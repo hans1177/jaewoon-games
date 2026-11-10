@@ -43,6 +43,52 @@ const families=[
   ['PROMOTIONAL_MEDIA','asset','thumbnail cover marketing','Separate licensed promo visuals from actual runtime screenshot evidence.','Media integrity and rights; never claims runtime rendered proof.']
 ];
 export const ROBLOX_QUALITY_FAMILIES=Object.freeze(families.map(([id,kind,words,improvement,acceptance])=>Object.freeze({id,kind,tokens:Object.freeze(words.split(' ')),improvement,acceptance})));
+// [자동 개선 판단] BUILD_UP의 승인 설계 GAP 명칭과 실제 Roblox 책임 영역을 직접 연결한다.
+// 단어 출현만으로 기능 결함이나 수정 완료를 인정하지 않는다.
+const QUALITY_DOMAIN_BY_FAMILY=Object.freeze({
+  SERVER_AUTHORITY:['SYSTEM_CONNECTION','ECONOMY','REWARDS'],
+  SOURCE_STABILITY:['RUNTIME_STABILITY','ERROR_RECOVERY'],
+  SAVE_RECOVERY:['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY'],
+  MULTIPLAYER_SYNC:['MULTIPLAYER_AND_SYNC'],
+  WORLD_TERRAIN:['TERRAIN','WORLD_MAP_TOPOLOGY','WORLD_NAVIGATION'],
+  REGIONS_LANDMARKS:['REGIONS','MAP_EXPANSION','WORLD_DENSITY','LANDMARKS','CONTENT_DISCOVERY'],
+  ENVIRONMENT_FOLIAGE:['ENVIRONMENT','ENVIRONMENTAL_MOTION'],
+  BUILDINGS_PROPS:['BUILDINGS_AND_PROPS','INTERACTION_DISCOVERABILITY'],
+  CHARACTERS_RIGS:['CHARACTER_VISUALS','PLAYER_ACTIONS'],
+  MONSTERS_NPCS:['ENEMY_VISUALS','ENEMY_AI','NPC_SOCIAL_BEHAVIOR','SPAWN_ENCOUNTER_DIRECTOR'],
+  WEAPONS_EQUIPMENT:['WEAPONS_AND_EQUIPMENT','EQUIPMENT_LOADOUT'],
+  ITEMS_LOOT:['INVENTORY','INVENTORY_USABILITY','REWARDS','CONTENT_VARIETY'],
+  MATERIALS_TEXTURES:['MATERIALS','PALETTE'],
+  ICONS_IMAGES:['UI_DESIGN_SYSTEM','FEEDBACK_CLARITY'],
+  UI_HUD_MENUS:['UI_HUD','MENU_FLOW','UI_INFORMATION_PRIORITY','FIRST_10_MINUTES','TUTORIAL_ONBOARDING'],
+  MOBILE_TOUCH:['MOBILE_UX','INPUT','CONVENIENCE'],
+  ANIMATION_MOTION:['ANIMATION','SECONDARY_MOTION','GAME_FEEL'],
+  ACTION_IMPACT:['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_AGENCY','AUDIO_VISUAL_TIMING'],
+  ACTION_TRAVERSAL:['TRAVERSAL','PLAYER_ACTIONS'],
+  VFX_PARTICLES:['VFX','AUDIO_VISUAL_TIMING'],
+  LIGHTING_SKY:['LIGHTING'],
+  CAMERA_COMPOSITION:['CAMERA'],
+  AUDIO_BGM:['AUDIO_MUSIC_SFX'],
+  AUDIO_SFX:['AUDIO_MUSIC_SFX','FEEDBACK_CLARITY'],
+  PERFORMANCE_BUDGET:['PERFORMANCE','PERFORMANCE_BUDGET'],
+  COMBAT_BALANCE:['DIFFICULTY_PACING','ANTI_GRIND'],
+  AI_NAVIGATION:['ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS'],
+  QUEST_PROGRESSION:['PROGRESSION','GOALS','UNLOCKS','QUESTS','MID_LATE_GAME_DEPTH','NARRATIVE_STORY','REPLAYABILITY_VARIATION','SESSION_FLOW'],
+  CRAFTING_ECONOMY:['CRAFTING','ECONOMY','SYSTEM_CONNECTION'],
+  SPAWN_RESPAWN:['FAILURE_RESPAWN_CHECKPOINTS','SESSION_FLOW'],
+  ACCESSIBILITY:['ACCESSIBILITY','SETTINGS_ACCESSIBILITY','UI_DESIGN_SYSTEM'],
+  PROMOTIONAL_MEDIA:[]
+});
+const QUALITY_PLAYER_IMPACT_ORDER=Object.freeze([
+  'SOURCE_STABILITY','SERVER_AUTHORITY','SAVE_RECOVERY','SPAWN_RESPAWN','MOBILE_TOUCH',
+  'UI_HUD_MENUS','ACTION_IMPACT','QUEST_PROGRESSION','MULTIPLAYER_SYNC','PERFORMANCE_BUDGET',
+  'MONSTERS_NPCS','AI_NAVIGATION','ACTION_TRAVERSAL','CHARACTERS_RIGS','WEAPONS_EQUIPMENT',
+  'ITEMS_LOOT','CRAFTING_ECONOMY','REGIONS_LANDMARKS','WORLD_TERRAIN','ANIMATION_MOTION',
+  'ACCESSIBILITY','BUILDINGS_PROPS','MATERIALS_TEXTURES','ICONS_IMAGES','AUDIO_SFX',
+  'LIGHTING_SKY','CAMERA_COMPOSITION','VFX_PARTICLES','AUDIO_BGM','ENVIRONMENT_FOLIAGE',
+  'COMBAT_BALANCE','PROMOTIONAL_MEDIA'
+]);
+const playerImpactRank=id=>{const index=QUALITY_PLAYER_IMPACT_ORDER.indexOf(id);return index<0?999:index;};
 export const ROBLOX_MOTION_STATES=Object.freeze([
   'IDLE','WALK','RUN','START','STOP','TURN','JUMP','LAND',
   'ATTACK_ANTICIPATION','ATTACK_IMPACT','ATTACK_RECOVERY',
@@ -332,13 +378,21 @@ export function buildRobloxHolisticQualityPlan({
       hashes.push(relative+':'+digest(content));
     }else if(assetMap[row.ext]&&row.bytes<=40*1024*1024){
       const bytes=fs.readFileSync(row.file);
-      assets.push({path:relative,bytes:bytes.length,sha256:'sha256:'+digest(bytes),
+      const sourceHash=digest(bytes);
+      hashes.push(relative+':'+sourceHash);
+      assets.push({path:relative,bytes:bytes.length,sha256:'sha256:'+sourceHash,
         familyCandidate:assetMap[row.ext],integrity:integrity(relative,bytes),
         rightsVerified:false,visualVerified:false,runtimeVerified:false});
     }
   }
   const combined=texts.map(row=>row.text.toLowerCase()).join('\n');
-  const known=unique([...scan.files.map(row=>norm(path.relative(scope.repo,row.file))),...(sourceObservation?.topFiles||[]).map(row=>clean(row.file)).filter(Boolean)]);
+  // [소유권] 이전 작업이나 타 플랫폼에서 전달된 경로는 현재 게임의 실제 파일일 때만 채택한다.
+  const observedFiles=(sourceObservation?.topFiles||[]).map(row=>norm(row?.file)).filter(file=>{
+    if(!file.startsWith(scope.relative+'/'))return false;
+    const full=path.resolve(scope.repo,file);
+    return full.startsWith(scope.repo+path.sep)&&fs.existsSync(full)&&fs.statSync(full).isFile();
+  });
+  const known=unique([...scan.files.map(row=>norm(path.relative(scope.repo,row.file))),...observedFiles]);
   const gaps=new Set((Array.isArray(qualityGaps)?qualityGaps:[]).map(row=>clean(row?.domain||row).toUpperCase()));
   const refs=assetRefs(texts,scope.repo);
   const broken=assets.filter(row=>row.integrity.startsWith('INVALID'));
@@ -352,19 +406,24 @@ export function buildRobloxHolisticQualityPlan({
     evidenceReference:null,repairState:'AWAIT_ACTUAL_FAILURE_OR_APPROVED_QUALITY_GAP'
   }));
   const rows=ROBLOX_QUALITY_FAMILIES.map(def=>{
-    const files=known.filter(file=>def.tokens.some(token=>file.toLowerCase().includes(token))).slice(0,6);
+    const namedOwners=known.filter(file=>def.tokens.some(token=>file.toLowerCase().includes(token)));
     const mentioned=def.tokens.some(token=>combined.includes(token));
     const ownAssets=assets.filter(asset=>asset.familyCandidate===def.id);
     const ownRefs=refs.filter(ref=>def.tokens.some(token=>ref.path.toLowerCase().includes(token)));
+    const files=unique([...ownRefs.flatMap(ref=>ref.owners),...namedOwners]).slice(0,6);
     const issues=[...ownAssets.filter(row=>row.integrity.startsWith('INVALID')).map(row=>'INVALID_ASSET_BYTES:'+row.path),
       ...ownRefs.filter(row=>!row.exists).map(row=>'MISSING_ASSET_REFERENCE:'+row.path)];
+    const gapDomains=(QUALITY_DOMAIN_BY_FAMILY[def.id]||[]).filter(domain=>gaps.has(domain));
+    if(gaps.has(def.id))gapDomains.push(def.id);
     const candidate=files.length>0||mentioned||ownAssets.length>0||ownRefs.length>0;
-    return {id:def.id,kind:def.kind,priority:issues.length?'P0':gaps.has(def.id)?'P1':candidate?'P2':'P3',
+    return {id:def.id,kind:def.kind,priority:issues.length?'P0':gapDomains.length?'P1':candidate?'P2':'P3',
       sourceFiles:files,sourceSignalOnly:mentioned,assetCount:ownAssets.length,
       sourceState:!scan.complete?'PARTIAL_SOURCE':candidate?'CANDIDATE_NOT_VERIFIED':'NOT_OBSERVED',
+      gapDomains:unique(gapDomains),gapEvidence:'BUILD_UP_DESIGN_SOURCE_GAP_NOT_RUNTIME_PROOF',
       issues,improvement:def.improvement,acceptance:def.acceptance,
       implementationStatus:'NOT_IMPLEMENTED_BY_PLAN',verified:false,actualPlayVerified:false};
-  }).sort((a,b)=>a.priority.localeCompare(b.priority)||b.issues.length-a.issues.length||a.id.localeCompare(b.id));
+  }).sort((a,b)=>a.priority.localeCompare(b.priority)||b.issues.length-a.issues.length
+    ||playerImpactRank(a.id)-playerImpactRank(b.id)||a.id.localeCompare(b.id));
   const studio=runtimeEvidence?.studioPlayEvidence||{};
   const exactStudio=Boolean(studio.authority==='roblox-official-studio-mcp-runtime'
     &&studio.actualPlay===true&&studio.runtimeVerified===true
@@ -381,7 +440,32 @@ export function buildRobloxHolisticQualityPlan({
     ...broken.map(row=>({id:'ASSET_SIGNATURE_INVALID',path:row.path,reason:row.integrity,priority:'P0'})),
     ...missing.map(row=>({id:'SOURCE_ASSET_REFERENCE_MISSING',path:row.path,reason:'FILE_ABSENT',priority:'P0'}))
   ];
-  const fingerprint=sourceObservation?.sourceTreeFingerprint||digest(hashes.sort().join('\n'));
+  // [자동 진단→수정 대상] 기존 BUILD_UP에 한 번에 한 책임 영역을 전달한다.
+  // 확정된 정적 결함(P0)과 설계/소스상 의심되는 개선 영역(P1/P2)을 엄격히 구분한다.
+  const sourceDefect=issues.slice().sort((a,b)=>a.id.localeCompare(b.id)||a.path.localeCompare(b.path))[0];
+  const familyTarget=rows.find(row=>row.priority==='P1'&&row.sourceFiles.length)
+    ||rows.find(row=>row.priority==='P1')
+    ||rows.find(row=>row.priority==='P2'&&row.sourceFiles.length)||null;
+  const refOwner=sourceDefect?.id==='SOURCE_ASSET_REFERENCE_MISSING'
+    ?refs.find(row=>row.path===sourceDefect.path)?.owners||[]:[];
+  const autonomousWorkUnit=sourceDefect?Object.freeze({
+    id:sourceDefect.id,priority:'P0',mode:'REPAIR_CONFIRMED_STATIC_DEFECT',
+    sourceFiles:sourceDefect.id==='ASSET_SIGNATURE_INVALID'?[sourceDefect.path]:refOwner,
+    sourceAsset:sourceDefect.path,ownerDiscoveryRequired:refOwner.length===0&&sourceDefect.id!=='ASSET_SIGNATURE_INVALID',
+    evidence:'LOCAL_SOURCE_BYTES_OR_MISSING_REFERENCE',verifiedRuntime:false,
+    action:'REPAIR_EXISTING_OWNER_OR_LICENSED_ASSET_AND_RERUN_EXACT_QUALITY_CHECK'
+  }):familyTarget?Object.freeze({
+    id:familyTarget.id,priority:familyTarget.priority,
+    mode:familyTarget.priority==='P1'?'REVIEW_DESIGN_SOURCE_GAP_THEN_REPAIR':'INSPECT_SOURCE_CANDIDATE_THEN_REPAIR_IF_PROVEN',
+    sourceFiles:familyTarget.sourceFiles,sourceAsset:null,
+    ownerDiscoveryRequired:familyTarget.sourceFiles.length===0,
+    gapDomains:familyTarget.gapDomains,evidence:'STATIC_CANDIDATE_NOT_RUNTIME_VERIFIED',
+    verifiedRuntime:false,action:familyTarget.improvement
+  }):Object.freeze({id:null,priority:'NONE',mode:'NO_SOURCE_SUPPORTED_TARGET',
+    sourceFiles:[],sourceAsset:null,ownerDiscoveryRequired:true,
+    evidence:'SOURCE_REVIEW_REQUIRED',verifiedRuntime:false,action:'INSPECT_CURRENT_GAME_BEFORE_EDIT'});
+  // 공유·다른 게임 지시의 임의 fingerprint로 이 게임 소스의 변화가 증명되지 않게 한다.
+  const fingerprint=digest(hashes.sort().join('\n'));
   return Object.freeze({
     version:1,authority:'EXISTING_BUILD_UP_SOURCE_ONLY',
     gameId,sourceRoot:scope.relative,sourceTreeFingerprint:fingerprint,
@@ -400,6 +484,8 @@ export function buildRobloxHolisticQualityPlan({
       unexecuted:detailedChecks.filter(row=>row.executionStatus==='NOT_EXECUTED').length,
       actualPlayVerified:0,realTouchVerified:0},
     families:rows,priorityWork:rows.filter(row=>row.priority==='P0'||row.priority==='P1').concat(rows.filter(row=>row.priority==='P2').slice(0,6)).slice(0,12),
+    autonomousWorkUnit,autonomousDecisionOwner:'VIBE_EXISTING_BUILD_UP',
+    actualSourceDefects:issues.length,designSourceGapsUnverified:rows.filter(row=>row.priority==='P1').length,
     officialStudioScenarios:scenarios,officialStudioHarnessRequired:true,
     externalGuiAutomationForbidden:true,robloxPlayerAutomationForbidden:true,
     sourceOnlyCannotSatisfyF0F9OrPlaybot:true,
@@ -425,7 +511,8 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10,compact=
     'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceOnly=true COMPACT_VOLUME_INDEX; full evidence-specific source/asset plan in robloxHolisticQualityPlan.',
     'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; source edits are NOT runtime PASS.',
     'MOTION_ACTION_BUILD_UP: real rig/Animator motion, anticipation-impact-recovery, hit/death, synced input/VFX/SFX, mobile LOD; only approved game-specific actor classes.',
-    'QUALITY_PROOF_RULE: only exact source runtime and licensed asset evidence; Studio / real device execution remains unverified until actually observed.'
+    'QUALITY_PROOF_RULE: only exact source runtime and licensed asset evidence; Studio / real device execution remains unverified until actually observed.',
+    'AUTONOMOUS_QUALITY_WORK_UNIT: '+JSON.stringify(plan.autonomousWorkUnit||{})+'; existing BUILD_UP owner must inspect and directly repair only proven defects; no standalone pipeline.'
   ];
   const top=(plan.priorityWork||[]).slice(0,Math.max(1,Math.min(16,Number(maxFamilies)||10)));
   const states=(plan.motion?.states||[]).filter(row=>row.sourceMentioned!==true).map(row=>row.id);
@@ -437,6 +524,7 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10,compact=
   return [
     'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceTree='+plan.sourceTreeFingerprint+' scanComplete='+plan.scan?.complete+' assets='+plan.scan?.assetCount+' sourceOnly=true',
     'SHARED_LIBRARY_QA: metadata='+plan.sharedLibrary?.status+' total='+plan.sharedLibrary?.coverage?.total+' gameRelevant='+plan.sharedLibrary?.coverage?.gameRelevant+' missingLocal='+plan.sharedLibrary?.coverage?.localFilesMissing+' ownershipGaps='+plan.sharedLibrary?.coverage?.ownershipOrLicenseMetadataGaps+' rightsProof=UNVERIFIED; evaluate all relevant library entries, keep originals, repair provenance before new use.',
+    'AUTONOMOUS_QUALITY_WORK_UNIT: '+JSON.stringify(plan.autonomousWorkUnit||{})+'; automatically inspect this exact existing owner, edit responsible code/assets only for a verified defect or approved design gap, then rerun relevant existing QA. Never infer PASS from static clues.',
     'QUALITY_FAMILY_REPAIR_TARGETS: '+top.map(row=>row.id+'['+row.priority+']:'+row.improvement+' @ '+(row.sourceFiles?.join('|')||'LOCATE_OWNING_SOURCE')).join(' ; '),
     'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; full definitions in robloxHolisticQualityPlan.detailedChecks; pick game-applicable checks, measure exact results before changing owning code or assets; count labels != tested gameplay.',
     'DETAILED_GAME_SOURCE_TARGETS: '+detailed.map(row=>row.id+'['+row.verificationMethod+'] '+row.acceptance+' => repair only observed failure or approved gap; sourceCandidate='+row.sourceCandidate).join(' ; ')+'. Exclude features absent from approved design; rerun same check after source/asset repair.',
