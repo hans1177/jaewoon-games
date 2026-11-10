@@ -3793,6 +3793,18 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/\[QA\] FEATURE_COVERED/);
   assert.match(script,/MARE_STUDIO_AUDIT=/);
   assert.match(script,/STUDIO_SCRIPT_MARE_FULL_AUDIT=/);
+  // [시간 초과 회귀] Studio의 140초 에셋 감시보다 짧은 90초 폴링으로 미완료 판정하면 안 된다.
+  assert.match(script,/const mareAuditDeadline=Date\.now\(\)\+175000/);
+  assert.match(script,/Date\.now\(\)\+3000>=mareAuditDeadline/);
+  // [초상 ID 회귀] 이미 승인·사용권한을 받은 등록표와 실제 Luau 456개를 전수 비교한다.
+  const registered=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  const activeSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const active=new Map([...activeSource.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(m=>[m[1],m[2]]));
+  assert.equal(active.size,Object.keys(registered).length);
+  for(const [key,row] of Object.entries(registered)){
+    assert.equal(active.get(key),String(row.assetId),'asset registration mismatch: '+key);
+    if(key.startsWith('Portraits/'))assert.equal(row.usePermissionGranted,true,'portrait use grant unverified: '+key);
+  }
   assert.match(script,/STUDIO_ASSET_AUDIT_FAILED/);
   assert.match(script,/STUDIO_FEATURE_AUDIT_FAILED/);
   assert.match(script,/STUDIO_FULL_AUDIT_INCOMPLETE/);
