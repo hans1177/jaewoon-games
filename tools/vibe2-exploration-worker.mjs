@@ -221,6 +221,11 @@ function verifyDiagnosticReplayBaseline({order={},target='',root=''}={}){
     line:Number.isInteger(Number(matched?.line))?Number(matched.line):null,
     needle:clean(matched?.needle)||null,
     microTask:clean(matched?.microTask)||null,
+    // [인과 증거] 오류가 사라지는 것과 실제 버튼 연결 복구를 별도로 확인한다.
+    domTarget:reproduced&&identity.type==='DOM_EVENT_TARGET_MISMATCH'&&matched?.pageFile
+      &&matched?.expectedId&&matched?.callback&&matched?.lookupKind
+      ?{pageFile:posix(matched.pageFile),expectedId:clean(matched.expectedId),
+        callback:clean(matched.callback),lookupKind:clean(matched.lookupKind)}:null,
     verifiedResponsibleSystem:reproduced?diagnosticResponsibleSystem(identity.type):null,
     verifier:'AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN',
     sourceWrite:false,
@@ -258,6 +263,7 @@ function compileCausalReplayPlan({order={},failures=[],testTargets=[],diagnostic
     diagnosticLine:diagnosticReplay?.line??null,
     diagnosticNeedle:diagnosticReplay?.needle||null,
     diagnosticMicroTask:diagnosticReplay?.microTask||null,
+    diagnosticDomTarget:diagnosticReplay?.domTarget||null,
     verifiedResponsibleSystem:diagnosticReplay?.verifiedResponsibleSystem||null,
     diagnosticVerifier:diagnosticReplay?.verifier||null,
     identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false

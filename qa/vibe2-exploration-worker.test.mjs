@@ -1575,3 +1575,21 @@ test('successful runtime evidence and verification requirements do not manufactu
   assert.equal(broken.editContract.gameRepair.required,true);
   assert.equal(broken.editContract.causalReplay.required,true);
 });
+
+test('DOM causal replay keeps the actual button ID and callback as prepatch evidence',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/causal-button');
+  write(path.join(root,'index.html'),'<html><body><button id="play" data-gameplay-action="startGame">Play</button><script src="app.js"></script></body></html>');
+  write(path.join(root,'app.js'),"document.getElementById('missing').addEventListener('click',startGame);\nfunction startGame(){}");
+  const evidence=['diagnostic:DOM_EVENT_TARGET_MISMATCH','diagnostic-key:DOM_EVENT_TARGET_MISMATCH:app.js'];
+  const order={run:true,taskId:'causal-button',gameId:'causal-button',target:'web',
+    goal:'실제 시작 버튼의 이벤트 연결을 복구',
+    source:{root:'web-games/causal-button',responsibleFiles:['web-games/causal-button/app.js'],ignoredPaths:[]},
+    selectedTask:{evidence,lastOutcome:'FAIL'},
+    workPackage:{id:'causal-button-wp',sharedContext:{diagnosticEvidence:evidence}}};
+  const result=exploreVibe2WorkOrder({cwd,order});
+  const replay=result.editContract.causalReplay;
+  assert.equal(replay.executable,true);
+  assert.equal(replay.mode,'DIAGNOSTIC_RESCAN');
+  assert.equal(replay.diagnosticType,'DOM_EVENT_TARGET_MISMATCH');
+  assert.deepEqual(replay.diagnosticDomTarget,{pageFile:'index.html',expectedId:'play',callback:'startGame',lookupKind:'getElementById'});
+});

@@ -945,3 +945,28 @@ test('causal replay rejects a symlinked game source rooted outside the repositor
   assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:source-escape'}),
     /CAUSAL_REPLAY_SOURCE_ROOT_ESCAPED_REPOSITORY/);
 });
+
+test('DOM diagnostic replay rejects silent optional chaining and callback substitution',()=>{
+  const root=repo(),sourceRoot=path.join(root,'web-games/causal-button');
+  const html='<html><body><button id="play" data-gameplay-action="startGame">Play</button><script src="app.js"></script></body></html>';
+  fs.mkdirSync(sourceRoot,{recursive:true});fs.writeFileSync(path.join(sourceRoot,'index.html'),html);
+  const script=path.join(sourceRoot,'app.js'),manifest=path.join(root,'manifest.json');
+  const replay={required:true,prePatchReproduced:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+    diagnosticType:'DOM_EVENT_TARGET_MISMATCH',diagnosticFile:'app.js',
+    diagnosticDomTarget:{pageFile:'index.html',expectedId:'play',callback:'startGame',lookupKind:'getElementById'}};
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot:'web-games/causal-button',changedFiles:['app.js'],
+    exploration:{editContract:{causalReplay:replay}}}));
+  fs.writeFileSync(script,"document.getElementById('missing')?.addEventListener('click',startGame);\nfunction startGame(){}\n");
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:dom-silent'}),/CAUSAL_REPLAY_DOM_CALLBACK_NOT_CONNECTED/);
+  fs.writeFileSync(script,"document.getElementById('play')?.addEventListener('click',otherGame);\nfunction startGame(){}\nfunction otherGame(){}\n");
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:dom-swapped'}),/CAUSAL_REPLAY_DOM_CALLBACK_NOT_CONNECTED/);
+  fs.writeFileSync(script,"document.getElementById('play').addEventListener('click',startGame);\nfunction startGame(){}\n");
+  const pass=runIncrementalQa({root,manifest,namespace:'web:dom-restored'});
+  assert.equal(pass.causalReplay.status,'EXECUTED_PASS');
+  assert.equal(pass.causalReplay.canonicalQaStillRequired,true);
+  fs.writeFileSync(script,"document.getElementById('play').addEventListener('click',startGame);\nfunction startGame(){}\n");
+  replay.diagnosticDomTarget=null;
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot:'web-games/causal-button',changedFiles:['app.js'],
+    exploration:{editContract:{causalReplay:replay}}}));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:dom-missing-evidence'}),/CAUSAL_REPLAY_DOM_BINDING_EVIDENCE_MISSING/);
+});

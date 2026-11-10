@@ -224,6 +224,51 @@ function runCausalReplay({root,data={}}={}){
       };
       throw error;
     }
+
+    // [버튼 실행 계약] 동일 오류가 다시 검출되지 않아도 이벤트가 사라졌거나
+    // 다른 버튼/콜백으로 바뀌면 실제 수리로 인정하지 않는다.
+    if(type==='DOM_EVENT_TARGET_MISMATCH'){
+      const target=plan.diagnosticDomTarget;
+      if(!target||!target.pageFile||!target.expectedId||!target.callback
+        ||!['getElementById','querySelector'].includes(target.lookupKind)
+        ||!/^[A-Za-z][\w-]{0,79}$/.test(target.expectedId)
+        ||!/^[A-Za-z_$][\w$]{0,79}$/.test(target.callback))
+        throw new Error('CAUSAL_REPLAY_DOM_BINDING_EVIDENCE_MISSING');
+      const jsFile=path.resolve(sourceDir,file),pageFile=path.resolve(sourceDir,posix(target.pageFile));
+      const realRoot=fs.realpathSync(sourceDir);
+      for(const candidate of [jsFile,pageFile]){
+        if(!candidate.startsWith(sourceDir+path.sep)||!fs.existsSync(candidate)
+          ||fs.lstatSync(candidate).isSymbolicLink()||!fs.statSync(candidate).isFile()
+          ||!fs.realpathSync(candidate).startsWith(realRoot+path.sep))
+          throw new Error('CAUSAL_REPLAY_DOM_BINDING_SOURCE_UNVERIFIED');
+      }
+      const js=fs.readFileSync(jsFile,'utf8'),html=fs.readFileSync(pageFile,'utf8');
+      if(Buffer.byteLength(js)>1600000||Buffer.byteLength(html)>1600000)
+        throw new Error('CAUSAL_REPLAY_DOM_BINDING_SOURCE_TOO_LARGE');
+      if(pageFile!==jsFile){
+        const linked=[...html.matchAll(/<script\b([^>]*)>/gi)].some(row=>{
+          const src=/\bsrc\s*=\s*(["'])([^"']+)\1/i.exec(row[1])?.[2]||'';
+          return src&&!/^(?:\/|https?:|data:|blob:)/i.test(src)
+            &&path.resolve(path.dirname(pageFile),src.split(/[?#]/)[0])===jsFile;
+        });
+        if(!linked)throw new Error('CAUSAL_REPLAY_DOM_BINDING_SCRIPT_UNLINKED');
+      }
+      const idCount=[...html.matchAll(/\bid\s*=\s*(["'])([^"']+)\1/gi)]
+        .filter(row=>row[2]===target.expectedId).length;
+      const buttonMatches=[...html.matchAll(/<button\b([^>]*)>/gi)].filter(row=>{
+        const id=/\bid\s*=\s*(["'])([^"']+)\1/i.exec(row[1])?.[2];
+        const action=/\bdata-gameplay-action\s*=\s*(["'])([^"']+)\1/i.exec(row[1])?.[2];
+        return id===target.expectedId&&action===target.callback&&
+          !/\bdisabled\b|\bonclick\s*=/i.test(row[1]);
+      });
+      const wires=[...js.matchAll(/document\.(getElementById|querySelector)\s*\(\s*(["'])(#?[A-Za-z][\w-]*)\2\s*\)\s*\.addEventListener\s*\(\s*(["'])click\4\s*,\s*([A-Za-z_$][\w$]*)\s*\)/g)];
+      const verified=wires.filter(row=>row[1]===target.lookupKind&&row[3]===(row[1]==='querySelector'?'#':'')+target.expectedId&&row[5]===target.callback);
+      const functions=[...js.matchAll(new RegExp('(?:^|\\n)\\s*(?:async\\s+)?function\\s+'+target.callback+'\\s*\\(','g'))];
+      if(idCount!==1||buttonMatches.length!==1||verified.length!==1||functions.length!==1
+        ||wires.filter(row=>row[5]===target.callback).length!==1){
+        throw new Error('CAUSAL_REPLAY_DOM_CALLBACK_NOT_CONNECTED:'+file);
+      }
+    }
     return{
       status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,
       targets:[{target:`diagnostic:${type}:${file}`,outcome:'ABSENT_AFTER_PATCH'}],
