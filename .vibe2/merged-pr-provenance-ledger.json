@@ -180725,11 +180725,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_fdcd2d211102d7d3f064875c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12402",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12402,
+        "baseBranch": "main",
+        "headBranch": "vibe59-roblox-auto-repair-dedupe-20261111",
+        "baseSha": "6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d",
+        "headSha": "a00961d03fb17b4ad0d4117131dac75ef7a70dcc",
+        "mergeCommitSha": "0d3b5e225bdbaa5371bebd4e56ba1ac4cf475106",
+        "mergedAt": "2026-11-10T23:27:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7d4c8fc1c3758d4524f775ebcbe4abfb73140acfc0b35bae31f72ee3e1defd25",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe59-roblox-auto-repair-dedupe-20261111",
+        "candidateSha": "a00961d03fb17b4ad0d4117131dac75ef7a70dcc"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 116,
+        "deletedLineCount": 8,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12402",
+        "merge-commit:0d3b5e225bdbaa5371bebd4e56ba1ac4cf475106",
+        "base-main:6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1442
+    "total": 1443
   }
 }
