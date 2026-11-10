@@ -3888,6 +3888,8 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
   assert.match(uploader,/if \(!studioRegrantPath\) for \(const \[dir, kind\] of/);
   assert.match(uploader,/report\.summary\?\.completedSteps !== 185/);
   assert.match(uploader,/report\.assetRegistryAudit\?\.status !== 'PASS'/);
+  assert.match(uploader,/report\.assetRegistryAudit\.mismatched\.length !== 0/);
+  assert.match(uploader,/report\.assetRegistryAudit\.unverifiedPermissions\.length !== 0/);
   assert.match(uploader,/row\.status !== 'TIMEOUT_16S'/);
   assert.match(uploader,/row\.id !== 'rbxassetid:\/\/' \+ registered\.assetId/);
   assert.match(uploader,/pendingPermissions\.push\(\{id, assetId: registered\.assetId\}\)/);
