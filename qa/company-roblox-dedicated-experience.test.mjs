@@ -19,7 +19,10 @@ test('forest model registration fails closed when cached creator does not match 
   assert.match(uploader,/MODEL_CREATOR_API_KEY_OWNER_MISMATCH/);
   assert.match(uploader,/MODEL_CREATOR_ASSET_WRITE_SCOPE_REQUIRED/);
   assert.doesNotMatch(uploader,/const cookie=/);
-  assert.match(workflow,/creator=\{userId:String\(scope\.authorizedUserId\)\}/);
+  // 실제 모델 등록 책임은 uploader에 있다. 게시 workflow는 같은 Open Cloud 키로
+  // 원본 Universe Use 권한을 확인하며 다른 계정으로 전환하지 않는다.
+  assert.match(workflow,/const apiKey=String\(process\.env\.ROBLOX_OPEN_CLOUD_API_KEY\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS/);
 });
 
 test('Forest dedicated publishing and CC0 registration never reuse a different account cookie',()=>{
@@ -256,4 +259,26 @@ test('publish rejects sanctioned image IDs before network access', async()=>{
     }
     assert.equal(requests,0);
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+// [실사용 권한] 모델 등록표만 통과해서는 게시할 수 없으며, 기존 공개키로 정확한
+// 원본 모델 ID마다 해당 Universe 권한을 받은 뒤에만 비공개 플레이를 게시한다.
+test('Forest private publisher verifies CC0 gear, item and shields with batched Universe grants',()=>{
+  const source=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  const start=source.indexOf('- name: Grant original Forest models to the existing private Universe');
+  const end=source.indexOf('\n      - name: Build exact current main Roblox place',start);
+  assert.ok(start>=0&&end>start);
+  const block=source.slice(start,end);
+  assert.match(block,/OWNER_FOREST_GEAR_SOURCE_PROVENANCE_REQUIRED/);
+  assert.match(block,/OWNER_FOREST_GEAR_MODEL_BINDING_INVALID/);
+  assert.match(block,/OWNER_FOREST_ITEM_PACK_SOURCE_REQUIRED/);
+  assert.match(block,/OWNER_FOREST_ITEM_MODEL_BINDING_INVALID/);
+  assert.match(block,/OWNER_FOREST_VILLAGE_GEAR_SOURCE_REQUIRED/);
+  assert.match(block,/OWNER_FOREST_VILLAGE_GEAR_MODEL_INVALID/);
+  assert.match(block,/assetIds\.slice\(offset,offset\+20\)/);
+  assert.match(block,/batch\.every\(assetId=>granted\.has\(String\(assetId\)\)\)/);
+  assert.match(block,/successAssetIds/);
+  assert.match(block,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
+  assert.match(block,/ROBLOX_CC0_UNIVERSE_GRANT_BATCH_ACCEPTED=/);
+  assert.doesNotMatch(block,/ROBLOX_SECURITY_COOKIE|continue-on-error:\s*true/);
 });

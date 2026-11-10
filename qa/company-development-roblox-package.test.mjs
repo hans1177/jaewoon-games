@@ -2566,7 +2566,8 @@ test('forest native uploader retains verified weapon IDs after creature/village 
     JSON.parse(JSON.stringify(runInNewContext(source.slice(start,end)+'\nregisteredGearIds;',
       {fantasy:true,oldRegistry:value,targetUniverse:universe})));
   const valid=evaluate(registry);
-  assert.equal(Object.keys(valid).length,20);
+  const retainedItemCount=Object.keys(registry.itemPackV1.assetIds).length+5;
+  assert.equal(Object.keys(valid).length,20+retainedItemCount);
   for(const [name,row] of Object.entries(group.models)){
     assert.equal(valid[name],row.assetId);
     assert.match(current,new RegExp('^\\s*'+name+'\\s*=\\s*'+row.assetId+',?$','m'));
@@ -2576,6 +2577,12 @@ test('forest native uploader retains verified weapon IDs after creature/village 
   assert.throws(()=>evaluate(forbidden),/FOREST_GEAR_REGISTERED_PROVENANCE_INVALID:gear_sword_01/);
   const ungranted=structuredClone(registry);
   ungranted.gearExpansionV1.universeUseGrantVerified=false;
-  assert.equal(Object.keys(evaluate(ungranted)).length,0);
+  assert.equal(Object.keys(evaluate(ungranted)).length,retainedItemCount);
+  const unverifiedItem=structuredClone(registry);
+  unverifiedItem.itemPackV1.license='NC';
+  assert.throws(()=>evaluate(unverifiedItem),/FOREST_ITEM_PACK_SOURCE_PROVENANCE_REQUIRED/);
+  const unverifiedShield=structuredClone(registry);
+  unverifiedShield.villageExtraV2.models.vxShieldA.importedSourceHash='0'.repeat(64);
+  assert.throws(()=>evaluate(unverifiedShield),/FOREST_APPROVED_VILLAGE_GEAR_INVALID:vxShieldA/);
   assert.throws(()=>evaluate(registry,'999999'),/FOREST_GEAR_APPROVED_GROUP_INVALID/);
 });

@@ -4,13 +4,13 @@ import fs from 'fs';
 import path from 'path';
 const dir = 'roblox-games/fantasy-survival/';
 const read = f => fs.readFileSync(path.join(dir, f), 'utf8');
-export function checkFantasyAssets() {
+export function checkFantasyAssets({idsSource,configSource,serverSource,clientSource} = {}) {
   const problems = [];
-  const ids = read('shared/VisualAssetIds.luau');
+  const ids = idsSource ?? read('shared/VisualAssetIds.luau');
   const registered = new Map([...ids.matchAll(/([A-Za-z_][\w]*)\s*=\s*(\d{6,})/g)].map(m => [m[1], m[2]]));
-  const cfg = read('shared/GameConfig.luau');
-  const server = read('server/Game.server.luau');
-  const client = read('client/Game.client.luau');
+  const cfg = configSource ?? read('shared/GameConfig.luau');
+  const server = serverSource ?? read('server/Game.server.luau');
+  const client = clientSource ?? read('client/Game.client.luau');
   // 1) 장비·망토 ModelKey가 등록 ID로 연결되는지
   const keys = new Set([...cfg.matchAll(/ModelKey\s*=\s*"([^"]+)"/g)].map(m => m[1]));
   for (const key of keys) if (!registered.has(key)) problems.push(`ModelKey 미등록: ${key}`);
@@ -26,8 +26,15 @@ export function checkFantasyAssets() {
   for (const m of cfg.matchAll(/IconCell\s*=\s*(\d+)/g)) if (+m[1] > 24) problems.push(`IconCell 범위 초과: ${m[1]}`);
   // 5) Part로 만든 모델 금지
   if (/Instance\.new\("Part"\)/.test(client)) problems.push('클라이언트에 Part 생성');
-  // 6) 서버가 spawnEnemy에서 쓰는 몬스터 종 키 등록
-  for (const m of server.matchAll(/\{id="(wolf|bat|golem|ghost)"/g)) if (!registered.has(m[1]) && !registered.has('mon_' + m[1])) problems.push(`몬스터 종 미등록: ${m[1]}`);
+  // 6) 몬스터의 실물 모델 ID만 확인한다. ghost는 별도 가짜 모델이 아니라
+  // 승인된 skeleton MeshPart를 재사용하므로 spawnEnemy의 실제 선택 경로를 증명한다.
+  const ghostUsesSkeleton=/\blocal\s+modelId\s*=\s*partId=="ghost"\s+and\s+NativeCreatureAssets\.skeleton\b/.test(server);
+  for (const m of server.matchAll(/\{id="(wolf|bat|golem|ghost)"/g)) {
+    const kind=m[1];
+    const bound=registered.has(kind)||registered.has('mon_'+kind)
+      ||(kind==='ghost'&&ghostUsesSkeleton&&registered.has('skeleton'));
+    if (!bound) problems.push(`몬스터 종 미등록: ${kind}`);
+  }
   return { problems, registered: registered.size, modelKeys: keys.size };
 }
 if (import.meta.url === `file://${process.argv[1]}`) {
