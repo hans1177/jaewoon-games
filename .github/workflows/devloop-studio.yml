@@ -129,6 +129,10 @@ jobs:
           if (@($report.errors).Count -gt 0) {
             $qaStage = 'STUDIO_EXECUTION'
             $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+            # [복구 분류] Studio MCP 통신 타임아웃을 게임 소스 오류로 위장하지 않는다.
+            if (@($report.errors | Where-Object { [string]$_ -match 'MCP timeout: tools/call' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
+            }
           }
           $runtimeRows = @($report.log | Where-Object {
             $_.ctx -in @('Client','Server') -and [string]$_.out -match 'LOGS\(([1-9][0-9]*)\):'
