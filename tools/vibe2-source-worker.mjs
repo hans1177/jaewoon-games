@@ -3364,6 +3364,13 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       // 함수/기능 완결성 계약과 기존 검증기를 우회하지 않는다.
       if(!validatorExecuted||!pending.length)continue;
       const failureFiles=new Set(decision.comparison.sourceFiles);
+      // [인과 피드백] 정식 검증기의 오류 코드와 연결된 수정 효과가
+      // 실제 원본 diff에서 확인되는 대안을 먼저 시험한다. 런타임 PASS는 아니다.
+      const feedbackTargetSystem=/^(?:NATIVE_INPUT_|INPUT_BUTTON_|ROBLOX_INPUT_)/.test(reasonCode)?'INPUT_BUTTON'
+        :/^(?:NATIVE_CAMERA_|CAMERA_|ROBLOX_CAMERA_)/.test(reasonCode)?'CAMERA':null;
+      const feedbackStaticEffect=row=>feedbackTargetSystem
+        &&causalReview(row).expectations.some(effect=>effect.system===feedbackTargetSystem
+          &&effect.mode==='SOURCE_COUNTERFACTUAL'&&effect.sourceEffectObserved===true)?1:0;
       const sourceDiversity=row=>candidateComparison(row).sourceFiles.filter(file=>!failureFiles.has(file)).length;
       const recipeDiversity=row=>clean(row.deterministicRobloxNativeRepair)!==clean(decision.recipe)?1:0;
       pending.sort((a,b)=>{
@@ -3373,7 +3380,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         const systemCoverage=composedIntent&&requestedRepairSystems.length>=2
           ?bc.repairSystemCoverage-ac.repairSystemCoverage:0;
         const sourceShift=sourceDiversity(b)-sourceDiversity(a);
-        return functionCoverage||systemCoverage||sourceShift
+        return functionCoverage||systemCoverage
+          ||feedbackStaticEffect(b)-feedbackStaticEffect(a)||sourceShift
           ||recipeDiversity(b)-recipeDiversity(a)
           ||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
           ||ac.changedBytes-bc.changedBytes;
@@ -3385,6 +3393,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         nextHypothesisId:rejectedSourcePatchFingerprint(next)?.slice(0,16)||null,
         nextRecipe:clean(next.deterministicRobloxNativeRepair),
         nextResponsibleFiles:nextComparison.sourceFiles,
+        feedbackTargetSystem,feedbackStaticEffectObserved:feedbackTargetSystem?feedbackStaticEffect(next)===1:null,
+        feedbackEvidenceKind:'STATIC_SOURCE_ONLY_RUNTIME_QA_STILL_REQUIRED',
         changedStrategy:sourceDiversity(next)>0?'ALTERNATIVE_SOURCE_OWNER':
           recipeDiversity(next)?'ALTERNATIVE_REPAIR_RECIPE':'SAME_SCOPE_NEW_INTERVENTION',
         qaRequired:true,sourceWrite:false,sourceRevisionAuthorityExpanded:false
