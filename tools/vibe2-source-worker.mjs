@@ -3320,14 +3320,31 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         causalReview:decision.causalReview,
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
+      // [소스 무결성] 검증기 성공/실패/예외와 무관하게 원본이 바뀌면 재계획을 중단한다.
+      // 최신 원본 재탐색 없이 이전 스냅샷에서 뽑은 다른 후보로 우회하지 않는다.
+      const sourceDrift=decision.sources.some(({path:file,sha256})=>{
+        try{
+          const current=path.resolve(sourceRoot,file);
+          return !sha256||fs.lstatSync(current).isSymbolicLink()
+            ||!fs.realpathSync(current).startsWith(root+path.sep)
+            ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sha256;
+        }catch{return true;}
+      });
       const code=clean(error?.message).split(':')[0];
-      const reasonCode=/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED';
+      const reasonCode=sourceDrift?'DETERMINISTIC_SOURCE_REVISION_CHANGED'
+        :/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED';
       const failureClass=generationFailureClass(error);
-      const failed=validatorExecuted?'CANONICAL_CANDIDATE_VALIDATOR_REJECTED':'SOURCE_PREFLIGHT_REJECTED';
+      const failed=sourceDrift?'SOURCE_REVISION_CHANGED'
+        :validatorExecuted?'CANONICAL_CANDIDATE_VALIDATOR_REJECTED':'SOURCE_PREFLIGHT_REJECTED';
       selection.attempts.push({...decision,status:'REJECTED',failureClass,reasonCode,
         validationEvidence:failed});
       const hypothesis=hypotheses.find(row=>row.fingerprint===fingerprint);
       if(hypothesis)hypothesis.status=failed;
+      if(sourceDrift){
+        const stale=new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
+        stale.vibe2DeterministicSelection={...selection,status:'SOURCE_REVISION_CHANGED'};
+        throw stale;
+      }
       // [실패 반영 재계획] 현재 소스에서 실제로 관측한 검증 실패가 있을 때
       // 같은 책임 파일·같은 수리법의 반복 대신 겹치지 않는 대체안을 먼저 시험한다.
       // 함수/기능 완결성 계약과 기존 검증기를 우회하지 않는다.
