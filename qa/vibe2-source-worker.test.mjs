@@ -7,11 +7,48 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,focusedSymbolContext,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,focusedSymbolContext,requestLocalModel,normalizeResponsibleFiles} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
+
+test('Roblox coding source reader prioritizes only current approved quality owner without changing file permission',()=>{
+ const root='roblox-games/magic-forest';
+ const originals=[root+'/shared/GameConfig.luau',root+'/server/Game.server.luau',root+'/client/Game.client.luau'];
+ const directive={version:1,directiveId:'forest-verified-work',gameId:'magic-forest',sourceRoot:root,
+  robloxHolisticQualityPlan:{gameId:'magic-forest',sourceRoot:root,autonomousWorkUnit:{
+   id:'CURRENT_CAUSAL_FAILURE',priority:'P0',mode:'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST',
+   sourceFiles:[root+'/client/Game.client.luau',root+'/server/Game.server.luau',
+    'roblox-games/other/client/Game.client.luau',root+'/../other/server/Game.server.luau']
+  }}};
+ const order={target:'roblox',gameId:'magic-forest',source:{root,responsibleFiles:originals},
+  selectedTask:{gameId:'magic-forest',sourceRoot:root,buildUpDirectiveId:'forest-verified-work',buildUpDirective:directive}};
+ const originalRelative=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+ const ranked=normalizeResponsibleFiles(order,root,'roblox');
+ assert.deepEqual(ranked,['client/Game.client.luau','server/Game.server.luau','shared/GameConfig.luau']);
+ assert.deepEqual([...ranked].sort(),[...originalRelative].sort(),'priority may not add or drop allowed files');
+ assert.deepEqual(normalizeResponsibleFiles({...order,gameId:'other'},root,'roblox'),originalRelative);
+ assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,buildUpDirectiveId:'not-current'}},root,'roblox'),originalRelative);
+ assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,sourceRoot:'roblox-games/other'}},root,'roblox'),originalRelative);
+ assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,buildUpDirective:{
+  ...directive,robloxHolisticQualityPlan:{...directive.robloxHolisticQualityPlan,
+   autonomousWorkUnit:{id:'OTHER_GAME',sourceFiles:['roblox-games/other/client/Game.client.luau']}}
+ }}},root,'roblox'),originalRelative);
+});
+
+test('Roblox source priority ignores advisory owner not in current work order and internal asset work',()=>{
+ const root='roblox-games/forest-scope';
+ const files=[root+'/server/Game.server.luau',root+'/client/Game.client.luau'];
+ const quality={gameId:'forest-scope',sourceRoot:root,autonomousWorkUnit:{
+  id:'UI_HUD_MENUS',mode:'REVIEW_DESIGN_SOURCE_GAP_THEN_REPAIR',sourceFiles:[root+'/server/NotAllowed.server.luau']}};
+ const order={target:'roblox',gameId:'forest-scope',source:{root,responsibleFiles:files},
+  selectedTask:{gameId:'forest-scope',sourceRoot:root,buildUpDirectiveId:'quality-1',
+   buildUpDirective:{version:1,directiveId:'quality-1',sourceRoot:root,robloxHolisticQualityPlan:quality}}};
+ assert.deepEqual(normalizeResponsibleFiles(order,root,'roblox'),['server/Game.server.luau','client/Game.client.luau']);
+ const asset={...order,source:{...order.source,internalAssetMotion:true}};
+ assert.deepEqual(normalizeResponsibleFiles(asset,root,'roblox'),['server/Game.server.luau','client/Game.client.luau']);
+});
 
 test('source coder keeps reserved helper functions ahead of noisy graph evidence without widening file writes',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-helper-focus-'));
