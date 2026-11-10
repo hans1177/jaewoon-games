@@ -121,7 +121,12 @@ if (studioRegrantPath) {
     || !Array.isArray(report.errors) || !report.errors.includes('STUDIO_ASSET_AUDIT_FAILED')
     || report.assetRegistryAudit?.status !== 'PASS'
     || report.assetRegistryAudit?.registered !== Object.keys(registry.assets).length
-    || report.assetRegistryAudit?.mismatched !== 0
+    || !Array.isArray(report.assetRegistryAudit?.mismatched)
+    || report.assetRegistryAudit.mismatched.length !== 0
+    || !Array.isArray(report.assetRegistryAudit?.missing)
+    || report.assetRegistryAudit.missing.length !== 0
+    || !Array.isArray(report.assetRegistryAudit?.unverifiedPermissions)
+    || report.assetRegistryAudit.unverifiedPermissions.length !== 0
     || media?.status !== 'FAIL' || !Array.isArray(failuresInStudio)
     || failuresInStudio.length === 0 || failuresInStudio.length > 128
     || media.failed !== failuresInStudio.length)
