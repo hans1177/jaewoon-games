@@ -77,7 +77,7 @@ const failedNames = new Set((errors.items || [])
   .filter(item => item.action === 'SERVER_ASSET_ACCESS_FAILED' || item.action === 'REUPLOAD_MODEL')
   .map(item => String(item.key || '')).filter(Boolean));
 const todo = restoreOnly
-  ? Object.entries(registry.assets).filter(([name, value]) => failedNames.has(name) && /^[1-9]\\d*$/.test(String(value?.assetId || '')))
+  ? Object.entries(registry.assets).filter(([name, value]) => failedNames.has(name) && /^[1-9]\d*$/.test(String(value?.assetId || '')))
   : Object.entries(registry.assets).filter(([, value]) => !value.usePermissionGranted);
 const resolvedNames = new Set(todo.map(([name]) => name));
 if (restoreOnly) {
@@ -86,7 +86,7 @@ if (restoreOnly) {
     throw new Error('MEADOW_CAMP_SOURCE_NOT_APPROVED');
   for (const [name, id] of Object.entries(approved.assetIds)) {
     if (!failedNames.has(name)) continue;
-    if (!/^[1-9]\\d*$/.test(String(id))) throw new Error('MEADOW_CAMP_INVALID_ASSET_ID:' + name);
+    if (!/^[1-9]\d*$/.test(String(id))) throw new Error('MEADOW_CAMP_INVALID_ASSET_ID:' + name);
     todo.push([name, {assetId: String(id), usePermissionGranted: false}]);
     resolvedNames.add(name);
   }
