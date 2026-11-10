@@ -18,7 +18,7 @@ on:
       - 'roblox-games/fantasy-survival/server/**'
       - 'roblox-games/fantasy-survival/shared/**'
   workflow_run:
-    workflows: ["Devloop Studio Capture", "Owner Mare Essentia Direct Publish"]
+    workflows: ["Devloop Studio Capture", "Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]
     types: [completed]
   workflow_dispatch:
     inputs:
@@ -32,7 +32,16 @@ permissions:
   contents: read
 jobs:
   dispatch:
-    if: github.repository == 'hans1177/jaewoon-games' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    # [마력숲 실제 QA] 전용 게시 403 실패에도 기존 Studio 소스 점검은 별도로 실행한다.
+    # PR/취소는 실제 배포 결과가 아니므로 트리거하지 않는다.
+    if: >-
+      github.repository == 'hans1177/jaewoon-games' &&
+      (github.event_name != 'workflow_run' ||
+       github.event.workflow_run.conclusion == 'success' ||
+       (github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.conclusion == 'failure'))
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch Studio capture on owner PC
@@ -49,6 +58,17 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             if [ "${{ github.event.workflow_run.name }}" = "Owner Mare Essentia Direct Publish" ]; then
               game=mare-essentia
+            elif [ "${{ github.event.workflow_run.name }}" = "Owner Roblox Dedicated Private Experiences" ]; then
+              # [완료 연동] PR 계약 검사는 실제 게시가 아니다.
+              if [ "${{ github.event.workflow_run.event }}" != "push" ] || [ "${{ github.event.workflow_run.head_branch }}" != "main" ]; then
+                echo "owner publication not on main, skip"; exit 0
+              fi
+              # [게임 격리] 마력숲이나 전용 게시 책임 파일 변경만 확인한다.
+              changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.workflow_run.head_sha }}" --jq '.files[].filename')
+              if ! printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$'; then
+                echo "no Forest source or publisher change, skip"; exit 0
+              fi
+              game=fantasy-survival
             else
               other=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
               if [ "${other:-0}" -ge 1 ]; then echo "already queued/running ($other), skip"; exit 0; fi
@@ -59,7 +79,7 @@ jobs:
             # [게임 선택] 최신 병합에 마력숲 소스만 포함되면 마력숲을 먼저 검사한다.
             game=mare-essentia
             changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename' || true)
-            if printf '%s\n' "$changed" | grep -q '^roblox-games/fantasy-survival/' &&
+            if printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$' &&
                ! printf '%s\n' "$changed" | grep -q '^roblox-games/mare-essentia/'; then
               game=fantasy-survival
             fi
