@@ -12,7 +12,7 @@ test('마력숲 자산 연결 점검: 모델 키·아이콘 셀·에셋 ID가 �
 test('원본 CC0 아이템·방패는 승인 등록표의 동일 ID를 재사용하고 중복 등록하지 않는다',()=>{
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
   const actual=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
-  const registered=new Map([...actual.matchAll(/([A-Za-z_][\\w]*)\\s*=\\s*(\\d{6,})/g)].map(m=>[m[1],m[2]]));
+  const registered=new Map([...actual.matchAll(/([A-Za-z_][\w]*)\s*=\s*(\d{6,})/g)].map(m=>[m[1],m[2]]));
   assert.equal(registry.itemPackV1.license,'CC0-1.0');
   assert.equal(registry.itemPackV1.licenseEvidence,'https://quaternius.com/packs/ultimaterpg.html');
   for(const [name,id] of Object.entries(registry.itemPackV1.assetIds)){
