@@ -124,10 +124,53 @@ Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_LABEL=roblox-studio-authenticated'
 Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_MODE=SIGNED_IN_INTERACTIVE_DESKTOP_ONLY'
 Write-Host 'Keep Studio signed in, Assistant MCP enabled, and this PowerShell window open.'
 Write-Host 'Queued official Studio MCP jobs will run here when this authenticated Windows session is online.'
-Push-Location $RunnerRoot
-try {
-  & $runnerCmd
-  if ($LASTEXITCODE -ne 0) { throw 'ROBLOX_FREE_STUDIO_RUNNER_STOPPED_WITH_ERROR' }
-} finally {
-  Pop-Location
+# [메인] 재연결: 같은 인증된 Windows 사용자 데스크톱에서만 기존 러너를 재실행한다.
+# 자격 증명 자동 로그인, 서비스(Session 0) 실행, 새 러너 등록은 하지 않는다.
+$restartDelaySeconds = 15
+$studioPauseNotified = $false
+$lastRunnerExit = $null
+while ($true) {
+  $activeStudio = @(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
+    Where-Object { [int]$_.SessionId -eq $sessionId } | Select-Object -First 1)
+  if ($activeStudio.Count -ne 1) {
+    if (-not $studioPauseNotified) {
+      Write-Warning 'ROBLOX_FREE_STUDIO_RUNNER_PAUSED=STUDIO_INTERACTIVE_SESSION_MISSING'
+      $studioPauseNotified = $true
+    }
+    Start-Sleep -Seconds 30
+    continue
+  }
+  $activeStudioExe = $activeStudio[0].Path
+  if (-not $activeStudioExe -or -not (Test-Path -LiteralPath $activeStudioExe)) {
+    throw 'ROBLOX_FREE_STUDIO_EXECUTABLE_NOT_FOUND'
+  }
+  $activeStudioSig = Get-AuthenticodeSignature -FilePath $activeStudioExe
+  if ($activeStudioSig.Status -ne 'Valid' -or
+      $null -eq $activeStudioSig.SignerCertificate -or
+      $activeStudioSig.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
+    throw 'ROBLOX_FREE_STUDIO_SIGNED_OFFICIAL_BINARY_REQUIRED'
+  }
+  if ($studioPauseNotified) {
+    Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_RESUME=OFFICIAL_STUDIO_INTERACTIVE_SESSION'
+    $studioPauseNotified = $false
+  }
+  $runnerExit = -1
+  try {
+    Push-Location $RunnerRoot
+    try {
+      & $runnerCmd
+      $runnerExit = [int]$LASTEXITCODE
+    } finally {
+      Pop-Location
+    }
+  } catch {
+    Write-Warning 'ROBLOX_FREE_STUDIO_RUNNER_START_FAILED=RETRY_WITH_EXISTING_REGISTRATION'
+  }
+  if ($lastRunnerExit -ne $runnerExit) {
+    Write-Warning "ROBLOX_FREE_STUDIO_RUNNER_EXIT=$runnerExit"
+    $lastRunnerExit = $runnerExit
+  }
+  Write-Host "ROBLOX_FREE_STUDIO_RUNNER_RECONNECT_DELAY_SECONDS=$restartDelaySeconds"
+  Start-Sleep -Seconds $restartDelaySeconds
+  $restartDelaySeconds = [Math]::Min(60, $restartDelaySeconds * 2)
 }
