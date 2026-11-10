@@ -3703,6 +3703,28 @@ test('Mare first-click QA verifies actual selection screen and never confirms de
   assert.doesNotMatch(script,/title:Destroy\(\)|newBtn:Activate\(\)/);
 });
 
+test('Studio Auto QA uses change and completion events instead of an unreliable ten-minute schedule',()=>{
+  const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.match(workflow,/name: Studio Auto QA/);
+  assert.doesNotMatch(workflow,/^\s*schedule:\s*$/m);
+  assert.doesNotMatch(workflow,/cron:/);
+  assert.match(workflow,/  push:\n    branches: \[main\]/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/client\/\*\*/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/server\/\*\*/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/shared\/\*\*/);
+  assert.match(workflow,/  workflow_run:\n    workflows: \["Devloop Studio Capture", "Owner Mare Essentia Direct Publish"\]/);
+  assert.match(workflow,/github\.event\.workflow_run\.conclusion == 'success'/);
+  assert.match(workflow,/gh workflow run devloop-studio\.yml/);
+  assert.match(workflow,/game=fantasy-survival/);
+  assert.match(workflow,/studio already queued/);
+  assert.match(workflow,/github\.event_name \}\}" != "push"/);
+  assert.doesNotMatch(workflow,/10#\$\(date -u \+%M\)/);
+  const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(runner,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(runner,/group: roblox-studio-shared-host/);
+  assert.match(runner,/cancel-in-progress: false/);
+});
+
 test('Studio click QA stops unresponsive MCP discovery without claiming runtime PASS',()=>{
   const script=helper.slice(
     helper.indexOf('export async function runStudioScript('),
