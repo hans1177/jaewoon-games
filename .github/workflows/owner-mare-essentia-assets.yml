@@ -54,7 +54,7 @@ jobs:
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
           STUDIO_REGRANT: ${{ inputs.studio_regrant || false }}
         shell: bash
