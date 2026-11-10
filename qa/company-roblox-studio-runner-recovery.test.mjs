@@ -35,3 +35,14 @@ test('recovery preserves unrelated Windows services and login boundaries without
   assert.match(workflow,/ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA/);
   assert.doesNotMatch(workflow,/STUDIO_ACTUAL_PLAY=PASS|ROBLOX_STUDIO_MCP_PLAY_PASS=YES/);
 });
+
+test('authenticated Windows Studio runner reconnects after exits but pauses without an interactive Studio',()=>{
+  assert.match(canonical,/while \(\$true\) \{/);
+  assert.match(canonical,/ROBLOX_FREE_STUDIO_RUNNER_PAUSED=STUDIO_INTERACTIVE_SESSION_MISSING/);
+  assert.match(canonical,/ROBLOX_FREE_STUDIO_RUNNER_RESUME=OFFICIAL_STUDIO_INTERACTIVE_SESSION/);
+  assert.match(canonical,/Get-AuthenticodeSignature -FilePath \$activeStudioExe/);
+  assert.match(canonical,/\$restartDelaySeconds = \[Math\]::Min\(60, \$restartDelaySeconds \* 2\)/);
+  assert.match(canonical,/\$runnerExit = \[int\]\$LASTEXITCODE/);
+  assert.match(canonical,/if \(\$CheckOnly\) \{/);
+  assert.doesNotMatch(canonical,/New-Service|Register-ScheduledTask|--token \$env:/);
+});
