@@ -370,3 +370,52 @@ test('Forest publisher completion dispatches independent Studio QA for both game
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(!qa.includes('schedule:'));
 });
+
+
+// [배포키 일원화] 차단된 기존 API 키를 마력숲 에셋 자동 복구에서 재사용하지 않는다.
+// 자동 복구는 원본 모델을 다시 업로드하지 않고 기존 등록 ID 권한만 확인한다.
+test('Forest asset recovery uses only dedicated deploy key and existing grant-only mode',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-fantasy-assets.yml','utf8');
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY: \$\\{\\{ secrets\\.ROBLOX_DEPLOY_API_KEY \\}\\}/);
+  assert.doesNotMatch(workflow,/secrets\\.ROBLOX_OPEN_CLOUD_API_KEY/);
+  assert.match(workflow,/node tools\\/fantasy-survival-reupload\\.mjs --regrant-only(?:\\s|$)/);
+  assert.doesNotMatch(workflow,/--regrant-only --camp-only/);
+  const script=fs.readFileSync('tools/fantasy-survival-reupload.mjs','utf8');
+  assert.match(script,/const restoreOnly = process\\.argv\\.includes\\('--regrant-only'\\)/);
+  assert.match(script,/for \\(const job of \\(restoreOnly \\? campJobs : jobs\\)\\)/);
+});
+
+// [불필요한 재업로드 방지] 현 main 등록 증거가 완비된 경우에만 Blender 단계를 생략한다.
+// 출처·ID가 하나라도 깨지면 기존 실물 등록 경로로 되돌아가야 한다.
+// 단, 외부 Roblox Universe 승인 검사는 별도 forest_grant 단계에서 항상 수행한다.
+test('Forest registered gear reuse rejects missing or changed source binding and keeps live grant check',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  const begin=workflow.indexOf("if node --input-type=module <<'NODE'",workflow.indexOf('- name: Register source-verified Forest weapons and armor'));
+  const end=workflow.indexOf('\\n          NODE\\n          then',begin);
+  assert.ok(begin>=0&&end>begin);
+  assert.match(workflow,/FOREST_DEPLOY_API_KEY_MISSING/);
+  assert.match(workflow,/FOREST_GEAR_REGISTERED_IDS_REUSED_PENDING_LIVE_UNIVERSE_GRANT/);
+  assert.match(workflow,/node tools\\/baeksu-war-upload-meshes\\.mjs --register-forest-gear/);
+  assert.match(workflow,/id: forest_grant/);
+  assert.match(workflow,/ROBLOX_CC0_UNIVERSE_GRANT_BATCH_ACCEPTED/);
+  const script=workflow.slice(begin+"if node --input-type=module <<'NODE'".length,end)
+    .replace("import fs from 'node:fs';","const fs=require('node:fs');");
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  const run=(source,luau)=>{
+    let code=null;
+    runInNewContext(script,{
+      require:name=>{
+        assert.equal(name,'node:fs');
+        return{readFileSync:file=>file.endsWith('CC0-ASSET-REGISTRY.json')?JSON.stringify(source):luau};
+      },
+      process:{exit:value=>{code=value;}},
+    });
+    return code;
+  };
+  assert.equal(run(registry,ids),0,'existing 20 verified registrations should skip costly re-upload');
+  assert.equal(run(registry,ids.replace(/gear_sword_01\\s*=\\s*\\d+/,'gear_sword_01=0')),1,'invalid source-to-ID mapping requires original registration');
+  const tampered=structuredClone(registry);
+  tampered.gearExpansionV1.models.gear_sword_01.sourceVerified=false;
+  assert.equal(run(tampered,ids),1,'unverified provenance may not reuse registered assets');
+});
