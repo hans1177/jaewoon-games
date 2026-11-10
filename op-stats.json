@@ -13,10 +13,10 @@
    }
   },
   "outline:soft": {
-   "n": 439,
-   "gainSum": 3280.3,
-   "keep": 346,
-   "improved": 300,
+   "n": 440,
+   "gainSum": 3281.5,
+   "keep": 347,
+   "improved": 301,
    "broken": 0,
    "fail": {
     "REGRESSED": 10,
@@ -74,8 +74,8 @@
    }
   },
   "inset_panel:strong": {
-   "n": 142,
-   "gainSum": 428.4,
+   "n": 143,
+   "gainSum": 412.6,
    "keep": 102,
    "improved": 76,
    "broken": 9,
@@ -84,7 +84,7 @@
     "BROKEN": 9,
     "DARKENED": 9,
     "DETAIL_LOST": 3,
-    "REGRESSED": 17
+    "REGRESSED": 18
    }
   },
   "wear:soft": {
@@ -124,10 +124,10 @@
    }
   },
   "outline:strong": {
-   "n": 154,
-   "gainSum": 1014.8,
-   "keep": 98,
-   "improved": 90,
+   "n": 155,
+   "gainSum": 1022.6,
+   "keep": 99,
+   "improved": 91,
    "broken": 0,
    "fail": {
     "DARKENED": 22,
@@ -258,10 +258,10 @@
    }
   },
   "outline:strong": {
-   "n": 107,
-   "gainSum": 232.2,
-   "keep": 61,
-   "improved": 50,
+   "n": 108,
+   "gainSum": 235.8,
+   "keep": 62,
+   "improved": 51,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 25,
@@ -313,14 +313,14 @@
    }
   },
   "outline:soft": {
-   "n": 236,
-   "gainSum": 1550.2,
-   "keep": 184,
-   "improved": 162,
+   "n": 238,
+   "gainSum": 1557.4,
+   "keep": 185,
+   "improved": 163,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 24,
-    "DARKENED": 25,
+    "DARKENED": 26,
     "REGRESSED": 3
    }
   },
@@ -440,10 +440,10 @@
    }
   },
   "wear:soft": {
-   "n": 8,
-   "gainSum": -0.8,
-   "keep": 4,
-   "improved": 0,
+   "n": 9,
+   "gainSum": 0.7,
+   "keep": 5,
+   "improved": 1,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 3,
@@ -1050,6 +1050,123 @@
    "fail": {
     "REGRESSED": 1
    }
+  }
+ },
+ "UI": {
+  "hud_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 0,
+   "improved": 0,
+   "broken": 0
+  },
+  "hud_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 0,
+   "improved": 0,
+   "broken": 0
+  },
+  "inventory_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 36,
+   "improved": 1,
+   "broken": 0
+  },
+  "inventory_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 54,
+   "improved": 1,
+   "broken": 0
+  },
+  "shop_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 18,
+   "improved": 1,
+   "broken": 0
+  },
+  "shop_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 36,
+   "improved": 1,
+   "broken": 0
+  },
+  "settings_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 18,
+   "improved": 1,
+   "broken": 0
+  },
+  "settings_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 36,
+   "improved": 1,
+   "broken": 0
+  },
+  "craft_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 18,
+   "improved": 1,
+   "broken": 0
+  },
+  "craft_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 36,
+   "improved": 1,
+   "broken": 0
+  },
+  "quest_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 18,
+   "improved": 1,
+   "broken": 0
+  },
+  "quest_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 36,
+   "improved": 1,
+   "broken": 0
+  },
+  "dialogue_layout:soft": {
+   "n": 3,
+   "keep": 2,
+   "gainSum": -15,
+   "improved": 0,
+   "broken": 1,
+   "fail": {
+    "overlap": 1
+   }
+  },
+  "dialogue_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 0,
+   "improved": 0,
+   "broken": 0
+  },
+  "combat_layout:soft": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 0,
+   "improved": 0,
+   "broken": 0
+  },
+  "combat_layout:strong": {
+   "n": 3,
+   "keep": 3,
+   "gainSum": 0,
+   "improved": 0,
+   "broken": 0
   }
  }
 }

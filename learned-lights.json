@@ -166,7 +166,7 @@
   "meanLastRun": 66.4
  },
  "CREATURE": {
-  "runs": 16,
+  "runs": 17,
   "top": [
    {
     "score": 100,
@@ -233,103 +233,103 @@
     }
    },
    {
-    "score": 99.1,
+    "score": 100,
     "params": {
-     "elevation": 54,
-     "azimuth": 72,
-     "kelvin": 2800,
-     "sun_strength": 4.21,
-     "softness": 9.5,
-     "ambient_kelvin": 6207.8,
-     "ambient_strength": 0.78
+     "elevation": 80,
+     "azimuth": 2,
+     "kelvin": 2904.85,
+     "sun_strength": 4.44,
+     "softness": 4.88,
+     "ambient_kelvin": 4922.57,
+     "ambient_strength": 0.53
     },
     "roblox": {
-     "ClockTime": 9.6,
-     "Brightness": 3.37,
+     "ClockTime": 11.3,
+     "Brightness": 3.55,
+     "ColorShift_Top": [
+      255,
+      174,
+      103
+     ],
+     "Ambient": [
+      135,
+      120,
+      108
+     ],
+     "OutdoorAmbient": [
+      155,
+      138,
+      124
+     ],
+     "ShadowSoftness": 0.41
+    }
+   },
+   {
+    "score": 100,
+    "params": {
+     "elevation": 73,
+     "azimuth": 339,
+     "kelvin": 3498.77,
+     "sun_strength": 3.94,
+     "softness": 5.92,
+     "ambient_kelvin": 4832.58,
+     "ambient_strength": 0.43
+    },
+    "roblox": {
+     "ClockTime": 13.1,
+     "Brightness": 3.15,
+     "ColorShift_Top": [
+      255,
+      193,
+      141
+     ],
+     "Ambient": [
+      110,
+      97,
+      86
+     ],
+     "OutdoorAmbient": [
+      126,
+      111,
+      99
+     ],
+     "ShadowSoftness": 0.49
+    }
+   },
+   {
+    "score": 100,
+    "params": {
+     "elevation": 80,
+     "azimuth": 329,
+     "kelvin": 2800,
+     "sun_strength": 4.45,
+     "softness": 4.91,
+     "ambient_kelvin": 5616.21,
+     "ambient_strength": 0.55
+    },
+    "roblox": {
+     "ClockTime": 12.7,
+     "Brightness": 3.56,
      "ColorShift_Top": [
       255,
       170,
       95
      ],
      "Ambient": [
-      199,
-      195,
-      189
+      140,
+      132,
+      124
      ],
      "OutdoorAmbient": [
-      229,
-      224,
-      218
+      161,
+      152,
+      143
      ],
-     "ShadowSoftness": 0.79
-    }
-   },
-   {
-    "score": 97.8,
-    "params": {
-     "elevation": 26,
-     "azimuth": 0,
-     "kelvin": 4609.85,
-     "sun_strength": 4.5,
-     "softness": 6.53,
-     "ambient_kelvin": 4850.91,
-     "ambient_strength": 0.77
-    },
-    "roblox": {
-     "ClockTime": 7.7,
-     "Brightness": 3.6,
-     "ColorShift_Top": [
-      255,
-      220,
-      192
-     ],
-     "Ambient": [
-      196,
-      173,
-      155
-     ],
-     "OutdoorAmbient": [
-      226,
-      199,
-      178
-     ],
-     "ShadowSoftness": 0.54
-    }
-   },
-   {
-    "score": 97.2,
-    "params": {
-     "elevation": 49,
-     "azimuth": 311,
-     "kelvin": 3874.72,
-     "sun_strength": 4.28,
-     "softness": 10.99,
-     "ambient_kelvin": 5070.65,
-     "ambient_strength": 0.81
-    },
-    "roblox": {
-     "ClockTime": 14.7,
-     "Brightness": 3.42,
-     "ColorShift_Top": [
-      255,
-      203,
-      160
-     ],
-     "Ambient": [
-      207,
-      186,
-      169
-     ],
-     "OutdoorAmbient": [
-      238,
-      214,
-      194
-     ],
-     "ShadowSoftness": 0.92
+     "ShadowSoftness": 0.41
     }
    }
   ],
-  "meanLastRun": 80.1
+  "meanLastRun": 91
  },
  "BUILDING": {
   "runs": 50,
