@@ -293,7 +293,10 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
   const files=[];
   let total=0,matchedSymbolCount=0;
   const contextPaths=unique([...responsibleFiles,...(exploration.contextFiles||[])]).slice(0,MAX_CONTEXT_FILES);
+  // [장문맥] 거대 파일 한 개가 모든 문맥을 소비하지 않게 파일마다 입력 예산을 보장한다.
+  const perFileLimit=Math.floor(FOCUSED_WEB_REPAIR_CONTEXT_BYTES/Math.max(1,Math.min(8,contextPaths.length)));
   for(const relative of contextPaths){
+    let fileUsed=0;
     const full=path.resolve(root,relative);
     if(!full.startsWith(path.resolve(root)+path.sep))continue;
     if(!fs.existsSync(full)||!fs.statSync(full).isFile())continue;
@@ -334,15 +337,37 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     matchedSymbolCount+=matched.size;
     const merged=mergeSourceWindowRanges(ranges).slice(0,8);
     for(const row of merged){
-      let content=text.slice(row.start,row.end);
-      if(!content.trim())continue;
-      const remaining=FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total;
-      if(remaining<=0)break;
-      while(Buffer.byteLength(content,'utf8')>remaining&&content.length>240)content=content.slice(0,Math.floor(content.length*.82));
-      if(!content.trim())continue;
-      files.push({path:relative,content,truncated:row.start>0||row.end<text.length||content.length<row.end-row.start,editable:responsibleFiles.includes(relative),exactSourceWindow:true,windowLabel:(row.labels||[]).join('+')||'responsibility'});
-      total+=Buffer.byteLength(content,'utf8');
-      if(total>=FOCUSED_WEB_REPAIR_CONTEXT_BYTES)break;
+      const original=text.slice(row.start,row.end);
+      const budget=Math.min(perFileLimit-fileUsed,FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total);
+      if(budget<180||!original.trim())continue;
+      const windows=[];
+      if(Buffer.byteLength(original,'utf8')<=budget){
+        windows.push({content:original,start:row.start,end:row.end});
+      }else{
+        // 크고 긴 책임 함수의 앞·뒤는 독립된 실제 소스 구간이다. 합쳐서 가짜 앵커로 쓰지 않는다.
+        const caps=[Math.floor(budget*.56),budget-Math.floor(budget*.56)];
+        for(let n=0;n<2;n++){
+          if(caps[n]<140)continue;
+          let content=original;
+          while(Buffer.byteLength(content,'utf8')>caps[n]&&content.length>1){
+            const cut=Math.max(1,Math.floor(content.length*.12));
+            content=n===0?content.slice(0,-cut):content.slice(cut);
+          }
+          const boundary=n===0?content.lastIndexOf('\n'):content.indexOf('\n');
+          if(boundary>=0)content=n===0?content.slice(0,boundary+1):content.slice(boundary+1);
+          if(content.trim())windows.push({content,start:n===0?row.start:row.end-content.length,
+            end:n===0?row.start+content.length:row.end,part:n});
+        }
+      }
+      for(const w of windows){
+        const bytes=Buffer.byteLength(w.content,'utf8');
+        if(bytes>perFileLimit-fileUsed||bytes>FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total)continue;
+        files.push({path:relative,content:w.content,
+          truncated:w.start>0||w.end<text.length,editable:responsibleFiles.includes(relative),
+          exactSourceWindow:true,windowLabel:((row.labels||[]).join('+')||'responsibility')+
+            (w.part===undefined?'':w.part===0?':HEAD':':TAIL')});
+        fileUsed+=bytes;total+=bytes;
+      }
     }
   }
   if(!files.length)return null;
