@@ -2685,10 +2685,22 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
 }
 
 
+// [스튜디오 자동 QA] 기존 MCP 실행 흐름에서 실제 클릭·화면 증거를 검증하고 첫 실패에서 종료한다.
 export async function runStudioScript({mcpCommand='',expectedStudioName='',outDir='',steps=[]}={}){
   const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:90000});
   fs.mkdirSync(outDir,{recursive:true});
-  const report={log:[],errors:[]};
+  const report={
+    log:[],errors:[],
+    summary:{
+      plannedSteps:steps.length,
+      completedSteps:0,
+      plannedClicks:steps.filter(st=>st.type==='click_text'||st.type==='click_from_luau').length,
+      successfulClicks:0,
+      plannedFrames:steps.filter(st=>st.type==='capture').length,
+      capturedFrames:0,
+      abortedEarly:false
+    }
+  };
   let studioId='',started=false;
   const luau=async(ctx,code)=>{
     const t=client.tool('execute_luau');
@@ -2697,7 +2709,9 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
   };
   try{
     await client.connect();
-    await client.waitForTools(['list_roblox_studios','get_studio_state','start_stop_play','screen_capture','execute_luau'],{attempts:20,delayMs:3000});
+    const required=['list_roblox_studios','get_studio_state','start_stop_play','screen_capture','execute_luau'];
+    if(report.summary.plannedClicks>0)required.push('user_mouse_input');
+    await client.waitForTools(required,{attempts:20,delayMs:3000});
     for(let i=1;i<=60&&!studioId;i++){
       const listed=await client.call('list_roblox_studios',{});
       if(collectStudios(listed,[]).length){
@@ -2713,40 +2727,64 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     const playTool=client.tool('start_stop_play');
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
     started=true;
-    let n=0;
-    for(const st of steps){
+    for(let n=0;n<steps.length;n++){
+      const st=steps[n];
+      console.log('STUDIO_SCRIPT_PROGRESS='+n+'/'+steps.length+':'+st.type);
       try{
-        if(st.type==='wait'){await wait(st.ms||1000);}
-        else if(st.type==='luau'){
+        if(st.type==='wait'){
+          await wait(st.ms||1000);
+        }else if(st.type==='luau'){
           const out=await luau(st.ctx||'Client',st.code);
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
-        }else if(st.type==='click_text'){
-          const code='local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end print("BTN:"..out) return out';
-          const out=await luau('Client',code);
-          const m=out.match(/(-?\d+),(-?\d+)/);
-          if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.text,at:m[0]});}
-          else report.log.push({step:n,click:st.text,at:'NOT_FOUND'});
-        }else if(st.type==='click_from_luau'){
-          const out=await luau(st.ctx||'Client',st.code);
-          const m=out.match(/(-?\d+),(-?\d+)/);
-          if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.label||'luau',at:m[0],out:out.slice(0,200)});}
-          else report.log.push({step:n,click:st.label||'luau',at:'NOT_FOUND',out:out.slice(0,200)});
+        }else if(st.type==='click_text'||st.type==='click_from_luau'){
+          const code=st.type==='click_text'
+            ?'local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out'
+            :st.code;
+          const out=await luau(st.type==='click_text'?'Client':(st.ctx||'Client'),code);
+          const m=out.match(/(?:^|\n)\s*(-?\d+),(-?\d+)(?=\s|$)/);
+          const label=st.type==='click_text'?st.text:(st.label||'luau');
+          if(!m){
+            report.log.push({step:n,click:label,at:'NOT_FOUND',out:out.slice(0,300)});
+            throw new Error('STUDIO_UI_TARGET_NOT_FOUND:'+label);
+          }
+          const mt=client.tool('user_mouse_input');
+          await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));
+          report.summary.successfulClicks++;
+          report.log.push({step:n,click:label,at:m[1]+','+m[2],out:out.slice(0,300)});
+          console.log('STUDIO_SCRIPT_CLICK_DISPATCHED='+label+':'+m[1]+','+m[2]);
         }else if(st.type==='capture'){
           const capTool=client.tool('screen_capture');
           const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});
           const r=await client.call('screen_capture',a);
           const imgs=collectImages(r,[],outDir,String(st.name||'cap'+n));
           report.log.push({step:n,capture:st.name,files:imgs.length});
+          if(imgs.length===0)throw new Error('STUDIO_SCREEN_CAPTURE_EMPTY:'+clean(st.name));
+          report.summary.capturedFrames+=imgs.length;
+        }else{
+          throw new Error('STUDIO_SCRIPT_UNKNOWN_STEP_TYPE:'+clean(st.type));
         }
-      }catch(e){report.errors.push('step'+n+':'+clean(e?.message||e).slice(0,300));}
-      n++;
+        report.summary.completedSteps=n+1;
+      }catch(e){
+        report.errors.push('step'+n+':'+clean(e?.message||e).slice(0,300));
+        report.summary.completedSteps=n+1;
+        report.summary.abortedEarly=true;
+        console.log('STUDIO_SCRIPT_ABORT_STEP='+n+':'+st.type);
+        break;
+      }
+    }
+    if(!report.errors.length&&report.summary.successfulClicks!==report.summary.plannedClicks){
+      report.errors.push('STUDIO_CLICK_COVERAGE_INCOMPLETE');
+    }
+    if(!report.errors.length&&report.summary.capturedFrames<report.summary.plannedFrames){
+      report.errors.push('STUDIO_FRAME_COVERAGE_INCOMPLETE');
     }
   }catch(e){report.errors.push(clean(e?.message||e).slice(0,400));}
   finally{
-    if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch{}}
+    if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch(e){report.errors.push('stop:'+clean(e?.message||e).slice(0,200));}}
     client.close();
   }
   fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,1));
+  console.log('STUDIO_SCRIPT_RESULT='+(!report.errors.length?'PASS':'FAIL')+':steps='+report.summary.completedSteps+'/'+report.summary.plannedSteps+':clicks='+report.summary.successfulClicks+'/'+report.summary.plannedClicks+':frames='+report.summary.capturedFrames);
   return report;
 }
 
