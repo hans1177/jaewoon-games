@@ -113,9 +113,9 @@ jobs:
             if (Test-Path -LiteralPath $reportFile) {
               try { $attemptReport = Get-Content -LiteralPath $reportFile -Raw | ConvertFrom-Json } catch {}
             }
-            $rpcStalled = @($attemptReport.errors | Where-Object {
-              [string]$_ -match 'MCP timeout: tools/call|MCP process exited code='
-            }).Count -gt 0
+            $attemptErrors = @($attemptReport.errors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+            $rpcStalled = $attemptErrors.Count -gt 0 -and
+              @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=' }).Count -eq 0
             if (-not $rpcStalled) { break }
             Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
             Start-Sleep -Seconds 8
