@@ -68,6 +68,7 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
     return unchanged('candidate-source-revision-mismatch');
   const runMarker=`${clean(target)||'engine'}-verification-run:${clean(runId)}`;
   if(clean(runId)&&existingEvidence.includes(runMarker))return unchanged('duplicate-candidate-verification-run');
+  if(['failed','cancelled'].includes(currentStatus))return unchanged('candidate-verification-after-terminal-status');
   if(result!=='success'&&alreadyAdvanced)return unchanged('late-candidate-verification-after-checkpoint');
   const evidence = verificationEvidence({ target, runId, headSha, conclusion: result, failureStage, failureSignature });
   if (result === 'success') {
