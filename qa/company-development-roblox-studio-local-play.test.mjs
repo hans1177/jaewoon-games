@@ -3666,6 +3666,7 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
     helper.indexOf('export async function runOfficialStudioMcpPlay(')
   );
   assert.match(script,/fastFailOnProviderTimeout:true/);
+  assert.match(script,/timeoutMs:45000/);
   assert.match(script,/const studioDiscoveryDeadline=Date\.now\(\)\+5\*60\*1000/);
   assert.match(script,/Date\.now\(\)<studioDiscoveryDeadline/);
   assert.match(script,/if\(!studioId\)throw new Error\('NO_STUDIO'\)/);
