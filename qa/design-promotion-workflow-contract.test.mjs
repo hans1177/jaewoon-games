@@ -97,7 +97,7 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json company-learning\/company-log-map\.json company-learning\/company-architecture-map\.json company-learning\/security-immune-system\.json tools\/design-only-promotion-sync\.mjs/);
   const policyCheckout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
   const policyReset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
-  for(const dependency of ['company-homepage-platform-exposure-sync','company-platform-exposure-control','company-shared-context','company-direct-native-design-migration']){
+  for(const dependency of ['game-catalog-normalization','production-classification','company-homepage-platform-exposure-sync','company-platform-exposure-control','company-shared-context','company-direct-native-design-migration']){
     assert.ok(policyCheckout.split(/\s+/).includes(`tools/${dependency}.mjs`),`checkout must include ${dependency}`);
     assert.ok(policyReset.split(/\s+/).includes(`tools/${dependency}.mjs`),`runtime commit must exclude ${dependency}`);
   }
