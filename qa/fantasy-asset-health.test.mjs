@@ -79,3 +79,12 @@ test('텔레메트리 표의 서버 에셋 권한·원본 오류와 지형 오�
   assert.ok(report.items.some(x => x.key === 'fence' && x.action === 'SERVER_ASSET_ACCESS_FAILED'));
   assert.ok(report.items.some(x => x.key === 'INVALID_TERRAIN_MATERIAL' && x.action === 'GAME_RUNTIME_SOURCE_ERROR'));
 });
+
+test('거울 정원 지형은 Terrain 지원 재질만 사용한다', () => {
+  const server = fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau', 'utf8');
+  const section = server.match(/-- 숨겨진 문 \/ 거울 정원\.[\s\S]*?local gate=Instance\.new\("Attachment"\)/)?.[0];
+  assert.ok(section, '거울 정원 지형 생성 구간이 있어야 한다');
+  assert.match(section, /terrain:FillBlock\([^\n]+Enum\.Material\.Limestone\)/);
+  assert.match(section, /terrain:FillCylinder\([^\n]+Enum\.Material\.Glacier\)/);
+  assert.doesNotMatch(section, /Enum\.Material\.(?:Marble|Glass)/);
+});
