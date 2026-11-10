@@ -3897,6 +3897,16 @@ local function refreshBowVisualCore(player)
   local oldShield=character:FindFirstChild("MeadowShieldVisual")
   if oldShield then oldShield:Destroy() end
   local weapon=meadowRpg.equippedWeapon(player)
+  -- [무기 자산 선택→실물 메시] 기존 선택된 atom을 등록 CC0 원본의
+  -- 손 장착 경로에 직접 연결한다. 서버 피해·능력치·저장 로직은 유지한다.
+  local studioWeaponAtoms=((Config.StudioAssets or {}).Families or {}).WEAPON or {}
+  local weaponClass=weapon and Config.GearWeaponClass[weapon.Id] or nil
+  local requiredWeaponAtom=({
+    Sword="BLADE_LONG",Greatsword="BLADE_HEAVY",Dagger="BLADE_SHORT",
+    Axe="AXE_HEAD",Hammer="HAMMER_HEAD",Mace="MACE_HEAD",
+    Bow="BOW_LIMB",Staff="STAFF_SHAFT",Spear="SPEAR_HEAD",Wand="WAND_SHAFT"
+  })[weaponClass]
+  local selectedWeaponReady=requiredWeaponAtom~=nil and table.find(studioWeaponAtoms,requiredWeaponAtom)~=nil
   -- [실물 방패] 승인 CC0 4종을 개별 연결한다. 종전 방어 스킬 방패 표시도 유지한다.
   local shield=meadowRpg.equippedShield(player)
   if weapon and weapon.Id then
@@ -3927,7 +3937,7 @@ local function refreshBowVisualCore(player)
   -- 임의 파츠·가짜 검은 생성하지 않고 기존 스타터 장검 Tool 동작은 유지한다.
   local previous=character:FindFirstChild("MeadowForgedWeaponVisual")
   if previous then previous:Destroy() end
-  if weapon and weapon.ModelKey and not weapon.Bow then
+  if weapon and weapon.ModelKey and not weapon.Bow and (not requiredWeaponAtom or selectedWeaponReady) then
     local hand=character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
     if hand then
       local model=worldAsset(weapon.ModelKey,(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.5)
@@ -3947,7 +3957,7 @@ local function refreshBowVisualCore(player)
       elseif model then model:Destroy() end
     end
   end
-  if not weapon or not weapon.Bow then return end
+  if not weapon or not weapon.Bow or (requiredWeaponAtom and not selectedWeaponReady) then return end
   local human=character:FindFirstChildOfClass("Humanoid")
   if human then human:UnequipTools() end
   local hand=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
