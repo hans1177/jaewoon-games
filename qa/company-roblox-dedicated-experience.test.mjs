@@ -348,3 +348,25 @@ test('Forest private publish and original asset workflows require the dedicated 
   assert.match(owner,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
   assert.match(owner,/ROBLOX_CC0_UNIVERSE_GRANT_DENIED_/);
 });
+
+
+// [마력숲·대항해시대] 기존 게시 후 두 게임 모두 공식 Studio PC 검사를 요청한다.
+// 권한 403은 배포 실패로 유지하고 Studio 검사와 구분한다.
+test('Forest publisher completion dispatches independent Studio QA for both games',()=>{
+  const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
+  assert.ok(qa.includes("github.event.workflow_run.event == 'push'"));
+  assert.ok(qa.includes("github.event.workflow_run.event == 'workflow_dispatch'"));
+  assert.ok(qa.includes("github.event.workflow_run.head_branch == 'main'"));
+  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'failure'"));
+  assert.ok(qa.includes('github.event.workflow_run.head_sha'));
+  assert.ok(qa.includes('no Forest source or publisher change, skip'));
+  assert.ok(qa.includes('games="mare-essentia fantasy-survival"'));
+  assert.ok(qa.includes('for game in $games; do'));
+  assert.ok(qa.includes('select((.display_title // "") | contains(" · " + $game + " ·"))'));
+  assert.ok(qa.includes('continue'));
+  assert.ok(qa.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
+  assert.ok(qa.includes('script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
+  assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
+  assert.ok(!qa.includes('schedule:'));
+});
