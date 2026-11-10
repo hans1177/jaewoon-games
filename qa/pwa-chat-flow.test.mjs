@@ -36,6 +36,18 @@ test('PWA chat orders tasks and messages chronologically instead of reversing th
   assert.doesNotMatch(command,/\[\.\.\.tasks\]\.reverse\(\)/);
 });
 
+test('mobile PWA resumes an authenticated existing game task for coding and error-repair dialogue',()=>{
+  assert.match(command,/data-followup="\$\{esc\(task\.id\)\}"/);
+  assert.match(command,/data-game="\$\{esc\(task\.game_id\)\}"/);
+  assert.match(command,/function beginTaskFollowUp\(taskId,gameId\)/);
+  assert.match(command,/contextTaskId:activeTaskId\?null:contextTaskId\|\|null/);
+  assert.match(command,/if\(contextTaskId\)\{activeTaskId=''/);
+  assert.match(command,/activeTaskId='';contextTaskId='';\$\('followUpNotice'\)\.hidden=true/);
+  assert.match(command,/\[\.\.\.ordered\]\.reverse\(\)\.find/);
+  assert.match(command,/min-height:44px/);
+  assert.doesNotMatch(command,/if\(!providerConfigured\)\{openSetup\('Gemini를 먼저 연결해줘\.'/);
+});
+
 test('PWA chat follows latest only while the reader is already at the bottom',()=>{
   assert.match(command,/let didInitialRender=false,followLatest=true/);
   assert.match(command,/function isNearBottom\(\)/);
