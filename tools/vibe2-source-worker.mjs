@@ -3298,7 +3298,16 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       validatorExecuted=true;
       const candidateValidation=candidateValidator(candidate);
-      if(candidateValidation?.pass!==true)throw new Error('DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED');
+      if(candidateValidation?.pass!==true){
+        // [인과 피드백] 검증기가 반환한 기계 판정 코드를 다음 가설에 전달한다.
+        // 임의 문장·예약된 무결성 오류 코드는 실제 원본 변경 근거로 위장하지 못한다.
+        const reported=clean(candidateValidation?.reasonCode||candidateValidation?.failureCode);
+        const reserved=new Set(['DETERMINISTIC_SOURCE_REVISION_CHANGED',
+          'SOURCE_REVISION_CHANGED','ROBLOX_NO_MODEL_VALIDATION_BUDGET_EXHAUSTED']);
+        const reason=/^[A-Z][A-Z0-9_]{0,79}$/.test(reported)&&!reserved.has(reported)
+          ?reported:'DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED';
+        throw new Error(reason);
+      }
       for(const {path:file,sha256} of decision.sources){
         const current=path.resolve(sourceRoot,file);
         if(fs.lstatSync(current).isSymbolicLink()||!fs.realpathSync(current).startsWith(root+path.sep)
