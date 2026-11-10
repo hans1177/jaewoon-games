@@ -243,18 +243,21 @@ jobs:
           Set shell = CreateObject("WScript.Shell")
           Set svc = GetObject("winmgmts:\\.\root\cimv2")
           target = "$vbsListener"
-          running = False
-          Set listeners = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
-          For Each p In listeners
-            If LCase(p.ExecutablePath) = LCase(target) Then
-              running = True
-              Exit For
+          Do
+            running = False
+            Set listeners = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
+            For Each p In listeners
+              If LCase(p.ExecutablePath) = LCase(target) Then
+                running = True
+                Exit For
+              End If
+            Next
+            If Not running Then
+              shell.CurrentDirectory = "$vbsRoot"
+              shell.Run Chr(34) & target & Chr(34) & " run", 0, False
             End If
-          Next
-          If Not running Then
-            shell.CurrentDirectory = "$vbsRoot"
-            shell.Run Chr(34) & target & Chr(34) & " run", 0, False
-          End If
+            WScript.Sleep 15000
+          Loop
           "@
           $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
 
