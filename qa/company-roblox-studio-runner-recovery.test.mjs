@@ -73,3 +73,29 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   assert.match(bootstrap,/For Each p In listeners/);
   assert.match(bootstrap,/If LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
 });
+
+test('daily C cleanup runs on existing signed-in Studio runner without touching apps, saves, or downloads',()=>{
+  assert.match(workflow,/cron: '15 18 \* \* \*'/);
+  const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
+  assert.match(recover,/if: github\.event_name != 'schedule'/);
+  const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
+  assert.match(bootstrap,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  const start=bootstrap.indexOf('- name: Clean only aged Windows user temporary files and Roblox logs on C');
+  const end=bootstrap.indexOf('- name: Install hidden user-logon Startup launcher');
+  assert.ok(start>=0&&end>start);
+  const cleanup=bootstrap.slice(start,end);
+  assert.match(cleanup,/\$systemRoot = \[IO\.Path\]::GetPathRoot\(\$env:WINDIR\)/);
+  assert.match(cleanup,/Join-Path \$env:LOCALAPPDATA 'Roblox\\logs'/);
+  assert.match(cleanup,/Join-Path \$env:LOCALAPPDATA 'Temp'/);
+  assert.match(cleanup,/Days = 2; Ext = @\('\.log','\.txt'\)/);
+  assert.match(cleanup,/Days = 7; Ext = @\('\.tmp','\.log','\.dmp'\)/);
+  assert.match(cleanup,/\$file\.FullName -Force -ErrorAction Stop/);
+  assert.match(cleanup,/\$deletedCount -ge 5000/);
+  assert.match(cleanup,/ReparsePoint/);
+  assert.match(cleanup,/C_UNUSED_APPS=REVIEW_ONLY_NO_AUTOMATIC_UNINSTALL/);
+  assert.match(cleanup,/C_DRIVE_BELOW_5GB=OWNER_REVIEW_WINDOWS_STORAGE_CLEANUP_RECOMMENDATIONS/);
+  assert.doesNotMatch(cleanup,/Remove-AppxPackage|Win32_Product|winget uninstall|Get-ChildItem -Recurse|Clear-RecycleBin|Downloads|Documents|SavedPlaces/);
+  assert.match(bootstrap,/name: Install hidden user-logon Startup launcher\n        if: github\.event_name != 'schedule'/);
+  assert.match(bootstrap,/name: Checkout native recording setup without downloading game assets\n        if: github\.event_name != 'schedule'/);
+  assert.match(bootstrap,/name: Restore real Roblox Player recording on existing interactive Windows runner\n        if: github\.event_name != 'schedule'/);
+});
