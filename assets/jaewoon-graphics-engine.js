@@ -564,7 +564,7 @@
 
     // Read-only commercial HUD: every state comes from confirmed game events.
     // These elements never own hit, quest, skill, save, or network decisions.
-    const rich={player:null,actions:null,boss:null,objective:null,status:null,warnings:new Map(),warningSeen:new Map()};
+    const rich={player:null,actions:null,uiSurface:null,boss:null,objective:null,status:null,warnings:new Map(),warningSeen:new Map()};
     const topInset=()=>Math.max(0,Number(safeInsets.top)||0)+8;
     const outerInset=side=>Math.max(0,Number(safeInsets[side])||0)+8;
     function reflowRichHud(){
@@ -677,6 +677,61 @@
         node.appendChild(button);
       }
       rich.actions={node,count:actions.length};
+      return true;
+    }
+    // [실제 UI] 배치·폰트·버튼은 공통 설계안을 사용하고, 게임 소유 onAction 외에는 동작하지 않는다.
+    function updateUiSurface({craft,components=[],onAction,visible=true}={}){
+      if(destroyed)return false;
+      if(visible===false){if(!rich.uiSurface)return false;
+        remove(rich.uiSurface.node);rich.uiSurface=null;return true;}
+      const view=dimensions(),slots=craft?.layout?.placements;
+      if(!craft?.layout?.pass||craft.score?.score<92||craft.score?.issues?.length||
+        craft.viewport?.width!==view.width||craft.viewport?.height!==view.height||
+        !Array.isArray(slots)||!Array.isArray(components)||!Array.isArray(craft.controls)||
+        slots.length!==components.length||craft.controls.length!==components.length)return false;
+      const positions=new Map(slots.map(p=>[p.id,p]));
+      const declared=new Map(craft.controls.map(c=>[c.id,c]));
+      const actions=new Set();
+      if(positions.size!==components.length||declared.size!==components.length)return false;
+      for(const c of components){
+        const p=positions.get(c?.id),b=declared.get(c?.id),actionId=String(c?.actionId||'');
+        if(!p||!b||p.unresolved||b.label!==String(c.label||c.id)||b.actionId!==actionId||
+          (actionId&&(actions.has(actionId)||p.width<44||p.height<44)))return false;
+        if(actionId)actions.add(actionId);
+      }
+      if(actions.size&&typeof onAction!=='function')return false;
+      const tokens=craft.design?.tokens||{},validColor=x=>/^#[0-9a-fA-F]{6}$/.test(String(x||''));
+      const bg=validColor(tokens.background)?tokens.background:panel,
+        fg=validColor(tokens.foreground)?tokens.foreground:ink,
+        accent=validColor(tokens.accent)?tokens.accent:edge;
+      const family=tokens.fontFamily==='system-ui, sans-serif'?tokens.fontFamily:'inherit';
+      const root=make('div',{position:'absolute',inset:'0',pointerEvents:'none',fontFamily:family});
+      root.setAttribute('data-vibe-ui-surface',String(craft.surface).slice(0,32));
+      root.setAttribute('role','group');
+      for(const c of components){
+        const p=positions.get(c.id),interactive=Boolean(c.actionId);
+        const node=doc.createElement(interactive?'button':'div');
+        node.textContent=String(c.label||c.id).slice(0,140);
+        node.setAttribute('data-vibe-ui-id',String(c.id).slice(0,64));
+        if(interactive){node.setAttribute('type','button');node.setAttribute('aria-label',node.textContent);}
+        else node.setAttribute('role','status');
+        Object.assign(node.style,{position:'absolute',left:p.x+'px',top:p.y+'px',width:p.width+'px',
+          height:p.height+'px',boxSizing:'border-box',padding:interactive?'6px':'9px',
+          border:'1px solid '+(interactive?accent:edge),borderRadius:corner+'px',
+          background:bg,color:fg,fontFamily:family,
+          fontSize:(interactive?Number(tokens.fontButtonPx)||14:Number(tokens.fontBodyPx)||15)+'px',
+          lineHeight:String(Number(tokens.lineHeight)||1.4),fontWeight:interactive?'700':'500',
+          textAlign:'center',display:'flex',alignItems:'center',justifyContent:'center',
+          overflow:'hidden',overflowWrap:'anywhere',
+          pointerEvents:interactive?'auto':'none',touchAction:'manipulation'});
+        if(interactive){
+          if(c.enabled===false){node.disabled=true;node.style.opacity='.45';node.setAttribute('aria-disabled','true');}
+          node.onclick=()=>{if(!destroyed&&rich.uiSurface?.node===root&&c.enabled!==false)onAction(c.actionId,c.id,craft.surface);};
+        }
+        root.appendChild(node);
+      }
+      if(rich.uiSurface)remove(rich.uiSurface.node);
+      rich.uiSurface={node:root,surface:craft.surface,actions:actions.size};
       return true;
     }
     function clearBossHud(){
@@ -837,20 +892,20 @@
       for(const animation of icons.values())if(animation&&animation.cancel)animation.cancel();
       icons.clear();damage.clear();seen.clear();impactSprites.clear();impactSeen.clear();
       shakeSeen.clear();activeImpactSprites=0;toasts.length=0;tooltip=null;
-      rich.warnings.clear();rich.warningSeen.clear();rich.player=null;rich.actions=null;
+      rich.warnings.clear();rich.warningSeen.clear();rich.player=null;rich.actions=null;rich.uiSurface=null;
       rich.boss=null;rich.objective=null;rich.status=null;remove(stage);
       if(changedHostPosition&&host.style.position==='relative')host.style.position='';
     }
     return Object.freeze({ready:true,showDamage,showImpactVfx,requestCameraShake,
       showTooltip,hideTooltip,notify,animateIcon,
-      updateStatusIcon,updatePlayerHud,updateActionHud,
+      updateStatusIcon,updatePlayerHud,updateActionHud,updateUiSurface,
       updateBossHud,clearBossHud,updateObjectiveHud,updateStatusTray,
       showDirectionWarning,destroy,
       stats:()=>Object.freeze({activeDamage:damage.size,activeVfxSprites:activeImpactSprites,
         activeNotices:toasts.length,
         activeWarnings:rich.warnings.size,bossVisible:Boolean(rich.boss),
         objectiveVisible:Boolean(rich.objective),playerVisible:Boolean(rich.player),
-        actionButtons:rich.actions?.count||0,
+        actionButtons:rich.actions?.count||0,uiSurface:rich.uiSurface?.surface||null,uiButtons:rich.uiSurface?.actions||0,
         activeStatusEffects:rich.status?rich.status.children.length:0,
         tooltipVisible:Boolean(tooltip),destroyed}),
       authority:'WEB_PRESENTATION_ONLY_NO_GAMEPLAY_MUTATION'});
