@@ -95,11 +95,25 @@ export function judge(row,limits=LIMITS){
 
 // 리그 점검 게이트: 캐릭터·생물 계열 자식은 메쉬·리그 검사기를 통과해야 유지한다(애니메이션 연습으로 넘기려면 필수).
 export const RIGGED_FAMILY=/CHARACTER|CREATURE|HERO|NPC|ANIMAL/i;
+export const REQUIRED_MOTION_STATES=Object.freeze(['IDLE','MOVE','ATTACK','HIT','DEATH']);
+
+// [모션 실측] 외형/관절 점수는 모션 클립 존재나 실제 게임 재생 성공의 증거가 아니다.
+export function motionCoverage(actionNames=[]){
+  const names=Array.isArray(actionNames)?actionNames.map(x=>String(x||'').toLowerCase()):[];
+  const patterns={IDLE:/idle|rest|breath|대기/,MOVE:/walk|run|move|locomotion|이동|걷|달리/,ATTACK:/attack|strike|slash|bite|combat|공격/,HIT:/hit|hurt|damage|stagger|피격/,DEATH:/death|die|dead|collapse|사망/};
+  const present=REQUIRED_MOTION_STATES.filter(k=>names.some(name=>patterns[k].test(name)));
+  const missing=REQUIRED_MOTION_STATES.filter(k=>!present.includes(k));
+  return {present,missing,coverage:+(present.length/REQUIRED_MOTION_STATES.length).toFixed(2),
+    clipNames:names.slice(0,16),nativeRuntimeVerified:false,gameApplied:false};
+}
 export function rigGate(row,audit){
   if(!RIGGED_FAMILY.test(row.family||'')||!row.keep||!row.glb)return row;
   try{
     const ev=audit(row.glb);
-    row.audit={pass:ev.pass,failures:ev.failures.slice(0,3)};
+    row.audit={pass:ev.pass,failures:ev.failures.slice(0,3),
+      productionEligible:ev.productionEligible===true,
+      blockers:(ev.productionBlockers||[]).slice(0,3)};
+    row.motion=motionCoverage(ev.actionNames||[]);
     if(!ev.pass){row.keep=false;row.verdict='REGRESSED';row.reason='RIG:'+ev.failures[0]}
   }catch(e){row.audit={pass:false,failures:['AUDIT_ERROR']};row.keep=false;row.verdict='BROKEN';row.reason='RIG_AUDIT_ERROR'}
   return row;
@@ -159,7 +173,10 @@ export function chooseDiverseParents(pool,count){
   return selected;
 }
 
-export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,rigAudit=f=>evaluateAudit(measureRig(f))}={}){
+export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,rigAudit=f=>{
+    const measured=measureRig(f),verdict=evaluateAudit(measured);
+    return {...verdict,actionNames:(measured.actions||[]).map(a=>a.name)};
+  }}={}){
   const rng=mulberry32(seed);
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
   const stats=statsPath&&fs.existsSync(statsPath)?JSON.parse(fs.readFileSync(statsPath,'utf8')):{};
@@ -210,7 +227,7 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
         Object.assign(row,{attach:res.attach||null,score:sc.score,parentScore:parentScore.score,gain:sc.gain,novelty:sc.novelty,darkening:sc.darkening,detailDrop:sc.detailDrop,sub:sc.sub,empty:!!sc.empty,triangles:res.triangles,glb:path.relative(repoRoot,res.glb),glbSha256:sha256(res.glb)});
       }else row.error=res?.error||'NO_RESULT';
       Object.assign(row,judge(row));
-      if(row.glb){const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit);if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit})}
+      if(row.glb){const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit);if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit,motion:g.motion})}
       // [아이콘] 통과한 실제 CC0 소품/아이템의 3/4 시점 PNG를 2.5D 아이콘 후보로 만든다.
       // 64px 가독성은 별도 판정하며, 실제 게임 등록·교체는 기존 품질/런타임 관문 이후에만 한다.
       if(row.keep&&/PROP|ITEM|WEAPON|TOOL|UI/i.test(row.family)){

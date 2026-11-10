@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
+import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession,rigGate,motionCoverage} from '../tools/vibe-variation-gym.mjs';
 import {summarize} from '../tools/vibe-gym-publish.mjs';
 
 const repo=process.cwd();
@@ -33,6 +33,21 @@ test('합격한 변형은 출처·조리법·아이콘 가독성 기록만 보�
   assert.deepEqual(out.icon,{legible:true,pixels64:410,contrast64:0.34});
   assert.equal(out.keep,true);assert.equal(out.license,'CC0');
   assert.equal(out.registered,false);assert.equal(out.gameApplied,false);
+});
+
+test('리깅과 모션 연습은 독립 판정: 실제 액션 클립 부족 시 모션 완료를 주장하지 않는다',()=>{
+  const coverage=motionCoverage(['Idle_Breathe','Walk_Forward','Slash_Attack','Hurt']);
+  assert.deepEqual(coverage.present,['IDLE','MOVE','ATTACK','HIT']);
+  assert.deepEqual(coverage.missing,['DEATH']);assert.equal(coverage.coverage,0.8);
+  assert.equal(coverage.nativeRuntimeVerified,false);
+  const row=rigGate({family:'CREATURE',keep:true,verdict:'IMPROVED',glb:'creature.glb'},()=>({
+    pass:true,failures:[],productionEligible:false,productionBlockers:['PRIMITIVE_BUILT_MESH'],
+    actionNames:['Idle','Walk']
+  }));
+  assert.equal(row.keep,true);assert.equal(row.audit.productionEligible,false);
+  assert.deepEqual(row.motion.missing,['ATTACK','HIT','DEATH']);
+  assert.equal(row.motion.gameApplied,false);
+  assert.deepEqual(motionCoverage([]).missing,['IDLE','MOVE','ATTACK','HIT','DEATH']);
 });
 
 test('연습 대상은 소품·몬스터·캐릭터·배경을 우선 섞고 부족할 때 같은 가족을 채운다', () => {

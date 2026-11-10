@@ -30,6 +30,9 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     families:[...new Set(gym.ledger.map(r=>r.family))],
     iconCandidates:gym.ledger.filter(r=>r.icon?.legible).length,
     iconRejected:gym.ledger.filter(r=>r.icon&&!r.icon.legible).length,
+    rigAudited:gym.ledger.filter(r=>r.audit).length,
+    motionComplete:gym.ledger.filter(r=>r.motion?.missing.length===0).length,
+    motionGaps:gym.ledger.filter(r=>r.motion?.missing.length>0).length,
     gameApplied:0};
   const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,process.env.VIBE_CC0_LIBRARY_DIR||null,4);
   if(light&&lp){
