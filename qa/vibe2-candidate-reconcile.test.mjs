@@ -155,6 +155,7 @@ test('late failed verification cannot rewind a previously verified or runtime-aw
       failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'LATE_STUDIO_FAILURE'
     });
     assert.equal(result.updated,false,current.status+':'+current.blocker);
+    assert.equal(result.finalPass,false,'ignored late failure cannot report a new PASS');
     const before=queue.tasks[0],after=result.queue.tasks[0];
     assert.equal(after.status,before.status);
     assert.equal(after.retries,before.retries);
