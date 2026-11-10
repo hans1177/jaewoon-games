@@ -304,3 +304,44 @@ test('BUILD_UP passes current authorized source files to Vibe autonomous quality
   assert.equal(work.mode,'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST');
   assert.equal(directive.robloxHolisticQualityPlan.qualityComplete,false);
 }));
+
+
+test('Vibe first-quality decision precedes large design context in actual Roblox BUILD_UP coding prompt',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'server','Game.server.luau'),'local combat=true');
+  const owner='roblox-games/'+game+'/server/Game.server.luau';
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:game,platform:'ROBLOX',repoRoot:dir,sourceRoot:'roblox-games/'+game,
+    responsibleFiles:[owner],
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:false,
+      failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'LIVE_ABILITY_FAILED'},
+    designRecord:{content:{identity:'숲 생존',coreFun:'기존 사냥',coreLoop:['사냥']}}
+  });
+  const prompt=directivePrompt(directive);
+  const top=prompt.indexOf('VIBE_QUALITY_FIRST_WORK: ');
+  assert.ok(top>0);
+  assert.ok(top<prompt.indexOf('DESIGN_IMPLEMENTATION_CONTEXT: '));
+  assert.ok(top<prompt.indexOf('STUDIO_OBSERVED_FAILURES: '));
+  assert.ok(prompt.includes('REPAIR_CURRENT_CAUSAL_FAILURE_FIRST'));
+  assert.ok(prompt.includes(owner));
+  assert.ok(prompt.includes('NO_WRITE_SCOPE_EXPANSION'));
+  assert.ok(prompt.includes('VIBE_QUALITY_FIRST_RULE'));
+  assert.equal(directive.robloxHolisticQualityPlan.autonomousWorkUnit.verifiedRuntime,false);
+}));
+
+test('existing Vibe source worker prioritizes quality only for exact current game and allowed owners',()=>{
+  const worker=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  const start=worker.indexOf('  // [메인] 실제 코딩 주문은 기존 BUILD_UP 진단 우선순위를 맨 앞에서 전달한다.');
+  const end=worker.indexOf('  const taskEvidence=',start);
+  assert.ok(start>=0&&end>start);
+  const section=worker.slice(start,end);
+  assert.match(section,/trustedBuildUp&&plan\.target==='roblox'/);
+  assert.match(section,/qualityPlan\?\.gameId===clean\(task\.gameId\)/);
+  assert.match(section,/posix\(task\.sourceRoot\)===exactGameRoot/);
+  assert.match(section,/authorizedTaskFiles\.has\(file\)/);
+  assert.match(section,/qualityAuthorizedOwners\.join/);
+  assert.match(section,/NONE_OWNER_DISCOVERY_REQUIRED/);
+  assert.match(section,/report scope\/ownership blocker/);
+  assert.match(section,/const executionGoal = \[qualityExecutionGuidance,packageGuidance/);
+  assert.doesNotMatch(section,/responsibleFiles\.push\(|authorizedTaskFiles\.add\(|task\.responsibleFiles\s*=/);
+  assert.match(worker,/ignoredPaths:freezeList\(adapter\.source\.ignoredPaths\), responsibleFiles/);
+});
