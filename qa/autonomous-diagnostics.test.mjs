@@ -37,6 +37,23 @@ test('dynamic template attributes are not treated as broken local paths',()=>{
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('native scanner reproduces null-unsafe querySelector event wiring',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),[
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width"></head><body>',
+      '<button id="start">Play</button><script>',
+      "document.querySelector('#start').addEventListener('click',startGame);",
+      'function startGame(){}','</script></body></html>'
+    ].join('\n'));
+    const issue=diagnoseGame(root).issues.find(row=>row.type==='DOM_NULL_EVENT_BIND');
+    assert.ok(issue);
+    assert.equal(issue.line,3);
+    assert.match(issue.needle,/querySelector/);
+    assert.equal(issue.file,'index.html');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('diagnostics records related files so a multi-file issue can feed parallel department scopes',()=>{
   const root=fixture();
   try{

@@ -148,7 +148,7 @@ function diagnoseFile(root,row,filesystem=fs){
       const first=unguardedParses[0];
       results.push(issue('UNGUARDED_SAVE_PARSE','high',row.relative,`try/catch 밖의 저장 JSON.parse ${unguardedParses.length}곳이 손상 저장값에서 예외를 낼 수 있음`,{line:lineAt(text,first.index),needle:first.expression,microTask:`${row.relative}의 보호되지 않은 저장 JSON.parse 1곳에 기존 저장 의미를 유지하는 실패 방어를 추가한다.`}));
     }
-    const domMatch=/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/.exec(text);
+    const domMatch=/document\.(?:getElementById|querySelector)\s*\([^\n;]+\)\s*\.addEventListener\s*\(/.exec(text);
     if(domMatch)results.push(issue('DOM_NULL_EVENT_BIND','medium',row.relative,'DOM 조회 직후 null 확인 없이 이벤트를 연결하는 경로가 있음',{line:lineAt(text,domMatch.index),needle:domMatch[0],microTask:`${row.relative}의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.`}));
     const duplicate=adjacentDuplicateListener(text);
     if(duplicate)results.push(issue('ADJACENT_DUPLICATE_EVENT_LISTENER','high',row.relative,`동일 이벤트 리스너 문장이 ${duplicate.line-1}/${duplicate.line}행에 연속 중복됨`,{

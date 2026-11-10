@@ -3067,7 +3067,7 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
   if(!spec)return null;
   let replace='';
   if(spec.diagnosticType==='DOM_NULL_EVENT_BIND'){
-    const unsafe=/(document\.getElementById\s*\([^\n;]+\))\s*\.addEventListener\s*\(/;
+    const unsafe=/(document\.(?:getElementById|querySelector)\s*\([^\n;]+\))\s*\.addEventListener\s*\(/;
     if(!unsafe.test(spec.find))return null;
     replace=spec.find.replace(unsafe,(_match,call)=>call+'?.addEventListener(');
   }else if(spec.diagnosticType==='INTERVAL_CLEANUP_RISK'){
@@ -3401,7 +3401,7 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
     :spec.diagnosticType==='TOUCH_ACTION_UNSPECIFIED'
       ?'HARD POSTCONDITION: replacement source must add a real touch-action: CSS declaration to the actual interactive control/arena selector while preserving intended page scrolling. Do not satisfy this with a comment or data attribute.'
       :spec.diagnosticType==='DOM_NULL_EVENT_BIND'
-        ?'HARD POSTCONDITION: directly repair the reproduced document.getElementById(...).addEventListener(...) chain. Preserve the event behavior but add a real null-safe guard or optional chaining so the unsafe direct chain is absent.'
+        ?'HARD POSTCONDITION: directly repair the reproduced document.getElementById/querySelector(...).addEventListener(...) chain. Preserve the event behavior but add a real null-safe guard or optional chaining so the unsafe direct chain is absent.'
         :'HARD POSTCONDITION: the replacement must directly eliminate the reproduced diagnostic target before any unrelated improvement.';
   return{
     spec,
@@ -3439,7 +3439,7 @@ export function evaluateDiagnosticPostcondition({candidate={},exploration={}}={}
   if(pass&&type==='INTERVAL_CLEANUP_RISK'&&!/\bclearInterval\s*\(/.test(changed)){pass=false;reason='CLEAR_INTERVAL_LIFECYCLE_MISSING';}
   if(pass&&type==='TOUCH_ACTION_UNSPECIFIED'&&!/touch-action\s*:/i.test(changed)){pass=false;reason='TOUCH_ACTION_POLICY_MISSING';}
   if(pass&&type==='DOM_NULL_EVENT_BIND'){
-    const unsafe=/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/;
+    const unsafe=/document\.(?:getElementById|querySelector)\s*\([^\n;]+\)\s*\.addEventListener\s*\(/;
     const targeted=targetEdits.some(row=>unsafe.test(String(row?.find??''))||clean(replay.diagnosticNeedle)&&String(row?.find??'').includes(clean(replay.diagnosticNeedle)));
     if(!targeted){pass=false;reason='DOM_NULL_EVENT_BIND_TARGET_NOT_REPAIRED';}
     else if(unsafe.test(changed)){pass=false;reason='DOM_NULL_EVENT_BIND_STILL_UNSAFE';}

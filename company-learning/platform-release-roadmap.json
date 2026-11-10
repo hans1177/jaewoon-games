@@ -1,5 +1,5 @@
 {
-  "version": 608,
+  "version": 609,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9592,7 +9592,9 @@
       "intent": "OWNER_INTERNAL_CODING_ENGINE_FIRST_WITHOUT_EXTERNAL_MODEL_DEPENDENCY",
       "implementationFiles": [
         "tools/vibe2-source-worker.mjs",
-        "qa/vibe2-source-worker.test.mjs"
+        "qa/vibe2-source-worker.test.mjs",
+        "tools/autonomous-diagnostics.mjs",
+        "qa/autonomous-diagnostics.test.mjs"
       ],
       "canonicalWorkerOnly": true,
       "noNewPipeline": true,
@@ -9600,14 +9602,16 @@
       "existingResponsibilityFilesOnly": true,
       "noModelRepairTypes": [
         "ADJACENT_DUPLICATE_EVENT_LISTENER",
-        "MISSING_VIEWPORT"
+        "MISSING_VIEWPORT",
+        "DOM_NULL_EVENT_BIND_QUERY_SELECTOR"
       ],
       "causalPostconditionVerificationRequired": true,
       "independentExistingCandidateQaRequired": true,
       "unaffectedGameSaveAndBalance": true,
       "externalProviderConfigurationUnchanged": true,
       "runtimeGameValidation": "UNVERIFIED",
-      "ciState": "PENDING"
+      "ciState": "PENDING_ON_LATEST_MAIN",
+      "improvedDiagnostic": "QUERY_SELECTOR_NULL_BINDING_SOURCE_REPRODUCED_BEFORE_PATCH"
     }
   },
   "vibeExecutionLaneContract": {

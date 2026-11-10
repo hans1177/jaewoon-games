@@ -4345,6 +4345,23 @@ test('internal code repair inserts one viewport only from current reproduced sou
   assert.equal(deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['index.html']}),null);
 });
 
+test('model-free coding repairs a reproduced querySelector null handler while preserving event action',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/demo');
+  const unsafe="document.querySelector('#start').addEventListener('click',startGame);";
+  const source=['<!doctype html><html><head><meta name="viewport" content="width=device-width"></head><body>',
+    '<button id="start">Play</button><script>',unsafe,'function startGame(){}','</script></body></html>'].join('\n');
+  write(path.join(root,'index.html'),source);
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+    diagnosticType:'DOM_NULL_EVENT_BIND',diagnosticFile:'index.html',diagnosticLine:3,diagnosticNeedle:unsafe}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['index.html']});
+  assert.ok(candidate);
+  assert.match(candidate.edits[0].replace,/querySelector\('#start'\)\?\.addEventListener\('click',startGame\)/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+  const after=source.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  assert.ok(after.includes('function startGame(){}'));
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),source);
+});
+
 test('source worker wires deterministic diagnostic before model recovery',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const deterministicAt=source.indexOf('const deterministicDiagnostic=!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate');
