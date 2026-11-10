@@ -1579,6 +1579,8 @@ test('Roblox source worker reuses official Blender cache before native fantasy s
   assert.match(setup,/command -v blender/);
   assert.match(setup,/ROBLOX_NATIVE_BLENDER=REUSED_SYSTEM/);
   assert.match(setup,/ROBLOX_NATIVE_BLENDER=RESTORED_CACHE/);
+  assert.match(setup,/&& "\$executable" --background --disable-autoexec --python-expr/,
+    'damaged cached Blender must fail the exporter probe and be re-downloaded');
   assert.match(setup,/sha256sum --check --status/);
   assert.match(setup,/0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e/);
   assert.match(setup,/https:\/\/download\.blender\.org\/release\/Blender4\.5\/blender-4\.5\.15-linux-x64\.tar\.xz/);
