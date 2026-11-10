@@ -343,5 +343,5 @@ test('existing Vibe source worker prioritizes quality only for exact current gam
   assert.match(section,/report scope\/ownership blocker/);
   assert.match(section,/const executionGoal = \[qualityExecutionGuidance,packageGuidance/);
   assert.doesNotMatch(section,/responsibleFiles\.push\(|authorizedTaskFiles\.add\(|task\.responsibleFiles\s*=/);
-  assert.match(worker,/responsibleFiles:freezeList\(adapter\.source\.candidateFiles\)/);
+  assert.match(worker,/ignoredPaths:freezeList\(adapter\.source\.ignoredPaths\), responsibleFiles/);
 });
