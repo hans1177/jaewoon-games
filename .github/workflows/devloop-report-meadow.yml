@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Read Meadow telemetry with dedicated read-only key
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ_KEY }}
           UNIVERSE_ID: '10773436325'
         run: python3 roblox-games/fantasy-survival/tools/devloop/telemetry_report.py > /tmp/telemetry.md
       - name: Analyze broken screen assets and request re-registration when models are the cause
