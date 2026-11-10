@@ -4303,6 +4303,48 @@ test('deterministic diagnostic repair adds touch-action to the actual interactiv
   assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
 });
 
+test('internal code repair removes only reproduced consecutive duplicate event handler',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/demo');
+  const listener="button.addEventListener('click',startGame);";
+  const original=['<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>',
+    '<body><button>Play</button><script>',"const button=document.querySelector('button');",
+    listener,listener,'function startGame(){}','</script></body></html>'].join('\n');
+  write(path.join(root,'index.html'),original);
+  const replay={required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+    diagnosticType:'ADJACENT_DUPLICATE_EVENT_LISTENER',diagnosticFile:'index.html',
+    diagnosticLine:5,diagnosticNeedle:listener};
+  const exploration={editContract:{causalReplay:replay}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['index.html']});
+  assert.ok(candidate);
+  assert.equal(candidate.deterministicDiagnosticType,replay.diagnosticType);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+  const after=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  assert.equal(after.split(listener).length-1,1);
+  assert.ok(after.includes('function startGame(){}'));
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),original);
+  assert.equal(deterministicDiagnosticCandidate({exploration:{editContract:{causalReplay:{
+    ...replay,diagnosticLine:6}}},sourceRoot:root,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicDiagnosticCandidate({exploration,sourceRoot:root,
+    responsibleFiles:['other.html']}),null);
+});
+
+test('internal code repair inserts one viewport only from current reproduced source',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/demo');
+  const original='<!doctype html><html><head><title>Game</title></head><body><button>Play</button></body></html>';
+  write(path.join(root,'index.html'),original);
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+    diagnosticType:'MISSING_VIEWPORT',diagnosticFile:'index.html',diagnosticNeedle:'<head'}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['index.html']});
+  assert.ok(candidate);
+  assert.equal(candidate.deterministicDiagnosticType,'MISSING_VIEWPORT');
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+  const after=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  assert.equal(after.match(/name="viewport"/g).length,1);
+  assert.ok(after.includes('<title>Game</title>'));
+  write(path.join(root,'index.html'),after);
+  assert.equal(deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['index.html']}),null);
+});
+
 test('source worker wires deterministic diagnostic before model recovery',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const deterministicAt=source.indexOf('const deterministicDiagnostic=!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate');

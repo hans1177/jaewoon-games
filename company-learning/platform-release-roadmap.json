@@ -1,5 +1,5 @@
 {
-  "version": 607,
+  "version": 608,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9587,6 +9587,27 @@
       ],
       "actualAuthenticatedPhoneConversation": "UNVERIFIED",
       "actualGameRepairOrRelease": "UNVERIFIED"
+    },
+    "vibeNativeSourceRepairStrengthening20261110": {
+      "intent": "OWNER_INTERNAL_CODING_ENGINE_FIRST_WITHOUT_EXTERNAL_MODEL_DEPENDENCY",
+      "implementationFiles": [
+        "tools/vibe2-source-worker.mjs",
+        "qa/vibe2-source-worker.test.mjs"
+      ],
+      "canonicalWorkerOnly": true,
+      "noNewPipeline": true,
+      "reproducedDiagnosticAndExactCurrentSourceRequired": true,
+      "existingResponsibilityFilesOnly": true,
+      "noModelRepairTypes": [
+        "ADJACENT_DUPLICATE_EVENT_LISTENER",
+        "MISSING_VIEWPORT"
+      ],
+      "causalPostconditionVerificationRequired": true,
+      "independentExistingCandidateQaRequired": true,
+      "unaffectedGameSaveAndBalance": true,
+      "externalProviderConfigurationUnchanged": true,
+      "runtimeGameValidation": "UNVERIFIED",
+      "ciState": "PENDING"
     }
   },
   "vibeExecutionLaneContract": {

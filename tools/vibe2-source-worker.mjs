@@ -469,6 +469,24 @@ export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',r
     if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return null;
     const source=fs.readFileSync(file,'utf8'),type=clean(replay.diagnosticType).toUpperCase(),needle=clean(replay.diagnosticNeedle);
     let find='';
+    // [독립 진단 근거] 확인된 문제 유형, 행 번호, 현재 소스의 정확한 원문을 다시 대조한다.
+    if(type==='MISSING_VIEWPORT'&&!/<meta\b[^>]*name\s*=\s*["']viewport["']/i.test(source)){
+      const head=/<head\b[^>]*>/i.exec(source);
+      if(head&&source.split(head[0]).length===2)find=head[0];
+    }
+    if(type==='ADJACENT_DUPLICATE_EVENT_LISTENER'){
+      const lines=source.split(/\r?\n/),nl=source.includes('\r\n')?'\r\n':'\n',pairs=[];
+      for(let index=1;index<lines.length;index++){
+        const previous=lines[index-1],current=lines[index];
+        if(current.trim().length<24||current.trim()!==previous.trim()||
+           !/\.addEventListener\s*\(/.test(current)||
+           (replay.diagnosticLine!=null&&Number(replay.diagnosticLine)!==index+1)||
+           (needle&&needle!==current.trim()))continue;
+        pairs.push(previous+nl+current);
+      }
+      if(pairs.length===1)find=pairs[0];
+    }
+    if(['MISSING_VIEWPORT','ADJACENT_DUPLICATE_EVENT_LISTENER'].includes(type)&&!find)return null;
     if(type==='TOUCH_ACTION_UNSPECIFIED')find=interactiveCssDiagnosticAnchor(source);
     if(!find&&needle&&source.includes(needle))find=exactDiagnosticAnchor(source,needle);
     if(!find&&type==='INTERVAL_CLEANUP_RISK'&&source.includes('setInterval('))find=exactDiagnosticAnchor(source,'setInterval(');
@@ -3060,6 +3078,15 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
     const timer=match[1];
     const cleanup="window.addEventListener('pagehide',()=>{if("+timer+"){clearInterval("+timer+");"+timer+"=null;}},{once:true}); ";
     replace=spec.find.replace(timerAssign,value=>cleanup+value);
+  }else if(spec.diagnosticType==='MISSING_VIEWPORT'){
+    if(!/^<head\b[^>]*>$/i.test(spec.find))return null;
+    replace=spec.find+'\n<meta name="viewport" content="width=device-width,initial-scale=1">';
+  }else if(spec.diagnosticType==='ADJACENT_DUPLICATE_EVENT_LISTENER'){
+    const lines=spec.find.split(/\r?\n/);
+    if(lines.length!==2||lines[0].trim()!==lines[1].trim()||
+       !/\.addEventListener\s*\(/.test(lines[0]))return null;
+    // [네이티브 중복 제거] 동일한 이벤트 연결문의 두 번째 행만 제거한다.
+    replace=lines[0];
   }else if(spec.diagnosticType==='TOUCH_ACTION_UNSPECIFIED'){
     if(/touch-action\s*:/i.test(spec.find))return null;
     if(spec.find==='<style>')replace='<style>\nbutton,[data-gameplay-action]{touch-action:manipulation;}';
@@ -3417,6 +3444,20 @@ export function evaluateDiagnosticPostcondition({candidate={},exploration={}}={}
     if(!targeted){pass=false;reason='DOM_NULL_EVENT_BIND_TARGET_NOT_REPAIRED';}
     else if(unsafe.test(changed)){pass=false;reason='DOM_NULL_EVENT_BIND_STILL_UNSAFE';}
     else if(!/\baddEventListener\s*\(/.test(changed)){pass=false;reason='DOM_EVENT_BEHAVIOR_NOT_PRESERVED';}
+  }
+  if(pass&&type==='MISSING_VIEWPORT'){
+    const headChanged=targetEdits.some(row=>/<head\b/i.test(String(row?.find||'')));
+    if(!headChanged||!/<meta\b[^>]*name\s*=\s*["']viewport["'][^>]*content\s*=\s*["']width=device-width,initial-scale=1["']/i.test(changed)){
+      pass=false;reason='EXACT_VIEWPORT_TAG_MISSING';
+    }
+  }
+  if(pass&&type==='ADJACENT_DUPLICATE_EVENT_LISTENER'){
+    const exact=targetEdits.some(row=>{
+      const lines=String(row?.find??'').split(/\r?\n/);
+      return lines.length===2&&lines[0].trim().length>=24&&lines[0].trim()===lines[1].trim()&&
+        /\.addEventListener\s*\(/.test(lines[0])&&String(row?.replace??'').trim()===lines[0].trim();
+    });
+    if(!exact){pass=false;reason='DUPLICATE_LISTENER_EXACT_LINE_NOT_REMOVED';}
   }
   return{required:true,pass,type,file,reason,needle:clean(replay.diagnosticNeedle)||null,authorityExpanded:false};
 }
