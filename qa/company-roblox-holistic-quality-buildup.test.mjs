@@ -252,5 +252,5 @@ test('Vibe active causal failure is repaired before automatic content or visual 
   assert.equal(plan.autonomousDecisionOwner,'VIBE_EXISTING_BUILD_UP');
   assert.match(robloxHolisticQualityPromptLines(plan).join('\\n'),/REPAIR_CURRENT_FAILED_STAGE/);
   const directiveSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
-  assert.match(directiveSource,/repairRequested:clean\\(nextActionDecision\\?\\.action\\)\\.toUpperCase\\(\\)===\\x27CAUSAL_REPAIR\\x27/);
+  assert.ok(directiveSource.includes("repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'"));
 }));
