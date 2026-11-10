@@ -19,7 +19,10 @@ test('forest model registration fails closed when cached creator does not match 
   assert.match(uploader,/MODEL_CREATOR_API_KEY_OWNER_MISMATCH/);
   assert.match(uploader,/MODEL_CREATOR_ASSET_WRITE_SCOPE_REQUIRED/);
   assert.doesNotMatch(uploader,/const cookie=/);
-  assert.match(workflow,/creator=\{userId:String\(scope\.authorizedUserId\)\}/);
+  // 실제 모델 등록 책임은 uploader에 있다. 게시 workflow는 같은 Open Cloud 키로
+  // 원본 Universe Use 권한을 확인하며 다른 계정으로 전환하지 않는다.
+  assert.match(workflow,/const apiKey=String\(process\.env\.ROBLOX_OPEN_CLOUD_API_KEY\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS/);
 });
 
 test('Forest dedicated publishing and CC0 registration never reuse a different account cookie',()=>{
