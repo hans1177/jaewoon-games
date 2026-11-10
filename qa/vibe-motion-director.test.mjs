@@ -1407,6 +1407,19 @@ test('semantic fingerprints suppress redundant motion variants',()=>{
   assert.equal(dup[0].verified,true);
 });
 
+test('모바일 UI 연습 통계는 실제 게임 UI 메서드만 추천하고 런타임 승인 권한을 갖지 않는다',()=>{
+  const ui=summarizeVibeVisualPractice({UI:{
+    'hud_layout:soft':{n:15,keep:14,gainSum:180},
+    'shop_layout:strong':{n:15,keep:0,gainSum:-40}
+  }});
+  assert.equal(ui.ready,true);
+  assert.equal(ui.families[0].family,'UI');
+  assert.equal(ui.families[0].recommended[0].name,'hud_layout:soft');
+  assert.equal(ui.families[0].avoid[0].name,'shop_layout:strong');
+  assert.equal(ui.gameApplied,false);
+  assert.equal(ui.runtimeVerified,false);
+});
+
 test('연습 점수는 검증된 제작물이나 PASS로 승격하지 않고 기존 제작 방법 힌트로 분류한다',()=>{
   const out=summarizeVibeVisualPractice({PROP:{
     'outline:soft':{n:12,gainSum:54,keep:10},

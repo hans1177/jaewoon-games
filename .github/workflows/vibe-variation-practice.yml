@@ -85,17 +85,19 @@ jobs:
           if [ "$(date -u +%M)" -lt 5 ]; then
             gh api -X POST "repos/${{ github.repository }}/actions/workflows/vibe-look-promotion.yml/dispatches" -f ref=main || true
           fi
-      - name: Upload kept children and previews
+      - name: Delete practice-only render artifacts after scoring
+        if: always()
+        run: |
+          # [중앙정책 제5규칙] 연습 자산은 보존/게임 적용 금지. 재현 가능한 숫자형 기록만 남긴다.
+          find build/practice -type f \( -iname '*.png' -o -iname '*.glb' -o -iname '*.gltf' -o -iname '*.blend' -o -iname '*.jpg' \) -delete || true
+      - name: Upload numeric practice evidence only
         uses: actions/upload-artifact@v4
         with:
           name: variation-gym-${{ github.run_id }}
           path: |
             build/practice/session.json
             build/practice/gym/ledger.json
-            build/practice/gym/*.png
-            build/practice/gym/icons/*.png
-            build/practice/light/round*/*.png
-          retention-days: 14
+          retention-days: 1
           if-no-files-found: warn
 
   practice-local:
@@ -144,3 +146,13 @@ jobs:
       - name: Publish stats to vibe-gym-data (never main)
         shell: pwsh
         run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/practice/gym/ledger.json --lights build/learned-lights.json
+      - name: Delete local practice-only render artifacts after scoring
+        if: always()
+        shell: pwsh
+        run: |
+          # [중앙정책 제5규칙] 로컬 원본 CC0 라이브러리는 유지하고 build/practice 연습 파생만 제거한다.
+          if (Test-Path 'build/practice') {
+            Get-ChildItem 'build/practice' -Recurse -File |
+              Where-Object { $_.Extension.ToLowerInvariant() -in @('.png','.glb','.gltf','.blend','.jpg') } |
+              Remove-Item -Force
+          }
