@@ -10593,6 +10593,15 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   assert.equal(candidate.semanticGrounding.exactFunctionRewrite,true);
   assert.equal(candidate.semanticGrounding.originalEditCount,2);
   assert.equal(candidate.semanticGrounding.originalRecipe,'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
+  const validated=deterministicRobloxNativeRepairCandidate({
+    order,sourceRoot:root,responsibleFiles:[rel],sourceRootRelative:'roblox-games/fantasy-survival',
+    candidateValidator:()=>({pass:true})
+  });
+  assert.equal(validated.deterministicSelection.status,'CANDIDATE_VALIDATED');
+  assert.equal(validated.causalReview.pass,true);
+  assert.deepEqual(validated.causalReview.expectations.map(row=>[row.system,row.sourceEffectObserved]),
+    [['INPUT_BUTTON',true]]);
+  assert.equal(validated.causalReview.actualRuntimeVerified,false);
   assert.equal(candidate.semanticGrounding.sourceFunction,'RobloxCommonUI.AdaptActionMenu');
   assert.equal(candidate.semanticGrounding.responsibleFunction,'RobloxCommonUI.AdaptActionMenu');
   const menuStart=original.indexOf('function RobloxCommonUI.AdaptActionMenu(');

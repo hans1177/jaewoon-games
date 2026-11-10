@@ -3160,12 +3160,21 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       let observed=false,observable=false;
       if(system==='INPUT_BUTTON'){
         observable=true;
-        observed=changes.some(row=>
-          row.after.includes('.Activated:Connect(')&&(
-            row.before.includes('.MouseButton1Click:Connect(')
-            ||(!row.before.includes('.Activated:Connect(')&&row.after.includes('.Activated:Connect('))
-            ||row.after.includes('OutsideActionsMenuClose')
-          ));
+        const studioBackdrop=unique([
+          raw.deterministicRobloxNativeRepair,raw.semanticGrounding?.originalRecipe,
+          ...(raw.semanticGrounding?.recipes||[])
+        ].map(clean)).includes('STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
+        observed=studioBackdrop
+          ?changes.some(row=>row.before.includes('shade=Instance.new("TextButton")')
+            &&row.after.includes('shade=Instance.new("Frame")')
+            &&row.after.includes('OutsideActionsMenuClose'))
+            &&changes.some(row=>row.before.includes('shade.Activated:Connect(')
+              &&row.after.includes('outsideClose.Activated:Connect('))
+          :changes.some(row=>
+            row.after.includes('.Activated:Connect(')&&(
+              row.before.includes('.MouseButton1Click:Connect(')
+              ||!row.before.includes('.Activated:Connect(')
+            ));
       }else if(system==='CAMERA'){
         observable=true;
         observed=changes.some(row=>row.before.includes('workspace.CurrentCamera')
