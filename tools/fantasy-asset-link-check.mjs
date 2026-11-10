@@ -4,13 +4,13 @@ import fs from 'fs';
 import path from 'path';
 const dir = 'roblox-games/fantasy-survival/';
 const read = f => fs.readFileSync(path.join(dir, f), 'utf8');
-export function checkFantasyAssets() {
+export function checkFantasyAssets({idsSource,configSource,serverSource,clientSource} = {}) {
   const problems = [];
-  const ids = read('shared/VisualAssetIds.luau');
+  const ids = idsSource ?? read('shared/VisualAssetIds.luau');
   const registered = new Map([...ids.matchAll(/([A-Za-z_][\w]*)\s*=\s*(\d{6,})/g)].map(m => [m[1], m[2]]));
-  const cfg = read('shared/GameConfig.luau');
-  const server = read('server/Game.server.luau');
-  const client = read('client/Game.client.luau');
+  const cfg = configSource ?? read('shared/GameConfig.luau');
+  const server = serverSource ?? read('server/Game.server.luau');
+  const client = clientSource ?? read('client/Game.client.luau');
   // 1) 장비·망토 ModelKey가 등록 ID로 연결되는지
   const keys = new Set([...cfg.matchAll(/ModelKey\s*=\s*"([^"]+)"/g)].map(m => m[1]));
   for (const key of keys) if (!registered.has(key)) problems.push(`ModelKey 미등록: ${key}`);
