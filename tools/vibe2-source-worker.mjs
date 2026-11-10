@@ -7386,7 +7386,7 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   });
   // 기존 책임 그래프의 실제 함수 몸체를 비교한다. 근처에 책임 함수명이 있다는 이유로
   // 옆 함수의 변경을 통과시키지 않는다. 모델의 주장이나 주석은 검증 근거가 아니다.
-  const symbolMutationRows=[];
+  const symbolMutationRows=[],symbolInspectionGaps=[],ambiguousSymbolOwners=[];
   if(hardGate&&clean(sourceRoot)){
     const grouped=new Map();
     for(const edit of edits){
@@ -7398,9 +7398,14 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     const allowedSymbols=new Set([...primaryTargets,...dependent]);
     for(const [relative,rows] of grouped){
       try{
-        if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..'))continue;
+        // [검증] 보호 모드에서는 파일/파서 증거가 누락된 편집을 추측으로 통과시키지 않는다.
+        if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..')){
+          symbolInspectionGaps.push(relative+':INVALID_PATH');continue;
+        }
         const file=path.resolve(ownerRoot,relative);
-        if(!file.startsWith(ownerRoot+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+        if(!file.startsWith(ownerRoot+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){
+          symbolInspectionGaps.push(relative+':MISSING_SOURCE');continue;
+        }
         const before=fs.readFileSync(file,'utf8');
         let after=before,exact=true;
         for(const edit of rows){
@@ -7408,10 +7413,21 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
           if(!find||after.split(find).length!==2){exact=false;break;}
           after=after.replace(find,replace);
         }
-        if(!exact)continue; // 기존 exact-edit 검증 단계에서 별도로 거부한다.
+        if(!exact){
+          symbolInspectionGaps.push(relative+':NONEXACT_REPLAY');continue;
+        }
         const language=/\.lua[u]?$/i.test(relative)?'luau':/\.cs$/i.test(relative)?'csharp':'javascript';
         const existing=inspectSourceFunctions(before,{language}),proposed=inspectSourceFunctions(after,{language});
-        if(!existing.length&&!proposed.length)continue; // 미지원 문법은 근거 없이 심볼 PASS를 주장하지 않는다.
+        if(!existing.length&&!proposed.length){
+          symbolInspectionGaps.push(relative+':NO_FUNCTION_EVIDENCE');continue;
+        }
+        // [모호성] 이름만으로 선택하면 같은 이름의 두 책임 함수가 하나로 합쳐진다.
+        // 승인 함수 이름은 수정 전후 모두 유일해야 하며, 클래스·스코프를 추측하지 않는다.
+        for(const name of allowedSymbols){
+          if(existing.filter(row=>row.name===name).length>1||
+             proposed.filter(row=>row.name===name).length>1)
+            ambiguousSymbolOwners.push(relative+':'+name);
+        }
         const existingByName=new Map(existing.map(row=>[row.name,row]));
         const proposedByName=new Map(proposed.map(row=>[row.name,row]));
         const changedSymbols=unique([...existingByName.keys(),...proposedByName.keys()].filter(name=>{
@@ -7448,7 +7464,8 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
         const unownedSourceMutation=nonOwnedSource(before,existing)!==nonOwnedSource(after,proposed);
         symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols,unownedSourceMutation});
       }catch{
-        // 소스 검사 자체가 실패한 경우에도 함수 범위를 추측해 PASS로 만들지 않는다.
+        // [실패 폐쇄] 범위 검사 예외는 편집 승인 근거가 아니라 실패 사유다.
+        symbolInspectionGaps.push(relative+':PARSER_OR_READ_ERROR');
       }
     }
   }
@@ -7458,6 +7475,8 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   }
   const unapprovedSymbols=unique(symbolMutationRows.flatMap(row=>row.unrelatedSymbols.map(name=>row.path+':'+name)));
   const unownedSourcePaths=unique(symbolMutationRows.filter(row=>row.unownedSourceMutation).map(row=>row.path));
+  const unverifiedSymbolPaths=unique(symbolInspectionGaps);
+  const ambiguousSymbolPaths=unique(ambiguousSymbolOwners);
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
   const saveKeyViolations=[];
@@ -7474,12 +7493,15 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
   if(hardGate&&unapprovedSymbols.length)violations.push('UNRELATED_SYMBOL:'+unapprovedSymbols.join(','));
   if(hardGate&&unownedSourcePaths.length)violations.push('UNOWNED_SOURCE_MUTATION:'+unownedSourcePaths.join(','));
+  if(hardGate&&unverifiedSymbolPaths.length)violations.push('SYMBOL_INSPECTION_UNPROVEN:'+unverifiedSymbolPaths.join(','));
+  if(hardGate&&ambiguousSymbolPaths.length)violations.push('AMBIGUOUS_SYMBOL_OWNER:'+ambiguousSymbolPaths.join(','));
   if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
   if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
     version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
     unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,unownedSourcePaths,
+    unverifiedSymbolPaths,ambiguousSymbolPaths,
     protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
     saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
