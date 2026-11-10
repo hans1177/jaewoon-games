@@ -400,6 +400,11 @@ test('Vibe autonomously detects missing declared inventory visuals without grant
   assert.equal(plan.autonomousWorkUnit.workScope.directMutationAuthorized,false);
   assert.deepEqual(plan.autonomousWorkUnit.workScope.authorizedSourceFiles,[]);
   assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+  const worker=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  assert.match(worker,/unboundInventoryItems=/);
+  assert.match(worker,/qualityWork\.missingItemIds\.filter\(id=>/);
+  assert.match(worker,/company-verified licensed original 3D first/);
+  assert.match(worker,/authorizedTaskFiles\.has\(file\)/);
   assert.equal(plan.families.find(row=>row.id==='ITEMS_LOOT').priority,'P1');
   assert.match(robloxHolisticQualityPromptLines(plan).join('\n'),/ITEM_VISUAL_COVERAGE/);
   assert.match(robloxHolisticQualityPromptLines(plan,10,true).join('\n'),/ITEM_VISUAL_COVERAGE/);
