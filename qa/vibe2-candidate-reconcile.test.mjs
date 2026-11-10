@@ -3,6 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { reconcileVibeCandidateVerification } from '../tools/vibe2-candidate-reconcile.mjs';
 
@@ -93,4 +94,107 @@ test('late native verification callback cannot rewind an already verified task',
   assert(task.evidence.includes('unity-verification-run:205'));
   assert.equal(result.finalPass,true);
   assert.equal(result.reason,'engine-verification-evidence-merged-without-stage-rewind');
+});
+
+
+test('authenticated Roblox QA failure records exact stage and signature and requeues without PASS',()=>{
+  const sha='a'.repeat(40);
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'roblox-causal',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+    status:'blocked',blocker:'candidate-awaiting-engine-qa',goal:'기존 게임 입력 수정',
+    evidence:['vibe2/candidate/OWNER-ROBLOX-OBBY-causal','candidate-sha:'+sha],
+    retries:0,maxRetries:2
+  }]});
+  const args={candidateBranch:'vibe2/candidate/OWNER-ROBLOX-OBBY-causal',target:'roblox',
+    conclusion:'failure',runId:'91001',headSha:sha,
+    failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'LIVE_STUDIO_VERIFY_VIBE_CANDIDATE'};
+  const result=reconcileVibeCandidateVerification(queue,args);
+  const task=result.queue.tasks[0];
+  assert.equal(result.updated,true);
+  assert.equal(result.verificationPassed,false);
+  assert.equal(result.promotionAllowed,false);
+  assert.equal(result.learningEligible,false);
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert(task.evidence.includes('roblox-verification-run:91001'));
+  assert(task.evidence.includes('engine-qa-failure-stage:TARGET_PLATFORM_RUNTIME'));
+  assert(task.evidence.includes('engine-qa-failure-signature:LIVE_STUDIO_VERIFY_VIBE_CANDIDATE'));
+  assert.equal(task.lastOutcome,'FAIL');
+  assert.equal(task.evidence.some(x=>/runtime.*:PASS|studio.*:PASS|runtimeVerified:true/i.test(x)),false);
+  const repeated=reconcileVibeCandidateVerification(result.queue,args);
+  assert.equal(repeated.updated,false);
+  assert.equal(repeated.reason,'duplicate-candidate-verification-run');
+  assert.equal(repeated.queue.tasks[0].retries,1);
+});
+
+test('late failed verification cannot rewind a previously verified or runtime-await Roblox checkpoint',()=>{
+  const sha='b'.repeat(40);
+  for(const current of [
+    {status:'verified',blocker:null,evidence:[]},
+    {status:'blocked',blocker:'candidate-awaiting-roblox-runtime-qa',evidence:[]},
+    {status:'blocked',blocker:'custom-wait',evidence:['roblox-runtime-await-source-tree:'+sha]},
+    {status:'failed',blocker:'retry-limit-exceeded',evidence:[]},
+    {status:'cancelled',blocker:'lifecycle-inactive',evidence:[]}
+  ]){
+    const queue=createVibeContinuousQueue({tasks:[{
+      id:'keep-checkpoint',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+      goal:'기존 게임',status:current.status,blocker:current.blocker,
+      evidence:['vibe2/candidate/OWNER-ROBLOX-OBBY-keep','candidate-sha:'+sha,...current.evidence],
+      retries:2,maxRetries:2
+    }]});
+    const result=reconcileVibeCandidateVerification(queue,{
+      candidateBranch:'vibe2/candidate/OWNER-ROBLOX-OBBY-keep',target:'roblox',
+      conclusion:'failure',runId:'91002',headSha:sha,
+      failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'LATE_STUDIO_FAILURE'
+    });
+    assert.equal(result.updated,false,current.status+':'+current.blocker);
+    const before=queue.tasks[0],after=result.queue.tasks[0];
+    assert.equal(after.status,before.status);
+    assert.equal(after.retries,before.retries);
+    assert.equal(after.blocker,before.blocker);
+    assert.equal(after.evidence.length,before.evidence.length);
+    assert.equal(result.promotionAllowed,false);
+    assert.equal(result.learningEligible,false);
+  }
+});
+
+test('candidate QA report rejects stale source revision and mismatched platform without retrying',()=>{
+  const sha='c'.repeat(40);
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'revision-bound',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+    status:'blocked',blocker:'candidate-awaiting-engine-qa',goal:'게임 복구',
+    evidence:['vibe2/candidate/OWNER-ROBLOX-OBBY-revision','candidate-sha:'+sha],
+    retries:0,maxRetries:2
+  }]});
+  const base={candidateBranch:'vibe2/candidate/OWNER-ROBLOX-OBBY-revision',
+    target:'roblox',conclusion:'failure',runId:'91003',headSha:sha};
+  const stale=reconcileVibeCandidateVerification(queue,{...base,headSha:'d'.repeat(40)});
+  assert.equal(stale.reason,'candidate-source-revision-mismatch');
+  assert.equal(stale.updated,false);
+  const missing=reconcileVibeCandidateVerification(queue,{...base,headSha:''});
+  assert.equal(missing.updated,false);
+  const wrongTarget=reconcileVibeCandidateVerification(queue,{...base,target:'unity'});
+  assert.equal(wrongTarget.reason,'candidate-target-mismatch');
+  assert.equal(wrongTarget.updated,false);
+  for(const result of [stale,missing,wrongTarget]){
+    assert.equal(result.queue.tasks[0].status,'blocked');
+    assert.equal(result.queue.tasks[0].retries,0);
+  }
+});
+
+test('canonical Roblox Studio result workflow routes real failed jobs without bypassing success-only promotion',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-candidate-result.yml','utf8');
+  assert.match(workflow,/QA conclusion mismatch: requested=/);
+  assert.match(workflow,/QA run candidate branch or source SHA mismatch/);
+  assert.match(workflow,/const failed=jobs\.find\(job=>String\(job\.status/);
+  assert.match(workflow,/const step=\(failed\.steps\|\|\[\]\)\.find/);
+  assert.match(workflow,/failure_stage=\$\{stage\}/);
+  assert.match(workflow,/--failure-stage="\$QA_FAILURE_STAGE"/);
+  assert.match(workflow,/--failure-signature="\$QA_FAILURE_SIGNATURE"/);
+  assert.match(workflow,/candidate branch changed after observed QA/);
+  assert.match(workflow,/if: steps\.qa\.outputs\.verified == '1'/);
+  assert.match(workflow,/if: steps\.promote_contract\.outcome == 'success'/);
+  assert.match(workflow,/if: steps\.promote\.outcome == 'success'/);
+  assert.doesNotMatch(workflow,/VIBE2_AUTO_FINAL_PASS=YES/);
+  assert.doesNotMatch(workflow,/VIBE2_AUTO_LEARNING=YES/);
 });
