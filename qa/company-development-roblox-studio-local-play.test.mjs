@@ -3776,6 +3776,13 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/MareQAAssetStatus/);
   assert.match(qa,/MareQAAssetTotals/);
   assert.match(qa,/ContentProvider\.PreloadAsync/);
+  // [개별 로딩 회귀] 하나의 콘텐츠가 무응답이어도 12개 병렬 검사와 ID별 16초 판정을 유지한다.
+  assert.match(qa,/for i = 1, #items, 12 do/);
+  assert.match(qa,/task\.delay\(16, function\(\)/);
+  assert.match(qa,/complete\("TIMEOUT_16S"\)/);
+  assert.match(qa,/ContentProvider, \{ row\.inst \}/);
+  assert.match(qa,/#failedMedia < 128/);
+  assert.doesNotMatch(qa,/for i = 1, #items, 30 do/);
   assert.match(qa,/task\.delay\(140, function\(\)/);
   assert.match(qa,/fetchCallbacks = mediaCallbacks/);
   assert.match(qa,/currentBatch = currentBatch/);
