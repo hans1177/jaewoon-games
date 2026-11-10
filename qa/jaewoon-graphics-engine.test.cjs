@@ -166,7 +166,7 @@ test('model-free graphics harmonizes real CC0 RGBA without mutating original or 
   const source={license:'CC0-1.0',sha256:'a'.repeat(64)};
   const original=new Uint8ClampedArray([255,22,10,255,4,12,20,0,12,40,90,240,220,200,170,255]);
   const before=[...original];
-  const style={palette:[[20,30,40],[110,130,150],[235,220,205]],pixelGrid:1};
+  const style={palette:[[20,30,40],[110,130,150],[235,220,205]],pixelGrid:1,detailRetention:0};
   const transformed=Graphics.harmonizeSourceRaster({width:2,height:2,pixels:original,source,style});
   assert.deepEqual([...original],before,'original must remain immutable');
   assert.deepEqual([...transformed.pixels].filter((_,i)=>i%4===3),[255,0,240,255]);
@@ -182,10 +182,39 @@ test('model-free palette grid enforces shared color blocks while preserving silh
   const source={license:'CC0',sourceSha256:'b'.repeat(64)};
   const original=new Uint8Array([12,28,40,255,235,230,220,128,45,60,80,0,130,120,110,255]);
   const transformed=Graphics.harmonizeSourceRaster({width:2,height:2,pixels:original,source,
-    style:{palette:[[10,20,30],[225,225,220]],pixelGrid:2}});
+    style:{palette:[[10,20,30],[225,225,220]],pixelGrid:2,detailRetention:0}});
   assert.deepEqual([...transformed.pixels.slice(0,3)],[...transformed.pixels.slice(4,7)]);
   assert.equal(transformed.pixels[11],0);
   assert.equal(transformed.visiblePixels,3);
+});
+
+test('high-quality source raster preserves light/shadow details without generating meshes or changing alpha',()=>{
+  const source={license:'CC0',sha256:'c'.repeat(64)};
+  const pixels=new Uint8Array([
+    25,25,25,255,
+    215,215,215,255,
+    50,50,50,0,
+    115,115,115,128
+  ]);
+  const unchanged=[...pixels];
+  const options={width:2,height:2,pixels,source,
+    style:{palette:[[85,95,105],[160,175,185]],pixelGrid:2}};
+  const modern=Graphics.harmonizeSourceRaster(options);
+  const flat=Graphics.harmonizeSourceRaster({...options,
+    style:{...options.style,detailRetention:0}});
+  assert.ok(modern.pixels[0]<modern.pixels[4],'original texture relief remains visible');
+  assert.equal(flat.pixels[0],flat.pixels[4],'legacy flat style is still available');
+  assert.deepEqual([...modern.pixels].filter((_,i)=>i%4===3),[255,255,0,128]);
+  assert.equal(modern.pixels[8],0,'fully transparent source stays visually empty');
+  assert.deepEqual([...pixels],unchanged);
+  assert.notEqual(modern.styleKey,flat.styleKey,'different detail levels cannot share an atlas style key');
+  assert.equal(modern.materialDetailSource,'ORIGINAL_CC0_PIXEL_LUMINANCE');
+  assert.equal(modern.runtimeVerified,false);
+  assert.throws(()=>Graphics.composeSourceSpriteAtlas({frames:[modern,flat]}),
+    /GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH/);
+  for(const detailRetention of [-0.01,1.01,NaN,Infinity,'0.5'])
+    assert.throws(()=>Graphics.harmonizeSourceRaster({...options,
+      style:{...options.style,detailRetention}}),/GRAPHICS_DETAIL_RETENTION_INVALID/);
 });
 
 test('model-free atlas composes only matching source-derived styles and rejects fake assets',()=>{
