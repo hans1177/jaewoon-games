@@ -67,18 +67,20 @@ export function extractVibeSourceImportRefs(source='',target=''){
   const roblox=['roblox','luau','lua'].includes(clean(target).toLowerCase());
   // [코딩 정확도] 문자열의 -- 는 주석이 아니다. 실제 Luau 주석만 공백으로
   // 치환해 줄 위치를 지키고, 주석에 적힌 가짜 require를 의존성으로 오인하지 않는다.
-  let scanText=text;
+  let scanText=text,quotedMask=null;
   if(roblox){
     const chars=text.split('');
+    quotedMask=new Uint8Array(text.length);
     let quote=null;
     for(let i=0;i<chars.length;){
       const c=text[i];
       if(quote){
-        if(c==='\\'){i+=2;continue;}
+        quotedMask[i]=1;
+        if(c==='\\'){if(i+1<quotedMask.length)quotedMask[i+1]=1;i+=2;continue;}
         if(c===quote)quote=null;
         i++;continue;
       }
-      if(c==='"'||c==="'"){quote=c;i++;continue;}
+      if(c==='"'||c==="'"){quote=c;quotedMask[i]=1;i++;continue;}
       if(c==='-'&&text[i+1]==='-'){
         const opening=/^\[(=*)\[/.exec(text.slice(i+2,i+20));
         const close=opening?']'+opening[1]+']':null;
@@ -96,12 +98,16 @@ export function extractVibeSourceImportRefs(source='',target=''){
     /\bfrom\s+['"]([^'"]+)['"]/g,
     /\bimport\s*['"]([^'"]+)['"]/g,
     /\b(?:require|import)\s*\(\s*['"]([^'"]+)['"]\s*\)/g
-  ])for(const match of scanText.matchAll(expression))refs.add(match[1]);
+  ])for(const match of scanText.matchAll(expression)){
+    if(quotedMask?.[match.index])continue;
+    refs.add(match[1]);
+  }
   if(roblox){
     // [로블록스 모듈 연결] 실제 require 체인을 정적 경로로 변환한다.
     // 혼합 .Module / :WaitForChild("Module") 체인도 같은 ModuleScript를 가리킨다.
     const expression=/\brequire\s*\(\s*script((?:\.Parent){1,8})((?:(?:\.[A-Za-z_]\w*)|(?::WaitForChild\(\s*["'][A-Za-z_]\w*["']\s*\))){1,8})\s*\)/g;
     for(const match of scanText.matchAll(expression)){
+      if(quotedMask?.[match.index])continue;
       const parents=(match[1].match(/\.Parent/g)||[]).length;
       const parts=[...match[2].matchAll(/\.([A-Za-z_]\w*)|:WaitForChild\(\s*(["'])([A-Za-z_]\w*)\2\s*\)/g)]
         .map(row=>row[1]||row[3]);
