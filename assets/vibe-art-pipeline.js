@@ -585,7 +585,8 @@ export function createVibeGraphicsProduction({
   runtimeBeforeAfterEvidence=null,
   interfaceRequirements=[],
   sceneObjectRequirements=[],
-  engineMeasurementCapture=null
+  engineMeasurementCapture=null,
+  spatialAssets=[]
 }={}){
   const platforms=graphicsProductionPlatforms(target);
   const changeRequestStability=createVibeOwnerChangeRequestStability({request,previousRequests:previousOwnerRequests,affectedScopes});
@@ -734,10 +735,66 @@ export function createVibeGraphicsProduction({
   const beforeAfterAudit=runtimeEvidenceBound?.visualRegression?auditVibeRuntimeBeforeAfterComparison(runtimeEvidenceBound.visualRegression):null;
   const highEndFrameAudit=runtimeEvidenceBound&&(runtimeEvidenceBound.highEndVisualRequired===true||String(runtimeEvidenceBound.qualityProfile||'').toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION')?auditVibeHighEndTargetFrameEvidence(runtimeEvidenceBound):null;
   const artDirectionReview=runtimeAudit?.artDirectionReview||null;
+  // [실제 3D 적용 추적] 기존 그래픽 작업에서 원본 모델·게임 소스·실행 장면을 동일 개체로 묶는다.
+  // 준비된 모델, 등록 선언, 자체 성공 플래그는 독립 런타임 증거가 아니다.
+  const spatialDeclarations=[
+    ...(Array.isArray(spatialAssets)?spatialAssets:[]),
+    ...(Array.isArray(game?.spatialAssets)?game.spatialAssets:[]),
+    ...(Array.isArray(world?.spatialAssets)?world.spatialAssets:[]),
+    ...sceneRequirements.filter(row=>row.spatial3dRequired===true)
+  ];
+  const observations=Array.isArray(runtimeEvidenceBase.spatial3dObservations)
+    ?runtimeEvidenceBase.spatial3dObservations:[];
+  const spatialIds=new Set();
+  const spatial3dItems=Object.freeze(spatialDeclarations.filter(row=>row&&typeof row==='object').map(row=>{
+    const id=clean(row.id||row.sceneObjectId||row.assetId);
+    const sourcePath=clean(row.masterGlbPath||row.sourcePath).replaceAll('\\','/');
+    const sourceHash=clean(row.masterGlbSha256||row.sourceHash).toLowerCase();
+    const binding=row.gameBinding||row.nativeBinding||{},issues=[];
+    if(!id||spatialIds.has(id))issues.push('SPATIAL_OBJECT_ID_MISSING_OR_DUPLICATE');
+    spatialIds.add(id);
+    if(!/^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[a-zA-Z0-9_./-]+\.glb$/i.test(sourcePath))
+      issues.push('REAL_MASTER_GLB_SOURCE_REQUIRED');
+    if(!/^[a-f0-9]{64}$/.test(sourceHash))issues.push('SOURCE_SHA256_REQUIRED');
+    if(row.licenseVerified!==true||row.visualContentReviewed!==true)
+      issues.push('ASSET_RIGHTS_OR_CONTENT_REVIEW_REQUIRED');
+    if(!sourceRevision||binding.sourceRevision!==sourceRevision||
+       binding.sceneObjectId!==id||binding.sourceHash!==sourceHash||
+       !clean(binding.modelPath||binding.modelAssetId))
+      issues.push('EXACT_GAME_SOURCE_MODEL_BINDING_REQUIRED');
+    const matches=observations.filter(observation=>
+      observation?.sceneObjectId===id&&observation?.sourceRevision===sourceRevision&&
+      observation?.candidateRevision===candidateRevision&&
+      observation?.modelSourceHash===sourceHash);
+    if(runtimeAudit?.pass!==true||!candidateRevision||matches.length!==1||
+       matches[0]?.bindingObserved!==true||matches[0]?.realRuntimeCapture!==true||
+       matches[0]?.perspectiveDepthConfirmed!==true||
+       !Number.isFinite(matches[0]?.nativeTriangleCount)||
+       matches[0].nativeTriangleCount<=0||
+       !/^[a-f0-9]{64}$/i.test(clean(matches[0]?.captureSha256)))
+      issues.push('INDEPENDENT_3D_RUNTIME_BINDING_EVIDENCE_REQUIRED');
+    return Object.freeze({id,sourcePath,sourceHash,
+      status:issues.length?'3D_BINDING_REPAIR_REQUIRED':'3D_RUNTIME_EVIDENCE_LINKED',
+      issues:Object.freeze(issues),gameplayAuthority:false,saveAuthority:false});
+  }));
+  const spatial3dApplication=Object.freeze({
+    required:spatial3dItems.length>0,
+    requiredCount:spatial3dItems.length,
+    runtimeLinkedCount:spatial3dItems.filter(row=>!row.issues.length).length,
+    status:spatial3dItems.some(row=>row.issues.length)?'3D_BINDING_REPAIR_REQUIRED':
+      spatial3dItems.length?'3D_RUNTIME_EVIDENCE_LINKED':'NO_EXPLICIT_3D_ASSET_DECLARATIONS',
+    items:spatial3dItems,sourceFilesModified:false,
+    applicationOwner:'EXISTING_VIBE_GAME_SOURCE_WORKER',
+    verifier:'EXISTING_NATIVE_OR_WEB_RUNTIME_QA',
+    cannotClaim3dRuntimePassFromMetadataAlone:true
+  });
   const verifiedReferenceStructure=Object.freeze(referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).map(row=>Object.freeze({sourceId:row.request.sourceId,structuralEvidence:row.observation.features,directSceneCopyAllowed:false})));
   const runtimeRepairLoop=runtimeAudit?Object.freeze({
     status:runtimeAudit.pass?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
-    defects:Object.freeze([...(runtimeAudit.repairTargets||[])]),
+    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),
+      ...spatial3dItems.filter(row=>row.issues.length).map(row=>Object.freeze({
+        surface:'SPATIAL_3D',id:row.id,findings:row.issues,
+        scope:'NATIVE_MODEL_BINDING_AND_VISUAL_ONLY',preserveGameplayAndSave:true}))]),
     beforeAfter:beforeAfterAudit,
     artDirectionReview,
     preciseArtDirectionRepairTargets:Object.freeze((artDirectionReview?.repairTargets||[]).filter(row=>row.sourcePath&&row.targetId&&row.property)),
@@ -759,7 +816,8 @@ export function createVibeGraphicsProduction({
     missingCaptureRemainsUnverified:true,
     captureDeclarationAloneCannotCloseDefect:true
   });
-  const status=runtimeAudit?(runtimeAudit.pass?'GRAPHICS_PASS':'RUNTIME_VISUAL_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
+  const status=runtimeAudit?(runtimeAudit.pass&&spatial3dApplication.status!=='3D_BINDING_REPAIR_REQUIRED'
+    ?'GRAPHICS_PASS':'RUNTIME_VISUAL_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
   const evidence=createVibeGraphicsProductionEvidenceRoot({
     gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
   });
@@ -800,6 +858,7 @@ export function createVibeGraphicsProduction({
     engineMeasurementCapture:measurementCapture,
     interfaceRequirements:requiredInterfaceSurfaces,
     sceneObjectRequirements:sceneRequirements,
+    spatial3dApplication,
     evidence,
     queue:Object.freeze({
       siblingTopLevelGraphicsTasksForbidden:true,
@@ -842,6 +901,7 @@ export function createVibeGraphicsProduction({
       runtimeBeforeAfterComparisonRequiredForHighEnd:true,
       declaredInterfaceSurfacesRequireMobileRuntimeEvidence:true,
       declaredSceneObjectsRequireRuntimeBindingEvidence:true,
+      declaredSpatialModelsRequireExactMasterGlbToRuntimeProof:true,
       characterIdentityDirectorIntegrated:true,
       environmentDetailDirectorIntegrated:true,
       engineMeasurementCaptureRequired:true,

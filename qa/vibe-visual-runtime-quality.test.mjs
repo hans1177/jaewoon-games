@@ -210,6 +210,26 @@ test('graphics production binds character identity environment detail and runtim
 });
 
 
+test('graphics production requires actual GLB-to-game-to-runtime binding evidence',()=>{
+  const sourceRevision='a'.repeat(40),candidateRevision='b'.repeat(40),sourceHash='c'.repeat(64);
+  const model={id:'forest-boss',sourcePath:'assets/forest/boss.glb',sourceHash,
+    licenseVerified:true,visualContentReviewed:true,
+    gameBinding:{sourceRevision,sceneObjectId:'forest-boss',sourceHash,modelAssetId:'123456'}};
+  const planned=createVibeGraphicsProduction({gameId:'forest',target:'roblox',
+    sourceRevision,candidateRevision,spatialAssets:[model]});
+  assert.equal(planned.spatial3dApplication.requiredCount,1);
+  assert.equal(planned.spatial3dApplication.runtimeLinkedCount,0);
+  assert.ok(planned.spatial3dApplication.items[0].issues.includes(
+    'INDEPENDENT_3D_RUNTIME_BINDING_EVIDENCE_REQUIRED'));
+  assert.equal(planned.status,'GRAPHICS_PRODUCTION_ACTIVE');
+  const fake=createVibeGraphicsProduction({gameId:'forest',target:'roblox',
+    sourceRevision,candidateRevision,
+    spatialAssets:[{...model,sourcePath:'assets/forest/boss.png',sourceHash:'wrong'}]});
+  assert.ok(fake.spatial3dApplication.items[0].issues.includes('REAL_MASTER_GLB_SOURCE_REQUIRED'));
+  assert.ok(fake.spatial3dApplication.items[0].issues.includes('SOURCE_SHA256_REQUIRED'));
+  assert.equal(fake.spatial3dApplication.runtimeLinkedCount,0);
+});
+
 test('mobile visual audit rejects stale, thumbnail, unreviewed, clipped and overlapping evidence',()=>{
  const revision='f'.repeat(40);
  const audit=(row)=>auditVibeRuntimeVisualEvidence({stage:'INTERNAL_PLAYTEST',candidateRevision:revision,captures:captures(revision),requiredInterfaceSurfaces:['HUD'],interfaceCoverage:{HUD:row}});

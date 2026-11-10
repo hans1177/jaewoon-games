@@ -256,6 +256,20 @@ test('sprite atlas prevents dark GPU edge seams without painting transparent pix
     /GRAPHICS_ATLAS_LAYOUT_INVALID/);
 });
 
+test('sprite atlas inherits real edge color across transparent source margins without changing alpha',()=>{
+  const source={license:'CC0',sha256:'e'.repeat(64)},pixels=new Uint8Array(3*3*4);
+  pixels.set([160,90,40,255],16);
+  const original=[...pixels];
+  const frame=Graphics.harmonizeSourceRaster({width:3,height:3,pixels,source,
+    style:{palette:[[10,20,30],[160,90,40]],detailRetention:0}});
+  const atlas=Graphics.composeSourceSpriteAtlas({frames:[frame],padding:2});
+  const pad=(3*atlas.width+1)*4,center=(3*atlas.width+3)*4;
+  assert.deepEqual([...atlas.pixels.slice(pad,pad+3)],[...atlas.pixels.slice(center,center+3)]);
+  assert.equal(atlas.pixels[pad+3],0);
+  assert.deepEqual([...pixels],original);
+  assert.equal(atlas.runtimeVerified,false);
+});
+
 test('model-free graphics fails closed on licenses, invalid source pixels and unverifiable source hash',()=>{
   const valid={width:1,height:1,pixels:new Uint8Array([10,20,30,255]),
     style:{palette:[[0,0,0],[255,255,255]]}};
