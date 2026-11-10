@@ -4,6 +4,8 @@
 -- 역할: 항구·시장 필수 모델을 우선, 동시 InsertService 호출을 제한한다.
 
 local InsertService = game:GetService("InsertService")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local library = ReplicatedStorage:WaitForChild("MareAssets")
@@ -37,11 +39,22 @@ end)
 
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
+-- [Studio QA] 등록 모델 전체의 실제 로딩 성공·실패를 카운트하며 라이브 저장/동작은 건드리지 않는다.
+local studioAudit = RunService:IsStudio()
+local failedKeys = {}
+if studioAudit then
+	ReplicatedStorage:SetAttribute("MareModelAuditState", "RUNNING")
+	ReplicatedStorage:SetAttribute("MareModelAuditTotals", "")
+end
 local priorityPending = 0
 for _, asset in queue do
 	if (order[asset.kind] or 99) <= 3 then priorityPending += 1 end
 end
 
+if studioAudit and #queue == 0 then
+	ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = 0, loaded = 0, failed = 0, errors = { "NO_REGISTERED_MODELS" }}))
+	ReplicatedStorage:SetAttribute("MareModelAuditState", "FAIL")
+end
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
@@ -59,14 +72,20 @@ for _ = 1, 12 do
 				else
 					container:Destroy()
 					failed += 1
+					if #failedKeys < 24 then table.insert(failedKeys, item.key .. ":INVALID_MODEL") end
 					warn("[MareEssentia] 자산 모델 형식 오류", item.key, item.id)
 				end
 			else
 				failed += 1
+				if #failedKeys < 24 then table.insert(failedKeys, item.key .. ":LOAD_FAILED") end
 				warn("[MareEssentia] 모델 불러오기 실패", item.key, item.id, container)
 			end
 			pending -= 1
 			if (order[item.kind] or 99) <= 3 then priorityPending -= 1 end
+			if studioAudit and pending == 0 then
+				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
+				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
+			end
 		end
 	end)
 end
