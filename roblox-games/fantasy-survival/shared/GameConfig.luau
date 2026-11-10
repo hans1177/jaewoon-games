@@ -273,7 +273,7 @@ local Config = {
        {Label="상자를 모두 가져간다",Outcome="큰 이득을 얻었다.",Coins=56,Stone=0}}},
   },
   -- [기사단 야영지] Kenney CC0 소품(레지스트리 kenneyMiniForestCamp)의 Roblox Model 자산 ID. 업그레이드 비용·효과는 서버가 계산한다.
-  CampAssets = {tent=138107993064718,flag=130533309973210,fence=114116639095318,platform=122683229132564,plant=97901069313770,rocks=139122219687710,stones=137109771506109,ladder=119331611772063,target=138101094037840,bow=124501344249201,treeHigh=96566876504132,dirt=103949521884200},
+  CampAssets = {tent=90386821329619,flag=95821488648368,fence=127745607810869,platform=105435612950950,plant=137874894087422,rocks=139122219687710,stones=136360205955060,ladder=119331611772063,target=138101094037840,bow=124501344249201,treeHigh=96566876504132,dirt=103949521884200},
   CampUpgrades = {
     {Name="모닥불 복구",Wood=10,Stone=5,Coins=0,Desc="휴식으로 체력과 기력을 회복할 수 있어."},
     {Name="요리 화덕 설치",Wood=20,Stone=15,Coins=30,Desc="야영지에서 요리를 할 수 있어. 휴식할 때 회복약도 얻어(5분에 1개)."},
