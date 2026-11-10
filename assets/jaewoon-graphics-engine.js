@@ -205,16 +205,40 @@
         const offset=4*((yy+y)*width+x);
         pixels.set(frame.pixels.subarray(yy*w*4,(yy+1)*w*4),offset);
       }
-      // [경계 색 보존] 투명 패딩의 RGB만 실제 스프라이트 경계색으로 복사한다.
-      // GPU 선형 필터에서 검은 가장자리가 섞이는 현상을 줄이고 alpha=0은 유지한다.
+      // [경계 색 보존] 원본 내부의 투명 여백에는 손대지 않는다.
+      // 아틀라스 패딩 RGB는 인접한 실제 불투명 픽셀에서 가져오고 alpha=0을 유지한다.
       if(edgeBleed&&padding){
+        const pixelCount=w*h,distance=new Int32Array(pixelCount),nearest=new Int32Array(pixelCount);
+        const unreachable=w+h+1;
+        for(let i=0;i<pixelCount;i++){
+          const visible=frame.pixels[i*4+3]>0;
+          distance[i]=visible?0:unreachable;
+          nearest[i]=visible?i:-1;
+        }
+        const propagate=(index,adjacent)=>{
+          if(adjacent>=0&&adjacent<pixelCount&&nearest[adjacent]>=0
+            &&distance[adjacent]+1<distance[index]){
+            nearest[index]=nearest[adjacent];
+            distance[index]=distance[adjacent]+1;
+          }
+        };
+        for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+          const i=yy*w+xx;
+          if(xx>0)propagate(i,i-1);
+          if(yy>0)propagate(i,i-w);
+        }
+        for(let yy=h-1;yy>=0;yy--)for(let xx=w-1;xx>=0;xx--){
+          const i=yy*w+xx;
+          if(xx+1<w)propagate(i,i+1);
+          if(yy+1<h)propagate(i,i+w);
+        }
         for(let yy=-padding;yy<h+padding;yy++)for(let xx=-padding;xx<w+padding;xx++){
           if(xx>=0&&xx<w&&yy>=0&&yy<h)continue;
           const sourceX=Math.max(0,Math.min(w-1,xx));
           const sourceY=Math.max(0,Math.min(h-1,yy));
-          const from=(sourceY*w+sourceX)*4;
-          if(frame.pixels[from+3]===0)continue;
-          const to=((y+yy)*width+x+xx)*4;
+          const closest=nearest[sourceY*w+sourceX];
+          if(closest<0)continue;
+          const from=closest*4,to=((y+yy)*width+x+xx)*4;
           pixels[to]=frame.pixels[from];
           pixels[to+1]=frame.pixels[from+1];
           pixels[to+2]=frame.pixels[from+2];
