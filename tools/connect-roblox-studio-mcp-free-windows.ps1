@@ -127,32 +127,36 @@ Write-Host 'Queued official Studio MCP jobs will run here when this authenticate
 # [메인] 재연결: 같은 인증된 Windows 사용자 데스크톱에서만 기존 러너를 재실행한다.
 # 자격 증명 자동 로그인, 서비스(Session 0) 실행, 새 러너 등록은 하지 않는다.
 $restartDelaySeconds = 15
-$studioPauseNotified = $false
+$studioAppAbsentNotified = $false
 $lastRunnerExit = $null
 while ($true) {
+  # [인증] 러너는 Studio가 닫혀 있어도 온라인이어야 다음 작업에서 Studio를 열 수 있다.
+  # 실제 Studio 인증/플레이 증거는 해당 GitHub 작업이 별도로 검증한다.
+  if ([int](Get-Process -Id $PID).SessionId -ne $sessionId -or $sessionId -le 0) {
+    throw 'ROBLOX_FREE_STUDIO_INTERACTIVE_DESKTOP_REQUIRED'
+  }
   $activeStudio = @(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
     Where-Object { [int]$_.SessionId -eq $sessionId } | Select-Object -First 1)
-  if ($activeStudio.Count -ne 1) {
-    if (-not $studioPauseNotified) {
-      Write-Warning 'ROBLOX_FREE_STUDIO_RUNNER_PAUSED=STUDIO_INTERACTIVE_SESSION_MISSING'
-      $studioPauseNotified = $true
+  if ($activeStudio.Count -eq 0) {
+    if (-not $studioAppAbsentNotified) {
+      Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_AVAILABLE_WITHOUT_STUDIO=WAIT_FOR_GITHUB_JOB_LAUNCH'
+      $studioAppAbsentNotified = $true
     }
-    Start-Sleep -Seconds 30
-    continue
-  }
-  $activeStudioExe = $activeStudio[0].Path
-  if (-not $activeStudioExe -or -not (Test-Path -LiteralPath $activeStudioExe)) {
-    throw 'ROBLOX_FREE_STUDIO_EXECUTABLE_NOT_FOUND'
-  }
-  $activeStudioSig = Get-AuthenticodeSignature -FilePath $activeStudioExe
-  if ($activeStudioSig.Status -ne 'Valid' -or
-      $null -eq $activeStudioSig.SignerCertificate -or
-      $activeStudioSig.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
-    throw 'ROBLOX_FREE_STUDIO_SIGNED_OFFICIAL_BINARY_REQUIRED'
-  }
-  if ($studioPauseNotified) {
-    Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_RESUME=OFFICIAL_STUDIO_INTERACTIVE_SESSION'
-    $studioPauseNotified = $false
+  } else {
+    $activeStudioExe = $activeStudio[0].Path
+    if (-not $activeStudioExe -or -not (Test-Path -LiteralPath $activeStudioExe)) {
+      throw 'ROBLOX_FREE_STUDIO_EXECUTABLE_NOT_FOUND'
+    }
+    $activeStudioSig = Get-AuthenticodeSignature -FilePath $activeStudioExe
+    if ($activeStudioSig.Status -ne 'Valid' -or
+        $null -eq $activeStudioSig.SignerCertificate -or
+        $activeStudioSig.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
+      throw 'ROBLOX_FREE_STUDIO_SIGNED_OFFICIAL_BINARY_REQUIRED'
+    }
+    if ($studioAppAbsentNotified) {
+      Write-Host 'ROBLOX_FREE_STUDIO_APP_READY=OFFICIAL_STUDIO_INTERACTIVE_SESSION'
+      $studioAppAbsentNotified = $false
+    }
   }
   $runnerExit = -1
   try {
