@@ -88,31 +88,52 @@ task.spawn(function()
 		ReplicatedStorage:SetAttribute("MareQAAssetStatus", "FAIL")
 		fail("asset preload timed out at batch " .. currentBatch .. " callbacks=" .. mediaCallbacks .. "/" .. #items)
 	end)
-	for i = 1, #items, 30 do
+	-- [이미지·음원] 30개 묶음의 단일 PreloadAsync가 멈추면 누락 원인을 알 수 없다.
+	-- 기존 ContentProvider 경로에서 ID별로 로드하고 12개씩 병렬 진행해 한 개의 정지가 전체 검사를 막지 못하게 한다.
+	table.sort(items, function(a, b) return a.it.key < b.it.key end)
+	for i = 1, #items, 12 do
+		if ReplicatedStorage:GetAttribute("MareQAAssetStatus") ~= "RUNNING" then break end
 		currentBatch = i
-		local batch = {}
-		for j = i, math.min(i + 29, #items) do
-			table.insert(batch, items[j].inst)
-		end
-		local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, batch, function(contentId, status)
-			mediaCallbacks += 1
-			if status ~= Enum.AssetFetchStatus.Success then
+		local remaining = math.min(12, #items - i + 1)
+		for j = i, math.min(i + 11, #items) do
+			local row = items[j]
+			local finished, fetchStatus = false, nil
+			-- [실패 증거] 한 ID의 타임아웃·콜백·실패를 한 번만 확정한다.
+			local function complete(status)
+				if finished then return end
+				finished = true
+				remaining -= 1
+				row.inst:Destroy()
+				if status == "SUCCESS" then return end
 				bad += 1
-				local key = "?"
-				for _, row in items do
-					if row.it.url == contentId then
-						key = row.it.key
-					end
+				if #failedMedia < 128 then
+					table.insert(failedMedia, { key = row.it.key, id = row.it.url, status = status })
 				end
-				if #failedMedia < 24 then
-					table.insert(failedMedia, { key = key, id = tostring(contentId), status = tostring(status) })
-				end
-				fail("asset " .. key .. " " .. tostring(contentId) .. " status=" .. tostring(status))
+				fail("asset " .. row.it.key .. " " .. row.it.url .. " status=" .. status)
 			end
-		end)
-		if not preloaded then
-			bad += 1
-			fail("asset batch " .. i .. " preload error " .. tostring(preloadError):sub(1, 90))
+			task.spawn(function()
+				local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, { row.inst }, function(_, status)
+					if finished then return end
+					mediaCallbacks += 1
+					if status ~= Enum.AssetFetchStatus.Success or fetchStatus == nil then
+						fetchStatus = status
+					end
+				end)
+				if not preloaded then
+					complete("PRELOAD_ERROR:" .. tostring(preloadError):sub(1, 95))
+				elseif fetchStatus == Enum.AssetFetchStatus.Success then
+					complete("SUCCESS")
+				else
+					complete(if fetchStatus then tostring(fetchStatus) else "NO_CALLBACK")
+				end
+			end)
+			-- [개별 제한] ContentProvider 호출이 반환되지 않아도 다음 등록 ID 검사를 계속한다.
+			task.delay(16, function()
+				complete("TIMEOUT_16S")
+			end)
+		end
+		while remaining > 0 and ReplicatedStorage:GetAttribute("MareQAAssetStatus") == "RUNNING" do
+			task.wait(0.2)
 		end
 	end
 	-- [전체 자산] 모든 배치가 실제로 끝났을 때만 통과 처리한다. 시간 초과 기록을 덮어쓰지 않는다.
