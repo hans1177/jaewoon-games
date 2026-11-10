@@ -3757,6 +3757,9 @@ test('Studio click QA text sampling uses proven direct descendants scan without 
       assert.match(step.code,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
       assert.match(step.code,/if d:IsA\('TextLabel'\) and d\.Visible then/);
       assert.match(step.code,/local value=d\.Text/);
+      assert.match(step.code,/local cut=utf8\.offset\(value,41\)/);
+      assert.match(step.code,/cut and string\.sub\(value,1,cut-1\) or value/);
+      assert.doesNotMatch(step.code,/string\.sub\(value,1,40\)/);
       assert.match(step.code,/if #out>=10 then break end/);
       assert.doesNotMatch(step.code,/while head<=|os\.clock\(|q\[head\]|d:GetChildren\(\)/);
     }
@@ -3765,5 +3768,6 @@ test('Studio click QA text sampling uses proven direct descendants scan without 
     assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
   }
   assert.match(generator,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
+  assert.match(generator,/utf8\.offset\(value,41\)/);
   assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
