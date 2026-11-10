@@ -127,8 +127,13 @@
     const grid=style.pixelGrid===undefined?1:style.pixelGrid;
     if(!Number.isInteger(grid)||grid<1||grid>8)
       throw new Error('GRAPHICS_PIXEL_GRID_INVALID');
+    // [재질 디테일] 실제 원본의 명암·마모·입체감 보존 비율. 0은 기존 픽셀 팔레트 모드.
+    const detailRetention=style.detailRetention===undefined?0.55:style.detailRetention;
+    if(typeof detailRetention!=='number'||!Number.isFinite(detailRetention)||
+       detailRetention<0||detailRetention>1)
+      throw new Error('GRAPHICS_DETAIL_RETENTION_INVALID');
     const palette=inputPalette.map(rgb=>rgb.slice());
-    const styleKey=JSON.stringify({palette,grid});
+    const styleKey=JSON.stringify({palette,grid,detailRetention});
     const lum=rgb=>rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
     const paletteLuma=palette.map(lum);
     const original=new Uint8ClampedArray(pixels);
@@ -156,14 +161,18 @@
         result[i+3]=a;
         if(a===0)continue;
         visible++;
+        // 기존 물체의 실제 텍스처 밝기를 활용한다. 새 도형/재질을 임의 생성하지 않는다.
+        const originalLuma=original[i]*.2126+original[i+1]*.7152+original[i+2]*.0722;
+        const toneShift=(originalLuma-paletteLuma[best])*detailRetention;
         for(let channel=0;channel<3;channel++){
-          result[i+channel]=color[channel];
+          result[i+channel]=Math.max(0,Math.min(255,Math.round(color[channel]+toneShift)));
           if(result[i+channel]!==original[i+channel])changes++;
         }
       }
     }
     if(visible===0)throw new Error('GRAPHICS_SOURCE_FULLY_TRANSPARENT');
     return Object.freeze({width,height,pixels:result,styleKey,sourceHash,
+      detailRetention,materialDetailSource:'ORIGINAL_CC0_PIXEL_LUMINANCE',
       visiblePixels:visible,changedChannels:changes,modelFree:true,sourceImmutable:true,
       license,productionVerified:false,runtimeVerified:false,
       authority:'GRAPHICS_CC0_SOURCE_DERIVATIVE_CANDIDATE'});
