@@ -60,6 +60,7 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
   });
   // [현재 후보 검증] 이전 소스 버전·중복 Actions 완료 알림이 재시도 횟수나 확정된
   // 런타임 체크포인트를 변경하지 못하게 한다. 미확인 SHA는 권한이나 PASS 증거가 아니다.
+  if(clean(task.target).toLowerCase()!==clean(target).toLowerCase())return unchanged('candidate-target-mismatch');
   const sha=clean(headSha).toLowerCase();
   const boundCandidateShas=unique(existingEvidence
     .map(row=>row.match(/^candidate-(?:head-)?sha:([a-f0-9]{40})$/i)?.[1]?.toLowerCase())
