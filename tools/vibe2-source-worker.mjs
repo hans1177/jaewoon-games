@@ -8475,7 +8475,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
     const priorFailureClass=generationFailureClass(lastError);
     const failureRepeatCount=priorFailureClass?failureHistory.filter(value=>value===priorFailureClass).length:0;
-    const repeatedFailureShiftEligible=!allowFullRewrite&&failureRepeatCount>=2&&['EDIT_MATCH','STUDIO_QUALITY_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','SELF_REVIEW'].includes(priorFailureClass);
+    // [로블록스 자동복구] 동일 실패 2회면 기존 책임 함수 안에서 다른 정확 앵커로 전환한다.
+    const repeatedFailureShiftEligible=!allowFullRewrite&&failureRepeatCount>=2
+      &&(['EDIT_MATCH','STUDIO_QUALITY_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','SELF_REVIEW'].includes(priorFailureClass)
+        ||(target==='roblox'&&['ROBLOX_STRUCTURAL_CONTINUITY','DIAGNOSTIC_POSTCONDITION','NO_OP'].includes(priorFailureClass)));
     if(repeatedFailureShiftEligible){
       const shiftKey=priorFailureClass+':'+failureRepeatCount;
       if(repeatedFailureShiftKey!==shiftKey){
@@ -8734,6 +8737,17 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       }
       lastRejectedCandidate=candidate;
       attemptCandidate=candidate;
+      // [중복 실패 차단] 정규화 후 실제 소스 수정 내용이 이전에 거절된 후보와 같다면
+      // 동일한 QA를 다시 실행하지 않는다. 그 실패 근거를 그대로 보존해 다음 전략을 선택한다.
+      // 원본 소스는 이 단계에서 변경되지 않으며, 검증 통과로 절대 승격하지 않는다.
+      if(!allowFullRewrite){
+        const fingerprint=rejectedSourcePatchFingerprint(candidate);
+        const rejected=fingerprint?rejectedPatchHistory.get(fingerprint):null;
+        if(rejected?.error){
+          console.log('VIBE2_REPEAT_REJECTED_PATCH_SKIP_QA='+attempt+':fingerprint='+fingerprint.slice(0,16));
+          throw new Error(clean(rejected.error.message)||'REPEATED_REJECTED_SOURCE_PATCH');
+        }
+      }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
       return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxRebuildFocused,initialPromptBytes:Buffer.byteLength(prompt,'utf8'),requestPromptBytes:attemptPromptBytes,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,repeatedFailureStrategyShifts,repeatedRejectedPatchCount,repeatedRejectedPatchStrategyShifts,repeatedRejectedPatchGuidanceCount,rejectedPatchFingerprintCount:rejectedPatchHistory.size,failureHistory:[...failureHistory],focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
@@ -8749,9 +8763,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       if(!allowFullRewrite&&attemptCandidate){
         const fingerprint=rejectedSourcePatchFingerprint(attemptCandidate);
         if(fingerprint){
-          const previous=rejectedPatchHistory.get(fingerprint)||0;
-          const count=previous+1;
-          rejectedPatchHistory.set(fingerprint,count);
+          const previous=rejectedPatchHistory.get(fingerprint);
+          const count=(previous?.count||0)+1;
+          rejectedPatchHistory.set(fingerprint,{count,error:previous?.error||error});
           lastRepeatedRejectedPatch=count>=2?{fingerprint,count,failureClass}:null;
           if(count>=2){
             repeatedRejectedPatchCount+=1;

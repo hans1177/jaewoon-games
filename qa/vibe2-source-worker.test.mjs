@@ -3085,9 +3085,61 @@ test('repeat-rejected source candidates produce one changed implementation and c
   assert.equal(result.generation.rejectedPatchFingerprintCount,1);
   assert.equal(result.generation.focusedReplaceAnchorRotations>=1,true);
   assert.deepEqual(result.generation.failureHistory,['SEMANTIC_DIFF_BUDGET','SEMANTIC_DIFF_BUDGET']);
-  assert.equal(validationCalls,3);
+  assert.equal(validationCalls,2,'same rejected source candidate must not repeat expensive QA');
   assert.equal(result.candidate.edits.some(row=>row.replace.includes('gold += 999')),false);
   assert.equal(result.candidateValidation.pass,true);
+});
+
+test('Roblox repeat Luau syntax failures rotate the exact source anchor and recover without widening scope',async()=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='server/Game.server.luau';
+  const source=[
+    'local function movePlayer(input)',
+    '  local speed = 5',
+    '  return input.X * speed',
+    'end'
+  ].join('\n')+'\n';
+  const sourceRoot=path.join(cwd,root);
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return strict JSON.',
+    'Engine: roblox',
+    'Goal: repair movement implementation without changing saved player data',
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  const bad1=path.join(cwd,'bad-luau-1.json'),bad2=path.join(cwd,'bad-luau-2.json');
+  const good3=path.join(cwd,'good-luau-3.json');
+  write(bad1,JSON.stringify({edits:[{path:relative,find:'  local speed = 5',replace:'  local speed = BAD_SYNTAX('}]}));
+  write(bad2,JSON.stringify({edits:[{path:relative,find:'  return input.X * speed',replace:'  return BAD_SYNTAX('}]}));
+  const focused=focusedReplaceOnlySpec(prompt,{responsibleFiles:[relative],sourceRoot,anchorIndex:1});
+  assert.ok(focused?.find,'alternate anchor must come from original Luau source');
+  const replacement=focused.find.includes('input.X * speed')
+    ?focused.find.replace('input.X * speed','input.X * (speed + 0)')
+    :focused.find.includes('local speed = 5')
+      ?focused.find.replace('local speed = 5','local speed = 5 + 0')
+      :focused.find+' -- verified Luau scope';
+  assert.notEqual(replacement,focused.find);
+  write(good3,JSON.stringify({replace:replacement}));
+  let validationCalls=0;
+  const result=await generateCandidateWithRecovery({
+    prompt,model:'qwen3:1.7b',responseFiles:[bad1,bad2,good3],allowFullRewrite:false,
+    target:'roblox',responsibleFiles:[relative],sourceRootRelative:root,sourceRoot,
+    candidateValidator(candidate){
+      validationCalls++;
+      if(candidate.edits.some(row=>row.replace.includes('BAD_SYNTAX(')))
+        throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:LUAU_SYNTAX:invalid function call');
+      return {pass:true};
+    }
+  });
+  assert.equal(result.generation.attempts,3);
+  assert.deepEqual(result.generation.failureHistory,['ROBLOX_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY']);
+  assert.equal(result.generation.repeatedFailureStrategyShifts,1);
+  assert.ok(result.generation.focusedReplaceAnchorRotations>=1);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.candidateValidation.pass,true);
+  assert.equal(validationCalls,3);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,relative),'utf8'),source,'source must remain unchanged until canonical write');
 });
 
 test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
