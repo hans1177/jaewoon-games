@@ -10944,3 +10944,49 @@ test('Vibe5.9 hypotheses stay unverified without a canonical validator or runtim
   assert.equal(candidate.deterministicSelection.replans.length,0);
   assert.equal(candidate.causalReview.actualRuntimeVerified,false);
 });
+
+
+// [회귀] 후보 검증 중 원본 변경이 감지되면 검증기 결과와 무관하게 즉시 중단한다.
+// 같은 스냅샷에서 다른 파일 후보를 시도하면 새로운 변경을 잘못 덮을 수 있다.
+test('Vibe5.9 blocks stale source revisions after candidate validation',t=>{
+  for(const mode of ['pass','reject','throw']){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-source-drift-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    const first='client/First.client.luau',second='client/Second.client.luau';
+    const firstSource=[
+      'local function attack()',
+      ' local score=1',
+      'end',
+      'local attackButton=Instance.new("TextButton")',
+      'attackButton.Parent = hud',
+      'local action=Instance.new("TextButton")',
+      'action.MouseButton1Click:Connect(function() end)',''
+    ].join('\n');
+    const other='other'+'X'.repeat(130);
+    fs.writeFileSync(path.join(root,first),firstSource);
+    fs.writeFileSync(path.join(root,second),
+      'local '+other+'=Instance.new("TextButton")\n'
+      +other+'.MouseButton1Click:Connect(function() end)\n');
+    const attempted=[];
+    assert.throws(()=>deterministicRobloxNativeRepairCandidate({
+      order:{target:'roblox',goal:'모바일 버튼 복구'},
+      sourceRoot:root,responsibleFiles:[first,second],
+      candidateValidator:c=>{
+        attempted.push(c.edits[0].path);
+        fs.appendFileSync(path.join(root,first),'-- external source revision\n');
+        if(mode==='throw')throw new Error('NATIVE_REPRODUCED_INPUT_FAILURE');
+        return {pass:mode==='pass',runtimeVerified:false};
+      }
+    }),error=>{
+      assert.equal(error.message,'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+      assert.equal(error.vibe2DeterministicSelection?.status,'SOURCE_REVISION_CHANGED');
+      assert.equal(error.vibe2DeterministicSelection?.replans?.length,0);
+      assert.equal(error.vibe2DeterministicSelection?.attempts?.length,1);
+      assert.equal(error.vibe2DeterministicSelection?.attempts?.[0]?.reasonCode,
+        'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+      return true;
+    });
+    assert.deepEqual(attempted,[first],mode+' must not continue with a stale candidate');
+  }
+});
