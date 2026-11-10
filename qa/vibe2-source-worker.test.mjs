@@ -121,6 +121,23 @@ test('Vibe context cannot silently omit the seventeenth required owner under sym
  }),null);
 });
 
+test('Vibe source context rejects two editable owners with the same function name',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-duplicate-primary-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.writeFileSync(path.join(root,'first.js'),'function perform(){return "first";}\n');
+ fs.writeFileSync(path.join(root,'second.js'),'function perform(){return "second";}\n');
+ const editContract={responsibilityConfidence:'HIGH',primaryTargets:['perform']};
+ assert.equal(focusedSymbolContext(root,'web',['first.js','second.js'],{editContract}),null,
+   'two editable owners must never be selected by filename order');
+ const safe=focusedSymbolContext(root,'web',['first.js'],{
+   contextFiles:['second.js'],editContract
+ });
+ assert.ok(safe?.ownerCoverageVerified,'read-only dependency must not create a second writer');
+ assert.equal(safe.requiredOwnerCount,1);
+ assert.equal(safe.verifiedOwnerCount,1);
+ assert.ok(safe.files.some(row=>row.path==='second.js'&&row.editable===false));
+});
+
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-'));
