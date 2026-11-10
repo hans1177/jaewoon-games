@@ -2711,8 +2711,10 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     await client.connect();
     const required=['list_roblox_studios','get_studio_state','start_stop_play','screen_capture','execute_luau'];
     if(report.summary.plannedClicks>0)required.push('user_mouse_input');
-    await client.waitForTools(required,{attempts:20,delayMs:3000});
-    for(let i=1;i<=60&&!studioId;i++){
+    await client.waitForTools(required,{attempts:20,delayMs:3000,fastFailOnProviderTimeout:true});
+    // [메인] 실물 Studio 탐색이 반복 RPC 대기로 멈추지 않도록 5분 시각 제한을 둔다.
+    const studioDiscoveryDeadline=Date.now()+5*60*1000;
+    for(let i=1;i<=60&&!studioId&&Date.now()<studioDiscoveryDeadline;i++){
       const listed=await client.call('list_roblox_studios',{});
       if(collectStudios(listed,[]).length){
         const cand=chooseStudio(listed,expectedStudioName);
