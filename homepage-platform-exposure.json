@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-10T14:33:54.228Z",
+  "generatedAt": "2026-11-10T14:34:01.656Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -696,7 +696,7 @@
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-11-10T14:03:05.134Z",
-            "checkedAt": "2026-11-10T14:28:04.030Z",
+            "checkedAt": "2026-11-10T14:23:36.682Z",
             "lastFailureAt": "2026-11-10T14:03:05.134Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
@@ -801,7 +801,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-10T14:28:04.030Z"
+      "updatedAt": "2026-11-10T14:23:36.682Z"
     },
     {
       "gameId": "defense",
@@ -1218,15 +1218,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-11-10T14:31:49.153Z",
-            "lastFailureAt": null,
-            "f0PassedAt": null,
+            "currentFloor": "F0_BEFORE_SOURCE_BIND",
+            "stage": "TARGET_PLATFORM_SOURCE_BIND",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-11-10T14:13:38.344Z",
+            "checkedAt": "2026-11-10T14:21:41.354Z",
+            "lastFailureAt": "2026-11-10T14:13:38.344Z",
+            "f0PassedAt": "2026-11-10T14:02:49.786Z",
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1326,7 +1326,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-10T14:31:49.153Z"
+      "updatedAt": "2026-11-10T14:21:41.354Z"
     },
     {
       "gameId": "fifty-days",
