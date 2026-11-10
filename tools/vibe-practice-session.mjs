@@ -6,19 +6,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {runGymSession,pickParents,mulberry32,blenderAvailable} from './vibe-variation-gym.mjs';
+import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable} from './vibe-variation-gym.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 
 // 이번 회차에 쓸 부모 두 개(조명용·굽기용)를 시드로 고른다. 레지스트리의 승인된 CC0 + 오너가 승인한 로컬 라이브러리.
-export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null){
+export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,count=2){
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
   const pool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+11)),...(libraryDir?approvedLibraryParents(libraryDir):[])];
   const abs=p=>path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file);
   const rng=mulberry32(seed+12);
   const shuffled=[...pool].sort(()=>rng()-.5);
-  return shuffled.slice(0,2).map(p=>({id:p.id,family:p.family,file:abs(p)}));
+  return chooseDiverseParents(shuffled,count).map(p=>({id:p.id,family:p.family,file:abs(p)}));
 }
 
 export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,variants=4,out='build/practice',statsPath=null,lightsPath=null,light=true,bake=true,lightCandidates=8,lightRounds=2}={}){
@@ -26,8 +26,12 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   const session={seed,at:new Date().toISOString()};
   const gym=runGymSession({repoRoot,parents,variants,seed,out:path.join(out,'gym'),statsPath});
   const tally={};for(const r of gym.ledger)tally[r.verdict]=(tally[r.verdict]||0)+1;
-  session.gym={children:gym.ledger.length,tally};
-  const [lp,bp]=pickPracticeParents(repoRoot,seed);
+  session.gym={children:gym.ledger.length,tally,
+    families:[...new Set(gym.ledger.map(r=>r.family))],
+    iconCandidates:gym.ledger.filter(r=>r.icon?.legible).length,
+    iconRejected:gym.ledger.filter(r=>r.icon&&!r.icon.legible).length,
+    gameApplied:0};
+  const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,null,4);
   if(light&&lp){
     try{
       const res=runLightSearch({parent:lp.file,candidates:lightCandidates,rounds:lightRounds,seed,out:path.join(out,'light')});
@@ -39,11 +43,18 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       }
     }catch(e){session.light={error:String(e.message||e).slice(0,200)}}
   }
-  if(bake&&bp){
-    try{
-      const rec=runBake({parent:bp.file,ratio:0.3,size:128,out:path.join(out,'bake')});
-      session.bake={parent:bp.id,...evaluateBake(rec),trianglesHigh:rec.trianglesHigh,trianglesLow:rec.trianglesLow};
-    }catch(e){session.bake={error:String(e.message||e).slice(0,200)}}
+  // [노멀맵] 평평한 모델은 진짜 굽기 품질을 증명하지 못한다. 기준을 낮추지 않고 다른 CC0 부모로 재시도한다.
+  if(bake&&bakeParents.length){
+    const attempts=[];
+    for(const bp of bakeParents.slice(0,3)){
+      try{
+        const rec=runBake({parent:bp.file,ratio:0.3,size:128,out:path.join(out,'bake')});
+        const verdict=evaluateBake(rec);
+        attempts.push({parent:bp.id,...verdict,trianglesHigh:rec.trianglesHigh,trianglesLow:rec.trianglesLow});
+        if(verdict.pass)break;
+      }catch(e){attempts.push({parent:bp.id,pass:false,error:String(e.message||e).slice(0,200)})}
+    }
+    session.bake={...attempts[attempts.length-1],attempts};
   }
   fs.writeFileSync(path.join(outDir,'session.json'),JSON.stringify(session,null,1));
   return {session,gym};

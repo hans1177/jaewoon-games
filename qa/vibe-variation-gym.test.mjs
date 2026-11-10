@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {mulberry32,pickParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
+import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
 
 const repo=process.cwd();
 const imaging=spawnSync('python3',['-c','import PIL,numpy'],{encoding:'utf8'}).status===0;
@@ -23,6 +23,13 @@ test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없�
     {id:'texture',license:'CC0',family:'PROP',sourceFiles:['a/ok.png']},
   ]};
   assert.deepEqual(pickParents(reg,root,10,mulberry32(1)).map(p=>p.id),['ok']);
+});
+
+test('연습 대상은 소품·몬스터·캐릭터·배경을 우선 섞고 부족할 때 같은 가족을 채운다', () => {
+  const pool=[{id:'prop-a',family:'PROP'},{id:'prop-b',family:'PROP'},{id:'enemy',family:'CREATURE'},{id:'hero',family:'CHARACTER'},{id:'world',family:'ENVIRONMENT'}];
+  assert.deepEqual(chooseDiverseParents(pool,3).map(x=>x.id),['prop-a','enemy','hero']);
+  assert.deepEqual(chooseDiverseParents(pool,5).map(x=>x.id),['prop-a','enemy','hero','world','prop-b']);
+  assert.deepEqual(chooseDiverseParents(pool,0),[]);
 });
 
 test('시드가 같으면 부모·팔(연산:세기) 선택이 같다(재현 가능)', () => {
@@ -84,6 +91,19 @@ test('성적표 갱신: 횟수·이득 합·유지·개선·고장을 센다', (
 function png(dir,name,py){fs.mkdirSync(dir,{recursive:true});const f=path.join(dir,name);
   assert.equal(spawnSync('python3',['-c',`from PIL import Image,ImageDraw\nim=Image.new('RGBA',(256,256),(0,0,0,0));d=ImageDraw.Draw(im)\n${py}\nim.save(${JSON.stringify(f)})`]).status,0);return f}
 const scorer=(...a)=>JSON.parse(spawnSync('python3',[path.join(repo,'tools','vibe_object_score.py'),...a],{encoding:'utf8'}).stdout.trim().split('\n').pop());
+
+test('2.5D 아이콘은 기존 투명 PNG에서 128/64px 후보를 만들고 작은 화면 가독성을 기록한다', {skip:!imaging&&'Pillow/numpy 없음'}, () => {
+  const dir=tmp();
+  const render=png(dir,'item.png',"d.rectangle([60,70,195,220],fill=(185,45,50,255));d.polygon([(65,70),(128,20),(195,70)],fill=(245,199,40,255))");
+  const res=scorer('--png',render,'--icon-dir',path.join(dir,'icons'));
+  const icon=res.results[0].icon;
+  assert.equal(icon.files.length,2);
+  assert.ok(icon.pixels64>=220);
+  for(const file of icon.files)assert.ok(fs.statSync(file).size>100);
+  assert.ok(typeof icon.legible==='boolean');
+  const reg=fs.existsSync(path.join(dir,'company-asset-library.json'));
+  assert.equal(reg,false); // 연습은 게임 에셋 등록이 아니다
+});
 
 test('오브젝트 점수기: 명암·색이 있는 물체가 밋밋한 회색 덩어리보다 높고, 같은 그림의 새로움은 0이며, 빈 그림은 0점', {skip:!imaging&&'Pillow/numpy 없음'}, () => {
   const d=tmp();

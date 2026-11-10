@@ -8,6 +8,7 @@ import sys, json, math, argparse
 ap = argparse.ArgumentParser()
 ap.add_argument("--png", action="append", required=True)
 ap.add_argument("--parent", help="부모(원본) 렌더 PNG: 새로움 계산용")
+ap.add_argument("--icon-dir", help="통과한 3D 소품 렌더를 2.5D 아이콘 후보(128px/64px)로 저장")
 a = ap.parse_args()
 try:
     import numpy as np
@@ -89,6 +90,35 @@ def novelty(path, parent):
     return round(float(diff[u].mean()), 4)
 
 
+# [2.5D 아이콘] 기존 3/4 시점 렌더만 축소한다. 배경 합성/새 도형 생성 없음.
+def make_icon(source, icon_dir):
+    from PIL import Image
+    import os
+    im = Image.open(source).convert("RGBA")
+    box = im.getchannel("A").getbbox()
+    if not box:
+        return {"legible": False, "reason": "EMPTY_RENDER", "files": []}
+    obj = im.crop(box)
+    os.makedirs(icon_dir, exist_ok=True)
+    files = []
+    base = os.path.splitext(os.path.basename(source))[0]
+    for size in (128, 64):
+        canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        content = obj.copy()
+        content.thumbnail((int(size * 0.83), int(size * 0.83)), Image.Resampling.LANCZOS)
+        canvas.alpha_composite(content, ((size-content.width)//2, (size-content.height)//2))
+        dest = os.path.join(icon_dir, base + "-" + str(size) + ".png")
+        canvas.save(dest)
+        files.append(dest)
+    small = np.asarray(Image.open(files[1]).convert("RGBA"), dtype=np.float32) / 255.0
+    mask = small[:, :, 3] > 0.5
+    visible = int(mask.sum())
+    lum = small[..., :3].mean(2)[mask]
+    contrast = float(np.percentile(lum, 95) - np.percentile(lum, 5)) if visible else 0.0
+    legible = visible >= 220 and contrast >= 0.09
+    return {"legible": bool(legible), "pixels64": visible, "contrast64": round(contrast, 3),
+            "reason": None if legible else "SMALL_ICON_UNREADABLE", "files": files}
+
 out = {"available": True, "results": []}
 par = score(a.parent) if a.parent else None
 for p in a.png:
@@ -101,5 +131,7 @@ for p in a.png:
         pi = par["raw"].get("interiorLuma", 0.0)
         r["darkening"] = round(max(0.0, (pi - r["raw"].get("interiorLuma", 0.0)) / max(pi, 0.05)), 3) if not r.get("empty") else 1.0
         r["detailDrop"] = round(max(0.0, par["sub"].get("detail", 0.0) - r["sub"].get("detail", 0.0)), 3) if not r.get("empty") else 1.0
+    if a.icon_dir and not r.get("empty"):
+        r["icon"] = make_icon(p, a.icon_dir)
     out["results"].append(r)
 print(json.dumps(out, ensure_ascii=False))

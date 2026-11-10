@@ -130,8 +130,10 @@ function runGym(jobsFile,outDir){
   if(!fs.existsSync(res))throw new Error('VARIATION_GYM_FAILED: '+String(r.stderr||r.stdout).split('\n').slice(-5).join('\n'));
   return JSON.parse(fs.readFileSync(res,'utf8'));
 }
-function scoreChild(png,parentPng){
-  const r=runPython([path.join(here,'vibe_object_score.py'),'--png',png,'--parent',parentPng],{encoding:'utf8',maxBuffer:1<<26});
+function scoreChild(png,parentPng,iconDir=null){
+  const args=[path.join(here,'vibe_object_score.py'),'--png',png,'--parent',parentPng];
+  if(iconDir)args.push('--icon-dir',iconDir);
+  const r=runPython(args,{encoding:'utf8',maxBuffer:1<<26});
   const j=JSON.parse(r.stdout.trim().split('\n').pop());
   if(!j.available)throw new Error('OBJECT_SCORER_UNAVAILABLE(Pillow/numpy)');
   return j.results[0];
@@ -141,6 +143,22 @@ const slugOf=id=>id.replace(/[^a-z0-9]+/gi,'-').slice(0,40);
 const absOf=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file);
 const relOrAbs=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:p.file;
 
+// [연습 대상] 한 회차에 같은 소품만 반복하지 않고 승인된 CC0 가족별로 먼저 한 개씩 고른다.
+export function chooseDiverseParents(pool,count){
+  const selected=[],families=new Set();
+  for(const parent of pool){
+    if(selected.length>=count)break;
+    const family=String(parent.family||'?').toUpperCase();
+    if(families.has(family))continue;
+    families.add(family);selected.push(parent);
+  }
+  for(const parent of pool){
+    if(selected.length>=count)break;
+    if(!selected.includes(parent))selected.push(parent);
+  }
+  return selected;
+}
+
 export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,rigAudit=f=>evaluateAudit(measureRig(f))}={}){
   const rng=mulberry32(seed);
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
@@ -149,7 +167,7 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
   const lib=libraryDir?approvedLibraryParents(libraryDir).filter(x=>!only||only.includes(x.id)):[];
   const pool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+1),only),...lib];
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  const chosen=pool.slice(0,parents);
+  const chosen=chooseDiverseParents(pool,parents);
   if(!chosen.length)throw new Error('NO_ELIGIBLE_CC0_PARENT');
   // 부품 풀: 작은 소품(PROP)류. 부모와 다른 에셋만.
   const partPool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+2)),...approvedLibraryParents(libraryDir||'')].filter(x=>/PROP|ITEM|DECOR/i.test(x.family));
@@ -193,6 +211,16 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
       }else row.error=res?.error||'NO_RESULT';
       Object.assign(row,judge(row));
       if(row.glb){const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit);if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit})}
+      // [아이콘] 통과한 실제 CC0 소품/아이템의 3/4 시점 PNG를 2.5D 아이콘 후보로 만든다.
+      // 64px 가독성은 별도 판정하며, 실제 게임 등록·교체는 기존 품질/런타임 관문 이후에만 한다.
+      if(row.keep&&/PROP|ITEM|WEAPON|TOOL|UI/i.test(row.family)){
+        const iconScore=scoreChild(res.png,parentRes.png,path.join(outDir,'icons'));
+        if(iconScore.icon){
+          row.icon={...iconScore.icon,
+            files:(iconScore.icon.files||[]).map(file=>path.relative(repoRoot,file)),
+            registered:false,gameApplied:false};
+        }
+      }
       rows.push(row);ledger.push(row);
     }
     updateStats(stats,p.family,rows);
