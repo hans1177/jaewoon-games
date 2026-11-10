@@ -70,7 +70,32 @@ jobs:
              [ "${{ github.event.workflow_run.name }}" = "Owner Roblox Dedicated Private Experiences" ]; then
             # [게시 이벤트 격리] 해당 게임 또는 해당 게시 파일의 main 변경에만 후속 PC 검사 요청.
             changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.workflow_run.head_sha }}" --jq '.files[].filename')
-            if ! printf '%s\\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\\.github/workflows/owner-roblox-dedicated-private-experiences\\.yml$'; then
+            if ! printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^[.]github/workflows/owner-roblox-dedicated-private-experiences[.]yml; then
+              echo "no Forest source or publisher change, skip"; exit 0
+            fi
+          fi
+          # [중복 방지] 게임마다 같은 main 소스가 이미 PC에서 실행/대기 중인지 개별 확인한다.
+          # 기존 Studio 공유 러너의 직렬 실행과 STOP 차단은 그대로 유지한다.
+          head=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')
+          runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=100")
+          for game in $games; do
+            pending=$(printf '%s' "$runs" | jq --arg head "$head" --arg game "$game" '[.workflow_runs[] |
+              select(.head_sha == $head) |
+              select(.status == "queued" or .status == "pending" or .status == "in_progress") |
+              select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
+            if [ "$pending" -ge 1 ]; then
+              echo "studio already queued/running for $game on $head, skip duplicate"
+              continue
+            fi
+            case "$game" in
+              mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
+              fantasy-survival) script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json ;;
+              *) echo "bad game"; exit 1 ;;
+            esac
+            gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
+            echo "dispatched $game $script"
+          done
+; then
               echo "no Forest source or publisher change, skip"; exit 0
             fi
           fi
