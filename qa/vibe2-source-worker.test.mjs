@@ -10994,7 +10994,7 @@ test('Vibe5.9 blocks stale source revisions after candidate validation',t=>{
 
 // [인과 피드백 회귀] 정식 검증기가 반환한 오류 코드만 다음 후보 선택에 전달한다.
 // 임의 문장과 소스 무결성 상태 위장은 일반 거절로 처리하며 런타임 PASS는 선언하지 않는다.
-test('Vibe5.9 validator return codes survive causal replanning without trusted-state spoofing',t=>{
+test('no-model Roblox Vibe5.9 validator return codes survive causal replanning without trusted-state spoofing',t=>{
   const cases=[
     {label:'reasonCode',feedback:{pass:false,reasonCode:'NATIVE_INPUT_CALLBACK_MISSING'},expected:'NATIVE_INPUT_CALLBACK_MISSING'},
     {label:'failureCode',feedback:{pass:false,failureCode:'NATIVE_GAME_STATE_NOT_UPDATED'},expected:'NATIVE_GAME_STATE_NOT_UPDATED'},
@@ -11044,7 +11044,7 @@ test('Vibe5.9 validator return codes survive causal replanning without trusted-s
 
 // [실제 검증기 예외 경로] 원인 세부 식별자는 다음 가설에 남기되,
 // 오류 원문에 포함된 경로·사적 데이터는 기존 재계획 증거에 복사하지 않는다.
-test('Vibe5.9 captures validator exception subcodes safely',t=>{
+test('no-model Roblox Vibe5.9 captures validator exception subcodes safely',t=>{
   for(const item of [
     {message:'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:private/Secret.luau',
       subcode:'MODEL_CONTROL_TOKEN'},
@@ -11091,7 +11091,7 @@ test('Vibe5.9 captures validator exception subcodes safely',t=>{
 
 // [실패별 후보 재계획] 카메라 실측 콜백 누락 코드는 다음 후보를 원본 수정 근거로
 // 재정렬한다. 일반 버튼/다른 파일 우선순위보다 해당 기능의 정적 교정 효과를 앞세운다.
-test('Vibe5.9 camera validator feedback favors source-grounded camera correction',t=>{
+test('no-model Roblox Vibe5.9 camera validator feedback favors source-grounded camera correction',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-camera-feedback-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.mkdirSync(path.join(root,'client'),{recursive:true});
