@@ -25,7 +25,16 @@ jobs:
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ_KEY }}
           UNIVERSE_ID: '10773436325'
-        run: python3 roblox-games/fantasy-survival/tools/devloop/telemetry_report.py > /tmp/telemetry.md
+        run: |
+          node --input-type=module <<'NODE'
+          import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
+          const info = await introspectRobloxApiKey();
+          const datastore = info.scopes.filter(scope => String(scope.name||'').includes('universe-datastores'));
+          console.log('MEADOW_KEY_ENABLED=' + info.enabled);
+          console.log('MEADOW_KEY_EXPIRED=' + info.expired);
+          console.log('MEADOW_DATASTORE_SCOPES=' + JSON.stringify(datastore));
+          NODE
+          python3 roblox-games/fantasy-survival/tools/devloop/telemetry_report.py > /tmp/telemetry.md
       - name: Analyze broken screen assets and request re-registration when models are the cause
         env:
           GH_TOKEN: ${{ github.token }}
