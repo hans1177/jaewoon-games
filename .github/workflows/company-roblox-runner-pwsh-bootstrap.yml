@@ -271,11 +271,23 @@ jobs:
             Stop-Process -Id ([int]$watcher.ProcessId) -Force -ErrorAction Stop
           }
           if ($existingWatchers.Count -gt 0) { Start-Sleep -Seconds 2 }
-          $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
+          # [저장] 실행 중 읽기 잠금과 파일 비우기를 방지하기 위해 완성본을 먼저 기록한다.
+          $startupTemp = Join-Path $startupRoot ('Jaewoon-Roblox-Runner.' + $PID + '.tmp')
+          try {
+            [IO.File]::WriteAllText($startupTemp, [string]$launcher, [Text.Encoding]::ASCII)
+            $expectedBytes = [Text.Encoding]::ASCII.GetByteCount([string]$launcher)
+            $tempBytes = [int64](Get-Item -LiteralPath $startupTemp -ErrorAction Stop).Length
+            if ($expectedBytes -lt 100 -or $tempBytes -ne $expectedBytes) {
+              throw 'ROBLOX_RUNNER_STARTUP_TEMP_NOT_VERIFIED'
+            }
+            Move-Item -LiteralPath $startupTemp -Destination $startupPath -Force -ErrorAction Stop
+          } finally {
+            Remove-Item -LiteralPath $startupTemp -Force -ErrorAction SilentlyContinue
+          }
           $startupFile = Get-Item -LiteralPath $startupPath -ErrorAction Stop
-          Write-Host "ROBLOX_RUNNER_STARTUP_SOURCE_BYTES=$([Text.Encoding]::ASCII.GetByteCount([string]$launcher))"
+          Write-Host "ROBLOX_RUNNER_STARTUP_SOURCE_BYTES=$expectedBytes"
           Write-Host "ROBLOX_RUNNER_STARTUP_FILE_BYTES=$($startupFile.Length)"
-          if ($startupFile.Length -lt 100) {
+          if ($startupFile.Length -ne $expectedBytes) {
             throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_NOT_PERSISTED'
           }
           # [실행 증거] 동일 데스크톱에서 새 감시기를 실행하고 독립 프로세스로 살아 있는지 확인한다.
