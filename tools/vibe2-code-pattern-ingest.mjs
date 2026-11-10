@@ -49,7 +49,7 @@ const VISUAL_CODING_RECIPES=Object.freeze({
   CONTEXTUAL_HUD:{source:'buildVibePresentationCraft / optimizeVibeScreenLayout',proof:['VIEWPORT_BOUNDS','FOCAL_OCCLUSION','MOBILE_TOUCH','STATE_PRESERVATION']},
   NINE_SLICE_SURFACE:{source:'RobloxCommonUI.CreatePanel surfaceTexture/sliceCenter; existing web CSS border-image',proof:['REAL_VERIFIED_TEXTURE_ASSET','SOURCE_IMAGE_PROVENANCE','FRAME_CORNERS_UNSTRETCHED']},
   MATERIAL_HARMONIZATION:{source:'createVibeVisualMaterialRecipe / existing native authoring',proof:['VERIFIED_ASSET_MATERIAL_SLOTS','STYLE_LOCK','ORIGINAL_ASSET_IMMUTABLE']},
-  SCREEN_LAYOUT_OPTIMIZER:{source:'optimizeVibeScreenLayout',proof:['POSITIVE_VIEWPORT','NO_UNRESOLVED_OCCLUSION','PORTRAIT_LANDSCAPE']},
+  SCREEN_LAYOUT_OPTIMIZER:{source:'buildVibePresentationCraft / optimizeVibeScreenLayout / JaewoonGraphicsEngine.updateUiSurface / RobloxCommonUI.CreatePanel(uiPlan)',proof:['POSITIVE_VIEWPORT','NO_UNRESOLVED_OCCLUSION','PORTRAIT_LANDSCAPE','UI_DESIGN_FONT_CONTRAST','GAME_OWNED_ACTION_CALLBACK','SOURCE_BOUND_RUNTIME_CAPTURE']},
   NOTIFICATION_STACK:{source:'notify / Notify',proof:['ACTIVE_BUDGET','REENTRANT_EVENTS','VISIBLE_POSITION','CLEANUP']},
   STATUS_DURATION_TRACK:{source:'updateStatusIcon / UpdateStatusIcon',proof:['AUTHORITATIVE_REMAINING_DURATION','ZERO_STATE','STACKS_DISPLAY']},
   ITEM_VISUAL_PREVIEW:{source:'existing game native model camera and render target',proof:['REAL_BOUND_MODEL','VALID_CAMERA','MOBILE_BUDGET']},

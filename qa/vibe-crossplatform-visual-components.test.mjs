@@ -163,6 +163,14 @@ test('both native platform adapters expose concrete event-safe visual abilities'
     assert.ok(src.includes(name),name);
   }
   assert.match(src,/event\.confirmed ~= true/);
+  assert.match(src,/options\.uiPlan/);
+  assert.match(src,/uiPlan\.layout\.pass ~= true/);
+  assert.match(src,/uiPlan\.score\.score/);
+  assert.match(src,/UI_ACTION_NOT_BOUND/);
+  assert.match(src,/RobloxCommonUI\.CreatePrimaryButton\(/);
+  assert.match(src,/element\.Activated:Connect\(/);
+  assert.match(src,/options\.onAction\(actionId, control\.id, uiPlan\.surface\)/);
+  assert.match(src,/frame:SetAttribute\("OwnsGameplayAuthority", false\)/);
   assert.match(src,/descendant:IsA\("BaseScript"\)/);
   assert.match(src,/model:GetBoundingBox\(\)/);
   assert.match(src,/seen\[id\]/);

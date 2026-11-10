@@ -121,10 +121,62 @@ end
 function RobloxCommonUI.CreatePanel(options)
   options = options or {}
   local theme = cloneTheme(options.theme)
+  -- [UI 검증 계약] 기존 패널에 검증된 바이브 배치안만 그린다. 이벤트 권한은 게임 콜백만 소유한다.
+  local uiPlan = options.uiPlan
+  local uiPositions = nil
+  if uiPlan ~= nil then
+    if type(uiPlan) ~= "table" or type(uiPlan.layout) ~= "table" or uiPlan.layout.pass ~= true
+      or type(uiPlan.score) ~= "table" or (tonumber(uiPlan.score.score) or 0) < 92
+      or type(uiPlan.score.issues) ~= "table" or #uiPlan.score.issues > 0
+      or type(uiPlan.controls) ~= "table" or type(uiPlan.layout.placements) ~= "table"
+      or #uiPlan.controls < 1 or #uiPlan.controls > 24
+      or #uiPlan.controls ~= #uiPlan.layout.placements or type(uiPlan.viewport) ~= "table" then
+      return nil, "INVALID_SCORED_UI_PLAN"
+    end
+    local width = tonumber(uiPlan.viewport.width)
+    local height = tonumber(uiPlan.viewport.height)
+    local tokens = type(uiPlan.design) == "table" and uiPlan.design.tokens or nil
+    if not width or not height or width < 240 or height < 240 or width > 2048 or height > 2048
+      or type(tokens) ~= "table" or (tonumber(tokens.fontButtonPx) or 0) < 14
+      or (tonumber(tokens.fontBodyPx) or 0) < 14
+      or (tonumber(tokens.fontTitlePx) or 0) < (tonumber(tokens.fontBodyPx) or 0) + 2 then
+      return nil, "INVALID_UI_DESIGN_TOKENS"
+    end
+    uiPositions = {}
+    for _, slot in ipairs(uiPlan.layout.placements) do
+      if type(slot) ~= "table" or type(slot.id) ~= "string" or slot.id == ""
+        or uiPositions[slot.id] ~= nil or slot.unresolved == true
+        or type(slot.x) ~= "number" or type(slot.y) ~= "number"
+        or type(slot.width) ~= "number" or type(slot.height) ~= "number"
+        or slot.x < 0 or slot.y < 0 or slot.width <= 0 or slot.height <= 0
+        or slot.x + slot.width > width or slot.y + slot.height > height then
+        return nil, "INVALID_UI_PLACEMENT"
+      end
+      uiPositions[slot.id] = slot
+    end
+    local boundActions, seenControls = {}, {}
+    for _, control in ipairs(uiPlan.controls) do
+      if type(control) ~= "table" or type(control.id) ~= "string" or control.id == ""
+        or seenControls[control.id] or not uiPositions[control.id] then
+        return nil, "INVALID_UI_CONTROL"
+      end
+      seenControls[control.id] = true
+      local actionId = tostring(control.actionId or "")
+      if actionId ~= "" then
+        local slot = uiPositions[control.id]
+        if type(options.onAction) ~= "function" or boundActions[actionId]
+          or slot.width < 44 or slot.height < 44 then
+          return nil, "UI_ACTION_NOT_BOUND"
+        end
+        boundActions[actionId] = true
+      end
+    end
+  end
 
   local frame = Instance.new("Frame")
   frame.Name = options.name or "CommonPanel"
-  frame.Size = options.size or UDim2.fromOffset(320, 180)
+  frame.Size = uiPlan and UDim2.fromOffset(uiPlan.viewport.width, uiPlan.viewport.height)
+    or options.size or UDim2.fromOffset(320, 180)
   frame.BackgroundColor3 = theme.Panel
   frame.BorderSizePixel = 0
   frame.ClipsDescendants = options.clipsDescendants == true
@@ -175,6 +227,64 @@ function RobloxCommonUI.CreatePanel(options)
   corner(inner, math.max(6, (tonumber(options.cornerRadius) or theme.Corner) - 4))
   stroke(inner, theme.BorderBright, 1, 0.72)
 
+  if uiPositions then
+    -- [UI 입력] Roblox 기본 버튼을 재사용하며 게임 규칙/Remote/저장 처리를 절대 대체하지 않는다.
+    frame.ClipsDescendants = true
+    local tokens = uiPlan.design.tokens
+    local ink = theme.Text
+    local background = theme.Panel
+    if type(tokens.foreground) == "string" and string.match(tokens.foreground, "^#%x%x%x%x%x%x$") then
+      ink = Color3.fromHex(tokens.foreground)
+    end
+    if type(tokens.background) == "string" and string.match(tokens.background, "^#%x%x%x%x%x%x$") then
+      background = Color3.fromHex(tokens.background)
+    end
+    for _, control in ipairs(uiPlan.controls) do
+      local slot = uiPositions[control.id]
+      local actionId = tostring(control.actionId or "")
+      local label = string.sub(tostring(control.label or control.id), 1, 140)
+      local element
+      if actionId ~= "" then
+        element = RobloxCommonUI.CreatePrimaryButton({
+          name = tostring(control.id), text = label,
+          size = UDim2.fromOffset(slot.width, slot.height),
+          minWidth = 44, minHeight = 44,
+          textSize = tonumber(tokens.fontButtonPx), theme = theme,
+          reducedMotion = options.reducedMotion == true,
+        })
+        element.BackgroundColor3 = background
+        element.TextColor3 = ink
+        element.Active = control.enabled ~= false
+        element.Selectable = control.enabled ~= false
+        element:SetAttribute("ActionBinding", actionId)
+        element:SetAttribute("OwnsGameplayAction", false)
+        element.Activated:Connect(function()
+          if frame.Parent ~= nil and element.Active and type(options.onAction) == "function" then
+            options.onAction(actionId, control.id, uiPlan.surface)
+          end
+        end)
+      else
+        element = Instance.new("TextLabel")
+        element.Name = tostring(control.id)
+        element.BackgroundColor3 = background
+        element.BorderSizePixel = 0
+        element.Text = label
+        element.TextColor3 = ink
+        element.TextSize = tonumber(tokens.fontBodyPx)
+        element.TextWrapped = true
+        element.TextXAlignment = Enum.TextXAlignment.Center
+        element.TextYAlignment = Enum.TextYAlignment.Center
+        element.Font = Enum.Font.Gotham
+      end
+      element.Position = UDim2.fromOffset(slot.x, slot.y)
+      element.Size = UDim2.fromOffset(slot.width, slot.height)
+      element.ZIndex = inner.ZIndex + 1
+      element.Parent = frame
+    end
+    frame:SetAttribute("ScoredUiSurface", tostring(uiPlan.surface or "UNKNOWN"))
+    frame:SetAttribute("OwnsGameplayAuthority", false)
+    frame:SetAttribute("RuntimeUiVerified", false)
+  end
   frame:SetAttribute("PresentationRole", "COMMON_READABLE_PANEL")
   frame:SetAttribute("TouchSafe", true)
   return frame, inner
