@@ -24,7 +24,7 @@ jobs:
       - name: Read Meadow telemetry with dedicated read-only key
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ_KEY }}
-          UNIVERSE_ID: '10773436325'
+          UNIVERSE_ID: '10775310122'
         run: |
           node --input-type=module <<'NODE'
           import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
