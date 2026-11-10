@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-v31bbb",
+      "worker": "vibe2",
+      "taskId": "star-frontier-existing-web-assessment-v1",
+      "gameId": "star-frontier",
+      "files": [
+        "web-games/star-frontier/index.html"
+      ],
+      "baseSha": "5ca670dea6e6f9ce067d87280ad90f74242e2cc0",
+      "runId": "42811125653",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-10T12:31:54.479Z",
+      "expiresAt": "2026-11-10T13:16:54.479Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:star-frontier-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
