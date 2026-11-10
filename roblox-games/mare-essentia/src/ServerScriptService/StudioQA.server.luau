@@ -129,6 +129,8 @@ task.spawn(function()
 			rejected += 1
 			-- [기능 검사] 거절 응답에 view가 있더라도 구현 성공으로 오인하지 않는다.
 			if not quiet then print("[QA] REJECTED " .. name .. " -> " .. message:sub(1, 60)) end
+		elseif res.ok == true and res.view == nil then
+			featureFail("FEATURE_NO_VIEW " .. name)
 		elseif res.ok == true or res.view ~= nil then
 			accepted += 1
 			if not quiet then ok("FEATURE " .. name .. " -> " .. message:sub(1, 40)) end
@@ -152,6 +154,10 @@ task.spawn(function()
 		end)
 		if not success then
 			featureFail("action " .. action .. " threw: " .. tostring(result))
+			return nil
+		end
+		if result == nil then
+			featureFail("FEATURE_NO_RESPONSE " .. action)
 			return nil
 		end
 		return result
