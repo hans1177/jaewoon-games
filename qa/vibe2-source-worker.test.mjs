@@ -5826,6 +5826,62 @@ test('semantic diff hard gate rejects explicit unrelated system mutation even wh
   assert.match(result.violations.join('|'),/UNRELATED_SYSTEM:ECONOMY/);
 });
 
+test('semantic diff rejects a modified duplicate owner symbol instead of guessing which function is authorized',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before=[
+    'function handlePointer(e){ pointerState=e; }',
+    'function handlePointer(e){ pointerState=normalizePointer(e); }'
+  ].join('\\n');
+  write(path.join(sourceRoot,'index.html'),before);
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',
+      find:'function handlePointer(e){ pointerState=e; }',
+      replace:'function handlePointer(e){ pointerState=normalizePointer(e); }'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.mode,'HARD_ENFORCE');
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.ambiguousSymbolPaths,['index.html:handlePointer']);
+  assert.match(result.violations.join('|'),/AMBIGUOUS_SYMBOL_OWNER:index\\.html:handlePointer/);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),before);
+});
+
+test('semantic diff refuses high-confidence edits when no function owner can be inspected',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),'const handlePointer = true;\\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'const handlePointer = true;',replace:'const handlePointer = false;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unverifiedSymbolPaths,['index.html:NO_FUNCTION_EVIDENCE']);
+  assert.match(result.violations.join('|'),/SYMBOL_INSPECTION_UNPROVEN:index\\.html:NO_FUNCTION_EVIDENCE/);
+});
+
+test('semantic diff blocks a missing responsible source instead of treating its name as proof',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'other.js'),'function idle(){}');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'game.js',find:'function handlePointer(){}',
+      replace:'function handlePointer(){ return 1; }'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unverifiedSymbolPaths,['game.js:MISSING_SOURCE']);
+});
+
 test('semantic diff identifies an unrelated function mutation next to an allowed responsibility',()=>{
   const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
   write(path.join(sourceRoot,'index.html'),[
