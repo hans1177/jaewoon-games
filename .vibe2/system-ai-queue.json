@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -1995,7 +1995,7 @@
       "failureSignature": "FAIL",
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:42794959271:1",
+      "previousReservationId": "system-ai:42869801541:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:42869801541:1",
-      "reservedAt": "2026-11-10T18:01:32.648Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3299,7 +3299,15 @@
         "actions-run:42736997565",
         "system-ai-handoff-to-reservation:system-ai:42794959271:1",
         "actions-run:42794959271",
-        "system-ai-handoff-to-reservation:system-ai:42869801541:1"
+        "system-ai-handoff-to-reservation:system-ai:42869801541:1",
+        "actions-run:42869801541",
+        "external-ai-raw-output-sha256:bcd4d3edd2caae81ec4ad6090d7c1de57ea7460e312598b038e5a9effa1dfdfe",
+        "selected-strategy:direct-json-artifact-generation",
+        "system-ai-critic-decision-sha256:d073d4ebac9f2dbc79c90c3d336631faa09da2efaad0b2568b2fc5024030fb05",
+        "system-ai-applied-answer-sha256:4da6e1fb38c631df9e093a9a188aa895969e33b436650987076dc095b98f274d",
+        "repair-strategy-fingerprint:1f3e43b4323491f954b662c50637f383e73f3e8ae34d5bcc325dc979fcecc488",
+        "failed-strategy-fingerprint:1f3e43b4323491f954b662c50637f383e73f3e8ae34d5bcc325dc979fcecc488",
+        "model-output-sha256:bcd4d3edd2caae81ec4ad6090d7c1de57ea7460e312598b038e5a9effa1dfdfe"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1446,
@@ -3314,7 +3322,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-11-10T18:01:32.648Z"
+      "updatedAt": "2026-11-10T18:09:59.478Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -116890,7 +116898,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116925,7 +116933,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 41,
-      "previousReservationId": "system-ai:42856283286:1",
+      "previousReservationId": "system-ai:42869801541:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -116933,12 +116941,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:42869801541:1",
-      "reservedAt": "2026-11-10T18:01:32.648Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -121266,7 +121274,8 @@
         "actions-run:42854027449",
         "system-ai-handoff-to-reservation:system-ai:42856283286:1",
         "actions-run:42856283286",
-        "system-ai-handoff-to-reservation:system-ai:42869801541:1"
+        "system-ai-handoff-to-reservation:system-ai:42869801541:1",
+        "actions-run:42869801541"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1946,
@@ -121281,7 +121290,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-10T18:01:32.648Z"
+      "updatedAt": "2026-11-10T18:09:59.478Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
