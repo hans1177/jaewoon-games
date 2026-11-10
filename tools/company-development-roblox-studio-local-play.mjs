@@ -2853,6 +2853,45 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         break;
       }
     }
+    // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
+    const mareScript=steps.some(st=>st.type==='click_from_luau'&&st.code.includes('"프랑스"'));
+    if(mareScript&&!report.summary.abortedEarly){
+      const auditCode="local r=game:GetService('ReplicatedStorage') local h=game:GetService('HttpService') "
+        +"local keys={'MareModelAuditState','MareModelAuditTotals','MareQAAssetStatus','MareQAAssetTotals','MareQAFeatureStatus','MareQAFeatureTotals'} "
+        +"local a={} for _,key in ipairs(keys) do a[key]=r:GetAttribute(key) or '' end "
+        +"return 'MARE_STUDIO_AUDIT='..h:JSONEncode(a)";
+      try{
+        let last={};
+        for(let n=0;n<30;n++){
+          const out=await luau('Server',auditCode);
+          const marker=out.split(/\r?\n/).find(line=>line.startsWith('MARE_STUDIO_AUDIT='));
+          if(!marker)throw new Error('MARE_STUDIO_AUDIT_RESPONSE_MISSING');
+          last=JSON.parse(marker.slice('MARE_STUDIO_AUDIT='.length));
+          const states=[last.MareModelAuditState,last.MareQAAssetStatus,last.MareQAFeatureStatus];
+          if(states.every(state=>state==='PASS'||state==='FAIL'))break;
+          if(n<29)await wait(3000);
+        }
+        const parseTotals=key=>{try{return JSON.parse(last[key]||'{}');}catch{return{invalidJson:true};}};
+        report.assetAudit={
+          models:{status:last.MareModelAuditState||'UNVERIFIED',...parseTotals('MareModelAuditTotals')},
+          registered:{status:last.MareQAAssetStatus||'UNVERIFIED',...parseTotals('MareQAAssetTotals')},
+          features:{status:last.MareQAFeatureStatus||'UNVERIFIED',...parseTotals('MareQAFeatureTotals')}
+        };
+        console.log('STUDIO_SCRIPT_MARE_FULL_AUDIT='+JSON.stringify(report.assetAudit).slice(0,1900));
+        if(report.assetAudit.models.status==='FAIL'||report.assetAudit.registered.status==='FAIL'){
+          report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+        }
+        if(report.assetAudit.features.status==='FAIL'){
+          report.errors.push('STUDIO_FEATURE_AUDIT_FAILED');
+        }
+        if(Object.values(report.assetAudit).some(part=>part.status!=='PASS'&&part.status!=='FAIL')){
+          report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
+        }
+      }catch(error){
+        report.assetAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,160)};
+        report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
+      }
+    }
     if(!report.errors.length&&report.summary.successfulClicks!==report.summary.plannedClicks){
       report.errors.push('STUDIO_CLICK_COVERAGE_INCOMPLETE');
     }
