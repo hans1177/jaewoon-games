@@ -179,10 +179,11 @@
   }
 
   // [메인: 아틀라스] 같은 Style Lock으로 변환한 실제 스프라이트만 시트에 정렬한다.
-  function composeSourceSpriteAtlas({frames=[],columns=4,padding=2}={}){
+  function composeSourceSpriteAtlas({frames=[],columns=4,padding=2,edgeBleed=true}={}){
     if(!Array.isArray(frames)||!frames.length||frames.length>64
        ||!Number.isInteger(columns)||columns<1||columns>8
-       ||!Number.isInteger(padding)||padding<0||padding>8)
+       ||!Number.isInteger(padding)||padding<0||padding>8
+       ||typeof edgeBleed!=='boolean')
       throw new Error('GRAPHICS_ATLAS_LAYOUT_INVALID');
     const first=frames[0],w=first?.width,h=first?.height,key=first?.styleKey;
     if(!Number.isInteger(w)||!Number.isInteger(h)||!key
@@ -204,10 +205,26 @@
         const offset=4*((yy+y)*width+x);
         pixels.set(frame.pixels.subarray(yy*w*4,(yy+1)*w*4),offset);
       }
+      // [경계 색 보존] 투명 패딩의 RGB만 실제 스프라이트 경계색으로 복사한다.
+      // GPU 선형 필터에서 검은 가장자리가 섞이는 현상을 줄이고 alpha=0은 유지한다.
+      if(edgeBleed&&padding){
+        for(let yy=-padding;yy<h+padding;yy++)for(let xx=-padding;xx<w+padding;xx++){
+          if(xx>=0&&xx<w&&yy>=0&&yy<h)continue;
+          const sourceX=Math.max(0,Math.min(w-1,xx));
+          const sourceY=Math.max(0,Math.min(h-1,yy));
+          const from=(sourceY*w+sourceX)*4;
+          if(frame.pixels[from+3]===0)continue;
+          const to=((y+yy)*width+x+xx)*4;
+          pixels[to]=frame.pixels[from];
+          pixels[to+1]=frame.pixels[from+1];
+          pixels[to+2]=frame.pixels[from+2];
+        }
+      }
       cells.push(Object.freeze({index,x,y,width:w,height:h,sourceHash:frame.sourceHash}));
     });
     return Object.freeze({width,height,pixels,frames:Object.freeze(cells),
-      styleKey:key,modelFree:true,productionVerified:false,runtimeVerified:false,
+      styleKey:key,transparentPaddingRgbBleed:edgeBleed,modelFree:true,
+      productionVerified:false,runtimeVerified:false,
       authority:'GRAPHICS_SOURCE_ONLY_SPRITE_ATLAS_CANDIDATE'});
   }
 
