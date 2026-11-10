@@ -235,6 +235,27 @@ test('model-free atlas composes only matching source-derived styles and rejects 
     /GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH/);
 });
 
+test('sprite atlas prevents dark GPU edge seams without painting transparent pixels',()=>{
+  const source={license:'CC0',sha256:'d'.repeat(64)};
+  const pixels=new Uint8Array([240,140,90,255]);
+  const frame=Graphics.harmonizeSourceRaster({
+    width:1,height:1,pixels,source,style:{palette:[[10,20,30],[225,155,95]]}
+  });
+  const bleed=Graphics.composeSourceSpriteAtlas({frames:[frame],columns:1,padding:2});
+  const raw=Graphics.composeSourceSpriteAtlas({frames:[frame],columns:1,padding:2,edgeBleed:false});
+  const padIndex=(2*bleed.width+1)*4,centerIndex=(2*bleed.width+2)*4;
+  assert.equal(bleed.pixels[padIndex],bleed.pixels[centerIndex]);
+  assert.equal(bleed.pixels[padIndex+1],bleed.pixels[centerIndex+1]);
+  assert.equal(bleed.pixels[padIndex+2],bleed.pixels[centerIndex+2]);
+  assert.equal(bleed.pixels[padIndex+3],0,'bleeding RGB cannot create new visible geometry');
+  assert.equal(raw.pixels[padIndex],0,'legacy transparent black padding remains selectable');
+  assert.equal(raw.pixels[padIndex+3],0);
+  assert.equal(bleed.transparentPaddingRgbBleed,true);
+  assert.deepEqual([...pixels],[240,140,90,255],'original texture never changes');
+  assert.throws(()=>Graphics.composeSourceSpriteAtlas({frames:[frame],edgeBleed:'yes'}),
+    /GRAPHICS_ATLAS_LAYOUT_INVALID/);
+});
+
 test('model-free graphics fails closed on licenses, invalid source pixels and unverifiable source hash',()=>{
   const valid={width:1,height:1,pixels:new Uint8Array([10,20,30,255]),
     style:{palette:[[0,0,0],[255,255,255]]}};
