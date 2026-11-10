@@ -259,10 +259,10 @@ jobs:
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_DEPLOY_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
@@ -291,6 +291,12 @@ jobs:
             console.log('ROBLOX_DEDICATED_TARGET=NO_PENDING_GAME');
             process.exit(0);
           }
+          // [인증] 마력숲은 배포 전용 키만 사용하며 기존 키로 대체하지 않는다.
+          const apiKey=gameId==='fantasy-survival'
+            ?String(process.env.ROBLOX_DEPLOY_API_KEY||'').trim()
+            :String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+          if(!apiKey)throw Error('ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING:'+gameId);
+          console.log('ROBLOX_OPEN_CLOUD_CREDENTIAL_ROUTE='+gameId+':'+(gameId==='fantasy-survival'?'DEPLOY':'LEGACY'));
           const finalEntry=publishStage==='final'?(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===String(process.env.PUBLISH_CYCLE_ID||'')):null;
           if(publishStage==='final'&&(!finalEntry?.releaseSnapshot||finalEntry.finalReviewPassed!==true||finalEntry.f9ReleaseRegressionPassed!==true))throw new Error('ROBLOX_FINAL_PUBLISH_EXACT_F9_SNAPSHOT_REQUIRED:'+gameId);
           const releaseReadiness=publishStage==='final'?evaluateInternalRelease({...finalEntry.releaseSnapshot,robloxFinalReviewPassed:finalEntry.finalReviewPassed,robloxF9ReleaseRegressionPassed:finalEntry.f9ReleaseRegressionPassed,robloxF9ReleaseRegressionEvidence:finalEntry.f9Evidence},'ROBLOX',roadmap,'SERVER_DEPLOYMENT'):null;
@@ -318,7 +324,7 @@ jobs:
           if(validationCollision)console.log('ROBLOX_VALIDATION_TARGET_COLLISION_REPAIR='+gameId);
           const cookie='';
           const created=await createRobloxDedicatedExperience({
-            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            apiKey,
             cookie,
           });
           await configureRobloxExperience({
@@ -327,12 +333,12 @@ jobs:
             description:publishStage==='final'
               ?'Canonical private game build for '+String(item.gameName||gameId)+'. Content may be replaced only by exact F9-verified artifacts.'
               :'Private pre-F9 validation build for '+String(item.gameName||gameId)+'. Never used as the canonical game server target.',
-            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            apiKey,
             cookie,
           });
           await ensureRobloxExperiencePrivate({
             universeId:created.universeId,
-            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            apiKey,
             cookie,
           });
           const result={
@@ -753,7 +759,7 @@ jobs:
         if: steps.target.outputs.skip != 'true' && steps.target.outputs.publish_stage == 'validation'
         working-directory: main
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ steps.target.outputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY || (steps.target.outputs.game_id != 'fantasy-survival' && secrets.ROBLOX_OPEN_CLOUD_API_KEY) }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
         shell: bash
         run: |
@@ -813,7 +819,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ steps.target.outputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY || (steps.target.outputs.game_id != 'fantasy-survival' && secrets.ROBLOX_OPEN_CLOUD_API_KEY) }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
@@ -1372,7 +1378,7 @@ jobs:
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
         working-directory: main
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ steps.target.outputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY || (steps.target.outputs.game_id != 'fantasy-survival' && secrets.ROBLOX_OPEN_CLOUD_API_KEY) }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
@@ -1492,7 +1498,7 @@ jobs:
         env:
           GAME_ID: ${{ inputs.game_id }}
           CYCLE_ID: ${{ inputs.publish_cycle_id }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ inputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY || (inputs.game_id != 'fantasy-survival' && secrets.ROBLOX_OPEN_CLOUD_API_KEY) }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -1758,18 +1764,29 @@ jobs:
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_DEPLOY_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           mkdir -p .tmp/roblox-thumbnail-evidence
           failures=()
           scope_blocked=()
           for game_id in $GAME_IDS; do
             echo "ROBLOX_THUMBNAIL_SYNC_START=$game_id"
             log_file=".tmp/roblox-thumbnail-evidence/$game_id.log"
-            if node tools/company-roblox-thumbnail-sync.mjs \
+            # [인증] 공통 썸네일 작업도 게임별 키를 혼용하지 않는다.
+            if [ "$game_id" = 'fantasy-survival' ]; then
+              scoped_key="$ROBLOX_DEPLOY_API_KEY"
+            else
+              scoped_key="$ROBLOX_OPEN_CLOUD_API_KEY"
+            fi
+            if [ -z "$scoped_key" ]; then
+              echo "ROBLOX_THUMBNAIL_DEPLOY_CREDENTIAL_MISSING=$game_id" >&2
+              failures+=("$game_id")
+              continue
+            fi
+            if ROBLOX_OPEN_CLOUD_API_KEY="$scoped_key" node tools/company-roblox-thumbnail-sync.mjs \
               --game-id="$game_id" \
               --catalog=game-catalog.json \
               --queue=../runtime/development-queue.json \
