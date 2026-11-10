@@ -126,7 +126,7 @@ jobs:
               $sourceFile = $paths[0]
             }
           }
-          $frames = @(Get-ChildItem -Path $out -Recurse -Filter '*.png' -File -ErrorAction SilentlyContinue)
+          $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') })
           if ($frames.Count -lt 1) {
             $qaStage = 'STUDIO_EXECUTION'
             $qaSignature = 'STUDIO_SCREENSHOTS_MISSING'
