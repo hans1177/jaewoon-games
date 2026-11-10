@@ -2853,6 +2853,129 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         break;
       }
     }
+    // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
+    const mareScript=steps.some(st=>st.type==='click_from_luau'&&st.code.includes('"프랑스"'));
+    if(mareScript&&!report.summary.abortedEarly){
+      const auditCode="local r=game:GetService('ReplicatedStorage') local h=game:GetService('HttpService') "
+        +"local keys={'MareModelAuditState','MareModelAuditTotals','MareQAAssetStatus','MareQAAssetTotals','MareQAFeatureStatus','MareQAFeatureTotals'} "
+        +"local a={} for _,key in ipairs(keys) do a[key]=r:GetAttribute(key) or '' end "
+        +"return 'MARE_STUDIO_AUDIT='..h:JSONEncode(a)";
+      try{
+        let last={};
+        for(let n=0;n<30;n++){
+          const out=await luau('Server',auditCode);
+          const marker=out.split(/\r?\n/).find(line=>line.startsWith('MARE_STUDIO_AUDIT='));
+          if(!marker)throw new Error('MARE_STUDIO_AUDIT_RESPONSE_MISSING');
+          last=JSON.parse(marker.slice('MARE_STUDIO_AUDIT='.length));
+          const states=[last.MareModelAuditState,last.MareQAAssetStatus,last.MareQAFeatureStatus];
+          if(states.every(state=>state==='PASS'||state==='FAIL'))break;
+          if(n<29)await wait(3000);
+        }
+        const parseTotals=key=>{try{return JSON.parse(last[key]||'{}');}catch{return{invalidJson:true};}};
+        report.assetAudit={
+          models:{status:last.MareModelAuditState||'UNVERIFIED',...parseTotals('MareModelAuditTotals')},
+          registered:{status:last.MareQAAssetStatus||'UNVERIFIED',...parseTotals('MareQAAssetTotals')},
+          features:{status:last.MareQAFeatureStatus||'UNVERIFIED',...parseTotals('MareQAFeatureTotals')}
+        };
+        console.log('STUDIO_SCRIPT_MARE_FULL_AUDIT='+JSON.stringify(report.assetAudit).slice(0,1900));
+        if(report.assetAudit.models.status==='FAIL'||report.assetAudit.registered.status==='FAIL'){
+          report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+        }
+        if(report.assetAudit.features.status==='FAIL'){
+          report.errors.push('STUDIO_FEATURE_AUDIT_FAILED');
+        }
+        if(Object.values(report.assetAudit).some(part=>part.status!=='PASS'&&part.status!=='FAIL')){
+          report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
+        }
+      }catch(error){
+        report.assetAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,160)};
+        report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
+      }
+    }
+    // [등록 전수] 업로드 등록표와 실제 Luau 호출 ID를 1:1 비교한다. 불일치를 자동 덮어쓰지 않는다.
+    if(mareScript&&!report.summary.abortedEarly){
+      try{
+        const root=fs.existsSync(path.join('main','roblox-games','mare-essentia'))
+          ?path.join('main','roblox-games','mare-essentia')
+          :path.join('roblox-games','mare-essentia');
+        const registered=JSON.parse(fs.readFileSync(path.join(root,'assets-registered.json'),'utf8')).assets;
+        const actual=fs.readFileSync(path.join(root,'src','ReplicatedStorage','Shared','AssetIds.luau'),'utf8');
+        const effective=new Map([...actual.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(hit=>[hit[1],hit[2]]));
+        const mismatches=[],missing=[],unverified=[];
+        for(const [key,row] of Object.entries(registered)){
+          const codeId=effective.get(key);
+          if(!codeId){missing.push(key);continue;}
+          if(String(row.assetId)!==codeId){
+            mismatches.push({key,registeredId:String(row.assetId),effectiveId:codeId,reason:'EFFECTIVE_ID_PERMISSION_NOT_PROVEN'});
+          }
+          if(row.usePermissionGranted!==true)unverified.push(key);
+        }
+        for(const key of effective.keys())if(!Object.hasOwn(registered,key))missing.push(key);
+        report.assetRegistryAudit={
+          registered:Object.keys(registered).length,activeIds:effective.size,
+          mismatched:mismatches.slice(0,60),missing:missing.slice(0,60),
+          unverifiedPermissions:unverified.slice(0,60),
+          status:mismatches.length||missing.length||unverified.length?'REPAIR_REQUIRED':'PASS'
+        };
+        console.log('STUDIO_SCRIPT_ASSET_REGISTRY_AUDIT='+JSON.stringify({
+          registered:report.assetRegistryAudit.registered,activeIds:effective.size,
+          mismatched:mismatches.length,missing:missing.length,unverified:unverified.length,
+          status:report.assetRegistryAudit.status
+        }));
+        if(report.assetRegistryAudit.status!=='PASS')report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+      }catch(error){
+        report.assetRegistryAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,150)};
+        report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+      }
+    }
+    // [원인 소유권] ContentProvider 실패 ID를 공식 Studio의 실제 인스턴스·등록 모듈에 연결한다.
+    // 원본에 없는 ID는 임의 대체하지 않고 UNMAPPED로 증거를 남긴다.
+    const contentWarnings=report.log.filter(row=>typeof row.out==='string'&&row.out.startsWith('LOGS('));
+    const failedAssetIds=[...new Set(contentWarnings.flatMap(row=>
+      [...row.out.matchAll(/rbxassetid:\/\/([0-9]{8,20})/g)].map(hit=>hit[1])))].slice(0,16);
+    if(mareScript&&failedAssetIds.length){
+      report.assetOwnership={reportedFailedIds:failedAssetIds,contexts:{}};
+      const ids=failedAssetIds.map(id=>JSON.stringify(id)).join(',');
+      const ownershipCode="local ids={"+ids+"} local target={} local owners={} "
+        +"for _,id in ipairs(ids) do target[id]=true owners[id]={registry={},instances={}} end "
+        +"local shared=game:GetService('ReplicatedStorage'):FindFirstChild('Shared') "
+        +"if shared then for _,name in ipairs({'AssetIds','AudioIds'}) do "
+        +"local m=shared:FindFirstChild(name) if m then local ok,entries=pcall(require,m) "
+        +"if ok and type(entries)=='table' then for key,value in pairs(entries) do "
+        +"local id=string.match(tostring(value),'%d+') if target[id] and #owners[id].registry<5 then "
+        +"table.insert(owners[id].registry,name..'.'..tostring(key)) end end end end end end "
+        +"local visited=0 local contentRefs=0 local complete=true "
+        +"for _,d in ipairs(game:GetDescendants()) do visited=visited+1 if visited>25000 then complete=false break end "
+        +"local props={} "
+        +"if d:IsA('Sound') then props={'SoundId'} "
+        +"elseif d:IsA('ImageLabel') or d:IsA('ImageButton') then props={'Image','HoverImage','PressedImage'} "
+        +"elseif d:IsA('MeshPart') then props={'MeshId','TextureID'} "
+        +"elseif d:IsA('SpecialMesh') then props={'MeshId','TextureId'} "
+        +"elseif d:IsA('Decal') or d:IsA('ParticleEmitter') or d:IsA('Beam') or d:IsA('Trail') then props={'Texture'} "
+        +"elseif d:IsA('SurfaceAppearance') or d:IsA('MaterialVariant') then props={'ColorMap','NormalMap','MetalnessMap','RoughnessMap'} "
+        +"elseif d:IsA('Animation') then props={'AnimationId'} "
+        +"elseif d:IsA('Shirt') then props={'ShirtTemplate'} "
+        +"elseif d:IsA('Pants') then props={'PantsTemplate'} "
+        +"elseif d:IsA('Sky') then props={'SkyboxBk','SkyboxDn','SkyboxFt','SkyboxLf','SkyboxRt','SkyboxUp','SunTextureId','MoonTextureId'} end "
+        +"for _,prop in ipairs(props) do local ok,value=pcall(function() return d[prop] end) "
+        +"if ok and type(value)=='string' and value~='' then contentRefs=contentRefs+1 "
+        +"local id=string.match(value,'rbxassetid://(%d+)') "
+        +"if target[id] and #owners[id].instances<6 then "
+        +"table.insert(owners[id].instances,string.sub(d:GetFullName(),1,130)..'.'..prop) end end end end "
+        +"return 'ASSET_OWNER_MAP='..game:GetService('HttpService'):JSONEncode({scanned=visited,contentRefs=contentRefs,complete=complete,owners=owners})";
+      for(const context of ['Server','Client']){
+        try{
+          const out=await luau(context,ownershipCode);
+          const marker=out.split(/\r?\n/).find(line=>line.startsWith('ASSET_OWNER_MAP='));
+          if(!marker)throw new Error('STUDIO_ASSET_OWNER_RESPONSE_MISSING');
+          report.assetOwnership.contexts[context]=JSON.parse(marker.slice('ASSET_OWNER_MAP='.length));
+          console.log('STUDIO_SCRIPT_ASSET_OWNER_MAP='+context+':'+JSON.stringify(report.assetOwnership.contexts[context]).slice(0,1100));
+        }catch(error){
+          report.assetOwnership.contexts[context]={complete:false,error:clean(error?.message||error).slice(0,140)};
+          report.errors.push('STUDIO_ASSET_OWNERSHIP_UNVERIFIED_'+context.toUpperCase());
+        }
+      }
+    }
     if(!report.errors.length&&report.summary.successfulClicks!==report.summary.plannedClicks){
       report.errors.push('STUDIO_CLICK_COVERAGE_INCOMPLETE');
     }

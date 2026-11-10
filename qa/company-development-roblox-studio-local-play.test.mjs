@@ -3742,6 +3742,47 @@ test('Existing Devloop Studio workflow rechecks Mare text sampling after main up
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
+test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
+  const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
+  const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
+  const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  assert.match(model,/MareModelAuditState/);
+  assert.match(model,/MareModelAuditTotals/);
+  assert.match(model,/pending == 0/);
+  assert.match(model,/loaded = loaded, failed = failed, errors = failedKeys/);
+  assert.match(qa,/if not RunService:IsStudio\(\) then/);
+  assert.match(qa,/MareQAAssetStatus/);
+  assert.match(qa,/MareQAAssetTotals/);
+  assert.match(qa,/ContentProvider\.PreloadAsync/);
+  assert.match(qa,/MareQAFeatureStatus/);
+  assert.match(qa,/MareQAFeatureTotals/);
+  assert.match(qa,/FEATURE_UNIMPLEMENTED_OR_ERROR/);
+  assert.match(qa,/elseif res\.ok == false then/);
+  assert.match(qa,/FEATURE_NO_RESPONSE/);
+  assert.match(qa,/FEATURE_NO_VIEW/);
+  assert.match(qa,/FEATURE_NO_CASES/);
+  assert.match(qa,/\[QA\] FEATURE_COVERED/);
+  assert.match(script,/MARE_STUDIO_AUDIT=/);
+  assert.match(script,/STUDIO_SCRIPT_MARE_FULL_AUDIT=/);
+  assert.match(script,/STUDIO_ASSET_AUDIT_FAILED/);
+  assert.match(script,/STUDIO_FEATURE_AUDIT_FAILED/);
+  assert.match(script,/STUDIO_FULL_AUDIT_INCOMPLETE/);
+  assert.match(script,/ASSET_OWNER_MAP=/);
+  assert.match(script,/STUDIO_SCRIPT_ASSET_OWNER_MAP=/);
+  assert.match(script,/STUDIO_SCRIPT_ASSET_REGISTRY_AUDIT=/);
+  assert.match(script,/EFFECTIVE_ID_PERMISSION_NOT_PROVEN/);
+  assert.match(script,/usePermissionGranted!==true/);
+  assert.match(script,/STUDIO_ASSET_AUDIT_FAILED/);
+  assert.match(script,/UNVERIFIED/);
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/STUDIO_MARE_ASSET_AUDIT_MODELS=/);
+  assert.match(workflow,/STUDIO_MARE_ASSET_AUDIT_MEDIA=/);
+  assert.match(workflow,/STUDIO_MARE_FEATURE_AUDIT=/);
+  assert.match(workflow,/STUDIO_ASSET_AUDIT_FAILED/);
+  assert.match(workflow,/STUDIO_FEATURE_AUDIT_FAILED/);
+  assert.match(workflow,/STUDIO_FULL_AUDIT_INCOMPLETE/);
+});
+
 test('Studio click QA text sampling uses proven direct descendants scan without changing click coverage',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   for(const [game,script] of [

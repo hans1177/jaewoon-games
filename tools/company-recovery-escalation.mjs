@@ -203,7 +203,8 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const studioValue=field=>clean(studioMarkers.find(v=>v.startsWith('STUDIO_QA_'+field+'='))?.slice(('STUDIO_QA_'+field+'=').length));
   const studioStage=['STUDIO_EXECUTION','STUDIO_GAME_RUNTIME','STUDIO_GAME_SOURCE'].includes(studioValue('FAILURE_STAGE'))?studioValue('FAILURE_STAGE'):'';
   const studioSignature=['STUDIO_SCRIPT_REPORTED_ERRORS','STUDIO_MCP_TOOL_TIMEOUT','STUDIO_SCREENSHOTS_MISSING',
-    'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
+    'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
+    'STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_FULL_AUDIT_INCOMPLETE'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
   const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');
   const failedStep=failedJobs.flatMap(job=>(Array.isArray(job.steps)?job.steps:[])
