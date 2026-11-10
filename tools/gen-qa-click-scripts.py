@@ -30,10 +30,17 @@ def pick(prefer, mode):
     "local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) "
     "return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"))
 
-TEXTS = ("local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} "
- "for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Text~='' and #d.Text>3 then "
- "local x=d local ok=true while x and x~=P do if (x:IsA('GuiObject') and not x.Visible) or (x:IsA('LayerCollector') and not x.Enabled) then ok=false break end x=x.Parent end "
- "if ok then out[#out+1]=string.sub(d.Text,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')")
+TEXTS = ("local P=game:GetService('Players').LocalPlayer.PlayerGui "
+ "local out={} local q={P} local head=1 local seen=0 "
+ "while head<=#q and seen<400 and #out<10 do "
+ "local d=q[head] head=head+1 seen=seen+1 "
+ "local visible=not ((d:IsA('GuiObject') and not d.Visible) or (d:IsA('LayerCollector') and not d.Enabled)) "
+ "if visible then "
+ "if d:IsA('TextLabel') and d.Text~='' and #d.Text>3 then "
+ "out[#out+1]=string.sub(d.Text,1,40) if #out>=10 then break end end "
+ "if #q<650 then for _,child in ipairs(d:GetChildren()) do "
+ "if #q>=650 then break end q[#q+1]=child end end end end "
+ "return 'TEXTS: '..table.concat(out,' | ')")
 
 LOGS = ("local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do "
  "if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then "
@@ -44,7 +51,7 @@ def build(first_wait, prefer, n):
     for i in range(1, n + 1):
         s += [{"type": "luau", "ctx": "Client", "code": pick(prefer, 'scroll')}, {"type": "wait", "ms": 600},
               {"type": "click_from_luau", "ctx": "Client", "label": "auto%02d" % i, "code": pick(prefer, 'click')},
-              {"type": "wait", "ms": 2200}, {"type": "capture", "name": "c%02d" % i},
+              {"type": "wait", "ms": (12000 if i == 1 and "새 게임" in prefer else 2200)}, {"type": "capture", "name": "c%02d" % i},
               {"type": "luau", "ctx": "Client", "code": TEXTS}]
     s += [{"type": "luau", "ctx": "Client", "code": LOGS},
           {"type": "luau", "ctx": "Server", "code": LOGS},
