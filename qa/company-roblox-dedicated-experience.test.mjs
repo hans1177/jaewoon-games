@@ -348,3 +348,24 @@ test('Forest private publish and original asset workflows require the dedicated 
   assert.match(owner,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
   assert.match(owner,/ROBLOX_CC0_UNIVERSE_GRANT_DENIED_/);
 });
+
+
+// [마력숲 배포 후 Studio] 기존 전용 게시 작업이 끝나면 공식 PC 실측 검사를 연결한다.
+// PR 계약 검사·다른 게임 게시 완료로 오작동하지 않으며, 권한 403도 Studio PASS로 바꾸지 않는다.
+test('Forest owner publication completion dispatches existing Studio QA on main without requiring a successful grant',()=>{
+  const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.match(qa,/workflows: \["Devloop Studio Capture", "Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"\]/);
+  assert.match(qa,/github\.event\.workflow_run\.event == 'push'/);
+  assert.match(qa,/github\.event\.workflow_run\.head_branch == 'main'/);
+  assert.match(qa,/github\.event\.workflow_run\.conclusion == 'failure'/);
+  assert.match(qa,/github\.event\.workflow_run\.head_sha/);
+  assert.match(qa,/owner publication not on main, skip/);
+  assert.match(qa,/no Forest source or publisher change, skip/);
+  assert.match(qa,/game=fantasy-survival/);
+  assert.match(qa,/^\s+if ! printf '%s\\n' "\$changed" \| grep -Eq /m);
+  assert.match(qa,/roblox-games\/fantasy-survival\//);
+  assert.match(qa,/owner-roblox-dedicated-private-experiences\\\.yml/);
+  assert.equal((qa.match(/gh workflow run devloop-studio\.yml/g)||[]).length,1);
+  assert.match(qa,/script=roblox-games\/fantasy-survival\/tools\/devloop\/studio-scripts\/fantasy-qa-click\.json/);
+  assert.doesNotMatch(qa,/^\s*schedule:/m);
+});
