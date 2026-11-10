@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Open Cloud DataStore(MareDevLog)에서 최근 3일치 오류·FPS를 읽어 마크다운으로 출력한다.
-권한이 없거나 데이터가 없으면 그 사실을 문서에 적고 정상 종료한다."""
+권한 오류와 통신 실패는 실패로 기록하며 데이터 미생성(404)만 허용한다."""
 import os, json, urllib.request, urllib.error, datetime
 key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "")
-uni = os.environ.get("UNIVERSE_ID", "10774821253")
+if not key:
+    raise SystemExit("MARE_TELEMETRY_API_KEY_MISSING")
+uni = os.environ.get("UNIVERSE_ID", "10775310508")
 base = f"https://apis.roblox.com/cloud/v2/universes/{uni}/data-stores/MareDevLog/entries/"
 def get(entry):
     req = urllib.request.Request(base + entry, headers={"x-api-key": key})
@@ -18,11 +20,14 @@ print("# 게임 텔레메트리 (최근 3일)\n")
 print(f"> 자동 생성 {datetime.datetime.utcnow():%Y-%m-%d %H:%M} UTC. 게임 안 오류·경고·FPS를 모은 값이다.\n")
 today = datetime.datetime.utcnow()
 found = False
+failures = set()
 for back in range(3):
     day = (today - datetime.timedelta(days=back)).strftime("%Y%m%d")
     data, err = get("d" + day)
     if err:
-        print(f"## {day}\n- 읽기 실패 또는 데이터 없음: {err}\n")
+        print(f"## {day}\n- 데이터 없음 또는 읽기 실패: {err}\n")
+        if err != "HTTP 404":
+            failures.add(err)
         continue
     v = data.get("value", data)
     found = True
@@ -38,4 +43,6 @@ for back in range(3):
             print(f"| {m['n']} | {m['side']}/{m['kind']} | {m['text'].replace('|','/')} |")
         print()
 if not found:
-    print("아직 읽을 데이터가 없다. 게임이 배포되어 플레이되면 쌓인다. 계속 실패하면 API 키에 DataStore 읽기 권한이 있는지 확인한다.")
+    print("최근 3일간 읽힌 데이터가 없다. HTTP 404는 데이터 미생성일 수 있다.")
+if failures:
+    raise SystemExit("MARE_TELEMETRY_READ_FAILED: " + ", ".join(sorted(failures)))

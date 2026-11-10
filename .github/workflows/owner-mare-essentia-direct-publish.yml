@@ -1,5 +1,5 @@
 # Mare Essentia 오너 직접배포. 명시적 자산 연결 변경은 기존 전용 체험에 반영한다.
-# Universe/Place ID를 비워 두면 비공개 전용 체험을 새로 만들고, 입력하면 그 체험에 새 버전으로 게시한다.
+# 대상 ID를 비우면 canonical 대항해시대 전용 체험을 재사용한다. 실수로 새 체험을 생성하지 않는다.
 name: Owner Mare Essentia Direct Publish
 run-name: Owner Mare Essentia publish · ${{ github.sha }}
 
@@ -88,8 +88,8 @@ jobs:
 
       - name: Publish to private Roblox Experience
         env:
-          EXISTING_UNIVERSE_ID: ${{ inputs.universe_id || (github.event_name == 'push' && '10774821253') || '' }}
-          EXISTING_PLACE_ID: ${{ inputs.place_id }}
+          EXISTING_UNIVERSE_ID: ${{ inputs.universe_id || '10775310508' }}
+          EXISTING_PLACE_ID: ${{ inputs.place_id || '73607605986189' }}
           SOURCE_REV: ${{ inputs.rollback_ref || github.sha }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
@@ -101,6 +101,14 @@ jobs:
           if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -z "${EXISTING_PLACE_ID:-}" ]]; then
             EXISTING_PLACE_ID="$(curl -fsSL --retry 3 -H "x-api-key: ${ROBLOX_OPEN_CLOUD_API_KEY}" "https://apis.roblox.com/cloud/v2/universes/${EXISTING_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);const m=String(j.rootPlace||'').match(/(\\d+)\\s*$/);if(!m){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(m[1])})")"
             echo "ROOT_PLACE_ID=${EXISTING_PLACE_ID}"
+          fi
+
+          # [배포 대상 검증] canonical 체험 외 배포 및 새 체험 생성 금지.
+          expected_universe="$(node -p "require('./roblox-games/mare-essentia/experience-target.json').universeId")"
+          expected_place="$(node -p "require('./roblox-games/mare-essentia/experience-target.json').placeId")"
+          if [[ "$EXISTING_UNIVERSE_ID" != "$expected_universe" || "$EXISTING_PLACE_ID" != "$expected_place" ]]; then
+            echo "::error::MARE_CANONICAL_TARGET_MISMATCH"
+            exit 1
           fi
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/owner-mare/$GAME_ID.rbxlx" --source-revision "$SOURCE_REV" --output "/tmp/owner-mare/result.json")
           if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -n "${EXISTING_PLACE_ID:-}" ]]; then
