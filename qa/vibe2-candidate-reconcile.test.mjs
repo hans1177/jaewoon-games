@@ -208,3 +208,62 @@ test('canonical Roblox Studio result workflow routes real failed jobs without by
   assert.doesNotMatch(workflow,/VIBE2_AUTO_FINAL_PASS=YES/);
   assert.doesNotMatch(workflow,/VIBE2_AUTO_LEARNING=YES/);
 });
+
+
+// [인과 실패 기록 보안 회귀] 외부 오류 원문·경로가 다음 수정 전략의 학습 근거로 승격되지 않도록 차단한다.
+test('untrusted Studio failure labels cannot enter causal queue evidence',()=>{
+  const sha='e'.repeat(40);
+  const candidateBranch='vibe2/candidate/OWNER-ROBLOX-OBBY-evidence-safe';
+  for(const entry of [
+    {stage:'TARGET_PLATFORM_RUNTIME',signature:'LIVE_STUDIO_PRIVATE/secret?token=123',stageAccepted:true},
+    {stage:'TARGET_PLATFORM_RUNTIME:private/secret',signature:'LIVE_STUDIO_VALID_STEP',stageAccepted:false},
+    {stage:'TARGET_PLATFORM_RUNTIME',signature:'LIVE_STUDIO_VALID_STEP\nPRIVATE_SECRET',stageAccepted:true},
+    {stage:'CANDIDATE_STATIC_GATE',signature:'CONTRACT_PRIVATE/secret?token=123',stageAccepted:true}
+  ]){
+    const queue=createVibeContinuousQueue({tasks:[{
+      id:'roblox-evidence-safe',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+      status:'blocked',blocker:'candidate-awaiting-engine-qa',goal:'버튼 복구',
+      evidence:[candidateBranch,'candidate-sha:'+sha],retries:0,maxRetries:2
+    }]});
+    const result=reconcileVibeCandidateVerification(queue,{
+      candidateBranch,target:'roblox',conclusion:'failure',runId:'91555',headSha:sha,
+      failureStage:entry.stage,failureSignature:entry.signature
+    });
+    const task=result.queue.tasks[0];
+    const evidence=task.evidence.join('\n');
+    assert.equal(result.updated,true);
+    assert.equal(result.verificationPassed,false);
+    assert.equal(result.promotionAllowed,false);
+    assert.equal(result.learningEligible,false);
+    assert.equal(task.status,'queued');
+    assert.equal(task.retries,1);
+    assert.equal(evidence.includes('engine-qa-failure-stage:TARGET_PLATFORM_RUNTIME'),
+      entry.stageAccepted&&entry.stage==='TARGET_PLATFORM_RUNTIME');
+    assert.equal(evidence.includes('engine-qa-failure-stage:CANDIDATE_STATIC_GATE'),
+      entry.stageAccepted&&entry.stage==='CANDIDATE_STATIC_GATE');
+    assert.equal(task.evidence.some(row=>row.startsWith('engine-qa-failure-signature:')),false);
+    assert.doesNotMatch(JSON.stringify(result.queue),/secret|token=123|PRIVATE_SECRET|VALID_STEP/i);
+  }
+});
+
+test('canonical long Studio failure code stays consistent across evidence and retry cause',()=>{
+  const sha='f'.repeat(40),candidateBranch='vibe2/candidate/OWNER-ROBLOX-OBBY-long-step';
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'roblox-long-step',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+    status:'blocked',blocker:'candidate-awaiting-engine-qa',goal:'기존 입력 복구',
+    evidence:[candidateBranch,'candidate-sha:'+sha],retries:0,maxRetries:2
+  }]});
+  const signature='LIVE_STUDIO_'+'A'.repeat(100);
+  const result=reconcileVibeCandidateVerification(queue,{
+    candidateBranch,target:'roblox',conclusion:'failure',runId:'91556',headSha:sha,
+    failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:signature
+  });
+  const task=result.queue.tasks[0],safe=signature.slice(0,90);
+  assert.equal(result.updated,true);
+  assert.equal(task.status,'queued');
+  assert(task.evidence.includes('engine-qa-failure-signature:'+safe));
+  assert(task.evidence.includes('retry-failure-signature:candidate-roblox-verification-failed:TARGET_PLATFORM_RUNTIME:'+safe));
+  assert.equal(task.blocker,null,'queued retry keeps the failure cause in evidence, not in its active blocker');
+  assert.equal(task.evidence.some(row=>row.includes(signature)),false);
+  assert.equal(result.finalPass,false);
+});

@@ -24,15 +24,19 @@ function parseArgs(argv = process.argv.slice(2)) {
 }
 function verificationEvidence({ target, runId, headSha, conclusion, failureStage = '', failureSignature = '' }) {
   const failed=['failure','timed_out','startup_failure'].includes(clean(conclusion).toLowerCase());
-  const stage=clean(failureStage).replace(/[^a-zA-Z0-9_:-]/g,'_').slice(0,100);
-  const signature=clean(failureSignature).replace(/[\r\n]+/g,' ').slice(0,180);
-  return unique([
+  // [원인 코드] 정식 Studio QA가 내보내는 기계 식별자만 보존한다.
+  // 자유형 오류 문구, 파일 경로, 비밀값은 큐/학습 데이터로 복사하지 않는다.
+  const rawStage=clean(failureStage),rawSignature=clean(failureSignature);
+  const stage=failed&&['TARGET_PLATFORM_RUNTIME','CANDIDATE_STATIC_GATE'].includes(rawStage)?rawStage:'';
+  const signature=stage&&/^(?:LIVE_STUDIO|CONTRACT)_[A-Z0-9_]{1,116}$/.test(rawSignature)
+    ?rawSignature.slice(0,90):'';
+  return {stage,signature,evidence:unique([
     `${clean(target)||'engine'}-verification-run:${clean(runId)}`,
     clean(headSha)?`candidate-head-sha:${clean(headSha)}`:'',
     `verification-conclusion:${clean(conclusion).toLowerCase()}`,
     failed&&stage?`engine-qa-failure-stage:${stage}`:'',
     failed&&signature?`engine-qa-failure-signature:${signature}`:''
-  ]);
+  ])};
 }
 function findTask(queue, candidateBranch) {
   const branch = clean(candidateBranch);
@@ -71,7 +75,8 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
   if(clean(runId)&&existingEvidence.includes(runMarker))return unchanged('duplicate-candidate-verification-run');
   if(['failed','cancelled'].includes(currentStatus))return unchanged('candidate-verification-after-terminal-status');
   if(result!=='success'&&alreadyAdvanced)return unchanged('late-candidate-verification-after-checkpoint');
-  const evidence = verificationEvidence({ target, runId, headSha, conclusion: result, failureStage, failureSignature });
+  const observed=verificationEvidence({ target, runId, headSha, conclusion: result, failureStage, failureSignature });
+  const evidence=observed.evidence;
   if (result === 'success') {
     const tasks = queue.tasks.map((item) => {
       if(item.id!==task.id)return{...item};
@@ -94,8 +99,8 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
   if (['failure','timed_out','startup_failure'].includes(result)) {
     // [반복 실패 인과 추적] 같은 실제 실패 단계/식별자는 기존 큐의 cause streak에서
     // 동일 원인으로 묶고, 서로 다른 실패는 같은 원인으로 합치지 않는다.
-    const observedStage=clean(failureStage).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,72);
-    const observedSignature=clean(failureSignature).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,90);
+    const observedStage=observed.stage;
+    const observedSignature=observed.signature;
     const blocker=[`candidate-${clean(target)||'engine'}-verification-failed`,observedStage,observedSignature]
       .filter(Boolean).join(':');
     const failed=finishVibeQueueTask(queue,{ taskId:task.id, outcome:'FAIL', evidence, blocker, retryable:true });
