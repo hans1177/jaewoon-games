@@ -19,6 +19,10 @@ const blockedPaths = new Set(contentSafety.blockedAssets.flatMap(row => row.sour
 const blockedHashes = new Set(contentSafety.blockedAssets.flatMap(row => row.sha256 || []));
 const blockedIds = new Set(contentSafety.blockedAssets.flatMap(row => row.assetIds || []).map(String));
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
+// [스튜디오 실측 복구] 검증된 실패 ID만 기존 승인 API로 재확인한다. 재업로드는 금지한다.
+const studioRegrantArg = process.argv.find(arg => arg.startsWith('--studio-regrant='));
+const studioRegrantPath = studioRegrantArg ? studioRegrantArg.slice('--studio-regrant='.length) : '';
+if (studioRegrantArg && !studioRegrantPath) throw new Error('STUDIO_REGRANT_REPORT_PATH_REQUIRED');
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
 
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
@@ -73,7 +77,7 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
-for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits']]) {
+if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     const ext = path.extname(f).toLowerCase();
@@ -107,6 +111,36 @@ for (const item of plan) {
 const failures = [];
 const pendingPermissions = [];
 let accountBlocked = false;
+if (studioRegrantPath) {
+  // [실측 계약] 다른 게임/기록이거나 등록 번호가 바뀌면 권한 쓰기를 시작하지 않는다.
+  const report = JSON.parse(await fs.readFile(studioRegrantPath, 'utf8'));
+  const media = report.assetAudit?.registered;
+  const failuresInStudio = media?.failedMedia;
+  if (report.summary?.plannedSteps !== 185 || report.summary?.completedSteps !== 185
+    || report.summary?.abortedEarly !== false || report.summary?.capturedFrames !== 31
+    || !Array.isArray(report.errors) || !report.errors.includes('STUDIO_ASSET_AUDIT_FAILED')
+    || report.assetRegistryAudit?.status !== 'PASS'
+    || report.assetRegistryAudit?.registered !== Object.keys(registry.assets).length
+    || report.assetRegistryAudit?.mismatched !== 0
+    || media?.status !== 'FAIL' || !Array.isArray(failuresInStudio)
+    || failuresInStudio.length === 0 || failuresInStudio.length > 128
+    || media.failed !== failuresInStudio.length)
+    throw new Error('MARE_STUDIO_REGRANT_EVIDENCE_NOT_VERIFIED');
+  const seen = new Set();
+  for (const row of failuresInStudio) {
+    const id = String(row.key || '').replace(/^AssetIds\./, '');
+    const registered = registry.assets[id];
+    if (!/^AssetIds\.(?:Goods|Menu|Portraits)\/[A-Za-z0-9._-]+$/.test(String(row.key || ''))
+      || row.status !== 'TIMEOUT_16S' || seen.has(id) || !registered
+      || !['Image', 'Decal'].includes(registered.assetType)
+      || !/^[1-9][0-9]*$/.test(String(registered.assetId))
+      || row.id !== 'rbxassetid://' + registered.assetId)
+      throw new Error('MARE_STUDIO_REGRANT_ID_OR_TYPE_MISMATCH:' + id);
+    seen.add(id);
+    pendingPermissions.push({id, assetId: registered.assetId});
+  }
+  console.log('MARE_STUDIO_REGRANT_VALIDATED_TARGET_COUNT=' + pendingPermissions.length);
+}
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
   const originalBytes = await fs.readFile(item.file);
@@ -276,7 +310,7 @@ for (let offset = 0; !accountBlocked && offset < pendingPermissions.length; offs
     console.log('GRANT_BATCH_FAILED', offset, batch.length, String(error.message).slice(0, 180));
   }
 }
-registry.updatedAt = new Date().toISOString();
+if (!studioRegrantPath || failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
 await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
 const lines = Object.entries(registry.assets).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
