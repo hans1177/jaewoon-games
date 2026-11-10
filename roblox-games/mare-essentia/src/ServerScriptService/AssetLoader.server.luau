@@ -65,6 +65,38 @@ for _ = 1, 12 do
 				local model = container:FindFirstChildWhichIsA("Model") or container
 				local group = library:FindFirstChild(item.kind)
 				if model:IsA("Model") and model:FindFirstChildWhichIsA("BasePart", true) and group then
+					-- [항구 우물] Studio 실측에서 콘텐츠 표현이 없는 5개 TextureID만 제거한다.
+					-- CC0 원본 모델의 메시·스케일·구조는 보존하며, 라이브러리 복제 전에 재질을 복구한다.
+					if item.key == "Town/village-well" then
+						local unavailable = {
+							["131733628065975"] = true, ["111140593310889"] = true,
+							["134307586169558"] = true, ["139141388446795"] = true,
+							["118471529732548"] = true,
+						}
+						local repaired = 0
+						for _, mesh in model:GetDescendants() do
+							if mesh:IsA("MeshPart") and unavailable[mesh.TextureID:match("%d+") or ""] then
+								mesh.TextureID = ""
+								mesh.MaterialVariant = ""
+								local name = mesh.Name:lower()
+								if name:find("stone ring", 1, true) then
+									mesh.Material = Enum.Material.Slate
+									mesh.Color = Color3.fromRGB(120, 119, 110)
+								elseif name:find("bail", 1, true) then
+									mesh.Material = Enum.Material.CorrodedMetal
+									mesh.Color = Color3.fromRGB(105, 105, 99)
+								elseif name:find("rope", 1, true) then
+									mesh.Material = Enum.Material.Fabric
+									mesh.Color = Color3.fromRGB(161, 148, 117)
+								else
+									mesh.Material = Enum.Material.Wood
+									mesh.Color = Color3.fromRGB(119, 95, 70)
+								end
+								repaired += 1
+							end
+						end
+						print("[MareEssentia] village-well unavailable textures removed=" .. repaired)
+					end
 					model.Name = item.name
 					model.Parent = group
 					if model ~= container then container:Destroy() end
