@@ -1110,6 +1110,12 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(studio,/STUDIO_QA_FAILURE_STAGE=\$qaStage/);
   assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
   assert.match(studio,/STUDIO_MCP_TOOL_TIMEOUT/);
+  assert.match(studio,/STUDIO_SYSTEM_DISK_SPACE_REQUIRED/);
+  assert.match(studio,/STUDIO_OLD_ROBLOX_LOGS_CLEARED/);
+  assert.match(studio,/Get-ChildItem -LiteralPath \$robloxLogRoot -File/);
+  assert.match(studio,/\.LastWriteTime -lt \$cutoff/);
+  assert.match(studio,/\.Extension -in @\('\.log','\.txt'\)/);
+  assert.doesNotMatch(studio,/Remove-Item .*Roblox\\Versions|Remove-Item .*SavedPlaces/);
   assert.match(studio,/STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE/);
   assert.match(studio,/for \(\$studioAttempt = 1; \$studioAttempt -le 2; \$studioAttempt\+\+\)/);
   assert.match(studio,/if \(\$studioAttempt -ge 2\) \{ break \}/);
