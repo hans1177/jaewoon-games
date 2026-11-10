@@ -59,7 +59,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-10T13:46:15.978Z",
+      "updatedAt": "2026-11-10T14:00:00.410Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -583,7 +583,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "5db1bcfdf063e7ca55c4807fbf9946d5e0a03c20",
-      "robloxBuildFailedAt": "2026-11-09T02:08:53.275Z",
+      "robloxBuildFailedAt": "2026-11-10T14:00:00.410Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -626,8 +626,8 @@
         "sourceRevision": "5db1bcfdf063e7ca55c4807fbf9946d5e0a03c20",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 42548397008,
-        "testedAt": "2026-11-09T02:08:53.275Z",
+        "workflowRunId": 42828447595,
+        "testedAt": "2026-11-10T14:00:00.410Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
@@ -1192,7 +1192,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
           "baselineFingerprint": "67c26bf67451e60498df1e0a7d31d05c6029f299f00eafe7fc5f998de238dfed",
-          "validatorFingerprint": "4fb511a4f435949ae8fbc6b147836e192f14e119d714770b7560295f5e3e1466"
+          "validatorFingerprint": "04533908bf6216c543491279032356e97e5bb4e5b6827ac7d33de6d528d1306d"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -3732,7 +3732,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-10T13:57:45.826Z",
+  "updatedAt": "2026-11-10T14:00:00.410Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -3799,5 +3799,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
