@@ -559,6 +559,21 @@ jobs:
         with:
           node-version: '22'
 
+      # [정식 CC0 제작 준비] 원본 Blender 집은 정식 내보내기 도구가 반드시 필요하다.
+      # 생성물/게임 소스를 임의 도형이나 대체 모델로 바꾸지 않고 필요한 작업만 준비한다.
+      - name: Install official Blender exporter for approved village meshes
+        if: matrix.nativeCreatureRepair == true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v blender >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends blender
+          fi
+          blender --background --disable-autoexec --python-exit-code 5 \
+            --python-expr "import bpy; assert hasattr(bpy.ops.export_scene, 'gltf'), 'BLENDER_GLTF_EXPORTER_REQUIRED'"
+          echo 'ROBLOX_NATIVE_CC0_BLENDER_EXPORTER=READY'
+
       - name: Fetch current company runtime, Vibe learning, and shared build-up directive
         env:
           GAME_ID: ${{ matrix.gameId }}
