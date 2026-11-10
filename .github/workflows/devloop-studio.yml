@@ -56,6 +56,13 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
+          # [메인] 자동개발 빌드 임시 파일은 기존 E: 인증 실행기 작업 경로만 사용한다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_BUILD_TEMP_DRIVE=E'
           $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo.zip'
           $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-bin'
           Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
@@ -75,6 +82,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
+          # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
+          # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_PROCESS_TEMP_DRIVE=E'
           if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
           # [로그] Studio 실행 전 시스템 드라이브 압박만 해소한다. 오래된 Roblox 로그 외에는 삭제하지 않는다.
           $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
