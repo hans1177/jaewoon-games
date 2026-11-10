@@ -204,6 +204,50 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     if(/\blocal\s+nativeVillageReady\s*=/.test(raw)
       &&/\blocal\s+function\s+worldAsset\s*\(/.test(raw))return false;
   }
+  // [검증된 실물 무기 바인딩] 선택된 WEAPON atom은 등록된 CC0 Model ID로
+  // 로드한 MeshPart를 기존 장착 함수에서 실제 손에 Weld할 때만 인정한다.
+  // 목록·HUD·전투 모션 atom만으로는 실물 무기가 적용됐다고 판정하지 않는다.
+  if(family==='WEAPON'){
+    const visualStart=raw.indexOf('local function refreshBowVisualCore(player)');
+    const visualEnd=visualStart>=0?raw.indexOf('\nend\n',visualStart):-1;
+    const visual=visualEnd>visualStart?raw.slice(visualStart,visualEnd):'';
+    const approvedModel=[
+      /local modelId = NativeCreatureAssets\[id\]/,
+      /template = AssetService:LoadAssetAsync\(modelId\)/,
+      /template:IsA\("Model"\)/,
+      /template:FindFirstChildWhichIsA\("MeshPart",true\)/,
+      /local clone=template:Clone\(\)/,
+    ];
+    const forgedStart=visual.indexOf('  if weapon and weapon.ModelKey and not weapon.Bow and (not requiredWeaponAtom or selectedWeaponReady) then');
+    const bowStart=visual.indexOf('  if not weapon or not weapon.Bow or (requiredWeaponAtom and not selectedWeaponReady) then return end');
+    const forged=forgedStart>=0&&bowStart>forgedStart?visual.slice(forgedStart,bowStart):'';
+    const bow=bowStart>=0?visual.slice(bowStart):'';
+    const selected=[
+      /local studioWeaponAtoms=\(\(Config\.StudioAssets or \{\}\)\.Families or \{\}\)\.WEAPON or \{\}/,
+      /Sword="BLADE_LONG"/,
+      /Bow="BOW_LIMB"/,
+      /local selectedWeaponReady=requiredWeaponAtom~=nil and table\.find\(studioWeaponAtoms,requiredWeaponAtom\)~=nil/,
+    ];
+    const forgedEquip=[
+      /local model=worldAsset\(weapon\.ModelKey,/,
+      /local mesh=model and model:FindFirstChildWhichIsA\("MeshPart",true\)/,
+      /model:PivotTo\(grip\*mesh\.CFrame:Inverse\(\)\*model:GetPivot\(\)\)/,
+      /local joint=Instance\.new\("WeldConstraint"\);joint\.Part0=hand;joint\.Part1=part/,
+      /model\.Parent=character/,
+    ];
+    const bowEquip=[
+      /local model=worldAsset\(weapon\.ModelKey or "item_bow_wooden",/,
+      /local mesh=model and model:FindFirstChildWhichIsA\("MeshPart",true\)/,
+      /model:PivotTo\(grip\*mesh\.CFrame:Inverse\(\)\*model:GetPivot\(\)\)/,
+      /local weld=Instance\.new\("WeldConstraint"\);weld\.Part0=hand;weld\.Part1=part/,
+      /model\.Parent=character/,
+    ];
+    if(approvedModel.every(pattern=>pattern.test(raw))
+      &&selected.every(pattern=>pattern.test(visual))
+      &&forgedEquip.every(pattern=>pattern.test(forged))
+      &&bowEquip.every(pattern=>pattern.test(bow)))return true;
+    if(visualStart>=0)return false;
+  }
   // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
   // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.
