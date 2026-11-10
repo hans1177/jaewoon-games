@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -184263,7 +184263,7 @@
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -184322,12 +184322,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:42798744319:1",
+      "reservedAt": "2026-11-10T10:29:20.365Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40125353017:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -186957,14 +186957,15 @@
         "system-ai-handoff-to-reservation:system-ai:42779932274:1",
         "actions-run:42779932274",
         "system-ai-handoff-to-reservation:system-ai:42784081157:1",
-        "actions-run:42784081157"
+        "actions-run:42784081157",
+        "system-ai-handoff-to-reservation:system-ai:42798744319:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2374,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 178,
-        "recurrenceCount": 1214,
+        "recurrenceCount": 1215,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -186972,7 +186973,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:39:33.428Z",
-      "updatedAt": "2026-11-10T08:57:17.461Z"
+      "updatedAt": "2026-11-10T10:29:20.365Z"
     },
     {
       "id": "recovery-recovery-5debf7e19cca75143235",
@@ -206151,6 +206152,5 @@
       "createdAt": "2026-11-10T07:56:58.327Z",
       "updatedAt": "2026-11-10T07:56:58.327Z"
     }
-  ],
-  "updatedAt": "2026-11-10T10:25:31.773Z"
+  ]
 }
