@@ -87,8 +87,9 @@ test('complex owner request binds up to eight real function calls and six indepe
 });
 
 test('Vibe5.9 merges repeated owner event instructions into one source-grounded atomic edit',t=>{
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-owner-chains-'));
- t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-owner-chains-'));
+ t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+ const root=path.join(temp,'game');fs.mkdirSync(root);
  const source=[
   'let output=[];',
   'function commitState(){output.push("state");}',
