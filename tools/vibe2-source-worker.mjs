@@ -2939,7 +2939,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     return{rows,names:[...names]};
   };
   let requestedFunctions=[];
-  if(composedIntent&&candidates.length>=2){
+  if(composedIntent){
     const found=new Set();
     for(const [file,original] of sourceTexts){
       if(!sourceFunctions.has(file))sourceFunctions.set(file,
@@ -2951,6 +2951,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
     requestedFunctions=[...found].sort();
+  }
+  if(composedIntent&&candidates.length>=2){
     const rawCandidates=[...candidates];
     const fingerprints=new Set();
     // [후보 비교] 우선 요청 함수 범위를 크게 만족하는 조합, 다음 최소 변경 조합.
