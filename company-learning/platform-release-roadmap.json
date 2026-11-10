@@ -1,5 +1,5 @@
 {
-  "version": 604,
+  "version": 605,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9513,6 +9513,24 @@
         "qa/vibe-visual-runtime-quality.test.mjs"
       ],
       "verifiedStatus": "CI_PENDING_AND_NATIVE_RUNTIME_UNVERIFIED"
+    },
+    "vibeComplexExistingFunctionExpansion20261110": {
+      "scope": "EXISTING_OWNER_APPROVED_COMPLEX_FUNCTION_LINKING",
+      "coordinator": "tools/vibe2-complex-intent.mjs",
+      "implementationFiles": [
+        "tools/vibe2-complex-intent.mjs",
+        "qa/vibe2-complex-intent.test.mjs",
+        "qa/vibe2-complex-work-planner.test.mjs"
+      ],
+      "maxExplicitClauses": 6,
+      "maxBoundExistingEffectsPerClause": 8,
+      "globalBoundExistingEffectMax": 48,
+      "approvedSourceAndExistingFunctionNamesRequired": true,
+      "uniqueFunctionScopeAndSourceShaMustMatch": true,
+      "preserveSaveGameplayAndServerAuthority": true,
+      "existingCanonicalCandidateAndQaPipelineOnly": true,
+      "actualGameRuntimeStillUnverified": true,
+      "implementationState": "SOURCE_ON_MAIN_CI_PENDING"
     }
   },
   "vibeExecutionLaneContract": {

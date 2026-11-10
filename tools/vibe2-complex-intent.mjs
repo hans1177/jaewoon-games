@@ -9,7 +9,7 @@ const identifier='([A-Za-z_$][A-Za-z0-9_$]{0,63})';
 const english=new RegExp('^when\\s+(?:function\\s+)?'+identifier+'\\s*(?:\\(\\))?\\s+(?:runs|finishes|completes)\\s*,?\\s*call\\s+(.+?)\\.?$','i');
 const korean=new RegExp('^함수\\s+'+identifier+'\\s+실행\\s*후\\s+(.+?)\\s+호출(?:해|해줘|해주세요)?\\.?$');
 const effectIdentifier=new RegExp('^'+identifier+'(?:\\(\\))?$');
-// 기존 함수 호출만 2~4개, 원문 순서 그대로. 미지의 문장·인자는 추측하지 않는다.
+// [복합 명령] 기존 함수 호출만 최대 8개, 원문 순서 그대로. 미지의 문장·인자는 추측하지 않는다.
 function extractExistingChain(text){
   const en=english.exec(text),ko=en?null:korean.exec(text);
   if(!en&&!ko)return null;
@@ -18,7 +18,7 @@ function extractExistingChain(text){
   const parts=match[2].replace(/\.$/,'').split(en?
     /\s*,\s*(?:(?:then|and)\s+)?|\s+(?:then|and)\s+/i:
     /\s*호출(?:한)?\s*(?:하고|후|뒤|다음)\s*|\s+(?:다음|그리고)\s+/);
-  if(parts.length<2||parts.length>4)return null;
+  if(parts.length<2||parts.length>8)return null;
   const names=parts.map(part=>effectIdentifier.exec(part.trim())?.[1]);
   if(names.some(name=>!name))return null;
   return {ownerText:text,trigger:match[1],effects:names};
@@ -37,13 +37,14 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
     String(directive.platform).toLowerCase()===target&&typeof directive.gameIdentityAndNonNegotiables?.identity==='string'&&
     ['gameplayImplementationDirectives','progressionContentWorldDirectives','uxInputDirectives','preserveConstraints','acceptanceEvidence','nextEscalationCandidates'].every(key=>Array.isArray(directive[key]))&&goal.slice(at+2)===directivePrompt(directive).trimEnd())
     goal=goal.slice(0,at).trim();
-  if(!['web','roblox'].includes(target)||!goal||goal.length>640||
+  if(!['web','roblox'].includes(target)||!goal||goal.length>1280||
     /[\r\n\x00-\x1f\`{}]/.test(goal))return null;
-  // [메인] 세미콜론으로 구분된 최대 4개 명시 지시만 해석한다. 임의 문장을 보완하지 않는다.
+  // [메인] 최대 6개 소스 기반 지시와 48개 실제 기존 함수 연결만 허용한다.
+  // 임의 인자/함수 생성 없이 기존 단일 원자 편집 및 검증 절차를 재사용한다.
   const clauses=goal.split(';').map(text=>text.trim());
-  if(clauses.length>4||clauses.some(text=>!text||text.length>320))return null;
+  if(clauses.length>6||clauses.some(text=>!text||text.length>320))return null;
   const steps=clauses.map(extractExistingChain);
-  if(steps.some(step=>!step))return null; // 알 수 없는 자연어는 추정하지 않고 거절.
+  if(steps.some(step=>!step)||steps.reduce((n,step)=>n+step.effects.length,0)>48)return null;
   const names=steps.flatMap(step=>[step.trigger,...step.effects]);
   if(task.ownerDirective!==true&&order.ownerApproved!==true)
     throw Error('VIBE2_COMPLEX_OWNER_DIRECTIVE_REQUIRED');

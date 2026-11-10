@@ -50,12 +50,35 @@ test('ordered natural-language call connectors retain exact owner text and groun
  for(const goal of [
   '함수 event 실행 후 commitState 호출하고 process.exit 호출해',
   '함수 event 실행 후 commitState 호출하고 render를 추측해서 호출해',
-  'When function event runs, call commitState, render, unknown, extra, fifth'
+  'When function event runs, call commitState, render, unknown, extra, fifth, sixth, seventh, eighth, ninth'
  ]){
   assert.equal(compileVibe2ComplexIntent({...base,order:{selectedTask:{...base.order.selectedTask,goal}}}),null);
  }
 });
 
+
+test('complex owner request binds up to eight real function calls and six independent clauses without guessing',()=>{
+  const base={target:'web',sourceRoot:'web-games/line-defense',responsibleFiles:['game.js'],
+    order:{selectedTask:{gameId:'line-defense',ownerDirective:true,goal:''}}};
+  const names=['prepare','validate','animate','render','audioCue','showHud','logOutcome','settle'];
+  const goal='When function start runs, call '+names.join(', ');
+  const parsed=compileVibe2ComplexIntent({...base,order:{
+    selectedTask:{...base.order.selectedTask,goal}}});
+  assert.deepEqual(parsed.requirements.map(row=>row.effect),names);
+  assert.equal(parsed.requirements.length,8);
+  for(let i=1;i<8;i++)assert.deepEqual(parsed.requirements[i].dependsOn,[parsed.requirements[i-1].id]);
+  const clauses=Array.from({length:6},(_,i)=>
+    'When function trigger'+i+' runs, call action'+i+'A, action'+i+'B, action'+i+'C, action'+i+'D').join('; ');
+  const multiple=compileVibe2ComplexIntent({...base,order:{selectedTask:{
+    ...base.order.selectedTask,goal:clauses}}});
+  assert.equal(multiple.requirements.length,24);
+  assert.deepEqual([...new Set(multiple.requirements.map(row=>row.group))],[0,1,2,3,4,5]);
+  const rejected='When function start runs, call '+[...names,'tooMany'].join(', ');
+  assert.equal(compileVibe2ComplexIntent({...base,order:{selectedTask:{
+    ...base.order.selectedTask,goal:rejected}}}),null);
+  assert.equal(compileVibe2ComplexIntent({...base,order:{selectedTask:{
+    ...base.order.selectedTask,goal:clauses+'; When function extra runs, call one, two'}}}),null);
+});
 
 test('owner can request the existing state -> UI -> save function chain in Korean and English',()=>{
  for(const goal of [

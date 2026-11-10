@@ -9,7 +9,7 @@ import {gunzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {compileComplexOwnerIntent} from '../tools/vibe2-complex-intent.mjs';
 import {createVibe59OneShotVolumeCandidate} from '../tools/vibe59-one-shot-volume.mjs';
-import {planComplexGameWork,createComplexGameCandidate} from '../tools/vibe2-complex-work-planner.mjs';
+import {planComplexGameWork,createComplexGameCandidate,createVibe2ComplexCandidate} from '../tools/vibe2-complex-work-planner.mjs';
 import {buildGameSourceIndex,sourceDigest} from '../tools/vibe2-game-source-index.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
@@ -51,6 +51,28 @@ test('canonical Vibe2 source worker physically applies an existing production UI
  const diff=spawnSync('git',['diff','--name-only'],{cwd:repo,encoding:'utf8',timeout:15000});
  assert.equal(diff.status,0);assert.equal(diff.stdout.trim(),project+'/'+relative);
 });
+test('eight approved existing functions execute in exact order in one original WEB owner function',t=>{
+  const {root}=fixture(t);
+  const effects=['prepare','validate','draw','sound','updateHud','updateScene','notify','finish'];
+  const source='const events=[];\n'+effects.map(name=>
+    'function '+name+'(){events.push("'+name+'");}').join('\n')+
+    '\nfunction triggerAction(){events.push("original");}\n';
+  const file=path.join(root,'game.js');fs.writeFileSync(file,source);
+  const ownerGoal='When function triggerAction runs, call '+effects.join(', ');
+  const candidate=createVibe2ComplexCandidate({
+    order:{selectedTask:{gameId:'rpg',ownerDirective:true,goal:ownerGoal}},
+    sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseCommit:revision
+  });
+  assert.equal(candidate.edits.length,1);
+  assert.equal(candidate.vibe59DesignSteps.length,8);
+  assert.equal(candidate.runtimeVerified,false);
+  const docs=new Map([['game.js',source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const executed=vm.runInNewContext(docs.get('game.js')+'triggerAction();events;');
+  assert.deepEqual(Array.from(executed),['original',...effects]);
+  assert.equal(fs.readFileSync(file,'utf8'),source,'original game source must stay unchanged in candidate planning');
+});
+
 test('natural owner request compiles two real source edits atomically through the existing V59 entry',t=>{
  const {repo,root}=fixture(t),source='const state={dead:false,hp:10};\nfunction hit(a){\n a.hp -= 1;\n}\nfunction reward(a){\n hit(a);\n a.hp += 1;\n}';
  fs.writeFileSync(path.join(root,'game.js'),source);
