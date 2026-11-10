@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:42736997565:1",
+      "reservedAt": "2026-11-10T01:44:19.136Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3294,7 +3294,8 @@
         "system-ai-handoff-to-reservation:system-ai:42516540551:1",
         "actions-run:42516540551",
         "system-ai-handoff-to-reservation:system-ai:42666159683:1",
-        "actions-run:42666159683"
+        "actions-run:42666159683",
+        "system-ai-handoff-to-reservation:system-ai:42736997565:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1446,
@@ -3309,7 +3310,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-11-09T17:48:55.760Z"
+      "updatedAt": "2026-11-10T01:44:19.136Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -121243,7 +121244,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -121285,12 +121286,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:42736997565:1",
+      "reservedAt": "2026-11-10T01:44:19.136Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -123953,14 +123954,15 @@
         "system-ai-handoff-to-reservation:system-ai:42599836688:1",
         "actions-run:42599836688",
         "system-ai-handoff-to-reservation:system-ai:42730884514:1",
-        "actions-run:42730884514"
+        "actions-run:42730884514",
+        "system-ai-handoff-to-reservation:system-ai:42736997565:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1918,
+      "impactScore": 1946,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 42,
-        "recurrenceCount": 42,
+        "blockedTaskCount": 43,
+        "recurrenceCount": 43,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -123968,7 +123970,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-10T01:01:11.572Z"
+      "updatedAt": "2026-11-10T01:44:19.136Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
