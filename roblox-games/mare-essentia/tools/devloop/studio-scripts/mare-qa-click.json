@@ -33,7 +33,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -61,7 +61,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -89,7 +89,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -117,7 +117,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -145,7 +145,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -173,7 +173,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -201,7 +201,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -229,7 +229,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -257,7 +257,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -285,7 +285,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -313,7 +313,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -341,7 +341,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -369,7 +369,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -397,7 +397,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -425,7 +425,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -453,7 +453,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -481,7 +481,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -509,7 +509,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -537,7 +537,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -565,7 +565,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -593,7 +593,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -621,7 +621,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -649,7 +649,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -677,7 +677,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -705,7 +705,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -733,7 +733,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -761,7 +761,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -789,7 +789,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -817,7 +817,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
@@ -845,7 +845,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
   "type": "luau",
