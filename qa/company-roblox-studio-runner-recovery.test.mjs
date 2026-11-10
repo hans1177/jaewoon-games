@@ -47,6 +47,9 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   assert.match(canonical,/if \(\$CheckOnly\) \{/);
   assert.doesNotMatch(canonical,/New-Service|Register-ScheduledTask|--token \$env:/);
   const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
+  assert.match(bootstrap,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
+  assert.match(recover,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
   assert.match(bootstrap,/WScript\.Sleep 15000/);
   assert.match(bootstrap,/For Each p In listeners/);
   assert.match(bootstrap,/If LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
