@@ -29,6 +29,9 @@ test('Roblox coding source reader prioritizes only current approved quality owne
  assert.deepEqual(ranked,['client/Game.client.luau','server/Game.server.luau','shared/GameConfig.luau']);
  assert.deepEqual([...ranked].sort(),[...originalRelative].sort(),'priority may not add or drop allowed files');
  assert.deepEqual(normalizeResponsibleFiles({...order,gameId:'other'},root,'roblox'),originalRelative);
+ assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,
+  buildUpDirective:{...directive,version:undefined}}},root,'roblox'),originalRelative,
+  'missing directive version cannot force owner prioritization');
  assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,buildUpDirectiveId:'not-current'}},root,'roblox'),originalRelative);
  assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,sourceRoot:'roblox-games/other'}},root,'roblox'),originalRelative);
  assert.deepEqual(normalizeResponsibleFiles({...order,selectedTask:{...order.selectedTask,buildUpDirective:{
