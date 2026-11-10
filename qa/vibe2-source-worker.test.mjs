@@ -10710,3 +10710,51 @@ test('complex native source candidate records incomplete named function coverage
     });
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
 });
+
+
+// [기능 단위 복합 설계] 자연어에 함수명이 없어도 실제 버튼·카메라 책임 후보를 분리하여 조합한다.
+test('complex source worker combines button and camera responsibilities without repeating one system',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-repair-systems-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const paths=['client/InputA.client.luau','client/InputB.client.luau','client/Camera.client.luau'];
+  const before=[
+    'local first=Instance.new("TextButton")\nfirst.MouseButton1Click:Connect(function() end)',
+    'local second=Instance.new("TextButton")\nsecond.MouseButton1Click:Connect(function() end)',
+    'local currentCamera = workspace.CurrentCamera'
+  ];
+  for(let i=0;i<paths.length;i++)fs.writeFileSync(path.join(root,paths[i]),before[i]);
+  const opts={order:{target:'roblox',goal:'복합 버튼 카메라 동시에 복구'},
+    sourceRoot:root,responsibleFiles:paths,candidateValidator:()=>({pass:true})};
+  const selected=deterministicRobloxNativeRepairCandidate(opts);
+  assert.equal(selected.deterministicRobloxNativeRepair,'COMPOSED_SOURCE_GRAPH');
+  assert.deepEqual(selected.deterministicSelection.requestedRepairSystems,['INPUT_BUTTON','CAMERA']);
+  assert.equal(selected.deterministicSelection.selectedComparison.repairSystemCoverage,2);
+  assert.deepEqual(selected.deterministicSelection.selectedComparison.missingRepairSystems,[]);
+  assert.equal(selected.deterministicSelection.scopeComplete,true);
+  assert.equal(selected.edits.length,2);
+  assert.ok(selected.edits.some(edit=>edit.path===paths[2]));
+  assert.equal(selected.edits.filter(edit=>edit.path!==paths[2]).length,1);
+  assert.ok(selected.semanticGrounding.sourceFunctionUnits?.length===2);
+  for(let i=0;i<paths.length;i++)assert.equal(fs.readFileSync(path.join(root,paths[i]),'utf8'),before[i]);
+});
+
+test('complex native repair refuses incomplete requested systems with exact missing evidence',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-repair-systems-incomplete-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Main.client.luau';
+  const before='local btn=Instance.new("TextButton")\nbtn.MouseButton1Click:Connect(function() end)';
+  fs.writeFileSync(path.join(root,file),before);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'복합 버튼 카메라 동시에 복구'},
+    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})
+  }),error=>{
+    assert.equal(error.vibe2DeterministicSelection.status,'ALL_CANDIDATES_REJECTED');
+    assert.ok(error.vibe2DeterministicSelection.attempts.every(row=>
+      row.reasonCode==='DETERMINISTIC_REPAIR_SYSTEM_COVERAGE_INCOMPLETE'));
+    assert.deepEqual(error.vibe2DeterministicSelection.attempts[0].comparison.missingRepairSystems,['CAMERA']);
+    return true;
+  });
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
+});

@@ -2918,7 +2918,35 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   // 이름이 없는 요구를 임의 함수로 매핑하거나 책임 파일 밖으로 쓰기 권한을 넓히지 않는다.
   const composedIntent=/(?:복합|복잡|여러|다중|동시|통합|묶음|자동.?개발|multi[- ]?file|multi[- ]?step|complex|batch|compose|integrat)/i.test(intent);
   const sourceFunctions=new Map();
-  const functionTargets=new Map();
+  // [역할 구분] 함수 이름이 없는 요청은 검증 가능한 기능 영역만 근거로 분해한다.
+  // 근거 없는 함수 추정이나 저장/서버 권한 변경을 허용하지 않는다.
+  const requestedRepairSystems=[
+    /(?:button|gui.?button|touch.?button|버튼|터치.?버튼)/i.test(intent)?'INPUT_BUTTON':null,
+    /(?:camera|카메라)/i.test(intent)?'CAMERA':null,
+    /(?:datastore|persist|저장|save)/i.test(intent)?'SAVE':null,
+    /(?:animation|motion|IK\b|관절|모션|애니메이션)/i.test(intent)?'MOTION':null,
+    /(?:round|terminal|escape|라운드|단말|탈출)/i.test(intent)?'ROUND':null,
+    /(?:viewport|scroll|스크롤)/i.test(intent)?'HUD_SCROLL':null,
+    /(?:cleanup|teardown|누수|연결.?정리)/i.test(intent)?'LIFECYCLE_CLEANUP':null
+  ].filter(Boolean);
+  const candidateSystems=raw=>{
+    const recipes=unique([
+      raw.deterministicRobloxNativeRepair,
+      raw.semanticGrounding?.originalRecipe,
+      ...(raw.semanticGrounding?.recipes||[])
+    ].map(clean).filter(Boolean));
+    const systems=new Set();
+    for(const name of recipes){
+      if(/(?:BUTTON|GUI_BINDING|TOUCH|MODAL_BACKDROP)/.test(name))systems.add('INPUT_BUTTON');
+      if(/CAMERA/.test(name))systems.add('CAMERA');
+      if(/(?:SAVE|PERSIST)/.test(name))systems.add('SAVE');
+      if(/(?:WILDLIFE|ACTOR_|MOTION|ANIMATION)/.test(name))systems.add('MOTION');
+      if(/(?:ROUND|ESCAPE)/.test(name))systems.add('ROUND');
+      if(/(?:SCROLL|VIEWPORT)/.test(name))systems.add('HUD_SCROLL');
+      if(/(?:CLEANUP|TEARDOWN)/.test(name))systems.add('LIFECYCLE_CLEANUP');
+    }
+    return [...systems].sort();
+  };
   const functionEvidence=raw=>{
     const rows=[],names=new Set();
     for(const edit of raw.edits||[]){
@@ -2967,15 +2995,34 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           ?(count(bc)-count(ac)||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)||aSize-bSize)
           :(aSize-bSize||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0));
       });
-      const selected=[],occupied=new Map(),covered=new Set();
-      for(const raw of rankedSource){
-        if(selected.length>=4)break;
+      const selected=[],occupied=new Map(),covered=new Set(),coveredSystems=new Set();
+      // [복합 후보 탐색] 같은 버튼 수정을 반복 선택하기보다 아직 빠진
+      // 요청 기능 영역과 함수를 채우는 실제 소스 후보를 우선 조합한다.
+      const remaining=[...rankedSource];
+      while(remaining.length&&selected.length<4){
+        if(requestedRepairSystems.length>=2||requestedFunctions.length>=2){
+          remaining.sort((a,b)=>{
+            const aSystem=candidateSystems(a).filter(name=>
+              requestedRepairSystems.includes(name)&&!coveredSystems.has(name)).length;
+            const bSystem=candidateSystems(b).filter(name=>
+              requestedRepairSystems.includes(name)&&!coveredSystems.has(name)).length;
+            const aFunction=functionEvidence(a).names.filter(name=>
+              requestedFunctions.includes(name)&&!covered.has(name)).length;
+            const bFunction=functionEvidence(b).names.filter(name=>
+              requestedFunctions.includes(name)&&!covered.has(name)).length;
+            return bFunction-aFunction||bSystem-aSystem||
+              (Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0);
+          });
+        }
+        const raw=remaining.shift();
         if(!Array.isArray(raw.edits)||!raw.edits.length||raw.newFiles?.length||raw.replaceFiles?.length)continue;
         const dependencies=unique([...raw.edits.map(row=>row.path),...(raw.readDependencies||[])]);
         if(dependencies.some(path=>!sourceHashes.has(path)))continue;
-        const functionNames=functionEvidence(raw).names;
-        // 명시된 함수가 2개 이상이면 관련 없는 소스 수정은 조합에 넣지 않는다.
-        if(requestedFunctions.length>=2&&!functionNames.some(name=>requestedFunctions.includes(name)))continue;
+        const functionNames=functionEvidence(raw).names,repairSystems=candidateSystems(raw);
+        if(requestedFunctions.length>=2&&!functionNames.some(name=>
+          requestedFunctions.includes(name)&&!covered.has(name)))continue;
+        if(requestedRepairSystems.length>=2&&!repairSystems.some(name=>
+          requestedRepairSystems.includes(name)&&!coveredSystems.has(name)))continue;
         const ranges=[],seenThisCandidate=new Map();
         let disjoint=true;
         for(const edit of raw.edits){
@@ -2990,8 +3037,11 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         if(!disjoint)continue;
         selected.push(raw);
         for(const name of functionNames)covered.add(name);
+        for(const name of repairSystems)coveredSystems.add(name);
         for(const row of ranges)occupied.set(row.path,[...(occupied.get(row.path)||[]),row]);
-        if(requestedFunctions.length>=2&&requestedFunctions.every(name=>covered.has(name)))break;
+        if((requestedFunctions.length<2||requestedFunctions.every(name=>covered.has(name)))&&
+          (requestedRepairSystems.length<2||requestedRepairSystems.every(name=>coveredSystems.has(name)))&&
+          (requestedFunctions.length>=2||requestedRepairSystems.length>=2))break;
       }
       if(selected.length<2)continue;
       const edits=selected.flatMap(row=>row.edits);
@@ -3011,6 +3061,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           sourceFiles:paths,sourceFunctionUnits:functionUnits,
           requestedFunctions,coveredFunctions:[...covered].sort(),
           uncoveredFunctions:requestedFunctions.filter(name=>!covered.has(name)),
+          requestedRepairSystems,coveredRepairSystems:[...coveredSystems].sort(),
+          missingRepairSystems:requestedRepairSystems.filter(name=>!coveredSystems.has(name)),
           compositionStrategy:mode,sourceBound:true,uniqueOriginalAnchors:true,
           noNewSaveKeys:true,modelUsed:false,runtimeVerified:false
         }
@@ -3071,8 +3123,12 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   const candidateComparison=raw=>{
     const units=functionEvidence(raw),touched=unique((raw.edits||[]).map(row=>row.path));
     const coveredFunctions=requestedFunctions.filter(name=>units.names.includes(name));
+    const sourceSystems=candidateSystems(raw),coveredRepairSystems=requestedRepairSystems.filter(name=>sourceSystems.includes(name));
     return{
       functionCoverage:coveredFunctions.length,
+      repairSystemCoverage:coveredRepairSystems.length,requestedRepairSystemCount:requestedRepairSystems.length,
+      coveredRepairSystems,missingRepairSystems:requestedRepairSystems.filter(name=>!coveredRepairSystems.includes(name)),
+      sourceRepairSystems:sourceSystems,
       requestedFunctionCount:requestedFunctions.length,
       coveredFunctions,uncoveredFunctions:requestedFunctions.filter(name=>!coveredFunctions.includes(name)),
       sourceFunctions:units.names,sourceFiles:touched,
@@ -3087,12 +3143,15 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       const ac=candidateComparison(a),bc=candidateComparison(b);
       const coverage=composedIntent&&requestedFunctions.length>=2
         ?bc.functionCoverage-ac.functionCoverage:0;
-      return coverage||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
+      const systemCoverage=composedIntent&&requestedRepairSystems.length>=2
+        ?bc.repairSystemCoverage-ac.repairSystemCoverage:0;
+      return coverage||systemCoverage||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
         ||(composedIntent?bc.sourceFunctions.length-ac.sourceFunctions.length:0)
         ||ac.changedBytes-bc.changedBytes;
     });
-  const selection={version:3,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
-    requestedFunctions,comparisonPolicy:'FUNCTION_COVERAGE_THEN_SOURCE_PRIORITY_THEN_MINIMAL_CHANGE',
+  const selection={version:4,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+    requestedFunctions,requestedRepairSystems,
+    comparisonPolicy:'FUNCTION_AND_SYSTEM_COVERAGE_THEN_SOURCE_PRIORITY_THEN_MINIMAL_CHANGE',
     attempts:[],selectedFingerprint:null,runtimeVerified:false};
   const deadline=Date.now()+DEFAULT_TIMEOUT_MS;
   for(const raw of ranked){
@@ -3119,6 +3178,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       // 기존 복구 경로에 정확한 실패 근거를 반환하고, 부분 수정의 통과 판정을 금지한다.
       if(composedIntent&&requestedFunctions.length>=2&&decision.comparison.uncoveredFunctions.length)
         throw new Error('DETERMINISTIC_FUNCTION_COVERAGE_INCOMPLETE');
+      if(composedIntent&&requestedRepairSystems.length>=2&&decision.comparison.missingRepairSystems.length)
+        throw new Error('DETERMINISTIC_REPAIR_SYSTEM_COVERAGE_INCOMPLETE');
       const candidate=normalizeCandidate(raw,{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=candidateValidator(candidate);
@@ -3133,8 +3194,9 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       selection.attempts.push({...decision,status:'VALIDATED'});
       selection.selectedFingerprint=fingerprint;
       selection.selectedComparison=decision.comparison;
-      selection.scopeComplete=requestedFunctions.length>=2&&decision.comparison.uncoveredFunctions.length===0;
-      selection.scopeCompletionBasis=requestedFunctions.length>=2?'EXPLICIT_SOURCE_FUNCTION_COVERAGE_ONLY':'NOT_PROVEN';
+      selection.scopeComplete=(requestedFunctions.length>=2||requestedRepairSystems.length>=2)
+        &&decision.comparison.uncoveredFunctions.length===0&&decision.comparison.missingRepairSystems.length===0;
+      selection.scopeCompletionBasis=selection.scopeComplete?'SOURCE_FUNCTION_AND_REPAIR_SYSTEM_COVERAGE_ONLY':'NOT_PROVEN';
       return {...raw,normalizedCandidate:candidate,candidateValidation,
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
