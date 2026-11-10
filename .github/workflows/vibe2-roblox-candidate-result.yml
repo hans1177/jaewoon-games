@@ -453,3 +453,10 @@ jobs:
             --data "$payload"
           echo 'VIBE2_EVENT_DRIVEN_REFILL=REPOSITORY_DISPATCH'
           echo 'VIBE2_ROBLOX_VERIFICATION_REFILL=YES'
+
+      - name: Preserve failed QA as failed candidate result after retry routing
+        if: steps.qa.outputs.actual_conclusion == 'failure'
+        shell: bash
+        run: |
+          echo 'VIBE2_ROBLOX_CANDIDATE_RESULT=FAILED_QA_RECORDED_FOR_REPAIR'
+          exit 1
