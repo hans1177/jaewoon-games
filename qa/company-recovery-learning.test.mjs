@@ -1084,6 +1084,16 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
     ]}});
   assert.equal(runtime.owner,'SYSTEM_AI');
   assert.deepEqual(runtime.queue.tasks[0].responsibleFiles,[]);
+  // [스튜디오 통신 장애] MCP 타임아웃은 게임 소스 오류로 처리하지 않는다.
+  const timeout=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+    jobsInput:{...jobs,studioMarkers:[
+      'STUDIO_QA_GAME_ID=mare-essentia',
+      'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION',
+      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_MCP_TOOL_TIMEOUT'
+    ]}});
+  assert.equal(timeout.owner,'SYSTEM_AI');
+  assert.equal(timeout.queue.tasks[0].failureSignature,'STUDIO_MCP_TOOL_TIMEOUT');
+  assert.deepEqual(timeout.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
   const missing=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
     jobsInput:{...jobs,studioMarkers:jobs.studioMarkers.filter(v=>!v.startsWith('STUDIO_QA_SOURCE_FILE='))}});
   assert.equal(missing.owner,'SYSTEM_AI');
@@ -1099,6 +1109,8 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(studio,/run-name: Devloop Studio Capture/);
   assert.match(studio,/STUDIO_QA_FAILURE_STAGE=\$qaStage/);
   assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
+  assert.match(studio,/STUDIO_MCP_TOOL_TIMEOUT/);
+  assert.match(studio,/MCP timeout: tools\/call/);
   assert.match(studio,/STUDIO_QA_FAILED_EVIDENCE_PUBLISHED/);
   assert.match(studio,/STUDIO_SCRIPT_PROCESS_EXIT=\$studioNodeExitCode/);
   assert.match(studio,/STUDIO_REPORT_MISSING/);
