@@ -204,6 +204,22 @@ jobs:
               $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
             }
           }
+          # [실증 분류] 185단계 버튼 PASS와 모델·이미지/음악·게임 기능 전수 PASS를 분리한다.
+          if (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_ASSET_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_ASSET_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FEATURE_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_FEATURE_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FULL_AUDIT_INCOMPLETE' }).Count -gt 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+          }
+          if ($report.assetAudit) {
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MODELS=" + [string]$report.assetAudit.models.status)
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MEDIA=" + [string]$report.assetAudit.registered.status)
+            Write-Host ("STUDIO_MARE_FEATURE_AUDIT=" + [string]$report.assetAudit.features.status)
+          }
           $runtimeRows = @($report.log | Where-Object {
             $_.ctx -in @('Client','Server') -and [string]$_.out -match 'LOGS\(([1-9][0-9]*)\):'
           })
