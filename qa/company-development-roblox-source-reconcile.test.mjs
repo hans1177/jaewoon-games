@@ -1557,3 +1557,37 @@ test('legacy module-only source cannot be promoted without current native static
 
 // [복합장르] 설계 A 또는 B 장르 하나만 일치하면 인정하되, 실제 소스·모드 검증은 유지한다.
 // [삭제된 게임 QA 정리] 삭제된 소스 파일을 현재 활성 게임의 검증 대상으로 취급하지 않는다.
+
+// [CC0 에셋 실행 회귀] 원본 마을 건물/망토 변환에 Blender가 필요한 경우에만,
+// 기존 Roblox source-worker가 공식 SHA 고정 캐시를 복원·검증·저장한다.
+test('Roblox source worker reuses official Blender cache before native fantasy source conversion',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const job=workflow.split('\n  source-worker:\n')[1]?.split(/\n  [a-z][a-z0-9-]*:\n/)[0];
+  assert.ok(job,'existing canonical Roblox source-worker must be retained');
+  const restore=job.indexOf('      - name: Restore pinned Blender for native Roblox assets');
+  const prepare=job.indexOf('      - name: Verify or prepare official Blender for native Roblox assets');
+  const save=job.indexOf('      - name: Save verified Blender toolchain cache');
+  const compile=job.indexOf('      - name: Compile isolated Roblox source candidate');
+  assert.ok(restore>0 && restore<prepare && prepare<save && save<compile,
+    'cache restore/verify/save must precede the existing native source compile');
+  const setup=job.slice(restore,compile);
+  assert.match(setup,/uses: actions\/cache\/restore@v4/);
+  assert.match(setup,/uses: actions\/cache\/save@v4/);
+  assert.match(setup,/steps\.native-blender\.outputs\.built == 'true'/);
+  assert.equal((setup.match(/if: matrix\.nativeCreatureRepair == true/g)||[]).length,3,
+    'Blender must be scoped to the existing native creature/asset repair work');
+  assert.match(setup,/command -v blender/);
+  assert.match(setup,/ROBLOX_NATIVE_BLENDER=REUSED_SYSTEM/);
+  assert.match(setup,/ROBLOX_NATIVE_BLENDER=RESTORED_CACHE/);
+  assert.match(setup,/sha256sum --check --status/);
+  assert.match(setup,/0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e/);
+  assert.match(setup,/https:\/\/download\.blender\.org\/release\/Blender4\.5\/blender-4\.5\.15-linux-x64\.tar\.xz/);
+  assert.match(setup,/bpy\.ops\.export_scene\.gltf\.get_rna_type\(\)/);
+  assert.match(setup,/\$GITHUB_PATH/);
+  assert.doesNotMatch(setup,/apt-get|pip install|continue-on-error: true/,
+    'do not reinstall packages each run or bypass exporter verification');
+  const script=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
+  assert.match(script,/FANTASY_VILLAGE_BLENDER_EXPORTER_REQUIRED/);
+  assert.match(script,/FOREST_WORN_CAPE_BLENDER_EXPORTER_REQUIRED/);
+  assert.match(script,/subprocess\.run\(\['blender','--background'/);
+});
