@@ -7,9 +7,25 @@ import {spawnSync} from 'node:child_process';
 import {blenderAvailable} from '../tools/vibe-variation-gym.mjs';
 import {runPracticeSession,pickPracticeParents} from '../tools/vibe-practice-session.mjs';
 import {loop} from '../tools/vibe-practice-loop.mjs';
+import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
 
 const imaging=spawnSync('python3',['-c','import PIL,numpy'],{encoding:'utf8'}).status===0;
 const tmp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'ps-'));
+
+test('UI 자동 연습은 8종 화면·3종 모바일 비율을 실측 채점하며 게임 적용을 주장하지 않는다', () => {
+  const practice=exerciseVibeUiLayouts();
+  assert.equal(practice.surfaces.length,8);
+  assert.deepEqual(practice.viewports,['SMALL_PORTRAIT','MOBILE_PORTRAIT','MOBILE_LANDSCAPE']);
+  assert.equal(practice.trials,8*3*2);
+  assert.equal(practice.staticPasses+practice.staticFailures,practice.trials);
+  assert.ok(practice.meanScore>=0&&practice.meanScore<=100);
+  assert.ok(practice.rows.some(row=>row.surface==='INVENTORY'));
+  assert.ok(practice.rows.some(row=>row.surface==='COMBAT'));
+  assert.ok(practice.rows.every(row=>row.gameApplied===false&&row.runtimeVerified===false));
+  assert.equal(practice.measurement,'SYNTHETIC_GEOMETRY_ONLY');
+  assert.equal(practice.screenshotsCaptured,false);
+  assert.deepEqual(exerciseVibeUiLayouts().rows,practice.rows);
+});
 
 test('연습 부모 선택은 시드가 같으면 같고 승인된 CC0만 고른다', () => {
   const a=pickPracticeParents(process.cwd(),5),b=pickPracticeParents(process.cwd(),5);
@@ -38,6 +54,11 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   const stats=path.join(tmp(),'stats.json'),lights=path.join(tmp(),'lights.json');
   const {session}=runPracticeSession({repoRoot:root,seed:3,parents:1,variants:3,out,statsPath:stats,lightsPath:lights,lightCandidates:3,lightRounds:1});
   assert.ok(session.gym.children>=1);
+  assert.equal(session.ui.trials,48);
+  assert.equal(session.ui.gameApplied,false);
+  const learnedUi=JSON.parse(fs.readFileSync(stats,'utf8')).UI;
+  assert.ok(learnedUi['hud_layout:soft'].n>=3);
+  assert.ok(learnedUi['inventory_layout:strong'].n>=3);
   assert.ok(session.light&&Number.isFinite(session.light.best),JSON.stringify(session.light));
   assert.ok(session.bake&&typeof session.bake.pass==='boolean',JSON.stringify(session.bake));
   assert.ok(fs.existsSync(path.join(out,'session.json')));

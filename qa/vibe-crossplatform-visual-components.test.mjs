@@ -7,7 +7,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,exerciseVibeUiLayouts
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -51,6 +51,14 @@ test('visual craft returns real pixel placements and source-safe material slots'
   assert.equal(plan.craftPlans[0].grammar,'RECIPE_GRAPH');
   assert.equal(plan.craftPlans[0].materialRecipe.materialCues[0].construction,'CARVED_JOINERY');
 });
+test('모바일 UI 8종 반복 연습은 기존 배치기·채점기로만 수행하고 실제 게임 적용은 차단한다',()=>{
+  const trials=exerciseVibeUiLayouts();
+  assert.equal(trials.trials,48);
+  assert.ok(trials.staticPasses>0);
+  assert.ok(trials.rows.every(row=>row.score>=0&&row.score<=100));
+  assert.ok(trials.rows.every(row=>row.gameApplied===false&&!row.runtimeVerified));
+});
+
 test('layout optimizer can pack 12 distinct badges without HUD overlaps',()=>{
   const components=Array.from({length:12},(_,i)=>({
     id:'visible-badge-'+i,width:98,height:42,priority:1,zone:'EDGE'

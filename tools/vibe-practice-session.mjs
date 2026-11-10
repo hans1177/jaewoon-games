@@ -10,6 +10,7 @@ import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailab
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
+import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
 
 // 이번 회차에 쓸 부모 두 개(조명용·굽기용)를 시드로 고른다. 레지스트리의 승인된 CC0 + 오너가 승인한 로컬 라이브러리.
 export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,count=2){
@@ -34,6 +35,25 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     motionComplete:gym.ledger.filter(r=>r.motion?.missing.length===0).length,
     motionGaps:gym.ledger.filter(r=>r.motion?.missing.length>0).length,
     gameApplied:0};
+  // [UI 연습→채점→보관] 기존 화면 배치 엔진으로 8개 화면/3개 모바일 크기/2개 간격 변형을 연습한다.
+  // 수치 평가만 기존 op-stats.json에 저장해 게임 코드·입력·저장 상태를 변경하지 않는다.
+  const ui=exerciseVibeUiLayouts();
+  session.ui={surfaces:ui.surfaces,viewports:ui.viewports,trials:ui.trials,
+    staticPasses:ui.staticPasses,staticFailures:ui.staticFailures,
+    meanScore:ui.meanScore,measurement:ui.measurement,runtimeVerified:false,gameApplied:false};
+  if(statsPath){
+    const statsFile=path.resolve(repoRoot,statsPath);
+    const scores=fs.existsSync(statsFile)?JSON.parse(fs.readFileSync(statsFile,'utf8')):{};
+    scores.UI??={};
+    for(const row of ui.rows){
+      const key=row.surface.toLowerCase()+'_layout:'+row.variant;
+      const entry=scores.UI[key]??={n:0,keep:0,gainSum:0,improved:0,broken:0};
+      entry.n++;entry.gainSum+=row.gain;
+      if(row.staticPass){entry.keep++;if(row.gain>0)entry.improved++;}
+      else{entry.broken++;entry.fail??={};const reason=row.issues[0]||'STATIC_LAYOUT_FAIL';entry.fail[reason]=(entry.fail[reason]||0)+1;}
+    }
+    fs.writeFileSync(statsFile,JSON.stringify(scores,null,1)+'\n');
+  }
   const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,process.env.VIBE_CC0_LIBRARY_DIR||null,4);
   if(light&&lp){
     try{
@@ -67,5 +87,5 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const args=process.argv.slice(2);const opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d};const flag=n=>args.includes('--'+n);
   if(!blenderAvailable()){console.error('Blender/bpy 없음 (VIBE2_BLENDER_BINARY 또는 pip install bpy)');process.exit(2)}
   const {session}=runPracticeSession({seed:+opt('seed',Math.floor(Date.now()/1000)),parents:+opt('parents',3),variants:+opt('variants',4),out:opt('out','build/practice'),statsPath:opt('stats',null),lightsPath:opt('lights',null),light:!flag('no-light'),bake:!flag('no-bake'),lightCandidates:+opt('light-candidates',8),lightRounds:+opt('light-rounds',2)});
-  console.log(`VIBE_PRACTICE_SESSION gym=${JSON.stringify(session.gym.tally)} light=${session.light?.best??session.light?.error??'-'} bake=${session.bake?(session.bake.pass?'PASS':'FAIL '+(session.bake.failures||session.bake.error)):'-'}`);
+  console.log(`VIBE_PRACTICE_SESSION gym=${JSON.stringify(session.gym.tally)} ui=${session.ui.staticPasses}/${session.ui.trials} static layouts light=${session.light?.best??session.light?.error??'-'} bake=${session.bake?(session.bake.pass?'PASS':'FAIL '+(session.bake.failures||session.bake.error)):'-'}`);
 }

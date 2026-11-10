@@ -323,4 +323,73 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
   });
 }
 export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0}={}){let score=100;score-=Math.max(0,primaryActions-1)*8;score-=overlaps*15;score-=edgeClips*18;score-=unreadableLabels*10;score-=touchTargetsSmall*8;if(!criticalHudVisible)score-=30;score=clamp(score);return Object.freeze({score,grade:score>=90?'A':score>=75?'B':score>=60?'C':'D',issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',touchTargetsSmall&&'touch-target',!criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))})}
+// [UI 반복 연습] 기존 화면 배치기/채점기로 안전 영역·충돌·터치 판독성을 수치 연습한다.
+// 이미지·모델·스크립트 에셋 생성 없음. 연습 결과는 게임 런타임 승인이나 실제 버튼 작동 증거가 아니다.
+export function exerciseVibeUiLayouts(){
+  const profiles=[
+    {surface:'HUD',controls:[['health',148,44,'TOP',false,true],['skills',154,56,'BOTTOM',true],['bag',48,48,'RIGHT',true],['quest',160,46,'TOP']]},
+    {surface:'INVENTORY',controls:[['slots',170,174,'LEFT'],['details',140,154,'RIGHT'],['equip',98,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'SHOP',controls:[['wares',178,164,'LEFT'],['prices',136,130,'RIGHT'],['purchase',110,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'SETTINGS',controls:[['tabs',124,138,'LEFT'],['options',172,156,'RIGHT'],['apply',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'CRAFT',controls:[['recipes',172,158,'LEFT'],['ingredients',144,144,'RIGHT'],['craft',100,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'QUEST',controls:[['journal',180,164,'LEFT'],['objective',140,110,'RIGHT'],['track',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'DIALOGUE',controls:[['dialogue',200,100,'BOTTOM',false,true],['response',160,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'COMBAT',controls:[['health',152,44,'TOP',false,true],['attack',78,60,'BOTTOM',true],['skills',144,52,'BOTTOM',true],['target',116,46,'TOP']]}
+  ];
+  const viewports=[
+    {name:'SMALL_PORTRAIT',width:360,height:640,safe:{left:12,right:12,top:24,bottom:24}},
+    {name:'MOBILE_PORTRAIT',width:393,height:852,safe:{left:16,right:16,top:32,bottom:24}},
+    {name:'MOBILE_LANDSCAPE',width:844,height:390,safe:{left:16,right:16,top:14,bottom:14}}
+  ];
+  const rows=[];
+  for(const profile of profiles)for(const view of viewports)for(const variant of ['soft','strong']){
+    const factor=variant==='soft'?0.94:1.12;
+    const controls=profile.controls.map(([id,baseW,baseH,zone,touch=false,critical=false])=>({
+      id,zone,priority:critical?8:touch?5:2,width:Math.round(baseW*factor),
+      height:Math.round(baseH*factor),touch,critical
+    }));
+    const viewport={width:view.width,height:view.height},safeInsets=view.safe;
+    const focalRegion=['HUD','COMBAT'].includes(profile.surface)?{
+      x:Math.round(view.width*0.24),y:Math.round(view.height*0.23),
+      width:Math.round(view.width*0.52),height:Math.round(view.height*0.52)
+    }:null;
+    const layout=optimizeVibeScreenLayout({viewport,safeInsets,components:controls,focalRegion});
+    const byId=new Map((layout.placements||[]).map(row=>[row.id,row]));
+    const missing=controls.filter(row=>!byId.has(row.id)).length;
+    const touchTargetsSmall=controls.filter(row=>row.touch&&(Math.min(byId.get(row.id)?.width||0,byId.get(row.id)?.height||0)<44)).length;
+    const edgeClips=(layout.placements||[]).filter(row=>row.x<view.safe.left||
+      row.y<view.safe.top||row.x+row.width>view.width-view.safe.right||
+      row.y+row.height>view.height-view.safe.bottom).length+missing;
+    const overlaps=(layout.placements||[]).filter(row=>row.unresolved).length;
+    const criticalHudVisible=controls.filter(row=>row.critical).every(row=>byId.has(row.id)&&!byId.get(row.id).unresolved);
+    const score=scoreVibeScreenComposition({overlaps,edgeClips,touchTargetsSmall,criticalHudVisible});
+    // 비교 기준은 실제 게임 UI가 아니라 같은 요소를 최적화 없이 세로로 쌓은 연습 기준안이다.
+    const raw=[];
+    let y=view.safe.top;
+    for(const control of controls){raw.push({x:view.safe.left,y,width:control.width,height:control.height});
+      y+=control.height+6;}
+    const baselineClips=raw.filter(rect=>rect.x+rect.width>view.width-view.safe.right||
+      rect.y+rect.height>view.height-view.safe.bottom).length;
+    let baselineOverlaps=0;
+    for(let i=0;i<raw.length;i++)for(let j=i+1;j<raw.length;j++)if(overlapArea(raw[i],raw[j])>0)baselineOverlaps++;
+    const baselineScore=scoreVibeScreenComposition({
+      overlaps:baselineOverlaps,edgeClips:baselineClips,
+      touchTargetsSmall:controls.filter(row=>row.touch&&(row.width<44||row.height<44)).length,
+      criticalHudVisible:true}).score;
+    rows.push(Object.freeze({surface:profile.surface,viewport:view.name,variant,
+      score:score.score,baselineScore,gain:score.score-baselineScore,
+      staticPass:layout.pass&&score.score>=90&&touchTargetsSmall===0&&edgeClips===0,
+      issues:Object.freeze(score.issues.slice()),runtimeVerified:false,gameApplied:false}));
+  }
+  const passing=rows.filter(row=>row.staticPass).length;
+  const totalScore=rows.reduce((sum,row)=>sum+row.score,0);
+  return Object.freeze({surfaces:Object.freeze(profiles.map(p=>p.surface)),
+    viewports:Object.freeze(viewports.map(v=>v.name)),
+    trials:rows.length,staticPasses:passing,staticFailures:rows.length-passing,
+    meanScore:Math.round(totalScore/Math.max(1,rows.length)*10)/10,
+    rows:Object.freeze(rows),source:'EXISTING_VIBE_PRESENTATION_LAYOUT_AND_SCORE',
+    measurement:'SYNTHETIC_GEOMETRY_ONLY',screenshotsCaptured:false,
+    runtimeVerified:false,gameApplied:false});
+}
+
 if(typeof window!=='undefined'){window.auditJaewoonVibePresentation=auditVibePresentation;window.createJaewoonVibeDesignSystem=createVibeDesignSystem;window.createJaewoonVibeCinematicDirection=createVibeCinematicDirection;window.createJaewoonVibeCinematicBeat=createVibeCinematicBeat;window.createJaewoonVibePresentationEvent=createVibePresentationEvent;window.compileJaewoonVibePresentationEvents=compileVibePresentationEvents;window.createJaewoonVibeAudioUIExecution=createVibeAudioUIExecution;window.executeJaewoonVibeAudioUIEvent=executeVibeAudioUIEvent;window.routeJaewoonVibePresentationEvent=routeVibePresentationEvent;window.buildJaewoonVibePresentationTimeline=buildVibePresentationTimeline;window.createJaewoonVibeHighEndPresentationStack=createVibeHighEndPresentationStack;window.planJaewoonVibePresentationAutopilot=planVibePresentationAutopilot;window.scoreJaewoonVibeScreenComposition=scoreVibeScreenComposition}
