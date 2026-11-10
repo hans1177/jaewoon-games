@@ -25,7 +25,7 @@ jobs:
   capture:
     if: github.repository == 'hans1177/jaewoon-games'
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 25
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,10 +93,18 @@ jobs:
               & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
             }
             Write-Host "NODE_EXIT=$LASTEXITCODE"
+            if ($LASTEXITCODE -ne 0) { throw "STUDIO_SCRIPT_EXIT_$LASTEXITCODE" }
           } finally {
             Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
           }
-          if (-not (Test-Path $out)) { Write-Host 'NO_OUTPUT'; exit 0 }
+          # [실증 검증] 성공처럼 보이는 빈 캡처·스크립트 오류는 실패로 처리한다.
+          $reportFile = Join-Path $out 'report.json'
+          if (-not (Test-Path $reportFile)) { throw 'STUDIO_REPORT_MISSING' }
+          $report = Get-Content $reportFile -Raw | ConvertFrom-Json
+          if (@($report.errors).Count -gt 0) { throw 'STUDIO_SCRIPT_REPORTED_ERRORS' }
+          $frames = @(Get-ChildItem -Path $out -Recurse -Filter '*.png' -File -ErrorAction SilentlyContinue)
+          if ($frames.Count -lt 1) { throw 'STUDIO_SCREENSHOTS_MISSING' }
+          Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
           $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
           Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
           New-Item -ItemType Directory $dst | Out-Null
@@ -109,3 +117,4 @@ jobs:
           git commit -q -m "studio frames $($env:CAP_GAME) run ${{ github.run_id }}"
           git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-studio-frames
           Write-Host "PUBLISHED=$LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_PUBLISH_FAILED' }
