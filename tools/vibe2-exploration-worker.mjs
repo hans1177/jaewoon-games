@@ -70,19 +70,23 @@ export function extractVibeSourceImportRefs(source='',target=''){
     /\b(?:require|import)\s*\(\s*['"]([^'"]+)['"]\s*\)/g
   ])for(const match of text.matchAll(expression))refs.add(match[1]);
   if(['roblox','luau','lua'].includes(clean(target).toLowerCase())){
-    // script.Parent.Foo = sibling module; script.Parent.Parent.Foo = parent-directory module.
-    const expression=/\brequire\s*\(\s*script((?:\.Parent)+)((?:\.[A-Za-z_]\w*)+|:WaitForChild\(\s*['"]([A-Za-z_]\w*)['"]\s*\))\s*\)/g;
+    // [로블록스 모듈 연결] 실제 require 체인을 정적 경로로 변환한다.
+    // 혼합 .Module / :WaitForChild("Module") 체인도 같은 ModuleScript를 가리킨다.
+    const expression=/\brequire\s*\(\s*script((?:\.Parent){1,8})((?:(?:\.[A-Za-z_]\w*)|(?::WaitForChild\(\s*["'][A-Za-z_]\w*["']\s*\))){1,8})\s*\)/g;
     for(const match of text.matchAll(expression)){
+      const lineStart=text.lastIndexOf('\n',match.index)+1;
+      if(text.slice(lineStart,match.index).trimStart().startsWith('--'))continue;
       const parents=(match[1].match(/\.Parent/g)||[]).length;
-      if(parents<1)continue;
-      const modulePath=match[2].startsWith('.')?match[2].slice(1).replaceAll('.','/'):match[3];
-      refs.add((parents===1?'./':'../'.repeat(parents-1))+modulePath);
+      const parts=[...match[2].matchAll(/\.([A-Za-z_]\w*)|:WaitForChild\(\s*(["'])([A-Za-z_]\w*)\2\s*\)/g)]
+        .map(row=>row[1]||row[3]);
+      if(parts.length===0)continue;
+      refs.add((parents===1?'./':'../'.repeat(parents-1))+parts.join('/'));
     }
   }
   return Object.freeze([...refs].filter(Boolean).sort());
 }
 
-function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceFunctions=[],target=''}){
+function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceFunctions=[],target='',requiredModulePaths=[]}){
   let score=0;const text=safeRead(row.full);
   if(responsible.has(row.relative))return{...row,score:10000,text,connections:[]};
   const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
@@ -92,6 +96,24 @@ function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,respon
   if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;
   const callNames=fn=>new Set([...fn.code.matchAll(/\b([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*)\s*\(/g)].map(match=>match[1].split(/[.:]/).at(-1)));
   const sourceCalls=new Set(sourceFunctions.flatMap(fn=>[...callNames(fn)])),sourceNames=new Set(sourceFunctions.map(fn=>fn.name.split(/[.:]/).at(-1))),connections=[];
+  if(target==='roblox'){
+    // A required module and its importers are higher-value coding context than lexical neighbors.
+    // Dependency discovery remains read-only and cannot extend the reserved writable paths.
+    const moduleStem=file=>posix(file).replace(/(?:\/init)?\.luau?$/i,'');
+    const matchModule=(ref,file)=>ref===moduleStem(file)||ref===posix(file)||ref+'/init'===moduleStem(file);
+    if(requiredModulePaths.some(ref=>matchModule(ref,row.relative))){
+      score+=320;
+      connections.push({path:row.relative,symbol:path.basename(moduleStem(row.relative)),direction:'REQUIRED_MODULE'});
+    }
+    const rowImports=extractVibeSourceImportRefs(text,target)
+      .filter(ref=>/^\.\.?\//.test(ref))
+      .map(ref=>path.posix.normalize(path.posix.join(dir,ref)))
+      .filter(ref=>ref!=='.'&&!ref.startsWith('../'));
+    if([...responsible].some(owner=>rowImports.some(ref=>matchModule(ref,owner)))){
+      score+=320;
+      connections.push({path:row.relative,symbol:path.basename(moduleStem(row.relative)),direction:'MODULE_IMPORTER'});
+    }
+  }
   for(const fn of inspectSourceFunctions(text,{language:target})){
     if(sourceCalls.has(fn.name.split(/[.:]/).at(-1)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLEE'});
     if([...callNames(fn)].some(name=>sourceNames.has(name)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLER'});
@@ -668,7 +690,13 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const scanLimitReached=rows.length>=MAX_SCAN_FILES;
   const responsibilityRows=responsible.map(relative=>{const full=path.join(root,relative),text=safeRead(full);return{relative,full,text,score:10000};}).filter(row=>fs.existsSync(row.full));
   const sourceFunctions=responsibilityRows.flatMap(row=>inspectSourceFunctions(row.text,{language:target}));
-  const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
+  const requiredModulePaths=target==='roblox'?unique(responsibilityRows.flatMap(row=>
+    extractVibeSourceImportRefs(row.text,target)
+      .filter(ref=>/^\.\.?\//.test(ref))
+      .map(ref=>path.posix.normalize(path.posix.join(path.posix.dirname(row.relative),ref)))
+      .filter(ref=>ref!=='.'&&!ref.startsWith('../'))
+  )):[];
+  const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target,requiredModulePaths})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
   const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
   const testCandidates=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,32).map(row=>row.relative));
