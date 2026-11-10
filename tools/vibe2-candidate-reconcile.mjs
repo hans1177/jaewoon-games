@@ -22,8 +22,17 @@ function parseArgs(argv = process.argv.slice(2)) {
   }
   return args;
 }
-function verificationEvidence({ target, runId, headSha, conclusion }) {
-  return unique([`${clean(target) || 'engine'}-verification-run:${clean(runId)}`, clean(headSha) ? `candidate-head-sha:${clean(headSha)}` : '', `verification-conclusion:${clean(conclusion).toLowerCase()}`]);
+function verificationEvidence({ target, runId, headSha, conclusion, failureStage = '', failureSignature = '' }) {
+  const failed=['failure','timed_out','startup_failure'].includes(clean(conclusion).toLowerCase());
+  const stage=clean(failureStage).replace(/[^a-zA-Z0-9_:-]/g,'_').slice(0,100);
+  const signature=clean(failureSignature).replace(/[\r\n]+/g,' ').slice(0,180);
+  return unique([
+    `${clean(target)||'engine'}-verification-run:${clean(runId)}`,
+    clean(headSha)?`candidate-head-sha:${clean(headSha)}`:'',
+    `verification-conclusion:${clean(conclusion).toLowerCase()}`,
+    failed&&stage?`engine-qa-failure-stage:${stage}`:'',
+    failed&&signature?`engine-qa-failure-signature:${signature}`:''
+  ]);
 }
 function findTask(queue, candidateBranch) {
   const branch = clean(candidateBranch);
@@ -32,20 +41,36 @@ function findTask(queue, candidateBranch) {
 function nextParallel(queue) { return selectVibeQueueBatch(queue, { maxConcurrentTasks: queue.maxConcurrentTasks }); }
 function shouldRefill(next) { return Boolean(next?.continueRequired || Number(next?.freeSlots || 0) > 0); }
 
-export function reconcileVibeCandidateVerification(queueInput, { candidateBranch = '', target = 'unity', conclusion = '', runId = '', headSha = '' } = {}) {
+export function reconcileVibeCandidateVerification(queueInput, { candidateBranch = '', target = 'unity', conclusion = '', runId = '', headSha = '', failureStage = '', failureSignature = '' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const branch = clean(candidateBranch);
   if (!branch.startsWith('vibe2/candidate/')) return Object.freeze({ updated:false, reason:'not-vibe2-candidate', queue, next:nextParallel(queue), dispatchNext:false });
   const task = findTask(queue, branch);
   if (!task) return Object.freeze({ updated:false, reason:'candidate-task-not-found', queue, next:nextParallel(queue), dispatchNext:false });
   const result = clean(conclusion).toLowerCase();
-  const evidence = verificationEvidence({ target, runId, headSha, conclusion: result });
+  const existingEvidence=(task.evidence||[]).map(clean);
+  const currentStatus=clean(task.status).toLowerCase();
+  const currentBlocker=clean(task.blocker);
+  const alreadyAdvanced=currentStatus==='verified'
+    ||/^candidate-awaiting-(?:roblox|unity)-runtime-qa$/i.test(currentBlocker)
+    ||existingEvidence.some(value=>/^(?:roblox|unity)-runtime-await-source-tree:/i.test(value));
+  const unchanged=reason=>Object.freeze({
+    updated:false,reason,taskId:task.id,verificationPassed:false,finalPass:currentStatus==='verified',
+    promotionAllowed:false,learningEligible:false,queue,next:nextParallel(queue),dispatchNext:false
+  });
+  // [현재 후보 검증] 이전 소스 버전·중복 Actions 완료 알림이 재시도 횟수나 확정된
+  // 런타임 체크포인트를 변경하지 못하게 한다. 미확인 SHA는 권한이나 PASS 증거가 아니다.
+  const sha=clean(headSha).toLowerCase();
+  const boundCandidateShas=unique(existingEvidence
+    .map(row=>row.match(/^candidate-(?:head-)?sha:([a-f0-9]{40})$/i)?.[1]?.toLowerCase())
+    .filter(Boolean));
+  if(boundCandidateShas.length&&(!/^[a-f0-9]{40}$/.test(sha)||boundCandidateShas.some(value=>value!==sha)))
+    return unchanged('candidate-source-revision-mismatch');
+  const runMarker=`${clean(target)||'engine'}-verification-run:${clean(runId)}`;
+  if(clean(runId)&&existingEvidence.includes(runMarker))return unchanged('duplicate-candidate-verification-run');
+  if(result!=='success'&&alreadyAdvanced)return unchanged('late-candidate-verification-after-checkpoint');
+  const evidence = verificationEvidence({ target, runId, headSha, conclusion: result, failureStage, failureSignature });
   if (result === 'success') {
-    const currentStatus=clean(task.status).toLowerCase();
-    const currentBlocker=clean(task.blocker);
-    const alreadyAdvanced=currentStatus==='verified'
-      ||/^candidate-awaiting-(?:roblox|unity)-runtime-qa$/i.test(currentBlocker)
-      ||(task.evidence||[]).some(value=>/^(?:roblox|unity)-runtime-await-source-tree:/i.test(clean(value)));
     const tasks = queue.tasks.map((item) => {
       if(item.id!==task.id)return{...item};
       const mergedEvidence=unique([...(item.evidence || []), ...evidence]);
@@ -77,16 +102,16 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
   return Object.freeze({ updated:true, taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:shouldRefill(next), reason:'engine-verification-incomplete' });
 }
 
-export function runCandidateReconcile({ queueFile='.vibe2/queue.json', candidateBranch='', target='unity', conclusion='', runId='', headSha='' }={}) {
+export function runCandidateReconcile({ queueFile='.vibe2/queue.json', candidateBranch='', target='unity', conclusion='', runId='', headSha='', failureStage='', failureSignature='' }={}) {
   const queue=readJson(queueFile,{tasks:[]});
-  const result=reconcileVibeCandidateVerification(queue,{candidateBranch,target,conclusion,runId,headSha});
+  const result=reconcileVibeCandidateVerification(queue,{candidateBranch,target,conclusion,runId,headSha,failureStage,failureSignature});
   if(result.updated)writeJson(queueFile,result.queue);
   return result;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args=parseArgs();
-  const result=runCandidateReconcile({ queueFile:clean(args.queue)||'.vibe2/queue.json', candidateBranch:clean(args.branch), target:clean(args.target)||'unity', conclusion:clean(args.conclusion), runId:clean(args['run-id']), headSha:clean(args['head-sha']) });
+  const result=runCandidateReconcile({ queueFile:clean(args.queue)||'.vibe2/queue.json', candidateBranch:clean(args.branch), target:clean(args.target)||'unity', conclusion:clean(args.conclusion), runId:clean(args['run-id']), headSha:clean(args['head-sha']), failureStage:clean(args['failure-stage']), failureSignature:clean(args['failure-signature']) });
   console.log(`VIBE2_RECONCILE_UPDATED=${result.updated?'YES':'NO'}`);
   console.log(`VIBE2_RECONCILE_REASON=${result.reason}`);
   console.log(`VIBE2_FINAL_PASS=${result.finalPass?'YES':'NO'}`);
