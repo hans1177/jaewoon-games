@@ -2640,6 +2640,22 @@ export function directivePrompt(d={}){
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
+    // [자동 개선 우선순위] 매우 긴 설계 문맥보다 앞서 동일 작업의 실제 선택 대상을 제시한다.
+    // 이 소스 후보는 쓰기 권한이나 런타임 통과 증거를 뜻하지 않는다.
+    ...(clean(d.platform).toUpperCase()==='ROBLOX'&&d.robloxHolisticQualityPlan?.autonomousWorkUnit?.id
+      ?[
+        'VIBE_QUALITY_FIRST_WORK: '+JSON.stringify({
+          id:d.robloxHolisticQualityPlan.autonomousWorkUnit.id,
+          mode:d.robloxHolisticQualityPlan.autonomousWorkUnit.mode,
+          priority:d.robloxHolisticQualityPlan.autonomousWorkUnit.priority,
+          sourceFiles:d.robloxHolisticQualityPlan.autonomousWorkUnit.sourceFiles||[],
+          ownerDiscoveryRequired:d.robloxHolisticQualityPlan.autonomousWorkUnit.ownerDiscoveryRequired===true,
+          evidence:d.robloxHolisticQualityPlan.autonomousWorkUnit.evidence,
+          verifiedRuntime:false,
+          permission:'NO_WRITE_SCOPE_EXPANSION'
+        }),
+        'VIBE_QUALITY_FIRST_RULE: 실제 실패 복구를 먼저 수행한다. 후보는 현재 게임의 승인된 작업 파일과 교집합으로만 사용한다. 일치하지 않으면 원인과 책임 파일을 다시 조사하고 권한을 새로 만들거나 임의 추정으로 수정하지 않는다. 기존 함수/리소스를 직접 수정하며 동일 실패 검사 재실행 전 PASS 금지.'
+      ]:[]),
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
     `DESIGN_SOURCE_BUILD_UP: ${JSON.stringify(d.designSourceBuildUp||{})}`,
