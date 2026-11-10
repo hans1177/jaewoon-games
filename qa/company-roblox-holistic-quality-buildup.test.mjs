@@ -1,3 +1,4 @@
+// 파일명: qa/company-roblox-holistic-quality-buildup.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -250,7 +251,56 @@ test('Vibe active causal failure is repaired before automatic content or visual 
   assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
   assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,true);
   assert.equal(plan.autonomousDecisionOwner,'VIBE_EXISTING_BUILD_UP');
-  assert.match(robloxHolisticQualityPromptLines(plan).join('\\n'),/REPAIR_CURRENT_FAILED_STAGE/);
+  assert.match(robloxHolisticQualityPromptLines(plan).join('\\n'),/INSPECT_CANDIDATE_OWNERS_IDENTIFY_EXACT_CAUSE/);
   const directiveSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
   assert.ok(directiveSource.includes("repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'"));
+}));
+
+
+test('Vibe failure repair retains only same-game authorized existing Luau candidates',()=>fixture(({dir,game,base})=>{
+  const expected='roblox-games/'+game+'/server/Combat.server.luau';
+  fs.writeFileSync(path.join(base,'server','Combat.server.luau'),'local damage = 5');
+  fs.writeFileSync(path.join(base,'client','UI.client.luau'),'local gui = {}');
+  fs.mkdirSync(path.join(dir,'roblox-games','other'),{recursive:true});
+  fs.writeFileSync(path.join(dir,'roblox-games','other','Game.server.luau'),'print("other")');
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,repairRequested:true,
+    runtimeEvidence:{failureSignature:'OBSERVED_COMBAT_FAILURE'},
+    responsibleFiles:[expected,'roblox-games/other/Game.server.luau',
+      'roblox-games/'+game+'/../other/Game.server.luau','../../policy.json']});
+  assert.equal(plan.autonomousWorkUnit.mode,'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST');
+  assert.deepEqual(plan.autonomousWorkUnit.sourceFiles,[expected]);
+  assert.deepEqual(plan.autonomousWorkUnit.workScope.authorizedSourceFiles,[expected]);
+  assert.equal(plan.autonomousWorkUnit.workScope.writableScopeExpanded,false);
+  assert.equal(plan.autonomousWorkUnit.workScope.directMutationAuthorized,false);
+  assert.equal(plan.autonomousWorkUnit.workScope.exactOwnerCauseVerified,false);
+  assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,true);
+  assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+}));
+
+test('Vibe source ownership rejects symlink escaping into other game',()=>fixture(({dir,game,base})=>{
+  const other=path.join(dir,'outside.luau');
+  fs.writeFileSync(other,'print("do not edit")');
+  const bad=path.join(base,'server','Wrong.server.luau');
+  fs.symlinkSync(other,bad);
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,repairRequested:true,
+    responsibleFiles:['roblox-games/'+game+'/server/Wrong.server.luau']});
+  assert.deepEqual(plan.autonomousWorkUnit.sourceFiles,[]);
+  assert.equal(plan.autonomousWorkUnit.workScope.authorizedFileCount,0);
+  assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,true);
+}));
+
+test('BUILD_UP passes current authorized source files to Vibe autonomous quality evaluator',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'server','Combat.server.luau'),'local combat=true');
+  const file='roblox-games/'+game+'/server/Combat.server.luau';
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:game,platform:'ROBLOX',repoRoot:dir,sourceRoot:'roblox-games/'+game,
+    responsibleFiles:[file,'roblox-games/another/server/Game.server.luau'],
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureSignature:'ACTUAL_RUNTIME_FAIL'},
+    designRecord:{content:{identity:'숲 생존',coreFun:'사냥',coreLoop:['사냥']}}
+  });
+  const work=directive.robloxHolisticQualityPlan.autonomousWorkUnit;
+  assert.deepEqual(work.sourceFiles,[file]);
+  assert.equal(work.workScope.authorizedFileCount,1);
+  assert.equal(work.mode,'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST');
+  assert.equal(directive.robloxHolisticQualityPlan.qualityComplete,false);
 }));
