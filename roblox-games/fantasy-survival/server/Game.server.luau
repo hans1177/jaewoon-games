@@ -1010,6 +1010,17 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
     clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+    -- [마을 우물 텍스처] 화면/네트워크에 노출하기 전에 수입 팔레트 참조만 정리한다.
+    -- 원본 MeshId·지붕·우물통·원본 모델과 게임 진행·저장 구조는 유지한다.
+    if id=="villageWell" then
+      for _,mesh in ipairs(clone:GetDescendants()) do
+        if mesh:IsA("MeshPart") then
+          local palette=mesh:FindFirstChildOfClass("SurfaceAppearance")
+          if palette then palette:Destroy() end
+          if mesh.TextureID~="" then mesh.TextureID="" end
+        end
+      end
+    end
     clone.Parent=gameWorld
     clone:SetAttribute("CC0SourceModelId",modelId)
     return clone
@@ -2852,10 +2863,8 @@ local function createMeadowVillage()
           mesh.CanQuery=ring or post
           mesh.CanTouch=false
           mesh.CastShadow=true
-          -- 원본 GLB의 단색 팔레트만 제거하며 MeshId/스케일/배치/구조는 유지한다.
-          local palette=mesh:FindFirstChildOfClass("SurfaceAppearance")
-          if palette then palette:Destroy() end
-          if mesh.TextureID~="" then mesh.TextureID="" end
+          -- [마을 우물 재질] 외부 텍스처는 worldAsset 복제본의 Workspace 배치 전에 정리했다.
+          -- 여기서는 기존 원본 메시의 석재·목재·철 색상만 적용한다.
           mesh.MaterialVariant=""
           if ring then
             mesh.Material=Enum.Material.Slate
