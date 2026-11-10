@@ -2687,7 +2687,8 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
 
 // [스튜디오 자동 QA] 기존 MCP 실행 흐름에서 실제 클릭·화면 증거를 검증하고 첫 실패에서 종료한다.
 export async function runStudioScript({mcpCommand='',expectedStudioName='',outDir='',steps=[]}={}){
-  const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:90000});
+  // [메인] 대기 중인 공식 MCP 요청을 조기에 실패로 기록해 기존 Studio 세션 재시도를 허용한다.
+  const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:45000});
   fs.mkdirSync(outDir,{recursive:true});
   const report={
     log:[],errors:[],
