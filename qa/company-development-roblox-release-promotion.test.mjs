@@ -494,6 +494,22 @@ test('dedicated target bootstrap and place publication never use an old account 
   assert.match(candidate,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
 });
 
+test('Forest publication, metadata and thumbnail use the deploy credential, not the legacy key',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ const target=workflow.slice(workflow.indexOf('      - name: Ensure game-specific private Roblox target'),workflow.indexOf('      - name: Persist dedicated private target reservation'));
+ assert.match(target,/const apiKey=gameId==='fantasy-survival'/);
+ assert.match(target,/process\.env\.ROBLOX_DEPLOY_API_KEY/);
+ assert.match(target,/ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING/);
+ assert.match(target,/ROBLOX_OPEN_CLOUD_CREDENTIAL_ROUTE=/);
+ const publish=workflow.slice(workflow.indexOf('      - name: Publish exact package to validation target'),workflow.indexOf('      - name:',workflow.indexOf('      - name: Publish exact package to validation target')+20));
+ assert.ok(publish.includes("steps.target.outputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY"));
+ assert.ok(workflow.includes("inputs.game_id == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY"));
+ const thumbnails=workflow.slice(workflow.indexOf('      - name: Render upload and verify shared thumbnails'));
+ assert.ok(thumbnails.includes('ROBLOX_DEPLOY_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}'));
+ assert.match(thumbnails,/if \[ "\$game_id" = 'fantasy-survival' \]/);
+ assert.match(thumbnails,/ROBLOX_OPEN_CLOUD_API_KEY="\$scoped_key" node tools\/company-roblox-thumbnail-sync\.mjs/);
+});
+
 test('private runtime dedupe job itself never waits behind a same-game runner lock',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const start=workflow.indexOf('  release-dedupe:');
