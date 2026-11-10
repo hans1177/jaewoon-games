@@ -3910,3 +3910,28 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
   assert.match(workflow,/--studio-regrant=\$RUNNER_TEMP\/mare-studio-report\.json/);
   assert.match(workflow,/inputs\.studio_regrant != true/);
 });
+
+
+// [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
+test('Mare image timeout requires official visible Studio Client IsLoaded proof for every asset',()=>{
+  const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  assert.match(script,/const failed=media\.failedMedia/);
+  assert.match(script,/row\?\.status==='TIMEOUT_16S'/);
+  assert.match(script,/asset\.usePermissionGranted===true/);
+  assert.match(script,/report\.assetRegistryAudit\?\.status==='PASS'/);
+  assert.match(script,/report\.assetAudit\?\.models\?\.status==='PASS'/);
+  assert.match(script,/unique\.size!==imageRows\.length/);
+  assert.match(script,/Number\(media\.imagesSounds\)!==imageRows\.length\+Number\(media\.fetchCallbacks\)/);
+  assert.match(script,/const response=await luau\('Client',auditClientCode\)/);
+  assert.match(script,/img\.Visible=true img\.Parent=g labels\[i\]=img/);
+  assert.match(script,/if img\.IsLoaded then loaded\+=1/);
+  assert.match(script,/if not img\.IsLoaded then table\.insert\(missing,rows\[i\]\.key\)/);
+  assert.match(script,/proof\.expected===imageRows\.length/);
+  assert.match(script,/proof\.loaded===imageRows\.length/);
+  assert.match(script,/proof\.missing\.length===0/);
+  assert.match(script,/media\.serverPreloadEvidence=\{status:media\.status,failed:media\.failed,failedMedia:media\.failedMedia\}/);
+  assert.match(script,/media\.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_ISLOADED'/);
+  assert.match(script,/report\.clientImageAudit=\{status:'UNVERIFIED'/);
+  assert.match(script,/STUDIO_CLIENT_IMAGE_RESPONSE_MISSING/);
+  assert.doesNotMatch(script,/if\(media\.failed>0\)media\.status='PASS'/);
+});

@@ -2931,6 +2931,75 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
       }
     }
+    // [대항해시대 이미지 실증] 서버의 분리된 ImageLabel PreloadAsync 타임아웃은 실제 클라이언트 렌더 성공과 다르다.
+    // 공식 Studio MCP Client에서 모든 타임아웃 이미지를 실제 보이는 ImageLabel로 띄우고 IsLoaded를 확인한다.
+    // 하나라도 로드되지 않거나 다른 실패 유형이면 원래 서버 FAIL을 유지한다. 게임의 저장/규칙에는 관여하지 않는다.
+    if(mareScript&&!report.summary.abortedEarly&&report.assetAudit?.registered?.status==='FAIL'
+      &&report.assetAudit?.models?.status==='PASS'&&report.assetRegistryAudit?.status==='PASS'){
+      const media=report.assetAudit.registered;
+      const failed=media.failedMedia;
+      const root=fs.existsSync(path.join('main','roblox-games','mare-essentia'))
+        ?path.join('main','roblox-games','mare-essentia'):path.join('roblox-games','mare-essentia');
+      try{
+        const registered=JSON.parse(fs.readFileSync(path.join(root,'assets-registered.json'),'utf8')).assets;
+        const imageRows=Array.isArray(failed)?failed.map(row=>{
+          const key=clean(row?.key).replace(/^AssetIds\./,'');
+          const asset=registered[key];
+          const valid=/^(?:Goods|Menu|Portraits)\/[A-Za-z0-9._-]+$/.test(key)
+            &&asset&&['Image','Decal'].includes(asset.assetType)
+            &&asset.usePermissionGranted===true
+            &&clean(row?.id)==='rbxassetid://'+clean(asset.assetId)
+            &&row?.status==='TIMEOUT_16S';
+          if(!valid)throw Error('STUDIO_CLIENT_IMAGE_INVALID_SOURCE:'+key);
+          return{key,id:clean(row.id)};
+        }):[];
+        const unique=new Set(imageRows.map(row=>row.key));
+        if(!imageRows.length||imageRows.length!==Number(media.failed)
+          ||unique.size!==imageRows.length
+          ||Number(media.imagesSounds)!==imageRows.length+Number(media.fetchCallbacks))
+          throw Error('STUDIO_CLIENT_IMAGE_NOT_EXCLUSIVE_PRELOAD_TIMEOUT');
+        const luauRows=imageRows.map(row=>'{key='+JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
+        const auditClientCode="local rows={"+luauRows+"} "
+          +"local p=game:GetService('Players').LocalPlayer "
+          +"local h=game:GetService('HttpService') "
+          +"local g=Instance.new('ScreenGui') g.Name='MareStudioMediaAudit' "
+          +"g.ResetOnSpawn=false g.DisplayOrder=1000 g.IgnoreGuiInset=true g.Parent=p:WaitForChild('PlayerGui') "
+          +"local labels={} "
+          +"for i,row in ipairs(rows) do "
+          +"local img=Instance.new('ImageLabel') img.Name='Media'..i "
+          +"img.BackgroundTransparency=1 img.BorderSizePixel=0 "
+          +"img.Size=UDim2.fromOffset(24,24) "
+          +"img.Position=UDim2.fromOffset(((i-1)%10)*24,math.floor((i-1)/10)*24) "
+          +"img.Image=row.id img.Visible=true img.Parent=g labels[i]=img end "
+          +"local loaded=0 local stop=os.clock()+30 "
+          +"repeat loaded=0 for _,img in ipairs(labels) do if img.IsLoaded then loaded+=1 end end "
+          +"if loaded==#rows or os.clock()>=stop then break end task.wait(0.25) until false "
+          +"local missing={} for i,img in ipairs(labels) do "
+          +"if not img.IsLoaded then table.insert(missing,rows[i].key) end end "
+          +"local result={expected=#rows,loaded=#rows-#missing,missing=missing,mode='VISIBLE_CLIENT_IMAGE_ISLOADED'} "
+          +"g:Destroy() return 'MARE_CLIENT_IMAGE_AUDIT='..h:JSONEncode(result)";
+        const response=await luau('Client',auditClientCode);
+        const marker=response.split(/\r?\n/).find(line=>line.startsWith('MARE_CLIENT_IMAGE_AUDIT='));
+        if(!marker)throw Error('STUDIO_CLIENT_IMAGE_RESPONSE_MISSING');
+        const proof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
+        report.clientImageAudit=proof;
+        console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_AUDIT='+JSON.stringify(proof).slice(0,1000));
+        if(proof.mode==='VISIBLE_CLIENT_IMAGE_ISLOADED'&&proof.expected===imageRows.length
+          &&proof.loaded===imageRows.length&&Array.isArray(proof.missing)&&proof.missing.length===0){
+          media.serverPreloadEvidence={status:media.status,failed:media.failed,failedMedia:media.failedMedia};
+          media.status='PASS';
+          media.failed=0;
+          media.failedMedia=[];
+          media.clientVerified=true;
+          media.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_ISLOADED';
+          report.errors=report.errors.filter(error=>error!=='STUDIO_ASSET_AUDIT_FAILED');
+          console.log('STUDIO_MARE_IMAGES_REAL_CLIENT_LOADED='+imageRows.length);
+        }
+      }catch(error){
+        report.clientImageAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,190)};
+        console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_UNVERIFIED='+report.clientImageAudit.reason);
+      }
+    }
     // [원인 소유권] ContentProvider 실패 ID를 공식 Studio의 실제 인스턴스·등록 모듈에 연결한다.
     // 원본에 없는 ID는 임의 대체하지 않고 UNMAPPED로 증거를 남긴다.
     const contentWarnings=report.log.filter(row=>typeof row.out==='string'&&row.out.startsWith('LOGS('));
