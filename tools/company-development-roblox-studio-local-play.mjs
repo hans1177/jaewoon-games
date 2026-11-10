@@ -2746,6 +2746,16 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
             const detail=flattenText(state,[]).join('\n').slice(0,1500);
             report.log.push({step:n,studioStateAfterFirstClick:detail});
             console.log('STUDIO_SCRIPT_POST_CLICK_STATE='+detail.replace(/\s+/g,' ').slice(0,450));
+            // [진단] 부작용 없는 서버·클라이언트 실행으로 RPC 장애와 UI 텍스트 수집 장애를 구분한다.
+            for(const ctx of ['Server','Client']){
+              const probe={step:n,postClickProbeContext:ctx,status:'STARTED'};
+              report.log.push(probe);
+              console.log('STUDIO_SCRIPT_POST_CLICK_PROBE_START='+ctx);
+              const out=await luau(ctx,"return 'STUDIO_POST_CLICK_PING'");
+              probe.status='OK';
+              probe.out=out.slice(0,200);
+              console.log('STUDIO_SCRIPT_POST_CLICK_PROBE_OK='+ctx);
+            }
           }
           const out=await luau(st.ctx||'Client',st.code);
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
