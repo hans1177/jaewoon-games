@@ -54,7 +54,7 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
  const item={gameId:'fantasy-survival',robloxSourceCommit:sourceRevision,robloxBuildArtifactIdentity:artifactIdentity,
   robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision,
   robloxRuntimeCandidateEvidence:candidate,robloxRuntimeFoundationEvidence:runtime};
- const processMock={env:{ROBLOX_OPEN_CLOUD_API_KEY:'mock-secret'}};
+ const processMock={env:{ROBLOX_DEPLOY_API_KEY:'mock-1980-deploy-key',ROBLOX_OPEN_CLOUD_API_KEY:'mock-legacy-key'}};
  const clock={now:()=>Date.parse('2026-11-03T14:00:00Z'),parse:Date.parse};
  const check=(row=item,opts={})=>select({items:[row]},opts.requested||'',
   opts.enabled??true,opts.env||processMock,opts.clock||clock).length;
@@ -78,7 +78,10 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
  assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,observedAt:'2026-11-03T13:58:00Z'}}}),0);
  assert.equal(check(item,{requested:'other-game'}),0);
  assert.equal(check(item,{enabled:false}),0);
- assert.equal(check(item,{env:{env:{ROBLOX_OPEN_CLOUD_API_KEY:''}}}),0);
+ assert.equal(check(item,{env:{env:{ROBLOX_DEPLOY_API_KEY:'',ROBLOX_OPEN_CLOUD_API_KEY:'mock-legacy-key'}}}),0,
+  'Forest server permission read must not fall back to the legacy account credential');
+ assert.equal(check({...item,gameId:'other-game'},{env:{env:{ROBLOX_DEPLOY_API_KEY:'',ROBLOX_OPEN_CLOUD_API_KEY:'mock-legacy-key'}}}),1,
+  'Other games retain their existing credential path');
  const body=workflow.slice(start,qualityGate);
  assert.match(body,/probeRobloxOpenCloudGameServerObservation/);
  assert.match(workflow,/const officialServerReadByGame=new Map\(\)/);
@@ -607,9 +610,10 @@ test('different universe or non-CDN official fallback never asserts verified ima
 test('cloud workflow runs independent engine and image requests together and preserves sibling results on failure',async()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const start=workflow.indexOf('          const probes=new Array(candidates.length);');
- const end=workflow.indexOf("          fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json'",start);
+ // [QA] 실제 Cloud 요청 선택까지만 실행한다. 운영용 180초 할당량 대기는 테스트에서 반복하지 않는다.
+ const end=workflow.indexOf('          await Promise.all(Array.from({length:probeConcurrency}',start);
  assert.ok(start>0&&end>start);
- const run=new (Object.getPrototypeOf(async function(){}).constructor)('candidates','requested','process','probeRobloxOpenCloudEngine','probeRobloxOpenCloudImageEvidence','console',workflow.slice(start,end)+'\nreturn probes;');
+ const run=new (Object.getPrototypeOf(async function(){}).constructor)('candidates','requested','process','probeRobloxOpenCloudEngine','probeRobloxOpenCloudImageEvidence','console',workflow.slice(start,end)+'\nawait Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));\nreturn probes;');
  let images=0,engines=0;
  const rows=[1,2].map(n=>({gameId:'game-'+n,robloxSourceCommit:'source-'+n,robloxBuildArtifactIdentity:'artifact-'+n,robloxRuntimeCandidateEvidence:{universeId:'1',placeId:String(n),versionNumber:n}}));
  const probes=await run(rows,'',{env:{ROBLOX_OPEN_CLOUD_API_KEY:'k'}},async({placeId})=>{
