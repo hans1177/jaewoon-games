@@ -796,7 +796,7 @@ test('Roblox coding explorer prioritizes exact required ModuleScripts among deco
     source:{root:'roblox-games/module-routing',responsibleFiles:['roblox-games/module-routing/'+mainPath],ignoredPaths:[]},
     workPackage:{id:'module-routing',sharedContext:{diagnosticEvidence:[]}}};
   const out=exploreVibe2WorkOrder({cwd,order});
-  assert.ok(out.relatedFiles.includes(modulePath),'actual required module must beat unrelated files');
+  assert.ok(out.relatedFiles.some(row=>row.path===modulePath),'actual required module must beat unrelated files');
   assert.ok(out.sourceDependencies.some(row=>row.path===modulePath)
     ||out.sourceImpact.impactedSources.some(row=>row.path===modulePath)
     ||out.contextFiles.includes(modulePath),'required module must enter coding context');
@@ -822,8 +822,8 @@ test('Roblox module reverse dependencies find importers with alias calls and pre
     source:{root:'roblox-games/module-reverse',responsibleFiles:['roblox-games/module-reverse/'+modulePath],ignoredPaths:[]},
     workPackage:{id:'module-reverse',sharedContext:{diagnosticEvidence:[]}}};
   const out=exploreVibe2WorkOrder({cwd,order});
-  assert.ok(out.relatedFiles.includes('client/Hud.client.luau'));
-  assert.ok(out.relatedFiles.includes('server/Store.server.luau'));
+  assert.ok(out.relatedFiles.some(row=>row.path==='client/Hud.client.luau'));
+  assert.ok(out.relatedFiles.some(row=>row.path==='server/Store.server.luau'));
   assert.deepEqual(out.editContract.allowedResponsibleFiles,[modulePath]);
   assert.equal(out.sourceWrite,false);
   fs.rmSync(cwd,{recursive:true,force:true});
