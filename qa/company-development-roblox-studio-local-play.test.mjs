@@ -3758,6 +3758,8 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/MareQAFeatureTotals/);
   assert.match(qa,/FEATURE_UNIMPLEMENTED_OR_ERROR/);
   assert.match(qa,/elseif res\.ok == false then/);
+  assert.match(qa,/FEATURE_NO_RESPONSE/);
+  assert.match(qa,/FEATURE_NO_VIEW/);
   assert.match(qa,/FEATURE_NO_CASES/);
   assert.match(qa,/\[QA\] FEATURE_COVERED/);
   assert.match(script,/MARE_STUDIO_AUDIT=/);
