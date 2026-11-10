@@ -627,6 +627,33 @@ jobs:
           echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$learning_sha"
           echo "VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256=$file_sha256"
           echo 'VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE'
+          # [비권한 시각 연습] 숫자형 성적만 배치당 한 번 읽는다. 검증된 학습 지식과 분리한다.
+          practice_dir="$learning_root/visual-practice"
+          mkdir -p "$practice_dir"
+          if git fetch --depth=1 --no-tags origin vibe-gym-data --quiet \
+            && git show FETCH_HEAD:op-stats.json > "$practice_dir/op-stats.json" 2>/dev/null; then
+            if node - "$practice_dir/op-stats.json" <<'NODE'
+          const fs=require('fs');
+          const buf=fs.readFileSync(process.argv[2]);
+          if(buf.length>200000)process.exit(1);
+          const stats=JSON.parse(buf.toString('utf8'));
+          if(!stats||Array.isArray(stats)||typeof stats!=='object'||Object.keys(stats).length>64)process.exit(1);
+          for(const [family,ops] of Object.entries(stats)){
+            if(!/^[A-Z_]{2,32}$/.test(family)||!ops||Array.isArray(ops)||typeof ops!=='object'||Object.keys(ops).length>96)process.exit(1);
+            for(const [name,s] of Object.entries(ops)){
+              if(!/^[a-z_]{3,32}:(?:soft|strong)$/.test(name)||!s||typeof s!=='object')process.exit(1);
+              for(const k of ['n','keep','gainSum'])if(!Number.isFinite(Number(s[k]||0)))process.exit(1);
+            }
+          }
+          NODE
+            then echo 'VIBE2_VISUAL_PRACTICE_HINTS=READ_ONLY_ADVISORY'; else
+              rm -f "$practice_dir/op-stats.json"
+              echo 'VIBE2_VISUAL_PRACTICE_HINTS=INVALID_IGNORED'
+            fi
+          else
+            rm -f "$practice_dir/op-stats.json"
+            echo 'VIBE2_VISUAL_PRACTICE_HINTS=UNAVAILABLE_IGNORED'
+          fi
 
       - name: Upload verified learning memory for worker cohort
         if: steps.main_wake.outputs.proceed == 'true' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
@@ -1563,6 +1590,7 @@ jobs:
       WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256: ${{ needs.reserve.outputs.shared_security_sha256 }}
       VIBE2_VERIFIED_LEARNING_MEMORY_SHA: ${{ needs.reserve.outputs.verified_learning_memory_sha }}
       VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256: ${{ needs.reserve.outputs.verified_learning_memory_file_sha256 }}
+      VIBE2_VISUAL_PRACTICE_HINTS_PATH: ${{ github.workspace }}/vibe2-learning-memory/visual-practice/op-stats.json
     steps:
       - name: Mark worker start
         shell: bash

@@ -1,5 +1,6 @@
 // 파일명: qa/vibe-motion-director.test.mjs
 import test from 'node:test';
+import {summarizeVibeVisualPractice} from '../tools/vibe2-asset-production-plan.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -1404,6 +1405,21 @@ test('semantic fingerprints suppress redundant motion variants',()=>{
   const dup=findNearDuplicateMotionCandidates({candidate,library:[{id:'slash-old',dna:same}]});
   assert.equal(dup.length,1);
   assert.equal(dup[0].verified,true);
+});
+
+test('연습 점수는 검증된 제작물이나 PASS로 승격하지 않고 기존 제작 방법 힌트로 분류한다',()=>{
+  const out=summarizeVibeVisualPractice({PROP:{
+    'outline:soft':{n:12,gainSum:54,keep:10},
+    'moss:strong':{n:12,gainSum:-48,keep:1},
+    'bevel:strong':{n:2,gainSum:150,keep:2}
+  },CREATURE:{'outline:strong':{n:20,gainSum:-50,keep:0}},BAD:{'outline:soft':{n:100,gainSum:1000,keep:100}}});
+  assert.equal(out.ready,true);assert.equal(out.runtimeVerified,false);
+  assert.equal(out.gameApplied,false);assert.equal(out.positiveMasteryAllowed,false);
+  assert.deepEqual(out.families.map(x=>x.family),['PROP','CREATURE']);
+  assert.equal(out.families[0].recommended[0].name,'outline:soft');
+  assert.deepEqual(out.families[0].avoid.map(x=>x.name),['moss:strong']);
+  assert.equal(out.families[1].avoid[0].name,'outline:strong');
+  assert.equal(summarizeVibeVisualPractice({PROP:{'outline:soft':{n:1,keep:1,gainSum:2}}}).ready,false);
 });
 
 test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
