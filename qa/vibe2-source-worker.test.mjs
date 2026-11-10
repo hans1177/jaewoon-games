@@ -60,6 +60,39 @@ test('large multi-file change keeps first source tail and next owner in a 48KB c
  assert.equal(fs.readFileSync(path.join(root,'a.js'),'utf8'),original);
 });
 
+test('focused context reserves space for two distant core functions in one large file',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-owner-focus-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const source='function alpha(){\n'+('  const spam = 1;\n'.repeat(4800))+'  return 1;\n}\n'+
+   'function omega(){return 2;}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const ctx=focusedSymbolContext(root,'web',['game.js'],{
+   editContract:{responsibilityConfidence:'HIGH',primaryTargets:['alpha','omega']}
+ });
+ assert.ok(ctx);
+ assert.ok(ctx.bytes<=48000);
+ assert.ok(ctx.files.some(x=>x.content.includes('function alpha()')));
+ assert.ok(ctx.files.some(x=>x.content.includes('function omega()')));
+ assert.ok(ctx.files.some(x=>x.content.includes('return 1;')));
+ assert.ok(ctx.files.every(x=>source.includes(x.content)));
+});
+
+test('focused context prefers a late real target over eight irrelevant earlier state anchors',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-responsible-priority-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const chunks=['const saving = 1;'];
+ for(let i=0;i<14;i++)chunks.push('const memory'+i+'=1;\n'+('x'.repeat(500))+'\n');
+ chunks.push('function actualOwner(){return 42;}');
+ const code=chunks.join('\n');
+ fs.writeFileSync(path.join(root,'state.js'),code);
+ const ctx=focusedSymbolContext(root,'web',['state.js'],{
+  editContract:{responsibilityConfidence:'HIGH',primaryTargets:['actualOwner'],
+   semanticDiffBudget:{saveKeysMustRemainCompatible:Array.from({length:8},(_,i)=>'memory'+i)}}
+ });
+ assert.ok(ctx&&ctx.files.some(x=>x.content.includes('function actualOwner()')));
+ assert.ok(ctx.files.every(x=>code.includes(x.content)));
+});
+
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-'));
