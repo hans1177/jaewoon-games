@@ -1044,3 +1044,64 @@ test('held web game recovery remains queued instead of reactivating it',async()=
   assert.equal(result.recovery.tasks[0].status,'queued');
   assert.deepEqual(result.gameRequeuedTaskIds,[]);
 });
+
+test('Studio QA failure uses exact source evidence and canonical source intake before Vibe repair',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const run={
+    name:'Devloop Studio Capture',path:'.github/workflows/devloop-studio.yml',
+    conclusion:'failure',id:42749091011,run_attempt:1,head_sha:'a'.repeat(40),
+    head_branch:'main',display_title:'Devloop Studio Capture · mare-essentia · '+'a'.repeat(40),
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const sourceFile='roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau';
+  const jobs={jobs:[{name:'capture',conclusion:'failure',
+    steps:[{name:'Launch Studio, run script, capture frames',conclusion:'failure'}]}],
+    studioMarkers:[
+      'STUDIO_QA_GAME_ID=mare-essentia',
+      'STUDIO_QA_FAILURE_STAGE=STUDIO_GAME_SOURCE',
+      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
+      'STUDIO_QA_SOURCE_FILE='+sourceFile
+    ]};
+  const a=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:{games:[]}});
+  assert.equal(a.gameId,'mare-essentia');
+  assert.equal(a.owner,'VIBE2_VIBE3');
+  assert.deepEqual(a.queue.tasks[0].responsibleFiles,[sourceFile]);
+  assert.equal(a.queue.tasks[0].failureStage,'STUDIO_GAME_SOURCE');
+  const dispatched=dispatchRecovery({recoveryInput:a.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.gameQueue.tasks.length,1);
+  assert.deepEqual(dispatched.gameQueue.tasks[0].responsibleFiles,[sourceFile]);
+  assert.equal(dispatched.gameQueue.tasks[0].target,'roblox');
+  const duplicate=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:{games:[]},recoveryInput:a.queue});
+  assert.equal(duplicate.added.length,0);
+  assert.equal(duplicate.ignored,'EXACT_WORKFLOW_ATTEMPT_ALREADY_INGESTED');
+
+  const runtime=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+    jobsInput:{...jobs,studioMarkers:[
+      'STUDIO_QA_GAME_ID=mare-essentia',
+      'STUDIO_QA_FAILURE_STAGE=STUDIO_GAME_RUNTIME',
+      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_OBSERVED_RUNTIME_WARNINGS'
+    ]}});
+  assert.equal(runtime.owner,'SYSTEM_AI');
+  assert.deepEqual(runtime.queue.tasks[0].responsibleFiles,[]);
+  const missing=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+    jobsInput:{...jobs,studioMarkers:jobs.studioMarkers.filter(v=>!v.startsWith('STUDIO_QA_SOURCE_FILE='))}});
+  assert.equal(missing.owner,'SYSTEM_AI');
+  assert.deepEqual(missing.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  const forged=escalateDeploymentFailure({event:{workflow_run:{...run,display_title:'Unrelated Capture'}},
+    jobsInput:jobs,catalogInput:{games:[]}});
+  assert.equal(forged.owner,'SYSTEM_AI');
+  assert.equal(forged.gameId,null);
+});
+test('Studio QA evidence feeds the existing recovery queue and preserves reports before failure',()=>{
+  const studio=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const recovery=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+  assert.match(studio,/run-name: Devloop Studio Capture/);
+  assert.match(studio,/STUDIO_QA_FAILURE_STAGE=\$qaStage/);
+  assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
+  assert.match(studio,/STUDIO_QA_FAILED_EVIDENCE_PUBLISHED/);
+  assert.ok(studio.indexOf('PUBLISHED=$LASTEXITCODE')<studio.indexOf('STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'));
+  assert.match(recovery,/      - Devloop Studio Capture/);
+  assert.match(recovery,/studioMarkers/);
+  assert.match(recovery,/--deployment-event=\$GITHUB_EVENT_PATH/);
+});
