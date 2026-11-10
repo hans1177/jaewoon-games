@@ -125,12 +125,15 @@ task.spawn(function()
 		if message == "알 수 없는 요청" or message == "오류가 발생했어요"
 			or string.find(message, "미구현", 1, true) or string.find(string.lower(message), "not implemented", 1, true) then
 			featureFail("FEATURE_UNIMPLEMENTED_OR_ERROR " .. name .. ": " .. message)
+		elseif res.ok == false then
+			rejected += 1
+			-- [기능 검사] 거절 응답에 view가 있더라도 구현 성공으로 오인하지 않는다.
+			if not quiet then print("[QA] REJECTED " .. name .. " -> " .. message:sub(1, 60)) end
 		elseif res.ok == true or res.view ~= nil then
 			accepted += 1
 			if not quiet then ok("FEATURE " .. name .. " -> " .. message:sub(1, 40)) end
-		elseif res.ok == false or message ~= "" then
+		elseif message ~= "" then
 			rejected += 1
-			-- [기능 검사] 정상적인 비용 부족/조건 미충족은 구현 성공이라고 거짓 채점하지 않는다.
 			if not quiet then print("[QA] REJECTED " .. name .. " -> " .. message:sub(1, 60)) end
 		else
 			featureFail("FEATURE_RESPONSE_UNKNOWN " .. name)
