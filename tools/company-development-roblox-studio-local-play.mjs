@@ -2892,6 +2892,42 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
       }
     }
+    // [등록 전수] 업로드 등록표와 실제 Luau 호출 ID를 1:1 비교한다. 불일치를 자동 덮어쓰지 않는다.
+    if(mareScript&&!report.summary.abortedEarly){
+      try{
+        const root=fs.existsSync(path.join('main','roblox-games','mare-essentia'))
+          ?path.join('main','roblox-games','mare-essentia')
+          :path.join('roblox-games','mare-essentia');
+        const registered=JSON.parse(fs.readFileSync(path.join(root,'assets-registered.json'),'utf8')).assets;
+        const actual=fs.readFileSync(path.join(root,'src','ReplicatedStorage','Shared','AssetIds.luau'),'utf8');
+        const effective=new Map([...actual.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(hit=>[hit[1],hit[2]]));
+        const mismatches=[],missing=[],unverified=[];
+        for(const [key,row] of Object.entries(registered)){
+          const codeId=effective.get(key);
+          if(!codeId){missing.push(key);continue;}
+          if(String(row.assetId)!==codeId){
+            mismatches.push({key,registeredId:String(row.assetId),effectiveId:codeId,reason:'EFFECTIVE_ID_PERMISSION_NOT_PROVEN'});
+          }
+          if(row.usePermissionGranted!==true)unverified.push(key);
+        }
+        for(const key of effective.keys())if(!Object.hasOwn(registered,key))missing.push(key);
+        report.assetRegistryAudit={
+          registered:Object.keys(registered).length,activeIds:effective.size,
+          mismatched:mismatches.slice(0,60),missing:missing.slice(0,60),
+          unverifiedPermissions:unverified.slice(0,60),
+          status:mismatches.length||missing.length||unverified.length?'REPAIR_REQUIRED':'PASS'
+        };
+        console.log('STUDIO_SCRIPT_ASSET_REGISTRY_AUDIT='+JSON.stringify({
+          registered:report.assetRegistryAudit.registered,activeIds:effective.size,
+          mismatched:mismatches.length,missing:missing.length,unverified:unverified.length,
+          status:report.assetRegistryAudit.status
+        }));
+        if(report.assetRegistryAudit.status!=='PASS')report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+      }catch(error){
+        report.assetRegistryAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,150)};
+        report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
+      }
+    }
     // [원인 소유권] ContentProvider 실패 ID를 공식 Studio의 실제 인스턴스·등록 모듈에 연결한다.
     // 원본에 없는 ID는 임의 대체하지 않고 UNMAPPED로 증거를 남긴다.
     const contentWarnings=report.log.filter(row=>typeof row.out==='string'&&row.out.startsWith('LOGS('));
