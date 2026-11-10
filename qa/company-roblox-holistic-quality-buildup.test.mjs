@@ -422,8 +422,11 @@ test('actual Mare Essentia item catalog is fully inspected and unbound items are
   assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='gum_arabic'));
   assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='tobacco'));
   assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='ambergris'));
-  assert.equal(plan.autonomousWorkUnit.id,'UNBOUND_DATA_DEFINED_ITEMS');
-  assert.equal(plan.autonomousWorkUnit.mode,'FILL_VERIFIED_SEMANTIC_ASSET_GAPS');
-  assert.ok(plan.autonomousWorkUnit.sourceFiles.includes('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'));
+  // 현 게임에 P0 파일 정합성 오류가 있으면 그 오류를 P1 아이템 누락보다 먼저 처리한다.
+  assert.equal(plan.autonomousWorkUnit.priority,'P0');
+  assert.equal(plan.autonomousWorkUnit.id,'ASSET_SIGNATURE_INVALID');
+  assert.ok(plan.families.find(row=>row.id==='ITEMS_LOOT').gapDomains.includes('UNBOUND_DATA_DEFINED_ITEMS'));
+  assert.ok(plan.itemAssetCoverage.missing.every(row=>
+    row.sourceOwner==='roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'));
   assert.equal(plan.autonomousWorkUnit.workScope.directMutationAuthorized,false);
 });
