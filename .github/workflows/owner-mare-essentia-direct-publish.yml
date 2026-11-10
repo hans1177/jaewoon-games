@@ -7,6 +7,8 @@ on:
   push:
     branches: [main]
     paths:
+      # [배포 자동 검증] 전용 게시 워크플로 변경도 기존 체험으로 한 번 배포해 검증한다.
+      - '.github/workflows/owner-mare-essentia-direct-publish.yml'
       - 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau'
       - 'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'
       - 'roblox-games/mare-essentia/src/**'
