@@ -83,21 +83,42 @@ jobs:
           if (-not (Test-Path $mcp)) { $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat' }
           if (-not (Test-Path $mcp)) { throw 'StudioMCP not found' }
           Write-Host "STUDIO=$studio MCP=$mcp"
-          $proc = Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru
           $out = Join-Path $env:RUNNER_TEMP 'mare-frames'
-          Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory $out -Force | Out-Null
-          try {
-            if ($env:CAP_SCRIPT -ne '') {
-              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
-            } else {
-              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+          $reportFile = Join-Path $out 'report.json'
+          $studioNodeExitCode = 1
+          # [메인] MCP 통신이 끊긴 경우에만 같은 빌드·같은 작업을 새 Studio 세션으로 한 번 재시도한다.
+          # 게임 코드 오류, 클릭 실패, 화면 불일치는 재시도하지 않고 기존 QA 실패로 남긴다.
+          for ($studioAttempt = 1; $studioAttempt -le 2; $studioAttempt++) {
+            Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $out -Force | Out-Null
+            Write-Host "STUDIO_MCP_CAPTURE_ATTEMPT=$studioAttempt"
+            try {
+              Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru | Out-Null
+              if ($env:CAP_SCRIPT -ne '') {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              } else {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              }
+              $studioNodeExitCode = [int]$LASTEXITCODE
+            } catch {
+              $studioNodeExitCode = 1
+              Write-Warning ("STUDIO_MCP_CAPTURE_PROCESS_ERROR=" + $_.Exception.GetType().Name)
+            } finally {
+              Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
             }
-            Write-Host "NODE_EXIT=$LASTEXITCODE"
-            $studioNodeExitCode = [int]$LASTEXITCODE
-          Write-Host "STUDIO_SCRIPT_PROCESS_EXIT=$studioNodeExitCode"
-          } finally {
-            Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            Write-Host "NODE_EXIT=$studioNodeExitCode"
+            Write-Host "STUDIO_SCRIPT_PROCESS_EXIT=$studioNodeExitCode"
+            if ($studioAttempt -ge 2) { break }
+            $attemptReport = $null
+            if (Test-Path -LiteralPath $reportFile) {
+              try { $attemptReport = Get-Content -LiteralPath $reportFile -Raw | ConvertFrom-Json } catch {}
+            }
+            $rpcStalled = @($attemptReport.errors | Where-Object {
+              [string]$_ -match 'MCP timeout: tools/call|MCP process exited code='
+            }).Count -gt 0
+            if (-not $rpcStalled) { break }
+            Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
+            Start-Sleep -Seconds 8
           }
           # [실증 검증] 성공처럼 보이는 빈 캡처·스크립트 오류는 실패로 처리한다.
           $reportFile = Join-Path $out 'report.json'
