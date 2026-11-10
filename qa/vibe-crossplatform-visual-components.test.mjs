@@ -184,6 +184,11 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(worker,/createWebPresentationController/);
   assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
   assert.match(worker,/planVibePresentationAutopilot\(/);
+  assert.match(worker,/staticUiQuality:row\.score/);
+  assert.match(worker,/designTokens:row\.design/);
+  assert.match(worker,/actions:\(row\.controls/);
+  assert.match(worker,/updateUiSurface/);
+  assert.match(worker,/existingGameCallback/);
 });
 
 
