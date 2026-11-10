@@ -60,6 +60,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ -z "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
+            echo "::error::MARE_1980_DEPLOY_API_KEY_MISSING" >&2
+            exit 1
+          fi
           if [[ "$STUDIO_REGRANT" == "true" ]]; then
             # [기존 실측 증거] 별도 공식 Studio 출력 브랜치에서 실제 실패 자산만 가져온다.
             git fetch --no-tags --depth=1 origin refs/heads/mare-essentia-studio-frames

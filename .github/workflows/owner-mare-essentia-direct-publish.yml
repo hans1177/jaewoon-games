@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       universe_id:
-        description: '기존 Universe ID (비우면 새 비공개 체험 생성). Place ID를 비우면 대표 Place를 자동 조회'
+        description: '기존 Universe ID (비우면 지정된 대항해시대 체험 사용). Place ID를 비우면 대표 Place를 자동 조회'
         type: string
         required: false
         default: ''
@@ -93,17 +93,15 @@ jobs:
           EXISTING_UNIVERSE_ID: ${{ inputs.universe_id || '10775310508' }}
           EXISTING_PLACE_ID: ${{ inputs.place_id || '73607605986189' }}
           SOURCE_REV: ${{ inputs.rollback_ref || github.sha }}
-          # [1980 계정] Roblox 키 표시명 ROBLOX-1980-PUBLISH는 저장소 비밀변수 ROBLOX_DEPLOY_API_KEY에 저장한다.
-          # [권한 격리] 차단된 기존 계정 API 키와 쿠키로 자동 대체하지 않는다.
+          # [1980 전용 배포] Creator Hub ROBLOX-1980-PUBLISH 키를 GitHub ROBLOX_DEPLOY_API_KEY에서만 읽는다.
+          # 이전 계정 키와 인증 쿠키는 배포에 사용하지 않는다.
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ''
-          ROBLOX_SECURITY_COOKIE: ''
-          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+          ROBLOX_CREATOR_USER_ID: '11664914771'
         shell: bash
         run: |
           set -euo pipefail
           if [[ -z "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
-            echo 'MARE_1980_PUBLISH_API_KEY_MISSING' >&2
+            echo "::error::MARE_1980_DEPLOY_API_KEY_MISSING" >&2
             exit 1
           fi
           if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -z "${EXISTING_PLACE_ID:-}" ]]; then
