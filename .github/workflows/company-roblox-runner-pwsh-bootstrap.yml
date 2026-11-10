@@ -245,23 +245,49 @@ jobs:
           Set shell = CreateObject("WScript.Shell")
           Set svc = GetObject("winmgmts:\\.\root\cimv2")
           target = "$vbsListener"
+          shell.CurrentDirectory = "$vbsRoot"
           Do
             running = False
             Set listeners = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
             For Each p In listeners
-              If LCase(p.ExecutablePath) = LCase(target) Then
+              If p.SessionId > 0 And LCase(p.ExecutablePath) = LCase(target) Then
                 running = True
                 Exit For
               End If
             Next
             If Not running Then
-              shell.CurrentDirectory = "$vbsRoot"
-              shell.Run Chr(34) & target & Chr(34) & " run", 0, False
+              ' Use the registered runner's original run.cmd to retain its environment.
+              shell.Run "cmd.exe /d /c run.cmd", 0, False
             End If
             WScript.Sleep 15000
           Loop
           "@
           $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
+          if (-not (Test-Path -LiteralPath $startupPath)) {
+            throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_NOT_PERSISTED'
+          }
+          if ((Get-Content -LiteralPath $startupPath -Raw).Trim() -ne $launcher.Trim()) {
+            throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_CONTENT_MISMATCH'
+          }
+          # [메인] 로그인 이후만 기다리지 않고 지금 감시 프로그램을 실행·확인한다.
+          # 같은 파일의 기존 감시 프로그램만 교체하며 다른 프로세스와 인증에는 손대지 않는다.
+          $hostSessionId = [int](Get-Process -Id $PID).SessionId
+          $existingWatchers = @(Get-CimInstance Win32_Process -Filter "Name='wscript.exe'" -ErrorAction SilentlyContinue |
+            Where-Object { [int]$_.SessionId -eq $hostSessionId -and
+              [string]$_.CommandLine -match [regex]::Escape($startupPath) })
+          foreach ($watcher in $existingWatchers) {
+            Stop-Process -Id ([int]$watcher.ProcessId) -Force -ErrorAction Stop
+          }
+          Start-Process -FilePath (Join-Path $env:WINDIR 'System32\wscript.exe') -ArgumentList ('"' + $startupPath + '"') -WindowStyle Hidden | Out-Null
+          Start-Sleep -Seconds 3
+          $activeWatchers = @(Get-CimInstance Win32_Process -Filter "Name='wscript.exe'" -ErrorAction SilentlyContinue |
+            Where-Object { [int]$_.SessionId -eq $hostSessionId -and
+              [string]$_.CommandLine -match [regex]::Escape($startupPath) })
+          if ($activeWatchers.Count -ne 1) {
+            throw 'ROBLOX_RUNNER_INTERACTIVE_WATCHDOG_START_NOT_VERIFIED'
+          }
+          Write-Host 'ROBLOX_RUNNER_WATCHDOG=ACTIVE_SAME_INTERACTIVE_SESSION'
+          Write-Host 'ROBLOX_RUNNER_REBOOT_PROOF=NOT_TESTED_NO_FORCED_REBOOT'
 
           Write-Host "ROBLOX_RUNNER_ROOT=$runnerRoot"
           Write-Host "ROBLOX_RUNNER_STARTUP_LAUNCHER=$startupPath"
