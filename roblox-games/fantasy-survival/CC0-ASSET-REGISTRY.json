@@ -5251,5 +5251,44 @@
     "universeUseGrantVerified": true,
     "runtimeVerified": false,
     "status": "REGISTERED_AND_UNIVERSE_USE_GRANTED_PENDING_RUNTIME"
+  },
+  "gearExpansionV2": {
+    "version": 2,
+    "gameId": "fantasy-survival",
+    "universeId": "10773436325",
+    "sourceVerified": true,
+    "license": "CC0-1.0",
+    "sourcePacks": {
+      "swordtember-30-glb.zip": "7bd10d5ab0aae89bf9a639ab8a21a336ba1652a537307bff0b2ab0cb8b59ff29",
+      "rpg-items-8.zip": "51acd89645ae49d9563a11f7314fea1b33ee16e764c071d8814c0c3b1642efc8",
+      "rpg-items-armor-8.zip": "1a91b47a47b911f74d47ca09de4d40d58166cfa41139687236d9fc0bce4588cb",
+      "medieval-weapons": "c06a6fa9a1b13576edf3bd62d7b52aba334f8fc0"
+    },
+    "licenseSources": {
+      "swordtember-30-glb.zip": "https://opengameart.org/content/30-unique-lowpoly-swords-cc0-swordtember2022",
+      "rpg-items-8.zip": "https://opengameart.org/content/rpg-item-collection-1",
+      "rpg-items-armor-8.zip": "https://opengameart.org/content/rpg-item-collection-2",
+      "medieval-weapons": "https://quaternius.com/packs/medievalweapons.html"
+    },
+    "modelCount": 42,
+    "models": {
+      "gear_sword_13": {
+        "assetId": 108228239395454,
+        "sha256": "068f70b213fb48d94bed27af12a5e6a73a6538693d5de2b8e4e37020b1e5deb8",
+        "sourceArchive": "swordtember-30-glb.zip",
+        "sourceArchiveSha256": "7bd10d5ab0aae89bf9a639ab8a21a336ba1652a537307bff0b2ab0cb8b59ff29",
+        "archiveEntry": "20-Leaf.glb",
+        "license": "CC0-1.0",
+        "licenseEvidence": "https://opengameart.org/content/30-unique-lowpoly-swords-cc0-swordtember2022",
+        "universeId": "10773436325",
+        "sourceVerified": true,
+        "nativeRegistrationVerified": true,
+        "universeUseGrantVerified": false,
+        "runtimeVerified": false
+      }
+    },
+    "nativeRegistrationVerified": false,
+    "universeUseGrantVerified": false,
+    "runtimeVerified": false
   }
 }
