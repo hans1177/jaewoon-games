@@ -290,6 +290,12 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     ...(exploration.sourceDependencies||[]).map(row=>row.symbol)
   ]).filter(name=>/^[A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*$/.test(name));
   if(!responsibleFiles.length||!symbolCandidates.length||!['HIGH','MEDIUM'].includes(confidence))return null;
+  // [책임 우선] 실제 소스 선언으로 증명된 핵심 함수가 추후 입력 축약에서 사라지면 포커스 성공으로 처리하지 않는다.
+  const criticalSymbols=new Set(symbolCandidates.filter(name=>
+    (contract.primaryTargets||[]).includes(name)||
+    (contract.reservedHelperEditPlan?.reservedHelperEdits||[]).some(row=>
+      row.symbol===name&&row.writableWithinExistingReservation===true&&responsibleFiles.includes(row.file))));
+  const criticalAnchors=[],retainedAnchors=new Set();
   const files=[];
   let total=0,matchedSymbolCount=0;
   const contextPaths=unique([...responsibleFiles,...(exploration.contextFiles||[])]).slice(0,MAX_CONTEXT_FILES);
@@ -307,7 +313,11 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     for(const symbol of symbolCandidates.slice(0,16)){
       const declarations=functions.filter(fn=>fn.name===symbol);
       if(declarations.length){
-        for(const fn of declarations)ranges.push({start:fn.start,end:fn.end,labels:[symbol]});
+        for(const fn of declarations){
+          ranges.push({start:fn.start,end:fn.end,labels:[symbol]});
+          if(responsibleFiles.includes(relative)&&criticalSymbols.has(symbol))
+            criticalAnchors.push({path:relative,symbol,at:fn.start});
+        }
         matched.add(symbol);continue;
       }
       // Native qualified symbols must be read from real declarations, not comments or string examples.
@@ -335,10 +345,20 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     }
     if(!ranges.length)continue;
     matchedSymbolCount+=matched.size;
-    const merged=mergeSourceWindowRanges(ranges).slice(0,8);
+    const merged=mergeSourceWindowRanges(ranges)
+      .sort((a,b)=>{
+        const priority=row=>row.labels?.some(label=>criticalSymbols.has(label))?0:
+          row.labels?.some(label=>label.startsWith('SAVE_KEY:'))?1:
+          row.labels?.some(label=>label.startsWith('STATE:'))?2:3;
+        return priority(a)-priority(b)||a.start-b.start;
+      }).slice(0,8);
+    const importantCount=merged.filter(row=>row.labels?.some(label=>criticalSymbols.has(label))).length;
+    const perImportant=Math.floor(perFileLimit/Math.max(1,importantCount));
     for(const row of merged){
       const original=text.slice(row.start,row.end);
-      const budget=Math.min(perFileLimit-fileUsed,FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total);
+      const isImportant=row.labels?.some(label=>criticalSymbols.has(label));
+      const budget=Math.min(isImportant?perImportant:perFileLimit-fileUsed,
+        perFileLimit-fileUsed,FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total);
       if(budget<180||!original.trim())continue;
       const windows=[];
       if(Buffer.byteLength(original,'utf8')<=budget){
@@ -367,10 +387,14 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
           exactSourceWindow:true,windowLabel:((row.labels||[]).join('+')||'responsibility')+
             (w.part===undefined?'':w.part===0?':HEAD':':TAIL')});
         fileUsed+=bytes;total+=bytes;
+        for(const anchor of criticalAnchors)if(anchor.path===relative&&
+          w.start<=anchor.at&&anchor.at<w.end)
+          retainedAnchors.add(anchor.path+':'+anchor.symbol+':'+anchor.at);
       }
     }
   }
-  if(!files.length)return null;
+  if(!files.length||criticalAnchors.some(anchor=>
+    !retainedAnchors.has(anchor.path+':'+anchor.symbol+':'+anchor.at)))return null;
   return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',codingAnalysisVersion:CODING_ANALYSIS_VERSION,focusedSymbolCount:matchedSymbolCount,exactSourceWindows:true,fullFileFallback:false};
 }
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
