@@ -1409,17 +1409,32 @@ test('semantic fingerprints suppress redundant motion variants',()=>{
 
 test('모바일 UI 연습 통계는 실제 게임 UI 메서드만 추천하고 런타임 승인 권한을 갖지 않는다',()=>{
   const ui=summarizeVibeVisualPractice({UI:{
-    'hud_layout:soft':{n:15,keep:14,gainSum:180},
+    'hud_layout:soft':{n:15,keep:14,gainSum:180,designSamples:6,designScoreSum:600,fontIssues:0,bindingIssues:0,touchSpacingIssues:0},
     'shop_layout:strong':{n:15,keep:0,gainSum:-40}
   }});
   assert.equal(ui.ready,true);
   assert.equal(ui.families[0].family,'UI');
   assert.equal(ui.families[0].recommended[0].name,'hud_layout:soft');
+  assert.equal(ui.families[0].recommended[0].meanDesign,100);
+  assert.equal(ui.families[0].recommended[0].designAuthority,'SYNTHETIC_ADVISORY_NOT_RUNTIME_PASS');
   assert.equal(ui.families[0].avoid[0].name,'shop_layout:strong');
   assert.equal(ui.gameApplied,false);
   assert.equal(ui.runtimeVerified,false);
 });
 
+test('UI 추천은 디자인 실측 분모·폰트·바인딩 근거가 없거나 불량하면 차단한다',()=>{
+  const legacy=summarizeVibeVisualPractice({UI:{'shop_layout:strong':{n:30,keep:30,gainSum:600}}});
+  assert.equal(legacy.ready,false);
+  const unsafe=summarizeVibeVisualPractice({UI:{
+    'shop_layout:soft':{n:30,keep:30,gainSum:600,designSamples:9,designScoreSum:900,fontIssues:0,bindingIssues:2,touchSpacingIssues:0},
+    'quest_layout:strong':{n:30,keep:30,gainSum:500,designSamples:9,designScoreSum:900,fontIssues:0,bindingIssues:0,touchSpacingIssues:0}
+  }});
+  assert.equal(unsafe.ready,true);
+  assert.equal(unsafe.families[0].recommended.length,1);
+  assert.equal(unsafe.families[0].recommended[0].name,'quest_layout:strong');
+  assert.equal(unsafe.families[0].avoid[0].name,'shop_layout:soft');
+  assert.equal(unsafe.positiveMasteryAllowed,false);
+});
 test('연습 점수는 검증된 제작물이나 PASS로 승격하지 않고 기존 제작 방법 힌트로 분류한다',()=>{
   const out=summarizeVibeVisualPractice({PROP:{
     'outline:soft':{n:12,gainSum:54,keep:10},

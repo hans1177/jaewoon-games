@@ -931,10 +931,26 @@ export function summarizeVibeVisualPractice(stats={}){
       if(!/^[a-z_]{3,32}:(?:soft|strong)$/.test(name)||!s||typeof s!=='object')continue;
       const n=Number(s.n),keep=Number(s.keep),gainSum=Number(s.gainSum);
       if(!Number.isSafeInteger(n)||n<5||n>10000000||!Number.isSafeInteger(keep)||keep<0||keep>n||!Number.isFinite(gainSum)||Math.abs(gainSum)>1e9)continue;
-      arms.push({name,samples:n,meanGain:+(gainSum/n).toFixed(3),keepRate:+(keep/n).toFixed(3)});
+      const arm={name,samples:n,meanGain:+(gainSum/n).toFixed(3),keepRate:+(keep/n).toFixed(3)};
+      if(family==='UI'){
+        const designSamples=Number(s.designSamples),designSum=Number(s.designScoreSum);
+        const issues=[s.fontIssues,s.bindingIssues,s.touchSpacingIssues].map(Number);
+        const measured=Number.isSafeInteger(designSamples)&&designSamples>=3&&designSamples<=n&&
+          Number.isFinite(designSum)&&designSum>=0&&designSum<=designSamples*100&&
+          issues.every(x=>Number.isSafeInteger(x)&&x>=0&&x<=n);
+        const meanDesign=measured?+(designSum/designSamples).toFixed(3):null;
+        arm.designSamples=measured?designSamples:0;
+        arm.meanDesign=meanDesign;
+        arm.designMeasured=measured;
+        arm.qualitySafe=measured&&meanDesign>=92&&issues.every(x=>x===0);
+        arm.designAuthority='SYNTHETIC_ADVISORY_NOT_RUNTIME_PASS';
+      }
+      arms.push(arm);
     }
-    const recommended=arms.filter(a=>a.meanGain>0&&a.keepRate>=0.5).sort((a,b)=>b.meanGain-a.meanGain||b.keepRate-a.keepRate).slice(0,3);
-    const avoid=arms.filter(a=>a.keepRate<0.2).sort((a,b)=>a.keepRate-b.keepRate||a.meanGain-b.meanGain).slice(0,3);
+    const recommended=arms.filter(a=>a.meanGain>0&&a.keepRate>=0.5&&
+      (family!=='UI'||a.qualitySafe)).sort((a,b)=>b.meanGain-a.meanGain||b.keepRate-a.keepRate).slice(0,3);
+    const avoid=arms.filter(a=>a.keepRate<0.2||
+      (family==='UI'&&a.designMeasured&&!a.qualitySafe)).sort((a,b)=>a.keepRate-b.keepRate||a.meanGain-b.meanGain).slice(0,3);
     if(recommended.length||avoid.length)families.push(freeze({family,recommended:freezeList(recommended.map(a=>freeze(a))),avoid:freezeList(avoid.map(a=>freeze(a)))}));
   }
   return freeze({ready:families.length>0,families:freezeList(families),authority:'PRACTICE_ADVISORY_ONLY',productionCandidate:false,runtimeVerified:false,gameApplied:false,positiveMasteryAllowed:false});

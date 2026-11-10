@@ -49,7 +49,20 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     for(const row of ui.rows){
       const key=row.surface.toLowerCase()+'_layout:'+row.variant;
       const entry=scores.UI[key]??={n:0,keep:0,gainSum:0,improved:0,broken:0};
+      // 기존 n은 배치 검사 누계다. 디자인 실측이 시작된 회차만 별도 분모로 보관한다.
+      if(!Number.isSafeInteger(entry.designSamples)||entry.designSamples<0){
+        const prior=Number(entry.designScoreSum||0);
+        if(Number.isSafeInteger(prior)&&prior>=0&&prior<=entry.n*100&&prior%100===0){
+          // 이전 디자인 점수는 전부 100점인 확정 정적 회차다.
+          entry.designSamples=prior/100;
+        }else{
+          entry.designLegacyScoreSum=prior;
+          entry.designScoreSum=0;
+          entry.designSamples=0;
+        }
+      }
       entry.n++;entry.gainSum+=row.gain;
+      entry.designSamples++;
       entry.designScoreSum=(entry.designScoreSum||0)+row.designScore;
       entry.fontIssues=(entry.fontIssues||0)+row.fontIssues;
       entry.bindingIssues=(entry.bindingIssues||0)+row.bindingIssues;

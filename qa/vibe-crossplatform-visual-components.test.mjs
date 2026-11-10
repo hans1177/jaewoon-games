@@ -80,6 +80,8 @@ test('디자인 제작안은 실제 DOM과 게임 제공 버튼 콜백으로만 
   assert.equal(craft.score.issues.length,0,JSON.stringify(craft.score));
   assert.equal(craft.layout.pass,true);
   assert.equal(ctrl.updateUiSurface({craft,components}),false);
+  assert.equal(ctrl.updateUiSurface({craft:{...craft,score:null},components,onAction:()=>{}}),false);
+  assert.equal(ctrl.updateUiSurface({craft:{...craft,score:{score:100,issues:[]}},components,onAction:()=>{}}),false);
   const pressed=[];
   assert.equal(ctrl.updateUiSurface({craft,components,onAction:(action,id,surface)=>pressed.push([action,id,surface])}),true);
   const root=host.children[0].children.find(x=>x.attrs['data-vibe-ui-surface']==='INVENTORY');

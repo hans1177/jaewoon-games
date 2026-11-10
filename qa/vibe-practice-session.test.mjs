@@ -60,6 +60,7 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.ok(learnedUi['hud_layout:soft'].n>=3);
   assert.ok(learnedUi['inventory_layout:strong'].n>=3);
   assert.ok(learnedUi['inventory_layout:strong'].designScoreSum>=300);
+  assert.equal(learnedUi['inventory_layout:strong'].designSamples,3);
   assert.equal(learnedUi['inventory_layout:strong'].bindingIssues,0);
   assert.ok(session.light&&Number.isFinite(session.light.best),JSON.stringify(session.light));
   assert.ok(session.bake&&typeof session.bake.pass==='boolean',JSON.stringify(session.bake));
