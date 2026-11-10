@@ -3667,6 +3667,10 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   );
   assert.match(script,/fastFailOnProviderTimeout:true/);
   assert.match(script,/timeoutMs:45000/);
+  assert.match(script,/studioStateAfterFirstClick:detail/);
+  assert.match(script,/STUDIO_SCRIPT_POST_CLICK_STATE=/);
+  assert.match(script,/client\.call\('get_studio_state'/);
+  assert.match(script,/report\.summary\.successfulClicks===1&&report\.summary\.capturedFrames===2/);
   assert.match(script,/const studioDiscoveryDeadline=Date\.now\(\)\+5\*60\*1000/);
   assert.match(script,/Date\.now\(\)<studioDiscoveryDeadline/);
   assert.match(script,/if\(!studioId\)throw new Error\('NO_STUDIO'\)/);
