@@ -362,6 +362,7 @@ test('Forest owner publication completion dispatches existing Studio QA on main 
   assert.match(qa,/owner publication not on main, skip/);
   assert.match(qa,/no Forest source or publisher change, skip/);
   assert.match(qa,/game=fantasy-survival/);
+  assert.match(qa,/studio-autoqa\\\.yml\\\$/);
   assert.match(qa,/^\s+if ! printf '%s\\n' "\$changed" \| grep -Eq /m);
   assert.match(qa,/roblox-games\/fantasy-survival\//);
   assert.match(qa,/owner-roblox-dedicated-private-experiences\\\.yml/);
