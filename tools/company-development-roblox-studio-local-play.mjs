@@ -1040,7 +1040,7 @@ function mouseClickItem(schema,x,y){
     if(/^(x|screen.?x|position.?x)$/i.test(name)){item[name]=Math.round(Number(x)||0);continue;}
     if(/^(y|screen.?y|position.?y)$/i.test(name)){item[name]=Math.round(Number(y)||0);continue;}
     if(/position|coordinates|screen.?point/i.test(name)&&def.type==='object'){item[name]={x:Math.round(Number(x)||0),y:Math.round(Number(y)||0)};continue;}
-    if(/action|type|event|operation/i.test(name)){if(Array.isArray(def.enum))item[name]=enumValue(def,['click','mouse_click','press','tap']);else if(def.type==='string')item[name]='click';continue;}
+    if(/action|type|event|operation/i.test(name)){if(Array.isArray(def.enum)){const v=enumValue(def,['mousebuttonclick','mouse_click','click','mouseclick','tap']);if(!/click|tap/i.test(clean(v)))throw new Error('STUDIO_MCP_MOUSE_CLICK_ACTION_UNSUPPORTED');item[name]=v;}else if(def.type==='string')item[name]='mouseButtonClick';continue;}
     if(/button/i.test(name)){if(Array.isArray(def.enum))item[name]=enumValue(def,['left','primary','mousebutton1']);else if(def.type==='string')item[name]='left';continue;}
   }
   return fillRequired(item,schema);
@@ -2787,10 +2787,46 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
             throw new Error('STUDIO_UI_TARGET_NOT_FOUND:'+label);
           }
           const mt=client.tool('user_mouse_input');
-          await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));
-          report.summary.successfulClicks++;
-          report.log.push({step:n,click:label,at:m[1]+','+m[2],out:out.slice(0,300)});
+          const mouseArgs=mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2]));
+          // [MCP 입력] 실제 공식 도구가 선택한 클릭 이벤트를 남긴다. Studio ID는 기록하지 않는다.
+          const inputAction=Object.fromEntries(Object.entries(mouseArgs).filter(([key])=>!/studio.*id/i.test(key)));
+          const clickRecord={step:n,click:label,at:m[1]+','+m[2],out:out.slice(0,300),inputAction,status:'DISPATCH_PENDING'};
+          report.log.push(clickRecord);
+          console.log('STUDIO_SCRIPT_MOUSE_CLICK_INPUT='+JSON.stringify(inputAction).slice(0,800));
+          const response=await client.call('user_mouse_input',mouseArgs);
+          clickRecord.status='DISPATCHED';
+          clickRecord.mouseResponse=flattenText(response,[]).join(' ').slice(0,400);
           console.log('STUDIO_SCRIPT_CLICK_DISPATCHED='+label+':'+m[1]+','+m[2]);
+          // [메인] 새 게임 클릭은 서버 요청 성공이 아니라 실제 메뉴 제거와 나라 선택 노출까지 확인한다.
+          // 저장된 플레이가 있으면 삭제 확인을 자동 재클릭하지 않는다.
+          const isMareNewGame=report.summary.successfulClicks===0&&st.code.includes('"프랑스"')
+            &&/CLICK=.*새 게임/.test(out);
+          if(isMareNewGame){
+            await wait(400);
+            const startStateCode="local p=game:GetService('Players').LocalPlayer.PlayerGui "
+              +"local title=p:FindFirstChild('TitleGui') "
+              +"local backdrop=p:FindFirstChild('TitleBackdrop') "
+              +"local panel=backdrop and backdrop:FindFirstChild('TitlePanel',true) "
+              +"local sail=false "
+              +"if panel then for _,d in ipairs(panel:GetDescendants()) do if d:IsA('TextButton') and string.find(d.Text,'출항하기',1,true) then sail=true break end end end "
+              +"local confirm=false "
+              +"if title then for _,d in ipairs(title:GetDescendants()) do if d:IsA('TextButton') and string.find(d.Text,'저장이 사라져요',1,true) then confirm=true break end end end "
+              +"return 'TITLE_MENU='..tostring(title~=nil and title.Enabled)..';NATION_SELECTION='..tostring(panel~=nil and panel.Visible)..';SAIL_BUTTON='..tostring(sail)..';NEW_GAME_CONFIRM='..tostring(confirm)";
+            const state=await luau('Client',startStateCode);
+            clickRecord.postClickState=state.slice(0,450);
+            console.log('STUDIO_SCRIPT_NEW_GAME_TRANSITION='+state.replace(/\s+/g,' ').slice(0,450));
+            if(state.includes('NEW_GAME_CONFIRM=true')){
+              clickRecord.status='CONFIRMATION_REQUIRED';
+              throw new Error('STUDIO_NEW_GAME_CONFIRMATION_REQUIRED_NO_AUTO_RESET');
+            }
+            if(!state.includes('TITLE_MENU=false;NATION_SELECTION=true;SAIL_BUTTON=true')){
+              clickRecord.status='NO_TRANSITION';
+              throw new Error('STUDIO_NEW_GAME_SCREEN_DID_NOT_ADVANCE');
+            }
+            clickRecord.status='VERIFIED';
+            console.log('STUDIO_SCRIPT_NEW_GAME_CLICK_VERIFIED=1');
+          }
+          report.summary.successfulClicks++;
         }else if(st.type==='capture'){
           const capTool=client.tool('screen_capture');
           const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});

@@ -3660,6 +3660,46 @@ test('Daechung actual cloud Studio input, visual, target damage and rejoin check
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
+test('Official Studio MCP mouse clicks use an actual click action, never a move or down-only event',()=>{
+  const source=helper.slice(helper.indexOf('function mouseClickItem('),helper.indexOf('function pngDimensions('));
+  const clickArgs=new Function('schemaProps','setStudioId','enumValue','fillRequired','clean',source+';return mouseClickArgs')(
+    schema=>schema?.properties||{},
+    (args,_schema,id)=>{args.studio_id=id;},
+    (def,patterns)=>{
+      const values=def.enum||[];
+      for(const pattern of patterns){const hit=values.find(v=>v.toLowerCase()===pattern);if(hit)return hit;}
+      for(const pattern of patterns){const hit=values.find(v=>v.toLowerCase().includes(pattern));if(hit)return hit;}
+      return values[0];
+    },
+    args=>args,
+    value=>String(value??'').trim()
+  );
+  const actionProps={x:{type:'integer'},y:{type:'integer'},mouse_button:{type:'string'}};
+  const props=action=>({properties:{studio_id:{type:'string'},actions:{type:'array',items:{properties:{...actionProps,action}}}}});
+  const action=clickArgs(props({type:'string',enum:['moveTo','mouseButtonDown','mouseButtonClick','mouseButtonUp']}),'studio-test',898,57).actions[0];
+  assert.equal(action.action,'mouseButtonClick');
+  assert.equal(action.mouse_button,'left');
+  assert.deepEqual([action.x,action.y],[898,57]);
+  assert.equal(clickArgs(props({type:'string'}),'studio-test',100,200).actions[0].action,'mouseButtonClick');
+  assert.throws(()=>clickArgs(props({type:'string',enum:['moveTo','mouseButtonDown']}),'studio-test',100,200),/STUDIO_MCP_MOUSE_CLICK_ACTION_UNSUPPORTED/);
+});
+
+test('Mare first-click QA verifies actual selection screen and never confirms deleting a saved game',()=>{
+  const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  assert.match(script,/const mouseArgs=mouseClickArgs\(/);
+  assert.match(script,/STUDIO_SCRIPT_MOUSE_CLICK_INPUT=/);
+  assert.match(script,/STUDIO_SCRIPT_NEW_GAME_TRANSITION=/);
+  assert.match(script,/STUDIO_SCRIPT_NEW_GAME_CLICK_VERIFIED=1/);
+  assert.match(script,/title=p:FindFirstChild\('TitleGui'\)/);
+  assert.match(script,/backdrop:FindFirstChild\('TitlePanel',true\)/);
+  assert.match(script,/SAIL_BUTTON=/);
+  assert.match(script,/NEW_GAME_CONFIRM=/);
+  assert.match(script,/STUDIO_NEW_GAME_SCREEN_DID_NOT_ADVANCE/);
+  assert.match(script,/STUDIO_NEW_GAME_CONFIRMATION_REQUIRED_NO_AUTO_RESET/);
+  assert.ok(script.indexOf("clickRecord.status='VERIFIED'")<script.indexOf('report.summary.successfulClicks++;'));
+  assert.doesNotMatch(script,/title:Destroy\(\)|newBtn:Activate\(\)/);
+});
+
 test('Studio click QA stops unresponsive MCP discovery without claiming runtime PASS',()=>{
   const script=helper.slice(
     helper.indexOf('export async function runStudioScript('),
