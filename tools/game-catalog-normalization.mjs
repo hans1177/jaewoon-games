@@ -705,6 +705,12 @@ export function normalizeCatalog(catalog={}){
     if(media)game.homepageMedia=media;
     else delete game.homepageMedia;
     game.productionClass=normalizedProductionClass(game.productionClass);
+    // [분류 미러] 실제 승격된 게임 분류가 기준이다. 이전 홈페이지 요약의
+    // DESIGN_ONLY 값이 새 개발확정 상태를 덮어 정상 설계 승격을 막지 않게 한다.
+    if(game.homepageInfo&&typeof game.homepageInfo==='object'&&!Array.isArray(game.homepageInfo)
+      &&Object.hasOwn(game.homepageInfo,'productionClass')){
+      game.homepageInfo.productionClass=game.productionClass;
+    }
     const legacyHistorical=clean(game.homepageCategory).toLowerCase()==='historical-deployed';
     game.homepageCategory=homepageCategoryForProductionClass(game.productionClass)||'design-only';
     if(legacyHistorical&&!clean(game.homepageDisplayMode))game.homepageDisplayMode='ROBLOX_HISTORICAL_DEPLOYMENT';
