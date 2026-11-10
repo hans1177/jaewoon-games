@@ -58,7 +58,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          for f in roblox-games/fantasy-survival/assets-registered.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau; do
+          for f in roblox-games/fantasy-survival/assets-registered.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/shared/GameConfig.luau; do
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git diff --quiet -- "$f" && git ls-files --error-unmatch "$f" >/dev/null 2>&1; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"

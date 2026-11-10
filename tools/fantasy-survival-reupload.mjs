@@ -3,6 +3,7 @@
 // 필요: ROBLOX_OPEN_CLOUD_API_KEY, ROBLOX_CREATOR_USER_ID, FANTASY_UNIVERSE_ID. 모델만 올린다(사진 없음).
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 
 const ROOT = 'roblox-games/fantasy-survival';
@@ -35,10 +36,49 @@ const jobs = [
   ...Object.entries(map.files).map(([name, file]) => ({name, file})),
   ...Object.entries(map.archives).map(([name, a]) => ({name, zip: a.zip, entry: a.entry, file: a.zip + '#' + a.entry})),
 ];
+// [진단 원본] 실제 라이브 체험에 접근 실패한 자산만 복구 대상으로 선정한다.
+const errors = restoreOnly
+  ? JSON.parse(await fs.readFile(ROOT + '/broken-assets.json', 'utf8'))
+  : {items: []};
+const failedNames = new Set((errors.items || [])
+  .filter(item => item.action === 'SERVER_ASSET_ACCESS_FAILED' || item.action === 'REUPLOAD_MODEL')
+  .map(item => String(item.key || '')).filter(Boolean));
+const approvedRegistryPath = ROOT + '/CC0-ASSET-REGISTRY.json';
+const approvedRegistry = restoreOnly ? JSON.parse(await fs.readFile(approvedRegistryPath, 'utf8')) : null;
+const approved = approvedRegistry?.kenneyMiniForestCamp;
+if (restoreOnly && (!approved || approved.license !== 'CC0-1.0' || !/^[a-f0-9]{64}$/.test(String(approved.zipSha256||'')) || !approved.assetIds))
+  throw new Error('MEADOW_CAMP_SOURCE_NOT_APPROVED');
+let campJobs = [], campConfig = '';
+const newCampIds = new Map();
+if (restoreOnly && campOnly) {
+  const brokenCamps = Object.entries(approved.files || {}).filter(([name]) => failedNames.has(name));
+  if (!brokenCamps.length) throw new Error('MEADOW_CAMP_REUPLOAD_NO_FAILED_ASSETS');
+  if (String(approved.universeId) === String(UNIVERSE_ID) && approved.universeUseGrantVerified === true)
+    throw new Error('MEADOW_CAMP_ALREADY_GRANTED_CHECK_RUNTIME_FIRST');
+  const url = new URL(approved.downloadUrl);
+  if (url.protocol !== 'https:' || url.hostname !== 'opengameart.org')
+    throw new Error('MEADOW_CAMP_SOURCE_DOMAIN_INVALID');
+  const source = await fetch(url, {headers: {'user-agent': 'jaewoon-games'}, signal: AbortSignal.timeout(60000)});
+  if (!source.ok) throw new Error('MEADOW_CAMP_SOURCE_HTTP_' + source.status);
+  const zipBytes = Buffer.from(await source.arrayBuffer());
+  if (crypto.createHash('sha256').update(zipBytes).digest('hex') !== approved.zipSha256)
+    throw new Error('MEADOW_CAMP_SOURCE_HASH_MISMATCH');
+  const zipPath = '/tmp/kenney-meadow-camp.zip';
+  await fs.writeFile(zipPath, zipBytes);
+  campConfig = await fs.readFile(ROOT + '/shared/GameConfig.luau', 'utf8');
+  for (const [name, entry] of brokenCamps) {
+    const original = String(approved.assetIds[name] || '');
+    if (!/^[1-9]\d*$/.test(original) ||
+        !new RegExp('\\b' + name + '=' + original + '\\b').test(campConfig))
+      throw new Error('MEADOW_CAMP_GAME_CONFIG_ID_MISMATCH:' + name);
+    campJobs.push({name, zip: zipPath, entry, camp: true});
+  }
+  console.log('MEADOW_CAMP_REUPLOAD_APPROVED=' + campJobs.length + ':UNIVERSE=' + UNIVERSE_ID);
+}
 const failures = [], pending = [];
 const restored = [];
-for (const job of (restoreOnly ? [] : jobs)) {
-  if (registry.assets[job.name]?.assetId) { console.log('SKIP', job.name); continue; }
+for (const job of (restoreOnly ? campJobs : jobs)) {
+  if (!job.camp && registry.assets[job.name]?.assetId) { console.log('SKIP', job.name); continue; }
   try {
     const bytes = job.zip ? execFileSync('unzip', ['-p', job.zip, job.entry], {maxBuffer: 200 * 1024 * 1024}) : await fs.readFile(job.file);
     let ext = path.extname(job.zip ? job.entry : job.file).toLowerCase();
@@ -62,7 +102,8 @@ for (const job of (restoreOnly ? [] : jobs)) {
       if (op.done) assetId = String(op.response?.assetId || '');
     }
     if (!/^[1-9][0-9]*$/.test(assetId)) throw new Error('NO_ASSET_ID');
-    registry.assets[job.name] = {assetId, source: job.file, usePermissionGranted: false};
+    if (job.camp) newCampIds.set(job.name, assetId);
+    else registry.assets[job.name] = {assetId, source: job.file, usePermissionGranted: false};
     console.log('UPLOADED', job.name, assetId);
   } catch (e) {
     failures.push(job.name);
@@ -70,25 +111,18 @@ for (const job of (restoreOnly ? [] : jobs)) {
     if (/moderated/i.test(String(e.message))) break;
   }
 }
-// [권한 복구] 현재 라이브 체험에서 실패한 등록 모델과 승인된 야영지 소품만 재승인한다.
-const errors = restoreOnly
-  ? JSON.parse(await fs.readFile(ROOT + '/broken-assets.json', 'utf8'))
-  : {items: []};
-const failedNames = new Set((errors.items || [])
-  .filter(item => item.action === 'SERVER_ASSET_ACCESS_FAILED' || item.action === 'REUPLOAD_MODEL')
-  .map(item => String(item.key || '')).filter(Boolean));
+// [권한 복구] 대상 체험 ID와 실제 승인 API 응답을 기준으로 검증한다.
 const todo = restoreOnly
   ? Object.entries(registry.assets).filter(([name, value]) => !campOnly && failedNames.has(name) && /^[1-9]\d*$/.test(String(value?.assetId || '')))
   : Object.entries(registry.assets).filter(([, value]) => !value.usePermissionGranted);
 const resolvedNames = new Set(todo.map(([name]) => name));
 if (restoreOnly) {
-  const approved = JSON.parse(await fs.readFile(ROOT + '/CC0-ASSET-REGISTRY.json', 'utf8')).kenneyMiniForestCamp;
-  if (!approved || approved.license !== 'CC0-1.0' || !approved.zipSha256 || !approved.assetIds)
-    throw new Error('MEADOW_CAMP_SOURCE_NOT_APPROVED');
   for (const [name, id] of Object.entries(approved.assetIds)) {
     if (!failedNames.has(name)) continue;
-    if (!/^[1-9]\d*$/.test(String(id))) throw new Error('MEADOW_CAMP_INVALID_ASSET_ID:' + name);
-    todo.push([name, {assetId: String(id), usePermissionGranted: false}]);
+    const assetId = restoreOnly && campOnly ? newCampIds.get(name) : String(id);
+    if (restoreOnly && campOnly && !assetId) continue; // 업로드 실패 시 구형 소유자 자산을 재사용하지 않는다.
+    if (!/^[1-9]\d*$/.test(String(assetId))) throw new Error('MEADOW_CAMP_INVALID_ASSET_ID:' + name);
+    todo.push([name, {assetId: String(assetId), usePermissionGranted: false}]);
     resolvedNames.add(name);
   }
   const unresolved = [...failedNames].filter(name => !resolvedNames.has(name));
@@ -105,10 +139,32 @@ for (let i = 0; i < todo.length; i += 25) {
         requests: batch.map(([, v]) => ({assetId: Number(v.assetId), grantToDependencies: true}))})});
     const ok = new Set((res.successAssetIds || []).map(String));
     for (const [name, v] of batch) {
-      if (ok.has(String(v.assetId))) { v.usePermissionGranted = true; if (restoreOnly) restored.push(name); console.log('GRANTED_ASSET', name); }
+      if (ok.has(String(v.assetId))) {
+        v.usePermissionGranted = true;
+        if (restoreOnly) restored.push(name);
+        if (restoreOnly && campOnly && newCampIds.get(name) === String(v.assetId)) {
+          const before = String(approved.assetIds[name]);
+          const replacement = new RegExp('\\b' + name + '=' + before + '\\b');
+          if (!replacement.test(campConfig)) throw new Error('MEADOW_CAMP_GAME_CONFIG_CONCURRENT_CHANGE:' + name);
+          campConfig = campConfig.replace(replacement, name + '=' + v.assetId);
+          approved.assetIds[name] = String(v.assetId);
+        }
+        console.log('GRANTED_ASSET', name);
+      }
       else { const reason=(res.errors || []).find(error => String(error.assetId)===String(v.assetId))?.code || 'UNSPECIFIED'; failures.push(name + ':GRANT:' + reason); console.log('GRANT_WARNING', name, reason); }
     }
   } catch (e) { console.log('GRANT_BATCH_FAILED', i, String(e.message).slice(0, 180)); batch.forEach(([n]) => failures.push(n + ':GRANT')); }
+}
+// [기존 ID 교체] 실제 업로드와 해당 체험 권한 승인 둘 다 성공한 모델만 게임 설정에 반영한다.
+if (restoreOnly && campOnly) {
+  if (restored.length === campJobs.length && failures.length === 0) {
+    approved.universeId = UNIVERSE_ID;
+    approved.authorizedUniverseIds = [...new Set([...(approved.authorizedUniverseIds || []), UNIVERSE_ID])];
+    approved.universeUseGrantVerified = true;
+    approved.runtimeVerified = false;
+  }
+  await fs.writeFile(approvedRegistryPath, JSON.stringify(approvedRegistry, null, 2) + '\n');
+  await fs.writeFile(ROOT + '/shared/GameConfig.luau', campConfig);
 }
 registry.updatedAt = new Date().toISOString();
 await fs.writeFile(regPath, JSON.stringify(registry, null, 2) + '\n');
