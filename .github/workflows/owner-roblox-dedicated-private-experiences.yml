@@ -199,18 +199,44 @@ jobs:
         run: |
           set -euo pipefail
           test "$ROBLOX_UNIVERSE_ID" = '10773436325'
-          # [자산 도구] 준비된 패키지 목록으로 먼저 설치하고, 실패할 때만 목록을 갱신한다.
-          # 패키지 서명 검증은 유지하며 네트워크 지연이 게시 작업 전체를 소진하지 않게 한다.
-          if ! command -v blender >/dev/null 2>&1; then
-            echo 'FOREST_BLENDER_INSTALL_STARTED'
-            if ! sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy; then
-              echo 'FOREST_PACKAGE_INDEX_REFRESH_STARTED'
-              sudo timeout 120 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
-              sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy
-            fi
-            echo 'FOREST_BLENDER_INSTALL_COMPLETED'
+          # [배포 인증] 키 부재를 Blender 설치 전 확인한다. 키 자체나 응답 원문은 기록하지 않는다.
+          if [ -z "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]; then
+            echo 'FOREST_DEPLOY_API_KEY_MISSING' >&2
+            exit 1
           fi
-          node tools/baeksu-war-upload-meshes.mjs --register-forest-gear --game-id=fantasy-survival
+          # [기존 등록 보존] 원본 20종이 등록·바인딩된 경우 대량 Blender 설치/업로드를 반복하지 않는다.
+          # 실제 Universe 사용 권한은 이어지는 forest_grant 단계에서 매번 재검증한다.
+          if node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+          const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+          const gear=registry.gearExpansionV1;
+          const models=Object.entries(gear?.models||{});
+          const ready=gear?.gameId==='fantasy-survival'&&gear?.universeId==='10773436325'
+            &&gear?.nativeRegistrationVerified===true&&gear?.modelCount===20&&models.length===20
+            &&models.every(([name,row])=>row.sourceVerified===true
+              &&row.nativeRegistrationVerified===true
+              &&row.universeId==='10773436325'
+              &&row.license==='CC0-1.0'&&/^[a-f0-9]{64}$/.test(String(row.sha256||''))
+              &&Number.isSafeInteger(row.assetId)&&row.assetId>0
+              &&new RegExp('\\b'+name+'\\s*=\\s*'+row.assetId+'\\b').test(ids));
+          process.exit(ready?0:1);
+          NODE
+          then
+            echo 'FOREST_GEAR_REGISTERED_IDS_REUSED_PENDING_LIVE_UNIVERSE_GRANT'
+          else
+            # [기존 제작 경로] 미등록 원본일 때만 기존 Blender/CC0 업로더 사용.
+            if ! command -v blender >/dev/null 2>&1; then
+              echo 'FOREST_BLENDER_INSTALL_STARTED'
+              if ! sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy; then
+                echo 'FOREST_PACKAGE_INDEX_REFRESH_STARTED'
+                sudo timeout 120 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
+                sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy
+              fi
+              echo 'FOREST_BLENDER_INSTALL_COMPLETED'
+            fi
+            node tools/baeksu-war-upload-meshes.mjs --register-forest-gear --game-id=fantasy-survival
+          fi
 
       # [실물 등록 영속화] API 업로드 후 실패해도 이미 발급된 ID를 중복 업로드하지 않도록 main에 증거를 보존한다.
       - name: Persist Forest registered model IDs in canonical sources
