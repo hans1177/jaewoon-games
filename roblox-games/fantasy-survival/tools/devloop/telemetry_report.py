@@ -5,7 +5,7 @@ import os, json, urllib.request, urllib.error, datetime
 key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "")
 if not key:
     raise SystemExit("ROBLOX_MEADOW_TELEMETRY_READ_SECRET_MISSING")
-uni = os.environ.get("UNIVERSE_ID", "10773436325")
+uni = os.environ.get("UNIVERSE_ID", "10775310122")
 base = f"https://apis.roblox.com/cloud/v2/universes/{uni}/data-stores/MeadowDevLog/entries/"
 def get(entry):
     req = urllib.request.Request(base + entry, headers={"x-api-key": key})
