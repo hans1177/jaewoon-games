@@ -202,6 +202,8 @@ test('canonical Roblox Studio result workflow routes real failed jobs without by
   assert.match(workflow,/if: steps\.qa\.outputs\.verified == '1'/);
   assert.match(workflow,/if: steps\.promote_contract\.outcome == 'success'/);
   assert.match(workflow,/if: steps\.promote\.outcome == 'success'/);
+  assert.match(workflow,/if: steps\.qa\.outputs\.actual_conclusion == 'failure'/);
+  assert.match(workflow,/VIBE2_ROBLOX_CANDIDATE_RESULT=FAILED_QA_RECORDED_FOR_REPAIR/);
   assert.doesNotMatch(workflow,/VIBE2_AUTO_FINAL_PASS=YES/);
   assert.doesNotMatch(workflow,/VIBE2_AUTO_LEARNING=YES/);
 });
