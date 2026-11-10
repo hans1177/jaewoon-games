@@ -3271,7 +3271,8 @@ export function buildGameSpecificBuildUpDirective({
     ?buildRobloxHolisticQualityPlan({repoRoot,gameId:id,sourceRoot:qualitySourceRoot,
       sourceObservation:source,qualityGaps:states.filter(row=>row.state==='GAP'),
       previousPlan:previousDirective?.robloxHolisticQualityPlan,
-      runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision)})
+      runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision),
+      repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'})
     :null;
   return Object.freeze({
     version:2,
