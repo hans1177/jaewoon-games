@@ -92,7 +92,13 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
     });
   }
   if (['failure','timed_out','startup_failure'].includes(result)) {
-    const failed=finishVibeQueueTask(queue,{ taskId:task.id, outcome:'FAIL', evidence, blocker:`candidate-${clean(target)||'engine'}-verification-failed`, retryable:true });
+    // [반복 실패 인과 추적] 같은 실제 실패 단계/식별자는 기존 큐의 cause streak에서
+    // 동일 원인으로 묶고, 서로 다른 실패는 같은 원인으로 합치지 않는다.
+    const observedStage=clean(failureStage).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,72);
+    const observedSignature=clean(failureSignature).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,90);
+    const blocker=[`candidate-${clean(target)||'engine'}-verification-failed`,observedStage,observedSignature]
+      .filter(Boolean).join(':');
+    const failed=finishVibeQueueTask(queue,{ taskId:task.id, outcome:'FAIL', evidence, blocker, retryable:true });
     const next=failed.next;
     return Object.freeze({ ...failed, dispatchNext:shouldRefill(next), taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, reason:'engine-verification-failed' });
   }
