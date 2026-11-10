@@ -7,9 +7,12 @@ import {execFileSync} from 'node:child_process';
 
 const ROOT = 'roblox-games/fantasy-survival';
 const UNIVERSE_ID = process.env.FANTASY_UNIVERSE_ID;
+const restoreOnly = process.argv.includes('--regrant-only');
 const creatorId = process.env.ROBLOX_CREATOR_USER_ID;
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 if (!key || !UNIVERSE_ID || !creatorId) throw new Error('MISSING_ENV');
+const target = JSON.parse(await fs.readFile(ROOT + '/experience-target.json', 'utf8'));
+if (String(target.universeId) !== String(UNIVERSE_ID)) throw new Error('MEADOW_EXPERIENCE_ID_MISMATCH');
 const map = JSON.parse(await fs.readFile(ROOT + '/reupload-map.json', 'utf8'));
 const regPath = ROOT + '/assets-registered.json';
 const registry = await fs.readFile(regPath, 'utf8').then(JSON.parse, () => ({universeId: UNIVERSE_ID, assets: {}}));
@@ -32,7 +35,8 @@ const jobs = [
   ...Object.entries(map.archives).map(([name, a]) => ({name, zip: a.zip, entry: a.entry, file: a.zip + '#' + a.entry})),
 ];
 const failures = [], pending = [];
-for (const job of jobs) {
+const restored = [];
+for (const job of (restoreOnly ? [] : jobs)) {
   if (registry.assets[job.name]?.assetId) { console.log('SKIP', job.name); continue; }
   try {
     const bytes = job.zip ? execFileSync('unzip', ['-p', job.zip, job.entry], {maxBuffer: 200 * 1024 * 1024}) : await fs.readFile(job.file);
@@ -65,7 +69,32 @@ for (const job of jobs) {
     if (/moderated/i.test(String(e.message))) break;
   }
 }
-const todo = Object.entries(registry.assets).filter(([, v]) => !v.usePermissionGranted);
+// [권한 복구] 현재 라이브 체험에서 실패한 등록 모델과 승인된 야영지 소품만 재승인한다.
+const errors = restoreOnly
+  ? JSON.parse(await fs.readFile(ROOT + '/broken-assets.json', 'utf8'))
+  : {items: []};
+const failedNames = new Set((errors.items || [])
+  .filter(item => item.action === 'SERVER_ASSET_ACCESS_FAILED' || item.action === 'REUPLOAD_MODEL')
+  .map(item => String(item.key || '')).filter(Boolean));
+const todo = restoreOnly
+  ? Object.entries(registry.assets).filter(([name, value]) => failedNames.has(name) && /^[1-9]\\d*$/.test(String(value?.assetId || '')))
+  : Object.entries(registry.assets).filter(([, value]) => !value.usePermissionGranted);
+const resolvedNames = new Set(todo.map(([name]) => name));
+if (restoreOnly) {
+  const approved = JSON.parse(await fs.readFile(ROOT + '/CC0-ASSET-REGISTRY.json', 'utf8')).kenneyMiniForestCamp;
+  if (!approved || approved.license !== 'CC0-1.0' || !approved.zipSha256 || !approved.assetIds)
+    throw new Error('MEADOW_CAMP_SOURCE_NOT_APPROVED');
+  for (const [name, id] of Object.entries(approved.assetIds)) {
+    if (!failedNames.has(name)) continue;
+    if (!/^[1-9]\\d*$/.test(String(id))) throw new Error('MEADOW_CAMP_INVALID_ASSET_ID:' + name);
+    todo.push([name, {assetId: String(id), usePermissionGranted: false}]);
+    resolvedNames.add(name);
+  }
+  const unresolved = [...failedNames].filter(name => !resolvedNames.has(name));
+  console.log('MEADOW_PERMISSION_REPAIR_TARGET=' + UNIVERSE_ID
+    + ' TARGETS=' + todo.length + ' UNMAPPED=' + unresolved.join(','));
+  if (!todo.length) throw new Error('MEADOW_PERMISSION_REPAIR_NO_REGISTERED_IDS');
+}
 for (let i = 0; i < todo.length; i += 25) {
   const batch = todo.slice(i, i + 25);
   try {
@@ -75,7 +104,7 @@ for (let i = 0; i < todo.length; i += 25) {
         requests: batch.map(([, v]) => ({assetId: Number(v.assetId), grantToDependencies: true}))})});
     const ok = new Set((res.successAssetIds || []).map(String));
     for (const [name, v] of batch) {
-      if (ok.has(String(v.assetId))) { v.usePermissionGranted = true; console.log('GRANTED_ASSET', name); }
+      if (ok.has(String(v.assetId))) { v.usePermissionGranted = true; if (restoreOnly) restored.push(name); console.log('GRANTED_ASSET', name); }
       else { failures.push(name + ':GRANT'); console.log('GRANT_WARNING', name); }
     }
   } catch (e) { console.log('GRANT_BATCH_FAILED', i, String(e.message).slice(0, 180)); batch.forEach(([n]) => failures.push(n + ':GRANT')); }
@@ -93,4 +122,5 @@ for (const [name, v] of Object.entries(registry.assets)) {
 }
 await fs.writeFile(luauPath, luau);
 console.log('REGISTERED=' + Object.keys(registry.assets).length + ' REPLACED=' + replaced + ' FAILED=' + failures.length);
+if (restoreOnly) console.log('MEADOW_PERMISSION_REPAIR_CONFIRMED=' + restored.length + ' OF=' + todo.length);
 if (failures.length) { console.error('INCOMPLETE', failures.join(',')); process.exitCode = 1; }
