@@ -2737,6 +2737,16 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         if(st.type==='wait'){
           await wait(st.ms||1000);
         }else if(st.type==='luau'){
+          // [메인] 첫 실제 클릭·후속 화면 캡처 뒤 공식 Studio 플레이 상태를 함께 기록한다.
+          // 클라이언트 Luau 호출이 멈추면 UI 검사 자체와 Studio 통신 장애를 구분할 수 있다.
+          if(report.summary.successfulClicks===1&&report.summary.capturedFrames===2&&st.code.includes("return 'TEXTS: '")){
+            const t=client.tool('get_studio_state');
+            const a={};setStudioId(a,t.inputSchema||{},studioId);
+            const state=await client.call('get_studio_state',fillRequired(a,t.inputSchema||{}));
+            const detail=flattenText(state,[]).join('\n').slice(0,1500);
+            report.log.push({step:n,studioStateAfterFirstClick:detail});
+            console.log('STUDIO_SCRIPT_POST_CLICK_STATE='+detail.replace(/\s+/g,' ').slice(0,450));
+          }
           const out=await luau(st.ctx||'Client',st.code);
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
         }else if(st.type==='click_text'||st.type==='click_from_luau'){
