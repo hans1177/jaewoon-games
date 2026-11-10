@@ -178890,11 +178890,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0ec21ca8bd8342547f5c2cc6",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12379",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "471ee75519f759fd6d92d12beab0017bba6f5198",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12379,
+        "baseBranch": "main",
+        "headBranch": "fix-fantasy-approved-asset-registry-20261110",
+        "baseSha": "471ee75519f759fd6d92d12beab0017bba6f5198",
+        "headSha": "9db5296027e1880c2f548c64082b9ce3cef38da1",
+        "mergeCommitSha": "a401dc9ca9b1192ae46917f725fc0f6a8b30b723",
+        "mergedAt": "2026-11-10T14:29:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "402421c9c11d1b2cc35f8cfd955871f09623ac7a3759628653e3457fc0a2e7a9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix-fantasy-approved-asset-registry-20261110",
+        "candidateSha": "9db5296027e1880c2f548c64082b9ce3cef38da1"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 264,
+        "deletedLineCount": 37,
+        "changedFiles": [
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/fantasy-asset-link-check.test.mjs",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+          "tools/baeksu-war-upload-meshes.mjs",
+          "tools/fantasy-asset-link-check.mjs",
+          "tools/vibe3-roblox-platform.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/fantasy-asset-link-check.test.mjs",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+          "tools/baeksu-war-upload-meshes.mjs",
+          "tools/fantasy-asset-link-check.mjs",
+          "tools/vibe3-roblox-platform.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12379",
+        "merge-commit:a401dc9ca9b1192ae46917f725fc0f6a8b30b723",
+        "base-main:471ee75519f759fd6d92d12beab0017bba6f5198"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1427
+    "total": 1428
   }
 }
