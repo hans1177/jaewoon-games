@@ -8,9 +8,15 @@ end
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ContentProvider = game:GetService("ContentProvider")
+local HttpService = game:GetService("HttpService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local fails, oks = 0, 0
+-- [증거] 기존 Studio 실행기가 실제 자산·기능 검사 완료 여부를 읽는다.
+ReplicatedStorage:SetAttribute("MareQAAssetStatus", "RUNNING")
+ReplicatedStorage:SetAttribute("MareQAAssetTotals", "")
+ReplicatedStorage:SetAttribute("MareQAFeatureStatus", "RUNNING")
+ReplicatedStorage:SetAttribute("MareQAFeatureTotals", "")
 local function ok(msg)
 	oks += 1
 	print("[QA] OK " .. msg)
@@ -23,6 +29,7 @@ end
 -- 1) 자산: 모든 이미지·모델·소리 ID가 이 체험에서 실제로 불러와지는지
 task.spawn(function()
 	local ids = {}
+	local moduleErrors, modelReferences = 0, 0
 	for _, moduleName in { "AssetIds", "AudioIds" } do
 		local m = Shared:FindFirstChild(moduleName)
 		local success, data = pcall(function()
@@ -31,11 +38,18 @@ task.spawn(function()
 		if success and type(data) == "table" then
 			for key, value in data do
 				local url = type(value) == "number" and ("rbxassetid://" .. value) or tostring(value)
-				if string.find(url, "rbxassetid://") then
+				if string.find(url, "rbxassetid://", 1, true) then
 					table.insert(ids, { key = moduleName .. "." .. tostring(key), url = url })
+					if moduleName == "AssetIds" and not (string.find(key, "Menu/", 1, true) or string.find(key, "Goods/", 1, true) or string.find(key, "Portraits/", 1, true)) then
+						modelReferences += 1
+					end
+				else
+					moduleErrors += 1
+					fail("invalid asset id " .. moduleName .. "." .. tostring(key))
 				end
 			end
 		else
+			moduleErrors += 1
 			fail("module " .. moduleName .. " load error")
 		end
 	end
@@ -63,7 +77,7 @@ task.spawn(function()
 		for j = i, math.min(i + 29, #items) do
 			table.insert(batch, items[j].inst)
 		end
-		ContentProvider:PreloadAsync(batch, function(contentId, status)
+		local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, batch, function(contentId, status)
 			if status ~= Enum.AssetFetchStatus.Success then
 				bad += 1
 				local key = "?"
@@ -75,11 +89,20 @@ task.spawn(function()
 				fail("asset " .. key .. " " .. tostring(contentId) .. " status=" .. tostring(status))
 			end
 		end)
+		if not preloaded then
+			bad += 1
+			fail("asset batch " .. i .. " preload error " .. tostring(preloadError):sub(1, 90))
+		end
 	end
-	if bad == 0 then
+	-- [전체 자산] 이미지·음악은 PreloadAsync로 실검사, 모델은 AssetLoader의 별도 전수 결과와 결합한다.
+	ReplicatedStorage:SetAttribute("MareQAAssetTotals", HttpService:JSONEncode({
+		registered = #ids, imagesSounds = #items, models = modelReferences, failed = bad + moduleErrors,
+	}))
+	ReplicatedStorage:SetAttribute("MareQAAssetStatus", if bad == 0 and moduleErrors == 0 and #ids > 0 then "PASS" else "FAIL")
+	if bad == 0 and moduleErrors == 0 and #ids > 0 then
 		ok("images/sounds preloaded: " .. #items)
 	else
-		print("[QA] ASSET_FAIL_COUNT " .. bad .. "/" .. #items)
+		print("[QA] ASSET_FAIL_COUNT " .. (bad + moduleErrors) .. "/" .. #items)
 	end
 end)
 
