@@ -3682,6 +3682,15 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   assert.match(script,/fs\.writeFileSync\(path\.join\(outDir,'report\.json'\)/);
 });
 
+test('Existing Devloop Studio workflow rechecks Mare text sampling after main updates',()=>{
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/  push:\n    branches: \[main\]\n    paths:/);
+  assert.match(workflow,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json/);
+  assert.match(workflow,/github\.event_name == 'push' && 'mare-essentia' \|\| inputs\.game/);
+  assert.match(workflow,/github\.event_name == 'push' && 'roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json'/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+});
+
 test('Studio click QA text sampling uses bounded non-yielding visible-label scan without changing planned clicks',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   for(const [game,script] of [
