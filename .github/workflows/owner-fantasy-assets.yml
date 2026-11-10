@@ -47,7 +47,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             # [현재 체험 복구] 기존 자산은 재업로드하지 않고 승인된 자산의 사용 권한만 복구한다.
-            node tools/fantasy-survival-reupload.mjs --regrant-only
+            node tools/fantasy-survival-reupload.mjs --regrant-only --camp-only
           else
             node tools/fantasy-survival-reupload.mjs
           fi

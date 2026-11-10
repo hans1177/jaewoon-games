@@ -8,6 +8,7 @@ import {execFileSync} from 'node:child_process';
 const ROOT = 'roblox-games/fantasy-survival';
 const UNIVERSE_ID = process.env.FANTASY_UNIVERSE_ID;
 const restoreOnly = process.argv.includes('--regrant-only');
+const campOnly = process.argv.includes('--camp-only');
 const creatorId = process.env.ROBLOX_CREATOR_USER_ID;
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 if (!key || !UNIVERSE_ID || !creatorId) throw new Error('MISSING_ENV');
@@ -77,7 +78,7 @@ const failedNames = new Set((errors.items || [])
   .filter(item => item.action === 'SERVER_ASSET_ACCESS_FAILED' || item.action === 'REUPLOAD_MODEL')
   .map(item => String(item.key || '')).filter(Boolean));
 const todo = restoreOnly
-  ? Object.entries(registry.assets).filter(([name, value]) => failedNames.has(name) && /^[1-9]\d*$/.test(String(value?.assetId || '')))
+  ? Object.entries(registry.assets).filter(([name, value]) => !campOnly && failedNames.has(name) && /^[1-9]\d*$/.test(String(value?.assetId || '')))
   : Object.entries(registry.assets).filter(([, value]) => !value.usePermissionGranted);
 const resolvedNames = new Set(todo.map(([name]) => name));
 if (restoreOnly) {
@@ -105,7 +106,7 @@ for (let i = 0; i < todo.length; i += 25) {
     const ok = new Set((res.successAssetIds || []).map(String));
     for (const [name, v] of batch) {
       if (ok.has(String(v.assetId))) { v.usePermissionGranted = true; if (restoreOnly) restored.push(name); console.log('GRANTED_ASSET', name); }
-      else { failures.push(name + ':GRANT'); console.log('GRANT_WARNING', name); }
+      else { const reason=(res.errors || []).find(error => String(error.assetId)===String(v.assetId))?.code || 'UNSPECIFIED'; failures.push(name + ':GRANT:' + reason); console.log('GRANT_WARNING', name, reason); }
     }
   } catch (e) { console.log('GRANT_BATCH_FAILED', i, String(e.message).slice(0, 180)); batch.forEach(([n]) => failures.push(n + ':GRANT')); }
 }
