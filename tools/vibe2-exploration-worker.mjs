@@ -64,18 +64,44 @@ function protectedSignals(text=''){const checks=[['save',/save|세이브|progres
 // Imports are references only: neither this helper nor the explorer may write target files.
 export function extractVibeSourceImportRefs(source='',target=''){
   const text=String(source??''),refs=new Set();
+  const roblox=['roblox','luau','lua'].includes(clean(target).toLowerCase());
+  // [코딩 정확도] 문자열의 -- 는 주석이 아니다. 실제 Luau 주석만 공백으로
+  // 치환해 줄 위치를 지키고, 주석에 적힌 가짜 require를 의존성으로 오인하지 않는다.
+  let scanText=text;
+  if(roblox){
+    const chars=text.split('');
+    let quote=null;
+    for(let i=0;i<chars.length;){
+      const c=text[i];
+      if(quote){
+        if(c==='\\'){i+=2;continue;}
+        if(c===quote)quote=null;
+        i++;continue;
+      }
+      if(c==='"'||c==="'"){quote=c;i++;continue;}
+      if(c==='-'&&text[i+1]==='-'){
+        const opening=/^\[(=*)\[/.exec(text.slice(i+2,i+20));
+        const close=opening?']'+opening[1]+']':null;
+        const at=close?text.indexOf(close,i+2+opening[0].length):-1;
+        const stop=close?(at<0?text.length:at+close.length)
+          :(text.indexOf('\n',i)<0?text.length:text.indexOf('\n',i));
+        for(let j=i;j<stop;j++)if(text[j]!=='\n'&&text[j]!=='\r')chars[j]=' ';
+        i=stop;continue;
+      }
+      i++;
+    }
+    scanText=chars.join('');
+  }
   for(const expression of [
     /\bfrom\s+['"]([^'"]+)['"]/g,
     /\bimport\s*['"]([^'"]+)['"]/g,
     /\b(?:require|import)\s*\(\s*['"]([^'"]+)['"]\s*\)/g
-  ])for(const match of text.matchAll(expression))refs.add(match[1]);
-  if(['roblox','luau','lua'].includes(clean(target).toLowerCase())){
+  ])for(const match of scanText.matchAll(expression))refs.add(match[1]);
+  if(roblox){
     // [로블록스 모듈 연결] 실제 require 체인을 정적 경로로 변환한다.
     // 혼합 .Module / :WaitForChild("Module") 체인도 같은 ModuleScript를 가리킨다.
     const expression=/\brequire\s*\(\s*script((?:\.Parent){1,8})((?:(?:\.[A-Za-z_]\w*)|(?::WaitForChild\(\s*["'][A-Za-z_]\w*["']\s*\))){1,8})\s*\)/g;
-    for(const match of text.matchAll(expression)){
-      const lineStart=text.lastIndexOf('\n',match.index)+1;
-      if(text.slice(lineStart,match.index).trimStart().startsWith('--'))continue;
+    for(const match of scanText.matchAll(expression)){
       const parents=(match[1].match(/\.Parent/g)||[]).length;
       const parts=[...match[2].matchAll(/\.([A-Za-z_]\w*)|:WaitForChild\(\s*(["'])([A-Za-z_]\w*)\2\s*\)/g)]
         .map(row=>row[1]||row[3]);
