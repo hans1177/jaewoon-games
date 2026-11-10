@@ -3903,7 +3903,7 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
   assert.match(uploader,/row\.id !== 'rbxassetid:\/\/' \+ registered\.assetId/);
   assert.match(uploader,/pendingPermissions\.push\(\{id, assetId: registered\.assetId\}\)/);
   assert.match(uploader,/MARE_STUDIO_REGRANT_VALIDATED_TARGET_COUNT/);
-  assert.match(uploader,/if \(!studioRegrantPath \|\| failures\.length === 0\) registry\.updatedAt/);
+  assert.match(uploader,/if \(failures\.length === 0\) registry\.updatedAt/);
   assert.match(workflow,/studio_regrant:/);
   assert.match(workflow,/mare-essentia-studio-frames/);
   assert.match(workflow,/git show FETCH_HEAD:report\.json/);
@@ -3934,4 +3934,28 @@ test('Mare image timeout requires official visible Studio Client IsLoaded proof 
   assert.match(script,/report\.clientImageAudit=\{status:'UNVERIFIED'/);
   assert.match(script,/STUDIO_CLIENT_IMAGE_RESPONSE_MISSING/);
   assert.doesNotMatch(script,/if\(media\.failed>0\)media\.status='PASS'/);
+});
+
+
+// [대항해시대 실제 Client 45개 실패] GUI ImageLabel은 Decal 자산이 아니라 Image 자산을 등록한다.
+// Asset create·Universe grant 성공 전에 기존 45개 등록 ID를 변경하지 않는다.
+test('Mare goods/menu asset replacement requires verified Image uploads with atomic rollback',()=>{
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.match(uploader,/assetType: image \? 'Image' : 'Model'/);
+  assert.doesNotMatch(uploader,/assetType: image \? \(kind === 'Portraits' \? 'Image' : 'Decal'\)/);
+  assert.match(uploader,/const previousTypeAssets = new Map\(\)/);
+  assert.match(uploader,/previousTypeAssets\.set\(item\.kind \+ '\/' \+ item\.name, \{\.\.\.row\}\)/);
+  assert.match(uploader,/const replacementUnverified = \[\.\.\.previousTypeAssets\]/);
+  assert.match(uploader,/registry\.assets\[id\]\?\.usePermissionGranted !== true/);
+  assert.match(uploader,/if \(failures\.length && previousTypeAssets\.size\)/);
+  assert.match(uploader,/for \(const \[id, previous\] of previousTypeAssets\) registry\.assets\[id\] = previous/);
+  assert.match(uploader,/MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/);
+  const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8'));
+  const approved=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const targets=Object.entries(registry.assets).filter(([id,row])=>/^(Goods|Menu)\//.test(id)&&row.assetType==='Decal');
+  assert.equal(targets.length,45,'actual 45 affected old assets are identified');
+  for(const [id,row] of targets){
+    assert.match(String(row.assetId),/^[1-9][0-9]*$/);
+    assert.match(String(approved[id]),/^[a-f0-9]{64}$/);
+  }
 });
