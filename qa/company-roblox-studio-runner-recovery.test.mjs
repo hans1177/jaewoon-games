@@ -60,6 +60,12 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   assert.ok(bootstrap.indexOf('Stop-Process -Id ([int]$watcher.ProcessId)') < bootstrap.indexOf('[IO.File]::WriteAllText($startupTemp'));
   assert.match(bootstrap,/Move-Item -LiteralPath \$startupTemp -Destination \$startupPath -Force/);
   assert.match(bootstrap,/ROBLOX_RUNNER_STARTUP_TEMP_NOT_VERIFIED/);
+  assert.match(bootstrap,/ROBLOX_RUNNER_STARTUP_VOLUME_FREE_MB/);
+  assert.match(bootstrap,/ROBLOX_RUNNER_SYSTEM_DISK_SPACE_REQUIRED/);
+  assert.match(bootstrap,/Get-Date\)\.AddDays\(-2\)/);
+  assert.match(bootstrap,/\.Extension -in @\('\.log','\.txt'\)/);
+  assert.match(bootstrap,/Get-ChildItem -LiteralPath \$robloxLogs -File/);
+  assert.doesNotMatch(bootstrap,/Remove-Item -LiteralPath \$env:LOCALAPPDATA|Remove-Item.*Roblox\\Versions/);
   assert.doesNotMatch(bootstrap,/\$launcher \| Set-Content -LiteralPath \$startupPath/);
   assert.doesNotMatch(bootstrap,/Get-Content -LiteralPath \$startupPath -Raw/);
   assert.match(bootstrap,/\[int\]\$_.SessionId -eq \$hostSessionId/);
