@@ -35,6 +35,31 @@ export function evaluateAudit(a,limits=LIMITS){
     stats:{meshes:meshes.length,triangles:a.triangles,bones:(a.armatures||[]).reduce((n,x)=>n+x.bones,0),actions:(a.actions||[]).length,primitiveShare:Number(share.toFixed(3))}};
 }
 
+// [모션 곡선 정적 감사] 실제 뼈 키프레임의 존재·움직임만 판정한다.
+// 애니메이션 재생, 충돌, 공격 타이밍, 게임 적용 성공을 대신하지 않는다.
+export function evaluateMotionCurves(actions=[]){
+  const rows=Array.isArray(actions)?actions:[];
+  const inspected=rows.filter(row=>row?.curvesInspected===true);
+  const valid=inspected.filter(row=>{
+    const range=row.frames;
+    return Array.isArray(range)&&range.length===2&&
+      Number.isFinite(range[0])&&Number.isFinite(range[1])&&range[1]>range[0]&&
+      Number.isSafeInteger(row.keyframeCount)&&row.keyframeCount>=2&&
+      Number.isSafeInteger(row.validBoneCurves)&&row.validBoneCurves>0&&
+      Number.isSafeInteger(row.movingBoneCurves)&&row.movingBoneCurves>0&&
+      row.movingBoneCurves<=row.validBoneCurves&&
+      row.invalidCurves===0;
+  });
+  return {observedClips:rows.length,inspectedClips:inspected.length,
+    validMovingClips:valid.length,
+    validClipNames:valid.slice(0,64).map(row=>String(row.name||'').slice(0,90)),
+    invalidOrUnmeasuredClips:rows.length-valid.length,
+    observedBoneCurves:inspected.reduce((n,row)=>n+(Number.isSafeInteger(row.boneCurves)?row.boneCurves:0),0),
+    movingBoneCurves:valid.reduce((n,row)=>n+row.movingBoneCurves,0),
+    curveMeasurementAvailable:inspected.length>0,
+    gameplayMotionVerified:false,nativeRuntimeVerified:false,gameApplied:false};
+}
+
 export function measure(input,{blender=process.env.VIBE2_BLENDER_BINARY,out}={}){
   const script=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'vibe_mesh_audit.py');
   const output=out||path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe-audit-')),'audit.json');
