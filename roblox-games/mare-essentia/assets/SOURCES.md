@@ -671,3 +671,19 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 
 - `cardart/world_46.jpg`는 유네스코 세계유산 기록을 참고해 대항해시대에 맞춰 그린 유적·항구 창작 삽화 20종이다. 시대와 참고 주소는 도감 목록에 기록했다.
 - `cardart/event_merchant_hoi_an.jpg`는 호이안 투본강의 가상 상인과 화물 거래를 그린 1600×900 창작 원화다. [유네스코 호이안 옛 도시](https://whc.unesco.org/en/list/948/)를 배경 참고 자료로 썼다. 사람 검수·로블록스 등록과 장면 재생 연결은 대기 상태다.
+| `portraits/` | person_charles2.png | Jan van der Vaart · PUBLIC-DOMAIN | https://www.nga.gov/artworks/37922-charles-ii |
+| `portraits/` | person_cromwell.png | William Faithorne · PUBLIC-DOMAIN | https://www.nga.gov/artworks/40959-oliver-cromwell |
+| `portraits/` | person_drake.png | Nicolas de Larmessin IV · PUBLIC-DOMAIN | https://www.nga.gov/artworks/38006-sir-francis-drake |
+| `portraits/` | person_elizabeth1.png | Willem de Passe and John Payne · PUBLIC-DOMAIN | https://www.nga.gov/artworks/40594-queen-elizabeth |
+| `portraits/` | person_hume.png | Simon Charles Miger after Charles-Nicolas Cochin II · PUBLIC-DOMAIN | https://www.nga.gov/artworks/71513-m-david-hume |
+| `portraits/` | person_milton.png | William Faithorne · PUBLIC-DOMAIN | https://www.nga.gov/artworks/58207-john-milton |
+| `portraits/` | person_napoleon.png | Jacques-Louis David · PUBLIC-DOMAIN | https://www.nga.gov/artworks/46114-emperor-napoleon-his-study-tuileries |
+| `portraits/` | person_peter1.png | Augustin de Saint-Aubin · PUBLIC-DOMAIN | https://www.nga.gov/artworks/70232-peter-great |
+| `portraits/` | person_shakespeare.png | Martin Droeshout · PUBLIC-DOMAIN | https://www.nga.gov/artworks/38733-william-shakespeare |
+| `portraits/` | person_washington.png | Gilbert Stuart · PUBLIC-DOMAIN | https://www.nga.gov/artworks/127695-george-washington |
+| `portraits/` | scholar_franklin.png | Joseph Siffred Duplessis · PUBLIC-DOMAIN | https://www.metmuseum.org/art/collection/search/436236 |
+| `portraits/` | scholar_galileo.png | Galgano Cipriani, after Justus Susterman and Raphael Morghen · CC0-1.0 | https://www.si.edu/object/portrait-galileo-galilei-1562-1642:chndm_1931-94-91 |
+| `portraits/` | scholar_harvey.png | Unknown engraver · PUBLIC-DOMAIN | https://wellcomecollection.org/works/h72dm4n9 |
+| `portraits/` | scholar_johnson.png | James Watson (after Joshua Reynolds) · PUBLIC-DOMAIN | https://www.nga.gov/artworks/10857-samuel-johnson |
+| `portraits/` | scholar_rembrandt.png | Rembrandt van Rijn · PUBLIC-DOMAIN | https://www.nga.gov/artworks/9844-self-portrait |
+| `portraits/` | scholar_wren.png | S. Coignard · PUBLIC-DOMAIN | https://www.nga.gov/artworks/41157-sir-christopher-wren-architect |
