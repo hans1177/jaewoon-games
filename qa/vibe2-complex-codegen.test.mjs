@@ -34,6 +34,68 @@ function setup(t,target='web',html=false){
 }
 const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
 
+// [게임별 자산 최적화] 동일 원본의 중복, 모바일 텍스처, 정적 시작화면 참조를 파일 원본만으로 확인한다.
+test('Vibe5.9 audits per-game duplicate assets and large mobile textures without changing approved art',t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-opt-audit-'));
+ t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const gameId='asset-mobile',root=path.join(repo,'web-games',gameId);
+ fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+ fs.mkdirSync(path.join(repo,'web-games','other','assets'),{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[
+  {id:gameId,webPath:'web-games/'+gameId,lifecycleState:'ACTIVE'},
+  {id:'other',webPath:'web-games/other',lifecycleState:'ACTIVE'}
+ ]}));
+ const image=Buffer.alloc(32);
+ Buffer.from([137,80,78,71,13,10,26,10]).copy(image,0);
+ image.writeUInt32BE(13,8);image.write('IHDR',12,'ascii');
+ image.writeUInt32BE(2048,16);image.writeUInt32BE(1024,20);
+ fs.writeFileSync(path.join(root,'assets','hero.png'),image);
+ fs.writeFileSync(path.join(root,'assets','hero-duplicate.png'),image);
+ fs.writeFileSync(path.join(repo,'web-games','other','assets','another.png'),image);
+ fs.writeFileSync(path.join(root,'index.html'),
+  '<img src="assets/hero.png"><img src="assets/missing.png">');
+ const original=fs.readFileSync(path.join(root,'assets','hero.png'));
+ const audit=inspectVibe59ExistingGameAssets({
+  order:{selectedTask:{gameId}},repositoryRoot:repo,sourceRoot:root,target:'web'});
+ const perf=audit.optimization;
+ assert.equal(perf.kind,'GAME_SCOPED_STATIC_ASSET_OPTIMIZATION');
+ assert.equal(perf.gameId,gameId);
+ assert.equal(perf.scannedAssetCount,2);
+ assert.equal(perf.scanComplete,true);
+ assert.equal(perf.estimatedRgbaMemoryBytes,2*2048*1024*4);
+ assert.equal(perf.decodedTextureCount,2);
+ assert.deepEqual(perf.duplicateGroups[0].paths,['assets/hero-duplicate.png','assets/hero.png']);
+ assert.equal(perf.duplicateGroups[0].automaticRemovalAllowed,false);
+ assert.ok(perf.oversizedTextures.some(row=>row.path==='assets/hero.png'));
+ assert.deepEqual(perf.initialStaticAssets,[{path:'assets/hero.png',bytes:image.length}]);
+ assert.deepEqual(audit.missingReferences.map(row=>row.assetPath),['assets/missing.png']);
+ assert.equal(perf.optimizationApplied,false);
+ assert.equal(perf.estimatedRgbaMemoryIsNotMeasuredGpuMemory,true);
+ assert.equal(perf.referenceCoverage,'LITERAL_HTML_CSS_ONLY');
+ assert.equal(audit.sourceWrite,false);
+ assert.deepEqual(fs.readFileSync(path.join(root,'assets','hero.png')),original);
+});
+
+test('Vibe5.9 Roblox asset audit does not confuse local files with Cloud IDs or other games',t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-opt-roblox-'));
+ t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,'roblox-games','bound-game');
+ fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+ fs.writeFileSync(path.join(root,'assets','terrain.glb'),Buffer.from('real existing bytes'));
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
+  games:[{id:'bound-game',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
+ const inspected=inspectVibe59ExistingGameAssets({
+  order:{selectedTask:{gameId:'bound-game'}},sourceRoot:root,repositoryRoot:repo,target:'roblox'});
+ assert.equal(inspected.optimization.referenceCoverage,'LOCAL_FILES_ONLY_REMOTE_IDS_UNKNOWN');
+ assert.deepEqual(inspected.optimization.actions,['AUDIT_REMOTE_ASSET_IDS_AND_INSTANCE_STREAMING_IN_ACTUAL_PLACE']);
+ assert.equal(inspected.optimization.runtimeVerified,false);
+ assert.equal(inspected.optimization.assetFilesModified,false);
+ assert.equal(inspected.optimization.licenseProofRequiredForReplacement,true);
+ assert.throws(()=>inspectVibe59ExistingGameAssets({
+  order:{selectedTask:{gameId:'other-game'}},sourceRoot:root,repositoryRoot:repo,target:'roblox'}),
+  /ROOT_UNCLAIMED/);
+});
+
 // 원본 게임 파일과 기존 소스 작업자의 단일 적용 경로를 사용한다.
 test('canonical Vibe2 no-model worker edits actual game source on an isolated candidate branch',async t=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-real-source-write-'));
