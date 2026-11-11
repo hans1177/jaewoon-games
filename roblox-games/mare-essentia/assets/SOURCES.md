@@ -666,3 +666,8 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `event_merchant_coromandel.jpg` | 코로만델 면직물 상인이 무늬와 납품 수량을 확인하는 장면 | [메트로폴리탄 미술관의 코로만델 수출 면직물](https://www.metmuseum.org/art/collection/search/231243) |
 | `event_merchant_lamu.jpg` | 스와힐리 항구 라무에서 천을 거래하는 장면 | [유네스코 라무 구시가지](https://whc.unesco.org/en/list/1055/) |
 | `event_merchant_naha.jpg` | 류큐 나하에서 옻칠 문서함과 화물을 확인하는 장면 | [스미스소니언의 17세기 나하 문서함](https://collections.si.edu/search/record/ark:/65665/ye3397c57054fa94f81bd3dba926c6f18ef) |
+
+## 세계 유적·항구 도감 원화
+
+- `cardart/world_46.jpg`는 유네스코 세계유산 기록을 참고해 대항해시대에 맞춰 그린 유적·항구 창작 삽화 20종이다. 시대와 참고 주소는 도감 목록에 기록했다.
+- `cardart/event_merchant_hoi_an.jpg`는 호이안 투본강의 가상 상인과 화물 거래를 그린 1600×900 창작 원화다. [유네스코 호이안 옛 도시](https://whc.unesco.org/en/list/948/)를 배경 참고 자료로 썼다. 사람 검수·로블록스 등록과 장면 재생 연결은 대기 상태다.
