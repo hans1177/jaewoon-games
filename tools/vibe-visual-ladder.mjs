@@ -74,6 +74,30 @@ function verify(){
   const rp=opt('report');
   if(!rp||!fs.existsSync(rp))return {ok:false,why:'Studio 보고서 없음'};
   const text=fs.readFileSync(rp,'utf8');
+  // [대항해시대 실증] 원본을 고정하지 않은 캡처·일부 화면·미디어 실패는 자동 자산/룩 승격에 사용하지 않는다.
+  if(game==='mare-essentia'){
+    let report;
+    try{report=JSON.parse(text)}catch{return {ok:false,why:'Studio 보고서 JSON 오류'}}
+    const head=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'});
+    const revision=String(head.stdout||'').trim();
+    if(head.status!==0||!/^[0-9a-f]{40}$/.test(revision)||report.sourceRevision!==revision)
+      return {ok:false,why:'Studio 검사 소스 버전이 현재 main과 불일치'};
+    const summary=report.summary||{},assets=report.assetAudit||{},client=report.clientImageAudit||{};
+    if(!Array.isArray(report.errors)||report.errors.length>0
+      ||summary.plannedSteps!==185||summary.completedSteps!==185||summary.abortedEarly!==false
+      ||summary.plannedClicks!==30||summary.successfulClicks!==30
+      ||summary.plannedFrames!==31||summary.capturedFrames!==31
+      ||assets.models?.status!=='PASS'||assets.features?.status!=='PASS'
+      ||assets.registered?.status!=='PASS'||assets.registered.clientVerified!==true
+      ||assets.registered.soundClientVerified!==true
+      ||client.mode!=='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
+      ||!Number.isSafeInteger(client.expected)||client.expected<1||client.loaded!==client.expected
+      ||!Array.isArray(client.missing)||client.missing.length!==0
+      ||!Number.isSafeInteger(client.soundExpected)||client.soundExpected<1
+      ||client.soundLoaded!==client.soundExpected
+      ||!Array.isArray(client.soundMissing)||client.soundMissing.length!==0)
+      return {ok:false,why:'Studio 전체 클릭/화면/미디어 전수 검증 미통과'};
+  }
   const sha=crypto.createHash('sha256').update(text).digest('hex').slice(0,16);
   if(state.lastReportSha===sha)return {ok:false,why:'이미 반영된 보고서(새 캡처 필요)'};
   pendingSha=sha;
