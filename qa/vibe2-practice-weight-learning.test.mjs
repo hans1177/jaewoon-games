@@ -7,6 +7,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { buildPracticeDataset } from '../tools/vibe2-practice-dataset.mjs';
 import { buildPracticeTeacherSamples } from '../tools/vibe2-online-unity-teacher.mjs';
+import { buildLicensedReferenceSamples } from '../tools/vibe2-licensed-reference-samples.mjs';
 
 test('teacher practice samples become a real train/eval dataset without pretending to be verified evidence', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-practice-'));
@@ -40,6 +41,41 @@ test('teacher practice samples become a real train/eval dataset without pretendi
   assert.ok(manifest.stats.eval > 0);
   const train = fs.readFileSync(path.join(out, 'train.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
   assert.ok(train.every((row) => row.synthetic && row.practiceOnly && row.runtimePromotionAllowed === false));
+});
+
+test('Roblox practice includes original implementation in train and eval; stale reference-only artifacts fail closed', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-roblox-practice-'));
+  try {
+    const samples = path.join(root, 'samples');
+    const data = path.join(root, 'data');
+    const result = buildLicensedReferenceSamples({
+      drillsFile: 'company-learning/roblox-practice.json', outDir: samples, max: 96,
+    });
+    assert.equal(result.written, 25);
+    assert.equal(result.codePracticeWritten, 14);
+    const manifest = buildPracticeDataset({ inputDir: samples, outDir: data, minSamples: 20, taskType: 'roblox' });
+    assert.equal(manifest.practiceOnly, true);
+    assert.equal(manifest.runtimePromotionAllowed, false);
+    assert.equal(manifest.stats.licensedReferenceTotal, 25);
+    assert.ok(manifest.stats.codeImplementationTrain > 0);
+    assert.ok(manifest.stats.codeImplementationEval > 0);
+    assert.deepEqual(manifest.sourceKinds, ['licensed-reference', 'teacher']);
+    const validate = "import importlib.util,json,sys,types; p='tools/vibe2-practice-train.py'; s=importlib.util.spec_from_file_location('practice',p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); d=sys.argv[1]; rows=lambda n:[json.loads(x) for x in open(d+'/'+n+'.jsonl',encoding='utf-8')]; m.practice_validate(types.SimpleNamespace(task_type='roblox'),json.load(open(d+'/manifest.json')),rows('train'),rows('eval'))";
+    const python = process.platform === 'win32' ? 'python' : 'python3';
+    execFileSync(python, ['-c', validate, data]);
+    const staleSamples = path.join(root, 'stale-samples');
+    fs.mkdirSync(staleSamples);
+    for (const file of fs.readdirSync(samples).filter(name => name.startsWith('roblox-ref-'))) {
+      fs.copyFileSync(path.join(samples, file), path.join(staleSamples, file));
+    }
+    const staleData = path.join(root, 'stale-data');
+    const stale = buildPracticeDataset({ inputDir: staleSamples, outDir: staleData, minSamples: 20, taskType: 'roblox' });
+    assert.equal(stale.stats.codeImplementationTrain, 0);
+    assert.equal(stale.stats.codeImplementationEval, 0);
+    assert.throws(() => execFileSync(python, ['-c', validate, staleData], {stdio: 'pipe'}));
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });
 
 test('practice trainer and workflow keep learned adapter unverified and require actual training execution', () => {

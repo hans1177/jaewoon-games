@@ -44,6 +44,22 @@ def practice_validate(args, manifest, train_rows, eval_rows):
         eval_families = {row.get('familyId') for row in eval_rows}
         if None in train_families | eval_families or train_families & eval_families:
             raise RuntimeError('practice exercise family leakage')
+    # Roblox practice must exercise actual implementation in both disjoint splits.
+    # A historical reference-only artifact is not a valid Roblox coding run.
+    if args.task_type == 'roblox':
+        for split, rows in (('Train', train_rows), ('Eval', eval_rows)):
+            code_rows = sum(
+                row.get('sampleKind') == 'CODE_IMPLEMENTATION'
+                and row.get('sourceKind') == 'teacher'
+                and row.get('synthetic') is True
+                for row in rows
+            )
+            if code_rows < 1 or int(stats.get('codeImplementation' + split, -1)) != code_rows:
+                raise RuntimeError('Roblox practice requires original Luau code samples in both train and eval')
+        source_kinds = set(manifest.get('sourceKinds') or [])
+        if not manifest.get('containsLicensedReference') or not {'teacher', 'licensed-reference'}.issubset(source_kinds):
+            raise RuntimeError('Roblox practice requires original Luau exercises and licensed references')
+
     found_licensed = 0
     for row in train_rows + eval_rows:
         if row.get('taskType') != args.task_type or row.get('practiceOnly') is not True:
