@@ -59,6 +59,10 @@ export function rankAdaptiveContextCandidates({files=[],diagnostic=null,responsi
   const recent=new Set(uniq(recentChangedFiles));
   const diagnosticFile=posix(diagnostic?.file||diagnostic?.path||'');
   const needle=clean(diagnostic?.needle);
+  const symbol=clean(diagnostic?.function||diagnostic?.symbol);
+  // [오류 자가복구] 확인된 함수 식별자만 정확한 선언/호출 문맥으로 사용한다.
+  const symbolPattern=/^[A-Za-z_][A-Za-z0-9_]*$/.test(symbol)
+    ?new RegExp('\\b(?:local\\s+)?function\\s+'+symbol+'\\s*\\(|\\blocal\\s+'+symbol+'\\s*=\\s*function\\s*\\('):null;
   return safeArray(files).map((file,index)=>{
     const rel=posix(file?.path||file?.relative||file);
     const content=typeof file==='object'?String(file.content??''):'';
@@ -68,6 +72,7 @@ export function rankAdaptiveContextCandidates({files=[],diagnostic=null,responsi
     if(related.has(rel))score+=55;
     if(recent.has(rel))score+=35;
     if(needle&&(content.includes(needle)||file?.diagnosticMatch===true))score+=45;
+    if(symbolPattern&&symbolPattern.test(content))score+=70;
     score+=rolePathBoost(role,rel);
     if(/(?:^|\/)(?:qa|test|tests|spec)(?:\/|\.|-|_)/i.test(rel)&&role!=='qa')score+=4;
     return {...(typeof file==='object'?file:{}),path:rel,contextScore:score,_index:index};
@@ -91,7 +96,11 @@ export function packAdaptiveContext(options={}){
     const reserved=pending?Math.min(Math.floor(remaining/2),pending*2048):0;
     const available=Math.min(limits.maxFileBytes,remaining-reserved);
     if(available<=0)continue;
-    const content=truncateUtf8(row.content??'',available,options.diagnostic?.needle),used=Buffer.byteLength(content);
+    const symbol=clean(options.diagnostic?.function||options.diagnostic?.symbol);
+    const symbolAnchor=/^[A-Za-z_][A-Za-z0-9_]*$/.test(symbol)
+      ?String(row.content??'').match(new RegExp('(?:local\\s+)?function\\s+'+symbol+'\\s*\\(|local\\s+'+symbol+'\\s*=\\s*function\\s*\\('))?.[0]||'':'';
+    const content=truncateUtf8(row.content??'',available,options.diagnostic?.needle||symbolAnchor),
+      used=Buffer.byteLength(content);
     if(used<1)continue;
     packed.push({...row,content,packedBytes:used,truncated:used<Buffer.byteLength(String(row.content??''))});
     bytes+=used;
@@ -189,13 +198,25 @@ function verifiedEvidenceRows(root){
   }).filter(Boolean);
 }
 
-export function findVerifiedFailureResolution({root='company-learning/evidence',gameId='',fingerprint=''}={}){
+export function findVerifiedFailureResolution({root='company-learning/evidence',gameId='',fingerprint='',sourceCommit=''}={}){
   const id=clean(typeof fingerprint==='object'?fingerprint?.id:fingerprint);
   if(!clean(gameId)||!id)return null;
-  const rows=verifiedEvidenceRows(root).filter(({value})=>clean(value.gameId)===clean(gameId)&&clean(value?.vibe2DevelopmentIntelligence?.failureFingerprint?.id)===id);
+  // [검증 학습] 보류·회귀 실패 이력은 정답 레시피로 복원하지 않는다.
+  // 현재 원본 SHA를 지정한 작업은 다른 리비전의 근거를 자동 적용하지 않는다.
+  const revision=clean(sourceCommit);
+  const rows=verifiedEvidenceRows(root).filter(({value})=>{
+    const checkpoint=value?.vibe2DevelopmentIntelligence?.checkpoint;
+    return clean(value.gameId)===clean(gameId)
+      &&clean(value?.vibe2DevelopmentIntelligence?.failureFingerprint?.id)===id
+      &&(!checkpoint||clean(checkpoint.status).toUpperCase()==='VERIFIED')
+      &&(!revision||(clean(checkpoint?.sourceCommit||value.sourceCommit||value.sourceRevision)===revision));
+  });
   rows.sort((a,b)=>String(b.value.generatedAt||b.value.recordedAt||'').localeCompare(String(a.value.generatedAt||a.value.recordedAt||'')));
   const row=rows[0];if(!row)return null;
-  return Object.freeze({source:posix(row.file),candidateId:row.value.candidateId||null,changedFiles:Object.freeze(uniq(row.value.changedFiles)),summary:clean(row.value.summary),expectedEffect:clean(row.value.expectedEffect)});
+  return Object.freeze({source:posix(row.file),candidateId:row.value.candidateId||null,
+    changedFiles:Object.freeze(uniq(row.value.changedFiles)),summary:clean(row.value.summary),
+    expectedEffect:clean(row.value.expectedEffect),verified:true,independentQa:'PASS',
+    sourceCommit:clean(row.value?.vibe2DevelopmentIntelligence?.checkpoint?.sourceCommit||row.value.sourceCommit||row.value.sourceRevision)||null});
 }
 
 export function loadLatestVerifiedCheckpoint({root='company-learning/evidence',gameId='',role=''}={}){
