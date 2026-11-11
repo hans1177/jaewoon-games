@@ -148,6 +148,9 @@ test('24시간 기존 로컬 CPU 학습기가 로블록스 공개 코드 연습�
   const wf=fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml','utf8');
   assert.match(wf,/prepare-roblox-practice:/);
   assert.match(wf,/roblox-practice-train:/);
+  const robloxJob=wf.slice(wf.indexOf('  roblox-practice-train:'));
+  assert.match(robloxJob,/group: vibe2-roblox-practice-local-training/);
+  assert.doesNotMatch(robloxJob,/group: vibe2-unity-practice-local-training/);
   assert.match(wf,/--drills company-learning\/roblox-practice\.json/);
   assert.match(wf,/--task-type roblox/);
   assert.match(wf,/'--task-type', 'roblox'/);

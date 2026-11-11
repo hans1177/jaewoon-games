@@ -262,7 +262,7 @@ jobs:
     env:
       LEARNING_FOCUS: ROBLOX_CODING_ONLY
     concurrency:
-      group: vibe2-unity-practice-local-training
+      group: vibe2-roblox-practice-local-training
       cancel-in-progress: false
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 180
