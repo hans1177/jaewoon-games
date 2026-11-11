@@ -27,6 +27,9 @@ local D = {
 	Story = require("./Shared/Story"),
 	Harbor = require("./Shared/Harbor"),
 	SeaRoutes = require("./Shared/SeaRoutes"),
+	TacticsData = require("./Shared/TacticsData"),
+	Tactics = require("./Shared/Tactics"),
+	TacticsMaps = require("./Shared/TacticsMaps"),
 }
 local Registry = require("./Services/Registry")(D)
 local S = Registry.S

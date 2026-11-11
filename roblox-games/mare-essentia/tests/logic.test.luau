@@ -28,6 +28,9 @@ local D = {
 	Harbor = require("./Shared/Harbor"),
 	SeaRoutes = require("./Shared/SeaRoutes"),
 	Regions = require("./Shared/Regions"),
+	TacticsData = require("./Shared/TacticsData"),
+	Tactics = require("./Shared/Tactics"),
+	TacticsMaps = require("./Shared/TacticsMaps"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -1786,6 +1789,100 @@ do
 		end
 	end
 	check("view builds for every nation after any action", firstFail == nil, firstFail)
+end
+
+-- 지상 전술 탐험 ---------------------------------------------------------------
+do
+	local st = newState("england")
+	st.portId = "london"
+	st.ship.supplies = 200
+	local day0 = st.day
+	check("전술: 전투 없이 행동하면 거부", select(1, act(st, "TacticsAct", { unitId = "p1", kind = "wait" })) == false)
+	check("전술: 건물 안 지점은 시작 불가", select(1, act(st, "TacticsStart", { siteId = "london_hospital" })) == false)
+	check("전술: 잘못된 지점은 거부", select(1, act(st, "TacticsStart", { siteId = "nowhere" })) == false)
+	check("전술: 다른 항구 지점은 거부", select(1, act(st, "TacticsStart", { siteId = "amsterdam_gardens" })) == false)
+	local ok, msg = act(st, "TacticsStart", { siteId = "london_fields" })
+	check("전술: 런던 근교 들판에서 시작", ok, msg)
+	local b = st.tbattle
+	check("전술: 전투가 열리고 부대가 3명 이상", b ~= nil and b.status == "active" and #D.Tactics.alive(b, "player") >= 3)
+	check("전술: 보급품과 날짜가 소모됨", st.ship.supplies < 200 and st.day > day0)
+	check("전술: 이미 전투 중이면 또 시작 불가", select(1, act(st, "TacticsStart", { siteId = "london_fields" })) == false)
+	check("전술: 주인공이 있고 조사할 카드가 있음", D.Tactics.getUnit(b, "p1").lead and #b.poolLeft >= 1)
+	check("전술: 잘못된 행동은 거부", select(1, act(st, "TacticsAct", { unitId = "p1", kind = "dance" })) == false)
+	check("전술: 갈 수 없는 칸은 거부", select(1, act(st, "TacticsAct", { unitId = "p1", kind = "wait", x = 99, y = 99 })) == false)
+	local coins0, cardId = st.coins, b.poolLeft[1]
+	-- 적을 모두 쓰러뜨린 것으로 만들고 조사 지점에서 카드를 찾은 상태로 한 번 대기
+	b.found = { cardId }
+	b.poolLeft = {}
+	for _, u in D.Tactics.alive(b, "enemy") do
+		u.hp = 0
+	end
+	local ok2, msg2 = act(st, "TacticsAct", { unitId = "p1", kind = "wait" })
+	check("전술: 마지막 행동 성공", ok2, msg2)
+	check("전술: 승리", b.status == "won", b.status)
+	check("전술: 찾은 카드가 도감에 등록", st.discovered[cardId] == true)
+	check("전술: 코인 보상", st.coins > coins0)
+	check("전술: 기록이 남음", st.tactics.cleared["london_fields"] ~= nil and st.tactics.cleared["london_fields"].biome == "plain")
+	check("전술: 탐험 횟수 증가", st.stats.explored >= 1)
+	local extra = {}
+	S.Quest.autoReport(st, extra)
+	check("전술: 첫 현장 지휘 퀘스트 자동 보고", st.quests.done["q_tac_first"] == true and st.quests.done["q_tac_plain"] == true)
+	check("전술: 끝난 전투에 더 행동 불가", select(1, act(st, "TacticsAct", { unitId = "p1", kind = "wait" })) == false)
+	check("전술: 화면 닫기", select(1, act(st, "TacticsLeave", {})) == true and st.tbattle == nil)
+	local view = S.View.build(st, ctx)
+	local siteView
+	for _, sv in view.sites do
+		if sv.id == "london_fields" then
+			siteView = sv
+		end
+		if sv.id == "london_hospital" then
+			check("전술: 병원 지점은 화면에 전술 표시 없음", sv.tactics == nil)
+		end
+	end
+	check("전술: 지점 화면에 맵 이름과 최고 등급", siteView ~= nil and siteView.tactics ~= nil and siteView.tactics.rank ~= "", siteView and siteView.tactics and siteView.tactics.rank)
+	-- 저장과 불러오기
+	local saved = S.State.serialize(st)
+	saved.tactics.cleared["junk"] = { rank = "Z", turns = 1, biome = "x" }
+	saved.tactics.cleared["ok_site"] = { rank = "A", turns = 5, biome = "forest" }
+	local loaded = S.State.sanitize(saved)
+	check("전술: 저장·불러오기에서 기록 유지, 잘못된 등급은 버림", loaded ~= nil and loaded.tactics.cleared["london_fields"] ~= nil and loaded.tactics.cleared["junk"] == nil and loaded.tactics.cleared["ok_site"].rank == "A")
+	check("전술: 전투 상태는 저장하지 않음", saved.tbattle == nil)
+end
+
+do
+	-- 패배하면 보상 없이 끝나고, 모험 레벨이 모자라면 시작할 수 없다
+	local st = newState("england")
+	st.portId = "dublin"
+	st.ship.supplies = 200
+	check("전술: 모험 레벨이 모자라면 거부", select(1, act(st, "TacticsStart", { siteId = "giants_causeway" })) == false)
+	st.portId = "london"
+	local ok = act(st, "TacticsStart", { siteId = "london_fields" })
+	check("전술: 패배 시험 시작", ok)
+	local b = st.tbattle
+	local coins0 = st.coins
+	D.Tactics.getUnit(b, "p1").hp = 0
+	act(st, "TacticsAct", { unitId = "m1", kind = "wait" })
+	check("전술: 주인공이 쓰러지면 패배", b.status == "lost")
+	check("전술: 패배하면 코인 보상 없음", st.coins == coins0 and st.tactics.cleared["london_fields"] == nil)
+end
+
+do
+	-- 모든 탐험 지점 중 전술 맵이 있는 곳은 시작할 수 있어야 한다(지점당 첫 번째 시작 가능성)
+	local started, tried = 0, 0
+	for _, site in D.Sites.Sites do
+		if D.TacticsMaps.forSite(site) then
+			tried += 1
+			local st = newState("england")
+			st.portId = site.portId
+			st.ship.supplies = 500
+			st.careers.adventure.level = 20
+			local ok = act(st, "TacticsStart", { siteId = site.id })
+			if ok then
+				started += 1
+			end
+		end
+	end
+	check("전술: 맵이 연결된 모든 지점에서 시작 가능", started == tried and tried >= 20, started .. "/" .. tried)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

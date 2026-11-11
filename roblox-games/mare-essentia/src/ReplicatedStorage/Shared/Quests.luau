@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research"
+	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -15,6 +15,7 @@ export type Quest = {
 	rewardCareer: string?, -- "trade" | "adventure" | "battle"
 	rewardXp: number,
 	fieldId: string?, -- kind "field": 이 분야의 도감 카드 수
+	biome: string?, -- kind "tactics_biome": 이 장소 종류(TacticsMaps 의 biome)의 지상 전술 탐험을 깬 지점 수
 	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
 	minAffinity: number?,
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
@@ -193,6 +194,23 @@ local Quests: { Quest } = {
 	{ id = "q_tahiti_iron", name = "파페에테 철 납품", summary = "철 4개를 파페에테에 납품", kind = "deliver", goodId = "iron", portId = "tahiti", amount = 4, rewardCoins = 260, rewardFame = 7, rewardCareer = "trade", rewardXp = 50 },
 	{ id = "q_sao_tome_cloth", name = "상투메 옷감 납품", summary = "옷감 6개를 상투메에 납품", kind = "deliver", goodId = "cloth", portId = "sao_tome", amount = 6, rewardCoins = 220, rewardFame = 6, rewardCareer = "trade", rewardXp = 45 },
 	{ id = "q_sao_tome_iron", name = "상투메 철 납품", summary = "철 4개를 상투메에 납품", kind = "deliver", goodId = "iron", portId = "sao_tome", amount = 4, rewardCoins = 260, rewardFame = 7, rewardCareer = "trade", rewardXp = 50 },
+	-- 지상 전술 탐험 퀘스트 (자동 보고: 조건을 채우면 알아서 보상)
+	{ id = "q_tac_first", name = "첫 현장 지휘", summary = "지상 전술 탐험 1곳 성공", kind = "tactics", amount = 1, rewardCoins = 300, rewardFame = 10, rewardCareer = "battle", rewardXp = 60 },
+	{ id = "q_tac_five", name = "노련한 탐험대장", summary = "서로 다른 지상 전술 탐험 5곳 성공", kind = "tactics", amount = 5, rewardCoins = 1500, rewardFame = 40, rewardCareer = "adventure", rewardXp = 150 },
+	{ id = "q_tac_fifteen", name = "대륙을 누빈 지휘관", summary = "서로 다른 지상 전술 탐험 15곳 성공", kind = "tactics", amount = 15, rewardCoins = 8000, rewardFame = 150, rewardCareer = "battle", rewardXp = 400 },
+	{ id = "q_tac_rank_s", name = "빈틈없는 작전", summary = "지상 전술 탐험 3곳을 S 등급으로 성공", kind = "tactics_rank", amount = 3, rewardCoins = 2500, rewardFame = 60, rewardCareer = "battle", rewardXp = 200 },
+	{ id = "q_tac_forest", name = "숲의 사냥꾼들", summary = "숲 지점 지상 전술 탐험 2곳 성공", kind = "tactics_biome", biome = "forest", amount = 2, rewardCoins = 900, rewardFame = 25, rewardCareer = "adventure", rewardXp = 90, rewardCardId = "zoo_reindeer" },
+	{ id = "q_tac_coast", name = "해적 소탕", summary = "해안 지점 지상 전술 탐험 2곳 성공", kind = "tactics_biome", biome = "coast", amount = 2, rewardCoins = 900, rewardFame = 25, rewardCareer = "battle", rewardXp = 90 },
+	{ id = "q_tac_mine", name = "갱도의 불빛", summary = "광산 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "mine", amount = 1, rewardCoins = 1200, rewardFame = 30, rewardCareer = "adventure", rewardXp = 100, rewardCardId = "min_swedish_iron" },
+	{ id = "q_tac_stones", name = "열석의 수호자", summary = "고대 열석·선돌 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "stones", amount = 1, rewardCoins = 1200, rewardFame = 35, rewardCareer = "adventure", rewardXp = 110 },
+	{ id = "q_tac_ruins", name = "유물을 지켜라", summary = "발굴 유적 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "ruins", amount = 1, rewardCoins = 1400, rewardFame = 40, rewardCareer = "adventure", rewardXp = 120, rewardCardId = "relic_roman_coin" },
+	{ id = "q_tac_volcano", name = "불의 산을 넘어", summary = "화산 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "volcano", amount = 1, rewardCoins = 1500, rewardFame = 45, rewardCareer = "battle", rewardXp = 130 },
+	{ id = "q_tac_wall", name = "옛 방벽의 파수꾼", summary = "옛 방벽 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "wall", amount = 1, rewardCoins = 1500, rewardFame = 45, rewardCareer = "battle", rewardXp = 130 },
+	{ id = "q_tac_cliff", name = "벼랑길 돌파", summary = "절벽 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "cliff", amount = 1, rewardCoins = 1300, rewardFame = 35, rewardCareer = "adventure", rewardXp = 110 },
+	{ id = "q_tac_marsh", name = "안개 속의 밀수꾼", summary = "석호·간척지 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "marsh", amount = 1, rewardCoins = 1000, rewardFame = 28, rewardCareer = "battle", rewardXp = 100 },
+	{ id = "q_tac_garden", name = "수확철의 불청객", summary = "정원·과수원 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "garden", amount = 1, rewardCoins = 700, rewardFame = 18, rewardCareer = "adventure", rewardXp = 70 },
+	{ id = "q_tac_quarry", name = "하얀 돌 비탈", summary = "채석장 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "quarry", amount = 1, rewardCoins = 1200, rewardFame = 30, rewardCareer = "adventure", rewardXp = 100, rewardCardId = "min_marble" },
+	{ id = "q_tac_plain", name = "들판의 길목", summary = "들판 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "plain", amount = 1, rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 60 },
 }
 
 local ById: { [string]: Quest } = {}
