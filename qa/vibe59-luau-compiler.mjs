@@ -1,5 +1,6 @@
-// Compile actual emitted Roblox Luau, not just JS scenario stand-ins.
-// Run with an official, SHA-verified luau-compile: VIBE59_LUAU_COMPILER=/path/to/luau-compile node qa/vibe59-luau-compiler.mjs
+// 파일명: qa/vibe59-luau-compiler.mjs
+// [메인] 실제 생성된 Roblox Luau를 공식 컴파일러와 타입 분석기로 검증한다.
+// 기존 117개 문법 검사와 109개 타입 계약을 확인하며 Studio 실게임 QA를 대체하지 않는다.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -11,7 +12,9 @@ import {synthesizeVibe59Pathfinding} from '../tools/vibe59-pathfinding.mjs';
 import {synthesizeVibe59CraftingTransaction} from '../tools/vibe59-crafting-transaction.mjs';
 
 const bin=process.env.VIBE59_LUAU_COMPILER||process.argv[2];
+const analyzer=process.env.VIBE59_LUAU_ANALYZER||process.argv[3];
 if(!bin||!fs.existsSync(bin))throw Error('VIBE59_OFFICIAL_LUAU_COMPILER_REQUIRED');
+if(!analyzer||!fs.existsSync(analyzer))throw Error('VIBE59_OFFICIAL_LUAU_ANALYZER_REQUIRED');
 const slot='-- VIBE59_QUALITY_SLOT';
 const make=(signature,body,helpers='')=>
   helpers+'local function '+signature+'\n local state = profiles[player]\n '+body+
@@ -57,7 +60,15 @@ for(const skill of VIBE59_LUAU_CODING_SKILLS_109){
  const result=synthesizeVibe59LuauSkill({spec,source,replaceAnchor:'-- VIBE59_SLOT',
   sourcePath:'server/Game.server.luau'});
  assert.equal(result.runtimeVerified,false);
- emitted.push({id:'recipe-'+skill.id,source:source.replace('-- VIBE59_SLOT',result.source)});
+ // [타입 검사] 기존 상태 필드의 수치·불리언 계약 아래서 생성된 함수를 엄격하게 검사한다.
+ // 외부 Roblox API가 없는 레시피만 대상으로 하며 원본 게임 소스나 저장값을 바꾸지 않는다.
+ const typedSource='--!strict\n'+
+  'type VibeState = {data: {value: number, flag: boolean, check: '+
+  (['confirm-on','confirm-off','confirm-add'].includes(skill.kind)?'boolean':'number')+
+  ', other: number}}\n'+
+  'local profiles: {[any]: VibeState} = {}\n'+
+  source.replace('-- VIBE59_SLOT',result.source);
+ emitted.push({id:'recipe-'+skill.id,source:source.replace('-- VIBE59_SLOT',result.source),typedSource});
 }
 assert.equal(VIBE59_QUALITY_GAMEPLAY_ACTIONS.length,6);
 for(const row of scenario){
@@ -86,22 +97,37 @@ emitted.push({id:'crafting-verified-transaction',source:batchSource.replace(slot
 assert.equal(emitted.length,117);
 const directory=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-compiler-'));
 try{
- let ok=0;
+ let ok=0,typeChecked=0;
  for(const item of emitted){
   const filename=path.join(directory,item.id+'.server.luau');
   fs.writeFileSync(filename,item.source,'utf8');
   const result=spawnSync(bin,['--null',filename],{encoding:'utf8',timeout:15000});
   assert.equal(result.error,undefined,item.id+' '+String(result.error));
   assert.equal(result.status,0,item.id+' '+result.stderr+' '+result.stdout);
+  if(item.typedSource){
+   const typedFilename=path.join(directory,item.id+'.typed.luau');
+   fs.writeFileSync(typedFilename,item.typedSource,'utf8');
+   const analysis=spawnSync(analyzer,[typedFilename],{encoding:'utf8',timeout:15000});
+   assert.equal(analysis.error,undefined,item.id+' '+String(analysis.error));
+   assert.equal(analysis.status,0,item.id+' '+analysis.stderr+' '+analysis.stdout);
+   typeChecked++;
+  }
   ok++;
  }
  const bad=path.join(directory,'invalid.server.luau');
  fs.writeFileSync(bad,'local function broken()\n if then\nend\n','utf8');
  const reject=spawnSync(bin,['--null',bad],{encoding:'utf8',timeout:15000});
  assert.notEqual(reject.status,0,'invalid Luau syntax must cause a nonzero exit');
+ // [음성 회귀] 타입 분석기가 실패해야 하는 코드를 통과시킨다면 QA를 실패시킨다.
+ const typedBad=path.join(directory,'invalid-type.luau');
+ fs.writeFileSync(typedBad,'--!strict\nlocal bad: number = "not a number"\nprint(bad)\n','utf8');
+ const typeReject=spawnSync(analyzer,[typedBad],{encoding:'utf8',timeout:15000});
+ assert.equal(typeReject.error,undefined,String(typeReject.error));
+ assert.notEqual(typeReject.status,0,'invalid Luau type must cause a nonzero exit');
+ assert.equal(typeChecked,109);
  console.log('VIBE59_LUAU_REAL_COMPILER=PASS',JSON.stringify({
-  compiled:ok,recipes:109,advanced:6,pathfinding:1,craftingTransaction:1,
-  invalidSourceRejected:true,robloxStudioVerified:false
+  compiled:ok,typeChecked,recipes:109,advanced:6,pathfinding:1,craftingTransaction:1,
+  invalidSourceRejected:true,invalidTypeRejected:true,robloxStudioVerified:false
  }));
 }finally{
  fs.rmSync(directory,{recursive:true,force:true});
