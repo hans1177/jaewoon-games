@@ -760,6 +760,10 @@ do
 		end
 		local rotation = math.floor((playerView.day or 0) / 30)
 		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
+		-- 술잔을 든 칸(북해 주점 19번)은 술 그림 금지 규칙에 따라 건너뛴다.
+		if region == "north_sea" and cell == 19 then
+			cell = 18
+		end
 		return atlas, Vector2.new(cell % 5 * 200, math.floor(cell / 5) * 200), Vector2.new(200, 200)
 	end
 end
