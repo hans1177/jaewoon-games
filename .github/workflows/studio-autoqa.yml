@@ -11,6 +11,9 @@ on:
       - '.github/workflows/studio-autoqa.yml'
       # [자동 재검증] Studio 실행기 또는 게임별 점검 스크립트 변경 시 기존 QA를 즉시 재실행한다.
       - '.github/workflows/devloop-studio.yml'
+      # [PC 복구] 메인에서 실행기 자동복구가 수정되면 기존 정확한 Studio QA를 대기열에 넣는다.
+      - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
+      - 'tools/move-roblox-studio-runner-to-e.ps1'
       - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'tools/gen-qa-click-scripts.py'
       - 'roblox-games/*/tools/devloop/studio-scripts/*.json'
