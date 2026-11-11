@@ -155,6 +155,11 @@ function Sfx.levels()
 	return musicLevel, sfxLevel
 end
 
+-- 지금 흐르는 배경 음악 이름 (연출이 끝난 뒤 되돌리는 데 쓴다)
+function Sfx.current()
+	return currentName
+end
+
 function Sfx.state()
 	return musicOn, sfxOn
 end

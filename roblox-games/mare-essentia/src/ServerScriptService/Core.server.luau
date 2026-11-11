@@ -46,6 +46,7 @@ local D = {
 	PeopleTalk = require(Shared:WaitForChild("PeopleTalk")),
 	PortOrder = require(Shared:WaitForChild("PortOrder")),
 	RoomClock = require(Shared:WaitForChild("RoomClock")),
+	WonderScenes = require(Shared:WaitForChild("WonderScenes")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
 }
@@ -194,6 +195,10 @@ local function reply(state, ok, message)
 		local news = S.World.tick(state)
 		if #news > 0 then
 			result.message = (if result.message ~= "" then result.message .. "\n" else "") .. table.concat(news, "\n")
+		end
+		if state.pendingScene then
+			result.scene = state.pendingScene
+			state.pendingScene = nil
 		end
 		result.view = S.View.build(state, ctx)
 	end
