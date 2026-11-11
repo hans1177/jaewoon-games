@@ -88,22 +88,47 @@ export function scoreDir(dir,reference){
   return out;
 }
 
-export function runLightSearch({parent,candidates=16,rounds=2,seed=1,reference=null,out='build/light-search',res=192,samples=8}={}){
+export function runLightSearch({
+  parent,candidates=16,rounds=2,seed=1,reference=null,out='build/light-search',res=192,samples=8,
+  learned=[],render=renderCandidates,score=scoreDir
+}={}){
   const rng=mulberry32(seed);
-  let pool=Array.from({length:candidates},()=>sample(rng));
+  const axes=Object.entries(SPACE);
+  const anchors=[];
+  const seen=new Set();
+  for(const row of Array.isArray(learned)?learned:[]){
+    if(anchors.length>=Math.floor(candidates/4))break;
+    if(!Number.isFinite(row?.score)||!axes.every(([key,[lo,hi]])=>
+      Number.isFinite(row.params?.[key])&&row.params[key]>=lo&&row.params[key]<=hi))continue;
+    const params=Object.fromEntries(axes.map(([key])=>[key,row.params[key]]));
+    const key=JSON.stringify(params);
+    if(seen.has(key))continue;
+    seen.add(key);
+    anchors.push(params);
+  }
+  let pool=Array.from({length:candidates},(_,i)=>{
+    if(i<anchors.length)return anchors[i];
+    if(anchors.length&&i<Math.floor(candidates/2))return perturb(anchors[i%anchors.length],rng);
+    return sample(rng);
+  });
   const all=[];
   for(let round=0;round<rounds;round++){
     const dir=path.resolve(out,`round${round}`);fs.rmSync(dir,{recursive:true,force:true});
     const jobs=pool.map((p,i)=>toJob(`r${round}c${String(i).padStart(2,'0')}`,p));
-    renderCandidates(parent,jobs,dir,res,samples);
-    const sc=scoreDir(dir,reference);
-    pool.forEach((p,i)=>all.push({id:jobs[i].id,params:p,score:sc[jobs[i].id]??0,round}));
+    render(parent,jobs,dir,res,samples);
+    const scores=score(dir,reference);
+    if(jobs.some(job=>!Number.isFinite(scores[job.id])))throw Error('LIGHT_SCORE_INCOMPLETE');
+    pool.forEach((params,i)=>all.push({id:jobs[i].id,params,score:scores[jobs[i].id],round}));
     const top=all.filter(x=>x.round===round).sort((a,b)=>b.score-a.score).slice(0,Math.max(2,Math.floor(candidates/4)));
     // 다음 라운드: 상위 조합 주변을 흔든 것 + 새 무작위 몇 개(갇히지 않게)
     pool=Array.from({length:candidates},(_,i)=>i<candidates*0.7?perturb(top[i%top.length].params,rng):sample(rng));
   }
+  // 이전 우승 후보도 현재 모델에서 다시 렌더해 같은 조건에서 비교한다.
+  const baseline=anchors.length?Math.max(...all.slice(0,anchors.length).map(row=>row.score)):null;
   all.sort((a,b)=>b.score-a.score);
-  return {best:all.slice(0,5).map(x=>({...x,roblox:toRoblox(x.params)})),tested:all.length,mean:r2(all.reduce((t,x)=>t+x.score,0)/all.length,1)};
+  return {best:all.slice(0,5).map(x=>({...x,roblox:toRoblox(x.params)})),tested:all.length,
+    mean:r2(all.reduce((t,x)=>t+x.score,0)/all.length,1),replayed:anchors.length,
+    baseline,gain:baseline===null?null:r2(all[0].score-baseline,1)};
 }
 
 // 배운 조합 표: 모델 종류(family)마다 상위 5개만 유지. 점수가 같거나 낮으면 바꾸지 않는다.
@@ -121,11 +146,13 @@ export function mergeLearned(learned,family,result,keep=5){
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const args=process.argv.slice(2);const opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d};
   if(!opt('parent')){console.error('--parent 필요');process.exit(2)}
-  const res=runLightSearch({parent:path.resolve(opt('parent')),candidates:+opt('candidates',16),rounds:+opt('rounds',2),seed:+opt('seed',1),reference:opt('reference',null),out:opt('out','build/light-search')});
-  const learnedPath=opt('learned',null);
+  const learnedPath=opt('learned',null),family=opt('family','default');
+  const cur=learnedPath&&fs.existsSync(learnedPath)?JSON.parse(fs.readFileSync(learnedPath,'utf8')):{};
+  const res=runLightSearch({parent:path.resolve(opt('parent')),candidates:+opt('candidates',16),
+    rounds:+opt('rounds',2),seed:+opt('seed',1),reference:opt('reference',null),
+    out:opt('out','build/light-search'),learned:cur[family]?.top});
   if(learnedPath){
-    const cur=fs.existsSync(learnedPath)?JSON.parse(fs.readFileSync(learnedPath,'utf8')):{};
-    mergeLearned(cur,opt('family','default'),res);
+    mergeLearned(cur,family,res);
     fs.mkdirSync(path.dirname(learnedPath),{recursive:true});fs.writeFileSync(learnedPath,JSON.stringify(cur,null,1)+'\n');
   }
   console.log(`VIBE_LIGHT_SEARCH tested=${res.tested} mean=${res.mean} best=${res.best[0].score} ClockTime=${res.best[0].roblox.ClockTime} Brightness=${res.best[0].roblox.Brightness}`);
