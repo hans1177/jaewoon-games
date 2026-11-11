@@ -953,9 +953,35 @@ test('System AI never records unevidenced model-claimed hypothesis falsification
       falsifiedHypothesisIds:['execution-integration-path-defect','contract-or-evidence-mismatch'],
       edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}]}));
     const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.ok(result.hypothesisCandidates.some(x=>x.id==='execution-integration-path-defect'&&!x.rejected));
+    assert.ok(result.hypothesisCandidates.some(x=>x.id==='contract-or-evidence-mismatch'&&!x.rejected));
     assert.deepEqual(result.falsifiedHypothesisIds,[]);
     assert.equal(result.hypothesisPlanBound,true);
     assert.equal(result.supervisorReviewRequired,true);
     assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),'export const value=2;\n');
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('System AI distinguishes causal same-file edit sequence from previously failed inverse sequence',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    const original='export const label = "A B";\n';
+    const edits=[
+      {path:'tools/demo.mjs',find:'A',replace:'B'},
+      {path:'tools/demo.mjs',find:'B',replace:'C'}
+    ];
+    const task={id:'causal-edit-sequence',status:'running',goal:'repair',failureSignature:'SAME_STAGE',
+      responsibleFiles:['tools/demo.mjs']};
+    write('tools/demo.mjs',original);
+    write('task.json',JSON.stringify(task));
+    write('response.json',JSON.stringify({summary:'first order',edits}));
+    const first=await runSystemAiWorker({taskFile:'task.json',outputFile:'first.json',responseFile:'response.json'});
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),'export const label = "C B";\n');
+    write('tools/demo.mjs',original);
+    write('task.json',JSON.stringify({...task,id:'inverse-order',failedStrategyFingerprints:[first.repairStrategyFingerprint]}));
+    write('response.json',JSON.stringify({summary:'inverse order',edits:[edits[1],edits[0]]}));
+    const second=await runSystemAiWorker({taskFile:'task.json',outputFile:'second.json',responseFile:'response.json'});
+    assert.notEqual(second.repairStrategyFingerprint,first.repairStrategyFingerprint);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),'export const label = "B C";\n');
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
