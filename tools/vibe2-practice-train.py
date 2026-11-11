@@ -45,7 +45,7 @@ def practice_validate(args, manifest, train_rows, eval_rows):
         if not holdout_path or not Path(holdout_path).is_file():
             raise RuntimeError('Roblox practice holdout file required')
         holdout_rows = [json.loads(line) for line in Path(holdout_path).read_text(encoding='utf-8').splitlines() if line.strip()]
-        held_hash = hashlib.sha256(('\\n'.join(json.dumps(row, ensure_ascii=False,
+        held_hash = hashlib.sha256(('\n'.join(json.dumps(row, ensure_ascii=False,
             sort_keys=True, separators=(',', ':')) for row in holdout_rows)).encode('utf-8')).hexdigest()
         if held_hash != manifest.get('holdoutSha256') or len(holdout_rows) != int(stats.get('holdout', -1)):
             raise RuntimeError('Roblox practice holdout hash/count mismatch')
