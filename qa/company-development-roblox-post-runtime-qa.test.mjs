@@ -535,28 +535,32 @@ test('post-foundation Studio follow-up dispatch uses existing authenticated exec
   assert.ok(step.includes('run_studio=true'));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
 });
-test('post-foundation Studio follow-up is exact-source, verified artifact, and quality gated',()=>{
+test('post-foundation Studio follow-up reuses canonical candidate planner and exact identity',()=>{
   const start=workflow.indexOf('const queueStudioFollowupIfEligible=item=>');
   const end=workflow.indexOf('\n\n          for(const item of candidates)',start);
   assert.ok(start>0&&end>start);
   const statement=workflow.slice(start,end);
-  const revisions='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
-  const queue=[];
-  const candidateForItem=item=>item.robloxRuntimeCandidateEvidence||{};
+  assert.ok(statement.includes('planLocalStudioCandidates({'));
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const queue=[],calls=[];
+  let eligible=true;
+  const planLocalStudioCandidates=({queue:source,requestedGameId,repoRoot})=>{
+    calls.push([source.items[0].gameId,requestedGameId,repoRoot]);
+    return{include:eligible?[{gameId:requestedGameId,sourceRevision:revision,
+      artifactIdentity:artifact,versionNumber:19}]:[]};
+  };
   const callback=runInNewContext(statement+';queueStudioFollowupIfEligible',
-    {studioFollowupIds:queue,candidateForItem});
-  const base={gameId:'ocean',productionClass:'DEVELOPMENT_CONFIRMED',
-    robloxSourceCommit:revisions,robloxBuildArtifactIdentity:artifact,
-    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revisions,
-      artifactIdentity:artifact,versionNumber:19}};
+    {studioFollowupIds:queue,planLocalStudioCandidates,roadmap:{},process:{cwd:()=>'.'}});
+  const base={gameId:'ocean',robloxSourceCommit:revision,
+    robloxBuildArtifactIdentity:artifact,robloxRuntimeCandidateEvidence:{
+      published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:19}};
   callback(base);
   assert.deepEqual(queue,['ocean']);
-  callback({...base,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revisions});
   callback({...base,robloxSourceCommit:'c'.repeat(40)});
-  callback({...base,productionClass:'DESIGN_ONLY'});
+  callback({...base,robloxBuildArtifactIdentity:'sha256:'+'d'.repeat(64)});
   callback({...base,robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,published:false}});
-  callback({...base,robloxInternalVibePlayEvidence:{
-    pass:true,actualPlay:true,runtimeVerified:true,officialStudioMcp:true,
-    sourceRevision:revisions,artifactIdentity:artifact,versionNumber:19}});
+  eligible=false;
+  callback(base);
   assert.deepEqual(queue,['ocean']);
+  assert.equal(calls.length,4);
 });
