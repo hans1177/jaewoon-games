@@ -59,11 +59,13 @@ function TacticsView.open(opts)
 	local title = label(topBar, "", 16, TEXT, UDim2.fromOffset(12, 5), UDim2.new(1, -24, 0, 34))
 	title.TextYAlignment = Enum.TextYAlignment.Center
 
-	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - 150), BackgroundTransparency = 1, ClipsDescendants = true }, root)
-	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, 150), BackgroundColor3 = Color3.fromRGB(30, 32, 40), BorderSizePixel = 0 }, root)
+	local screenH = gui.AbsoluteSize.Y > 0 and gui.AbsoluteSize.Y or 600
+	local bottomH = if screenH < 560 then 112 else 150
+	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
+	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = Color3.fromRGB(30, 32, 40), BorderSizePixel = 0 }, root)
 	local info = label(bottom, "", 14, TEXT, UDim2.fromOffset(10, 6), UDim2.new(0.58, -14, 1, -12))
 	local logLabel = label(bottom, "", 13, Color3.fromRGB(190, 182, 160), UDim2.new(0.58, 0, 0, 6), UDim2.new(0.42, -10, 0, 74))
-	local btnRow = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -10, 1, -8), Size = UDim2.new(0.42, -10, 0, 64), BackgroundTransparency = 1 }, bottom)
+	local btnRow = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -10, 1, -8), Size = UDim2.new(0.42, -10, 0, math.min(64, bottomH - 16)), BackgroundTransparency = 1 }, bottom)
 	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Center }, btnRow)
 
 	local selected = nil -- 고른 내 유닛 id
@@ -85,13 +87,21 @@ function TacticsView.open(opts)
 		return id and Rules.getUnit(battle, id) or nil
 	end
 
+	local lastSend = 0
 	local function send(action, payload)
-		if busy then
+		-- 같은 버튼이 연달아 눌려도 한 번만 보낸다. 서버가 "너무 빨라요"로 거절하면 잠깐 뒤 한 번 더 보낸다.
+		if busy or os.clock() - lastSend < 0.3 then
 			return
 		end
 		busy = true
+		lastSend = os.clock()
 		local result = invoke(action, payload)
+		if type(result) == "table" and result.ok == false and result.message == "너무 빨라요" then
+			task.wait(0.4)
+			result = invoke(action, payload)
+		end
 		busy = false
+		lastSend = os.clock()
 		if type(result) == "table" then
 			local v = result.view and result.view.tactics
 			if v then
@@ -104,12 +114,8 @@ function TacticsView.open(opts)
 	end
 
 	local function clearBoard()
-		for _, t in tiles do
-			t:Destroy()
-		end
-		for _, u in unitViews do
-			u:Destroy()
-		end
+		-- 이전에 그린 것이 하나도 남지 않게 판 전체를 비운다
+		boardHolder:ClearAllChildren()
 		tiles, unitViews = {}, {}
 	end
 
@@ -163,7 +169,7 @@ function TacticsView.open(opts)
 			end
 		end
 		local sel = unitById(selected)
-		local sz = UDim2.new(0, 70, 0, 52)
+		local sz = UDim2.new(0, 70, 0, math.min(52, bottomH - 24))
 		if battle.status ~= "active" then
 			return
 		end
@@ -198,7 +204,11 @@ function TacticsView.open(opts)
 			return
 		end
 		local won = battle.status == "won"
-		local shade = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = 20 }, root)
+		local oldShade = root:FindFirstChild("ResultShade")
+		if oldShade then
+			oldShade:Destroy()
+		end
+		local shade = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = 20, Name = "ResultShade" }, root)
 		local card = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(0.86, 0, 0, 230), BackgroundColor3 = Color3.fromRGB(36, 38, 48), BorderSizePixel = 0, ZIndex = 21 }, shade)
 		make("UICorner", { CornerRadius = UDim.new(0, 12) }, card)
 		local head = label(card, if won then "승리!" else "패배…", 26, if won then Color3.fromRGB(226, 176, 78) else Color3.fromRGB(190, 70, 64), UDim2.fromOffset(16, 12), UDim2.new(1, -32, 0, 36))
@@ -212,7 +222,14 @@ function TacticsView.open(opts)
 		b.ZIndex = 22
 	end
 
+	local building, again = false, false
 	rebuild = function()
+		-- 그리는 도중에 다시 불리면(화면 크기 변경 등) 끝난 뒤 한 번만 다시 그린다
+		if building then
+			again = true
+			return
+		end
+		building = true
 		clearBoard()
 		local W, H = boardHolder.AbsoluteSize.X, boardHolder.AbsoluteSize.Y
 		if W < 10 or H < 10 then
@@ -338,6 +355,11 @@ function TacticsView.open(opts)
 		drawInfo()
 		drawButtons()
 		drawResult()
+		building = false
+		if again then
+			again = false
+			rebuild()
+		end
 	end
 
 	boardHolder:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
