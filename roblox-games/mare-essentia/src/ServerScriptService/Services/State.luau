@@ -46,6 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
 			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
 			landmarks = {}, -- 항구별 특수 건축물 (항구 id → 건축물 id → true)
@@ -465,6 +466,18 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.portStages) == "table" then
+			for portId, t in saved.portStages do
+				if type(portId) == "string" and #portId <= 40 and type(t) == "table" then
+					s.portStages[portId] = {}
+					for chainId, n in t do
+						if type(chainId) == "string" and #chainId <= 24 and type(n) == "number" and n == n then
+							s.portStages[portId][chainId] = math.floor(math.clamp(n :: number, 0, 10))
+						end
+					end
+				end
+			end
+		end
 		if type(saved.stocks) == "table" then
 			local k = saved.stocks
 			for _, field in { "held", "cost" } do
@@ -606,6 +619,7 @@ return function(D)
 			landmarks = state.landmarks,
 			history = state.history,
 			stocks = state.stocks,
+			portStages = state.portStages,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,

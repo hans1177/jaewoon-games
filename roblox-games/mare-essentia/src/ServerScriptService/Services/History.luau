@@ -222,6 +222,20 @@ return function(D, S)
 		for i = 1, math.min(5, #seenList) do
 			out.recent[i] = seenList[i]
 		end
+		-- 역사서(연대기): 겪은 사건은 이야기와 내 선택을, 아직 오지 않은 사건은 연도만 보여 준다
+		out.chronicle = {}
+		for _, e in E.Events do
+			local idx = h.seen[e.id]
+			local passed = state.startYear + state.day / 365 >= e.year
+			table.insert(out.chronicle, {
+				year = e.year, tag = e.tag, known = idx ~= nil or passed,
+				title = if idx ~= nil or passed then e.title else "???", text = if idx ~= nil or passed then e.text else "아직 오지 않은 시대의 일",
+				choice = if idx and e.choices[idx] then e.choices[idx].label elseif idx == #e.choices + 1 and e.insight then "★ " .. e.insight.label else nil,
+			})
+		end
+		table.sort(out.chronicle, function(a, b)
+			return a.year < b.year
+		end)
 		out.seenCount = #seenList
 		for _, f in h.fx do
 			if f.untilDay >= state.day then
