@@ -985,7 +985,8 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
       failureSignature:'repeat-save-failure',repeatCount:3,responsibleFiles:['save.js'],
       originalScenarioReplay:{required:false},
       invariants:{required:true,testTargets:['qa/invariant.test.mjs']}}}}}));
-  const report=runIncrementalQa({root,manifest,namespace:'web:demo'});
+  const cacheFile=path.join(root,'qa-cache.json');
+  const report=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});
   assert.equal(report.outcome,'PASS');
   assert.equal(report.impactPlan.riskPrediction.level,'HIGH');
   assert.deepEqual(report.impactPlan.focusedTargets,
@@ -993,7 +994,7 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   assert.equal(report.impactPlan.focusedTargetsExecuted,false);
   assert.equal(report.gameRepairQa.invariants,'PASS','the original invariant runner performs actual test execution');
   assert.equal(report.impactPlan.fullRegressionStillRequired,true);
-  const cached=runIncrementalQa({root,manifest,namespace:'web:demo'});
+  const cached=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});
   assert.equal(cached.cached,true);
   assert.deepEqual(cached.impactPlan.focusedTargets,report.impactPlan.focusedTargets);
   assert.equal(cached.impactPlan.riskPrediction.runtimeProbabilityKnown,false);
