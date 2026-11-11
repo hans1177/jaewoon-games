@@ -25,7 +25,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "workspace:SetAttribute('DevCall','Tab_explore') return 'x'"
+  "code": "workspace:SetAttribute('DevCall','Tactics') return 'x'"
  },
  {
   "type": "wait",
@@ -36,8 +36,9 @@
   "name": "t0_explore"
  },
  {
-  "type": "click_from_luau",
-  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"이어하기\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return 'TAC_OPEN '..tostring(workspace:GetAttribute('DevResult'))"
  },
  {
   "type": "wait",
