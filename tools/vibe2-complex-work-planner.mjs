@@ -630,9 +630,12 @@ export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibl
    failures:order.selectedTask?.vibe59ComplexCounterexamples??order.vibe59ComplexCounterexamples??[],
    generate:()=>createComplexGameCandidate({plan,sourceRoot,target}),
    evaluate:candidate=>({pass:candidate.vibe59TestPlan.pass,actualGamePlaytest:false}),
-   maxAttempts:3,approvedBudget:3});
+   // [후보 비교] 기존 원자적 검증을 모두 통과한 안들 중 수정 영향이 작은 결과를 선택한다.
+   compareValidated:true,maxAttempts:3,approvedBudget:3});
   if(repair.status!=='CANDIDATE_VALIDATED')return {status:'BLOCKED',unresolved:[{code:repair.reason}],repair};
-  const candidate={...repair.candidate,complexRepair:{attempts:repair.attempts,actualGamePlaytest:false}};
+  const candidate={...repair.candidate,complexRepair:{attempts:repair.attempts,
+   selection:repair.selection,causalReplayVerified:repair.causalReplayVerified===true,
+   actualGamePlaytest:false}};
   return {status:'CANDIDATE',plan,candidate};
  }catch(error){return {status:'BLOCKED',unresolved:[{code:String(error.message)}],sourceWrite:false,modelUsed:false,runtimeVerified:false}}
 }
