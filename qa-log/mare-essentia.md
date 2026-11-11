@@ -45,3 +45,6 @@
 - 2026-11-12 00:2x(KST, run 43045742504, 15:16Z 커밋) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음, Client LOGS 비어 있음(서버만 CardArt 12개 TIMEOUT_16S = 오탐 패턴 유지). 출항하기→선장실·교역소·조선소 동작 정상, 모델 431·registry 555·클라이언트 이미지·소리 124/124 PASS. 코드 수정 없음, 재배포 안 함. (이번 실행은 jpg 미확인, report.json 만 확인)
 
 - 2026-11-12 01:19(KST) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음, 모델 431·registry 555·클라이언트 이미지·소리 124/124 PASS. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-12 02:22(KST, run 43066831635) 바이브: 클릭 30/30, 프레임 31장. errors 에 STUDIO_ASSET_AUDIT_FAILED 1건: Server preload CardArt 12개 TIMEOUT_16S(serverPreloadUnresponsive=true, 오탐 패턴 유지). 모델 431 PASS, registry 663 PASS(불일치·누락 0). 새로 보임: clientImageAudit 232개 중 160개만 로드(소리 20/20), 미로드 72개 = Menu 12·Portraits 대부분(scholar_*·person_*)·Goods 2(whale_oil, wool) — 최근 학자 동료 추가(#12598)로 expected 가 늘었고 화면에 아직 안 뜬 이미지는 로드 안 된 것으로 보임(방문한 조선소 c12 jpg 는 정상). 
+- 큐 추가: 다음 점검에서 미로드 72개 수가 줄었는지/그대로인지 확인. 그대로면 Menu/*·Portraits/scholar_* 가 실제 Image 종류·권한 문제인지 점검. 코드 수정 없음, 재배포 안 함.
