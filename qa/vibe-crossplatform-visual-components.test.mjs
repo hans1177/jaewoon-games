@@ -51,11 +51,14 @@ test('visual craft returns real pixel placements and source-safe material slots'
   assert.equal(plan.craftPlans[0].grammar,'RECIPE_GRAPH');
   assert.equal(plan.craftPlans[0].materialRecipe.materialCues[0].construction,'CARVED_JOINERY');
 });
-test('모바일 UI 8종 반복 연습은 기존 배치기·채점기로만 수행하고 실제 게임 적용은 차단한다',()=>{
+test('모바일 UI 18종 반복 연습은 기존 배치기·채점기로만 수행하고 실제 게임 적용은 차단한다',()=>{
   const trials=exerciseVibeUiLayouts();
-  assert.equal(trials.trials,48);
-  assert.equal(trials.staticPasses,48);
+  assert.equal(trials.trials,108);
+  assert.equal(trials.staticPasses,108);
   assert.equal(trials.staticFailures,0);
+  assert.equal(trials.surfaces.length,18);
+  assert.ok(['BOSS','PARTY','NOTIFICATION'].every(x=>trials.surfaces.includes(x)));
+  assert.equal(trials.runtimeVerified,false);
   assert.ok(trials.rows.every(row=>row.fontIssues===0&&row.bindingIssues===0&&row.designScore>=92));
   assert.ok(trials.rows.every(row=>row.score>=0&&row.score<=100));
   assert.ok(trials.rows.every(row=>row.gameApplied===false&&!row.runtimeVerified));
