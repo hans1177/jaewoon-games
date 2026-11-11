@@ -571,14 +571,14 @@ test('Mare trade goods practice validates existing originals, rights and blocked
 });
 
 
-test('Mare trade approved ingredient icons replace prohibited alcohol visuals with safe source art',()=>{
+test('Mare trade uses approved ingredients and neutral cargo models for alcohol goods',()=>{
   const root='roblox-games/mare-essentia';
   const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
   const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
   assert.match(client,/SAFE_INGREDIENT_ICON = \{ beer = "beer_grain", sake = "sake_rice" \}/);
   assert.match(client,/AssetIds\["Goods\/" \.\. ingredient\]/);
-  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "grapes" \}/);
+  assert.match(client,/\bwine = \{ "Cargo", "barrel", Color3\.fromRGB\(\d+, \d+, \d+\) \}/);
   for(const ingredient of ['beer_grain','sake_rice']){
     assert.ok(approved['Goods/'+ingredient],'unapproved: '+ingredient);
     if(assets['Goods/'+ingredient]){
