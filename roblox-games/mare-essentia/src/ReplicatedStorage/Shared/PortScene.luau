@@ -19,7 +19,7 @@ local C = Color3.fromRGB
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
 local GOOD_MESH = {
-	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "wine-red" }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
+	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "grapes" }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
 	cloth = { "Cargo", "textiles-stack-large" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
 	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bars" }, silver = { "Cargo", "silver-bars" }, gold = { "Cargo", "gold-bars" },
 	gems = { "Cargo", "gems-pile-small" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
@@ -1021,7 +1021,7 @@ function PortScene.build(info, onFacility)
 	-- 부두 화물: 등록된 실제 상품 모델을 쓰며 생산품·가격·보행 판정에는 영향을 주지 않는다.
 	local cargoModels = {
 		iron = "iron-bars", timber = "wood-log-stack", cloth = "textiles-stack-large-colored",
-		fish = "food-barrel-fish", cheese = "cheese", wine = "wine-red",
+		fish = "food-barrel-fish", cheese = "cheese", wine = "grapes",
 		olive_oil = "bottle-oil", tea = "cup-tea", coffee = "cup-coffee",
 	}
 	local port = PortData.Ports[info.portId]

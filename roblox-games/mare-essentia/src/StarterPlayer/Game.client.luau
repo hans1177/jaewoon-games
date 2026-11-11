@@ -165,13 +165,15 @@ local WOOD = Color3.fromRGB(120, 78, 50)
 for id, spec in {
 	gold = { "Cargo", "gold-bar" }, silver = { "Cargo", "silver-bar" }, copper = { "Cargo", "copper-bar" },
 	gems = { "Cargo", "gems-sack" }, jade = { "Cargo", "gem-medium", Color3.fromRGB(80, 170, 120) },
-	pearl_shell = { "Cargo", "mussel-open" }, wine = { "Cargo", "glass-wine" },
+	pearl_shell = { "Cargo", "mussel-open" },
 	mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) }, ebony = { "Cargo", "wood-log-a", Color3.fromRGB(40, 32, 30) },
 	kauri = { "Cargo", "wood-log-a", Color3.fromRGB(176, 132, 82) }, logwood = { "Cargo", "wood-log-a", Color3.fromRGB(120, 50, 70) },
 	brazilwood = { "Cargo", "wood-log-a", Color3.fromRGB(160, 62, 48) }, sandalwood = { "Cargo", "wood-log-a", Color3.fromRGB(190, 150, 96) },
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
 	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel-open", Color3.fromRGB(110, 70, 40) },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
+	-- 주류 묘사는 Roblox 기준상 제한되어, 술병·술잔 대신 재료(포도·보리·벼) 그림으로 보여 준다
+	wine = { "Cargo", "grapes" },
 } do
 	GOOD_ICON[id] = spec
 end
@@ -186,9 +188,9 @@ for goodsId, cargoAsset in {
 		GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }
 	end
 end
--- 와인은 기존 교역 그림을 보존하면서 승인된 실물 와인잔을 상세 화면에서 보여 준다.
-if AssetIds["Cargo/glass-wine"] then
-	GOOD_ICON.wine = { "Cargo", "glass-wine", nil, "Menu/trade" }
+-- 와인은 술잔 대신 재료인 포도 모델로 보여 준다 (주류 묘사 제한).
+if AssetIds["Cargo/grapes"] then
+	GOOD_ICON.wine = { "Cargo", "grapes" }
 end
 
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
