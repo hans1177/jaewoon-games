@@ -28,10 +28,28 @@ export function evaluateAudit(a,limits=LIMITS){
   if(Math.abs(a.groundOffsetRatio)>limits.groundTolerance)failures.push(`GROUND_OFFSET:${a.groundOffsetRatio}`);
   for(const p of a.symmetry||[])if(Math.max(p.sizeErr,p.posErr,p.zErr)>limits.symmetryTolerance)failures.push(`ASYMMETRIC:${p.pair.join('/')}`);
   if(a.triangles>limits.maxTriangles)failures.push(`TRIANGLE_BUDGET:${a.triangles}`);
+  // [실패 원인 추적] 메쉬별 최저점과 가장 가까운 부품을 남긴다. 통과 기준은 그대로다.
+  const ground=a.groundEvidence||{};
+  const detached=meshes.filter(m=>m.orphan).slice(0,16).map(m=>({
+    name:String(m.name||'').slice(0,90),minZ:Number.isFinite(m.minZ)?m.minZ:null,
+    nearestMesh:String(m.nearestMesh||'').slice(0,90)}));
+  const separated=meshes.filter(m=>m.nearestGapRatio>limits.floatingGapRatio&&!/^Handheld_/i.test(m.name)).slice(0,16).map(m=>({
+    name:String(m.name||'').slice(0,90),gapRatio:m.nearestGapRatio,
+    nearestMesh:String(m.nearestMesh||'').slice(0,90)}));
+  const diagnostics={
+    lowestMesh:String(ground.lowestMesh||'').slice(0,90)||null,
+    lowestMeshMinZ:Number.isFinite(ground.lowestMeshMinZ)?ground.lowestMeshMinZ:null,
+    lowestBoundMesh:String(ground.lowestBoundMesh||'').slice(0,90)||null,
+    lowestBoundMeshMinZ:Number.isFinite(ground.lowestBoundMeshMinZ)?ground.lowestBoundMeshMinZ:null,
+    boundGroundOffsetRatio:Number.isFinite(ground.boundGroundOffsetRatio)?ground.boundGroundOffsetRatio:null,
+    orphanMeshesBelowBoundGround:Array.isArray(ground.orphanMeshesBelowBoundGround)?ground.orphanMeshesBelowBoundGround.slice(0,16).map(x=>String(x).slice(0,90)):[],
+    detachedMeshes:detached,separatedMeshes:separated
+  };
   const prim=meshes.filter(m=>m.primitiveLike).length;
   const share=meshes.length?prim/meshes.length:0;
   if(share>limits.primitiveShareBlock)productionBlockers.push(`PRIMITIVE_BUILT_MESH:${prim}/${meshes.length}`);
   return {pass:failures.length===0,failures,productionBlockers,productionEligible:failures.length===0&&productionBlockers.length===0,
+    diagnostics,
     stats:{meshes:meshes.length,triangles:a.triangles,bones:(a.armatures||[]).reduce((n,x)=>n+x.bones,0),actions:(a.actions||[]).length,primitiveShare:Number(share.toFixed(3))}};
 }
 
