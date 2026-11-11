@@ -22,6 +22,9 @@ test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없�
     {id:'pay',license:'CC-BY-4.0',family:'PROP',sourceFiles:['a/pay.obj']},
     {id:'nofile',license:'CC0',family:'PROP',sourceFiles:['a/missing.obj']},
     {id:'texture',license:'CC0',family:'PROP',sourceFiles:['a/ok.png']},
+    {id:'inactive',license:'CC0',family:'PROP',catalogActive:false,sourceFiles:['a/ok.obj']},
+    {id:'corrupt',license:'CC0',family:'PROP',corruptSource:true,sourceFiles:['a/ok.obj']},
+    {id:'escape',license:'CC0',family:'PROP',sourceFiles:['../outside.obj']},
   ]};
   assert.deepEqual(pickParents(reg,root,10,mulberry32(1)).map(p=>p.id),['ok']);
 });
