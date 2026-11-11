@@ -25,8 +25,8 @@ return function(D, S)
 		if lvl < st.harbor then
 			return st, false, string.format("교역소 %d단계 필요", st.harbor)
 		end
-		if S.State.year(state) < st.since then
-			return st, false, string.format("%d년부터 지을 수 있어요", st.since)
+		if S.Pace.effYear(state) < st.since then
+			return st, false, string.format("%d년부터 지을 수 있어요 (발견·연구·퀘스트로 앞당길 수 있어요)", st.since)
 		end
 		if st.node and not D.KnowledgeTree.understood(state, st.node) then
 			local c = D.Cards.ById[st.node]

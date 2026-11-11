@@ -218,6 +218,10 @@ local I = {
 	independence = { node = "phi_enlightenment", label = "계몽 사상으로 신생국을 지지한다", hint = "+200코인, 명성 +50", coins = 200, fame = 50 },
 	french_revolution = { node = "phi_natural_law", label = "인권 선언의 논의를 지켜보고 중재한다", hint = "+300코인, 명성 +20", coins = 300, fame = 20 },
 }
+-- 학문·기술·탐험 사건은 플레이어의 앞당김만큼 일찍 닥칠 수 있다 (정치·전쟁·재난은 제때)
+for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau" } do
+	E.ById[id].accel = true
+end
 for id, ins in I do
 	E.ById[id].insight = ins
 end

@@ -46,6 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
 			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
@@ -466,6 +467,11 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.pace) == "table" then
+			s.pace.days = math.floor(num(saved.pace.days, 0, 0, 365 * 10))
+			s.pace.window = math.floor(num(saved.pace.window, 0, 0, 1e9))
+			s.pace.used = math.floor(num(saved.pace.used, 0, 0, 1000))
+		end
 		if type(saved.portStages) == "table" then
 			for portId, t in saved.portStages do
 				if type(portId) == "string" and #portId <= 40 and type(t) == "table" then
@@ -620,6 +626,7 @@ return function(D)
 			history = state.history,
 			stocks = state.stocks,
 			portStages = state.portStages,
+			pace = state.pace,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
