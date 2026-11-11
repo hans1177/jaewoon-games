@@ -995,7 +995,8 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   assert.equal(report.gameRepairQa.invariants,'PASS','the original invariant runner performs actual test execution');
   assert.equal(report.impactPlan.fullRegressionStillRequired,true);
   const cached=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});
-  assert.equal(cached.cached,true);
+  assert.equal(cached.cached,false,'mandatory invariant checks must rerun even on identical source');
+  assert.equal(cached.contentHash,report.contentHash);
   assert.deepEqual(cached.impactPlan.focusedTargets,report.impactPlan.focusedTargets);
   assert.equal(cached.impactPlan.riskPrediction.runtimeProbabilityKnown,false);
   // 불변성 테스트만 고쳐도 이전 통과 캐시는 폐기하고 실제 실패를 검출해야 한다.
