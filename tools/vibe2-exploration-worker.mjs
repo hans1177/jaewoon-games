@@ -860,6 +860,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       ...sourceImpact.impactedSources.map(row=>row.path),
       ...related.filter(row=>(row.connections||[]).length>0).map(row=>row.relative)]);
     const mapRows=graphRows.slice(0,48)
+      .map(row=>scoredByPath.get(row.relative)||row)
       .filter(row=>Array.isArray(row.functions)&&reachable.has(row.relative));
     const mapPaths=new Set(mapRows.map(row=>row.relative));
     const links=new Map(mapRows.map(row=>[row.relative,new Set()]));
