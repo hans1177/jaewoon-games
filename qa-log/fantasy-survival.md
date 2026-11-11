@@ -47,3 +47,5 @@
 - 'permission for Asset' 시크릿 복구 대기(사람 작업) 그대로.
 
 - 2026-11-12 02:08(KST, run 43064146928) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 환경 설정 창 jpg(c12) 직접 확인: 글자·버튼 정상. 'permission for Asset' 시크릿 복구 대기(사람 작업) 그대로. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-12 07:25(KST, run 43108322083, 07:12 촬영) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 환경 설정 창 jpg(c12) 직접 확인: 글자·버튼 정상. 'permission for Asset' 는 같은 ID 들 그대로(시크릿 ROBLOX_OPEN_CLOUD_API_KEY/CREATOR_USER_ID 복구 대기, 사람 작업). 코드 수정 없음, 재배포 안 함.
