@@ -10,6 +10,7 @@ import sys, json, os, glob, argparse, math
 ap = argparse.ArgumentParser()
 ap.add_argument("--dir", required=True)
 ap.add_argument("--looks")
+ap.add_argument("--scene-composition", action="store_true", help="실제 장면 캡처의 시선 집중도를 화면 격자로 측정")
 ap.add_argument("--max", type=int, default=24)
 ap.add_argument("--reference", help="오너 레퍼런스/스케치 이미지 폴더: 이 화면들과 얼마나 닮았는지도 잰다")
 a = ap.parse_args()
@@ -85,13 +86,31 @@ def score_image(img):
     edge = float((mag > 0.08).mean())
     flat = float((mag < 0.008).mean())
 
+    focus = min(1.0, (sep + vert) / 0.18)
+    composition = {}
+    if a.scene_composition:
+        # 한 방향의 수평선이나 세로줄만으로는 시선이 모이는 지점으로 판단하지 않는다.
+        # 화면을 3×3으로 나눠 가로·세로 윤곽이 함께 모인 곳을 찾는다.
+        grid = []
+        for rows in np.array_split(np.arange(gx.shape[0]), 3):
+            for cols in np.array_split(np.arange(gx.shape[1]), 3):
+                tile = np.ix_(rows, cols)
+                grid.append(min(float((gx[tile] > 0.07).mean()), float((gy[tile] > 0.07).mean())))
+        strongest = int(np.argmax(grid))
+        peak = grid[strongest]
+        surrounding = float(np.median(grid))
+        focus = min(1.0, max(0.0, peak - surrounding) / 0.035)
+        composition = {"focusColumn": strongest % 3 + 1 if focus > 0 else None,
+                       "focusRow": strongest // 3 + 1 if focus > 0 else None,
+                       "focusEdgeSeparation": round(max(0.0, peak - surrounding), 4)}
+
     sub = {
         "exposure": band(mean, 0.22, 0.62, 0.22),
         "contrast": band(rng, 0.6, 0.92, 0.25),
         "clipping": 1.0 - min(1.0, (max(0.0, dark - 0.15) + max(0.0, blown - 0.05)) * 3),
         "saturation": band(sat, 0.3, 0.6, 0.18),
         "harmony": band(eff_hues, 1.0, 4.5, 3.0) if eff_hues > 0 else 0.6,
-        "focus": min(1.0, (sep + vert) / 0.18),
+        "focus": focus,
         "detail": band(edge, 0.09, 0.22, 0.05),
         "flatness": 1.0 - max(0.0, min(1.0, (flat - 0.35) / 0.3)),
     }
@@ -99,7 +118,7 @@ def score_image(img):
     total = sum(weights.values())
     score = 100.0 * sum(sub[k] * weights[k] for k in sub) / total
     return score, sub, {"meanLuma": round(mean, 3), "range": round(rng, 3), "saturation": round(sat, 3),
-                        "effectiveHues": round(eff_hues, 2), "edge": round(edge, 3), "flat": round(flat, 3)}
+                        "effectiveHues": round(eff_hues, 2), "edge": round(edge, 3), "flat": round(flat, 3), **composition}
 
 
 def features(img):
@@ -139,7 +158,8 @@ ADVICE = {
     "clipping": "검게 죽거나 하얗게 날아간 영역이 많다 → 조명·Bloom Threshold 조정",
     "saturation": "채도가 너무 낮거나 높다 → ColorCorrection Saturation 조정",
     "harmony": "색이 너무 많이 흩어져 있다 → 룩 프리셋 틴트로 색 통일",
-    "focus": "중앙과 배경이 구분되지 않는다 → 피사계 심도·비네트·주인공 대비",
+    "focus": ("화면에 윤곽이 모이는 지점이 약하다 → 랜드마크 주변의 배경 복잡도와 카메라 구도 확인"
+              if a.scene_composition else "중앙과 배경이 구분되지 않는다 → 피사계 심도·비네트·주인공 대비"),
     "detail": "윤곽·질감이 너무 적거나 많다 → 재질·텍스처 디테일 점검",
     "flatness": "평평한 단색 면이 넓다(도형 느낌) → 진짜 에셋·질감·그라데이션 필요",
 }

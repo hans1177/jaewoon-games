@@ -103,3 +103,26 @@ test('래더: aestheticBudget.minScore 보다 낮으면 승급하지 않고 이�
   const r=adv(s);
   assert.match(r.stdout,/승급 없음 \(미적 점수 \d+(\.\d+)? < 기준 99/,r.stdout+r.stderr);
 });
+
+test('장면 구도는 수평선과 화면 옆의 윤곽 집중 지점을 구분한다', {skip}, () => {
+  const dir=tmp();
+  try{
+    const horizon=`im=Image.new('RGB',(320,180),(85,145,200));d=ImageDraw.Draw(im)
+d.rectangle([0,90,320,180],fill=(55,95,65))`;
+    mk(dir,'horizon.png',horizon+'\nim.save(OUT)');
+    mk(dir,'landmark.png',horizon+`
+for y in range(10,55,10):
+    for x in range(220,305,10):
+        d.rectangle([x,y,x+5,y+5],fill=(230,190,95))
+im.save(OUT)`);
+    const [sky,landmark]=run(dir,'--scene-composition').frames;
+    assert.equal(sky.sub.focus,0);
+    assert.equal(sky.raw.focusColumn,null);
+    assert.ok(landmark.sub.focus>0.5);
+    assert.equal(landmark.raw.focusColumn,3);
+    assert.equal(landmark.raw.focusRow,1);
+    assert.ok(run(dir).frames[0].sub.focus>0);
+  }finally{
+    fs.rmSync(dir,{recursive:true,force:true});
+  }
+});
