@@ -4,21 +4,32 @@ import {sourceDigest} from './vibe2-game-source-index.mjs';
 
 // 메인: 기존 생성기·독립 평가기를 호출하는 한정된 반례 탐색. 큐·배포 권한은 없다.
 export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:sourceSha,
- failures=[],allowedPaths=[],maxAttempts=3,approvedBudget=3}={}){
+ failures=[],allowedPaths=[],replay=null,compareValidated=false,maxAttempts=3,approvedBudget=3}={}){
  const budget=Number.isSafeInteger(maxAttempts)&&Number.isSafeInteger(approvedBudget)&&
   maxAttempts>0&&approvedBudget>0?Math.min(5,maxAttempts,approvedBudget):0;
  if(typeof generate!=='function'||typeof evaluate!=='function'||!/^[a-f0-9]{64}$/.test(sourceSha)||!budget||
-  !Array.isArray(allowedPaths)||allowedPaths.some(path=>typeof path!=='string'||!path))
+  !Array.isArray(allowedPaths)||allowedPaths.some(path=>typeof path!=='string'||!path)||
+  !Array.isArray(failures)||(replay!==null&&typeof replay!=='function')||
+  typeof compareValidated!=='boolean'||(replay!==null&&!failures.length))
   throw Error('VIBE2_REPAIR_CONTRACT');
  const owners=new Set(allowedPaths);
  const seen=new Set(),counterexamples=[],attempts=[];
- let skippedDuplicate=false;
+ let skippedDuplicate=false,replayUnresolved=false,best=null,validated=0;
  for(const failure of failures){
   if(failure.sourceDigest!==sourceSha||failure.reproduced!==true||!failure.failureSignature||
    !Array.isArray(failure.responsibleSymbols)||failure.responsibleSymbols.length<1||failure.responsibleSymbols.length>2)
    return {status:'BLOCKED',reason:'UNVERIFIED_COUNTEREXAMPLE',attempts,sourceWrite:false,runtimeVerified:false};
   if(failure.patchFingerprint)seen.add(failure.patchFingerprint);
   counterexamples.push(failure);
+  // [오류 재현] 별도 실행 오라클이 기존 소스·동일 실패 서명을 재현하지 못하면 자동 수정 금지.
+  if(replay!==null){
+   const before=replay({phase:'BEFORE',sourceDigest:sourceSha,failure,candidate:null,fingerprint:null});
+   if(before&&typeof before.then==='function')throw Error('VIBE2_REPAIR_SYNCHRONOUS_REPLAY_REQUIRED');
+   if(before?.sourceDigest!==sourceSha||before?.failureSignature!==failure.failureSignature||
+     before?.reproduced!==true)
+    return {status:'BLOCKED',reason:'COUNTEREXAMPLE_BASELINE_NOT_REPRODUCED',attempts,
+     counterexamples,sourceWrite:false,runtimeVerified:false};
+  }
  }
  for(let attempt=0;attempt<budget;attempt++){
   const candidate=generate({attempt,counterexamples:[...counterexamples]});
@@ -48,14 +59,49 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
   seen.add(fingerprint);seen.add(legacyFingerprint);
   const result=evaluate(candidate,{attempt,counterexamples:[...counterexamples]});
   if(result&&typeof result.then==='function')throw Error('VIBE2_REPAIR_SYNCHRONOUS_ORACLE_REQUIRED');
-  attempts.push({attempt:attempt+1,fingerprint,pass:result?.pass===true});
-  if(result?.pass===true)return {status:'CANDIDATE_VALIDATED',candidate,attempts,counterexamples,
-   actualGamePlaytest:result.actualGamePlaytest===true,sourceWrite:false,runtimeVerified:false};
+  // [수정 후 재실행] 테스트 통과만으로 과거 오류가 해결됐다고 추정하지 않는다.
+  // 동일 원본 해시와 정확한 후보 지문에 연결된 재실행 증거를 모두 요구한다.
+  let unresolved=null;
+  if(result?.pass===true&&replay!==null){
+   for(const failure of failures){
+    const after=replay({phase:'AFTER',sourceDigest:sourceSha,failure,candidate,fingerprint});
+    if(after&&typeof after.then==='function')throw Error('VIBE2_REPAIR_SYNCHRONOUS_REPLAY_REQUIRED');
+    if(after?.sourceDigest!==sourceSha||after?.failureSignature!==failure.failureSignature||
+      after?.patchFingerprint!==fingerprint||after?.reproduced!==false){
+     unresolved=failure;break;
+    }
+   }
+  }
+  const passed=result?.pass===true&&unresolved===null;
+  attempts.push({attempt:attempt+1,fingerprint,pass:passed,
+   ...(replay!==null?{causalReplayVerified:passed}: {})});
+  if(passed){
+   validated++;
+   // [후보 비교] 서로 독립적으로 통과한 후보 중 수정 파일 수, 변경 면적이 작은 안을 선택한다.
+   const size=edits.reduce((sum,row)=>sum+row[1].length+row[2].length,0);
+   const fileCount=new Set(edits.map(row=>row[0])).size;
+   if(best===null||fileCount<best.fileCount||fileCount===best.fileCount&&
+      (size<best.size||size===best.size&&fingerprint<best.fingerprint))
+    best={candidate,fingerprint,size,fileCount,actualGamePlaytest:result.actualGamePlaytest===true};
+   if(!compareValidated)break;
+   continue;
+  }
+  if(unresolved!==null){
+   replayUnresolved=true;
+   counterexamples.push({...unresolved,sourceDigest:sourceSha,patchFingerprint:fingerprint});
+   continue;
+  }
   if(result?.reproduced!==true||!result.failureSignature||!Array.isArray(result.responsibleSymbols)||
     result.responsibleSymbols.length<1||result.responsibleSymbols.length>2)
    return {status:'BLOCKED',reason:'UNREPRODUCED_OR_UNSCOPED_FAILURE',attempts,sourceWrite:false,runtimeVerified:false};
   counterexamples.push({...result,sourceDigest:sourceSha,patchFingerprint:fingerprint});
  }
- return {status:'BLOCKED',reason:skippedDuplicate?'REPEATED_PATCH_FINGERPRINT':'REPAIR_BUDGET_EXHAUSTED',
+ if(best!==null)return {status:'CANDIDATE_VALIDATED',candidate:best.candidate,attempts,counterexamples,
+  actualGamePlaytest:best.actualGamePlaytest,sourceWrite:false,runtimeVerified:false,
+  ...(replay!==null?{causalReplayVerified:true}:{}),
+  ...(compareValidated?{selection:{evaluated:attempts.length,validated,modifiedFiles:best.fileCount,
+   footprint:best.size,fingerprint:best.fingerprint}}:{})};
+ return {status:'BLOCKED',reason:replayUnresolved?'COUNTEREXAMPLE_REPLAY_NOT_RESOLVED':
+  skippedDuplicate?'REPEATED_PATCH_FINGERPRINT':'REPAIR_BUDGET_EXHAUSTED',
   attempts,counterexamples,sourceWrite:false,runtimeVerified:false};
 }
