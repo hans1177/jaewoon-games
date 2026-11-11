@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-incremental-qa.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -969,4 +970,65 @@ test('DOM diagnostic replay rejects silent optional chaining and callback substi
   fs.writeFileSync(manifest,JSON.stringify({sourceRoot:'web-games/causal-button',changedFiles:['app.js'],
     exploration:{editContract:{causalReplay:replay}}}));
   assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:dom-missing-evidence'}),/CAUSAL_REPLAY_DOM_BINDING_EVIDENCE_MISSING/);
+});
+
+test('canonical incremental QA derives hotspot and focused targets from the current repair manifest',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const project='web-games/demo',base=path.join(root,project);
+  fs.mkdirSync(path.join(base,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(base,'save.js'),'export const save = true;\n','utf8');
+  fs.writeFileSync(path.join(base,'qa','invariant.test.mjs'),
+    'import test from "node:test"; test("state invariant",()=>{});\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot:project,changedFiles:['save.js'],
+    exploration:{editContract:{gameRepair:{required:true,prePatchReproduced:true,
+      failureSignature:'repeat-save-failure',repeatCount:3,responsibleFiles:['save.js'],
+      originalScenarioReplay:{required:false},
+      invariants:{required:true,testTargets:['qa/invariant.test.mjs']}}}}}));
+  const cacheFile=path.join(root,'qa-cache.json');
+  const report=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});
+  assert.equal(report.outcome,'PASS');
+  assert.equal(report.impactPlan.riskPrediction.level,'HIGH');
+  assert.deepEqual(report.impactPlan.focusedTargets,
+    [{target:'qa/invariant.test.mjs',category:'invariants'}]);
+  assert.equal(report.impactPlan.focusedTargetsExecuted,false);
+  assert.equal(report.gameRepairQa.invariants,'PASS','the original invariant runner performs actual test execution');
+  assert.equal(report.impactPlan.fullRegressionStillRequired,true);
+  const cached=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});
+  assert.equal(cached.cached,false,'mandatory invariant checks must rerun even on identical source');
+  assert.equal(cached.contentHash,report.contentHash);
+  assert.deepEqual(cached.impactPlan.focusedTargets,report.impactPlan.focusedTargets);
+  assert.equal(cached.impactPlan.riskPrediction.runtimeProbabilityKnown,false);
+  // 불변성 테스트만 고쳐도 이전 통과 캐시는 폐기하고 실제 실패를 검출해야 한다.
+  fs.writeFileSync(path.join(base,'qa','invariant.test.mjs'),
+    'import test from "node:test"; test("broken invariant",()=>{throw new Error("broken")});\n','utf8');
+  // 실패용 원본 테스트가 실제로 실패하는지도 독립 실행으로 먼저 입증한다.
+  const nativeEnv={...process.env};delete nativeEnv.NODE_TEST_CONTEXT;
+  assert.throws(()=>execFileSync(process.execPath,
+    ['--test',path.join(base,'qa','invariant.test.mjs')],{
+      cwd:root,stdio:'pipe',env:nativeEnv}));
+  let after=null,regressionError=null;
+  try{after=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});}
+  catch(error){regressionError=error;}
+  assert.ok(regressionError,'modified invariant test must fail rather than reuse a cached PASS: '+
+    JSON.stringify({cached:after?.cached,hashChanged:after?.contentHash!==report.contentHash,
+      repair:after?.gameRepairQa?.invariants}));
+  assert.match(String(regressionError.message),/GAME_REPAIR_INVARIANT_FAILED/);
+});
+
+test('causal replay executes nested Node regression tests instead of skipping a broken test',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const project='web-games/replay-proof',source=path.join(root,project);
+  fs.mkdirSync(path.join(source,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(source,'game.js'),'export const ready=true;\n');
+  fs.writeFileSync(path.join(source,'qa','broken.test.mjs'),
+    'import test from "node:test";test("must fail",()=>{throw new Error("causal-error")});\n');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:project,changedFiles:['game.js'],
+    exploration:{editContract:{causalReplay:{required:true,prePatchReproduced:true,
+      executable:true,mode:'NODE_TEST_TARGETS',nodeTestTargets:['qa/broken.test.mjs']}}}
+  }));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:replay-proof'}),
+    /Command failed/);
 });

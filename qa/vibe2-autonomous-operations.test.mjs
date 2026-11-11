@@ -174,7 +174,51 @@ test('incremental checks are game-scoped advisory only and shared changes requir
  const source=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
  assert.match(source,/VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS/);
  const qa=fs.readFileSync('tools/vibe2-incremental-qa.mjs','utf8');
- assert.match(qa,/automaticImpactedChecks\(changed\)/);
+ assert.match(qa,/automaticImpactedChecks\(changed,/);
+});
+
+// [위험 예측] 기존 회귀검사를 유지하면서 Roblox 저장·서버 권한 경계·반복 오류를 우선 분류한다.
+test('impacted QA predicts Roblox persistence and authority hotspots with bounded focused tests',()=>{
+ const gameRepair={required:true,prePatchReproduced:true,failureSignature:'save-reconnect',
+  repeatCount:4,responsibleFiles:['server/Profile.server.luau'],
+  invariants:{testTargets:['qa/profile-invariant.test.mjs','qa/../escape.test.mjs']},
+  saveMigration:{testTargets:['qa/save-migration.test.mjs','/tmp/unsafe.test.mjs']},
+  multiplayerLifecycle:{testTargets:['qa/two-client.test.mjs','qa/profile-invariant.test.mjs']}
+ };
+ const files=['roblox-games/demo/server/Profile.server.luau','roblox-games/demo/client/GUI.client.luau'];
+ const result=automaticImpactedChecks(files,{sourceRoot:'roblox-games/demo',gameRepair});
+ assert.deepEqual(result.gameIds,['demo']);
+ assert.equal(result.riskPrediction.level,'HIGH');
+ assert.ok(result.riskPrediction.signals.includes('PERSISTENCE_SOURCE_CHANGE'));
+ assert.ok(result.riskPrediction.signals.includes('ROBLOX_CLIENT_SERVER_BOUNDARY'));
+ assert.ok(result.riskPrediction.signals.includes('REPEATED_DECLARED_FAILURE'));
+ assert.deepEqual(result.focusedTargets.map(x=>x.target),[
+  'qa/profile-invariant.test.mjs','qa/save-migration.test.mjs','qa/two-client.test.mjs']);
+ assert.equal(result.focusedTargetsExecuted,false);
+ assert.equal(result.riskPrediction.runtimeProbabilityKnown,false);
+ assert.equal(result.riskPrediction.evidence,'STATIC_HEURISTIC_AND_DECLARED_MANIFEST_ONLY');
+ assert.equal(result.fullRegressionStillRequired,true);
+ assert.equal(result.canReplaceFinalQA,false);
+ assert.ok(result.tests.includes('full-release-fan-in-unchanged'));
+});
+
+test('impact prediction rejects stale failure context and cannot fabricate focused coverage',()=>{
+ const base=automaticImpactedChecks(['roblox-games/demo/server/Fight.server.luau']);
+ assert.equal(base.riskPrediction.level,'ELEVATED');
+ assert.deepEqual(base.focusedTargets,[]);
+ const repair={required:true,prePatchReproduced:false,failureSignature:'old',
+  repeatCount:20,responsibleFiles:['server/Fight.server.luau'],
+  invariants:{testTargets:['qa/battle.test.mjs']}};
+ const noProof=automaticImpactedChecks(['roblox-games/demo/server/Fight.server.luau'],
+  {sourceRoot:'roblox-games/demo',gameRepair:repair});
+ assert.equal(noProof.riskPrediction.signals.includes('REPEATED_DECLARED_FAILURE'),false);
+ assert.deepEqual(noProof.focusedTargets.map(x=>x.target),['qa/battle.test.mjs']);
+ const irrelevant=automaticImpactedChecks(['web-games/other/ui.css'],
+  {sourceRoot:'roblox-games/demo',gameRepair:{...repair,prePatchReproduced:true}});
+ assert.equal(irrelevant.riskPrediction.level,'LOW');
+ assert.deepEqual(irrelevant.focusedTargets,[]);
+ assert.equal(irrelevant.riskPrediction.signals.length,0);
+ assert.deepEqual(irrelevant.tests,['source-syntax-and-security','game-runtime:other','full-release-fan-in-unchanged']);
 });
 
 test('maintenance takes over only after exact published source and QA are both proven',()=>{

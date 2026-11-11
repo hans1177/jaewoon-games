@@ -70,10 +70,13 @@ function gameRepairContract(data={}){
 }
 function runRepairNodeTargets({root,data={},targets=[],category='CHECK'}={}){
   const resolved=resolveReplayTargets(root,data,{nodeTestTargets:targets});
+  // [재귀 테스트 보호] node --test 안의 NODE_TEST_CONTEXT를 자식에 넘기면 실행 없이 0으로 종료한다.
+  const testEnv={...process.env};delete testEnv.NODE_TEST_CONTEXT;
   const results=[];
   for(const target of resolved){
     try{
-      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
+      execFileSync(process.execPath,['--test',target.absolute],{
+        cwd:root,stdio:'pipe',encoding:'utf8',env:testEnv,timeout:20_000,maxBuffer:2*1024*1024});
       results.push({target:target.relative,outcome:'PASS'});
     }catch(error){
       const wrapped=new Error(`GAME_REPAIR_${category}_FAILED:${target.relative}`);
@@ -281,10 +284,13 @@ function runCausalReplay({root,data={}}={}){
   if(mode!=='NODE_TEST_TARGETS')return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'UNSUPPORTED_REPLAY_MODE',targets:[],verifiedResponsibleSystem:null,canonicalQaStillRequired:true};
   const targets=resolveReplayTargets(root,data,plan);
   if(!targets.length)throw new Error('CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET');
+  // [실제 실행] 외부 테스트 러너의 재귀 컨텍스트를 제거해야 내부 검사 실패가 검출된다.
+  const testEnv={...process.env};delete testEnv.NODE_TEST_CONTEXT;
   const results=[];
   for(const target of targets){
     try{
-      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8',timeout:20_000,maxBuffer:2*1024*1024});
+      execFileSync(process.execPath,['--test',target.absolute],{
+        cwd:root,stdio:'pipe',encoding:'utf8',env:testEnv,timeout:20_000,maxBuffer:2*1024*1024});
     }catch(error){
       if(error?.code==='ETIMEDOUT'||error?.signal==='SIGTERM')throw new Error(`CAUSAL_REPLAY_TARGET_TIMEOUT:${target.relative}`);
       throw error;
@@ -992,9 +998,11 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const started = Date.now();
   const data=manifestData(manifest);
   const changed = collectFiles({root, files, manifest});
-  const impactPlan=automaticImpactedChecks(changed);
   const replayPlan=causalReplayPlan(data);
   const gameRepair=gameRepairContract(data);
+  // [영향 회귀] 기존 변경 파일 검사에 실제 복구 계약의 책임 파일·테스트 대상만 전달한다.
+  // 정적 위험도는 평가 우선순위이며 검증 통과나 최종 QA를 대신하지 않는다.
+  const impactPlan=automaticImpactedChecks(changed,{gameRepair,sourceRoot:data.sourceRoot});
   const replayTargets=replayPlan?.executable===true&&clean(replayPlan?.mode)==='NODE_TEST_TARGETS'?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
@@ -1005,7 +1013,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
   const assetSourceUsage=data?.internalAssetSourceUsage||null;
   const assetSourceHashes=Array.isArray(assetSourceUsage?.selectedSourceHashes)?assetSourceUsage.selectedSourceHashes:[];
-  const payload = ['vibe2-incremental-qa-v18', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
+  const payload = ['vibe2-incremental-qa-v19', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
   // 자산 소스는 변경 파일 목록 밖에서도 바뀐다. 캐시 조회 전에 현재 내용과 비교한다.
   if(assetSourceUsage?.synchronization?.selectedSourceContentHashesRequired===true){
     const paths=assetSourceUsage.selectedSourcePaths||[];
@@ -1030,6 +1038,16 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
     payload.push(relative, fs.readFileSync(file));
   }
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
+  // [검증 캐시] 저장·불변성 테스트는 변경 파일 외부에 존재한다. 테스트 코드가 바뀌면 과거 PASS를 재사용하지 않는다.
+  // 멀티플레이 검증은 아래의 기존 강제 재실행 정책을 유지한다.
+  if(gameRepair?.required===true){
+    const invariantNames=Array.isArray(gameRepair?.invariants?.testTargets)?gameRepair.invariants.testTargets:[];
+    const saveNames=gameRepair?.saveMigration?.required===true&&Array.isArray(gameRepair.saveMigration.testTargets)
+      ?gameRepair.saveMigration.testTargets:[];
+    const repairTargets=resolveReplayTargets(root,data,{nodeTestTargets:[...invariantNames,...saveNames]});
+    for(const target of new Map(repairTargets.map(target=>[target.relative,target])).values())
+      payload.push('GAME_REPAIR_FOCUSED:'+target.relative,fs.readFileSync(target.absolute));
+  }
   // 도안은 변경되지 않은 지지면·연결 파일에도 의존하므로 캐시 조회 전 전체 바인딩을 다시 읽는다.
   const blueprintSources=new Map();
   for(const blueprint of [data.spatialBlueprint,data.interfaceBlueprint]){
@@ -1048,7 +1066,13 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   // Always rescan current inputs; changed-file hashes cannot certify this replay.
   const diagnosticReplay=replayPlan?.required===true&&replayPlan?.executable===true&&clean(replayPlan.mode)==='DIAGNOSTIC_RESCAN';
   // 멀티 계약은 변경 목록 밖의 서버·수신 소스에도 의존한다. 현재 소스를 다시 검사한다.
-  const cached = diagnosticReplay||gameRepair?.multiplayerLifecycle?.required===true ? null : cache.entries?.[contentHash];
+  // [증거 보호] 불변성·저장 복구 검사는 대상 파일 해시가 같아도 실행 증거를 새로 수집한다.
+  // 캐시가 실제 실패를 가리지 않도록 기존 멀티플레이 강제 재검증 경계를 확장한다.
+  const mandatoryRepairCheck=gameRepair?.required===true&&(
+    (Array.isArray(gameRepair?.invariants?.testTargets)&&gameRepair.invariants.testTargets.length>0)||
+    gameRepair?.saveMigration?.required===true);
+  const cached = diagnosticReplay||gameRepair?.multiplayerLifecycle?.required===true||mandatoryRepairCheck
+    ? null : cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, impactPlan, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
