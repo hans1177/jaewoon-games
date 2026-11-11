@@ -59,7 +59,9 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.ok(session.gym.children>=1);
   assert.equal(session.ui.trials,108);
   assert.equal(session.ui.gameApplied,false);
-  assert.equal(session.assetCoverage.cataloguedAssets,JSON.parse(fs.readFileSync('company-asset-library.json','utf8')).assets.length);
+  assert.equal(session.assetCoverage.registryAssets,JSON.parse(fs.readFileSync('company-asset-library.json','utf8')).assets.length);
+  assert.ok(session.assetCoverage.cataloguedAssets>=session.assetCoverage.registryAssets);
+  assert.ok(session.assetCoverage.scannedCatalogs.some(x=>x.endsWith('asset-manifest.json')));
   assert.equal(session.assetCoverage.nativeRuntimeVerified,false);
   assert.equal(session.practiceDomains.BUTTON.trials,108);
   assert.equal(session.practiceDomains.ICON.nativeRuntimeVerified,false);
@@ -75,6 +77,21 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.ok(fs.existsSync(path.join(out,'session.json')));
   const learned=JSON.parse(fs.readFileSync(lights,'utf8'));
   assert.ok(Object.values(learned)[0].top.length>=1);
+});
+
+test('3D 연습용 CC0 원본이 없어도 임의 생성하지 않고 UI 분류·부족 기록만 남긴다',()=>{
+  const root=tmp();fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+    assets:[{id:'missing',family:'CHARACTER',license:'CC0',sourceFiles:['missing.glb']}]
+  }));
+  const {session}=runPracticeSession({repoRoot:root,seed:2,parents:1,variants:1,
+    out:'build/practice',light:false,bake:false});
+  assert.equal(session.assetShortage,'NO_ELIGIBLE_CC0_PARENT');
+  assert.equal(session.gym.children,0);
+  assert.equal(session.assetCoverage.eligible3dAssets,0);
+  assert.equal(session.practiceDomains.RIG.nativeRuntimeVerified,false);
+  assert.equal(session.practiceDomains.UI.trials,108);
+  assert.equal(session.productionPromotionAllowed,false);
+  assert.ok(fs.existsSync(path.join(root,'build/practice/gym/ledger.json')));
 });
 
 test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 스스로 다음 회차를 예약한다(체인), 끄는 변수와 안전망이 있다', () => {
