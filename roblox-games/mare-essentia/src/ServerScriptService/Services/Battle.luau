@@ -28,7 +28,7 @@ return function(D, S)
 		local skills = {}
 		for _, id in state.loadout do
 			local s = D.Skills.Skills[id]
-			if s and S.Battle.skillBlock(state, s) == nil and #skills < slots then
+			if s and skillBlock(state, s) == nil and #skills < slots then
 				table.insert(skills, id)
 			end
 		end
