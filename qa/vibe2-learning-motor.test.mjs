@@ -2554,3 +2554,19 @@ test('explicit failure signature dominates stale evidence but free-form messages
     evidence:['runtime-failure:STABLE_FAILURE_CODE']});
   assert.equal(plain,'web|STABLE_FAILURE_CODE');
 });
+
+test('verified recovery cause outranks its own stale evidence fingerprints',()=>{
+  const context=retrieveUnifiedLearning({
+    task:{target:'roblox',gameId:'ocean',failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      goal:'repair exact F0 failure'},
+    experienceInput:{records:[{
+      id:'verified-current',engine:'roblox',gameId:'ocean',verified:true,reusable:true,
+      outcome:'PASS',problem:'repair exact F0 failure',
+      failureCause:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      evidence:['runtime-failure:OLD_STUDIO_ERROR'],
+      reusablePatterns:['rerun current F0 after source correction']
+    }]}
+  });
+  assert.equal(context.failureLocalMemory[0]?.id,'verified-current');
+  assert.ok(context.failureLocalMemory[0]?.reasons.includes('same-game-same-failure'));
+});
