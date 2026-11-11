@@ -511,3 +511,19 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `assets/goods/indigo.png` | `indigo-64px.png` | OpenFarm 기여자 · CC0-1.0 | https://github.com/openfarmcc/open-crop-icons/blob/5c17291ded7409b4a6a25d2d060667b0a1e3e32f/icons/indigo/indigo-64px.png | `fba95d8b105a648168ebcd570b7471ebb1367feebcf98513e121582e5d9180c4` |
 
 전용 이미지는 기존 `Goods/<상품 ID>` 조회 경로를 사용한다. Roblox 업로드 자산 ID와 체험 사용 권한 검증 전에는 게임 내 표시를 PASS로 판정하지 않는다.
+
+## 2026-11-11 CC0 항구 배경 7종
+
+제작자: Kenney. 오리지널 배경 GLB 7종. 공식 Kenney 페이지에서 CC0 확인. 원본 그대로 보존, 캐릭터·피·술·담배·로고 없음(원본 썸네일 시각 확인). 상업 이용·수정 허용.
+
+| 저장 경로 | 쓰임 | 원본·라이선스 | 원본 Git SHA |
+|---|---|---|---|
+| `assets/naval/rocks-sand-a.glb` | 열대 모래 암석 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/rocks-sand-a.glb) | `adcc106a71647d1df305966bf69322a594b95a32` |
+| `assets/naval/rocks-sand-b.glb` | 열대 모래 암석 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/rocks-sand-b.glb) | `cbd3a76fa4c7f098aacfded108967f8cc388587c` |
+| `assets/naval/rocks-sand-c.glb` | 열대 모래 암석 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/rocks-sand-c.glb) | `6b5c22ebf6409d305d33210f72f5256f2534a92f` |
+| `assets/naval/rocks-a.glb` | 북부 암초 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/rocks-a.glb) | `91923f9062623a257426cfaf0da98bf1592facc2` |
+| `assets/naval/rocks-b.glb` | 북부 암초 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/rocks-b.glb) | `08868717d77aa6edffaa245b209e269640cbad4b` |
+| `assets/naval/patch-sand-foliage.glb` | 열대 해안 수풀 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/pirate-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/pirate-kit/patch-sand-foliage.glb) | `8e59ffa6dee87552b616fe1d45c7719c7f850759` |
+| `assets/castle/ground-hills.glb` | 북부 배경 언덕 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/castle-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/castle-kit/ground-hills.glb) | `9f068afc5065911194d866a1e0a5251c75a4e951` |
+
+기존 `PortScene`/`AssetIds`/Open Cloud 업로더만 이용. ID가 등록되기 전엔 새 배경 표시를 보류한다. 실제 로블록스 Studio 수입, 런타임, 모바일, 배포는 별도 확인이 필요하다.
