@@ -89,7 +89,9 @@ test('출처 누락, 공급자·모델 불일치, 미확인 유료 모델을 차
   const mismatch=accepted({evidence:evidence.map(x=>x==='external-ai-model:gemini-3.8-flash'?'external-ai-model:openai/gpt-oss-20b':x)});
   const paid=accepted({evidence:evidence.map(x=>x==='external-ai-model:gemini-3.8-flash'?'external-ai-model:gemini-paid-pro':x)});
   const unknown=accepted({evidence:evidence.map(x=>x==='external-ai-provider:GEMINI'?'external-ai-provider:UNVERIFIED':x)});
-  assert.equal(buildExternalAiLearningFeed({tasks:[missing,mismatch,paid,unknown]}).records.length,0);
+  const inherited=accepted({evidence:evidence.map(x=>x==='external-ai-provider:GEMINI'?'external-ai-provider:constructor':x)});
+  const proto=accepted({evidence:evidence.map(x=>x==='external-ai-provider:GEMINI'?'external-ai-provider:__proto__':x)});
+  assert.equal(buildExternalAiLearningFeed({tasks:[missing,mismatch,paid,unknown,inherited,proto]}).records.length,0);
 });
 
 test('실제로 호출된 교사 공급자와 모델을 기존 피더에 전달한다',()=>{

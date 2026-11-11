@@ -77,7 +77,7 @@ function eligible(task={}){
   const sha=marker(ev,'external-ai-raw-output-sha256:');
   const model=marker(ev,'external-ai-model:');
   const provider=marker(ev,'external-ai-provider:');
-  return SHA256.test(sha)&&Boolean(VERIFIED_TEACHERS[provider]?.has(model));
+  return SHA256.test(sha)&&Object.hasOwn(VERIFIED_TEACHERS,provider)&&VERIFIED_TEACHERS[provider].has(model);
 }
 export function buildAssistantTraceLearningFeed(traceInput={}){
   const records=[],actions=[],seen=new Set();
