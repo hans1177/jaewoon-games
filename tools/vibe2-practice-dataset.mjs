@@ -90,12 +90,22 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12, taskTy
   deduped.sort((a, b) => deterministicScore(a) - deterministicScore(b));
   const evalCount = Math.max(2, Math.min(Math.floor(deduped.length * 0.2), deduped.length - 1));
   // A family stays in one split: revisions of one exercise cannot inflate eval.
-  const evalFamilies=new Set();
-  const codeFamilies=[...new Set(deduped.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').map(row=>row.familyId))];
-  // A loss measured only on prose cannot evaluate implementation learning.
-  if(codeFamilies.length>=2)evalFamilies.add(codeFamilies[0]);
-  for(const row of deduped){if(deduped.filter(item=>evalFamilies.has(item.familyId)).length>=evalCount)break;evalFamilies.add(row.familyId);}
-  if(codeFamilies.length>=2&&codeFamilies.every(id=>evalFamilies.has(id)))evalFamilies.delete(codeFamilies.at(-1));
+  const evalFamilies = new Set();
+  const codeFamilies = [...new Set(deduped.filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId))];
+  // Roblox keeps at least ten original Luau code exercises in training and
+  // reserves three separate code families for practice evaluation when possible.
+  // This is never an independent fixed holdout or native runtime evidence.
+  const reservedCodeFamilies = taskType === 'roblox' && codeFamilies.length >= 12
+    ? Math.min(3, codeFamilies.length - 10, evalCount - 1)
+    : (codeFamilies.length >= 2 ? 1 : 0);
+  for (const id of codeFamilies.slice(0, reservedCodeFamilies)) evalFamilies.add(id);
+  const codeFamilySet = new Set(codeFamilies);
+  for (const row of deduped) {
+    if (deduped.filter(item => evalFamilies.has(item.familyId)).length >= evalCount) break;
+    if (taskType === 'roblox' && codeFamilySet.has(row.familyId)) continue;
+    evalFamilies.add(row.familyId);
+  }
+  if (codeFamilies.length >= 2 && codeFamilies.every(id => evalFamilies.has(id))) evalFamilies.delete(codeFamilies.at(-1));
   const evalRows = deduped.filter(row=>evalFamilies.has(row.familyId));
   const trainRows = deduped.filter(row=>!evalFamilies.has(row.familyId));
   if(!trainRows.length)throw new Error('practice split requires independent exercise families');

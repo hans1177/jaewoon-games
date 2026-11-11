@@ -127,7 +127,7 @@ jobs:
           test "$code_count" -eq 14
           node tools/vibe2-practice-dataset.mjs \
             --input "$samples" --out "$dataset" --min-samples 20 --task-type roblox
-          node --input-type=module -e 'import fs from "node:fs";const m=JSON.parse(fs.readFileSync(process.argv[1]));if(m.targetTaskType!=="roblox"||m.authority!=="PRACTICE_ONLY"||m.runtimePromotionAllowed!==false||m.stats.codeImplementationTrain<10||m.stats.codeImplementationEval<1)throw Error("ROBLOX_IMPLEMENTATION_TRAINING_DATASET_NOT_READY")' "$dataset/manifest.json"
+          node --input-type=module -e 'import fs from "node:fs";const m=JSON.parse(fs.readFileSync(process.argv[1]));if(m.targetTaskType!=="roblox"||m.authority!=="PRACTICE_ONLY"||m.runtimePromotionAllowed!==false||m.stats.codeImplementationTrain<10||m.stats.codeImplementationEval<3)throw Error("ROBLOX_IMPLEMENTATION_TRAINING_DATASET_NOT_READY")' "$dataset/manifest.json"
           node --test qa/vibe2-licensed-reference-learning.test.mjs
           echo "ROBLOX_LICENSED_REFERENCE_SAMPLES=$sample_count"
           echo "ROBLOX_ORIGINAL_LUAU_IMPLEMENTATION_SAMPLES=$code_count"
@@ -314,6 +314,7 @@ jobs:
           $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset safety gate failed' }
           if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 20) { throw 'licensed Roblox reference samples missing from dataset' }
+          if ($manifest.stats.codeImplementationTrain -lt 10 -or $manifest.stats.codeImplementationEval -lt 3) { throw 'Roblox coding train/eval stratification not ready' }
           "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
           Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"

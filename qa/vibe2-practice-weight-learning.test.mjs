@@ -57,8 +57,16 @@ test('Roblox practice includes original implementation in train and eval; stale 
     assert.equal(manifest.practiceOnly, true);
     assert.equal(manifest.runtimePromotionAllowed, false);
     assert.equal(manifest.stats.licensedReferenceTotal, 25);
-    assert.ok(manifest.stats.codeImplementationTrain > 0);
-    assert.ok(manifest.stats.codeImplementationEval > 0);
+    assert.equal(manifest.stats.codeImplementationTrain, 11);
+    assert.equal(manifest.stats.codeImplementationEval, 3);
+    assert.equal(manifest.stats.train + manifest.stats.eval, 39);
+    const trainCodeFamilies = fs.readFileSync(path.join(data, 'train.jsonl'), 'utf8').trim().split('\n').map(JSON.parse)
+      .filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId);
+    const evalCodeFamilies = fs.readFileSync(path.join(data, 'eval.jsonl'), 'utf8').trim().split('\n').map(JSON.parse)
+      .filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId);
+    assert.equal(new Set(trainCodeFamilies).size, 11);
+    assert.equal(new Set(evalCodeFamilies).size, 3);
+    assert.ok(evalCodeFamilies.every(id => !trainCodeFamilies.includes(id)));
     assert.deepEqual(manifest.sourceKinds, ['licensed-reference', 'teacher']);
     const validate = "import importlib.util,json,sys,types; p='tools/vibe2-practice-train.py'; s=importlib.util.spec_from_file_location('practice',p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); d=sys.argv[1]; rows=lambda n:[json.loads(x) for x in open(d+'/'+n+'.jsonl',encoding='utf-8')]; m.practice_validate(types.SimpleNamespace(task_type='roblox'),json.load(open(d+'/manifest.json')),rows('train'),rows('eval'))";
     const python = process.platform === 'win32' ? 'python' : 'python3';
