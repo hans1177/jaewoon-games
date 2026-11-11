@@ -188007,11 +188007,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b833ae9fb9cf420c900501d0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12488",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2ba47fdd96631d73177f268c5251a84e7ff7e667",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12488,
+        "baseBranch": "main",
+        "headBranch": "assets/mare-landmarks-cc0",
+        "baseSha": "2ba47fdd96631d73177f268c5251a84e7ff7e667",
+        "headSha": "769051c810e1e769d8121f2108ea7a6b62fa0bd7",
+        "mergeCommitSha": "d29d41cbc4bc7a285d279515cead4c4af891d5ea",
+        "mergedAt": "2026-11-11T08:46:37Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d71b42c6d0cbd4d7b677e73aad49c114ece7ddc9278da10e6cac9b0c4f89f9f7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/mare-landmarks-cc0",
+        "candidateSha": "769051c810e1e769d8121f2108ea7a6b62fa0bd7"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 442,
+        "deletedLineCount": 66,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/castle/fortress.glb",
+          "roblox-games/mare-essentia/assets/goods/beer_grain.png",
+          "roblox-games/mare-essentia/assets/goods/sake_rice.png",
+          "roblox-games/mare-essentia/assets/goods/src/beer_grain.svg",
+          "roblox-games/mare-essentia/assets/goods/src/sake_rice.svg",
+          "roblox-games/mare-essentia/assets/town/bell-tower.glb",
+          "roblox-games/mare-essentia/assets/town/church.glb",
+          "roblox-games/mare-essentia/assets/town/temple-stone.glb",
+          "roblox-games/mare-essentia/assets/town/temple-tower.glb",
+          "roblox-games/mare-essentia/assets/town/windmill.glb",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12488",
+        "merge-commit:d29d41cbc4bc7a285d279515cead4c4af891d5ea",
+        "base-main:2ba47fdd96631d73177f268c5251a84e7ff7e667"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1500
+    "total": 1501
   }
 }
