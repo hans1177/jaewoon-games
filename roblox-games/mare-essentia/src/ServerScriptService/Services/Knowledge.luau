@@ -188,7 +188,7 @@ return function(D, S)
 	end
 
 	local function ensureAcademy(state)
-		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, last = {}, shown = {} }
+		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, last = {}, shown = {} }
 		return state.academy
 	end
 
@@ -362,6 +362,43 @@ return function(D, S)
 		local fame = math.floor(lm.cost / 50)
 		state.fame += fame
 		return true, string.format("%s에 %s을(를) 세웠다! %s 명성 +%d", D.Ports.Ports[state.portId].name, lm.name, lm.summary, fame)
+	end
+
+	-- 신제품 출시: 지식으로 개량된(✦) 교역품을 5개 이상 싣고 와서 출시 행사를 연다. (교역소 3단계 이상)
+	-- 시장에 풀지 않고 행사에서 프리미엄 값에 팔리며, 개량 폭이 클수록·박물관이 있을수록 더 받는다. 항구마다 60일에 한 번.
+	local LAUNCH_COOLDOWN, LAUNCH_COUNT = 60, 5
+	function handlers.Launch(state, p)
+		local goodId = type(p) == "table" and type(p.goodId) == "string" and p.goodId
+		local good = goodId and D.Ports.Goods[goodId]
+		if not good then
+			return false, "잘못된 교역품"
+		end
+		local lvl = D.Harbor.level(state.harbor[state.portId] or 0)
+		if lvl < 3 then
+			return false, "신제품 출시 행사는 교역소가 3단계 이상인 항구에서 열려요"
+		end
+		local gm = K.goodsMult(state, goodId)
+		if gm <= 1.001 then
+			return false, string.format("%s은(는) 아직 개량되지 않았어요 (지식 트리에서 관련 지식을 이해하세요)", good.name)
+		end
+		if (state.cargo[goodId] or 0) < LAUNCH_COUNT then
+			return false, string.format("%s %d개가 필요해요", good.name, LAUNCH_COUNT)
+		end
+		local a = ensureAcademy(state)
+		local key = "launch:" .. state.portId
+		local last = a.last[key]
+		if last and state.day - last < LAUNCH_COOLDOWN then
+			return false, string.format("다음 출시 행사는 %d일 뒤에 열려요", LAUNCH_COOLDOWN - (state.day - last))
+		end
+		S.State.removeCargo(state, goodId, LAUNCH_COUNT)
+		local mult = 1.5 + (gm - 1) * 6 + (if K.hasLandmark(state, state.portId, "museum") then 0.25 else 0)
+		local coins = math.floor(good.basePrice * LAUNCH_COUNT * mult)
+		local fame = 6 + math.floor((gm - 1) * 100)
+		a.last[key] = state.day
+		a.launched = (a.launched or 0) + 1
+		state.coins += coins
+		state.fame += fame
+		return true, string.format("%s 신제품 출시 행사! %s %d개가 개당 기준가의 %d%%에 팔렸다. +%d코인, 명성 +%d", D.Ports.Ports[state.portId].name, good.name, LAUNCH_COUNT, math.floor(mult * 100), coins, fame)
 	end
 
 	-- ===== 박람회 =====
@@ -572,7 +609,25 @@ return function(D, S)
 				return rows
 			end)(),
 				expoWait = if lastExpo then math.max(0, EXPO_COOLDOWN - (state.day - lastExpo)) else 0, expoOpen = lvl >= 2,
-				medals = a.medals or 0,
+				medals = a.medals or 0, launched = a.launched or 0,
+				launch = (function()
+					local rows = {}
+					local lastL = a.last["launch:" .. state.portId]
+					local wait = if lastL then math.max(0, LAUNCH_COOLDOWN - (state.day - lastL)) else 0
+					local ids = {}
+					for goodId in D.Ports.Goods do
+						table.insert(ids, goodId)
+					end
+					table.sort(ids)
+					for _, goodId in ids do
+						local gm = K.goodsMult(state, goodId)
+						if gm > 1.001 then
+							local have = state.cargo[goodId] or 0
+							table.insert(rows, { goodId = goodId, name = D.Ports.Goods[goodId].name, have = have, need = LAUNCH_COUNT, up = math.floor((gm - 1) * 100 + 0.5), open = lvl >= 3, wait = wait })
+						end
+					end
+					return rows
+				end)(),
 			}
 			local prev = {}
 			for _, formId in { "specimen", "taxidermy", "live" } do

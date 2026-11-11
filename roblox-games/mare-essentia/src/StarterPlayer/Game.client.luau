@@ -3635,6 +3635,14 @@ local function renderExplore()
 							end)
 						end
 					end
+					for _, lr in ac.launch do
+						add(function()
+							local sub = string.format("개량 +%d%% · 싣고 있는 %d개 (%d개 필요)%s", lr.up, lr.have, lr.need, if not lr.open then " · 교역소 3단계 이상" elseif lr.wait > 0 then string.format(" · %d일 뒤 가능", lr.wait) else "")
+							return mkRow(content, "신제품 출시 — " .. lr.name .. " ✦", sub, {
+								{ text = "출시", color = COLORS.gold, onClick = function() call("Launch", { goodId = lr.goodId }) end, enabled = lr.open and lr.wait == 0 and lr.have >= lr.need },
+							}, 56)
+						end)
+					end
 					for _, b in ac.buildings do
 						add(function()
 							local sub = if b.built then b.summary .. " (건축 완료)" else string.format("%s · 건축비 %d코인%s", b.summary, b.cost, if b.can then "" else " · " .. tostring(b.why))
