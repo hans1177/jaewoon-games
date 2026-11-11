@@ -107,3 +107,12 @@ test('워크플로: 30분 주기, 끄는 변수, 결과·원장 수집, main 이
   assert.doesNotMatch(y, /git push/);
   assert.match(y, /cancel-in-progress: false/);
 });
+
+test('종합 점검 스크립트는 시작 버튼이 없어도 멈추지 않는다(click_text 대신 없으면 모서리 점을 쓰는 click_from_luau)', () => {
+  const d = JSON.parse(fs.readFileSync(GAMES['fantasy-survival'].scripts.health, 'utf8'));
+  assert.equal(d.some(s => s.type === 'click_text'), false);
+  const clicks = d.filter(s => s.type === 'click_from_luau');
+  assert.ok(clicks.length >= 1);
+  for (const c of clicks) { assert.match(c.code, /이어하기/); assert.match(c.code, /모험 시작/); assert.match(c.code, /out="6,6"/); }
+  assert.ok(d.some(s => s.type === 'luau' && /HEALTH_ERR/.test(s.code)));
+});

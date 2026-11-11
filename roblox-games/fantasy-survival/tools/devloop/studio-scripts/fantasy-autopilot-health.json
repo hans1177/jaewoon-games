@@ -1,15 +1,19 @@
 [
  {
   "type": "wait",
-  "ms": 9000
+  "ms": 30000
  },
  {
-  "type": "click_text",
-  "text": "이어하기"
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local want={\"이어하기\",\"모험 시작\"} local out=nil local bestY=nil for _,w in ipairs(want) do for _,d in ipairs(p:GetDescendants()) do if out==nil and d:IsA(\"TextButton\") and d.Text==w and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end if out==nil then out=\"6,6\" end return out"
  },
  {
-  "type": "click_text",
-  "text": "모험 시작"
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local want={\"이어하기\",\"모험 시작\"} local out=nil local bestY=nil for _,w in ipairs(want) do for _,d in ipairs(p:GetDescendants()) do if out==nil and d:IsA(\"TextButton\") and d.Text==w and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end if out==nil then out=\"6,6\" end return out"
  },
  {
   "type": "wait",
