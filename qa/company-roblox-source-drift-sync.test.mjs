@@ -251,6 +251,39 @@ test('Roblox build source drift ignores QA metadata while tracking Rojo build in
   ]),['horror-escape-room']);
 });
 
+// [대항해시대 Rojo 회귀] src/ Luau는 패키지 입력이고, 문서만 고친 경우에는 과거 빌드를 무효화하지 않는다.
+test('Mare src Luau changes are canonical Rojo build changes, unlike QA metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'mare-src-drift-'));
+  const base='roblox-games/mare-essentia';
+  const luau=base+'/src/ReplicatedStorage/Shared/HistoryEvents.luau';
+  const metadata=base+'/docs/NOTES.md';
+  const write=(file,content)=>{
+    const absolute=path.join(root,file);
+    fs.mkdirSync(path.dirname(absolute),{recursive:true});
+    fs.writeFileSync(absolute,content);
+  };
+  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+  try{
+    write(base+'/default.project.json',JSON.stringify({tree:{ReplicatedStorage:{Shared:{$path:'src/ReplicatedStorage/Shared'}}}}));
+    write(luau,'return {Events={}}\\n');
+    write(metadata,'initial\\n');
+    git('init');git('config','user.name','test');git('config','user.email','test@example.invalid');
+    git('add','.');git('commit','-m','base');
+    const original=git('rev-parse','HEAD');
+    assert.equal(robloxBuildInputGameId(luau),'mare-essentia');
+    assert.deepEqual(changedRobloxBuildGameIds([luau],{repoRoot:root}),['mare-essentia']);
+    write(luau,'return {Events={new_event=true}}\\n');
+    git('add','.');git('commit','-m','new event');
+    const changed=git('rev-parse','HEAD');
+    assert.equal(robloxBuildSourceChangedBetween({repoRoot:root,gameId:'mare-essentia',fromRevision:original,toRevision:changed}),true);
+    write(metadata,'notes only\\n');
+    git('add','.');git('commit','-m','notes');
+    const metadataOnly=git('rev-parse','HEAD');
+    assert.equal(robloxBuildInputGameId(metadata),'');
+    assert.equal(robloxBuildSourceChangedBetween({repoRoot:root,gameId:'mare-essentia',fromRevision:changed,toRevision:metadataOnly}),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('metadata-only mistaken invalidation restores preserved exact build evidence without fabricating runtime pass',()=>{
   const x=item();
   x.concurrentTargetPlatforms=['ROBLOX','UNITY'];
