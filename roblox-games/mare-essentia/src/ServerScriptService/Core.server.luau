@@ -294,6 +294,16 @@ if game:GetService("RunService"):IsStudio() then
 				session.state.tbattle = b
 				return reply(session.state, true, map.intro)
 			end
+			if action == "QATacticsDump" and session.state and session.state.tbattle then
+				local b = session.state.tbattle
+				local parts = { string.format("turn=%d phase=%s status=%s", b.turn, b.phase, b.status) }
+				for _, u in b.units do
+					if u.team == "player" then
+						table.insert(parts, string.format("%s(%d,%d)%s", u.id, u.x, u.y, u.acted and "A" or "-"))
+					end
+				end
+				return { ok = true, message = table.concat(parts, " ") }
+			end
 			if action == "QAGrant" and session.state then
 				session.state.coins = 1e9
 				session.state.fame = math.max(session.state.fame or 0, 1000)
