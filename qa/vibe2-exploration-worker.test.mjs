@@ -886,6 +886,74 @@ test('Roblox coding engine does not guess ambiguous sibling ModuleScripts or reu
   }
 });
 
+test('open-source-inspired repository map ranks actual Roblox owner and required modules over decoys',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/ranked-map');
+  const owner='client/Controller.client.luau',module='shared/Combat.luau';
+  const original=[
+    'local Combat=require(script.Parent.Parent.shared.Combat)',
+    'local function handleCombatInput() return Combat.Attack() end',
+    'return handleCombatInput()'
+  ].join('\n')+'\n';
+  write(path.join(root,owner),original);
+  write(path.join(root,module),[
+    'local Combat={}',
+    'function Combat.Attack() return true end',
+    'function Combat.Block() return false end',
+    'return Combat'
+  ].join('\n')+'\n');
+  for(let i=0;i<36;i++)write(path.join(root,'shared/Unrelated'+String(i).padStart(2,'0')+'.luau'),
+    'local Ignore={}; function Ignore.Decoy() return 0 end; return Ignore\n');
+  const order={run:true,taskId:'ranked-code-map',gameId:'ranked-map',target:'roblox',
+    goal:'repair handleCombatInput and Combat.Attack behavior using existing ModuleScript',
+    source:{root:'roblox-games/ranked-map',responsibleFiles:['roblox-games/ranked-map/'+owner],ignoredPaths:[]},
+    workPackage:{id:'ranked-code-map',sharedContext:{diagnosticEvidence:[]}}};
+  const result=exploreVibe2WorkOrder({cwd,order}),map=result.codingRepoMap;
+  assert.equal(map.version,1);
+  assert.equal(map.method,'PERSONALIZED_DEPENDENCY_RANKED_SYMBOL_MAP');
+  assert.equal(map.sourceWrite,false);
+  assert.equal(map.runtimeVerified,false);
+  assert.ok(map.bytes<=map.maxBytes&&map.maxBytes===2400);
+  assert.ok(map.entries.some(row=>row.path===owner&&row.symbol==='handleCombatInput'&&row.editable));
+  assert.ok(map.entries.some(row=>row.path===module&&row.symbol==='Combat.Attack'&&!row.editable));
+  assert.ok(map.entries.every(row=>[owner,module].includes(row.path)));
+  assert.match(explorationGuidance(result),/BOUNDED ROBLOX CODE MAP/);
+  assert.match(explorationGuidance(result),/CODE_MAP shared\/Combat\.luau::Combat\.Attack@/);
+  assert.deepEqual(result.editContract.allowedResponsibleFiles,[owner]);
+  assert.equal(fs.readFileSync(path.join(root,owner),'utf8'),original);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('Roblox repository map remains bounded on many symbols and stale cached maps are not reused',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/map-limit'),owner='server/Controller.server.luau';
+  const functions=Array.from({length:90},(_,i)=>
+    'local function action'+String(i).padStart(2,'0')+'() return '+i+' end').join('\n');
+  write(path.join(root,owner),functions+'\n');
+  for(let i=0;i<30;i++)write(path.join(root,'server/Unused'+i+'.luau'),
+    'local function unused(){return 5} end\n');
+  const order={run:true,taskId:'bounded-repo-map',gameId:'map-limit',target:'roblox',
+    goal:'change action42 only and preserve other actions',
+    source:{root:'roblox-games/map-limit',responsibleFiles:['roblox-games/map-limit/'+owner],ignoredPaths:[]},
+    workPackage:{id:'map-limit',sharedContext:{diagnosticEvidence:[]}}};
+  const first=exploreVibe2WorkOrder({cwd,order}),map=first.codingRepoMap;
+  assert.ok(map.entries.length<=28);
+  assert.ok(map.bytes<=2400);
+  assert.ok(map.entries.filter(row=>row.path===owner).length<=8);
+  assert.ok(map.entries.some(row=>row.symbol==='action42'),'goal-owned function must rank above unrelated symbols');
+  assert.ok(map.entries.every(row=>row.editable===true));
+  const artifact=path.join(cwd,'.vibe2/map.json'),old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=artifact;
+  try{
+    write(artifact,JSON.stringify({...first,codingRepoMap:undefined}));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+    write(artifact,JSON.stringify(first));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('Roblox coding engine grounds callable ModuleScript API in actual returned table functions',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-api');
   const start='client/Main.client.luau',module='shared/Inventory.luau';
