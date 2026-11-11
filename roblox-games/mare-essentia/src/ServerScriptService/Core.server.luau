@@ -305,6 +305,24 @@ if game:GetService("RunService"):IsStudio() then
 				end
 				return { ok = true, message = table.concat(parts, " ") }
 			end
+			if action == "QAKnowledge" and session.state then
+				-- 개발 캡처용: 지식 트리·학술 행사 화면을 채워서 보여 주기 위한 상태 (Studio 전용)
+				local st = session.state
+				st.coins, st.fame = 1e9, math.max(st.fame or 0, 1000)
+				st.portId = "london"
+				st.harbor.london = 99999
+				st.reported = st.reported or {}
+				for _, id in { "phi_skepticism", "phi_atomism", "phi_utopia", "phi_rationalism", "phi_empiricism", "phy_buoyancy", "phy_lever", "phy_pendulum", "phy_barometer", "phy_refraction", "ast_polaris", "ast_orion", "chem_dye", "chem_indigo", "geo_trade_winds", "nav_compass_rose" } do
+					st.discovered[id] = true
+					st.reported[id] = true
+				end
+				for _, id in { "bot_herbarium", "art_oil_painting", "med_anatomy", "nav_cross_staff" } do
+					st.discovered[id] = true
+				end
+				st.portTech = { london = { physics = 20, art = 7 } }
+				st.cargo.indigo = 6
+				return { ok = true, message = "knowledge staged" }
+			end
 			if action == "QAGrant" and session.state then
 				session.state.coins = 1e9
 				session.state.fame = math.max(session.state.fame or 0, 1000)
