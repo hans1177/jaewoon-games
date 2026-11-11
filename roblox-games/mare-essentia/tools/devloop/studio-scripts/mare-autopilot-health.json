@@ -1,0 +1,26 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local out={} local P=game.Players.LocalPlayer\n-- 1) 콘솔 오류 수와 첫 오류\nlocal ok,hist=pcall(function() return game:GetService(\"LogService\"):GetLogHistory() end)\nlocal errs,first=0,\"\"\nif ok then for _,m in ipairs(hist) do if m.messageType==Enum.MessageType.MessageError then errs=errs+1 if first==\"\" then first=string.sub(m.message,1,160) end end end end\ntable.insert(out,\"HEALTH_ERR n=\"..errs..\" first=\"..first)\n-- 2) 화면 이미지 자산 불러오기 실패\nlocal gui=P:FindFirstChildOfClass(\"PlayerGui\") local t,seen={},{}\nif gui then for _,d in ipairs(gui:GetDescendants()) do if d:IsA(\"ImageLabel\") or d:IsA(\"ImageButton\") then local i=d.Image if type(i)==\"string\" and string.find(i,\"rbxassetid://\",1,true) and not seen[i] then seen[i]=true table.insert(t,d) end end end end\nlocal failed={}\npcall(function() game:GetService(\"ContentProvider\"):PreloadAsync(t,function(id,st) if st==Enum.AssetFetchStatus.Failure or st==Enum.AssetFetchStatus.TimedOut then if #failed<20 then table.insert(failed,id) end end end) end)\ntable.insert(out,\"HEALTH_ASSET fail=\"..#failed..\" total=\"..#t..\" ids=\"..table.concat(failed,\",\"))\n-- 3) 월드: 몹(플레이어 아닌 Humanoid)과 체력, 지형 부품 수\nlocal mobs,hpsum,parts=0,0,0\nfor _,d in ipairs(workspace:GetDescendants()) do\n if d:IsA(\"Humanoid\") and not game.Players:GetPlayerFromCharacter(d.Parent) then mobs=mobs+1 hpsum=hpsum+d.Health elseif d:IsA(\"BasePart\") then parts=parts+1 end\nend\ntable.insert(out,\"HEALTH_WORLD mobs=\"..mobs..\" mobhp=\"..math.floor(hpsum)..\" parts=\"..parts)\n-- 4) 퀘스트·전투 UI 글자가 화면에 있는지(없으면 UI 연결 의심)\nlocal words={\"퀘스트\",\"항해\",\"교역\",\"백과\"} local found={}\nif gui then for _,d in ipairs(gui:GetDescendants()) do if (d:IsA(\"TextLabel\") or d:IsA(\"TextButton\")) and d.Text~=\"\" then for _,w in ipairs(words) do if string.find(d.Text,w,1,true) then found[w]=(found[w] or 0)+1 end end end end end\nlocal parts2={} for _,w in ipairs(words) do table.insert(parts2,w..\"=\"..(found[w] or 0)) end\ntable.insert(out,\"HEALTH_UI \"..table.concat(parts2,\" \"))\n-- 5) 조명/배경\nlocal L=game:GetService(\"Lighting\")\ntable.insert(out,\"HEALTH_LIGHT clock=\"..string.format(\"%.1f\",L.ClockTime)..\" bright=\"..string.format(\"%.2f\",L.Brightness)..\" atmos=\"..tostring(L:FindFirstChildOfClass(\"Atmosphere\")~=nil)..\" sky=\"..tostring(L:FindFirstChildOfClass(\"Sky\")~=nil))\nreturn table.concat(out,\"\\n\")",
+  "label": "autopilot-health"
+ },
+ {
+  "type": "capture",
+  "name": "ap_game"
+ },
+ {
+  "type": "wait",
+  "ms": 20000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local out={} local P=game.Players.LocalPlayer\n-- 1) 콘솔 오류 수와 첫 오류\nlocal ok,hist=pcall(function() return game:GetService(\"LogService\"):GetLogHistory() end)\nlocal errs,first=0,\"\"\nif ok then for _,m in ipairs(hist) do if m.messageType==Enum.MessageType.MessageError then errs=errs+1 if first==\"\" then first=string.sub(m.message,1,160) end end end end\ntable.insert(out,\"HEALTH_ERR n=\"..errs..\" first=\"..first)\n-- 2) 화면 이미지 자산 불러오기 실패\nlocal gui=P:FindFirstChildOfClass(\"PlayerGui\") local t,seen={},{}\nif gui then for _,d in ipairs(gui:GetDescendants()) do if d:IsA(\"ImageLabel\") or d:IsA(\"ImageButton\") then local i=d.Image if type(i)==\"string\" and string.find(i,\"rbxassetid://\",1,true) and not seen[i] then seen[i]=true table.insert(t,d) end end end end\nlocal failed={}\npcall(function() game:GetService(\"ContentProvider\"):PreloadAsync(t,function(id,st) if st==Enum.AssetFetchStatus.Failure or st==Enum.AssetFetchStatus.TimedOut then if #failed<20 then table.insert(failed,id) end end end) end)\ntable.insert(out,\"HEALTH_ASSET fail=\"..#failed..\" total=\"..#t..\" ids=\"..table.concat(failed,\",\"))\n-- 3) 월드: 몹(플레이어 아닌 Humanoid)과 체력, 지형 부품 수\nlocal mobs,hpsum,parts=0,0,0\nfor _,d in ipairs(workspace:GetDescendants()) do\n if d:IsA(\"Humanoid\") and not game.Players:GetPlayerFromCharacter(d.Parent) then mobs=mobs+1 hpsum=hpsum+d.Health elseif d:IsA(\"BasePart\") then parts=parts+1 end\nend\ntable.insert(out,\"HEALTH_WORLD mobs=\"..mobs..\" mobhp=\"..math.floor(hpsum)..\" parts=\"..parts)\n-- 4) 퀘스트·전투 UI 글자가 화면에 있는지(없으면 UI 연결 의심)\nlocal words={\"퀘스트\",\"항해\",\"교역\",\"백과\"} local found={}\nif gui then for _,d in ipairs(gui:GetDescendants()) do if (d:IsA(\"TextLabel\") or d:IsA(\"TextButton\")) and d.Text~=\"\" then for _,w in ipairs(words) do if string.find(d.Text,w,1,true) then found[w]=(found[w] or 0)+1 end end end end end\nlocal parts2={} for _,w in ipairs(words) do table.insert(parts2,w..\"=\"..(found[w] or 0)) end\ntable.insert(out,\"HEALTH_UI \"..table.concat(parts2,\" \"))\n-- 5) 조명/배경\nlocal L=game:GetService(\"Lighting\")\ntable.insert(out,\"HEALTH_LIGHT clock=\"..string.format(\"%.1f\",L.ClockTime)..\" bright=\"..string.format(\"%.2f\",L.Brightness)..\" atmos=\"..tostring(L:FindFirstChildOfClass(\"Atmosphere\")~=nil)..\" sky=\"..tostring(L:FindFirstChildOfClass(\"Sky\")~=nil))\nreturn table.concat(out,\"\\n\")",
+  "label": "autopilot-health-2"
+ }
+]
