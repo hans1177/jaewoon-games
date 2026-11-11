@@ -697,3 +697,8 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - `portraits/npc_south_asia.jpg` · 1700년대 남아시아 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
 - `portraits/npc_southeast_asia.jpg` · 1700년대 동남아시아 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
 - `portraits/heroes_color.jpg` · 1700년 이후용 기존 가상 주인공 9명의 채색 원화. 3열×3행, 칸당 256×336.
+- `portraits/npc_atlantic_europe.jpg` · 1700년대 유럽 대서양 연안 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
+- `portraits/npc_mediterranean.jpg` · 1700년대 지중해 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
+- `portraits/npc_red_sea.jpg` · 1700년대 홍해 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
+- `portraits/npc_west_africa.jpg` · 1700년대 서아프리카 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
+- `portraits/npc_americas.jpg` · 1700년대 아메리카 가상 교역소·주점 인물 20명. 5열×4행, 칸당 200×200.
