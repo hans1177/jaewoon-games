@@ -124,12 +124,24 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   for(const file of files.slice(0,48)){
     const path=String(file?.path||''),source=String(file?.source||'');
     if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
-    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[];
+    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[],
+      functionDefinitions=[],functionCalls=[];
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
     // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
     const activeSource=stripVibe59LuauComments(source);
     for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
       if(!line.trim())continue;
+      // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
+      // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
+      for(const declaration of line.matchAll(/(?:^|[;\s])(?:local\s+)?function\s+([A-Za-z_]\w*)\s*\(|\blocal\s+([A-Za-z_]\w*)\s*=\s*function\s*\(/g)){
+        if(functionDefinitions.length<48)functionDefinitions.push({
+          name:declaration[1]||declaration[2],line:i+1});
+      }
+      for(const invocation of line.matchAll(/(?<![\w.:])([A-Za-z_]\w*)\s*\(/g)){
+        if(functionCalls.length>=64)break;
+        if(invocation[1]==='function'||/\bfunction\s+$/.test(line.slice(0,invocation.index)))continue;
+        functionCalls.push({name:invocation[1],line:i+1});
+      }
       for(const match of line.matchAll(/\b([A-Za-z_]\w*)\.(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::Connect\s*\(|=)/g)){
         if(events.length>=24)break;
         events.push({remote:match[1],signal:match[2],line:i+1});
@@ -162,7 +174,8 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       return {...x,responsible:owners.has(path),
         exactAnchor:uniqueAnchor?original:null,exactAnchorUnique:uniqueAnchor};
     }));
-    result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,warnings:found.slice(0,16)});
+    result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,
+      functionDefinitions,functionCalls,warnings:found.slice(0,16)});
     warnings.push(...found.slice(0,16).map(x=>({path,...x})));
   }
   // 실제 Remote 인스턴스 ID가 없는 정적 정보이므로 같은 변수명은 연결 '후보'일 뿐이다.
@@ -179,6 +192,16 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       status:receivers.length===1?'POTENTIAL_RECEIVER':receivers.length>1?'AMBIGUOUS_RECEIVER':'RECEIVER_NOT_OBSERVED',
       runtimeVerified:false};
   })).slice(0,80);
+  // [수정 영향 범위] 호출 이름만 같은 다른 파일은 연결하지 않는다.
+  // 중복 정의는 보수적으로 모호 처리하고, 미확인 함수는 결함으로 단정하지 않는다.
+  const functionLinks=result.flatMap(file=>file.functionCalls.flatMap(call=>{
+    const definitions=file.functionDefinitions.filter(row=>row.name===call.name);
+    if(!definitions.length)return [];
+    return [{path:file.path,callLine:call.line,symbol:call.name,
+      possibleDefinitions:definitions.map(row=>({path:file.path,line:row.line})),
+      status:definitions.length===1?'POTENTIAL_SAME_FILE_FUNCTION':'AMBIGUOUS_SAME_FILE_FUNCTION',
+      runtimeVerified:false}];
+  })).slice(0,160);
   const priority=code=>/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
     :/COMBAT|DAMAGE|BUILD|INVENTORY|BESTIARY/i.test(code)?2:1;
   const priorityFindings=[
@@ -197,14 +220,14 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     mode:'SOURCE_GROUNDED_STATIC_ADVISORY',sourceWrite:false,runtimeVerified:false,
     qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
     observedFiles:result.length,observedResponsibleFiles:result.filter(row=>row.responsible).length,
-    priorityFindings,remoteLinks,
+    priorityFindings,remoteLinks,functionLinks,
     missingReceiverMeansConfirmedDefect:false,
     unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
     existingSaveBalanceAndAuthorityMustBePreserved:true
   });
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
-    diagnostics:diagnostics.slice(0,200),remoteLinks,qualityDirector,
+    diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,qualityDirector,
     offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
 function expression(node,depth=0){
