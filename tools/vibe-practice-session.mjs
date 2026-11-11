@@ -22,7 +22,7 @@ export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC
   return chooseDiverseParents(shuffled,count).map(p=>({id:p.id,family:p.family,file:abs(p)}));
 }
 
-export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,variants=4,out='build/practice',statsPath=null,lightsPath=null,light=true,bake=true,lightCandidates=8,lightRounds=2}={}){
+export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,variants=4,out='build/practice',statsPath=null,lightsPath=null,light=true,bake=true,lightCandidates=8,lightRounds=2,bakeHistoryPath='build/bake-history.json'}={}){
   const outDir=path.resolve(repoRoot,out);fs.mkdirSync(outDir,{recursive:true});
   const session={seed,at:new Date().toISOString()};
   // [전체 자산 분류] 중앙 자산 레지스트리는 읽기 전용, 출처 없는 항목은 부족 자산으로 분리한다.
@@ -104,7 +104,15 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     const libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null;
     const sourcePool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+17)),
       ...(libraryDir?approvedLibraryParents(libraryDir):[])];
-    const selected=selectBakeParents(sourcePool.map(p=>({...p,file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)})),3);
+    // [학습 이력] 기존 vibe-gym-data 브랜치에서 불러온 후보별 실측 결과만 사용한다.
+    // 파일이 없어도 승인된 원본 연습은 계속하며, 이전 실패를 성공으로 승격하지 않는다.
+    let bakeHistory={};
+    try{
+      const prior=JSON.parse(fs.readFileSync(path.resolve(repoRoot,bakeHistoryPath),'utf8'));
+      if(prior?.bake?.history&&typeof prior.bake.history==='object')bakeHistory=prior.bake.history;
+    }catch{}
+    const selected=selectBakeParents(sourcePool.map(p=>({...p,
+      file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)})),3,bakeHistory);
     const attempts=[];
     for(const bp of selected){
       try{
