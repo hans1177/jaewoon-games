@@ -2048,6 +2048,25 @@ do
 	stL.coins = 10
 	stL.portTech.london.chemistry = 6
 	check("건축: 돈이 모자라면 불가", select(1, act(stL, "BuildLandmark", { id = "laboratory" })) == false)
+	-- 학문 계통도
+	local stT = newState("england")
+	stT.discovered.bot_herbarium = true
+	check("계통도: 뿌리 학문은 처음부터 열림", K.disciplineOpen(stT, "philosophy") and K.disciplineOpen(stT, "physics"))
+	check("계통도: 갈라진 학문은 뿌리를 이해해야 열림", not K.disciplineOpen(stT, "botany"))
+	check("계통도: 닫힌 학문의 지식은 보고 불가", K.status(stT, K.ById.bot_herbarium) == "closed")
+	stT.reported = { phi_skepticism = true, phi_atomism = true, phi_utopia = true }
+	check("계통도: 철학 3개를 이해하면 식물학이 열림", K.disciplineOpen(stT, "botany") and K.status(stT, K.ById.bot_herbarium) == "ready")
+	stT.reported.bot_herbarium, stT.reported.bot_new_seeds = true, true
+	stT.reported.phi_skepticism, stT.reported.phi_atomism, stT.reported.phi_utopia = nil, nil, nil
+	check("계통도: 한번 시작한 학문은 닫히지 않음", K.disciplineOpen(stT, "botany"))
+	local rootsOk, parentBad = true, nil
+	for _, d in K.Disciplines do
+		if d.parent and not K.DisciplineById[d.parent] then parentBad = d.id end
+		if d.openAt and not d.parent then parentBad = d.id end
+	end
+	check("계통도: 모든 학문의 뿌리가 실제로 있음", parentBad == nil, parentBad)
+	local viewT = S.View.build(stT, ctx)
+	check("계통도: 화면에 계통도가 담김", viewT.knowledge.tree ~= nil and #viewT.knowledge.tree == #K.Disciplines, tostring(viewT.knowledge.tree and #viewT.knowledge.tree))
 	-- 신제품 출시
 	local stN = newState("england")
 	stN.portId = "london"
@@ -2127,7 +2146,7 @@ do
 	check("지식: 학회 기록이 저장·복원됨", backS.academy.presented == 3 and backS.academy.last["london:physics"] == 777)
 	-- 화면에 지식 트리가 담김
 	local view = S.View.build(st, ctx)
-	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == 4, tostring(view.knowledge))
+	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == #K.Disciplines, tostring(view.knowledge))
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
