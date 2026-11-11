@@ -3788,8 +3788,8 @@ test('Mare official Studio QA records complete registered media, model loading a
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
   // [카드 원화 회귀] CardArt는 승인된 Image 자산이므로 InsertService 모델 큐에서 제외한다.
   assert.match(model,/kind ~= "CardArt"/);
-  assert.match(qa,/string\\.find\\(key, "CardArt\\/", 1, true\\)/);
-  assert.match(qa,/string\\.find\\(it\\.key, "\\.CardArt\\/", 1, true\\)/);
+  assert.ok(qa.includes('string.find(key, "CardArt/", 1, true)'));
+  assert.ok(qa.includes('string.find(it.key, ".CardArt/", 1, true)'));
   assert.match(model,/MareModelAuditState/);
   assert.match(model,/MareModelAuditTotals/);
   assert.match(model,/pending == 0/);
