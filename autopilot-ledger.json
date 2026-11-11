@@ -39,25 +39,29 @@
     },
     "mare-essentia:trade": {
       "lastAt": 1794379459689,
-      "pending": true,
-      "lastSha": "a5c8906b0d937bb7c7f043fd878b36b02061ba43"
+      "pending": false,
+      "lastSha": "a5c8906b0d937bb7c7f043fd878b36b02061ba43",
+      "runs": 1,
+      "ema": 0.35,
+      "failStreak": 1,
+      "lastResult": "FAILED"
     }
   },
   "lastReport": {
-    "fantasy-survival": "[{\"plannedSteps\":42,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":9,\"capturedFrames\":0,\"abortedEarly\":true},1,1,[{\"step\":1,\"click\":\"이어하기\",\"at\":\"NOT_FOUND\",\"out\":\"NONE\\ntext\"}]]",
-    "mare-essentia": "[{\"plannedSteps\":23,\"completedSteps\":23,\"plannedClicks\":5,\"successfulClicks\":5,\"plannedFrames\":6,\"capturedFrames\":6,\"abortedEarly\":false},0,15,[{\"step\":22,\"ctx\":\"Client\",\"out\":\"TAC_END title= ERR n=0 first=\\ntext\"}]]"
+    "fantasy-survival": "[{\"plannedSteps\":185,\"completedSteps\":2,\"plannedClicks\":30,\"successfulClicks\":0,\"plannedFrames\":31,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
+    "mare-essentia": "[{\"plannedSteps\":185,\"completedSteps\":185,\"plannedClicks\":30,\"successfulClicks\":30,\"plannedFrames\":31,\"capturedFrames\":31,\"abortedEarly\":false},0,131,[{\"step\":184,\"ctx\":\"Client\",\"out\":\"clicked=|⚓  새 게임@34,0|프랑스@ScrollingFrame24,1|1700년 ★추천 증기 기술의 새벽@ScrollingFrame34,2|⚓  출항하기@ScrollingFrame24,0|상태@13,3|닫기@21,3|교역@Dock53,2|교역@13,3|항구@21,3|닫기@28,3|조선소@Dock53,6|조선소@13,3|수리@ScrollingFrame32,0|선원+5@ScrollingFrame36,0|보급+20@ScrollingFrame39,0|고용@ScrollingFrame36,0|해산@ScrollingFrame39,0|기함으로@ScrollingFrame36,0|매각 0@ScrollingFrame39,0|매각 900@ScrollingFrame39,0|1800@ScrollingFrame39,0|기본@ScrollingFrame39,0|장착중@ScrollingFrame39,0|1200@ScrollingFrame39,0|3500@ScrollingFrame39,0|6000@ScrollingFrame39,0|12000@ScrollingFrame39,0|2500@ScrollingFrame39,0|보유중@ScrollingFrame39,0|5000@ScrollingFrame39,0\\ntext\"}]]"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
       "id": "studio-unreachable",
       "kind": "infra",
       "task": "health",
-      "text": "Studio 점검이 중간에 멈춤: step1:STUDIO_UI_TARGET_NOT_FOUND:이어하기",
+      "text": "Studio 점검이 중간에 멈춤: step1:ROBLOX_STUDIO_MCP_TOOL_ERROR:screen_capture:Network action ScreenCaptureTool.CaptureScreen sent to DMN_RSRVD_FOCUSED failed - Target is not reachable (ScreenCaptureTool.CaptureScreen, DMN_RSRVD_",
       "game": "fantasy-survival",
       "fingerprint": "fantasy-survival:studio-unreachable",
       "firstAt": 1794368302951,
-      "lastAt": 1794379458226,
-      "seen": 3,
+      "lastAt": 1794380046341,
+      "seen": 4,
       "resolvedAt": 1794371068002
     },
     "mare-essentia:no-mobs": {
