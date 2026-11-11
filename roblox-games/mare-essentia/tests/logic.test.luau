@@ -775,6 +775,9 @@ do
 	check("regions: caribbean=3, dakar=2", D.Regions.of(D.Ports.Ports.havana) == D.Regions.List[3] and D.Regions.of(D.Ports.Ports.dakar) == D.Regions.List[2])
 	st.careers.adventure.level = 30
 	st.ship.supplies = 5000
+	local okG, msgG = act(st, "Sail", { portId = "nagasaki" })
+	check("far east needs navigation knowledge", not okG and string.find(msgG or "", "항해 지식") ~= nil, msgG)
+	st.reported = { geo_monsoon = true, nav_log_line = true }
 	local ok2 = act(st, "Sail", { portId = "nagasaki" })
 	check("far east opens at high level", ok2)
 end
@@ -987,7 +990,7 @@ do
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
-	check("view quests", #v.quests.available == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId then n += 1 end end return n end)())
+	check("view quests", #v.quests.available == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after then n += 1 end end return n end)())
 	check("view loadout", v.loadout.slots == 3)
 	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == 6)
 	check("view scholars at london", #v.scholars >= 4)
@@ -2048,6 +2051,58 @@ do
 	stL.coins = 10
 	stL.portTech.london.chemistry = 6
 	check("건축: 돈이 모자라면 불가", select(1, act(stL, "BuildLandmark", { id = "laboratory" })) == false)
+	-- 모든 카드가 트리에 들어가 있고, 효과 교역품이 실제로 있다
+	local fieldOf = {}
+	for _, d in K.Disciplines do fieldOf[d.field] = d.id end
+	local missingCard, badGood, badDisc = nil, nil, nil
+	for _, c in D.Cards.Cards do
+		if fieldOf[c.field] and not K.ById[c.id] then missingCard = c.id end
+	end
+	for _, node in K.Nodes do
+		if not K.DisciplineById[node.disc] then badDisc = node.id end
+		if node.fx and node.fx.goods then
+			for _, g in node.fx.goods do
+				if not D.Ports.Goods[g] then badGood = node.id .. ":" .. g end
+			end
+		end
+	end
+	check("지식: 학문 분야의 모든 카드가 트리에 들어감", missingCard == nil, missingCard)
+	check("지식: 효과의 교역품이 실제로 있음", badGood == nil, badGood)
+	check("지식: 노드의 학문이 실제로 있음", badDisc == nil, badDisc)
+	check("지식: 노드가 충분히 많음(카드 전체)", #K.Nodes >= 400, tostring(#K.Nodes))
+	-- 연속 퀘스트
+	local chainBad, chainFirst = nil, 0
+	for _, q in D.Quests.Quests do
+		if q.after then
+			if not D.Quests.ById[q.after] then chainBad = q.id end
+			if q.kind == "understand_card" and not K.ById[q.cardId] then chainBad = q.id end
+		elseif string.sub(q.id, 1, 5) == "q_ch_" then
+			chainFirst += 1
+		end
+	end
+	check("연속퀘: 앞 단계가 실제로 있고 지식도 있음", chainBad == nil, chainBad)
+	check("연속퀘: 시작 퀘스트가 학문 계통마다 있음", chainFirst >= 9, tostring(chainFirst))
+	local stC = newState("england")
+	local vC = S.View.build(stC, ctx)
+	local hasFirst, hasSecond = false, false
+	for _, q in vC.quests.available do
+		if q.id == "q_ch_nav_compass" then hasFirst = true end
+		if q.id == "q_ch_nav_cross" then hasSecond = true end
+	end
+	check("연속퀘: 첫 단계만 보임", hasFirst and not hasSecond)
+	check("연속퀘: 앞 단계 전에는 수락 불가", select(1, act(stC, "Accept", { questId = "q_ch_nav_cross" })) == false)
+	stC.reported.nav_compass_rose = true
+	S.Quest.autoReport(stC, {})
+	check("연속퀘: 앞 단계를 끝내면 다음이 열림", stC.quests.done.q_ch_nav_compass == true)
+	-- 항해 기술 해금 (문명식)
+	local stR = newState("england")
+	stR.careers.adventure.level = 30
+	stR.ship.supplies = 5000
+	stR.coins = 100000
+	local okR1, msgR1 = act(stR, "Sail", { portId = "havana" })
+	check("해금: 신대륙은 십자 관측기를 이해해야 감", not okR1 and string.find(msgR1 or "", "십자 관측기") ~= nil, msgR1)
+	stR.reported.nav_cross_staff = true
+	check("해금: 이해하면 갈 수 있음", select(1, act(stR, "Sail", { portId = "havana" })) == true)
 	-- 학문 계통도
 	local stT = newState("england")
 	stT.discovered.bot_herbarium = true
