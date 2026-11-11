@@ -17,6 +17,8 @@ return {
 	["CardArt/world_05"] = 90366822452143,
 	["CardArt/world_07"] = 95287655544552,
 	["CardArt/world_26"] = 126294992819399,
+	["CardArt/world_27"] = 84362944084696,
+	["CardArt/world_28"] = 101742511367055,
 	["Cargo/apple"] = 87948687343452,
 	["Cargo/bag"] = 119303193248420,
 	["Cargo/bag-flat"] = 130904686615018,
