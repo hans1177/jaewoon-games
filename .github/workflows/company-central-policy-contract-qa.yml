@@ -276,6 +276,7 @@ jobs:
           post_runtime_contract=NO
           isolated_post_runtime=NO
           isolated_studio=NO
+          isolated_runner=NO
           if grep -Eq '^(company-directive\.json|company-learning/(platform-release-roadmap|company-log-map|company-architecture-map|security-immune-system|other-ai-machine-directive|next-session-handoff)\.json|tools/company-shared-context\.mjs|tools/company-constitution-enforcer\.mjs|\.github/workflows/company-central-policy-contract-qa\.yml)$' /tmp/central-policy-impact-files.txt; then full_policy=YES; fi
           if grep -Eq '^(tools/company-development-roblox-studio-local-play\.mjs|qa/company-development-roblox-studio-local-play\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then studio_contract=YES; fi
           if grep -Eq '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then post_runtime_contract=YES; fi
@@ -292,6 +293,14 @@ jobs:
               isolated_studio=YES
             fi
           fi
+          # [정확한 PC 실행기 범위] 소유 정책과 다른 게임 파일은 기존 전체 검사 유지.
+          runner_changed="$(grep -Ec '^(\.github/workflows/company-roblox-runner-pwsh-bootstrap\.yml|qa/company-roblox-studio-runner-recovery\.test\.mjs)$' /tmp/central-policy-impact-files.txt || true)"
+          runner_allowed="$(grep -Ec '^(\.github/workflows/company-central-policy-contract-qa\.yml|\.github/workflows/company-roblox-runner-pwsh-bootstrap\.yml|qa/company-roblox-studio-runner-recovery\.test\.mjs)$' /tmp/central-policy-impact-files.txt || true)"
+          changed_total="$(wc -l < /tmp/central-policy-impact-files.txt | tr -d '[:space:]')"
+          if [ "$runner_changed" -eq 2 ] && [ "$runner_allowed" -eq "$changed_total" ] && [ "$changed_total" -ge 2 ]; then
+            isolated_runner=YES
+          fi
+          echo "isolated_runner=$isolated_runner" >> "$GITHUB_OUTPUT"
           echo "isolated_studio=$isolated_studio" >> "$GITHUB_OUTPUT"
           echo "isolated_post_runtime=$isolated_post_runtime" >> "$GITHUB_OUTPUT"
           echo "full_policy=$full_policy" >> "$GITHUB_OUTPUT"
@@ -314,8 +323,17 @@ jobs:
           node --check tools/company-development-roblox-studio-local-play.mjs
           node --test qa/company-development-roblox-studio-local-play.test.mjs
 
+      - name: Verify isolated authenticated Windows Studio runner with canonical policy preflight
+        if: ${{ steps.impact.outputs.isolated_runner == 'YES' }}
+        run: |
+          node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          node --test qa/company-roblox-studio-runner-recovery.test.mjs
+          node --check tools/company-roblox-hosted-studio-mcp-connection.mjs
+          node --test qa/company-roblox-hosted-studio-mcp-connection.test.mjs
+          node --test qa/company-development-roblox-post-runtime-qa.test.mjs
+          echo 'CENTRAL_POLICY_AUTHENTICATED_WINDOWS_RUNNER_QA=PASS'
       - name: Verify central policy and selected-platform production authority
-        if: ${{ steps.impact.outputs.isolated_post_runtime != 'YES' && steps.impact.outputs.isolated_studio != 'YES' }}
+        if: ${{ steps.impact.outputs.isolated_post_runtime != 'YES' && steps.impact.outputs.isolated_studio != 'YES' && steps.impact.outputs.isolated_runner != 'YES' }}
         env:
           FULL_POLICY: ${{ steps.impact.outputs.full_policy }}
           STUDIO_CONTRACT: ${{ steps.impact.outputs.studio_contract }}
