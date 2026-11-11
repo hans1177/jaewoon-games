@@ -96,8 +96,16 @@ return function(D, S)
 		return total
 	end
 
+	-- 중형 이상 배에서 조타수·포술장 자리가 비면 작은 감점
+	local function vacancy(state)
+		if S.State.shipDef(state).class < 2 then
+			return 0, 0
+		end
+		return (if state.stations.helm then 0 else D.Specialties.VACANT_SPEED), (if state.stations.gunner then 0 else D.Specialties.VACANT_CANNON)
+	end
+
 	local function speedMult(state)
-		return 1 + sum(state, "speedMult") + (if S.Knowledge then S.Knowledge.speedBonus(state) else 0) + (if S.Build then S.Build.speedBonus(state) else 0)
+		return 1 + (vacancy(state)) + sum(state, "speedMult") + (if S.Knowledge then S.Knowledge.speedBonus(state) else 0) + (if S.Build then S.Build.speedBonus(state) else 0)
 	end
 
 	local function sellBonus(state)
@@ -105,7 +113,8 @@ return function(D, S)
 	end
 
 	local function cannonBonus(state)
-		return sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0)
+		local _, vc = vacancy(state)
+		return vc + sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0)
 	end
 
 	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"
@@ -417,6 +426,7 @@ return function(D, S)
 		discoverBonus = discoverBonus,
 		coinMult = coinMult,
 		speedMult = speedMult,
+		vacancy = vacancy,
 		sellBonus = sellBonus,
 		cannonBonus = cannonBonus,
 		recruitBlock = recruitBlock,
