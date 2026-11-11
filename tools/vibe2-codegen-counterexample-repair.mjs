@@ -21,7 +21,7 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
  // [근거 인덱스] 원본 바이트·해시·함수 범위를 기존 소스 인덱스에 고정한다.
  const originals=new Map(),writableSymbols=new Map();
  if(sourceIndex!==null){
-  if(sourceIndex.files.length>32||sourceIndex.symbols.length>4096||
+  if(sourceIndex.files.length>32||sourceIndex.symbols.length>131072||
    sourceDigest(JSON.stringify(sourceIndex.files.map(file=>[file.path,file.sourceSha256])))!==sourceSha)
    throw Error('VIBE2_REPAIR_SOURCE_INDEX_STALE');
   for(const file of sourceIndex.files){
