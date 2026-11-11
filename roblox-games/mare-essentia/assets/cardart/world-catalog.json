@@ -18,8 +18,8 @@
     "animationStatus": "미구현"
   },
   "counts": {
-    "subjects": 614,
-    "illustrated": 249,
+    "subjects": 628,
+    "illustrated": 267,
     "largeEventArt": 11
   },
   "subjects": [
@@ -3210,12 +3210,12 @@
         "antwerp"
       ],
       "subject": "구리판에 새겨 찍어 낸 그림. 지도와 도감 삽화에 쓰였다.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_09",
+      "sketch": {
+        "file": "world_41.jpg",
         "row": 2,
-        "column": 5
+        "column": 2
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -4049,12 +4049,12 @@
         "calcutta"
       ],
       "subject": "물 위에 피는 신성한 꽃.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_11",
-        "row": 4,
-        "column": 1
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 1,
+        "column": 4
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -5170,12 +5170,12 @@
         "batavia"
       ],
       "subject": "화산 기슭에 선 거대한 불탑.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_14",
-        "row": 4,
-        "column": 1
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 1,
+        "column": 5
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -8293,12 +8293,12 @@
         "belem"
       ],
       "subject": "흰 수액이 고무가 되는 나무.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_23",
+      "sketch": {
+        "file": "world_42.jpg",
         "row": 2,
-        "column": 3
+        "column": 1
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -11016,6 +11016,230 @@
       "subject": "유리종 내부의 공기를 빼는 손펌프.",
       "sketch": {
         "file": "world_40.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_paldalmun",
+      "name": "수원 화성 팔달문",
+      "category": "건축",
+      "region": "동아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "석축 위에 목조 누각이 올라간 남쪽 성문.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_dabotap",
+      "name": "불국사 다보탑",
+      "category": "건축",
+      "region": "동아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "석재 난간과 층마다 달라지는 구조가 돋보이는 탑.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 1,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_itsukushima_torii",
+      "name": "이쓰쿠시마 수상 도리이",
+      "category": "건축",
+      "region": "동아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "밀물 때 바다 한가운데 서 있는 것처럼 보이는 문.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 1,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_fujian_tulou",
+      "name": "푸젠 원형 토루",
+      "category": "건축",
+      "region": "동아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "공동 마당을 둥글게 둘러싼 흙벽 건축.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_rani_ki_vav",
+      "name": "라니 키 바브",
+      "category": "건축",
+      "region": "남아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "석조 계단과 기둥이 깊은 우물까지 이어지는 건축.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_movable_type",
+      "name": "금속 활자",
+      "category": "공학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "서랍에 나뉘어 담긴 금속 활자 표본.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_mapmaking_tools",
+      "name": "지도 제도 도구",
+      "category": "측량",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "종이에 거리와 각도를 옮기는 자와 컴퍼스.",
+      "sketch": {
+        "file": "world_41.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_horseshoe_crab",
+      "name": "투구게",
+      "category": "동물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "둥근 등딱지와 길게 뻗은 꼬리가 보이는 표본.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_tidal_starfish",
+      "name": "조간대 불가사리",
+      "category": "동물",
+      "region": "유럽·북대서양",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "썰물로 드러난 바위 웅덩이에 사는 불가사리.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 1,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_ghost_pipefish",
+      "name": "유령실고기",
+      "category": "동물",
+      "region": "열대 해역",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "해초 사이에 몸을 숨기는 가늘고 긴 물고기.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 1,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_pitcher_plant",
+      "name": "벌레잡이통풀",
+      "category": "식물",
+      "region": "열대 해역",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "잎 끝에 뚜껑 달린 통 모양 구조가 자라는 식물.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 1,
+        "column": 5
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_azurite",
+      "name": "남동석 결정",
+      "category": "광물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "암석 위에 형성된 진한 푸른 결정.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_manganese_dendrites",
+      "name": "망가니즈 나뭇가지 무늬",
+      "category": "광물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "석회암 표면에 검은 가지처럼 퍼진 광물 무늬.",
+      "sketch": {
+        "file": "world_42.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_crinoid_fossil",
+      "name": "바다나리 화석",
+      "category": "화석",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "줄기와 꽃처럼 펼쳐진 팔이 남은 화석.",
+      "sketch": {
+        "file": "world_42.jpg",
         "row": 2,
         "column": 4
       },
