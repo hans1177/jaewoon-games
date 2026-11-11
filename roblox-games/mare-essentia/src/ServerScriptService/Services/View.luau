@@ -380,9 +380,21 @@ return function(D, S)
 					days = site.days,
 					left = left,
 					unlocked = state.careers.adventure.level >= site.minLevel,
+					-- 지상 전술 탐험이 가능한 곳이면 맵 이름과 지금까지의 최고 등급
+					tactics = (function()
+						local map = D.TacticsMaps.forSite(site)
+						if not map then
+							return nil
+						end
+						local rec = state.tactics and state.tactics.cleared[site.id]
+						return { mapName = map.name, rank = rec and rec.rank or "" }
+					end)(),
 				})
 			end
 		end
+
+		-- 진행 중인 지상 전술 전투(없으면 nil)
+		view.tactics = state.tbattle
 
 		-- 학자
 		view.scholars = {}

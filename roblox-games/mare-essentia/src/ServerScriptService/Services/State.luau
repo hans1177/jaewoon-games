@@ -46,6 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
 			scholarsMet = {},
 			bosses = {},
 			specialty = nil,
@@ -458,6 +459,17 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.tactics) == "table" and type(saved.tactics.cleared) == "table" then
+			for id, rec in saved.tactics.cleared do
+				if type(id) == "string" and #id <= 60 and type(rec) == "table" and (rec.rank == "S" or rec.rank == "A" or rec.rank == "B") then
+					s.tactics.cleared[id] = {
+						rank = rec.rank,
+						turns = math.floor(num(rec.turns, 0, 0, 999)),
+						biome = if type(rec.biome) == "string" then string.sub(rec.biome, 1, 24) else "",
+					}
+				end
+			end
+		end
 		if type(saved.scholarsMet) == "table" then
 			for id, v in saved.scholarsMet do
 				if v == true then
@@ -486,6 +498,7 @@ return function(D)
 			loadout = state.loadout,
 			quests = state.quests,
 			stats = state.stats,
+			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
 			specialty = state.specialty,
