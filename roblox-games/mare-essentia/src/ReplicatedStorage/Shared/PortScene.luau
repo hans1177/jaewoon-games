@@ -1430,6 +1430,8 @@ function PortScene.build(info, onFacility)
 			c_boyle = { "Mage", Color3.fromRGB(130, 70, 70) }, c_papin = { "Barbarian", Color3.fromRGB(96, 100, 110) },
 			t_navigator = { "Knight", Color3.fromRGB(40, 90, 120) }, t_gunner = { "Barbarian", Color3.fromRGB(120, 60, 50) },
 			t_purser = { "Rogue", Color3.fromRGB(90, 80, 50) }, t_surgeon = { "Mage", Color3.fromRGB(230, 230, 235) },
+			t_helmsman = { "Knight", Color3.fromRGB(50, 70, 110) }, t_mate = { "Rogue", Color3.fromRGB(120, 60, 80) },
+			t_boatswain = { "Barbarian", Color3.fromRGB(90, 70, 50) }, t_master_gunner = { "Barbarian", Color3.fromRGB(140, 50, 50) },
 		}
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
