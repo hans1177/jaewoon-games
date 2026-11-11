@@ -140,6 +140,55 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
         const retainedHistory=Object.fromEntries(Object.entries(history)
           .sort((a,b)=>b[1].lastSession.localeCompare(a[1].lastSession)||
             b[1].attempts-a[1].attempts||a[0].localeCompare(b[0])).slice(0,128));
+        // [리그 실패 도감] 블렌더로 실제 검사한 CC0 원본만 기록한다.
+        // 검증되지 않은 모션·런타임은 승격하지 않는다. 기록은 최대 64개, 소수 필드만 보관한다.
+        const rigHistory=Object.fromEntries(Object.entries(previous.rig?.history||{})
+          .filter(([id,row])=>/^[\w:./-]{1,140}$/.test(id)&&row&&typeof row==='object')
+          .slice(-64).map(([id,row])=>[id,{
+            sourceSha256:/^[a-f0-9]{64}$/.test(row.sourceSha256||'')?row.sourceSha256:null,
+            attempts:cleanCount(row.attempts),passed:cleanCount(row.passed),
+            failed:cleanCount(row.failed),measured:cleanCount(row.measured),
+            bones:cleanCount(row.bones),meshParts:cleanCount(row.meshParts),
+            clipNamesObserved:cleanCount(row.clipNamesObserved),
+            lastFailures:Array.isArray(row.lastFailures)?
+              row.lastFailures.slice(0,8).map(x=>String(x).slice(0,100)):[],
+            lastSession:String(row.lastSession||'').slice(0,40)
+          }]));
+        let latestRig={measured:false,rigPass:false,reason:'NO_SOURCE_STUDY'};
+        const study=session.rigStudy;
+        if(study&&/^[\w:./-]{1,140}$/.test(String(study.parent||''))){
+          const id=String(study.parent);
+          const sha=/^[a-f0-9]{64}$/.test(study.sourceSha256||'')?study.sourceSha256:null;
+          const stored=rigHistory[id]||{};
+          const same=!stored.sourceSha256||stored.sourceSha256===sha;
+          const old=same?stored:{};
+          const failureNames=Array.isArray(study.rigFailures)?study.rigFailures:[];
+          const faults=failureNames.slice(0,8).map(x=>String(x).slice(0,100));
+          if(study.error)faults.push(String(study.error).slice(0,100));
+          const measured=study.measured===true;
+          const passed=measured&&study.rigPass===true&&cleanCount(study.bones)>0;
+          latestRig={
+            id,sourceSha256:sha,measured,rigPass:passed,
+            bones:cleanCount(study.bones),meshParts:cleanCount(study.meshParts),
+            clipNamesObserved:cleanCount(study.clipsObserved),
+            clipNameCoverage:Number.isFinite(study.clipNameCoverage)?
+              Math.max(0,Math.min(1,study.clipNameCoverage)):0,
+            failures:faults.slice(0,8),motionCurvesMeasured:false,
+            nativeRuntimeVerified:false,gameApplied:false
+          };
+          rigHistory[id]={
+            sourceSha256:sha,attempts:cleanCount(old.attempts)+1,
+            passed:cleanCount(old.passed)+(passed?1:0),
+            failed:cleanCount(old.failed)+(passed?0:1),
+            measured:cleanCount(old.measured)+(measured?1:0),
+            bones:latestRig.bones,meshParts:latestRig.meshParts,
+            clipNamesObserved:latestRig.clipNamesObserved,
+            lastFailures:latestRig.failures,lastSession:String(session.at||'').slice(0,40)
+          };
+        }
+        const retainedRigHistory=Object.fromEntries(Object.entries(rigHistory)
+          .sort((a,b)=>b[1].lastSession.localeCompare(a[1].lastSession)||
+            b[1].attempts-a[1].attempts||a[0].localeCompare(b[0])).slice(0,64));
         const coverage={version:1,
           sessions:cleanCount(previous.sessions)+1,
           lastSessionAt:String(session.at||'').slice(0,40),
@@ -150,6 +199,7 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
           bake:{pass:session.bake?.pass===true,reason:String(session.bake?.reason||
             (session.bake?.pass?'':'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP')).slice(0,90),
             attempts:bakeAttempts,history:retainedHistory},
+          rig:{latest:latestRig,history:retainedRigHistory},
           trainingAndDesignOnly:true,nativeRuntimeVerified:false,gameApplied:false,
           productionPromotionAllowed:false};
         fs.writeFileSync(previousPath,JSON.stringify(coverage,null,1)+'\n');
