@@ -98,10 +98,12 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,process.env.VIBE_CC0_LIBRARY_DIR||null,4);
   if(light&&lp){
     try{
-      const res=runLightSearch({parent:lp.file,candidates:lightCandidates,rounds:lightRounds,seed,out:path.join(out,'light')});
-      session.light={parent:lp.id,family:lp.family,best:res.best[0].score,mean:res.mean,roblox:res.best[0].roblox};
+      const cur=lightsPath&&fs.existsSync(lightsPath)?JSON.parse(fs.readFileSync(lightsPath,'utf8')):{};
+      const res=runLightSearch({parent:lp.file,candidates:lightCandidates,rounds:lightRounds,seed,
+        out:path.join(out,'light'),learned:cur[lp.family]?.top});
+      session.light={parent:lp.id,family:lp.family,best:res.best[0].score,mean:res.mean,
+        roblox:res.best[0].roblox,replayed:res.replayed,baseline:res.baseline,gain:res.gain};
       if(lightsPath){
-        const cur=fs.existsSync(lightsPath)?JSON.parse(fs.readFileSync(lightsPath,'utf8')):{};
         mergeLearned(cur,lp.family,res);
         fs.mkdirSync(path.dirname(path.resolve(lightsPath)),{recursive:true});fs.writeFileSync(lightsPath,JSON.stringify(cur,null,1)+'\n');
       }
