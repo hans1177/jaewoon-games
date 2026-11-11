@@ -59,6 +59,68 @@ test('canonical exploration guidance carries Roblox quality director without gra
   assert.match(report,/책임 파일의 정확한 함수·유일 앵커만 사용/);
 });
 
+// [실제 스튜디오 → 원인 탐색 → 검증 학습] 기존 탐색 워커의 복구 입력과 쓰기 범위를 검증한다.
+test('official Studio Lua runtime evidence reaches the existing responsible-file repair contract',t=>{
+  const cwd=tempRoot();
+  t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceFile=path.join(cwd,'roblox-games/demo/server/Inventory.server.luau');
+  const source=[
+    'local profiles={}',
+    ...Array.from({length:25},(_,i)=>i===7
+      ?'local function restoreInventory(player) return profiles[player] end'
+      :'local unused'+i+'=0'),
+    'local current=restoreInventory(nil)',
+    'return current'
+  ].join('\n');
+  write(sourceFile,source);
+  const failure={
+    authority:'roblox-official-studio-mcp-product-quality-failure',
+    sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),
+    workflowRunId:1234,
+    qualityFailureDetails:[{
+      id:'studio-luau-runtime-error',repairSurface:'LUAU_RUNTIME',
+      observed:{scriptErrors:[{
+        signature:"Script 'ServerScriptService.Inventory', Line 27: attempt to index nil",
+        sourceLocation:{studioPath:'ServerScriptService.Inventory',line:27,
+          runtimeObserved:true,repositoryPathVerified:false}
+      }]}
+    }]
+  };
+  const order={run:true,taskId:'studio-luau-causal-repair',gameId:'demo',target:'roblox',
+    goal:'Repair observed existing Inventory runtime failure',
+    source:{root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Inventory.server.luau'],
+      ignoredPaths:[]},
+    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure}}},
+    unifiedLearning:{failureFingerprint:'fp-studio',failureLocalMemory:[
+      {id:'reject-failed-qa',verified:true,reusable:true,independentQa:'FAIL',
+        failureFingerprint:'fp-studio',reusablePatterns:['unsafe']},
+      {id:'reject-other-failure',verified:true,reusable:true,independentQa:'PASS',
+        failureFingerprint:'different',reusablePatterns:['unrelated']},
+      {id:'verified-fix',verified:true,reusable:true,independentQa:'PASS',
+        failureFingerprint:'fp-studio',reusablePatterns:['same-file-responsibility']}
+    ]},
+    workPackage:{id:'studio-luau-repair',sharedContext:{diagnosticEvidence:[]}}};
+  const report=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(report.sourceWrite,false);
+  const repair=report.editContract.gameRepair;
+  assert.equal(repair.required,true);
+  assert.equal(repair.studioRuntimeLineCandidates.length,1);
+  assert.equal(repair.studioRuntimeLineCandidates[0].sourcePath,'server/Inventory.server.luau');
+  assert.equal(repair.studioRuntimeLineCandidates[0].line,27);
+  assert.equal(repair.studioRuntimeLineCandidates[0].sourcePathVerified,false);
+  assert.ok(report.editContract.requiredFocusedChecks.includes('STUDIO_EXACT_SCENARIO_REPLAY'));
+  assert.deepEqual(report.editContract.patchRecipe.verifiedMemoryIds,['verified-fix']);
+  assert.match(explorationGuidance(report),/공식 Studio 오류 원인 위치 후보=/);
+  assert.equal(fs.readFileSync(sourceFile,'utf8'),source);
+  const unverified={...order,taskId:'studio-luau-unverified',
+    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{
+      studioQualityFailure:{...failure,workflowRunId:0}
+    }}}};
+  const rejected=exploreVibe2WorkOrder({cwd,order:unverified});
+  assert.deepEqual(rejected.editContract.gameRepair.studioRuntimeLineCandidates,[]);
+});
+
 test('exploration worker collects reusable impact context without changing source',()=>{
   const cwd=tempRoot();
   const player=path.join(cwd,'unity-games/demo/Assets/Player.cs');

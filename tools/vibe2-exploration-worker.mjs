@@ -247,7 +247,25 @@ function taskFailureEvidence(order={}){
       return /(?:^|[-_: ])(?:fail(?:ed|ure)?|error|blocker|invalid|missing|no[-_ ]?op|edit[-_ ]?match|timeout|broken|hard[-_ ]?failure|실패|누락|오류)(?:$|[-_: ])/i.test(evidence);
     })
   ];
-  return unique(values).slice(0,16);
+  // [스튜디오 실측 오류] 공식 MCP의 정확한 빌드·작업 증거만 기존 인과 복구로 진입한다.
+  const studio=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+    ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure;
+  const studioVerified=studio?.authority==='roblox-official-studio-mcp-product-quality-failure'
+    &&/^[a-f0-9]{40}$/i.test(clean(studio.sourceRevision))
+    &&/^sha256:[a-f0-9]{64}$/i.test(clean(studio.artifactIdentity))
+    &&Number(studio.workflowRunId)>0;
+  const observed=studioVerified?(studio.qualityFailureDetails||[])
+    .filter(row=>row?.id==='studio-luau-runtime-error')
+    .flatMap(row=>Array.isArray(row?.observed?.scriptErrors)?row.observed.scriptErrors:[])
+    .filter(row=>row?.sourceLocation?.runtimeObserved===true)
+    .slice(0,8).map(row=>{
+      const location=row.sourceLocation;
+      const studioPath=clean(location.studioPath).replace(/[^A-Za-z0-9_.\/ -]/g,'').slice(0,160);
+      const line=Number(location.line);
+      return studioPath&&Number.isSafeInteger(line)&&line>0
+        ?'STUDIO_LUAU_RUNTIME_ERROR:'+studioPath+':'+line:null;
+    }).filter(Boolean):[];
+  return unique([...observed,...values]).slice(0,16);
 }
 
 function diagnosticReplayIdentity(order={}){
@@ -332,7 +350,10 @@ function compileCausalReplayPlan({order={},failures=[],testTargets=[],diagnostic
 function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSymbols=[],ownedState=[],requiredFocusedChecks=[],preserveSemantics=[]}={}){
   const failureFingerprint=clean(order?.unifiedLearning?.failureFingerprint)||null;
   const verifiedMemory=(order?.unifiedLearning?.failureLocalMemory||[])
-    .filter(row=>row?.verified===true&&row?.reusable===true)
+    .filter(row=>row?.verified===true&&row?.reusable===true
+      &&clean(row?.independentQa).toUpperCase()!=='FAIL'
+      &&clean(row?.state).toUpperCase()!=='QUARANTINED'
+      &&(!row?.failureFingerprint||clean(row.failureFingerprint)===failureFingerprint))
     .slice(0,5);
   const reusePatterns=unique(verifiedMemory.flatMap(row=>row?.reusablePatterns||[])).slice(0,12);
   const avoidPatterns=unique(verifiedMemory.flatMap(row=>[...(row?.avoidPatterns||[]),row?.failureCause])).slice(0,12);
@@ -434,6 +455,26 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     explicitDevelopmentMode:sourceAnalysis.present?'PRESERVE_PATCH':'GREENFIELD'
   });
   const failures=taskFailureEvidence(order);
+  const studioFailure=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+    ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
+  const studioExact=studioFailure?.authority==='roblox-official-studio-mcp-product-quality-failure'
+    &&/^[a-f0-9]{40}$/i.test(clean(studioFailure.sourceRevision))
+    &&/^sha256:[a-f0-9]{64}$/i.test(clean(studioFailure.artifactIdentity))
+    &&Number(studioFailure.workflowRunId)>0;
+  const studioLocations=studioExact?(studioFailure.qualityFailureDetails||[])
+    .filter(row=>row?.id==='studio-luau-runtime-error')
+    .flatMap(row=>Array.isArray(row?.observed?.scriptErrors)?row.observed.scriptErrors:[])
+    .filter(row=>row?.sourceLocation?.runtimeObserved===true)
+    .slice(0,8).map(row=>{
+      const location=row.sourceLocation,studioPath=clean(location.studioPath);
+      const scriptName=studioPath.split(/[.\\/]/).at(-1).toLowerCase();
+      const line=Number(location.line);
+      const matched=sourceRows.filter(source=>path.basename(source.relative).split('.')[0].toLowerCase()===scriptName);
+      const observedLines=matched.length===1?String(matched[0].text||'').split(/\r?\n/).length:0;
+      return matched.length===1&&Number.isSafeInteger(line)&&line>0&&line<=observedLines
+        ?{studioPath,sourcePath:matched[0].relative,line,confidence:'UNIQUE_SCRIPT_NAME_AND_LINE_CANDIDATE',
+          sourcePathVerified:false,runtimeErrorObserved:true}:null;
+    }).filter(Boolean):[];
   const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures,language:order.target});
   const graph=expertDevelopment?.responsibilityGraph||{nodes:[],edges:[]};
   const architectureSnapshot=summarizeResponsibilityArchitecture(graph);
@@ -545,6 +586,8 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     },
     repeatCount:repairRepeatCount,
     repairMode,
+    studioRuntimeLineCandidates:studioLocations,
+    studioRuntimeReplayRequired:studioLocations.length>0,
     sameApproachWithoutNewCausalEvidenceForbidden:repairRequired&&repairMode==='ROOT_CAUSE_MODE',
     impactRegressionRequired:true,
     fullRegressionFanInRequired:true,
@@ -564,6 +607,7 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     ...hotspotChecks,
     ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
     ...(repairRequired?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
+    ...(studioLocations.length?['STUDIO_LUAU_ERROR_EXACT_SOURCE_LINE_RECHECK','STUDIO_EXACT_SCENARIO_REPLAY']:[]),
     ...(repairRequired&&saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
     ...(repairRequired&&multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
     ...(repairRequired&&repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
@@ -1000,6 +1044,7 @@ export function explorationGuidance(handoff={}){
       ...(handoff.robloxCoding.qualityDirector?[
         `Roblox 게임 감독 우선 검토=${handoff.robloxCoding.qualityDirector.priorityFindings.map(x=>x.path+':'+x.code+'@'+x.line+':'+x.review+(x.exactAnchorUnique?' [정확 앵커 확보]':' [앵커 미확인]')).join(' | ')||'관측된 책임 파일 위험 신호 없음(품질 통과 아님)'}`,
         `Roblox 원격 이벤트 영향 관계=${handoff.robloxCoding.qualityDirector.remoteLinks.map(x=>x.path+':'+x.method+'('+x.remote+') -> '+x.expectedSignal+':'+(x.possibleReceivers.join('/')||'관측 안 됨')+' ['+x.status+']').join(' | ')||'관측된 원격 호출 없음'}`,
+        `Roblox 기존 함수 참조 후보=${(handoff.robloxCoding.qualityDirector.functionReferences||[]).filter(x=>(handoff.responsibleFiles||[]).includes(x.path)).slice(0,24).map(x=>x.path+'::'+x.symbol+'@'+x.declaredLine+' <- '+(x.possibleCallLines.join('/')||'미관측')).join(' | ')||'관측된 함수 참조 없음'}`,
         'Roblox 감독 결과는 정적 관측이다. Remote 변수명 일치는 실제 인스턴스 연결 증명이 아니고 수신 파일 미관측도 결함 확정이 아니다. 책임 파일의 정확한 함수·유일 앵커만 사용하고 게임 저장·밸런스·서버 권한을 보호한다.'
       ]:[]),
       'Roblox 정적 분석은 실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다.'
@@ -1030,6 +1075,10 @@ export function explorationGuidance(handoff={}){
       `보존 계약=${(handoff.editContract.preserveSemantics||[]).join(' | ')||'NONE'}`,
       `인과 체인=${(handoff.editContract.failureOrRequirementCausalChain||[]).join(' -> ')||'NONE'}`,
       `실제 호출·상태 관계=${JSON.stringify(handoff.editContract.responsibilityGraph||{})}`,
+      ...(handoff.editContract.gameRepair?.studioRuntimeLineCandidates?.length?[
+        `공식 Studio 오류 원인 위치 후보=${handoff.editContract.gameRepair.studioRuntimeLineCandidates.map(x=>x.studioPath+':'+x.line+' -> '+x.sourcePath+' [파일명 후보, 코드 확인 필요]').join(' | ')}`,
+        '해당 스크립트의 실제 함수와 전후 호출을 확인하고 기존 책임 함수를 직접 수정하라. 동일 Studio 시나리오 재실행 전에는 수정 성공 또는 실행 통과로 기록하지 마라.'
+      ]:[]),
       `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
       `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,

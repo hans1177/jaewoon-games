@@ -790,7 +790,14 @@ export function classifyStudioConsoleOutput(consoleResult,{ownedSourceText=''}={
         return;
       }
     }
-    errors.push({type:assetError?'studio-asset-load-error':'studio-console-error',actionId:null,signature});
+    // [스튜디오 오류 추적] 공식 콘솔의 스크립트·행 정보만 보존한다. 추정 경로는 만들지 않는다.
+    const studioLocation=/Script\s+['"]([^'"]{1,180})['"],?\s*Line\s+(\d{1,7})/i.exec(signature)
+      ||/\b((?:ServerScriptService|ServerStorage|StarterPlayerScripts|StarterCharacterScripts|StarterGui|ReplicatedStorage|Workspace)[A-Za-z0-9_./-]{0,160}):(\d{1,7})\b/.exec(signature);
+    const sourceLocation=studioLocation&&Number(studioLocation[2])>0
+      ?{studioPath:studioLocation[1],line:Number(studioLocation[2]),runtimeObserved:true,repositoryPathVerified:false}
+      :null;
+    errors.push({type:assetError?'studio-asset-load-error':'studio-console-error',
+      actionId:null,signature,...(sourceLocation?{sourceLocation}:{})});
   };
   const gameActionYieldPattern=/Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i;
   const localUnpublishedDataStorePattern=/You must publish this place to the web to access DataStore/i;
@@ -3794,6 +3801,18 @@ export async function runOfficialStudioMcpPlay({
     console.log('ROBLOX_STUDIO_EXTERNAL_ANIMATION_WARNING_SUPPRESSED='+Number(consoleClassification.externalAnimationAssetWarningsSuppressed||0));
     for(const row of consoleClassification.errors)errors.push(row);
     const brokenAssets=consoleClassification.errors.filter(row=>row.type==='studio-asset-load-error');
+    // [실제 실행 → 자동복구 입력] 정확히 관측된 Lua 오류만 기존 빌드업 복구 증거로 전달한다.
+    const observedScriptErrors=consoleClassification.errors.filter(row=>row.type==='studio-console-error'
+      &&row.sourceLocation?.runtimeObserved===true);
+    if(observedScriptErrors.length){
+      qualityFailureKinds.push('studio-luau-runtime-error');
+      qualityFailureDetails.push({
+        id:'studio-luau-runtime-error',repairSurface:'LUAU_RUNTIME',priority:'CRITICAL',
+        hint:'Repair the observed existing Luau function in the allowed responsible source only; map the Studio script path to the repository and replay the exact scenario. Never invent a path or claim runtime pass.',
+        observed:{scriptErrors:observedScriptErrors.slice(0,8).map(row=>({
+          signature:row.signature,sourceLocation:row.sourceLocation}))}
+      });
+    }
     scenarioCoverage.push({id:'visual-asset-load-integrity',pass:brokenAssets.length===0,required:true});
     if(brokenAssets.length){
       qualityFailureKinds.push('visual-asset-load-integrity');

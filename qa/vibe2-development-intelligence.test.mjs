@@ -98,6 +98,49 @@ test('verified evidence memory reuses matching failure and latest checkpoint onl
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+// [자가복구·학습] 재현된 함수에 문맥을 집중하고 검증되지 않은 수정 이력을 배제한다.
+test('exact responsible function wins bounded context and keeps the diagnostic anchor',()=>{
+  const files=[
+    {path:'ui/hud.luau',content:'local function drawHud()\n return 1\nend'},
+    {path:'server/Main.server.luau',content:'-- prelude\n'.repeat(400)+
+      'local function restorePlayer()\n return true\nend\n'+'-- after\n'.repeat(400)}
+  ];
+  const ranked=rankAdaptiveContextCandidates({
+    files,diagnostic:{function:'restorePlayer'},role:'development'
+  });
+  assert.equal(ranked[0].path,'server/Main.server.luau');
+  const packed=packAdaptiveContext({files,diagnostic:{function:'restorePlayer'},
+    limits:{maxFiles:1,maxBytes:210,maxFileBytes:210}});
+  assert.equal(packed.files[0].content.includes('function restorePlayer'),true);
+  assert.ok(packed.bytes<=210);
+});
+
+test('failure memory cannot promote pending repairs or reuse another source revision',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-verified-repair-'));
+  try{
+    const fp=failureFingerprint({type:'STUDIO_LUAU_RUNTIME_ERROR',message:'nil root'});
+    const pass=buildExecutionCheckpoint({
+      gameId:'rpg',candidateId:'ok',status:'VERIFIED',sourceCommit:'a'.repeat(40)
+    });
+    const items=[
+      {candidateId:'ok',generatedAt:'2026-11-08',checkpoint:pass},
+      {candidateId:'pending',generatedAt:'2026-11-09',checkpoint:{...pass,status:'IMPLEMENTED_PENDING_QA'}},
+      {candidateId:'bad',generatedAt:'2026-11-10',checkpoint:{...pass,sourceCommit:'b'.repeat(40)}}
+    ];
+    for(const row of items)fs.writeFileSync(path.join(root,row.candidateId+'.json'),JSON.stringify({
+      gameId:'rpg',candidateId:row.candidateId,generatedAt:row.generatedAt,
+      verified:true,outcome:'SUCCESS',independentQa:'PASS',
+      vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:row.checkpoint}
+    }));
+    assert.equal(findVerifiedFailureResolution({root,gameId:'rpg',fingerprint:fp}).candidateId,'bad');
+    const same=findVerifiedFailureResolution({root,gameId:'rpg',fingerprint:fp,sourceCommit:'a'.repeat(40)});
+    assert.equal(same.candidateId,'ok');
+    assert.equal(same.verified,true);
+    assert.equal(same.independentQa,'PASS');
+    assert.equal(findVerifiedFailureResolution({root,gameId:'rpg',fingerprint:fp,sourceCommit:'c'.repeat(40)}),null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('execution checkpoint preserves resume-critical state',()=>{
   const checkpoint=buildExecutionCheckpoint({gameId:'P1',role:'development',sourceCommit:'abc',candidateId:'c1',goal:'fix one issue',completed:['patched'],changedFiles:['game.js'],nextAction:'run QA',pendingCi:['Vibe QA'],acceptanceCriteria:['no crash']});
   assert.equal(checkpoint.status,'IMPLEMENTED_PENDING_QA');
