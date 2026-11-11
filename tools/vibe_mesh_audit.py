@@ -2,7 +2,7 @@
 # 캐릭터 .blend/.glb 의 메쉬·리그 품질을 숫자로 검사한다. (Blender 또는 pip bpy 필요)
 # 사용: blender --background --python tools/vibe_mesh_audit.py -- --input hero.blend --output audit.json
 # 판정은 tools/vibe-mesh-audit.mjs 가 한다. 이 파일은 측정만 한다.
-import bpy, sys, json, argparse, math, re
+import bpy, sys, json, argparse, math, re, struct
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -241,26 +241,97 @@ if args.candidate_output:
         from pathlib import Path
         target = Path(args.candidate_output).resolve()
         origin = Path(args.input).resolve()
-        if target != origin and target.suffix.lower() == '.glb' and target.parent.is_dir():
+        if origin.suffix.lower() != '.glb' or target == origin or target.suffix.lower() != '.glb' or not target.parent.is_dir() or target.exists():
+            candidate['reason'] = 'INVALID_OR_EXISTING_CANDIDATE_PATH'
+        else:
             try:
-                bpy.data.objects.remove(orphan_obj, do_unlink=True)
-                correction = -bound_lowest[0]
-                # 모두 같은 이동량을 적용하며 부모가 있는 부품은 부모를 따라간다.
-                for obj in bpy.data.objects:
-                    if obj.parent is None and obj.type in {'ARMATURE', 'MESH', 'EMPTY'}:
-                        obj.location.z += correction
-                bpy.context.view_layer.update()
-                bpy.ops.export_scene.gltf(
-                    filepath=str(target), export_format='GLB',
-                    export_animations=True, export_morph=True)
-                if target.is_file() and target.stat().st_size > 0:
-                    candidate.update({'created': True, 'reason': 'STRAY_HELPER_REMOVED_IN_DERIVED_CANDIDATE',
-                                      'removedMesh': suspected['name'],
-                                      'originShiftZ': round(correction, 5)})
-                else:
-                    candidate['reason'] = 'EMPTY_CANDIDATE_EXPORT'
-            except (RuntimeError, ValueError, OSError) as exc:
-                candidate['reason'] = 'CANDIDATE_EXPORT_FAILED:' + type(exc).__name__
+                # [원본 애니메이션 보존] Blender GLB 재수출은 클립을 잃을 수 있다.
+                # 검증된 독립 노드 하나만 GLB 장면 그래프에서 제외한다.
+                # BIN 데이터, 애니메이션 sampler/channel, 스킨 가중치는 재작성하지 않는다.
+                blob = origin.read_bytes()
+                if len(blob) < 28 or len(blob) > 256 * 1024 * 1024:
+                    raise ValueError('INVALID_GLB_SIZE')
+                magic, version, total = struct.unpack_from('<4sII', blob)
+                if magic != b'glTF' or version != 2 or total != len(blob):
+                    raise ValueError('INVALID_GLB_HEADER')
+                chunks = []
+                pos = 12
+                while pos < len(blob):
+                    if pos + 8 > len(blob):
+                        raise ValueError('INVALID_GLB_CHUNK_HEADER')
+                    size, kind = struct.unpack_from('<I4s', blob, pos)
+                    pos += 8
+                    if size % 4 or pos + size > len(blob):
+                        raise ValueError('INVALID_GLB_CHUNK_SIZE')
+                    chunks.append((kind, blob[pos:pos + size]))
+                    pos += size
+                if len(chunks) != 2 or chunks[0][0] != b'JSON' or chunks[1][0] != b'BIN\\x00':
+                    raise ValueError('UNSUPPORTED_GLB_CHUNKS')
+                doc = json.loads(chunks[0][1].decode('utf8').rstrip(' \\x00'))
+                safe_extensions = {'KHR_materials_unlit', 'KHR_texture_transform',
+                                   'KHR_materials_pbrSpecularGlossiness', 'KHR_materials_emissive_strength',
+                                   'KHR_materials_specular', 'KHR_materials_clearcoat'}
+                if set(doc.get('extensionsUsed', [])) - safe_extensions:
+                    raise ValueError('UNKNOWN_NODE_INDEX_EXTENSION')
+                nodes = doc.get('nodes', [])
+                matches = [i for i, n in enumerate(nodes) if n.get('name') == suspected['name']]
+                if len(matches) != 1:
+                    raise ValueError('HELPER_GLB_NODE_NOT_UNIQUE')
+                victim = matches[0]
+                node = nodes[victim]
+                if 'mesh' not in node or 'skin' in node or node.get('children'):
+                    raise ValueError('HELPER_IS_SKINNED_OR_PARENT')
+                if sum(n.get('mesh') == node['mesh'] for n in nodes) != 1:
+                    raise ValueError('HELPER_MESH_SHARED')
+                if any(victim in n.get('children', []) for n in nodes):
+                    raise ValueError('HELPER_HAS_PARENT_NODE')
+                scenes = doc.get('scenes', [])
+                if sum(scene.get('nodes', []).count(victim) for scene in scenes) != 1:
+                    raise ValueError('HELPER_NOT_SINGLE_SCENE_ROOT')
+                skins = doc.get('skins', [])
+                if any(victim in skin.get('joints', []) or skin.get('skeleton') == victim for skin in skins):
+                    raise ValueError('HELPER_REFERENCED_BY_SKIN')
+                animations = doc.get('animations', [])
+                if not animations or not sum(len(anim.get('channels', [])) for anim in animations):
+                    raise ValueError('NO_ORIGINAL_ANIMATION_CHANNELS')
+                for anim in animations:
+                    for channel in anim.get('channels', []):
+                        index = channel.get('target', {}).get('node')
+                        if not isinstance(index, int) or index == victim:
+                            raise ValueError('HELPER_OR_UNSUPPORTED_ANIMATION_TARGET')
+                if abs(bound_lowest[0] / height) > 0.03:
+                    raise ValueError('BOUND_GROUND_NOT_NEAR_ZERO')
+                def remap(index):
+                    return index - 1 if index > victim else index
+                # [연결 정합성] node 배열을 하나 줄이고 glTF 표준 인덱스를 전부 갱신한다.
+                # 모션 채널의 타임라인·샘플·바이너리는 그대로이므로 재압축이나 새 보간이 없다.
+                doc['nodes'] = [n for i, n in enumerate(nodes) if i != victim]
+                for scene in scenes:
+                    scene['nodes'] = [remap(i) for i in scene.get('nodes', []) if i != victim]
+                for n in doc['nodes']:
+                    if 'children' in n:
+                        n['children'] = [remap(i) for i in n['children']]
+                for skin in skins:
+                    skin['joints'] = [remap(i) for i in skin.get('joints', [])]
+                    if 'skeleton' in skin:
+                        skin['skeleton'] = remap(skin['skeleton'])
+                for anim in animations:
+                    for channel in anim['channels']:
+                        channel['target']['node'] = remap(channel['target']['node'])
+                new_json = json.dumps(doc, ensure_ascii=False, separators=(',', ':')).encode('utf8')
+                new_json += b' ' * (-len(new_json) % 4)
+                binary_chunk = struct.pack('<I4s', len(chunks[1][1]), chunks[1][0]) + chunks[1][1]
+                size = 12 + 8 + len(new_json) + len(binary_chunk)
+                with target.open('xb') as output_file:
+                    output_file.write(struct.pack('<4sII', b'glTF', 2, size))
+                    output_file.write(struct.pack('<I4s', len(new_json), b'JSON'))
+                    output_file.write(new_json)
+                    output_file.write(binary_chunk)
+                candidate.update({'created': True, 'reason': 'ISOLATED_GLB_NODE_REMOVED_WITH_MOTION_BYTES_PRESERVED',
+                                  'removedMesh': suspected['name'], 'originShiftZ': 0.0,
+                                  'animationChannelsKept': sum(len(anim['channels']) for anim in animations)})
+            except (RuntimeError, ValueError, TypeError, KeyError, OSError, struct.error) as exc:
+                candidate['reason'] = 'GLB_SAFE_EDIT_REJECTED:' + str(exc)[:64]
                 try:
                     target.unlink(missing_ok=True)
                 except OSError:
