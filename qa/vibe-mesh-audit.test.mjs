@@ -112,57 +112,42 @@ test('실제 Blender: 캐릭터 공장 결과가 리그 검사를 통과하고 �
 });
 
  
-// [실제 CC0 검증] Blender 재수출 없이 독립 노드만 제거하여 원본 모션 바이트를 보존한다.
-// Blender 없는 기본 QA에서는 건너뛰고, Blender 설치 후 기존 연습 워크플로에서 반드시 실행한다.
-test('실제 Blender: 스켈레톤 원본 독립 노드 제거 후 리그·모션 보존을 재검사한다',
+// [실제 CC0 검증] GLB 원본에 존재하지 않는 Blender 본 표시용 보조 메쉬만 제외한다.
+// 단 하나라도 일치하지 않으면 원본 메쉬를 무시하지 않으며, 합격 판정은 기존 검사를 쓴다.
+test('실제 Blender: 원본 GLB 대조로 임포터 보조 메쉬만 제외하고 본·모션을 보존한다',
   {skip:!blenderAvailable()&&'Blender/bpy 없음',timeout:180000}, () => {
   const source=path.resolve('assets/roblox/actors/native/skeleton-minion.glb');
-  assert.ok(fs.existsSync(source),'승인 CC0 모델 원본이 누락됨');
+  assert.ok(fs.existsSync(source),'승인된 CC0 원본 모델 누락');
   const checksum=()=>crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex');
-  const sourceSha=checksum();
-  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-rig-repair-'));
+  const beforeSha=checksum();
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-rig-source-audit-'));
   const candidate=path.join(dir,'candidate.glb');
   try{
-    const original=measure(source,{out:path.join(dir,'source.json'),candidateOutput:candidate});
-    if(!original.candidate?.created){
-      // [실측 원인] glTF 원본 노드명과 Blender의 실제 오브젝트명이 다른지 구분한다.
-      const bytes=fs.readFileSync(source);
-      const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
-      const sourceNodes=(gltf.nodes||[]).map((node,i)=>({
-        i,name:node.name||null,meshName:Number.isInteger(node.mesh)?gltf.meshes?.[node.mesh]?.name||null:null,
-        mesh:node.mesh??null,parent: (gltf.nodes||[]).findIndex(n=>(n.children||[]).includes(i))
-      }));
-      console.log('RIG_GLB_SOURCE_NODES='+JSON.stringify({
-        count:sourceNodes.length,meshCount:gltf.meshes?.length,
-        extensions:gltf.extensionsUsed||[],scenes:gltf.scenes?.map(x=>x.nodes?.length),
-        named:sourceNodes.filter(n=>/ico|sphere|skeleton|minion|root/i.test(n.name||'')||/ico|sphere/i.test(n.meshName||'')).slice(0,30),
-        meshObjects:original.meshes.map(m=>({name:m.name,vertices:m.vertices,faces:m.faces,orphan:m.orphan})),
-        error:original.candidate.reason
-      }));
-    }
-    assert.equal(original.candidate?.created,true,JSON.stringify(original.candidate));
-    assert.ok(fs.existsSync(candidate));
-    assert.ok(original.meshes.some(m=>m.name==='Icosphere'&&m.orphan));
-    const fixed=measure(candidate,{out:path.join(dir,'candidate.json')});
-    const verdict=evaluateAudit(fixed);
-    const originalCurves=evaluateMotionCurves(original.actions);
-    const fixedCurves=evaluateMotionCurves(fixed.actions);
-    assert.ok(!fixed.meshes.some(m=>m.name==='Icosphere'));
+    const bytes=fs.readFileSync(source);
+    const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+    const originalNodes=(gltf.nodes||[]).filter(n=>Number.isInteger(n.mesh));
+    assert.equal(originalNodes.length,9);
+    assert.ok(originalNodes.every(n=>n.name!=='Icosphere'));
+    const raw=measure(source,{out:path.join(dir,'source.json'),candidateOutput:candidate});
+    const verdict=evaluateAudit(raw);
+    const curves=evaluateMotionCurves(raw.actions||[]);
+    assert.equal(raw.importHelperEvidence?.verified,true,
+      JSON.stringify(raw.importHelperEvidence));
+    assert.equal(raw.importHelperEvidence?.sourceMeshNodes,9);
+    assert.equal(raw.importHelperEvidence?.importedMeshObjects,10);
+    assert.deepEqual(raw.importHelperEvidence?.excludedImportOnlyMeshes,['Icosphere']);
+    assert.equal(raw.meshes.length,9);
+    assert.ok(raw.meshes.every(m=>m.name!=='Icosphere'));
     assert.equal(verdict.pass,true,JSON.stringify(verdict.failures));
-    assert.equal(fixed.armatures.reduce((n,a)=>n+a.bones,0),
-      original.armatures.reduce((n,a)=>n+a.bones,0));
-    assert.equal(fixedCurves.validMovingClips,originalCurves.validMovingClips);
-    assert.equal(fixedCurves.movingBoneCurves,originalCurves.movingBoneCurves);
-    assert.ok(fixedCurves.validMovingClips>0);
-    // GLB 원본의 BIN 파트가 비트 단위로 동일해야 모션 키프레임·스킨 버퍼가 보존된다.
-    const binaryChunk=filename=>{
-      const bytes=fs.readFileSync(filename);
-      const offset=20+bytes.readUInt32LE(12);
-      assert.equal(bytes.toString('ascii',offset+4,offset+7),'BIN');
-      return bytes.subarray(offset+8,offset+8+bytes.readUInt32LE(offset));
-    };
-    assert.deepEqual(binaryChunk(candidate),binaryChunk(source));
-    assert.equal(checksum(),sourceSha,'원본 모델 SHA가 변경됨');
+    assert.ok(Math.abs(raw.groundOffsetRatio)<=0.03);
+    assert.equal(verdict.stats.bones,41);
+    assert.equal(curves.validMovingClips,85);
+    assert.equal(curves.movingBoneCurves,8358);
+    // 원본 결함이 아니므로 파생 GLB나 새 애니메이션은 생성하지 않는다.
+    assert.equal(raw.candidate?.created,false);
+    assert.equal(raw.candidate?.reason,'IMPORT_ONLY_HELPER_EXCLUDED_NO_SOURCE_REPAIR_NEEDED');
+    assert.equal(fs.existsSync(candidate),false);
+    assert.equal(checksum(),beforeSha,'원본 해시가 달라짐');
   }finally{
     fs.rmSync(dir,{recursive:true,force:true});
   }
