@@ -1,4 +1,33 @@
 {
   "v": 1,
-  "entries": {}
+  "entries": {
+    "background:sparse-world:월드 부품이 적음(n)#ae76519be9": {
+      "sig": "background:sparse-world:월드 부품이 적음(n)",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "search": "local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]",
+          "replace": "local tintColor = wallColor or (style and style.walls and #style.walls > 0 and style.walls[rng:NextInteger(1, #style.walls)] or Color3.fromRGB(150,150,150))"
+        },
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "search": "local wall = style.walls[rng:NextInteger(1, #style.walls)]",
+          "replace": "local wall = (style and style.walls and #style.walls > 0 and style.walls[rng:NextInteger(1, #style.walls)] or Color3.fromRGB(150,150,150))"
+        },
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "search": "local roof = style.roofs[rng:NextInteger(1, #style.roofs)]",
+          "replace": "local roof = (style and style.roofs and #style.roofs > 0 and style.roofs[rng:NextInteger(1, #style.roofs)] or Color3.fromRGB(100,100,100))"
+        }
+      ],
+      "summary": "스타일 데이터가 없을 때 기본 색상을 사용하도록 안전하게 수정했습니다",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1794373775720
+    }
+  }
 }
