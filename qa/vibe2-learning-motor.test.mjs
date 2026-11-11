@@ -2139,6 +2139,25 @@ test('platform fault cards enter existing practice queue with executable route c
 });
 
 
+test('24시간 학습 모터가 로블록스 공개소스 기반 문제를 기존 루아우 연습 큐에 넣는다',()=>{
+  const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+  const idle=buildIdlePracticeQueue({});
+  for(const id of ['oss-profile-lease','oss-trove-cleanup','oss-typed-remote-sequence']){
+    const source=curriculum.drills.find(row=>row.id===id);
+    assert.ok(source?.licensedSource);
+    const card=idle.drills.find(row=>row.robloxPracticeDrill===id);
+    assert.equal(card.kind,'ROBLOX_CODE_REPAIR');
+    const queued=injectIdlePracticeTask({tasks:[]},{drills:[card]});
+    assert.equal(queued.added,true);
+    assert.equal(queued.task.target,'roblox');
+    assert.equal(queued.task.robloxPracticeDrill,id);
+    assert.equal(queued.task.responsibleFiles.length,0);
+    assert.ok(queued.task.goal.includes('practiceMode=ROBLOX_CODE'));
+    assert.ok(queued.task.completionCriteria.includes('PRACTICE_LUAU_VARIANTS_EXECUTED'));
+    assert.ok(queued.task.evidence.includes('production-pass:NO'));
+  }
+});
+
 test('animal and insect visual knowledge is retrieved by matching graphics tasks',()=>{
   const distilled=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
   const cases=[
