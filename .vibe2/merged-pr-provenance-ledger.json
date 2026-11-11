@@ -199976,11 +199976,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aef0e751345cc0f5c4d4aa2e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-12606",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "36d0c142406f623e04f97a325aa61e106bc831f5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12606,
+        "baseBranch": "main",
+        "headBranch": "chatgpt/vibe59-visual-clarity-mobile-20261112",
+        "baseSha": "36d0c142406f623e04f97a325aa61e106bc831f5",
+        "headSha": "6d4b967d5ad7aa327015ad89f124e6b0554d05ee",
+        "mergeCommitSha": "36a2f3ee3a2cd4ba400a90997b27e05d96b1e9a4",
+        "mergedAt": "2026-11-11T22:09:35Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1576ef71ccc5f6aeadd4df4e7043ce835d29854e356456ee5e556ca9af532c4c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "chatgpt/vibe59-visual-clarity-mobile-20261112",
+        "candidateSha": "6d4b967d5ad7aa327015ad89f124e6b0554d05ee"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 143,
+        "deletedLineCount": 17,
+        "changedFiles": [
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-game-ui-browser.mjs",
+          "assets/vibe-model-preview.html",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-game-ui.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/portraits/npc_americas.jpg",
+          "roblox-games/mare-essentia/assets/portraits/npc_atlantic_europe.jpg",
+          "roblox-games/mare-essentia/assets/portraits/npc_mediterranean.jpg",
+          "roblox-games/mare-essentia/assets/portraits/npc_red_sea.jpg",
+          "roblox-games/mare-essentia/assets/portraits/npc_west_africa.jpg",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-game-ui-browser.mjs",
+          "assets/vibe-model-preview.html",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-game-ui.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12606",
+        "merge-commit:36a2f3ee3a2cd4ba400a90997b27e05d96b1e9a4",
+        "base-main:36d0c142406f623e04f97a325aa61e106bc831f5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1594
+    "total": 1595
   }
 }
