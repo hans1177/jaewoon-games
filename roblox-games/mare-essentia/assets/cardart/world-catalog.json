@@ -18,8 +18,8 @@
     "animationStatus": "미구현"
   },
   "counts": {
-    "subjects": 500,
-    "illustrated": 120,
+    "subjects": 508,
+    "illustrated": 129,
     "largeEventArt": 10
   },
   "subjects": [
@@ -2002,12 +2002,12 @@
         "lisbon"
       ],
       "subject": "소용돌이 껍데기의 살아 있는 화석.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_06",
-        "row": 2,
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 1,
         "column": 2
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -9200,6 +9200,134 @@
         "row": 4,
         "column": 5
       },
+      "eventArt": null
+    },
+    {
+      "id": "am_cinchona",
+      "name": "기나나무",
+      "category": "식물",
+      "region": "남아메리카",
+      "existingGameCard": true,
+      "ports": [],
+      "subject": "잎과 꽃을 담은 기나나무 표본.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_fern_fossil",
+      "name": "고사리 화석",
+      "category": "화석",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "암석에 남은 고사리 잎의 인상.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 1,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_brass_astrolabe",
+      "name": "놋쇠 아스트롤라베 세부 스케치",
+      "category": "고대 유물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "놋쇠 천체관측 기구.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "phy_refraction",
+      "name": "빛의 굴절",
+      "category": "물리",
+      "region": "해역 공통",
+      "existingGameCard": true,
+      "ports": [],
+      "subject": "유리 프리즘을 지난 빛의 분산.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 1,
+        "column": 5
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "chem_distillation",
+      "name": "증류",
+      "category": "화학",
+      "region": "해역 공통",
+      "existingGameCard": true,
+      "ports": [],
+      "subject": "목이 굽은 유리 증류 기구.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_armillary",
+      "name": "혼천의",
+      "category": "천문",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "천구의 주요 원을 나타낸 관측 모형.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_waterwheel",
+      "name": "수차",
+      "category": "공학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "물의 흐름으로 회전하는 목제 수차.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "lang_ledger",
+      "name": "장부 기록",
+      "category": "경제",
+      "region": "해역 공통",
+      "existingGameCard": true,
+      "ports": [],
+      "subject": "거래를 기록하는 장부와 봉인.",
+      "sketch": {
+        "file": "world_26.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
       "eventArt": null
     }
   ]
