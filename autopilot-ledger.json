@@ -11,9 +11,9 @@
       "lastResult": "FAILED"
     },
     "mare-essentia:health": {
-      "lastAt": 1794371069417,
-      "pending": false,
-      "lastSha": "e6895c2b0773b6ad9a190f9ed660fb71878eee35",
+      "lastAt": 1794384116308,
+      "pending": true,
+      "lastSha": "c5247eaa151d0e56c166aca5f63f586758a07bfe",
       "runs": 1,
       "ema": 0.65,
       "failStreak": 0,
@@ -66,13 +66,17 @@
     },
     "mare-essentia:voyage": {
       "lastAt": 1794382873728,
-      "pending": true,
-      "lastSha": "7427a7fcaf6999bc03cb529363824196631380cb"
+      "pending": false,
+      "lastSha": "7427a7fcaf6999bc03cb529363824196631380cb",
+      "runs": 1,
+      "ema": 0.35,
+      "failStreak": 1,
+      "lastResult": "FAILED"
     }
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "[{\"plannedSteps\":29,\"completedSteps\":29,\"plannedClicks\":4,\"successfulClicks\":4,\"plannedFrames\":6,\"capturedFrames\":6,\"abortedEarly\":false},0,21,[{\"step\":28,\"ctx\":\"Client\",\"out\":\"TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   2/12턴 (내 턴) ERR n=0 first=\\ntext\"}]]"
+    "mare-essentia": "[{\"plannedSteps\":185,\"completedSteps\":185,\"plannedClicks\":30,\"successfulClicks\":30,\"plannedFrames\":31,\"capturedFrames\":31,\"abortedEarly\":false},0,131,[{\"step\":184,\"ctx\":\"Client\",\"out\":\"clicked=|⚓  새 게임@34,0|프랑스@ScrollingFrame24,1|1700년 ★추천 증기 기술의 새벽@ScrollingFrame34,2|⚓  출항하기@ScrollingFrame24,0|상태@13,3|닫기@21,3|교역@Dock53,2|교역@13,3|항구@21,3|닫기@28,3|조선소@Dock53,6|조선소@13,3|수리@ScrollingFrame32,0|선원+5@ScrollingFrame36,0|보급+20@ScrollingFrame39,0|고용@ScrollingFrame36,0|해산@ScrollingFrame39,0|기함으로@ScrollingFrame36,0|매각 0@ScrollingFrame39,0|매각 900@ScrollingFrame39,0|1800@ScrollingFrame39,0|기본@ScrollingFrame39,0|1200@ScrollingFrame39,0|장착중@ScrollingFrame39,0|6000@ScrollingFrame39,0|12000@ScrollingFrame39,0|2500@ScrollingFrame39,0|보유중@ScrollingFrame39,0|5000@ScrollingFrame39,0|9000@ScrollingFrame39,0\\ntext\"}]]"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -133,7 +137,8 @@
     "fantasy-survival:health",
     "mare-essentia:ui",
     "mare-essentia:combat",
-    "mare-essentia:voyage"
+    "mare-essentia:voyage",
+    "mare-essentia:health"
   ],
-  "lastDispatchAt": 1794382873728
+  "lastDispatchAt": 1794384116308
 }
