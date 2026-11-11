@@ -18,6 +18,7 @@ on:
       - 'tools/vibe59-*.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
       - 'qa/vibe59-roblox-coding.test.mjs'
+      - 'qa/vibe59-luau-compiler.mjs'
       - '.github/workflows/vibe59-luau-compiler.yml'
   workflow_dispatch:
 
@@ -55,6 +56,11 @@ jobs:
           chmod +x "$compiler"
           "$compiler" --help >/dev/null
           echo "VIBE59_LUAU_COMPILER=$compiler" >> "$GITHUB_ENV"
+          analyzer="$(find "$PWD/binaries" -type f -name 'luau-analyze' -print -quit)"
+          test -n "$analyzer"
+          chmod +x "$analyzer"
+          "$analyzer" --help >/dev/null
+          echo "VIBE59_LUAU_ANALYZER=$analyzer" >> "$GITHUB_ENV"
           runtime="$(find "$PWD/binaries" -type f -name 'luau' -print -quit)"
           test -n "$runtime"
           chmod +x "$runtime"
@@ -63,7 +69,7 @@ jobs:
         run: node --test qa/vibe59-roblox-coding.test.mjs
       - name: Verify crafting candidate and authorization rules with Node tests
         run: node --test qa/vibe59-crafting-transaction.test.mjs
-      - name: Compile 117 complete generated Luau scripts and reject invalid syntax
+      - name: Compile 117 generated Luau scripts and type-check 109 strict recipes
         run: node qa/vibe59-luau-compiler.mjs
       - name: Execute 109 emitted Luau recipes and advanced crafting behavior
         run: node qa/vibe59-luau-runtime.mjs
