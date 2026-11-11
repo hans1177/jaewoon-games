@@ -1,3 +1,4 @@
+// 파일명: tools/vibe59-roblox-coding.mjs
 // Vibe5.9 Roblox-native coding. Read-only Lua source analysis and bounded code synthesis.
 // Native Luau compiler, Studio gameplay, authorization and release still need independent QA.
 const ID=/^[A-Za-z_][A-Za-z0-9_]*$/;
@@ -19,53 +20,83 @@ const RULE_TABLE=Object.freeze([["ai","AI_BUSY_LOOP","ANY","while\\s+true\\s+do(
 export const VIBE59_ROBLOX_OFFLINE_RULES=Object.freeze(RULE_TABLE.map(
   ([system,id,side,pattern,repair])=>Object.freeze({id,system,side,pattern,repair})
 ));
+// [루아우 분석] 문자열·긴 문자열·주석을 선형으로 구분한다.
+// 규칙이 실제 인자로 검사하는 문자열만 보존하고, 그 외 텍스트는 공백 처리한다.
+const OFFLINE_LITERAL_ARGUMENTS=new Set([
+  'HumanoidRootPart','DataStoreService','Part','Tool',
+  'Coins','Gold','Money','Currency','Inventory','build','place'
+]);
 function stripVibe59LuauComments(source){
-  let result='',i=0,quoted=null;
-  const blank=c=>c==='\n'||c==='\r'?c:' ';
+  let result='',i=0;
+  const blank=text=>text.replace(/[^\r\n]/g,' ');
+  const bracketAt=index=>{
+    if(source[index]!=='[')return null;
+    let end=index+1;
+    while(source[end]==='=')end++;
+    if(source[end]!=='[')return null;
+    return {contentStart:end+1,closing:']'+'='.repeat(end-index-1)+']'};
+  };
   while(i<source.length){
-    const c=source[i],next=source[i+1];
-    if(quoted){
-      result+=c;i++;
-      if(c==='\\'&&i<source.length){result+=source[i++];continue}
-      if(c===quoted)quoted=null;
+    const c=source[i];
+    if(c==='-'&&source[i+1]==='-'){
+      const bracket=bracketAt(i+2);
+      if(bracket){
+        const close=source.indexOf(bracket.closing,bracket.contentStart);
+        const stop=close<0?source.length:close+bracket.closing.length;
+        result+=blank(source.slice(i,stop));i=stop;
+      }else{
+        const end=source.indexOf('\n',i);
+        const stop=end<0?source.length:end;
+        result+=blank(source.slice(i,stop));i=stop;
+      }
       continue;
     }
-    if(c==='"'||c==="'"){quoted=c;result+=c;i++;continue}
-    if(c==='-'&&next==='-'){
-      const opening=/^\[(=*)\[/.exec(source.slice(i+2,i+20));
-      if(opening){
-        const closing=']'+opening[1]+']',end=source.indexOf(closing,i+2+opening[0].length);
-        const stop=end<0?source.length:end+closing.length;
-        while(i<stop)result+=blank(source[i++]);
-        continue;
+    const bracket=bracketAt(i);
+    if(bracket){
+      const close=source.indexOf(bracket.closing,bracket.contentStart);
+      const stop=close<0?source.length:close+bracket.closing.length;
+      result+=blank(source.slice(i,stop));i=stop;
+      continue;
+    }
+    if(c==='"'||c==="'"||c.charCodeAt(0)===96){
+      const start=i,delimiter=c;i++;
+      while(i<source.length){
+        const current=source[i++];
+        if(current==='\\'&&i<source.length){i++;continue;}
+        if(current===delimiter)break;
       }
-      while(i<source.length&&source[i]!=='\n')result+=blank(source[i++]);
+      const literal=source.slice(start,i);
+      const allowed=delimiter.charCodeAt(0)!==96&&literal.endsWith(delimiter)
+        &&OFFLINE_LITERAL_ARGUMENTS.has(literal.slice(1,-1));
+      result+=allowed?literal:blank(literal);
       continue;
     }
     result+=c;i++;
   }
   return result;
 }
-function insideVibe59QuotedText(source,index){
-  let quote=null;
-  for(let i=0;i<index;i++){
-    const c=source[i];
-    if(quote){if(c==='\\'){i++;continue}if(c===quote)quote=null}
-    else if(c==='"'||c==="'")quote=c;
-  }
-  return quote!==null;
-}
+
 export function diagnoseVibe59RobloxOffline({path='',source=''}={}){
   const side=classifyVibe59RobloxScript(path);
   if(typeof source!=='string'||source.length>260000||!/\.(?:lua|luau)$/i.test(String(path)))
     throw Error('VIBE59_ROBLOX_DIAGNOSTIC_SOURCE');
   const code=stripVibe59LuauComments(source),diagnostics=[];
+  // [성능] 규칙 50종이 같은 원문 앞부분을 반복 탐색하지 않도록 행 시작 위치를 한 번만 구축한다.
+  const lineStarts=[0];
+  for(let i=0;i<code.length;i++)if(code.charCodeAt(i)===10)lineStarts.push(i+1);
+  const lineAt=index=>{
+    let low=0,high=lineStarts.length;
+    while(low<high){
+      const mid=(low+high)>>>1;
+      if(lineStarts[mid]<=index)low=mid+1;else high=mid;
+    }
+    return low;
+  };
   for(const rule of VIBE59_ROBLOX_OFFLINE_RULES){
     if(rule.side!=='ANY'&&rule.side!==side)continue;
     let matched=0;
     for(const hit of code.matchAll(new RegExp(rule.pattern,'g'))){
-      if(insideVibe59QuotedText(code,hit.index))continue;
-      diagnostics.push({path,side,line:code.slice(0,hit.index).split('\n').length,
+      diagnostics.push({path,side,line:lineAt(hit.index),
         code:rule.id,system:rule.system,repair:rule.repair,status:'REVIEW_REQUIRED',
         runtimeVerified:false});
       if(++matched===2||diagnostics.length===120)break;
