@@ -79,9 +79,11 @@ if (!creatorId) {
 const plan = [];
 // 2026-11-11 오너 승인으로 바이브가 직접 그린 평면 벡터 교역품(소스: assets/goods/src/)
 const VIBE_DRAWN_GOODS = ['feathers','cloves','nutmeg','cinnamon','lacquer','camphor','ginseng','vanilla','cochineal','sealskin','guano','nitrate','ambergris','gum_arabic','beer_grain','sake_rice'].map(n => n + '.png');
-if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits']]) {
+if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
+    // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
+    if (kind === 'CardArt' && !/^(?:world_(?:0[1-9]|1[0-9]|2[0-5])|event_[a-z_]+)\.jpg$/.test(f)) continue;
     const ext = path.extname(f).toLowerCase();
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
@@ -89,7 +91,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: kind === 'CardArt' ? 'WIKIMEDIA_VERIFIED_PD_CC0_CCBY_MODIFIED'
+      license: kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
         : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png', ...VIBE_DRAWN_GOODS].includes(f) ? 'PROJECT_ORIGINAL_ART'
@@ -282,7 +284,7 @@ for (const item of plan) {
       assetType: item.assetType, displayName: 'MareEssentia ' + id,
       description: item.assetType !== 'Model'
         ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
-          : item.kind === 'CardArt' ? 'Codex card art: Wikipedia lead image (public domain/CC0/CC BY verified), stylized for Mare Essentia; credits in CardArtCredits.luau'
+          : item.kind === 'CardArt' ? 'Original illustrated discovery art for Mare Essentia; subject sources and atlas coordinates in assets/SOURCES.md and assets/cardart/world-catalog.json'
           : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
           : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
