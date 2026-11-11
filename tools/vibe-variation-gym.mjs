@@ -147,13 +147,21 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
 
 // 부모 후보: CC0 + 소스 파일(obj/glb)이 실제로 있고 + 막힘/격리/게임사용금지/파생이 아닌 등록 에셋
 export function pickParents(registry,repoRoot,n,rng,only=null){
-  const ok=[];
+  const ok=[],root=fs.realpathSync(repoRoot);
   for(const a of registry.assets||[]){
     if(!/^CC0(?:-1\.0)?$/i.test(String(a.license||'')))continue;
-    if(a.securityBlocked||a.quarantined||a.gameUseForbidden||a.parentSourceId||a.derivedFromAssetId)continue;
-    const file=(a.sourceFiles||[]).find(f=>/\.(obj|glb|gltf)$/i.test(f));
-    if(!file||!fs.existsSync(path.join(repoRoot,file)))continue;
+    if(a.securityBlocked||a.quarantined||a.gameUseForbidden||a.parentSourceId||a.derivedFromAssetId||
+      a.catalogActive===false||a.corruptSource)continue;
     if(only&&!only.includes(a.id))continue;
+    const file=(a.sourceFiles||[]).find(f=>{
+      if(typeof f!=='string'||!/\.(obj|glb|gltf)$/i.test(f)||path.isAbsolute(f)||
+        f.split(/[\\/]/).some(segment=>segment==='..'||segment==='.'))return false;
+      try{
+        const resolved=fs.realpathSync(path.resolve(root,f));
+        return resolved.startsWith(root+path.sep)&&fs.statSync(resolved).isFile();
+      }catch{return false;}
+    });
+    if(!file)continue;
     ok.push({id:a.id,family:String(a.family||a.category||'?'),file,license:'CC0'});
   }
   for(let i=ok.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[ok[i],ok[j]]=[ok[j],ok[i]]}
