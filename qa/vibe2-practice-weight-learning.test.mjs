@@ -95,6 +95,24 @@ test('Roblox practice compares frozen baseline and adapter on the same eval with
   assert.match(workflow, /PRACTICE_EVAL_PASSES=2/);
 });
 
+test('automatic Roblox practice coalesces pending pushes and uses permitted small CPU model without changing canonical base', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml', 'utf8');
+  const trainer = fs.readFileSync('tools/vibe2-train.py', 'utf8');
+  assert.match(workflow, /group: vibe2-unity-practice-cpu-.*workflow_dispatch.*scheduled-and-push/);
+  assert.match(workflow, /queue: single/);
+  assert.match(workflow, /cancel-in-progress: false/);
+  const roblox = workflow.split('  roblox-practice-train:')[1];
+  const unity = workflow.split('  cpu-practice-train:')[1].split('  roblox-practice-train:')[0];
+  assert.ok(roblox);
+  assert.match(roblox, /group: vibe2-roblox-practice-local-training\\n      queue: single/);
+  assert.match(roblox, /'--base-model', 'Qwen\\/Qwen3-0\\.6B'/);
+  assert.match(roblox, /Roblox CPU practice trained an unexpected base model/);
+  assert.match(roblox, /SMALL_CPU_PRACTICE_NOT_CANONICAL_1P7B/);
+  assert.match(roblox, /PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO/);
+  assert.doesNotMatch(unity, /'--base-model', 'Qwen\\/Qwen3-0\\.6B'/);
+  assert.match(trainer, /parser\\.add_argument\\("--base-model", default="Qwen\\/Qwen3-1\\.7B"\\)/);
+});
+
 test('practice trainer and workflow keep learned adapter unverified and require actual training execution', () => {
   const trainer = fs.readFileSync('tools/vibe2-practice-train.py', 'utf8');
   assert.match(trainer, /PRACTICE_ONLY/);
@@ -152,7 +170,7 @@ test('answer supervision keeps complete code targets at the CPU token budget',()
 test('hourly Windows CPU practice coalesces duplicate queue wakes and resumes only complete exact-input checkpoints',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml','utf8');
   const trainer=fs.readFileSync('tools/vibe2-train.py','utf8');
-  assert.match(workflow,/group: vibe2-unity-practice-cpu-.*schedule.*hourly/);
+  assert.match(workflow,/group: vibe2-unity-practice-cpu-.*workflow_dispatch.*scheduled-and-push/);
   assert.match(workflow,/queue: single/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
