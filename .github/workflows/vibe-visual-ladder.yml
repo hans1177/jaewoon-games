@@ -14,6 +14,7 @@ on:
         type: string
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: vibe-visual-ladder
   cancel-in-progress: false
@@ -66,12 +67,23 @@ jobs:
             [ -n "$report" ] && node tools/vibe-rig-kit.mjs --game "$game" --report "$report" || true
           done
       - name: Commit ladder state
+        id: commit
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md docs/devloop/RIG_KIT_*.md vibe-ladder-status.json docs/devloop/ladder
+          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau roblox-games/*/shared/LookAssignment.luau roblox-games/*/src/ReplicatedStorage/Shared/LookAssignment.luau docs/devloop/VISUAL_LADDER_*.md docs/devloop/RIG_KIT_*.md vibe-ladder-status.json docs/devloop/ladder
           if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
+          mare_changed=$(git diff --cached --name-only | grep -E '^roblox-games/mare-essentia/(visual-ladder-state\.json|src/ReplicatedStorage/Shared/LookAssignment\.luau)
+            git status --short | head -5
+            if git pull -q --rebase --autostash origin main && git push -q origin HEAD:main; then
+              if [ -n "$mare_changed" ]; then echo 'mare_changed=true' >> "$GITHUB_OUTPUT"; fi
+              exit 0
+            fi
+            sleep 4
+          done
+          exit 1
+ || true)
           git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
           for i in 1 2 3; do
             git status --short | head -5
@@ -79,3 +91,22 @@ jobs:
             sleep 4
           done
           exit 1
+
+      - name: Continue Mare look evidence in existing official Studio QA
+        if: steps.commit.outputs.mare_changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # [자동 승격→적용→재검증] 실제 룩 후보가 대기·확인 중일 때만 새 main 캡처를 요청한다.
+          node --input-type=module <<'NODE' > "$RUNNER_TEMP/mare-look-followup"
+          import fs from 'node:fs';
+          const state=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/visual-ladder-state.json','utf8'));
+          const look=state.look||{};
+          const pending=Number(look.pending?.streak||0)>0;
+          const verifying=typeof look.preset==='string'&&look.confirmed!==true;
+          process.stdout.write(pending||verifying?'yes':'no');
+          NODE
+          if [ "$(cat "$RUNNER_TEMP/mare-look-followup")" = 'yes' ]; then
+            gh workflow run devloop-studio.yml --ref main -f game=mare-essentia -f script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
+            echo 'MARE_LOOK_EXACT_STUDIO_RECHECK_DISPATCHED=YES' >> "$GITHUB_STEP_SUMMARY"
+          fi
