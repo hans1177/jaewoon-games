@@ -1,0 +1,66 @@
+# 바이브 자동 판단기: 30분마다 Studio 점검 결과를 읽고, 지금 가장 가치 있는 점검 하나를 스스로 골라 Studio 에 요청한다.
+# 같은 점검을 되풀이하지 않는다(최근 기록 감점, 안 해 본 영역 가산, 코드 변화 없으면 건너뜀). 결과로 배우고 작업 지시서를 남긴다.
+# 끄기: 저장소 변수 VIBE_AUTOPILOT=off.
+name: Vibe Autopilot
+run-name: Vibe Autopilot · ${{ github.run_number }}
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: vibe-autopilot
+  cancel-in-progress: false
+jobs:
+  decide:
+    if: ${{ github.repository == 'hans1177/jaewoon-games' && vars.VIBE_AUTOPILOT != 'off' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Gather reports, ledger, code heads and Studio queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          mkdir -p build/reports
+          for g in fantasy-survival mare-essentia; do
+            gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-studio-frames" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || rm -f "build/reports/${g}.json"
+          done
+          gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json 2>/dev/null || rm -f build/autopilot-ledger.json
+          : > build/heads.txt
+          for g in fantasy-survival mare-essentia; do
+            sha=$(gh api "repos/${GITHUB_REPOSITORY}/commits?sha=main&path=roblox-games/${g}&per_page=1" --jq '.[0].sha // ""' 2>/dev/null || true)
+            echo "${g}=${sha}" >> build/heads.txt
+          done
+          node -e "const fs=require('fs');const h={};for(const l of fs.readFileSync('build/heads.txt','utf8').split('\n')){const [k,v]=l.split('=');if(k&&v)h[k]=v}fs.writeFileSync('build/heads.json',JSON.stringify(h))"
+          q=0
+          for st in queued in_progress pending; do
+            n=$(gh run list --workflow devloop-studio.yml --status $st -L 20 --json databaseId --jq 'length' 2>/dev/null || echo 0)
+            q=$((q + n))
+          done
+          echo "QUEUED=$q" >> "$GITHUB_ENV"
+      - name: Decide and request the next check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/vibe-autopilot.mjs --run --queued "$QUEUED" --ledger build/autopilot-ledger.json --reports build/reports --heads build/heads.json
+      - name: Save ledger and work orders to vibe-gym-data (never main)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          put() {
+            local src="$1" dest="$2" sha
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${dest}?ref=vibe-gym-data" --jq .sha 2>/dev/null || true)"
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${dest}" -f message="autopilot: ${dest}" -f branch=vibe-gym-data -f content="$(base64 -w0 "$src")" ${sha:+-f sha="$sha"} >/dev/null
+            echo "SAVED $dest"
+          }
+          put build/autopilot-ledger.json autopilot-ledger.json
+          put build/autopilot-orders.json autopilot-orders.json
