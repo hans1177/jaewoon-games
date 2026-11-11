@@ -3796,6 +3796,22 @@ test('Existing Devloop Studio workflow rechecks Mare text sampling after main up
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
+// [대항해시대 화면 회귀] 공식 30회 클릭·31장 촬영을 유지하면서 항해·지도·기술 메뉴도 탐색한다.
+test('Mare Studio click script retains complete audit and prioritizes sailing map technology',()=>{
+  const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const prefer=['새 게임','프랑스','1700','출항하기','교역','조선','퀘스트','항해','지도','기술','항구','설정'];
+  const generated='build(35000, ['+prefer.map(value=>JSON.stringify(value)).join(', ')+'], 30)';
+  const expected='local pref={'+prefer.map(value=>JSON.stringify(value)).join(',')+'}';
+  const picks=steps.filter(step=>step.type==='click_from_luau'||(step.type==='luau'&&step.code?.includes('local pref=')));
+  assert.ok(gen.includes(generated));
+  assert.equal(steps.length,185);
+  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
+  assert.equal(steps.filter(step=>step.type==='capture').length,31);
+  assert.equal(picks.length,60);
+  assert.ok(picks.every(step=>step.code.includes(expected)));
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
