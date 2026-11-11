@@ -74,6 +74,7 @@ jobs:
         run: |
           node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
           node tools/vibe-gym-publish.mjs pull --stats build/learned-lights.json --file learned-lights.json
+          node tools/vibe-gym-publish.mjs pull --stats build/bake-history.json --file practice-domains.json
       - name: Practice (variation gym + light search + normal bake)
         env:
           VIBE2_BLENDER_BINARY: blender
