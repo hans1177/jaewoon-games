@@ -201,8 +201,8 @@ export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoo
   const tests=['source-syntax-and-security',...games.map(g=>'game-runtime:'+g),
     ...(shared?['shared-dependency-regression']:[]),'full-release-fan-in-unchanged'];
   // [위험 예측] 기존 게임의 저장·서버 권한 경계와 공유 코드 변경을 놓치지 않는다.
-  const server=files.some(f=>/^(?:roblox-games\/[^/]+\/(?:server|ServerScriptService)\/|.*\.server\.lua(?:u)?)$/i.test(f));
-  const client=files.some(f=>/^(?:roblox-games\/[^/]+\/(?:client|StarterPlayerScripts|StarterGui)\/|.*\.client\.lua(?:u)?)$/i.test(f));
+  const server=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:server|ServerScriptService)\/|\.server\.lua(?:u)?$)/i.test(f));
+  const client=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:client|StarterPlayerScripts|StarterGui)\/|\.client\.lua(?:u)?$)/i.test(f));
   const save=files.some(f=>/(?:^|[\/._-])(?:save|saving|profile|data-store|datastore|inventory|economy|currency)(?:[\/._-]|$)/i.test(f));
   const root=clean(sourceRoot).replaceAll('\\','/').replace(/^\.\/+|\/+$/g,'');
   const owned=Array.isArray(gameRepair?.responsibleFiles)&&gameRepair.responsibleFiles.some(raw=>{
