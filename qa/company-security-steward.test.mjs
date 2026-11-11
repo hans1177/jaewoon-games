@@ -636,10 +636,11 @@ test('Vibe5.9 generated algorithm refuses unsafe Luau source replacement and unv
 });
 
 // [보안 범위] 얕은 checkout이 정상 PR의 공통 조상을 잃어 잘못 격리하는 회귀를 차단한다.
-test('security workflow fetches full PR ancestry before enforcing fail-closed common ancestor check',()=>{
+test('security workflow retains shallow checkout and retrieves missing ancestry without weakening the security gate',()=>{
  const scope=securityWorkflow.slice(securityWorkflow.indexOf('  scan:'),securityWorkflow.indexOf('\n  enforce:'));
- assert.ok(scope.includes('fetch-depth: 0'));
+ assert.ok(scope.includes('fetch-depth: 1'));
  assert.ok(scope.includes('filter: blob:none'));
+ assert.ok(scope.includes('git fetch --no-tags --deepen=64 origin "$head_sha"'));
  assert.ok(scope.includes('git merge-base "$base_sha" "$head_sha" >/dev/null'));
  assert.ok(scope.includes('SECURITY_SCAN_COMMON_ANCESTOR_UNAVAILABLE'));
  assert.ok(scope.includes('node tools/company-security-steward.mjs'));
