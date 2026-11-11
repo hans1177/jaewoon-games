@@ -186,6 +186,7 @@ test('24시간 기존 로컬 CPU 학습기가 로블록스 공개 코드 연습�
   assert.match(wf,/--drills company-learning\/roblox-practice\.json/);
   assert.match(wf,/--task-type roblox/);
   assert.match(wf,/'--task-type', 'roblox'/);
+  assert.equal((wf.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4,'each local training job must use the event source revision');
   assert.match(wf,/ROBLOX_STUDIO_RUNTIME_VERIFIED=NO/);
   assert.match(wf,/ROBLOX_MODEL_AUTO_PROMOTION=NO/);
   assert.match(wf,/PRACTICE_PROMOTION_STATE=UNVERIFIED/);
