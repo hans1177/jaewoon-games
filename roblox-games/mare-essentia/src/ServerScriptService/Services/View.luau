@@ -534,6 +534,10 @@ return function(D, S)
 			})
 		end
 		view.companions = { max = D.Specialties.slotsFor(def.class), list = {}, stations = {} }
+		do
+			local vs, vc = S.Perk.vacancy(state)
+			view.companions.vacancy = { speed = vs, cannon = vc }
+		end
 		for _, st in D.Specialties.Stations do
 			local who = state.stations[st.id]
 			local c = who and D.Specialties.CompanionById[who]

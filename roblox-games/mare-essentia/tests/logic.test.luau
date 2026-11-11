@@ -294,6 +294,17 @@ local function extraTests()
 		local back = S.State.sanitize(S.State.serialize(stSt))
 		return back.stations.gunner == "c_harrison"
 	end)())
+	check("자리: 중형 배에서 조타수 자리가 비면 감점", (function()
+		local v = newState("england")
+		local base = D.Ships.Ships.caravel.class
+		v.ship.id = "galleon"
+		v.stations = {}
+		local empty = S.Perk.speedMult(v)
+		v.companions = { "c_harrison" }
+		v.stations = { helm = "c_harrison" }
+		local sv = S.Perk.vacancy(v)
+		return base < 2 and empty < 1 and sv == 0
+	end)())
 	check("자리: 화면에 6자리", #S.View.build(stSt, ctx).companions.stations == 6)
 	-- 방 시계
 	local RC = D.RoomClock

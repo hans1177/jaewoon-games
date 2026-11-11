@@ -2743,7 +2743,12 @@ function RENDERERS.status()
 	end
 	add(function() return mkHeader(content, string.format("배의 자리 (이 배는 동료 %d명까지)", view.companions.max)) end)
 	add(function()
-		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 다음 동료와 자리를 바꿔요.", 12, COLORS.muted, true)
+		local vac = view.companions.vacancy
+		local warn = ""
+		if vac and (vac.speed < 0 or vac.cannon < 0) then
+			warn = "\n⚠ 조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
+		end
+		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
 	end)
 	for _, st in view.companions.stations do
 		add(function()
@@ -2758,6 +2763,15 @@ function RENDERERS.status()
 			local nxt = joined[idx]
 			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음" else "  (다른 직책)")) else "비어 있음"
 			local btns = {}
+			local fit = nil
+			for _, c in joined do
+				if c.bestSeat == st.name then fit = c; break end
+			end
+			if fit and fit ~= nxt then
+				table.insert(btns, { text = "★ " .. fit.name, color = COLORS.green or COLORS.blue, onClick = function()
+					call("Station", { companionId = fit.id, station = st.id })
+				end })
+			end
 			if nxt then
 				table.insert(btns, { text = "▶ " .. nxt.name, color = COLORS.blue, onClick = function()
 					H.stationPick[st.id] = idx

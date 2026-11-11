@@ -227,6 +227,8 @@ return {
 	StationById = StationById,
 	CompanionStation = CompanionStation,
 	STATION_MATCH = 1.2,
+	VACANT_SPEED = -0.02,
+	VACANT_CANNON = -0.02,
 	STATION_MISMATCH = 0.6,
 	MAX_SLOTS = 6,
 	-- 배 등급별로 함께할 수 있는 동료 수 (캐러벨·플루트 2, 프리깃·갈레온 4, 증기선 5, 철갑선 6)
