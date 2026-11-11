@@ -5321,6 +5321,12 @@ task.spawn(function()
 			else
 				workspace:SetAttribute("DevResult", "TACTICS_OPEN no battle in view")
 			end
+		elseif type(dc) == "string" and string.sub(dc, 1, 7) == "CodexK_" then
+			-- 개발 캡처용: 백과사전의 지식 트리 화면(개요 또는 학문 상세)을 바로 연다
+			workspace:SetAttribute("DevCall", nil)
+			local which = string.sub(dc, 8)
+			codexField = if which == "overview" then nil else "k:" .. which
+			openTab("codex")
 		elseif type(dc) == "string" and string.sub(dc, 1, 4) == "Tab_" then
 			workspace:SetAttribute("DevCall", nil)
 			openTab(string.sub(dc, 5))

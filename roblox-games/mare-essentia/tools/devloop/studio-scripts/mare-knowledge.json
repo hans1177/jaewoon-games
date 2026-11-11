@@ -1,0 +1,82 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'KN_NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] if not f or not pl then return 'KN_STAGE ok=false no hook' end local r=f:Invoke(pl,'QAKnowledge',{}) return 'KN_STAGE ok='..tostring(r and r.ok)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('State',{}) workspace:SetAttribute('DevCall','State') local k=a and a.view and a.view.knowledge return 'KN_VIEW disc='..tostring(k and #k.disciplines)..' tree='..tostring(k and k.tree and #k.tree)..' gates='..tostring(k and k.gates and #k.gates)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','CodexK_overview') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "k0_overview"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','CodexK_botany') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "k1_botany_locked"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','CodexK_philosophy') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "k2_philosophy"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','CodexK_navigation') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "k3_navigation"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('JointPresent',{disc='physics'}) local b=r:InvokeServer('BuildLandmark',{id='museum'}) local c=r:InvokeServer('Launch',{goodId='indigo'}) local s=r:InvokeServer('State',{}) workspace:SetAttribute('DevCall','State') return 'KN_ACT joint='..tostring(a and a.ok)..' build='..tostring(b and b.ok)..' launch='..tostring(c and c.ok)..' | '..tostring(a and a.message):sub(1,80)..' | '..tostring(b and b.message):sub(1,60)..' | '..tostring(c and c.message):sub(1,80)"
+ }
+]
