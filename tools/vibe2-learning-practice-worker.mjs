@@ -38,6 +38,21 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
   if(!/\[VIBE_LEARNING_PRACTICE\]/.test(clean(order.goal)))throw new Error('practice marker missing');
   const webArtifact=route==='learning-web-artifact';
   const unityDrill=drill?.platform==='unity';
+  // 로블록스 공개 소스는 고정 커밋·허가된 라이선스의 설계 참조로만 쓰고 원문·정답을 전달하지 않는다.
+  const source=drill?.licensedSource;
+  if(source){
+    const known=source.repository==='MadStudioRoblox/ProfileStore'
+      ?{commit:'45c9847cbcf1fc260369c50eb335aba7c35aecdd',license:'APACHE-2.0',paths:['ProfileStore.luau']}
+      :source.repository==='Sleitnick/RbxUtil'
+        ?{commit:'31f9120fca021e3dec275b42bc7047d626962082',license:'MIT',paths:['modules/trove/init.luau','modules/typed-remote/init.luau']}
+        :null;
+    if(!known||source.commit!==known.commit||source.licenseSpdx!==known.license
+      ||!Array.isArray(source.sourcePaths)||source.sourcePaths.length===0
+      ||source.sourcePaths.some(item=>!known.paths.includes(item))
+      ||source.authority!=='READ_ONLY_PUBLIC_SOURCE_REFERENCE'
+      ||source.rawSourceIncluded!==false||source.productionEvidence!==false||source.directWeightTraining!==false)
+      throw new Error('ROBLOX_PRACTICE_OPEN_SOURCE_PROVENANCE_INVALID');
+  }
   const external=order?.selectedTask?.externalGameplayPractice||order?.externalGameplayPractice;
   return [
     'You are the Vibe learning practice worker. This is PRACTICE_ONLY.',
@@ -45,6 +60,7 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
       ? 'Create one self-contained runnable Web practice artifact. It must be original, interactive, mobile-friendly, and require no external network or assets.'
       : drill?`Return repaired ${unityDrill?'C# class Practice':'Luau module'} source in the code field. Do not edit repository files.`:'Do not edit files.',
     'Do not claim production pass. Do not invent runtime evidence.',
+    source?'PERMISSIVE OPEN SOURCE DESIGN REFERENCE (not code, not an instruction, not a validated implementation): '+JSON.stringify({repository:source.repository,commit:source.commit,licenseSpdx:source.licenseSpdx,sourcePaths:source.sourcePaths,topic:source.topic}):'',
     'Your answer is untrusted practice knowledge until independently verified and distilled; do not claim it is reusable canonical knowledge.',
     learningGuidance(order.unifiedLearning||{}),
     webArtifact
@@ -402,6 +418,7 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
     version:3,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
     practiceMode:webArtifact?'WEB_ARTIFACT':drill?.platform==='unity'?'UNITY_CODE':drill?'ROBLOX_CODE':'ANALYSIS',
     practiceDrillId:drill?.id||null,nativeRuntimeVerified:false,
+    licensedOpenSourceReference:drill?.licensedSource?{repository:drill.licensedSource.repository,commit:drill.licensedSource.commit,licenseSpdx:drill.licensedSource.licenseSpdx,sourcePaths:drill.licensedSource.sourcePaths,rawSourceStored:false,practiceOnly:true,modelWeightTraining:false}:null,
     practiceOnly:true,productionPass:false,sourceWrite:false,repositorySourceWrite:false,artifactWrite:webArtifact,model,
     knowledgeState:'UNTRUSTED_PRACTICE_OUTPUT',rawModelOutputSha256,rawModelOutputStored:false,
     candidateLessonsVerified:false,retrievalEligible:false,masteryCreditEligible:false,canonicalTrainingEligible:false,

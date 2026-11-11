@@ -199,6 +199,105 @@
         "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; for n=1,50 do assert(solve(s,\"k\"..n,n,8)<=8) end; assert(#s.order==8 and s.values.k1==nil and s.values.k50==50)",
         "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; solve(s,\"a\",1,3); solve(s,\"b\",2,3); solve(s,\"a\",9,3); assert(#s.order==2 and s.values.a==9); solve(s,\"c\",3,3); solve(s,\"d\",4,3); assert(#s.order==3 and s.values.a==nil)"
       ]
+    },
+    {
+      "id": "oss-profile-lease",
+      "level": "고급",
+      "failure": "CROSS_SERVER_SAVE_SESSION_OWNERSHIP",
+      "domains": [
+        "ROBLOX_DATASTORE",
+        "SAVE",
+        "RECOVERY"
+      ],
+      "licensedSource": {
+        "repository": "MadStudioRoblox/ProfileStore",
+        "commit": "45c9847cbcf1fc260369c50eb335aba7c35aecdd",
+        "licenseSpdx": "APACHE-2.0",
+        "sourcePaths": [
+          "ProfileStore.luau"
+        ],
+        "topic": "DATASTORE_SESSION_FENCING",
+        "authority": "READ_ONLY_PUBLIC_SOURCE_REFERENCE",
+        "rawSourceIncluded": false,
+        "productionEvidence": false,
+        "directWeightTraining": false
+      },
+      "scenario": "오픈소스 ProfileStore의 세션 소유권 원리를 참고한 독립 Luau 연습이다. 함수(state, ownerId, nextEpoch)를 반환하라. ownerId는 빈 문자열이 아닌 string, nextEpoch는 현재 state.epoch보다 큰 양의 정수여야 한다. state.owner가 nil이거나 같은 ownerId인 경우에만 소유권 및 세대 번호를 함께 갱신하고 true를 반환하라. 다른 서버 소유·오래된 번호·비정상 입력이면 false를 반환하고 owner, epoch, saveKey, value를 변경하지 않는다. 실제 DataStore 통신이나 원본 코드는 사용하지 않는다.",
+      "broken": "return function(state, ownerId, nextEpoch)\n    state.owner = ownerId\n    state.epoch = nextEpoch\n    return true\nend",
+      "reference": "return function(state, ownerId, nextEpoch)\n    if type(ownerId) ~= \"string\" or ownerId == \"\" then return false end\n    if type(nextEpoch) ~= \"number\" or nextEpoch ~= nextEpoch or nextEpoch % 1 ~= 0 or nextEpoch < 1 or nextEpoch <= state.epoch then return false end\n    if state.owner ~= nil and state.owner ~= ownerId then return false end\n    state.owner = ownerId\n    state.epoch = nextEpoch\n    return true\nend",
+      "tests": [
+        "local f=require(\"./candidate\")\nlocal s={epoch=0,saveKey=\"progress-v1\",value=9}; assert(f(s,\"server-A\",1)); assert(not f(s,\"server-B\",2)); assert(s.owner==\"server-A\" and s.epoch==1 and s.saveKey==\"progress-v1\" and s.value==9); assert(f(s,\"server-A\",3)); assert(not f(s,\"server-A\",3)); assert(s.epoch==3)",
+        "local f=require(\"./candidate\")\nlocal s={owner=\"server-K\",epoch=17,saveKey=\"keep\",value=12}; for _,v in ipairs({-1,0,1,17,1.5}) do assert(not f(s,\"server-K\",v)) end; assert(not f(s,\"\",18)); assert(not f(s,5,18)); assert(not f(s,\"server-X\",19)); assert(s.owner==\"server-K\" and s.epoch==17 and s.value==12 and s.saveKey==\"keep\"); assert(f(s,\"server-K\",18))"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local s={epoch=0,value=1};assert(f(s,\"alpha\",1));assert(not f(s,\"beta\",2));assert(s.epoch==1)"
+      ]
+    },
+    {
+      "id": "oss-trove-cleanup",
+      "level": "고급",
+      "failure": "STALE_EVENT_RESOURCE_REUSE",
+      "domains": [
+        "ROBLOX_REPLICATION",
+        "MOBILE_INPUT",
+        "UI_STATE"
+      ],
+      "licensedSource": {
+        "repository": "Sleitnick/RbxUtil",
+        "commit": "31f9120fca021e3dec275b42bc7047d626962082",
+        "licenseSpdx": "MIT",
+        "sourcePaths": [
+          "modules/trove/init.luau"
+        ],
+        "topic": "RESOURCE_CLEANUP_ONCE",
+        "authority": "READ_ONLY_PUBLIC_SOURCE_REFERENCE",
+        "rawSourceIncluded": false,
+        "productionEvidence": false,
+        "directWeightTraining": false
+      },
+      "scenario": "오픈소스 RbxUtil Trove의 리소스 수명 관리 원리를 참고한 독립 Luau 연습이다. 함수(state)를 반환하라. state.cleanup에 담긴 콜백들을 한 번씩 실행하고, 개별 콜백이 오류를 내더라도 나머지를 계속 처리하라. 최초 실행 시 state.closed=true, state.cleanup={}로 확정한 뒤 콜백을 보호 실행하고 true 반환. 이미 closed면 아무 콜백도 재실행하지 않고 false 반환. 실제 Instance나 RBXScriptConnection은 사용하지 않는다.",
+      "broken": "return function(state)\n    for _, callback in ipairs(state.cleanup) do callback() end\n    return true\nend",
+      "reference": "return function(state)\n    if state.closed == true then return false end\n    state.closed = true\n    local callbacks = state.cleanup or {}\n    state.cleanup = {}\n    for _, callback in ipairs(callbacks) do pcall(callback) end\n    return true\nend",
+      "tests": [
+        "local f=require(\"./candidate\")\nlocal n=0;local s={cleanup={function() n+=1 end,function() error(\"disconnect failure\") end,function() n+=2 end}};assert(f(s));assert(n==3 and s.closed==true and #s.cleanup==0);assert(not f(s));assert(n==3)",
+        "local f=require(\"./candidate\")\nlocal n=0;for k=1,15 do local s={closed=false,cleanup={function() n+=1 end,function() n+=10 end}};assert(f(s));assert(not f(s)) end;assert(n==165);local empty={};assert(f(empty) and empty.closed==true and #empty.cleanup==0)"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local n=0;local s={cleanup={function() n+=1 end}};assert(f(s));assert(not f(s));assert(n==1)"
+      ]
+    },
+    {
+      "id": "oss-typed-remote-sequence",
+      "level": "고급",
+      "failure": "REMOTE_REPLAY_CROSS_PLAYER_COLLISION",
+      "domains": [
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_REPLICATION"
+      ],
+      "licensedSource": {
+        "repository": "Sleitnick/RbxUtil",
+        "commit": "31f9120fca021e3dec275b42bc7047d626962082",
+        "licenseSpdx": "MIT",
+        "sourcePaths": [
+          "modules/typed-remote/init.luau"
+        ],
+        "topic": "PER_PLAYER_REMOTE_SEQUENCE",
+        "authority": "READ_ONLY_PUBLIC_SOURCE_REFERENCE",
+        "rawSourceIncluded": false,
+        "productionEvidence": false,
+        "directWeightTraining": false
+      },
+      "scenario": "오픈소스 RbxUtil typed-remote의 타입 경계 원리를 참고한 독립 Luau 연습이다. 함수(state, playerId, request)를 반환하라. state.balances[playerId]가 존재하는 플레이어만 허용한다. request는 table이고 sequence는 1 이상의 정수이면서 해당 플레이어의 state.lastSequence보다 커야 한다. delta는 1~10 정수여야 한다. 검증 성공 후에만 해당 플레이어 balance와 lastSequence를 동시에 갱신하고 true를 반환한다. 다른 플레이어의 시퀀스 번호와 충돌하지 않아야 하며, 거부 시 상태를 변경하지 않는다. 실제 RemoteEvent는 사용하지 않는다.",
+      "broken": "return function(state, playerId, request)\n    state.balances[playerId] = (state.balances[playerId] or 0) + request.delta\n    state.lastSequence[playerId] = request.sequence\n    return true\nend",
+      "reference": "return function(state, playerId, request)\n    if type(playerId) ~= \"string\" or state.balances[playerId] == nil or type(request) ~= \"table\" then return false end\n    local sequence, delta = request.sequence, request.delta\n    if type(sequence) ~= \"number\" or sequence ~= sequence or sequence % 1 ~= 0 or sequence < 1 or sequence <= (state.lastSequence[playerId] or 0) then return false end\n    if type(delta) ~= \"number\" or delta ~= delta or delta % 1 ~= 0 or delta < 1 or delta > 10 then return false end\n    state.balances[playerId] += delta\n    state.lastSequence[playerId] = sequence\n    return true\nend",
+      "tests": [
+        "local f=require(\"./candidate\")\nlocal s={balances={p1=0,p2=4},lastSequence={}};assert(f(s,\"p1\",{sequence=1,delta=3}));assert(f(s,\"p2\",{sequence=1,delta=2}));assert(not f(s,\"p1\",{sequence=1,delta=3}));assert(not f(s,\"p2\",{sequence=2,delta=11}));assert(s.balances.p1==3 and s.balances.p2==6 and s.lastSequence.p1==1 and s.lastSequence.p2==1)",
+        "local f=require(\"./candidate\")\nlocal s={balances={a=7},lastSequence={a=2}};assert(not f(s,\"b\",{sequence=3,delta=1}));assert(not f(s,\"a\",{sequence=3,delta=0}));assert(not f(s,\"a\",{sequence=3.5,delta=2}));assert(not f(s,\"a\",{sequence=2,delta=2}));assert(not f(s,\"a\",nil));assert(s.balances.a==7 and s.lastSequence.a==2);assert(f(s,\"a\",{sequence=3,delta=10}));assert(s.balances.a==17 and s.lastSequence.a==3)"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local s={balances={a=1,b=2},lastSequence={}};assert(f(s,\"a\",{sequence=1,delta=1}));assert(f(s,\"b\",{sequence=1,delta=1}))"
+      ]
     }
   ],
   "platformDrills": [

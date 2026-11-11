@@ -537,3 +537,37 @@ test('learning practice uses external Gemini API with no local server fallback',
 // [독립 실행] 기존 브라우저가 준비된 정식 practice CI에서만 실제 게임 후보를 검증한다.
 if(process.env.VIBE2_PLAYWRIGHT_MODULE)
   await import('./vibe2-complex-codegen-browser.test.mjs');
+
+test('로블록스 공개소스 참고 훈련은 라이선스·정확한 커밋을 묶고 정답·숨은 시험을 감춘다',()=>{
+  const drills=robloxCurriculum.drills.filter(row=>row.licensedSource);
+  assert.deepEqual(drills.map(row=>row.id),['oss-profile-lease','oss-trove-cleanup','oss-typed-remote-sequence']);
+  for(const drill of drills){
+    const source=drill.licensedSource;
+    assert.ok(['MIT','APACHE-2.0'].includes(source.licenseSpdx));
+    assert.match(source.commit,/^[a-f0-9]{40}$/);
+    assert.ok(source.sourcePaths.every(x=>x.endsWith('.luau')));
+    assert.equal(source.authority,'READ_ONLY_PUBLIC_SOURCE_REFERENCE');
+    assert.equal(source.rawSourceIncluded,false);
+    assert.equal(source.productionEvidence,false);
+    assert.equal(source.directWeightTraining,false);
+    const prompt=buildPracticePrompt({executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] ROBLOX_CODE'},{drill});
+    assert.match(prompt,/PERMISSIVE OPEN SOURCE DESIGN REFERENCE/);
+    assert.ok(prompt.includes(source.repository));
+    assert.ok(prompt.includes(source.commit));
+    assert.ok(prompt.includes(drill.scenario));
+    assert.ok(!prompt.includes(drill.reference));
+    for(const hidden of drill.tests)assert.ok(!prompt.includes(hidden));
+  }
+});
+
+test('공개 로블록스 훈련 출처 위조와 원문 입력은 거부한다',()=>{
+  const drill=robloxCurriculum.drills.find(row=>row.id==='oss-profile-lease');
+  const order={executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] ROBLOX_CODE'};
+  for(const licensedSource of [
+    {...drill.licensedSource,licenseSpdx:'GPL-3.0'},
+    {...drill.licensedSource,commit:'b'.repeat(40)},
+    {...drill.licensedSource,rawSourceIncluded:true},
+    {...drill.licensedSource,repository:'Other/Unverified'},
+    {...drill.licensedSource,sourcePaths:['../hidden.luau']}
+  ])assert.throws(()=>buildPracticePrompt(order,{drill:{...drill,licensedSource}}),/ROBLOX_PRACTICE_OPEN_SOURCE_PROVENANCE_INVALID/);
+});
