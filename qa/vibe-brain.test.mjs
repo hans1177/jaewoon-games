@@ -232,3 +232,18 @@ test('워크플로: 플레이북·학습용 기록을 데이터 브랜치에서 
   assert.ok(y.includes('origin "$branch"'));
   assert.ok(!y.includes('--force'));
 });
+
+test('모델 이름이 바뀌어도 목록에서 쓸 모델을 스스로 고른다(Groq·OpenRouter)', async () => {
+  const { pickGroqModels, pickOpenRouterModels } = await import('../tools/vibe-llm.mjs');
+  const g = pickGroqModels(['whisper-large-v3', 'llama-3.1-8b-instant', 'openai/gpt-oss-120b', 'llama-3.3-70b-versatile', 'meta-llama/llama-guard-4-12b']);
+  assert.deepEqual(g.slice(0, 2), ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile']);
+  assert.ok(!g.some(x => /whisper|guard/.test(x)));
+  const free = { prompt: '0', completion: '0' };
+  const o = pickOpenRouterModels([
+    { id: 'google/lyria-3-pro-preview', pricing: free }, { id: 'cohere/north-mini-code:free', pricing: free },
+    { id: 'paid/model', pricing: { prompt: '0.1', completion: '0.1' } }, { id: 'openrouter/free', pricing: free },
+    { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', pricing: free }]);
+  assert.equal(o[0], 'cohere/north-mini-code:free');
+  assert.equal(o.at(-1), 'openrouter/free');
+  assert.ok(!o.includes('paid/model') && !o.some(x => /lyria/.test(x)));
+});
