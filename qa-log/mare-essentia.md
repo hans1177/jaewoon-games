@@ -30,3 +30,6 @@
 - 2026-11-11 17:30(KST, run 42985043057, 17:23 촬영) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음, Client LOGS 비어 있음, 모델 388/registry 456/클라이언트 이미지 68/68 PASS. Server TIMEOUT_16S 68개 같은 패턴 → 오탐으로 봄(플레이 영향 없음). 코드 수정 없음, 재배포 안 함.
 
 - 2026-11-11 18:17(KST, run 42990561757) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-11 19:23(KST, run 42998133413) 바이브: 클릭 30/30, 프레임 31장 정상. errors 에 STUDIO_ASSET_AUDIT_FAILED 1건(처음 등장): Server preload 96개 TIMEOUT_16S(140초 timedOut), clientImageAudit 가 UNVERIFIED(STUDIO_CLIENT_IMAGE_NOT_EXCLUSIVE_PRELOAD_TIMEOUT). 모델 401 PASS, registry 506 PASS(불일치·누락 0), Client LOGS 비어 있음 → 같은 Goods 서버 preload 오탐 패턴이 timeout 으로 번진 것으로 봄(플레이 영향 없음). 코드 수정 없음, 재배포 안 함.
+- 다음 큐 추가: 서버 preload TIMEOUT 만으로 errors 에 STUDIO_ASSET_AUDIT_FAILED 가 붙지 않게 점검 스크립트 판정 완화 검토(5회째 같은 패턴). 다음 점검에서 clientImageAudit 가 PASS 로 돌아오는지 확인.

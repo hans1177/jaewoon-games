@@ -32,3 +32,5 @@
 - 2026-11-11 17:30(KST, run 42984418690, 17:18 촬영) 바이브: 점검 실패 — errors 에 screen_capture 'Target is not reachable (DMN_RSRVD_FOCUSED)', 클릭 0/30, 프레임 0장, 2단계에서 중단(12:19 와 같은 증상 재발: Studio Play/MCP 꺼짐). 코드 문제 아님. 같은 날 13:30·14:30 은 정상이었으므로 일시적일 수 있음. 사람 확인: PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기. 코드 수정 없음, 재배포 안 함.
 
 - 2026-11-11 18:12(KST, run 42990205792) 바이브: 점검 실패 — screen_capture DMN_RSRVD_FOCUSED, 클릭 0/30, 프레임 0장(17:18 과 같은 증상 반복: Studio Play/MCP 꺼짐). 코드 문제 아님. 사람 확인: PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-11 19:19(KST, run 42996877932) 바이브: 점검 정상 복구 — 클릭 30/30, 프레임 31장, errors 비어 있음(MCP 다시 켜진 것으로 봄). Client/Server LOGS 'permission for Asset' 는 같은 ID 들만 남음(Client 4개: 108733651071071·120799643869835·71208441396858·101876091951426, Server: villageRoof·villageDoor·villageStoneWall·item_star·item_potion5_filled). 원인은 여전히 시크릿(ROBLOX_OPEN_CLOUD_API_KEY/CREATOR_USER_ID) 비어 있어 재업로드 불가 → 사람 작업. 코드 수정 없음, 재배포 안 함.
