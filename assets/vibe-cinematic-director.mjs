@@ -10,9 +10,12 @@ export class VibeCinematicDirector {
  constructor({adapter={},quality='high',reducedMotion=false}={}){
   this.adapter=adapter;this.quality=quality;this.reducedMotion=!!reducedMotion;this.time=0;this.tracks=new Map();this.events=[];this.nextId=0;
  }
- addTrack(name,keyframes,{loop=false,easing='quint',onComplete=null}={}){
+ // [시네마틱 감독] 기존 카메라 트랙에 선택적으로 연출 비트를 묶는다. 공격/판정 타이밍과 무관하다.
+ addTrack(name,keyframes,{loop=false,easing='quint',onComplete=null,stageBeats=false}={}){
   if(!name||!Array.isArray(keyframes)||keyframes.length<2)throw Error('Invalid cinematic track');
-  const frames=keyframes.map(k=>({at:k.at,position:vec(k.position),lookAt:vec(k.lookAt),fov:Number.isFinite(k.fov)?k.fov:45,weight:Number.isFinite(k.weight)?k.weight:1,event:k.event||null}));
+  const frames=keyframes.map((k,index)=>({at:k.at,position:vec(k.position),lookAt:vec(k.lookAt),
+   fov:Number.isFinite(k.fov)?k.fov:45,weight:Number.isFinite(k.weight)?k.weight:1,
+   event:k.event||(stageBeats?(index===0?'establish':index===keyframes.length-1?'resolve':'focus'):null)}));
   if(frames.some((f,i)=>!Number.isFinite(f.at)||f.at<0||(i>0&&f.at<=frames[i-1].at)))throw Error('Keyframe times must increase');
   if(!vibeEasing[easing])throw Error('Unknown easing');
   this.tracks.set(name,{frames,loop,easing,onComplete,elapsed:0,eventsFired:new Set(),finished:false});
