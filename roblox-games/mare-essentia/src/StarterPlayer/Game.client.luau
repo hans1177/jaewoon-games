@@ -182,8 +182,8 @@ for id, spec in {
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
 	-- 주류 묘사는 Roblox 기준상 제한되어, 술병·술잔 대신 재료(포도·보리·벼) 그림으로 보여 준다
 	-- 술 종류는 모두 나무통으로 통일하고 색만 달리한다 (주류 묘사 제한)
-	beer = { "Cargo", "barrel", Color3.fromRGB(196, 138, 46) }, wine = { "Cargo", "barrel", Color3.fromRGB(112, 32, 54) },
-	sake = { "Cargo", "barrel", Color3.fromRGB(226, 214, 186) },
+	-- 제한된 주류 원료 그림(beer/sake)은 SAFE_INGREDIENT_ICON의 승인 이미지를 유지한다.
+	wine = { "Cargo", "barrel", Color3.fromRGB(112, 32, 54) },
 } do
 	GOOD_ICON[id] = spec
 end
@@ -193,9 +193,20 @@ for goodsId, cargoAsset in {
 	cheese = "cheese", cloth = "textiles-a", coffee = "cup-coffee", fish = "fish",
 	glass = "glass", iron = "iron-bars", olive_oil = "bottle-oil", pepper = "pepper-mill",
 	salt = "shaker-salt", tea = "cup-tea", timber = "wood-log-stack",
+	-- [교역품 3D 확대] 등록된 동일 품목 실물만 추가한다. 새 도형/임의 모델 없음.
+	maize = "corn", copper = "copper-bar", silver = "silver-bar", gems = "gems-sack",
 } do
 	if AssetIds["Cargo/" .. cargoAsset] and AssetIds["Goods/" .. goodsId] then
 		GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }
+	end
+end
+-- [교역품 자동 3D 연결] 기존 등록기가 동일 상품 이름으로 만든 전용 Cargo 모델을 인식한다.
+-- 체험 권한·원본 검증은 기존 업로더와 서버 AssetLoader가 담당한다. 미등록은 승인 원화 유지.
+-- 제한 상품은 원료 아이콘 정책을 유지하고, 타 상품 메시로 대체하지 않는다.
+for goodsId in PortData.Goods do
+	if not SAFE_INGREDIENT_ICON[goodsId] and goodsId ~= "wine" and goodsId ~= "rum" and goodsId ~= "tobacco"
+		and AssetIds["Cargo/" .. goodsId] and AssetIds["Goods/" .. goodsId] then
+		GOOD_ICON[goodsId] = { "Cargo", goodsId, nil, "Goods/" .. goodsId }
 	end
 end
 
