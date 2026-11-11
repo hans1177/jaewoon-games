@@ -283,7 +283,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		return portrait
 	end
 	-- [3D 통일] 3D 모델이 있는 상품은 작은 목록과 상세 모두 같은 3D 모델로 보여 준다 (그림과 모델이 섞여 보이지 않게).
-	if kind == "Goods" or kind == "Menu" then
+	if kind == "Goods" or kind == "Menu" or (kind == "Cargo" and px < 64 and type(smallArt) == "string" and AssetIds[smallArt]) then
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
 		card.Size = UDim2.fromOffset(px, px)
@@ -294,7 +294,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		gradient.Color = ColorSequence.new(Color3.fromRGB(39, 50, 65), Color3.fromRGB(17, 23, 35))
 		gradient.Rotation = 90
 		gradient.Parent = card
-		local assetId = AssetIds[kind .. "/" .. asset]
+		local assetId = if kind == "Cargo" and smallArt then AssetIds[smallArt] else AssetIds[kind .. "/" .. asset]
 		if assetId then
 			-- [2.5D] 같은 승인 원본의 그림·그림자층만 겹친다. 파츠·가짜 모델 생성 없음.
 			local imageId = "rbxassetid://" .. tostring(assetId)
@@ -343,6 +343,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		end
 		return card
 	end
+	-- [교역품 3D] 승인된 Cargo 모델만 표시하고, 지연 로딩 동안에는 동일 상품 원화를 유지한다.
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
 	vf.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
@@ -359,57 +360,82 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 	cam.FieldOfView = 35
 	cam.Parent = vf
 	vf.CurrentCamera = cam
+	local world = Instance.new("WorldModel")
+	world.Name = "Display"
+	world.Parent = vf
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = kind and lib and lib:FindFirstChild(kind)
-	local tpl = group and asset and group:FindFirstChild(asset)
-	if tpl and tpl:IsA("Model") then
-		local m = tpl:Clone()
-		for _, d in m:GetDescendants() do
-			if d:IsA("BasePart") then
-				d.Anchored = true
-				if tint and d:IsA("MeshPart") then
-					d.Color = tint
-				end
+	local currentModel, readyConnection, fallback = nil, nil, nil
+
+	-- [모델 적용] 등록된 실제 모델의 메시·텍스처를 유지하며 복제한다.
+	local function showRegisteredModel(template)
+		if currentModel or not template or not template:IsA("Model") or not template:FindFirstChildWhichIsA("BasePart", true) then
+			return false
+		end
+		local model = template:Clone()
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.Anchored = true
+				if tint and part:IsA("MeshPart") then part.Color = tint end
 			end
 		end
-		local world = Instance.new("WorldModel")
-		world.Name = "Display"
-		world.Parent = vf
-		m.Parent = world
-		local cf, size = m:GetBoundingBox()
-		-- 수직·수평 시야에 모델 전체가 들어오도록 바운딩 구로 거리를 계산한다.
+		model.Parent = world
+		local cf, size = model:GetBoundingBox()
 		local radius = math.max(size.Magnitude * 0.5, 0.1)
 		local reach = radius / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.08
 		if kind == "People" then
-			-- 동료 얼굴은 전신 도감이 아니라 반신 초상 구도로 보여 준다.
 			local focus = cf.Position + Vector3.new(0, size.Y * 0.30, 0)
 			cam.FieldOfView = 34
 			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.12, 0.08, 1).Unit * (size.Y * 0.88), focus)
 		else
 			cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
 		end
+		currentModel = model
+		if fallback then fallback:Destroy(); fallback = nil end
+		if readyConnection then readyConnection:Disconnect(); readyConnection = nil end
 		if px >= 60 then
-			addItemMotion({ gui = vf, model = m, center = cf.Position, base = m:GetPivot() })
+			addItemMotion({ gui = vf, model = model, center = cf.Position, base = model:GetPivot() })
 		end
-	else
+		return true
+	end
+
+	local template = group and asset and group:FindFirstChild(asset)
+	if not showRegisteredModel(template) then
+		-- [원화 대기] 정확히 동일한 교역품 승인 PNG 우선. 임의 상품 그림은 사용하지 않는다.
+		local originalId = if type(smallArt) == "string" then AssetIds[smallArt] else nil
 		local knownId = if kind and asset then AssetIds[kind .. "/" .. asset] else nil
-		if knownId then
+		if originalId or knownId then
 			local image = Instance.new("ImageLabel")
+			image.Name = if originalId then "ApprovedGoodsArt" else "RegisteredModelThumbnail"
 			image.Size = UDim2.fromScale(1, 1)
 			image.BackgroundTransparency = 1
-			image.Image = "rbxthumb://type=Asset&id=" .. tostring(knownId) .. "&w=150&h=150"
+			image.Image = if originalId then "rbxassetid://" .. tostring(originalId)
+				else "rbxthumb://type=Asset&id=" .. tostring(knownId) .. "&w=150&h=150"
 			image.ScaleType = Enum.ScaleType.Fit
 			image.Parent = vf
+			fallback = image
 		else
-			local q = Instance.new("TextLabel")
-			q.BackgroundTransparency = 1
-			q.Size = UDim2.fromScale(1, 1)
-			q.Text = labelText or "자산 준비"
-			q.TextWrapped = true
-			q.TextColor3 = Color3.fromRGB(232, 209, 154)
-			q.Font = Enum.Font.GothamBold
-			q.TextSize = math.min(14, math.max(10, px / 4))
-			q.Parent = vf
+			local nameTile = Instance.new("TextLabel")
+			nameTile.Name = "UnregisteredAssetLabel"
+			nameTile.BackgroundTransparency = 1
+			nameTile.Size = UDim2.fromScale(1, 1)
+			nameTile.Text = labelText or "자산 준비"
+			nameTile.TextWrapped = true
+			nameTile.TextColor3 = Color3.fromRGB(232, 209, 154)
+			nameTile.Font = Enum.Font.GothamBold
+			nameTile.TextSize = math.min(14, math.max(10, px / 4))
+			nameTile.Parent = vf
+			fallback = nameTile
+		end
+		-- [지연 전환] 등록 메시가 도착하면 열린 카드의 그림을 3D로 바꾼다.
+		if kind == "Cargo" and group and asset and knownId then
+			readyConnection = group.ChildAdded:Connect(function(child)
+				if child.Name == asset then showRegisteredModel(child) end
+			end)
+			vf.Destroying:Connect(function()
+				if readyConnection then readyConnection:Disconnect(); readyConnection = nil end
+			end)
+			showRegisteredModel(group:FindFirstChild(asset))
 		end
 	end
 	vf.Parent = parent
