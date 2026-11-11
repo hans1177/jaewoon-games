@@ -6,7 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {mulberry32,blenderAvailable} from '../tools/vibe-variation-gym.mjs';
 import {kelvinToRgb,sample,perturb,SPACE,toRoblox,toJob,mergeLearned,runLightSearch} from '../tools/vibe-light-search.mjs';
-import {evaluateBake,runBake} from '../tools/vibe-normal-bake.mjs';
+import {evaluateBake,runBake,inspectBakeSource,selectBakeParents} from '../tools/vibe-normal-bake.mjs';
 
 const imaging=spawnSync('python3',['-c','import PIL,numpy'],{encoding:'utf8'}).status===0;
 const table=JSON.parse(fs.readFileSync('assets/roblox/common-look-v1/look-presets.json','utf8'));
@@ -51,6 +51,39 @@ test('노멀 굽기 판정: 가벼워지고 요철이 실제로 구워져야 합
   assert.match(evaluateBake({ok:true,trianglesHigh:1000,trianglesLow:200,normalDeviation:0}).failures[0],/NOTHING_BAKED/);
   assert.match(evaluateBake({ok:true,trianglesHigh:90000,trianglesLow:20000,normalDeviation:0.05}).failures.join(),/TOO_HEAVY/);
   assert.equal(evaluateBake({ok:false}).pass,false);
+});
+
+test('노멀맵 연습은 실제 정적 원본의 면 수를 확인하고 부족한 원본을 제외한다',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bake-static-'));
+  const low=path.join(root,'low.obj'),high=path.join(root,'high.obj');
+  fs.writeFileSync(low,'o low\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
+  fs.writeFileSync(high,'o high\nv 0 0 0\nv 1 0 0\nv 0 1 0\n'+
+    Array.from({length:1800},()=> 'f 1 2 3\n').join(''));
+  const simple=inspectBakeSource(low),detailed=inspectBakeSource(high);
+  assert.equal(simple.eligible,false);assert.equal(simple.reason,'SOURCE_HAS_INSUFFICIENT_GEOMETRY');
+  assert.equal(detailed.eligible,true);assert.equal(detailed.triangles,1800);
+  assert.equal(detailed.nativeRuntimeVerified,false);
+  assert.deepEqual(selectBakeParents([{id:'low',file:low},{id:'high',file:high}],3).map(x=>x.id),['high']);
+  assert.equal(inspectBakeSource(path.join(root,'missing.obj')).eligible,false);
+});
+
+test('노멀맵 전처리는 관절과 애니메이션 원본을 구조적으로 보호한다',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bake-rig-')),rig=path.join(root,'rig.glb');
+  const payload=Buffer.from(JSON.stringify({
+    asset:{version:'2.0'},buffers:[{byteLength:0}],accessors:[{count:9000}],
+    meshes:[{primitives:[{attributes:{POSITION:0}}]}],
+    skins:[{joints:[0]}],animations:[{channels:[],samplers:[]}]
+  }),'utf8');
+  const aligned=Buffer.concat([payload,Buffer.alloc((4-payload.length%4)%4,32)]);
+  const glb=Buffer.alloc(20+aligned.length);
+  glb.write('glTF',0);glb.writeUInt32LE(2,4);glb.writeUInt32LE(glb.length,8);
+  glb.writeUInt32LE(aligned.length,12);glb.write('JSON',16);aligned.copy(glb,20);
+  fs.writeFileSync(rig,glb);
+  const result=inspectBakeSource(rig);
+  assert.equal(result.triangles,3000);assert.equal(result.skinned,true);
+  assert.equal(result.eligible,false);
+  assert.equal(result.reason,'ANIMATED_ACTOR_REQUIRES_RIG_PRESERVING_AUTHORING');
+  assert.deepEqual(selectBakeParents([{id:'rig',file:rig}],3),[]);
 });
 
 test('실제 Blender: 조명 탐색이 렌더·채점해 최고 조합을 돌려주고, 굽기가 줄이고 노멀맵을 만든다', {skip:(!blenderAvailable()||!imaging)&&'Blender 또는 Pillow/numpy 없음'}, () => {
