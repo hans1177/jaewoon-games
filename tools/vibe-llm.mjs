@@ -56,20 +56,23 @@ export async function openaiCompatCall({ url, key, model, prompt, fetchFn = fetc
   return text;
 }
 
-// providers: [{name, call: async(prompt)=>text}] 를 순서대로 시도한다.
+// providers: [{name, call: async(prompt)=>text}] 를 순서대로 시도한다. trace 는 시도마다 {name, ok, status, message}.
 export async function askChain({ prompt, providers, log = () => {} }) {
-  const errors = [];
+  const trace = [];
   for (const p of providers) {
     try {
       const text = await p.call(prompt);
+      trace.push({ name: p.name, ok: true });
       log(`LLM_OK ${p.name}`);
-      return { text, provider: p.name, errors };
+      return { text, provider: p.name, errors: trace.filter(t => !t.ok).map(t => `${t.name}:${t.message}`), trace };
     } catch (e) {
-      errors.push(`${p.name}:${e.message}`);
+      trace.push({ name: p.name, ok: false, status: e.status || 0, message: e.message });
       log(`LLM_FAIL ${p.name} ${e.message}`);
     }
   }
-  throw new LlmError('ALL_PROVIDERS_FAILED ' + errors.join(' | '));
+  const err = new LlmError('ALL_PROVIDERS_FAILED ' + trace.map(t => `${t.name}:${t.message}`).join(' | '));
+  err.trace = trace;
+  throw err;
 }
 
 // 환경에서 공급자 목록을 만든다. Gemini 는 allowGemini(무료 확인 변수)가 참일 때만 쓴다.
