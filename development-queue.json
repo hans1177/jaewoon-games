@@ -1370,10 +1370,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-11T16:48:57.500Z",
+      "updatedAt": "2026-11-11T16:50:46.722Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2095,25 +2095,24 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "791bc79ae5146c1c7ffff0ae3bafd946ee0ae76e",
+      "robloxQualityBuildUpSourceRevision": "e7e14357c125f1a3dcb1d62d7eefafda22794646",
       "robloxQualityFailureClass": "PRODUCT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "791bc79ae5146c1c7ffff0ae3bafd946ee0ae76e",
-        "artifactIdentity": "sha256:45d7fa066f6be303b593d85397254a7bdc5d7cc1f63d25e27adf7d40c73031be",
-        "versionNumber": 42959519120,
+        "sourceRevision": "e7e14357c125f1a3dcb1d62d7eefafda22794646",
+        "artifactIdentity": "sha256:14c624ba3cb28324445680713f1ff2923096c5f22959c8a7119069d6187eaf09",
+        "versionNumber": 43059631654,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
           "adaptive-ui-commercial-quality",
-          "observed-action-a5a1724f10caafbfaa3d",
-          "observed-action-5f391f74a05998aef298"
+          "observed-action-a5a1724f10caafbfaa3d"
         ],
         "qualityFailureDetails": [
           {
@@ -2149,24 +2148,6 @@
               "recoveredByInteraction": false,
               "attempts": 1
             }
-          },
-          {
-            "id": "observed-action-5f391f74a05998aef298",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-5f391f74a05998aef298",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "ui-discovered-R15Skill3",
-              "targetIdentity": "MeadowTouchLayer.MeadowR15SkillDock.R15Skill3",
-              "actionType": "mcp-ui-exploration",
-              "effectRequired": true,
-              "recoveredByInteraction": false,
-              "attempts": 1
-            }
           }
         ],
         "repairSurfaces": [
@@ -2174,8 +2155,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_UI_STATE",
-        "testedAt": "2026-11-11T12:10:08.025Z",
-        "workflowRunId": 43013565966,
+        "testedAt": "2026-11-11T16:50:46.722Z",
+        "workflowRunId": 43061107503,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxStudioAssetBindingApplied": true,
@@ -2745,12 +2726,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "791bc79ae5146c1c7ffff0ae3bafd946ee0ae76e",
-        "artifactIdentity": "sha256:45d7fa066f6be303b593d85397254a7bdc5d7cc1f63d25e27adf7d40c73031be",
-        "artifactRunId": 42959519120,
+        "sourceRevision": "e7e14357c125f1a3dcb1d62d7eefafda22794646",
+        "artifactIdentity": "sha256:14c624ba3cb28324445680713f1ff2923096c5f22959c8a7119069d6187eaf09",
+        "artifactRunId": 43059631654,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 42959519120,
+        "versionNumber": 43059631654,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -3221,7 +3202,7 @@
             "id": "scenario-observed-action-5f391f74a05998aef298",
             "name": "scenario-observed-action-5f391f74a05998aef298",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "console-output-captured",
@@ -3256,7 +3237,7 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 3,
+          "scenarioFailureCount": 2,
           "primaryActionDisplacement": 0,
           "primaryActionVelocity": 0.00006501112511614338,
           "primaryActionFeedbackChanged": false,
@@ -3282,14 +3263,14 @@
             },
             "surfaces": {
               "interactionSurfaceCount": 518,
-              "progressionSurfaceCount": 1464,
-              "combatSurfaceCount": 896,
+              "progressionSurfaceCount": 1396,
+              "combatSurfaceCount": 905,
               "npcSurfaceCount": 104,
               "companionSurfaceCount": 5,
               "itemSurfaceCount": 6,
               "remoteCount": 16,
               "soundCount": 0,
-              "effectCount": 237,
+              "effectCount": 245,
               "promptCount": 509,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -3298,8 +3279,8 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 3924.1953125,
-              "descendantCount": 75048
+              "memoryMb": 4039.81640625,
+              "descendantCount": 74928
             },
             "multiplayer": null,
             "saveRejoin": null
@@ -3533,7 +3514,7 @@
           },
           {
             "id": "observed-action-5f391f74a05998aef298",
-            "pass": false
+            "pass": true
           },
           {
             "id": "visual-asset-load-integrity",
@@ -3543,8 +3524,7 @@
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
           "adaptive-ui-commercial-quality",
-          "observed-action-a5a1724f10caafbfaa3d",
-          "observed-action-5f391f74a05998aef298"
+          "observed-action-a5a1724f10caafbfaa3d"
         ],
         "qualityFailureDetails": [
           {
@@ -3580,24 +3560,6 @@
               "recoveredByInteraction": false,
               "attempts": 1
             }
-          },
-          {
-            "id": "observed-action-5f391f74a05998aef298",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-5f391f74a05998aef298",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "ui-discovered-R15Skill3",
-              "targetIdentity": "MeadowTouchLayer.MeadowR15SkillDock.R15Skill3",
-              "actionType": "mcp-ui-exploration",
-              "effectRequired": true,
-              "recoveredByInteraction": false,
-              "attempts": 1
-            }
           }
         ],
         "functionalChainEvidence": {
@@ -3607,8 +3569,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-11-11T12:10:08.025Z",
-        "workflowRunId": 43013565966,
+        "testedAt": "2026-11-11T16:50:46.722Z",
+        "workflowRunId": 43061107503,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -3652,12 +3614,16 @@
         "artifactIdentity": "sha256:14c624ba3cb28324445680713f1ff2923096c5f22959c8a7119069d6187eaf09",
         "artifactRunId": 43059631654,
         "candidateVersionNumber": 43059631654,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-11-11T16:45:44.031Z",
         "interruptionRetryCount": 1,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-11-11T16:50:46.722Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -3791,7 +3757,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-11T16:49:56.126Z",
+  "updatedAt": "2026-11-11T16:50:46.722Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
