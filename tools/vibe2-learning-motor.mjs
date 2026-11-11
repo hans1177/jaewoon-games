@@ -1193,13 +1193,18 @@ function explicitFailureCodes(values=[]){
   for(const value of values){
     const text=clean(value);
     for(const match of text.matchAll(/(?:runtime-failure|source-generation-failure|failure-code|blocker)[:=]([A-Za-z0-9_-]+)/gi)) out.push(upper(match[1]));
+    // [오류 식별자] 로그 접두사가 없는 정식 failureSignature도 기존 검색에서 식별한다.
+    if(text.length>=8&&text.length<=120&&/^[A-Za-z][A-Za-z0-9]*(?:[_-][A-Za-z0-9]+)+$/.test(text))
+      out.push(upper(text));
   }
   return uniq(out).sort();
 }
 export function failureFingerprintForTask(task={}){
-  const evidence=[task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean);
+  const evidence=[task.failureSignature,task.failureStage,task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean);
   const text=evidence.join(' ');
-  const explicit=explicitFailureCodes(evidence);
+  // [정확한 원인 우선] 과거 evidence에 다른 오류가 섞여도 현재 정식 식별자를 우선한다.
+  const current=explicitFailureCodes([task.failureSignature]);
+  const explicit=current.length?current:explicitFailureCodes(evidence);
   const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
   const domains=inferDomains(text,task.target).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
   if(!explicit.length&&!classes.length&&!/fail|failure|block|repair|error|bug|오류|실패|누락/i.test(text))return null;
@@ -1208,7 +1213,7 @@ export function failureFingerprintForTask(task={}){
 }
 function failureFingerprintForExperience(record={}){
   const values=[
-    record.failureCause,record.problem,record.goal,
+    record.failureSignature,record.failureCause,record.problem,record.goal,
     ...(record.evidence||[])
   ].map(clean).filter(Boolean);
   const text=values.join(' ');
@@ -1233,12 +1238,14 @@ function assetMotionIdentity(value={}){
 }
 
 export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},externalAiDistilledInput={},masteryInput={}}={}){
-  const qWords=words([task.goal,task.gameId,task.target,task.genre,task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '));
+  const qWords=words([task.goal,task.gameId,task.target,task.genre,task.failureSignature,task.failureStage,task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '));
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
   const failureFingerprint=failureFingerprintForTask(task);
   const taskAssetMotionIdentity=assetMotionIdentity(task);
-  const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
+  const currentFailureCodes=explicitFailureCodes([task.failureSignature]);
+  const taskFailureCodes=currentFailureCodes.length?currentFailureCodes:
+    explicitFailureCodes([task.failureStage,task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
   // 검증된 프로젝트 지식보다 낮은 읽기 전용 공식 문서 참고 정보.
   const codingScopeText=[task.goal,task.blocker,task.lastOutcome,task.sourceRoot,...(task.responsibleFiles||[]),...(task.evidence||[])].map(clean).join(' ');
   const unityWebScope=(engine==='unity'||engine==='web')&&(
