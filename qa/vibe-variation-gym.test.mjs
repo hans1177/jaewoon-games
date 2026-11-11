@@ -24,9 +24,13 @@ test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없�
     {id:'texture',license:'CC0',family:'PROP',sourceFiles:['a/ok.png']},
     {id:'inactive',license:'CC0',family:'PROP',catalogActive:false,sourceFiles:['a/ok.obj']},
     {id:'corrupt',license:'CC0',family:'PROP',corruptSource:true,sourceFiles:['a/ok.obj']},
+    {id:'wrong-hash',license:'CC0',family:'PROP',sourceSha256:'0'.repeat(64),sourceFiles:['a/ok.obj']},
     {id:'escape',license:'CC0',family:'PROP',sourceFiles:['../outside.obj']},
   ]};
+  reg.assets[0].sourceSha256=crypto.createHash('sha256')
+    .update(fs.readFileSync(path.join(root,'a','ok.obj'))).digest('hex');
   assert.deepEqual(pickParents(reg,root,10,mulberry32(1)).map(p=>p.id),['ok']);
+  assert.equal(pickParents(reg,root,10,mulberry32(1))[0].approvedSourceSha256,reg.assets[0].sourceSha256);
 });
 
 test('합격한 변형은 출처·조리법·아이콘 가독성 기록만 보관하고 게임 적용으로 오인하지 않는다', () => {
