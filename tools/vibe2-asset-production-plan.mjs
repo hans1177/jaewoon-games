@@ -5210,11 +5210,44 @@ export function buildVibeAssetProductionPlan({
       }
     }
   }
+  // [마리 교역품 3D] 기존 자산 장부의 정확한 품목 공백을 Vibe2 기존 제작 요구에 전달한다.
+  // 불충분한 자산은 후보일 뿐이다. 런타임 검증 이전에 게임 자산으로 승격하지 않는다.
+  const tradeGoodsSourceRequirements=[];
+  let tradeGoods3DPractice=null;
+  if(resolvedTarget==='roblox'&&gameId==='mare-essentia'
+    &&(!declaredRoot||declaredRoot==='roblox-games/mare-essentia')){
+    const practice=readJson(path.join(repoRoot,'roblox-games/mare-essentia/assets-wanted.json'),null)?.tradeGoods3DPractice;
+    const rows=Array.isArray(practice?.goods)?practice.goods:[];
+    const stats=practice?.stats||{};
+    const coverage=Number(stats.registeredSourceChecked||0)+Number(stats.missingExactModel||0)
+      +Number(stats.unverified||0)+Number(stats.visualRestricted||0);
+    if(Number(stats.targetCount)>=70&&rows.length===Number(stats.targetCount)
+      &&coverage===rows.length&&practice?.authority==='EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY'){
+      const missing=rows.filter(row=>row?.state==='MISSING_EXACT_MODEL'
+        &&/^[a-z][a-z0-9_]{1,60}$/.test(clean(row?.id)));
+      tradeGoods3DPractice=freeze({gameId,platform:'ROBLOX',targetCount:rows.length,
+        sourceChecked:Number(stats.registeredSourceChecked||0),
+        missingCount:missing.length,visualRestricted:Number(stats.visualRestricted||0),
+        runtimeVerified:false,autoReplaceWithoutRuntimeReview:false,
+        nextExistingAssetTasks:freezeList(missing.slice(0,4).map(row=>clean(row.id)))});
+      for(const row of missing.slice(0,4))tradeGoodsSourceRequirements.push({
+        family:'PROP',role:clean(row.id),assetRole:clean(row.id),
+        source:'CURRENT_MARE_TRADE_GOODS_3D_PRACTICE',
+        sourcePath:'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ports.luau',
+        sourceConsumer:'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau',
+        required:true,licenseRequirement:'CC0-1.0',
+        preferredAcquisition:'VERIFIED_EXISTING_OR_CC0_BEFORE_AUTHORING',
+        matchRule:'EXACT_TRADE_GOOD_ONLY',runtimeVerified:false,
+        sourceWrite:false,assetProductionLane:'ASSET_DEVELOPMENT'
+      });
+    }
+  }
   const explicitRequirements=Array.isArray(task.assetRequirements)?task.assetRequirements:[];
   const explicitKeys=new Set(explicitRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.role).toLowerCase().replace(/[\s-]+/g,'_')));
   const flowAssetRequirements=normalizeFlowAssetRequirements([
     ...explicitRequirements,
-    ...sourceActorRequirements.filter(row=>!explicitKeys.has(row.family+':'+row.role))
+    ...sourceActorRequirements.filter(row=>!explicitKeys.has(row.family+':'+row.role)),
+    ...tradeGoodsSourceRequirements.filter(row=>!explicitKeys.has(row.family+':'+row.role))
   ]);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
@@ -6625,6 +6658,7 @@ export function buildVibeAssetProductionPlan({
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     sourceActorRequirements:freezeList(sourceActorRequirements.map(row=>freeze({...row}))),
+    tradeGoods3DPractice,
     flowAssetRequirements,
     assetSupplySummary,
     detailedAssetCandidateReview,
