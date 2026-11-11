@@ -854,7 +854,13 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   // 별도 모델/파이프라인/외부 코드 실행 없이 기존 탐색 결과를 재사용한다.
   let codingRepoMap=null;
   if(target==='roblox'){
-    const mapRows=graphRows.slice(0,48).filter(row=>Array.isArray(row.functions));
+    // 관련성의 근거가 호출/require/영향 그래프에 있는 함수만 넣는다.
+    // 같은 폴더라는 이유만으로 선택된 무관한 모듈은 문맥 예산을 소모하지 않는다.
+    const reachable=new Set([...responsible,...moduleRows.map(row=>row.path),
+      ...sourceImpact.impactedSources.map(row=>row.path),
+      ...related.filter(row=>(row.connections||[]).length>0).map(row=>row.relative)]);
+    const mapRows=graphRows.slice(0,48)
+      .filter(row=>Array.isArray(row.functions)&&reachable.has(row.relative));
     const mapPaths=new Set(mapRows.map(row=>row.relative));
     const links=new Map(mapRows.map(row=>[row.relative,new Set()]));
     for(const row of mapRows){
