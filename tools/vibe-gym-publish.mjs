@@ -89,6 +89,40 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             unverifiedOrFailed:cleanCount(prior.unverifiedOrFailed)+record.unverifiedOrFailed
           };
         }
+        // [노멀맵 재연습 장부] 승인된 부모 ID별 통과·실패 실측만 제한해서 누적한다.
+        // 미시도 원본을 우선하게 만드는 동일 데이터 브랜치 기록이며 게임 자산이 아니다.
+        const history=Object.fromEntries(Object.entries(previous.bake?.history||{})
+          .filter(([id,r])=>/^[\w:./-]{1,140}$/.test(id)&&r&&typeof r==='object')
+          .slice(-128).map(([id,r])=>[id,{
+            attempts:cleanCount(r.attempts),failures:cleanCount(r.failures),
+            passes:cleanCount(r.passes),
+            bestNormalDeviation:Number.isFinite(r.bestNormalDeviation)?
+              Math.max(0,Math.min(2,r.bestNormalDeviation)):0,
+            lastSession:String(r.lastSession||'').slice(0,40)
+          }]));
+        const bakeAttempts=[];
+        for(const row of (session.bake?.attempts||[]).slice(0,3)){
+          const id=String(row?.parent||'');
+          if(!/^[\w:./-]{1,140}$/.test(id))continue;
+          const prior=history[id]||{attempts:0,failures:0,passes:0,bestNormalDeviation:0};
+          const dev=Number.isFinite(row.normalDeviation)&&row.normalDeviation>=0?
+            Math.min(2,row.normalDeviation):null;
+          history[id]={
+            attempts:cleanCount(prior.attempts)+1,
+            failures:cleanCount(prior.failures)+(row.pass===true?0:1),
+            passes:cleanCount(prior.passes)+(row.pass===true?1:0),
+            bestNormalDeviation:Math.max(Number(prior.bestNormalDeviation)||0,dev||0),
+            lastSession:String(session.at||'').slice(0,40)
+          };
+          bakeAttempts.push({id,pass:row.pass===true,
+            trianglesHigh:cleanCount(row.trianglesHigh),
+            trianglesLow:cleanCount(row.trianglesLow),
+            normalDeviation:dev,
+            failure:String((row.failures||[]).join(',')||row.error||'').slice(0,100)});
+        }
+        const retainedHistory=Object.fromEntries(Object.entries(history)
+          .sort((a,b)=>b[1].lastSession.localeCompare(a[1].lastSession)||
+            b[1].attempts-a[1].attempts||a[0].localeCompare(b[0])).slice(0,128));
         const coverage={version:1,
           sessions:cleanCount(previous.sessions)+1,
           lastSessionAt:String(session.at||'').slice(0,40),
@@ -97,7 +131,8 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
           eligible3dAssets:cleanCount(session.assetCoverage?.eligible3dAssets),
           domains,cumulative,
           bake:{pass:session.bake?.pass===true,reason:String(session.bake?.reason||
-            (session.bake?.pass?'':'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP')).slice(0,90)},
+            (session.bake?.pass?'':'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP')).slice(0,90),
+            attempts:bakeAttempts,history:retainedHistory},
           trainingAndDesignOnly:true,nativeRuntimeVerified:false,gameApplied:false,
           productionPromotionAllowed:false};
         fs.writeFileSync(previousPath,JSON.stringify(coverage,null,1)+'\n');
