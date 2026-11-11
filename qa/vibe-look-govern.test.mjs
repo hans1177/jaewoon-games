@@ -155,3 +155,20 @@ test('적용 후 평균이 올라도 같은 장면이 후퇴하면 되돌리고 
   assert.equal(bad.event.regressedFrame,'port.png');
   assert.equal(bad.look.baselineFrames,null);
 });
+
+test('이미 센 스튜디오 보고서는 후보 연속 횟수와 적용 후 확인 횟수에 재사용하지 않는다',()=>{
+  const candidate=shot([row('storybook')]);
+  const first=step(emptyLook(),candidate,T0,{captureKey:'capture-a'});
+  const second=step(first.look,candidate,h(1),{captureKey:'capture-b'});
+  const replay=step(second.look,candidate,h(2),{captureKey:'capture-a'});
+  assert.equal(replay.event.type,'DUPLICATE_CAPTURE');
+  assert.equal(replay.look.pending.streak,2);
+  const applied=step(replay.look,candidate,h(3),{captureKey:'capture-c'});
+  assert.equal(applied.event.type,'APPLY');
+  const same=step(applied.look,shot([],{score:60}),h(4),{captureKey:'capture-c'});
+  assert.equal(same.event.type,'DUPLICATE_CAPTURE');
+  const fresh=step(same.look,shot([],{score:60}),h(5),{captureKey:'capture-d'});
+  assert.equal(fresh.event.captures,1);
+  const confirmed=step(fresh.look,shot([],{score:60}),h(6),{captureKey:'capture-e'});
+  assert.equal(confirmed.event.type,'CONFIRMED');
+});
