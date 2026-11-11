@@ -1217,7 +1217,9 @@ function failureFingerprintForExperience(record={}){
     ...(record.evidence||[])
   ].map(clean).filter(Boolean);
   const text=values.join(' ');
-  const explicit=explicitFailureCodes(values);
+  // [검증된 복구 원인] 학습 기록의 확정 실패 식별자를 과거 주변 로그보다 우선한다.
+  const direct=explicitFailureCodes([record.failureSignature,record.failureCause]);
+  const explicit=direct.length?direct:explicitFailureCodes(values);
   const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
   const domains=inferDomains(text,record.engine).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
   if(!explicit.length&&!classes.length&&!clean(record.failureCause))return null;
