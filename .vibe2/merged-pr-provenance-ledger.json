@@ -184241,11 +184241,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6e404ff73541ec499298743b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12452",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9212ff909460dc93878c84802540d1588e34d960",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12452,
+        "baseBranch": "main",
+        "headBranch": "vibe/chain-autopilot-brain",
+        "baseSha": "9212ff909460dc93878c84802540d1588e34d960",
+        "headSha": "63ae803eb93cb00b38b98e83e0ea1e05d1bb9d2d",
+        "mergeCommitSha": "0228fdd8b333f9c67a9db2f9634680791fc4c2f6",
+        "mergedAt": "2026-11-11T04:23:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7c30b071df6eca69c5284e983a0428d9dfc45f1972b5389e87279fba243c2294",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/chain-autopilot-brain",
+        "candidateSha": "63ae803eb93cb00b38b98e83e0ea1e05d1bb9d2d"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 81,
+        "deletedLineCount": 18,
+        "changedFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-light-bake.test.mjs",
+          "qa/vibe-variation-gym.test.mjs",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-normal-bake.mjs",
+          "tools/vibe-practice-session.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-light-bake.test.mjs",
+          "qa/vibe-variation-gym.test.mjs",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-normal-bake.mjs",
+          "tools/vibe-practice-session.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12452",
+        "merge-commit:0228fdd8b333f9c67a9db2f9634680791fc4c2f6",
+        "base-main:9212ff909460dc93878c84802540d1588e34d960"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1471
+    "total": 1472
   }
 }
