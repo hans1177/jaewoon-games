@@ -109,7 +109,7 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             const id=String(asset.id||''),r=history[id];
             const sha=String(asset.sourceSha256||asset.sourceHash||'').toLowerCase();
             if(r&&!r.sourceSha256&&/^[a-f0-9]{64}$/.test(sha)&&
-              /^CC0(?:-1\\.0)?$/i.test(String(asset.license||'')))r.sourceSha256=sha;
+              /^CC0(?:-1\.0)?$/i.test(String(asset.license||'')))r.sourceSha256=sha;
           }
         }catch{}
         const bakeAttempts=[];
