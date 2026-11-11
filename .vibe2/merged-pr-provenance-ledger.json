@@ -197311,11 +197311,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_087d2c489cbb8f0e001e9370",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12585",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "728ed6407be172eb4e1e0db4c733dab5f0b4b33e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12585,
+        "baseBranch": "main",
+        "headBranch": "mare-world-catalog-expansion-01",
+        "baseSha": "728ed6407be172eb4e1e0db4c733dab5f0b4b33e",
+        "headSha": "6b7d1a58f495a3e577809fa2c8342f8dd1c597b1",
+        "mergeCommitSha": "d9484d01cf57318540af6d5aed64cb2ba3865a9c",
+        "mergedAt": "2026-11-11T16:16:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "79d7174f04740e8f41edf639894abd3a387a35bfc94cace27a48f76fec3f5c9b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-world-catalog-expansion-01",
+        "candidateSha": "6b7d1a58f495a3e577809fa2c8342f8dd1c597b1"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 266,
+        "deletedLineCount": 4,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/cardart/event_merchant_coromandel.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_merchant_lamu.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_merchant_naha.jpg",
+          "roblox-games/mare-essentia/assets/cardart/world-catalog.json",
+          "roblox-games/mare-essentia/assets/cardart/world_45.jpg",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_diallo.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_diallo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_equiano.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_equiano.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_etow.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_etow.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_sessarakoo.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_sessarakoo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_wheatley.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_wheatley.png.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/cardart/world-catalog.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_diallo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_equiano.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_etow.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_sessarakoo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_wheatley.png.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12585",
+        "merge-commit:d9484d01cf57318540af6d5aed64cb2ba3865a9c",
+        "base-main:728ed6407be172eb4e1e0db4c733dab5f0b4b33e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1574
+    "total": 1575
   }
 }
