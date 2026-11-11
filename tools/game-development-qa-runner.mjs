@@ -76,8 +76,12 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
     // 내부 node:test 실행 환경이 중첩 실행으로 전파되면 자식 테스트를 건너뛰므로 분리한다.
     const env={...process.env,GAME_ID:game.gameId};
     delete env.NODE_TEST_CONTEXT;
+    // [스튜디오 실행검증] 실제 서버/클라이언트 지연 시나리오가 120초를 넘을 수 있다.
+    // 전용 테스트만 4분 제한으로 완주시키며 다른 게임의 기본 제한·전체 테스트 집합은 유지한다.
+    const actualTimeoutMs=game.tests.includes('qa/company-development-roblox-studio-local-play.test.mjs')
+      ?Math.max(timeoutMs,240000):timeoutMs;
     const check=spawnSync(process.execPath,['--test','--test-reporter=tap',...game.tests],{
-      cwd:repoRoot,encoding:'utf8',timeout:timeoutMs,maxBuffer:4*1024*1024,
+      cwd:repoRoot,encoding:'utf8',timeout:actualTimeoutMs,maxBuffer:4*1024*1024,
       env
     });
     // 자동검증: 일부 실행 환경의 성공 종료 코드만 믿지 않고 TAP의 실제 실패 집계도 확인한다.

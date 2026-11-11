@@ -3786,6 +3786,10 @@ test('Mare official Studio QA records complete registered media, model loading a
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  // [카드 원화 회귀] CardArt는 승인된 Image 자산이므로 InsertService 모델 큐에서 제외한다.
+  assert.match(model,/kind ~= "CardArt"/);
+  assert.ok(qa.includes('string.find(key, "CardArt/", 1, true)'));
+  assert.ok(qa.includes('string.find(it.key, ".CardArt/", 1, true)'));
   assert.match(model,/MareModelAuditState/);
   assert.match(model,/MareModelAuditTotals/);
   assert.match(model,/pending == 0/);
@@ -3834,6 +3838,19 @@ test('Mare official Studio QA records complete registered media, model loading a
   const activeSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const active=new Map([...activeSource.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(m=>[m[1],m[2]]));
   assert.equal(active.size,Object.keys(registered).length);
+  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt']);
+  const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const cardKeys=Object.keys(registered).filter(key=>key.startsWith('CardArt/'));
+  assert.ok(cardKeys.length>=17,'Mare approved discovery/event illustrations must be registered');
+  for(const [key,row] of Object.entries(registered)){
+    const kind=key.split('/')[0];
+    assert.equal(row.assetType,imageKinds.has(kind)?'Image':'Model','wrong Mare asset category: '+key);
+    if(kind==='CardArt'){
+      assert.equal(row.usePermissionGranted,true,'CardArt usage permission missing: '+key);
+      const actualSha=crypto.createHash('sha256').update(fs.readFileSync(row.source)).digest('hex');
+      assert.equal(actualSha,originals[key],'CardArt original differs from approved SHA256: '+key);
+    }
+  }
   for(const [key,row] of Object.entries(registered)){
     assert.equal(active.get(key),String(row.assetId),'asset registration mismatch: '+key);
     if(key.startsWith('Portraits/'))assert.equal(row.usePermissionGranted,true,'portrait use grant unverified: '+key);
@@ -3952,9 +3969,13 @@ test('Mare goods/menu asset replacement requires verified Image uploads with ato
   assert.match(uploader,/MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/);
   const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8'));
   const approved=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
-  const targets=Object.entries(registry.assets).filter(([id,row])=>/^(Goods|Menu)\//.test(id)&&row.assetType==='Decal');
-  assert.equal(targets.length,45,'actual 45 affected old assets are identified');
+  // [등록 완료 후 회귀] 과거 45개 Decal이 현재 등록표에 남아 있어서는 안 된다.
+  // 승인된 전체 교역품·메뉴 ID와 Universe 사용 권한을 실물 등록 기준으로 검사한다.
+  const targets=Object.entries(registry.assets).filter(([id])=>/^(Goods|Menu)\//.test(id));
+  assert.ok(targets.length>=45,'approved trade/menu images must remain registered');
   for(const [id,row] of targets){
+    assert.equal(row.assetType,'Image','legacy Decal must not be used by GUI: '+id);
+    assert.equal(row.usePermissionGranted,true,'missing Universe image grant: '+id);
     assert.match(String(row.assetId),/^[1-9][0-9]*$/);
     assert.match(String(approved[id]),/^[a-f0-9]{64}$/);
   }
