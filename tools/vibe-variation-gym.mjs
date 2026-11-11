@@ -11,6 +11,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 import {runPython,findBlender} from './vibe-python.mjs';
 import {measure as measureRig,evaluateAudit} from './vibe-mesh-audit.mjs';
+import {inspectBakeSource} from './vibe-normal-bake.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const sha256=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -55,7 +56,11 @@ export function classifyPracticeAsset(asset={}){
   if(/RIG|SKELETON|ARMATURE/.test(family))add('RIG','JOINT','MOTION');
   if(/ACTION|COMBAT/.test(family))add('ACTION','MOTION');
   if(/MATERIAL|TEXTURE|SHADER/.test(family))add('MATERIAL');
-  if(/UI|INTERFACE|HUD|MENU/.test(family))add('UI','BUTTON','ICON');
+  if(/UI|INTERFACE|HUD|MENU/.test(family)){
+    // 등록된 디자인 계약과 파일만 관측한 카탈로그는 구분한다.
+    // 일반 UI 이미지가 실제 버튼·아이콘이라는 거짓 분류를 막는다.
+    if(asset.catalogOnly)add('UI');else add('UI','BUTTON','ICON');
+  }
   if(/BUTTON|CONTROL/.test(family)||/\bbutton\b/.test(names))add('BUTTON','UI');
   if(/ICON|CURSOR/.test(family)||/\bicon\b/.test(names))add('ICON','UI');
   if(/VFX|PARTICLE|EFFECT/.test(family))add('VFX');
@@ -104,7 +109,8 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
       const types=Array.isArray(item.types)?item.types.map(x=>String(x).toLowerCase()):[];
       const family=types.some(x=>/enemy|boss|monster|character/.test(x))?'CREATURE'
         :types.some(x=>/animation|motion/.test(x))?'MOTION'
-        :types.some(x=>/icon|ui|menu/.test(x))?'UI'
+        :types.some(x=>/icon/.test(x))?'ICON'
+        :types.some(x=>/ui|menu/.test(x))?'UI'
         :types.some(x=>/sound|music|audio|sfx/.test(x))?'AUDIO'
         :types.some(x=>/environment|terrain/.test(x))?'ENVIRONMENT'
         :types.some(x=>/material|texture/.test(x))?'MATERIAL':'PROP';
@@ -140,13 +146,15 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
         const family=/\.(?:mp3|ogg|wav|flac)$/.test(ext)?'AUDIO':
           /\.(?:ttf|otf|woff2?)$/.test(ext)?'FONT':
           /(?:^|\/)(?:icons?|cursors?)(?:\/|[-_])/.test(name)?'ICON':
+          /(?:^|\/)(?:buttons?)(?:\/|[-_])/.test(name)?'BUTTON':
           /(?:^|\/)(?:ui|interface|menus?|hud|buttons?)(?:\/|[-_])/.test(name)?'UI':
           /\.(?:ktx2?|tga|mat)$/.test(ext)||/(?:normal|roughness|metalness|albedo|diffuse|texture|material|pbr)/.test(name)?'MATERIAL':
           /(?:^|\/)(?:actors?|characters?|creatures?|npcs?)(?:\/|[-_])/.test(name)?'CHARACTER':
           /(?:motion|animation|keyframes?)/.test(name)?'MOTION':
           /(?:background|environment|foliage|terrain|forests?|skybox|world)/.test(name)?'ENVIRONMENT':
           /\.(?:glb|gltf|obj|fbx|blend)$/.test(ext)?'PROP':'UI';
-        assets.push({id:'repo:'+relative,title:entry.name,family,catalogOnly:true,sourceFiles:[]});
+        assets.push({id:'repo:'+relative,title:entry.name,family,
+          path:relative,catalogOnly:true,sourceFiles:[]});
       }
     }
     sources.push(dir+'/** (media inventory only)');
@@ -164,7 +172,8 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
       if(typeof name!=='string'||!/\.(obj|glb|gltf)$/i.test(name)||path.isAbsolute(name))return false;
       try{
         const full=fs.realpathSync(path.resolve(root,name));
-        return full.startsWith(root+path.sep)&&fs.statSync(full).isFile();
+        return full.startsWith(root+path.sep)&&fs.statSync(full).isFile()&&
+          inspectBakeSource(full).staticSourceInspected===true&&inspectBakeSource(full).triangles>0;
       }catch{return false;}
     });
     if(eligible3d)fam.eligible3d++;
@@ -197,7 +206,8 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
         f.split(/[\\/]/).some(segment=>segment==='..'||segment==='.'))return false;
       try{
         const resolved=fs.realpathSync(path.resolve(root,f));
-        return resolved.startsWith(root+path.sep)&&fs.statSync(resolved).isFile();
+        return resolved.startsWith(root+path.sep)&&fs.statSync(resolved).isFile()&&
+          inspectBakeSource(resolved).staticSourceInspected===true&&inspectBakeSource(resolved).triangles>0;
       }catch{return false;}
     });
     if(!file)continue;
