@@ -48,3 +48,5 @@
 
 - 2026-11-12 02:22(KST, run 43066831635) 바이브: 클릭 30/30, 프레임 31장. errors 에 STUDIO_ASSET_AUDIT_FAILED 1건: Server preload CardArt 12개 TIMEOUT_16S(serverPreloadUnresponsive=true, 오탐 패턴 유지). 모델 431 PASS, registry 663 PASS(불일치·누락 0). 새로 보임: clientImageAudit 232개 중 160개만 로드(소리 20/20), 미로드 72개 = Menu 12·Portraits 대부분(scholar_*·person_*)·Goods 2(whale_oil, wool) — 최근 학자 동료 추가(#12598)로 expected 가 늘었고 화면에 아직 안 뜬 이미지는 로드 안 된 것으로 보임(방문한 조선소 c12 jpg 는 정상). 
 - 큐 추가: 다음 점검에서 미로드 72개 수가 줄었는지/그대로인지 확인. 그대로면 Menu/*·Portraits/scholar_* 가 실제 Image 종류·권한 문제인지 점검. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-12 08:16(KST) 바이브: 클릭 30/30, 프레임 31장. errors STUDIO_ASSET_AUDIT_FAILED 1건(Server preload CardArt 12개 TIMEOUT_16S, 오탐 패턴 유지). 모델 431 PASS, registry 673 PASS. 클라이언트 이미지 160/242 로드(미로드 82: Menu 12·Portraits 대부분·Goods 2) — 02:22 의 72개보다 늘었으나 새 Portraits 추가 때문으로 보임, 방문 화면 영향 없음. 코드 수정 없음(마력숲 실행기 버그만 수정), 재배포 안 함.
