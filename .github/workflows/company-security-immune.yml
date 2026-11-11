@@ -93,6 +93,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          # [보안 성능] 얕은 checkout은 유지하고 공통 조상 누락 시 필요한 조상만 추가로 확보한다.
           fetch-depth: 1
           fetch-tags: false
           filter: blob:none
@@ -124,6 +125,12 @@ jobs:
           git cat-file -e "$head_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$head_sha"
           git cat-file -e "$base_sha^{commit}"
           git cat-file -e "$head_sha^{commit}"
+          # [정확한 보안 증거] 얕은 이력의 공통 조상이 누락된 경우에만 최대 64개 조상을 더 받는다.
+          # 정상 비교에 실패하면 기존 보안 정책대로 실패시키며 빈 패치/승인으로 우회하지 않는다.
+          if ! git merge-base "$base_sha" "$head_sha" >/dev/null; then
+            git fetch --no-tags --deepen=64 origin "$head_sha"
+          fi
+          git merge-base "$base_sha" "$head_sha" >/dev/null || { echo 'SECURITY_SCAN_COMMON_ANCESTOR_UNAVAILABLE'; exit 1; }
           echo "base=$base_sha" >> "$GITHUB_OUTPUT"
           echo "head=$head_sha" >> "$GITHUB_OUTPUT"
 
