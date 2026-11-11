@@ -95,10 +95,11 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
   const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
   const found=[];
   // [게임별 분석] 실제 파일 헤더에서만 픽셀 수를 읽고, 모르는 포맷은 추측하지 않는다.
+  let scanTruncated=false;
   function walk(dir,depth){
-    if(depth>5||found.length>=256)return;
+    if(depth>5||found.length>=256){scanTruncated=true;return;}
     for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-      if(found.length>=256)break;
+      if(found.length>=256){scanTruncated=true;break;}
       const abs=path.join(dir,entry.name);
       if(entry.isSymbolicLink())continue;
       if(entry.isDirectory()){walk(abs,depth+1);continue;}
@@ -197,7 +198,7 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
   if(target==='roblox')actions.push('AUDIT_REMOTE_ASSET_IDS_AND_INSTANCE_STREAMING_IN_ACTUAL_PLACE');
   const optimization=Object.freeze({
     gameId,target,kind:'GAME_SCOPED_STATIC_ASSET_OPTIMIZATION',
-    scannedAssetCount:found.length,scanComplete:found.length<256,
+    scannedAssetCount:found.length,scanComplete:!scanTruncated,
     totalFileBytes:found.reduce((sum,file)=>sum+file.bytes,0),
     textureFileBytes:textures.reduce((sum,file)=>sum+file.bytes,0),
     decodedTextureCount:textures.filter(file=>file.estimatedRgbaBytes).length,
