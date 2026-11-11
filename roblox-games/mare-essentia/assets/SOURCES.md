@@ -648,3 +648,10 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - 교역품: brazilwood, cocoa, copper, ebony, gems, gold, jade, kauri, logwood, mahogany, maize, palm_oil, pearl_shell, sandalwood, sandalwood_hi, silver.
 - 사건 삽화: anglo_dutch_war, bumper_harvest, cape_colony, drought, earthquake, great_fire, plague_wave, storm, volcano.
 - 로블록스 게시용 이미지 승인 및 사용 권한 검증은 별도로 기록한다.
+
+### 후속 사건 삽화 원본
+
+- 프로젝트 창작 원화 27장. 역사 사건은 상황을 재현한 창작 장면이다.
+- 세계 이벤트: hurricane, monsoon_fail, tsunami, harbor_fire, hard_winter, famine, locusts, shipworm, piracy, trade_boom, calm_seas, new_route, treasure_wreck, fish_shoal, new_plant, canal_opened, royal_charter, festival.
+- 역사 사건: principia, zanzibar, lisbon_quake, industrial_start, cook_voyage, boston_tea, harrison_h4, franklin_kite, canton_system.
+- 로블록스 게시용 이미지 승인 및 사용 권한 검증은 별도로 기록한다.
