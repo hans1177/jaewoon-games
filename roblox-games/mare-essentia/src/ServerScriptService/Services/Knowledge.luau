@@ -8,6 +8,8 @@ return function(D, S)
 
 	local FAME = { Common = 3, Uncommon = 6, Rare = 12, Epic = 25, Legendary = 50 }
 
+	local techLevelOf -- 아래에서 정의 (연구 성과 계산이 쓴다)
+
 	local function cardName(id)
 		local c = D.Cards.ById[id]
 		return c and c.name or id
@@ -107,6 +109,22 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- 항구의 학문별 기술 점수(공동 발표로 쌓임) → 기술 수준 0~4
+	local TECH_STEPS = { 6, 16, 32, 60 }
+	local function techPoints(state, portId, disc)
+		local t = state.portTech and state.portTech[portId]
+		return t and t[disc] or 0
+	end
+	techLevelOf = function(state, portId, disc)
+		local pts, lv = techPoints(state, portId, disc), 0
+		for i, need in TECH_STEPS do
+			if pts >= need then
+				lv = i
+			end
+		end
+		return lv
+	end
+
 	-- 항구의 학문: 그 항구에 있는 학자들이 다루는 학문
 	local function portDisciplines(portId)
 		local set, list = {}, {}
@@ -133,7 +151,17 @@ return function(D, S)
 				understood += 1
 			end
 		end
-		return math.min(0.2, (lvl - 1) * 0.03 + understood * 0.005), lvl, discs
+		-- 학자와 함께한 공동 발표로 쌓인 항구의 기술 수준도 연구 성과를 키운다
+		local techBonus = 0
+		for _, d in discs do
+			techBonus += 0.02 * techLevelOf(state, portId, d)
+		end
+		for _, lm in K.Landmarks do
+			if K.hasLandmark(state, portId, lm.id) then
+				techBonus += lm.research
+			end
+		end
+		return math.min(0.3, (lvl - 1) * 0.03 + understood * 0.005 + techBonus), lvl, discs
 	end
 
 	local function supplyMult(state, portId, goodId)
@@ -160,7 +188,7 @@ return function(D, S)
 	end
 
 	local function ensureAcademy(state)
-		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, last = {}, shown = {} }
+		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, last = {}, shown = {} }
 		return state.academy
 	end
 
@@ -194,6 +222,146 @@ return function(D, S)
 		S.Perk.addAffinity(state, 1, msgs)
 		S.Perk.gainSpec(state, "Physics", 10, msgs)
 		return true, table.concat(msgs, "\n")
+	end
+
+	-- 지금 이 항구에서 그 학문의 공동 발표를 함께할 수 있는 학자
+	local function jointScholar(state, discId)
+		local year = S.State.year(state)
+		for _, sc in D.Scholars.Scholars do
+			if sc.portId == state.portId and year >= sc.fromYear and year <= sc.toYear and table.find(K.ScholarDisciplines[sc.id] or {}, discId) then
+				return sc
+			end
+		end
+		return nil
+	end
+
+	local JOINT_COOLDOWN = 45
+	local function jointCooldown(state)
+		return if K.hasLandmark(state, state.portId, "hall") then K.LandmarkById.hall.jointFast else JOINT_COOLDOWN
+	end
+
+	-- 공동 발표: 학자와 함께 연구를 발표한다. 내가 이해한 지식·가져온 수집품(관련 교역품)·완료한 지식 퀘스트가 기여로 인정되고,
+	-- 그만큼 이 항구의 그 학문 기술이 발전한다. 기술이 오르면 항구의 연구 성과와 관련 교역품 공급이 커진다.
+	function handlers.JointPresent(state, p)
+		local disc = type(p.disc) == "string" and K.DisciplineById[p.disc]
+		if not disc then
+			return false, "잘못된 요청"
+		end
+		local sc = jointScholar(state, disc.id)
+		if not sc then
+			return false, "지금 이 항구에는 그 학문의 학자가 없어요"
+		end
+		local n = understoodIn(state, disc.id)
+		if n < 1 then
+			return false, string.format("%s 지식을 하나 이상 이해해야 함께 발표할 수 있어요", disc.name)
+		end
+		local a = ensureAcademy(state)
+		local key = "joint:" .. state.portId .. ":" .. disc.id
+		local last = a.last[key]
+		if last and state.day - last < jointCooldown(state) then
+			return false, string.format("다음 공동 발표는 %d일 뒤에 할 수 있어요", jointCooldown(state) - (state.day - last))
+		end
+		-- 기여 1) 이해한 지식  2) 관련 수집품(교역품 최대 3개씩 기증)  3) 완료한 지식 퀘스트
+		local pts = n * 2
+		local lines = { string.format("· 이해한 지식 %d개 (+%d)", n, n * 2) }
+		local donated = {}
+		for _, goodId in K.DisciplineGoods[disc.id] or {} do
+			local have = state.cargo[goodId] or 0
+			local give = math.min(3, have)
+			if give > 0 then
+				S.State.removeCargo(state, goodId, give)
+				pts += give
+				table.insert(donated, string.format("%s %d개", D.Ports.Goods[goodId].name, give))
+			end
+		end
+		if #donated > 0 then
+			table.insert(lines, string.format("· 수집품 기증: %s (+%d)", table.concat(donated, ", "), pts - n * 2))
+		end
+		local qdone = 0
+		for _, q in D.Quests.Quests do
+			if q.disc == disc.id and state.quests.done[q.id] then
+				qdone += 1
+			end
+		end
+		if qdone > 0 then
+			pts += qdone * 3
+			table.insert(lines, string.format("· 완료한 지식 퀘스트 %d개 (+%d)", qdone, qdone * 3))
+		end
+		if K.hasLandmark(state, state.portId, "hall") then
+			pts = math.floor(pts * K.LandmarkById.hall.jointMult)
+			table.insert(lines, "· 학술원의 도움으로 기여가 1.5배")
+		end
+		a.last[key] = state.day
+		a.joint = (a.joint or 0) + 1
+		state.portTech = state.portTech or {}
+		state.portTech[state.portId] = state.portTech[state.portId] or {}
+		local before = techLevelOf(state, state.portId, disc.id)
+		state.portTech[state.portId][disc.id] = techPoints(state, state.portId, disc.id) + pts
+		local after = techLevelOf(state, state.portId, disc.id)
+		local fame, coins = 4 + pts, 20 * pts
+		state.fame += fame
+		state.coins += coins
+		local msgs = { string.format("%s와(과) 함께 %s 연구를 공동 발표했다!", sc.name, disc.name) }
+		for _, l in lines do
+			table.insert(msgs, l)
+		end
+		table.insert(msgs, string.format("%s의 %s 기술 +%d점 (지금 %d점)", D.Ports.Ports[state.portId].name, disc.name, pts, techPoints(state, state.portId, disc.id)))
+		if after > before then
+			table.insert(msgs, string.format("%s 기술이 %d단계로 발전했다! 연구 성과와 관련 교역품 공급이 늘어난다.", disc.name, after))
+		end
+		table.insert(msgs, string.format("학계의 평가: 명성 +%d, 연구 지원금 +%d코인", fame, coins))
+		S.Perk.addAffinity(state, 2, msgs)
+		return true, table.concat(msgs, "\n")
+	end
+
+	-- 특수 건축물 조건: 교역소 단계 + 학문 기술 단계
+	local function landmarkReq(state, lm)
+		local lvl = D.Harbor.level(state.harbor[state.portId] or 0)
+		if lvl < lm.harbor then
+			return false, string.format("교역소가 %d단계 이상이어야 해요", lm.harbor)
+		end
+		local t = state.portTech and state.portTech[state.portId] or {}
+		local best, ok = 0, false
+		for discId in t do
+			local tl = techLevelOf(state, state.portId, discId)
+			best = math.max(best, tl)
+			if lm.disc == discId and tl >= lm.level then
+				ok = true
+			end
+		end
+		if lm.disc == "any" then
+			ok = best >= lm.level
+		end
+		if not ok then
+			local dn = if lm.disc == "any" then "어느 학문이든" else K.DisciplineById[lm.disc].name
+			return false, string.format("%s 기술이 %d단계 이상이어야 해요 (학자와 공동 발표로 키워요)", dn, lm.level)
+		end
+		return true
+	end
+
+	-- 건축: 항구가 발전하고 학문 기술이 오르면 박물관·천문대·연구소·미술관·학술원을 지을 수 있다.
+	function handlers.BuildLandmark(state, p)
+		local lm = type(p) == "table" and type(p.id) == "string" and K.LandmarkById[p.id]
+		if not lm then
+			return false, "잘못된 건축물"
+		end
+		if K.hasLandmark(state, state.portId, lm.id) then
+			return false, string.format("이 항구에는 이미 %s이(가) 있어요", lm.name)
+		end
+		local ok, why = landmarkReq(state, lm)
+		if not ok then
+			return false, why
+		end
+		if state.coins < lm.cost then
+			return false, string.format("건축비 %d코인이 필요해요", lm.cost)
+		end
+		state.coins -= lm.cost
+		state.landmarks = state.landmarks or {}
+		state.landmarks[state.portId] = state.landmarks[state.portId] or {}
+		state.landmarks[state.portId][lm.id] = true
+		local fame = math.floor(lm.cost / 50)
+		state.fame += fame
+		return true, string.format("%s에 %s을(를) 세웠다! %s 명성 +%d", D.Ports.Ports[state.portId].name, lm.name, lm.summary, fame)
 	end
 
 	-- ===== 박람회 =====
@@ -259,7 +427,7 @@ return function(D, S)
 			end
 			return a.id < b.id
 		end)
-		local slots = 3 + lvl
+		local slots = 3 + lvl + (if K.hasLandmark(state, state.portId, "museum") then K.LandmarkById.museum.expoSlots else 0)
 		local out = {}
 		for i = 1, math.min(slots, #list) do
 			out[i] = list[i]
@@ -309,6 +477,10 @@ return function(D, S)
 			score += pc.value
 			a.shown[pc.id] = true
 			table.insert(lines, string.format("· %s (%s%s)", pc.name, pc.kind, if pc.first then ", 첫 전시 +50%" else ""))
+		end
+		if K.hasLandmark(state, state.portId, "museum") then
+			score = math.floor(score * K.LandmarkById.museum.expoMult)
+			table.insert(lines, "· 박물관의 상설 전시 덕분에 점수 +15%")
 		end
 		local medal = nil
 		for _, m in MEDALS do
@@ -376,12 +548,29 @@ return function(D, S)
 			local pres = {}
 			for _, d in discs do
 				local last = a.last[state.portId .. ":" .. d]
-				table.insert(pres, { disc = d, name = K.DisciplineById[d].name, understood = understoodIn(state, d), wait = if last then math.max(0, PRESENT_COOLDOWN - (state.day - last)) else 0 })
+				local js = jointScholar(state, d)
+				local jl = a.last["joint:" .. state.portId .. ":" .. d]
+				local pts = techPoints(state, state.portId, d)
+				local lvT = techLevelOf(state, state.portId, d)
+				table.insert(pres, {
+					disc = d, name = K.DisciplineById[d].name, understood = understoodIn(state, d), wait = if last then math.max(0, PRESENT_COOLDOWN - (state.day - last)) else 0,
+					jointScholar = js and js.name or nil, jointWait = if jl then math.max(0, jointCooldown(state) - (state.day - jl)) else 0,
+					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1],
+				})
 			end
 			local lastExpo = a.last["expo:" .. state.portId]
 			out.academy = {
 				research = math.floor(r * 100 + 0.5), harborLevel = lvl, disciplines = names, present = pres,
-				presentMin = PRESENT_MIN, presented = a.presented, expos = a.expos,
+				presentMin = PRESENT_MIN, presented = a.presented, expos = a.expos, joint = a.joint or 0,
+			buildings = (function()
+				local rows = {}
+				for _, lm in K.Landmarks do
+					local built = K.hasLandmark(state, state.portId, lm.id)
+					local ok, why = landmarkReq(state, lm)
+					table.insert(rows, { id = lm.id, name = lm.name, cost = lm.cost, summary = lm.summary, built = built, can = ok and not built, why = if built then "지어졌어요" else why })
+				end
+				return rows
+			end)(),
 				expoWait = if lastExpo then math.max(0, EXPO_COOLDOWN - (state.day - lastExpo)) else 0, expoOpen = lvl >= 2,
 				medals = a.medals or 0,
 			}
@@ -396,7 +585,7 @@ return function(D, S)
 				prev[formId] = { name = FORMS[formId].name, pieces = #pieces, score = score, fee = fee }
 			end
 			out.academy.expoPreview = prev
-			out.academy.expoSlots = 3 + lvl
+			out.academy.expoSlots = 3 + lvl + (if K.hasLandmark(state, state.portId, "museum") then K.LandmarkById.museum.expoSlots else 0)
 		end
 		for _, node in K.Nodes do
 			local fx = node.fx

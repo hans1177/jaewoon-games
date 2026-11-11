@@ -3626,6 +3626,22 @@ local function renderExplore()
 								{ text = "발표", color = COLORS.gold, onClick = function() call("Present", { disc = pr.disc }) end, enabled = pr.understood >= ac.presentMin and pr.wait == 0 },
 							}, 56)
 						end)
+						if pr.jointScholar then
+							add(function()
+								local sub = string.format("%s 학자와 함께 · 기술 %d단계 (%d점%s) · 이해한 지식, 관련 교역품 기증, 퀘스트가 기여로 인정%s", pr.jointScholar, pr.techLevel, pr.techPoints, if pr.techNext then "/" .. pr.techNext else " 최고", if pr.jointWait > 0 then string.format(" · %d일 뒤 가능", pr.jointWait) else "")
+								return mkRow(content, "공동 발표 — " .. pr.name, sub, {
+									{ text = "함께 발표", color = COLORS.gold, onClick = function() call("JointPresent", { disc = pr.disc }) end, enabled = pr.understood >= 1 and pr.jointWait == 0 },
+								}, 64)
+							end)
+						end
+					end
+					for _, b in ac.buildings do
+						add(function()
+							local sub = if b.built then b.summary .. " (건축 완료)" else string.format("%s · 건축비 %d코인%s", b.summary, b.cost, if b.can then "" else " · " .. tostring(b.why))
+							return mkRow(content, "특수 건축물 — " .. b.name, sub, {
+								{ text = if b.built then "완료" else "건축", color = COLORS.gold, onClick = function() call("BuildLandmark", { id = b.id }) end, enabled = b.can },
+							}, 64)
+						end)
 					end
 					add(function()
 					local pv = ac.expoPreview

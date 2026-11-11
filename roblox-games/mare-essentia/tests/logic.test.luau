@@ -2008,6 +2008,46 @@ do
 	check("지식: 잘못된 학문은 거부", select(1, act(stP, "Present", { disc = "alchemy" })) == false)
 	stP.portId = "seville"
 	check("지식: 학회 없는 항구에서는 발표 불가", select(1, act(stP, "Present", { disc = "physics" })) == false)
+	-- 공동 발표
+	local stJ = newState("england")
+	stJ.portId = "london"
+	stJ.reported = {}
+	check("공동발표: 이해한 지식이 없으면 불가", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
+	for _, id in { "phy_buoyancy", "phy_lever" } do
+		stJ.reported[id] = true
+	end
+	stJ.cargo.glass = 4
+	local r0 = S.Knowledge.researchOf(stJ, "london")
+	local okJ = act(stJ, "JointPresent", { disc = "physics" })
+	check("공동발표: 성공하면 항구 기술 점수가 오름", okJ == true and (stJ.portTech.london.physics or 0) >= 4 and stJ.academy.joint == 1)
+	check("공동발표: 수집품이 기증됨", (stJ.cargo.glass or 0) <= 1)
+	check("공동발표: 쿨타임", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
+	stJ.portTech.london.physics = 60
+	check("공동발표: 기술이 오르면 연구 성과도 오름", S.Knowledge.researchOf(stJ, "london") > r0)
+	local ser = S.State.sanitize(S.State.serialize(stJ))
+	check("공동발표: 저장/불러오기", ser.portTech.london.physics == 60 and ser.academy.joint == 1)
+	stJ.portId = "seville"
+	check("공동발표: 학자 없는 항구 불가", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
+	-- 특수 건축물
+	local stL = newState("england")
+	stL.portId = "london"
+	stL.coins = 100000
+	check("건축: 조건 미달이면 불가", select(1, act(stL, "BuildLandmark", { id = "museum" })) == false)
+	stL.harbor.london = 99999
+	stL.portTech = { london = { astronomy = 16, art = 6 } }
+	local sp0 = S.Knowledge.speedBonus(stL)
+	local rs0 = S.Knowledge.researchOf(stL, "london")
+	check("건축: 박물관", select(1, act(stL, "BuildLandmark", { id = "museum" })) == true and stL.landmarks.london.museum == true)
+	check("건축: 중복 불가", select(1, act(stL, "BuildLandmark", { id = "museum" })) == false)
+	check("건축: 천문대는 항해 속도를 올림", select(1, act(stL, "BuildLandmark", { id = "observatory" })) == true and S.Knowledge.speedBonus(stL) > sp0)
+	check("건축: 건물이 연구 성과를 올림", S.Knowledge.researchOf(stL, "london") > rs0)
+	check("건축: 학술원", select(1, act(stL, "BuildLandmark", { id = "hall" })) == true)
+	check("건축: 잘못된 id 거부", select(1, act(stL, "BuildLandmark", { id = "castle" })) == false)
+	local backL = S.State.sanitize(S.State.serialize(stL))
+	check("건축: 저장/불러오기", backL.landmarks.london.museum == true and backL.landmarks.london.hall == true)
+	stL.coins = 10
+	stL.portTech.london.chemistry = 6
+	check("건축: 돈이 모자라면 불가", select(1, act(stL, "BuildLandmark", { id = "laboratory" })) == false)
 	-- 박람회
 	local stE = newState("england")
 	stE.portId = "london"
@@ -2075,7 +2115,7 @@ do
 	check("지식: 학회 기록이 저장·복원됨", backS.academy.presented == 3 and backS.academy.last["london:physics"] == 777)
 	-- 화면에 지식 트리가 담김
 	local view = S.View.build(st, ctx)
-	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == 3, tostring(view.knowledge))
+	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == 4, tostring(view.knowledge))
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
