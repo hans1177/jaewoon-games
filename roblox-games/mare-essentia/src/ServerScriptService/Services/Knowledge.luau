@@ -160,7 +160,7 @@ return function(D, S)
 	end
 
 	local function ensureAcademy(state)
-		state.academy = state.academy or { presented = 0, expos = 0, last = {} }
+		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, last = {}, shown = {} }
 		return state.academy
 	end
 
@@ -196,35 +196,145 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	-- 박람회 출품: 학문으로 개량한 교역품을 항구 박람회에 내놓는다 (교역소 2단계 이상, 화물은 줄지 않음)
-	function handlers.Expo(state)
+	-- ===== 박람회 =====
+	-- 전시품은 발견한 도감 카드에서 나온다: 동물은 표본·박제·살아 있는 채로(생체), 식물은 표본(압화), 광물은 광물·화석 표본, 유물은 그대로.
+	-- 전시 방식 배율: 표본 1.0 · 박제 1.3(30코인) · 생체 1.7(80코인). 처음 전시하는 카드는 +50%.
+	local RARITY_VALUE = { Common = 4, Uncommon = 8, Rare = 16, Epic = 32, Legendary = 64 }
+	local FORMS = {
+		specimen = { name = "표본", mult = 1.0, cost = 0 },
+		taxidermy = { name = "박제", mult = 1.3, cost = 30 },
+		live = { name = "생체", mult = 1.7, cost = 80 },
+	}
+	-- 바다 동물은 살려서 데려올 수 없다
+	local NO_LIVE = { "고래", "돌고래", "상어", "문어", "오징어", "해파리", "산호" }
+	local EXPO_FIELDS = { Zoology = "동물", Botany = "식물 표본", Mineral = "광물", Relic = "유물" }
+
+	local function isFossil(card)
+		for _, w in { "호박", "화석", "암모나이트", "백악" } do
+			if string.find(card.name, w, 1, true) then
+				return true
+			end
+		end
+		return false
+	end
+
+	local function canLive(card)
+		for _, w in NO_LIVE do
+			if string.find(card.name, w, 1, true) then
+				return false
+			end
+		end
+		return card.field == "Zoology"
+	end
+
+	-- 이 항구 박람회에 내놓을 수 있는 전시품(가치 높은 순). 전시관 자리는 3 + 교역소 단계.
+	local function expoPieces(state, formId, lvl)
+		local form = FORMS[formId]
+		local list = {}
+		for cardId in state.discovered do
+			local card = D.Cards.ById[cardId]
+			if card and EXPO_FIELDS[card.field] then
+				local f, fname = FORMS.specimen, "표본"
+				if card.field == "Zoology" then
+					if formId == "live" and canLive(card) then
+						f, fname = FORMS.live, "생체"
+					elseif formId == "live" or formId == "taxidermy" then
+						f, fname = FORMS.taxidermy, "박제"
+					end
+				elseif card.field == "Mineral" and isFossil(card) then
+					fname = "화석 표본"
+				elseif card.field == "Mineral" then
+					fname = "광물 표본"
+				elseif card.field == "Relic" then
+					fname = "유물"
+				end
+				local first = not (state.academy and state.academy.shown and state.academy.shown[cardId])
+				local value = math.floor((RARITY_VALUE[card.rarity] or 4) * f.mult * (if first then 1.5 else 1))
+				table.insert(list, { id = cardId, name = card.name, kind = fname, value = value, cost = f.cost, first = first })
+			end
+		end
+		table.sort(list, function(a, b)
+			if a.value ~= b.value then
+				return a.value > b.value
+			end
+			return a.id < b.id
+		end)
+		local slots = 3 + lvl
+		local out = {}
+		for i = 1, math.min(slots, #list) do
+			out[i] = list[i]
+		end
+		return out, #list
+	end
+
+	local MEDALS = { { 120, "금메달" }, { 60, "은메달" }, { 25, "동메달" } }
+
+	-- 박람회: 표본·박제·생체 동물, 식물·광물·화석·유물, 그리고 개량 교역품을 내놓고 심사를 받는다. (교역소 2단계 이상)
+	function handlers.Expo(state, p)
 		local lvl = D.Harbor.level(state.harbor[state.portId] or 0)
 		if lvl < 2 then
 			return false, "박람회는 교역소가 2단계 이상인 항구에서 열려요"
 		end
+		local formId = if type(p) == "table" and type(p.form) == "string" and FORMS[p.form] then p.form else "specimen"
 		local a = ensureAcademy(state)
 		local key = "expo:" .. state.portId
 		local last = a.last[key]
 		if last and state.day - last < EXPO_COOLDOWN then
 			return false, string.format("다음 박람회는 %d일 뒤에 열려요", EXPO_COOLDOWN - (state.day - last))
 		end
-		local coins, kinds = 0, 0
+		local pieces = expoPieces(state, formId, lvl)
+		local goodsKinds, goodsCoins = 0, 0
 		for goodId, count in state.cargo do
 			local gm = K.goodsMult(state, goodId)
 			if count > 0 and gm > 1.001 and D.Ports.Goods[goodId] then
-				kinds += 1
-				coins += math.min(3, count) * math.floor(D.Ports.Goods[goodId].basePrice * (1 + (gm - 1) * 5))
+				goodsKinds += 1
+				goodsCoins += math.min(3, count) * math.floor(D.Ports.Goods[goodId].basePrice * (1 + (gm - 1) * 5))
 			end
 		end
-		if kinds == 0 then
-			return false, "개량된 교역품(✦)을 화물칸에 싣고 와야 출품할 수 있어요"
+		if #pieces == 0 and goodsKinds == 0 then
+			return false, "내놓을 전시품이 없어요. 동물·식물·광물 카드를 발견하거나, 개량 교역품(✦)을 싣고 오세요"
+		end
+		local fee = 0
+		for _, pc in pieces do
+			fee += pc.cost
+		end
+		if fee > state.coins then
+			return false, string.format("전시 준비 비용 %d코인이 모자라요 (박제·생체 동물은 손질과 우리가 필요해요)", fee)
+		end
+		state.coins -= fee
+		a.shown = a.shown or {}
+		local score = goodsKinds * 10
+		local lines = {}
+		for _, pc in pieces do
+			score += pc.value
+			a.shown[pc.id] = true
+			table.insert(lines, string.format("· %s (%s%s)", pc.name, pc.kind, if pc.first then ", 첫 전시 +50%" else ""))
+		end
+		local medal = nil
+		for _, m in MEDALS do
+			if score >= m[1] then
+				medal = m[2]
+				break
+			end
 		end
 		a.last[key] = state.day
 		a.expos += 1
-		local fame = 4 * kinds + 3 * lvl
+		if medal then
+			a.medals = (a.medals or 0) + 1
+		end
+		local coins = score * 6 + goodsCoins
+		local fame = math.floor(score / 4) + 3 * lvl
 		state.coins += coins
 		state.fame += fame
-		local msgs = { string.format("%s 박람회에 개량 교역품 %d종을 출품했다!", D.Ports.Ports[state.portId].name, kinds), string.format("수상 상금 +%d코인, 명성 +%d", coins, fame) }
+		local msgs = { string.format("%s 박람회 개막! 전시 방식: %s", D.Ports.Ports[state.portId].name, FORMS[formId].name) }
+		for _, l in lines do
+			table.insert(msgs, l)
+		end
+		if goodsKinds > 0 then
+			table.insert(msgs, string.format("· 개량 교역품 %d종", goodsKinds))
+		end
+		table.insert(msgs, string.format("심사 점수 %d점%s", score, if medal then " — " .. medal .. "!" else ""))
+		table.insert(msgs, string.format("상금 +%d코인, 명성 +%d%s", coins, fame, if fee > 0 then string.format(" (준비 비용 -%d)", fee) else ""))
 		return true, table.concat(msgs, "\n")
 	end
 
@@ -273,7 +383,20 @@ return function(D, S)
 				research = math.floor(r * 100 + 0.5), harborLevel = lvl, disciplines = names, present = pres,
 				presentMin = PRESENT_MIN, presented = a.presented, expos = a.expos,
 				expoWait = if lastExpo then math.max(0, EXPO_COOLDOWN - (state.day - lastExpo)) else 0, expoOpen = lvl >= 2,
+				medals = a.medals or 0,
 			}
+			local prev = {}
+			for _, formId in { "specimen", "taxidermy", "live" } do
+				local pieces = expoPieces(state, formId, lvl)
+				local score, fee = 0, 0
+				for _, pc in pieces do
+					score += pc.value
+					fee += pc.cost
+				end
+				prev[formId] = { name = FORMS[formId].name, pieces = #pieces, score = score, fee = fee }
+			end
+			out.academy.expoPreview = prev
+			out.academy.expoSlots = 3 + lvl
 		end
 		for _, node in K.Nodes do
 			local fx = node.fx

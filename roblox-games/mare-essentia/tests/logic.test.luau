@@ -2020,6 +2020,39 @@ do
 	local okE = act(stE, "Expo", {})
 	check("지식: 개량 교역품(✦)을 출품하면 상금", okE == true and stE.coins > coinsE and stE.cargo.timber == 5 and stE.academy.expos == 1)
 	check("지식: 박람회에도 쿨타임", select(1, act(stE, "Expo", {})) == false)
+	-- 진짜 박람회: 동물 표본·박제·생체, 식물, 광물·화석
+	local stZ = newState("england")
+	stZ.portId = "london"
+	stZ.harbor.london = 1000
+	check("지식: 전시품이 하나도 없으면 박람회 불가", select(1, act(stZ, "Expo", { form = "specimen" })) == false)
+	stZ.discovered.zoo_reindeer = true
+	stZ.discovered.zoo_puffin = true
+	stZ.discovered.bot_tulip = true
+	stZ.discovered.min_amber = true
+	local view0 = S.View.build(stZ, ctx)
+	local pv = view0.knowledge.academy.expoPreview
+	check("지식: 박람회 미리보기에 방식별 점수", pv.live.score > pv.taxidermy.score and pv.taxidermy.score > pv.specimen.score and pv.live.fee > pv.taxidermy.fee, pv.live.score .. "/" .. pv.taxidermy.score .. "/" .. pv.specimen.score)
+	stZ.coins = 0
+	check("지식: 박제·생체는 준비 비용이 모자라면 거부", select(1, act(stZ, "Expo", { form = "live" })) == false and stZ.academy.expos == 0)
+	stZ.coins = 1000
+	local okZ, msgZ = act(stZ, "Expo", { form = "live" })
+	check("지식: 살아 있는 동물을 전시한 박람회 성공", okZ == true and string.find(msgZ, "생체", 1, true) ~= nil and stZ.academy.expos == 1, msgZ)
+	check("지식: 전시한 카드가 기록됨(첫 전시 보너스는 한 번)", stZ.academy.shown.zoo_reindeer == true)
+	stZ.day += 91
+	local stZ2 = newState("england")
+	stZ2.portId, stZ2.harbor.london = "london", 1000
+	stZ2.discovered.zoo_reindeer = true
+	stZ2.academy.shown.zoo_reindeer = true
+	local first2 = S.View.build(stZ2, ctx).knowledge.academy.expoPreview.live.score
+	stZ2.academy.shown.zoo_reindeer = nil
+	local first1 = S.View.build(stZ2, ctx).knowledge.academy.expoPreview.live.score
+	check("지식: 처음 전시하는 카드는 점수 +50%", first1 > first2, first1 .. "/" .. first2)
+	-- 바다 동물은 생체로 못 데려온다 (박제로 대신)
+	local stW = newState("england")
+	stW.portId, stW.harbor.london = "london", 1000
+	stW.discovered.zoo_dolphin = true
+	local okW, msgW = act(stW, "Expo", { form = "live" })
+	check("지식: 바다 동물은 생체 대신 박제로 전시", okW == true and string.find(msgW, "박제", 1, true) ~= nil and string.find(msgW, "생체)", 1, true) == nil, msgW)
 	-- 퀘스트: 이해/발표/박람회가 자동 집계
 	local qs = newState("england")
 	qs.reported = { phy_lever = true, phy_pendulum = true, phy_gravity = true, ast_polaris = true }

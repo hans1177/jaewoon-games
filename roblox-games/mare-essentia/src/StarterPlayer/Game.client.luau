@@ -3628,10 +3628,17 @@ local function renderExplore()
 						end)
 					end
 					add(function()
-						local sub = if not ac.expoOpen then "교역소 2단계 이상에서 열려요" elseif ac.expoWait > 0 then string.format("%d일 뒤 열려요", ac.expoWait) else "개량 교역품(✦)을 화물칸에 싣고 출품해요"
-						return mkRow(content, "박람회 출품", sub, {
-							{ text = "출품", color = COLORS.green, onClick = function() call("Expo", {}) end, enabled = ac.expoOpen and ac.expoWait == 0 },
-						}, 56)
+					local pv = ac.expoPreview
+					local sub = if not ac.expoOpen then "교역소 2단계 이상에서 열려요" elseif ac.expoWait > 0 then string.format("%d일 뒤 열려요", ac.expoWait) else string.format("발견한 동물·식물·광물·화석·유물 중 가치 높은 %d점 + 개량 교역품(✦). 수상 %d회", ac.expoSlots, ac.medals)
+					if pv and ac.expoOpen and ac.expoWait == 0 then
+						sub ..= string.format("\n예상 점수 표본 %d · 박제 %d(-%d코인) · 생체 %d(-%d코인)", pv.specimen.score, pv.taxidermy.score, pv.taxidermy.fee, pv.live.score, pv.live.fee)
+					end
+					local can = ac.expoOpen and ac.expoWait == 0
+					return mkRow(content, "박람회 출품", sub, {
+						{ text = "표본", color = COLORS.green, onClick = function() call("Expo", { form = "specimen" }) end, enabled = can },
+						{ text = "박제", color = COLORS.gold, onClick = function() call("Expo", { form = "taxidermy" }) end, enabled = can },
+						{ text = "생체", color = COLORS.blue, onClick = function() call("Expo", { form = "live" }) end, enabled = can },
+					}, 72)
 					end)
 				end
 			end
