@@ -39,6 +39,7 @@ local D = {
 	PeopleTalk = require("./Shared/PeopleTalk"),
 	PortOrder = require("./Shared/PortOrder"),
 	RoomClock = require("./Shared/RoomClock"),
+	WonderScenes = require("./Shared/WonderScenes"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -230,6 +231,25 @@ local function extraTests()
 	check("1517 시작: 가을에 95개조 반박문 사건이 닥침", st17.history.pending == "reformation_95", tostring(st17.history.pending))
 	check("1517 시작: 종교개혁 이후 사건이 16건", (function() local n = 0 for _, e in HE.Events do if e.year >= 1517 and e.year < 1600 then n += 1 end end return n end)() == 16)
 	check("1517 시작: 새 게임 요청이 받아들여짐", select(1, S.State.new("england", 1517)) ~= nil)
+	-- 원더 연출
+	local WSd = D.WonderScenes
+	local badScene = 0
+	local AIds: any = require("./Shared/AssetIds")
+	for cid, sc in WSd.Scenes do
+		if not D.Cards.ById[cid] or not AIds["CardArt/" .. sc.art] or not WSd.Moods[sc.mood] or #sc.lines < 3 then badScene += 1 end
+	end
+	check("원더 연출: 모든 장면의 카드·원화·음악 분위기·자막이 있음", badScene == 0 and next(WSd.Scenes) ~= nil)
+	local stW = newState("england")
+	local msgsW: { any } = {}
+	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 연출: 원더 카드를 처음 발견하면 장면 예약", stW.pendingScene == "site_stonehenge")
+	stW.pendingScene = nil
+	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 연출: 이미 발견한 카드는 다시 예약하지 않음", stW.pendingScene == nil)
+	local stN = newState("england")
+	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
+	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)
+	check("원더 연출: 임시 값은 저장하지 않음", S.State.serialize(stW).pendingScene == nil)
 	-- 방 시계
 	local RC = D.RoomClock
 	check("방 시계: 현실 1분 = 6일", RC.daysFor(60) == 6 and RC.daysFor(3600) == 360 and RC.daysFor(-5) == 0)

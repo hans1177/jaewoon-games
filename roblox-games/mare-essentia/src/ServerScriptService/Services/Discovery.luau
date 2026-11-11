@@ -13,6 +13,9 @@ return function(D, S)
 			return false
 		end
 		state.discovered[cardId] = true
+		if D.WonderScenes.Scenes[cardId] then
+			state.pendingScene = cardId -- 원더 연출 (저장하지 않는 임시 값)
+		end
 		local coins = math.floor(card.reward.coins * S.Perk.coinMult(state, card.field))
 		state.coins += coins
 		state.fame += card.reward.fame

@@ -1182,6 +1182,9 @@ local function call(action, payload)
 			Sfx.play(snd)
 		end
 	end
+	if result.scene then
+		task.defer(H.playWonderScene, result.scene)
+	end
 	if result.ranking then
 		ranking = result.ranking
 	end
@@ -3840,6 +3843,14 @@ function H.showCardDetail(card)
 		end
 	end
 	title.ZIndex = 43
+	local replayScene = require(Shared:WaitForChild("WonderScenes")).Scenes[card.id]
+	if card.found and replayScene then
+		local rp = mkButton(body, "🎬 원더 연출 다시 보기", COLORS.blue, UDim2.new(1, 0, 0, 40), function()
+			overlay:Destroy()
+			H.playWonderScene(card.id)
+		end, true)
+		rp.ZIndex = 43
+	end
 	local close = mkButton(box, "닫기", COLORS.gold, UDim2.new(1, -20, 0, 44), function()
 		overlay:Destroy()
 	end, true)
@@ -4790,6 +4801,202 @@ openOptions = function()
 		back.TextColor3 = Color3.fromRGB(22, 14, 4)
 	end
 	draw()
+end
+
+-- 원더 연출: 큰 원화가 연필 스케치 → 채색 순서로 스스로 그려지고 음악이 흐른다 (약 10초, 눌러서 건너뛰기)
+function H.playWonderScene(cardId)
+	local WS = require(Shared:WaitForChild("WonderScenes"))
+	local sc = WS.Scenes[cardId]
+	local assetId = sc and AssetIds["CardArt/" .. sc.art]
+	if not sc or not assetId or H.sceneBusy then
+		return
+	end
+	H.sceneBusy = true
+	local TS = game:GetService("TweenService")
+	local mood = WS.Moods[sc.mood] or WS.Moods.temple
+	local prevMusic = Sfx.current()
+	local layer = overlayGui("WonderScene", 60)
+	local alive = true
+	local root = Instance.new("TextButton")
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.fromRGB(10, 8, 6)
+	root.BackgroundTransparency = 1
+	root.Text = ""
+	root.AutoButtonColor = false
+	root.ZIndex = 100
+	root.Parent = layer
+	TS:Create(root, TweenInfo.new(0.8), { BackgroundTransparency = 0 }):Play()
+	-- 16:9 액자
+	local frame = Instance.new("Frame")
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	frame.Position = UDim2.fromScale(0.5, 0.46)
+	frame.Size = UDim2.fromScale(0.94, 0.94)
+	frame.BackgroundColor3 = Color3.fromRGB(236, 222, 190)
+	frame.BackgroundTransparency = 0
+	frame.ZIndex = 101
+	frame.ClipsDescendants = true
+	frame.Parent = root
+	local ratio = Instance.new("UIAspectRatioConstraint")
+	ratio.AspectRatio = 16 / 9
+	ratio.Parent = frame
+	local fstroke = Instance.new("UIStroke")
+	fstroke.Thickness = 3
+	fstroke.Color = Color3.fromRGB(212, 168, 74)
+	fstroke.Parent = frame
+	local image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=768&h=432"
+	local N = 14
+	local zoom = Instance.new("Frame") -- 천천히 다가가는 화면 (Ken Burns)
+	zoom.AnchorPoint = Vector2.new(0.5, 0.5)
+	zoom.Position = UDim2.fromScale(0.5, 0.5)
+	zoom.Size = UDim2.fromScale(1, 1)
+	zoom.BackgroundTransparency = 1
+	zoom.ZIndex = 102
+	zoom.Parent = frame
+	-- 두 겹: 스케치(바랜 갈색, 윗줄부터 붓질처럼) → 채색(왼쪽에서 오른쪽으로 번져 가며)
+	local strips = {}
+	for i = 1, N do
+		local x0 = (i - 1) / N
+		local sk = Instance.new("Frame") -- 스케치 줄
+		sk.Position = UDim2.fromScale(x0, 0)
+		sk.Size = UDim2.new(1 / N + 0.002, 0, 0, 0)
+		sk.BackgroundTransparency = 1
+		sk.ClipsDescendants = true
+		sk.ZIndex = 103
+		sk.Parent = zoom
+		local ski = Instance.new("ImageLabel")
+		ski.BackgroundTransparency = 1
+		ski.Image = image
+		ski.ImageColor3 = Color3.fromRGB(150, 120, 86)
+		ski.ImageTransparency = 0.5
+		ski.Position = UDim2.fromScale(-x0 * N, 0)
+		ski.Size = UDim2.fromScale(N, 1)
+		ski.ZIndex = 103
+		ski.Parent = sk
+		sk:SetAttribute("full", 1)
+		local co = Instance.new("Frame") -- 채색 줄
+		co.Position = UDim2.fromScale(x0, 0)
+		co.Size = UDim2.new(1 / N + 0.002, 0, 1, 0)
+		co.BackgroundTransparency = 1
+		co.ClipsDescendants = true
+		co.ZIndex = 104
+		co.Parent = zoom
+		local coi = Instance.new("ImageLabel")
+		coi.BackgroundTransparency = 1
+		coi.Image = image
+		coi.ImageTransparency = 1
+		coi.Position = UDim2.fromScale(-x0 * N, 0)
+		coi.Size = UDim2.fromScale(N, 1)
+		coi.ZIndex = 104
+		coi.Parent = co
+		strips[i] = { sk = sk, coi = coi }
+	end
+	local D = WS.Duration
+	-- 자막
+	local cap = Instance.new("TextLabel")
+	cap.AnchorPoint = Vector2.new(0.5, 1)
+	cap.Position = UDim2.fromScale(0.5, 0.985)
+	cap.Size = UDim2.new(0.9, 0, 0, 74)
+	cap.BackgroundTransparency = 1
+	cap.TextColor3 = Color3.fromRGB(246, 232, 200)
+	cap.TextStrokeTransparency = 0.4
+	cap.Font = Enum.Font.Gotham
+	cap.TextSize = 17
+	cap.TextWrapped = true
+	cap.Text = ""
+	cap.ZIndex = 110
+	cap.Parent = root
+	local ttl = Instance.new("TextLabel")
+	ttl.AnchorPoint = Vector2.new(0.5, 0)
+	ttl.Position = UDim2.fromScale(0.5, 0.02)
+	ttl.Size = UDim2.new(0.9, 0, 0, 40)
+	ttl.BackgroundTransparency = 1
+	ttl.TextTransparency = 1
+	ttl.TextColor3 = Color3.fromRGB(246, 214, 120)
+	ttl.TextStrokeTransparency = 1
+	ttl.Font = Enum.Font.GothamBold
+	ttl.TextSize = 28
+	ttl.Text = sc.title
+	ttl.ZIndex = 110
+	ttl.Parent = root
+	local hint = Instance.new("TextLabel")
+	hint.AnchorPoint = Vector2.new(1, 0)
+	hint.Position = UDim2.new(1, -12, 0, 8)
+	hint.Size = UDim2.fromOffset(140, 20)
+	hint.BackgroundTransparency = 1
+	hint.TextColor3 = Color3.fromRGB(180, 168, 140)
+	hint.Font = Enum.Font.Gotham
+	hint.TextSize = 12
+	hint.TextXAlignment = Enum.TextXAlignment.Right
+	hint.Text = "화면을 누르면 건너뛰기"
+	hint.ZIndex = 110
+	hint.Parent = root
+	Sfx.music(mood.music)
+	Sfx.play(mood.sfx)
+
+	local function finish()
+		if not alive then
+			return
+		end
+		alive = false
+		H.sceneBusy = false
+		Sfx.play("sfx_fanfare", 0.6)
+		Sfx.music(prevMusic)
+		local tw = TS:Create(root, TweenInfo.new(0.6), { BackgroundTransparency = 1 })
+		tw:Play()
+		for _, d in root:GetDescendants() do
+			if d:IsA("ImageLabel") then
+				TS:Create(d, TweenInfo.new(0.6), { ImageTransparency = 1 }):Play()
+			elseif d:IsA("TextLabel") then
+				TS:Create(d, TweenInfo.new(0.6), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+			end
+		end
+		task.delay(0.7, function()
+			layer:Destroy()
+		end)
+	end
+	root.Activated:Connect(finish)
+
+	task.spawn(function()
+		task.wait(0.8)
+		-- 1) 스케치: 줄마다 위에서 아래로 붓질 (약 3.5초, 줄은 엇갈려 시작)
+		for i, s in strips do
+			local delay = (i - 1) * 0.12
+			task.delay(delay, function()
+				if alive then
+					TS:Create(s.sk, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Size = UDim2.new(1 / N + 0.002, 0, 1, 0) }):Play()
+				end
+			end)
+		end
+		-- 2) 채색: 왼쪽에서 오른쪽으로 색이 번진다 (3초부터 약 4.5초)
+		task.delay(3, function()
+			for i, s in strips do
+				task.delay((i - 1) * 0.2, function()
+					if alive then
+						TS:Create(s.coi, TweenInfo.new(1.4, Enum.EasingStyle.Sine), { ImageTransparency = 0 }):Play()
+					end
+				end)
+			end
+		end)
+		-- 천천히 다가가기
+		TS:Create(zoom, TweenInfo.new(D, Enum.EasingStyle.Linear), { Size = UDim2.fromScale(1.1, 1.1) }):Play()
+		-- 3) 제목과 자막
+		task.delay(4.5, function()
+			if alive then
+				TS:Create(ttl, TweenInfo.new(1), { TextTransparency = 0, TextStrokeTransparency = 0.5 }):Play()
+			end
+		end)
+		for i, line in sc.lines do
+			task.delay(5.5 + (i - 1) * 1.4, function()
+				if alive then
+					cap.Text = line
+					cap.TextTransparency = 1
+					TS:Create(cap, TweenInfo.new(0.5), { TextTransparency = 0 }):Play()
+				end
+			end)
+		end
+		task.wait(D)
+		finish()
+	end)
 end
 
 function H.startNewGame()
