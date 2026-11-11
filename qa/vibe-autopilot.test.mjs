@@ -116,3 +116,16 @@ test('종합 점검 스크립트는 시작 버튼이 없어도 멈추지 않는�
   for (const c of clicks) { assert.match(c.code, /이어하기/); assert.match(c.code, /모험 시작/); assert.match(c.code, /out="6,6"/); }
   assert.ok(d.some(s => s.type === 'luau' && /HEALTH_ERR/.test(s.code)));
 });
+
+test('점검이 끝날 때마다 이어 실행(workflow_run)되고, 방금 보냈으면 10분은 쉬어 연속 실패 루프를 막는다', () => {
+  const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
+  assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture'\]\s*\n\s*types: \[completed\]/);
+  assert.match(y, /cron: '7,37 \* \* \* \*'/);                          // 안전망은 그대로
+  const b = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
+  assert.match(b, /workflows: \['Vibe Autopilot'\]/);
+  const now = Date.now();
+  let L = emptyLedger();
+  L = markDispatched(L, { game: 'fantasy-survival', kind: 'health' }, now - 3 * 60000, 'a');
+  assert.match(decide({ signals: none, ledger: L, now, heads }).skipped, /방금 점검을 보냈다/);
+  assert.equal(decide({ signals: none, ledger: L, now: now + 8 * 60000, heads }).skipped.includes('방금'), false);
+});
