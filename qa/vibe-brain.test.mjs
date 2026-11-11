@@ -269,3 +269,13 @@ test('검증·커밋은 두뇌가 실제로 고친 파일만 대상으로 한다
   assert.doesNotMatch(y, /git add -A/);
   assert.match(y, /brain-result\.json'\)\.files/);
 });
+
+test('수동 실행의 retry_now 는 쉬는 시간을 건너뛰지만 평소엔 지킨다', () => {
+  const o = { fingerprint: 'g:x', kind: 'background' };
+  const L = { attempts: { 'g:x': { n: 1, lastAt: Date.now() - 60000 } } };
+  delete process.env.BRAIN_RETRY_NOW;
+  assert.equal(pickOrder([o], L), null);
+  process.env.BRAIN_RETRY_NOW = '1';
+  try { assert.equal(pickOrder([o], L).fingerprint, 'g:x'); } finally { delete process.env.BRAIN_RETRY_NOW; }
+  assert.match(fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8'), /BRAIN_RETRY_NOW: \$\{\{ github\.event\.inputs\.retry_now/);
+});
