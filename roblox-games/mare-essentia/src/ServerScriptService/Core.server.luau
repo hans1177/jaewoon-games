@@ -44,13 +44,14 @@ local D = {
 	Stocks = require(Shared:WaitForChild("Stocks")),
 	People = require(Shared:WaitForChild("People")),
 	PeopleTalk = require(Shared:WaitForChild("PeopleTalk")),
+	PortOrder = require(Shared:WaitForChild("PortOrder")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
 local S = Registry.S
-local QUEST_WATCH = { Explore = true, TacticsAct = true, TacticsEnd = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, HistoryChoose = true, StockBuy = true, BuildStage = true, StockSell = true, Present = true, Expo = true, JointPresent = true, BuildLandmark = true, Launch = true, PeopleTalk = true, PeopleClaim = true }
+local QUEST_WATCH = { Explore = true, TacticsAct = true, TacticsEnd = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, HistoryChoose = true, StockBuy = true, BuildStage = true, StockSell = true, Present = true, Expo = true, JointPresent = true, BuildLandmark = true, Launch = true, PeopleTalk = true, PeopleClaim = true, OrderPatrol = true }
 local handlers = Registry.handlers
 
 -- [중요] DataStore 이름은 게임 이름이 바뀌어도, 유니버스가 바뀌어도 임의로 바꾸지 않는다. 바꾸면 플레이어 저장이 빈 저장소로 읽혀 전부 초기화된다.
@@ -59,7 +60,7 @@ local STORE_NAME = "MareEssentia_v2"
 local RATE_LIMIT = 0.1
 local AUTOSAVE_INTERVAL = 15 -- DataStore 쓰기 제한(키당 6초에 1회)을 넘지 않도록 변경된 세션만 이 주기로 저장
 local MARKET_INTERVAL = 5
-local START_YEARS = { [1600] = true, [1625] = true, [1650] = true, [1700] = true, [1750] = true }
+local START_YEARS = { [1517] = true, [1600] = true, [1625] = true, [1650] = true, [1700] = true, [1750] = true }
 
 local random = Random.new()
 local market = S.MarketClass.new()

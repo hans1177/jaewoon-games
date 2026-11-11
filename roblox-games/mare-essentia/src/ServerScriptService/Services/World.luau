@@ -93,6 +93,7 @@ return function(D, S)
 		local exposed = if ev.port then state.portId == ev.port else hereRegion(state) == region
 		if exposed then
 			if ev.kind == "disaster" then
+				S.Order.shock(state, state.portId)
 				local cut = mitigation(state, ev.guard)
 				local loss = math.min(math.floor(state.coins * ev.pct * (1 - cut)), ev.mx)
 				loss = math.max(0, loss)

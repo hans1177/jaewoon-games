@@ -47,6 +47,8 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
+			order = {}, -- 항구 치안 (항구 id → {v, day, patrolDay})
+			orderPatrols = 0,
 			peopleTalked = {}, -- 대화를 나눈 인물 (인물 id → true)
 			peopleClaimed = {}, -- 인물 백과 보상 받은 단계 (필요 인원 문자열 → true)
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
@@ -470,6 +472,14 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.order) == "table" then
+			for id, r in saved.order do
+				if type(id) == "string" and D.Ports.Ports[id] and type(r) == "table" then
+					s.order[id] = { v = num(r.v, 0, 0, 100), day = math.floor(num(r.day, 0, 0, 1e9)), patrolDay = math.floor(num(r.patrolDay, -1000, -1000, 1e9)) }
+				end
+			end
+		end
+		s.orderPatrols = math.floor(num(saved.orderPatrols, 0, 0, 1e9))
 		if type(saved.peopleTalked) == "table" then
 			for k, v in saved.peopleTalked do
 				if v == true and type(k) == "string" and #k <= 40 then s.peopleTalked[k] = true end
@@ -673,6 +683,8 @@ return function(D)
 			pace = state.pace,
 			world = state.world,
 			peopleClaimed = state.peopleClaimed,
+			order = state.order,
+			orderPatrols = state.orderPatrols,
 			peopleTalked = state.peopleTalked,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,

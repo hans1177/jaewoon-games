@@ -37,6 +37,7 @@ local D = {
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
 	PeopleTalk = require("./Shared/PeopleTalk"),
+	PortOrder = require("./Shared/PortOrder"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -221,6 +222,32 @@ local function extraTests()
 	check("대화: 처음엔 보상, 두 번째엔 보상 없음", okT and stT.coins == 40 and act(stT, "PeopleTalk", { id = anyP.id }) and stT.coins == 40)
 	check("대화: 저장/불러오기", S.State.sanitize(S.State.serialize(stT)).peopleTalked[anyP.id] == true and S.People.talkCount(stT) == 1)
 	check("대화: 알 수 없는 인물 거절", select(1, act(stT, "PeopleTalk", { id = "nobody" })) == false)
+	-- 1517년 시작 (종교개혁)
+	local st17 = S.State.new("netherlands", 1517)
+	st17.day = HE.dayOf(HE.ById.reformation_95, 1517) + 1
+	S.History.tick(st17)
+	check("1517 시작: 가을에 95개조 반박문 사건이 닥침", st17.history.pending == "reformation_95", tostring(st17.history.pending))
+	check("1517 시작: 종교개혁 이후 사건이 16건", (function() local n = 0 for _, e in HE.Events do if e.year >= 1517 and e.year < 1600 then n += 1 end end return n end)() == 16)
+	check("1517 시작: 새 게임 요청이 받아들여짐", select(1, S.State.new("england", 1517)) ~= nil)
+	-- 항구 치안
+	local PO = D.PortOrder
+	check("치안: 신대륙 개척지는 유럽보다 기본 치안이 낮음", PO.BASE.new_world < PO.BASE.europe)
+	check("치안: 해적 소굴은 해적 황금기에 더 낮음", PO.target("new_world", "nassau", 1700, 0, 1) < PO.target("new_world", "nassau", 1600, 0, 1) and PO.target("new_world", "nassau", 1600, 0, 1) < PO.target("new_world", "havana", 1600, 0, 1))
+	check("치안: 방어 건물과 교역소가 목표를 올림", PO.target("europe", "london", 1700, 3, 3) > PO.target("europe", "london", 1700, 0, 1))
+	local stO = newState("england")
+	local o0 = S.Order.currentOf(stO, stO.portId)
+	stO.coins = 1000
+	local okO = act(stO, "OrderPatrol", {})
+	local o1 = S.Order.currentOf(stO, stO.portId)
+	check("치안: 순찰은 코인을 쓰고 치안을 올림", okO and stO.coins == 1000 - PO.PATROL_COST and o1 > o0 and stO.orderPatrols == 1)
+	check("치안: 쿨다운 안에는 다시 못 보냄", select(1, act(stO, "OrderPatrol", {})) == false)
+	stO.day += PO.PATROL_COOLDOWN
+	check("치안: 시간이 지나면 기본 치안으로 돌아감", S.Order.currentOf(stO, stO.portId) < o1 + 0.001 and math.abs(S.Order.currentOf(stO, stO.portId) - S.Order.targetOf(stO, stO.portId)) <= math.abs(o1 - S.Order.targetOf(stO, stO.portId)))
+	local bB = S.Order.sellBonus(stO)
+	S.Order.shock(stO, stO.portId, 40)
+	check("치안: 충격으로 떨어지면 판매 비율도 낮아짐", S.Order.sellBonus(stO) < bB)
+	check("치안: 저장/불러오기", S.State.sanitize(S.State.serialize(stO)).orderPatrols == 1 and S.State.sanitize(S.State.serialize(stO)).order[stO.portId] ~= nil)
+	check("치안: 화면에 담김", S.View.build(stO, ctx).order ~= nil and S.View.build(stO, ctx).order.cost == PO.PATROL_COST)
 	-- 1600년대 초 시작
 	local st16 = S.State.new("netherlands", 1600)
 	check("1600 시작: 날짜와 해가 맞음", S.State.year(st16) == 1600)
@@ -231,7 +258,7 @@ local function extraTests()
 	for _, e in HE.Events do
 		if e.year >= 1600 then ev16n += 1 end
 	end
-	check("1600 시작: 1650년 이전 역사 사건이 15건 이상", ev16 >= 15 and ev16n == #HE.Events, ev16 .. "/" .. ev16n)
+	check("1600 시작: 1650년 이전 역사 사건이 15건 이상 (종교개혁 이후 사건 포함)", ev16 >= 15 and ev16n == #HE.Events - 16, ev16 .. "/" .. ev16n)
 	st16.day = HE.dayOf(HE.ById.eic_charter, 1600) + 1
 	S.History.tick(st16)
 	check("1600 시작: 1600년 말에 영국 동인도회사 사건이 닥침", st16.history.pending == "eic_charter" or st16.history.pending == "sekigahara", tostring(st16.history.pending))
@@ -244,9 +271,9 @@ local function extraTests()
 		if e.year < 1700 then st50.history.seen[e.id] = nil end
 	end
 	for _, e in HE.Events do
-		if e.year < 1600 then seenEarly = false end
+		if e.year < 1517 then seenEarly = false end
 	end
-	check("역사 사건은 모두 1600년 이후", seenEarly)
+	check("역사 사건은 모두 1517년 이후", seenEarly)
 	local galileoOk = false
 	st16.portId = "venice"
 	st16.fame = 100
