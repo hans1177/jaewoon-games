@@ -593,3 +593,44 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - `cardart/event_machu_picchu.jpg` · [마추픽추](https://whc.unesco.org/en/list/274/).
 - `cardart/event_stonehenge.jpg` · [스톤헨지](https://whc.unesco.org/en/list/373/).
 - 모두 1672×941, 가로형 발견 이벤트용 단독 구도. 잉크 선과 옅은 수채 채색을 담은 게임 전용 생성 원화 `PROJECT_ORIGINAL_ART`. 배경 지형과 조명은 회화적 재구성이다.
+
+## 2026-11-11 세계 유적·신비 지형 CC0 원본 30종
+
+원본 제작사 Polygonal Mind(2018~2023)가 CC0로 공개한 3D 모델을 기존 폴더에 확보했다. ToxSam의 원본 FBX→GLB 변환 공개본을 **바이너리 무수정 그대로** 사용한다. 제작자 직접 공개·라이선스: https://github.com/ToxSam/cc0-models-Polygonal-Mind 및 https://github.com/PolygonalMind/initiative-opensource-release (CC0-1.0, 상업적 이용·수정·재배포 가능). AI가 생성하거나 스크립트로 새 기하구조를 조립한 자산은 추가하지 않았다.
+
+| 저장 파일 (assets/ 기준) | 용도 | 제작자 원본 GLB | 원본·저장 Git SHA |
+|---|---|---|---|
+| `terrain/egypt-obelisk.glb` | 이집트 오벨리스크 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/Obelisk_Art.glb) | `cc6084f93d8d09688521447329e5b28fbf9a4f80` |
+| `terrain/egypt-temple-arch-a.glb` | 이집트 신전 아치 A | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/TempleArch01_Art.glb) | `2693560b56e4192bc0e80ca74efc0614b020f13d` |
+| `terrain/egypt-temple-arch-b.glb` | 이집트 신전 아치 B | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/TempleArch02_Art.glb) | `55b6de2e059cf4ef791a2c851c6a6374b319b680` |
+| `terrain/egypt-column.glb` | 이집트 기둥 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/Column_Art.glb) | `cd61c6be01a2bad9fb3c169ab0a51e1c76cbc856` |
+| `terrain/egypt-temple-floor.glb` | 이집트 신전 바닥 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/TempleFloor01_Art.glb) | `4ee2f71d182b6bb79050a60e9c258071cd47868d` |
+| `terrain/egypt-temple-door.glb` | 이집트 신전 문 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/Door_Art.glb) | `9fd54dd4498e0d196ff73c11820747225b841cda` |
+| `terrain/egypt-temple-wall.glb` | 이집트 신전 벽 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/Wall01_Art.glb) | `571a356427de505949e2e3c4da3f2be78dfd293d` |
+| `terrain/egypt-temple-detail.glb` | 이집트 신전 장식 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/tomb-chaser-1/TempleEmbelisher01_Art.glb) | `dd1eebdc5c35661c689903b930d131eae89a3d78` |
+| `terrain/mystic-broken-wall.glb` | 고대 파손 벽 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Wall_Broken_01.glb) | `454e754188bddd83d64365d2d4a860f00d1b0ab2` |
+| `terrain/mystic-broken-column.glb` | 고대 부서진 기둥 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Column_SmallBroken_01.glb) | `3692003ac9c185526ba067b23a321cb40d75418a` |
+| `terrain/mystic-stairs.glb` | 고산 유적 계단 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Platform_Stairs_01.glb) | `5ed1c8cf2faaaac4101248beac857c713559001a` |
+| `terrain/mystic-sand-dune.glb` | 모래언덕 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Dune_Sand.glb) | `62e84fb9b8b8d6bac9770f5f9ad5e430ac49716c` |
+| `terrain/mystic-crystal-circle.glb` | 신비한 수정 군락 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Crystal_ClusterSurrounded.glb) | `c6165728d5e26044a8cd653db90f984f3c32d848` |
+| `terrain/mystic-stone-arch.glb` | 유적 아치 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Arc.glb) | `b732fa4c83511645eb5edcb734b9646a42c111a7` |
+| `terrain/mystic-column.glb` | 석조 기둥 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Column_Regular.glb) | `b5778a46dcbad1fa3c1e3ed74eb2479c6a29c0a4` |
+| `terrain/mystic-wall-corner.glb` | 파손 벽 모서리 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Wall_CornerBroken.glb) | `b8825a01c5e80715b21ff2de19d9b6aea5ac0551` |
+| `terrain/mystic-crystals.glb` | 수정 덩어리 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/crystal-crossroads/Crystal_Cluster.glb) | `ed55b8d726985edbf0a57238105fa268d25e30b4` |
+| `terrain/greek-amphitheater.glb` | 그리스풍 원형극장 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Str_Amphitheater_01_Art.glb) | `9d9bf1a175cd69939922408f757a4aec0499db2e` |
+| `terrain/greek-ruins-a.glb` | 고전 유적 A | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Str_Ruins_01_Art.glb) | `7718918ca9ce539b4acddb1718eac11de1c4a66f` |
+| `terrain/greek-column.glb` | 고전 기둥 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Str_Column_04_Art.glb) | `1b22f04452d98559466388a52df0b1d0b3ba4a46` |
+| `terrain/greek-statue.glb` | 고전 조각상 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Statue_greek_01_Art.glb) | `44c132ba56ec0b151f2fdae4e35f49396acedc92` |
+| `terrain/greek-ruins-b.glb` | 고전 유적 B | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Str_Ruins_02_Art.glb) | `2dabe3ed029849238960f877ba289cb65a9be1ff` |
+| `terrain/greek-ruins-c.glb` | 고전 유적 C | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Str_Ruins_03_Art.glb) | `685369fba0e29d07798d65ca56a51f4d247a9c66` |
+| `terrain/land-waterfall.glb` | 폭포 지형 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Water_Fall_01_Art.glb) | `a8fface77486c0a6d0b3013bad3b658f59ee447d` |
+| `terrain/land-floating-island.glb` | 부유섬 지형 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/MomusPark/Floating_Island_4_Art.glb) | `8cefa508e7732dc69bd6a5ce466424f9cfab49ec` |
+| `town/eastasia-roof.glb` | 동아시아 기와지붕 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/lunar-year/RoomRoof.glb) | `a5e7cdd973e12e6fedef75ed5aee73baa73fa50f` |
+| `town/eastasia-stairs.glb` | 동아시아 계단 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/lunar-year/EntranceStairs.glb) | `c15c732cb00ae6e9aca173c672f55c3fb4d0b699` |
+| `town/eastasia-base.glb` | 동아시아 건축 기단 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/lunar-year/BuildingBase.glb) | `1c6da7d4fa6a793e0f1cbbeb137a418b756be285` |
+| `town/eastasia-column-base.glb` | 동아시아 기둥 기단 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/lunar-year/ColumnBase.glb) | `b637e6d43ef4a7908acb1ebb2255a43fc2ad5c69` |
+| `town/eastasia-bell.glb` | 동아시아 종 | [원본](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/lunar-year/Bell.glb) | `0e5e8ad15934b08e3c520494c2d8d5b63f4690d7` |
+
+**보증 범위:** 30/30개는 GLB 파일 헤더와 Git blob SHA를 소스와 대조했고 일치했다. 이집트 고분/신전풍, 고전 지중해 유적풍, 동아시아 전통 건축풍, 환상 유적 지형을 위한 **독립 모델 부품**이다. 실제 피라미드·마추픽추·스톤헨지·앙코르와트 등 실존 유적을 측량·복원한 모델은 아니므로 실제 문화재 이름으로 등록·표시하지 않는다. 마추픽추풍은 고산 계단·석조 벽 같은 환경구성에만 참고하고, 스톤헨지는 저작자 원본을 직접 확보하기 전까지 미확보다. 고유 퀘스트·보상·진행도·저장값은 변경하지 않는다.
+
+**로블록스 적용 상태:** GitHub 원본 보관과 Roblox 클라우드 모델 등록·게임 런타임 장면 표시·모바일 실행 검증·실제 체험 게시는 분리되며, 자동 등록 성공과 런타임 QA가 확인되기 전에는 게임 내 표현을 완료로 보지 않는다.
