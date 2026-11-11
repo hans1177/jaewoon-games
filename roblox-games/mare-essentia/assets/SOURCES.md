@@ -500,3 +500,14 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - 원본: 프로젝트 제작 대화에서 직접 생성한 게임 전용 항해시대 인물 원화. 상업 화보·타인 사진을 전사하지 않은 `PROJECT_ORIGINAL_ART`. 인물의 나이·직업·생활 흔적을 강조하며 1600~1700년대 증기 대체역사와의 일관성을 우선한다.
 - 안전 확인: 인물 얼굴·복식 중심 초상 시트이며 피·고어·규제 상품 묘사 없음. 기존 등록 도구의 콘텐츠 차단 정책은 그대로 적용한다.
 - 적용: `Portraits/npcs_new` 자산 등록 후 시설·NPC 대화창의 기존 6역할 이미지를 대체한다. `Portraits/heroes_new`는 외형·역할이 맞는 일부 국가 주인공에 한정하며, 맞지 않는 국가는 기존 `heroes` 자산을 유지한다. 신규 ID/게임별 사용 권한/실제 게시 여부는 각기 확인 전까지 미검증이다.
+
+## 2026-11-11 교역품 CC0 원본: 쌀·인디고
+
+원본 제작: OpenFarm 기여자, Open Crop Icons. 전체 이미지 원본은 CC0-1.0으로 공개되며 상업 이용·수정·게임 업로드 가능. 사용 전 시각 검수에서 일반 식물 그림(쌀 이삭·인디고 식물) 외 피·술·담배·실존 인물 없음 확인. 원본 64px PNG. 두 이미지는 각 상품의 재배 식물을 나타내며 곡물 낱알 또는 염료 가공품의 실사 이미지는 아니다.
+
+| 원본 저장 위치 | 원본 파일 | 제작자·라이선스 | 원본 URL | PNG SHA-256 |
+|---|---|---|---|---|
+| `assets/goods/rice.png` | `rice-64px.png` | OpenFarm 기여자 · CC0-1.0 | https://github.com/openfarmcc/open-crop-icons/blob/5c17291ded7409b4a6a25d2d060667b0a1e3e32f/icons/rice/rice-64px.png | `30f7d91cbe2be2c7fefffdd9c6b35e9a447a704c0054800a1a2ea27b786f642f` |
+| `assets/goods/indigo.png` | `indigo-64px.png` | OpenFarm 기여자 · CC0-1.0 | https://github.com/openfarmcc/open-crop-icons/blob/5c17291ded7409b4a6a25d2d060667b0a1e3e32f/icons/indigo/indigo-64px.png | `fba95d8b105a648168ebcd570b7471ebb1367feebcf98513e121582e5d9180c4` |
+
+전용 이미지는 기존 `Goods/<상품 ID>` 조회 경로를 사용한다. Roblox 업로드 자산 ID와 체험 사용 권한 검증 전에는 게임 내 표시를 PASS로 판정하지 않는다.

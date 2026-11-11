@@ -91,7 +91,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
         : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
-        : kind === 'Goods' && f === 'saffron.png' ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
+        : kind === 'Goods' && ['saffron.png', 'rice.png', 'indigo.png'].includes(f) ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
 
@@ -264,6 +264,7 @@ for (const item of plan) {
           : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
           : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
+          : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
         : 'CC0 model for Mare Essentia (' + item.kind + '); see assets/SOURCES.md',
