@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-4b67q8",
+      "worker": "vibe2",
+      "taskId": "dice-battle-board-existing-web-assessment-v1",
+      "gameId": "dice-battle-board",
+      "files": [
+        "web-games/dice-battle-board/index.html"
+      ],
+      "baseSha": "12bbcb0957b99d309d66b0d5d21f1f7c9bf94d45",
+      "runId": "42938915701",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-11T01:41:23.770Z",
+      "expiresAt": "2026-11-11T02:26:23.770Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:dice-battle-board-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
