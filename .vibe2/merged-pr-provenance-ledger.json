@@ -197567,11 +197567,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0028ca12867de0c89c02db73",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12587",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "40338375b4ebda9f345f4dfc3c01aa8742e8e604",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12587,
+        "baseBranch": "main",
+        "headBranch": "vibe/optional-resume-click",
+        "baseSha": "40338375b4ebda9f345f4dfc3c01aa8742e8e604",
+        "headSha": "52aac40fb2b4572ff30f9e19ffea0e49cfa724f3",
+        "mergeCommitSha": "a8986df2574c79be4cdd19f53997064542fbec68",
+        "mergedAt": "2026-11-11T16:24:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "71cadcf5af3e21fdac96edc0e604cee60e7b823d0881525966a4cb12029a3ab7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/optional-resume-click",
+        "candidateSha": "52aac40fb2b4572ff30f9e19ffea0e49cfa724f3"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 20,
+        "deletedLineCount": 9,
+        "changedFiles": [
+          "qa-log/fantasy-survival.md",
+          "qa-log/mare-essentia.md",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-light-diag.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-motion-check.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-rigs.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-sky.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-wolf-motion.json",
+          "tools/company-development-roblox-studio-local-play.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-light-diag.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-motion-check.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-rigs.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-sky.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-wolf-motion.json",
+          "tools/company-development-roblox-studio-local-play.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12587",
+        "merge-commit:a8986df2574c79be4cdd19f53997064542fbec68",
+        "base-main:40338375b4ebda9f345f4dfc3c01aa8742e8e604"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1576
+    "total": 1577
   }
 }
