@@ -28,6 +28,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1794373775720
+    },
+    "combat:no-mobs:월드에 몹이 하나도 없음(전투 점검 필요)#bf6525a9b4": {
+      "sig": "combat:no-mobs:월드에 몹이 하나도 없음(전투 점검 필요)",
+      "kind": "combat",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ServerScriptService/Services/Battle.luau",
+          "search": "if s and S.Battle.skillBlock(state, s) == nil and #skills < slots then",
+          "replace": "if s and skillBlock(state, s) == nil and #skills < slots then"
+        }
+      ],
+      "summary": "Battle 서비스에서 로컬 skillBlock 함수를 잘못된 경로로 호출해 전투 로직이 중단되는 문제를 수정했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1794374766862
     }
   }
 }
