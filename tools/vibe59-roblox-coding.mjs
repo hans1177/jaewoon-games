@@ -111,7 +111,8 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
   const inspection=inspectVibe59RobloxCoding({files,responsiblePaths});
   return Object.freeze({plans:inspection.diagnostics.filter(x=>x.responsible)
     .map(row=>({path:row.path,line:row.line,code:row.code,system:row.system,
-      review:row.repair,exactFind:row.exactAnchor||null,
+      review:row.repair,responsibleFunction:row.responsibleFunction||null,
+      exactFind:row.exactAnchor||null,
       exactAnchorUnique:row.exactAnchorUnique===true,
       ownerApprovalRequired:true,sourceChange:false}))
     .slice(0,120),modelUsed:false,sourceWrite:false,runtimeVerified:false,
@@ -120,11 +121,33 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
 
 export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   if(!Array.isArray(files)||files.length>48)throw Error('VIBE59_ROBLOX_SCAN_LIMIT');
-  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[];
+  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[],functionReferences=[];
   for(const file of files.slice(0,48)){
     const path=String(file?.path||''),source=String(file?.source||'');
     if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
     const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[];
+    // [함수 책임 추적] 주석과 문자열을 제외한 동일 파일 선언·호출 후보만 기록한다.
+    // 루아우 중첩 스코프 및 런타임 동적 호출은 정적 분석으로 증명하지 않는다.
+    const groundedLines=stripVibe59LuauComments(source).split(/\r?\n/).slice(0,4000);
+    const declarations=[];
+    for(const [i,line] of groundedLines.entries()){
+      const declaration=/^\s*(?:local\s+)?function\s+([A-Za-z_]\w*)\s*\(|^\s*local\s+([A-Za-z_]\w*)\s*=\s*function\s*\(/.exec(line);
+      if(declaration&&declarations.length<128){
+        declarations.push({symbol:declaration[1]||declaration[2],line:i+1});
+      }
+    }
+    for(const declaration of declarations){
+      const pattern=new RegExp('\\b'+declaration.symbol+'\\s*\\(','g');
+      const callLines=[];
+      for(const [index,line] of groundedLines.entries()){
+        if(index+1===declaration.line)continue;
+        if(pattern.test(line))callLines.push(index+1);
+        pattern.lastIndex=0;
+        if(callLines.length>=32)break;
+      }
+      functionReferences.push({path,symbol:declaration.symbol,declaredLine:declaration.line,
+        possibleCallLines:callLines,scope:'SAME_FILE_NAME_MATCH',runtimeVerified:false});
+    }
     for(const [i,line] of source.split(/\r?\n/).slice(0,4000).entries()){
       if(/^\s*--/.test(line))continue;
       for(const match of line.matchAll(/\b([A-Za-z_]\w*)\.(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::Connect\s*\(|=)/g)){
@@ -156,7 +179,8 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       const original=originalLines[x.line-1]||'';
       const uniqueAnchor=original.length>=8&&original.length<=1024
         &&source.indexOf(original)>=0&&source.indexOf(original)===source.lastIndexOf(original);
-      return {...x,responsible:owners.has(path),
+      const responsibleFunction=declarations.filter(row=>row.line<=x.line).at(-1)?.symbol||null;
+      return {...x,responsible:owners.has(path),responsibleFunction,
         exactAnchor:uniqueAnchor?original:null,exactAnchorUnique:uniqueAnchor};
     }));
     result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,warnings:found.slice(0,16)});
@@ -195,13 +219,16 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
     observedFiles:result.length,observedResponsibleFiles:result.filter(row=>row.responsible).length,
     priorityFindings,remoteLinks,
+    functionReferences:functionReferences.slice(0,256),
+    functionReferenceMatchesAreConfirmedCalls:false,
     missingReceiverMeansConfirmedDefect:false,
     unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
     existingSaveBalanceAndAuthorityMustBePreserved:true
   });
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
-    diagnostics:diagnostics.slice(0,200),remoteLinks,qualityDirector,
+    diagnostics:diagnostics.slice(0,200),remoteLinks,
+    functionReferences:functionReferences.slice(0,256),qualityDirector,
     offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
 function expression(node,depth=0){
