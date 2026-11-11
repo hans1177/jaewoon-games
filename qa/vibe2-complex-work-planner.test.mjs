@@ -194,6 +194,85 @@ test('counterexample repair limits edits to grounded responsible files',()=>{
  assert.equal(valid.runtimeVerified,false);
 });
 
+// [실제 실행 반례] 정상 동작만 통과한 가짜 수정은 재현으로 거부하고, 수정 면적이 작은 성공안을 채택한다.
+test('counterexample repair reproduces a dead-target bug and compares two real fixes',()=>{
+ const original='function hit(target) {target.hp -= 10;return target.hp;}';
+ const sha=sourceDigest(original);
+ const failure={sourceDigest:sha,reproduced:true,failureSignature:'dead-target-damaged',
+  responsibleSymbols:['hit']};
+ const replacements=[
+  'target.hp -= 10; /* unchanged bug */',
+  'if (target.dead) { return target.hp; } target.hp -= 10;',
+  'if (!target.dead) target.hp -= 10;'
+ ];
+ const candidate=index=>({edits:[{path:'server/Fight.server.luau',
+  find:'target.hp -= 10;',replace:replacements[index]}]});
+ const run=(patch,target)=>{
+  const source=patch?original.replace(patch.edits[0].find,patch.edits[0].replace):original;
+  return vm.runInNewContext(source+'\nhit(target);',{target});
+ };
+ const replayed=[],evaluated=[];
+ const result=runCodegenCounterexampleRepair({
+  sourceDigest:sha,failures:[failure],allowedPaths:['server/Fight.server.luau'],
+  maxAttempts:3,approvedBudget:3,compareValidated:true,
+  generate:({attempt})=>candidate(attempt),
+  evaluate:patch=>{
+   evaluated.push(patch.edits[0].replace);
+   // 기존 회귀검사는 일반 전투만 통과시키므로 미수정 결함까지 검출하지 못한다.
+   assert.equal(run(patch,{hp:50,dead:false}),40);
+   return {pass:true,actualGamePlaytest:false};
+  },
+  replay:({phase,sourceDigest:boundSha,failure:row,candidate:patch,fingerprint})=>{
+   assert.equal(boundSha,sha);
+   assert.equal(row.failureSignature,failure.failureSignature);
+   const hp=run(patch,{hp:50,dead:true});
+   replayed.push({phase,hp,fingerprint});
+   return {sourceDigest:sha,failureSignature:row.failureSignature,
+    patchFingerprint:fingerprint,reproduced:hp===40};
+  }
+ });
+ assert.equal(result.status,'CANDIDATE_VALIDATED');
+ assert.equal(result.causalReplayVerified,true);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.candidate.edits[0].replace,replacements[2]);
+ assert.deepEqual(result.attempts.map(item=>item.pass),[false,true,true]);
+ assert.deepEqual(result.attempts.map(item=>item.causalReplayVerified),[false,true,true]);
+ assert.deepEqual(replayed.map(item=>item.phase),['BEFORE','AFTER','AFTER','AFTER']);
+ assert.deepEqual(evaluated,replacements);
+ assert.equal(result.selection.validated,2);
+ assert.equal(result.selection.evaluated,3);
+ assert.equal(result.selection.modifiedFiles,1);
+ assert.equal(result.counterexamples.length,2);
+});
+
+// [거짓 검증 차단] 최초 오류의 재현 실패, 다른 후보 지문, 비동기 오라클을 거부한다.
+test('counterexample replay fails closed on invalid provenance and unresolved bugs',()=>{
+ const sha=sourceDigest('legacy'),failure={sourceDigest:sha,reproduced:true,
+  failureSignature:'dead-hit',responsibleSymbols:['attack']};
+ const generate=()=>({edits:[{path:'server/Game.server.luau',find:'bad',replace:'stillBad'}]});
+ const options={sourceDigest:sha,failures:[failure],generate,evaluate:()=>({pass:true}),
+  allowedPaths:['server/Game.server.luau'],maxAttempts:2,approvedBudget:2};
+ const baseline=runCodegenCounterexampleRepair({...options,
+  replay:()=>({sourceDigest:sha,failureSignature:'unrelated',reproduced:true})});
+ assert.equal(baseline.reason,'COUNTEREXAMPLE_BASELINE_NOT_REPRODUCED');
+ assert.equal(baseline.attempts.length,0);
+ let evaluations=0;
+ const failureResult=runCodegenCounterexampleRepair({...options,
+  evaluate:()=>{evaluations++;return {pass:true}},
+  replay:({phase,fingerprint})=>({sourceDigest:sha,failureSignature:'dead-hit',
+   patchFingerprint:phase==='AFTER'?'wrong-candidate':fingerprint,
+   reproduced:phase==='BEFORE'})});
+ assert.equal(failureResult.reason,'COUNTEREXAMPLE_REPLAY_NOT_RESOLVED');
+ assert.equal(failureResult.status,'BLOCKED');
+ assert.deepEqual(failureResult.attempts.map(item=>item.pass),[false]);
+ assert.equal(evaluations,1,'duplicate failed candidates are not re-evaluated');
+ assert.throws(()=>runCodegenCounterexampleRepair({...options,replay:()=>Promise.resolve({})}),
+  /VIBE2_REPAIR_SYNCHRONOUS_REPLAY_REQUIRED/);
+ assert.throws(()=>runCodegenCounterexampleRepair({...options,replay:()=>({}),failures:[]}),
+  /VIBE2_REPAIR_CONTRACT/);
+});
+
 test('real line-defense source prevents dead attacks and duplicate death rewards while normal combat stays identical',()=>{
  const root='web-games/line-defense';
  const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['index.html']});
