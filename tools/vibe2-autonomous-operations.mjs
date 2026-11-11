@@ -192,14 +192,61 @@ export function shouldRetryCloudflarePublication(task={}){
     ||flags.has('cloudflare-quota-cleared-verified');
 }
 
-export function automaticImpactedChecks(changedFiles=[]){
+// [메인] 기존 영향 검사 경로를 유지하면서 실제 변경 파일·선언된 반복 실패를 기준으로 위험 우선순위를 제시한다.
+// 위험 점수는 정적 휴리스틱이며 실행 성공, 재현 증거 또는 회귀검사 통과로 승격하지 않는다.
+export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoot=''}={}){
   const files=unique(changedFiles.map(clean).filter(Boolean));
   const games=unique(files.map(f=>/^(?:web|roblox|unity|unreal)-games\/([^/]+)\//.exec(f)?.[1]).filter(Boolean));
   const shared=files.some(f=>/^(assets\/|tools\/|\.github\/|qa\/)/.test(f));
-  return {gameIds:games,sharedCodeChanged:shared,
-    tests:['source-syntax-and-security',...games.map(g=>'game-runtime:'+g),
-      ...(shared?['shared-dependency-regression']:[]),'full-release-fan-in-unchanged'],
-    scope:'ADVISORY_FIRST_PASS_ONLY',canReplaceFinalQA:false};
+  const tests=['source-syntax-and-security',...games.map(g=>'game-runtime:'+g),
+    ...(shared?['shared-dependency-regression']:[]),'full-release-fan-in-unchanged'];
+  // [위험 예측] 기존 게임의 저장·서버 권한 경계와 공유 코드 변경을 놓치지 않는다.
+  const server=files.some(f=>/^(?:roblox-games\/[^/]+\/(?:server|ServerScriptService)\/|.*\.server\.lua(?:u)?)$/i.test(f));
+  const client=files.some(f=>/^(?:roblox-games\/[^/]+\/(?:client|StarterPlayerScripts|StarterGui)\/|.*\.client\.lua(?:u)?)$/i.test(f));
+  const save=files.some(f=>/(?:^|[\/._-])(?:save|saving|profile|data-store|datastore|inventory|economy|currency)(?:[\/._-]|$)/i.test(f));
+  const root=clean(sourceRoot).replaceAll('\\','/').replace(/^\.\/+|\/+$/g,'');
+  const owned=Array.isArray(gameRepair?.responsibleFiles)&&gameRepair.responsibleFiles.some(raw=>{
+    if(typeof raw!=='string'||!raw||raw.startsWith('/')||raw.includes('\\')||
+      raw.split('/').some(segment=>!segment||segment==='.'||segment==='..'))return false;
+    return files.includes(raw)||(root&&files.includes(root+'/'+raw));
+  });
+  const repeat=Number.isSafeInteger(gameRepair?.repeatCount)&&gameRepair.repeatCount>=2&&gameRepair.repeatCount<=10000;
+  const recurrent=gameRepair?.required===true&&gameRepair?.prePatchReproduced===true&&
+    typeof gameRepair?.failureSignature==='string'&&gameRepair.failureSignature.length>0&&
+    gameRepair.failureSignature.length<=256&&owned&&repeat;
+  const signals=[];
+  if(save)signals.push('PERSISTENCE_SOURCE_CHANGE');
+  if(server&&client)signals.push('ROBLOX_CLIENT_SERVER_BOUNDARY');
+  else if(server)signals.push('ROBLOX_SERVER_AUTHORITY_SOURCE');
+  if(shared)signals.push('SHARED_DEPENDENCY_CHANGE');
+  if(recurrent)signals.push('REPEATED_DECLARED_FAILURE');
+  const score=(save?4:0)+(server&&client?3:server?2:0)+(shared?2:0)+(recurrent?5:0);
+  // [영향 테스트] 미리 승인된 기존 QA 테스트만 추천한다. 경로/실행 검증 없이 자동 실행하지 않는다.
+  const selected=[];
+  if(gameRepair?.required===true&&owned){
+    const categories=[
+      ['invariants',gameRepair.invariants?.testTargets],
+      ...(save?[['saveMigration',gameRepair.saveMigration?.testTargets]]:[]),
+      ...(server||client?[['multiplayerLifecycle',gameRepair.multiplayerLifecycle?.testTargets]]:[])
+    ];
+    for(const [category,targets] of categories){
+      if(!Array.isArray(targets))continue;
+      for(const target of targets){
+        if(typeof target!=='string'||target.length>240||target.startsWith('/')||
+          target.includes('\\')||target.split('/').some(part=>!part||part==='.'||part==='..')||
+          !/(?:test|spec|qa)/i.test(target)||!/\.(?:js|mjs|cjs)$/.test(target))continue;
+        if(!selected.some(row=>row.target===target))selected.push({target,category});
+        if(selected.length>=16)break;
+      }
+      if(selected.length>=16)break;
+    }
+  }
+  return {gameIds:games,sharedCodeChanged:shared,tests,
+    scope:'ADVISORY_FIRST_PASS_ONLY',canReplaceFinalQA:false,
+    riskPrediction:{level:score>=4?'HIGH':score>=2?'ELEVATED':'LOW',score,signals,
+      evidence:'STATIC_HEURISTIC_AND_DECLARED_MANIFEST_ONLY',runtimeProbabilityKnown:false},
+    focusedTargets:selected,focusedTargetsExecuted:false,
+    fullRegressionStillRequired:true};
 }
 
 export function verifiedMaintenanceMode(task={},proof={}){
