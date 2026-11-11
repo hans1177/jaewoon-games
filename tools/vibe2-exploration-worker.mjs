@@ -121,7 +121,8 @@ export function extractVibeSourceImportRefs(source='',target=''){
 function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceCalls=new Set(),sourceNames=new Set(),responsibleFunctionsByPath=new Map(),target='',requiredModulePaths=[]}){
   let score=0;const text=typeof row.text==='string'?row.text:safeRead(row.full);
   if(responsible.has(row.relative))return{...row,score:10000,text,connections:[],
-    functions:responsibleFunctionsByPath.get(row.relative)||[]};
+    functions:responsibleFunctionsByPath.get(row.relative)||[],
+    imports:target==='roblox'?extractVibeSourceImportRefs(text,target):null};
   const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
   if(responsibleDirs.has(dir))score+=35;
   for(const token of tokens)if(lower.includes(token))score+=5;
