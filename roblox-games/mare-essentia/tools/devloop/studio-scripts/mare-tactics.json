@@ -66,6 +66,11 @@
   "name": "t2_selected"
  },
  {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
   "type": "click_from_luau",
   "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local U=nil if g then for _,d in ipairs(g:GetDescendants()) do if U==nil and d:IsA(\"TextButton\") and d.ZIndex==5 and d.BackgroundColor3==Color3.fromRGB(70,120,200) and d.BackgroundTransparency==0 then U=d end end end if U==nil then return \"6,6\" end local ts=U.AbsoluteSize.X+6 return string.format(\"%d,%d\",math.floor(U.AbsolutePosition.X+ts*1.5-2),math.floor(U.AbsolutePosition.Y+U.AbsoluteSize.Y/2))"
  },
@@ -76,6 +81,11 @@
  {
   "type": "capture",
   "name": "t3_move_chosen"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
  },
  {
   "type": "click_from_luau",
@@ -90,6 +100,11 @@
   "name": "t4_waited"
  },
  {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
   "type": "click_from_luau",
   "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"턴 종료\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
  },
@@ -100,6 +115,11 @@
  {
   "type": "capture",
   "name": "t5_enemy_turn"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
  },
  {
   "type": "luau",
