@@ -265,9 +265,9 @@ if args.candidate_output:
                         raise ValueError('INVALID_GLB_CHUNK_SIZE')
                     chunks.append((kind, blob[pos:pos + size]))
                     pos += size
-                if len(chunks) != 2 or chunks[0][0] != b'JSON' or chunks[1][0] != b'BIN\\x00':
+                if len(chunks) != 2 or chunks[0][0] != b'JSON' or chunks[1][0] != b'BIN\x00':
                     raise ValueError('UNSUPPORTED_GLB_CHUNKS')
-                doc = json.loads(chunks[0][1].decode('utf8').rstrip(' \\x00'))
+                doc = json.loads(chunks[0][1].decode('utf8').rstrip(' \x00'))
                 safe_extensions = {'KHR_materials_unlit', 'KHR_texture_transform',
                                    'KHR_materials_pbrSpecularGlossiness', 'KHR_materials_emissive_strength',
                                    'KHR_materials_specular', 'KHR_materials_clearcoat'}
