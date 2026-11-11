@@ -585,6 +585,79 @@ test('contextual negative evidence lowers selection score without globally depre
   assert.equal(deduped.negativeAdded,0);
 });
 
+// [누적 오류] 검증된 실패만 선호 상태를 회수하고, 신규 성공으로 재검증 복귀한다.
+test('repeated independently verified failures revoke stale preferred coding strategies until revalidated',()=>{
+ const mk=(id,gameId)=>({id,gameId,target:'web',evidence:[
+  'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+  'coding-strategy:RESPONSIBILITY_FIRST','coding-candidate-first-attempt:YES',
+  'vibe2/candidate/'+id+'-primary-run'
+ ]});
+ const successes={tasks:Array.from({length:5},(_,i)=>mk('risk-pass-'+i,i%2?'game-b':'game-a'))};
+ const initial=applyVerifiedCodingStrategyOutcomes({},successes);
+ assert.equal(initial.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'PREFERRED');
+ const fail=(i)=>({id:'risk-negative-'+i,gameId:'game-a',target:'web',evidence:[
+  'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+   version:1,variant:'primary',strategy:'RESPONSIBILITY_FIRST',
+   failureFingerprint:'web|FAILED_SAVE',failureClass:'EDIT_MATCH',
+   runEvidence:'actions-run:risk-'+i,verifiedBy:'IMMUTABLE_WORKER_RESULT',
+   infrastructureFailure:false
+  }))
+ ]});
+ const bad=applyVerifiedCodingStrategyOutcomes(initial.state,{tasks:Array.from({length:5},(_,i)=>fail(i))});
+ assert.equal(bad.negativeAdded,5);
+ assert.equal(bad.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.verifiedFailures,5);
+ assert.equal(bad.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'REVALIDATION_REQUIRED');
+ const noPreference=preferredCodingStrategyForTask({task:{gameId:'game-a',target:'web'},stateInput:bad.state});
+ assert.equal(noPreference.strategy,null);
+ const deduped=applyVerifiedCodingStrategyOutcomes(bad.state,{tasks:Array.from({length:5},(_,i)=>fail(i))});
+ assert.equal(deduped.negativeAdded,0);
+ const recovered=applyVerifiedCodingStrategyOutcomes(bad.state,{tasks:[mk('risk-pass-recovery','game-b')]});
+ assert.equal(recovered.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'PREFERRED');
+ assert.equal(preferredCodingStrategyForTask({task:{gameId:'game-a',target:'web'},stateInput:recovered.state}).strategy,'RESPONSIBILITY_FIRST');
+});
+
+test('same exact failure repeatedly blocks a preferred strategy but leaves other proven repairs available',()=>{
+ const positive=(strategy,i)=>({id:strategy+'-'+i,gameId:i%2?'game-b':'game-a',target:'web',evidence:[
+  'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+  'coding-strategy:'+strategy,'coding-candidate-first-attempt:YES',
+  'vibe2/candidate/'+strategy+'-'+i+'-primary-run'
+ ]});
+ const tasks=['RESPONSIBILITY_FIRST','CAUSAL_TRACE_FIRST'].flatMap(strategy=>
+  Array.from({length:5},(_,i)=>positive(strategy,i)));
+ const original=applyVerifiedCodingStrategyOutcomes({}, {tasks});
+ const fp='web|FAILED_SAVE';
+ const task={gameId:'game-a',target:'web',goal:'저장 복구 오류',evidence:['runtime-failure:FAILED_SAVE'],lastOutcome:'FAIL'};
+ const before=preferredCodingStrategyForTask({task,stateInput:original.state});
+ assert.equal(before.strategy!==null,true);
+ const negatives={tasks:Array.from({length:2},(_,i)=>({
+  id:'same-error-'+i,gameId:'game-a',target:'web',evidence:[
+   'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+    version:1,variant:'primary',strategy:'RESPONSIBILITY_FIRST',failureFingerprint:fp,
+    failureClass:'EDIT_MATCH',runEvidence:'actions-run:same-error-'+i,
+    verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure:false
+   }))
+  ]
+ }))};
+ const learned=applyVerifiedCodingStrategyOutcomes(original.state,negatives);
+ assert.equal(learned.negativeAdded,2);
+ assert.equal(learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'PREFERRED');
+ const selected=preferredCodingStrategyForTask({task,stateInput:learned.state});
+ assert.equal(selected.strategy,'CAUSAL_TRACE_FIRST');
+ assert.deepEqual(selected.quarantinedStrategies,['RESPONSIBILITY_FIRST']);
+ assert.equal(selected.authorityExpanded,false);
+ assert.equal(selected.advisoryOnly,true);
+ assert.match(codingStrategyGuidance(selected),/contextQuarantinedStrategies=RESPONSIBILITY_FIRST/);
+ const alone=preferredCodingStrategyForTask({task,stateInput:{
+  ...learned.state,codingStrategyMemory:{...learned.state.codingStrategyMemory,
+   strategies:{RESPONSIBILITY_FIRST:learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST}}
+ }});
+ assert.equal(alone.strategy,null);
+ assert.equal(alone.state,'CONTEXT_RISK_REVALIDATION_REQUIRED');
+ assert.match(codingStrategyGuidance(alone),/perform read-only investigation and revalidation/);
+ const noContext=preferredCodingStrategyForTask({task:{gameId:'game-a',target:'web'},stateInput:learned.state});
+ assert.ok(noContext.strategy,'one failing fingerprint never globally invalidates a proven strategy');
+});
+
 test('verified regression outcomes calibrate overconfident responsibility and build same-game hotspot memory',()=>{
   const enc=value=>encodeURIComponent(JSON.stringify(value));
   const mk=(id,outcome)=>({
