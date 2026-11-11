@@ -215,6 +215,12 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   const third=JSON.parse(fs.readFileSync(path.join(practice,'session.json'),'utf8'));
   third.bake.attempts[0].sourceSha256='b'.repeat(64);
   third.rigStudy.sourceSha256='d'.repeat(64);
+  third.rigStudy.curveInspectedClips=76;
+  third.rigStudy.validMovingClips=30;
+  third.rigStudy.movingBoneCurves=420;
+  third.rigStudy.dynamicClipCoverage=0.8;
+  third.rigStudy.dynamicClipPresent=['IDLE','MOVE','ATTACK','HIT'];
+  third.rigStudy.motionCurvesMeasured=true;
   fs.writeFileSync(path.join(practice,'session.json'),JSON.stringify(third));
   assert.equal(publish({stats:'stats.json',ledger:'build/practice/gym/ledger.json',cwd:work}).published,true);
   const updated=JSON.parse(spawnSync('git',['--git-dir',bare,'show','vibe-gym-data:practice-domains.json'],{encoding:'utf8'}).stdout);
@@ -224,6 +230,14 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(updated.rig.history['actor-barbarian'].sourceSha256,'d'.repeat(64));
   assert.equal(updated.rig.history['actor-barbarian'].attempts,1);
   assert.equal(updated.rig.history['actor-barbarian'].failed,1);
+  assert.equal(updated.rig.history['actor-barbarian'].validMovingClips,30);
+  assert.equal(updated.rig.history['actor-barbarian'].movingBoneCurves,420);
+  assert.equal(updated.rig.latest.curveInspectedClips,76);
+  assert.equal(updated.rig.latest.motionCurvesMeasured,true);
+  assert.equal(updated.rig.latest.dynamicClipCoverage,0.8);
+  assert.deepEqual(updated.rig.latest.dynamicClipPresent,['IDLE','MOVE','ATTACK','HIT']);
+  assert.equal(updated.rig.latest.nativeRuntimeVerified,false);
+  assert.equal(updated.rig.latest.gameApplied,false);
 });
 
 test('파이썬·Blender 찾기: 실행 가능한 파이썬을 찾고, 잘못된 Blender 경로는 없는 것으로 본다', () => {
