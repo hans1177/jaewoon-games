@@ -186396,11 +186396,174 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5f6cc09862f2e4e5d4ec8476",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-12469",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2cfd0f46e210fd6c2b233b7f345f7fb9a4fa72cc",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12469,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/rig-practice-concurrency-qa-20261111",
+        "baseSha": "2cfd0f46e210fd6c2b233b7f345f7fb9a4fa72cc",
+        "headSha": "2a212cb64555f6a2f2e3b52c3fcc62399d5b78da",
+        "mergeCommitSha": "7420e48a22f5a394417b3c35d2dee143c68b81a9",
+        "mergedAt": "2026-11-11T06:53:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e4dcce08ff34978c3825703af727377bee7b8ef6fa8d5f6c250954a1cab3b9a8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/rig-practice-concurrency-qa-20261111",
+        "candidateSha": "2a212cb64555f6a2f2e3b52c3fcc62399d5b78da"
+      },
+      "changeStats": {
+        "changedFileCount": 26,
+        "codingRelevantFileCount": 23,
+        "addedLineCount": 2520,
+        "deletedLineCount": 150,
+        "changedFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "docs/devloop/VISUAL_LADDER_fantasy-survival.md",
+          "docs/devloop/VISUAL_LADDER_mare-essentia.md",
+          "qa/vibe-practice-session.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Tactics.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsData.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsMaps.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Tactics.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/balance.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tests/tactics.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tactics.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "qa/vibe-practice-session.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Tactics.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsData.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsMaps.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Tactics.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/balance.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tests/tactics.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tactics.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12469",
+        "merge-commit:7420e48a22f5a394417b3c35d2dee143c68b81a9",
+        "base-main:2cfd0f46e210fd6c2b233b7f345f7fb9a4fa72cc"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1488
+    "total": 1489
   }
 }
