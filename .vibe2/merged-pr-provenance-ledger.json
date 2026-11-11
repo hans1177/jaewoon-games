@@ -195260,11 +195260,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_87e5b7b795d8c0866e346fd8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12563",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "55d14c4be5e9b069bb9e4fd6781fcbd22627249a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12563,
+        "baseBranch": "main",
+        "headBranch": "mare-portrait-review-inbox-2",
+        "baseSha": "55d14c4be5e9b069bb9e4fd6781fcbd22627249a",
+        "headSha": "e5db95db923cfef94fe254e345d40e6178d9bed1",
+        "mergeCommitSha": "33ffc0cfa5c90ff59936483b0159cbf66da6444b",
+        "mergedAt": "2026-11-11T15:07:53Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b811b09f6c3cdbdfebc08d4797252def9ef9498e749c575bf9080b99d72fee8d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-portrait-review-inbox-2",
+        "candidateSha": "e5db95db923cfef94fe254e345d40e6178d9bed1"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 42,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_erasmus.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_erasmus.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_hume.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_hume.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_locke.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_locke.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_luther.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_luther.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_napoleon.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_napoleon.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_wren.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_wren.png.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_erasmus.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_hume.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_locke.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_luther.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_napoleon.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_wren.png.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12563",
+        "merge-commit:33ffc0cfa5c90ff59936483b0159cbf66da6444b",
+        "base-main:55d14c4be5e9b069bb9e4fd6781fcbd22627249a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1557
+    "total": 1558
   }
 }
