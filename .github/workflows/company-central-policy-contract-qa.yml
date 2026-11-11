@@ -343,6 +343,8 @@ jobs:
           node --test qa/company-roblox-holistic-quality-buildup.test.mjs
           node --check tools/company-roblox-hosted-studio-mcp-connection.mjs
           node --test qa/company-roblox-hosted-studio-mcp-connection.test.mjs
+          # [PC 자동실행 회귀] 윈도우 로그인·등록 실행기·정확 플레이 실행 연결.
+          node --test qa/company-roblox-studio-runner-recovery.test.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
