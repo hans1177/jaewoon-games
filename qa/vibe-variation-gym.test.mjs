@@ -181,7 +181,7 @@ test('판정: 점수가 올라도 안쪽이 어두워지거나 세부가 뭉개�
 
 test('성적표 갱신: 횟수·이득 합·유지·개선·고장을 센다', () => {
   const s=updateStats({}, 'PROP',[{arm:'bevel:soft',op:'bevel',gain:2,keep:true,verdict:'IMPROVED'},{arm:'bevel:soft',op:'bevel',gain:-4,keep:false,verdict:'REGRESSED'},{arm:'outline:strong',op:'outline',gain:0,keep:false,verdict:'BROKEN'}]);
-  assert.deepEqual(s.PROP['bevel:soft'],{n:2,gainSum:-2,keep:1,improved:1,broken:0,fail:{REGRESSED:1}});
+  assert.deepEqual(s.PROP['bevel:soft'],{n:2,gainSum:-2,keep:1,improved:1,broken:0,fail:{REGRESSED:1},qualityTrials:2,qualityGainSum:-2});
   assert.equal(s.PROP['outline:strong'].broken,1);
 });
 
@@ -287,4 +287,19 @@ test('색 밝기 맞춤: 어두운 흙·이끼색도 부모 밝기의 일정 비
   const gym=fs.readFileSync(path.join(repo,'tools','vibe_variation_gym.py'),'utf8');
   assert.match(gym,/_new_mat\('GymDirt', tinted\(/);
   assert.match(gym,/_new_mat\('GymMoss', tinted\(/);
+});
+
+test('다음 연습은 읽히는 아이콘과 리그를 보존한 변형을 더 자주 선택한다',()=>{
+  const stats=updateStats({},'PROP',[
+    {arm:'outline:strong',gain:25,keep:false,verdict:'REGRESSED'},
+    {arm:'outline:strong',gain:25,keep:true,verdict:'IMPROVED',icon:{legible:false}},
+    {arm:'outline:soft',gain:3,keep:true,verdict:'IMPROVED',icon:{legible:true}},
+    {arm:'outline:soft',gain:3,keep:true,verdict:'IMPROVED',icon:{legible:true}},
+  ]);
+  assert.equal(stats.PROP['outline:strong'].qualityGainSum,0);
+  assert.ok(chooseArms(stats,'PROP',10,mulberry32(7),0).every(a=>a.strength==='soft'&&a.op==='outline'));
+  const row=rigGate({family:'CHARACTER',keep:true,glb:'candidate.glb'},
+    ()=>({pass:true,failures:[],actionNames:['idle']}),motionCoverage(['idle','walk']));
+  assert.equal(row.keep,false);
+  assert.equal(row.reason,'MOTION_STATE_LOST');
 });
