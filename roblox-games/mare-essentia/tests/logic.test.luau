@@ -35,6 +35,7 @@ local D = {
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
+	People = require("./Shared/People"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -2149,6 +2150,56 @@ do
 	local backV = S.State.sanitize(S.State.serialize(stY))
 	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
 	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
+	-- 인물 백과
+	local PE = D.People
+	local catOk = {}
+	for _, c in PE.Cats do catOk[c.id] = true end
+	local badP = 0
+	for _, p in PE.Curated do
+		if not catOk[p.cat] or p.born >= p.died or #p.bio < 6 then badP += 1; print("나쁜 인물", p.id) end
+		if p.via.port and not D.Ports.Ports[p.via.port] then badP += 1; print("나쁜 항구", p.id, p.via.port) end
+		if p.via.event and not D.HistoryEvents.ById[p.via.event] then badP += 1; print("나쁜 사건", p.id, p.via.event) end
+		if p.via.scholar then
+			local okS = false
+			for _, s in D.Scholars.Scholars do if s.id == p.via.scholar then okS = true end end
+			if not okS then badP += 1; print("나쁜 학자", p.id) end
+		end
+		if next(p.via) == nil then badP += 1; print("방법 없음", p.id) end
+	end
+	check("백과: 인물 데이터가 올바름", badP == 0, tostring(badP))
+	check("백과: 인물이 100명 넘음", #PE.Curated >= 100 and #S.People.all >= 140, #PE.Curated .. "/" .. #S.People.all)
+	local stP = newState("england")
+	stP.portId = "london"
+	local n0 = S.People.knownCount(stP)
+	stP.stats.visited.london = true
+	stP.day = 365 * 60 -- 1760년
+	check("백과: 항구를 방문하면 인물이 기록됨", S.People.knownCount(stP) > n0)
+	local stP2 = newState("england") -- 1700년
+	stP2.stats.visited.london = true
+	local shakespeareKnown, nelsonKnown = false, false
+	for _, p in S.People.all do
+		if p.id == "shakespeare" then shakespeareKnown = S.People.known(stP2, p) end
+		if p.id == "nelson" then nelsonKnown = S.People.known(stP2, p) end
+	end
+	check("백과: 시대가 오기 전엔 기록 안 됨(넬슨 1700년)", shakespeareKnown and not nelsonKnown)
+	stP2.scholarsMet.newton = true
+	stP2.history.seen.great_plague = 1
+	local vP = S.View.build(stP2, ctx).people
+	check("백과: 화면에 목록과 분야가 담김", vP and vP.total == #S.People.all and #vP.cats == #PE.Cats and #vP.list == vP.total)
+	local hiddenOk = true
+	for _, e in vP.list do if not e.known and (e.name ~= nil or e.bio ~= nil) then hiddenOk = false end end
+	check("백과: 모르는 인물은 이름을 숨김", hiddenOk)
+	stP2.coins = 0
+	check("백과: 모자란 인원으로 보상 못 받음", select(1, act(stP2, "PeopleClaim", { need = 150 })) == false)
+	local needTier = PE.Tiers[1].need
+	for _, p in S.People.all do
+		if S.People.knownCount(stP2) >= needTier then break end
+		stP2.scholarsMet[p.id] = true
+	end
+	local okC = act(stP2, "PeopleClaim", { need = needTier })
+	check("백과: 인원을 채우면 보상을 받고 한 번만", okC and stP2.coins == PE.Tiers[1].coins and select(1, act(stP2, "PeopleClaim", { need = needTier })) == false)
+	local backP = S.State.sanitize(S.State.serialize(stP2))
+	check("백과: 저장/불러오기", backP.peopleClaimed[tostring(needTier)] == true)
 	-- 세계 이벤트 (재해·행운)
 	local WE = D.WorldEvents
 	local regionIds = {}

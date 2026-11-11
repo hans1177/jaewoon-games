@@ -42,6 +42,7 @@ local D = {
 	KnowledgeTree = require(Shared:WaitForChild("KnowledgeTree")),
 	HistoryEvents = require(Shared:WaitForChild("HistoryEvents")),
 	Stocks = require(Shared:WaitForChild("Stocks")),
+	People = require(Shared:WaitForChild("People")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
 }
