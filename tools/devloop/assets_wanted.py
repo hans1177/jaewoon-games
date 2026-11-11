@@ -14,8 +14,10 @@ root = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") els
 verify_goods = "--verify-goods" in sys.argv
 here = os.path.dirname(os.path.abspath(__file__))
 seed_path = os.path.join(root, "assets-wanted.seed.json")
-with open(seed_path, encoding="utf-8") as f:
-    seed = json.load(f) if os.path.isfile(seed_path) else []
+seed = []
+if os.path.isfile(seed_path):
+    with open(seed_path, encoding="utf-8") as f:
+        seed = json.load(f)
 check = subprocess.run([sys.executable, os.path.join(here, "asset_check.py"), root],
                        capture_output=True, text=True)
 missing = sorted(set(re.findall(r"^\s+(\S+): (\w+/[\w\-\.]+)$", check.stdout, re.M)))
