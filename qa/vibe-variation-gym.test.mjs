@@ -84,6 +84,30 @@ test('분류는 출처/실물 없는 등록 자산을 연습 가능 또는 검�
   assert.ok(coverage.shortages.some(x=>x.id==='missing'));
 });
 
+test('게임 자산 전수 분류는 미등록 실파일을 포함하지만 임의 승인/런타임 성공으로 처리하지 않는다',()=>{
+  const root=tmp();
+  for(const [name,bytes] of [
+    ['assets/common-ui/buttons/start.svg','<svg/>'],
+    ['web-games/demo/assets/background.webp','webp'],
+    ['roblox-games/demo/assets/footstep.wav','wave'],
+    ['unity-games/demo/Assets/wood.mat','material']
+  ]){
+    const file=path.join(root,name);fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,bytes);
+  }
+  const report=buildPracticeAssetCoverage({assets:[]},root);
+  assert.equal(report.registryAssets,0);
+  assert.equal(report.observedRepositoryMediaFiles,4);
+  assert.equal(report.cataloguedAssets,4);
+  assert.equal(report.eligible3dAssets,0);
+  assert.ok(report.domains.BUTTON.catalogued>=1);
+  assert.ok(report.domains.ICON.catalogued>=1);
+  assert.ok(report.domains.ENVIRONMENT.catalogued>=1);
+  assert.ok(report.domains.AUDIO.catalogued>=1);
+  assert.ok(report.domains.MATERIAL.catalogued>=1);
+  assert.equal(report.gameApplied,false);
+});
+
 test('연습 대상은 소품·몬스터·캐릭터·배경을 우선 섞고 부족할 때 같은 가족을 채운다', () => {
   const pool=[{id:'prop-a',family:'PROP'},{id:'prop-b',family:'PROP'},{id:'enemy',family:'CREATURE'},{id:'hero',family:'CHARACTER'},{id:'world',family:'ENVIRONMENT'}];
   assert.deepEqual(chooseDiverseParents(pool,3).map(x=>x.id),['prop-a','enemy','hero']);
