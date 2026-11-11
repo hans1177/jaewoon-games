@@ -721,12 +721,20 @@ end
 
 do
 	local countries = {
+		atlantic_europe = { "france", "spain", "portugal", "ireland", "madeira", "azores", "canary" },
+		mediterranean = { "italy", "venice", "tuscany", "naples", "sicily", "malta", "greece", "levant", "ottoman", "ragusa", "crete", "rhodes", "cyprus", "dalmatia", "papal", "mallorca", "sardinia", "corsica" },
+		red_sea = { "egypt", "yemen", "hejaz", "oman" },
+		west_africa = { "senegal", "guinea", "sierra_leone", "gold_coast", "dahomey", "benin", "niger_delta" },
+		americas = { "canada", "newfoundland", "new_france", "new_england", "new_netherland", "pennsylvania", "carolina", "louisiana",
+			"bahamas", "cuba", "new_spain", "jamaica", "hispaniola", "puerto_rico", "barbados", "trinidad", "venezuela", "new_granada",
+			"panama", "suriname", "brazil", "rio_de_la_plata", "quito", "peru", "chile" },
 		north_sea = { "england", "netherlands", "denmark", "sweden", "norway", "scotland", "germany" },
 		east_africa = { "swahili", "somalia", "mozambique" },
 		east_asia = { "china", "japan", "korea", "macau", "formosa" },
 		south_asia = { "gujarat", "portuguese_india", "malabar", "ceylon", "coromandel", "bengal" },
 		southeast_asia = { "malay", "vietnam", "java", "celebes", "moluccas", "borneo" },
 	}
+	local mediterraneanPorts = { marseille = true, toulon = true, barcelona = true, valencia = true, cartagena = true, malaga = true }
 	local regionByCountry = {}
 	for region, ids in countries do
 		for _, id in ids do
@@ -740,7 +748,7 @@ do
 		if not port or not playerView or (playerView.year or 0) < 1700 or (role ~= "merchant" and role ~= "tavern") then
 			return nil
 		end
-		local region = regionByCountry[port.country]
+		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
 		local atlas = region and AssetIds["Portraits/npc_" .. region]
 		if not atlas then
 			return nil
