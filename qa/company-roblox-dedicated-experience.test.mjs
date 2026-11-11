@@ -571,6 +571,55 @@ test('Mare trade goods practice validates existing originals, rights and blocked
 });
 
 
+// [교역품 3D] 70종 전체를 정확한 상품 역할로 분리하고 원본·권한·자동개선 관문을 검증한다.
+test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe asset lane',()=>{
+  const root='roblox-games/mare-essentia';
+  const ports=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Ports.luau','utf8');
+  const section=ports.split('local Goods:')[1]?.split('\nlocal Ports:')[0];
+  assert.ok(section,'Mare goods section exists');
+  const ids=[...section.matchAll(/^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*id\s*=\s*"\1"/gm)].map(m=>m[1]);
+  assert.equal(ids.length,70);
+  const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
+  const seed=JSON.parse(fs.readFileSync(root+'/assets-wanted.seed.json','utf8'));
+  assert.ok(seed.some(x=>x.id==='trade-goods-3d-models'));
+  assert.match(client,/for goodsId in PortData\.Goods do/);
+  assert.match(client,/AssetIds\["Cargo\/" \.\. goodsId\]/);
+  assert.match(client,/maize = "corn"/);
+  assert.match(client,/copper = "copper-bar"/);
+  assert.match(client,/silver = "silver-bar"/);
+  assert.match(client,/gems = "gems-sack"/);
+  assert.doesNotMatch(client,/\bbeer = \{ "Cargo"/);
+  assert.doesNotMatch(client,/\bsake = \{ "Cargo"/);
+  const registered=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
+  const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const match=client.match(/for goodsId, cargoAsset in \{([\s\S]*?)\}\s*do\s*if AssetIds\["Cargo\//);
+  assert.ok(match);
+  const pairs=[...match[1].matchAll(/\b([a-z][a-z0-9_]*)\s*=\s*"([a-z][a-z0-9_-]*)"/g)];
+  assert.equal(pairs.length,15);
+  for(const [,good,cargo] of pairs){
+    assert.ok(ids.includes(good),good);
+    const model=registered['Cargo/'+cargo];
+    assert.equal(model?.assetType,'Model',cargo);
+    assert.equal(model?.license,'CC0-1.0',cargo);
+    assert.equal(model?.usePermissionGranted,true,cargo);
+    assert.ok(approved['Goods/'+good],good);
+  }
+  const script=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  assert.match(script,/TRADE_GOODS_SOURCE_SECTION_UNVERIFIED/);
+  assert.match(script,/EXACT_GOOD_ROLE_REGISTERED_CC0_GLB_SOURCE_HASH_UNIVERSE_RIGHTS/);
+  assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
+  assert.match(script,/"tradeGoods3DPractice"/);
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.match(workflow,/schedule:\s*\n\s*- cron: '20 19 \* \* \*'/);
+  assert.match(workflow,/github\.event_name != 'schedule'/);
+  assert.match(workflow,/TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING/);
+  const planner=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.match(planner,/gameId==='mare-essentia'/);
+  assert.match(planner,/tradeGoodsSourceRequirements\.filter/);
+  assert.match(planner,/assetProductionLane:'ASSET_DEVELOPMENT'/);
+  assert.match(planner,/autoReplaceWithoutRuntimeReview:false/);
+});
+
 test('Mare trade uses approved ingredients and neutral cargo models for alcohol goods',()=>{
   const root='roblox-games/mare-essentia';
   const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
