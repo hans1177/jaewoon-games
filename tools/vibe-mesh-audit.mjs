@@ -78,12 +78,20 @@ export function evaluateMotionCurves(actions=[]){
     gameplayMotionVerified:false,nativeRuntimeVerified:false,gameApplied:false};
 }
 
-export function measure(input,{blender=process.env.VIBE2_BLENDER_BINARY,out}={}){
+export function measure(input,{blender=process.env.VIBE2_BLENDER_BINARY,out,candidateOutput=null}={}){
   const script=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'vibe_mesh_audit.py');
   const output=out||path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe-audit-')),'audit.json');
+  // [수리 후보] 명시된 별도 GLB에만 출력한다. 원본 덮어쓰기/승격은 금지한다.
+  const command=['--','--input',path.resolve(input),'--output',path.resolve(output)];
+  if(candidateOutput){
+    const candidate=path.resolve(candidateOutput);
+    if(candidate===path.resolve(input)||candidate===path.resolve(output)||!candidate.endsWith('.glb'))
+      throw new Error('INVALID_RIG_CANDIDATE_PATH');
+    command.push('--candidate-output',candidate);
+  }
   let r;
-  if(blender)r=spawnSync(blender,['--background','--factory-startup','--python-exit-code','1','--python',script,'--','--input',path.resolve(input),'--output',output],{encoding:'utf8',maxBuffer:1<<26});
-  else r=spawnSync('python3',['-c',`import sys,runpy;sys.argv=['x','--','--input',${JSON.stringify(path.resolve(input))},'--output',${JSON.stringify(output)}];runpy.run_path(${JSON.stringify(script)},run_name='__main__')`],{encoding:'utf8',maxBuffer:1<<26});
+  if(blender)r=spawnSync(blender,['--background','--factory-startup','--python-exit-code','1','--python',script,...command],{encoding:'utf8',maxBuffer:1<<26});
+  else r=spawnSync('python3',['-c',`import sys,runpy;sys.argv=['x',...${JSON.stringify(command)}];runpy.run_path(${JSON.stringify(script)},run_name='__main__')`],{encoding:'utf8',maxBuffer:1<<26});
   if(r.status!==0||!fs.existsSync(output))throw new Error('MESH_AUDIT_MEASURE_FAILED: '+String(r.stderr||r.stdout).split('\n').slice(-6).join('\n'));
   return JSON.parse(fs.readFileSync(output,'utf8'));
 }

@@ -167,20 +167,46 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   if(actorSources.length){
     const actor=actorSources[0];
     const auditFile=path.join(outDir,'rig-source-audit.json');
+    const repairFile=path.join(outDir,'rig-repair-candidate.glb');
+    const repairAuditFile=path.join(outDir,'rig-candidate-audit.json');
     try{
+      // [원본 보존] 후보는 임시 build 경로에서만 만들고 리그/모션을 다시 정적 검증한다.
       const raw=measureRig(path.isAbsolute(actor.file)?actor.file:path.join(repoRoot,actor.file),
-        {out:auditFile});
+        {out:auditFile,candidateOutput:repairFile});
       const verdict=evaluateAudit(raw);
       const clips=motionCoverage((raw.actions||[]).map(x=>x.name));
       const curves=evaluateMotionCurves(raw.actions||[]);
       const dynamicClips=motionCoverage(curves.validClipNames);
+      const trial=raw.candidate||{attempted:false,created:false,reason:'NO_CANDIDATE_ATTEMPT'};
+      const repairStudy={attempted:trial.attempted===true,created:trial.created===true,
+        reason:String(trial.reason||'').slice(0,95),
+        removedMesh:String(trial.removedMesh||'').slice(0,90)||null,
+        originShiftZ:Number.isFinite(trial.originShiftZ)?trial.originShiftZ:null,
+        staticImprovement:false,rigPass:false,motionCurvesPreserved:false,
+        nativeRuntimeVerified:false,gameApplied:false,productionPromotionAllowed:false};
+      if(repairStudy.created&&fs.existsSync(repairFile)){
+        try{
+          const candidateRaw=measureRig(repairFile,{out:repairAuditFile});
+          const candidateVerdict=evaluateAudit(candidateRaw);
+          const candidateCurves=evaluateMotionCurves(candidateRaw.actions||[]);
+          repairStudy.rigPass=candidateVerdict.pass;
+          repairStudy.candidateFailures=candidateVerdict.failures.slice(0,8);
+          repairStudy.movingClips=candidateCurves.validMovingClips;
+          repairStudy.motionCurvesPreserved=curves.validMovingClips>0&&
+            candidateCurves.validMovingClips>=curves.validMovingClips&&
+            candidateCurves.movingBoneCurves>=curves.movingBoneCurves&&
+            candidateVerdict.stats.bones===verdict.stats.bones;
+          repairStudy.staticImprovement=candidateVerdict.failures.length<verdict.failures.length&&
+            repairStudy.motionCurvesPreserved&&candidateVerdict.pass;
+        }catch(error){repairStudy.reason='CANDIDATE_AUDIT_FAILED:'+String(error.code||error.name||'ERROR').slice(0,60);}
+      }
       session.rigStudy={
         parent:actor.id,family:actor.family,sourceSha256:actor.approvedSourceSha256,
         priorAttempts:actor.priorRigAttempts,eligibleActors:actorSources.length,
         measured:true,rigPass:verdict.pass,bones:verdict.stats.bones,meshParts:verdict.stats.meshes,
         rigFailures:verdict.failures.slice(0,12),
         // [수리 근거] 원본의 분리 메쉬·바닥 최저점만 기록한다. 임의 원점 이동/자동 본 연결 금지.
-        rigDiagnosis:verdict.diagnostics,
+        rigDiagnosis:verdict.diagnostics,repairStudy,
         productionBlockers:verdict.productionBlockers.slice(0,12),
         clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
         clipNamePresent:clips.present,clipNameMissing:clips.missing,
@@ -198,7 +224,12 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         eligibleActors:actorSources.length,measured:false,rigPass:false,
         error:String(error.message||error).slice(0,200),
         motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false};
-    }finally{fs.rmSync(auditFile,{force:true});}
+    }finally{
+      // 파생 GLB는 기존 학습 정책에 따라 수치 증거 추출 후 즉시 파기한다.
+      fs.rmSync(auditFile,{force:true});
+      fs.rmSync(repairAuditFile,{force:true});
+      fs.rmSync(repairFile,{force:true});
+    }
   }
   // [아이콘 원본 연습] 실제 승인된 CC0 UI PNG의 64px 가독성을 기존 채점기로 측정한다.
   // 이미지만 분석하며 새 버튼 기능·게임 화면·저장 키를 자동 교체하지 않는다.

@@ -187,6 +187,19 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
               study.dynamicClipPresent:[]).filter(x=>
                 ['IDLE','MOVE','ATTACK','HIT','DEATH'].includes(x)).slice(0,5),
             failures:faults.slice(0,8),
+            // [격리 수리 학습] 파생 GLB를 보관하거나 승인하지 않고 재검사 숫자만 적는다.
+            repairStudy:{
+              attempted:study.repairStudy?.attempted===true,
+              created:study.repairStudy?.created===true,
+              staticImprovement:study.repairStudy?.staticImprovement===true,
+              rigPass:study.repairStudy?.rigPass===true,
+              motionCurvesPreserved:study.repairStudy?.motionCurvesPreserved===true,
+              reason:String(study.repairStudy?.reason||'').slice(0,95),
+              removedMesh:String(study.repairStudy?.removedMesh||'').slice(0,90)||null,
+              originShiftZ:Number.isFinite(study.repairStudy?.originShiftZ)?
+                study.repairStudy.originShiftZ:null,
+              nativeRuntimeVerified:false,gameApplied:false,productionPromotionAllowed:false
+            },
             // [최신 리그 원인] 최저점과 본 연결 최저점의 차이만 보존. 불합격 자산 승격 없음.
             groundEvidence:{
               lowestMesh:String(study.rigDiagnosis?.lowestMesh||'').slice(0,90)||null,

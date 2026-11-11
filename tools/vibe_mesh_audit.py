@@ -9,6 +9,7 @@ argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 ap = argparse.ArgumentParser()
 ap.add_argument('--input', required=True)
 ap.add_argument('--output', required=True)
+ap.add_argument('--candidate-output', default=None)
 args = ap.parse_args(argv)
 
 if args.input.lower().endswith(('.glb', '.gltf')):
@@ -215,6 +216,56 @@ result = {
     'actions': acts,
     'triangles': sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in meshes),
 }
+# [격리 수리 연습] 원본은 읽기만 한다. 메쉬 한 개가 독립된 바닥 외부 보조체임이
+# 계측으로 입증된 경우에만 별도 GLB 후보를 만들고, 실제 합격은 재검사에 맡긴다.
+# Icosphere라는 이름만으로 임의 삭제하지 않는다. 게임 적용/승격 권한은 없다.
+if args.candidate_output:
+    candidate = {'attempted': True, 'created': False, 'reason': 'UNSAFE_OR_UNPROVEN_STRAY_MESH',
+                 'originalPreserved': True, 'nativeRuntimeVerified': False,
+                 'gameApplied': False, 'productionPromotionAllowed': False}
+    orphan_rows = [r for r in rows if r['orphan']]
+    suspected = orphan_rows[0] if len(orphan_rows) == 1 else None
+    eligible = (
+        len(arms) == 1 and suspected is not None and
+        suspected['name'] == 'Icosphere' and lowest and
+        lowest[1] == suspected['name'] and bound_lowest is not None and
+        suspected['name'] in ground_evidence['orphanMeshesBelowBoundGround'] and
+        len(result['actions']) > 0
+    )
+    if eligible:
+        orphan_obj = bpy.data.objects.get(suspected['name'])
+        eligible = (orphan_obj is not None and orphan_obj.type == 'MESH' and
+                    not orphan_obj.vertex_groups and not orphan_obj.modifiers and
+                    not orphan_obj.data.shape_keys and orphan_obj.parent is None)
+    if eligible:
+        from pathlib import Path
+        target = Path(args.candidate_output).resolve()
+        origin = Path(args.input).resolve()
+        if target != origin and target.suffix.lower() == '.glb' and target.parent.is_dir():
+            try:
+                bpy.data.objects.remove(orphan_obj, do_unlink=True)
+                correction = -bound_lowest[0]
+                # 모두 같은 이동량을 적용하며 부모가 있는 부품은 부모를 따라간다.
+                for obj in bpy.data.objects:
+                    if obj.parent is None and obj.type in {'ARMATURE', 'MESH', 'EMPTY'}:
+                        obj.location.z += correction
+                bpy.context.view_layer.update()
+                bpy.ops.export_scene.gltf(
+                    filepath=str(target), export_format='GLB',
+                    export_animations=True, export_morph=True)
+                if target.is_file() and target.stat().st_size > 0:
+                    candidate.update({'created': True, 'reason': 'STRAY_HELPER_REMOVED_IN_DERIVED_CANDIDATE',
+                                      'removedMesh': suspected['name'],
+                                      'originShiftZ': round(correction, 5)})
+                else:
+                    candidate['reason'] = 'EMPTY_CANDIDATE_EXPORT'
+            except (RuntimeError, ValueError, OSError) as exc:
+                candidate['reason'] = 'CANDIDATE_EXPORT_FAILED:' + type(exc).__name__
+                try:
+                    target.unlink(missing_ok=True)
+                except OSError:
+                    pass
+    result['candidate'] = candidate
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))
