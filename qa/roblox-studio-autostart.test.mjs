@@ -46,3 +46,15 @@ test('설치 스크립트: 현재 사용자 로그온 작업(관리자 불필요
   assert.match(ins, /STUDIO_AUTOSTART_REGISTERED_RUNNER_NOT_FOUND/);
   assert.doesNotMatch(ins, /Winlogon|DefaultPassword|AutoAdminLogon/i);
 });
+
+test('Studio 점검 작업과 겹치지 않는다: 작업 중(Runner.Worker)에는 Studio 를 열지 않고, 기본 설정은 러너만 살린다', () => {
+  assert.match(sup, /Runner\.Worker/);
+  assert.match(sup, /startStudio -and -not \(Test-JobActive\)/);
+  assert.match(sup, /startStudio = \$false/);
+  assert.match(ins, /\[switch\]\$KeepStudioOpen/);
+  assert.match(ins, /startStudio = \$startStudio/);
+  assert.doesNotMatch(ins, /startStudio = \$true/);
+  // devloop-studio.yml 이 Studio 를 직접 끄고 연다는 전제가 그대로인지 확인
+  const w = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  assert.match(w, /Get-Process RobloxStudioBeta[^\n]*Stop-Process -Force/);
+});
