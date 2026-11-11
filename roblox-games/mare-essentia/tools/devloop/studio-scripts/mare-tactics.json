@@ -1,0 +1,98 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) local t=r:InvokeServer('TacticsStart',{siteId='london_fields'}) workspace:SetAttribute('DevCall','State') return 'TAC_START ok='..tostring(t and t.ok)..' msg='..tostring(t and t.message)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab_explore') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "t0_explore"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"이어하기\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "t1_board"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local tiles,units,btn=0,0,0 if g then for _,d in ipairs(g:GetDescendants()) do if d:IsA(\"TextButton\") then btn+=1 if d.ZIndex==5 then units+=1 else tiles+=1 end end end end return \"TAC_UI gui=\"..tostring(g~=nil)..\" tiles=\"..tiles..\" units=\"..units"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local U=nil if g then for _,d in ipairs(g:GetDescendants()) do if U==nil and d:IsA(\"TextButton\") and d.ZIndex==5 and d.BackgroundColor3==Color3.fromRGB(70,120,200) and d.BackgroundTransparency==0 then U=d end end end if U==nil then return \"6,6\" end return string.format(\"%d,%d\",math.floor(U.AbsolutePosition.X+U.AbsoluteSize.X/2),math.floor(U.AbsolutePosition.Y+U.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "t2_selected"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local U=nil if g then for _,d in ipairs(g:GetDescendants()) do if U==nil and d:IsA(\"TextButton\") and d.ZIndex==5 and d.BackgroundColor3==Color3.fromRGB(70,120,200) and d.BackgroundTransparency==0 then U=d end end end if U==nil then return \"6,6\" end local ts=U.AbsoluteSize.X+6 return string.format(\"%d,%d\",math.floor(U.AbsolutePosition.X+ts*1.5-2),math.floor(U.AbsolutePosition.Y+U.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "t3_move_chosen"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"대기\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "t4_waited"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"턴 종료\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "t5_enemy_turn"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local title=\"\" if g then for _,d in ipairs(g:GetDescendants()) do if d:IsA(\"TextLabel\") and string.find(d.Text,\"턴\") and title==\"\" then title=d.Text end end end local ok,hist=pcall(function() return game:GetService(\"LogService\"):GetLogHistory() end) local errs,first=0,\"\" if ok then for _,m in ipairs(hist) do if m.messageType==Enum.MessageType.MessageError then errs+=1 if first==\"\" then first=string.sub(m.message,1,200) end end end end return \"TAC_END title=\"..title..\" ERR n=\"..errs..\" first=\"..first"
+ }
+]
