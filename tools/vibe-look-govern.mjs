@@ -27,10 +27,13 @@ export function allowedByPolicy(preset,policy,mood='bright'){
 const hoursBetween=(a,b)=>(new Date(b)-new Date(a))/36e5;
 
 // 순수 판정. look(현재 상태)·aesthetic(스코어러 결과)·policy·table·mood·now → {look,event}
-export function decideLook({look=emptyLook(),aesthetic,policy,table,mood='bright',now=new Date().toISOString(),gate=GATE}){
+export function decideLook({look=emptyLook(),aesthetic,policy,table,captureKey=null,mood='bright',now=new Date().toISOString(),gate=GATE}){
   const cur={...emptyLook(),...look,blocked:[...(look.blocked||[])],history:[...(look.history||[])]};
   if(!policy||policy.enabled!==true)return {look:cur,event:{type:'DISABLED'}};
   if(!aesthetic||!aesthetic.available||!Number.isFinite(aesthetic.score)||!(aesthetic.checked>=gate.minFrames))return {look:cur,event:{type:'NOT_ENOUGH_FRAMES'}};
+
+  const recentCaptures=Array.isArray(cur.recentCaptures)?cur.recentCaptures:[];
+  if(captureKey&&recentCaptures.includes(captureKey))return {look:cur,event:{type:'DUPLICATE_CAPTURE'}};
 
   const frames=new Map((Array.isArray(aesthetic.frames)?aesthetic.frames:[])
     .filter(row=>typeof row?.file==='string'&&row.file&&Number.isFinite(row.score))
@@ -42,6 +45,7 @@ export function decideLook({look=emptyLook(),aesthetic,policy,table,mood='bright
     if(!regressedFrame&&baselineFrames.some(([file])=>!frames.has(file))){
       return {look:cur,event:{type:'NOT_ENOUGH_FRAMES'}};
     }
+    if(captureKey)cur.recentCaptures=[...recentCaptures,captureKey].slice(-32);
     const v=cur.verify||{scores:[]};
     const scores=[...v.scores,aesthetic.score];
     const worstDrop=aesthetic.score-cur.baseline;
@@ -74,6 +78,7 @@ export function decideLook({look=emptyLook(),aesthetic,policy,table,mood='bright
   }).sort((a,b)=>b.gain-a.gain);
   const top=eligible[0];
   if(!top)return {look:{...cur,pending:null},event:{type:'NO_CANDIDATE'}};
+  if(captureKey)cur.recentCaptures=[...recentCaptures,captureKey].slice(-32);
   const streak=cur.pending&&cur.pending.id===top.id?cur.pending.streak+1:1;
   if(streak<gate.streak)return {look:{...cur,pending:{id:top.id,streak}},event:{type:'STREAK',preset:top.id,streak,need:gate.streak}};
   cur.history.push({at:now,type:'APPLY',preset:top.id,baseline:aesthetic.score,estimatedGain:top.gain,minGain:top.minGain});
