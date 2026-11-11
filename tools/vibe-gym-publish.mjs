@@ -61,6 +61,49 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
     fs.appendFileSync(path.join(wt,'ledger-summary.jsonl'),summarize(led));
     const add=['op-stats.json','ledger-summary.jsonl'];
     if(lights&&fs.existsSync(path.resolve(cwd,lights))){fs.copyFileSync(path.resolve(cwd,lights),path.join(wt,'learned-lights.json'));add.push('learned-lights.json')}
+    // [분류 연습 보관] 기존 전용 데이터 브랜치에 숫자형 분야 성적만 스냅샷으로 남긴다.
+    // 연습 세션이 없는 외부 호출은 기존 동작 그대로 유지한다. 파일/GLB·미검증 자산은 저장하지 않는다.
+    const root=path.resolve(cwd),ledgerDir=path.dirname(path.resolve(root,ledger));
+    const sessionFile=path.resolve(ledgerDir,'..','session.json');
+    if(sessionFile.startsWith(root+path.sep)&&fs.existsSync(sessionFile)){
+      const session=JSON.parse(fs.readFileSync(sessionFile,'utf8'));
+      const cleanCount=value=>Number.isSafeInteger(value)&&value>=0?value:0;
+      const domains=Object.fromEntries(Object.entries(session.practiceDomains||{})
+        .filter(([name,record])=>/^[A-Z_]{2,24}$/.test(name)&&record&&typeof record==='object')
+        .slice(0,32).map(([name,record])=>[name,{
+          catalogued:cleanCount(record.catalogued),eligible3d:cleanCount(record.eligible3d),
+          trials:cleanCount(record.trials),staticMeasured:cleanCount(record.staticMeasured),
+          unverifiedOrFailed:cleanCount(record.unverifiedOrFailed),
+          state:String(record.state||'UNVERIFIED').slice(0,50),
+          runtimeVerified:false,gameApplied:false
+        }]));
+      if(Object.keys(domains).length){
+        const previousPath=path.join(wt,'practice-domains.json');
+        let previous={};try{previous=JSON.parse(fs.readFileSync(previousPath,'utf8'))}catch{}
+        const cumulative={};
+        for(const [name,record] of Object.entries(domains)){
+          const prior=previous.cumulative?.[name]||{};
+          cumulative[name]={
+            trials:cleanCount(prior.trials)+record.trials,
+            staticMeasured:cleanCount(prior.staticMeasured)+record.staticMeasured,
+            unverifiedOrFailed:cleanCount(prior.unverifiedOrFailed)+record.unverifiedOrFailed
+          };
+        }
+        const coverage={version:1,
+          sessions:cleanCount(previous.sessions)+1,
+          lastSessionAt:String(session.at||'').slice(0,40),
+          registryAssets:cleanCount(session.assetCoverage?.registryAssets),
+          cataloguedAssets:cleanCount(session.assetCoverage?.cataloguedAssets),
+          eligible3dAssets:cleanCount(session.assetCoverage?.eligible3dAssets),
+          domains,cumulative,
+          bake:{pass:session.bake?.pass===true,reason:String(session.bake?.reason||
+            (session.bake?.pass?'':'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP')).slice(0,90)},
+          trainingAndDesignOnly:true,nativeRuntimeVerified:false,gameApplied:false,
+          productionPromotionAllowed:false};
+        fs.writeFileSync(previousPath,JSON.stringify(coverage,null,1)+'\n');
+        add.push('practice-domains.json');
+      }
+    }
     must(git(['add',...add],wt),'add');
     const st=git(['status','--porcelain'],wt).stdout.trim();
     if(!st)return {published:false,reason:'NO_CHANGE'};
