@@ -133,6 +133,26 @@ local function rangedAttack(x: Runtime, y: Runtime, rng: () -> number, say: (str
 	elseif id == "pressure_valve" then
 		hullDmg = base * 2.2
 		text = "압력 밸브 방출"
+	elseif id == "gravity_calc" then
+		hullDmg = base * 2.4
+		text = "만유인력 계산"
+	elseif id == "chrono_fix" then
+		hullDmg = base * 1.0
+		y.speedDebuff = math.min(0.5, y.speedDebuff + 0.3)
+		text = "정밀 항로 차단"
+	elseif id == "buttress" then
+		f.hull = math.min(f.maxHull, f.hull + f.maxHull * 0.12)
+		hullDmg = base * 0.5
+		text = "버팀목 보강"
+	elseif id == "lightning_rod" then
+		hullDmg = base * 0.5
+		crewDmg = base * 0.1
+		y.luck = math.max(0.7, y.luck - 0.15)
+		text = "피뢰침 신호"
+	elseif id == "telescope_range" then
+		hullDmg = base * 1.8
+		y.speedDebuff = math.min(0.5, y.speedDebuff + 0.15)
+		text = "망원경 관측"
 	end
 
 	local d = math.floor(hullDmg * (1 - y.f.pumpReduction) + 0.5)

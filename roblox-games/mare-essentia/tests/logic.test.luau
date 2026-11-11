@@ -250,6 +250,25 @@ local function extraTests()
 	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
 	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)
 	check("원더 연출: 임시 값은 저장하지 않음", S.State.serialize(stW).pendingScene == nil)
+	-- 납품 의뢰 수 제한과 학자 동료
+	local stQ = newState("england")
+	local vq = S.View.build(stQ, ctx).quests
+	local shownD = 0
+	for _, a in vq.available do
+		local q = D.Quests.ById[a.id]
+		if q.kind == "deliver" then shownD += 1 end
+	end
+	check("납품 의뢰: 게시판에는 많아야 4개만 보임", shownD <= 4 and vq.otherPortDeliver > 0)
+	local stC = newState("england")
+	stC.fame = 500; stC.coins = 5000; stC.scholarsMet.newton = true
+	check("학자 동료: 만난 학자는 영입할 수 있음", act(stC, "Recruit", { companionId = "c_newton" }) and table.find(stC.companions, "c_newton") ~= nil)
+	check("학자 동료: 만나지 않은 학자는 영입 못 함", select(1, act(newState("england"), "Recruit", { companionId = "c_galileo" })) == false)
+	local nComp = 0
+	for _, c in D.Specialties.Companions do if c.scholarId ~= "" then nComp += 1 end end
+	check("학자 동료: 실존 학자 동료가 14명 이상", nComp >= 14, tostring(nComp))
+	local withSkill = 0
+	for _, sk in D.Skills.Skills do if sk.grantedBy and string.sub(sk.grantedBy, 1, 2) == "c_" then withSkill += 1 end end
+	check("학자 동료: 전용 스킬을 가진 동료가 7명", withSkill == 7, tostring(withSkill))
 	-- 방 시계
 	local RC = D.RoomClock
 	check("방 시계: 현실 1분 = 6일", RC.daysFor(60) == 6 and RC.daysFor(3600) == 360 and RC.daysFor(-5) == 0)
@@ -1392,7 +1411,7 @@ do
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
-	check("view quests", #v.quests.available == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after then n += 1 end end return n end)())
+	check("view quests", #v.quests.available + v.quests.otherPortDeliver == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after then n += 1 end end return n end)())
 	check("view loadout", v.loadout.slots == 3)
 	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == 6)
 	check("view scholars at london", #v.scholars >= 4)
@@ -1731,6 +1750,7 @@ do
 	local names = {
 		herbal_remedy = "약초 치료", predator_decoy = "맹수 울음", relic_ward = "유물의 가호", chart_course = "해도 항로 차단",
 		bribe_gunners = "뇌물 공작", star_fix = "별자리 조준", pressure_valve = "압력 밸브 방출",
+		gravity_calc = "만유인력 계산", chrono_fix = "정밀 항로 차단", buttress = "버팀목 보강", lightning_rod = "피뢰침 신호", telescope_range = "망원경 관측",
 	}
 	for id, name in names do
 		local me = S.Battle.playerFighter(newState("england"))

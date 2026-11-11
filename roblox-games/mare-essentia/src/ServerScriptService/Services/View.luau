@@ -3,6 +3,7 @@
 
 return function(D, S)
 	local View = {}
+	local DELIVER_SHOWN_MAX = 4 -- 주점 게시판에 한 번에 보여 주는 납품 의뢰 수
 
 	local function sortedKeys(t)
 		local keys = {}
@@ -428,7 +429,8 @@ return function(D, S)
 		end
 
 		-- 퀘스트
-		view.quests = { active = {}, available = {}, doneCount = 0 }
+		view.quests = { active = {}, available = {}, doneCount = 0, otherPortDeliver = 0 }
+		local shownDeliver = 0
 		for _ in state.quests.done do
 			view.quests.doneCount += 1
 		end
@@ -443,7 +445,13 @@ return function(D, S)
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
 				})
+			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
+				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
+				view.quests.otherPortDeliver += 1
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) then
+				if q.kind == "deliver" then
+					shownDeliver += 1
+				end
 				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
