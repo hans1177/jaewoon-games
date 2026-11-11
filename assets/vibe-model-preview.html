@@ -35,9 +35,9 @@ import {connectMotionPresentation} from './vibe-presentation-engine.mjs';
 import {VibeCinematicDirector,createCharacterPerformance} from './vibe-cinematic-director.mjs';
 import {createVibeHero,createVibeHandAnimation,setupVibeCinematicLighting,vibeSceneShots} from './vibe-character-studio.mjs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer} from './vibe-premium-character-pipeline.mjs';
-import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeCharacterAsset} from './vibe-cinematic-polish.mjs';
+import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeCharacterAsset,inspectVibeRenderedScene} from './vibe-cinematic-polish.mjs';
 import {VibeActionDirector,VibeLocomotionPolish,VibeCameraPolish,VibeScreenFxDirector,createVibeAudioCuePlanner} from './vibe-premium-gameplay-fx.mjs';
-import {createVibeStorybookWorld,createVibeAtmosphericSound,createVibeScreenFxOverlay} from './vibe-storybook-cinematics.mjs';
+import {createVibeStorybookWorld,createVibeAtmosphericSound,createVibeScreenFxOverlay,vibeStorybookPresets} from './vibe-storybook-cinematics.mjs';
 import {vibeGenreCatalog,resolveVibeGenre} from './vibe-genre-director.mjs';
 import {createVibeGenreCharacter,createVibeGenreAnimation,createVibeGenreMusic} from './vibe-genre-character-music.mjs';
 import {mountVibeGenreUi} from './vibe-genre-game-ui-browser.mjs';
@@ -52,7 +52,7 @@ import {createAdaptiveClimbIK,discoverClimbSkeleton} from './vibe-adaptive-climb
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
-if(!/^assets\/[a-zA-Z0-9._/-]+\.(?:glb|gltf)$/i.test(asset)||asset.includes('..')){status.textContent='잘못된 모델 경로';throw Error('invalid model')}
+if(asset&&(!/^assets\/[a-zA-Z0-9._/-]+\.(?:glb|gltf)$/i.test(asset)||asset.includes('..'))){status.textContent='잘못된 모델 경로';throw Error('invalid model')}
 const base=new URL('../',location.href),url=asset?new URL(asset,base):null;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x182238);
 const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
@@ -60,7 +60,22 @@ const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
 const shotComposer=createVibeShotComposer(THREE,camera);
 const cameraOffset=new THREE.Vector3(3,2.4,5.5),cameraFocusOffset=new THREE.Vector3(),cameraAimOffset=new THREE.Vector3(0,1.2,0),cameraFocus=new THREE.Vector3();
 const presentation=createVibeBrowserPresentation({camera});
-const cinematic=new VibeCinematicDirector({adapter:{applyCamera:(name,pose)=>{if(name==='showcase'){camera.position.set(pose.position.x,pose.position.y,pose.position.z);camera.lookAt(pose.lookAt.x,pose.lookAt.y,pose.lookAt.z);camera.fov=pose.fov;camera.updateProjectionMatrix()}}}});
+// [시네마틱 감독] 카메라 프레임과 동시에 기존 표정·효과음·화면 연출을 동기화한다.
+const cinematic=new VibeCinematicDirector({adapter:{
+ applyCamera:(name,pose)=>{if(name==='showcase'){camera.position.set(pose.position.x,pose.position.y,pose.position.z);camera.lookAt(pose.lookAt.x,pose.lookAt.y,pose.lookAt.z);camera.fov=pose.fov;camera.updateProjectionMatrix()}},
+ onEvent:event=>{
+  if(event.track!=='showcase')return;
+  if(event.type==='impact'){
+   screenFx.add('flash',{duration:.12,strength:.2});
+   atmosphericSound.play('chime',{volume:.07});
+   if(expressionDirector)expressionDirector.set('fear',.6);
+  }else if(event.type==='establish'||event.type==='focus'){
+   atmosphericSound.play('chime',{volume:.04});
+  }else if(event.type==='resolve'){
+   if(expressionDirector)expressionDirector.set('neutral');
+  }
+ }
+}});
 const characterPerformance=createCharacterPerformance();
 let handAnimation=null,facialRig=null,handRig=null,keyframePlayer=null,expressionDirector=null;
 const premiumActions=new VibeActionDirector({onCue:event=>{if(event.type==='impact-window')screenFx.add('flash',{duration:.12,strength:.25})}});
@@ -75,6 +90,8 @@ let showcaseActive=false;
 const mobileView=window.matchMedia('(max-width:720px)').matches,touchDevice=window.matchMedia('(pointer:coarse)').matches;
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setPixelRatio(Math.min(devicePixelRatio,mobileView?1.5:2));document.body.append(renderer.domElement);
 const styles={realistic:[.25,.48,1],fantasy:[.12,.68,1.05],scifi:[.68,.28,1.2],horror:[.06,.82,.75],cartoon:[0,.9,1.15]};
+// [미술감독] 픽셀 측정 기반 임시 노출 보정만 저장하며 게임 설정·세이브를 변경하지 않는다.
+let visualExposureOffset=0,visualReviewPhase='idle',visualReviewBaseline=null;
 const picker=document.createElement('select');picker.setAttribute('aria-label','장르별 재질 스타일');picker.style.cssText='position:absolute;top:40px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';
 for(const [key,label] of [['realistic','실사'],['fantasy','판타지'],['scifi','SF'],['horror','호러'],['cartoon','카툰']]){const opt=document.createElement('option');opt.value=key;opt.textContent=label;picker.append(opt)}
 document.body.append(picker);
@@ -109,14 +126,17 @@ const trainingEnemy=createVibeEnemyDummy(THREE,scene,{onHit:()=>{if(!activeModel
 const survivalDisplay=mountSurvivalDisplay(document);const survivalEffects=createSurvivalSceneEffects(THREE,{scene,camera});const ledgeController=createLedgeRaycastController(THREE,{scene});let survivalVisible=false;
 const worldBridge=createVibeWorldBridge(THREE,scene);const worldVfx=createVibeWorldVfx(THREE,scene);let previousBuildings=0;
 const gameUi=mountVibeGenreUi({genre:'storybook',onAction:event=>{if(event.type==='settings'){fxOverlay.setReducedMotion(event.settings.reducedMotion);storybookWorld.setReducedMotion(event.settings.reducedMotion)}}});
-const genrePicker=document.createElement('select');genrePicker.setAttribute('aria-label','게임 장르');for(const [id,profile] of Object.entries(vibeGenreCatalog)){const option=document.createElement('option');option.value=id;option.textContent=profile.label;genrePicker.append(option)}genrePicker.addEventListener('change',()=>{const genre=resolveVibeGenre(genrePicker.value);gameUi.setGenre(genrePicker.value);if(activeModel){costume?.dispose();genreMotion?.dispose();costume=createVibeGenreCharacter(THREE,activeModel,genrePicker.value);genreMotion=createVibeGenreAnimation(activeModel,genrePicker.value)}genreMusic.setGenre(genrePicker.value);lightingDirector.transition(genre.lighting,1);storybookWorld.dispose();storybookWorld=createVibeStorybookWorld(THREE,scene,{preset:genre.world});restyle();if(typeof worldPicker!=='undefined')worldPicker.value=genre.world;if(typeof lightingPicker!=='undefined')lightingPicker.value=genre.lighting;camera.fov=genre.camera.fov;camera.updateProjectionMatrix();});studioControls.append(genrePicker);
+const genrePicker=document.createElement('select');genrePicker.setAttribute('aria-label','게임 장르');for(const [id,profile] of Object.entries(vibeGenreCatalog)){const option=document.createElement('option');option.value=id;option.textContent=profile.label;genrePicker.append(option)}genrePicker.addEventListener('change',()=>{const genre=resolveVibeGenre(genrePicker.value);gameUi.setGenre(genrePicker.value);if(activeModel){costume?.dispose();genreMotion?.dispose();costume=createVibeGenreCharacter(THREE,activeModel,genrePicker.value);genreMotion=createVibeGenreAnimation(activeModel,genrePicker.value)}genreMusic.setGenre(genrePicker.value);lightingDirector.transition(genre.lighting,1);storybookWorld.transitionRegion(genre.world,1);visualExposureOffset=0;restyle();if(typeof worldPicker!=='undefined')worldPicker.value=genre.world;if(typeof lightingPicker!=='undefined')lightingPicker.value=genre.lighting;camera.fov=genre.camera.fov;camera.updateProjectionMatrix();});studioControls.append(genrePicker);
 const genrePlanPicker=document.createElement('select');genrePlanPicker.setAttribute('aria-label','확장 게임 시스템');for(const [id,entry] of Object.entries(vibeGenreSystems)){const option=document.createElement('option');option.value=id;option.textContent=entry.label;genrePlanPicker.append(option)}genrePlanPicker.addEventListener('change',()=>{const plan=planVibeGame({primary:genrePlanPicker.value});survivalVisible=plan.systems.includes('hunger');status.textContent=plan.primary+' · 시스템 '+plan.systems.join(', ')+' · UI '+plan.ui.join(', ')});studioControls.append(genrePlanPicker);
-const worldPicker=document.createElement('select');worldPicker.setAttribute('aria-label','동화풍 배경');for(const name of ['enchantedForest','sunsetVillage','moonlitRuins','emberVolcano']){const option=document.createElement('option');option.value=name;option.textContent=name;worldPicker.append(option)}worldPicker.addEventListener('change',()=>{storybookWorld.dispose();storybookWorld=createVibeStorybookWorld(THREE,scene,{preset:worldPicker.value});const mood=({enchantedForest:'forest',sunsetVillage:'forest',moonlitRuins:'laboratory',emberVolcano:'volcano'})[worldPicker.value];lightingDirector.transition(mood,1);lightingPicker.value=mood});studioControls.append(worldPicker);
-const shotPicker=document.createElement('select');shotPicker.setAttribute('aria-label','장면 연출');for(const name of Object.keys(vibeSceneShots)){const option=document.createElement('option');option.value=name;option.textContent=name;shotPicker.append(option)}studioControls.append(shotPicker);const shotButton=document.createElement('button');shotButton.textContent='장면 실행';shotButton.addEventListener('click',()=>{cinematic.addTrack('showcase',vibeSceneShots[shotPicker.value],{onComplete:()=>{showcaseActive=false}});showcaseActive=true});studioControls.append(shotButton);
+const worldPicker=document.createElement('select');worldPicker.setAttribute('aria-label','동화풍 배경');for(const name of ['enchantedForest','sunsetVillage','moonlitRuins','emberVolcano']){const option=document.createElement('option');option.value=name;option.textContent=name;worldPicker.append(option)}worldPicker.addEventListener('change',()=>{storybookWorld.transitionRegion(worldPicker.value,1);visualExposureOffset=0;restyle();const mood=({enchantedForest:'forest',sunsetVillage:'forest',moonlitRuins:'laboratory',emberVolcano:'volcano'})[worldPicker.value];lightingDirector.transition(mood,1);lightingPicker.value=mood});studioControls.append(worldPicker);
+const shotPicker=document.createElement('select');shotPicker.setAttribute('aria-label','장면 연출');for(const name of Object.keys(vibeSceneShots)){const option=document.createElement('option');option.value=name;option.textContent=name;shotPicker.append(option)}studioControls.append(shotPicker);const shotButton=document.createElement('button');shotButton.textContent='장면 실행';shotButton.addEventListener('click',()=>{cinematic.addTrack('showcase',vibeSceneShots[shotPicker.value],{stageBeats:true,onComplete:()=>{showcaseActive=false;shotComposer.reset()}});showcaseActive=true});studioControls.append(shotButton);
 function loadStudioHero(){const hero=createVibeHero(THREE);activeModel=hero.root;scene.add(hero.root);handAnimation=createVibeHandAnimation(hero);handAnimation.play('idle');costume?.dispose();genreMotion?.dispose();costume=createVibeGenreCharacter(THREE,hero,genrePicker.value);genreMotion=createVibeGenreAnimation(hero,genrePicker.value);facialRig=createVibeFacialRig(hero.root);handRig=createVibeHandRig(hero.root);expressionDirector=createVibeExpressionDirector(facialRig);camera.position.set(3,2.4,5.5);camera.lookAt(0,1.2,0);cameraOffset.set(3,2.4,5.5);cameraFocusOffset.set(0,0,0);cameraAimOffset.set(0,1.2,0);shotComposer.reset();restyle();status.textContent='바이브 오리지널 3D 캐릭터 · 얼굴 리깅 · 동작 · 조명';}
 // [재질] 원본 맵과 재질 기준값을 보존하며 금속/천/피부만 목적에 맞게 변주한다.
 function restyle(){
- const [metal,rough,exposure]=styles[picker.value];renderer.toneMappingExposure=exposure;
+ const [metal,rough,exposure]=styles[picker.value];
+  const art=resolveVibeGenre(genrePicker.value).artDirection;
+  const region=vibeStorybookPresets[worldPicker.value]||vibeStorybookPresets[art.world];
+  renderer.toneMappingExposure=Math.max(.65,Math.min(1.45,exposure+art.exposureOffset+(region.exposure-1)*.12+visualExposureOffset));
  if(!activeModel)return;
  activeModel.traverse(obj=>{
   if(!obj.isMesh)return;
@@ -136,12 +156,16 @@ function restyle(){
 picker.addEventListener('change',restyle);
 const resize=()=>{const w=Math.max(1,innerWidth),h=Math.max(1,innerHeight);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
 let mixer=null, characterMotion=null;
-const showcaseButton=document.createElement('button');showcaseButton.textContent='카메라 연출';studioControls.append(showcaseButton);showcaseButton.addEventListener('click',()=>{const p=camera.position.clone();cinematic.addTrack('showcase',[{at:0,position:p,lookAt:{x:0,y:0,z:0},fov:camera.fov},{at:1.6,position:{x:p.z*.8,y:p.y*1.15,z:-p.x*.8},lookAt:{x:0,y:0,z:0},fov:38},{at:3.2,position:p,lookAt:{x:0,y:0,z:0},fov:45}],{onComplete:()=>{showcaseActive=false}});showcaseActive=true});
+const showcaseButton=document.createElement('button');showcaseButton.textContent='카메라 연출';studioControls.append(showcaseButton);showcaseButton.addEventListener('click',()=>{const p=camera.position.clone();cinematic.addTrack('showcase',[{at:0,position:p,lookAt:{x:0,y:0,z:0},fov:camera.fov},{at:1.6,position:{x:p.z*.8,y:p.y*1.15,z:-p.x*.8},lookAt:{x:0,y:0,z:0},fov:38},{at:3.2,position:p,lookAt:{x:0,y:0,z:0},fov:45}],{stageBeats:true,onComplete:()=>{showcaseActive=false;shotComposer.reset()}});showcaseActive=true});
 const impactButton=document.createElement('button');impactButton.textContent='타격 연출';studioControls.append(impactButton);
 impactButton.addEventListener('click',()=>presentation.cue('impact',{shake:.3,hitStop:.045,flash:.12,sound:'impact',label:'타격'}));
 const motionToggle=document.createElement('label');motionToggle.innerHTML='<input type="checkbox"> 움직임 감소';studioControls.append(motionToggle);motionToggle.querySelector('input').addEventListener('change',e=>presentation.engine.setAccessibility({reducedMotion:e.target.checked}));const clipNames=[];
 const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');studioControls.append(animationPicker);
 const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()});
+// [실제 픽셀 진단] 25개 화면 좌표에서 WebGL 읽기. 테스트 마커/가상 점수는 시각 품질 증거가 아니다.
+const reviewButton=document.createElement('button');reviewButton.textContent='실제 화면 품질 진단';
+reviewButton.addEventListener('click',()=>{visualReviewBaseline=null;visualReviewPhase='baseline';status.textContent='렌더 화면 밝기·대비 측정 중'});
+studioControls.append(reviewButton);
 const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;ground.visible=false;scene.add(ground);const gridToggle=document.createElement('button');gridToggle.textContent='격자 표시';gridToggle.setAttribute('aria-pressed','false');gridToggle.addEventListener('click',()=>{ground.visible=!ground.visible;gridToggle.setAttribute('aria-pressed',String(ground.visible))});studioControls.append(gridToggle);if(url)new GLTFLoader().load(url.href,gltf=>{
 const model=gltf.scene;scene.add(model);activeModel=model;facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
 const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);cameraOffset.set(radius*1.5,radius*.9,radius*2.2);cameraFocusOffset.copy(center);cameraAimOffset.set(0,0,0);shotComposer.reset();
@@ -175,6 +199,36 @@ function draw(now){
   });
  }
  if(activeModel){const acting=characterPerformance.update(delta);activeModel.rotation.z=acting.secondarySway*.12;}presentation.update(delta);renderer.render(scene,camera);
+ // [실제 화면 평가] 동일 카메라 프레임의 중앙/주변 25점을 읽어 제한된 노출 보정을 전후 비교한다.
+ if(visualReviewPhase!=='idle'){
+  try{
+   const gl=renderer.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight;
+   if(w<5||h<5)throw Error('프레임 크기 부족');
+   const samples=new Uint8Array(100),pixel=new Uint8Array(4);
+   const coords=[.12,.31,.5,.69,.88];let index=0;
+   for(const y of coords)for(const x of coords){
+    gl.readPixels(Math.floor((w-1)*x),Math.floor((h-1)*y),1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
+    samples.set(pixel,index);index+=4;
+   }
+   if(gl.getError()!==gl.NO_ERROR)throw Error('픽셀 읽기 실패');
+   const measured=inspectVibeRenderedScene({pixels:samples,width:w,height:h,source:'webgl-readpixels',observed:true});
+   if(!measured.observed)throw Error('실제 픽셀 미확인');
+   if(visualReviewPhase==='baseline'&&measured.exposureDelta){
+    visualReviewBaseline={result:measured,offset:visualExposureOffset};
+    visualExposureOffset=Math.max(-.12,Math.min(.12,visualExposureOffset+measured.exposureDelta));
+    visualReviewPhase='candidate';restyle();
+   }else{
+    if(visualReviewPhase==='candidate'&&visualReviewBaseline){
+     const oldError=Math.abs(visualReviewBaseline.result.luminance-.48);
+     const newError=Math.abs(measured.luminance-.48);
+     if(newError>oldError+.005){visualExposureOffset=visualReviewBaseline.offset;restyle()}
+    }
+    status.textContent='실제 픽셀 '+measured.samples+'점 · 밝기 '+measured.luminance+
+     ' · 중심 대비 '+measured.centerContrast+' · 진단 '+(measured.findings.join(', ')||'특이 신호 없음')+' · 심사 별도';
+    visualReviewPhase='idle';visualReviewBaseline=null;
+   }
+  }catch(error){visualReviewPhase='idle';visualReviewBaseline=null;status.textContent='화면 픽셀 진단 불가 · '+error.message}
+ }
  // [성능: 적응형 픽셀 비율] 3초 간격의 실제 렌더 프레임으로만 변경해 해상도 진동을 억제한다.
  if(mobileView){
   if(!sampleStarted)sampleStarted=now;
