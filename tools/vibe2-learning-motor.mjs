@@ -2331,11 +2331,11 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     }
   }
   const drills=[
+    ...externalDrills,
+    ...repeatedFailureDrills,
     ...replayCodeDrills,
     ...studioDrills,
     ...weaknessDrills,
-    ...externalDrills,
-    ...repeatedFailureDrills,
     ...relearningDrills,
     ...adaptiveDrills,
     ...phase4Drills,
