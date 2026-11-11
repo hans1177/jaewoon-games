@@ -71,7 +71,7 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   assert.match(bootstrap,/\[int\]\$_.SessionId -eq \$hostSessionId/);
   assert.doesNotMatch(bootstrap,/shell\.Run Chr\(34\) & target & Chr\(34\) & " run"/);
   assert.match(bootstrap,/For Each p In listeners/);
-  assert.match(bootstrap,/If LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
+  assert.match(bootstrap,/If p\.SessionId > 0 And LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
 });
 
 test('daily C cleanup runs on existing signed-in Studio runner without touching apps, saves, or downloads',()=>{
