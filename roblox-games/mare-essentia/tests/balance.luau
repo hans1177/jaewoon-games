@@ -36,6 +36,7 @@ local D = {
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
 	PeopleTalk = require("./Shared/PeopleTalk"),
+	PortOrder = require("./Shared/PortOrder"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)

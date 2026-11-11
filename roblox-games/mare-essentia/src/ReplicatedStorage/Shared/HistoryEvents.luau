@@ -11,6 +11,102 @@ local function price(goods, mult, days, regions)
 end
 
 E.Events = {
+	{ id = "reformation_95", year = 1517, month = 10, title = "95개조 반박문", tag = "정치·종교",
+		text = "비텐베르크 성당 문에 면죄부를 비판하는 글이 붙는다. 인쇄기가 글을 사방으로 퍼뜨리고 유럽의 신앙과 정치가 갈라지기 시작한다.",
+		choices = {
+			{ label = "인쇄소에 투자한다", hint = "-200코인, 명성 +25", coins = -200, fame = 25 },
+			{ label = "전쟁 물자를 미리 사 둔다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "magellan_circum", year = 1519, month = 9, title = "마젤란 선단의 세계 일주 출항", tag = "탐험",
+		text = "다섯 척의 선단이 세비야를 떠나 서쪽으로 향한다. 이 항해는 지구가 둥글고 바다가 이어져 있음을 증명하게 된다.",
+		choices = {
+			{ label = "보급품을 대어 준다", hint = "-150코인, 명성 +25, 정향 값이 내린다", coins = -150, fame = 25, price = price({ "cloves", "nutmeg" }, 0.9, 80, { "europe", "indian" }) },
+			{ label = "소식만 전한다", hint = "+150코인", coins = 150 },
+		} },
+	{ id = "tenochtitlan", year = 1521, month = 8, title = "테노치티틀란 함락", tag = "정치·전쟁",
+		text = "호수 위의 도시가 스페인 연합군에게 무너진다. 신대륙의 산물이 유럽과 처음으로 크게 이어진다.",
+		choices = {
+			{ label = "신대륙 물산을 사들인다", hint = "-200코인, 은 값이 내린다", coins = -200, price = price({ "silver" }, 0.92, 70, { "new_world", "europe" }) },
+			{ label = "관망한다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "copernicus_heliocentric", year = 1543, month = 5, title = "코페르니쿠스 『천구의 회전에 대하여』", tag = "학문",
+		text = "태양이 우주의 중심이라는 책이 나온다. 별을 읽어 바다를 건너던 항해사들도 하늘을 새롭게 보기 시작한다.",
+		choices = {
+			{ label = "책을 사서 읽는다", hint = "-100코인, 명성 +20", coins = -100, fame = 20 },
+			{ label = "항해 일지에 별 기록을 남긴다", hint = "명성 +10, +100코인", coins = 100, fame = 10 },
+		} },
+	{ id = "potosi_silver", year = 1545, month = 1, title = "포토시 은광 발견", tag = "경제",
+		text = "안데스의 산 하나가 은으로 이루어져 있다. 은이 유럽과 중국으로 쏟아지며 세계 시세가 흔들리기 시작한다.",
+		choices = {
+			{ label = "은 거래에 뛰어든다", hint = "-250코인, 은 값이 내린다", coins = -250, price = price({ "silver" }, 0.85, 90, { "new_world", "europe" }) },
+			{ label = "은 가격이 오르기를 기다린다", hint = "+250코인", coins = 250 },
+		} },
+	{ id = "mercator_projection", year = 1569, month = 1, title = "메르카토르 도법 세계 지도", tag = "학문·항해",
+		text = "바다에서 일정한 방향으로 가는 길이 직선으로 그려지는 지도가 나온다. 항해사들의 침로 계산이 쉬워진다.",
+		choices = {
+			{ label = "지도를 사서 항로를 그린다", hint = "-150코인, 명성 +20", coins = -150, fame = 20 },
+			{ label = "기존 해도를 고수한다", hint = "+150코인", coins = 150 },
+		} },
+	{ id = "lepanto", year = 1571, month = 10, title = "레판토 해전", tag = "전쟁",
+		text = "지중해에서 기독교 연합 함대와 오스만 함대가 맞붙는다. 갤리선 시대의 마지막 대해전이다.",
+		choices = {
+			{ label = "전쟁 물자를 대 준다", hint = "-200코인, 명성 +20", coins = -200, fame = 20 },
+			{ label = "지중해 항로를 피해 돌아간다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "manila_galleon", year = 1571, month = 5, title = "마닐라 대형 범선 무역", tag = "경제·무역",
+		text = "마닐라와 아카풀코를 잇는 태평양 항로가 열린다. 중국 비단과 아메리카 은이 바다를 건너 오간다.",
+		choices = {
+			{ label = "태평양 항로에 투자한다", hint = "-200코인, 비단 값이 내린다", coins = -200, price = price({ "silk" }, 0.9, 80, { "pacific", "new_world" }) },
+			{ label = "대서양 교역에 집중한다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "imjin_war", year = 1592, month = 4, title = "임진왜란", tag = "정치·전쟁",
+		text = "일본군이 바다를 건너 조선을 침공한다. 동아시아의 바다에서 큰 수군 전투가 이어진다.",
+		choices = {
+			{ label = "극동 항로 상황을 살핀다", hint = "명성 +15", fame = 15 },
+			{ label = "전쟁 물자를 대 준다", hint = "-150코인, 명성 +20", coins = -150, fame = 20 },
+		} },
+	{ id = "dutch_revolt", year = 1581, month = 7, title = "네덜란드 독립 선언", tag = "정치",
+		text = "북쪽 일곱 주가 스페인 왕에 대한 충성을 거둔다. 암스테르담이 상업의 중심으로 떠오른다.",
+		choices = {
+			{ label = "암스테르담에 거점을 둔다", hint = "-200코인, 명성 +20", coins = -200, fame = 20 },
+			{ label = "기존 거래를 이어 간다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "drake_circum", year = 1580, month = 9, title = "드레이크 세계 일주 귀환", tag = "탐험",
+		text = "금은을 가득 실은 배가 영국 플리머스로 돌아온다. 여왕이 직접 배에 올라 기사 작위를 내린다.",
+		choices = {
+			{ label = "다음 원정에 출자한다", hint = "-250코인, 명성 +25", coins = -250, fame = 25 },
+			{ label = "소식을 듣고 사략을 경계한다", hint = "+150코인", coins = 150 },
+		} },
+	{ id = "gregorian_calendar", year = 1582, month = 10, title = "그레고리력 도입", tag = "학문",
+		text = "교황이 새 달력을 선포해 열흘을 건너뛴다. 나라마다 날짜가 달라 항구에서 계약일을 놓고 말썽이 인다.",
+		choices = {
+			{ label = "새 달력에 맞춰 계약을 고친다", hint = "-50코인, 명성 +15", coins = -50, fame = 15 },
+			{ label = "옛 달력을 고수한다", hint = "+100코인", coins = 100 },
+		} },
+	{ id = "armada", year = 1588, month = 7, title = "스페인 무적함대 패배", tag = "전쟁",
+		text = "거대한 함대가 영국 해협에서 폭풍과 화공선 앞에 무너진다. 바다의 주도권이 서서히 북쪽으로 옮겨 간다.",
+		choices = {
+			{ label = "영국 쪽 상선단에 합류한다", hint = "-150코인, 명성 +25", coins = -150, fame = 25 },
+			{ label = "남쪽 항구에 머문다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "dutch_first_voyage", year = 1595, month = 4, title = "네덜란드 첫 동인도 원정", tag = "경제·무역",
+		text = "포르투갈의 독점을 깨고 네덜란드 선단이 희망봉을 돌아 자바로 간다. 향신료 항로에 새 경쟁자가 나타난다.",
+		choices = {
+			{ label = "원정 선단에 출자한다", hint = "-250코인, 후추 값이 내린다", coins = -250, price = price({ "pepper" }, 0.88, 80, { "europe", "indian" }) },
+			{ label = "지켜본다", hint = "+200코인", coins = 200 },
+		} },
+	{ id = "nantes_edict", year = 1598, month = 4, title = "낭트 칙령", tag = "정치·종교",
+		text = "프랑스가 신교도에게 제한된 신앙의 자유를 허락한다. 종교 전쟁이 잠시 가라앉고 항구 도시가 살아난다.",
+		choices = {
+			{ label = "프랑스 항구 거래를 늘린다", hint = "-100코인, 명성 +15", coins = -100, fame = 15 },
+			{ label = "중립을 지킨다", hint = "+100코인", coins = 100 },
+		} },
+	{ id = "globe_theatre", year = 1599, month = 1, title = "글로브 극장 개관", tag = "문화",
+		text = "템스 강변에 둥근 극장이 문을 연다. 항구 사람들이 선원 이야기와 먼 나라 소문에 귀를 기울인다.",
+		choices = {
+			{ label = "극장 후원자가 된다", hint = "-150코인, 명성 +25", coins = -150, fame = 25 },
+			{ label = "구경만 한다", hint = "명성 +5", fame = 5 },
+		} },
 	{ id = "navigation_acts", year = 1651, month = 10, title = "항해 조례", tag = "정치·무역",
 		text = "잉글랜드 의회가 자국 배만 식민지 물건을 실어 나를 수 있다는 항해 조례를 통과시켰다. 네덜란드 중개 상인들이 술렁인다.",
 		choices = {
@@ -461,10 +557,26 @@ local I = {
 	torricelli_barometer = { node = "phy_boyle_law", label = "기체의 성질 지식으로 실험을 해석한다", hint = "명성 +45", fame = 45 },
 	qing_beijing = { node = "good_tea", label = "차 거래 지식으로 새 왕조 관청과 잇는다", hint = "+450코인", coins = 450 },
 	westphalia = { node = "lang_latin", label = "라틴어 조약문을 읽고 유리한 조항을 짚는다", hint = "+450코인, 명성 +20", coins = 450, fame = 20 },
+	reformation_95 = { node = "lang_printing_press", label = "인쇄기 지식으로 소책자 인쇄를 돕는다", hint = "+400코인, 명성 +25", coins = 400, fame = 25 },
+	magellan_circum = { node = "geo_straits_magellan", label = "마젤란 해협 지식으로 항로를 짚어 준다", hint = "명성 +45", fame = 45 },
+	tenochtitlan = { node = "good_cocoa", label = "카카오 거래 지식으로 새 상품을 알아본다", hint = "+450코인", coins = 450 },
+	copernicus_heliocentric = { node = "phi_scientific_method", label = "관측과 논증 지식으로 새 이론을 해설한다", hint = "명성 +45", fame = 45 },
+	potosi_silver = { node = "min_silver_ore", label = "은광석 지식으로 좋은 광맥을 알아본다", hint = "+500코인", coins = 500 },
+	mercator_projection = { node = "nav_mercator", label = "도법 지식으로 해도에 직선 항로를 긋는다", hint = "명성 +45", fame = 45 },
+	lepanto = { node = "arch_arsenal", label = "조선소 지식으로 함대 수리를 돕는다", hint = "+450코인", coins = 450 },
+	manila_galleon = { node = "geo_pacific_vast", label = "태평양의 넓이를 아는 지식으로 순풍 시기를 읽는다", hint = "+450코인", coins = 450 },
+	imjin_war = { node = "arch_star_fort", label = "성과 방어 지식으로 항구 방비를 돕는다", hint = "+400코인", coins = 400 },
+	dutch_revolt = { node = "lang_ledger", label = "장부 지식으로 새 공화국의 상인과 손잡는다", hint = "+450코인, 명성 +20", coins = 450, fame = 20 },
+	drake_circum = { node = "geo_pirate_waters", label = "해적 해역 지식으로 습격 시기를 읽는다", hint = "+400코인", coins = 400 },
+	gregorian_calendar = { node = "nav_portolan", label = "해도와 날짜 지식으로 계약 혼선을 푼다", hint = "명성 +35, +100코인", coins = 100, fame = 35 },
+	armada = { node = "lang_flag_signals", label = "깃발 신호 지식으로 선단 연락을 돕는다", hint = "+450코인, 명성 +20", coins = 450, fame = 20 },
+	dutch_first_voyage = { node = "geo_spice_islands", label = "향신료 제도 지식으로 거점을 알아본다", hint = "+500코인", coins = 500 },
+	nantes_edict = { node = "phi_skepticism", label = "관용과 회의의 지식으로 두 진영을 잇는다", hint = "명성 +40", fame = 40 },
+	globe_theatre = { node = "art_theater", label = "연극 지식으로 대본을 다듬는다", hint = "명성 +40", fame = 40 },
 	charles1_executed = { node = "phi_natural_law", label = "자연법 논쟁을 중재해 양쪽의 신뢰를 얻는다", hint = "명성 +45", fame = 45 },
 }
 -- 학문·기술·탐험 사건은 플레이어의 앞당김만큼 일찍 닥칠 수 있다 (정치·전쟁·재난은 제때)
-for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau", "franklin_kite", "harrison_h4", "smallpox_boston", "galileo_telescope", "harvey_circulation", "torricelli_barometer" } do
+for _, id in { "magellan_circum", "copernicus_heliocentric", "mercator_projection", "gregorian_calendar", "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau", "franklin_kite", "harrison_h4", "smallpox_boston", "galileo_telescope", "harvey_circulation", "torricelli_barometer" } do
 	E.ById[id].accel = true
 end
 for id, ins in I do

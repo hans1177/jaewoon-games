@@ -6,7 +6,7 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover = true, field = true, visit = true, research = true, tactics = true, tactics_biome = true, tactics_rank = true, tactics_goal = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, people = true, people_talk = true }
+	local AUTO_KINDS = { discover = true, field = true, visit = true, research = true, tactics = true, tactics_biome = true, tactics_rank = true, tactics_goal = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, people = true, people_talk = true, order_patrol = true }
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -34,6 +34,8 @@ return function(D, S)
 				end
 			end
 			return n
+		elseif quest.kind == "order_patrol" then
+			return state.orderPatrols
 		elseif quest.kind == "people_talk" then
 			return S.People.talkCount(state)
 		elseif quest.kind == "people" then

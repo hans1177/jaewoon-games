@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend"
+	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -377,6 +377,21 @@ do
 	for i, c in talks do
 		local id = "q_talk_" .. i
 		table.insert(Quests, { id = id, name = c.name, summary = string.format("기록한 인물 %d명과 대화하기", c.n), kind = "people_talk", amount = c.n, after = prev, rewardCoins = c.coins, rewardFame = c.fame, rewardCareer = "adventure", rewardXp = 50 + i * 50 } :: Quest)
+		prev = id
+	end
+end
+
+-- 항구 치안: 순찰로 항구를 안정시키는 연속 퀘스트
+do
+	local rounds = {
+		{ n = 3, name = "순찰의 첫걸음", coins = 400, fame = 12 },
+		{ n = 10, name = "항구의 파수꾼", coins = 1500, fame = 40 },
+		{ n = 25, name = "바다의 치안관", coins = 4000, fame = 100 },
+	}
+	local prev: string? = nil
+	for i, c in rounds do
+		local id = "q_order_" .. i
+		table.insert(Quests, { id = id, name = c.name, summary = string.format("항구 순찰대 %d번 보내기", c.n), kind = "order_patrol", amount = c.n, after = prev, rewardCoins = c.coins, rewardFame = c.fame, rewardCareer = "adventure", rewardXp = 60 + i * 60 } :: Quest)
 		prev = id
 	end
 end

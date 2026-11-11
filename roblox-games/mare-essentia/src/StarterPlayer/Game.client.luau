@@ -2513,6 +2513,15 @@ function RENDERERS.harbor()
 			}, 52)
 		end)
 	end
+	add(function()
+		local o = view.order
+		if not o then return mkLabel(content, "", 4, COLORS.text, false) end
+		local sub = string.format("치안 %d (%s) · 기본 %d · 판매 비율 %+.1f%%", o.value, o.label, o.target, o.sellBonus * 100)
+		local btn = if o.cooldownLeft > 0 then string.format("%d일 뒤", o.cooldownLeft) else string.format("순찰 %d코인", o.cost)
+		return mkRow(content, "항구 치안", sub .. "\n순찰을 보내면 치안 +" .. o.gain .. " (재해가 닥치면 떨어지고, 방어 건물·교역소 투자로 기본이 올라요)", {
+			{ text = btn, color = COLORS.gold, enabled = o.cooldownLeft <= 0, onClick = function() call("OrderPatrol", {}) end },
+		}, 88)
+	end)
 	add(function() return mkHeader(content, "주점") end)
 	add(function()
 		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품\n(지금 정보 수준: %s)", h.rumorCost, intelName(view.intel or 0)), {
@@ -5154,6 +5163,7 @@ renderTitle = function()
 	-- ② 시대
 	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
+		{ 1517, "1517년", "종교개혁의 시작" },
 		{ 1600, "1600년", "동인도회사의 새벽" },
 		{ 1625, "1625년", "30년 전쟁의 시대" },
 		{ 1650, "1650년", "과학혁명의 시작" },
