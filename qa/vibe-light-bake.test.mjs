@@ -129,3 +129,24 @@ test('실제 Blender: 확장 연산 4종이 CC0 부모에서 모두 성공한다
   const res=JSON.parse(fs.readFileSync(path.join(out,'o','results.json'),'utf8'));
   assert.deepEqual(res.map(x=>x.ok),[true,true,true,true],JSON.stringify(res.map(x=>x.error)));
 });
+
+test('light search replays same-family anchors and compares current renders',()=>{
+  const out=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-light-replay-'));
+  const params=sample(mulberry32(13));
+  const jobs=[];
+  try{
+    const result=runLightSearch({parent:'approved.obj',candidates:8,rounds:1,out,
+      learned:[{score:100,params:{...params,kelvin:Infinity}},{score:99,params},{score:98,params}],
+      render:(_parent,rows)=>jobs.push(...rows),
+      score:()=>Object.fromEntries(jobs.map((job,i)=>[job.id,i===1?80:70]))});
+    assert.deepEqual(jobs[0],toJob(jobs[0].id,params));
+    assert.equal(result.tested,8);
+    assert.equal(result.replayed,1);
+    assert.equal(result.baseline,70);
+    assert.equal(result.gain,10);
+    assert.throws(()=>runLightSearch({candidates:4,rounds:1,out,render:()=>{},score:()=>({})}),
+      /LIGHT_SCORE_INCOMPLETE/);
+  }finally{
+    fs.rmSync(out,{recursive:true,force:true});
+  }
+});
