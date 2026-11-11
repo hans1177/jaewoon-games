@@ -367,6 +367,21 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			end
 		end
 	end
+	-- 어린이: 머리를 크게 하고 목 관절을 올려 머리가 몸에 파묻히지 않게 한다 (모자·머리카락보다 먼저)
+	if outfit and outfit.age == "child" then
+		pcall(function()
+			local head = model:FindFirstChild("Head")
+			local neck = model:FindFirstChild("Neck", true)
+			if head and head:IsA("BasePart") and neck and neck:IsA("Motor6D") then
+				local delta = head.Size.Y * 0.3
+				head.Size = head.Size * 1.3
+				neck.C1 = neck.C1 * CFrame.new(0, -delta / 2, 0)
+			end
+		end)
+	end
+	if outfit and outfit.age then
+		model:SetAttribute("Age", outfit.age)
+	end
 	if outfit and outfit.hair then
 		pcall(addHair, model, outfit.hair, outfit.hairColor or Color3.fromRGB(60, 42, 30))
 	end
@@ -379,8 +394,6 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	-- 어린이는 머리가 크고 키가 작다, 노인은 조금 작다
 	if outfit and outfit.age == "child" then
 		height = (height or 5.8) * 0.62
-		local hs = humanoid:FindFirstChild("HeadScale")
-		if hs and hs:IsA("NumberValue") then hs.Value = 1.3 end
 	elseif outfit and outfit.age == "elder" then
 		height = (height or 5.8) * 0.95
 	end
@@ -467,6 +480,7 @@ function Pose.work(model, kind, t)
 	set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
 	set(m.root, CFrame.identity); set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
 	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
+	local elder = model:GetAttribute("Age") == "elder"
 	if kind == "hammer" then
 		local s = math.max(0, math.sin(t * 5))
 		set(m.rightArm, A(-1.5 - s * 1.0, 0, -0.1)); set(m.rightElbow, A(-0.6 - s * 0.5, 0, 0))
@@ -505,6 +519,10 @@ function Pose.work(model, kind, t)
 	elseif kind == "bell" then
 		local s = math.max(0, math.sin(t * 1.2))
 		set(m.rightArm, A(-2.2 + s * 0.6, 0, -0.1)); set(m.leftArm, A(-2.2 + s * 0.6, 0, 0.1))
+	end
+	-- 노인은 어떤 일을 해도 등이 조금 굽는다
+	if elder and m.waist and kind ~= "sit" then
+		m.waist.Transform = m.waist.Transform * A(0.2, 0, 0)
 	end
 end
 

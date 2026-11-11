@@ -578,6 +578,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local function addTask(fig, t)
 		if not fig then return end
 		t.model = fig
+		t.elder = fig:GetAttribute("Age") == "elder"
 		t.base = fig:GetPivot()
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		table.insert(walkers, t)
@@ -1481,6 +1482,8 @@ function PortScene.build(info, onFacility)
 				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, true)
 				if w.kind then
 					Pose.work(w.model, w.kind, now + w.phase)
+				elseif w.elder then
+					Pose.work(w.model, "stoop", now)
 				end
 			end
 		end
