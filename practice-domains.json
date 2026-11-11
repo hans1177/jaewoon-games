@@ -1,7 +1,7 @@
 {
  "version": 1,
- "sessions": 6,
- "lastSessionAt": "2026-11-11T04:19:21.081Z",
+ "sessions": 7,
+ "lastSessionAt": "2026-11-11T04:24:46.050Z",
  "registryAssets": 160,
  "cataloguedAssets": 2365,
  "eligible3dAssets": 78,
@@ -9,10 +9,10 @@
   "MESH": {
    "catalogued": 1151,
    "eligible3d": 78,
-   "trials": 0,
-   "staticMeasured": 0,
+   "trials": 4,
+   "staticMeasured": 4,
    "unverifiedOrFailed": 0,
-   "state": "NOT_PRACTICED",
+   "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
   },
@@ -59,9 +59,9 @@
   "MATERIAL": {
    "catalogued": 1307,
    "eligible3d": 78,
-   "trials": 5,
-   "staticMeasured": 3,
-   "unverifiedOrFailed": 2,
+   "trials": 4,
+   "staticMeasured": 4,
+   "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
@@ -70,8 +70,8 @@
    "catalogued": 361,
    "eligible3d": 25,
    "trials": 4,
-   "staticMeasured": 3,
-   "unverifiedOrFailed": 1,
+   "staticMeasured": 4,
+   "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
@@ -80,8 +80,8 @@
    "catalogued": 1120,
    "eligible3d": 68,
    "trials": 4,
-   "staticMeasured": 3,
-   "unverifiedOrFailed": 1,
+   "staticMeasured": 4,
+   "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
@@ -169,8 +169,8 @@
  },
  "cumulative": {
   "MESH": {
-   "trials": 0,
-   "staticMeasured": 0,
+   "trials": 4,
+   "staticMeasured": 4,
    "unverifiedOrFailed": 0
   },
   "RIG": {
@@ -194,28 +194,28 @@
    "unverifiedOrFailed": 0
   },
   "MATERIAL": {
-   "trials": 30,
-   "staticMeasured": 23,
+   "trials": 34,
+   "staticMeasured": 27,
    "unverifiedOrFailed": 5
   },
   "ENVIRONMENT": {
-   "trials": 24,
-   "staticMeasured": 23,
+   "trials": 28,
+   "staticMeasured": 27,
    "unverifiedOrFailed": 1
   },
   "OBJECT": {
-   "trials": 24,
-   "staticMeasured": 23,
+   "trials": 28,
+   "staticMeasured": 27,
    "unverifiedOrFailed": 1
   },
   "UI": {
-   "trials": 648,
-   "staticMeasured": 648,
+   "trials": 756,
+   "staticMeasured": 756,
    "unverifiedOrFailed": 0
   },
   "BUTTON": {
-   "trials": 648,
-   "staticMeasured": 648,
+   "trials": 756,
+   "staticMeasured": 756,
    "unverifiedOrFailed": 0
   },
   "ICON": {
@@ -239,8 +239,8 @@
    "unverifiedOrFailed": 0
   },
   "LIGHTING": {
-   "trials": 6,
-   "staticMeasured": 6,
+   "trials": 7,
+   "staticMeasured": 7,
    "unverifiedOrFailed": 0
   },
   "CAMERA": {
@@ -251,19 +251,11 @@
  },
  "bake": {
   "pass": false,
-  "reason": "SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP",
-  "attempts": [
-   {
-    "id": "external-tinytreats-house-v1",
-    "pass": false,
-    "trianglesHigh": 2818,
-    "trianglesLow": 845,
-    "normalDeviation": 0.0039,
-    "failure": "NOTHING_BAKED:0.0039"
-   }
-  ],
+  "reason": "NO_UNTRIED_HIGH_DETAIL_SOURCE",
+  "attempts": [],
   "history": {
    "external-tinytreats-house-v1": {
+    "sourceSha256": null,
     "attempts": 3,
     "failures": 3,
     "passes": 0,
