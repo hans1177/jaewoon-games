@@ -205,6 +205,44 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
         const retainedRigHistory=Object.fromEntries(Object.entries(rigHistory)
           .sort((a,b)=>b[1].lastSession.localeCompare(a[1].lastSession)||
             b[1].attempts-a[1].attempts||a[0].localeCompare(b[0])).slice(0,64));
+        // [2.5D 아이콘 실측 도감] CC0 원본 PNG를 64px로 본 결과만 학습 브랜치에 누적한다.
+        // 픽셀/대비 수치 및 원본 해시만 남기며 PNG·게임 적용을 보관하지 않는다.
+        const iconHistory=Object.fromEntries(Object.entries(previous.icon?.history||{})
+          .filter(([id,r])=>/^[\w:./-]{1,140}$/.test(id)&&r&&typeof r==='object')
+          .slice(-64).map(([id,r])=>[id,{
+            sourceSha256:/^[a-f0-9]{64}$/.test(r.sourceSha256||'')?r.sourceSha256:null,
+            attempts:cleanCount(r.attempts),measured:cleanCount(r.measured),
+            passed:cleanCount(r.passed),rejected:cleanCount(r.rejected),
+            pixels64:cleanCount(r.pixels64),
+            contrast64:Number.isFinite(r.contrast64)?Math.max(0,Math.min(1,r.contrast64)):0,
+            lastSession:String(r.lastSession||'').slice(0,40)
+          }]));
+        let latestIcon={measured:false,legible:false,reason:'NO_APPROVED_ICON_STUDY'};
+        const iconStudy=session.iconStudy;
+        if(iconStudy&&/^[\w:./-]{1,140}$/.test(String(iconStudy.parent||''))){
+          const id=String(iconStudy.parent);
+          const sha=/^[a-f0-9]{64}$/.test(iconStudy.sourceSha256||'')?
+            iconStudy.sourceSha256:null;
+          const old=iconHistory[id]||{};
+          const prior=old.sourceSha256&&sha&&old.sourceSha256!==sha?{}:old;
+          const pixels64=cleanCount(iconStudy.pixels64);
+          const contrast64=Number.isFinite(iconStudy.contrast64)?
+            Math.max(0,Math.min(1,iconStudy.contrast64)):0;
+          const measured=iconStudy.measured===true;
+          const legible=measured&&iconStudy.legible===true&&pixels64>=220&&contrast64>=0.09;
+          latestIcon={id,sourceSha256:sha,measured,legible,pixels64,contrast64,
+            reason:String(iconStudy.reason||'').slice(0,80),
+            nativeRuntimeVerified:false,gameApplied:false};
+          iconHistory[id]={sourceSha256:sha,
+            attempts:cleanCount(prior.attempts)+1,
+            measured:cleanCount(prior.measured)+(measured?1:0),
+            passed:cleanCount(prior.passed)+(legible?1:0),
+            rejected:cleanCount(prior.rejected)+(legible?0:1),
+            pixels64,contrast64,lastSession:String(session.at||'').slice(0,40)};
+        }
+        const retainedIconHistory=Object.fromEntries(Object.entries(iconHistory)
+          .sort((a,b)=>b[1].lastSession.localeCompare(a[1].lastSession)||
+            b[1].attempts-a[1].attempts||a[0].localeCompare(b[0])).slice(0,64));
         const coverage={version:1,
           sessions:cleanCount(previous.sessions)+1,
           lastSessionAt:String(session.at||'').slice(0,40),
@@ -216,6 +254,7 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             (session.bake?.pass?'':'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP')).slice(0,90),
             attempts:bakeAttempts,history:retainedHistory},
           rig:{latest:latestRig,history:retainedRigHistory},
+          icon:{latest:latestIcon,history:retainedIconHistory},
           trainingAndDesignOnly:true,nativeRuntimeVerified:false,gameApplied:false,
           productionPromotionAllowed:false};
         fs.writeFileSync(previousPath,JSON.stringify(coverage,null,1)+'\n');
