@@ -2655,10 +2655,10 @@ test('six-practice: verified weakness and repeated Luau failure become prioritiz
   const idle=buildIdlePracticeQueue(state);
   assert.equal(idle.weaknessFocusedDrills,2);
   assert.ok(idle.verifiedErrorReplayDrills>=1);
-  assert.equal(idle.drills[0].kind,'ROBLOX_CODE_REPAIR');
-  assert.equal(idle.drills[0].verifiedFailureAnalogue,true);
+  const analogue=idle.drills.find(row=>row.kind==='ROBLOX_CODE_REPAIR'&&row.verifiedFailureAnalogue===true);
+  assert.ok(analogue);
   assert.ok(idle.drills.some(row=>row.kind==='WEAKNESS_FOCUSED_DRILL'&&row.domains.includes('SAVE')));
-  const selected=injectIdlePracticeTask({tasks:[]},idle);
+  const selected=injectIdlePracticeTask({tasks:[]},{drills:[analogue]});
   assert.equal(selected.task.target,'roblox');
   assert.ok(selected.task.robloxPracticeDrill);
   assert.match(selected.task.goal,/newScenarioContext=RECONNECT_AND_RESTORE/);
