@@ -5,6 +5,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local NavalBattle = {}
 
@@ -485,13 +486,14 @@ function NavalBattle.play(opts)
 	local function shoot(fromPos, toPos, fx)
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
 		local to = ORIGIN + toPos + Vector3.new((math.random() - 0.5) * 10, 6 + math.random() * 3, (math.random() - 0.5) * 6)
+		Sfx.play("sfx_cannon", nil, 0.9 + math.random() * 0.25)
 		local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
 		task.delay(0.15, function()
 			flash:Destroy()
 		end)
 		local ball = part(folder, Vector3.new(1.5, 1.5, 1.5), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
 		local t0 = os.clock()
-		local dur = 0.8
+		local dur = 0.5
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
@@ -502,6 +504,7 @@ function NavalBattle.play(opts)
 				if finished then
 					return
 				end
+				Sfx.play("sfx_hit", 0.8, 0.85 + math.random() * 0.2)
 				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to), Color3.fromRGB(255, 150, 60), Enum.Material.Neon, Enum.PartType.Ball)
 				local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)), Color3.fromRGB(90, 90, 96), Enum.Material.SmoothPlastic, Enum.PartType.Ball)
 				smoke.Transparency = 0.3
@@ -549,7 +552,7 @@ function NavalBattle.play(opts)
 	local loser = if opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	local fleeProgress, fleeTried = 0, false
-	local nextMeFire, nextFoeFire = os.clock() + 2.2, os.clock() + 3.4
+	local nextMeFire, nextFoeFire = os.clock() + 0.9, os.clock() + 1.7
 	local boardStart = nil
 	local endAt = nil
 	local melIdx = 0
@@ -566,7 +569,7 @@ function NavalBattle.play(opts)
 
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
-			me.theta += steerDir * 0.9 * dt
+			me.theta += steerDir * 1.5 * dt
 			-- 조종 보조: 스틱을 놓고 있으면 적선에 옆면(포 방향)을 자동으로 맞춘다
 			if steerDir == 0 and phase == "duel" then
 				local dv = foe.pos - me.pos
@@ -576,10 +579,10 @@ function NavalBattle.play(opts)
 					local function gap(t)
 						return math.abs((t - me.theta + math.pi) % (math.pi * 2) - math.pi)
 					end
-					steerToward(me, if gap(a1) < gap(a2) then a1 else a2, dt, 0.45)
+					steerToward(me, if gap(a1) < gap(a2) then a1 else a2, dt, 0.8)
 				end
 			end
-			me.speed = 11 * (stickThrottle or throttle)
+			me.speed = 19 * (stickThrottle or throttle)
 			me.pos += forward(me.theta) * me.speed * dt
 
 			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
@@ -587,12 +590,12 @@ function NavalBattle.play(opts)
 			local dist = toMe.Magnitude
 			local bearing = math.atan2(toMe.Z, toMe.X)
 			local want = bearing + (if dist > 55 then 0.15 elseif dist < 32 then -1.9 else 1.45)
-			steerToward(foe, want, dt, 0.7)
-			foe.speed = if dist > 55 then 10 else 6.5
+			steerToward(foe, want, dt, 1.1)
+			foe.speed = if dist > 55 then 17 else 11
 			foe.pos += forward(foe.theta) * foe.speed * dt
 			if phase == "board" then
 				-- 접현: 서로 가까이 붙는다
-				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 0.8)
+				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 1.6)
 			end
 			-- 경계 밖으로 나가지 않게 가운데로 되돌린다
 			for _, sh in (if opts.canFlee and not fleeTried then { foe } else { me, foe }) do
@@ -642,13 +645,13 @@ function NavalBattle.play(opts)
 				local d = (foe.pos - me.pos).Magnitude
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
 				if d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
-					nextMeFire = now + 2.1
+					nextMeFire = now + 1.15
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
 					e = meQueue[math.min(#meQueue, (foeDone + 1))]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
 					for k = 0, volley - 1 do
-						task.delay(k * 0.12, function()
+						task.delay(k * 0.08, function()
 							if not finished then
 								shoot(me.pos, foe.pos, if k == volley - 1 then function()
 									shake = 1.2
@@ -659,11 +662,11 @@ function NavalBattle.play(opts)
 					end
 				end
 				if d < 95 and now >= nextFoeFire and meDone < #foeQueue then
-					nextFoeFire = now + 2.6
+					nextFoeFire = now + 1.45
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
 					for k = 0, volley - 1 do
-						task.delay(k * 0.12, function()
+						task.delay(k * 0.08, function()
 							if not finished then
 								shoot(foe.pos, me.pos, if k == volley - 1 then function()
 									shake = 1.6
@@ -674,18 +677,32 @@ function NavalBattle.play(opts)
 					end
 				end
 				-- 두 배가 맞닿으면 바로 접현 (백병전)
-				if d < 24 or (foeDone >= #meQueue and meDone >= #foeQueue) then
+				if d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue) then
 					phase = "board"
 					boardStart = now
 					hint.Text = ""
 					subtitle.Text = "두 배가 접현했다! 백병전!"
+					shake = 2.2
+					Sfx.play("sfx_horn")
+					Sfx.play("sfx_creak", 0.9, 0.8)
+					Sfx.play("sfx_hit", 1, 0.7)
 				end
 			else
 				-- 백병전: 남은 기록을 차례로 보여 준다
-				if now - boardStart > 1.2 + melIdx * 0.9 and melIdx < #meleeQueue then
+				if now - boardStart > 0.7 + melIdx * 0.55 and melIdx < #meleeQueue then
 					melIdx += 1
 					local e = meleeQueue[melIdx]
-					shake = 0.7
+					shake = 1.4
+					-- 칼날 부딪히는 소리: 효과음 한 가지를 높낮이를 바꿔 겹쳐 백병전 소리로 쓴다
+					Sfx.play("sfx_hit", 0.9, 1.25 + math.random() * 0.35)
+					task.delay(0.14, function()
+						if not finished then
+							Sfx.play("sfx_hit", 0.7, 1.55 + math.random() * 0.4)
+						end
+					end)
+					if melIdx % 2 == 0 then
+						Sfx.play("sfx_creak", 0.5, 1.2)
+					end
 					subtitle.Text = e.text
 					if e.player then
 						foeHp = math.max(foeEnd, foeHp - 0.05)
@@ -693,7 +710,7 @@ function NavalBattle.play(opts)
 						meHp = math.max(meEnd, meHp - 0.05)
 					end
 				end
-				if melIdx >= #meleeQueue and now - boardStart > 2.5 + #meleeQueue * 0.9 then
+				if melIdx >= #meleeQueue and now - boardStart > 1.6 + #meleeQueue * 0.55 then
 					phase = "end"
 					endAt = now
 					meHp, foeHp = meEnd, foeEnd
@@ -708,7 +725,7 @@ function NavalBattle.play(opts)
 				end
 			end
 		elseif phase == "end" then
-			if now - endAt > 3.4 then
+			if now - endAt > 2.4 then
 				finish()
 				return
 			end
@@ -721,7 +738,7 @@ function NavalBattle.play(opts)
 			e.pos += forward(e.theta) * 6 * dt
 		end
 		if now >= escortFire and #escorts > 0 and phase == "duel" then
-			escortFire = now + 4.5
+			escortFire = now + 2.8
 			local e = escorts[math.random(1, #escorts)]
 			if (e.pos - me.pos).Magnitude < 150 then
 				shoot(e.pos, me.pos + Vector3.new((math.random() - 0.5) * 60, 0, (math.random() - 0.5) * 60), nil)
@@ -731,7 +748,7 @@ function NavalBattle.play(opts)
 		-- 배 그리기 (침몰 연출 포함)
 		local meExtra, foeExtra
 		if sinkStart then
-			local k = math.clamp((now - sinkStart) / 3.2, 0, 1)
+			local k = math.clamp((now - sinkStart) / 2.2, 0, 1)
 			local sink = CFrame.new(0, -k * 12, 0) * CFrame.Angles(0, 0, (if loser == "me" then -1 else 1) * k * 0.5)
 			if loser == "me" then
 				meExtra = sink
@@ -764,7 +781,8 @@ function NavalBattle.play(opts)
 		end
 
 		-- 카메라: 우리 배 뒤쪽 위에서 따라간다
-		shake = math.max(0, shake - 0.05)
+		shake = math.max(0, shake - 0.06)
+		cam.FieldOfView = 62 + math.min(shake, 2.5) * 2.2 + (me.speed / 19) * 4
 		local f = forward(me.theta)
 		local focus = ORIGIN + me.pos + (foe.pos - me.pos) * 0.35
 		local camPos = ORIGIN + me.pos - f * 52 + Vector3.new(0, 30, 0)
