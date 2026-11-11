@@ -9,6 +9,7 @@ K.Disciplines = {
 	{ id = "astronomy", name = "천문학", field = "Astronomy", summary = "별을 읽으면 바다에서 길을 잃지 않는다. 항해 속도에 효과가 있다." },
 	{ id = "physics", name = "물리학", field = "Physics", summary = "빛과 힘과 증기의 법칙. 광학·기계·증기 기관으로 이어져 광물·유리 교역품 값이 오른다." },
 	{ id = "chemistry", name = "화학", field = "Chemistry", summary = "물질을 다루는 기술. 염료·유리·화약·비료로 교역품이 개량된다." },
+	{ id = "art", name = "예술", field = "Art", summary = "그림·음악·공예. 거장과 함께 발표하면 항구의 문화가 자라 사치 교역품(대리석·도자기·비단)이 풍부해진다." },
 }
 
 -- 이 학자는 어느 학문의 보고를 받는가
@@ -17,6 +18,9 @@ K.ScholarDisciplines = {
 	newton = { "physics", "astronomy" }, boyle = { "chemistry", "physics" }, leeuwenhoek = { "physics" },
 	papin = { "physics" }, savery = { "physics" }, newcomen = { "physics" }, celsius = { "physics" },
 	leibniz = { "physics", "chemistry" }, descartes = { "physics", "astronomy" },
+	-- 예술가 (그림·음악·판화)
+	rembrandt = { "art" }, vermeer = { "art" }, rubens = { "art" }, velazquez = { "art" }, vandevelde = { "art" },
+	canaletto = { "art" }, hogarth = { "art" }, handel = { "art" }, buxtehude = { "art" }, merian = { "art" },
 }
 
 -- 노드: id(카드 id), disc, needs(선행 카드), 효과 { speed=, cannon=, goods={ids}, goodsMult=, label= }
@@ -66,6 +70,22 @@ K.Nodes = {
 	n("chem_glass", "chemistry", { "chem_acid_base" }, { goods = { "glass" }, goodsMult = 0.1, label = "투명한 유리를 만든다" }),
 	n("chem_oxygen", "chemistry", { "che_air_pump", "chem_acid_base" }, nil),
 	n("chem_phosphorus", "chemistry", { "chem_distillation" }, nil),
+	-- 예술 (화학의 안료, 물리의 광학과 이어진다)
+	n("art_woodcut", "art", {}, nil),
+	n("art_still_life", "art", {}, nil),
+	n("art_portrait", "art", {}, nil),
+	n("art_landscape", "art", {}, nil),
+	n("art_theater", "art", {}, nil),
+	n("art_baroque_music", "art", {}, nil),
+	n("art_engraving", "art", { "art_woodcut" }, nil),
+	n("art_oil_painting", "art", { "chem_dye", "art_still_life" }, { goods = { "cochineal", "indigo" }, goodsMult = 0.04, label = "유화 물감을 만들려는 화가들이 안료를 찾는다" }),
+	n("art_tapestry", "art", { "art_portrait" }, { goods = { "silk" }, goodsMult = 0.05, label = "태피스트리 공방이 비단을 찾는다" }),
+	n("art_delft_tile", "art", { "art_still_life", "chem_glass" }, { goods = { "porcelain" }, goodsMult = 0.05, label = "푸른 유약 타일이 도자기 값을 올린다" }),
+	n("art_marine_painting", "art", { "art_landscape" }, nil),
+	n("art_map_painting", "art", { "art_engraving", "art_marine_painting" }, { speed = 0.01, label = "정교한 지도로 항로 판단이 쉬워진다" }),
+	n("art_violin", "art", { "art_baroque_music" }, { goods = { "ebony" }, goodsMult = 0.04, label = "악기 공방이 흑단을 찾는다" }),
+	n("art_organ", "art", { "art_baroque_music", "phy_barometer" }, nil),
+	n("art_masterpiece", "art", { "art_oil_painting", "art_portrait", "art_landscape" }, { goods = { "marble", "porcelain", "silk", "lacquer" }, goodsMult = 0.05, label = "걸작이 사치품 수요를 키운다" }),
 }
 
 K.ById = {}
@@ -82,9 +102,35 @@ K.DisciplineGoods = {
 	astronomy = {},
 	physics = { "glass", "iron", "copper", "tin", "coal" },
 	chemistry = { "indigo", "cochineal", "logwood", "glass", "nitrate", "guano", "camphor", "leather" },
+	art = { "marble", "porcelain", "silk", "lacquer", "ebony" },
 }
 
 K.SPEED_CAP = 0.15
+
+-- 특수 건축물: 항구가 발전하고 학문 기술이 오르면 그 항구에 지을 수 있다 (항구마다 따로).
+-- harbor: 필요한 교역소 단계, disc/level: 그 학문의 항구 기술 단계(disc 가 "any" 이면 어느 학문이든), research: 항구 연구 성과 가산
+-- expoSlots/expoMult: 박람회, speed: 항해 속도(지은 곳 수만큼), jointFast/jointMult: 공동 발표
+K.Landmarks = {
+	{ id = "museum", name = "박물관", cost = 2500, harbor = 3, disc = "any", level = 1, research = 0.02, expoSlots = 2, expoMult = 1.15,
+		summary = "발견물을 상설 전시한다. 박람회 전시 자리 +2, 박람회 점수 +15%." },
+	{ id = "observatory", name = "천문대", cost = 3000, harbor = 3, disc = "astronomy", level = 1, research = 0.02, speed = 0.02,
+		summary = "밤하늘 관측소. 항해 속도 +2% (여러 곳에 지으면 겹친다)." },
+	{ id = "laboratory", name = "연구소", cost = 3000, harbor = 3, disc = "chemistry", level = 1, research = 0.04,
+		summary = "실험 설비를 갖춘 연구소. 이 항구의 연구 성과가 크게 오른다." },
+	{ id = "gallery", name = "미술관", cost = 2500, harbor = 3, disc = "art", level = 1, research = 0.04,
+		summary = "화가와 공방이 모이는 곳. 이 항구의 연구 성과(예술 교역품 공급)가 오른다." },
+	{ id = "hall", name = "학술원", cost = 8000, harbor = 4, disc = "any", level = 2, research = 0.03, jointFast = 30, jointMult = 1.5,
+		summary = "학자들의 모임터. 공동 발표 쿨타임 30일, 기술 점수 +50%." },
+}
+K.LandmarkById = {}
+for _, lm in K.Landmarks do
+	K.LandmarkById[lm.id] = lm
+end
+
+function K.hasLandmark(state, portId, id)
+	local t = state.landmarks and state.landmarks[portId]
+	return t ~= nil and t[id] == true
+end
 
 -- 이해한(보고한) 지식인가
 function K.understood(state, id)
@@ -118,6 +164,14 @@ function K.speedBonus(state)
 	for _, node in K.Nodes do
 		if node.fx and node.fx.speed and K.understood(state, node.id) then
 			total += node.fx.speed
+		end
+	end
+	for portId, t in state.landmarks or {} do
+		for id in t do
+			local lm = K.LandmarkById[id]
+			if lm and lm.speed then
+				total += lm.speed
+			end
 		end
 	end
 	return math.min(total, K.SPEED_CAP)

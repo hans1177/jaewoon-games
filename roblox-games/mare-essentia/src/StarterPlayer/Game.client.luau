@@ -3635,6 +3635,14 @@ local function renderExplore()
 							end)
 						end
 					end
+					for _, b in ac.buildings do
+						add(function()
+							local sub = if b.built then b.summary .. " (건축 완료)" else string.format("%s · 건축비 %d코인%s", b.summary, b.cost, if b.can then "" else " · " .. tostring(b.why))
+							return mkRow(content, "특수 건축물 — " .. b.name, sub, {
+								{ text = if b.built then "완료" else "건축", color = COLORS.gold, onClick = function() call("BuildLandmark", { id = b.id }) end, enabled = b.can },
+							}, 64)
+						end)
+					end
 					add(function()
 					local pv = ac.expoPreview
 					local sub = if not ac.expoOpen then "교역소 2단계 이상에서 열려요" elseif ac.expoWait > 0 then string.format("%d일 뒤 열려요", ac.expoWait) else string.format("발견한 동물·식물·광물·화석·유물 중 가치 높은 %d점 + 개량 교역품(✦). 수상 %d회", ac.expoSlots, ac.medals)

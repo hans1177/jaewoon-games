@@ -156,6 +156,11 @@ return function(D, S)
 		for _, d in discs do
 			techBonus += 0.02 * techLevelOf(state, portId, d)
 		end
+		for _, lm in K.Landmarks do
+			if K.hasLandmark(state, portId, lm.id) then
+				techBonus += lm.research
+			end
+		end
 		return math.min(0.3, (lvl - 1) * 0.03 + understood * 0.005 + techBonus), lvl, discs
 	end
 
@@ -231,6 +236,9 @@ return function(D, S)
 	end
 
 	local JOINT_COOLDOWN = 45
+	local function jointCooldown(state)
+		return if K.hasLandmark(state, state.portId, "hall") then K.LandmarkById.hall.jointFast else JOINT_COOLDOWN
+	end
 
 	-- 공동 발표: 학자와 함께 연구를 발표한다. 내가 이해한 지식·가져온 수집품(관련 교역품)·완료한 지식 퀘스트가 기여로 인정되고,
 	-- 그만큼 이 항구의 그 학문 기술이 발전한다. 기술이 오르면 항구의 연구 성과와 관련 교역품 공급이 커진다.
@@ -250,8 +258,8 @@ return function(D, S)
 		local a = ensureAcademy(state)
 		local key = "joint:" .. state.portId .. ":" .. disc.id
 		local last = a.last[key]
-		if last and state.day - last < JOINT_COOLDOWN then
-			return false, string.format("다음 공동 발표는 %d일 뒤에 할 수 있어요", JOINT_COOLDOWN - (state.day - last))
+		if last and state.day - last < jointCooldown(state) then
+			return false, string.format("다음 공동 발표는 %d일 뒤에 할 수 있어요", jointCooldown(state) - (state.day - last))
 		end
 		-- 기여 1) 이해한 지식  2) 관련 수집품(교역품 최대 3개씩 기증)  3) 완료한 지식 퀘스트
 		local pts = n * 2
@@ -279,6 +287,10 @@ return function(D, S)
 			pts += qdone * 3
 			table.insert(lines, string.format("· 완료한 지식 퀘스트 %d개 (+%d)", qdone, qdone * 3))
 		end
+		if K.hasLandmark(state, state.portId, "hall") then
+			pts = math.floor(pts * K.LandmarkById.hall.jointMult)
+			table.insert(lines, "· 학술원의 도움으로 기여가 1.5배")
+		end
 		a.last[key] = state.day
 		a.joint = (a.joint or 0) + 1
 		state.portTech = state.portTech or {}
@@ -300,6 +312,56 @@ return function(D, S)
 		table.insert(msgs, string.format("학계의 평가: 명성 +%d, 연구 지원금 +%d코인", fame, coins))
 		S.Perk.addAffinity(state, 2, msgs)
 		return true, table.concat(msgs, "\n")
+	end
+
+	-- 특수 건축물 조건: 교역소 단계 + 학문 기술 단계
+	local function landmarkReq(state, lm)
+		local lvl = D.Harbor.level(state.harbor[state.portId] or 0)
+		if lvl < lm.harbor then
+			return false, string.format("교역소가 %d단계 이상이어야 해요", lm.harbor)
+		end
+		local t = state.portTech and state.portTech[state.portId] or {}
+		local best, ok = 0, false
+		for discId in t do
+			local tl = techLevelOf(state, state.portId, discId)
+			best = math.max(best, tl)
+			if lm.disc == discId and tl >= lm.level then
+				ok = true
+			end
+		end
+		if lm.disc == "any" then
+			ok = best >= lm.level
+		end
+		if not ok then
+			local dn = if lm.disc == "any" then "어느 학문이든" else K.DisciplineById[lm.disc].name
+			return false, string.format("%s 기술이 %d단계 이상이어야 해요 (학자와 공동 발표로 키워요)", dn, lm.level)
+		end
+		return true
+	end
+
+	-- 건축: 항구가 발전하고 학문 기술이 오르면 박물관·천문대·연구소·미술관·학술원을 지을 수 있다.
+	function handlers.BuildLandmark(state, p)
+		local lm = type(p) == "table" and type(p.id) == "string" and K.LandmarkById[p.id]
+		if not lm then
+			return false, "잘못된 건축물"
+		end
+		if K.hasLandmark(state, state.portId, lm.id) then
+			return false, string.format("이 항구에는 이미 %s이(가) 있어요", lm.name)
+		end
+		local ok, why = landmarkReq(state, lm)
+		if not ok then
+			return false, why
+		end
+		if state.coins < lm.cost then
+			return false, string.format("건축비 %d코인이 필요해요", lm.cost)
+		end
+		state.coins -= lm.cost
+		state.landmarks = state.landmarks or {}
+		state.landmarks[state.portId] = state.landmarks[state.portId] or {}
+		state.landmarks[state.portId][lm.id] = true
+		local fame = math.floor(lm.cost / 50)
+		state.fame += fame
+		return true, string.format("%s에 %s을(를) 세웠다! %s 명성 +%d", D.Ports.Ports[state.portId].name, lm.name, lm.summary, fame)
 	end
 
 	-- ===== 박람회 =====
@@ -365,7 +427,7 @@ return function(D, S)
 			end
 			return a.id < b.id
 		end)
-		local slots = 3 + lvl
+		local slots = 3 + lvl + (if K.hasLandmark(state, state.portId, "museum") then K.LandmarkById.museum.expoSlots else 0)
 		local out = {}
 		for i = 1, math.min(slots, #list) do
 			out[i] = list[i]
@@ -415,6 +477,10 @@ return function(D, S)
 			score += pc.value
 			a.shown[pc.id] = true
 			table.insert(lines, string.format("· %s (%s%s)", pc.name, pc.kind, if pc.first then ", 첫 전시 +50%" else ""))
+		end
+		if K.hasLandmark(state, state.portId, "museum") then
+			score = math.floor(score * K.LandmarkById.museum.expoMult)
+			table.insert(lines, "· 박물관의 상설 전시 덕분에 점수 +15%")
 		end
 		local medal = nil
 		for _, m in MEDALS do
@@ -488,7 +554,7 @@ return function(D, S)
 				local lvT = techLevelOf(state, state.portId, d)
 				table.insert(pres, {
 					disc = d, name = K.DisciplineById[d].name, understood = understoodIn(state, d), wait = if last then math.max(0, PRESENT_COOLDOWN - (state.day - last)) else 0,
-					jointScholar = js and js.name or nil, jointWait = if jl then math.max(0, JOINT_COOLDOWN - (state.day - jl)) else 0,
+					jointScholar = js and js.name or nil, jointWait = if jl then math.max(0, jointCooldown(state) - (state.day - jl)) else 0,
 					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1],
 				})
 			end
@@ -496,6 +562,15 @@ return function(D, S)
 			out.academy = {
 				research = math.floor(r * 100 + 0.5), harborLevel = lvl, disciplines = names, present = pres,
 				presentMin = PRESENT_MIN, presented = a.presented, expos = a.expos, joint = a.joint or 0,
+			buildings = (function()
+				local rows = {}
+				for _, lm in K.Landmarks do
+					local built = K.hasLandmark(state, state.portId, lm.id)
+					local ok, why = landmarkReq(state, lm)
+					table.insert(rows, { id = lm.id, name = lm.name, cost = lm.cost, summary = lm.summary, built = built, can = ok and not built, why = if built then "지어졌어요" else why })
+				end
+				return rows
+			end)(),
 				expoWait = if lastExpo then math.max(0, EXPO_COOLDOWN - (state.day - lastExpo)) else 0, expoOpen = lvl >= 2,
 				medals = a.medals or 0,
 			}
@@ -510,7 +585,7 @@ return function(D, S)
 				prev[formId] = { name = FORMS[formId].name, pieces = #pieces, score = score, fee = fee }
 			end
 			out.academy.expoPreview = prev
-			out.academy.expoSlots = 3 + lvl
+			out.academy.expoSlots = 3 + lvl + (if K.hasLandmark(state, state.portId, "museum") then K.LandmarkById.museum.expoSlots else 0)
 		end
 		for _, node in K.Nodes do
 			local fx = node.fx

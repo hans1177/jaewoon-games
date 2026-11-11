@@ -53,6 +53,25 @@ local Scholars: { Scholar } = {
 		cardId = "bot_plant_anatomy", line = "현미경 아래에서 나무의 속은 작은 관들로 가득하다오." },
 	{ id = "linnaeus", name = "카를 린네", portId = "gothenburg", fromYear = 1735, toYear = 1778, minFame = 80,
 		cardId = "bot_binomial", line = "이름을 두 단어로 줄이면 모든 식물을 정리할 수 있다네." },
+	-- 예술가: 학자처럼 보고·공동 발표를 받아 주고, 첫 방문에 작품 지식을 전수한다. 활동 시기와 장소는 게임 설정.
+	{ id = "rembrandt", name = "렘브란트 판 레인", portId = "amsterdam", fromYear = 1631, toYear = 1669, minFame = 40,
+		cardId = "art_oil_painting", line = "빛은 어둠 속에서 더 환하게 보이는 법이지요." },
+	{ id = "vermeer", name = "요하네스 베르메르", portId = "rotterdam", fromYear = 1653, toYear = 1675, minFame = 40,
+		cardId = "art_still_life", line = "창가로 스며드는 빛 한 줄이면 방 하나가 그림이 됩니다." },
+	{ id = "rubens", name = "페테르 파울 루벤스", portId = "antwerp", fromYear = 1609, toYear = 1640, minFame = 60,
+		cardId = "art_tapestry", line = "큰 화폭과 많은 제자, 그리고 끝없는 주문이 내 공방의 힘이라오." },
+	{ id = "velazquez", name = "디에고 벨라스케스", portId = "seville", fromYear = 1617, toYear = 1623, minFame = 40,
+		cardId = "art_portrait", line = "사람의 얼굴에서 신분이 아니라 마음을 그리려 하오." },
+	{ id = "vandevelde", name = "빌럼 판 더 펠더", portId = "amsterdam", fromYear = 1650, toYear = 1672, minFame = 40,
+		cardId = "art_marine_painting", line = "해전을 그리려고 작은 배를 타고 함대 곁을 따라다녔지요." },
+	{ id = "canaletto", name = "카날레토", portId = "venice", fromYear = 1720, toYear = 1768, minFame = 60,
+		cardId = "art_landscape", line = "운하와 다리를 한 장에 담으면 베네치아가 여행 가방에 들어가지요." },
+	{ id = "hogarth", name = "윌리엄 호가스", portId = "london", fromYear = 1720, toYear = 1764, minFame = 50,
+		cardId = "art_engraving", line = "동판에 새긴 풍자는 값싸게 퍼져 온 도시를 웃기고 찔러 대지." },
+	{ id = "handel", name = "게오르크 프리드리히 헨델", portId = "london", fromYear = 1712, toYear = 1759, minFame = 60,
+		cardId = "art_baroque_music", line = "음악은 귀로 듣지만 마음이 먼저 일어선다네." },
+	{ id = "buxtehude", name = "디트리히 북스테후데", portId = "lubeck", fromYear = 1668, toYear = 1707, minFame = 40,
+		cardId = "art_organ", line = "오르간의 모든 관에 바람이 가득 찰 때 교회가 떨리지요." },
 }
 
 return {
