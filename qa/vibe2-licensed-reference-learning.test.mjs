@@ -141,7 +141,10 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
     }
     const manifest=buildPracticeDataset({inputDir:samples,outDir:dataset,minSamples:20,taskType:'roblox'});
     assert.ok(manifest.stats.codeImplementationTrain>=10);
-    assert.ok(manifest.stats.codeImplementationEval>=1);
+    assert.ok(manifest.stats.codeImplementationEval>=2);
+    assert.ok(manifest.stats.codeImplementationHoldout>=2);
+    assert.equal(manifest.version,6);
+    assert.equal(manifest.independentExternalBenchmarkVerified,false);
     assert.deepEqual(manifest.sourceKinds,['licensed-reference','teacher']);
     assert.equal(manifest.targetTaskType,'roblox');
     assert.equal(manifest.authority,'PRACTICE_ONLY');
@@ -150,11 +153,14 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
     assert.ok(manifest.stats.train>=20);
     assert.ok(manifest.stats.eval>=2);
     const records=[...fs.readFileSync(path.join(dataset,'train.jsonl'),'utf8').trim().split('\n'),
-      ...fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n')].map(JSON.parse);
+      ...fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n'),
+      ...fs.readFileSync(path.join(dataset,'holdout.jsonl'),'utf8').trim().split('\n')].map(JSON.parse);
     assert.equal(records.length,39);
     const train=fs.readFileSync(path.join(dataset,'train.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
     const evalRows=fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
+    const holdout=fs.readFileSync(path.join(dataset,'holdout.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
     assert.equal(train.some(a=>evalRows.some(b=>a.familyId===b.familyId)),false);
+    assert.equal(holdout.some(a=>train.some(b=>a.familyId===b.familyId)||evalRows.some(b=>a.familyId===b.familyId)),false);
     for(const row of records){
       assert.equal(row.taskType,'roblox');
       assert.equal(row.practiceOnly,true);

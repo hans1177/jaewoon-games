@@ -57,19 +57,36 @@ test('Roblox practice includes original implementation in train and eval; stale 
     assert.equal(manifest.practiceOnly, true);
     assert.equal(manifest.runtimePromotionAllowed, false);
     assert.equal(manifest.stats.licensedReferenceTotal, 25);
-    assert.equal(manifest.stats.codeImplementationTrain, 11);
-    assert.equal(manifest.stats.codeImplementationEval, 3);
-    assert.equal(manifest.stats.train + manifest.stats.eval, 39);
+    assert.equal(manifest.version, 6);
+    assert.equal(manifest.holdoutAuthority, 'DISJOINT_FAMILIES_PRACTICE_ONLY');
+    assert.equal(manifest.independentExternalBenchmarkVerified, false);
+    assert.match(manifest.holdoutSha256, /^[a-f0-9]{64}$/);
+    assert.equal(manifest.stats.codeImplementationTrain, 10);
+    assert.equal(manifest.stats.codeImplementationEval, 2);
+    assert.equal(manifest.stats.codeImplementationHoldout, 2);
+    assert.equal(manifest.stats.holdout, 4);
+    assert.equal(manifest.stats.train + manifest.stats.eval + manifest.stats.holdout, 39);
     const trainCodeFamilies = fs.readFileSync(path.join(data, 'train.jsonl'), 'utf8').trim().split('\n').map(JSON.parse)
       .filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId);
     const evalCodeFamilies = fs.readFileSync(path.join(data, 'eval.jsonl'), 'utf8').trim().split('\n').map(JSON.parse)
       .filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId);
-    assert.equal(new Set(trainCodeFamilies).size, 11);
-    assert.equal(new Set(evalCodeFamilies).size, 3);
+    const holdoutCodeFamilies = fs.readFileSync(path.join(data, 'holdout.jsonl'), 'utf8').trim().split('\n').map(JSON.parse)
+      .filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId);
+    assert.equal(new Set(trainCodeFamilies).size, 10);
+    assert.equal(new Set(evalCodeFamilies).size, 2);
+    assert.equal(new Set(holdoutCodeFamilies).size, 2);
     assert.ok(evalCodeFamilies.every(id => !trainCodeFamilies.includes(id)));
+    assert.ok(holdoutCodeFamilies.every(id => !trainCodeFamilies.includes(id) && !evalCodeFamilies.includes(id)));
     assert.deepEqual(manifest.sourceKinds, ['licensed-reference', 'teacher']);
-    const validate = "import importlib.util,json,sys,types; p='tools/vibe2-practice-train.py'; s=importlib.util.spec_from_file_location('practice',p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); d=sys.argv[1]; rows=lambda n:[json.loads(x) for x in open(d+'/'+n+'.jsonl',encoding='utf-8')]; m.practice_validate(types.SimpleNamespace(task_type='roblox'),json.load(open(d+'/manifest.json')),rows('train'),rows('eval'))";
+    const validate = "import importlib.util,json,sys,types; p='tools/vibe2-practice-train.py'; s=importlib.util.spec_from_file_location('practice',p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); d=sys.argv[1]; rows=lambda n:[json.loads(x) for x in open(d+'/'+n+'.jsonl',encoding='utf-8')]; m.practice_validate(types.SimpleNamespace(task_type='roblox',holdout=d+'/holdout.jsonl'),json.load(open(d+'/manifest.json')),rows('train'),rows('eval'))";
     const python = process.platform === 'win32' ? 'python' : 'python3';
+    execFileSync(python, ['-c', validate, data]);
+    // [보류셋 위변조 방어] 해시가 다르면 사전 검증에서 즉시 실패한다.
+    const holdoutFile=path.join(data, 'holdout.jsonl');
+    const originalHoldout=fs.readFileSync(holdoutFile, 'utf8');
+    fs.writeFileSync(holdoutFile, originalHoldout+'\n{}\n');
+    assert.throws(()=>execFileSync(python, ['-c', validate, data], {stdio:'pipe'}));
+    fs.writeFileSync(holdoutFile, originalHoldout);
     execFileSync(python, ['-c', validate, data]);
     const staleSamples = path.join(root, 'stale-samples');
     fs.mkdirSync(staleSamples);
@@ -100,7 +117,12 @@ test('Roblox practice compares frozen baseline and adapter on the same eval with
   assert.match(workflow, /PRACTICE_ADAPTED_EVAL_LOSS=/);
   assert.match(workflow, /PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO/);
   assert.match(workflow, /PRACTICE_NATIVE_RUNTIME_VERIFIED=NO/);
-  assert.match(workflow, /PRACTICE_EVAL_PASSES=4/);
+  assert.match(workflow, /PRACTICE_EVAL_PASSES=8/);
+  assert.match(workflow, /PRACTICE_HOLDOUT_CODE_ADAPTED_EVAL_LOSS=/);
+  assert.match(workflow, /PRACTICE_HOLDOUT_EXTERNAL_BENCHMARK_VERIFIED=NO/);
+  assert.match(trainer, /practice_holdout_comparison = \{/);
+  assert.match(trainer, /"independentExternalBenchmarkVerified": False/);
+  assert.match(trainer, /"holdoutSha256": manifest\.get\("holdoutSha256"\)/);
   assert.match(trainer, /code_eval_rows = \[row for row in eval_rows if row.get\("sampleKind"\) == "CODE_IMPLEMENTATION"\]/);
   assert.match(trainer, /code_adapted_evaluation = trainer.evaluate\(eval_dataset=code_eval_dataset\)/);
   assert.match(trainer, /code_baseline_evaluation = trainer.evaluate\(eval_dataset=code_eval_dataset\)/);
