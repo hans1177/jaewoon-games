@@ -8,7 +8,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
-import {runBake,evaluateBake} from './vibe-normal-bake.mjs';
+import {runBake,evaluateBake,selectBakeParents} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
 
@@ -47,7 +47,7 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     motionComplete:gym.ledger.filter(r=>r.motion?.missing.length===0).length,
     motionGaps:gym.ledger.filter(r=>r.motion?.missing.length>0).length,
     gameApplied:0};
-  // [UI 연습→채점→보관] 기존 화면 배치 엔진으로 8개 화면/3개 모바일 크기/2개 간격 변형을 연습한다.
+  // [UI 연습→채점→보관] 기존 화면 배치 엔진으로 18개 화면/3개 모바일 크기/2개 간격 변형을 연습한다.
   // 수치 평가만 기존 op-stats.json에 저장해 게임 코드·입력·저장 상태를 변경하지 않는다.
   const ui=exerciseVibeUiLayouts();
   // [버튼·아이콘] 기존 UI 책임 채점기의 터치 크기·동작 바인딩·레이블 대비만 연습한다.
@@ -98,18 +98,37 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       }
     }catch(e){session.light={error:String(e.message||e).slice(0,200)}}
   }
-  // [노멀맵] 평평한 모델은 진짜 굽기 품질을 증명하지 못한다. 기준을 낮추지 않고 다른 CC0 부모로 재시도한다.
-  if(bake&&bakeParents.length){
+  // [노멀맵] 전체 승인 CC0 원본에서 실측 면 수/리그 여부로 후보를 고른다.
+  // 충분한 고폴리 표면이 없으면 품질 한계를 낮추거나 임의 요철을 만들어 통과시키지 않는다.
+  if(bake){
+    const libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null;
+    const sourcePool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+17)),
+      ...(libraryDir?approvedLibraryParents(libraryDir):[])];
+    const selected=selectBakeParents(sourcePool,3);
     const attempts=[];
-    for(const bp of bakeParents.slice(0,3)){
+    for(const bp of selected){
       try{
-        const rec=runBake({parent:bp.file,ratio:0.3,size:128,out:path.join(out,'bake')});
+        const ratio=Math.min(0.3,Math.max(0.02,4800/bp.sourceProfile.triangles));
+        const rec=runBake({parent:path.isAbsolute(bp.file)?bp.file:path.join(repoRoot,bp.file),
+          ratio,size:128,out:path.join(out,'bake')});
         const verdict=evaluateBake(rec);
-        attempts.push({parent:bp.id,...verdict,trianglesHigh:rec.trianglesHigh,trianglesLow:rec.trianglesLow});
+        attempts.push({parent:bp.id,sourceTriangles:bp.sourceProfile.triangles,
+          sourceType:bp.sourceProfile.sourceType,ratio,...verdict,
+          trianglesHigh:rec.trianglesHigh,trianglesLow:rec.trianglesLow,
+          normalDeviation:rec.normalDeviation});
         if(verdict.pass)break;
-      }catch(e){attempts.push({parent:bp.id,pass:false,error:String(e.message||e).slice(0,200)})}
+      }catch(e){
+        attempts.push({parent:bp.id,pass:false,
+          error:String(e.message||e).slice(0,200)});
+      }
     }
-    session.bake={...attempts[attempts.length-1],attempts};
+    session.bake=attempts.length?{...attempts.at(-1),attempts,
+      pass:attempts.some(x=>x.pass===true),
+      bestPassed:attempts.find(x=>x.pass===true)?.parent||null,
+      sourceCandidates:selected.length}:
+      {pass:false,reason:'NO_APPROVED_STATIC_HIGH_DETAIL_SOURCE',sourceCandidates:0,attempts:[]};
+    if(!session.bake.pass)session.assetCoverage.bakeShortage=session.bake.reason||
+      'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP';
   }
   // [분야별 연습 결과] 정적 실측·미검증·부족 분야를 분리한다. 게임/네이티브 성공으로 승격하지 않는다.
   const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{
@@ -130,11 +149,16 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       else record.unverifiedOrFailed++;
     }
   }
-  for(const name of ['UI','BUTTON','ICON']){
+  // [UI] 화면·버튼 배치 계약과 실제 아이콘 픽셀 가독성은 서로 다른 실측이다.
+  for(const name of ['UI','BUTTON']){
     domains[name].trials+=ui.trials;
     domains[name].staticMeasured+=ui.staticPasses;
     domains[name].unverifiedOrFailed+=ui.staticFailures;
   }
+  const iconRows=gym.ledger.filter(row=>row.icon&&typeof row.icon.legible==='boolean');
+  domains.ICON.trials+=iconRows.length;
+  domains.ICON.staticMeasured+=iconRows.filter(row=>row.icon.legible===true).length;
+  domains.ICON.unverifiedOrFailed+=iconRows.filter(row=>row.icon.legible!==true).length;
   if(session.light?.best!==undefined){
     domains.LIGHTING.trials++;domains.LIGHTING.staticMeasured++;
   }
@@ -155,5 +179,5 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const args=process.argv.slice(2);const opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d};const flag=n=>args.includes('--'+n);
   if(!blenderAvailable()){console.error('Blender/bpy 없음 (VIBE2_BLENDER_BINARY 또는 pip install bpy)');process.exit(2)}
   const {session}=runPracticeSession({seed:+opt('seed',Math.floor(Date.now()/1000)),parents:+opt('parents',3),variants:+opt('variants',4),out:opt('out','build/practice'),statsPath:opt('stats',null),lightsPath:opt('lights',null),light:!flag('no-light'),bake:!flag('no-bake'),lightCandidates:+opt('light-candidates',8),lightRounds:+opt('light-rounds',2)});
-  console.log(`VIBE_PRACTICE_SESSION gym=${JSON.stringify(session.gym.tally)} ui=${session.ui.staticPasses}/${session.ui.trials} static layouts light=${session.light?.best??session.light?.error??'-'} bake=${session.bake?(session.bake.pass?'PASS':'FAIL '+(session.bake.failures||session.bake.error)):'-'}`);
+  console.log(`VIBE_PRACTICE_SESSION gym=${JSON.stringify(session.gym.tally)} ui=${session.ui.staticPasses}/${session.ui.trials} static layouts light=${session.light?.best??session.light?.error??'-'} bake=${session.bake?(session.bake.pass?'PASS':'FAIL '+(session.bake.failures||session.bake.reason||session.bake.error)):'-'}`);
 }
