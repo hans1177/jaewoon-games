@@ -47,7 +47,7 @@ def trade_goods_practice():
     goal = next((row for row in seed if row.get("id") == "trade-goods-icons-missing"), {})
     goods, excluded = goal.get("goods", []), goal.get("blockedGoods", [])
     if not goods:
-        return None, []
+        return None, [], None
     if (len(goods) != len(set(goods)) or set(goods) & set(excluded) or
             any(not re.fullmatch("[a-z][a-z0-9_]*", name) for name in goods + excluded)):
         raise RuntimeError("TRADE_GOODS_TARGETS_INVALID")
