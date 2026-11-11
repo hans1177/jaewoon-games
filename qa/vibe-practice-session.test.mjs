@@ -82,13 +82,27 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.equal(session.rigStudy.priorAttempts,0);
   assert.equal(session.rigStudy.eligibleActors,actors.length);
   assert.equal(session.rigStudy.sourceSha256,chosen.approvedSourceSha256);
-  assert.equal(session.rigStudy.motionCurvesMeasured,false);
+  assert.equal(typeof session.rigStudy.motionCurvesMeasured,'boolean');
+  assert.equal(session.rigStudy.gameplayMotionVerified===true,false);
+  if(session.rigStudy.measured){
+    assert.ok(Number.isSafeInteger(session.rigStudy.curveInspectedClips));
+    assert.ok(Number.isSafeInteger(session.rigStudy.validMovingClips));
+    assert.ok(session.rigStudy.validMovingClips<=session.rigStudy.curveInspectedClips);
+    assert.ok(Number.isSafeInteger(session.rigStudy.movingBoneCurves));
+    assert.ok(Array.isArray(session.rigStudy.dynamicClipPresent));
+    const motionPassed=session.practiceDomains.MOTION.staticMeasured>=1;
+    const attackPassed=session.practiceDomains.ACTION.staticMeasured>=1;
+    assert.equal(motionPassed,session.rigStudy.motionCurvesMeasured&&
+      session.rigStudy.dynamicClipPresent.some(x=>x==='IDLE'||x==='MOVE'));
+    assert.equal(attackPassed,session.rigStudy.motionCurvesMeasured&&
+      session.rigStudy.dynamicClipPresent.includes('ATTACK'));
+  }
   assert.equal(session.rigStudy.nativeRuntimeVerified,false);
   assert.equal(session.rigStudy.gameApplied,false);
   assert.ok(session.practiceDomains.RIG.trials>=1);
   assert.ok(session.practiceDomains.JOINT.trials>=1);
-  assert.ok(session.practiceDomains.MOTION.unverifiedOrFailed>=1);
-  assert.ok(session.practiceDomains.ACTION.unverifiedOrFailed>=1);
+  assert.ok(session.practiceDomains.MOTION.trials>=1);
+  assert.ok(session.practiceDomains.ACTION.trials>=1);
   if(session.rigStudy.measured){
     assert.ok(Number.isSafeInteger(session.rigStudy.bones));
     assert.ok(Array.isArray(session.rigStudy.clipNameMissing));
