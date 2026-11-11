@@ -66,6 +66,11 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.equal(session.practiceDomains.BUTTON.trials,108);
   assert.equal(session.practiceDomains.ICON.nativeRuntimeVerified,false);
   assert.equal(session.productionPromotionAllowed,false);
+  // 모든 분야에서 시도 횟수는 통과·실패 합과 같아야 한다. 노멀맵 실패 누락 방지.
+  for(const [domain,record] of Object.entries(session.practiceDomains))
+    assert.equal(record.trials,record.staticMeasured+record.unverifiedOrFailed,domain);
+  assert.equal(session.practiceDomains.MATERIAL.unverifiedOrFailed>=
+    (session.bake?.attempts||[]).filter(attempt=>attempt.pass!==true).length,true);
   const learnedUi=JSON.parse(fs.readFileSync(stats,'utf8')).UI;
   assert.ok(learnedUi['hud_layout:soft'].n>=3);
   assert.ok(learnedUi['inventory_layout:strong'].n>=3);
