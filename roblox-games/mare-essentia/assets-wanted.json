@@ -41,6 +41,17 @@
     "Kenney Castle Kit / Fantasy Town Kit의 추가 부품(CC0)"
    ],
    "inboxPath": "assets/inbox/Castle/"
+  },
+  {
+   "id": "trade-goods-icons-missing",
+   "kind": "Goods",
+   "purpose": "전용 그림도 맞는 3D 모델도 없는 교역품 18종 (타조 깃털·정향·육두구·계피·인디고·쌀·칠기·장뇌·인삼·바닐라·코치닐·물개 가죽·구아노·초석·용연향·아라비아 고무 / 술류 맥주·청주는 내용 검수 정책상 그림 제외)",
+   "status": "missing",
+   "candidates": [
+    "Kenney Food Kit·Quaternius 소품(CC0) 중 같은 물건만",
+    "위키미디어 공용 공개 도메인 사진 → tools/devloop/sketchify.py 로 스케치화 후 APPROVED_IMAGES.json 등록"
+   ],
+   "inboxPath": "assets/inbox/Goods/<good_id>.png"
   }
  ],
  "codeReferencesNotRegistered": [],

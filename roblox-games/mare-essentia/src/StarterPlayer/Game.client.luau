@@ -171,6 +171,7 @@ for id, spec in {
 	brazilwood = { "Cargo", "wood-log-a", Color3.fromRGB(160, 62, 48) }, sandalwood = { "Cargo", "wood-log-a", Color3.fromRGB(190, 150, 96) },
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
 	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel-open", Color3.fromRGB(110, 70, 40) },
+	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
 } do
 	GOOD_ICON[id] = spec
 end
