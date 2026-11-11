@@ -2108,6 +2108,46 @@ do
 	stH.day += 11
 	S.History.tick(stH)
 	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	-- 지식 활용 선택지
+	local insBad = nil
+	for _, ev in HE.Events do
+		if not ev.insight then insBad = ev.id .. ":none"
+		elseif not D.KnowledgeTree.ById[ev.insight.node] then insBad = ev.id .. ":" .. ev.insight.node
+		else
+			for _, cid in ev.insight.cards or {} do
+				if not D.Cards.ById[cid] then insBad = ev.id .. ":" .. cid end
+			end
+		end
+	end
+	check("역사: 모든 사건에 지식 활용 선택지가 있고 올바름", insBad == nil, insBad)
+	local stI = newState("england")
+	stI.history.pending = "great_fire"
+	stI.coins = 100
+	local viewI0 = S.View.build(stI, ctx).history.pending
+	check("역사: 지식이 없으면 활용 선택지는 잠김", viewI0.lockedInsight ~= nil and #viewI0.choices == 2)
+	check("역사: 지식 없이 활용 선택지 고르기 불가", select(1, act(stI, "HistoryChoose", { choice = 3 })) == false)
+	stI.reported.arch_cathedral = true
+	local viewI1 = S.View.build(stI, ctx).history.pending
+	check("역사: 지식을 이해하면 활용 선택지가 열림", viewI1.lockedInsight == nil and #viewI1.choices == 3 and viewI1.choices[3].insight == true)
+	local cI = stI.coins
+	check("역사: 지식 활용 선택으로 더 큰 보상", select(1, act(stI, "HistoryChoose", { choice = 3 })) == true and stI.coins == cI + 500)
+	local peopleBad = nil
+	for _, ev in HE.Events do
+		for _, pid in ev.people or {} do
+			local okP = false
+			for _, s in D.Scholars.Scholars do if s.id == pid then okP = true end end
+			if not okP then peopleBad = ev.id .. ":" .. pid end
+		end
+	end
+	check("역사: 얽힌 인물이 실존 학자 목록에 있음", peopleBad == nil, peopleBad)
+	local stB = newState("england")
+	stB.history.pending = "great_fire"
+	stB.reported.arch_cathedral = true
+	stB.scholarsMet = { wren = true }
+	local cB = stB.coins
+	act(stB, "HistoryChoose", { choice = 3 })
+	check("역사: 얽힌 인물을 만난 적이 있으면 보상 25% 증가", stB.coins == cB + 625, tostring(stB.coins - cB))
+	local viewB = S.View.build(newState("england"), ctx)
 	local stH2 = newState("england")
 	stH2.history.pending = "principia"
 	stH2.coins = 0

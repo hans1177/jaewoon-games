@@ -5367,6 +5367,19 @@ do
 			local hint = mkLabel(row, ch.hint or "", 12, COLORS.muted, false, 2)
 			hint.LayoutOrder = 2
 		end
+		if ev.lockedInsight then
+			mkLabel(win, string.format("🔒 %s (지식 필요: %s)", ev.lockedInsight.label, ev.lockedInsight.need), 12, COLORS.muted, false, 18)
+		end
+		if ev.relatedDisc or (ev.relatedGoods and ev.relatedGoods ~= "") then
+			mkLabel(win, string.format("이어진 것 — 학문: %s · 교역품: %s", ev.relatedDisc or "-", if ev.relatedGoods ~= "" then ev.relatedGoods else "-"), 12, COLORS.muted, false, 19)
+		end
+		if ev.people and #ev.people > 0 then
+			local names = {}
+			for _, pp in ev.people do
+				table.insert(names, pp.name .. (if pp.met then " (만난 적 있음)" else ""))
+			end
+			mkLabel(win, "얽힌 인물: " .. table.concat(names, ", ") .. " — 만난 적이 있으면 지식 활용 보상이 커져요", 12, COLORS.muted, false, 17)
+		end
 		local later = mkButton(win, "나중에 정하기", COLORS.grey, UDim2.new(1, 0, 0, 34), function()
 			dismissed[ev.id] = true
 			closePopup()

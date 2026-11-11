@@ -79,7 +79,30 @@ return function(D, S)
 			return false, "지금 닥친 사건이 없어요"
 		end
 		local idx = type(p) == "table" and p.choice
+		local bondName = nil
 		local ch = type(idx) == "number" and ev.choices[math.floor(idx)]
+		-- 마지막 번호는 지식 활용 선택지 (그 지식을 이해했을 때만)
+		if not ch and type(idx) == "number" and ev.insight and math.floor(idx) == #ev.choices + 1 then
+			if not D.KnowledgeTree.understood(state, ev.insight.node) then
+				return false, "그 지식을 이해해야 할 수 있어요"
+			end
+			ch = ev.insight
+			-- 얽힌 인물을 만난 적이 있으면 인연의 보너스 (코인·명성 25% 더)
+			for _, pid in ev.people or {} do
+				if state.scholarsMet and state.scholarsMet[pid] then
+					local sch
+					for _, s in D.Scholars.Scholars do
+						if s.id == pid then sch = s end
+					end
+					local copy = table.clone(ch)
+					copy.coins = if ch.coins and ch.coins > 0 then math.floor(ch.coins * 1.25) else ch.coins
+					copy.fame = if ch.fame and ch.fame > 0 then math.ceil(ch.fame * 1.25) else ch.fame
+					ch = copy
+					bondName = sch and sch.name or pid
+					break
+				end
+			end
+		end
 		if not ch then
 			return false, "잘못된 선택"
 		end
@@ -88,6 +111,9 @@ return function(D, S)
 			return false, string.format("%d코인이 필요해요", cost)
 		end
 		local msgs = { string.format("[%d년 · %s] %s", ev.year, ev.title, ch.label) }
+		if bondName then
+			table.insert(msgs, string.format("%s와(과)의 인연으로 보상이 25%% 커졌다", bondName))
+		end
 		local function apply(fx)
 			if fx.coins then
 				state.coins += fx.coins
@@ -148,7 +174,40 @@ return function(D, S)
 			for i, ch in ev.choices do
 				table.insert(choices, { index = i, label = ch.label, hint = ch.hint, cost = if ch.coins and ch.coins < 0 then -ch.coins else 0 })
 			end
-			out.pending = { id = ev.id, year = ev.year, title = ev.title, tag = ev.tag, text = ev.text, choices = choices }
+			local lockedInsight = nil
+			if ev.insight then
+				local need = D.Cards.ById[ev.insight.node]
+				local known = D.KnowledgeTree.understood(state, ev.insight.node)
+				if known then
+					table.insert(choices, { index = #ev.choices + 1, label = "★ " .. ev.insight.label, hint = ev.insight.hint, cost = if ev.insight.coins and ev.insight.coins < 0 then -ev.insight.coins else 0, insight = true })
+				else
+					lockedInsight = { label = ev.insight.label, need = need and need.name or ev.insight.node }
+				end
+			end
+			-- 인과 요약: 어느 학문·교역품과 이어진 사건인가
+			local goods, seenG = {}, {}
+			for _, c in ev.choices do
+				for _, g in (c.price and c.price.goods) or {} do
+					if not seenG[g] then
+						seenG[g] = true
+						table.insert(goods, D.Ports.Goods[g] and D.Ports.Goods[g].name or g)
+					end
+				end
+			end
+			local disc = nil
+			local node = ev.insight and D.KnowledgeTree.ById[ev.insight.node]
+			if node then
+				disc = D.KnowledgeTree.DisciplineById[node.disc].name
+			end
+			local people = {}
+			for _, pid in ev.people or {} do
+				for _, s in D.Scholars.Scholars do
+					if s.id == pid then
+						table.insert(people, { name = s.name, met = (state.scholarsMet and state.scholarsMet[pid]) == true })
+					end
+				end
+			end
+			out.pending = { id = ev.id, year = ev.year, title = ev.title, tag = ev.tag, text = ev.text, choices = choices, lockedInsight = lockedInsight, relatedDisc = disc, relatedGoods = table.concat(goods, ", "), people = people }
 		end
 		local seenList = {}
 		for id, idx in h.seen do
