@@ -228,5 +228,7 @@ test('워크플로: 플레이북·학습용 기록을 데이터 브랜치에서 
   assert.match(y, /brain-dataset\.jsonl\?ref=vibe-gym-data/);
   assert.match(y, /--playbook build\/brain-playbook\.json --dataset build\/brain-dataset\.jsonl/);
   assert.match(y, /-gt 2000000/);
-  assert.doesNotMatch(y, /git push -q origin main|--force/);
+  assert.equal((y.match(/git push/g) || []).length, 1);            // 푸시는 브랜치 한 곳뿐
+  assert.ok(y.includes('origin "$branch"'));
+  assert.ok(!y.includes('--force'));
 });
