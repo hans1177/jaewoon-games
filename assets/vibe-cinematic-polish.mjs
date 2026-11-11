@@ -70,7 +70,7 @@ export function createVibeShotComposer(THREE,camera,{subject=null}={}){
  const number=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
  return {
   update(dt,{subjectPosition=null,offset=[2,1.6,4],lookOffset=[0,1.4,0],damping=7,
-    lookDamping=9,deadZone=.02,framing=.5,leadSeconds=.12,maxLead=.7,reducedMotion=false}={}){
+    lookDamping=9,deadZone=.02,framing=.5,fieldOfView=null,leadSeconds=.12,maxLead=.7,reducedMotion=false}={}){
    if(!Number.isFinite(dt)||dt<=0)return;
    const step=Math.min(dt,.1),follow=1-Math.exp(-step*Math.max(.1,number(damping,7)));
    const gaze=1-Math.exp(-step*Math.max(.1,number(lookDamping,9)));
@@ -96,7 +96,10 @@ export function createVibeShotComposer(THREE,camera,{subject=null}={}){
     target.lerp(aim,gaze);
    }
    camera.lookAt(target);
-   const requestedFov=Math.min(55,Math.max(23.5,Math.min(1,Math.max(.1,number(framing,.5)))*35+20));
+   // [카메라] 장르별 넓은 화각은 명시적 설정일 때만 적용해 기존 프레이밍과 호환한다.
+   const requestedFov=Number.isFinite(fieldOfView)
+    ?Math.max(20,Math.min(95,fieldOfView))
+    :Math.min(55,Math.max(23.5,Math.min(1,Math.max(.1,number(framing,.5)))*35+20));
    const currentFov=number(camera.fov,45);
    const nextFov=reducedMotion?requestedFov:lerp(currentFov,requestedFov,follow);
    if(Math.abs(nextFov-currentFov)>.001){
