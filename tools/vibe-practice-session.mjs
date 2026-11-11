@@ -179,6 +179,8 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         priorAttempts:actor.priorRigAttempts,eligibleActors:actorSources.length,
         measured:true,rigPass:verdict.pass,bones:verdict.stats.bones,meshParts:verdict.stats.meshes,
         rigFailures:verdict.failures.slice(0,12),
+        // [수리 근거] 원본의 분리 메쉬·바닥 최저점만 기록한다. 임의 원점 이동/자동 본 연결 금지.
+        rigDiagnosis:verdict.diagnostics,
         productionBlockers:verdict.productionBlockers.slice(0,12),
         clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
         clipNamePresent:clips.present,clipNameMissing:clips.missing,

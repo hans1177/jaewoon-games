@@ -153,6 +153,8 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             curveInspectedClips:cleanCount(row.curveInspectedClips),
             validMovingClips:cleanCount(row.validMovingClips),
             movingBoneCurves:cleanCount(row.movingBoneCurves),
+            lastLowestMesh:String(row.lastLowestMesh||'').slice(0,90),
+            lastBoundGroundOffsetRatio:Number.isFinite(row.lastBoundGroundOffsetRatio)?row.lastBoundGroundOffsetRatio:null,
             lastFailures:Array.isArray(row.lastFailures)?
               row.lastFailures.slice(0,8).map(x=>String(x).slice(0,100)):[],
             lastSession:String(row.lastSession||'').slice(0,40)
@@ -185,6 +187,14 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
               study.dynamicClipPresent:[]).filter(x=>
                 ['IDLE','MOVE','ATTACK','HIT','DEATH'].includes(x)).slice(0,5),
             failures:faults.slice(0,8),
+            // [최신 리그 원인] 최저점과 본 연결 최저점의 차이만 보존. 불합격 자산 승격 없음.
+            groundEvidence:{
+              lowestMesh:String(study.rigDiagnosis?.lowestMesh||'').slice(0,90)||null,
+              lowestMeshMinZ:Number.isFinite(study.rigDiagnosis?.lowestMeshMinZ)?study.rigDiagnosis.lowestMeshMinZ:null,
+              lowestBoundMesh:String(study.rigDiagnosis?.lowestBoundMesh||'').slice(0,90)||null,
+              boundGroundOffsetRatio:Number.isFinite(study.rigDiagnosis?.boundGroundOffsetRatio)?study.rigDiagnosis.boundGroundOffsetRatio:null,
+              orphansBelowBound:Array.isArray(study.rigDiagnosis?.orphanMeshesBelowBoundGround)?study.rigDiagnosis.orphanMeshesBelowBoundGround.slice(0,8).map(x=>String(x).slice(0,90)):[]
+            },
             motionCurvesMeasured:study.motionCurvesMeasured===true&&
               cleanCount(study.curveInspectedClips)>0,
             nativeRuntimeVerified:false,gameApplied:false
@@ -199,6 +209,8 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             curveInspectedClips:latestRig.curveInspectedClips,
             validMovingClips:latestRig.validMovingClips,
             movingBoneCurves:latestRig.movingBoneCurves,
+            lastLowestMesh:latestRig.groundEvidence.lowestMesh||'',
+            lastBoundGroundOffsetRatio:latestRig.groundEvidence.boundGroundOffsetRatio,
             lastFailures:latestRig.failures,lastSession:String(session.at||'').slice(0,40)
           };
         }

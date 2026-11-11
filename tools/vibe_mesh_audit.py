@@ -84,6 +84,9 @@ for o in meshes:
         'shapeKeys': len(me.shape_keys.key_blocks) if me.shape_keys else 0,
         'primitiveLike': (len(me.vertices), len(me.polygons)) in PRIMITIVE_SIGNATURES,
         'materials': len(me.materials),
+        # [바닥 원인 증거] 오브젝트별 월드 공간 최저점. 품질 통과 판정에는 사용하지 않는다.
+        'minZ': round(bb[0].z, 5) if bb else None,
+        'maxZ': round(bb[1].z, 5) if bb else None,
         # 뼈에 묶이지 않은 메쉬: 애니메이션되지 않고 제자리에 남는다
         'orphan': not (has_armature_mod and n_groups) and not bone_parented,
     })
@@ -97,10 +100,33 @@ for lo, hi in boxes.values():
         all_hi[i] = max(all_hi[i], hi[i])
 height = max(1e-6, all_hi.z - all_lo.z)
 
+# [접지 증거] 전체 최저점과 실제 리그에 연결된 메쉬 최저점을 분리한다.
+# 보조/독립 메쉬가 바닥을 끌어내렸는지 측정할 뿐, 불합격 기준은 절대 완화하지 않는다.
+all_bottoms = sorted((box[0].z, name) for name, box in boxes.items())
+bound_names = {row['name'] for row in rows if not row['orphan']}
+bound_bottoms = sorted((z, name) for z, name in all_bottoms if name in bound_names)
+lowest = all_bottoms[0] if all_bottoms else None
+bound_lowest = bound_bottoms[0] if bound_bottoms else None
+ground_evidence = {
+    'lowestMesh': lowest[1] if lowest else None,
+    'lowestMeshMinZ': round(lowest[0], 5) if lowest else None,
+    'lowestBoundMesh': bound_lowest[1] if bound_lowest else None,
+    'lowestBoundMeshMinZ': round(bound_lowest[0], 5) if bound_lowest else None,
+    'boundGroundOffsetRatio': round(bound_lowest[0] / height, 4) if bound_lowest else None,
+    'orphanMeshesBelowBoundGround': [
+        name for z, name in all_bottoms
+        if name not in bound_names and bound_lowest and z < bound_lowest[0] - 0.03 * height
+    ][:16],
+}
+
 # 떠 있는 부품: 가장 가까운 다른 메쉬와의 간격
 for r in rows:
-    others = [b for n, b in boxes.items() if n != r['name']]
-    r['nearestGap'] = round(min((gap(boxes[r['name']], b) for b in others), default=0.0), 5) if r['name'] in boxes else None
+    neighbors = sorted(
+        (gap(boxes[r['name']], box), name)
+        for name, box in boxes.items() if name != r['name']
+    ) if r['name'] in boxes else []
+    r['nearestGap'] = round(neighbors[0][0], 5) if neighbors else (0.0 if r['name'] in boxes else None)
+    r['nearestMesh'] = neighbors[0][1] if neighbors else None
     r['nearestGapRatio'] = round(r['nearestGap'] / height, 5) if r['nearestGap'] is not None else None
 
 # 좌우 대칭: L_/R_ 쌍의 크기와 X 위치가 거울상인지
@@ -183,6 +209,7 @@ result = {
                    'boneNames': [b.name for b in a.data.bones]} for a in arms],
     'height': round(height, 4),
     'groundOffsetRatio': round(all_lo.z / height, 4),
+    'groundEvidence': ground_evidence,
     'meshes': rows,
     'symmetry': pairs,
     'actions': acts,
