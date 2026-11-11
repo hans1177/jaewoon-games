@@ -1074,7 +1074,7 @@ function PortScene.build(info, onFacility)
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-10, 0, 28), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
 		{ name = "주점", tab = "quest", pos = Vector3.new(-10, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
 		{ name = "항만청", tab = "route", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
-		{ name = "은행", tab = "harbor", pos = Vector3.new(-34, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
+		{ name = "은행", tab = "harbor", pos = Vector3.new(-34, 0, 28), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
 		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-34, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
 		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-58, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
 		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-58, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
@@ -1085,6 +1085,21 @@ function PortScene.build(info, onFacility)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
 			sign(folder, body, f.name, nil, f.floors * 3 + 6)
+			-- 은행은 항구 발전도에 따라 커진다: 3단계 기둥, 4단계 깃발, 5단계 금괴 더미
+			if f.key == "bank" then
+				if sceneLevel >= 3 then
+					for _, dx in { -5, 0, 5 } do
+						importedModel(folder, "Terrain", "column", Vector3.new(f.pos.X + dx, 0, doorZ + (if f.pos.Z > 0 then -1.5 else 1.5)), 6, false)
+					end
+				end
+				if sceneLevel >= 4 then
+					importedModel(folder, "Castle", "flag-banner-long", Vector3.new(f.pos.X + 8, 0, doorZ), 9, false)
+					importedModel(folder, "Castle", "flag-banner-long", Vector3.new(f.pos.X - 8, 0, doorZ), 9, false)
+				end
+				if sceneLevel >= 5 then
+					importedModel(folder, "Cargo", "gold-bars-stack-large", Vector3.new(f.pos.X + 4, 0, doorZ + (if f.pos.Z > 0 then -3 else 3)), 2.4, false)
+				end
+			end
 			prompt(folder, Vector3.new(f.pos.X, 3, doorZ), f.name, "들어가기", f.tab, onFacility)
 			villager(folder, Vector3.new(f.pos.X + 3, 0, doorZ), if f.pos.Z > 0 then 0 else math.pi, Color3.fromRGB(rng:NextInteger(60, 160), rng:NextInteger(50, 120), rng:NextInteger(40, 110)), rng, KEEPER_ROLE[f.name] or "Knight")
 		end

@@ -604,7 +604,7 @@ return function(D, S)
 			S.Facility.contractExpired(state)
 			view.facilities = {}
 			for _, kind in { "bank", "guild", "palace", "harbormaster" } do
-				if D.Facilities.has(kind, port.id) then
+				if D.Facilities.has(kind, port.id, S.Harbor.level(state)) then
 					table.insert(view.facilities, kind)
 				end
 			end
@@ -612,8 +612,10 @@ return function(D, S)
 				deposit = state.bank.deposit,
 				loan = state.bank.loan,
 				limit = S.Facility.loanLimit(state),
-				depositRate = D.Facilities.BANK.DEPOSIT_RATE,
-				loanRate = D.Facilities.BANK.LOAN_RATE,
+				depositRate = D.Facilities.bankAt(S.Harbor.level(state)).depositRate,
+				loanRate = D.Facilities.bankAt(S.Harbor.level(state)).loanRate,
+				name = D.Facilities.bankAt(S.Harbor.level(state)).name,
+				level = S.Harbor.level(state),
 			}
 			view.guild = { offers = S.Facility.offers(state), contract = nil }
 			if state.contract then

@@ -1990,6 +1990,11 @@ do
 	check("deposit interest after 60 days", st.bank.deposit > 5000 - 100, st.bank.deposit)
 	check("bad amount rejected", not act(st, "Deposit", { amount = -5 }) and not act(st, "Deposit", { amount = 0 / 0 }))
 	local st2 = at("dublin")
+	do
+		local F = D.Facilities
+		check("은행: 발전도 3부터 어느 항구에나 생김", not F.has("bank", "dublin", 2) and F.has("bank", "dublin", 3) and F.has("bank", "london", 1))
+		check("은행: 단계별 이자·한도 개선", F.bankAt(5).depositRate > F.bankAt(1).depositRate and F.bankAt(5).loanRate < F.bankAt(1).loanRate and F.bankAt(5).loanMult == 3 and F.bankAt(1).name == "환전상")
+	end
 	check("no bank at dublin", not act(st2, "Deposit", { amount = 10 }))
 	st2 = at("london")
 	st2.fame = 0

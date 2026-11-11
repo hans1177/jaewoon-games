@@ -5,8 +5,12 @@ return function(D, S)
 	local F = D.Facilities
 	local handlers = {}
 
+	local function hereLevel(state)
+		return S.Harbor.level(state)
+	end
+
 	local function hasHere(state, kind)
-		return F.has(kind, state.portId)
+		return F.has(kind, state.portId, hereLevel(state))
 	end
 
 	-- 은행 --------------------------------------------------------------
@@ -20,14 +24,16 @@ return function(D, S)
 		end
 		local periods = math.floor((state.day - b.lastDay) / F.BANK.PERIOD_DAYS)
 		if periods > 0 then
-			b.deposit = math.floor(b.deposit * (1 + F.BANK.DEPOSIT_RATE) ^ periods)
-			b.loan = math.ceil(b.loan * (1 + F.BANK.LOAN_RATE) ^ periods)
+			local bk = F.bankAt(if hasHere(state, "bank") then hereLevel(state) else 1)
+			b.deposit = math.floor(b.deposit * (1 + bk.depositRate) ^ periods)
+			b.loan = math.ceil(b.loan * (1 + bk.loanRate) ^ periods)
 			b.lastDay += periods * F.BANK.PERIOD_DAYS
 		end
 	end
 
 	local function loanLimit(state)
-		return F.BANK.LOAN_BASE + state.fame * F.BANK.LOAN_PER_FAME
+		local mult = F.bankAt(if hasHere(state, "bank") then hereLevel(state) else 1).loanMult
+		return math.floor((F.BANK.LOAN_BASE + state.fame * F.BANK.LOAN_PER_FAME) * mult)
 	end
 
 	local function parse(p)
