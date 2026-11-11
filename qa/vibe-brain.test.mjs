@@ -247,3 +247,18 @@ test('모델 이름이 바뀌어도 목록에서 쓸 모델을 스스로 고른�
   assert.equal(o.at(-1), 'openrouter/free');
   assert.ok(!o.includes('paid/model') && !o.some(x => /lyria/.test(x)));
 });
+
+test('수정안의 검색 문구가 어긋나면 오류를 알려 주고 한 번 다시 받아 적용한다', async () => {
+  const root = mkRoot({ [GAME]: SRC });
+  const calls = [];
+  const llm = async prompt => {
+    calls.push(prompt);
+    const search = calls.length === 1 ? '12| local p = ui.target.AbsolutePosition' : 'local p = ui.target.AbsolutePosition';
+    return { provider: 'fake', trace: [], text: JSON.stringify({ summary: 'nil 방어', edits: [{ file: GAME, search, replace: 'if not ui.target then return nil end\n\tlocal p = ui.target.AbsolutePosition' }] }) };
+  };
+  const r = await runBrain({ orders: [order], ledger: emptyBrainLedger(), root, llm });
+  assert.equal(r.ok, true);
+  assert.equal(calls.length, 2);
+  assert.match(calls[1], /PREVIOUS ANSWER WAS REJECTED: SEARCH_MATCHES_0/);
+  assert.ok(LIMITS.contextChars <= 12000);
+});
