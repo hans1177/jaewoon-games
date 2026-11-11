@@ -904,6 +904,29 @@ test('Studio console classification blocks errors and critical boot warnings whi
   assert.equal(classifyStudioConsoleOutput(unknownGameActionYield).errors.length,1);
 });
 
+// [스튜디오 실측 → 기존 복구] 실제 콘솔의 스크립트·행 정보만 소스 책임 후보로 남긴다.
+test('Studio console preserves official Lua traceback locations without inventing repository paths',()=>{
+  const runtimeMessage="ServerScriptService.Inventory:27: attempt to index nil. Script 'ServerScriptService.Inventory', Line 27";
+  const input={content:[{type:'text',text:JSON.stringify({
+    message:runtimeMessage,messageType:3
+  })}]};
+  const report=classifyStudioConsoleOutput(input);
+  assert.equal(report.errors.length,1);
+  assert.equal(report.errors[0].type,'studio-console-error');
+  assert.deepEqual(report.errors[0].sourceLocation,{
+    studioPath:'ServerScriptService.Inventory',
+    line:27,runtimeObserved:true,repositoryPathVerified:false
+  });
+  const unrelated=classifyStudioConsoleOutput({
+    content:[{type:'text',text:JSON.stringify({
+      message:'some error without a script location',messageType:3
+    })}]
+  });
+  assert.equal(unrelated.errors.length,1);
+  assert.equal(unrelated.errors[0].sourceLocation,undefined);
+  assert.equal(report.structuredEntryCount,1);
+});
+
 test('Studio console parser accepts line-delimited structured console output',()=>{
   const entries=collectStudioConsoleEntries({
     content:[{type:'text',text:'{"message":"hello","messageType":0}\n{"message":"warn","messageType":"MessageWarning"}'}]
