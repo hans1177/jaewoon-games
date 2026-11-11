@@ -105,7 +105,73 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
     writeJson(path.join(outDir, file), sample);
     written += 1;
   }
-  return { sourceKind: 'licensed-reference', taskType: roblox ? 'roblox' : 'unity', candidateCount: rows.length, written };
+  // 메인: 로블록스 내부 루아우 복구 과제의 원본 정답만 학습한다.
+  // 공개 라이브러리의 원본 코드는 가져오지 않고, 숨은 테스트는 출력물에 포함하지 않는다.
+  let codePracticeWritten = 0;
+  if (roblox) {
+    if (doc.authority !== 'PRACTICE_ONLY' || doc.synthetic !== true || doc.runtimePromotionAllowed !== false ||
+        doc.verificationScope !== 'STANDALONE_LUAU_LOGIC_ONLY' || doc.nativeRuntimeVerified !== false) {
+      throw new Error('Roblox code practice authority mismatch');
+    }
+    const codeIds = new Set();
+    for (const drill of (doc.drills ?? []).slice(0, Math.max(0, max))) {
+      const id = clean(drill?.id);
+      const broken = clean(drill?.broken);
+      const reference = clean(drill?.reference);
+      if (!/^[a-z0-9-]{1,80}$/.test(id) || codeIds.has(id) ||
+          !clean(drill?.scenario) || !broken.startsWith('return function') ||
+          !reference.startsWith('return function') ||
+          Buffer.byteLength(reference) > 12_000 ||
+          !Array.isArray(drill?.tests) || drill.tests.length < 2 ||
+          !Array.isArray(drill?.feedbackTests) || drill.feedbackTests.length < 1) {
+        throw new Error('invalid original Roblox Luau practice drill: ' + id);
+      }
+      codeIds.add(id);
+      writeJson(path.join(outDir, 'roblox-code-' + id + '.json'), {
+        version: 1,
+        instruction: 'Roblox Luau 독립 코드 복구 연습: ' + clean(drill.scenario),
+        input: broken,
+        output: reference,
+        sampleKind: 'CODE_IMPLEMENTATION',
+        familyId: 'roblox-practice:' + id,
+        taskType: 'roblox',
+        difficulty: 'roblox-release',
+        lifecycle: 'active',
+        teacher: true,
+        synthetic: true,
+        practiceOnly: true,
+        sourceKind: 'teacher',
+        runtimePromotionAllowed: false,
+        project: 'roblox-original-practice',
+        teacherId: 'REPOSITORY_ORIGINAL_LUAU_PRACTICE',
+        sourceRevision: 'company-learning/roblox-practice.json#drills/' + id,
+        provenance: {
+          sourceKind: 'teacher',
+          sourceRevision: 'company-learning/roblox-practice.json#drills/' + id,
+          teacherId: 'REPOSITORY_ORIGINAL_LUAU_PRACTICE',
+          familyId: 'roblox-practice:' + id,
+          exerciseAuthority: 'STANDALONE_LUAU_ONLY_NOT_STUDIO_RUNTIME'
+        },
+        qa: {
+          teacherReview: 'PASS',
+          licenseCheck: 'NOT_APPLICABLE',
+          independentQa: 'NOT_APPLICABLE',
+          browserQa: 'NOT_APPLICABLE',
+          runtime: 'NOT_APPLICABLE'
+        },
+        verification: {
+          practiceOnly: true,
+          nativeRuntimeVerified: false,
+          productionEvidence: false,
+          hiddenTestsExcluded: true,
+          referenceDerivedFrom: 'REPOSITORY_OWNED_ORIGINAL_LUAU_EXERCISE',
+          promotionAllowed: false
+        }
+      });
+      codePracticeWritten++;
+    }
+  }
+  return { sourceKind: 'licensed-reference', taskType: roblox ? 'roblox' : 'unity', candidateCount: rows.length, written, codePracticeWritten };
 }
 
 function parseArgs(argv) {

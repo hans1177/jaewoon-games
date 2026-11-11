@@ -120,7 +120,29 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
     const built=buildLicensedReferenceSamples({drillsFile:file,outDir:samples});
     assert.equal(built.taskType,'roblox');
     assert.equal(built.written,25);
+    assert.equal(built.codePracticeWritten,14);
+    const codeSamples=fs.readdirSync(samples).filter(name=>name.startsWith('roblox-code-')&&name.endsWith('.json'));
+    assert.equal(codeSamples.length,14);
+    const original=JSON.parse(fs.readFileSync(file,'utf8'));
+    for(const name of codeSamples){
+      const row=JSON.parse(fs.readFileSync(path.join(samples,name),'utf8'));
+      const drill=original.drills.find(value=>row.familyId==='roblox-practice:'+value.id);
+      assert.ok(drill);
+      assert.equal(row.taskType,'roblox');
+      assert.equal(row.sampleKind,'CODE_IMPLEMENTATION');
+      assert.equal(row.sourceKind,'teacher');
+      assert.equal(row.synthetic,true);
+      assert.equal(row.runtimePromotionAllowed,false);
+      assert.equal(row.output,drill.reference);
+      assert.equal(row.verification.hiddenTestsExcluded,true);
+      for(const hidden of [...drill.tests,...drill.feedbackTests]){
+        assert.ok(!JSON.stringify(row).includes(JSON.stringify(hidden).slice(1,-1)));
+      }
+    }
     const manifest=buildPracticeDataset({inputDir:samples,outDir:dataset,minSamples:20,taskType:'roblox'});
+    assert.ok(manifest.stats.codeImplementationTrain>=10);
+    assert.ok(manifest.stats.codeImplementationEval>=1);
+    assert.deepEqual(manifest.sourceKinds,['licensed-reference','teacher']);
     assert.equal(manifest.targetTaskType,'roblox');
     assert.equal(manifest.authority,'PRACTICE_ONLY');
     assert.equal(manifest.runtimePromotionAllowed,false);
@@ -129,15 +151,25 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
     assert.ok(manifest.stats.eval>=2);
     const records=[...fs.readFileSync(path.join(dataset,'train.jsonl'),'utf8').trim().split('\n'),
       ...fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n')].map(JSON.parse);
-    assert.equal(records.length,25);
+    assert.equal(records.length,39);
+    const train=fs.readFileSync(path.join(dataset,'train.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
+    const evalRows=fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
+    assert.equal(train.some(a=>evalRows.some(b=>a.familyId===b.familyId)),false);
     for(const row of records){
       assert.equal(row.taskType,'roblox');
       assert.equal(row.practiceOnly,true);
       assert.equal(row.runtimePromotionAllowed,false);
-      assert.equal(row.qa.licenseCheck,'PASS');
-      assert.ok(['MIT','APACHE-2.0'].includes(row.provenance.licenseSpdx));
-      assert.match(row.provenance.commit,/^[a-f0-9]{40}$/i);
-      assert.ok(row.provenance.sourcePaths.length>0);
+      if(row.sourceKind==='licensed-reference'){
+        assert.equal(row.qa.licenseCheck,'PASS');
+        assert.ok(['MIT','APACHE-2.0'].includes(row.provenance.licenseSpdx));
+        assert.match(row.provenance.commit,/^[a-f0-9]{40}$/i);
+        assert.ok(row.provenance.sourcePaths.length>0);
+      }else{
+        assert.equal(row.sourceKind,'teacher');
+        assert.equal(row.synthetic,true);
+        assert.equal(row.sampleKind,'CODE_IMPLEMENTATION');
+        assert.equal(row.qa.runtime,'NOT_APPLICABLE');
+      }
     }
     const trainer=fs.readFileSync('tools/vibe2-practice-train.py','utf8');
     assert.match(trainer,/args\.task_type not in \('unity', 'roblox'\)/);

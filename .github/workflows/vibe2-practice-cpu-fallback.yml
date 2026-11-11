@@ -112,11 +112,15 @@ jobs:
             --drills company-learning/roblox-practice.json \
             --out "$samples" --max 96
           sample_count=$(find "$samples" -maxdepth 1 -type f -name 'roblox-ref-*.json' | wc -l | tr -d ' ')
+          code_count=$(find "$samples" -maxdepth 1 -type f -name 'roblox-code-*.json' | wc -l | tr -d ' ')
           test "$sample_count" -eq 25
+          test "$code_count" -eq 14
           node tools/vibe2-practice-dataset.mjs \
             --input "$samples" --out "$dataset" --min-samples 20 --task-type roblox
+          node --input-type=module -e 'import fs from "node:fs";const m=JSON.parse(fs.readFileSync(process.argv[1]));if(m.targetTaskType!=="roblox"||m.authority!=="PRACTICE_ONLY"||m.runtimePromotionAllowed!==false||m.stats.codeImplementationTrain<10||m.stats.codeImplementationEval<1)throw Error("ROBLOX_IMPLEMENTATION_TRAINING_DATASET_NOT_READY")' "$dataset/manifest.json"
           node --test qa/vibe2-licensed-reference-learning.test.mjs
           echo "ROBLOX_LICENSED_REFERENCE_SAMPLES=$sample_count"
+          echo "ROBLOX_ORIGINAL_LUAU_IMPLEMENTATION_SAMPLES=$code_count"
           echo 'ROBLOX_PRACTICE_AUTHORITY=PRACTICE_ONLY'
           echo 'ROBLOX_STUDIO_RUNTIME_VERIFIED=NO'
           echo 'ROBLOX_MODEL_AUTO_PROMOTION=NO'
