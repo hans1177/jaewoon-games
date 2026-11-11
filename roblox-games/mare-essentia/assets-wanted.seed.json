@@ -74,6 +74,21 @@
   ]
  },
  {
+  "id": "trade-goods-3d-models",
+  "kind": "Cargo",
+  "purpose": "게임의 현재 교역품 전종(Ports.luau)을 기존 승인 CC0 실물 3D와 정확히 대조한다. 부족 품목은 원본 후보·라이선스·원본 해시·Roblox Universe 권한·동일 빌드 시각검증 확보 전까지 미완성으로 둔다.",
+  "status": "missing-models-auto-practice",
+  "candidates": [
+   "검증된 회사 라이브러리와 현행 Cargo 실물 메시의 동일 품목 우선 사용",
+   "일치 품목이 없으면 CC0 실물 원본 확보·수정 후 동일 품목만 사용(기본 도형 파츠·임의 대체 금지)",
+   "기존 Vibe 자산 제작·디자인 경쟁·실제 Roblox 동일 버전 화면 검사만 사용"
+  ],
+  "inboxPath": "assets/inbox/Cargo/<good_id>.glb",
+  "autoPractice": "EXISTING_ASSET_REGISTER_WORKFLOW_AND_VIBE_ASSET_DEVELOPMENT",
+  "replacementGate": "LICENSE_SOURCE_HASH_UNIVERSE_PERMISSION_NATIVE_VISUAL_RUNTIME",
+  "noNewPipeline": true
+ },
+ {
   "id": "naval-melee-audio",
   "kind": "Audio",
   "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
