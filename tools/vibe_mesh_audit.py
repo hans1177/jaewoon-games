@@ -24,8 +24,55 @@ for _a in bpy.data.objects:
         _a.data.pose_position = 'REST'
 bpy.context.view_layer.update()
 dg = bpy.context.evaluated_depsgraph_get()
-meshes = [o for o in bpy.data.objects if o.type == 'MESH']
+imported_meshes = [o for o in bpy.data.objects if o.type == 'MESH']
 arms = [o for o in bpy.data.objects if o.type == 'ARMATURE']
+
+# [원본 대조] Blender glTF 임포터가 뼈 표시용 Icosphere(42 정점/80 면)를
+# 파일에 없는 별도 메쉬로 생성한다. 이 물체를 원본 결함으로 판정하면
+# 독립 메쉬/접지 오검출이 된다. 실제 GLB 씬 메쉬 이름과 개수의 완전 일치,
+# 원본 스킨/모션 존재, 비부모/비가중치 조건을 전부 만족할 때만 제외한다.
+source_mesh_names = []
+source_mesh_count = None
+excluded_import_helpers = []
+if args.input.lower().endswith('.glb') and arms:
+    try:
+        from pathlib import Path
+        blob = Path(args.input).read_bytes()
+        if len(blob) < 28 or len(blob) > 256 * 1024 * 1024:
+            raise ValueError('INVALID_GLB_SIZE')
+        magic, version, total = struct.unpack_from('<4sII', blob)
+        if magic != b'glTF' or version != 2 or total != len(blob):
+            raise ValueError('INVALID_GLB_HEADER')
+        json_len, json_type = struct.unpack_from('<I4s', blob, 12)
+        if json_type != b'JSON' or json_len <= 0 or json_len > len(blob) - 20:
+            raise ValueError('INVALID_GLB_JSON_CHUNK')
+        doc = json.loads(blob[20:20 + json_len].decode('utf8').rstrip(' \x00'))
+        if doc.get('skins') and doc.get('animations') and doc.get('scenes'):
+            nodes = doc.get('nodes', [])
+            source_mesh_names = [str(n.get('name') or doc['meshes'][n['mesh']].get('name') or '')
+                                 for n in nodes if isinstance(n.get('mesh'), int)]
+            source_mesh_count = len(source_mesh_names)
+            phantom = [o for o in imported_meshes if o.name == 'Icosphere' and
+                       len(o.data.vertices) == 42 and len(o.data.polygons) == 80 and
+                       o.parent is None and not o.vertex_groups and not o.modifiers and
+                       o.data.shape_keys is None]
+            real_names = sorted(o.name for o in imported_meshes if o not in phantom)
+            if (len(phantom) == 1 and len(imported_meshes) == len(source_mesh_names) + 1 and
+                real_names == sorted(source_mesh_names) and
+                all(n.get('name') != 'Icosphere' for n in nodes) and
+                all(me.get('name') != 'Icosphere' for me in doc.get('meshes', []))):
+                excluded_import_helpers = phantom
+    except (ValueError, TypeError, KeyError, IndexError, OSError, struct.error):
+        # 원본과 동일하다는 증거가 불완전하면 메쉬를 하나도 제외하지 않는다.
+        pass
+meshes = [o for o in imported_meshes if o not in excluded_import_helpers]
+import_helper_evidence = {
+    'verified': bool(excluded_import_helpers),
+    'sourceMeshNodes': source_mesh_count,
+    'importedMeshObjects': len(imported_meshes),
+    'excludedImportOnlyMeshes': [o.name for o in excluded_import_helpers],
+}
+
 
 # 기본 UV 구/큐브/원기둥이 만드는 정점·면 수 (bpy.ops.mesh.primitive_* 기본값과 흔한 변형)
 PRIMITIVE_SIGNATURES = {(8, 6), (362, 384), (482, 512), (114, 112), (26, 24), (42, 40), (50, 48), (98, 96), (32, 34), (64, 66)}
@@ -211,132 +258,24 @@ result = {
     'height': round(height, 4),
     'groundOffsetRatio': round(all_lo.z / height, 4),
     'groundEvidence': ground_evidence,
+    'importHelperEvidence': import_helper_evidence,
     'meshes': rows,
     'symmetry': pairs,
     'actions': acts,
     'triangles': sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in meshes),
 }
-# [격리 수리 연습] 원본은 읽기만 한다. 메쉬 한 개가 독립된 바닥 외부 보조체임이
-# 계측으로 입증된 경우에만 별도 GLB 후보를 만들고, 실제 합격은 재검사에 맡긴다.
-# Icosphere라는 이름만으로 임의 삭제하지 않는다. 게임 적용/승격 권한은 없다.
+# [실측 안전장치] 원본에 없는 임포터 보조 메쉬는 측정에서만 제외한다.
+# 검증되지 않은 실제 GLB 노드를 자동 삭제/재내보내기 하지 않는다.
+# 수리 후보를 억지로 만들거나 애니메이션을 잃게 하는 경로는 차단한다.
 if args.candidate_output:
-    candidate = {'attempted': True, 'created': False, 'reason': 'UNSAFE_OR_UNPROVEN_STRAY_MESH',
-                 'originalPreserved': True, 'nativeRuntimeVerified': False,
-                 'gameApplied': False, 'productionPromotionAllowed': False}
-    orphan_rows = [r for r in rows if r['orphan']]
-    suspected = orphan_rows[0] if len(orphan_rows) == 1 else None
-    eligible = (
-        len(arms) == 1 and suspected is not None and
-        suspected['name'] == 'Icosphere' and lowest and
-        lowest[1] == suspected['name'] and bound_lowest is not None and
-        suspected['name'] in ground_evidence['orphanMeshesBelowBoundGround'] and
-        len(result['actions']) > 0
-    )
-    if eligible:
-        orphan_obj = bpy.data.objects.get(suspected['name'])
-        eligible = (orphan_obj is not None and orphan_obj.type == 'MESH' and
-                    not orphan_obj.vertex_groups and not orphan_obj.modifiers and
-                    not orphan_obj.data.shape_keys and orphan_obj.parent is None)
-    if eligible:
-        from pathlib import Path
-        target = Path(args.candidate_output).resolve()
-        origin = Path(args.input).resolve()
-        if origin.suffix.lower() != '.glb' or target == origin or target.suffix.lower() != '.glb' or not target.parent.is_dir() or target.exists():
-            candidate['reason'] = 'INVALID_OR_EXISTING_CANDIDATE_PATH'
-        else:
-            try:
-                # [원본 애니메이션 보존] Blender GLB 재수출은 클립을 잃을 수 있다.
-                # 검증된 독립 노드 하나만 GLB 장면 그래프에서 제외한다.
-                # BIN 데이터, 애니메이션 sampler/channel, 스킨 가중치는 재작성하지 않는다.
-                blob = origin.read_bytes()
-                if len(blob) < 28 or len(blob) > 256 * 1024 * 1024:
-                    raise ValueError('INVALID_GLB_SIZE')
-                magic, version, total = struct.unpack_from('<4sII', blob)
-                if magic != b'glTF' or version != 2 or total != len(blob):
-                    raise ValueError('INVALID_GLB_HEADER')
-                chunks = []
-                pos = 12
-                while pos < len(blob):
-                    if pos + 8 > len(blob):
-                        raise ValueError('INVALID_GLB_CHUNK_HEADER')
-                    size, kind = struct.unpack_from('<I4s', blob, pos)
-                    pos += 8
-                    if size % 4 or pos + size > len(blob):
-                        raise ValueError('INVALID_GLB_CHUNK_SIZE')
-                    chunks.append((kind, blob[pos:pos + size]))
-                    pos += size
-                if len(chunks) != 2 or chunks[0][0] != b'JSON' or chunks[1][0] != b'BIN\x00':
-                    raise ValueError('UNSUPPORTED_GLB_CHUNKS')
-                doc = json.loads(chunks[0][1].decode('utf8').rstrip(' \x00'))
-                safe_extensions = {'KHR_materials_unlit', 'KHR_texture_transform',
-                                   'KHR_materials_pbrSpecularGlossiness', 'KHR_materials_emissive_strength',
-                                   'KHR_materials_specular', 'KHR_materials_clearcoat'}
-                if set(doc.get('extensionsUsed', [])) - safe_extensions:
-                    raise ValueError('UNKNOWN_NODE_INDEX_EXTENSION')
-                nodes = doc.get('nodes', [])
-                matches = [i for i, n in enumerate(nodes) if n.get('name') == suspected['name']]
-                if len(matches) != 1:
-                    raise ValueError('HELPER_GLB_NODE_NOT_UNIQUE')
-                victim = matches[0]
-                node = nodes[victim]
-                if 'mesh' not in node or 'skin' in node or node.get('children'):
-                    raise ValueError('HELPER_IS_SKINNED_OR_PARENT')
-                if sum(n.get('mesh') == node['mesh'] for n in nodes) != 1:
-                    raise ValueError('HELPER_MESH_SHARED')
-                if any(victim in n.get('children', []) for n in nodes):
-                    raise ValueError('HELPER_HAS_PARENT_NODE')
-                scenes = doc.get('scenes', [])
-                if sum(scene.get('nodes', []).count(victim) for scene in scenes) != 1:
-                    raise ValueError('HELPER_NOT_SINGLE_SCENE_ROOT')
-                skins = doc.get('skins', [])
-                if any(victim in skin.get('joints', []) or skin.get('skeleton') == victim for skin in skins):
-                    raise ValueError('HELPER_REFERENCED_BY_SKIN')
-                animations = doc.get('animations', [])
-                if not animations or not sum(len(anim.get('channels', [])) for anim in animations):
-                    raise ValueError('NO_ORIGINAL_ANIMATION_CHANNELS')
-                for anim in animations:
-                    for channel in anim.get('channels', []):
-                        index = channel.get('target', {}).get('node')
-                        if not isinstance(index, int) or index == victim:
-                            raise ValueError('HELPER_OR_UNSUPPORTED_ANIMATION_TARGET')
-                if abs(bound_lowest[0] / height) > 0.03:
-                    raise ValueError('BOUND_GROUND_NOT_NEAR_ZERO')
-                def remap(index):
-                    return index - 1 if index > victim else index
-                # [연결 정합성] node 배열을 하나 줄이고 glTF 표준 인덱스를 전부 갱신한다.
-                # 모션 채널의 타임라인·샘플·바이너리는 그대로이므로 재압축이나 새 보간이 없다.
-                doc['nodes'] = [n for i, n in enumerate(nodes) if i != victim]
-                for scene in scenes:
-                    scene['nodes'] = [remap(i) for i in scene.get('nodes', []) if i != victim]
-                for n in doc['nodes']:
-                    if 'children' in n:
-                        n['children'] = [remap(i) for i in n['children']]
-                for skin in skins:
-                    skin['joints'] = [remap(i) for i in skin.get('joints', [])]
-                    if 'skeleton' in skin:
-                        skin['skeleton'] = remap(skin['skeleton'])
-                for anim in animations:
-                    for channel in anim['channels']:
-                        channel['target']['node'] = remap(channel['target']['node'])
-                new_json = json.dumps(doc, ensure_ascii=False, separators=(',', ':')).encode('utf8')
-                new_json += b' ' * (-len(new_json) % 4)
-                binary_chunk = struct.pack('<I4s', len(chunks[1][1]), chunks[1][0]) + chunks[1][1]
-                size = 12 + 8 + len(new_json) + len(binary_chunk)
-                with target.open('xb') as output_file:
-                    output_file.write(struct.pack('<4sII', b'glTF', 2, size))
-                    output_file.write(struct.pack('<I4s', len(new_json), b'JSON'))
-                    output_file.write(new_json)
-                    output_file.write(binary_chunk)
-                candidate.update({'created': True, 'reason': 'ISOLATED_GLB_NODE_REMOVED_WITH_MOTION_BYTES_PRESERVED',
-                                  'removedMesh': suspected['name'], 'originShiftZ': 0.0,
-                                  'animationChannelsKept': sum(len(anim['channels']) for anim in animations)})
-            except (RuntimeError, ValueError, TypeError, KeyError, OSError, struct.error) as exc:
-                candidate['reason'] = 'GLB_SAFE_EDIT_REJECTED:' + str(exc)[:64]
-                try:
-                    target.unlink(missing_ok=True)
-                except OSError:
-                    pass
-    result['candidate'] = candidate
+    result['candidate'] = {
+        'attempted': True, 'created': False,
+        'reason': 'IMPORT_ONLY_HELPER_EXCLUDED_NO_SOURCE_REPAIR_NEEDED'
+                  if excluded_import_helpers else 'UNSAFE_OR_UNPROVEN_STRAY_MESH',
+        'originalPreserved': True,
+        'nativeRuntimeVerified': False, 'gameApplied': False,
+        'productionPromotionAllowed': False,
+    }
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))
