@@ -968,27 +968,20 @@ jobs:
               clientSource:readLuauTree(root+'/client'),
             });
           };
-          // [스튜디오 후속 재검증] 인증된 Windows Studio 실행을 기존 정확 후보 플래너에만 요청한다.
-          // F0 이전·소스 불일치·품질 보강 중인 게임은 자동 재호출하지 않는다.
+          // [스튜디오 자동재검증] 기존 정확 아티팩트 플래너의 선정 결과만 후속 요청한다.
+          // 별도 승인 경로·임시 후보 선택기를 만들지 않으며, 게임 데이터/인증을 변경하지 않는다.
           const queueStudioFollowupIfEligible=item=>{
             const gameId=String(item.gameId||'').trim();
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
-            const candidate=candidateForItem(item);
-            if(!/^[a-z0-9][a-z0-9-]{1,48}$/.test(gameId)
-              ||String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'
-              ||candidate.published!==true||!/^[a-f0-9]{40}$/.test(revision)
-              ||!artifact.startsWith('sha256:')
-              ||candidate.sourceRevision!==revision||candidate.artifactIdentity!==artifact
-              ||Number(candidate.versionNumber||0)<=0)return;
-            if(item.robloxQualityBuildUpRequired===true
-              &&String(item.robloxQualityBuildUpSourceRevision||'')===revision)return;
-            const play=item.robloxInternalVibePlayEvidence||{};
-            if(play.pass===true&&play.actualPlay===true&&play.runtimeVerified===true
-              &&play.officialStudioMcp===true&&play.sourceRevision===revision
-              &&play.artifactIdentity===artifact
-              &&Number(play.versionNumber)===Number(candidate.versionNumber))return;
-            studioFollowupIds.push(gameId);
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            if(!/^[a-z0-9][a-z0-9-]{1,48}$/.test(gameId)||candidate.published!==true)return;
+            const selected=planLocalStudioCandidates({
+              queue:{items:[item]},roadmap,requestedGameId:gameId,repoRoot:process.cwd()
+            }).include||[];
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            if(selected.some(row=>row.gameId===gameId&&row.sourceRevision===sourceRevision
+              &&row.artifactIdentity===artifactIdentity
+              &&Number(row.versionNumber)===Number(candidate.versionNumber)))studioFollowupIds.push(gameId);
           };
 
           for(const item of candidates){
