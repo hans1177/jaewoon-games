@@ -28,6 +28,13 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   const session={seed,at:new Date().toISOString()};
   // [전체 자산 분류] 중앙 자산 레지스트리는 읽기 전용, 출처 없는 항목은 부족 자산으로 분리한다.
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  // [연습 이력 선로드] 노멀맵·리그 모두 기존 숫자형 학습 브랜치의 같은 스냅샷을 사용한다.
+  let previousPractice={};
+  try{
+    const historyFile=path.resolve(repoRoot,bakeHistoryPath);
+    if(historyFile.startsWith(path.resolve(repoRoot)+path.sep))
+      previousPractice=JSON.parse(fs.readFileSync(historyFile,'utf8'));
+  }catch{}
   session.assetCoverage=buildPracticeAssetCoverage(registry,repoRoot);
   let gym;
   try{gym=runGymSession({repoRoot,parents,variants,seed,out:path.join(out,'gym'),statsPath});}
@@ -107,11 +114,7 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       ...(libraryDir?approvedLibraryParents(libraryDir):[])];
     // [학습 이력] 기존 vibe-gym-data 브랜치에서 불러온 후보별 실측 결과만 사용한다.
     // 파일이 없어도 승인된 원본 연습은 계속하며, 이전 실패를 성공으로 승격하지 않는다.
-    let bakeHistory={};
-    try{
-      const prior=JSON.parse(fs.readFileSync(path.resolve(repoRoot,bakeHistoryPath),'utf8'));
-      if(prior?.bake?.history&&typeof prior.bake.history==='object')bakeHistory=prior.bake.history;
-    }catch{}
+    const bakeHistory=previousPractice?.bake?.history||{};
     const sourceCandidates=sourcePool.map(p=>({...p,
       file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)}));
     const selected=selectBakeParents(sourceCandidates,3,bakeHistory);
@@ -145,11 +148,23 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   }
   // [리그·관절·모션 실제 원본 검사] 기존 Blender 메쉬 검사기를 CC0 캐릭터 원본에 적용한다.
   // 회차당 하나만 검사하며, 클립 이름만으로 실제 모션 재생·관절곡선 품질을 통과시키지 않는다.
+  const actorHistory=previousPractice?.rig?.history||{};
   const actorSources=pickParents(registry,repoRoot,1e9,mulberry32(seed+43))
-    .filter(p=>/CHARACTER|CREATURE|NPC|HERO|MONSTER/i.test(p.family))
-    .sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+    .filter(p=>/CHARACTER|CREATURE|NPC|HERO|MONSTER/i.test(p.family)&&
+      /\.(?:glb|gltf)$/i.test(p.file))
+    // [배움의 균형] 기존 실패·성공을 숨기지 않되, 아직 검사하지 않은 원본부터 하나씩 본다.
+    // SHA가 달라진 원본은 이전 성적을 물려받지 않는다.
+    .map(p=>{
+      const history=actorHistory[p.id]||{};
+      const same=!history.sourceSha256||history.sourceSha256===p.approvedSourceSha256;
+      const attempts=same&&Number.isSafeInteger(history.attempts)&&history.attempts>=0?
+        history.attempts:0;
+      return {...p,priorRigAttempts:attempts};
+    })
+    .sort((a,b)=>a.priorRigAttempts-b.priorRigAttempts||
+      String(a.id).localeCompare(String(b.id)));
   if(actorSources.length){
-    const actor=actorSources[Math.floor(Math.abs(seed)/300)%actorSources.length];
+    const actor=actorSources[0];
     const auditFile=path.join(outDir,'rig-source-audit.json');
     try{
       const raw=measureRig(path.isAbsolute(actor.file)?actor.file:path.join(repoRoot,actor.file),
@@ -157,8 +172,9 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       const verdict=evaluateAudit(raw);
       const clips=motionCoverage((raw.actions||[]).map(x=>x.name));
       session.rigStudy={
-        parent:actor.id,family:actor.family,measured:true,
-        rigPass:verdict.pass,bones:verdict.stats.bones,meshParts:verdict.stats.meshes,
+        parent:actor.id,family:actor.family,sourceSha256:actor.approvedSourceSha256,
+        priorAttempts:actor.priorRigAttempts,eligibleActors:actorSources.length,
+        measured:true,rigPass:verdict.pass,bones:verdict.stats.bones,meshParts:verdict.stats.meshes,
         rigFailures:verdict.failures.slice(0,12),
         productionBlockers:verdict.productionBlockers.slice(0,12),
         clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
@@ -166,7 +182,9 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false
       };
     }catch(error){
-      session.rigStudy={parent:actor.id,family:actor.family,measured:false,rigPass:false,
+      session.rigStudy={parent:actor.id,family:actor.family,
+        sourceSha256:actor.approvedSourceSha256,priorAttempts:actor.priorRigAttempts,
+        eligibleActors:actorSources.length,measured:false,rigPass:false,
         error:String(error.message||error).slice(0,200),
         motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false};
     }finally{fs.rmSync(auditFile,{force:true});}
