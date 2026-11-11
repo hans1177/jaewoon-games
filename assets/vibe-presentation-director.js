@@ -401,7 +401,18 @@ export function exerciseVibeUiLayouts(){
     {surface:'CRAFT',controls:[['recipes',172,158,'LEFT'],['ingredients',144,144,'RIGHT'],['craft',100,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
     {surface:'QUEST',controls:[['journal',180,164,'LEFT'],['objective',140,110,'RIGHT'],['track',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
     {surface:'DIALOGUE',controls:[['dialogue',200,100,'BOTTOM',false,true],['response',160,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
-    {surface:'COMBAT',controls:[['health',152,44,'TOP',false,true],['attack',78,60,'BOTTOM',true],['skills',144,52,'BOTTOM',true],['target',116,46,'TOP']]}
+    {surface:'COMBAT',controls:[['health',152,44,'TOP',false,true],['attack',78,60,'BOTTOM',true],['skills',144,52,'BOTTOM',true],['target',116,46,'TOP']]},
+    // [18종 화면 연습] 기존 배치/검증기를 재사용하며 UI·버튼·아이콘 구조만 정적으로 연습한다.
+    {surface:'EQUIPMENT',controls:[['character',176,166,'LEFT'],['gear',140,148,'RIGHT'],['equip',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'MAP',controls:[['map',210,168,'LEFT'],['legend',112,100,'RIGHT'],['pin',72,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'CODEX',controls:[['entries',172,154,'LEFT'],['lore',148,136,'RIGHT'],['inspect',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'TOOLTIP',controls:[['hint',186,96,'TOP',false,true],['details',152,92,'RIGHT'],['dismiss',96,48,'BOTTOM',true]]},
+    {surface:'HELP',controls:[['guide',178,136,'LEFT'],['hint',158,96,'RIGHT'],['continue',104,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'BOSS',controls:[['bossHealth',184,48,'TOP',false,true],['warning',148,52,'TOP',false,true],['evade',92,56,'BOTTOM',true],['attack',84,56,'BOTTOM',true]]},
+    {surface:'BUILD',controls:[['blueprints',176,142,'LEFT'],['preview',148,148,'RIGHT'],['place',96,48,'BOTTOM',true],['rotate',96,48,'BOTTOM',true]]},
+    {surface:'RESULT',controls:[['rewards',182,136,'LEFT'],['summary',142,116,'RIGHT'],['continue',104,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'PARTY',controls:[['roster',166,158,'LEFT'],['member',158,132,'RIGHT'],['invite',96,48,'BOTTOM',true],['close',48,48,'TOP',true]]},
+    {surface:'NOTIFICATION',controls:[['message',206,72,'TOP',false,true],['icon',64,64,'LEFT'],['dismiss',96,48,'BOTTOM',true]]}
   ];
   const viewports=[
     {name:'SMALL_PORTRAIT',width:360,height:640,safe:{left:12,right:12,top:24,bottom:24}},
@@ -411,7 +422,7 @@ export function exerciseVibeUiLayouts(){
   const labels=Object.freeze({health:'체력',skills:'스킬',bag:'가방',quest:'퀘스트',slots:'보유 목록',
     details:'상세 정보',equip:'장착',close:'닫기',wares:'판매 목록',prices:'가격',purchase:'구매',
     tabs:'항목',options:'설정 내용',apply:'적용',recipes:'제작법',ingredients:'재료',craft:'제작',
-    journal:'퀘스트 목록',objective:'목표',track:'추적',dialogue:'대화',response:'선택하기',attack:'공격',target:'대상'});
+    journal:'퀘스트 목록',objective:'목표',track:'추적',dialogue:'대화',response:'선택하기',attack:'공격',target:'대상',character:'캐릭터',gear:'장비',map:'지도',legend:'범례',pin:'표시',entries:'목록',lore:'설명',inspect:'보기',hint:'안내',dismiss:'닫기',guide:'도움말',continue:'계속',bossHealth:'우두머리',warning:'위험 경고',evade:'회피',blueprints:'설계',preview:'미리보기',place:'배치',rotate:'회전',rewards:'보상',summary:'결과',roster:'동료',member:'구성원',invite:'초대',message:'알림',icon:'아이콘'});
   const rows=[];
   for(const profile of profiles)for(const view of viewports)for(const variant of ['soft','strong']){
     const factor=variant==='soft'?0.94:1.12;
