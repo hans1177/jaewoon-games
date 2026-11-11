@@ -163,8 +163,10 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     domains.LIGHTING.trials++;domains.LIGHTING.staticMeasured++;
   }
   if(session.bake){
-    domains.MATERIAL.trials+=(session.bake.attempts||[]).length;
-    domains.MATERIAL.staticMeasured+=(session.bake.attempts||[]).filter(x=>x.pass===true).length;
+    const attempts=session.bake.attempts||[];
+    domains.MATERIAL.trials+=attempts.length;
+    domains.MATERIAL.staticMeasured+=attempts.filter(x=>x.pass===true).length;
+    domains.MATERIAL.unverifiedOrFailed+=attempts.filter(x=>x.pass!==true).length;
   }
   for(const record of Object.values(domains)){
     record.state=record.trials?(record.staticMeasured?'STATIC_PRACTICE_MEASURED':'UNVERIFIED_OR_FAILED'):'NOT_PRACTICED';
