@@ -645,6 +645,6 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 ## 교역품과 사건 삽화 원본
 
 - 아래 원본은 프로젝트를 위해 생성한 삽화다. 역사 사건 그림은 분위기를 재현한 창작 장면이다.
-- 교역품: brazilwood, cocoa, copper, ebony, gems, gold, jade, kauri, logwood, mahogany, maize, palm_oil, pearl_shell, sandalwood, silver.
+- 교역품: brazilwood, cocoa, copper, ebony, gems, gold, jade, kauri, logwood, mahogany, maize, palm_oil, pearl_shell, sandalwood, sandalwood_hi, silver.
 - 사건 삽화: anglo_dutch_war, bumper_harvest, cape_colony, drought, earthquake, great_fire, plague_wave, storm, volcano.
 - 로블록스 게시용 이미지 승인 및 사용 권한 검증은 별도로 기록한다.
