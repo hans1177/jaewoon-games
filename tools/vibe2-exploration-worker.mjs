@@ -770,19 +770,25 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       }
     }
   }
-  // [코드 생성 근거] 실제 ModuleScript가 끝에서 반환하는 테이블의 선언된
-  // 함수만 제시한다. 동적 반환이나 중첩·비공개 함수는 API로 추측하지 않는다.
+  const requiredModulePaths=moduleRows.map(row=>row.path);
+  const scored=rows.map(row=>scoreRelated(row,{
+    responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,
+    responsibleDirs,sourceCalls,sourceNames,responsibleFunctionsByPath,target,requiredModulePaths
+  })).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
+  // [코드 생성 근거·성능] 직전 책임 함수 분석 결과를 그대로 사용한다.
+  // 추가적인 inspectSourceFunctions 호출 없이, 실제 반환 테이블의 공개 함수만 기록한다.
+  const scoredByPath=new Map(scored.map(row=>[row.relative,row]));
   const moduleApi=target==='roblox'?moduleRows.slice(0,24).map(row=>{
-    const text=scannedByPath.get(row.path)?.text||'';
-    const executable=executableText(text,'luau');
-    const returned=executable.match(/(?:^|\\n)\\s*return\\s+([A-Za-z_]\\w*)\\s*$/)?.[1]||null;
-    const methods=returned?unique(inspectSourceFunctions(text,{language:'luau',maxFunctions:512})
+    const source=scannedByPath.get(row.path)?.text||'';
+    const executable=executableText(source,'luau');
+    const returned=executable.match(/(?:^|\n)\s*return\s+([A-Za-z_]\w*)\s*$/)?.[1]||null;
+    const methods=returned?unique((scoredByPath.get(row.path)?.functions||[])
       .map(fn=>{
         const prefix=returned+'.';
         const colon=returned+':';
         return fn.name.startsWith(prefix)?fn.name.slice(prefix.length)
           :fn.name.startsWith(colon)?fn.name.slice(colon.length):'';
-      }).filter(name=>/^[A-Za-z_]\\w*$/.test(name))).slice(0,24):[];
+      }).filter(name=>/^[A-Za-z_]\w*$/.test(name))).slice(0,24):[];
     return{path:row.path,returnedTable:returned,methods,
       evidence:returned?'STATIC_RETURNED_TABLE':'EXPORT_SHAPE_UNPROVEN',
       sourceWrite:false,runtimeVerified:false};
@@ -793,11 +799,6 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     sourceWrite:false,runtimeVerified:false,
     completeRepositoryGraph:false,authority:'unique-observed-module-require-paths-only'
   }:null;
-  const requiredModulePaths=moduleRows.map(row=>row.path);
-  const scored=rows.map(row=>scoreRelated(row,{
-    responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,
-    responsibleDirs,sourceCalls,sourceNames,responsibleFunctionsByPath,target,requiredModulePaths
-  })).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
   const contextFiles=unique([...responsible,...moduleRows.map(row=>row.path),...related.map(row=>row.relative)]).slice(0,12);
   const testCandidates=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,32).map(row=>row.relative));
