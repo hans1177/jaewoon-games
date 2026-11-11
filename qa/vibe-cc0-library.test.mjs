@@ -171,7 +171,6 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
     bake:{pass:false,reason:'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP'}
   }));
   assert.equal(publish({stats:'stats.json',ledger:'build/practice/gym/ledger.json',cwd:work}).published,true);
-  const payload=g('show','origin/vibe-gym-data:practice-domains.json');
   // 원격 갱신 확인은 git worktree가 아닌 bare의 새 브랜치를 직접 검사한다.
   const proof=spawnSync('git',['--git-dir',bare,'show','vibe-gym-data:practice-domains.json'],{encoding:'utf8'});
   assert.equal(proof.status,0,proof.stderr);
