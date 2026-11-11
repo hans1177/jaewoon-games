@@ -2517,3 +2517,40 @@ test('algorithm concepts survive mastery refresh without becoming production or 
  assert.equal(stable.addedVerifiedAlgorithms,0);
  assert.equal(stable.state.algorithmEvolutionMemory.concepts.length,1);
 });
+
+ // [학습 회귀] 정식 실패 식별자만 있어도 같은 원인의 검증된 수리법을 우선 찾아야 한다.
+test('exact current failure signature retrieves verified recovery before stale historical errors',()=>{
+  const task={gameId:'ocean',target:'roblox',taskType:'bottleneck-repair',
+    goal:'repair source preflight',failureStage:'F0_SOURCE_PREFLIGHT',
+    failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    evidence:['failure-cause:OLD_REMOTE_RUNTIME_FAILURE']};
+  const memory={records:[
+    {id:'current',gameId:'ocean',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+      problem:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',failureCause:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      change:'repair the exact source preflight',reusablePatterns:['verify source revision and compiler'],
+      evidence:['verified-f0-repair'],confirmations:2},
+    {id:'stale',gameId:'ocean',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+      problem:'runtime-failure:OLD_REMOTE_RUNTIME_FAILURE',failureCause:'runtime-failure:OLD_REMOTE_RUNTIME_FAILURE',
+      change:'fix old remote event',reusablePatterns:['check old remote'],
+      evidence:['verified-old-repair'],confirmations:10},
+    {id:'unverified',gameId:'ocean',engine:'roblox',verified:false,reusable:true,outcome:'PASS',
+      problem:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',failureCause:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      change:'unsafe guess',reusablePatterns:['fake green QA']}
+  ]};
+  const result=retrieveUnifiedLearning({task,experienceInput:memory});
+  assert.equal(failureFingerprintForTask(task),'roblox|ROBLOX_F0_SOURCE_PREFLIGHT_FAILED');
+  assert.equal(result.failureLocalMemory[0].id,'current');
+  assert.ok(result.failureLocalMemory[0].reasons.includes('same-game-same-failure'));
+  assert.equal(result.failureLocalMemory.some(x=>x.id==='unverified'),false);
+  assert.equal(result.failureLocalMemory.some(x=>x.id==='stale'),false);
+  assert.match(learningGuidance(result),/verify source revision and compiler/);
+  assert.doesNotMatch(learningGuidance(result),/fake green QA/);
+});
+test('explicit failure signature dominates stale evidence but free-form messages remain bounded',()=>{
+  assert.equal(failureFingerprintForTask({target:'roblox',failureSignature:'ROBLOX_SCRIPT_RUNTIME_FAILED',
+    evidence:['runtime-failure:OLD_STUDIO_ERROR']}),
+    'roblox|ROBLOX_SCRIPT_RUNTIME_FAILED');
+  const plain=failureFingerprintForTask({target:'web',failureSignature:'some casual words with spaces',
+    evidence:['runtime-failure:STABLE_FAILURE_CODE']});
+  assert.equal(plain,'web|STABLE_FAILURE_CODE');
+});
