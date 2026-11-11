@@ -123,7 +123,7 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
           !reference.startsWith('return function') ||
           Buffer.byteLength(reference) > 12_000 ||
           !Array.isArray(drill?.tests) || drill.tests.length < 2 ||
-          !Array.isArray(drill?.feedbackTests) || drill.feedbackTests.length < 1) {
+          (drill.feedbackTests !== undefined && (!Array.isArray(drill.feedbackTests) || drill.feedbackTests.length < 1))) {
         throw new Error('invalid original Roblox Luau practice drill: ' + id);
       }
       codeIds.add(id);
