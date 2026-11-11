@@ -203,8 +203,11 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   const iconRoot=fs.realpathSync(repoRoot),iconHistory=previousPractice?.icon?.history||{};
   const iconSources=[];
   for(const asset of registry.assets||[]){
+    const family=String(asset.family||'').toUpperCase();
+    const iconRole=/(?:icon|cursor|arrow|glyph|symbol|badge)/i.test(
+      [asset.id,asset.title,...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])].join(' '));
     if(!/^CC0(?:-1\.0)?$/i.test(String(asset.license||''))||
-      !/UI|ICON/.test(String(asset.family||'').toUpperCase())||
+      !(/ICON|CURSOR/.test(family)||/UI/.test(family)&&iconRole)||
       asset.catalogOnly||asset.securityBlocked||asset.quarantined||
       asset.gameUseForbidden||asset.corruptSource||asset.catalogActive===false||
       asset.parentSourceId||asset.derivedFromAssetId)continue;
