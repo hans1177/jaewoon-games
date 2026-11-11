@@ -314,6 +314,37 @@ K.DisciplineGoods = {
 
 K.SPEED_CAP = 0.15
 
+-- 인류의 시대: 이해한 지식이 쌓일수록 항구와 세계가 함께 다음 시대로 넘어간다 (르네상스 → 산업 혁명).
+-- 시대가 오르면 항해·연구 성과가 조금씩 커지고, 전환할 때마다 보상과 이야기가 따른다.
+K.Eras = {
+	{ id = "renaissance", name = "르네상스", need = 0, reward = 0, story = "인쇄기와 원근법이 퍼지고, 항구 도시의 상인들이 학문과 예술을 후원하기 시작했다." },
+	{ id = "discovery", name = "대항해 시대", need = 12, reward = 1, story = "항로가 바다 너머로 뻗는다. 항해사의 관측과 지도 제작자의 도법이 새 세계를 그려 낸다." },
+	{ id = "revolution", name = "과학 혁명", need = 40, reward = 2, story = "하위헌스의 렌즈, 보일의 공기 펌프, 뉴턴의 중력. 실험과 수학이 옛 믿음을 하나씩 바꾼다." },
+	{ id = "enlightenment", name = "계몽의 시대", need = 90, reward = 3, story = "린네가 자연에 이름을 붙이고 프랭클린이 번개를 길들인다. 학회와 사전, 병원이 도시마다 들어선다." },
+	{ id = "industrial", name = "산업 혁명", need = 150, reward = 4, story = "증기가 물을 퍼 올리고 배를 민다. 공장과 항구 크레인이 도시의 모습을 바꾼다." },
+}
+
+function K.understoodCount(state)
+	local n = 0
+	for id, v in state.reported or {} do
+		if v == true and K.ById[id] then
+			n += 1
+		end
+	end
+	return n
+end
+
+-- 지금의 시대 번호 (1~5)
+function K.eraIndex(state)
+	local n, idx = K.understoodCount(state), 1
+	for i, era in K.Eras do
+		if n >= era.need then
+			idx = i
+		end
+	end
+	return idx
+end
+
 -- 문명식 해금: 먼 바다는 항해 기술을 이해해야 갈 수 있다 (모험 레벨과 함께 필요).
 -- 이미 그 해역 이상에 있는 항구에서는 그대로 오갈 수 있다.
 K.RegionGates = {
@@ -443,6 +474,7 @@ function K.speedBonus(state)
 			end
 		end
 	end
+	total += 0.005 * (K.eraIndex(state) - 1)
 	return math.min(total, K.SPEED_CAP)
 end
 

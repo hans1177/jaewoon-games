@@ -2070,6 +2070,41 @@ do
 	check("지식: 효과의 교역품이 실제로 있음", badGood == nil, badGood)
 	check("지식: 노드의 학문이 실제로 있음", badDisc == nil, badDisc)
 	check("지식: 노드가 충분히 많음(카드 전체)", #K.Nodes >= 400, tostring(#K.Nodes))
+	-- 시대 전환 보상
+	local stX = newState("england")
+	stX.portId = "london"
+	local m = 0
+	for _, node in K.Nodes do
+		if m < 11 and node.disc == "philosophy" then stX.reported[node.id] = true; m += 1 end
+	end
+	stX.discovered.phy_buoyancy = true
+	local coinsX, fameX = stX.coins, stX.fame
+	local okX, msgX = act(stX, "ReportKnowledge", { scholarId = "newton" })
+	check("시대: 12개째 이해하면 대항해 시대로 전환·보상", okX == true and stX.academy.era == 2 and stX.coins > coinsX + 600 and string.find(msgX or "", "시대가 바뀌었다") ~= nil, tostring(msgX))
+	-- 인류의 시대
+	local stEra = newState("england")
+	stEra.portId = "london"
+	check("시대: 처음엔 르네상스", K.eraIndex(stEra) == 1 and stEra.academy.era == 1)
+	local sp1 = S.Knowledge.speedBonus(stEra)
+	local n = 0
+	for _, node in K.Nodes do
+		if n < 45 then stEra.reported[node.id] = true; n += 1 end
+	end
+	check("시대: 지식이 쌓이면 시대가 오름", K.eraIndex(stEra) >= 3, tostring(K.eraIndex(stEra)))
+	check("시대: 시대가 오르면 항해가 좋아짐", S.Knowledge.speedBonus(stEra) > sp1)
+	local viewE = S.View.build(stEra, ctx)
+	check("시대: 화면에 시대가 담김", viewE.knowledge.era ~= nil and viewE.knowledge.era.index == K.eraIndex(stEra))
+	stEra.discovered.phy_buoyancy = true
+	stEra.reported.phy_buoyancy = nil
+	stEra.reported.phi_skepticism = nil
+	local coinsE = stEra.coins
+	for _, node in K.Nodes do
+		if not stEra.reported[node.id] then stEra.reported[node.id] = true end
+	end
+	local okE = act(stEra, "ReportKnowledge", { scholarId = "newton" })
+	check("시대: 전환 때 보상(보고 또는 지식 변화)", K.eraIndex(stEra) == 5)
+	local backE = S.State.sanitize(S.State.serialize(stEra))
+	check("시대: 저장/불러오기", backE.academy.era == stEra.academy.era)
 	-- 연속 퀘스트
 	local chainBad, chainFirst = nil, 0
 	for _, q in D.Quests.Quests do
