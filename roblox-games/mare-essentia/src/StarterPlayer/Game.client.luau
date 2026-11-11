@@ -2407,7 +2407,7 @@ function RENDERERS.harbor()
 		local b = view.bank
 		section("은행")
 		add(function()
-			return mkLabel(content, string.format("예금 %d (30일 이자 %.1f%%)\n대출 %d / 한도 %d (30일 이자 %d%%)", b.deposit, b.depositRate * 100, b.loan, b.limit, b.loanRate * 100), 13, COLORS.text, false)
+			return mkLabel(content, string.format("%s (항구 %d단계) — 발전할수록 이자·한도가 좋아져요\n예금 %d (30일 이자 %.2f%%)\n대출 %d / 한도 %d (30일 이자 %.2f%%)", b.name or "은행", b.level or 1, b.deposit, b.depositRate * 100, b.loan, b.limit, b.loanRate * 100), 13, COLORS.text, false)
 		end)
 		for _, amt in { 100, 1000, 10000 } do
 			add(function()

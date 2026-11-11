@@ -43,8 +43,26 @@ Facilities.GUILD = {
 	PREMIUM = 1.6, -- 상품 기준가 대비 보상 배율
 }
 
-function Facilities.has(kind: string, portId: string): boolean
-	return table.find((Facilities :: any)[kind], portId) ~= nil
+-- 항구 발전도(1~5)에 따른 은행: 3단계부터는 목록에 없는 항구에도 은행이 생긴다.
+Facilities.BANK_OPEN_LEVEL = 3
+Facilities.BANK_LEVELS = {
+	name = { "환전상", "환전상", "은행", "은행·증권소", "국제 은행" },
+	depositRate = { 0.005, 0.006, 0.0075, 0.009, 0.011 },
+	loanRate = { 0.02, 0.0185, 0.017, 0.0155, 0.014 },
+	loanMult = { 1, 1.2, 1.5, 2, 3 },
+}
+
+function Facilities.has(kind: string, portId: string, level: number?): boolean
+	if table.find((Facilities :: any)[kind], portId) ~= nil then
+		return true
+	end
+	return kind == "bank" and (level or 1) >= Facilities.BANK_OPEN_LEVEL
+end
+
+function Facilities.bankAt(level: number)
+	local L = Facilities.BANK_LEVELS
+	local lv = math.clamp(math.floor(level or 1), 1, #L.name)
+	return { name = L.name[lv], depositRate = L.depositRate[lv], loanRate = L.loanRate[lv], loanMult = L.loanMult[lv], level = lv }
 end
 
 return Facilities
