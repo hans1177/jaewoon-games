@@ -192,6 +192,15 @@ test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 �
   assert.match(y,/always\(\) && vars\.VIBE_GYM_CLOUD != 'off' && vars\.VIBE_GYM_CHAIN != 'off'/);
   assert.match(y,/workflows\/vibe-variation-practice\.yml\/dispatches/);
   assert.match(y,/cron: '\*\/5 \* \* \* \*'/);                    // 안전망
-  assert.match(y,/group: vibe-variation-practice[\s\S]*?cancel-in-progress: false/); // 겹치지 않음
+  // [메인 큐 보존] PR 읽기 전용 검사는 별도 큐를 쓰더라도 main 연습 동시 실행 방지는 유지한다.
+  const group=(y.match(/^  group: ([^\n]+)$/m)||[])[1]||'';
+  const mainQueuePreserved=group==='vibe-variation-practice'||
+    (group.includes("github.event_name == 'pull_request'")&&
+      group.includes('github.event.pull_request.number')&&
+      group.includes("|| 'vibe-variation-practice'"));
+  assert.equal(mainQueuePreserved,true,'main 연습 동시 실행 큐가 유지되어야 한다');
+  assert.match(y,/cancel-in-progress: false/);
+  assert.match(y,/practice-cloud:\n    if: .*github.event_name != 'pull_request'/);
+  assert.match(y,/practice-local:\n    if: .*github.event_name != 'pull_request'/);
   assert.ok(y.indexOf('Publish stats to vibe-gym-data')<y.indexOf('Chain the next run'));  // 학습 저장 뒤에 예약
 });
