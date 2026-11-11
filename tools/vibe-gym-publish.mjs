@@ -101,6 +101,17 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
               Math.max(0,Math.min(2,r.bestNormalDeviation)):0,
             lastSession:String(r.lastSession||'').slice(0,40)
           }]));
+        // [기존 기록 이행] 과거 SHA 없는 실패 이력은 중앙 원본 해시로 식별한다.
+        // 다음에 승인된 원본 SHA가 바뀌면 이전 실패를 새 원본에 전가하지 않는다.
+        try{
+          const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+          for(const asset of registry.assets||[]){
+            const id=String(asset.id||''),r=history[id];
+            const sha=String(asset.sourceSha256||asset.sourceHash||'').toLowerCase();
+            if(r&&!r.sourceSha256&&/^[a-f0-9]{64}$/.test(sha)&&
+              /^CC0(?:-1\\.0)?$/i.test(String(asset.license||'')))r.sourceSha256=sha;
+          }
+        }catch{}
         const bakeAttempts=[];
         for(const row of (session.bake?.attempts||[]).slice(0,3)){
           const id=String(row?.parent||'');
