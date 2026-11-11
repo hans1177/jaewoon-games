@@ -262,3 +262,10 @@ test('수정안의 검색 문구가 어긋나면 오류를 알려 주고 한 번
   assert.match(calls[1], /PREVIOUS ANSWER WAS REJECTED: SEARCH_MATCHES_0/);
   assert.ok(LIMITS.contextChars <= 12000);
 });
+
+test('검증·커밋은 두뇌가 실제로 고친 파일만 대상으로 한다(LFS 때문에 섞인 파일 무시)', () => {
+  const y = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
+  assert.doesNotMatch(y, /git diff --name-only/);
+  assert.doesNotMatch(y, /git add -A/);
+  assert.match(y, /brain-result\.json'\)\.files/);
+});

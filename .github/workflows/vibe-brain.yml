@@ -59,7 +59,8 @@ jobs:
           ok=$(node -p "require('./build/brain-result.json').ok")
           if [ "$ok" != "true" ]; then echo "verified=no" >> "$GITHUB_OUTPUT"; exit 0; fi
           fail=0
-          changed=$(git diff --name-only)
+          # git diff 에는 LFS 포인터 때문에 관계없는 음원 파일이 섞여 나온다. 두뇌가 실제로 고친 파일만 본다.
+          changed=$(node -p "(require('./build/brain-result.json').files||[]).join('\\n')")
           echo "$changed"
           for f in $changed; do
             case "$f" in
@@ -80,7 +81,7 @@ jobs:
           else
             for t in qa/fantasy-*.test.mjs; do node --test "$t" >/dev/null 2>&1 || { echo "테스트 실패: $t"; fail=1; }; done
           fi
-          if [ "$fail" -eq 0 ]; then echo "verified=yes" >> "$GITHUB_OUTPUT"; else echo "verified=no" >> "$GITHUB_OUTPUT"; git checkout -- . ; fi
+          if [ "$fail" -eq 0 ]; then echo "verified=yes" >> "$GITHUB_OUTPUT"; else echo "verified=no" >> "$GITHUB_OUTPUT"; git checkout -- $changed ; fi
       - name: Open a pull request, merge only when allowed
         if: ${{ steps.verify.outputs.verified == 'yes' }}
         env:
@@ -96,7 +97,7 @@ jobs:
           git config user.name "vibe-brain"
           git config user.email "vibe-brain@users.noreply.github.com"
           git checkout -q -b "$branch"
-          git add -A roblox-games
+          git add -- $(node -p "(require('./build/brain-result.json').files||[]).join(' ')")
           git commit -q -m "fix(vibe-brain): ${summary}"
           git push -q origin "$branch"
           body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
