@@ -5,7 +5,7 @@ name: Vibe Brain
 run-name: Vibe Brain · ${{ github.run_number }}
 on:
   schedule:
-    - cron: '23 * * * *'
+    - cron: '23,53 * * * *'
   # 판단기가 새 작업 지시서를 남기면 바로 이어서 실행한다(하루 횟수·간격 제한은 두뇌 안에서 지킨다).
   workflow_run:
     workflows: ['Vibe Autopilot']

@@ -48,7 +48,7 @@ test('무료 한도가 끝나(429) 앞 모델이 실패하면 다음 모델로 �
   await assert.rejects(() => askChain({ prompt: 'x', providers: providers.slice(0, 2) }), /ALL_PROVIDERS_FAILED.*a:HTTP_429.*b:HTTP_503/);
 });
 
-test('지시서 고르기: 코드로 고칠 수 있는 것만, 오류 먼저, 시도 2번이면 포기, 12시간 간격', () => {
+test('지시서 고르기: 코드로 고칠 수 있는 것만, 오류 먼저, 시도 4번이면 포기, 45분 간격', () => {
   const now = Date.now();
   const orders = [
     { game: 'fantasy-survival', kind: 'asset_link', fingerprint: 'a', text: 'x', seen: 9 },
@@ -57,20 +57,20 @@ test('지시서 고르기: 코드로 고칠 수 있는 것만, 오류 먼저, �
     { game: 'fantasy-survival', kind: 'error', fingerprint: 'd', text: 'old', seen: 1, resolvedAt: 1 }
   ];
   assert.equal(pickOrder(orders, emptyBrainLedger(), now).fingerprint, 'c');
-  const L = emptyBrainLedger(); L.attempts.c = { n: 1, lastAt: now - 3600000 };
-  assert.equal(pickOrder(orders, L, now).fingerprint, 'b');            // 방금 시도한 c 는 12시간 쉼
-  L.attempts.c = { n: 2, lastAt: now - 99 * 3600000 };
-  assert.equal(pickOrder(orders, L, now).fingerprint, 'b');            // 두 번 실패한 c 는 포기
+  const L = emptyBrainLedger(); L.attempts.c = { n: 1, lastAt: now - 10 * 60000 };
+  assert.equal(pickOrder(orders, L, now).fingerprint, 'b');            // 방금 시도한 c 는 45분 쉼
+  L.attempts.c = { n: 4, lastAt: now - 99 * 3600000 };
+  assert.equal(pickOrder(orders, L, now).fingerprint, 'b');            // 네 번 실패한 c 는 포기
 });
 
-test('하루 3번·병합 간격 3시간 제한', () => {
+test('하루 12번·병합 간격 20분 제한', () => {
   const now = Date.parse('2026-11-11T12:00:00Z');
   assert.equal(gate(emptyBrainLedger(), now), '');
-  let L = recordMerged(emptyBrainLedger(), { order: { fingerprint: 'x' }, files: [] }, 1, now - 4 * 3600000);
+  let L = recordMerged(emptyBrainLedger(), { order: { fingerprint: 'x' }, files: [] }, 1, now - 40 * 60000);
   assert.equal(gate(L, now), '');
-  L = recordMerged(L, { order: { fingerprint: 'y' }, files: [] }, 2, now - 3600000);
+  L = recordMerged(L, { order: { fingerprint: 'y' }, files: [] }, 2, now - 5 * 60000);
   assert.match(gate(L, now), /분이 안 지났다/);
-  L = { ...L, merged: [], day: { date: '2026-11-11', count: 3 } };
+  L = { ...L, merged: [], day: { date: '2026-11-11', count: 12 } };
   assert.match(gate(L, now), /다 썼다/);
 });
 
@@ -121,7 +121,7 @@ test('한 바퀴: 관련 코드를 찾아 가짜 LLM 수정안을 검증·적용
 
 test('워크플로: 1시간 주기, 끄는 변수, Gemini 는 무료 확인 변수가 있을 때만, 검증 통과 뒤에만 PR, 병합은 VIBE_BRAIN_MERGE=on 일 때만', () => {
   const y = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(y, /cron: '23 \* \* \* \*'/);
+  assert.match(y, /cron: '23,53 \* \* \* \*'/);
   assert.match(y, /vars\.VIBE_BRAIN != 'off'/);
   assert.match(y, /GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
   assert.match(y, /GITHUB_MODELS_TOKEN: \$\{\{ github\.token \}\}/);

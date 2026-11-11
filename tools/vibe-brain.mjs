@@ -7,7 +7,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { askChain, buildProviders } from './vibe-llm.mjs';
 
-export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 3, minGapMin: 180, maxAttemptsPerOrder: 2, retryGapMin: 12 * 60, contextChars: 11000 };
+export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 12, minGapMin: 20, maxAttemptsPerOrder: 4, retryGapMin: 45, contextChars: 11000 };
 export const CODE_KINDS = new Set(['error', 'ui', 'combat', 'background']);   // 에셋 권한·Studio 연결 문제는 코드로 못 고친다
 
 const ALLOWED = /^roblox-games\/(fantasy-survival\/(client|server|shared)|mare-essentia\/src)\/(?!(?:.*\/)?(?:Common\/|[^\/]*(?:VisualAssetIds|LookAssignment|SkillTreeIconIds|OpeningAssetIds)[^\/]*$)).+\.luau$/;
