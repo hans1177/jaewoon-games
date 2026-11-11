@@ -132,6 +132,24 @@ test('real subprocess QA failures remain game-scoped and keep exact evidence',()
   }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
 
+test('slow official Studio case gets bounded runtime without extending unrelated game QA',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'mare-studio-timed-qa-'));
+  try{
+    fs.mkdirSync(path.join(root,'qa'),{recursive:true});
+    const testFile="import test from 'node:test';test('slow official Studio check',async()=>{await new Promise(resolve=>setTimeout(resolve,160))});\\n";
+    fs.writeFileSync(path.join(root,'qa/company-development-roblox-studio-local-play.test.mjs'),testFile);
+    fs.writeFileSync(path.join(root,'qa/other.test.mjs'),testFile);
+    const official=runGameQa({repoRoot:root,execute:true,timeoutMs:30,
+      selected:[{gameId:'mare-essentia',tests:['qa/company-development-roblox-studio-local-play.test.mjs']}]});
+    assert.equal(official.mergeReady,true,'official Studio tests must actually finish and pass');
+    assert.equal(official.results[0].error,null);
+    const other=runGameQa({repoRoot:root,execute:true,timeoutMs:30,
+      selected:[{gameId:'other',tests:['qa/other.test.mjs']}]});
+    assert.equal(other.mergeReady,false,'other game timeout stays strict');
+    assert.match(other.results[0].error||'',/ETIMEDOUT/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('merge readiness requires actual executed QA and never trusts pending or empty selection',()=>{
   assert.equal(runGameQa({selected:[]}).mergeReady,false);
   const pending=runGameQa({selected:[{gameId:'pending',tests:['qa/not-yet-executed.test.mjs']}]});
