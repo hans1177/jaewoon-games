@@ -136,7 +136,7 @@ test('slow official Studio case gets bounded runtime without extending unrelated
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'mare-studio-timed-qa-'));
   try{
     fs.mkdirSync(path.join(root,'qa'),{recursive:true});
-    const testFile="import test from 'node:test';test('slow official Studio check',async()=>{await new Promise(resolve=>setTimeout(resolve,160))});\\n";
+    const testFile="import test from 'node:test';test('slow official Studio check',async()=>{await new Promise(resolve=>setTimeout(resolve,160))});\n";
     fs.writeFileSync(path.join(root,'qa/company-development-roblox-studio-local-play.test.mjs'),testFile);
     fs.writeFileSync(path.join(root,'qa/other.test.mjs'),testFile);
     const official=runGameQa({repoRoot:root,execute:true,timeoutMs:30,
