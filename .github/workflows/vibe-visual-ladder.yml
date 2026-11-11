@@ -14,6 +14,8 @@ on:
         type: string
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 concurrency:
   group: vibe-visual-ladder
   cancel-in-progress: false
@@ -65,17 +67,46 @@ jobs:
             # 리그 키트 점검: 새 몬스터의 모션 가족·팔레트 누락을 일감 표로 남긴다(보고서에 BONES 줄이 없으면 건너뜀).
             [ -n "$report" ] && node tools/vibe-rig-kit.mjs --game "$game" --report "$report" || true
           done
-      - name: Commit ladder state
+      - name: Verify existing look quality contract
+        run: node --test qa/vibe-look-govern.test.mjs
+      - name: Promote ladder result through canonical reviewed PR
+        id: promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md docs/devloop/RIG_KIT_*.md vibe-ladder-status.json docs/devloop/ladder
-          if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
-          git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
-          for i in 1 2 3; do
-            git status --short | head -5
-            git pull -q --rebase --autostash origin main && git push -q origin HEAD:main && exit 0
-            sleep 4
-          done
-          exit 1
+          git config user.name "vibe-visual-ladder"
+          git config user.email "vibe-visual-ladder@users.noreply.github.com"
+          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau roblox-games/*/shared/LookAssignment.luau roblox-games/*/src/ReplicatedStorage/Shared/LookAssignment.luau docs/devloop/VISUAL_LADDER_*.md docs/devloop/RIG_KIT_*.md vibe-ladder-status.json docs/devloop/ladder
+          if git diff --cached --quiet; then echo 'VIBE_LADDER_CHANGE=NONE'; exit 0; fi
+          # [권한] 자동 작성자는 main에 직접 쓰지 않는다. 검증된 변경만 기존 PR 병합 경로를 쓴다.
+          mare_changed=$(git diff --cached --name-only | grep -E '^roblox-games/mare-essentia/(visual-ladder-state\.json|src/ReplicatedStorage/Shared/LookAssignment\.luau)$' || true)
+          base=$(git rev-parse HEAD)
+          branch="vibe-visual-ladder/${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git commit -m "비주얼 래더: 검증된 스튜디오 결과로 자산·룩 승급"
+          git push origin "HEAD:refs/heads/$branch"
+          pr=$(gh api -X POST "repos/$GITHUB_REPOSITORY/pulls" -f base=main -f head="$branch" -f title="바이브 비주얼 래더 자동 승급: ${GITHUB_RUN_ID}" -f body="기존 Studio 시각 검사 및 룩 회귀 테스트를 통과한 결과다. 게임 소스와 원본 에셋은 기존대로 유지하며 권한·F9·게시 검증을 생략하지 않는다." --jq '.number')
+          files=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr/files?per_page=100" --jq '.[].filename')
+          bad=$(printf '%s\n' "$files" | grep -v -E '^(roblox-games/[a-z0-9-]+/(visual-ladder-state\.json|shared/(VisualLadderState|LookAssignment)\.luau|src/ReplicatedStorage/Shared/(VisualLadderState|LookAssignment)\.luau)|docs/devloop/(VISUAL_LADDER_[a-z0-9-]+\.md|RIG_KIT_[a-z0-9-]+\.md|ladder/.*)|vibe-ladder-status\.json)$' || true)
+          if [ -n "$bad" ]; then echo "VIBE_LADDER_UNEXPECTED_FILE=$bad"; exit 1; fi
+          # [동일 소스] 다른 main 변경이 먼저 들어왔으면 PR을 남기고 이번 자동 병합은 중단한다.
+          live=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          if [ "$live" != "$base" ]; then echo "VIBE_LADDER_STALE_MAIN_PR_OPEN=$pr"; exit 0; fi
+          if gh api -X PUT "repos/$GITHUB_REPOSITORY/pulls/$pr/merge" -f merge_method=squash -f commit_title="바이브 비주얼 래더 자동 승급 (#$pr)" >/dev/null; then
+            echo "VIBE_LADDER_VERIFIED_PR_MERGED=$pr"
+            if [ -n "$mare_changed" ]; then echo 'mare_changed=true' >> "$GITHUB_OUTPUT"; fi
+          else
+            echo "VIBE_LADDER_MERGE_UNVERIFIED_PR_OPEN=$pr"
+          fi
+      - name: Continue exact Mare look verification in official Studio
+        if: steps.promotion.outputs.mare_changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # [승격 이후] 연속 개선 후보나 실제 게임 적용 중일 때만 기존 30클릭·31화면 검사를 재요청한다.
+          follow=$(node -e "const s=require('./roblox-games/mare-essentia/visual-ladder-state.json'); const l=s.look||{}; process.stdout.write(Number(l.pending?.streak||0)>0||(typeof l.preset==='string'&&l.confirmed!==true)?'yes':'no')")
+          if [ "$follow" = 'yes' ]; then
+            gh workflow run devloop-studio.yml --ref main -f game=mare-essentia -f script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
+            echo 'MARE_LOOK_EXACT_STUDIO_RECHECK_DISPATCHED=YES' >> "$GITHUB_STEP_SUMMARY"
+          fi
