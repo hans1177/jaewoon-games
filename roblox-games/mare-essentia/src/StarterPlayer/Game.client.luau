@@ -3067,7 +3067,8 @@ local function openTradeHall()
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, -230, 0, 26)
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local pr = mkLabel(row, string.format("사기 %d   팔기 %d   보유 %d", g.buy, g.sell, g.owned), 16, COLORS.muted, false)
+			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else ""), 14, COLORS.muted, false)
+			pr.TextTruncate = Enum.TextTruncate.AtEnd
 			pr.Position = UDim2.fromOffset(70, 38)
 			pr.Size = UDim2.new(1, -80, 0, 22)
 			pr.AutomaticSize = Enum.AutomaticSize.None
