@@ -527,17 +527,17 @@ test('post-foundation Studio follow-up dispatch uses existing authenticated exec
     workflow.indexOf('      - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence'),
     workflow.indexOf('      - name: Enforce persistent Open Cloud probe failures after evidence persistence')
   );
-  assert.match(step,/if: \\$\\{\\{ !cancelled\\(\\) && inputs\\.candidate_context == '' \\}\\}/);
-  assert.doesNotMatch(step,/if: \\$\\{\\{ false \\}\\}/);
-  assert.match(step,/sort -u \\/tmp\\/roblox-studio-followup-ids/);
-  assert.match(step,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=DEDUPED_ACTIVE/);
-  assert.match(step,/gh workflow run company-development-roblox-post-runtime-qa\\.yml/);
-  assert.match(step,/run_studio=true/);
-  assert.match(workflow,/runs-on: \\[self-hosted, Windows, X64, roblox-studio-authenticated\\]/);
+  assert.ok(step.includes("if: ${{ !cancelled() && inputs.candidate_context == '' }}"));
+  assert.ok(!step.includes("if: ${{ false }}"));
+  assert.ok(step.includes('sort -u /tmp/roblox-studio-followup-ids'));
+  assert.ok(step.includes('ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=DEDUPED_ACTIVE'));
+  assert.ok(step.includes('gh workflow run company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(step.includes('run_studio=true'));
+  assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
 });
 test('post-foundation Studio follow-up is exact-source, verified artifact, and quality gated',()=>{
   const start=workflow.indexOf('const queueStudioFollowupIfEligible=item=>');
-  const end=workflow.indexOf('\\n\\n          for(const item of candidates)',start);
+  const end=workflow.indexOf('\n\n          for(const item of candidates)',start);
   assert.ok(start>0&&end>start);
   const statement=workflow.slice(start,end);
   const revisions='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
@@ -560,4 +560,3 @@ test('post-foundation Studio follow-up is exact-source, verified artifact, and q
     sourceRevision:revisions,artifactIdentity:artifact,versionNumber:19}});
   assert.deepEqual(queue,['ocean']);
 });
-
