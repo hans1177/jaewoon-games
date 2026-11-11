@@ -27,6 +27,15 @@ for _, k in miss do fails += 1 print("등록되지 않은 에셋 요청: " .. k)
 for _, must in { "Terrain/tree-oak", "Terrain/tree-pinedefaulta", "Naval/palm-detailed-straight", "Town/house" } do
 	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
 end
+-- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
+local Registered = require("./AssetIds")
+for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
+	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills" } do
+	if Registered[id] and not State.used[id] then
+		fails += 1
+		print("회귀 실패: 등록된 해안 배경 요청되지 않음 " .. id)
+	end
+end
 local used = 0 for _ in State.used do used += 1 end
 print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 에셋 %d종 요청, 실패 %d"):format(#ports, built, used, fails))
 if fails > 0 then error("스모크 빌드 실패") end

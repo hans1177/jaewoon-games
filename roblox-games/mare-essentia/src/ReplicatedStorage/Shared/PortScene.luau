@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local PortData = require(script.Parent:WaitForChild("Ports"))
+local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 
 local PortScene = {}
 
@@ -965,6 +966,30 @@ function PortScene.build(info, onFacility)
 	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
+	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 멀리 최대 6개를 배치한다.
+	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
+	local warmShore = palmOk(info.portId, style)
+	local coastalRocks = if warmShore then { "rocks-sand-a", "rocks-sand-b", "rocks-sand-c" } else { "rocks-a", "rocks-b" }
+	for i = 1, 4 do
+		local name = coastalRocks[(i - 1) % #coastalRocks + 1]
+		if AssetIds["Naval/" .. name] then
+			local side = if i % 2 == 0 then 1 else -1
+			local seaRock = importedModel(folder, "Naval", name,
+				Vector3.new(100 + 27 * i, 0.5, side * (108 + 19 * i)), if warmShore then 19 else 23, false)
+			if seaRock then seaRock.Name = "DistantCoast_" .. i end
+		end
+	end
+	if warmShore and AssetIds["Naval/patch-sand-foliage"] then
+		for _, z in { -116, 116 } do
+			local patch = importedModel(folder, "Naval", "patch-sand-foliage", Vector3.new(13, 0.1, z), 11, false)
+			if patch then patch.Name = "SandyShore" end
+		end
+	elseif not warmShore and AssetIds["Castle/ground-hills"] then
+		for _, z in { -280, 280 } do
+			local hills = importedModel(folder, "Castle", "ground-hills", Vector3.new(-330, 0, z), 76, false)
+			if hills then hills.Name = "DistantHills" end
+		end
+	end
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
 	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
 	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(40, 0.8, 0), 22, false) then
