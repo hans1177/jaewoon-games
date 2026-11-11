@@ -4,6 +4,7 @@
 // 사용: node tools/vibe-normal-bake.mjs --parent <model> [--ratio 0.25] [--size 256] [--out build/bake]
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {runPython,findBlender} from './vibe-python.mjs';
@@ -70,17 +71,22 @@ export function inspectBakeSource(file){
 // [정적 선택] 베이크에 충분한 실제 면이 있고 관절·클립이 없는 CC0 원본을 우선한다.
 // 시드 순서는 동률에서만 사용한다. 세부가 없으면 원본을 변형해 결과를 조작하지 않는다.
 export function selectBakeParents(parents=[],max=3,history={}){
-  const prior=parent=>{
-    const item=history?.[String(parent.id)]||{};
-    return {failures:Number.isSafeInteger(item.failures)&&item.failures>=0?item.failures:0,
-      attempts:Number.isSafeInteger(item.attempts)&&item.attempts>=0?item.attempts:0};
-  };
-  return parents.map(parent=>({...parent,sourceProfile:inspectBakeSource(parent.file)}))
+  const candidates=parents.map(parent=>({...parent,sourceProfile:inspectBakeSource(parent.file)}))
     .filter(parent=>parent.sourceProfile.eligible)
-    // [자동 재연습] 기존 실측 실패 이력에 있는 부모는 뒤로 보내고 미시도 원본을 우선 탐색한다.
-    // 전부 실패했더라도 제외하지는 않는다. 동일 실패만 반복하지 않도록 배분한다.
-    .sort((a,b)=>prior(a).failures-prior(b).failures||
-      prior(a).attempts-prior(b).attempts||
+    .map(parent=>{
+      // [원본 동일성] 파일 내용이 바뀌면 과거 실패 횟수로 새 원본을 영구 차단하지 않는다.
+      const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(parent.file)).digest('hex');
+      const past=history?.[String(parent.id)]||{};
+      const same=!past.sourceSha256||past.sourceSha256===sourceSha256;
+      return {...parent,sourceSha256,priorAttempts:same&&Number.isSafeInteger(past.attempts)?Math.max(0,past.attempts):0,
+        priorFailures:same&&Number.isSafeInteger(past.failures)?Math.max(0,past.failures):0,
+        priorPasses:same&&Number.isSafeInteger(past.passes)?Math.max(0,past.passes):0};
+    });
+  // [실패 도감] 같은 원본의 실패 굽기를 두 번 검증했으면 다음 회차에는 중단한다.
+  // 합격/시도 기록과 다른 SHA를 가진 원본에는 다시 학습 기회를 부여한다.
+  return candidates.filter(parent=>parent.priorFailures<2||parent.priorPasses>0)
+    .sort((a,b)=>a.priorFailures-b.priorFailures||
+      a.priorAttempts-b.priorAttempts||
       b.sourceProfile.triangles-a.sourceProfile.triangles||
       String(a.id).localeCompare(String(b.id)))
     .slice(0,Math.max(0,max));
