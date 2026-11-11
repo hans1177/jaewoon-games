@@ -207,7 +207,7 @@ export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-syste
 // [자가복구 원자성] 전체 수정 내용을 메모리에서 검증하고, QA 승인 전에는 소스를 쓰지 않는다.
 const qaEvolutionRequested=clean(task.failureClass).toUpperCase()==='STALE_QA_CONTRACT'||clean(task.taskType).toLowerCase()==='qa-contract-repair'||unique(task.evidence).includes('qa-contract-drift:VERIFIED');
 if(edits.length+newFiles.length>MAX_EDITS)throw new Error('SYSTEM_AI_EDIT_LIMIT');
-const staged=new Map(),originals=new Map(),allowed=new Set(files);
+const staged=new Map(),originals=new Map();
 const qaBeforeByPath={};
 if(qaEvolutionRequested)for(const file of files)if(file.startsWith('qa/')&&fs.existsSync(file))qaBeforeByPath[file]=fs.readFileSync(file,'utf8');
 for(const edit of edits){
