@@ -916,7 +916,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       if((perFile.get(row.path)||0)>=8)continue;
       const entry={path:row.path,symbol:row.symbol,line:row.line,
         editable:row.editable,sourceVerified:true,runtimeVerified:false};
-      const line=row.path+':'+row.symbol+'@'+row.line+(row.editable?' [OWNER]':' [READ_ONLY]');
+      const line='CODE_MAP '+row.path+'::'+row.symbol+'@'+row.line
+        +(row.editable?' [OWNER]':' [READ_ONLY]');
       const size=Buffer.byteLength(line+'\n','utf8');
       if(bytes+size>2400)continue;
       bytes+=size;selected.push(entry);
