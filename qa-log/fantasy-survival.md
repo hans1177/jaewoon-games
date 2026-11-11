@@ -47,3 +47,5 @@
 - 'permission for Asset' 시크릿 복구 대기(사람 작업) 그대로.
 
 - 2026-11-12 02:08(KST, run 43064146928) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 환경 설정 창 jpg(c12) 직접 확인: 글자·버튼 정상. 'permission for Asset' 시크릿 복구 대기(사람 작업) 그대로. 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-12 08:2x(KST, 08:21 커밋) 바이브: 점검 실패 — errors "step2:Cannot read properties of undefined (reading 'includes')", 이어하기는 optional 로 건너뜀, 모험 시작 클릭 후 중단(클릭 0 집계, 프레임 0). 원인: 실행기 tools/company-development-roblox-studio-local-play.mjs 2815행에서 click_text 단계의 st.code(없음)에 .includes 호출. 수정: String(st.code||'') 로 방어. 게임 코드 문제 아님. 다음 점검에서 클릭 30/30 되는지 확인.
