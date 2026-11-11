@@ -3913,6 +3913,26 @@ local function renderCodexOverview()
 			return mkLabel(content, string.format("건물과 기술 사건은 시대순으로 열려요. 일찍 발견하고 보고하고, 학회·박람회·공동 발표를 하고, 어려운 퀘스트를 해내면 역사가 앞당겨져요. 지금 %.1f년 앞섬 (최대 %d년) · 이번 %d일 동안 앞당길 수 있는 양 %d/%d일. 앞서 갈수록, 짧은 기간에 몰아칠수록 덜 쌓여요.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 12, COLORS.muted, false)
 		end)
 	end
+	if view.people then
+		local pv = view.people
+		add(function() return mkHeader(content, string.format("인물 백과 (기록 %d / %d명)", pv.known, pv.total)) end)
+		add(function() return mkLabel(content, "항구를 찾아가거나 학자를 만나거나 역사 사건을 겪으면 그 시대의 인물이 백과에 기록돼요. 분야를 열어 보세요.", 12, COLORS.muted, false) end)
+		for _, t in pv.tiers do
+			add(function()
+				local label = string.format("%d명 기록 보상: %d코인 · 명성 %d", t.need, t.coins, t.fame)
+				return mkRow(content, label, if t.claimed then "받았어요" elseif t.ready then "받을 수 있어요" else string.format("%d명 더 기록하면 열려요", math.max(0, t.need - pv.known)), {
+					{ text = if t.claimed then "완료" else "받기", color = COLORS.gold, onClick = function() call("PeopleClaim", { need = t.need }) end, enabled = t.ready },
+				}, 52)
+			end)
+		end
+		for _, c in pv.cats do
+			add(function()
+				return mkRow(content, string.format("%s  %d / %d", c.name, c.known, c.total), "", {
+					{ text = "열기", color = COLORS.blue, onClick = function() codexField = "p:" .. c.id; render() end },
+				}, 48)
+			end)
+		end
+	end
 	if view.world then
 		local wv = view.world
 		add(function() return mkHeader(content, string.format("세계 소식 · 재해와 행운 (구호 %d번)", wv.aided or 0)) end)
@@ -3990,6 +4010,38 @@ local function renderCodexOverview()
 	end
 
 function H.renderCodexField()
+if string.sub(codexField, 1, 2) == "p:" then
+	local cid = string.sub(codexField, 3)
+	local cat = nil
+	for _, c in (view.people and view.people.cats or {}) do
+		if c.id == cid then
+			cat = c
+		end
+	end
+	if not cat then
+		codexField = nil
+		renderCodexOverview()
+		return
+	end
+	add(function()
+		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
+	end)
+	add(function() return mkLabel(content, string.format("인물 백과 · %s  %d / %d", cat.name, cat.known, cat.total), 17, COLORS.gold, true) end)
+	local n = 0
+	for _, p in view.people.list do
+		if p.cat == cid then
+			n += 1
+			add(function()
+				if p.known then
+					local sub = p.bio .. (if p.legacy ~= "" then "\n" .. p.legacy else "") .. (if p.rel then "\n" .. p.rel else "")
+					return mkRow(content, p.name .. "  (" .. p.years .. ")", sub, {}, 92)
+				end
+				return mkRow(content, string.format("??? #%d", n), p.hint, {}, 56)
+			end)
+		end
+	end
+	return
+end
 if string.sub(codexField, 1, 2) == "k:" then
 	local did = string.sub(codexField, 3)
 	local disc = nil

@@ -47,6 +47,7 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
+			peopleClaimed = {}, -- 인물 백과 보상 받은 단계 (필요 인원 문자열 → true)
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
@@ -468,6 +469,11 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.peopleClaimed) == "table" then
+			for k, v in saved.peopleClaimed do
+				if v == true and type(k) == "string" and #k <= 4 and tonumber(k) then s.peopleClaimed[k] = true end
+			end
+		end
 		if type(saved.world) == "table" then
 			local wv = saved.world
 			local w = { rng = math.floor(num(wv.rng, 1, 1, 2147483646)), nextDay = math.floor(num(wv.nextDay, 0, 0, 1e9)), cool = {}, active = {}, log = {}, aided = math.floor(num(wv.aided, 0, 0, 1e6)) }
@@ -650,6 +656,7 @@ return function(D)
 			portStages = state.portStages,
 			pace = state.pace,
 			world = state.world,
+			peopleClaimed = state.peopleClaimed,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,

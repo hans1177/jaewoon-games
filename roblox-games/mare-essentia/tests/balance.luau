@@ -34,6 +34,7 @@ local D = {
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
+	People = require("./Shared/People"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
