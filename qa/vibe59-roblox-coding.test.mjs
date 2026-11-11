@@ -139,6 +139,39 @@ test('duplicate edit anchors fail closed and missing receivers never become prov
   assert.ok(plans.plans.every(x=>x.exactFind===null));
 });
 
+// [함수 책임 추적] 명시적으로 선언된 로컬 함수와 동일 파일 호출 후보만 수집한다.
+test('Vibe59 function reference map stays source-grounded and never grants write authority',()=>{
+  const source=[
+    'local function updateState()',
+    '  return true',
+    'end',
+    '-- updateState()',
+    'local fake = "updateState()"',
+    'local function handleClick()',
+    '  updateState()',
+    '  humanoid:TakeDamage(3)',
+    'end'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({
+    files:[{path:'client/Fight.client.luau',source}],
+    responsiblePaths:['client/Fight.client.luau']
+  });
+  const target=report.functionReferences.find(row=>row.symbol==='updateState');
+  assert.ok(target);
+  assert.equal(target.declaredLine,1);
+  assert.deepEqual(target.possibleCallLines,[7]);
+  assert.equal(target.runtimeVerified,false);
+  assert.equal(report.qualityDirector.functionReferenceMatchesAreConfirmedCalls,false);
+  assert.equal(report.qualityDirector.sourceWrite,false);
+  const issue=report.diagnostics.find(row=>row.code==='COMBAT_CLIENT_DAMAGE');
+  assert.equal(issue.responsibleFunction,'handleClick');
+  const plan=planVibe59RobloxOfflineRepairs({
+    files:[{path:'client/Fight.client.luau',source}],
+    responsiblePaths:['client/Fight.client.luau']
+  });
+  assert.equal(plan.plans.find(row=>row.code==='COMBAT_CLIENT_DAMAGE').responsibleFunction,'handleClick');
+});
+
 test('existing authorized Luau code synthesis stays intact',()=>{
   const machine={handlerName:'handleFight',stateVariable:'phase',states:['idle','fight'],
     events:['attack'],transitions:[{from:'idle',to:'fight',event:'attack',actions:[]}]};
