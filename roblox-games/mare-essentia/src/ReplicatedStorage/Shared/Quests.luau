@@ -366,6 +366,21 @@ do
 	end
 end
 
+-- 인물과의 대화: 기록한 인물을 찾아 이야기를 듣는 연속 퀘스트
+do
+	local talks = {
+		{ n = 5, name = "이야기 한 자락", coins = 300, fame = 10 },
+		{ n = 20, name = "객석의 단골", coins = 1000, fame = 30 },
+		{ n = 50, name = "살아 있는 구술사", coins = 3000, fame = 80 },
+	}
+	local prev: string? = nil
+	for i, c in talks do
+		local id = "q_talk_" .. i
+		table.insert(Quests, { id = id, name = c.name, summary = string.format("기록한 인물 %d명과 대화하기", c.n), kind = "people_talk", amount = c.n, after = prev, rewardCoins = c.coins, rewardFame = c.fame, rewardCareer = "adventure", rewardXp = 50 + i * 50 } :: Quest)
+		prev = id
+	end
+end
+
 -- 시대의 증인: 인류의 시대가 넘어가는 순간을 따라간다 (연속 퀘스트)
 do
 	local names = { "대항해의 문", "과학 혁명의 증인", "계몽의 빛", "증기의 새벽" }

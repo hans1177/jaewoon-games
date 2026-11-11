@@ -169,6 +169,73 @@ return function(D, S)
 		return table.concat(parts, " · ")
 	end
 
+	local TALK_COINS, TALK_FAME = 40, 1
+
+	local function talkCount(state)
+		local n = 0
+		for _ in state.peopleTalked or {} do
+			n += 1
+		end
+		return n
+	end
+
+	local function lineOf(p)
+		if p.scholar then
+			return p.bio
+		end
+		return D.PeopleTalk.Lines[p.id]
+	end
+
+	-- 인물의 이야기에서 얻는 조언: 이어진 학문·교역품·사건
+	local function adviceOf(p)
+		local l = links[p.id]
+		local parts = {}
+		if #l.goods > 0 then
+			local gn = {}
+			for _, g in l.goods do
+				table.insert(gn, D.Ports.Goods[g] and D.Ports.Goods[g].name or g)
+			end
+			table.insert(parts, string.format("%s 교역과 이어진 인물이에요. 기록한 인물이 늘수록 그 교역품의 판매가가 조금씩 올라요.", table.concat(gn, "·")))
+		end
+		if l.disc and K.DisciplineById[l.disc] then
+			table.insert(parts, string.format("%s 연구를 도와요. 이 학문의 지식을 이해하면 재해 대비도 좋아져요.", K.DisciplineById[l.disc].name))
+		end
+		for _, e in l.events do
+			local ev = D.HistoryEvents.ById[e]
+			if ev then
+				table.insert(parts, string.format("역사 사건 「%s」가 닥치면 지식 활용 선택의 보상이 25%% 커져요.", ev.title))
+				break
+			end
+		end
+		return table.concat(parts, "\n")
+	end
+
+	-- 기록한 인물과 대화한다. 처음 나눌 때만 코인과 명성을 받는다.
+	function handlers.PeopleTalk(state, p)
+		local id = type(p) == "table" and type(p.id) == "string" and p.id
+		local person = id and byId[id]
+		if not person then
+			return false, "알 수 없는 인물이에요"
+		end
+		if not cacheOf(state).set[id] then
+			return false, "아직 백과에 기록하지 못한 인물이에요"
+		end
+		state.peopleTalked = state.peopleTalked or {}
+		local first = not state.peopleTalked[id]
+		local msgs = { string.format("%s: \"%s\" (게임 속 가상의 대화)", person.name, lineOf(person) or "…") }
+		local advice = adviceOf(person)
+		if advice ~= "" then
+			table.insert(msgs, advice)
+		end
+		if first then
+			state.peopleTalked[id] = true
+			state.coins += TALK_COINS
+			state.fame += TALK_FAME
+			table.insert(msgs, string.format("처음 나눈 대화 +%d코인, 명성 +%d", TALK_COINS, TALK_FAME))
+		end
+		return true, table.concat(msgs, "\n")
+	end
+
 	function handlers.PeopleClaim(state, p)
 		local need = type(p) == "table" and type(p.need) == "number" and math.floor(p.need)
 		local tier
@@ -234,7 +301,8 @@ return function(D, S)
 				end
 				local rel = if #relParts > 0 then table.concat(relParts, "  /  ") else nil
 				local years = if p.born then string.format("%d~%d", p.born, p.died) else string.format("활동 %d~%d", p.from, p.to)
-				table.insert(list, { id = p.id, cat = p.cat, known = true, name = p.name, years = years, bio = p.bio, legacy = p.legacy, rel = rel })
+				local talked = state.peopleTalked ~= nil and state.peopleTalked[p.id] == true
+				table.insert(list, { id = p.id, cat = p.cat, known = true, name = p.name, years = years, bio = p.bio, legacy = p.legacy, rel = rel, talked = talked, line = if talked then lineOf(p) else nil })
 			else
 				table.insert(list, { id = p.id, cat = p.cat, known = false, hint = hint(state, p) })
 			end
@@ -254,7 +322,7 @@ return function(D, S)
 		for d, tot in totalDisc do
 			byDisc[d] = { known = cacheOf(state).byDisc[d] or 0, total = tot }
 		end
-		return { total = #all, known = n, cats = cats, list = list, tiers = tiers, byDisc = byDisc }
+		return { total = #all, known = n, talked = talkCount(state), cats = cats, list = list, tiers = tiers, byDisc = byDisc }
 	end
 
 	local function catCount(state, cat)
@@ -268,5 +336,5 @@ return function(D, S)
 		return n
 	end
 
-	return { handlers = handlers, viewOf = viewOf, known = known, knownCount = knownCount, all = all, goodsBonus = goodsBonus, discBonus = discBonus, discCount = discCount, eventPeople = eventPeople, catCount = catCount }
+	return { handlers = handlers, viewOf = viewOf, known = known, knownCount = knownCount, all = all, goodsBonus = goodsBonus, discBonus = discBonus, discCount = discCount, eventPeople = eventPeople, catCount = catCount, talkCount = talkCount }
 end

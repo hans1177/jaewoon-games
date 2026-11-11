@@ -36,6 +36,7 @@ local D = {
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
+	PeopleTalk = require("./Shared/PeopleTalk"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -202,6 +203,66 @@ local function extraTests()
 	check("백과: 인원을 채우면 보상을 받고 한 번만", okC and stP2.coins == PE.Tiers[1].coins and select(1, act(stP2, "PeopleClaim", { need = needTier })) == false)
 	local backP = S.State.sanitize(S.State.serialize(stP2))
 	check("백과: 저장/불러오기", backP.peopleClaimed[tostring(needTier)] == true)
+	-- 인물 대화
+	local missingLine = 0
+	for _, p in PE.Curated do
+		if not D.PeopleTalk.Lines[p.id] then missingLine += 1 end
+	end
+	check("대화: 모든 큐레이션 인물에 대사가 있음", missingLine == 0)
+	local stT = newState("england")
+	local anyP = S.People.all[1]
+	for _, e in S.People.all do
+		if e.scholar then anyP = e; break end
+	end
+	check("대화: 기록 전에는 못 함", select(1, act(stT, "PeopleTalk", { id = anyP.id })) == false)
+	stT.scholarsMet[anyP.id] = true
+	stT.coins = 0
+	local okT = act(stT, "PeopleTalk", { id = anyP.id })
+	check("대화: 처음엔 보상, 두 번째엔 보상 없음", okT and stT.coins == 40 and act(stT, "PeopleTalk", { id = anyP.id }) and stT.coins == 40)
+	check("대화: 저장/불러오기", S.State.sanitize(S.State.serialize(stT)).peopleTalked[anyP.id] == true and S.People.talkCount(stT) == 1)
+	check("대화: 알 수 없는 인물 거절", select(1, act(stT, "PeopleTalk", { id = "nobody" })) == false)
+	-- 1600년대 초 시작
+	local st16 = S.State.new("netherlands", 1600)
+	check("1600 시작: 날짜와 해가 맞음", S.State.year(st16) == 1600)
+	local ev16, ev16n = 0, 0
+	for _, e in HE.Events do
+		if e.year < 1650 then ev16 += 1 end
+	end
+	for _, e in HE.Events do
+		if e.year >= 1600 then ev16n += 1 end
+	end
+	check("1600 시작: 1650년 이전 역사 사건이 15건 이상", ev16 >= 15 and ev16n == #HE.Events, ev16 .. "/" .. ev16n)
+	st16.day = HE.dayOf(HE.ById.eic_charter, 1600) + 1
+	S.History.tick(st16)
+	check("1600 시작: 1600년 말에 영국 동인도회사 사건이 닥침", st16.history.pending == "eic_charter" or st16.history.pending == "sekigahara", tostring(st16.history.pending))
+	local st50 = S.State.new("netherlands", 1700)
+	st50.day = 100
+	S.History.tick(st50)
+	check("1700 시작: 1650년 이전 사건은 나오지 않음", st50.history.pending == nil or HE.ById[st50.history.pending].year >= 1700)
+	local seenEarly = true
+	for _, e in HE.Events do
+		if e.year < 1700 then st50.history.seen[e.id] = nil end
+	end
+	for _, e in HE.Events do
+		if e.year < 1600 then seenEarly = false end
+	end
+	check("역사 사건은 모두 1600년 이후", seenEarly)
+	local galileoOk = false
+	st16.portId = "venice"
+	st16.fame = 100
+	st16.day = (1610 - 1600) * 365
+	local okG = act(st16, "Visit", { scholarId = "galileo" })
+	galileoOk = okG
+	check("1600 시작: 1610년 베네치아에서 갈릴레오를 만날 수 있음", galileoOk)
+	local pool16 = 0
+	for _, e in D.WorldEvents.Events do
+		if not e.year and 1600 >= e.frm then pool16 += 1 end
+	end
+	check("1600 시작: 무작위 재해·행운 후보가 넉넉함", pool16 >= 25, tostring(pool16))
+	local st16w = S.State.new("england", 1600)
+	st16w.day = 365 * 32
+	local w16 = S.World.tick(st16w)
+	check("1600 시작: 시간이 지나면 세계 이벤트가 쌓임(1631 베수비오 포함)", st16w.world.done.fx_vesuvius == true and #st16w.world.log >= 1)
 	-- 세계 이벤트: 실제 재해·연쇄
 	local badW2 = 0
 	local fixedN = 0

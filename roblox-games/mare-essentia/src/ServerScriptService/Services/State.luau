@@ -47,6 +47,7 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
+			peopleTalked = {}, -- 대화를 나눈 인물 (인물 id → true)
 			peopleClaimed = {}, -- 인물 백과 보상 받은 단계 (필요 인원 문자열 → true)
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
@@ -469,6 +470,11 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.peopleTalked) == "table" then
+			for k, v in saved.peopleTalked do
+				if v == true and type(k) == "string" and #k <= 40 then s.peopleTalked[k] = true end
+			end
+		end
 		if type(saved.peopleClaimed) == "table" then
 			for k, v in saved.peopleClaimed do
 				if v == true and type(k) == "string" and #k <= 4 and tonumber(k) then s.peopleClaimed[k] = true end
@@ -667,6 +673,7 @@ return function(D)
 			pace = state.pace,
 			world = state.world,
 			peopleClaimed = state.peopleClaimed,
+			peopleTalked = state.peopleTalked,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,

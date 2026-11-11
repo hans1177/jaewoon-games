@@ -100,6 +100,14 @@ local Scholars: { Scholar } = {
 		cardId = "art_baroque_music", line = "음악은 귀로 듣지만 마음이 먼저 일어선다네." },
 	{ id = "buxtehude", name = "디트리히 북스테후데", portId = "lubeck", fromYear = 1668, toYear = 1707, minFame = 40,
 		cardId = "art_organ", line = "오르간의 모든 관에 바람이 가득 찰 때 교회가 떨리지요." },
+	{ id = "galileo", name = "갈릴레오 갈릴레이", portId = "venice", fromYear = 1609, toYear = 1642, minFame = 60,
+		cardId = "ast_jupiter_moons", line = "렌즈를 하늘로 돌려 보게. 목성 곁의 작은 별들이 밤마다 자리를 바꾼다네." },
+	{ id = "harvey", name = "윌리엄 하비", portId = "london", fromYear = 1628, toYear = 1657, minFame = 40,
+		cardId = "med_circulation", line = "심장은 쉬지 않고 피를 밀어낸다네. 계산해 보면 그 피가 다시 돌아와야만 하지." },
+	{ id = "torricelli", name = "에반젤리스타 토리첼리", portId = "livorno", fromYear = 1641, toYear = 1647, minFame = 40,
+		cardId = "phy_barometer", line = "우리는 공기의 바다 밑바닥에 살고 있지요. 그 무게가 수은 기둥을 떠받칩니다." },
+	{ id = "hooke", name = "로버트 훅", portId = "london", fromYear = 1665, toYear = 1703, minFame = 40,
+		cardId = "med_cell_observation", line = "코르크를 얇게 썰어 보니 작은 방들이 가득했소. 나는 그것을 세포라 불렀지." },
 }
 
 return {

@@ -4040,7 +4040,8 @@ if string.sub(codexField, 1, 2) == "p:" then
 			add(function()
 				if p.known then
 					local sub = p.bio .. (if p.legacy ~= "" then "\n" .. p.legacy else "") .. (if p.rel then "\n" .. p.rel else "")
-					local row = mkRow(content, p.name .. "  (" .. p.years .. ")", sub, {}, 104)
+					local talkLabel = if p.talked then "다시 듣기" else "대화 (+40)"
+					local row = mkRow(content, p.name .. "  (" .. p.years .. ")", sub, { { text = talkLabel, color = COLORS.blue or COLORS.gold, onClick = function() call("PeopleTalk", { id = p.id }) end } }, 104)
 					-- 등록된 초상이 있으면 초상, 없으면 분야 유물 그림 (학자: scholar_<id>, 그 밖의 인물: person_<id>)
 					local key = if AssetIds["Portraits/scholar_" .. p.id] then "scholar_" .. p.id elseif AssetIds["Portraits/person_" .. p.id] then "person_" .. p.id else nil
 					if key then
@@ -5153,18 +5154,20 @@ renderTitle = function()
 	-- ② 시대
 	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
+		{ 1600, "1600년", "동인도회사의 새벽" },
+		{ 1625, "1625년", "30년 전쟁의 시대" },
 		{ 1650, "1650년", "과학혁명의 시작" },
 		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
 		{ 1750, "1750년", "분류학의 시대" },
 	}
 	local rowF = Instance.new("Frame")
 	rowF.BackgroundTransparency = 1
-	rowF.Size = UDim2.new(1, 0, 0, 60)
+	rowF.Size = UDim2.new(1, 0, 0, 128)
 	rowF.LayoutOrder = nxt()
 	rowF.ZIndex = 12
 	rowF.Parent = titleScroll
 	local eg = Instance.new("UIGridLayout")
-	eg.CellSize = UDim2.new(1 / 3, -6, 1, 0)
+	eg.CellSize = UDim2.new(1 / 3, -6, 0, 60)
 	eg.CellPadding = UDim2.fromOffset(8, 0)
 	eg.SortOrder = Enum.SortOrder.LayoutOrder
 	eg.Parent = rowF
