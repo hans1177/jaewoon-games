@@ -83,6 +83,8 @@ jobs:
             # repository binding and the expected machine-specific name pass.
             Add-Candidate (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner')
             Add-Candidate (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner2')
+            # [E 드라이브] 기존 마이그레이션의 표준 등록 경로를 재부팅 복구에서도 직접 확인한다.
+            Add-Candidate 'E:\JaewoonRobloxStudioRunner'
             $patterns = @(
               'C:\actions-runner*','C:\github-actions-runner*',
               'D:\actions-runner*','D:\github-actions-runner*',
@@ -251,7 +253,8 @@ jobs:
           $runnerRoot = $null
           foreach ($known in @(
             (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner'),
-            (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner2')
+            (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner2'),
+            'E:\JaewoonRobloxStudioRunner'
           )) {
             if (Test-RunnerRoot $known) { $runnerRoot = $known; break }
           }
