@@ -47,7 +47,7 @@ return function(D, S)
 			end
 		end
 		local stages = state.portStages and state.portStages[state.portId] and state.portStages[state.portId].guard or 0
-		return math.min(0.8, math.min(0.5, n * 0.02) + math.min(0.4, stages * 0.08))
+		return math.min(0.8, math.min(0.5, n * 0.02) + math.min(0.4, stages * 0.08) + math.min(0.1, S.People.discCount(state, guard) * 0.01))
 	end
 
 	local function validGoods(list)

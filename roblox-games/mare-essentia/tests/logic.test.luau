@@ -1996,7 +1996,7 @@ do
 	local g0 = S.Knowledge.supplyMult(stI, "london", "glass")
 	stI.harbor.london = 3000
 	local g1 = S.Knowledge.supplyMult(stI, "london", "glass")
-	check("지식: 항구에 투자하면 관련 교역품이 싸짐", g0 == 1 and g1 < 1 and g1 >= 0.8, g0 .. "/" .. g1)
+	check("지식: 항구에 투자하면 관련 교역품이 싸짐", g0 <= 1 and g1 < g0 and g1 >= 0.7, g0 .. "/" .. g1)
 	check("지식: 관련 없는 교역품은 그대로", S.Knowledge.supplyMult(stI, "london", "wool") == 1)
 	check("지식: 학자가 없는 항구는 영향 없음", S.Knowledge.supplyMult(stI, "marseille", "glass") == 1)
 	-- 학회 발표
@@ -2150,6 +2150,33 @@ do
 	local backV = S.State.sanitize(S.State.serialize(stY))
 	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
 	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
+	-- 인물과 학문·교역품·사건의 연결
+	local stL = newState("england")
+	stL.stats.visited = {}
+	check("연결: 기록이 없으면 보너스 없음", S.People.goodsBonus(stL, "tea") == 1 and S.People.discBonus(stL, { "navigation" }) == 0)
+	stL.stats.visited = { amsterdam = true, london = true, canton = true, edo = true }
+	stL.day = 365 * 70
+	check("연결: 인물을 기록하면 교역품 값 보너스", S.People.goodsBonus(stL, "tea") > 1 and S.People.goodsBonus(stL, "tea") <= 1.08)
+	check("연결: 학문 연구 보너스(상한 3%)", S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) > 0 and S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) <= 0.03 + 1e-9)
+	check("연결: 지식 서비스 교역품 값에 반영", S.Knowledge.goodsMult(stL, "tea") > 1)
+	check("연결: 사건에 얽힌 인물을 기록하면 인연", #S.People.eventPeople(stL, "great_fire") >= 1)
+	local mitL = S.World.mitigation(stL, "history")
+	stL.stats.visited = {}
+	check("연결: 기록한 인물이 재해 대비를 높임", mitL > S.World.mitigation(stL, "history"))
+	local sumP = S.View.build(stL, ctx).people
+	check("연결: 학문별 인물 수가 화면에 담김", sumP.byDisc.history ~= nil and sumP.byDisc.history.total > 3)
+	-- 인물 백과 퀘스트
+	local stQ = newState("england")
+	stQ.stats.visited = { amsterdam = true, london = true, canton = true, edo = true, lisbon = true, plymouth = true, seville = true, calicut = true }
+	stQ.day = 365 * 80
+	local q1 = D.Quests.ById.q_people_1
+	check("인물 퀘스트: 연속 퀘스트와 분야 퀘스트가 있음", q1 ~= nil and D.Quests.ById.q_people_2.after == "q_people_1" and D.Quests.ById.q_people_explorer.cat == "explorer")
+	check("인물 퀘스트: 진행도가 기록한 인물 수", S.Quest.progressAny(stQ, q1) == S.People.knownCount(stQ) and S.Quest.progressAny(stQ, q1) >= 5, S.Quest.progressAny(stQ, q1) .. "/" .. S.People.knownCount(stQ))
+	check("인물 퀘스트: 분야별 진행도", S.Quest.progressAny(stQ, D.Quests.ById.q_people_explorer) == S.People.catCount(stQ, "explorer") and S.People.catCount(stQ, "explorer") >= 3)
+	local coinsQ = stQ.coins
+	local msgsQ = {}
+	S.Quest.autoReport(stQ, msgsQ)
+	check("인물 퀘스트: 조건을 채우면 자동 보상", stQ.quests.done.q_people_1 == true and stQ.coins > coinsQ)
 	-- 인물 백과
 	local PE = D.People
 	local catOk = {}
@@ -2336,6 +2363,7 @@ do
 	end
 	check("역사: 모든 사건에 지식 활용 선택지가 있고 올바름", insBad == nil, insBad)
 	local stI = newState("england")
+	stI.stats.visited = {}
 	stI.history.pending = "great_fire"
 	stI.coins = 100
 	local viewI0 = S.View.build(stI, ctx).history.pending

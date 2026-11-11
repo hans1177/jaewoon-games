@@ -4060,6 +4060,10 @@ if string.sub(codexField, 1, 2) == "k:" then
 	end)
 	add(function() return mkLabel(content, string.format("%s  이해 %d / %d", disc.name, disc.done, disc.total), 17, COLORS.gold, true) end)
 	add(function() return mkLabel(content, disc.summary, 13, COLORS.text, false) end)
+	local pd = view.people and view.people.byDisc and view.people.byDisc[disc.id]
+	if pd then
+		add(function() return mkLabel(content, string.format("이 학문과 이어진 인물 %d / %d명 기록 — 인물을 기록할수록 이 학문의 연구가 조금씩 빨라져요.", pd.known, pd.total), 12, COLORS.green, false) end)
+	end
 	local kv = view.knowledge
 	add(function()
 		return mkLabel(content, string.format("지금 효과: 항해 속도 +%d%% · 포격 +%d%%", math.floor(kv.speedBonus * 100 + 0.5), math.floor(kv.cannonBonus * 100 + 0.5)), 12, COLORS.green, false)

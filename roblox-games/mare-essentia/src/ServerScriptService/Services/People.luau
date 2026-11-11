@@ -22,7 +22,10 @@ return function(D, S)
 		local discs = K.ScholarDisciplines[sc.id] or {}
 		local cat = "science"
 		for _, d in discs do
-			if d == "art" then cat = "art" break end
+			if d == "art" then
+				cat = "art"
+				break
+			end
 			if d == "philosophy" then cat = "thought" end
 			if d == "history" or d == "linguistics" or d == "mythology" then cat = "letters" end
 			if d == "commerce" then cat = "merchant" end
@@ -50,14 +53,90 @@ return function(D, S)
 		return false
 	end
 
-	local function knownCount(state)
-		local n = 0
-		for _, p in all do
-			if known(state, p) then
-				n += 1
+	-- 연결 정보: 인물이 이어진 학문·교역품·역사 사건 (학자는 그 학문과, 그가 얽힌 사건과 이어진다)
+	local links = {}
+	for _, p in all do
+		local l = PD.Links[p.id]
+		if l then
+			links[p.id] = { disc = l.disc, goods = l.goods or {}, events = l.events or {} }
+		else
+			local discs = K.ScholarDisciplines[p.id]
+			links[p.id] = { disc = discs and discs[1] or nil, goods = {}, events = {} }
+		end
+		if p.via and p.via.event and not table.find(links[p.id].events, p.via.event) then
+			table.insert(links[p.id].events, p.via.event)
+		end
+	end
+	for _, ev in D.HistoryEvents.Events do
+		for _, pid in ev.people or {} do
+			if links[pid] and not table.find(links[pid].events, ev.id) then
+				table.insert(links[pid].events, ev.id)
 			end
 		end
-		return n
+	end
+
+	-- 기록한 인물 목록·학문별/교역품별 수는 상태가 바뀔 때만 다시 센다 (자주 불리므로 캐시)
+	local function cacheOf(state)
+		local sig = tostring(state.day)
+		for _, t in { state.stats.visited, state.scholarsMet or {}, (state.history and state.history.seen) or {} } do
+			local n = 0
+			for _ in t do
+				n += 1
+			end
+			sig ..= "|" .. n
+		end
+		local c = state.peopleCache
+		if c and c.sig == sig then
+			return c
+		end
+		c = { sig = sig, set = {}, count = 0, byDisc = {}, byGood = {} }
+		for _, p in all do
+			if known(state, p) then
+				c.set[p.id] = true
+				c.count += 1
+				local l = links[p.id]
+				if l.disc then
+					c.byDisc[l.disc] = (c.byDisc[l.disc] or 0) + 1
+				end
+				for _, g in l.goods do
+					c.byGood[g] = (c.byGood[g] or 0) + 1
+				end
+			end
+		end
+		state.peopleCache = c
+		return c
+	end
+
+	local function knownCount(state)
+		return cacheOf(state).count
+	end
+
+	-- 인물 인연: 이어진 교역품 값 +1%/명 (최대 +8%), 학문 연구 +0.3%/명 (최대 +3%)
+	local function goodsBonus(state, goodId)
+		local n = cacheOf(state).byGood[goodId] or 0
+		return 1 + math.min(0.08, 0.01 * n)
+	end
+	local function discBonus(state, discs)
+		local c = cacheOf(state)
+		local n = 0
+		for _, d in discs do
+			n += c.byDisc[d] or 0
+		end
+		return math.min(0.03, 0.003 * n)
+	end
+	local function discCount(state, disc)
+		return cacheOf(state).byDisc[disc] or 0
+	end
+	-- 어떤 역사 사건에 얽힌 인물 중 내가 기록한 인물 (사건 선택의 인연 보너스)
+	local function eventPeople(state, evId)
+		local c = cacheOf(state)
+		local out = {}
+		for _, p in all do
+			if c.set[p.id] and table.find(links[p.id].events, evId) then
+				table.insert(out, p)
+			end
+		end
+		return out
 	end
 
 	local function hint(state, p)
@@ -130,11 +209,30 @@ return function(D, S)
 			end
 			if ok then
 				n += 1
-				local rel = nil
-				local v = p.via or {}
-				if v.event and D.HistoryEvents.ById[v.event] then
-					rel = "관련 사건: " .. D.HistoryEvents.ById[v.event].title
+				local l = links[p.id]
+				local relParts = {}
+				if l.disc and K.DisciplineById[l.disc] then
+					table.insert(relParts, "학문: " .. K.DisciplineById[l.disc].name)
 				end
+				if #l.goods > 0 then
+					local gn = {}
+					for _, g in l.goods do
+						table.insert(gn, D.Ports.Goods[g] and D.Ports.Goods[g].name or g)
+					end
+					table.insert(relParts, "교역품: " .. table.concat(gn, "·"))
+				end
+				if #l.events > 0 then
+					local en = {}
+					for _, e in l.events do
+						if D.HistoryEvents.ById[e] then
+							table.insert(en, D.HistoryEvents.ById[e].title)
+						end
+					end
+					if #en > 0 then
+						table.insert(relParts, "사건: " .. table.concat(en, "·"))
+					end
+				end
+				local rel = if #relParts > 0 then table.concat(relParts, "  /  ") else nil
 				local years = if p.born then string.format("%d~%d", p.born, p.died) else string.format("활동 %d~%d", p.from, p.to)
 				table.insert(list, { id = p.id, cat = p.cat, known = true, name = p.name, years = years, bio = p.bio, legacy = p.legacy, rel = rel })
 			else
@@ -145,8 +243,30 @@ return function(D, S)
 		for _, t in PD.Tiers do
 			table.insert(tiers, { need = t.need, coins = t.coins, fame = t.fame, claimed = claimed[tostring(t.need)] == true, ready = n >= t.need and not claimed[tostring(t.need)] })
 		end
-		return { total = #all, known = n, cats = cats, list = list, tiers = tiers }
+		local byDisc = {}
+		local totalDisc = {}
+		for _, p in all do
+			local d = links[p.id].disc
+			if d then
+				totalDisc[d] = (totalDisc[d] or 0) + 1
+			end
+		end
+		for d, tot in totalDisc do
+			byDisc[d] = { known = cacheOf(state).byDisc[d] or 0, total = tot }
+		end
+		return { total = #all, known = n, cats = cats, list = list, tiers = tiers, byDisc = byDisc }
 	end
 
-	return { handlers = handlers, viewOf = viewOf, known = known, knownCount = knownCount, all = all }
+	local function catCount(state, cat)
+		local c = cacheOf(state)
+		local n = 0
+		for _, p in all do
+			if p.cat == cat and c.set[p.id] then
+				n += 1
+			end
+		end
+		return n
+	end
+
+	return { handlers = handlers, viewOf = viewOf, known = known, knownCount = knownCount, all = all, goodsBonus = goodsBonus, discBonus = discBonus, discCount = discCount, eventPeople = eventPeople, catCount = catCount }
 end

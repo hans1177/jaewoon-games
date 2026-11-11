@@ -23,6 +23,7 @@ export type Quest = {
 	minAffinity: number?,
 	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
+	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
 
 local Quests: { Quest } = {
@@ -337,6 +338,33 @@ end
 table.insert(Quests, { id = "q_stock_1", name = "첫 주주", summary = "증권거래소에서 주식 거래 3번 하기 (암스테르담·런던)", kind = "stock", amount = 3, rewardCoins = 600, rewardFame = 20, rewardCareer = "trade", rewardXp = 90 } :: Quest)
 table.insert(Quests, { id = "q_stock_2", name = "배당의 맛", summary = "주식 배당으로 코인 1000 받기", kind = "dividend", amount = 1000, after = "q_stock_1", rewardCoins = 1500, rewardFame = 40, rewardCareer = "trade", rewardXp = 160 } :: Quest)
 table.insert(Quests, { id = "q_stock_3", name = "큰손", summary = "주식 거래 20번 하기", kind = "stock", amount = 20, after = "q_stock_2", rewardCoins = 4000, rewardFame = 90, rewardCareer = "trade", rewardXp = 300 } :: Quest)
+
+-- 인물 백과: 항구·학자·사건으로 인물을 기록하는 연속 퀘스트와 분야별 퀘스트
+do
+	local chain = {
+		{ n = 5, name = "백과의 첫 쪽", coins = 300, fame = 10 },
+		{ n = 20, name = "세계의 이름들", coins = 900, fame = 30 },
+		{ n = 50, name = "살아 있는 역사책", coins = 2500, fame = 70 },
+		{ n = 100, name = "인류의 초상", coins = 6000, fame = 150 },
+	}
+	local prev: string? = nil
+	for i, c in chain do
+		local id = "q_people_" .. i
+		table.insert(Quests, { id = id, name = c.name, summary = string.format("인물 백과에 인물 %d명 기록하기", c.n), kind = "people", amount = c.n, after = prev, rewardCoins = c.coins, rewardFame = c.fame, rewardCareer = "adventure", rewardXp = 60 + i * 60 } :: Quest)
+		prev = id
+	end
+	local cats = {
+		{ cat = "explorer", name = "바다 너머의 이름들", label = "탐험가·항해가", n = 6, coins = 1200, fame = 40 },
+		{ cat = "science", name = "별과 지도를 그린 사람들", label = "과학자·지도 제작자", n = 8, coins = 1500, fame = 50 },
+		{ cat = "merchant", name = "돈이 흐르는 길", label = "상인·금융가", n = 5, coins = 1200, fame = 40 },
+		{ cat = "pirate", name = "깃발 아래의 사람들", label = "해적·사략선장", n = 5, coins = 1200, fame = 40 },
+		{ cat = "ruler", name = "왕관과 항구", label = "군주·정치가", n = 10, coins = 1800, fame = 60 },
+		{ cat = "letters", name = "펜과 악보의 시대", label = "문학·음악가", n = 6, coins = 1200, fame = 40 },
+	}
+	for _, c in cats do
+		table.insert(Quests, { id = "q_people_" .. c.cat, name = c.name, summary = string.format("%s %d명 기록하기", c.label, c.n), kind = "people", cat = c.cat, amount = c.n, rewardCoins = c.coins, rewardFame = c.fame, rewardCareer = "adventure", rewardXp = 120 } :: Quest)
+	end
+end
 
 -- 시대의 증인: 인류의 시대가 넘어가는 순간을 따라간다 (연속 퀘스트)
 do
