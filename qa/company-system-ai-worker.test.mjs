@@ -858,3 +858,52 @@ test('existing evolution QA covers repair scoring source and worker regression o
   }
   assert.match(workflow,/node --test qa\/company-system-ai-worker\.test\.mjs qa\/company-system-ai-evolution\.test\.mjs qa\/company-system-ai-supervision-loop\.test\.mjs/);
 });
+
+ // [자가복구 원자성 회귀] 뒤쪽 편집 오류로 앞쪽 파일이 반쯤 적용되지 않아야 한다.
+test('System AI validates every exact edit before mutating any responsible file',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/a.mjs','export const a=1;\n');
+    write('tools/b.mjs','export const b=1;\n');
+    write('task.json',JSON.stringify({id:'atomic-edit',status:'running',goal:'update both',responsibleFiles:['tools/a.mjs','tools/b.mjs']}));
+    write('response.json',JSON.stringify({summary:'candidate',edits:[
+      {path:'tools/a.mjs',find:'a=1',replace:'a=2'},
+      {path:'tools/b.mjs',find:'missing-token',replace:'b=2'}
+    ]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'}),/SYSTEM_AI_FIND_MISSING/);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=1;\n');
+    assert.equal(fs.readFileSync('tools/b.mjs','utf8'),'export const b=1;\n');
+    assert.equal(fs.existsSync('result.json'),false);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+test('System AI rejects late new-file scope failure without partial earlier edits',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/a.mjs','export const a=1;\n');
+    write('task.json',JSON.stringify({id:'atomic-scope',status:'running',goal:'scoped update',responsibleFiles:['tools/a.mjs']}));
+    write('response.json',JSON.stringify({summary:'candidate',edits:[
+      {path:'tools/a.mjs',find:'a=1',replace:'a=2'}
+    ],newFiles:[{path:'tools/unassigned.mjs',content:'unexpected'}]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'}),/SYSTEM_AI_UNASSIGNED_NEW_FILE/);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=1;\n');
+    assert.equal(fs.existsSync('tools/unassigned.mjs'),false);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+test('System AI stages sequential edits on one file and refuses fake source mutations',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/a.mjs','export const a=1;\n');
+    write('task.json',JSON.stringify({id:'two-edits',status:'running',goal:'update one file twice',responsibleFiles:['tools/a.mjs']}));
+    const response={summary:'candidate',edits:[
+      {path:'tools/a.mjs',find:'a=1',replace:'a=2'},
+      {path:'tools/a.mjs',find:'a=2',replace:'a=3'}
+    ]};
+    write('response.json',JSON.stringify(response));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.deepEqual(result.changedFiles,['tools/a.mjs']);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=3;\n');
+    write('response.json',JSON.stringify({...response,edits:[{path:'tools/a.mjs',find:'a=3',replace:'a=3'}]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_NO_OP_EDIT/);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=3;\n');
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
