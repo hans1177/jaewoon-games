@@ -200975,11 +200975,162 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_26058d63e645161b889086a4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12623",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "21a81421620c8a60218d4d2f68545901a910942f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12623,
+        "baseBranch": "main",
+        "headBranch": "claude/mare-building-look",
+        "baseSha": "21a81421620c8a60218d4d2f68545901a910942f",
+        "headSha": "744852a74ae620a48a317f93caf74fe2b637e536",
+        "mergeCommitSha": "d6d7bc861b3305eeee0db71752b0f05baf4d8dce",
+        "mergedAt": "2026-11-11T22:58:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fc5d0d5b3afdff112dedee37eabd79cb64115c5a3f210b97f776281293972c41",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/mare-building-look",
+        "candidateSha": "744852a74ae620a48a317f93caf74fe2b637e536"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 444,
+        "deletedLineCount": 40,
+        "changedFiles": [
+          "assets/vibe-cinematic-director.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-character-music.mjs",
+          "assets/vibe-genre-director.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-storybook-cinematics.mjs",
+          "qa/vibe-cinematic-director.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-character-music.test.mjs",
+          "qa/vibe-genre-director.test.mjs",
+          "qa/vibe-storybook-cinematics.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/docs/CATALOG.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Facilities.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Facility.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-cinematic-director.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-character-music.mjs",
+          "assets/vibe-genre-director.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-storybook-cinematics.mjs",
+          "qa/vibe-cinematic-director.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-character-music.test.mjs",
+          "qa/vibe-genre-director.test.mjs",
+          "qa/vibe-storybook-cinematics.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Facilities.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Facility.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12623",
+        "merge-commit:d6d7bc861b3305eeee0db71752b0f05baf4d8dce",
+        "base-main:21a81421620c8a60218d4d2f68545901a910942f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1602
+    "total": 1603
   }
 }
