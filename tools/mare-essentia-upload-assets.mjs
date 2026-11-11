@@ -155,11 +155,27 @@ if (studioRegrantPath) {
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
   const originalBytes = await fs.readFile(item.file);
-  if (blockedHashes.has(crypto.createHash('sha256').update(originalBytes).digest('hex'))) {
+  const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
+  if (blockedHashes.has(sourceSha256)) {
     delete registry.assets[id];
     previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
     console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
     continue;
+  }
+  // [교역품 자동 연습→수정] 승인 SHA가 달라졌을 때만 기존 Image 업로드를 갱신한다.
+  // 미승인 변경은 현재 ID를 유지하되 업로드·게임 갱신을 차단한다.
+  if (item.kind === 'Goods' && item.assetType === 'Image') {
+    if (approvedImages[id] !== sourceSha256) {
+      console.log('GOODS_IMAGE_CHANGE_NOT_APPROVED', id);
+      if (registry.assets[id]?.assetId) failures.push(id + ': GOODS_APPROVAL_HASH_MISMATCH');
+      continue;
+    }
+    const old = registry.assets[id];
+    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+      previousTypeAssets.set(id, {...old});
+      delete registry.assets[id];
+      console.log('GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+    }
   }
   // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
   if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
@@ -173,6 +189,10 @@ for (const item of plan) {
   if (registry.assets[id]?.assetId) {
     // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
     registry.assets[id].source = item.file;
+    // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
+    // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
+    if (item.kind === 'Goods' && item.assetType === 'Image')
+      registry.assets[id].sourceSha256 = sourceSha256;
     if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
     console.log('SKIP_ALREADY_REGISTERED', id);
     continue;
@@ -284,7 +304,8 @@ for (const item of plan) {
     }
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
-    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false};
+    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
+      ...(item.kind === 'Goods' && item.assetType === 'Image' ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);

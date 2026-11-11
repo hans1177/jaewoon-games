@@ -534,3 +534,38 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
   assert.match(client,/if #itemMotion >= 10 then return end/);
   assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
 });
+
+
+test('Mare trade goods practice validates existing originals, rights and blocked goods before autonomous registration',()=>{
+  const root='roblox-games/mare-essentia';
+  const wanted=JSON.parse(fs.readFileSync(root+'/assets-wanted.seed.json','utf8'))
+    .find(x=>x.id==='trade-goods-icons-missing');
+  const registry=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
+  const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const script=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.equal(wanted.goods.length,16);
+  assert.equal(new Set(wanted.goods).size,16);
+  assert.deepEqual(wanted.blockedGoods,['beer','sake']);
+  for(const name of wanted.goods){
+    const row=registry['Goods/'+name];
+    assert.ok(row?.assetId,'missing registered '+name);
+    assert.equal(row.usePermissionGranted,true,'permission '+name);
+    assert.ok(approved['Goods/'+name],'missing approved SHA '+name);
+    assert.equal(row.source,root+'/assets/goods/'+name+'.png');
+  }
+  for(const name of wanted.blockedGoods)assert.equal(registry['Goods/'+name],undefined);
+  assert.match(script,/def trade_goods_practice\(\):/);
+  assert.match(script,/sourceFingerprintRecorded/);
+  assert.match(script,/nativeStudioDisplayVerified": False/);
+  assert.match(script,/TRADE_GOODS_PRACTICE_REJECTED/);
+  assert.match(workflow,/Practice and verify approved trade goods using existing asset ledger/);
+  assert.match(workflow,/python3 tools\/devloop\/assets_wanted\.py roblox-games\/mare-essentia --verify-goods/);
+  assert.match(workflow,/Refresh asset practice ledger after Roblox registration/);
+  assert.match(workflow,/roblox-games\/mare-essentia\/assets-wanted\.json; do/);
+  assert.match(uploader,/GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD/);
+  assert.match(uploader,/GOODS_IMAGE_CHANGE_NOT_APPROVED/);
+  assert.match(uploader,/sourceSha256/);
+  assert.doesNotMatch(workflow,/publish_after_register: \s*true/);
+});
