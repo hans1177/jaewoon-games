@@ -90,7 +90,8 @@ function verify(){
     if(framesInfo.ratio>=.4)return {ok:false,why:`깨진 화면 ${framesInfo.bad}/${framesInfo.checked}장(검정·흰색·단색)`};
     // 미적 점수(외부 AI 없이 픽셀 통계): 기본은 보고만 하고, spec.aestheticBudget.minScore 가 있을 때만 승급을 막는다.
     const budget=spec.aestheticBudget||{};
-    const aargs=['tools/vibe_aesthetic_score.py','--dir',fr,'--looks','assets/roblox/common-look-v1/look-presets.json'];
+    const aargs=['tools/vibe_aesthetic_score.py','--dir',fr,'--scene-composition',
+      '--looks','assets/roblox/common-look-v1/look-presets.json'];
     if(budget.referenceDir&&fs.existsSync(budget.referenceDir))aargs.push('--reference',budget.referenceDir);
     const ap=spawnSync('python3',aargs,{encoding:'utf8',maxBuffer:1<<26});
     try{aestheticInfo=JSON.parse(ap.stdout.trim().split('\n').pop())}catch{aestheticInfo=null}
