@@ -30,12 +30,21 @@
     },
     "fantasy-survival:combat": {
       "lastAt": 1794378838580,
+      "pending": false,
+      "lastSha": "1308769ce356bb02c2f517397acec4a78407ab29",
+      "runs": 1,
+      "ema": 0.65,
+      "failStreak": 1,
+      "lastResult": "FAILED"
+    },
+    "mare-essentia:trade": {
+      "lastAt": 1794379459689,
       "pending": true,
-      "lastSha": "1308769ce356bb02c2f517397acec4a78407ab29"
+      "lastSha": "a5c8906b0d937bb7c7f043fd878b36b02061ba43"
     }
   },
   "lastReport": {
-    "fantasy-survival": "[{\"plannedSteps\":185,\"completedSteps\":2,\"plannedClicks\":30,\"successfulClicks\":0,\"plannedFrames\":31,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
+    "fantasy-survival": "[{\"plannedSteps\":42,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":9,\"capturedFrames\":0,\"abortedEarly\":true},1,1,[{\"step\":1,\"click\":\"이어하기\",\"at\":\"NOT_FOUND\",\"out\":\"NONE\\ntext\"}]]",
     "mare-essentia": "[{\"plannedSteps\":23,\"completedSteps\":23,\"plannedClicks\":5,\"successfulClicks\":5,\"plannedFrames\":6,\"capturedFrames\":6,\"abortedEarly\":false},0,15,[{\"step\":22,\"ctx\":\"Client\",\"out\":\"TAC_END title= ERR n=0 first=\\ntext\"}]]"
   },
   "orders": {
@@ -43,12 +52,12 @@
       "id": "studio-unreachable",
       "kind": "infra",
       "task": "health",
-      "text": "Studio 점검이 중간에 멈춤: step1:ROBLOX_STUDIO_MCP_TOOL_ERROR:screen_capture:Network action ScreenCaptureTool.CaptureScreen sent to DMN_RSRVD_FOCUSED failed - Target is not reachable (ScreenCaptureTool.CaptureScreen, DMN_RSRVD_",
+      "text": "Studio 점검이 중간에 멈춤: step1:STUDIO_UI_TARGET_NOT_FOUND:이어하기",
       "game": "fantasy-survival",
       "fingerprint": "fantasy-survival:studio-unreachable",
       "firstAt": 1794368302951,
-      "lastAt": 1794378837258,
-      "seen": 2,
+      "lastAt": 1794379458226,
+      "seen": 3,
       "resolvedAt": 1794371068002
     },
     "mare-essentia:no-mobs": {
@@ -92,7 +101,8 @@
     "fantasy-survival:health",
     "mare-essentia:health",
     "fantasy-survival:ui",
-    "fantasy-survival:combat"
+    "fantasy-survival:combat",
+    "mare-essentia:trade"
   ],
-  "lastDispatchAt": 1794378838580
+  "lastDispatchAt": 1794379459689
 }
