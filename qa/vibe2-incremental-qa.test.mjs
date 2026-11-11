@@ -1005,6 +1005,11 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   // 실패용 원본 테스트가 실제로 실패하는지도 독립 실행으로 먼저 입증한다.
   assert.throws(()=>execFileSync(process.execPath,
     ['--test',path.join(base,'qa','invariant.test.mjs')],{cwd:root,stdio:'pipe'}));
-  assert.throws(()=>runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'}),
-    /GAME_REPAIR_INVARIANT_FAILED/);
+  let after=null,regressionError=null;
+  try{after=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});}
+  catch(error){regressionError=error;}
+  assert.ok(regressionError,'modified invariant test must fail rather than reuse a cached PASS: '+
+    JSON.stringify({cached:after?.cached,hashChanged:after?.contentHash!==report.contentHash,
+      repair:after?.gameRepairQa?.invariants}));
+  assert.match(String(regressionError.message),/GAME_REPAIR_INVARIANT_FAILED/);
 });
