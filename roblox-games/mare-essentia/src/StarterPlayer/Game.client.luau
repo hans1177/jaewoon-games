@@ -181,7 +181,7 @@ for id, spec in {
 	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel-open", Color3.fromRGB(110, 70, 40) },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
 	-- 주류 묘사는 Roblox 기준상 제한되어, 술병·술잔 대신 재료(포도·보리·벼) 그림으로 보여 준다
-	wine = { "Cargo", "grapes" },
+	beer = { "Goods", "beer_grain" }, sake = { "Goods", "sake_rice" }, wine = { "Cargo", "grapes" },
 } do
 	GOOD_ICON[id] = spec
 end
