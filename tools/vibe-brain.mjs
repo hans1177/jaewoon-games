@@ -7,7 +7,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { askChain, buildProviders } from './vibe-llm.mjs';
 
-export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 3, minGapMin: 180, maxAttemptsPerOrder: 2, retryGapMin: 12 * 60, contextChars: 24000 };
+export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 3, minGapMin: 180, maxAttemptsPerOrder: 2, retryGapMin: 12 * 60, contextChars: 11000 };
 export const CODE_KINDS = new Set(['error', 'ui', 'combat', 'background']);   // 에셋 권한·Studio 연결 문제는 코드로 못 고친다
 
 const ALLOWED = /^roblox-games\/(fantasy-survival\/(client|server|shared)|mare-essentia\/src)\/(?!(?:.*\/)?(?:Common\/|[^\/]*(?:VisualAssetIds|LookAssignment|SkillTreeIconIds|OpeningAssetIds)[^\/]*$)).+\.luau$/;
@@ -74,7 +74,7 @@ export function findContext(root, order) {
   let budget = LIMITS.contextChars;
   return picks.map(h => {
     const lines = fs.readFileSync(h.f, 'utf8').split('\n');
-    const from = Math.max(0, h.line - 70), to = Math.min(lines.length, h.line + 70);
+    const from = Math.max(0, h.line - 40), to = Math.min(lines.length, h.line + 40);
     let body = lines.slice(from, to).map((l, i) => `${from + i + 1}| ${l}`).join('\n');
     if (body.length > budget) body = body.slice(0, budget);
     budget -= body.length;
@@ -264,8 +264,14 @@ export async function runBrain({ orders, ledger, root, llm, playbook = emptyPlay
   const prompt = buildPrompt(order, ctx, examplesFor(order, playbook));
   let res, parsed;
   try { res = await llm(prompt); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
-  try { parsed = parseEdits(res.text); } catch (e) { return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: [e.message], attempted: true }; }
-  const errs = validateEdits(root, order, parsed);
+  let errs;
+  try { parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed); } catch (e) { errs = [e.message]; }
+  if (errs.length) {
+    // 수정안이 원본과 어긋나면(검색 문구 불일치 등) 오류를 알려 주고 한 번만 다시 받는다
+    log('REJECTED(1차) ' + errs.join(','));
+    const fb = prompt + '\n\nYOUR PREVIOUS ANSWER WAS REJECTED: ' + errs.join('; ') + '\nFix it: every "search" must be copied EXACTLY (same spaces, same text) from the code above, WITHOUT the "123| " line-number prefixes, and must occur exactly once. Return only the JSON.';
+    try { const res2 = await llm(fb); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
+  }
   if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: errs, attempted: true }; }
   const files = applyEdits(root, parsed);
   return { ok: true, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, summary: parsed.summary, files, edits: parsed.edits, sig: signature(order) };
