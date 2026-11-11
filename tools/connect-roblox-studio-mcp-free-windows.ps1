@@ -16,20 +16,42 @@ $sessionId = [int](Get-Process -Id $PID).SessionId
 if ($sessionId -le 0) { throw 'ROBLOX_FREE_STUDIO_INTERACTIVE_DESKTOP_REQUIRED: do not run as a Windows service' }
 if (-not $env:LOCALAPPDATA) { throw 'ROBLOX_FREE_STUDIO_USER_PROFILE_REQUIRED' }
 
+# [공식 설치 검사] 로그인한 PC에서는 Studio가 아직 열리지 않아도 기존 러너를 연결한다.
+# 정확한 Place 열기와 플레이는 기존 Studio MCP 전용 작업이 담당한다.
 $studio = @(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
   Where-Object { [int]$_.SessionId -eq $sessionId } | Select-Object -First 1)
-if ($studio.Count -ne 1) {
-  throw 'ROBLOX_FREE_STUDIO_NOT_RUNNING: sign in to Roblox Studio and open the test Place in this Windows desktop'
+$studioCandidates = @()
+if ($studio.Count -eq 1 -and $studio[0].Path) {
+  $studioCandidates += [string]$studio[0].Path
 }
-$studioExe = $studio[0].Path
-if (-not $studioExe -or -not (Test-Path -LiteralPath $studioExe)) {
-  throw 'ROBLOX_FREE_STUDIO_EXECUTABLE_NOT_FOUND'
+$studioRoots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'))
+$programFilesX86 = [Environment]::GetFolderPath('ProgramFilesX86')
+if ($programFilesX86) { $studioRoots += (Join-Path $programFilesX86 'Roblox\Versions') }
+foreach ($root in $studioRoots) {
+  if (-not (Test-Path -LiteralPath $root -PathType Container)) { continue }
+  $installed = @(Get-ChildItem -Path (Join-Path $root '*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTimeUtc -Descending)
+  foreach ($candidate in $installed) { $studioCandidates += [string]$candidate.FullName }
 }
-$studioSig = Get-AuthenticodeSignature -FilePath $studioExe
-if ($studioSig.Status -ne 'Valid' -or
-    $null -eq $studioSig.SignerCertificate -or
-    $studioSig.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
-  throw 'ROBLOX_FREE_STUDIO_SIGNED_OFFICIAL_BINARY_REQUIRED'
+$studioExe = $null
+foreach ($candidate in @($studioCandidates | Select-Object -Unique)) {
+  if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
+  $studioSig = Get-AuthenticodeSignature -FilePath $candidate
+  if ($studioSig.Status -eq 'Valid' -and
+      $null -ne $studioSig.SignerCertificate -and
+      $studioSig.SignerCertificate.Subject -like '*O=Roblox Corporation*') {
+    $studioExe = $candidate
+    break
+  }
+}
+if (-not $studioExe) {
+  throw 'ROBLOX_FREE_STUDIO_SIGNED_OFFICIAL_INSTALL_REQUIRED'
+}
+if ($studio.Count -eq 0) {
+  Write-Host 'ROBLOX_FREE_STUDIO_OFFICIAL_INSTALL_READY=STUDIO_CLOSED'
+  Write-Host 'ROBLOX_FREE_STUDIO_STUDIO_LAUNCH=DEFER_TO_EXACT_OFFICIAL_MCP_QA'
+} else {
+  Write-Host 'ROBLOX_FREE_STUDIO_OFFICIAL_INSTALL_READY=STUDIO_RUNNING'
 }
 $mcpBat = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
 $mcpExe = Join-Path (Split-Path $studioExe -Parent) 'StudioMCP.exe'
@@ -122,7 +144,7 @@ if (Test-Path -LiteralPath $runnerConfig) {
 if (-not (Test-Path -LiteralPath $runnerCmd)) { throw 'ROBLOX_FREE_STUDIO_RUN_CMD_MISSING' }
 Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_LABEL=roblox-studio-authenticated'
 Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_MODE=SIGNED_IN_INTERACTIVE_DESKTOP_ONLY'
-Write-Host 'Keep Studio signed in, Assistant MCP enabled, and this PowerShell window open.'
+Write-Host 'Keep the Windows desktop logged in and Assistant MCP enabled; exact QA launches Studio automatically.'
 Write-Host 'Queued official Studio MCP jobs will run here when this authenticated Windows session is online.'
 # [메인] 재연결: 같은 인증된 Windows 사용자 데스크톱에서만 기존 러너를 재실행한다.
 # 자격 증명 자동 로그인, 서비스(Session 0) 실행, 새 러너 등록은 하지 않는다.
