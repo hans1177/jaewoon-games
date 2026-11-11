@@ -81,13 +81,13 @@ jobs:
               echo "no Forest source or publisher change, skip"; exit 0
             fi
           fi
-          # [중복 제한] 게임별 동일 소스 실행/대기 여부만 확인. 다른 게임은 절대 막지 않는다.
+          # [중복 제한] 게임별로 대기 중인 검사가 하나라도 있으면 새로 넣지 않는다(대기 검사는 시작할 때 최신 main 을 검사하므로 안전).
+          # 실행 중인 검사는 같은 소스일 때만 중복으로 본다. 다른 게임은 절대 막지 않는다.
           head=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')
           runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=100")
           for game in $games; do
             pending=$(printf '%s' "$runs" | jq --arg head "$head" --arg game "$game" '[.workflow_runs[] |
-              select(.head_sha == $head) |
-              select(.status == "queued" or .status == "pending" or .status == "in_progress") |
+              select(.status == "queued" or .status == "pending" or (.status == "in_progress" and .head_sha == $head)) |
               select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
             if [ "$pending" -ge 1 ]; then
               echo "studio already queued/running for $game on $head, skip duplicate"
