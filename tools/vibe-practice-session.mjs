@@ -4,9 +4,10 @@
 // 사용: node tools/vibe-practice-session.mjs [--seed N] [--parents 3] [--variants 4] [--out build/practice] [--stats build/gym-stats.json] [--lights build/learned-lights.json]
 //      [--light-candidates 8] [--light-rounds 2] [--no-light] [--no-bake]
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,motionCoverage,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
+import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,motionCoverage,scoreChild,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
 import {measure as measureRig,evaluateAudit,evaluateMotionCurves} from './vibe-mesh-audit.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake,selectBakeParents} from './vibe-normal-bake.mjs';
@@ -197,6 +198,54 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false};
     }finally{fs.rmSync(auditFile,{force:true});}
   }
+  // [아이콘 원본 연습] 실제 승인된 CC0 UI PNG의 64px 가독성을 기존 채점기로 측정한다.
+  // 이미지만 분석하며 새 버튼 기능·게임 화면·저장 키를 자동 교체하지 않는다.
+  const iconRoot=fs.realpathSync(repoRoot),iconHistory=previousPractice?.icon?.history||{};
+  const iconSources=[];
+  for(const asset of registry.assets||[]){
+    if(!/^CC0(?:-1\.0)?$/i.test(String(asset.license||''))||
+      !/UI|ICON/.test(String(asset.family||'').toUpperCase())||
+      asset.catalogOnly||asset.securityBlocked||asset.quarantined||
+      asset.gameUseForbidden||asset.corruptSource||asset.catalogActive===false||
+      asset.parentSourceId||asset.derivedFromAssetId)continue;
+    const expected=String(asset.sourceSha256||asset.sourceHash||'').toLowerCase();
+    if(!/^[a-f0-9]{64}$/.test(expected))continue;
+    for(const file of asset.sourceFiles||[]){
+      if(typeof file!=='string'||path.isAbsolute(file)||!/\.png$/i.test(file)||
+        file.split(/[\\/]/).some(segment=>segment==='..'||segment==='.'))continue;
+      try{
+        const full=fs.realpathSync(path.resolve(iconRoot,file));
+        if(!full.startsWith(iconRoot+path.sep)||!fs.statSync(full).isFile()||
+          fs.statSync(full).size>8*1024*1024)continue;
+        if(crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')!==expected)continue;
+        const history=iconHistory[String(asset.id)]||{};
+        const same=!history.sourceSha256||history.sourceSha256===expected;
+        iconSources.push({id:String(asset.id),file:full,sourceSha256:expected,
+          priorAttempts:same&&Number.isSafeInteger(history.attempts)&&history.attempts>=0?
+            history.attempts:0});
+        break;
+      }catch{}
+    }
+  }
+  iconSources.sort((a,b)=>a.priorAttempts-b.priorAttempts||a.id.localeCompare(b.id));
+  if(iconSources.length){
+    const icon=iconSources[0];
+    const record={parent:icon.id,sourceSha256:icon.sourceSha256,
+      eligibleIcons:iconSources.length,priorAttempts:icon.priorAttempts,
+      measured:false,legible:false,pixels64:0,contrast64:0,
+      nativeRuntimeVerified:false,gameApplied:false};
+    try{
+      const result=scoreChild(icon.file,icon.file,path.join(outDir,'icons','approved')).icon;
+      if(result&&typeof result.legible==='boolean'){
+        record.measured=true;
+        record.legible=result.legible===true;
+        record.pixels64=Number.isSafeInteger(result.pixels64)?result.pixels64:0;
+        record.contrast64=Number.isFinite(result.contrast64)?result.contrast64:0;
+        record.reason=String(result.reason||'').slice(0,80);
+      }else record.reason='NO_64PX_ICON_MEASUREMENT';
+    }catch(error){record.reason='ICON_MEASURE_FAILED:'+String(error.code||error.name||'ERROR').slice(0,40);}
+    session.iconStudy=record;
+  }
   // [분야별 연습 결과] 정적 실측·미검증·부족 분야를 분리한다. 게임/네이티브 성공으로 승격하지 않는다.
   const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{
     catalogued:session.assetCoverage.domains[name].catalogued,
@@ -246,6 +295,11 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   domains.ICON.trials+=iconRows.length;
   domains.ICON.staticMeasured+=iconRows.filter(row=>row.icon.legible===true).length;
   domains.ICON.unverifiedOrFailed+=iconRows.filter(row=>row.icon.legible!==true).length;
+  if(session.iconStudy){
+    domains.ICON.trials++;
+    if(session.iconStudy.measured&&session.iconStudy.legible)domains.ICON.staticMeasured++;
+    else domains.ICON.unverifiedOrFailed++;
+  }
   if(session.light?.best!==undefined){
     domains.LIGHTING.trials++;domains.LIGHTING.staticMeasured++;
   }
