@@ -5109,6 +5109,23 @@ task.spawn(function()
 		elseif dc == "Options" then
 			workspace:SetAttribute("DevCall", nil)
 			openOptions()
+		elseif dc == "Tactics" then
+			-- 개발 캡처용: 서버에 열려 있는 지상 전술 전투 화면을 바로 연다(탐험 탭을 거치지 않는다)
+			workspace:SetAttribute("DevCall", nil)
+			if view and view.tactics then
+				local okOpen, errOpen = pcall(function()
+					require(Shared:WaitForChild("TacticsView")).open({
+						battle = view.tactics,
+						invoke = function(a, p)
+							return call(a, p)
+						end,
+						onClose = function() end,
+					})
+				end)
+				workspace:SetAttribute("DevResult", "TACTICS_OPEN " .. tostring(okOpen) .. " " .. tostring(errOpen))
+			else
+				workspace:SetAttribute("DevResult", "TACTICS_OPEN no battle in view")
+			end
 		elseif type(dc) == "string" and string.sub(dc, 1, 4) == "Tab_" then
 			workspace:SetAttribute("DevCall", nil)
 			openTab(string.sub(dc, 5))
