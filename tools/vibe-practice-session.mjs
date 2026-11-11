@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,motionCoverage,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
-import {measure as measureRig,evaluateAudit} from './vibe-mesh-audit.mjs';
+import {measure as measureRig,evaluateAudit,evaluateMotionCurves} from './vibe-mesh-audit.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake,selectBakeParents} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
@@ -171,6 +171,8 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         {out:auditFile});
       const verdict=evaluateAudit(raw);
       const clips=motionCoverage((raw.actions||[]).map(x=>x.name));
+      const curves=evaluateMotionCurves(raw.actions||[]);
+      const dynamicClips=motionCoverage(curves.validClipNames);
       session.rigStudy={
         parent:actor.id,family:actor.family,sourceSha256:actor.approvedSourceSha256,
         priorAttempts:actor.priorRigAttempts,eligibleActors:actorSources.length,
@@ -179,7 +181,13 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         productionBlockers:verdict.productionBlockers.slice(0,12),
         clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
         clipNamePresent:clips.present,clipNameMissing:clips.missing,
-        motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false
+        curveInspectedClips:curves.inspectedClips,validMovingClips:curves.validMovingClips,
+        movingBoneCurves:curves.movingBoneCurves,
+        invalidOrUnmeasuredClips:curves.invalidOrUnmeasuredClips,
+        dynamicClipCoverage:dynamicClips.coverage,
+        dynamicClipPresent:dynamicClips.present,dynamicClipMissing:dynamicClips.missing,
+        motionCurvesMeasured:curves.curveMeasurementAvailable,
+        gameplayMotionVerified:false,nativeRuntimeVerified:false,gameApplied:false
       };
     }catch(error){
       session.rigStudy={parent:actor.id,family:actor.family,
@@ -217,10 +225,16 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       if(study.measured&&study.rigPass&&study.bones>0)domains[name].staticMeasured++;
       else domains[name].unverifiedOrFailed++;
     }
-    // 모션·액션은 클립 이름을 관찰한 것뿐이다. 재생과 프레임별 관절 곡선은 아직 미측정이다.
+    // 클립 이름이 아니라 실제 움직이는 본의 키프레임 곡선이 있는 경우만 정적 측정으로 인정한다.
+    // 엔진 내 재생·충돌·공격 판정은 여전히 별도 미검증이다.
+    const present=study.dynamicClipPresent||[];
     for(const name of ['MOTION','ACTION']){
       domains[name].trials++;
-      domains[name].unverifiedOrFailed++;
+      const measured=study.motionCurvesMeasured===true&&study.validMovingClips>0&&
+        (name==='MOTION'?(present.includes('IDLE')||present.includes('MOVE')):
+          present.includes('ATTACK'));
+      if(measured)domains[name].staticMeasured++;
+      else domains[name].unverifiedOrFailed++;
     }
   }
   for(const name of ['UI','BUTTON']){
