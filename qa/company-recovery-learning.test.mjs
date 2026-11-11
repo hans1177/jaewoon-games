@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { enqueueRecovery, reviewRecovery, settleRecovery } from '../tools/company-recovery-queue.mjs';
+import { enqueueRecovery, reviewRecovery, settleRecovery, recoveryVerificationMetrics, runRecoveryQueue } from '../tools/company-recovery-queue.mjs';
 import { applySystemAiResults, normalizeSystemAiQueue } from '../tools/company-system-ai-queue.mjs';
 import { escalateRecoveryCandidates } from '../tools/company-recovery-escalation.mjs';
 import { promoteVerifiedRecoveryLearning } from '../tools/company-recovery-learning.mjs';
@@ -1155,4 +1155,59 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(recovery,/      - Devloop Studio Capture/);
   assert.match(recovery,/studioMarkers/);
   assert.match(recovery,/--deployment-event=\$GITHUB_EVENT_PATH/);
+});
+
+ // [자가복구 측정] 실패 재시도와 검수 성공만 측정, 진행 중인 작업은 성공으로 간주하지 않는다.
+test('recovery metrics exclude pending and fabricated unreviewed PASS evidence',()=>{
+  const metrics=recoveryVerificationMetrics({tasks:[
+    {id:'verified',status:'verified',primaryAiReview:'PASS',retries:2,
+      deterministicEvidence:['exact-stage:PASS','regression:PASS'],failureSignature:'F1',failureStage:'F0'},
+    {id:'pending',status:'awaiting-primary-ai-review',retries:1,
+      deterministicEvidence:['causal-replay-status:EXECUTED_PASS'],failureSignature:'F2'},
+    {id:'queued',status:'queued',retries:3,
+      evidence:['causal-replay-prepatch-reproduced:YES','causal-replay-executed:YES',
+        'causal-replay-status:EXECUTED_PASS','role-result:regression:PASS','role-result:review:PASS']}
+  ]});
+  assert.equal(metrics.reviewedPasses,1);
+  assert.equal(metrics.pendingReview,1);
+  assert.equal(metrics.failedAttempts,6);
+  assert.equal(metrics.measuredAttempts,7);
+  assert.equal(metrics.reviewedAttemptPassPct,14.29);
+  assert.equal(metrics.replay.replayExecuted,0);
+  assert.equal(metrics.replay.reviewedReplayEvidencePct,null);
+  assert.equal(metrics.runtimeSuccessRatePct,null);
+  assert.equal(metrics.externalRuntimeAttested,false);
+});
+test('recovery metrics require complete deterministic replay markers and reviewed regression',()=>{
+  const evidence=['causal-replay-prepatch-reproduced:YES','causal-replay-executed:YES',
+    'causal-replay-status:EXECUTED_PASS','role-result:regression:PASS','role-result:review:PASS'];
+  const metrics=recoveryVerificationMetrics({tasks:[
+    {id:'complete',status:'verified',primaryAiReview:'PASS',deterministicEvidence:evidence},
+    {id:'partial',status:'verified',primaryAiReview:'PASS',deterministicEvidence:
+      ['causal-replay-executed:YES','causal-replay-status:EXECUTED_PASS']},
+    {id:'unreviewed',status:'awaiting-primary-ai-review',deterministicEvidence:evidence}
+  ]});
+  assert.equal(metrics.replay.prepatchReported,2);
+  assert.equal(metrics.replay.replayExecuted,3);
+  assert.equal(metrics.replay.replayPassReported,2);
+  assert.equal(metrics.replay.replayReviewedWithRegression,1);
+  assert.equal(metrics.replay.reviewedReplayEvidencePct,33.33);
+  assert.equal(metrics.runtimeSuccessRatePct,null);
+});
+test('recovery summary preserves legacy counts and adds read-only measured evidence',()=>{
+  const cwd=fs.mkdtempSync('recovery-metrics-');
+  try{
+    const file=cwd+'/queue.json';
+    fs.writeFileSync(file,JSON.stringify({tasks:[
+      {id:'queued',status:'queued',retries:2},
+      {id:'reviewed',status:'verified',primaryAiReview:'PASS',deterministicEvidence:['stage:PASS']}
+    ]}));
+    const before=fs.readFileSync(file,'utf8');
+    const result=runRecoveryQueue({command:'summary',queue:file});
+    assert.deepEqual(result.counts,{queued:1,verified:1});
+    assert.equal(result.metrics.reviewedPasses,1);
+    assert.equal(result.metrics.failedAttempts,2);
+    assert.equal(fs.readFileSync(file,'utf8'),before);
+    assert.equal(recoveryVerificationMetrics({tasks:[]}).reviewedAttemptPassPct,null);
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });
