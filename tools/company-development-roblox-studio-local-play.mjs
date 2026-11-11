@@ -2789,6 +2789,12 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           const out=await luau(st.type==='click_text'?'Client':(st.ctx||'Client'),code);
           const m=out.match(/(?:^|\n)\s*(-?\d+),(-?\d+)(?=\s|$)/);
           const label=st.type==='click_text'?st.text:(st.label||'luau');
+          if(!m&&st.optional===true){
+            // 저장 데이터가 없으면 '이어하기' 같은 선택 버튼은 없다. 건너뛰고 다음 단계로 간다.
+            report.log.push({step:n,click:label,at:'OPTIONAL_SKIPPED',out:out.slice(0,300)});
+            report.summary.completedSteps=n+1;
+            continue;
+          }
           if(!m){
             report.log.push({step:n,click:label,at:'NOT_FOUND',out:out.slice(0,300)});
             throw new Error('STUDIO_UI_TARGET_NOT_FOUND:'+label);
