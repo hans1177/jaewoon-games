@@ -10741,7 +10741,40 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "791bc79ae5146c1c7ffff0ae3bafd946ee0ae76e",
+      "artifactIdentity": "sha256:45d7fa066f6be303b593d85397254a7bdc5d7cc1f63d25e27adf7d40c73031be",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 43013565966,
+      "testedAt": "2026-11-11T12:10:08.025Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":6,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8473684210526315}"
+        },
+        {
+          "id": "observed-action-a5a1724f10caafbfaa3d",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-a5a1724f10caafbfaa3d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill2\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill2\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-5f391f74a05998aef298",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-5f391f74a05998aef298\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill3\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
