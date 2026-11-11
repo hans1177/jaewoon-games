@@ -35,6 +35,51 @@ test('comments and quoted snippets are excluded',()=>{
   const source="-- humanoid:TakeDamage(7)\n--[[ humanoid:TakeDamage(12) ]]\nlocal text = 'humanoid:TakeDamage(3)'";
   assert.deepEqual(diagnoseVibe59RobloxOffline({path:'client/Fight.client.luau',source}).diagnostics,[]);
 });
+// [루아우 회귀] 긴 문자열·주석·보간 문자열을 실행 코드로 오판하지 않는다.
+test('Luau long-bracket literals and comments do not create false damage findings',()=>{
+  const source=[
+    'local first = [[humanoid:TakeDamage(5)',
+    ' --[=[ store:SetAsync(player.Name, profile) ]=]',
+    ']]',
+    'local second = [=[humanoid:TakeDamage(6)]=]',
+    'local third = '+String.fromCharCode(96)+'humanoid:TakeDamage(7)'+String.fromCharCode(96),
+    '--[=[ humanoid:TakeDamage(8) ]=]',
+    'humanoid:TakeDamage(9)'
+  ].join('\n');
+  const report=diagnoseVibe59RobloxOffline({path:'client/Fight.client.luau',source});
+  assert.deepEqual(report.diagnostics.filter(x=>x.code==='COMBAT_CLIENT_DAMAGE')
+    .map(x=>x.line),[7]);
+});
+
+test('Luau static rules retain whitelisted real literal arguments without quoted fake calls',()=>{
+  const source=[
+    'local hint = "Heartbeat:Connect(function() npc:MoveTo() end)"',
+    'local fake = "humanoid:TakeDamage(77)"',
+    'local store = game:GetService("DataStoreService")',
+    "local root = model:FindFirstChild('HumanoidRootPart').Position",
+    'local tool = Instance.new("Tool")',
+    'humanoid:TakeDamage(4)'
+  ].join('\r\n');
+  const report=diagnoseVibe59RobloxOffline({path:'client/Fight.client.luau',source});
+  const codes=new Set(report.diagnostics.map(row=>row.code));
+  assert.ok(codes.has('SAVE_CLIENT_SERVICE'));
+  assert.ok(codes.has('AI_UNCHECKED_ROOT_POSITION'));
+  assert.ok(codes.has('INVENTORY_CLIENT_TOOL_GRANT'));
+  assert.deepEqual(report.diagnostics.filter(row=>row.code==='COMBAT_CLIENT_DAMAGE')
+    .map(row=>row.line),[6]);
+  assert.ok(!codes.has('AI_HEARTBEAT_MOVETO'));
+});
+
+test('many quoted diagnostic decoys remain bounded and exact last-line locations survive',()=>{
+  const lines=Array.from({length:1200},()=>'local msg = "humanoid:TakeDamage(7)"');
+  lines.push('humanoid:TakeDamage(10)');
+  const report=diagnoseVibe59RobloxOffline({
+    path:'client/Fight.client.luau',source:lines.join('\n')
+  });
+  assert.deepEqual(report.diagnostics.filter(row=>row.code==='COMBAT_CLIENT_DAMAGE')
+    .map(row=>row.line),[1201]);
+});
+
 test('repairs remain review plans limited to responsible source',()=>{
   const files=[
     {path:'client/Fight.client.luau',source:'humanoid:TakeDamage(20)'},
