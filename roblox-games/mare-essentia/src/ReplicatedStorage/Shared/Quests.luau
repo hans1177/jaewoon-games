@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark"
+	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -232,6 +232,7 @@ local Quests: { Quest } = {
 	{ id = "q_kn_joint", name = "학자와 나란히", summary = "학자와 함께 공동 발표 3번 하기", kind = "joint", amount = 3, rewardCoins = 2000, rewardFame = 70, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "q_kn_porttech", name = "항구의 기술을 키워라", summary = "공동 발표로 어느 항구의 한 학문 기술을 3단계까지 올리기", kind = "port_tech", amount = 3, rewardCoins = 3500, rewardFame = 100, rewardCareer = "adventure", rewardXp = 250 },
 	{ id = "q_kn_landmark", name = "도시의 얼굴", summary = "항구에 박물관·천문대 같은 특수 건축물 1개 세우기", kind = "landmark", amount = 1, rewardCoins = 1500, rewardFame = 60, rewardCareer = "trade", rewardXp = 140 },
+	{ id = "q_kn_launch", name = "신제품 출시", summary = "개량된 교역품으로 신제품 출시 행사 2번 열기", kind = "launch", amount = 2, rewardCoins = 2200, rewardFame = 70, rewardCareer = "trade", rewardXp = 170 },
 	{ id = "q_kn_all", name = "계몽의 시대", summary = "지식 트리에서 지식 20개 이해하기", kind = "understand", amount = 20, rewardCoins = 6000, rewardFame = 150, rewardCareer = "adventure", rewardXp = 400 },
 }
 

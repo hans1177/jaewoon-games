@@ -48,7 +48,7 @@ return function(D)
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			landmarks = {}, -- 항구별 특수 건축물 (항구 id → 건축물 id → true)
 			portTech = {}, -- 공동 발표로 쌓인 항구별 학문 기술 점수 (항구 id → 학문 id → 점수)
-			academy = { presented = 0, expos = 0, medals = 0, joint = 0, last = {}, shown = {} }, -- 학회 발표·박람회 기록 (shown: 전시한 카드)
+			academy = { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, last = {}, shown = {} }, -- 학회 발표·박람회 기록 (shown: 전시한 카드)
 			reported = {}, -- 학자에게 보고해 이해한 지식(카드 id → true)
 			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
 			scholarsMet = {},
@@ -492,6 +492,7 @@ return function(D)
 			s.academy.expos = math.floor(num(saved.academy.expos, 0, 0, 1e6))
 			s.academy.medals = math.floor(num(saved.academy.medals, 0, 0, 1e6))
 			s.academy.joint = math.floor(num(saved.academy.joint, 0, 0, 1e6))
+			s.academy.launched = math.floor(num(saved.academy.launched, 0, 0, 1e6))
 			if type(saved.academy.shown) == "table" then
 				for k, v in saved.academy.shown do
 					if type(k) == "string" and #k <= 60 and v == true then

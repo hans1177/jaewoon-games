@@ -2048,6 +2048,18 @@ do
 	stL.coins = 10
 	stL.portTech.london.chemistry = 6
 	check("건축: 돈이 모자라면 불가", select(1, act(stL, "BuildLandmark", { id = "laboratory" })) == false)
+	-- 신제품 출시
+	local stN = newState("england")
+	stN.portId = "london"
+	stN.reported = { chem_dye = true, chem_indigo = true }
+	stN.cargo.indigo = 6
+	check("출시: 교역소가 낮으면 불가", select(1, act(stN, "Launch", { goodId = "indigo" })) == false)
+	stN.harbor.london = 99999
+	local cN = stN.coins
+	check("출시: 개량된 교역품이면 성공", select(1, act(stN, "Launch", { goodId = "indigo" })) == true and stN.coins > cN and stN.cargo.indigo == 1 and stN.academy.launched == 1)
+	check("출시: 개량 안 된 교역품 거부", select(1, act(stN, "Launch", { goodId = "wool" })) == false)
+	stN.cargo.indigo = 6
+	check("출시: 쿨타임", select(1, act(stN, "Launch", { goodId = "indigo" })) == false)
 	-- 박람회
 	local stE = newState("england")
 	stE.portId = "london"
