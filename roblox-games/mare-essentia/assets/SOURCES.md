@@ -687,3 +687,9 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `portraits/` | scholar_johnson.png | James Watson (after Joshua Reynolds) · PUBLIC-DOMAIN | https://www.nga.gov/artworks/10857-samuel-johnson |
 | `portraits/` | scholar_rembrandt.png | Rembrandt van Rijn · PUBLIC-DOMAIN | https://www.nga.gov/artworks/9844-self-portrait |
 | `portraits/` | scholar_wren.png | S. Coignard · PUBLIC-DOMAIN | https://www.nga.gov/artworks/41157-sir-christopher-wren-architect |
+
+## 시대·항구별 창작 초상화
+
+- `portraits/heroes_1517.jpg` · 기존 가상 주인공 9명의 1517년 복식 원화. 기존과 같은 3열×3행, 칸당 256×336.
+- `portraits/npc_north_sea.jpg`, `portraits/npc_east_africa.jpg` · 1700년대 북해·동아프리카 항구의 가상 인물 40명. 5열×4행, 칸당 200×200. 위 두 줄은 교역소, 아래 두 줄은 주점·여관 인물이다.
+- 프로젝트 창작 원화. 연도·항구·시설에 맞는 등록 자산이 있을 때 표시한다. 사람 검수와 로블록스 이미지 등록은 대기 상태다.
