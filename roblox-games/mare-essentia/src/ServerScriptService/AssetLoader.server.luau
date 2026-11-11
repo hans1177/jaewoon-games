@@ -23,8 +23,8 @@ local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castl
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
-	-- UI 이미지(메뉴·교역품·초상화)는 모델이 아니므로 InsertService 모델 로딩에서 제외한다.
-	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and type(assetId) == "number" and assetId > 0 then
+	-- UI 이미지(메뉴·교역품·초상화·도감/이벤트 원화)는 모델이 아니므로 InsertService에서 제외한다.
+	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and kind ~= "CardArt" and type(assetId) == "number" and assetId > 0 then
 		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
 	end
 end
