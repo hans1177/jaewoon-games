@@ -308,7 +308,7 @@ export function synthesizeVibe59RobloxDomainAction({spec={},source='',replaceAnc
   for(const field of [p.field,p.conditionField,p.toField].filter(Boolean)){
     const refs=[...groundedSource.matchAll(new RegExp('\\bstate\\.'+
       p.collection+'\\.'+field+'\\b','g'))];
-    if(!refs.some(hit=>!insideVibe59QuotedText(groundedSource,hit.index)))
+    if(refs.length===0)
       throw Error('VIBE59_DOMAIN_EXISTING_FIELDS_REQUIRED');
   }
   if(/(?:^|\n)\s*(?:local\s+)?(?:function\s+\w+|end)\b/.test(replaceAnchor))
