@@ -31,7 +31,7 @@ export function pickOrder(orders, ledger, now = Date.now()) {
   const open = (orders || []).filter(o => !o.resolvedAt && CODE_KINDS.has(o.kind));
   const ok = open.filter(o => {
     const a = ledger.attempts?.[o.fingerprint];
-    if (!a) return true;
+    if (!a || process.env.BRAIN_RETRY_NOW === '1') return true;   // 수동 실행에서 쉬는 시간을 건너뛴다(시험·복구용)
     if (a.n >= LIMITS.maxAttemptsPerOrder) return false;
     return (now - a.lastAt) / 60000 >= LIMITS.retryGapMin;
   });

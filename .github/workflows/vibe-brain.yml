@@ -11,6 +11,11 @@ on:
     workflows: ['Vibe Autopilot']
     types: [completed]
   workflow_dispatch:
+    inputs:
+      retry_now:
+        description: '1 이면 지시서별 쉬는 시간을 건너뛰고 지금 다시 시도(시험·복구용)'
+        required: false
+        default: '0'
 permissions:
   contents: write
   pull-requests: write
@@ -51,6 +56,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
+          BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
         run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
