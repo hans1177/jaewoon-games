@@ -171,6 +171,9 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
       ICON:{catalogued:8,eligible3d:0,trials:0,staticMeasured:0,
         unverifiedOrFailed:0,state:'NOT_PRACTICED'}
     },
+    iconStudy:{parent:'ui-mark',sourceSha256:'f'.repeat(64),
+      measured:true,legible:true,pixels64:550,contrast64:0.26,
+      nativeRuntimeVerified:false,gameApplied:false},
     rigStudy:{parent:'actor-barbarian',family:'CHARACTER',sourceSha256:'c'.repeat(64),
       measured:true,rigPass:false,bones:41,meshParts:14,clipsObserved:76,
       clipNameCoverage:1,rigFailures:['ORPHAN_MESH:Icosphere','GROUND_OFFSET:-0.2943'],
@@ -187,6 +190,11 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(record.domains.RIG.trials,3);
   assert.equal(record.domains.ICON.state,'NOT_PRACTICED');
   assert.equal(record.bake.pass,false);
+  assert.equal(record.icon.latest.measured,true);
+  assert.equal(record.icon.latest.legible,true);
+  assert.equal(record.icon.history['ui-mark'].attempts,1);
+  assert.equal(record.icon.history['ui-mark'].passed,1);
+  assert.equal(record.icon.latest.nativeRuntimeVerified,false);
   assert.equal(record.rig.latest.rigPass,false);
   assert.equal(record.rig.latest.bones,41);
   assert.equal(record.rig.latest.clipNamesObserved,76);
@@ -208,12 +216,18 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(next.cumulative.RIG.trials,6);
   assert.equal(next.bake.history['bench-a'].attempts,2);
   assert.equal(next.bake.history['bench-a'].failures,2);
+  assert.equal(next.icon.history['ui-mark'].attempts,2);
+  assert.equal(next.icon.history['ui-mark'].passed,2);
   assert.equal(next.rig.history['actor-barbarian'].attempts,2);
   assert.equal(next.rig.history['actor-barbarian'].failed,2);
   assert.equal(next.bake.history['bench-a'].sourceSha256,'a'.repeat(64));
   // 새 원본 SHA가 들어오면 이전 실패 횟수를 초기화한다.
   const third=JSON.parse(fs.readFileSync(path.join(practice,'session.json'),'utf8'));
   third.bake.attempts[0].sourceSha256='b'.repeat(64);
+  third.iconStudy.sourceSha256='e'.repeat(64);
+  third.iconStudy.legible=false;
+  third.iconStudy.pixels64=12;
+  third.iconStudy.contrast64=0.02;
   third.rigStudy.sourceSha256='d'.repeat(64);
   third.rigStudy.curveInspectedClips=76;
   third.rigStudy.validMovingClips=30;
@@ -227,6 +241,11 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(updated.bake.history['bench-a'].sourceSha256,'b'.repeat(64));
   assert.equal(updated.bake.history['bench-a'].attempts,1);
   assert.equal(updated.bake.history['bench-a'].failures,1);
+  assert.equal(updated.icon.history['ui-mark'].sourceSha256,'e'.repeat(64));
+  assert.equal(updated.icon.history['ui-mark'].attempts,1);
+  assert.equal(updated.icon.history['ui-mark'].passed,0);
+  assert.equal(updated.icon.history['ui-mark'].rejected,1);
+  assert.equal(updated.icon.latest.gameApplied,false);
   assert.equal(updated.rig.history['actor-barbarian'].sourceSha256,'d'.repeat(64));
   assert.equal(updated.rig.history['actor-barbarian'].attempts,1);
   assert.equal(updated.rig.history['actor-barbarian'].failed,1);
