@@ -98,7 +98,7 @@ test('대기열이 2개 이상이면 쉬고, 연속 실패한 점검은 감점�
 
 test('워크플로: 30분 주기, 끄는 변수, 결과·원장 수집, main 이 아닌 데이터 브랜치에만 저장(API)', () => {
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
-  assert.match(y, /cron: '7,37 \* \* \* \*'/);
+  assert.match(y, /cron: '7,22,37,52 \* \* \* \*'/);
   assert.match(y, /vars\.VIBE_AUTOPILOT != 'off'/);
   assert.match(y, /actions: write/);
   assert.match(y, /node tools\/vibe-autopilot\.mjs --run --queued "\$QUEUED"/);
@@ -117,15 +117,15 @@ test('종합 점검 스크립트는 시작 버튼이 없어도 멈추지 않는�
   assert.ok(d.some(s => s.type === 'luau' && /HEALTH_ERR/.test(s.code)));
 });
 
-test('점검이 끝날 때마다 이어 실행(workflow_run)되고, 방금 보냈으면 10분은 쉬어 연속 실패 루프를 막는다', () => {
+test('점검이 끝날 때마다 이어 실행(workflow_run)되고, 방금 보냈으면 5분은 쉬어 연속 실패 루프를 막는다', () => {
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
   assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture'\]\s*\n\s*types: \[completed\]/);
-  assert.match(y, /cron: '7,37 \* \* \* \*'/);                          // 안전망은 그대로
+  assert.match(y, /cron: '7,22,37,52 \* \* \* \*'/);                          // 안전망은 그대로
   const b = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
   assert.match(b, /workflows: \['Vibe Autopilot'\]/);
   const now = Date.now();
   let L = emptyLedger();
-  L = markDispatched(L, { game: 'fantasy-survival', kind: 'health' }, now - 3 * 60000, 'a');
+  L = markDispatched(L, { game: 'fantasy-survival', kind: 'health' }, now - 2 * 60000, 'a');
   assert.match(decide({ signals: none, ledger: L, now, heads }).skipped, /방금 점검을 보냈다/);
   assert.equal(decide({ signals: none, ledger: L, now: now + 8 * 60000, heads }).skipped.includes('방금'), false);
 });

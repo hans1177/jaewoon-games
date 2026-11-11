@@ -7,7 +7,7 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 
 const DAY = 24 * 60;
-export const MIN_GAP_MIN = 10;
+export const MIN_GAP_MIN = 5;
 
 // 게임별 점검 목록. studio 는 devloop-studio.yml 로, workflow 는 해당 워크플로 dispatch 로 실행한다.
 const F = 'roblox-games/fantasy-survival/tools/devloop/studio-scripts/';
