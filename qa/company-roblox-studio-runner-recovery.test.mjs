@@ -137,8 +137,8 @@ test('E-drive migrated Studio runner is discovered for reboot recovery and its c
   assert.match(bootstrap,/'E:\\JaewoonRobloxStudioRunner'/);
   assert.match(recover,/Test-RunnerRoot/);
   assert.match(bootstrap,/Test-RunnerRoot/);
-  assert.match(autoQa,/company-roblox-runner-pwsh-bootstrap\\.yml/);
-  assert.match(autoQa,/move-roblox-studio-runner-to-e\\.ps1/);
-  assert.match(autoQa,/gh workflow run devloop-studio\\.yml/);
+  assert.match(autoQa,/company-roblox-runner-pwsh-bootstrap\.yml/);
+  assert.match(autoQa,/move-roblox-studio-runner-to-e\.ps1/);
+  assert.match(autoQa,/gh workflow run devloop-studio\.yml/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNNER_AUTOMATED_LOGIN=TRUE/);
 });
