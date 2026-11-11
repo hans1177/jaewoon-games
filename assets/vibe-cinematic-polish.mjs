@@ -9,14 +9,22 @@ export const vibeLightingPresets=Object.freeze({
  volcano:{sky:0xffb68d,ground:0x36241f,ambient:.72,key:0xff7d3b,keyPower:3.5,fill:0x8f9ee6,fillPower:.45,rim:0xff3922,rimPower:2.7,fog:0x4d2926,density:.032},
  laboratory:{sky:0xdceaff,ground:0x414b55,ambient:1.5,key:0xf4f8ff,keyPower:2.2,fill:0x8fcfff,fillPower:1.6,rim:0xb9ffe8,rimPower:.85,fog:0x9aa9b8,density:.006}
 });
-export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=true}={}){
+// [메인: 장면 조명] 단일 키/보조/윤곽 조명으로 명암을 통일하고 모바일 그림자 비용을 제한한다.
+export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=true,mobile=false}={}){
  if(!vibeLightingPresets[preset])throw Error('Unknown lighting preset');
  const hemi=new THREE.HemisphereLight(),key=new THREE.DirectionalLight(),fill=new THREE.DirectionalLight(),rim=new THREE.DirectionalLight();
  key.position.set(4,7,5);fill.position.set(-5,3,3);rim.position.set(1,4,-6);
- key.castShadow=!!shadows;if(shadows){key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.00015;key.shadow.normalBias=.025;key.shadow.camera.near=.1;key.shadow.camera.far=30;}
+ key.castShadow=!!shadows;
+ if(shadows){
+  const resolution=mobile?1024:2048;
+  key.shadow.mapSize.set(resolution,resolution);
+  key.shadow.bias=-.00015;key.shadow.normalBias=.025;
+  key.shadow.camera.near=.1;key.shadow.camera.far=30;
+ }
  for(const light of [hemi,key,fill,rim])scene.add(light);
- const oldFog=scene.fog;const fog=new THREE.FogExp2(0xffffff,.01);scene.fog=fog;
- let current={...vibeLightingPresets[preset]},start={...current},target={...current},duration=0,elapsed=0;
+ const oldFog=scene.fog,fog=new THREE.FogExp2(0xffffff,.01);scene.fog=fog;
+ let current={...vibeLightingPresets[preset]},start={...current},target={...current};
+ let duration=0,elapsed=0;
  const color=(hex)=>new THREE.Color(hex);
  function apply(v){
   hemi.color.copy(color(v.sky));hemi.groundColor.copy(color(v.ground));hemi.intensity=v.ambient;
@@ -27,9 +35,28 @@ export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=
  }
  apply(current);
  return {
-  transition(name,seconds=1){if(!vibeLightingPresets[name])throw Error('Unknown lighting preset');start={...current};target={...vibeLightingPresets[name]};duration=Math.max(0,seconds);elapsed=0;if(!duration){current={...target};apply(current)}},
-  update(dt){if(!Number.isFinite(dt)||dt<=0||elapsed>=duration)return;elapsed=Math.min(duration,elapsed+Math.min(dt,.1));const t=smooth(elapsed/duration);current=Object.fromEntries(Object.keys(target).map(k=>[k,k==='ambient'||k.endsWith('Power')||k==='density'?lerp(start[k],target[k],t):color(start[k]).lerp(color(target[k]),t).getHex()]));apply(current)},
-  dispose(){for(const light of [hemi,key,fill,rim])scene.remove(light);if(scene.fog===fog)scene.fog=oldFog}
+  transition(name,seconds=1){
+   if(!vibeLightingPresets[name])throw Error('Unknown lighting preset');
+   start={...current};target={...vibeLightingPresets[name]};
+   duration=Number.isFinite(seconds)?Math.max(0,seconds):0;elapsed=0;
+   if(!duration){current={...target};apply(current)}
+  },
+  update(dt){
+   if(!Number.isFinite(dt)||dt<=0||elapsed>=duration)return;
+   elapsed=Math.min(duration,elapsed+Math.min(dt,.1));
+   const t=smooth(elapsed/duration);
+   current=Object.fromEntries(Object.keys(target).map(k=>[k,
+    k==='ambient'||k.endsWith('Power')||k==='density'
+     ?lerp(start[k],target[k],t)
+     :color(start[k]).lerp(color(target[k]),t).getHex()
+   ]));
+   apply(current);
+  },
+  dispose(){
+   for(const light of [hemi,key,fill,rim])scene.remove(light);
+   if(scene.fog===fog)scene.fog=oldFog;
+   key.castShadow=false;
+  }
  };
 }
 // [메인: 3D 카메라] 관성/피사체 예측/시선 보간은 렌더 전용이며 이동 판정과 분리한다.
