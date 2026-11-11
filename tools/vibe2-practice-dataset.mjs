@@ -89,34 +89,53 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12, taskTy
   if (deduped.length < minSamples) throw new Error(`practice samples ${deduped.length}/${minSamples}`);
   deduped.sort((a, b) => deterministicScore(a) - deterministicScore(b));
   const evalCount = Math.max(2, Math.min(Math.floor(deduped.length * 0.2), deduped.length - 1));
-  // A family stays in one split: revisions of one exercise cannot inflate eval.
-  const evalFamilies = new Set();
+  // [로블록스 연습 보류셋] 같은 문제 계열은 학습·평가·보류셋에 동시에 포함하지 않는다.
+  // 승인 코드 14계열을 학습 10 / 평가 2 / 보류 2로 분리하고 라이선스 참조 2계열도 보류한다.
+  // 동일 승인 자료 출처이므로 외부 독립 벤치마크/게임 런타임 검증으로 간주하지 않는다.
   const codeFamilies = [...new Set(deduped.filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').map(row => row.familyId))];
-  // Roblox keeps at least ten original Luau code exercises in training and
-  // reserves three separate code families for practice evaluation when possible.
-  // This is never an independent fixed holdout or native runtime evidence.
-  const reservedCodeFamilies = taskType === 'roblox' && codeFamilies.length >= 12
-    ? Math.min(3, codeFamilies.length - 10, evalCount - 1)
-    : (codeFamilies.length >= 2 ? 1 : 0);
-  for (const id of codeFamilies.slice(0, reservedCodeFamilies)) evalFamilies.add(id);
   const codeFamilySet = new Set(codeFamilies);
-  for (const row of deduped) {
-    if (deduped.filter(item => evalFamilies.has(item.familyId)).length >= evalCount) break;
+  const hasRobloxHoldout = taskType === 'roblox' && codeFamilies.length >= 14;
+  const holdoutFamilies = new Set();
+  if (hasRobloxHoldout) {
+    for (const id of codeFamilies.slice(0, 2)) holdoutFamilies.add(id);
+    const licensedFamilies = [...new Set(deduped
+      .filter(row => row.sourceKind === 'licensed-reference' && !codeFamilySet.has(row.familyId))
+      .map(row => row.familyId))];
+    if (licensedFamilies.length < 2) throw new Error('Roblox practice holdout requires disjoint licensed reference families');
+    for (const id of licensedFamilies.slice(0, 2)) holdoutFamilies.add(id);
+  }
+  const evalFamilies = new Set();
+  const reservedCodeFamilies = hasRobloxHoldout ? codeFamilies.slice(2, 4)
+    : (taskType === 'roblox' && codeFamilies.length >= 12
+      ? codeFamilies.slice(0, Math.min(3, codeFamilies.length - 10, evalCount - 1))
+      : codeFamilies.length >= 2 ? codeFamilies.slice(0, 1) : []);
+  for (const id of reservedCodeFamilies) evalFamilies.add(id);
+  const availableRows = deduped.filter(row => !holdoutFamilies.has(row.familyId));
+  for (const row of availableRows) {
+    if (availableRows.filter(item => evalFamilies.has(item.familyId)).length >= evalCount) break;
     if (taskType === 'roblox' && codeFamilySet.has(row.familyId)) continue;
     evalFamilies.add(row.familyId);
   }
   if (codeFamilies.length >= 2 && codeFamilies.every(id => evalFamilies.has(id))) evalFamilies.delete(codeFamilies.at(-1));
-  const evalRows = deduped.filter(row=>evalFamilies.has(row.familyId));
-  const trainRows = deduped.filter(row=>!evalFamilies.has(row.familyId));
-  if(!trainRows.length)throw new Error('practice split requires independent exercise families');
+  const holdoutRows = deduped.filter(row => holdoutFamilies.has(row.familyId));
+  const evalRows = availableRows.filter(row => evalFamilies.has(row.familyId));
+  const trainRows = availableRows.filter(row => !evalFamilies.has(row.familyId));
+  if (!trainRows.length) throw new Error('practice split requires independent exercise families');
+  if (hasRobloxHoldout && (
+    trainRows.filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').length < 10 ||
+    evalRows.filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').length < 2 ||
+    holdoutRows.filter(row => row.sampleKind === 'CODE_IMPLEMENTATION').length < 2
+  )) throw new Error('Roblox disjoint holdout stratification failed');
   const sourceKinds = [...new Set(deduped.map((row) => row.sourceKind))].sort();
   const licensedReferenceCount = deduped.filter((row) => row.sourceKind === 'licensed-reference').length;
   const syntheticCount = deduped.filter((row) => row.synthetic === true).length;
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'train.jsonl'), `${trainRows.map((row) => JSON.stringify(row)).join('\n')}\n`);
   fs.writeFileSync(path.join(outDir, 'eval.jsonl'), `${evalRows.map((row) => JSON.stringify(row)).join('\n')}\n`);
+  if (hasRobloxHoldout) fs.writeFileSync(path.join(outDir, 'holdout.jsonl'),
+    `${holdoutRows.map(row => JSON.stringify(row)).join('\n')}\n`);
   const manifest = {
-    version: 5,
+    version: hasRobloxHoldout ? 6 : 5,
     seed: SEED,
     targetTaskType: taskType,
     authority: 'PRACTICE_ONLY',
@@ -138,17 +157,22 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12, taskTy
     stats: {
       train: trainRows.length,
       eval: evalRows.length,
+      holdout: holdoutRows.length,
       syntheticTotal: syntheticCount,
       licensedReferenceTotal: licensedReferenceCount,
       licensedReferenceTrain: trainRows.filter((row) => row.sourceKind === 'licensed-reference').length,
       licensedReferenceEval: evalRows.filter((row) => row.sourceKind === 'licensed-reference').length,
+      licensedReferenceHoldout: holdoutRows.filter((row) => row.sourceKind === 'licensed-reference').length,
       deprecatedUsed: false,
       codeImplementationTrain: trainRows.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').length,
       codeImplementationEval: evalRows.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').length,
+      codeImplementationHoldout: holdoutRows.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').length,
     },
     trainSha256: datasetHash(trainRows),
     evalSha256: datasetHash(evalRows),
-    holdoutSha256: null,
+    holdoutSha256: hasRobloxHoldout ? datasetHash(holdoutRows) : null,
+    holdoutAuthority: hasRobloxHoldout ? 'DISJOINT_FAMILIES_PRACTICE_ONLY' : null,
+    independentExternalBenchmarkVerified: false,
   };
   writeJson(path.join(outDir, 'manifest.json'), manifest);
   return manifest;
