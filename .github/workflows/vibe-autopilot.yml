@@ -36,7 +36,7 @@ jobs:
           set -uo pipefail
           mkdir -p build/reports
           for g in fantasy-survival mare-essentia; do
-            gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-studio-frames" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || rm -f "build/reports/${g}.json"
+            gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-autopilot-report" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-studio-frames" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || rm -f "build/reports/${g}.json"
           done
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json 2>/dev/null || rm -f build/autopilot-ledger.json
           : > build/heads.txt

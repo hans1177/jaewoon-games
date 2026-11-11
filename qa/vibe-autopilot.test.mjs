@@ -129,3 +129,11 @@ test('점검이 끝날 때마다 이어 실행(workflow_run)되고, 방금 보�
   assert.match(decide({ signals: none, ledger: L, now, heads }).skipped, /방금 점검을 보냈다/);
   assert.equal(decide({ signals: none, ledger: L, now: now + 8 * 60000, heads }).skipped.includes('방금'), false);
 });
+
+test('autopilot 점검 결과는 별도 브랜치에 보관되고 판단기가 그걸 먼저 읽는다', () => {
+  const d = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  assert.match(d, /CAP_SCRIPT -match 'autopilot'/);
+  assert.match(d, /-autopilot-report/);
+  const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
+  assert.ok(y.indexOf('-autopilot-report') < y.indexOf('-studio-frames'));
+});
