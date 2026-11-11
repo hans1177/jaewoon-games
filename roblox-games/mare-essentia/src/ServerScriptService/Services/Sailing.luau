@@ -331,7 +331,7 @@ return function(D, S)
 			state.coins -= toll
 			return true, string.format("돌파에 실패했다. 선체 -%d, 통행료 %d코인", dmg, toll)
 		end
-		state.day += 1
+		S.State.advanceDays(state, 1)
 		morale(-3)
 		return true, "먼 길로 돌아 봉쇄를 피했다. 하루가 더 걸렸다"
 	end

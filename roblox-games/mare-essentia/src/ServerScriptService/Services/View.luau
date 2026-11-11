@@ -406,6 +406,7 @@ return function(D, S)
 		view.pace = S.Pace.viewOf(state)
 		view.world = S.World.viewOf(state)
 	view.order = S.Order.viewOf(state)
+	view.room = S.Room.viewOf(state)
 		view.people = S.People.viewOf(state)
 
 		-- 학자

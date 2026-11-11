@@ -86,7 +86,8 @@ return function(D, S)
 		local result = "먼 곳의 소식"
 		-- 이어질 사건 예약 (전쟁 뒤 기근, 기근 뒤 풍작 ...)
 		for _, f in ev.follow or {} do
-			if W.ById[f.id] and rand(w) < f.p then
+			local fr = if state.room then D.RoomClock.hash01(S.Room.seed(), ev.id .. ":" .. f.id .. ":" .. region, state.day) else rand(w)
+			if W.ById[f.id] and fr < f.p then
 				table.insert(w.queue, { id = f.id, day = state.day + f.after, region = region, cause = title })
 			end
 		end
@@ -121,8 +122,7 @@ return function(D, S)
 		return msgs
 	end
 
-	local function roll(state)
-		local w = world(state)
+	local function pickEvent(state, w, rand_)
 		local year = state.startYear + state.day / 365
 		local last = w.log[1] and w.log[1].kind
 		local pool, total = {}, 0
@@ -138,9 +138,9 @@ return function(D, S)
 			end
 		end
 		if #pool == 0 then
-			return {}
+			return nil
 		end
-		local r, acc = rand(w) * total, 0
+		local r, acc = rand_() * total, 0
 		local pick = pool[#pool].ev
 		for _, it in pool do
 			acc += it.wt
@@ -149,8 +149,36 @@ return function(D, S)
 				break
 			end
 		end
-		local region = pick.regions[math.floor(rand(w) * #pick.regions) + 1] or pick.regions[1]
-		return fire(state, pick, region)
+		local region = pick.regions[math.floor(rand_() * #pick.regions) + 1] or pick.regions[1]
+		return pick, region
+	end
+
+	-- k: 방 시계 안에서 이 추첨의 번호. 같은 방 사람들은 같은 번호에 같은 결과를 받는다.
+	local function roll(state, k)
+		local w = world(state)
+		local n = 0
+		local function rnd()
+			if k then
+				n += 1
+				return D.RoomClock.hash01(S.Room.seed(), "r" .. n, k)
+			end
+			return rand(w)
+		end
+		if k then
+			local rec = S.Room.roll(k, function()
+				local ev, reg = pickEvent(state, w, rnd)
+				return ev and { id = ev.id, region = reg } or nil
+			end)
+			if rec and W.ById[rec.id] then
+				return fire(state, W.ById[rec.id], rec.region)
+			end
+			return {}
+		end
+		local ev, reg = pickEvent(state, w, rnd)
+		if not ev then
+			return {}
+		end
+		return fire(state, ev, reg)
 	end
 
 	-- 지금 날짜까지 쌓인 사건을 굴리고 끝난 사건을 치운다. 알림 문장을 돌려준다(최대 3번까지 몰아서).
@@ -192,11 +220,16 @@ return function(D, S)
 			end
 		end
 		local n = 0
+		if state.room and w.nextDay % ROLL_DAYS ~= 0 then
+			w.nextDay = (math.floor(state.day / ROLL_DAYS) + 1) * ROLL_DAYS
+		end
 		while state.day >= w.nextDay and n < 3 do
+			local k = math.floor(w.nextDay / ROLL_DAYS)
 			w.nextDay += ROLL_DAYS
 			n += 1
-			if rand(w) < ROLL_CHANCE then
-				for _, m in roll(state) do
+			local chance = if state.room then D.RoomClock.hash01(S.Room.seed(), "chance", k) else rand(w)
+			if chance < ROLL_CHANCE then
+				for _, m in roll(state, if state.room then k else nil) do
 					table.insert(msgs, m)
 				end
 			end
