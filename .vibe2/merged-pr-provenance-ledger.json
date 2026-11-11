@@ -189492,11 +189492,160 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1515052869af13c1f347368a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12494",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "290455ddabfced07e57a27865e55bdb5a916d19d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12494,
+        "baseBranch": "main",
+        "headBranch": "assets/mare-ancient-ruins-cc0",
+        "baseSha": "290455ddabfced07e57a27865e55bdb5a916d19d",
+        "headSha": "b6af21aefd9c8d6d13d9450882ece637358921b9",
+        "mergeCommitSha": "b2c85a818ed7d7cc7a4950e17752051db0e80b9f",
+        "mergedAt": "2026-11-11T09:46:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "eb3c82f90991b2dd541847d2b22f240acf8029428b276dab25f7517758cb1b5d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/mare-ancient-ruins-cc0",
+        "candidateSha": "b6af21aefd9c8d6d13d9450882ece637358921b9"
+      },
+      "changeStats": {
+        "changedFileCount": 33,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 62,
+        "deletedLineCount": 21,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/terrain/egypt-column.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-obelisk.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-arch-a.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-arch-b.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-detail.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-door.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-floor.glb",
+          "roblox-games/mare-essentia/assets/terrain/egypt-temple-wall.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-amphitheater.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-column.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-ruins-a.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-ruins-b.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-ruins-c.glb",
+          "roblox-games/mare-essentia/assets/terrain/greek-statue.glb",
+          "roblox-games/mare-essentia/assets/terrain/land-floating-island.glb",
+          "roblox-games/mare-essentia/assets/terrain/land-waterfall.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-broken-column.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-broken-wall.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-column.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-crystal-circle.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-crystals.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-sand-dune.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-stairs.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-stone-arch.glb",
+          "roblox-games/mare-essentia/assets/terrain/mystic-wall-corner.glb",
+          "roblox-games/mare-essentia/assets/town/eastasia-base.glb",
+          "roblox-games/mare-essentia/assets/town/eastasia-bell.glb",
+          "roblox-games/mare-essentia/assets/town/eastasia-column-base.glb",
+          "roblox-games/mare-essentia/assets/town/eastasia-roof.glb",
+          "roblox-games/mare-essentia/assets/town/eastasia-stairs.glb",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12494",
+        "merge-commit:b2c85a818ed7d7cc7a4950e17752051db0e80b9f",
+        "base-main:290455ddabfced07e57a27865e55bdb5a916d19d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1512
+    "total": 1513
   }
 }
