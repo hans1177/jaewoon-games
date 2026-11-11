@@ -450,6 +450,9 @@ local function styleKeyOf(style)
 	return "north"
 end
 
+-- 성당 종탑 문화권(유럽·식민지). 오스만·일본·스와힐리·말라바르는 각자의 건축물을 세운다.
+local CHURCH_KEYS = { iberia = true, italy = true, france = true, britain = true, brick = true, hanse = true, nordic = true, colonial = true, north = true, med = true }
+
 local function rotateAround(m, pos, yaw)
 	if m then
 		m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, yaw, 0) * CFrame.new(-pos) * m:GetPivot())
@@ -710,6 +713,47 @@ local function densify(folder, info, style, rng, walkers, made)
 			rowOf("Town", "cart", 5, -104, -180, 28, 7.6)
 			rowOf("Cargo", "barrel", 2.4, -108, -180, 22, -7.4)
 			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 26, -12)
+		end
+		-- 지역을 대표하는 건축물 (발전도 2단계부터 선다): 성당 종탑, 첨탑, 사원탑, 신사 등
+		if lvl >= 2 then
+			local lx, lz = -84, -44
+			if CHURCH_KEYS[key] then
+				one("Town", "church", 16, lx, 0, lz, true)
+				one("Town", "bell-tower", 13, lx - 14, 0, lz, true)
+				if key == "italy" and lvl >= 3 then
+					one("Terrain", "greek-ruins-a", 10, lx - 36, 0, lz)
+					one("Terrain", "greek-statue", 6, lx - 50, 0, lz)
+				elseif (key == "brick" or key == "hanse" or key == "nordic") and lvl >= 3 then
+					one("Town", "windmill", 14, lx - 40, 0, lz, true)
+				end
+			elseif key == "ottoman" then
+				-- 미나레: 육각 탑을 쌓아 올린다 (높아질수록 한 층 더)
+				local parts = { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-top" }
+				if lvl >= 4 then table.insert(parts, 3, "tower-hexagon-mid") end
+				for i, nm in parts do
+					one("Castle", nm, 7, lx, (i - 1) * 6, lz, true)
+				end
+				one("Castle", "tower-hexagon-roof", 7, lx, #parts * 6, lz)
+				if lvl >= 3 then
+					one("Terrain", "egypt-obelisk", 12, lx - 24, 0, lz)
+				end
+			elseif key == "japan" then
+				one("Town", "temple-tower", 14, lx, 0, lz, true)
+				one("Town", "eastasia-bell", 5, lx - 14, 0, lz)
+				if lvl >= 4 then
+					one("Terrain", "gate-overhang", 12, lx - 26, 0, lz)
+				end
+			elseif key == "malabar" then
+				one("Town", "temple-tower", 15, lx, 0, lz, true)
+				if lvl >= 4 then
+					one("Town", "fountain-square", 9, lx - 18, 0, lz)
+				end
+			elseif key == "swahili" then
+				one("Town", "temple-stone", 13, lx, 0, lz, true)
+				if lvl >= 4 then
+					one("Terrain", "egypt-column", 8, lx - 14, 0, lz)
+				end
+			end
 		end
 	end
 	-- 골목 모퉁이: 덤불·화분·통·상자 더미
@@ -1174,8 +1218,8 @@ function PortScene.build(info, onFacility)
 		prompt(folder, Vector3.new(px + 20, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
 	end
 
-	-- 성당 종탑
-	do
+	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
+	if CHURCH_KEYS[currentKey] and sceneLevel < 2 then
 		local cx, cz = -84, 40
 		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
