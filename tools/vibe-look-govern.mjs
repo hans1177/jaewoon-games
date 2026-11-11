@@ -5,11 +5,11 @@
 //   ① 프레임 4장 이상  ② 추정 평균 이득 ≥ +8  ③ 가장 손해 본 프레임도 ≥ +3(한 화면이라도 나빠지면 탈락)
 //   ④ 레퍼런스가 있으면 레퍼런스 근접도가 기준선보다 +5 이상  ⑤ 게임 정책(lookPolicy)이 허용한 프리셋만, 밝은 게임은 밝은 낮 프리셋만
 //   ⑥ 게임당 24시간에 한 번만 바꿈(쿨다운)  ⑦ 이전에 되돌려진 프리셋은 그 게임에서 영구 차단
-// 적용 뒤 확인: 실제 캡처 2회의 평균이 적용 전 점수 +3 이상이어야 확정. 한 번이라도 -3 미만이면 즉시 되돌림.
+// 적용 뒤 확인: 실제 캡처 2회의 평균이 적용 전 점수 +3 이상이어야 확정. 전체 평균이나 같은 장면이 -3 이하이면 즉시 되돌림.
 // 게임 정책이 없으면(spec.lookPolicy.enabled !== true) 아무것도 하지 않는다. 결과는 게임의 LookAssignment.luau(Preset=nil 또는 id)로만 나간다.
 export const GATE={minFrames:4,minGain:8,minFrameGain:3,minReferenceGain:5,streak:3,cooldownHours:24,keepMargin:3,verifyCaptures:2,panicDrop:-3};
 
-export const emptyLook=()=>({preset:null,baseline:null,since:null,lastChange:null,pending:null,verify:null,confirmed:false,blocked:[],history:[]});
+export const emptyLook=()=>({preset:null,baseline:null,baselineFrames:null,since:null,lastChange:null,pending:null,verify:null,confirmed:false,blocked:[],history:[]});
 
 // 게임 정책이 허용하는 프리셋인가(허용 목록, 자동 프리셋 허용 여부, 밝은 게임 조건)
 export function allowedByPolicy(preset,policy,mood='bright'){
@@ -30,18 +30,26 @@ const hoursBetween=(a,b)=>(new Date(b)-new Date(a))/36e5;
 export function decideLook({look=emptyLook(),aesthetic,policy,table,mood='bright',now=new Date().toISOString(),gate=GATE}){
   const cur={...emptyLook(),...look,blocked:[...(look.blocked||[])],history:[...(look.history||[])]};
   if(!policy||policy.enabled!==true)return {look:cur,event:{type:'DISABLED'}};
-  if(!aesthetic||!aesthetic.available||!(aesthetic.checked>=gate.minFrames))return {look:cur,event:{type:'NOT_ENOUGH_FRAMES'}};
+  if(!aesthetic||!aesthetic.available||!Number.isFinite(aesthetic.score)||!(aesthetic.checked>=gate.minFrames))return {look:cur,event:{type:'NOT_ENOUGH_FRAMES'}};
 
-  // 적용 중: 확인 또는 되돌림
+  const frames=new Map((Array.isArray(aesthetic.frames)?aesthetic.frames:[])
+    .filter(row=>typeof row?.file==='string'&&row.file&&Number.isFinite(row.score))
+    .map(row=>[row.file,row.score]));
+  // 적용 중: 같은 이름의 화면끼리 비교하여 평균에 가려진 후퇴도 검출한다.
   if(cur.preset){
+    const baselineFrames=cur.baselineFrames||[];
+    const regressedFrame=baselineFrames.find(([file,score])=>frames.has(file)&&frames.get(file)-score<=gate.panicDrop)?.[0];
+    if(!regressedFrame&&baselineFrames.some(([file])=>!frames.has(file))){
+      return {look:cur,event:{type:'NOT_ENOUGH_FRAMES'}};
+    }
     const v=cur.verify||{scores:[]};
     const scores=[...v.scores,aesthetic.score];
     const worstDrop=aesthetic.score-cur.baseline;
-    if(worstDrop<=gate.panicDrop||(scores.length>=gate.verifyCaptures&&scores.reduce((t,x)=>t+x,0)/scores.length<cur.baseline+gate.keepMargin&&!cur.confirmed)){
+    if(regressedFrame||worstDrop<=gate.panicDrop||(scores.length>=gate.verifyCaptures&&scores.reduce((t,x)=>t+x,0)/scores.length<cur.baseline+gate.keepMargin&&!cur.confirmed)){
       const id=cur.preset;
-      cur.history.push({at:now,type:'ROLLBACK',preset:id,baseline:cur.baseline,scores});
+      cur.history.push({at:now,type:'ROLLBACK',preset:id,baseline:cur.baseline,scores,regressedFrame});
       if(!cur.blocked.includes(id))cur.blocked.push(id);
-      return {look:{...cur,preset:null,baseline:null,verify:null,confirmed:false,pending:null,lastChange:now,history:cur.history.slice(-30)},event:{type:'ROLLBACK',preset:id,scores,baseline:cur.baseline}};
+      return {look:{...cur,preset:null,baseline:null,baselineFrames:null,verify:null,confirmed:false,pending:null,lastChange:now,history:cur.history.slice(-30)},event:{type:'ROLLBACK',preset:id,scores,baseline:cur.baseline,regressedFrame}};
     }
     if(!cur.confirmed&&scores.length>=gate.verifyCaptures){
       cur.confirmed=true;cur.verify={scores:scores.slice(-5)};
@@ -69,7 +77,7 @@ export function decideLook({look=emptyLook(),aesthetic,policy,table,mood='bright
   const streak=cur.pending&&cur.pending.id===top.id?cur.pending.streak+1:1;
   if(streak<gate.streak)return {look:{...cur,pending:{id:top.id,streak}},event:{type:'STREAK',preset:top.id,streak,need:gate.streak}};
   cur.history.push({at:now,type:'APPLY',preset:top.id,baseline:aesthetic.score,estimatedGain:top.gain,minGain:top.minGain});
-  return {look:{...cur,preset:top.id,baseline:aesthetic.score,since:now,lastChange:now,pending:null,verify:{scores:[]},confirmed:false,history:cur.history.slice(-30)},event:{type:'APPLY',preset:top.id,estimatedGain:top.gain}};
+  return {look:{...cur,preset:top.id,baseline:aesthetic.score,baselineFrames:frames.size>=gate.minFrames?[...frames]:null,since:now,lastChange:now,pending:null,verify:{scores:[]},confirmed:false,history:cur.history.slice(-30)},event:{type:'APPLY',preset:top.id,estimatedGain:top.gain}};
 }
 
 export function lookLuau(look){
