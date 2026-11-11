@@ -32,6 +32,7 @@ local D = {
 	Tactics = require("./Shared/Tactics"),
 	TacticsMaps = require("./Shared/TacticsMaps"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
+	HistoryEvents = require("./Shared/HistoryEvents"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -2070,6 +2071,58 @@ do
 	check("지식: 효과의 교역품이 실제로 있음", badGood == nil, badGood)
 	check("지식: 노드의 학문이 실제로 있음", badDisc == nil, badDisc)
 	check("지식: 노드가 충분히 많음(카드 전체)", #K.Nodes >= 400, tostring(#K.Nodes))
+	-- 역사 사건
+	local HE = D.HistoryEvents
+	local heBad = nil
+	for _, ev in HE.Events do
+		if #ev.choices < 2 then heBad = ev.id .. ":choices" end
+		for _, ch in ev.choices do
+			for _, cid in ch.cards or {} do
+				if not D.Cards.ById[cid] then heBad = ev.id .. ":" .. cid end
+			end
+			if ch.price then
+				for _, g in ch.price.goods do if not D.Ports.Goods[g] then heBad = ev.id .. ":" .. g end end
+				for _, rid in ch.price.regions do
+					local okR = false
+					for _, r in D.Regions.List do if r.id == rid then okR = true end end
+					if not okR then heBad = ev.id .. ":" .. rid end
+				end
+			end
+		end
+	end
+	check("역사: 사건 자료가 올바름(카드·교역품·지역)", heBad == nil, heBad)
+	check("역사: 사건이 충분함", #HE.Events >= 25, tostring(#HE.Events))
+	local stH = newState("england") -- 1700 시작
+	stH.portId = "london"
+	S.History.tick(stH)
+	check("역사: 1700년 시작은 이전 사건이 일어나지 않음", stH.history.pending == nil or HE.ById[stH.history.pending].year >= 1700)
+	stH.day = HE.dayOf(HE.ById.act_of_union, 1700) + 1
+	S.History.tick(stH)
+	local first = stH.history.pending
+	check("역사: 날짜가 되면 사건이 닥침", first ~= nil and HE.ById[first].year <= 1707, tostring(first))
+	check("역사: 잘못된 선택 거부", select(1, act(stH, "HistoryChoose", { choice = 9 })) == false)
+	local okH, msgH = act(stH, "HistoryChoose", { choice = 2 })
+	check("역사: 선택하면 처리됨", okH == true and stH.history.seen[first] == 2, tostring(msgH))
+	stH.history.fx = { { goods = { "wool" }, regions = { "europe" }, mult = 0.5, untilDay = stH.day + 10 } }
+	check("역사: 지역 시세 효과가 적용됨", S.History.mult(stH, "london", "wool") == 0.5 and S.History.mult(stH, "london", "tea") == 1)
+	stH.day += 11
+	S.History.tick(stH)
+	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	local stH2 = newState("england")
+	stH2.history.pending = "principia"
+	stH2.coins = 0
+	check("역사: 비용이 모자라면 선택 불가", select(1, act(stH2, "HistoryChoose", { choice = 1 })) == false and stH2.history.pending == "principia")
+	stH2.coins = 500
+	act(stH2, "HistoryChoose", { choice = 1 })
+	check("역사: 선택으로 도감 카드를 얻음", stH2.discovered.phy_gravity == true and stH2.coins == 400)
+	local backH = S.State.sanitize(S.State.serialize(stH))
+	check("역사: 저장/불러오기", backH.history.seen[first] == 2)
+	local viewH = S.View.build(stH2, ctx)
+	check("역사: 화면에 사건 기록이 담김", viewH.history ~= nil and viewH.history.seenCount == 1)
+	local stH3 = newState("england")
+	stH3.history.pending = "south_sea"
+	stH3.coins = 1000
+	check("역사: 투자 사건은 성공이든 실패든 처리됨", select(1, act(stH3, "HistoryChoose", { choice = 1 })) == true and stH3.history.seen.south_sea == 1)
 	-- 시대 전환 보상
 	local stX = newState("england")
 	stX.portId = "london"

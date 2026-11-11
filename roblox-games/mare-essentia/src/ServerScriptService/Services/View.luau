@@ -90,7 +90,7 @@ return function(D, S)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
 			local mult = ctx.market:get(port.id, goodId)
-			local ev = ctx.market:eventMult(port.id, goodId)
+			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
 			local tag = ""
 			if table.find(port.produces, goodId) then
 				tag = "특산"
@@ -139,7 +139,7 @@ return function(D, S)
 				for otherId, other in D.Ports.Ports do
 					if otherId ~= port.id then
 						local m = ctx.market:get(otherId, g.id)
-						local e = ctx.market:eventMult(otherId, g.id)
+						local e = (ctx.market:eventMult(otherId, g.id) * S.History.mult(state, otherId, g.id))
 						table.insert(list, { name = other.name, sell = D.TradeMath.sellPrice(otherId, g.id, m, rate, e) })
 					end
 				end
@@ -400,6 +400,7 @@ return function(D, S)
 
 		-- 지식 트리(보고·이해·효과)
 		view.knowledge = S.Knowledge.viewOf(state)
+		view.history = S.History.viewOf(state)
 
 		-- 학자
 		view.scholars = {}

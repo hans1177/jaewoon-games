@@ -3867,6 +3867,19 @@ local function renderCodexOverview()
 			return mkLabel(content, er.story .. nxt .. " 시대가 오를수록 항해와 항구 연구가 조금씩 좋아져요.", 12, COLORS.muted, false)
 		end)
 	end
+	if view.history then
+		local hv = view.history
+		add(function() return mkHeader(content, string.format("역사의 분기점 (겪은 사건 %d / %d)", hv.seenCount or 0, hv.total or 0)) end)
+		if hv.pending then
+			add(function() return mkLabel(content, string.format("⚑ 지금 기다리는 사건: %d년 %s — 화면에 뜨는 선택 창에서 정하세요.", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+		end
+		for _, r in hv.recent do
+			add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
+		end
+		for _, e in hv.effects do
+			add(function() return mkLabel(content, string.format("진행 중인 시세 변화: %s (%d일 남음)", e.title or "", e.left), 12, COLORS.green, false) end)
+		end
+	end
 	add(function() return mkHeader(content, "먼 바다로 가는 길 (항해 지식을 이해해야 열려요)") end)
 	for _, g in (view.knowledge and view.knowledge.gates or {}) do
 		add(function()
@@ -5285,6 +5298,94 @@ menuToggle.Activated:Connect(function()
 	menuToggle.Visible = false
 end)
 
+
+-- 역사 사건: 게임 날짜가 실제 사건의 해에 닿으면 선택 창이 뜬다. 고를 때까지 다른 행동은 계속할 수 있다 (창은 닫기만 하면 잠시 숨는다).
+do
+	local popupFor, popupGui = nil, nil
+	local dismissed = {}
+	local function closePopup()
+		if popupGui then
+			popupGui:Destroy()
+			popupGui = nil
+			popupFor = nil
+		end
+	end
+	local function openPopup(ev)
+		closePopup()
+		popupFor = ev.id
+		local layer = overlayGui("HistoryEvent", 55)
+		popupGui = layer
+		local dim = Instance.new("Frame")
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.5
+		dim.BorderSizePixel = 0
+		dim.Parent = layer
+		local win = Instance.new("Frame")
+		win.AnchorPoint = Vector2.new(0.5, 0.5)
+		win.Position = UDim2.fromScale(0.5, 0.5)
+		win.Size = UDim2.new(0, 520, 0, 0)
+		win.AutomaticSize = Enum.AutomaticSize.Y
+		win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+		win.BorderSizePixel = 0
+		win.Parent = layer
+		corner(win, 16)
+		local wst = Instance.new("UIStroke")
+		wst.Color = BRASS
+		wst.Thickness = 2.5
+		wst.Parent = win
+		local limit = Instance.new("UISizeConstraint")
+		limit.MaxSize = Vector2.new(560, 640)
+		limit.MinSize = Vector2.new(280, 200)
+		limit.Parent = win
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
+		pad.Parent = win
+		local list = Instance.new("UIListLayout")
+		list.Padding = UDim.new(0, 10)
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.Parent = win
+		mkLabel(win, string.format("%d년 · %s", ev.year, ev.tag or "역사"), 13, COLORS.muted, false, 1)
+		mkLabel(win, ev.title, 22, Color3.fromRGB(246, 208, 130), true, 2)
+		mkLabel(win, ev.text, 15, COLORS.text, false, 3)
+		for i, ch in ev.choices do
+			local row = Instance.new("Frame")
+			row.BackgroundTransparency = 1
+			row.Size = UDim2.new(1, 0, 0, 0)
+			row.AutomaticSize = Enum.AutomaticSize.Y
+			row.LayoutOrder = 3 + i
+			row.Parent = win
+			local rl = Instance.new("UIListLayout")
+			rl.Padding = UDim.new(0, 2)
+			rl.Parent = row
+			local ok = (view and view.player and view.player.coins or 0) >= ch.cost
+			local b = mkButton(row, ch.label, COLORS.gold, UDim2.new(1, 0, 0, 40), function()
+				closePopup()
+				call("HistoryChoose", { choice = ch.index })
+			end, ok)
+			b.LayoutOrder = 1
+			local hint = mkLabel(row, ch.hint or "", 12, COLORS.muted, false, 2)
+			hint.LayoutOrder = 2
+		end
+		local later = mkButton(win, "나중에 정하기", COLORS.grey, UDim2.new(1, 0, 0, 34), function()
+			dismissed[ev.id] = true
+			closePopup()
+		end, true)
+		later.LayoutOrder = 20
+	end
+	task.spawn(function()
+		while true do
+			task.wait(0.8)
+			local hv = view and view.history
+			local pend = hv and hv.pending
+			if pend and not dismissed[pend.id] and popupFor ~= pend.id and not newGameMode then
+				openPopup(pend)
+			elseif not pend and popupGui then
+				closePopup()
+			end
+		end
+	end)
+end
 
 -- 개발 캡처용: 로컬에서 "DevCall" 속성에 State 를 넣으면 화면을 서버 상태로 새로 그린다 (읽기 전용 요청만)
 task.spawn(function()

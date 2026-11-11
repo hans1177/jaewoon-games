@@ -46,6 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
 			landmarks = {}, -- 항구별 특수 건축물 (항구 id → 건축물 id → true)
 			portTech = {}, -- 공동 발표로 쌓인 항구별 학문 기술 점수 (항구 id → 학문 id → 점수)
 			academy = { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }, -- 학회 발표·박람회 기록 (shown: 전시한 카드)
@@ -463,6 +464,33 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.history) == "table" then
+			local h = saved.history
+			if type(h.seen) == "table" then
+				for id, v in h.seen do
+					if type(id) == "string" and #id <= 40 and type(v) == "number" then
+						s.history.seen[id] = math.floor(math.clamp(v, 0, 9))
+					end
+				end
+			end
+			if type(h.pending) == "string" and #h.pending <= 40 then
+				s.history.pending = h.pending
+			end
+			if type(h.fx) == "table" then
+				for _, f in h.fx do
+					if type(f) == "table" and type(f.goods) == "table" and type(f.regions) == "table" and type(f.mult) == "number" and type(f.untilDay) == "number" and #s.history.fx < 20 then
+						local goods, regions = {}, {}
+						for _, g in f.goods do
+							if type(g) == "string" and #g <= 24 then table.insert(goods, g) end
+						end
+						for _, r in f.regions do
+							if type(r) == "string" and #r <= 24 then table.insert(regions, r) end
+						end
+						table.insert(s.history.fx, { goods = goods, regions = regions, mult = math.clamp(f.mult, 0.3, 3), untilDay = f.untilDay, title = if type(f.title) == "string" then string.sub(f.title, 1, 40) else nil })
+					end
+				end
+			end
+		end
 		if type(saved.landmarks) == "table" then
 			for portId, t in saved.landmarks do
 				if type(portId) == "string" and #portId <= 40 and type(t) == "table" then
@@ -560,6 +588,7 @@ return function(D)
 			academy = state.academy,
 			portTech = state.portTech,
 			landmarks = state.landmarks,
+			history = state.history,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
