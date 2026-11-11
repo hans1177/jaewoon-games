@@ -706,8 +706,12 @@ function codingOutcomeIdentity(task={},strategy=''){
 }
 function strategyLifecycle(row={}){
   const applications=Math.max(0,Number(row.verifiedApplications)||0);
+  const failures=Math.max(0,Number(row.verifiedFailures)||0);
   const games=Object.keys(row.games||{}).filter(Boolean).length;
   const firstPassRate=applications?Number(row.firstCandidatePasses||0)/applications:0;
+  // [위험 보정] 과거 PASS가 많아도 검증된 실패가 누적되면 선호 전략 자격을 회수한다.
+  // 재검증에 성공하면 기존 양성 증거를 유지한 채 자동으로 선호 자격을 복구할 수 있다.
+  if(failures>=3&&failures>=applications)return'REVALIDATION_REQUIRED';
   if(applications>=5&&games>=2&&firstPassRate>=0.6)return'PREFERRED';
   if(applications>=3)return'VERIFIED';
   if(applications>=1)return'OBSERVED';
@@ -1026,9 +1030,20 @@ function preferredContextModeForStrategy(row={}){
 export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput);
   const rows=Object.entries(state.codingStrategyMemory?.strategies||{}).map(([strategy,row])=>({strategy,...row}));
-  const eligible=rows.filter(row=>row.state==='PREFERRED');
-  if(!eligible.length)return{strategy:null,state:'NO_PREFERRED_STRATEGY',evidenceApplications:0,failureFingerprint:failureFingerprintForTask(task),selectionReason:'NO_PREFERRED_STRATEGY',advisoryOnly:true,authorityExpanded:false};
   const gameId=clean(task.gameId),target=lower(task.target),failureFingerprint=failureFingerprintForTask(task);
+  const eligibleGlobal=rows.filter(row=>row.state==='PREFERRED');
+  // [반례 기억] 동일 오류 지문에서 실패가 2회 이상이고 성공을 상쇄하면 해당 전략은 우선 추천하지 않는다.
+  // 기존 후보 순서와 쓰기 권한은 건드리지 않고 검증된 같은 오류의 증거만 참고한다.
+  const quarantinedStrategies=eligibleGlobal.filter(row=>{
+    const context=failureFingerprint?row.failureFingerprints?.[failureFingerprint]:null;
+    const successes=Math.max(0,Number(context?.verifiedApplications)||0);
+    const failures=Math.max(0,Number(context?.verifiedFailures)||0);
+    return failures>=2&&failures>=successes;
+  }).map(row=>row.strategy).sort();
+  const eligible=eligibleGlobal.filter(row=>!quarantinedStrategies.includes(row.strategy));
+  if(!eligible.length)return{strategy:null,state:quarantinedStrategies.length?'CONTEXT_RISK_REVALIDATION_REQUIRED':'NO_PREFERRED_STRATEGY',
+    evidenceApplications:0,failureFingerprint,selectionReason:quarantinedStrategies.length?'VERIFIED_CONTEXT_FAILURES':'NO_PREFERRED_STRATEGY',
+    quarantinedStrategies,advisoryOnly:true,authorityExpanded:false};
   const contextualScore=row=>{
     const context=failureFingerprint?row.failureFingerprints?.[failureFingerprint]:null;
     const sameGameSameFailure=Number(context?.games?.[gameId]||0);
@@ -1063,6 +1078,7 @@ export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
     contextualFirstCandidatePassRatePct:context?.verifiedApplications?Number(((context.firstCandidatePasses/context.verifiedApplications)*100).toFixed(1)):0,
     sameGameApplications:Number(winner.games?.[gameId]||0),sameTargetApplications:Number(winner.targets?.[target]||0),
     selectionReason,
+    quarantinedStrategies,
     contextualScore:contextualScore(winner),
     preferredContextMode:preferredContextMode?.mode||null,
     preferredContextModeSamples:Number(preferredContextMode?.verifiedApplications||0),
@@ -1074,7 +1090,9 @@ export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
   };
 }
 export function codingStrategyGuidance(preference={}){
-  if(!clean(preference?.strategy))return'';
+  if(!clean(preference?.strategy))return Array.isArray(preference.quarantinedStrategies)&&preference.quarantinedStrategies.length
+    ?'[VERIFIED CODING STRATEGY CONTEXT RISK - advisory only] failedStrategies='+preference.quarantinedStrategies.join(',')+'; perform read-only investigation and revalidation before reuse; no scope or QA changes.'
+    :'';
   return[
     '[VERIFIED CODING STRATEGY PREFERENCE - advisory inside reserved scope]',
     'strategy='+clean(preference.strategy),
@@ -1087,6 +1105,7 @@ export function codingStrategyGuidance(preference={}){
     'sameFailureVerifiedFailures='+Number(preference.sameFailureVerifiedFailures||0),
     'sameGameSameFailureVerifiedFailures='+Number(preference.sameGameSameFailureVerifiedFailures||0),
     'selectionReason='+(clean(preference.selectionReason)||'GLOBAL_PREFERRED'),
+    'contextQuarantinedStrategies='+(Array.isArray(preference.quarantinedStrategies)?preference.quarantinedStrategies.join(',')||'NONE':'NONE'),
     'preferredContextMode='+(clean(preference.preferredContextMode)||'NONE'),
     'preferredContextModeSamples='+Number(preference.preferredContextModeSamples||0),
     'preferredContextModeVerifiedFailures='+Number(preference.preferredContextModeVerifiedFailures||0),
