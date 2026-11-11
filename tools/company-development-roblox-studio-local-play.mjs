@@ -2969,7 +2969,12 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           ||failed.some(row=>row?.status!=='TIMEOUT_16S'
             ||byKey.get(String(row?.key||''))!==String(row?.id||'')))
           throw Error('STUDIO_CLIENT_MEDIA_NOT_EXCLUSIVE_PRELOAD_TIMEOUT');
-        const luauRows=allRows.map(row=>'{kind='+JSON.stringify(row.kind)+',key='
+        // [실물 이미지 재검증] 전체 Client 감사 후 누락된 승인 자산만 같은 Studio에서 한 번 더 검증한다.
+        // 두 번 모두 공식 IsLoaded 증거가 있어야 PASS한다. 각 호출은 MCP 45초 제한 안에서 끝낸다.
+        let pendingRows=allRows;
+        let proof=null;
+        for(let attempt=1;attempt<=2;attempt++){
+        const luauRows=pendingRows.map(row=>'{kind='+JSON.stringify(row.kind)+',key='
           +JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
         const auditClientCode="local rows={"+luauRows+"} "
           +"local shared=game:GetService('ReplicatedStorage'):WaitForChild('Shared') "
@@ -3008,7 +3013,34 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const response=await luau('Client',auditClientCode);
         const marker=response.split(/\r?\n/).find(line=>line.startsWith('MARE_CLIENT_IMAGE_AUDIT='));
         if(!marker)throw Error('STUDIO_CLIENT_IMAGE_RESPONSE_MISSING');
-        const proof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
+        const currentProof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
+        if(attempt===1){
+          proof=currentProof;
+        }else{
+          const imageCount=pendingRows.filter(row=>row.kind==='Image').length;
+          const soundCount=pendingRows.length-imageCount;
+          if(currentProof.mode!=='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
+            ||currentProof.expected!==imageCount||currentProof.soundExpected!==soundCount
+            ||!Array.isArray(currentProof.missing)||!Array.isArray(currentProof.soundMissing)
+            ||currentProof.loaded!==imageCount-currentProof.missing.length
+            ||currentProof.soundLoaded!==soundCount-currentProof.soundMissing.length)
+            throw Error('STUDIO_CLIENT_MEDIA_RETRY_EVIDENCE_INVALID');
+          proof.firstPassMissing={images:proof.missing,sounds:proof.soundMissing};
+          proof.missing=currentProof.missing;
+          proof.soundMissing=currentProof.soundMissing;
+          proof.loaded=proof.expected-proof.missing.length;
+          proof.soundLoaded=proof.soundExpected-proof.soundMissing.length;
+          proof.retryVerified=true;
+        }
+        if(proof?.mode!=='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
+          ||!Array.isArray(proof.missing)||!Array.isArray(proof.soundMissing))break;
+        if(proof.missing.length===0&&proof.soundMissing.length===0)break;
+        if(attempt!==1||proof.missing.length+proof.soundMissing.length>8)break;
+        const imageMissing=new Set(proof.missing),soundMissing=new Set(proof.soundMissing);
+        pendingRows=allRows.filter(row=>row.kind==='Image'?imageMissing.has(row.key):soundMissing.has(row.key));
+        if(pendingRows.length!==imageMissing.size+soundMissing.size)throw Error('STUDIO_CLIENT_MEDIA_RETRY_KEYS_INVALID');
+        console.log('STUDIO_MARE_CLIENT_MISSING_RETRY='+JSON.stringify({images:proof.missing,sounds:proof.soundMissing}));
+        }
         report.clientImageAudit=proof;
         console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_AUDIT='+JSON.stringify(proof).slice(0,1600));
         if(proof.mode==='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
