@@ -61,6 +61,8 @@ test('메쉬·리그·관절·모션·액션부터 UI 버튼 아이콘까지 실
   assert.ok(classifyPracticeAsset({family:'MOTION'}).targets.includes('MOTION'));
   assert.ok(classifyPracticeAsset({family:'AUDIO'}).targets.includes('AUDIO'));
   assert.ok(classifyPracticeAsset({family:'ENVIRONMENT'}).targets.includes('ENVIRONMENT'));
+  assert.ok(classifyPracticeAsset({id:'real-mesh',family:'PROP',file:'assets/real-mesh.obj'}).targets.includes('MESH'));
+  assert.ok(!classifyPracticeAsset({id:'metadata-only',family:'PROP'}).targets.includes('MESH'));
   assert.equal(actor.nativeRuntimeVerified,false);
   assert.ok(ASSET_PRACTICE_DOMAINS.length>=16);
 });
