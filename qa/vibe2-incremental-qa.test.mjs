@@ -998,4 +998,9 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   assert.equal(cached.cached,true);
   assert.deepEqual(cached.impactPlan.focusedTargets,report.impactPlan.focusedTargets);
   assert.equal(cached.impactPlan.riskPrediction.runtimeProbabilityKnown,false);
+  // 불변성 테스트만 고쳐도 이전 통과 캐시는 폐기하고 실제 실패를 검출해야 한다.
+  fs.writeFileSync(path.join(base,'qa','invariant.test.mjs'),
+    'import test from "node:test"; test("broken invariant",()=>{throw new Error("broken")});\\n','utf8');
+  assert.throws(()=>runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'}),
+    /GAME_REPAIR_INVARIANT_FAILED/);
 });
