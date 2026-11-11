@@ -18,8 +18,8 @@
     "animationStatus": "미구현"
   },
   "counts": {
-    "subjects": 628,
-    "illustrated": 267,
+    "subjects": 644,
+    "illustrated": 285,
     "largeEventArt": 11
   },
   "subjects": [
@@ -4909,12 +4909,12 @@
         "ambon"
       ],
       "subject": "꽃봉오리를 말려 향신료를 만드는 나무.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_14",
+      "sketch": {
+        "file": "world_44.jpg",
         "row": 1,
-        "column": 2
+        "column": 5
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -8759,12 +8759,12 @@
         "darwin"
       ],
       "subject": "바다에서 해초를 뜯는 이구아나.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_24",
-        "row": 3,
-        "column": 4
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 1,
+        "column": 3
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -11240,6 +11240,262 @@
       "subject": "줄기와 꽃처럼 펼쳐진 팔이 남은 화석.",
       "sketch": {
         "file": "world_42.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_kilwa",
+      "name": "킬와 대모스크",
+      "category": "건축",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "석조 아치가 남은 옛 항구의 모스크.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_aksum",
+      "name": "악숨 석비",
+      "category": "유적·원더",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "층층의 창문과 문을 새긴 높은 돌기둥.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 1,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_chan_chan",
+      "name": "찬찬 흙벽 유적",
+      "category": "유적·원더",
+      "region": "남아메리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "기하학 무늬가 새겨진 해안 도시의 흙벽.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 1,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_tiwanaku_sun_gate",
+      "name": "티와나쿠 태양의 문",
+      "category": "유적·원더",
+      "region": "남아메리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "상인방에 부조를 새긴 돌문.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_ciudad_perdida",
+      "name": "시우다드 페르디다",
+      "category": "유적·원더",
+      "region": "남아메리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "숲에 둘러싸인 원형 석조 단.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 1,
+        "column": 5
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_iguazu",
+      "name": "이과수 폭포",
+      "category": "자연 지형·해양",
+      "region": "남아메리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "숲을 가로지르는 강물이 여러 갈래로 떨어지는 폭포.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_archimedes_screw",
+      "name": "아르키메데스 나선 양수기",
+      "category": "공학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "기울인 나선을 돌려 물을 위로 올리는 장치.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_capstan",
+      "name": "범선 수직 권양기",
+      "category": "항해",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "밧줄을 감아 닻과 무거운 짐을 끌어올리는 장치.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_smith_bellows",
+      "name": "대장간 풀무",
+      "category": "공학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "가죽 주름을 눌러 화덕에 공기를 보내는 도구.",
+      "sketch": {
+        "file": "world_43.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_okapi",
+      "name": "오카피",
+      "category": "동물",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "다리에 줄무늬가 있는 숲의 포유류.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_caracal",
+      "name": "카라칼",
+      "category": "동물",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "귀 끝에 검은 털이 길게 난 고양잇과 동물.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 1,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_frankincense",
+      "name": "유향나무 수지",
+      "category": "식물",
+      "region": "서아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "잎과 굳은 수지 방울을 나란히 그린 표본.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_breadnut",
+      "name": "빵밤나무 열매",
+      "category": "식물",
+      "region": "열대 해역",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "가시가 있는 열매를 갈라 씨앗을 보여 준 표본.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_labradorite",
+      "name": "래브라도라이트",
+      "category": "광물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "각도에 따라 푸른빛이 비치는 장석.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_obsidian",
+      "name": "흑요석",
+      "category": "광물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "조개껍데기 모양으로 깨진 검은 화산 유리.",
+      "sketch": {
+        "file": "world_44.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_stromatolite",
+      "name": "스트로마톨라이트 단면",
+      "category": "화석",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "미생물 활동으로 만들어진 얇은 층이 반복되는 암석.",
+      "sketch": {
+        "file": "world_44.jpg",
         "row": 2,
         "column": 4
       },
