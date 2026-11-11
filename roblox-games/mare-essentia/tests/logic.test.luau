@@ -33,6 +33,7 @@ local D = {
 	TacticsMaps = require("./Shared/TacticsMaps"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
+	Stocks = require("./Shared/Stocks"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -2108,6 +2109,34 @@ do
 	stH.day += 11
 	S.History.tick(stH)
 	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	-- 증권거래소
+	local SKD = D.Stocks
+	local stS = newState("england") -- 1700
+	stS.portId = "london"
+	stS.coins = 100000
+	local vocP = SKD.price(SKD.ById.voc, 1700)
+	check("주식: 시세가 날짜로 계산됨(상장 전은 없음)", vocP ~= nil and SKD.price(SKD.ById.south_sea, 1700) == nil)
+	check("주식: 같은 날짜는 같은 시세", SKD.price(SKD.ById.voc, 1700.25) == SKD.price(SKD.ById.voc, 1700.25))
+	local peak = SKD.price(SKD.ById.south_sea, 1720.5)
+	check("주식: 남해 거품은 1720년에 치솟았다 무너짐", peak > 700 and SKD.price(SKD.ById.south_sea, 1721.2) < 200, tostring(peak))
+	local c0 = stS.coins
+	local okS, msgS = act(stS, "StockBuy", { id = "voc", amount = 10 })
+	check("주식: 사기", okS == true and stS.stocks.held.voc == 10 and stS.coins < c0, tostring(msgS))
+	check("주식: 상장 전 종목은 못 삼", select(1, act(stS, "StockBuy", { id = "south_sea", amount = 1 })) == false)
+	check("주식: 잘못된 요청 거부", select(1, act(stS, "StockBuy", { id = "voc", amount = 0 })) == false and select(1, act(stS, "StockBuy", { id = "nope", amount = 1 })) == false)
+	stS.portId = "seville"
+	check("주식: 거래소 없는 항구에서는 불가", select(1, act(stS, "StockSell", { id = "voc", amount = 1 })) == false)
+	stS.portId = "london"
+	local viewS = S.View.build(stS, ctx)
+	check("주식: 화면에 거래소가 담김", viewS.exchange ~= nil and #viewS.exchange.rows == #SKD.Stocks)
+	stS.day += 100
+	S.Stock.tick(stS)
+	check("주식: 분기마다 배당을 받음", stS.stocks.divTotal > 0)
+	local okSell = act(stS, "StockSell", { id = "voc", amount = 1000 })
+	check("주식: 전부 팔기", okSell == true and stS.stocks.held.voc == nil)
+	local backS = S.State.sanitize(S.State.serialize(stS))
+	check("주식: 저장/불러오기", backS.stocks.divTotal == stS.stocks.divTotal and backS.stocks.trades == 2)
+	local noviceFee = S.View.build(newState("england"), ctx)
 	-- 지식 활용 선택지
 	local insBad = nil
 	for _, ev in HE.Events do

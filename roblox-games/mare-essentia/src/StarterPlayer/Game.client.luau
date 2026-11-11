@@ -2354,6 +2354,26 @@ local function renderHarbor()
 		end
 	end
 
+	if view.exchange then
+		local ex = view.exchange
+		section(ex.name)
+		add(function()
+			return mkLabel(content, string.format("주식은 날짜에 따라 실제 역사처럼 오르내려요. 수수료 %.1f%% (상업·경제학 지식을 이해할수록 줄어요) · 다음 배당까지 %d일 · 지금까지 배당 %d코인", ex.fee, ex.nextDividend, ex.divTotal), 12, COLORS.muted, false)
+		end)
+		for _, r in ex.rows do
+			if r.listed then
+				add(function()
+					local arrow = if r.change > 0 then "▲" elseif r.change < 0 then "▼" else "－"
+					local sub = string.format("%s %d%% (30일)  ·  배당 연 %d%%  ·  보유 %d주%s\n%s", arrow, math.abs(r.change), r.dividend, r.held, if r.held > 0 then string.format(" (평균 %d)", r.avg) else "", r.summary)
+					return mkRow(content, string.format("%s  %d코인", r.name, r.price), sub, {
+						{ text = "10주 사기", color = COLORS.green, onClick = function() call("StockBuy", { id = r.id, amount = 10 }) end },
+						{ text = "전부 팔기", color = COLORS.red, onClick = function() call("StockSell", { id = r.id, amount = 1000000 }) end, enabled = r.held > 0 },
+					}, 76)
+				end)
+			end
+		end
+	end
+
 	if fac.guild then
 		section("상인 길드")
 		local g = view.guild
