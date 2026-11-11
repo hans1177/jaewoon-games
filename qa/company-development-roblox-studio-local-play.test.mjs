@@ -3847,7 +3847,8 @@ test('Mare official Studio QA records complete registered media, model loading a
     assert.equal(row.assetType,imageKinds.has(kind)?'Image':'Model','wrong Mare asset category: '+key);
     if(kind==='CardArt'){
       assert.equal(row.usePermissionGranted,true,'CardArt usage permission missing: '+key);
-      assert.equal(row.sourceSha256,originals[key],'CardArt source differs from approved original: '+key);
+      const actualSha=crypto.createHash('sha256').update(fs.readFileSync(row.source)).digest('hex');
+      assert.equal(actualSha,originals[key],'CardArt original differs from approved SHA256: '+key);
     }
   }
   for(const [key,row] of Object.entries(registered)){
