@@ -7,6 +7,7 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 
 const DAY = 24 * 60;
+export const MIN_GAP_MIN = 10;
 
 // 게임별 점검 목록. studio 는 devloop-studio.yml 로, workflow 는 해당 워크플로 dispatch 로 실행한다.
 const F = 'roblox-games/fantasy-survival/tools/devloop/studio-scripts/';
@@ -175,6 +176,8 @@ function why({ sinceMin, found, penalty, repeat, fresh, unchanged }) {
 export function decide({ signals, ledger, now = Date.now(), queued = 0, budget = 1, heads = {} }) {
   const rows = scoreTasks({ signals, ledger, now, queued, heads });
   if (queued >= 2) return { picks: [], rows, skipped: `Studio 대기열이 ${queued}개라 이번엔 쉰다` };
+  // 점검이 연달아 실패해도 계속 돌지 않게, 방금 보냈으면 10분은 쉰다(점검이 끝날 때마다 이어 실행되는 구조의 안전판)
+  if (ledger.lastDispatchAt && (now - ledger.lastDispatchAt) / 60000 < MIN_GAP_MIN) return { picks: [], rows, skipped: `방금 점검을 보냈다(${MIN_GAP_MIN}분 간격)` };
   const picks = rows.filter(r => !r.blocked).slice(0, budget);
   return { picks, rows, skipped: picks.length ? '' : '모든 점검이 쿨다운 중' };
 }
@@ -214,6 +217,7 @@ export function markDispatched(ledger, pick, now = Date.now(), head = '') {
   const k = taskKey(pick.game, pick.kind);
   out.tasks[k] = { ...(out.tasks[k] || {}), lastAt: now, pending: true, lastSha: head || (out.tasks[k] || {}).lastSha || '' };
   out.history = [...(out.history || []), k].slice(-12);
+  out.lastDispatchAt = now;
   return out;
 }
 
