@@ -12,26 +12,21 @@
 - 2026-11-09 17:25(KST) 바이브: 새 점검 결과 없음(13:39 그대로, 24시간 이내라 재요청 안 함). 점검 클릭 우선 목록에 가방/제작/도감/기사단/스킬트리/설정/자동질주 추가(NOT_FOUND 줄이기, 큐 2번 완료). 다음 점검에서 클릭 수 늘었는지 확인.
 
 ## 알려진 미해결
-- 재업로드 반영본이 아직 Studio 점검에서 검증 안 됨(점검 시각이 재업로드보다 빠름). 재배포(owner-new-experience) 요청함 → 다음 점검(매시 37분)에서 not authorized 로그가 사라졌는지 확인.
+- 'permission for Asset' 6개 ID(villageLantern·StoneWall·Well·Roof·Pillar, item_star) 잔존: 저장소 시크릿 ROBLOX_OPEN_CLOUD_API_KEY / ROBLOX_CREATOR_USER_ID 가 비어 있어 owner-fantasy-assets 가 MISSING_ENV 로 실패. 사람이 시크릿 복구 후 재실행해야 함.
 - Player:Move 'no character' 경고 (점검 중 캐릭터 없음, 영향 미확인).
+- Studio Play/MCP 가 가끔 꺼짐(아래 17:18 점검 참고).
 
 ## 다음에 볼 항목 큐
-0. owner-fantasy-assets 실행(병합 후) → owner-new-experience 재배포 → 다음 점검에서 not authorized 감소 확인. 원본이 저장소에 없는 62개(mon_trex/fox/horse 등 동물·공룡, item_backpack/potion/ring 등)는 원본 파일을 새로 받아야 함(사람 확인 필요).
-1. 다음 점검 로그에서 'not authorized' 잔여 ContentId 목록 확인 → 남은 것만 reupload-map.json 에 추가
-2. 점검 스크립트 클릭 목록 보강(가방/제작/도감/스킬트리 버튼) — NOT_FOUND 줄이기
-3. 재배포가 409 busy 이면 다음 실행에서 재시도
+0. 시크릿 복구 → owner-fantasy-assets 재실행 → owner-new-experience 재배포 → 6개 ID 사라졌는지 확인. 원본이 저장소에 없는 62개(mon_trex/fox/horse 등, item_backpack/potion/ring 등)는 원본 파일을 새로 받아야 함(사람 확인 필요)
+1. 다음 점검 로그에서 'permission for Asset' 잔여 ContentId 확인
+2. 재배포가 409 busy 이면 다음 실행에서 재시도
 
-- 2026-11-09 19:23(KST) 바이브: 새 점검 결과 없음(13:39 그대로). 점검 실행이 04:36Z 이후 멈춰 있어 재배포 효과 검증 대기 중. PC 실행기 확인 필요.
+- 2026-11-09 19:23~11-10 02:23(KST) 바이브: 새 점검 결과 없음. 실행기/Studio 정지(10:26Z cancelled 이후). 새로 고칠 것 없음.
 
-- 2026-11-09 21:25(KST) 바이브: 새 점검 결과 없음(결과 브랜치 그대로, 24시간 이내라 재요청 안 함). devloop-studio 10:26Z 실행도 cancelled → PC 실행기/Studio 멈춤 계속(사람 확인 필요: Studio 창 닫기·MCP 켜기). 새로 고칠 것 없음.
+- 2026-11-11 12:19(KST, run 42950597774) 새 점검 결과: 실행기 다시 동작. errors 에 screen_capture 'Target is not reachable (DMN_RSRVD_FOCUSED)' → Studio 가 Play 상태 아니거나 MCP 꺼짐. 클릭 0/30, 프레임 0장. 12:26 사람 확인 요청.
 
-- 2026-11-09 23:23(KST) 바이브: 새 점검 결과 없음(13:39 그대로, 24시간 이내라 재요청 안 함). 10:26Z 이후 새 실행 없음 → 약 13시간째 정지. 새로 고칠 것 없음.
+- 2026-11-11 13:30(KST, run 42955029603) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. Client LOGS 'permission for Asset' 6개 ID 남음(위 미해결 참고). 이전 약 31개에서 감소. 코드 수정 없음.
 
-- 2026-11-10 02:23(KST) 바이브: 새 점검 결과 없음(결과 브랜치 그대로, 24시간 이내라 재요청 안 함). devloop-studio 10:26Z cancelled 이후 약 7시간 실행 없음 → PC 실행기/Studio 정지 계속(사람 확인 필요: Studio 창 닫기·MCP 켜기). 새로 고칠 것 없음.
+- 2026-11-11 14:30(KST, run 42960411522) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장. 같은 6개 ID 그대로. 코드 수정 없음, 재배포 안 함.
 
-- 2026-11-11 12:19(KST, run 42950597774) 새 점검 결과: 실행기는 다시 동작함(마력숲 결과 올라옴). 하지만 errors 에 screen_capture 'Target is not reachable (DMN_RSRVD_FOCUSED)' → Studio 가 Play(실행) 상태가 아니거나 MCP 가 꺼져 있음. 클릭 0/30, 프레임 0장, 2단계에서 중단. 코드 문제 아님 → 재업로드 반영 검증은 아직 못 함.
-- 2026-11-11 12:26(KST) 바이브: 사람 확인 필요 — PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기(Play 가능 상태). 고칠 코드 없음, 재배포 안 함. 24시간 이내라 재점검 요청 안 함.
-
-- 2026-11-11 13:30(KST, run 42955029603) 바이브: 점검 정상 — 클릭 30/30 성공, 프레임 31장, errors 비어 있음(Studio Play 동작 회복). Client LOGS 에 'Requester does not have permission for Asset' 6개 ID 남음: 101876091951426(villageLantern) 102755178923561(villageStoneWall) 108733651071071(villageWell) 130739931462450(villageRoof) 77258836345522(villagePillar) 118825509898110(item_star). 이전 약 31개에서 6개로 감소(재업로드 효과 확인). 원인: owner-fantasy-assets 마지막 실행(11-10 16:20Z)이 MISSING_ENV 로 실패 — 저장소 시크릿 ROBLOX_OPEN_CLOUD_API_KEY / ROBLOX_CREATOR_USER_ID 가 비어 있음. 워크플로도 이제 --regrant-only(모델 재업로드 금지)로 바뀜. 사람 확인 필요: 시크릿 복구 후 재실행. 코드 수정 없음, 재배포 안 함.
-
-- 2026-11-11 14:30(KST, run 42960411522) 바이브: 새 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. Client LOGS 'permission for Asset' 는 같은 6개 ID(villageLantern·StoneWall·Well·Roof·Pillar, item_star) 그대로. 원인은 저장소 시크릿(ROBLOX_OPEN_CLOUD_API_KEY / ROBLOX_CREATOR_USER_ID) 비어 있음 → 사람 확인 필요. 코드 수정 없음, 재배포 안 함.
+- 2026-11-11 17:30(KST, run 42984418690, 17:18 촬영) 바이브: 점검 실패 — errors 에 screen_capture 'Target is not reachable (DMN_RSRVD_FOCUSED)', 클릭 0/30, 프레임 0장, 2단계에서 중단(12:19 와 같은 증상 재발: Studio Play/MCP 꺼짐). 코드 문제 아님. 같은 날 13:30·14:30 은 정상이었으므로 일시적일 수 있음. 사람 확인: PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기. 코드 수정 없음, 재배포 안 함.
