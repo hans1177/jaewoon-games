@@ -2932,7 +2932,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
       }
     }
     // [대항해시대 이미지 실증] 서버의 분리된 ImageLabel PreloadAsync 타임아웃은 실제 클라이언트 렌더 성공과 다르다.
-    // 공식 Studio MCP Client에서 모든 타임아웃 이미지를 실제 보이는 ImageLabel로 띄우고 IsLoaded를 확인한다.
+    // 공식 Studio MCP Client에서 교역품·메뉴·초상·도감 원화의 타임아웃 이미지를 보이는 ImageLabel로 띄우고 IsLoaded를 확인한다.
     // 하나라도 로드되지 않거나 다른 실패 유형이면 원래 서버 FAIL을 유지한다. 게임의 저장/규칙에는 관여하지 않는다.
     if(mareScript&&!report.summary.abortedEarly&&report.assetAudit?.registered?.status==='FAIL'
       &&report.assetAudit?.models?.status==='PASS'&&report.assetRegistryAudit?.status==='PASS'){
@@ -2945,7 +2945,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const imageRows=Array.isArray(failed)?failed.map(row=>{
           const key=clean(row?.key).replace(/^AssetIds\./,'');
           const asset=registered[key];
-          const valid=/^(?:Goods|Menu|Portraits)\/[A-Za-z0-9._-]+$/.test(key)
+          const valid=/^(?:Goods|Menu|Portraits|CardArt)\/[A-Za-z0-9._-]+$/.test(key)
             &&asset&&['Image','Decal'].includes(asset.assetType)
             &&asset.usePermissionGranted===true
             &&clean(row?.id)==='rbxassetid://'+clean(asset.assetId)
