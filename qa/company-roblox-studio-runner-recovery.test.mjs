@@ -77,7 +77,8 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
 test('daily C cleanup runs on existing signed-in Studio runner without touching apps, saves, or downloads',()=>{
   assert.match(workflow,/cron: '15 18 \* \* \*'/);
   const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
-  assert.match(recover,/if: github\.event_name != 'schedule'/);
+  assert.doesNotMatch(recover,/if: github\.event_name != 'schedule'/);
+  assert.match(recover,/ROBLOX_RUNNER_RECOVERY=BLOCKED_SERVICE_SESSION_NO_INTERACTIVE_DESKTOP/);
   const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
   assert.match(bootstrap,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   const start=bootstrap.indexOf('- name: Clean only aged Windows user temporary files and Roblox logs on C');
@@ -98,4 +99,28 @@ test('daily C cleanup runs on existing signed-in Studio runner without touching 
   assert.match(bootstrap,/name: Install hidden user-logon Startup launcher\n        if: github\.event_name != 'schedule'/);
   assert.match(bootstrap,/name: Checkout native recording setup without downloading game assets\n        if: github\.event_name != 'schedule'/);
   assert.match(bootstrap,/name: Restore real Roblox Player recording on existing interactive Windows runner\n        if: github\.event_name != 'schedule'/);
+});
+
+test('Windows sign-in connects an existing authenticated runner without requiring Studio to be preopened',()=>{
+  const check=canonical.slice(0,canonical.indexOf("if ($CheckOnly) {"));
+  assert.ok(check.includes("ROBLOX_FREE_STUDIO_OFFICIAL_INSTALL_READY=STUDIO_CLOSED"));
+  assert.ok(check.includes("Get-ChildItem -Path (Join-Path $root '*\\RobloxStudioBeta.exe')".replace('\\\\','\\')));
+  assert.ok(check.includes("Get-AuthenticodeSignature -FilePath $candidate"));
+  assert.ok(check.includes("ROBLOX_FREE_STUDIO_STUDIO_LAUNCH=DEFER_TO_EXACT_OFFICIAL_MCP_QA"));
+  assert.ok(!check.includes("ROBLOX_FREE_STUDIO_NOT_RUNNING"));
+  assert.ok(!check.includes("Start-Process"));
+  assert.ok(!check.includes("SendKeys"));
+  assert.ok(!check.includes("Set-ItemProperty"));
+  assert.ok(canonical.includes("ROBLOX_FREE_STUDIO_RUNNER_AVAILABLE_WITHOUT_STUDIO=WAIT_FOR_GITHUB_JOB_LAUNCH"));
+});
+test('exact Roblox QA launches the official signed Studio while existing Windows login recovery stays enabled',()=>{
+  const studioQa=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
+  const play=studioQa.slice(studioQa.indexOf('\n  studio-mcp-auto-play:'));
+  assert.ok(play.includes("runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]"));
+  assert.ok(play.includes("$placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH"));
+  assert.ok(play.includes("ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO"));
+  const recovery=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
+  assert.ok(!recovery.includes("if: github.event_name != 'schedule'"));
+  assert.ok(!canonical.includes("RobloxSecurity"));
+  assert.ok(!canonical.includes("SendKeys"));
 });
