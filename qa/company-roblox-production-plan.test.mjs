@@ -14,6 +14,33 @@ import {planVibeExternalCustomization} from '../assets/asset-selector.js';
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
 
+// [기존 제작 계획 연결] 오너가 자산 최적화를 요청한 게임만 실제 로컬 자산을 검사한다.
+test('canonical asset production plan includes scoped read-only asset optimization only when requested',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-asset-production-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const gameId='asset-demo',source=path.join(root,'roblox-games',gameId),asset=path.join(source,'assets','model.glb');
+ fs.mkdirSync(path.dirname(asset),{recursive:true});
+ fs.writeFileSync(asset,Buffer.from('existing-verified-object-source'));
+ fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+  games:[{id:gameId,lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
+ const task={gameId,sourceRoot:'roblox-games/'+gameId,goal:'기존 게임별 자산 최적화'};
+ const plan=buildVibeAssetProductionPlan({task,repoRoot:root,target:'roblox',manifest:{assets:[]}});
+ assert.equal(plan.gameScopedAssetOptimization.status,'ANALYZED');
+ assert.equal(plan.gameScopedAssetOptimization.gameId,gameId);
+ assert.equal(plan.gameScopedAssetOptimization.scannedAssetCount,1);
+ assert.equal(plan.gameScopedAssetOptimization.totalFileBytes,fs.statSync(asset).size);
+ assert.equal(plan.gameScopedAssetOptimization.assetFilesModified,false);
+ assert.equal(plan.gameScopedAssetOptimization.sourceWrite,false);
+ assert.equal(plan.gameScopedAssetOptimization.runtimeVerified,false);
+ const normal=buildVibeAssetProductionPlan({task:{...task,goal:'일반 기존 모델 확인'},
+  repoRoot:root,target:'roblox',manifest:{assets:[]}});
+ assert.equal(normal.gameScopedAssetOptimization,null);
+ const unbound=buildVibeAssetProductionPlan({task:{...task,sourceRoot:'roblox-games/someone-else'},
+  repoRoot:root,target:'roblox',manifest:{assets:[]}});
+ assert.equal(unbound.gameScopedAssetOptimization.status,'BLOCKED');
+ assert.equal(fs.readFileSync(asset,'utf8'),'existing-verified-object-source');
+});
+
 test('common material variants follow each game concept and stale shared style cannot replace approved style',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-game-style-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
