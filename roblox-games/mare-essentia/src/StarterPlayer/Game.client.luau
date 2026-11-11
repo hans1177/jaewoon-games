@@ -3734,18 +3734,9 @@ local function findField(id)
 	return nil
 end
 
--- 카드 그림: 이미지가 있으면 이미지, 없으면 분야 색의 임시 일러스트
-local function paintCardArt(parent, card, fieldDef)
+-- 카드 그림: 등록된 이미지가 표시될 때까지 분야 색과 이름을 보여준다.
+local function paintCardArt(parent, card, fieldDef, fitImage)
 	parent.ClipsDescendants = true
-	if card.found and card.image then
-		local img = Instance.new("ImageLabel")
-		img.Size = UDim2.fromScale(1, 1)
-		img.BackgroundTransparency = 1
-		img.Image = card.image
-		img.ScaleType = Enum.ScaleType.Crop
-		img.Parent = parent
-		return
-	end
 	local base = if card.found then fieldColor(fieldDef) else Color3.fromRGB(46, 52, 64)
 	parent.BackgroundColor3 = base
 	local shade = Instance.new("UIGradient")
@@ -3759,11 +3750,24 @@ local function paintCardArt(parent, card, fieldDef)
 	mark.TextScaled = true
 	mark.TextTransparency = 0.35
 	mark.TextColor3 = Color3.new(1, 1, 1)
-	mark.Text = if card.found then string.sub(fieldDef.name, 1, 3) else "?"
+	mark.Text = if card.found then fieldDef.name else "?"
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop, pad.PaddingBottom = UDim.new(0.2, 0), UDim.new(0.2, 0)
 	pad.Parent = mark
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0.08, 0), UDim.new(0.08, 0)
 	mark.Parent = parent
+	if card.found and type(card.image) == "string" and card.image ~= "" then
+		local img = Instance.new("ImageLabel")
+		img.Size = UDim2.fromScale(1, 1)
+		img.BackgroundTransparency = 1
+		img.ScaleType = if fitImage then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+		img.Image = card.image
+		img.Parent = parent
+		img:GetPropertyChangedSignal("IsLoaded"):Connect(function()
+			mark.Visible = not img.IsLoaded
+		end)
+		mark.Visible = not img.IsLoaded
+	end
 end
 
 function H.showCardDetail(card)
@@ -3781,7 +3785,10 @@ function H.showCardDetail(card)
 	local box = Instance.new("Frame")
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
 	box.Position = UDim2.fromScale(0.5, 0.5)
-	box.Size = UDim2.new(0.9, 0, 0, 440)
+	box.Size = UDim2.fromScale(0.9, 0.88)
+	local bounds = Instance.new("UISizeConstraint")
+	bounds.MaxSize = Vector2.new(560, 540)
+	bounds.Parent = box
 	box.BackgroundColor3 = COLORS.row
 	box.ZIndex = 41
 	corner(box, 14)
@@ -3792,12 +3799,12 @@ function H.showCardDetail(card)
 	stroke.Parent = box
 	local art = Instance.new("Frame")
 	art.Position = UDim2.fromOffset(10, 10)
-	art.Size = UDim2.new(1, -20, 0, 150)
+	art.Size = UDim2.new(1, -20, 0.46, 0)
 	art.BackgroundColor3 = COLORS.grey
 	art.ZIndex = 42
 	corner(art, 10)
 	art.Parent = box
-	paintCardArt(art, card, fieldDef)
+	paintCardArt(art, card, fieldDef, true)
 	for _, d in art:GetDescendants() do
 		if d:IsA("GuiObject") then
 			d.ZIndex = 43
@@ -3806,8 +3813,8 @@ function H.showCardDetail(card)
 	local body = Instance.new("ScrollingFrame")
 	body.BackgroundTransparency = 1
 	body.BorderSizePixel = 0
-	body.Position = UDim2.fromOffset(10, 168)
-	body.Size = UDim2.new(1, -20, 1, -218)
+	body.Position = UDim2.new(0, 10, 0.46, 18)
+	body.Size = UDim2.new(1, -20, 0.54, -76)
 	body.CanvasSize = UDim2.new()
 	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	body.ScrollBarThickness = 3
@@ -3833,7 +3840,7 @@ function H.showCardDetail(card)
 		end
 	end
 	title.ZIndex = 43
-	local close = mkButton(box, "닫기", COLORS.gold, UDim2.new(1, -20, 0, 36), function()
+	local close = mkButton(box, "닫기", COLORS.gold, UDim2.new(1, -20, 0, 44), function()
 		overlay:Destroy()
 	end, true)
 	close.AnchorPoint = Vector2.new(0.5, 1)
