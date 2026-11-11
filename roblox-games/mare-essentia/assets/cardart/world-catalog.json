@@ -18,8 +18,8 @@
     "animationStatus": "미구현"
   },
   "counts": {
-    "subjects": 538,
-    "illustrated": 163,
+    "subjects": 553,
+    "illustrated": 181,
     "largeEventArt": 11
   },
   "subjects": [
@@ -5861,12 +5861,12 @@
         "incheon"
       ],
       "subject": "긴 다리로 우아하게 서는 길상의 새.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_16",
-        "row": 3,
-        "column": 4
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 1,
+        "column": 2
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -8849,12 +8849,12 @@
         "port_moresby"
       ],
       "subject": "굽거나 삶아 먹는 큰 열매. 선원들이 탐낸 식량이다.",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_24",
-        "row": 4,
-        "column": 4
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 1,
+        "column": 1
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -9194,12 +9194,12 @@
       "existingGameCard": false,
       "ports": [],
       "subject": "마디와 세로 세 갈래가 드러나는 삼엽충 표본",
-      "sketch": null,
-      "plannedSlot": {
-        "sheet": "world_25",
-        "row": 4,
-        "column": 5
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 1,
+        "column": 3
       },
+      "plannedSlot": null,
       "eventArt": null
     },
     {
@@ -9805,6 +9805,246 @@
       "sketch": null,
       "plannedSlot": null,
       "eventArt": "event_ellora_kailasa.jpg"
+    },
+    {
+      "id": "world_socotra_dragon_blood_tree",
+      "name": "소코트라 용혈수",
+      "category": "식물",
+      "region": "서아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "바위 능선 위에 우산 모양으로 잎이 퍼진 나무.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 1,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_japanese_spider_crab",
+      "name": "일본거미게",
+      "category": "동물",
+      "region": "동아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "해저를 걷는 길고 가는 다리의 대형 게.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 1,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_portuguese_man_o_war",
+      "name": "작은부레관해파리",
+      "category": "동물",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "물 위에 뜨는 부레와 물 아래로 늘어진 푸른 촉수.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 1,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_faroe_sea_stacks",
+      "name": "페로 제도 해식기둥",
+      "category": "자연 지형·해양",
+      "region": "유럽·북대서양",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "해무 속 바다에서 솟아오른 암석 기둥.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_petra_siq",
+      "name": "페트라 시크 협곡",
+      "category": "자연 지형·해양",
+      "region": "서아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "붉은 사암 절벽 사이로 굽이치는 좁은 골짜기.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 1,
+        "column": 5
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_chand_baori",
+      "name": "찬드 바오리 계단 우물",
+      "category": "건축",
+      "region": "남아시아",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "수면까지 지그재그 계단이 이어지는 석조 우물.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_traverse_board",
+      "name": "항적 기록판",
+      "category": "항해",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "방향과 이동 기록을 나무판의 구멍과 말뚝으로 표시하는 도구.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_plumb_bob",
+      "name": "연추",
+      "category": "측량",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "줄 끝에 추를 매달아 수직을 확인하는 도구.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_bilge_pump",
+      "name": "범선 배수 펌프",
+      "category": "공학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "선체 바닥에 고인 물을 퍼내는 장치의 단면.",
+      "sketch": {
+        "file": "world_31.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_copper_sulfate_crystals",
+      "name": "황산구리 결정",
+      "category": "화학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "푸른 결정이 모여 있는 표본.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 1,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_convex_lens_lantern",
+      "name": "볼록렌즈 등롱",
+      "category": "광학",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "볼록한 유리 렌즈가 달린 목제 등롱.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 1,
+        "column": 5
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "study_reflecting_telescope",
+      "name": "반사 망원경",
+      "category": "천문",
+      "region": "해역 공통",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "거울로 빛을 모으는 놋쇠 망원경과 보관 상자.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 2,
+        "column": 1
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_table_mountain",
+      "name": "테이블산",
+      "category": "자연 지형·해양",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "해안 위로 솟아오른 평평한 산 정상.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 2,
+        "column": 2
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_sossusvlei",
+      "name": "소수스블레이 모래언덕",
+      "category": "자연 지형·해양",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "굽이치는 붉은 모래언덕과 마른 나무.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 2,
+        "column": 3
+      },
+      "plannedSlot": null,
+      "eventArt": null
+    },
+    {
+      "id": "world_lalibela_bete_giyorgis",
+      "name": "랄리벨라 성 게오르기우스 교회",
+      "category": "건축",
+      "region": "아프리카",
+      "existingGameCard": false,
+      "ports": [],
+      "subject": "암반을 깎아 만든 십자형 교회.",
+      "sketch": {
+        "file": "world_32.jpg",
+        "row": 2,
+        "column": 4
+      },
+      "plannedSlot": null,
+      "eventArt": null
     }
   ]
 }
