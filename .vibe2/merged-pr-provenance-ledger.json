@@ -191304,11 +191304,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1cbb4297e523a86cbbd1f2c4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-12520",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "04cce5d40405a5db984cd41fd6049636bc1d2fb7",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12520,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/mare-cardart-image-20261111",
+        "baseSha": "04cce5d40405a5db984cd41fd6049636bc1d2fb7",
+        "headSha": "b32e6c2ff310af34dade5146ad2434696630d8e8",
+        "mergeCommitSha": "d3d3bfaeabb20f92aada359b9a073bfa545da5ab",
+        "mergedAt": "2026-11-11T11:32:34Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ffd9dacfd308f487e12324bce7a0b7685283cb41d2e8788adc328abd3f0f4549",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/mare-cardart-image-20261111",
+        "candidateSha": "b32e6c2ff310af34dade5146ad2434696630d8e8"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 681,
+        "deletedLineCount": 40,
+        "changedFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/game-development-qa-runner.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/cardart/world-catalog.json",
+          "roblox-games/mare-essentia/assets/cardart/world_31.jpg",
+          "roblox-games/mare-essentia/assets/cardart/world_32.jpg",
+          "roblox-games/mare-essentia/assets/cardart/world_33.jpg",
+          "roblox-games/mare-essentia/assets/cardart/world_34.jpg",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Knowledge.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "tools/game-development-qa-runner.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/game-development-qa-runner.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/cardart/world-catalog.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Knowledge.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "tools/game-development-qa-runner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12520",
+        "merge-commit:d3d3bfaeabb20f92aada359b9a073bfa545da5ab",
+        "base-main:04cce5d40405a5db984cd41fd6049636bc1d2fb7"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1526
+    "total": 1527
   }
 }
