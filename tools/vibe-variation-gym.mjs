@@ -119,8 +119,8 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
     Array.isArray(asset.sourceFiles)?asset.sourceFiles.filter(x=>typeof x==='string'):[]));
   let observedFiles=0;
   const mediaExt=/\.(?:glb|gltf|obj|fbx|blend|png|jpe?g|webp|svg|ktx2?|tga|gif|mp3|ogg|wav|flac|ttf|otf|woff2?|mat)$/i;
-  const dirs=['assets','web-games','roblox-games','unity-games'];
-  for(const dir of dirs){
+  const mediaRoots=['assets','web-games','roblox-games','unity-games'];
+  for(const dir of mediaRoots){
     const base=path.join(root,dir);
     if(!fs.existsSync(base))continue;
     const pending=[base];
