@@ -70,10 +70,13 @@ function gameRepairContract(data={}){
 }
 function runRepairNodeTargets({root,data={},targets=[],category='CHECK'}={}){
   const resolved=resolveReplayTargets(root,data,{nodeTestTargets:targets});
+  // [재귀 테스트 보호] node --test 안의 NODE_TEST_CONTEXT를 자식에 넘기면 실행 없이 0으로 종료한다.
+  const testEnv={...process.env};delete testEnv.NODE_TEST_CONTEXT;
   const results=[];
   for(const target of resolved){
     try{
-      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
+      execFileSync(process.execPath,['--test',target.absolute],{
+        cwd:root,stdio:'pipe',encoding:'utf8',env:testEnv,timeout:20_000,maxBuffer:2*1024*1024});
       results.push({target:target.relative,outcome:'PASS'});
     }catch(error){
       const wrapped=new Error(`GAME_REPAIR_${category}_FAILED:${target.relative}`);
@@ -281,10 +284,13 @@ function runCausalReplay({root,data={}}={}){
   if(mode!=='NODE_TEST_TARGETS')return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'UNSUPPORTED_REPLAY_MODE',targets:[],verifiedResponsibleSystem:null,canonicalQaStillRequired:true};
   const targets=resolveReplayTargets(root,data,plan);
   if(!targets.length)throw new Error('CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET');
+  // [실제 실행] 외부 테스트 러너의 재귀 컨텍스트를 제거해야 내부 검사 실패가 검출된다.
+  const testEnv={...process.env};delete testEnv.NODE_TEST_CONTEXT;
   const results=[];
   for(const target of targets){
     try{
-      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8',timeout:20_000,maxBuffer:2*1024*1024});
+      execFileSync(process.execPath,['--test',target.absolute],{
+        cwd:root,stdio:'pipe',encoding:'utf8',env:testEnv,timeout:20_000,maxBuffer:2*1024*1024});
     }catch(error){
       if(error?.code==='ETIMEDOUT'||error?.signal==='SIGTERM')throw new Error(`CAUSAL_REPLAY_TARGET_TIMEOUT:${target.relative}`);
       throw error;
