@@ -185505,11 +185505,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_916fb0280f68ae4753fee24a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-12463",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "425f01eadaba8bfbd50ce9f34122a9b3611f29b6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12463,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/rig-repair-practice-20261111",
+        "baseSha": "425f01eadaba8bfbd50ce9f34122a9b3611f29b6",
+        "headSha": "2a1e109df1edf50b09eb32095cb5a08f086bf38d",
+        "mergeCommitSha": "4a9c466df942e1dde8faf558de59fe4c570510e9",
+        "mergedAt": "2026-11-11T05:34:57Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8d0ec8b101b3b5049c61b65b27599e3b3cd3877e2e181154249893453e08b3df",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/rig-repair-practice-20261111",
+        "candidateSha": "2a1e109df1edf50b09eb32095cb5a08f086bf38d"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 116,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          "qa/vibe-mesh-audit.test.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-mesh-audit.mjs",
+          "tools/vibe-practice-session.mjs",
+          "tools/vibe_mesh_audit.py"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe-mesh-audit.test.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-mesh-audit.mjs",
+          "tools/vibe-practice-session.mjs",
+          "tools/vibe_mesh_audit.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12463",
+        "merge-commit:4a9c466df942e1dde8faf558de59fe4c570510e9",
+        "base-main:425f01eadaba8bfbd50ce9f34122a9b3611f29b6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1481
+    "total": 1482
   }
 }
