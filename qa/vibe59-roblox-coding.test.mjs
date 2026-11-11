@@ -297,3 +297,46 @@ test('remote and state flow uses executable Luau only and preserves original lin
   assert.equal(report.remoteLinks[0].runtimeVerified,false);
   assert.equal(report.qualityDirector.gameplayPass,false);
 });
+
+ // [코딩 두뇌 회귀] 선언→호출 연결은 Luau 주석/문자열을 제외하고 실제 파일 안에서만 추적한다.
+test('Luau same-file function dependencies stay source-grounded and bounded',()=>{
+  const source=[
+    '-- local function ghost() end',
+    'local fake = "ghost() and check()"',
+    'local function check(player)',
+    '  return player ~= nil',
+    'end',
+    'local handler = function(player)',
+    '  return check(player)',
+    'end',
+    'handler(player)',
+    'other.check(player)',
+    '--[=[ check(player) ]=]'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({
+    files:[{path:'server/Combat.server.luau',source}],
+    responsiblePaths:['server/Combat.server.luau']
+  });
+  assert.deepEqual(report.files[0].functionDefinitions,[
+    {name:'check',line:3},{name:'handler',line:6}
+  ]);
+  assert.deepEqual(report.functionLinks.map(row=>[row.symbol,row.callLine,row.possibleDefinitions[0].line]),[
+    ['check',7,3],['handler',9,6]
+  ]);
+  assert.ok(report.functionLinks.every(row=>row.status==='POTENTIAL_SAME_FILE_FUNCTION'&&row.runtimeVerified===false));
+  assert.deepEqual(report.qualityDirector.functionLinks,report.functionLinks);
+  assert.equal(report.qualityDirector.completeRepositoryGraph,false);
+});
+test('duplicate Luau declarations remain ambiguous and cross-file names never imply dependencies',()=>{
+  const files=[
+    {path:'server/A.server.luau',source:'local function run() end\nlocal function run() end\nrun()'},
+    {path:'server/B.server.luau',source:'run()'}
+  ];
+  const report=inspectVibe59RobloxCoding({files,responsiblePaths:[files[0].path]});
+  assert.equal(report.functionLinks.length,1);
+  assert.equal(report.functionLinks[0].status,'AMBIGUOUS_SAME_FILE_FUNCTION');
+  assert.deepEqual(report.functionLinks[0].possibleDefinitions,[
+    {path:files[0].path,line:1},{path:files[0].path,line:2}
+  ]);
+  assert.equal(report.functionLinks[0].runtimeVerified,false);
+});
