@@ -518,7 +518,7 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
   }
   assert.equal(assets['Cargo/glass-wine']?.assetType,'Model');
   assert.match(client,/GOOD_ICON\[goodsId\] = \{ "Cargo", cargoAsset, nil, "Goods\/" \.\. goodsId \}/);
-  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "glass-wine", nil, "Menu\/trade" \}/);
+  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "grapes" \}/);
   assert.match(client,/if kind == "Cargo" and px <= 60 and smallArt and AssetIds\[smallArt\] then/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
@@ -568,4 +568,24 @@ test('Mare trade goods practice validates existing originals, rights and blocked
   assert.match(uploader,/GOODS_IMAGE_CHANGE_NOT_APPROVED/);
   assert.match(uploader,/sourceSha256/);
   assert.doesNotMatch(workflow,/publish_after_register: \s*true/);
+});
+
+
+test('Mare trade approved ingredient icons replace prohibited alcohol visuals with safe source art',()=>{
+  const root='roblox-games/mare-essentia';
+  const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
+  const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
+  assert.match(client,/SAFE_INGREDIENT_ICON = \{ beer = "beer_grain", sake = "sake_rice" \}/);
+  assert.match(client,/AssetIds\["Goods\/" \.\. ingredient\]/);
+  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "grapes" \}/);
+  for(const ingredient of ['beer_grain','sake_rice']){
+    assert.ok(approved['Goods/'+ingredient],'unapproved: '+ingredient);
+    if(assets['Goods/'+ingredient]){
+      assert.equal(assets['Goods/'+ingredient].usePermissionGranted,true);
+      assert.equal(assets['Goods/'+ingredient].assetType,'Image');
+    }
+  }
+  for(const banned of ['beer','sake','wine','tobacco'])
+    assert.equal(assets['Goods/'+banned],undefined);
 });
