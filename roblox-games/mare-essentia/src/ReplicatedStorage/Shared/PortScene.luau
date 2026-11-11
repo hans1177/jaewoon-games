@@ -600,11 +600,11 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local function pick(list) return list[rng:NextInteger(1, #list)] end
 
 	-- 요리: 광장 한쪽 모닥불 솥을 젓는 아낙 (1단계부터), 단계가 오르면 한 명 더
-	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-38, 0, -11.5), 3.6, false)
-	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-38, 1.2, -11.5), 2.2, false)
-	stay(Vector3.new(-38, 0, -8.6), Vector3.new(-38, 0, -11.5), "stir", { female = true, role = "Rogue", hat = false })
+	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-26, 0, -14), 3.6, false)
+	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-26, 1.2, -14), 2.2, false)
+	stay(Vector3.new(-26, 0, -11.2), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false })
 	if lvl >= 3 then
-		stay(Vector3.new(-41, 0, -9.4), Vector3.new(-38, 0, -11.5), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
+		stay(Vector3.new(-29, 0, -12), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
 	end
 	-- 건축: 널빤지를 쌓고 벽을 세우는 목수 (2단계부터)
 	if lvl >= 2 then
@@ -983,7 +983,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			end
 		end
 	end
-	local extraStalls = { Vector3.new(-44, 0, 19), Vector3.new(-44, 0, -19), Vector3.new(-70, 0, 19), Vector3.new(-70, 0, -19), Vector3.new(-6, 0, -20), Vector3.new(-6, 0, 22) }
+	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-6, 0, -14), Vector3.new(-6, 0, 14) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
 	table.clear(stallSpots)
 	for i, spot in extraStalls do
@@ -1311,23 +1311,23 @@ function PortScene.build(info, onFacility)
 
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
-		{ name = "교역소", tab = "trade", pos = Vector3.new(-10, 0, 28), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
-		{ name = "주점", tab = "quest", pos = Vector3.new(-10, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
+		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 32), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
+		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
 		{ name = "항만청", tab = "route", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
-		{ name = "은행", tab = "harbor", pos = Vector3.new(-34, 0, 28), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
-		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-34, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
-		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-58, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
-		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-58, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
+		{ name = "은행", tab = "harbor", pos = Vector3.new(-48, 0, 32), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
+		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-48, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
+		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-82, 0, 32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
+		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-82, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
-			local grow = 1 + 0.05 * (sceneLevel - 1)
+			local grow = 1.25 + 0.04 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민(5.8)보다 훨씬 크게: 1단계 1.25배 → 5단계 약 1.4배
 			local tone = f.color:Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
 			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
-			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
-			sign(folder, body, f.name, nil, f.floors * 3 + 6)
+			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d * grow / 2 - 2 else f.pos.Z + f.d * grow / 2 + 2
+			sign(folder, body, f.name, nil, (f.floors * 3 + 6) * grow)
 			do
 				-- 시설별 외형 단계 (승인된 기존 3D 소품만): 2단계 생활 소품, 3단계 장식, 4단계 깃발·기둥, 5단계 상징물
 				local lv = sceneLevel
