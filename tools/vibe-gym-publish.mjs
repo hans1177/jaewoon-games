@@ -187,6 +187,14 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
               study.dynamicClipPresent:[]).filter(x=>
                 ['IDLE','MOVE','ATTACK','HIT','DEATH'].includes(x)).slice(0,5),
             failures:faults.slice(0,8),
+            // [GLB 원본 대조] 파일에 없는 블렌더 임포터 보조 메쉬만 제외했다는 증거.
+            importHelperEvidence:{
+              verified:study.importHelperEvidence?.verified===true,
+              sourceMeshNodes:cleanCount(study.importHelperEvidence?.sourceMeshNodes),
+              importedMeshObjects:cleanCount(study.importHelperEvidence?.importedMeshObjects),
+              excludedImportOnlyMeshes:Array.isArray(study.importHelperEvidence?.excludedImportOnlyMeshes)?
+                study.importHelperEvidence.excludedImportOnlyMeshes.slice(0,4).map(x=>String(x).slice(0,90)):[]
+            },
             // [격리 수리 학습] 파생 GLB를 보관하거나 승인하지 않고 재검사 숫자만 적는다.
             repairStudy:{
               attempted:study.repairStudy?.attempted===true,
