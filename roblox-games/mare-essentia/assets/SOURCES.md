@@ -527,3 +527,20 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `assets/castle/ground-hills.glb` | 북부 배경 언덕 | Kenney CC0-1.0 [공식](https://kenney.nl/assets/castle-kit) · [원본 GLB](https://github.com/Hidencod/tge-assets/blob/main/packs/castle-kit/ground-hills.glb) | `9f068afc5065911194d866a1e0a5251c75a4e951` |
 
 기존 `PortScene`/`AssetIds`/Open Cloud 업로더만 이용. ID가 등록되기 전엔 새 배경 표시를 보류한다. 실제 로블록스 Studio 수입, 런타임, 모바일, 배포는 별도 확인이 필요하다.
+
+## 2026-11-11 건축 랜드마크 CC0 원본 6종
+
+실제 제작자의 원본 CC0 모델만 확보했다. 파일은 기존 `town/`·`castle/` 폴더에 저장해 기존 Roblox 자산 등록 체계를 그대로 사용한다. AI 생성물이나 도형을 조립한 새 모델은 추가하지 않았다. 3D 모델 원본은 저작자 표시 의무 없이 상업 이용·수정이 가능한 CC0-1.0이다.
+
+| 파일 (assets/ 기준) | 제작자 · 건축물 | 공식 CC0 모델 | 검증된 원본 Git blob SHA |
+|---|---|---|---|
+| `town/church.glb` | CreativeTrio · 유럽풍 교회 | https://poly.pizza/m/GHzPfvoyzX | `f976bc45c59fc42d9362e76f35b30efadc031cd1` |
+| `town/bell-tower.glb` | Quaternius · 종탑 | https://poly.pizza/m/ux44tbeQvj | `cb21c1134c157428b6e6289db3d1af6e623cdaf9` |
+| `town/windmill.glb` | Quaternius · 풍차 | https://poly.pizza/m/52yaPyaAAG | `58f1d27c27e4405dab0dd9c486b8eeb622cf502a` |
+| `town/temple-stone.glb` | Quaternius · 탑형 신전 A | https://poly.pizza/m/CE2Mn7lh6A | `215b0a373be72c4980f39b9253bd5ebfabb30a0a` |
+| `town/temple-tower.glb` | Quaternius · 탑형 신전 B | https://poly.pizza/m/v36uJiErXS | `0185f370fc7de6b83b6496aff595e0d09acd5a22` |
+| `castle/fortress.glb` | Quaternius · 성채 | https://poly.pizza/m/3r6gq3ow6O | `490d2f06408a82972e03db92ff6203562e63600a` |
+
+바이너리 보관 원본: https://github.com/ivy00johns/petri-dish-of-madness/tree/main/web/public/models/poly (교회·종탑·풍차), https://github.com/cgsdev0/buccaneers-beak/tree/main/Fantasy%20Pack (신전·성채). 두 번째 원본 폴더의 Temple 모델 파일명에는 Poly Pizza의 모델 식별자가 들어 있으므로 해당 공식 CC0 페이지와 직접 일치한다. 저장소에 생성된 Git blob SHA가 원본과 6/6 일치함을 확인했다.
+
+**표현 범위:** 신전 A/B는 실제 불교 탑·힌두 사원이라고 주장하지 않으며, 교회는 대성당을 대신하는 CC0 저폴리 모델이다. 특정 모스크·대성당·불교 탑·힌두 사원 원본은 저작·제작 방식/원본 전송을 검증할 때까지 미확보로 둔다. GitHub 보관은 Roblox 모델 등록·스튜디오 런타임·모바일 표시·체험 게시 성공을 의미하지 않는다.
