@@ -1007,7 +1007,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
   const assetSourceUsage=data?.internalAssetSourceUsage||null;
   const assetSourceHashes=Array.isArray(assetSourceUsage?.selectedSourceHashes)?assetSourceUsage.selectedSourceHashes:[];
-  const payload = ['vibe2-incremental-qa-v18', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
+  const payload = ['vibe2-incremental-qa-v19', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
   // 자산 소스는 변경 파일 목록 밖에서도 바뀐다. 캐시 조회 전에 현재 내용과 비교한다.
   if(assetSourceUsage?.synchronization?.selectedSourceContentHashesRequired===true){
     const paths=assetSourceUsage.selectedSourcePaths||[];
@@ -1032,6 +1032,16 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
     payload.push(relative, fs.readFileSync(file));
   }
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
+  // [검증 캐시] 저장·불변성 테스트는 변경 파일 외부에 존재한다. 테스트 코드가 바뀌면 과거 PASS를 재사용하지 않는다.
+  // 멀티플레이 검증은 아래의 기존 강제 재실행 정책을 유지한다.
+  if(gameRepair?.required===true){
+    const invariantNames=Array.isArray(gameRepair?.invariants?.testTargets)?gameRepair.invariants.testTargets:[];
+    const saveNames=gameRepair?.saveMigration?.required===true&&Array.isArray(gameRepair.saveMigration.testTargets)
+      ?gameRepair.saveMigration.testTargets:[];
+    const repairTargets=resolveReplayTargets(root,data,{nodeTestTargets:[...invariantNames,...saveNames]});
+    for(const target of new Map(repairTargets.map(target=>[target.relative,target])).values())
+      payload.push('GAME_REPAIR_FOCUSED:'+target.relative,fs.readFileSync(target.absolute));
+  }
   // 도안은 변경되지 않은 지지면·연결 파일에도 의존하므로 캐시 조회 전 전체 바인딩을 다시 읽는다.
   const blueprintSources=new Map();
   for(const blueprint of [data.spatialBlueprint,data.interfaceBlueprint]){
