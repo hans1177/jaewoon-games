@@ -170,7 +170,7 @@ if(flag('advance')){
 let lookEvent=null;
 if(flag('advance')&&lookPolicy&&verdict&&verdict.ok&&aestheticInfo){
   const table=JSON.parse(fs.readFileSync(path.join('assets','roblox','common-look-v1','look-presets.json'),'utf8'));
-  const res=decideLook({look:state.look,aesthetic:aestheticInfo,policy:lookPolicy,table,mood});
+  const res=decideLook({look:state.look,aesthetic:aestheticInfo,policy:lookPolicy,table,captureKey:pendingSha,mood});
   state.look=res.look;lookEvent=res.event;
 }
 {const pend=path.join('docs','devloop','ladder',game,'_pending');if(fs.existsSync(pend))fs.rmSync(pend,{recursive:true,force:true})}
