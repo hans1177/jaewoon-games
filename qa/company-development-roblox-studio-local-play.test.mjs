@@ -3969,9 +3969,13 @@ test('Mare goods/menu asset replacement requires verified Image uploads with ato
   assert.match(uploader,/MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/);
   const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8'));
   const approved=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
-  const targets=Object.entries(registry.assets).filter(([id,row])=>/^(Goods|Menu)\//.test(id)&&row.assetType==='Decal');
-  assert.equal(targets.length,45,'actual 45 affected old assets are identified');
+  // [등록 완료 후 회귀] 과거 45개 Decal이 현재 등록표에 남아 있어서는 안 된다.
+  // 승인된 전체 교역품·메뉴 ID와 Universe 사용 권한을 실물 등록 기준으로 검사한다.
+  const targets=Object.entries(registry.assets).filter(([id])=>/^(Goods|Menu)\//.test(id));
+  assert.ok(targets.length>=45,'approved trade/menu images must remain registered');
   for(const [id,row] of targets){
+    assert.equal(row.assetType,'Image','legacy Decal must not be used by GUI: '+id);
+    assert.equal(row.usePermissionGranted,true,'missing Universe image grant: '+id);
     assert.match(String(row.assetId),/^[1-9][0-9]*$/);
     assert.match(String(approved[id]),/^[a-f0-9]{64}$/);
   }
