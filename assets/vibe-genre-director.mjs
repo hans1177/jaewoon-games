@@ -20,6 +20,22 @@ export function resolveVibeGenre(name,overrides={}){
  for(const section of ['camera','movement','action','audio','fx','render'])result[section]={...base[section],...overrides[section]};
  result.fx.shake=clamp(result.fx.shake);result.fx.flash=clamp(result.fx.flash);result.fx.vignette=clamp(result.fx.vignette);
  result.movement.speed=clamp(result.movement.speed,0,20);
+ // [미술감독] 기존 장르·월드·카메라·재질 수치로 하나의 일관된 연출 목표를 계산한다.
+ // 새 모델이나 게임 수치를 만들지 않으며 후속 픽셀 검사는 실제 렌더 관측이 있어야 한다.
+ const regionColor={enchantedForest:0x93b6a1,sunsetVillage:0xf2ba91,moonlitRuins:0x304660,emberVolcano:0x513d40};
+ const regionAccent={enchantedForest:0xf7d89c,sunsetVillage:0xffdfaa,moonlitRuins:0xa6d9ff,emberVolcano:0xffa25d};
+ const mood=result.id==='horror'?'tension':result.id==='action'||result.id==='wuxia'?'momentum':
+  result.id==='cozy'||result.id==='illustration'?'rest':'discovery';
+ const world=Object.hasOwn(regionColor,result.world)?result.world:'enchantedForest';
+ result.artDirection=freeze({
+  genre:name,world,mood,background:regionColor[world],accent:regionAccent[world],
+  lighting:result.lighting,subjectPriority:'approved-model-silhouette-first',
+  cameraFocus:result.camera.fov>58?'action-wide':'subject-led',
+  materialRule:'keep-original-texture-and-authored-surface',audioCue:result.audio.ambience,
+  exposureOffset:clamp((1-result.render.saturation)*.12,-.06,.06),
+  targetLuminance:.48,review:'observed-pixels-only',
+  protected:freeze(['gameplay','collision','stats','save','progression','asset-identity'])
+ });
  return result;
 }
 export function createVibeGenreDirector({genre='storybook',onChange=()=>{},overrides={}}={}){

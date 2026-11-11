@@ -146,6 +146,48 @@ export function createVibeExpressionDirector(face,{blinkSeconds=3.4,transitionSe
   get expression(){return current}
  };
 }
+// [메인: 실제 화면 품질 판독] WebGL readPixels 관측치를 계산한다. 코드 마커나 추정 화면은 판독 불가.
+// 이 값은 미술감독의 진단 데이터일 뿐, 독립된 골든 씬 심사/배포 PASS 증거가 아니다.
+export function inspectVibeRenderedScene({pixels=null,width=0,height=0,source='',observed=false}={}){
+ const verifiedInput=source==='webgl-readpixels'&&observed===true&&Number.isInteger(width)&&width>0
+  &&Number.isInteger(height)&&height>0
+  &&pixels&&(pixels instanceof Uint8Array||pixels instanceof Uint8ClampedArray)
+  &&pixels.length>=9*4&&pixels.length%4===0;
+ if(!verifiedInput)return Object.freeze({observed:false,status:'NO_RUNTIME_PIXELS',findings:['runtime-pixels-required'],
+  exposureDelta:0,releaseAuthority:false,visualQualityPass:false});
+ const values=[],saturations=[];
+ for(let i=0;i<pixels.length;i+=4){
+  const r=pixels[i]/255,g=pixels[i+1]/255,b=pixels[i+2]/255;
+  values.push(.2126*r+.7152*g+.0722*b);
+  saturations.push(Math.max(r,g,b)-Math.min(r,g,b));
+ }
+ const count=values.length,mean=values.reduce((a,b)=>a+b,0)/count;
+ const sorted=values.slice().sort((a,b)=>a-b);
+ const range=sorted[Math.floor((count-1)*.9)]-sorted[Math.floor((count-1)*.1)];
+ const center=values[Math.floor(count/2)];
+ const corners=[values[0],values[Math.floor(Math.sqrt(count))-1],values[count-Math.floor(Math.sqrt(count))],values[count-1]];
+ const background=corners.reduce((a,b)=>a+b,0)/4;
+ const focusContrast=Math.abs(center-background);
+ const clippedShadows=values.filter(x=>x<.05).length/count;
+ const clippedHighlights=values.filter(x=>x>.95).length/count;
+ const findings=[];
+ if(mean<.23)findings.push('underexposed-frame');
+ if(mean>.77)findings.push('overexposed-frame');
+ if(range<.18)findings.push('weak-value-separation');
+ if(focusContrast<.085)findings.push('weak-center-background-contrast');
+ if(clippedShadows>.5)findings.push('clipped-shadow-area');
+ if(clippedHighlights>.45)findings.push('clipped-highlight-area');
+ const exposureDelta=mean<.23?.05:mean>.77?-.05:0;
+ return Object.freeze({
+  observed:true,status:'PIXEL_DIAGNOSTIC_ONLY',samples:count,
+  luminance:Number(mean.toFixed(3)),valueRange:Number(range.toFixed(3)),
+  centerContrast:Number(focusContrast.toFixed(3)),
+  saturation:Number((saturations.reduce((a,b)=>a+b,0)/count).toFixed(3)),
+  clippedShadows:Number(clippedShadows.toFixed(3)),
+  clippedHighlights:Number(clippedHighlights.toFixed(3)),
+  findings:Object.freeze(findings),exposureDelta,releaseAuthority:false,visualQualityPass:false
+ });
+}
 export function inspectVibeCharacterAsset(model){
  const result={meshes:0,triangles:0,bones:0,morphTargets:0,materials:0,missingUV:[],warnings:[]};const materials=new Set();
  model.traverse(o=>{
