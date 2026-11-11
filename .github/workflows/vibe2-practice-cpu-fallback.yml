@@ -127,7 +127,7 @@ jobs:
           test "$code_count" -eq 14
           node tools/vibe2-practice-dataset.mjs \
             --input "$samples" --out "$dataset" --min-samples 20 --task-type roblox
-          node --input-type=module -e 'import fs from "node:fs";const m=JSON.parse(fs.readFileSync(process.argv[1]));if(m.targetTaskType!=="roblox"||m.authority!=="PRACTICE_ONLY"||m.runtimePromotionAllowed!==false||m.stats.codeImplementationTrain<10||m.stats.codeImplementationEval<3)throw Error("ROBLOX_IMPLEMENTATION_TRAINING_DATASET_NOT_READY")' "$dataset/manifest.json"
+          node --input-type=module -e 'import fs from "node:fs";const m=JSON.parse(fs.readFileSync(process.argv[1]));if(m.targetTaskType!=="roblox"||m.authority!=="PRACTICE_ONLY"||m.runtimePromotionAllowed!==false||m.version!==6||!m.holdoutSha256||m.stats.codeImplementationTrain<10||m.stats.codeImplementationEval<2||m.stats.codeImplementationHoldout<2||m.stats.holdout<4)throw Error("ROBLOX_IMPLEMENTATION_TRAINING_DATASET_NOT_READY")' "$dataset/manifest.json"
           node --test qa/vibe2-licensed-reference-learning.test.mjs
           echo "ROBLOX_LICENSED_REFERENCE_SAMPLES=$sample_count"
           echo "ROBLOX_ORIGINAL_LUAU_IMPLEMENTATION_SAMPLES=$code_count"
@@ -314,13 +314,20 @@ jobs:
           $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset safety gate failed' }
           if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 20) { throw 'licensed Roblox reference samples missing from dataset' }
-          if ($manifest.stats.codeImplementationTrain -lt 10 -or $manifest.stats.codeImplementationEval -lt 3) { throw 'Roblox coding train/eval stratification not ready' }
+          if ($manifest.version -ne 6 -or $manifest.holdoutAuthority -ne 'DISJOINT_FAMILIES_PRACTICE_ONLY' -or
+              $manifest.independentExternalBenchmarkVerified -ne $false -or -not $manifest.holdoutSha256 -or
+              $manifest.stats.codeImplementationTrain -lt 10 -or $manifest.stats.codeImplementationEval -lt 2 -or
+              $manifest.stats.codeImplementationHoldout -lt 2 -or $manifest.stats.holdout -lt 4) {
+            throw 'Roblox disjoint train/eval/holdout stratification not ready'
+          }
           "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
           Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"
           Write-Host "PRACTICE_LICENSED_REFERENCE_TOTAL=$($manifest.stats.licensedReferenceTotal)"
           Write-Host "PRACTICE_ROBLOX_CODE_TRAIN=$($manifest.stats.codeImplementationTrain)"
           Write-Host "PRACTICE_ROBLOX_CODE_EVAL=$($manifest.stats.codeImplementationEval)"
+          Write-Host "PRACTICE_ROBLOX_CODE_HOLDOUT=$($manifest.stats.codeImplementationHoldout)"
+          Write-Host "PRACTICE_ROBLOX_HOLDOUT_HASH=$($manifest.holdoutSha256)"
           Write-Host "PRACTICE_SOURCE_KINDS=$($manifest.sourceKinds -join ',')"
       - name: Train Roblox CPU LoRA adapter
         run: |
@@ -334,6 +341,7 @@ jobs:
             'tools/vibe2-practice-train.py',
             '--train', (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl'),
             '--eval', (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl'),
+            '--holdout', (Join-Path $env:PRACTICE_DATASET_DIR 'holdout.jsonl'),
             '--dataset-manifest', (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json'),
             '--output', $adapterDir,
             '--adapter-version', $adapterVersion,
@@ -385,11 +393,21 @@ jobs:
               $codeEval.generalizationVerified -ne $false) {
             throw 'Roblox code-only evaluation or non-promotion scope missing'
           }
+          $holdout = $metadata.practiceHoldoutComparison
+          if ($null -eq $holdout -or $holdout.scope -ne 'DISJOINT_FAMILIES_PRACTICE_ONLY' -or
+              $holdout.holdoutSha256 -ne $metadata.datasetHoldoutSha256 -or
+              $holdout.familyDisjoint -ne $true -or $holdout.practiceOnly -ne $true -or
+              $holdout.independentExternalBenchmarkVerified -ne $false -or
+              $holdout.fixedHoldoutABVerified -ne $false -or
+              $holdout.robloxNativeRuntimeVerified -ne $false -or $holdout.runtimePromotionAllowed -ne $false -or
+              $holdout.sampleCount -lt 4 -or $holdout.codeImplementationSamples -lt 2 -or
+              $holdout.codeImplementationSamples -ne $metadata.codeImplementationHoldoutSamples -or
+              $holdout.encodedWindows -lt 1) { throw 'Roblox practice-only holdout comparison missing or unsafe' }
           $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
           if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
           $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           $receipt = [ordered]@{
-            version = 3
+            version = 4
             adapterVersion = $adapterVersion
             method = 'lora'
             device = 'cpu'
@@ -398,6 +416,9 @@ jobs:
             trainLoss = $metadata.trainMetrics.train_loss
             evalLoss = $metadata.evalMetrics.eval_loss
             practiceEvalComparison = $comparison
+            practiceHoldoutComparison = $holdout
+            datasetHoldoutSha256 = $metadata.datasetHoldoutSha256
+            codeImplementationHoldoutSamples = $metadata.codeImplementationHoldoutSamples
             codeImplementationTrainSamples = $metadata.codeImplementationTrainSamples
             codeImplementationEvalSamples = $metadata.codeImplementationEvalSamples
             finalEvalOnly = $metadata.finalEvalOnly
@@ -415,7 +436,14 @@ jobs:
           Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
           Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
           Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
-          Write-Host 'PRACTICE_EVAL_PASSES=4'
+          Write-Host 'PRACTICE_EVAL_PASSES=8'
+          Write-Host "PRACTICE_HOLDOUT_SAMPLES=$($holdout.sampleCount)"
+          Write-Host "PRACTICE_HOLDOUT_CODE_SAMPLES=$($holdout.codeImplementationSamples)"
+          Write-Host "PRACTICE_HOLDOUT_BASELINE_EVAL_LOSS=$($holdout.baselineEvalLoss)"
+          Write-Host "PRACTICE_HOLDOUT_ADAPTED_EVAL_LOSS=$($holdout.adaptedEvalLoss)"
+          Write-Host "PRACTICE_HOLDOUT_CODE_BASELINE_EVAL_LOSS=$($holdout.codeBaselineEvalLoss)"
+          Write-Host "PRACTICE_HOLDOUT_CODE_ADAPTED_EVAL_LOSS=$($holdout.codeAdaptedEvalLoss)"
+          Write-Host 'PRACTICE_HOLDOUT_EXTERNAL_BENCHMARK_VERIFIED=NO'
           Write-Host "PRACTICE_CODE_EVAL_SAMPLES=$($codeEval.sampleCount)"
           Write-Host "PRACTICE_CODE_BASELINE_EVAL_LOSS=$($codeEval.baselineEvalLoss)"
           Write-Host "PRACTICE_CODE_ADAPTED_EVAL_LOSS=$($codeEval.adaptedEvalLoss)"
