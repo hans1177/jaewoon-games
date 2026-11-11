@@ -37,7 +37,7 @@ function Write-Log([string]$msg) {
 }
 
 function Get-Config {
-  $c = [pscustomobject]@{ placeId = ''; universeId = ''; startStudio = $true; startRunner = $true }
+  $c = [pscustomobject]@{ placeId = ''; universeId = ''; startStudio = $false; startRunner = $true }
   if (Test-Path -LiteralPath $ConfigPath) {
     try {
       $j = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
@@ -70,6 +70,11 @@ function Test-StudioRunning {
   return (@(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue | Where-Object { [int]$_.SessionId -eq $sessionId }).Count -gt 0)
 }
 
+# GitHub 작업이 도는 중(Runner.Worker 가 있음)에는 Studio 를 절대 열지 않는다. 작업(devloop-studio)이 Studio 를 직접 끄고 자기 것을 열기 때문에 둘이 겹치면 캡처가 실패한다.
+function Test-JobActive {
+  return (@(Get-Process -Name 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object { [int]$_.SessionId -eq $sessionId }).Count -gt 0)
+}
+
 function Test-RunnerRunning {
   $root = [IO.Path]::GetFullPath($RunnerRoot).TrimEnd('\')
   foreach ($p in @(Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue)) {
@@ -97,7 +102,7 @@ try {
     $cfgNow = Get-Config
     $now = Get-Date
 
-    if ($cfgNow.startStudio -and -not (Test-StudioRunning) -and $now -ge $studioNextTry) {
+    if ($cfgNow.startStudio -and -not (Test-JobActive) -and -not (Test-StudioRunning) -and $now -ge $studioNextTry) {
       $exe = Find-StudioExe
       if (-not $exe) {
         Write-Log 'STUDIO_EXE_NOT_FOUND_OR_UNSIGNED'; $studioFails++

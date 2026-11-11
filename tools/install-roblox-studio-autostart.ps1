@@ -9,7 +9,8 @@ param(
   [string]$PlaceId = '',
   [string]$UniverseId = '',
   [switch]$CheckOnly,
-  [switch]$Uninstall
+  [switch]$Uninstall,
+  [switch]$KeepStudioOpen
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -56,10 +57,12 @@ $installed = Join-Path $stateDir 'roblox-studio-autostart-supervisor.ps1'
 Copy-Item -LiteralPath $supervisor -Destination $installed -Force
 
 $configPath = Join-Path $stateDir 'config.json'
-if ($PlaceId -or $UniverseId -or -not (Test-Path -LiteralPath $configPath)) {
-  [pscustomobject]@{ placeId = $PlaceId; universeId = $UniverseId; startStudio = $true; startRunner = $true } |
-    ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
-}
+# 기본은 러너만 살려 둔다. devloop-studio 작업이 Studio 를 직접 열고 닫으므로, 감독 스크립트가 Studio 를 열면 서로 방해한다.
+# Studio 를 항상 열어 두고 싶을 때만 -KeepStudioOpen 을 쓴다(작업 중에는 그래도 열지 않는다).
+$startStudio = [bool]$KeepStudioOpen
+# 설정은 매번 새로 쓴다(예전 설치가 남긴 startStudio=true 도 덮어쓴다).
+[pscustomobject]@{ placeId = $PlaceId; universeId = $UniverseId; startStudio = $startStudio; startRunner = $true } |
+  ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
 Write-Host ('STUDIO_AUTOSTART_CONFIG=' + $configPath)
 
 if ($CheckOnly) {
