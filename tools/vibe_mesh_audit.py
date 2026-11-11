@@ -154,7 +154,7 @@ for action in bpy.data.actions:
                 invalid_curves += 1
                 continue
             all_keys += len(keys)
-            target = re.search(r"pose\\.bones\\[['\\\"]([^'\\\"]+)['\\\"]\\]", str(curve.data_path))
+            target = re.search(r'pose\.bones\["([^"]+)"\]', str(curve.data_path))
             if not target:
                 continue
             bone_curves += 1
