@@ -194581,11 +194581,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_59e923007158838bad650366",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12558",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "45465e87becaa924159e204c168d4aaa7650eb53",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12558,
+        "baseBranch": "main",
+        "headBranch": "mare-missing-goods-and-events-art",
+        "baseSha": "45465e87becaa924159e204c168d4aaa7650eb53",
+        "headSha": "4b92201ddca9680cccfbf6b5f9ff4e91877e28a1",
+        "mergeCommitSha": "78a9338bb3d65f7e91c5fbae933f35e30b61d1d9",
+        "mergedAt": "2026-11-11T14:35:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "339fa1a91a606f385df0fe5e44cf85a9c19e3f4eca809b61fc9a52448094996a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-missing-goods-and-events-art",
+        "candidateSha": "4b92201ddca9680cccfbf6b5f9ff4e91877e28a1"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 7,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/cardart/event_anglo_dutch_war.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_bumper_harvest.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_cape_colony.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_drought.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_earthquake.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_great_fire.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_plague_wave.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_storm.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_volcano.jpg",
+          "roblox-games/mare-essentia/assets/goods/brazilwood.png",
+          "roblox-games/mare-essentia/assets/goods/cocoa.png",
+          "roblox-games/mare-essentia/assets/goods/copper.png",
+          "roblox-games/mare-essentia/assets/goods/ebony.png",
+          "roblox-games/mare-essentia/assets/goods/gems.png",
+          "roblox-games/mare-essentia/assets/goods/gold.png",
+          "roblox-games/mare-essentia/assets/goods/jade.png",
+          "roblox-games/mare-essentia/assets/goods/kauri.png",
+          "roblox-games/mare-essentia/assets/goods/logwood.png",
+          "roblox-games/mare-essentia/assets/goods/mahogany.png",
+          "roblox-games/mare-essentia/assets/goods/maize.png",
+          "roblox-games/mare-essentia/assets/goods/palm_oil.png",
+          "roblox-games/mare-essentia/assets/goods/pearl_shell.png",
+          "roblox-games/mare-essentia/assets/goods/sandalwood.png",
+          "roblox-games/mare-essentia/assets/goods/silver.png"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12558",
+        "merge-commit:78a9338bb3d65f7e91c5fbae933f35e30b61d1d9",
+        "base-main:45465e87becaa924159e204c168d4aaa7650eb53"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1552
+    "total": 1553
   }
 }
