@@ -9612,6 +9612,16 @@
       "runtimeGameValidation": "UNVERIFIED",
       "ciState": "PENDING_ON_LATEST_MAIN",
       "improvedDiagnostic": "QUERY_SELECTOR_NULL_BINDING_SOURCE_REPRODUCED_BEFORE_PATCH"
+    },
+    "vibeSelfHostedDistillationDesign20261111": {
+      "authority": "OWNER_DIRECTIVE_2026-11-11",
+      "scope": "EXISTING_EXTERNAL_AI_LEARNING_PIPELINE_DESIGN_ONLY",
+      "source": "externalAiLearningPipeline.selfStrengthening",
+      "status": "DOCUMENTED_NOT_IMPLEMENTED",
+      "noNewPipeline": true,
+      "qaAndTrainingThresholdsUnchanged": true,
+      "gameRuntimeOrDeploymentChanged": false,
+      "summaryKo": "외부 무료 AI 다중 교사→검증·증류→기존 학습 샘플·로컬 LoRA/QLoRA→홀드아웃·카나리→승인 승격/롤백→바이브 신규 과제 재순환 설계 추가"
     }
   },
   "vibeExecutionLaneContract": {
@@ -25287,7 +25297,172 @@
       "ADVISORY_RETRIEVAL",
       "FRESH_TASK_QA",
       "VERIFIED_EFFECTIVENESS_REWEIGHT"
-    ]
+    ],
+    "selfStrengthening": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-11-11",
+      "status": "DESIGN_ONLY_IMPLEMENTATION_UNVERIFIED",
+      "missionKo": "외부 AI의 검증된 능력을 무료·허가된 범위에서 증류하고 바이브 자체 모델의 가중치를 로컬 미세조정으로 강화해, 재현 가능한 성능 향상이 확인될 때만 반복 진화한다.",
+      "target": "VIBE_LOCAL_SELF_HOSTED_VERIFIED_RECURSIVE_IMPROVEMENT",
+      "architecture": {
+        "diagramKo": "허가된 무료 외부 AI 여러 개 → 문제 해결·코드 생성·검토 → 실제 실행·독립 QA·보안 검증 → 허가·검증된 지식 증류와 프로젝트 증거 → 기존 학습 샘플·데이터셋 준비 → 바이브 자체 모델 LoRA/QLoRA → 기존 모델과 고정 홀드아웃 비교 → 카나리·승인된 승격 또는 롤백 → 바이브 자체 신규 과제 생성 → 동일 검증 학습 순환 반복",
+        "pipeline": "company-learning/platform-release-roadmap.json#canonicalLearningChain",
+        "learningFeeder": "tools/company-system-ai-external-learning-feed.mjs",
+        "multiTeacherRouter": "tools/vibe2-gemini-free-rotation.mjs",
+        "externalKnowledgeDistiller": "tools/vibe2-external-ai-distillation.mjs",
+        "advisoryStore": ".vibe2/external-ai-distilled-knowledge.json",
+        "trainingSampleIngest": "tools/vibe2-distillation-ingest.mjs",
+        "trainingStatus": "tools/vibe2-distillation-status.mjs",
+        "trainingRequest": "tools/vibe2-training-request.mjs",
+        "dataset": "tools/vibe2-weight-learning.mjs",
+        "localTrainer": "tools/vibe2-train.py",
+        "existingLocalTrainingWorkflow": ".github/workflows/vibe2-local-distillation-train.yml",
+        "selfArchitectureFeedback": "tools/vibe2-self-architecture-evolution.mjs",
+        "actorBoundaries": {
+          "teacher": "AUTHORIZED_FREE_AI_GENERATES_CANDIDATES_NOT_VERIFIED_FACTS_OR_DIRECT_TRAINING_ROWS",
+          "critic": "INDEPENDENT_PROJECT_QA_SECURITY_AND_LICENSE_VERIFICATION",
+          "student": "VIBE_SELF_HOSTED_LLM_WITH_LORA_QLORA_ADAPTER",
+          "controller": "EXISTING_CANONICAL_LEARNING_MOTOR_AND_OWNER_POLICY",
+          "promotion": "NO_AUTOMATIC_ADAPTER_PROMOTION_EXISTING_APPROVED_GATE_ONLY"
+        }
+      },
+      "roadmap": [
+        {
+          "step": 1,
+          "id": "MULTI_FREE_TEACHERS",
+          "objectiveKo": "기존 허가된 무료 AI 여러 개를 교사로 활용, 출처·출력학습권리·무료 한도 확인",
+          "existingImplementation": "tools/vibe2-gemini-free-rotation.mjs",
+          "exitEvidence": "TEACHER_PERMISSION_AND_PROVENANCE_VERIFIED"
+        },
+        {
+          "step": 2,
+          "id": "PROBLEM_SOLVE_CODE_REVIEW",
+          "objectiveKo": "기존 책임 파일과 격리 후보 브랜치에서 AI 협업으로 문제 해결·코드 생성·검토, 외부 AI 자기 승인 금지",
+          "existingImplementation": "tools/vibe2-source-worker.mjs",
+          "exitEvidence": "REPRODUCIBLE_SCOPED_CANDIDATE"
+        },
+        {
+          "step": 3,
+          "id": "RUN_INDEPENDENT_QA",
+          "objectiveKo": "실제 실행·독립 QA·회귀·보안 검증; 불합격은 별도의 실패 학습 근거로 격리",
+          "existingImplementation": "tools/vibe2-incremental-qa.mjs",
+          "exitEvidence": "EXACT_SOURCE_REVISION_VERIFIED"
+        },
+        {
+          "step": 4,
+          "id": "DISTILL_PROVEN_LESSONS",
+          "objectiveKo": "원문 해시만 남기고 독립검증된 일반 지식 증류; 실제 재검증 프로젝트 결과와 허가된 자료만 정식 학습 샘플로",
+          "existingImplementation": "tools/vibe2-external-ai-distillation.mjs",
+          "exitEvidence": "LICENSED_VERIFIED_PROJECT_OUTCOME"
+        },
+        {
+          "step": 5,
+          "id": "BUILD_CANONICAL_DATASET",
+          "objectiveKo": "기존 verified sample→distillation status→deterministic request→자체 dataset, 학습 24·신규 12·프로젝트 2 기준 유지",
+          "existingImplementation": "tools/vibe2-weight-learning.mjs",
+          "exitEvidence": "READY_FOR_LOCAL_TRAINING_WITH_SEPARATE_EVAL_HOLDOUT"
+        },
+        {
+          "step": 6,
+          "id": "LOCAL_LORA_QLORA",
+          "objectiveKo": "기존 trainer 및 자체 호스팅 환경에서 허가된 모델만 LoRA/QLoRA, 결과는 TRAINED_UNVERIFIED",
+          "existingImplementation": "tools/vibe2-train.py",
+          "exitEvidence": "REPRODUCIBLE_TRAINED_UNVERIFIED_ADAPTER"
+        },
+        {
+          "step": 7,
+          "id": "CHAMPION_CHALLENGER_TEST",
+          "objectiveKo": "기존 모델과 신규 모델을 고정 홀드아웃 동일조건 비교; 정확성·회귀·비용·지연·일반화 측정",
+          "existingImplementation": "company-learning/canonical-learning-pipeline.json",
+          "exitEvidence": "FIXED_HOLDOUT_AB_AND_CANARY_PASS"
+        },
+        {
+          "step": 8,
+          "id": "AUTHORIZED_PROMOTE_OR_ROLLBACK",
+          "objectiveKo": "기존 승인 절차로만 승격; 개선 미입증 또는 카나리 실패 시 이전 모델 유지·복구",
+          "existingImplementation": "company-learning/canonical-learning-pipeline.json",
+          "exitEvidence": "PROMOTION_APPROVED_OR_ROLLBACK"
+        },
+        {
+          "step": 9,
+          "id": "VIBE_SELF_GENERATED_CHALLENGES",
+          "objectiveKo": "바이브가 더 어려운 과제·반례를 스스로 생성, 정답/검증 PASS는 생성하지 않고 외부·내부 독립검증",
+          "existingImplementation": "tools/vibe2-learning-motor.mjs",
+          "exitEvidence": "NEW_INDEPENDENTLY_TESTABLE_TASKS"
+        },
+        {
+          "step": 10,
+          "id": "RECURSIVE_REPEAT",
+          "objectiveKo": "검증된 새 과제를 동일 기존 증류·학습·비교 체인으로 재순환, 향상 증거가 있을 때만 반복 채택",
+          "existingImplementation": "tools/vibe2-self-architecture-evolution.mjs",
+          "exitEvidence": "NEXT_VERIFIED_LEARNING_EPISODE"
+        }
+      ],
+      "gates": {
+        "existingCanonicalLearningSequenceUnchanged": true,
+        "parallelOrShadowPipelineForbidden": true,
+        "verifiedProjectOutcomeBeforeTrainingSample": true,
+        "rawExternalOutputPersistence": "HASH_ONLY",
+        "externalOutputNeverDirectTrainingData": true,
+        "trainingPermissionRequiredPerTeacherAndDataset": true,
+        "paidApiForbidden": true,
+        "automaticBillingForbidden": true,
+        "trainingEnvironment": "LOCAL_SELF_HOSTED_ONLY",
+        "githubHostedModelTrainingForbidden": true,
+        "minimumTrainingSamples": 24,
+        "minimumFreshTrainingSamples": 12,
+        "minimumDistinctProjects": 2,
+        "independentQaAndSecurityRequired": true,
+        "fixedHoldoutBeforeCanary": true,
+        "automaticModelPromotionAllowed": false,
+        "newAdapterInitialState": "TRAINED_UNVERIFIED",
+        "preserveGameSaveBalanceSourceAndReleaseGates": true,
+        "preventPromptInjectionSecretsAndUntrustedCode": true,
+        "noExecutionAuthorityExpansion": true,
+        "noSyntheticPassOrUnlimitedIntelligenceClaims": true
+      },
+      "scorecard": {
+        "quality": [
+          "FRESH_TASK_PASS_RATE",
+          "FIRST_CANDIDATE_QA_PASS_RATE",
+          "BUG_REPAIR_PASS_RATE",
+          "REGRESSION_RATE",
+          "HOLDOUT_AB_DELTA",
+          "CROSS_GAME_GENERALIZATION"
+        ],
+        "efficiency": [
+          "MODEL_CALLS_PER_VERIFIED_RESULT",
+          "LOCAL_INFERENCE_LATENCY",
+          "EXTERNAL_AI_DEPENDENCY_RATE",
+          "ZERO_PAID_COST"
+        ],
+        "rollbackOn": [
+          "NO_VERIFIED_IMPROVEMENT",
+          "HOLDOUT_OR_CANARY_FAILURE",
+          "SECURITY_POLICY_FAILURE",
+          "LICENSE_OR_DATASET_PROVENANCE_FAILURE"
+        ]
+      },
+      "baseline": {
+        "observationDate": "2026-11-11",
+        "evidenceSource": "company-learning/distillation-training-request.json",
+        "lastRecordedRequestState": "WAITING_FOR_VERIFIED_SAMPLES",
+        "knownBlockers": [
+          "INSUFFICIENT_BATCH",
+          "INSUFFICIENT_PROJECT_DIVERSITY",
+          "TASK_PLAN_NOT_READY"
+        ],
+        "nextAction": "COLLECT_LICENSED_INDEPENDENTLY_VERIFIED_CROSS_PROJECT_SAMPLES_WITHOUT_LOWERING_THRESHOLDS",
+        "noActualTrainingOrModelPromotionAttested": true
+      },
+      "releaseAndImplementation": {
+        "scope": "DOCUMENTATION_AND_ARCHITECTURE_ONLY",
+        "existingRuntimeFlowUnchanged": true,
+        "newSchedulerWorkflowOrTrainerCreated": false,
+        "trainingNotExecutedByThisChange": true,
+        "codeAndDeploymentVerificationNotImplied": true
+      }
+    }
   },
   "unityWebFirstStage": {
     "version": 4,
