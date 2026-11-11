@@ -941,6 +941,78 @@ test('Roblox module coding engine keeps dynamically returned APIs unproven, not 
   fs.rmSync(cwd,{recursive:true,force:true});
 });
 
+test('open-source inspired repository rank keeps three-hop Roblox callers ahead of lexical decoys',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/repo-ranking');
+  const owner='shared/Inventory.luau',source='local Inventory={}\nfunction Inventory.Get() return true end\nreturn Inventory\n';
+  write(path.join(root,owner),source);
+  write(path.join(root,'client/Hud.luau'),'local Inv=require(script.Parent.Parent.shared.Inventory)\nreturn Inv.Get()\n');
+  write(path.join(root,'client/Panel.luau'),'local Hud=require(script.Parent.Hud)\nreturn Hud\n');
+  write(path.join(root,'client/Screen.luau'),'local Panel=require(script.Parent.Panel)\nreturn Panel\n');
+  for(let i=0;i<24;i++)write(path.join(root,'shared/InventoryNoise'+String(i).padStart(2,'0')+'.luau'),
+    'local function noisy() return Get() end\nreturn noisy\n');
+  const order={run:true,taskId:'repo-ranking',gameId:'repo-ranking',target:'roblox',
+    goal:'fix Inventory Get and all linked player HUD functions',
+    source:{root:'roblox-games/repo-ranking',
+      responsibleFiles:['roblox-games/repo-ranking/'+owner],ignoredPaths:[]},
+    workPackage:{id:'repo-ranking',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(out.codingContextRank.method,'FOCUSED_OBSERVED_SOURCE_LINK_RANK');
+  assert.equal(out.codingContextRank.iterations,4);
+  assert.equal(out.codingContextRank.observedLinkCount,3);
+  assert.ok(out.codingContextRank.rankedPaths.some(row=>row.path==='client/Screen.luau'));
+  assert.ok(out.contextFiles.includes('client/Hud.luau'));
+  assert.ok(out.contextFiles.includes('client/Panel.luau'));
+  assert.ok(out.contextFiles.includes('client/Screen.luau'),
+    'exact third-hop importer should not be evicted by namesake code');
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,[owner]);
+  assert.equal(out.sourceWrite,false);
+  assert.equal(out.codingContextRank.sourceWrite,false);
+  assert.match(explorationGuidance(out),/증거 기반 코드 우선순위=/);
+  assert.equal(fs.readFileSync(path.join(root,owner),'utf8'),source);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('repository rank rejects ambiguous Roblox module basenames without guessing',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/repo-ambiguous');
+  write(path.join(root,'shared/Combat.luau'),'local Combat={}\nfunction Combat.Hit() return true end\nreturn Combat\n');
+  write(path.join(root,'shared/Combat/init.luau'),'return {Hit=function() return false end}\n');
+  write(path.join(root,'client/Ambiguous.luau'),
+    'local Combat=require(script.Parent.Parent.shared.Combat)\nreturn Combat.Hit()\n');
+  const order={run:true,taskId:'repo-ambiguous',gameId:'repo-ambiguous',target:'roblox',
+    goal:'inspect Combat without speculative module choice',
+    source:{root:'roblox-games/repo-ambiguous',
+      responsibleFiles:['roblox-games/repo-ambiguous/shared/Combat.luau'],ignoredPaths:[]},
+    workPackage:{id:'repo-ambiguous',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(out.codingContextRank.observedLinkCount,0);
+  assert.deepEqual(out.codingContextRank.rankedPaths,[]);
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,['shared/Combat.luau']);
+  assert.equal(out.codingContextRank.authorityExpanded,false);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('focused dependency rank discovers multi-hop Web module tests without expanding edit scope',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/repo-ranking-web');
+  const owner='src/core.js';
+  write(path.join(root,owner),'export function getScore(){return 5}\n');
+  write(path.join(root,'src/ui.js'),"import {getScore} from './core.js'; export function render(){return getScore()}\n");
+  write(path.join(root,'src/main.js'),"import {render} from './ui.js'; export function start(){return render()}\n");
+  write(path.join(root,'qa/start.test.js'),"import {start} from '../src/main.js'; if(start()!==5) throw Error('regression')\n");
+  for(let i=0;i<25;i++)write(path.join(root,'src/getScoreNoise'+i+'.js'),
+    'export function noise(){return getScore()}\n');
+  const order={run:true,taskId:'repo-web-rank',gameId:'repo-ranking-web',target:'web',
+    goal:'repair getScore and related UI integration regression',
+    source:{root:'web-games/repo-ranking-web',responsibleFiles:['web-games/repo-ranking-web/'+owner],ignoredPaths:[]},
+    workPackage:{id:'repo-web-rank',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.ok(out.codingContextRank.observedLinkCount>=3);
+  assert.ok(out.codingContextRank.rankedPaths.some(row=>row.path==='src/main.js'));
+  assert.ok(out.testTargets.includes('qa/start.test.js'));
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,[owner]);
+  assert.equal(out.sourceWrite,false);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
 test('Roblox module reverse dependencies find importers with alias calls and preserve reservation',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-reverse');
   const modulePath='shared/Inventory.luau';
