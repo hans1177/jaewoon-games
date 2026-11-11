@@ -166,10 +166,10 @@ return function(D, S)
 		local rate = S.Trade.sellRateFor(state)
 		local deals = {}
 		for goodId, good in D.Ports.Goods do
-			local buy = T.getPrice(here, goodId, ctx.market:get(here, goodId), ctx.market:eventMult(here, goodId) * S.Knowledge.supplyMult(state, here, goodId))
+			local buy = T.getPrice(here, goodId, ctx.market:get(here, goodId), (ctx.market:eventMult(here, goodId) * S.History.mult(state, here, goodId)) * S.Knowledge.supplyMult(state, here, goodId))
 			for portId, port in D.Ports.Ports do
 				if portId ~= here then
-					local sell = T.sellPrice(portId, goodId, ctx.market:get(portId, goodId), rate * S.Knowledge.goodsMult(state, goodId), ctx.market:eventMult(portId, goodId))
+					local sell = T.sellPrice(portId, goodId, ctx.market:get(portId, goodId), rate * S.Knowledge.goodsMult(state, goodId), (ctx.market:eventMult(portId, goodId) * S.History.mult(state, portId, goodId)))
 					table.insert(deals, { good = good.name, port = port.name, profit = sell - buy })
 				end
 			end

@@ -46,7 +46,7 @@ return function(D, S)
 			return false, "화물칸이 부족해요"
 		end
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = ctx.market:eventMult(state.portId, goodId)
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
 		local total = 0
 		for _ = 1, amount do
 			total += T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
@@ -108,7 +108,7 @@ return function(D, S)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = ctx.market:eventMult(state.portId, goodId)
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
 		local revenue = 0
 		for _ = 1, amount do
 			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
@@ -160,7 +160,7 @@ return function(D, S)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = ctx.market:eventMult(state.portId, goodId)
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
 		local revenue = 0
 		for _ = 1, amount do
 			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
