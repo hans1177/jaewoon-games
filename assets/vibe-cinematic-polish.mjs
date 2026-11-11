@@ -10,7 +10,7 @@ export const vibeLightingPresets=Object.freeze({
  laboratory:{sky:0xdceaff,ground:0x414b55,ambient:1.5,key:0xf4f8ff,keyPower:2.2,fill:0x8fcfff,fillPower:1.6,rim:0xb9ffe8,rimPower:.85,fog:0x9aa9b8,density:.006}
 });
 // [메인: 장면 조명] 단일 키/보조/윤곽 조명으로 명암을 통일하고 모바일 그림자 비용을 제한한다.
-export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=true,mobile=false}={}){
+export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=true,mobile=false,subjectSeparation=0}={}){
  if(!vibeLightingPresets[preset])throw Error('Unknown lighting preset');
  const hemi=new THREE.HemisphereLight(),key=new THREE.DirectionalLight(),fill=new THREE.DirectionalLight(),rim=new THREE.DirectionalLight();
  key.position.set(4,7,5);fill.position.set(-5,3,3);rim.position.set(1,4,-6);
@@ -23,14 +23,16 @@ export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=
  }
  for(const light of [hemi,key,fill,rim])scene.add(light);
  const oldFog=scene.fog,fog=new THREE.FogExp2(0xffffff,.01);scene.fog=fog;
+ // [조명: 피사체 분리] 기존 조명 수/배경 에셋을 늘리지 않고 반사광 대비만 조절한다.
+ const separation=clamp(subjectSeparation,0,.5);
  let current={...vibeLightingPresets[preset]},start={...current},target={...current};
  let duration=0,elapsed=0;
  const color=(hex)=>new THREE.Color(hex);
  function apply(v){
-  hemi.color.copy(color(v.sky));hemi.groundColor.copy(color(v.ground));hemi.intensity=v.ambient;
+  hemi.color.copy(color(v.sky));hemi.groundColor.copy(color(v.ground));hemi.intensity=v.ambient*(1-separation*.7);
   key.color.copy(color(v.key));key.intensity=v.keyPower;
   fill.color.copy(color(v.fill));fill.intensity=v.fillPower;
-  rim.color.copy(color(v.rim));rim.intensity=v.rimPower;
+  rim.color.copy(color(v.rim));rim.intensity=v.rimPower*(1+separation);
   fog.color.copy(color(v.fog));fog.density=v.density;
  }
  apply(current);
