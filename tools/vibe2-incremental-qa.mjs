@@ -992,9 +992,11 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const started = Date.now();
   const data=manifestData(manifest);
   const changed = collectFiles({root, files, manifest});
-  const impactPlan=automaticImpactedChecks(changed);
   const replayPlan=causalReplayPlan(data);
   const gameRepair=gameRepairContract(data);
+  // [영향 회귀] 기존 변경 파일 검사에 실제 복구 계약의 책임 파일·테스트 대상만 전달한다.
+  // 정적 위험도는 평가 우선순위이며 검증 통과나 최종 QA를 대신하지 않는다.
+  const impactPlan=automaticImpactedChecks(changed,{gameRepair,sourceRoot:data.sourceRoot});
   const replayTargets=replayPlan?.executable===true&&clean(replayPlan?.mode)==='NODE_TEST_TARGETS'?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
