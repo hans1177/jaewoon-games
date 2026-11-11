@@ -200839,11 +200839,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7c764af76ba0c90792eb2d01",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-12625",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "21a81421620c8a60218d4d2f68545901a910942f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12625,
+        "baseBranch": "main",
+        "headBranch": "chatgpt/vibe59-five-art-directors-20261112",
+        "baseSha": "21a81421620c8a60218d4d2f68545901a910942f",
+        "headSha": "7ef514792422a3b995e12d9884a054354caaa8d6",
+        "mergeCommitSha": "91230b6d126b55b3fffe02f5033c79d2836cdb8d",
+        "mergedAt": "2026-11-11T22:53:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e7279eeec04ead2e45ff634e26688997a087662c0590c287e9119854ec028b85",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "chatgpt/vibe59-five-art-directors-20261112",
+        "candidateSha": "7ef514792422a3b995e12d9884a054354caaa8d6"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 315,
+        "deletedLineCount": 33,
+        "changedFiles": [
+          "assets/vibe-cinematic-director.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-character-music.mjs",
+          "assets/vibe-genre-director.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-storybook-cinematics.mjs",
+          "qa/vibe-cinematic-director.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-character-music.test.mjs",
+          "qa/vibe-genre-director.test.mjs",
+          "qa/vibe-storybook-cinematics.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-cinematic-director.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-genre-character-music.mjs",
+          "assets/vibe-genre-director.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-storybook-cinematics.mjs",
+          "qa/vibe-cinematic-director.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-genre-character-music.test.mjs",
+          "qa/vibe-genre-director.test.mjs",
+          "qa/vibe-storybook-cinematics.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12625",
+        "merge-commit:91230b6d126b55b3fffe02f5033c79d2836cdb8d",
+        "base-main:21a81421620c8a60218d4d2f68545901a910942f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1601
+    "total": 1602
   }
 }
