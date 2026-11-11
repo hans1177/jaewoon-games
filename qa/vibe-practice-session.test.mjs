@@ -47,12 +47,17 @@ test('승인된 CC0 아이콘은 64px 실측·실패 차단을 연습하고 게�
     {encoding:'utf8'});
   assert.equal(py.status,0,py.stderr);
   const sha=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  const reg={assets:[{id:'approved-icon',family:'ICON',license:'CC0',
-    sourceFiles:['assets/icon.png'],sourceSha256:sha,catalogActive:true}]};
+  const reg={assets:[
+    {id:'aaa-ui-bar',family:'UI',license:'CC0',
+      sourceFiles:['assets/icon.png'],sourceSha256:sha,catalogActive:true},
+    {id:'approved-icon',family:'ICON',license:'CC0',
+      sourceFiles:['assets/icon.png'],sourceSha256:sha,catalogActive:true}
+  ]};
   fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(reg));
   const {session}=runPracticeSession({repoRoot:root,seed:1,parents:1,variants:1,
     out:'build/icon-good',light:false,bake:false});
   assert.equal(session.iconStudy.parent,'approved-icon');
+  assert.equal(session.iconStudy.eligibleIcons,1);
   assert.equal(session.iconStudy.sourceSha256,sha);
   assert.equal(session.iconStudy.measured,true);
   assert.equal(session.iconStudy.legible,true);
@@ -61,7 +66,7 @@ test('승인된 CC0 아이콘은 64px 실측·실패 차단을 연습하고 게�
   assert.equal(session.practiceDomains.ICON.trials,1);
   assert.equal(session.practiceDomains.ICON.staticMeasured,1);
   assert.equal(session.iconStudy.gameApplied,false);
-  reg.assets[0].sourceSha256='0'.repeat(64);
+  reg.assets.find(a=>a.id==='approved-icon').sourceSha256='0'.repeat(64);
   fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(reg));
   const blocked=runPracticeSession({repoRoot:root,seed:2,parents:1,variants:1,
     out:'build/icon-blocked',light:false,bake:false}).session;
