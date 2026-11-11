@@ -382,7 +382,28 @@ def main():
     trainer = DifficultyCurriculumTrainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
     train_result = trainer.train(resume_from_checkpoint=resume_path) if resume_path else trainer.train()
     eval_result = trainer.evaluate()
+    # Same frozen base weights and identical eval windows: practice-only comparison,
+    # never an independent holdout, native-runtime pass, or promotion authority.
+    practice_eval_comparison = None
+    if args.task_type == "roblox" and manifest.get("authority") == "PRACTICE_ONLY":
+        with model.disable_adapter():
+            baseline_evaluation = trainer.evaluate()
+        baseline_loss = float(baseline_evaluation.get("eval_loss", float("nan")))
+        adapted_loss = float(eval_result.get("eval_loss", float("nan")))
+        practice_eval_comparison = {
+            "scope": "MATCHED_PRACTICE_EVAL_ONLY",
+            "evalSha256": manifest.get("evalSha256"),
+            "baselineEvalLoss": baseline_loss,
+            "adaptedEvalLoss": adapted_loss,
+            "lossReduction": baseline_loss - adapted_loss,
+            "lowerEvalLoss": adapted_loss < baseline_loss,
+            "fixedHoldoutABVerified": False,
+            "robloxNativeRuntimeVerified": False,
+            "runtimePromotionAllowed": False,
+        }
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
+    if practice_eval_comparison is not None:
+        losses.append(practice_eval_comparison["baselineEvalLoss"])
     if not all(value == value and abs(value) != float("inf") for value in losses):
         raise RuntimeError("non-finite loss: adapter is not saved")
     model.save_pretrained(output / "adapter")
@@ -402,6 +423,8 @@ def main():
         "encodedTrainWindows": len(train_dataset),
         "encodedEvalWindows": len(eval_dataset),
         "codeImplementationTrainSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in train_rows),
+        "codeImplementationEvalSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in eval_rows),
+        "practiceEvalComparison": practice_eval_comparison,
         "adapterVersion": args.adapter_version,
         "taskType": args.task_type,
         "baseModel": args.base_model,

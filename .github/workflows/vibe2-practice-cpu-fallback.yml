@@ -353,6 +353,15 @@ jobs:
           if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
           if ($metadata.containsLicensedReference -ne $true -or $metadata.licensedReferenceSamples -lt 20) { throw 'adapter metadata lost licensed-reference provenance' }
           if ($metadata.finalEvalOnly -ne $true) { throw 'single-final-eval optimization was not applied' }
+          $comparison = $metadata.practiceEvalComparison
+          if ($null -eq $comparison -or $comparison.scope -ne 'MATCHED_PRACTICE_EVAL_ONLY' -or
+              $comparison.evalSha256 -ne $metadata.datasetEvalSha256 -or
+              $comparison.fixedHoldoutABVerified -ne $false -or
+              $comparison.robloxNativeRuntimeVerified -ne $false -or
+              $comparison.runtimePromotionAllowed -ne $false) {
+            throw 'Roblox baseline comparison missing or incorrectly claims promotion authority'
+          }
+          if ($metadata.codeImplementationEvalSamples -lt 1) { throw 'Roblox implementation eval coverage missing' }
           $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
           if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
           $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -364,6 +373,9 @@ jobs:
             baseModel = $metadata.baseModel
             trainLoss = $metadata.trainMetrics.train_loss
             evalLoss = $metadata.evalMetrics.eval_loss
+            practiceEvalComparison = $comparison
+            codeImplementationTrainSamples = $metadata.codeImplementationTrainSamples
+            codeImplementationEvalSamples = $metadata.codeImplementationEvalSamples
             finalEvalOnly = $metadata.finalEvalOnly
             practiceSourceKinds = $metadata.practiceSourceKinds
             licensedReferenceSamples = $metadata.licensedReferenceSamples
@@ -379,7 +391,13 @@ jobs:
           Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
           Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
           Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
-          Write-Host 'PRACTICE_EVAL_PASSES=1'
+          Write-Host 'PRACTICE_EVAL_PASSES=2'
+          Write-Host "PRACTICE_BASELINE_EVAL_LOSS=$($comparison.baselineEvalLoss)"
+          Write-Host "PRACTICE_ADAPTED_EVAL_LOSS=$($comparison.adaptedEvalLoss)"
+          Write-Host "PRACTICE_LOSS_REDUCTION=$($comparison.lossReduction)"
+          Write-Host "PRACTICE_MATCHED_EVAL_IMPROVED=$($comparison.lowerEvalLoss)"
+          Write-Host 'PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO'
+          Write-Host 'PRACTICE_NATIVE_RUNTIME_VERIFIED=NO'
           Write-Host "PRACTICE_LICENSED_REFERENCE_SAMPLES=$($metadata.licensedReferenceSamples)"
           Write-Host "PRACTICE_ADAPTER_WEIGHTS_BYTES=$($weights.Length)"
           Write-Host "PRACTICE_ADAPTER_WEIGHTS_SHA256=$sha"

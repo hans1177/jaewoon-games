@@ -78,6 +78,23 @@ test('Roblox practice includes original implementation in train and eval; stale 
   }
 });
 
+test('Roblox practice compares frozen baseline and adapter on the same eval without claiming holdout or native pass', () => {
+  const trainer = fs.readFileSync('tools/vibe2-train.py', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml', 'utf8');
+  assert.match(trainer, /args\.task_type == "roblox" and manifest\.get\("authority"\) == "PRACTICE_ONLY"/);
+  assert.match(trainer, /with model\.disable_adapter\(\):\s+baseline_evaluation = trainer\.evaluate\(\)/);
+  assert.match(trainer, /"evalSha256": manifest\.get\("evalSha256"\)/);
+  assert.match(trainer, /"lossReduction": baseline_loss - adapted_loss/);
+  assert.match(trainer, /"fixedHoldoutABVerified": False/);
+  assert.match(trainer, /"robloxNativeRuntimeVerified": False/);
+  assert.match(workflow, /Roblox baseline comparison missing or incorrectly claims promotion authority/);
+  assert.match(workflow, /PRACTICE_BASELINE_EVAL_LOSS=/);
+  assert.match(workflow, /PRACTICE_ADAPTED_EVAL_LOSS=/);
+  assert.match(workflow, /PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO/);
+  assert.match(workflow, /PRACTICE_NATIVE_RUNTIME_VERIFIED=NO/);
+  assert.match(workflow, /PRACTICE_EVAL_PASSES=2/);
+});
+
 test('practice trainer and workflow keep learned adapter unverified and require actual training execution', () => {
   const trainer = fs.readFileSync('tools/vibe2-practice-train.py', 'utf8');
   assert.match(trainer, /PRACTICE_ONLY/);
