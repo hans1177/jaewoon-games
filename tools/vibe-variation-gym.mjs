@@ -51,6 +51,9 @@ export function classifyPracticeAsset(asset={}){
   else if(model)add('MESH','MATERIAL');
   if(/ENVIRONMENT|WORLD|TERRAIN|FOLIAGE|SCENE|BUILDING/.test(family))add('ENVIRONMENT','OBJECT','MATERIAL');
   if(/PROP|ITEM|OBJECT|WEAPON|TOOL|BUILDING/.test(family))add('OBJECT');
+  if(/MOTION|ANIMATION/.test(family))add('MOTION','ACTION','JOINT');
+  if(/RIG|SKELETON|ARMATURE/.test(family))add('RIG','JOINT','MOTION');
+  if(/ACTION|COMBAT/.test(family))add('ACTION','MOTION');
   if(/MATERIAL|TEXTURE|SHADER/.test(family))add('MATERIAL');
   if(/UI|INTERFACE|HUD|MENU/.test(family))add('UI','BUTTON','ICON');
   if(/BUTTON|CONTROL/.test(family)||/\bbutton\b/.test(names))add('BUTTON','UI');
@@ -67,13 +70,56 @@ export function classifyPracticeAsset(asset={}){
 // [자산 부족 기록] 실제 로컬 원본이 없는 카탈로그 항목을 학습 성공·승인 자산으로 세지 않는다.
 export function buildPracticeAssetCoverage(registry,repoRoot){
   const root=fs.realpathSync(repoRoot);
+  // [공용 자산 맵] 기존 Roblox 공용 팩과 공유 매니페스트까지 읽기 전용으로 분류한다.
+  // 팩의 이름/설계 항목은 실물 원본이 아니므로 연습 허가 및 품질 통과로 세지 않는다.
+  const assets=[...(Array.isArray(registry?.assets)?registry.assets:[])];
+  const sources=[];
+  const commonRoot=path.join(root,'assets','roblox');
+  let dirs=[];try{dirs=fs.readdirSync(commonRoot,{withFileTypes:true});}catch{}
+  for(const dir of dirs){
+    if(!dir.isDirectory()||!/^common-/.test(dir.name))continue;
+    const catalogPath=path.join(commonRoot,dir.name,'catalog.json');
+    let catalog;try{catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));}catch{continue;}
+    sources.push('assets/roblox/'+dir.name+'/catalog.json');
+    for(const [kind,values] of Object.entries({
+      atoms:catalog.atoms,items:catalog.items,
+      surfaces:catalog.surfaces,iconSymbols:catalog.iconSymbols
+    })){
+      if(!Array.isArray(values))continue;
+      for(const [index,item] of values.entries()){
+        const entry=item&&typeof item==='object'?item:{name:String(item)};
+        const family=kind==='iconSymbols'?'ICON':kind==='surfaces'?'UI':String(entry.family||catalog.family||'UNKNOWN');
+        assets.push({id:String(catalog.packId||dir.name)+':'+kind+':'+String(entry.atomId||entry.assetId||entry.id||entry.name||index),
+          title:entry.title||entry.name||entry.role||entry.atomId||'',
+          family,catalogOnly:true,sourceFiles:[]});
+      }
+    }
+    // 단일 팩 자체도 연습 범위를 대표하지만 실물 통과 증거는 아니다.
+    assets.push({id:String(catalog.packId||dir.name),title:catalog.title||dir.name,
+      family:catalog.family||'UNKNOWN',catalogOnly:true,sourceFiles:[]});
+  }
+  try{
+    const manifest=JSON.parse(fs.readFileSync(path.join(root,'assets','asset-manifest.json'),'utf8'));
+    for(const item of Array.isArray(manifest.assets)?manifest.assets:[]){
+      const types=Array.isArray(item.types)?item.types.map(x=>String(x).toLowerCase()):[];
+      const family=types.some(x=>/enemy|boss|monster|character/.test(x))?'CREATURE'
+        :types.some(x=>/animation|motion/.test(x))?'MOTION'
+        :types.some(x=>/icon|ui|menu/.test(x))?'UI'
+        :types.some(x=>/sound|music|audio|sfx/.test(x))?'AUDIO'
+        :types.some(x=>/environment|terrain/.test(x))?'ENVIRONMENT'
+        :types.some(x=>/material|texture/.test(x))?'MATERIAL':'PROP';
+      assets.push({id:'manifest:'+String(item.id||''),title:item.name||'',family,
+        catalogOnly:true,sourceFiles:[]});
+    }
+    sources.push('assets/asset-manifest.json');
+  }catch{}
   const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{catalogued:0,eligible3d:0}]));
   const families={},shortages=[];
-  for(const asset of Array.isArray(registry?.assets)?registry.assets:[]){
+  for(const asset of assets){
     const info=classifyPracticeAsset(asset),fam=families[info.family]??={catalogued:0,eligible3d:0};
     fam.catalogued++;
     const licensed=/^CC0(?:-1\.0)?$/i.test(String(asset.license||''));
-    const approved=licensed&&!asset.securityBlocked&&!asset.quarantined&&!asset.gameUseForbidden&&
+    const approved=!asset.catalogOnly&&licensed&&!asset.securityBlocked&&!asset.quarantined&&!asset.gameUseForbidden&&
       !asset.parentSourceId&&!asset.derivedFromAssetId&&asset.catalogActive!==false&&!asset.corruptSource;
     const sources=Array.isArray(asset.sourceFiles)?asset.sourceFiles:[];
     const eligible3d=approved&&sources.some(name=>{
@@ -91,7 +137,8 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
       if(eligible3d)domains[domain].eligible3d++;
     }
   }
-  return {cataloguedAssets:(registry?.assets||[]).length,
+  return {cataloguedAssets:assets.length,registryAssets:(registry?.assets||[]).length,
+    scannedCatalogs:sources,
     eligible3dAssets:Object.values(families).reduce((sum,f)=>sum+f.eligible3d,0),
     domains,families,shortages:shortages.slice(0,24),
     status:'CATALOG_CLASSIFICATION_NOT_GAME_OR_RUNTIME_VERIFICATION',
