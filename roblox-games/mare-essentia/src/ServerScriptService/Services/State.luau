@@ -47,6 +47,7 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
+			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
 			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
@@ -467,6 +468,27 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.world) == "table" then
+			local wv = saved.world
+			local w = { rng = math.floor(num(wv.rng, 1, 1, 2147483646)), nextDay = math.floor(num(wv.nextDay, 0, 0, 1e9)), cool = {}, active = {}, log = {}, aided = math.floor(num(wv.aided, 0, 0, 1e6)) }
+			if type(wv.cool) == "table" then
+				for id, d in wv.cool do
+					if type(id) == "string" and #id <= 40 and type(d) == "number" then w.cool[id] = d end
+				end
+			end
+			for _, a in type(wv.active) == "table" and wv.active or {} do
+				if type(a) == "table" and type(a.id) == "string" and D.WorldEvents.ById[a.id] and type(a.region) == "string" and type(a.endDay) == "number" and #w.active < 20 then
+					table.insert(w.active, { id = a.id, wid = if type(a.wid) == "number" then a.wid else 0, region = string.sub(a.region, 1, 24), title = string.sub(tostring(a.title), 1, 60), text = string.sub(tostring(a.text), 1, 200),
+						kind = if a.kind == "fortune" then "fortune" else "disaster", startDay = num(a.startDay, 0, 0, 1e9), endDay = a.endDay, aided = a.aided == true })
+				end
+			end
+			for _, l in type(wv.log) == "table" and wv.log or {} do
+				if type(l) == "table" and #w.log < 15 then
+					table.insert(w.log, { day = num(l.day, 0, 0, 1e9), year = math.floor(num(l.year, 1650, 1000, 3000)), title = string.sub(tostring(l.title), 1, 60), kind = if l.kind == "fortune" then "fortune" else "disaster", region = string.sub(tostring(l.region), 1, 24), result = string.sub(tostring(l.result), 1, 80) })
+				end
+			end
+			s.world = w
+		end
 		if type(saved.pace) == "table" then
 			s.pace.days = math.floor(num(saved.pace.days, 0, 0, 365 * 10))
 			s.pace.window = math.floor(num(saved.pace.window, 0, 0, 1e9))
@@ -513,7 +535,7 @@ return function(D)
 			end
 			if type(h.fx) == "table" then
 				for _, f in h.fx do
-					if type(f) == "table" and type(f.goods) == "table" and type(f.regions) == "table" and type(f.mult) == "number" and type(f.untilDay) == "number" and #s.history.fx < 20 then
+					if type(f) == "table" and type(f.goods) == "table" and type(f.regions) == "table" and type(f.mult) == "number" and type(f.untilDay) == "number" and #s.history.fx < 40 then
 						local goods, regions = {}, {}
 						for _, g in f.goods do
 							if type(g) == "string" and #g <= 24 then table.insert(goods, g) end
@@ -521,7 +543,7 @@ return function(D)
 						for _, r in f.regions do
 							if type(r) == "string" and #r <= 24 then table.insert(regions, r) end
 						end
-						table.insert(s.history.fx, { goods = goods, regions = regions, mult = math.clamp(f.mult, 0.3, 3), untilDay = f.untilDay, title = if type(f.title) == "string" then string.sub(f.title, 1, 40) else nil })
+						table.insert(s.history.fx, { goods = goods, regions = regions, mult = math.clamp(f.mult, 0.3, 3), untilDay = f.untilDay, title = if type(f.title) == "string" then string.sub(f.title, 1, 60) else nil, wid = if type(f.wid) == "number" then f.wid else nil })
 					end
 				end
 			end
@@ -627,6 +649,7 @@ return function(D)
 			stocks = state.stocks,
 			portStages = state.portStages,
 			pace = state.pace,
+			world = state.world,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,

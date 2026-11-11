@@ -404,6 +404,7 @@ return function(D, S)
 		view.exchange = S.Stock.viewOf(state)
 		view.portBuildings = S.Build.viewOf(state)
 		view.pace = S.Pace.viewOf(state)
+		view.world = S.World.viewOf(state)
 
 		-- 학자
 		view.scholars = {}

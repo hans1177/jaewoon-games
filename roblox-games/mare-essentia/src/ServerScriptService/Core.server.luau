@@ -42,6 +42,7 @@ local D = {
 	KnowledgeTree = require(Shared:WaitForChild("KnowledgeTree")),
 	HistoryEvents = require(Shared:WaitForChild("HistoryEvents")),
 	Stocks = require(Shared:WaitForChild("Stocks")),
+	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
 }
 
@@ -186,6 +187,10 @@ local function reply(state, ok, message)
 	if state then
 		S.History.tick(state)
 		S.Stock.tick(state)
+		local news = S.World.tick(state)
+		if #news > 0 then
+			result.message = (if result.message ~= "" then result.message .. "\n" else "") .. table.concat(news, "\n")
+		end
 		result.view = S.View.build(state, ctx)
 	end
 	return result

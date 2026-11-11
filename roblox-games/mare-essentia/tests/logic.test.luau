@@ -34,6 +34,7 @@ local D = {
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	Stocks = require("./Shared/Stocks"),
+	WorldEvents = require("./Shared/WorldEvents"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -2148,6 +2149,63 @@ do
 	local backV = S.State.sanitize(S.State.serialize(stY))
 	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
 	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
+	-- 세계 이벤트 (재해·행운)
+	local WE = D.WorldEvents
+	local regionIds = {}
+	for _, r in D.Regions.List do regionIds[r.id] = true end
+	local badData = 0
+	local kinds = { disaster = 0, fortune = 0 }
+	for _, e in WE.Events do
+		kinds[e.kind] += 1
+		for _, g in e.goods do if not D.Ports.Goods[g] then badData += 1; print("나쁜 상품", e.id, g) end end
+		for _, r in e.regions do if not regionIds[r] then badData += 1; print("나쁜 지역", e.id, r) end end
+		if not D.KnowledgeTree.DisciplineById[e.guard] then badData += 1; print("나쁜 학문", e.id, e.guard) end
+		if e.mult <= 0 or e.days <= 0 or e.frm > e.to then badData += 1 end
+	end
+	check("세계: 데이터가 올바름", badData == 0, tostring(badData))
+	check("세계: 재해와 행운이 모두 넉넉함", kinds.disaster >= 15 and kinds.fortune >= 12, kinds.disaster .. "/" .. kinds.fortune)
+	local stWd = newState("england")
+	stWd.portId = "london"
+	stWd.coins = 5000
+	for _ = 1, 60 do
+		stWd.day += 20
+		S.World.tick(stWd)
+	end
+	check("세계: 시간이 흐르면 사건이 쌓임", #stWd.world.log >= 12)
+	local nd, nf = 0, 0
+	for _, l in stWd.world.log do if l.kind == "disaster" then nd += 1 else nf += 1 end end
+	check("세계: 최근 기록에 재해와 행운이 섞임", nd > 0 and nf > 0, nd .. "/" .. nf)
+	check("세계: 시세 효과가 한도 안", #stWd.history.fx <= 40)
+	-- 피해와 완화
+	local stWe = newState("england")
+	stWe.portId = "london"
+	stWe.coins = 10000
+	stWe.world = nil
+	local fire0 = stWe.coins
+	local ev = WE.ById.earthquake
+	S.World.tick(stWe)
+	local w0 = S.World.mitigation(stWe, "architecture")
+	stWe.reported = {}
+	for _, nd2 in D.KnowledgeTree.Nodes do if nd2.disc == "architecture" then stWe.reported[nd2.id] = true end end
+	check("세계: 지식이 재해를 줄임", S.World.mitigation(stWe, "architecture") > w0)
+	stWe.portStages = { london = { guard = 5 } }
+	check("세계: 방어 건물이 재해를 더 줄임", S.World.mitigation(stWe, "architecture") <= 0.8 and S.World.mitigation(stWe, "architecture") > 0.4)
+	-- 구호
+	local stWf = newState("england")
+	stWf.portId = "london"
+	stWf.coins = 1000
+	S.World.tick(stWf)
+	stWf.world.active = { { id = "plague_wave", wid = 7, region = "europe", title = "유럽 역사", text = "", kind = "disaster", startDay = 0, endDay = stWf.day + 60 } }
+	table.insert(stWf.history.fx, { goods = { "camphor" }, regions = { "europe" }, mult = 1.35, untilDay = stWf.day + 60, wid = 7 })
+	local okA = act(stWf, "WorldAid", { index = 1 })
+	check("세계: 구호하면 명성과 시세 충격이 줄음", okA and stWf.fame > 0 and stWf.history.fx[#stWf.history.fx].untilDay <= stWf.day + 30 and stWf.coins == 850)
+	check("세계: 두 번 구호는 안 됨", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
+	stWf.world.active[1].aided = false
+	stWf.portId = "havana"
+	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
+	local backW = S.State.sanitize(S.State.serialize(stWd))
+	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
+	check("세계: 화면에 담김", S.View.build(stWd, ctx).world ~= nil)
 	-- 항구 건물 계통
 	local PB = D.PortBuildings
 	local pbBad = nil

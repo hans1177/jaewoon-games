@@ -3913,6 +3913,30 @@ local function renderCodexOverview()
 			return mkLabel(content, string.format("건물과 기술 사건은 시대순으로 열려요. 일찍 발견하고 보고하고, 학회·박람회·공동 발표를 하고, 어려운 퀘스트를 해내면 역사가 앞당겨져요. 지금 %.1f년 앞섬 (최대 %d년) · 이번 %d일 동안 앞당길 수 있는 양 %d/%d일. 앞서 갈수록, 짧은 기간에 몰아칠수록 덜 쌓여요.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 12, COLORS.muted, false)
 		end)
 	end
+	if view.world then
+		local wv = view.world
+		add(function() return mkHeader(content, string.format("세계 소식 · 재해와 행운 (구호 %d번)", wv.aided or 0)) end)
+		add(function() return mkLabel(content, "20일마다 세계 어딘가에서 재해나 행운이 닥쳐요. 그 지역 항구에 있으면 피해나 이득을 직접 받고, 아니어도 시세가 변해요. 해당 학문 지식과 방어 건물이 재해 피해를 줄여요.", 12, COLORS.muted, false) end)
+		if #wv.active == 0 then
+			add(function() return mkLabel(content, "지금 진행 중인 세계 사건이 없어요.", 12, COLORS.muted, false) end)
+		end
+		for _, a in wv.active do
+			add(function()
+				local sub = string.format("%s · %s — %d일 남음\n%s", a.region, if a.kind == "disaster" then "재해" else "행운", a.left, a.text)
+				if a.here and a.kind == "disaster" and a.cut then
+					sub ..= string.format("\n이 항구라면 대비로 피해 %d%% 감소", a.cut)
+				end
+				local btn = {}
+				if a.kind == "disaster" then
+					table.insert(btn, { text = if a.aided then "구호함" else string.format("구호 %d코인", wv.aidCost), color = COLORS.green, onClick = function() call("WorldAid", { index = a.index }) end, enabled = a.canAid })
+				end
+				return mkRow(content, (if a.kind == "disaster" then "⚠ " else "★ ") .. a.title .. (if a.here then "  [여기]" else ""), sub, btn, 100)
+			end)
+		end
+		for _, l in wv.log do
+			add(function() return mkLabel(content, string.format("%d년 %s (%s) — %s", l.year, l.title, if l.kind == "disaster" then "재해" else "행운", l.result), 12, COLORS.muted, false) end)
+		end
+	end
 	if view.history then
 		local hv = view.history
 		add(function() return mkHeader(content, string.format("역사의 분기점 (겪은 사건 %d / %d)", hv.seenCount or 0, hv.total or 0)) end)
