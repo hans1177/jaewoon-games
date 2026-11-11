@@ -5,6 +5,11 @@
       "n": 1,
       "lastAt": 1794372073844,
       "last": "FAILED"
+    },
+    "mare-essentia:sky-missing": {
+      "n": 1,
+      "lastAt": 1794373443851,
+      "last": "REJECTED"
     }
   },
   "merged": [],
@@ -15,8 +20,8 @@
   "providers": {
     "github-models:openai/gpt-4.1-mini": {
       "ok": 0,
-      "fail": 1,
-      "lastAt": 1794372073844
+      "fail": 2,
+      "lastAt": 1794373443850
     },
     "groq:llama-3.3-70b-versatile": {
       "ok": 0,
@@ -27,6 +32,21 @@
       "ok": 0,
       "fail": 1,
       "lastAt": 1794372073844
+    },
+    "groq:openai/gpt-oss-120b": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794373443850
+    },
+    "groq:openai/gpt-oss-20b": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794373443850
+    },
+    "openrouter:cohere/north-mini-code:free": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794373443850
     }
   }
 }
