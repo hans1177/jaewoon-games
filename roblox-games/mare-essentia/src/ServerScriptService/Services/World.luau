@@ -14,7 +14,7 @@ return function(D, S)
 
 	local function world(state)
 		if not state.world then
-			state.world = { rng = (state.startYear * 7 + state.day * 31) % 2147483646 + 1, nextDay = state.day + 15, cool = {}, active = {}, log = {}, aided = 0 }
+			state.world = { rng = (state.startYear * 7 + state.day * 31) % 2147483646 + 1, nextDay = state.day + 15, cool = {}, active = {}, log = {}, aided = 0, queue = {}, done = {} }
 		end
 		return state.world
 	end
@@ -65,11 +65,11 @@ return function(D, S)
 	end
 
 	-- 사건 하나를 일으킨다. 알림 문장 목록을 돌려준다.
-	local function fire(state, ev, region)
+	local function fire(state, ev, region, cause)
 		local w = world(state)
 		local rname = regionName(region)
 		local title = fmt(ev.title, rname)
-		local msgs = { string.format("[%s] %s — %s", if ev.kind == "disaster" then "재해" else "행운", title, fmt(ev.text, rname)) }
+		local msgs = { string.format("[%s] %s — %s%s", if ev.kind == "disaster" then "재해" else "행운", title, fmt(ev.text, rname), if cause then string.format(" (%s의 여파)", cause) else "") }
 		local wid = state.day * 100 + #w.log
 		table.insert(w.active, { id = ev.id, wid = wid, region = region, title = title, text = fmt(ev.text, rname), kind = ev.kind, startDay = state.day, endDay = state.day + ev.days })
 		w.cool[ev.id] = state.day
@@ -84,7 +84,14 @@ return function(D, S)
 		end
 		-- 내가 그 지역에 있으면 피해/이득
 		local result = "먼 곳의 소식"
-		if hereRegion(state) == region then
+		-- 이어질 사건 예약 (전쟁 뒤 기근, 기근 뒤 풍작 ...)
+		for _, f in ev.follow or {} do
+			if W.ById[f.id] and rand(w) < f.p then
+				table.insert(w.queue, { id = f.id, day = state.day + f.after, region = region, cause = title })
+			end
+		end
+		local exposed = if ev.port then state.portId == ev.port else hereRegion(state) == region
+		if exposed then
 			if ev.kind == "disaster" then
 				local cut = mitigation(state, ev.guard)
 				local loss = math.min(math.floor(state.coins * ev.pct * (1 - cut)), ev.mx)
@@ -120,7 +127,7 @@ return function(D, S)
 		local pool, total = {}, 0
 		for _, ev in W.Events do
 			local cool = w.cool[ev.id]
-			if year >= ev.frm and year <= ev.to and (not cool or state.day - cool >= 180) then
+			if not ev.year and year >= ev.frm and year <= ev.to and (not cool or state.day - cool >= 180) then
 				local wt = ev.w
 				if last and last == ev.kind then
 					wt *= 0.6
@@ -154,6 +161,35 @@ return function(D, S)
 			end
 		end
 		local msgs = {}
+		-- 실제 역사 속 재해·호재는 그 해가 되면 한 번 일어난다
+		for _, ev in W.Events do
+			if ev.year and not w.done[ev.id] and state.startYear + state.day / 365 >= ev.year + ((ev.month or 6) - 1) / 12 then
+				w.done[ev.id] = true
+				-- 시작 연도보다 한참 전의 일은 건너뛴다 (밀린 사건이 한꺼번에 쏟아지지 않게)
+				if ev.year + 1 >= state.startYear then
+					for _, m in fire(state, ev, ev.regions[1]) do
+						table.insert(msgs, m)
+					end
+				end
+			end
+		end
+		-- 예약된 후속 사건
+		for i = #w.queue, 1, -1 do
+			local q = w.queue[i]
+			if q.day <= state.day then
+				table.remove(w.queue, i)
+				local ev = W.ById[q.id]
+				local dup = false
+				for _, a in w.active do
+					if a.id == q.id and a.region == q.region then dup = true end
+				end
+				if ev and not dup then
+					for _, m in fire(state, ev, q.region, q.cause) do
+						table.insert(msgs, m)
+					end
+				end
+			end
+		end
 		local n = 0
 		while state.day >= w.nextDay and n < 3 do
 			w.nextDay += ROLL_DAYS

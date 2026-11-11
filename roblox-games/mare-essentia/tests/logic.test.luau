@@ -66,6 +66,251 @@ local function newState(nation)
 	return S.State.new(nation or "england", 1700)
 end
 
+-- 세계·인물·속도 검사는 따로 떼어 둔다 (한 곳에 모으면 타입 검사기가 감당하지 못한다)
+local function extraTests()
+	local S: any = Registry.S
+	local D: any = D
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
+	local HE: any = D.HistoryEvents
+	-- 역사의 속도
+	local stV = newState("england")
+	stV.portId = "london"
+	check("속도: 처음엔 앞당김이 없음", S.Pace.days(stV) == 0 and S.Pace.effYear(stV) == 1700)
+	check("속도: 쌓으면 앞당겨짐", S.Pace.add(stV, 10) == 10 and S.Pace.days(stV) == 10)
+	local g2 = S.Pace.add(stV, 100)
+	check("속도: 90일 한도(30일) 안에서만 쌓임", g2 == 20 and S.Pace.days(stV) == 30, tostring(g2))
+	check("속도: 한도가 차면 더 안 쌓임", S.Pace.add(stV, 50) == 0)
+	stV.day += 91
+	check("속도: 기간이 지나면 다시 쌓임", S.Pace.add(stV, 10) > 0)
+	stV.pace.days = 365 * 10
+	check("속도: 총 앞당김은 10년을 넘지 않음", S.Pace.add(stV, 100) == 0)
+	-- 앞당김이 사건 시기에 반영됨
+	local stX = newState("england")
+	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
+	S.History.tick(stX)
+	local before = stX.history.pending
+	stX.history.pending = nil
+	stX.history.seen = {}
+	stX.pace = { days = 365 * 10, window = 0, used = 0 }
+	S.History.tick(stX)
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
+	local fixedEv = newState("england")
+	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
+	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
+	fixedEv.history.seen = {}
+	for _, ev in HE.Events do if ev.accel or ev.year < 1756 then fixedEv.history.seen[ev.id] = 1 end end
+	S.History.tick(fixedEv)
+	check("속도: 정치·전쟁 사건은 앞당겨지지 않음", fixedEv.history.pending == nil, tostring(fixedEv.history.pending))
+	-- 지식 보고가 역사를 앞당김
+	local stY = newState("england")
+	stY.portId = "london"
+	stY.discovered.phy_buoyancy = true
+	act(stY, "ReportKnowledge", { scholarId = "newton" })
+	check("속도: 지식 보고로 역사가 앞당겨짐", S.Pace.days(stY) > 0)
+	local backV = S.State.sanitize(S.State.serialize(stY))
+	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
+	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
+	-- 인물과 학문·교역품·사건의 연결
+	local stL = newState("england")
+	stL.stats.visited = {}
+	check("연결: 기록이 없으면 보너스 없음", S.People.goodsBonus(stL, "tea") == 1 and S.People.discBonus(stL, { "navigation" }) == 0)
+	stL.stats.visited = { amsterdam = true, london = true, canton = true, edo = true }
+	stL.day = 365 * 70
+	check("연결: 인물을 기록하면 교역품 값 보너스", S.People.goodsBonus(stL, "tea") > 1 and S.People.goodsBonus(stL, "tea") <= 1.08)
+	check("연결: 학문 연구 보너스(상한 3%)", S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) > 0 and S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) <= 0.03 + 1e-9)
+	check("연결: 지식 서비스 교역품 값에 반영", S.Knowledge.goodsMult(stL, "tea") > 1)
+	check("연결: 사건에 얽힌 인물을 기록하면 인연", #S.People.eventPeople(stL, "great_fire") >= 1)
+	local mitL = S.World.mitigation(stL, "history")
+	stL.stats.visited = {}
+	check("연결: 기록한 인물이 재해 대비를 높임", mitL > S.World.mitigation(stL, "history"))
+	local sumP = S.View.build(stL, ctx).people
+	check("연결: 학문별 인물 수가 화면에 담김", sumP.byDisc.history ~= nil and sumP.byDisc.history.total > 3)
+	-- 인물 백과 퀘스트
+	local stQ = newState("england")
+	stQ.stats.visited = { amsterdam = true, london = true, canton = true, edo = true, lisbon = true, plymouth = true, seville = true, calicut = true }
+	stQ.day = 365 * 80
+	local q1 = D.Quests.ById.q_people_1
+	check("인물 퀘스트: 연속 퀘스트와 분야 퀘스트가 있음", q1 ~= nil and D.Quests.ById.q_people_2.after == "q_people_1" and D.Quests.ById.q_people_explorer.cat == "explorer")
+	check("인물 퀘스트: 진행도가 기록한 인물 수", S.Quest.progressAny(stQ, q1) == S.People.knownCount(stQ) and S.Quest.progressAny(stQ, q1) >= 5, S.Quest.progressAny(stQ, q1) .. "/" .. S.People.knownCount(stQ))
+	check("인물 퀘스트: 분야별 진행도", S.Quest.progressAny(stQ, D.Quests.ById.q_people_explorer) == S.People.catCount(stQ, "explorer") and S.People.catCount(stQ, "explorer") >= 3)
+	local coinsQ = stQ.coins
+	local msgsQ = {}
+	S.Quest.autoReport(stQ, msgsQ)
+	check("인물 퀘스트: 조건을 채우면 자동 보상", stQ.quests.done.q_people_1 == true and stQ.coins > coinsQ)
+	-- 인물 백과
+	local PE = D.People
+	local catOk = {}
+	for _, c in PE.Cats do catOk[c.id] = true end
+	local badP = 0
+	for _, p in PE.Curated do
+		if not catOk[p.cat] or p.born >= p.died or #p.bio < 6 then badP += 1; print("나쁜 인물", p.id) end
+		if p.via.port and not D.Ports.Ports[p.via.port] then badP += 1; print("나쁜 항구", p.id, p.via.port) end
+		if p.via.event and not D.HistoryEvents.ById[p.via.event] then badP += 1; print("나쁜 사건", p.id, p.via.event) end
+		if p.via.scholar then
+			local okS = false
+			for _, s in D.Scholars.Scholars do if s.id == p.via.scholar then okS = true end end
+			if not okS then badP += 1; print("나쁜 학자", p.id) end
+		end
+		if next(p.via) == nil then badP += 1; print("방법 없음", p.id) end
+	end
+	check("백과: 인물 데이터가 올바름", badP == 0, tostring(badP))
+	local goodCover = {}
+	for _, l in PE.Links do for _, g in l.goods or {} do goodCover[g] = true end end
+	local uncovered = 0
+	for gid in D.Ports.Goods do if not goodCover[gid] then uncovered += 1; print("연결 안 된 교역품", gid) end end
+	check("백과: 모든 교역품이 어떤 인물과 이어짐", uncovered == 0, tostring(uncovered))
+	local linkBad = 0
+	for id, l in PE.Links do
+		if not D.KnowledgeTree.DisciplineById[l.disc] then linkBad += 1; print("나쁜 학문", id) end
+		for _, g in l.goods or {} do if not D.Ports.Goods[g] then linkBad += 1; print("나쁜 상품", id, g) end end
+		for _, e in l.events or {} do if not D.HistoryEvents.ById[e] then linkBad += 1; print("나쁜 사건", id, e) end end
+	end
+	check("백과: 인물 연결(학문·교역품·사건)이 올바름", linkBad == 0, tostring(linkBad))
+	check("백과: 인물이 100명 넘음", #PE.Curated >= 100 and #S.People.all >= 140, #PE.Curated .. "/" .. #S.People.all)
+	local stP = newState("england")
+	stP.portId = "london"
+	local n0 = S.People.knownCount(stP)
+	stP.stats.visited.london = true
+	stP.day = 365 * 60 -- 1760년
+	check("백과: 항구를 방문하면 인물이 기록됨", S.People.knownCount(stP) > n0)
+	local stP2 = newState("england") -- 1700년
+	stP2.stats.visited.london = true
+	local shakespeareKnown, nelsonKnown = false, false
+	for _, p in S.People.all do
+		if p.id == "shakespeare" then shakespeareKnown = S.People.known(stP2, p) end
+		if p.id == "nelson" then nelsonKnown = S.People.known(stP2, p) end
+	end
+	check("백과: 시대가 오기 전엔 기록 안 됨(넬슨 1700년)", shakespeareKnown and not nelsonKnown)
+	stP2.scholarsMet.newton = true
+	stP2.history.seen.great_plague = 1
+	local vP = S.View.build(stP2, ctx).people
+	check("백과: 화면에 목록과 분야가 담김", vP and vP.total == #S.People.all and #vP.cats == #PE.Cats and #vP.list == vP.total)
+	local hiddenOk = true
+	for _, e in vP.list do if not e.known and (e.name ~= nil or e.bio ~= nil) then hiddenOk = false end end
+	check("백과: 모르는 인물은 이름을 숨김", hiddenOk)
+	stP2.coins = 0
+	check("백과: 모자란 인원으로 보상 못 받음", select(1, act(stP2, "PeopleClaim", { need = 150 })) == false)
+	local needTier = PE.Tiers[1].need
+	for _, p in S.People.all do
+		if S.People.knownCount(stP2) >= needTier then break end
+		stP2.scholarsMet[p.id] = true
+	end
+	local okC = act(stP2, "PeopleClaim", { need = needTier })
+	check("백과: 인원을 채우면 보상을 받고 한 번만", okC and stP2.coins == PE.Tiers[1].coins and select(1, act(stP2, "PeopleClaim", { need = needTier })) == false)
+	local backP = S.State.sanitize(S.State.serialize(stP2))
+	check("백과: 저장/불러오기", backP.peopleClaimed[tostring(needTier)] == true)
+	-- 세계 이벤트: 실제 재해·연쇄
+	local badW2 = 0
+	local fixedN = 0
+	for _, e in D.WorldEvents.Events do
+		for _, f in e.follow or {} do
+			if not D.WorldEvents.ById[f.id] or f.p <= 0 or f.p > 1 or f.after <= 0 then badW2 += 1; print("나쁜 연쇄", e.id, f.id) end
+		end
+		if e.year then
+			fixedN += 1
+			if not e.port or not D.Ports.Ports[e.port] or D.Regions.of(D.Ports.Ports[e.port]).id ~= e.regions[1] then badW2 += 1; print("나쁜 실제 사건", e.id) end
+		end
+	end
+	check("세계: 연쇄·실제 사건 데이터가 올바름", badW2 == 0 and fixedN >= 12, badW2 .. "/" .. fixedN)
+	local stFx = newState("england") -- 1700
+	stFx.portId = "marseille"
+	stFx.coins = 10000
+	stFx.day = (1721 - 1700) * 365
+	local newsFx = S.World.tick(stFx)
+	local gotPlague, gotEdo = false, false
+	for _, l in stFx.world.log do
+		if l.title == "마르세유 대역병" then gotPlague = true end
+		if l.title == "에도 메이레키 대화재" then gotEdo = true end
+	end
+	check("세계: 그 해가 되면 실제 재해가 항구에 닥침(마르세유 1720)", gotPlague and stFx.coins < 10000)
+	check("세계: 시작 연도 전의 실제 사건은 건너뜀(에도 1657)", not gotEdo and stFx.world.done.fx_edo_fire == true)
+	local stFx2 = newState("england")
+	stFx2.portId = "london"
+	stFx2.coins = 10000
+	stFx2.day = (1721 - 1700) * 365
+	S.World.tick(stFx2)
+	check("세계: 다른 항구에 있으면 직접 피해는 없음", stFx2.coins == 10000)
+	-- 연쇄: 지진은 화재·해일을, 기근은 풍작(회복)을 예약한다
+	local evEq, evFamine = D.WorldEvents.ById.earthquake, D.WorldEvents.ById.famine
+	local eqFollows, famineHeals = {}, false
+	for _, f in evEq.follow do eqFollows[f.id] = true end
+	for _, f in evFamine.follow do if f.id == "bumper_harvest" then famineHeals = true end end
+	check("세계: 지진 뒤 화재, 기근 뒤 풍작(회복)이 이어짐", eqFollows.harbor_fire == true and famineHeals)
+	-- 후속 사건 실행: 큐에 넣으면 날짜가 되어 일어남
+	local stQ2 = newState("england")
+	stQ2.portId = "london"
+	S.World.tick(stQ2)
+	table.insert(stQ2.world.queue, { id = "harbor_fire", day = stQ2.day + 3, region = "europe", cause = "테스트 지진" })
+	stQ2.day += 3
+	local newsQ = S.World.tick(stQ2)
+	local sawFire = false
+	for _, m in newsQ do if string.find(m, "테스트 지진의 여파", 1, true) then sawFire = true end end
+	check("세계: 후속 사건이 날짜가 되면 일어남", sawFire and #stQ2.world.queue == 0)
+	local backQ = S.State.sanitize(S.State.serialize(stFx))
+	check("세계: 실제 사건 기록이 저장됨", backQ.world.done.fx_marseille_plague == true)
+	-- 세계 이벤트 (재해·행운)
+	local WE = D.WorldEvents
+	local regionIds = {}
+	for _, r in D.Regions.List do regionIds[r.id] = true end
+	local badData = 0
+	local kinds = { disaster = 0, fortune = 0 }
+	for _, e in WE.Events do
+		kinds[e.kind] += 1
+		for _, g in e.goods do if not D.Ports.Goods[g] then badData += 1; print("나쁜 상품", e.id, g) end end
+		for _, r in e.regions do if not regionIds[r] then badData += 1; print("나쁜 지역", e.id, r) end end
+		if not D.KnowledgeTree.DisciplineById[e.guard] then badData += 1; print("나쁜 학문", e.id, e.guard) end
+		if e.mult <= 0 or e.days <= 0 or e.frm > e.to then badData += 1 end
+	end
+	check("세계: 데이터가 올바름", badData == 0, tostring(badData))
+	check("세계: 재해와 행운이 모두 넉넉함", kinds.disaster >= 15 and kinds.fortune >= 12, kinds.disaster .. "/" .. kinds.fortune)
+	local stWd = newState("england")
+	stWd.portId = "london"
+	stWd.coins = 5000
+	for _ = 1, 60 do
+		stWd.day += 20
+		S.World.tick(stWd)
+	end
+	check("세계: 시간이 흐르면 사건이 쌓임", #stWd.world.log >= 12)
+	local nd, nf = 0, 0
+	for _, l in stWd.world.log do if l.kind == "disaster" then nd += 1 else nf += 1 end end
+	check("세계: 최근 기록에 재해와 행운이 섞임", nd > 0 and nf > 0, nd .. "/" .. nf)
+	check("세계: 시세 효과가 한도 안", #stWd.history.fx <= 40)
+	-- 피해와 완화
+	local stWe = newState("england")
+	stWe.portId = "london"
+	stWe.coins = 10000
+	stWe.world = nil
+	local fire0 = stWe.coins
+	local ev = WE.ById.earthquake
+	S.World.tick(stWe)
+	local w0 = S.World.mitigation(stWe, "architecture")
+	stWe.reported = {}
+	for _, nd2 in D.KnowledgeTree.Nodes do if nd2.disc == "architecture" then stWe.reported[nd2.id] = true end end
+	check("세계: 지식이 재해를 줄임", S.World.mitigation(stWe, "architecture") > w0)
+	stWe.portStages = { london = { guard = 5 } }
+	check("세계: 방어 건물이 재해를 더 줄임", S.World.mitigation(stWe, "architecture") <= 0.8 and S.World.mitigation(stWe, "architecture") > 0.4)
+	-- 구호
+	local stWf = newState("england")
+	stWf.portId = "london"
+	stWf.coins = 1000
+	S.World.tick(stWf)
+	stWf.world.active = { { id = "plague_wave", wid = 7, region = "europe", title = "유럽 역사", text = "", kind = "disaster", startDay = 0, endDay = stWf.day + 60 } }
+	table.insert(stWf.history.fx, { goods = { "camphor" }, regions = { "europe" }, mult = 1.35, untilDay = stWf.day + 60, wid = 7 })
+	local okA = act(stWf, "WorldAid", { index = 1 })
+	check("세계: 구호하면 명성과 시세 충격이 줄음", okA and stWf.fame > 0 and stWf.history.fx[#stWf.history.fx].untilDay <= stWf.day + 30 and stWf.coins == 850)
+	check("세계: 두 번 구호는 안 됨", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
+	stWf.world.active[1].aided = false
+	stWf.portId = "havana"
+	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
+	local backW = S.State.sanitize(S.State.serialize(stWd))
+	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
+	check("세계: 화면에 담김", S.View.build(stWd, ctx).world ~= nil)
+end
+
+
 -- 1. 데이터 무결성 ---------------------------------------------------
 do
 	local produced, demanded = {}, {}
@@ -2112,178 +2357,7 @@ do
 	stH.day += 11
 	S.History.tick(stH)
 	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
-	-- 역사의 속도
-	local stV = newState("england")
-	stV.portId = "london"
-	check("속도: 처음엔 앞당김이 없음", S.Pace.days(stV) == 0 and S.Pace.effYear(stV) == 1700)
-	check("속도: 쌓으면 앞당겨짐", S.Pace.add(stV, 10) == 10 and S.Pace.days(stV) == 10)
-	local g2 = S.Pace.add(stV, 100)
-	check("속도: 90일 한도(30일) 안에서만 쌓임", g2 == 20 and S.Pace.days(stV) == 30, tostring(g2))
-	check("속도: 한도가 차면 더 안 쌓임", S.Pace.add(stV, 50) == 0)
-	stV.day += 91
-	check("속도: 기간이 지나면 다시 쌓임", S.Pace.add(stV, 10) > 0)
-	stV.pace.days = 365 * 10
-	check("속도: 총 앞당김은 10년을 넘지 않음", S.Pace.add(stV, 100) == 0)
-	-- 앞당김이 사건 시기에 반영됨
-	local stX = newState("england")
-	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
-	S.History.tick(stX)
-	local before = stX.history.pending
-	stX.history.pending = nil
-	stX.history.seen = {}
-	stX.pace = { days = 365 * 10, window = 0, used = 0 }
-	S.History.tick(stX)
-	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
-	local fixedEv = newState("england")
-	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
-	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
-	fixedEv.history.seen = {}
-	for _, ev in HE.Events do if ev.accel or ev.year < 1756 then fixedEv.history.seen[ev.id] = 1 end end
-	S.History.tick(fixedEv)
-	check("속도: 정치·전쟁 사건은 앞당겨지지 않음", fixedEv.history.pending == nil, tostring(fixedEv.history.pending))
-	-- 지식 보고가 역사를 앞당김
-	local stY = newState("england")
-	stY.portId = "london"
-	stY.discovered.phy_buoyancy = true
-	act(stY, "ReportKnowledge", { scholarId = "newton" })
-	check("속도: 지식 보고로 역사가 앞당겨짐", S.Pace.days(stY) > 0)
-	local backV = S.State.sanitize(S.State.serialize(stY))
-	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
-	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
-	-- 인물과 학문·교역품·사건의 연결
-	local stL = newState("england")
-	stL.stats.visited = {}
-	check("연결: 기록이 없으면 보너스 없음", S.People.goodsBonus(stL, "tea") == 1 and S.People.discBonus(stL, { "navigation" }) == 0)
-	stL.stats.visited = { amsterdam = true, london = true, canton = true, edo = true }
-	stL.day = 365 * 70
-	check("연결: 인물을 기록하면 교역품 값 보너스", S.People.goodsBonus(stL, "tea") > 1 and S.People.goodsBonus(stL, "tea") <= 1.08)
-	check("연결: 학문 연구 보너스(상한 3%)", S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) > 0 and S.People.discBonus(stL, { "physics", "history", "commerce", "art" }) <= 0.03 + 1e-9)
-	check("연결: 지식 서비스 교역품 값에 반영", S.Knowledge.goodsMult(stL, "tea") > 1)
-	check("연결: 사건에 얽힌 인물을 기록하면 인연", #S.People.eventPeople(stL, "great_fire") >= 1)
-	local mitL = S.World.mitigation(stL, "history")
-	stL.stats.visited = {}
-	check("연결: 기록한 인물이 재해 대비를 높임", mitL > S.World.mitigation(stL, "history"))
-	local sumP = S.View.build(stL, ctx).people
-	check("연결: 학문별 인물 수가 화면에 담김", sumP.byDisc.history ~= nil and sumP.byDisc.history.total > 3)
-	-- 인물 백과 퀘스트
-	local stQ = newState("england")
-	stQ.stats.visited = { amsterdam = true, london = true, canton = true, edo = true, lisbon = true, plymouth = true, seville = true, calicut = true }
-	stQ.day = 365 * 80
-	local q1 = D.Quests.ById.q_people_1
-	check("인물 퀘스트: 연속 퀘스트와 분야 퀘스트가 있음", q1 ~= nil and D.Quests.ById.q_people_2.after == "q_people_1" and D.Quests.ById.q_people_explorer.cat == "explorer")
-	check("인물 퀘스트: 진행도가 기록한 인물 수", S.Quest.progressAny(stQ, q1) == S.People.knownCount(stQ) and S.Quest.progressAny(stQ, q1) >= 5, S.Quest.progressAny(stQ, q1) .. "/" .. S.People.knownCount(stQ))
-	check("인물 퀘스트: 분야별 진행도", S.Quest.progressAny(stQ, D.Quests.ById.q_people_explorer) == S.People.catCount(stQ, "explorer") and S.People.catCount(stQ, "explorer") >= 3)
-	local coinsQ = stQ.coins
-	local msgsQ = {}
-	S.Quest.autoReport(stQ, msgsQ)
-	check("인물 퀘스트: 조건을 채우면 자동 보상", stQ.quests.done.q_people_1 == true and stQ.coins > coinsQ)
-	-- 인물 백과
-	local PE = D.People
-	local catOk = {}
-	for _, c in PE.Cats do catOk[c.id] = true end
-	local badP = 0
-	for _, p in PE.Curated do
-		if not catOk[p.cat] or p.born >= p.died or #p.bio < 6 then badP += 1; print("나쁜 인물", p.id) end
-		if p.via.port and not D.Ports.Ports[p.via.port] then badP += 1; print("나쁜 항구", p.id, p.via.port) end
-		if p.via.event and not D.HistoryEvents.ById[p.via.event] then badP += 1; print("나쁜 사건", p.id, p.via.event) end
-		if p.via.scholar then
-			local okS = false
-			for _, s in D.Scholars.Scholars do if s.id == p.via.scholar then okS = true end end
-			if not okS then badP += 1; print("나쁜 학자", p.id) end
-		end
-		if next(p.via) == nil then badP += 1; print("방법 없음", p.id) end
-	end
-	check("백과: 인물 데이터가 올바름", badP == 0, tostring(badP))
-	check("백과: 인물이 100명 넘음", #PE.Curated >= 100 and #S.People.all >= 140, #PE.Curated .. "/" .. #S.People.all)
-	local stP = newState("england")
-	stP.portId = "london"
-	local n0 = S.People.knownCount(stP)
-	stP.stats.visited.london = true
-	stP.day = 365 * 60 -- 1760년
-	check("백과: 항구를 방문하면 인물이 기록됨", S.People.knownCount(stP) > n0)
-	local stP2 = newState("england") -- 1700년
-	stP2.stats.visited.london = true
-	local shakespeareKnown, nelsonKnown = false, false
-	for _, p in S.People.all do
-		if p.id == "shakespeare" then shakespeareKnown = S.People.known(stP2, p) end
-		if p.id == "nelson" then nelsonKnown = S.People.known(stP2, p) end
-	end
-	check("백과: 시대가 오기 전엔 기록 안 됨(넬슨 1700년)", shakespeareKnown and not nelsonKnown)
-	stP2.scholarsMet.newton = true
-	stP2.history.seen.great_plague = 1
-	local vP = S.View.build(stP2, ctx).people
-	check("백과: 화면에 목록과 분야가 담김", vP and vP.total == #S.People.all and #vP.cats == #PE.Cats and #vP.list == vP.total)
-	local hiddenOk = true
-	for _, e in vP.list do if not e.known and (e.name ~= nil or e.bio ~= nil) then hiddenOk = false end end
-	check("백과: 모르는 인물은 이름을 숨김", hiddenOk)
-	stP2.coins = 0
-	check("백과: 모자란 인원으로 보상 못 받음", select(1, act(stP2, "PeopleClaim", { need = 150 })) == false)
-	local needTier = PE.Tiers[1].need
-	for _, p in S.People.all do
-		if S.People.knownCount(stP2) >= needTier then break end
-		stP2.scholarsMet[p.id] = true
-	end
-	local okC = act(stP2, "PeopleClaim", { need = needTier })
-	check("백과: 인원을 채우면 보상을 받고 한 번만", okC and stP2.coins == PE.Tiers[1].coins and select(1, act(stP2, "PeopleClaim", { need = needTier })) == false)
-	local backP = S.State.sanitize(S.State.serialize(stP2))
-	check("백과: 저장/불러오기", backP.peopleClaimed[tostring(needTier)] == true)
-	-- 세계 이벤트 (재해·행운)
-	local WE = D.WorldEvents
-	local regionIds = {}
-	for _, r in D.Regions.List do regionIds[r.id] = true end
-	local badData = 0
-	local kinds = { disaster = 0, fortune = 0 }
-	for _, e in WE.Events do
-		kinds[e.kind] += 1
-		for _, g in e.goods do if not D.Ports.Goods[g] then badData += 1; print("나쁜 상품", e.id, g) end end
-		for _, r in e.regions do if not regionIds[r] then badData += 1; print("나쁜 지역", e.id, r) end end
-		if not D.KnowledgeTree.DisciplineById[e.guard] then badData += 1; print("나쁜 학문", e.id, e.guard) end
-		if e.mult <= 0 or e.days <= 0 or e.frm > e.to then badData += 1 end
-	end
-	check("세계: 데이터가 올바름", badData == 0, tostring(badData))
-	check("세계: 재해와 행운이 모두 넉넉함", kinds.disaster >= 15 and kinds.fortune >= 12, kinds.disaster .. "/" .. kinds.fortune)
-	local stWd = newState("england")
-	stWd.portId = "london"
-	stWd.coins = 5000
-	for _ = 1, 60 do
-		stWd.day += 20
-		S.World.tick(stWd)
-	end
-	check("세계: 시간이 흐르면 사건이 쌓임", #stWd.world.log >= 12)
-	local nd, nf = 0, 0
-	for _, l in stWd.world.log do if l.kind == "disaster" then nd += 1 else nf += 1 end end
-	check("세계: 최근 기록에 재해와 행운이 섞임", nd > 0 and nf > 0, nd .. "/" .. nf)
-	check("세계: 시세 효과가 한도 안", #stWd.history.fx <= 40)
-	-- 피해와 완화
-	local stWe = newState("england")
-	stWe.portId = "london"
-	stWe.coins = 10000
-	stWe.world = nil
-	local fire0 = stWe.coins
-	local ev = WE.ById.earthquake
-	S.World.tick(stWe)
-	local w0 = S.World.mitigation(stWe, "architecture")
-	stWe.reported = {}
-	for _, nd2 in D.KnowledgeTree.Nodes do if nd2.disc == "architecture" then stWe.reported[nd2.id] = true end end
-	check("세계: 지식이 재해를 줄임", S.World.mitigation(stWe, "architecture") > w0)
-	stWe.portStages = { london = { guard = 5 } }
-	check("세계: 방어 건물이 재해를 더 줄임", S.World.mitigation(stWe, "architecture") <= 0.8 and S.World.mitigation(stWe, "architecture") > 0.4)
-	-- 구호
-	local stWf = newState("england")
-	stWf.portId = "london"
-	stWf.coins = 1000
-	S.World.tick(stWf)
-	stWf.world.active = { { id = "plague_wave", wid = 7, region = "europe", title = "유럽 역사", text = "", kind = "disaster", startDay = 0, endDay = stWf.day + 60 } }
-	table.insert(stWf.history.fx, { goods = { "camphor" }, regions = { "europe" }, mult = 1.35, untilDay = stWf.day + 60, wid = 7 })
-	local okA = act(stWf, "WorldAid", { index = 1 })
-	check("세계: 구호하면 명성과 시세 충격이 줄음", okA and stWf.fame > 0 and stWf.history.fx[#stWf.history.fx].untilDay <= stWf.day + 30 and stWf.coins == 850)
-	check("세계: 두 번 구호는 안 됨", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
-	stWf.world.active[1].aided = false
-	stWf.portId = "havana"
-	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
-	local backW = S.State.sanitize(S.State.serialize(stWd))
-	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
-	check("세계: 화면에 담김", S.View.build(stWd, ctx).world ~= nil)
+	extraTests()
 	-- 항구 건물 계통
 	local PB = D.PortBuildings
 	local pbBad = nil

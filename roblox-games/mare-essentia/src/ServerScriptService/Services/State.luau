@@ -476,10 +476,20 @@ return function(D)
 		end
 		if type(saved.world) == "table" then
 			local wv = saved.world
-			local w = { rng = math.floor(num(wv.rng, 1, 1, 2147483646)), nextDay = math.floor(num(wv.nextDay, 0, 0, 1e9)), cool = {}, active = {}, log = {}, aided = math.floor(num(wv.aided, 0, 0, 1e6)) }
+			local w = { rng = math.floor(num(wv.rng, 1, 1, 2147483646)), nextDay = math.floor(num(wv.nextDay, 0, 0, 1e9)), cool = {}, active = {}, log = {}, aided = math.floor(num(wv.aided, 0, 0, 1e6)), queue = {}, done = {} }
 			if type(wv.cool) == "table" then
 				for id, d in wv.cool do
 					if type(id) == "string" and #id <= 40 and type(d) == "number" then w.cool[id] = d end
+				end
+			end
+			if type(wv.done) == "table" then
+				for id, v in wv.done do
+					if v == true and type(id) == "string" and D.WorldEvents.ById[id] then w.done[id] = true end
+				end
+			end
+			for _, q in type(wv.queue) == "table" and wv.queue or {} do
+				if type(q) == "table" and type(q.id) == "string" and D.WorldEvents.ById[q.id] and type(q.day) == "number" and type(q.region) == "string" and #w.queue < 20 then
+					table.insert(w.queue, { id = q.id, day = q.day, region = string.sub(q.region, 1, 24), cause = if type(q.cause) == "string" then string.sub(q.cause, 1, 60) else nil })
 				end
 			end
 			for _, a in type(wv.active) == "table" and wv.active or {} do
