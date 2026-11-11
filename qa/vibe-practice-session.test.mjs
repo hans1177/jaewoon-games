@@ -5,7 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {blenderAvailable} from '../tools/vibe-variation-gym.mjs';
-import {runPracticeSession,pickPracticeParents} from '../tools/vibe-practice-session.mjs';
+import {runPracticeSession,pickPracticeParents,selectGameAssetPractice} from '../tools/vibe-practice-session.mjs';
+import {inspectVibe59ExistingGameAssets} from '../tools/vibe59-existing-game-assets.mjs';
 import {loop} from '../tools/vibe-practice-loop.mjs';
 import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
 
@@ -64,6 +65,8 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.equal(learnedUi['inventory_layout:strong'].bindingIssues,0);
   assert.ok(session.light&&Number.isFinite(session.light.best),JSON.stringify(session.light));
   assert.ok(session.bake&&typeof session.bake.pass==='boolean',JSON.stringify(session.bake));
+  assert.equal(session.gameAssetOptimization.optimizationApplied,false);
+  assert.equal(session.gameAssetOptimization.runtimeVerified,false);
   assert.ok(fs.existsSync(path.join(out,'session.json')));
   const learned=JSON.parse(fs.readFileSync(lights,'utf8'));
   assert.ok(Object.values(learned)[0].top.length>=1);
@@ -78,4 +81,35 @@ test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 �
   assert.match(y,/cron: '\*\/5 \* \* \* \*'/);                    // 안전망
   assert.match(y,/group: vibe-variation-practice[\s\S]*?cancel-in-progress: false/); // 겹치지 않음
   assert.ok(y.indexOf('Publish stats to vibe-gym-data')<y.indexOf('Chain the next run'));  // 학습 저장 뒤에 예약
+});
+
+
+// [게임별 자산 연습] 오직 기존 게임 원본을 읽고 실제 파일 중복 후보를 측정한다.
+test('automatic game asset practice rotates approved game scope without touching another game',t=>{
+  const root=tmp();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const first=path.join(root,'roblox-games','practice-a','assets');
+  const other=path.join(root,'roblox-games','practice-b','assets');
+  fs.mkdirSync(first,{recursive:true});fs.mkdirSync(other,{recursive:true});
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[
+    {id:'practice-a',lifecycleState:'ACTIVE'}, {id:'practice-b',lifecycleState:'ACTIVE'},
+    {id:'../../private',lifecycleState:'ACTIVE'}]}));
+  const source=Buffer.from('approved-unchanged-mesh');
+  fs.writeFileSync(path.join(first,'piece.glb'),source);
+  fs.writeFileSync(path.join(first,'piece-copy.glb'),source);
+  fs.writeFileSync(path.join(other,'different.glb'),Buffer.from('independent-other-game'));
+  const choice0=selectGameAssetPractice({repoRoot:root,seed:0});
+  const choice1=selectGameAssetPractice({repoRoot:root,seed:1});
+  assert.deepEqual([choice0.gameId,choice1.gameId],['practice-a','practice-b']);
+  assert.equal(choice0.target,'roblox');
+  const inspected=inspectVibe59ExistingGameAssets({
+    order:{selectedTask:{gameId:choice0.gameId}},repositoryRoot:root,
+    sourceRoot:choice0.sourceRoot,target:choice0.target
+  });
+  assert.equal(inspected.optimization.scannedAssetCount,2);
+  assert.equal(inspected.optimization.duplicateGroups.length,1);
+  assert.equal(inspected.optimization.optimizationApplied,false);
+  assert.equal(inspected.optimization.runtimeVerified,false);
+  assert.deepEqual(fs.readFileSync(path.join(first,'piece.glb')),source);
+  assert.equal(fs.readFileSync(path.join(other,'different.glb'),'utf8'),'independent-other-game');
+  assert.equal(selectGameAssetPractice({repoRoot:path.join(root,'empty'),seed:0}),null);
 });

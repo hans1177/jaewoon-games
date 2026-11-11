@@ -11,6 +11,7 @@ import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
+import {inspectVibe59ExistingGameAssets} from './vibe59-existing-game-assets.mjs';
 
 // 이번 회차에 쓸 부모 두 개(조명용·굽기용)를 시드로 고른다. 레지스트리의 승인된 CC0 + 오너가 승인한 로컬 라이브러리.
 export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,count=2){
@@ -22,9 +23,63 @@ export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC
   return chooseDiverseParents(shuffled,count).map(p=>({id:p.id,family:p.family,file:abs(p)}));
 }
 
+// [게임별 자산 실측 연습] 기존 카탈로그의 활성 게임만 읽고 Roblox를 우선 순환한다.
+ // 한 회차에 한 게임만 조사하며 이미지/모델 원본이나 게임 소스는 변경하지 않는다.
+export function selectGameAssetPractice({repoRoot=process.cwd(),seed=1}={}){
+  const catalogPath=path.join(repoRoot,'game-catalog.json');
+  if(!fs.existsSync(catalogPath))return null;
+  const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
+  const stopped=new Set(catalog.ownerStoppedGameIds||[]);
+  const games=Array.isArray(catalog.games)?catalog.games:[];
+  const candidates=[];
+  for(const target of ['roblox','web']){
+    for(const row of games){
+      const gameId=String(row?.id||'');
+      if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)||stopped.has(gameId)
+        ||row?.lifecycleState==='OWNER_HOLD'||row?.lifecycleState==='STOPPED')continue;
+      const root=path.resolve(repoRoot,target+'-games',gameId);
+      if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())continue;
+      candidates.push({gameId,target,sourceRoot:root});
+    }
+    if(candidates.length)break;
+  }
+  if(!candidates.length)return null;
+  const index=((Math.trunc(Number(seed)||0)%candidates.length)+candidates.length)%candidates.length;
+  return candidates[index];
+}
+
 export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,variants=4,out='build/practice',statsPath=null,lightsPath=null,light=true,bake=true,lightCandidates=8,lightRounds=2}={}){
   const outDir=path.resolve(repoRoot,out);fs.mkdirSync(outDir,{recursive:true});
   const session={seed,at:new Date().toISOString()};
+  // [자산 최적화 비교] 중복 해시·해상도·초기 정적 참조를 게임별 기존 감사기로 측정한다.
+  // 미확인 로블록스 Cloud ID와 모바일 FPS/메모리는 추정해 PASS 처리하지 않는다.
+  try{
+    const scoped=selectGameAssetPractice({repoRoot,seed});
+    if(!scoped){
+      session.gameAssetOptimization={status:'NO_ELIGIBLE_GAME',optimizationApplied:false,
+        runtimeVerified:false,gameApplied:false};
+    }else{
+      const report=inspectVibe59ExistingGameAssets({
+        order:{selectedTask:{gameId:scoped.gameId}},repositoryRoot:repoRoot,
+        sourceRoot:scoped.sourceRoot,target:scoped.target
+      });
+      const result=report.optimization||{};
+      session.gameAssetOptimization={
+        status:'AUDITED',gameId:scoped.gameId,target:scoped.target,
+        scannedAssetCount:result.scannedAssetCount||0,scanComplete:result.scanComplete===true,
+        duplicateCandidateGroups:(result.duplicateGroups||[]).length,
+        oversizedTextureCandidates:(result.oversizedTextures||[]).length,
+        largeFileCandidates:(result.largeFiles||[]).length,
+        startupReferenceCandidates:(result.initialStaticAssets||[]).length,
+        referenceCoverage:result.referenceCoverage||'UNKNOWN',
+        optimizationApplied:false,runtimeVerified:false,gameApplied:false,
+        sourceWrite:false,actualMobileMeasurements:false
+      };
+    }
+  }catch(error){
+    session.gameAssetOptimization={status:'AUDIT_FAILED',reason:String(error?.message||error).slice(0,120),
+      optimizationApplied:false,runtimeVerified:false,gameApplied:false,sourceWrite:false};
+  }
   const gym=runGymSession({repoRoot,parents,variants,seed,out:path.join(out,'gym'),statsPath});
   const tally={};for(const r of gym.ledger)tally[r.verdict]=(tally[r.verdict]||0)+1;
   session.gym={children:gym.ledger.length,tally,
