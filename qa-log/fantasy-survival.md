@@ -36,3 +36,5 @@
 - 2026-11-11 19:19(KST, run 42996877932) 바이브: 점검 정상 복구 — 클릭 30/30, 프레임 31장, errors 비어 있음(MCP 다시 켜진 것으로 봄). Client/Server LOGS 'permission for Asset' 는 같은 ID 들만 남음(Client 4개: 108733651071071·120799643869835·71208441396858·101876091951426, Server: villageRoof·villageDoor·villageStoneWall·item_star·item_potion5_filled). 원인은 여전히 시크릿(ROBLOX_OPEN_CLOUD_API_KEY/CREATOR_USER_ID) 비어 있어 재업로드 불가 → 사람 작업. 코드 수정 없음, 재배포 안 함.
 
 - 2026-11-11 21:29(KST, run 43014462080, 21:25 촬영) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 설정 화면 jpg 직접 확인: 글자·버튼 정상. 코드 수정 없음, 재배포 안 함. 'permission for Asset' 는 시크릿 복구 대기(사람 작업) 그대로.
+
+- 2026-11-11 22:20(KST, 13:16Z 촬영) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 'permission for Asset' 는 같은 ID 들 그대로(시크릿 ROBLOX_OPEN_CLOUD_API_KEY/CREATOR_USER_ID 복구 대기, 사람 작업). 코드 수정 없음, 재배포 안 함.
