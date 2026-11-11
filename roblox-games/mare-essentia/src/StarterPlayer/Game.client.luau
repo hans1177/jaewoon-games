@@ -266,7 +266,20 @@ local function addItemMotion(entry)
 	end)
 end
 
-local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt)
+local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
+	if kind == "Portraits" and portraitOffset and AssetIds["Portraits/" .. asset] then
+		local portrait = Instance.new("ImageLabel")
+		portrait.Size = UDim2.fromOffset(px, px)
+		portrait.BorderSizePixel = 0
+		portrait.BackgroundTransparency = 1
+		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
+		portrait.ImageRectOffset = portraitOffset
+		portrait.ImageRectSize = Vector2.new(256, 336)
+		portrait.ScaleType = Enum.ScaleType.Crop
+		corner(portrait, 8)
+		portrait.Parent = parent
+		return portrait
+	end
 	-- [원본 재사용] 작은 목록은 승인 Image 2.5D 카드, 상품 상세는 기존 Cargo 3D 메시.
 	if kind == "Cargo" and px <= 60 and smallArt and AssetIds[smallArt] then
 		kind, asset = string.match(smallArt, "^(%w+)/(.+)$")
@@ -405,8 +418,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt)
 end
 
 -- 줄(row) 왼쪽에 아이콘을 붙이고 글자 상자를 오른쪽으로 민다
-local function withIcon(row, kind, asset, tint, px)
-	local icon = modelIcon(row, kind, asset, tint, px)
+local function withIcon(row, kind, asset, tint, px, portraitOffset)
+	local icon = modelIcon(row, kind, asset, tint, px, nil, nil, portraitOffset)
 	icon.Position = UDim2.new(0, 8, 0.5, -px / 2)
 	local box = row:FindFirstChildWhichIsA("Frame")
 	if box then
@@ -643,6 +656,23 @@ local PORTRAIT_TILE = {
 	scholar = Vector2.new(PORTRAIT_SIZE.X, PORTRAIT_SIZE.Y),
 	hero = Vector2.new(PORTRAIT_SIZE.X * 2, PORTRAIT_SIZE.Y),
 }
+local FACILITY_ATLAS = AssetIds["Portraits/crew_facilities"]
+local FACILITY_TILE = {
+	merchant = Vector2.new(256, 336), harbor = Vector2.new(512, 336),
+	yard = Vector2.new(0, 672), tavern = Vector2.new(256, 672), scholar = Vector2.new(512, 672),
+}
+local COMPANION_PORTRAIT = {}
+for atlas, ids in {
+	crew_facilities = { "t_navigator", "t_gunner", "t_purser", "t_surgeon" },
+	crew_nations = { "n_england", "n_netherlands", "n_france", "n_portugal", "n_ottoman", "n_swahili", "n_malabar", "n_japan", "n_new_spain" },
+} do
+	if AssetIds["Portraits/" .. atlas] then
+		for index, id in ids do
+			local cell = index - 1
+			COMPANION_PORTRAIT[id] = { atlas = atlas, offset = Vector2.new(cell % 3 * 256, math.floor(cell / 3) * 336) }
+		end
+	end
+end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
 	["주점"] = "tavern", ["학자의 서재"] = "scholar",
@@ -653,7 +683,8 @@ local HERO_ATLAS = AssetIds["Portraits/heroes"]
 local HERO_SIZE = Vector2.new(256, 336)
 -- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
 -- 외형이 안 맞는 국가 주인공은 기존에 등록된 고유 초상화를 보존한다.
-local HERO_NEW_ATLAS = AssetIds["Portraits/heroes_new"]
+local HERO_PERIOD_ATLAS = AssetIds["Portraits/heroes_period"]
+local HERO_NEW_ATLAS = HERO_PERIOD_ATLAS or AssetIds["Portraits/heroes_new"]
 local HERO_NEW_SIZE = Vector2.new(256, 336)
 local HERO_NEW_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너: 해류 관측 학자
@@ -694,9 +725,10 @@ local function setPortrait(groupName)
 	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
 	local heroTile = if heroNation then HERO_TILE[heroNation] else nil
-	local newHeroTile = if heroNation and HERO_NEW_ATLAS then HERO_NEW_TILE[heroNation] else nil
+	local newHeroTile = if heroNation and HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[heroNation] else nil
 	local imageId = if newHeroTile then HERO_NEW_ATLAS
 		elseif heroTile and HERO_ATLAS then HERO_ATLAS
+		elseif tile and FACILITY_ATLAS then FACILITY_ATLAS
 		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
 		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
@@ -704,10 +736,11 @@ local function setPortrait(groupName)
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
 	portraitImage.ImageRectOffset = if newHeroTile then newHeroTile
 		elseif imageId == HERO_ATLAS and heroTile then heroTile
+		elseif imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
 		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else Vector2.zero
 	portraitImage.ImageRectSize = if newHeroTile then HERO_NEW_SIZE
 		elseif imageId == HERO_ATLAS and heroTile then HERO_SIZE
-		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_SIZE else Vector2.zero
+		elseif tile and (imageId == FACILITY_ATLAS or imageId == PORTRAIT_ATLAS) then PORTRAIT_SIZE else Vector2.zero
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -1818,7 +1851,7 @@ end
 
 -- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
 local function heroPortrait(parent, nationId, w, h)
-	local newTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[nationId] else nil
+	local newTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[nationId] else nil
 	local tile = newTile or HERO_TILE[nationId]
 	local atlas = if newTile then HERO_NEW_ATLAS else HERO_ATLAS
 	local size = if newTile then HERO_NEW_SIZE else HERO_SIZE
@@ -2480,7 +2513,10 @@ local function renderHarbor()
 				local model = COMPANION_MODEL[c.id]
 				local scholarId = string.match(c.id, "^c_(.+)$")
 				-- 실존 학자는 검증되어 등록된 당대 초상화가 있으면 모델보다 우선한다.
-				if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				local portrait = COMPANION_PORTRAIT[c.id]
+				if portrait then
+					withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
+				elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 					withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
 				elseif model then
 					withIcon(row, "People", model, nil, 56)
@@ -2611,7 +2647,10 @@ local function renderStatus()
 			end
 			local row = mkRow(content, view.talk.name, "\"" .. view.talk.line .. "\"\n" .. (view.talk.note or ""), nil, 136)
 			local scholarId = if talkId then string.match(talkId, "^c_(.+)$") else nil
-			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			local portrait = COMPANION_PORTRAIT[talkId]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 68, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
 			elseif talkId and COMPANION_MODEL[talkId] then
 				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
@@ -2642,7 +2681,10 @@ local function renderStatus()
 			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
 			local model = COMPANION_MODEL[c.id]
 			local scholarId = string.match(c.id, "^c_(.+)$")
-			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			local portrait = COMPANION_PORTRAIT[c.id]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
 			elseif model then
 				withIcon(row, "People", model, nil, 52)
@@ -2791,7 +2833,7 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		local merchantImageId = PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
+		local merchantImageId = FACILITY_ATLAS or PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
 		if merchantImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "MerchantPortrait"
@@ -2801,8 +2843,8 @@ local function openTradeHall()
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
 			photo.Image = "rbxassetid://" .. tostring(merchantImageId)
-			photo.ImageRectOffset = if PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
-			photo.ImageRectSize = if PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
+			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.merchant elseif PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
+			photo.ImageRectSize = if FACILITY_ATLAS or PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 			photo.Parent = left
 		else
 			local vf = Instance.new("ViewportFrame")
@@ -3414,15 +3456,16 @@ local function openYardHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(32, 40, 50))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		if PORTRAIT_ATLAS then
+		local yardImageId = FACILITY_ATLAS or PORTRAIT_ATLAS
+		if yardImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "ShipwrightPortrait"
 			photo.Size = UDim2.new(1, 0, 1, -150)
 			photo.BackgroundTransparency = 1
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
-			photo.Image = "rbxassetid://" .. tostring(PORTRAIT_ATLAS)
-			photo.ImageRectOffset = PORTRAIT_TILE.yard
+			photo.Image = "rbxassetid://" .. tostring(yardImageId)
+			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.yard else PORTRAIT_TILE.yard
 			photo.ImageRectSize = PORTRAIT_SIZE
 			photo.Parent = left
 		else
@@ -4708,7 +4751,7 @@ renderTitle = function()
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
 		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
-		local newFaceTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[n.id] else nil
+		local newFaceTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[n.id] else nil
 		local faceTile = newFaceTile or HERO_TILE[n.id]
 		local faceAtlas = if newFaceTile then HERO_NEW_ATLAS else HERO_ATLAS
 		local faceSize = if newFaceTile then HERO_NEW_SIZE else HERO_SIZE
