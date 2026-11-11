@@ -76,6 +76,7 @@ function verify(){
   const text=fs.readFileSync(rp,'utf8');
   // [대항해시대 실증] 원본을 고정하지 않은 캡처·일부 화면·미디어 실패는 자동 자산/룩 승격에 사용하지 않는다.
   if(game==='mare-essentia'){
+    if(!opt('frames'))return {ok:false,why:'실제 Studio 프레임 없는 룩 승격 금지'};
     let report;
     try{report=JSON.parse(text)}catch{return {ok:false,why:'Studio 보고서 JSON 오류'}}
     const head=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'});
