@@ -32,6 +32,7 @@ local D = {
 	TacticsMaps = require("./Shared/TacticsMaps"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
+	Stocks = require("./Shared/Stocks"),
 }
 local Registry = require("./Services/Registry")(D)
 local S = Registry.S

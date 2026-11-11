@@ -401,6 +401,7 @@ return function(D, S)
 		-- 지식 트리(보고·이해·효과)
 		view.knowledge = S.Knowledge.viewOf(state)
 		view.history = S.History.viewOf(state)
+		view.exchange = S.Stock.viewOf(state)
 
 		-- 학자
 		view.scholars = {}

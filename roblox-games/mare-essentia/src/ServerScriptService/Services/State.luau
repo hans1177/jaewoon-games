@@ -46,6 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
 			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
 			landmarks = {}, -- 항구별 특수 건축물 (항구 id → 건축물 id → true)
 			portTech = {}, -- 공동 발표로 쌓인 항구별 학문 기술 점수 (항구 id → 학문 id → 점수)
@@ -464,6 +465,21 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.stocks) == "table" then
+			local k = saved.stocks
+			for _, field in { "held", "cost" } do
+				if type(k[field]) == "table" then
+					for id, v in k[field] do
+						if type(id) == "string" and #id <= 24 and type(v) == "number" and v == v then
+							s.stocks[field][id] = math.floor(math.clamp(v :: number, 0, 1e12))
+						end
+					end
+				end
+			end
+			s.stocks.next = if type(k.next) == "number" then math.floor(k.next) else s.stocks.next
+			s.stocks.divTotal = math.floor(num(k.divTotal, 0, 0, 1e12))
+			s.stocks.trades = math.floor(num(k.trades, 0, 0, 1e9))
+		end
 		if type(saved.history) == "table" then
 			local h = saved.history
 			if type(h.seen) == "table" then
@@ -589,6 +605,7 @@ return function(D)
 			portTech = state.portTech,
 			landmarks = state.landmarks,
 			history = state.history,
+			stocks = state.stocks,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
