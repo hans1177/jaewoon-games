@@ -218,7 +218,7 @@ local KEEPER_ROLE = {
 }
 local OC = Color3.fromRGB
 local currentKey = "north"
-local function villager(parent, pos, facing, coat, rng, role, keepCoat)
+local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
 	local outfit
@@ -230,6 +230,19 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat)
 		}
 		if not keepCoat then
 			coat = o.coats[rng:NextInteger(1, #o.coats)]
+		end
+	end
+	if extra then
+		outfit = outfit or {}
+		for k, v in extra do
+			outfit[k] = v
+		end
+		-- 시대 복식: 삼각모는 17세기 후반 이후, 그 전에는 챙 넓은 모자
+		if outfit.hat == "tricorn" and (extra.year or 1700) < 1680 then
+			outfit.hat = "wide"
+		end
+		if extra.noHat then
+			outfit.hat = nil
 		end
 	end
 	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8, outfit)
@@ -495,6 +508,185 @@ local function palmOk(portId, style)
 	if p and p.country == "france" then return false end
 	if p and p.lat > 36 then return false end
 	return true
+end
+
+-- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
+local stallSpots = {}
+local SKIN_HAIR = { Color3.fromRGB(48, 36, 30), Color3.fromRGB(86, 60, 40), Color3.fromRGB(150, 110, 60), Color3.fromRGB(30, 28, 30) }
+local GRAY_HAIR = Color3.fromRGB(206, 204, 200)
+local function faceTo(from, to)
+	local d = to - from
+	return math.atan2(-d.X, -d.Z)
+end
+-- 손에 든 짐: 승인된 3D 소품을 윗몸 앞에 붙인다 (실패하면 빈손)
+local function holdProp(fig, kind, asset, size)
+	local torso = fig and fig:FindFirstChild("UpperTorso")
+	if not torso then return end
+	local ok = pcall(function()
+		local m = importedModel(fig, kind, asset, torso.Position, size, false)
+		if not m then return end
+		m:PivotTo(torso.CFrame * CFrame.new(0, -0.2, -1.6))
+		local main
+		for _, p in m:GetDescendants() do
+			if p:IsA("BasePart") then
+				p.Anchored = false
+				p.Massless = true
+				p.CanCollide = false
+				main = main or p
+			end
+		end
+		if main then
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = torso, main
+			w.Parent = main
+			for _, p in m:GetDescendants() do
+				if p:IsA("BasePart") and p ~= main then
+					local w2 = Instance.new("WeldConstraint")
+					w2.Part0, w2.Part1 = main, p
+					w2.Parent = p
+				end
+			end
+		end
+	end)
+	return ok
+end
+
+local function spawnJobs(folder, info, rng, lvl, walkers, key)
+	local year = info.year or 1700
+	local o = OUTFIT[key] or OUTFIT.north or {}
+	local function person(pos, facing, spec)
+		local extra = { year = year, age = spec.age or "adult" }
+		local female = spec.female
+		local old = extra.age == "elder"
+		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
+		extra.hairColor = hairColor
+		extra.hair = if female then (if extra.age == "child" then "long" elseif rng:NextNumber() < 0.5 then "bun" else "long") else "short"
+		if female and extra.age ~= "child" then
+			extra.skirt = spec.skirt or (o.coats and o.coats[rng:NextInteger(1, #o.coats)]) or Color3.fromRGB(120, 90, 70)
+			extra.skirtLong = true
+		end
+		if spec.hat ~= false then
+			extra.hat = spec.hat or (if female and extra.age ~= "child" then nil else o.hat)
+			extra.hatColor = spec.hatColor or (if o.hats then o.hats[rng:NextInteger(1, #o.hats)] else nil)
+		else
+			extra.noHat = true
+		end
+		-- villager() 는 지역 복식표의 모자를 기본으로 쓰므로 hat=nil 이면 모자 없이 만들도록 표시
+		local fig = villager(folder, pos, facing, spec.coat, rng, spec.role or "Rogue", spec.coat ~= nil, extra)
+		return fig
+	end
+	local function addTask(fig, t)
+		if not fig then return end
+		t.model = fig
+		t.base = fig:GetPivot()
+		t.phase = t.phase or rng:NextNumber(0, 10)
+		table.insert(walkers, t)
+	end
+	local function stay(pos, target, kind, spec)
+		local fig = person(pos, faceTo(pos, target), spec or {})
+		addTask(fig, { kind = kind, mode = "stay" })
+		return fig
+	end
+	local function path(a, b, kind, speed, spec, over)
+		local fig = person(a, faceTo(a, b), spec or {})
+		local len = (b - a).Magnitude
+		if fig then
+			local p = fig:GetPivot().Position
+			fig:PivotTo(CFrame.lookAt(p, p + (b - a).Unit * Vector3.new(1, 0, 1)))
+		end
+		addTask(fig, { kind = kind, mode = "path", len = len, speed = speed, over = over })
+		return fig
+	end
+	local function pick(list) return list[rng:NextInteger(1, #list)] end
+
+	-- 요리: 광장 한쪽 모닥불 솥을 젓는 아낙 (1단계부터), 단계가 오르면 한 명 더
+	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-38, 0, -11.5), 3.6, false)
+	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-38, 1.2, -11.5), 2.2, false)
+	stay(Vector3.new(-38, 0, -8.6), Vector3.new(-38, 0, -11.5), "stir", { female = true, role = "Rogue", hat = false })
+	if lvl >= 3 then
+		stay(Vector3.new(-41, 0, -9.4), Vector3.new(-38, 0, -11.5), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
+	end
+	-- 건축: 널빤지를 쌓고 벽을 세우는 목수 (2단계부터)
+	if lvl >= 2 then
+		importedModel(folder, "Town", "wall-wood", Vector3.new(-52, 0, 11.5), 8, false)
+		importedModel(folder, "Cargo", "wood-planks-stack-small", Vector3.new(-46, 0, 12), 2.6, false)
+		importedModel(folder, "Cargo", "resource-wood", Vector3.new(-58, 0, 12.5), 2.4, false)
+		stay(Vector3.new(-54, 0, 8.6), Vector3.new(-52, 0, 11.5), "hammer", { role = "Barbarian", hat = "cap" })
+		if lvl >= 3 then
+			stay(Vector3.new(-50, 0, 8.8), Vector3.new(-52, 0, 11.5), "hammer", { role = "Barbarian", hat = "cap" })
+		end
+	end
+	-- 농사: 마을 바깥 밭에서 괭이질 (1단계 1명, 단계마다 늘어난다). 밭은 큰길 끝 너머에 있다.
+	do
+		local fx = -222
+		for r = -2, 2 do
+			for x = 0, 5 do
+				importedModel(folder, "Terrain", if (r + x) % 2 == 0 then "crops-wheatstagea" else "crops-wheatstageb", Vector3.new(fx - x * 5, 0, r * 6), 3.4, false)
+			end
+		end
+		for z = -16, 16, 8 do
+			importedModel(folder, "Town", "fence_straight", Vector3.new(fx + 6, 0, z), 8, false)
+		end
+		local farmers = ({ 1, 2, 2, 3, 4 })[lvl]
+		for i = 1, farmers do
+			local p = Vector3.new(fx - 3 - i * 5, 0, (i % 2 == 0 and 3 or -3))
+			stay(p, p + Vector3.new(0, 0, if i % 2 == 0 then 4 else -4), "hoe", { role = "Barbarian", hat = "straw", hatColor = Color3.fromRGB(196, 164, 100), female = i % 2 == 0 })
+		end
+		if lvl >= 3 then
+			importedModel(folder, "Town", "cart", Vector3.new(fx + 2, 0, -20), 5, false)
+			importedModel(folder, "Cargo", "food-crate-large-apples", Vector3.new(fx + 2, 1.4, -20), 2.2, false)
+		end
+	end
+	-- 순찰: 큰길을 오가며 두리번거리는 경비 (2단계부터)
+	local guards = ({ 0, 1, 1, 2, 3 })[lvl]
+	for i = 1, guards do
+		local z = if i % 2 == 0 then -3.2 else 3.2
+		path(Vector3.new(-24 - i * 10, 0, z), Vector3.new(-172, 0, z), "look", 1.7, { role = "Knight", hat = false })
+	end
+	-- 짐꾼: 부두에서 교역소까지 짐을 나른다 (1단계 1명, 3단계 2명)
+	do
+		local porters = if lvl >= 3 then 2 else 1
+		for i = 1, porters do
+			local pz = 24 + i * 3
+			local fig = path(Vector3.new(14, 0, pz), Vector3.new(-6, 0, pz - 6), "carry", 1.5, { role = "Barbarian", hat = false })
+			if fig then
+				holdProp(fig, "Cargo", pick({ "box-open", "barrel", "bag" }), 2.2)
+			end
+		end
+	end
+	-- 낚시: 부두 가장자리에 앉아 낚싯대를 던지는 사람 (1단계부터)
+	do
+		importedModel(folder, "Cargo", "food-barrel-fish", Vector3.new(36, 2, 4.6), 2.4, false)
+		stay(Vector3.new(32, 2.4, 4.5), Vector3.new(32, 2.4, 20), "fish", { role = "Rogue", hat = if palmOk(info.portId, nil) then "straw" else "knit", hatColor = Color3.fromRGB(196, 164, 100) })
+		if lvl >= 4 then
+			stay(Vector3.new(44, 2.4, -4.5), Vector3.new(44, 2.4, -20), "fish", { role = "Rogue", female = true })
+		end
+	end
+	-- 장사: 가판대 뒤에서 손님을 부르는 상인 (가판대가 선 만큼)
+	for i, spot in stallSpots do
+		local back = Vector3.new(spot.X, 0, spot.Z + (if spot.Z > 0 then 3.4 else -3.4))
+		stay(back, spot, "stall", { role = "Rogue", female = i % 2 == 0 })
+	end
+	-- 이야기: 둘이 마주 서서 이야기하는 이웃 (2단계부터)
+	if lvl >= 2 then
+		local a, b = Vector3.new(-22, 0, 6), Vector3.new(-22, 0, 8.6)
+		stay(a, b, "talk", { role = "Mage", female = true })
+		stay(b, a, "talk", { role = "Rogue", age = "elder" })
+	end
+	-- 노인: 광장 벤치에서 쉰다 (2단계부터)
+	if lvl >= 2 then
+		importedModel(folder, "Town", "bench_A", Vector3.new(-32, 0, 11), 3.8, false)
+		stay(Vector3.new(-32, 0.3, 11), Vector3.new(-32, 0, 0), "sit", { role = "Mage", age = "elder", female = lvl % 2 == 0 })
+	end
+	-- 아이들: 분수 둘레를 뛰어다닌다 (2단계 1명, 단계마다 늘어난다)
+	for i = 1, ({ 0, 1, 2, 3, 4 })[lvl] do
+		local fig = person(Vector3.new(-8, 0, 0), 0, { age = "child", female = i % 2 == 0, role = "Rogue", hat = false })
+		addTask(fig, { kind = "child", mode = "circle", cx = -8, cz = 0, r = 6 + i * 1.3, speed = 1.5 + i * 0.2 })
+	end
+	-- 노인 느린 산책 (3단계부터)
+	if lvl >= 3 then
+		path(Vector3.new(-20, 0, 12.5), Vector3.new(-70, 0, 12.5), "stoop", 0.8, { role = "Mage", age = "elder" })
+	end
 end
 
 local function densify(folder, info, style, rng, walkers, made)
@@ -793,8 +985,10 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local extraStalls = { Vector3.new(-44, 0, 19), Vector3.new(-44, 0, -19), Vector3.new(-70, 0, 19), Vector3.new(-70, 0, -19), Vector3.new(-6, 0, -20), Vector3.new(-6, 0, 22) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
+	table.clear(stallSpots)
 	for i, spot in extraStalls do
 		if i > stallMax then break end
+		table.insert(stallSpots, spot)
 		importedModel(folder, "Town", if i % 2 == 0 then "stall-red" else "stall-green", spot, 6.5, false)
 		for k = 1, 4 do
 			local good = made[(i + k) % math.max(1, #made) + 1] or "cheese"
@@ -846,8 +1040,10 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	importedModel(folder, "Terrain", "campfire-logs", Vector3.new(-80, 0, 30.5), 4, false)
 
-	-- 5) 움직임: 골목을 오가는 주민 14명
-	for i = 1, 14 do
+	-- 5) 움직임: 일하는 주민(직업별 모션)과 골목을 오가는 주민
+	spawnJobs(folder, info, rng, lvl, walkers, key)
+	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
+	for i = 1, wanderers do
 		local sideZ = ({ 38, -38, 57, -57, 73, -73, 87, -87 })[(i - 1) % 8 + 1]
 		local v = villager(folder, Vector3.new(rng:NextNumber(-140, -30), 0, sideZ + rng:NextNumber(-0.8, 0.8)), 0, Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(50, 150)), rng)
 		if v then
@@ -1258,7 +1454,20 @@ function PortScene.build(info, onFacility)
 	local walkConn = RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		for _, w in walkers do
-			if w.model.Parent then
+			if w.mode == "stay" then
+				if w.model.Parent then
+					Pose.work(w.model, w.kind, now + w.phase)
+				end
+			elseif w.mode == "circle" then
+				if w.model.Parent then
+					local a = (now + w.phase) * w.speed / w.r
+					local pos = Vector3.new(w.cx + math.cos(a) * w.r, 0, w.cz + math.sin(a) * w.r)
+					local hop = math.abs(math.sin(now * 7 + w.phase)) * 0.25
+					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
+					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
+					Pose.walkR15(w.model, now * w.speed * 5 + w.phase, true)
+				end
+			elseif w.model.Parent then
 				local cycle = w.len / w.speed
 				local u = ((now + w.phase) % (cycle * 2)) / cycle -- 0..2
 				local forward = u < 1
@@ -1270,6 +1479,9 @@ function PortScene.build(info, onFacility)
 				local turn = if forward then CFrame.new() else CFrame.Angles(0, math.pi, 0)
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * turn * rot)
 				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, true)
+				if w.kind then
+					Pose.work(w.model, w.kind, now + w.phase)
+				end
 			end
 		end
 	end)

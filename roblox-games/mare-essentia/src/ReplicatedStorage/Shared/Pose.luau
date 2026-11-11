@@ -207,6 +207,57 @@ local function addHat(model, kind, color)
 	end
 end
 
+-- 머리카락: 짧은 머리·묶음·긴 머리·흰머리. (부품 몇 개로 만든 머리, 모자와 같은 방식)
+local function addHair(model, kind, color)
+	local head = model:FindFirstChild("Head")
+	if not (head and head:IsA("BasePart") and kind) then
+		return
+	end
+	local h = head.Size
+	local function piece(shape, size, offset)
+		local q = Instance.new("Part")
+		q.Name = "Hair"
+		q.Shape = shape
+		q.Size = size
+		q.Color = color
+		q.Material = Enum.Material.Fabric
+		q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
+		q.CFrame = head.CFrame * CFrame.new(offset)
+		q.Parent = model
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = head, q
+		w.Parent = q
+	end
+	piece(Enum.PartType.Ball, Vector3.new(h.X * 1.12, h.Y * 0.8, h.X * 1.12), Vector3.new(0, h.Y * 0.25, h.X * 0.06))
+	if kind == "long" then
+		piece(Enum.PartType.Block, Vector3.new(h.X * 1.0, h.Y * 1.5, h.X * 0.35), Vector3.new(0, -h.Y * 0.2, h.X * 0.5))
+	elseif kind == "bun" then
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.5, h.X * 0.5, h.X * 0.5), Vector3.new(0, h.Y * 0.72, h.X * 0.3))
+	end
+end
+
+-- 치마·앞치마: 허리 아래를 감싸는 통(여성 복식, 요리사 앞치마)
+local function addSkirt(model, color, long)
+	local lower = model:FindFirstChild("LowerTorso")
+	if not (lower and lower:IsA("BasePart")) then
+		return
+	end
+	local len = if long then lower.Size.Y * 2.6 else lower.Size.Y * 1.7
+	local q = Instance.new("Part")
+	q.Name = "Skirt"
+	q.Shape = Enum.PartType.Cylinder
+	q.Size = Vector3.new(len, lower.Size.X * 1.55, lower.Size.X * 1.4)
+	q.Color = color
+	q.Material = Enum.Material.Fabric
+	q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
+	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.38, 0) * CFrame.Angles(0, 0, math.pi / 2)
+	q.Parent = model
+	local w = Instance.new("WeldConstraint")
+	w.Part0, w.Part1 = lower, q
+	w.Parent = q
+end
+
+-- outfit 추가 필드: age("child"|"adult"|"elder"), hair("short"|"bun"|"long"), hairColor, skirt(Color3), skirtLong
 function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height, outfit)
 	if not r15Template then
 		if r15Unavailable then return nil end
@@ -316,8 +367,22 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			end
 		end
 	end
+	if outfit and outfit.hair then
+		pcall(addHair, model, outfit.hair, outfit.hairColor or Color3.fromRGB(60, 42, 30))
+	end
+	if outfit and outfit.skirt then
+		pcall(addSkirt, model, outfit.skirt, outfit.skirtLong)
+	end
 	if outfit and outfit.hat then
 		pcall(addHat, model, outfit.hat, outfit.hatColor or jacket)
+	end
+	-- 어린이는 머리가 크고 키가 작다, 노인은 조금 작다
+	if outfit and outfit.age == "child" then
+		height = (height or 5.8) * 0.62
+		local hs = humanoid:FindFirstChild("HeadScale")
+		if hs and hs:IsA("NumberValue") then hs.Value = 1.3 end
+	elseif outfit and outfit.age == "elder" then
+		height = (height or 5.8) * 0.95
 	end
 	local headPart = model:FindFirstChild("Head")
 	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
@@ -373,6 +438,74 @@ function Pose.walkR15(model, phase, moving)
 	if motors.rightArm then motors.rightArm.Transform = CFrame.Angles(stride, 0, 0) end
 	if motors.leftLeg then motors.leftLeg.Transform = CFrame.Angles(stride, 0, 0) end
 	if motors.rightLeg then motors.rightLeg.Transform = CFrame.Angles(-stride, 0, 0) end
+end
+
+-- 마을 주민의 일 모션. kind 에 따라 관절을 직접 놓는다 (t = 초, 제자리 일), 또는 걷기 위에 덧씌운다.
+-- 제자리: hammer(망치질) hoe(괭이질) stir(젓기) sit(앉아 쉼) fish(낚시) talk(대화) sweep(쓸기) stall(손님 부름) bell(종 치기)
+-- 걷기 위 덧씌움: carry(짐 들기) look(두리번) stoop(굽은 등)
+function Pose.work(model, kind, t)
+	local m = rigMotors[model]
+	if not m then return end
+	local function set(motor, cf)
+		if motor then motor.Transform = cf end
+	end
+	local A = CFrame.Angles
+	if kind == "carry" then
+		set(m.leftArm, A(-1.25, 0, 0.1)); set(m.rightArm, A(-1.25, 0, -0.1))
+		set(m.leftElbow, A(-0.5, 0, 0)); set(m.rightElbow, A(-0.5, 0, 0))
+		return
+	elseif kind == "look" then
+		set(m.neck, A(0, math.sin(t * 0.9) * 0.9, 0))
+		return
+	elseif kind == "stoop" then
+		set(m.waist, A(0.28, 0, 0))
+		set(m.neck, A(-0.25, 0, 0))
+		return
+	end
+	-- 제자리 일: 먼저 걷기 흔적을 지운다
+	set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
+	set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
+	set(m.root, CFrame.identity); set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
+	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
+	if kind == "hammer" then
+		local s = math.max(0, math.sin(t * 5))
+		set(m.rightArm, A(-1.5 - s * 1.0, 0, -0.1)); set(m.rightElbow, A(-0.6 - s * 0.5, 0, 0))
+		set(m.leftArm, A(-0.9, 0, 0.2)); set(m.waist, A(0.12 + s * 0.15, 0, 0))
+	elseif kind == "hoe" then
+		local s = math.sin(t * 2.2)
+		set(m.waist, A(0.55 + s * 0.3, 0, 0))
+		set(m.leftArm, A(-1.0 - s * 0.5, 0, 0.1)); set(m.rightArm, A(-1.0 - s * 0.5, 0, -0.1))
+		set(m.leftKnee, A(-0.15, 0, 0)); set(m.rightKnee, A(-0.15, 0, 0))
+	elseif kind == "stir" then
+		set(m.rightArm, A(-1.0 + math.sin(t * 3) * 0.15, 0, 0.15 * math.cos(t * 3))); set(m.rightElbow, A(-0.8, 0, 0))
+		set(m.leftArm, A(-0.2, 0, 0.35)); set(m.waist, A(0.18, 0, 0))
+	elseif kind == "sit" or kind == "fish" then
+		set(m.root, CFrame.new(0, -1.1, 0))
+		set(m.leftLeg, A(1.45, 0, 0.05)); set(m.rightLeg, A(1.45, 0, -0.05))
+		set(m.leftKnee, A(-1.45, 0, 0)); set(m.rightKnee, A(-1.45, 0, 0))
+		set(m.leftArm, A(-0.45, 0, 0.1)); set(m.rightArm, A(-0.45, 0, -0.1))
+		set(m.waist, A(0.08, 0, 0))
+		if kind == "fish" then
+			local cast = math.max(0, math.sin(t * 0.6))
+			set(m.rightArm, A(-1.0 - cast * 1.1, 0, -0.1)); set(m.rightElbow, A(-0.9, 0, 0))
+			set(m.leftArm, A(-1.0, 0, 0.15)); set(m.neck, A(0.2, 0, 0))
+		end
+	elseif kind == "talk" then
+		local g = math.sin(t * 3)
+		set(m.rightArm, A(-0.9 + g * 0.5, 0, -0.35)); set(m.rightElbow, A(-0.9, 0, 0))
+		set(m.leftArm, A(-0.4 - g * 0.2, 0, 0.3)); set(m.neck, A(math.sin(t * 1.7) * 0.12, math.sin(t * 0.8) * 0.25, 0))
+	elseif kind == "sweep" then
+		local s = math.sin(t * 3)
+		set(m.waist, A(0.22, 0, 0))
+		set(m.leftArm, A(-0.9, 0, 0.1 + s * 0.15)); set(m.rightArm, A(-1.0, 0, -0.1 + s * 0.2))
+	elseif kind == "stall" then
+		local g = math.max(0, math.sin(t * 1.4))
+		set(m.rightArm, A(-0.5 - g * 1.2, 0, -0.5)); set(m.rightElbow, A(-0.5, 0, 0))
+		set(m.leftArm, A(-0.3, 0, 0.25)); set(m.neck, A(0, math.sin(t * 0.7) * 0.4, 0))
+	elseif kind == "bell" then
+		local s = math.max(0, math.sin(t * 1.2))
+		set(m.rightArm, A(-2.2 + s * 0.6, 0, -0.1)); set(m.leftArm, A(-2.2 + s * 0.6, 0, 0.1))
+	end
 end
 
 -- 전투용 모션: 걷기(무릎·팔꿈치·몸 흔들림), 숨쉬기, 공격 휘두르기, 맞아서 휘청임
