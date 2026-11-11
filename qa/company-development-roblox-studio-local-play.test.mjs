@@ -3929,6 +3929,19 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
 });
 
 
+// [대항해시대 서버 선로딩 장애] 첫 12건 무응답이면 반복을 중단하고 Client 실증을 요구한다.
+test('Mare unresponsive server preload keeps strict client evidence gate',()=>{
+  const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
+  const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  assert.ok(qa.includes('if i == 1 and mediaCallbacks == 0 and timedOutMedia == math.min(12, #items) then'));
+  assert.ok(qa.includes('serverPreloadUnresponsive = true'));
+  assert.equal(qa.split('serverPreloadUnresponsive = serverPreloadUnresponsive').length-1,2);
+  assert.ok(qa.includes('if not timedOut and bad == 0 and moduleErrors == 0 and #ids > 0 then'));
+  assert.ok(script.includes("const response=await luau('Client',auditClientCode)"));
+  assert.ok(script.includes('proof.loaded===imageRows.length'));
+  assert.ok(script.includes('proof.soundLoaded===soundRows.length'));
+});
+
 // [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
 test('Mare server media timeout requires full official Client image and sound IsLoaded proof, never partial PASS',()=>{
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
