@@ -1,10 +1,32 @@
 {
   "v": 1,
-  "attempts": {},
+  "attempts": {
+    "mare-essentia:no-mobs": {
+      "n": 1,
+      "lastAt": 1794372073844,
+      "last": "FAILED"
+    }
+  },
   "merged": [],
   "day": {
     "date": "",
     "count": 0
   },
-  "providers": {}
+  "providers": {
+    "github-models:openai/gpt-4.1-mini": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794372073844
+    },
+    "groq:llama-3.3-70b-versatile": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794372073844
+    },
+    "openrouter:qwen/qwen3-coder:free": {
+      "ok": 0,
+      "fail": 1,
+      "lastAt": 1794372073844
+    }
+  }
 }
