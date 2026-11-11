@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable} from './vibe-variation-gym.mjs';
+import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
@@ -25,7 +25,19 @@ export function pickPracticeParents(repoRoot,seed,libraryDir=process.env.VIBE_CC
 export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,variants=4,out='build/practice',statsPath=null,lightsPath=null,light=true,bake=true,lightCandidates=8,lightRounds=2}={}){
   const outDir=path.resolve(repoRoot,out);fs.mkdirSync(outDir,{recursive:true});
   const session={seed,at:new Date().toISOString()};
-  const gym=runGymSession({repoRoot,parents,variants,seed,out:path.join(out,'gym'),statsPath});
+  // [전체 자산 분류] 중앙 자산 레지스트리는 읽기 전용, 출처 없는 항목은 부족 자산으로 분리한다.
+  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  session.assetCoverage=buildPracticeAssetCoverage(registry,repoRoot);
+  let gym;
+  try{gym=runGymSession({repoRoot,parents,variants,seed,out:path.join(out,'gym'),statsPath});}
+  catch(error){
+    if(!String(error.message||error).includes('NO_ELIGIBLE_CC0_PARENT'))throw error;
+    // 빈 자산은 임의 생성/우회하지 않고 UI 연습만 계속한다.
+    const gymDir=path.join(outDir,'gym');fs.mkdirSync(gymDir,{recursive:true});
+    fs.writeFileSync(path.join(gymDir,'ledger.json'),JSON.stringify({seed,generated:0,ledger:[]})+'\n');
+    gym={ledger:[],stats:{},outDir:gymDir};
+    session.assetShortage='NO_ELIGIBLE_CC0_PARENT';
+  }
   const tally={};for(const r of gym.ledger)tally[r.verdict]=(tally[r.verdict]||0)+1;
   session.gym={children:gym.ledger.length,tally,
     families:[...new Set(gym.ledger.map(r=>r.family))],
@@ -38,10 +50,12 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   // [UI 연습→채점→보관] 기존 화면 배치 엔진으로 8개 화면/3개 모바일 크기/2개 간격 변형을 연습한다.
   // 수치 평가만 기존 op-stats.json에 저장해 게임 코드·입력·저장 상태를 변경하지 않는다.
   const ui=exerciseVibeUiLayouts();
+  // [버튼·아이콘] 기존 UI 책임 채점기의 터치 크기·동작 바인딩·레이블 대비만 연습한다.
   session.ui={surfaces:ui.surfaces,viewports:ui.viewports,trials:ui.trials,
     staticPasses:ui.staticPasses,staticFailures:ui.staticFailures,
     meanScore:ui.meanScore,measurement:ui.measurement,designVerified:false,
-    bindingsRuntimeVerified:false,runtimeVerified:false,gameApplied:false};
+    bindingsRuntimeVerified:false,runtimeVerified:false,gameApplied:false,
+    buttonStaticChecks:ui.rows.length,iconRuntimeVerified:false,buttonsClicked:false};
   if(statsPath){
     const statsFile=path.resolve(repoRoot,statsPath);
     const scores=fs.existsSync(statsFile)?JSON.parse(fs.readFileSync(statsFile,'utf8')):{};
@@ -97,6 +111,42 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     }
     session.bake={...attempts[attempts.length-1],attempts};
   }
+  // [분야별 연습 결과] 정적 실측·미검증·부족 분야를 분리한다. 게임/네이티브 성공으로 승격하지 않는다.
+  const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{
+    catalogued:session.assetCoverage.domains[name].catalogued,
+    eligible3d:session.assetCoverage.domains[name].eligible3d,
+    trials:0,staticMeasured:0,unverifiedOrFailed:0,
+    nativeRuntimeVerified:false,gameApplied:false
+  }]));
+  for(const row of gym.ledger){
+    for(const name of row.practiceTargets||[]){
+      const record=domains[name];record.trials++;
+      const measured=name==='RIG'||name==='JOINT'
+        ?row.audit?.pass===true
+        :name==='MOTION'||name==='ACTION'
+          ?Array.isArray(row.motion?.present)&&row.motion.present.length>0
+          :row.ok===true&&Number.isFinite(row.score)&&Number.isFinite(row.parentScore);
+      if(measured)record.staticMeasured++;
+      else record.unverifiedOrFailed++;
+    }
+  }
+  for(const name of ['UI','BUTTON','ICON']){
+    domains[name].trials+=ui.trials;
+    domains[name].staticMeasured+=ui.staticPasses;
+    domains[name].unverifiedOrFailed+=ui.staticFailures;
+  }
+  if(session.light?.best!==undefined){
+    domains.LIGHTING.trials++;domains.LIGHTING.staticMeasured++;
+  }
+  if(session.bake){
+    domains.MATERIAL.trials+=(session.bake.attempts||[]).length;
+    domains.MATERIAL.staticMeasured+=(session.bake.attempts||[]).filter(x=>x.pass===true).length;
+  }
+  for(const record of Object.values(domains)){
+    record.state=record.trials?(record.staticMeasured?'STATIC_PRACTICE_MEASURED':'UNVERIFIED_OR_FAILED'):'NOT_PRACTICED';
+  }
+  session.practiceDomains=domains;
+  session.productionPromotionAllowed=false;
   fs.writeFileSync(path.join(outDir,'session.json'),JSON.stringify(session,null,1));
   return {session,gym};
 }
