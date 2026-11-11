@@ -2643,6 +2643,20 @@ test('stale Studio workflow runs abort before opening Studio',()=>{
   );
 });
 
+// [정확한 실행본 증거] Studio Client 미디어 검증과 캡처의 출처는 실행 중인 main HEAD로 고정한다.
+test('studio-script requires pinned main head and writes same source revision into report',()=>{
+  const begin=helper.indexOf("if(mode==='studio-script')");
+  const end=helper.indexOf("if(mode==='opening-capture')",begin);
+  const mode=helper.slice(begin,end);
+  const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  assert.ok(begin>=0&&end>begin);
+  assert.ok(mode.includes('assertCurrentStudioWorkflowHead({workflowSha:clean(process.env.GITHUB_SHA)})'));
+  assert.ok(mode.indexOf('assertCurrentStudioWorkflowHead')<mode.indexOf('await runStudioScript('));
+  assert.ok(mode.includes('sourceRevision:headGuard.checkoutSha'));
+  assert.ok(script.includes('sourceRevision:clean(sourceRevision)'));
+  assert.ok(script.includes("fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,1))"));
+});
+
 test('mcp-run checks current main head before any Studio MCP play call',()=>{
   const mainAt=helper.indexOf("if(mode==='check-head'||mode==='mcp-run')");
   const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead({workflowSha:',mainAt);
