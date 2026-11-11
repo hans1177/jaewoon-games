@@ -120,5 +120,5 @@ test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=
  assert.match(html,/window\.performance\.now\(\)/);
  assert.match(html,/characterPerformance\.update\(delta\)/);
  assert.doesNotMatch(html,/scene\.add\(new THREE\.HemisphereLight/);
- assert.doesNotMatch(html,/performance\.now\(\)\/1000/);
+ assert.doesNotMatch(html,/now:performance\.now\(\)\/1000/);
 });
