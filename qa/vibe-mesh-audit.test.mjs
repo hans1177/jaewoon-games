@@ -124,6 +124,22 @@ test('실제 Blender: 스켈레톤 원본 독립 노드 제거 후 리그·모�
   const candidate=path.join(dir,'candidate.glb');
   try{
     const original=measure(source,{out:path.join(dir,'source.json'),candidateOutput:candidate});
+    if(!original.candidate?.created){
+      // [실측 원인] glTF 원본 노드명과 Blender의 실제 오브젝트명이 다른지 구분한다.
+      const bytes=fs.readFileSync(source);
+      const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+      const sourceNodes=(gltf.nodes||[]).map((node,i)=>({
+        i,name:node.name||null,meshName:Number.isInteger(node.mesh)?gltf.meshes?.[node.mesh]?.name||null:null,
+        mesh:node.mesh??null,parent: (gltf.nodes||[]).findIndex(n=>(n.children||[]).includes(i))
+      }));
+      console.log('RIG_GLB_SOURCE_NODES='+JSON.stringify({
+        count:sourceNodes.length,meshCount:gltf.meshes?.length,
+        extensions:gltf.extensionsUsed||[],scenes:gltf.scenes?.map(x=>x.nodes?.length),
+        named:sourceNodes.filter(n=>/ico|sphere|skeleton|minion|root/i.test(n.name||'')||/ico|sphere/i.test(n.meshName||'')).slice(0,30),
+        meshObjects:original.meshes.map(m=>({name:m.name,vertices:m.vertices,faces:m.faces,orphan:m.orphan})),
+        error:original.candidate.reason
+      }));
+    }
     assert.equal(original.candidate?.created,true,JSON.stringify(original.candidate));
     assert.ok(fs.existsSync(candidate));
     assert.ok(original.meshes.some(m=>m.name==='Icosphere'&&m.orphan));
