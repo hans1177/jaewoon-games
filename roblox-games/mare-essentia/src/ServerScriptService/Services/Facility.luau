@@ -287,7 +287,7 @@ return function(D, S)
 		end
 		state.title += 1
 		state.coins += nextTitle.coins
-		return true, string.format("%s에서 알현했다. '%s' 작위를 받았다! (+%d코인, 판매 비율 +%.1f%%)", (F.PALACE_NAMES :: any)[state.portId], nextTitle.name, nextTitle.coins, F.TITLE_SELL_BONUS * 100)
+		return true, string.format("%s에서 알현했다. '%s' 작위를 받았다! (+%d코인, 판매 비율 +%.1f%%)", F.palaceName(state.portId), nextTitle.name, nextTitle.coins, F.TITLE_SELL_BONUS * 100)
 	end
 
 	return {

@@ -45,6 +45,7 @@ Facilities.GUILD = {
 
 -- 항구 발전도(1~5)에 따른 은행: 3단계부터는 목록에 없는 항구에도 은행이 생긴다.
 Facilities.BANK_OPEN_LEVEL = 3
+Facilities.PALACE_OPEN_LEVEL = 5 -- 무역 중심지(5단계)에는 왕궁이 없어도 총독 관저가 생긴다
 Facilities.BANK_LEVELS = {
 	name = { "환전상", "환전상", "은행", "은행·증권소", "국제 은행" },
 	depositRate = { 0.005, 0.006, 0.0075, 0.009, 0.011 },
@@ -56,7 +57,14 @@ function Facilities.has(kind: string, portId: string, level: number?): boolean
 	if table.find((Facilities :: any)[kind], portId) ~= nil then
 		return true
 	end
+	if kind == "palace" then
+		return (level or 1) >= Facilities.PALACE_OPEN_LEVEL
+	end
 	return kind == "bank" and (level or 1) >= Facilities.BANK_OPEN_LEVEL
+end
+
+function Facilities.palaceName(portId: string): string
+	return (Facilities.PALACE_NAMES :: any)[portId] or "총독 관저"
 end
 
 function Facilities.bankAt(level: number)

@@ -450,6 +450,9 @@ local function styleKeyOf(style)
 	return "north"
 end
 
+-- 성당 종탑 문화권(유럽·식민지). 오스만·일본·스와힐리·말라바르는 각자의 건축물을 세운다.
+local CHURCH_KEYS = { iberia = true, italy = true, france = true, britain = true, brick = true, hanse = true, nordic = true, colonial = true, north = true, med = true }
+
 local function rotateAround(m, pos, yaw)
 	if m then
 		m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, yaw, 0) * CFrame.new(-pos) * m:GetPivot())
@@ -710,6 +713,47 @@ local function densify(folder, info, style, rng, walkers, made)
 			rowOf("Town", "cart", 5, -104, -180, 28, 7.6)
 			rowOf("Cargo", "barrel", 2.4, -108, -180, 22, -7.4)
 			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 26, -12)
+		end
+		-- 지역을 대표하는 건축물 (발전도 2단계부터 선다): 성당 종탑, 첨탑, 사원탑, 신사 등
+		if lvl >= 2 then
+			local lx, lz = -84, -44
+			if CHURCH_KEYS[key] then
+				one("Town", "church", 16, lx, 0, lz, true)
+				one("Town", "bell-tower", 13, lx - 14, 0, lz, true)
+				if key == "italy" and lvl >= 3 then
+					one("Terrain", "greek-ruins-a", 10, lx - 36, 0, lz)
+					one("Terrain", "greek-statue", 6, lx - 50, 0, lz)
+				elseif (key == "brick" or key == "hanse" or key == "nordic") and lvl >= 3 then
+					one("Town", "windmill", 14, lx - 40, 0, lz, true)
+				end
+			elseif key == "ottoman" then
+				-- 미나레: 육각 탑을 쌓아 올린다 (높아질수록 한 층 더)
+				local parts = { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-top" }
+				if lvl >= 4 then table.insert(parts, 3, "tower-hexagon-mid") end
+				for i, nm in parts do
+					one("Castle", nm, 7, lx, (i - 1) * 6, lz, true)
+				end
+				one("Castle", "tower-hexagon-roof", 7, lx, #parts * 6, lz)
+				if lvl >= 3 then
+					one("Terrain", "egypt-obelisk", 12, lx - 24, 0, lz)
+				end
+			elseif key == "japan" then
+				one("Town", "temple-tower", 14, lx, 0, lz, true)
+				one("Town", "eastasia-bell", 5, lx - 14, 0, lz)
+				if lvl >= 4 then
+					one("Terrain", "gate-overhang", 12, lx - 26, 0, lz)
+				end
+			elseif key == "malabar" then
+				one("Town", "temple-tower", 15, lx, 0, lz, true)
+				if lvl >= 4 then
+					one("Town", "fountain-square", 9, lx - 18, 0, lz)
+				end
+			elseif key == "swahili" then
+				one("Town", "temple-stone", 13, lx, 0, lz, true)
+				if lvl >= 4 then
+					one("Terrain", "egypt-column", 8, lx - 14, 0, lz)
+				end
+			end
 		end
 	end
 	-- 골목 모퉁이: 덤불·화분·통·상자 더미
@@ -1081,10 +1125,46 @@ function PortScene.build(info, onFacility)
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
-			local body = house(folder, f.pos, f.w, f.d, f.floors, style, rng, f.color)
+			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
+			local grow = 1 + 0.05 * (sceneLevel - 1)
+			local tone = f.color:Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
+			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
 			sign(folder, body, f.name, nil, f.floors * 3 + 6)
+			do
+				-- 시설별 외형 단계 (승인된 기존 3D 소품만): 2단계 생활 소품, 3단계 장식, 4단계 깃발·기둥, 5단계 상징물
+				local lv = sceneLevel
+				local zs = if f.pos.Z > 0 then -1 else 1
+				local fx, fz = f.pos.X, doorZ
+				local function at(dx, dz) return Vector3.new(fx + dx, 0, fz + zs * dz) end
+				if f.name == "교역소" then
+					if lv >= 2 then importedModel(folder, "Cargo", "barrel", at(-6, 0), 2.4, false) importedModel(folder, "Cargo", "box-open", at(-8, 0.5), 2.2, false) end
+					if lv >= 3 then importedModel(folder, "Town", "stall-red", at(9, 2), 6, false) end
+					if lv >= 4 then importedModel(folder, "Castle", "flag-banner-short", at(-10, 1), 8, false) end
+					if lv >= 5 then importedModel(folder, "Cargo", "textiles-stack-large-colored", at(7, 0), 2.6, false) importedModel(folder, "Cargo", "gold-bars-stack-large", at(11, 0), 2.2, false) end
+				elseif f.name == "주점" then
+					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 3 then importedModel(folder, "Town", "bench_A", at(6, 1), 3.6, false) end
+					if lv >= 4 then lantern(folder, at(5, 0), 3) importedModel(folder, "Castle", "flag-banner-short", at(-8, 1), 7, false) end
+					if lv >= 5 then importedModel(folder, "Cargo", "pot-stew", at(9, 0), 2.2, false) end
+				elseif f.name == "항만청" then
+					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
+					if lv >= 4 then
+						for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-top" } do
+							importedModel(folder, "Castle", part_, Vector3.new(fx + 11, (k - 1) * 6, f.pos.Z), 7, true)
+						end
+					end
+				elseif f.name == "상인 길드" then
+					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
+					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
+					if lv >= 5 then importedModel(folder, "Town", "stall-green", at(10, 2), 6, false) end
+				elseif f.name == "학자의 서재" or f.name == "도서관 (도감)" then
+					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
+					if lv >= 5 then importedModel(folder, "Terrain", "statue-column", at(9, 2), 9, true) end
+				end
+			end
 			-- 은행은 항구 발전도에 따라 커진다: 3단계 기둥, 4단계 깃발, 5단계 금괴 더미
 			if f.key == "bank" then
 				if sceneLevel >= 3 then
@@ -1127,12 +1207,19 @@ function PortScene.build(info, onFacility)
 		end
 		part(folder, Vector3.new(14, 14, 14), CFrame.new(px, 22, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 140, 170), Enum.Material.Metal, Enum.PartType.Ball)
 		part(folder, Vector3.new(0.4, 6, 4), CFrame.new(px, 33, 2), Color3.fromRGB(180, 30, 40), Enum.Material.Fabric)
-		sign(folder, body, "왕궁", Color3.fromRGB(150, 110, 40), 16)
-		prompt(folder, Vector3.new(px + 20, 3, 0), "왕궁", "알현하기", "harbor", onFacility)
+		-- 발전도 4단계부터 기둥·깃발이 늘고, 5단계 왕궁 없는 항구에는 같은 자리에 총독 관저가 선다
+		if sceneLevel >= 4 then
+			for _, z in { -12, 12 } do
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(px + 18, 0, z), 10, false)
+			end
+		end
+		local palaceTitle = info.palaceName or "왕궁"
+		sign(folder, body, palaceTitle, Color3.fromRGB(150, 110, 40), 16)
+		prompt(folder, Vector3.new(px + 20, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
 	end
 
-	-- 성당 종탑
-	do
+	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
+	if CHURCH_KEYS[currentKey] and sceneLevel < 2 then
 		local cx, cz = -84, 40
 		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
