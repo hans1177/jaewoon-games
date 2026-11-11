@@ -2131,6 +2131,8 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='HYPOTHESIS_FALSIFICATION_DRILL')return'현재 가장 약한 검증 도메인에 대해 개선 가설 하나와 반증 조건 하나를 명시하고, 가설을 지지하는 증거보다 먼저 실패시킬 수 있는 테스트를 설계한다. 반증되면 실패 원인을 다음 학습 신호로 보존한다.';
   if(kind==='PREVIOUS_RESULT_COMPARISON_DRILL')return'동일 도메인의 이전 검증 결과와 현재 접근을 비교해 개선/퇴보/불확실을 분리하고, 차이를 설명할 수 있는 최소 인과 가설과 다음 검증을 만든다.';
   if(kind==='RELEARNING_REPLAY_DRILL')return'반복된 검증 실패를 그대로 암기하지 말고 원인 fingerprint를 재현한 뒤 다른 해결 전략으로 다시 풀고 이전 실패와 결과를 비교한다.';
+  if(kind==='WEAKNESS_FOCUSED_DRILL')return'독립 검증 실패 비중이 높은 영역을 먼저 학습한다. 실패 원인과 반증 테스트를 작성하고 이미 검증된 성공 전략과 비교한다. 연습 성적은 숙련 성공으로 가산하지 않는다.';
+  if(kind==='STUDIO_ERROR_REVIEW_DRILL')return'검증된 동일 게임 Studio 실패 기록의 오류 분류를 분석한다. 기존 공식 Studio MCP에서 정확한 배포 후보로 다시 플레이해야 실제 해결 PASS가 되며 이 분석만으로 런타임 PASS를 주장하지 않는다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
@@ -2193,6 +2195,20 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
+  // [검증된 약점 집중] 숙련도 수준만 보지 않고 검증된 실패/성공 누계를 사용한다.
+  // 연습 점수·가짜 성공·증거 없는 시뮬레이션은 이 우선순위에 반영하지 않는다.
+  const weaknessDrills=Object.entries(state.domains)
+    .filter(([,row])=>Number(row.verifiedFailureLessons)>0)
+    .sort((a,b)=>{
+      const score=row=>Number(row.verifiedFailureLessons)/(1+Number(row.verifiedSuccesses));
+      return score(b[1])-score(a[1])||a[1].level-b[1].level||a[0].localeCompare(b[0]);
+    }).slice(0,3).map(([domain,row])=>({
+      id:'weakness-'+lower(domain),kind:'WEAKNESS_FOCUSED_DRILL',
+      priority:'high',productionPreemptible:true,countsAsProductionPass:false,
+      domains:[domain],sourceFailure:row.lastEvidence,
+      verifiedFailureLessons:row.verifiedFailureLessons,
+      verifiedSuccesses:row.verifiedSuccesses,practiceOnly:true
+    }));
   const improvement=planVibeAutonomousImprovement({stateInput:state,capabilityEvidence:benchmarkInput?.capabilityEvidence});
   const adaptiveDrills=improvement.proposals.map(row=>({
     id:row.id,kind:row.kind,priority:'high',productionPreemptible:true,
@@ -2246,6 +2262,42 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
   const robloxCurriculum=JSON.parse(fs.readFileSync(new URL('../company-learning/roblox-practice.json',import.meta.url),'utf8'));
   const robloxDrills=robloxCurriculum.drills.map(row=>({id:'roblox-'+row.id,kind:'ROBLOX_CODE_REPAIR',robloxCodePractice:true,robloxPracticeDrill:row.id,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
   const platformDrills=(robloxCurriculum.platformDrills||[]).map(row=>({id:row.id,kind:'PLATFORM_CODE_REPAIR',codingPracticeDrill:row.id,platformProfile:row.platform,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
+  // [실제 오류 복습] 검증된 반복 실패의 도메인과 일치하는 기존 실행형 Luau 교재만 매칭한다.
+  // 원본 게임 코드나 숨겨진 검사 내용은 연습 문제로 복사하지 않는다.
+  const replayCodeDrills=repeated.slice(0,3).flatMap(([sig,row])=>{
+    const matching=robloxCurriculum.drills.find(drill=>(drill.domains||[]).some(domain=>(row.domains||[]).includes(domain)));
+    return matching?[{
+      id:'replay-code-'+hash(sig+'|'+matching.id),kind:'ROBLOX_CODE_REPAIR',
+      robloxCodePractice:true,robloxPracticeDrill:matching.id,level:matching.level,
+      domains:matching.domains,sourceFailure:sig,verifiedFailureAnalogue:true,
+      priority:'high',productionPreemptible:true,countsAsProductionPass:false
+    }]:[];
+  });
+  // [공식 스튜디오 복습] 이전 단계에서 정확한 아티팩트·공식 입력·체크포인트를
+  // 검증해 추출한 실패 기록만 읽는다. 새 Studio 실행이나 PASS 증거를 만들지 않는다.
+  const studioDrills=(benchmarkInput?.verifiedStudioPractice||[])
+    .filter(row=>row?.verified===true&&row?.outcome==='FAIL'
+      &&row?.taskType==='roblox-studio-local-internal-play'
+      &&clean(row?.gameId)&&clean(row?.id))
+    .slice(0,5).map(row=>({
+      id:'studio-failure-'+hash(row.id),kind:'STUDIO_ERROR_REVIEW_DRILL',
+      gameId:clean(row.gameId),platformProfile:'ROBLOX',priority:'high',
+      productionPreemptible:true,countsAsProductionPass:false,sourceFailure:row.id,
+      domains:['ROBLOX_STUDIO','DEBUGGING'],officialStudioRecheckRequired:true,
+      verifiedFailureAnalogue:false
+    }));
+  // [실력 측정] 신뢰된 독립 QA·회귀 증거가 있는 벤치마크만 집계한다.
+  const verifiedLedger=buildVerifiedVibeCapabilityLedger(benchmarkInput?.capabilityEvidence?.attempts||[]);
+  const verifiedPracticeMetrics={
+    authority:'ATTESTED_BENCHMARKS_ONLY',
+    comparableTracks:verifiedLedger.length,
+    verifiedAttempts:verifiedLedger.reduce((n,row)=>n+row.attempts,0),
+    verifiedPasses:verifiedLedger.reduce((n,row)=>n+row.pass,0),
+    verifiedFailures:verifiedLedger.reduce((n,row)=>n+row.fail,0),
+    verifiedHoldoutAttempts:verifiedLedger.reduce((n,row)=>n+row.holdoutTotal,0),
+    verifiedHoldoutPasses:verifiedLedger.reduce((n,row)=>n+row.holdoutPass,0),
+    nativeRuntimePassFromPractice:false,productionPassFromPractice:false
+  };
   const curriculumById=new Map([...robloxCurriculum.drills.map(row=>({...row,platform:'roblox'})),...(robloxCurriculum.platformDrills||[])].map(row=>[row.id,row]));
   const externalDrills=[];
   const seenExternal=new Set();
@@ -2279,6 +2331,9 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     }
   }
   const drills=[
+    ...replayCodeDrills,
+    ...studioDrills,
+    ...weaknessDrills,
     ...externalDrills,
     ...repeatedFailureDrills,
     ...relearningDrills,
@@ -2298,7 +2353,9 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
     externalGameplayPracticeDrills:externalDrills.length,
-    phase4GeneralizationDrills:phase4Drills.length,adaptiveImprovementDrills:adaptiveDrills.length,drills
+    phase4GeneralizationDrills:phase4Drills.length,adaptiveImprovementDrills:adaptiveDrills.length,
+    weaknessFocusedDrills:weaknessDrills.length,verifiedErrorReplayDrills:replayCodeDrills.length,
+    studioReviewDrills:studioDrills.length,verifiedPracticeMetrics,drills
   };
 }
 
@@ -2397,11 +2454,19 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const codingPractice=Boolean(clean(drill?.codingPracticeDrill));
   const unityCodePractice=codingPractice&&lower(drill.platformProfile)==='unity';
   const artifactPractice=!unityCodePractice&&!robloxCodePractice&&!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','STREAMING_OPTIMIZATION','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING','WEB_RUNTIME'].includes(upper(domain)));
+  // [미지 문제 연습] 같은 고정 답안을 반복하지 않도록 회차마다 입력/수명주기 변형을 요청한다.
+  // 숨겨진 독립 테스트를 대체하지 않고, Phase4 대조군/도전자 조건은 변경하지 않는다.
+  const challengeContexts=['RECONNECT_AND_RESTORE','PORTRAIT_LANDSCAPE_INPUT',
+    'MULTIPLAYER_JOIN_LEAVE_ORDER','LONG_SESSION_CLEANUP','LOAD_FAILURE_RETRY'];
+  const challengeFingerprint=hash(clean(drill.id)+'|'+String(next.generation));
+  const challengeContext=phase4?null:challengeContexts[(next.generation-1)%challengeContexts.length];
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
     `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
     `practiceGeneration=${next.generation}`,
+    challengeContext?`newScenarioContext=${challengeContext}`:'',
+    challengeContext?`newScenarioFingerprint=${challengeFingerprint}`:'',
     next.previousScore!==null?`previousArtifactScore=${next.previousScore}`:'',
     unityCodePractice?'practiceMode=UNITY_CODE':robloxCodePractice?'practiceMode=ROBLOX_CODE':artifactPractice?'practiceMode=WEB_ARTIFACT':'practiceMode=ANALYSIS',
     robloxCodePractice?'robloxPracticeDrill='+clean(drill.robloxPracticeDrill):'',
@@ -2432,15 +2497,18 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     `phase4-unseen-problem-fingerprint:${clean(drill.unseenProblemFingerprint)}`,
     'phase4-strong-generalization-evidence:NO'
   ]:[];
+  const studioReview=drill?.officialStudioRecheckRequired===true;
   const task={
-    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:unityCodePractice?'unity':robloxCodePractice?'roblox':phase4?(lower(drill.targetEngine)||'web'):'web',robloxPracticeDrill:robloxCodePractice?clean(drill.robloxPracticeDrill):null,codingPracticeDrill:codingPractice?clean(drill.codingPracticeDrill):null,department:'learning',type:'research',goal,
+    id,gameId:phase4?(clean(drill.holdoutGameId)||null):studioReview?clean(drill.gameId):null,
+    target:unityCodePractice?'unity':robloxCodePractice||studioReview?'roblox':phase4?(lower(drill.targetEngine)||'web'):'web',
+    robloxPracticeDrill:robloxCodePractice?clean(drill.robloxPracticeDrill):null,codingPracticeDrill:codingPractice?clean(drill.codingPracticeDrill):null,department:'learning',type:'research',goal,
     ...(drill.externalGameplayPractice?{externalGameplayPractice:drill.externalGameplayPractice}:{}),
-    responsibleFiles:[],dependencies:[],priority:robloxCodePractice||codingPractice?'high':'low',releaseState:'other',status:'queued',
+    responsibleFiles:[],dependencies:[],priority:drill.priority==='high'||robloxCodePractice||codingPractice?'high':'low',releaseState:'other',status:'queued',
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill?.companyGraphicsLibrary===true?['company-graphics-library-24h','company-graphics-library-prepared-not-promoted',`company-graphics-platform:${upper(drill.platformProfile)}`]:[]),...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
-    completionCriteria:[unityCodePractice?'PRACTICE_CSHARP_VARIANTS_EXECUTED':robloxCodePractice?'PRACTICE_LUAU_VARIANTS_EXECUTED':artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,challengeContext?`practice-new-scenario-request:${challengeFingerprint}`:'',studioReview?'official-studio-runtime-recheck:PENDING':'',drill.verifiedFailureAnalogue===true?'verified-failure-analogue-not-exact-replay':'',artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill?.companyGraphicsLibrary===true?['company-graphics-library-24h','company-graphics-library-prepared-not-promoted',`company-graphics-platform:${upper(drill.platformProfile)}`]:[]),...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
+    completionCriteria:[unityCodePractice?'PRACTICE_CSHARP_VARIANTS_EXECUTED':robloxCodePractice?'PRACTICE_LUAU_VARIANTS_EXECUTED':artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(studioReview?['OFFICIAL_STUDIO_MCP_EXACT_CANDIDATE_PLAY_REQUIRED_SEPARATELY']:[]),...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
 }
@@ -3307,7 +3375,9 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     learningState.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
   const benchmark=buildBenchmarkLadder(learningState,cloudExperience.memory,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(learningState,benchmark,externalRuntimeSamples,roadmapInput);
+  const verifiedStudioPractice=collectVerifiedRobloxStudioPlayExperience(companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(learningState,
+    {...benchmark,verifiedStudioPractice:verifiedStudioPractice.records},externalRuntimeSamples,roadmapInput);
   const tournament=enrichQueueForCandidateTournaments(queueInput,learningState);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
@@ -3347,6 +3417,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     cloudExperiencePersisted:cloudExperience.added||0,
     cloudExperiencePersistedPositive:cloudExperience.positive||0,
     cloudExperiencePersistedNegative:cloudExperience.negative||0,
+    verifiedStudioPracticeReviewCandidates:verifiedStudioPractice.records.filter(row=>row.outcome==='FAIL').length,
     studioExperienceChanged:false,
     studioExperiencePersisted:0,
     studioExperiencePersistedPositive:0,
