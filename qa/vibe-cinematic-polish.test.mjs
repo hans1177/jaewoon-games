@@ -53,6 +53,15 @@ test('3D camera follows subject smoothly, leads within bounds, and snaps on tele
  shot.update(.016,{...controls,subjectPosition:{x:2,y:0,z:0},reducedMotion:true});
  assert.equal(camera.position.x,5);
  assert.ok(shot.velocity.length()<1e-9);
+ // [QA] 넓은 액션 화각도 장르 값 그대로 적용하고 기본 프레이밍은 보존한다.
+ shot.update(.016,{...controls,subjectPosition:{x:2,y:0,z:0},fieldOfView:65,reducedMotion:true});
+ assert.equal(camera.fov,65);
+ shot.update(.016,{...controls,subjectPosition:{x:2,y:0,z:0},fieldOfView:999,reducedMotion:true});
+ assert.equal(camera.fov,95);
+ shot.update(.016,{...controls,subjectPosition:{x:2,y:0,z:0},fieldOfView:15,reducedMotion:true});
+ assert.equal(camera.fov,20);
+ shot.update(.016,{...controls,subjectPosition:{x:2,y:0,z:0},reducedMotion:true});
+ assert.equal(camera.fov,44.5);
 });
  
 // [메인: 표정] 감정 교체 때 이전 모프가 남지 않으면서 중간 프레임은 자연스럽게 섞인다.
@@ -135,4 +144,17 @@ test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=
  assert.match(html,/Math\.max\(\.85,currentPixelRatio-\.25\)/);
  assert.match(html,/if\(document\.hidden\)\{sampleStarted=0/);
  assert.match(html,/expressionDirector\.update\(delta,\{reducedMotion:gameUi\.ui\.settings\.reducedMotion\}\)/);
+ // [QA] 단일 카메라 책임 함수와 모바일 포인터가 기존 이동 집합에 직접 연결되어야 한다.
+ assert.match(html,/createVibeShotComposer\(THREE,camera\)/);
+ assert.match(html,/shotComposer\.update\(delta,\{/);
+ assert.match(html,/fieldOfView:view\.fov/);
+ assert.match(html,/if\(showcaseActive\)cinematic\.update\(delta\);\s*\/\/[^\n]*\n else if\(activeModel\)/);
+ assert.match(html,/touchControls\.className='vibe-touch-controls'/);
+ assert.match(html,/touchKeys\.has\('ArrowRight'\)/);
+ assert.match(html,/touchKeys\.has\('ArrowUp'\)/);
+ assert.match(html,/button\.setPointerCapture\(event\.pointerId\)/);
+ assert.match(html,/button\.addEventListener\('pointercancel',release\)/);
+ assert.match(html,/button\.addEventListener\('lostpointercapture',release\)/);
+ assert.match(html,/window\.addEventListener\('blur',/);
+ assert.match(html,/touch-action:none/);
 });
