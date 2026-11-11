@@ -613,6 +613,9 @@ test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(workflow,/schedule:\s*\n\s*- cron: '20 19 \* \* \*'/);
   assert.match(workflow,/github\.event_name != 'schedule'/);
   assert.match(workflow,/TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING/);
+  assert.match(workflow,/j=report\['tradeGoodsPractice'\]/);
+  assert.match(workflow,/three=report\['tradeGoods3DPractice'\]/);
+  assert.doesNotMatch(workflow,/three=j\['tradeGoods3DPractice'\]/);
   const planner=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
   assert.match(planner,/gameId==='mare-essentia'/);
   assert.match(planner,/tradeGoodsSourceRequirements\.filter/);
