@@ -16,6 +16,24 @@ test('reduced motion freezes translation',()=>{
  d.addTrack('shot',[{at:0,position:{x:1}},{at:1,position:{x:9}}]);
  assert.equal(d.update(.5)[0].position.x,1);
 });
+// [시네마틱 감독] 화면 프레임과 동일한 타임라인에서 시작·집중·종료 비트를 한 번만 방출한다.
+test('optional staged cinematic beats sync to existing camera track events',()=>{
+ const eventRows=[],cameraRows=[];
+ const director=new VibeCinematicDirector({adapter:{
+  onEvent:event=>eventRows.push(event.type),
+  applyCamera:(name,pose)=>cameraRows.push({name,x:pose.position.x})
+ }});
+ director.addTrack('showcase',[
+  {at:0,position:{x:0}},
+  {at:.2,position:{x:2}},
+  {at:.4,position:{x:4}}
+ ],{stageBeats:true});
+ for(let i=0;i<10;i++)director.update(.05);
+ assert.deepEqual(eventRows,['establish','focus','resolve']);
+ assert.ok(cameraRows.length>=8);
+ assert.ok(cameraRows.at(-1).x>=3.99);
+});
+
 test('acting micro motion remains bounded',()=>{
  const a=createCharacterPerformance();let v;
  for(let i=0;i<120;i++)v=a.update(1/60,{targetLook:{x:1}});

@@ -13,7 +13,10 @@ export function createVibeStorybookWorld(THREE,scene,{preset='enchantedForest',s
  if(!vibeStorybookPresets[preset])throw Error('Unknown storybook preset');
  let state=seed>>>0||1;const rand=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296};
  const root=new THREE.Group();root.name='VibeStorybookWorld';scene.add(root);
- const palette=vibeStorybookPresets[preset];const oldBackground=scene.background,oldFog=scene.fog;
+ // [월드 감독] 기존 네 지역의 색채를 재사용하며 새 지형/장식/모델은 생성하지 않는다.
+ let palette=vibeStorybookPresets[preset],region=preset;
+ const oldBackground=scene.background,oldFog=scene.fog;
+ let transitionStart=null,transitionTarget=null,transitionSeconds=0,transitionElapsed=0;
  scene.background=new THREE.Color(palette.background);scene.fog=new THREE.FogExp2(palette.fog,.018);
  const material=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness,metalness:0});
  const grass=material(palette.ground),bark=material(0x715e4d),leaf=material(0x668b65),warm=material(palette.accent);
@@ -32,12 +35,46 @@ export function createVibeStorybookWorld(THREE,scene,{preset='enchantedForest',s
   motes.push({mesh:mote,origin:mote.position.clone(),phase:rand()*6.28,speed:.35+rand()*.6});
  }
  let time=0;
+ // [월드 감독: 시각 연출] 지형·충돌·세이브는 건드리지 않고 기존 배경/안개/재질만 전환한다.
+ const applyRegion=value=>{
+  scene.background.setHex(value.background);scene.fog.color.setHex(value.fog);
+  grass.color.setHex(value.ground);warm.color.setHex(value.accent);
+ };
  return {
-  update(dt){if(!Number.isFinite(dt)||dt<=0||reducedMotion)return;time+=Math.min(dt,.1);
+  transitionRegion(name,seconds=1){
+   if(!vibeStorybookPresets[name])throw Error('Unknown storybook preset');
+   region=name;
+   const next=vibeStorybookPresets[name];
+   transitionStart={background:scene.background.getHex(),fog:scene.fog.color.getHex(),
+    ground:grass.color.getHex(),accent:warm.color.getHex()};
+   transitionTarget=next;
+   transitionElapsed=0;
+   transitionSeconds=reducedMotion?0:Math.max(0,Number.isFinite(seconds)?seconds:0);
+   palette=next;
+   if(!transitionSeconds)applyRegion(next);
+   return region;
+  },
+  get region(){return region},
+  get direction(){return Object.freeze({region,background:palette.background,accent:palette.accent,
+   wind:palette.wind,mood:region==='moonlitRuins'?'ancient-mystery':
+    region==='emberVolcano'?'volcanic-danger':region==='sunsetVillage'?'inhabited-warmth':'forest-discovery',
+   protected:['gameplay','save','navigation','assets']})},
+  update(dt){if(!Number.isFinite(dt)||dt<=0)return;
+   const step=Math.min(dt,.1);
+   if(transitionTarget&&transitionElapsed<transitionSeconds){
+    transitionElapsed=Math.min(transitionSeconds,transitionElapsed+step);
+    const t=ease(transitionElapsed/transitionSeconds),color=(a,b)=>new THREE.Color(a).lerp(new THREE.Color(b),t).getHex();
+    applyRegion({background:color(transitionStart.background,transitionTarget.background),
+     fog:color(transitionStart.fog,transitionTarget.fog),
+     ground:color(transitionStart.ground,transitionTarget.ground),
+     accent:color(transitionStart.accent,transitionTarget.accent)});
+   }
+   if(reducedMotion)return;
+   time+=step;
    for(const item of sway)item.object.rotation.z=Math.sin(time*.7*palette.wind+item.phase)*.018*item.scale;
    for(const item of motes){item.mesh.position.y=item.origin.y+Math.sin(time*item.speed+item.phase)*.18;item.mesh.position.x=item.origin.x+Math.cos(time*.33+item.phase)*.14}
   },
-  setReducedMotion(value){reducedMotion=!!value},
+  setReducedMotion(value){reducedMotion=!!value;if(reducedMotion&&transitionTarget){transitionSeconds=0;applyRegion(transitionTarget)}},
   dispose(){scene.remove(root);root.traverse(o=>{if(o.isMesh)o.geometry.dispose()});for(const m of [grass,bark,leaf,warm])m.dispose();scene.background=oldBackground;scene.fog=oldFog},
   root
  };

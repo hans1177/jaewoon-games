@@ -12,23 +12,23 @@ export const genreAssets=Object.freeze({
  platformer:{name:'점프 모험가',color:0x5975bc,prop:'satchel',bpm:136,scale:[0,2,4,7,9],stride:.75}
 });
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(x)?x:0));
+// [메인: 캐릭터 디자인 감독] 승인되지 않은 원형 장비를 합성하지 않고 이미 장착된 의상 재질만 변주한다.
 export function createVibeGenreCharacter(THREE,base,genre='storybook'){
  const spec=genreAssets[genre];if(!spec)throw Error('Unknown genre');
- const root=base?.root||base;if(!root?.add)throw Error('Character group required');
- const group=new THREE.Group();group.name='Original_'+genre;root.add(group);
- const mat=new THREE.MeshStandardMaterial({color:spec.color,roughness:.72}),gold=new THREE.MeshStandardMaterial({color:0xe2bc78,metalness:.3,roughness:.4});
- const add=(name,geo,m,x,y,z)=>{const o=new THREE.Mesh(geo,m);o.name=name;o.position.set(x,y,z);o.castShadow=true;group.add(o);return o};
- add('shoulder_L',new THREE.SphereGeometry(.22,12,8),mat,-.39,1.5,0);
- add('shoulder_R',new THREE.SphereGeometry(.22,12,8),mat,.39,1.5,0);
- const cap=add('genre_headwear',new THREE.ConeGeometry(.3,.23,genre==='voxel'?4:12),mat,0,2.58,0);
- if(genre==='wuxia')cap.scale.set(.5,1.6,.5);
- if(spec.prop==='blade'||spec.prop==='staff'||spec.prop==='pickaxe'){
-  const tool=add('gear_'+spec.prop,new THREE.CylinderGeometry(.035,.04,spec.prop==='staff'?1.1:.72,8),gold,.62,1.06,.12);tool.rotation.z=.35;
-  if(spec.prop==='pickaxe')add('pickaxe_head',new THREE.BoxGeometry(.4,.1,.13),gold,.5,1.4,.12);
- }else if(spec.prop==='satchel')add('satchel',new THREE.BoxGeometry(.32,.32,.2),gold,.48,1.05,.12);
- else if(spec.prop==='lantern')add('lantern',new THREE.BoxGeometry(.18,.24,.17),gold,.56,.85,.14);
- else add('scanner',new THREE.BoxGeometry(.22,.13,.13),gold,.56,1.02,.14);
- return {group,spec,dispose(){root.remove(group);group.traverse(o=>{if(o.isMesh)o.geometry.dispose()});mat.dispose();gold.dispose()}};
+ const root=base?.root||base;if(!root?.traverse)throw Error('Character group required');
+ const originals=new Map(),accent=new THREE.Color(spec.color);
+ root.traverse(mesh=>{
+  if(!mesh.isMesh||!/outfit|armor|coat|cloth|fabric|robe|tunic|sleeve|jacket|shirt|pants|skirt|cape/i.test(mesh.name||''))return;
+  for(const material of (Array.isArray(mesh.material)?mesh.material:[mesh.material])){
+   if(!material?.color?.clone||originals.has(material))continue;
+   originals.set(material,material.color.clone());
+   // 원본 텍스처·UV·지오메트리·캐릭터 실루엣은 변경하지 않는다.
+   material.color.lerp(accent,.22);material.needsUpdate=true;
+  }
+ });
+ return {group:root,spec,applied:originals.size,assetCreated:false,
+  dispose(){for(const [material,color] of originals){material.color.copy(color);material.needsUpdate=true}originals.clear()}
+ };
 }
 export function createVibeGenreAnimation(character,genre='storybook'){
  const spec=genreAssets[genre];if(!spec)throw Error('Unknown genre');
