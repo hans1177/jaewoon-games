@@ -286,6 +286,14 @@ if game:GetService("RunService"):IsStudio() then
 		local session = sessions[player]
 		if session then
 			session.lastAction = -100 -- 점검은 요청 간격 제한을 받지 않는다
+			if action == "QATactics" and session.state then
+				-- 지상 전술 화면 점검용: 항구·레벨과 상관없이 지정한 맵으로 전투를 연다(저장·보상 없음)
+				local map = D.TacticsMaps.ById[type(payload) == "table" and payload.mapId or "plain_road"] or D.TacticsMaps.ById.plain_road
+				local b = D.Tactics.newBattle(map, S.Tactics.buildParty(session.state), { enemyLevel = 1, pool = { "qa_card" } })
+				b.siteId, b.siteName, b.biome = "qa_" .. map.id, "점검 맵", map.biome
+				session.state.tbattle = b
+				return reply(session.state, true, map.intro)
+			end
 			if action == "QAGrant" and session.state then
 				session.state.coins = 1e9
 				session.state.fame = math.max(session.state.fame or 0, 1000)
