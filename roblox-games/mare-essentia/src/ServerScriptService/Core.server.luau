@@ -39,11 +39,12 @@ local D = {
 	TacticsData = require(Shared:WaitForChild("TacticsData")),
 	Tactics = require(Shared:WaitForChild("Tactics")),
 	TacticsMaps = require(Shared:WaitForChild("TacticsMaps")),
+	KnowledgeTree = require(Shared:WaitForChild("KnowledgeTree")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
 local S = Registry.S
-local QUEST_WATCH = { Explore = true, TacticsAct = true, TacticsEnd = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true }
+local QUEST_WATCH = { Explore = true, TacticsAct = true, TacticsEnd = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, Present = true, Expo = true }
 local handlers = Registry.handlers
 
 -- [중요] DataStore 이름은 게임 이름이 바뀌어도, 유니버스가 바뀌어도 임의로 바꾸지 않는다. 바꾸면 플레이어 저장이 빈 저장소로 읽혀 전부 초기화된다.

@@ -49,7 +49,7 @@ return function(D, S)
 		local ev = ctx.market:eventMult(state.portId, goodId)
 		local total = 0
 		for _ = 1, amount do
-			total += T.getPrice(state.portId, goodId, mult, ev)
+			total += T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
 			mult = T.nextStockMult(mult, 1, true)
 		end
 		-- 흥정으로 받은 할인은 같은 항구·같은 물건의 다음 구매 한 번에만 적용된다
@@ -111,7 +111,7 @@ return function(D, S)
 		local ev = ctx.market:eventMult(state.portId, goodId)
 		local revenue = 0
 		for _ = 1, amount do
-			revenue += T.sellPrice(state.portId, goodId, mult, rate, ev)
+			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
 			mult = T.nextStockMult(mult, 1, false)
 		end
 		local tariff = math.floor(revenue * tariffRate(state))
@@ -163,7 +163,7 @@ return function(D, S)
 		local ev = ctx.market:eventMult(state.portId, goodId)
 		local revenue = 0
 		for _ = 1, amount do
-			revenue += T.sellPrice(state.portId, goodId, mult, rate, ev)
+			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
 			mult = T.nextStockMult(mult, 1, false)
 		end
 		revenue = math.floor(revenue * 1.1)

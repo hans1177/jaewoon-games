@@ -2915,7 +2915,7 @@ local function openTradeHall()
 			local gi = GOOD_ICON[g.id]
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, -230, 0, 26)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -3105,7 +3105,7 @@ local function renderTrade()
 			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
+			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
 			nm.Position = UDim2.fromOffset(76, 6)
 			nm.Size = UDim2.new(1, -150, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -3604,15 +3604,37 @@ local function renderExplore()
 			local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
 			local srow = mkRow(content, sc.name, sub, {
 				{ text = "방문", color = COLORS.gold, onClick = function() call("Visit", { scholarId = sc.id }) end, enabled = sc.status == "ready" },
-			}, 60)
+					{ text = if (sc.reportable or 0) > 0 then string.format("보고 (%d)", sc.reportable) else "보고", color = COLORS.green, onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end, enabled = (sc.reportable or 0) > 0 },
+				}, 60)
 			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
 			if AssetIds["Portraits/scholar_" .. sc.id] then
 				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
 			end
-			return srow
-		end)
-	end
-end
+						return srow
+					end)
+				end
+				local ac = view.knowledge and view.knowledge.academy
+				if ac and #ac.disciplines > 0 then
+					add(function() return mkHeader(content, string.format("학술 행사 · 이 항구의 연구 성과 %d%%", ac.research)) end)
+					add(function()
+						return mkLabel(content, string.format("이 항구의 학문: %s. 항구에 투자할수록 학자들의 연구가 늘어 관련 교역품이 싸져요 (교역소 %d단계). 지금까지 발표 %d회 · 박람회 %d회.", table.concat(ac.disciplines, ", "), ac.harborLevel, ac.presented, ac.expos), 12, COLORS.muted, false)
+					end)
+					for _, pr in ac.present do
+						add(function()
+							local sub = string.format("이해한 지식 %d개 (%d개 이상 필요)%s", pr.understood, ac.presentMin, if pr.wait > 0 then string.format(" · %d일 뒤 가능", pr.wait) else "")
+							return mkRow(content, "학회 발표 — " .. pr.name, sub, {
+								{ text = "발표", color = COLORS.gold, onClick = function() call("Present", { disc = pr.disc }) end, enabled = pr.understood >= ac.presentMin and pr.wait == 0 },
+							}, 56)
+						end)
+					end
+					add(function()
+						local sub = if not ac.expoOpen then "교역소 2단계 이상에서 열려요" elseif ac.expoWait > 0 then string.format("%d일 뒤 열려요", ac.expoWait) else "개량 교역품(✦)을 화물칸에 싣고 출품해요"
+						return mkRow(content, "박람회 출품", sub, {
+							{ text = "출품", color = COLORS.green, onClick = function() call("Expo", {}) end, enabled = ac.expoOpen and ac.expoWait == 0 },
+						}, 56)
+					end)
+				end
+			end
 
 local RARITY_COLOR = {
 	Common = COLORS.muted, Uncommon = COLORS.green, Rare = COLORS.blue, Epic = Color3.fromRGB(170, 110, 210), Legendary = COLORS.gold,
@@ -3802,12 +3824,76 @@ local function renderCodexOverview()
 			return row
 		end)
 	end
+	add(function() return mkHeader(content, "지식 트리 (발견 → 보고 → 이해 → 효과)") end)
+	add(function()
+		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
+	end)
+	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		add(function()
+			return mkRow(content, string.format("%s  이해 %d / %d", d.name, d.done, d.total), d.summary, {
+				{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
+			}, 64)
+		end)
+	end
 	add(function() return mkHeader(content, "전체 도감 보상") end)
 	tierRows(cx.overall, "all", "전체 %d%% 달성")
-end
+	end
 
 local function renderCodexField()
-	local f = findField(codexField)
+if string.sub(codexField, 1, 2) == "k:" then
+	local did = string.sub(codexField, 3)
+	local disc = nil
+	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		if d.id == did then
+			disc = d
+		end
+	end
+	if not disc then
+		codexField = nil
+		renderCodexOverview()
+		return
+	end
+	add(function()
+		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
+	end)
+	add(function() return mkLabel(content, string.format("%s  이해 %d / %d", disc.name, disc.done, disc.total), 17, COLORS.gold, true) end)
+	add(function() return mkLabel(content, disc.summary, 13, COLORS.text, false) end)
+	local kv = view.knowledge
+	add(function()
+		return mkLabel(content, string.format("지금 효과: 항해 속도 +%d%% · 포격 +%d%%", math.floor(kv.speedBonus * 100 + 0.5), math.floor(kv.cannonBonus * 100 + 0.5)), 12, COLORS.green, false)
+	end)
+	for _, nd in disc.nodes do
+		add(function()
+			local mark, col
+			if nd.status == "done" then
+				mark, col = "✔ 이해함", COLORS.green
+			elseif nd.status == "ready" then
+				mark, col = "● 보고 가능", COLORS.gold
+			elseif nd.status == "blocked" then
+				mark, col = "✖ 선행 필요", COLORS.red
+			else
+				mark, col = "? 아직 발견 못 함", COLORS.muted
+			end
+			local sub = mark
+			if #nd.needs > 0 then
+				sub ..= "  ·  선행: " .. table.concat(nd.needs, ", ")
+			end
+			if nd.effect then
+				sub ..= "\n효과: " .. nd.effect
+			end
+			local row = mkRow(content, nd.name, sub, {}, if nd.effect then 64 else 52)
+			local stripe = Instance.new("Frame")
+			stripe.Size = UDim2.new(0, 4, 1, -12)
+			stripe.Position = UDim2.fromOffset(0, 6)
+			stripe.BackgroundColor3 = col
+			stripe.BorderSizePixel = 0
+			stripe.Parent = row
+			return row
+		end)
+	end
+	return
+end
+local f = findField(codexField)
 	if not f then
 		codexField = nil
 		renderCodexOverview()

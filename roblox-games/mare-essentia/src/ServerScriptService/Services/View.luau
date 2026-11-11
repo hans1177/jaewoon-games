@@ -101,8 +101,10 @@ return function(D, S)
 				id = goodId,
 				name = good.name,
 				tag = tag,
-				buy = D.TradeMath.getPrice(port.id, goodId, mult, ev),
-				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate, ev),
+				buy = D.TradeMath.getPrice(port.id, goodId, mult, ev * S.Knowledge.supplyMult(state, port.id, goodId)),
+				cheaper = S.Knowledge.supplyMult(state, port.id, goodId) < 0.999 or nil,
+				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev),
+				upgraded = S.Knowledge.goodsMult(state, goodId) > 1.001 or nil,
 				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
 				owned = state.cargo[goodId] or 0,
 			})
@@ -396,6 +398,9 @@ return function(D, S)
 		-- 진행 중인 지상 전술 전투(없으면 nil)
 		view.tactics = state.tbattle
 
+		-- 지식 트리(보고·이해·효과)
+		view.knowledge = S.Knowledge.viewOf(state)
+
 		-- 학자
 		view.scholars = {}
 		for _, sc in D.Scholars.Scholars do
@@ -410,7 +415,7 @@ return function(D, S)
 				elseif state.fame < sc.minFame then
 					status = string.format("명성 %d 필요", sc.minFame)
 				end
-				table.insert(view.scholars, { id = sc.id, name = sc.name, status = status })
+				table.insert(view.scholars, { id = sc.id, name = sc.name, status = status, reportable = if status == "ready" or status == "met" then S.Knowledge.reportableCount(state, sc) else 0 })
 			end
 		end
 
