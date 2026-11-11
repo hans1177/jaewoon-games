@@ -194978,11 +194978,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c519eb4d995e53bbc91e4600",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12561",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "92e56ac68586eea5bd03b1573b513a1813a46906",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12561,
+        "baseBranch": "main",
+        "headBranch": "mare-portrait-review-inbox",
+        "baseSha": "92e56ac68586eea5bd03b1573b513a1813a46906",
+        "headSha": "d9430d38d5749dfa6e4a8ed4468bc7dea1e40ffa",
+        "mergeCommitSha": "271d3acf63f6deecbe90d00319dce54f86877a1a",
+        "mergedAt": "2026-11-11T15:02:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a5b32840f3dfd4da75fd2ab004dba63483777cd265ddf60c945f8935516666d0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-portrait-review-inbox",
+        "candidateSha": "d9430d38d5749dfa6e4a8ed4468bc7dea1e40ffa"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 56,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_galileo.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_galileo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_harvey.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_harvey.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_washington.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_washington.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_franklin.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_franklin.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_galileo.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_galileo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_harvey.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_harvey.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rembrandt.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rembrandt.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rubens.png",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rubens.png.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_galileo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_harvey.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/person_washington.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_franklin.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_galileo.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_harvey.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rembrandt.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Portraits/scholar_rubens.png.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12561",
+        "merge-commit:271d3acf63f6deecbe90d00319dce54f86877a1a",
+        "base-main:92e56ac68586eea5bd03b1573b513a1813a46906"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1555
+    "total": 1556
   }
 }
