@@ -2,7 +2,7 @@
 # 캐릭터 .blend/.glb 의 메쉬·리그 품질을 숫자로 검사한다. (Blender 또는 pip bpy 필요)
 # 사용: blender --background --python tools/vibe_mesh_audit.py -- --input hero.blend --output audit.json
 # 판정은 tools/vibe-mesh-audit.mjs 가 한다. 이 파일은 측정만 한다.
-import bpy, sys, json, argparse, math
+import bpy, sys, json, argparse, math, re
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -118,10 +118,63 @@ for n in list(boxes):
         z_err = abs(ca.z - cb.z) / height
         pairs.append({'pair': [n, 'R_' + n[2:]], 'sizeErr': round(size_err, 4), 'posErr': round(pos_err, 4), 'zErr': round(z_err, 4)})
 
+# [실제 모션 채널 검사] 클립 이름만으로 동작 품질을 통과시키지 않는다.
+# 구형 F-curve와 신형 Layer/Channelbag 모두 원본 키프레임을 읽기만 한다.
+# 이 검사는 정적 곡선 구조 증거이며 엔진 런타임 재생/충돌 성공은 아니다.
 acts = []
-for a in bpy.data.actions:
-    fr = a.frame_range
-    acts.append({'name': a.name, 'frames': [int(fr[0]), int(fr[1])]})
+rig_bones = {bone.name for arm in arms for bone in arm.data.bones}
+for action in bpy.data.actions:
+    fr = action.frame_range
+    curves = []
+    try:
+        curves = list(getattr(action, 'fcurves', []))
+    except (AttributeError, TypeError):
+        pass
+    if not curves:
+        try:
+            for layer in getattr(action, 'layers', []):
+                for strip in layer.strips:
+                    if hasattr(strip, 'channelbags'):
+                        for bag in strip.channelbags:
+                            curves.extend(list(bag.fcurves))
+                    elif hasattr(strip, 'channelbag'):
+                        for slot in getattr(action, 'slots', []):
+                            bag = strip.channelbag(slot, ensure=False)
+                            if bag:
+                                curves.extend(list(bag.fcurves))
+        except (AttributeError, TypeError, RuntimeError):
+            curves = []
+    all_keys = bone_curves = valid_bone_curves = moving_bone_curves = invalid_curves = 0
+    for curve in curves:
+        try:
+            keys = list(curve.keyframe_points)
+            values = [float(k.co[1]) for k in keys]
+            positions = [float(k.co[0]) for k in keys]
+            if any(not math.isfinite(x) for x in values + positions):
+                invalid_curves += 1
+                continue
+            all_keys += len(keys)
+            target = re.search(r"pose\\.bones\\[['\\\"]([^'\\\"]+)['\\\"]\\]", str(curve.data_path))
+            if not target:
+                continue
+            bone_curves += 1
+            if target.group(1) in rig_bones:
+                valid_bone_curves += 1
+                if len(values) >= 2 and max(values) - min(values) > 1e-4:
+                    moving_bone_curves += 1
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            invalid_curves += 1
+    acts.append({
+        'name': action.name,
+        'frames': [int(fr[0]), int(fr[1])],
+        'curvesInspected': bool(curves),
+        'curveCount': len(curves),
+        'keyframeCount': all_keys,
+        'boneCurves': bone_curves,
+        'validBoneCurves': valid_bone_curves,
+        'movingBoneCurves': moving_bone_curves,
+        'invalidCurves': invalid_curves,
+    })
 
 result = {
     'input': args.input,
