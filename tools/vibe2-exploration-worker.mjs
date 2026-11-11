@@ -200,7 +200,7 @@ function reusableArtifact(cwd,order){
     ||(clean(order.target).toLowerCase()==='roblox'&&(
       cached.robloxCoding?.authority!=='roblox-luau-static-analysis'
       ||cached.robloxModuleGraph?.version!==1))
-    ||(clean(order.target).toLowerCase()==='roblox'&&cached.codingContextRank?.version!==1)
+    ||cached.codingContextRank?.version!==1
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
