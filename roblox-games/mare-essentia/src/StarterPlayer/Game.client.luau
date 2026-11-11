@@ -3859,9 +3859,20 @@ local function renderCodexOverview()
 	add(function()
 		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
 	end)
+	add(function() return mkHeader(content, "학문 계통도 (뿌리에서 갈라져 나온 순서)") end)
+	for _, t in (view.knowledge and view.knowledge.tree or {}) do
+		add(function()
+			local sub = if t.open then "열림" else string.format("잠김 — %s 지식 %d/%d개 이해하면 열려요", t.parentName or "", t.parentDone, t.openAt or 0)
+			return mkLabel(content, string.rep("    ", t.depth) .. (if t.depth > 0 then "└ " else "") .. t.name .. "  · " .. sub, 13, if t.open then COLORS.text else COLORS.muted, false)
+		end)
+	end
 	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
 		add(function()
-			return mkRow(content, string.format("%s  이해 %d / %d", d.name, d.done, d.total), d.summary, {
+			local sub = d.summary
+			if not d.open then
+				sub = string.format("[잠김: %s 지식 %d/%d개] ", d.parentName or "", d.parentDone, d.openAt or 0) .. sub
+			end
+			return mkRow(content, string.format("%s  이해 %d / %d", d.name, d.done, d.total), sub, {
 				{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
 			}, 64)
 		end)
@@ -3902,6 +3913,8 @@ if string.sub(codexField, 1, 2) == "k:" then
 				mark, col = "● 보고 가능", COLORS.gold
 			elseif nd.status == "blocked" then
 				mark, col = "✖ 선행 필요", COLORS.red
+			elseif nd.status == "closed" then
+				mark, col = "🔒 학문이 아직 열리지 않음", COLORS.muted
 			else
 				mark, col = "? 아직 발견 못 함", COLORS.muted
 			end

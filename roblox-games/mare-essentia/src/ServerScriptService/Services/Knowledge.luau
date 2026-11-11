@@ -573,8 +573,25 @@ return function(D, S)
 					})
 				end
 			end
-			table.insert(out.disciplines, { id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes })
+			local isOpen, parentDone = K.disciplineOpen(state, d.id)
+			local parent = d.parent and K.DisciplineById[d.parent]
+			table.insert(out.disciplines, {
+				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes,
+				era = d.era, parentName = parent and parent.name or nil, open = isOpen, openAt = d.openAt, parentDone = parentDone or 0,
+			})
 		end
+		-- 계통도: 뿌리에서 갈라져 나온 순서대로 (깊이 표시)
+		out.tree = {}
+		local function walk(parentId, depth)
+			for _, d in K.Disciplines do
+				if d.parent == parentId then
+					local o, pd = K.disciplineOpen(state, d.id)
+					table.insert(out.tree, { id = d.id, name = d.name, depth = depth, open = o, openAt = d.openAt, parentName = parentId and K.DisciplineById[parentId].name or nil, parentDone = pd or 0 })
+					walk(d.id, depth + 1)
+				end
+			end
+		end
+		walk(nil, 0)
 		do
 			local r, lvl, discs = researchOf(state, state.portId)
 			local names = {}
