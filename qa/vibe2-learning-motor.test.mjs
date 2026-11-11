@@ -2643,3 +2643,93 @@ test('verified recovery cause outranks its own stale evidence fingerprints',()=>
   assert.equal(context.failureLocalMemory[0]?.id,'verified-current');
   assert.ok(context.failureLocalMemory[0]?.reasons.includes('same-game-same-failure'));
 });
+
+
+// [자동 연습 6종] 검증된 약점·오류·Studio·새 시나리오·성적 집계만 기존 큐에 연결한다.
+test('six-practice: verified weakness and repeated Luau failure become prioritized but unpromoted drills',()=>{
+  const state={
+    domains:{SAVE:{xp:0,verifiedFailureLessons:4,verifiedSuccesses:1},
+      DEBUGGING:{xp:20,verifiedFailureLessons:1,verifiedSuccesses:8}},
+    failureSignatures:{'verified-save-fingerprint':{count:3,domains:['SAVE'],lastEvidence:'verified-outcome-1'}}
+  };
+  const idle=buildIdlePracticeQueue(state);
+  assert.equal(idle.weaknessFocusedDrills,2);
+  assert.ok(idle.verifiedErrorReplayDrills>=1);
+  assert.equal(idle.drills[0].kind,'ROBLOX_CODE_REPAIR');
+  assert.equal(idle.drills[0].verifiedFailureAnalogue,true);
+  assert.ok(idle.drills.some(row=>row.kind==='WEAKNESS_FOCUSED_DRILL'&&row.domains.includes('SAVE')));
+  const selected=injectIdlePracticeTask({tasks:[]},idle);
+  assert.equal(selected.task.target,'roblox');
+  assert.ok(selected.task.robloxPracticeDrill);
+  assert.match(selected.task.goal,/newScenarioContext=RECONNECT_AND_RESTORE/);
+  assert.ok(selected.task.evidence.includes('verified-failure-analogue-not-exact-replay'));
+  assert.ok(selected.task.evidence.includes('production-pass:NO'));
+  assert.equal(selected.task.ownerDirective,false);
+  const again=injectIdlePracticeTask({tasks:[{...selected.task,status:'done'}]},idle);
+  assert.match(again.task.goal,/newScenarioFingerprint=/);
+  assert.equal(again.task.sourceRoot.startsWith('learning-practice:'),true);
+  assert.equal(buildIdlePracticeQueue({}).weaknessFocusedDrills,0);
+});
+
+test('six-practice: official verified Studio failure schedules analysis only, never fabricates runtime',()=>{
+  const source='f'.repeat(40),artifact='sha256:'+'e'.repeat(64);
+  const item={
+    gameId:'studio-six-practice',robloxSourceCommit:source,
+    robloxBuildArtifactIdentity:artifact,robloxFoundationF0Evidence:{artifactRunId:345},
+    robloxRuntimeCandidateEvidence:{sourceRevision:source,artifactIdentity:artifact,
+      artifactRunId:345,universeId:'12',placeId:'34',versionNumber:5,published:true},
+    robloxInternalVibePlayEvidence:{
+      authority:'vibe2-roblox-studio-runtime',actualPlay:true,pass:false,
+      runtimeVerified:false,learningReusable:true,localPlaceFile:true,
+      onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,rawSourceIncluded:false,
+      rawGameplayValuesIncluded:false,sourceRevision:source,artifactIdentity:artifact,
+      artifactRunId:345,publishedCandidateCrossCheckPassed:true,
+      publishedCandidateCrossCheckAuthority:'OPEN_CLOUD',universeId:'12',placeId:'34',
+      versionNumber:5,capabilities:{studioTestService:true,virtualInput:true},
+      actions:[{id:'tap',type:'tap',dispatched:true,ok:true}],
+      checkpoints:[{id:'gui',name:'ui-visible-elements',required:true,pass:false}],
+      errors:[{type:'ui-input-not-responding'}]
+    }
+  };
+  const report=refreshLearningMotor({companyQueueInput:{items:[item]}});
+  assert.equal(report.verifiedStudioPracticeReviewCandidates,1);
+  assert.equal(report.studioExperiencePersisted,0);
+  assert.equal(report.addedRobloxStudioVerifiedOutcomes,0);
+  const review=report.idlePractice.drills.find(row=>row.kind==='STUDIO_ERROR_REVIEW_DRILL');
+  assert.equal(review.gameId,'studio-six-practice');
+  const task=injectIdlePracticeTask({tasks:[]},{drills:[review]}).task;
+  assert.equal(task.gameId,'studio-six-practice');
+  assert.equal(task.target,'roblox');
+  assert.ok(task.evidence.includes('official-studio-runtime-recheck:PENDING'));
+  assert.ok(task.completionCriteria.includes('OFFICIAL_STUDIO_MCP_EXACT_CANDIDATE_PLAY_REQUIRED_SEPARATELY'));
+  const stale=structuredClone(item);
+  stale.robloxInternalVibePlayEvidence.artifactRunId=999;
+  const noEvidence=refreshLearningMotor({companyQueueInput:{items:[stale]}});
+  assert.equal(noEvidence.idlePractice.studioReviewDrills,0);
+});
+
+test('six-practice: trusted benchmark aggregates exclude unverified outcomes and request new contexts per generation',()=>{
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const accepted={sourceRevision:'a'.repeat(40),evidenceId:'six-verified-1',proof,
+    domain:'SAVE',genre:'survival',platform:'ROBLOX',benchmarkVersion:'six-v1',
+    independentQaRecorded:true,regressionRecorded:true,result:'PASS',
+    modelCalls:0,holdout:true};
+  const report=buildIdlePracticeQueue({}, {capabilityEvidence:{attempts:[
+    accepted,{...accepted,evidenceId:'fake-no-qa',proof:null,result:'PASS'},
+    {...accepted,evidenceId:'six-verified-2',result:'FAIL',holdout:false}
+  ]}});
+  const m=report.verifiedPracticeMetrics;
+  assert.equal(m.verifiedAttempts,2);
+  assert.equal(m.verifiedPasses,1);
+  assert.equal(m.verifiedFailures,1);
+  assert.equal(m.verifiedHoldoutPasses,1);
+  assert.equal(m.productionPassFromPractice,false);
+  const drill={id:'fresh-variation',kind:'HYPOTHESIS_FALSIFICATION_DRILL',
+    domains:['SAVE'],priority:'high'};
+  const first=injectIdlePracticeTask({tasks:[]},{drills:[drill]}).task;
+  const second=injectIdlePracticeTask({tasks:[{...first,status:'done'}]},{drills:[drill]}).task;
+  assert.match(first.goal,/newScenarioContext=RECONNECT_AND_RESTORE/);
+  assert.match(second.goal,/newScenarioContext=PORTRAIT_LANDSCAPE_INPUT/);
+  assert.notEqual(first.goal.match(/newScenarioFingerprint=(\w+)/)[1],second.goal.match(/newScenarioFingerprint=(\w+)/)[1]);
+  assert.ok(first.evidence.includes('production-pass:NO'));
+});
