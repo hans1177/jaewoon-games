@@ -150,6 +150,9 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             failed:cleanCount(row.failed),measured:cleanCount(row.measured),
             bones:cleanCount(row.bones),meshParts:cleanCount(row.meshParts),
             clipNamesObserved:cleanCount(row.clipNamesObserved),
+            curveInspectedClips:cleanCount(row.curveInspectedClips),
+            validMovingClips:cleanCount(row.validMovingClips),
+            movingBoneCurves:cleanCount(row.movingBoneCurves),
             lastFailures:Array.isArray(row.lastFailures)?
               row.lastFailures.slice(0,8).map(x=>String(x).slice(0,100)):[],
             lastSession:String(row.lastSession||'').slice(0,40)
@@ -173,7 +176,17 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             clipNamesObserved:cleanCount(study.clipsObserved),
             clipNameCoverage:Number.isFinite(study.clipNameCoverage)?
               Math.max(0,Math.min(1,study.clipNameCoverage)):0,
-            failures:faults.slice(0,8),motionCurvesMeasured:false,
+            curveInspectedClips:cleanCount(study.curveInspectedClips),
+            validMovingClips:cleanCount(study.validMovingClips),
+            movingBoneCurves:cleanCount(study.movingBoneCurves),
+            dynamicClipCoverage:Number.isFinite(study.dynamicClipCoverage)?
+              Math.max(0,Math.min(1,study.dynamicClipCoverage)):0,
+            dynamicClipPresent:(Array.isArray(study.dynamicClipPresent)?
+              study.dynamicClipPresent:[]).filter(x=>
+                ['IDLE','MOVE','ATTACK','HIT','DEATH'].includes(x)).slice(0,5),
+            failures:faults.slice(0,8),
+            motionCurvesMeasured:study.motionCurvesMeasured===true&&
+              cleanCount(study.curveInspectedClips)>0,
             nativeRuntimeVerified:false,gameApplied:false
           };
           rigHistory[id]={
@@ -183,6 +196,9 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
             measured:cleanCount(old.measured)+(measured?1:0),
             bones:latestRig.bones,meshParts:latestRig.meshParts,
             clipNamesObserved:latestRig.clipNamesObserved,
+            curveInspectedClips:latestRig.curveInspectedClips,
+            validMovingClips:latestRig.validMovingClips,
+            movingBoneCurves:latestRig.movingBoneCurves,
             lastFailures:latestRig.failures,lastSession:String(session.at||'').slice(0,40)
           };
         }
