@@ -35,6 +35,32 @@ def practice_validate(args, manifest, train_rows, eval_rows):
     stats = manifest.get('stats') or {}
     if int(stats.get('train', -1)) != len(train_rows) or int(stats.get('eval', -1)) != len(eval_rows):
         raise RuntimeError('practice dataset row counts do not match manifest')
+    # [검증 보류셋] 로블록스 연습 v6부터는 학습·평가와 다른 문제 계열의 보류셋을 고정한다.
+    holdout_rows = []
+    if args.task_type == 'roblox' and int(manifest.get('version', 0)) >= 6:
+        if (manifest.get('holdoutAuthority') != 'DISJOINT_FAMILIES_PRACTICE_ONLY' or
+                manifest.get('independentExternalBenchmarkVerified') is not False):
+            raise RuntimeError('Roblox holdout may be practice-only, never verified external benchmark')
+        holdout_path = getattr(args, 'holdout', None)
+        if not holdout_path or not Path(holdout_path).is_file():
+            raise RuntimeError('Roblox practice holdout file required')
+        holdout_rows = [json.loads(line) for line in Path(holdout_path).read_text(encoding='utf-8').splitlines() if line.strip()]
+        held_hash = hashlib.sha256(('\\n'.join(json.dumps(row, ensure_ascii=False,
+            sort_keys=True, separators=(',', ':')) for row in holdout_rows)).encode('utf-8')).hexdigest()
+        if held_hash != manifest.get('holdoutSha256') or len(holdout_rows) != int(stats.get('holdout', -1)):
+            raise RuntimeError('Roblox practice holdout hash/count mismatch')
+        groups = [{row.get('familyId') for row in part} for part in (train_rows, eval_rows, holdout_rows)]
+        if any(None in group for group in groups) or any(groups[i] & groups[j]
+                for i in range(3) for j in range(i + 1, 3)):
+            raise RuntimeError('Roblox practice family leaked across train/eval/holdout')
+        if (sum(r.get('sampleKind') == 'CODE_IMPLEMENTATION' for r in holdout_rows) < 2 or
+                int(stats.get('codeImplementationHoldout', -1)) !=
+                sum(r.get('sampleKind') == 'CODE_IMPLEMENTATION' for r in holdout_rows) or
+                sum(r.get('sampleKind') == 'CODE_IMPLEMENTATION' for r in train_rows) < 10 or
+                sum(r.get('sampleKind') == 'CODE_IMPLEMENTATION' for r in eval_rows) < 2):
+            raise RuntimeError('Roblox implementation holdout stratification failed')
+    elif args.task_type == 'roblox':
+        raise RuntimeError('Roblox practice requires v6 disjoint holdout')
     if int(manifest.get('version', 0)) >= 5:
         for name, rows in [('train', train_rows), ('eval', eval_rows)]:
             payload = '\n'.join(json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(',', ':')) for row in rows)
@@ -61,7 +87,7 @@ def practice_validate(args, manifest, train_rows, eval_rows):
             raise RuntimeError('Roblox practice requires original Luau exercises and licensed references')
 
     found_licensed = 0
-    for row in train_rows + eval_rows:
+    for row in train_rows + eval_rows + holdout_rows:
         if row.get('taskType') != args.task_type or row.get('practiceOnly') is not True:
             raise RuntimeError('non-matching practice row reached practice trainer')
         if row.get('runtimePromotionAllowed') is not False or row.get('lifecycle') != 'active':
