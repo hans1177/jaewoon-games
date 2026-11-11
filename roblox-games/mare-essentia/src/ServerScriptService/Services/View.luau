@@ -533,7 +533,15 @@ return function(D, S)
 				nextXp = if rec and rec.level >= D.Specialties.MAX_LEVEL then 0 else D.Specialties.xpForNext(if rec then rec.level else 1),
 			})
 		end
-		view.companions = { max = D.Specialties.MAX_COMPANIONS, list = {} }
+		view.companions = { max = D.Specialties.slotsFor(def.class), list = {}, stations = {} }
+		for _, st in D.Specialties.Stations do
+			local who = state.stations[st.id]
+			local c = who and D.Specialties.CompanionById[who]
+			table.insert(view.companions.stations, {
+				id = st.id, name = st.name, summary = st.summary, seatId = who, seatName = c and c.name,
+				matched = c ~= nil and D.Specialties.CompanionStation[who] == st.id,
+			})
+		end
 		for _, c in D.Specialties.Companions do
 			if not c.nation or c.nation == state.nationId then
 			table.insert(view.companions.list, {
@@ -541,6 +549,7 @@ return function(D, S)
 				name = c.name,
 				summary = c.summary,
 				role = c.role,
+				bestSeat = D.Specialties.StationById[D.Specialties.CompanionStation[c.id] or "boatswain"].name,
 				fee = c.fee,
 				joined = table.find(state.companions, c.id) ~= nil,
 				affinity = state.affinity[c.id] or 0,

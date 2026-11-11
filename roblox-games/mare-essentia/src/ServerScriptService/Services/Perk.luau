@@ -39,7 +39,15 @@ return function(D, S)
 		for _, id in state.companions do
 			local c = Sp.CompanionById[id]
 			if c then
-				table.insert(list, scaled(c.perk, Sp.affinityMult(affinityOf(state, id))))
+				local seat = nil
+				for stId, who in state.stations do
+					if who == id then
+						seat = stId
+					end
+				end
+				-- 자기 직책에 앉으면 x1.2, 엉뚱한 자리나 자리가 없으면 x0.6
+				local fit = if seat ~= nil and seat == Sp.CompanionStation[id] then Sp.STATION_MATCH else Sp.STATION_MISMATCH
+				table.insert(list, scaled(c.perk, Sp.affinityMult(affinityOf(state, id)) * fit))
 			end
 		end
 		for _ = 1, state.escorts do
@@ -167,8 +175,9 @@ return function(D, S)
 		if table.find(state.companions, c.id) then
 			return "이미 함께하고 있어요"
 		end
-		if #state.companions >= Sp.MAX_COMPANIONS then
-			return string.format("동료는 최대 %d명이에요", Sp.MAX_COMPANIONS)
+		local slots = Sp.slotsFor(S.State.shipDef(state).class)
+		if #state.companions >= slots then
+			return string.format("이 배에는 동료가 %d명까지 탈 수 있어요 (큰 배일수록 자리가 많아요)", slots)
 		end
 		if c.nation and c.nation ~= state.nationId then
 			return "다른 주인공의 동료예요"
@@ -185,6 +194,8 @@ return function(D, S)
 		return nil
 	end
 
+	local seatFor
+
 	function handlers.Recruit(state, p)
 		local c = type(p.companionId) == "string" and Sp.CompanionById[p.companionId]
 		if not c then
@@ -196,7 +207,50 @@ return function(D, S)
 		end
 		state.coins -= c.fee
 		table.insert(state.companions, c.id)
-		return true, string.format("%s이(가) 동료가 되었다! (-%d코인)", c.name, c.fee)
+		local seat = seatFor(state, c.id)
+		return true, string.format("%s이(가) 동료가 되었다! (-%d코인) %s 자리에 앉았다", c.name, c.fee, Sp.StationById[seat].name)
+	end
+
+	-- 이 동료를 앉힐 자리: 맞는 직책이 비어 있으면 그 자리, 아니면 처음 빈 자리 (모두 차면 맞는 직책 자리의 주인과 바꾼다)
+	function seatFor(state, id)
+		local want = Sp.CompanionStation[id] or "boatswain"
+		if state.stations[want] == nil then
+			state.stations[want] = id
+			return want
+		end
+		for _, st in Sp.Stations do
+			if state.stations[st.id] == nil then
+				state.stations[st.id] = id
+				return st.id
+			end
+		end
+		return want
+	end
+
+	-- 동료를 다른 자리에 앉힌다. 그 자리에 앉은 동료가 있으면 서로 자리를 바꾼다.
+	function handlers.Station(state, p)
+		local id = type(p.companionId) == "string" and p.companionId
+		local to = type(p.station) == "string" and Sp.StationById[p.station]
+		if not id or not to or not table.find(state.companions, id) then
+			return false, "함께하고 있지 않은 동료예요"
+		end
+		local from = nil
+		for stId, who in state.stations do
+			if who == id then
+				from = stId
+			end
+		end
+		if from == to.id then
+			return false, "이미 그 자리에 앉아 있어요"
+		end
+		local other = state.stations[to.id]
+		state.stations[to.id] = id
+		if from then
+			state.stations[from] = other
+		end
+		local name = Sp.CompanionById[id].name
+		local good = Sp.CompanionStation[id] == to.id
+		return true, string.format("%s을(를) %s 자리에 앉혔다%s", name, to.name, if good then " (직책에 딱 맞아요, 효과 x1.2)" else " (직책과 달라 효과가 줄어요, x0.6)")
 	end
 
 	-- 동료와 대화: 하루에 한 번 호감도 +2. 호감 단계에 따라 다른 이야기를 한다.
@@ -333,6 +387,11 @@ return function(D, S)
 			return false, "함께하고 있지 않아요"
 		end
 		table.remove(state.companions, idx)
+		for stId, who in state.stations do
+			if who == p.companionId then
+				state.stations[stId] = nil
+			end
+		end
 		return true, "동료와 헤어졌다. 다시 영입할 수 있다"
 	end
 
@@ -362,6 +421,9 @@ return function(D, S)
 		cannonBonus = cannonBonus,
 		recruitBlock = recruitBlock,
 		-- 의사 동료: 열병·괴혈병·사기 하락을 줄이는 비율 (최대 80%)
+		seatFor = function(state, id)
+			return seatFor(state, id)
+		end,
 		healReduction = function(state)
 			return math.min(0.8, sum(state, "healMult"))
 		end,

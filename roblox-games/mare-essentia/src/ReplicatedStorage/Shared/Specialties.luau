@@ -172,6 +172,30 @@ local SpecialtyById: { [string]: Specialty } = {}
 for _, s in Specialties do
 	SpecialtyById[s.id] = s
 end
+-- 배의 자리: 한 자리에 동료 한 명. 자기 직책에 앉으면 효과 x1.2, 엉뚱한 자리에 앉으면 x0.6.
+export type Station = { id: string, name: string, summary: string }
+local Stations: { Station } = {
+	{ id = "helm", name = "조타수", summary = "키를 잡는 자리. 항해와 길 찾기에 어울려요" },
+	{ id = "mate", name = "부선장", summary = "선장을 돕는 자리. 장부·보급·사람 관리에 어울려요" },
+	{ id = "boatswain", name = "갑판장", summary = "갑판 일과 선원들을 이끄는 자리. 백병전과 사기에 어울려요" },
+	{ id = "gunner", name = "포술장", summary = "포와 전투를 맡는 자리. 포격과 전투 계산에 어울려요" },
+	{ id = "surgeon", name = "선의", summary = "선원의 몸을 돌보는 자리. 열병·괴혈병에 어울려요" },
+	{ id = "scholar", name = "학자", summary = "관찰과 기록을 맡는 자리. 발견과 도감에 어울려요" },
+}
+local StationById: { [string]: Station } = {}
+for _, st in Stations do
+	StationById[st.id] = st
+end
+-- 동료마다 가장 잘 맞는 자리 (게임 설정)
+local CompanionStation: { [string]: string } = {
+	c_merian = "scholar", c_halley = "helm", c_leeuwenhoek = "surgeon", c_linnaeus = "scholar", c_boyle = "scholar",
+	c_papin = "gunner", c_newton = "gunner", c_huygens = "helm", c_harrison = "helm", c_banks = "scholar",
+	c_lind = "surgeon", c_wren = "boatswain", c_franklin = "scholar", c_galileo = "gunner",
+	t_navigator = "helm", t_gunner = "gunner", t_purser = "mate", t_surgeon = "surgeon",
+	n_england = "scholar", n_netherlands = "mate", n_france = "mate", n_portugal = "helm", n_ottoman = "mate",
+	n_swahili = "boatswain", n_malabar = "boatswain", n_japan = "boatswain", n_new_spain = "boatswain",
+}
+
 local CompanionById: { [string]: Companion } = {}
 for _, c in Companions do
 	CompanionById[c.id] = c
@@ -182,6 +206,23 @@ return {
 	SpecialtyById = SpecialtyById,
 	Companions = Companions,
 	CompanionById = CompanionById,
+	Stations = Stations,
+	StationById = StationById,
+	CompanionStation = CompanionStation,
+	STATION_MATCH = 1.2,
+	STATION_MISMATCH = 0.6,
+	MAX_SLOTS = 6,
+	-- 배 등급별로 함께할 수 있는 동료 수 (캐러벨·플루트 2, 프리깃·갈레온 4, 증기선 5, 철갑선 6)
+	slotsFor = function(shipClass: number): number
+		if shipClass >= 4 then
+			return 6
+		elseif shipClass == 3 then
+			return 5
+		elseif shipClass == 2 then
+			return 4
+		end
+		return 2
+	end,
 	MAX_AFFINITY = 100,
 	-- 호감도 단계: 0~29 낯선 사이(x1.0), 30~69 믿는 사이(x1.15), 70 이상 오랜 벗(x1.3)
 	affinityTier = function(affinity: number): number
