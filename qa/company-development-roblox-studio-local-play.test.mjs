@@ -3930,29 +3930,43 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
 
 
 // [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
-test('Mare image timeout requires official visible Studio Client IsLoaded proof for every asset',()=>{
+test('Mare server media timeout requires full official Client image and sound IsLoaded proof, never partial PASS',()=>{
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  // [원본 계약] 이미지 전 종류는 승인·등록·사용권한을 확인하고, 음원도 기존 AudioIds 전체를 검사한다.
   assert.match(script,/const failed=media\.failedMedia/);
-  assert.match(script,/row\?\.status==='TIMEOUT_16S'/);
-  assert.match(script,/asset\.usePermissionGranted===true/);
+  assert.match(script,/row\?\.status!=='TIMEOUT_16S'/);
+  assert.match(script,/asset\.usePermissionGranted!==true/);
+  assert.match(script,/\(\?:Goods\|Menu\|Portraits\|CardArt\)/);
+  assert.match(script,/AudioIds\.luau/);
+  assert.match(script,/const allRows=\[\.\.\.imageRows,\.\.\.soundRows\]/);
+  assert.match(script,/Number\(media\.imagesSounds\)!==allRows\.length/);
+  assert.match(script,/Number\(media\.registered\)!==Number\(media\.models\)\+allRows\.length/);
+  assert.match(script,/Number\(media\.failed\)!==failed\.length/);
+  assert.match(script,/failedKeys\.size!==failed\.length/);
+  assert.match(script,/byKey\.get\(String\(row\?\.key\|\|''\)\)!==String\(row\?\.id\|\|''\)/);
   assert.match(script,/report\.assetRegistryAudit\?\.status==='PASS'/);
   assert.match(script,/report\.assetAudit\?\.models\?\.status==='PASS'/);
-  assert.match(script,/unique\.size!==imageRows\.length/);
-  assert.match(script,/Number\(media\.imagesSounds\)!==imageRows\.length\+Number\(media\.fetchCallbacks\)/);
+  // [실제 Studio] 30초 동안 실제로 보이는 ImageLabel과 재생하지 않은 Sound 양쪽의 IsLoaded를 확인한다.
   assert.match(script,/const response=await luau\('Client',auditClientCode\)/);
-  assert.match(script,/img\.Visible=true img\.Parent=g labels\[i\]=img/);
-  assert.match(script,/if img\.IsLoaded then loaded\+=1/);
-  assert.match(script,/if not img\.IsLoaded then table\.insert\(missing,rows\[i\]\.key\)/);
+  assert.match(script,/img\.Visible=true img\.Parent=g/);
+  assert.match(script,/if row\.image\.IsLoaded then loaded\+=1/);
+  assert.match(script,/if row\.sound\.IsLoaded then soundLoaded\+=1/);
+  assert.match(script,/if not row\.image\.IsLoaded then table\.insert\(missing,row\.key\)/);
+  assert.match(script,/if not row\.sound\.IsLoaded then table\.insert\(soundMissing,row\.key\)/);
+  assert.match(script,/STUDIO_MEDIA_SOURCE_MISMATCH/);
   assert.match(script,/proof\.expected===imageRows\.length/);
   assert.match(script,/proof\.loaded===imageRows\.length/);
   assert.match(script,/proof\.missing\.length===0/);
-  assert.match(script,/media\.serverPreloadEvidence=\{status:media\.status,failed:media\.failed,failedMedia:media\.failedMedia\}/);
-  assert.match(script,/media\.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_ISLOADED'/);
+  assert.match(script,/proof\.soundExpected===soundRows\.length/);
+  assert.match(script,/proof\.soundLoaded===soundRows\.length/);
+  assert.match(script,/proof\.soundMissing\.length===0/);
+  assert.match(script,/media\.serverPreloadEvidence=\{status:media\.status,failed:media\.failed/);
+  assert.match(script,/media\.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'/);
+  assert.match(script,/STUDIO_MARE_SOUNDS_REAL_CLIENT_LOADED=/);
   assert.match(script,/report\.clientImageAudit=\{status:'UNVERIFIED'/);
   assert.match(script,/STUDIO_CLIENT_IMAGE_RESPONSE_MISSING/);
   assert.doesNotMatch(script,/if\(media\.failed>0\)media\.status='PASS'/);
 });
-
 
 // [대항해시대 실제 Client 45개 실패] GUI ImageLabel은 Decal 자산이 아니라 Image 자산을 등록한다.
 // Asset create·Universe grant 성공 전에 기존 45개 등록 ID를 변경하지 않는다.
