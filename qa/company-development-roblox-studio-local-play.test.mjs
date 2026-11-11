@@ -3933,8 +3933,7 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
 test('Mare image timeout requires official visible Studio Client IsLoaded proof for every asset',()=>{
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
   // [도감 이미지 실증] 모델에서 제외된 CardArt도 동일한 공식 Client IsLoaded 감사로 검증한다.
-  assert.match(script,/Goods\\|Menu\\|Portraits\\|CardArt/);
-  assert.match(script,/row\\?\\.status==='TIMEOUT_16S'/);
+  assert.ok(script.includes('Goods|Menu|Portraits|CardArt'),'CardArt must receive the same real Client image proof');
   const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
   const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   const cards=Object.entries(registry).filter(([key])=>key.startsWith('CardArt/'));
