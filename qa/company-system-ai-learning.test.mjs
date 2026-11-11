@@ -347,7 +347,8 @@ test('verified external AI graphics findings distill into visual rig motion mate
       'verification:success','primary-ai-review:PASS',
       'changed-file:roblox-games/graphics-demo/shared/VisualStyle.luau',
       'external-ai-raw-output-sha256:'+'a'.repeat(64),
-      'external-ai-model:multimodal-critic',
+      'external-ai-provider:GEMINI',
+      'external-ai-model:gemini-3.8-flash',
       'actions-run:graphics-review-1'
     ]
   }]});
