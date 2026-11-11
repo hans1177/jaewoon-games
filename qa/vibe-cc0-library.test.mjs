@@ -171,6 +171,10 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
       ICON:{catalogued:8,eligible3d:0,trials:0,staticMeasured:0,
         unverifiedOrFailed:0,state:'NOT_PRACTICED'}
     },
+    rigStudy:{parent:'actor-barbarian',family:'CHARACTER',sourceSha256:'c'.repeat(64),
+      measured:true,rigPass:false,bones:41,meshParts:14,clipsObserved:76,
+      clipNameCoverage:1,rigFailures:['ORPHAN_MESH:Icosphere','GROUND_OFFSET:-0.2943'],
+      motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false},
     bake:{pass:false,reason:'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP',
       attempts:[{parent:'bench-a',pass:false,trianglesHigh:2000,trianglesLow:500,
         normalDeviation:0.0039,failures:['NOTHING_BAKED:0.0039']}]}
@@ -183,6 +187,13 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(record.domains.RIG.trials,3);
   assert.equal(record.domains.ICON.state,'NOT_PRACTICED');
   assert.equal(record.bake.pass,false);
+  assert.equal(record.rig.latest.rigPass,false);
+  assert.equal(record.rig.latest.bones,41);
+  assert.equal(record.rig.latest.clipNamesObserved,76);
+  assert.equal(record.rig.latest.motionCurvesMeasured,false);
+  assert.equal(record.rig.history['actor-barbarian'].attempts,1);
+  assert.equal(record.rig.history['actor-barbarian'].failed,1);
+  assert.ok(record.rig.latest.failures.includes('ORPHAN_MESH:Icosphere'));
   assert.equal(record.bake.history['bench-a'].attempts,1);
   assert.equal(record.bake.history['bench-a'].sourceSha256,null);
   assert.equal(record.bake.history['bench-a'].failures,1);
@@ -197,16 +208,22 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.equal(next.cumulative.RIG.trials,6);
   assert.equal(next.bake.history['bench-a'].attempts,2);
   assert.equal(next.bake.history['bench-a'].failures,2);
+  assert.equal(next.rig.history['actor-barbarian'].attempts,2);
+  assert.equal(next.rig.history['actor-barbarian'].failed,2);
   assert.equal(next.bake.history['bench-a'].sourceSha256,'a'.repeat(64));
   // 새 원본 SHA가 들어오면 이전 실패 횟수를 초기화한다.
   const third=JSON.parse(fs.readFileSync(path.join(practice,'session.json'),'utf8'));
   third.bake.attempts[0].sourceSha256='b'.repeat(64);
+  third.rigStudy.sourceSha256='d'.repeat(64);
   fs.writeFileSync(path.join(practice,'session.json'),JSON.stringify(third));
   assert.equal(publish({stats:'stats.json',ledger:'build/practice/gym/ledger.json',cwd:work}).published,true);
   const updated=JSON.parse(spawnSync('git',['--git-dir',bare,'show','vibe-gym-data:practice-domains.json'],{encoding:'utf8'}).stdout);
   assert.equal(updated.bake.history['bench-a'].sourceSha256,'b'.repeat(64));
   assert.equal(updated.bake.history['bench-a'].attempts,1);
   assert.equal(updated.bake.history['bench-a'].failures,1);
+  assert.equal(updated.rig.history['actor-barbarian'].sourceSha256,'d'.repeat(64));
+  assert.equal(updated.rig.history['actor-barbarian'].attempts,1);
+  assert.equal(updated.rig.history['actor-barbarian'].failed,1);
 });
 
 test('파이썬·Blender 찾기: 실행 가능한 파이썬을 찾고, 잘못된 Blender 경로는 없는 것으로 본다', () => {
