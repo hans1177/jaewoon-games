@@ -3914,6 +3914,8 @@ local function renderCodexOverview()
 		end)
 	end
 	if view.people then
+		local PEOPLE_CAT_RELIC = { ruler = "shield-round", explorer = "map-rolled", military = "weapon-spear", science = "magnifying-glass", inventor = "hammer", thought = "journal-open",
+			art = "chisel", letters = "journal-closed", merchant = "coin", pirate = "weapon-sword", faith = "lantern" }
 		local pv = view.people
 		add(function() return mkHeader(content, string.format("인물 백과 (기록 %d / %d명)", pv.known, pv.total)) end)
 		add(function() return mkLabel(content, "항구를 찾아가거나 학자를 만나거나 역사 사건을 겪으면 그 시대의 인물이 백과에 기록돼요. 분야를 열어 보세요.", 12, COLORS.muted, false) end)
@@ -3927,9 +3929,11 @@ local function renderCodexOverview()
 		end
 		for _, c in pv.cats do
 			add(function()
-				return mkRow(content, string.format("%s  %d / %d", c.name, c.known, c.total), "", {
+				local row = mkRow(content, string.format("%s  %d / %d", c.name, c.known, c.total), "", {
 					{ text = "열기", color = COLORS.blue, onClick = function() codexField = "p:" .. c.id; render() end },
-				}, 48)
+				}, 56)
+				withIcon(row, "Relics", PEOPLE_CAT_RELIC[c.id] or "key", nil, 40)
+				return row
 			end)
 		end
 	end
@@ -4027,6 +4031,8 @@ if string.sub(codexField, 1, 2) == "p:" then
 		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
 	end)
 	add(function() return mkLabel(content, string.format("인물 백과 · %s  %d / %d", cat.name, cat.known, cat.total), 17, COLORS.gold, true) end)
+	local PEOPLE_RELIC = { ruler = "shield-round", explorer = "map-rolled", military = "weapon-spear", science = "magnifying-glass", inventor = "hammer", thought = "journal-open",
+		art = "chisel", letters = "journal-closed", merchant = "coin", pirate = "weapon-sword", faith = "lantern" }
 	local n = 0
 	for _, p in view.people.list do
 		if p.cat == cid then
@@ -4034,9 +4040,19 @@ if string.sub(codexField, 1, 2) == "p:" then
 			add(function()
 				if p.known then
 					local sub = p.bio .. (if p.legacy ~= "" then "\n" .. p.legacy else "") .. (if p.rel then "\n" .. p.rel else "")
-					return mkRow(content, p.name .. "  (" .. p.years .. ")", sub, {}, 92)
+					local row = mkRow(content, p.name .. "  (" .. p.years .. ")", sub, {}, 104)
+					-- 등록된 초상이 있으면 초상, 없으면 분야 유물 그림 (학자: scholar_<id>, 그 밖의 인물: person_<id>)
+					local key = if AssetIds["Portraits/scholar_" .. p.id] then "scholar_" .. p.id elseif AssetIds["Portraits/person_" .. p.id] then "person_" .. p.id else nil
+					if key then
+						withIcon(row, "Portraits", key, nil, 72)
+					else
+						withIcon(row, "Relics", PEOPLE_RELIC[cid] or "key", nil, 56)
+					end
+					return row
 				end
-				return mkRow(content, string.format("??? #%d", n), p.hint, {}, 56)
+				local row = mkRow(content, string.format("??? #%d", n), p.hint, {}, 60)
+				withIcon(row, "Relics", "key", nil, 44)
+				return row
 			end)
 		end
 	end
