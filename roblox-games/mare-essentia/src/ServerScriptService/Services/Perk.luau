@@ -89,7 +89,7 @@ return function(D, S)
 	end
 
 	local function speedMult(state)
-		return 1 + sum(state, "speedMult") + (if S.Knowledge then S.Knowledge.speedBonus(state) else 0)
+		return 1 + sum(state, "speedMult") + (if S.Knowledge then S.Knowledge.speedBonus(state) else 0) + (if S.Build then S.Build.speedBonus(state) else 0)
 	end
 
 	local function sellBonus(state)
@@ -97,7 +97,7 @@ return function(D, S)
 	end
 
 	local function cannonBonus(state)
-		return sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0)
+		return sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0)
 	end
 
 	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"

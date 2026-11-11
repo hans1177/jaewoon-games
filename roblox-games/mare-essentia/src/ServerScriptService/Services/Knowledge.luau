@@ -183,6 +183,7 @@ return function(D, S)
 			end
 		end
 		techBonus += 0.01 * (K.eraIndex(state) - 1)
+		techBonus += S.Build.researchBonus(state, portId)
 		return math.min(0.3, (lvl - 1) * 0.03 + understood * 0.005 + techBonus), lvl, discs
 	end
 

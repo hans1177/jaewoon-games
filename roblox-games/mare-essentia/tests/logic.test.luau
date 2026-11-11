@@ -34,6 +34,7 @@ local D = {
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	Stocks = require("./Shared/Stocks"),
+	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -2109,6 +2110,44 @@ do
 	stH.day += 11
 	S.History.tick(stH)
 	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	-- 항구 건물 계통
+	local PB = D.PortBuildings
+	local pbBad = nil
+	for _, chain in PB.Chains do
+		for _, st in chain.stages do
+			if st.node and not D.KnowledgeTree.ById[st.node] then pbBad = chain.id .. ":" .. st.node end
+			if st.era and not D.KnowledgeTree.Eras[st.era] then pbBad = chain.id .. ":era" end
+		end
+	end
+	check("건물계통: 자료가 올바름", pbBad == nil, pbBad)
+	local stP = newState("england") -- 1700
+	stP.portId = "london"
+	stP.coins = 1000000
+	stP.harbor.london = 99999
+	check("건물계통: 첫 단계 건축", select(1, act(stP, "BuildStage", { chain = "trade" })) == true and S.Build.stageOf(stP, "london", "trade") == 1)
+	check("건물계통: 지식이 없으면 다음 단계 불가", select(1, act(stP, "BuildStage", { chain = "trade" })) == false)
+	stP.reported.lang_hanse_trade = true
+	check("건물계통: 지식을 이해하면 길드 회관", select(1, act(stP, "BuildStage", { chain = "trade" })) == true and S.Build.stageOf(stP, "london", "trade") == 2)
+	local r1 = S.Trade.sellRateFor and nil
+	check("건물계통: 판매 비율 가산은 지은 항구에서만", S.Build.sellBonus(stP) > 0 and (function() stP.portId = "amsterdam" local z = S.Build.sellBonus(stP) stP.portId = "london" return z end)() == 0)
+	stP.reported.good_sugar = true
+	act(stP, "BuildStage", { chain = "trade" })
+	check("건물계통: 1694년 이전이면 은행·증권소 불가 / 1700년에는 지식만 있으면", select(1, act(stP, "BuildStage", { chain = "trade" })) == false)
+	stP.reported.good_silk = true
+	check("건물계통: 은행과 증권소(1694년~)", select(1, act(stP, "BuildStage", { chain = "trade" })) == true)
+	check("건물계통: 1750년 이후 건물은 1700년에 불가", select(1, act(stP, "BuildStage", { chain = "trade" })) == false)
+	act(stP, "BuildStage", { chain = "ship" })
+	check("건물계통: 선착장의 속도 효과가 합산됨", S.Build.speedBonus(stP) > 0)
+	local viewP = S.View.build(stP, ctx)
+	check("건물계통: 화면에 계통이 담김", viewP.portBuildings ~= nil and #viewP.portBuildings == #PB.Chains)
+	local backP = S.State.sanitize(S.State.serialize(stP))
+	check("건물계통: 저장/불러오기", backP.portStages.london.trade == 4)
+	check("건물계통: 잘못된 계통 거부", select(1, act(stP, "BuildStage", { chain = "castle" })) == false)
+	local chron = S.View.build(newState("england"), ctx).history.chronicle
+	check("역사서: 연대기에 모든 사건이 연도순", #chron == #HE.Events and chron[1].year <= chron[#chron].year)
+	local futureHidden = false
+	for _, c in chron do if not c.known and c.title == "???" then futureHidden = true end end
+	check("역사서: 아직 오지 않은 사건은 가려짐", futureHidden)
 	-- 증권거래소
 	local SKD = D.Stocks
 	local stS = newState("england") -- 1700

@@ -2374,6 +2374,21 @@ local function renderHarbor()
 		end
 	end
 
+	if view.portBuildings then
+		section("항구 건물 계통 (상인 조합소에서 은행까지, 항구도 단계마다 발전해요)")
+		for _, ch in view.portBuildings do
+			add(function()
+				local sub = string.format("%d / %d단계%s", ch.stage, ch.total, if ch.built ~= "" then " · " .. ch.built else "")
+				if ch.next then
+					sub ..= string.format("\n다음: %s (%d코인) — %s\n%s", ch.next.name, ch.next.cost, if ch.next.can then "지을 수 있어요" else tostring(ch.next.why), ch.next.lore)
+				end
+				return mkRow(content, ch.name, sub, {
+					{ text = "건축", color = COLORS.gold, onClick = function() call("BuildStage", { chain = ch.id }) end, enabled = ch.next ~= nil and ch.next.can },
+				}, 112)
+			end)
+		end
+	end
+
 	if fac.guild then
 		section("상인 길드")
 		local g = view.guild
@@ -3895,6 +3910,13 @@ local function renderCodexOverview()
 		end
 		for _, r in hv.recent do
 			add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
+		end
+		add(function() return mkHeader(content, "역사서 · 연대기 (시대가 지나야 읽을 수 있어요)") end)
+		for _, ch in hv.chronicle or {} do
+			add(function()
+				local sub = if ch.known then ch.text .. (if ch.choice then "\n▶ 나의 선택: " .. ch.choice else "") else ch.text
+				return mkRow(content, string.format("%d년 · %s%s", ch.year, ch.title, if ch.tag then "  [" .. ch.tag .. "]" else ""), sub, {}, if ch.known then 84 else 44)
+			end)
 		end
 		for _, e in hv.effects do
 			add(function() return mkLabel(content, string.format("진행 중인 시세 변화: %s (%d일 남음)", e.title or "", e.left), 12, COLORS.green, false) end)
