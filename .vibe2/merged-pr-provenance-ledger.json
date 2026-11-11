@@ -184618,11 +184618,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_13a9d5c4d0be682288063ac5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12455",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "483b4a86d44e4d5d87979046437440d941a553ef",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12455,
+        "baseBranch": "main",
+        "headBranch": "vibe/llm-model-discovery",
+        "baseSha": "483b4a86d44e4d5d87979046437440d941a553ef",
+        "headSha": "01ae5d76a909277b4297a022259ecc92db57fb21",
+        "mergeCommitSha": "7843688f66a926eebd144e52f6ef3476daf07f84",
+        "mergedAt": "2026-11-11T04:58:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e0f969eb3550ee112274f325399f1c3def74446ddb30ecbd62acb1848254e833",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/llm-model-discovery",
+        "candidateSha": "01ae5d76a909277b4297a022259ecc92db57fb21"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 19,
+        "addedLineCount": 1264,
+        "deletedLineCount": 52,
+        "changedFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          ".github/workflows/vibe2-practice-cpu-fallback.yml",
+          "company-learning/roblox-practice.json",
+          "qa/vibe-brain.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-mesh-audit.test.mjs",
+          "qa/vibe-practice-session.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-learning-practice-worker.test.mjs",
+          "qa/vibe2-licensed-reference-learning.test.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-llm.mjs",
+          "tools/vibe-mesh-audit.mjs",
+          "tools/vibe-practice-session.mjs",
+          "tools/vibe2-learning-practice-worker.mjs",
+          "tools/vibe2-licensed-reference-samples.mjs",
+          "tools/vibe2-practice-dataset.mjs",
+          "tools/vibe2-practice-train.py",
+          "tools/vibe_mesh_audit.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          ".github/workflows/vibe2-practice-cpu-fallback.yml",
+          "company-learning/roblox-practice.json",
+          "qa/vibe-brain.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-mesh-audit.test.mjs",
+          "qa/vibe-practice-session.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-learning-practice-worker.test.mjs",
+          "qa/vibe2-licensed-reference-learning.test.mjs",
+          "tools/vibe-gym-publish.mjs",
+          "tools/vibe-llm.mjs",
+          "tools/vibe-mesh-audit.mjs",
+          "tools/vibe-practice-session.mjs",
+          "tools/vibe2-learning-practice-worker.mjs",
+          "tools/vibe2-licensed-reference-samples.mjs",
+          "tools/vibe2-practice-dataset.mjs",
+          "tools/vibe2-practice-train.py",
+          "tools/vibe_mesh_audit.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12455",
+        "merge-commit:7843688f66a926eebd144e52f6ef3476daf07f84",
+        "base-main:483b4a86d44e4d5d87979046437440d941a553ef"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1474
+    "total": 1475
   }
 }
