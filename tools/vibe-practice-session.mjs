@@ -111,8 +111,9 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       const prior=JSON.parse(fs.readFileSync(path.resolve(repoRoot,bakeHistoryPath),'utf8'));
       if(prior?.bake?.history&&typeof prior.bake.history==='object')bakeHistory=prior.bake.history;
     }catch{}
-    const selected=selectBakeParents(sourcePool.map(p=>({...p,
-      file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)})),3,bakeHistory);
+    const sourceCandidates=sourcePool.map(p=>({...p,
+      file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)}));
+    const selected=selectBakeParents(sourceCandidates,3,bakeHistory);
     const attempts=[];
     for(const bp of selected){
       try{
@@ -120,13 +121,14 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         const rec=runBake({parent:path.isAbsolute(bp.file)?bp.file:path.join(repoRoot,bp.file),
           ratio,size:128,out:path.join(out,'bake')});
         const verdict=evaluateBake(rec);
-        attempts.push({parent:bp.id,sourceTriangles:bp.sourceProfile.triangles,
+        attempts.push({parent:bp.id,sourceSha256:bp.sourceSha256,
+          sourceTriangles:bp.sourceProfile.triangles,
           sourceType:bp.sourceProfile.sourceType,ratio,...verdict,
           trianglesHigh:rec.trianglesHigh,trianglesLow:rec.trianglesLow,
           normalDeviation:rec.normalDeviation});
         if(verdict.pass)break;
       }catch(e){
-        attempts.push({parent:bp.id,pass:false,
+        attempts.push({parent:bp.id,sourceSha256:bp.sourceSha256,pass:false,
           error:String(e.message||e).slice(0,200)});
       }
     }
@@ -134,7 +136,9 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       pass:attempts.some(x=>x.pass===true),
       bestPassed:attempts.find(x=>x.pass===true)?.parent||null,
       sourceCandidates:selected.length}:
-      {pass:false,reason:'NO_APPROVED_STATIC_HIGH_DETAIL_SOURCE',sourceCandidates:0,attempts:[]};
+      {pass:false,reason:selectBakeParents(sourceCandidates,1).length?
+        'NO_UNTRIED_HIGH_DETAIL_SOURCE':'NO_APPROVED_STATIC_HIGH_DETAIL_SOURCE',
+        sourceCandidates:0,attempts:[]};
     if(!session.bake.pass)session.assetCoverage.bakeShortage=session.bake.reason||
       'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP';
   }
