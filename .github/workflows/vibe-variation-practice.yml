@@ -23,6 +23,13 @@ on:
       - 'qa/vibe-mesh-audit.test.mjs'
       - 'qa/vibe-cc0-library.test.mjs'
       - '.github/workflows/vibe-variation-practice.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/vibe_mesh_audit.py'
+      - 'tools/vibe-mesh-audit.mjs'
+      - 'qa/vibe-mesh-audit.test.mjs'
+      - '.github/workflows/vibe-variation-practice.yml'
   schedule:
     # 5분마다(GitHub cron 최소 단위). 진짜 매분은 로컬 PC에서 tools/vibe-practice-loop.mjs 가 한다(60초 루프).
     # 비용을 줄이려면 저장소 변수 VIBE_GYM_CLOUD=off 로 클라우드 연습만 끌 수 있다(로컬 루프는 영향 없음).
@@ -41,11 +48,36 @@ permissions:
   contents: write
   actions: write
 concurrency:
-  group: vibe-variation-practice
+  # PR의 리그 실제 QA는 기존 main 연습 실행과 서로 대기열을 막지 않는다.
+  group: ${{ github.event_name == 'pull_request' && format('vibe-variation-practice-pr-{0}', github.event.pull_request.number) || 'vibe-variation-practice' }}
   cancel-in-progress: false
 jobs:
+  # [실제 리그 수리 계약] 기존 블렌더 연습 워크플로 내 PR 전용 읽기 전용 QA.
+  rig-native-qa:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender for actual CC0 model regression
+        run: |
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list; do
+            if [ -f "$source" ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$source"
+            fi
+          done
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 update
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+      - name: Verify real mesh removal ground and unchanged animations
+        env:
+          VIBE2_BLENDER_BINARY: blender
+        run: |
+          python3 -m py_compile tools/vibe_mesh_audit.py
+          node --test qa/vibe-mesh-audit.test.mjs
   practice-cloud:
-    if: ${{ vars.VIBE_GYM_CLOUD != 'off' }}
+    if: ${{ github.event_name != 'pull_request' && vars.VIBE_GYM_CLOUD != 'off' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -74,6 +106,10 @@ jobs:
           sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 update
           sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           python3 -m pip install --quiet pillow numpy
+      - name: Validate actual CC0 rig repair and motion preservation
+        env:
+          VIBE2_BLENDER_BINARY: blender
+        run: node --test qa/vibe-mesh-audit.test.mjs
       - name: Pull learned stats and learned lights
         run: |
           node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
@@ -121,7 +157,7 @@ jobs:
           if-no-files-found: warn
 
   practice-local:
-    if: ${{ vars.VIBE_GYM_LOCAL == 'true' }}
+    if: ${{ github.event_name != 'pull_request' && vars.VIBE_GYM_LOCAL == 'true' }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 40
     env:

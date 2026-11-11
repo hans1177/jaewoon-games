@@ -2,7 +2,7 @@
 # 캐릭터 .blend/.glb 의 메쉬·리그 품질을 숫자로 검사한다. (Blender 또는 pip bpy 필요)
 # 사용: blender --background --python tools/vibe_mesh_audit.py -- --input hero.blend --output audit.json
 # 판정은 tools/vibe-mesh-audit.mjs 가 한다. 이 파일은 측정만 한다.
-import bpy, sys, json, argparse, math, re
+import bpy, sys, json, argparse, math, re, struct
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -24,8 +24,55 @@ for _a in bpy.data.objects:
         _a.data.pose_position = 'REST'
 bpy.context.view_layer.update()
 dg = bpy.context.evaluated_depsgraph_get()
-meshes = [o for o in bpy.data.objects if o.type == 'MESH']
+imported_meshes = [o for o in bpy.data.objects if o.type == 'MESH']
 arms = [o for o in bpy.data.objects if o.type == 'ARMATURE']
+
+# [원본 대조] Blender glTF 임포터가 뼈 표시용 Icosphere(42 정점/80 면)를
+# 파일에 없는 별도 메쉬로 생성한다. 이 물체를 원본 결함으로 판정하면
+# 독립 메쉬/접지 오검출이 된다. 실제 GLB 씬 메쉬 이름과 개수의 완전 일치,
+# 원본 스킨/모션 존재, 비부모/비가중치 조건을 전부 만족할 때만 제외한다.
+source_mesh_names = []
+source_mesh_count = None
+excluded_import_helpers = []
+if args.input.lower().endswith('.glb') and arms:
+    try:
+        from pathlib import Path
+        blob = Path(args.input).read_bytes()
+        if len(blob) < 28 or len(blob) > 256 * 1024 * 1024:
+            raise ValueError('INVALID_GLB_SIZE')
+        magic, version, total = struct.unpack_from('<4sII', blob)
+        if magic != b'glTF' or version != 2 or total != len(blob):
+            raise ValueError('INVALID_GLB_HEADER')
+        json_len, json_type = struct.unpack_from('<I4s', blob, 12)
+        if json_type != b'JSON' or json_len <= 0 or json_len > len(blob) - 20:
+            raise ValueError('INVALID_GLB_JSON_CHUNK')
+        doc = json.loads(blob[20:20 + json_len].decode('utf8').rstrip(' \x00'))
+        if doc.get('skins') and doc.get('animations') and doc.get('scenes'):
+            nodes = doc.get('nodes', [])
+            source_mesh_names = [str(n.get('name') or doc['meshes'][n['mesh']].get('name') or '')
+                                 for n in nodes if isinstance(n.get('mesh'), int)]
+            source_mesh_count = len(source_mesh_names)
+            phantom = [o for o in imported_meshes if o.name == 'Icosphere' and
+                       len(o.data.vertices) == 42 and len(o.data.polygons) == 80 and
+                       o.parent is None and not o.vertex_groups and not o.modifiers and
+                       o.data.shape_keys is None]
+            real_names = sorted(o.name for o in imported_meshes if o not in phantom)
+            if (len(phantom) == 1 and len(imported_meshes) == len(source_mesh_names) + 1 and
+                real_names == sorted(source_mesh_names) and
+                all(n.get('name') != 'Icosphere' for n in nodes) and
+                all(me.get('name') != 'Icosphere' for me in doc.get('meshes', []))):
+                excluded_import_helpers = phantom
+    except (ValueError, TypeError, KeyError, IndexError, OSError, struct.error):
+        # 원본과 동일하다는 증거가 불완전하면 메쉬를 하나도 제외하지 않는다.
+        pass
+meshes = [o for o in imported_meshes if o not in excluded_import_helpers]
+import_helper_evidence = {
+    'verified': bool(excluded_import_helpers),
+    'sourceMeshNodes': source_mesh_count,
+    'importedMeshObjects': len(imported_meshes),
+    'excludedImportOnlyMeshes': [o.name for o in excluded_import_helpers],
+}
+
 
 # 기본 UV 구/큐브/원기둥이 만드는 정점·면 수 (bpy.ops.mesh.primitive_* 기본값과 흔한 변형)
 PRIMITIVE_SIGNATURES = {(8, 6), (362, 384), (482, 512), (114, 112), (26, 24), (42, 40), (50, 48), (98, 96), (32, 34), (64, 66)}
@@ -211,61 +258,24 @@ result = {
     'height': round(height, 4),
     'groundOffsetRatio': round(all_lo.z / height, 4),
     'groundEvidence': ground_evidence,
+    'importHelperEvidence': import_helper_evidence,
     'meshes': rows,
     'symmetry': pairs,
     'actions': acts,
     'triangles': sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in meshes),
 }
-# [격리 수리 연습] 원본은 읽기만 한다. 메쉬 한 개가 독립된 바닥 외부 보조체임이
-# 계측으로 입증된 경우에만 별도 GLB 후보를 만들고, 실제 합격은 재검사에 맡긴다.
-# Icosphere라는 이름만으로 임의 삭제하지 않는다. 게임 적용/승격 권한은 없다.
+# [실측 안전장치] 원본에 없는 임포터 보조 메쉬는 측정에서만 제외한다.
+# 검증되지 않은 실제 GLB 노드를 자동 삭제/재내보내기 하지 않는다.
+# 수리 후보를 억지로 만들거나 애니메이션을 잃게 하는 경로는 차단한다.
 if args.candidate_output:
-    candidate = {'attempted': True, 'created': False, 'reason': 'UNSAFE_OR_UNPROVEN_STRAY_MESH',
-                 'originalPreserved': True, 'nativeRuntimeVerified': False,
-                 'gameApplied': False, 'productionPromotionAllowed': False}
-    orphan_rows = [r for r in rows if r['orphan']]
-    suspected = orphan_rows[0] if len(orphan_rows) == 1 else None
-    eligible = (
-        len(arms) == 1 and suspected is not None and
-        suspected['name'] == 'Icosphere' and lowest and
-        lowest[1] == suspected['name'] and bound_lowest is not None and
-        suspected['name'] in ground_evidence['orphanMeshesBelowBoundGround'] and
-        len(result['actions']) > 0
-    )
-    if eligible:
-        orphan_obj = bpy.data.objects.get(suspected['name'])
-        eligible = (orphan_obj is not None and orphan_obj.type == 'MESH' and
-                    not orphan_obj.vertex_groups and not orphan_obj.modifiers and
-                    not orphan_obj.data.shape_keys and orphan_obj.parent is None)
-    if eligible:
-        from pathlib import Path
-        target = Path(args.candidate_output).resolve()
-        origin = Path(args.input).resolve()
-        if target != origin and target.suffix.lower() == '.glb' and target.parent.is_dir():
-            try:
-                bpy.data.objects.remove(orphan_obj, do_unlink=True)
-                correction = -bound_lowest[0]
-                # 모두 같은 이동량을 적용하며 부모가 있는 부품은 부모를 따라간다.
-                for obj in bpy.data.objects:
-                    if obj.parent is None and obj.type in {'ARMATURE', 'MESH', 'EMPTY'}:
-                        obj.location.z += correction
-                bpy.context.view_layer.update()
-                bpy.ops.export_scene.gltf(
-                    filepath=str(target), export_format='GLB',
-                    export_animations=True, export_morph=True)
-                if target.is_file() and target.stat().st_size > 0:
-                    candidate.update({'created': True, 'reason': 'STRAY_HELPER_REMOVED_IN_DERIVED_CANDIDATE',
-                                      'removedMesh': suspected['name'],
-                                      'originShiftZ': round(correction, 5)})
-                else:
-                    candidate['reason'] = 'EMPTY_CANDIDATE_EXPORT'
-            except (RuntimeError, ValueError, OSError) as exc:
-                candidate['reason'] = 'CANDIDATE_EXPORT_FAILED:' + type(exc).__name__
-                try:
-                    target.unlink(missing_ok=True)
-                except OSError:
-                    pass
-    result['candidate'] = candidate
+    result['candidate'] = {
+        'attempted': True, 'created': False,
+        'reason': 'IMPORT_ONLY_HELPER_EXCLUDED_NO_SOURCE_REPAIR_NEEDED'
+                  if excluded_import_helpers else 'UNSAFE_OR_UNPROVEN_STRAY_MESH',
+        'originalPreserved': True,
+        'nativeRuntimeVerified': False, 'gameApplied': False,
+        'productionPromotionAllowed': False,
+    }
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import crypto from 'node:crypto';
 import {evaluateAudit,evaluateMotionCurves,measure,blenderAvailable} from '../tools/vibe-mesh-audit.mjs';
 
 const good=()=>({armatures:[{name:'Rig',bones:20,roots:1}],height:2,groundOffsetRatio:0.002,triangles:9000,actions:[{name:'Idle'}],
@@ -108,4 +109,46 @@ test('실제 Blender: 캐릭터 공장 결과가 리그 검사를 통과하고 �
   assert.deepEqual(v.failures,[]);
   assert.ok(v.stats.bones>=40&&v.stats.actions>=6);
   assert.equal(v.productionEligible,false); // 구·큐브로 만든 인형은 제품 에셋 후보가 아니다
+});
+
+ 
+// [실제 CC0 검증] GLB 원본에 존재하지 않는 Blender 본 표시용 보조 메쉬만 제외한다.
+// 단 하나라도 일치하지 않으면 원본 메쉬를 무시하지 않으며, 합격 판정은 기존 검사를 쓴다.
+test('실제 Blender: 원본 GLB 대조로 임포터 보조 메쉬만 제외하고 본·모션을 보존한다',
+  {skip:!blenderAvailable()&&'Blender/bpy 없음',timeout:180000}, () => {
+  const source=path.resolve('assets/roblox/actors/native/skeleton-minion.glb');
+  assert.ok(fs.existsSync(source),'승인된 CC0 원본 모델 누락');
+  const checksum=()=>crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+  const beforeSha=checksum();
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-rig-source-audit-'));
+  const candidate=path.join(dir,'candidate.glb');
+  try{
+    const bytes=fs.readFileSync(source);
+    const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+    const originalNodes=(gltf.nodes||[]).filter(n=>Number.isInteger(n.mesh));
+    assert.equal(originalNodes.length,9);
+    assert.ok(originalNodes.every(n=>n.name!=='Icosphere'));
+    const raw=measure(source,{out:path.join(dir,'source.json'),candidateOutput:candidate});
+    const verdict=evaluateAudit(raw);
+    const curves=evaluateMotionCurves(raw.actions||[]);
+    assert.equal(raw.importHelperEvidence?.verified,true,
+      JSON.stringify(raw.importHelperEvidence));
+    assert.equal(raw.importHelperEvidence?.sourceMeshNodes,9);
+    assert.equal(raw.importHelperEvidence?.importedMeshObjects,10);
+    assert.deepEqual(raw.importHelperEvidence?.excludedImportOnlyMeshes,['Icosphere']);
+    assert.equal(raw.meshes.length,9);
+    assert.ok(raw.meshes.every(m=>m.name!=='Icosphere'));
+    assert.equal(verdict.pass,true,JSON.stringify(verdict.failures));
+    assert.ok(Math.abs(raw.groundOffsetRatio)<=0.03);
+    assert.equal(verdict.stats.bones,41);
+    assert.equal(curves.validMovingClips,85);
+    assert.equal(curves.movingBoneCurves,8358);
+    // 원본 결함이 아니므로 파생 GLB나 새 애니메이션은 생성하지 않는다.
+    assert.equal(raw.candidate?.created,false);
+    assert.equal(raw.candidate?.reason,'IMPORT_ONLY_HELPER_EXCLUDED_NO_SOURCE_REPAIR_NEEDED');
+    assert.equal(fs.existsSync(candidate),false);
+    assert.equal(checksum(),beforeSha,'원본 해시가 달라짐');
+  }finally{
+    fs.rmSync(dir,{recursive:true,force:true});
+  }
 });
