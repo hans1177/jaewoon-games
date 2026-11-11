@@ -143,3 +143,18 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
     assert.match(trainer,/args\.task_type not in \('unity', 'roblox'\)/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('24시간 기존 로컬 CPU 학습기가 로블록스 공개 코드 연습을 우선 실행한다',()=>{
+  const wf=fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml','utf8');
+  assert.match(wf,/prepare-roblox-practice:/);
+  assert.match(wf,/roblox-practice-train:/);
+  assert.match(wf,/--drills company-learning\/roblox-practice\.json/);
+  assert.match(wf,/--task-type roblox/);
+  assert.match(wf,/'--task-type', 'roblox'/);
+  assert.match(wf,/ROBLOX_STUDIO_RUNTIME_VERIFIED=NO/);
+  assert.match(wf,/ROBLOX_MODEL_AUTO_PROMOTION=NO/);
+  assert.match(wf,/PRACTICE_PROMOTION_STATE=UNVERIFIED/);
+  assert.match(wf,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
+  assert.match(wf,/if: github\.event_name != 'schedule'/);
+  assert.match(wf,/cpu-practice-train:/);
+});

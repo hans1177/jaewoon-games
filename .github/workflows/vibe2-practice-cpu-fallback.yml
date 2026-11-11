@@ -88,7 +88,49 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  prepare-roblox-practice:
+    # 기존 샘플 준비 흐름을 공유하며 외부 네트워크/유료 API/게임 배포 권한은 부여하지 않는다.
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      LEARNING_FOCUS: ROBLOX_CODING_ONLY
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare pinned MIT and Apache Roblox Luau reference samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          samples="$RUNNER_TEMP/roblox-licensed-practice-samples-cpu"
+          dataset="$RUNNER_TEMP/roblox-practice-preflight"
+          node tools/vibe2-licensed-reference-samples.mjs \
+            --drills company-learning/roblox-practice.json \
+            --out "$samples" --max 96
+          sample_count=$(find "$samples" -maxdepth 1 -type f -name 'roblox-ref-*.json' | wc -l | tr -d ' ')
+          test "$sample_count" -eq 25
+          node tools/vibe2-practice-dataset.mjs \
+            --input "$samples" --out "$dataset" --min-samples 20 --task-type roblox
+          node --test qa/vibe2-licensed-reference-learning.test.mjs
+          echo "ROBLOX_LICENSED_REFERENCE_SAMPLES=$sample_count"
+          echo 'ROBLOX_PRACTICE_AUTHORITY=PRACTICE_ONLY'
+          echo 'ROBLOX_STUDIO_RUNTIME_VERIFIED=NO'
+          echo 'ROBLOX_MODEL_AUTO_PROMOTION=NO'
+      - name: Upload Roblox licensed practice samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-licensed-practice-samples-cpu
+          path: ${{ runner.temp }}/roblox-licensed-practice-samples-cpu
+          retention-days: 1
+          if-no-files-found: error
+
   cpu-practice-train:
+    # 정기 학습은 Roblox를 우선한다. Unity는 수동/소스 변경 시 기존 학습 경로 유지.
+    if: github.event_name != 'schedule'
     needs: prepare-practice
     concurrency:
       group: vibe2-unity-practice-local-training
@@ -210,6 +252,135 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-cpu-practice-learning-receipt
+          path: ${{ env.PRACTICE_RECEIPT }}
+          retention-days: 1
+          if-no-files-found: error
+
+
+  roblox-practice-train:
+    needs: prepare-roblox-practice
+    env:
+      LEARNING_FOCUS: ROBLOX_CODING_ONLY
+    concurrency:
+      group: vibe2-unity-practice-local-training
+      cancel-in-progress: false
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Provision local Python and ML stack
+        run: .\tools\vibe2-bootstrap-python.ps1
+      - name: Confirm CPU fallback is required
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & $env:PYTHON_EXE -c "import torch; print('CPU_FALLBACK_CUDA_AVAILABLE=' + str(torch.cuda.is_available())); print('CPU_FALLBACK_DEVICE=' + ('cuda' if torch.cuda.is_available() else 'cpu'))"
+          if ($LASTEXITCODE -ne 0) { throw 'PyTorch device probe failed' }
+      - name: Download licensed Roblox Luau practice samples
+        uses: actions/download-artifact@v4
+        with:
+          name: roblox-licensed-practice-samples-cpu
+          path: ${{ runner.temp }}/roblox-licensed-practice-samples-cpu
+      - name: Build mixed practice-only dataset
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $samples = Join-Path $env:RUNNER_TEMP 'roblox-licensed-practice-samples-cpu'
+          $datasetDir = Join-Path $env:RUNNER_TEMP "roblox-practice-cpu-$env:GITHUB_RUN_ID"
+          node tools/vibe2-practice-dataset.mjs --input $samples --out $datasetDir --min-samples 20 --task-type roblox
+          if ($LASTEXITCODE -ne 0) { throw 'practice dataset build failed' }
+          $manifestPath = Join-Path $datasetDir 'manifest.json'
+          $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset safety gate failed' }
+          if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 20) { throw 'licensed Unity reference samples missing from dataset' }
+          "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
+          Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"
+          Write-Host "PRACTICE_LICENSED_REFERENCE_TOTAL=$($manifest.stats.licensedReferenceTotal)"
+          Write-Host "PRACTICE_SOURCE_KINDS=$($manifest.sourceKinds -join ',')"
+      - name: Train Roblox CPU LoRA adapter
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
+          $adapterVersion = "roblox-practice-licensed-cpu-$env:GITHUB_RUN_ID"
+          $adapterDir = Join-Path $root "adapters\roblox-practice\$adapterVersion"
+          if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
+          $trainArgs = @(
+            'tools/vibe2-practice-train.py',
+            '--train', (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl'),
+            '--eval', (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl'),
+            '--dataset-manifest', (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json'),
+            '--output', $adapterDir,
+            '--adapter-version', $adapterVersion,
+            '--task-type', 'roblox',
+            '--method', 'lora',
+            '--epochs', '1.0',
+            '--max-length', '256',
+            '--batch-size', '1',
+            '--grad-accum', '1',
+            '--final-eval-only',
+            '--cpu-practice-recovery'
+          )
+          & $env:PYTHON_EXE @trainArgs
+          if ($LASTEXITCODE -ne 0) {
+            # A Windows CPU job may end after most of the epoch with no Python
+            # traceback. Resume ONE time only from its exact Trainer checkpoint.
+            $checkpointRoot = Join-Path $adapterDir 'checkpoints'
+            $complete = @(Get-ChildItem $checkpointRoot -Directory -Filter 'checkpoint-*' -ErrorAction SilentlyContinue | Where-Object {
+              (Test-Path (Join-Path $_.FullName 'trainer_state.json')) -and
+              (Test-Path (Join-Path $_.FullName 'optimizer.pt'))
+            })
+            if ($complete.Count -eq 0) { throw 'CPU practice LoRA training failed without verified checkpoint' }
+            Write-Host 'WINDOWS_CPU_PRACTICE_RESUME=VERIFIED_CHECKPOINT'
+            & $env:PYTHON_EXE @trainArgs '--resume-checkpoint'
+            if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training retry failed' }
+          }
+          $metadataPath = Join-Path $adapterDir 'training-metadata.json'
+          $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
+          if ($metadata.containsLicensedReference -ne $true -or $metadata.licensedReferenceSamples -lt 20) { throw 'adapter metadata lost licensed-reference provenance' }
+          if ($metadata.finalEvalOnly -ne $true) { throw 'single-final-eval optimization was not applied' }
+          $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
+          if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
+          $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $receipt = [ordered]@{
+            version = 3
+            adapterVersion = $adapterVersion
+            method = 'lora'
+            device = 'cpu'
+            baseModel = $metadata.baseModel
+            trainLoss = $metadata.trainMetrics.train_loss
+            evalLoss = $metadata.evalMetrics.eval_loss
+            finalEvalOnly = $metadata.finalEvalOnly
+            practiceSourceKinds = $metadata.practiceSourceKinds
+            licensedReferenceSamples = $metadata.licensedReferenceSamples
+            adapterWeightsBytes = $weights.Length
+            adapterWeightsSha256 = $sha
+            promotionState = $metadata.promotionState
+            runtimePromotionAllowed = $metadata.runtimePromotionAllowed
+            requiredNextGate = $metadata.requiredNextGate
+          }
+          $receiptPath = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-practice-learning-receipt.json'
+          $receipt | ConvertTo-Json -Depth 10 | Set-Content $receiptPath -Encoding utf8
+          "PRACTICE_RECEIPT=$receiptPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
+          Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
+          Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
+          Write-Host 'PRACTICE_EVAL_PASSES=1'
+          Write-Host "PRACTICE_LICENSED_REFERENCE_SAMPLES=$($metadata.licensedReferenceSamples)"
+          Write-Host "PRACTICE_ADAPTER_WEIGHTS_BYTES=$($weights.Length)"
+          Write-Host "PRACTICE_ADAPTER_WEIGHTS_SHA256=$sha"
+          Write-Host 'PRACTICE_PROMOTION_STATE=UNVERIFIED'
+          Write-Host 'PRACTICE_RUNTIME_PROMOTION=NO'
+      - name: Upload Roblox practice learning receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-practice-learning-receipt
           path: ${{ env.PRACTICE_RECEIPT }}
           retention-days: 1
           if-no-files-found: error
