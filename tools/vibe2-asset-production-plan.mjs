@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication, planVibeExternalCustomization } from '../assets/asset-selector.js';
+import {inspectVibe59ExistingGameAssets} from './vibe59-existing-game-assets.mjs';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
@@ -5132,6 +5133,31 @@ export function buildVibeAssetProductionPlan({
   const sourceActorRequirements=[];
   const gameId=clean(task.gameId);
   const declaredRoot=clean(task.sourceRoot||task.ownerSourceRoot||task.projectPath).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
+  // [게임별 최적화] 오너가 명시한 자산 최적화 작업에서만 기존 읽기 전용 실파일 검사를 연결한다.
+  // 기존 모델/ID/라이선스·게임 경제·저장 상태는 절대 자동 변경하지 않는다.
+  let gameScopedAssetOptimization=null;
+  if(task.assetOptimizationRequested===true||
+    /(?:자산|에셋|asset|texture|텍스처).{0,24}(?:최적화|경량화|메모리|용량|optimi)/i.test(request)){
+    const localTarget=resolvedTarget==='roblox'?'roblox':
+      resolvedTarget==='web'||resolvedTarget==='web-validation'?'web':null;
+    const expected=localTarget?localTarget+'-games/'+gameId:'';
+    if(!localTarget||!/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)||
+      declaredRoot&&declaredRoot!==expected){
+      gameScopedAssetOptimization=freeze({status:'BLOCKED',reason:'GAME_SCOPED_SOURCE_NOT_BOUND',
+        sourceWrite:false,runtimeVerified:false});
+    }else{
+      try{
+        const audit=inspectVibe59ExistingGameAssets({order:{selectedTask:{gameId}},
+          sourceRoot:path.join(repoRoot,expected),repositoryRoot:repoRoot,target:localTarget});
+        gameScopedAssetOptimization=freeze({status:'ANALYZED',...audit.optimization,
+          sourceWrite:false});
+      }catch(error){
+        gameScopedAssetOptimization=freeze({status:'BLOCKED',
+          reason:clean(error?.message).slice(0,140)||'GAME_SCOPED_ASSET_AUDIT_UNAVAILABLE',
+          sourceWrite:false,runtimeVerified:false});
+      }
+    }
+  }
   if(resolvedTarget==='roblox'&&/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId)
     &&(!declaredRoot||declaredRoot==='roblox-games/'+gameId)){
     const root=path.join(repoRoot,'roblox-games',gameId);
@@ -6567,6 +6593,7 @@ export function buildVibeAssetProductionPlan({
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
+    gameScopedAssetOptimization,
     visualPracticeSkillHints:summarizeVibeVisualPractice(
       process.env.VIBE2_VISUAL_PRACTICE_HINTS_PATH
         &&fs.existsSync(process.env.VIBE2_VISUAL_PRACTICE_HINTS_PATH)
