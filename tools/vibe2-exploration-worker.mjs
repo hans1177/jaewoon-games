@@ -121,7 +121,8 @@ export function extractVibeSourceImportRefs(source='',target=''){
 function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceCalls=new Set(),sourceNames=new Set(),responsibleFunctionsByPath=new Map(),target='',requiredModulePaths=[]}){
   let score=0;const text=typeof row.text==='string'?row.text:safeRead(row.full);
   if(responsible.has(row.relative))return{...row,score:10000,text,connections:[],
-    functions:responsibleFunctionsByPath.get(row.relative)||[]};
+    functions:responsibleFunctionsByPath.get(row.relative)||[],
+    imports:target==='roblox'?extractVibeSourceImportRefs(text,target):null};
   const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
   if(responsibleDirs.has(dir))score+=35;
   for(const token of tokens)if(lower.includes(token))score+=5;
@@ -193,7 +194,8 @@ function reusableArtifact(cwd,order){
     cached.impactAnalysisSchemaVersion!==6
     ||(clean(order.target).toLowerCase()==='roblox'&&(
       cached.robloxCoding?.authority!=='roblox-luau-static-analysis'
-      ||cached.robloxModuleGraph?.version!==1))
+      ||cached.robloxModuleGraph?.version!==1
+      ||cached.codingRepoMap?.version!==1))
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -805,7 +807,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   let testTargets=testCandidates.slice(0,8);
   // Reuse the already scanned files: no extra model, source write, workflow or QA stage.
   const uniqueGraphRows=new Map();
-  for(const row of [...responsibilityRows,...related,
+  for(const row of [...responsibilityRows,
+    ...moduleRows.map(row=>scoredByPath.get(row.path)).filter(Boolean),...related,
     ...scored.filter(row=>testCandidates.includes(row.relative))]){
     if(!uniqueGraphRows.has(row.relative))uniqueGraphRows.set(row.relative,row);
   }
@@ -828,7 +831,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const codeFlow=analyzeVibe4CodeFlow({target,responsiblePaths:responsible,
     files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)}))});
   const robloxCoding=target==='roblox'?inspectVibe59RobloxCoding({
-    files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)})),
+    files:graphRows.slice(0,48).map(row=>({path:row.relative,source:row.text||safeRead(row.full)})),
     responsiblePaths:responsible}):null;
   // Prioritize observed graph-reachable regression tests, retaining existing fallback checks.
   const autonomy59=buildVibe59AutonomyPlan({order,target,sourceImpact,codeFlow});
@@ -847,6 +850,85 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const editContract=target==='system'
     ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
     :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline,sourceRows:responsibilityRows});
+  // [바이브5.9 코드 작성] Aider(Apache-2.0) repo-map 착안: 현재 게임의
+  // 실제 함수 정의와 require 연결만 개인화 그래프 순위로 정렬한 소형 문맥이다.
+  // 별도 모델/파이프라인/외부 코드 실행 없이 기존 탐색 결과를 재사용한다.
+  let codingRepoMap=null;
+  if(target==='roblox'){
+    // 관련성의 근거가 호출/require/영향 그래프에 있는 함수만 넣는다.
+    // 같은 폴더라는 이유만으로 선택된 무관한 모듈은 문맥 예산을 소모하지 않는다.
+    const reachable=new Set([...responsible,...moduleRows.map(row=>row.path),
+      ...sourceImpact.impactedSources.map(row=>row.path),
+      ...related.filter(row=>(row.connections||[]).length>0).map(row=>row.relative)]);
+    const mapRows=graphRows.slice(0,48)
+      .map(row=>scoredByPath.get(row.relative)||row)
+      .filter(row=>Array.isArray(row.functions)&&reachable.has(row.relative));
+    const mapPaths=new Set(mapRows.map(row=>row.relative));
+    const links=new Map(mapRows.map(row=>[row.relative,new Set()]));
+    for(const row of mapRows){
+      for(const ref of row.imports||[]){
+        if(!/^\.\.?\//.test(ref))continue;
+        const resolved=path.posix.normalize(path.posix.join(path.posix.dirname(row.relative),ref));
+        if(!resolved||resolved==='.'||resolved==='..'||resolved.startsWith('../'))continue;
+        const matches=[resolved,resolved+'.luau',resolved+'.lua',resolved+'/init.luau',resolved+'/init.lua']
+          .filter(value=>mapPaths.has(value));
+        if(matches.length===1&&matches[0]!==row.relative)links.get(row.relative).add(matches[0]);
+      }
+    }
+    // Personalized PageRank: owner를 출발점으로 삼아 직접 의존 모듈에 가중치를 배분.
+    const owners=mapRows.filter(row=>responsibleSet.has(row.relative));
+    const base=new Map(mapRows.map(row=>[row.relative,
+      owners.length?(responsibleSet.has(row.relative)?1/owners.length:0):1/Math.max(mapRows.length,1)]));
+    let ranks=new Map(base);
+    for(let round=0;round<12;round++){
+      const next=new Map(mapRows.map(row=>[row.relative,(base.get(row.relative)||0)*0.2]));
+      let dangling=0;
+      for(const row of mapRows){
+        const outgoing=links.get(row.relative),weight=ranks.get(row.relative)||0;
+        if(!outgoing?.size){dangling+=weight*0.8;continue;}
+        for(const to of outgoing)next.set(to,(next.get(to)||0)+weight*0.8/outgoing.size);
+      }
+      for(const row of mapRows)next.set(row.relative,
+        (next.get(row.relative)||0)+dangling*(base.get(row.relative)||0));
+      ranks=next;
+    }
+    const declared=new Set((editContract.primaryTargets||[]).map(clean));
+    const words=goalTokens(order?.originalGoal||order?.goal);
+    const symbols=[];
+    for(const row of mapRows){
+      const owned=responsibleSet.has(row.relative),rank=ranks.get(row.relative)||0;
+      const count=Math.max(1,row.functions.length);
+      for(const fn of row.functions.slice(0,64)){
+        if(!/^[A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*$/.test(fn.name))continue;
+        const simple=fn.name.split(/[.:]/).at(-1),lower=simple.toLowerCase();
+        const matched=declared.has(fn.name)||declared.has(simple);
+        const relevance=words.some(word=>word.length>=3&&lower.includes(word));
+        const priority=rank*1000/Math.sqrt(count)+(matched?800:0)+(relevance?130:0)+(owned?100:0);
+        const line=(row.text.slice(0,fn.start).match(/\n/g)||[]).length+1;
+        symbols.push({path:row.relative,symbol:fn.name,line,priority,
+          editable:owned,sourceVerified:true,runtimeVerified:false});
+      }
+    }
+    symbols.sort((a,b)=>b.priority-a.priority||a.path.localeCompare(b.path)||a.line-b.line);
+    const selected=[],perFile=new Map();let bytes=0;
+    for(const row of symbols){
+      if(selected.length>=28)break;
+      if((perFile.get(row.path)||0)>=8)continue;
+      const entry={path:row.path,symbol:row.symbol,line:row.line,
+        editable:row.editable,sourceVerified:true,runtimeVerified:false};
+      const line='CODE_MAP '+row.path+'::'+row.symbol+'@'+row.line
+        +(row.editable?' [OWNER]':' [READ_ONLY]');
+      const size=Buffer.byteLength(line+'\n','utf8');
+      if(bytes+size>2400)continue;
+      bytes+=size;selected.push(entry);
+      perFile.set(row.path,(perFile.get(row.path)||0)+1);
+    }
+    codingRepoMap={version:1,method:'PERSONALIZED_DEPENDENCY_RANKED_SYMBOL_MAP',
+      entries:selected,bytes,maxBytes:2400,inspectedFiles:mapRows.length,
+      truncated:mapRows.length<rows.length||symbols.length>selected.length,
+      sourceWrite:false,runtimeVerified:false,completeRepositoryGraph:false,
+      writableFiles:responsible.slice(0,16),authority:'read-only-coding-context-only'};
+  }
   const orderFingerprint=explorationOrderFingerprint(order);
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,orderFingerprint,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
@@ -868,6 +950,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     codeFlow,
     robloxCoding,
     robloxModuleGraph,
+    codingRepoMap,
     autonomy59,
     impactAnalysisSchemaVersion:6,
     scanPathDigest,
@@ -899,6 +982,11 @@ export function explorationGuidance(handoff={}){
     ...(handoff.autonomy59?[
       `Vibe5.9 명세=${handoff.autonomy59.requirement.explicitSystems.join(',')||'NONE'} · 추천만=${handoff.autonomy59.requirement.suggestedOnly.join(',')||'NONE'} · 검증완료=${handoff.autonomy59.completion.verified.length}/${handoff.autonomy59.completion.required}`,
       'Vibe5.9 학습·설계·복구 정보는 실행 검증 및 승인되지 않은 코드 변경의 근거가 아니다.'
+    ]:[]),
+    ...(handoff.codingRepoMap?[
+      `[BOUNDED ROBLOX CODE MAP] method=${handoff.codingRepoMap.method}; bytes=${handoff.codingRepoMap.bytes}/${handoff.codingRepoMap.maxBytes}; source-only=YES`,
+      ...(handoff.codingRepoMap.entries||[]).map(row=>`CODE_MAP ${row.path}::${row.symbol}@${row.line} [${row.editable?'OWNER':'READ_ONLY'}]`),
+      '함수 맵은 정적 코드 근거이며 읽기 전용 의존 파일 수정, 존재하지 않는 API 추가, 보안·QA 생략을 허용하지 않는다.'
     ]:[]),
     ...(handoff.robloxModuleGraph?[
       `Vibe5.9 Roblox 기존 모듈 연결=${handoff.robloxModuleGraph.modules.map(row=>row.path+' <- '+row.from+':'+row.depth).join(' | ')||'NONE'}`,
