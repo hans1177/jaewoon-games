@@ -2812,7 +2812,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           console.log('STUDIO_SCRIPT_CLICK_DISPATCHED='+label+':'+m[1]+','+m[2]);
           // [메인] 새 게임 클릭은 서버 요청 성공이 아니라 실제 메뉴 제거와 나라 선택 노출까지 확인한다.
           // 저장된 플레이가 있으면 삭제 확인을 자동 재클릭하지 않는다.
-          const isMareNewGame=report.summary.successfulClicks===0&&st.code.includes('"프랑스"')
+          const isMareNewGame=report.summary.successfulClicks===0&&String(st.code||'').includes('"프랑스"')
             &&/CLICK=.*새 게임/.test(out);
           if(isMareNewGame){
             await wait(400);
