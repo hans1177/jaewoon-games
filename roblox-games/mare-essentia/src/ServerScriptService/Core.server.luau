@@ -45,6 +45,7 @@ local D = {
 	People = require(Shared:WaitForChild("People")),
 	PeopleTalk = require(Shared:WaitForChild("PeopleTalk")),
 	PortOrder = require(Shared:WaitForChild("PortOrder")),
+	RoomClock = require(Shared:WaitForChild("RoomClock")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
 }
@@ -227,15 +228,25 @@ local function onInvoke(player, action, payload)
 		if type(nationId) ~= "string" or not D.Ports.Nations[nationId] or not START_YEARS[year] then
 			return { ok = false, message = "잘못된 선택이에요" }
 		end
-		session.state = S.State.new(nationId, year)
+		local newState = S.State.new(nationId, year)
+		if payload.room == true then
+			-- 방 시계: 이미 열린 방이 있으면 그 시대로만 들어갈 수 있다
+			local info = S.Room.info
+			if info and info.startYear ~= year then
+				return { ok = false, message = string.format("지금 열린 방은 %d년 시대예요. 같은 시대를 고르거나 혼자 하기를 선택하세요", info.startYear), room = S.Room.publicInfo() }
+			end
+			S.Room.join(newState)
+		end
+		session.state = newState
 		session.dirty = true
-		return reply(session.state, true, string.format("%d년, %s에서 항해를 시작합니다!", year, D.Ports.Ports[session.state.portId].name))
+		return reply(session.state, true, string.format("%d년, %s에서 항해를 시작합니다!%s", S.State.year(newState), D.Ports.Ports[newState.portId].name, if newState.room then " (같이 하기: 시대가 현실 시간으로 흘러요)" else ""))
 	end
 
 	local state = session.state
 	if not state then
-		return { ok = false, message = "먼저 나라를 선택하세요", needsNewGame = true }
+		return { ok = false, message = "먼저 나라를 선택하세요", needsNewGame = true, room = S.Room.publicInfo() }
 	end
+	S.Room.sync(state)
 
 	if action == "State" then
 		return reply(state, true, "")

@@ -4796,7 +4796,7 @@ function H.startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
 	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
-	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
+	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart, room = H.roomMode == true })
 	if not (result and result.ok) then
 		sceneHold = false
 	end
@@ -5215,6 +5215,24 @@ renderTitle = function()
 		b.Parent = rowF
 	end
 
+	-- 같이 하기 (방 시계)
+	do
+		local on = H.roomMode == true
+		local ri = H.roomInfo
+		local sub = if on then
+			(if ri then string.format("지금 열린 방은 %d년 시대예요 (현재 %d년). 같은 시대만 고를 수 있어요.", ri.startYear, ri.year) else "첫 번째로 방을 열어요. 고른 시대로 시작하고, 다른 사람이 들어오면 같은 시계를 써요.")
+			else "혼자 하기: 항해할 때마다 날짜가 흘러요."
+		local row = mkRow(titleScroll, if on then "같이 하기 · 켜짐" else "같이 하기 · 꺼짐", sub .. "\n(켜면 시대가 현실 시간으로 흘러요: 현실 1분 = 게임 6일)", {
+			{ text = if on then "끄기" else "켜기", color = if on then COLORS.grey else COLORS.gold, onClick = function()
+				H.roomMode = not on
+				if H.roomMode and H.roomInfo then chosenYear = H.roomInfo.startYear end
+				renderTitle()
+			end },
+		}, 88)
+		row.LayoutOrder = nxt()
+		row.ZIndex = 12
+	end
+
 	-- 출발
 	local actions = Instance.new("Frame")
 	actions.BackgroundTransparency = 1
@@ -5435,6 +5453,7 @@ task.spawn(function()
 	for _ = 1, 30 do
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
+			H.roomInfo = result.room
 			message = ""
 			render()
 			H.showTitle()

@@ -38,6 +38,7 @@ local D = {
 	People = require("./Shared/People"),
 	PeopleTalk = require("./Shared/PeopleTalk"),
 	PortOrder = require("./Shared/PortOrder"),
+	RoomClock = require("./Shared/RoomClock"),
 	PortBuildings = require("./Shared/PortBuildings"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -229,6 +230,49 @@ local function extraTests()
 	check("1517 시작: 가을에 95개조 반박문 사건이 닥침", st17.history.pending == "reformation_95", tostring(st17.history.pending))
 	check("1517 시작: 종교개혁 이후 사건이 16건", (function() local n = 0 for _, e in HE.Events do if e.year >= 1517 and e.year < 1600 then n += 1 end end return n end)() == 16)
 	check("1517 시작: 새 게임 요청이 받아들여짐", select(1, S.State.new("england", 1517)) ~= nil)
+	-- 방 시계
+	local RC = D.RoomClock
+	check("방 시계: 현실 1분 = 6일", RC.daysFor(60) == 6 and RC.daysFor(3600) == 360 and RC.daysFor(-5) == 0)
+	check("방 시계: 같은 입력이면 같은 값", RC.hash01(7, "a", 3) == RC.hash01(7, "a", 3) and RC.hash01(7, "a", 3) ~= RC.hash01(7, "a", 4))
+	local fakeNow = 1000
+	S.Room.nowFn = function() return fakeNow end
+	S.Room.reset()
+	local rA = S.State.new("england", 1650)
+	S.Room.join(rA)
+	local rB = S.State.new("netherlands", 1700)
+	S.Room.join(rB)
+	check("방 시계: 늦게 온 사람은 방 시대로 고정", rB.startYear == 1650 and rB.room ~= nil and rB.room.id == rA.room.id)
+	fakeNow += 600
+	S.Room.sync(rA)
+	S.Room.sync(rB)
+	check("방 시계: 10분 뒤 둘 다 같은 날(60일)", rA.day == 60 and rB.day == 60)
+	local before = rA.day
+	S.State.advanceDays(rA, 30)
+	check("방 시계: 행동으로 시대가 건너뛰지 않음", rA.day == before)
+	local soloS = newState("england")
+	local soloDay = soloS.day
+	S.State.advanceDays(soloS, 5)
+	check("방 시계: 혼자 하기는 지금처럼 날짜가 흐름", soloS.day == soloDay + 5)
+	-- 같은 방 두 사람이 같은 세계 사건을 겪음
+	fakeNow += 3600 * 20 -- 20시간 = 약 20년
+	S.Room.sync(rA)
+	S.Room.sync(rB)
+	local logA, logB = {}, {}
+	for _ = 1, 40 do
+		for _, m in S.World.tick(rA) do table.insert(logA, m) end
+		for _, m in S.World.tick(rB) do table.insert(logB, m) end
+		fakeNow += 3600
+		S.Room.sync(rA)
+		S.Room.sync(rB)
+	end
+	local titlesA, titlesB = {}, {}
+	for _, e in rA.world.log do table.insert(titlesA, e.title .. e.day) end
+	for _, e in rB.world.log do table.insert(titlesB, e.title .. e.day) end
+	check("방 시계: 같은 방은 같은 세계 사건을 겪음", #titlesA > 0 and table.concat(titlesA, "|") == table.concat(titlesB, "|"))
+	check("방 시계: 저장/불러오기", S.State.sanitize(S.State.serialize(rA)).room ~= nil and S.State.sanitize(S.State.serialize(rA)).room.id == rA.room.id)
+	check("방 시계: 화면에 담김", S.View.build(rA, ctx).room.on == true and S.View.build(soloS, ctx).room.on == false)
+	S.Room.nowFn = os.time
+	S.Room.reset()
 	-- 항구 치안
 	local PO = D.PortOrder
 	check("치안: 신대륙 개척지는 유럽보다 기본 치안이 낮음", PO.BASE.new_world < PO.BASE.europe)

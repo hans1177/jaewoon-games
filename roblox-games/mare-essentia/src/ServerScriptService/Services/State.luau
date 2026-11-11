@@ -47,6 +47,7 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
+			room = nil, -- 방 시계에 참여 중이면 { id }
 			order = {}, -- 항구 치안 (항구 id → {v, day, patrolDay})
 			orderPatrols = 0,
 			peopleTalked = {}, -- 대화를 나눈 인물 (인물 id → true)
@@ -80,6 +81,9 @@ return function(D)
 	end
 
 	function State.advanceDays(state, n)
+		if state.room then
+			return -- 방 시계: 행동으로 시대를 건너뛰지 않는다 (시간은 현실 시간으로 흐른다)
+		end
 		state.day += n
 	end
 
@@ -472,6 +476,9 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.room) == "table" and type(saved.room.id) == "string" and #saved.room.id <= 40 then
+			s.room = { id = saved.room.id }
+		end
 		if type(saved.order) == "table" then
 			for id, r in saved.order do
 				if type(id) == "string" and D.Ports.Ports[id] and type(r) == "table" then
@@ -683,6 +690,7 @@ return function(D)
 			pace = state.pace,
 			world = state.world,
 			peopleClaimed = state.peopleClaimed,
+			room = state.room,
 			order = state.order,
 			orderPatrols = state.orderPatrols,
 			peopleTalked = state.peopleTalked,
