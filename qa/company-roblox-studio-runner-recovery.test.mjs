@@ -128,3 +128,17 @@ test('authenticated runner automatically launches exact Studio Place through exi
   assert.ok(canonical.includes('ROBLOX_FREE_STUDIO_RUNNER_AVAILABLE_WITHOUT_STUDIO=WAIT_FOR_GITHUB_JOB_LAUNCH'));
   assert.ok(!workflow.includes('ROBLOX_RUNNER_AUTOMATED_LOGIN=TRUE'));
 });
+
+test('E-drive migrated Studio runner is discovered for reboot recovery and its changes enqueue exact Studio QA',()=>{
+  const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
+  const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
+  const autoQa=fs.readFileSync(new URL('../.github/workflows/studio-autoqa.yml',import.meta.url),'utf8');
+  assert.match(recover,/Add-Candidate 'E:\\JaewoonRobloxStudioRunner'/);
+  assert.match(bootstrap,/'E:\\JaewoonRobloxStudioRunner'/);
+  assert.match(recover,/Test-RunnerRoot/);
+  assert.match(bootstrap,/Test-RunnerRoot/);
+  assert.match(autoQa,/company-roblox-runner-pwsh-bootstrap\.yml/);
+  assert.match(autoQa,/move-roblox-studio-runner-to-e\.ps1/);
+  assert.match(autoQa,/gh workflow run devloop-studio\.yml/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNNER_AUTOMATED_LOGIN=TRUE/);
+});
