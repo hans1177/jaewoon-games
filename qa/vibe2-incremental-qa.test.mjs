@@ -1003,8 +1003,10 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   fs.writeFileSync(path.join(base,'qa','invariant.test.mjs'),
     'import test from "node:test"; test("broken invariant",()=>{throw new Error("broken")});\n','utf8');
   // 실패용 원본 테스트가 실제로 실패하는지도 독립 실행으로 먼저 입증한다.
+  const nativeEnv={...process.env};delete nativeEnv.NODE_TEST_CONTEXT;
   assert.throws(()=>execFileSync(process.execPath,
-    ['--test',path.join(base,'qa','invariant.test.mjs')],{cwd:root,stdio:'pipe'}));
+    ['--test',path.join(base,'qa','invariant.test.mjs')],{
+      cwd:root,stdio:'pipe',env:nativeEnv}));
   let after=null,regressionError=null;
   try{after=runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'});}
   catch(error){regressionError=error;}
@@ -1012,4 +1014,21 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
     JSON.stringify({cached:after?.cached,hashChanged:after?.contentHash!==report.contentHash,
       repair:after?.gameRepairQa?.invariants}));
   assert.match(String(regressionError.message),/GAME_REPAIR_INVARIANT_FAILED/);
+});
+
+test('causal replay executes nested Node regression tests instead of skipping a broken test',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const project='web-games/replay-proof',source=path.join(root,project);
+  fs.mkdirSync(path.join(source,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(source,'game.js'),'export const ready=true;\n');
+  fs.writeFileSync(path.join(source,'qa','broken.test.mjs'),
+    'import test from "node:test";test("must fail",()=>{throw new Error("causal-error")});\n');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:project,changedFiles:['game.js'],
+    exploration:{editContract:{causalReplay:{required:true,prePatchReproduced:true,
+      executable:true,mode:'NODE_TEST_TARGETS',nodeTestTargets:['qa/broken.test.mjs']}}}
+  }));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:replay-proof'}),
+    /Command failed/);
 });
