@@ -186,6 +186,53 @@ for _, e in E.Events do
 	E.ById[e.id] = e
 end
 
+-- 지식 활용 선택지: 그 지식을 이해하고 있으면 사건에서 더 좋은 길이 하나 더 열린다. (학문 → 사건 → 교역품·도감의 인과)
+-- node: 필요한 지식(도감 카드 id, KnowledgeTree 노드)
+local I = {
+	navigation_acts = { node = "good_sugar", label = "설탕 정제 지식으로 정제 상인과 계약", hint = "+400코인, 설탕 값이 내린다", coins = 400, price = price({ "sugar" }, 0.9, 70, { "europe", "new_world" }) },
+	anglo_dutch_war = { node = "ship_fluyt_design", label = "플루트선으로 호송 없이 돌파", hint = "+600코인", coins = 600 },
+	cape_colony = { node = "med_lime_scurvy", label = "라임과 채소를 비축해 장기 항해에 나선다", hint = "+300코인, 명성 +20, 계절풍 지식 획득", coins = 300, fame = 20, cards = { "geo_monsoon" } },
+	restoration = { node = "phi_scientific_method", label = "학회에 실험 보고서를 낸다", hint = "명성 +40, 공기 펌프 지식 획득", fame = 40, cards = { "che_air_pump" } },
+	colbert = { node = "good_silk", label = "비단 공방과 합작한다", hint = "+500코인, 비단 값이 내린다", coins = 500, price = price({ "silk" }, 0.85, 80, { "europe" }) },
+	great_plague = { node = "med_anatomy", label = "의사를 배에 태워 방역을 돕는다", hint = "+200코인, 명성 +35, 기나나무 약재 지식 획득", coins = 200, fame = 35, cards = { "med_cinchona" } },
+	great_fire = { node = "arch_cathedral", label = "건축 지식으로 재건 설계를 자문한다", hint = "+500코인, 명성 +30", coins = 500, fame = 30 },
+	vienna = { node = "lang_lingua_franca", label = "공용어로 오스만 상인과 직거래한다", hint = "+400코인, 커피 값이 크게 내린다", coins = 400, price = price({ "coffee" }, 0.75, 90, { "europe" }) },
+	qing_maritime = { node = "nav_mercator", label = "정확한 해도로 새 항로를 연다", hint = "+300코인, 차 값이 크게 내린다", coins = 300, price = price({ "tea" }, 0.8, 90, { "far_east", "indian" }) },
+	fontainebleau = { node = "chem_glass", label = "유리 기술자를 데려온다", hint = "-100코인, 명성 +20, 유리 값이 내린다", coins = -100, fame = 20, price = price({ "glass" }, 0.85, 80, { "europe" }) },
+	principia = { node = "phy_pendulum", label = "진자 실험 기록을 학회에 보태 준다", hint = "+200코인, 명성 +30", coins = 200, fame = 30 },
+	glorious_revolution = { node = "phi_social_contract", label = "사회 계약 이론으로 새 정부를 지지한다", hint = "명성 +40", fame = 40 },
+	brazil_gold = { node = "geo_trade_winds", label = "무역풍 항로로 금 운송 계약을 맺는다", hint = "+500코인", coins = 500 },
+	bank_of_england = { node = "good_sugar", label = "상업 지식으로 어음 거래에 나선다", hint = "+500코인, 명성 +20", coins = 500, fame = 20 },
+	peters_embassy = { node = "ship_dry_dock", label = "건선거 설계를 전수한다", hint = "+600코인, 명성 +30", coins = 600, fame = 30 },
+	zanzibar = { node = "bot_clove_tree", label = "정향 재배 지식을 나눈다", hint = "+300코인, 정향 값이 크게 내린다", coins = 300, price = price({ "cloves" }, 0.7, 90, { "indian", "w_africa" }) },
+	act_of_union = { node = "lang_hanse_trade", label = "한자 상업어 인맥으로 스코틀랜드 상인과 잇는다", hint = "+250코인, 양모 값이 내린다", coins = 250, price = price({ "wool" }, 0.85, 70, { "europe" }) },
+	utrecht = { node = "geo_cape_good_hope", label = "항로 지식으로 특허 선단에 합류한다", hint = "+400코인", coins = 400 },
+	south_sea = { node = "phi_skepticism", label = "의심하며 장부를 따져 폭락 뒤 헐값에 사들인다", hint = "+300코인, 명성 +20 (잃을 위험 없음)", coins = 300, fame = 20 },
+	dutch_learning = { node = "lang_dictionary", label = "사전을 끼고 번역서를 직접 읽는다", hint = "명성 +20, 렌즈 연마 지식 획득", fame = 20, cards = { "phy_lens_grinding" } },
+	lisbon_quake = { node = "arch_dome", label = "내진 설계를 조언한다", hint = "+300코인, 명성 +30, 대리석 값이 오른다", coins = 300, fame = 30, price = price({ "marble" }, 1.3, 70, { "europe" }) },
+	seven_years_war = { node = "nav_backstaff", label = "정확한 항법으로 봉쇄를 뚫는다", hint = "+700코인", coins = 700 },
+	plassey = { node = "geo_monsoon", label = "계절풍 달력으로 선단에 합류한다", hint = "+500코인", coins = 500 },
+	industrial_start = { node = "phy_newcomen_engine", label = "증기 기관 광산에 출자한다", hint = "-200코인, 명성 +30, 석탄·철 값이 크게 내린다", coins = -200, fame = 30, price = price({ "coal", "iron" }, 0.75, 90, { "europe" }) },
+	cook_voyage = { node = "ast_jupiter_moons", label = "경도 관측 계산에 참여한다", hint = "명성 +40, 금성 관측 지식 획득", fame = 40, cards = { "ast_venus" } },
+	boston_tea = { node = "good_tea", label = "차 유통 지식으로 밀수 차를 크게 푼다", hint = "+400코인", coins = 400 },
+	independence = { node = "phi_enlightenment", label = "계몽 사상으로 신생국을 지지한다", hint = "+200코인, 명성 +50", coins = 200, fame = 50 },
+	french_revolution = { node = "phi_natural_law", label = "인권 선언의 논의를 지켜보고 중재한다", hint = "+300코인, 명성 +20", coins = 300, fame = 20 },
+}
+for id, ins in I do
+	E.ById[id].insight = ins
+end
+
+-- 사건과 얽힌 실존 인물 (Scholars 의 id). 그 인물을 만난 적이 있으면 지식 활용 선택의 보상이 커진다. (인물 → 사건 → 학문·교역품의 인과)
+local P = {
+	anglo_dutch_war = { "witsen" }, cape_colony = { "blaeu" }, restoration = { "boyle", "wren" }, colbert = { "huygens" },
+	great_plague = { "newton" }, great_fire = { "wren" }, principia = { "newton", "halley" }, glorious_revolution = { "newton" },
+	bank_of_england = { "newton" }, peters_embassy = { "witsen" }, fontainebleau = { "papin" }, south_sea = { "newton" },
+	industrial_start = { "newcomen", "savery" }, cook_voyage = { "banks" }, boston_tea = { "franklin" }, independence = { "franklin" },
+}
+for id, list in P do
+	E.ById[id].people = list
+end
+
 -- 사건이 일어나는 게임 일수 (startYear 기준)
 function E.dayOf(ev, startYear)
 	return (ev.year - startYear) * 365 + ((ev.month or 6) - 1) * 30
