@@ -637,7 +637,7 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 
 ## 세계 발견물 스케치와 대형 이벤트 원화
 
-- `cardart/world-catalog.json`에 소재 500종의 지역, 도감 식별자, 그림 위치를 기록한다. 스케치가 연결된 항목만 제작된 그림이다.
+- `cardart/world-catalog.json`에 발견물의 지역, 도감 식별자, 그림 위치를 기록한다. 스케치가 연결된 항목만 제작된 그림이다.
 - `world_01.jpg`부터 이어지는 시트는 각각 1000×800, 5열×4행이다. 칸은 200×200이며 왼쪽 위부터 읽는다.
 - `event_*.jpg`는 같은 소재를 큰 화면에 표시하기 위한 가로형 독립 원화다. 현재 그림 자산이며 이벤트 애니메이션 연결 상태는 목록에 기록한다.
 - 생성 원화 `PROJECT_ORIGINAL_ART`. 고증 참고는 항목별 출처를 확인한다. 살아 있는 사람, 인물 초상, 군중은 발견물 그림에서 제외했다. 모아이는 석상 유적이다. 신화 소재는 전승 삽화다.
@@ -655,3 +655,14 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - 세계 이벤트: hurricane, monsoon_fail, tsunami, harbor_fire, hard_winter, famine, locusts, shipworm, piracy, trade_boom, calm_seas, new_route, treasure_wreck, fish_shoal, new_plant, canal_opened, royal_charter, festival.
 - 역사 사건: principia, zanzibar, lisbon_quake, industrial_start, cook_voyage, boston_tea, harrison_h4, franklin_kite, canton_system.
 - 로블록스 게시용 이미지 승인 및 사용 권한 검증은 별도로 기록한다.
+
+## 대항해시대 교류 유물과 항구 상인 원화
+
+- `cardart/world_45.jpg`는 유물·직물·항해 기록 12종의 프로젝트 창작 스케치다. 박물관·백과사전 자료는 형태와 시대를 확인하는 참고 문헌으로 썼다. 항목별 시대와 참고 주소는 `world-catalog.json`에 있다.
+- 아래 1600×900 원화의 상인과 선원은 가상 인물이다. 사람 검수와 로블록스 등록 및 이벤트 재생 연결은 대기 상태다.
+
+| 원화 | 장면 | 시대와 배경 참고 |
+|---|---|---|
+| `event_merchant_coromandel.jpg` | 코로만델 면직물 상인이 무늬와 납품 수량을 확인하는 장면 | [메트로폴리탄 미술관의 코로만델 수출 면직물](https://www.metmuseum.org/art/collection/search/231243) |
+| `event_merchant_lamu.jpg` | 스와힐리 항구 라무에서 천을 거래하는 장면 | [유네스코 라무 구시가지](https://whc.unesco.org/en/list/1055/) |
+| `event_merchant_naha.jpg` | 류큐 나하에서 옻칠 문서함과 화물을 확인하는 장면 | [스미스소니언의 17세기 나하 문서함](https://collections.si.edu/search/record/ark:/65665/ye3397c57054fa94f81bd3dba926c6f18ef) |
