@@ -56,7 +56,8 @@ task.spawn(function()
 	local bad = 0
 	-- [자산 감사] 실제 로딩 콜백·실패 자산·진행 위치를 보존한다.
 	local mediaStarted = os.clock()
-	local mediaCallbacks, currentBatch = 0, 0
+	local mediaCallbacks, currentBatch, timedOutMedia = 0, 0, 0
+	local serverPreloadUnresponsive = false
 	local failedMedia = {}
 	local items = {}
 	for _, it in ids do
@@ -83,6 +84,7 @@ task.spawn(function()
 			registered = #ids, imagesSounds = #items, models = modelReferences,
 			fetchCallbacks = mediaCallbacks, currentBatch = currentBatch,
 			failed = bad + moduleErrors, failedMedia = failedMedia,
+			serverPreloadUnresponsive = serverPreloadUnresponsive,
 			elapsedSeconds = math.floor(os.clock() - mediaStarted), timedOut = true,
 		}))
 		ReplicatedStorage:SetAttribute("MareQAAssetStatus", "FAIL")
@@ -105,6 +107,7 @@ task.spawn(function()
 				remaining -= 1
 				row.inst:Destroy()
 				if status == "SUCCESS" then return end
+				if status == "TIMEOUT_16S" then timedOutMedia += 1 end
 				bad += 1
 				if #failedMedia < 128 then
 					table.insert(failedMedia, { key = row.it.key, id = row.it.url, status = status })
@@ -135,6 +138,13 @@ task.spawn(function()
 		while remaining > 0 and ReplicatedStorage:GetAttribute("MareQAAssetStatus") == "RUNNING" do
 			task.wait(0.2)
 		end
+		-- [서버 로딩 장애] 첫 12건 모두 콜백 없이 시간 초과면 같은 서버 선로딩을 반복하지 않는다.
+		-- 전체 등록 목록은 유지하고 FAIL을 기록한다. 기존 Studio Client 전수 IsLoaded 검증만 PASS를 확정한다.
+		if i == 1 and mediaCallbacks == 0 and timedOutMedia == math.min(12, #items) then
+			serverPreloadUnresponsive = true
+			print("[QA] SERVER_PRELOAD_UNRESPONSIVE client validation required")
+			break
+		end
 	end
 	-- [전체 자산] 모든 배치가 실제로 끝났을 때만 통과 처리한다. 시간 초과 기록을 덮어쓰지 않는다.
 	local timedOut = ReplicatedStorage:GetAttribute("MareQAAssetStatus") == "FAIL"
@@ -142,6 +152,7 @@ task.spawn(function()
 		registered = #ids, imagesSounds = #items, models = modelReferences,
 		fetchCallbacks = mediaCallbacks, currentBatch = currentBatch,
 		failed = bad + moduleErrors, failedMedia = failedMedia,
+		serverPreloadUnresponsive = serverPreloadUnresponsive,
 		elapsedSeconds = math.floor(os.clock() - mediaStarted), timedOut = timedOut,
 	}))
 	ReplicatedStorage:SetAttribute("MareQAAssetStatus",
