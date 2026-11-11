@@ -64,6 +64,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1794407947073
+    },
+    "background:sky-missing:배경 연출 약함: 대기 있음, 하늘 없음#71ff9f7f2d": {
+      "sig": "background:sky-missing:배경 연출 약함: 대기 있음, 하늘 없음",
+      "kind": "background",
+      "game": "fantasy-survival",
+      "edits": [
+        {
+          "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+          "search": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+          "replace": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)\n    -- 배경 하늘 보강: Sky 인스턴스가 없으면 기본 스카이박스 생성\n    local lighting = game:GetService(\"Lighting\")\n    if not lighting:FindFirstChildOfClass(\"Sky\") then\n        local sky = Instance.new(\"Sky\")\n        sky.Name = \"VerifiedLearningSky\"\n        sky.SkyboxBk = \"rbxasset://textures/skybox/back.jpg\"\n        sky.SkyboxDn = \"rbxasset://textures/skybox/down.jpg\"\n        sky.SkyboxFt = \"rbxasset://textures/skybox/front.jpg\"\n        sky.SkyboxLf = \"rbxasset://textures/skybox/left.jpg\"\n        sky.SkyboxRt = \"rbxasset://textures/skybox/right.jpg\"\n        sky.SkyboxUp = \"rbxasset://textures/skybox/up.jpg\"\n        sky.Parent = lighting\n    end"
+        }
+      ],
+      "summary": "배경에 Sky 인스턴스를 추가해 하늘을 보강했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1794413878881
     }
   }
 }
