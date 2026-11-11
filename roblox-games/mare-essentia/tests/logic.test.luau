@@ -1993,6 +1993,7 @@ do
 	do
 		local F = D.Facilities
 		check("은행: 발전도 3부터 어느 항구에나 생김", not F.has("bank", "dublin", 2) and F.has("bank", "dublin", 3) and F.has("bank", "london", 1))
+		check("왕궁: 5단계 항구에는 총독 관저", F.has("palace", "dublin", 5) and not F.has("palace", "dublin", 4) and F.palaceName("dublin") == "총독 관저" and F.palaceName("london") == "잉글랜드 왕궁")
 		check("은행: 단계별 이자·한도 개선", F.bankAt(5).depositRate > F.bankAt(1).depositRate and F.bankAt(5).loanRate < F.bankAt(1).loanRate and F.bankAt(5).loanMult == 3 and F.bankAt(1).name == "환전상")
 	end
 	check("no bank at dublin", not act(st2, "Deposit", { amount = 10 }))

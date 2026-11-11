@@ -632,7 +632,7 @@ return function(D, S)
 			end
 			local nextTitle = D.Facilities.TITLES[state.title + 1]
 			view.palace = {
-				name = D.Facilities.PALACE_NAMES[port.id],
+				name = D.Facilities.palaceName(port.id),
 				title = if state.title > 0 then D.Facilities.TITLES[state.title].name else nil,
 				nextTitle = if nextTitle then nextTitle.name else nil,
 				nextFame = if nextTitle then nextTitle.fame else nil,

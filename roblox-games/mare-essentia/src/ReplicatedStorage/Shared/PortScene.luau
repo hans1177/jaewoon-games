@@ -1081,10 +1081,46 @@ function PortScene.build(info, onFacility)
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
-			local body = house(folder, f.pos, f.w, f.d, f.floors, style, rng, f.color)
+			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
+			local grow = 1 + 0.05 * (sceneLevel - 1)
+			local tone = f.color:Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
+			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
 			sign(folder, body, f.name, nil, f.floors * 3 + 6)
+			do
+				-- 시설별 외형 단계 (승인된 기존 3D 소품만): 2단계 생활 소품, 3단계 장식, 4단계 깃발·기둥, 5단계 상징물
+				local lv = sceneLevel
+				local zs = if f.pos.Z > 0 then -1 else 1
+				local fx, fz = f.pos.X, doorZ
+				local function at(dx, dz) return Vector3.new(fx + dx, 0, fz + zs * dz) end
+				if f.name == "교역소" then
+					if lv >= 2 then importedModel(folder, "Cargo", "barrel", at(-6, 0), 2.4, false) importedModel(folder, "Cargo", "box-open", at(-8, 0.5), 2.2, false) end
+					if lv >= 3 then importedModel(folder, "Town", "stall-red", at(9, 2), 6, false) end
+					if lv >= 4 then importedModel(folder, "Castle", "flag-banner-short", at(-10, 1), 8, false) end
+					if lv >= 5 then importedModel(folder, "Cargo", "textiles-stack-large-colored", at(7, 0), 2.6, false) importedModel(folder, "Cargo", "gold-bars-stack-large", at(11, 0), 2.2, false) end
+				elseif f.name == "주점" then
+					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 3 then importedModel(folder, "Town", "bench_A", at(6, 1), 3.6, false) end
+					if lv >= 4 then lantern(folder, at(5, 0), 3) importedModel(folder, "Castle", "flag-banner-short", at(-8, 1), 7, false) end
+					if lv >= 5 then importedModel(folder, "Cargo", "pot-stew", at(9, 0), 2.2, false) end
+				elseif f.name == "항만청" then
+					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
+					if lv >= 4 then
+						for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-top" } do
+							importedModel(folder, "Castle", part_, Vector3.new(fx + 11, (k - 1) * 6, f.pos.Z), 7, true)
+						end
+					end
+				elseif f.name == "상인 길드" then
+					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
+					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
+					if lv >= 5 then importedModel(folder, "Town", "stall-green", at(10, 2), 6, false) end
+				elseif f.name == "학자의 서재" or f.name == "도서관 (도감)" then
+					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
+					if lv >= 5 then importedModel(folder, "Terrain", "statue-column", at(9, 2), 9, true) end
+				end
+			end
 			-- 은행은 항구 발전도에 따라 커진다: 3단계 기둥, 4단계 깃발, 5단계 금괴 더미
 			if f.key == "bank" then
 				if sceneLevel >= 3 then
@@ -1127,8 +1163,15 @@ function PortScene.build(info, onFacility)
 		end
 		part(folder, Vector3.new(14, 14, 14), CFrame.new(px, 22, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 140, 170), Enum.Material.Metal, Enum.PartType.Ball)
 		part(folder, Vector3.new(0.4, 6, 4), CFrame.new(px, 33, 2), Color3.fromRGB(180, 30, 40), Enum.Material.Fabric)
-		sign(folder, body, "왕궁", Color3.fromRGB(150, 110, 40), 16)
-		prompt(folder, Vector3.new(px + 20, 3, 0), "왕궁", "알현하기", "harbor", onFacility)
+		-- 발전도 4단계부터 기둥·깃발이 늘고, 5단계 왕궁 없는 항구에는 같은 자리에 총독 관저가 선다
+		if sceneLevel >= 4 then
+			for _, z in { -12, 12 } do
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(px + 18, 0, z), 10, false)
+			end
+		end
+		local palaceTitle = info.palaceName or "왕궁"
+		sign(folder, body, palaceTitle, Color3.fromRGB(150, 110, 40), 16)
+		prompt(folder, Vector3.new(px + 20, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
 	end
 
 	-- 성당 종탑

@@ -4671,6 +4671,7 @@ syncScene = function()
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,
+		palaceName = view.palace and view.palace.name,
 		storyCount = #(view.story or {}),
 		companions = crew,
 		arrive = arriveNext,
