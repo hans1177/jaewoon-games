@@ -2692,11 +2692,12 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
 
 
 // [스튜디오 자동 QA] 기존 MCP 실행 흐름에서 실제 클릭·화면 증거를 검증하고 첫 실패에서 종료한다.
-export async function runStudioScript({mcpCommand='',expectedStudioName='',outDir='',steps=[]}={}){
+export async function runStudioScript({mcpCommand='',expectedStudioName='',outDir='',steps=[],sourceRevision=''}={}){
   // [메인] 대기 중인 공식 MCP 요청을 조기에 실패로 기록해 기존 Studio 세션 재시도를 허용한다.
   const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:45000});
   fs.mkdirSync(outDir,{recursive:true});
   const report={
+    sourceRevision:clean(sourceRevision),
     log:[],errors:[],
     summary:{
       plannedSteps:steps.length,
@@ -4736,8 +4737,10 @@ async function main(){
     return;
   }
   if(mode==='studio-script'){
+    // [증거 고정] 공식 스튜디오 보고서는 캡처에 실제 사용된 main 커밋과 실행 커밋이 같을 때만 발급한다.
+    const headGuard=assertCurrentStudioWorkflowHead({workflowSha:clean(process.env.GITHUB_SHA)});
     const steps=JSON.parse(fs.readFileSync(clean(a['script']),'utf8'));
-    const rep=await runStudioScript({mcpCommand:clean(a['mcp-command']),expectedStudioName:clean(a['studio-name']),outDir:clean(a['out-dir']),steps});
+    const rep=await runStudioScript({mcpCommand:clean(a['mcp-command']),expectedStudioName:clean(a['studio-name']),outDir:clean(a['out-dir']),steps,sourceRevision:headGuard.checkoutSha});
     console.log('STUDIO_SCRIPT_ERRORS='+rep.errors.length+' LOG='+rep.log.length);
     return;
   }
