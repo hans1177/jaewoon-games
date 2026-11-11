@@ -179,6 +179,90 @@ E.Events = {
 			{ label = "망명 귀족을 실어 나른다", hint = "+500코인", coins = 500 },
 			{ label = "혁명 정부와 교역한다", hint = "포도주 값이 내린다", price = price({ "wine" }, 0.85, 80, { "europe" }) },
 		} },
+	{ id = "great_storm_1703", year = 1703, month = 11, title = "1703년의 대폭풍", tag = "재난·기상",
+		text = "영국 남부를 덮친 폭풍이 군함과 상선 수천 척을 부수고 템스 강의 배를 뭍으로 밀어 올렸다. 목재와 돛천이 부족하다.",
+		choices = {
+			{ label = "수리용 목재를 대량으로 들여온다", hint = "+300코인, 목재 값이 오른다", coins = 300, price = price({ "timber", "linen" }, 1.3, 60, { "europe" }) },
+			{ label = "피해 선원들을 돕는다", hint = "명성 +20", fame = 20 },
+		} },
+	{ id = "taiwan_qing", year = 1683, month = 8, title = "청의 타이완 편입", tag = "정치·전쟁",
+		text = "정성공의 후손이 항복하고 타이완이 청에 편입된다. 동남 해안의 해적과 반청 세력의 거점이 사라지고 항구마다 새 규칙이 들어선다.",
+		choices = {
+			{ label = "청의 공인 상인으로 등록한다", hint = "+300코인, 설탕·쌀 값이 내린다", coins = 300, price = price({ "sugar", "rice" }, 0.9, 70, { "far_east" }) },
+			{ label = "밀무역 항구를 찾는다", hint = "+400코인", coins = 400 },
+		} },
+	{ id = "nerchinsk", year = 1689, month = 9, title = "네르친스크 조약", tag = "정치·외교",
+		text = "러시아와 청이 아무르 강 유역의 국경을 정한다. 시베리아 모피와 중국 차가 오가는 육상 교역로가 열린다.",
+		choices = {
+			{ label = "시베리아 모피를 사들인다", hint = "모피 값이 내린다", price = price({ "fur" }, 0.85, 80, { "europe" }) },
+			{ label = "차를 먼저 확보한다", hint = "+250코인, 차 값이 오른다", coins = 250, price = price({ "tea" }, 1.1, 60, { "europe", "far_east" }) },
+		} },
+	{ id = "aurangzeb_death", year = 1707, month = 3, title = "아우랑제브의 죽음", tag = "정치·왕정",
+		text = "무굴 제국을 반세기 다스린 황제가 죽자 지방 총독과 상인 가문이 독자 세력을 키운다. 면직물 산지의 거래 질서가 흔들린다.",
+		choices = {
+			{ label = "지방 영주와 직거래한다", hint = "+300코인, 면화·인디고 값이 내린다", coins = 300, price = price({ "cotton", "indigo" }, 0.88, 70, { "indian" }) },
+			{ label = "혼란을 피해 물러선다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "smallpox_boston", year = 1721, month = 6, title = "보스턴의 천연두 접종 논쟁", tag = "재난·의학",
+		text = "천연두가 번진 보스턴에서 목사 코튼 매더와 의사 보일스턴이 접종을 시도한다. 도시는 찬반으로 갈린다.",
+		choices = {
+			{ label = "접종을 후원한다", hint = "-200코인, 명성 +30", coins = -200, fame = 30 },
+			{ label = "백신 대신 약재를 판다", hint = "+250코인", coins = 250 },
+		} },
+	{ id = "nader_shah", year = 1739, month = 3, title = "나디르 샤의 델리 약탈", tag = "전쟁·정치",
+		text = "페르시아의 나디르 샤가 델리를 점령하고 공작 옥좌와 막대한 보석을 가져간다. 인도양 서쪽의 교역 질서가 흔들린다.",
+		choices = {
+			{ label = "보석과 융단을 사들인다", hint = "보석·융단 값이 내린다", price = price({ "gems", "carpet" }, 0.85, 70, { "indian" }) },
+			{ label = "페르시아 만 항로를 지킨다", hint = "+350코인", coins = 350 },
+		} },
+	{ id = "jenkins_ear", year = 1739, month = 10, title = "젠킨스의 귀 전쟁", tag = "전쟁·식민",
+		text = "스페인 해안경비대에 귀를 잘렸다는 영국 선장의 이야기가 의회를 달군다. 카리브해의 밀무역과 스페인 은 함대가 표적이 된다.",
+		choices = {
+			{ label = "사략 면허를 받는다", hint = "+450코인", coins = 450 },
+			{ label = "중립 상선으로 은을 나른다", hint = "은 값이 내린다", price = price({ "silver" }, 0.88, 60, { "new_world", "europe" }) },
+		} },
+	{ id = "franklin_kite", year = 1752, month = 6, title = "프랭클린의 번개 실험", tag = "학문·과학",
+		text = "벤저민 프랭클린이 번개가 전기임을 보이려 연을 날린다. 피뢰침은 뾰족한 쇠막대 하나로 배와 건물을 지켜 줄 것이다.",
+		choices = {
+			{ label = "피뢰침을 배에 단다", hint = "-150코인, 명성 +25", coins = -150, fame = 25 },
+			{ label = "실험 이야기를 퍼뜨린다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "canton_system", year = 1757, month = 11, title = "광저우 일구통상", tag = "정치·무역",
+		text = "청이 서양과의 무역을 광저우 한 곳으로 제한한다. 공행이라 불리는 특허 상인만이 거래를 맡는다.",
+		choices = {
+			{ label = "공행과 장기 계약을 맺는다", hint = "+350코인, 차·비단·도자기 값이 내린다", coins = 350, price = price({ "tea", "silk", "porcelain" }, 0.92, 80, { "far_east", "europe" }) },
+			{ label = "다른 항구를 시험한다", hint = "+200코인, 명성 +10", coins = 200, fame = 10 },
+		} },
+	{ id = "harrison_h4", year = 1761, month = 11, title = "해리슨의 H4 시험 항해", tag = "학문·항해",
+		text = "시계공 존 해리슨의 해상 시계가 자메이카까지 긴 항해에서 거의 오차 없이 시간을 지켰다. 경도 문제가 풀릴 수 있다.",
+		choices = {
+			{ label = "시계 제작을 후원한다", hint = "-250코인, 명성 +30", coins = -250, fame = 30 },
+			{ label = "경도 상금 소식을 퍼뜨린다", hint = "명성 +15", fame = 15 },
+		} },
+	{ id = "treaty_paris", year = 1763, month = 2, title = "파리 조약", tag = "정치·전쟁",
+		text = "7년 전쟁이 끝나고 프랑스가 캐나다와 인도의 거점을 내준다. 북미 모피와 카리브 설탕 거래가 새 주인을 맞는다.",
+		choices = {
+			{ label = "새 영토의 모피를 확보한다", hint = "모피 값이 내린다", price = price({ "fur" }, 0.85, 80, { "new_world" }) },
+			{ label = "설탕 섬 상인과 손잡는다", hint = "+300코인", coins = 300 },
+		} },
+	{ id = "tupac_revolt", year = 1780, month = 11, title = "투팍 아마루 2세의 봉기", tag = "정치·식민",
+		text = "안데스의 원주민 지도자가 광산 노역 강제 배정에 맞서 봉기한다. 포토시의 은 수송이 끊긴다.",
+		choices = {
+			{ label = "은 수송을 호위한다", hint = "+400코인", coins = 400 },
+			{ label = "상황을 지켜본다", hint = "은 값이 오른다", price = price({ "silver" }, 1.12, 60, { "new_world", "europe" }) },
+		} },
+	{ id = "laki_eruption", year = 1783, month = 6, title = "라키 화산의 분화", tag = "재난·기상",
+		text = "아이슬란드 라키 화산이 몇 달 동안 독한 안개를 뿜는다. 유럽의 여름이 흐려지고 이듬해 흉작이 든다.",
+		choices = {
+			{ label = "곡식과 생선을 비축해 둔다", hint = "+250코인, 생선 값이 오른다", coins = 250, price = price({ "fish", "cheese" }, 1.2, 70, { "europe" }) },
+			{ label = "굶주린 항구에 구호품을 보낸다", hint = "명성 +25", fame = 25 },
+		} },
+	{ id = "first_fleet", year = 1788, month = 1, title = "제1함대의 시드니 입항", tag = "탐험·식민",
+		text = "영국 죄수 이송선단 11척이 보터니 만에 닿아 시드니에 정착지를 세운다. 대양주에 새 항구가 생겼다.",
+		choices = {
+			{ label = "보급선 계약을 맺는다", hint = "+400코인", coins = 400 },
+			{ label = "고래와 물개 사냥 거점을 알아본다", hint = "고래기름 값이 내린다", price = price({ "whale_oil", "sealskin" }, 0.85, 80, { "pacific" }) },
+		} },
 }
 
 E.ById = {}
@@ -217,9 +301,23 @@ local I = {
 	boston_tea = { node = "good_tea", label = "차 유통 지식으로 밀수 차를 크게 푼다", hint = "+400코인", coins = 400 },
 	independence = { node = "phi_enlightenment", label = "계몽 사상으로 신생국을 지지한다", hint = "+200코인, 명성 +50", coins = 200, fame = 50 },
 	french_revolution = { node = "phi_natural_law", label = "인권 선언의 논의를 지켜보고 중재한다", hint = "+300코인, 명성 +20", coins = 300, fame = 20 },
+	great_storm_1703 = { node = "wx_gale", label = "강풍 경험으로 미리 피항해 배를 지킨다", hint = "+300코인, 명성 +20", coins = 300, fame = 20 },
+	taiwan_qing = { node = "geo_south_china_sea", label = "남중국해 해도로 새 항로를 연다", hint = "+350코인", coins = 350 },
+	nerchinsk = { node = "good_fur", label = "모피 등급 지식으로 좋은 가죽만 고른다", hint = "+400코인", coins = 400 },
+	aurangzeb_death = { node = "bot_cotton_plant", label = "면화 재배 지식으로 산지 농가와 직거래한다", hint = "+400코인, 면화 값이 크게 내린다", coins = 400, price = price({ "cotton" }, 0.8, 80, { "indian" }) },
+	smallpox_boston = { node = "med_inoculation", label = "접종 지식을 도시 의사들과 나눈다", hint = "+150코인, 명성 +45", coins = 150, fame = 45 },
+	nader_shah = { node = "geo_persian_gulf", label = "페르시아 만 지식으로 안전한 항구를 찾는다", hint = "+450코인", coins = 450 },
+	jenkins_ear = { node = "am_silver_ore_potosi", label = "은광 지식으로 은 시세를 읽고 거래한다", hint = "+600코인", coins = 600 },
+	franklin_kite = { node = "wx_thunderstorm", label = "뇌우를 이해하고 피뢰침을 설계에 보탠다", hint = "+200코인, 명성 +40", coins = 200, fame = 40 },
+	canton_system = { node = "good_porcelain", label = "자기 감정 지식으로 최상품만 확보한다", hint = "+500코인, 도자기 값이 내린다", coins = 500, price = price({ "porcelain" }, 0.85, 80, { "far_east", "europe" }) },
+	harrison_h4 = { node = "nav_chronometer", label = "해상 시계 지식으로 시험 항해를 돕는다", hint = "명성 +50, 경도 문제 지식 획득", fame = 50, cards = { "nav_longitude_problem" } },
+	treaty_paris = { node = "geo_newfoundland_banks", label = "어장 지식으로 대구 거래를 늘린다", hint = "+450코인", coins = 450 },
+	tupac_revolt = { node = "min_silver_ore", label = "은광 지식으로 대체 광산을 찾아 연결한다", hint = "+500코인", coins = 500 },
+	laki_eruption = { node = "geo_volcano_island", label = "화산 지식으로 피해 지역을 예측한다", hint = "+300코인, 명성 +30", coins = 300, fame = 30 },
+	first_fleet = { node = "bot_pacific_plants", label = "남태평양 식물 지식으로 새 작물을 심는다", hint = "+300코인, 명성 +30", coins = 300, fame = 30 },
 }
 -- 학문·기술·탐험 사건은 플레이어의 앞당김만큼 일찍 닥칠 수 있다 (정치·전쟁·재난은 제때)
-for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau" } do
+for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau", "franklin_kite", "harrison_h4", "smallpox_boston" } do
 	E.ById[id].accel = true
 end
 for id, ins in I do
@@ -232,6 +330,7 @@ local P = {
 	great_plague = { "newton" }, great_fire = { "wren" }, principia = { "newton", "halley" }, glorious_revolution = { "newton" },
 	bank_of_england = { "newton" }, peters_embassy = { "witsen" }, fontainebleau = { "papin" }, south_sea = { "newton" },
 	industrial_start = { "newcomen", "savery" }, cook_voyage = { "banks" }, boston_tea = { "franklin" }, independence = { "franklin" },
+	franklin_kite = { "franklin" }, harrison_h4 = { "harrison" }, great_storm_1703 = { "wren" }, first_fleet = { "banks" },
 }
 for id, list in P do
 	E.ById[id].people = list
