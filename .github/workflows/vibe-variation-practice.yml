@@ -29,6 +29,7 @@ on:
       - 'tools/vibe_mesh_audit.py'
       - 'tools/vibe-mesh-audit.mjs'
       - 'qa/vibe-mesh-audit.test.mjs'
+      - 'qa/vibe-practice-session.test.mjs'
       - '.github/workflows/vibe-variation-practice.yml'
   schedule:
     # 5분마다(GitHub cron 최소 단위). 진짜 매분은 로컬 PC에서 tools/vibe-practice-loop.mjs 가 한다(60초 루프).
@@ -61,6 +62,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+      - name: Verify existing practice scheduling contract
+        run: node --test qa/vibe-practice-session.test.mjs
       - name: Install Blender for actual CC0 model regression
         run: |
           for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list; do
