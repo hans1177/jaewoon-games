@@ -42,7 +42,7 @@ export const ASSET_PRACTICE_DOMAINS=Object.freeze([
 ]);
 export function classifyPracticeAsset(asset={}){
   const family=String(asset.family||asset.category||'UNKNOWN').toUpperCase();
-  const names=[asset.id,asset.title,asset.name,asset.path,
+  const names=[asset.id,asset.title,asset.name,asset.path,asset.file,
     ...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])].filter(x=>typeof x==='string').join(' ').toLowerCase();
   const targets=new Set();
   const add=(...values)=>values.forEach(value=>targets.add(value));
