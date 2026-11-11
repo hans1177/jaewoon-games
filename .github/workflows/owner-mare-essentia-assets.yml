@@ -13,6 +13,9 @@ on:
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
       - 'tools/devloop/assets_wanted.py'
       - 'tools/mare-essentia-upload-assets.mjs'
+  # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
+  schedule:
+    - cron: '20 19 * * *'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -66,6 +69,22 @@ jobs:
               raise SystemExit('TRADE_GOODS_PRACTICE_COVERAGE_MISMATCH')
           if s['invalid']:
               raise SystemExit('TRADE_GOODS_PRACTICE_INVALID')
+          # [교역품 3D] 현재 항구 상품 70종을 현행 Cargo 등록/실물/권한과 반복 대조한다.
+          three=j['tradeGoods3DPractice']
+          t=three['stats']
+          if t['targetCount']<70 or t['targetCount']!=len(three['goods']):
+              raise SystemExit('TRADE_GOODS_3D_CATALOG_INCOMPLETE')
+          if t['targetCount']!=t['registeredSourceChecked']+t['missingExactModel']+t['unverified']+t['visualRestricted']:
+              raise SystemExit('TRADE_GOODS_3D_COVERAGE_INCONSISTENT')
+          if t['unverified']:
+              raise SystemExit('TRADE_GOODS_3D_REGISTERED_SOURCE_OR_RIGHTS_INVALID')
+          if any(row['state']=='REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING' and
+                 (not row.get('sourceSha256') or not row.get('assetId')) for row in three['goods']):
+              raise SystemExit('TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING')
+          print('TRADE_GOODS_3D_TARGET='+str(t['targetCount']))
+          print('TRADE_GOODS_3D_SOURCE_CHECKED='+str(t['registeredSourceChecked']))
+          print('TRADE_GOODS_3D_MISSING='+str(t['missingExactModel']))
+          print('TRADE_GOODS_3D_RUNTIME_VERIFIED=NO')
           pending=s['readyToRegister']+s['permissionPending']
           with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as f:
               f.write(f'pending={pending}\n')
@@ -79,6 +98,8 @@ jobs:
           node --test --test-name-pattern='Mare trade' qa/company-roblox-dedicated-experience.test.mjs
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
+        # 정기 연습은 무료 정적 진단만 수행한다. 신규/변경 승인 자산 업로드는 기존 push·수동 경로.
+        if: ${{ github.event_name != 'schedule' }}
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
