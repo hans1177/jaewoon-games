@@ -207,6 +207,8 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
         rigFailures:verdict.failures.slice(0,12),
         // [수리 근거] 원본의 분리 메쉬·바닥 최저점만 기록한다. 임의 원점 이동/자동 본 연결 금지.
         rigDiagnosis:verdict.diagnostics,repairStudy,
+        // [원본 대조 증거] Blender가 추가한 비원본 뼈 모양은 재사용 원본 품질을 훼손하지 않는다.
+        importHelperEvidence:raw.importHelperEvidence||{verified:false,excludedImportOnlyMeshes:[]},
         productionBlockers:verdict.productionBlockers.slice(0,12),
         clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
         clipNamePresent:clips.present,clipNameMissing:clips.missing,
