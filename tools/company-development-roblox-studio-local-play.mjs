@@ -2931,9 +2931,9 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
       }
     }
-    // [대항해시대 이미지 실증] 서버의 분리된 ImageLabel PreloadAsync 타임아웃은 실제 클라이언트 렌더 성공과 다르다.
-    // 공식 Studio MCP Client에서 교역품·메뉴·초상·도감 원화의 타임아웃 이미지를 보이는 ImageLabel로 띄우고 IsLoaded를 확인한다.
-    // 하나라도 로드되지 않거나 다른 실패 유형이면 원래 서버 FAIL을 유지한다. 게임의 저장/규칙에는 관여하지 않는다.
+    // [대항해시대 이미지·음원 실증] 서버 PreloadAsync의 타임아웃은 실제 Client 로딩 증거가 아니다.
+    // 전체 승인 이미지·기존 음원까지 Client에서 직접 로드해 검증하며, 일부 ID만 확인해 PASS하지 않는다.
+    // 자산 등록번호/원본/권한은 변경하지 않고, 한 항목이라도 로드되지 않으면 원래 FAIL을 유지한다.
     if(mareScript&&!report.summary.abortedEarly&&report.assetAudit?.registered?.status==='FAIL'
       &&report.assetAudit?.models?.status==='PASS'&&report.assetRegistryAudit?.status==='PASS'){
       const media=report.assetAudit.registered;
@@ -2942,58 +2942,91 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         ?path.join('main','roblox-games','mare-essentia'):path.join('roblox-games','mare-essentia');
       try{
         const registered=JSON.parse(fs.readFileSync(path.join(root,'assets-registered.json'),'utf8')).assets;
-        const imageRows=Array.isArray(failed)?failed.map(row=>{
-          const key=clean(row?.key).replace(/^AssetIds\./,'');
-          const asset=registered[key];
-          const valid=/^(?:Goods|Menu|Portraits|CardArt)\/[A-Za-z0-9._-]+$/.test(key)
-            &&asset&&['Image','Decal'].includes(asset.assetType)
-            &&asset.usePermissionGranted===true
-            &&clean(row?.id)==='rbxassetid://'+clean(asset.assetId)
-            &&row?.status==='TIMEOUT_16S';
-          if(!valid)throw Error('STUDIO_CLIENT_IMAGE_INVALID_SOURCE:'+key);
-          return{key,id:clean(row.id)};
-        }):[];
-        const unique=new Set(imageRows.map(row=>row.key));
-        if(!imageRows.length||imageRows.length!==Number(media.failed)
-          ||unique.size!==imageRows.length
-          ||Number(media.imagesSounds)!==imageRows.length+Number(media.fetchCallbacks))
-          throw Error('STUDIO_CLIENT_IMAGE_NOT_EXCLUSIVE_PRELOAD_TIMEOUT');
-        const luauRows=imageRows.map(row=>'{key='+JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
+        const idSource=fs.readFileSync(path.join(root,'src','ReplicatedStorage','Shared','AssetIds.luau'),'utf8');
+        const effectiveIds=new Map([...idSource.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)]
+          .map(match=>[match[1],match[2]]));
+        const imageRows=Object.entries(registered)
+          .filter(([key])=>/^(?:Goods|Menu|Portraits|CardArt)\/[A-Za-z0-9._-]+$/.test(key))
+          .sort(([a],[b])=>a.localeCompare(b))
+          .map(([key,asset])=>{
+            if(asset?.assetType!=='Image'||asset.usePermissionGranted!==true
+              ||!/^[1-9]\d*$/.test(String(asset.assetId))
+              ||effectiveIds.get(key)!==String(asset.assetId))
+              throw Error('STUDIO_CLIENT_IMAGE_INVALID_SOURCE:'+key);
+            return{kind:'Image',key,id:'rbxassetid://'+String(asset.assetId)};
+          });
+        const audioSource=fs.readFileSync(path.join(root,'src','ReplicatedStorage','Shared','AudioIds.luau'),'utf8');
+        const soundRows=[...audioSource.matchAll(/\b([A-Za-z][A-Za-z0-9_]*)\s*=\s*["'](rbxassetid:\/\/[1-9]\d*)["']/g)]
+          .map(match=>({kind:'Sound',key:match[1],id:match[2]}));
+        const allRows=[...imageRows,...soundRows];
+        const byKey=new Map(allRows.map(row=>[row.kind==='Sound'?'AudioIds.'+row.key:'AssetIds.'+row.key,row.id]));
+        const failedKeys=new Set(Array.isArray(failed)?failed.map(row=>String(row?.key||'')):[]);
+        if(!imageRows.length||!soundRows.length||byKey.size!==allRows.length
+          ||Number(media.imagesSounds)!==allRows.length
+          ||Number(media.registered)!==Number(media.models)+allRows.length
+          ||!Array.isArray(failed)||!failed.length||failedKeys.size!==failed.length
+          ||Number(media.failed)!==failed.length
+          ||failed.some(row=>row?.status!=='TIMEOUT_16S'
+            ||byKey.get(String(row?.key||''))!==String(row?.id||'')))
+          throw Error('STUDIO_CLIENT_MEDIA_NOT_EXCLUSIVE_PRELOAD_TIMEOUT');
+        const luauRows=allRows.map(row=>'{kind='+JSON.stringify(row.kind)+',key='
+          +JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
         const auditClientCode="local rows={"+luauRows+"} "
+          +"local shared=game:GetService('ReplicatedStorage'):WaitForChild('Shared') "
+          +"local currentImages=require(shared:WaitForChild('AssetIds')) "
+          +"local currentSounds=require(shared:WaitForChild('AudioIds')) "
           +"local p=game:GetService('Players').LocalPlayer "
           +"local h=game:GetService('HttpService') "
           +"local g=Instance.new('ScreenGui') g.Name='MareStudioMediaAudit' "
           +"g.ResetOnSpawn=false g.DisplayOrder=1000 g.IgnoreGuiInset=true g.Parent=p:WaitForChild('PlayerGui') "
-          +"local labels={} "
+          +"local folder=Instance.new('Folder') folder.Name='MareStudioSoundAudit' folder.Parent=game:GetService('SoundService') "
+          +"local labels={} local sounds={} "
           +"for i,row in ipairs(rows) do "
+          +"local live=if row.kind=='Image' then 'rbxassetid://'..tostring(currentImages[row.key]) else tostring(currentSounds[row.key]) "
+          +"if live~=row.id then error('STUDIO_MEDIA_SOURCE_MISMATCH:'..row.key) end "
+          +"if row.kind=='Image' then "
           +"local img=Instance.new('ImageLabel') img.Name='Media'..i "
           +"img.BackgroundTransparency=1 img.BorderSizePixel=0 "
           +"img.Size=UDim2.fromOffset(24,24) "
-          +"img.Position=UDim2.fromOffset(((i-1)%10)*24,math.floor((i-1)/10)*24) "
-          +"img.Image=row.id img.Visible=true img.Parent=g labels[i]=img end "
-          +"local loaded=0 local stop=os.clock()+30 "
-          +"repeat loaded=0 for _,img in ipairs(labels) do if img.IsLoaded then loaded+=1 end end "
-          +"if loaded==#rows or os.clock()>=stop then break end task.wait(0.25) until false "
-          +"local missing={} for i,img in ipairs(labels) do "
-          +"if not img.IsLoaded then table.insert(missing,rows[i].key) end end "
-          +"local result={expected=#rows,loaded=#rows-#missing,missing=missing,mode='VISIBLE_CLIENT_IMAGE_ISLOADED'} "
-          +"g:Destroy() return 'MARE_CLIENT_IMAGE_AUDIT='..h:JSONEncode(result)";
+          +"img.Position=UDim2.fromOffset(((#labels)%10)*24,math.floor(#labels/10)*24) "
+          +"img.Image=row.id img.Visible=true img.Parent=g labels[#labels+1]={image=img,key=row.key} "
+          +"else "
+          +"local sound=Instance.new('Sound') sound.Name='Audio'..i sound.SoundId=row.id sound.Parent=folder "
+          +"sounds[#sounds+1]={sound=sound,key=row.key} end end "
+          +"local loaded=0 local soundLoaded=0 local stop=os.clock()+30 "
+          +"repeat loaded=0 for _,row in ipairs(labels) do if row.image.IsLoaded then loaded+=1 end end "
+          +"soundLoaded=0 for _,row in ipairs(sounds) do if row.sound.IsLoaded then soundLoaded+=1 end end "
+          +"if (loaded==#labels and soundLoaded==#sounds) or os.clock()>=stop then break end task.wait(0.25) until false "
+          +"local missing={} for _,row in ipairs(labels) do "
+          +"if not row.image.IsLoaded then table.insert(missing,row.key) end end "
+          +"local soundMissing={} for _,row in ipairs(sounds) do "
+          +"if not row.sound.IsLoaded then table.insert(soundMissing,row.key) end end "
+          +"local result={expected=#labels,loaded=#labels-#missing,missing=missing, "
+          +"soundExpected=#sounds,soundLoaded=#sounds-#soundMissing,soundMissing=soundMissing, "
+          +"mode='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'} "
+          +"g:Destroy() folder:Destroy() return 'MARE_CLIENT_IMAGE_AUDIT='..h:JSONEncode(result)";
         const response=await luau('Client',auditClientCode);
         const marker=response.split(/\r?\n/).find(line=>line.startsWith('MARE_CLIENT_IMAGE_AUDIT='));
         if(!marker)throw Error('STUDIO_CLIENT_IMAGE_RESPONSE_MISSING');
         const proof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
         report.clientImageAudit=proof;
-        console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_AUDIT='+JSON.stringify(proof).slice(0,1000));
-        if(proof.mode==='VISIBLE_CLIENT_IMAGE_ISLOADED'&&proof.expected===imageRows.length
-          &&proof.loaded===imageRows.length&&Array.isArray(proof.missing)&&proof.missing.length===0){
-          media.serverPreloadEvidence={status:media.status,failed:media.failed,failedMedia:media.failedMedia};
+        console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_AUDIT='+JSON.stringify(proof).slice(0,1600));
+        if(proof.mode==='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
+          &&proof.expected===imageRows.length&&proof.loaded===imageRows.length
+          &&Array.isArray(proof.missing)&&proof.missing.length===0
+          &&proof.soundExpected===soundRows.length&&proof.soundLoaded===soundRows.length
+          &&Array.isArray(proof.soundMissing)&&proof.soundMissing.length===0){
+          media.serverPreloadEvidence={status:media.status,failed:media.failed,
+            failedMedia:media.failedMedia,timedOut:media.timedOut,fetchCallbacks:media.fetchCallbacks};
           media.status='PASS';
           media.failed=0;
           media.failedMedia=[];
           media.clientVerified=true;
-          media.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_ISLOADED';
+          media.soundClientVerified=true;
+          media.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED';
           report.errors=report.errors.filter(error=>error!=='STUDIO_ASSET_AUDIT_FAILED');
           console.log('STUDIO_MARE_IMAGES_REAL_CLIENT_LOADED='+imageRows.length);
+          console.log('STUDIO_MARE_SOUNDS_REAL_CLIENT_LOADED='+soundRows.length);
         }
       }catch(error){
         report.clientImageAudit={status:'UNVERIFIED',reason:clean(error?.message||error).slice(0,190)};
