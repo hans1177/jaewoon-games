@@ -172,8 +172,12 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
       if(typeof name!=='string'||!/\.(obj|glb|gltf)$/i.test(name)||path.isAbsolute(name))return false;
       try{
         const full=fs.realpathSync(path.resolve(root,name));
-        return full.startsWith(root+path.sep)&&fs.statSync(full).isFile()&&
-          inspectBakeSource(full).staticSourceInspected===true&&inspectBakeSource(full).triangles>0;
+        if(!full.startsWith(root+path.sep)||!fs.statSync(full).isFile())return false;
+        const mesh=inspectBakeSource(full);
+        if(!mesh.staticSourceInspected||mesh.triangles<=0)return false;
+        const expected=String(asset.sourceSha256||asset.sourceHash||'').toLowerCase();
+        return !/^[a-f0-9]{64}$/.test(expected)||
+          crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')===expected;
       }catch{return false;}
     });
     if(eligible3d)fam.eligible3d++;
@@ -206,12 +210,18 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
         f.split(/[\\/]/).some(segment=>segment==='..'||segment==='.'))return false;
       try{
         const resolved=fs.realpathSync(path.resolve(root,f));
-        return resolved.startsWith(root+path.sep)&&fs.statSync(resolved).isFile()&&
-          inspectBakeSource(resolved).staticSourceInspected===true&&inspectBakeSource(resolved).triangles>0;
+        if(!resolved.startsWith(root+path.sep)||!fs.statSync(resolved).isFile())return false;
+        const mesh=inspectBakeSource(resolved);
+        if(!mesh.staticSourceInspected||mesh.triangles<=0)return false;
+        const expected=String(a.sourceSha256||a.sourceHash||'').toLowerCase();
+        return !/^[a-f0-9]{64}$/.test(expected)||
+          crypto.createHash('sha256').update(fs.readFileSync(resolved)).digest('hex')===expected;
       }catch{return false;}
     });
     if(!file)continue;
-    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,license:'CC0'});
+    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,license:'CC0',
+      approvedSourceSha256:/^[a-f0-9]{64}$/i.test(a.sourceSha256||a.sourceHash||'')?
+        String(a.sourceSha256||a.sourceHash).toLowerCase():null});
   }
   for(let i=ok.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[ok[i],ok[j]]=[ok[j],ok[i]]}
   return ok.slice(0,n);
