@@ -135,7 +135,7 @@ test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데�
       assert.equal(row.runtimePromotionAllowed,false);
       assert.equal(row.output,drill.reference);
       assert.equal(row.verification.hiddenTestsExcluded,true);
-      for(const hidden of [...drill.tests,...drill.feedbackTests]){
+      for(const hidden of [...drill.tests,...(drill.feedbackTests||[])]){
         assert.ok(!JSON.stringify(row).includes(JSON.stringify(hidden).slice(1,-1)));
       }
     }
