@@ -322,7 +322,7 @@ function runGym(jobsFile,outDir){
   if(!fs.existsSync(res))throw new Error('VARIATION_GYM_FAILED: '+String(r.stderr||r.stdout).split('\n').slice(-5).join('\n'));
   return JSON.parse(fs.readFileSync(res,'utf8'));
 }
-function scoreChild(png,parentPng,iconDir=null){
+export function scoreChild(png,parentPng,iconDir=null){
   const args=[path.join(here,'vibe_object_score.py'),'--png',png,'--parent',parentPng];
   if(iconDir)args.push('--icon-dir',iconDir);
   const r=runPython(args,{encoding:'utf8',maxBuffer:1<<26});
