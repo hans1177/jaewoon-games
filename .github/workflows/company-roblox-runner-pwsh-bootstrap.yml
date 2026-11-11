@@ -224,7 +224,7 @@ jobs:
           }
 
       - name: Install hidden user-logon Startup launcher
-        if: github.event_name != 'schedule'
+        # [윈도우 자동시작 복구] 예약 실행에서도 시작프로그램이 빠지거나 감시기가 종료되었는지 확인.
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
@@ -316,11 +316,19 @@ jobs:
             WScript.Sleep 15000
           Loop
           "@
-          # [메인] 실행 중인 동일 프로필의 이전 감시기만 먼저 종료해 VBS 파일 잠금을 해제한다.
+          # [로그인 실행기 감시] 기존 감시기가 최신 내용으로 정상 실행 중이면 건드리지 않는다.
           $hostSessionId = [int](Get-Process -Id $PID).SessionId
           $existingWatchers = @(Get-CimInstance Win32_Process -Filter "Name='wscript.exe'" -ErrorAction SilentlyContinue |
             Where-Object { [int]$_.SessionId -eq $hostSessionId -and
               [string]$_.CommandLine -match [regex]::Escape($startupPath) })
+          if ((Test-Path -LiteralPath $startupPath -PathType Leaf) -and $existingWatchers.Count -eq 1) {
+            $existingScript = [IO.File]::ReadAllText($startupPath,[Text.Encoding]::ASCII)
+            if ($existingScript -ceq [string]$launcher) {
+              Write-Host 'ROBLOX_RUNNER_WATCHDOG=PRESERVED_VERIFIED_SAME_INTERACTIVE_SESSION'
+              return
+            }
+          }
+          # 작업자가 중단됐거나 이전 코드인 경우에만 동일 세션 감시기를 다시 설치한다.
           foreach ($watcher in $existingWatchers) {
             Stop-Process -Id ([int]$watcher.ProcessId) -Force -ErrorAction Stop
           }
