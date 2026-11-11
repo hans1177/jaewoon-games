@@ -125,8 +125,11 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     const path=String(file?.path||''),source=String(file?.source||'');
     if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
     const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[];
-    for(const [i,line] of source.split(/\r?\n/).slice(0,4000).entries()){
-      if(/^\s*--/.test(line))continue;
+    // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
+    // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
+    const activeSource=stripVibe59LuauComments(source);
+    for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
+      if(!line.trim())continue;
       for(const match of line.matchAll(/\b([A-Za-z_]\w*)\.(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::Connect\s*\(|=)/g)){
         if(events.length>=24)break;
         events.push({remote:match[1],signal:match[2],line:i+1});

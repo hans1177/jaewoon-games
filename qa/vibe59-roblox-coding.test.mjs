@@ -262,3 +262,38 @@ test('unsafe JavaScript prototype property names are never Luau state bindings',
   assert.throws(()=>synthesizeVibe59RobloxDomainAction({spec,source,
     replaceAnchor:'-- ANCHOR',sourcePath:'server/Main.server.luau'}),/BAD_IDENTIFIER/);
 });
+
+ // [정적 흐름 회귀] Aider/SWE-agent 방식의 원본 근거 확인: 주석·문자열 오탐 제거.
+test('remote and state flow uses executable Luau only and preserves original lines',()=>{
+  const client='client/Fight.client.luau',server='server/Fight.server.luau';
+  const files=[
+    {path:client,source:[
+      '-- remote:FireServer("fake")',
+      'local text = "remote:FireClient()"',
+      '--[=[ remote:FireServer("blocked")',
+      'local ghost = game:GetService("DataStoreService")',
+      ']=]',
+      'local literal = [[remote:InvokeServer()]]',
+      'local note = '+String.fromCharCode(96)+'remote:FireServer()'+String.fromCharCode(96),
+      'remote:FireServer("hit")',
+      'local store = game:GetService("DataStoreService")'
+    ].join('\n')},
+    {path:server,source:[
+      'local fake = "remote.OnServerEvent:Connect(function() end)"',
+      '-- remote.OnServerEvent:Connect(function() end)',
+      'remote.OnServerEvent:Connect(function(player) end)',
+      'local ignored = [[store:SetAsync(player.Name, data)]]',
+      'store:SetAsync(player.Name, data)'
+    ].join('\n')}
+  ];
+  const report=inspectVibe59RobloxCoding({files,responsiblePaths:[client]});
+  assert.deepEqual(report.files[0].calls,[{remote:'remote',method:'FireServer',line:8}]);
+  assert.deepEqual(report.files[0].stateEffects,[]);
+  assert.deepEqual(report.files[1].events,[{remote:'remote',signal:'OnServerEvent',line:3}]);
+  assert.deepEqual(report.files[1].stateEffects,[{method:'SetAsync',line:5}]);
+  assert.deepEqual(report.warnings.filter(x=>x.code==='CLIENT_DATASTORE_SERVICE')
+    .map(x=>x.line),[9]);
+  assert.deepEqual(report.remoteLinks[0].possibleReceivers,[server]);
+  assert.equal(report.remoteLinks[0].runtimeVerified,false);
+  assert.equal(report.qualityDirector.gameplayPass,false);
+});
