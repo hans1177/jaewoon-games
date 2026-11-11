@@ -194837,11 +194837,152 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3132b31452968787fce70f5c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12560",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "240ed83daf67a057d2749b19bc38a5f92fd3e2af",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12560,
+        "baseBranch": "main",
+        "headBranch": "mare-event-art-second-batch",
+        "baseSha": "240ed83daf67a057d2749b19bc38a5f92fd3e2af",
+        "headSha": "b9a3e6de33c942ee0e0578825930848e387133d9",
+        "mergeCommitSha": "8bcf00ba091a73074494375e305fbfd2ddc2525f",
+        "mergedAt": "2026-11-11T14:57:38Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c3bbe390c46bae7bf6ddc5dc718eaf451ecea49d36ca0fb76d0f8a9c933e7a89",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-event-art-second-batch",
+        "candidateSha": "b9a3e6de33c942ee0e0578825930848e387133d9"
+      },
+      "changeStats": {
+        "changedFileCount": 28,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 7,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/cardart/event_boston_tea.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_calm_seas.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_canal_opened.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_canton_system.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_cook_voyage.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_famine.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_festival.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_fish_shoal.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_franklin_kite.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_harbor_fire.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_hard_winter.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_harrison_h4.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_hurricane.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_industrial_start.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_lisbon_quake.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_locusts.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_monsoon_fail.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_new_plant.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_new_route.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_piracy.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_principia.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_royal_charter.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_shipworm.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_trade_boom.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_treasure_wreck.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_tsunami.jpg",
+          "roblox-games/mare-essentia/assets/cardart/event_zanzibar.jpg"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12560",
+        "merge-commit:8bcf00ba091a73074494375e305fbfd2ddc2525f",
+        "base-main:240ed83daf67a057d2749b19bc38a5f92fd3e2af"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1554
+    "total": 1555
   }
 }
