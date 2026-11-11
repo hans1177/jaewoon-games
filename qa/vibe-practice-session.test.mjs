@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {blenderAvailable} from '../tools/vibe-variation-gym.mjs';
+import {blenderAvailable,pickParents,mulberry32} from '../tools/vibe-variation-gym.mjs';
 import {runPracticeSession,pickPracticeParents} from '../tools/vibe-practice-session.mjs';
 import {loop} from '../tools/vibe-practice-loop.mjs';
 import {exerciseVibeUiLayouts} from '../assets/vibe-presentation-director.js';
@@ -55,7 +55,20 @@ test('루프: 실패한 회차가 있어도 계속 돌고, 최대 회차에서 �
 test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하고 session.json 을 남긴다', {skip:(!blenderAvailable()||!imaging)&&'Blender 또는 Pillow/numpy 없음'}, () => {
   const root=process.cwd(),out=path.join(tmp(),'out');
   const stats=path.join(tmp(),'stats.json'),lights=path.join(tmp(),'lights.json');
-  const {session}=runPracticeSession({repoRoot:root,seed:3,parents:1,variants:3,out,statsPath:stats,lightsPath:lights,lightCandidates:3,lightRounds:1});
+  // [실제 재학습 순서] 지난 회차에 많이 검사한 승인 캐릭터보다 미검사 모델을 우선한다.
+  const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const actors=pickParents(reg,root,1e9,mulberry32(3+43))
+    .filter(p=>/CHARACTER|CREATURE|NPC|HERO|MONSTER/i.test(p.family)&&
+      /\.(?:glb|gltf)$/i.test(p.file));
+  assert.ok(actors.length>1);
+  const chosen=actors.at(-1),historyPath=path.join(tmp(),'prior-practice.json');
+  const history=Object.fromEntries(actors.map(p=>[p.id,{
+    sourceSha256:p.approvedSourceSha256,attempts:p.id===chosen.id?0:6
+  }]));
+  fs.writeFileSync(historyPath,JSON.stringify({rig:{history}}));
+  const {session}=runPracticeSession({repoRoot:root,seed:3,parents:1,variants:3,out,
+    statsPath:stats,lightsPath:lights,lightCandidates:3,lightRounds:1,
+    bakeHistoryPath:historyPath});
   assert.ok(session.gym.children>=1);
   assert.equal(session.ui.trials,108);
   assert.equal(session.ui.gameApplied,false);
@@ -65,6 +78,10 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.equal(session.assetCoverage.nativeRuntimeVerified,false);
   assert.equal(session.practiceDomains.BUTTON.trials,108);
   assert.ok(session.rigStudy&&typeof session.rigStudy.measured==='boolean');
+  assert.equal(session.rigStudy.parent,chosen.id);
+  assert.equal(session.rigStudy.priorAttempts,0);
+  assert.equal(session.rigStudy.eligibleActors,actors.length);
+  assert.equal(session.rigStudy.sourceSha256,chosen.approvedSourceSha256);
   assert.equal(session.rigStudy.motionCurvesMeasured,false);
   assert.equal(session.rigStudy.nativeRuntimeVerified,false);
   assert.equal(session.rigStudy.gameApplied,false);
