@@ -104,7 +104,7 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     const libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null;
     const sourcePool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+17)),
       ...(libraryDir?approvedLibraryParents(libraryDir):[])];
-    const selected=selectBakeParents(sourcePool,3);
+    const selected=selectBakeParents(sourcePool.map(p=>({...p,file:path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file)})),3);
     const attempts=[];
     for(const bp of selected){
       try{
