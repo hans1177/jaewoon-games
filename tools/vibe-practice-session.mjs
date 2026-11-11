@@ -6,7 +6,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
+import {runGymSession,pickParents,chooseDiverseParents,mulberry32,blenderAvailable,motionCoverage,ASSET_PRACTICE_DOMAINS,buildPracticeAssetCoverage} from './vibe-variation-gym.mjs';
+import {measure as measureRig,evaluateAudit} from './vibe-mesh-audit.mjs';
 import {runLightSearch,mergeLearned} from './vibe-light-search.mjs';
 import {runBake,evaluateBake,selectBakeParents} from './vibe-normal-bake.mjs';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
@@ -142,6 +143,34 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     if(!session.bake.pass)session.assetCoverage.bakeShortage=session.bake.reason||
       'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP';
   }
+  // [리그·관절·모션 실제 원본 검사] 기존 Blender 메쉬 검사기를 CC0 캐릭터 원본에 적용한다.
+  // 회차당 하나만 검사하며, 클립 이름만으로 실제 모션 재생·관절곡선 품질을 통과시키지 않는다.
+  const actorSources=pickParents(registry,repoRoot,1e9,mulberry32(seed+43))
+    .filter(p=>/CHARACTER|CREATURE|NPC|HERO|MONSTER/i.test(p.family))
+    .sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  if(actorSources.length){
+    const actor=actorSources[Math.floor(Math.abs(seed)/300)%actorSources.length];
+    const auditFile=path.join(outDir,'rig-source-audit.json');
+    try{
+      const raw=measureRig(path.isAbsolute(actor.file)?actor.file:path.join(repoRoot,actor.file),
+        {out:auditFile});
+      const verdict=evaluateAudit(raw);
+      const clips=motionCoverage((raw.actions||[]).map(x=>x.name));
+      session.rigStudy={
+        parent:actor.id,family:actor.family,measured:true,
+        rigPass:verdict.pass,bones:verdict.stats.bones,meshParts:verdict.stats.meshes,
+        rigFailures:verdict.failures.slice(0,12),
+        productionBlockers:verdict.productionBlockers.slice(0,12),
+        clipsObserved:(raw.actions||[]).length,clipNameCoverage:clips.coverage,
+        clipNamePresent:clips.present,clipNameMissing:clips.missing,
+        motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false
+      };
+    }catch(error){
+      session.rigStudy={parent:actor.id,family:actor.family,measured:false,rigPass:false,
+        error:String(error.message||error).slice(0,200),
+        motionCurvesMeasured:false,nativeRuntimeVerified:false,gameApplied:false};
+    }finally{fs.rmSync(auditFile,{force:true});}
+  }
   // [분야별 연습 결과] 정적 실측·미검증·부족 분야를 분리한다. 게임/네이티브 성공으로 승격하지 않는다.
   const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{
     catalogued:session.assetCoverage.domains[name].catalogued,
@@ -162,6 +191,20 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     }
   }
   // [UI] 화면·버튼 배치 계약과 실제 아이콘 픽셀 가독성은 서로 다른 실측이다.
+  if(session.rigStudy){
+    const study=session.rigStudy;
+    // 리그와 관절의 가중치·본 검사는 실제 Blender 측정으로만 통과 처리한다.
+    for(const name of ['RIG','JOINT']){
+      domains[name].trials++;
+      if(study.measured&&study.rigPass&&study.bones>0)domains[name].staticMeasured++;
+      else domains[name].unverifiedOrFailed++;
+    }
+    // 모션·액션은 클립 이름을 관찰한 것뿐이다. 재생과 프레임별 관절 곡선은 아직 미측정이다.
+    for(const name of ['MOTION','ACTION']){
+      domains[name].trials++;
+      domains[name].unverifiedOrFailed++;
+    }
+  }
   for(const name of ['UI','BUTTON']){
     domains[name].trials+=ui.trials;
     domains[name].staticMeasured+=ui.staticPasses;
