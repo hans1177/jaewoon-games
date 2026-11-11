@@ -46,7 +46,7 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
-			academy = { presented = 0, expos = 0, last = {} }, -- 학회 발표·박람회 기록
+			academy = { presented = 0, expos = 0, medals = 0, last = {}, shown = {} }, -- 학회 발표·박람회 기록 (shown: 전시한 카드)
 			reported = {}, -- 학자에게 보고해 이해한 지식(카드 id → true)
 			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
 			scholarsMet = {},
@@ -464,6 +464,14 @@ return function(D)
 		if type(saved.academy) == "table" then
 			s.academy.presented = math.floor(num(saved.academy.presented, 0, 0, 1e6))
 			s.academy.expos = math.floor(num(saved.academy.expos, 0, 0, 1e6))
+			s.academy.medals = math.floor(num(saved.academy.medals, 0, 0, 1e6))
+			if type(saved.academy.shown) == "table" then
+				for k, v in saved.academy.shown do
+					if type(k) == "string" and #k <= 60 and v == true then
+						s.academy.shown[k] = true
+					end
+				end
+			end
 			if type(saved.academy.last) == "table" then
 				for k, v in saved.academy.last do
 					if type(k) == "string" and #k <= 60 and type(v) == "number" and v == v then
