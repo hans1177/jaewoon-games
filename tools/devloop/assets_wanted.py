@@ -67,7 +67,13 @@ def trade_goods_practice():
     ports = os.path.join(root, "src", "ReplicatedStorage", "Shared", "Ports.luau")
     with open(ports, encoding="utf-8") as f:
         text = f.read()
-    game_goods = set(re.findall(r'^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*id\s*=\s*"\1"', text, re.M))
+    # [교역품 범위] Ports.luau에는 항구·국가도 동일한 id 패턴이 있어 Goods 섹션만 분리한다.
+    parts = text.split("local Goods:", 1)
+    if len(parts) != 2 or "\nlocal Ports:" not in parts[1]:
+        raise RuntimeError("TRADE_GOODS_SOURCE_SECTION_UNVERIFIED")
+    goods_source = parts[1].split("\nlocal Ports:", 1)[0]
+    game_goods = set(re.findall(r'^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*id\s*=\s*"\1"',
+                            goods_source, re.M))
     rows, errors = [], []
     for good in goods + excluded:
         key = "Goods/" + good
