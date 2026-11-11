@@ -36,3 +36,5 @@
 
 - 2026-11-11 21:26(KST, run 43014337341, 21:21 촬영) 바이브: 클릭 30/30, 프레임 31장, errors 에 STUDIO_ASSET_AUDIT_FAILED 1건(19:23 과 같음). 원인: Server preload TIMEOUT_16S 96개(CardArt 16개 포함) + clientImageAudit UNVERIFIED(INVALID_SOURCE:CardArt/event_angkor). 모델 431 PASS. c11 조선소 화면 jpg 직접 확인: 글자·초상·배경 정상. 플레이 영향 없음, 코드 수정 없음, 재배포 안 함.
 - 큐 유지: CardArt 16개(registry 에 Image·권한 부여됨)가 클라이언트 감사에서 INVALID_SOURCE 인지(검수 대기 가능성) 다음 점검에서 확인. 서버 preload TIMEOUT 만으로 AUDIT_FAILED 가 붙지 않게 완화 검토(6회째).
+
+- 2026-11-11 22:20(KST, 13:20Z 촬영) 바이브: 새 점검 — 클릭 30/30, 프레임 31장, errors 비어 있음. clientImageAudit PASS(이미지·소리 124/124 로드, 누락 0), registry 555 PASS, 모델 431 PASS → 앞 큐의 CardArt INVALID_SOURCE 해결 확인. Server preload TIMEOUT_16S 96개는 오탐 패턴 그대로(플레이 영향 없음). 코드 수정 없음, 재배포 안 함.
