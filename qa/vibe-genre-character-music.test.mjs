@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {genreAssets,createVibeGenreAnimation,createVibeGenreMusic} from '../assets/vibe-genre-character-music.mjs';
+import {genreAssets,createVibeGenreCharacter,createVibeGenreAnimation,createVibeGenreMusic} from '../assets/vibe-genre-character-music.mjs';
 test('all ten genres have original characters and musical scales',()=>{
  assert.equal(Object.keys(genreAssets).length,10);
  for(const asset of Object.values(genreAssets)){assert.ok(asset.name);assert.ok(asset.bpm>0);assert.ok(asset.scale.length>=5)}
@@ -19,7 +19,6 @@ test('character art director styles existing clothing without constructing primi
  const model={traverse(fn){fn(coat);fn(face)}};
  const THREE={Color,Group:class{constructor(){throw Error('primitive group forbidden')}},
   Mesh:class{constructor(){throw Error('primitive geometry forbidden')}}};
- const {createVibeGenreCharacter}=await import('../assets/vibe-genre-character-music.mjs');
  const dressed=createVibeGenreCharacter(THREE,model,'wuxia');
  assert.equal(dressed.applied,1);
  assert.equal(dressed.assetCreated,false);
