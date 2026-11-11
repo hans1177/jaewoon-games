@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession,rigGate,motionCoverage} from '../tools/vibe-variation-gym.mjs';
+import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession,rigGate,motionCoverage,classifyPracticeAsset,buildPracticeAssetCoverage,ASSET_PRACTICE_DOMAINS} from '../tools/vibe-variation-gym.mjs';
 import {summarize} from '../tools/vibe-gym-publish.mjs';
 
 const repo=process.cwd();
@@ -48,6 +48,37 @@ test('리깅과 모션 연습은 독립 판정: 실제 액션 클립 부족 시 
   assert.deepEqual(row.motion.missing,['ATTACK','HIT','DEATH']);
   assert.equal(row.motion.gameApplied,false);
   assert.deepEqual(motionCoverage([]).missing,['IDLE','MOVE','ATTACK','HIT','DEATH']);
+});
+
+test('메쉬·리그·관절·모션·액션부터 UI 버튼 아이콘까지 실제 카탈로그를 연습 분야로 분류한다',()=>{
+  const actor=classifyPracticeAsset({id:'wolf',family:'CREATURE'});
+  for(const key of ['MESH','RIG','JOINT','MOTION','ACTION','MATERIAL'])assert.ok(actor.targets.includes(key),key);
+  const design=classifyPracticeAsset({id:'hud',family:'UI'});
+  assert.ok(['UI','BUTTON','ICON'].every(key=>design.targets.includes(key)));
+  assert.ok(classifyPracticeAsset({family:'MOTION'}).targets.includes('MOTION'));
+  assert.ok(classifyPracticeAsset({family:'AUDIO'}).targets.includes('AUDIO'));
+  assert.ok(classifyPracticeAsset({family:'ENVIRONMENT'}).targets.includes('ENVIRONMENT'));
+  assert.equal(actor.nativeRuntimeVerified,false);
+  assert.ok(ASSET_PRACTICE_DOMAINS.length>=16);
+});
+
+test('분류는 출처/실물 없는 등록 자산을 연습 가능 또는 검증 통과로 오인하지 않는다',()=>{
+  const root=tmp();fs.mkdirSync(path.join(root,'source'));
+  fs.writeFileSync(path.join(root,'source','hero.glb'),'practice fixture');
+  const coverage=buildPracticeAssetCoverage({assets:[
+    {id:'safe',family:'CHARACTER',license:'CC0',sourceFiles:['source/hero.glb']},
+    {id:'missing',family:'CHARACTER',license:'CC0',sourceFiles:['source/missing.glb']},
+    {id:'blocked',family:'PROP',license:'CC0',securityBlocked:true,sourceFiles:['source/hero.glb']},
+    {id:'ui',family:'UI',license:'unknown',sourceFiles:[]}
+  ]},root);
+  assert.equal(coverage.cataloguedAssets,4);
+  assert.equal(coverage.eligible3dAssets,1);
+  assert.equal(coverage.domains.RIG.catalogued,2);
+  assert.equal(coverage.domains.RIG.eligible3d,1);
+  assert.equal(coverage.domains.BUTTON.catalogued,1);
+  assert.equal(coverage.nativeRuntimeVerified,false);
+  assert.equal(coverage.gameApplied,false);
+  assert.ok(coverage.shortages.some(x=>x.id==='missing'));
 });
 
 test('연습 대상은 소품·몬스터·캐릭터·배경을 우선 섞고 부족할 때 같은 가족을 채운다', () => {
