@@ -113,6 +113,44 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
     }
     sources.push('assets/asset-manifest.json');
   }catch{}
+  // [실제 저장소 자산 전수 색인] 등록부에 없는 이미지/메쉬/재질/오디오/글꼴도
+  // 파일 자체를 발견하되, 무검증 파일은 소스 승인·엔진 적용에 사용할 수 없다.
+  const indexedPaths=new Set(assets.flatMap(asset=>
+    Array.isArray(asset.sourceFiles)?asset.sourceFiles.filter(x=>typeof x==='string'):[]));
+  let observedFiles=0;
+  const mediaExt=/\.(?:glb|gltf|obj|fbx|blend|png|jpe?g|webp|svg|ktx2?|tga|gif|mp3|ogg|wav|flac|ttf|otf|woff2?|mat)$/i;
+  const dirs=['assets','web-games','roblox-games','unity-games'];
+  for(const dir of dirs){
+    const base=path.join(root,dir);
+    if(!fs.existsSync(base))continue;
+    const pending=[base];
+    while(pending.length){
+      const folder=pending.pop();
+      let entries;try{entries=fs.readdirSync(folder,{withFileTypes:true});}catch{continue;}
+      for(const entry of entries){
+        if(entry.isDirectory()){
+          if(!entry.name.startsWith('.')&&entry.name!=='node_modules')pending.push(path.join(folder,entry.name));
+          continue;
+        }
+        if(!entry.isFile()||!mediaExt.test(entry.name))continue;
+        const relative=path.relative(root,path.join(folder,entry.name)).replaceAll('\\','/');
+        if(indexedPaths.has(relative))continue;
+        indexedPaths.add(relative);observedFiles++;
+        const name=relative.toLowerCase(),ext=path.extname(name);
+        const family=/\.(?:mp3|ogg|wav|flac)$/.test(ext)?'AUDIO':
+          /\.(?:ttf|otf|woff2?)$/.test(ext)?'FONT':
+          /(?:^|\/)(?:icons?|cursors?)(?:\/|[-_])/.test(name)?'ICON':
+          /(?:^|\/)(?:ui|interface|menus?|hud|buttons?)(?:\/|[-_])/.test(name)?'UI':
+          /\.(?:ktx2?|tga|mat)$/.test(ext)||/(?:normal|roughness|metalness|albedo|diffuse|texture|material|pbr)/.test(name)?'MATERIAL':
+          /(?:^|\/)(?:actors?|characters?|creatures?|npcs?)(?:\/|[-_])/.test(name)?'CHARACTER':
+          /(?:motion|animation|keyframes?)/.test(name)?'MOTION':
+          /(?:background|environment|foliage|terrain|forests?|skybox|world)/.test(name)?'ENVIRONMENT':
+          /\.(?:glb|gltf|obj|fbx|blend)$/.test(ext)?'PROP':'UI';
+        assets.push({id:'repo:'+relative,title:entry.name,family,catalogOnly:true,sourceFiles:[]});
+      }
+    }
+    sources.push(dir+'/** (media inventory only)');
+  }
   const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{catalogued:0,eligible3d:0}]));
   const families={},shortages=[];
   for(const asset of assets){
@@ -138,6 +176,7 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
     }
   }
   return {cataloguedAssets:assets.length,registryAssets:(registry?.assets||[]).length,
+    observedRepositoryMediaFiles:observedFiles,
     scannedCatalogs:sources,
     eligible3dAssets:Object.values(families).reduce((sum,f)=>sum+f.eligible3d,0),
     domains,families,shortages:shortages.slice(0,24),
