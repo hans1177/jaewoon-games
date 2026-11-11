@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {evaluateAudit,measure,blenderAvailable} from '../tools/vibe-mesh-audit.mjs';
+import {evaluateAudit,evaluateMotionCurves,measure,blenderAvailable} from '../tools/vibe-mesh-audit.mjs';
 
 const good=()=>({armatures:[{name:'Rig',bones:20,roots:1}],height:2,groundOffsetRatio:0.002,triangles:9000,actions:[{name:'Idle'}],
   symmetry:[{pair:['L_Arm','R_Arm'],sizeErr:0.01,posErr:0.01,zErr:0.01}],
@@ -42,6 +42,26 @@ test('기본 도형으로 만든 메쉬가 많으면 고장은 아니지만 제�
 test('빈 입력은 메쉬·리그 없음으로 실패한다', () => {
   const f=evaluateAudit({meshes:[],armatures:[]}).failures;
   assert.ok(f.includes('NO_MESH')&&f.includes('NO_ARMATURE'));
+});
+
+test('모션 실측은 실제 본의 움직이는 키프레임 곡선만 인정하고 이름만 있는 클립은 제외한다',()=>{
+  const valid=name=>({name,frames:[0,30],curvesInspected:true,curveCount:4,
+    keyframeCount:22,boneCurves:4,validBoneCurves:4,movingBoneCurves:3,invalidCurves:0});
+  const result=evaluateMotionCurves([valid('Walk'),valid('Attack'),{
+    ...valid('Idle'),movingBoneCurves:0
+  },{name:'Fake_Attack',frames:[0,30],curvesInspected:false},
+  {...valid('Broken_Run'),invalidCurves:1},{...valid('Outside'),frames:[0,0]}]);
+  assert.equal(result.observedClips,6);
+  assert.equal(result.inspectedClips,5);
+  assert.equal(result.validMovingClips,2);
+  assert.deepEqual(result.validClipNames,['Walk','Attack']);
+  assert.equal(result.invalidOrUnmeasuredClips,4);
+  assert.equal(result.curveMeasurementAvailable,true);
+  assert.equal(result.gameplayMotionVerified,false);
+  assert.equal(result.nativeRuntimeVerified,false);
+  assert.equal(result.gameApplied,false);
+  assert.equal(evaluateMotionCurves([{name:'Attack',frames:[0,20]}]).validMovingClips,0);
+  assert.equal(evaluateMotionCurves([]).curveMeasurementAvailable,false);
 });
 
 // 실제 Blender(또는 bpy)가 있을 때만: 캐릭터 공장 → 감사까지 끝에서 끝으로 돌린다.
