@@ -1,3 +1,5 @@
+// 파일명: assets/vibe-cinematic-polish.mjs
+// [임포트] 외부 에셋 없이 기존 Three.js 표현 계층에 연결되는 시네마틱 연출
 // Original cinematic polish tools for THREE scenes. No external copyrighted assets.
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(v)?v:0));
 const smooth=t=>{t=clamp(t);return t*t*(3-2*t)};
@@ -30,39 +32,84 @@ export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=
   dispose(){for(const light of [hemi,key,fill,rim])scene.remove(light);if(scene.fog===fog)scene.fog=oldFog}
  };
 }
+// [메인: 3D 카메라] 관성/피사체 예측/시선 보간은 렌더 전용이며 이동 판정과 분리한다.
 export function createVibeShotComposer(THREE,camera,{subject=null}={}){
- const target=new THREE.Vector3(),velocity=new THREE.Vector3();let last=null;
+ const target=new THREE.Vector3(),velocity=new THREE.Vector3();
+ const origin=new THREE.Vector3(),previous=new THREE.Vector3(),motion=new THREE.Vector3();
+ const offsetVector=new THREE.Vector3(),aim=new THREE.Vector3(),desired=new THREE.Vector3(),delta=new THREE.Vector3();
+ let initialized=false;
+ const number=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
  return {
-  update(dt,{subjectPosition=null,offset=[2,1.6,4],lookOffset=[0,1.4,0],damping=7,deadZone=.02,framing=.5}={}){
+  update(dt,{subjectPosition=null,offset=[2,1.6,4],lookOffset=[0,1.4,0],damping=7,
+    lookDamping=9,deadZone=.02,framing=.5,leadSeconds=.12,maxLead=.7,reducedMotion=false}={}){
    if(!Number.isFinite(dt)||dt<=0)return;
-   const origin=subjectPosition?new THREE.Vector3(subjectPosition.x,subjectPosition.y,subjectPosition.z):subject?.getWorldPosition?.(new THREE.Vector3())||new THREE.Vector3();
-   const desired=origin.clone().add(new THREE.Vector3(...offset));
-   const alpha=1-Math.exp(-Math.min(dt,.1)*Math.max(.1,damping));
-   if(!last){camera.position.copy(desired);last=desired.clone()}
-   else if(camera.position.distanceTo(desired)>deadZone)camera.position.lerp(desired,alpha);
-   target.copy(origin).add(new THREE.Vector3(...lookOffset));
-   camera.lookAt(target);camera.fov=lerp(camera.fov,clamp(framing,.1,1)*35+20,alpha);camera.updateProjectionMatrix();
+   const step=Math.min(dt,.1),follow=1-Math.exp(-step*Math.max(.1,number(damping,7)));
+   const gaze=1-Math.exp(-step*Math.max(.1,number(lookDamping,9)));
+   if(subjectPosition)origin.set(number(subjectPosition.x),number(subjectPosition.y),number(subjectPosition.z));
+   else if(subject?.getWorldPosition)subject.getWorldPosition(origin);
+   else origin.set(0,0,0);
+   offsetVector.set(number(offset[0]),number(offset[1]),number(offset[2]));
+   delta.copy(origin).sub(previous);
+   // 큰 순간이동은 직전 속도를 이어 쓰지 않아 화면이 엉뚱한 방향으로 쏠리지 않게 한다.
+   const teleport=initialized&&delta.length()>Math.max(4,offsetVector.length()*3);
+   if(!initialized||teleport)motion.set(0,0,0);
+   else motion.lerp(delta.multiplyScalar(1/Math.max(dt,.001)),1-Math.exp(-step*8));
+   previous.copy(origin);
+   delta.copy(motion).multiplyScalar(Math.max(0,Math.min(.25,number(leadSeconds,.12))));
+   const leadLimit=Math.max(0,Math.min(2,number(maxLead,.7)));
+   if(delta.length()>leadLimit)delta.multiplyScalar(leadLimit/delta.length());
+   desired.copy(origin).add(offsetVector).add(delta);
+   aim.copy(origin).add(delta).add(offsetVector.set(number(lookOffset[0]),number(lookOffset[1]),number(lookOffset[2])));
+   if(!initialized||teleport||reducedMotion){
+    camera.position.copy(desired);target.copy(aim);
+   }else{
+    if(camera.position.distanceTo(desired)>Math.max(0,number(deadZone,.02)))camera.position.lerp(desired,follow);
+    target.lerp(aim,gaze);
+   }
+   camera.lookAt(target);
+   const requestedFov=Math.min(55,Math.max(23.5,Math.min(1,Math.max(.1,number(framing,.5)))*35+20));
+   const currentFov=number(camera.fov,45);
+   const nextFov=reducedMotion?requestedFov:lerp(currentFov,requestedFov,follow);
+   if(Math.abs(nextFov-currentFov)>.001){
+    camera.fov=nextFov;camera.updateProjectionMatrix();
+   }
    velocity.copy(desired).sub(camera.position);
+   initialized=true;
   },
   get velocity(){return velocity.clone()},
-  reset(){last=null}
+  reset(){initialized=false;motion.set(0,0,0);velocity.set(0,0,0)}
  };
 }
-export function createVibeExpressionDirector(face,{blinkSeconds=3.4}={}){
- let elapsed=0,lastBlink=-10;
- const presets={neutral:{},joy:{mouthSmileLeft:.8,mouthSmileRight:.8,cheekPuff:.2},fear:{browInnerUp:.8,eyeWideLeft:.55,eyeWideRight:.55,jawOpen:.28},anger:{browDownLeft:.75,browDownRight:.75,mouthClose:.4},sad:{browInnerUp:.6,mouthFrownLeft:.65,mouthFrownRight:.65},pain:{eyeBlinkLeft:.7,eyeBlinkRight:.7,mouthFrownLeft:.55,mouthFrownRight:.55,jawOpen:.25}};
- let current='neutral',intensity=1;
+// [메인: 캐릭터 연기] 표정 전환을 보간하고 중립 표정에서 이전 모프 값을 반드시 해제한다.
+export function createVibeExpressionDirector(face,{blinkSeconds=3.4,transitionSeconds=.18}={}){
+ let elapsed=0,initialized=false,current='neutral',intensity=1;
+ const presets={
+  neutral:{},joy:{mouthSmileLeft:.8,mouthSmileRight:.8,cheekPuff:.2},
+  fear:{browInnerUp:.8,eyeWideLeft:.55,eyeWideRight:.55,jawOpen:.28},
+  anger:{browDownLeft:.75,browDownRight:.75,mouthClose:.4},
+  sad:{browInnerUp:.6,mouthFrownLeft:.65,mouthFrownRight:.65},
+  pain:{eyeBlinkLeft:.7,eyeBlinkRight:.7,mouthFrownLeft:.55,mouthFrownRight:.55,jawOpen:.25}
+ };
+ const channels=[...new Set([...Object.values(presets).flatMap(p=>Object.keys(p)),'eyeBlinkLeft','eyeBlinkRight','jawOpen'])];
+ const pose=Object.fromEntries(channels.map(key=>[key,0]));
+ const blinkPeriod=Number.isFinite(blinkSeconds)&&blinkSeconds>.3?blinkSeconds:3.4;
  return {
   set(name,weight=1){if(!presets[name])throw Error('Unknown expression');current=name;intensity=clamp(weight)},
-  update(dt,{speaking=false}={}){
+  update(dt,{speaking=false,reducedMotion=false}={}){
    if(!Number.isFinite(dt)||dt<=0)return;
-   elapsed+=Math.min(dt,.1);const cycle=elapsed%blinkSeconds;
+   const step=Math.min(dt,.1);elapsed+=step;
+   const alpha=!initialized||reducedMotion||transitionSeconds<=0?1:1-Math.exp(-step/transitionSeconds);
+   const expression=presets[current];
+   for(const key of channels)pose[key]=lerp(pose[key],(expression[key]||0)*intensity,alpha);
+   // 눈깜박임은 짧게 유지하고, 입 모양은 음성 상태에 즉시 반응한다.
+   const cycle=elapsed%blinkPeriod;
    const blink=cycle<.14?Math.sin(Math.PI*cycle/.14):0;
-   const weights=Object.fromEntries(Object.entries(presets[current]).map(([key,value])=>[key,value*intensity]));
-   weights.eyeBlinkLeft=Math.max(weights.eyeBlinkLeft||0,blink);
-   weights.eyeBlinkRight=Math.max(weights.eyeBlinkRight||0,blink);
-   weights.jawOpen=Math.max(weights.jawOpen||0,speaking?.12+.17*Math.abs(Math.sin(elapsed*11)):0);
+   const weights={...pose};
+   weights.eyeBlinkLeft=Math.max(weights.eyeBlinkLeft,blink);
+   weights.eyeBlinkRight=Math.max(weights.eyeBlinkRight,blink);
+   if(speaking)weights.jawOpen=Math.max(weights.jawOpen,.12+.17*Math.abs(Math.sin(elapsed*11)));
    face.pose(weights);
+   initialized=true;
   },
   get expression(){return current}
  };
