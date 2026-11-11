@@ -66,6 +66,7 @@ return function(D)
 			specialty = nil,
 			specLevels = {},
 			companions = {},
+			stations = {}, -- 배의 자리 (자리 id → 동료 id)
 			affinity = {},
 			harbor = {},
 			bank = { deposit = 0, loan = 0, lastDay = 0 },
@@ -339,9 +340,46 @@ return function(D)
 					type(id) == "string"
 					and D.Specialties.CompanionById[id]
 					and not table.find(s.companions, id)
-					and #s.companions < D.Specialties.MAX_COMPANIONS
+					and #s.companions < D.Specialties.slotsFor(D.Ships.Ships[s.ship.id].class)
 				then
 					table.insert(s.companions, id)
+				end
+			end
+		end
+		-- 배의 자리: 저장된 자리가 올바르면 따르고, 앉지 못한 동료는 맞는 직책 → 빈 자리 순으로 앉힌다
+		if type(saved.stations) == "table" then
+			for stId, who in saved.stations do
+				if type(stId) == "string" and D.Specialties.StationById[stId] and type(who) == "string" and table.find(s.companions, who) then
+					local dup = false
+					for _, w in s.stations do
+						if w == who then
+							dup = true
+						end
+					end
+					if not dup then
+						s.stations[stId] = who
+					end
+				end
+			end
+		end
+		for _, cid in s.companions do
+			local seated = false
+			for _, w in s.stations do
+				if w == cid then
+					seated = true
+				end
+			end
+			if not seated then
+				local want = D.Specialties.CompanionStation[cid] or "boatswain"
+				if s.stations[want] == nil then
+					s.stations[want] = cid
+				else
+					for _, st in D.Specialties.Stations do
+						if s.stations[st.id] == nil then
+							s.stations[st.id] = cid
+							break
+						end
+					end
 				end
 			end
 		end
@@ -700,6 +738,7 @@ return function(D)
 			specialty = state.specialty,
 			specLevels = state.specLevels,
 			companions = state.companions,
+			stations = state.stations,
 			affinity = state.affinity,
 			harbor = state.harbor,
 			bank = state.bank,

@@ -2732,7 +2732,33 @@ function RENDERERS.status()
 			return grow
 		end)
 	end
-	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
+	add(function() return mkHeader(content, string.format("배의 자리 (이 배는 동료 %d명까지)", view.companions.max)) end)
+	add(function()
+		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 다음 동료와 자리를 바꿔요.", 12, COLORS.muted, true)
+	end)
+	for _, st in view.companions.stations do
+		add(function()
+			local joined = {}
+			for _, c in view.companions.list do
+				if c.joined and c.id ~= st.seatId then
+					table.insert(joined, c)
+				end
+			end
+			H.stationPick = H.stationPick or {}
+			local idx = (H.stationPick[st.id] or 0) % math.max(1, #joined) + 1
+			local nxt = joined[idx]
+			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음" else "  (다른 직책)")) else "비어 있음"
+			local btns = {}
+			if nxt then
+				table.insert(btns, { text = "▶ " .. nxt.name, color = COLORS.blue, onClick = function()
+					H.stationPick[st.id] = idx
+					call("Station", { companionId = nxt.id, station = st.id })
+				end })
+			end
+			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
+		end)
+	end
+	add(function() return mkHeader(content, "동료") end)
 	if view.talk then
 		add(function()
 			-- 실제 동료 대화에 기존 등록 초상화를 연결한다. 호감도·대화·저장은 그대로 둔다.
@@ -2768,7 +2794,7 @@ function RENDERERS.status()
 	end
 	for _, c in view.companions.list do
 		add(function()
-			local sub = string.format("%s\n영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
+			local sub = string.format("%s\n어울리는 자리 %s · 영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.bestSeat, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
 			local btn = if c.joined
 				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
 				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }

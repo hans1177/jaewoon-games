@@ -269,6 +269,32 @@ local function extraTests()
 	local withSkill = 0
 	for _, sk in D.Skills.Skills do if sk.grantedBy and string.sub(sk.grantedBy, 1, 2) == "c_" then withSkill += 1 end end
 	check("학자 동료: 전용 스킬을 가진 동료가 7명", withSkill == 7, tostring(withSkill))
+	-- 배의 자리
+	local SPd = D.Specialties
+	check("자리: 배 등급별 동료 수 2/4/5/6", SPd.slotsFor(1) == 2 and SPd.slotsFor(2) == 4 and SPd.slotsFor(3) == 5 and SPd.slotsFor(4) == 6)
+	local noSeat = 0
+	for _, c in SPd.Companions do
+		if not SPd.StationById[SPd.CompanionStation[c.id] or ""] then noSeat += 1 end
+	end
+	check("자리: 모든 동료에 어울리는 자리가 있음", noSeat == 0)
+	local stSt = newState("england")
+	stSt.fame = 500; stSt.coins = 9000; stSt.scholarsMet.harrison = true; stSt.scholarsMet.newton = true
+	check("자리: 영입하면 어울리는 자리에 앉음", act(stSt, "Recruit", { companionId = "c_harrison" }) and stSt.stations.helm == "c_harrison")
+	check("자리: 직책에 맞는 효과 x1.2, 다른 자리 x0.6", (function()
+		local fast = S.Perk.speedMult(stSt)
+		act(stSt, "Station", { companionId = "c_harrison", station = "surgeon" })
+		local slow = S.Perk.speedMult(stSt)
+		return fast > slow and slow > 1 and math.abs((fast - 1) / (slow - 1) - 2) < 0.01
+	end)())
+	act(stSt, "Station", { companionId = "c_harrison", station = "helm" })
+	act(stSt, "Recruit", { companionId = "c_newton" })
+	check("자리: 자리가 찬 곳에는 서로 바꿔 앉음", act(stSt, "Station", { companionId = "c_newton", station = "helm" }) and stSt.stations.helm == "c_newton" and stSt.stations.gunner == "c_harrison")
+	check("자리: 작별하면 자리가 비워짐", act(stSt, "Dismiss", { companionId = "c_newton" }) and stSt.stations.helm == nil)
+	check("자리: 저장/불러오기", (function()
+		local back = S.State.sanitize(S.State.serialize(stSt))
+		return back.stations.gunner == "c_harrison"
+	end)())
+	check("자리: 화면에 6자리", #S.View.build(stSt, ctx).companions.stations == 6)
 	-- 방 시계
 	local RC = D.RoomClock
 	check("방 시계: 현실 1분 = 6일", RC.daysFor(60) == 6 and RC.daysFor(3600) == 360 and RC.daysFor(-5) == 0)
@@ -1588,7 +1614,7 @@ do
 	c.scholarsMet.merian, c.scholarsMet.boyle = true, true
 	act(c, "Recruit", { companionId = "c_merian" })
 	ok = act(c, "Recruit", { companionId = "c_boyle" })
-	check("companion max enforced", not ok and #c.companions == D.Specialties.MAX_COMPANIONS)
+	check("companion max enforced", not ok and #c.companions == D.Specialties.slotsFor(S.State.shipDef(c).class))
 	local visibleCompanions = 0
 	for _, cc in D.Specialties.Companions do
 		if not cc.nation or cc.nation == c.nationId then
