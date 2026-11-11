@@ -10742,11 +10742,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "791bc79ae5146c1c7ffff0ae3bafd946ee0ae76e",
-      "artifactIdentity": "sha256:45d7fa066f6be303b593d85397254a7bdc5d7cc1f63d25e27adf7d40c73031be",
+      "sourceRevision": "e7e14357c125f1a3dcb1d62d7eefafda22794646",
+      "artifactIdentity": "sha256:14c624ba3cb28324445680713f1ff2923096c5f22959c8a7119069d6187eaf09",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 43013565966,
-      "testedAt": "2026-11-11T12:10:08.025Z",
+      "workflowRunId": 43061107503,
+      "testedAt": "2026-11-11T16:50:46.722Z",
       "repairSurfaces": [
         "MOBILE_UI",
         "ROBLOX_OBSERVED_INTERACTION"
@@ -10765,13 +10765,6 @@
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
           "observed": "{\"id\":\"observed-action-a5a1724f10caafbfaa3d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill2\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill2\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-5f391f74a05998aef298",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-5f391f74a05998aef298\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill3\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
         }
       ]
     },
