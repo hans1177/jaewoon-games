@@ -99,7 +99,7 @@ test('practice trainer and workflow keep learned adapter unverified and require 
   const trainer = fs.readFileSync('tools/vibe2-practice-train.py', 'utf8');
   assert.match(trainer, /PRACTICE_ONLY/);
   assert.match(trainer, /runtimePromotionAllowed.*False/);
-  assert.match(trainer, /VERIFIED_UNITY_HOLDOUT_AB_AND_CANARY/);
+  assert.match(trainer, /metadata\['requiredNextGate'\] = 'VERIFIED_' \+ str\(dataset_manifest\['targetTaskType'\]\)\.upper\(\) \+ '_HOLDOUT_AB_AND_CANARY'/);
   const workflow = fs.readFileSync('.github/workflows/vibe2-structural-repair-distillation.yml', 'utf8');
   assert.match(workflow, /unity-practice-train:/);
   assert.match(workflow, /needs\.online-teacher\.outputs\.practice_count != '0'/);
