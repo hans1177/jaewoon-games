@@ -4,6 +4,11 @@
 
 return function(D, S)
 	local K = D.KnowledgeTree
+
+	-- 교역품 값 보너스: 지식(최대 +40%)에 기록한 인물의 인연(최대 +8%)을 곱한다
+	local function goodsMult(state, goodId)
+		return K.goodsMult(state, goodId) * S.People.goodsBonus(state, goodId)
+	end
 	local handlers = {}
 
 	local FAME = { Common = 3, Uncommon = 6, Rare = 12, Epic = 25, Legendary = 50 }
@@ -187,6 +192,7 @@ return function(D, S)
 		end
 		techBonus += 0.01 * (K.eraIndex(state) - 1)
 		techBonus += S.Build.researchBonus(state, portId)
+		techBonus += S.People.discBonus(state, discs)
 		return math.min(0.3, (lvl - 1) * 0.03 + understood * 0.005 + techBonus), lvl, discs
 	end
 
@@ -406,7 +412,7 @@ return function(D, S)
 		if lvl < 3 then
 			return false, "신제품 출시 행사는 교역소가 3단계 이상인 항구에서 열려요"
 		end
-		local gm = K.goodsMult(state, goodId)
+		local gm = goodsMult(state, goodId)
 		if gm <= 1.001 then
 			return false, string.format("%s은(는) 아직 개량되지 않았어요 (지식 트리에서 관련 지식을 이해하세요)", good.name)
 		end
@@ -520,7 +526,7 @@ return function(D, S)
 		local pieces = expoPieces(state, formId, lvl)
 		local goodsKinds, goodsCoins = 0, 0
 		for goodId, count in state.cargo do
-			local gm = K.goodsMult(state, goodId)
+			local gm = goodsMult(state, goodId)
 			if count > 0 and gm > 1.001 and D.Ports.Goods[goodId] then
 				goodsKinds += 1
 				goodsCoins += math.min(3, count) * math.floor(D.Ports.Goods[goodId].basePrice * (1 + (gm - 1) * 5))
@@ -691,7 +697,7 @@ return function(D, S)
 					end
 					table.sort(ids)
 					for _, goodId in ids do
-						local gm = K.goodsMult(state, goodId)
+						local gm = goodsMult(state, goodId)
 						if gm > 1.001 then
 							local have = state.cargo[goodId] or 0
 							table.insert(rows, { goodId = goodId, name = D.Ports.Goods[goodId].name, have = have, need = LAUNCH_COUNT, up = math.floor((gm - 1) * 100 + 0.5), open = lvl >= 3, wait = wait })
@@ -717,7 +723,7 @@ return function(D, S)
 			local fx = node.fx
 			if fx and fx.goods and K.understood(state, node.id) then
 				for _, g in fx.goods do
-					out.upgrades[g] = math.floor((K.goodsMult(state, g) - 1) * 100 + 0.5)
+					out.upgrades[g] = math.floor((goodsMult(state, g) - 1) * 100 + 0.5)
 				end
 			end
 		end
@@ -725,7 +731,7 @@ return function(D, S)
 	end
 
 	return {
-		handlers = handlers, goodsMult = K.goodsMult, speedBonus = K.speedBonus, viewOf = viewOf,
+		handlers = handlers, goodsMult = goodsMult, speedBonus = K.speedBonus, viewOf = viewOf,
 		reportableCount = reportableCount, scholarDisciplines = scholarDisciplines,
 		supplyMult = supplyMult, researchOf = researchOf, understoodIn = understoodIn,
 	}

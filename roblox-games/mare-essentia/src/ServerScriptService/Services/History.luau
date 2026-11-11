@@ -89,19 +89,17 @@ return function(D, S)
 			end
 			ch = ev.insight
 			-- 얽힌 인물을 만난 적이 있으면 인연의 보너스 (코인·명성 25% 더)
-			for _, pid in ev.people or {} do
-				if state.scholarsMet and state.scholarsMet[pid] then
-					local sch
-					for _, s in D.Scholars.Scholars do
-						if s.id == pid then sch = s end
-					end
-					local copy = table.clone(ch)
-					copy.coins = if ch.coins and ch.coins > 0 then math.floor(ch.coins * 1.25) else ch.coins
-					copy.fame = if ch.fame and ch.fame > 0 then math.ceil(ch.fame * 1.25) else ch.fame
-					ch = copy
-					bondName = sch and sch.name or pid
-					break
-				end
+			local bond = nil
+			for _, p in S.People.eventPeople(state, ev.id) do
+				bond = p.name
+				break
+			end
+			if bond then
+				local copy = table.clone(ch)
+				copy.coins = if ch.coins and ch.coins > 0 then math.floor(ch.coins * 1.25) else ch.coins
+				copy.fame = if ch.fame and ch.fame > 0 then math.ceil(ch.fame * 1.25) else ch.fame
+				ch = copy
+				bondName = bond
 			end
 		end
 		if not ch then
@@ -201,10 +199,15 @@ return function(D, S)
 				disc = D.KnowledgeTree.DisciplineById[node.disc].name
 			end
 			local people = {}
+			local metIds = {}
+			for _, p in S.People.eventPeople(state, ev.id) do
+				metIds[p.id] = true
+				table.insert(people, { name = p.name, met = true })
+			end
 			for _, pid in ev.people or {} do
 				for _, s in D.Scholars.Scholars do
-					if s.id == pid then
-						table.insert(people, { name = s.name, met = (state.scholarsMet and state.scholarsMet[pid]) == true })
+					if s.id == pid and not metIds[pid] then
+						table.insert(people, { name = s.name, met = false })
 					end
 				end
 			end
