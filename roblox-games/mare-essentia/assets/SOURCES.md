@@ -641,3 +641,10 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - `world_01.jpg`부터 이어지는 시트는 각각 1000×800, 5열×4행이다. 칸은 200×200이며 왼쪽 위부터 읽는다.
 - `event_*.jpg`는 같은 소재를 큰 화면에 표시하기 위한 가로형 독립 원화다. 현재 그림 자산이며 이벤트 애니메이션 연결 상태는 목록에 기록한다.
 - 생성 원화 `PROJECT_ORIGINAL_ART`. 고증 참고는 항목별 출처를 확인한다. 살아 있는 사람, 인물 초상, 군중은 발견물 그림에서 제외했다. 모아이는 석상 유적이다. 신화 소재는 전승 삽화다.
+
+## 교역품과 사건 삽화 원본
+
+- 아래 원본은 프로젝트를 위해 생성한 삽화다. 역사 사건 그림은 분위기를 재현한 창작 장면이다.
+- 교역품: brazilwood, cocoa, copper, ebony, gems, gold, jade, kauri, logwood, mahogany, maize, palm_oil, pearl_shell, sandalwood, silver.
+- 사건 삽화: anglo_dutch_war, bumper_harvest, cape_colony, drought, earthquake, great_fire, plague_wave, storm, volcano.
+- 로블록스 게시용 이미지 승인 및 사용 권한 검증은 별도로 기록한다.
