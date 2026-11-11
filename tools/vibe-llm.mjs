@@ -51,7 +51,8 @@ export async function openaiCompatCall({ url, key, model, prompt, fetchFn = fetc
     body: JSON.stringify({ model, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
   });
   if (!r.ok) throw new LlmError(`${name}_${model}_HTTP_${r.status}`, { status: r.status, retryable: true });
-  const text = (await r.json()).choices?.[0]?.message?.content || '';
+  let body; try { body = await r.json(); } catch { throw new LlmError(`${name}_${model}_NOT_JSON`, { status: r.status, retryable: true }); }
+  const text = body.choices?.[0]?.message?.content || '';
   if (!String(text).trim()) throw new LlmError(`${name}_${model}_EMPTY`, { retryable: true });
   return text;
 }
@@ -75,6 +76,31 @@ export async function askChain({ prompt, providers, log = () => {} }) {
   throw err;
 }
 
+
+// 모델 이름은 자주 바뀐다. 공급자 목록에서 지금 쓸 수 있는 모델을 골라 이름 바뀜(404)에 스스로 대응한다.
+export function pickGroqModels(ids) {
+  const bad = /whisper|guard|tts|orpheus|embed|safeguard|allam|prompt-guard|compound/i;
+  const pref = [/gpt-oss-120b/i, /llama-3\.3-70b/i, /qwen.*(32b|coder)/i, /kimi/i, /llama-4/i, /llama-3\.1-70b/i, /gpt-oss-20b/i, /llama-3\.1-8b/i];
+  const ok = (ids || []).filter(id => !bad.test(id));
+  const out = [];
+  for (const re of pref) for (const id of ok) if (re.test(id) && !out.includes(id)) out.push(id);
+  return out.slice(0, 3);
+}
+export function pickOpenRouterModels(list) {
+  const bad = /lyria|-vl|omni|image|audio|video|embed|1\.7b|2\.6b|preview-image/i;
+  const free = (list || []).filter(m => String(m?.pricing?.prompt) === '0' && String(m?.pricing?.completion) === '0' && !bad.test(m.id));
+  const pref = [/code|coder/i, /ultra|super/i, /gemma-4-31b/i, /nemotron/i, /qwen/i, /llama/i];
+  const out = [];
+  for (const re of pref) for (const m of free) if (re.test(m.id) && !out.includes(m.id) && m.id !== 'openrouter/free') out.push(m.id);
+  if (free.some(m => m.id === 'openrouter/free')) out.push('openrouter/free');
+  return out.slice(0, 3);
+}
+async function listIds(fetchFn, url, key) {
+  const r = await fetchFn(url, { headers: key ? { authorization: 'Bearer ' + key } : {} });
+  if (!r.ok) throw new Error('LIST_HTTP_' + r.status);
+  return (await r.json()).data || [];
+}
+
 // 환경에서 공급자 목록을 만든다. Gemini 는 allowGemini(무료 확인 변수)가 참일 때만 쓴다.
 export async function buildProviders({ env = process.env, allowGemini = true, fetchFn = fetch, log = () => {} } = {}) {
   const providers = [];
@@ -96,13 +122,17 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
   }
   // 4순위: Groq 무료 한도(큰 오픈 모델을 빠르게). 키(GROQ_API_KEY)가 있을 때만. 모델 이름은 바뀔 수 있어 변수로 바꿀 수 있다.
   if (env.GROQ_API_KEY) {
-    const m = env.VIBE_BRAIN_GROQ_MODEL || 'llama-3.3-70b-versatile';
-    providers.push({ name: 'groq:' + m, call: prompt => openaiCompatCall({ url: 'https://api.groq.com/openai/v1/chat/completions', key: env.GROQ_API_KEY, model: m, prompt, fetchFn, name: 'GROQ' }) });
+    let ms = String(env.VIBE_BRAIN_GROQ_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
+    if (!ms.length) { try { ms = pickGroqModels((await listIds(fetchFn, 'https://api.groq.com/openai/v1/models', env.GROQ_API_KEY)).map(m => m.id)); } catch (e) { log('GROQ_MODEL_LIST_FAILED ' + e.message); } }
+    if (!ms.length) ms = ['llama-3.3-70b-versatile'];
+    for (const m of ms) providers.push({ name: 'groq:' + m, call: prompt => openaiCompatCall({ url: 'https://api.groq.com/openai/v1/chat/completions', key: env.GROQ_API_KEY, model: m, prompt, fetchFn, name: 'GROQ' }) });
   }
   // 5순위: OpenRouter 무료 Qwen3 Coder(하루 50회, 키 필요)
   if (env.OPENROUTER_API_KEY) {
-    const m = env.VIBE_BRAIN_OPENROUTER_MODEL || 'qwen/qwen3-coder:free';
-    providers.push({ name: 'openrouter:' + m, call: prompt => openaiCompatCall({ url: 'https://openrouter.ai/api/v1/chat/completions', key: env.OPENROUTER_API_KEY, model: m, prompt, fetchFn, name: 'OPENROUTER' }) });
+    let ms = String(env.VIBE_BRAIN_OPENROUTER_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
+    if (!ms.length) { try { ms = pickOpenRouterModels(await listIds(fetchFn, 'https://openrouter.ai/api/v1/models')); } catch (e) { log('OPENROUTER_MODEL_LIST_FAILED ' + e.message); } }
+    if (!ms.length) ms = ['openrouter/free'];
+    for (const m of ms) providers.push({ name: 'openrouter:' + m, call: prompt => openaiCompatCall({ url: 'https://openrouter.ai/api/v1/chat/completions', key: env.OPENROUTER_API_KEY, model: m, prompt, fetchFn, name: 'OPENROUTER' }) });
   }
   return providers;
 }
