@@ -907,3 +907,55 @@ test('System AI stages sequential edits on one file and refuses fake source muta
     assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=3;\n');
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+ // [자가복구 회귀] 같은 파일 순차 편집은 순서가 전략 의미의 일부다.
+test('System AI strategy fingerprint keeps same-file edit order while normalizing cross-file order',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/a.mjs','export const a=1;\nexport const b=1;\n');
+    write('tools/b.mjs','export const c=1;\n');
+    const base={id:'fingerprint-order',status:'running',goal:'repair',failureSignature:'REPAIR_SAME_SIGNATURE',
+      responsibleFiles:['tools/a.mjs','tools/b.mjs']};
+    const firstEdits=[
+      {path:'tools/a.mjs',find:'a=1',replace:'a=2'},
+      {path:'tools/a.mjs',find:'a=2',replace:'a=3'},
+      {path:'tools/b.mjs',find:'c=1',replace:'c=2'}
+    ];
+    write('task.json',JSON.stringify(base));
+    write('response.json',JSON.stringify({summary:'ordered',edits:firstEdits}));
+    const first=await runSystemAiWorker({taskFile:'task.json',outputFile:'first.json',responseFile:'response.json'});
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=3;\nexport const b=1;\n');
+    write('tools/a.mjs','export const a=1;\nexport const b=1;\n');
+    write('tools/b.mjs','export const c=1;\n');
+    write('response.json',JSON.stringify({summary:'same actions, moved different file',
+      edits:[firstEdits[2],firstEdits[0],firstEdits[1]]}));
+    write('task.json',JSON.stringify({...base,id:'retry',failedStrategyFingerprints:[first.repairStrategyFingerprint]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'retry.json',responseFile:'response.json'}),
+      /SYSTEM_AI_REPEATED_FAILED_STRATEGY/);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=1;\nexport const b=1;\n');
+    // 역순 작업은 두 번째 단계의 일치 앵커가 없어서 거부돼야 하며 원본 보존도 확인한다.
+    write('response.json',JSON.stringify({summary:'invalid reversed chain',
+      edits:[firstEdits[1],firstEdits[0],firstEdits[2]]}));
+    write('task.json',JSON.stringify({...base,id:'changed-order'}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'reversed.json',responseFile:'response.json'}),
+      /SYSTEM_AI_FIND_MISSING/);
+    assert.equal(fs.readFileSync('tools/a.mjs','utf8'),'export const a=1;\nexport const b=1;\n');
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+test('System AI never records unevidenced model-claimed hypothesis falsification as fact',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs','export const value=1;\n');
+    write('task.json',JSON.stringify({id:'unproven-cause',status:'running',goal:'repair current stage',
+      taskType:'bottleneck-repair',failureSignature:'REPAIR_FAILURE',
+      responsibleFiles:['tools/demo.mjs']}));
+    write('response.json',JSON.stringify({summary:'minimal scoped repair',
+      falsifiedHypothesisIds:['execution-integration-path-defect','contract-or-evidence-mismatch'],
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}]}));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.deepEqual(result.falsifiedHypothesisIds,[]);
+    assert.equal(result.hypothesisPlanBound,true);
+    assert.equal(result.supervisorReviewRequired,true);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),'export const value=2;\n');
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
