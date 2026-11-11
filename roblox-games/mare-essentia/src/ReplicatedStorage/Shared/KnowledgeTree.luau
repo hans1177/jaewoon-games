@@ -43,6 +43,7 @@ K.ScholarDisciplines = {
 	leibniz = { "philosophy", "physics", "chemistry" }, descartes = { "philosophy", "physics", "astronomy" },
 	-- 예술가 (그림·음악·판화)
 	-- 철학·박물학·의학·지리
+	galileo = { "astronomy", "physics" }, harvey = { "medicine" }, torricelli = { "physics", "meteorology" }, hooke = { "physics", "medicine" },
 	spinoza = { "philosophy" }, lind = { "medicine" }, harrison = { "geography", "navigation" }, blaeu = { "navigation", "geography" }, sloane = { "botany", "medicine" },
 	banks = { "botany", "geography" }, linnaeus = { "botany", "zoology" }, malpighi = { "botany", "medicine" }, redi = { "zoology" },
 	wren = { "architecture" }, vancampen = { "architecture" }, witsen = { "shipbuilding" }, chapman = { "shipbuilding" },

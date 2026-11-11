@@ -263,6 +263,132 @@ E.Events = {
 			{ label = "보급선 계약을 맺는다", hint = "+400코인", coins = 400 },
 			{ label = "고래와 물개 사냥 거점을 알아본다", hint = "고래기름 값이 내린다", price = price({ "whale_oil", "sealskin" }, 0.85, 80, { "pacific" }) },
 		} },
+	{ id = "eic_charter", year = 1600, month = 12, title = "영국 동인도회사 특허", tag = "정치·무역",
+		text = "엘리자베스 1세가 런던 상인들에게 동인도 무역의 독점 특허장을 내린다. 향신료를 둘러싼 경쟁에 잉글랜드가 뛰어든다.",
+		choices = {
+			{ label = "주주로 참여한다", hint = "-250코인, 명성 +20, 후추 값이 내린다", coins = -250, fame = 20, price = price({ "pepper" }, 0.9, 80, { "europe" }) },
+			{ label = "독점 밖에서 사무역을 한다", hint = "+250코인", coins = 250 },
+		} },
+	{ id = "sekigahara", year = 1600, month = 10, title = "세키가하라 전투", tag = "정치·전쟁",
+		text = "일본의 패권을 건 대전투에서 도쿠가와 이에야스가 이겨 새 질서의 문을 연다. 항구마다 무사와 상인의 지위가 다시 정해진다.",
+		choices = {
+			{ label = "승자 쪽 상인과 손잡는다", hint = "+300코인, 은·구리 값이 내린다", coins = 300, price = price({ "silver", "copper" }, 0.9, 70, { "far_east" }) },
+			{ label = "중립을 지킨다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "voc_founding", year = 1602, month = 3, title = "네덜란드 동인도회사 설립", tag = "경제·무역",
+		text = "여러 무역 회사가 하나로 합쳐 세계 최초의 주식회사가 된다. 암스테르담 거리에서 주식 증서가 사고팔린다.",
+		choices = {
+			{ label = "첫 주식을 산다", hint = "-300코인, 명성 +25", coins = -300, fame = 25 },
+			{ label = "향신료 항로 정보를 판다", hint = "+300코인, 정향·육두구 값이 내린다", coins = 300, price = price({ "cloves", "nutmeg" }, 0.88, 80, { "europe" }) },
+		} },
+	{ id = "jamestown", year = 1607, month = 5, title = "제임스타운 건설", tag = "탐험·식민",
+		text = "영국 이주민 백여 명이 체서피크 만에 첫 영구 정착지를 세운다. 굶주림과 질병 속에 담배 재배가 길을 연다.",
+		choices = {
+			{ label = "보급선을 보낸다", hint = "-150코인, 명성 +20", coins = -150, fame = 20 },
+			{ label = "담배 묘목을 사들인다", hint = "담배 값이 내린다", price = price({ "tobacco" }, 0.88, 90, { "new_world", "europe" }) },
+		} },
+	{ id = "quebec_founded", year = 1608, month = 7, title = "퀘벡 건설", tag = "탐험·식민",
+		text = "사뮈엘 드 샹플랭이 세인트로렌스 강가에 교역소를 세운다. 모피를 실은 카누가 상류에서 내려오기 시작한다.",
+		choices = {
+			{ label = "모피 교역에 합류한다", hint = "+300코인, 모피 값이 내린다", coins = 300, price = price({ "fur" }, 0.88, 80, { "new_world", "europe" }) },
+			{ label = "원주민 동맹을 돕는다", hint = "명성 +20", fame = 20 },
+		} },
+	{ id = "galileo_telescope", year = 1609, month = 8, title = "갈릴레오의 망원경", tag = "학문·천문",
+		text = "베네치아에서 망원경 소식을 들은 갈릴레오가 직접 렌즈를 갈아 하늘로 향한다. 달의 산과 목성의 위성이 보이기 시작한다.",
+		choices = {
+			{ label = "렌즈를 사 주며 후원한다", hint = "-150코인, 명성 +25, 목성의 위성 지식 획득", coins = -150, fame = 25, cards = { "ast_jupiter_moons" } },
+			{ label = "해군에 망원경을 소개한다", hint = "+250코인", coins = 250 },
+		} },
+	{ id = "thirty_years_war", year = 1618, month = 5, title = "30년 전쟁의 시작", tag = "전쟁",
+		text = "프라하에서 시작된 종교 분쟁이 유럽 전역의 전쟁으로 번진다. 용병과 군수품 값이 오르고 한자 도시의 교역이 위험해진다.",
+		choices = {
+			{ label = "군수품을 공급한다", hint = "+400코인, 철·화약 재료 값이 오른다", coins = 400, price = price({ "iron", "coal" }, 1.15, 70, { "europe" }) },
+			{ label = "중립 항구에서 곡물을 판다", hint = "+200코인, 명성 +10", coins = 200, fame = 10 },
+		} },
+	{ id = "batavia_founded", year = 1619, month = 5, title = "바타비아 건설", tag = "경제·식민",
+		text = "얀 피터르스존 쿤이 자카르타를 부수고 그 자리에 네덜란드 동인도회사의 아시아 본부를 세운다.",
+		choices = {
+			{ label = "바타비아 창고에 납품한다", hint = "+350코인", coins = 350 },
+			{ label = "향신료 밀무역 항구를 찾는다", hint = "정향·후추 값이 오른다", price = price({ "cloves", "pepper" }, 1.1, 60, { "far_east", "indian" }) },
+		} },
+	{ id = "mayflower", year = 1620, month = 11, title = "메이플라워호의 도착", tag = "탐험·식민",
+		text = "신앙의 자유를 찾아 떠난 청교도 백여 명이 케이프코드에 닿아 플리머스 식민지를 시작한다.",
+		choices = {
+			{ label = "겨울 보급품을 나른다", hint = "-100코인, 명성 +20", coins = -100, fame = 20 },
+			{ label = "어장과 모피를 알아본다", hint = "+250코인", coins = 250 },
+		} },
+	{ id = "new_amsterdam", year = 1626, month = 5, title = "뉴암스테르담 건설", tag = "경제·식민",
+		text = "네덜란드 서인도 회사가 맨해튼 섬에 교역소를 세운다. 허드슨 강의 모피가 암스테르담으로 흘러든다.",
+		choices = {
+			{ label = "모피 교역소와 계약한다", hint = "+300코인, 모피 값이 내린다", coins = 300, price = price({ "fur" }, 0.88, 80, { "new_world", "europe" }) },
+			{ label = "서인도 회사 주식을 산다", hint = "-200코인, 명성 +20", coins = -200, fame = 20 },
+		} },
+	{ id = "vasa_sinks", year = 1628, month = 8, title = "바사호의 침몰", tag = "재난·조선",
+		text = "스웨덴 왕의 자랑이던 거대한 군함 바사호가 처녀항해 첫 바람에 기울어 스톡홀름 항구에서 가라앉는다.",
+		choices = {
+			{ label = "인양과 수리를 맡는다", hint = "+250코인", coins = 250 },
+			{ label = "설계 오류를 기록해 둔다", hint = "명성 +15", fame = 15 },
+		} },
+	{ id = "harvey_circulation", year = 1628, month = 6, title = "하비의 『심장의 운동에 관하여』", tag = "학문·의학",
+		text = "윌리엄 하비가 혈액이 몸 안을 순환한다고 발표한다. 의학계가 크게 술렁인다.",
+		choices = {
+			{ label = "책을 선원 의사들에게 돌린다", hint = "-100코인, 명성 +25", coins = -100, fame = 25 },
+			{ label = "해부 실험을 후원한다", hint = "-150코인, 명성 +20, 혈액 순환 지식 획득", coins = -150, fame = 20, cards = { "med_circulation" } },
+		} },
+	{ id = "tulip_mania", year = 1637, month = 2, title = "튤립 투기 열풍", tag = "경제·투기",
+		text = "튤립 구근 한 뿌리가 집 한 채 값에 팔린다는 소문이 돈다. 어느 날 갑자기 사겠다는 사람이 사라진다.",
+		choices = {
+			{ label = "고점에서 손을 턴다", hint = "+400코인", coins = 400 },
+			{ label = "구근에 걸어 본다", hint = "-300코인, 이기면 크게 번다", coins = -300, chance = { p = 0.3, win = { coins = 1500 }, lose = { coins = 0 } } },
+		} },
+	{ id = "sakoku", year = 1639, month = 7, title = "일본의 쇄국령", tag = "정치·무역",
+		text = "막부가 포르투갈 배의 입항을 금지하고 해외 왕래를 엄하게 제한한다. 이듬해부터 네덜란드 상관만 나가사키의 데지마에 남는다.",
+		choices = {
+			{ label = "데지마 무역권을 노린다", hint = "+400코인, 은·구리 값이 내린다", coins = 400, price = price({ "silver", "copper" }, 0.88, 80, { "far_east", "europe" }) },
+			{ label = "다른 항구로 옮겨 간다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "portugal_independence", year = 1640, month = 12, title = "포르투갈의 독립 회복", tag = "정치·왕정",
+		text = "60년 만에 포르투갈이 스페인에서 떨어져 나와 새 왕을 맞는다. 브라질과 아프리카 해안 거점의 주인이 다시 가려진다.",
+		choices = {
+			{ label = "새 왕실과 계약한다", hint = "+350코인, 설탕 값이 내린다", coins = 350, price = price({ "sugar" }, 0.9, 70, { "europe", "new_world" }) },
+			{ label = "네덜란드 쪽 거점을 지원한다", hint = "명성 +15", fame = 15 },
+		} },
+	{ id = "malacca_dutch", year = 1641, month = 1, title = "네덜란드의 말라카 점령", tag = "전쟁·식민",
+		text = "네덜란드가 포르투갈의 말라카를 포위 끝에 점령한다. 해협의 통행세와 향신료 거래권이 새 주인에게 넘어간다.",
+		choices = {
+			{ label = "해협 통행권을 협상한다", hint = "+450코인", coins = 450 },
+			{ label = "향신료를 사재기한다", hint = "정향·육두구 값이 오른다", price = price({ "cloves", "nutmeg" }, 1.12, 60, { "far_east", "indian" }) },
+		} },
+	{ id = "english_civil_war", year = 1642, month = 8, title = "잉글랜드 내전의 시작", tag = "정치·전쟁",
+		text = "왕과 의회가 칼을 맞대자 런던 상인과 항구 도시는 대부분 의회 편에 선다. 해군도 의회로 기운다.",
+		choices = {
+			{ label = "의회 해군에 군수를 댄다", hint = "+400코인", coins = 400 },
+			{ label = "프랑스 항구로 물자를 돌린다", hint = "+250코인, 모직 값이 내린다", coins = 250, price = price({ "wool", "cloth" }, 0.9, 60, { "europe" }) },
+		} },
+	{ id = "torricelli_barometer", year = 1643, month = 6, title = "토리첼리의 수은 기둥", tag = "학문·물리",
+		text = "토리첼리가 수은을 채운 유리관을 세워 대기에 무게가 있음을 보인다. 날씨를 재는 기압계의 시작이다.",
+		choices = {
+			{ label = "실험 기구를 구해 준다", hint = "-120코인, 명성 +20, 기압계 지식 획득", coins = -120, fame = 20, cards = { "phy_barometer" } },
+			{ label = "항해사들에게 소문을 낸다", hint = "명성 +10", fame = 10 },
+		} },
+	{ id = "qing_beijing", year = 1644, month = 6, title = "청의 베이징 입성", tag = "정치·왕정",
+		text = "명나라가 무너지고 만주 청군이 베이징에 들어온다. 남쪽 해안에서는 명을 잇자는 세력이 바다로 나선다.",
+		choices = {
+			{ label = "새 왕조의 관허 상인이 된다", hint = "+350코인", coins = 350 },
+			{ label = "명 유민 선단과 거래한다", hint = "+300코인, 명성 -5", coins = 300, fame = -5 },
+		} },
+	{ id = "westphalia", year = 1648, month = 10, title = "베스트팔렌 조약", tag = "정치·외교",
+		text = "30년 전쟁이 끝나고 네덜란드의 독립이 공식으로 인정된다. 라인 강과 발트 해 교역이 다시 열린다.",
+		choices = {
+			{ label = "발트 해 교역을 다시 연다", hint = "+400코인, 목재 값이 내린다", coins = 400, price = price({ "timber" }, 0.88, 70, { "europe" }) },
+			{ label = "평화 기념 연회에 참석한다", hint = "명성 +25", fame = 25 },
+		} },
+	{ id = "charles1_executed", year = 1649, month = 1, title = "찰스 1세의 처형", tag = "정치·왕정",
+		text = "잉글랜드가 왕의 목을 베고 공화국을 선포한다. 왕당파 항구와 해외 식민지가 갈라진다.",
+		choices = {
+			{ label = "공화국 정부와 계약한다", hint = "+300코인", coins = 300 },
+			{ label = "왕당파 피난민을 태운다", hint = "+250코인, 명성 +5", coins = 250, fame = 5 },
+		} },
 }
 
 E.ById = {}
@@ -315,9 +441,30 @@ local I = {
 	tupac_revolt = { node = "min_silver_ore", label = "은광 지식으로 대체 광산을 찾아 연결한다", hint = "+500코인", coins = 500 },
 	laki_eruption = { node = "geo_volcano_island", label = "화산 지식으로 피해 지역을 예측한다", hint = "+300코인, 명성 +30", coins = 300, fame = 30 },
 	first_fleet = { node = "bot_pacific_plants", label = "남태평양 식물 지식으로 새 작물을 심는다", hint = "+300코인, 명성 +30", coins = 300, fame = 30 },
+	eic_charter = { node = "bot_pepper_vine", label = "후추 덩굴 지식으로 산지 직거래를 연다", hint = "+400코인, 후추 값이 크게 내린다", coins = 400, price = price({ "pepper" }, 0.8, 80, { "europe" }) },
+	sekigahara = { node = "good_silk", label = "비단 거래 지식으로 새 권력의 상인과 잇는다", hint = "+450코인", coins = 450 },
+	voc_founding = { node = "lang_ledger", label = "장부 기록으로 주식 거래의 이치를 꿰뚫는다", hint = "+400코인, 명성 +30", coins = 400, fame = 30 },
+	jamestown = { node = "good_tobacco", label = "담배 재배·건조 지식을 전수한다", hint = "+400코인, 명성 +20", coins = 400, fame = 20 },
+	quebec_founded = { node = "good_fur", label = "모피 등급 지식으로 상품만 골라 산다", hint = "+400코인", coins = 400 },
+	galileo_telescope = { node = "phy_refraction", label = "빛의 굴절 지식으로 렌즈 연마를 돕는다", hint = "명성 +45", fame = 45 },
+	thirty_years_war = { node = "lang_cipher", label = "암호문 해독으로 봉쇄를 피해 간다", hint = "+500코인", coins = 500 },
+	batavia_founded = { node = "bot_clove_tree", label = "정향나무 지식으로 재배지를 알아본다", hint = "+450코인", coins = 450 },
+	mayflower = { node = "bot_cranberry", label = "크랜베리 지식으로 겨울을 넘기게 돕는다", hint = "명성 +35, +100코인", coins = 100, fame = 35 },
+	new_amsterdam = { node = "geo_estuary", label = "강 하구 지식으로 안전한 정박지를 잡는다", hint = "+400코인", coins = 400 },
+	vasa_sinks = { node = "ship_galleon_design", label = "갈레온 설계 지식으로 복원 계획을 낸다", hint = "+400코인, 명성 +25", coins = 400, fame = 25 },
+	harvey_circulation = { node = "med_anatomy", label = "해부학 지식으로 하비의 실험을 돕는다", hint = "명성 +45", fame = 45 },
+	tulip_mania = { node = "bot_tulip", label = "튤립의 진짜 가치를 알아보고 거품 전에 정리한다", hint = "+600코인", coins = 600 },
+	sakoku = { node = "lang_dictionary", label = "사전과 통역으로 데지마 협상을 돕는다", hint = "+500코인", coins = 500 },
+	portugal_independence = { node = "geo_cape_good_hope", label = "희망봉 항로 지식으로 새 왕실 선단에 합류한다", hint = "+500코인", coins = 500 },
+	malacca_dutch = { node = "geo_malacca_strait", label = "말라카 해협 지식으로 안전한 통과 시기를 읽는다", hint = "+550코인", coins = 550 },
+	english_civil_war = { node = "ship_planks", label = "선체 외판 지식으로 전함 수리를 맡는다", hint = "+500코인", coins = 500 },
+	torricelli_barometer = { node = "phy_boyle_law", label = "기체의 성질 지식으로 실험을 해석한다", hint = "명성 +45", fame = 45 },
+	qing_beijing = { node = "good_tea", label = "차 거래 지식으로 새 왕조 관청과 잇는다", hint = "+450코인", coins = 450 },
+	westphalia = { node = "lang_latin", label = "라틴어 조약문을 읽고 유리한 조항을 짚는다", hint = "+450코인, 명성 +20", coins = 450, fame = 20 },
+	charles1_executed = { node = "phi_natural_law", label = "자연법 논쟁을 중재해 양쪽의 신뢰를 얻는다", hint = "명성 +45", fame = 45 },
 }
 -- 학문·기술·탐험 사건은 플레이어의 앞당김만큼 일찍 닥칠 수 있다 (정치·전쟁·재난은 제때)
-for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau", "franklin_kite", "harrison_h4", "smallpox_boston" } do
+for _, id in { "cape_colony", "restoration", "principia", "peters_embassy", "dutch_learning", "industrial_start", "cook_voyage", "fontainebleau", "franklin_kite", "harrison_h4", "smallpox_boston", "galileo_telescope", "harvey_circulation", "torricelli_barometer" } do
 	E.ById[id].accel = true
 end
 for id, ins in I do
@@ -330,7 +477,8 @@ local P = {
 	great_plague = { "newton" }, great_fire = { "wren" }, principia = { "newton", "halley" }, glorious_revolution = { "newton" },
 	bank_of_england = { "newton" }, peters_embassy = { "witsen" }, fontainebleau = { "papin" }, south_sea = { "newton" },
 	industrial_start = { "newcomen", "savery" }, cook_voyage = { "banks" }, boston_tea = { "franklin" }, independence = { "franklin" },
-	franklin_kite = { "franklin" }, harrison_h4 = { "harrison" }, great_storm_1703 = { "wren" }, first_fleet = { "banks" },
+	franklin_kite = { "franklin" }, harrison_h4 = { "harrison" },
+	galileo_telescope = { "galileo" }, harvey_circulation = { "harvey" }, torricelli_barometer = { "torricelli" }, voc_founding = { "witsen" }, tulip_mania = { "rembrandt" }, great_storm_1703 = { "wren" }, first_fleet = { "banks" },
 }
 for id, list in P do
 	E.ById[id].people = list
