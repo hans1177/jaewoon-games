@@ -664,8 +664,40 @@
   "meanLastRun": 48.8
  },
  "ENVIRONMENT": {
-  "runs": 25,
+  "runs": 26,
   "top": [
+   {
+    "score": 74.6,
+    "params": {
+     "elevation": 17,
+     "azimuth": 26,
+     "kelvin": 5874.31,
+     "sun_strength": 4.72,
+     "softness": 7.64,
+     "ambient_kelvin": 9176.29,
+     "ambient_strength": 0.15
+    },
+    "roblox": {
+     "ClockTime": 7.1,
+     "Brightness": 3.78,
+     "ColorShift_Top": [
+      255,
+      244,
+      233
+     ],
+     "Ambient": [
+      31,
+      33,
+      38
+     ],
+     "OutdoorAmbient": [
+      36,
+      38,
+      44
+     ],
+     "ShadowSoftness": 0.64
+    }
+   },
    {
     "score": 73.8,
     "params": {
@@ -763,70 +795,38 @@
     }
    },
    {
-    "score": 65.7,
+    "score": 67.4,
     "params": {
-     "elevation": 26,
-     "azimuth": 71,
-     "kelvin": 5875.74,
-     "sun_strength": 4.67,
-     "softness": 1,
-     "ambient_kelvin": 9274.37,
-     "ambient_strength": 0.15
+     "elevation": 33,
+     "azimuth": 5,
+     "kelvin": 5648.78,
+     "sun_strength": 5,
+     "softness": 7.49,
+     "ambient_kelvin": 10018.05,
+     "ambient_strength": 0.33
     },
     "roblox": {
-     "ClockTime": 7.7,
-     "Brightness": 3.74,
+     "ClockTime": 8.2,
+     "Brightness": 4,
      "ColorShift_Top": [
       255,
-      244,
-      233
+      240,
+      227
      ],
      "Ambient": [
-      31,
-      33,
-      38
+      67,
+      72,
+      84
      ],
      "OutdoorAmbient": [
-      36,
-      38,
-      44
+      77,
+      83,
+      97
      ],
-     "ShadowSoftness": 0.08
-    }
-   },
-   {
-    "score": 65.5,
-    "params": {
-     "elevation": 25,
-     "azimuth": 29,
-     "kelvin": 4576.87,
-     "sun_strength": 4.87,
-     "softness": 5.6,
-     "ambient_kelvin": 8865.73,
-     "ambient_strength": 0.27
-    },
-    "roblox": {
-     "ClockTime": 7.7,
-     "Brightness": 3.9,
-     "ColorShift_Top": [
-      255,
-      219,
-      190
-     ],
-     "Ambient": [
-      57,
-      60,
-      69
-     ],
-     "OutdoorAmbient": [
-      65,
-      69,
-      79
-     ],
-     "ShadowSoftness": 0.47
+     "ShadowSoftness": 0.62
     }
    }
   ],
-  "meanLastRun": 46.4
+  "meanLastRun": 56.4
  }
 }
