@@ -3,7 +3,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeCharacterAsset,vibeLightingPresets} from '../assets/vibe-cinematic-polish.mjs';
+import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeRenderedScene,inspectVibeCharacterAsset,vibeLightingPresets} from '../assets/vibe-cinematic-polish.mjs';
 test('expressions emit facial muscle channels and speech cues',()=>{
  const frames=[];const director=createVibeExpressionDirector({pose:p=>frames.push(p)});
  director.set('fear');director.update(.05,{speaking:true});
@@ -157,4 +157,42 @@ test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=
  assert.match(html,/button\.addEventListener\('lostpointercapture',release\)/);
  assert.match(html,/window\.addEventListener\('blur',/);
  assert.match(html,/touch-action:none/);
+});
+
+// [실제 화면 판독] 가상 입력/소스 마커는 품질 합격으로 승격하지 않는다.
+test('visual director only diagnoses observed WebGL pixels and never grants release PASS',()=>{
+ const dark=new Uint8Array(25*4);
+ for(let i=0;i<25;i++){dark.set([28,28,28,255],i*4)}
+ const result=inspectVibeRenderedScene({pixels:dark,width:640,height:480,source:'webgl-readpixels',observed:true});
+ assert.equal(result.observed,true);
+ assert.equal(result.status,'PIXEL_DIAGNOSTIC_ONLY');
+ assert.equal(result.samples,25);
+ assert.equal(result.exposureDelta,.05);
+ assert.ok(result.findings.includes('underexposed-frame'));
+ assert.ok(result.findings.includes('weak-value-separation'));
+ assert.equal(result.releaseAuthority,false);
+ assert.equal(result.visualQualityPass,false);
+ const bright=new Uint8Array(25*4);
+ for(let i=0;i<25;i++)bright.set([250,250,250,255],i*4);
+ assert.equal(inspectVibeRenderedScene({pixels:bright,width:640,height:480,source:'webgl-readpixels',observed:true}).exposureDelta,-.05);
+ const marker=inspectVibeRenderedScene({pixels:dark,width:640,height:480,source:'source-marker',observed:true});
+ assert.equal(marker.observed,false);
+ assert.equal(marker.releaseAuthority,false);
+ const absent=inspectVibeRenderedScene({});
+ assert.equal(absent.status,'NO_RUNTIME_PIXELS');
+});
+// [화면 연결] 장르·월드·캐릭터·시네마틱·관측 픽셀 모두 실제 기존 미리보기에서 연결한다.
+test('3D preview connects five art directors without extra model primitives',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(html,/resolveVibeGenre\(genrePicker\.value\)\.artDirection/);
+ assert.match(html,/storybookWorld\.transitionRegion\(worldPicker\.value,1\)/);
+ assert.match(html,/createVibeGenreCharacter\(THREE,activeModel,genrePicker\.value\)/);
+ assert.match(html,/stageBeats:true/);
+ assert.match(html,/onEvent:event=>/);
+ assert.match(html,/gl\.readPixels\(/);
+ assert.match(html,/inspectVibeRenderedScene\(\{pixels:samples,width:w,height:h,source:'webgl-readpixels',observed:true\}\)/);
+ assert.match(html,/visualReviewPhase==='candidate'/);
+ assert.match(html,/visualReviewBaseline\.result\.luminance/);
+ assert.match(html,/if\(asset&&\(\!/);
+ assert.doesNotMatch(html,/storybookWorld\.dispose\(\);storybookWorld=createVibeStorybookWorld/);
 });
