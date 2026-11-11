@@ -55,15 +55,19 @@ test('노멀 굽기 판정: 가벼워지고 요철이 실제로 구워져야 합
 
 test('노멀맵 연습은 실제 정적 원본의 면 수를 확인하고 부족한 원본을 제외한다',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'bake-static-'));
-  const low=path.join(root,'low.obj'),high=path.join(root,'high.obj');
+  const low=path.join(root,'low.obj'),high=path.join(root,'high.obj'),medium=path.join(root,'medium.obj');
   fs.writeFileSync(low,'o low\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
   fs.writeFileSync(high,'o high\nv 0 0 0\nv 1 0 0\nv 0 1 0\n'+
     Array.from({length:1800},()=> 'f 1 2 3\n').join(''));
+  fs.writeFileSync(medium,'o medium\nv 0 0 0\nv 1 0 0\nv 0 1 0\n'+
+    Array.from({length:1600},()=> 'f 1 2 3\n').join(''));
   const simple=inspectBakeSource(low),detailed=inspectBakeSource(high);
   assert.equal(simple.eligible,false);assert.equal(simple.reason,'SOURCE_HAS_INSUFFICIENT_GEOMETRY');
   assert.equal(detailed.eligible,true);assert.equal(detailed.triangles,1800);
   assert.equal(detailed.nativeRuntimeVerified,false);
   assert.deepEqual(selectBakeParents([{id:'low',file:low},{id:'high',file:high}],3).map(x=>x.id),['high']);
+  assert.equal(selectBakeParents([{id:'high',file:high},{id:'medium',file:medium}],1,
+    {high:{attempts:3,failures:3},medium:{attempts:0,failures:0}})[0].id,'medium');
   assert.equal(inspectBakeSource(path.join(root,'missing.obj')).eligible,false);
 });
 
