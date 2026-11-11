@@ -36,6 +36,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Vibe2 Qwen LoRA/QLoRA trainer")
     parser.add_argument("--train", required=True)
     parser.add_argument("--eval", required=True)
+    parser.add_argument("--holdout", default="", help="Disjoint practice-only Roblox holdout JSONL")
     parser.add_argument("--output", required=True)
     parser.add_argument("--base-model", default="Qwen/Qwen3-1.7B")
     parser.add_argument("--method", choices=("lora", "qlora"), default="lora")
@@ -219,6 +220,7 @@ def cpu_practice_identity(args, manifest):
     fields = {
         "trainSha256": manifest.get("trainSha256"),
         "evalSha256": manifest.get("evalSha256"),
+        "holdoutSha256": manifest.get("holdoutSha256"),
         "baseModel": args.base_model, "adapterVersion": args.adapter_version,
         "taskType": args.task_type, "method": args.method,
         "seed": args.seed, "epochs": args.epochs, "learningRate": args.learning_rate,
@@ -268,6 +270,7 @@ def main():
     random.seed(args.seed)
     train_rows = load_jsonl(args.train)
     eval_rows = load_jsonl(args.eval)
+    holdout_rows = load_jsonl(args.holdout) if args.holdout else []
     if not train_rows or not eval_rows:
         raise RuntimeError("train and eval datasets must both contain verified samples")
     manifest = json.loads(Path(args.dataset_manifest).read_text(encoding="utf-8"))
@@ -385,6 +388,7 @@ def main():
     # Same frozen base weights and identical eval windows: practice-only comparison,
     # never an independent holdout, native-runtime pass, or promotion authority.
     practice_eval_comparison = None
+    practice_holdout_comparison = None
     if args.task_type == "roblox" and manifest.get("authority") == "PRACTICE_ONLY":
         # Separate diagnostic: code-implementation rows only, from the existing
         # disjoint evaluation set; never treat its small size as a fixed holdout.
@@ -393,13 +397,43 @@ def main():
             raise RuntimeError("Roblox practice has no code implementation evaluation rows")
         code_eval_dataset = JsonlDataset(code_eval_rows)
         code_adapted_evaluation = trainer.evaluate(eval_dataset=code_eval_dataset)
+        # [검증 보류셋] 훈련/정기 평가에 사용하지 않은 계열만 마지막에 수치로 비교한다.
+        if manifest.get("version", 0) >= 6 and not holdout_rows:
+            raise RuntimeError("Roblox practice holdout required by dataset v6")
+        holdout_dataset = JsonlDataset(holdout_rows) if holdout_rows else None
+        holdout_code_rows = [row for row in holdout_rows if row.get("sampleKind") == "CODE_IMPLEMENTATION"]
+        holdout_code_dataset = JsonlDataset(holdout_code_rows) if holdout_code_rows else None
+        holdout_adapted_evaluation = trainer.evaluate(eval_dataset=holdout_dataset) if holdout_dataset else None
+        holdout_code_adapted_evaluation = trainer.evaluate(eval_dataset=holdout_code_dataset) if holdout_code_dataset else None
         with model.disable_adapter():
             baseline_evaluation = trainer.evaluate()
             code_baseline_evaluation = trainer.evaluate(eval_dataset=code_eval_dataset)
+            holdout_baseline_evaluation = trainer.evaluate(eval_dataset=holdout_dataset) if holdout_dataset else None
+            holdout_code_baseline_evaluation = trainer.evaluate(eval_dataset=holdout_code_dataset) if holdout_code_dataset else None
         baseline_loss = float(baseline_evaluation.get("eval_loss", float("nan")))
         adapted_loss = float(eval_result.get("eval_loss", float("nan")))
         code_baseline_loss = float(code_baseline_evaluation.get("eval_loss", float("nan")))
         code_adapted_loss = float(code_adapted_evaluation.get("eval_loss", float("nan")))
+        if holdout_dataset and holdout_code_dataset:
+            base_holdout = float(holdout_baseline_evaluation.get("eval_loss", float("nan")))
+            adapt_holdout = float(holdout_adapted_evaluation.get("eval_loss", float("nan")))
+            base_code_holdout = float(holdout_code_baseline_evaluation.get("eval_loss", float("nan")))
+            adapt_code_holdout = float(holdout_code_adapted_evaluation.get("eval_loss", float("nan")))
+            practice_holdout_comparison = {
+                "scope": "DISJOINT_FAMILIES_PRACTICE_ONLY",
+                "holdoutSha256": manifest.get("holdoutSha256"),
+                "sampleCount": len(holdout_rows), "codeImplementationSamples": len(holdout_code_rows),
+                "encodedWindows": len(holdout_dataset),
+                "baselineEvalLoss": base_holdout, "adaptedEvalLoss": adapt_holdout,
+                "lossReduction": base_holdout - adapt_holdout, "lowerEvalLoss": adapt_holdout < base_holdout,
+                "codeBaselineEvalLoss": base_code_holdout, "codeAdaptedEvalLoss": adapt_code_holdout,
+                "codeLossReduction": base_code_holdout - adapt_code_holdout,
+                "codeLowerEvalLoss": adapt_code_holdout < base_code_holdout,
+                "familyDisjoint": True, "practiceOnly": True,
+                "independentExternalBenchmarkVerified": False,
+                "fixedHoldoutABVerified": False, "robloxNativeRuntimeVerified": False,
+                "runtimePromotionAllowed": False,
+            }
         practice_eval_comparison = {
             "scope": "MATCHED_PRACTICE_EVAL_ONLY",
             "evalSha256": manifest.get("evalSha256"),
@@ -423,6 +457,11 @@ def main():
             "runtimePromotionAllowed": False,
         }
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
+    if args.task_type == "roblox" and manifest.get("version", 0) >= 6:
+        if practice_holdout_comparison is None:
+            raise RuntimeError("Roblox practice v6 holdout A/B comparison is missing")
+        losses.extend(practice_holdout_comparison[key] for key in
+                      ("baselineEvalLoss", "adaptedEvalLoss", "codeBaselineEvalLoss", "codeAdaptedEvalLoss"))
     if practice_eval_comparison is not None:
         losses.extend([
             practice_eval_comparison["baselineEvalLoss"],
@@ -450,6 +489,8 @@ def main():
         "codeImplementationTrainSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in train_rows),
         "codeImplementationEvalSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in eval_rows),
         "practiceEvalComparison": practice_eval_comparison,
+        "practiceHoldoutComparison": practice_holdout_comparison,
+        "codeImplementationHoldoutSamples": sum(row.get("sampleKind") == "CODE_IMPLEMENTATION" for row in holdout_rows),
         "adapterVersion": args.adapter_version,
         "taskType": args.task_type,
         "baseModel": args.base_model,
