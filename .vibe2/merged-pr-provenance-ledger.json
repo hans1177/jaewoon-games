@@ -183859,11 +183859,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_bf9d51a7f4727eaa5192cdb1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12447",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1b2dff6e007c9781c4edda8001d3fecc9d67fa1d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12447,
+        "baseBranch": "main",
+        "headBranch": "claude/health-script-start",
+        "baseSha": "1b2dff6e007c9781c4edda8001d3fecc9d67fa1d",
+        "headSha": "2127e7eda4082a15f21b5f26570f6227f9d18469",
+        "mergeCommitSha": "8a4a2119f230d4f56564102b48302a812ccf3979",
+        "mergedAt": "2026-11-11T03:42:44Z",
+        "authorLogin": "hans1177",
+        "titleHash": "05039782e2e62d3b35040d9cbb88d290804ae0d7302a57567cb956fc3d380be3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/health-script-start",
+        "candidateSha": "2127e7eda4082a15f21b5f26570f6227f9d18469"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 35,
+        "deletedLineCount": 10,
+        "changedFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-variation-gym.test.mjs",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-autopilot-health.json",
+          "tools/vibe-variation-gym.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-variation-gym.test.mjs",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-autopilot-health.json",
+          "tools/vibe-variation-gym.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12447",
+        "merge-commit:8a4a2119f230d4f56564102b48302a812ccf3979",
+        "base-main:1b2dff6e007c9781c4edda8001d3fecc9d67fa1d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1468
+    "total": 1469
   }
 }
