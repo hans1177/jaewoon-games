@@ -178,6 +178,45 @@ export function reviewRecovery(queueInput,{id,decision,evidence=[]}={}){
   });
   if(!found)throw new Error('RECOVERY_TASK_NOT_FOUND:'+target);return{...queue,tasks};
 }
+// [메인] 복구 성공률 계측은 기존 큐의 실제 재시도·검수 결과만 읽는다.
+// 이 집계는 외부 QA/로블록스 런타임 증명 또는 작업 성공 판정을 새로 만들지 않는다.
+export function recoveryVerificationMetrics(queueInput={}){
+  const tasks=normalizeRecoveryQueue(queueInput).tasks;
+  let failedAttempts=0,reviewedPasses=0,pendingReview=0,unobservedRetries=0;
+  let prepatchReported=0,replayExecuted=0,replayPassReported=0,replayReviewedWithRegression=0;
+  for(const task of tasks){
+    const retries=Number(task.retries);
+    if(Number.isSafeInteger(retries)&&retries>=0)failedAttempts+=retries;
+    else unobservedRetries++;
+    const reviewed=task.status==='verified'&&task.primaryAiReview==='PASS'
+      &&task.deterministicEvidence.length>0;
+    if(reviewed)reviewedPasses++;
+    if(task.status==='awaiting-primary-ai-review')pendingReview++;
+    // 검증 전 일반 evidence 문자열이 아닌 검수용 deterministicEvidence만 관찰한다.
+    const markers=new Set(task.deterministicEvidence);
+    const prepatch=markers.has('causal-replay-prepatch-reproduced:YES');
+    const executed=markers.has('causal-replay-executed:YES');
+    const replayPass=executed&&prepatch&&markers.has('causal-replay-status:EXECUTED_PASS');
+    if(prepatch)prepatchReported++;
+    if(executed)replayExecuted++;
+    if(replayPass)replayPassReported++;
+    if(replayPass&&reviewed&&markers.has('role-result:regression:PASS')&&
+      markers.has('role-result:review:PASS'))replayReviewedWithRegression++;
+  }
+  const measuredAttempts=failedAttempts+reviewedPasses;
+  const pct=(success,total)=>total?Number((100*success/total).toFixed(2)):null;
+  return{
+    version:1,kind:'RECOVERY_QUEUE_OBSERVED_EVIDENCE_METRICS',readOnly:true,
+    taskCount:tasks.length,failedAttempts,reviewedPasses,pendingReview,unobservedRetries,
+    measuredAttempts,
+    reviewedAttemptPassPct:unobservedRetries===0?pct(reviewedPasses,measuredAttempts):null,
+    replay:{prepatchReported,replayExecuted,replayPassReported,replayReviewedWithRegression,
+      reviewedReplayEvidencePct:pct(replayReviewedWithRegression,replayExecuted)},
+    evidenceScope:'QUEUE_RECORDED_MARKERS_ONLY',externalRuntimeAttested:false,
+    runtimeSuccessRatePct:null,verificationAuthorityExpanded:false
+  };
+}
+
 export function runRecoveryQueue(args={}){
   const file=clean(args.queue)||'.vibe2/recovery-queue.json',cmd=clean(args.command).toLowerCase();
   let queue=normalizeRecoveryQueue(readJson(file,{tasks:[]}));
@@ -205,10 +244,11 @@ export function runRecoveryQueue(args={}){
   }
   if(cmd==='settle'){queue=settleRecovery(queue,{id:args.id,outcome:args.outcome,evidence:clean(args.evidence).split(',')});writeJson(file,queue);return{cmd,queue};}
   if(cmd==='review'){queue=reviewRecovery(queue,{id:args.id,decision:args.decision,evidence:clean(args.evidence).split(',')});writeJson(file,queue);return{cmd,queue};}
-  if(cmd==='summary')return{cmd,queue,counts:queue.tasks.reduce((m,x)=>(m[x.status]=(m[x.status]||0)+1,m),{})};
+  if(cmd==='summary')return{cmd,queue,counts:queue.tasks.reduce((m,x)=>(m[x.status]=(m[x.status]||0)+1,m),{}),metrics:recoveryVerificationMetrics(queue)};
   throw new Error('RECOVERY_COMMAND_UNKNOWN:'+cmd);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=runRecoveryQueue(parseArgs());
   console.log('COMPANY_RECOVERY_QUEUE='+result.cmd.toUpperCase());
+  if(result.cmd==='summary')console.log('RECOVERY_OBSERVED_EVIDENCE_METRICS='+JSON.stringify(result.metrics));
 }
