@@ -3492,16 +3492,55 @@ local function startField(s)
 end
 
 local function renderExplore()
+	-- 지상 전술 탐험: 격자 맵 턴제 전투. 서버가 전투를 만들어 주면 전술 화면을 연다.
+	local function openTactics()
+		if inField or not (view and view.tactics) then
+			return
+		end
+		inField = true
+		main.Visible = false
+		require(Shared:WaitForChild("TacticsView")).open({
+			battle = view.tactics,
+			invoke = function(action, payload)
+				return call(action, payload)
+			end,
+			onClose = function()
+				inField = false
+				applyView()
+				main.Visible = true
+				render()
+			end,
+		})
+	end
+
+	local function startTactics(s)
+		local result = call("TacticsStart", { siteId = s.id })
+		if result and result.ok and view and view.tactics then
+			openTactics()
+		end
+	end
 	add(function() return mkHeader(content, "탐험 지점") end)
+	if view.tactics and view.tactics.status == "active" then
+		add(function()
+			return mkRow(content, "진행 중인 전술 탐험", view.tactics.siteName .. " · " .. view.tactics.name, {
+				{ text = "이어하기", color = COLORS.gold, onClick = openTactics, enabled = true },
+			}, 54)
+		end)
+	end
 	if #view.sites == 0 then
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
 	for _, s in view.sites do
 		add(function()
 			local sub = if s.left == 0 then "모두 조사했어요" else string.format("발견 가능 %d · %d일 · 모험 Lv.%d 이상", s.left, s.days, s.minLevel)
-			return mkRow(content, s.name, sub, {
+			local actions = {
 				{ text = "탐험", color = COLORS.green, onClick = function() startField(s) end, enabled = s.unlocked and s.left > 0 },
-			}, 54)
+			}
+			if s.tactics then
+				sub = sub .. string.format(" · 전술 맵 ‘%s’%s", s.tactics.mapName, if s.tactics.rank ~= "" then " (최고 " .. s.tactics.rank .. ")" else "")
+				table.insert(actions, { text = "전술", color = COLORS.blue, onClick = function() startTactics(s) end, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active") })
+			end
+			return mkRow(content, s.name, sub, actions, 54)
 		end)
 	end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
