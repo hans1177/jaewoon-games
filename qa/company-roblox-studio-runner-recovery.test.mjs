@@ -133,8 +133,8 @@ test('E-drive migrated Studio runner is discovered for reboot recovery and its c
   const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
   const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
   const autoQa=fs.readFileSync(new URL('../.github/workflows/studio-autoqa.yml',import.meta.url),'utf8');
-  assert.match(recover,/Add-Candidate 'E:\\\\JaewoonRobloxStudioRunner'/);
-  assert.match(bootstrap,/'E:\\\\JaewoonRobloxStudioRunner'/);
+  assert.match(recover,/Add-Candidate 'E:\\JaewoonRobloxStudioRunner'/);
+  assert.match(bootstrap,/'E:\\JaewoonRobloxStudioRunner'/);
   assert.match(recover,/Test-RunnerRoot/);
   assert.match(bootstrap,/Test-RunnerRoot/);
   assert.match(autoQa,/company-roblox-runner-pwsh-bootstrap\\.yml/);
