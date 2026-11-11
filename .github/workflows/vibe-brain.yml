@@ -1,0 +1,113 @@
+# 바이브 두뇌: 1시간마다 작업 지시서 중 코드로 고칠 수 있는 것 하나를 무료 LLM(Gemini → Codestral → GitHub Models → Groq → OpenRouter)에게 고치게 한다.
+# 검증(문법·게임 테스트)을 통과한 수정만 PR 로 올린다. 병합은 저장소 변수 VIBE_BRAIN_MERGE=on 일 때만 스스로 한다(기본은 PR 만 열고 사람이 본다).
+# 끄기: VIBE_BRAIN=off. Gemini 는 VIBE2_GEMINI_FREE_TIER_VERIFIED=YES 일 때만 쓴다(유료 결제 방지).
+name: Vibe Brain
+run-name: Vibe Brain · ${{ github.run_number }}
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  models: read
+concurrency:
+  group: vibe-brain
+  cancel-in-progress: false
+jobs:
+  think:
+    if: ${{ github.repository == 'hans1177/jaewoon-games' && vars.VIBE_BRAIN != 'off' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Luau
+        run: |
+          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          mkdir -p /tmp/luau && unzip -q /tmp/luau.zip -d /tmp/luau && chmod +x /tmp/luau/*
+      - name: Gather work orders and brain ledger
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          mkdir -p build
+          gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
+          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
+      - name: Think (ask free models for one safe fix)
+        env:
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
+          MISTRAL_CODESTRAL_API_KEY: ${{ secrets.MISTRAL_CODESTRAL_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --ledger build/brain-ledger.json --out build/brain-result.json
+      - name: Verify the change (syntax and game tests)
+        id: verify
+        run: |
+          set -uo pipefail
+          ok=$(node -p "require('./build/brain-result.json').ok")
+          if [ "$ok" != "true" ]; then echo "verified=no" >> "$GITHUB_OUTPUT"; exit 0; fi
+          fail=0
+          changed=$(git diff --name-only)
+          echo "$changed"
+          for f in $changed; do
+            case "$f" in
+              roblox-games/fantasy-survival/client/*|roblox-games/fantasy-survival/server/*|roblox-games/fantasy-survival/shared/*|roblox-games/mare-essentia/src/*) ;;
+              *) echo "허용되지 않은 파일: $f"; fail=1 ;;
+            esac
+            git show "HEAD:$f" > /tmp/before.luau 2>/dev/null || true
+            cp "$f" /tmp/after.luau
+            b=$(/tmp/luau/luau-analyze /tmp/before.luau 2>&1 | grep -c "SyntaxError" || true)
+            a=$(/tmp/luau/luau-analyze /tmp/after.luau 2>&1 | grep -c "SyntaxError" || true)
+            echo "SyntaxError before=$b after=$a ($f)"
+            [ "$a" -gt "$b" ] && fail=1
+          done
+          game=$(node -p "require('./build/brain-result.json').fingerprint.split(':')[0]")
+          if [ "$game" = "mare-essentia" ]; then
+            LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh || fail=1
+            node --test qa/mare-*.test.mjs || fail=1
+          else
+            for t in qa/fantasy-*.test.mjs; do node --test "$t" >/dev/null 2>&1 || { echo "테스트 실패: $t"; fail=1; }; done
+          fi
+          if [ "$fail" -eq 0 ]; then echo "verified=yes" >> "$GITHUB_OUTPUT"; else echo "verified=no" >> "$GITHUB_OUTPUT"; git checkout -- . ; fi
+      - name: Open a pull request, merge only when allowed
+        if: ${{ steps.verify.outputs.verified == 'yes' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_ON: ${{ vars.VIBE_BRAIN_MERGE }}
+        run: |
+          set -euo pipefail
+          summary=$(node -p "require('./build/brain-result.json').summary")
+          fp=$(node -p "require('./build/brain-result.json').fingerprint")
+          prov=$(node -p "require('./build/brain-result.json').provider")
+          text=$(node -p "require('./build/brain-result.json').text")
+          branch="vibe-brain/run-${GITHUB_RUN_ID}"
+          git config user.name "vibe-brain"
+          git config user.email "vibe-brain@users.noreply.github.com"
+          git checkout -q -b "$branch"
+          git add -A roblox-games
+          git commit -q -m "fix(vibe-brain): ${summary}"
+          git push -q origin "$branch"
+          body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
+          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$(printf "$body")" --jq .number)
+          echo "PR #$pr"
+          if [ "${MERGE_ON:-off}" = "on" ]; then
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash >/dev/null && merged=yes || merged=no
+            if [ "$merged" = "yes" ]; then node tools/vibe-brain.mjs --record-merged "$pr" --ledger build/brain-ledger.json --out build/brain-result.json; echo "MERGED #$pr"; fi
+          else
+            echo "병합은 VIBE_BRAIN_MERGE=on 일 때만 한다. PR 만 열어 두었다."
+          fi
+      - name: Save the brain ledger to vibe-gym-data (never main)
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          [ -f build/brain-ledger.json ] || exit 0
+          sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .sha 2>/dev/null || true)"
+          gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json" -f message="brain: ledger" -f branch=vibe-gym-data -f content="$(base64 -w0 build/brain-ledger.json)" ${sha:+-f sha="$sha"} >/dev/null && echo SAVED
