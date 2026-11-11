@@ -34,6 +34,70 @@ export const OPERATORS={
 
 export function mulberry32(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 
+// [자산 분류] 카탈로그의 종류는 연습 목표이지 실제 리그/모션/런타임 검증 증거가 아니다.
+export const ASSET_PRACTICE_DOMAINS=Object.freeze([
+  'MESH','RIG','JOINT','MOTION','ACTION','MATERIAL','ENVIRONMENT','OBJECT',
+  'UI','BUTTON','ICON','VFX','AUDIO','FONT','LIGHTING','CAMERA'
+]);
+export function classifyPracticeAsset(asset={}){
+  const family=String(asset.family||asset.category||'UNKNOWN').toUpperCase();
+  const names=[asset.id,asset.title,asset.name,asset.path,
+    ...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])].filter(x=>typeof x==='string').join(' ').toLowerCase();
+  const targets=new Set();
+  const add=(...values)=>values.forEach(value=>targets.add(value));
+  const actor=/CHARACTER|CREATURE|HERO|NPC|ANIMAL|MONSTER/.test(family);
+  const model=/\.(?:obj|glb|gltf|fbx|blend)(?:\s|$)/i.test(names);
+  if(actor){add('MESH','RIG','JOINT','MOTION','ACTION','MATERIAL');}
+  else if(model)add('MESH','MATERIAL');
+  if(/ENVIRONMENT|WORLD|TERRAIN|FOLIAGE|SCENE|BUILDING/.test(family))add('ENVIRONMENT','OBJECT','MATERIAL');
+  if(/PROP|ITEM|OBJECT|WEAPON|TOOL|BUILDING/.test(family))add('OBJECT');
+  if(/MATERIAL|TEXTURE|SHADER/.test(family))add('MATERIAL');
+  if(/UI|INTERFACE|HUD|MENU/.test(family))add('UI','BUTTON','ICON');
+  if(/BUTTON|CONTROL/.test(family)||/\bbutton\b/.test(names))add('BUTTON','UI');
+  if(/ICON|CURSOR/.test(family)||/\bicon\b/.test(names))add('ICON','UI');
+  if(/VFX|PARTICLE|EFFECT/.test(family))add('VFX');
+  if(/AUDIO|SOUND|MUSIC/.test(family))add('AUDIO');
+  if(/FONT|TYPOGRAPHY/.test(family))add('FONT','UI');
+  if(/LIGHT|SKY/.test(family))add('LIGHTING','ENVIRONMENT');
+  if(/CAMERA/.test(family))add('CAMERA');
+  if(/\.(?:png|jpe?g|webp|svg)$/i.test(names)&&!targets.size)add('UI');
+  return {family,targets:ASSET_PRACTICE_DOMAINS.filter(domain=>targets.has(domain)),
+    classificationOnly:true,nativeRuntimeVerified:false};
+}
+// [자산 부족 기록] 실제 로컬 원본이 없는 카탈로그 항목을 학습 성공·승인 자산으로 세지 않는다.
+export function buildPracticeAssetCoverage(registry,repoRoot){
+  const root=fs.realpathSync(repoRoot);
+  const domains=Object.fromEntries(ASSET_PRACTICE_DOMAINS.map(name=>[name,{catalogued:0,eligible3d:0}]));
+  const families={},shortages=[];
+  for(const asset of Array.isArray(registry?.assets)?registry.assets:[]){
+    const info=classifyPracticeAsset(asset),fam=families[info.family]??={catalogued:0,eligible3d:0};
+    fam.catalogued++;
+    const licensed=/^CC0(?:-1\.0)?$/i.test(String(asset.license||''));
+    const approved=licensed&&!asset.securityBlocked&&!asset.quarantined&&!asset.gameUseForbidden&&
+      !asset.parentSourceId&&!asset.derivedFromAssetId&&asset.catalogActive!==false&&!asset.corruptSource;
+    const sources=Array.isArray(asset.sourceFiles)?asset.sourceFiles:[];
+    const eligible3d=approved&&sources.some(name=>{
+      if(typeof name!=='string'||!/\.(obj|glb|gltf)$/i.test(name)||path.isAbsolute(name))return false;
+      try{
+        const full=fs.realpathSync(path.resolve(root,name));
+        return full.startsWith(root+path.sep)&&fs.statSync(full).isFile();
+      }catch{return false;}
+    });
+    if(eligible3d)fam.eligible3d++;
+    else if(shortages.length<24)shortages.push({id:String(asset.id||'').slice(0,100),family:info.family,
+      reason:approved?'NO_VERIFIED_LOCAL_3D_SOURCE':'NOT_APPROVED_OR_SOURCE_BLOCKED'});
+    for(const domain of info.targets){
+      domains[domain].catalogued++;
+      if(eligible3d)domains[domain].eligible3d++;
+    }
+  }
+  return {cataloguedAssets:(registry?.assets||[]).length,
+    eligible3dAssets:Object.values(families).reduce((sum,f)=>sum+f.eligible3d,0),
+    domains,families,shortages:shortages.slice(0,24),
+    status:'CATALOG_CLASSIFICATION_NOT_GAME_OR_RUNTIME_VERIFICATION',
+    gameApplied:false,nativeRuntimeVerified:false};
+}
+
 // 부모 후보: CC0 + 소스 파일(obj/glb)이 실제로 있고 + 막힘/격리/게임사용금지/파생이 아닌 등록 에셋
 export function pickParents(registry,repoRoot,n,rng,only=null){
   const ok=[];
@@ -184,6 +248,9 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
   const lib=libraryDir?approvedLibraryParents(libraryDir).filter(x=>!only||only.includes(x.id)):[];
   const pool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+1),only),...lib];
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  // [연습 균형] 이미 많이 연습한 가족보다 실제 CC0 원본이 있는 미연습 가족을 먼저 고른다.
+  const attempts=family=>Object.values(stats[String(family||'')]||{}).reduce((n,row)=>n+(Number.isSafeInteger(row?.n)?row.n:0),0);
+  pool.sort((a,b)=>attempts(a.family)-attempts(b.family));
   const chosen=chooseDiverseParents(pool,parents);
   if(!chosen.length)throw new Error('NO_ELIGIBLE_CC0_PARENT');
   // 부품 풀: 작은 소품(PROP)류. 부모와 다른 에셋만.
@@ -218,6 +285,8 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
       const res=byId[j.id],m=meta[j.id];
       const params={...j.params};
       const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
+      row.practiceTargets=classifyPracticeAsset(p).targets;
+      row.nativeRuntimeVerified=false;row.gameApplied=false;
       if(m.part){ // 두 부모 모두 출처·해시를 남긴다
         delete params.part;
         row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license};
