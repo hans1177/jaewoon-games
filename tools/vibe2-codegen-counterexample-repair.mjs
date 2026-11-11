@@ -4,15 +4,44 @@ import {sourceDigest} from './vibe2-game-source-index.mjs';
 
 // 메인: 기존 생성기·독립 평가기를 호출하는 한정된 반례 탐색. 큐·배포 권한은 없다.
 export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:sourceSha,
- failures=[],allowedPaths=[],replay=null,compareValidated=false,maxAttempts=3,approvedBudget=3}={}){
+ failures=[],allowedPaths=[],sourceIndex=null,allowedSymbolIds=[],semanticDiffBudget=null,
+ replay=null,compareValidated=false,maxAttempts=3,approvedBudget=3}={}){
  const budget=Number.isSafeInteger(maxAttempts)&&Number.isSafeInteger(approvedBudget)&&
   maxAttempts>0&&approvedBudget>0?Math.min(5,maxAttempts,approvedBudget):0;
  if(typeof generate!=='function'||typeof evaluate!=='function'||!/^[a-f0-9]{64}$/.test(sourceSha)||!budget||
   !Array.isArray(allowedPaths)||allowedPaths.some(path=>typeof path!=='string'||!path)||
   !Array.isArray(failures)||(replay!==null&&typeof replay!=='function')||
-  typeof compareValidated!=='boolean'||(replay!==null&&!failures.length))
+  typeof compareValidated!=='boolean'||(replay!==null&&!failures.length)||
+  (sourceIndex!==null&&(!Array.isArray(sourceIndex?.files)||!Array.isArray(sourceIndex?.symbols)||
+   sourceIndex.digest!==sourceSha||!Array.isArray(allowedSymbolIds)||!allowedSymbolIds.length||
+   !Number.isSafeInteger(semanticDiffBudget)||semanticDiffBudget<1||semanticDiffBudget>131072))||
+  (sourceIndex===null&&(allowedSymbolIds.length!==0||semanticDiffBudget!==null)))
   throw Error('VIBE2_REPAIR_CONTRACT');
  const owners=new Set(allowedPaths);
+ // [근거 인덱스] 원본 바이트·해시·함수 범위를 기존 소스 인덱스에 고정한다.
+ const originals=new Map(),writableSymbols=new Map();
+ if(sourceIndex!==null){
+  if(sourceIndex.files.length>32||sourceIndex.symbols.length>131072||
+   sourceDigest(JSON.stringify(sourceIndex.files.map(file=>[file.path,file.sourceSha256])))!==sourceSha)
+   throw Error('VIBE2_REPAIR_SOURCE_INDEX_STALE');
+  for(const file of sourceIndex.files){
+   if(typeof file.path!=='string'||typeof file.source!=='string'||
+    originals.has(file.path)||sourceDigest(file.source)!==file.sourceSha256)
+    throw Error('VIBE2_REPAIR_SOURCE_INDEX_STALE');
+   originals.set(file.path,file.source);
+  }
+  for(const id of new Set(allowedSymbolIds)){
+   const matches=sourceIndex.symbols.filter(symbol=>symbol.id===id);
+   if(matches.length!==1||matches[0].ambiguous||matches[0].unsupported?.length||
+    !originals.has(matches[0].path)||!Number.isSafeInteger(matches[0].start)||
+    !Number.isSafeInteger(matches[0].end)||matches[0].start<0||
+    matches[0].end>originals.get(matches[0].path).length||
+    matches[0].start>=matches[0].end||
+    matches[0].sourceSha256!==sourceIndex.files.find(f=>f.path===matches[0].path)?.sourceSha256)
+    throw Error('VIBE2_REPAIR_SYMBOL_CONTRACT');
+   writableSymbols.set(id,matches[0]);
+  }
+ }
  const seen=new Set(),counterexamples=[],attempts=[];
  let skippedDuplicate=false,replayUnresolved=false,best=null,validated=0;
  for(const failure of failures){
@@ -49,6 +78,28 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
     /^[A-Za-z]:/.test(file)||file.split('/').some(part=>!part||part==='.'||part==='..')||
     (owners.size>0&&!owners.has(file))))
    return {status:'BLOCKED',reason:'OUT_OF_SCOPE_REPAIR_EDIT',attempts,sourceWrite:false,runtimeVerified:false};
+  // [생성 후 검증] 문자열 앵커 전체가 아닌 실제 달라진 바이트 범위가 승인 함수 안에 있어야 한다.
+  // 읽기 전용 의존 함수, 오래된 앵커, 중복 앵커, 과도한 수정은 평가 전에 차단한다.
+  if(sourceIndex!==null){
+   let changed=0;
+   for(const [file,find,replace] of edits){
+    const original=originals.get(file);
+    if(original===undefined||!original.includes(find)||original.indexOf(find)!==original.lastIndexOf(find))
+     return {status:'BLOCKED',reason:'STALE_OR_AMBIGUOUS_REPAIR_ANCHOR',attempts,sourceWrite:false,runtimeVerified:false};
+    const at=original.indexOf(find);
+    let prefix=0,suffix=0;
+    while(prefix<find.length&&prefix<replace.length&&find[prefix]===replace[prefix])prefix++;
+    while(suffix<find.length-prefix&&suffix<replace.length-prefix&&
+     find[find.length-1-suffix]===replace[replace.length-1-suffix])suffix++;
+    const start=at+prefix,end=at+find.length-suffix;
+    if(![...writableSymbols.values()].some(symbol=>symbol.path===file&&
+      symbol.start<=start&&end<=symbol.end))
+     return {status:'BLOCKED',reason:'UNOWNED_REPAIR_SYMBOL_DELTA',attempts,sourceWrite:false,runtimeVerified:false};
+    changed+=find.length-prefix-suffix+replace.length-prefix-suffix;
+    if(changed>semanticDiffBudget)
+     return {status:'BLOCKED',reason:'REPAIR_SEMANTIC_DIFF_BUDGET_EXCEEDED',attempts,sourceWrite:false,runtimeVerified:false};
+   }
+  }
   const dependent=edits.some((a,i)=>edits.some((b,j)=>i!==j&&a[0]===b[0]&&
    (a[1].includes(b[1])||a[2].includes(b[1]))));
   if(!dependent)edits.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));

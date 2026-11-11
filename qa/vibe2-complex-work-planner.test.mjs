@@ -273,6 +273,72 @@ test('counterexample replay fails closed on invalid provenance and unresolved bu
   /VIBE2_REPAIR_CONTRACT/);
 });
 
+// [함수 범위 회귀] 생성한 전체 문자열 패치가 아닌 실제 바뀐 부분만 원본 함수와 대조한다.
+test('repair checks generated semantic diff against source-indexed owned function',t=>{
+ const {root}=fixture(t),filename=path.join(root,'game.js');
+ const original=[
+  'function hit(target){target.hp -= 10;return target.hp;}',
+  'function save(){return 1;}',
+  'function draw(){return 1;}'
+ ].join('\n');
+ fs.writeFileSync(filename,original);
+ const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['game.js'],target:'web'});
+ const owner=index.symbols.find(symbol=>symbol.name==='hit');
+ assert.ok(owner,'original hit symbol is present in source index');
+ const evaluate=()=>({pass:true,actualGamePlaytest:false});
+ const options={sourceDigest:index.digest,sourceIndex:index,allowedPaths:['game.js'],
+  allowedSymbolIds:[owner.id],semanticDiffBudget:96,evaluate,maxAttempts:2,approvedBudget:2};
+ const patch=(find,replace)=>({edits:[{path:'game.js',find,replace}]});
+ const checked=candidate=>runCodegenCounterexampleRepair({...options,generate:()=>candidate});
+ const find=original.slice(owner.start,owner.end);
+ const good=find.replace('target.hp -= 10;','if (!target.dead) target.hp -= 10;');
+ assert.notEqual(find,good);
+ const valid=checked(patch(find,good));
+ assert.equal(valid.status,'CANDIDATE_VALIDATED');
+ assert.equal(valid.sourceWrite,false);
+ assert.equal(valid.runtimeVerified,false);
+ const outside=checked(patch('return 1;','return 2;'));
+ assert.equal(outside.reason,'STALE_OR_AMBIGUOUS_REPAIR_ANCHOR');
+ const unowned=checked(patch('function save(){return 1;}','function save(){return 2;}'));
+ assert.equal(unowned.reason,'UNOWNED_REPAIR_SYMBOL_DELTA');
+ const crossed=checked(patch('return target.hp;}\nfunction save(){return 1;',
+  'return target.hp;}\nfunction save(){return 2;'));
+ assert.equal(crossed.reason,'UNOWNED_REPAIR_SYMBOL_DELTA');
+ const stale=checked(patch('target.hp *= 7;','target.hp -= 10;'));
+ assert.equal(stale.reason,'STALE_OR_AMBIGUOUS_REPAIR_ANCHOR');
+ const oversized=runCodegenCounterexampleRepair({...options,semanticDiffBudget:12,
+  generate:()=>patch(find,good)});
+ assert.equal(oversized.reason,'REPAIR_SEMANTIC_DIFF_BUDGET_EXCEEDED');
+ const changed=JSON.parse(JSON.stringify(index));
+ changed.files[0].source+='// stale';
+ assert.throws(()=>runCodegenCounterexampleRepair({...options,sourceIndex:changed,
+  generate:()=>patch(find,good)}),/VIBE2_REPAIR_SOURCE_INDEX_STALE/);
+ assert.equal(fs.readFileSync(filename,'utf8'),original);
+});
+
+// [다중 편집] 합산 변경 예산과 명시한 책임 함수 목록을 모두 지켜야 검증한다.
+test('repair counts actual semantic edits across multiple owned functions',t=>{
+ const {root}=fixture(t),filename=path.join(root,'game.js');
+ const original='function hit(t){t.hp -= 1;}\nfunction heal(t){t.hp += 1;}';
+ fs.writeFileSync(filename,original);
+ const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['game.js'],target:'web'});
+ const ids=index.symbols.filter(row=>['hit','heal'].includes(row.name)).map(row=>row.id);
+ assert.equal(ids.length,2);
+ const candidate={edits:[
+  {path:'game.js',find:'t.hp -= 1;',replace:'if (!t.dead) t.hp -= 1;'},
+  {path:'game.js',find:'t.hp += 1;',replace:'if (!t.dead) t.hp += 1;'}
+ ]};
+ const options={sourceDigest:index.digest,sourceIndex:index,allowedPaths:['game.js'],
+  allowedSymbolIds:ids,semanticDiffBudget:96,generate:()=>candidate,
+  evaluate:()=>({pass:true})};
+ assert.equal(runCodegenCounterexampleRepair(options).status,'CANDIDATE_VALIDATED');
+ assert.equal(runCodegenCounterexampleRepair({...options,allowedSymbolIds:[ids[0]]})
+  .reason,'UNOWNED_REPAIR_SYMBOL_DELTA');
+ assert.equal(runCodegenCounterexampleRepair({...options,semanticDiffBudget:16})
+  .reason,'REPAIR_SEMANTIC_DIFF_BUDGET_EXCEEDED');
+ assert.equal(fs.readFileSync(filename,'utf8'),original);
+});
+
 test('real line-defense source prevents dead attacks and duplicate death rewards while normal combat stays identical',()=>{
  const root='web-games/line-defense';
  const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['index.html']});

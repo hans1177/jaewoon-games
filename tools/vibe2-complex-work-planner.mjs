@@ -627,6 +627,9 @@ export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibl
   const repair=runCodegenCounterexampleRepair({sourceDigest:plan.index.digest,
    // [책임 소스] 실제 인덱스에 바인딩된 파일 외에는 반례 수정이 확장될 수 없다.
    allowedPaths:plan.index.files.map(file=>file.path),
+   // [함수 범위·변경 예산] Aider식 원본 함수 근거를 생성 이후 변경 바이트와 대조한다.
+   sourceIndex:plan.index,allowedSymbolIds:[...new Set(plan.nodes.map(node=>node.owner.id))],
+   semanticDiffBudget:Math.min(131072,Math.max(2048,plan.nodes.length*2048)),
    failures:order.selectedTask?.vibe59ComplexCounterexamples??order.vibe59ComplexCounterexamples??[],
    generate:()=>createComplexGameCandidate({plan,sourceRoot,target}),
    evaluate:candidate=>({pass:candidate.vibe59TestPlan.pass,actualGamePlaytest:false}),
