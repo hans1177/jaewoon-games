@@ -45,16 +45,302 @@
   {
    "id": "trade-goods-icons-missing",
    "kind": "Goods",
-   "purpose": "전용 그림도 맞는 3D 모델도 없는 교역품 18종 (타조 깃털·정향·육두구·계피·인디고·쌀·칠기·장뇌·인삼·바닐라·코치닐·물개 가죽·구아노·초석·용연향·아라비아 고무 / 술류 맥주·청주는 내용 검수 정책상 그림 제외)",
-   "status": "missing",
+   "purpose": "16종 교역품의 승인 원본·최소 64px·해시·Roblox 자산 ID·체험 권한을 자동 검사. 맥주·청주 그림은 정책상 차단",
+   "status": "registered-rights-confirmed-game-qa-pending",
    "candidates": [
-    "Kenney Food Kit·Quaternius 소품(CC0) 중 같은 물건만",
-    "위키미디어 공용 공개 도메인 사진 → tools/devloop/sketchify.py 로 스케치화 후 APPROVED_IMAGES.json 등록"
+    "기존 등록 원본 우선 재사용(CC0 2종, 프로젝트 전용 원화 14종)",
+    "추가 원본은 품목 일치·라이선스·이미지 승인 해시 확인 후 기존 업로더만 사용"
    ],
-   "inboxPath": "assets/inbox/Goods/<good_id>.png"
+   "inboxPath": "assets/inbox/Goods/<good_id>.png",
+   "goods": [
+    "feathers",
+    "cloves",
+    "nutmeg",
+    "cinnamon",
+    "indigo",
+    "rice",
+    "lacquer",
+    "camphor",
+    "ginseng",
+    "vanilla",
+    "cochineal",
+    "sealskin",
+    "guano",
+    "nitrate",
+    "ambergris",
+    "gum_arabic"
+   ],
+   "blockedGoods": [
+    "beer",
+    "sake"
+   ]
   }
  ],
  "codeReferencesNotRegistered": [],
  "registry": null,
- "inboxWaiting": []
+ "inboxWaiting": [],
+ "tradeGoodsPractice": {
+  "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
+  "method": "PNG_HEADER_MIN_64PX_APPROVAL_SHA256_LICENSE_REGISTERED_RIGHTS",
+  "visualLegibilityMeasured": false,
+  "nativeRuntimeVerified": false,
+  "runtimePromotionAllowed": false,
+  "stats": {
+   "targetCount": 16,
+   "excludedCount": 2,
+   "registeredWithRights": 16,
+   "readyToRegister": 0,
+   "permissionPending": 0,
+   "blocked": 2,
+   "invalid": 0
+  },
+  "goods": [
+   {
+    "id": "feathers",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "93169918966471",
+    "sourceSha256": "6a92f3b1d55c36b49aa8bcf62da929f4481a5cdec11ef2ff3998f11388e5acf2",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "cloves",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "124601969340274",
+    "sourceSha256": "d592fbb1ae8d1a78785d7f6b01c2d4fa12ffb80bdfe42e255bcdf9dbc4a8375b",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "nutmeg",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "102192008209831",
+    "sourceSha256": "55197c8db655e5829cfe0361debc02722a0687b3353040e1da26161770356ecd",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "cinnamon",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "73055953150394",
+    "sourceSha256": "b61c0fe028f42f1e58a39bb1e97bb08ec473524e23a69413a026e9c5fe01176c",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "indigo",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "81907200507876",
+    "sourceSha256": "fba95d8b105a648168ebcd570b7471ebb1367feebcf98513e121582e5d9180c4",
+    "dimensions": [
+     64,
+     64
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "rice",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "137070133749622",
+    "sourceSha256": "30f7d91cbe2be2c7fefffdd9c6b35e9a447a704c0054800a1a2ea27b786f642f",
+    "dimensions": [
+     64,
+     64
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "lacquer",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "97111057525509",
+    "sourceSha256": "5e00f6160ae1b759668d4326c742a67c6fd107150f4e45982cc3ceadc4d01c22",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "camphor",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "71182633769869",
+    "sourceSha256": "734b42033e0493f26b1201781a446efca3007cddaeb269c2185f544db6ad96be",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "ginseng",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "70508993139898",
+    "sourceSha256": "0fffe87e1e73df33ff114cb725e0675141f4d171d29bc09a15b02994bb569551",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "vanilla",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "86823206793657",
+    "sourceSha256": "86da5bcea26f1d8b376677886975f764edf7041c0a71df16fb41dbb94ca0b5da",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "cochineal",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "130147221190174",
+    "sourceSha256": "4c4d81007d069e4d10517affe3adadce16a1dd02ec20722c5bdb3efc5c626aca",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "sealskin",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "76304776702681",
+    "sourceSha256": "861d205e19145f210149cfd767f765459fe0e3842822d3860a261b508161d755",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "guano",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "105482943063317",
+    "sourceSha256": "8bcb65ec61bff683d441b49c4bc4462f4f2ccf75dc87146a51af3fa232d46d4a",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "nitrate",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "133294766517131",
+    "sourceSha256": "86f01d8e1d931baab70eddc90d8999dd39e8d67e9e88afa103db58bfea198a66",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "ambergris",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "107143276141685",
+    "sourceSha256": "5f2871ef01cace4e9d90a969bdcea935a47df842e588ebdde6e6c9bd21c8c7e0",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "gum_arabic",
+    "state": "REGISTERED_RIGHTS_CONFIRMED",
+    "assetId": "99961255894018",
+    "sourceSha256": "bcf43f2b4789922f384adeb98e3470776f65e7f531e903f2d6da4de779d5edba",
+    "dimensions": [
+     512,
+     512
+    ],
+    "sourceFingerprintRecorded": true,
+    "approved": true,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "beer",
+    "state": "BLOCKED_BY_POLICY",
+    "assetId": null,
+    "sourceSha256": null,
+    "dimensions": null,
+    "sourceFingerprintRecorded": false,
+    "approved": false,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   },
+   {
+    "id": "sake",
+    "state": "BLOCKED_BY_POLICY",
+    "assetId": null,
+    "sourceSha256": null,
+    "dimensions": null,
+    "sourceFingerprintRecorded": false,
+    "approved": false,
+    "nativeStudioDisplayVerified": false,
+    "gamePublishedFromPractice": false
+   }
+  ]
+ }
 }
