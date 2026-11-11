@@ -113,6 +113,12 @@ test('automatic Roblox practice coalesces pending pushes and uses permitted smal
   assert.ok(roblox.includes('PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO'));
   assert.ok(!unity.includes("'--base-model', 'Qwen/Qwen3-0.6B'"));
   assert.ok(trainer.includes('parser.add_argument("--base-model", default="Qwen/Qwen3-1.7B")'));
+  assert.ok(workflow.includes('unity_practice:'));
+  assert.ok(workflow.includes('default: false'));
+  assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.unity_practice == true"));
+  assert.ok(workflow.includes('needs: [prepare-practice, roblox-practice-train]'));
+  assert.ok(workflow.includes('LEARNING_FOCUS: ROBLOX_CODING_ONLY'));
+  assert.ok(unity.includes('LEARNING_FOCUS: UNITY_CODING_ONLY'));
 });
 
 test('practice trainer and workflow keep learned adapter unverified and require actual training execution', () => {

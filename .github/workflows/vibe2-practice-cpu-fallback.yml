@@ -16,6 +16,12 @@ on:
   schedule:
     - cron: '27 * * * *'
   workflow_dispatch:
+    inputs:
+      unity_practice:
+        description: 'Explicit Unity practice after Roblox finishes (off by default)'
+        required: false
+        type: boolean
+        default: false
 
 # Coalesce all automatic push/hourly requests while one local CPU run is active.
 # Manual requests remain independent; no running safe training is cancelled.
@@ -29,14 +35,16 @@ permissions:
   actions: read
 
 env:
-  LEARNING_FOCUS: UNITY_CODING_ONLY
+  LEARNING_FOCUS: ROBLOX_CODING_ONLY
   PRACTICE_AUTHORITY: PRACTICE_ONLY
   PRACTICE_RUNTIME_PROMOTION: 'NO'
 
 jobs:
   prepare-practice:
-    # Roblox 자동 학습에 로컬 실행 자원을 우선 배정한다. Unity 연습은 수동 실행으로 보존한다.
-    if: github.event_name == 'workflow_dispatch'
+    # Unity is OWNER_HOLD: only explicit manual opt-in may prepare its practice samples.
+    if: github.event_name == 'workflow_dispatch' && inputs.unity_practice == true
+    env:
+      LEARNING_FOCUS: UNITY_CODING_ONLY
     # Sample preparation is control-plane work; keep game-primary ubuntu-latest capacity for heavy workers.
     runs-on: ubuntu-slim
     timeout-minutes: 10
@@ -135,9 +143,11 @@ jobs:
           if-no-files-found: error
 
   cpu-practice-train:
-    # Roblox 자동 학습 우선. Unity CPU 훈련은 사용자가 수동 요청할 때만 수행한다.
-    if: github.event_name == 'workflow_dispatch'
-    needs: prepare-practice
+    # Even with explicit Unity opt-in, finish this run's Roblox practice first.
+    if: github.event_name == 'workflow_dispatch' && inputs.unity_practice == true
+    needs: [prepare-practice, roblox-practice-train]
+    env:
+      LEARNING_FOCUS: UNITY_CODING_ONLY
     concurrency:
       group: vibe2-unity-practice-local-training
       cancel-in-progress: false
