@@ -257,6 +257,11 @@ jobs:
           git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-studio-frames
           Write-Host "PUBLISHED=$LASTEXITCODE"
           if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_PUBLISH_FAILED' }
+          # 바이브 자동 점검(autopilot) 결과는 다른 Studio 실행이 덮어쓰지 못하게 별도 브랜치에도 보관한다(판단기가 읽는다).
+          if ([string]$env:CAP_SCRIPT -match 'autopilot') {
+            git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report
+            Write-Host "AUTOPILOT_REPORT_PUBLISHED=$LASTEXITCODE"
+          }
           if ($qaStage -ne '') {
             Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
             Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
