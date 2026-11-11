@@ -28,8 +28,8 @@ def practice_validate(args, manifest, train_rows, eval_rows):
         raise RuntimeError('practice trainer accepts PRACTICE_ONLY dataset only')
     if manifest.get('runtimePromotionAllowed') is not False:
         raise RuntimeError('practice dataset must forbid runtime promotion')
-    if manifest.get('targetTaskType') != args.task_type or args.task_type != 'unity':
-        raise RuntimeError('practice trainer accepts taskType=unity only')
+    if manifest.get('targetTaskType') != args.task_type or args.task_type not in ('unity', 'roblox'):
+        raise RuntimeError('practice trainer accepts taskType=unity or roblox only')
     if not train_rows or not eval_rows:
         raise RuntimeError('practice train and eval rows are required')
     stats = manifest.get('stats') or {}
@@ -46,8 +46,8 @@ def practice_validate(args, manifest, train_rows, eval_rows):
             raise RuntimeError('practice exercise family leakage')
     found_licensed = 0
     for row in train_rows + eval_rows:
-        if row.get('taskType') != 'unity' or row.get('practiceOnly') is not True:
-            raise RuntimeError('non-Unity practice row reached practice trainer')
+        if row.get('taskType') != args.task_type or row.get('practiceOnly') is not True:
+            raise RuntimeError('non-matching practice row reached practice trainer')
         if row.get('runtimePromotionAllowed') is not False or row.get('lifecycle') != 'active':
             raise RuntimeError('unsafe or inactive practice row reached trainer')
         source_kind = row.get('sourceKind') or (row.get('provenance') or {}).get('sourceKind')
@@ -102,7 +102,7 @@ def main():
     metadata['verifiedProductionEvidence'] = False
     metadata['promotionState'] = 'UNVERIFIED'
     metadata['runtimePromotionAllowed'] = False
-    metadata['requiredNextGate'] = 'VERIFIED_UNITY_HOLDOUT_AB_AND_CANARY'
+    metadata['requiredNextGate'] = 'VERIFIED_' + str(dataset_manifest['targetTaskType']).upper() + '_HOLDOUT_AB_AND_CANARY'
     metadata_file.write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({
         'practiceTraining': 'PASS',

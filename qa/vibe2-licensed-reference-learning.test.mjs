@@ -106,3 +106,40 @@ test('CPU practice skips activation recompute without changing production defaul
   assert.match(trainer, /num_train_epochs=args\.epochs/);
   assert.match(trainer, /learning_rate=args\.learning_rate/);
 });
+
+test('오픈소스 로블록스 Lua 참고자료는 독립된 연습 전용 데이터셋으로만 구축된다',()=>{
+  const file='company-learning/roblox-practice.json';
+  const material=JSON.parse(fs.readFileSync(file,'utf8')).licensedReferences;
+  assert.equal(material.scope,'ROBLOX_CODING_ONLY');
+  assert.equal(material.runtimePromotionAllowed,false);
+  assert.equal(material.drills.length,25);
+  assert.deepEqual(material.sources.map(row=>row.licenseSpdx),['MIT','MIT','Apache-2.0']);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-public-licensed-'));
+  try{
+    const samples=path.join(root,'samples'),dataset=path.join(root,'dataset');
+    const built=buildLicensedReferenceSamples({drillsFile:file,outDir:samples});
+    assert.equal(built.taskType,'roblox');
+    assert.equal(built.written,25);
+    const manifest=buildPracticeDataset({inputDir:samples,outDir:dataset,minSamples:20,taskType:'roblox'});
+    assert.equal(manifest.targetTaskType,'roblox');
+    assert.equal(manifest.authority,'PRACTICE_ONLY');
+    assert.equal(manifest.runtimePromotionAllowed,false);
+    assert.equal(manifest.stats.licensedReferenceTotal,25);
+    assert.ok(manifest.stats.train>=20);
+    assert.ok(manifest.stats.eval>=2);
+    const records=[...fs.readFileSync(path.join(dataset,'train.jsonl'),'utf8').trim().split('\n'),
+      ...fs.readFileSync(path.join(dataset,'eval.jsonl'),'utf8').trim().split('\n')].map(JSON.parse);
+    assert.equal(records.length,25);
+    for(const row of records){
+      assert.equal(row.taskType,'roblox');
+      assert.equal(row.practiceOnly,true);
+      assert.equal(row.runtimePromotionAllowed,false);
+      assert.equal(row.qa.licenseCheck,'PASS');
+      assert.ok(['MIT','APACHE-2.0'].includes(row.provenance.licenseSpdx));
+      assert.match(row.provenance.commit,/^[a-f0-9]{40}$/i);
+      assert.ok(row.provenance.sourcePaths.length>0);
+    }
+    const trainer=fs.readFileSync('tools/vibe2-practice-train.py','utf8');
+    assert.match(trainer,/args\.task_type not in \('unity', 'roblox'\)/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

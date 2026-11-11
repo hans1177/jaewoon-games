@@ -14,8 +14,8 @@ function filesIn(dir) {
   return fs.readdirSync(dir).filter((name) => name.endsWith('.json')).sort().map((name) => path.join(dir, name));
 }
 
-function normalize(record, sourceFile) {
-  if (record?.taskType !== 'unity' || record?.practiceOnly !== true || record?.runtimePromotionAllowed !== false) return null;
+function normalize(record, sourceFile, taskType) {
+  if (record?.taskType !== taskType || record?.practiceOnly !== true || record?.runtimePromotionAllowed !== false) return null;
   const sourceKind = String(record?.sourceKind ?? record?.provenance?.sourceKind ?? '').trim();
   if (!['teacher', 'licensed-reference'].includes(sourceKind)) return null;
   if (sourceKind === 'teacher' && record?.synthetic !== true) return null;
@@ -36,7 +36,7 @@ function normalize(record, sourceFile) {
     output,
     sampleKind: record.sampleKind === 'CODE_IMPLEMENTATION' ? 'CODE_IMPLEMENTATION' : 'JUDGMENT',
     familyId: String(record.familyId ?? record.provenance?.familyId ?? record.provenance?.drillId ?? record.sourceRevision ?? path.basename(sourceFile)),
-    taskType: 'unity',
+    taskType,
     difficulty: String(record?.difficulty ?? 'regression'),
     lifecycle: 'active',
     synthetic: record.synthetic === true,
@@ -82,8 +82,9 @@ function datasetHash(rows) {
   return sha256(rows.map(stable).join('\n'));
 }
 
-export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
-  const rows = filesIn(inputDir).map((file) => normalize(readJson(file), file)).filter(Boolean);
+export function buildPracticeDataset({ inputDir, outDir, minSamples = 12, taskType = 'unity' }) {
+  if (!['unity','roblox'].includes(taskType)) throw new Error('unsupported practice task type');
+  const rows = filesIn(inputDir).map((file) => normalize(readJson(file), file, taskType)).filter(Boolean);
   const deduped = [...new Map(rows.map((row) => [sha256(`${row.instruction}\n${row.input}\n${row.output}`), row])).values()];
   if (deduped.length < minSamples) throw new Error(`practice samples ${deduped.length}/${minSamples}`);
   deduped.sort((a, b) => deterministicScore(a) - deterministicScore(b));
@@ -107,7 +108,7 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
   const manifest = {
     version: 5,
     seed: SEED,
-    targetTaskType: 'unity',
+    targetTaskType: taskType,
     authority: 'PRACTICE_ONLY',
     practiceOnly: true,
     syntheticOnly: licensedReferenceCount === 0,
@@ -123,7 +124,7 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
       licensedReferenceNeverCountsAsVerifiedProductionEvidence: true,
       verifiedProductionEvidenceRequiredForPromotion: true,
     },
-    taskTrainingPlan: { unity: { samples: deduped.length, ready: true, authority: 'PRACTICE_ONLY' } },
+    taskTrainingPlan: { [taskType]: { samples: deduped.length, ready: true, authority: 'PRACTICE_ONLY' } },
     stats: {
       train: trainRows.length,
       eval: evalRows.length,
@@ -160,6 +161,7 @@ function main() {
     inputDir: args.input || 'tmp/unity-gpt-practice-samples',
     outDir: args.out || 'tmp/unity-practice-dataset',
     minSamples: Number(args['min-samples'] ?? 12),
+    taskType: String(args['task-type'] ?? 'unity'),
   });
   console.log(JSON.stringify(result));
 }

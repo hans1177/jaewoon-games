@@ -10,8 +10,9 @@ const writeJson = (file, value) => { fs.mkdirSync(path.dirname(file), { recursiv
 const COMMIT_RE = /^[0-9a-f]{40}$/i;
 
 export function loadLicensedReferenceDrills(file) {
-  const doc = readJson(file);
-  if (doc.scope !== 'UNITY_CODING_ONLY' || doc.sourceKind !== 'licensed-reference' || doc.synthetic !== false || doc.authority !== 'PRACTICE_ONLY' || doc.runtimePromotionAllowed !== false) {
+  const input = readJson(file);
+  const doc = input?.licensedReferences ?? input;
+  if (!['UNITY_CODING_ONLY','ROBLOX_CODING_ONLY'].includes(doc.scope) || doc.sourceKind !== 'licensed-reference' || doc.synthetic !== false || doc.authority !== 'PRACTICE_ONLY' || doc.runtimePromotionAllowed !== false) {
     throw new Error('licensed Unity reference contract mismatch');
   }
   const sourceMap = new Map();
@@ -40,6 +41,8 @@ export function loadLicensedReferenceDrills(file) {
 
 export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) {
   const rows = loadLicensedReferenceDrills(drillsFile).slice(0, Math.max(0, max));
+  const doc = readJson(drillsFile);
+  const roblox = (doc?.licensedReferences ?? doc).scope === 'ROBLOX_CODING_ONLY';
   fs.mkdirSync(outDir, { recursive: true });
   let written = 0;
   for (const { drill, source } of rows) {
@@ -54,15 +57,15 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
     };
     const sample = {
       version: 1,
-      instruction: `Unity 실제 코드 근거 구현판단 연습: ${clean(drill.scenario)}`,
+      instruction: `${roblox ? 'Roblox Luau' : 'Unity'} 실제 코드 근거 구현판단 연습: ${clean(drill.scenario)}`,
       input: JSON.stringify(modelInput, null, 2),
       output: [
         clean(drill.answer),
         Array.isArray(drill.avoid) && drill.avoid.length ? `피해야 할 접근: ${drill.avoid.join(' / ')}` : '',
         Array.isArray(drill.verify) && drill.verify.length ? `검증 포인트: ${drill.verify.join(' / ')}` : '',
       ].filter(Boolean).join('\n'),
-      taskType: 'unity',
-      difficulty: clean(drill.difficulty) || 'unity-build',
+      taskType: roblox ? 'roblox' : 'unity',
+      difficulty: clean(drill.difficulty) || (roblox ? 'roblox-release' : 'unity-build'),
       lifecycle: 'active',
       teacher: true,
       synthetic: false,
@@ -70,7 +73,7 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
       sourceKind: 'licensed-reference',
       runtimePromotionAllowed: false,
       project: `licensed:${source.repository}`,
-      teacherId: 'GPT-5.6-Sol-licensed-distillation-v1',
+      teacherId: (roblox ? 'PUBLIC_LICENSED_ROBLOX_REFERENCE' : 'GPT-5.6-Sol-licensed-distillation-v1'),
       sourceRevision,
       provenance: {
         sourceKind: 'licensed-reference',
@@ -81,7 +84,7 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
         sourcePaths: source.sourcePaths,
         evidenceSymbol: clean(drill.evidenceSymbol),
         drillId: clean(drill.id),
-        teacherId: 'GPT-5.6-Sol-licensed-distillation-v1',
+        teacherId: (roblox ? 'PUBLIC_LICENSED_ROBLOX_REFERENCE' : 'GPT-5.6-Sol-licensed-distillation-v1'),
       },
       qa: {
         teacherReview: 'PASS',
@@ -102,7 +105,7 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
     writeJson(path.join(outDir, file), sample);
     written += 1;
   }
-  return { sourceKind: 'licensed-reference', candidateCount: rows.length, written };
+  return { sourceKind: 'licensed-reference', taskType: roblox ? 'roblox' : 'unity', candidateCount: rows.length, written };
 }
 
 function parseArgs(argv) {
