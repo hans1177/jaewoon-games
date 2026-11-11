@@ -87,12 +87,33 @@ local Skills: { [string]: Skill } = {
 		id = "pressure_valve", name = "압력 밸브 방출", phase = "ranged", cooldown = 5, steamOnly = false,
 		grantedBy = "c_papin", summary = "압력솥의 증기를 뿜어 큰 피해, 석탄 불필요 (동료 파팽)",
 	},
+	gravity_calc = {
+		id = "gravity_calc", name = "만유인력 계산", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "c_newton", summary = "포탄의 궤적을 계산해 매우 큰 선체 피해 (동료 뉴턴)",
+	},
+	chrono_fix = {
+		id = "chrono_fix", name = "정밀 항로 차단", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "c_harrison", summary = "정확한 위치로 적의 길을 막아 속도를 크게 낮춘다 (동료 해리슨)",
+	},
+	buttress = {
+		id = "buttress", name = "버팀목 보강", phase = "any", cooldown = 5, steamOnly = false,
+		grantedBy = "c_wren", summary = "선체를 버팀목으로 보강해 크게 수리 (동료 렌)",
+	},
+	lightning_rod = {
+		id = "lightning_rod", name = "피뢰침 신호", phase = "ranged", cooldown = 5, steamOnly = false,
+		grantedBy = "c_franklin", summary = "번개 같은 신호로 적을 혼란에 빠뜨려 컨디션을 떨어뜨린다 (동료 프랭클린)",
+	},
+	telescope_range = {
+		id = "telescope_range", name = "망원경 관측", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "c_galileo", summary = "멀리서 약점을 보고 쏴 큰 피해와 속도 저하 (동료 갈릴레오)",
+	},
 }
 
 local Order = {
 	"broadside", "chain_shot", "grapeshot", "ram", "repair",
 	"rally", "cutlass_flurry", "pistol_volley", "surgeon", "steam_burst", "steam_hook",
 	"herbal_remedy", "predator_decoy", "relic_ward", "chart_course", "bribe_gunners", "star_fix", "pressure_valve",
+	"gravity_calc", "chrono_fix", "buttress", "lightning_rod", "telescope_range",
 }
 
 local DefaultLoadout = { "broadside", "grapeshot", "cutlass_flurry", "pistol_volley" }

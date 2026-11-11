@@ -282,10 +282,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		portrait.Parent = parent
 		return portrait
 	end
-	-- [원본 재사용] 작은 목록은 승인 Image 2.5D 카드, 상품 상세는 기존 Cargo 3D 메시.
-	if kind == "Cargo" and px <= 60 and smallArt and AssetIds[smallArt] then
-		kind, asset = string.match(smallArt, "^(%w+)/(.+)$")
-	end
+	-- [3D 통일] 3D 모델이 있는 상품은 작은 목록과 상세 모두 같은 3D 모델로 보여 준다 (그림과 모델이 섞여 보이지 않게).
 	if kind == "Goods" or kind == "Menu" then
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
@@ -4269,6 +4266,11 @@ function RENDERERS.quest()
 		end)
 	end
 	add(function() return mkHeader(content, "받을 수 있는 퀘스트") end)
+	if (view.quests.otherPortDeliver or 0) > 0 then
+		add(function()
+			return mkLabel(content, string.format("납품 의뢰는 지금 항구(%s)의 주점 게시판 것만 보여요. 다른 항구에도 %d개가 더 있어요.", view.player.portName, view.quests.otherPortDeliver), 12, COLORS.muted, true)
+		end)
+	end
 	for _, q in view.quests.available do
 		add(function()
 			if q.auto then
