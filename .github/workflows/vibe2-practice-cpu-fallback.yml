@@ -35,6 +35,8 @@ env:
 
 jobs:
   prepare-practice:
+    # Roblox 자동 학습에 로컬 실행 자원을 우선 배정한다. Unity 연습은 수동 실행으로 보존한다.
+    if: github.event_name == 'workflow_dispatch'
     # Sample preparation is control-plane work; keep game-primary ubuntu-latest capacity for heavy workers.
     runs-on: ubuntu-slim
     timeout-minutes: 10
@@ -133,8 +135,8 @@ jobs:
           if-no-files-found: error
 
   cpu-practice-train:
-    # 정기 학습은 Roblox를 우선한다. Unity는 수동/소스 변경 시 기존 학습 경로 유지.
-    if: github.event_name != 'schedule'
+    # Roblox 자동 학습 우선. Unity CPU 훈련은 사용자가 수동 요청할 때만 수행한다.
+    if: github.event_name == 'workflow_dispatch'
     needs: prepare-practice
     concurrency:
       group: vibe2-unity-practice-local-training
@@ -300,11 +302,13 @@ jobs:
           $manifestPath = Join-Path $datasetDir 'manifest.json'
           $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset safety gate failed' }
-          if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 20) { throw 'licensed Unity reference samples missing from dataset' }
+          if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 20) { throw 'licensed Roblox reference samples missing from dataset' }
           "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
           Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"
           Write-Host "PRACTICE_LICENSED_REFERENCE_TOTAL=$($manifest.stats.licensedReferenceTotal)"
+          Write-Host "PRACTICE_ROBLOX_CODE_TRAIN=$($manifest.stats.codeImplementationTrain)"
+          Write-Host "PRACTICE_ROBLOX_CODE_EVAL=$($manifest.stats.codeImplementationEval)"
           Write-Host "PRACTICE_SOURCE_KINDS=$($manifest.sourceKinds -join ',')"
       - name: Train Roblox CPU LoRA adapter
         run: |

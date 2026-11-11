@@ -191,6 +191,10 @@ test('24시간 기존 로컬 CPU 학습기가 로블록스 공개 코드 연습�
   assert.match(wf,/ROBLOX_MODEL_AUTO_PROMOTION=NO/);
   assert.match(wf,/PRACTICE_PROMOTION_STATE=UNVERIFIED/);
   assert.match(wf,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
-  assert.match(wf,/if: github\.event_name != 'schedule'/);
+  assert.equal((wf.match(/if: github\.event_name == 'workflow_dispatch'/g)||[]).length,2,
+    'Unity preparation and training must be opt-in while scheduled and push compute stays Roblox-first');
+  assert.match(wf,/PRACTICE_ROBLOX_CODE_TRAIN=/);
+  assert.match(wf,/PRACTICE_ROBLOX_CODE_EVAL=/);
+  assert.match(wf,/licensed Roblox reference samples missing from dataset/);
   assert.match(wf,/cpu-practice-train:/);
 });
