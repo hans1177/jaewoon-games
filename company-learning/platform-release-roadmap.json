@@ -9622,6 +9622,17 @@
       "qaAndTrainingThresholdsUnchanged": true,
       "gameRuntimeOrDeploymentChanged": false,
       "summaryKo": "외부 무료 AI 다중 교사→검증·증류→기존 학습 샘플·로컬 LoRA/QLoRA→홀드아웃·카나리→승인 승격/롤백→바이브 신규 과제 재순환 설계 추가"
+    },
+    "vibeSelfHostedDistillationImplementation20261111": {
+      "authority": "OWNER_DIRECTIVE_2026-11-11",
+      "scope": "EXISTING_SYSTEM_AI_TEACHER_PROVENANCE",
+      "source": "externalAiLearningPipeline.selfStrengthening",
+      "status": "CODE_APPLIED_QA_PENDING",
+      "noNewPipeline": true,
+      "trainingThresholdsUnchanged": true,
+      "noAutomaticPromotion": true,
+      "noPaidApi": true,
+      "summaryKo": "외부 무료 AI의 실제 공급자·모델을 독립검증 증류 후보까지 전달하고 잘못되거나 누락된 공급자 증거를 차단"
     }
   },
   "vibeExecutionLaneContract": {
@@ -25301,7 +25312,7 @@
     "selfStrengthening": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-11-11",
-      "status": "DESIGN_ONLY_IMPLEMENTATION_UNVERIFIED",
+      "status": "PARTIAL_CODE_IMPLEMENTED_QA_UNVERIFIED",
       "missionKo": "외부 AI의 검증된 능력을 무료·허가된 범위에서 증류하고 바이브 자체 모델의 가중치를 로컬 미세조정으로 강화해, 재현 가능한 성능 향상이 확인될 때만 반복 진화한다.",
       "target": "VIBE_LOCAL_SELF_HOSTED_VERIFIED_RECURSIVE_IMPROVEMENT",
       "architecture": {
@@ -25456,11 +25467,18 @@
         "noActualTrainingOrModelPromotionAttested": true
       },
       "releaseAndImplementation": {
-        "scope": "DOCUMENTATION_AND_ARCHITECTURE_ONLY",
-        "existingRuntimeFlowUnchanged": true,
+        "scope": "EXISTING_FREE_TEACHER_PROVENANCE_AND_VERIFIED_ADVISORY_DISTILLATION",
+        "existingRuntimeFlowUnchanged": false,
         "newSchedulerWorkflowOrTrainerCreated": false,
         "trainingNotExecutedByThisChange": true,
-        "codeAndDeploymentVerificationNotImplied": true
+        "codeAndDeploymentVerificationNotImplied": true,
+        "changedResponsibilities": [
+          "tools/vibe2-gemini-free-rotation.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/company-system-ai-external-learning-feed.mjs",
+          "qa/company-system-ai-external-learning-feed.test.mjs",
+          ".github/workflows/company-system-ai-workers.yml"
+        ]
       }
     }
   },

@@ -6,11 +6,18 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import {validateExternalAiCandidate} from './vibe2-external-ai-distillation.mjs';
+import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS} from './vibe2-gemini-free-rotation.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const SHA256=/^[a-f0-9]{64}$/i;
+// 메인: 실제 무료 API에서 선택된 공급자·모델 조합만 확인된 교사로 분류한다.
+const VERIFIED_TEACHERS=Object.freeze({
+  GEMINI:new Set(GEMINI_FREE_MODELS),
+  GROQ:new Set([VERIFIED_FREE_FALLBACK_MODELS.GROQ]),
+  OPENROUTER:new Set([VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER])
+});
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function args(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const at=raw.indexOf('=');if(at<0)out[raw.slice(2)]=true;else out[raw.slice(2,at)]=raw.slice(at+1);}return out;}
@@ -69,7 +76,8 @@ function eligible(task={}){
   if(!ev.some(x=>x.startsWith('changed-file:')))return false;
   const sha=marker(ev,'external-ai-raw-output-sha256:');
   const model=marker(ev,'external-ai-model:');
-  return SHA256.test(sha)&&Boolean(model);
+  const provider=marker(ev,'external-ai-provider:');
+  return SHA256.test(sha)&&Boolean(VERIFIED_TEACHERS[provider]?.has(model));
 }
 export function buildAssistantTraceLearningFeed(traceInput={}){
   const records=[],actions=[],seen=new Set();
@@ -107,14 +115,15 @@ export function buildExternalAiLearningFeed(queueInput={},assistantTraceInput={}
     const ev=uniq(task.evidence);
     const rawOutputSha256=marker(ev,'external-ai-raw-output-sha256:').toLowerCase();
     const model=marker(ev,'external-ai-model:');
+    const provider=marker(ev,'external-ai-provider:');
     const changed=ev.filter(x=>x.startsWith('changed-file:')).map(x=>x.slice('changed-file:'.length));
     const run=ev.find(x=>x.startsWith('actions-run:'))||'actions-run:unknown';
     const patterns=generalizedPatterns(task);
     if(!patterns.length)continue;
     records.push({
-      id:'system-ai-'+clean(task.id)+'-'+crypto.createHash('sha256').update(rawOutputSha256).digest('hex').slice(0,12),
+      id:'system-ai-'+clean(task.id)+'-'+crypto.createHash('sha256').update(provider+'|'+model+'|'+rawOutputSha256).digest('hex').slice(0,12),
       sourceKind:'external-ai',
-      provider:'LOCAL_OLLAMA_SUPERVISED_SYSTEM_AI',
+      provider,
       model,
       rawOutputSha256,
       engine:engineFor(task),

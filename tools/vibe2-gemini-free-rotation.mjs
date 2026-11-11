@@ -95,7 +95,7 @@ export async function requestGeminiFreePair({
         continue;
       }
       console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+model);
-      return{text,model};
+      return{text,model,provider:'GEMINI'};
     }catch(error){
       // A cancelled/failed transport may rotate once; an authorization or content failure may not.
       if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
@@ -190,7 +190,7 @@ export async function requestGeminiFreePair({
         continue;
       }
       console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+slot);
-      return{text,model:route.model};
+      return{text,model:route.model,provider:route.provider};
     }catch(error){
       if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
         cooldownUntil.set(slot,Date.now()+15000);
