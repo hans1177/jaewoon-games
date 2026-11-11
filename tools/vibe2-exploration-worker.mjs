@@ -133,7 +133,7 @@ function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,respon
   // [오픈소스 방식 응용] 현 작업 파일로부터 실제 참조가 증명된 코드에 우선권을 준다.
   // 이름이 비슷해도 연결 증거가 없다면 점수를 추가하지 않는다.
   if(graphRank>0){
-    score+=Math.min(720,Math.round(graphRank*2600));
+    score+=Math.min(720,Math.round(graphRank*11000));
     connections.push({path:row.relative,symbol:'observed-import-graph',direction:'REPO_CONTEXT_RANK'});
   }
   if(target==='roblox'){
