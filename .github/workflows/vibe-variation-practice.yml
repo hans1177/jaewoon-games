@@ -18,6 +18,7 @@ on:
       - 'qa/vibe-variation-gym.test.mjs'
       - 'qa/vibe-practice-session.test.mjs'
       - 'qa/vibe-light-bake.test.mjs'
+      - 'qa/vibe-cc0-library.test.mjs'
       - '.github/workflows/vibe-variation-practice.yml'
   schedule:
     # 5분마다(GitHub cron 최소 단위). 진짜 매분은 로컬 PC에서 tools/vibe-practice-loop.mjs 가 한다(60초 루프).
@@ -57,7 +58,7 @@ jobs:
           node --check tools/vibe-practice-session.mjs
           node --check assets/vibe-presentation-director.js
           python3 -m py_compile tools/vibe_object_score.py
-          node --test qa/vibe-variation-gym.test.mjs qa/vibe-practice-session.test.mjs qa/vibe-crossplatform-visual-components.test.mjs qa/vibe-light-bake.test.mjs
+          node --test qa/vibe-variation-gym.test.mjs qa/vibe-practice-session.test.mjs qa/vibe-crossplatform-visual-components.test.mjs qa/vibe-light-bake.test.mjs qa/vibe-cc0-library.test.mjs
       - name: Install Blender and imaging libs
         run: |
           # Ubuntu hosted runner의 불안정한 Azure HTTP 미러를 공식 HTTPS 미러로 통일한다.
