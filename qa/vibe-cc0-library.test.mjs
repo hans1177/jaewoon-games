@@ -155,6 +155,38 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.deepEqual(files.sort(),['ledger-summary.jsonl','op-stats.json']);          // GLB·미리보기는 올리지 않는다
   assert.equal(JSON.parse(summarize([{id:'a',gain:1}]).trim()).registered,false);
   assert.equal(publish({stats:'stats.json',ledger:'ledger.json',cwd:work}).published,true); // 장부는 계속 누적
+  // 같은 출판기가 실제 연습 세션을 받으면 분야별 숫자만 데이터 브랜치에 보관한다.
+  const practice=path.join(work,'build','practice'),gym=path.join(practice,'gym');
+  fs.mkdirSync(gym,{recursive:true});
+  fs.copyFileSync(path.join(work,'ledger.json'),path.join(gym,'ledger.json'));
+  fs.writeFileSync(path.join(practice,'session.json'),JSON.stringify({
+    at:'2026-11-11T00:00:00Z',
+    assetCoverage:{registryAssets:160,cataloguedAssets:180,eligible3dAssets:70},
+    practiceDomains:{
+      RIG:{catalogued:22,eligible3d:10,trials:3,staticMeasured:1,
+        unverifiedOrFailed:2,state:'STATIC_PRACTICE_MEASURED'},
+      ICON:{catalogued:8,eligible3d:0,trials:0,staticMeasured:0,
+        unverifiedOrFailed:0,state:'NOT_PRACTICED'}
+    },
+    bake:{pass:false,reason:'SOURCE_DETAIL_NOT_TRANSFERRED_TO_NORMAL_MAP'}
+  }));
+  assert.equal(publish({stats:'stats.json',ledger:'build/practice/gym/ledger.json',cwd:work}).published,true);
+  const payload=g('show','origin/vibe-gym-data:practice-domains.json');
+  // 원격 갱신 확인은 git worktree가 아닌 bare의 새 브랜치를 직접 검사한다.
+  const proof=spawnSync('git',['--git-dir',bare,'show','vibe-gym-data:practice-domains.json'],{encoding:'utf8'});
+  assert.equal(proof.status,0,proof.stderr);
+  const record=JSON.parse(proof.stdout);
+  assert.equal(record.domains.RIG.trials,3);
+  assert.equal(record.domains.ICON.state,'NOT_PRACTICED');
+  assert.equal(record.bake.pass,false);
+  assert.equal(record.nativeRuntimeVerified,false);
+  assert.equal(record.productionPromotionAllowed,false);
+  assert.equal(JSON.stringify(record).includes('big/file.glb'),false);
+  assert.equal(record.sessions,1);
+  assert.equal(publish({stats:'stats.json',ledger:'build/practice/gym/ledger.json',cwd:work}).published,true);
+  const next=JSON.parse(spawnSync('git',['--git-dir',bare,'show','vibe-gym-data:practice-domains.json'],{encoding:'utf8'}).stdout);
+  assert.equal(next.sessions,2);
+  assert.equal(next.cumulative.RIG.trials,6);
 });
 
 test('파이썬·Blender 찾기: 실행 가능한 파이썬을 찾고, 잘못된 Blender 경로는 없는 것으로 본다', () => {
