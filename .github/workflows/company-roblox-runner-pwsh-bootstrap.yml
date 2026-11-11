@@ -15,7 +15,8 @@ permissions:
 
 jobs:
   recover-via-unity:
-    if: github.event_name != 'schedule'
+    # [로그인 자동복구] 예약 실행에서도 등록된 Roblox 러너를 기존 Unity 호스트에서 복구한다.
+    # Windows 로그인 세션·사용자 동일성 검사는 유지하며 새 등록은 수행하지 않는다.
     name: recover Roblox runner from colocated Unity runner
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 3
