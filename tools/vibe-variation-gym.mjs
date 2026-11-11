@@ -10,7 +10,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 import {runPython,findBlender} from './vibe-python.mjs';
-import {measure as measureRig,evaluateAudit} from './vibe-mesh-audit.mjs';
+import {measure as measureRig,evaluateAudit,evaluateMotionCurves} from './vibe-mesh-audit.mjs';
 import {inspectBakeSource} from './vibe-normal-bake.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -235,7 +235,11 @@ export function chooseArms(stats,family,count,rng,epsilon=0.3){
   const everyArm=Object.keys(OPERATORS).flatMap(op=>STRENGTHS.map(strength=>({op,strength})));
   const failing=a=>{const f=fam[armKey(a.op,a.strength)];return !!f&&f.n>=5&&f.keep/f.n<0.2};
   const all=everyArm.filter(a=>!failing(a)).length?everyArm.filter(a=>!failing(a)):everyArm;
-  const mean=a=>{const f=fam[armKey(a.op,a.strength)];return f&&f.n>=2?f.gainSum/f.n:null};
+  const mean=a=>{
+    const f=fam[armKey(a.op,a.strength)];
+    if(f?.qualityTrials>=2)return f.qualityGainSum/f.qualityTrials;
+    return f?.n>=2?(f.gainSum/f.n)*(f.keep/f.n):null;
+  };
   // 이득이 플러스인 팔만 활용 대상. 이득에 비례한 가중으로 뽑아서, 나쁜 팔(마이너스)은 탐험 때만 나온다.
   const good=all.map(a=>({a,m:mean(a)})).filter(x=>x.m!==null&&x.m>0).sort((x,y)=>y.m-x.m).slice(0,4);
   const total=good.reduce((t,x)=>t+x.m,0);
@@ -284,7 +288,7 @@ export function motionCoverage(actionNames=[]){
   return {present,missing,coverage:+(present.length/REQUIRED_MOTION_STATES.length).toFixed(2),
     clipNames:names.slice(0,16),nativeRuntimeVerified:false,gameApplied:false};
 }
-export function rigGate(row,audit){
+export function rigGate(row,audit,sourceMotion=null){
   if(!RIGGED_FAMILY.test(row.family||'')||!row.keep||!row.glb)return row;
   try{
     const ev=audit(row.glb);
@@ -293,6 +297,9 @@ export function rigGate(row,audit){
       blockers:(ev.productionBlockers||[]).slice(0,3)};
     row.motion=motionCoverage(ev.actionNames||[]);
     if(!ev.pass){row.keep=false;row.verdict='REGRESSED';row.reason='RIG:'+ev.failures[0]}
+    else if(sourceMotion?.present.some(state=>!row.motion.present.includes(state))){
+      row.keep=false;row.verdict='REGRESSED';row.reason='MOTION_STATE_LOST';
+    }
   }catch(e){row.audit={pass:false,failures:['AUDIT_ERROR']};row.keep=false;row.verdict='BROKEN';row.reason='RIG_AUDIT_ERROR'}
   return row;
 }
@@ -302,7 +309,12 @@ export function updateStats(stats,family,rows){
   for(const r of rows){
     const s=stats[family][r.arm||r.op]??={n:0,gainSum:0,keep:0,improved:0,broken:0};
     if(r.keep===false){const why=r.reason||r.verdict;s.fail??={};s.fail[why]=(s.fail[why]||0)+1} // 실패 도감: 왜 실패했는지 쌓는다
-    s.n++;s.gainSum=+(s.gainSum+(r.gain||0)).toFixed(3);
+    const gain=Number.isFinite(r.gain)?r.gain:0;
+    s.n++;s.gainSum=+(s.gainSum+gain).toFixed(3);
+    // 작은 아이콘이 읽히고 모델·리그 판정을 통과한 변형에만 양의 학습 보상을 준다.
+    const qualityGain=r.keep===true&&r.icon?.legible!==false?gain:Math.min(gain,0);
+    s.qualityTrials=(s.qualityTrials||0)+1;
+    s.qualityGainSum=+((s.qualityGainSum||0)+qualityGain).toFixed(3);
     if(r.keep)s.keep++;
     if(r.verdict==='IMPROVED')s.improved++;
     if(r.verdict==='BROKEN')s.broken++;
@@ -353,7 +365,7 @@ export function chooseDiverseParents(pool,count){
 
 export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,rigAudit=f=>{
     const measured=measureRig(f),verdict=evaluateAudit(measured);
-    return {...verdict,actionNames:(measured.actions||[]).map(a=>a.name)};
+    return {...verdict,actionNames:evaluateMotionCurves(measured.actions||[]).validClipNames};
   }}={}){
   const rng=mulberry32(seed);
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
@@ -394,6 +406,11 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
     const slug=slugOf(p.id),parentRes=byId[`${slug}__parent`],parentSha=sha256(absOf(repoRoot,p));
     if(!parentRes?.ok)continue;
     const parentScore=scoreChild(parentRes.png,parentRes.png);
+    let sourceMotion=null;
+    if(RIGGED_FAMILY.test(p.family)){
+      try{sourceMotion=motionCoverage(rigAudit(absOf(repoRoot,p)).actionNames||[]);}
+      catch{sourceMotion=null;}
+    }
     const rows=[];
     for(const j of jobs.filter(j=>j.id.startsWith(slug+'__')&&j.op!=='identity')){
       const res=byId[j.id],m=meta[j.id];
@@ -410,7 +427,10 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
         Object.assign(row,{attach:res.attach||null,score:sc.score,parentScore:parentScore.score,gain:sc.gain,novelty:sc.novelty,darkening:sc.darkening,detailDrop:sc.detailDrop,sub:sc.sub,empty:!!sc.empty,triangles:res.triangles,glb:path.relative(repoRoot,res.glb),glbSha256:sha256(res.glb)});
       }else row.error=res?.error||'NO_RESULT';
       Object.assign(row,judge(row));
-      if(row.glb){const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit);if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit,motion:g.motion})}
+      if(row.glb){
+        const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit,sourceMotion);
+        if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit,motion:g.motion});
+      }
       // [아이콘] 통과한 실제 CC0 소품/아이템의 3/4 시점 PNG를 2.5D 아이콘 후보로 만든다.
       // 64px 가독성은 별도 판정하며, 실제 게임 등록·교체는 기존 품질/런타임 관문 이후에만 한다.
       if(row.keep&&/PROP|ITEM|WEAPON|TOOL|UI/i.test(row.family)){
