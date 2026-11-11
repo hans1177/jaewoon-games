@@ -111,6 +111,9 @@ return function(D, S)
 
 	-- 동료 전용 퀘스트는 호감도가 모자라면 아직 보이지 않는다
 	local function visible(state, quest)
+		if quest.after and not state.quests.done[quest.after] then
+			return false
+		end
 		if quest.companionId then
 			return (state.affinity[quest.companionId] or 0) >= (quest.minAffinity or 0)
 		end
@@ -124,6 +127,9 @@ return function(D, S)
 		end
 		if state.quests.done[quest.id] then
 			return false, "이미 완료한 퀘스트예요"
+		end
+		if quest.after and not state.quests.done[quest.after] then
+			return false, "앞 단계 퀘스트를 먼저 끝내야 해요"
 		end
 		if not visible(state, quest) then
 			return false, "동료와 더 가까워져야 해요"

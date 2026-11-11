@@ -3859,6 +3859,16 @@ local function renderCodexOverview()
 	add(function()
 		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
 	end)
+	add(function() return mkHeader(content, "먼 바다로 가는 길 (항해 지식을 이해해야 열려요)") end)
+	for _, g in (view.knowledge and view.knowledge.gates or {}) do
+		add(function()
+			local parts = {}
+			for _, nd in g.need do
+				table.insert(parts, (if nd.done then "✔ " else "✖ ") .. nd.name)
+			end
+			return mkLabel(content, g.region .. (if g.open then " (열림)" else "") .. " — " .. table.concat(parts, "  "), 13, if g.open then COLORS.green else COLORS.text, false)
+		end)
+	end
 	add(function() return mkHeader(content, "학문 계통도 (뿌리에서 갈라져 나온 순서)") end)
 	for _, t in (view.knowledge and view.knowledge.tree or {}) do
 		add(function()
@@ -3904,6 +3914,9 @@ if string.sub(codexField, 1, 2) == "k:" then
 	add(function()
 		return mkLabel(content, string.format("지금 효과: 항해 속도 +%d%% · 포격 +%d%%", math.floor(kv.speedBonus * 100 + 0.5), math.floor(kv.cannonBonus * 100 + 0.5)), 12, COLORS.green, false)
 	end)
+	if (disc.hidden or 0) > 0 then
+		add(function() return mkLabel(content, string.format("아직 발견하지 못한 지식 %d개는 발견하면 이곳에 나타나요.", disc.hidden), 12, COLORS.muted, false) end)
+	end
 	for _, nd in disc.nodes do
 		add(function()
 			local mark, col

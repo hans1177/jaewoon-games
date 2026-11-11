@@ -53,6 +53,8 @@ local Scholars: { Scholar } = {
 		cardId = "bot_plant_anatomy", line = "현미경 아래에서 나무의 속은 작은 관들로 가득하다오." },
 	{ id = "linnaeus", name = "카를 린네", portId = "gothenburg", fromYear = 1735, toYear = 1778, minFame = 80,
 		cardId = "bot_binomial", line = "이름을 두 단어로 줄이면 모든 식물을 정리할 수 있다네." },
+	{ id = "blaeu", name = "요안 블라외", portId = "amsterdam", fromYear = 1638, toYear = 1673, minFame = 40,
+		cardId = "nav_portolan", line = "바다와 땅을 한 장에 그려 두면 선장이 길을 잃지 않지요." },
 	{ id = "lind", name = "제임스 린드", portId = "plymouth", fromYear = 1747, toYear = 1794, minFame = 40,
 		cardId = "med_lime_scurvy", line = "선원에게 귤과 라임을 먹이면 이가 흔들리는 병이 사라진다오." },
 	{ id = "harrison", name = "존 해리슨", portId = "london", fromYear = 1730, toYear = 1776, minFame = 100,

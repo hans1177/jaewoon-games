@@ -8,6 +8,7 @@ return function(D, S)
 
 	local FAME = { Common = 3, Uncommon = 6, Rare = 12, Epic = 25, Legendary = 50 }
 
+	K.autofill(D.Cards.Cards)
 	local techLevelOf -- 아래에서 정의 (연구 성과 계산이 쓴다)
 
 	local function cardName(id)
@@ -551,13 +552,17 @@ return function(D, S)
 	local function viewOf(state)
 		local out = { disciplines = {}, speedBonus = K.speedBonus(state), cannonBonus = K.cannonBonus(state), upgrades = {} }
 		for _, d in K.Disciplines do
-			local nodes, done, total = {}, 0, 0
+			local nodes, done, total, hidden = {}, 0, 0, 0
 			for _, node in K.Nodes do
 				if node.disc == d.id then
 					total += 1
 					local st, missing = K.status(state, node)
 					if st == "done" then
 						done += 1
+					end
+					if node.auto and st == "locked" then
+						hidden += 1
+						continue
 					end
 					local needNames = {}
 					for _, need in node.needs do
@@ -576,9 +581,23 @@ return function(D, S)
 			local isOpen, parentDone = K.disciplineOpen(state, d.id)
 			local parent = d.parent and K.DisciplineById[d.parent]
 			table.insert(out.disciplines, {
-				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes,
+				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes, hidden = hidden,
 				era = d.era, parentName = parent and parent.name or nil, open = isOpen, openAt = d.openAt, parentDone = parentDone or 0,
 			})
+		end
+		-- 먼 바다 해금 조건 (문명식)
+		out.gates = {}
+		for _, reg in D.Regions.List do
+			local need = K.RegionGates[reg.id]
+			if need then
+				local rows, all = {}, true
+				for _, id in need do
+					local ok = K.understood(state, id)
+					all = all and ok
+					table.insert(rows, { name = cardName(id), done = ok })
+				end
+				table.insert(out.gates, { region = reg.name, need = rows, open = all })
+			end
 		end
 		-- 계통도: 뿌리에서 갈라져 나온 순서대로 (깊이 표시)
 		out.tree = {}

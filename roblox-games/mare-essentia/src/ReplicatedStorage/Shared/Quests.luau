@@ -21,6 +21,7 @@ export type Quest = {
 	biome: string?, -- kind "tactics_biome": 이 장소 종류(TacticsMaps 의 biome)의 지상 전술 탐험을 깬 지점 수
 	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
 	minAffinity: number?,
+	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
 }
 
@@ -235,6 +236,102 @@ local Quests: { Quest } = {
 	{ id = "q_kn_launch", name = "신제품 출시", summary = "개량된 교역품으로 신제품 출시 행사 2번 열기", kind = "launch", amount = 2, rewardCoins = 2200, rewardFame = 70, rewardCareer = "trade", rewardXp = 170 },
 	{ id = "q_kn_all", name = "계몽의 시대", summary = "지식 트리에서 지식 20개 이해하기", kind = "understand", amount = 20, rewardCoins = 6000, rewardFame = 150, rewardCareer = "adventure", rewardXp = 400 },
 }
+
+-- 연속 퀘스트(문명식 기술 계통): 앞 단계를 끝내야 다음 단계가 열린다. 쉬운 지식에서 어려운 지식으로, 사이사이 해전·교역·탐험 과제가 끼어든다.
+-- 단계: { id, 이름, 설명, 종류, ...옵션 }  (kind "card": 그 지식 이해, "win": 해전 승리, "deliver": 납품, "discover": 도감 카드 발견)
+local Chains: { { any } } = {
+	{ "nav", "대양의 길잡이", {
+		{ "compass", "나침반의 방향", "나침반 장미를 이해하기", "card", "nav_compass_rose" },
+		{ "cross", "별의 높이를 재다", "십자 관측기를 이해하기 (대서양 횡단의 첫걸음)", "card", "nav_cross_staff" },
+		{ "pirates", "길목을 지켜라", "해전에서 5번 승리", "win", 5 },
+		{ "staff", "해를 등지고", "백스태프를 이해하기", "card", "nav_backstaff" },
+		{ "mercator", "굽은 땅을 평평하게", "메르카토르 도법을 이해하기", "card", "nav_mercator" },
+		{ "longitude", "경도를 풀어라", "경도 문제를 이해하기 (태평양 항해의 열쇠)", "card", "nav_longitude_problem" },
+		{ "chrono", "흔들리지 않는 시계", "해상 시계를 이해하기", "card", "nav_chronometer" },
+	} },
+	{ "geo", "바람과 해류를 따라", {
+		{ "trade", "무역풍을 타다", "무역풍을 이해하기", "card", "geo_trade_winds" },
+		{ "cape", "희망의 곶", "희망봉을 이해하기 (인도양 항해의 열쇠)", "card", "geo_cape_good_hope" },
+		{ "monsoon", "계절풍의 달력", "계절풍을 이해하기 (동남아 항해의 열쇠)", "card", "geo_monsoon" },
+		{ "spice", "향신료를 싣고", "후추 20개를 암스테르담에 납품", "deliver", "pepper", "amsterdam", 20 },
+		{ "magellan", "마젤란의 물길", "마젤란 해협을 이해하기", "card", "geo_straits_magellan" },
+		{ "horn", "세상의 끝", "케이프혼을 이해하기", "card", "geo_cape_horn" },
+	} },
+	{ "steam", "증기의 시대", {
+		{ "pendulum", "흔들리는 추", "진자를 이해하기", "card", "phy_pendulum" },
+		{ "gravity", "떨어지는 사과", "중력을 이해하기", "card", "phy_gravity" },
+		{ "boyle", "공기의 탄성", "보일의 법칙을 이해하기", "card", "phy_boyle_law" },
+		{ "papin", "솥 안의 증기", "파팽의 증기 솥을 이해하기", "card", "phy_papin_digester" },
+		{ "coal", "화력의 연료", "석탄 15개를 루앙에 납품", "deliver", "coal", "rouen", 15 },
+		{ "engine", "증기가 바다로", "뉴커먼 기관을 이해하기", "card", "phy_newcomen_engine" },
+		{ "engine_ship", "스스로 가는 배", "선박용 증기기관을 이해하기", "card", "ship_steam_engine" },
+	} },
+	{ "sky", "하늘의 법칙", {
+		{ "polaris", "북극성", "북극성을 이해하기", "card", "ast_polaris" },
+		{ "observer", "옛 관측자의 기록", "옛 관측자의 기록을 이해하기", "card", "ast_old_observer" },
+		{ "jupiter", "목성의 달", "목성의 달을 이해하기", "card", "ast_jupiter_moons" },
+		{ "comet", "혜성의 정체", "혜성을 이해하기", "card", "ast_comet" },
+		{ "halley", "76년의 약속", "핼리의 혜성 예측을 이해하기", "card", "ast_halley_prediction" },
+	} },
+	{ "alchemy", "연금술에서 화학으로", {
+		{ "distill", "증류의 불", "증류를 이해하기", "card", "chem_distillation" },
+		{ "acid", "산과 염기", "산과 염기를 이해하기", "card", "chem_acid_base" },
+		{ "powder", "화약을 다듬다", "정제 화약을 이해하기", "card", "chem_gunpowder_refine" },
+		{ "battle", "새 화약의 시험", "해전에서 8번 승리", "win", 8 },
+		{ "glass", "투명한 유리", "유리 제조를 이해하기", "card", "chem_glass" },
+		{ "oxygen", "숨의 공기", "산소를 이해하기", "card", "chem_oxygen" },
+	} },
+	{ "med", "선원을 살리는 학문", {
+		{ "anatomy", "몸속의 지도", "해부학을 이해하기", "card", "med_anatomy" },
+		{ "surgeon", "배 위의 의사", "선상 의사를 이해하기", "card", "med_ship_surgeon" },
+		{ "scurvy", "괴혈병과 라임", "괴혈병과 라임을 이해하기", "card", "med_lime_scurvy" },
+		{ "quarantine", "항구의 방역", "검역을 이해하기", "card", "med_plague_quarantine" },
+		{ "inoculation", "천연두를 이기다", "천연두 접종을 이해하기", "card", "med_inoculation" },
+	} },
+	{ "phi", "이성의 계단", {
+		{ "skeptic", "의심하는 법", "회의주의를 이해하기", "card", "phi_skepticism" },
+		{ "reason", "생각하는 이성", "합리주의를 이해하기", "card", "phi_rationalism" },
+		{ "method", "실험하는 이성", "과학적 방법을 이해하기", "card", "phi_scientific_method" },
+		{ "contract", "사회 계약", "사회 계약을 이해하기", "card", "phi_social_contract" },
+		{ "light", "계몽의 빛", "계몽을 이해하기", "card", "phi_enlightenment" },
+	} },
+	{ "ship", "바다를 가르는 설계", {
+		{ "lateen", "삼각돛", "삼각돛을 이해하기", "card", "ship_lateen" },
+		{ "fluyt", "플루트선", "플루트선의 설계를 이해하기", "card", "ship_fluyt_design" },
+		{ "crane", "항만 크레인", "항만 크레인을 이해하기", "card", "arch_harbor_crane" },
+		{ "arsenal", "조선소 건물", "조선소 건물을 이해하기", "card", "arch_arsenal" },
+		{ "dock", "건선거", "건선거를 이해하기", "card", "ship_dry_dock" },
+		{ "copper", "구리를 입힌 배", "구리 피복을 이해하기", "card", "ship_copper_sheathing" },
+	} },
+	{ "nature", "자연의 체계", {
+		{ "herbarium", "식물 표본집", "식물 표본집을 이해하기", "card", "bot_herbarium" },
+		{ "binomial", "이름 붙이기", "이명법을 이해하기", "card", "bot_binomial" },
+		{ "explore", "먼 나라의 식물", "도감 카드 25장 발견", "discover", 25 },
+		{ "anatomy", "식물의 속", "식물 해부도를 이해하기", "card", "bot_plant_anatomy" },
+		{ "systema", "자연의 체계", "자연의 체계를 이해하기", "card", "bot_systema_naturae" },
+	} },
+}
+for _, ch in Chains do
+	local prev: string? = nil
+	for i, st in ch[3] do
+		local id = "q_ch_" .. ch[1] .. "_" .. st[1]
+		local q: any = {
+			id = id, name = st[2], summary = ch[2] .. " " .. i .. "/" .. #ch[3] .. " — " .. st[3], after = prev,
+			rewardCoins = 400 * i + 300, rewardFame = 15 * i + 10, rewardCareer = "adventure", rewardXp = 60 + 35 * i,
+		}
+		if st[4] == "card" then
+			q.kind, q.cardId, q.amount = "understand_card", st[5], 1
+		elseif st[4] == "win" then
+			q.kind, q.amount = "win", st[5]
+		elseif st[4] == "deliver" then
+			q.kind, q.goodId, q.portId, q.amount = "deliver", st[5], st[6], st[7]
+		else
+			q.kind, q.amount = "discover", st[5]
+		end
+		table.insert(Quests, q :: Quest)
+		prev = id
+	end
+end
 
 local ById: { [string]: Quest } = {}
 for _, q in Quests do

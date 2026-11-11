@@ -64,6 +64,22 @@ return function(D, S)
 		if not D.Regions.isOpen(lvAdv, homeTier, D.Regions.tierOf(to.id, to.lat, to.lon)) then
 			return false, string.format("%s 해역은 모험 Lv.%d부터 갈 수 있어요 (지금 Lv.%d)", region.name, region.minLevel, lvAdv)
 		end
+		do
+			local gate = D.KnowledgeTree.RegionGates[region.id]
+			local here = D.Regions.of(D.Ports.Ports[state.portId])
+			if gate and here.minLevel < region.minLevel then
+				local lacking = {}
+				for _, id in gate do
+					if not D.KnowledgeTree.understood(state, id) then
+						local c = D.Cards.ById[id]
+						table.insert(lacking, c and c.name or id)
+					end
+				end
+				if #lacking > 0 then
+					return false, string.format("%s 해역으로 가려면 항해 지식이 필요해요: %s (학자에게 보고해 이해하세요)", region.name, table.concat(lacking, ", "))
+				end
+			end
+		end
 		local def = S.State.shipDef(state)
 		if state.ship.hull < def.hull * 0.2 then
 			return false, "선체가 너무 손상됐어요. 수리가 필요해요"

@@ -11,7 +11,8 @@ local K = {}
 --                 ↘ 화학 → 의학, 광물학
 --                 ↘ 건축학 → 조선학
 --   철학 → 식물학 → 동물학
---   철학 → 언어학 → 고고학(유물) → 신화·민속학        예술(독립)
+--   철학 → 언어학 → 고고학(유물) → 신화·민속학, 역사·유적학
+--   철학 → 상업·경제학        천문학 → 항해술        예술(독립)
 K.Disciplines = {
 	{ id = "philosophy", name = "철학", field = "Philosophy", era = "고대~", summary = "세계를 이성과 경험으로 따져 묻는 일. 모든 학문의 뿌리라 새 학문(식물학)이 여기서 갈라져 나온다." },
 	{ id = "physics", name = "물리학", field = "Physics", era = "근세", parent = "philosophy", summary = "빛과 힘과 증기의 법칙. 광학·기계·증기 기관으로 이어져 광물·유리 교역품 값이 오른다." },
@@ -28,18 +29,21 @@ K.Disciplines = {
 	{ id = "linguistics", name = "언어학", field = "Language", era = "고대~", parent = "philosophy", openAt = 2, summary = "문자와 말, 인쇄. 공용어가 퍼지면 교역이 쉬워지고 먼 나라의 기록을 읽을 수 있다." },
 	{ id = "archaeology", name = "고고학", field = "Relic", era = "근세", parent = "linguistics", openAt = 2, summary = "옛 유물과 기록을 모아 읽는다. 오래된 해도와 관측기에서 항해 지식을 되살린다." },
 	{ id = "mythology", name = "신화·민속학", field = "Myth", era = "고대~", parent = "archaeology", openAt = 2, summary = "바다 괴물과 전설을 모으고 견주어 본다. 이야기가 보물 수요와 항해 용기가 된다." },
+	{ id = "navigation", name = "항해술", field = "Navigation", era = "대항해", parent = "astronomy", openAt = 3, summary = "나침반과 관측기, 해도와 시계. 위도·경도를 알면 먼 바다에서도 길을 잃지 않아 항해 속도가 오른다." },
+	{ id = "commerce", name = "상업·경제학", field = "Goods", era = "근세", parent = "philosophy", openAt = 3, summary = "교역품의 산지와 값을 따지고 거래를 체계화한다. 후추·설탕·비단 같은 교역품이 개량된다." },
+	{ id = "history", name = "역사·유적학", field = "Site", era = "고대~", parent = "archaeology", openAt = 2, summary = "성곽과 신전, 거석 유적을 답사하고 기록한다. 옛 도시의 역사에서 교훈을 얻는다." },
 	{ id = "art", name = "예술", field = "Art", era = "고대~", summary = "그림·음악·공예. 거장과 함께 발표하면 항구의 문화가 자라 사치 교역품(대리석·도자기·비단)이 풍부해진다." },
 }
 
 -- 이 학자는 어느 학문의 보고를 받는가
 K.ScholarDisciplines = {
-	huygens = { "astronomy", "physics" }, halley = { "astronomy", "geography" }, romer = { "astronomy", "physics" },
+	huygens = { "astronomy", "physics" }, halley = { "astronomy", "geography", "navigation" }, romer = { "astronomy", "physics" },
 	newton = { "philosophy", "physics", "astronomy" }, boyle = { "chemistry", "physics", "medicine" }, leeuwenhoek = { "physics" },
 	papin = { "physics" }, savery = { "physics" }, newcomen = { "physics" }, celsius = { "physics" },
 	leibniz = { "philosophy", "physics", "chemistry" }, descartes = { "philosophy", "physics", "astronomy" },
 	-- 예술가 (그림·음악·판화)
 	-- 철학·박물학·의학·지리
-	spinoza = { "philosophy" }, lind = { "medicine" }, harrison = { "geography" }, sloane = { "botany", "medicine" },
+	spinoza = { "philosophy" }, lind = { "medicine" }, harrison = { "geography", "navigation" }, blaeu = { "navigation", "geography" }, sloane = { "botany", "medicine" },
 	banks = { "botany", "geography" }, linnaeus = { "botany", "zoology" }, malpighi = { "botany", "medicine" }, redi = { "zoology" },
 	wren = { "architecture" }, vancampen = { "architecture" }, witsen = { "shipbuilding" }, chapman = { "shipbuilding" },
 	cronstedt = { "mineralogy" }, steno = { "mineralogy" }, franklin = { "meteorology", "physics" }, fahrenheit = { "meteorology" },
@@ -172,11 +176,31 @@ n("geo_monsoon", "geography", { "geo_trade_winds" }, { speed = 0.015, label = "�
 n("geo_cape_good_hope", "geography", { "geo_trade_winds" }, nil)
 n("geo_straits_magellan", "geography", { "geo_cape_good_hope" }, nil)
 n("geo_cape_horn", "geography", { "geo_straits_magellan" }, nil)
+n("nav_compass_rose", "navigation", {}, nil)
+n("nav_dead_reckoning", "navigation", {}, nil)
+n("nav_log_line", "navigation", { "nav_dead_reckoning" }, { speed = 0.01, label = "측정줄로 속도를 재어 추측 항법이 정확해진다" })
+n("nav_lead_line", "navigation", {}, nil)
+n("nav_cross_staff", "navigation", { "nav_compass_rose", "ast_polaris" }, { speed = 0.015, label = "십자 관측기로 별 높이를 잰다" })
+n("nav_backstaff", "navigation", { "nav_cross_staff" }, { speed = 0.01, label = "백스태프로 해를 등지고 정확히 잰다" })
+n("nav_octant", "navigation", { "nav_backstaff" }, { speed = 0.015, label = "팔분의로 흔들리는 배 위에서도 잰다" })
+n("nav_portolan", "navigation", { "nav_compass_rose" }, nil)
+n("nav_chronometer", "navigation", { "nav_longitude_problem", "phy_pendulum" }, { speed = 0.03, label = "해상 시계로 경도를 정확히 안다" })
+n("good_pepper", "commerce", {}, { goods = { "pepper" }, goodsMult = 0.04, label = "후추 거래가 체계화된다" })
+n("good_cinnamon", "commerce", {}, { goods = { "cinnamon" }, goodsMult = 0.04, label = "계피 거래가 체계화된다" })
+n("good_sugar", "commerce", {}, { goods = { "sugar" }, goodsMult = 0.05, label = "설탕 정제업이 자리 잡는다" })
+n("good_coffee", "commerce", {}, { goods = { "coffee" }, goodsMult = 0.04, label = "커피하우스가 늘어 커피값이 오른다" })
+n("good_silk", "commerce", {}, { goods = { "silk" }, goodsMult = 0.04, label = "비단길 거래가 체계화된다" })
+n("good_wine", "commerce", {}, nil)
+n("good_cheese", "commerce", {}, nil)
+n("good_herring", "commerce", {}, { goods = { "fish" }, goodsMult = 0.04, label = "청어 절임 유통이 늘어난다" })
+n("good_amber_trade", "commerce", { "good_herring" }, { goods = { "amber" }, goodsMult = 0.05, label = "호박 무역로가 정리된다" })
+n("good_cocoa", "commerce", { "good_sugar" }, { goods = { "cocoa" }, goodsMult = 0.05, label = "초콜릿 음료가 유행한다" })
+n("good_tea", "commerce", { "good_sugar", "good_coffee" }, { goods = { "tea" }, goodsMult = 0.05, label = "차 거래가 커피와 겨룬다" })
 n("geo_southern_cross", "geography", { "ast_polaris" }, { speed = 0.01, label = "남반구에서도 별로 위도를 잰다" })
 n("geo_malacca_strait", "geography", { "geo_monsoon" }, nil)
 n("geo_spice_islands", "geography", { "geo_monsoon" }, { goods = { "cloves", "nutmeg", "pepper" }, goodsMult = 0.03, label = "향신료 제도 항로가 정리된다" })
-n("nav_mercator", "geography", { "geo_trade_winds", "ast_polaris" }, { speed = 0.02, label = "메르카토르 도법 해도로 항로를 곧게 긋는다" })
-n("nav_longitude_problem", "geography", { "nav_mercator", "ast_jupiter_moons" }, { speed = 0.03, label = "경도를 알면 먼 바다에서도 길을 잃지 않는다" })
+n("nav_mercator", "navigation", { "geo_trade_winds", "ast_polaris" }, { speed = 0.02, label = "메르카토르 도법 해도로 항로를 곧게 긋는다" })
+n("nav_longitude_problem", "navigation", { "nav_mercator", "ast_jupiter_moons" }, { speed = 0.03, label = "경도를 알면 먼 바다에서도 길을 잃지 않는다" })
 	-- 건축학
 n("arch_town_hall", "architecture", {}, nil)
 n("arch_canal_house", "architecture", {}, nil)
@@ -290,6 +314,15 @@ K.DisciplineGoods = {
 
 K.SPEED_CAP = 0.15
 
+-- 문명식 해금: 먼 바다는 항해 기술을 이해해야 갈 수 있다 (모험 레벨과 함께 필요).
+-- 이미 그 해역 이상에 있는 항구에서는 그대로 오갈 수 있다.
+K.RegionGates = {
+	new_world = { "nav_cross_staff" },
+	indian = { "geo_cape_good_hope", "nav_backstaff" },
+	far_east = { "geo_monsoon", "nav_log_line" },
+	pacific = { "nav_longitude_problem" },
+}
+
 -- 특수 건축물: 항구가 발전하고 학문 기술이 오르면 그 항구에 지을 수 있다 (항구마다 따로).
 -- harbor: 필요한 교역소 단계, disc/level: 그 학문의 항구 기술 단계(disc 가 "any" 이면 어느 학문이든), research: 항구 연구 성과 가산
 -- expoSlots/expoMult: 박람회, speed: 항해 속도(지은 곳 수만큼), jointFast/jointMult: 공동 발표
@@ -318,6 +351,37 @@ end
 -- 이해한(보고한) 지식인가
 function K.understood(state, id)
 	return state.reported ~= nil and state.reported[id] == true
+end
+
+-- 지식 카드 중 트리에 아직 없는 것을 학문별로 채운다 (카드의 분야 → 학문). 쉬운 카드는 선행 없이, 희귀한 카드는 그 학문의 첫 지식을 이해해야 한다.
+-- Knowledge 서비스가 시작할 때 한 번 부른다.
+function K.autofill(cards: { any })
+	if K.filled then
+		return
+	end
+	K.filled = true
+	local byField = {}
+	for _, d in K.Disciplines do
+		byField[d.field] = d.id
+	end
+	local roots = {}
+	for _, node in K.Nodes do
+		if #node.needs == 0 and not roots[node.disc] then
+			roots[node.disc] = node.id
+		end
+	end
+	for _, c in cards do
+		local disc = byField[c.field]
+		if disc and not K.ById[c.id] then
+			local needs = {}
+			if (c.rarity == "Rare" or c.rarity == "Epic" or c.rarity == "Legendary") and roots[disc] then
+				needs = { roots[disc] }
+			end
+			local node = { id = c.id, disc = disc, needs = needs, fx = nil, auto = true }
+			table.insert(K.Nodes, node)
+			K.ById[c.id] = node
+		end
+	end
 end
 
 -- 학문이 열려 있는가: 뿌리 학문에서 지식을 openAt 개 이해했거나, 이미 이 학문의 지식을 이해했으면 열려 있다.
