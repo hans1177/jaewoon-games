@@ -3859,6 +3859,14 @@ local function renderCodexOverview()
 	add(function()
 		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
 	end)
+	if view.knowledge and view.knowledge.era then
+		local er = view.knowledge.era
+		add(function() return mkHeader(content, string.format("인류의 시대 — %s", er.name)) end)
+		add(function()
+			local nxt = if er.nextName then string.format(" 다음 시대(%s)까지 이해한 지식 %d/%d개.", er.nextName, er.count, er.nextNeed) else " 마지막 시대에 이르렀어요."
+			return mkLabel(content, er.story .. nxt .. " 시대가 오를수록 항해와 항구 연구가 조금씩 좋아져요.", 12, COLORS.muted, false)
+		end)
+	end
 	add(function() return mkHeader(content, "먼 바다로 가는 길 (항해 지식을 이해해야 열려요)") end)
 	for _, g in (view.knowledge and view.knowledge.gates or {}) do
 		add(function()

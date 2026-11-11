@@ -42,6 +42,25 @@ return function(D, S)
 		return n
 	end
 
+	-- 시대 전환: 이해한 지식이 기준을 넘으면 다음 시대로. 한 번에 여러 단계를 넘을 수도 있다.
+	local function eraCheck(state, msgs)
+		local a = state.academy
+		if not a then
+			return
+		end
+		a.era = a.era or 1
+		local idx = K.eraIndex(state)
+		while a.era < idx do
+			a.era += 1
+			local era = K.Eras[a.era]
+			local coins, fame = 600 * era.reward * era.reward, 30 * era.reward
+			state.coins += coins
+			state.fame += fame
+			table.insert(msgs, string.format("★ 시대가 바뀌었다: %s! %s", era.name, era.story))
+			table.insert(msgs, string.format("시대의 보상: 명성 +%d, +%d코인 (항해와 연구가 조금 더 좋아진다)", fame, coins))
+		end
+	end
+
 	function handlers.ReportKnowledge(state, p)
 		local scholar = type(p.scholarId) == "string" and findScholar(p.scholarId)
 		if not scholar then
@@ -106,6 +125,7 @@ return function(D, S)
 		end
 		table.insert(msgs, 1, string.format("%s에게 발견을 보고했다.", scholar.name))
 		table.insert(msgs, string.format("보고 보상: 명성 +%d, +%d코인", totalFame, totalCoins))
+		eraCheck(state, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
 		return true, table.concat(msgs, "\n")
 	end
@@ -162,6 +182,7 @@ return function(D, S)
 				techBonus += lm.research
 			end
 		end
+		techBonus += 0.01 * (K.eraIndex(state) - 1)
 		return math.min(0.3, (lvl - 1) * 0.03 + understood * 0.005 + techBonus), lvl, discs
 	end
 
@@ -189,7 +210,7 @@ return function(D, S)
 	end
 
 	local function ensureAcademy(state)
-		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, last = {}, shown = {} }
+		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }
 		return state.academy
 	end
 
@@ -586,6 +607,11 @@ return function(D, S)
 			})
 		end
 		-- 먼 바다 해금 조건 (문명식)
+		do
+			local idx = K.eraIndex(state)
+			local era, nxt = K.Eras[idx], K.Eras[idx + 1]
+			out.era = { index = idx, name = era.name, story = era.story, count = K.understoodCount(state), nextName = nxt and nxt.name or nil, nextNeed = nxt and nxt.need or nil }
+		end
 		out.gates = {}
 		for _, reg in D.Regions.List do
 			local need = K.RegionGates[reg.id]
