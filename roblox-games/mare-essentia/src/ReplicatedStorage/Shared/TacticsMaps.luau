@@ -198,6 +198,102 @@ Maps.List = {
 		},
 		foes = { A = "raider", B = "raider_chief", C = "relic_guard" },
 	},
+	{
+		id = "river_ford", name = "여울목 건너기", biome = "plain", objective = "reach", turnLimit = 12,
+		intro = "넓은 강 건너편 나루터까지 가야 한다. 깊은 물은 못 건너니 얕은 여울을 찾자. 건너편엔 산적이 기다린다.",
+		rows = {
+			"..f..WW...hG",
+			"..f..WW.....",
+			"1.x..ww..A..",
+			"2....ww.f...",
+			"3....WW...B.",
+			"4..x.ww.h.A.",
+			"5....ww.....",
+			"..f..WW.x...",
+			"..f..WW.....",
+		},
+		foes = { A = "bandit", B = "bandit_archer" },
+	},
+	{
+		id = "forest_hunt", name = "사냥꾼의 은신처", biome = "forest", objective = "rout", turnLimit = 13,
+		intro = "밀렵꾼들이 숲 깊은 곳에 덫을 놓았다. 늑대까지 풀어놓았으니 조심해서 몰아내자.",
+		rows = {
+			"f..ff..ff...",
+			".f..f..f..f.",
+			"1.x.f.f...A.",
+			"2.f...f.Bf..",
+			"3...f.f.x.C.",
+			"4.f...f.Bf..",
+			"5.x.f.f...A.",
+			".f..f..f..f.",
+			"f..ff..ff...",
+		},
+		foes = { A = "wolf", B = "poacher", C = "hunter" },
+	},
+	{
+		id = "coast_wreck", name = "난파선 해안", biome = "coast", objective = "survive", turnLimit = 8,
+		intro = "난파선 잔해 사이로 해적들이 상륙한다. 8턴만 버티면 순찰대가 도착한다.",
+		rows = {
+			"WWWWWWWWWWWW",
+			"Wssssrsssss.",
+			"1s.x.rr...sA",
+			"2ss...r.s.sA",
+			"3s.r.....xsB",
+			"4ss...r.s.sA",
+			"5s.x.rr...sA",
+			"Wssssrsssss.",
+			"WWWWWWWWWWWW",
+		},
+		foes = { A = "pirate", B = "pirate_gunner" },
+	},
+	{
+		id = "farm_raid", name = "농가 습격", biome = "garden", objective = "boss", turnLimit = 13,
+		intro = "탈영병 무리가 농가를 차지했다. 두목만 쓰러뜨리면 나머지는 달아날 것이다.",
+		rows = {
+			"............",
+			".rr..f..rr..",
+			"1.rx.f..r.C.",
+			"2....f.x....",
+			"3.f....f..B.",
+			"4....f......",
+			"5.rx.f..rA..",
+			".rr..f..rr..",
+			"............",
+		},
+		foes = { A = "deserter", B = "bandit_archer", C = "bandit_chief" },
+	},
+	{
+		id = "cliff_ascent", name = "벼랑 오르기", biome = "cliff", objective = "boss", turnLimit = 14,
+		intro = "가파른 벼랑 위 산채에 도적 두목이 숨어 있다. 좁은 틈을 골라 올라가자.",
+		rows = {
+			"hhh#hhhhhhh#",
+			"1.x#h..#.hCh",
+			"2..h..h#..hh",
+			"3.hh.#h..xBh",
+			"4..h...#.hAh",
+			"5.x#h.h#..hh",
+			"hhh#h..#.hhh",
+			"hhhhh.h..x.A",
+			"############",
+		},
+		foes = { A = "bandit", B = "bandit_archer", C = "bandit_chief" },
+	},
+	{
+		id = "marsh_causeway", name = "늪지 둑길", biome = "marsh", objective = "boss", turnLimit = 14,
+		intro = "늪 한가운데 둑길이 이어진다. 밀수 두목이 그 끝에서 기다린다.",
+		rows = {
+			"ww~~~~~~~~ww",
+			"w..~~..~~.Cw",
+			"1.x~w..w~..~",
+			"2......~~.B.",
+			"3.~~.xs..w..",
+			"4..~w..~~.A.",
+			"5.x~~..w~..~",
+			"w..~~~~~~.ww",
+			"ww~~~~~~~~ww",
+		},
+		foes = { A = "smuggler", B = "pirate_gunner", C = "pirate_captain" },
+	},
 }
 
 Maps.ById = {}
@@ -251,10 +347,12 @@ Maps.SiteOverride = {
 	gothenburg_forest = "forest_trail",
 }
 
+-- 장소 종류마다 맵이 하나 이상. 같은 지점은 늘 같은 맵이 나오도록 지점 id 로 고른다.
 local BIOME_DEFAULT = {
-	plain = "plain_road", forest = "forest_trail", coast = "coast_cove", mine = "mine_tunnel", stones = "stone_circle",
-	cliff = "cliff_path", marsh = "marsh_lagoon", volcano = "volcano_slope", quarry = "quarry", ruins = "ruins_dig",
-	garden = "orchard_grove", wall = "wall_ridge",
+	plain = { "plain_road", "river_ford" }, forest = { "forest_trail", "forest_hunt" }, coast = { "coast_cove", "coast_wreck" },
+	mine = { "mine_tunnel" }, stones = { "stone_circle" }, cliff = { "cliff_path", "cliff_ascent" },
+	marsh = { "marsh_lagoon", "marsh_causeway" }, volcano = { "volcano_slope" }, quarry = { "quarry" }, ruins = { "ruins_dig" },
+	garden = { "orchard_grove", "farm_raid" }, wall = { "wall_ridge" },
 }
 
 -- 이 탐험 지점(site)에서 열 수 있는 전술 맵. 없으면 nil.
@@ -267,7 +365,15 @@ function Maps.forSite(site)
 	if not biome then
 		return nil
 	end
-	return Maps.ById[BIOME_DEFAULT[biome]]
+	local list = BIOME_DEFAULT[biome]
+	if not list then
+		return nil
+	end
+	local sum = 0
+	for i = 1, #site.id do
+		sum += string.byte(site.id, i)
+	end
+	return Maps.ById[list[sum % #list + 1]]
 end
 
 return Maps
