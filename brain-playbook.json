@@ -46,6 +46,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1794374766862
+    },
+    "background:sky-missing:배경 연출 약함: 대기 있음, 하늘 없음#fe2e206000": {
+      "sig": "background:sky-missing:배경 연출 약함: 대기 있음, 하늘 없음",
+      "kind": "background",
+      "game": "fantasy-survival",
+      "edits": [
+        {
+          "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+          "search": "  nativeFoundationSpawn.Parent = workspace\nend\nnativeFoundationSpawn.Size = Vector3.new(8, 1, 8)",
+          "replace": "  nativeFoundationSpawn.Parent = workspace\nend\nlocal meadowLighting = game:GetService(\"Lighting\")\nif not meadowLighting:FindFirstChildOfClass(\"Sky\") then\n  local meadowSky = Instance.new(\"Sky\")\n  meadowSky.Name = \"MeadowSky\"\n  meadowSky.Parent = meadowLighting\nend\nnativeFoundationSpawn.Size = Vector3.new(8, 1, 8)"
+        }
+      ],
+      "summary": "Lighting 서비스에 Sky 개체가 없는 경우 Sky를 생성하여 대기 연출을 완성하도록 수정했습니다.",
+      "provider": "gemini:gemini-3.6-flash",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1794407947073
     }
   }
 }
