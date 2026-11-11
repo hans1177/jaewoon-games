@@ -31,3 +31,5 @@
 
 - 2026-11-11 12:19(KST, run 42950597774) 새 점검 결과: 실행기는 다시 동작함(마력숲 결과 올라옴). 하지만 errors 에 screen_capture 'Target is not reachable (DMN_RSRVD_FOCUSED)' → Studio 가 Play(실행) 상태가 아니거나 MCP 가 꺼져 있음. 클릭 0/30, 프레임 0장, 2단계에서 중단. 코드 문제 아님 → 재업로드 반영 검증은 아직 못 함.
 - 2026-11-11 12:26(KST) 바이브: 사람 확인 필요 — PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기(Play 가능 상태). 고칠 코드 없음, 재배포 안 함. 24시간 이내라 재점검 요청 안 함.
+
+- 2026-11-11 13:30(KST, run 42955029603) 바이브: 점검 정상 — 클릭 30/30 성공, 프레임 31장, errors 비어 있음(Studio Play 동작 회복). Client LOGS 에 'Requester does not have permission for Asset' 6개 ID 남음: 101876091951426(villageLantern) 102755178923561(villageStoneWall) 108733651071071(villageWell) 130739931462450(villageRoof) 77258836345522(villagePillar) 118825509898110(item_star). 이전 약 31개에서 6개로 감소(재업로드 효과 확인). 원인: owner-fantasy-assets 마지막 실행(11-10 16:20Z)이 MISSING_ENV 로 실패 — 저장소 시크릿 ROBLOX_OPEN_CLOUD_API_KEY / ROBLOX_CREATOR_USER_ID 가 비어 있음. 워크플로도 이제 --regrant-only(모델 재업로드 금지)로 바뀜. 사람 확인 필요: 시크릿 복구 후 재실행. 코드 수정 없음, 재배포 안 함.
