@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -35,6 +36,37 @@ test('연습 부모 선택은 시드가 같으면 같고 승인된 CC0만 고른
   assert.deepEqual(a,b);
   const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   for(const p of a){const row=reg.assets.find(x=>x.id===p.id);assert.ok(row);assert.match(String(row.license),/^CC0/);assert.ok(!row.securityBlocked&&!row.quarantined);assert.ok(fs.existsSync(p.file))}
+});
+
+test('승인된 CC0 아이콘은 64px 실측·실패 차단을 연습하고 게임 적용으로 간주하지 않는다',
+  {skip:!imaging&&'Pillow/numpy 없음'},()=>{
+  const root=tmp(),file=path.join(root,'assets','icon.png');
+  fs.mkdirSync(path.dirname(file),{recursive:true});
+  const py=spawnSync('python3',['-c',
+    'from PIL import Image\nimport sys\nim=Image.new("RGBA",(128,128),(0,0,0,0))\nfor y in range(16,112):\n for x in range(16,112):\n  im.putpixel((x,y),(40,80,235,255) if y<64 else (255,220,90,255))\nim.save(sys.argv[1])',file],
+    {encoding:'utf8'});
+  assert.equal(py.status,0,py.stderr);
+  const sha=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const reg={assets:[{id:'approved-icon',family:'ICON',license:'CC0',
+    sourceFiles:['assets/icon.png'],sourceSha256:sha,catalogActive:true}]};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(reg));
+  const {session}=runPracticeSession({repoRoot:root,seed:1,parents:1,variants:1,
+    out:'build/icon-good',light:false,bake:false});
+  assert.equal(session.iconStudy.parent,'approved-icon');
+  assert.equal(session.iconStudy.sourceSha256,sha);
+  assert.equal(session.iconStudy.measured,true);
+  assert.equal(session.iconStudy.legible,true);
+  assert.ok(session.iconStudy.pixels64>=220);
+  assert.ok(session.iconStudy.contrast64>=0.09);
+  assert.equal(session.practiceDomains.ICON.trials,1);
+  assert.equal(session.practiceDomains.ICON.staticMeasured,1);
+  assert.equal(session.iconStudy.gameApplied,false);
+  reg.assets[0].sourceSha256='0'.repeat(64);
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(reg));
+  const blocked=runPracticeSession({repoRoot:root,seed:2,parents:1,variants:1,
+    out:'build/icon-blocked',light:false,bake:false}).session;
+  assert.equal(blocked.iconStudy,undefined);
+  assert.equal(blocked.practiceDomains.ICON.trials,0);
 });
 
 test('루프: 실패한 회차가 있어도 계속 돌고, 최대 회차에서 멈추며, STOP 파일이면 멈춘다', async () => {
@@ -109,6 +141,11 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
     assert.equal(session.practiceDomains.RIG.staticMeasured<=1,true);
   }
   assert.equal(session.practiceDomains.ICON.nativeRuntimeVerified,false);
+  if(session.iconStudy){
+    assert.equal(session.iconStudy.nativeRuntimeVerified,false);
+    assert.equal(session.iconStudy.gameApplied,false);
+    assert.equal(session.practiceDomains.ICON.trials>=1,true);
+  }
   assert.equal(session.productionPromotionAllowed,false);
   // 모든 분야에서 시도 횟수는 통과·실패 합과 같아야 한다. 노멀맵 실패 누락 방지.
   for(const [domain,record] of Object.entries(session.practiceDomains))
