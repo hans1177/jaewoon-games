@@ -68,6 +68,16 @@ test('노멀맵 연습은 실제 정적 원본의 면 수를 확인하고 부족
   assert.deepEqual(selectBakeParents([{id:'low',file:low},{id:'high',file:high}],3).map(x=>x.id),['high']);
   assert.equal(selectBakeParents([{id:'high',file:high},{id:'medium',file:medium}],1,
     {high:{attempts:3,failures:3},medium:{attempts:0,failures:0}})[0].id,'medium');
+  // 동일 원본에서 반복 실패한 경우만 휴지한다. 원본 내용이 바뀌면 검증을 다시 한다.
+  const hash=selectBakeParents([{id:'high',file:high}],1)[0].sourceSha256;
+  assert.match(hash,/^[a-f0-9]{64}$/);
+  const history={high:{attempts:2,failures:2,sourceSha256:hash},
+    medium:{attempts:2,failures:2}};
+  assert.deepEqual(selectBakeParents([{id:'high',file:high},{id:'medium',file:medium}],3,history),[]);
+  fs.appendFileSync(high,'f 1 2 3\n');
+  const changed=selectBakeParents([{id:'high',file:high}],1,history);
+  assert.equal(changed.length,1);
+  assert.notEqual(changed[0].sourceSha256,hash);
   assert.equal(inspectBakeSource(path.join(root,'missing.obj')).eligible,false);
 });
 
