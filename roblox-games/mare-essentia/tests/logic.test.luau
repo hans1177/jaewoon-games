@@ -31,6 +31,7 @@ local D = {
 	TacticsData = require("./Shared/TacticsData"),
 	Tactics = require("./Shared/Tactics"),
 	TacticsMaps = require("./Shared/TacticsMaps"),
+	KnowledgeTree = require("./Shared/KnowledgeTree"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -1883,6 +1884,165 @@ do
 		end
 	end
 	check("전술: 맵이 연결된 모든 지점에서 시작 가능", started == tried and tried >= 20, started .. "/" .. tried)
+end
+
+-- 지식 트리(보고·인과·효과) -------------------------------------------------------
+do
+	local K = D.KnowledgeTree
+	local badCard, badNeed, selfNeed = nil, nil, nil
+	for _, node in K.Nodes do
+		if not D.Cards.ById[node.id] then
+			badCard = node.id
+		end
+		for _, need in node.needs do
+			if not K.ById[need] then
+				badNeed = node.id .. "<-" .. need
+			end
+			if need == node.id then
+				selfNeed = node.id
+			end
+		end
+		if not K.DisciplineById[node.disc] then
+			badCard = node.disc
+		end
+		if node.fx and node.fx.goods then
+			for _, g in node.fx.goods do
+				if not D.Ports.Goods[g] then
+					badCard = "good:" .. g
+				end
+			end
+		end
+	end
+	check("지식: 모든 노드의 카드·학문·교역품이 실제로 있음", badCard == nil, badCard)
+	check("지식: 선행 지식이 모두 노드로 존재", badNeed == nil, badNeed)
+	check("지식: 자기 자신을 선행으로 두지 않음", selfNeed == nil, selfNeed)
+	-- 순환 검사: 선행을 따라가다 자기로 돌아오면 안 된다
+	local cyc = nil
+	local function walk(id, seen)
+		if seen[id] then
+			cyc = id
+			return
+		end
+		seen[id] = true
+		for _, need in K.ById[id].needs do
+			walk(need, table.clone(seen))
+		end
+	end
+	for _, node in K.Nodes do
+		walk(node.id, {})
+	end
+	check("지식: 선행 관계에 순환 없음", cyc == nil, cyc)
+	local scholarBad = nil
+	for sid, discs in K.ScholarDisciplines do
+		local found = false
+		for _, sc in D.Scholars.Scholars do
+			if sc.id == sid then
+				found = true
+			end
+		end
+		if not found then
+			scholarBad = sid
+		end
+		for _, d in discs do
+			if not K.DisciplineById[d] then
+				scholarBad = sid .. ":" .. d
+			end
+		end
+	end
+	check("지식: 보고 받는 학자와 학문이 실제로 있음", scholarBad == nil, scholarBad)
+
+	-- 보고 흐름: 런던의 뉴턴(1700년대)에게 물리 발견을 보고한다
+	local st = newState("england")
+	st.portId = "london"
+	st.fame = 500
+	local coins0, fame0 = st.coins, st.fame
+	check("지식: 발견이 없으면 보고할 게 없음", select(1, act(st, "ReportKnowledge", { scholarId = "newton" })) == false)
+	st.discovered.phy_gravity = true
+	local okB, msgB = act(st, "ReportKnowledge", { scholarId = "newton" })
+	check("지식: 선행 지식이 없으면 보고가 막히고 이유를 알려 줌", okB == false and string.find(msgB, "먼저", 1, true) ~= nil, msgB)
+	st.discovered.phy_pendulum = true
+	st.discovered.phy_lever = true
+	local okC, msgC = act(st, "ReportKnowledge", { scholarId = "newton" })
+	check("지식: 선행을 발견하면 연쇄로 한꺼번에 보고됨", okC == true and st.reported.phy_pendulum and st.reported.phy_lever and st.reported.phy_gravity, msgC)
+	check("지식: 보고하면 명성·코인 보상", st.fame > fame0 and st.coins > coins0)
+	check("지식: 같은 걸 다시 보고하면 새 발견 없음", select(1, act(st, "ReportKnowledge", { scholarId = "newton" })) == false)
+	check("지식: 다른 항구의 학자에게는 보고 불가", (function() st.portId = "amsterdam" local r = select(1, act(st, "ReportKnowledge", { scholarId = "newton" })) st.portId = "london" return r == false end)())
+	check("지식: 잘못된 학자 id 는 거부", select(1, act(st, "ReportKnowledge", { scholarId = "nobody" })) == false)
+	-- 효과: 지레(phy_lever)를 이해하면 목재·대리석 값이 오른다
+	check("지식: 이해한 지식이 교역품 값을 올림", K.goodsMult(st, "timber") > 1.0 and K.goodsMult(st, "wool") == 1.0)
+	-- 천문: 항해 속도 효과는 상한이 있다
+	local st2 = newState("england")
+	for _, node in K.Nodes do
+		st2.reported = st2.reported or {}
+		st2.reported[node.id] = true
+	end
+	check("지식: 항해 속도 보너스에 상한", K.speedBonus(st2) <= K.SPEED_CAP + 1e-9 and K.speedBonus(st2) > 0)
+	check("지식: 교역품 개량 상한 40%", K.goodsMult(st2, "glass") <= 1.4 + 1e-9)
+	-- 저장: 보고 기록이 저장·복원됨
+	local saved = S.State.serialize(st)
+	local back = S.State.sanitize(saved)
+	check("지식: 보고 기록이 저장에 들어감", saved.reported ~= nil and saved.reported.phy_gravity == true and back ~= nil and back.reported.phy_gravity == true)
+	-- 항구 투자 → 연구 성과 → 관련 교역품 공급(값) 증가
+	local stI = newState("england")
+	stI.portId = "london"
+	local g0 = S.Knowledge.supplyMult(stI, "london", "glass")
+	stI.harbor.london = 3000
+	local g1 = S.Knowledge.supplyMult(stI, "london", "glass")
+	check("지식: 항구에 투자하면 관련 교역품이 싸짐", g0 == 1 and g1 < 1 and g1 >= 0.8, g0 .. "/" .. g1)
+	check("지식: 관련 없는 교역품은 그대로", S.Knowledge.supplyMult(stI, "london", "wool") == 1)
+	check("지식: 학자가 없는 항구는 영향 없음", S.Knowledge.supplyMult(stI, "marseille", "glass") == 1)
+	-- 학회 발표
+	local stP = newState("england")
+	stP.portId = "london"
+	stP.reported = {}
+	check("지식: 이해가 모자라면 학회 발표 불가", select(1, act(stP, "Present", { disc = "physics" })) == false)
+	for _, id in { "phy_buoyancy", "phy_lever", "phy_pendulum", "phy_barometer" } do
+		stP.reported[id] = true
+	end
+	local fameP = stP.fame
+	local okP = act(stP, "Present", { disc = "physics" })
+	check("지식: 3개 이상 이해하면 학회 발표 성공(명성·코인)", okP == true and stP.fame > fameP and stP.academy.presented == 1)
+	check("지식: 발표는 쿨타임이 있음", select(1, act(stP, "Present", { disc = "physics" })) == false)
+	stP.day += 61
+	check("지식: 쿨타임 뒤에는 다시 발표 가능", select(1, act(stP, "Present", { disc = "physics" })) == true)
+	check("지식: 잘못된 학문은 거부", select(1, act(stP, "Present", { disc = "alchemy" })) == false)
+	stP.portId = "seville"
+	check("지식: 학회 없는 항구에서는 발표 불가", select(1, act(stP, "Present", { disc = "physics" })) == false)
+	-- 박람회
+	local stE = newState("england")
+	stE.portId = "london"
+	stE.reported = { phy_lever = true }
+	check("지식: 교역소 1단계에서는 박람회 불가", select(1, act(stE, "Expo", {})) == false)
+	stE.harbor.london = 1000
+	check("지식: 개량 교역품이 없으면 출품 불가", select(1, act(stE, "Expo", {})) == false)
+	stE.cargo.timber = 5
+	local coinsE = stE.coins
+	local okE = act(stE, "Expo", {})
+	check("지식: 개량 교역품(✦)을 출품하면 상금", okE == true and stE.coins > coinsE and stE.cargo.timber == 5 and stE.academy.expos == 1)
+	check("지식: 박람회에도 쿨타임", select(1, act(stE, "Expo", {})) == false)
+	-- 퀘스트: 이해/발표/박람회가 자동 집계
+	local qs = newState("england")
+	qs.reported = { phy_lever = true, phy_pendulum = true, phy_gravity = true, ast_polaris = true }
+	qs.academy.presented, qs.academy.expos = 2, 1
+	local function prog(qid)
+		return S.Quest.progressAny(qs, D.Quests.ById[qid])
+	end
+	check("지식: 이해 퀘스트 진행도(전체·학문별)", prog("q_kn_first") == 4 and prog("q_kn_physics") == 3 and prog("q_kn_astro") == 1, prog("q_kn_first") .. "/" .. prog("q_kn_physics"))
+	check("지식: 특정 지식·발표·박람회 퀘스트 진행도", prog("q_kn_steam") == 0 and prog("q_kn_present") == 2 and prog("q_kn_expo") == 1)
+	local badQ = nil
+	for _, q in D.Quests.Quests do
+		if q.kind == "understand" and q.disc and not K.DisciplineById[q.disc] then badQ = q.id end
+		if q.kind == "understand_card" and not K.ById[q.cardId] then badQ = q.id end
+	end
+	check("지식: 퀘스트가 가리키는 학문·지식이 실제로 있음", badQ == nil, badQ)
+	-- 저장 복원
+	local stS = newState("england")
+	stS.academy.presented, stS.academy.last["london:physics"] = 3, 777
+	local backS = S.State.sanitize(S.State.serialize(stS))
+	check("지식: 학회 기록이 저장·복원됨", backS.academy.presented == 3 and backS.academy.last["london:physics"] == 777)
+	-- 화면에 지식 트리가 담김
+	local view = S.View.build(st, ctx)
+	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == 3, tostring(view.knowledge))
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

@@ -46,6 +46,8 @@ return function(D)
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			academy = { presented = 0, expos = 0, last = {} }, -- 학회 발표·박람회 기록
+			reported = {}, -- 학자에게 보고해 이해한 지식(카드 id → true)
 			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
 			scholarsMet = {},
 			bosses = {},
@@ -459,6 +461,24 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.academy) == "table" then
+			s.academy.presented = math.floor(num(saved.academy.presented, 0, 0, 1e6))
+			s.academy.expos = math.floor(num(saved.academy.expos, 0, 0, 1e6))
+			if type(saved.academy.last) == "table" then
+				for k, v in saved.academy.last do
+					if type(k) == "string" and #k <= 60 and type(v) == "number" and v == v then
+						s.academy.last[k] = math.floor(math.clamp(v, 0, 1e9))
+					end
+				end
+			end
+		end
+		if type(saved.reported) == "table" then
+			for id, v in saved.reported do
+				if type(id) == "string" and #id <= 60 and v == true then
+					s.reported[id] = true
+				end
+			end
+		end
 		if type(saved.tactics) == "table" and type(saved.tactics.cleared) == "table" then
 			for id, rec in saved.tactics.cleared do
 				if type(id) == "string" and #id <= 60 and type(rec) == "table" and (rec.rank == "S" or rec.rank == "A" or rec.rank == "B") then
@@ -499,6 +519,8 @@ return function(D)
 			loadout = state.loadout,
 			quests = state.quests,
 			stats = state.stats,
+			reported = state.reported,
+			academy = state.academy,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,

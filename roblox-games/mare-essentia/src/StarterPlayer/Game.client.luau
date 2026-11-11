@@ -178,10 +178,12 @@ for id, spec in {
 	kauri = { "Cargo", "wood-log-a", Color3.fromRGB(176, 132, 82) }, logwood = { "Cargo", "wood-log-a", Color3.fromRGB(120, 50, 70) },
 	brazilwood = { "Cargo", "wood-log-a", Color3.fromRGB(160, 62, 48) }, sandalwood = { "Cargo", "wood-log-a", Color3.fromRGB(190, 150, 96) },
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
-	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel-open", Color3.fromRGB(110, 70, 40) },
+	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel", Color3.fromRGB(104, 62, 36) },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
 	-- 주류 묘사는 Roblox 기준상 제한되어, 술병·술잔 대신 재료(포도·보리·벼) 그림으로 보여 준다
-	beer = { "Goods", "beer_grain" }, sake = { "Goods", "sake_rice" }, wine = { "Cargo", "grapes" },
+	-- 술 종류는 모두 나무통으로 통일하고 색만 달리한다 (주류 묘사 제한)
+	beer = { "Cargo", "barrel", Color3.fromRGB(196, 138, 46) }, wine = { "Cargo", "barrel", Color3.fromRGB(112, 32, 54) },
+	sake = { "Cargo", "barrel", Color3.fromRGB(226, 214, 186) },
 } do
 	GOOD_ICON[id] = spec
 end
@@ -195,10 +197,6 @@ for goodsId, cargoAsset in {
 	if AssetIds["Cargo/" .. cargoAsset] and AssetIds["Goods/" .. goodsId] then
 		GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }
 	end
-end
--- 와인은 술잔 대신 재료인 포도 모델로 보여 준다 (주류 묘사 제한).
-if AssetIds["Cargo/grapes"] then
-	GOOD_ICON.wine = { "Cargo", "grapes" }
 end
 
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
@@ -268,7 +266,20 @@ local function addItemMotion(entry)
 	end)
 end
 
-local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt)
+local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
+	if kind == "Portraits" and portraitOffset and AssetIds["Portraits/" .. asset] then
+		local portrait = Instance.new("ImageLabel")
+		portrait.Size = UDim2.fromOffset(px, px)
+		portrait.BorderSizePixel = 0
+		portrait.BackgroundTransparency = 1
+		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
+		portrait.ImageRectOffset = portraitOffset
+		portrait.ImageRectSize = Vector2.new(256, 336)
+		portrait.ScaleType = Enum.ScaleType.Crop
+		corner(portrait, 8)
+		portrait.Parent = parent
+		return portrait
+	end
 	-- [원본 재사용] 작은 목록은 승인 Image 2.5D 카드, 상품 상세는 기존 Cargo 3D 메시.
 	if kind == "Cargo" and px <= 60 and smallArt and AssetIds[smallArt] then
 		kind, asset = string.match(smallArt, "^(%w+)/(.+)$")
@@ -407,8 +418,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt)
 end
 
 -- 줄(row) 왼쪽에 아이콘을 붙이고 글자 상자를 오른쪽으로 민다
-local function withIcon(row, kind, asset, tint, px)
-	local icon = modelIcon(row, kind, asset, tint, px)
+local function withIcon(row, kind, asset, tint, px, portraitOffset)
+	local icon = modelIcon(row, kind, asset, tint, px, nil, nil, portraitOffset)
 	icon.Position = UDim2.new(0, 8, 0.5, -px / 2)
 	local box = row:FindFirstChildWhichIsA("Frame")
 	if box then
@@ -645,6 +656,23 @@ local PORTRAIT_TILE = {
 	scholar = Vector2.new(PORTRAIT_SIZE.X, PORTRAIT_SIZE.Y),
 	hero = Vector2.new(PORTRAIT_SIZE.X * 2, PORTRAIT_SIZE.Y),
 }
+local FACILITY_ATLAS = AssetIds["Portraits/crew_facilities"]
+local FACILITY_TILE = {
+	merchant = Vector2.new(256, 336), harbor = Vector2.new(512, 336),
+	yard = Vector2.new(0, 672), tavern = Vector2.new(256, 672), scholar = Vector2.new(512, 672),
+}
+local COMPANION_PORTRAIT = {}
+for atlas, ids in {
+	crew_facilities = { "t_navigator", "t_gunner", "t_purser", "t_surgeon" },
+	crew_nations = { "n_england", "n_netherlands", "n_france", "n_portugal", "n_ottoman", "n_swahili", "n_malabar", "n_japan", "n_new_spain" },
+} do
+	if AssetIds["Portraits/" .. atlas] then
+		for index, id in ids do
+			local cell = index - 1
+			COMPANION_PORTRAIT[id] = { atlas = atlas, offset = Vector2.new(cell % 3 * 256, math.floor(cell / 3) * 336) }
+		end
+	end
+end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
 	["주점"] = "tavern", ["학자의 서재"] = "scholar",
@@ -655,7 +683,8 @@ local HERO_ATLAS = AssetIds["Portraits/heroes"]
 local HERO_SIZE = Vector2.new(256, 336)
 -- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
 -- 외형이 안 맞는 국가 주인공은 기존에 등록된 고유 초상화를 보존한다.
-local HERO_NEW_ATLAS = AssetIds["Portraits/heroes_new"]
+local HERO_PERIOD_ATLAS = AssetIds["Portraits/heroes_period"]
+local HERO_NEW_ATLAS = HERO_PERIOD_ATLAS or AssetIds["Portraits/heroes_new"]
 local HERO_NEW_SIZE = Vector2.new(256, 336)
 local HERO_NEW_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너: 해류 관측 학자
@@ -696,9 +725,10 @@ local function setPortrait(groupName)
 	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
 	local heroTile = if heroNation then HERO_TILE[heroNation] else nil
-	local newHeroTile = if heroNation and HERO_NEW_ATLAS then HERO_NEW_TILE[heroNation] else nil
+	local newHeroTile = if heroNation and HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[heroNation] else nil
 	local imageId = if newHeroTile then HERO_NEW_ATLAS
 		elseif heroTile and HERO_ATLAS then HERO_ATLAS
+		elseif tile and FACILITY_ATLAS then FACILITY_ATLAS
 		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
 		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
@@ -706,10 +736,11 @@ local function setPortrait(groupName)
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
 	portraitImage.ImageRectOffset = if newHeroTile then newHeroTile
 		elseif imageId == HERO_ATLAS and heroTile then heroTile
+		elseif imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
 		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else Vector2.zero
 	portraitImage.ImageRectSize = if newHeroTile then HERO_NEW_SIZE
 		elseif imageId == HERO_ATLAS and heroTile then HERO_SIZE
-		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_SIZE else Vector2.zero
+		elseif tile and (imageId == FACILITY_ATLAS or imageId == PORTRAIT_ATLAS) then PORTRAIT_SIZE else Vector2.zero
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -1820,7 +1851,7 @@ end
 
 -- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
 local function heroPortrait(parent, nationId, w, h)
-	local newTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[nationId] else nil
+	local newTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[nationId] else nil
 	local tile = newTile or HERO_TILE[nationId]
 	local atlas = if newTile then HERO_NEW_ATLAS else HERO_ATLAS
 	local size = if newTile then HERO_NEW_SIZE else HERO_SIZE
@@ -2482,7 +2513,10 @@ local function renderHarbor()
 				local model = COMPANION_MODEL[c.id]
 				local scholarId = string.match(c.id, "^c_(.+)$")
 				-- 실존 학자는 검증되어 등록된 당대 초상화가 있으면 모델보다 우선한다.
-				if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				local portrait = COMPANION_PORTRAIT[c.id]
+				if portrait then
+					withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
+				elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 					withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
 				elseif model then
 					withIcon(row, "People", model, nil, 56)
@@ -2613,7 +2647,10 @@ local function renderStatus()
 			end
 			local row = mkRow(content, view.talk.name, "\"" .. view.talk.line .. "\"\n" .. (view.talk.note or ""), nil, 136)
 			local scholarId = if talkId then string.match(talkId, "^c_(.+)$") else nil
-			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			local portrait = COMPANION_PORTRAIT[talkId]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 68, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
 			elseif talkId and COMPANION_MODEL[talkId] then
 				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
@@ -2644,7 +2681,10 @@ local function renderStatus()
 			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
 			local model = COMPANION_MODEL[c.id]
 			local scholarId = string.match(c.id, "^c_(.+)$")
-			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			local portrait = COMPANION_PORTRAIT[c.id]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
 			elseif model then
 				withIcon(row, "People", model, nil, 52)
@@ -2793,7 +2833,7 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		local merchantImageId = PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
+		local merchantImageId = FACILITY_ATLAS or PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
 		if merchantImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "MerchantPortrait"
@@ -2803,8 +2843,8 @@ local function openTradeHall()
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
 			photo.Image = "rbxassetid://" .. tostring(merchantImageId)
-			photo.ImageRectOffset = if PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
-			photo.ImageRectSize = if PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
+			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.merchant elseif PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
+			photo.ImageRectSize = if FACILITY_ATLAS or PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 			photo.Parent = left
 		else
 			local vf = Instance.new("ViewportFrame")
@@ -2875,7 +2915,7 @@ local function openTradeHall()
 			local gi = GOOD_ICON[g.id]
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, -230, 0, 26)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -3065,7 +3105,7 @@ local function renderTrade()
 			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
+			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
 			nm.Position = UDim2.fromOffset(76, 6)
 			nm.Size = UDim2.new(1, -150, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -3416,15 +3456,16 @@ local function openYardHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(32, 40, 50))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		if PORTRAIT_ATLAS then
+		local yardImageId = FACILITY_ATLAS or PORTRAIT_ATLAS
+		if yardImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "ShipwrightPortrait"
 			photo.Size = UDim2.new(1, 0, 1, -150)
 			photo.BackgroundTransparency = 1
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
-			photo.Image = "rbxassetid://" .. tostring(PORTRAIT_ATLAS)
-			photo.ImageRectOffset = PORTRAIT_TILE.yard
+			photo.Image = "rbxassetid://" .. tostring(yardImageId)
+			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.yard else PORTRAIT_TILE.yard
 			photo.ImageRectSize = PORTRAIT_SIZE
 			photo.Parent = left
 		else
@@ -3563,15 +3604,37 @@ local function renderExplore()
 			local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
 			local srow = mkRow(content, sc.name, sub, {
 				{ text = "방문", color = COLORS.gold, onClick = function() call("Visit", { scholarId = sc.id }) end, enabled = sc.status == "ready" },
-			}, 60)
+					{ text = if (sc.reportable or 0) > 0 then string.format("보고 (%d)", sc.reportable) else "보고", color = COLORS.green, onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end, enabled = (sc.reportable or 0) > 0 },
+				}, 60)
 			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
 			if AssetIds["Portraits/scholar_" .. sc.id] then
 				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
 			end
-			return srow
-		end)
-	end
-end
+						return srow
+					end)
+				end
+				local ac = view.knowledge and view.knowledge.academy
+				if ac and #ac.disciplines > 0 then
+					add(function() return mkHeader(content, string.format("학술 행사 · 이 항구의 연구 성과 %d%%", ac.research)) end)
+					add(function()
+						return mkLabel(content, string.format("이 항구의 학문: %s. 항구에 투자할수록 학자들의 연구가 늘어 관련 교역품이 싸져요 (교역소 %d단계). 지금까지 발표 %d회 · 박람회 %d회.", table.concat(ac.disciplines, ", "), ac.harborLevel, ac.presented, ac.expos), 12, COLORS.muted, false)
+					end)
+					for _, pr in ac.present do
+						add(function()
+							local sub = string.format("이해한 지식 %d개 (%d개 이상 필요)%s", pr.understood, ac.presentMin, if pr.wait > 0 then string.format(" · %d일 뒤 가능", pr.wait) else "")
+							return mkRow(content, "학회 발표 — " .. pr.name, sub, {
+								{ text = "발표", color = COLORS.gold, onClick = function() call("Present", { disc = pr.disc }) end, enabled = pr.understood >= ac.presentMin and pr.wait == 0 },
+							}, 56)
+						end)
+					end
+					add(function()
+						local sub = if not ac.expoOpen then "교역소 2단계 이상에서 열려요" elseif ac.expoWait > 0 then string.format("%d일 뒤 열려요", ac.expoWait) else "개량 교역품(✦)을 화물칸에 싣고 출품해요"
+						return mkRow(content, "박람회 출품", sub, {
+							{ text = "출품", color = COLORS.green, onClick = function() call("Expo", {}) end, enabled = ac.expoOpen and ac.expoWait == 0 },
+						}, 56)
+					end)
+				end
+			end
 
 local RARITY_COLOR = {
 	Common = COLORS.muted, Uncommon = COLORS.green, Rare = COLORS.blue, Epic = Color3.fromRGB(170, 110, 210), Legendary = COLORS.gold,
@@ -3761,12 +3824,76 @@ local function renderCodexOverview()
 			return row
 		end)
 	end
+	add(function() return mkHeader(content, "지식 트리 (발견 → 보고 → 이해 → 효과)") end)
+	add(function()
+		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
+	end)
+	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		add(function()
+			return mkRow(content, string.format("%s  이해 %d / %d", d.name, d.done, d.total), d.summary, {
+				{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
+			}, 64)
+		end)
+	end
 	add(function() return mkHeader(content, "전체 도감 보상") end)
 	tierRows(cx.overall, "all", "전체 %d%% 달성")
-end
+	end
 
 local function renderCodexField()
-	local f = findField(codexField)
+if string.sub(codexField, 1, 2) == "k:" then
+	local did = string.sub(codexField, 3)
+	local disc = nil
+	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		if d.id == did then
+			disc = d
+		end
+	end
+	if not disc then
+		codexField = nil
+		renderCodexOverview()
+		return
+	end
+	add(function()
+		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
+	end)
+	add(function() return mkLabel(content, string.format("%s  이해 %d / %d", disc.name, disc.done, disc.total), 17, COLORS.gold, true) end)
+	add(function() return mkLabel(content, disc.summary, 13, COLORS.text, false) end)
+	local kv = view.knowledge
+	add(function()
+		return mkLabel(content, string.format("지금 효과: 항해 속도 +%d%% · 포격 +%d%%", math.floor(kv.speedBonus * 100 + 0.5), math.floor(kv.cannonBonus * 100 + 0.5)), 12, COLORS.green, false)
+	end)
+	for _, nd in disc.nodes do
+		add(function()
+			local mark, col
+			if nd.status == "done" then
+				mark, col = "✔ 이해함", COLORS.green
+			elseif nd.status == "ready" then
+				mark, col = "● 보고 가능", COLORS.gold
+			elseif nd.status == "blocked" then
+				mark, col = "✖ 선행 필요", COLORS.red
+			else
+				mark, col = "? 아직 발견 못 함", COLORS.muted
+			end
+			local sub = mark
+			if #nd.needs > 0 then
+				sub ..= "  ·  선행: " .. table.concat(nd.needs, ", ")
+			end
+			if nd.effect then
+				sub ..= "\n효과: " .. nd.effect
+			end
+			local row = mkRow(content, nd.name, sub, {}, if nd.effect then 64 else 52)
+			local stripe = Instance.new("Frame")
+			stripe.Size = UDim2.new(0, 4, 1, -12)
+			stripe.Position = UDim2.fromOffset(0, 6)
+			stripe.BackgroundColor3 = col
+			stripe.BorderSizePixel = 0
+			stripe.Parent = row
+			return row
+		end)
+	end
+	return
+end
+local f = findField(codexField)
 	if not f then
 		codexField = nil
 		renderCodexOverview()
@@ -4710,7 +4837,7 @@ renderTitle = function()
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
 		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
-		local newFaceTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[n.id] else nil
+		local newFaceTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[n.id] else nil
 		local faceTile = newFaceTile or HERO_TILE[n.id]
 		local faceAtlas = if newFaceTile then HERO_NEW_ATLAS else HERO_ATLAS
 		local faceSize = if newFaceTile then HERO_NEW_SIZE else HERO_SIZE
