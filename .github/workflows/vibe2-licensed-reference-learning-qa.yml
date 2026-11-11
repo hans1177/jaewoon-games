@@ -8,6 +8,8 @@ on:
       - 'tools/vibe2-practice-dataset.mjs'
       - 'tools/vibe2-practice-train.py'
       - 'qa/vibe2-licensed-reference-learning.test.mjs'
+      - 'qa/vibe2-practice-weight-learning.test.mjs'
+      - 'tools/vibe2-train.py'
       - '.github/workflows/vibe2-practice-cpu-fallback.yml'
       - '.github/workflows/vibe2-licensed-reference-learning-qa.yml'
   push:
@@ -18,6 +20,8 @@ on:
       - 'tools/vibe2-practice-dataset.mjs'
       - 'tools/vibe2-practice-train.py'
       - 'qa/vibe2-licensed-reference-learning.test.mjs'
+      - 'qa/vibe2-practice-weight-learning.test.mjs'
+      - 'tools/vibe2-train.py'
       - '.github/workflows/vibe2-practice-cpu-fallback.yml'
       - '.github/workflows/vibe2-licensed-reference-learning-qa.yml'
 
@@ -40,7 +44,7 @@ jobs:
           node --check tools/vibe2-practice-dataset.mjs
           python -m py_compile tools/vibe2-practice-train.py
       - name: Verify source-backed licensed learning contract
-        run: node --test qa/vibe2-licensed-reference-learning.test.mjs
+        run: node --test qa/vibe2-licensed-reference-learning.test.mjs qa/vibe2-practice-weight-learning.test.mjs
       - name: Verify no production promotion authority
         run: |
           set -euo pipefail
