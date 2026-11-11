@@ -1,7 +1,7 @@
 {
  "version": 1,
- "sessions": 11,
- "lastSessionAt": "2026-11-11T04:55:28.967Z",
+ "sessions": 12,
+ "lastSessionAt": "2026-11-11T05:01:56.558Z",
  "registryAssets": 160,
  "cataloguedAssets": 2365,
  "eligible3dAssets": 78,
@@ -40,9 +40,9 @@
    "catalogued": 266,
    "eligible3d": 10,
    "trials": 1,
-   "staticMeasured": 0,
-   "unverifiedOrFailed": 1,
-   "state": "UNVERIFIED_OR_FAILED",
+   "staticMeasured": 1,
+   "unverifiedOrFailed": 0,
+   "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
   },
@@ -50,9 +50,9 @@
    "catalogued": 266,
    "eligible3d": 10,
    "trials": 1,
-   "staticMeasured": 0,
-   "unverifiedOrFailed": 1,
-   "state": "UNVERIFIED_OR_FAILED",
+   "staticMeasured": 1,
+   "unverifiedOrFailed": 0,
+   "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
   },
@@ -169,53 +169,53 @@
  },
  "cumulative": {
   "MESH": {
-   "trials": 19,
-   "staticMeasured": 19,
+   "trials": 23,
+   "staticMeasured": 23,
    "unverifiedOrFailed": 0
   },
   "RIG": {
-   "trials": 3,
+   "trials": 4,
    "staticMeasured": 0,
-   "unverifiedOrFailed": 3
+   "unverifiedOrFailed": 4
   },
   "JOINT": {
-   "trials": 3,
+   "trials": 4,
    "staticMeasured": 0,
-   "unverifiedOrFailed": 3
+   "unverifiedOrFailed": 4
   },
   "MOTION": {
-   "trials": 3,
-   "staticMeasured": 0,
+   "trials": 4,
+   "staticMeasured": 1,
    "unverifiedOrFailed": 3
   },
   "ACTION": {
-   "trials": 3,
-   "staticMeasured": 0,
+   "trials": 4,
+   "staticMeasured": 1,
    "unverifiedOrFailed": 3
   },
   "MATERIAL": {
-   "trials": 49,
-   "staticMeasured": 42,
+   "trials": 53,
+   "staticMeasured": 46,
    "unverifiedOrFailed": 5
   },
   "ENVIRONMENT": {
-   "trials": 43,
-   "staticMeasured": 42,
+   "trials": 47,
+   "staticMeasured": 46,
    "unverifiedOrFailed": 1
   },
   "OBJECT": {
-   "trials": 43,
-   "staticMeasured": 42,
+   "trials": 47,
+   "staticMeasured": 46,
    "unverifiedOrFailed": 1
   },
   "UI": {
-   "trials": 1188,
-   "staticMeasured": 1188,
+   "trials": 1296,
+   "staticMeasured": 1296,
    "unverifiedOrFailed": 0
   },
   "BUTTON": {
-   "trials": 1188,
-   "staticMeasured": 1188,
+   "trials": 1296,
+   "staticMeasured": 1296,
    "unverifiedOrFailed": 0
   },
   "ICON": {
@@ -239,8 +239,8 @@
    "unverifiedOrFailed": 0
   },
   "LIGHTING": {
-   "trials": 11,
-   "staticMeasured": 11,
+   "trials": 12,
+   "staticMeasured": 12,
    "unverifiedOrFailed": 0
   },
   "CAMERA": {
@@ -266,23 +266,52 @@
  },
  "rig": {
   "latest": {
-   "id": "external-actor-barbarian",
-   "sourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+   "id": "external-actor-knight",
+   "sourceSha256": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
    "measured": true,
    "rigPass": false,
    "bones": 41,
-   "meshParts": 14,
+   "meshParts": 16,
    "clipNamesObserved": 76,
    "clipNameCoverage": 1,
+   "curveInspectedClips": 76,
+   "validMovingClips": 69,
+   "movingBoneCurves": 5889,
+   "dynamicClipCoverage": 1,
+   "dynamicClipPresent": [
+    "IDLE",
+    "MOVE",
+    "ATTACK",
+    "HIT",
+    "DEATH"
+   ],
    "failures": [
     "ORPHAN_MESH:Icosphere",
-    "GROUND_OFFSET:-0.2943"
+    "GROUND_OFFSET:-0.2885"
    ],
-   "motionCurvesMeasured": false,
+   "motionCurvesMeasured": true,
    "nativeRuntimeVerified": false,
    "gameApplied": false
   },
   "history": {
+   "external-actor-knight": {
+    "sourceSha256": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
+    "attempts": 1,
+    "passed": 0,
+    "failed": 1,
+    "measured": 1,
+    "bones": 41,
+    "meshParts": 16,
+    "clipNamesObserved": 76,
+    "curveInspectedClips": 76,
+    "validMovingClips": 69,
+    "movingBoneCurves": 5889,
+    "lastFailures": [
+     "ORPHAN_MESH:Icosphere",
+     "GROUND_OFFSET:-0.2885"
+    ],
+    "lastSession": "2026-11-11T05:01:56.558Z"
+   },
    "external-actor-barbarian": {
     "sourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
     "attempts": 1,
@@ -292,6 +321,9 @@
     "bones": 41,
     "meshParts": 14,
     "clipNamesObserved": 76,
+    "curveInspectedClips": 0,
+    "validMovingClips": 0,
+    "movingBoneCurves": 0,
     "lastFailures": [
      "ORPHAN_MESH:Icosphere",
      "GROUND_OFFSET:-0.2943"
