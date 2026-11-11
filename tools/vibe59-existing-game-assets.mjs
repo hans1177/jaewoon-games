@@ -94,20 +94,38 @@ function findLedgerSource(ledger,gameId,entryId,sourcePath,sourceSha){
 export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',repositoryRoot=process.cwd(),target='web'}={}){
   const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
   const found=[];
+  // [게임별 분석] 실제 파일 헤더에서만 픽셀 수를 읽고, 모르는 포맷은 추측하지 않는다.
+  let scanTruncated=false;
   function walk(dir,depth){
-    if(depth>5||found.length>=256)return;
+    if(depth>5||found.length>=256){scanTruncated=true;return;}
     for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-      if(found.length>=256)break;
+      if(found.length>=256){scanTruncated=true;break;}
       const abs=path.join(dir,entry.name);
       if(entry.isSymbolicLink())continue;
       if(entry.isDirectory()){walk(abs,depth+1);continue;}
       if(!entry.isFile()||!/\.(svg|css|png|webp|jpg|jpeg|glb|fbx|ogg|mp3|wav|gz)$/i.test(entry.name))continue;
       const relative=path.relative(root,abs).split(path.sep).join('/');
-      found.push({path:relative,bytes:fs.statSync(abs).size,sha256:sha(fs.readFileSync(abs))});
+      const bytes=fs.readFileSync(abs),ext=path.extname(relative).toLowerCase();
+      let width=0,height=0;
+      if(ext==='.png'&&bytes.length>=24&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+        &&bytes.toString('ascii',12,16)==='IHDR'){
+        width=bytes.readUInt32BE(16);height=bytes.readUInt32BE(20);
+      }else if(ext==='.webp'&&bytes.length>=30&&bytes.toString('ascii',0,4)==='RIFF'
+        &&bytes.toString('ascii',8,12)==='WEBP'){
+        const kind=bytes.toString('ascii',12,16);
+        if(kind==='VP8X'){
+          width=1+bytes.readUIntLE(24,3);height=1+bytes.readUIntLE(27,3);
+        }else if(kind==='VP8 '&&bytes.length>=30&&bytes[23]===0x9d&&bytes[24]===0x01&&bytes[25]===0x2a){
+          width=bytes.readUInt16LE(26)&0x3fff;height=bytes.readUInt16LE(28)&0x3fff;
+        }
+      }
+      const dimensionKnown=width>0&&height>0&&width<=16384&&height<=16384;
+      found.push({path:relative,bytes:bytes.length,sha256:sha(bytes),
+        ...(dimensionKnown?{width,height,estimatedRgbaBytes:width*height*4}:{})});
     }
   }
   walk(root,0);
-  const missingReferences=[];
+  const missingReferences=[],staticReferences=new Set();
   // Detect broken file-backed SVG/PNG/audio/model links without selecting a made-up replacement.
   // Only literal HTML/CSS paths are considered; runtime-computed URLs remain unverified.
   if(target==='web'){
@@ -134,14 +152,64 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
           ||value.startsWith('/')||value.includes('\\')||value.includes(':')
           ||value.split('/').includes('..'))continue;
         const resolved=path.resolve(path.dirname(file),value);
-        if(!resolved.startsWith(root+path.sep)||fs.existsSync(resolved))continue;
+        if(!resolved.startsWith(root+path.sep))continue;
+        if(fs.existsSync(resolved)){
+          staticReferences.add(path.relative(root,resolved).split(path.sep).join('/'));
+          continue;
+        }
         missingReferences.push({referencedBy:path.relative(root,file).split(path.sep).join('/'),
           assetPath:path.relative(root,resolved).split(path.sep).join('/'),
           problem:'MISSING_REFERENCED_ASSET',repair:'REQUIRES_VERIFIED_ROLE_AND_PROVENANCE'});
       }
     }
   }
-  return Object.freeze({gameId,target,assets:found,missingReferences,
+  // [게임별 최적화] 중복을 임의 삭제하지 않고, 원본 해시와 정적 참조에만 기반해 후보를 만든다.
+  const groups=new Map();
+  for(const file of found){
+    if(!groups.has(file.sha256))groups.set(file.sha256,[]);
+    groups.get(file.sha256).push(file);
+  }
+  const duplicateGroups=[...groups.values()].filter(rows=>rows.length>1)
+    .map(rows=>({sha256:rows[0].sha256,paths:rows.map(row=>row.path).sort(),
+      duplicateBytes:(rows.length-1)*rows[0].bytes,automaticRemovalAllowed:false}))
+    .sort((a,b)=>b.duplicateBytes-a.duplicateBytes||a.paths[0].localeCompare(b.paths[0]))
+    .slice(0,24);
+  const textures=found.filter(file=>/\.(?:png|webp|jpe?g)$/i.test(file.path));
+  const oversizedTextures=textures.filter(file=>file.width&&file.height&&
+    (/(?:^|\/)(?:ui|icons?|hud)(?:\/|$)/i.test(file.path)
+      ?file.width*file.height>512*512:file.width*file.height>1024*1024))
+    .map(file=>({path:file.path,width:file.width,height:file.height,
+      estimatedRgbaBytes:file.estimatedRgbaBytes,threshold:'MOBILE_REVIEW_ONLY'}))
+    .sort((a,b)=>b.estimatedRgbaBytes-a.estimatedRgbaBytes||a.path.localeCompare(b.path))
+    .slice(0,24);
+  const largeFiles=found.filter(file=>file.bytes> (
+    /\.(?:png|webp|jpe?g|svg)$/i.test(file.path)?2*1024*1024:
+    /\.(?:ogg|mp3|wav)$/i.test(file.path)?4*1024*1024:8*1024*1024))
+    .map(file=>({path:file.path,bytes:file.bytes,action:'PROFILE_AND_VERIFY_BEFORE_REPLACEMENT'}))
+    .sort((a,b)=>b.bytes-a.bytes||a.path.localeCompare(b.path)).slice(0,24);
+  const initialStaticAssets=found.filter(file=>staticReferences.has(file.path))
+    .map(file=>({path:file.path,bytes:file.bytes}))
+    .sort((a,b)=>b.bytes-a.bytes||a.path.localeCompare(b.path)).slice(0,24);
+  const actions=[];
+  if(duplicateGroups.length)actions.push('VERIFY_IDENTICAL_ASSETS_AND_REUSE_EXISTING_APPROVED_SOURCE_ID');
+  if(oversizedTextures.length)actions.push('MEASURE_MOBILE_TEXTURE_MEMORY_AND_REVIEW_RESOLUTION');
+  if(largeFiles.length)actions.push('PROFILE_LARGE_ASSET_LOAD_COST_BEFORE_OPTIMIZATION');
+  if(initialStaticAssets.length)actions.push('PRIORITIZE_ONLY_CRITICAL_STARTUP_ASSETS');
+  if(target==='roblox')actions.push('AUDIT_REMOTE_ASSET_IDS_AND_INSTANCE_STREAMING_IN_ACTUAL_PLACE');
+  const optimization=Object.freeze({
+    gameId,target,kind:'GAME_SCOPED_STATIC_ASSET_OPTIMIZATION',
+    scannedAssetCount:found.length,scanComplete:!scanTruncated,
+    totalFileBytes:found.reduce((sum,file)=>sum+file.bytes,0),
+    textureFileBytes:textures.reduce((sum,file)=>sum+file.bytes,0),
+    decodedTextureCount:textures.filter(file=>file.estimatedRgbaBytes).length,
+    estimatedRgbaMemoryBytes:textures.reduce((sum,file)=>sum+(file.estimatedRgbaBytes||0),0),
+    duplicateGroups,oversizedTextures,largeFiles,initialStaticAssets,actions,
+    referenceCoverage:target==='web'?'LITERAL_HTML_CSS_ONLY':'LOCAL_FILES_ONLY_REMOTE_IDS_UNKNOWN',
+    estimatedRgbaMemoryIsNotMeasuredGpuMemory:true,
+    optimizationApplied:false,assetFilesModified:false,licenseProofRequiredForReplacement:true,
+    gameplayAndSavePreserved:true,runtimeVerified:false
+  });
+  return Object.freeze({gameId,target,assets:found,missingReferences,optimization,
     sourceWrite:false,runtimeVerified:false,suggestionsRequireProvenance:true});
 }
 
