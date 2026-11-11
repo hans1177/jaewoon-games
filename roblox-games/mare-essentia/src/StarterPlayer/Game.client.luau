@@ -52,7 +52,8 @@ local TABS = {
 	{ id = "status", name = "상태" },
 	{ id = "trade", name = "교역" },
 	{ id = "harbor", name = "항구" },
-	{ id = "map", name = "지도" },
+	{ id = "map", name = "일지" },
+	{ id = "crew", name = "동료" },
 	{ id = "route", name = "항해" },
 	{ id = "yard", name = "조선소" },
 	{ id = "explore", name = "탐험" },
@@ -69,7 +70,7 @@ local GROUPS = {
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "explore", "battle" } },
 	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
-	{ name = "선장실", keeper = "선장", tabs = { "status" } },
+	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
 local function groupOf(tabId)
 	for _, g in GROUPS do
@@ -1026,7 +1027,7 @@ dockPad.PaddingTop, dockPad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5)
 dockPad.Parent = dock
 
 local DOCK = {
-	{ "view", "걷기" }, { "trade", "교역" }, { "harbor", "항구" }, { "route", "항해" }, { "map", "지도" },
+	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "map", "일지" },
 	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
@@ -1053,7 +1054,7 @@ for i, d in DOCK do
 	menuLabel.TextColor3 = Color3.fromRGB(250, 236, 200)
 	menuLabel.Text = d[2]
 	menuLabel.Parent = b
-	local menuAssetId = AssetIds["Menu/" .. d[1]]
+	local menuAssetId = AssetIds["Menu/" .. d[1]] or (if d[1] == "crew" then AssetIds["Menu/harbor"] else nil)
 	if menuAssetId then
 		local image = Instance.new("ImageLabel")
 		image.Name = "Icon"
@@ -2675,6 +2676,111 @@ function RENDERERS.harbor()
 	end
 end
 
+function RENDERERS.crew()
+	add(function() return mkHeader(content, "동료와 대화") end)
+	add(function()
+		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
+	end)
+	add(function() return mkHeader(content, string.format("배의 자리 (이 배는 동료 %d명까지)", view.companions.max)) end)
+	add(function()
+		local vac = view.companions.vacancy
+		local warn = ""
+		if vac and (vac.speed < 0 or vac.cannon < 0) then
+			warn = "\n⚠ 조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
+		end
+		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
+	end)
+	for _, st in view.companions.stations do
+		add(function()
+			local joined = {}
+			for _, c in view.companions.list do
+				if c.joined and c.id ~= st.seatId then
+					table.insert(joined, c)
+				end
+			end
+			H.stationPick = H.stationPick or {}
+			local idx = (H.stationPick[st.id] or 0) % math.max(1, #joined) + 1
+			local nxt = joined[idx]
+			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음" else "  (다른 직책)")) else "비어 있음"
+			local btns = {}
+			local fit = nil
+			for _, c in joined do
+				if c.bestSeat == st.name then fit = c; break end
+			end
+			if fit and fit ~= nxt then
+				table.insert(btns, { text = "★ " .. fit.name, color = COLORS.green or COLORS.blue, onClick = function()
+					call("Station", { companionId = fit.id, station = st.id })
+				end })
+			end
+			if nxt then
+				table.insert(btns, { text = "▶ " .. nxt.name, color = COLORS.blue, onClick = function()
+					H.stationPick[st.id] = idx
+					call("Station", { companionId = nxt.id, station = st.id })
+				end })
+			end
+			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
+		end)
+	end
+	add(function() return mkHeader(content, "동료") end)
+	if view.talk then
+		add(function()
+			-- 실제 동료 대화에 기존 등록 초상화를 연결한다. 호감도·대화·저장은 그대로 둔다.
+			local talkId = nil
+			for _, companion in view.companions.list do
+				if companion.name == view.talk.name then
+					talkId = companion.id
+					break
+				end
+			end
+			local row = mkRow(content, view.talk.name, "\"" .. view.talk.line .. "\"\n" .. (view.talk.note or ""), nil, 136)
+			local scholarId = if talkId then string.match(talkId, "^c_(.+)$") else nil
+			local portrait = COMPANION_PORTRAIT[talkId]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 68, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
+			elseif talkId and COMPANION_MODEL[talkId] then
+				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
+			end
+			return row
+		end)
+	end
+	if view.talk and view.talk.options then
+		add(function()
+			return mkLabel(content, view.talk.question or "", 16, COLORS.gold, true)
+		end)
+		for i, text in view.talk.options do
+			add(function()
+				return mkRow(content, text, "", { { text = "대답", color = COLORS.green, onClick = function() call("TalkChoice", { index = i }) end } }, 48)
+			end)
+		end
+	end
+	for _, c in view.companions.list do
+		add(function()
+			local sub = string.format("%s\n어울리는 자리 %s · 영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.bestSeat, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
+			local btn = if c.joined
+				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
+			local btns = { btn }
+			if c.joined then
+				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
+			end
+			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
+			local model = COMPANION_MODEL[c.id]
+			local scholarId = string.match(c.id, "^c_(.+)$")
+			local portrait = COMPANION_PORTRAIT[c.id]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
+			elseif model then
+				withIcon(row, "People", model, nil, 52)
+			end
+			return row
+		end)
+	end
+end
+
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	add(function() return mkHeader(content, "선박") end)
@@ -2780,104 +2886,6 @@ function RENDERERS.status()
 				withIcon(grow, gi[1], gi[2], nil, 44)
 			end
 			return grow
-		end)
-	end
-	add(function() return mkHeader(content, string.format("배의 자리 (이 배는 동료 %d명까지)", view.companions.max)) end)
-	add(function()
-		local vac = view.companions.vacancy
-		local warn = ""
-		if vac and (vac.speed < 0 or vac.cannon < 0) then
-			warn = "\n⚠ 조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
-		end
-		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
-	end)
-	for _, st in view.companions.stations do
-		add(function()
-			local joined = {}
-			for _, c in view.companions.list do
-				if c.joined and c.id ~= st.seatId then
-					table.insert(joined, c)
-				end
-			end
-			H.stationPick = H.stationPick or {}
-			local idx = (H.stationPick[st.id] or 0) % math.max(1, #joined) + 1
-			local nxt = joined[idx]
-			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음" else "  (다른 직책)")) else "비어 있음"
-			local btns = {}
-			local fit = nil
-			for _, c in joined do
-				if c.bestSeat == st.name then fit = c; break end
-			end
-			if fit and fit ~= nxt then
-				table.insert(btns, { text = "★ " .. fit.name, color = COLORS.green or COLORS.blue, onClick = function()
-					call("Station", { companionId = fit.id, station = st.id })
-				end })
-			end
-			if nxt then
-				table.insert(btns, { text = "▶ " .. nxt.name, color = COLORS.blue, onClick = function()
-					H.stationPick[st.id] = idx
-					call("Station", { companionId = nxt.id, station = st.id })
-				end })
-			end
-			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
-		end)
-	end
-	add(function() return mkHeader(content, "동료") end)
-	if view.talk then
-		add(function()
-			-- 실제 동료 대화에 기존 등록 초상화를 연결한다. 호감도·대화·저장은 그대로 둔다.
-			local talkId = nil
-			for _, companion in view.companions.list do
-				if companion.name == view.talk.name then
-					talkId = companion.id
-					break
-				end
-			end
-			local row = mkRow(content, view.talk.name, "\"" .. view.talk.line .. "\"\n" .. (view.talk.note or ""), nil, 136)
-			local scholarId = if talkId then string.match(talkId, "^c_(.+)$") else nil
-			local portrait = COMPANION_PORTRAIT[talkId]
-			if portrait then
-				withIcon(row, "Portraits", portrait.atlas, nil, 68, portrait.offset)
-			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
-				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
-			elseif talkId and COMPANION_MODEL[talkId] then
-				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
-			end
-			return row
-		end)
-	end
-	if view.talk and view.talk.options then
-		add(function()
-			return mkLabel(content, view.talk.question or "", 16, COLORS.gold, true)
-		end)
-		for i, text in view.talk.options do
-			add(function()
-				return mkRow(content, text, "", { { text = "대답", color = COLORS.green, onClick = function() call("TalkChoice", { index = i }) end } }, 48)
-			end)
-		end
-	end
-	for _, c in view.companions.list do
-		add(function()
-			local sub = string.format("%s\n어울리는 자리 %s · 영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.bestSeat, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
-			local btn = if c.joined
-				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
-				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-			local btns = { btn }
-			if c.joined then
-				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
-			end
-			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
-			local model = COMPANION_MODEL[c.id]
-			local scholarId = string.match(c.id, "^c_(.+)$")
-			local portrait = COMPANION_PORTRAIT[c.id]
-			if portrait then
-				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
-			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
-				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
-			elseif model then
-				withIcon(row, "People", model, nil, 52)
-			end
-			return row
 		end)
 	end
 	add(function() return mkHeader(content, "명성 랭킹 (서버 전체 상위 10)") end)
@@ -4512,6 +4520,24 @@ local SEA_NAMES = {
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
 function RENDERERS.map()
+	-- 일지: 지금 어디서 무엇을 하는지, 겪은 사건, 기다리는 사건을 먼저 보여 주고 아래에 항해 지도를 둔다
+	do
+		local p = view.player
+		add(function() return mkHeader(content, "항해 일지") end)
+		add(function()
+			return mkLabel(content, string.format("%s · %d년 %d일째 · %s에 정박 중\n코인 %d · 명성 %d · 동료 %d명", p.nation, p.year, p.day, p.portName, p.coins, p.fame or 0, #(view.companions and view.companions.list and (function() local n = {} for _, c in view.companions.list do if c.joined then table.insert(n, c) end end return n end)() or {})), 14, COLORS.text, true)
+		end)
+		local hv = view.history
+		if hv then
+			if hv.pending then
+				add(function() return mkLabel(content, string.format("⚑ 기다리는 사건: %d년 %s", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+			end
+			for _, r in hv.recent or {} do
+				add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
+			end
+		end
+		add(function() return mkHeader(content, "항해 지도") end)
+	end
 	local cosLat = 0.66 -- 유럽 위도에서 가로를 줄여 비율을 맞춘다
 	local function mapX(lon) return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin) end
 	local function mapY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
