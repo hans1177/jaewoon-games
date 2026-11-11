@@ -63,14 +63,15 @@ jobs:
           python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods
           python3 - <<'PY'
           import json,os
-          j=json.load(open('roblox-games/mare-essentia/assets-wanted.json',encoding='utf-8'))['tradeGoodsPractice']
+          report=json.load(open('roblox-games/mare-essentia/assets-wanted.json',encoding='utf-8'))
+          j=report['tradeGoodsPractice']
           s=j['stats']
           if s['targetCount']!=16 or s['excludedCount']!=2 or s['blocked']!=2:
               raise SystemExit('TRADE_GOODS_PRACTICE_COVERAGE_MISMATCH')
           if s['invalid']:
               raise SystemExit('TRADE_GOODS_PRACTICE_INVALID')
           # [교역품 3D] 현재 항구 상품 70종을 현행 Cargo 등록/실물/권한과 반복 대조한다.
-          three=j['tradeGoods3DPractice']
+          three=report['tradeGoods3DPractice']
           t=three['stats']
           if t['targetCount']<70 or t['targetCount']!=len(three['goods']):
               raise SystemExit('TRADE_GOODS_3D_CATALOG_INCOMPLETE')
