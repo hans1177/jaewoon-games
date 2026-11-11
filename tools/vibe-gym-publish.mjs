@@ -94,6 +94,7 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
         const history=Object.fromEntries(Object.entries(previous.bake?.history||{})
           .filter(([id,r])=>/^[\w:./-]{1,140}$/.test(id)&&r&&typeof r==='object')
           .slice(-128).map(([id,r])=>[id,{
+            sourceSha256:/^[a-f0-9]{64}$/.test(r.sourceSha256||'')?r.sourceSha256:null,
             attempts:cleanCount(r.attempts),failures:cleanCount(r.failures),
             passes:cleanCount(r.passes),
             bestNormalDeviation:Number.isFinite(r.bestNormalDeviation)?
@@ -104,17 +105,22 @@ export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote=
         for(const row of (session.bake?.attempts||[]).slice(0,3)){
           const id=String(row?.parent||'');
           if(!/^[\w:./-]{1,140}$/.test(id))continue;
-          const prior=history[id]||{attempts:0,failures:0,passes:0,bestNormalDeviation:0};
+          const sourceSha256=/^[a-f0-9]{64}$/.test(row.sourceSha256||'')?row.sourceSha256:null;
+          const stored=history[id];
+          const prior=stored?.sourceSha256&&sourceSha256&&stored.sourceSha256!==sourceSha256?
+            {attempts:0,failures:0,passes:0,bestNormalDeviation:0}:stored||
+            {attempts:0,failures:0,passes:0,bestNormalDeviation:0};
           const dev=Number.isFinite(row.normalDeviation)&&row.normalDeviation>=0?
             Math.min(2,row.normalDeviation):null;
           history[id]={
+            sourceSha256:sourceSha256||prior.sourceSha256||null,
             attempts:cleanCount(prior.attempts)+1,
             failures:cleanCount(prior.failures)+(row.pass===true?0:1),
             passes:cleanCount(prior.passes)+(row.pass===true?1:0),
             bestNormalDeviation:Math.max(Number(prior.bestNormalDeviation)||0,dev||0),
             lastSession:String(session.at||'').slice(0,40)
           };
-          bakeAttempts.push({id,pass:row.pass===true,
+          bakeAttempts.push({id,sourceSha256,pass:row.pass===true,
             trianglesHigh:cleanCount(row.trianglesHigh),
             trianglesLow:cleanCount(row.trianglesLow),
             normalDeviation:dev,
