@@ -1002,6 +1002,9 @@ test('canonical incremental QA derives hotspot and focused targets from the curr
   // 불변성 테스트만 고쳐도 이전 통과 캐시는 폐기하고 실제 실패를 검출해야 한다.
   fs.writeFileSync(path.join(base,'qa','invariant.test.mjs'),
     'import test from "node:test"; test("broken invariant",()=>{throw new Error("broken")});\n','utf8');
+  // 실패용 원본 테스트가 실제로 실패하는지도 독립 실행으로 먼저 입증한다.
+  assert.throws(()=>execFileSync(process.execPath,
+    ['--test',path.join(base,'qa','invariant.test.mjs')],{cwd:root,stdio:'pipe'}));
   assert.throws(()=>runIncrementalQa({root,manifest,cacheFile,namespace:'web:demo'}),
     /GAME_REPAIR_INVARIANT_FAILED/);
 });
