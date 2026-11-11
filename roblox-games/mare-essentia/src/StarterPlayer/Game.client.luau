@@ -157,8 +157,16 @@ end
 
 -- 교역품: 상품 ID마다 전용 고해상도 그림을 사용한다. 다른 물건의 모델을 대체 표시하지 않는다.
 local GOOD_ICON = {}
+-- [내용 검수] 주류 자체를 묘사하지 않고 승인된 원료(보리·홉, 벼 이삭)만 표시한다.
+-- 해당 이미지가 아직 체험에 등록되지 않았으면 일반 교역 아이콘을 사용한다.
+local SAFE_INGREDIENT_ICON = { beer = "beer_grain", sake = "sake_rice" }
 for id in PortData.Goods do
-	GOOD_ICON[id] = if id == "wine" or id == "tobacco" then { "Menu", "trade" } else { "Goods", id }
+	local ingredient = SAFE_INGREDIENT_ICON[id]
+	if ingredient then
+		GOOD_ICON[id] = if AssetIds["Goods/" .. ingredient] then { "Goods", ingredient } else { "Menu", "trade" }
+	else
+		GOOD_ICON[id] = if id == "wine" or id == "tobacco" then { "Menu", "trade" } else { "Goods", id }
+	end
 end
 -- 승인된 그림이 없는 상품 중, 같은 물건의 3D 모델이 있는 것은 그것을 쓴다
 local WOOD = Color3.fromRGB(120, 78, 50)
