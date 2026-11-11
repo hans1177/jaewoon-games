@@ -108,11 +108,18 @@ test('cinematic lighting owns one rig, transitions mood and releases scene fog',
  const hi=createVibeLightingDirector(THREE,desktop,{mobile:false});
  assert.deepEqual(desktop.children[1].shadow.size,[2048,2048]);
  hi.dispose();
+ const focused={children:[],fog:null,add(x){this.children.push(x)},remove(x){this.children.splice(this.children.indexOf(x),1)}};
+ const separated=createVibeLightingDirector(THREE,focused,{subjectSeparation:.28,shadows:false});
+ assert.equal(focused.children.length,4);
+ assert.equal(focused.children[1].castShadow,false);
+ assert.ok(focused.children[0].intensity<vibeLightingPresets.forest.ambient);
+ assert.ok(focused.children[3].intensity>vibeLightingPresets.forest.rimPower);
+ separated.dispose();
 });
 // [메인: 3D 미리보기] 조작창, 렌더 색공간, 오디오 클록의 통합 연결을 확인한다.
 test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
- assert.match(html,/createVibeLightingDirector\(THREE,scene,\{mobile:mobileView\}\)/);
+ assert.match(html,/createVibeLightingDirector\(THREE,scene,\{mobile:mobileView,subjectSeparation:\.28\}\)/);
  assert.match(html,/renderer\.toneMapping=THREE\.ACESFilmicToneMapping/);
  assert.match(html,/studioControls\.append\(picker,audioButton\)/);
  assert.match(html,/studioControls\.className='studio-panel'/);
@@ -121,4 +128,11 @@ test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=
  assert.match(html,/characterPerformance\.update\(delta\)/);
  assert.doesNotMatch(html,/scene\.add\(new THREE\.HemisphereLight/);
  assert.doesNotMatch(html,/now:performance\.now\(\)\/1000/);
+ assert.match(html,/if\(mobileView\)\{/);
+ assert.match(html,/sampleFrames\+\+/);
+ assert.match(html,/fps<22/);
+ assert.match(html,/fps>28/);
+ assert.match(html,/Math\.max\(\.85,currentPixelRatio-\.25\)/);
+ assert.match(html,/if\(document\.hidden\)\{sampleStarted=0/);
+ assert.match(html,/expressionDirector\.update\(delta,\{reducedMotion:gameUi\.ui\.settings\.reducedMotion\}\)/);
 });
