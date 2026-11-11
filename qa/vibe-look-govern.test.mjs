@@ -139,3 +139,19 @@ test('판타지 서바이벌: 어두운 분위기 전용 정책(dark-fantasy 만
   assert.equal(allowedByPolicy(dark,spec.lookPolicy,spec.mood),true);
   assert.equal(allowedByPolicy(bright,spec.lookPolicy,spec.mood),false);
 });
+
+test('적용 후 평균이 올라도 같은 장면이 후퇴하면 되돌리고 누락 장면은 확인을 보류한다',()=>{
+  const frames=['port.png','sea.png','map.png','town.png'].map(file=>({file,score:50}));
+  const applied=step(emptyLook(),shot([row('storybook')],{checked:4,frames}),T0,
+    {gate:{...GATE,streak:1}});
+  assert.equal(applied.event.type,'APPLY');
+  const look=applied.look;
+  assert.deepEqual(look.baselineFrames,frames.map(({file,score})=>[file,score]));
+  const missing=step(look,shot([],{score:65,frames:frames.slice(1)}));
+  assert.equal(missing.event.type,'NOT_ENOUGH_FRAMES');
+  assert.deepEqual(missing.look.verify.scores,[]);
+  const bad=step(look,shot([],{score:65,frames:frames.map((f,i)=>({...f,score:i?72:44}))}));
+  assert.equal(bad.event.type,'ROLLBACK');
+  assert.equal(bad.event.regressedFrame,'port.png');
+  assert.equal(bad.look.baselineFrames,null);
+});
