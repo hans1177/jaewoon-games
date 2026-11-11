@@ -3,12 +3,12 @@
   "tasks": {
     "fantasy-survival:health": {
       "lastAt": 1794407203092,
-      "pending": true,
+      "pending": false,
       "lastSha": "1308769ce356bb02c2f517397acec4a78407ab29",
-      "runs": 2,
-      "ema": 0.545,
-      "failStreak": 2,
-      "lastResult": "FAILED"
+      "runs": 3,
+      "ema": 0.681,
+      "failStreak": 0,
+      "lastResult": "FOUND"
     },
     "mare-essentia:health": {
       "lastAt": 1794384116308,
@@ -90,7 +90,7 @@
     }
   },
   "lastReport": {
-    "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
+    "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":9,\"plannedClicks\":2,\"successfulClicks\":2,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,5,[{\"step\":8,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=17 total=20 ids=rbxassetid://123002292731314,rbxassetid://103609265503025,rbxassetid://84007761993593,rbxassetid://129911424873839,rbxassetid://102668066491590,rbxassetid://136078836725262,rbxassetid://82072502121497,rbxassetid://129030506278489,rbxassetid://71333073665947,rbxassetid://87436201112904,rbxassetid://109238389541686,rbxassetid://127661757924412,rbxassetid://121029196724745,rbxassetid://85078081802173,rbxassetid://120656085154237,rbxassetid://81665484719308,rbxassetid://115039637258925\\nHEALTH_WORLD mobs=64 mobhp=6400 parts=517\\nHEALTH_UI 퀘스트=8 체력=2 스킬=63 인벤=1\\nHEALTH_LIGHT clock=8.1 bright=2.26 atmos=true sky=false\\ntext\"}]]",
     "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=16 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=1\\nHEALTH_UI 퀘스트=1 항해=4 교역=1 백과=1\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
   },
   "orders": {
@@ -141,6 +141,47 @@
       "lastAt": 1794384712118,
       "seen": 2,
       "resolvedAt": 1794375225082
+    },
+    "fantasy-survival:asset-fail": {
+      "id": "asset-fail",
+      "kind": "asset_link",
+      "task": "health",
+      "text": "화면 이미지 17/20 불러오기 실패. ID: 123002292731314,103609265503025,84007761993593,129911424873839,102668066491590,136078836725262,82072502121497,129030506278489",
+      "ids": [
+        "123002292731314",
+        "103609265503025",
+        "84007761993593",
+        "129911424873839",
+        "102668066491590",
+        "136078836725262",
+        "82072502121497",
+        "129030506278489",
+        "71333073665947",
+        "87436201112904",
+        "109238389541686",
+        "127661757924412",
+        "121029196724745",
+        "85078081802173",
+        "120656085154237",
+        "81665484719308",
+        "115039637258925"
+      ],
+      "game": "fantasy-survival",
+      "fingerprint": "fantasy-survival:asset-fail",
+      "firstAt": 1794407891456,
+      "lastAt": 1794407891456,
+      "seen": 1
+    },
+    "fantasy-survival:sky-missing": {
+      "id": "sky-missing",
+      "kind": "background",
+      "task": "background",
+      "text": "배경 연출 약함: 대기 있음, 하늘 없음",
+      "game": "fantasy-survival",
+      "fingerprint": "fantasy-survival:sky-missing",
+      "firstAt": 1794407891456,
+      "lastAt": 1794407891456,
+      "seen": 1
     }
   },
   "history": [
