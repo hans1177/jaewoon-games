@@ -3932,6 +3932,20 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
 // [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
 test('Mare image timeout requires official visible Studio Client IsLoaded proof for every asset',()=>{
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
+  // [도감 이미지 실증] 모델에서 제외된 CardArt도 동일한 공식 Client IsLoaded 감사로 검증한다.
+  assert.match(script,/Goods\\|Menu\\|Portraits\\|CardArt/);
+  assert.match(script,/row\\?\\.status==='TIMEOUT_16S'/);
+  const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const cards=Object.entries(registry).filter(([key])=>key.startsWith('CardArt/'));
+  assert.ok(cards.length>=19,'registered discovery/event images required');
+  for(const [key,asset] of cards){
+    assert.equal(asset.assetType,'Image','CardArt must be a Roblox image: '+key);
+    assert.equal(asset.usePermissionGranted,true,'CardArt requires verified usage grant: '+key);
+    assert.match(String(asset.assetId),/^[1-9][0-9]*$/);
+    const actualSha=crypto.createHash('sha256').update(fs.readFileSync(asset.source)).digest('hex');
+    assert.equal(actualSha,originals[key],'CardArt must match the approved source: '+key);
+  }
   assert.match(script,/const failed=media\.failedMedia/);
   assert.match(script,/row\?\.status==='TIMEOUT_16S'/);
   assert.match(script,/asset\.usePermissionGranted===true/);
