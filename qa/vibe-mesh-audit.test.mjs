@@ -60,6 +60,13 @@ test('리그 미연결 메쉬가 최저점을 끌어내리면 원인만 표시�
   assert.equal(result.diagnostics.separatedMeshes[0].nearestMesh,'Boot');
 });
 
+test('수리 후보 출력이 원본 또는 측정 JSON을 덮어쓰는 경로면 거부한다', () => {
+  const original=path.resolve('tools/vibe_mesh_audit.py');
+  assert.throws(()=>measure(original,{candidateOutput:original}),/INVALID_RIG_CANDIDATE_PATH/);
+  const output=path.join(os.tmpdir(),'rig-candidate-audit.json');
+  assert.throws(()=>measure(original,{out:output,candidateOutput:output}),/INVALID_RIG_CANDIDATE_PATH/);
+});
+
 test('빈 입력은 메쉬·리그 없음으로 실패한다', () => {
   const f=evaluateAudit({meshes:[],armatures:[]}).failures;
   assert.ok(f.includes('NO_MESH')&&f.includes('NO_ARMATURE'));
