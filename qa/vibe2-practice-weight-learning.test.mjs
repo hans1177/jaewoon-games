@@ -92,7 +92,17 @@ test('Roblox practice compares frozen baseline and adapter on the same eval with
   assert.match(workflow, /PRACTICE_ADAPTED_EVAL_LOSS=/);
   assert.match(workflow, /PRACTICE_FIXED_HOLDOUT_AB_VERIFIED=NO/);
   assert.match(workflow, /PRACTICE_NATIVE_RUNTIME_VERIFIED=NO/);
-  assert.match(workflow, /PRACTICE_EVAL_PASSES=2/);
+  assert.match(workflow, /PRACTICE_EVAL_PASSES=4/);
+  assert.match(trainer, /code_eval_rows = \[row for row in eval_rows if row.get\("sampleKind"\) == "CODE_IMPLEMENTATION"\]/);
+  assert.match(trainer, /code_adapted_evaluation = trainer.evaluate\(eval_dataset=code_eval_dataset\)/);
+  assert.match(trainer, /code_baseline_evaluation = trainer.evaluate\(eval_dataset=code_eval_dataset\)/);
+  assert.match(trainer, /"sampleCount": len\(code_eval_rows\)/);
+  assert.match(trainer, /"independentHoldoutVerified": False/);
+  assert.match(trainer, /"generalizationVerified": False/);
+  assert.match(workflow, /Roblox code-only evaluation or non-promotion scope missing/);
+  assert.match(workflow, /PRACTICE_CODE_BASELINE_EVAL_LOSS=/);
+  assert.match(workflow, /PRACTICE_CODE_ADAPTED_EVAL_LOSS=/);
+  assert.match(workflow, /PRACTICE_CODE_INDEPENDENT_HOLDOUT_VERIFIED=NO/);
 });
 
 test('automatic Roblox practice coalesces pending pushes and uses permitted small CPU model without changing canonical base', () => {

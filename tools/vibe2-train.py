@@ -386,10 +386,20 @@ def main():
     # never an independent holdout, native-runtime pass, or promotion authority.
     practice_eval_comparison = None
     if args.task_type == "roblox" and manifest.get("authority") == "PRACTICE_ONLY":
+        # Separate diagnostic: code-implementation rows only, from the existing
+        # disjoint evaluation set; never treat its small size as a fixed holdout.
+        code_eval_rows = [row for row in eval_rows if row.get("sampleKind") == "CODE_IMPLEMENTATION"]
+        if not code_eval_rows:
+            raise RuntimeError("Roblox practice has no code implementation evaluation rows")
+        code_eval_dataset = JsonlDataset(code_eval_rows)
+        code_adapted_evaluation = trainer.evaluate(eval_dataset=code_eval_dataset)
         with model.disable_adapter():
             baseline_evaluation = trainer.evaluate()
+            code_baseline_evaluation = trainer.evaluate(eval_dataset=code_eval_dataset)
         baseline_loss = float(baseline_evaluation.get("eval_loss", float("nan")))
         adapted_loss = float(eval_result.get("eval_loss", float("nan")))
+        code_baseline_loss = float(code_baseline_evaluation.get("eval_loss", float("nan")))
+        code_adapted_loss = float(code_adapted_evaluation.get("eval_loss", float("nan")))
         practice_eval_comparison = {
             "scope": "MATCHED_PRACTICE_EVAL_ONLY",
             "evalSha256": manifest.get("evalSha256"),
@@ -397,13 +407,28 @@ def main():
             "adaptedEvalLoss": adapted_loss,
             "lossReduction": baseline_loss - adapted_loss,
             "lowerEvalLoss": adapted_loss < baseline_loss,
+            "codeImplementation": {
+                "scope": "EXISTING_EVAL_SUBSET_ONLY",
+                "sampleCount": len(code_eval_rows),
+                "encodedWindows": len(code_eval_dataset),
+                "baselineEvalLoss": code_baseline_loss,
+                "adaptedEvalLoss": code_adapted_loss,
+                "lossReduction": code_baseline_loss - code_adapted_loss,
+                "lowerEvalLoss": code_adapted_loss < code_baseline_loss,
+                "independentHoldoutVerified": False,
+                "generalizationVerified": False,
+            },
             "fixedHoldoutABVerified": False,
             "robloxNativeRuntimeVerified": False,
             "runtimePromotionAllowed": False,
         }
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
     if practice_eval_comparison is not None:
-        losses.append(practice_eval_comparison["baselineEvalLoss"])
+        losses.extend([
+            practice_eval_comparison["baselineEvalLoss"],
+            practice_eval_comparison["codeImplementation"]["baselineEvalLoss"],
+            practice_eval_comparison["codeImplementation"]["adaptedEvalLoss"],
+        ])
     if not all(value == value and abs(value) != float("inf") for value in losses):
         raise RuntimeError("non-finite loss: adapter is not saved")
     model.save_pretrained(output / "adapter")

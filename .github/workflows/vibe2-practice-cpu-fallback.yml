@@ -377,6 +377,13 @@ jobs:
             throw 'Roblox baseline comparison missing or incorrectly claims promotion authority'
           }
           if ($metadata.codeImplementationEvalSamples -lt 1) { throw 'Roblox implementation eval coverage missing' }
+          $codeEval = $comparison.codeImplementation
+          if ($null -eq $codeEval -or $codeEval.scope -ne 'EXISTING_EVAL_SUBSET_ONLY' -or
+              $codeEval.sampleCount -ne $metadata.codeImplementationEvalSamples -or
+              $codeEval.encodedWindows -lt 1 -or $codeEval.independentHoldoutVerified -ne $false -or
+              $codeEval.generalizationVerified -ne $false) {
+            throw 'Roblox code-only evaluation or non-promotion scope missing'
+          }
           $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
           if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
           $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -407,7 +414,12 @@ jobs:
           Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
           Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
           Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
-          Write-Host 'PRACTICE_EVAL_PASSES=2'
+          Write-Host 'PRACTICE_EVAL_PASSES=4'
+          Write-Host "PRACTICE_CODE_EVAL_SAMPLES=$($codeEval.sampleCount)"
+          Write-Host "PRACTICE_CODE_BASELINE_EVAL_LOSS=$($codeEval.baselineEvalLoss)"
+          Write-Host "PRACTICE_CODE_ADAPTED_EVAL_LOSS=$($codeEval.adaptedEvalLoss)"
+          Write-Host "PRACTICE_CODE_MATCHED_EVAL_IMPROVED=$($codeEval.lowerEvalLoss)"
+          Write-Host 'PRACTICE_CODE_INDEPENDENT_HOLDOUT_VERIFIED=NO'
           Write-Host "PRACTICE_BASELINE_EVAL_LOSS=$($comparison.baselineEvalLoss)"
           Write-Host "PRACTICE_ADAPTED_EVAL_LOSS=$($comparison.adaptedEvalLoss)"
           Write-Host "PRACTICE_LOSS_REDUCTION=$($comparison.lossReduction)"
