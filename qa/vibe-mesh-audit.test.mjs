@@ -39,6 +39,27 @@ test('기본 도형으로 만든 메쉬가 많으면 고장은 아니지만 제�
   assert.ok(v.productionBlockers[0].startsWith('PRIMITIVE_BUILT_MESH:5/10'));
 });
 
+test('리그 미연결 메쉬가 최저점을 끌어내리면 원인만 표시하고 품질 불합격은 유지한다', () => {
+  const a=good();
+  a.groundOffsetRatio=-0.2691;
+  a.groundEvidence={lowestMesh:'Icosphere',lowestMeshMinZ:-0.7,
+    lowestBoundMesh:'Boot',lowestBoundMeshMinZ:0.01,boundGroundOffsetRatio:0.004,
+    orphanMeshesBelowBoundGround:['Icosphere']};
+  a.meshes.push({name:'Icosphere',orphan:true,minZ:-0.7,nearestMesh:'Boot',
+    unweightedVertices:null,maxInfluences:0,unnormalizedVertices:0,nearestGapRatio:0.06,primitiveLike:false});
+  const result=evaluateAudit(a);
+  assert.equal(result.pass,false);
+  assert.equal(result.productionEligible,false);
+  assert.ok(result.failures.includes('ORPHAN_MESH:Icosphere'));
+  assert.ok(result.failures.includes('GROUND_OFFSET:-0.2691'));
+  assert.equal(result.diagnostics.lowestMesh,'Icosphere');
+  assert.equal(result.diagnostics.lowestBoundMesh,'Boot');
+  assert.equal(result.diagnostics.boundGroundOffsetRatio,0.004);
+  assert.deepEqual(result.diagnostics.orphanMeshesBelowBoundGround,['Icosphere']);
+  assert.deepEqual(result.diagnostics.detachedMeshes.map(m=>m.name),['Icosphere']);
+  assert.equal(result.diagnostics.separatedMeshes[0].nearestMesh,'Boot');
+});
+
 test('빈 입력은 메쉬·리그 없음으로 실패한다', () => {
   const f=evaluateAudit({meshes:[],armatures:[]}).failures;
   assert.ok(f.includes('NO_MESH')&&f.includes('NO_ARMATURE'));
@@ -73,7 +94,10 @@ test('실제 Blender: 캐릭터 공장 결과가 리그 검사를 통과하고 �
     ?spawnSync(env,['--background','--factory-startup','--python-exit-code','1','--python',script,'--','--output-dir',dir,'--genre','fantasy'],{encoding:'utf8',maxBuffer:1<<26})
     :spawnSync('python3',['-c',`import sys,runpy;sys.argv=['x','--','--output-dir',${JSON.stringify(dir)},'--genre','fantasy'];runpy.run_path(${JSON.stringify(script)},run_name='__main__')`],{encoding:'utf8',maxBuffer:1<<26});
   assert.equal(r.status,0,String(r.stderr).slice(-400));
-  const v=evaluateAudit(measure(path.join(dir,'fantasy.blend')));
+  const raw=measure(path.join(dir,'fantasy.blend'));
+  const v=evaluateAudit(raw);
+  assert.ok(raw.groundEvidence&&typeof raw.groundEvidence.lowestMesh==='string');
+  assert.ok(Number.isFinite(raw.groundEvidence.boundGroundOffsetRatio));
   assert.deepEqual(v.failures,[]);
   assert.ok(v.stats.bones>=40&&v.stats.actions>=6);
   assert.equal(v.productionEligible,false); // 구·큐브로 만든 인형은 제품 에셋 후보가 아니다
