@@ -703,6 +703,58 @@ local HERO_TILE = {
 	new_spain = Vector2.new(256, 672), -- 디에고 모랄레스
 	portugal = Vector2.new(512, 672), -- 이네스 카브랄
 }
+-- 연도와 항구에 맞는 승인·등록 초상을 고른다.
+function H.heroPortraitAsset(nationId)
+	local year = if view and view.player and not newGameMode then view.player.year else chosenYear
+	local atlas = if year and year >= 1700 then AssetIds["Portraits/heroes_color"]
+		elseif year and year < 1600 then AssetIds["Portraits/heroes_1517"] else nil
+	local tile = HERO_TILE[nationId]
+	if atlas and tile then
+		return atlas, tile, HERO_SIZE
+	end
+	local oldTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[nationId] else nil
+	if oldTile then
+		return HERO_NEW_ATLAS, oldTile, HERO_NEW_SIZE
+	end
+	return HERO_ATLAS, tile, HERO_SIZE
+end
+
+do
+	local countries = {
+		north_sea = { "england", "netherlands", "denmark", "sweden", "norway", "scotland", "germany" },
+		east_africa = { "swahili", "somalia", "mozambique" },
+		east_asia = { "china", "japan", "korea", "macau", "formosa" },
+		south_asia = { "gujarat", "portuguese_india", "malabar", "ceylon", "coromandel", "bengal" },
+		southeast_asia = { "malay", "vietnam", "java", "celebes", "moluccas", "borneo" },
+	}
+	local regionByCountry = {}
+	for region, ids in countries do
+		for _, id in ids do
+			regionByCountry[id] = region
+		end
+	end
+
+	function H.facilityPortraitAsset(portId, role)
+		local playerView = view and view.player
+		local port = portId and PortData.Ports[portId]
+		if not port or not playerView or (playerView.year or 0) < 1700 or (role ~= "merchant" and role ~= "tavern") then
+			return nil
+		end
+		local region = regionByCountry[port.country]
+		local atlas = region and AssetIds["Portraits/npc_" .. region]
+		if not atlas then
+			return nil
+		end
+		local seed = 0
+		for index = 1, #portId do
+			seed = (seed * 31 + string.byte(portId, index)) % 101
+		end
+		local rotation = math.floor((playerView.day or 0) / 30)
+		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
+		return atlas, Vector2.new(cell % 5 * 200, math.floor(cell / 5) * 200), Vector2.new(200, 200)
+	end
+end
+
 local function setPortrait(groupName)
 	-- 새 게임 선택 중에는 선택한 주인공, 이어하기에서는 저장된 주인공의 얼굴을 유지한다.
 	local heroNation = nil
@@ -717,29 +769,30 @@ local function setPortrait(groupName)
 			end
 		end
 	end
-	local identity = if heroNation then groupName .. ":" .. heroNation else groupName
+	local tile = PORTRAIT_GROUP[groupName]
+	local portId = view and view.player and view.player.portId
+	local regionalId, regionalOffset, regionalSize = H.facilityPortraitAsset(portId, tile)
+	local heroId, heroOffset, heroSize
+	if heroNation then
+		heroId, heroOffset, heroSize = H.heroPortraitAsset(heroNation)
+	end
+	local imageId = heroId or regionalId
+		or (if tile and FACILITY_ATLAS then FACILITY_ATLAS
+			elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
+			elseif tile == "merchant" then AssetIds["Portraits/merchant"] else nil)
+	local offset = heroOffset or regionalOffset
+		or (if imageId and imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
+			elseif imageId and imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else nil)
+	local identity = groupName .. ":" .. tostring(heroNation or portId or "") .. ":" .. tostring(imageId) .. ":" .. tostring(offset)
 	if portraitKey == identity then
 		return
 	end
 	portraitKey = identity
-	local tile = PORTRAIT_GROUP[groupName]
-	local heroTile = if heroNation then HERO_TILE[heroNation] else nil
-	local newHeroTile = if heroNation and HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[heroNation] else nil
-	local imageId = if newHeroTile then HERO_NEW_ATLAS
-		elseif heroTile and HERO_ATLAS then HERO_ATLAS
-		elseif tile and FACILITY_ATLAS then FACILITY_ATLAS
-		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
-		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
 	portraitFrame.Visible = imageId == nil
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
-	portraitImage.ImageRectOffset = if newHeroTile then newHeroTile
-		elseif imageId == HERO_ATLAS and heroTile then heroTile
-		elseif imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
-		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else Vector2.zero
-	portraitImage.ImageRectSize = if newHeroTile then HERO_NEW_SIZE
-		elseif imageId == HERO_ATLAS and heroTile then HERO_SIZE
-		elseif tile and (imageId == FACILITY_ATLAS or imageId == PORTRAIT_ATLAS) then PORTRAIT_SIZE else Vector2.zero
+	portraitImage.ImageRectOffset = offset or Vector2.zero
+	portraitImage.ImageRectSize = heroSize or regionalSize or (if offset then PORTRAIT_SIZE else Vector2.zero)
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -1853,10 +1906,7 @@ end
 
 -- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
 local function heroPortrait(parent, nationId, w, h)
-	local newTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[nationId] else nil
-	local tile = newTile or HERO_TILE[nationId]
-	local atlas = if newTile then HERO_NEW_ATLAS else HERO_ATLAS
-	local size = if newTile then HERO_NEW_SIZE else HERO_SIZE
+	local atlas, tile, size = H.heroPortraitAsset(nationId)
 	if atlas and tile then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "HeroPortrait"
@@ -2881,7 +2931,8 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		local merchantImageId = FACILITY_ATLAS or PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
+		local regionalId, regionalOffset, regionalSize = H.facilityPortraitAsset(p.portId, "merchant")
+		local merchantImageId = regionalId or FACILITY_ATLAS or PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
 		if merchantImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "MerchantPortrait"
@@ -2891,8 +2942,8 @@ local function openTradeHall()
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
 			photo.Image = "rbxassetid://" .. tostring(merchantImageId)
-			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.merchant elseif PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
-			photo.ImageRectSize = if FACILITY_ATLAS or PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
+			photo.ImageRectOffset = regionalOffset or (if FACILITY_ATLAS then FACILITY_TILE.merchant elseif PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero)
+			photo.ImageRectSize = regionalSize or (if FACILITY_ATLAS or PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero)
 			photo.Parent = left
 		else
 			local vf = Instance.new("ViewportFrame")
@@ -5287,10 +5338,7 @@ renderTitle = function()
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
 		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
-		local newFaceTile = if HERO_NEW_ATLAS then (if HERO_PERIOD_ATLAS then HERO_TILE else HERO_NEW_TILE)[n.id] else nil
-		local faceTile = newFaceTile or HERO_TILE[n.id]
-		local faceAtlas = if newFaceTile then HERO_NEW_ATLAS else HERO_ATLAS
-		local faceSize = if newFaceTile then HERO_NEW_SIZE else HERO_SIZE
+		local faceAtlas, faceTile, faceSize = H.heroPortraitAsset(n.id)
 		if faceAtlas and faceTile then
 			local face = Instance.new("ImageLabel")
 			face.Name = "NationHeroPortrait"
