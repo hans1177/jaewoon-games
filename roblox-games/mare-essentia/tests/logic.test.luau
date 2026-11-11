@@ -2008,6 +2008,26 @@ do
 	check("지식: 잘못된 학문은 거부", select(1, act(stP, "Present", { disc = "alchemy" })) == false)
 	stP.portId = "seville"
 	check("지식: 학회 없는 항구에서는 발표 불가", select(1, act(stP, "Present", { disc = "physics" })) == false)
+	-- 공동 발표
+	local stJ = newState("england")
+	stJ.portId = "london"
+	stJ.reported = {}
+	check("공동발표: 이해한 지식이 없으면 불가", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
+	for _, id in { "phy_buoyancy", "phy_lever" } do
+		stJ.reported[id] = true
+	end
+	stJ.cargo.glass = 4
+	local r0 = S.Knowledge.researchOf(stJ, "london")
+	local okJ = act(stJ, "JointPresent", { disc = "physics" })
+	check("공동발표: 성공하면 항구 기술 점수가 오름", okJ == true and (stJ.portTech.london.physics or 0) >= 4 and stJ.academy.joint == 1)
+	check("공동발표: 수집품이 기증됨", (stJ.cargo.glass or 0) <= 1)
+	check("공동발표: 쿨타임", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
+	stJ.portTech.london.physics = 60
+	check("공동발표: 기술이 오르면 연구 성과도 오름", S.Knowledge.researchOf(stJ, "london") > r0)
+	local ser = S.State.sanitize(S.State.serialize(stJ))
+	check("공동발표: 저장/불러오기", ser.portTech.london.physics == 60 and ser.academy.joint == 1)
+	stJ.portId = "seville"
+	check("공동발표: 학자 없는 항구 불가", select(1, act(stJ, "JointPresent", { disc = "physics" })) == false)
 	-- 박람회
 	local stE = newState("england")
 	stE.portId = "london"
