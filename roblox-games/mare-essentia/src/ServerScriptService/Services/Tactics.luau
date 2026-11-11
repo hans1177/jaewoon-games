@@ -173,7 +173,7 @@ return function(D, S)
 		local prev = state.tactics.cleared[b.siteId]
 		local order = { S = 3, A = 2, B = 1 }
 		if not prev or (order[rank] or 0) > (order[prev.rank] or 0) then
-			state.tactics.cleared[b.siteId] = { rank = rank, turns = b.turn - 1, biome = b.biome }
+			state.tactics.cleared[b.siteId] = { rank = rank, turns = b.turn - 1, biome = b.biome, objective = b.objective }
 		end
 	end
 

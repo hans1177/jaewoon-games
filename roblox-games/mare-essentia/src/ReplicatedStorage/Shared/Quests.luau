@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank"
+	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -15,6 +15,7 @@ export type Quest = {
 	rewardCareer: string?, -- "trade" | "adventure" | "battle"
 	rewardXp: number,
 	fieldId: string?, -- kind "field": 이 분야의 도감 카드 수
+	objective: string?, -- kind "tactics_goal": 이 목표(rout/boss/survive/reach)로 깬 지점 수
 	biome: string?, -- kind "tactics_biome": 이 장소 종류(TacticsMaps 의 biome)의 지상 전술 탐험을 깬 지점 수
 	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
 	minAffinity: number?,
@@ -211,6 +212,10 @@ local Quests: { Quest } = {
 	{ id = "q_tac_garden", name = "수확철의 불청객", summary = "정원·과수원 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "garden", amount = 1, rewardCoins = 700, rewardFame = 18, rewardCareer = "adventure", rewardXp = 70 },
 	{ id = "q_tac_quarry", name = "하얀 돌 비탈", summary = "채석장 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "quarry", amount = 1, rewardCoins = 1200, rewardFame = 30, rewardCareer = "adventure", rewardXp = 100, rewardCardId = "min_marble" },
 	{ id = "q_tac_plain", name = "들판의 길목", summary = "들판 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "plain", amount = 1, rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 60 },
+	{ id = "q_tac_reach", name = "적진 돌파", summary = "도착 지점에 닿는 지상 전술 탐험 2곳 성공", kind = "tactics_goal", objective = "reach", amount = 2, rewardCoins = 1600, rewardFame = 40, rewardCareer = "adventure", rewardXp = 140 },
+	{ id = "q_tac_survive", name = "끝까지 버텨라", summary = "버티기 지상 전술 탐험 2곳 성공", kind = "tactics_goal", objective = "survive", amount = 2, rewardCoins = 1800, rewardFame = 45, rewardCareer = "battle", rewardXp = 150 },
+	{ id = "q_tac_boss", name = "두목 사냥", summary = "두목을 쓰러뜨리는 지상 전술 탐험 4곳 성공", kind = "tactics_goal", objective = "boss", amount = 4, rewardCoins = 3000, rewardFame = 70, rewardCareer = "battle", rewardXp = 220 },
+	{ id = "q_tac_rout", name = "깨끗이 소탕", summary = "적을 모두 물리치는 지상 전술 탐험 4곳 성공", kind = "tactics_goal", objective = "rout", amount = 4, rewardCoins = 2600, rewardFame = 60, rewardCareer = "battle", rewardXp = 200 },
 }
 
 local ById: { [string]: Quest } = {}

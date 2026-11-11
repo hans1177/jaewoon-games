@@ -466,6 +466,7 @@ return function(D)
 						rank = rec.rank,
 						turns = math.floor(num(rec.turns, 0, 0, 999)),
 						biome = if type(rec.biome) == "string" then string.sub(rec.biome, 1, 24) else "",
+						objective = if type(rec.objective) == "string" then string.sub(rec.objective, 1, 24) else "",
 					}
 				end
 			end
