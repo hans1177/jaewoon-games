@@ -14,7 +14,7 @@ const tmp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'gym-'));
 
 test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없는 것만 고른다', () => {
   const root=tmp();fs.mkdirSync(path.join(root,'a'));
-  for(const f of ['ok.obj','blocked.obj','derived.obj','pay.obj'])fs.writeFileSync(path.join(root,'a',f),'o');
+  for(const f of ['ok.obj','blocked.obj','derived.obj','pay.obj'])fs.writeFileSync(path.join(root,'a',f),'o valid\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
   const reg={assets:[
     {id:'ok',license:'CC0',family:'PROP',sourceFiles:['a/ok.obj']},
     {id:'blocked',license:'CC0',family:'PROP',sourceFiles:['a/blocked.obj'],securityBlocked:true},
@@ -67,27 +67,32 @@ test('메쉬·리그·관절·모션·액션부터 UI 버튼 아이콘까지 실
 
 test('분류는 출처/실물 없는 등록 자산을 연습 가능 또는 검증 통과로 오인하지 않는다',()=>{
   const root=tmp();fs.mkdirSync(path.join(root,'source'));
-  fs.writeFileSync(path.join(root,'source','hero.glb'),'practice fixture');
+  fs.writeFileSync(path.join(root,'source','hero.obj'),'o hero\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
+  fs.writeFileSync(path.join(root,'source','invalid.glb'),'practice fixture');
   const coverage=buildPracticeAssetCoverage({assets:[
-    {id:'safe',family:'CHARACTER',license:'CC0',sourceFiles:['source/hero.glb']},
+    {id:'safe',family:'CHARACTER',license:'CC0',sourceFiles:['source/hero.obj']},
+    {id:'invalid',family:'CHARACTER',license:'CC0',sourceFiles:['source/invalid.glb']},
     {id:'missing',family:'CHARACTER',license:'CC0',sourceFiles:['source/missing.glb']},
-    {id:'blocked',family:'PROP',license:'CC0',securityBlocked:true,sourceFiles:['source/hero.glb']},
+    {id:'blocked',family:'PROP',license:'CC0',securityBlocked:true,sourceFiles:['source/hero.obj']},
     {id:'ui',family:'UI',license:'unknown',sourceFiles:[]}
   ]},root);
-  assert.equal(coverage.cataloguedAssets,4);
+  assert.equal(coverage.cataloguedAssets,5);
   assert.equal(coverage.eligible3dAssets,1);
-  assert.equal(coverage.domains.RIG.catalogued,2);
+  assert.equal(coverage.domains.RIG.catalogued,3);
   assert.equal(coverage.domains.RIG.eligible3d,1);
   assert.equal(coverage.domains.BUTTON.catalogued,1);
   assert.equal(coverage.nativeRuntimeVerified,false);
   assert.equal(coverage.gameApplied,false);
   assert.ok(coverage.shortages.some(x=>x.id==='missing'));
+  assert.ok(coverage.shortages.some(x=>x.id==='invalid'));
+  assert.equal(pickParents({assets:[{id:'fake',license:'CC0',family:'PROP',sourceFiles:['source/invalid.glb']}]},root,1,mulberry32(5)).length,0);
 });
 
 test('게임 자산 전수 분류는 미등록 실파일을 포함하지만 임의 승인/런타임 성공으로 처리하지 않는다',()=>{
   const root=tmp();
   for(const [name,bytes] of [
     ['assets/common-ui/buttons/start.svg','<svg/>'],
+    ['assets/common-ui/icons/map.svg','<svg/>'],
     ['web-games/demo/assets/background.webp','webp'],
     ['roblox-games/demo/assets/footstep.wav','wave'],
     ['unity-games/demo/Assets/wood.mat','material']
@@ -97,14 +102,17 @@ test('게임 자산 전수 분류는 미등록 실파일을 포함하지만 임�
   }
   const report=buildPracticeAssetCoverage({assets:[]},root);
   assert.equal(report.registryAssets,0);
-  assert.equal(report.observedRepositoryMediaFiles,4);
-  assert.equal(report.cataloguedAssets,4);
+  assert.equal(report.observedRepositoryMediaFiles,5);
+  assert.equal(report.cataloguedAssets,5);
   assert.equal(report.eligible3dAssets,0);
   assert.ok(report.domains.BUTTON.catalogued>=1);
   assert.ok(report.domains.ICON.catalogued>=1);
   assert.ok(report.domains.ENVIRONMENT.catalogued>=1);
   assert.ok(report.domains.AUDIO.catalogued>=1);
   assert.ok(report.domains.MATERIAL.catalogued>=1);
+  assert.equal(report.domains.BUTTON.catalogued,1);
+  assert.equal(report.domains.ICON.catalogued,1);
+  assert.equal(report.domains.UI.catalogued,2);
   assert.equal(report.gameApplied,false);
 });
 
