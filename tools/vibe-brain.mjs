@@ -4,6 +4,7 @@
 // 안전장치: 두 게임의 소스 폴더 안 .luau 만, 파일 3개·변경 80줄 이하, 정확히 한 번 나오는 문장만 교체, 위험한 API·새 에셋 ID 금지, 하루 횟수·간격 제한.
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { askChain, buildProviders } from './vibe-llm.mjs';
 
 export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 3, minGapMin: 180, maxAttemptsPerOrder: 2, retryGapMin: 12 * 60, contextChars: 24000 };
@@ -12,7 +13,8 @@ export const CODE_KINDS = new Set(['error', 'ui', 'combat', 'background']);   //
 const ALLOWED = /^roblox-games\/(fantasy-survival\/(client|server|shared)|mare-essentia\/src)\/(?!(?:.*\/)?(?:Common\/|[^\/]*(?:VisualAssetIds|LookAssignment|SkillTreeIconIds|OpeningAssetIds)[^\/]*$)).+\.luau$/;
 const FORBIDDEN = /loadstring|getfenv|setfenv|HttpService|MarketplaceService|DataStoreService|MessagingService|:Kick\(|os\.execute|io\.open|require\(\s*\d{5,}/;
 
-export function emptyBrainLedger() { return { v: 1, attempts: {}, merged: [], day: { date: '', count: 0 } }; }
+export function emptyBrainLedger() { return { v: 1, attempts: {}, merged: [], day: { date: '', count: 0 }, providers: {} }; }
+export function emptyPlaybook() { return { v: 1, entries: {} }; }
 
 const today = now => new Date(now).toISOString().slice(0, 10);
 
@@ -80,7 +82,7 @@ export function findContext(root, order) {
   }).filter(c => c.body);
 }
 
-export function buildPrompt(order, ctx) {
+export function buildPrompt(order, ctx, examples = []) {
   return [
     'You are the repair brain of a Roblox game engine called Vibe. Fix exactly ONE issue with a minimal, safe code change.',
     'The game code is Luau (Roblox). Comments and UI text are Korean; keep that style.',
@@ -95,6 +97,7 @@ export function buildPrompt(order, ctx) {
     '- Prefer guarding against nil (early return, FindFirstChild, pcall) over restructuring. Do not rename or delete public functions.',
     '- If you cannot fix it safely with the code shown, output {"summary":"cannot fix","edits":[]}.',
     '',
+    ...(examples.length ? ['PAST FIXES THAT WERE CONFIRMED TO WORK ON SIMILAR ISSUES (style reference only, do not copy blindly):', ...examples.map(e => `- issue: ${e.sig}\n  edit: ${JSON.stringify(e.edits[0]).slice(0, 700)}`), ''] : []),
     'CODE (line-numbered excerpts):',
     ...ctx.map(c => `--- FILE: ${c.file} (lines ${c.from}-${c.to})\n${c.body}`)
   ].join('\n');
@@ -149,21 +152,123 @@ export function applyEdits(root, parsed) {
   return touched;
 }
 
+
+// ======================= 학습: 공급자 통계 · 플레이북(고친 방법 기억) · 결과 라벨 · 학습용 데이터 =======================
+const QUOTA_REST_MS = 6 * 3600000;        // 한도 초과(429)면 6시간 쉰다
+const OUTAGE_REST_MS = 15 * 60000;        // 일시 장애(5xx)면 15분 쉰다
+
+// 한도가 끝난 모델은 건너뛰고, 계속 실패(3번 이상, 성공률 30% 미만)하는 모델은 순서 맨 뒤로 보낸다. 나머지는 원래 우선순위를 지킨다.
+export function rankProviders(providers, stats = {}, now = Date.now()) {
+  const idx = new Map(providers.map((p, i) => [p.name, i]));
+  const demoted = p => { const s = stats[p.name]; return s && s.ok + s.fail >= 3 && s.ok / (s.ok + s.fail) < 0.3 ? 1 : 0; };
+  return providers.filter(p => !(stats[p.name]?.quotaUntil > now)).sort((a, b) => demoted(a) - demoted(b) || idx.get(a.name) - idx.get(b.name));
+}
+
+// trace: askChain 의 시도 기록. validProvider: 수정안이 검증까지 통과한 공급자 이름(없으면 null)
+export function updateProviderStats(stats, trace = [], validProvider = null, now = Date.now()) {
+  const out = JSON.parse(JSON.stringify(stats || {}));
+  for (const t of trace) {
+    const s = out[t.name] || { ok: 0, fail: 0 };
+    if (t.ok) { if (validProvider === t.name || validProvider === null) s.ok++; else s.fail++; }
+    else {
+      s.fail++;
+      if (t.status === 429 || /429|quota|RESOURCE_EXHAUSTED/i.test(t.message || '')) s.quotaUntil = now + QUOTA_REST_MS;
+      else if (t.status >= 500 || /_HTTP_5\d\d/.test(t.message || '')) s.quotaUntil = Math.max(s.quotaUntil || 0, now + OUTAGE_REST_MS);
+    }
+    s.lastAt = now;
+    out[t.name] = s;
+  }
+  return out;
+}
+
+// 문제의 "모양": 숫자·ID 를 지우고 첫 오류 문장만 남겨 같은 종류의 문제를 알아본다.
+export function signature(order) {
+  const t = String(order.text || '').replace(/rbxassetid:\/\/\d+/g, 'ID').replace(/\d+/g, 'N').replace(/\s+/g, ' ').toLowerCase().trim();
+  const m = t.match(/첫 오류:\s*(.*)$/);
+  return `${order.kind}:${String(order.fingerprint || '').split(':')[1] || ''}:${(m ? m[1] : t).slice(0, 160)}`;
+}
+
+const tokens = sig => new Set(String(sig).split(/[^a-z가-힣_]+/).filter(w => w.length > 2));
+export function similarity(a, b) {
+  const A = tokens(a), B = tokens(b);
+  if (!A.size || !B.size) return 0;
+  let n = 0; for (const x of A) if (B.has(x)) n++;
+  return n / (A.size + B.size - n);
+}
+
+const editsKey = edits => crypto.createHash('sha1').update(JSON.stringify(edits)).digest('hex').slice(0, 10);
+
+// 같은 모양의 문제를 이미 "해결 확인"된 방법으로 고친 적이 있으면, 모델을 부르지 않고 그 방법을 다시 적용한다.
+export function playbookReplay({ order, playbook, root }) {
+  const sig = signature(order);
+  const cands = Object.entries(playbook.entries || {}).filter(([, e]) => e.state === 'proven' && e.sig === sig && e.game === order.game)
+    .sort((a, b) => b[1].successes - a[1].successes);
+  for (const [key, e] of cands) {
+    if (!validateEdits(root, order, { edits: e.edits }).length) return { key, entry: e, parsed: { summary: e.summary + ' (플레이북 재적용)', edits: e.edits } };
+  }
+  return null;
+}
+
+// 비슷한 문제를 해결한 사례를 모델에게 예시로 보여 준다(같은 게임이 아니어도 모양이 비슷하면).
+export function examplesFor(order, playbook, k = 2) {
+  const sig = signature(order);
+  return Object.values(playbook.entries || {}).filter(e => e.state === 'proven').map(e => ({ e, sim: similarity(sig, e.sig) }))
+    .filter(x => x.sim >= 0.2).sort((a, b) => b.sim - a.sim || b.e.successes - a.e.successes).slice(0, k).map(x => x.e);
+}
+
+export function addCandidate(playbook, { order, parsed, provider, now = Date.now() }) {
+  const out = JSON.parse(JSON.stringify(playbook));
+  const sig = signature(order), key = sig + '#' + editsKey(parsed.edits);
+  out.entries[key] = out.entries[key] || { sig, kind: order.kind, game: order.game, edits: parsed.edits, summary: parsed.summary, provider, state: 'candidate', successes: 0, failures: 0, at: now };
+  return { playbook: out, key };
+}
+
+// 병합된 수정이 실제로 문제를 없앴는지 지시서로 확인해 라벨을 붙이고 플레이북을 갱신한다.
+// 지시서가 닫혔으면 RESOLVED(해결 확인 → proven), 6시간이 지나도 열려 있으면 NOT_RESOLVED(실패 → 3번 실패하면 bad).
+export function labelOutcomes({ ledger, playbook, orders, now = Date.now() }) {
+  const L = JSON.parse(JSON.stringify(ledger)), P = JSON.parse(JSON.stringify(playbook));
+  const byFp = Object.fromEntries((orders || []).map(o => [o.fingerprint, o]));
+  let changed = 0;
+  for (const m of L.merged || []) {
+    if (m.label) continue;
+    const o = byFp[m.fp], entry = P.entries[m.pbKey];
+    if (o && o.resolvedAt && o.resolvedAt > m.at) { m.label = 'RESOLVED'; if (entry) { entry.successes++; entry.state = 'proven'; } changed++; }
+    else if ((!o || !o.resolvedAt) && now - m.at > 6 * 3600000) { m.label = 'NOT_RESOLVED'; if (entry) { entry.failures++; if (entry.failures >= 3 || entry.successes === 0 && entry.failures >= 2) entry.state = 'bad'; } changed++; }
+  }
+  return { ledger: L, playbook: P, changed };
+}
+
+// 학습용 기록: 키처럼 보이는 글자는 지우고, 길이를 제한한다.
+export function sanitize(text, max = 20000) {
+  return String(text || '').replace(/AIza[0-9A-Za-z_\-]{30,}/g, '[KEY]').replace(/\b(?:sk|gsk|ghp|github_pat)_[0-9A-Za-z_\-]{16,}/g, '[KEY]').replace(/Bearer\s+[0-9A-Za-z._\-]{16,}/g, 'Bearer [KEY]').slice(0, max);
+}
+
+export function datasetLine({ order, prompt, responseText, provider, outcome, rejected = [], now = Date.now() }) {
+  return JSON.stringify({ at: now, sig: signature(order), kind: order.kind, game: order.game, provider, outcome, rejected, prompt: sanitize(prompt), response: sanitize(responseText, 8000) });
+}
+
 // 한 바퀴: 고르고 → 묻고 → 검증하고 → 적용한다. llm 은 {text, provider} 를 주는 함수(테스트에서 가짜로 바꾼다).
-export async function runBrain({ orders, ledger, root, llm, now = Date.now(), log = () => {} }) {
+export async function runBrain({ orders, ledger, root, llm, playbook = emptyPlaybook(), now = Date.now(), log = () => {} }) {
   const why = gate(ledger, now);
   if (why) return { ok: false, skipped: why };
   const order = pickOrder(orders, ledger, now);
   if (!order) return { ok: false, skipped: '고칠 수 있는 열린 지시서가 없다' };
+  // 1) 같은 모양의 문제를 해결한 적이 있으면 모델 없이 그 방법을 다시 쓴다(무료 한도도 아낀다)
+  const replay = playbookReplay({ order, playbook, root });
+  if (replay) {
+    const files = applyEdits(root, replay.parsed);
+    return { ok: true, order, provider: 'playbook', summary: replay.parsed.summary, files, edits: replay.parsed.edits, pbKey: replay.key, sig: signature(order), replayed: true };
+  }
   const ctx = findContext(root, order);
   if (!ctx.length) return { ok: false, order, skipped: '관련 코드를 찾지 못했다', attempted: true };
-  const prompt = buildPrompt(order, ctx);
+  const prompt = buildPrompt(order, ctx, examplesFor(order, playbook));
   let res, parsed;
-  try { res = await llm(prompt); parsed = parseEdits(res.text); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true }; }
+  try { res = await llm(prompt); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
+  try { parsed = parseEdits(res.text); } catch (e) { return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: [e.message], attempted: true }; }
   const errs = validateEdits(root, order, parsed);
-  if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, rejected: errs, attempted: true }; }
+  if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: errs, attempted: true }; }
   const files = applyEdits(root, parsed);
-  return { ok: true, order, provider: res.provider, summary: parsed.summary, files };
+  return { ok: true, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, summary: parsed.summary, files, edits: parsed.edits, sig: signature(order) };
 }
 
 export function recordAttempt(ledger, result, now = Date.now()) {
@@ -177,7 +282,7 @@ export function recordAttempt(ledger, result, now = Date.now()) {
 
 export function recordMerged(ledger, result, pr, now = Date.now()) {
   const out = JSON.parse(JSON.stringify(ledger));
-  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider }].slice(-30);
+  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider, sig: result.sig || '', pbKey: result.pbKey || '' }].slice(-30);
   out.day = out.day?.date === today(now) ? { date: today(now), count: out.day.count + 1 } : { date: today(now), count: 1 };
   return out;
 }
@@ -188,22 +293,39 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const a = process.argv.slice(2);
   const arg = n => { const i = a.indexOf('--' + n); return i >= 0 ? a[i + 1] : ''; };
   const ledgerFile = arg('ledger') || 'build/brain-ledger.json', outFile = arg('out') || 'build/brain-result.json';
+  const playbookFile = arg('playbook') || 'build/brain-playbook.json', datasetFile = arg('dataset') || 'build/brain-dataset.jsonl';
+  const save = (f, v) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, typeof v === 'string' ? v : JSON.stringify(v, null, 2) + '\n'); };
   if (arg('record-merged')) {          // 병합이 끝난 뒤 워크플로가 호출: 하루 횟수·간격 장부에 기록
     const r = readJson(outFile, {});
-    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint }, files: r.files || [], provider: r.provider }, Number(arg('record-merged')));
-    fs.writeFileSync(ledgerFile, JSON.stringify(L, null, 2) + '\n');
+    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint }, files: r.files || [], provider: r.provider, sig: r.sig, pbKey: r.pbKey }, Number(arg('record-merged')));
+    save(ledgerFile, L);
     console.log('병합 기록 완료');
     process.exit(0);
   }
   const orders = readJson(arg('orders') || 'build/autopilot-orders.json', []);
   let ledger = readJson(ledgerFile, emptyBrainLedger());
+  let playbook = readJson(playbookFile, emptyPlaybook());
+  ledger.providers ||= {};
+  // 1) 지난번 병합이 문제를 없앴는지 확인해 배운다
+  const lab = labelOutcomes({ ledger, playbook, orders });
+  ledger = lab.ledger; playbook = lab.playbook;
+  if (lab.changed) console.log(`지난 병합 ${lab.changed}건의 결과를 확인해 플레이북에 반영`);
+  // 2) 무료 한도가 남은 모델을 우선순위대로
   const providers = await buildProviders({ allowGemini: process.env.BRAIN_ALLOW_GEMINI !== 'no', log: m => console.log(m) });
-  console.log('모델 순서:', providers.map(p => p.name).join(' → ') || '(없음)');
-  const llm = prompt => askChain({ prompt, providers, log: m => console.log(m) });
-  const result = await runBrain({ orders, ledger, root: process.cwd(), llm, log: m => console.log(m) });
+  const ranked = rankProviders(providers, ledger.providers);
+  console.log('모델 순서:', ranked.map(p => p.name).join(' → ') || '(없음)', providers.length - ranked.length ? `(한도로 쉬는 모델 ${providers.length - ranked.length}개)` : '');
+  const llm = prompt => askChain({ prompt, providers: ranked, log: m => console.log(m) });
+  const result = await runBrain({ orders, ledger, root: process.cwd(), llm, playbook, log: m => console.log(m) });
+  // 3) 배운 것 기록
+  if (result.trace) ledger.providers = updateProviderStats(ledger.providers, result.trace, result.ok ? result.provider : (result.rejected ? '' : null));
+  if (result.ok && !result.replayed) { const c = addCandidate(playbook, { order: result.order, parsed: { summary: result.summary, edits: result.edits }, provider: result.provider }); playbook = c.playbook; result.pbKey = c.key; }
+  if (result.prompt && result.responseText) {
+    const line = datasetLine({ order: result.order, prompt: result.prompt, responseText: result.responseText, provider: result.provider, outcome: result.ok ? 'APPLIED' : 'REJECTED', rejected: result.rejected || [] });
+    fs.mkdirSync(path.dirname(datasetFile), { recursive: true });
+    fs.appendFileSync(datasetFile, line + '\n');
+  }
   ledger = recordAttempt(ledger, result);
-  fs.mkdirSync(path.dirname(outFile), { recursive: true });
-  fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2) + '\n');
-  fs.writeFileSync(outFile, JSON.stringify({ ok: result.ok, skipped: result.skipped || '', rejected: result.rejected || [], provider: result.provider || '', summary: result.summary || '', files: result.files || [], fingerprint: result.order?.fingerprint || '', kind: result.order?.kind || '', text: result.order?.text || '' }, null, 2) + '\n');
-  console.log(result.ok ? `적용: ${result.summary} (${result.files.join(', ')}) by ${result.provider}` : `건너뜀/거부: ${result.skipped || result.rejected?.join(',')}`);
+  save(ledgerFile, ledger); save(playbookFile, playbook);
+  save(outFile, { ok: result.ok, skipped: result.skipped || '', rejected: result.rejected || [], provider: result.provider || '', replayed: !!result.replayed, summary: result.summary || '', files: result.files || [], fingerprint: result.order?.fingerprint || '', kind: result.order?.kind || '', text: result.order?.text || '', sig: result.sig || '', pbKey: result.pbKey || '' });
+  console.log(result.ok ? `적용${result.replayed ? '(플레이북 재적용, 모델 호출 없음)' : ''}: ${result.summary} (${result.files.join(', ')}) by ${result.provider}` : `건너뜀/거부: ${result.skipped || result.rejected?.join(',')}`);
 }

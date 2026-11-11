@@ -38,6 +38,8 @@ jobs:
           mkdir -p build
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
+          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
+          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-dataset.jsonl?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-dataset.jsonl 2>/dev/null || rm -f build/brain-dataset.jsonl
       - name: Think (ask free models for one safe fix)
         env:
           GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
@@ -45,7 +47,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --ledger build/brain-ledger.json --out build/brain-result.json
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
         run: |
@@ -102,12 +104,20 @@ jobs:
           else
             echo "병합은 VIBE_BRAIN_MERGE=on 일 때만 한다. PR 만 열어 두었다."
           fi
-      - name: Save the brain ledger to vibe-gym-data (never main)
+      - name: Save the brain ledger, playbook and learning dataset to vibe-gym-data (never main)
         if: ${{ always() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
-          [ -f build/brain-ledger.json ] || exit 0
-          sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .sha 2>/dev/null || true)"
-          gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json" -f message="brain: ledger" -f branch=vibe-gym-data -f content="$(base64 -w0 build/brain-ledger.json)" ${sha:+-f sha="$sha"} >/dev/null && echo SAVED
+          put() {
+            local src="$1" dest="$2" sha
+            [ -f "$src" ] || return 0
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${dest}?ref=vibe-gym-data" --jq .sha 2>/dev/null || true)"
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${dest}" -f message="brain: ${dest}" -f branch=vibe-gym-data -f content="$(base64 -w0 "$src")" ${sha:+-f sha="$sha"} >/dev/null && echo "SAVED $dest"
+          }
+          # 학습용 기록은 2MB 를 넘으면 오래된 줄부터 버린다
+          if [ -f build/brain-dataset.jsonl ] && [ "$(stat -c %s build/brain-dataset.jsonl)" -gt 2000000 ]; then tail -c 1500000 build/brain-dataset.jsonl | sed '1d' > build/brain-dataset.tmp && mv build/brain-dataset.tmp build/brain-dataset.jsonl; fi
+          put build/brain-ledger.json brain-ledger.json
+          put build/brain-playbook.json brain-playbook.json
+          put build/brain-dataset.jsonl brain-dataset.jsonl
