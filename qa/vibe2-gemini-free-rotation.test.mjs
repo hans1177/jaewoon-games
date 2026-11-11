@@ -120,6 +120,8 @@ test('quota 429 rotates to the other model, honors Retry-After, and does not ret
     };
     const first=await requestGeminiFreePair({apiKey:'test-key-not-real',contents:[{role:'user',parts:[{text:'source'}]}],fetchImpl});
     assert.equal(first.text,'{"source":"candidate"}');
+    assert.equal(first.provider,'GEMINI');
+    assert.ok(GEMINI_FREE_MODELS.includes(first.model));
     assert.equal(urls.length,2);
     assert.notEqual(urls[0],urls[1]);
     assert.ok(urls.every(value=>GEMINI_FREE_MODELS.some(model=>value.includes(model))));
@@ -180,6 +182,8 @@ test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>
       }
     });
     assert.equal(response.text,'{"edits":[]}');
+    assert.equal(response.provider,'OPENROUTER');
+    assert.equal(response.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
     assert.equal(calls.length,3);
     const last=calls.at(-1),body=JSON.parse(last.options.body);
     assert.equal(last.url,'https://openrouter.ai/api/v1/chat/completions');
@@ -222,6 +226,8 @@ test('verified Groq free plan uses the pinned free-plan model and on-demand tier
       }
     });
     assert.equal(result.text,'{"ok":true}');
+    assert.equal(result.provider,'GROQ');
+    assert.equal(result.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
     assert.equal(calls.length,3);
     const groq=calls.at(-1);
     assert.equal(groq.url,'https://api.groq.com/openai/v1/chat/completions');
