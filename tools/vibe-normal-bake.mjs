@@ -11,6 +11,72 @@ import {runPython,findBlender} from './vibe-python.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url));
 export const LIMITS={minReduction:0.3,minNormalDeviation:0.006,maxLowTriangles:5000};
 
+// [노멀 연습 원본 분석] 실제 면 수를 보지 않고 평면 소품을 반복 굽는 낭비를 줄인다.
+// 메쉬 복제·보간·재질 생성 없이 승인된 원본의 정적 구조만 분석한다.
+export function inspectBakeSource(file){
+  const fail=reason=>({eligible:false,reason,triangles:0,skinned:false,animated:false});
+  let raw,ext,geometry;
+  try{
+    const stat=fs.statSync(file);
+    if(!stat.isFile()||stat.size<20||stat.size>64*1024*1024)return fail('SOURCE_SIZE_INVALID');
+    ext=path.extname(file).toLowerCase();
+    if(ext==='.obj'){
+      raw=fs.readFileSync(file,'utf8');
+      let triangles=0,vertices=0;
+      for(const row of raw.split(/\r?\n/)){
+        if(row.startsWith('v '))vertices++;
+        else if(row.startsWith('f '))triangles+=Math.max(0,row.trim().split(/\s+/).length-3);
+      }
+      geometry={triangles,vertices,skinned:false,animated:false};
+    }else if(ext==='.glb'){
+      const fd=fs.openSync(file,'r');
+      try{
+        const head=Buffer.alloc(20);
+        if(fs.readSync(fd,head,0,20,0)!==20||head.toString('ascii',0,4)!=='glTF'||
+          head.readUInt32LE(4)!==2||head.toString('ascii',16,20)!=='JSON')
+          return fail('GLB_HEADER_INVALID');
+        const length=head.readUInt32LE(12);
+        if(length<2||length>8*1024*1024||length+20>stat.size)return fail('GLB_JSON_INVALID');
+        const buf=Buffer.alloc(length);
+        if(fs.readSync(fd,buf,0,length,20)!==length)return fail('GLB_JSON_TRUNCATED');
+        raw=buf.toString('utf8');
+      }finally{fs.closeSync(fd);}
+      geometry=null;
+    }else if(ext==='.gltf'){
+      if(stat.size>8*1024*1024)return fail('GLTF_JSON_TOO_LARGE');
+      raw=fs.readFileSync(file,'utf8');geometry=null;
+    }else return fail('SOURCE_FORMAT_UNSUPPORTED');
+    if(!geometry){
+      const model=JSON.parse(raw);
+      const accessors=Array.isArray(model.accessors)?model.accessors:[];
+      let triangles=0;
+      for(const mesh of Array.isArray(model.meshes)?model.meshes:[])
+        for(const primitive of Array.isArray(mesh.primitives)?mesh.primitives:[]){
+          const mode=primitive.mode??4;
+          const idx=Number.isSafeInteger(primitive.indices)?primitive.indices:primitive.attributes?.POSITION;
+          const count=Number.isSafeInteger(idx)?Number(accessors[idx]?.count)||0:0;
+          if(mode===4)triangles+=Math.floor(count/3);
+          else if(mode===5||mode===6)triangles+=Math.max(0,count-2);
+        }
+      geometry={triangles,vertices:0,skinned:(model.skins||[]).length>0,animated:(model.animations||[]).length>0};
+    }
+    const reason=geometry.skinned||geometry.animated?'ANIMATED_ACTOR_REQUIRES_RIG_PRESERVING_AUTHORING':
+      geometry.triangles<1500?'SOURCE_HAS_INSUFFICIENT_GEOMETRY':'';
+    return {...geometry,eligible:!reason,reason:reason||null,
+      sourceType:ext,staticSourceInspected:true,nativeRuntimeVerified:false};
+  }catch(error){return fail('SOURCE_INSPECTION_FAILED:'+String(error.code||error.name||'UNKNOWN').slice(0,24))}
+}
+
+// [정적 선택] 베이크에 충분한 실제 면이 있고 관절·클립이 없는 CC0 원본을 우선한다.
+// 시드 순서는 동률에서만 사용한다. 세부가 없으면 원본을 변형해 결과를 조작하지 않는다.
+export function selectBakeParents(parents=[],max=3){
+  return parents.map(parent=>({...parent,sourceProfile:inspectBakeSource(parent.file)}))
+    .filter(parent=>parent.sourceProfile.eligible)
+    .sort((a,b)=>b.sourceProfile.triangles-a.sourceProfile.triangles||
+      String(a.id).localeCompare(String(b.id)))
+    .slice(0,Math.max(0,max));
+}
+
 // 합격 판정: 충분히 가벼워졌고(30% 이상 감소), 노멀맵에 실제 요철이 구워졌고(변화량), 저폴리 삼각형 수가 상한 이하인가
 export function evaluateBake(rec,limits=LIMITS){
   const failures=[];
