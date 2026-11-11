@@ -64,6 +64,19 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   assert.ok(session.assetCoverage.scannedCatalogs.some(x=>x.endsWith('asset-manifest.json')));
   assert.equal(session.assetCoverage.nativeRuntimeVerified,false);
   assert.equal(session.practiceDomains.BUTTON.trials,108);
+  assert.ok(session.rigStudy&&typeof session.rigStudy.measured==='boolean');
+  assert.equal(session.rigStudy.motionCurvesMeasured,false);
+  assert.equal(session.rigStudy.nativeRuntimeVerified,false);
+  assert.equal(session.rigStudy.gameApplied,false);
+  assert.ok(session.practiceDomains.RIG.trials>=1);
+  assert.ok(session.practiceDomains.JOINT.trials>=1);
+  assert.ok(session.practiceDomains.MOTION.unverifiedOrFailed>=1);
+  assert.ok(session.practiceDomains.ACTION.unverifiedOrFailed>=1);
+  if(session.rigStudy.measured){
+    assert.ok(Number.isSafeInteger(session.rigStudy.bones));
+    assert.ok(Array.isArray(session.rigStudy.clipNameMissing));
+    assert.equal(session.practiceDomains.RIG.staticMeasured<=1,true);
+  }
   assert.equal(session.practiceDomains.ICON.nativeRuntimeVerified,false);
   assert.equal(session.productionPromotionAllowed,false);
   // 모든 분야에서 시도 횟수는 통과·실패 합과 같아야 한다. 노멀맵 실패 누락 방지.
