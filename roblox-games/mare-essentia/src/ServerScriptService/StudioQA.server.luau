@@ -40,7 +40,7 @@ task.spawn(function()
 				local url = type(value) == "number" and ("rbxassetid://" .. value) or tostring(value)
 				if string.find(url, "rbxassetid://", 1, true) then
 					table.insert(ids, { key = moduleName .. "." .. tostring(key), url = url })
-					if moduleName == "AssetIds" and not (string.find(key, "Menu/", 1, true) or string.find(key, "Goods/", 1, true) or string.find(key, "Portraits/", 1, true)) then
+					if moduleName == "AssetIds" and not (string.find(key, "Menu/", 1, true) or string.find(key, "Goods/", 1, true) or string.find(key, "Portraits/", 1, true) or string.find(key, "CardArt/", 1, true)) then
 						modelReferences += 1
 					end
 				else
@@ -63,7 +63,7 @@ task.spawn(function()
 		local kind = nil
 		if string.find(it.key, "AudioIds") then
 			kind = "Sound"
-		elseif string.find(it.key, ".Menu/", 1, true) or string.find(it.key, ".Goods/", 1, true) or string.find(it.key, ".Portraits/", 1, true) then
+		elseif string.find(it.key, ".Menu/", 1, true) or string.find(it.key, ".Goods/", 1, true) or string.find(it.key, ".Portraits/", 1, true) or string.find(it.key, ".CardArt/", 1, true) then
 			kind = "ImageLabel"
 		end
 		if kind then
