@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -2062,39 +2060,6 @@
       "confirmations": 11,
       "confidence": 0.9167,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_a4bc6e16bde62c41e2d58d5f",
-          "taskId": "amusement-tycoon-studio-evolution-core-fun-v18",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221"
-          ],
-          "evidence": [
-            "base-main:e1966762ef113a266d9ea2b102e90f364521b267",
-            "actions-run:42909126669",
-            "reservation-id:42909126669:1",
-            "capability-application-sample:851fc2b5c7d0ded9d750"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_a39dce165e908719b033a5f3",
@@ -4167,6 +4132,39 @@
             "actions-run:43116111561",
             "reservation-id:43116111561:1",
             "capability-application-sample:74df263e3d123f2208c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_de9c1e6eb021d871dd33f33f",
+          "taskId": "amusement-tycoon-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:289081e825d7421d7ec450b35612e092b69e792e",
+            "actions-run:43118819232",
+            "reservation-id:43118819232:1",
+            "capability-application-sample:445d5c6660eade639062"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -6803,39 +6801,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b64bc87b365aea792d0787b8",
-          "taskId": "amusement-tycoon-studio-evolution-core-fun-v18",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221"
-          ],
-          "evidence": [
-            "base-main:e1966762ef113a266d9ea2b102e90f364521b267",
-            "actions-run:42909126669",
-            "reservation-id:42909126669:1",
-            "capability-application-sample:851fc2b5c7d0ded9d750"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0ec45348c7182a23e45a207e",
           "taskId": "amusement-tycoon-studio-evolution-core-fun-v18",
           "workKey": null,
@@ -8906,6 +8871,39 @@
             "actions-run:43116111561",
             "reservation-id:43116111561:1",
             "capability-application-sample:74df263e3d123f2208c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3f1633563eea4b0de05a64c3",
+          "taskId": "amusement-tycoon-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:289081e825d7421d7ec450b35612e092b69e792e",
+            "actions-run:43118819232",
+            "reservation-id:43118819232:1",
+            "capability-application-sample:445d5c6660eade639062"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189194,39 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_58e31fe7464f8a43173340d2",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v26",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:c092768bb13a1e2d9d04a831523f78e618702edc",
-            "actions-run:43077003007",
-            "reservation-id:43077003007:1",
-            "capability-application-sample:81f0862cacd9678dc2fe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_27e96984b438cdcaf26fbc58",
           "taskId": "exorcist-office-web-startup-spatial-repair-v26",
           "workKey": null,
@@ -191297,6 +191262,39 @@
             "actions-run:43114068647",
             "reservation-id:43114068647:1",
             "capability-application-sample:8ca8e0e050fb0756fc90"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4ddb8b85b276023b5f68ead4",
+          "taskId": "amusement-tycoon-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:289081e825d7421d7ec450b35612e092b69e792e",
+            "actions-run:43118819232",
+            "reservation-id:43118819232:1",
+            "capability-application-sample:445d5c6660eade639062"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196245,39 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_045cc8191117788221c21c29",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v26",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:c092768bb13a1e2d9d04a831523f78e618702edc",
-            "actions-run:43077003007",
-            "reservation-id:43077003007:1",
-            "capability-application-sample:81f0862cacd9678dc2fe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_67f2cf76fc194f83eabfab9d",
           "taskId": "exorcist-office-web-startup-spatial-repair-v26",
           "workKey": null,
@@ -198348,6 +198313,39 @@
             "actions-run:43114068647",
             "reservation-id:43114068647:1",
             "capability-application-sample:8ca8e0e050fb0756fc90"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4f1c3a42ee7ec2efbcbad4c6",
+          "taskId": "amusement-tycoon-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:289081e825d7421d7ec450b35612e092b69e792e",
+            "actions-run:43118819232",
+            "reservation-id:43118819232:1",
+            "capability-application-sample:445d5c6660eade639062"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -464274,39 +464272,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_121aa9a50cb4d3be243a70cb",
-          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d1777761fbb21feb3437efef",
-            "capability_ctrace_9781b1502c8927f6ef26bf86",
-            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
-            "capability_ctrace_103520cd8f954d2962974bda",
-            "capability_ctrace_1f913c6f916890189426fa9b"
-          ],
-          "evidence": [
-            "base-main:db6411725762e8053f246fea0a875c02b0086e59",
-            "actions-run:37464027008",
-            "reservation-id:37464027008:1",
-            "capability-application-sample:15609bf04904aad7a5e9"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_41837712e922da9b137976f1",
           "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
           "workKey": null,
@@ -466377,6 +466342,39 @@
             "actions-run:42495893575",
             "reservation-id:42495893575:1",
             "capability-application-sample:ebdf0372d8d7ab31e09a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5232f348e5fb0a9b570afd43",
+          "taskId": "amusement-tycoon-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:289081e825d7421d7ec450b35612e092b69e792e",
+            "actions-run:43118819232",
+            "reservation-id:43118819232:1",
+            "capability-application-sample:445d5c6660eade639062"
           ],
           "observedAt": null,
           "rawCodeStored": false,
