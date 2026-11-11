@@ -521,3 +521,43 @@ test('exact private candidate first-frame diagnostics retain server simulation s
   assert.ok(workflow.includes("item.robloxFailureSignature=groundingObserved?'ROBLOX_FIRST_FRAME_GROUNDING_FAILED':'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'"));
   assert.ok(workflow.includes('item.canonicalState=\'TARGET_PLATFORM_REPAIR_REQUIRED\''));
 });
+ // [자동 실행 회귀] 기존 Studio MCP 실행기만 사용하며, 정적/클라우드 검사를 실제 플레이로 승격하지 않는다.
+test('post-foundation Studio follow-up dispatch uses existing authenticated executor and dedupes active runs',()=>{
+  const step=workflow.slice(
+    workflow.indexOf('      - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence'),
+    workflow.indexOf('      - name: Enforce persistent Open Cloud probe failures after evidence persistence')
+  );
+  assert.match(step,/if: \\$\\{\\{ !cancelled\\(\\) && inputs\\.candidate_context == '' \\}\\}/);
+  assert.doesNotMatch(step,/if: \\$\\{\\{ false \\}\\}/);
+  assert.match(step,/sort -u \\/tmp\\/roblox-studio-followup-ids/);
+  assert.match(step,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=DEDUPED_ACTIVE/);
+  assert.match(step,/gh workflow run company-development-roblox-post-runtime-qa\\.yml/);
+  assert.match(step,/run_studio=true/);
+  assert.match(workflow,/runs-on: \\[self-hosted, Windows, X64, roblox-studio-authenticated\\]/);
+});
+test('post-foundation Studio follow-up is exact-source, verified artifact, and quality gated',()=>{
+  const start=workflow.indexOf('const queueStudioFollowupIfEligible=item=>');
+  const end=workflow.indexOf('\\n\\n          for(const item of candidates)',start);
+  assert.ok(start>0&&end>start);
+  const statement=workflow.slice(start,end);
+  const revisions='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const queue=[];
+  const candidateForItem=item=>item.robloxRuntimeCandidateEvidence||{};
+  const callback=runInNewContext(statement+';queueStudioFollowupIfEligible',
+    {studioFollowupIds:queue,candidateForItem});
+  const base={gameId:'ocean',productionClass:'DEVELOPMENT_CONFIRMED',
+    robloxSourceCommit:revisions,robloxBuildArtifactIdentity:artifact,
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revisions,
+      artifactIdentity:artifact,versionNumber:19}};
+  callback(base);
+  assert.deepEqual(queue,['ocean']);
+  callback({...base,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revisions});
+  callback({...base,robloxSourceCommit:'c'.repeat(40)});
+  callback({...base,productionClass:'DESIGN_ONLY'});
+  callback({...base,robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,published:false}});
+  callback({...base,robloxInternalVibePlayEvidence:{
+    pass:true,actualPlay:true,runtimeVerified:true,officialStudioMcp:true,
+    sourceRevision:revisions,artifactIdentity:artifact,versionNumber:19}});
+  assert.deepEqual(queue,['ocean']);
+});
+
