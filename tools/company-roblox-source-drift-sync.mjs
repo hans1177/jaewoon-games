@@ -18,7 +18,8 @@ export function robloxBuildInputGameId(file=''){
   const gameId=clean(parts[1]);
   const rel=parts.slice(2).join('/');
   if(!/^[a-z0-9][a-z0-9-]{1,48}$/.test(gameId))return '';
-  if(rel==='default.project.json'||rel.startsWith('shared/')||rel.startsWith('server/')||rel.startsWith('client/'))return gameId;
+  // [Rojo 게임 소스] 대항해시대처럼 프로젝트가 src/ 아래 Luau를 직접 바인딩하는 경우도 빌드 입력으로 판정한다.
+  if(rel==='default.project.json'||rel.startsWith('src/')||rel.startsWith('shared/')||rel.startsWith('server/')||rel.startsWith('client/'))return gameId;
   return '';
 }
 // 공용 자산 의존성: 실제 Rojo 프로젝트에 연결된 저장소 자산만 영향 게임에 반영한다.
@@ -58,7 +59,7 @@ export function changedRobloxBuildGameIds(files=[],{repoRoot='.'}={}){
 }
 function robloxBuildPathspecs(gameId='',repoRoot='.'){
   const root=`roblox-games/${clean(gameId)}`;
-  return [`${root}/default.project.json`,`${root}/shared`,`${root}/server`,`${root}/client`,...robloxBoundAssetPaths({repoRoot,gameId})];
+  return [`${root}/default.project.json`,`${root}/src`,`${root}/shared`,`${root}/server`,`${root}/client`,...robloxBoundAssetPaths({repoRoot,gameId})];
 }
 export function robloxBuildSourceChangedBetween({repoRoot='.',gameId='',fromRevision='',toRevision=''}={}){
   const from=clean(fromRevision),to=clean(toRevision),id=clean(gameId);
