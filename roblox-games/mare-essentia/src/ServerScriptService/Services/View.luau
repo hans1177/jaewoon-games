@@ -403,6 +403,7 @@ return function(D, S)
 		view.history = S.History.viewOf(state)
 		view.exchange = S.Stock.viewOf(state)
 		view.portBuildings = S.Build.viewOf(state)
+		view.pace = S.Pace.viewOf(state)
 
 		-- 학자
 		view.scholars = {}

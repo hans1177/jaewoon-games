@@ -2110,6 +2110,44 @@ do
 	stH.day += 11
 	S.History.tick(stH)
 	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	-- 역사의 속도
+	local stV = newState("england")
+	stV.portId = "london"
+	check("속도: 처음엔 앞당김이 없음", S.Pace.days(stV) == 0 and S.Pace.effYear(stV) == 1700)
+	check("속도: 쌓으면 앞당겨짐", S.Pace.add(stV, 10) == 10 and S.Pace.days(stV) == 10)
+	local g2 = S.Pace.add(stV, 100)
+	check("속도: 90일 한도(30일) 안에서만 쌓임", g2 == 20 and S.Pace.days(stV) == 30, tostring(g2))
+	check("속도: 한도가 차면 더 안 쌓임", S.Pace.add(stV, 50) == 0)
+	stV.day += 91
+	check("속도: 기간이 지나면 다시 쌓임", S.Pace.add(stV, 10) > 0)
+	stV.pace.days = 365 * 10
+	check("속도: 총 앞당김은 10년을 넘지 않음", S.Pace.add(stV, 100) == 0)
+	-- 앞당김이 사건 시기에 반영됨
+	local stX = newState("england")
+	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
+	S.History.tick(stX)
+	local before = stX.history.pending
+	stX.history.pending = nil
+	stX.history.seen = {}
+	stX.pace = { days = 365 * 10, window = 0, used = 0 }
+	S.History.tick(stX)
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
+	local fixedEv = newState("england")
+	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
+	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
+	fixedEv.history.seen = {}
+	for _, ev in HE.Events do if ev.accel or ev.year < 1756 then fixedEv.history.seen[ev.id] = 1 end end
+	S.History.tick(fixedEv)
+	check("속도: 정치·전쟁 사건은 앞당겨지지 않음", fixedEv.history.pending == nil, tostring(fixedEv.history.pending))
+	-- 지식 보고가 역사를 앞당김
+	local stY = newState("england")
+	stY.portId = "london"
+	stY.discovered.phy_buoyancy = true
+	act(stY, "ReportKnowledge", { scholarId = "newton" })
+	check("속도: 지식 보고로 역사가 앞당겨짐", S.Pace.days(stY) > 0)
+	local backV = S.State.sanitize(S.State.serialize(stY))
+	check("속도: 저장/불러오기", backV.pace.days == stY.pace.days)
+	check("속도: 화면에 담김", S.View.build(stY, ctx).pace.days == stY.pace.days)
 	-- 항구 건물 계통
 	local PB = D.PortBuildings
 	local pbBad = nil

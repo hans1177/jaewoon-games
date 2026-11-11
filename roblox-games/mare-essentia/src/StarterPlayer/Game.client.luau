@@ -214,7 +214,9 @@ local TEXT_ICONS = {
 	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "key" }, { "카드", "Relics", "key" }, { "발견", "Relics", "key" },
 	{ "이야기", "Relics", "key" },
 }
-local function iconFor(title, subtitle)
+local H: { [string]: any } = {}
+
+function H.iconFor(title, subtitle)
 	for _, t in TITLE_ICONS do
 		if string.find(title, t[1], 1, true) then
 			return t
@@ -512,7 +514,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 			b.Position = UDim2.new(1, -6 - (btnCount - i) * 68, 0.5, 0)
 		end
 	end
-	local ic = iconFor(title, subtitle)
+	local ic = H.iconFor(title, subtitle)
 	if ic and (height or 60) >= 50 then
 		withIcon(row, ic[2], ic[3], nil, math.min(46, (height or 60) - 10))
 	end
@@ -1007,7 +1009,7 @@ gear.Activated:Connect(function()
 	openOptions()
 end)
 
-local function updateHud(p, ship)
+function H.updateHud(p, ship)
 	hudName.Text = string.format("%s · %d년", p.nation, p.year)
 	hudPort.Text = "항구  " .. tostring(p.portName)
 	hudBanner.Text = tostring(p.portName)
@@ -1067,13 +1069,13 @@ local bubbleLine = bubbleLabel(2, 13, COLORS.text)
 local bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
 local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
 local bubbleKey, bubbleToken = nil, 0
-local function hideBubble()
+function H.hideBubble()
 	bubbleToken += 1
 	bubble.Visible = false
 end
 bubble.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		hideBubble()
+		H.hideBubble()
 	end
 end)
 local function refreshBubble()
@@ -1109,7 +1111,7 @@ menuToggle:GetPropertyChangedSignal("Visible"):Connect(function()
 	end
 end)
 
-local function clearContent()
+function H.clearContent()
 	for _, child in content:GetChildren() do
 		if not child:IsA("UIListLayout") then
 			child:Destroy()
@@ -1302,7 +1304,7 @@ local function drawLand(frame)
 	end
 end
 
-local function playVoyage(fromName, toName, days, steam, path)
+function H.playVoyage(fromName, toName, days, steam, path)
 	local overlay = Instance.new("TextButton") -- 누르면 건너뛰기
 	overlay.Name = "VoyageScene"
 	overlay.Size = UDim2.fromScale(1, 1)
@@ -1596,7 +1598,7 @@ local function sail(portId)
 			end
 			local vf = workspace:FindFirstChild("VoyageScene")
 			if vf then vf:Destroy() end
-			ok, err = pcall(playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
+			ok, err = pcall(H.playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
 		end
 		if not ok then
 			warn("[Game] voyage scene error:", err)
@@ -1722,7 +1724,7 @@ local ART = {
 	epilogue = { sky = Color3.fromRGB(246, 150, 96), floor = Color3.fromRGB(34, 62, 110) },
 }
 
-local function paintScene(parent, art, t)
+function H.paintScene(parent, art, t)
 	local pal = ART[art] or ART.harbor
 	parent.BackgroundColor3 = pal.sky
 	mkBox(parent, UDim2.fromScale(0, 0.62), UDim2.fromScale(1, 0.38), pal.floor)
@@ -2041,7 +2043,7 @@ function playStory(ev)
 	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	paintScene(picture, ev.art)
+	H.paintScene(picture, ev.art)
 
 	-- 등장 인물: 승인된 3D 인물 모델을 반신 초상으로 보여 준다 (모델이 없으면 실루엣)
 	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
@@ -2291,14 +2293,14 @@ end
 -- 탭 화면 -------------------------------------------------------------------
 
 local order = 0
-local function nextOrder()
+function H.nextOrder()
 	order += 1
 	return order
 end
 
 local function add(builder)
 	local obj = builder()
-	obj.LayoutOrder = nextOrder()
+	obj.LayoutOrder = H.nextOrder()
 	if obj.Parent == nil then
 		obj.Parent = content -- 직접 만든 프레임(지도, 카드 격자)도 목록에 넣는다
 	end
@@ -2307,7 +2309,9 @@ end
 
 local intelName
 local addRumorPanel
-local function renderHarbor()
+local RENDERERS: { [string]: any } = {}
+
+function RENDERERS.harbor()
 	local h = view.harbor
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
@@ -2562,7 +2566,7 @@ local function renderHarbor()
 	end
 end
 
-local function renderStatus()
+function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	add(function() return mkHeader(content, "선박") end)
 	add(function()
@@ -2762,7 +2766,7 @@ function intelName(level)
 end
 
 -- 이야기와 조언: 프롤로그, 새 해역의 막, 동료의 한마디
-local function addStoryPanel()
+function H.addStoryPanel()
 	if view.prologue then
 		add(function() return mkHeader(content, view.prologue.title) end)
 		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
@@ -3066,7 +3070,7 @@ local function openTradeHall()
 	build()
 end
 
-local function renderTrade()
+function RENDERERS.trade()
 	if view.guide then
 		add(function()
 			return mkLabel(content, "💡 교역 요령: 이 항구의 특산품은 싸게 사고, '수요'가 높은 다른 항구에 가서 팔면 이익이 남아요. 지도 탭에서 갈 곳을 고르세요.", 14, COLORS.gold, true)
@@ -3088,7 +3092,7 @@ local function renderTrade()
 	add(function()
 		return mkLabel(content, string.format("동료의 장사 감각: %s (동료가 있으면 시장·귀띔 정보가 정확해져요)", intelName(view.intel or 0)), 14, COLORS.muted, false)
 	end)
-	addStoryPanel()
+	H.addStoryPanel()
 	if view.news and #view.news > 0 then
 		add(function() return mkHeader(content, "시장 소식") end)
 		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
@@ -3266,7 +3270,7 @@ local function renderTrade()
 	end)
 end
 
-local function renderRoute()
+function RENDERERS.route()
 	local ship = view.ship
 	if view.weather then
 		add(function()
@@ -3552,7 +3556,7 @@ local function openYardHall()
 	build()
 end
 
-local function startField(s)
+function H.startField(s)
 	if inField then
 		return
 	end
@@ -3578,7 +3582,7 @@ local function startField(s)
 	})
 end
 
-local function renderExplore()
+function RENDERERS.explore()
 	-- 지상 전술 탐험: 격자 맵 턴제 전투. 서버가 전투를 만들어 주면 전술 화면을 연다.
 	local function openTactics()
 		if inField or not (view and view.tactics) then
@@ -3621,7 +3625,7 @@ local function renderExplore()
 		add(function()
 			local sub = if s.left == 0 then "모두 조사했어요" else string.format("발견 가능 %d · %d일 · 모험 Lv.%d 이상", s.left, s.days, s.minLevel)
 			local actions = {
-				{ text = "탐험", color = COLORS.green, onClick = function() startField(s) end, enabled = s.unlocked and s.left > 0 },
+				{ text = "탐험", color = COLORS.green, onClick = function() H.startField(s) end, enabled = s.unlocked and s.left > 0 },
 			}
 			if s.tactics then
 				sub = sub .. string.format(" · 전술 맵 ‘%s’%s", s.tactics.mapName, if s.tactics.rank ~= "" then " (최고 " .. s.tactics.rank .. ")" else "")
@@ -3753,7 +3757,7 @@ local function paintCardArt(parent, card, fieldDef)
 	mark.Parent = parent
 end
 
-local function showCardDetail(card)
+function H.showCardDetail(card)
 	local fieldDef = findField(card.field)
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.fromScale(1, 1)
@@ -3902,6 +3906,13 @@ local function renderCodexOverview()
 			return mkLabel(content, er.story .. nxt .. " 시대가 오를수록 항해와 항구 연구가 조금씩 좋아져요.", 12, COLORS.muted, false)
 		end)
 	end
+	if view.pace then
+		local pc = view.pace
+		add(function() return mkHeader(content, "역사의 속도") end)
+		add(function()
+			return mkLabel(content, string.format("건물과 기술 사건은 시대순으로 열려요. 일찍 발견하고 보고하고, 학회·박람회·공동 발표를 하고, 어려운 퀘스트를 해내면 역사가 앞당겨져요. 지금 %.1f년 앞섬 (최대 %d년) · 이번 %d일 동안 앞당길 수 있는 양 %d/%d일. 앞서 갈수록, 짧은 기간에 몰아칠수록 덜 쌓여요.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 12, COLORS.muted, false)
+		end)
+	end
 	if view.history then
 		local hv = view.history
 		add(function() return mkHeader(content, string.format("역사의 분기점 (겪은 사건 %d / %d)", hv.seenCount or 0, hv.total or 0)) end)
@@ -3954,7 +3965,7 @@ local function renderCodexOverview()
 	tierRows(cx.overall, "all", "전체 %d%% 달성")
 	end
 
-local function renderCodexField()
+function H.renderCodexField()
 if string.sub(codexField, 1, 2) == "k:" then
 	local did = string.sub(codexField, 3)
 	local disc = nil
@@ -4082,7 +4093,7 @@ local f = findField(codexField)
 				rr.Text = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
 				rr.Parent = tile
 				tile.Activated:Connect(function()
-					showCardDetail(c)
+					H.showCardDetail(c)
 				end)
 			end
 		end
@@ -4090,15 +4101,15 @@ local f = findField(codexField)
 	end)
 end
 
-local function renderCodex()
+function RENDERERS.codex()
 	if codexField then
-		renderCodexField()
+		H.renderCodexField()
 	else
 		renderCodexOverview()
 	end
 end
 
-local function renderTech()
+function RENDERERS.tech()
 	add(function()
 		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 13, COLORS.muted, false)
 	end)
@@ -4118,7 +4129,7 @@ local function renderTech()
 	end
 end
 
-local function renderQuest()
+function RENDERERS.quest()
 	add(function() return mkHeader(content, "진행 중") end)
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "진행 중인 퀘스트가 없어요.", 13, COLORS.muted, false) end)
@@ -4147,7 +4158,7 @@ local function renderQuest()
 	end
 end
 
-local function renderBattle()
+function RENDERERS.battle()
 	local lo = view.loadout
 	if not equipped then
 		equipped = table.clone(lo.equipped)
@@ -4232,7 +4243,7 @@ local SEA_NAMES = {
 }
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
-local function renderMap()
+function RENDERERS.map()
 	local cosLat = 0.66 -- 유럽 위도에서 가로를 줄여 비율을 맞춘다
 	local function mapX(lon) return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin) end
 	local function mapY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
@@ -4328,16 +4339,13 @@ local function renderMap()
 	end
 end
 
-local RENDERERS = {
-	map = renderMap, harbor = renderHarbor, status = renderStatus, trade = renderTrade, route = renderRoute, yard = renderYard, explore = renderExplore,
-	codex = renderCodex, tech = renderTech, quest = renderQuest, battle = renderBattle,
-}
+RENDERERS.yard = renderYard
 
 -- 새 게임 선택 화면 -------------------------------------------------------------
 
 -- 전체 그리기 -----------------------------------------------------------------
 
-local function renderTabs()
+function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
 			child:Destroy()
@@ -4671,7 +4679,7 @@ openOptions = function()
 	draw()
 end
 
-local function startNewGame()
+function H.startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
 	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
@@ -5110,7 +5118,7 @@ renderTitle = function()
 		cancel.ZIndex = 13
 		cancel.TextSize = 14
 	end
-	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), startNewGame, true)
+	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), H.startNewGame, true)
 	go.ZIndex = 13
 	go.TextSize = 22
 	go.TextColor3 = Color3.fromRGB(22, 14, 4)
@@ -5125,7 +5133,7 @@ end
 
 local wasTitle = false
 local titleMenuOpen = false
-local function setTitleMode(on)
+function H.setTitleMode(on)
 	titleGui.Enabled = on or titleMenuOpen
 	titlePanel.Visible = on and not titleMenuOpen
 	if on then
@@ -5138,7 +5146,7 @@ end
 
 function render()
 	order = 0
-	clearContent()
+	H.clearContent()
 	if not audioLock then
 		Sfx.music(if view and currentTab == "trade" then "music_market" else "music_harbor")
 		if view then
@@ -5146,7 +5154,7 @@ function render()
 		end
 	end
 
-	setTitleMode(not view or newGameMode)
+	H.setTitleMode(not view or newGameMode)
 	if not view or newGameMode then
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
@@ -5170,8 +5178,8 @@ function render()
 	headerLabel.Text = string.format("%s · %s\n%s %s  선체 %d/%d  화물 %d/%d",
 		grp.name, grp.keeper, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
 	coinValue.Text = tostring(p.coins)
-	updateHud(p, ship)
-	renderTabs()
+	H.updateHud(p, ship)
+	H.renderTabs()
 	syncScene()
 
 	if message ~= "" then
@@ -5182,7 +5190,7 @@ end
 
 -- 시작 화면: 이어하기 / 새 게임 / 소리 ---------------------------------------------
 
-local function showTitle()
+function H.showTitle()
 	local layer = overlayGui("TitleGui", 40)
 	local wasMain = main.Visible
 	main.Visible = false
@@ -5313,7 +5321,7 @@ task.spawn(function()
 		if result and (result.view or result.needsNewGame) then
 			message = ""
 			render()
-			showTitle()
+			H.showTitle()
 			return
 		end
 		if result and not result.loading then

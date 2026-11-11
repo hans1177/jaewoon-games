@@ -180,6 +180,10 @@ return function(D, S)
 		if quest.rewardCardId then
 			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
 		end
+		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
+		if quest.after or quest.kind == "understand_card" or quest.kind == "understand" then
+			S.Pace.addMsg(state, 5 + math.floor(quest.rewardFame / 10), msgs, "퀘스트 완수")
+		end
 	end
 
 	function handlers.Claim(state, p)

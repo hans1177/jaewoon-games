@@ -80,6 +80,7 @@ return function(D, S)
 		state.reported = state.reported or {}
 		local msgs = {}
 		local totalFame, totalCoins = 0, 0
+		local paceDays = 0
 		-- 보고하면 새로 이해한 지식 때문에 다음 지식도 이어서 보고할 수 있다
 		local progressed = true
 		while progressed do
@@ -88,6 +89,7 @@ return function(D, S)
 				if table.find(discs, node.disc) and K.status(state, node) == "ready" then
 					state.reported[node.id] = true
 					progressed = true
+					paceDays += S.Pace.RARITY_DAYS[D.Cards.ById[node.id] and D.Cards.ById[node.id].rarity or "Common"] or 1
 					local card = D.Cards.ById[node.id]
 					local fame = FAME[card and card.rarity or "Common"] or 3
 					local coins = fame * 8
@@ -125,6 +127,7 @@ return function(D, S)
 		end
 		table.insert(msgs, 1, string.format("%s에게 발견을 보고했다.", scholar.name))
 		table.insert(msgs, string.format("보고 보상: 명성 +%d, +%d코인", totalFame, totalCoins))
+		S.Pace.addMsg(state, paceDays, msgs, "발견을 보고함")
 		eraCheck(state, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
 		return true, table.concat(msgs, "\n")
@@ -238,6 +241,7 @@ return function(D, S)
 		end
 		a.last[key] = state.day
 		a.presented += 1
+		S.Pace.add(state, 6)
 		local fame, coins = 6 * n, 50 * n
 		state.fame += fame
 		state.coins += coins
@@ -316,6 +320,7 @@ return function(D, S)
 		end
 		a.last[key] = state.day
 		a.joint = (a.joint or 0) + 1
+		S.Pace.add(state, 10)
 		state.portTech = state.portTech or {}
 		state.portTech[state.portId] = state.portTech[state.portId] or {}
 		local before = techLevelOf(state, state.portId, disc.id)
@@ -384,6 +389,7 @@ return function(D, S)
 		state.landmarks[state.portId][lm.id] = true
 		local fame = math.floor(lm.cost / 50)
 		state.fame += fame
+		S.Pace.add(state, 20)
 		return true, string.format("%s에 %s을(를) 세웠다! %s 명성 +%d", D.Ports.Ports[state.portId].name, lm.name, lm.summary, fame)
 	end
 
@@ -419,6 +425,7 @@ return function(D, S)
 		local fame = 6 + math.floor((gm - 1) * 100)
 		a.last[key] = state.day
 		a.launched = (a.launched or 0) + 1
+		S.Pace.add(state, 5)
 		state.coins += coins
 		state.fame += fame
 		return true, string.format("%s 신제품 출시 행사! %s %d개가 개당 기준가의 %d%%에 팔렸다. +%d코인, 명성 +%d", D.Ports.Ports[state.portId].name, good.name, LAUNCH_COUNT, math.floor(mult * 100), coins, fame)
@@ -551,6 +558,7 @@ return function(D, S)
 		end
 		a.last[key] = state.day
 		a.expos += 1
+		S.Pace.add(state, 8)
 		if medal then
 			a.medals = (a.medals or 0) + 1
 		end

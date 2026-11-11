@@ -29,7 +29,8 @@ return function(D, S)
 		for _, ev in E.Events do
 			if ev.year >= state.startYear and h.seen[ev.id] == nil then
 				local d = E.dayOf(ev, state.startYear)
-				if d <= state.day and d < bestDay then
+				local reach = state.day + (if ev.accel then S.Pace.days(state) else 0)
+				if d <= reach and d < bestDay then
 					best, bestDay = ev, d
 				end
 			end
@@ -226,7 +227,7 @@ return function(D, S)
 		out.chronicle = {}
 		for _, e in E.Events do
 			local idx = h.seen[e.id]
-			local passed = state.startYear + state.day / 365 >= e.year
+			local passed = state.startYear + (state.day + (if e.accel then S.Pace.days(state) else 0)) / 365 >= e.year
 			table.insert(out.chronicle, {
 				year = e.year, tag = e.tag, known = idx ~= nil or passed,
 				title = if idx ~= nil or passed then e.title else "???", text = if idx ~= nil or passed then e.text else "아직 오지 않은 시대의 일",
