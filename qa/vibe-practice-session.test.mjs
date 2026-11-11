@@ -98,14 +98,23 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
     .filter(p=>/CHARACTER|CREATURE|NPC|HERO|MONSTER/i.test(p.family)&&
       /\.(?:glb|gltf)$/i.test(p.file));
   assert.ok(actors.length>1);
-  const chosen=actors.at(-1),historyPath=path.join(tmp(),'prior-practice.json');
+  // Production deliberately rejects history paths outside repoRoot. Keep the
+  // fixture in the existing build dir and delete it even if Blender fails.
+  const chosen=actors.at(-1);
+  const historyPath=path.join(root,'build','qa-vibe-practice-'+crypto.randomUUID()+'.json');
   const history=Object.fromEntries(actors.map(p=>[p.id,{
     sourceSha256:p.approvedSourceSha256,attempts:p.id===chosen.id?0:6
   }]));
+  fs.mkdirSync(path.dirname(historyPath),{recursive:true});
   fs.writeFileSync(historyPath,JSON.stringify({rig:{history}}));
-  const {session}=runPracticeSession({repoRoot:root,seed:3,parents:1,variants:3,out,
-    statsPath:stats,lightsPath:lights,lightCandidates:3,lightRounds:1,
-    bakeHistoryPath:historyPath});
+  let session;
+  try{
+    ({session}=runPracticeSession({repoRoot:root,seed:3,parents:1,variants:3,out,
+      statsPath:stats,lightsPath:lights,lightCandidates:3,lightRounds:1,
+      bakeHistoryPath:historyPath}));
+  }finally{
+    fs.rmSync(historyPath,{force:true});
+  }
   assert.ok(session.gym.children>=1);
   assert.equal(session.ui.trials,108);
   assert.equal(session.ui.gameApplied,false);
