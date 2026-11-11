@@ -73,6 +73,11 @@ jobs:
           print('TRADE_GOODS_AUTO_GAME_PUBLISH=NO')
           PY
 
+      - name: Check trade goods practice and safe ingredient game bindings
+        shell: bash
+        run: |
+          node --test --test-name-pattern='Mare trade' qa/company-roblox-dedicated-experience.test.mjs
+
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
