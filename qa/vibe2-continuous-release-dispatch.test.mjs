@@ -750,7 +750,14 @@ test('Roblox candidate static validation precedes promotion without claiming act
   assert.match(native,/ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'[\s\S]*?exit 0[\s\S]*?git -C runtime config/);
   assert.match(native,/candidate_context == '' && steps\.studio_play/);
   const followup=native.slice(native.indexOf('      - name: Dispatch exact Studio MCP follow-up'),native.indexOf('      - name: Enforce persistent Open Cloud probe failures'));
-  assert.match(followup,/if: \$\{\{ false \}\} # EXPLICIT_AUTHENTICATED_STUDIO_OPT_IN_ONLY/);
+  assert.match(followup,/if: \$\{\{ !cancelled\(\) && inputs\.candidate_context == '' \}\}/);
+  assert.match(followup,/test -s \/tmp\/roblox-studio-followup-ids/);
+  assert.match(followup,/sort -u \/tmp\/roblox-studio-followup-ids/);
+  assert.match(followup,/gh api "repos\/\$GITHUB_REPOSITORY\/actions\/workflows\/company-development-roblox-post-runtime-qa\.yml\/runs\?per_page=100"/);
+  assert.match(followup,/current_active/);
+  assert.match(followup,/DEDUPED_ACTIVE:/);
+  assert.match(followup,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f run_studio=true/);
+  assert.match(followup,/ROBLOX_STUDIO_MCP_REAL_PLAY_STILL_REQUIRED=YES/);
   const studioPlan=native.slice(native.indexOf('  studio-local-plan:'),native.indexOf('  studio-mcp-auto-play:'));
    assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
   assert.match(native,/const cloudApiOnly=true/);
