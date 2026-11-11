@@ -195,7 +195,7 @@ test('기존 Vibe 룩 연습→승격→게임 적용 흐름은 에셋·룩 원�
   assert.match(ladder,/roblox-games\/\*\/src\/ReplicatedStorage\/Shared\/LookAssignment\.luau/);
   assert.match(ladder,/gh workflow run devloop-studio\.yml --ref main -f game=mare-essentia/);
   assert.match(ladder,/steps\.promotion\.outputs\.mare_changed == 'true'/);
-  assert.doesNotMatch(ladder,/git push[^\n]*HEAD:main/);
+  assert.equal(ladder.includes('HEAD:main'),false);
   assert.match(ladder,/gh api -X PUT "repos\/\$GITHUB_REPOSITORY\/pulls\/\$pr\/merge"/);
   assert.match(promotion,/gh workflow run devloop-studio\.yml --ref main -f game=mare-essentia/);
   assert.match(script,/client\.loaded!==client\.expected/);
