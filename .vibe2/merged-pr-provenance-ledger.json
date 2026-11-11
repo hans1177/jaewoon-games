@@ -183252,11 +183252,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_cd7186886bd9822902bb7d0f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12437",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "21dcf6107f7a93c5c1e3ca8c5152d75f058f9aa4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12437,
+        "baseBranch": "main",
+        "headBranch": "fix/studio-reboot-e-runner-20261111",
+        "baseSha": "21dcf6107f7a93c5c1e3ca8c5152d75f058f9aa4",
+        "headSha": "b882e882ad1327d2366e8678fefd26b2bfd66752",
+        "mergeCommitSha": "924e3f4c93b7c42663c28eee1e05cb5afa2b02f6",
+        "mergedAt": "2026-11-11T02:43:54Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5768318a8c904612cdaa64a4b6d3595ac692403aba52ffb2d7d30bd53833fd47",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/studio-reboot-e-runner-20261111",
+        "candidateSha": "b882e882ad1327d2366e8678fefd26b2bfd66752"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 21,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml",
+          ".github/workflows/studio-autoqa.yml",
+          "qa/company-roblox-studio-runner-recovery.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml",
+          ".github/workflows/studio-autoqa.yml",
+          "qa/company-roblox-studio-runner-recovery.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12437",
+        "merge-commit:924e3f4c93b7c42663c28eee1e05cb5afa2b02f6",
+        "base-main:21dcf6107f7a93c5c1e3ca8c5152d75f058f9aa4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1463
+    "total": 1464
   }
 }
