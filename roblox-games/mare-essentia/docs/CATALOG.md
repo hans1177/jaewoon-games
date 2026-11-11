@@ -1093,3 +1093,282 @@
 | 하얀 금 | 상아 5개를 암스테르담에 납품 | 1800코인, 명성 36 |
 | 서아프리카 순항 | 서로 다른 항구 55곳 방문 | 12000코인, 명성 200 |
 
+
+## 인물 백과 (179명)
+생몰 연도, 분야, 등장 조건은 **제 기억에서 옮긴 것이라 구현 전 출처 확인이 필요하다.** 확인 출처 후보: 브리태니커 백과사전, 옥스퍼드 인명사전(ODNB), 위키백과 각 인물 항목(생몰·재위 연도 교차 확인). 대사와 설명 문장은 게임 속에서 지어낸 가상의 글이다.
+
+| 인물 | 생몰 | 분야 | 등장 조건 | 출처 확인 |
+|---|---|---|---|---|
+| 엘리자베스 1세 | 1533~1603 | ruler | port = "london" | 필요 |
+| 올리버 크롬웰 | 1599~1658 | ruler | port = "london", event = "navigation_acts" | 필요 |
+| 찰스 2세 | 1630~1685 | ruler | port = "london", event = "restoration" | 필요 |
+| 윌리엄 3세 | 1650~1702 | ruler | port = "amsterdam", event = "glorious_revolution" | 필요 |
+| 루이 14세 | 1638~1715 | ruler | port = "rouen", event = "colbert" | 필요 |
+| 표트르 1세 | 1672~1725 | ruler | port = "st_petersburg", event = "peters_embassy" | 필요 |
+| 예카테리나 2세 | 1729~1796 | ruler | port = "st_petersburg" | 필요 |
+| 프리드리히 2세 | 1712~1786 | ruler | port = "koenigsberg", event = "seven_years_war" | 필요 |
+| 마리아 테레지아 | 1717~1780 | ruler | port = "trieste" | 필요 |
+| 구스타브 2세 아돌프 | 1594~1632 | ruler | port = "stockholm" | 필요 |
+| 크리스티안 4세 | 1577~1648 | ruler | port = "copenhagen" | 필요 |
+| 주앙 5세 | 1689~1750 | ruler | port = "lisbon", event = "brazil_gold" | 필요 |
+| 폼발 후작 | 1699~1782 | ruler | port = "lisbon", event = "lisbon_quake" | 필요 |
+| 쉴레이만 1세 | 1494~1566 | ruler | port = "istanbul" | 필요 |
+| 악바르 | 1542~1605 | ruler | port = "surat" | 필요 |
+| 시바지 | 1630~1680 | ruler | port = "surat" | 필요 |
+| 강희제 | 1654~1722 | ruler | port = "canton", event = "qing_maritime" | 필요 |
+| 건륭제 | 1711~1799 | ruler | port = "canton" | 필요 |
+| 도쿠가와 요시무네 | 1684~1751 | ruler | port = "edo", event = "dutch_learning" | 필요 |
+| 도쿠가와 이에야스 | 1543~1616 | ruler | port = "edo" | 필요 |
+| 도요토미 히데요시 | 1537~1598 | ruler | port = "osaka" | 필요 |
+| 이순신 | 1545~1598 | military | port = "busan" | 필요 |
+| 정조 | 1752~1800 | ruler | port = "incheon" | 필요 |
+| 은징가 | 1583~1663 | ruler | port = "luanda" | 필요 |
+| 오세이 투투 | 1660~1717 | ruler | port = "elmina" | 필요 |
+| 조지 워싱턴 | 1732~1799 | ruler | port = "philadelphia", event = "independence" | 필요 |
+| 루이 16세 | 1754~1793 | ruler | port = "marseille", event = "french_revolution" | 필요 |
+| 나폴레옹 보나파르트 | 1769~1821 | military | port = "ajaccio" | 필요 |
+| 로버트 클라이브 | 1725~1774 | military | port = "calcutta", event = "plassey" | 필요 |
+| 워런 헤이스팅스 | 1732~1818 | ruler | port = "calcutta" | 필요 |
+| 투생 루베르튀르 | 1743~1803 | military | port = "santo_domingo" | 필요 |
+| 투팍 아마루 2세 | 1738~1781 | military | port = "callao" | 필요 |
+| 몬테수마 2세 | 1466~1520 | ruler | port = "veracruz" | 필요 |
+| 크리스토퍼 콜럼버스 | 1451~1506 | explorer | port = "seville" | 필요 |
+| 바스쿠 다가마 | 1469~1524 | explorer | port = "calicut" | 필요 |
+| 페르디난드 마젤란 | 1480~1521 | explorer | port = "seville" | 필요 |
+| 정화 | 1371~1433 | explorer | port = "malacca" | 필요 |
+| 빌럼 바렌츠 | 1550~1597 | explorer | port = "amsterdam" | 필요 |
+| 헨리 허드슨 | 1565~1611 | explorer | port = "new_york" | 필요 |
+| 사뮈엘 드 샹플랭 | 1567~1635 | explorer | port = "quebec" | 필요 |
+| 라 살 | 1643~1687 | explorer | port = "new_orleans" | 필요 |
+| 아벨 타스만 | 1603~1659 | explorer | port = "batavia" | 필요 |
+| 윌리엄 댐피어 | 1651~1715 | explorer | port = "perth" | 필요 |
+| 조지 앤슨 | 1697~1762 | explorer | port = "plymouth" | 필요 |
+| 비투스 베링 | 1681~1741 | explorer | port = "sitka" | 필요 |
+| 루이 앙투안 드 부갱빌 | 1729~1811 | explorer | port = "tahiti" | 필요 |
+| 제임스 쿡 | 1728~1779 | explorer | port = "sydney", event = "cook_voyage" | 필요 |
+| 라페루즈 백작 | 1741~1788 | explorer | port = "sydney" | 필요 |
+| 피리 레이스 | 1470~1553 | explorer | port = "istanbul" | 필요 |
+| 미힐 더 라위터 | 1607~1676 | military | port = "amsterdam", event = "anglo_dutch_war" | 필요 |
+| 로버트 블레이크 | 1598~1657 | military | port = "plymouth" | 필요 |
+| 투르빌 백작 | 1642~1701 | military | port = "toulon" | 필요 |
+| 쉬프랭 | 1729~1788 | military | port = "toulon" | 필요 |
+| 허레이쇼 넬슨 | 1758~1805 | military | port = "plymouth" | 필요 |
+| 존 폴 존스 | 1747~1792 | military | port = "boston" | 필요 |
+| 니콜라우스 코페르니쿠스 | 1473~1543 | science | port = "gdansk" | 필요 |
+| 튀코 브라헤 | 1546~1601 | science | port = "copenhagen" | 필요 |
+| 갈릴레오 갈릴레이 | 1564~1642 | science | port = "livorno", scholar = "galileo" | 필요 |
+| 요하네스 케플러 | 1571~1630 | science | scholar = "huygens" | 필요 |
+| 로버트 훅 | 1635~1703 | science | port = "london", scholar = "hooke" | 필요 |
+| 조반니 카시니 | 1625~1712 | science | port = "genoa" | 필요 |
+| 레온하르트 오일러 | 1707~1783 | science | port = "st_petersburg" | 필요 |
+| 미하일 로모노소프 | 1711~1765 | science | port = "st_petersburg" | 필요 |
+| 윌리엄 하비 | 1578~1657 | science | port = "london", scholar = "harvey" | 필요 |
+| 블레즈 파스칼 | 1623~1662 | science | port = "rouen" | 필요 |
+| 헤라르뒤스 메르카토르 | 1512~1594 | science | port = "antwerp" | 필요 |
+| 아브라암 오르텔리위스 | 1527~1598 | science | port = "antwerp" | 필요 |
+| 세키 다카카즈 | 1642~1708 | science | port = "edo" | 필요 |
+| 이노 다다타카 | 1745~1818 | science | port = "hakodate" | 필요 |
+| 자이 싱 2세 | 1688~1743 | science | port = "surat" | 필요 |
+| 존 스미턴 | 1724~1792 | inventor | port = "plymouth" | 필요 |
+| 제임스 와트 | 1736~1819 | inventor | port = "glasgow", event = "industrial_start" | 필요 |
+| 데시데리위스 에라스뮈스 | 1466~1536 | thought | port = "rotterdam" | 필요 |
+| 니콜로 마키아벨리 | 1469~1527 | thought | port = "livorno" | 필요 |
+| 토머스 홉스 | 1588~1679 | thought | port = "london" | 필요 |
+| 존 로크 | 1632~1704 | thought | port = "london" | 필요 |
+| 휴고 흐로티위스 | 1583~1645 | thought | port = "rotterdam" | 필요 |
+| 몽테스키외 | 1689~1755 | thought | port = "bordeaux" | 필요 |
+| 볼테르 | 1694~1778 | thought | port = "london" | 필요 |
+| 데이비드 흄 | 1711~1776 | thought | port = "edinburgh" | 필요 |
+| 애덤 스미스 | 1723~1790 | thought | port = "glasgow" | 필요 |
+| 임마누엘 칸트 | 1724~1804 | thought | port = "koenigsberg" | 필요 |
+| 박지원 | 1737~1805 | thought | port = "incheon" | 필요 |
+| 피터르 브뤼헐 | 1525~1569 | art | port = "antwerp" | 필요 |
+| 안토니 판 데이크 | 1599~1641 | art | port = "antwerp" | 필요 |
+| 프란스 할스 | 1582~1666 | art | port = "amsterdam" | 필요 |
+| 잠바티스타 티에폴로 | 1696~1770 | art | port = "venice" | 필요 |
+| 가쓰시카 호쿠사이 | 1760~1849 | art | port = "edo" | 필요 |
+| 윌리엄 셰익스피어 | 1564~1616 | letters | port = "london" | 필요 |
+| 미겔 데 세르반테스 | 1547~1616 | letters | port = "seville" | 필요 |
+| 존 밀턴 | 1608~1674 | letters | port = "london" | 필요 |
+| 대니얼 디포 | 1660~1731 | letters | port = "london" | 필요 |
+| 조너선 스위프트 | 1667~1745 | letters | port = "dublin" | 필요 |
+| 루이스 드 카몽이스 | 1524~1580 | letters | port = "lisbon" | 필요 |
+| 마쓰오 바쇼 | 1644~1694 | letters | port = "edo" | 필요 |
+| 지카마쓰 몬자에몬 | 1653~1725 | letters | port = "osaka" | 필요 |
+| 안토니오 비발디 | 1678~1741 | letters | port = "venice" | 필요 |
+| 요한 제바스티안 바흐 | 1685~1750 | letters | port = "lubeck" | 필요 |
+| 게오르크 필리프 텔레만 | 1681~1767 | letters | port = "hamburg" | 필요 |
+| 야코프 푸거 | 1459~1525 | merchant | port = "antwerp" | 필요 |
+| 로렌초 데 메디치 | 1449~1492 | merchant | port = "livorno" | 필요 |
+| 토머스 그레셤 | 1519~1579 | merchant | port = "london" | 필요 |
+| 얀 피터르스존 쿤 | 1587~1629 | merchant | port = "batavia" | 필요 |
+| 요세프 데 라 베가 | 1650~1692 | merchant | port = "amsterdam" | 필요 |
+| 에드워드 로이드 | 1648~1713 | merchant | port = "london" | 필요 |
+| 윌리엄 패터슨 | 1658~1719 | merchant | port = "edinburgh", event = "bank_of_england" | 필요 |
+| 존 로 | 1671~1729 | merchant | port = "edinburgh", event = "south_sea" | 필요 |
+| 로버트 모리스 | 1734~1806 | merchant | port = "philadelphia" | 필요 |
+| 프랜시스 드레이크 | 1540~1596 | pirate | port = "plymouth" | 필요 |
+| 하이레딘 바르바로사 | 1478~1546 | pirate | port = "algiers" | 필요 |
+| 헨리 모건 | 1635~1688 | pirate | port = "kingston" | 필요 |
+| 윌리엄 키드 | 1645~1701 | pirate | port = "new_york" | 필요 |
+| 에드워드 티치 | 1680~1718 | pirate | port = "nassau" | 필요 |
+| 바살러뮤 로버츠 | 1682~1722 | pirate | port = "elmina" | 필요 |
+| 정성공 | 1624~1662 | pirate | port = "tainan" | 필요 |
+| 그레이스 오말리 | 1530~1603 | pirate | port = "dublin" | 필요 |
+| 마르틴 루터 | 1483~1546 | faith | port = "hamburg" | 필요 |
+| 프란치스코 하비에르 | 1506~1552 | faith | port = "goa" | 필요 |
+| 마테오 리치 | 1552~1610 | faith | port = "macau" | 필요 |
+| 바르톨로메 데 라스 카사스 | 1484~1566 | faith | port = "santo_domingo" | 필요 |
+| 윌리엄 펜 | 1644~1718 | faith | port = "philadelphia" | 필요 |
+| 에르난 코르테스 | 1485~1547 | explorer | port = "veracruz" | 필요 |
+| 프란시스코 피사로 | 1478~1541 | explorer | port = "callao" | 필요 |
+| 아바스 1세 | 1571~1629 | ruler | port = "bandar_abbas" | 필요 |
+| 나디르 샤 | 1688~1747 | military | port = "bandar_abbas", event = "nader_shah" | 필요 |
+| 아우랑제브 | 1618~1707 | ruler | port = "surat", event = "aurangzeb_death" | 필요 |
+| 티푸 술탄 | 1750~1799 | military | port = "calicut" | 필요 |
+| 술탄 아궁 | 1593~1645 | ruler | port = "batavia" | 필요 |
+| 나라이 대왕 | 1632~1688 | ruler | port = "bangkok" | 필요 |
+| 딱신 대왕 | 1734~1782 | ruler | port = "bangkok" | 필요 |
+| 바인나웅 | 1516~1581 | ruler | port = "rangoon" | 필요 |
+| 응우옌후에 | 1753~1792 | military | port = "hoi_an" | 필요 |
+| 하사누딘 | 1631~1670 | ruler | port = "makassar" | 필요 |
+| 물레이 이스마일 | 1645~1727 | ruler | port = "tangier" | 필요 |
+| 아흐메트 3세 | 1673~1736 | ruler | port = "istanbul" | 필요 |
+| 에블리야 첼레비 | 1611~1682 | explorer | port = "istanbul" | 필요 |
+| 투파이아 | 1725~1770 | explorer | port = "tahiti" | 필요 |
+| 카메하메하 1세 | 1758~1819 | ruler | port = "honolulu" | 필요 |
+| 소르 후아나 이녜스 데 라 크루스 | 1648~1695 | letters | port = "veracruz" | 필요 |
+| 티라덴치스 | 1746~1792 | military | port = "rio" | 필요 |
+| 줌비 | 1655~1695 | military | port = "recife" | 필요 |
+| 페드루 알바르스 카브랄 | 1467~1520 | explorer | port = "salvador" | 필요 |
+| 보방 | 1633~1707 | inventor | port = "toulon" | 필요 |
+| 리슐리외 추기경 | 1585~1642 | ruler | port = "la_rochelle" | 필요 |
+| 얀 더 빗 | 1625~1672 | ruler | port = "amsterdam" | 필요 |
+| 페터르 스타위버선트 | 1612~1672 | ruler | port = "new_york" | 필요 |
+| 페터르 미노이트 | 1589~1638 | merchant | port = "new_york" | 필요 |
+| 존 윈스럽 | 1588~1649 | ruler | port = "boston" | 필요 |
+| 코튼 매더 | 1663~1728 | faith | port = "boston", event = "smallpox_boston" | 필요 |
+| 새뮤얼 피프스 | 1633~1703 | ruler | port = "london" | 필요 |
+| 장 샤르댕 | 1643~1713 | explorer | port = "bandar_abbas" | 필요 |
+| 프랑수아 베르니에 | 1620~1688 | explorer | port = "surat" | 필요 |
+| 장바티스트 타베르니에 | 1605~1689 | merchant | port = "surat" | 필요 |
+| 엥겔베르트 켐퍼 | 1651~1716 | science | port = "nagasaki" | 필요 |
+| 카를 툰베리 | 1743~1828 | science | port = "nagasaki" | 필요 |
+| 이삭 티칭 | 1745~1812 | merchant | port = "nagasaki" | 필요 |
+| 페르디난트 페르비스트 | 1623~1688 | science | event = "qing_maritime" | 필요 |
+| 아담 샬 폰 벨 | 1591~1666 | science | port = "macau" | 필요 |
+| 도쿠가와 미쓰쿠니 | 1628~1701 | thought | port = "edo" | 필요 |
+| 아라이 하쿠세키 | 1657~1725 | thought | port = "edo", event = "dutch_learning" | 필요 |
+| 스기타 겐파쿠 | 1733~1817 | science | port = "edo", event = "dutch_learning" | 필요 |
+| 홍대용 | 1731~1783 | science | port = "incheon" | 필요 |
+| 허준 | 1539~1615 | science | port = "incheon" | 필요 |
+| 토머스 치펀데일 | 1718~1779 | art | port = "london" | 필요 |
+| 장바티스트 콜베르 | 1619~1683 | ruler | event = "colbert" | 필요 |
+| 윌리엄 애덤스 | 1564~1620 | explorer | port = "edo" | 필요 |
+| 야마다 나가마사 | 1590~1630 | explorer | port = "bangkok" | 필요 |
+| 하세쿠라 쓰네나가 | 1571~1622 | explorer | port = "seville" | 필요 |
+| 존 스미스 | 1580~1631 | explorer | port = "boston" | 필요 |
+| 월터 롤리 | 1552~1618 | explorer | port = "plymouth" | 필요 |
+| 샤 자한 | 1592~1666 | ruler | port = "surat" | 필요 |
+| 도쿠가와 이에미쓰 | 1604~1651 | ruler | port = "edo", event = "sakoku" | 필요 |
+| 도르곤 | 1612~1650 | ruler | port = "tianjin", event = "qing_beijing" | 필요 |
+| 정지룡 | 1604~1661 | pirate | port = "amoy" | 필요 |
+| 얀 판 리베이크 | 1619~1677 | ruler | port = "cape_town" | 필요 |
+| 마우리츠 판 나사우 | 1567~1625 | military | port = "rotterdam" | 필요 |
+| 요한 판 올던바르너펠트 | 1547~1619 | ruler | port = "amsterdam", event = "voc_founding" | 필요 |
+| 제임스 1세 | 1566~1625 | ruler | port = "london", event = "jamestown" | 필요 |
+| 찰스 1세 | 1600~1649 | ruler | port = "london", event = "charles1_executed" | 필요 |
+
+## 역사 사건 (63개)
+연도와 월은 게임 설정이며 **출처 확인이 필요하다.**
+
+| 사건 | 연도 | 월 | 출처 확인 |
+|---|---|---|---|
+| 세키가하라 전투 | 1600 | 10 | 필요 |
+| 영국 동인도회사 특허 | 1600 | 12 | 필요 |
+| 네덜란드 동인도회사 설립 | 1602 | 3 | 필요 |
+| 제임스타운 건설 | 1607 | 5 | 필요 |
+| 퀘벡 건설 | 1608 | 7 | 필요 |
+| 갈릴레오의 망원경 | 1609 | 8 | 필요 |
+| 30년 전쟁의 시작 | 1618 | 5 | 필요 |
+| 바타비아 건설 | 1619 | 5 | 필요 |
+| 메이플라워호의 도착 | 1620 | 11 | 필요 |
+| 뉴암스테르담 건설 | 1626 | 5 | 필요 |
+| 하비의 『심장의 운동에 관하여』 | 1628 | 6 | 필요 |
+| 바사호의 침몰 | 1628 | 8 | 필요 |
+| 튤립 투기 열풍 | 1637 | 2 | 필요 |
+| 일본의 쇄국령 | 1639 | 7 | 필요 |
+| 포르투갈의 독립 회복 | 1640 | 12 | 필요 |
+| 네덜란드의 말라카 점령 | 1641 | 1 | 필요 |
+| 잉글랜드 내전의 시작 | 1642 | 8 | 필요 |
+| 토리첼리의 수은 기둥 | 1643 | 6 | 필요 |
+| 청의 베이징 입성 | 1644 | 6 | 필요 |
+| 베스트팔렌 조약 | 1648 | 10 | 필요 |
+| 찰스 1세의 처형 | 1649 | 1 | 필요 |
+| 항해 조례 | 1651 | 10 | 필요 |
+| 케이프 식민지 건설 | 1652 | 4 | 필요 |
+| 제1차 영란 전쟁 | 1652 | 7 | 필요 |
+| 영국 왕정복고와 왕립학회 | 1660 | 5 | 필요 |
+| 루이 14세의 친정과 콜베르 | 1661 | 3 | 필요 |
+| 런던 대역병 | 1665 | 7 | 필요 |
+| 런던 대화재 | 1666 | 9 | 필요 |
+| 청의 타이완 편입 | 1683 | 8 | 필요 |
+| 빈 포위전과 커피하우스 | 1683 | 9 | 필요 |
+| 청의 해금 완화 | 1684 | 1 | 필요 |
+| 낭트 칙령 폐지와 위그노 망명 | 1685 | 10 | 필요 |
+| 프린키피아 출간 | 1687 | 7 | 필요 |
+| 명예혁명 | 1688 | 11 | 필요 |
+| 네르친스크 조약 | 1689 | 9 | 필요 |
+| 브라질 금광 발견 | 1693 | 6 | 필요 |
+| 영란은행 설립 | 1694 | 7 | 필요 |
+| 표트르 대제의 대사절단 | 1697 | 8 | 필요 |
+| 오만의 잔지바르 장악 | 1698 | 12 | 필요 |
+| 1703년의 대폭풍 | 1703 | 11 | 필요 |
+| 아우랑제브의 죽음 | 1707 | 3 | 필요 |
+| 잉글랜드와 스코틀랜드의 합병 | 1707 | 5 | 필요 |
+| 위트레흐트 조약 | 1713 | 4 | 필요 |
+| 일본의 서양서 수입 완화 | 1720 | 3 | 필요 |
+| 남해 회사 거품 | 1720 | 9 | 필요 |
+| 보스턴의 천연두 접종 논쟁 | 1721 | 6 | 필요 |
+| 나디르 샤의 델리 약탈 | 1739 | 3 | 필요 |
+| 젠킨스의 귀 전쟁 | 1739 | 10 | 필요 |
+| 프랭클린의 번개 실험 | 1752 | 6 | 필요 |
+| 리스본 대지진 | 1755 | 11 | 필요 |
+| 7년 전쟁 | 1756 | 5 | 필요 |
+| 플라시 전투 | 1757 | 6 | 필요 |
+| 광저우 일구통상 | 1757 | 11 | 필요 |
+| 산업 혁명의 시작 | 1760 | 4 | 필요 |
+| 해리슨의 H4 시험 항해 | 1761 | 11 | 필요 |
+| 파리 조약 | 1763 | 2 | 필요 |
+| 쿡의 첫 항해와 뱅크스 | 1768 | 8 | 필요 |
+| 보스턴 차 사건 | 1773 | 12 | 필요 |
+| 미국 독립 선언 | 1776 | 7 | 필요 |
+| 투팍 아마루 2세의 봉기 | 1780 | 11 | 필요 |
+| 라키 화산의 분화 | 1783 | 6 | 필요 |
+| 제1함대의 시드니 입항 | 1788 | 1 | 필요 |
+| 프랑스 혁명 | 1789 | 7 | 필요 |
+
+## 세계 고정 사건 (실제 재해·행운 19개)
+실제 날짜·장소는 **출처 확인이 필요하다.** 피해·상품 시세 효과의 크기는 게임 설정이다.
+
+| 사건 | 연도 | 월 | 항구 | 종류 | 출처 확인 |
+|---|---|---|---|---|---|
+| 와이나푸티나 화산 폭발 | 1600 | 2 | callao | disaster | 필요 |
+| 암스테르담 은행 설립 | 1609 | 1 | amsterdam | fortune | 필요 |
+| 1630년 베네치아 역병 | 1630 | 6 | venice | disaster | 필요 |
+| 1631년 베수비오 분화 | 1631 | 12 | naples | disaster | 필요 |
+| 마드라스 요새 건설 | 1639 | 8 | madras | fortune | 필요 |
+| 1647년 칠레 대지진 | 1647 | 5 | valparaiso | disaster | 필요 |
+| 에도 메이레키 대화재 | 1657 | 3 | edo | disaster | 필요 |
+| 포트로열 대지진 | 1692 | 6 | kingston | disaster | 필요 |
+| 모카 커피 붐 | 1700 | 6 | mocha | fortune | 필요 |
+| 후지산 호에이 분화 | 1707 | 12 | edo | disaster | 필요 |
+| 1715년 보물선단 난파 | 1715 | 7 | nassau | fortune | 필요 |
+| 마르세유 대역병 | 1720 | 5 | marseille | disaster | 필요 |
+| 니스타드 조약 | 1721 | 9 | st_petersburg | fortune | 필요 |
+| 브라질 다이아몬드 발견 | 1729 | 6 | rio | fortune | 필요 |
+| 캘커타 대형 사이클론 | 1737 | 10 | calcutta | disaster | 필요 |
+| 아일랜드의 혹한과 대기근 | 1740 | 12 | dublin | disaster | 필요 |
+| 벵골 대기근 | 1770 | 3 | calcutta | disaster | 필요 |
+| 1780년의 대허리케인 | 1780 | 10 | bridgetown | disaster | 필요 |
+| 칼라브리아 대지진 | 1783 | 2 | messina | disaster | 필요 |
