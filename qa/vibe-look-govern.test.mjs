@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {GATE,decideLook,allowedByPolicy,emptyLook,lookLuau} from '../tools/vibe-look-govern.mjs';
 import {policyGames} from '../tools/vibe-look-kit.mjs';
@@ -138,4 +140,66 @@ test('판타지 서바이벌: 어두운 분위기 전용 정책(dark-fantasy 만
   const dark=table.presets.find(p=>p.id==='dark-fantasy'),bright=table.presets.find(p=>p.id==='bright-adventure');
   assert.equal(allowedByPolicy(dark,spec.lookPolicy,spec.mood),true);
   assert.equal(allowedByPolicy(bright,spec.lookPolicy,spec.mood),false);
+});
+
+test('대항해시대 룩 자동 승격은 동일 main 소스·스튜디오 30클릭·31화면·전수 미디어 증거 없이는 막는다', () => {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'mare-look-gate-'));
+  const gameDir=path.join(dir,'roblox-games','mare-essentia');
+  const shared=path.join(gameDir,'src','ReplicatedStorage','Shared');
+  try{
+    fs.mkdirSync(shared,{recursive:true});
+    fs.mkdirSync(path.join(dir,'frames'),{recursive:true});
+    fs.writeFileSync(path.join(gameDir,'visual-ladder.json'),JSON.stringify({
+      game:'mare-essentia',paths:{shared:'src/ReplicatedStorage/Shared'},mood:'bright',
+      categories:{world:{label:'항구',tiers:[{tier:1,name:'기본',requires:[]},{tier:2,name:'개선',requires:[]}]}}
+    }));
+    fs.writeFileSync(path.join(gameDir,'visual-ladder-state.json'),JSON.stringify({floor:0,tiers:{world:1},history:[]}));
+    const git=(...args)=>{
+      const r=spawnSync('git',args,{cwd:dir,encoding:'utf8'});
+      assert.equal(r.status,0,r.stderr||r.stdout);
+      return r.stdout.trim();
+    };
+    git('init');git('config','user.name','mare-qa');git('config','user.email','mare@example.invalid');
+    git('add','.');git('commit','-m','test');
+    const head=git('rev-parse','HEAD');
+    const base={
+      sourceRevision:head,errors:[],
+      summary:{plannedSteps:185,completedSteps:185,abortedEarly:false,
+        plannedClicks:30,successfulClicks:30,plannedFrames:31,capturedFrames:31},
+      assetAudit:{
+        models:{status:'PASS'},features:{status:'PASS'},
+        registered:{status:'PASS',clientVerified:true,soundClientVerified:true}
+      },
+      clientImageAudit:{mode:'VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED',expected:124,loaded:124,missing:[],
+        soundExpected:20,soundLoaded:20,soundMissing:[]}
+    };
+    const run=report=>{
+      fs.writeFileSync(path.join(dir,'report.json'),JSON.stringify(report));
+      const r=spawnSync(process.execPath,[path.resolve('tools/vibe-visual-ladder.mjs'),
+        '--game','mare-essentia','--advance','--report','report.json','--frames','frames'],{cwd:dir,encoding:'utf8'});
+      assert.equal(r.status,0,r.stderr||r.stdout);
+      assert.equal(JSON.parse(fs.readFileSync(path.join(gameDir,'visual-ladder-state.json'),'utf8')).floor,0);
+      return r.stdout;
+    };
+    assert.match(run({...base,sourceRevision:'0'.repeat(40)}),/소스 버전이 현재 main과 불일치/);
+    assert.match(run({...base,summary:{...base.summary,successfulClicks:0,capturedFrames:7}}),/전체 클릭\/화면\/미디어 전수 검증 미통과/);
+    assert.match(run({...base,clientImageAudit:{...base.clientImageAudit,missing:['Goods/test'],loaded:123}}),/전체 클릭\/화면\/미디어 전수 검증 미통과/);
+    assert.match(run(base),/화면 검사 불가|캡처 화면 0장/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('기존 Vibe 룩 연습→승격→게임 적용 흐름은 에셋·룩 원본을 보존하며 Studio 재검사를 자동 연결한다',()=>{
+  const ladder=fs.readFileSync('.github/workflows/vibe-visual-ladder.yml','utf8');
+  const promotion=fs.readFileSync('.github/workflows/vibe-look-promotion.yml','utf8');
+  const script=fs.readFileSync('tools/vibe-visual-ladder.mjs','utf8');
+  assert.match(ladder,/roblox-games\/\*\/src\/ReplicatedStorage\/Shared\/LookAssignment\.luau/);
+  assert.match(ladder,/gh workflow run devloop-studio\.yml --ref main -f game=mare-essentia/);
+  assert.match(ladder,/steps\.promotion\.outputs\.mare_changed == 'true'/);
+  assert.equal(ladder.includes('HEAD:main'),false);
+  assert.match(ladder,/gh api -X PUT "repos\/\$GITHUB_REPOSITORY\/pulls\/\$pr\/merge"/);
+  assert.match(promotion,/gh workflow run devloop-studio\.yml --ref main -f game=mare-essentia/);
+  assert.match(script,/client\.loaded!==client\.expected/);
+  assert.match(script,/report\.sourceRevision!==revision/);
+  assert.match(script,/if\(!opt\('frames'\)\)/);
+  assert.match(script,/client\.soundLoaded!==client\.soundExpected/);
 });

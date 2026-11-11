@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 concurrency:
   group: vibe-look-promotion
   cancel-in-progress: false
@@ -86,6 +87,9 @@ jobs:
           if [ -n "$bad" ] || [ "$need" != "2" ]; then echo "안전 확인 실패: $files"; echo "자동 병합 중단: 예상 밖 파일 $bad" >> "$GITHUB_STEP_SUMMARY"; exit 0; fi
           if gh api -X PUT "repos/${{ github.repository }}/pulls/$pr/merge" -f merge_method=squash -f commit_title="룩 프리셋 자동 승급: ${{ steps.promo.outputs.id }} (#$pr)" >/dev/null; then
             echo "자동 병합 완료 #$pr" >> "$GITHUB_STEP_SUMMARY"
+            # [기존 게임 소비자] 검증 후보를 곧바로 사용하지 않고 Mare 공식 Studio 전수 검사로 3회 이상 판정한다.
+            gh workflow run devloop-studio.yml --ref main -f game=mare-essentia -f script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
+            echo 'MARE_LOOK_PROMOTION_STUDIO_AUDIT_DISPATCHED=YES' >> "$GITHUB_STEP_SUMMARY"
           else
             echo "병합이 거부됨(브랜치 보호 등). PR #$pr 은 열어 둔다." >> "$GITHUB_STEP_SUMMARY"
           fi
