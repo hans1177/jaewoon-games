@@ -1060,7 +1060,13 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   // Always rescan current inputs; changed-file hashes cannot certify this replay.
   const diagnosticReplay=replayPlan?.required===true&&replayPlan?.executable===true&&clean(replayPlan.mode)==='DIAGNOSTIC_RESCAN';
   // 멀티 계약은 변경 목록 밖의 서버·수신 소스에도 의존한다. 현재 소스를 다시 검사한다.
-  const cached = diagnosticReplay||gameRepair?.multiplayerLifecycle?.required===true ? null : cache.entries?.[contentHash];
+  // [증거 보호] 불변성·저장 복구 검사는 대상 파일 해시가 같아도 실행 증거를 새로 수집한다.
+  // 캐시가 실제 실패를 가리지 않도록 기존 멀티플레이 강제 재검증 경계를 확장한다.
+  const mandatoryRepairCheck=gameRepair?.required===true&&(
+    (Array.isArray(gameRepair?.invariants?.testTargets)&&gameRepair.invariants.testTargets.length>0)||
+    gameRepair?.saveMigration?.required===true);
+  const cached = diagnosticReplay||gameRepair?.multiplayerLifecycle?.required===true||mandatoryRepairCheck
+    ? null : cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, impactPlan, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
