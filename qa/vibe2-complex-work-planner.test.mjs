@@ -168,6 +168,32 @@ test('counterexample repair skips known failed patch evidence and rejects malfor
  }
 });
 
+// [반례 수정 보호 회귀] 책임 밖 파일, 경로 이탈, 숨겨진 파일 추가를 평가 전에 차단한다.
+test('counterexample repair limits edits to grounded responsible files',()=>{
+ const sha=sourceDigest('original'),allowedPaths=['server/Fight.server.luau'];
+ const evaluate=()=>{throw Error('OUT_OF_SCOPE_EDIT_REACHED_ORACLE')};
+ const check=(candidate,expected)=>runCodegenCounterexampleRepair({
+  sourceDigest:sha,allowedPaths,generate:()=>candidate,evaluate
+ }).reason===expected;
+ const edit=(path)=>({edits:[{path,find:'old',replace:'new'}]});
+ for(const path of ['client/Fight.client.luau','server/Other.server.luau',
+  '../server/Fight.server.luau','server/../server/Fight.server.luau',
+  '/server/Fight.server.luau','C:/server/Fight.server.luau',
+  'server\\\\Fight.server.luau','server//Fight.server.luau','server/./Fight.server.luau']){
+  assert.equal(check(edit(path),'OUT_OF_SCOPE_REPAIR_EDIT'),true,path);
+ }
+ assert.equal(check({...edit(allowedPaths[0]),newFiles:[{path:'server/Evil.server.luau',content:'new'}]},
+  'UNAPPROVED_REPAIR_FILE_CHANGE'),true);
+ assert.equal(check({...edit(allowedPaths[0]),replaceFiles:[{path:allowedPaths[0],content:'new'}]},
+  'UNAPPROVED_REPAIR_FILE_CHANGE'),true);
+ const valid=runCodegenCounterexampleRepair({sourceDigest:sha,allowedPaths,
+  generate:()=>edit(allowedPaths[0]),evaluate:()=>({pass:true,actualGamePlaytest:false})});
+ assert.equal(valid.status,'CANDIDATE_VALIDATED');
+ assert.deepEqual(valid.attempts.map(row=>row.pass),[true]);
+ assert.equal(valid.sourceWrite,false);
+ assert.equal(valid.runtimeVerified,false);
+});
+
 test('real line-defense source prevents dead attacks and duplicate death rewards while normal combat stays identical',()=>{
  const root='web-games/line-defense';
  const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['index.html']});

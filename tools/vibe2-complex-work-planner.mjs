@@ -625,6 +625,8 @@ export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibl
   const plan=planComplexGameWork({order,sourceRoot,responsibleFiles,target,baseRevisionSha});
   if(plan.status!=='BOUND')return plan;
   const repair=runCodegenCounterexampleRepair({sourceDigest:plan.index.digest,
+   // [책임 소스] 실제 인덱스에 바인딩된 파일 외에는 반례 수정이 확장될 수 없다.
+   allowedPaths:plan.index.files.map(file=>file.path),
    failures:order.selectedTask?.vibe59ComplexCounterexamples??order.vibe59ComplexCounterexamples??[],
    generate:()=>createComplexGameCandidate({plan,sourceRoot,target}),
    evaluate:candidate=>({pass:candidate.vibe59TestPlan.pass,actualGamePlaytest:false}),
