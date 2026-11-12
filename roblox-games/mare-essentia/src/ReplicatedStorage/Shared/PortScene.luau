@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: PortScene.luau
 -- 항구 3D 장면 (클라이언트 전용, 보기용). 도형(Part)으로 항구 마을·부두·배·갈매기를 만든다.
 -- 항구마다 지역 양식(북유럽 / 지중해)과 시설(교역소, 조선소, 은행, 길드, 왕궁, 항만청)이 달라진다.
 -- 판정에는 쓰이지 않는다. 시설 앞의 ProximityPrompt를 누르면 onFacility(탭 id)가 불린다.
@@ -172,12 +173,27 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		m.Parent = parent
 		local _, ext = m:GetBoundingBox()
 		local isPalm = string.find(asset, "palm", 1, true) ~= nil
-		local axis = if kind == "People" or asset == "chimney" or isPalm then ext.Y else math.max(ext.X, ext.Z)
+		local isAnimal = kind == "Animals"
+		-- FBX 가축은 가져온 단위·축이 다른 경우가 있다. 기존 야외 장면처럼 세 축의 최대 크기로 맞춘다.
+		local axis = if kind == "People" or asset == "chimney" or isPalm then ext.Y
+			elseif isAnimal then math.max(ext.X, ext.Y, ext.Z)
+			else math.max(ext.X, ext.Z)
 		if axis < 0.01 then error("빈 모델") end
-		-- 야자나무는 잎이 넓어 가로 기준으로 줄이면 줄기가 뒤틀려 보인다: 높이 기준으로 맞춘다
-		local scale = desiredSize * (if isPalm then 1.5 else 1) / axis
-		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
+		-- 야자나무는 잎이 넓어 가로 기준으로 줄이면 줄기가 뒤틀려 보인다: 높이 기준으로 맞춘다.
+		local ratio = desiredSize * (if isPalm then 1.5 else 1) / axis
+		-- 일반 시설·선박은 기존 배율 제한을 보존한다. 동물은 결과 실측 크기로 검증한다.
+		if not isAnimal and (ratio < 0.01 or ratio > 100) then error("비정상적인 모델 배율") end
+		-- ScaleTo는 상대 배율이 아니라 모델의 절대 배율을 받는다. 수입본의 기존 배율을 반영한다.
+		local scale = if isAnimal then m:GetScale() * ratio else ratio
+		if scale ~= scale or scale <= 0 or scale == math.huge then error("비정상적인 모델 배율") end
 		m:ScaleTo(scale)
+		if isAnimal then
+			local _, actualSize = m:GetBoundingBox()
+			local actualAxis = math.max(actualSize.X, actualSize.Y, actualSize.Z)
+			if math.abs(actualAxis - desiredSize) > desiredSize * 0.2 then
+				error("동물 수입본 목표 크기 불일치")
+			end
+		end
 		if kind ~= "People" then
 			local _, size = m:GetBoundingBox()
 			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
