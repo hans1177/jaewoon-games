@@ -3000,6 +3000,38 @@ do
 	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == #K.Disciplines, tostring(view.knowledge))
 end
 
+-- 백병전 카드 패: 주인공 카드는 늘 있고, 발견한 유물·동물이 카드가 된다
+do
+	local ds = S.State.new("england", 1700, nil)
+	local relicCard, animalCard
+	for _, c in D.Cards.Cards do
+		if c.field == "Relic" and not relicCard then relicCard = c end
+		if c.field == "Zoology" and not animalCard then animalCard = c end
+	end
+	ds.discovered[relicCard.id] = true
+	ds.discovered[animalCard.id] = true
+	local dv = S.View.build(ds, { rng = function() return 0.5 end, market = S.MarketClass.new() })
+	local names = {}
+	for _, c in dv.deck.cards do
+		names[c.name] = c.kind
+	end
+	check("카드 패: 주인공 스킬 카드가 맨 앞", dv.deck.cards[1].skill == "command" and dv.deck.cards[1].kind == "crew")
+	check("카드 패: 발견한 유물이 카드가 된다", names[relicCard.name] ~= nil)
+	check("카드 패: 발견한 동물이 카드가 된다", names[animalCard.name] == "animal")
+	check("카드 패: 지금 타는 배가 카드가 된다", dv.deck.cards[#dv.deck.cards].kind == "ship")
+	-- 지식·항해자도 카드가 된다
+	local bookCard
+	for _, c in D.Cards.Cards do
+		if c.field == "Astronomy" then bookCard = c break end
+	end
+	ds.discovered[bookCard.id] = true
+	ds.diplo.met.v_maria = true
+	local dv2 = S.View.build(ds, { rng = function() return 0.5 end, market = S.MarketClass.new() })
+	local kinds = {}
+	for _, c in dv2.deck.cards do kinds[c.kind] = true end
+	check("카드 패: 지식 카드와 우군 카드", kinds.book and kinds.friend)
+end
+
 -- 항구 자체 성장과 세금 수익
 do
 	local gs = S.State.new("england", 1700, nil)

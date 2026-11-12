@@ -1454,6 +1454,7 @@ local function call(action, payload)
 			wind = view.weather and view.weather.wind,
 			windAngle = ((view.weather and string.byte(view.weather.id or "x", 1) or 0) * 47) % 360,
 			enemyName = lb.enemy,
+			deck = view.deck,
 			log = lb.log,
 			winner = lb.winner,
 			reason = lb.reason,
