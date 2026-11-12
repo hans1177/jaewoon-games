@@ -5620,6 +5620,7 @@ end
 local titleGui = overlayGui("TitleBackdrop", -5)
 titleGui.Enabled = false
 local titleShip
+local refreshTitlePreview
 do
 	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(14, 20, 40))
 	root.ClipsDescendants = true
@@ -5627,9 +5628,9 @@ do
 	local g = Instance.new("UIGradient")
 	g.Rotation = 90
 	g.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 16, 44)),
-		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(70, 44, 92)),
-		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(226, 112, 78)),
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 70, 114)),
+		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(85, 149, 183)),
+		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(233, 169, 124)),
 		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 190, 110)),
 	})
 	g.Parent = sky
@@ -5645,8 +5646,8 @@ do
 	local sg = Instance.new("UIGradient")
 	sg.Rotation = 90
 	sg.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(190, 120, 96)),
-		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(44, 70, 110)),
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 181)),
+		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(45, 101, 135)),
 		ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 18, 38)),
 	})
 	sg.Parent = sea
@@ -5654,29 +5655,119 @@ do
 		local w = mkBox(sea, UDim2.fromScale(0.04 + (i * 0.37) % 0.8, 0.08 + i * 0.09), UDim2.fromScale(0.1 + (i % 3) * 0.04, 0.012), Color3.fromRGB(255, 200, 150), 0.7)
 		w.ZIndex = 4
 	end
-	-- 배 실루엣
-	titleShip = mkBox(root, UDim2.fromScale(0.2, 0.655), UDim2.fromOffset(100, 12), Color3.fromRGB(14, 10, 12))
-	titleShip.ZIndex = 5
-	do
-		local parts = {
-			mkBox(titleShip, UDim2.fromOffset(26, -52), UDim2.fromOffset(3, 52), Color3.fromRGB(14, 10, 12)),
-			mkBox(titleShip, UDim2.fromOffset(62, -40), UDim2.fromOffset(3, 40), Color3.fromRGB(14, 10, 12)),
-			mkBox(titleShip, UDim2.fromOffset(30, -49), UDim2.fromOffset(22, 32), Color3.fromRGB(34, 24, 26)),
-			mkBox(titleShip, UDim2.fromOffset(66, -37), UDim2.fromOffset(17, 26), Color3.fromRGB(34, 24, 26)),
-		}
-		for _, f in parts do
-			f.ZIndex = 5
+	-- 파일명: Game.client.luau / 3D 타이틀
+	-- 승인된 항구·범선 원본 모델만 미리보기에 복제한다. 저장과 월드 파츠는 건드리지 않는다.
+	local preview = Instance.new("ViewportFrame")
+	preview.Name = "TitleHarbor3D"
+	preview.BackgroundTransparency = 1
+	preview.Position = UDim2.fromScale(-0.04, 0.23)
+	preview.Size = UDim2.fromScale(0.72, 0.72)
+	preview.Ambient = Color3.fromRGB(147, 175, 194)
+	preview.LightColor = Color3.fromRGB(255, 233, 191)
+	preview.LightDirection = Vector3.new(-0.6, -0.7, -0.4)
+	preview.ZIndex = 5
+	preview.Parent = root
+	local world = Instance.new("WorldModel")
+	world.Parent = preview
+	local camera = Instance.new("Camera")
+	camera.FieldOfView = 40
+	camera.Parent = preview
+	preview.CurrentCamera = camera
+	local shipName, dockModel, townModel
+	local SHIP_MODELS = {
+		caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-pirate-medium",
+		galleon = "ship-large", paddle_steamer = "ship-pirate-small",
+		ironclad_frigate = "ship-pirate-medium",
+	}
+	local function approvedClone(kind, name, at, span, angle)
+		local library = ReplicatedStorage:FindFirstChild("MareAssets")
+		local folder = library and library:FindFirstChild(kind)
+		local original = folder and folder:FindFirstChild(name)
+		if not (original and original:IsA("Model")) then return nil end
+		local model = original:Clone()
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.Anchored = true
+				part.CanCollide = false
+				part.CanTouch = false
+				part.CanQuery = false
+			end
 		end
+		local bounds = model:GetExtentsSize()
+		local longest = math.max(bounds.X, bounds.Y, bounds.Z)
+		if longest < 0.01 then model:Destroy(); return nil end
+		model:ScaleTo(model:GetScale() * span / longest)
+		model:PivotTo(CFrame.new(at) * CFrame.Angles(0, math.rad(angle), 0))
+		model.Parent = world
+		return model
+	end
+	refreshTitlePreview = function()
+		if not titleGui.Enabled then return end
+		local desired = SHIP_MODELS[view and view.ship and view.ship.id] or "ship-large"
+		if desired ~= shipName then
+			if titleShip then titleShip:Destroy(); titleShip = nil end
+			titleShip = approvedClone("Naval", desired, Vector3.new(0, -0.65, 0), 14, -22)
+			if titleShip then shipName = desired end
+		end
+		if not dockModel then
+			dockModel = approvedClone("Naval", "structure-platform-dock", Vector3.new(11, -2.6, -9), 12, 12)
+		end
+		if not townModel then
+			townModel = approvedClone("Town", "house", Vector3.new(14, -1.8, -14), 8, 10)
+		end
+	end
+	task.spawn(function()
+		local library = ReplicatedStorage:WaitForChild("MareAssets", 20)
+		if not library then return end
+		for _, kind in { "Naval", "Town" } do
+			local folder = library:FindFirstChild(kind)
+			if folder then
+				folder.ChildAdded:Connect(function()
+					if titleGui.Enabled then task.defer(refreshTitlePreview) end
+				end)
+			end
+		end
+		refreshTitlePreview()
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if not titleGui.Enabled then return end
+		local t = os.clock()
+		if titleShip and titleShip.Parent then
+			titleShip:PivotTo(CFrame.new(0, -0.65 + math.sin(t * 0.9) * 0.12, 0)
+				* CFrame.Angles(math.sin(t * 0.5) * 0.016, math.rad(-22) + math.sin(t * 0.16) * 0.10, math.sin(t) * 0.013))
+		end
+		camera.CFrame = CFrame.lookAt(
+			Vector3.new(23 + math.sin(t * 0.11) * 2, 11.5, 26 + math.cos(t * 0.11) * 2),
+			Vector3.new(0, 0, -3))
+	end)
+	local function titlePreviewLayout()
+		local currentCamera = workspace.CurrentCamera
+		local size = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
+		local portrait = size.Y > size.X
+		preview.Position = if portrait then UDim2.fromScale(-0.12, 0.28) else UDim2.fromScale(-0.04, 0.23)
+		preview.Size = if portrait then UDim2.fromScale(1.16, 0.49) else UDim2.fromScale(0.72, 0.72)
+	end
+	titlePreviewLayout()
+	if workspace.CurrentCamera then
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(titlePreviewLayout)
 	end
 	-- 게임 이름
 	local function titleText(text, y, size, color, font)
 		local l = Instance.new("TextLabel")
 		l.BackgroundTransparency = 1
 		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.new(0.2, 0, y, 0)
-		l.Size = UDim2.new(0.36, 0, 0, size + 8)
+		local currentCamera = workspace.CurrentCamera
+		local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
+		local portrait = screen.Y > screen.X
+		l.Position = UDim2.new(if portrait then 0.5 else 0.29, 0, if portrait then y * 0.65 else y, 0)
+		l.Size = UDim2.new(if portrait then 0.90 else 0.53, 0, 0, size + 14)
 		l.Text = text
 		l.TextSize = size
+		l.TextScaled = true
+		local limit = Instance.new("UITextSizeConstraint")
+		limit.MaxTextSize = size
+		limit.MinTextSize = 12
+		limit.Parent = l
 		l.Font = font
 		l.TextColor3 = color
 		l.TextStrokeTransparency = 0.5
@@ -5687,16 +5778,6 @@ do
 	titleText("MARE ESSENTIA", 0.12, 38, Color3.fromRGB(246, 208, 130), Enum.Font.GothamBlack)
 	titleText("학문의 바다", 0.12 + 0.11, 26, Color3.fromRGB(240, 232, 215), Enum.Font.GothamBold)
 	titleText("지식을 싣고, 미지의 바다를 건너라", 0.12 + 0.2, 16, Color3.fromRGB(214, 200, 180), Enum.Font.Gotham)
-	task.spawn(function()
-		while true do
-			task.wait(0.05)
-			if titleGui.Enabled then
-				local t = os.clock()
-				titleShip.Position = UDim2.new(0.2 + math.sin(t * 0.12) * 0.008, -50, 0.655 + math.sin(t * 1.3) * 0.004, 0)
-				titleShip.Rotation = math.sin(t * 0.9) * 1.5
-			end
-		end
-	end)
 end
 -- 타이틀 오른쪽 선택 패널: 나라(3열 카드) → 시대(3칸) → 출항 버튼 순서로, 스크롤 없이 한눈에 보이게 짠다
 local GOLD = Color3.fromRGB(226, 182, 92)
@@ -5806,7 +5887,7 @@ renderTitle = function()
 	grid.ZIndex = 12
 	grid.Parent = titleScroll
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.new(1 / 3, -6, 0, 56)
+	gl.CellSize = UDim2.new(if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y > workspace.CurrentCamera.ViewportSize.X then 0.5 else 1 / 3, -6, 0, 60)
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.Parent = grid
@@ -6053,6 +6134,13 @@ H.titleMenuOpen = false
 function H.setTitleMode(on)
 	titleGui.Enabled = on or H.titleMenuOpen
 	titlePanel.Visible = on and not H.titleMenuOpen
+	local currentCamera = workspace.CurrentCamera
+	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
+	local portrait = screen.Y > screen.X
+	titlePanel.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
+	titlePanel.Position = if portrait then UDim2.new(0.5, 0, 1, -8) else UDim2.new(1, -14, 0.5, 0)
+	titlePanel.Size = if portrait then UDim2.new(0.94, 0, 0.70, 0) else UDim2.new(0.58, 0, 1, -28)
+	if titleGui.Enabled and refreshTitlePreview then refreshTitlePreview() end
 	if on then
 		main.Visible = false
 	elseif H.wasTitle then
@@ -6116,6 +6204,7 @@ function H.showTitle()
 	H.titleMenuOpen = true
 	titleGui.Enabled = true
 	titlePanel.Visible = false
+	if refreshTitlePreview then refreshTitlePreview() end
 	local function leave()
 		H.titleMenuOpen = false
 		layer:Destroy()
@@ -6134,9 +6223,12 @@ function H.showTitle()
 	root.Parent = layer
 
 	local box = Instance.new("Frame")
-	box.AnchorPoint = Vector2.new(1, 0.5)
-	box.Position = UDim2.new(1, -18, 0.5, 0)
-	box.Size = UDim2.new(0.4, 0, 0, 330)
+	local currentCamera = workspace.CurrentCamera
+	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
+	local portrait = screen.Y > screen.X
+	box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
+	box.Position = if portrait then UDim2.new(0.5, 0, 1, -18) else UDim2.new(1, -18, 0.5, 0)
+	box.Size = if portrait then UDim2.new(0.91, 0, 0, 330) else UDim2.new(0.4, 0, 0, 330)
 	box.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
 	box.BackgroundTransparency = 0.1
 	box.BorderSizePixel = 0
@@ -6161,7 +6253,7 @@ function H.showTitle()
 		lay.SortOrder = Enum.SortOrder.LayoutOrder
 		lay.Parent = box
 	end
-	local head = mkLabel(box, "항해를 시작합니다", 20, Color3.fromRGB(246, 208, 130), true, 1)
+	local head = mkLabel(box, "선장의 항해 일지", 20, Color3.fromRGB(246, 208, 130), true, 1)
 	head.Size = UDim2.new(1, 0, 0, 26)
 	head.AutomaticSize = Enum.AutomaticSize.None
 	head.TextXAlignment = Enum.TextXAlignment.Center
@@ -6190,7 +6282,7 @@ function H.showTitle()
 	end
 	local confirmed = false
 	local newBtn
-	newBtn = big("⚓  새 게임", Color3.fromRGB(34, 52, 82), if view then 3 else 2, if view then 56 else 76, function()
+	newBtn = big("⚓  새로운 항해", Color3.fromRGB(34, 52, 82), if view then 3 else 2, if view then 56 else 76, function()
 		if view and not confirmed then
 			confirmed = true
 			newBtn.Text = "저장이 사라져요. 한 번 더 누르면 새로 시작"
