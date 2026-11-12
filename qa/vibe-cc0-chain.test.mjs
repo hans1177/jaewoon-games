@@ -134,20 +134,19 @@ test('mare story/event audio uses verified CC0 parents and decodable game-specif
   const listing=spawnSync('unzip',['-Z','-1',archive],{encoding:'utf8',timeout:30000});
   assert.equal(listing.status,0,String(listing.stderr||''));
   const entries=listing.stdout.split(/\r?\n/);
+  const missing=archiveEntries.filter(track=>entries.filter(e=>e===track.sourceEntry||e.endsWith('/'+track.sourceEntry)).length!==1);
+  assert.deepEqual(missing.map(x=>x.sourceEntry),[],
+    'Kenney source entry mismatches. Actual OGG entries: '+entries.filter(e=>e.endsWith('.ogg')).join(','));
   for(const track of archiveEntries){
-    const matches=entries.filter(e=>e===track.sourceEntry||e.endsWith('/'+track.sourceEntry));
-    assert.equal(matches.length,1,'missing or duplicate CC0 entry '+track.sourceEntry);
-    const original=spawnSync('unzip',['-p',archive,matches[0]],{maxBuffer:16*1024*1024,timeout:30000});
+    const original=spawnSync('unzip',['-p',archive,track.sourceEntry],{maxBuffer:16*1024*1024,timeout:30000});
     assert.equal(original.status,0,'cannot unpack CC0 '+track.sourceEntry);
     assert.equal(original.stdout.subarray(0,4).toString(),'OggS');
   }
   console.log('MARE_CC0_AUDIO_SOURCE_BYTES_VALID 21');
   const encoder=spawnSync('ffmpeg',['-version'],{encoding:'utf8'});
   const inspector=spawnSync('ffprobe',['-version'],{encoding:'utf8'});
-  if(encoder.error?.code==='ENOENT'||inspector.error?.code==='ENOENT'){
-    console.log('MARE_CC0_DERIVATIVE_CODEC_UNAVAILABLE_NO_RUNTIME_PASS');
-    return;
-  }
+  assert.notEqual(encoder.error?.code,'ENOENT','FFmpeg must be installed before claiming audio quality PASS');
+  assert.notEqual(inspector.error?.code,'ENOENT','FFprobe must be installed before claiming audio quality PASS');
   assert.equal(encoder.status,0);
   assert.equal(inspector.status,0);
   const run=spawnSync(process.execPath,['tools/mare-audio-upload.mjs'],{

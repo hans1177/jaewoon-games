@@ -1,4 +1,5 @@
-# [마리 에센시아] 직접 합성한 음악·효과음을 로블록스 오디오로 등록하고 AudioIds.luau 에 기록한다. 같은 해시는 다시 올리지 않는다.
+# 파일명: .github/workflows/mare-audio-upload.yml
+# 기존 마리 에센시아 CC0 오디오 등록 작업. 등록 ID/영수증은 main 직접 쓰기 대신 기존 PR 검토로 전달한다.
 name: Mare Audio Upload
 on:
   workflow_dispatch:
@@ -8,13 +9,14 @@ on:
         required: false
         default: '10775310508'
       fresh:
-        description: '1 = 이전 등록 기록을 무시하고 새 계정으로 다시 올림'
+        description: '0 = 기존 등록 보존. 이전 오디오 강제 재등록 불가'
         type: string
         required: false
-        default: '1'
+        default: '0'
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: mare-audio-upload
@@ -32,20 +34,40 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Upload audio and grant Universe use
+      - name: Verify rights, hashes and encoded audio
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg unzip
+          AUDIO_CC0_PREFLIGHT=1 node tools/mare-audio-upload.mjs
+      - name: Upload verified audio and grant Universe use
+        id: upload
+        continue-on-error: true
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
-          AUDIO_FRESH: ${{ inputs.fresh }}
+          AUDIO_FRESH: '0'
         run: node tools/mare-audio-upload.mjs
-      - name: Commit audio ids
+      - name: Propose verified audio IDs through existing main PR review
+        if: ${{ always() && (steps.upload.outcome == 'success' || steps.upload.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git config user.name 'mare-audio-upload'
           git config user.email 'actions@users.noreply.github.com'
           git add roblox-games/mare-essentia/audio/uploaded.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau
           if git diff --cached --quiet; then echo 'AUDIO_IDS_ALREADY_CURRENT'; exit 0; fi
-          git commit -m 'assets(mare-essentia): bind synthesized audio ids'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          branch="assets/mare-audio-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          git commit -m 'assets(mare): bind verified CC0 audio IDs'
+          git push origin "HEAD:$branch"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+            --title 'assets(mare): bind verified audio IDs' \
+            --body 'CC0 원본·해시와 파일 디코딩은 오디오 등록 단계에서 확인. 업로드 결과와 Universe 사용 권한 기록을 반영할 후보. 실제 Roblox Studio/모바일 재생·볼륨·루프 QA 및 F0~F9를 완료 전제로 주장하지 않는다.'
+      - name: Report upload failures accurately
+        if: ${{ always() && steps.upload.outcome == 'failure' }}
+        run: |
+          echo 'AUDIO_UPLOAD_FAILED; preserve candidate receipts, no completed or PASS claim'
+          exit 1
