@@ -240,7 +240,7 @@ for id, spec in {
 	GOOD_ICON[id] = spec
 end
 -- [3D 교역품] 승인된 원본 Cargo 메시가 실제 상품과 일치할 때만 상세 아이콘에 재사용한다.
--- 작은 목록은 동일 상품의 원본 Image를 2.5D 카드로 표시해 모바일 렌더 부하를 제한한다.
+-- 교역품 목록과 상세 화면은 동일한 승인 3D 모델을 사용한다.
 for goodsId, cargoAsset in {
 	cheese = "cheese", cloth = "textiles-a", coffee = "cup-coffee", fish = "fish",
 	glass = "glass", iron = "iron-bars", olive_oil = "bottle-oil", pepper = "pepper-mill",
@@ -344,7 +344,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		return portrait
 	end
 	-- [3D 통일] 3D 모델이 있는 상품은 작은 목록과 상세 모두 같은 3D 모델로 보여 준다 (그림과 모델이 섞여 보이지 않게).
-	if kind == "Goods" or kind == "Menu" or (kind == "Cargo" and px < 64 and type(smallArt) == "string" and AssetIds[smallArt]) then
+	if kind == "Goods" or kind == "Menu" then
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
 		card.Size = UDim2.fromOffset(px, px)
@@ -355,7 +355,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		gradient.Color = ColorSequence.new(Color3.fromRGB(39, 50, 65), Color3.fromRGB(17, 23, 35))
 		gradient.Rotation = 90
 		gradient.Parent = card
-		local assetId = if kind == "Cargo" and smallArt then AssetIds[smallArt] else AssetIds[kind .. "/" .. asset]
+		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
 			-- [2.5D] 같은 승인 원본의 그림·그림자층만 겹친다. 파츠·가짜 모델 생성 없음.
 			local imageId = "rbxassetid://" .. tostring(assetId)
