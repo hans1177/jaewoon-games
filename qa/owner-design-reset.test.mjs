@@ -6,7 +6,34 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
+import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {runOwnerAllGamesDesignReset,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
+
+// [대항해시대] 오너가 요청한 Vibe 후속 개발은 기존 정식 DESIGN_ONLY 접수만 사용한다.
+test('Mare Essentia owner Vibe continuation stays canonical and never fabricates development passes',()=>{
+  const requests=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8')).requests||[];
+  const matches=requests.filter(request=>request.gameId==='mare-essentia');
+  assert.equal(matches.length,1,'Mare is enrolled once');
+  const request=matches[0],seed=request.seed;
+  assert.equal(request.status,'ACTIVE');
+  assert.equal(seed.productionClass,'DESIGN_ONLY','new intake cannot claim successful design gates');
+  assert.equal(seed.lifecycleState,'DESIGN_ONLY');
+  assert.equal(seed.OWNER_REBUILD_MODE,'PRESERVATION_PRESENTATION_UPGRADE');
+  assert.equal(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION,true);
+  assert.equal(seed.CANONICAL_IMPLEMENTATION_SOURCE,'roblox-games/mare-essentia');
+  assert.equal(seed.INITIAL_TARGET_PLATFORM,'ROBLOX');
+  assert.equal(seed.SAVE_POLICY,'PRESERVE_EXISTING_MareEssentia_v2_DATASTORE_AND_FIELDS');
+  assert.ok(seed.OWNER_LATEST_DESIGN_REQUEST.includes('F0~F9'));
+  assert.deepEqual(validateGameSeed(structuredClone(seed)).errors,[],'existing seed contract remains enforced');
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  assert.ok(!(catalog.permanentRemovalPolicy?.ids||[]).includes('mare-essentia'));
+  const state={version:1,seeds:[]};
+  const owner=ensureOwnerDesignResetSeed(state,'mare-essentia');
+  assert.equal(owner.changed,true);
+  assert.equal(owner.seed.productionClass,'DESIGN_ONLY');
+  assert.equal(ensureOwnerDesignResetSeed(state,'mare-essentia').changed,false,'repeated intake is idempotent');
+  assert.equal(state.seeds.length,1);
+});
 
 test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
   const queue=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
