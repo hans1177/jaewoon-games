@@ -110,7 +110,7 @@ E.Events = {
 	{ id = "navigation_acts", year = 1651, month = 10, title = "항해 조례", tag = "정치·무역",
 		text = "잉글랜드 의회가 자국 배만 식민지 물건을 실어 나를 수 있다는 항해 조례를 통과시켰다. 네덜란드 중개 상인들이 술렁인다.",
 		choices = {
-			{ label = "조례를 따른다", hint = "명성 +10, 설탕·담배 값이 오른다", fame = 10, price = price({ "sugar", "tobacco" }, 1.1, 60, { "europe", "new_world" }) },
+			{ label = "조례를 따른다", hint = "명성 +10, 설탕 값이 오른다", fame = 10, price = price({ "sugar" }, 1.1, 60, { "europe", "new_world" }) },
 			{ label = "밀무역으로 돌파", hint = "+300코인", coins = 300 },
 		} },
 	{ id = "anglo_dutch_war", year = 1652, month = 7, title = "제1차 영란 전쟁", tag = "전쟁",
@@ -237,7 +237,7 @@ E.Events = {
 		text = "유럽에서 인도와 북아메리카까지, 세계 곳곳에서 영국과 프랑스가 맞붙는다. 바다는 사략선과 호송 함대로 가득하다.",
 		choices = {
 			{ label = "사략 면허를 받는다", hint = "+500코인", coins = 500 },
-			{ label = "중립 교역을 이어 간다", hint = "설탕·담배 값이 오른다", price = price({ "sugar", "tobacco" }, 1.2, 70, { "new_world", "indian" }) },
+			{ label = "중립 교역을 이어 간다", hint = "설탕 값이 오른다", price = price({ "sugar" }, 1.2, 70, { "new_world", "indian" }) },
 		} },
 	{ id = "plassey", year = 1757, month = 6, title = "플라시 전투", tag = "정치·식민",
 		text = "벵골에서 영국 동인도회사가 지방 태수의 군대를 꺾는다. 인도의 직물과 향료 무역이 회사의 손에 들어간다.",
@@ -266,7 +266,7 @@ E.Events = {
 	{ id = "independence", year = 1776, month = 7, title = "미국 독립 선언", tag = "정치·혁명",
 		text = "열세 식민지가 왕의 통치를 거부하고 독립을 선언한다. 새로운 나라가 바다 건너 교역에 뛰어든다.",
 		choices = {
-			{ label = "신생국과 교역한다", hint = "+300코인, 담배·면화 값이 내린다", coins = 300, price = price({ "tobacco", "cotton" }, 0.9, 80, { "new_world" }) },
+			{ label = "신생국과 교역한다", hint = "+300코인, 면화 값이 내린다", coins = 300, price = price({ "cotton" }, 0.9, 80, { "new_world" }) },
 			{ label = "왕실 편에 선다", hint = "명성 +15", fame = 15 },
 		} },
 	{ id = "french_revolution", year = 1789, month = 7, title = "프랑스 혁명", tag = "정치·혁명",
@@ -378,10 +378,10 @@ E.Events = {
 			{ label = "향신료 항로 정보를 판다", hint = "+300코인, 정향·육두구 값이 내린다", coins = 300, price = price({ "cloves", "nutmeg" }, 0.88, 80, { "europe" }) },
 		} },
 	{ id = "jamestown", year = 1607, month = 5, title = "제임스타운 건설", tag = "탐험·식민",
-		text = "영국 이주민 백여 명이 체서피크 만에 첫 영구 정착지를 세운다. 굶주림과 질병 속에 담배 재배가 길을 연다.",
+		text = "영국 이주민 백여 명이 체서피크 만에 첫 영구 정착지를 세운다. 굶주림과 질병 속에 식량 작물과 교역로를 찾아 나선다.",
 		choices = {
 			{ label = "보급선을 보낸다", hint = "-150코인, 명성 +20", coins = -150, fame = 20 },
-			{ label = "담배 묘목을 사들인다", hint = "담배 값이 내린다", price = price({ "tobacco" }, 0.88, 90, { "new_world", "europe" }) },
+			{ label = "옥수수 종자를 사들인다", hint = "옥수수 값이 내린다", price = price({ "maize" }, 0.88, 90, { "new_world", "europe" }) },
 		} },
 	{ id = "quebec_founded", year = 1608, month = 7, title = "퀘벡 건설", tag = "탐험·식민",
 		text = "사뮈엘 드 샹플랭이 세인트로렌스 강가에 교역소를 세운다. 모피를 실은 카누가 상류에서 내려오기 시작한다.",
@@ -540,7 +540,7 @@ local I = {
 	eic_charter = { node = "bot_pepper_vine", label = "후추 덩굴 지식으로 산지 직거래를 연다", hint = "+400코인, 후추 값이 크게 내린다", coins = 400, price = price({ "pepper" }, 0.8, 80, { "europe" }) },
 	sekigahara = { node = "good_silk", label = "비단 거래 지식으로 새 권력의 상인과 잇는다", hint = "+450코인", coins = 450 },
 	voc_founding = { node = "lang_ledger", label = "장부 기록으로 주식 거래의 이치를 꿰뚫는다", hint = "+400코인, 명성 +30", coins = 400, fame = 30 },
-	jamestown = { node = "good_tobacco", label = "담배 재배·건조 지식을 전수한다", hint = "+400코인, 명성 +20", coins = 400, fame = 20 },
+	jamestown = { node = "good_sugar", label = "신대륙 작물의 교역 지식을 전수한다", hint = "+400코인, 명성 +20", coins = 400, fame = 20 },
 	quebec_founded = { node = "good_fur", label = "모피 등급 지식으로 상품만 골라 산다", hint = "+400코인", coins = 400 },
 	galileo_telescope = { node = "phy_refraction", label = "빛의 굴절 지식으로 렌즈 연마를 돕는다", hint = "명성 +45", fame = 45 },
 	thirty_years_war = { node = "lang_cipher", label = "암호문 해독으로 봉쇄를 피해 간다", hint = "+500코인", coins = 500 },

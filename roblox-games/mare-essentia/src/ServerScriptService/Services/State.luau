@@ -252,9 +252,16 @@ return function(D)
 			}
 		end
 
+		-- [저장 호환] 더는 판매하지 않는 옛 화물은 복원 시 구입 원가(없으면 기존 기본가)로 정산한다.
+		-- 기존 저장 키는 유지하고 정상 저장 때 폐지 화물은 기록하지 않는다.
 		if type(saved.cargo) == "table" then
 			for goodId, qty in saved.cargo do
-				if D.Ports.Goods[goodId] and type(qty) == "number" and qty >= 1 then
+				if goodId == "tobacco" and type(qty) == "number" and qty == qty and qty >= 1 then
+					local paid = type(saved.basis) == "table" and saved.basis[goodId]
+					local unit = num(paid, 90, 0, 1e6)
+					if unit < 1 then unit = 90 end
+					s.coins = math.min(1e9, s.coins + math.floor(num(qty, 0, 0, 1e6)) * unit)
+				elseif D.Ports.Goods[goodId] and type(qty) == "number" and qty >= 1 then
 					s.cargo[goodId] = math.floor(qty)
 					s.basis[goodId] = num(type(saved.basis) == "table" and saved.basis[goodId], 0, 0, 1e6)
 				end
@@ -639,7 +646,7 @@ return function(D)
 					if type(f) == "table" and type(f.goods) == "table" and type(f.regions) == "table" and type(f.mult) == "number" and type(f.untilDay) == "number" and #s.history.fx < 40 then
 						local goods, regions = {}, {}
 						for _, g in f.goods do
-							if type(g) == "string" and #g <= 24 then table.insert(goods, g) end
+							if type(g) == "string" and #g <= 24 and D.Ports.Goods[g] then table.insert(goods, g) end
 						end
 						for _, r in f.regions do
 							if type(r) == "string" and #r <= 24 then table.insert(regions, r) end

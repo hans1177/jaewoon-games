@@ -55,7 +55,6 @@ local Goods: { [string]: Good } = {
 	tin = { id = "tin", name = "주석", basePrice = 60 },
 	porcelain = { id = "porcelain", name = "도자기", basePrice = 170 },
 	coffee = { id = "coffee", name = "커피", basePrice = 100 },
-	tobacco = { id = "tobacco", name = "담배", basePrice = 90 },
 	marble = { id = "marble", name = "대리석", basePrice = 85 },
 	coral = { id = "coral", name = "산호", basePrice = 140 },
 	saffron = { id = "saffron", name = "사프란", basePrice = 190 },
@@ -111,7 +110,7 @@ local Ports: { [string]: Port } = {
 	},
 	amsterdam = {
 		id = "amsterdam", name = "암스테르담", country = "netherlands", lat = 52.37, lon = 4.90,
-		produces = { "spice", "cheese", "tea", "porcelain" }, demands = { "wool", "timber", "iron", "tobacco", "whale_oil", "marble", "coral", "carpet", "dates", "cotton", "leather", "ivory", "pepper", "pearls", "gold", "palm_oil", "gum_arabic", "ebony", "feathers", "cloves", "nutmeg", "cinnamon", "indigo", "rice", "gems", "ambergris", "lacquer", "camphor", "ginseng", "copper", "sandalwood", "cocoa", "mahogany", "rum", "logwood", "cochineal", "vanilla", "brazilwood", "kauri", "sealskin", "pearl_shell", "guano", "nitrate" }, shipyard = true,
+		produces = { "spice", "cheese", "tea", "porcelain" }, demands = { "wool", "timber", "iron", "whale_oil", "marble", "coral", "carpet", "dates", "cotton", "leather", "ivory", "pepper", "pearls", "gold", "palm_oil", "gum_arabic", "ebony", "feathers", "cloves", "nutmeg", "cinnamon", "indigo", "rice", "gems", "ambergris", "lacquer", "camphor", "ginseng", "copper", "sandalwood", "cocoa", "mahogany", "rum", "logwood", "cochineal", "vanilla", "brazilwood", "kauri", "sealskin", "pearl_shell", "guano", "nitrate" }, shipyard = true,
 	},
 	rouen = {
 		id = "rouen", name = "루앙", country = "france", lat = 49.44, lon = 1.10,
@@ -123,7 +122,7 @@ local Ports: { [string]: Port } = {
 	},
 	gothenburg = {
 		id = "gothenburg", name = "예테보리", country = "sweden", lat = 57.71, lon = 11.97,
-		produces = { "iron", "timber", "fish" }, demands = { "cheese", "wine", "cloth", "tobacco" }, shipyard = true,
+		produces = { "iron", "timber", "fish" }, demands = { "cheese", "wine", "cloth" }, shipyard = true,
 	},
 	antwerp = {
 		id = "antwerp", name = "안트베르펀", country = "netherlands", lat = 51.22, lon = 4.40,
@@ -143,7 +142,7 @@ local Ports: { [string]: Port } = {
 	},
 	dublin = {
 		id = "dublin", name = "더블린", country = "ireland", lat = 53.35, lon = -6.26,
-		produces = { "wool", "beer" }, demands = { "iron", "sugar", "tobacco", "raisins" }, shipyard = false,
+		produces = { "wool", "beer" }, demands = { "iron", "sugar", "raisins" }, shipyard = false,
 	},
 	bordeaux = {
 		id = "bordeaux", name = "보르도", country = "france", lat = 44.84, lon = -0.58,
@@ -159,7 +158,7 @@ local Ports: { [string]: Port } = {
 	},
 	seville = {
 		id = "seville", name = "세비야", country = "spain", lat = 37.39, lon = -5.98,
-		produces = { "wine", "sugar", "tobacco", "leather", "pepper" }, demands = { "wool", "fur", "iron", "linen", "incense", "ebony", "rice", "lacquer", "sandalwood", "cocoa", "cochineal", "maize" }, shipyard = false,
+		produces = { "wine", "sugar", "leather", "pepper" }, demands = { "wool", "fur", "iron", "linen", "incense", "ebony", "rice", "lacquer", "sandalwood", "cocoa", "cochineal", "maize" }, shipyard = false,
 	},
 	marseille = {
 		id = "marseille", name = "마르세유", country = "france", lat = 43.30, lon = 5.37,
@@ -183,7 +182,7 @@ local Ports: { [string]: Port } = {
 	},
 	lisbon = {
 		id = "lisbon", name = "리스본", country = "portugal", lat = 38.72, lon = -9.14,
-		produces = { "salt", "sugar", "spice", "porcelain", "tobacco", "pepper" }, demands = { "fur", "timber", "iron", "beer", "linen", "coral", "incense", "gold", "cloves", "cinnamon", "rice", "sandalwood", "maize", "brazilwood" }, shipyard = true,
+		produces = { "salt", "sugar", "spice", "porcelain", "pepper" }, demands = { "fur", "timber", "iron", "beer", "linen", "coral", "incense", "gold", "cloves", "cinnamon", "rice", "sandalwood", "maize", "brazilwood" }, shipyard = true,
 	},
 	rotterdam = {
 		id = "rotterdam", name = "로테르담", country = "netherlands", lat = 51.92, lon = 4.48,
@@ -191,7 +190,7 @@ local Ports: { [string]: Port } = {
 	},
 	plymouth = {
 		id = "plymouth", name = "플리머스", country = "england", lat = 50.37, lon = -4.14,
-		produces = { "tin", "fish", "salt" }, demands = { "wine", "sugar", "tobacco", "timber", "mahogany", "kauri" }, shipyard = true,
+		produces = { "tin", "fish", "salt" }, demands = { "wine", "sugar", "timber", "mahogany", "kauri" }, shipyard = true,
 	},
 	hull = {
 		id = "hull", name = "헐", country = "england", lat = 53.74, lon = -0.33,
@@ -199,7 +198,7 @@ local Ports: { [string]: Port } = {
 	},
 	glasgow = {
 		id = "glasgow", name = "글래스고", country = "scotland", lat = 55.86, lon = -4.25,
-		produces = { "linen", "coal", "iron" }, demands = { "tobacco", "sugar", "wine", "tea" }, shipyard = true,
+		produces = { "linen", "coal", "iron" }, demands = { "sugar", "wine", "tea" }, shipyard = true,
 	},
 	lubeck = {
 		id = "lubeck", name = "뤼베크", country = "germany", lat = 53.87, lon = 10.69,
@@ -219,7 +218,7 @@ local Ports: { [string]: Port } = {
 	},
 	cadiz = {
 		id = "cadiz", name = "카디스", country = "spain", lat = 36.53, lon = -6.29,
-		produces = { "salt", "wine", "tobacco", "sugar", "pepper" }, demands = { "fur", "timber", "cloth", "coal" }, shipyard = true,
+		produces = { "salt", "wine", "sugar", "pepper" }, demands = { "fur", "timber", "cloth", "coal" }, shipyard = true,
 	},
 	barcelona = {
 		id = "barcelona", name = "바르셀로나", country = "spain", lat = 41.38, lon = 2.17,
@@ -335,7 +334,7 @@ local Ports: { [string]: Port } = {
 	},
 	thessaloniki = {
 		id = "thessaloniki", name = "테살로니키", country = "ottoman", lat = 40.64, lon = 22.94,
-		produces = { "silk", "wool", "tobacco", "raisins" }, demands = { "cloth", "iron", "fish", "glass" }, shipyard = false,
+		produces = { "silk", "wool", "raisins" }, demands = { "cloth", "iron", "fish", "glass" }, shipyard = false,
 	},
 	candia = {
 		id = "candia", name = "칸디아", country = "crete", lat = 35.34, lon = 25.14,
@@ -351,7 +350,7 @@ local Ports: { [string]: Port } = {
 	},
 	smyrna = {
 		id = "smyrna", name = "이즈미르", country = "ottoman", lat = 38.42, lon = 27.14,
-		produces = { "silk", "spice", "olive_oil", "tobacco", "carpet", "raisins", "cotton" }, demands = { "wool", "iron", "fur", "glass" }, shipyard = true,
+		produces = { "silk", "spice", "olive_oil", "carpet", "raisins", "cotton" }, demands = { "wool", "iron", "fur", "glass" }, shipyard = true,
 	},
 	acre = {
 		id = "acre", name = "아크레", country = "levant", lat = 32.92, lon = 35.07,
@@ -687,7 +686,7 @@ local Ports: { [string]: Port } = {
 	},
 	havana = {
 		id = "havana", name = "아바나", country = "cuba", lat = 23.17, lon = -82.35,
-		produces = { "sugar", "tobacco", "mahogany", "rum" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = true,
+		produces = { "sugar", "mahogany", "rum" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = true,
 	},
 	veracruz = {
 		id = "veracruz", name = "베라크루스", country = "new_spain", lat = 19.15, lon = -96.10,
@@ -703,11 +702,11 @@ local Ports: { [string]: Port } = {
 	},
 	santo_domingo = {
 		id = "santo_domingo", name = "산토도밍고", country = "hispaniola", lat = 18.40, lon = -69.85,
-		produces = { "sugar", "tobacco", "leather", "mahogany" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
+		produces = { "sugar", "leather", "mahogany" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
 	},
 	san_juan = {
 		id = "san_juan", name = "산후안", country = "puerto_rico", lat = 18.45, lon = -66.10,
-		produces = { "sugar", "rum", "tobacco" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
+		produces = { "sugar", "rum" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
 	},
 	bridgetown = {
 		id = "bridgetown", name = "브리지타운", country = "barbados", lat = 13.05, lon = -59.60,
@@ -715,11 +714,11 @@ local Ports: { [string]: Port } = {
 	},
 	port_of_spain = {
 		id = "port_of_spain", name = "포트오브스페인", country = "trinidad", lat = 10.65, lon = -61.60,
-		produces = { "cocoa", "sugar", "tobacco" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
+		produces = { "cocoa", "sugar" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
 	},
 	la_guaira = {
 		id = "la_guaira", name = "라과이라", country = "venezuela", lat = 10.60, lon = -66.90,
-		produces = { "cocoa", "tobacco", "leather", "pearls" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
+		produces = { "cocoa", "leather", "pearls" }, demands = { "cloth", "iron", "wine", "timber" }, shipyard = false,
 	},
 	cartagena_indias = {
 		id = "cartagena_indias", name = "카르타헤나 데 인디아스", country = "new_granada", lat = 10.40, lon = -75.55,
@@ -743,7 +742,7 @@ local Ports: { [string]: Port } = {
 	},
 	salvador = {
 		id = "salvador", name = "살바도르", country = "brazil", lat = -13.00, lon = -38.45,
-		produces = { "sugar", "tobacco", "brazilwood", "gold" }, demands = { "cloth", "iron", "wine", "salt" }, shipyard = true,
+		produces = { "sugar", "brazilwood", "gold" }, demands = { "cloth", "iron", "wine", "salt" }, shipyard = true,
 	},
 	rio = {
 		id = "rio", name = "리우데자네이루", country = "brazil", lat = -22.95, lon = -43.10,

@@ -159,14 +159,12 @@ end
 -- 교역품: 일반 상품은 승인된 전용 원본을 쓴다. 표현 제한 상품만 기존 중립 화물 외형을 사용한다.
 local GOOD_ICON = {}
 -- [표현 제한] 술 4종은 동일한 승인 나무통 메시의 색상만 변경한다.
--- 담배는 상품·흡연 도구를 묘사하지 않는 기존 무표시 포대를 쓴다. 교역 규칙과 저장 ID는 유지한다.
 -- Roblox 연령/지역 제한 및 표현 검수는 외형 변경만으로 면제되지 않는다.
 local RESTRICTED_CARGO_ICON = {
 	beer = { "Cargo", "barrel", Color3.fromRGB(174, 115, 48) }, -- 맥주: 황토색
 	sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, -- 청주: 미색
 	wine = { "Cargo", "barrel", Color3.fromRGB(112, 45, 64) }, -- 와인: 자주색
 	rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) }, -- 럼주: 진갈색
-	tobacco = { "Cargo", "bag", Color3.fromRGB(101, 106, 94) }, -- 담배: 무표시 회녹색 포대
 }
 for id in PortData.Goods do
 	local neutral = RESTRICTED_CARGO_ICON[id]

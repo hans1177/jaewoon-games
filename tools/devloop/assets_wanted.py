@@ -149,7 +149,7 @@ def trade_goods_practice():
                                              mapping_match.group(1))):
         raise RuntimeError("TRADE_GOODS_3D_DUPLICATE_MAPPING")
     # [보호] 기존 승인된 원료 아이콘 및 제한 표현은 3D 모델 자동 교체에서 제외한다.
-    visual_restricted = set(excluded) | {"wine", "rum", "tobacco"}
+    visual_restricted = set(excluded) | {"wine", "rum"}
     three_d = []
     for good in sorted(game_goods):
         model_name = good if "Cargo/" + good in registered else source_mappings.get(good)

@@ -572,14 +572,14 @@ test('Mare trade goods practice validates existing originals, rights and blocked
 });
 
 
-// [교역품 3D] 70종 전체를 정확한 상품 역할로 분리하고 원본·권한·자동개선 관문을 검증한다.
-test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe asset lane',()=>{
+// [교역품 3D] 남은 69종의 실물·권한·자동개선 관문을 검증한다.
+test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe asset lane',()=>{
   const root='roblox-games/mare-essentia';
   const ports=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Ports.luau','utf8');
   const section=ports.split('local Goods:')[1]?.split('\nlocal Ports:')[0];
   assert.ok(section,'Mare goods section exists');
   const ids=[...section.matchAll(/^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*id\s*=\s*"\1"/gm)].map(m=>m[1]);
-  assert.equal(ids.length,70);
+  assert.equal(ids.length,69);
   const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
   const seed=JSON.parse(fs.readFileSync(root+'/assets-wanted.seed.json','utf8'));
   assert.ok(seed.some(x=>x.id==='trade-goods-3d-models'));
@@ -626,7 +626,7 @@ test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(planner,/autoReplaceWithoutRuntimeReview:false/);
 });
 
-test('Mare trade keeps alcohol in four tinted barrels and tobacco in plain Cargo bag',()=>{
+test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
   const root='roblox-games/mare-essentia';
   const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
@@ -636,8 +636,7 @@ test('Mare trade keeps alcohol in four tinted barrels and tobacco in plain Cargo
   assert.deepEqual(entries.map(e=>e[1]).sort(),['beer','rum','sake','wine']);
   const colors=entries.map(e=>e.slice(2).join(','));
   assert.equal(new Set(colors).size,4,'one barrel mesh must have four distinct color tints');
-  assert.match(match[1],/\btobacco = \{ "Cargo", "bag", Color3\.fromRGB\(\d+, \d+, \d+\) \}/);
-  for(const name of ['barrel','bag']){
+  for(const name of ['barrel']){
     const asset=assets['Cargo/'+name];
     assert.equal(asset?.assetType,'Model',name);
     assert.equal(asset?.license,'CC0-1.0',name);
@@ -647,8 +646,16 @@ test('Mare trade keeps alcohol in four tinted barrels and tobacco in plain Cargo
   assert.match(client,/GOOD_ICON\[id\] = if AssetIds\[neutral\[1\] \.\. "\/" \.\. neutral\[2\]\] then neutral else \{ "Menu", "trade" \}/);
   assert.match(client,/if not RESTRICTED_CARGO_ICON\[goodsId\]/);
   assert.doesNotMatch(client,/SAFE_INGREDIENT_ICON/);
+  assert.doesNotMatch(client,/\btobacco\b/);
+  for(const file of ['Ports','Quests','KnowledgeCards','Sites','WorldEvents','HistoryEvents','People','PeopleTalk']){
+    const src=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/'+file+'.luau','utf8');
+    assert.doesNotMatch(src,/tobacco|담배|담뱃/i,file);
+  }
+  const state=fs.readFileSync(root+'/src/ServerScriptService/Services/State.luau','utf8');
+  assert.match(state,/goodId == "tobacco"/);
+  assert.match(state,/s\.coins = math\.min\(1e9, s\.coins \+/);
   // 제한 품목의 차단된 전용 이미지·새 모델을 재등록하지 않는다.
-  for(const id of ['beer','sake','rum','wine','tobacco']){
+  for(const id of ['beer','sake','rum','wine']){
     assert.equal(assets['Goods/'+id],undefined);
     assert.equal(assets['Cargo/'+id],undefined);
   }
