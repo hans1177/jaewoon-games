@@ -590,6 +590,12 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		if grain and highlighted then
 			grain.ImageColor3 = Color3.fromRGB(249, 226, 178)
 		end
+		if grain then
+			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
+			b:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
+				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.06
+			end)
+		end
 		local edge = Instance.new("UIStroke")
 		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		edge.Color = if active then INK_EDGE else Color3.fromRGB(128, 108, 82)
@@ -7107,10 +7113,35 @@ function H.showTitle()
 	bounds.MaxSize = Vector2.new(460, if view then 318 else 230)
 	bounds.Parent = box
 
+	-- [안쪽 책장] 메뉴 속지는 가죽 표지 위에 놓인 진짜 종이 질감의 한 장으로 그린다.
+	local pageId = AssetIds["Menu/parchment_grain"]
+	if pageId then
+		local leaf = Instance.new("ImageLabel")
+		leaf.Name = "ParchmentBookPage"
+		leaf.Position = UDim2.fromOffset(6, 6)
+		leaf.Size = UDim2.new(1, -12, 1, -12)
+		leaf.BackgroundColor3 = COLORS.paper
+		leaf.BackgroundTransparency = 0
+		leaf.BorderSizePixel = 0
+		leaf.Image = "rbxassetid://" .. tostring(pageId)
+		leaf.ScaleType = Enum.ScaleType.Tile
+		leaf.TileSize = UDim2.fromOffset(220, 220)
+		leaf.ZIndex = box.ZIndex
+		leaf.Active = false
+		leaf.Parent = box
+		corner(leaf, 6)
+		local edgeFade = Instance.new("UIStroke")
+		edgeFade.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		edgeFade.Color = Color3.fromRGB(112, 77, 43)
+		edgeFade.Transparency = 0.28
+		edgeFade.Thickness = 1.5
+		edgeFade.Parent = leaf
+	end
 	local pages = Instance.new("ScrollingFrame")
 	pages.Size = UDim2.new(1, -12, 1, -12)
 	pages.Position = UDim2.fromOffset(6, 6)
 	pages.BackgroundColor3 = COLORS.paper
+	pages.BackgroundTransparency = if pageId then 0.98 else 0
 	corner(pages, 6)
 	pages.BorderSizePixel = 0
 	pages.ScrollBarThickness = 3
