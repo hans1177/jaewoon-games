@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: VoyageScene.luau
 -- 항해 장면 (3D 바다). 항구에서 멀리 떨어진 빈 공간에 바다를 만들고,
 -- 내 배가 항로(위도·경도 점들)를 따라 실제로 달린다. 카메라가 배를 돌며 비춘다.
 -- 낮에서 해질녘으로 시간이 흐르고, 구름·갈매기·물보라가 따라온다. 화면을 누르면 건너뛴다.
@@ -13,7 +14,6 @@ local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
-local STREAKS = 0 -- 곧은 흰 막대는 어색해서 쓰지 않는다
 local CLOUDS = 0 -- 공 모양 구름은 바다에 어두운 그림자 얼룩을 만들어서 쓰지 않는다(하늘 구름은 스카이박스)
 
 local function part(parent, size, cf, color, material, shape)
@@ -83,6 +83,71 @@ local function yawOf(dir)
 	return math.atan2(-dir.Z, dir.X)
 end
 
+-- 해역별 날씨 표현. 확률은 연출용이며 항해 예보·사건 판정은 서버에서 정한다.
+local SEA_WEATHER = {
+	clear = { name = "맑음", fog = Color3.fromRGB(176, 205, 232), sea = Color3.fromRGB(28, 88, 140), visibility = 2600, rock = 0 },
+	mist = { name = "해무", fog = Color3.fromRGB(199, 214, 219), sea = Color3.fromRGB(71, 104, 117), visibility = 175, rock = 0.12 },
+	haze = { name = "건조 연무", fog = Color3.fromRGB(225, 180, 125), sea = Color3.fromRGB(61, 98, 111), visibility = 670, rock = 0.18 },
+	shower = { name = "햇빛 속 소나기", kind = "rain", rate = 110, fog = Color3.fromRGB(173, 199, 216), sea = Color3.fromRGB(47, 102, 126), visibility = 950, rock = 0.22 },
+	monsoon = { name = "계절풍 폭우", kind = "rain", rate = 200, fog = Color3.fromRGB(99, 128, 131), sea = Color3.fromRGB(23, 73, 82), visibility = 340, rock = 0.68 },
+	storm = { name = "뇌우", kind = "rain", rate = 235, fog = Color3.fromRGB(80, 91, 116), sea = Color3.fromRGB(20, 44, 66), visibility = 260, rock = 1, thunder = true },
+	hail = { name = "우박 돌풍", kind = "hail", rate = 140, fog = Color3.fromRGB(133, 155, 184), sea = Color3.fromRGB(38, 64, 93), visibility = 510, rock = 0.72, thunder = true },
+	snow = { name = "눈보라", kind = "snow", rate = 120, fog = Color3.fromRGB(219, 231, 240), sea = Color3.fromRGB(62, 94, 120), visibility = 185, rock = 0.42 },
+}
+
+local SEASON_LIGHT = {
+	{ name = "겨울", tint = Color3.fromRGB(216, 231, 252), rays = 0.05, brightness = -0.025, sea = Color3.fromRGB(35, 76, 111) },
+	{ name = "봄", tint = Color3.fromRGB(235, 251, 235), rays = 0.13, brightness = 0.015, sea = Color3.fromRGB(35, 111, 129) },
+	{ name = "여름", tint = Color3.fromRGB(255, 234, 194), rays = 0.27, brightness = 0.065, sea = Color3.fromRGB(31, 110, 151) },
+	{ name = "가을", tint = Color3.fromRGB(255, 220, 178), rays = 0.12, brightness = 0.01, sea = Color3.fromRGB(38, 88, 113) },
+}
+
+local function weatherAt(path, cum, total, progress, day, rng)
+	local lat, lon = 0, 0
+	if type(path) == "table" and #path == #cum then
+		local distance = total * progress
+		for i = 1, #cum - 1 do
+			if distance <= cum[i + 1] then
+				local alpha = (distance - cum[i]) / math.max(0.001, cum[i + 1] - cum[i])
+				lat = path[i][1] + (path[i + 1][1] - path[i][1]) * alpha
+				local deltaLon = (path[i + 1][2] - path[i][2] + 180) % 360 - 180
+				lon = (path[i][2] + deltaLon * alpha + 180) % 360 - 180
+				break
+			end
+		end
+	end
+	local month = math.floor(((day or 0) % 365) / (365 / 12))
+	if lat < 0 then month = (month + 6) % 12 end
+	local season = math.floor(((month + 1) % 12) / 3) + 1
+	local latitude = math.abs(lat)
+	local region, choices
+	if latitude >= 48 then
+		region = if lat >= 0 then "북쪽 냉해역" else "남쪽 냉해역"
+		choices = if season == 1 then { "snow", "snow", "hail", "mist", "clear" } else { "mist", "mist", "hail", "shower", "clear" }
+	elseif lat < -37 then
+		region = "남반구 서풍대"
+		choices = if season == 1 then { "storm", "hail", "snow", "mist", "clear" } else { "storm", "hail", "shower", "clear" }
+	elseif lon >= 35 and lon <= 125 and latitude < 29 then
+		region = "인도양·아시아 계절풍 해역"
+		choices = if season == 3 or season == 4 then { "monsoon", "monsoon", "storm", "shower", "clear" } else { "clear", "haze", "shower", "monsoon" }
+	elseif latitude < 25 and lon > -100 and lon < -50 then
+		region = "카리브·열대 서대서양"
+		choices = { "shower", "shower", "clear", "clear", "storm" }
+	elseif latitude < 30 and lon >= -30 and lon <= 25 then
+		region = "동대서양 무역풍 해역"
+		choices = { "haze", "haze", "clear", "shower" }
+	elseif latitude < 27 then
+		region = "열대 외해"
+		choices = { "shower", "clear", "clear", "storm" }
+	else
+		region = "온대 해역"
+		choices = if season == 1 then { "hail", "mist", "storm", "clear" }
+			elseif season == 3 then { "clear", "clear", "shower", "storm" }
+			else { "mist", "shower", "storm", "clear" }
+	end
+	return region, SEASON_LIGHT[season], SEA_WEATHER[choices[rng:NextInteger(1, #choices)]]
+end
+
 -- info: { shipId, steam, days, path, fromName, toName, makeShip, event = { kind, won } }
 function VoyageScene.play(info)
 	local player = Players.LocalPlayer
@@ -129,6 +194,10 @@ function VoyageScene.play(info)
 	dayLabel.Position = UDim2.new(0, 0, 0, 72)
 	dayLabel.Size = UDim2.new(1, 0, 0, 22)
 	dayLabel.TextSize = 16
+	dayLabel.TextScaled = true
+	local dayTextLimit = Instance.new("UITextSizeConstraint")
+	dayTextLimit.MaxTextSize = 16
+	dayTextLimit.Parent = dayLabel
 	dayLabel.Font = Enum.Font.Gotham
 	dayLabel.Parent = gui
 	local barBack = Instance.new("Frame")
@@ -512,7 +581,9 @@ function VoyageScene.play(info)
 	Lighting.ClockTime = 8
 
 	-- 바다: 배를 따라다니는 큰 판
-	local sea = part(folder, Vector3.new(7000, 2, 7000), CFrame.new(ORIGIN + Vector3.new(0, -1.6, 0)), Color3.fromRGB(28, 88, 140), Enum.Material.SmoothPlastic)
+	local waterline = 0
+	local seaCenterY = waterline - 1
+	local sea = part(folder, Vector3.new(7000, 2, 7000), CFrame.new(ORIGIN + Vector3.new(0, seaCenterY, 0)), Color3.fromRGB(28, 88, 140), Enum.Material.SmoothPlastic)
 	sea.Name = "Sea"
 	sea.Reflectance = 0.12
 
@@ -520,7 +591,6 @@ function VoyageScene.play(info)
 	local terrain = workspace.Terrain
 	local savedWater = { c = terrain.WaterColor, t = terrain.WaterTransparency, r = terrain.WaterReflectance, ws = terrain.WaterWaveSize, wsp = terrain.WaterWaveSpeed }
 	-- 지형 물은 검은 타원 얼룩이 생겨 쓰지 않는다. 판의 윗면을 수면(0)에 맞춘다.
-	sea.Position = Vector3.new(sea.Position.X, -1, sea.Position.Z)
 	local waterOk = false
 	pcall(function()
 		terrain.WaterColor = Color3.fromRGB(22, 96, 150)
@@ -589,28 +659,19 @@ function VoyageScene.play(info)
 		end
 	end
 
-	-- 물보라 줄무늬 (달리는 느낌을 준다)
-	local rng = Random.new(os.time())
-	local streaks = {}
-	for _ = 1, STREAKS do
-		local s = part(folder, Vector3.new(rng:NextNumber(5, 12), 0.15, rng:NextNumber(0.5, 1.1)), CFrame.new(ORIGIN), Color3.fromRGB(235, 245, 255), Enum.Material.SmoothPlastic)
-		s.Transparency = 0.55
-		table.insert(streaks, s)
+	local rng = Random.new()
+	local weatherStart = rng:NextNumber(0.16, 0.48)
+	local weatherEnd = math.min(0.92, weatherStart + rng:NextNumber(0.28, 0.43))
+	local sample = (weatherStart + weatherEnd) * 0.5
+	local region, season, weather = weatherAt(info.path, cum, total, sample, (info.departureDay or 0) + math.floor(info.days * sample), rng)
+	if ev.kind == "storm" or ev.kind == "fog" or ev.kind == "ghost" then
+		weather = if ev.kind == "storm" then SEA_WEATHER.storm else SEA_WEATHER.mist
+	elseif info.weatherId == "storm" then
+		weather = if weather == SEA_WEATHER.hail then weather else SEA_WEATHER.storm
+	elseif info.weatherId == "rain" and weather.kind == nil then
+		weather = SEA_WEATHER.shower
 	end
-	local function scatter(s, center, yaw, ahead)
-		local a = rng:NextNumber(0, math.pi * 2)
-		local r = rng:NextNumber(30, 420)
-		local ox, oz = math.cos(a) * r, math.sin(a) * r
-		if ahead then
-			-- 진행 방향 앞쪽으로 다시 뿌린다
-			ox = math.cos(yaw) * rng:NextNumber(260, 420) + math.cos(a) * 120
-			oz = -math.sin(yaw) * rng:NextNumber(260, 420) + math.sin(a) * 120
-		end
-		s.CFrame = CFrame.new(center.X + ox, 0.1, center.Z + oz) * CFrame.Angles(0, rng:NextNumber(0, math.pi), 0)
-	end
-	for _, s in streaks do
-		scatter(s, ORIGIN, 0, false)
-	end
+	if info.intro then weather = SEA_WEATHER.clear end
 
 	-- 구름
 	local clouds = {}
@@ -642,26 +703,13 @@ function VoyageScene.play(info)
 	local nextGull = 4
 	local EVENT_AT = 0.42 -- 항해의 이 지점에서 사건이 시작된다
 	local EVENT_LEN = 0.26
-	local rain = nil
+	if ev.kind == "storm" or ev.kind == "fog" or ev.kind == "ghost" then
+		weatherStart, weatherEnd = EVENT_AT, EVENT_AT + EVENT_LEN
+	end
 	local enemy = nil
 	local enemyY = 1.2
 	local barrel = nil
-	if ev.kind == "storm" then
-		-- 비: 배 위쪽에서 따라다니는 파티클 판
-		local sky = part(folder, Vector3.new(160, 1, 160), CFrame.new(ORIGIN + Vector3.new(0, 90, 0)), Color3.new(0, 0, 0))
-		sky.Transparency = 1
-		local em = Instance.new("ParticleEmitter")
-		em.Rate = 0
-		em.Lifetime = NumberRange.new(0.8, 1.1)
-		em.Speed = NumberRange.new(110, 140)
-		em.EmissionDirection = Enum.NormalId.Bottom
-		em.SpreadAngle = Vector2.new(6, 6)
-		em.Size = NumberSequence.new(0.35)
-		em.Transparency = NumberSequence.new(0.35)
-		em.Color = ColorSequence.new(Color3.fromRGB(190, 205, 225))
-		em.Parent = sky
-		rain = { part = sky, emitter = em }
-	elseif ev.kind == "pirates" then
+	if ev.kind == "pirates" then
 		enemy = info.makeShip(folder, "frigate", ORIGIN + Vector3.new(0, 1.2, 0))
 		enemy.Name = "PirateShip"
 		pcall(function() enemy:ScaleTo(1.7) end)
@@ -692,54 +740,71 @@ function VoyageScene.play(info)
 	local nextShot = 0
 	local lightning = 0
 
-	-- 항적: 선미 거품, 뱃머리 물보라, V자 물결
-	local function emitterPart(rate, life, speed, spread, sizeFrom, sizeTo, accel, dir)
-		local p = part(folder, Vector3.new(1, 1, 1), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
-		p.Transparency = 1
-		local em = Instance.new("ParticleEmitter")
-		em.Rate = rate
-		em.Lifetime = NumberRange.new(life * 0.7, life)
-		em.Speed = NumberRange.new(speed * 0.6, speed)
-		em.SpreadAngle = Vector2.new(spread, spread)
-		em.EmissionDirection = dir or Enum.NormalId.Top
-		em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, sizeFrom), NumberSequenceKeypoint.new(1, sizeTo) })
-		em.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(1, 1) })
-		em.Color = ColorSequence.new(Color3.fromRGB(240, 248, 255))
-		em.Acceleration = accel or Vector3.zero
-		em.LockedToPart = false
-		em.Parent = p
-		return p, em
-	end
+	-- 수면에 닿는 선수 양옆의 물방울과, 회전한 항로를 따라 남는 선미 거품
 	local FOAM = "rbxasset://textures/particles/smoke_main.dds"
-	local sternPart, sternEm = emitterPart(22, 3.2, 3, 90, 5, 16, Vector3.zero, Enum.NormalId.Top)
-	sternEm.Texture = FOAM
-	sternEm.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(1, 1) })
-	local bowPart, bowEm = emitterPart(34, 1.1, 12, 30, 2, 6, Vector3.new(0, -26, 0), Enum.NormalId.Top)
-	bowEm.Texture = FOAM
-	bowEm.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 1) })
-	-- 선미 양옆에서 이어지는 하얀 항적 띠
-	local trailParts = {}
-	for i = 1, 2 do
-		local tp = part(folder, Vector3.new(0.5, 0.5, 0.5), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
-		tp.Transparency = 1
-		local a0, a1 = Instance.new("Attachment"), Instance.new("Attachment")
-		a0.Position, a1.Position = Vector3.new(0, 0, -1.2), Vector3.new(0, 0, 1.2)
-		a0.Parent, a1.Parent = tp, tp
-		local tr = Instance.new("Trail")
-		tr.Attachment0, tr.Attachment1 = a0, a1
-		tr.Lifetime = 2.4
-		tr.Texture = FOAM
-		tr.TextureMode = Enum.TextureMode.Stretch
-		tr.MinLength = 0.2
-		tr.FaceCamera = false
-		tr.Color = ColorSequence.new(Color3.fromRGB(235, 246, 255))
-		tr.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.8), NumberSequenceKeypoint.new(0.4, 0.88), NumberSequenceKeypoint.new(1, 1) })
-		tr.WidthScale = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 5) })
-		tr.LightEmission = 0.25
-		tr.Parent = tp
-		table.insert(trailParts, tp)
+	local function spray(lifetime, size, transparency, acceleration)
+		local anchor = part(folder, Vector3.new(0.25, 0.25, 0.25), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		anchor.Transparency = 1
+		local emitter = Instance.new("ParticleEmitter")
+		emitter.Texture = FOAM
+		emitter.Rate = 0
+		emitter.Lifetime = lifetime
+		emitter.Size = size
+		emitter.Transparency = transparency
+		emitter.Acceleration = acceleration
+		emitter.EmissionDirection = Enum.NormalId.Front
+		emitter.SpreadAngle = Vector2.new(23, 16)
+		emitter.Color = ColorSequence.new(Color3.fromRGB(246, 252, 255), Color3.fromRGB(158, 206, 225))
+		emitter.LightEmission = 0.22
+		emitter.LightInfluence = 0.35
+		emitter.Rotation = NumberRange.new(-180, 180)
+		emitter.RotSpeed = NumberRange.new(-35, 35)
+		emitter.LockedToPart = false
+		emitter.Parent = anchor
+		return anchor, emitter
 	end
-	local wakes = {}
+
+	local bowJets = {}
+	for _, side in { -1, 1 } do
+		local anchor, emitter = spray(NumberRange.new(0.38, 0.68),
+			NumberSequence.new(0.55, 1.65),
+			NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.14), NumberSequenceKeypoint.new(0.32, 0.35), NumberSequenceKeypoint.new(1, 1) }),
+			Vector3.new(0, -45, 0))
+		table.insert(bowJets, { side = side, anchor = anchor, emitter = emitter })
+	end
+	local sternPart, sternEm = spray(NumberRange.new(0.75, 1.35), NumberSequence.new(2.2, 6.5),
+		NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(0.46, 0.60), NumberSequenceKeypoint.new(1, 1) }),
+		Vector3.zero)
+	sternEm.SpreadAngle = Vector2.new(38, 5)
+	sternEm.Speed = NumberRange.new(2, 5)
+
+	local trailParts = {}
+	for _, side in { -1, 0, 1 } do
+		local anchor = part(folder, Vector3.new(0.25, 0.25, 0.25), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		anchor.Transparency = 1
+		local a0, a1 = Instance.new("Attachment"), Instance.new("Attachment")
+		local width = if side == 0 then 1.15 else 0.68
+		a0.Position, a1.Position = Vector3.new(0, 0, -width), Vector3.new(0, 0, width)
+		a0.Parent, a1.Parent = anchor, anchor
+		local trail = Instance.new("Trail")
+		trail.Enabled = false
+		trail.Attachment0, trail.Attachment1 = a0, a1
+		trail.Lifetime = if side == 0 then 0.9 else 1.75
+		trail.Texture = FOAM
+		trail.TextureMode = Enum.TextureMode.Wrap
+		trail.TextureLength = if side == 0 then 6 else 11
+		trail.MinLength = 0.65
+		trail.FaceCamera = false
+		trail.Color = ColorSequence.new(Color3.fromRGB(239, 249, 251), Color3.fromRGB(147, 202, 222))
+		trail.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.22), NumberSequenceKeypoint.new(0.32, 0.46), NumberSequenceKeypoint.new(1, 1),
+		})
+		trail.WidthScale = NumberSequence.new(1, if side == 0 then 1.45 else 2.65)
+		trail.LightEmission = 0.23
+		trail.Parent = anchor
+		table.insert(trailParts, { side = side, anchor = anchor, trail = trail })
+	end
+	local nextBreak = 0
 
 	-- 사건 소품: 지나가는 상선, 암초, 섬, 유령선 등 (승인된 모델만)
 	local props = {}
@@ -854,25 +919,37 @@ function VoyageScene.play(info)
 		local ey = restY(es)
 		table.insert(escorts, { m = es, rot = CFrame.new(-ebase.Position) * ebase, y = ey, back = 34 + i * 12, side = ({ 28, -28, 52 })[i], phase = i * 1.7 })
 	end
-	-- 날씨 연출: 비·폭풍 예보면 처음부터 가랑비가 내리고 흐리다
-	local wRain = nil
-	if (info.weatherId == "rain" or info.weatherId == "storm") and not rain then
-		local sky = part(folder, Vector3.new(160, 1, 160), CFrame.new(ORIGIN + Vector3.new(0, 90, 0)), Color3.new(0, 0, 0))
-		sky.Transparency = 1
-		local em = Instance.new("ParticleEmitter")
-		em.Rate = if info.weatherId == "storm" then 600 else 260
-		em.Lifetime = NumberRange.new(0.8, 1.1)
-		em.Speed = NumberRange.new(110, 140)
-		em.EmissionDirection = Enum.NormalId.Bottom
-		em.SpreadAngle = Vector2.new(6, 6)
-		em.Size = NumberSequence.new(0.3)
-		em.Transparency = NumberSequence.new(0.4)
-		em.Color = ColorSequence.new(Color3.fromRGB(190, 205, 225))
-		em.Parent = sky
-		wRain = sky
-		Lighting.FogEnd = 1500
-		Lighting.FogColor = Color3.fromRGB(150, 165, 180)
+	-- 한 항해에 하나의 강수 장치만 유지한다.
+	local precipAnchor, precip, hailAnchor, hailBurst
+	if weather.kind then
+		local snow, hail = weather.kind == "snow", weather.kind == "hail"
+		precipAnchor = part(folder, Vector3.new(96, 0.25, 96), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		precipAnchor.Transparency = 1
+		precip = Instance.new("ParticleEmitter")
+		precip.Texture = FOAM
+		precip.Rate = 0
+		precip.EmissionDirection = Enum.NormalId.Bottom
+		precip.Speed = if snow then NumberRange.new(9, 17) elseif hail then NumberRange.new(58, 77) else NumberRange.new(79, 108)
+		precip.Lifetime = if snow then NumberRange.new(1.6, 2.2) elseif hail then NumberRange.new(0.48, 0.66) else NumberRange.new(0.4, 0.57)
+		precip.Acceleration = Vector3.new(if snow then 14 else 34, if snow then -1 else -30, 12)
+		precip.SpreadAngle = if snow then Vector2.new(26, 20) else Vector2.new(9, 9)
+		precip.Size = if snow then NumberSequence.new(0.45, 0.28) elseif hail then NumberSequence.new(0.64, 0.43) else NumberSequence.new(1.35, 0.7)
+		precip.Color = ColorSequence.new(if hail or snow then Color3.fromRGB(235, 246, 255) else Color3.fromRGB(181, 215, 234))
+		precip.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.16), NumberSequenceKeypoint.new(0.76, 0.32), NumberSequenceKeypoint.new(1, 1) })
+		if weather.kind == "rain" then
+			precip.Orientation = Enum.ParticleOrientation.VelocityParallel
+			precip.Squash = NumberSequence.new(-0.72)
+		end
+		precip.Parent = precipAnchor
+		if hail then
+			hailAnchor, hailBurst = spray(NumberRange.new(0.16, 0.3), NumberSequence.new(0.45, 0.75), NumberSequence.new(0.25, 1), Vector3.new(0, -42, 0))
+			hailAnchor.Size = Vector3.new(31, 0.25, 18)
+			hailBurst.EmissionDirection = Enum.NormalId.Top
+			hailBurst.Speed = NumberRange.new(3, 9)
+		end
 	end
+	local mobile = UserInputService.TouchEnabled
+	local lastWeatherText, flashUntil = "", 0
 
 	-- 게임 시작 연출(intro): 제목·자막과 주인공 초상을 얹고, 해 질 녘 빛으로 항해한다
 	local subLabel, introIdx, introLines = nil, 0, nil
@@ -904,7 +981,7 @@ function VoyageScene.play(info)
 	local function ui(k, t)
 		bar.Size = UDim2.fromScale(k, 1)
 		local day = math.clamp(math.ceil(k * info.days), 1, math.max(info.days, 1))
-		dayLabel.Text = string.format("항해 %d일째 / %d일", day, info.days)
+		dayLabel.Text = string.format("항해 %d일째 / %d일%s", day, info.days, lastWeatherText)
 		Lighting.ClockTime = if info.intro then 16.2 + k * 2 else 8 + k * math.clamp(info.days * 1.6, 3, 11)
 		if subLabel and #introLines > 0 then
 			local per = (duration - 2) / #introLines
@@ -1049,26 +1126,43 @@ function VoyageScene.play(info)
 		yaw += diff * math.min(1, dt * 2.2)
 		heel += (math.clamp(diff, -0.6, 0.6) * 0.22 - heel) * math.min(1, dt * 2)
 		applyShip(pos, yaw, t)
+		local progress = dist / total
+		local phase = math.clamp((progress - weatherStart) / (weatherEnd - weatherStart), 0, 1)
+		local weatherLevel = if weather == SEA_WEATHER.clear then 0 else math.sin(phase * math.pi) ^ 2
 		do
 			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
 			local rgt = Vector3.new(math.sin(yaw), 0, math.cos(yaw))
-			sternPart.CFrame = CFrame.new(pos - fwd * shipLen * 0.45 + Vector3.new(0, 0.2, 0))
-			bowPart.CFrame = CFrame.new(pos + fwd * shipLen * 0.5 + Vector3.new(0, 0.1, 0))
-			bowEm.Rate = 20 + 30 * math.min(1, speedNow / 20)
-			for i, tp in trailParts do
-				local sgn = if i == 1 then 1 else -1
-				tp.CFrame = CFrame.new(pos - fwd * shipLen * 0.4 + rgt * sgn * shipLen * 0.22 + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, yaw, 0)
+			local surface = Vector3.new(pos.X, waterline + 0.08, pos.Z)
+			local cruise = if helm then helmSpeed else speedNow * (0.25 + 0.75 * math.min(t / 2, 1))
+			local flow = math.clamp(cruise / SPEED, 0, 1.35)
+			local roughness = weather.rock * weatherLevel
+			local breakWave = flow > 0.18 and t >= nextBreak
+			if breakWave then
+				nextBreak = t + rng:NextNumber(0.48, 0.82) / math.max(0.45, flow + roughness * 0.35)
+			end
+			for _, jet in bowJets do
+				local point = surface + fwd * shipLen * 0.40 + rgt * jet.side * shipLen * 0.115
+				local sprayDirection = fwd * 0.26 + rgt * jet.side * 0.78 + Vector3.new(0, 0.58, 0)
+				jet.anchor.CFrame = CFrame.lookAt(point, point + sprayDirection)
+				jet.emitter.Rate = math.floor(flow * (15 + 10 * roughness))
+				local force = 8 + 11 * flow + 7 * roughness
+				jet.emitter.Speed = NumberRange.new(force * 0.57, force)
+				if breakWave then
+					jet.emitter:Emit(math.ceil(3 + 5 * flow + 4 * roughness))
+				end
+			end
+			local stern = surface - fwd * shipLen * 0.41
+			sternPart.CFrame = CFrame.lookAt(stern, stern - fwd + Vector3.new(0, 0.14, 0))
+			sternEm.Rate = math.floor(flow * 16)
+			for _, wake in trailParts do
+				local point = stern + rgt * wake.side * shipLen * 0.14
+				wake.anchor.CFrame = CFrame.new(point) * CFrame.Angles(0, yaw, 0)
+				wake.trail.Enabled = flow > 0.12
 			end
 			fillChunksAround(pos, 1)
 		end
-		sea.CFrame = CFrame.new(pos.X, -1.6, pos.Z)
+		sea.CFrame = CFrame.new(pos.X, seaCenterY, pos.Z)
 
-		for _, s in streaks do
-			local d = s.Position - pos
-			if d.X * d.X + d.Z * d.Z > 460 * 460 then
-				scatter(s, pos, yaw, true)
-			end
-		end
 		for _, c in clouds do
 			c.offset += Vector3.new(6 * dt, 0, 0)
 			local rel = c.offset
@@ -1120,23 +1214,39 @@ function VoyageScene.play(info)
 		end
 		local intensity = if active then math.sin(ek * math.pi) else 0
 		local right = Vector3.new(math.sin(yaw), 0, math.cos(yaw)) -- 뱃머리 기준 오른쪽(+Z 쪽)
-		if rain then
-			rain.emitter.Rate = intensity * 900
-			rain.part.CFrame = CFrame.new(pos + Vector3.new(0, 90, 0))
-			Lighting.FogEnd = 2600 - intensity * 1700
-			Lighting.FogColor = Color3.fromRGB(176, 205, 232):Lerp(Color3.fromRGB(70, 80, 95), intensity)
-			Lighting.ClockTime = 8 + k * 6 - intensity * 3
-			sea.Color = Color3.fromRGB(28, 88, 140):Lerp(Color3.fromRGB(20, 44, 66), intensity)
-			if intensity > 0.3 and t > lightning then
-				lightning = t + rng:NextNumber(1.2, 3)
-				task.spawn(function()
-					Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-					task.wait(0.07)
-					Lighting.Ambient = saved.ambient
-				end)
-			end
-			-- 큰 파도에 배가 크게 흔들린다
-			local rock = intensity
+		lastWeatherText = string.format(" · %s · %s %s", region, season.name,
+			if weatherLevel > 0.16 then weather.name else SEA_WEATHER.clear.name)
+		local mist = weather.visibility < 350
+		Lighting.FogStart = 600 * (1 - weatherLevel)
+		Lighting.FogEnd = 2600 + (weather.visibility - 2600) * weatherLevel
+		Lighting.FogColor = SEA_WEATHER.clear.fog:Lerp(weather.fog, weatherLevel)
+		atmosphere.Color = SEA_WEATHER.clear.fog:Lerp(weather.fog, weatherLevel)
+		atmosphere.Density = 0.25 + weatherLevel * (if mist then 0.34 else 0.16)
+		atmosphere.Haze = (if weather == SEA_WEATHER.haze then 3.6 else 1.4) * weatherLevel
+		sea.Color = season.sea:Lerp(weather.sea, weatherLevel)
+		rays.Intensity = season.rays * (1 - weatherLevel * 0.82)
+		bloom.Intensity = (0.24 + season.rays * 0.9) * (1 - weatherLevel * 0.55)
+		grade.TintColor = season.tint:Lerp(weather.fog:Lerp(Color3.new(1, 1, 1), 0.72), weatherLevel)
+		grade.Saturation = 0.16 - weatherLevel * 0.32
+		if precip then
+			local high = if weather.kind == "snow" then 24 else 45
+			local cloud = Vector3.new(pos.X, high, pos.Z)
+			precipAnchor.CFrame = CFrame.new(cloud - right * 17)
+			precip.Rate = math.floor(weather.rate * weatherLevel * (if mobile then 0.60 else 1))
+		end
+		if hailBurst then
+			hailAnchor.CFrame = CFrame.new(pos.X, waterline + 0.16, pos.Z) * CFrame.Angles(0, yaw, 0)
+			hailBurst.Rate = math.floor(weatherLevel * (if mobile then 12 else 22))
+		end
+		if weather.thunder and weatherLevel > 0.42 and t > lightning then
+			lightning = t + rng:NextNumber(2.0, 4.2)
+			flashUntil = t + 0.11
+			Sfx.play("sfx_ambience_storm", 0.36, rng:NextNumber(0.85, 1.08))
+		end
+		grade.Brightness = season.brightness - weatherLevel * (if weather == SEA_WEATHER.shower then 0.035 else 0.15)
+			+ (if t < flashUntil then 0.29 else 0)
+		local rock = weather.rock * weatherLevel
+		if rock > 0.02 then
 			ship:PivotTo(ship:GetPivot() * CFrame.Angles(math.sin(t * 2.1) * 0.09 * rock, 0, math.sin(t * 1.7) * 0.12 * rock))
 		end
 		if enemy then
@@ -1180,9 +1290,6 @@ function VoyageScene.play(info)
 			local ep = pos - fwd * e.back + rgt * e.side
 			e.m:PivotTo(CFrame.new(ep.X, e.y + math.sin(t * 1.2 + e.phase) * 0.4, ep.Z) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(math.sin(t + e.phase) * 0.03, 0, math.sin(t * 0.8 + e.phase) * 0.05) * e.rot)
 		end
-		if wRain then
-			wRain.CFrame = CFrame.new(pos + Vector3.new(0, 90, 0))
-		end
 		-- 사건 소품: 사건 구간에 가까워질 때만 보인다
 		do
 			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
@@ -1207,11 +1314,7 @@ function VoyageScene.play(info)
 				local p = pos + fwd * (f.along + (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.3) + right * f.side
 				f.m:PivotTo(CFrame.new(p.X, if jump >= 0 then jump * 7 + 0.5 else -500, p.Z) * CFrame.Angles(0, yaw + math.pi / 2, -(1 - jump) * 0.8))
 			end
-			if ev.kind == "fog" or ev.kind == "ghost" then
-				Lighting.FogEnd = 2600 - intensity * (if ev.kind == "fog" then 2300 else 1900)
-				Lighting.FogColor = Color3.fromRGB(176, 205, 232):Lerp(if ev.kind == "fog" then Color3.fromRGB(205, 210, 215) else Color3.fromRGB(110, 130, 150), intensity)
-				atmosphere.Density = 0.25 + intensity * 0.4
-			end
+
 			banner.TextTransparency = 1 - math.clamp(intensity * 2.2, 0, 1)
 			banner.TextStrokeTransparency = 1 - math.clamp(intensity * 1.6, 0, 0.6)
 		end
