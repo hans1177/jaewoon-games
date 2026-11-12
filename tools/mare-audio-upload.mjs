@@ -31,7 +31,7 @@ function prepareVerifiedCC0(track){
     if(track.sourceFile!==cc0PackDir+'kenney-rpg-sfx-50.zip'
       ||!/^[a-f0-9]{64}$/.test(track.sourceArchiveSha256)
       ||!/^Audio\/[A-Za-z0-9_]+\.ogg$/.test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
-    const source=cc0PackManifest.assets?.find(x=>x.file==='kenney-rpg-sfx-50.zip');
+    const source=cc0PackManifest.packs?.find(x=>x.file==='kenney-rpg-sfx-50.zip');
     if(!source||source.licenseDeclared!=='CC0-1.0'
       ||source.licenseSourceUrl!==track.sourceUrl||source.sourceUrl!==track.sourceDownloadUrl
       ||source.sha256!==track.sourceArchiveSha256)throw Error('CC0_AUDIO_ARCHIVE_RIGHTS_INVALID');
