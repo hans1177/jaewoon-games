@@ -213,6 +213,102 @@ function Sfx.wonderCue(mood, fallback)
 	return firstReady("sfx_wonder_" .. tostring(mood or "temple"), fallback, "sfx_bell")
 end
 
+
+-- 교역소 상인 인사: 자막 없이 한 마디만, 지원되는 현지어 음성으로 들려준다.
+-- 지원되지 않는 언어는 임의의 가짜 현지어 음성을 만들지 않고 짧은 공용 인사로 대체한다.
+-- 오디오 자산 신규 등록 없이 로블록스 기본 AudioTextToSpeech를 사용한다.
+local MERCHANT_VOICE = {
+	en = { "Welcome!", "1" },
+	fr = { "Bienvenue!", "401" },
+	de = { "Willkommen!", "201" },
+	it = { "Benvenuto!", "301" },
+	es = { "¡Bienvenido!", "101" },
+	pt = { "Bem-vindo!", "1001" },
+	ar = { "أهلاً وسهلاً!", "801" },
+	hi = { "नमस्ते!", "601" },
+	zh = { "欢迎光临！", "501" },
+	ja = { "いらっしゃいませ！", "701" },
+	ko = { "어서 오시오!", "901" },
+}
+local MERCHANT_LANGUAGE = {
+	england = "en", scotland = "en", ireland = "en", new_england = "en",
+	canada = "en", newfoundland = "en", pennsylvania = "en", carolina = "en",
+	jamaica = "en", barbados = "en", australia = "en", tasmania = "en",
+	new_zealand = "en", california = "en", pacific_northwest = "en",
+	france = "fr", new_france = "fr", louisiana = "fr", mauritius = "fr",
+	germany = "de", austria = "de", prussia = "de",
+	italy = "it", venice = "it", tuscany = "it", naples = "it", sicily = "it",
+	papal = "it", sardinia = "it", corsica = "it", malta = "it",
+	spain = "es", new_spain = "es", cuba = "es", hispaniola = "es",
+	puerto_rico = "es", new_granada = "es", venezuela = "es", panama = "es",
+	rio_de_la_plata = "es", peru = "es", chile = "es", quito = "es",
+	philippines = "es", canary = "es", mallorca = "es",
+	portugal = "pt", brazil = "pt", madeira = "pt", azores = "pt", cape_verde = "pt",
+	portuguese_india = "pt", macau = "pt", sao_tome = "pt", angola = "pt",
+	ottoman = "ar", egypt = "ar", morocco = "ar", algeria = "ar",
+	tunisia = "ar", tripoli = "ar", hejaz = "ar", yemen = "ar",
+	oman = "ar", levant = "ar",
+	malabar = "hi", gujarat = "hi", bengal = "hi", coromandel = "hi",
+	china = "zh", japan = "ja", korea = "ko",
+}
+local lastMerchantVoiceAt = -100
+local activeMerchantVoice = nil
+
+function Sfx.merchantGreeting(port)
+	if not sfxOn or not port or os.clock() - lastMerchantVoiceAt < 12 then
+		return
+	end
+	local language = MERCHANT_LANGUAGE[tostring(port.country or "")] or "en"
+	local phrase = MERCHANT_VOICE[language]
+	lastMerchantVoiceAt = os.clock()
+	-- 음성 요청량과 중복 재생을 억제한다. 기존 효과음 음량 설정을 그대로 따른다.
+	if activeMerchantVoice then
+		activeMerchantVoice.speech:Destroy()
+		activeMerchantVoice.output:Destroy()
+		activeMerchantVoice = nil
+	end
+	local ok = pcall(function()
+		local speech = Instance.new("AudioTextToSpeech")
+		speech.Name = "MareMerchantGreeting"
+		speech.Text = phrase[1]
+		speech.VoiceId = phrase[2]
+		speech.AutoLocalize = false -- 입항한 지역의 음성 언어를 유지
+		speech.Volume = math.clamp(sfxLevel * 0.30, 0, 0.85)
+		speech.Parent = SoundService
+
+		local output = Instance.new("AudioDeviceOutput")
+		output.Name = "MareMerchantOutput"
+		output.Parent = SoundService
+
+		local wire = Instance.new("Wire")
+		wire.SourceInstance = speech
+		wire.TargetInstance = output
+		wire.Parent = speech
+
+		local playing = { speech = speech, output = output }
+		activeMerchantVoice = playing
+		local function finish()
+			if activeMerchantVoice == playing then
+				activeMerchantVoice = nil
+			end
+			speech:Destroy()
+			output:Destroy()
+		end
+		speech.Ended:Once(finish)
+		speech:Play()
+		task.delay(8, function()
+			if speech.Parent then
+				finish()
+			end
+		end)
+	end)
+	if not ok and activeMerchantVoice then
+		activeMerchantVoice.speech:Destroy()
+		activeMerchantVoice.output:Destroy()
+		activeMerchantVoice = nil
+	end
+end
+
 -- 파도·바람 같은 앰비언트 루프 (names: 목록, nil 이면 끈다)
 function Sfx.ambient(names)
 	local key = table.concat(names or {}, "|")
@@ -252,6 +348,9 @@ end
 function Sfx.setSfxEnabled(on)
 	sfxOn = on
 	sfxGroup.Volume = if on then sfxLevel else 0
+	if activeMerchantVoice then
+		activeMerchantVoice.speech.Volume = if on then math.clamp(sfxLevel * 0.30, 0, 0.85) else 0
+	end
 end
 
 -- 음량 단계 조절 (dir: +1 크게, -1 작게). 바뀐 크기를 돌려준다.
@@ -267,6 +366,9 @@ function Sfx.stepSfx(dir)
 	sfxLevel = math.clamp(math.floor((sfxLevel + dir * 0.3) * 10 + 0.5) / 10, 0.4, 3.0)
 	if sfxOn then
 		sfxGroup.Volume = sfxLevel
+		if activeMerchantVoice then
+			activeMerchantVoice.speech.Volume = math.clamp(sfxLevel * 0.30, 0, 0.85)
+		end
 	end
 	return sfxLevel
 end
