@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import {VibeMotionEngine, createFixedStepMotionLoop} from '../assets/vibe-motion-engine.mjs';
+import {makeFootPlant,makeMotionMatcher,makeLayeredPoseBlender} from '../assets/vibe-studio-animation.js';
 const design=JSON.parse(readFileSync(new URL('../assets/vibe-visual-design-system.json',import.meta.url)));
 test('genre presets and movement states',()=>{
  const played=[];const engine=new VibeMotionEngine(design,{play:(name)=>played.push(name)});
@@ -54,4 +55,36 @@ test('action cancellation window prevents early queued dodge and recovers to idl
  recovery.enter('light-attack');recovery.update(.1);recovery.update(.1);
  assert.equal(recovery.state,'idle');
  assert.throws(()=>engine.registerActionRule('dodge',{duration:-1}));
+});
+
+test('Vibe 5.9 world-space foot locks do not mutate source positions and release on swing',()=>{
+ const feet={left:{x:1,y:2,z:3},right:{x:4,y:2,z:3}};
+ const plant=makeFootPlant({stride:1});
+ plant.update({phase:.9,speed:1,feet});
+ plant.update({phase:0,speed:1,feet});
+ const left=plant.getTargets().left;assert.deepEqual(left,{x:1,y:2,z:3});
+ feet.left.x=99;assert.deepEqual(plant.getTargets().left,{x:1,y:2,z:3});
+ plant.update({phase:.55,speed:1,feet});assert.equal(plant.getTargets().left,undefined);
+ plant.update({phase:.75,speed:1,grounded:false,feet});assert.deepEqual(plant.getTargets(),{});
+});
+
+test('Vibe 5.9 selects real authored clips with hysteresis, rejects empty candidates',()=>{
+ const matcher=makeMotionMatcher({hysteresis:.1});
+ assert.equal(matcher.select({candidates:[{features:{speed:0}}]}).selected,null);
+ const choices=[{sourceClipId:'walk',features:{speed:1,heading:0,leftFootPlanted:true}},
+  {sourceClipId:'run',features:{speed:3,heading:0,leftFootPlanted:true}}];
+ assert.equal(matcher.select({features:{speed:1.1,leftFootPlanted:true},candidates:choices}).selected,'walk');
+ assert.equal(matcher.select({features:{speed:2.9,leftFootPlanted:true},candidates:choices}).selected,'run');
+ matcher.reset();assert.equal(matcher.current,null);
+});
+
+test('Vibe 5.9 masked pose layers preserve original and exclude non-target bones',()=>{
+ const blender=makeLayeredPoseBlender();
+ const base={Hip:{ry:0,x:1},Arm:{rx:0,ry:0}};
+ const result=blender.blend({base,layers:[{weight:1,mask:['Arm'],pose:{Hip:{ry:2},Arm:{rx:1.2}}},
+  {weight:.5,additive:true,mask:['Arm'],pose:{Arm:{ry:.6}}}]});
+ assert.deepEqual(result.Hip,{ry:0,x:1});
+ assert.ok(Math.abs(result.Arm.rx-1.2)<1e-8);
+ assert.ok(Math.abs(result.Arm.ry-.3)<1e-8);
+ assert.equal(base.Arm.rx,0);
 });
