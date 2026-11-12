@@ -110,8 +110,11 @@ export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
   }
   const indices=mesh.geometry?.attributes?.skinIndex;
   const boneCount=Array.isArray(mesh.skeleton?.bones)?mesh.skeleton.bones.length:null;
-  if(boneCount===0)issues.push('EMPTY_BOUND_SKELETON:'+name);
-  if(boneCount!==null&&!indices)issues.push('MISSING_SKIN_INDICES:'+name);
+  // [스킨 리그] 정점 가중치만으로 정상 판정하지 않는다. 연결된 실제 뼈대와 인덱스 모두 필수다.
+  if(boneCount===null)issues.push('MISSING_BOUND_SKELETON:'+name);
+  else if(boneCount===0)issues.push('EMPTY_BOUND_SKELETON:'+name);
+  else if(mesh.skeleton.bones.some(bone=>!bone?.isBone))issues.push('INVALID_BOUND_BONES:'+name);
+  if(!indices)issues.push('MISSING_SKIN_INDICES:'+name);
   if(indices&&(indices.count!==weights.count||indices.itemSize<components))
    issues.push('SKIN_INDEX_LAYOUT_MISMATCH:'+name);
   // 메쉬가 많을 때도 뒤쪽 메쉬를 반드시 검사한다. 예산 미달은 통과시키지 않는다.
