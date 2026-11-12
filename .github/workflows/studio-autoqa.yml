@@ -18,6 +18,8 @@ on:
       - 'tools/gen-qa-click-scripts.py'
       - 'roblox-games/mare-essentia/tools/devloop/studio-scripts/*.json'
       - 'roblox-games/mare-essentia/src/**'
+      # Rojo 자산 폴더·빌드 트리 변경도 공식 Studio로 검증한다.
+      - 'roblox-games/mare-essentia/default.project.json'
   workflow_run:
     workflows: ["Owner Mare Essentia Direct Publish"]
     types: [completed]
