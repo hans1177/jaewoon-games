@@ -234,6 +234,33 @@ test('Vibe 5.9 batches only repeated nonanimated static source meshes and dispos
  batch.dispose();assert.ok(rows.every(x=>x.visible));assert.equal(root.children.length,5);
 });
 
+test('Vibe 5.9 static batching preserves hidden, transparent and manual-matrix meshes',()=>{
+ class InstancedMesh{
+  constructor(geometry,material,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.matrices=[]}
+  setMatrixAt(i,m){this.matrices[i]=m}
+  dispose(){this.disposed=true}
+ }
+ const geometry={uuid:'shared-geo'},material={uuid:'shared-mat'};
+ const plain=i=>({isMesh:true,name:'Foliage'+i,visible:true,matrixAutoUpdate:true,
+  geometry,material,matrix:{i},updateMatrix(){},castShadow:false,receiveShadow:true});
+ const visible=Array.from({length:4},(_,i)=>plain(i));
+ const hidden={...plain(4),visible:false};
+ const manual={...plain(5),matrixAutoUpdate:false};
+ const translucent=Array.from({length:4},(_,i)=>({...plain(10+i),material:{uuid:'glass',transparent:true}}));
+ const root={children:[...visible,hidden,manual,...translucent],
+  add(o){this.children.push(o)},remove(o){this.children.splice(this.children.indexOf(o),1)}};
+ const batch=batchVibeExistingStaticMeshes({InstancedMesh},root,{minimum:4});
+ assert.equal(batch.batched,4);
+ assert.equal(batch.drawCallsSaved,3);
+ assert.equal(hidden.visible,false);
+ assert.equal(manual.visible,true);
+ assert.ok(translucent.every(o=>o.visible));
+ batch.dispose();
+ assert.ok(visible.every(o=>o.visible));
+ assert.equal(hidden.visible,false);
+ assert.equal(root.children.length,10);
+});
+
 test('Vibe 5.9 graphics are attached to the existing WebGL preview, not a duplicate runtime',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  for(const symbol of ['createVibeAuthoredMeshLOD(THREE,model)','batchVibeExistingStaticMeshes(THREE,model',
