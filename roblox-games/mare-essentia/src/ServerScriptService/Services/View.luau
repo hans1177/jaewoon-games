@@ -594,7 +594,10 @@ return function(D, S)
 		do
 			local inv = S.Harbor.invested(state)
 			local lv = S.Harbor.level(state)
+			local rg = D.Harbor.regime(state.startYear + math.floor(state.day / 365))
 			view.harbor = {
+				regime = { id = rg.id, name = rg.name, kind = rg.kind, note = rg.note, price = rg.price },
+				portType = D.Harbor.portType(port.produces),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,

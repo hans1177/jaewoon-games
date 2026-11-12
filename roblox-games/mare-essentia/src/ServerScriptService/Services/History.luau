@@ -63,6 +63,11 @@ return function(D, S)
 
 	local function mult(state, portId, goodId)
 		local m = histMult(state, portId, goodId)
+		-- 거시경제 국면: 인플레·디플레, 교역품 분류별·지역별 차등
+		local port = D.Ports.Ports[portId]
+		if port then
+			m *= D.Harbor.priceMult(D.Harbor.regime(state.startYear + math.floor(state.day / 365)), D.Regions.of(port).id, goodId)
+		end
 		-- 전쟁 중인 나라의 항구는 무기·자재 값이 오른다
 		return if S.Diplomacy then m * S.Diplomacy.mult(state, portId, goodId) else m
 	end

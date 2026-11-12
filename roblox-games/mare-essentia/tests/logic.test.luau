@@ -2085,8 +2085,23 @@ do
 	check("invest works", ok and st.coins == 9000 and st.harbor[st.portId] == 1000 and st.fame == fame0 + 10)
 	check("harbor level 2 at 1000", S.Harbor.level(st) == 2)
 	check("harbor sell bonus", S.Harbor.sellBonus(st) == 0.01)
+	do
+		local H = D.Harbor
+		check("regime 1520 inflation", H.regime(1520).kind == "inflation" and H.regime(1520).price > 1)
+		check("regime 1636 tulip bubble", H.regime(1636).id == "tulip_mania")
+		check("regime 1640 crash", H.regime(1640).kind == "bust")
+		check("regime 1630 depression", H.regime(1630).kind == "depression")
+		check("vitality boom > depression", H.vitality(H.regime(1580), "europe", { "silver" }, 0) > H.vitality(H.regime(1630), "europe", { "silver" }, 0))
+		check("vitality depression shrinks europe", H.vitality(H.regime(1630), "europe", { "wool" }, 0) < 0.5)
+		check("depression milder far away", H.vitality(H.regime(1630), "far_east", { "wool" }, 0) > 0.8)
+		check("trade activity boosts", H.vitality(H.regime(1700), "europe", { "tea" }, 1) > H.vitality(H.regime(1700), "europe", { "tea" }, 0))
+		check("war: strategic up, luxury down", H.priceMult(H.regime(1630), "europe", "iron") > 1 and H.priceMult(H.regime(1630), "europe", "silk") < 1)
+		check("war price weaker in far east", H.priceMult(H.regime(1630), "far_east", "iron") < H.priceMult(H.regime(1630), "europe", "iron"))
+		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
+	end
 	local v = S.View.build(st, ctx)
 	check("view harbor", v.harbor.level == 2 and v.harbor.invested == 1000 and v.harbor.nextAt == 2000)
+	check("view regime", type(v.harbor.regime) == "table" and type(v.harbor.regime.name) == "string" and type(v.harbor.portType) == "string")
 	check("view discounted supply cost", v.shipyard.supplyCost == math.floor(S.Shipyard.SUPPLY_COST * 0.95) or v.shipyard.supplyCost == math.max(1, math.floor(S.Shipyard.SUPPLY_COST * 0.95)))
 	for _ = 1, 3 do
 		act(st, "Invest", { amount = 3000 })

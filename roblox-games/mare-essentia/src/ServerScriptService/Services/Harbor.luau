@@ -34,6 +34,8 @@ return function(D, S)
 		local before = levelAt(state)
 		state.coins -= amount
 		state.harbor[state.portId] = invested(state) + amount
+		state.harborPaid = state.harborPaid or {}
+		state.harborPaid[state.portId] = (state.harborPaid[state.portId] or 0) + amount
 		local msgs = { string.format("%s에 %d코인을 투자했다", D.Ports.Ports[state.portId].name, amount) }
 		local fame = math.floor(amount / 100)
 		state.fame += fame
@@ -70,16 +72,34 @@ return function(D, S)
 		end
 		local inv = invested(state)
 		local before = levelAt(state)
-		if inv < SELF_GROW_CAP then
-			local gain = math.floor(elapsed * (1.2 + before * 1.5))
+		local year = state.startYear + math.floor(state.day / 365)
+		local regime = H.regime(year)
+		local port = D.Ports.Ports[state.portId]
+		state.harborTrade = state.harborTrade or {}
+		local activity = (state.harborTrade[state.portId] or 0) / 150
+		state.harborTrade[state.portId] = nil
+		local region = D.Regions.of(port).id
+		local vit = H.vitality(regime, region, port.produces, activity)
+		if vit >= 0.5 and inv < SELF_GROW_CAP then
+			local gain = math.floor(elapsed * (1.2 + before * 1.5) * vit)
 			if gain > 0 then
 				state.harbor[state.portId] = math.min(SELF_GROW_CAP, inv + gain)
-				table.insert(msgs, string.format("%s가 그사이 스스로 자랐다 (+%d)", D.Ports.Ports[state.portId].name, gain))
-				local after = levelAt(state)
-				if after > before then
-					table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
-				end
+				table.insert(msgs, string.format("%s가 %s 속에 스스로 자랐다 (+%d)", port.name, regime.name, gain))
 			end
+		elseif vit < 0.5 then
+			-- 불황: 스스로 키운 몫만 줄고, 플레이어가 투자한 만큼은 지킨다.
+			local floorAt = (state.harborPaid and state.harborPaid[state.portId]) or 0
+			local loss = math.floor(elapsed * (0.8 + before * 0.6) * (0.5 - vit))
+			if loss > 0 and inv > floorAt then
+				state.harbor[state.portId] = math.max(floorAt, inv - loss)
+				table.insert(msgs, string.format("%s: %s로 %s 상점이 문을 닫았다 (-%d)", regime.name, regime.note, port.name, math.min(loss, inv - floorAt)))
+			end
+		end
+		local after = levelAt(state)
+		if after > before then
+			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
+		elseif after < before then
+			table.insert(msgs, string.format("항구가 '%s'(으)로 위축됐다", H.NAMES[after]))
 		end
 		-- 투자한 항구의 세금 수익
 		local stake = state.harbor[state.portId] or 0

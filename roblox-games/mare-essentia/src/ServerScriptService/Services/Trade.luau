@@ -67,6 +67,8 @@ return function(D, S)
 		state.basis[goodId] = (basis * owned + total) / (owned + amount)
 		state.cargo[goodId] = owned + amount
 		ctx.market:set(state.portId, goodId, mult)
+		state.harborTrade = state.harborTrade or {}
+		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + amount
 		return true, string.format("%s %d개 구매 (-%d)", D.Ports.Goods[goodId].name, amount, total)
 	end
 
@@ -133,6 +135,8 @@ return function(D, S)
 				end
 			end
 		end
+		state.harborTrade = state.harborTrade or {}
+		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + (tonumber(amount) or 0)
 		if profit > 0 then
 			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
 			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
