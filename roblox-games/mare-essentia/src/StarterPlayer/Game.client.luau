@@ -505,12 +505,17 @@ end
 
 -- 줄(row) 왼쪽에 아이콘을 붙이고 글자 상자를 오른쪽으로 민다
 local function withIcon(row, kind, asset, tint, px, portraitOffset)
+	local previous = row:FindFirstChild("RowIcon")
+	if previous then previous:Destroy() end
 	local icon = modelIcon(row, kind, asset, tint, px, nil, nil, portraitOffset)
+	icon.Name = "RowIcon"
 	icon.Position = UDim2.new(0, 8, 0.5, -px / 2)
-	local box = row:FindFirstChildWhichIsA("Frame")
+	local box = row:FindFirstChild("RowText")
 	if box then
-		box.Position = UDim2.new(0, px + 16, 0, box.Position.Y.Offset)
-		box.Size = UDim2.new(box.Size.X.Scale, box.Size.X.Offset - (px + 8), box.Size.Y.Scale, box.Size.Y.Offset)
+		local inset = px + 16
+		local delta = inset - box.Position.X.Offset
+		box.Position = UDim2.fromOffset(inset, box.Position.Y.Offset)
+		box.Size = UDim2.new(box.Size.X.Scale, box.Size.X.Offset - delta, box.Size.Y.Scale, box.Size.Y.Offset)
 	end
 	return icon
 end
@@ -580,6 +585,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	local btnWidth = btnCount * 68 + 8
 
 	local textBox = Instance.new("Frame")
+	textBox.Name = "RowText"
 	textBox.BackgroundTransparency = 1
 	textBox.Position = UDim2.fromOffset(8, 4)
 	textBox.Size = UDim2.new(1, -(btnWidth + 12), 1, -8)
@@ -1295,14 +1301,14 @@ do
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.new(0.8, 0, 0.8, 0)
+		win.Size = UDim2.fromScale(0.96, 0.94)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer
 		corner(win, 14)
 		hudStroke(win, 2)
 		local cons = Instance.new("UISizeConstraint")
-		cons.MaxSize = Vector2.new(620, 460)
+		cons.MaxSize = Vector2.new(760, 820)
 		cons.Parent = win
 		local deck = view and view.deck
 		local cards = (deck and deck.cards) or {}
@@ -4272,6 +4278,51 @@ local function paintCardArt(parent, card, fieldDef, fitImage)
 	end
 end
 
+function H.combatCardImage(unit)
+	local artKey = if unit.special == "scorch" then "event_harbor_fire"
+		elseif unit.special == "weather" then "event_storm" else "event_calm_seas"
+	return "rbxassetid://" .. AssetIds["CardArt/" .. artKey]
+end
+
+function H.codexCardTile(grid, card, field, badge, tint, onClick)
+	local tile = Instance.new("TextButton")
+	tile.AutoButtonColor = false
+	tile.Text = ""
+	tile.BackgroundColor3 = COLORS.row
+	tile.BorderSizePixel = 0
+	corner(tile, 8)
+	local stroke = Instance.new("UIStroke")
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Thickness = 2
+	stroke.Color = tint
+	stroke.Parent = tile
+
+	local art = Instance.new("Frame")
+	art.Position = UDim2.fromOffset(5, 5)
+	art.Size = UDim2.new(1, -10, 1, -46)
+	corner(art, 5)
+	art.Parent = tile
+	paintCardArt(art, card, field)
+	local name = mkLabel(tile, card.name, 13, if card.found then COLORS.text else COLORS.muted, true)
+	name.AutomaticSize = Enum.AutomaticSize.None
+	name.Position = UDim2.new(0, 5, 1, -40)
+	name.Size = UDim2.new(1, -10, 0, 24)
+	name.TextScaled = true
+	name.TextXAlignment = Enum.TextXAlignment.Center
+	name.TextYAlignment = Enum.TextYAlignment.Center
+	local size = Instance.new("UITextSizeConstraint")
+	size.MaxTextSize = 13
+	size.Parent = name
+	local rank = mkLabel(tile, badge, 11, tint, true)
+	rank.AutomaticSize = Enum.AutomaticSize.None
+	rank.Position = UDim2.new(0, 5, 1, -16)
+	rank.Size = UDim2.new(1, -10, 0, 14)
+	rank.TextXAlignment = Enum.TextXAlignment.Center
+	tile.Activated:Connect(onClick)
+	tile.Parent = grid
+	return tile
+end
+
 function H.showCardDetail(card)
 	local fieldDef = if card.combat then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
 	local article = if card.found then require(Shared:WaitForChild("KnowledgeCards")).Articles[card.id] else nil
@@ -4426,8 +4477,6 @@ function H.showCombatCard(unit, origin, skill)
 	if skill then
 		effect ..= "\n" .. skill.name .. " · " .. skill.text
 	end
-	local artKey = if unit.special == "scorch" then "event_harbor_fire"
-		elseif unit.special == "weather" then "event_storm" else "event_calm_seas"
 	H.showCardDetail({
 		id = unit.id,
 		name = unit.name,
@@ -4435,7 +4484,7 @@ function H.showCombatCard(unit, origin, skill)
 		rarity = if unit.special then "특수" elseif unit.hero then "영웅" else "병종",
 		description = if unit.special then "접현전에서 즉시 효과를 내는 카드예요."
 			else string.format("%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power),
-		image = "rbxassetid://" .. AssetIds["CardArt/" .. artKey],
+		image = H.combatCardImage(unit),
 		combat = { effect = effect, origin = origin },
 	})
 end
@@ -4474,6 +4523,12 @@ local function renderCodexOverview()
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
 	end)
+	local samples = {}
+	for _, card in cx.cards do
+		if card.found and card.image and card.image ~= "" and not samples[card.field] then
+			samples[card.field] = card
+		end
+	end
 	for _, f in cx.fields do
 		add(function()
 			local claimable = 0
@@ -4485,12 +4540,21 @@ local function renderCodexOverview()
 			local row = mkRow(content, string.format("%s  %d / %d%s", f.name, f.found, f.total, if claimable > 0 then "  ★보상" else ""), f.summary, {
 				{ text = "열기", color = fieldColor(f), onClick = function() codexField = f.id; render() end },
 			}, 64)
-			local stripe = Instance.new("Frame")
-			stripe.Size = UDim2.new(0, 4, 1, -12)
-			stripe.Position = UDim2.fromOffset(0, 6)
-			stripe.BackgroundColor3 = fieldColor(f)
-			stripe.BorderSizePixel = 0
-			stripe.Parent = row
+			row.AccentBar.BackgroundColor3 = fieldColor(f)
+			if samples[f.id] then
+				local old = row:FindFirstChild("RowIcon")
+				if old then old:Destroy() end
+				local art = Instance.new("Frame")
+				art.Position = UDim2.fromOffset(8, 6)
+				art.Size = UDim2.fromOffset(52, 48)
+				corner(art, 5)
+				art.Parent = row
+				paintCardArt(art, samples[f.id], f)
+				local box = row.RowText
+				local delta = 68 - box.Position.X.Offset
+				box.Position = UDim2.fromOffset(68, box.Position.Y.Offset)
+				box.Size = UDim2.new(1, box.Size.X.Offset - delta, 1, -8)
+			end
 			local barBack = Instance.new("Frame")
 			barBack.AnchorPoint = Vector2.new(0, 1)
 			barBack.Position = UDim2.new(0, 8, 1, -3)
@@ -4640,14 +4704,26 @@ if codexField == "boarding" then
 		end
 		table.sort(units, function(a, b) return a.name < b.name end)
 		add(function() return mkLabel(content, BC.ROW_NAME[rowId] or "특수 카드", 16, COLORS.gold, true) end)
-		for _, unit in units do
-			add(function()
-				local detail = if unit.special then unit.text else string.format("기본 전투력 %d%s", unit.power, if unit.hero then " · 영웅" else "")
-				return mkRow(content, unit.name, detail, {
-					{ text = "펼치기", color = COLORS.blue, onClick = function() H.showCombatCard(unit) end },
-				}, 52)
-			end)
-		end
+		add(function()
+			local grid = Instance.new("Frame")
+			grid.BackgroundTransparency = 1
+			grid.Size = UDim2.new(1, -6, 0, 0)
+			grid.AutomaticSize = Enum.AutomaticSize.Y
+			local layout = Instance.new("UIGridLayout")
+			layout.CellSize = UDim2.new(1 / 3, -5, 0, 106)
+			layout.CellPadding = UDim2.fromOffset(5, 5)
+			layout.SortOrder = Enum.SortOrder.LayoutOrder
+			layout.Parent = grid
+			local field = { name = BC.ROW_NAME[rowId] or "특수", color = { 70, 92, 96 } }
+			for index, unit in units do
+				local badge = if unit.special then "특수" elseif unit.hero then "영웅 · " .. unit.power else "위력 " .. unit.power
+				local tint = if unit.hero then COLORS.gold elseif unit.special then Color3.fromRGB(193, 166, 221) else Color3.fromRGB(176, 201, 215)
+				local tile = H.codexCardTile(grid, { name = unit.name, found = true, image = H.combatCardImage(unit) },
+					field, badge, tint, function() H.showCombatCard(unit) end)
+				tile.LayoutOrder = index
+			end
+			return grid
+		end)
 	end
 	return
 end
@@ -4781,7 +4857,7 @@ local f = findField(codexField)
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local g = Instance.new("UIGridLayout")
-		g.CellSize = UDim2.new(0.333, -6, 0, 132)
+		g.CellSize = UDim2.new(1 / 3, -6, 0, 118)
 		g.CellPadding = UDim2.fromOffset(6, 6)
 		g.SortOrder = Enum.SortOrder.LayoutOrder
 		g.Parent = grid
@@ -4789,46 +4865,10 @@ local f = findField(codexField)
 		for _, c in view.codex.cards do
 			if c.field == f.id then
 				n += 1
-				local tile = Instance.new("TextButton")
+				local tint = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
+				local badge = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
+				local tile = H.codexCardTile(grid, c, f, badge, tint, function() H.showCardDetail(c) end)
 				tile.LayoutOrder = n
-				tile.AutoButtonColor = false
-				tile.Text = ""
-				tile.BackgroundColor3 = COLORS.row
-				corner(tile, 8)
-				tile.Parent = grid
-				local st = Instance.new("UIStroke")
-				st.Thickness = 2
-				st.Color = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
-				st.Parent = tile
-				local art = Instance.new("Frame")
-				art.Position = UDim2.fromOffset(4, 4)
-				art.Size = UDim2.new(1, -8, 0, 78)
-				art.BackgroundColor3 = COLORS.grey
-				corner(art, 6)
-				art.Parent = tile
-				paintCardArt(art, c, f)
-				local nm = Instance.new("TextLabel")
-				nm.BackgroundTransparency = 1
-				nm.Position = UDim2.fromOffset(4, 84)
-				nm.Size = UDim2.new(1, -8, 0, 28)
-				nm.Font = Enum.Font.GothamBold
-				nm.TextSize = 12
-				nm.TextWrapped = true
-				nm.TextColor3 = if c.found then COLORS.text else COLORS.muted
-				nm.Text = c.name
-				nm.Parent = tile
-				local rr = Instance.new("TextLabel")
-				rr.BackgroundTransparency = 1
-				rr.Position = UDim2.new(0, 4, 1, -18)
-				rr.Size = UDim2.new(1, -8, 0, 14)
-				rr.Font = Enum.Font.Gotham
-				rr.TextSize = 10
-				rr.TextColor3 = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
-				rr.Text = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
-				rr.Parent = tile
-				tile.Activated:Connect(function()
-					H.showCardDetail(c)
-				end)
 			end
 		end
 		return grid
