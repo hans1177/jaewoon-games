@@ -214302,11 +214302,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a85a0c5d5ad1340568ddb626",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12856",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9c27a08552986e94465664ff118a599e8c543f24",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12856,
+        "baseBranch": "main",
+        "headBranch": "assets/mare-audio-43206512137-1",
+        "baseSha": "9c27a08552986e94465664ff118a599e8c543f24",
+        "headSha": "52a8720aae1a6f7c53b80fb316de3ebd669582f3",
+        "mergeCommitSha": "206aed4b324d034a32347905ad14e146314a47b5",
+        "mergedAt": "2026-11-12T11:15:17Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "2d705f2740ec49cee7393a1df329c7df095c701b803f24f14ca4c760810ad727",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/mare-audio-43206512137-1",
+        "candidateSha": "52a8720aae1a6f7c53b80fb316de3ebd669582f3"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 14,
+        "deletedLineCount": 12,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/audio/manifest.json",
+          "roblox-games/mare-essentia/audio/out/music_region_w_africa.ogg",
+          "roblox-games/mare-essentia/audio/uploaded.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/mare-essentia/audio/manifest.json",
+          "roblox-games/mare-essentia/audio/uploaded.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12856",
+        "merge-commit:206aed4b324d034a32347905ad14e146314a47b5",
+        "base-main:9c27a08552986e94465664ff118a599e8c543f24"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1704
+    "total": 1705
   }
 }
