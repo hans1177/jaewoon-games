@@ -717,6 +717,8 @@ for id, spec in {
 	h_england = { "north_atlantic", 15 }, h_netherlands = { "north_atlantic", 1 }, h_france = { "north_atlantic", 16 },
 	h_ottoman = { "mediterranean", 19 }, h_swahili = { "east_africa_red_sea", 5 }, h_malabar = { "indian", 1 },
 	h_japan = { "pacific", 15 }, h_new_spain = { "americas", 3 }, h_portugal = { "mediterranean", 15 },
+	t_priest = { "faith_christian", 0 }, t_nun = { "faith_christian", 16 }, t_monk = { "faith_buddhist", 2 }, t_bhikkhuni = { "faith_buddhist", 17 },
+	t_scribe = { "faith_indian_ocean", 1 }, t_pilgrim = { "faith_indian_ocean", 7 },
 } do
 	if AssetIds["Portraits/companions_" .. spec[1]] then
 		COMPANION_PORTRAIT[id] = { atlas = "companions_" .. spec[1], offset = Vector2.new(spec[2] % 5 * 256, math.floor(spec[2] / 5) * 336) }
@@ -5198,71 +5200,14 @@ function H.startNewGame()
 		newGameMode = true
 		render()
 	end
-	-- 시작 직후 프롤로그: 주인공이 왜 항해를 떠나는지 보여 준다
+	-- 프롤로그 없이 곧바로 시작 항구에서 시작한다 (플레이어는 3인칭 이야기 속 새 선장)
 	if result and result.ok then
-		local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
-		local pro = N.Prologues[chosenNation] or N.Prologue
-		local lines = {}
-		for sentence in string.gmatch(pro.text, "[^%.]+%.?") do
-			local t = string.gsub(sentence, "^%s+", "")
-			if t ~= "" then
-				table.insert(lines, t)
-			end
-		end
-		task.spawn(function()
-			-- 3D 오프닝: 시작 항구에서 가까운 바다로 나가는 항해 장면에 자막과 주인공 초상을 얹는다
-			local startId = view.player.portId
-			local sp = PortData.Ports[startId]
-			local nearId, nearD = nil, math.huge
-			for id, q in PortData.Ports do
-				if id ~= startId then
-					local d = (q.lat - sp.lat) ^ 2 + (q.lon - sp.lon) ^ 2
-					if d < nearD then
-						nearId, nearD = id, d
-					end
-				end
-			end
-			sceneHold = true
-			audioLock = true
-			main.Visible = false
-			menuToggle.Visible = false
-			Sfx.music("music_sea")
-			Sfx.ambient({ "sfx_waves", "sfx_wind" })
-			local days = math.clamp(math.ceil((#lines * 4.2 + 3 - 8) / 0.9), 4, 16)
-			local nationId = chosenNation
-			local ok, err = pcall(VoyageScene.play, {
-				shipId = view.ship.id, steam = false, days = days,
-				path = SeaRoutes.path(startId, nearId, PortData.Ports),
-				fromName = "", toName = "",
-				makeShip = PortScene.makeShip, place = PortScene.placeModel,
-				intro = {
-					title = pro.title, lines = lines,
-					portrait = function(gui)
-						local hp = heroPortrait(gui, nationId, 130, 168)
-						hp.AnchorPoint = Vector2.new(0, 1)
-						hp.Position = UDim2.new(0, 24, 1, -24)
-						hp.ZIndex = 7
-					end,
-				},
-			})
-			if not ok then
-				warn("[Game] 3D 오프닝 오류, 2D 연출로 대체:", err)
-				local cam = workspace.CurrentCamera
-				cam.CameraType = Enum.CameraType.Custom
-				local g = player.PlayerGui:FindFirstChild("VoyageHud")
-				if g then g:Destroy() end
-				local vf = workspace:FindFirstChild("VoyageScene")
-				if vf then vf:Destroy() end
-				playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = nationId })
-			end
-			arriveNext = true
-			main.Visible = true
-			menuToggle.Visible = false
-			sceneHold = false
-			sceneKey = nil
-			audioLock = false
-			render()
-		end)
+		arriveNext = false
+		sceneKey = nil
+		sceneHold = false
+		main.Visible = true
+		menuToggle.Visible = false
+		render()
 	end
 end
 
@@ -6187,26 +6132,39 @@ end
 		go.LayoutOrder = 5
 	end
 
-	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기)
+	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기). 위쪽 정보창 아래에 둔다.
 	local chipGui = overlayGui("CaptainChip", 12)
 	local chip = Instance.new("Frame")
-	chip.AnchorPoint = Vector2.new(0, 0.5)
-	chip.Position = UDim2.new(0, 8, 0.42, 0)
-	chip.Size = UDim2.fromOffset(92, 132)
+	chip.AnchorPoint = Vector2.new(0, 0)
+	chip.Position = UDim2.new(0, 8, 0.4, 0)
+	chip.Size = UDim2.fromOffset(104, 150)
 	chip.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
-	chip.BackgroundTransparency = 0.15
+	chip.BackgroundTransparency = 0.08
 	chip.BorderSizePixel = 0
 	chip.Visible = false
 	chip.Parent = chipGui
-	corner(chip, 10)
+	corner(chip, 12)
+	do
+		local cst = Instance.new("UIStroke")
+		cst.Color = BRASS
+		cst.Thickness = 2
+		cst.Parent = chip
+	end
 	local chipKey = nil
-	local chipName = mkLabel(chip, "", 12, Color3.fromRGB(246, 208, 130), true)
-	chipName.AnchorPoint = Vector2.new(0.5, 1)
-	chipName.Position = UDim2.new(0.5, 0, 1, -4)
-	chipName.Size = UDim2.new(1, -6, 0, 18)
+	local chipName = mkLabel(chip, "", 13, Color3.fromRGB(246, 208, 130), true)
+	chipName.AnchorPoint = Vector2.new(0.5, 0)
+	chipName.Position = UDim2.new(0.5, 0, 0, 108)
+	chipName.Size = UDim2.new(1, -8, 0, 18)
 	chipName.AutomaticSize = Enum.AutomaticSize.None
 	chipName.TextXAlignment = Enum.TextXAlignment.Center
 	chipName.TextTruncate = Enum.TextTruncate.AtEnd
+	local chipSub = mkLabel(chip, "", 10, COLORS.muted, false)
+	chipSub.AnchorPoint = Vector2.new(0.5, 0)
+	chipSub.Position = UDim2.new(0.5, 0, 0, 127)
+	chipSub.Size = UDim2.new(1, -8, 0, 16)
+	chipSub.AutomaticSize = Enum.AutomaticSize.None
+	chipSub.TextXAlignment = Enum.TextXAlignment.Center
+	chipSub.TextTruncate = Enum.TextTruncate.AtEnd
 	local function refreshChip()
 		local c = view and view.captain
 		local show = c ~= nil and not newGameMode
@@ -6214,7 +6172,7 @@ end
 		if not show then
 			return
 		end
-		local key = tostring(c.portrait) .. "|" .. tostring(c.name) .. "|" .. tostring(view.player and view.player.year)
+		local key = tostring(c.portrait) .. "|" .. tostring(c.name) .. "|" .. tostring(view.player and view.player.nation) .. "|" .. tostring(view.player and view.player.year)
 		if key == chipKey then
 			return
 		end
@@ -6225,7 +6183,8 @@ end
 			end
 		end
 		chipName.Text = c.name or "선장"
-		local face = portraitImg(chip, c.portrait, 80, 100)
+		chipSub.Text = (if c.origin then c.origin.name else view.player.nation)
+		local face = portraitImg(chip, c.portrait, 90, 96)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -6233,10 +6192,10 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 80, 54)
-			face.Position = UDim2.fromOffset(6, 20)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 90, 62)
+			face.Position = UDim2.fromOffset(7, 22)
 		else
-			face.Position = UDim2.fromOffset(6, 6)
+			face.Position = UDim2.fromOffset(7, 7)
 		end
 		face.Name = "ChipFace"
 	end
@@ -6256,7 +6215,7 @@ end
 			cap.AutomaticSize = Enum.AutomaticSize.None
 			cap.TextXAlignment = Enum.TextXAlignment.Center
 			task.wait(2.4)
-			TweenService:Create(big, TweenInfo.new(0.6), { Size = UDim2.fromOffset(80, 100), Position = UDim2.new(0, 54, 0.42, -26) }):Play()
+			TweenService:Create(big, TweenInfo.new(0.6), { Size = UDim2.fromOffset(90, 96), Position = UDim2.new(0, 60, 0.4, 55) }):Play()
 			task.wait(0.7)
 		end
 		layer:Destroy()
