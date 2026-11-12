@@ -577,10 +577,13 @@ function NavalBattle.play(opts)
 			icon.AnchorPoint = Vector2.new(0, 0.5)
 			icon.Position = position
 			icon.Size = size
-			icon.BackgroundTransparency = 1
+			icon.BackgroundColor3 = paper
+			icon.BorderSizePixel = 0
 			icon.ScaleType = Enum.ScaleType.Fit
 			icon.Image = "rbxassetid://" .. AssetIds[assetKey]
+			icon.ImageColor3 = Color3.fromRGB(114, 75, 43)
 			icon.Parent = parent
+			frameEdge(icon, brass, 4)
 			return icon
 		end
 
