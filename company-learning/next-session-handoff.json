@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__SKIN_RIG_AND_PBR_RESOURCE_FIXES__NATIVE_RUNTIME_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__IMPORTED_FINGER_GESTURE_ENABLED_PENDING_QA_AND_NATIVE_VISUAL_VERIFICATION",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,12 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "READ_CURRENT_MAIN_CANONICAL_FOUR_AND_AGENTS_BEFORE_WRITES",
+      "VERIFY_648d6205_VIBE_QA_43313575442_INCLUDES_ACTUAL_FINGER_TESTS_AND_PBR_REGRESSION",
+      "VERIFY_648d6205_VIBE_INTEGRATED_REGRESSION_43313575363_AND_MAGIC_FOREST_STATIC_PLAY_43313575425_EXACT_SOURCE_POSTPUB_BROWSER",
+      "VERIFY_APPROVED_REAL_GLTF_MIXAMO_AND_BLENDER_HAND_GESTURES_VISIBLE_ON_MOBILE_AND_RESTORE_AUTHORING_DATA",
+      "DO_NOT_MARK_PAGES_BROWSER_PASS_IF_LOG_SAYS_SUPERSEDED",
+      "FINISH_18_FEATURES_WITH_NATIVE_GLTF_SKIN_AND_RENDERER_EVIDENCE_ONLY",
       "RELOAD_CURRENT_MAIN_AGENTS_AND_CENTRAL_4_FULL_ROADMAP_BLOB_BEFORE_SOURCE_WRITE",
       "CHECK_EXACT_61e18c0_VIBE_QA_RUN_43312661952_PBR_AND_RIG_TARGETED_TEST_STAGE_FOR_REAL_PASS",
       "CHECK_EXACT_61e18c0_INTEGRATED_RUN_43312661446_AND_PAGES_43312661617_POSTPUB_BROWSER_SOURCE_SHA",
@@ -366,7 +372,10 @@
       ".github/workflows/vibe-qa.yml:EXISTING_VISUAL_QUALITY_CHECK_STEP_NOW_EXECUTES_RIG_IK_MOTION_CINEMATIC_TESTS_NO_NEW_WORKFLOW (aea0bc82)",
       "assets/vibe-premium-character-pipeline.mjs:EXISTING_APPLY_VIBE_PBR_TEXTURES_RESTORES_ORIGINAL_SHARED_MATERIALS_AND_DISPOSES_UNIQUE_TEXTURES_ONLY_ONCE (61e18c0)",
       "assets/vibe-premium-character-pipeline.mjs:PBR_TEXTURE_LOAD_FAILURE_CLEANS_LOADED_TEXTURES_BEFORE_ANY_MATERIAL_MUTATION (61e18c0)",
-      "qa/vibe-premium-character-pipeline.test.mjs:PBR_RESTORATION_FAILURE_DISPOSAL_AND_SHARED_MATERIAL_NON_MUTATION_TESTS (61e18c0)"
+      "qa/vibe-premium-character-pipeline.test.mjs:PBR_RESTORATION_FAILURE_DISPOSAL_AND_SHARED_MATERIAL_NON_MUTATION_TESTS (61e18c0)",
+      "assets/vibe-premium-character-pipeline.mjs:EXISTING_HAND_RIG_RECOGNIZES_MIXAMO_BLENDER_FINGER_BONE_ALIASES_AND_SKIPS_INVALID_NON_BONES_NO_NEW_BONES (648d6205)",
+      "assets/vibe-model-preview.html:APPROVED_GLTFS_GESTURE_BUTTON_GRIP_FIST_POINT_RESET_AND_APPLY_AFTER_ANIMATION_MIXER (648d6205)",
+      "qa/vibe-premium-character-pipeline.test.mjs:MIXAMO_BLENDER_BONE_ROTATION_RESET_AND_PREVIEW_BINDING_TESTS (648d6205)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -387,7 +396,9 @@
       "b52f047 Vibe Integrated Regression 43310327626 SUCCESS confirmed on exact source commit",
       "Constitution central preflight policy-qa CONSTITUTION_ENFORCEMENT=PASS in run 43310785701 logs (workflow as whole failed other Studio tests)",
       "aea0bc82 Vibe QA run 43312073966 SUCCESS including targeted rig/IK/motion/graphics tests in existing stage",
-      "aea0bc82 Vibe Integrated Regression run 43312074106 SUCCESS"
+      "aea0bc82 Vibe Integrated Regression run 43312074106 SUCCESS",
+      "61e18c0 Vibe Integrated Regression run 43312661446 SUCCESS",
+      "61e18c0 Magic Forest Static Play 43312661617 completed SUCCESS and WEB_PAGES_LIVE_SOURCE_SHA=61e18c0 in postpub job 131514254756, but BROWSER_SETUP_SUPERSEDED_BY=2bab9a3 so does NOT prove exact live browser functionality"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -432,9 +443,14 @@
       "61e18c0 Vibe Integrated Regression run 43312661446 QUEUED at checkpoint",
       "61e18c0 Magic Forest Static Play run 43312661617 IN_PROGRESS at checkpoint",
       "61e18c0 EXACT_WEB_PUBLISHED_SHA_AND_REAL_GLB_MOBILE_RUNTIME_SAVE_UNVERIFIED",
-      "GENUINE_WEBGPU_RENDERER_FALLBACK_FULL_GPU_OCCLUSION_AND_RAGDOLL_CLOTH_STILL_NOT_IMPLEMENTED_AND_NOT_ATTESTED"
+      "GENUINE_WEBGPU_RENDERER_FALLBACK_FULL_GPU_OCCLUSION_AND_RAGDOLL_CLOTH_STILL_NOT_IMPLEMENTED_AND_NOT_ATTESTED",
+      "648d6205 Vibe QA 43313575442 IN_PROGRESS at checkpoint",
+      "648d6205 Vibe Integrated Regression 43313575363 IN_PROGRESS at checkpoint",
+      "648d6205 Magic Forest Static Play 43313575425 IN_PROGRESS at checkpoint",
+      "648d6205 REAL APPROVED GLTF MESH_FINGER_VISUAL_PLAYBACK_AND_TOUCH_GESTURE_BROWSER_RESULT_UNVERIFIED",
+      "61e18c0 Vibe QA 43312661952 CANCELLED_BY_NEW_MAIN, NOT PASS"
     ],
-    "lastObservedMain": "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e",
+    "lastObservedMain": "648d62053b217fab917b5ca886ae9e23aadac32f",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -475,30 +491,30 @@
       "fb70c9ec89510e15709450a406c1745f765a0983",
       "b52f04761578dcd1d53f859766aa979cf8d8a4c7",
       "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98",
-      "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e"
+      "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e",
+      "648d62053b217fab917b5ca886ae9e23aadac32f"
     ],
     "latestDirectWork": {
-      "sourceBase": "bacc8544212c34261dd4619abceb37e6e39e497a",
+      "sourceBase": "dc6900f91a8477f9023d0ddee1a698b09d86fbd6",
       "implementationCommits": [
-        "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98",
-        "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e"
+        "648d62053b217fab917b5ca886ae9e23aadac32f"
       ],
       "modifiedExistingFiles": [
         "assets/vibe-premium-character-pipeline.mjs",
-        "qa/vibe-premium-character-pipeline.test.mjs",
-        ".github/workflows/vibe-qa.yml"
+        "assets/vibe-model-preview.html",
+        "qa/vibe-premium-character-pipeline.test.mjs"
       ],
-      "scope": "FAIL_CLOSED_MISSING_SKELETON_BONE_INDEX; CANONICAL_VIBE_QA_EXECUTES_RIG_IK_MOTION_GRAPHICS_TESTS; PBR_RESTORES_MATERIALS_AND_RELEASES_TEXTURES_ON_FAILURE",
+      "scope": "REAL_APPROVED_GLTF_HAND_FINGER_BONE_NAME_ALIASES+TOUCH_GESTURE_PREVIEW_AFTER_AUTHORED_ANIMATION",
       "qa": {
-        "firstVibeQA": "SUCCESS_43312073966",
-        "firstIntegrated": "SUCCESS_43312074106",
-        "latestVibeQa": "QUEUED_43312661952",
-        "latestIntegrated": "QUEUED_43312661446",
-        "latestPages": "IN_PROGRESS_43312661617"
+        "vibeQa": "IN_PROGRESS_43313575442",
+        "integrated": "IN_PROGRESS_43313575363",
+        "pages": "IN_PROGRESS_43313575425",
+        "previousPbrReg": "SUCCESS_43312661446",
+        "previousPbrBrowser": "SUPERSEDED_NOT_PASS_43312661617"
       },
-      "postPublish": "EXACT_LATEST_SOURCE_BROWSER_NOT_ATTESTED",
+      "postPublish": "LATEST_EXACT_APPROVED_GLTF_HAND_VISUAL_TOUCH_UNVERIFIED",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Fetch main and AGENTS plus 4 central policies (full blob SHA 3554729... if unchanged). Read latest QA jobs 43312661952 and 43312661446 then postpub browser job 43312661617. If failure fix existing responsibility; avoid new gate. Shared PBR maps now restored on dispose, and source rig without bound skeleton fails. Constitution enforcer passed although Studio policy suite has 7 unrelated tests failing, so don't label all policy QA PASS."
+      "nextWorkerInstruction": "Reload current main, canonical policy 4+AGENTS. Check exact Actions run IDs 43313575442, 43313575363, 43313575425, verify Mixamo/Blender hand aliases in approved GLTF with actual browser frames/touch and that hand gesture removal restores. Prior PBR pages was superseded, not exact browser QA. No new folders/pipelines, avoid changing saves or authority."
     }
   }
 }
