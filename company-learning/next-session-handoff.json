@@ -298,6 +298,12 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "AFTER_CHANGE_FETCH_LATEST_MAIN_AND_REVALIDATE_CENTRAL_POLICY",
+      "CHECK_VIBE_QA_43305654308_AND_INTEGRATED_REGRESSION_43305654543_AND_MAGIC_FOREST_STATIC_PLAY_43305654480_OUTCOMES_ON_8fdd29e9",
+      "IF_MAGIC_FOREST_3D_MOBILE_SMOKE_MOVEMENT_FAILS_READ_EXACT_JOB_AND_FIND_RESPONSIBLE_RUNTIME_FIX_WITHOUT_WEAKENING_ASSERTIONS",
+      "RUN_REAL_SKINNED_GLTF_MULTI_MESH_RIG_AUDIT_AND_CONFIRMED_WEBGL_BATCH_SCENE_TO_ATTEST_EFFECT_BEYOND_MOCK_QA",
+      "VERIFY_PUBLISHED_MANIFEST_SOURCE_SHA_EQUALS_LATEST_MAIN_AND_POST_DEPLOY_BROWSER_MOBILE_TOUCH_SAVE",
+      "CONTINUE_ALL_18_FEATURES_SCOPE_PRIORITIZING_REAL_NATIVE_MODEL_INTEGRATION_NO_UNAPPROVED_ASSET_CREATION",
       "REFRESH_MAIN_AND_RE_READ_CENTRAL_FOUR_AGENTS",
       "CHECK_EXISTING_CI_RUNS_QA_VIBE_AND_MAGIC_FOREST_PAGES_FOR_LATEST_MAIN_SHA",
       "IF_BROWSER_SMOKE_FAILS_READ_JOB_LOG_AND_FIX_EXISTING_RESPONSIBLE_PREVIEW_SOURCE",
@@ -325,7 +331,11 @@
       "assets/vibe-studio-animation.js:PHYSICS_INSPIRED_BOUNDED_DIRECTIONAL_HIT_REACTION",
       "assets/vibe-model-preview.html:REAL_HIT_VISUAL_BINDING_TO_EXISTING_ONDAMAGE_CALLBACK",
       "qa/vibe-studio-systems.test.mjs:PHYSICAL_PRESENTATION_QA_CASE",
-      "assets/vibe-cinematic-polish.mjs:FIX_REPEATED_LOD_INSTANCES_KEEP_ALL_MESHES_AT_SELECTED_LEVEL"
+      "assets/vibe-cinematic-polish.mjs:FIX_REPEATED_LOD_INSTANCES_KEEP_ALL_MESHES_AT_SELECTED_LEVEL",
+      "assets/vibe-premium-character-pipeline.mjs:FAIR_PER_MESH_SKIN_WEIGHT_AUDIT+BOUND_SKIN_INDEX_VALIDATION+FAIL_CLOSED_SAMPLE_COVERAGE (main 7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e)",
+      "assets/vibe-cinematic-polish.mjs:STATIC_INSTANCE_GROUPING_EXCLUDES_HIDDEN_TRANSPARENT_AND_MANUAL_MATRIX_ASSETS (main 8fdd29e937d4065e4012f48bed8328ccf138011f)",
+      "qa/vibe-premium-character-pipeline.test.mjs:REGRESSION_LATER_MESH_INVALID_WEIGHTS+INVALID_BONE_INDICES",
+      "qa/vibe-cinematic-polish.test.mjs:REGRESSION_HIDDEN_AND_TRANSPARENT_BATCHING"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -334,7 +344,8 @@
       "GitHub Actions Vibe Integrated Regression run 43297811418 on 86f24344: SUCCESS",
       "GitHub Actions Magic Forest Static Play 43298451993 on ce1153bd: SUCCESS (older snapshot; not proof of latest 720253b2)",
       "Vibe Integrated Regression 43299864735 on 720253b2: SUCCESS",
-      "Vibe Integrated Regression 43300155842 on 500f95cc: SUCCESS"
+      "Vibe Integrated Regression 43300155842 on 500f95cc: SUCCESS",
+      "7edb5b1e Vibe Integrated Regression 43305376717 SUCCESS (2026-11-13 KST); DOES_NOT_PROVE_NATIVE_RUNTIME"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -349,16 +360,21 @@
       "LATEST_MAIN_EXACT_PUBLISHED_DEPLOY_POST_SMOKE",
       "LATEST_MAIN_3F907A60_VIBE_QA_43300274224_PENDING",
       "LATEST_MAIN_3F907A60_INTEGRATED_REGRESSION_43300274342_RUNNING",
-      "LATEST_MAIN_3F907A60_PAGES_POSTPUBLICATION_43300274309_PENDING"
+      "LATEST_MAIN_3F907A60_PAGES_POSTPUBLICATION_43300274309_PENDING",
+      "8fdd29e9_VIBE_QA_43305654308_PENDING_AS_OF_LAST_OBSERVATION",
+      "8fdd29e9_VIBE_INTEGRATED_REGRESSION_43305654543_PENDING_AS_OF_LAST_OBSERVATION",
+      "8fdd29e9_MAGIC_FOREST_STATIC_PLAY_43305654480_PENDING_AS_OF_LAST_OBSERVATION",
+      "LATEST_SOURCE_8fdd29e9_EXACT_POST_PUBLISH_BROWSER_MOBILE_AND_SAVE_VERIFICATION"
     ],
-    "lastObservedMain": "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5",
+    "lastObservedMain": "8fdd29e937d4065e4012f48bed8328ccf138011f",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
       "GitHub Pages post-publication run 43297676199 FAILED at qa/vibe-browser-smoke.mjs:337 locator for impact button '타격 연출 테스트' missing, preview button label was '타격 연출'. Fixed main commit f940f5fc; latest exact deployed runtime not yet verified.",
       "Existing UI accessibility/static test may require source updates; never change required QA thresholds merely to force PASS.",
       "Previous post-publication smoke 43297676199 button locator mismatch; label was changed at f940f5fc and needs exact new source live proof.",
-      "Magic Forest Static Play 43299263110 success is SUPERSEDED, log says POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY=720de189; NOT exact postdeployment proof for 3f907a60 or newer."
+      "Magic Forest Static Play 43299263110 success is SUPERSEDED, log says POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY=720de189; NOT exact postdeployment proof for 3f907a60 or newer.",
+      "GitHub Pages Magic Forest Static Play 43300424718 on d697ef9 failed its post-publication browser test after exact source SHA matched: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED, failureStage MOVEMENT_RESPONSE_DELAYED (only 11 frames and seven sim ticks over 2 seconds). This is separate from inspected graphics/rig changes and may be runner/WebGL responsiveness; do not mark PASS or weaken movement QA. Inspect live game source and reproduction evidence before changing gameplay."
     ],
     "commits": [
       "3ccf0aa352ca5a479c57d6391e5c7264abfb3a9e",
@@ -378,7 +394,30 @@
       "720253b2b0d3854175231061f8bfea7a4fe528d4",
       "500f95ccb3aa3c8b9b0e39796860ac28a8da4284",
       "eaca945f98e3c8f72f5666b7e869d6ddbde4b7ff",
-      "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5"
-    ]
+      "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5",
+      "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
+      "8fdd29e937d4065e4012f48bed8328ccf138011f"
+    ],
+    "latestDirectWork": {
+      "sourceBase": "d697ef97538bf1a8827eae26f115c11e1cbe0171",
+      "implementationCommits": [
+        "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
+        "8fdd29e937d4065e4012f48bed8328ccf138011f"
+      ],
+      "modifiedExistingFiles": [
+        "assets/vibe-premium-character-pipeline.mjs",
+        "qa/vibe-premium-character-pipeline.test.mjs",
+        "assets/vibe-cinematic-polish.mjs",
+        "qa/vibe-cinematic-polish.test.mjs"
+      ],
+      "scope": "RIG_WEIGHT_AND_BONE_INDEX_AUDIT_COVERAGE; STATIC_BATCH_VISIBILITY_TRANSPARENCY_AND_MATRIX_SAFETY",
+      "qa": {
+        "integratedRegressionFor7edb5b1": "SUCCESS_ACTIONS_RUN_43305376717",
+        "latest8fdd29e9": "PENDING_AT_CHECKPOINT"
+      },
+      "postPublish": "UNVERIFIED",
+      "sourceAndGameplayPreserved": true,
+      "nextWorkerInstruction": "Refresh main head, four canonical documents and AGENTS. Read current QA run statuses and exact smoke failure before any new patch. Do not promote all 18 items to complete."
+    }
   }
 }
