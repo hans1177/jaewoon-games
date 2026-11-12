@@ -728,6 +728,55 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			end
 		end
 	end
+	-- 경제 지표 연출: 실업자는 광장 가장자리에서 서성이고, 호황엔 짐꾼이 오가며 장터가 커진다.
+	-- 부흥 사건은 눈에 띄는 상징물(문화=조각상·깃발, 학술=오벨리스크, 박람회=천막 장터, 해양=항구 깃발)을 세운다.
+	do
+		local idx = info.econIndex or 100
+		local unemp = info.unemployment or 12
+		local idle = math.min(5, math.floor(math.clamp(unemp - 8, 0, 24) / 4))
+		for i = 1, idle do
+			local z = if i % 2 == 0 then 15 else -15
+			local at = Vector3.new(-14 - i * 3.5, 0, z)
+			stay(at, Vector3.new(-26, 0, 0), "talk", { role = "Rogue", hat = i % 2 == 0, age = "elder" })
+		end
+		local busy = math.min(4, math.floor(math.clamp(idx - 105, 0, 80) / 20))
+		for i = 1, busy do
+			local pz = if i % 2 == 0 then 10 + i else -10 - i
+			path(Vector3.new(14, 0, pz), Vector3.new(-40, 0, pz), "carry", 1.6, { role = "Barbarian", hat = false })
+		end
+		if idx >= 130 then
+			for k = 1, 2 do
+				importedModel(folder, "Town", if k == 1 then "stall-red" else "stall-green", Vector3.new(-18 - k * 9, 0, 13), 7, false)
+				importedModel(folder, "Town", if k == 1 then "stall-green" else "stall-red", Vector3.new(-18 - k * 9, 0, -13), 7, false)
+			end
+		end
+		local has = {}
+		for _, b in info.boosts or {} do
+			has[b] = true
+		end
+		if has.culture then
+			for _, z in { -17, 17 } do
+				importedModel(folder, "Terrain", "statue-column", Vector3.new(-12, 0, z), 12, true)
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(-16, 0, z), 10, false)
+			end
+			stay(Vector3.new(-14, 0, 6), Vector3.new(-26, 0, 0), "talk", { role = "Mage", hat = true })
+		end
+		if has.scholarly then
+			importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(-12, 0, 24), 16, true)
+			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(-12, 0, -24), 14, true)
+		end
+		if has.fair then
+			for k = 0, 3 do
+				importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(-30 - k * 10, 0, 27), 9, false)
+				importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(-30 - k * 10, 0, -27), 9, false)
+			end
+		end
+		if has.maritime or has.economic then
+			for _, z in { -12, 12 } do
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(38, 0, z), 12, false)
+			end
+		end
+	end
 	-- 발전도 상승 공사: 새 단계가 열리면 바로 바뀌지 않고, 공사 기간 동안 비계·자재 더미와
 	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
 	if info.construction then

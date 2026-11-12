@@ -2771,6 +2771,7 @@ function RENDERERS.harbor()
 			local lines = {
 				string.format("경제 국면: %s · %s", e.regimeName, h.portType or ""),
 				string.format("경기지수 %d (100=평시) · 물가지수 %d · 최근 거래 %d개", e.index, e.priceIndex, e.trade),
+				string.format("실업률 %d%% · 임금지수 %d · 금리 %.1f%%", e.unemployment, e.wage, e.interest),
 				string.format("학자 기술 합계 %d → 단계 %d개 이상 열린 품목에 반영", e.techSum, math.floor(e.techSum / 6)),
 			}
 			if e.festival then table.insert(lines, "축제: " .. e.festival) end
@@ -5574,7 +5575,13 @@ syncScene = function()
 		portLevel = shownLv
 	end
 	local econKind = view.harbor and view.harbor.regime and view.harbor.regime.kind or "normal"
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local eco = view.harbor and view.harbor.economy or {}
+	local boostIds = {}
+	for _, b in eco.boosts or {} do
+		table.insert(boostIds, b.id or b.name)
+	end
+	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
@@ -5585,6 +5592,9 @@ syncScene = function()
 		level = portLevel,
 		construction = construction,
 		econ = econKind,
+		econIndex = eco.index,
+		unemployment = eco.unemployment,
+		boosts = boostIds,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,

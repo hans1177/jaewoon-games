@@ -223,10 +223,16 @@ return function(D, S)
 		for _, rv in H.REVIVALS do
 			local u = state.harborBoost and state.harborBoost[portId .. "|" .. rv.id]
 			if u and u >= state.day then
-				table.insert(boosts, { name = rv.name, left = u - state.day })
+				table.insert(boosts, { id = rv.id, name = rv.name, left = u - state.day })
 			end
 		end
+		-- 거시 지표: 실업률(경기가 나쁠수록↑), 임금지수(경기와 물가를 따라감), 금리(인플레·호황엔↑, 디플레·불황엔↓)
+		local priceIdx = math.floor(sum / n * 100 + 0.5)
+		local unemployment = math.clamp(math.floor(30 - vit * 18 + 0.5), 2, 35)
+		local wage = math.floor(100 * math.sqrt(math.max(vit, 0.1)) * priceIdx / 100 + 0.5)
+		local interest = math.clamp(math.floor((4 + (priceIdx - 100) * 0.8 + (vit * 100 - 100) * 0.03) * 10 + 0.5) / 10, 1, 15)
 		return {
+			unemployment = unemployment, wage = wage, interest = interest,
 			boosts = boosts,
 			index = math.floor(vit * 100 + 0.5), -- 경기지수 (100 = 평시, 50 미만이면 쇠퇴)
 			priceIndex = math.floor(sum / n * 100 + 0.5),
