@@ -1363,13 +1363,13 @@ local function hudText(parent, pos, size, textSize, color, align)
 end
 
 -- [왼쪽 정보] 날짜 · 코인 · 항구 · 내구도 · 화물을 일정 간격으로 표시한다.
-H.hudName = hudText(card, UDim2.fromOffset(70, 7), UDim2.new(1, -78, 0, 24), 16, Color3.fromRGB(47, 30, 20))
-H.hudCoin = hudText(card, UDim2.fromOffset(70, 31), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(91, 49, 20))
-H.hudPort = hudText(card, UDim2.fromOffset(70, 55), UDim2.new(1, -78, 0, 23), 15, Color3.fromRGB(56, 40, 27))
+H.hudName = hudText(card, UDim2.fromOffset(70, 2), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(47, 30, 20))
+H.hudCoin = hudText(card, UDim2.fromOffset(70, 25), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(91, 49, 20))
+H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 22), 15, Color3.fromRGB(56, 40, 27))
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
-hullBack.Position = UDim2.fromOffset(70, 82)
-hullBack.Size = UDim2.new(1, -82, 0, 5)
+hullBack.Position = UDim2.fromOffset(72, 76)
+hullBack.Size = UDim2.fromOffset(150, 6)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 2)
@@ -1379,7 +1379,7 @@ hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 2)
-H.hudShip = hudText(card, UDim2.fromOffset(70, 90), UDim2.new(1, -78, 0, 21), 14, Color3.fromRGB(54, 37, 25))
+H.hudShip = hudText(card, UDim2.fromOffset(70, 85), UDim2.new(1, -78, 0, 20), 14, Color3.fromRGB(54, 37, 25))
 -- 글자 그림자: 글자 바깥에 번지는 효과(UIStroke) 대신 같은 글자를 1픽셀 아래에 어둡게 깔아 또렷하게 읽히게 한다.
 function H.shadowOf(label: TextLabel)
 	local sh = label:Clone()
@@ -1513,8 +1513,8 @@ dock.Name = "Dock"
 dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
-dock.Position = UDim2.new(1, -8, 0, 80)
-dock.Size = UDim2.fromOffset(206, 160)
+dock.Position = UDim2.new(1, -8, 0, 4)
+dock.Size = UDim2.fromOffset(206, 150)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
@@ -1529,7 +1529,7 @@ dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 dockGrid.FillDirectionMaxCells = 3
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(206, 160)
+dockLimit.MaxSize = Vector2.new(206, 150)
 dockLimit.Parent = dock
 
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
@@ -1545,46 +1545,27 @@ for i, d in H.DOCK do
 	end)
 end
 
--- 걷기/전경 전환은 왼쪽 카드 아래의 글자 버튼으로 옮겼다.
-do
-	local viewBtn = Instance.new("TextButton")
-	viewBtn.Name = "ViewToggle"
-	viewBtn.BackgroundTransparency = 1
-	viewBtn.Position = UDim2.fromOffset(78, 118)
-	viewBtn.Size = UDim2.fromOffset(120, 26)
-	viewBtn.Font = Enum.Font.GothamBold
-	viewBtn.TextSize = 14
-	viewBtn.TextXAlignment = Enum.TextXAlignment.Left
-	viewBtn.TextColor3 = Color3.fromRGB(255, 218, 120)
-	viewBtn.Text = "걷기로 전환"
-	viewBtn.AutoButtonColor = false
-	viewBtn.Parent = hud
-	H.shadowOf(viewBtn :: any)
-	viewBtn.Activated:Connect(function()
-		overview = not overview
-		viewBtn.Text = if overview then "걷기로 전환" else "전경으로 전환"
-		applyView()
-	end)
-end
-
--- 시스템 · 내 카드 · 자동항해 · 도움말
+-- 시스템 4개(걷기 · 내 카드 · 설정 · 도움말): 시설 6개 바로 아래 한 줄. 자동항해는 항만청 탭에서 한다.
 local render
 local openOptions
+local SYS_Y = 158
 local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정", true)
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -218, 0, 3)
+gear.Position = UDim2.new(1, -78, 0, SYS_Y)
 do
-	local auto = H.hudShortcut(hud, "AutoVoyageButton", "auto", "자동항해", true)
-	auto.AnchorPoint = Vector2.new(1, 0)
-	auto.Position = UDim2.new(1, -78, 0, 3)
-	auto.Activated:Connect(function()
-		player:SetAttribute("ManualHelm", false)
-		openTab("route")
-	end)
 	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
-	help.Position = UDim2.new(1, -8, 0, 3)
+	help.Position = UDim2.new(1, -8, 0, SYS_Y)
 	help.Activated:Connect(function() openOptions(true) end)
+	local walk = H.hudShortcut(hud, "ViewToggle", "view", "걷기", true)
+	walk.AnchorPoint = Vector2.new(1, 0)
+	walk.Position = UDim2.new(1, -218, 0, SYS_Y)
+	walk.Activated:Connect(function()
+		overview = not overview
+		local cap = walk:FindFirstChild("MenuName")
+		if cap then cap.Text = if overview then "걷기" else "전경" end
+		applyView()
+	end)
 end
 gear.Activated:Connect(function()
 	Sfx.play("sfx_click")
@@ -1597,7 +1578,7 @@ do
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -148, 0, 3)
+	deckBtn.Position = UDim2.new(1, -148, 0, 158)
 	local open = nil
 	function H.openDeck()
 		if open then
