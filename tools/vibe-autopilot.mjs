@@ -255,7 +255,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const reports = {}, signals = {};
   for (const g of Object.keys(GAMES)) { reports[g] = readJson(path.join(reportsDir, g + '.json'), null); signals[g] = parseReport(reports[g]); }
   ledger = learn({ ledger, reports, signals });
-  const d = decide({ signals, ledger, queued, heads, gameId: arg('game'), budget: Number(arg('budget') || 1) });
+  const decisionAt = Date.now();
+  const d = decide({ signals, ledger, now: decisionAt, queued, heads, gameId: arg('game'), budget: Number(arg('budget') || 1) });
   console.log('상위 점검 후보:');
   for (const r of d.rows.slice(0, 6)) console.log(` ${r.blocked ? '·' : '▶'} ${r.game} ${r.kind} 점수 ${r.score} — ${r.why}`);
   if (d.skipped) console.log('건너뜀:', d.skipped);
@@ -263,9 +264,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`선택: ${p.game} / ${p.area}`);
     if (run) {
       const r = spawnSync('gh', dispatchPlan(p), { encoding: 'utf8' });
-      if (r.status === 0) ledger = markDispatched(ledger, p, Date.now(), heads[p.game] || ''); else console.log('dispatch 실패:', (r.stderr || '').slice(0, 200));
+      if (r.status === 0) ledger = markDispatched(ledger, p, decisionAt, heads[p.game] || ''); else console.log('dispatch 실패:', (r.stderr || '').slice(0, 200));
     }
   }
+  // [상태] 같은 원장에 마지막 판단 시각을 보존한다. 게임 세이브 및 기존 키는 변경하지 않는다.
+  ledger.lastDecisionAt = decisionAt;
   fs.mkdirSync(path.dirname(ledgerFile), { recursive: true });
   fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2) + '\n');
   const orders = openOrders(ledger);
