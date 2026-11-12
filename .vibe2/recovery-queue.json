@@ -203193,7 +203193,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-11-12T02:41:20.973Z"
+      "updatedAt": "2026-11-12T02:44:48.670Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203414,7 +203414,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-11-12T02:41:20.996Z"
+      "updatedAt": "2026-11-12T02:44:48.695Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -238450,7 +238450,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-11-12T02:41:21.068Z"
+      "updatedAt": "2026-11-12T02:44:48.815Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -239833,7 +239833,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-11-12T02:41:21.135Z"
+      "updatedAt": "2026-11-12T02:44:48.893Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -244897,7 +244897,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-12T02:41:21.045Z"
+      "updatedAt": "2026-11-12T02:44:48.787Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -249770,7 +249770,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-12T02:41:21.021Z"
+      "updatedAt": "2026-11-12T02:44:48.743Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -255074,7 +255074,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-12T02:41:21.090Z"
+      "updatedAt": "2026-11-12T02:44:48.838Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -256678,7 +256678,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-11-12T02:41:21.113Z"
+      "updatedAt": "2026-11-12T02:44:48.871Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -259244,7 +259244,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-25T08:09:24.576Z",
-      "updatedAt": "2026-11-12T02:41:21.158Z"
+      "updatedAt": "2026-11-12T02:44:48.913Z"
     },
     {
       "id": "recovery-a8e7c5b2447563afc90e",
@@ -269119,7 +269119,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-12T02:41:21.180Z"
+      "updatedAt": "2026-11-12T02:44:48.935Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -276162,7 +276162,7 @@
     },
     {
       "id": "recovery-8d9d734fd72cddc1273a",
-      "status": "queued",
+      "status": "blocked-primary-ai-assignment-required",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-43139221729",
@@ -276198,7 +276198,13 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-12T02:11:36.920Z",
-      "updatedAt": "2026-11-12T02:11:36.920Z"
+      "updatedAt": "2026-11-12T02:44:50.279Z",
+      "dispatchEvidence": [
+        "security-recovery-executor-missing",
+        "primary-ai-assignment-required",
+        "primary-ai-repair-file:.github/workflows/owner-mare-essentia-assets.yml",
+        "recovery-dispatch-blocked-at:2026-11-12T02:44:50.279Z"
+      ]
     }
   ]
 }
