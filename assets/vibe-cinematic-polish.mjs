@@ -54,6 +54,18 @@ export function createVibeLightingDirector(THREE,scene,{preset='forest',shadows=
    ]));
    apply(current);
   },
+  // [조명: 기기별 실제 그림자] 화질 등급이 내려가면 광원 수를 늘리지 않고 그림자 비용만 줄인다.
+  setShadowQuality(level='HIGH'){
+   const tier=String(level).toUpperCase();
+   const enabled=Boolean(shadows)&&tier!=='LOW';
+   const resolution=mobile?(tier==='HIGH'?1024:512):(tier==='HIGH'?2048:1024);
+   if(key.castShadow!==enabled||key.shadow.mapSize.x!==resolution){
+    key.castShadow=enabled;
+    key.shadow.mapSize.set(resolution,resolution);
+    if(key.shadow.map){key.shadow.map.dispose();key.shadow.map=null;}
+   }
+   return{enabled,resolution};
+  },
   dispose(){
    for(const light of [hemi,key,fill,rim])scene.remove(light);
    if(scene.fog===fog)scene.fog=oldFog;
@@ -146,6 +158,106 @@ export function createVibeExpressionDirector(face,{blinkSeconds=3.4,transitionSe
   get expression(){return current}
  };
 }
+// [메인: 실제 프레임 예산] 품질 변경을 안정화하고 기존 렌더러 설정을 직접 제어한다.
+export function createVibeRenderQualityController(renderer,{mobile=false,maxPixelRatio=2,minPixelRatio=.8,initialTier='HIGH',onTierChange=null}={}){
+ if(!renderer?.setPixelRatio||!renderer?.shadowMap)throw Error('Three.js renderer required');
+ const limit=Math.max(minPixelRatio,Number(maxPixelRatio)||1),floor=Math.max(.5,Math.min(limit,Number(minPixelRatio)||.8));
+ const tiers=['LOW','MID','HIGH'];let index=Math.max(0,tiers.indexOf(String(initialTier).toUpperCase()));
+ let frames=0,elapsed=0,slowWindows=0,fastWindows=0;
+ const initialShadow=renderer.shadowMap.enabled,initialRatio=renderer.getPixelRatio?.()||limit;
+ const ratios=[Math.max(floor,limit*.6),Math.max(floor,limit*.8),limit];
+ const apply=()=>{
+  const tier=tiers[index],ratio=ratios[index];
+  if(Math.abs((renderer.getPixelRatio?.()||0)-ratio)>.01)renderer.setPixelRatio(ratio);
+  renderer.shadowMap.enabled=initialShadow&&index>0;
+  onTierChange?.(tier);
+  return{tier,ratio};
+ };
+ apply();
+ return{
+  sample(dt,{drawCalls=0}={}){
+   if(!Number.isFinite(dt)||dt<=0)return null;
+   elapsed+=Math.min(.25,dt);frames++;
+   if(elapsed<3)return null;
+   const fps=frames/elapsed,target=mobile?29:55;
+   if(fps<target*.8||drawCalls>450){slowWindows++;fastWindows=0;}
+   else if(fps>target*.98&&drawCalls<250){fastWindows++;slowWindows=0;}
+   else{slowWindows=0;fastWindows=0;}
+   if(slowWindows>=2&&index>0){index--;slowWindows=0;apply();}
+   if(fastWindows>=3&&index<2){index++;fastWindows=0;apply();}
+   frames=0;elapsed=0;
+   return Object.freeze({fps:Number(fps.toFixed(1)),tier:tiers[index],pixelRatio:ratios[index],
+    drawCalls:Number.isFinite(drawCalls)?drawCalls:null,performanceObservationOnly:true});
+  },
+  get tier(){return tiers[index];},
+  dispose(){renderer.shadowMap.enabled=initialShadow;renderer.setPixelRatio(initialRatio);}
+ };
+}
+
+// [메인: 저작권 보호 LOD] 기존 승인된 3D 에셋에 내장된 LOD만 거리로 전환한다. 메쉬 생성 금지.
+export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
+ if(!root?.traverse)throw Error('Model required');
+ const families=new Map();
+ root.traverse(mesh=>{
+  if(!mesh?.isMesh||mesh.isSkinnedMesh||mesh.morphTargetInfluences?.length)return;
+  const match=String(mesh.name||'').match(/^(.*?)[_.-]LOD([0-9]+)$/i);
+  if(!match)return;
+  const key=match[1],level=Number(match[2]);
+  if(!families.has(key))families.set(key,[]);
+  families.get(key).push({mesh,level,visible:mesh.visible});
+ });
+ const groups=[...families.values()].filter(rows=>rows.length>1);
+ for(const group of groups)group.sort((a,b)=>a.level-b.level);
+ const world=new THREE.Vector3(),steps=distances.map(Number);
+ return{
+  groups:groups.length,
+  update(camera){
+   if(!camera?.position||!groups.length)return 0;
+   root.getWorldPosition(world);
+   const distance=world.distanceTo(camera.position);
+   const level=steps.filter(value=>Number.isFinite(value)&&distance>=value).length;
+   for(const group of groups){
+    const selected=group[Math.min(level,group.length-1)];
+    for(const row of group)row.mesh.visible=row===selected&&row.visible;
+   }
+   return groups.length;
+  },
+  reset(){for(const group of groups)for(const row of group)row.mesh.visible=row.visible}
+ };
+}
+
+// [메인: GPU 배칭] 원본 GLB의 직계 자식인 동일 정적 메쉬만 인스턴싱한다.
+// 스킨·모프·애니메이션·개별 상호작용 개체는 절대 배칭하지 않는다.
+export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=false}={}){
+ if(!root?.children||animated)return{batched:0,drawCallsSaved:0,dispose(){}};
+ const groups=new Map(),hidden=[],batches=[];
+ for(const o of root.children){
+  if(!o?.isMesh||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||o.material instanceof Array)continue;
+  if(!o.geometry||!o.material)continue;
+  const key=String(o.geometry.uuid||o.geometry.id)+':'+String(o.material.uuid||o.material.id);
+  if(!groups.has(key))groups.set(key,[]);
+  groups.get(key).push(o);
+ }
+ for(const group of groups.values()){
+  if(group.length<Math.max(2,minimum))continue;
+  const source=group[0],instanced=new THREE.InstancedMesh(source.geometry,source.material,group.length);
+  instanced.name=source.name+'-instances';instanced.castShadow=source.castShadow;
+  instanced.receiveShadow=source.receiveShadow;
+  for(let i=0;i<group.length;i++){
+   const mesh=group[i];mesh.updateMatrix();instanced.setMatrixAt(i,mesh.matrix);
+   hidden.push({mesh,visible:mesh.visible});mesh.visible=false;
+  }
+  instanced.instanceMatrix.needsUpdate=true;
+  instanced.computeBoundingSphere?.();
+  root.add(instanced);batches.push(instanced);
+ }
+ return{
+  batched:hidden.length,drawCallsSaved:hidden.length-batches.length,
+  dispose(){for(const entry of hidden)entry.mesh.visible=entry.visible;
+   for(const batch of batches){root.remove(batch);batch.dispose?.();}}
+ };
+}
+
 // [메인: 실제 화면 품질 판독] WebGL readPixels 관측치를 계산한다. 코드 마커나 추정 화면은 판독 불가.
 // 이 값은 미술감독의 진단 데이터일 뿐, 독립된 골든 씬 심사/배포 PASS 증거가 아니다.
 export function inspectVibeRenderedScene({pixels=null,width=0,height=0,source='',observed=false}={}){
