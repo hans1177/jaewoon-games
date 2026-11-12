@@ -5786,13 +5786,13 @@ function H.buildTitlePreview(root)
 	camera.FieldOfView = 40
 	camera.Parent = preview
 	preview.CurrentCamera = camera
-	local shipName, dockModel, townModel
+	local shipName, dockModel
 	local SHIP_MODELS = {
 		caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-pirate-medium",
 		galleon = "ship-large", paddle_steamer = "ship-pirate-small",
 		ironclad_frigate = "ship-pirate-medium",
 	}
-	local function approvedClone(kind, name, at, span, angle)
+	local function approvedClone(kind, name, at, span, angle, sink)
 		local library = ReplicatedStorage:FindFirstChild("MareAssets")
 		local folder = library and library:FindFirstChild(kind)
 		local original = folder and folder:FindFirstChild(name)
@@ -5811,22 +5811,36 @@ function H.buildTitlePreview(root)
 		if longest < 0.01 then model:Destroy(); return nil end
 		model:ScaleTo(model:GetScale() * span / longest)
 		model:PivotTo(CFrame.new(at) * CFrame.Angles(0, math.rad(angle), 0))
+		-- 바닥면을 물높이(at.Y)에 맞춘다: 모델 중심이 아니라 밑바닥이 수면에 닿게 (둥둥 뜨는 느낌 방지)
+		local cf, size = model:GetBoundingBox()
+		local drop = (cf.Position.Y - size.Y / 2) - at.Y + (sink or 0)
+		model:PivotTo(model:GetPivot() - Vector3.new(0, drop, 0))
+		model:SetAttribute("PivotLift", model:GetPivot().Position.Y - at.Y)
 		model.Parent = world
 		return model
+	end
+	-- 수면: 배 둘레에 은은한 물결 원판을 깔아 배·부두가 물 위에 놓인 것처럼 보이게 한다
+	for i, spec in { { 34, 0.78, Color3.fromRGB(70, 130, 160) }, { 24, 0.6, Color3.fromRGB(110, 170, 185) }, { 15, 0.45, Color3.fromRGB(180, 215, 215) } } do
+		local disc = Instance.new("Part")
+		disc.Shape = Enum.PartType.Cylinder
+		disc.Anchored, disc.CanCollide, disc.CanTouch, disc.CanQuery = true, false, false, false
+		disc.Material = Enum.Material.SmoothPlastic
+		disc.Color = spec[3]
+		disc.Transparency = spec[2]
+		disc.Size = Vector3.new(0.12, spec[1], spec[1])
+		disc.CFrame = CFrame.new(3 + i, -0.55 - i * 0.02, -2) * CFrame.Angles(0, 0, math.pi / 2)
+		disc.Parent = world
 	end
 	H.refreshTitlePreview = function()
 		if not titleGui.Enabled then return end
 		local desired = SHIP_MODELS[view and view.ship and view.ship.id] or "ship-large"
 		if desired ~= shipName then
 			if titleShip then titleShip:Destroy(); titleShip = nil end
-			titleShip = approvedClone("Naval", desired, Vector3.new(0, -0.65, 0), 14, -22)
+			titleShip = approvedClone("Naval", desired, Vector3.new(0, -0.5, 0), 12.5, -22, 0.35)
 			if titleShip then shipName = desired end
 		end
 		if not dockModel then
-			dockModel = approvedClone("Naval", "structure-platform-dock", Vector3.new(11, -2.6, -9), 12, 12)
-		end
-		if not townModel then
-			townModel = approvedClone("Town", "house", Vector3.new(14, -1.8, -14), 8, 10)
+			dockModel = approvedClone("Naval", "structure-platform-dock", Vector3.new(15, -0.5, -4), 10, 78, 0.2)
 		end
 	end
 	task.spawn(function()
@@ -5846,7 +5860,7 @@ function H.buildTitlePreview(root)
 		if not titleGui.Enabled then return end
 		local t = os.clock()
 		if titleShip and titleShip.Parent then
-			titleShip:PivotTo(CFrame.new(0, -0.65 + math.sin(t * 0.9) * 0.12, 0)
+			titleShip:PivotTo(CFrame.new(0, -0.5 + (titleShip:GetAttribute("PivotLift") or 0) + math.sin(t * 0.9) * 0.1, 0)
 				* CFrame.Angles(math.sin(t * 0.5) * 0.016, math.rad(-22) + math.sin(t * 0.16) * 0.10, math.sin(t) * 0.013))
 		end
 		camera.CFrame = CFrame.lookAt(
