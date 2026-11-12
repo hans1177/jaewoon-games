@@ -2,6 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 imported model preview hides world occluders without hiding terrain',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ const world=readFileSync(new URL('../assets/vibe-storybook-cinematics.mjs',import.meta.url),'utf8');
+ assert.match(preview,/activeModel=model;storybookWorld\.setDecorationsVisible\(false\)/);
+ assert.match(world,/setDecorationsVisible\(visible\)\{for\(const prop of props\)prop\.visible=!!visible;for\(const mote of motes\)mote\.mesh\.visible=!!visible\}/);
+ assert.match(world,/root\.add\(ground\)/);
+});
 test('Vibe 5.9 real GLB portrait framing uses both camera frustum axes',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(html,/box\.getBoundingSphere\(new THREE\.Sphere\(\)\)\.radius/);
