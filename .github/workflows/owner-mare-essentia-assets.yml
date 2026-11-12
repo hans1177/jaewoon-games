@@ -77,7 +77,7 @@ jobs:
             for attempt in 1 2 3 4; do
               git fetch --no-tags --depth=32 origin main
               if ! git merge-base --is-ancestor FETCH_HEAD HEAD; then
-                git rebase FETCH_HEAD
+                git rebase --autostash FETCH_HEAD
               fi
               if git push origin HEAD:main; then
                 pushed=true
