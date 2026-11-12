@@ -236,7 +236,8 @@ export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=fal
  if(!root?.children||animated)return{batched:0,drawCallsSaved:0,dispose(){}};
  const groups=new Map(),hidden=[],batches=[];
  for(const o of root.children){
-  if(!o?.isMesh||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||/[._-]LOD[0-9]+$/i.test(o.name||'')||o.material instanceof Array)continue;
+  if(!o?.isMesh||!o.visible||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||
+   o.matrixAutoUpdate===false||o.material?.transparent===true||/[._-]LOD[0-9]+$/i.test(o.name||'')||Array.isArray(o.material))continue;
   if(!o.geometry||!o.material)continue;
   const key=String(o.geometry.uuid||o.geometry.id)+':'+String(o.material.uuid||o.material.id);
   if(!groups.has(key))groups.set(key,[]);
