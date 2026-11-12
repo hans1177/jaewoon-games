@@ -113,15 +113,15 @@
     "pig",
     "llama",
     "dog-pug",
-    "chicken"
+    "chicken",
+    "cat",
+    "elephant"
    ],
    "missing": [
     "goat",
     "donkey",
-    "cat",
     "pigeon",
     "camel",
-    "elephant",
     "turkey"
    ],
    "candidates": [
@@ -131,7 +131,53 @@
    ],
    "sourceFolder": "assets/animals/",
    "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
-   "autoBindWithoutRuntimeProof": false
+   "autoBindWithoutRuntimeProof": false,
+   "regionalUseGuidance": {
+    "cow": [
+     "유럽·아프리카·아시아 농장"
+    ],
+    "horse": [
+     "유럽·오스만·인도양 마차·농장"
+    ],
+    "sheep": [
+     "유럽·오스만 목장"
+    ],
+    "pig": [
+     "지역·종교 관습에 맞는 농가만"
+    ],
+    "llama": [
+     "아메리카 안데스 지역만"
+    ],
+    "dog-pug": [
+     "유럽·아시아 거리·가정, 품종 시대 적합성 별도 확인"
+    ],
+    "chicken": [
+     "전 지역 농촌·시장"
+    ],
+    "cat": [
+     "항구 창고·거리, 고품질 화풍 확인 전 배치 금지"
+    ],
+    "elephant": [
+     "말라바르·인도양의 지역 장식용, 전투·수레에 자동 적용 금지"
+    ],
+    "camel": [
+     "오스만·홍해 지역, 원본 부족으로 아직 미배치"
+    ],
+    "turkey": [
+     "아메리카 및 16세기 이후 유입 지역, 원본 부족"
+    ],
+    "pigeon": [
+     "도시 광장·항구, 원본 부족"
+    ],
+    "donkey": [
+     "유럽·오스만 짐 운반, 원본 부족"
+    ],
+    "goat": [
+     "유럽·지중해·아프리카 목장, 원본 부족"
+    ]
+   },
+   "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
+   "visualQualityStatus": "SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA"
   },
   {
    "id": "mare-harbor-life-props",
@@ -143,7 +189,8 @@
     "wheel",
     "workbench-anvil",
     "cart-high",
-    "workbench-grind"
+    "workbench-grind",
+    "anchor"
    ],
    "alreadyInGameSources": [
     "town/cart.glb",
@@ -155,7 +202,6 @@
    "missing": [
     "fishing-net",
     "net-drying-frame",
-    "anchor",
     "clothesline",
     "kite",
     "play-ball"
@@ -171,7 +217,31 @@
     "wine-prop"
    ],
    "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
-   "autoBindWithoutRuntimeProof": false
+   "autoBindWithoutRuntimeProof": false,
+   "eraScope": "돛단배 항구의 닻·밧줄·그물·양륙 작업이 우선. 현대식 플라스틱·전동 공구·현대 어선 장비는 불허.",
+   "regionalUseGuidance": {
+    "anchor": [
+     "유럽·지중해·인도양 돛단배 항구"
+    ],
+    "fishing-net": [
+     "전통 어업 항구; 아직 미확보"
+    ],
+    "net-drying-frame": [
+     "연안 어촌; 아직 미확보"
+    ],
+    "harbor-crane": [
+     "인력·수동 도르래식만 후보"
+    ],
+    "ship-repair-slipway": [
+     "목조 선박 정비 장소 후보"
+    ],
+    "kite": [
+     "시대·지역 사료에 맞는 어린이 놀이 후보"
+    ],
+    "play-ball": [
+     "가죽·천 등 시대 재질만 후보"
+    ]
+   }
   }
  ],
  "codeReferencesNotRegistered": [],
