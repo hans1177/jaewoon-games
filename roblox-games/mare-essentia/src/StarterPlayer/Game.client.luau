@@ -5165,7 +5165,7 @@ function RENDERERS.battle()
 		equipped = table.clone(lo.equipped)
 	end
 	add(function()
-		return mkRow(content, "사략선 사냥", "바다에서 해적을 찾아 자동 해전을 벌여요 (1일 소요)", {
+		return mkRow(content, "사략선 사냥", "바다에서 해적을 찾아 카드 대결 해전을 벌여요. 카드에서 이기면 승리! (1일 소요)", {
 			{ text = "출격", color = COLORS.red, onClick = function() call("Hunt") end },
 		}, 56)
 	end)

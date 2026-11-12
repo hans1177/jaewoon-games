@@ -333,7 +333,7 @@ function VoyageScene.play(info)
 		modeBadge = Instance.new("TextLabel")
 		modeBadge.Name = "SailModeBadge"
 		modeBadge.AnchorPoint = Vector2.new(0.5, 0)
-		modeBadge.Position = UDim2.new(0.5, 0, 0, 58)
+		modeBadge.Position = UDim2.new(0.5, 0, 1, -84)
 		modeBadge.Size = UDim2.fromOffset(230, 30)
 		modeBadge.BackgroundColor3 = Color3.fromRGB(18, 30, 48)
 		modeBadge.BackgroundTransparency = 0.2
