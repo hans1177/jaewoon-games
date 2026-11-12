@@ -647,12 +647,14 @@ test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
   assert.match(client,/if not RESTRICTED_CARGO_ICON\[goodsId\]/);
   assert.doesNotMatch(client,/SAFE_INGREDIENT_ICON/);
   assert.doesNotMatch(client,/\btobacco\b/);
-  for(const file of ['Ports','Quests','KnowledgeCards','Sites','WorldEvents','HistoryEvents','People','PeopleTalk']){
+  for(const file of ['Ports','Quests','KnowledgeCards','Sites','WorldEvents','HistoryEvents','People','PeopleTalk','Fields']){
     const src=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/'+file+'.luau','utf8');
     assert.doesNotMatch(src,/tobacco|담배|담뱃/i,file);
   }
   const state=fs.readFileSync(root+'/src/ServerScriptService/Services/State.luau','utf8');
   assert.match(state,/goodId == "tobacco"/);
+  const sites=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  assert.doesNotMatch(sites,/am_peace_pipe/);
   assert.match(state,/s\.coins = math\.min\(1e9, s\.coins \+/);
   // 제한 품목의 차단된 전용 이미지·새 모델을 재등록하지 않는다.
   for(const id of ['beer','sake','rum','wine']){
