@@ -46,6 +46,16 @@ fi
 echo "== 에셋 등록 검사 =="
 python3 "$ROOT/tools/devloop/asset_check.py" "$ROOT"
 
+# 클라이언트가 실제로 컴파일되는지(지역 변수 200개 한도·병합 충돌 표식 포함) 확인한다
+COMPILE="${LUAU_DIR:+$LUAU_DIR/}luau-compile"
+if grep -n '^<<<<<<<\|^>>>>>>>' "$ROOT"/src/StarterPlayer/*.luau "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$ROOT"/src/ServerScriptService/*.luau "$ROOT"/src/ServerScriptService/Services/*.luau; then
+  echo "병합 충돌 표식이 남아 있어요"; exit 1
+fi
+if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
+  echo "== 클라이언트 컴파일 검사 =="
+  "$COMPILE" --null "$ROOT/src/StarterPlayer/Game.client.luau" >/dev/null
+fi
+
 echo "== 타입 검사 =="
 "$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/tactics.test.luau"
 echo "OK"

@@ -240,6 +240,18 @@ local Companions: { Companion } = {
 		summary = "항구에서 만난 낭인 무사. 포격 +8%",
 		perk = { cannonMult = 0.08 },
 		battleLine = "칼은 바다에서도 무뎌지지 않소!", winLine = "승패는 병가지상사. 하지만 오늘은 이겼소." },
+	{ id = "n_china", name = "선원 출신 린", scholarId = "", role = "정크선 선원", fee = 0, minFame = 0, nation = "china",
+		summary = "정크선에서 자란 노련한 선원. 되파는 비율 +2%",
+		perk = { sellBonus = 0.02 },
+		battleLine = "돛은 접고 포는 열어라!", winLine = "바다는 넓고 장사는 길다오." },
+	{ id = "n_spain", name = "은 광산 출신 알론소", scholarId = "", role = "갤리온 포수", fee = 0, minFame = 0, nation = "spain",
+		summary = "은 함대에서 포를 다룬 사내. 포격 +7%",
+		perk = { cannonMult = 0.07 },
+		battleLine = "산 하나를 무너뜨린 손이오, 배쯤이야!", winLine = "은보다 무거운 승리요." },
+	{ id = "n_korea", name = "수군 출신 박 도현", scholarId = "", role = "판옥선 수군", fee = 0, minFame = 0, nation = "korea",
+		summary = "남해를 지킨 수군 출신. 포격 +6%",
+		perk = { cannonMult = 0.06 },
+		battleLine = "물길은 제 손바닥입니다, 선장님!", winLine = "바다를 아는 쪽이 이깁니다." },
 	{ id = "n_new_spain", name = "광부 출신 마테오", scholarId = "", role = "광산 출신 선원", fee = 0, minFame = 0, nation = "new_spain",
 		summary = "광산에서 단련된 힘센 선원. 포격 +6%",
 		perk = { cannonMult = 0.06 },
@@ -275,6 +287,7 @@ local CompanionStation: { [string]: string } = {
 	t_helmsman = "helm", t_mate = "mate", t_boatswain = "boatswain", t_master_gunner = "gunner",
 	n_england = "scholar", n_netherlands = "mate", n_france = "mate", n_portugal = "helm", n_ottoman = "mate",
 	n_swahili = "boatswain", n_malabar = "boatswain", n_japan = "boatswain", n_new_spain = "boatswain",
+	n_china = "mate", n_spain = "gunner", n_korea = "gunner",
 }
 
 local CompanionById: { [string]: Companion } = {}
@@ -349,7 +362,7 @@ for power, list in PowerCountries do
 	end
 end
 -- 게임 속 출신 국가 → 세력 (누에바 에스파냐는 에스파냐 편)
-local NationPower = { new_spain = "spain" }
+local NationPower = { new_spain = "spain", korea = "china" }
 
 -- 전쟁: a 편과 b 편의 세력들, 시작·끝 해(from~to). 전쟁 중에는 양쪽 세력의 항구에서 무기·건축 자재 수요가 늘고,
 -- 우리 세력과 싸우는 나라의 항구에 들어가면 입항세를 문다.

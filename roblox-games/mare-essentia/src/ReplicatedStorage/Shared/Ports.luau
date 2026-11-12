@@ -835,7 +835,7 @@ local Nations: { [string]: Nation } = {
 	england = {
 		id = "england", name = "영국", startPort = "london",
 		summary = "항해술 우수 (항해 속도 +5%)",
-		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
+		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
 	},
 	netherlands = {
 		id = "netherlands", name = "네덜란드", startPort = "amsterdam",
@@ -850,12 +850,12 @@ local Nations: { [string]: Nation } = {
 	denmark = {
 		id = "denmark", name = "덴마크", startPort = "copenhagen",
 		summary = "북해 해군 전통 (전투 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2, hidden = true,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2,
 	},
 	sweden = {
 		id = "sweden", name = "스웨덴", startPort = "gothenburg",
 		summary = "자연 연구 (모험 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1, hidden = true,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1,
 	},
 	venice = {
 		id = "venice", name = "베네치아 공화국", startPort = "venice",
@@ -886,6 +886,21 @@ local Nations: { [string]: Nation } = {
 		id = "new_spain", name = "누에바 에스파냐", startPort = "veracruz",
 		summary = "신대륙 탐험 (모험 경험 +25%) · 신대륙 시작",
 		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.25, battleXpMult = 1,
+	},
+	china = {
+		id = "china", name = "중국", startPort = "canton",
+		summary = "비단과 도자기의 제국 (판매 비율 +3%) · 극동 시작",
+		speedMult = 1, sellBonus = 0.03, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
+	},
+	spain = {
+		id = "spain", name = "에스파냐", startPort = "seville",
+		summary = "은 함대의 나라 (시작 코인 +150, 전투 경험 +10%)",
+		speedMult = 1, sellBonus = 0, startCoins = 150, adventureXpMult = 1, battleXpMult = 1.1,
+	},
+	korea = {
+		id = "korea", name = "조선", startPort = "busan",
+		summary = "거북선의 후예 (전투 경험 +15%, 항해 속도 +2%) · 극동 시작",
+		speedMult = 1.02, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.15,
 	},
 	portugal = {
 		id = "portugal", name = "포르투갈", startPort = "lisbon",
