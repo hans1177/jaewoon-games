@@ -25,7 +25,8 @@ jobs:
       github.repository == 'hans1177/jaewoon-games' &&
       vars.VIBE_AUTOPILOT != 'off' &&
       (github.event_name != 'workflow_run' ||
-       github.event.workflow_run.path == '.github/workflows/devloop-studio.yml' ||
+       (github.event.workflow_run.path == '.github/workflows/devloop-studio.yml' &&
+        github.event.action == 'completed') ||
        (github.event.workflow_run.path == '.github/workflows/company-system-ai-workers.yml' &&
         (github.event.action == 'requested' || github.event.workflow_run.conclusion == 'success') &&
         github.event.workflow_run.head_branch == 'main'))
