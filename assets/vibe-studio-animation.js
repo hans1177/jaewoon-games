@@ -30,10 +30,18 @@ export function makeAttackTimeline({windup=.25,active=.12,recovery=.35,hitMarker
    if(started===null)return{phase:'IDLE',events:[]};
    const elapsed=Math.max(0,now-started),events=[];
    let phase='WINDUP';
-   if(elapsed>=windup&&elapsed<windup+active){
-    phase='ACTIVE';
-    for(let i=0;i<hitMarkers.length;i++)if(elapsed>=windup+hitMarkers[i]&&!emitted.has(i)){emitted.add(i);events.push({type:'HIT',marker:i,time:started+windup+hitMarkers[i]});}
-   }else if(elapsed>=windup+active)phase='RECOVERY';
+   // [메인: 공격 모션] 프레임이 ACTIVE 구간을 건너뛰어도 실제 정의된 히트 마커를 누락하지 않는다.
+   // 이벤트는 타임라인 마커 시각으로 전달하고 중복 발행하지 않는다. 피해 판정은 기존 권한 흐름이 담당한다.
+   if(elapsed>=windup){
+    for(let i=0;i<hitMarkers.length;i++){
+     const markerTime=windup+hitMarkers[i];
+     if(elapsed>=markerTime&&!emitted.has(i)){
+      emitted.add(i);events.push({type:'HIT',marker:i,time:started+markerTime});
+     }
+    }
+    events.sort((a,b)=>a.time-b.time||a.marker-b.marker);
+    phase=elapsed<windup+active?'ACTIVE':'RECOVERY';
+   }
    if(elapsed>=windup+active+recovery){started=null;phase='IDLE';events.push({type:'COMPLETE',time:now});}
    return{phase,events,elapsed};
   },
