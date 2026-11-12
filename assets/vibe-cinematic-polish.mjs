@@ -209,18 +209,20 @@ export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
   if(!byName.has(key))byName.set(key,[]);
   byName.get(key).push({mesh,level:Number(match[2]),visible:mesh.visible});
  });
- const groups=[...families.values()].flatMap(value=>[...value.values()])
-  .filter(rows=>new Set(rows.map(row=>row.level)).size>1)
-  .map(rows=>({rows,levels:[...new Set(rows.map(row=>row.level))].sort((a,b)=>a-b)}));
- const world=new THREE.Vector3(),steps=distances.map(Number);
+ const groups=[...families.entries()].flatMap(([parent,value])=>[...value.values()].map(rows=>({parent,rows})))
+  .filter(group=>new Set(group.rows.map(row=>row.level)).size>1)
+  .map(group=>({...group,levels:[...new Set(group.rows.map(row=>row.level))].sort((a,b)=>a-b)}));
+ const world=new THREE.Vector3(),steps=distances.map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
  return{
   groups:groups.length,
   update(camera){
    if(!camera?.position||!groups.length)return 0;
-   root.getWorldPosition(world);
-   const distance=world.distanceTo(camera.position);
-   const step=steps.filter(value=>Number.isFinite(value)&&distance>=value).length;
    for(const group of groups){
+    // [메쉬 LOD] 맵 전체 중심이 아니라 실제 해당 원본 메쉬 부모까지의 거리로 선택한다.
+    const origin=group.parent?.getWorldPosition?group.parent:root;
+    origin.getWorldPosition(world);
+    const distance=world.distanceTo(camera.position);
+    const step=steps.filter(value=>distance>=value).length;
     const level=group.levels[Math.min(step,group.levels.length-1)];
     // LOD 보조 메쉬는 제작 시 숨겨져 있어도 선택된 레벨에서 보여야 한다. reset은 원래 가시성 복원.
     for(const row of group.rows)row.mesh.visible=row.level===level;
@@ -240,7 +242,10 @@ export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=fal
   if(!o?.isMesh||!o.visible||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||
    o.matrixAutoUpdate===false||o.material?.transparent===true||/[._-]LOD[0-9]+$/i.test(o.name||'')||Array.isArray(o.material))continue;
   if(!o.geometry||!o.material)continue;
-  const key=String(o.geometry.uuid||o.geometry.id)+':'+String(o.material.uuid||o.material.id);
+  // [GPU 배칭] 개별 조명 그림자·레이어·렌더 순서가 다르면 절대 한 호출로 합치지 않는다.
+  const key=[o.geometry.uuid||o.geometry.id,o.material.uuid||o.material.id,
+   Number(Boolean(o.castShadow)),Number(Boolean(o.receiveShadow)),o.renderOrder??0,
+   o.layers?.mask??1,Number(o.frustumCulled!==false)].join(':');
   if(!groups.has(key))groups.set(key,[]);
   groups.get(key).push(o);
  }
@@ -249,6 +254,9 @@ export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=fal
   const source=group[0],instanced=new THREE.InstancedMesh(source.geometry,source.material,group.length);
   instanced.name=source.name+'-instances';instanced.castShadow=source.castShadow;
   instanced.receiveShadow=source.receiveShadow;
+  instanced.renderOrder=source.renderOrder??0;
+  instanced.frustumCulled=source.frustumCulled!==false;
+  if(instanced.layers&&source.layers)instanced.layers.mask=source.layers.mask;
   for(let i=0;i<group.length;i++){
    const mesh=group[i];mesh.updateMatrix();instanced.setMatrixAt(i,mesh.matrix);
    hidden.push({mesh,visible:mesh.visible});mesh.visible=false;

@@ -234,6 +234,48 @@ test('Vibe 5.9 authored LOD activates initially hidden lower-detail geometry and
  assert.equal(low.visible,false);
 });
 
+test('Vibe 5.9 LOD selection uses the individual authored object world position',()=>{
+ class Vec3{set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(v){return Math.hypot(this.x-v.x,this.y-v.y,this.z-v.z)}}
+ const parentNear={getWorldPosition(v){return v.set(0,0,0)}};
+ const parentFar={getWorldPosition(v){return v.set(100,0,0)}};
+ const rows=[];
+ for(const parent of [parentNear,parentFar])for(let level=0;level<2;level++)
+  rows.push({parent,isMesh:true,name:'Tree_LOD'+level,visible:true});
+ const root={traverse(fn){rows.forEach(fn)},getWorldPosition(v){return v.set(0,0,0)}};
+ const lod=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[10]});
+ assert.equal(lod.groups,2);
+ lod.update({position:{x:0,y:0,z:0}});
+ assert.deepEqual(rows.map(r=>r.visible),[true,false,false,true]);
+ lod.update({position:{x:100,y:0,z:0}});
+ assert.deepEqual(rows.map(r=>r.visible),[false,true,true,false]);
+ lod.reset();assert.ok(rows.every(r=>r.visible));
+});
+
+test('Vibe 5.9 static batching preserves shadow, layer, render-order and culling differences',()=>{
+ class InstancedMesh{
+  constructor(geometry,material,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.layers={mask:1};this.matrices=[]}
+  setMatrixAt(i,m){this.matrices[i]=m}dispose(){}
+ }
+ const geometry={uuid:'geo'},material={uuid:'mat'};
+ const make=(i,opts={})=>({name:'Stone'+i,isMesh:true,visible:true,geometry,material,
+  castShadow:true,receiveShadow:false,renderOrder:0,layers:{mask:1},frustumCulled:true,
+  updateMatrix(){},matrix:{i},...opts});
+ const grouped=Array.from({length:4},(_,i)=>make(i));
+ const mismatched=[make(5,{castShadow:false}),make(6,{layers:{mask:2}}),
+  make(7,{renderOrder:12}),make(8,{frustumCulled:false})];
+ const original=[...grouped,...mismatched];
+ const root={children:[...original],add(o){this.children.push(o)},remove(o){this.children.splice(this.children.indexOf(o),1)}};
+ const batch=batchVibeExistingStaticMeshes({InstancedMesh},root,{minimum:4});
+ assert.equal(batch.batched,4);
+ assert.equal(batch.drawCallsSaved,3);
+ assert.ok(grouped.every(r=>!r.visible));
+ assert.ok(mismatched.every(r=>r.visible));
+ const merged=root.children.at(-1);
+ assert.equal(merged.castShadow,true);assert.equal(merged.receiveShadow,false);
+ assert.equal(merged.layers.mask,1);assert.equal(merged.renderOrder,0);assert.equal(merged.frustumCulled,true);
+ batch.dispose();assert.ok(original.every(r=>r.visible));assert.equal(root.children.length,8);
+});
+
 test('Vibe 5.9 batches only repeated nonanimated static source meshes and disposes safely',()=>{
  class InstancedMesh{
   constructor(geo,mat,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.matrices=[]}
