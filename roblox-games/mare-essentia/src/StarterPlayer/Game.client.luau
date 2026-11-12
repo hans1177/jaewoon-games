@@ -156,17 +156,25 @@ local function mkLabel(parent, text, size, color, bold, order)
 	return l
 end
 
--- 교역품: 상품 ID마다 전용 고해상도 그림을 사용한다. 다른 물건의 모델을 대체 표시하지 않는다.
+-- 교역품: 일반 상품은 승인된 전용 원본을 쓴다. 표현 제한 상품만 기존 중립 화물 외형을 사용한다.
 local GOOD_ICON = {}
--- [내용 검수] 주류 자체를 묘사하지 않고 승인된 원료(보리·홉, 벼 이삭)만 표시한다.
--- 해당 이미지가 아직 체험에 등록되지 않았으면 일반 교역 아이콘을 사용한다.
-local SAFE_INGREDIENT_ICON = { beer = "beer_grain", sake = "sake_rice" }
+-- [표현 제한] 술 4종은 동일한 승인 나무통 메시의 색상만 변경한다.
+-- 담배는 상품·흡연 도구를 묘사하지 않는 기존 무표시 포대를 쓴다. 교역 규칙과 저장 ID는 유지한다.
+-- Roblox 연령/지역 제한 및 표현 검수는 외형 변경만으로 면제되지 않는다.
+local RESTRICTED_CARGO_ICON = {
+	beer = { "Cargo", "barrel", Color3.fromRGB(174, 115, 48) }, -- 맥주: 황토색
+	sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, -- 청주: 미색
+	wine = { "Cargo", "barrel", Color3.fromRGB(112, 45, 64) }, -- 와인: 자주색
+	rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) }, -- 럼주: 진갈색
+	tobacco = { "Cargo", "bag", Color3.fromRGB(101, 106, 94) }, -- 담배: 무표시 회녹색 포대
+}
 for id in PortData.Goods do
-	local ingredient = SAFE_INGREDIENT_ICON[id]
-	if ingredient then
-		GOOD_ICON[id] = if AssetIds["Goods/" .. ingredient] then { "Goods", ingredient } else { "Menu", "trade" }
+	local neutral = RESTRICTED_CARGO_ICON[id]
+	if neutral then
+		-- 기존 허가된 메시가 보이지 않으면 제한 품목 전용 이미지 대신 일반 교역 표시를 유지한다.
+		GOOD_ICON[id] = if AssetIds[neutral[1] .. "/" .. neutral[2]] then neutral else { "Menu", "trade" }
 	else
-		GOOD_ICON[id] = if id == "wine" or id == "tobacco" then { "Menu", "trade" } else { "Goods", id }
+		GOOD_ICON[id] = { "Goods", id }
 	end
 end
 -- 승인된 그림이 없는 상품 중, 같은 물건의 3D 모델이 있는 것은 그것을 쓴다
@@ -179,12 +187,8 @@ for id, spec in {
 	kauri = { "Cargo", "wood-log-a", Color3.fromRGB(176, 132, 82) }, logwood = { "Cargo", "wood-log-a", Color3.fromRGB(120, 50, 70) },
 	brazilwood = { "Cargo", "wood-log-a", Color3.fromRGB(160, 62, 48) }, sandalwood = { "Cargo", "wood-log-a", Color3.fromRGB(190, 150, 96) },
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
-	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel", Color3.fromRGB(104, 62, 36) },
+	palm_oil = { "Cargo", "barrel-open" },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
-	-- 주류 묘사는 Roblox 기준상 제한되어, 술병·술잔 대신 재료(포도·보리·벼) 그림으로 보여 준다
-	-- 술 종류는 모두 나무통으로 통일하고 색만 달리한다 (주류 묘사 제한)
-	-- 제한된 주류 원료 그림(beer/sake)은 SAFE_INGREDIENT_ICON의 승인 이미지를 유지한다.
-	wine = { "Cargo", "barrel", Color3.fromRGB(112, 32, 54) },
 } do
 	GOOD_ICON[id] = spec
 end
@@ -203,9 +207,9 @@ for goodsId, cargoAsset in {
 end
 -- [교역품 자동 3D 연결] 기존 등록기가 동일 상품 이름으로 만든 전용 Cargo 모델을 인식한다.
 -- 체험 권한·원본 검증은 기존 업로더와 서버 AssetLoader가 담당한다. 미등록은 승인 원화 유지.
--- 제한 상품은 원료 아이콘 정책을 유지하고, 타 상품 메시로 대체하지 않는다.
+-- 제한 상품은 위 RESTRICTED_CARGO_ICON의 승인된 중립 화물 표현을 유지한다.
 for goodsId in PortData.Goods do
-	if not SAFE_INGREDIENT_ICON[goodsId] and goodsId ~= "wine" and goodsId ~= "rum" and goodsId ~= "tobacco"
+	if not RESTRICTED_CARGO_ICON[goodsId]
 		and AssetIds["Cargo/" .. goodsId] and AssetIds["Goods/" .. goodsId] then
 		GOOD_ICON[goodsId] = { "Cargo", goodsId, nil, "Goods/" .. goodsId }
 	end
