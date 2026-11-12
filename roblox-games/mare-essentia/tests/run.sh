@@ -72,7 +72,7 @@ echo "== 문화권 표 검사 =="
 
 echo "== 항구 스모크 빌드 =="
 SM="$TMP/smoke"; mkdir -p "$SM"
-cp "$ROOT"/src/ReplicatedStorage/Shared/{Ports,AssetIds,PortBuildings}.luau "$SM/"
+cp "$ROOT"/src/ReplicatedStorage/Shared/{Ports,AssetIds,PortBuildings,Voyage}.luau "$SM/"
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$SM"/Ports.luau
 cp "$ROOT"/tests/mockstate.luau "$ROOT"/tests/smoke_portscene.luau "$SM/"
 { cat "$ROOT/tests/smoke_prelude.luau"; sed 1d "$ROOT"/src/ReplicatedStorage/Shared/PortCultures.luau; } > "$SM/PortCultures.luau"
