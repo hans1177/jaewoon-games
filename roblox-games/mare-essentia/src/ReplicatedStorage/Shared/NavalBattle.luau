@@ -6,11 +6,30 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local NavalBattle = {}
 
 local ORIGIN = Vector3.new(6000, 0, 0)
+
+-- 접현 카드 원화와 등록 모델
+local CARD_SEA = "CardArt/event_calm_seas"
+local CARD_STORM = "CardArt/event_storm"
+local CARD_FIRE = "CardArt/event_harbor_fire"
+local CARD_MODELS = {
+	sword = { "Relics", "weapon-sword", "swing" },
+	spear = { "Relics", "weapon-spear", "swing" },
+	cannon = { "Naval", "cannon", "recoil" },
+	shieldman = { "Relics", "shield-round", "brace" },
+	swivel = { "Naval", "cannon-mobile", "recoil" },
+	hero_captain = { "Naval", "ship-small", "swell" },
+	surgeon = { "Cargo", "mortar-pestle", "brace" },
+	hero_medic = { "Cargo", "mortar-pestle", "brace" },
+	fog = { "Naval", "ship-small", "swell" },
+	storm = { "Naval", "ship-small", "swell" },
+	clear = { "Naval", "ship-small", "swell" },
+}
 
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
@@ -602,6 +621,7 @@ function NavalBattle.play(opts)
 		local auto = false
 		local playing = false
 		local selected
+		local stopCardMotion
 		local rowTargets = { me = {}, foe = {} }
 		local function afterAction(ok, msg, res)
 			if not ok then
@@ -649,7 +669,98 @@ function NavalBattle.play(opts)
 		end
 		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
 
+		-- 한 번에 선택한 카드 한 장의 원화와 모델만 움직인다.
+		local function animateCardArt(art, image, card)
+			local spec = CARD_MODELS[card.id] or CARD_MODELS[card.weapon]
+			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
+			local group = spec and assets and assets:FindFirstChild(spec[1])
+			local template = group and group:FindFirstChild(spec[2])
+			local view, model, center, bounds, pivot
+			if template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true) then
+				view = Instance.new("ViewportFrame")
+				view.Size = UDim2.fromScale(1, 1)
+				view.BackgroundTransparency = 1
+				view.Ambient = Color3.fromRGB(156, 161, 174)
+				view.LightColor = Color3.fromRGB(255, 231, 187)
+				view.LightDirection = Vector3.new(-1, -1, -0.5).Unit
+				view.ZIndex = image.ZIndex + 1
+				view.Parent = art
+				model = template:Clone()
+				model.Parent = view
+				local box
+				box, bounds = model:GetBoundingBox()
+				center = box.Position
+				pivot = model:GetPivot()
+				local cam = Instance.new("Camera")
+				cam.FieldOfView = 34
+				local distance = math.max(bounds.Magnitude, 0.1) * 1.85
+				cam.CFrame = CFrame.lookAt(center + Vector3.new(0.85, 0.48, 1).Unit * distance, center)
+				cam.Parent = view
+				view.CurrentCamera = cam
+			end
+
+			local light = Instance.new("Frame")
+			light.Size = UDim2.fromScale(1, 1)
+			light.BackgroundColor3 = if card.id == "scorch" or card.row == "cannon" then Color3.fromRGB(255, 166, 78)
+				elseif card.id == "fog" or card.id == "storm" then Color3.fromRGB(192, 212, 239)
+				else Color3.fromRGB(255, 229, 173)
+			light.BorderSizePixel = 0
+			light.BackgroundTransparency = 0.65
+			light.ZIndex = image.ZIndex + 2
+			light.Parent = art
+			local sweep = Instance.new("UIGradient")
+			sweep.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.43, 1),
+				NumberSequenceKeypoint.new(0.53, 0), NumberSequenceKeypoint.new(0.7, 1),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			sweep.Rotation = 28
+			sweep.Parent = light
+
+			local elapsed, lastUpdate = 0, -1
+			local motion
+			local destroying
+			local function stop()
+				motion:Disconnect()
+				destroying:Disconnect()
+				image.Position = UDim2.fromScale(0.5, 0.5)
+				if view then view:Destroy() end
+				light:Destroy()
+			end
+			motion = RunService.RenderStepped:Connect(function(dt)
+				elapsed += dt
+				if elapsed - lastUpdate < 1 / 30 then return end
+				lastUpdate = elapsed
+				local cycle = elapsed % 2
+				local strike = math.sin(math.pi * math.clamp(cycle / 0.5, 0, 1))
+				image.Position = UDim2.fromScale(0.5 + 0.048 * math.sin(elapsed * 1.8), 0.5 + 0.035 * math.cos(elapsed * 2.1))
+				sweep.Offset = Vector2.new(cycle - 1, 0)
+				light.BackgroundTransparency = 0.7 - 0.3 * strike
+				if not model then return end
+				local roll, recoil = 0, 0
+				if spec[3] == "swing" then
+					roll = -0.52 * strike
+				elseif spec[3] == "recoil" then
+					recoil = -bounds.Magnitude * 0.11 * strike
+				elseif spec[3] == "swell" then
+					roll = 0.13 * math.sin(elapsed * 3.2)
+				else
+					roll = 0.12 * strike
+				end
+				model:PivotTo(CFrame.new(center + Vector3.new(recoil, 0, recoil))
+					* CFrame.Angles(0, 0.25 * math.sin(elapsed * 2.3), roll) * CFrame.new(-center) * pivot)
+			end)
+			destroying = art.Destroying:Connect(function()
+				motion:Disconnect()
+			end)
+			return stop
+		end
+
 		render = function()
+			if stopCardMotion then
+				stopCardMotion()
+				stopCardMotion = nil
+			end
 			selected = nil
 			for _, ch in boardFrame:GetChildren() do
 				ch:Destroy()
@@ -711,7 +822,29 @@ function NavalBattle.play(opts)
 				b.BorderSizePixel = 0
 				b.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
 				local sub = if c.special then c.text else string.format("%s %s%s", ROW_ICON[c.row], BC.ROW_NAME[c.row], if c.ability then " · " .. (ABIL[c.ability] or "") else "")
-				b.Text = string.format("%s\n%s\n%s", c.name, tostring(c.power or "✦"), sub)
+				b.Text = ""
+				local art = Instance.new("Frame")
+				art.Name = "Artwork"
+				art.Archivable = false
+				art.Position = UDim2.fromOffset(3, 3)
+				art.Size = UDim2.new(1, -6, 0.65, -3)
+				art.BackgroundColor3 = Color3.fromRGB(31, 45, 56)
+				art.BorderSizePixel = 0
+				art.ClipsDescendants = true
+				art.Parent = b
+				local image = Instance.new("ImageLabel")
+				image.AnchorPoint = Vector2.new(0.5, 0.5)
+				image.Position = UDim2.fromScale(0.5, 0.5)
+				image.Size = UDim2.fromScale(1.17, 1.17)
+				image.BackgroundTransparency = 1
+				image.ScaleType = Enum.ScaleType.Crop
+				local artKey = if c.id == "scorch" then CARD_FIRE elseif c.id == "storm" or c.id == "fog" or c.id == "melee_fog" then CARD_STORM else CARD_SEA
+				image.Image = "rbxassetid://" .. AssetIds[artKey]
+				image.Parent = art
+				local caption = label(b, string.format("%s  %s", c.name, tostring(c.power or "✦")), 13, Color3.fromRGB(250, 236, 200), true)
+				caption.Position = UDim2.fromScale(0.04, 0.65)
+				caption.Size = UDim2.fromScale(0.92, 0.35)
+				caption.TextScaled = true
 				b.Parent = handFrame
 				local cc = Instance.new("UICorner")
 				cc.CornerRadius = UDim.new(0, 8)
@@ -730,6 +863,8 @@ function NavalBattle.play(opts)
 							TweenService:Create(selected, TweenInfo.new(0.12), { Rotation = 0 }):Play()
 							selected.UIStroke.Color = Color3.fromRGB(162, 120, 66)
 						end
+						if stopCardMotion then stopCardMotion() end
+						stopCardMotion = animateCardArt(art, image, c)
 						selected = b
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
@@ -753,6 +888,7 @@ function NavalBattle.play(opts)
 					flight.Position = UDim2.fromOffset(start.X, start.Y)
 					flight.ZIndex = 20
 					flight.Parent = bg
+					art.Parent = flight
 					b.Visible = false
 					local flightTween = TweenService:Create(flight, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 						Position = UDim2.fromOffset(finishAt.X, finishAt.Y),
@@ -765,6 +901,7 @@ function NavalBattle.play(opts)
 					if finished or not g.Parent then
 						return
 					end
+					art.Parent = b
 					flight:Destroy()
 					b.Visible = true
 					afterAction(BC.play(m, "me", i))
