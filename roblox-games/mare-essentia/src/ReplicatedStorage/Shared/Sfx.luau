@@ -5,6 +5,7 @@ local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 
 local IDS = require(script.Parent:WaitForChild("AudioIds"))
+local Regions = require(script.Parent:WaitForChild("Regions"))
 
 -- 기본 음량 (0~1)
 local VOLUME = {
@@ -100,6 +101,103 @@ function Sfx.music(name)
 	s:Play()
 	TweenService:Create(s, TweenInfo.new(2), { Volume = target }):Play()
 	currentMusic = s
+end
+
+
+-- 지역·국가·이벤트 선곡은 기존 음악 재생기로만 처리한다.
+-- 음원 ID가 실제 등록되지 않은 이름은 반드시 기존 승인된 곡으로 되돌린다.
+local function firstReady(...)
+	for i = 1, select("#", ...) do
+		local name = select(i, ...)
+		if name and IDS[name] then
+			return name
+		end
+	end
+	return nil
+end
+
+-- 현재 항구의 나라 → 해역 → 기존 항구·교역소 BGM 순으로 적용.
+function Sfx.portMusic(port, market)
+	if not port then
+		Sfx.music(if market then "music_market" else "music_harbor")
+		return
+	end
+	local region = Regions.of(port).id
+	local country = tostring(port.country or "")
+	local portId = tostring(port.id or "")
+	if market then
+		Sfx.music(firstReady("music_market_port_" .. portId, "music_market_nation_" .. country,
+			"music_market_region_" .. region, "music_market"))
+	else
+		Sfx.music(firstReady("music_port_" .. portId, "music_nation_" .. country,
+			"music_region_" .. region, "music_harbor"))
+	end
+end
+
+-- 대사·스토리 장면별 선곡. 해적 사건은 검증된 CC0 원본 기반 음원이 등록되면 우선 사용한다.
+function Sfx.storyMusic(ev)
+	local art = tostring(ev.art or "harbor")
+	local identity = tostring(ev.id or "") .. " " .. tostring(ev.chapter or "")
+	if string.find(identity, "pirate", 1, true) or string.find(identity, "해적", 1, true)
+		or string.find(identity, "사략", 1, true) then
+		return firstReady("music_pirate", "music_battle")
+	end
+	local base = ({
+		tavern = "music_market", storm = "music_battle", palace = "music_harbor",
+		library = "music_harbor", observatory = "music_sea", ruins = "music_sea",
+		harbor = "music_harbor",
+	})[art] or "music_harbor"
+	return firstReady("music_story_" .. art, "music_story_nation_" .. tostring(ev.nation or ""), base)
+end
+
+function Sfx.storyCue(ev)
+	local art = tostring(ev.art or "harbor")
+	local base = ({
+		tavern = "sfx_creak", storm = "sfx_horn", palace = "sfx_bell",
+		library = "sfx_creak", observatory = "sfx_bell", ruins = "sfx_creak",
+		harbor = "sfx_horn",
+	})[art] or "sfx_bell"
+	return firstReady("sfx_story_" .. art, base)
+end
+
+-- 실제 역사 사건의 성격으로 전환한다. 게임 이벤트의 날짜·보상·결과는 바꾸지 않는다.
+function Sfx.historyMusic(ev)
+	local tag = tostring(ev.tag or "")
+	if string.find(tag, "전쟁", 1, true) then
+		return firstReady("music_history_war", "music_battle")
+	elseif string.find(tag, "재난", 1, true) or string.find(tag, "화재", 1, true) then
+		return firstReady("music_history_disaster", "music_battle")
+	elseif string.find(tag, "무역", 1, true) or string.find(tag, "경제", 1, true) then
+		return firstReady("music_history_trade", "music_market")
+	elseif string.find(tag, "학문", 1, true) or string.find(tag, "문화", 1, true) then
+		return firstReady("music_history_discovery", "music_harbor")
+	elseif string.find(tag, "탐험", 1, true) then
+		return firstReady("music_history_exploration", "music_sea")
+	end
+	return firstReady("music_history", "music_sea")
+end
+
+function Sfx.historyCue(ev)
+	local tag = tostring(ev.tag or "")
+	if string.find(tag, "전쟁", 1, true) then
+		return firstReady("sfx_event_war", "sfx_cannon")
+	elseif string.find(tag, "재난", 1, true) or string.find(tag, "화재", 1, true) then
+		return firstReady("sfx_event_danger", "sfx_horn")
+	elseif string.find(tag, "탐험", 1, true) or string.find(tag, "발견", 1, true) then
+		return firstReady("sfx_event_discovery", "sfx_fanfare")
+	elseif string.find(tag, "경제", 1, true) or string.find(tag, "무역", 1, true) then
+		return firstReady("sfx_event_trade", "sfx_coin")
+	end
+	return firstReady("sfx_event_notice", "sfx_bell")
+end
+
+-- 불가사의 발견 화면의 특별 곡이 없는 동안은 기존 원더 음악을 보존한다.
+function Sfx.wonderMusic(mood, fallback)
+	return firstReady("music_wonder_" .. tostring(mood or "temple"), fallback, "music_sea")
+end
+
+function Sfx.wonderCue(mood, fallback)
+	return firstReady("sfx_wonder_" .. tostring(mood or "temple"), fallback, "sfx_bell")
 end
 
 -- 파도·바람 같은 앰비언트 루프 (names: 목록, nil 이면 끈다)
