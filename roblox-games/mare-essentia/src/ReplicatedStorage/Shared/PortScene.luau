@@ -415,6 +415,18 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
 		end
+		-- 발전한 항구(3단계↑)에선 일부 집 앞에 발코니(Town/balcony-wall-fence)를 달아 실루엣을 다양하게 한다
+		if houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
+			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, if pos.Z > 0 then -size * 0.52 else size * 0.52), size * 0.7, false, tintColor)
+			if bal then
+				bal.Name = "HarborBalcony"
+				uniformMaterial(bal, style)
+			end
+		end
+		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
+		if houseTier >= 4 and not vacant and seed % 5 == 2 then
+			importedModel(parent, "Town", "cart", pos + Vector3.new(size * 0.8, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
+		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end
 	local wall = style.walls[rng:NextInteger(1, #style.walls)]

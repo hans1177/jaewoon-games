@@ -5676,6 +5676,20 @@ do
 			end
 		end
 	end
+	-- 걷는 발소리: 항구·갑판을 걸을 때 두 소리를 번갈아 낸다
+	task.spawn(function()
+		local alt = false
+		while true do
+			task.wait(0.4)
+			local c = player.Character
+			local hum = c and c:FindFirstChildOfClass("Humanoid")
+			local rt = c and c:FindFirstChild("HumanoidRootPart")
+			if hum and rt and not rt.Anchored and hum.MoveDirection.Magnitude > 0.1 and hum.FloorMaterial ~= Enum.Material.Air then
+				alt = not alt
+				Sfx.play(if alt then "sfx_deck_step" else "sfx_deck_step_alt", 0.28, 0.95 + math.random() * 0.15)
+			end
+		end
+	end)
 	-- 바다·바닥 아래로 떨어지면 항구 시작 지점으로 되돌린다 (걷다가 물에 빠지는 사고 방지)
 	task.spawn(function()
 		while true do
