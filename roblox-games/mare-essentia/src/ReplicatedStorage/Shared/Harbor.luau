@@ -56,6 +56,11 @@ function Harbor.festivalAt(region: string, day: number)
 	return nil
 end
 
+-- 해금 단계: 항구 단계에 그 항구 학자들의 기술 수준 합(techSum)이 더해진다 (기술 6점마다 +1단계, 최대 5)
+function Harbor.effLevel(level: number, techSum: number?): number
+	return math.min(Harbor.MAX_LEVEL, level + math.floor((techSum or 0) / 6))
+end
+
 -- 특산품 해금: 처음엔 그 땅의 토착 특산 2가지뿐이고, 항구가 발전(기술·시설·교역 축적)할 때마다 하나씩 더 생긴다.
 -- produces 목록은 토착 → 후발 순서로 적혀 있다.
 Harbor.NATIVE_COUNT = 2

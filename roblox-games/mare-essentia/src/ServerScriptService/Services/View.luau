@@ -92,7 +92,7 @@ return function(D, S)
 			end
 		end
 		view.goods = {}
-		local lv0 = D.Harbor.level(state.harbor[port.id] or 0)
+		local lv0 = D.Harbor.effLevel(D.Harbor.level(state.harbor[port.id] or 0), S.Knowledge.techSum(state, port.id))
 		local rid0 = D.Regions.of(port).id
 		local yr0 = state.startYear + math.floor(state.day / 365)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
@@ -614,8 +614,9 @@ return function(D, S)
 				demands = {},
 			}
 			local full = D.Harbor.producesOf(port.produces, rid0, yr0)
+			local lvE = lv0
 			for i, id in full do
-				if lv >= D.Harbor.unlockLevel(i) then
+				if lvE >= D.Harbor.unlockLevel(i) then
 					table.insert(view.harbor.produces, D.Ports.Goods[id].name)
 				else
 					view.harbor.nextProduce = view.harbor.nextProduce or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }
@@ -623,7 +624,7 @@ return function(D, S)
 			end
 			local dem = D.Harbor.demandsOf(port.demands, rid0, yr0, port.produces)
 			for i, id in dem do
-				if lv >= D.Harbor.unlockLevel(i) then
+				if lvE >= D.Harbor.unlockLevel(i) then
 					table.insert(view.harbor.demands, D.Ports.Goods[id].name)
 				else
 					view.harbor.nextDemand = view.harbor.nextDemand or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }

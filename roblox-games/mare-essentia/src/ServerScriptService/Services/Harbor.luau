@@ -130,7 +130,21 @@ return function(D, S)
 				table.insert(msgs, string.format("%s: %s로 %s 상점이 문을 닫았다 (-%d)", regime.name, regime.note, port.name, math.min(loss, inv - floorAt)))
 			end
 		end
+		-- 이 항구 학자들의 자율 연구: 번영하면 빨라지고, 불황·재해에는 멈춘다
+		local techBefore = S.Knowledge.techSum(state, state.portId)
+		if vit >= 0.8 then
+			local pts = math.floor(elapsed * 0.04 * vit * (1 + before * 0.3) + 0.5)
+			if pts > 0 and S.Knowledge.autoResearch(state, state.portId, pts) > 0 then
+				table.insert(msgs, string.format("%s의 학자들이 연구를 진전시켰다 (기술 수준 상승)", port.name))
+			end
+		end
+		local techAfter = S.Knowledge.techSum(state, state.portId)
 		local after = levelAt(state)
+		if H.effLevel(after, techAfter) > H.effLevel(after, techBefore) then
+			for _, g in newlyOpen(port, H.effLevel(after, techBefore), H.effLevel(after, techAfter), year) do
+				table.insert(msgs, string.format("새 교역 품목이 열렸다: %s (기술 발전)", D.Ports.Goods[g].name))
+			end
+		end
 		if after > before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
 			for _, g in newlyOpen(port, before, after, year) do
