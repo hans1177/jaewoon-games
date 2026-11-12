@@ -213,6 +213,7 @@ for goodsId in PortData.Goods do
 	end
 end
 
+local H: { [string]: any } = {}
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 H.TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
@@ -228,7 +229,6 @@ H.TEXT_ICONS = {
 	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "key" }, { "카드", "Relics", "key" }, { "발견", "Relics", "key" },
 	{ "이야기", "Relics", "key" },
 }
-local H: { [string]: any } = {}
 
 function H.iconFor(title, subtitle)
 	for _, t in H.TITLE_ICONS do
