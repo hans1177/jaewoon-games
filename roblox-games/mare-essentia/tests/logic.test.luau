@@ -1714,9 +1714,10 @@ do
 		local coins = it.coins
 		check("free companion", H.IntroCompanion(it, {}) and table.find(it.companions, "n_england") and it.coins == coins)
 		check("bad portrait", not H.IntroPortrait(it, { portrait = "npc:nowhere:3" }) and not H.IntroPortrait(it, { portrait = "x" }))
-		check("portrait ok", H.IntroPortrait(it, { portrait = "npc:london:4" }) and S.Intro.step(it) == "done")
+		check("bad sheet portrait", not H.IntroPortrait(it, { portrait = "cp:nowhere:3" }) and not H.IntroPortrait(it, { portrait = "cp:oceania:20" }))
+		check("portrait ok", H.IntroPortrait(it, { portrait = "cp:north_atlantic:17" }) and S.Intro.step(it) == "done")
 		local rt = S.State.sanitize(S.State.serialize(it))
-		check("intro roundtrip", rt.captain.name == "한스" and rt.captain.portrait == "npc:london:4" and rt.intro.portrait)
+		check("intro roundtrip", rt.captain.name == "한스" and rt.captain.portrait == "cp:north_atlantic:17" and rt.intro.portrait)
 		local old = S.State.serialize(it)
 		old.intro = nil
 		check("old save skips intro", S.Intro.step(S.State.sanitize(old)) == "done")

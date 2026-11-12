@@ -271,7 +271,22 @@ for _, o in Origins do
 	OriginById[o.id] = o
 end
 
+-- 동료·인물 초상화 시트 (5열, 칸 256x336). 값은 칸 수. 시트 이름은 Portraits/companions_<이름>
+local PortraitSheets = {
+	north_atlantic = 20, mediterranean = 20, west_africa = 20, east_africa_red_sea = 20, oceania = 20,
+	faith_christian = 20, faith_buddhist = 20, faith_indian_ocean = 10,
+	africa = 20, americas = 20, atlantic = 20, indian = 20, pacific = 20,
+}
+-- 해역(Regions)별로 어울리는 시트
+local RegionSheets = {
+	north_sea = "north_atlantic", atlantic_europe = "north_atlantic", mediterranean = "mediterranean",
+	west_africa = "west_africa", east_africa = "east_africa_red_sea", red_sea = "east_africa_red_sea",
+	americas = "americas", south_asia = "indian", east_asia = "pacific", southeast_asia = "pacific",
+}
+
 return {
+	PortraitSheets = PortraitSheets,
+	RegionSheets = RegionSheets,
 	Origins = Origins,
 	OriginById = OriginById,
 	Specialties = Specialties,

@@ -711,6 +711,17 @@ for atlas, ids in {
 		end
 	end
 end
+-- 동료 초상: 새 시트(5열)의 칸을 배정한다. 아랫줄(15~19)은 여성, 윗줄은 남성 인물 위주.
+for id, spec in {
+	t_helmsman = { "mediterranean", 4 }, t_mate = { "mediterranean", 16 }, t_boatswain = { "west_africa", 2 }, t_master_gunner = { "north_atlantic", 17 },
+	h_england = { "north_atlantic", 15 }, h_netherlands = { "north_atlantic", 1 }, h_france = { "north_atlantic", 16 },
+	h_ottoman = { "mediterranean", 19 }, h_swahili = { "east_africa_red_sea", 5 }, h_malabar = { "indian", 1 },
+	h_japan = { "pacific", 15 }, h_new_spain = { "americas", 3 }, h_portugal = { "mediterranean", 15 },
+} do
+	if AssetIds["Portraits/companions_" .. spec[1]] then
+		COMPANION_PORTRAIT[id] = { atlas = "companions_" .. spec[1], offset = Vector2.new(spec[2] % 5 * 256, math.floor(spec[2] / 5) * 336) }
+	end
+end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
 	["주점"] = "tavern", ["학자의 서재"] = "scholar",
@@ -781,6 +792,15 @@ do
 		end
 	end
 
+	-- 항구가 속한 해역 id (초상화 시트 고르기용)
+	function H.regionOfPort(portId)
+		local port = portId and PortData.Ports[portId]
+		if not port then
+			return nil
+		end
+		return if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
+	end
+
 	-- 화가가 그려 주는 초상 후보: 그 지역 교역소 사람들 10칸 (1700년 이후 화풍)
 	function H.npcCellAsset(portId, cell)
 		local port = portId and PortData.Ports[portId]
@@ -795,6 +815,7 @@ do
 		return atlas, Vector2.new(cell % 5 * 200, math.floor(cell / 5) * 200), Vector2.new(200, 200)
 	end
 
+	local RegionSheetOf = require(Shared:WaitForChild("Specialties")).RegionSheets
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
@@ -811,6 +832,13 @@ do
 			seed = (seed * 31 + string.byte(portId, index)) % 101
 		end
 		local rotation = math.floor((playerView.day or 0) / 30)
+		-- 격달로 새 지역 인물 시트의 젊은 인물이 가게를 맡는다
+		local sheet = RegionSheetOf and RegionSheetOf[region]
+		local fresh = sheet and AssetIds["Portraits/companions_" .. sheet]
+		if fresh and (seed + rotation) % 2 == 1 then
+			local c = (seed * 7 + rotation * 3 + (if role == "tavern" then 11 else 0)) % 20
+			return fresh, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
+		end
 		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
 		-- 술잔을 든 칸(북해 주점 19번)은 술 그림 금지 규칙에 따라 건너뛴다.
 		if region == "north_sea" and cell == 19 then
@@ -6009,6 +6037,15 @@ end
 		if type(value) ~= "string" then
 			return nil
 		end
+		local sheet, idx = string.match(value, "^cp:([%w_]+):(%d+)$")
+		if sheet then
+			local atlas = AssetIds["Portraits/companions_" .. sheet]
+			local c = tonumber(idx)
+			if not atlas or not c then
+				return nil
+			end
+			return atlas, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
+		end
 		local nation = string.match(value, "^hero:([%w_]+)$")
 		if nation then
 			return H.heroPortraitAsset(nation)
@@ -6227,17 +6264,18 @@ end
 
 	local function nationPortraits()
 		local out = {}
-		for id in PortData.Nations do
-			table.insert(out, "hero:" .. id)
-		end
-		table.sort(out)
-		local portId = view.player.portId
-		if (view.player.year or 0) >= 1700 then
-			for cell = 0, 9 do
-				if H.npcCellAsset(portId, cell) then
-					table.insert(out, "npc:" .. portId .. ":" .. cell)
-				end
+		local sheet = require(Shared:WaitForChild("Specialties")).RegionSheets[H.regionOfPort(view.player.portId) or ""] or "north_atlantic"
+		-- 윗줄에서 남성 인물 5명, 아랫줄에서 여성 인물 5명
+		for _, c in { 0, 2, 4, 6, 8, 15, 16, 17, 18, 19 } do
+			if AssetIds["Portraits/companions_" .. sheet] then
+				table.insert(out, "cp:" .. sheet .. ":" .. c)
 			end
+		end
+		if #out == 0 then
+			for id in PortData.Nations do
+				table.insert(out, "hero:" .. id)
+			end
+			table.sort(out)
 		end
 		return out
 	end
