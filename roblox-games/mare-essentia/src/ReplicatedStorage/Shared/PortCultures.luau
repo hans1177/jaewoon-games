@@ -99,11 +99,11 @@ STYLE.colonial = variant(STYLE.med,
 local REGION = {
 	-- 비유럽 문화권 (뒤에 오는 기존 항목을 덮어쓴다: 아래에서 다시 적용)
 	-- 유럽 문화권
-	lisbon = "iberia", porto = "iberia", seville = "iberia", cadiz = "iberia", malaga = "iberia", barcelona = "iberia", valencia = "iberia", cartagena = "iberia", funchal = "iberia", las_palmas = "iberia", ponta_delgada = "iberia", palma = "iberia",
-	genoa = "italy", venice = "italy", livorno = "italy", naples = "italy", palermo = "italy", messina = "italy", syracuse = "italy", trieste = "italy", ancona = "italy", ragusa = "italy", split = "italy", cagliari = "italy", corfu = "italy", candia = "italy", valletta = "italy",
+	lisbon = "iberia", porto = "iberia", seville = "iberia", cadiz = "iberia", malaga = "iberia", barcelona = "iberia", valencia = "iberia", cartagena = "iberia", funchal = "iberia", las_palmas = "iberia", ponta_delgada = "iberia", palma = "iberia", gibraltar = "iberia",
+	genoa = "italy", venice = "italy", livorno = "italy", naples = "italy", palermo = "italy", messina = "italy", syracuse = "italy", trieste = "italy", ancona = "italy", ragusa = "italy", split = "italy", cagliari = "italy", corfu = "italy", candia = "italy", valletta = "italy", famagusta = "italy",
 	rouen = "france", bordeaux = "france", la_rochelle = "france", marseille = "france", toulon = "france", ajaccio = "france",
 	hamburg = "hanse", lubeck = "hanse", gdansk = "hanse", riga = "hanse", tallinn = "hanse", koenigsberg = "hanse",
-	san_francisco = "stone",
+	san_francisco = "stone", rhodes = "med",
 	sitka = "nordic", vancouver = "nordic",
 	sydney = "tropic", hobart = "tropic", perth = "tropic", darwin = "tropic", auckland = "tropic", port_moresby = "tropic", suva = "tropic", tahiti = "tropic", honolulu = "tropic", guam = "tropic", acapulco = "tropic", panama = "tropic", guayaquil = "tropic", callao = "tropic", valparaiso = "tropic",
 	charleston = "tropic", new_orleans = "tropic", nassau = "tropic", havana = "tropic", veracruz = "tropic", campeche = "tropic", kingston = "tropic", santo_domingo = "tropic", san_juan = "tropic", bridgetown = "tropic", port_of_spain = "tropic", la_guaira = "tropic", cartagena_indias = "tropic", portobelo = "tropic", paramaribo = "tropic", belem = "tropic", recife = "tropic", salvador = "tropic", rio = "tropic", montevideo = "tropic", buenos_aires = "tropic",
@@ -126,7 +126,7 @@ local REGION = {
 	london = "britain", edinburgh = "britain", glasgow = "britain", dublin = "britain", plymouth = "britain", hull = "britain",
 }
 for key, list in {
-	ottoman = { "istanbul", "beirut", "acre", "damietta", "alexandria", "smyrna", "tripoli", "algiers", "tunis" },
+	ottoman = { "istanbul", "beirut", "acre", "damietta", "alexandria", "smyrna", "tripoli", "algiers", "tunis", "athens", "thessaloniki" },
 	swahili = { "zanzibar", "kilwa", "mombasa", "mogadishu", "mozambique", "aden", "mocha", "muscat" },
 	malabar = { "calicut", "cochin", "goa", "colombo", "madras", "calcutta", "diu", "surat", "malacca" },
 	japan = { "nagasaki", "osaka", "edo", "hakodate" },
