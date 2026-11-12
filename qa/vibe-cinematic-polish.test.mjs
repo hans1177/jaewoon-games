@@ -251,6 +251,41 @@ test('Vibe 5.9 LOD selection uses the individual authored object world position'
  lod.reset();assert.ok(rows.every(r=>r.visible));
 });
 
+test('Vibe 5.9 authored LOD uses world camera position for cameras parented to rigs',()=>{
+ class Vec3{set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(o){return Math.hypot(this.x-o.x,this.y-o.y,this.z-o.z)}}
+ const parent={getWorldPosition(v){return v.set(100,0,0)}};
+ const meshes=[0,1].map(level=>({parent,isMesh:true,name:'ApprovedRock_LOD'+level,visible:level===0}));
+ const root={traverse(fn){meshes.forEach(fn)},getWorldPosition(v){return v.set(0,0,0)}};
+ const lod=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[10]});
+ // 카메라 로컬 좌표는 0이지만 실제 월드 좌표는 바위에서 2만큼 떨어져 있다.
+ const near={position:{x:0,y:0,z:0},getWorldPosition(v){return v.set(102,0,0)}};
+ assert.equal(lod.update(near),1);
+ assert.deepEqual(meshes.map(m=>m.visible),[true,false]);
+ const far={position:{x:0,y:0,z:0},getWorldPosition(v){return v.set(150,0,0)}};
+ assert.equal(lod.update(far),1);
+ assert.deepEqual(meshes.map(m=>m.visible),[false,true]);
+ // 기존 카메라와 단위 테스트의 position만 있는 컨트롤러도 그대로 허용한다.
+ lod.update({position:{x:100,y:0,z:0}});
+ assert.deepEqual(meshes.map(m=>m.visible),[true,false]);
+ lod.reset();
+ assert.deepEqual(meshes.map(m=>m.visible),[true,false]);
+});
+
+test('Vibe 5.9 LOD refuses invalid camera positions and ignores negative distance thresholds',()=>{
+ class Vec3{set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(o){return Math.hypot(this.x-o.x,this.y-o.y,this.z-o.z)}}
+ const parent={getWorldPosition(v){return v.set(0,0,0)}};
+ const rows=[0,1].map(level=>({parent,isMesh:true,name:'ApprovedTree_LOD'+level,visible:level===0}));
+ const root={traverse(fn){rows.forEach(fn)},getWorldPosition(v){return v.set(0,0,0)}};
+ const lod=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[-100,10,NaN]});
+ assert.equal(lod.update({position:{x:NaN,y:0,z:0}}),0);
+ assert.deepEqual(rows.map(m=>m.visible),[true,false]);
+ lod.update({position:{x:0,y:0,z:2}});
+ assert.deepEqual(rows.map(m=>m.visible),[true,false]);
+ lod.update({position:{x:0,y:0,z:12}});
+ assert.deepEqual(rows.map(m=>m.visible),[false,true]);
+ lod.reset();assert.deepEqual(rows.map(m=>m.visible),[true,false]);
+});
+
 test('Vibe 5.9 GPU instancing keeps attached children, mirrored assets and existing instances visible',()=>{
  class InstancedMesh{
   constructor(geometry,material,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.layers={mask:1};this.matrices=[]}
