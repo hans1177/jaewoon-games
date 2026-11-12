@@ -1321,7 +1321,7 @@ hud.Parent = gui
 local card = Instance.new("Frame")
 card.BackgroundTransparency = 1
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(188, 67)
+card.Size = UDim2.fromOffset(204, 81)
 H.hudCard = card
 card.Parent = hud
 
@@ -1330,7 +1330,7 @@ local function hudText(parent, pos, size, textSize, color, align)
 	l.BackgroundTransparency = 1
 	l.Position = pos
 	l.Size = size
-	l.Font = Enum.Font.Antique
+	l.Font = Enum.Font.GothamMedium
 	l.TextSize = textSize
 	l.TextColor3 = color
 	l.TextXAlignment = align or Enum.TextXAlignment.Left
@@ -1339,13 +1339,13 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-H.hudName = hudText(card, UDim2.fromOffset(45, 0), UDim2.fromOffset(143, 16), 12, COLORS.paper)
-H.hudCoin = hudText(card, UDim2.fromOffset(45, 16), UDim2.fromOffset(143, 14), 11, Color3.fromRGB(255, 229, 170))
-H.hudPort = hudText(card, UDim2.fromOffset(45, 30), UDim2.fromOffset(143, 14), 11, COLORS.paper)
+H.hudName = hudText(card, UDim2.fromOffset(53, 0), UDim2.fromOffset(151, 19), 15, COLORS.paper)
+H.hudCoin = hudText(card, UDim2.fromOffset(53, 19), UDim2.fromOffset(151, 18), 14, Color3.fromRGB(255, 229, 170))
+H.hudPort = hudText(card, UDim2.fromOffset(53, 37), UDim2.fromOffset(151, 18), 14, COLORS.paper)
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(39, 31, 26)
-hullBack.Position = UDim2.fromOffset(45, 46)
-hullBack.Size = UDim2.fromOffset(139, 4)
+hullBack.Position = UDim2.fromOffset(53, 55)
+hullBack.Size = UDim2.fromOffset(145, 4)
 hullBack.Parent = card
 corner(hullBack, 2)
 local hullFill = Instance.new("Frame")
@@ -1353,7 +1353,7 @@ hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.Parent = hullBack
 corner(hullFill, 2)
-H.hudShip = hudText(card, UDim2.fromOffset(45, 52), UDim2.fromOffset(143, 14), 11, COLORS.paper)
+H.hudShip = hudText(card, UDim2.fromOffset(53, 62), UDim2.fromOffset(151, 18), 14, COLORS.paper)
 for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
 	label.TextStrokeColor3 = Color3.fromRGB(28, 22, 19)
 	label.TextStrokeTransparency = 0.18
@@ -1385,71 +1385,52 @@ corner(coinCard, 10)
 hudStroke(coinCard, 2)
 
 -- 화면 위에 떠 있는 항해 도구. 그림과 터치 영역만 두고 메뉴 판은 제거한다.
+-- 항해 도구용 직접 제작 선화. 각 경로는 32픽셀 도안의 꼭짓점이다.
+H.hudEngravings = {
+	gear = {{11,3,21,3,22,7,26,6,30,13,27,16,30,20,26,27,22,26,21,30,11,30,10,26,6,27,2,20,5,16,2,13,6,6,10,7,11,3},{16,10,21,12,23,16,21,21,16,23,11,21,9,16,11,12,16,10}},
+	deck = {{3,8,17,4,23,26,8,30,3,8},{15,5,28,8,26,30,12,27,15,5},{21,12,25,18,20,23,17,17,21,12}},
+	auto = {{4,20,29,20,25,27,9,27,4,20},{16,4,16,19},{17,5,26,17,17,17},{14,8,6,17,14,17},{2,30,7,29,12,30,18,29,23,30,30,29}},
+	help = {{16,2,24,5,29,12,29,21,23,28,15,30,7,27,3,21,3,11,8,5,16,2},{11,11,14,8,20,9,22,13,16,18,16,21},{16,25,16,26}},
+	view = {{5,17,16,7,28,17,16,26,5,17},{12,17,16,13,20,17,16,21,12,17}},
+	trade = {{16,3,16,28},{7,29,25,29},{4,10,28,10},{7,10,2,21,12,21,7,10},{25,10,20,21,30,21,25,10}},
+	crew = {{11,4,15,6,17,10,15,14,11,16,7,14,5,10,7,6,11,4},{2,29,3,23,7,19,15,19,19,23,20,29,2,29},{20,7,25,6,28,9,28,13,24,16,21,14},{22,19,27,19,30,23,30,27,24,27}},
+	route = {{16,2,26,7,30,16,26,25,16,30,6,25,2,16,6,7,16,2},{22,9,18,19,10,24,13,14,22,9},{13,14,18,19}},
+	journal = {{5,4,21,4,21,26,5,28,5,4},{8,9,16,9},{8,14,15,14},{8,19,13,19},{15,25,27,6,30,4,29,12,23,19,18,20}},
+	chart = {{3,7,11,4,21,8,29,5,29,26,21,29,11,25,3,28,3,7},{11,4,11,25},{21,8,21,29},{6,19,15,13,25,18}},
+	yard = {{4,22,29,22,25,28,9,28,4,22},{6,18,6,4,22,4,22,15},{6,11,13,4},{22,15,19,18,16,15}},
+	explore = {{3,24,20,8,25,13,9,29,3,24},{18,7,23,2,30,9,25,14},{11,18,16,23}},
+	codex = {{3,6,12,6,16,10,20,6,29,6,29,25,20,25,16,28,12,25,3,25,3,6},{16,10,16,28},{6,12,12,12},{20,12,26,12},{6,17,12,17},{20,17,26,17}},
+	tech = {{12,3,21,3},{14,3,14,12,5,25,8,29,25,29,28,25,19,12,19,3},{10,20,23,20},{17,24,18,24}},
+	quest = {{6,4,25,4,25,28,6,28,6,4},{10,11,12,13,16,9},{18,11,22,11},{10,20,12,22,16,18},{18,20,22,20}},
+	battle = {{4,3,9,5,26,24,22,28,6,9,4,3},{28,3,23,5,6,24,10,28,26,9,28,3},{2,22,11,30},{21,30,30,22}},
+	status = {{16,3,28,8,27,19,23,25,16,30,9,25,5,19,4,8,16,3},{8,16,13,16,16,10,19,21,22,16,25,16}},
+}
 function H.hudShortcut(parent, name, key, label)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(46, 46)
+	button.Size = UDim2.fromOffset(44, 44)
 	button.BackgroundTransparency = 1
 	button.Text = ""
 	button.AutoButtonColor = false
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	local art = AssetIds["Menu/" .. key]
-	if art then
-		local shadow = Instance.new("ImageLabel")
-		shadow.BackgroundTransparency = 1
-		shadow.Size = UDim2.fromOffset(35, 35)
-		shadow.Position = UDim2.fromOffset(6, 7)
-		shadow.Image = "rbxassetid://" .. tostring(art)
-		shadow.ScaleType = Enum.ScaleType.Fit
-		shadow.ImageColor3 = Color3.fromRGB(34, 24, 19)
-		shadow.Parent = button
-		local icon = shadow:Clone()
-		icon.Position = UDim2.fromOffset(5, 4)
-		icon.ImageColor3 = Color3.fromRGB(253, 226, 174)
-		icon.Parent = button
-	else
-		local ivory = Color3.fromRGB(235, 202, 150)
-		local patina = Color3.fromRGB(64, 47, 37)
-		local function mark(x, y, w, h, radius, rotation, outline, fill)
-			local shape = Instance.new("Frame")
-			shape.Position = UDim2.fromOffset(x, y)
-			shape.Size = UDim2.fromOffset(w, h)
-			shape.BorderSizePixel = 0
-			shape.BackgroundColor3 = fill or ivory
-			shape.BackgroundTransparency = if outline then 1 else 0
-			shape.Rotation = rotation
-			shape.Parent = button
-			corner(shape, radius)
-			local edge = Instance.new("UIStroke")
-			edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			edge.Color = if outline then ivory else patina
-			edge.Thickness = if outline then 2 else 1
-			edge.Parent = shape
-		end
-		if key == "crew" then
-			mark(25, 10, 10, 10, 5, 0, false)
-			mark(23, 22, 16, 11, 5, 0, false)
-			mark(10, 11, 13, 13, 7, 0, false)
-			mark(5, 26, 24, 12, 6, 0, false)
-		elseif key == "journal" then
-			mark(7, 11, 15, 24, 2, -8, true)
-			mark(23, 11, 15, 24, 2, 8, true)
-			mark(11, 18, 7, 2, 1, -8, false)
-			mark(11, 24, 8, 2, 1, -8, false)
-			mark(27, 19, 7, 2, 1, 8, false)
-			mark(27, 25, 7, 2, 1, 8, false)
-		elseif key == "deck" then
-			mark(8, 10, 18, 27, 2, -17, true)
-			mark(20, 9, 18, 28, 2, 12, false)
-			mark(25, 18, 8, 8, 1, 45, false, patina)
-		elseif key == "gear" then
-			for i = 0, 7 do
-				local angle = i * math.pi / 4
-				mark(20 + math.sin(angle) * 14, 19 - math.cos(angle) * 14, 6, 8, 1, i * 45, false)
-			end
-			mark(10, 10, 26, 26, 13, 0, false)
-			mark(17, 17, 12, 12, 6, 0, false, patina)
+	for _, path in H.hudEngravings[key] do
+		for i = 1, #path - 2, 2 do
+			local x, y = path[i], path[i + 1]
+			local dx, dy = path[i + 2] - x, path[i + 3] - y
+			local line = Instance.new("Frame")
+			line.AnchorPoint = Vector2.new(0.5, 0.5)
+			line.Position = UDim2.fromOffset(6 + x + dx / 2, 6 + y + dy / 2)
+			line.Size = UDim2.fromOffset(math.sqrt(dx * dx + dy * dy) + 1, 2)
+			line.Rotation = math.deg(math.atan2(dy, dx))
+			line.BackgroundColor3 = Color3.fromRGB(247, 216, 165)
+			line.BorderSizePixel = 0
+			corner(line, 1)
+			local ink = Instance.new("UIStroke")
+			ink.Color = Color3.fromRGB(60, 40, 28)
+			ink.Thickness = 1.15
+			ink.Parent = line
+			line.Parent = button
 		end
 	end
 	local scale = Instance.new("UIScale")
@@ -1473,7 +1454,7 @@ dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
 dock.Position = UDim2.new(1, -8, 0, 51)
-dock.Size = UDim2.new(0, 100, 1, -160)
+dock.Size = UDim2.fromOffset(140, 44)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
@@ -1482,18 +1463,19 @@ dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
 do
 	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(100, 294)
+	limit.MaxSize = Vector2.new(140, 272)
 	limit.Parent = dock
 	local grid = Instance.new("UIGridLayout")
-	grid.CellSize = UDim2.fromOffset(46, 46)
+	grid.CellSize = UDim2.fromOffset(44, 44)
 	grid.CellPadding = UDim2.fromOffset(2, 2)
 	grid.SortOrder = Enum.SortOrder.LayoutOrder
 	grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	grid.FillDirectionMaxCells = 3
 	grid.Parent = dock
 end
 
 H.DOCK = {
-	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "journal", "일지" },
+	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "journal", "일지" }, { "chart", "지도" },
 	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
@@ -1507,23 +1489,32 @@ for i, d in H.DOCK do
 			applyView()
 		elseif d[1] == "journal" then
 			openTab("map", "journal")
+		elseif d[1] == "chart" then
+			openTab("map", "chart")
 		else
 			openTab(d[1])
 		end
 	end)
 end
 
--- 설정 · 지도 · 내 카드
+-- 시스템 · 내 카드 · 자동항해 · 도움말
 local render
 local openOptions
 local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정")
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -104, 0, 3)
+gear.Position = UDim2.new(1, -152, 0, 3)
 do
-	local chart = H.hudShortcut(hud, "ChartButton", "chart_folded_map", "지도")
-	chart.AnchorPoint = Vector2.new(1, 0)
-	chart.Position = UDim2.new(1, -56, 0, 3)
-	chart.Activated:Connect(function() openTab("map", "chart") end)
+	local auto = H.hudShortcut(hud, "AutoVoyageButton", "auto", "자동항해")
+	auto.AnchorPoint = Vector2.new(1, 0)
+	auto.Position = UDim2.new(1, -56, 0, 3)
+	auto.Activated:Connect(function()
+		player:SetAttribute("ManualHelm", false)
+		openTab("route")
+	end)
+	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말")
+	help.AnchorPoint = Vector2.new(1, 0)
+	help.Position = UDim2.new(1, -8, 0, 3)
+	help.Activated:Connect(function() openOptions(true) end)
 end
 gear.Activated:Connect(function()
 	Sfx.play("sfx_click")
@@ -1536,7 +1527,7 @@ do
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드")
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -8, 0, 3)
+	deckBtn.Position = UDim2.new(1, -104, 0, 3)
 	local open = nil
 	function H.openDeck()
 		if open then
@@ -1813,12 +1804,15 @@ corner(bubble, 12)
 hudStroke(bubble, 2)
 do
 	local function layoutBubble()
-		local width = hud.AbsoluteSize.X
-		local left = if width >= 580 then 206 else 8
-		local right = if width >= 580 then 160 else 112
+		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
+		local rows = math.clamp(math.floor((height - 146 + 2) / 46), 1, 5)
+		dock.Size = UDim2.fromOffset(140, rows * 46 - 2)
+		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
+		local left = if width >= 610 then 222 else 8
+		local right = if width >= 610 then 200 else 152
 		local bubbleWidth = math.clamp(width - left - right, 1, 380)
 		bubble.AnchorPoint = Vector2.new(0, 0)
-		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 580 then 8 else 82)
+		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
 	end
 	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
@@ -1852,6 +1846,20 @@ H.bubbleWho = bubbleLabel(1, 14, COLORS.gold)
 H.bubbleLine = bubbleLabel(2, 13, COLORS.text)
 H.bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
 local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
+do
+	local textSizes = {
+		[H.hudName] = 15, [H.hudCoin] = 14, [H.hudPort] = 14, [H.hudShip] = 14,
+		[H.bubbleWho] = 14, [H.bubbleLine] = 13, [H.bubbleAdvice] = 13, [bubbleNext] = 12,
+	}
+	local function updateSize()
+		local extra = if player:GetAttribute("LargeHudText") then 3 else 0
+		for label, size in textSizes do
+			label.TextSize = size + extra
+		end
+	end
+	player:GetAttributeChangedSignal("LargeHudText"):Connect(updateSize)
+	updateSize()
+end
 local bubbleKey, bubbleToken = nil, 0
 function H.hideBubble()
 	bubbleToken += 1
@@ -6293,11 +6301,11 @@ H.HELP_LINES = {
 	"· '걷기' 버튼으로 항구 전경과 걷기 시점을 바꿉니다.",
 	"· 항해 중 화면을 누르면 연출을 건너뜁니다.",
 }
-openOptions = function()
+openOptions = function(helpOnly)
 	closeOptions()
 	local layer = overlayGui("Options", 60)
 	optionsGui = layer
-	local helpOpen, confirmNew = false, false
+	local helpOpen, confirmNew = helpOnly == true, false
 	local dim = Instance.new("TextButton")
 	dim.Size = UDim2.fromScale(1, 1)
 	dim.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -6310,7 +6318,7 @@ openOptions = function()
 	local win = Instance.new("Frame")
 	win.AnchorPoint = Vector2.new(0.5, 0.5)
 	win.Position = UDim2.fromScale(0.5, 0.5)
-	win.Size = UDim2.new(0, 540, 0.86, 0)
+	win.Size = UDim2.fromScale(0.94, 0.86)
 	win.BackgroundColor3 = COLORS.cover
 	win.BorderSizePixel = 0
 	win.Parent = layer
@@ -6322,11 +6330,11 @@ openOptions = function()
 	wst.Parent = win
 	local limit = Instance.new("UISizeConstraint")
 	limit.MaxSize = Vector2.new(560, 520)
-	limit.MinSize = Vector2.new(300, 200)
+	limit.MinSize = Vector2.new(0, 0)
 	limit.Parent = win
 	local bar = mkBox(win, UDim2.fromScale(0, 0), UDim2.new(1, 0, 0, 46), Color3.fromRGB(40, 32, 18))
 	corner(bar, 16)
-	local ttl = mkLabel(bar, "⚙  설정", 20, Color3.fromRGB(246, 208, 130), true)
+	local ttl = mkLabel(bar, if helpOnly then "항해 도움말" else "시스템 설정", 20, Color3.fromRGB(246, 208, 130), true)
 	ttl.Position = UDim2.fromOffset(16, 9)
 	ttl.Size = UDim2.new(1, -70, 0, 28)
 	ttl.AutomaticSize = Enum.AutomaticSize.None
@@ -6386,56 +6394,69 @@ openOptions = function()
 				btn.TextSize = 13
 			end
 		end
-		section("⛵ 항해 방식")
-		do
-			local manualOn = player:GetAttribute("ManualHelm") == true
-			row("수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종" else "꺼짐: 자동 항해", {
-				{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.green, onClick = function() player:SetAttribute("ManualHelm", not manualOn); draw() end },
+		if not helpOnly then
+			section("⛵ 항해 방식")
+			do
+				local manualOn = player:GetAttribute("ManualHelm") == true
+				row("수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종" else "꺼짐: 자동 항해", {
+					{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.green, onClick = function() player:SetAttribute("ManualHelm", not manualOn); draw() end },
+				})
+			end
+			section("🔊 소리")
+			do
+				local musicOn, sfxOn = Sfx.state()
+				local ml, sl = Sfx.levels()
+				row("음악  " .. math.floor(ml / 1.5 * 100 + 0.5) .. "%", if musicOn then "켜짐" else "꺼짐", {
+					{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setMusicEnabled(not musicOn); draw() end },
+					{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepMusic(-1); draw() end },
+					{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepMusic(1); draw() end },
+				})
+				row("효과음  " .. math.floor(sl / 1.5 * 100 + 0.5) .. "%", if sfxOn then "켜짐" else "꺼짐", {
+					{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setSfxEnabled(not sfxOn); draw() end },
+					{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); draw() end },
+					{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); draw() end },
+				})
+			end
+			section("🖥 화면")
+			row("항구 보기", if overview then "전경 시점" else "걷기 시점", {
+				{ text = if overview then "걷기" else "전경", color = COLORS.blue, onClick = function() overview = not overview; applyView(); draw() end },
+			})
+			local large = player:GetAttribute("LargeHudText") == true
+			row("글자 크기", "선장 정보 · 대화 · 도움말", {
+				{ text = if large then "보통" else "크게", onClick = function()
+					player:SetAttribute("LargeHudText", not large)
+					draw()
+				end },
 			})
 		end
-		section("🔊 소리")
-		do
-			local musicOn, sfxOn = Sfx.state()
-			local ml, sl = Sfx.levels()
-			row("음악  " .. math.floor(ml / 1.5 * 100 + 0.5) .. "%", if musicOn then "켜짐" else "꺼짐", {
-				{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setMusicEnabled(not musicOn); draw() end },
-				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepMusic(-1); draw() end },
-				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepMusic(1); draw() end },
-			})
-			row("효과음  " .. math.floor(sl / 1.5 * 100 + 0.5) .. "%", if sfxOn then "켜짐" else "꺼짐", {
-				{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setSfxEnabled(not sfxOn); draw() end },
-				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); draw() end },
-				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); draw() end },
-			})
-		end
-		section("🖥 화면")
-		row("항구 보기", if overview then "전경 시점" else "걷기 시점", {
-			{ text = if overview then "걷기" else "전경", color = COLORS.blue, onClick = function() overview = not overview; applyView(); draw() end },
-		})
 		section("📖 도움말")
-		row("게임 방법", "교역 · 항해 · 의뢰의 기본 흐름", {
-			{ text = if helpOpen then "접기" else "보기", color = COLORS.blue, onClick = function() helpOpen = not helpOpen; draw() end },
-		})
+		if not helpOnly then
+			row("게임 방법", "교역 · 항해 · 의뢰의 기본 흐름", {
+				{ text = if helpOpen then "접기" else "보기", color = COLORS.blue, onClick = function() helpOpen = not helpOpen; draw() end },
+			})
+		end
 		if helpOpen then
-			local hl = mkLabel(body, table.concat(H.HELP_LINES, "\n"), 14, COLORS.text, false, nxt())
+			local hl = mkLabel(body, table.concat(H.HELP_LINES, "\n"), if player:GetAttribute("LargeHudText") then 18 else 15, COLORS.text, false, nxt())
 			hl.Size = UDim2.new(1, -16, 0, 0)
 		end
-		section("🗂 게임")
-		row("저장", "진행은 자동으로 저장돼요", {})
-		if view then
-			if confirmNew then
-				row("정말 새로 시작할까요?", "지금 진행 상황은 사라져요", {
-					{ text = "취소", color = COLORS.grey, onClick = function() confirmNew = false; draw() end },
-					{ text = "시작", color = COLORS.red, onClick = function()
-						closeOptions()
-						newGameMode = true
-						render()
-					end },
-				})
-			else
-				row("새 게임", "나라와 시대를 다시 고릅니다", {
-					{ text = "새 게임", color = COLORS.red, onClick = function() confirmNew = true; draw() end },
-				})
+		if not helpOnly then
+			section("🗂 게임")
+			row("저장", "진행은 자동으로 저장돼요", {})
+			if view then
+				if confirmNew then
+					row("정말 새로 시작할까요?", "지금 진행 상황은 사라져요", {
+						{ text = "취소", color = COLORS.grey, onClick = function() confirmNew = false; draw() end },
+						{ text = "시작", color = COLORS.red, onClick = function()
+							closeOptions()
+							newGameMode = true
+							render()
+						end },
+					})
+				else
+					row("새 게임", "나라와 시대를 다시 고릅니다", {
+						{ text = "새 게임", color = COLORS.red, onClick = function() confirmNew = true; draw() end },
+					})
+				end
 			end
 		end
 		local back = mkButton(body, "게임으로 돌아가기", COLORS.gold, UDim2.new(1, -4, 0, 46), closeOptions, true)
@@ -6696,7 +6717,18 @@ titleGui.Enabled = false
 	ship.Visible = layered
 	if shipId then ship.Image = "rbxassetid://" .. tostring(shipId) end
 	ship.Parent = root
-	local waterline, shipX, shipY, waveHeight = 0, 0, 0, 0
+	local water = Instance.new("Frame")
+	water.Name = "TitleForegroundWater"
+	water.BackgroundTransparency = 1
+	water.ClipsDescendants = true
+	water.ZIndex = 4
+	water.Visible = layered
+	water.Parent = root
+	local surface = art:Clone()
+	surface.Name = "WaterSurface"
+	surface.ZIndex = 4
+	surface.Parent = water
+	local shipX, shipY, waveHeight = 0, 0, 0
 
 	local rays = mkBox(root, UDim2.fromScale(0.03, 0), UDim2.fromScale(0.72, 0.68), Color3.fromRGB(255, 226, 170), 0.62)
 	rays.ZIndex = 2
@@ -6710,7 +6742,7 @@ titleGui.Enabled = false
 	rayFade.Parent = rays
 
 	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(23, 26, 30), 0.28)
-	shade.ZIndex = 4
+	shade.ZIndex = 5
 	local shadeFade = Instance.new("UIGradient")
 	shadeFade.Transparency = NumberSequence.new(1, 0)
 	shadeFade.Parent = shade
@@ -6740,17 +6772,20 @@ titleGui.Enabled = false
 		if layered then
 			local seaHeight = if portrait then height * 2.05 else math.max(height, math.min(width * 0.68, height * 1.5))
 			art.Size = UDim2.fromOffset(math.max(width, seaHeight * 0.72), seaHeight)
-			local shipSize = math.min(width * (if portrait then 0.85 else 0.48), height * (if portrait then 0.45 else 0.79))
-			waterline = height - seaHeight * 0.19
+			surface.Size = art.Size
+			local waterline = height - seaHeight * 0.14
+			local shipSize = math.min(width * (if portrait then 0.81 else 0.39), waterline * (if portrait then 0.69 else 0.72))
+			water.Position = UDim2.fromOffset(0, waterline)
+			water.Size = UDim2.new(1, 0, 0, height - waterline)
 			shipX = width * (if portrait then 0.5 else 0.29)
-			shipY = waterline - shipSize * 0.43
-			waveHeight = math.clamp(shipSize * 0.016, 2, 8)
+			shipY = waterline - shipSize * 0.408
+			waveHeight = math.clamp(shipSize * 0.009, 1.5, 4.5)
 			ship.Size = UDim2.fromOffset(shipSize, shipSize)
 			ship.Position = UDim2.fromOffset(shipX, shipY)
 		end
 		shadeFade.Rotation = if portrait then 90 else 0
-		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.055, 0, 0, 74)
-		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
+		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.04, 0, 0, 48)
+		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.48, 0, 0, 49)
 		heading.TextXAlignment = if portrait then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 		subtitle.Position = heading.Position + UDim2.fromOffset(0, heading.Size.Y.Offset + 2)
 		subtitle.Size = UDim2.new(heading.Size.X.Scale, 0, 0, 26)
@@ -6777,20 +6812,19 @@ titleGui.Enabled = false
 			return
 		end
 		if touch then hideTouch(touch) end
-		local started, last = os.clock(), 0
+		local started = os.clock()
 		curtain.BackgroundTransparency = 0
 		connection = game:GetService("RunService").RenderStepped:Connect(function()
 			local now = os.clock()
-			if now - last < 1 / 30 then return end
-			last = now
 			local t = now - started
 			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
 			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
 			if layered then
-				local swell = t * 1.04
-				ship.Position = UDim2.fromOffset(shipX + math.sin(t * 0.35) * waveHeight * 0.36,
-					shipY + (math.sin(swell) + math.sin(t * 1.71) * 0.26) * waveHeight)
-				ship.Rotation = math.sin(swell + 0.65) * 2.4 + math.sin(t * 0.57) * 0.7
+				local swell = t * 0.91
+				local pitch = math.sin(swell - 0.68) * 1.05 + math.sin(t * 1.44) * 0.22
+				local pivotShift = math.sin(math.rad(pitch)) * ship.AbsoluteSize.Y * 0.34
+				ship.Position = UDim2.fromOffset(shipX + pivotShift, shipY + math.sin(swell) * waveHeight)
+				ship.Rotation = pitch
 			end
 		end)
 	end)
@@ -7808,7 +7842,7 @@ end
 	local chip = Instance.new("Frame")
 	chip.AnchorPoint = Vector2.new(0, 0)
 	chip.Position = UDim2.fromOffset(1, 3)
-	chip.Size = UDim2.fromOffset(39, 54)
+	chip.Size = UDim2.fromOffset(47, 66)
 	chip.BackgroundTransparency = 1
 	chip.BorderSizePixel = 0
 	chip.Visible = false
@@ -7867,7 +7901,7 @@ end
 		chipName.Text = c.name or "선장"
 		chipSub.Text = "🏳 " .. tostring(view.player.nation)
 		chipSub2.Text = if c.origin then c.origin.name else ""
-		local face = portraitImg(chip, c.portrait, 37, 52, true)
+		local face = portraitImg(chip, c.portrait, 45, 64, true)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -7875,8 +7909,8 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 35, 25)
-			face.Position = UDim2.fromOffset(2, 14)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 43, 30)
+			face.Position = UDim2.fromOffset(2, 18)
 		else
 			face.Position = UDim2.fromOffset(1, 1)
 		end
