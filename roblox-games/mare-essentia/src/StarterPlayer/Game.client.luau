@@ -799,7 +799,61 @@ do
 	grad.Color = ColorSequence.new(Color3.fromRGB(95, 65, 44), Color3.fromRGB(33, 23, 20))
 	grad.Rotation = 90
 	grad.Parent = main
+
 	bookMaterial(main, "leather", 196)
+	-- [책 등 장정] 낡은 가죽 표지를 따라 손으로 꿰맨 실밥을 남긴다.
+	for i = 1, 24 do
+		for _, top in { true, false } do
+			local stitch = Instance.new("Frame")
+			stitch.Name = "LeatherStitch"
+			stitch.BackgroundColor3 = Color3.fromRGB(206, 165, 110)
+			stitch.BackgroundTransparency = 0.29
+			stitch.BorderSizePixel = 0
+			stitch.AnchorPoint = Vector2.new(0.5, 0)
+			stitch.Position = UDim2.new(i / 25, 0, if top then 0 else 1, if top then 7 else -12)
+			stitch.Size = UDim2.fromOffset(2, 5)
+			stitch.Rotation = 24
+			stitch.ZIndex = main.ZIndex + 1
+			stitch.Parent = main
+		end
+	end
+	for i = 1, 12 do
+		for _, left in { true, false } do
+			local stitch = Instance.new("Frame")
+			stitch.Name = "LeatherSpineStitch"
+			stitch.BackgroundColor3 = Color3.fromRGB(206, 165, 110)
+			stitch.BackgroundTransparency = 0.33
+			stitch.BorderSizePixel = 0
+			stitch.Position = UDim2.new(if left then 0 else 1, if left then 7 else -11, i / 13, 0)
+			stitch.Size = UDim2.fromOffset(5, 2)
+			stitch.Rotation = -18
+			stitch.ZIndex = main.ZIndex + 1
+			stitch.Parent = main
+		end
+	end
+	-- [모서리 제본] 낡은 황동 압정의 바깥 고리와 안쪽 눌림.
+	for _, pos in { Vector2.new(0, 0), Vector2.new(1, 0), Vector2.new(0, 1), Vector2.new(1, 1) } do
+		local stud = Instance.new("Frame")
+		stud.Name = "BookCornerRivet"
+		stud.AnchorPoint = pos
+		stud.Position = UDim2.new(pos.X, if pos.X == 0 then 12 else -12, pos.Y, if pos.Y == 0 then 12 else -12)
+		stud.Size = UDim2.fromOffset(10, 10)
+		stud.BackgroundColor3 = Color3.fromRGB(195, 151, 73)
+		stud.BorderSizePixel = 0
+		stud.ZIndex = main.ZIndex + 2
+		stud.Parent = main
+		corner(stud, 5)
+		local insetDot = Instance.new("Frame")
+		insetDot.Name = "RivetPunch"
+		insetDot.AnchorPoint = Vector2.new(0.5, 0.5)
+		insetDot.Position = UDim2.fromScale(0.5, 0.5)
+		insetDot.Size = UDim2.fromOffset(4, 4)
+		insetDot.BackgroundColor3 = Color3.fromRGB(92, 61, 36)
+		insetDot.BorderSizePixel = 0
+		insetDot.ZIndex = stud.ZIndex + 1
+		insetDot.Parent = stud
+		corner(insetDot, 3)
+	end
 	-- 안쪽 가는 테두리 (액자 느낌)
 	local inset = Instance.new("Frame")
 	inset.Name = "InnerFrame"
@@ -1392,7 +1446,7 @@ hudStroke(coinCard, 2)
 local dock = Instance.new("ScrollingFrame")
 dock.Name = "Dock"
 dock.BackgroundColor3 = NAVY
-dock.BackgroundTransparency = 0.15
+dock.BackgroundTransparency = if AssetIds["Menu/leather_grain"] then 0.89 else 0.15
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
 dock.Position = UDim2.new(1, -8, 0, -50) -- 상단 인셋(약 57)만큼 올려 화면 맨 위에 붙인다 -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
@@ -1401,6 +1455,31 @@ dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
+-- [HUD 장정] 목록의 배치·터치를 건드리지 않고 별도 가죽 표면을 뒤에 깐다.
+local dockLeatherId = AssetIds["Menu/leather_grain"]
+if dockLeatherId then
+	local leather = Instance.new("ImageLabel")
+	leather.Name = "DockLeather"
+	leather.BackgroundColor3 = COLORS.leather
+	leather.BackgroundTransparency = 0
+	leather.BorderSizePixel = 0
+	leather.AnchorPoint = dock.AnchorPoint
+	leather.Position = dock.Position
+	leather.Size = dock.Size
+	leather.Image = "rbxassetid://" .. tostring(dockLeatherId)
+	leather.ImageTransparency = 0.08
+	leather.ScaleType = Enum.ScaleType.Tile
+	leather.TileSize = UDim2.fromOffset(144, 144)
+	leather.Active = false
+	leather.Parent = hud
+	corner(leather, 10)
+	local seam = Instance.new("UIStroke")
+	seam.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	seam.Color = Color3.fromRGB(183, 136, 73)
+	seam.Thickness = 1.3
+	seam.Transparency = 0.36
+	seam.Parent = leather
+end
 dock.Parent = hud
 corner(dock, 10)
 hudStroke(dock, 1.5)
@@ -7002,6 +7081,21 @@ function H.showTitle()
 	box.Parent = root
 	corner(box, 11)
 	bookMaterial(box, "leather", 196)
+	-- [메뉴 표지] 안쪽 눌린 가죽 봉제 홈.
+	local binding = Instance.new("Frame")
+	binding.Name = "BookSewnMargin"
+	binding.BackgroundTransparency = 1
+	binding.Position = UDim2.fromOffset(4, 4)
+	binding.Size = UDim2.new(1, -8, 1, -8)
+	binding.ZIndex = box.ZIndex + 1
+	binding.Parent = box
+	corner(binding, 9)
+	local thread = Instance.new("UIStroke")
+	thread.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	thread.Color = Color3.fromRGB(207, 172, 119)
+	thread.Transparency = 0.49
+	thread.Thickness = 1
+	thread.Parent = binding
 	local edge = Instance.new("UIStroke")
 	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	edge.Color = UI_BRASS
