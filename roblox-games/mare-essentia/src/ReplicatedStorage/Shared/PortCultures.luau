@@ -215,5 +215,36 @@ STYLE.china.kit, STYLE.japan.kit = "eastasia", "eastasia"
 STYLE.china.mat, STYLE.seasia.mat, STYLE.pacific.mat, STYLE.wafrica.mat, STYLE.creole.mat = Enum.Material.WoodPlanks, Enum.Material.Wood, Enum.Material.Wood, Enum.Material.Sand, Enum.Material.Concrete
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
+-- 문화권별 실제 주택 구성. 기존 승인된 Town 메시로만 외벽·지붕·창호를 표현한다.
+-- roof는 추가 지붕창/박공 요소이며, 슬라브·돔 등 전용 모델이 없는 지역에는 임의 대체 지붕을 얹지 않는다.
+-- trim은 외벽에서 확인 가능한 소형 원본 창호/벽체 부품이다. 모든 주택에 반복 배치하지 않아 모바일 부하를 제한한다.
+local HOUSE_ARCH = {
+	north = { roof = "roof-gable", roofMat = Enum.Material.Slate, trim = "kenney_wood_wall_cross_01", trimMat = Enum.Material.WoodPlanks, chimney = true, annex = true },
+	med = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, annex = true },
+	brick = { roof = "roof-gable", roofMat = Enum.Material.Slate, trim = "kenney_grey_window_narrow_01", chimney = true, annex = true },
+	nordic = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks, chimney = true },
+	stone = { roof = "roof-high-window", roofMat = Enum.Material.Slate, trim = "kenney_grey_window_round_01", chimney = true, annex = true },
+	desert = { trim = "kenney_grey_window_narrow_01", trimMat = Enum.Material.Sandstone },
+	tropic = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks, balcony = true },
+	iberia = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, annex = true },
+	italy = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, annex = true },
+	france = { roof = "roof-high-window", roofMat = Enum.Material.Slate, trim = "kenney_grey_window_round_01", chimney = true, annex = true },
+	britain = { roof = "roof-high-window", roofMat = Enum.Material.Slate, trim = "kenney_wood_wall_cross_01", trimMat = Enum.Material.WoodPlanks, chimney = true, annex = true },
+	hanse = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "kenney_grey_window_narrow_01", chimney = true, annex = true },
+	ottoman = { trim = "kenney_grey_window_round_01", trimMat = Enum.Material.Limestone },
+	swahili = { trim = "kenney_grey_window_round_01", trimMat = Enum.Material.Limestone },
+	malabar = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks },
+	japan = { roofMat = Enum.Material.Slate, eastAsiaEntry = true },
+	china = { roofMat = Enum.Material.Slate, eastAsiaEntry = true },
+	seasia = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks },
+	pacific = { trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks },
+	wafrica = { trim = "kenney_grey_window_narrow_01", trimMat = Enum.Material.Sandstone },
+	creole = { roof = "roof-high-window", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true },
+	colonial = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, annex = true },
+}
+for culture, architecture in HOUSE_ARCH do
+	STYLE[culture].house = architecture
+end
+
 
 return { MED = MED, STYLE = STYLE, REGION = REGION, PROFILE = PROFILE, OUTFIT = OUTFIT, HEADWEAR_15C = HEADWEAR_15C }
