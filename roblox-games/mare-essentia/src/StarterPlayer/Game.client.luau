@@ -1341,19 +1341,12 @@ hud.Visible = false
 hud.Parent = gui
 
 local card = Instance.new("Frame")
-card.BackgroundColor3 = Color3.fromRGB(233, 215, 180)
-card.BackgroundTransparency = 0.04
+card.BackgroundTransparency = 1 -- 배경 없이 글자만 (읽기 쉬운 크림색 + 1픽셀 그림자)
 card.BorderSizePixel = 0
 card.Position = UDim2.fromOffset(8, 8)
 card.Size = UDim2.fromOffset(290, 114)
 H.hudCard = card
 card.Parent = hud
-corner(card, 10)
-hudStroke(card, 2)
-local cardWash = Instance.new("UIGradient")
-cardWash.Rotation = 90
-cardWash.Color = ColorSequence.new(Color3.fromRGB(248, 231, 193), Color3.fromRGB(202, 173, 123))
-cardWash.Parent = card
 
 local function hudText(parent, pos, size, textSize, color, align)
 	local l = Instance.new("TextLabel")
@@ -1387,11 +1380,37 @@ hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 2)
 H.hudShip = hudText(card, UDim2.fromOffset(70, 90), UDim2.new(1, -78, 0, 21), 14, Color3.fromRGB(54, 37, 25))
+-- 글자 그림자: 글자 바깥에 번지는 효과(UIStroke) 대신 같은 글자를 1픽셀 아래에 어둡게 깔아 또렷하게 읽히게 한다.
+function H.shadowOf(label: TextLabel)
+	local sh = label:Clone()
+	sh.Name = label.Name .. "Shadow"
+	sh.TextColor3 = Color3.fromRGB(18, 12, 8)
+	sh.TextTransparency = 0.25
+	sh.ZIndex = label.ZIndex - 1
+	sh.Position = label.Position + UDim2.fromOffset(1, 1)
+	sh.Parent = label.Parent
+	local function sync()
+		sh.Text = label.Text
+		sh.Visible = label.Visible
+		sh.TextSize = label.TextSize
+	end
+	label:GetPropertyChangedSignal("Text"):Connect(sync)
+	label:GetPropertyChangedSignal("TextSize"):Connect(sync)
+	label:GetPropertyChangedSignal("Visible"):Connect(sync)
+	sync()
+	return sh
+end
 for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
 	label.Font = Enum.Font.GothamBold
 	label.TextStrokeTransparency = 1
 	label.TextTruncate = Enum.TextTruncate.AtEnd
+	label.TextColor3 = Color3.fromRGB(255, 244, 214)
 end
+H.hudCoin.TextColor3 = Color3.fromRGB(255, 218, 120)
+for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
+	H.shadowOf(label)
+end
+hullBack.BackgroundColor3 = Color3.fromRGB(22, 16, 11)
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
 local banner = Instance.new("Frame")
@@ -1427,60 +1446,57 @@ local HUD_MENU_ART = {
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(if dockItem then 60 else 44, if dockItem then 68 else 44)
-	button.BackgroundColor3 = Color3.fromRGB(229, 205, 158)
-	button.BackgroundTransparency = 0.04
+	button.Size = UDim2.fromOffset(if dockItem then 64 else 44, if dockItem then 70 else 44)
+	button.BackgroundTransparency = 1 -- 배경 없이 그림만
 	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	corner(button, 8)
-	local stroke = Instance.new("UIStroke")
-	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	stroke.Color = Color3.fromRGB(97, 60, 32)
-	stroke.Thickness = 1.7
-	stroke.Parent = button
-	local wash = Instance.new("UIGradient")
-	wash.Rotation = 90
-	wash.Color = ColorSequence.new(Color3.fromRGB(247, 226, 179), Color3.fromRGB(203, 162, 105))
-	wash.Parent = button
 	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	local artSize = if dockItem then 40 else 34
+	local artTop = if dockItem then 3 else 4
 	if artId then
-		local art = Instance.new("ImageLabel")
-		art.Name = "MenuArt"
-		art.AnchorPoint = Vector2.new(0.5, 0)
-		art.Position = UDim2.new(0.5, 0, 0, if dockItem then 5 else 6)
-		art.Size = UDim2.fromOffset(if dockItem then 34 else 32, if dockItem then 34 else 32)
-		art.BackgroundTransparency = 1
-		art.Image = "rbxassetid://" .. tostring(artId)
-		art.ImageColor3 = Color3.fromRGB(78, 49, 29)
-		art.ScaleType = Enum.ScaleType.Fit
-		art.Parent = button
+		for i = 1, 2 do
+			local art = Instance.new("ImageLabel")
+			art.Name = if i == 1 then "MenuArtShadow" else "MenuArt"
+			art.AnchorPoint = Vector2.new(0.5, 0)
+			art.Position = UDim2.new(0.5, if i == 1 then 1 else 0, 0, artTop + (if i == 1 then 2 else 0))
+			art.Size = UDim2.fromOffset(artSize, artSize)
+			art.BackgroundTransparency = 1
+			art.Image = "rbxassetid://" .. tostring(artId)
+			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else Color3.fromRGB(255, 240, 204)
+			art.ImageTransparency = if i == 1 then 0.45 else 0
+			art.ScaleType = Enum.ScaleType.Fit
+			art.ZIndex = i
+			art.Parent = button
+		end
 	else
 		button.Text = string.sub(label, 1, 1)
-		button.TextSize = 22
+		button.TextSize = 24
 		button.Font = Enum.Font.GothamBold
-		button.TextColor3 = Color3.fromRGB(78, 49, 29)
+		button.TextColor3 = Color3.fromRGB(255, 240, 204)
 	end
 	if dockItem then
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(2, 41)
-		caption.Size = UDim2.new(1, -4, 0, 23)
+		caption.Position = UDim2.fromOffset(0, 46)
+		caption.Size = UDim2.new(1, 0, 0, 20)
 		caption.Font = Enum.Font.GothamBold
-		caption.TextSize = 12
-		caption.TextWrapped = true
-		caption.TextColor3 = Color3.fromRGB(58, 38, 22)
+		caption.TextSize = 13
+		caption.TextWrapped = false
+		caption.ZIndex = 3
+		caption.TextColor3 = Color3.fromRGB(255, 244, 214)
 		caption.Text = label
 		caption.Parent = button
+		H.shadowOf(caption)
 	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = button
 	button.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-			scale.Scale = 0.95
+			scale.Scale = 0.92
 		end
 	end)
 	button.InputEnded:Connect(function(input)
@@ -1497,7 +1513,7 @@ dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
 dock.Position = UDim2.new(1, -8, 0, 62)
-dock.Size = UDim2.fromOffset(194, 350)
+dock.Size = UDim2.fromOffset(206, 160)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
@@ -1505,36 +1521,48 @@ dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
 local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(60, 68)
+dockGrid.CellSize = UDim2.fromOffset(64, 70)
 dockGrid.CellPadding = UDim2.fromOffset(6, 5)
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 dockGrid.FillDirectionMaxCells = 3
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(194, 350)
+dockLimit.MaxSize = Vector2.new(206, 160)
 dockLimit.Parent = dock
 
+-- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
 H.DOCK = {
-	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "journal", "일지" }, { "chart", "지도" },
-	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
-	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
+	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
+	{ "quest", "주점", "quest" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 for i, d in H.DOCK do
-	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[1], d[2], true)
+	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	b.Activated:Connect(function()
-		if d[1] == "view" then
-			overview = not overview
-			b:SetAttribute("ActionLabel", if overview then "걷기" else "전경")
-			applyView()
-		elseif d[1] == "journal" then
-			openTab("map", "journal")
-		elseif d[1] == "chart" then
-			openTab("map", "chart")
-		else
-			openTab(d[1])
-		end
+		openTab(d[1])
+	end)
+end
+
+-- 걷기/전경 전환은 왼쪽 카드 아래의 글자 버튼으로 옮겼다.
+do
+	local viewBtn = Instance.new("TextButton")
+	viewBtn.Name = "ViewToggle"
+	viewBtn.BackgroundTransparency = 1
+	viewBtn.Position = UDim2.fromOffset(78, 118)
+	viewBtn.Size = UDim2.fromOffset(120, 26)
+	viewBtn.Font = Enum.Font.GothamBold
+	viewBtn.TextSize = 14
+	viewBtn.TextXAlignment = Enum.TextXAlignment.Left
+	viewBtn.TextColor3 = Color3.fromRGB(255, 218, 120)
+	viewBtn.Text = "▸ 걷기"
+	viewBtn.AutoButtonColor = false
+	viewBtn.Parent = hud
+	H.shadowOf(viewBtn :: any)
+	viewBtn.Activated:Connect(function()
+		overview = not overview
+		viewBtn.Text = if overview then "▸ 걷기" else "▸ 전경 보기"
+		applyView()
 	end)
 end
 
