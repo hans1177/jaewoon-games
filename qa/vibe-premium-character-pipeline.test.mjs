@@ -38,6 +38,34 @@ test('Vibe 5.9 rig audit blocks missing skin weights and accepts normalized appr
  assert.ok(bad.issues.some(issue=>issue.includes('MISSING_SKIN_WEIGHTS')));
 });
 
+test('Vibe 5.9 rig audit checks later meshes under a shared sample budget',()=>{
+ const bone={isBone:true,name:'Root'};
+ const attr=values=>({count:values.length,itemSize:4,getComponent:(i,j)=>j===0?values[i]:0});
+ const front={isSkinnedMesh:true,name:'Front',geometry:{attributes:{skinWeight:attr([1,1,1,1])}}};
+ const rear={isSkinnedMesh:true,name:'Rear',geometry:{attributes:{skinWeight:attr([0])}}};
+ const model={traverse(fn){fn(bone);fn(front);fn(rear)}};
+ const audit=inspectVibeCharacterRig(model,{sampleLimit:2});
+ assert.equal(audit.weightsSampled,2);
+ assert.equal(audit.unweighted,1);
+ assert.equal(audit.productionEligible,false);
+ assert.ok(audit.issues.includes('UNWEIGHTED_VERTICES'));
+ const insufficient=inspectVibeCharacterRig(model,{sampleLimit:1});
+ assert.equal(insufficient.productionEligible,false);
+ assert.ok(insufficient.issues.includes('RIG_AUDIT_COVERAGE_INCOMPLETE'));
+ assert.equal(insufficient.sourcePreserved,true);
+});
+test('Vibe 5.9 rig audit detects out-of-range bound bone indices without mutating source',()=>{
+ const bone={isBone:true,name:'Root'};
+ const weights={count:2,itemSize:4,getComponent:(i,j)=>j===0?1:0};
+ const indices={count:2,itemSize:4,getComponent:(i,j)=>j===0?3:0};
+ const mesh={isSkinnedMesh:true,name:'Body',skeleton:{bones:[bone]},geometry:{attributes:{skinWeight:weights,skinIndex:indices}}};
+ const audit=inspectVibeCharacterRig({traverse(fn){fn(bone);fn(mesh)}});
+ assert.equal(audit.invalidIndices,2);
+ assert.ok(audit.issues.includes('INVALID_SKIN_INDICES'));
+ assert.equal(audit.productionEligible,false);
+ assert.equal(indices.getComponent(0,0),3);
+});
+
 test('Vibe 5.9 joint constraints honor rest and reset without adding bones',()=>{
  const bone={isBone:true,name:'LeftHand',rotation:{x:.2,y:0,z:0}};
  const model={traverse(fn){fn(bone)}};
