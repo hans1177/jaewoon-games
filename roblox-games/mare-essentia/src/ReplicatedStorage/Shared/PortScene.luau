@@ -234,9 +234,11 @@ local KEEPER_ROLE = {
 }
 local OC = Color3.fromRGB
 local currentKey = "north"
+local currentYear = 1492
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
+	local year = if extra and type(extra.year) == "number" then extra.year else currentYear
 	local outfit
 	if o then
 		outfit = {
@@ -253,14 +255,21 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 		for k, v in extra do
 			outfit[k] = v
 		end
-		-- 시대 복식: 삼각모는 17세기 후반 이후, 그 전에는 챙 넓은 모자
-		if outfit.hat == "tricorn" and (extra.year or 1700) < 1680 then
-			outfit.hat = "wide"
-		end
-		if extra.noHat then
-			outfit.hat = nil
-		end
 	end
+	outfit = outfit or {}
+	outfit.year = year
+	outfit.culture = currentKey
+	outfit.profession = if extra and extra.profession then extra.profession else role
+	-- 15세기: 검증되지 않은 후대 삼각모·근세 캡·원시 도형 모자/가발/원통 치마를 사용하지 않는다.
+	-- 시대에 맞는 정식 R15 메시와 상업적 사용권·장착 QA가 확인되기 전에는 없는 복식으로 처리한다.
+	if year < 1500 then
+		outfit.hat = nil
+		outfit.hair = nil
+		outfit.skirt = nil
+	elseif outfit.hat == "tricorn" and year < 1680 then
+		outfit.hat = "wide"
+	end
+	if extra and extra.noHat then outfit.hat = nil end
 	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8, outfit)
 	if figure then figure.Name = "Villager" end
 	return figure
@@ -600,7 +609,7 @@ local function penAt(i, n)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
-	local year = info.year or 1700
+	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
 	local function person(pos, facing, spec)
 		local extra = { year = year, age = spec.age or "adult" }
@@ -1414,6 +1423,7 @@ function PortScene.build(info, onFacility)
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	currentKey = styleKeyOf(style)
+	currentYear = if type(info.year) == "number" then info.year else 1492
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
