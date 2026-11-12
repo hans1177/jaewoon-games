@@ -168,6 +168,8 @@ end)
 task.spawn(function()
 	local featureFails, featureCalls, accepted, rejected = 0, 0, 0, 0
 	local issues = {}
+	local coverage, observed = {}, {}
+	local previousView
 	local function featureFail(msg)
 		featureFails += 1
 		if #issues < 24 then table.insert(issues, msg:sub(1, 150)) end
@@ -207,17 +209,66 @@ task.spawn(function()
 	end
 	local function call(action, payload)
 		featureCalls += 1
+		local row = coverage[action]
+		if not row then
+			row = { calls = 0, accepted = 0, rejected = 0, invalid = 0 }
+			coverage[action] = row
+		end
+		row.calls += 1
 		local success, result = pcall(function()
 			return remote:Invoke(player, action, payload or {})
 		end)
 		if not success then
+			row.invalid += 1
 			featureFail("action " .. action .. " threw: " .. tostring(result))
 			return nil
 		end
-		if result == nil then
-			featureFail("FEATURE_NO_RESPONSE " .. action)
+		if type(result) ~= "table" or type(result.ok) ~= "boolean" then
+			row.invalid += 1
+			featureFail("FEATURE_RESPONSE_INVALID " .. action)
 			return nil
 		end
+		if result.ok then
+			row.accepted += 1
+		else
+			row.rejected += 1
+		end
+		local view = result.view
+		if result.ok and view then
+			local function observe(name, valid)
+				if valid then
+					observed[name] = (observed[name] or 0) + 1
+				else
+					featureFail("FEATURE_STATE_NOT_OBSERVED " .. name)
+				end
+			end
+			if action == "Accept" then
+				local active = false
+				for _, quest in view.quests.active do
+					if quest.id == payload.questId then active = true; break end
+				end
+				local doneBefore = previousView and previousView.quests and previousView.quests.doneCount or 0
+				observe("quest-accepted", active or view.quests.doneCount > doneBefore)
+			elseif action == "Hunt" then
+				local battle = view.lastBattle
+				observe("naval-encounter", battle and battle.pending == true and type(battle.log) == "table" and #battle.log > 0)
+			elseif action == "ResolveBattle" then
+				observe("naval-resolved", view.lastBattle and view.lastBattle.pending == false)
+			elseif action == "Sail" then
+				observe("voyage-arrived", view.player and view.player.portId == payload.portId)
+			elseif action == "Explore" then
+				observe("exploration-advanced", previousView and previousView.player and view.player
+					and (view.player.year ~= previousView.player.year or view.player.day ~= previousView.player.day))
+			elseif action == "TacticsStart" then
+				observe("land-battle-started", view.tactics and view.tactics.siteId == payload.siteId and view.tactics.status == "active")
+			elseif action == "TacticsEnd" then
+				local before = previousView and previousView.tactics
+				observe("land-battle-turn", before and view.tactics and (view.tactics.turn > before.turn or view.tactics.status ~= before.status))
+			elseif action == "TacticsLeave" then
+				observe("land-battle-left", view.tactics == nil)
+			end
+		end
+		if view then previousView = view end
 		return result
 	end
 	for _ = 1, 40 do
@@ -255,7 +306,26 @@ task.spawn(function()
 		grade(name, res, false)
 		return res
 	end
-	local portId = r.view.portId or r.view.port and r.view.port.id
+	local landAttempted, checkedSites = false, {}
+	local function checkLandBattle(view)
+		if landAttempted or not view or view.tactics then return end
+		for _, site in view.sites or {} do
+			if site.unlocked and site.tactics and site.left > 0 and not checkedSites[site.id] then
+				checkedSites[site.id] = true
+				local battle = call("TacticsStart", { siteId = site.id })
+				if battle then grade("TacticsStart " .. site.id, battle, true) end
+				if battle and battle.ok then
+					landAttempted = true
+					local turn = call("TacticsEnd")
+					if turn then grade("TacticsEnd", turn, true) end
+					local leave = call("TacticsLeave")
+					if leave then grade("TacticsLeave", leave, true) end
+				end
+				return
+			end
+		end
+	end
+	checkLandBattle(r.view)
 	-- 퀘스트: 보이는 모든 퀘스트를 수락해 본다 (수락 조건 때문에 거절되는 것은 정상)
 	for i, q in Quests.Quests do
 		if i > 8 then
@@ -355,7 +425,10 @@ task.spawn(function()
 	for _, id in portIds do
 		task.wait(0.1) -- 쉬지 않고 돌리면 Studio가 시간 초과로 멈춘다
 		local res = call("Sail", { portId = id })
-		if res then grade("Sail " .. tostring(id), res, true) end
+		if res then
+			grade("Sail " .. tostring(id), res, true)
+			if res.ok then checkLandBattle(res.view) end
+		end
 		local choice = call("VoyageChoice", { index = 1 })
 		if choice then grade("VoyageChoice", choice, true) end
 		local bonus = call("VoyageBonus", { index = 1 })
@@ -365,6 +438,7 @@ task.spawn(function()
 	print("[QA] FEATURE_COVERED Sail cases=" .. #portIds)
 	ReplicatedStorage:SetAttribute("MareQAFeatureTotals", HttpService:JSONEncode({
 		calls = featureCalls, accepted = accepted, rejected = rejected, failed = featureFails, issues = issues,
+		coverage = coverage, observed = observed,
 	}))
 	ReplicatedStorage:SetAttribute("MareQAFeatureStatus", if featureFails == 0 and accepted > 0 then "PASS" else "FAIL")
 	print(string.format("[QA] DONE calls=%d accepted=%d rejected=%d featureFails=%d", featureCalls, accepted, rejected, featureFails))

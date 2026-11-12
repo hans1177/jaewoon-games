@@ -2710,6 +2710,18 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
       abortedEarly:false
     }
   };
+  const mareScript=steps.some(st=>st.type==='click_from_luau'&&st.code.includes('"프랑스"'));
+  if(mareScript)report.visualSamples=[];
+  const voyageDiagnostics=new Set();
+  const inspectVoyageConsole=response=>{
+    if(!mareScript)return;
+    const entries=collectStudioConsoleEntries(response,[]);
+    const messages=entries.length?entries.map(row=>row.message):flattenText(response,[]);
+    for(const line of messages.flatMap(value=>value.split(/\r?\n/))){
+      const match=line.match(/\[Game\] (?:3D 항해 오류, 2D로 대체|voyage scene error):?[^\r\n]*/i);
+      if(match)voyageDiagnostics.add(match[0].slice(0,300));
+    }
+  };
   let studioId='',started=false;
   const luau=async(ctx,code)=>{
     const t=client.tool('execute_luau');
@@ -2850,6 +2862,25 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           report.log.push({step:n,capture:st.name,files:imgs.length});
           if(imgs.length===0)throw new Error('STUDIO_SCREEN_CAPTURE_EMPTY:'+clean(st.name));
           report.summary.capturedFrames+=imgs.length;
+          if(mareScript){
+            const frame=captureSanity(imgs);
+            const previousClick=report.log.findLast(row=>row.status==='DISPATCHED'||row.status==='VERIFIED');
+            const label=clean(previousClick?.out).match(/CLICK=([^\r\n]+)/)?.[1]||'';
+            const sample={name:st.name||'cap'+n,frame,...(label?{interaction:label.slice(0,100)}:{})};
+            report.visualSamples.push(sample);
+            if(report.visualSamples.filter(row=>row.scene||row.sceneProbeUnavailable).length<6&&(!label||/출항|항해|탐험|전투|교역|지도/.test(label))){
+              try{
+                const output=await luau('Client',"local p=game:GetService('Players').LocalPlayer local l=game:GetService('Lighting') local c=workspace.CurrentCamera "
+                  +"return 'MARE_VISUAL_SAMPLE='..game:GetService('HttpService'):JSONEncode({camera=c~=nil,brightness=l.Brightness,"
+                  +"atmosphere=l:FindFirstChildOfClass('Atmosphere')~=nil,sky=l:FindFirstChildOfClass('Sky')~=nil,"
+                  +"voyageScene=workspace:FindFirstChild('VoyageScene')~=nil,voyageHud=p.PlayerGui:FindFirstChild('VoyageHud')~=nil,"
+                  +"departing=workspace:GetAttribute('VoyageActive')==true})");
+                const marker=output.split(/\r?\n/).find(line=>line.startsWith('MARE_VISUAL_SAMPLE='));
+                if(marker)sample.scene=JSON.parse(marker.slice('MARE_VISUAL_SAMPLE='.length));
+                else sample.sceneProbeUnavailable=true;
+              }catch{sample.sceneProbeUnavailable=true;}
+            }
+          }
         }else{
           throw new Error('STUDIO_SCRIPT_UNKNOWN_STEP_TYPE:'+clean(st.type));
         }
@@ -2863,7 +2894,6 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
       }
     }
     // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
-    const mareScript=steps.some(st=>st.type==='click_from_luau'&&st.code.includes('"프랑스"'));
     if(mareScript&&!report.summary.abortedEarly){
       const auditCode="local r=game:GetService('ReplicatedStorage') local h=game:GetService('HttpService') "
         +"local keys={'MareModelAuditState','MareModelAuditTotals','MareQAAssetStatus','MareQAAssetTotals','MareQAFeatureStatus','MareQAFeatureTotals'} "
@@ -3136,6 +3166,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const args={};setStudioId(args,tool.inputSchema||{},studioId);
         const response=await client.call('get_console_output',fillRequired(args,tool.inputSchema||{}));
         if(response==null)throw new Error('ROBLOX_STUDIO_MCP_CONSOLE_RESPONSE_MISSING');
+        inspectVoyageConsole(response);
         const classification=classifyStudioConsoleOutput(response);
         report.consoleCapture={
           captured:true,errorCount:classification.errors.length,
@@ -3159,12 +3190,24 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
             rows.push(...history);
           }catch{}
         }
+        inspectVoyageConsole(rows);
         const classification=classifyStudioConsoleOutput(rows);
         report.consoleCapture={
           captured:contexts.length>0,contexts,errorCount:classification.errors.length,
           warningCount:classification.warningCount,errors:classification.errors
         };
       }
+    }
+    if(mareScript){
+      const samples=report.visualSamples;
+      report.visualEvidence={
+        framesChecked:samples.length,framesWithInvalidSize:samples.filter(row=>!row.frame.pass).length,
+        voyageSceneObserved:samples.some(row=>row.scene?.voyageScene||row.scene?.voyageHud),
+        departureObserved:samples.some(row=>row.scene?.departing),
+        voyageDiagnostics:[...voyageDiagnostics].slice(0,12),
+        graphicalQuality:'REVIEW_CAPTURED_FRAMES'
+      };
+      if(voyageDiagnostics.size&&!report.errors.includes('STUDIO_FEATURE_AUDIT_FAILED'))report.errors.push('STUDIO_FEATURE_AUDIT_FAILED');
     }
     if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch(e){report.errors.push('stop:'+clean(e?.message||e).slice(0,200));}}
     client.close();
