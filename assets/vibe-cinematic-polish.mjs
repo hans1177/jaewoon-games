@@ -212,17 +212,25 @@ export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
  const groups=[...families.entries()].flatMap(([parent,value])=>[...value.values()].map(rows=>({parent,rows})))
   .filter(group=>new Set(group.rows.map(row=>row.level)).size>1)
   .map(group=>({...group,levels:[...new Set(group.rows.map(row=>row.level))].sort((a,b)=>a-b)}));
- const world=new THREE.Vector3(),steps=distances.map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+ // [유틸: 정밀도 거리] 실제 카메라가 다른 오브젝트에 붙어도 양쪽 월드좌표로 계산한다.
+ const world=new THREE.Vector3(),cameraWorld=new THREE.Vector3();
+ const steps=distances.map(Number).filter(value=>Number.isFinite(value)&&value>=0).sort((a,b)=>a-b);
  return{
   groups:groups.length,
   update(camera){
-   if(!camera?.position||!groups.length)return 0;
+   if(!groups.length||(!camera?.position&&typeof camera?.getWorldPosition!=='function'))return 0;
+   let cameraPosition=camera.position;
+   if(typeof camera.getWorldPosition==='function'){
+    camera.getWorldPosition(cameraWorld);
+    cameraPosition=cameraWorld;
+   }
+   if(!cameraPosition||![cameraPosition.x,cameraPosition.y,cameraPosition.z].every(Number.isFinite))return 0;
    for(const group of groups){
     // [메쉬 LOD] 맵 전체 중심이 아니라 실제 해당 원본 메쉬 부모까지의 거리로 선택한다.
     const origin=group.parent?.getWorldPosition?group.parent:root;
     origin.getWorldPosition(world);
-    const distance=world.distanceTo(camera.position);
-    const step=steps.filter(value=>distance>=value).length;
+    const distance=world.distanceTo(cameraPosition);
+    let step=0;while(step<steps.length&&distance>=steps[step])step++;
     const level=group.levels[Math.min(step,group.levels.length-1)];
     // LOD 보조 메쉬는 제작 시 숨겨져 있어도 선택된 레벨에서 보여야 한다. reset은 원래 가시성 복원.
     for(const row of group.rows)row.mesh.visible=row.level===level;
