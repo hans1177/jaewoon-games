@@ -6837,6 +6837,16 @@ end
 			end
 		end
 		go.LayoutOrder = 5
+		if workspace:GetAttribute("QAAutoIntro") then
+			-- Studio 자동 점검: 클릭 좌표가 어긋나도 안내 대화가 스스로 넘어가게 한다
+			task.spawn(function()
+				for _ = 1, 4 do
+					task.wait(1.2)
+					if dlg ~= layer then return end
+					submit()
+				end
+			end)
+		end
 		if box then
 			-- 엔터로도 확인한다
 			box.FocusLost:Connect(function(enterPressed)
