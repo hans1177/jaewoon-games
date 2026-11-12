@@ -2117,6 +2117,9 @@ do
 		check("transplant: sugar new world after 1550", not H.isLocal("sugar", "new_world", 1540) and H.isLocal("sugar", "new_world", 1560))
 		check("producesOf drops non-local", #H.producesOf({ "tea", "wool" }, "europe", 1600) == 1)
 		check("demandsOf excludes own specialties", #H.demandsOf({ "wool", "tea", "silk" }, "europe", 1600, { "wool" }) == 2)
+		check("port waves differ", H.portWave("london", 400) ~= H.portWave("canton", 400))
+		check("port wave bounded", H.portWave("london", 123) > 0.7 and H.portWave("london", 123) < 1.3)
+		check("festival in window", H.festivalAt("europe", 47) ~= nil and H.festivalAt("europe", 200) == nil)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)

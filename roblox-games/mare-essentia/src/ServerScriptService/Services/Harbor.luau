@@ -97,6 +97,24 @@ return function(D, S)
 		state.harborTrade[state.portId] = nil
 		local region = D.Regions.of(port).id
 		local vit = H.vitality(regime, region, H.producesOf(port.produces, region, year), activity)
+		-- 항구 고유 파동, 지역 축제, 진행 중인 재해·행운 (실제 사건은 World 가 일으킨다)
+		vit *= H.portWave(port.id, state.day)
+		local fest = H.festivalAt(region, state.day)
+		if fest then
+			vit *= 1.25
+			table.insert(msgs, string.format("%s 축제(%s)로 항구가 북적인다", port.name, fest.name))
+		end
+		for _, ev in (state.world and state.world.active) or {} do
+			if ev.region == region and ev.endDay >= state.day then
+				if ev.kind == "disaster" then
+					vit *= 0.4
+					table.insert(msgs, string.format("%s: %s 여파로 항구가 휘청인다", port.name, ev.title))
+				else
+					vit *= 1.35
+					table.insert(msgs, string.format("%s: %s 덕에 항구가 활기를 띤다", port.name, ev.title))
+				end
+			end
+		end
 		if vit >= 0.5 and inv < SELF_GROW_CAP then
 			local gain = math.floor(elapsed * (1.2 + before * 1.5) * vit)
 			if gain > 0 then

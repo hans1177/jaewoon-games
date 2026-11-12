@@ -22,6 +22,40 @@ function Harbor.level(invested: number): number
 	return lv
 end
 
+-- 항구마다 다른 경기 파동: 항구 이름에서 정한 주기·위상으로 오르내려, 같은 국면 속에서도 항구마다 사이클이 어긋난다.
+function Harbor.portWave(portId: string, day: number): number
+	local h = 0
+	for i = 1, #portId do
+		h = (h * 31 + string.byte(portId, i)) % 100003
+	end
+	local period = 700 + (h % 600) -- 약 2~3.5년
+	local phase = (h % 360) * math.pi / 180
+	return 1 + 0.25 * math.sin(2 * math.pi * day / period + phase)
+end
+
+-- 지역 축제: 해마다 같은 철에 열려 며칠간 항구가 북적인다 (연중 일자 기준)
+Harbor.FESTIVALS = {
+	europe = { { day = 45, name = "사육제(카니발)" }, { day = 125, name = "봄 정기시" }, { day = 270, name = "수확제" } },
+	indian = { { day = 300, name = "디왈리 등불제" }, { day = 160, name = "계절풍 개항제" } },
+	far_east = { { day = 40, name = "설 명절 시장" }, { day = 265, name = "추석 달맞이" } },
+	w_africa = { { day = 250, name = "얌 수확제" } },
+	new_world = { { day = 305, name = "망자의 날 장터" }, { day = 60, name = "카니발" } },
+	pacific = { { day = 200, name = "수확 잔치" } },
+}
+function Harbor.festivalAt(region: string, day: number)
+	local list = Harbor.FESTIVALS[region]
+	if not list then
+		return nil
+	end
+	local doy = day % 365
+	for _, f in list do
+		if math.abs(doy - f.day) <= 7 then
+			return f
+		end
+	end
+	return nil
+end
+
 -- 특산품 해금: 처음엔 그 땅의 토착 특산 2가지뿐이고, 항구가 발전(기술·시설·교역 축적)할 때마다 하나씩 더 생긴다.
 -- produces 목록은 토착 → 후발 순서로 적혀 있다.
 Harbor.NATIVE_COUNT = 2
