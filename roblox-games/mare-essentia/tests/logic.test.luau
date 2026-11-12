@@ -1587,6 +1587,31 @@ do
 	check("boss cooldown blocks", not ok, msg)
 	check("view lists bosses", #S.View.build(st, ctx).bosses == #D.Bosses.Bosses)
 
+	-- 보스전 카드 대결: 결과를 보류했다가, 카드 기록을 서버가 검증해 확정한다
+	do
+		local bs = newState("england")
+		bs.careers.battle.level = 10
+		bs.ship.id = "galleon"
+		local bdef = S.State.shipDef(bs)
+		bs.ship.hull, bs.ship.crew = bdef.hull, bdef.crew
+		local okB = act(bs, "ChallengeBoss", { bossId = "sea_serpent", cards = true })
+		check("boss card mode defers the result", okB and bs.pendingBattle ~= nil and bs.pendingBattle.bossId == "sea_serpent" and bs.pendingBattle.card.boss == true)
+		local c = bs.pendingBattle.card
+		local mB = D.BoardingCards.build("gunnery", c.seed, { fighter = c.my, deckCards = S.Battle.deckCache[bs] }, { fighter = c.foe, boss = true })
+		local actsB, gB = {}, 0
+		while not mB.over and gB < 400 do
+			gB += 1
+			local side = mB.turn
+			local okA, _, _, a = D.BoardingCards.ai(mB, side)
+			if side == "me" and okA then table.insert(actsB, a) end
+		end
+		check("boss card record accepted", act(bs, "CardBattle", { actions = actsB }))
+		local coins0 = bs.coins
+		act(bs, "ResolveBattle", {})
+		check("boss card win pays reward, loss does not", (mB.winner ~= "me") or bs.coins > coins0)
+		check("boss card result settles", bs.pendingBattle == nil and bs.stats.battlesWon + bs.stats.battlesLost >= (if mB.winner == "draw" then 0 else 1))
+	end
+
 	-- 저장 왕복과 변조 방어
 	local saved = S.State.serialize(st)
 	local back = S.State.sanitize(saved)

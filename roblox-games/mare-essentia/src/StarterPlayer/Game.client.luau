@@ -5137,7 +5137,7 @@ function RENDERERS.battle()
 		add(function()
 			local sub = string.format("%s\n격파 %d회%s", b.summary, b.defeated, if b.blocked then " · " .. b.blocked else "")
 			return mkRow(content, b.name, sub, {
-				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end },
+				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id, cards = true }) end },
 			}, 76)
 		end)
 	end
