@@ -724,6 +724,64 @@ for id, spec in {
 		COMPANION_PORTRAIT[id] = { atlas = "companions_" .. spec[1], offset = Vector2.new(spec[2] % 5 * 256, math.floor(spec[2] / 5) * 336) }
 	end
 end
+-- 초상 배정표: 한 칸은 한 사람만 쓴다. 이미 동료가 쓰는 칸은 H.portraitUsed 에 적어 두고,
+-- 국가 고향 동료(n_*)와 주인공 후보는 그 나라 시트의 빈 칸에서 겹치지 않게 고른다.
+-- 나라마다 먼저 쓰는 시트(어울리는 지역 순서). 칸이 모자라면 다른 시트의 빈 칸으로 넘어간다.
+do
+local PortraitSheetsN = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Specialties")).PortraitSheets
+H.NATION_SHEET = {
+	england = { "north_atlantic", "atlantic" }, netherlands = { "north_atlantic", "atlantic" }, denmark = { "north_atlantic" }, sweden = { "north_atlantic" },
+	france = { "atlantic", "north_atlantic" }, spain = { "atlantic", "mediterranean" }, portugal = { "atlantic", "africa" }, new_spain = { "americas" },
+	venice = { "mediterranean" }, ottoman = { "mediterranean", "east_africa_red_sea" }, swahili = { "east_africa_red_sea", "africa" }, malabar = { "indian" },
+	china = { "pacific", "oceania" }, japan = { "pacific", "oceania" }, korea = { "pacific", "oceania" },
+}
+local SHEET_FALLBACK = { "west_africa", "africa", "oceania", "indian", "americas", "pacific", "mediterranean", "atlantic", "east_africa_red_sea", "north_atlantic" }
+H.portraitUsed = {}
+for _, spec in {
+	{ "mediterranean", 4 }, { "mediterranean", 16 }, { "west_africa", 2 }, { "north_atlantic", 17 },
+	{ "north_atlantic", 15 }, { "north_atlantic", 1 }, { "north_atlantic", 16 }, { "mediterranean", 19 }, { "east_africa_red_sea", 5 },
+	{ "indian", 1 }, { "pacific", 15 }, { "americas", 3 }, { "mediterranean", 15 },
+	{ "faith_christian", 0 }, { "faith_christian", 16 }, { "faith_buddhist", 3 }, { "faith_buddhist", 17 }, { "faith_indian_ocean", 3 }, { "faith_indian_ocean", 4 },
+} do
+	H.portraitUsed[spec[1] .. ":" .. spec[2]] = true
+end
+-- 나라의 시트 목록(+ 예비 시트)에서 아직 아무도 안 쓴 칸 하나를 집는다. 집은 칸은 바로 사용 처리된다.
+function H.freeCell(nid, from, to)
+	local lists = { H.NATION_SHEET[nid] or {}, SHEET_FALLBACK }
+	for _, list in lists do
+		for _, sheet in list do
+			if AssetIds["Portraits/companions_" .. sheet] and PortraitSheetsN[sheet] then
+				for c = from, math.min(to, PortraitSheetsN[sheet] - 1) do
+					local key = sheet .. ":" .. c
+					if not H.portraitUsed[key] then
+						H.portraitUsed[key] = true
+						return sheet, c
+					end
+				end
+			end
+		end
+	end
+	return nil, nil
+end
+local NATION_LIST = { "england", "netherlands", "france", "spain", "portugal", "denmark", "sweden", "venice", "ottoman", "swahili", "malabar", "china", "japan", "korea", "new_spain" }
+for _, nid in NATION_LIST do
+	local sheet, cell = H.freeCell(nid, 0, 14)
+	if sheet then
+		COMPANION_PORTRAIT["n_" .. nid] = { atlas = "companions_" .. sheet, offset = Vector2.new(cell % 5 * 256, math.floor(cell / 5) * 336) }
+	end
+end
+-- 주인공 후보 6칸: 남성풍 윗줄 4칸 + 여성풍 아랫줄 2칸 (동료가 쓰는 칸은 빼고, 한 번 고른 칸은 다른 국가 후보와도 겹치지 않는다)
+H.captainChoices = {}
+for _, nid in NATION_LIST do
+	local out = {}
+	for i = 1, 6 do
+		local sheet, c = if i <= 4 then H.freeCell(nid, 0, 14) else H.freeCell(nid, 15, 19)
+		if not sheet and i > 4 then sheet, c = H.freeCell(nid, 0, 14) end
+		if sheet then table.insert(out, "cp:" .. sheet .. ":" .. c) end
+	end
+	H.captainChoices[nid] = out
+end
+end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
 	["주점"] = "tavern", ["학자의 서재"] = "scholar",
@@ -6456,12 +6514,14 @@ end
 
 	local function nationPortraits()
 		local out = {}
-		local sheet = require(Shared:WaitForChild("Specialties")).RegionSheets[H.regionOfPort(view.player.portId) or ""] or "north_atlantic"
-		-- 윗줄에서 남성 인물 5명, 아랫줄에서 여성 인물 5명
-		for _, c in { 0, 2, 4, 6, 8, 15, 16, 17, 18, 19 } do
-			if AssetIds["Portraits/companions_" .. sheet] then
-				table.insert(out, "cp:" .. sheet .. ":" .. c)
+		local nid = nil
+		for id, n in PortData.Nations do
+			if n.name == view.player.nation then
+				nid = id
 			end
+		end
+		for _, v in H.captainChoices[nid or ""] or {} do
+			table.insert(out, v)
 		end
 		if #out == 0 then
 			for id in PortData.Nations do
