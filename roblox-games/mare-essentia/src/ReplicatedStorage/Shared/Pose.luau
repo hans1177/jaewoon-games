@@ -382,6 +382,12 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	if outfit and outfit.age then
 		model:SetAttribute("Age", outfit.age)
 	end
+	-- [시대·문화·직업] 비주얼 메타데이터는 게임 세이브·경제·판정에 기록하지 않는다.
+	if outfit then
+		if type(outfit.year) == "number" then model:SetAttribute("AppearanceYear", outfit.year) end
+		if type(outfit.culture) == "string" then model:SetAttribute("AppearanceCulture", outfit.culture) end
+		if type(outfit.profession) == "string" then model:SetAttribute("AppearanceProfession", outfit.profession) end
+	end
 	if outfit and outfit.hair then
 		pcall(addHair, model, outfit.hair, outfit.hairColor or Color3.fromRGB(60, 42, 30))
 	end
