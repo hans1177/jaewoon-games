@@ -218,10 +218,10 @@ return function(D, S)
 		for _ = 1, 8 do
 			local again = false
 			for _, quest in D.Quests.Quests do
-				if AUTO_KINDS[quest.kind] and not state.quests.done[quest.id] and visible(state, quest) then
+				if (AUTO_KINDS[quest.kind] or state.quests.active[quest.id]) and not state.quests.done[quest.id] and visible(state, quest) then
 					local a = state.quests.active[quest.id] or { delivered = 0, baseWins = state.stats.battlesWon }
 					if progressWith(state, quest, a) >= quest.amount then
-						payout(state, quest, "발견 보고", msgs)
+						payout(state, quest, if AUTO_KINDS[quest.kind] then "일지 기록 완료" else "의뢰 완료", msgs)
 						reported += 1
 						again = true
 					end
@@ -234,8 +234,60 @@ return function(D, S)
 		return reported
 	end
 
+	-- 일지에 새 퀘스트를 자동으로 올린다: 소문을 듣거나 사람을 만나 이야기하면 시작된다 (수락 단계 없음).
+	-- personId: 방금 이야기한 동료 id (그 동료의 전용 퀘스트가 먼저 열린다)
+	local function offer(state, msgs, how, personId)
+		if countActive(state) >= MAX_ACTIVE then
+			return nil
+		end
+		local pick = nil
+		for _, quest in D.Quests.Quests do
+			if not state.quests.done[quest.id] and not state.quests.active[quest.id] and not AUTO_KINDS[quest.kind] and visible(state, quest)
+				and (quest.kind ~= "deliver" or quest.portId == state.portId) then
+				if quest.companionId then
+					if quest.companionId == personId then
+						pick = quest
+						break
+					end
+				elseif not pick then
+					pick = quest
+				end
+			end
+		end
+		if not pick then
+			return nil
+		end
+		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
+		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: %s (%s)", how, pick.name, pick.summary))
+		return pick
+	end
+
+	-- 항구에 도착하면: 주점 소문이 돌고(가끔), 얽힌 인물이 있으면 이야기가 시작된다.
+	local function arrivalHooks(state, msgs)
+		if state._hookPort == state.portId then
+			return
+		end
+		local first = state._hookPort == nil
+		state._hookPort = state.portId
+		if first then
+			return
+		end
+		-- 항구와 날짜로 정해지는 결정적 확률(70%): 같은 도착이면 같은 소문
+		local h = 0
+		for i = 1, #state.portId do
+			h += string.byte(state.portId, i) * i
+		end
+		if (h + state.day * 7) % 10 < 7 then
+			offer(state, msgs, "주점에서 소문을 들었다")
+		end
+		if S.Story and S.Story.autoTrigger then
+			S.Story.autoTrigger(state, msgs)
+		end
+	end
+
 	-- 항구에 도착하면 받아 둔 납품 퀘스트의 물건을 자동으로 넘긴다. 조건을 채운 퀘스트는 알려 준다.
 	local function autoDeliver(state, msgs)
+		arrivalHooks(state, msgs)
 		for _, quest in D.Quests.Quests do
 			local a = state.quests.active[quest.id]
 			if a and quest.kind == "deliver" and quest.portId == state.portId and a.delivered < quest.amount then
@@ -251,10 +303,10 @@ return function(D, S)
 			local a = state.quests.active[quest.id]
 			if a and not a.notified and progress(state, quest) >= quest.amount then
 				a.notified = true
-				table.insert(msgs, "퀘스트 조건 달성! 퀘스트 탭에서 보상을 받으세요: " .. quest.name)
+				table.insert(msgs, "일지: 조건을 채웠다 — " .. quest.name)
 			end
 		end
 	end
 
-	return { handlers = handlers, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }
+	return { handlers = handlers, offer = offer, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }
 end

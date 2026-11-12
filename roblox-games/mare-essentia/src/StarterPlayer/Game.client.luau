@@ -59,7 +59,7 @@ local TABS = {
 	{ id = "explore", name = "탐험" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
-	{ id = "quest", name = "퀘스트" },
+	{ id = "quest", name = "일지" },
 	{ id = "battle", name = "전투" },
 }
 
@@ -2216,6 +2216,27 @@ function playStory(ev)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
 	H.paintScene(picture, ev.art)
+	-- 일러스트 연출: 장면 종류에 맞는 그림을 깔고 천천히 다가가는 카메라 효과를 준다 (그림이 없으면 위의 단순 배경)
+	do
+		local ILLUST = { tavern = "event_festival", harbor = "event_trade_boom", storm = "event_storm", palace = "event_royal_charter", ruins = "event_stonehenge", observatory = "event_principia", library = "event_principia" }
+		local img = AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
+		if img then
+			local bg = Instance.new("ImageLabel")
+			bg.Name = "Illustration"
+			bg.AnchorPoint = Vector2.new(0.5, 0.5)
+			bg.Position = UDim2.fromScale(0.5, 0.5)
+			bg.Size = UDim2.fromScale(1.02, 1.02)
+			bg.BackgroundTransparency = 1
+			bg.ScaleType = Enum.ScaleType.Crop
+			bg.Image = "rbxassetid://" .. tostring(img)
+			bg.Parent = picture
+			local shade = Instance.new("UIGradient")
+			shade.Rotation = 90
+			shade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 0.25) })
+			shade.Parent = bg
+			game:GetService("TweenService"):Create(bg, TweenInfo.new(20, Enum.EasingStyle.Sine), { Size = UDim2.fromScale(1.14, 1.14) }):Play()
+		end
+	end
 
 	-- 등장 인물: 승인된 3D 인물 모델을 반신 초상으로 보여 준다 (모델이 없으면 실루엣)
 	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
@@ -2251,6 +2272,29 @@ function playStory(ev)
 		or string.find(npcName, "스와힐리", 1, true) or string.find(npcName, "오스만", 1, true) then
 		tile = nil
 	end
+	-- 동료 사연이면 그 동료의 그린 초상을 쓴다
+	local cid = ev.id and string.match(ev.id, "^(h_[%w_]+)_%d+$")
+	local cport = cid and COMPANION_PORTRAIT[cid]
+	if cport then
+		local ph = Instance.new("ImageLabel")
+		ph.Name = "NpcPortrait"
+		ph.AnchorPoint = Vector2.new(0.5, 1)
+		ph.Position = UDim2.fromScale(0.5, 1)
+		ph.Size = UDim2.new(0, 250, 1, -14)
+		ph.BackgroundTransparency = 1
+		ph.ScaleType = Enum.ScaleType.Crop
+		ph.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. cport.atlas])
+		ph.ImageRectOffset = cport.offset
+		ph.ImageRectSize = Vector2.new(256, 336)
+		corner(ph, 10)
+		local pst = Instance.new("UIStroke")
+		pst.Color = Color3.fromRGB(214, 170, 82)
+		pst.Thickness = 3
+		pst.Parent = ph
+		ph.Parent = picture
+		tile = nil
+		tpl = nil
+	end
 	local storyImageId = if PORTRAIT_ATLAS and tile then PORTRAIT_ATLAS
 		elseif tile == "merchant" then AssetIds["Portraits/merchant"] else nil
 	if storyImageId then
@@ -2266,6 +2310,8 @@ function playStory(ev)
 		photo.ImageRectOffset = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_TILE[tile] else Vector2.zero
 		photo.ImageRectSize = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 		photo.Parent = picture
+	elseif cport then
+		-- 그린 초상을 이미 올렸다
 	elseif tpl then
 		local vf = Instance.new("ViewportFrame")
 		vf.BackgroundTransparency = 1
@@ -4472,13 +4518,14 @@ function RENDERERS.tech()
 end
 
 function RENDERERS.quest()
-	add(function() return mkHeader(content, "진행 중") end)
-	if #view.quests.active == 0 then
-		add(function() return mkLabel(content, "진행 중인 퀘스트가 없어요.", 13, COLORS.muted, false) end)
-	end
+	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
 	local STRAND = { companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
 	local function strandText(q)
 		return (if q.strand then "[" .. STRAND[q.strand] .. "] " else "") .. q.summary .. (if q.story then "\n" .. q.story else "")
+	end
+	add(function() return mkHeader(content, string.format("📖 일지 · 진행 중 %d", #view.quests.active)) end)
+	if #view.quests.active == 0 then
+		add(function() return mkLabel(content, "아직 적힌 이야기가 없어요. 항구에서 소문을 듣거나 사람들과 이야기를 나눠 보세요.", 13, COLORS.muted, true) end)
 	end
 	for _, q in view.quests.active do
 		add(function()
@@ -4486,26 +4533,34 @@ function RENDERERS.quest()
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
-			table.insert(buttons, { text = "보상", color = COLORS.green, onClick = function() call("Claim", { questId = q.id }) end, enabled = q.progress >= q.amount })
-			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 120 else 68)
+			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인 (조건을 채우면 자동 지급)", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 124 else 76)
 		end)
 	end
-	add(function() return mkHeader(content, "받을 수 있는 퀘스트") end)
-	if (view.quests.otherPortDeliver or 0) > 0 then
-		add(function()
-			return mkLabel(content, string.format("납품 의뢰는 지금 항구(%s)의 주점 게시판 것만 보여요. 다른 항구에도 %d개가 더 있어요.", view.player.portName, view.quests.otherPortDeliver), 12, COLORS.muted, true)
-		end)
-	end
+	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
+	local autos = {}
 	for _, q in view.quests.available do
+		if q.auto then table.insert(autos, q) end
+	end
+	if #autos > 0 then
+		add(function() return mkHeader(content, "자동 기록 중인 목표") end)
+		for _, q in autos do
+			add(function()
+				return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, if q.story then 116 else 64)
+			end)
+		end
+	end
+	if (view.quests.otherPortDeliver or 0) > 0 or #view.quests.available > #autos then
 		add(function()
-			if q.auto then
-				-- 발견·방문·연구 퀘스트는 수락하지 않아도 조건을 채우면 자동으로 보고되고 보상이 들어온다
-				return mkRow(content, q.name, string.format("%s\n자동 보고 · 진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, if q.story then 116 else 64)
-			end
-			return mkRow(content, q.name, string.format("%s\n보상 %d코인", strandText(q), q.rewardCoins), {
-				{ text = "수락", color = COLORS.blue, onClick = function() call("Accept", { questId = q.id }) end },
-			}, 64)
+			return mkLabel(content, "아직 모르는 의뢰와 이야기가 더 있어요. 다른 항구의 소문과 사람들에게서 듣게 돼요.", 12, COLORS.muted, true)
 		end)
+	end
+	if #view.quests.done > 0 then
+		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
+		for _, q in view.quests.done do
+			add(function()
+				return mkLabel(content, "✔ " .. q.name .. " — " .. q.summary, 12, COLORS.muted, true)
+			end)
+		end
 	end
 end
 
@@ -6651,6 +6706,16 @@ end
 			task.wait(0.7)
 			pcall(refreshChip)
 			pcall(refreshGoal)
+			-- 중요 인물이 항구에서 찾아오면 일러스트 연출 장면이 저절로 열린다
+			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
+				for _, ev in view.story or {} do
+					if ev.id == view.autoStory then
+						H.autoStoryShown = ev.id
+						pcall(playStory, ev)
+						break
+					end
+				end
+			end
 			if H.openingPending and not openingShown and view and not newGameMode and not sceneHold and not dlg and main.Visible then
 				openingShown = true
 				pcall(H.openingScene)

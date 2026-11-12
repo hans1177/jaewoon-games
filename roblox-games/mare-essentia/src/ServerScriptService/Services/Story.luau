@@ -76,8 +76,33 @@ return function(D, S)
 			S.Perk.addAffinity(state, fx.affinity, msgs)
 		end
 		state.story[e.id] = math.floor(p.choice)
+		if state.autoStory == e.id then
+			state.autoStory = nil
+		end
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, blockReason = blockReason }
+	-- 항구에 닿았을 때 그 항구에 있는 중요 인물이 이야기를 걸어온다 (60%, 항구·날짜로 정해지는 결정적 확률).
+	-- 화면은 view.autoStory 를 보고 일러스트 연출 장면을 자동으로 연다.
+	local function autoTrigger(state, msgs)
+		if state.autoStory then
+			return
+		end
+		local seed = 0
+		for i = 1, #state.portId do
+			seed += string.byte(state.portId, i) * (i + 3)
+		end
+		if (seed + state.day * 13) % 10 >= 6 then
+			return
+		end
+		for _, e in D.Story.Events do
+			if not blockReason(state, e) then
+				state.autoStory = e.id
+				table.insert(msgs, string.format("[%s] %s이(가) 당신을 찾는다", e.title, e.npc))
+				return
+			end
+		end
+	end
+
+	return { handlers = handlers, blockReason = blockReason, autoTrigger = autoTrigger }
 end
