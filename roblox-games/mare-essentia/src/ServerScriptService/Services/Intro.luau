@@ -40,7 +40,7 @@ return function(D, S)
 		return s
 	end
 
-	-- 초상화 표기: "hero:<국가>" 또는 "npc:<항구>:<0~9>"
+	-- 초상화 표기: "cp:<시트>:<칸>" (동료·인물 시트), 예전 "hero:<국가>", "npc:<항구>:<0~9>"
 	local function validPortrait(p)
 		if type(p) ~= "string" then
 			return false
@@ -48,6 +48,11 @@ return function(D, S)
 		local nation = string.match(p, "^hero:([%w_]+)$")
 		if nation then
 			return D.Ports.Nations[nation] ~= nil
+		end
+		local sheet, idx = string.match(p, "^cp:([%w_]+):(%d+)$")
+		if sheet then
+			local count = D.Specialties.PortraitSheets[sheet]
+			return count ~= nil and tonumber(idx) < count
 		end
 		local port, cell = string.match(p, "^npc:([%w_]+):(%d)$")
 		return port ~= nil and cell ~= nil and D.Ports.Ports[port] ~= nil
