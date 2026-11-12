@@ -4556,19 +4556,50 @@ function RENDERERS.map()
 		add(function() return mkHeader(content, "항해 지도") end)
 	end
 	local cosLat = 0.66 -- 유럽 위도에서 가로를 줄여 비율을 맞춘다
-	local function mapX(lon) return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin) end
-	local function mapY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
+	-- 손으로 그린 세계지도(1587x991, 지도 영역 x 31~1553, y 98~920)가 있으면 그 위에 항구를 얹는다
+	local worldImg = AssetIds["CardArt/event_chart_world"]
+	local function mapX(lon)
+		if worldImg then
+			return (31 + (lon + 180) / 360 * 1522) / 1587
+		end
+		return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin)
+	end
+	local function mapY(lat)
+		if worldImg then
+			return (98 + (80.6 - lat) / 145.4 * 822) / 991
+		end
+		return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin)
+	end
 	add(function()
 		local frame = Instance.new("Frame")
 		-- 지도 비율(가로/세로)에 맞춰 높이를 직접 정한다 (UIAspectRatioConstraint는 스크롤 목록 안에서 높이가 0이 됐다)
 		local mapW = math.max(200, content.AbsoluteSize.X - 10)
-		frame.Size = UDim2.new(1, -6, 0, math.floor(mapW / ((Geo.cols * cosLat) / Geo.rows)))
+		frame.Size = UDim2.new(1, -6, 0, if worldImg then math.floor(mapW * 991 / 1587) else math.floor(mapW / ((Geo.cols * cosLat) / Geo.rows)))
 		frame.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
 		frame.BorderSizePixel = 0
 		frame.ClipsDescendants = true
-		drawLand(frame)
+		if worldImg then
+			local bg = Instance.new("ImageLabel")
+			bg.Size = UDim2.fromScale(1, 1)
+			bg.BackgroundTransparency = 1
+			bg.Image = "rbxassetid://" .. tostring(worldImg)
+			bg.ScaleType = Enum.ScaleType.Stretch
+			bg.Parent = frame
+			local compass = AssetIds["Menu/chart_compass"]
+			if compass then
+				local c = Instance.new("ImageLabel")
+				c.AnchorPoint = Vector2.new(1, 1)
+				c.Position = UDim2.new(1, -8, 1, -8)
+				c.Size = UDim2.fromOffset(46, 46)
+				c.BackgroundTransparency = 1
+				c.Image = "rbxassetid://" .. tostring(compass)
+				c.Parent = frame
+			end
+		else
+			drawLand(frame)
+		end
 		-- 해역 이름
-		for _, sea in SEA_NAMES do
+		for _, sea in (if worldImg then {} else SEA_NAMES) do
 			local lb = Instance.new("TextLabel")
 			lb.AnchorPoint = Vector2.new(0.5, 0.5)
 			lb.Position = UDim2.fromScale(mapX(sea[3]), mapY(sea[2]))
@@ -4604,11 +4635,24 @@ function RENDERERS.map()
 			local dot = Instance.new("TextButton")
 			dot.AnchorPoint = Vector2.new(0.5, 0.5)
 			dot.Position = UDim2.fromScale(mapX(pt.lon), mapY(pt.lat))
-			dot.Size = UDim2.fromOffset(if isHere then 18 else 14, if isHere then 18 else 14)
+			local small = worldImg ~= nil
+			dot.Size = UDim2.fromOffset(if isHere then (if small then 12 else 18) else (if small then 8 else 14), if isHere then (if small then 12 else 18) else (if small then 8 else 14))
 			dot.Text = ""
 			dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
 			dot.BorderSizePixel = 1
 			dot.Parent = frame
+			-- 현재 항구는 닻 아이콘으로 크게 표시
+			local anchorIcon = if isHere and worldImg then AssetIds["Menu/chart_anchor"] else nil
+			if anchorIcon then
+				local ai = Instance.new("ImageLabel")
+				ai.AnchorPoint = Vector2.new(0.5, 0.5)
+				ai.Position = UDim2.fromScale(0.5, 0.5)
+				ai.Size = UDim2.fromOffset(30, 30)
+				ai.BackgroundTransparency = 1
+				ai.Image = "rbxassetid://" .. tostring(anchorIcon)
+				ai.ZIndex = 5
+				ai.Parent = dot
+			end
 			local corner = Instance.new("UICorner")
 			corner.CornerRadius = UDim.new(1, 0)
 			corner.Parent = dot
@@ -4632,6 +4676,36 @@ function RENDERERS.map()
 	add(function()
 		return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
 	end)
+	-- 해역 확대도: 선택한 항구(없으면 현재 항구)가 속한 해역의 그림 지도
+	do
+		local focus = selectedPort or view.player.portId
+		local region = H.regionOfPort(focus)
+		local chart = ({
+			north_sea = "north_sea", atlantic_europe = "west_europe", mediterranean = "mediterranean", west_africa = "west_africa",
+			east_africa = "indian_ocean", red_sea = "indian_ocean", south_asia = "indian_ocean", southeast_asia = "southeast_asia",
+			east_asia = "east_asia",
+		})[region or ""]
+		if region == "americas" then
+			local pt = PortData.Ports[focus]
+			chart = if pt and pt.lat < 12 then "south_america" else "caribbean"
+		end
+		local img = chart and AssetIds["CardArt/event_chart_" .. chart]
+		if img then
+			add(function()
+				local mapW = math.max(200, content.AbsoluteSize.X - 10)
+				local pic = Instance.new("ImageLabel")
+				pic.Size = UDim2.new(1, -6, 0, math.floor(mapW * 992 / 1586))
+				pic.BackgroundTransparency = 1
+				pic.Image = "rbxassetid://" .. tostring(img)
+				pic.ScaleType = Enum.ScaleType.Fit
+				corner(pic, 8)
+				return pic
+			end)
+			add(function()
+				return mkLabel(content, string.format("%s 해역도", PortData.Ports[focus].name), 12, COLORS.muted, false)
+			end)
+		end
+	end
 	if selectedPort and selectedPort ~= view.player.portId then
 		for _, r in view.routes do
 			if r.id == selectedPort then
