@@ -14,13 +14,9 @@
 - 배경 분위기·빛·공기 6단계(승인된 풀·꽃·바위 메시 밀도 증가): approved-ground-cover-meshes · 등록 후보 8개: mushroom, assets/roblox/actors/sources/quaternius-cute/FBX/Mushroom.fbx, villageStoneWall, assets/shared/party/pillar-stone.glb, rocks, Models/GLB format/rocks-low.glb, stones, Models/GLB format/stones.glb (오너가 승인하면 바로 풀림)
 - 몹 외형·모션·이펙트 5단계(승인된 몹 전용 이펙트 메시): approved-mob-vfx-meshes · 등록 후보 8개: assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip, assets/external/simple-rpg/icons-vfx-npc/game-icons.zip, assets/external/simple-rpg/icons-vfx-npc/ui-adventure.zip, assets/external/simple-rpg/icons-vfx-npc/ui-pack.zip, assets/external/simple-rpg/icons-vfx-npc/emotes.zip, interfaceVfx, slash, spark (오너가 승인하면 바로 풀림)
 
-## 최근 화면 검사
-
-- 프레임 31장 중 깨진 화면 0장
-
 ## 룩 자동 적용
 
-- 현재: 적용 안 함(게임 원래 연출) · 이번 회차: NOT_ENOUGH_FRAMES
+- 현재: 적용 안 함(게임 원래 연출)
 
 ## 최근 승급 기록
 
