@@ -1,8 +1,10 @@
 -- 자동 생성: tools/mare-essentia-upload-assets.mjs (직접 고치지 말 것)
 return {
+	["Animals/cat"] = 79373455239272,
 	["Animals/chicken"] = 82991790164266,
 	["Animals/cow"] = 83562948192460,
 	["Animals/dog-pug"] = 82468177068339,
+	["Animals/elephant"] = 106617829123973,
 	["Animals/horse"] = 140016920179671,
 	["Animals/llama"] = 118451592430314,
 	["Animals/pig"] = 90642083582412,
@@ -347,6 +349,7 @@ return {
 	["Menu/trade"] = 113779942745319,
 	["Menu/view"] = 121106150800662,
 	["Menu/yard"] = 98074316679977,
+	["Naval/anchor"] = 80326817138429,
 	["Naval/barrel"] = 81839854184102,
 	["Naval/boat-fishing-small"] = 95090003303237,
 	["Naval/boat-row-large"] = 77794853469399,
