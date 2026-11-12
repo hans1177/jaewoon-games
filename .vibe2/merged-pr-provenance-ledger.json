@@ -209016,11 +209016,154 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_29d8ce545a60d6b1f934984e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12774",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d6bca079e7c750c88c25952ee9654fb3d70a568d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12774,
+        "baseBranch": "main",
+        "headBranch": "assets/mare-audio-43178089481-1",
+        "baseSha": "d6bca079e7c750c88c25952ee9654fb3d70a568d",
+        "headSha": "29c3db60c2f610a14e2935de52085556c3f6646b",
+        "mergeCommitSha": "7c0739d938a819b1e35d5975a20e88327ea75915",
+        "mergedAt": "2026-11-12T07:54:43Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "2d705f2740ec49cee7393a1df329c7df095c701b803f24f14ca4c760810ad727",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/mare-audio-43178089481-1",
+        "candidateSha": "29c3db60c2f610a14e2935de52085556c3f6646b"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 68,
+        "deletedLineCount": 66,
+        "changedFiles": [
+          "roblox-games/mare-essentia/audio/out/music_pirate.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_book_turn.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_cargo_fabric.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_chart_unfold.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_coin_pouch.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_contract_stamp.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_event_danger.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_event_discovery.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_event_notice.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_event_trade.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_event_war.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_sail_fabric.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_ship_cabin_door.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_harbor.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_library.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_observatory.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_palace.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_ruins.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_story_tavern.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_treasure_chest.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_wonder_temple.ogg",
+          "roblox-games/mare-essentia/audio/uploaded.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/audio/uploaded.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12774",
+        "merge-commit:7c0739d938a819b1e35d5975a20e88327ea75915",
+        "base-main:d6bca079e7c750c88c25952ee9654fb3d70a568d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1664
+    "total": 1665
   }
 }
