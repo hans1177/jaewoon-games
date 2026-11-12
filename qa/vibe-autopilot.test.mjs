@@ -119,9 +119,10 @@ test('종합 점검 스크립트는 시작 버튼이 없어도 멈추지 않는�
 
 test('Studio 완료와 System AI 완료로 10분 예약 누락을 복구하고 5분 재발송을 막는다', () => {
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
-  assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture', 'Company System AI Workers'\]\s*\n\s*types: \[completed\]/);
+  assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture', 'Company System AI Workers'\]\s*\n\s*types: \[requested, completed\]/);
   assert.match(y, /cron: '8-58\/10 \* \* \* \*'/);                          // 안전망은 그대로
   assert.match(y, /AUTOPILOT_FALLBACK_SKIP=RECENT_DECISION/);
+  assert.match(y, /github.event.action == 'requested'/);
   assert.match(y, /lastDecisionAt/);
   assert.match(y, /if: env\.AUTOPILOT_SKIP != 'true'/);
   assert.match(fs.readFileSync('tools/vibe-autopilot.mjs', 'utf8'), /ledger\.lastDecisionAt = decisionAt/);
