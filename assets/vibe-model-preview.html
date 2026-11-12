@@ -34,7 +34,7 @@ import {createVibeBrowserPresentation} from './vibe-browser-presentation.mjs';
 import {connectMotionPresentation} from './vibe-presentation-engine.mjs';
 import {VibeCinematicDirector,createCharacterPerformance} from './vibe-cinematic-director.mjs';
 import {createVibeHero,createVibeHandAnimation,setupVibeCinematicLighting,vibeSceneShots} from './vibe-character-studio.mjs';
-import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer} from './vibe-premium-character-pipeline.mjs';
+import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,inspectVibeCharacterRig} from './vibe-premium-character-pipeline.mjs';
 import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeCharacterAsset,inspectVibeRenderedScene,createVibeRenderQualityController,createVibeAuthoredMeshLOD,batchVibeExistingStaticMeshes} from './vibe-cinematic-polish.mjs';
 import {VibeActionDirector,VibeLocomotionPolish,VibeCameraPolish,VibeScreenFxDirector,createVibeAudioCuePlanner} from './vibe-premium-gameplay-fx.mjs';
 import {createVibeStorybookWorld,createVibeAtmosphericSound,createVibeScreenFxOverlay,vibeStorybookPresets} from './vibe-storybook-cinematics.mjs';
@@ -188,6 +188,19 @@ const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)
 const reviewButton=document.createElement('button');reviewButton.textContent='실제 화면 품질 진단';
 reviewButton.addEventListener('click',()=>{visualReviewBaseline=null;visualReviewPhase='baseline';status.textContent='렌더 화면 밝기·대비 측정 중'});
 studioControls.append(reviewButton);
+// [메인: 실제 모델 진단] 기존 미리보기에서 스킨/본 검사만 수행하고 원본을 수정하지 않는다.
+const rigAuditButton=document.createElement('button');rigAuditButton.textContent='리깅·메쉬 진단';
+rigAuditButton.setAttribute('aria-label','실제 모델 리깅 진단');
+rigAuditButton.addEventListener('click',()=>{
+ if(!url||!activeModel){status.textContent='실제 GLTF 모델을 먼저 선택해';return;}
+ const report=inspectVibeCharacterRig(activeModel,{sampleLimit:4096});
+ if(!report.skinnedMeshes){status.textContent='정적 모델 · 리깅 검사 대상 아님';return;}
+ const count=report.weightsSampled+'/'+report.totalVertices+' 정점';
+ if(report.productionEligible)status.textContent='리깅 검사 정상 · 본 '+report.bones+'개 · '+count;
+ else status.textContent='리깅 '+(report.coverageComplete?'문제 감지':'검증 미완료')+
+  ' · '+count+' · '+report.issues.slice(0,3).join(', ').slice(0,130);
+});
+studioControls.append(rigAuditButton);
 const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;ground.visible=false;scene.add(ground);const gridToggle=document.createElement('button');gridToggle.textContent='격자 표시';gridToggle.setAttribute('aria-pressed','false');gridToggle.addEventListener('click',()=>{ground.visible=!ground.visible;gridToggle.setAttribute('aria-pressed',String(ground.visible))});studioControls.append(gridToggle);if(url)new GLTFLoader().load(url.href,gltf=>{
 const model=gltf.scene;scene.add(model);activeModel=model;facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();
  // [메쉬/GPU] 승인된 원본에 LOD가 있을 때만 전환하고 무애니메이션 정적 반복 모델만 배칭.

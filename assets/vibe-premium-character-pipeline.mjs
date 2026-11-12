@@ -92,16 +92,21 @@ export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
  const bones=[],skinned=[],issues=[];let sampled=0,unweighted=0,unnormalized=0,invalidWeights=0,invalidIndices=0;
  model.traverse(o=>{if(o?.isBone)bones.push(o);if(o?.isSkinnedMesh)skinned.push(o)});
  const budget=Number.isFinite(sampleLimit)?Math.max(1,Math.min(65536,Math.floor(sampleLimit))):4096;
- if(skinned.length>budget)issues.push('RIG_AUDIT_COVERAGE_INCOMPLETE');
+ // [리깅 검사] 일부 정점만 본 경우 정상 판정하지 않는다.
+ const totalVertices=skinned.reduce((n,mesh)=>{
+  const count=mesh.geometry?.attributes?.skinWeight?.count;
+  return n+(Number.isInteger(count)&&count>0?count:0);
+ },0);
+ let coverageComplete=skinned.length<=budget;
  for(const [meshIndex,mesh] of skinned.entries()){
   const name=String(mesh.name||'unnamed');
   const weights=mesh.geometry?.attributes?.skinWeight;
   if(!weights||!Number.isInteger(weights.count)||weights.count<1){
-   issues.push('MISSING_SKIN_WEIGHTS:'+name);continue;
+   coverageComplete=false;issues.push('MISSING_SKIN_WEIGHTS:'+name);continue;
   }
   const components=weights.itemSize||4;
   if(!Number.isInteger(components)||components<1||components>4){
-   issues.push('INVALID_SKIN_INFLUENCE_COUNT:'+name);continue;
+   coverageComplete=false;issues.push('INVALID_SKIN_INFLUENCE_COUNT:'+name);continue;
   }
   const indices=mesh.geometry?.attributes?.skinIndex;
   const boneCount=Array.isArray(mesh.skeleton?.bones)?mesh.skeleton.bones.length:null;
@@ -111,7 +116,8 @@ export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
    issues.push('SKIN_INDEX_LAYOUT_MISMATCH:'+name);
   // 메쉬가 많을 때도 뒤쪽 메쉬를 반드시 검사한다. 예산 미달은 통과시키지 않는다.
   const quota=Math.floor(budget/skinned.length)+(meshIndex<budget%skinned.length?1:0);
-  const count=Math.min(weights.count,quota);
+  // 검사 예산이 전체 정점을 포함하면 작은 메쉬 때문에 검사가 누락되지 않게 전수 검사한다.
+  const count=totalVertices<=budget?weights.count:Math.min(weights.count,quota);
   for(let k=0;k<count;k++){
    const i=Math.floor((k+.5)*weights.count/count);
    let sum=0;
@@ -127,6 +133,8 @@ export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
    sampled++;if(sum<.0001)unweighted++;else if(Math.abs(sum-1)>.035)unnormalized++;
   }
  }
+ coverageComplete=coverageComplete&&sampled===totalVertices;
+ if(!coverageComplete)issues.push('RIG_AUDIT_COVERAGE_INCOMPLETE');
  if(!bones.length)issues.push('NO_BONES');
  if(!skinned.length)issues.push('NO_SKINNED_MESH');
  if(unweighted)issues.push('UNWEIGHTED_VERTICES');
@@ -134,6 +142,7 @@ export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
  if(invalidWeights)issues.push('INVALID_SKIN_WEIGHTS');
  if(invalidIndices)issues.push('INVALID_SKIN_INDICES');
  return Object.freeze({bones:bones.length,skinnedMeshes:skinned.length,weightsSampled:sampled,
+  totalVertices,coverageComplete,
   unweighted,unnormalized,invalidWeights,invalidIndices,issues:Object.freeze(issues),
   productionEligible:issues.length===0,rigRepairPerformed:false,sourcePreserved:true});
 }
