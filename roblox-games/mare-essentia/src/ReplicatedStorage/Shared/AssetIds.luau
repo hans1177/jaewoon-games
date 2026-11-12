@@ -1,5 +1,12 @@
 -- 자동 생성: tools/mare-essentia-upload-assets.mjs (직접 고치지 말 것)
 return {
+	["Animals/chicken"] = 82991790164266,
+	["Animals/cow"] = 83562948192460,
+	["Animals/dog-pug"] = 82468177068339,
+	["Animals/horse"] = 140016920179671,
+	["Animals/llama"] = 118451592430314,
+	["Animals/pig"] = 90642083582412,
+	["Animals/sheep"] = 73921282007891,
 	["CardArt/event_angkor"] = 90783710214595,
 	["CardArt/event_anglo_dutch_war"] = 113404061062686,
 	["CardArt/event_boston_tea"] = 109655723686183,
@@ -766,5 +773,8 @@ return {
 	["Town/wall-door"] = 75188170325302,
 	["Town/wall-window-shutters"] = 113578382896433,
 	["Town/wall-wood"] = 73028461865672,
+	["Town/watermill"] = 83575392859540,
+	["Town/wheel"] = 106692581965653,
 	["Town/windmill"] = 124744982400234,
+	["Town/workbench-anvil"] = 72094044297354,
 }
