@@ -638,6 +638,59 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			importedModel(folder, "Cargo", "food-crate-large-apples", Vector3.new(fx + 2, 1.4, -20), 2.2, false)
 		end
 	end
+	-- 동물: 지역마다 키우는 가축과 마을 동물 (풀을 뜯고, 모이를 쪼고, 꼬리를 흔든다). 모델이 없으면 건너뛴다.
+	do
+		local SPECIES = {
+			iberia = { "sheep", "donkey", "pig", "chicken", "dog" }, italy = { "donkey", "chicken", "cat", "dog" },
+			france = { "cow", "sheep", "chicken", "dog" }, britain = { "sheep", "cow", "horse", "dog" },
+			brick = { "cow", "horse", "cat", "chicken" }, hanse = { "horse", "pig", "dog", "chicken" },
+			nordic = { "sheep", "horse", "cow", "dog" }, tropic = { "pig", "chicken", "dog", "cat" },
+			desert = { "donkey", "cat", "chicken" }, med = { "donkey", "cat", "chicken", "sheep" },
+			ottoman = { "donkey", "cat", "sheep", "chicken" }, swahili = { "donkey", "chicken", "cat", "cow" },
+			malabar = { "elephant", "cow", "chicken", "cat" }, japan = { "cat", "chicken", "pig", "dog" },
+			colonial = { "llama", "horse", "pig", "chicken", "dog" },
+		}
+		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
+		local KIND = {
+			cow = { 3.4, "graze" }, horse = { 3.8, "graze" }, sheep = { 2.3, "graze" }, pig = { 2.2, "peck" }, llama = { 3.2, "graze" },
+			donkey = { 3.2, "graze" }, elephant = { 6.5, "still" }, chicken = { 1, "peck" }, dog = { 1.5, "tail" }, cat = { 1.1, "still" },
+		}
+		local list = SPECIES[key] or SPECIES.britain
+		local function animal(species, pos)
+			local k = KIND[species]
+			local m = k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
+			if not m then
+				return
+			end
+			m:PivotTo(CFrame.new(m:GetPivot().Position) * CFrame.Angles(0, rng:NextNumber(0, math.pi * 2), 0) * (m:GetPivot() - m:GetPivot().Position))
+			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10) })
+		end
+		-- 가축: 밭 가장자리 (단계가 오를수록 늘어난다)
+		local stock = {}
+		for _, sp in list do
+			if sp == "cow" or sp == "sheep" or sp == "pig" or sp == "horse" or sp == "llama" or sp == "donkey" or sp == "elephant" then
+				table.insert(stock, sp)
+			end
+		end
+		local heads = math.min(lvl + 1, 5)
+		for i = 1, heads do
+			if #stock > 0 then
+				animal(stock[(i - 1) % #stock + 1], Vector3.new(-200 - (i % 3) * 7, 0, (i - 3) * 6 + rng:NextNumber(-1, 1)))
+			end
+		end
+		-- 마을 동물: 모닥불 곁 닭·개·고양이
+		local pets = {}
+		for _, sp in list do
+			if sp == "chicken" or sp == "dog" or sp == "cat" then
+				table.insert(pets, sp)
+			end
+		end
+		for i = 1, math.min(lvl + 1, 4) do
+			if #pets > 0 then
+				animal(pets[(i - 1) % #pets + 1], Vector3.new(-24 - i * 2.4, 0, -17 + (i % 2) * 5 + rng:NextNumber(-0.8, 0.8)))
+			end
+		end
+	end
 	-- 순찰: 큰길을 오가며 두리번거리는 경비 (2단계부터)
 	local guards = ({ 0, 1, 1, 2, 3 })[lvl]
 	for i = 1, guards do
@@ -1458,6 +1511,22 @@ function PortScene.build(info, onFacility)
 			if w.mode == "stay" then
 				if w.model.Parent then
 					Pose.work(w.model, w.kind, now + w.phase)
+				end
+			elseif w.mode == "animal" then
+				if w.model.Parent then
+					local t = now + w.phase
+					local pitch, bob = 0, 0
+					if w.akind == "graze" then
+						pitch = math.max(0, math.sin(t * 0.7)) * 0.22
+					elseif w.akind == "peck" then
+						pitch = math.max(0, math.sin(t * 3.1)) * 0.3
+					elseif w.akind == "tail" then
+						pitch = math.sin(t * 5) * 0.04
+						bob = math.abs(math.sin(t * 2.2)) * 0.05
+					else
+						bob = math.sin(t * 1.3) * 0.03
+					end
+					w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
 				end
 			elseif w.mode == "circle" then
 				if w.model.Parent then
