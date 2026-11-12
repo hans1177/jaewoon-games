@@ -826,7 +826,7 @@ sizeLimit.Parent = main
 H.pageMasthead = Instance.new("Frame")
 H.pageMasthead.Name = "BookMasthead"
 H.pageMasthead.Position = UDim2.fromOffset(4, 4)
-H.pageMasthead.Size = UDim2.new(1, -8, 0, 74)
+H.pageMasthead.Size = UDim2.new(1, -8, 0, 58)
 H.pageMasthead.BackgroundColor3 = COLORS.paper
 H.pageMasthead.BorderSizePixel = 0
 H.pageMasthead.Parent = mainInner
@@ -854,11 +854,11 @@ local function pageRule(parent, position, size)
 	rule.Parent = parent
 	return rule
 end
-pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -5), UDim2.new(1, -72, 0, 1))
+pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -4), UDim2.new(1, -72, 0, 1))
 H.pageDetails = mkLabel(H.pageMasthead, "", 11, COLORS.brown, true)
 H.pageDetails.AutomaticSize = Enum.AutomaticSize.None
-H.pageDetails.Position = UDim2.fromOffset(65, 36)
-H.pageDetails.Size = UDim2.new(1, -74, 0, 32)
+H.pageDetails.Position = UDim2.fromOffset(65, 33)
+H.pageDetails.Size = UDim2.new(1, -74, 0, 18)
 H.pageDetails.TextTruncate = Enum.TextTruncate.AtEnd
 
 local headerLabel = Instance.new("TextLabel")
@@ -1285,24 +1285,24 @@ contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
 -- 넓은 화면은 왼쪽 책갈피, 좁은 화면은 상단 한 줄 목차를 사용한다.
-H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 86), UDim2.new(0, 1, 1, -94))
+H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, -76))
 function H.layoutBook()
 	local wide = mainInner.AbsoluteSize.X >= 610
 	local tabs = tabBar.Visible
 	H.bookSpine.Visible = tabs and wide
 	if tabs and wide then
-		tabBar.Position = UDim2.fromOffset(8, 86)
-		tabBar.Size = UDim2.new(0, 116, 1, -94)
+		tabBar.Position = UDim2.fromOffset(8, 68)
+		tabBar.Size = UDim2.new(0, 116, 1, -76)
 		tabLayout.CellSize = UDim2.new(1, 0, 0, 44)
 		tabLayout.CellPadding = UDim2.fromOffset(0, 6)
-		content.Position = UDim2.fromOffset(142, 86)
-		content.Size = UDim2.new(1, -150, 1, -94)
+		content.Position = UDim2.fromOffset(142, 68)
+		content.Size = UDim2.new(1, -150, 1, -76)
 	else
-		tabBar.Position = UDim2.fromOffset(8, 86)
+		tabBar.Position = UDim2.fromOffset(8, 68)
 		tabBar.Size = UDim2.new(1, -16, 0, 40)
 		tabLayout.CellSize = UDim2.new(0.25, -4, 0, 40)
 		tabLayout.CellPadding = UDim2.fromOffset(5, 0)
-		local top = if tabs then 134 else 86
+		local top = if tabs then 116 else 68
 		content.Position = UDim2.fromOffset(8, top)
 		content.Size = UDim2.new(1, -16, 1, -top - 8)
 	end
@@ -1446,7 +1446,7 @@ local HUD_MENU_ART = {
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(if dockItem then 64 else 44, if dockItem then 70 else 44)
+	button.Size = UDim2.fromOffset(if dockItem then 72 else 44, if dockItem then 78 else 44)
 	button.BackgroundTransparency = 1 -- 배경 없이 그림만
 	button.BorderSizePixel = 0
 	button.Text = ""
@@ -1454,7 +1454,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
 	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	local artSize = if dockItem then 40 else 34
+	local artSize = if dockItem then 48 else 34
 	local artTop = if dockItem then 3 else 4
 	if artId then
 		for i = 1, 2 do
@@ -1482,10 +1482,10 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(0, 46)
+		caption.Position = UDim2.fromOffset(0, 54)
 		caption.Size = UDim2.new(1, 0, 0, 20)
 		caption.Font = Enum.Font.GothamBold
-		caption.TextSize = 13
+		caption.TextSize = 14
 		caption.TextWrapped = false
 		caption.ZIndex = 3
 		caption.TextColor3 = Color3.fromRGB(255, 244, 214)
@@ -1514,7 +1514,7 @@ dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
 dock.Position = UDim2.new(1, -8, 0, 4)
-dock.Size = UDim2.fromOffset(206, 150)
+dock.Size = UDim2.fromOffset(228, 164)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
@@ -1522,14 +1522,14 @@ dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
 local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(64, 70)
+dockGrid.CellSize = UDim2.fromOffset(72, 78)
 dockGrid.CellPadding = UDim2.fromOffset(6, 5)
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 dockGrid.FillDirectionMaxCells = 3
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(206, 150)
+dockLimit.MaxSize = Vector2.new(228, 164)
 dockLimit.Parent = dock
 
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
@@ -1548,10 +1548,10 @@ end
 -- 시스템 4개(걷기 · 내 카드 · 설정 · 도움말): 시설 6개 바로 아래 한 줄. 자동항해는 항만청 탭에서 한다.
 local render
 local openOptions
-local SYS_Y = 158
+local SYS_Y = 170
 local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정", true)
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -78, 0, SYS_Y)
+gear.Position = UDim2.new(1, -86, 0, SYS_Y)
 do
 	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
@@ -1559,7 +1559,7 @@ do
 	help.Activated:Connect(function() openOptions(true) end)
 	local walk = H.hudShortcut(hud, "ViewToggle", "view", "걷기", true)
 	walk.AnchorPoint = Vector2.new(1, 0)
-	walk.Position = UDim2.new(1, -218, 0, SYS_Y)
+	walk.Position = UDim2.new(1, -242, 0, SYS_Y)
 	walk.Activated:Connect(function()
 		overview = not overview
 		local cap = walk:FindFirstChild("MenuName")
@@ -1578,7 +1578,7 @@ do
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -148, 0, 158)
+	deckBtn.Position = UDim2.new(1, -164, 0, SYS_Y)
 	local open = nil
 	function H.openDeck()
 		if open then
@@ -7279,8 +7279,7 @@ function render()
 	local grp = groupOf(currentTab)
 	setPortrait(grp.name)
 	headerLabel.Text = grp.name
-	H.pageDetails.Text = string.format("%s · %s\n%s · 선체 %d/%d · 화물 %d/%d",
-		p.portName, grp.keeper, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
+	H.pageDetails.Text = string.format("%s · %s", p.portName, grp.keeper)
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	H.renderTabs()
@@ -7487,6 +7486,7 @@ end)
 
 openTab = function(tabId, mapPage)
 	currentTab = tabId
+	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
 	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
 	if tabId == "map" and mapPage ~= "journal" then
