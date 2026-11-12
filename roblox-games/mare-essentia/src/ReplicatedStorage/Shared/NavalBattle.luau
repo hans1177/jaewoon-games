@@ -1094,7 +1094,94 @@ function NavalBattle.play(opts)
 			return { step = step, stop = stop }
 		end
 
+
+		-- 규칙·원화를 읽을 수 있는 확대 도판: 두 번 누르기 조작은 그대로 보존한다.
+		local focusFrame = Instance.new("Frame")
+		focusFrame.Name = "NavalCardCodexPreview"
+		focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+		focusFrame.Position = UDim2.fromScale(0.55, 0.47)
+		focusFrame.Size = UDim2.fromOffset(186, 252)
+		focusFrame.BackgroundColor3 = Color3.fromRGB(50, 35, 25)
+		focusFrame.BackgroundTransparency = 0.02
+		focusFrame.BorderSizePixel = 0
+		focusFrame.ClipsDescendants = true
+		focusFrame.Visible = false
+		focusFrame.ZIndex = 50
+		focusFrame.Parent = g
+		local focusEdge = frameEdge(focusFrame, Color3.fromRGB(224, 179, 99), 7)
+		focusEdge.Thickness = 3
+		local focusPaper = Instance.new("ImageLabel")
+		focusPaper.Size = UDim2.fromScale(1, 1)
+		focusPaper.BackgroundTransparency = 1
+		focusPaper.Image = if AssetIds["Menu/parchment_grain"] then "rbxassetid://" .. tostring(AssetIds["Menu/parchment_grain"]) else ""
+		focusPaper.ImageColor3 = Color3.fromRGB(174, 134, 83)
+		focusPaper.ImageTransparency = 0.43
+		focusPaper.ScaleType = Enum.ScaleType.Crop
+		focusPaper.ZIndex = 50
+		focusPaper.Parent = focusFrame
+		local focusArtwork = Instance.new("Frame")
+		focusArtwork.Name = "CodexPainting"
+		focusArtwork.Position = UDim2.fromOffset(6, 27)
+		focusArtwork.Size = UDim2.new(1, -12, 0, 153)
+		focusArtwork.BackgroundColor3 = Color3.fromRGB(77, 58, 43)
+		focusArtwork.BorderSizePixel = 0
+		focusArtwork.ClipsDescendants = true
+		focusArtwork.ZIndex = 51
+		focusArtwork.Parent = focusFrame
+		local focusImage = Instance.new("ImageLabel")
+		focusImage.AnchorPoint = Vector2.new(0.5, 0.5)
+		focusImage.Position = UDim2.fromScale(0.5, 0.5)
+		focusImage.Size = UDim2.fromScale(1.14, 1.14)
+		focusImage.BackgroundTransparency = 1
+		focusImage.ScaleType = Enum.ScaleType.Crop
+		focusImage.ImageColor3 = Color3.fromRGB(239, 214, 174)
+		focusImage.ZIndex = 52
+		focusImage.Parent = focusArtwork
+		local focusName = label(focusFrame, "", 17, Color3.fromRGB(247, 211, 151), true)
+		focusName.Position = UDim2.fromOffset(8, 4)
+		focusName.Size = UDim2.new(1, -16, 0, 23)
+		focusName.TextStrokeTransparency = 0.38
+		focusName.Font = Enum.Font.Antique
+		focusName.ZIndex = 53
+		local focusRule = label(focusFrame, "", 14, ink, true)
+		focusRule.Position = UDim2.new(0, 8, 0, 184)
+		focusRule.Size = UDim2.new(1, -16, 0, 61)
+		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
+		focusRule.BackgroundTransparency = 0.08
+		focusRule.BorderSizePixel = 0
+		focusRule.TextScaled = true
+		focusRule.TextWrapped = true
+		focusRule.TextStrokeTransparency = 1
+		focusRule.Font = Enum.Font.Antique
+		focusRule.ZIndex = 52
+		frameEdge(focusRule, brass, 4)
+		local focusMotion
+		local function showCardCodex(card)
+			if focusMotion then
+				focusMotion.stop()
+				for i = #cardMotions, 1, -1 do
+					if cardMotions[i] == focusMotion then table.remove(cardMotions, i); break end
+				end
+				focusMotion = nil
+			end
+			if not card then focusFrame.Visible = false; return end
+			focusFrame.Visible = true
+			local meta = CARD_STAGE[card.id]
+			local artKey = if meta then meta.art else CARD_SEA
+			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+			focusName.Text = card.name
+			local row = if card.row then BC.ROW_NAME[card.row] or "" else "전술"
+			local strength = if card.power then " · 전투력 " .. tostring(card.power) else ""
+			local description = if card.special then card.text or "전술 카드"
+				elseif card.ability then ABIL_DETAIL[card.ability] or (ABIL[card.ability] or "")
+				elseif card.hero then "영웅 · 날씨와 소각의 영향을 받지 않음"
+				else "병종 상성을 고려해 전투 줄에 배치"
+			focusRule.Text = row .. strength .. "\n" .. description
+			focusMotion = animateCardArt(focusArtwork, focusImage, card)
+			table.insert(cardMotions, focusMotion)
+		end
 		render = function()
+			showCardCodex(nil)
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 			selected = nil
@@ -1243,6 +1330,7 @@ function NavalBattle.play(opts)
 							selected:SetAttribute("ArtFocused", false)
 						end
 						b:SetAttribute("ArtFocused", true)
+						showCardCodex(c)
 						selected = b
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
@@ -1252,6 +1340,7 @@ function NavalBattle.play(opts)
 					end
 
 					playing = true
+					showCardCodex(nil)
 					local side = if c.ability == "spy" then "foe" else "me"
 					local target = if c.special then boardFrame else rowTargets[side][c.row]
 					local flight = b:Clone()
