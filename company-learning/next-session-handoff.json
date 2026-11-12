@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__BOUND_RIG_SECURITY_AND_ACTUAL_QA_ENABLED__RUNTIME_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__SKIN_RIG_AND_PBR_RESOURCE_FIXES__NATIVE_RUNTIME_UNVERIFIED",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,13 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "RELOAD_CURRENT_MAIN_AGENTS_AND_CENTRAL_4_FULL_ROADMAP_BLOB_BEFORE_SOURCE_WRITE",
+      "CHECK_EXACT_61e18c0_VIBE_QA_RUN_43312661952_PBR_AND_RIG_TARGETED_TEST_STAGE_FOR_REAL_PASS",
+      "CHECK_EXACT_61e18c0_INTEGRATED_RUN_43312661446_AND_PAGES_43312661617_POSTPUB_BROWSER_SOURCE_SHA",
+      "IF_QA_FAILS_FIX_EXISTING_APPLY_VIBE_PBR_TEXTURES_AND_TEST_REAL_BEHAVIOR_NOT_ASSERTIONS",
+      "VERIFY_APPROVED_REAL_GLTF_PBR_MATERIAL_DISPOSAL_IN_LIVE_WEBGL_BROWSER_ASSET_AND_MOBILE",
+      "KEEP_STUDIO_POLICY_QA_FAILURES_SEPARATE_FROM_VIBE_WEB_QA_IN_STATUS",
+      "CONTINUE_REMAINING_GRAPHICS8_AND_MOTION10_IN_EXISTING_FUNCTIONS_WITH_OWNER_APPROVED_ASSETS_ONLY",
       "LOAD_LATEST_MAIN_4_POLICY_DOCS_FULL_PLATFORM_BLOB_AND_AGENTS_BEFORE_WRITES",
       "CHECK_43312073966_FOR_ACTUAL_RIG_IK_MOTION_GRAPHICS_NODE_TESTS_AND_FIX_REAL_ERRORS_IN_RESPONSIBLE_MODULES",
       "CHECK_INTEGRATED_REGRESSION_43312074106_AND_PAGES_43312074139_EXACT_SOURCE_POST_PUBLICATION_BROWSER",
@@ -356,7 +363,10 @@
       "qa/vibe-premium-character-pipeline.test.mjs:THREE_NEW_CASES_PARTIAL_COVERAGE_UNEVEN_MESH_BUDGET_AND_PREVIEW_AUDIT_WIRING (b52f047)",
       "assets/vibe-premium-character-pipeline.mjs:SKINNED_MESH_REQUIRES_BOUND_REAL_SKELETON_VALID_BONE_MEMBERS_AND_SKIN_INDEX_FOR_PRODUCTION_ELIGIBILITY (aea0bc82)",
       "qa/vibe-premium-character-pipeline.test.mjs:REAL_SKIN_BINDING_SUCCESS_FIXTURES_AND_NEGATIVE_MISSING_SKELETON_INDEX_INVALID_BONES_COVERAGE (aea0bc82)",
-      ".github/workflows/vibe-qa.yml:EXISTING_VISUAL_QUALITY_CHECK_STEP_NOW_EXECUTES_RIG_IK_MOTION_CINEMATIC_TESTS_NO_NEW_WORKFLOW (aea0bc82)"
+      ".github/workflows/vibe-qa.yml:EXISTING_VISUAL_QUALITY_CHECK_STEP_NOW_EXECUTES_RIG_IK_MOTION_CINEMATIC_TESTS_NO_NEW_WORKFLOW (aea0bc82)",
+      "assets/vibe-premium-character-pipeline.mjs:EXISTING_APPLY_VIBE_PBR_TEXTURES_RESTORES_ORIGINAL_SHARED_MATERIALS_AND_DISPOSES_UNIQUE_TEXTURES_ONLY_ONCE (61e18c0)",
+      "assets/vibe-premium-character-pipeline.mjs:PBR_TEXTURE_LOAD_FAILURE_CLEANS_LOADED_TEXTURES_BEFORE_ANY_MATERIAL_MUTATION (61e18c0)",
+      "qa/vibe-premium-character-pipeline.test.mjs:PBR_RESTORATION_FAILURE_DISPOSAL_AND_SHARED_MATERIAL_NON_MUTATION_TESTS (61e18c0)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -375,7 +385,9 @@
       "8f6fb304 Vibe QA run 43307517213 SUCCESS and Integrated Regression run 43307517488 SUCCESS",
       "b52f047 Vibe QA 43310327659 SUCCESS confirmed on exact source commit",
       "b52f047 Vibe Integrated Regression 43310327626 SUCCESS confirmed on exact source commit",
-      "Constitution central preflight policy-qa CONSTITUTION_ENFORCEMENT=PASS in run 43310785701 logs (workflow as whole failed other Studio tests)"
+      "Constitution central preflight policy-qa CONSTITUTION_ENFORCEMENT=PASS in run 43310785701 logs (workflow as whole failed other Studio tests)",
+      "aea0bc82 Vibe QA run 43312073966 SUCCESS including targeted rig/IK/motion/graphics tests in existing stage",
+      "aea0bc82 Vibe Integrated Regression run 43312074106 SUCCESS"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -415,9 +427,14 @@
       "aea0bc82_VIBE_QA_43312073966_QUEUED_LAST_OBSERVATION_INCLUDES_NEW_TEST_FILES",
       "aea0bc82_INTEGRATED_REGRESSION_43312074106_IN_PROGRESS_LAST_OBSERVATION",
       "aea0bc82_PAGES_43312074139_QUEUED_LAST_OBSERVATION",
-      "aea0bc82_BROSWER_LIVE_GLB_REAL_RIG_AND_MOBILE_SAVE_EXACT_PUBLISHED_SHA_NOT_YET_VERIFIED"
+      "aea0bc82_BROSWER_LIVE_GLB_REAL_RIG_AND_MOBILE_SAVE_EXACT_PUBLISHED_SHA_NOT_YET_VERIFIED",
+      "61e18c0 Vibe QA run 43312661952 QUEUED at checkpoint",
+      "61e18c0 Vibe Integrated Regression run 43312661446 QUEUED at checkpoint",
+      "61e18c0 Magic Forest Static Play run 43312661617 IN_PROGRESS at checkpoint",
+      "61e18c0 EXACT_WEB_PUBLISHED_SHA_AND_REAL_GLB_MOBILE_RUNTIME_SAVE_UNVERIFIED",
+      "GENUINE_WEBGPU_RENDERER_FALLBACK_FULL_GPU_OCCLUSION_AND_RAGDOLL_CLOTH_STILL_NOT_IMPLEMENTED_AND_NOT_ATTESTED"
     ],
-    "lastObservedMain": "fdea048a760a6265948e29d9daf8894542c0f23e",
+    "lastObservedMain": "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -457,28 +474,31 @@
       "dc660e244b038cfd11e0e976919c808ea342b38e",
       "fb70c9ec89510e15709450a406c1745f765a0983",
       "b52f04761578dcd1d53f859766aa979cf8d8a4c7",
-      "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98"
+      "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98",
+      "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e"
     ],
     "latestDirectWork": {
       "sourceBase": "bacc8544212c34261dd4619abceb37e6e39e497a",
       "implementationCommits": [
-        "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98"
+        "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98",
+        "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e"
       ],
       "modifiedExistingFiles": [
         "assets/vibe-premium-character-pipeline.mjs",
         "qa/vibe-premium-character-pipeline.test.mjs",
         ".github/workflows/vibe-qa.yml"
       ],
-      "scope": "SKINNED_RIG_MISSING_SKELETON_INDEX_REAL_BONE_FAIL_CLOSED_WITH_5_CANONICAL_QUALITY_TEST_FILES",
+      "scope": "FAIL_CLOSED_MISSING_SKELETON_BONE_INDEX; CANONICAL_VIBE_QA_EXECUTES_RIG_IK_MOTION_GRAPHICS_TESTS; PBR_RESTORES_MATERIALS_AND_RELEASES_TEXTURES_ON_FAILURE",
       "qa": {
-        "constitution": "ENFORCER_PASS_IN_43310785701_BUT_OVERALL_NATIVE_STUDIO_TESTS_FAILED",
-        "vibeQa": "QUEUED_43312073966",
-        "integrated": "IN_PROGRESS_43312074106",
-        "pages": "QUEUED_43312074139"
+        "firstVibeQA": "SUCCESS_43312073966",
+        "firstIntegrated": "SUCCESS_43312074106",
+        "latestVibeQa": "QUEUED_43312661952",
+        "latestIntegrated": "QUEUED_43312661446",
+        "latestPages": "IN_PROGRESS_43312661617"
       },
-      "postPublish": "EXACT_SOURCE_BROWSER_UNVERIFIED",
+      "postPublish": "EXACT_LATEST_SOURCE_BROWSER_NOT_ATTESTED",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Before any writes read live main, central 4 including full blob, AGENTS. GitHub Actions Vibe QA 43312073966 now actually runs rig, IK, motion and graphics files. Fix actual failed source rather than tests and verify exact postpub SHA; don't claim newest browser pass from superseded prior run; native Studio-policy workflow has unrelated 7 failing tests."
+      "nextWorkerInstruction": "Fetch main and AGENTS plus 4 central policies (full blob SHA 3554729... if unchanged). Read latest QA jobs 43312661952 and 43312661446 then postpub browser job 43312661617. If failure fix existing responsibility; avoid new gate. Shared PBR maps now restored on dispose, and source rig without bound skeleton fails. Constitution enforcer passed although Studio policy suite has 7 unrelated tests failing, so don't label all policy QA PASS."
     }
   }
 }
