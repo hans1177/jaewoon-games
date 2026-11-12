@@ -49,8 +49,15 @@ local function make(name, parent)
 end
 
 -- 효과음 한 번 (같은 소리는 너무 자주 겹치지 않게 0.05초 간격)
-function Sfx.play(name, volume, speed)
-	if not sfxOn or not IDS[name] or broken[name] then
+function Sfx.play(name, volume, speed, fallback)
+	if not sfxOn then
+		return
+	end
+	-- 신규 해전 음원이 아직 등록되지 않았거나 재생에 실패했으면 기존 승인 효과음을 쓴다.
+	if not IDS[name] or broken[name] then
+		name = fallback
+	end
+	if not name or not IDS[name] or broken[name] then
 		return
 	end
 	local now = os.clock()
