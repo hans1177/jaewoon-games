@@ -59,7 +59,8 @@ local TABS = {
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
-	{ id = "quest", name = "일지" },
+	{ id = "map", name = "일지" },
+	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
 }
 
