@@ -3,7 +3,7 @@
 local State = require("./mockstate")
 local PortScene = require("./PortScene")
 local Cultures = require("./PortCultures")
-local ports = { "london", "amsterdam", "rouen", "lisbon", "istanbul", "zanzibar", "calicut", "nagasaki", "veracruz", "venice", "hamburg", "bergen", "sydney", "aden", "cape_town", "canton", "osaka", "alexandria", "havana", "goa", "malacca", "rio", "valletta", "seville", "genoa", "shanghai", "batavia", "manila", "cartagena_indias", "edinburgh", "macau", "salvador", "edo" }
+local ports = { "london", "amsterdam", "rouen", "lisbon", "istanbul", "zanzibar", "calicut", "nagasaki", "veracruz", "venice", "hamburg", "bergen", "sydney", "aden", "cape_town", "canton", "osaka", "alexandria", "havana", "goa", "malacca", "rio", "valletta", "seville", "genoa", "shanghai", "batavia", "manila", "cartagena_indias", "edinburgh", "macau", "salvador", "edo", "naples", "marseille", "barcelona", "rouen", "casablanca", "rangoon", "honolulu", "split", "ragusa", "kilwa", "muscat", "elmina", "quebec", "san_juan", "tunis", "hoi_an" }
 -- 문화권마다 최소 한 곳은 반드시 포함
 local seen = {}
 for _, id in ports do seen[Cultures.REGION[id] or "?"] = true end
