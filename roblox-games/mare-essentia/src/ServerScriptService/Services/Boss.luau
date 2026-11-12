@@ -38,7 +38,7 @@ return function(D, S)
 				table.insert(msgs, line)
 			end
 			S.Discovery.grantCard(state, boss.cardId, msgs)
-			S.Cardbook.offer(state, "boss", msgs)
+			S.Cardbook.offer(state, "boss", msgs, nil, nil, D.CardBook.BOSS_CARD[boss.id])
 			S.State.gainXp(state, "battle", boss.rewardXp, msgs)
 			S.Perk.addAffinity(state, 5, msgs)
 		elseif winner == "b" then

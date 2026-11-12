@@ -277,6 +277,7 @@ return function(D, S)
 				state.coins += m.reward
 				state.fame += 2
 				table.insert(msgs, string.format("보물지도의 표시를 따라 해안을 파 보니... 보물 상자가 나왔다! +%d코인, 명성 +2", m.reward))
+				S.Cardbook.chest(state, msgs)
 			end
 		end
 		S.Shipyard.payUpkeep(state, days, msgs)

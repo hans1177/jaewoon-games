@@ -30,12 +30,12 @@ return function(D, S)
 	end
 
 	-- 승리 보상: 카드 3장 중 1장 고르기 (이미 고르지 않은 보상이 있으면 그 보상은 무작위로 받는다)
-	function C.offer(state, source, msgs, rng, field)
+	function C.offer(state, source, msgs, rng, field, extra)
 		local book = C.get(state)
 		if book.pick then
 			CB.choose(book, 1)
 		end
-		CB.offer(book, source, rng or math.random, field)
+		CB.offer(book, source, rng or math.random, field, extra)
 		if msgs then table.insert(msgs, "전투 카드 3장 중 1장을 고를 수 있다") end
 	end
 
@@ -69,6 +69,11 @@ return function(D, S)
 		local msgs = {}
 		C.reward(state, "explore", msgs)
 		return true, "퍼즐 해결! " .. msgs[1]
+	end
+
+	-- 보물상자: 코인 대신 카드 3장 중 1장
+	function C.chest(state, msgs)
+		C.offer(state, "chest", msgs)
 	end
 
 	-- 주점의 용병 모집: 코인을 내면 카드 한 장 (발견·탐험보다 비싸지만 확실하다)

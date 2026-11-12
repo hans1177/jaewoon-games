@@ -3288,6 +3288,12 @@ do
 		local ok1 = CBr.saveSlot(bk, 2, "돌격덱", ids1)
 		check("저장 칸: 저장하고 불러온다", ok1 and CBr.useSlot(bk, 2) and #bk.deck == #ids1)
 		check("저장 칸: 없는 칸은 거절", not CBr.saveSlot(bk, 5, "x", ids1) and not CBr.useSlot(bk, 3))
+		local bb = CBr.new("europe")
+		local bo = CBr.offer(bb, "boss", math.random, nil, CBr.BOSS_CARD.kraken)
+		check("두목 카드: 후보 첫 장이 두목 전용 카드", bo[1] == "boss_kraken" and #bo == 3 and CBr.isHero("boss_kraken"))
+		local leak = false
+		for _, pool in CBr.POOLS do for _, id in pool do if string.sub(id, 1, 5) == "boss_" then leak = true end end end
+		check("두목 카드: 일반 뽑기에는 나오지 않는다", not leak)
 		-- 3장 중 1장 고르기 / 연습전 / 하루 퍼즐
 		local bp = CBr.new("europe")
 		local offered = CBr.offer(bp, "boss", math.random)
