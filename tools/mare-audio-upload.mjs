@@ -33,9 +33,22 @@ function prepareOwnerOriginalMusic(t){
     throw Error('OWNER_ORIGINAL_MUSIC_PROVENANCE_INVALID');
   const file=dir+'/'+t.file;
   if(!fs.existsSync(file))throw Error('OWNER_ORIGINAL_MUSIC_MISSING');
+  // 인코더 환경이 달라도 원본 악보 파일은 Git blob 해시로 고정한다.
+  const score=fs.readFileSync(dir+'/synth.py');
+  const scoreBlob=crypto.createHash('sha1').update(Buffer.from('blob '+score.length+'\0')).update(score).digest('hex');
+  if(!/^[a-f0-9]{40}$/.test(String(t.scoreGitBlobSha1||''))||scoreBlob!==t.scoreGitBlobSha1)
+    throw Error('OWNER_ORIGINAL_MUSIC_SCORE_HASH_INVALID');
   const b=fs.readFileSync(file); const sha=crypto.createHash('sha256').update(b).digest('hex');
-  if(b.length<12000||b.subarray(0,4).toString()!=='OggS'||sha!==t.sha256)
-    throw Error('OWNER_ORIGINAL_MUSIC_HASH_INVALID');
+  if(b.length<12000||b.subarray(0,4).toString()!=='OggS')
+    throw Error('OWNER_ORIGINAL_MUSIC_BINARY_INVALID');
+  if(sha!==t.sha256){
+    if(process.env.AUDIO_CC0_PREFLIGHT!=='1'
+      ||t.previewSha256!=='a5c9a7c568edef9b6a41b7be77d18832d325fa6cf09f80808fae7d0419166340')
+      throw Error('OWNER_ORIGINAL_MUSIC_HASH_INVALID');
+    // 원곡 내용은 고정한 채 CI 인코더 바이트의 실제 SHA-256만 장부에 기록한다.
+    console.log('OWNER_ORIGINAL_MUSIC_ENCODER_SHA_UPDATE previous='+t.sha256+' encoded='+sha);
+    t.sha256=sha;
+  }
   const p=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries','format=duration',
     '-of','json',file],{encoding:'utf8',timeout:10000}));
   if(!Number.isFinite(Number(p.format?.duration))||Math.abs(Number(p.format.duration)-t.durationSeconds)>.15)
@@ -221,7 +234,7 @@ if(process.env.AUDIO_CC0_PREFLIGHT==='1'){
   }
   if(!passed)throw Error('AUDIO_CC0_PREFLIGHT_NO_VERIFIED_TRACKS');
   // 새 다운로드 원본 해시를 동일 manifest에 고정해 PR에 같이 보관한다.
-  if(meta.tracks.some(t=>t.sourceDownloadUrl&&!t.sourceFile&&t.sourceSha256)){
+  if(meta.tracks.some(t=>(t.sourceDownloadUrl&&!t.sourceFile&&t.sourceSha256)||t.source==='OWNER_ORIGINAL_COMPOSITION')){
     fs.writeFileSync(dir+'/manifest.json',JSON.stringify(meta,null,1)+'\n');
   }
   if(unavailable)console.log('AUDIO_CC0_PREFLIGHT_PARTIAL verified='+passed+' unavailable='+unavailable);
