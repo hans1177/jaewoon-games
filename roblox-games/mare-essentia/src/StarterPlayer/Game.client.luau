@@ -1192,6 +1192,7 @@ local BRASS = Color3.fromRGB(214, 170, 82)
 
 local function hudStroke(obj, thickness)
 	local st = Instance.new("UIStroke")
+	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 글자가 아니라 테두리에만 (기본값은 글자에 번짐)
 	st.Color = BRASS
 	st.Thickness = thickness or 1.5
 	st.Parent = obj
@@ -1342,6 +1343,7 @@ for i, d in H.DOCK do
 		g.Parent = b
 	end
 	local bs = Instance.new("UIStroke")
+	bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 글자가 아니라 테두리에만 (기본값은 글자에 번짐)
 	bs.Color = BRASS
 	bs.Thickness = 1
 	bs.Transparency = 0.35
