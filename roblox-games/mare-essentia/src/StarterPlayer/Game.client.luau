@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau
 -- 클라이언트 UI: 서버(GameAction)가 보내 준 스냅샷(view)을 표시하고 요청만 보낸다.
 -- 판정은 모두 서버가 하므로 여기서는 값을 계산해 믿지 않는다.
 
@@ -402,8 +403,9 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
 	H.iconPaper(vf, px)
-	vf.Ambient = Color3.fromRGB(184, 173, 154)
-	vf.LightColor = Color3.fromRGB(255, 238, 204)
+	-- [교역품 조명] 밝은 중성광과 따뜻한 종이 배경으로 재질과 윤곽을 분리한다.
+	vf.Ambient = Color3.fromRGB(202, 195, 181)
+	vf.LightColor = Color3.fromRGB(255, 247, 224)
 	vf.LightDirection = Vector3.new(-0.8, -1.6, -0.55).Unit
 	local cam = Instance.new("Camera")
 	cam.FieldOfView = 35
@@ -437,12 +439,32 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			cam.FieldOfView = 34
 			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.12, 0.08, 1).Unit * (size.Y * 0.88), focus)
 		else
-			cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
+			local direction = Vector3.new(0.85, 0.65, 1.2).Unit
+			-- [모바일 교역품] 작은 정사각형 화면은 메시의 실제 투영 외곽을 기준으로 빈 여백을 줄인다.
+			-- 8개 모서리의 원근 거리로 맞추므로 기다란 병·천·상자도 잘리지 않는다.
+			if kind == "Cargo" and px < 90 then
+				local viewFrame = CFrame.lookAt(cf.Position + direction, cf.Position)
+				local half = size * 0.5
+				local tangent = math.tan(math.rad(cam.FieldOfView * 0.5))
+				local fitted = 0.1
+				for x = -1, 1, 2 do
+					for y = -1, 1, 2 do
+						for z = -1, 1, 2 do
+							local delta = cf:VectorToWorldSpace(Vector3.new(half.X * x, half.Y * y, half.Z * z))
+							local extent = math.max(math.abs(delta:Dot(viewFrame.RightVector)), math.abs(delta:Dot(viewFrame.UpVector)))
+							fitted = math.max(fitted, delta:Dot(direction) + extent / tangent)
+						end
+					end
+				end
+				reach = fitted * 1.06
+			end
+			cam.CFrame = CFrame.lookAt(cf.Position + direction * reach, cf.Position)
 		end
 		currentModel = model
 		if fallback then fallback:Destroy(); fallback = nil end
 		if readyConnection then readyConnection:Disconnect(); readyConnection = nil end
-		if px >= 60 then
+		-- [모바일 성능] 52/60px 목록 카드는 정지 표본, 상세(96px)만 회전한다.
+		if px >= 90 then
 			addItemMotion({ gui = vf, model = model, center = cf.Position, base = model:GetPivot() })
 		end
 		return true
