@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__GRAPHICS_LOD_BATCH_FIX_RUNTIME_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__LATEST_GLF_SOURCE_MOTION_RENDER_QA_PENDING",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,10 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "RELOAD_CURRENT_MAIN_AND_POLICY4_AGENTS_AFTER_HANDOFF",
+      "FETCH_CI_43308046687_43308046407_43308046425_AND_LATEST_SOURCE_SHA",
+      "VERIFY_RUN_ALIAS_REAL_APPROVED_GLTF_RUN_AND_JOG_SOURCE_CLIPS_IN_LIVE_PREVIEW_WITH_NO_DUPLICATE_MIXER",
+      "VERIFY_PUBLISH_MANIFEST_AND_BROWSER_SMOKE_EXACT_LATEST_SHA_AND_FIX_REPRODUCIBLE_WILD_SURVIVAL_MOVEMENT_DELAY_ONLY_ON_EVIDENCE",
       "REFRESH_MAIN_BEFORE_WORK_AND_RELOAD_CANONICAL_POLICY4_AGENTS",
       "FETCH_ACTIONS_VIBE_QA_43307517213_INTEGRATED_REGRESSION_43307517488_MAGIC_FOREST_STATIC_PLAY_43307517530",
       "CHECK_LATEST_DEPLOY_PUBLISH_MANIFEST_SOURCE_SHA_AND_POST_BROWSER_MOBILE_INPUT_SAVE",
@@ -331,7 +335,10 @@
       "qa/vibe-cinematic-polish.test.mjs:LOD_HIDDEN_DEFAULT_RENDER_AND_RESET_REGRESSION (eb49063a4)",
       "assets/vibe-cinematic-polish.mjs:AUTHORED_LOD_GROUP_PARENT_WORLD_DISTANCE_PER_OBJECT_WITH_SAFE_ROOT_FALLBACK (8f6fb30)",
       "assets/vibe-cinematic-polish.mjs:STATIC_INSTANCING_STATE_PARTITION_FOR_SHADOW_LAYER_RENDER_ORDER_CULLING_AND_PRESERVED_INSTANCED_FLAGS (8f6fb30)",
-      "qa/vibe-cinematic-polish.test.mjs:AUTHORED_LOD_NEAR_AND_FAR_GROUP_TEST;STATIC_BATCH_DIFFERENT_RENDER_STATE_TEST (8f6fb30)"
+      "qa/vibe-cinematic-polish.test.mjs:AUTHORED_LOD_NEAR_AND_FAR_GROUP_TEST;STATIC_BATCH_DIFFERENT_RENDER_STATE_TEST (8f6fb30)",
+      "assets/vibe-character-adapter.mjs:AUTHORED_GLTF_CLIP_ALIAS_MATCHING_WALK_JOG_SPRINT_RUN_WITH_DEDUPE_AND_SAFE_ABSENT_CLIPS (dc660e24)",
+      "assets/vibe-model-preview.html:DESKTOP_FRAME_CAP_60FPS_AND_55FPS_RENDER_QUALITY_CONTROLLER_TARGET_PRESERVE_MOBILE_30FPS (dc660e24)",
+      "qa/vibe-motion-engine.test.mjs:AUTHOR_SOURCE_CLIP_ALIAS_BEHAVIOR_AND_DESKTOP_FRAME_BUDGET_TESTS (dc660e24/fb70c9ec)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -346,7 +353,8 @@
       "8fdd29e9 Vibe Integrated Regression run 43305654543 SUCCESS",
       "8f6fb304 Vibe Integrated Regression GitHub Actions run 43307517488 SUCCESS (verified from Actions run state)",
       "7388bdb0 Vibe QA run 43307118779 SUCCESS and Vibe Integrated Regression run 43307118796 SUCCESS",
-      "eb49063a Vibe QA 43306014838 SUCCESS and Vibe Integrated Regression 43306014606 SUCCESS"
+      "eb49063a Vibe QA 43306014838 SUCCESS and Vibe Integrated Regression 43306014606 SUCCESS",
+      "8f6fb304 Vibe QA run 43307517213 SUCCESS and Integrated Regression run 43307517488 SUCCESS"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -374,9 +382,13 @@
       "7388 exact QA and postdeployment Pages SHA match",
       "8f6fb304 Vibe QA run 43307517213 in progress at last check",
       "8f6fb304 Magic Forest Static Play 43307517530 pending at last check",
-      "LATEST_MAIN_AFTER_HANDOFF_EXACT_PUBLISHED_SHA_AND_BROWSER_RUNTIME_STILL_UNVERIFIED"
+      "LATEST_MAIN_AFTER_HANDOFF_EXACT_PUBLISHED_SHA_AND_BROWSER_RUNTIME_STILL_UNVERIFIED",
+      "fb70c9ec Vibe QA run 43308046687 in progress at checkpoint",
+      "fb70c9ec Vibe Integrated Regression run 43308046407 queued at checkpoint",
+      "fb70c9ec Magic Forest Static Play run 43308046425 pending at checkpoint",
+      "CURRENT_MAIN_EXACT_LIVE_MOBILE_BROWSER_SAVE_RUN_NOT_CONFIRMED"
     ],
-    "lastObservedMain": "8f6fb3040d7af2a68822864c8c093cae3560dd95",
+    "lastObservedMain": "fb70c9ec89510e15709450a406c1745f765a0983",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -410,26 +422,33 @@
       "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
       "8fdd29e937d4065e4012f48bed8328ccf138011f",
       "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175",
-      "8f6fb3040d7af2a68822864c8c093cae3560dd95"
+      "8f6fb3040d7af2a68822864c8c093cae3560dd95",
+      "dc660e244b038cfd11e0e976919c808ea342b38e",
+      "fb70c9ec89510e15709450a406c1745f765a0983"
     ],
     "latestDirectWork": {
       "sourceBase": "7a22073ad47fc4451d28a01844600b0fc79960bf",
       "implementationCommits": [
-        "8f6fb3040d7af2a68822864c8c093cae3560dd95"
+        "8f6fb3040d7af2a68822864c8c093cae3560dd95",
+        "dc660e244b038cfd11e0e976919c808ea342b38e",
+        "fb70c9ec89510e15709450a406c1745f765a0983"
       ],
       "modifiedExistingFiles": [
         "assets/vibe-cinematic-polish.mjs",
-        "qa/vibe-cinematic-polish.test.mjs"
+        "qa/vibe-cinematic-polish.test.mjs",
+        "assets/vibe-character-adapter.mjs",
+        "assets/vibe-model-preview.html",
+        "qa/vibe-motion-engine.test.mjs"
       ],
-      "scope": "PER_PARENT_AUTHORED_LOD_DISTANCE_AND_INSTANCED_MESH_RENDER_STATE_PRESERVATION",
+      "scope": "PER_OBJECT_LOD_GFX; INSTANCING_RENDER_STATE; AUTHOR_CLIP_RUN_ALIAS; DESKTOP_60FPS_PRESENTATION",
       "qa": {
-        "integrated": "SUCCESS_43307517488",
-        "vibeQa": "IN_PROGRESS_43307517213",
-        "pages": "PENDING_43307517530"
+        "graphics": "VIBE_QA_SUCCESS_43307517213; INTEGRATED_SUCCESS_43307517488",
+        "latest": "RUNNING_43308046687; QUEUED_43308046407",
+        "live": "PENDING_43308046425"
       },
-      "postPublish": "UNVERIFIED_EXACT_SHA",
+      "postPublish": "LATEST_COMMIT_UNVERIFIED",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Reload main/central four/AGENTS; verify exact latest CI after handoff; do not mistake superseded GitHub Pages status for browser pass; continue native GLB 18 feature track without reintroducing duplicate mixer or breaking saves."
+      "nextWorkerInstruction": "Inspect live main, canonical policy four and AGENTS; use Actions run IDs to get actual QA status, confirm exact published SHA (do not count superseded), validate GLTF clip alias in browser and real model, continue outstanding features with real approved assets; no duplicate pipelines."
     }
   }
 }
