@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-11-12T07:39:07.986Z",
+  "updatedAt": "2026-11-02",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -37,6 +37,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -82,7 +83,28 @@
         "marketing": {
           "thumbnail": "assets/page-bg-v4.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "amusement-tycoon",
+            "titleEn": "PARK TYCOON",
+            "titleKo": "놀이공원 타이쿤",
+            "cover": {
+              "src": "assets/homepage-covers/amusement-tycoon.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 61706,
+              "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
+            },
+            "small": {
+              "src": "assets/homepage-covers/amusement-tycoon-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 27642,
+              "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "amusement-tycoon",
@@ -119,7 +141,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/amusement-tycoon"
@@ -203,6 +225,28 @@
       "ownerWebSourceRevision": "6a62e3cfea5f37627b06bf4a09c6ebf98fcfa27c7e63cc247a057bab08e0f42d",
       "ownerWebEntryFile": "web-games/amusement-tycoon/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "amusement-tycoon",
+        "titleEn": "PARK TYCOON",
+        "titleKo": "놀이공원 타이쿤",
+        "cover": {
+          "src": "assets/homepage-covers/amusement-tycoon.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 61706,
+          "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
+        },
+        "small": {
+          "src": "assets/homepage-covers/amusement-tycoon-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 27642,
+          "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
+      },
       "robloxProjectPath": "roblox-games/amusement-tycoon",
       "unityProjectPath": "unity-games/amusement-tycoon",
       "robloxTitleArtwork": {
@@ -249,6 +293,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -292,7 +337,28 @@
         "marketing": {
           "thumbnail": "assets/page-bg-v2.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "line-defense",
+            "titleEn": "CAT FRONTLINE",
+            "titleKo": "고양이 전선",
+            "cover": {
+              "src": "assets/homepage-covers/line-defense.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 60968,
+              "sha256": "6229e19a6349660e020290040effe6fdc39b0c6fb07bfaa03bb6ec304a0320cc"
+            },
+            "small": {
+              "src": "assets/homepage-covers/line-defense-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 26172,
+              "sha256": "3162e20f66dd76334a43e874f088a148e7ce45a3331e9545a043fe154b2ca0a7"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "slanted punchy comic lettering with wide ink strokes and small flat dark outline"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "line-defense",
@@ -329,7 +395,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/line-defense"
@@ -412,6 +478,28 @@
       "ownerWebSourceRevision": "a1124ea3c77adde7bec2d00b98aecf41075ac3dd432402d898eb589d2f5bd8e6",
       "ownerWebEntryFile": "web-games/line-defense/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "line-defense",
+        "titleEn": "CAT FRONTLINE",
+        "titleKo": "고양이 전선",
+        "cover": {
+          "src": "assets/homepage-covers/line-defense.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 60968,
+          "sha256": "6229e19a6349660e020290040effe6fdc39b0c6fb07bfaa03bb6ec304a0320cc"
+        },
+        "small": {
+          "src": "assets/homepage-covers/line-defense-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 26172,
+          "sha256": "3162e20f66dd76334a43e874f088a148e7ce45a3331e9545a043fe154b2ca0a7"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "slanted punchy comic lettering with wide ink strokes and small flat dark outline"
+      },
       "robloxProjectPath": "roblox-games/line-defense",
       "unityProjectPath": "unity-games/line-defense",
       "robloxTitleArtwork": {
@@ -459,6 +547,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -504,7 +593,28 @@
         "marketing": {
           "thumbnail": "assets/roblox-thumbnails/village-dungeons.svg",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "village-dungeons",
+            "titleEn": "VILLAGE DUNGEONS",
+            "titleKo": "마을 던전 RPG",
+            "cover": {
+              "src": "assets/homepage-covers/village-dungeons.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 56432,
+              "sha256": "3884286806ee030990edbc346439c9ad7a53dd02cd39c2f1c2b5c0b4f7c84844"
+            },
+            "small": {
+              "src": "assets/homepage-covers/village-dungeons-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 24196,
+              "sha256": "d9b9423f39f6283d3ae3bf8c56459baedaefd53c8ac62b8c8206bb29bf9bc726"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "medieval uncial lettering with sturdy rounded bowls and flat parchment tone"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "village-dungeons",
@@ -541,7 +651,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/village-dungeons"
@@ -626,6 +736,28 @@
       "ownerWebSourceRevision": "bba6185a26182edc922138930d2489c159a947e60ae7a10e3d95723194af8ca7",
       "ownerWebEntryFile": "web-games/village-dungeons/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "village-dungeons",
+        "titleEn": "VILLAGE DUNGEONS",
+        "titleKo": "마을 던전 RPG",
+        "cover": {
+          "src": "assets/homepage-covers/village-dungeons.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 56432,
+          "sha256": "3884286806ee030990edbc346439c9ad7a53dd02cd39c2f1c2b5c0b4f7c84844"
+        },
+        "small": {
+          "src": "assets/homepage-covers/village-dungeons-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 24196,
+          "sha256": "d9b9423f39f6283d3ae3bf8c56459baedaefd53c8ac62b8c8206bb29bf9bc726"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "medieval uncial lettering with sturdy rounded bowls and flat parchment tone"
+      },
       "robloxProjectPath": "roblox-games/village-dungeons",
       "unityProjectPath": "unity-games/village-dungeons",
       "robloxTitleArtwork": {
@@ -673,6 +805,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -726,7 +859,28 @@
         "marketing": {
           "thumbnail": "assets/title-survival.svg",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "wild-survival",
+            "titleEn": "WILD SURVIVAL",
+            "titleKo": "야생 생존",
+            "cover": {
+              "src": "assets/homepage-covers/wild-survival.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 56522,
+              "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
+            },
+            "small": {
+              "src": "assets/homepage-covers/wild-survival-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23366,
+              "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "rugged expedition woodcut slab serif with restrained worn edges"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "wild-survival",
@@ -763,7 +917,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -835,6 +989,28 @@
       "ownerWebSourceRevision": "cbc3006020d3878defdf4ab93fb7faecc34671d41c6b4131351f5085e2a36950",
       "ownerWebEntryFile": "web-games/wild-survival/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "wild-survival",
+        "titleEn": "WILD SURVIVAL",
+        "titleKo": "야생 생존",
+        "cover": {
+          "src": "assets/homepage-covers/wild-survival.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 56522,
+          "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
+        },
+        "small": {
+          "src": "assets/homepage-covers/wild-survival-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23366,
+          "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "rugged expedition woodcut slab serif with restrained worn edges"
+      },
       "robloxTitleArtwork": {
         "gameId": "wild-survival",
         "src": "assets/homepage-covers/wild-survival.webp",
@@ -930,7 +1106,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "human-go-temp",
+            "titleEn": "HUMAN GO",
+            "titleKo": "휴먼 GO",
+            "cover": {
+              "src": "assets/homepage-covers/human-go-temp.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 55236,
+              "sha256": "5cd9d6d716c2af2f80269b0f869e1742c49d6365f87991986a7929f9caf2d5d8"
+            },
+            "small": {
+              "src": "assets/homepage-covers/human-go-temp-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23378,
+              "sha256": "cf73b48d42d0c6a1e5e3d498eef451aa8c0a3864f4215e2859ba507d9d1cb9b8"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "clean compact retro travel sans lettering, flat sky blue with navy outline"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "human-go-temp",
@@ -1035,6 +1232,28 @@
         }
       },
       "catalogOrder": 5,
+      "homepageMedia": {
+        "gameId": "human-go-temp",
+        "titleEn": "HUMAN GO",
+        "titleKo": "휴먼 GO",
+        "cover": {
+          "src": "assets/homepage-covers/human-go-temp.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 55236,
+          "sha256": "5cd9d6d716c2af2f80269b0f869e1742c49d6365f87991986a7929f9caf2d5d8"
+        },
+        "small": {
+          "src": "assets/homepage-covers/human-go-temp-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23378,
+          "sha256": "cf73b48d42d0c6a1e5e3d498eef451aa8c0a3864f4215e2859ba507d9d1cb9b8"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "clean compact retro travel sans lettering, flat sky blue with navy outline"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1085,6 +1304,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1156,7 +1376,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/seed-casual-realm-weaver"
@@ -1272,6 +1492,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1343,7 +1564,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/seed-idle-growth-rpg-crystal-bloom"
@@ -1459,6 +1680,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1530,7 +1752,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/seed-puzzle-chromatic-cascade"
@@ -2402,6 +2624,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2443,7 +2666,28 @@
         "marketing": {
           "thumbnail": "assets/crystal-v2.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "seed-single-defense-strat-celestial-bastion",
+            "titleEn": "CELESTIAL BASTION",
+            "titleKo": "천상의 보루",
+            "cover": {
+              "src": "assets/homepage-covers/seed-single-defense-strat-celestial-bastion.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 53728,
+              "sha256": "cb6c5101eba2d7798585d484d59a976127a483ea1f4777303807a1c725912f6d"
+            },
+            "small": {
+              "src": "assets/homepage-covers/seed-single-defense-strat-celestial-bastion-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 22408,
+              "sha256": "74f17d30a3baa506678757804ad2bd17bec02f88acfde0de92be686b37c2a3e1"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "architectural tall Art Deco capitals with angular flared stems"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2480,7 +2724,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/seed-single-defense-strat-celestial-bastion"
@@ -2561,6 +2805,28 @@
         "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageMedia": {
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "titleEn": "CELESTIAL BASTION",
+        "titleKo": "천상의 보루",
+        "cover": {
+          "src": "assets/homepage-covers/seed-single-defense-strat-celestial-bastion.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 53728,
+          "sha256": "cb6c5101eba2d7798585d484d59a976127a483ea1f4777303807a1c725912f6d"
+        },
+        "small": {
+          "src": "assets/homepage-covers/seed-single-defense-strat-celestial-bastion-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 22408,
+          "sha256": "74f17d30a3baa506678757804ad2bd17bec02f88acfde0de92be686b37c2a3e1"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "architectural tall Art Deco capitals with angular flared stems"
+      },
       "robloxProjectPath": "roblox-games/seed-single-defense-strat-celestial-bastion",
       "unityProjectPath": "unity-games/seed-single-defense-strat-celestial-bastion",
       "robloxTitleArtwork": {
@@ -2607,6 +2873,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2678,7 +2945,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
@@ -2842,7 +3109,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "cat-step",
+            "titleEn": "CAT STEP",
+            "titleKo": "캣 스텝",
+            "cover": {
+              "src": "assets/homepage-covers/cat-step.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 41932,
+              "sha256": "34231cabd49357cfea638bda26e9350e2a0a956b3d4352568f7e566581fad2bc"
+            },
+            "small": {
+              "src": "assets/homepage-covers/cat-step-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 18666,
+              "sha256": "0e5a38ac083574a28f59deaf00356236b7de53214580ce877be2b5091e3ac9c4"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "bouncy friendly italic bubble lettering, subtle flat navy border"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "cat-step",
@@ -2947,6 +3235,28 @@
         }
       },
       "catalogOrder": 15,
+      "homepageMedia": {
+        "gameId": "cat-step",
+        "titleEn": "CAT STEP",
+        "titleKo": "캣 스텝",
+        "cover": {
+          "src": "assets/homepage-covers/cat-step.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 41932,
+          "sha256": "34231cabd49357cfea638bda26e9350e2a0a956b3d4352568f7e566581fad2bc"
+        },
+        "small": {
+          "src": "assets/homepage-covers/cat-step-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 18666,
+          "sha256": "0e5a38ac083574a28f59deaf00356236b7de53214580ce877be2b5091e3ac9c4"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "bouncy friendly italic bubble lettering, subtle flat navy border"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3046,7 +3356,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "core-clash-4v4",
+            "titleEn": "CORE CLASH",
+            "titleKo": "코어 전장 4대4",
+            "cover": {
+              "src": "assets/homepage-covers/core-clash-4v4.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 46772,
+              "sha256": "66f4ac0a7dcabaeac68c0af12282fd37a247c9f1f4a0999b35852bfdd93e094d"
+            },
+            "small": {
+              "src": "assets/homepage-covers/core-clash-4v4-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 20482,
+              "sha256": "6d948477fac94ee7f784a81c4e9e68a88bcea72ac115912e9ef6e6bf49695abf"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "wide competitive esports techno lettering, sharp diagonal sliced corners"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "core-clash-4v4",
@@ -3151,6 +3482,28 @@
         }
       },
       "catalogOrder": 16,
+      "homepageMedia": {
+        "gameId": "core-clash-4v4",
+        "titleEn": "CORE CLASH",
+        "titleKo": "코어 전장 4대4",
+        "cover": {
+          "src": "assets/homepage-covers/core-clash-4v4.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 46772,
+          "sha256": "66f4ac0a7dcabaeac68c0af12282fd37a247c9f1f4a0999b35852bfdd93e094d"
+        },
+        "small": {
+          "src": "assets/homepage-covers/core-clash-4v4-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 20482,
+          "sha256": "6d948477fac94ee7f784a81c4e9e68a88bcea72ac115912e9ef6e6bf49695abf"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "wide competitive esports techno lettering, sharp diagonal sliced corners"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3187,22 +3540,23 @@
         "3D"
       ],
       "image": "assets/page-bg-v4.webp",
-      "webPath": null,
+      "webPath": "web-games/deep-diver",
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTarget": "ROBLOX",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_NEW_WEB_GAME",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "selectedPlatform": "WEB",
       "catalogOrder": 17,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox 설계 보강 완료",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerWebEntryFile": "web-games/deep-diver/index.html",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -3226,7 +3580,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-        "updatedAt": "2026-11-12T07:36:15.735Z",
+        "updatedAt": "2026-11-12T07:39:06.693Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -3260,19 +3614,19 @@
         },
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "MINIMUM_ROBLOX_DESIGN_READY",
-          "target": "ROBLOX",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
           "selectedPlatform": "WEB",
-          "stage": "개발확정 · Roblox 개발"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "web-games/deep-diver",
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -3310,8 +3664,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Roblox 개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox 설계 보강 완료",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
           "runtime": {
             "authority": "company-runtime",
             "developmentActive": true,
@@ -3332,7 +3686,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-            "updatedAt": "2026-11-12T07:36:15.735Z",
+            "updatedAt": "2026-11-12T07:39:06.693Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -3344,12 +3698,9 @@
       "ownerWebSourceRevision": "68c41b492bf9233543df0fbe2ec788c119b1569986ff7109b70d9f845c59c8c5",
       "webDevelopmentResetRequired": true,
       "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/deep-diver"
-      },
-      "updatedAt": "2026-11-12T07:39:06.693Z"
+        "ROBLOX",
+        "UNITY"
+      ]
     },
     {
       "id": "defense",
@@ -3425,7 +3776,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "defense",
+            "titleEn": "FOREST DEFENSE",
+            "titleKo": "숲길 디펜스",
+            "cover": {
+              "src": "assets/homepage-covers/defense.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 67476,
+              "sha256": "2698480a9584f526f468ec0c2721e1d8452abfaa20f22a180da247e4b272642b"
+            },
+            "small": {
+              "src": "assets/homepage-covers/defense-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 28274,
+              "sha256": "5119c361ae53a0d471ae5727a065270c32ffb511f476243cb1769a5bdc667c02"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "rounded carved storybook wood slab lettering, cream with dark-green shadow"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "defense",
@@ -3530,6 +3902,28 @@
         }
       },
       "catalogOrder": 18,
+      "homepageMedia": {
+        "gameId": "defense",
+        "titleEn": "FOREST DEFENSE",
+        "titleKo": "숲길 디펜스",
+        "cover": {
+          "src": "assets/homepage-covers/defense.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 67476,
+          "sha256": "2698480a9584f526f468ec0c2721e1d8452abfaa20f22a180da247e4b272642b"
+        },
+        "small": {
+          "src": "assets/homepage-covers/defense-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 28274,
+          "sha256": "5119c361ae53a0d471ae5727a065270c32ffb511f476243cb1769a5bdc667c02"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "rounded carved storybook wood slab lettering, cream with dark-green shadow"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3630,7 +4024,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "dice-battle-board",
+            "titleEn": "DICE BATTLE",
+            "titleKo": "주사위 전투 보드",
+            "cover": {
+              "src": "assets/homepage-covers/dice-battle-board.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 58752,
+              "sha256": "8d679bf6a6d7d9713b99b4c69c48720f0a2ea840fe9512e403670aebed2aaa80"
+            },
+            "small": {
+              "src": "assets/homepage-covers/dice-battle-board-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 25820,
+              "sha256": "5ad2ecb3c7be40582b78a6ccba9189686bdb535b92237a098a774d35ad5647b1"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "playful chunky boardgame slab with square dot details"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "dice-battle-board",
@@ -3735,6 +4150,28 @@
         }
       },
       "catalogOrder": 19,
+      "homepageMedia": {
+        "gameId": "dice-battle-board",
+        "titleEn": "DICE BATTLE",
+        "titleKo": "주사위 전투 보드",
+        "cover": {
+          "src": "assets/homepage-covers/dice-battle-board.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 58752,
+          "sha256": "8d679bf6a6d7d9713b99b4c69c48720f0a2ea840fe9512e403670aebed2aaa80"
+        },
+        "small": {
+          "src": "assets/homepage-covers/dice-battle-board-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 25820,
+          "sha256": "5ad2ecb3c7be40582b78a6ccba9189686bdb535b92237a098a774d35ad5647b1"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "playful chunky boardgame slab with square dot details"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3835,7 +4272,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "exorcist-office",
+            "titleEn": "EXORCIST OFFICE",
+            "titleKo": "퇴마 사무소",
+            "cover": {
+              "src": "assets/homepage-covers/exorcist-office.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 30592,
+              "sha256": "8b2338213bb7ed314f5bb4db47562a66311202a8f70538e2636e8e3ec35dc5d3"
+            },
+            "small": {
+              "src": "assets/homepage-covers/exorcist-office-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 12822,
+              "sha256": "9c5657516fdb342c6cf3ff942a3a64646d3d72231b18d2a996e6de6bb17ea2d1"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "dry-ink hand-brushed angular exorcist lettering, white and subtle red accent"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "exorcist-office",
@@ -3940,6 +4398,28 @@
         }
       },
       "catalogOrder": 20,
+      "homepageMedia": {
+        "gameId": "exorcist-office",
+        "titleEn": "EXORCIST OFFICE",
+        "titleKo": "퇴마 사무소",
+        "cover": {
+          "src": "assets/homepage-covers/exorcist-office.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 30592,
+          "sha256": "8b2338213bb7ed314f5bb4db47562a66311202a8f70538e2636e8e3ec35dc5d3"
+        },
+        "small": {
+          "src": "assets/homepage-covers/exorcist-office-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 12822,
+          "sha256": "9c5657516fdb342c6cf3ff942a3a64646d3d72231b18d2a996e6de6bb17ea2d1"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "dry-ink hand-brushed angular exorcist lettering, white and subtle red accent"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3977,7 +4457,7 @@
         "보드"
       ],
       "image": "assets/homepage-covers/fantasy-survival.webp",
-      "webPath": null,
+      "webPath": "web-games/fantasy-survival",
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -3985,7 +4465,7 @@
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -4013,7 +4493,7 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-11-12T07:35:53.734Z",
+        "updatedAt": "2026-11-12T08:31:24.134Z",
         "status": "F0_SOURCE_PREFLIGHT_PASSED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -4038,7 +4518,28 @@
         "marketing": {
           "thumbnail": "assets/homepage-covers/fantasy-survival.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "fantasy-survival",
+            "titleEn": "MANA FOREST",
+            "titleKo": "마력숲 생존기",
+            "cover": {
+              "src": "assets/homepage-covers/fantasy-survival.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 50268,
+              "sha256": "ecd9b0e53943f1d64a2348ada4392a97458cb3bdb0e62be4677b87ab8929dea0"
+            },
+            "small": {
+              "src": "assets/homepage-covers/fantasy-survival-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 21574,
+              "sha256": "89c886405cdf7df2f3923d18b48ccaa1b58a0efd2af970fc58294b3fd495119e"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "rustic hand-cut forest serif with sturdy organic shapes, flat light sage"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "fantasy-survival",
@@ -4063,19 +4564,19 @@
         },
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "MINIMUM_ROBLOX_DESIGN_READY",
-          "target": "ROBLOX",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
           "handling": "",
           "selectedPlatform": "WEB",
-          "stage": "개발확정 · Roblox 개발"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "web-games/fantasy-survival",
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/fantasy-survival"
@@ -4113,8 +4614,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Roblox 개발",
-          "recentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "developmentActive": true,
@@ -4136,23 +4637,48 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-11-12T07:35:53.734Z",
+            "updatedAt": "2026-11-12T08:31:24.134Z",
             "status": "F0_SOURCE_PREFLIGHT_PASSED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
       "catalogOrder": 21,
-      "productionTarget": "ROBLOX",
-      "homepageStage": "개발확정 · Roblox 개발",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival",
+        "UNITY": "unity-games/fantasy-survival"
       },
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "updatedAt": "2026-11-12T07:39:07.986Z",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageMedia": {
+        "gameId": "fantasy-survival",
+        "titleEn": "MANA FOREST",
+        "titleKo": "마력숲 생존기",
+        "cover": {
+          "src": "assets/homepage-covers/fantasy-survival.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 50268,
+          "sha256": "ecd9b0e53943f1d64a2348ada4392a97458cb3bdb0e62be4677b87ab8929dea0"
+        },
+        "small": {
+          "src": "assets/homepage-covers/fantasy-survival-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 21574,
+          "sha256": "89c886405cdf7df2f3923d18b48ccaa1b58a0efd2af970fc58294b3fd495119e"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "rustic hand-cut forest serif with sturdy organic shapes, flat light sage"
+      },
       "robloxProjectPath": "roblox-games/fantasy-survival",
       "unityProjectPath": "unity-games/fantasy-survival",
       "robloxTitleArtwork": {
@@ -4174,8 +4700,7 @@
       "webPublishedSourceTreeSha": "adc0915ec88a44ae3214ff900ffc7520c9e67d05",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true,
-      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp",
-      "productionTier": 2
+      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp"
     },
     {
       "id": "fifty-days",
@@ -4248,7 +4773,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "fifty-days",
+            "titleEn": "FIFTY DAYS",
+            "titleKo": "50일",
+            "cover": {
+              "src": "assets/homepage-covers/fifty-days.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 40268,
+              "sha256": "d936b0be186766b48276fa3facc3da7bde4693accbe31e7675a6c5aac9bd8576"
+            },
+            "small": {
+              "src": "assets/homepage-covers/fifty-days-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 16980,
+              "sha256": "b3f49e2a0b449643a4de503fad759e946fb4b7258ab93f182506bcab41f8fabb"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "narrow field-notebook handprinted block capitals"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "fifty-days",
@@ -4352,6 +4898,28 @@
         }
       },
       "catalogOrder": 22,
+      "homepageMedia": {
+        "gameId": "fifty-days",
+        "titleEn": "FIFTY DAYS",
+        "titleKo": "50일",
+        "cover": {
+          "src": "assets/homepage-covers/fifty-days.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 40268,
+          "sha256": "d936b0be186766b48276fa3facc3da7bde4693accbe31e7675a6c5aac9bd8576"
+        },
+        "small": {
+          "src": "assets/homepage-covers/fifty-days-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 16980,
+          "sha256": "b3f49e2a0b449643a4de503fad759e946fb4b7258ab93f182506bcab41f8fabb"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "narrow field-notebook handprinted block capitals"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4617,7 +5185,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "gem-survivor",
+            "titleEn": "GEM SURVIVOR",
+            "titleKo": "보석 생존전",
+            "cover": {
+              "src": "assets/homepage-covers/gem-survivor.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 51432,
+              "sha256": "d6f8b67174a432fa7ea2f62dbc983297a51e2105243c99a9f180c8447e794755"
+            },
+            "small": {
+              "src": "assets/homepage-covers/gem-survivor-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23374,
+              "sha256": "c3148149bb8f2e6fe0e9985b93bbfea3c126c2b654c7ae3061e96f371879f0a1"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "heavy arcade pixel corner lettering with deliberately stepped outlines"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "gem-survivor",
@@ -4722,6 +5311,28 @@
         }
       },
       "catalogOrder": 24,
+      "homepageMedia": {
+        "gameId": "gem-survivor",
+        "titleEn": "GEM SURVIVOR",
+        "titleKo": "보석 생존전",
+        "cover": {
+          "src": "assets/homepage-covers/gem-survivor.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 51432,
+          "sha256": "d6f8b67174a432fa7ea2f62dbc983297a51e2105243c99a9f180c8447e794755"
+        },
+        "small": {
+          "src": "assets/homepage-covers/gem-survivor-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23374,
+          "sha256": "c3148149bb8f2e6fe0e9985b93bbfea3c126c2b654c7ae3061e96f371879f0a1"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "heavy arcade pixel corner lettering with deliberately stepped outlines"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4822,7 +5433,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "kingshot-ad",
+            "titleEn": "KINGSHOT",
+            "titleKo": "킹샷 광고풍",
+            "cover": {
+              "src": "assets/homepage-covers/kingshot-ad.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 61306,
+              "sha256": "772b737557cb85b7950e16edcd949decec40249d8e4f5f0486c6abf740b5a58c"
+            },
+            "small": {
+              "src": "assets/homepage-covers/kingshot-ad-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 26256,
+              "sha256": "f77ddcc2a361362a56e1006a7607ee8f9f38abfd8591e0fdd8f738de1457456f"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "heavy medieval archer sign slab with pointed terminals"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "kingshot-ad",
@@ -4927,6 +5559,28 @@
         }
       },
       "catalogOrder": 25,
+      "homepageMedia": {
+        "gameId": "kingshot-ad",
+        "titleEn": "KINGSHOT",
+        "titleKo": "킹샷 광고풍",
+        "cover": {
+          "src": "assets/homepage-covers/kingshot-ad.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 61306,
+          "sha256": "772b737557cb85b7950e16edcd949decec40249d8e4f5f0486c6abf740b5a58c"
+        },
+        "small": {
+          "src": "assets/homepage-covers/kingshot-ad-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 26256,
+          "sha256": "f77ddcc2a361362a56e1006a7607ee8f9f38abfd8591e0fdd8f738de1457456f"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "heavy medieval archer sign slab with pointed terminals"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4978,6 +5632,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -5053,7 +5708,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -5359,6 +6014,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
       "catalogOrder": 28,
       "updatedAt": "2026-10-20T19:38:00+09:00",
@@ -5440,7 +6096,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -5600,7 +6256,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "party-rpg",
+            "titleEn": "PARTY RPG",
+            "titleKo": "파티 RPG",
+            "cover": {
+              "src": "assets/homepage-covers/party-rpg.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 45154,
+              "sha256": "c906f3c1e3a93fd8b7044d7c0b70615c371093c336167fdc7e6a2d4bda1a578a"
+            },
+            "small": {
+              "src": "assets/homepage-covers/party-rpg-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 20158,
+              "sha256": "97f649be2a92d53a128b5530deaa235eeffb1cbcecb19d68b8c6f551525bb7b7"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "friendly chunky quest-book serif with curved R and distinctive long tails"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "party-rpg",
@@ -5705,6 +6382,28 @@
         }
       },
       "catalogOrder": 29,
+      "homepageMedia": {
+        "gameId": "party-rpg",
+        "titleEn": "PARTY RPG",
+        "titleKo": "파티 RPG",
+        "cover": {
+          "src": "assets/homepage-covers/party-rpg.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 45154,
+          "sha256": "c906f3c1e3a93fd8b7044d7c0b70615c371093c336167fdc7e6a2d4bda1a578a"
+        },
+        "small": {
+          "src": "assets/homepage-covers/party-rpg-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 20158,
+          "sha256": "97f649be2a92d53a128b5530deaa235eeffb1cbcecb19d68b8c6f551525bb7b7"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "friendly chunky quest-book serif with curved R and distinctive long tails"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -5805,7 +6504,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "realistic-builder",
+            "titleEn": "REALISTIC BUILDER",
+            "titleKo": "현실 건축가",
+            "cover": {
+              "src": "assets/homepage-covers/realistic-builder.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 57254,
+              "sha256": "41d8ae5481223bf66fbbbc2a3462eb67dce98f1f8d912402e59c477de0260290"
+            },
+            "small": {
+              "src": "assets/homepage-covers/realistic-builder-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23028,
+              "sha256": "144c6c23a48afe6ba8dbaacca9ac768d96f8c4653c5af41e75e05ad7019e5c7c"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "architect blueprint monospaced squared technical lettering"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "realistic-builder",
@@ -5910,6 +6630,28 @@
         }
       },
       "catalogOrder": 30,
+      "homepageMedia": {
+        "gameId": "realistic-builder",
+        "titleEn": "REALISTIC BUILDER",
+        "titleKo": "현실 건축가",
+        "cover": {
+          "src": "assets/homepage-covers/realistic-builder.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 57254,
+          "sha256": "41d8ae5481223bf66fbbbc2a3462eb67dce98f1f8d912402e59c477de0260290"
+        },
+        "small": {
+          "src": "assets/homepage-covers/realistic-builder-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23028,
+          "sha256": "144c6c23a48afe6ba8dbaacca9ac768d96f8c4653c5af41e75e05ad7019e5c7c"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "architect blueprint monospaced squared technical lettering"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -5961,6 +6703,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -6036,7 +6779,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -6200,7 +6943,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "star-frontier",
+            "titleEn": "STAR FRONTIER",
+            "titleKo": "별길 개척자",
+            "cover": {
+              "src": "assets/homepage-covers/star-frontier.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 46812,
+              "sha256": "9cfd351da7d690900e48b9ebb4947846edf6e32c7649f350d21f8cf49825d93c"
+            },
+            "small": {
+              "src": "assets/homepage-covers/star-frontier-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 19820,
+              "sha256": "a57cd4c2617baed7090f413db699f6135fb78316093802c0e947326204ea5287"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "extended retro futuristic geometric lettering, open angular counters"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "star-frontier",
@@ -6304,6 +7068,28 @@
         }
       },
       "catalogOrder": 32,
+      "homepageMedia": {
+        "gameId": "star-frontier",
+        "titleEn": "STAR FRONTIER",
+        "titleKo": "별길 개척자",
+        "cover": {
+          "src": "assets/homepage-covers/star-frontier.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 46812,
+          "sha256": "9cfd351da7d690900e48b9ebb4947846edf6e32c7649f350d21f8cf49825d93c"
+        },
+        "small": {
+          "src": "assets/homepage-covers/star-frontier-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 19820,
+          "sha256": "a57cd4c2617baed7090f413db699f6135fb78316093802c0e947326204ea5287"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "extended retro futuristic geometric lettering, open angular counters"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6404,7 +7190,28 @@
         "marketing": {
           "thumbnail": "assets/pwa-icon-512.png",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "tower-choice-rpg",
+            "titleEn": "TEN FLOOR TOWER",
+            "titleKo": "10층 탑 RPG",
+            "cover": {
+              "src": "assets/homepage-covers/tower-choice-rpg.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 43304,
+              "sha256": "f863cfab9eb4fd05696775cf9fa5ede6b2b604d4dc371485b9179580a28aab14"
+            },
+            "small": {
+              "src": "assets/homepage-covers/tower-choice-rpg-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 17978,
+              "sha256": "13dda1661c29ab065ef17e940f1f71355e678127527cc3044a28ea1449ec1759"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "vertical stone inscription serif, narrow tall letters"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "tower-choice-rpg",
@@ -6509,6 +7316,28 @@
         }
       },
       "catalogOrder": 33,
+      "homepageMedia": {
+        "gameId": "tower-choice-rpg",
+        "titleEn": "TEN FLOOR TOWER",
+        "titleKo": "10층 탑 RPG",
+        "cover": {
+          "src": "assets/homepage-covers/tower-choice-rpg.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 43304,
+          "sha256": "f863cfab9eb4fd05696775cf9fa5ede6b2b604d4dc371485b9179580a28aab14"
+        },
+        "small": {
+          "src": "assets/homepage-covers/tower-choice-rpg-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 17978,
+          "sha256": "13dda1661c29ab065ef17e940f1f71355e678127527cc3044a28ea1449ec1759"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "vertical stone inscription serif, narrow tall letters"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6727,6 +7556,7 @@
       "developmentHandling": "OWNER_NEW_GAME_DESIGN_PIPELINE",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -6772,7 +7602,28 @@
         "marketing": {
           "thumbnail": "assets/page-bg-v4.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "zombie-survival",
+            "titleEn": "ZOMBIE SURVIVAL",
+            "titleKo": "좀비 생존기",
+            "cover": {
+              "src": "assets/homepage-covers/zombie-survival.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 58646,
+              "sha256": "653847a6d42776e1828b768e4b0f6187301aa3eb94674aae23ce02ae4b8718b4"
+            },
+            "small": {
+              "src": "assets/homepage-covers/zombie-survival-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23442,
+              "sha256": "b55b86fe38e6bf9cee7cde251d5c3bb4657f223f0eb10ff0b4b2abecbc7a635f"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "rough condensed survival stencil with horizontal chipped ink"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "zombie-survival",
@@ -6809,7 +7660,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/zombie-survival"
@@ -6884,6 +7735,28 @@
       "ownerWebSourceRevision": "85c4ad9d8797f62fa37ec336b8ce4d08dfee38ccda713ceb5a206e940fc1d1cd",
       "ownerWebEntryFile": "web-games/zombie-survival/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "zombie-survival",
+        "titleEn": "ZOMBIE SURVIVAL",
+        "titleKo": "좀비 생존기",
+        "cover": {
+          "src": "assets/homepage-covers/zombie-survival.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 58646,
+          "sha256": "653847a6d42776e1828b768e4b0f6187301aa3eb94674aae23ce02ae4b8718b4"
+        },
+        "small": {
+          "src": "assets/homepage-covers/zombie-survival-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23442,
+          "sha256": "b55b86fe38e6bf9cee7cde251d5c3bb4657f223f0eb10ff0b4b2abecbc7a635f"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "rough condensed survival stencil with horizontal chipped ink"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6935,6 +7808,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7008,7 +7882,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/bug-defense"
@@ -7126,6 +8000,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7169,7 +8044,28 @@
         "marketing": {
           "thumbnail": "assets/insect-main-v3.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "insect-survival",
+            "titleEn": "INSECT SURVIVAL",
+            "titleKo": "곤충 생존기",
+            "cover": {
+              "src": "assets/homepage-covers/insect-survival.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 44656,
+              "sha256": "b3b59c40706f1f99a30c2d5337992cf11e99ef31718f00189beb821b0cc6479e"
+            },
+            "small": {
+              "src": "assets/homepage-covers/insect-survival-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 20574,
+              "sha256": "e911c742cfd1631eb578a6157f0e3266d260e4bb61803a73487665adde41cf56"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "angular condensed field-guide stencil, flat olive white"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "insect-survival",
@@ -7206,7 +8102,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/insect-survival"
@@ -7279,6 +8175,28 @@
       "ownerWebSourceRevision": "db7fd6aa0a67e020edd4dc53939928020ac0561fcfa83682caaf5a967c620037",
       "ownerWebEntryFile": "web-games/insect-survival/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "insect-survival",
+        "titleEn": "INSECT SURVIVAL",
+        "titleKo": "곤충 생존기",
+        "cover": {
+          "src": "assets/homepage-covers/insect-survival.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 44656,
+          "sha256": "b3b59c40706f1f99a30c2d5337992cf11e99ef31718f00189beb821b0cc6479e"
+        },
+        "small": {
+          "src": "assets/homepage-covers/insect-survival-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 20574,
+          "sha256": "e911c742cfd1631eb578a6157f0e3266d260e4bb61803a73487665adde41cf56"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "angular condensed field-guide stencil, flat olive white"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7329,6 +8247,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7370,7 +8289,28 @@
         "marketing": {
           "thumbnail": "assets/mock.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "chess-battle",
+            "titleEn": "CHESS BATTLE",
+            "titleKo": "체스 배틀",
+            "cover": {
+              "src": "assets/homepage-covers/chess-battle.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 39148,
+              "sha256": "46c23c0d38d22dd0907f7dac422ba7dd0b7c3980a20de718e5374d75de02fbe2"
+            },
+            "small": {
+              "src": "assets/homepage-covers/chess-battle-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 17884,
+              "sha256": "bd35de0d832c9cc4a444b2a37246476c20f0f24b8ea00f364ce3255751d97468"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "elegant high-contrast classical chess serif, black and ivory, broad spacing"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "chess-battle",
@@ -7407,7 +8347,7 @@
             "archive": true,
             "playable": false,
             "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/chess-battle"
@@ -7488,6 +8428,28 @@
       "ownerWebSourceRevision": "7adc4bdb47ccb443d29afa6464ef613d96104083127173015c1de3bd3f46cf17",
       "ownerWebEntryFile": "web-games/chess-battle/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "chess-battle",
+        "titleEn": "CHESS BATTLE",
+        "titleKo": "체스 배틀",
+        "cover": {
+          "src": "assets/homepage-covers/chess-battle.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 39148,
+          "sha256": "46c23c0d38d22dd0907f7dac422ba7dd0b7c3980a20de718e5374d75de02fbe2"
+        },
+        "small": {
+          "src": "assets/homepage-covers/chess-battle-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 17884,
+          "sha256": "bd35de0d832c9cc4a444b2a37246476c20f0f24b8ea00f364ce3255751d97468"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "elegant high-contrast classical chess serif, black and ivory, broad spacing"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7537,6 +8499,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7608,7 +8571,7 @@
             "archive": true,
             "playable": false,
             "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/human-go"
@@ -7717,6 +8680,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7790,7 +8754,7 @@
             "archive": true,
             "playable": false,
             "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/island-village"
@@ -7953,7 +8917,28 @@
         "marketing": {
           "thumbnail": "assets/fantasy-rpg-v2.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "monster-adventure",
+            "titleEn": "MONSTER ADVENTURE",
+            "titleKo": "몬스터 어드벤처",
+            "cover": {
+              "src": "assets/homepage-covers/monster-adventure.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 64218,
+              "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
+            },
+            "small": {
+              "src": "assets/homepage-covers/monster-adventure-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 27860,
+              "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "monster-adventure",
@@ -7990,7 +8975,7 @@
             "archive": true,
             "playable": false,
             "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/monster-adventure"
@@ -8068,11 +9053,34 @@
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
       "homepageDisplayMode": "",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "1430d58b33bc169ea7e8f01593872a7e96aade8c4b5ef9de07463380583666e5",
       "ownerWebEntryFile": "web-games/monster-adventure/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "monster-adventure",
+        "titleEn": "MONSTER ADVENTURE",
+        "titleKo": "몬스터 어드벤처",
+        "cover": {
+          "src": "assets/homepage-covers/monster-adventure.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 64218,
+          "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
+        },
+        "small": {
+          "src": "assets/homepage-covers/monster-adventure-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 27860,
+          "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
+      },
       "robloxProjectPath": "roblox-games/monster-adventure",
       "unityProjectPath": "unity-games/monster-adventure",
       "robloxTitleArtwork": {
@@ -8118,6 +9126,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8189,7 +9198,7 @@
             "archive": false,
             "playable": false,
             "state": "PERMANENTLY_REMOVED_REJECTED_TEST",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/survival"
@@ -8471,6 +9480,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8512,7 +9522,28 @@
         "marketing": {
           "thumbnail": "assets/page-bg-v2.webp",
           "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
+          "homepageMedia": {
+            "gameId": "territory-war",
+            "titleEn": "THREE CROWNS",
+            "titleKo": "영토 전쟁 · 세 왕관",
+            "cover": {
+              "src": "assets/homepage-covers/territory-war.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 85030,
+              "sha256": "aa56e0d073882effc56b132eaaff21dc7c7666312a8b6d034343419956bceff8"
+            },
+            "small": {
+              "src": "assets/homepage-covers/territory-war-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 35370,
+              "sha256": "e28d7de6d308c4f26e02db8b8fb11d4efd0ffeb0a7211ecced7b0ccff28e696e"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "strong square-cut royal slab serif, flat ivory and dark-red trim"
+          },
           "robloxThumbnail": null,
           "robloxTitleArtwork": {
             "gameId": "territory-war",
@@ -8549,7 +9580,7 @@
             "archive": true,
             "playable": false,
             "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": "unity-games/territory-war"
@@ -8630,6 +9661,28 @@
       "ownerWebSourceRevision": "f2693e4cbcea8ce663573fed6adc55ce4ef77853531c6da2ec14f7a6df303520",
       "ownerWebEntryFile": "web-games/territory-war/index.html",
       "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "territory-war",
+        "titleEn": "THREE CROWNS",
+        "titleKo": "영토 전쟁 · 세 왕관",
+        "cover": {
+          "src": "assets/homepage-covers/territory-war.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 85030,
+          "sha256": "aa56e0d073882effc56b132eaaff21dc7c7666312a8b6d034343419956bceff8"
+        },
+        "small": {
+          "src": "assets/homepage-covers/territory-war-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 35370,
+          "sha256": "e28d7de6d308c4f26e02db8b8fb11d4efd0ffeb0a7211ecced7b0ccff28e696e"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "strong square-cut royal slab serif, flat ivory and dark-red trim"
+      },
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
