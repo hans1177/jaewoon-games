@@ -382,130 +382,141 @@ jobs:
           Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
           
           # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
+          # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
+          # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
           $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          $remote = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
           Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
           New-Item -ItemType Directory $dst | Out-Null
-          Set-Location $dst
-          git init -q
-          git config user.name 'mare-capture-bot'
-          git config user.email 'mare-capture-bot@users.noreply.github.com'
-          $branch = "$($env:CAP_GAME)-studio-frames"
-          $repoUrl = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
-          gh api "repos/$($env:GITHUB_REPOSITORY)/branches/$branch" --silent 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            git fetch -q --no-tags --depth=1 $repoUrl "refs/heads/$branch"
+          Push-Location $dst
+          try {
+            git init -q
+            git config user.name 'mare-capture-bot'
+            git config user.email 'mare-capture-bot@users.noreply.github.com'
+            & git fetch -q --depth=1 $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
-            git checkout -q -B frames FETCH_HEAD
+            & git checkout -q --detach FETCH_HEAD
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
-          } else {
-            git checkout -q -b frames
-            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_BRANCH_CREATE_FAILED' }
+            $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
+            # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
+            $archive = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const [dst, out, runId, scriptName, scriptFile, repo] = process.argv.slice(2);
+          if (!/^\d{5,}$/.test(runId)) throw Error('STUDIO_ARCHIVE_RUN_ID_INVALID');
+          const imageExt = /\.(?:png|jpe?g)$/i;
+          const indexFile = path.join(dst, 'index.json');
+          const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
+          const history = Array.isArray(prior.runs) ? prior.runs : [];
+          const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
+          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind);
+          const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+          const summary = report.summary || {};
+          const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
+          const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
+          const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
+            ? path.join(dst, previous.path) : dst;
+          const comparisons = frames.map(name => {
+            const oldFile = path.join(previousDir, name);
+            const currentHash = digest(path.join(out, name));
+            const baseline = fs.existsSync(oldFile) ? digest(oldFile) : '';
+            return {name, sha256: currentHash, comparison: baseline
+              ? (baseline === currentHash ? 'SAME_BYTES' : 'CHANGED_BYTES') : 'NO_BASELINE'};
+          });
+          const rows = script.map((step, n) => {
+            const executed = n < Number(summary.completedSteps || 0);
+            const failed = errors.some(value => String(value).startsWith('step' + n + ':'));
+            const skipped = (report.log || []).some(row => row.step === n && row.at === 'OPTIONAL_SKIPPED');
+            const captures = step.type === 'capture'
+              ? frames.filter(name => name.startsWith(String(step.name || 'cap' + n) + '-')) : [];
+            return {step: n, type: step.type, name: step.name || step.label || step.text || '',
+              status: !executed ? 'NOT_RUN' : failed ? 'FAIL' : skipped ? 'SKIPPED' : 'PASS',
+              screenshots: captures};
+          });
+          const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
+            [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
+          audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
+          const requiredDone = Number(summary.completedSteps) === Number(summary.plannedSteps)
+            && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
+            && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
+              === Number(summary.plannedClicks || 0);
+          let result = errors.length || !requiredDone || rows.some(row => row.status === 'FAIL') ? 'FAIL' : 'PASS';
+          if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
+            result = 'UNVERIFIED';
+          const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            summary, errors, audits, steps: rows,
+            screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
+            previousRunId: previous?.runId || null};
+          const folder = path.join(dst, 'runs', runId);
+          fs.mkdirSync(folder, {recursive: true});
+          fs.cpSync(out, folder, {recursive: true, force: true});
+          fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+              fs.rmSync(path.join(dst, entry.name));
           }
-          $oldIndex = @()
-          $previousRun = ''
-          if (Test-Path -LiteralPath (Join-Path $dst 'history.json')) {
-            $index = Get-Content -LiteralPath (Join-Path $dst 'history.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-            $oldIndex = @($index.runs | Where-Object { $_ -and [string]$_.runId -match '^[0-9]+$' })
-            if ($oldIndex.Count -gt 0) { $previousRun = [string]$oldIndex[0].runId }
+          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+            if (entry.isFile()) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
           }
-          # [그래픽 비교] 이름이 같은 이전 화면과 SHA-256 비교. 변경 여부일 뿐 화질 합격 판정으로 사용하지 않는다.
-          $visual = @()
-          foreach ($frame in $frames) {
-            $relative = $frame.FullName.Substring($out.Length).TrimStart('\', '/').Replace('\', '/')
-            $oldPath = Join-Path $dst $relative
-            $currentHash = (Get-FileHash -LiteralPath $frame.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-            $previousHash = ''
-            $change = 'NEW'
-            if (Test-Path -LiteralPath $oldPath -PathType Leaf) {
-              $previousHash = (Get-FileHash -LiteralPath $oldPath -Algorithm SHA256).Hash.ToLowerInvariant()
-              $change = 'CHANGED'
-              if ($previousHash -eq $currentHash) { $change = 'UNCHANGED' }
-            }
-            $visual += [ordered]@{ file = $relative; change = $change; sha256 = $currentHash; previousSha256 = $previousHash }
+          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision,
+            result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
+            summary, path: 'runs/' + runId};
+          const merged = [record, ...history.filter(row => row.runId !== runId)];
+          const kept = [];
+          for (const row of merged) {
+            if ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6))
+              kept.push(row);
+            else if (/^runs\/[0-9]+$/.test(row.path || ''))
+              fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
           }
-          $changedFrames = @($visual | Where-Object { $_.change -eq 'CHANGED' }).Count
-          $archive = Join-Path (Join-Path $dst 'runs') $runId
-          New-Item -ItemType Directory $archive -Force | Out-Null
-          Copy-Item (Join-Path $out '*') $archive -Recurse -Force
-          # 루트는 최신 검사만 유지한다. runs/는 별도 수명 정책으로 관리한다.
-          Get-ChildItem -LiteralPath $dst -File | Where-Object { $_.Extension -in @('.png','.jpg','.jpeg') -or $_.Name -in @('report.json','checklist.json') } | Remove-Item -Force
-          Copy-Item (Join-Path $out '*') $dst -Recurse -Force
-          $runStatus = 'PASS'
-          if ($qaStage) { $runStatus = 'FAIL' }
-          $checklist = [ordered]@{
-            runId = $runId
-            game = [string]$env:CAP_GAME
-            kind = $kind
-            sourceRevision = [string]$rawReport.sourceRevision
-            checkedAt = (Get-Date).ToUniversalTime().ToString('o')
-            status = $runStatus
-            failureStage = $qaStage
-            failureSignature = $qaSignature
-            checks = [ordered]@{
-              steps = $stepsState; clicks = $clicksState; screenshots = $framesState
-              console = $consoleState; models = $modelState; media = $mediaState; features = $featureState
-            }
-            counts = [ordered]@{
-              plannedSteps = [int]$sum.plannedSteps; completedSteps = [int]$sum.completedSteps
-              plannedClicks = [int]$sum.plannedClicks; successfulClicks = [int]$sum.successfulClicks
-              plannedFrames = [int]$sum.plannedFrames; capturedFrames = $frames.Count
-              warnings = [int]$rawReport.consoleCapture.warningCount
-            }
-            captureChecks = $captureChecks
-            previousRunId = $previousRun
-            visualComparison = $visual
-            visualComparisonMethod = 'SHA256_BYTES_ONLY_NOT_VISUAL_QUALITY'
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, latest: record,
+            lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
+          console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
+          console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
+            retained: kept.length, previous: previous?.runId || null}));
+          '@
+            $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            git add -A
+            git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
+            # 이력 보존 브랜치는 강제 갱신하지 않는다. 동시 변경이 있으면 안전하게 실패한다.
+            & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_PUSH_FAILED' }
+            Write-Host 'STUDIO_ARCHIVE_PUBLISHED=1'
+          } finally {
+            Pop-Location
           }
-          $checklist | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $dst 'checklist.json') -Encoding UTF8
-          Copy-Item -LiteralPath (Join-Path $dst 'checklist.json') -Destination $archive -Force
-          $record = [ordered]@{
-            runId = $runId; at = $checklist.checkedAt; kind = $kind; status = $runStatus
-            sourceRevision = $checklist.sourceRevision; frames = $frames.Count
-            changedFrames = $changedFrames; screenshots = "runs/$runId/"
-          }
-          # [보관 제한] 정밀 검사 12회, 자동 점검 8회, 기타 4회, 공통 7일로 저장소 폭증을 방지한다.
-          $cutoff = (Get-Date).ToUniversalTime().AddDays(-7)
-          $all = @($record) + @($oldIndex | Where-Object { [string]$_.runId -ne $runId })
-          $recent = @($all | Where-Object {
-            try { ([datetime]$_.at).ToUniversalTime() -ge $cutoff } catch { $false }
-          } | Sort-Object -Property at -Descending)
-          $kept = @($recent | Where-Object { $_.kind -eq 'full' } | Select-Object -First 12) +
-                  @($recent | Where-Object { $_.kind -eq 'autopilot' } | Select-Object -First 8) +
-                  @($recent | Where-Object { $_.kind -eq 'other' } | Select-Object -First 4)
-          $kept = @($kept | Sort-Object -Property at -Descending)
-          $allowed = @($kept | ForEach-Object { [string]$_.runId })
-          Get-ChildItem -LiteralPath (Join-Path $dst 'runs') -Directory -ErrorAction SilentlyContinue |
-            Where-Object { $allowed -notcontains $_.Name } | Remove-Item -Recurse -Force
-          ([ordered]@{ version = 1; game = [string]$env:CAP_GAME; retentionDays = 7; runs = $kept }) |
-            ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $dst 'history.json') -Encoding UTF8
-          $gallery = @('# 스튜디오 점검 사진 이력', '', '최신: [사진](./) · [검사표](checklist.json) · [전체 이력](history.json)', '', '보관: 정밀 12회 / 자동 8회 / 기타 4회, 최대 7일', '', '| 실행 | 결과 | 사진 | 변경된 파일 |', '|---|---|---:|---:|')
-          foreach ($item in $kept) {
-            $gallery += "| [$($item.kind) #$($item.runId)](runs/$($item.runId)/) | $($item.status) | $($item.frames) | $($item.changedFrames) |"
-          }
-          $gallery | Set-Content -LiteralPath (Join-Path $dst 'README.md') -Encoding UTF8
-          git add -A
-          git commit -q -m "studio evidence $($env:CAP_GAME) run $runId"
-          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_COMMIT_FAILED' }
-          git push -q $repoUrl "HEAD:refs/heads/$branch"
-          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_PUBLISH_FAILED' }
-          Write-Host "STUDIO_REPORT_PUBLISHED=$branch RUN_ID=$runId STATUS=$runStatus HISTORY=$($kept.Count) CHANGED_FRAMES=$changedFrames"
-          
-          # [호환] 자동 판단기는 기존 별도 autopilot-report 브랜치의 최신 report.json만 읽는다.
-          # 이 브랜치에는 이력을 중복 복사하지 않아 무료 저장소 사용량을 제한한다.
+          # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.
           if ([string]$env:CAP_SCRIPT -match 'autopilot') {
-            $apDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
-            Remove-Item -Recurse -Force $apDst -ErrorAction SilentlyContinue
-            New-Item -ItemType Directory $apDst | Out-Null
-            Copy-Item (Join-Path $out '*') $apDst -Recurse -Force
-            git -C $apDst init -q
-            git -C $apDst config user.name 'mare-capture-bot'
-            git -C $apDst config user.email 'mare-capture-bot@users.noreply.github.com'
-            git -C $apDst add -A
-            git -C $apDst commit -q -m "autopilot latest $($env:CAP_GAME) run $runId"
-            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_AUTOPILOT_COMMIT_FAILED' }
-            git -C $apDst push -q -f $repoUrl "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
-            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_AUTOPILOT_REPORT_PUBLISH_FAILED' }
-            Write-Host 'AUTOPILOT_REPORT_PUBLISHED=0'
+            $autoDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $autoDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $autoDst | Out-Null
+            Copy-Item "$out\*" $autoDst -Recurse
+            Push-Location $autoDst
+            try {
+              git init -q
+              git config user.name 'mare-capture-bot'
+              git config user.email 'mare-capture-bot@users.noreply.github.com'
+              git add -A
+              git commit -q -m "autopilot report $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_COMMIT_FAILED' }
+              & git push -q -f $remote "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_PUBLISH_FAILED' }
+              Write-Host 'AUTOPILOT_REPORT_PUBLISHED=1'
+            } finally {
+              Pop-Location
+            }
           }
           if ($qaStage -ne '') {
             Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
