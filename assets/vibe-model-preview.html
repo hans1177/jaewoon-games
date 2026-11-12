@@ -86,7 +86,7 @@ const locomotion=new VibeLocomotionPolish({onStep:()=>{const cue=audioCues.plan(
 const screenFx=new VibeScreenFxDirector();const audioCues=createVibeAudioCuePlanner();const heldKeys=new Set(),touchKeys=new Set();
 window.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','KeyE','KeyP','KeyO','Space'].includes(event.code)){heldKeys.add(event.code);if(event.code==='Space')premiumActions.request('dodge',{priority:1});}});
 window.addEventListener('keyup',event=>heldKeys.delete(event.code));
-window.addEventListener('keydown',event=>{if(event.code==='KeyO')trainingEnemy.attack();if(event.code==='KeyP'){const result=trainingEnemy.parry();parryActive=result==='perfect'||result==='parry';status.textContent='패링 판정: '+result}});
+window.addEventListener('keydown',event=>{if(event.code==='KeyO'){trainingEnemy.root.visible=true;trainingEnemy.attack();}if(event.code==='KeyP'){const result=trainingEnemy.parry();parryActive=result==='perfect'||result==='parry';status.textContent='패링 판정: '+result}});
 let showcaseActive=false;
 // [조명] 중복 광원 제거: 기존 시네마틱 조명 감독기만 사용.
 // [렌더] 명암 압축과 기기별 픽셀 예산: 모바일 고비용 그림자/과도한 해상도 제한.
@@ -218,7 +218,7 @@ rigAuditButton.addEventListener('click',()=>{
 });
 studioControls.append(rigAuditButton);
 const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;ground.visible=false;scene.add(ground);const gridToggle=document.createElement('button');gridToggle.textContent='격자 표시';gridToggle.setAttribute('aria-pressed','false');gridToggle.addEventListener('click',()=>{ground.visible=!ground.visible;gridToggle.setAttribute('aria-pressed',String(ground.visible))});studioControls.append(gridToggle);if(url)new GLTFLoader().load(url.href,gltf=>{
-const model=gltf.scene;scene.add(model);activeModel=model;storybookWorld.setDecorationsVisible(false);facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();
+const model=gltf.scene;scene.add(model);activeModel=model;storybookWorld.setDecorationsVisible(false);trainingEnemy.root.visible=false;facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();
  // [메쉬/GPU] 승인된 원본에 LOD가 있을 때만 전환하고 무애니메이션 정적 반복 모델만 배칭.
  authoredLOD=createVibeAuthoredMeshLOD(THREE,model);
  staticBatch=batchVibeExistingStaticMeshes(THREE,model,{minimum:4,animated:!!gltf.animations?.length});const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
