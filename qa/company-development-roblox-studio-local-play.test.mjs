@@ -2060,6 +2060,10 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
   if(name==='list_roblox_studios')result={studios:[{studio_id:'test-studio',name:'test'}]};
   if(name==='start_stop_play')playing=args.action==='start';
   if(name==='execute_luau'){
+   if(args.code.includes('STUDIO_LOG_HISTORY=')){
+    result={content:[{type:'text',text:'STUDIO_LOG_HISTORY='+JSON.stringify([{messageType:3,message:'Startup-only error'},{messageType:3,message:'Menu: attempt to index nil'}])}]};
+    process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:req.id,result})+'\\n');return;
+   }
    const marker=args.code.match(/ROBLOX_STUDIO_ACTUAL_PLAY_(?:CORE|WORLD|RUNTIME)=/)[0];
    const data=marker.includes('CORE')?{player:{characterPresent:true,humanoidPresent:true,health:0,maxHealth:100,humanoidState:'Dead',rootY:-500}}:marker.includes('WORLD')?{world:{floorBelowPlayer:false,collidablePartCount:0}}:{};
    result={content:[{type:'text',text:marker+JSON.stringify(data)}]};
@@ -2069,7 +2073,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
    const entries=[{messageType:3,message:'Menu: attempt to index nil'}];
    if(consoleReads===1)entries.push({messageType:3,message:'Startup-only error'});
    if(consoleReads===2)entries.push({messageType:3,message:'Abort-only error'});
-   result={content:[{type:'text',text:JSON.stringify(entries)}]};
+   result=fs.existsSync(${JSON.stringify(events+'.fallback')})?{isError:true,content:[{type:'text',text:'console unavailable'}]}:{content:[{type:'text',text:JSON.stringify(entries)}]};
   }
   if(name==='screen_capture')result=playing?{content:[{type:'image',mimeType:'image/png',data:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='}]}:{isError:true,content:[{type:'text',text:'viewport already stopped'}]};
  }
@@ -2100,9 +2104,11 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
     assert.equal(report.runtimeProbes.initialClient.player.rootY,-500);
     assert.equal(report.runtimeProbes.initialClient.world.floorBelowPlayer,false);
     assert.equal(report.errors.some(x=>x.type==='studio-capture-evidence-error'),false);
+    fs.writeFileSync(events+'.fallback','');
     const scripted=await runStudioScript({mcpCommand:executable,expectedStudioName:'test',outDir:dir,steps:[]});
     assert.equal(scripted.consoleCapture.captured,true);
     assert.equal(scripted.consoleCapture.errorCount,2);
+    assert.deepEqual(scripted.consoleCapture.contexts,['Client','Server']);
     assert.ok(scripted.consoleCapture.errors.some(row=>row.signature==='Startup-only error'));
 
   }finally{fs.rmSync(dir,{recursive:true,force:true});}

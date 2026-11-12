@@ -3137,11 +3137,31 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const classification=classifyStudioConsoleOutput(response);
         report.consoleCapture={
           captured:true,errorCount:classification.errors.length,
-          warningCount:classification.warningCount,
-          errors:classification.errors
+          warningCount:classification.warningCount,errors:classification.errors
         };
       }catch{
-        report.consoleCapture={captured:false};
+        // 기존 검사와 동일한 Studio LogService를 Play 세션이 살아 있을 때 읽는다.
+        const code="local rows={} local history=game:GetService('LogService'):GetLogHistory() "
+          +"for i=math.max(1,#history-119),#history do local row=history[i] "
+          +"if row.messageType==Enum.MessageType.MessageError or row.messageType==Enum.MessageType.MessageWarning then "
+          +"rows[#rows+1]={messageType=row.messageType.Value,message=string.sub(row.message,1,500)} end end "
+          +"return 'STUDIO_LOG_HISTORY='..game:GetService('HttpService'):JSONEncode(rows)";
+        const contexts=[],rows=[];
+        for(const context of ['Client','Server']){
+          try{
+            const output=await luau(context,code);
+            const line=output.split(/\r?\n/).find(value=>value.startsWith('STUDIO_LOG_HISTORY='));
+            const history=line&&JSON.parse(line.slice('STUDIO_LOG_HISTORY='.length));
+            if(!Array.isArray(history))continue;
+            contexts.push(context);
+            rows.push(...history);
+          }catch{}
+        }
+        const classification=classifyStudioConsoleOutput(rows);
+        report.consoleCapture={
+          captured:contexts.length>0,contexts,errorCount:classification.errors.length,
+          warningCount:classification.warningCount,errors:classification.errors
+        };
       }
     }
     if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch(e){report.errors.push('stop:'+clean(e?.message||e).slice(0,200));}}

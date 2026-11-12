@@ -1,6 +1,6 @@
 # 공통(게임 id 입력): 오너 PC의 로그인된 Roblox Studio(기존 러너 라벨 roblox-studio-authenticated)로 마을을 직접 띄워 화면을 캡처한다.
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
-# 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (다음 Claude 실행이 읽는다).
+# 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (바이브 복구가 실패 증거를 읽는다).
 name: Devloop Studio Capture
 run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ github.sha }}
 on:
@@ -235,18 +235,67 @@ jobs:
             })
             -not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)
           })
-          if ($runtimeRows.Count -gt 0 -and -not $qaStage) {
-            $qaStage = 'STUDIO_GAME_RUNTIME'
-            $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
-            # [책임 소스] 로그에 실제 상대경로와 줄 번호가 명시된 경우만 후보로 본다.
-            $paths = @($runtimeRows | ForEach-Object {
-              [regex]::Matches([string]$_.out, 'roblox-games/' + [regex]::Escape($env:CAP_GAME) + '/[A-Za-z0-9_./-]+\.luau:[0-9]+') |
-                ForEach-Object { ($_.Value -replace ':[0-9]+$','') }
+          # [자동 복구] 콘솔에서 확인한 게임 코드 오류를 기존 복구 마커로 넘긴다.
+          $consoleErrors = @($report.consoleCapture.errors | Where-Object {
+            $_.type -eq 'studio-console-error' -and -not [string]::IsNullOrWhiteSpace([string]$_.signature)
+          })
+          Write-Host "STUDIO_QA_CONSOLE_CAPTURED=$($report.consoleCapture.captured)"
+          Write-Host "STUDIO_QA_CONSOLE_ERRORS=$($consoleErrors.Count)"
+          $evidence = @($consoleErrors | ForEach-Object { [string]$_.signature })
+          if (-not $qaStage) { $evidence += @($runtimeRows | ForEach-Object { [string]$_.out }) }
+          $sourceFile = ''
+          if ($evidence.Count -gt 0) {
+            $prefix = "roblox-games/$($env:CAP_GAME)/"
+            $paths = @($evidence | ForEach-Object {
+              [regex]::Matches($_, [regex]::Escape($prefix) + '[A-Za-z0-9_./-]+\.luau:[0-9]+') |
+                ForEach-Object { $_.Value -replace ':[0-9]+$','' }
             } | Sort-Object -Unique)
-            if ($paths.Count -eq 1 -and (Test-Path ("main/" + $paths[0]))) {
+            # Studio 스택의 인스턴스 경로는 동일 프로젝트의 Rojo 소스맵으로만 변환한다.
+            $scriptPaths = @($consoleErrors | ForEach-Object {
+              [regex]::Matches([string]$_.signature, "(?:Script '([A-Za-z0-9_.-]+)', Line [0-9]+|(?<![A-Za-z0-9_./-])((?:Players|ReplicatedStorage|ServerScriptService|StarterPlayer)\.[A-Za-z0-9_.-]+):[0-9]+)") |
+                ForEach-Object { if ($_.Groups[1].Success) { $_.Groups[1].Value } else { $_.Groups[2].Value } }
+            } | ForEach-Object { $_ -replace '^Players\.[^.]+\.PlayerScripts\.', 'StarterPlayer.StarterPlayerScripts.' } | Sort-Object -Unique)
+            if ($scriptPaths.Count -gt 0) {
+              $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe | Select-Object -First 1 -ExpandProperty FullName
+              if ($rojo) {
+                $mapFile = Join-Path $env:RUNNER_TEMP 'studio-repair-sourcemap.json'
+                $gameRoot = (Resolve-Path -LiteralPath ("main/" + $prefix)).Path
+                Push-Location -LiteralPath $gameRoot
+                try {
+                  & $rojo sourcemap default.project.json --output $mapFile
+                  if ($LASTEXITCODE -eq 0) {
+                    $tree = Get-Content -LiteralPath $mapFile -Raw | ConvertFrom-Json
+                    $nodes = [Collections.Generic.Queue[object]]::new()
+                    foreach ($child in $tree.children) { $nodes.Enqueue(@{ node = $child; name = [string]$child.name }) }
+                    while ($nodes.Count -gt 0) {
+                      $entry = $nodes.Dequeue()
+                      if ($scriptPaths -ccontains $entry.name) {
+                        foreach ($file in $entry.node.filePaths) {
+                          $relative = ([string]$file).Replace('\','/')
+                          if ($relative -match '^[A-Za-z0-9_./-]+\.luau$' -and -not $relative.Contains('..')) {
+                            $paths += $prefix + $relative
+                          }
+                        }
+                      }
+                      foreach ($child in $entry.node.children) {
+                        $nodes.Enqueue(@{ node = $child; name = $entry.name + '.' + $child.name })
+                      }
+                    }
+                  }
+                } catch {
+                  Write-Warning 'STUDIO_REPAIR_SOURCEMAP_UNAVAILABLE'
+                } finally { Pop-Location }
+              }
+            }
+            $paths = @($paths | Sort-Object -Unique)
+            if ($paths.Count -eq 1 -and $scriptPaths.Count -le 1 -and $paths[0].Length -le 160 -and -not $paths[0].Contains('..') -and
+                [string]$report.sourceRevision -eq $env:GITHUB_SHA -and (Test-Path -LiteralPath ("main/" + $paths[0]) -PathType Leaf)) {
               $qaStage = 'STUDIO_GAME_SOURCE'
               $qaSignature = 'STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'
               $sourceFile = $paths[0]
+            } elseif (-not $qaStage) {
+              $qaStage = 'STUDIO_GAME_RUNTIME'
+              $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
             }
           }
           $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') })
