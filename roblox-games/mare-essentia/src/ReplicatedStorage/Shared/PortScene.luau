@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local PortData = require(script.Parent:WaitForChild("Ports"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
 
 local PortScene = {}
 
@@ -94,7 +95,7 @@ local function gableRoof(parent, center, w, d, h, color)
 end
 
 local SIGN_ICONS = {
-	{ "교역", "💰" }, { "주점", "🍺" }, { "항만", "⚓" }, { "은행", "🏦" }, { "길드", "📜" }, { "서재", "🔬" },
+	{ "증권", "📈" }, { "박물관", "🏛️" }, { "극장", "🎭" }, { "식물원", "🌿" }, { "천문대", "🔭" }, { "학술원", "🎓" }, { "동물원", "🦁" }, { "제철", "⚙️" }, { "교역", "💰" }, { "주점", "🍺" }, { "항만", "⚓" }, { "은행", "🏦" }, { "길드", "📜" }, { "서재", "🔬" },
 	{ "도서관", "📚" }, { "조선", "🔨" }, { "왕궁", "👑" }, { "총독", "👑" }, { "이야기", "❗" },
 }
 local function signIcon(text)
@@ -905,6 +906,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	end
 end
 
+-- 발전도 랜드마크 자리(양쪽 큰길 뒤). 집은 이 자리를 피해 짓는다.
+local LM_SITES = {
+	Vector3.new(-112, 0, 34), Vector3.new(-112, 0, -34), Vector3.new(-150, 0, 46), Vector3.new(-150, 0, -46),
+	Vector3.new(-190, 0, 40), Vector3.new(-190, 0, -40), Vector3.new(-72, 0, 72), Vector3.new(-72, 0, -72),
+}
+
 local function densify(folder, info, style, rng, walkers, made)
 	local key = styleKeyOf(style)
 	local palm = palmOk(info.portId, style)
@@ -933,7 +940,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	local X_END = -190
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
-	local slots = { Vector3.new(-134, 0, 70), Vector3.new(-134, 0, -70), Vector3.new(-178, 0, 70), Vector3.new(-178, 0, -70) }
+	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
 	for i = #slots, 2, -1 do
 		local j = dz:NextInteger(1, i)
 		slots[i], slots[j] = slots[j], slots[i]
@@ -943,6 +950,9 @@ local function densify(folder, info, style, rng, walkers, made)
 		if x > -104 and math.abs(z) > 20 and math.abs(z) < 54 then return true end
 		for _, d in districts do
 			if math.abs(x - d.at.X) < 24 and math.abs(z - d.at.Z) < 22 then return true end
+		end
+		for _, a in LM_SITES do
+			if math.abs(x - a.X) < 20 and math.abs(z - a.Z) < 20 then return true end
 		end
 		return false
 	end
@@ -1551,6 +1561,100 @@ local function densify(folder, info, style, rng, walkers, made)
 	for i = 1, 30 do
 		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
 		importedModel(folder, "Terrain", trees[1] == "tree-pinedefaulta" and "tree-pinedefaulta" or "tree-oak", pos, rng:NextNumber(8, 13), false)
+	end
+end
+
+-- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
+local function placeLandmarks(folder, info, style, rng, onFacility)
+	local lvl = sceneLevel
+	local order = {}
+	for i = 1, #LM_SITES do order[i] = i end
+	local pr = seeded(info.portId .. "landmarks")
+	for i = #order, 2, -1 do
+		local j = pr:NextInteger(1, i)
+		order[i], order[j] = order[j], order[i]
+	end
+	local function put(kind, asset, size, x, z, solid, yaw)
+		local m = importedModel(folder, kind, asset, Vector3.new(x, 0, z), size, solid == true)
+		if m and yaw then rotateAround(m, Vector3.new(x, 0, z), yaw) end
+		return m
+	end
+	local function ring(cx, cz, hx, hz, fence)
+		for k = -hx, hx, 5 do
+			put("Town", fence, 5, cx + k, cz + hz, false)
+			put("Town", fence, 5, cx + k, cz - hz, false)
+		end
+		for k = -hz + 5, hz - 5, 5 do
+			put("Town", fence, 5, cx + hx, cz + k, false, math.pi / 2)
+			put("Town", fence, 5, cx - hx, cz + k, false, math.pi / 2)
+		end
+	end
+	for idx, lm in PortBuildings.Landmarks do
+		local at = LM_SITES[order[idx]]
+		if at and lvl >= lm.minLevel then
+			local x, z = at.X, at.Z
+			local face = if z > 0 then 0 else math.pi
+			local front = if z > 0 then -1 else 1
+			local tint = Color3.fromRGB(226, 218, 200)
+			local body
+			if lm.id == "theater" then
+				body = put("Terrain", "greek-amphitheater", 30, x, z, true, face)
+			elseif lm.id == "exchange" then
+				body = house(folder, Vector3.new(x, 0, z), 26, 18, 3, style, rng, Color3.fromRGB(214, 206, 186))
+				for k = -2, 2 do put("Terrain", "column", 9, x + k * 5, z + front * 12, false) end
+				put("Castle", "flag-banner-long", 10, x + 14, z + front * 11, false)
+			elseif lm.id == "museum" then
+				body = house(folder, Vector3.new(x, 0, z), 26, 18, 2, style, rng, tint)
+				for k = -1, 1, 2 do put("Terrain", "column", 9, x + k * 6, z + front * 12, false) end
+				put("Terrain", "statue-column", 12, x + 14, z + front * 12, true)
+				put("Terrain", "statue-head", 8, x - 14, z + front * 12, true)
+			elseif lm.id == "botanic" then
+				ring(x, z, 15, 15, "fence")
+				local plants = { "tree_large", "tree-oak", "plant-bush", "tree-crooked" }
+				for k = 1, 9 do
+					local pk = plants[(k - 1) % #plants + 1]
+					local kind = if pk == "plant-bush" or pk == "tree-oak" then "Terrain" else "Town"
+					put(kind, pk, if pk == "plant-bush" then 4 else 9, x - 11 + (k % 3) * 11, z - 11 + (k // 3) * 11, false)
+				end
+				put("Town", "fountain-round", 7, x, z, true)
+				body = put("Terrain", "crop-pumpkin", 3, x + 4, z + 4, false)
+			elseif lm.id == "observatory" then
+				for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-top" } do
+					body = importedModel(folder, "Castle", part_, Vector3.new(x, (k - 1) * 8, z), 10, true) or body
+				end
+				put("Town", "bench_A", 3.6, x + 8, z + front * 8, false)
+			elseif lm.id == "academy" then
+				body = house(folder, Vector3.new(x, 0, z), 28, 20, 3, style, rng, Color3.fromRGB(196, 184, 170))
+				put("Town", "bell-tower", 20, x + 17, z, true)
+				for k = -1, 1, 2 do put("Terrain", "column", 9, x + k * 7, z + front * 13, false) end
+			elseif lm.id == "zoo" then
+				ring(x, z, 17, 17, "fence_straight")
+				local beasts = { "elephant", "llama", "horse", "donkey" }
+				for k = 1, 4 do
+					local m = importedModel(folder, "Animals", beasts[k], Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14), if beasts[k] == "elephant" then 8 else 5, false)
+					if m then rotateAround(m, Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14), rng:NextNumber(0, math.pi * 2)) end
+				end
+				put("Town", "stall-red", 6, x, z + front * 19, false, face)
+				body = put("Terrain", "tree-oak", 9, x, z, false)
+			elseif lm.id == "ironworks" then
+				body = put("Town", "watermill", 24, x, z, true, face)
+				put("Town", "workbench-anvil", 3.4, x + 12, z + front * 6, false)
+				put("Town", "workbench-grind", 3.4, x + 15, z + front * 6, false)
+				put("Cargo", "iron-bars-stack-large", 3, x - 12, z + front * 7, false)
+				for k = -1, 1 do
+					importedModel(folder, "Town", "chimney", Vector3.new(x + k * 6, 15, z), 7, false)
+					smokeOn(folder, Vector3.new(x + k * 6, 23, z))
+				end
+			end
+			local adorn = body
+			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
+			if adorn then
+				sign(folder, adorn, lm.name, nil, 18)
+			end
+			if lm.tab then
+				prompt(folder, Vector3.new(x, 3, z + front * 14), lm.name, "들어가기", lm.tab, onFacility)
+			end
+		end
 	end
 end
 
@@ -2224,6 +2328,7 @@ function PortScene.build(info, onFacility)
 	end
 
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
+	placeLandmarks(folder, info, style, rng, onFacility)
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
