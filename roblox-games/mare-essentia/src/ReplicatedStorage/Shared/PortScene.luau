@@ -3059,7 +3059,35 @@ function PortScene.build(info, onFacility)
 		return anim ~= nil
 	end
 
-	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
+	-- 시작 위치: 건물·벽 안에 서지 않도록 큰길 중앙부터 후보를 훑어 비어 있는 곳을 고른다
+	local spawnPos = Vector3.new(-2, 4, 10)
+	pcall(function()
+		local overlap = OverlapParams.new()
+		overlap.FilterType = Enum.RaycastFilterType.Include
+		overlap.FilterDescendantsInstances = { folder }
+		local ground = workspace:FindFirstChild("Baseplate") or folder:FindFirstChild("Ground")
+		local floorPart = folder:FindFirstChild("SafetyFloor")
+		local function blocked(pos)
+			for _, hit in workspace:GetPartBoundsInBox(CFrame.new(pos + Vector3.new(0, 4, 0)), Vector3.new(5, 7, 5), overlap) do
+				if hit.CanCollide and hit ~= ground and hit ~= floorPart and hit.Name ~= "SafetyFloor" and hit.Size.Y < 200 then
+					return true
+				end
+			end
+			return false
+		end
+		local found = false
+		for _, z in { 0, 3, -3, 6, -6, 10, -10, 14, -14 } do
+			for _, x in { -2, -10, 6, -18, -26, -40 } do
+				local candidate = Vector3.new(x, 4, z)
+				if not blocked(candidate) then
+					spawnPos, found = candidate, true
+					break
+				end
+			end
+			if found then break end
+		end
+	end)
+	return { folder = folder, spawn = CFrame.new(spawnPos) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
 -- 항해 장면(VoyageScene)에서 같은 배 모델을 쓰기 위해 내보낸다

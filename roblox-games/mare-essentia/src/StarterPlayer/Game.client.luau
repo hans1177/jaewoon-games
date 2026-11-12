@@ -589,6 +589,38 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		grad.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 		grad.Rotation = 90
 		grad.Parent = row
+		-- 낡은 종이: 가장자리가 그을리고 얼룩이 번진 느낌
+		do
+			local burn = Instance.new("Frame")
+			burn.Name = "AgedEdge"
+			burn.Size = UDim2.fromScale(1, 1)
+			burn.BackgroundColor3 = Color3.fromRGB(92, 58, 26)
+			burn.BorderSizePixel = 0
+			burn.ZIndex = 1
+			burn.Parent = row
+			corner(burn, 5)
+			local bg = Instance.new("UIGradient")
+			bg.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.38), NumberSequenceKeypoint.new(0.12, 0.86),
+				NumberSequenceKeypoint.new(0.88, 0.86), NumberSequenceKeypoint.new(1, 0.3),
+			})
+			bg.Parent = burn
+			local seed = #title * 31 + (height or 60)
+			for i = 1, 3 do
+				local k = (seed * (i + 3)) % 97 / 97
+				local blot = Instance.new("Frame")
+				blot.Name = "Stain"
+				blot.AnchorPoint = Vector2.new(0.5, 0.5)
+				blot.Position = UDim2.fromScale(0.15 + k * 0.7, 0.3 + ((k * 7) % 1) * 0.5)
+				blot.Size = UDim2.fromOffset(22 + k * 26, 14 + k * 14)
+				blot.BackgroundColor3 = Color3.fromRGB(150, 104, 52)
+				blot.BackgroundTransparency = 0.86
+				blot.BorderSizePixel = 0
+				blot.ZIndex = 1
+				blot.Parent = row
+				corner(blot, 12)
+			end
+		end
 		-- 모서리에 찍힌 밀랍 인장
 		local seal = Instance.new("TextLabel")
 		seal.Name = "WaxSeal"
@@ -6230,11 +6262,25 @@ do
 	art.Name = "TitleVoyageIllustration"
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(1.06, 1.06)
+	art.Size = UDim2.fromScale(0.5, 0.78)
+	art.Position = UDim2.fromScale(0.3, 0.52)
 	art.BackgroundTransparency = 1
 	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
 	art.ScaleType = Enum.ScaleType.Crop
+	art.ImageColor3 = Color3.fromRGB(226, 208, 170) -- 바랜 판화 느낌
+	art.ZIndex = 1
 	art.Parent = picture
+	do
+		local frame = Instance.new("UIStroke")
+		frame.Color = Color3.fromRGB(196, 158, 84)
+		frame.Thickness = 3
+		frame.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		frame.Parent = art
+		local sea = Instance.new("UIGradient")
+		sea.Color = ColorSequence.new(Color3.fromRGB(12, 24, 38), Color3.fromRGB(28, 54, 74))
+		sea.Rotation = 90
+		sea.Parent = picture
+	end
 
 	-- (지역 변수 한도를 넘지 않게 함수 안에서 만든다)
 	;(function()
@@ -6278,16 +6324,16 @@ do
 					m:Destroy()
 				end
 			end
-			addShip("ship-large", 46, 8, 0, 0)
-			addShip("ship-small", 17, -60, -60, 2.4)
+			addShip("ship-small", 10, -60, -80, 2.4)
+			addShip("ship-small", 7, 40, -120, 1.6)
 		end
 		stageCam.CFrame = CFrame.lookAt(Vector3.new(-6, 11, 84), Vector3.new(-12, 8, 0))
 		-- 물보라 줄무늬(앞쪽일수록 빠르고 크다)와 갈매기
 		local streaks, gulls = {}, {}
 		do
 			local rng = Random.new(77)
-			for i = 1, 16 do
-				local y = 0.58 + rng:NextNumber() * 0.38
+			for i = 1, 7 do
+				local y = 0.8 + rng:NextNumber() * 0.16
 				local f = Instance.new("Frame")
 				f.BorderSizePixel = 0
 				f.BackgroundColor3 = Color3.fromRGB(236, 244, 248)
@@ -6297,7 +6343,7 @@ do
 				f.Parent = picture
 				table.insert(streaks, { f = f, x = rng:NextNumber(), y = y, v = 0.01 + (y - 0.55) * 0.05 })
 			end
-			for i = 1, 4 do
+			for i = 1, 0 do
 				local g = Instance.new("TextLabel")
 				g.BackgroundTransparency = 1
 				g.Text = "︶︶"
