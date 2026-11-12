@@ -1600,6 +1600,7 @@ local function call(action, payload)
 			snd = "sfx_bell" -- 이야기의 시작을 알리는 종
 		elseif action == "Claim" or action == "TurnIn" then
 			snd = "sfx_quest_reward" -- 퀘스트 완료
+			task.delay(0.9, Sfx.play, "sfx_quest_book_close", 0.7) -- 의뢰 장부를 덮는 소리
 		elseif action == "IntroCompanion" then
 			snd = "sfx_fanfare" -- 새 동료
 		elseif action == "IntroName" then
@@ -2071,6 +2072,9 @@ local function sail(portId)
 		playStory(vc)
 	end
 	Sfx.play("sfx_bell")
+	-- 정박: 종소리 뒤에 닻이 내려가고 닻줄이 풀린다
+	task.delay(0.7, Sfx.play, "sfx_anchor_lower", 0.85)
+	task.delay(1.1, Sfx.play, "sfx_rope_release", 0.6)
 	Sfx.ambient({ "sfx_waves" })
 	syncScene()
 end
