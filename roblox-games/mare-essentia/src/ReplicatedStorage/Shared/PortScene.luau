@@ -260,16 +260,12 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	outfit.year = year
 	outfit.culture = currentKey
 	outfit.profession = if extra and extra.profession then extra.profession else role
-	-- 15세기: 삼각모(17세기 말~), 페즈형 근대 군모, 18세기 군복을 배제한다.
-	-- 머리카락·치마는 15세기에도 존재하므로 지우지 않는다.
-	-- 실제 R15 의상 메시와 문화별 전용 모자는 장착 QA 후에만 사용한다.
+	-- 15세기: 후대 모자뿐 아니라 Part 조립으로 만들어진 가짜 의상·머리카락은 새로 붙이지 않는다.
+	-- 실제 승인된 15세기 R15 복식·머리 메시의 장착 검증이 끝나면 그 메시만 사용한다.
 	if year < 1500 then
-		-- 병사·후드 입은 인물과 모자를 벗는 설정은 유지한다.
-		if role == "Knight" or role == "Rogue_Hooded" or outfit.age == "child" then
-			outfit.hat = nil
-		else
-			outfit.hat = Cultures.HEADWEAR_15C[currentKey] or "wide"
-		end
+		outfit.hat = nil
+		outfit.hair = nil
+		outfit.skirt = nil
 	elseif outfit.hat == "tricorn" and year < 1680 then
 		outfit.hat = "wide"
 	end
