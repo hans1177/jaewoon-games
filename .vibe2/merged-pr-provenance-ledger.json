@@ -221782,11 +221782,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3166360894f4e9cf009700f7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12974",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9e4152b507827b2dc4417e348a720c934dcd85c5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12974,
+        "baseBranch": "main",
+        "headBranch": "claude/hudclean",
+        "baseSha": "9e4152b507827b2dc4417e348a720c934dcd85c5",
+        "headSha": "9a6cba6fccfcd66286d52add7b1c87efd6e5c616",
+        "mergeCommitSha": "2da6f471a0c434eb7542746c92ab84a96f7f0574",
+        "mergedAt": "2026-11-12T21:23:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a9d84b724497800968326f60b8a1eb9ecd85f1507d879fa1b0aeb777567dc6c4",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/hudclean",
+        "candidateSha": "9a6cba6fccfcd66286d52add7b1c87efd6e5c616"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 1271,
+        "deletedLineCount": 137,
+        "changedFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "assets/vibe-adaptive-climb-ik.mjs",
+          "assets/vibe-character-adapter.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-premium-character-pipeline.mjs",
+          "assets/vibe-studio-animation.js",
+          "company-learning/next-session-handoff.json",
+          "qa-log/addendum-20261112-2030Z.md",
+          "qa/vibe-adaptive-climb-ik.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-motion-engine.test.mjs",
+          "qa/vibe-premium-character-pipeline.test.mjs",
+          "qa/vibe-studio-systems.test.mjs",
+          "roblox-games/mare-essentia/docs/devloop/STATE.md",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/vibe-brain.mjs",
+          "tools/vibe-llm.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "assets/vibe-adaptive-climb-ik.mjs",
+          "assets/vibe-character-adapter.mjs",
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-model-preview.html",
+          "assets/vibe-premium-character-pipeline.mjs",
+          "assets/vibe-studio-animation.js",
+          "company-learning/next-session-handoff.json",
+          "qa/vibe-adaptive-climb-ik.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-motion-engine.test.mjs",
+          "qa/vibe-premium-character-pipeline.test.mjs",
+          "qa/vibe-studio-systems.test.mjs",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/vibe-brain.mjs",
+          "tools/vibe-llm.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12974",
+        "merge-commit:2da6f471a0c434eb7542746c92ab84a96f7f0574",
+        "base-main:9e4152b507827b2dc4417e348a720c934dcd85c5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1766
+    "total": 1767
   }
 }
