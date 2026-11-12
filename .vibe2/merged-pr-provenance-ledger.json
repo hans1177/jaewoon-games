@@ -203328,11 +203328,138 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b75805113a89268b7ad3c839",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12660",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "30236ca1d104ccde548b137282b3882c225af8e3",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12660,
+        "baseBranch": "main",
+        "headBranch": "claude/mare-portraits-150",
+        "baseSha": "30236ca1d104ccde548b137282b3882c225af8e3",
+        "headSha": "9fbe652cdcfccb0479263dbb2d85d1a4b6d3c234",
+        "mergeCommitSha": "78541edcb4ec5fb202b8c143d35f111a55e0e39e",
+        "mergedAt": "2026-11-12T01:14:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7b4663e85f636d6f6404ed99770d3d2f09bfd23fafaec77141399f9d5f72e181",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/mare-portraits-150",
+        "candidateSha": "9fbe652cdcfccb0479263dbb2d85d1a4b6d3c234"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 13,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/portraits/companions_africa.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_americas.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_atlantic.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_east_africa_red_sea.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_faith_buddhist.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_faith_christian.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_faith_indian_ocean.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_indian.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_mediterranean.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_north_atlantic.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_oceania.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_pacific.jpg",
+          "roblox-games/mare-essentia/assets/portraits/companions_west_africa.jpg"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12660",
+        "merge-commit:78541edcb4ec5fb202b8c143d35f111a55e0e39e",
+        "base-main:30236ca1d104ccde548b137282b3882c225af8e3"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1620
+    "total": 1621
   }
 }
