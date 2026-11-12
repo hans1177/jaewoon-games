@@ -192,6 +192,10 @@ return function(D, S)
 		if #state.companions >= slots then
 			return string.format("이 배에는 동료가 %d명까지 탈 수 있어요 (큰 배일수록 자리가 많아요)", slots)
 		end
+		if c.requiresStory and not state.story[c.requiresStory] then
+			local port = c.homePort and D.Ports.Ports[c.homePort]
+			return string.format("%s 주점에서 이 사람의 사연을 먼저 들어야 해요", port and port.name or "고향")
+		end
 		if c.nation and c.nation ~= state.nationId then
 			return "다른 주인공의 동료예요"
 		end

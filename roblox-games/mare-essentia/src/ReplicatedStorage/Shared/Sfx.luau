@@ -69,6 +69,10 @@ function Sfx.play(name, volume, speed)
 end
 
 -- 배경 음악: 같은 곡이면 그대로, 다르면 서서히 바꾼다
+function Sfx.currentName()
+	return currentName
+end
+
 function Sfx.music(name)
 	if currentName == name then
 		return
