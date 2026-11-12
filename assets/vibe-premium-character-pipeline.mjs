@@ -68,23 +68,59 @@ export function createVibeKeyframePlayer({targets={},tracks={},fps=30}={}){
   stop(){playing=false},get active(){return active?.name??null}
  };
 }
-export async function applyVibePBRTextures(THREE,model,{baseColor,normal,roughness,metalness,ao}, {textureLoader=new THREE.TextureLoader(),maxAnisotropy=8}={}){
- const textures={};
- for(const [channel,url] of Object.entries({map:baseColor,normalMap:normal,roughnessMap:roughness,metalnessMap:metalness,aoMap:ao})){
-  if(!url)continue;
-  const texture=await textureLoader.loadAsync(url);
-  if(channel==='map')texture.colorSpace=THREE.SRGBColorSpace;
-  texture.anisotropy=Math.min(maxAnisotropy,8);textures[channel]=texture;
- }
- model.traverse(mesh=>{
-  if(!mesh.isMesh)return;
-  for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material]){
-   if(!material?.isMeshStandardMaterial)continue;
-   Object.assign(material,textures);material.needsUpdate=true;
+// [메인: PBR 재질] 승인된 원본 텍스처만 적용하며 원본 재질과 GPU 텍스처 수명을 보존한다.
+export async function applyVibePBRTextures(THREE,model,{baseColor,normal,roughness,metalness,ao}={},
+ {textureLoader=new THREE.TextureLoader(),maxAnisotropy=8}={}){
+ if(!model?.traverse||typeof textureLoader?.loadAsync!=='function')
+  throw Error('A model and texture loader are required');
+ const textures={},originals=new Map(),loaded=new Set();
+ const requested={map:baseColor,normalMap:normal,roughnessMap:roughness,metalnessMap:metalness,aoMap:ao};
+ const anisotropy=Number.isFinite(maxAnisotropy)?Math.max(1,Math.min(8,Math.floor(maxAnisotropy))):8;
+ // [유틸: 복원] 같은 재질이 여러 스킨·메쉬에 공유되어도 한 번만 복원한다.
+ const restore=()=>{
+  for(const [material,snapshot] of originals){
+   for(const [channel,row] of Object.entries(snapshot)){
+    if(row.exists)material[channel]=row.value;
+    else delete material[channel];
+   }
+   material.needsUpdate=true;
   }
- });
- return {textures,dispose(){for(const texture of Object.values(textures))texture.dispose()}};
+ };
+ const release=()=>{for(const texture of loaded)texture?.dispose?.()};
+ try{
+  for(const [channel,url] of Object.entries(requested)){
+   if(!url)continue;
+   const texture=await textureLoader.loadAsync(url);
+   if(!texture)throw Error('Texture loader returned no texture');
+   loaded.add(texture);
+   if(channel==='map')texture.colorSpace=THREE.SRGBColorSpace;
+   texture.anisotropy=anisotropy;
+   textures[channel]=texture;
+  }
+  const channels=Object.keys(textures);
+  if(channels.length)model.traverse(mesh=>{
+   if(!mesh?.isMesh)return;
+   for(const material of (Array.isArray(mesh.material)?mesh.material:[mesh.material])){
+    if(!material?.isMeshStandardMaterial||originals.has(material))continue;
+    const snapshot={};
+    for(const channel of channels)snapshot[channel]={
+     exists:Object.prototype.hasOwnProperty.call(material,channel),value:material[channel]
+    };
+    originals.set(material,snapshot);
+    Object.assign(material,textures);
+    material.needsUpdate=true;
+   }
+  });
+ }catch(error){restore();release();throw error}
+ let disposed=false;
+ return {textures,dispose(){
+  if(disposed)return;
+  disposed=true;
+  restore();
+  release();
+ }};
 }
+
 // [메인: 리그 검사] 실측 스킨 가중치와 본 구성을 진단한다. 결손을 가짜 뼈로 대체하지 않는다.
 export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
  if(!model?.traverse)throw Error('A Three.js model is required');
