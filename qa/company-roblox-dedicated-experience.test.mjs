@@ -507,8 +507,8 @@ test('Mare facility tabs provide unique nonempty labels for every rendered group
   assert.equal(names.get('explore'),'탐험');
 });
 
-// [비주얼] 기존 진짜 Cargo 메시를 상품 상세 3D에 사용하고, 작은 상품은 동일 승인 그림의 2.5D 카드로 표현한다.
-test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5D licensed artwork',()=>{
+// [비주얼] 교역품은 52/60px 목록과 상세 모두 실제 Cargo 메시로 표시한다. 일반 메뉴/그림만 2D로 유지한다.
+test('Mare trade cards use registered 3D Cargo viewports even at compact mobile sizes',()=>{
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
   const specs={
@@ -530,7 +530,10 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
     assert.ok(neutralCargo.includes(good+' = { "Cargo", "barrel", Color3.fromRGB('),
       good+' remains the neutral registered barrel');
   }
-  assert.match(client,/kind == "Cargo" and px < 64 and type\(smallArt\) == "string" and AssetIds\[smallArt\]/);
+  assert.match(client,/if kind == "Goods" or kind == "Menu" then/);
+  assert.doesNotMatch(client,/kind == "Cargo" and px < 64/);
+  assert.match(client,/local assetId = AssetIds\[kind \.\. "\/" \.\. asset\]/);
+  assert.match(client,/local vf = Instance\.new\("ViewportFrame"\)/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
