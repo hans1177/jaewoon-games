@@ -551,6 +551,38 @@ local function holdProp(fig, kind, asset, size)
 	return ok
 end
 
+-- 항구 구역 계획: 항구가 만드는 물건(생산품)과 발전도로 구역의 크기·종류가 달라진다.
+-- 농원(가축 울타리) · 어항(건조대·쪽배) · 광산·벌목 하역장 · 해안 포대(군사)가 항구마다 다르게 선다.
+local function zoneLayout(portId, lvl)
+	local port = PortData.Ports[portId]
+	local prod = {}
+	for _, g in (port and port.produces) or {} do
+		prod[g] = true
+	end
+	local function any(list)
+		for _, g in list do
+			if prod[g] then return true end
+		end
+		return false
+	end
+	local zr = seeded(portId .. "zone")
+	local lay = {
+		fish = any({ "fish", "whale_oil", "salt", "amber" }),
+		farm = any({ "wool", "cheese", "wine", "olive_oil", "rice", "maize", "cotton", "beer", "leather", "dates", "sugar" }),
+		timber = any({ "timber", "mahogany", "kauri", "logwood", "brazilwood", "sandalwood" }),
+		mine = any({ "iron", "coal", "tin", "copper", "gold", "silver", "gems" }),
+		fort = (port and port.shipyard) or lvl >= 4,
+		trader = port ~= nil and #port.produces >= 4,
+		side = zr:NextInteger(0, 1) * 2 - 1, -- 포대가 서는 쪽 (반대쪽은 어항·하역장)
+	}
+	lay.pens = math.clamp(5 - lvl + (if lay.farm then 1 else 0) - (if lay.fish then 1 else 0), 1, 4)
+	return lay
+end
+-- 가축 울타리 중심 (마을 서쪽 끝, 16x12)
+local function penAt(i, n)
+	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 24)
+end
+
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local year = info.year or 1700
 	local o = OUTFIT[key] or OUTFIT.north or {}
@@ -665,30 +697,79 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			m:PivotTo(CFrame.new(m:GetPivot().Position) * CFrame.Angles(0, rng:NextNumber(0, math.pi * 2), 0) * (m:GetPivot() - m:GetPivot().Position))
 			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10) })
 		end
-		-- 가축: 밭 가장자리 (단계가 오를수록 늘어난다)
+		local lay = zoneLayout(info.portId, lvl)
+		local has = {}
+		for _, sp in list do
+			has[sp] = true
+		end
+		-- 마을 동물은 가만히 서 있지 않고 제자리 근처를 오간다 (span: 오가는 거리)
+		local function roam(species, pos, span)
+			local n0 = #walkers
+			animal(species, pos)
+			local w = walkers[#walkers]
+			if #walkers > n0 and w then
+				w.span = span
+				w.rate = rng:NextNumber(0.3, 0.6)
+			end
+		end
 		local stock = {}
 		for _, sp in list do
 			if sp == "cow" or sp == "sheep" or sp == "pig" or sp == "horse" or sp == "llama" or sp == "donkey" or sp == "elephant" then
 				table.insert(stock, sp)
 			end
 		end
-		local heads = math.min(lvl + 1, 5)
-		for i = 1, heads do
+		-- 1) 농원구역: 울타리 안의 가축 (울타리가 많은 작은 마을일수록 가축이 많다)
+		for i = 1, lay.pens do
+			local c = penAt(i, lay.pens)
 			if #stock > 0 then
-				animal(stock[(i - 1) % #stock + 1], Vector3.new(-200 - (i % 3) * 7, 0, (i - 3) * 6 + rng:NextNumber(-1, 1)))
+				local sp = stock[(i - 1) % #stock + 1]
+				if sp == "elephant" then
+					animal(sp, c)
+				else
+					for k = 1, math.min(2 + (lvl % 2), 3) do
+						animal(sp, c + Vector3.new(rng:NextNumber(-5, 5), 0, rng:NextNumber(-3, 3)))
+					end
+				end
+			end
+			if has.chicken and i == 1 then
+				for _ = 1, 2 do
+					animal("chicken", c + Vector3.new(rng:NextNumber(-12, -10), 0, rng:NextNumber(-4, 4)))
+				end
 			end
 		end
-		-- 마을 동물: 모닥불 곁 닭·개·고양이
+		-- 2) 상업구역: 수레를 끄는 짐승이 장터 옆에 묶여 있다
+		if lvl >= 2 then
+			for _, sp in { "horse", "donkey", "llama", "cow" } do
+				if has[sp] then
+					animal(sp, Vector3.new(-127, 0, 11))
+					break
+				end
+			end
+			if lvl >= 3 and has.elephant then
+				animal("elephant", Vector3.new(-136, 0, -13))
+			end
+		end
+		-- 3) 주거구역: 골목을 어슬렁거리는 개·고양이·닭
 		local pets = {}
 		for _, sp in list do
 			if sp == "chicken" or sp == "dog" or sp == "cat" then
 				table.insert(pets, sp)
 			end
 		end
-		for i = 1, math.min(lvl + 1, 4) do
+		for i = 1, math.min(lvl + 2, 6) do
 			if #pets > 0 then
-				animal(pets[(i - 1) % #pets + 1], Vector3.new(-24 - i * 2.4, 0, -17 + (i % 2) * 5 + rng:NextNumber(-0.8, 0.8)))
+				local sd = if i % 2 == 0 then 1 else -1
+				roam(pets[(i - 1) % #pets + 1], Vector3.new(-44 - i * 15 + rng:NextNumber(-3, 3), 0, sd * (34.5 + rng:NextNumber(0, 2))), 5)
 			end
+		end
+		-- 4) 항만구역: 생선 통 곁 고양이, 부두를 지키는 개
+		if has.cat or lay.fish then
+			for i = 1, if lay.fish then 2 else 1 do
+				roam("cat", Vector3.new(30 + i * 5, 2, -5.4), 3)
+			end
+		end
+		if has.dog then
+			roam("dog", Vector3.new(-2, 0, 24), 6)
 		end
 	end
 	-- 순찰: 큰길을 오가며 두리번거리는 경비 (2단계부터)
@@ -999,6 +1080,84 @@ local function densify(folder, info, style, rng, walkers, made)
 				if lvl >= 4 then
 					one("Terrain", "egypt-column", 8, lx - 14, 0, lz)
 				end
+			end
+		end
+		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
+		local lay = zoneLayout(info.portId, lvl)
+		local sd = lay.side
+		-- 농원구역(마을 서쪽 끝): 가축 울타리와 밭. 작은 마을일수록 울타리가 많고 큰 항구는 장터로 바뀐다.
+		for i = 1, lay.pens do
+			local c = penAt(i, lay.pens)
+			for dx = -6, 6, 4 do
+				for _, dz in { -6, 6 } do
+					one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
+				end
+			end
+			for dz = -4, 4, 4 do
+				for _, dx in { -8, 8 } do
+					rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
+				end
+			end
+			if lay.farm then
+				rowOf("Terrain", "crops-wheatstagea", 4, c.X - 22, c.X - 44, 7, c.Z - 3)
+				rowOf("Terrain", "crops-wheatstageb", 4, c.X - 22, c.X - 44, 7, c.Z + 3)
+			end
+		end
+		-- 상업구역(큰길 안쪽): 수레와 장터. 생산품이 많은 무역 항구일수록 가판이 늘어난다.
+		if lvl >= 2 then
+			one("Town", "cart", 5, -118, 0, 11)
+		end
+		local shops = math.min(lvl - 1, if lay.trader then 4 else 2)
+		for i = 1, shops do
+			local x = -104 - 15 * i
+			local z = if i % 2 == 0 then -14 else 14
+			one("Town", if i % 2 == 0 then "stall-red" else "stall-green", 6.5, x, 0, z)
+			local good = made[(i % math.max(1, #made)) + 1] or "cheese"
+			local mesh = GOOD_MESH[good]
+			if mesh then
+				for kk = 1, 3 do
+					importedModel(folder, mesh[1], mesh[2], Vector3.new(x + (kk - 2) * 1.8, 2.5, z), 1.8, false, mesh[3])
+				end
+			end
+		end
+		-- 종교구역: 성당 뒤 묘지, 사원·신사의 제단
+		if lvl >= 3 then
+			if CHURCH_KEYS[key] then
+				one("Terrain", "crypt-large", 9, -146, 0, -44)
+			elseif key == "ottoman" or key == "japan" or key == "malabar" or key == "swahili" then
+				one("Terrain", "altar-stone", 5, -84, 0, -30)
+			end
+		end
+		-- 항만구역: 어항은 건조대와 쪽배, 광산·벌목 항구는 하역장, 그 반대쪽 해안엔 포대(군사구역)
+		local hz = -sd
+		if lay.fish then
+			for x = 12, -12, -8 do
+				one("Town", "fence_straight", 5, x, 0, hz * 62)
+				one("Cargo", "fish-large", 2, x, 3, hz * 62)
+			end
+			for _, bz in { 56, 66 } do
+				one("Naval", "boat-row-small", 6, 16, 0.3, hz * bz)
+			end
+		end
+		if lay.timber then
+			one("Terrain", "log-stack", 4, 8, 0, hz * 78)
+			one("Terrain", "log-stack", 4, 0, 0, hz * 78)
+			one("Cargo", "resource-planks", 3, 8, 0, hz * 84)
+		end
+		if lay.mine then
+			one("Cargo", "iron-bars-stack-large", 3, 10, 0, hz * 70)
+			one("Town", "workbench-anvil", 3.4, 2, 0, hz * 70)
+		end
+		if lay.fort then
+			one("Naval", "tower-watch", 12, 6, 0, sd * 72, true)
+			if lvl >= 3 then
+				for _, dz in { 62, 66 } do
+					one("Naval", "cannon", 3.4, 14, 0, sd * dz)
+				end
+				one("Castle", "flag-banner-long", 9, 2, 0, sd * 64)
+			end
+			if lvl >= 5 then
+				one("Naval", "tower-watch", 12, 6, 0, sd * 92, true)
 			end
 		end
 	end
@@ -1526,7 +1685,14 @@ function PortScene.build(info, onFacility)
 					else
 						bob = math.sin(t * 1.3) * 0.03
 					end
-					w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
+					if w.span then
+						local u = t * w.rate
+						local turn = if math.cos(u) < 0 then math.pi else 0
+						bob = math.abs(math.sin(u * 6)) * 0.06
+						w.model:PivotTo(w.base * CFrame.new(0, bob, -math.sin(u) * w.span) * CFrame.Angles(0, turn, 0))
+					else
+						w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
+					end
 				end
 			elseif w.mode == "circle" then
 				if w.model.Parent then
