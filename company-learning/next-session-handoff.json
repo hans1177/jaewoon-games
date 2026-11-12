@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__GPU_BATCH_PRESERVATION_QA_PENDING_NATIVE_RUNTIME_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__NESTED_CAMERA_WORLD_LOD_FIX_QA_STEPS_SUCCESS_POSTDEPLOY_UNVERIFIED",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,11 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "RELOAD_LATEST_MAIN_AND_CANONICAL_POLICY4_AGENTS_BEFORE_SOURCE_WRITE",
+      "CHECK_EXACT_CEAAEDD4_VIBE_QA_43318642054_AND_PAGES_43318642119_POSTDEPLOY_RESULT",
+      "DO_NOT_CLAIM_POSTPUBLISH_PASS_IF_BROWSER_SUPERSEDED_OR_SKIPPED",
+      "VERIFY_ARTIST_AUTHORED_LOD_WITH_REAL_PARENTED_THREEJS_CAMERA_AND_APPROVED_GLTF_ON_MOBILE_WEBGL",
+      "CONTINUE_18_FEATURES_GENUINE_WEBGPU_AND_NATIVE_RIG_PHYSICS_WITHOUT_NEW_PIPELINE_OR_PROXY_ASSETS",
       "RELOAD_LIVE_MAIN_4_CANONICAL_POLICY_DOCS_FULL_ROADMAP_BLOB_AND_AGENTS_BEFORE_WRITES",
       "CHECK_VIBE_QA_43317719154_AND_INTEGRATED_REGRESSION_43317719070_FOR_EXACT_51d22ee_COMMIT",
       "CHECK_MAGIC_FOREST_STATIC_PLAY_43317719077_PUBLISH_AND_EXACT_POST_BROWSER_SOURCE_SHA_NOT_SUPERSEDED",
@@ -387,7 +392,10 @@
       "assets/vibe-model-preview.html:APPROVED_GLTFS_GESTURE_BUTTON_GRIP_FIST_POINT_RESET_AND_APPLY_AFTER_ANIMATION_MIXER (648d6205)",
       "qa/vibe-premium-character-pipeline.test.mjs:MIXAMO_BLENDER_BONE_ROTATION_RESET_AND_PREVIEW_BINDING_TESTS (648d6205)",
       "assets/vibe-cinematic-polish.mjs:EXISTING_GPU_BATCH_BYPASSES_MESHES_WITH_CHILDREN_NEGATIVE_DETERMINANT_OR_ZERO_SCALE_EXISTING_INSTANCES_CUSTOM_RENDER_HOOKS_AND_MISSING_SOURCE_IDS (51d22ee)",
-      "qa/vibe-cinematic-polish.test.mjs:2_GPU_BATCH_PRESERVATION_REGRESSIONS_CHILDREN_MIRROR_INSTANCED_CUSTOM_HOOK_MISSING_UUID (51d22ee)"
+      "qa/vibe-cinematic-polish.test.mjs:2_GPU_BATCH_PRESERVATION_REGRESSIONS_CHILDREN_MIRROR_INSTANCED_CUSTOM_HOOK_MISSING_UUID (51d22ee)",
+      "assets/vibe-cinematic-polish.mjs:AUTHORED_LOD_DISTANCE_USES_CAMERA_GET_WORLD_POSITION_FOR_PARENTED_CAMERAS_AND_REJECTS_INVALID_CAMERA_POSITIONS (e3781c4)",
+      "assets/vibe-cinematic-polish.mjs:LOD_THRESHOLDS_IGNORE_NEGATIVE_AND_NONFINITE_DISTANCES_PRESERVING_AUTHOR_LIVE_MESHES (e3781c4)",
+      "qa/vibe-cinematic-polish.test.mjs:WORLD_CAMERA_RIG_AND_INVALID_LOD_THRESHOLD_NEGATIVE_TESTS (ceaaedd4)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -413,7 +421,10 @@
       "61e18c0 Magic Forest Static Play 43312661617 completed SUCCESS and WEB_PAGES_LIVE_SOURCE_SHA=61e18c0 in postpub job 131514254756, but BROWSER_SETUP_SUPERSEDED_BY=2bab9a3 so does NOT prove exact live browser functionality",
       "648d6205 Vibe QA 43313575442 SUCCESS",
       "648d6205 Vibe Integrated Regression 43313575363 SUCCESS",
-      "648d6205 Magic Forest Static Play 43313575425 SUCCESS; post-publication-3d-smoke SKIPPED not verified"
+      "648d6205 Magic Forest Static Play 43313575425 SUCCESS; post-publication-3d-smoke SKIPPED not verified",
+      "51d22ee Vibe QA 43317719154 SUCCESS and Vibe Integrated Regression 43317719070 SUCCESS on GPU batching change",
+      "ceaaedd4 Vibe Integrated Regression 43318643081 SUCCESS",
+      "ceaaedd4 Vibe QA 43318642054 steps Check all JavaScript syntax, Validate Vibe runtime visual quality contract, Validate composable motion director SUCCESS on exact source"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -469,9 +480,13 @@
       "51d22ee_VIBE_QA_43317719154_RUNS_CANONICAL_GRAPHICS_TEST_STAGE_IN_PROGRESS_LAST_CHECK",
       "51d22ee_INTEGRATED_REGRESSION_43317719070_IN_PROGRESS_LAST_CHECK",
       "51d22ee_MAGIC_FOREST_STATIC_PLAY_43317719077_PENDING_LAST_CHECK",
-      "51d22ee_AUTHOR_GLTF_REAL_WEBGL_STATIC_BATCH_SCENE_FRAME_AND_MOBILE_INPUT_SAVE_UNVERIFIED"
+      "51d22ee_AUTHOR_GLTF_REAL_WEBGL_STATIC_BATCH_SCENE_FRAME_AND_MOBILE_INPUT_SAVE_UNVERIFIED",
+      "ceaaedd4 Vibe QA overall run 43318642054 IN_PROGRESS at checkpoint",
+      "ceaaedd4 Magic Forest Static Play run 43318642119 IN_PROGRESS at checkpoint",
+      "ceaaedd4 exact postpublish browser/mobile approved GLTF save and interaction NOT VERIFIED",
+      "fe749680 all-in-one Git commit built but ref update timed out; equivalent source and tests were instead applied via two verified contents commits e3781c4 and ceaaedd4. DO NOT merge orphan commit as new change."
     ],
-    "lastObservedMain": "51d22ee120d98138704c141b18e20d9442f636a8",
+    "lastObservedMain": "c1ca039a48305f247fee53ce9d8941dd7a259153",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -514,45 +529,68 @@
       "aea0bc82b8c17b73e1ce4daf9e49eef32f46ed98",
       "61e18c0590fc4f71f5ae4ed28868e2c76acefe7e",
       "648d62053b217fab917b5ca886ae9e23aadac32f",
-      "51d22ee120d98138704c141b18e20d9442f636a8"
+      "51d22ee120d98138704c141b18e20d9442f636a8",
+      "e3781c4801a97347a37341fdd7739ef7646f4727",
+      "ceaaedd453e18d2fc797899e43a69fb60e97c427"
     ],
     "latestDirectWork": {
-      "sourceBase": "169d4cd79bd10e62786fd670822b25fac4aecc94",
+      "sourceBase": "4cfab95ae8da733ab317e12e1235a665dc6b5461",
       "implementationCommits": [
-        "51d22ee120d98138704c141b18e20d9442f636a8"
+        "e3781c4801a97347a37341fdd7739ef7646f4727",
+        "ceaaedd453e18d2fc797899e43a69fb60e97c427"
       ],
       "modifiedExistingFiles": [
         "assets/vibe-cinematic-polish.mjs",
         "qa/vibe-cinematic-polish.test.mjs"
       ],
-      "scope": "KEEP_EXISTING_GPU_BATCH_BUT_EXCLUDE_NESTED_MIRRORED_ZERO_SCALE_ALREADY_INSTANCED_RENDER_CUSTOMIZED_AND_UNIDENTIFIED_APPROVED_MESHES",
+      "scope": "PARENTED_CAMERA_WORLD_SPACE_DISTANCE_FOR_EXISTING_APPROVED_MESH_LOD; INVALID_INPUT_FAIL_SAFE",
       "qa": {
-        "vibeQa": "IN_PROGRESS_RUN_43317719154",
-        "integrated": "IN_PROGRESS_RUN_43317719070",
-        "pages": "PENDING_RUN_43317719077"
+        "vibeQaFocusedSteps": "SUCCESS_RUN_43318642054",
+        "vibeQaWhole": "IN_PROGRESS_43318642054",
+        "integrated": "SUCCESS_43318643081",
+        "pages": "IN_PROGRESS_43318642119"
       },
-      "postPublish": "EXACT_SOURCE_GLTF_MOBILE_NOT_YET_VERIFIED",
+      "postPublish": "EXACT_MAIN_BROWSER_MOBILE_UNVERIFIED",
       "sourceAndGameplayPreserved": true,
       "previousWork": {
-        "sourceBase": "9e35ec4b82cb3faa5cb98db3230e132e173ce2e5",
-        "implementationCommits": [],
-        "modifiedExistingFiles": [
-          "assets/vibe-studio-animation.js",
-          "qa/vibe-studio-systems.test.mjs",
-          "company-learning/next-session-handoff.json"
+        "sourceBase": "169d4cd79bd10e62786fd670822b25fac4aecc94",
+        "implementationCommits": [
+          "51d22ee120d98138704c141b18e20d9442f636a8"
         ],
-        "scope": "ATTACK_TIMELINE_DROPPED_FRAME_AUTHORED_HIT_MARKER_RECOVERY_NO_DAMAGE_AUTHORITY_CHANGE",
+        "modifiedExistingFiles": [
+          "assets/vibe-cinematic-polish.mjs",
+          "qa/vibe-cinematic-polish.test.mjs"
+        ],
+        "scope": "KEEP_EXISTING_GPU_BATCH_BUT_EXCLUDE_NESTED_MIRRORED_ZERO_SCALE_ALREADY_INSTANCED_RENDER_CUSTOMIZED_AND_UNIDENTIFIED_APPROVED_MESHES",
         "qa": {
-          "priorHandVibeQa": "SUCCESS_43313575442",
-          "priorHandIntegrated": "SUCCESS_43313575363",
-          "priorHandPages": "SUCCESS_43313575425_POSTPUB_SMOKE_SKIPPED",
-          "newRun": "PENDING"
+          "vibeQa": "IN_PROGRESS_RUN_43317719154",
+          "integrated": "IN_PROGRESS_RUN_43317719070",
+          "pages": "PENDING_RUN_43317719077"
         },
-        "postPublish": "UNVERIFIED",
+        "postPublish": "EXACT_SOURCE_GLTF_MOBILE_NOT_YET_VERIFIED",
         "sourceAndGameplayPreserved": true,
-        "nextWorkerInstruction": "Verify exact new commit Vibe QA + Integrated Regression and Pages postpub. Confirm node test Vibe 5.9 attack timeline dropped-frame marker cases actually executed. Verify real authored GLTF mobile hand animation and attack marker time in browser; prior hand Pages postpub smoke skipped."
+        "previousWork": {
+          "sourceBase": "9e35ec4b82cb3faa5cb98db3230e132e173ce2e5",
+          "implementationCommits": [],
+          "modifiedExistingFiles": [
+            "assets/vibe-studio-animation.js",
+            "qa/vibe-studio-systems.test.mjs",
+            "company-learning/next-session-handoff.json"
+          ],
+          "scope": "ATTACK_TIMELINE_DROPPED_FRAME_AUTHORED_HIT_MARKER_RECOVERY_NO_DAMAGE_AUTHORITY_CHANGE",
+          "qa": {
+            "priorHandVibeQa": "SUCCESS_43313575442",
+            "priorHandIntegrated": "SUCCESS_43313575363",
+            "priorHandPages": "SUCCESS_43313575425_POSTPUB_SMOKE_SKIPPED",
+            "newRun": "PENDING"
+          },
+          "postPublish": "UNVERIFIED",
+          "sourceAndGameplayPreserved": true,
+          "nextWorkerInstruction": "Verify exact new commit Vibe QA + Integrated Regression and Pages postpub. Confirm node test Vibe 5.9 attack timeline dropped-frame marker cases actually executed. Verify real authored GLTF mobile hand animation and attack marker time in browser; prior hand Pages postpub smoke skipped."
+        },
+        "nextWorkerInstruction": "First read live main/policy4/AGENTS, then Actions QA 43317719154, regression 43317719070, Pages 43317719077. Exact CI and post-publication browser SHA required. Preserve prior attack timeline frame skip fix, do not duplicate pipelines or alter damage/save. User wants 18 total improvements, many remain unverified."
       },
-      "nextWorkerInstruction": "First read live main/policy4/AGENTS, then Actions QA 43317719154, regression 43317719070, Pages 43317719077. Exact CI and post-publication browser SHA required. Preserve prior attack timeline frame skip fix, do not duplicate pipelines or alter damage/save. User wants 18 total improvements, many remain unverified."
+      "nextWorkerInstruction": "Reload main + central 4 full roadmap blob and AGENTS. Exact latest source ceaaedd4 has integrated PASS and Vibe focused tests PASS; check whole run 43318642054 and exact Pages run 43318642119. Ref update of prebuilt fe749680 timed out so source and tests were committed via standard Contents API e3781c4 and ceaaedd4, do not duplicate. User expects ongoing 18-feature graphics/motion work with existing approved assets and runtime evidence, no shadow pipelines."
     }
   }
 }
