@@ -403,20 +403,30 @@ jobs:
           }
           $oldIndex = @()
           $previousRun = ''
+          $compareRoot = ''
           if (Test-Path -LiteralPath (Join-Path $dst 'history.json')) {
             $index = Get-Content -LiteralPath (Join-Path $dst 'history.json') -Raw -Encoding UTF8 | ConvertFrom-Json
             $oldIndex = @($index.runs | Where-Object { $_ -and [string]$_.runId -match '^[0-9]+$' })
-            if ($oldIndex.Count -gt 0) { $previousRun = [string]$oldIndex[0].runId }
+            $prior = @($oldIndex | Where-Object { $_.kind -eq $kind } | Select-Object -First 1)
+            if ($prior.Count -gt 0) {
+              $previousRun = [string]$prior[0].runId
+              $candidate = Join-Path (Join-Path $dst 'runs') $previousRun
+              if (Test-Path -LiteralPath $candidate -PathType Container) { $compareRoot = $candidate }
+            }
+          } elseif (Test-Path -LiteralPath (Join-Path $dst 'report.json')) {
+            # 이력 도입 이전의 루트 사진은 최초 회차의 임시 기준으로만 사용한다.
+            $compareRoot = $dst
           }
-          # [그래픽 비교] 이름이 같은 이전 화면과 SHA-256 비교. 변경 여부일 뿐 화질 합격 판정으로 사용하지 않는다.
+          # [그래픽 비교] 같은 검사 종류의 직전 회차만 비교한다. 바이트 변화는 화질 합격·실패 판정이 아니다.
           $visual = @()
           foreach ($frame in $frames) {
-            $relative = $frame.FullName.Substring($out.Length).TrimStart('\', '/').Replace('\', '/')
-            $oldPath = Join-Path $dst $relative
+            $relative = $frame.FullName.Substring($out.Length).TrimStart([char]92, [char]47).Replace([char]92, [char]47)
+            $oldPath = ''
+            if ($compareRoot) { $oldPath = Join-Path $compareRoot $relative }
             $currentHash = (Get-FileHash -LiteralPath $frame.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             $previousHash = ''
             $change = 'NEW'
-            if (Test-Path -LiteralPath $oldPath -PathType Leaf) {
+            if ($oldPath -and (Test-Path -LiteralPath $oldPath -PathType Leaf)) {
               $previousHash = (Get-FileHash -LiteralPath $oldPath -Algorithm SHA256).Hash.ToLowerInvariant()
               $change = 'CHANGED'
               if ($previousHash -eq $currentHash) { $change = 'UNCHANGED' }
