@@ -197,17 +197,21 @@ export function createVibeRenderQualityController(renderer,{mobile=false,maxPixe
 // [메인: 저작권 보호 LOD] 기존 승인된 3D 에셋에 내장된 LOD만 거리로 전환한다. 메쉬 생성 금지.
 export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
  if(!root?.traverse)throw Error('Model required');
+ // 동일한 이름의 나무가 여러 개 있어도 각 부모·메쉬 계열로 묶어 누락 렌더를 막는다.
  const families=new Map();
  root.traverse(mesh=>{
   if(!mesh?.isMesh||mesh.isSkinnedMesh||mesh.morphTargetInfluences?.length)return;
   const match=String(mesh.name||'').match(/^(.*?)[_.-]LOD([0-9]+)$/i);
   if(!match)return;
-  const key=match[1],level=Number(match[2]);
-  if(!families.has(key))families.set(key,[]);
-  families.get(key).push({mesh,level,visible:mesh.visible});
+  const parent=mesh.parent||root;
+  if(!families.has(parent))families.set(parent,new Map());
+  const byName=families.get(parent),key=match[1];
+  if(!byName.has(key))byName.set(key,[]);
+  byName.get(key).push({mesh,level:Number(match[2]),visible:mesh.visible});
  });
- const groups=[...families.values()].filter(rows=>rows.length>1);
- for(const group of groups)group.sort((a,b)=>a.level-b.level);
+ const groups=[...families.values()].flatMap(value=>[...value.values()])
+  .filter(rows=>new Set(rows.map(row=>row.level)).size>1)
+  .map(rows=>({rows,levels:[...new Set(rows.map(row=>row.level))].sort((a,b)=>a-b)}));
  const world=new THREE.Vector3(),steps=distances.map(Number);
  return{
   groups:groups.length,
@@ -215,14 +219,14 @@ export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
    if(!camera?.position||!groups.length)return 0;
    root.getWorldPosition(world);
    const distance=world.distanceTo(camera.position);
-   const level=steps.filter(value=>Number.isFinite(value)&&distance>=value).length;
+   const step=steps.filter(value=>Number.isFinite(value)&&distance>=value).length;
    for(const group of groups){
-    const selected=group[Math.min(level,group.length-1)];
-    for(const row of group)row.mesh.visible=row===selected&&row.visible;
+    const level=group.levels[Math.min(step,group.levels.length-1)];
+    for(const row of group.rows)row.mesh.visible=row.level===level&&row.visible;
    }
    return groups.length;
   },
-  reset(){for(const group of groups)for(const row of group)row.mesh.visible=row.visible}
+  reset(){for(const group of groups)for(const row of group.rows)row.mesh.visible=row.visible}
  };
 }
 
