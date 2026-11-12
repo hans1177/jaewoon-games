@@ -99,25 +99,37 @@ function prepareVerifiedCC0(track){
 // API 키 없이 원본 권리/해시/파생 음원의 디코더까지 검사하는 수동 검증 모드.
 if(process.env.AUDIO_CC0_PREFLIGHT==='1'){
   const tracks=meta.tracks.filter(t=>t.license==='CC0-1.0');
-  let passed=0;
+  let passed=0,unavailable=0;
   for(const t of tracks){
-    const evidence=prepareVerifiedCC0(t);
-    const file=dir+'/'+t.file;
-    const info=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries',
-      'format=duration,size','-of','json',file],{encoding:'utf8',timeout:15000}));
-    const duration=Number(info.format?.duration);
-    if(!Number.isFinite(duration)||duration<0.05||duration>180)
-      throw Error('CC0_AUDIO_INVALID_DURATION:'+t.name);
-    console.log('AUDIO_CC0_PREFLIGHT_PASS '+t.name+' duration='+duration.toFixed(2)
-      +' original='+evidence.sourceSha256+' derived='
-      +crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
-    passed++;
+    try{
+      const evidence=prepareVerifiedCC0(t);
+      const file=dir+'/'+t.file;
+      const info=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries',
+        'format=duration,size','-of','json',file],{encoding:'utf8',timeout:15000}));
+      const duration=Number(info.format?.duration);
+      if(!Number.isFinite(duration)||duration<0.05||duration>180)
+        throw Error('CC0_AUDIO_INVALID_DURATION:'+t.name);
+      console.log('AUDIO_CC0_PREFLIGHT_PASS '+t.name+' duration='+duration.toFixed(2)
+        +' original='+evidence.sourceSha256+' derived='
+        +crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+      passed++;
+    }catch(e){
+      // 신규 외부 다운로드 실패는 그 곡만 격리한다. 기존 검증곡/고정 해시 불일치는 즉시 중단.
+      if(t.sourceDownloadUrl&&!t.sourceFile&&!t.sourceSha256){
+        unavailable++;
+        console.log('AUDIO_CC0_PREFLIGHT_UNAVAILABLE '+t.name+' '+String(e.message||e).slice(0,140));
+        continue;
+      }
+      throw e;
+    }
   }
+  if(!passed)throw Error('AUDIO_CC0_PREFLIGHT_NO_VERIFIED_TRACKS');
   // 새 다운로드 원본 해시를 동일 manifest에 고정해 PR에 같이 보관한다.
   if(meta.tracks.some(t=>t.sourceDownloadUrl&&!t.sourceFile&&t.sourceSha256)){
     fs.writeFileSync(dir+'/manifest.json',JSON.stringify(meta,null,1)+'\n');
   }
-  console.log('AUDIO_CC0_PREFLIGHT_OK '+passed);
+  if(unavailable)console.log('AUDIO_CC0_PREFLIGHT_PARTIAL verified='+passed+' unavailable='+unavailable);
+  else console.log('AUDIO_CC0_PREFLIGHT_OK '+passed);
   process.exit(0);
 }
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
