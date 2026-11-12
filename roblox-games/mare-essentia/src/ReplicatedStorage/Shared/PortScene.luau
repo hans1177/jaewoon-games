@@ -1103,10 +1103,32 @@ end
 -- 주요 항구의 상징 건축물: 광장 맞은편(개요 카메라에 보이는 자리)에 그 도시를 알아볼 수 있는 실루엣을 세운다.
 -- 등록된 실제 CC0 모델만 조합한다 (직접 만든 도형 없음). 좌표는 앵커(-30, 0, -66) 기준.
 local SIG_ANCHOR = Vector3.new(-30, 0, -66)
+-- [유럽 항구] 실제 Ports.country를 사용한다. 저장된 국가·항구·발전도 값은 변경하지 않는다.
+-- lot/gap/density는 배경 구획과 집의 모양에만 적용한다. 경제·시설 해금에는 관여하지 않는다.
+local COUNTRY_PLAN = {
+	portugal = { lot = 0.94, gap = 0.9, density = 1.06 }, spain = { lot = 1.04, gap = 1.05, density = 0.94 },
+	canary = { lot = 1.04, gap = 1.05, density = 0.94 }, madeira = { lot = 0.94, gap = 0.9, density = 1.06 },
+	azores = { lot = 0.94, gap = 0.9, density = 1.06 }, mallorca = { lot = 1.04, gap = 1.05, density = 0.94 },
+	netherlands = { lot = 0.88, gap = 0.76, density = 1.06 },
+	italy = { lot = 0.94, gap = 0.94, density = 1.05 }, venice = { lot = 0.88, gap = 0.82, density = 1.06 },
+	tuscany = { lot = 0.94, gap = 0.94, density = 1.05 }, naples = { lot = 0.94, gap = 0.94, density = 1.05 },
+	sicily = { lot = 0.94, gap = 0.94, density = 1.05 }, sardinia = { lot = 0.94, gap = 0.94, density = 1.05 },
+	ragusa = { lot = 0.94, gap = 0.94, density = 1.05 }, papal = { lot = 0.94, gap = 0.94, density = 1.05 },
+	dalmatia = { lot = 0.94, gap = 0.94, density = 1.05 }, austria = { lot = 0.94, gap = 0.94, density = 1.05 },
+	france = { lot = 1.06, gap = 1.12, density = 0.94 }, corsica = { lot = 0.96, gap = 1.05, density = 0.98 },
+	england = { lot = 0.97, gap = 1.06, density = 0.99 },
+	scotland = { lot = 1.02, gap = 1.10, density = 0.97 }, ireland = { lot = 1.02, gap = 1.10, density = 0.97 },
+	germany = { lot = 0.91, gap = 0.86, density = 1.04 }, poland = { lot = 0.91, gap = 0.86, density = 1.04 },
+	prussia = { lot = 0.91, gap = 0.86, density = 1.04 }, livonia = { lot = 0.91, gap = 0.86, density = 1.04 },
+	estonia = { lot = 0.91, gap = 0.86, density = 1.04 }, gotland = { lot = 0.91, gap = 0.86, density = 1.04 },
+	norway = { lot = 1.05, gap = 1.14, density = 0.92 }, sweden = { lot = 1.05, gap = 1.14, density = 0.92 },
+	denmark = { lot = 1.02, gap = 1.08, density = 0.95 }, finland = { lot = 1.05, gap = 1.14, density = 0.92 },
+	russia = { lot = 1.02, gap = 1.08, density = 0.95 }, malta = { lot = 0.96, gap = 0.98, density = 1.01 },
+}
 local SIG = {}
 do
-	local function one(kind, asset, size, dx, dz, y)
-		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz, y = y or 0 }
+	local function one(kind, asset, size, dx, dz, y, tint)
+		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz, y = y or 0, tint = tint }
 	end
 	local function stack(kind, parts, size, dx, dz)
 		local out = {}
@@ -1189,7 +1211,13 @@ do
 	SIG.glasgow = walledChurch()
 	SIG.copenhagen = cat(spire(SQ, 10, 0, 0), one("Castle", "fortress", 24, 20, 8))
 	SIG.stockholm = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "church", 22, 22, 6))
-	SIG.bergen = cat(one("Town", "church", 24, 0, 0), one("Castle", "wall", 24, 18, 12), one("Castle", "wall", 24, -18, 12))
+	-- 베르겐 브뤼겐 목조 창고: 서로 다른 붉은색·황토색·청색 박공 줄.
+	SIG.bergen = cat(
+		one("Town", "house", 17, -22, 0, 0, C(166, 66, 49)),
+		one("Town", "house", 17, -4, 0, 0, C(214, 166, 74)),
+		one("Town", "house", 17, 14, 0, 0, C(88, 126, 146)),
+		one("Town", "bell-tower", 25, 0, -24)
+	)
 	SIG.oslo = fort(28)
 	SIG.helsinki = cat(one("Town", "church", 28, 0, 0), one("Castle", "wall", 24, 0, 16))
 	SIG.st_petersburg = cat(one("Castle", "fortress", 30, 0, 0), spire(SQ, 10, 22, 0))
@@ -1268,15 +1296,62 @@ do
 	SIG.ragusa = cat(one("Castle", "wall", 24, 0, 0), one("Castle", "wall", 24, 22, 0), one("Castle", "wall", 24, -22, 0), one("Castle", "fortress", 22, 0, 16), one("Town", "bell-tower", 24, 14, 10))
 	SIG.corfu = fort(26)
 	SIG.candia = fort(26)
+	-- 기존 아이콘이 없던 유럽 해항도 도시가 고유한 성곽·시청·종탑 윤곽을 갖는다.
+	SIG.gothenburg = cat(one("Town", "house", 18, -18, 0, 0, C(178, 66, 53)), one("Town", "house", 18, 0, 0, 0, C(222, 195, 120)), one("Naval", "tower-watch", 24, 20, 0))
+	SIG.hull = cat(one("Castle", "gate", 23, 0, 0), one("Town", "bell-tower", 25, 18, 6))
+	SIG.la_rochelle = cat(spire(SQ, 11, -12, 0), spire(SQ, 11, 12, 0), one("Castle", "gate", 20, 0, 8))
+	SIG.valencia = cat(one("Town", "church", 27, 0, 0), spire(HEX, 9, -18, 0), one("Town", "fountain-square", 12, 16, 12))
+	SIG.malaga = cat(one("Castle", "fortress", 27, -12, 0), one("Town", "church", 22, 16, 4))
+	SIG.cartagena = cat(one("Castle", "fortress", 28, 0, 0), spire(SQ, 9, 20, 5))
+	SIG.toulon = cat(fort(25), one("Naval", "tower-watch", 19, 20, -8))
+	SIG.livorno = cat(lighthouse, one("Castle", "wall", 18, 18, 12))
+	SIG.trieste = cat(one("Town", "church", 26, 0, 0), spire(SQ, 9, -16, 0))
+	SIG.ancona = cat(spire(SQ, 10, 0, 0), one("Town", "church", 24, 18, 4))
+	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
 
 local function placeSignature(folder, info)
 	local list = SIG[info.portId]
-	if not list then
+	local port = PortData.Ports[info.portId]
+	local nation = port and port.country or ""
+	local european = COUNTRY_PLAN[nation] ~= nil and currentKey ~= "ottoman"
+	if not list and not european then return end
+	-- 발전도 1은 작은 항구촌. 2는 소형 마을 표지, 3은 본래 도시 랜드마크,
+	-- 4~5는 국별 상징과 부두 장식이 단계적으로 늘어난다.
+	if european and sceneLevel < 3 then
+		if sceneLevel == 2 then
+			local asset = if nation == "netherlands" then "windmill"
+				elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
+				elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
+				else "church"
+			importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+		end
 		return
 	end
-	for _, e in list do
-		importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true)
+	for _, e in list or {} do
+		importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
+	end
+	if european and sceneLevel >= 4 then
+		-- 바닷가 건물은 기존 모델을 국별로 골라 쓴다. 새 자산·충돌하는 랜드마크 생성은 없다.
+		local kind, asset = "Town", "fountain-square"
+		if nation == "portugal" or nation == "spain" or nation == "canary" then
+			kind, asset = "Castle", "tower-square-base"
+		elseif nation == "netherlands" then
+			asset = "windmill"
+		elseif nation == "england" or nation == "scotland" or nation == "ireland" then
+			kind, asset = "Naval", "tower-watch"
+		elseif nation == "germany" or nation == "poland" or nation == "prussia" or nation == "livonia" or nation == "estonia" then
+			kind, asset = "Castle", "gate"
+		elseif nation == "norway" or nation == "sweden" or nation == "denmark" or nation == "finland" then
+			asset = "house"
+		elseif nation == "italy" or nation == "venice" or nation == "tuscany" or nation == "naples" or nation == "sicily" then
+			kind, asset = "Terrain", "statue-column"
+		end
+		importedModel(folder, kind, asset, Vector3.new(-8, 0, -112), 15, false)
+		if sceneLevel >= 5 then
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(-18, 0, -128), 10, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(2, 0, -128), 10, false)
+		end
 	end
 end
 
@@ -1290,6 +1365,8 @@ local function densify(folder, info, style, rng, walkers, made)
 	local palm = palmOk(info.portId, style)
 	local cold = not palm
 	local port = PortData.Ports[info.portId]
+	local nation = port and port.country or ""
+	local countryPlan = COUNTRY_PLAN[nation]
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
 	local lvl = sceneLevel
@@ -1303,12 +1380,12 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
-	local S = P.S -- 집 한 채가 차지하는 한 변(스터드). house()의 최종 크기 = max(w,d)*변주*HOUSE_SCALE
+	local S = P.S * (countryPlan and countryPlan.lot or 1) -- 국가별 필지 너비. 저장 레벨·시설 판정은 그대로 둔다
 	local fw = S / HOUSE_SCALE
 	local laneL = 2 * S + P.alley + 3
 	local pairsMax = math.max(1, math.floor((136 - 38) / laneL))
 	local pairsN = math.min(pairsMax, math.ceil(lvl * 0.8))
-	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens, 0.3, 0.97)
+	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
 	local smokers = 0
 	local X_END = -190
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
@@ -1354,7 +1431,7 @@ local function densify(folder, info, style, rng, walkers, made)
 					smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
 				end
 			end
-			x -= S * (1 + P.gapf * rng:NextNumber(0.6, 1.4))
+			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
 		end
 	end
 	for _, side in { 1, -1 } do
@@ -1631,6 +1708,44 @@ local function densify(folder, info, style, rng, walkers, made)
 			rowOf("Town", "cart", 5, -104, -180, 28, 7.6)
 			rowOf("Cargo", "barrel", 2.4, -108, -180, 22, -7.4)
 			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 26, -12)
+		end
+		-- [유럽 국가별 생활 구역] 같은 문화권이어도 포르투갈·스페인, 각 북유럽 국가의 골목 표정은 다르다.
+		-- 기존 주거·장터 구획 바깥(-54~-80, ±112)에 작은 구성만 배치해 동선을 지킨다.
+		if countryPlan and lvl >= 2 and key ~= "ottoman" then
+			if nation == "portugal" or nation == "madeira" or nation == "azores" then
+				house(folder, Vector3.new(-54, 0, -114), 13, 12, 2, style, rng, C(238, 228, 210))
+				one("Town", "fountain-square", 8, -80, 0, -116, true)
+				if lvl >= 4 then one("Terrain", "column", 10, -73, 0, -99) end
+			elseif nation == "spain" or nation == "canary" or nation == "mallorca" then
+				one("Town", "church", 19, -54, 0, -112, true)
+				if lvl >= 3 then one("Town", "bell-tower", 18, -77, 0, -112, true) end
+				if lvl >= 4 then one("Castle", "wall", 16, -55, 0, -132, true) end
+			elseif nation == "netherlands" then
+				house(folder, Vector3.new(-52, 0, -114), 12, 11, 3, style, rng, C(150, 70, 54))
+				if lvl >= 3 then house(folder, Vector3.new(-74, 0, -114), 12, 11, 3, style, rng, C(190, 130, 85)) end
+			elseif nation == "france" or nation == "corsica" then
+				one("Town", "fountain-round", 8, -58, 0, -114, true)
+				for _, z in { -125, -101 } do one("Terrain", "tree-oak", 10, -78, 0, z) end
+				if lvl >= 4 then one("Town", "bell-tower", 19, -54, 0, -132, true) end
+			elseif nation == "england" or nation == "scotland" or nation == "ireland" then
+				house(folder, Vector3.new(-54, 0, -114), 14, 12, 2, style, rng, C(170, 160, 142))
+				if lvl >= 3 then one("Castle", "gate", 18, -78, 0, -114, true) end
+			elseif nation == "germany" or nation == "poland" or nation == "prussia" or nation == "livonia" or nation == "estonia" or nation == "gotland" then
+				house(folder, Vector3.new(-54, 0, -114), 13, 13, 3, style, rng, C(158, 62, 48))
+				if lvl >= 3 then one("Cargo", "textiles-stack-large", 4, -78, 0, -114) end
+				if lvl >= 4 then one("Town", "windmill", 18, -78, 0, -130, true) end
+			elseif nation == "norway" or nation == "sweden" or nation == "denmark" or nation == "finland" then
+				house(folder, Vector3.new(-54, 0, -114), 13, 12, 2, style, rng, C(172, 61, 49))
+				if lvl >= 3 then house(folder, Vector3.new(-76, 0, -114), 13, 12, 2, style, rng, C(214, 183, 86)) end
+				if lvl >= 4 then one("Town", "fence_rails", 8, -58, 0, -133) end
+			elseif nation == "italy" or nation == "venice" or nation == "tuscany" or nation == "naples" or nation == "sicily" or nation == "sardinia" or nation == "ragusa" or nation == "papal" or nation == "dalmatia" or nation == "austria" then
+				one("Town", "fountain-round", 8, -54, 0, -114, true)
+				if lvl >= 3 then
+					for _, x in { -70, -78, -86 } do one("Terrain", "column", 9, x, 0, -116) end
+				end
+			elseif nation == "malta" then
+				one("Castle", "fortress", 23, -54, 0, -114, true)
+			end
 		end
 		-- 지역을 대표하는 건축물 (발전도 2단계부터 선다): 성당 종탑, 첨탑, 사원탑, 신사 등
 		if lvl >= 2 then
