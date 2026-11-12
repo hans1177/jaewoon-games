@@ -203,6 +203,30 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.match(seedDesignWorkflow,/designReviewEligible/);
 });
 
+test('owner Mare Essentia preservation intake enters existing Vibe designer without bypassing release gates',()=>{
+  const requests=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8')).requests;
+  const entries=requests.filter(x=>x.gameId==='mare-essentia');
+  assert.equal(entries.length,1,'one canonical owner request; never a parallel queue');
+  const request=entries[0];
+  assert.equal(request.status,'ACTIVE');
+  assert.equal(request.seed?.status,'ACTIVE');
+  assert.equal(request.seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION,true);
+  assert.equal(request.seed?.OWNER_REBUILD_MODE,'PRESERVATION_PRESENTATION_UPGRADE');
+  assert.equal(request.seed?.CANONICAL_IMPLEMENTATION_SOURCE,'roblox-games/mare-essentia');
+  assert.equal(request.seed?.INITIAL_TARGET_PLATFORM,'ROBLOX');
+  assert.match(request.seed?.SAVE_POLICY||'',/MareEssentia_v2/);
+  assert.ok(request.seed?.GAMEPLAY_SKETCH?.firstPlayableCycle?.length>=6);
+  assert.equal(roadmap.permanentProjectRemoval.ids.includes('mare-essentia'),false);
+  assert.match(seedWorkflow,/const pendingOwner=/);
+  assert.match(seedWorkflow,/OWNER_PRESERVATION_INTAKE/);
+  assert.match(seedWorkflow,/pendingOwner\.length>0/);
+  assert.match(seedWorkflow,/gh workflow enable company-design-promotion-sync\.yml/);
+  assert.match(seedWorkflow,/MARE_OWNER_REMOVAL_LOCK/);
+  assert.match(seedWorkflow,/MARE_CANONICAL_DESIGN_PROMOTION_STATE=ACTIVE_VERIFIED/);
+  assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
+  assert.doesNotMatch(seedWorkflow,/company-design-promotion-sync-new|mare-vibe-shadow|bypass.*F0|bypass.*F9/);
+});
+
 test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
   assert.match(seedWorkflow,/IDLE_24H_AUTONOMOUS_PRODUCTION/);
   assert.match(seedWorkflow,/GAME_SEED_IDLE_TARGET_COUNT/);
