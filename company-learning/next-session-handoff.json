@@ -298,6 +298,8 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "RECHECK_NEXT_MAIN_EXACT_COMMIT_AFTER_HANDOFF_AND_FETCH_RUNS_43306014838_43306014606_43306014340",
+      "VERIFY_AUTHORED_LOD_HIDDEN_DEFAULT_ACTIVATION_IN_REAL_APPROVED_GLTF_RUNTIME",
       "AFTER_CHANGE_FETCH_LATEST_MAIN_AND_REVALIDATE_CENTRAL_POLICY",
       "CHECK_VIBE_QA_43305654308_AND_INTEGRATED_REGRESSION_43305654543_AND_MAGIC_FOREST_STATIC_PLAY_43305654480_OUTCOMES_ON_8fdd29e9",
       "IF_MAGIC_FOREST_3D_MOBILE_SMOKE_MOVEMENT_FAILS_READ_EXACT_JOB_AND_FIND_RESPONSIBLE_RUNTIME_FIX_WITHOUT_WEAKENING_ASSERTIONS",
@@ -335,7 +337,9 @@
       "assets/vibe-premium-character-pipeline.mjs:FAIR_PER_MESH_SKIN_WEIGHT_AUDIT+BOUND_SKIN_INDEX_VALIDATION+FAIL_CLOSED_SAMPLE_COVERAGE (main 7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e)",
       "assets/vibe-cinematic-polish.mjs:STATIC_INSTANCE_GROUPING_EXCLUDES_HIDDEN_TRANSPARENT_AND_MANUAL_MATRIX_ASSETS (main 8fdd29e937d4065e4012f48bed8328ccf138011f)",
       "qa/vibe-premium-character-pipeline.test.mjs:REGRESSION_LATER_MESH_INVALID_WEIGHTS+INVALID_BONE_INDICES",
-      "qa/vibe-cinematic-polish.test.mjs:REGRESSION_HIDDEN_AND_TRANSPARENT_BATCHING"
+      "qa/vibe-cinematic-polish.test.mjs:REGRESSION_HIDDEN_AND_TRANSPARENT_BATCHING",
+      "assets/vibe-cinematic-polish.mjs:SHOW_AUTHORED_LOD_MESH_WHEN_SELECTED_EVEN_IF_AUTHORING_DEFAULT_HIDDEN_AND_RESTORE_ORIGINAL_ON_RESET (eb49063a4)",
+      "qa/vibe-cinematic-polish.test.mjs:LOD_HIDDEN_DEFAULT_RENDER_AND_RESET_REGRESSION (eb49063a4)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -345,7 +349,9 @@
       "GitHub Actions Magic Forest Static Play 43298451993 on ce1153bd: SUCCESS (older snapshot; not proof of latest 720253b2)",
       "Vibe Integrated Regression 43299864735 on 720253b2: SUCCESS",
       "Vibe Integrated Regression 43300155842 on 500f95cc: SUCCESS",
-      "7edb5b1e Vibe Integrated Regression 43305376717 SUCCESS (2026-11-13 KST); DOES_NOT_PROVE_NATIVE_RUNTIME"
+      "7edb5b1e Vibe Integrated Regression 43305376717 SUCCESS (2026-11-13 KST); DOES_NOT_PROVE_NATIVE_RUNTIME",
+      "8fdd29e9 Vibe QA run 43305654308 SUCCESS",
+      "8fdd29e9 Vibe Integrated Regression run 43305654543 SUCCESS"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -364,9 +370,13 @@
       "8fdd29e9_VIBE_QA_43305654308_PENDING_AS_OF_LAST_OBSERVATION",
       "8fdd29e9_VIBE_INTEGRATED_REGRESSION_43305654543_PENDING_AS_OF_LAST_OBSERVATION",
       "8fdd29e9_MAGIC_FOREST_STATIC_PLAY_43305654480_PENDING_AS_OF_LAST_OBSERVATION",
-      "LATEST_SOURCE_8fdd29e9_EXACT_POST_PUBLISH_BROWSER_MOBILE_AND_SAVE_VERIFICATION"
+      "LATEST_SOURCE_8fdd29e9_EXACT_POST_PUBLISH_BROWSER_MOBILE_AND_SAVE_VERIFICATION",
+      "eb49063a4 Vibe QA run 43306014838 QUEUED at checkpoint",
+      "eb49063a4 Vibe Integrated Regression run 43306014606 QUEUED at checkpoint",
+      "eb49063a4 Magic Forest Static Play run 43306014340 PENDING at checkpoint",
+      "EXACT_PUBLISHED_SHA_MATCHES_NEWEST_MAIN_AFTER_FINAL_HANDOFF_NOT_ATTESTED"
     ],
-    "lastObservedMain": "8fdd29e937d4065e4012f48bed8328ccf138011f",
+    "lastObservedMain": "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -396,13 +406,15 @@
       "eaca945f98e3c8f72f5666b7e869d6ddbde4b7ff",
       "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5",
       "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
-      "8fdd29e937d4065e4012f48bed8328ccf138011f"
+      "8fdd29e937d4065e4012f48bed8328ccf138011f",
+      "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175"
     ],
     "latestDirectWork": {
       "sourceBase": "d697ef97538bf1a8827eae26f115c11e1cbe0171",
       "implementationCommits": [
         "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
-        "8fdd29e937d4065e4012f48bed8328ccf138011f"
+        "8fdd29e937d4065e4012f48bed8328ccf138011f",
+        "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175"
       ],
       "modifiedExistingFiles": [
         "assets/vibe-premium-character-pipeline.mjs",
@@ -410,14 +422,16 @@
         "assets/vibe-cinematic-polish.mjs",
         "qa/vibe-cinematic-polish.test.mjs"
       ],
-      "scope": "RIG_WEIGHT_AND_BONE_INDEX_AUDIT_COVERAGE; STATIC_BATCH_VISIBILITY_TRANSPARENCY_AND_MATRIX_SAFETY",
+      "scope": "MULTI_MESH_RIG_WEIGHT_INDEX_AUDIT; STATIC_BATCH_VISIBILITY_TRANSPARENCY_AND_MATRIX; AUTHORING_HIDDEN_LOD_LEVEL_ACTIVATION",
       "qa": {
         "integratedRegressionFor7edb5b1": "SUCCESS_ACTIONS_RUN_43305376717",
-        "latest8fdd29e9": "PENDING_AT_CHECKPOINT"
+        "qaFor8fdd29e": "SUCCESS_ACTIONS_RUN_43305654308",
+        "regressionFor8fdd29e": "SUCCESS_ACTIONS_RUN_43305654543",
+        "latestEb49063": "QUEUED_ACTIONS_RUN_43306014838_AND_43306014606"
       },
-      "postPublish": "UNVERIFIED",
+      "postPublish": "UNVERIFIED_AS_LATEST_MAIN_CHANGES",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Refresh main head, four canonical documents and AGENTS. Read current QA run statuses and exact smoke failure before any new patch. Do not promote all 18 items to complete."
+      "nextWorkerInstruction": "First fetch live main+policy4+AGENTS; then read this handoff and Actions 43306014838/43306014606/43306014340; do not reimplement reviewed fixes; investigate exact live wild-survival movement smoke failure only with evidence; continue 18 items and re-record."
     }
   }
 }
