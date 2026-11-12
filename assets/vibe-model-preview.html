@@ -222,7 +222,13 @@ const model=gltf.scene;scene.add(model);activeModel=model;facialRig=createVibeFa
  // [메쉬/GPU] 승인된 원본에 LOD가 있을 때만 전환하고 무애니메이션 정적 반복 모델만 배칭.
  authoredLOD=createVibeAuthoredMeshLOD(THREE,model);
  staticBatch=batchVibeExistingStaticMeshes(THREE,model,{minimum:4,animated:!!gltf.animations?.length});const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
-const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);cameraOffset.set(radius*1.5,radius*.9,radius*2.2);cameraFocusOffset.copy(center);cameraAimOffset.set(0,0,0);shotComposer.reset();
+const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;
+// [모바일 카메라] 실제 원본의 바운딩 구를 세로·가로 화각 중 좁은 쪽에 맞춘다. 장르 카메라가 35도까지 좁아져도 전신을 유지한다.
+const halfVerticalFov=THREE.MathUtils.degToRad(Math.min(camera.fov,35))*.5;
+const halfHorizontalFov=Math.atan(Math.tan(halfVerticalFov)*camera.aspect);
+const fitDistance=Math.max(.1,box.getBoundingSphere(new THREE.Sphere()).radius)*1.3/Math.sin(Math.min(halfVerticalFov,halfHorizontalFov));
+cameraOffset.set(1.5,.9,2.2).normalize().multiplyScalar(fitDistance);
+camera.position.copy(cameraOffset);camera.lookAt(0,0,0);cameraFocusOffset.copy(center);cameraAimOffset.set(0,0,0);shotComposer.reset();
 if(gltf.animations?.length){
  for(const clip of gltf.animations){clipNames.push(clip.name);const opt=document.createElement('option');opt.value=clip.name;opt.textContent=clip.name||'동작 '+clipNames.length;animationPicker.append(opt)}
   connectVibeCharacter({character:model,clips:gltf.animations,genre:picker.value,THREE}).then(adapter=>{
