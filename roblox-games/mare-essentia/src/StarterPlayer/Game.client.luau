@@ -2987,6 +2987,10 @@ end
 local function openTradeHall()
 	Sfx.play("sfx_bell")
 	closeTradeHall()
+	-- 상인이 교역소 입장 시 현지어로 짧게 인사한다. 별도 인사 자막은 넣지 않는다.
+	if view and view.player then
+		Sfx.merchantGreeting(PortData.Ports[view.player.portId])
+	end
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
 	local root = Instance.new("Frame")
@@ -3082,7 +3086,7 @@ local function openTradeHall()
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
-		local say = (message ~= "" and message) or string.format("어서 오시오! %s 시세는 날마다 달라진다오.", p.portName)
+		local say = (message ~= "" and message) or string.format("%s 시세는 날마다 달라진다오.", p.portName)
 		local sl = mkLabel(bubble, say, 16, Color3.fromRGB(50, 36, 24), true)
 		sl.Position = UDim2.fromOffset(10, 8)
 		sl.Size = UDim2.new(1, -20, 1, -16)
