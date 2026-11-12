@@ -2141,14 +2141,10 @@ function playStory(ev)
 	overlay.ZIndex = 60
 	local layer = overlayGui("Overlay", 20)
 	overlay.Parent = layer
-	-- 장면 분위기에 맞는 음악: 끝나면 원래 음악으로 돌아간다
+	-- 스토리 성격에 맞춰 기존 오디오 제어기에서 BGM·시작 효과음을 선택한다.
 	local prevStoryMusic = Sfx.currentName()
-	do
-		local mood = ({ tavern = "music_market", storm = "music_battle", palace = "music_harbor", library = "music_harbor", observatory = "music_sea", ruins = "music_sea", harbor = "music_harbor" })[ev.art]
-		if mood then
-			Sfx.music(mood)
-		end
-	end
+	Sfx.music(Sfx.storyMusic(ev))
+	Sfx.play(Sfx.storyCue(ev), 0.38)
 	overlay.Destroying:Connect(function()
 		if prevStoryMusic then
 			Sfx.music(prevStoryMusic)
@@ -5414,8 +5410,8 @@ function H.playWonderScene(cardId)
 	hint.Text = "화면을 누르면 건너뛰기"
 	hint.ZIndex = 110
 	hint.Parent = root
-	Sfx.music(mood.music)
-	Sfx.play(mood.sfx)
+	Sfx.music(Sfx.wonderMusic(sc.mood, mood.music))
+	Sfx.play(Sfx.wonderCue(sc.mood, mood.sfx))
 
 	local function finish()
 		if not alive then
@@ -5951,7 +5947,8 @@ function render()
 	order = 0
 	H.clearContent()
 	if not audioLock then
-		Sfx.music(if view and currentTab == "trade" then "music_market" else "music_harbor")
+		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
+			view ~= nil and currentTab == "trade")
 		if view then
 			Sfx.ambient({ "sfx_waves" })
 		end
@@ -6173,8 +6170,8 @@ do
 		closePopup()
 		popupFor = ev.id
 		histPrev = Sfx.currentName()
-		Sfx.music("music_sea") -- 장중한 바다 음악으로 사건의 무게를 더한다
-		Sfx.play("sfx_bell")
+		Sfx.music(Sfx.historyMusic(ev)) -- 사건의 종류(전쟁·재난·교역·탐험 등)에 맞는 곡으로 전환
+		Sfx.play(Sfx.historyCue(ev), 0.4)
 		local layer = overlayGui("HistoryEvent", 55)
 		popupGui = layer
 		local dim = Instance.new("Frame")
