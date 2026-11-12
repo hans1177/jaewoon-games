@@ -4,6 +4,7 @@ return {
 	["Animals/chicken"] = 82991790164266,
 	["Animals/cow"] = 83562948192460,
 	["Animals/dog-pug"] = 82468177068339,
+	["Animals/donkey"] = 134314895007483,
 	["Animals/elephant"] = 106617829123973,
 	["Animals/horse"] = 140016920179671,
 	["Animals/llama"] = 118451592430314,
