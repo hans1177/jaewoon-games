@@ -41,6 +41,8 @@ export function createVibeStorybookWorld(THREE,scene,{preset='enchantedForest',s
   grass.color.setHex(value.ground);warm.color.setHex(value.accent);
  };
  return {
+  // [미리보기] 외부 원본 모델을 가리는 월드 장식만 숨긴다. 지면·조명·게임 월드는 유지한다.
+  setDecorationsVisible(visible){for(const prop of props)prop.visible=!!visible;for(const mote of motes)mote.mesh.visible=!!visible},
   transitionRegion(name,seconds=1){
    if(!vibeStorybookPresets[name])throw Error('Unknown storybook preset');
    region=name;
