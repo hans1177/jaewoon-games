@@ -177,6 +177,22 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- 해전 기동 점수: 포탄 낙하 경고를 피한 만큼 명성 보너스(전투 결과와는 무관, 한 전투에 한 번, 최대 +4)
+	function handlers.BattleFlair(state, p)
+		local lb = state.lastBattle
+		if not lb or lb.flairClaimed or lb.pending then
+			return false, ""
+		end
+		lb.flairClaimed = true
+		local score = if type(p) == "table" and type(p.score) == "number" and p.score == p.score then math.clamp(math.floor(p.score), 0, 400) else 0
+		local fame = math.min(4, score // 60)
+		if fame <= 0 then
+			return true, ""
+		end
+		state.fame += fame
+		return true, string.format("멋진 기동! 명성 +%d", fame)
+	end
+
 	function handlers.ResolveBattle(state, p, ctx)
 		return resolve(state, ctx, p ~= nil and p.flee == true)
 	end

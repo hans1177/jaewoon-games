@@ -176,7 +176,6 @@ for id in PortData.Goods do
 	end
 end
 -- 승인된 그림이 없는 상품 중, 같은 물건의 3D 모델이 있는 것은 그것을 쓴다
-local WOOD = Color3.fromRGB(120, 78, 50)
 for id, spec in {
 	gold = { "Cargo", "gold-bar" }, silver = { "Cargo", "silver-bar" }, copper = { "Cargo", "copper-bar" },
 	gems = { "Cargo", "gems-sack" }, jade = { "Cargo", "gem-medium", Color3.fromRGB(80, 170, 120) },
@@ -1465,7 +1464,12 @@ local function call(action, payload)
 				call("ResolveBattle", { flee = true })
 				return view ~= nil and view.lastBattle ~= nil and view.lastBattle.fled == true
 			end,
-			onDone = function()
+			onDone = function(flairScore)
+				if flairScore and flairScore > 0 and not lb.pending then
+					task.spawn(function()
+						call("BattleFlair", { score = flairScore })
+					end)
+				end
 				if lb.pending and not resolved then
 					resolved = true
 					call("ResolveBattle", { flee = false })
@@ -5651,12 +5655,16 @@ do
 	-- 배 실루엣
 	titleShip = mkBox(root, UDim2.fromScale(0.2, 0.655), UDim2.fromOffset(100, 12), Color3.fromRGB(14, 10, 12))
 	titleShip.ZIndex = 5
-	local m1 = mkBox(titleShip, UDim2.fromOffset(26, -52), UDim2.fromOffset(3, 52), Color3.fromRGB(14, 10, 12))
-	local m2 = mkBox(titleShip, UDim2.fromOffset(62, -40), UDim2.fromOffset(3, 40), Color3.fromRGB(14, 10, 12))
-	local s1 = mkBox(titleShip, UDim2.fromOffset(30, -49), UDim2.fromOffset(22, 32), Color3.fromRGB(34, 24, 26))
-	local s2 = mkBox(titleShip, UDim2.fromOffset(66, -37), UDim2.fromOffset(17, 26), Color3.fromRGB(34, 24, 26))
-	for _, f in { m1, m2, s1, s2 } do
-		f.ZIndex = 5
+	do
+		local parts = {
+			mkBox(titleShip, UDim2.fromOffset(26, -52), UDim2.fromOffset(3, 52), Color3.fromRGB(14, 10, 12)),
+			mkBox(titleShip, UDim2.fromOffset(62, -40), UDim2.fromOffset(3, 40), Color3.fromRGB(14, 10, 12)),
+			mkBox(titleShip, UDim2.fromOffset(30, -49), UDim2.fromOffset(22, 32), Color3.fromRGB(34, 24, 26)),
+			mkBox(titleShip, UDim2.fromOffset(66, -37), UDim2.fromOffset(17, 26), Color3.fromRGB(34, 24, 26)),
+		}
+		for _, f in parts do
+			f.ZIndex = 5
+		end
 	end
 	-- 게임 이름
 	local function titleText(text, y, size, color, font)
@@ -5689,11 +5697,6 @@ do
 	end)
 end
 -- 타이틀 오른쪽 선택 패널: 나라(3열 카드) → 시대(3칸) → 출항 버튼 순서로, 스크롤 없이 한눈에 보이게 짠다
-local NATION_COLOR = {
-	england = Color3.fromRGB(196, 44, 56), netherlands = Color3.fromRGB(232, 124, 36), france = Color3.fromRGB(56, 88, 180),
-	portugal = Color3.fromRGB(44, 128, 78), ottoman = Color3.fromRGB(176, 32, 56), swahili = Color3.fromRGB(34, 146, 146),
-	malabar = Color3.fromRGB(232, 164, 44), japan = Color3.fromRGB(214, 70, 82), new_spain = Color3.fromRGB(206, 168, 54),
-}
 local GOLD = Color3.fromRGB(226, 182, 92)
 local titlePanel = Instance.new("Frame")
 titlePanel.Name = "TitlePanel"
@@ -6043,17 +6046,17 @@ renderTitle = function()
 	end
 end
 
-local wasTitle = false
-local titleMenuOpen = false
+H.wasTitle = false
+H.titleMenuOpen = false
 function H.setTitleMode(on)
-	titleGui.Enabled = on or titleMenuOpen
-	titlePanel.Visible = on and not titleMenuOpen
+	titleGui.Enabled = on or H.titleMenuOpen
+	titlePanel.Visible = on and not H.titleMenuOpen
 	if on then
 		main.Visible = false
-	elseif wasTitle then
+	elseif H.wasTitle then
 		main.Visible = true
 	end
-	wasTitle = on
+	H.wasTitle = on
 end
 
 function render()
@@ -6108,16 +6111,16 @@ function H.showTitle()
 	local wasMain = main.Visible
 	main.Visible = false
 	menuToggle.Visible = false
-	titleMenuOpen = true
+	H.titleMenuOpen = true
 	titleGui.Enabled = true
 	titlePanel.Visible = false
 	local function leave()
-		titleMenuOpen = false
+		H.titleMenuOpen = false
 		layer:Destroy()
 	end
 	-- 시작 메뉴가 떠 있는 동안 게임 본 화면이 뒤에 비치지 않게 계속 숨긴다
 	task.spawn(function()
-		while titleMenuOpen do
+		while H.titleMenuOpen do
 			main.Visible = false
 			task.wait(0.1)
 		end
