@@ -652,8 +652,8 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
   const props=wanted.find(row=>row.id==='mare-harbor-life-props');
   assert.equal(animals?.autoBindWithoutRuntimeProof,false);
   assert.equal(props?.autoBindWithoutRuntimeProof,false);
-  assert.equal(animals?.sourceReady.length,9);
-  assert.equal(animals?.missing.length,5);
+  assert.equal(animals?.sourceReady.length,10);
+  assert.equal(animals?.missing.length,4);
   assert.ok(props.missing.includes('fishing-net'));
   assert.ok(!props.missing.includes('anchor'));
   assert.ok(animals.missing.includes('camel'));
@@ -668,4 +668,36 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
     if(relative.endsWith('.fbx'))assert.equal(bytes.subarray(0,18).toString(),'Kaydara FBX Binary',relative);
     else assert.equal(bytes.subarray(0,4).toString(),'glTF',relative);
   }
+});
+
+
+test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{
+  const root='roblox-games/mare-essentia/assets/animals/';
+  const obj=fs.readFileSync(root+'donkey-source.obj');
+  const mtl=fs.readFileSync(root+'donkey-source.mtl');
+  const glb=fs.readFileSync(root+'donkey.glb');
+  const gitSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+  assert.equal(gitSha(obj),'31869de9664710b0b035b4441cab17cacf6e3925');
+  assert.equal(gitSha(mtl),'8637f52251852454564167b8e71839108fa1b5b7');
+  assert.equal(gitSha(glb),'408de349a14a3d270441fc61033f09646cdca866');
+  assert.equal([...obj.toString('utf8').matchAll(/^v /gm)].length,1002);
+  assert.equal([...obj.toString('utf8').matchAll(/^f /gm)].length,1022);
+  assert.equal([...mtl.toString('utf8').matchAll(/^newmtl /gm)].length,8);
+  assert.equal(glb.readUInt32LE(0),0x46546c67);
+  assert.equal(glb.readUInt32LE(4),2);
+  assert.equal(glb.readUInt32LE(8),glb.length);
+  assert.equal(glb.readUInt32LE(16),0x4e4f534a);
+  const gltf=JSON.parse(glb.subarray(20,20+glb.readUInt32LE(12)).toString('utf8'));
+  assert.equal(gltf.asset.version,'2.0');
+  assert.equal(gltf.meshes.length,1);
+  assert.equal(gltf.meshes[0].primitives.length,8);
+  assert.equal(gltf.materials.length,8);
+  assert.equal(gltf.meshes[0].primitives.reduce((sum,p)=>sum+gltf.accessors[p.attributes.POSITION].count,0),6000);
+  assert.equal(gltf.animations?.length||0,0);
+  const seed=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-wanted.seed.json','utf8'));
+  const animals=seed.find(x=>x.id==='mare-farm-animals');
+  assert.ok(animals.sourceReady.includes('donkey'));
+  assert.ok(animals.animationPending.includes('donkey'));
+  assert.equal(animals.actualStudioAnimationVerified,false);
+  assert.equal(animals.autoBindWithoutRuntimeProof,false);
 });
