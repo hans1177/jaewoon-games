@@ -441,7 +441,7 @@ function B.play(m, side, handIdx)
 			m.turn = other(side)
 		end
 	end
-	return true, msg, result, act
+	return true, msg, result, act, c
 end
 
 function B.pass(m, side)

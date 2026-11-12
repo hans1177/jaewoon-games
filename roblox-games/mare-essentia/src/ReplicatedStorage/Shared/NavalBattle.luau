@@ -32,6 +32,17 @@ local CARD_MODELS = {
 	clear = { "Naval", "ship-small", "swell" },
 }
 
+-- 카드 원화: 등록된 백과사전 판화 중 장면이 맞는 것을 쓴다 (해전 전용 판화는 따로 그려 받아야 한다)
+local CARD_ART = {
+	gunner = "CardArt/event_anglo_dutch_war", swivel = "CardArt/event_anglo_dutch_war", culverin = "CardArt/event_anglo_dutch_war",
+	musketeer = "CardArt/event_piracy", sharpshooter = "CardArt/event_piracy", scout = "CardArt/event_chart_world",
+	swordsman = "CardArt/event_piracy", axeman = "CardArt/event_piracy", pikeman = "CardArt/event_piracy",
+	shieldman = "CardArt/event_royal_charter", boatswain = "CardArt/event_cook_voyage", surgeon = "CardArt/event_new_plant",
+	beast = "CardArt/event_treasure_wreck", hero_blade = "CardArt/event_piracy", hero_marksman = "CardArt/event_anglo_dutch_war",
+	hero_cannon = "CardArt/event_anglo_dutch_war", hero_spy = "CardArt/event_chart_world", hero_medic = "CardArt/event_new_plant",
+	hero_captain = "CardArt/event_cook_voyage", fog = "CardArt/event_calm_seas", storm = "CardArt/event_storm",
+	melee_fog = "CardArt/event_hurricane", clear = "CardArt/event_calm_seas", scorch = "CardArt/event_harbor_fire",
+}
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
@@ -541,7 +552,7 @@ function NavalBattle.play(opts)
 	local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
 	local ROW_ICON = { melee = "⚔", ranged = "🔫", cannon = "💣" }
-	local function startBoarding(cfg, onEnd)
+	local function startBoarding(cfg, onEnd, onPlay)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
 		local rng = function()
@@ -558,9 +569,9 @@ function NavalBattle.play(opts)
 			local foeDeck, foeLeader = BC.enemyDeck(opts.isBoss == true, rng)
 			m = BC.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
 		end
-		local function mine(ok, msg, res, act)
+		local function mine(ok, msg, res, act, card)
 			if ok and act then table.insert(actions, act) end
-			return ok, msg, res
+			return ok, msg, res, card, "me"
 		end
 		local TITLE = if cfg then "해전 카드 대결" else "접현 전투"
 
@@ -611,6 +622,9 @@ function NavalBattle.play(opts)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
 		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
+		if cfg then
+			bg.BackgroundTransparency = 0.42 -- 뒤로 3D 해상 무대(두 배와 선원)가 비쳐 보인다
+		end
 		-- 퀜트식 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
 		local wood = Instance.new("UIGradient")
 		wood.Color = ColorSequence.new({
@@ -764,7 +778,8 @@ function NavalBattle.play(opts)
 		local selected
 		local stopCardMotion
 		local rowTargets = { me = {}, foe = {} }
-		local function afterAction(ok, msg, res)
+		local function afterAction(ok, msg, res, card, side)
+			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
 				info.Text = msg or ""
 				return
@@ -1014,6 +1029,7 @@ function NavalBattle.play(opts)
 				rf.Position = UDim2.fromScale(0, (k - 1) / 6)
 				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
 				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(68, 76, 65) else Color3.fromRGB(88, 58, 50)
+				if cfg then rf.BackgroundTransparency = 0.25 end
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
 				frameEdge(rf, brass, 4)
@@ -1067,7 +1083,7 @@ function NavalBattle.play(opts)
 				image.Size = UDim2.fromScale(1.17, 1.17)
 				image.BackgroundTransparency = 1
 				image.ScaleType = Enum.ScaleType.Crop
-				local artKey = if c.id == "scorch" then CARD_FIRE elseif c.id == "storm" or c.id == "fog" or c.id == "melee_fog" then CARD_STORM else CARD_SEA
+				local artKey = CARD_ART[c.id] or (if c.row == "cannon" then "CardArt/event_anglo_dutch_war" elseif c.hero then "CardArt/event_cook_voyage" else CARD_SEA)
 				image.Image = "rbxassetid://" .. AssetIds[artKey]
 				image.Parent = art
 				local caption = label(b, c.name, 13, ink, true)
@@ -1158,17 +1174,17 @@ function NavalBattle.play(opts)
 				elseif m.turn == "foe" then
 					task.wait(0.9)
 					if finished then break end
-					local ok, msg, res = BC.ai(m, "foe")
+					local ok, msg, res, _, playedCard = BC.ai(m, "foe")
 					if ok then
-						afterAction(ok, "해적: " .. (msg or ""), res)
+						afterAction(ok, "해적: " .. (msg or ""), res, playedCard, "foe")
 					end
 				elseif auto then
 					task.wait(0.5)
 					if finished or playing or m.turn ~= "me" or m.over then continue end
-					local ok, msg, res, act = BC.ai(m, "me")
+					local ok, msg, res, act, playedCard = BC.ai(m, "me")
 					if ok then
-						mine(ok, msg, res, act)
-						afterAction(ok, msg, res)
+						mine(ok, msg, res, act, playedCard)
+						afterAction(ok, msg, res, playedCard, "me")
 					end
 				else
 					task.wait(0.1)
@@ -1316,6 +1332,79 @@ function NavalBattle.play(opts)
 		sh.model:PivotTo(cf)
 	end
 
+	-- 카드 대결 무대: 두 배 갑판 위에 로블록스 캐릭터 선원이 서 있고, 카드를 낼 때마다 그 줄의 병종이 움직인다
+	local crews = { me = {}, foe = {} }
+	local crewMode = { me = nil, foe = nil } -- { kind, untilT }
+	local function spawnCrew(sh, side, coat, role)
+		local box, size = sh.model:GetBoundingBox()
+		local deckY = box.Position.Y - size.Y / 2 + size.Y * 0.3
+		local along = size.X >= size.Z
+		local pivot = sh.model:GetPivot()
+		for i = 1, 4 do
+			local seed = i * 17 + (if side == "me" then 1 else 99)
+			local ok, rig = pcall(Pose.createR15, folder, Vector3.zero, 0, coat, Random.new(seed), role, 5)
+			if ok and rig then
+				for _, d in rig:GetDescendants() do
+					if d:IsA("BasePart") then
+						d.Anchored = true
+						d.CanCollide = false
+						d.CanQuery = false
+					end
+				end
+				local slide = (i - 2.5) * (if along then size.X else size.Z) * 0.16
+				local side2 = if i % 2 == 0 then 1.6 else -1.6
+				local world = Vector3.new(box.Position.X + (if along then slide else side2), deckY + 2.6, box.Position.Z + (if along then side2 else slide))
+				table.insert(crews[side], { rig = rig, off = pivot:ToObjectSpace(CFrame.new(world)), idx = i })
+			end
+		end
+	end
+	if opts.card then
+		task.spawn(function()
+			spawnCrew(me, "me", Color3.fromRGB(60, 87, 107), "Sailor")
+			spawnCrew(foe, "foe", Color3.fromRGB(117, 48, 39), "Rogue")
+		end)
+	end
+	local function crewAct(side, card)
+		if not card then return end
+		local kind = if card.special then "cheer" elseif card.row == "cannon" then "gun" elseif card.row == "ranged" then "shoot" else "melee"
+		crewMode[side] = { kind = kind, untilT = os.clock() + 1.6 }
+		local from, to = (if side == "me" then me else foe), (if side == "me" then foe else me)
+		if kind == "gun" or kind == "shoot" then
+			for k = 0, (if kind == "gun" then 2 else 0) do
+				task.delay(0.25 + k * 0.22, function()
+					if not finished then
+						shoot(from.pos, to.pos, function() shake = 1.0 end)
+					end
+				end)
+			end
+		else
+			shake = 0.8
+			Sfx.play("sfx_hit", 0.5, 1.3 + math.random() * 0.3)
+		end
+	end
+	local function updateCrews(now)
+		for side, list in crews do
+			local sh = if side == "me" then me else foe
+			local other = if side == "me" then foe else me
+			local mode = crewMode[side]
+			local active = mode and now < mode.untilT
+			for _, c in list do
+				local pos = (sh.model:GetPivot() * c.off).Position
+				local look = Vector3.new(other.model:GetPivot().Position.X, pos.Y, other.model:GetPivot().Position.Z)
+				if (look - pos).Magnitude > 1 then
+					c.rig:PivotTo(CFrame.lookAt(pos, look))
+				end
+				if active and mode.kind == "gun" then
+					Pose.work(c.rig, "hammer", now + c.idx * 0.3)
+				elseif active and (mode.kind == "melee" or mode.kind == "shoot") then
+					Pose.animateR15(c.rig, { phase = now * 4 + c.idx, moving = false, t = now, attack = math.clamp(((now + c.idx * 0.15) % 0.8) / 0.4, 0, 1) })
+				else
+					Pose.animateR15(c.rig, { phase = now * 2 + c.idx, moving = false, t = now, attack = 0 })
+				end
+			end
+		end
+	end
+
 	local function steerToward(sh, targetTheta, dt, rate)
 		local diff = (targetTheta - sh.theta + math.pi) % (math.pi * 2) - math.pi
 		sh.theta += math.clamp(diff, -rate * dt, rate * dt)
@@ -1360,6 +1449,7 @@ function NavalBattle.play(opts)
 			me.speed = 19 * (stickThrottle or throttle) * wf
 			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
+			if cardBusy then me.speed = 0 end
 			me.pos += forward(me.theta) * me.speed * dt
 
 			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
@@ -1369,6 +1459,7 @@ function NavalBattle.play(opts)
 			local want = bearing + (if dist > 55 then 0.15 elseif dist < 32 then -1.9 else 1.45)
 			steerToward(foe, want, dt, 1.1)
 			foe.speed = (if dist > 55 then 17 else 11) * windFactor(foe.theta)
+			if cardBusy then foe.speed = 0 end
 			foe.pos += forward(foe.theta) * foe.speed * dt
 			if phase == "board" then
 				-- 접현: 서로 가까이 붙는다
@@ -1490,6 +1581,8 @@ function NavalBattle.play(opts)
 							boardStart = os.clock() - 100
 							phase = "board"
 							subtitle.Text = if w == "a" then "적선이 항복하고 가라앉는다!" elseif w == "b" then "우리 배가 무너진다..." else "서로 물러났다."
+						end, function(side, card)
+							crewAct(side, card)
 						end)
 					end)
 				end
@@ -1588,6 +1681,7 @@ function NavalBattle.play(opts)
 		end
 		poseShip(me, now, meExtra)
 		poseShip(foe, now, foeExtra)
+		updateCrews(now)
 		for _, e in escorts do
 			poseShip(e, now, nil)
 		end
@@ -1617,6 +1711,15 @@ function NavalBattle.play(opts)
 		local f = forward(me.theta)
 		local focus = ORIGIN + me.pos + (foe.pos - me.pos) * 0.35
 		local camPos = ORIGIN + me.pos - f * 52 + Vector3.new(0, 30, 0)
+		if cardBusy then
+			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
+			local mid = (me.pos + foe.pos) / 2
+			local dir = foe.pos - me.pos
+			local perp = Vector3.new(-dir.Z, 0, dir.X)
+			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
+			camPos = ORIGIN + mid + perp * 92 + Vector3.new(0, 34, 0)
+		end
 		cam.CFrame = CFrame.lookAt(camPos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), focus + Vector3.new(0, 4, 0))
 	end))
 
