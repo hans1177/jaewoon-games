@@ -218,7 +218,7 @@ rigAuditButton.addEventListener('click',()=>{
 });
 studioControls.append(rigAuditButton);
 const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;ground.visible=false;scene.add(ground);const gridToggle=document.createElement('button');gridToggle.textContent='격자 표시';gridToggle.setAttribute('aria-pressed','false');gridToggle.addEventListener('click',()=>{ground.visible=!ground.visible;gridToggle.setAttribute('aria-pressed',String(ground.visible))});studioControls.append(gridToggle);if(url)new GLTFLoader().load(url.href,gltf=>{
-const model=gltf.scene;scene.add(model);activeModel=model;facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();
+const model=gltf.scene;scene.add(model);activeModel=model;storybookWorld.setDecorationsVisible(false);facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);expressionDirector=createVibeExpressionDirector(facialRig);restyle();
  // [메쉬/GPU] 승인된 원본에 LOD가 있을 때만 전환하고 무애니메이션 정적 반복 모델만 배칭.
  authoredLOD=createVibeAuthoredMeshLOD(THREE,model);
  staticBatch=batchVibeExistingStaticMeshes(THREE,model,{minimum:4,animated:!!gltf.animations?.length});const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
