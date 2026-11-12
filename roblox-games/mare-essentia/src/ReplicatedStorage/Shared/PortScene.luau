@@ -1065,6 +1065,35 @@ local function densify(folder, info, style, rng, walkers, made)
 				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 24, cx + 18, cz, true, face)
 				put("Terrain", "log-stack", 4, cx - 16, cz + 4, false)
 			end
+			-- 구역별 주민: 하는 일이 다르다 (광장에만 몰려 있지 않게)
+			local function npc(dx, dz, yaw, kind, mode, spec)
+				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw, Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)), rng, spec and spec.role or "Rogue", false, spec and spec.extra)
+				if not m then return end
+				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
+				if mode == "path" then
+					w.len = spec.len
+					w.speed = rng:NextNumber(1.2, 1.9)
+					w.idleKind = spec.idle
+				end
+				table.insert(walkers, w)
+			end
+			if d.kind == "religious" then
+				local doorZ = cz + (if cz > 0 then -19 else 19)
+				npc(-4, doorZ - (if cz > 0 then 1 else -1) * 0, face, "bell", "stay", { role = "Knight" })
+				npc(5, doorZ, face + math.pi, "talk", "stay", { role = "Rogue" })
+				npc(-22, doorZ, -math.pi / 2, nil, "path", { role = "Rogue", len = 22, idle = "look" })
+			elseif d.kind == "market" then
+				for k = -2, 2, 2 do
+					npc(k * 8, (if cz > 0 then -11 else 11), face + math.pi, "stall", "stay", { role = "Barbarian" })
+				end
+				npc(-18, 0, -math.pi / 2, "carry", "path", { role = "Rogue", len = 36, idle = "talk" })
+				npc(18, 3, math.pi / 2, nil, "path", { role = "Rogue", len = 30, idle = "look" })
+			else
+				for k = -1, 1 do
+					npc(k * 10 - 2, k * 7, face, "hoe", "stay", { role = "Barbarian", extra = { hat = "straw" } })
+				end
+				npc(-18, 10, -math.pi / 2, "carry", "path", { role = "Rogue", len = 34, idle = "stoop" })
+			end
 		end
 	end
 	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
@@ -1574,7 +1603,7 @@ local function densify(folder, info, style, rng, walkers, made)
 end
 
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
-local function placeLandmarks(folder, info, style, rng, onFacility)
+local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	local lvl = sceneLevel
 	local order = {}
 	for i = 1, #LM_SITES do order[i] = i end
@@ -1654,6 +1683,38 @@ local function placeLandmarks(folder, info, style, rng, onFacility)
 					importedModel(folder, "Town", "chimney", Vector3.new(x + k * 6, 15, z), 7, false)
 					smokeOn(folder, Vector3.new(x + k * 6, 23, z))
 				end
+			end
+			-- 시설마다 일하는/둘러보는 사람들
+			local function npc(dx, dz, yaw, kind, mode, role, len, idle)
+				local m = villager(folder, Vector3.new(x + dx, 0, z + dz), yaw, Color3.fromRGB(rng:NextInteger(70, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)), rng, role or "Rogue")
+				if not m then return end
+				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
+				if mode == "path" then
+					w.len, w.speed, w.idleKind = len, rng:NextNumber(1.1, 1.7), idle
+				end
+				table.insert(walkers, w)
+			end
+			local toward = face + math.pi
+			if lm.id == "exchange" then
+				npc(-6, front * 16, toward, "talk", "stay", "Knight")
+				npc(4, front * 17, face, "talk", "stay", "Rogue")
+				npc(-14, front * 20, -math.pi / 2, "carry", "path", "Rogue", 28, "talk")
+			elseif lm.id == "museum" or lm.id == "academy" then
+				npc(-5, front * 17, toward, "look", "stay", "Mage")
+				npc(-16, front * 21, -math.pi / 2, nil, "path", "Rogue", 30, "look")
+			elseif lm.id == "observatory" then
+				npc(8, front * 12, toward, "look", "stay", "Mage")
+			elseif lm.id == "theater" then
+				for k = -1, 1 do npc(k * 6, front * -4, face, "sit", "stay", "Rogue") end
+			elseif lm.id == "zoo" then
+				npc(0, front * 22, -math.pi / 2, "sweep", "path", "Barbarian", 16, "talk")
+				npc(6, front * 24, toward, "look", "stay", "Rogue")
+			elseif lm.id == "ironworks" then
+				npc(10, front * 9, face, "hammer", "stay", "Barbarian")
+				npc(-10, front * 9, -math.pi / 2, "carry", "path", "Barbarian", 20, "stoop")
+			elseif lm.id == "botanic" then
+				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
+				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
@@ -1940,7 +2001,7 @@ function PortScene.build(info, onFacility)
 	end
 	-- 광장을 오가는 주민
 	local walkers = {}
-	for _ = 1, 8 do
+	for _ = 1, 4 do
 		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
 		if v then
 			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(8, 18), speed = rng:NextNumber(1.6, 2.6), phase = rng:NextNumber(0, 10) })
@@ -1987,18 +2048,30 @@ function PortScene.build(info, onFacility)
 					Pose.walkR15(w.model, now * w.speed * 5 + w.phase, true)
 				end
 			elseif w.model.Parent then
+				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
 				local cycle = w.len / w.speed
-				local u = ((now + w.phase) % (cycle * 2)) / cycle -- 0..2
-				local forward = u < 1
-				local d = if forward then u * w.len else (2 - u) * w.len
+				local dwell = w.dwell or 2.2
+				local total = (cycle + dwell) * 2
+				local t = (now + w.phase) % total
+				local d, yaw, moving = 0, 0, true
+				local function ease(x) x = math.clamp(x, 0, 1) return x * x * (3 - 2 * x) end
+				if t < cycle then
+					d = t / cycle * w.len
+				elseif t < cycle + dwell then
+					d, yaw, moving = w.len, math.pi * ease((t - cycle) / (dwell * 0.6)), false
+				elseif t < 2 * cycle + dwell then
+					d, yaw = (1 - (t - cycle - dwell) / cycle) * w.len, math.pi
+				else
+					d, yaw, moving = 0, math.pi + math.pi * ease((t - 2 * cycle - dwell) / (dwell * 0.6)), false
+				end
 				local rot = w.base - w.base.Position
-				local dir = w.base.LookVector
-				local pos = w.base.Position + dir * d
-				local bob = math.abs(math.sin(now * 6 + w.phase)) * 0.15
-				local turn = if forward then CFrame.new() else CFrame.Angles(0, math.pi, 0)
-				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * turn * rot)
-				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, true)
-				if w.kind then
+				local pos = w.base.Position + w.base.LookVector * d
+				local bob = if moving then math.abs(math.sin(now * 6 + w.phase)) * 0.15 else 0
+				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
+				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, moving)
+				if not moving then
+					Pose.work(w.model, w.idleKind or "talk", now + w.phase)
+				elseif w.kind then
 					Pose.work(w.model, w.kind, now + w.phase)
 				elseif w.elder then
 					Pose.work(w.model, "stoop", now)
@@ -2026,10 +2099,25 @@ function PortScene.build(info, onFacility)
 	-- 하늘·빛: 늦은 오후의 따뜻한 바다 분위기
 	do
 		local Lighting = game:GetService("Lighting")
-		Lighting.ClockTime = 13.5
+		-- 질감·소재는 모두 같게, 하늘빛과 저녁 분위기는 문화권(항구)마다 다르게
+		local LOOK = {
+			north = { clock = 14, amb = Color3.fromRGB(116, 122, 140), haze = Color3.fromRGB(192, 206, 226), dens = 0.36 },
+			med = { clock = 15.5, amb = Color3.fromRGB(132, 124, 118), haze = Color3.fromRGB(224, 214, 196), dens = 0.28 },
+			iberia = { clock = 16, amb = Color3.fromRGB(138, 122, 108), haze = Color3.fromRGB(236, 210, 176), dens = 0.28 },
+			italy = { clock = 15.5, amb = Color3.fromRGB(134, 124, 114), haze = Color3.fromRGB(230, 212, 188), dens = 0.28 },
+			ottoman = { clock = 16.5, amb = Color3.fromRGB(142, 120, 100), haze = Color3.fromRGB(240, 206, 160), dens = 0.30 },
+			swahili = { clock = 16, amb = Color3.fromRGB(136, 122, 100), haze = Color3.fromRGB(236, 214, 168), dens = 0.30 },
+			malabar = { clock = 16.5, amb = Color3.fromRGB(134, 122, 104), haze = Color3.fromRGB(238, 208, 160), dens = 0.32 },
+			japan = { clock = 17, amb = Color3.fromRGB(128, 116, 126), haze = Color3.fromRGB(218, 200, 214), dens = 0.40 },
+			colonial = { clock = 15, amb = Color3.fromRGB(122, 122, 118), haze = Color3.fromRGB(210, 220, 214), dens = 0.30 },
+			desert = { clock = 12.5, amb = Color3.fromRGB(140, 124, 100), haze = Color3.fromRGB(240, 220, 176), dens = 0.30 },
+			tropic = { clock = 13, amb = Color3.fromRGB(104, 124, 116), haze = Color3.fromRGB(186, 230, 224), dens = 0.26 },
+		}
+		local look = LOOK[currentKey] or LOOK.med
+		Lighting.ClockTime = look.clock
 		Lighting.Brightness = 2.0
-		Lighting.Ambient = Color3.fromRGB(96, 98, 110)
-		Lighting.OutdoorAmbient = Color3.fromRGB(122, 124, 138)
+		Lighting.Ambient = Color3.fromRGB(96, 98, 110):Lerp(look.amb, 0.5)
+		Lighting.OutdoorAmbient = look.amb
 		Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
 		Lighting.GlobalShadows = true
 		local atmos = Lighting:FindFirstChild("MareAtmosphere")
@@ -2038,9 +2126,9 @@ function PortScene.build(info, onFacility)
 			atmos.Name = "MareAtmosphere"
 			atmos.Parent = Lighting
 		end
-		atmos.Density = 0.28
+		atmos.Density = look.dens
 		atmos.Offset = 0.2
-		atmos.Color = Color3.fromRGB(199, 214, 235)
+		atmos.Color = look.haze
 		atmos.Decay = Color3.fromRGB(120, 140, 170)
 		atmos.Glare = 0.35
 		atmos.Haze = 1.4
@@ -2338,7 +2426,7 @@ function PortScene.build(info, onFacility)
 	end
 
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
-	placeLandmarks(folder, info, style, rng, onFacility)
+	placeLandmarks(folder, info, style, rng, onFacility, walkers)
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
