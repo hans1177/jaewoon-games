@@ -10,7 +10,9 @@ const dir='roblox-games/fantasy-survival/skilltree-icons';
 const manifest=JSON.parse(fs.readFileSync(dir+'/files.json','utf8'));
 const receiptPath=dir+'/uploaded.json';
 const idsPath='roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau';
-const universeId='10773436325';
+const universeId='10775310122';
+const legacyUniverseIds=['10773436325'];
+const grantUniverseIds=[universeId,...legacyUniverseIds];
 const expectedCount=4;
 const contentSafety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
   .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
@@ -79,6 +81,7 @@ if(!creator){
 let receipt={assets:{},failed:{},universeId,universeUseGrantVerified:false};
 if(fs.existsSync(receiptPath))receipt=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
 receipt.assets=receipt.assets||{};
+if(receipt.grantedUniverseIds===undefined||grantUniverseIds.some(u=>!(receipt.grantedUniverseIds||[]).includes(u)))receipt.universeUseGrantVerified=false;
 receipt.failed={};
 const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipt,null,1)+'\n');
 
@@ -122,16 +125,18 @@ if(uploaded.length!==expectedCount){save();throw Error('SKILLTREE_INCOMPLETE');}
 
 // Universe 사용 권한 승인(기존 이미지 등록 경로와 동일한 API).
 if(!receipt.universeUseGrantVerified){
-  for(let i=0;i<uploaded.length;i+=4){
+  for(const subjectId of grantUniverseIds)for(let i=0;i<uploaded.length;i+=4){
     const chunk=uploaded.slice(i,i+4);
     const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
       method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
-      body:JSON.stringify({subjectType:'Universe',subjectId:universeId,action:'Use',
+      body:JSON.stringify({subjectType:'Universe',subjectId,action:'Use',
         requests:chunk.map(n=>({assetId:Number(receipt.assets[n].assetId),grantToDependencies:true}))}),
     });
     if(grant.errors?.length)throw Error('SKILLTREE_UNIVERSE_PERMISSION_REJECTED');
   }
   receipt.universeUseGrantVerified=true;
+  receipt.universeId=universeId;
+  receipt.grantedUniverseIds=grantUniverseIds;
   save();
   console.log('SKILLTREE_UNIVERSE_USE_GRANTED='+universeId);
 }
