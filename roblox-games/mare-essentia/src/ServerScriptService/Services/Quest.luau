@@ -180,12 +180,20 @@ return function(D, S)
 		return true, string.format("%s %d개 납품 (%d/%d)", D.Ports.Goods[quest.goodId].name, amount, a.delivered, quest.amount)
 	end
 
+	local function storyOf(quest)
+		local good = quest.goodId and D.Ports.Goods[quest.goodId]
+		local port = quest.portId and D.Ports.Ports[quest.portId]
+		return D.Quests.Story(quest, good and good.name, port and port.name)
+	end
+
 	local function payout(state, quest, label, msgs)
 		state.quests.active[quest.id] = nil
 		state.quests.done[quest.id] = true
 		state.coins += quest.rewardCoins
 		state.fame += quest.rewardFame
 		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
+		local _, ending = storyOf(quest)
+		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
@@ -258,7 +266,8 @@ return function(D, S)
 			return nil
 		end
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
-		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: %s (%s)", how, pick.name, pick.summary))
+		local hook = storyOf(pick)
+		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end
 
@@ -308,5 +317,5 @@ return function(D, S)
 		end
 	end
 
-	return { handlers = handlers, offer = offer, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }
+	return { handlers = handlers, storyOf = storyOf, offer = offer, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }
 end

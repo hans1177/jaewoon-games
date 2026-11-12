@@ -2984,6 +2984,23 @@ do
 	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == #K.Disciplines, tostring(view.knowledge))
 end
 
+-- 퀘스트 이야기: 모든 퀘스트에 사연과 결말이 있고, 채워지지 않은 자리표시가 남지 않는다
+do
+	local bad = 0
+	for _, q in D.Quests.Quests do
+		local good = q.goodId and D.Ports.Goods[q.goodId]
+		local port = q.portId and D.Ports.Ports[q.portId]
+		local hook, ending = D.Quests.Story(q, good and good.name, port and port.name)
+		if #hook < 20 or #ending < 10 or string.find(hook .. ending, "{", 1, true) then
+			bad += 1
+		end
+	end
+	check("퀘스트마다 사연과 결말 문장이 있다", bad == 0, tostring(bad))
+	local d1 = D.Quests.ById["q_first_trade"]
+	local h1 = D.Quests.Story(d1, "양모", "암스테르담")
+	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")

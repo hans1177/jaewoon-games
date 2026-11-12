@@ -441,7 +441,8 @@ return function(D, S)
 			view.quests.doneCount += 1
 			local dq = D.Quests.ById[id]
 			if dq then
-				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand })
+				local _, ending = S.Quest.storyOf(dq)
+				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand, ending = ending })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
@@ -451,7 +452,7 @@ return function(D, S)
 					id = q.id,
 					name = q.name,
 					summary = q.summary,
-					story = q.story,
+					story = (S.Quest.storyOf(q)),
 					strand = q.strand or (if q.companionId then "companion" else nil),
 					kind = q.kind,
 					progress = S.Quest.progress(state, q),
@@ -465,7 +466,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, story = q.story, strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 

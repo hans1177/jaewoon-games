@@ -4567,7 +4567,7 @@ function RENDERERS.quest()
 		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
 		for _, q in view.quests.done do
 			add(function()
-				return mkLabel(content, "✔ " .. q.name .. " — " .. q.summary, 12, COLORS.muted, true)
+				return mkLabel(content, "✔ " .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
 			end)
 		end
 	end
