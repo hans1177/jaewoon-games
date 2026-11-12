@@ -279,3 +279,19 @@ test('수동 실행의 retry_now 는 쉬는 시간을 건너뛰지만 평소엔 
   try { assert.equal(pickOrder([o], L).fingerprint, 'g:x'); } finally { delete process.env.BRAIN_RETRY_NOW; }
   assert.match(fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8'), /BRAIN_RETRY_NOW: \$\{\{ github\.event\.inputs\.retry_now/);
 });
+
+test('Studio frames go only to an image-capable provider', async () => {
+  const images = [{ mimeType: 'image/png', data: 'AA==' }];
+  const requests = [];
+  const providers = await buildProviders({
+    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-test-flash', GITHUB_MODELS_TOKEN: 'fake' },
+    fetchFn: async (url, init) => {
+      requests.push({ url, body: JSON.parse(init.body) });
+      return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{}' }] } }] }) };
+    }
+  });
+  await askChain({ prompt: 'inspect', images, providers: providers.reverse() });
+  assert.equal(requests.length, 1);
+  assert.match(requests[0].url, /generativelanguage\.googleapis\.com/);
+  assert.deepEqual(requests[0].body.contents[0].parts, [{ text: 'inspect' }, { inlineData: images[0] }]);
+});
