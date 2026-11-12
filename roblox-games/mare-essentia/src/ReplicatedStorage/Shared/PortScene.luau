@@ -1997,6 +1997,21 @@ function PortScene.build(info, onFacility)
 			end
 		end
 	end
+	-- 항구에 머무는 다른 항해자(상인·탐험가·군인 등): 광장 한쪽에 서 있다
+	for i, v in info.voyagers or {} do
+		if i > 3 then break end
+		local look = if v.role == "탐험가" then { "Knight", Color3.fromRGB(70, 110, 90) }
+			elseif v.role == "군인" then { "Barbarian", Color3.fromRGB(110, 60, 60) }
+			elseif v.role == "순례 사제" then { "Mage", Color3.fromRGB(200, 190, 160) }
+			elseif v.role == "해적" or v.role == "사략선장" then { "Barbarian", Color3.fromRGB(40, 40, 50) }
+			else { "Rogue", Color3.fromRGB(150, 110, 60) }
+		local m = villager(folder, Vector3.new(16 + i * 5, 0, 14 - i * 3), -math.pi / 2, look[2], rng, look[1])
+		if m then
+			m.Name = "Voyager_" .. tostring(v.id)
+			local tag = m:FindFirstChild("Head") or m:FindFirstChildWhichIsA("BasePart", true)
+			if tag then sign(folder, tag, v.name .. " (" .. v.role .. ")", Color3.fromRGB(110, 80, 30), 4) end
+		end
+	end
 	local followConn
 	if #followers > 0 then
 		local Players = game:GetService("Players")

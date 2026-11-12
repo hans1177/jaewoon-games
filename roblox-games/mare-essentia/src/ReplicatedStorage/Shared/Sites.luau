@@ -511,7 +511,7 @@ local Sites: { Site } = {
 	{ id = "boston_whalers", name = "낸터킷 포경 항구", portId = "boston", minLevel = 2, days = 2, pool = { "am_ship_bell", "geo_gulf_stream" } },
 	{ id = "newyork_harbor", name = "허드슨 강 어귀", portId = "new_york", minLevel = 2, days = 1, pool = { "am_beaver", "geo_chesapeake", "am_colonial_deed" } },
 	{ id = "niagara_trip", name = "대폭포 탐사", portId = "new_york", minLevel = 4, days = 3, pool = { "geo_niagara", "geo_great_lakes", "am_totem" } },
-	{ id = "philadelphia_hall", name = "독립 회관", portId = "philadelphia", minLevel = 2, days = 1, pool = { "site_independence_hall", "am_maize_plant" } },
+	{ id = "philadelphia_hall", name = "독립 회관", portId = "philadelphia", minLevel = 2, days = 1, pool = { "site_independence_hall", "am_maize_plant", "am_pineapple" } },
 	{ id = "charleston_rice", name = "찰스턴 쌀밭", portId = "charleston", minLevel = 1, days = 1, pool = { "am_pottery_native", "am_tomato" } },
 	{ id = "neworleans_delta", name = "미시시피 삼각주", portId = "new_orleans", minLevel = 3, days = 2, pool = { "geo_mississippi", "am_iguana", "am_victoria_lily" } },
 	{ id = "nassau_pirates", name = "나소 해적 소굴", portId = "nassau", minLevel = 2, days = 1, pool = { "am_pirate_code", "am_blackbeard_flag", "geo_bahama_banks" } },
