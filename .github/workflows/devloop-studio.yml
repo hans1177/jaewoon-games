@@ -325,29 +325,187 @@ jobs:
               $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
             }
           }
-          $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') })
-          if ($frames.Count -lt 1 -and -not $qaStage) {
+          # [검사] 실제 스크린샷과 보고서 단계·클릭·자산 감사 항목을 각각 기록한다.
+          $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') } | Sort-Object FullName)
+          $rawReport = Get-Content -LiteralPath $reportFile -Raw -Encoding UTF8 | ConvertFrom-Json
+          $sum = $rawReport.summary
+          $runId = [string]$env:GITHUB_RUN_ID
+          if ($runId -notmatch '^[0-9]+$') { throw 'STUDIO_RUN_ID_INVALID' }
+          $kind = 'other'
+          if ([string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') { $kind = 'full' }
+          elseif ([string]$env:CAP_SCRIPT -match 'autopilot') { $kind = 'autopilot' }
+          $stepsState = 'NOT_CHECKED'
+          if ([int]$sum.plannedSteps -gt 0) {
+            $stepsState = 'FAIL'
+            if ([int]$sum.completedSteps -eq [int]$sum.plannedSteps -and $studioNodeExitCode -eq 0) { $stepsState = 'PASS' }
+          }
+          $clicksState = 'NOT_CHECKED'
+          if ([int]$sum.plannedClicks -gt 0) {
+            $clicksState = 'FAIL'
+            if (([int]$sum.successfulClicks + [int]$sum.skippedOptionalClicks) -eq [int]$sum.plannedClicks) { $clicksState = 'PASS' }
+          }
+          $framesState = 'NOT_CHECKED'
+          if ([int]$sum.plannedFrames -gt 0) {
+            $framesState = 'FAIL'
+            if ([int]$sum.capturedFrames -ge [int]$sum.plannedFrames -and $frames.Count -ge [int]$sum.plannedFrames) { $framesState = 'PASS' }
+          }
+          if ($frames.Count -lt 1 -or $framesState -eq 'FAIL') {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_SCREENSHOTS_INCOMPLETE' }
+          }
+          $consoleState = 'NOT_CHECKED'
+          if ($rawReport.consoleCapture -and $rawReport.consoleCapture.captured -eq $true) {
+            $consoleState = 'PASS'
+            if ([int]$rawReport.consoleCapture.errorCount -gt 0 -or @($rawReport.consoleCapture.errors).Count -gt 0) { $consoleState = 'FAIL' }
+          }
+          $modelState = 'NOT_CHECKED'
+          $mediaState = 'NOT_CHECKED'
+          $featureState = 'NOT_CHECKED'
+          if ($rawReport.assetAudit) {
+            if ($rawReport.assetAudit.models.status) { $modelState = [string]$rawReport.assetAudit.models.status }
+            if ($rawReport.assetAudit.registered.status) { $mediaState = [string]$rawReport.assetAudit.registered.status }
+            if ($rawReport.assetAudit.features.status) { $featureState = [string]$rawReport.assetAudit.features.status }
+          }
+          if ($kind -eq 'full' -and ($modelState -eq 'NOT_CHECKED' -or $mediaState -eq 'NOT_CHECKED' -or $featureState -eq 'NOT_CHECKED')) {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE' }
+          }
+          $captureChecks = @()
+          foreach ($entry in @($rawReport.log | Where-Object { $_.capture })) {
+            $captureName = [string]$entry.capture
+            $matches = @($frames | Where-Object { $_.BaseName -eq $captureName -or $_.BaseName.StartsWith($captureName + '-') })
+            $captureChecks += [ordered]@{ name = $captureName; status = $(if ($matches.Count -gt 0) { 'PASS' } else { 'FAIL' }); files = @($matches | ForEach-Object { $_.Name }) }
+          }
+          if (@($captureChecks | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0 -and -not $qaStage) {
             $qaStage = 'STUDIO_EXECUTION'
-            $qaSignature = 'STUDIO_SCREENSHOTS_MISSING'
+            $qaSignature = 'STUDIO_CAPTURE_STEP_MISSING'
           }
           Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
+          Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
+          
+          # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
           $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
           Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
           New-Item -ItemType Directory $dst | Out-Null
-          Copy-Item "$out\*" $dst -Recurse
           Set-Location $dst
           git init -q
           git config user.name 'mare-capture-bot'
           git config user.email 'mare-capture-bot@users.noreply.github.com'
+          $branch = "$($env:CAP_GAME)-studio-frames"
+          $repoUrl = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
+          gh api "repos/$($env:GITHUB_REPOSITORY)/branches/$branch" --silent 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            git fetch -q --no-tags --depth=1 $repoUrl "refs/heads/$branch"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
+            git checkout -q -B frames FETCH_HEAD
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
+          } else {
+            git checkout -q -b frames
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_BRANCH_CREATE_FAILED' }
+          }
+          $oldIndex = @()
+          $previousRun = ''
+          if (Test-Path -LiteralPath (Join-Path $dst 'history.json')) {
+            $index = Get-Content -LiteralPath (Join-Path $dst 'history.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+            $oldIndex = @($index.runs | Where-Object { $_ -and [string]$_.runId -match '^[0-9]+$' })
+            if ($oldIndex.Count -gt 0) { $previousRun = [string]$oldIndex[0].runId }
+          }
+          # [그래픽 비교] 이름이 같은 이전 화면과 SHA-256 비교. 변경 여부일 뿐 화질 합격 판정으로 사용하지 않는다.
+          $visual = @()
+          foreach ($frame in $frames) {
+            $relative = $frame.FullName.Substring($out.Length).TrimStart('\', '/').Replace('\', '/')
+            $oldPath = Join-Path $dst $relative
+            $currentHash = (Get-FileHash -LiteralPath $frame.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            $previousHash = ''
+            $change = 'NEW'
+            if (Test-Path -LiteralPath $oldPath -PathType Leaf) {
+              $previousHash = (Get-FileHash -LiteralPath $oldPath -Algorithm SHA256).Hash.ToLowerInvariant()
+              $change = 'CHANGED'
+              if ($previousHash -eq $currentHash) { $change = 'UNCHANGED' }
+            }
+            $visual += [ordered]@{ file = $relative; change = $change; sha256 = $currentHash; previousSha256 = $previousHash }
+          }
+          $changedFrames = @($visual | Where-Object { $_.change -eq 'CHANGED' }).Count
+          $archive = Join-Path (Join-Path $dst 'runs') $runId
+          New-Item -ItemType Directory $archive -Force | Out-Null
+          Copy-Item (Join-Path $out '*') $archive -Recurse -Force
+          # 루트는 최신 검사만 유지한다. runs/는 별도 수명 정책으로 관리한다.
+          Get-ChildItem -LiteralPath $dst -File | Where-Object { $_.Extension -in @('.png','.jpg','.jpeg') -or $_.Name -in @('report.json','checklist.json') } | Remove-Item -Force
+          Copy-Item (Join-Path $out '*') $dst -Recurse -Force
+          $runStatus = 'PASS'
+          if ($qaStage) { $runStatus = 'FAIL' }
+          $checklist = [ordered]@{
+            runId = $runId
+            game = [string]$env:CAP_GAME
+            kind = $kind
+            sourceRevision = [string]$rawReport.sourceRevision
+            checkedAt = (Get-Date).ToUniversalTime().ToString('o')
+            status = $runStatus
+            failureStage = $qaStage
+            failureSignature = $qaSignature
+            checks = [ordered]@{
+              steps = $stepsState; clicks = $clicksState; screenshots = $framesState
+              console = $consoleState; models = $modelState; media = $mediaState; features = $featureState
+            }
+            counts = [ordered]@{
+              plannedSteps = [int]$sum.plannedSteps; completedSteps = [int]$sum.completedSteps
+              plannedClicks = [int]$sum.plannedClicks; successfulClicks = [int]$sum.successfulClicks
+              plannedFrames = [int]$sum.plannedFrames; capturedFrames = $frames.Count
+              warnings = [int]$rawReport.consoleCapture.warningCount
+            }
+            captureChecks = $captureChecks
+            previousRunId = $previousRun
+            visualComparison = $visual
+            visualComparisonMethod = 'SHA256_BYTES_ONLY_NOT_VISUAL_QUALITY'
+          }
+          $checklist | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $dst 'checklist.json') -Encoding UTF8
+          Copy-Item -LiteralPath (Join-Path $dst 'checklist.json') -Destination $archive -Force
+          $record = [ordered]@{
+            runId = $runId; at = $checklist.checkedAt; kind = $kind; status = $runStatus
+            sourceRevision = $checklist.sourceRevision; frames = $frames.Count
+            changedFrames = $changedFrames; screenshots = "runs/$runId/"
+          }
+          # [보관 제한] 정밀 검사 12회, 자동 점검 8회, 기타 4회, 공통 7일로 저장소 폭증을 방지한다.
+          $cutoff = (Get-Date).ToUniversalTime().AddDays(-7)
+          $all = @($record) + @($oldIndex | Where-Object { [string]$_.runId -ne $runId })
+          $recent = @($all | Where-Object {
+            try { ([datetime]$_.at).ToUniversalTime() -ge $cutoff } catch { $false }
+          } | Sort-Object -Property at -Descending)
+          $kept = @($recent | Where-Object { $_.kind -eq 'full' } | Select-Object -First 12) +
+                  @($recent | Where-Object { $_.kind -eq 'autopilot' } | Select-Object -First 8) +
+                  @($recent | Where-Object { $_.kind -eq 'other' } | Select-Object -First 4)
+          $kept = @($kept | Sort-Object -Property at -Descending)
+          $allowed = @($kept | ForEach-Object { [string]$_.runId })
+          Get-ChildItem -LiteralPath (Join-Path $dst 'runs') -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $allowed -notcontains $_.Name } | Remove-Item -Recurse -Force
+          ([ordered]@{ version = 1; game = [string]$env:CAP_GAME; retentionDays = 7; runs = $kept }) |
+            ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $dst 'history.json') -Encoding UTF8
+          $gallery = @('# 스튜디오 점검 사진 이력', '', '최신: [사진](./) · [검사표](checklist.json) · [전체 이력](history.json)', '', '보관: 정밀 12회 / 자동 8회 / 기타 4회, 최대 7일', '', '| 실행 | 결과 | 사진 | 변경된 파일 |', '|---|---|---:|---:|')
+          foreach ($item in $kept) {
+            $gallery += "| [$($item.kind) #$($item.runId)](runs/$($item.runId)/) | $($item.status) | $($item.frames) | $($item.changedFrames) |"
+          }
+          $gallery | Set-Content -LiteralPath (Join-Path $dst 'README.md') -Encoding UTF8
           git add -A
-          git commit -q -m "studio frames $($env:CAP_GAME) run ${{ github.run_id }}"
-          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-studio-frames
-          Write-Host "PUBLISHED=$LASTEXITCODE"
+          git commit -q -m "studio evidence $($env:CAP_GAME) run $runId"
+          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_COMMIT_FAILED' }
+          git push -q $repoUrl "HEAD:refs/heads/$branch"
           if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_PUBLISH_FAILED' }
-          # 바이브 자동 점검(autopilot) 결과는 다른 Studio 실행이 덮어쓰지 못하게 별도 브랜치에도 보관한다(판단기가 읽는다).
+          Write-Host "STUDIO_REPORT_PUBLISHED=$branch RUN_ID=$runId STATUS=$runStatus HISTORY=$($kept.Count) CHANGED_FRAMES=$changedFrames"
+          
+          # [호환] 자동 판단기는 기존 별도 autopilot-report 브랜치의 최신 report.json만 읽는다.
+          # 이 브랜치에는 이력을 중복 복사하지 않아 무료 저장소 사용량을 제한한다.
           if ([string]$env:CAP_SCRIPT -match 'autopilot') {
-            git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report
-            Write-Host "AUTOPILOT_REPORT_PUBLISHED=$LASTEXITCODE"
+            $apDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $apDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $apDst | Out-Null
+            Copy-Item (Join-Path $out '*') $apDst -Recurse -Force
+            git -C $apDst init -q
+            git -C $apDst config user.name 'mare-capture-bot'
+            git -C $apDst config user.email 'mare-capture-bot@users.noreply.github.com'
+            git -C $apDst add -A
+            git -C $apDst commit -q -m "autopilot latest $($env:CAP_GAME) run $runId"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_AUTOPILOT_COMMIT_FAILED' }
+            git -C $apDst push -q -f $repoUrl "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_AUTOPILOT_REPORT_PUBLISH_FAILED' }
+            Write-Host 'AUTOPILOT_REPORT_PUBLISHED=0'
           }
           if ($qaStage -ne '') {
             Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
