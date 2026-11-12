@@ -318,6 +318,197 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'TAC_NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] if not f or not pl then return 'TAC_START ok=false no hook' end local r=f:Invoke(pl,'QATactics',{mapId='plain_road'}) return 'TAC_START ok='..tostring(r and r.ok)..' msg='..tostring(r and r.message)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('State',{}) workspace:SetAttribute('DevCall','State') return 'TAC_VIEW tactics='..tostring(a and a.view and a.view.tactics ~= nil)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tactics') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "t0_explore"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return 'TAC_OPEN '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "t1_board"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local tiles,units,btn=0,0,0 if g then for _,d in ipairs(g:GetDescendants()) do if d:IsA(\"TextButton\") then btn+=1 if d.ZIndex==5 then units+=1 else tiles+=1 end end end end return \"TAC_UI gui=\"..tostring(g~=nil)..\" tiles=\"..tiles..\" units=\"..units"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local U=nil if g then for _,d in ipairs(g:GetDescendants()) do if U==nil and d:IsA(\"TextButton\") and d.ZIndex==5 and d.BackgroundColor3==Color3.fromRGB(70,120,200) and d.BackgroundTransparency==0 then U=d end end end if U==nil then return \"6,6\" end return string.format(\"%d,%d\",math.floor(U.AbsolutePosition.X+U.AbsoluteSize.X/2),math.floor(U.AbsolutePosition.Y+U.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "t2_selected"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local U=nil if g then for _,d in ipairs(g:GetDescendants()) do if U==nil and d:IsA(\"TextButton\") and d.ZIndex==5 and d.BackgroundColor3==Color3.fromRGB(70,120,200) and d.BackgroundTransparency==0 then U=d end end end if U==nil then return \"6,6\" end local ts=U.AbsoluteSize.X+6 return string.format(\"%d,%d\",math.floor(U.AbsolutePosition.X+ts*1.5-2),math.floor(U.AbsolutePosition.Y+U.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "t3_move_chosen"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"대기\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "t4_waited"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
+  "type": "click_from_luau",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local out=nil local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"TextButton\") and d.Text==\"턴 종료\" and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out or \"6,6\""
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "t5_enemy_turn"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] local r=f:Invoke(pl,'QATacticsDump',{}) return 'TAC_DUMP '..tostring(r and r.message)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game:GetService(\"Players\").LocalPlayer.PlayerGui local g=p:FindFirstChild(\"TacticsView\") local title=\"\" if g then for _,d in ipairs(g:GetDescendants()) do if d:IsA(\"TextLabel\") and string.find(d.Text,\"턴\") and title==\"\" then title=d.Text end end end local ok,hist=pcall(function() return game:GetService(\"LogService\"):GetLogHistory() end) local errs,first=0,\"\" if ok then for _,m in ipairs(hist) do if m.messageType==Enum.MessageType.MessageError then errs+=1 if first==\"\" then first=string.sub(m.message,1,200) end end end end return \"TAC_END title=\"..title..\" ERR n=\"..errs..\" first=\"..first"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local RS=game:GetService(\"ReplicatedStorage\") local VS=require(RS.Shared.VoyageScene) local PS=require(RS.Shared.PortScene) local SR=require(RS.Shared.SeaRoutes) local PD=require(RS.Shared.Ports) task.spawn(function() local ok,err=pcall(VS.play,{shipId=\"galleon\",steam=false,days=30,path=SR.path(\"lisbon\",\"london\",PD.Ports),fromName=\"Lisbon\",toName=\"London\",makeShip=PS.makeShip,place=PS.placeModel,escorts=2,weatherId=\"clear\",event={kind=\"merchant\"}}) workspace:SetAttribute(\"VoyageDone\",tostring(ok)..tostring(err)) end) return \"started\""
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "v1_start"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "v2_event"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('VoyageScene') local c=workspace.CurrentCamera local sh=f.VoyageShip local vis,tot=0,0 local ex={} for _,d in sh:GetDescendants() do if d:IsA('BasePart') then tot+=1 if d.Transparency<1 then vis+=1 end if #ex<4 then table.insert(ex,d.Name..':'..tostring(d.Transparency)..':'..tostring(d.Size)..':'..tostring(d.ClassName)) end end end local v,on=c:WorldToViewportPoint(sh:GetPivot().Position) local lt=game:GetService('Lighting') local at=lt:FindFirstChildOfClass('Atmosphere') local cc=lt:FindFirstChildOfClass('ColorCorrectionEffect') return 'stream='..tostring(workspace.StreamingEnabled)..' parts='..vis..'/'..tot..' ex='..table.concat(ex,';')..' vp='..tostring(v)..' on='..tostring(on)..' parent='..tostring(sh.Parent)..' fog='..lt.FogEnd..' brightness='..lt.Brightness..' atmo='..tostring(at and at.Density)..' camdist='..tostring((c.CFrame.Position-sh:GetPivot().Position).Magnitude)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "capture",
+  "name": "v3_event2"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "v4_late"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return tostring(workspace:GetAttribute(\"VoyageDone\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('VoyageActive', true) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') and g.Name~='BattleGui' then g.Enabled=false end end local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local NB=require(RS.Shared.NavalBattle) local ok,err=pcall(function() NB.play({shipId='galleon',shipName='갈레온',fleet={'플루트선','호위함'},weatherName='맑음',wind=1.0,windAngle=60,enemyName='검은 수염의 배',log={'[1] 우리 배: 포격! 적 선체 -12','[1] 검은 수염의 배: 포격! 선체 -8','[2] 우리 배: 포격! 적 선체 -15','[2] 검은 수염의 배: 포격! 선체 -6','[3] 우리 배: 포격! 적 선체 -30'},winner='a',reason='sunk',isBoss=false,onDone=function() end}) end) return 'play ok='..tostring(ok)..' '..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 7000
+ },
+ {
+  "type": "capture",
+  "name": "b1_start"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "b2_mid"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then out[#out+1]=string.sub(m.message,1,160) end end return 'LOGS('..#out..'): '..table.concat(out,' // ')"
  },
  {

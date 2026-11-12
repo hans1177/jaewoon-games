@@ -91,6 +91,14 @@ def build_mare():
         S += [{"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevCall','Tab_%s') return 'tab %s'" % (t, t)},
               {"type": "wait", "ms": 2500}, {"type": "capture", "name": "tab_" + t},
               {"type": "luau", "ctx": "Client", "code": TEXTS}]
+    # 해상 항해·해상 전투·지상 전술도 같은 점검에서 본다 (각 전용 스크립트의 첫 대기만 뺀다). 화면을 가리는 장면은 뒤에 둔다.
+    import os
+    d = os.path.join('roblox-games', 'mare-essentia', 'tools', 'devloop', 'studio-scripts')
+    for name in ("mare-tactics", "mare-voyage", "mare-battle"):
+        seg = json.load(open(os.path.join(d, name + ".json"), encoding='utf-8'))
+        if seg and seg[0]["type"] == "wait":
+            seg = seg[1:]
+        S += seg
     S += [{"type": "luau", "ctx": "Client", "code": LOGS}, {"type": "luau", "ctx": "Server", "code": LOGS}]
     return S
 
