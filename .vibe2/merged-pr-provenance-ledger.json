@@ -202309,11 +202309,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_86093bfe8786b7124a6f77d2",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12646",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "13971d5972997d7fd068b9e40fb5a03281680c40",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12646,
+        "baseBranch": "main",
+        "headBranch": "claude/mare-town-rename",
+        "baseSha": "13971d5972997d7fd068b9e40fb5a03281680c40",
+        "headSha": "2d7c49701c1093c2035635969c10615f6f618286",
+        "mergeCommitSha": "0e7715e5d553e665665736847af8d49bf18095c7",
+        "mergedAt": "2026-11-12T00:12:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c5f8a715041156cc005719edac10bf94bd6ecde013146d3c31d8ada6b7d58358",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/mare-town-rename",
+        "candidateSha": "2d7c49701c1093c2035635969c10615f6f618286"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 5,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/town/kenney_grey_win_sq_sill_01.glb",
+          "roblox-games/mare-essentia/assets/town/kenney_grey_window_square_sill_01.glb",
+          "roblox-games/mare-essentia/assets/town/kenney_roof_in_corner_grn_01.glb",
+          "roblox-games/mare-essentia/assets/town/kenney_roof_inner_corner_green_01.glb",
+          "roblox-games/mare-essentia/assets/town/kenney_wood_win_sq_sill_01.glb",
+          "roblox-games/mare-essentia/assets/town/kenney_wood_window_square_sill_01.glb",
+          "roblox-games/mare-essentia/assets/town/quaternius_large_square_tower_bricks.glb",
+          "roblox-games/mare-essentia/assets/town/quaternius_lg_sq_tower_brick.glb",
+          "roblox-games/mare-essentia/assets/town/quaternius_sm_sq_tower_brick.glb",
+          "roblox-games/mare-essentia/assets/town/quaternius_small_square_tower_bricks.glb"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12646",
+        "merge-commit:0e7715e5d553e665665736847af8d49bf18095c7",
+        "base-main:13971d5972997d7fd068b9e40fb5a03281680c40"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1612
+    "total": 1613
   }
 }
