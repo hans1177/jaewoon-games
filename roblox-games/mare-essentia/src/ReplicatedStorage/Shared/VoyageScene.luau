@@ -327,6 +327,30 @@ function VoyageScene.play(info)
 	-- 수동 항해(helm): 스틱/WASD로 배를 직접 몰고, 바람 방향에 따라 속도가 달라진다.
 	-- 항해 결과(전투·거래)는 서버가 이미 정했으므로 여기서는 연출·조종만 다룬다.
 	local helm = info.helm == true and not info.intro and not manual
+	-- 지금 항해 방식을 항상 알려 주는 표시 (수동 조종 / 자동 항해 / 바람 띠 직접 항해)
+	local modeBadge
+	if not info.intro then
+		modeBadge = Instance.new("TextLabel")
+		modeBadge.Name = "SailModeBadge"
+		modeBadge.AnchorPoint = Vector2.new(0.5, 0)
+		modeBadge.Position = UDim2.new(0.5, 0, 0, 58)
+		modeBadge.Size = UDim2.fromOffset(230, 30)
+		modeBadge.BackgroundColor3 = Color3.fromRGB(18, 30, 48)
+		modeBadge.BackgroundTransparency = 0.2
+		modeBadge.Font = Enum.Font.GothamBold
+		modeBadge.TextSize = 15
+		modeBadge.TextColor3 = Color3.fromRGB(255, 232, 170)
+		modeBadge.Text = if manual then "🌬 직접 항해 (바람 띠)" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
+		modeBadge.ZIndex = 9
+		modeBadge.Parent = gui
+		local mc = Instance.new("UICorner")
+		mc.CornerRadius = UDim.new(0, 15)
+		mc.Parent = modeBadge
+		local ms = Instance.new("UIStroke")
+		ms.Color = Color3.fromRGB(232, 190, 96)
+		ms.Thickness = 1.5
+		ms.Parent = modeBadge
+	end
 	local helmConns = {}
 	local stickX, stickY = 0, 0
 	local autoOn = false
@@ -540,6 +564,7 @@ function VoyageScene.play(info)
 		autoBtn.Activated:Connect(function()
 			autoOn = not autoOn
 			autoBtn.Text = if autoOn then "🎮 직접 조종" else "⚓ 자동 항해"
+			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
 		end)
 		-- 목적지 깃발(멀리서도 보이는 빛기둥)
 		local beacon = part(folder, Vector3.new(5, 160, 5), CFrame.new(helmDest + Vector3.new(0, 80, 0)), Color3.fromRGB(255, 205, 90), Enum.Material.Neon)
@@ -1072,6 +1097,7 @@ function VoyageScene.play(info)
 			speedLabel.Text = string.format("속도 %.0f노트 · 돛 %d%%", helmSpeed / 2, math.floor(helmTrim * 100))
 			distLabel.Text = string.format("목적지까지 %d", math.floor(remaining))
 			trimFill.Size = UDim2.fromScale(1, helmTrim)
+			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
 			helmMsg.Text = if autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
 			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
 			local mid = (pts[1] + helmDest) / 2
