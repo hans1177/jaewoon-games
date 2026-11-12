@@ -208,9 +208,33 @@ local function other(side)
 end
 B.other = other
 
+-- 해역 규칙: 시드로 정한다. 그 줄은 매 판 약해진 채 시작한다 ('맑음'·'순풍' 카드로 걷어 낼 수 있다)
+B.SEA_RULES = {
+	{ id = "calm", name = "잔잔한 바다", text = "특별한 규칙이 없어요" },
+	{ id = "storm", name = "폭풍 해역", row = "cannon", text = "포 줄이 매 판 약해진 채 시작해요" },
+	{ id = "fog", name = "안개 해역", row = "ranged", text = "사격 줄이 매 판 약해진 채 시작해요" },
+	{ id = "melee", name = "혼전 해역", row = "melee", text = "근접 줄이 매 판 약해진 채 시작해요" },
+}
+function B.seaRule(seed)
+	local r = (math.floor(seed / 7) % 8)
+	return B.SEA_RULES[if r < 4 then 1 elseif r < 6 then 2 elseif r < 7 then 3 else 4]
+end
+-- 적 성격: 돌격형은 끝까지 카드를 내고, 신중형은 앞서면 일찍 멈춘다
+B.STYLES = {
+	rush = { name = "돌격형", margin = 24, text = "앞서도 멈추지 않고 몰아쳐요" },
+	steady = { name = "균형형", margin = 14, text = "보통으로 싸워요" },
+	careful = { name = "신중형", margin = 7, text = "앞서면 카드를 아끼며 일찍 멈춰요" },
+}
+function B.foeStyle(seed)
+	local r = math.floor(seed / 3) % 3
+	return if r == 0 then "rush" elseif r == 1 then "steady" else "careful"
+end
+
 function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFaction)
 	local m = {
 		faction = { me = myFaction, foe = foeFaction },
+		style = { foe = "steady" },
+		sea = nil,
 		rows = { me = { melee = {}, ranged = {}, cannon = {} }, foe = { melee = {}, ranged = {}, cannon = {} } },
 		hand = { me = {}, foe = {} },
 		deck = { me = myDeck, foe = foeDeck },
@@ -407,6 +431,13 @@ local function nextTurn(m, side)
 	end
 end
 
+local function applySea(m)
+	if m.sea and m.sea.row then
+		m.weather[m.sea.row] = true
+	end
+end
+B.applySea = applySea
+
 local function roundEnd(m)
 	local a, b = B.total(m, "me"), B.total(m, "foe")
 	local winner = nil
@@ -459,6 +490,7 @@ local function roundEnd(m)
 		m.passed[side] = false
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
+	applySea(m)
 	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
 	if m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3 then
@@ -764,7 +796,8 @@ function B.ai(m, side)
 		return B.pass(m, side)
 	end
 	-- 두 판을 이겼거나 카드가 아깝다면 크게 앞설 때 멈춘다
-	if mine > theirs + 14 and m.wins[side] + m.wins[foe] > 0 then
+	local margin = (B.STYLES[m.style and m.style[side] or "steady"] or B.STYLES.steady).margin
+	if mine > theirs + margin and m.wins[side] + m.wins[foe] > 0 then
 		return B.pass(m, side)
 	end
 	if not m.leaderUsed[side] and #m.hand[side] <= 4 and not m.passed[foe] then
@@ -868,7 +901,11 @@ function B.build(kind, seed, my, foe)
 		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
 		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
 	end
-	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
+	local m = B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
+	m.sea = B.seaRule(seed)
+	m.style.foe = B.foeStyle(seed)
+	applySea(m)
+	return m
 end
 
 -- 서버 검증: 시드와 플레이어의 행동 기록으로 한 판을 처음부터 다시 돌린다.
@@ -895,6 +932,72 @@ function B.replay(kind, seed, my, foe, actions)
 	end
 	if actions[i] ~= nil then return nil end
 	return { winner = m.winner, wins = { me = m.wins.me, foe = m.wins.foe } }
+end
+
+
+-- ── 도움말: 추천 수, 적 정찰, 동료 조언 ───────────────────────────────────────────
+-- 손패 번호 → 그 카드를 냈을 때 점수 차(내 점수 - 상대 점수) 변화. 추천 수 표시에 쓴다.
+function B.hint(m, side)
+	local out, bestI, bestGain = {}, nil, -1e9
+	for i, c in m.hand[side] do
+		local g = B.gainOf(m, side, c)
+		out[i] = math.floor(g + 0.5)
+		if g > bestGain then bestI, bestGain = i, g end
+	end
+	return out, bestI
+end
+
+-- 출항 전 정찰: 적의 문화권·성격·해역 규칙·약한 줄을 알려 준다
+function B.scout(seed, foe)
+	local foeFac = foe and foe.faction or (if foe and foe.boss then nil else B.foeFaction(seed))
+	local deck = B.enemyDeck(foe and foe.boss == true, B.seeded(seed + 13), foeFac)
+	local rows = { melee = 0, ranged = 0, cannon = 0 }
+	for _, c in deck do
+		if c.row and c.power then rows[c.row] += c.power end
+	end
+	local weak, weakV = "melee", 1e9
+	for _, r in B.ROWS do
+		if rows[r] < weakV then weak, weakV = r, rows[r] end
+	end
+	local sea = B.seaRule(seed)
+	local style = B.STYLES[B.foeStyle(seed)]
+	return {
+		faction = foeFac and B.Factions[foeFac] and B.Factions[foeFac].name or "해적 두목",
+		style = style.name, styleText = style.text, sea = sea.name, seaText = sea.text,
+		weakRow = weak, weakName = B.ROW_NAME[weak], counterRow = ({ melee = "ranged", ranged = "cannon", cannon = "melee" })[weak],
+	}
+end
+
+-- 동료 조언: 지금 상황에 맞는 한마디 (없으면 nil). 한 판에 한 번만 보이도록 부르는 쪽이 조절한다.
+function B.advice(m, side)
+	if m.over or m.turn ~= side or m.passed[side] then return nil end
+	local foe = other(side)
+	local mine, theirs = B.total(m, side), B.total(m, foe)
+	local _, bestI = B.hint(m, side)
+	if m.passed[foe] and mine > theirs then
+		return "상대가 멈췄어요. 지금 멈추면 이번 판은 우리 거예요!"
+	end
+	if m.passed[foe] and mine <= theirs and #m.hand[side] > 0 then
+		return "상대가 멈췄어요. 이기려면 지금 점수를 넘겨야 해요."
+	end
+	if theirs > mine + 12 then
+		for _, c in m.hand[side] do
+			if c.special == "scorch" or c.ability == "snipe" then
+				return "많이 밀려요. 소각이나 저격수로 가장 센 카드를 노려 보세요."
+			end
+		end
+		return "점수가 크게 밀려요. 이번 판을 버리고 다음 판을 노리는 것도 방법이에요."
+	end
+	for _, row in B.ROWS do
+		local _, adv, dis = B.rowMatchup(m, side, row)
+		if dis and #m.rows[side][row] > 0 then
+			return string.format("%s 줄이 상성에서 밀려요. 상성이 맞는 줄에 카드를 내 보세요.", B.ROW_NAME[row])
+		end
+	end
+	if bestI and #m.hand[side] <= 3 and m.wins[side] + m.wins[foe] == 0 then
+		return "손패가 얼마 안 남았어요. 첫 판은 아끼고 멈추는 것도 좋아요."
+	end
+	return nil
 end
 
 return B

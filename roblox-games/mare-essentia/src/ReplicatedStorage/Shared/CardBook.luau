@@ -171,4 +171,79 @@ function CB.sanitize(saved: any, factionId: string?): any
 	return book
 end
 
+-- ── 추천 덱 ──────────────────────────────────────────────────────────────────────
+CB.RECOMMEND = {
+	rush = { name = "돌격덱", text = "근접 위주. 군기와 무기 상성으로 몰아쳐요" },
+	gun = { name = "포격덱", text = "사격·포 위주. 저격수와 장포로 센 카드를 노려요" },
+	balance = { name = "운영덱", text = "첩자·치료·회군·순풍으로 오래 버티며 카드를 아껴요" },
+}
+local ABILITY_SCORE = { bond = 2, morale = 1, spy = 3, medic = 3, armor = 1, snipe = 4 }
+local SPECIAL_SCORE = { horn = 6, scorch = 3, decoy = 2, wind = 3, clear = 1, weather = -2 }
+
+local function recommendScore(id, tier, style)
+	local d = def(id)
+	local score = (d.power or 0) + (tier - 1)
+	if d.hero then score += 6 end
+	if d.special then score += SPECIAL_SCORE[d.special] or 0 end
+	score += ABILITY_SCORE[d.ability or ""] or 0
+	if style == "rush" then
+		if d.row == "melee" then score += 3 end
+		if id == "horn" then score += 2 end
+	elseif style == "gun" then
+		if d.row == "ranged" or d.row == "cannon" then score += 3 end
+		if d.ability == "snipe" or id == "culverin" then score += 3 end
+	else
+		if d.ability == "spy" or d.ability == "medic" then score += 3 end
+		if id == "decoy" or id == "wind" then score += 3 end
+	end
+	return score
+end
+
+-- 보유 카드에서 취향에 맞는 덱을 짠다 (영웅 3·특수 4까지). 카드가 15장도 안 되면 nil.
+function CB.recommend(book: any, style: string): { string }?
+	local pool = {}
+	for id, n in book.owned do
+		for k = 1, n do
+			table.insert(pool, { id = id, score = recommendScore(id, CB.tierOf(book, id), style) - (k - 1) * 0.3 })
+		end
+	end
+	table.sort(pool, function(a, b)
+		if a.score ~= b.score then return a.score > b.score end
+		return a.id < b.id
+	end)
+	local ids, heroes, specials = {}, 0, 0
+	for _, c in pool do
+		if #ids >= 22 then break end
+		if CB.isHero(c.id) then
+			if heroes < CB.MAX_HEROES then heroes += 1 table.insert(ids, c.id) end
+		elseif CB.isSpecial(c.id) then
+			if specials < 4 then specials += 1 table.insert(ids, c.id) end
+		else
+			table.insert(ids, c.id)
+		end
+	end
+	if #ids < CB.MIN_DECK then return nil end
+	return ids
+end
+
+-- 덱 저장 칸 3개
+CB.SLOTS = 3
+function CB.saveSlot(book: any, slot: number, name: string?, ids: { string }): (boolean, string)
+	if slot < 1 or slot > CB.SLOTS then return false, "저장 칸이 없어요" end
+	local ok, msg = CB.validateDeck(book, ids)
+	if not ok then return false, msg end
+	book.slots = book.slots or {}
+	local label = if type(name) == "string" and utf8.len(name) and utf8.len(name) <= 8 and not string.match(name, "%c") and name ~= "" then name else string.format("덱 %d", slot)
+	book.slots[slot] = { name = label, ids = table.clone(ids) }
+	return true, string.format("「%s」 칸에 덱을 저장했다", label)
+end
+function CB.useSlot(book: any, slot: number): (boolean, string)
+	local sl = book.slots and book.slots[slot]
+	if not sl then return false, "비어 있는 칸이에요" end
+	local ok, msg = CB.validateDeck(book, sl.ids)
+	if not ok then return false, "그 덱은 지금 쓸 수 없어요: " .. msg end
+	book.deck = table.clone(sl.ids)
+	return true, string.format("「%s」 덱으로 바꿨다", sl.name)
+end
+
 return CB
