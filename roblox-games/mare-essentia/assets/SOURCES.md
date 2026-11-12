@@ -818,3 +818,13 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `town/workbench-anvil.glb` | 모루 작업대 | Kenney · CC0-1.0 | https://kenney.nl/assets/survival-kit | `b92fb534e0f6db92565529a8cc15753fb0ddbf35c3f5bcc718aaabb7d31e4a07` |
 
 추가 확보 필요: 염소·당나귀·고양이·비둘기·낙타·코끼리·살아 있는 칠면조, 어망·어망 건조틀·닻·빨래줄·연·공. `cargo/turkey.glb`는 조리된 요리이므로 살아 있는 칠면조를 대신하지 않는다. 바다 갈매기·기존 밧줄·수레·풍차는 중복 등록하지 않는다.
+
+
+### 2026-11-12 항구 하역·대장간 확장 2종
+
+사용자 요청에 맞춘 항구 하역 수레와 연마 작업대를 기존 Kenney CC0 원본에서 직접 재사용한다. 실제 게임 화면·Roblox 권한을 검증하기 전에는 제작 품질 완료로 표시하지 않는다.
+
+| 원본 파일 | 용도 | 제작자·라이선스 | 공식 원본 | SHA-256 |
+|---|---|---|---|---|
+| `town/cart-high.glb` | 항구 하역·마차용 높이 있는 수레 | Kenney Fantasy Town Kit 2.0 · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit | `c9d656399c42e6fb47f406ae31eb637ad0c1bfea45300209f4e2f2c405e94eb6` |
+| `town/workbench-grind.glb` | 대장간 공구 연마 작업대 | Kenney Survival Kit · CC0-1.0 | https://kenney.nl/assets/survival-kit | `6da609c418bba7ee8f8402d8f6783fa1d45c3c6391202c31cd4d25a710d37a20` |
