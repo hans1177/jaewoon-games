@@ -42,7 +42,7 @@ return function(D, S)
 	end
 
 	-- 지역 시세 효과: 사건을 겪은 뒤 일정 기간 그 지역 항구의 값이 달라진다 (플레이어마다 따로).
-	local function mult(state, portId, goodId)
+	local function histMult(state, portId, goodId)
 		local h = state.history
 		if not h or #h.fx == 0 then
 			return 1
@@ -59,6 +59,12 @@ return function(D, S)
 			end
 		end
 		return m
+	end
+
+	local function mult(state, portId, goodId)
+		local m = histMult(state, portId, goodId)
+		-- 전쟁 중인 나라의 항구는 무기·자재 값이 오른다
+		return if S.Diplomacy then m * S.Diplomacy.mult(state, portId, goodId) else m
 	end
 
 	local function regionNames(ids)

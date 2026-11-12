@@ -53,6 +53,7 @@ return function(D)
 			orderPatrols = 0,
 			peopleTalked = {}, -- 대화를 나눈 인물 (인물 id → true)
 			peopleClaimed = {}, -- 인물 백과 보상 받은 단계 (필요 인원 문자열 → true)
+			diplo = { rep = {}, passUntil = 0, met = {}, honor = {}, warSeen = {} }, -- 국가 관계: 세력별 호감·통행 증서·만난 항해자·명예 시민·전쟁 알림
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
@@ -569,6 +570,26 @@ return function(D)
 			end
 			s.world = w
 		end
+		if type(saved.diplo) == "table" then
+			local dv = saved.diplo
+			local di = s.diplo
+			for id, v in type(dv.rep) == "table" and dv.rep or {} do
+				if type(id) == "string" and D.Specialties.PowerName[id] and type(v) == "number" then
+					di.rep[id] = math.floor(math.clamp(v, -100, 100))
+				end
+			end
+			for id, v in type(dv.met) == "table" and dv.met or {} do
+				if v == true and type(id) == "string" and D.Specialties.VoyagerById[id] then di.met[id] = true end
+			end
+			for id, v in type(dv.honor) == "table" and dv.honor or {} do
+				if v == true and type(id) == "string" and D.Specialties.PowerName[id] then di.honor[id] = true end
+			end
+			for id, v in type(dv.warSeen) == "table" and dv.warSeen or {} do
+				if (v == "on" or v == "end") and type(id) == "string" and #id <= 30 then di.warSeen[id] = v end
+			end
+			di.passUntil = num(dv.passUntil, 0, 0, 1e9)
+			if type(dv.last) == "string" and D.Ports.Ports[dv.last] then di.last = dv.last end
+		end
 		if type(saved.pace) == "table" then
 			s.pace.days = math.floor(num(saved.pace.days, 0, 0, 365 * 10))
 			s.pace.window = math.floor(num(saved.pace.window, 0, 0, 1e9))
@@ -749,6 +770,7 @@ return function(D)
 			portStages = state.portStages,
 			pace = state.pace,
 			world = state.world,
+			diplo = state.diplo,
 			peopleClaimed = state.peopleClaimed,
 			room = state.room,
 			order = state.order,

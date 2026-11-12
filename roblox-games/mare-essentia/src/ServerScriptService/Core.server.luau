@@ -193,6 +193,9 @@ local function reply(state, ok, message)
 		S.History.tick(state)
 		S.Stock.tick(state)
 		local news = S.World.tick(state)
+		for _, m in S.Diplomacy.tick(state) do
+			table.insert(news, m)
+		end
 		if #news > 0 then
 			result.message = (if result.message ~= "" then result.message .. "\n" else "") .. table.concat(news, "\n")
 		end
