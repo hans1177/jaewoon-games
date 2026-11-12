@@ -530,7 +530,7 @@ local function styleKeyOf(style)
 end
 
 -- 성당 종탑 문화권(유럽·식민지). 오스만·일본·스와힐리·말라바르는 각자의 건축물을 세운다.
-local CHURCH_KEYS = { iberia = true, italy = true, france = true, britain = true, brick = true, hanse = true, nordic = true, colonial = true, north = true, med = true }
+local CHURCH_KEYS = { iberia = true, italy = true, france = true, britain = true, brick = true, hanse = true, nordic = true, colonial = true, creole = true, north = true, med = true }
 
 local function rotateAround(m, pos, yaw)
 	if m then
@@ -772,6 +772,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			ottoman = { "donkey", "cat", "sheep", "chicken" }, swahili = { "donkey", "chicken", "cat", "cow" },
 			malabar = { "elephant", "cow", "chicken", "cat" }, japan = { "cat", "chicken", "pig", "dog" },
 			colonial = { "llama", "horse", "pig", "chicken", "dog" },
+			creole = { "horse", "chicken", "dog", "cat" }, china = { "pig", "chicken", "dog", "cat" },
+			seasia = { "cow", "pig", "chicken", "dog" }, pacific = { "pig", "chicken", "dog" },
+			wafrica = { "cow", "sheep", "chicken", "dog" },
 		}
 		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
 		local KIND = {
@@ -1024,15 +1027,15 @@ local function densify(folder, info, style, rng, walkers, made)
 			if m and yaw then rotateAround(m, Vector3.new(x, 0, z), yaw) end
 			return m
 		end
-		local hotKey = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "desert" or key == "tropic"
+		local hotKey = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
 		for _, d in districts do
 			local cx, cz = d.at.X, d.at.Z
 			local face = if cz > 0 then 0 else math.pi
 			if d.kind == "religious" then
-				if key == "japan" then
+				if key == "japan" or key == "china" then
 					put("Town", "temple-tower", 26, cx, cz, true, face)
 					put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
-				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" then
+				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" then
 					put("Town", "temple-stone", 28, cx, cz, true, face)
 					put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true)
 				else
@@ -1226,6 +1229,39 @@ local function densify(folder, info, style, rng, walkers, made)
 			rowOf("Town", "fence_straight", 6, -100, -180, 24, 8.4)
 			rowOf("Cargo", "barrel", 2.4, -108, -180, 20, -7.4)
 			rowOf("Terrain", "tree-pinedefaulta", 9, -100, -182, 22, 11)
+		elseif key == "china" then
+			-- 패루 문, 등롱, 붉은 가판, 소나무
+			one("Terrain", "gate-overhang", 12, -60, 0, 0)
+			for _, x in { -100, -130, -160 } do
+				lantern(folder, Vector3.new(x, 0, 4.6), 3)
+				lantern(folder, Vector3.new(x, 0, -4.6), 3)
+			end
+			rowOf("Town", "stall-red", 7, -100, -180, 24, 9)
+			rowOf("Cargo", "barrel", 2.4, -108, -180, 20, -7.4)
+			rowOf("Terrain", "tree-pinedefaulta", 9, -100, -182, 22, 11)
+		elseif key == "seasia" then
+			-- 수상가옥풍 말뚝, 쪽배, 야자, 향신료 자루
+			rowOf("Terrain", "wood-support", 5, -100, -180, 26, 9)
+			rowOf("Cargo", "bag", 2.2, -108, -180, 18, -7.4)
+			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 24, 12)
+			one("Town", "village-well", 6, -120, 0, 8)
+		elseif key == "pacific" then
+			-- 해변 마을: 야자 숲, 통나무 더미, 천막
+			rowOf("Naval", "palm-detailed-straight", 12, -90, -190, 20, 10)
+			rowOf("Terrain", "log-stack", 4, -110, -170, 30, -9)
+			rowOf("Terrain", "tent-detailedopen", 9, -100, -160, 40, 12)
+		elseif key == "wafrica" then
+			-- 시장 천막, 곡식자루, 큰 나무 그늘
+			rowOf("Terrain", "tent-detailedopen", 9, -100, -170, 30, 9)
+			rowOf("Cargo", "bag", 2.2, -108, -170, 18, -7.4)
+			rowOf("Terrain", "crops-cornstagec", 5, -112, -182, 20, -11)
+			rowOf("Town", "tree_large", 14, -100, -182, 40, 14)
+		elseif key == "creole" then
+			-- 파스텔 광장: 분수, 야자, 수레, 통
+			one("Town", "fountain-round", 10, -100, 0, 0)
+			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 22, 10)
+			rowOf("Town", "cart", 5, -104, -180, 30, -8)
+			rowOf("Cargo", "barrel", 2.4, -108, -180, 22, 7.4)
 		elseif key == "colonial" then
 			-- 광장 분수, 옥수수밭·호박, 수레와 통
 			one("Town", "fountain-round", 10, -100, 0, 0)
@@ -1498,6 +1534,39 @@ local function densify(folder, info, style, rng, walkers, made)
 			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(lx + 10, 0, z / 2), 10, false)
 		end
 		importedModel(folder, "Terrain", "gate-overhang", Vector3.new(lx + 18, 0, 0), 14, false)
+	elseif key == "china" then
+		-- 탑과 패루
+		importedModel(folder, "Town", "temple-tower", Vector3.new(lx, 0, 0), 30, true)
+		for _, z in { -18, 18 } do
+			importedModel(folder, "Town", "temple-stone", Vector3.new(lx + 4, 0, z), 12, true)
+		end
+		importedModel(folder, "Terrain", "gate-overhang", Vector3.new(lx + 18, 0, 0), 14, false)
+	elseif key == "seasia" then
+		importedModel(folder, "Town", "temple-tower", Vector3.new(lx, 0, 0), 26, true)
+		for _, z in { -16, 16 } do
+			importedModel(folder, "Terrain", "statue-ring", Vector3.new(lx + 8, 0, z), 10, true)
+		end
+		for _, z in { -24, -8, 8, 24 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 14, 0, z), 13, false)
+		end
+	elseif key == "pacific" then
+		for _, z in { -14, 0, 14 } do
+			importedModel(folder, "Terrain", "statue-ring", Vector3.new(lx, 0, z), 16, true)
+		end
+		for _, z in { -24, -12, 12, 24 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 10, 0, z), 15, false)
+		end
+	elseif key == "wafrica" then
+		-- 대서양 노예무역·교역 요새풍
+		importedModel(folder, "Castle", "fortress", Vector3.new(lx, 0, 0), 30, true)
+		importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(lx + 14, 0, 12), 20, true)
+		importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(lx + 14, 0, -12), 14, false)
+	elseif key == "creole" then
+		importedModel(folder, "Town", "church", Vector3.new(lx, 0, 0), 22, true)
+		importedModel(folder, "Naval", "tower-complete-small", Vector3.new(lx + 14, 0, 0), 16, true)
+		for _, z in { -16, 16 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 4, 0, z), 14, false)
+		end
 	elseif key == "colonial" then
 		-- 성당 종탑
 		importedModel(folder, "Castle", "tower-square-base", Vector3.new(lx, 0, 0), 24, true)
@@ -1536,9 +1605,13 @@ local function densify(folder, info, style, rng, walkers, made)
 			end
 		elseif key == "swahili" then
 			big("Terrain", "pillar-obelisk", 24)
-		elseif key == "malabar" or key == "tropic" then
+		elseif key == "malabar" or key == "tropic" or key == "pacific" or key == "seasia" then
 			big("Terrain", "statue-ring", 20)
-		elseif key == "japan" then
+		elseif key == "wafrica" then
+			big("Terrain", "pillar-obelisk", 22)
+		elseif key == "creole" then
+			big("Terrain", "statue-column", 18)
+		elseif key == "japan" or key == "china" then
 			big("Town", "temple-tower", 24)
 		elseif key == "desert" then
 			big("Terrain", "egypt-obelisk", 28)
@@ -1587,7 +1660,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	for i = 1, 12 do
 		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
-	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial"
+	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
 	local trees = if key == "japan" then { "tree-pinedefaulta", "tree-pinedefaulta", "tree-oak" } elseif hot then { "palm-detailed-straight", "tree-crooked", "tree_large" } elseif cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
 	for i = 1, 150 do
 		local side = if i % 2 == 0 then 1 else -1
@@ -2114,6 +2187,11 @@ function PortScene.build(info, onFacility)
 			japan = { clock = 17, amb = Color3.fromRGB(128, 116, 126), haze = Color3.fromRGB(218, 200, 214), dens = 0.40 },
 			colonial = { clock = 15, amb = Color3.fromRGB(122, 122, 118), haze = Color3.fromRGB(210, 220, 214), dens = 0.30 },
 			desert = { clock = 12.5, amb = Color3.fromRGB(140, 124, 100), haze = Color3.fromRGB(240, 220, 176), dens = 0.30 },
+			china = { clock = 17, amb = Color3.fromRGB(132, 116, 112), haze = Color3.fromRGB(230, 200, 196), dens = 0.36 },
+			seasia = { clock = 14, amb = Color3.fromRGB(108, 124, 108), haze = Color3.fromRGB(200, 226, 196), dens = 0.34 },
+			pacific = { clock = 12.5, amb = Color3.fromRGB(110, 128, 132), haze = Color3.fromRGB(190, 232, 236), dens = 0.20 },
+			wafrica = { clock = 15, amb = Color3.fromRGB(132, 116, 96), haze = Color3.fromRGB(236, 200, 150), dens = 0.30 },
+			creole = { clock = 16, amb = Color3.fromRGB(128, 122, 120), haze = Color3.fromRGB(240, 214, 200), dens = 0.28 },
 			tropic = { clock = 13, amb = Color3.fromRGB(104, 124, 116), haze = Color3.fromRGB(186, 230, 224), dens = 0.26 },
 		}
 		local look = LOOK[currentKey] or LOOK.med
