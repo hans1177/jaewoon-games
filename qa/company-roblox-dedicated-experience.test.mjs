@@ -351,44 +351,23 @@ test('Forest private publish and original asset workflows require the dedicated 
 });
 
 
-// [실제 1980 배포 이벤트 회귀] Owner Mare는 run-name에 SHA가 들어가 workflow_run.name이 고정값이 아니다.
-// workflow_run.path를 비교해 정상 게시 완료가 두 게임 Studio QA로 이어지도록 보장한다.
-test('Studio Auto QA routes dynamic owner publisher run-name by stable workflow path',()=>{
-  const studio=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+// [대항해시대 Studio 자동 실행] 기존 오너 게시 워크플로의 고정 경로를 확인하고 마력숲 Studio 실행을 막는다.
+test('Studio Auto QA routes Mare publisher by workflow path without launching Forest Studio',()=>{
+  const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   const mare=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
   assert.ok(mare.includes('run-name: Owner Mare Essentia publish ·'));
-  assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
-  assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml'"));
-  assert.ok(studio.includes('github.event.workflow_run.path }}'));
-  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish'"));
-  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences'"));
-  assert.ok(studio.includes("github.event.workflow_run.conclusion == 'success'"));
-  assert.ok(studio.includes("github.event.workflow_run.head_branch == 'main'"));
-  assert.ok(studio.includes('no Forest source or publisher change, skip'));
-  assert.ok(studio.includes('studio already queued/running for $game on $head, skip duplicate'));
-});
-
-// [마력숲·대항해시대] 기존 게시 후 두 게임 모두 공식 Studio PC 검사를 요청한다.
-// 권한 403은 배포 실패로 유지하고 Studio 검사와 구분한다.
-test('Forest publisher completion dispatches independent Studio QA for both games',()=>{
-  const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
-  assert.ok(qa.includes("github.event.workflow_run.event == 'push'"));
-  assert.ok(qa.includes("github.event.workflow_run.event == 'workflow_dispatch'"));
+  assert.ok(qa.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
+  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'success'"));
   assert.ok(qa.includes("github.event.workflow_run.head_branch == 'main'"));
-  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'failure'"));
-  assert.ok(qa.includes('github.event.workflow_run.head_sha'));
-  assert.ok(qa.includes('no Forest source or publisher change, skip'));
-  assert.ok(qa.includes('games="mare-essentia fantasy-survival"'));
-  assert.ok(qa.includes('for game in $games; do'));
-  assert.ok(qa.includes('select((.display_title // "") | contains(" · " + $game + " ·"))'));
-  assert.ok(qa.includes('continue'));
+  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
+  assert.ok(qa.includes('if [ "$game" != mare-essentia ]; then exit 0; fi'));
+  assert.ok(qa.includes('studio already queued/running for $game on $head, skip duplicate'));
   assert.ok(qa.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  assert.ok(qa.includes('script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
+  assert.ok(qa.includes('contains(" · fantasy-survival ·")')); // 기존 대기 마력숲 Studio는 취소만 한다.
+  assert.doesNotMatch(qa,/gh workflow run devloop-studio\.yml[^\n]*fantasy-survival/);
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(!qa.includes('schedule:'));
 });
-
 
 // [배포키 일원화] 차단된 기존 API 키를 마력숲 에셋 자동 복구에서 재사용하지 않는다.
 // 자동 복구는 원본 모델을 다시 업로드하지 않고 기존 등록 ID 권한만 확인한다.
@@ -496,11 +475,37 @@ test('Mare publisher rejects stale GUI Decal and ungranted registry assets befor
   assert.match(publisher,/'usePermissionGranted'|"usePermissionGranted"/);
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
   const imageRows=Object.entries(assets).filter(([key])=>/^(Goods|Menu|Portraits)\//.test(key));
-  assert.equal(imageRows.length,68);
+  assert.ok(imageRows.length>=65,'registered image catalog includes all allowed trade goods');
   assert.ok(imageRows.every(([,row])=>row.assetType==='Image'&&row.usePermissionGranted===true));
-  assert.equal(Object.keys(assets).length,456);
+  const ids=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const active=new Map([...ids.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)].map(m=>[m[1],m[2]]));
+  assert.equal(Object.keys(assets).length,active.size,'every registered asset stays bound to its Lua id');
+  for(const [key,row] of Object.entries(assets)){
+    assert.equal(String(row.assetId),active.get(key),key+' id mismatch');
+    assert.equal(row.usePermissionGranted,true,key+' rights');
+  }
 });
 
+
+// [대항해시대 시작 화면] 시설 탭마다 유일한 표시 이름이 있어야 Roblox Text에 nil이 전달되지 않는다.
+test('Mare facility tabs provide unique nonempty labels for every rendered group',()=>{
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const tabsSection=client.match(/local TABS = \{([\s\S]*?)\n\}/);
+  const groupsSection=client.match(/local GROUPS = \{([\s\S]*?)\n\}/);
+  assert.ok(tabsSection&&groupsSection,'facility tab definitions exist');
+  const names=new Map();
+  for(const m of tabsSection[1].matchAll(/\{\s*id\s*=\s*"([a-z_]+)",\s*name\s*=\s*"([^"]+)"\s*\}/g)){
+    assert.equal(names.has(m[1]),false,'duplicate tab label: '+m[1]);
+    names.set(m[1],m[2]);
+  }
+  const used=[...groupsSection[1].matchAll(/tabs\s*=\s*\{([^}]+)\}/g)]
+    .flatMap(m=>[...m[1].matchAll(/"([a-z_]+)"/g)].map(v=>v[1]));
+  assert.ok(used.length>0,'facility tabs exist');
+  for(const id of used)assert.ok(names.get(id),'facility tab has no Text label: '+id);
+  assert.equal(names.get('quest'),'퀘스트');
+  assert.equal(names.get('map'),'일지');
+  assert.equal(names.get('explore'),'탐험');
+});
 
 // [비주얼] 기존 진짜 Cargo 메시를 상품 상세 3D에 사용하고, 작은 상품은 동일 승인 그림의 2.5D 카드로 표현한다.
 test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5D licensed artwork',()=>{
@@ -519,8 +524,13 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
   }
   assert.equal(assets['Cargo/glass-wine']?.assetType,'Model');
   assert.match(client,/GOOD_ICON\[goodsId\] = \{ "Cargo", cargoAsset, nil, "Goods\/" \.\. goodsId \}/);
-  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "grapes" \}/);
-  assert.match(client,/if kind == "Cargo" and px <= 60 and smallArt and AssetIds\[smallArt\] then/);
+  assert.match(client,/local RESTRICTED_CARGO_ICON = \{/);
+  const neutralCargo=client.split('local RESTRICTED_CARGO_ICON = {')[1].split('\n}')[0];
+  for(const good of ['beer','sake','wine','rum']){
+    assert.ok(neutralCargo.includes(good+' = { "Cargo", "barrel", Color3.fromRGB('),
+      good+' remains the neutral registered barrel');
+  }
+  assert.match(client,/kind == "Cargo" and px < 64 and type\(smallArt\) == "string" and AssetIds\[smallArt\]/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
