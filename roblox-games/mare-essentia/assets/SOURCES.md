@@ -867,3 +867,26 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `portraits/` | companions_oceania.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
 | `portraits/` | companions_pacific.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
 | `portraits/` | companions_west_africa.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `cardart/` | event_chart_caribbean.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_east_asia.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_indian_ocean.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_mediterranean.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_north_sea.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_pacific.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_south_america.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_southeast_asia.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_west_africa.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_west_europe.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `cardart/` | event_chart_world.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | https://chatgpt.com/library?file_id=libfile_6020007ca5b48191b681c198101549f3&account_id=personal |
+| `icons/` | chart_anchor.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_close.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_compass.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_departure.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_explore.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_folded_map.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_port.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_wonder.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_wonder_pin.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_world.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_zoom_in.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
+| `icons/` | chart_zoom_out.png | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia map interface sprite sheet |
