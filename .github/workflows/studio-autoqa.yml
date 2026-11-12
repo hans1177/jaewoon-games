@@ -73,7 +73,25 @@ jobs:
             select(.head_sha == $head) |
             select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress") |
             select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
-          if [ "$pending" -ge 1 ]; then
+          # [예약] 새 소스 변경은 즉시 검사한다. 매일 정밀 검사는 최근 기록과 독립적으로 중복 여부를 판단한다.
+          # 기존 일반 검사 하나가 대기 중이라고 하루 1번 정밀 검사를 통째로 누락시키지 않는다.
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            latest=$(gh api "repos/$GITHUB_REPOSITORY/contents/history.json?ref=mare-essentia-studio-frames" --jq .content 2>/dev/null \
+              | base64 -d 2>/dev/null | jq -r '[.runs[] | select(.kind == "full")][0].at // ""' 2>/dev/null || true)
+            if [ -n "$latest" ]; then
+              last_s=$(date -u -d "$latest" +%s 2>/dev/null || echo 0)
+              now_s=$(date -u +%s)
+              if [ "$last_s" -gt 0 ] && [ "$now_s" -ge "$last_s" ] && [ "$(( now_s-last_s ))" -lt 72000 ]; then
+                echo "STUDIO_DEEP_QA_SKIP=RECENT_FULL:$latest"
+                exit 0
+              fi
+            fi
+            # 공유 Windows Studio 러너의 작업을 직렬 처리하되, 다른 단순 검사 하나로 예약을 잃지 않는다.
+            if [ "$pending" -ge 2 ]; then
+              echo "STUDIO_DEEP_QA_SKIP=RUNNER_QUEUE:$pending"
+              exit 0
+            fi
+          elif [ "$pending" -ge 1 ]; then
             echo "studio already queued/running for $game on $head, skip duplicate"
             exit 0
           fi
