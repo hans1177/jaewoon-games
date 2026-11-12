@@ -342,7 +342,8 @@ end
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
-	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
+	-- 마을 전체가 한 팔레트로 보이도록: 지역 대표색(첫 색)에 가깝게 모으고 집마다 아주 조금만 다르게 한다
+	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
 	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
 	if houseTier <= 1 then
 		tintColor = tintColor:Lerp(Color3.fromRGB(176, 150, 100), 0.25) -- 초가·통나무 느낌으로 바랜 색
@@ -1358,8 +1359,8 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
-		fillRow(side * (6 + S / 2 + 1), 0, -92)
-		fillRow(side * (6 + S + 2 + S / 2 + 1), 0.15, -92)
+		fillRow(side * (14 + S / 2 + 1), 0, -92)
+		fillRow(side * (14 + S + 2 + S / 2 + 1), 0.15, -92)
 		for p = 0, pairsN do
 			local laneZ = 38 + p * laneL
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
@@ -2310,7 +2311,7 @@ function PortScene.build(info, onFacility)
 
 	-- 광장
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())
-	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
+	part(folder, Vector3.new(130, 0.25, 22), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
 	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
 	part(folder, Vector3.new(100, 0.3, 74), CFrame.new(-38, 0.14, 0), roadColor(style), roadMat())
 	for _, sz in { 57, -57 } do
@@ -3059,7 +3060,35 @@ function PortScene.build(info, onFacility)
 		return anim ~= nil
 	end
 
-	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
+	-- 시작 위치: 건물·벽 안에 서지 않도록 큰길 중앙부터 후보를 훑어 비어 있는 곳을 고른다
+	local spawnPos = Vector3.new(-2, 4, 10)
+	pcall(function()
+		local overlap = OverlapParams.new()
+		overlap.FilterType = Enum.RaycastFilterType.Include
+		overlap.FilterDescendantsInstances = { folder }
+		local ground = workspace:FindFirstChild("Baseplate") or folder:FindFirstChild("Ground")
+		local floorPart = folder:FindFirstChild("SafetyFloor")
+		local function blocked(pos)
+			for _, hit in workspace:GetPartBoundsInBox(CFrame.new(pos + Vector3.new(0, 4, 0)), Vector3.new(5, 7, 5), overlap) do
+				if hit.CanCollide and hit ~= ground and hit ~= floorPart and hit.Name ~= "SafetyFloor" and hit.Size.Y < 200 then
+					return true
+				end
+			end
+			return false
+		end
+		local found = false
+		for _, z in { 0, 3, -3, 6, -6, 10, -10, 14, -14 } do
+			for _, x in { -2, -10, 6, -18, -26, -40 } do
+				local candidate = Vector3.new(x, 4, z)
+				if not blocked(candidate) then
+					spawnPos, found = candidate, true
+					break
+				end
+			end
+			if found then break end
+		end
+	end)
+	return { folder = folder, spawn = CFrame.new(spawnPos) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
 -- 항해 장면(VoyageScene)에서 같은 배 모델을 쓰기 위해 내보낸다
