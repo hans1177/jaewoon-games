@@ -1510,20 +1510,33 @@ local function call(action, payload)
 			snd = if result.message and result.message ~= "" and result.message ~= "너무 빨라요" then "sfx_error" else nil
 		elseif action == "Buy" or action == "MarketBuy" then
 			snd = "sfx_buy"
+			task.delay(0.18, Sfx.play, "sfx_cargo_drop", 0.7) -- 짐 싣는 소리
 		elseif action == "Sell" or action == "Smuggle" or action == "MarketPost" then
 			snd = "sfx_sell"
+			task.delay(0.12, Sfx.play, "sfx_coin_pouch", 0.7) -- 동전 주머니
+		elseif action == "TurnInContract" then
+			snd = "sfx_contract_stamp"
 		elseif action == "TurnInBounty" or action == "MailClaim" or action == "Audience" or action == "Recruit" then
 			snd = "sfx_fanfare"
-		elseif action == "BuyGear" or action == "BuyShip" or action == "BuyEscort" or action == "Invest" or action == "Feast" then
+		elseif action == "BuyGear" or action == "ToggleGear" then
+			snd = "sfx_equipment_wear"
+		elseif action == "BuyShip" or action == "BuyEscort" or action == "Invest" or action == "Feast" then
 			snd = "sfx_coin"
+		elseif action == "Repair" then
+			snd = "sfx_workshop_chop" -- 조선소 망치질
 		elseif action == "Sail" or action == "HistoryChoose" then
 			snd = "sfx_horn"
-		elseif action == "Accept" or action == "PlayStory" then
-			snd = "sfx_bell" -- 퀘스트·이야기의 시작을 알리는 종
-		elseif action == "Claim" or action == "IntroCompanion" then
-			snd = "sfx_fanfare" -- 퀘스트 완료·새 동료
-		elseif action == "TurnIn" then
-			snd = "sfx_coin"
+			if action == "Sail" then
+				task.delay(0.2, Sfx.play, "sfx_rope_pull", 0.8) -- 닻줄·돛줄 당기는 소리
+			end
+		elseif action == "Accept" then
+			snd = "sfx_quest_accept"
+		elseif action == "PlayStory" then
+			snd = "sfx_bell" -- 이야기의 시작을 알리는 종
+		elseif action == "Claim" or action == "TurnIn" then
+			snd = "sfx_quest_reward" -- 퀘스트 완료
+		elseif action == "IntroCompanion" then
+			snd = "sfx_fanfare" -- 새 동료
 		elseif action == "IntroName" then
 			snd = "sfx_buy" -- 장부에 도장 찍는 소리
 		end
@@ -1535,6 +1548,9 @@ local function call(action, payload)
 		end
 		if snd then
 			Sfx.play(snd)
+		end
+		if good and string.find(msg, "보물", 1, true) then
+			task.delay(0.4, Sfx.play, "sfx_treasure_chest", 0.8)
 		end
 	end
 	if result.scene then
@@ -1621,6 +1637,7 @@ local function call(action, payload)
 				inField = false
 				audioLock = false
 				Sfx.play(if lb.winner == "a" then "sfx_fanfare" else "sfx_error")
+				Sfx.music(if lb.winner == "a" then Sfx.questEndMusic(true) else Sfx.questEndMusic(false))
 				applyView()
 				main.Visible = true
 				render()

@@ -587,8 +587,9 @@ function NavalBattle.play(opts)
 			if res then
 				info.Text = string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe, if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
 				Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_hit", 0.6, 1)
+				Sfx.play("sfx_metal_clash", 0.7, 1)
 			else
-				Sfx.play("sfx_click", 0.6, 1.1)
+				Sfx.play("sfx_boarding_draw", 0.7, 1) -- 카드를 내는 손짓(칼 뽑는 소리)
 			end
 			render()
 		end
@@ -778,6 +779,7 @@ function NavalBattle.play(opts)
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
 		local to = ORIGIN + toPos + Vector3.new((math.random() - 0.5) * 10, 6 + math.random() * 3, (math.random() - 0.5) * 6)
 		Sfx.play("sfx_cannon", nil, 0.9 + math.random() * 0.25)
+		task.delay(0.9, Sfx.play, "sfx_cannon_reload", 0.45, 1) -- 장전 소리
 		local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
 		task.delay(0.15, function()
 			flash:Destroy()
@@ -989,6 +991,7 @@ function NavalBattle.play(opts)
 						end)
 					end
 					Sfx.play("sfx_horn")
+					Sfx.play("sfx_boarding_slash", 0.9, 1)
 					Sfx.play("sfx_creak", 0.9, 0.8)
 					Sfx.play("sfx_hit", 1, 0.7)
 				end
