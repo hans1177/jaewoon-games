@@ -242,5 +242,74 @@
     },
     "runtimeStateMayCreatePolicy": false,
     "postCentralDocumentWriteSharedContextResyncRequired": true
+  },
+  "ownerVibe59GraphicsMotion18": {
+    "requestedAt": "2026-11-13",
+    "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
+    "status": "IN_PROGRESS_UNVERIFIED",
+    "scope": {
+      "graphics": [
+        "LOD_MESH",
+        "RENDERER_CAPABILITY_FALLBACK",
+        "PBR_MATERIAL",
+        "LIGHT_SHADOW",
+        "CINEMATIC",
+        "GPU_CULLING_BATCHING",
+        "STYLE_HARMONIZATION",
+        "ADAPTIVE_MOBILE_QUALITY"
+      ],
+      "motion": [
+        "AUTO_RIG_DIAGNOSTICS",
+        "JOINT_CONSTRAINTS",
+        "FULL_BODY_IK",
+        "RETARGETING",
+        "MOTION_MATCHING",
+        "LAYERED_BLEND",
+        "PHYSICAL_HIT_REACTION",
+        "CLOTH_AND_SECONDARY_MOTION",
+        "FACE_AND_FINGER_RIG",
+        "AUTOMATED_QUALITY_AUDIT"
+      ]
+    },
+    "hardRules": [
+      "READ_CURRENT_MAIN_CENTRAL_FOUR_DOCUMENTS_AGENTS_AND_POLICY_BRIEF_FIRST",
+      "CHECK_LATEST_MAIN_COMMITS_BEFORE_WRITING",
+      "NO_UNAPPROVED_ASSETS_OR_PRIMITIVE_CHARACTER_REPLACEMENTS",
+      "PRESERVE_GAMEPLAY_AUTHORITY_AND_SAVES",
+      "NO_NEW_SHADOW_PIPELINES",
+      "DO_NOT_CLAIM_PASS_WITHOUT_RUNTIME_EVIDENCE"
+    ],
+    "startingMain": "9e4152b507827b2dc4417e348a720c934dcd85c5",
+    "sourcePaths": [
+      "assets/vibe-studio-animation.js",
+      "assets/vibe-motion-core.js",
+      "assets/vibe-motion-director.js",
+      "assets/vibe-adaptive-climb-ik.mjs",
+      "assets/vibe-premium-character-pipeline.mjs",
+      "assets/vibe-cinematic-polish.mjs",
+      "assets/vibe-model-preview.html",
+      "assets/jaewoon-graphics-engine.js"
+    ],
+    "qaPaths": [
+      "qa/vibe-motion-engine.test.mjs",
+      "qa/vibe-premium-character-pipeline.test.mjs",
+      "qa/vibe-adaptive-climb-ik.test.mjs",
+      "qa/vibe-visual-runtime-quality.test.mjs",
+      "qa/jaewoon-graphics-engine.test.cjs"
+    ],
+    "nextActions": [
+      "VERIFY_LATEST_MAIN_AND_CENTRAL_POLICY",
+      "IMPLEMENT_DIRECT_RESPONSIBLE_FUNCTIONS",
+      "ADD_BEHAVIORAL_TESTS",
+      "CHECK_GITHUB_CI_AND_RUNTIME",
+      "UPDATE_THIS_PROGRESS_WITH_COMMIT_AND_EVIDENCE"
+    ],
+    "implemented": [],
+    "verified": [],
+    "unverified": [
+      "ALL_REQUESTED_FEATURES_UNTIL_CODE_AND_TEST_EVIDENCE"
+    ],
+    "lastObservedMain": "9e4152b507827b2dc4417e348a720c934dcd85c5",
+    "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION"
   }
 }
