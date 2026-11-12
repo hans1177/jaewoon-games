@@ -6133,6 +6133,7 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
 			currentTab = id
+			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
 			H.mapPage = nil
 			if id ~= "battle" then
 				equipped = nil
@@ -6144,24 +6145,7 @@ function H.renderTabs()
 		if currentTab == id then
 			b.TextColor3 = Color3.fromRGB(32, 22, 8)
 		end
-		if id ~= "status" and AssetIds["Menu/" .. id] then
-			b.Text = ""
-			local icon = modelIcon(b, "Menu", id, nil, 24)
-			icon.Name = "Icon"
-			icon.Position = UDim2.new(0, 4, 0.5, -12)
-			local label = Instance.new("TextLabel")
-			label.Name = "Label"
-			label.BackgroundTransparency = 1
-			label.Position = UDim2.fromOffset(29, 0)
-			label.Size = UDim2.new(1, -32, 1, 0)
-			label.Font = b.Font
-			label.TextSize = 12
-			label.TextWrapped = true
-			label.TextXAlignment = Enum.TextXAlignment.Left
-			label.TextColor3 = b.TextColor3
-			label.Text = TAB_NAME[id]
-			label.Parent = b
-		end
+		b.TextSize = 16 -- 탭은 글자만: 그림 없이 크고 또렷하게
 	end
 	local fold = mkButton(tabBar, "닫기", COLORS.red, UDim2.fromOffset(60, 38), function()
 		main.Visible = false
