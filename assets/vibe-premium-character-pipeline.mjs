@@ -52,7 +52,7 @@ export function createVibeHandRig(model,{leftPrefix='LeftHand',rightPrefix='Righ
  }
  return {
   hands,
-  curl(side,finger,amount){const chain=hands[side]?.[finger];if(!chain)throw Error('Unknown finger');for(const {bone,rest} of chain)bone.rotation.x=rest+(side==='left'?-1:1)*clamp(amount)*1.15;return chain.length},
+  curl(side,finger,amount){const chain=hands[side]?.[finger];if(!chain)throw Error('Unknown finger');if(!Number.isFinite(amount))throw Error('Invalid finger curl amount');const value=clamp(amount);for(const {bone,rest} of chain)bone.rotation.x=rest+(side==='left'?-1:1)*value*1.15;return chain.length},
   gesture(side,gesture){const presets={open:[0,0,0,0,0],fist:[.85,1,1,1,1],point:[.7,0,1,1,1],grip:[.6,.8,.8,.8,.8]};const values=presets[gesture];if(!values)throw Error('Unknown hand gesture');fingers.forEach((finger,i)=>this.curl(side,finger.toLowerCase(),values[i]))},
   reset(){for(const hand of Object.values(hands))for(const chain of Object.values(hand))for(const {bone,rest} of chain)bone.rotation.x=rest}
  };
