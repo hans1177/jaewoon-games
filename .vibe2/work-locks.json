@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1jtyoyj",
+      "worker": "vibe2",
+      "taskId": "party-rpg-studio-evolution-usability-v12",
+      "gameId": "party-rpg",
+      "files": [
+        "web-games/party-rpg/audio.mjs",
+        "web-games/party-rpg/index.html",
+        "web-games/party-rpg/view.mjs"
+      ],
+      "baseSha": "8d87dab82d4a44037aaf198fcb8ec16141b6e89b",
+      "runId": "43250617011",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-12T15:57:29.757Z",
+      "expiresAt": "2026-11-12T16:42:29.757Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:party-rpg-studio-evolution-usability-v12"
+      ]
+    }
+  ]
 }
