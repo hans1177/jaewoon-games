@@ -1665,6 +1665,14 @@ do
 					end)(), 64)
 					pr.LayoutOrder = 0
 				end
+				H.devCards = {
+					practice = function() playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {}) end,
+					puzzle = function()
+						local day = bk.day or math.floor(os.time() / 86400)
+						local _, limit = BC.puzzle(day)
+						playCardOnly(string.format("해전 퍼즐 (%d장 이내로 역전!)", limit or 0), function() return (BC.puzzle(day)) end, "CardPuzzle", { day = day })
+					end,
+				}
 				local train = mkRow(builder, "연습전 · 오늘의 해전 퍼즐", "연습전: 정해진 패로 규칙을 배우는 첫 판 / 퍼즐: 하루 하나, 적은 장수로 역전", {
 					{ text = "연습전", color = COLORS.green, onClick = function()
 						playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {})
@@ -8238,6 +8246,15 @@ task.spawn(function()
 		if dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
 			openYardHall()
+		elseif dc == "Deck" then
+			workspace:SetAttribute("DevCall", nil)
+			pcall(function() H.openDeck() end)
+		elseif dc == "Practice" or dc == "Puzzle" then
+			workspace:SetAttribute("DevCall", nil)
+			local ok2, err2 = pcall(function()
+				H.devCards[if dc == "Practice" then "practice" else "puzzle"]()
+			end)
+			workspace:SetAttribute("DevResult", dc .. " " .. tostring(ok2) .. " " .. tostring(err2))
 		elseif dc == "Options" then
 			workspace:SetAttribute("DevCall", nil)
 			openOptions()
