@@ -49,14 +49,14 @@ local UI_BRASS_DARK = Color3.fromRGB(120, 92, 44)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
-	{ id = "status", name = "상태" },
-	{ id = "trade", name = "교역" },
-	{ id = "harbor", name = "항구" },
-	{ id = "map", name = "일지" },
-	{ id = "crew", name = "동료" },
+	{ id = "quest", name = "퀘스트" },
 	{ id = "route", name = "항해" },
+	{ id = "trade", name = "교역" },
+	{ id = "cards", name = "백과" },
+	{ id = "status", name = "상태" },
+	{ id = "harbor", name = "항구" },
+	{ id = "crew", name = "동료" },
 	{ id = "yard", name = "조선소" },
-	{ id = "explore", name = "탐험" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "quest", name = "일지" },
