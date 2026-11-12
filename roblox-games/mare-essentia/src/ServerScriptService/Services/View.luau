@@ -695,6 +695,73 @@ return function(D, S)
 			}
 		end
 
+		-- 백병전 카드 패: 게임 곳곳의 성과가 카드가 된다. 효과는 해전 장면의 기동 점수에만 쓰인다 (전투 결과는 서버 판정).
+		--  주인공·동료(스킬 카드) / 발견한 지식·유물·동물(분야별 카드) / 만난 항해자(우군 카드) / 지금 타는 배(선박 카드) / 라이벌의 인정
+		do
+			local STATION_SKILL = { gunner = "volley", surgeon = "heal", helm = "focus", boatswain = "rally", mate = "analyze", scholar = "analyze" }
+			local FIELD_SKILL = {
+				Zoology = "beast", Botany = "heal", Medicine = "heal", Astronomy = "insight", Navigation = "focus", Geography = "scout",
+				Weather = "ward", Physics = "ward", Chemistry = "volley", Mineral = "rally", Relic = "luck", Site = "luck", Art = "rally",
+				Architecture = "ward", Language = "analyze", Philosophy = "analyze", Myth = "luck", Shipbuilding = "ward", Goods = "rally",
+			}
+			local FIELD_KIND = { Zoology = "animal", Relic = "relic", Site = "relic", Art = "relic", Architecture = "relic", Mineral = "relic", Myth = "relic" }
+			local ROLE_SKILL = { soldier = "volley", privateer = "rally", merchant = "ward", explorer = "scout", pirate = "luck", pilgrim = "heal" }
+			local SHIP_SKILL = { caravel = "focus", fluyt = "ward", frigate = "volley", galleon = "ward", paddle_steamer = "insight", ironclad_frigate = "ward" }
+			local cards = {}
+			local cap = view.captain
+			table.insert(cards, { kind = "crew", name = (cap and cap.name) or "선장", skill = "command" })
+			for _, cid in state.companions do
+				local c = D.Specialties.CompanionById[cid]
+				if c and #cards < 4 then
+					table.insert(cards, { kind = "crew", name = c.name, skill = STATION_SKILL[D.Specialties.CompanionStation[cid] or ""] or "analyze" })
+				end
+			end
+			-- 분야마다 가장 귀한 발견 하나씩, 귀한 순서로 5장
+			local rank = { Legendary = 5, Epic = 4, Rare = 3, Uncommon = 2, Common = 1 }
+			local bestOf = {}
+			for _, c in D.Cards.Cards do
+				if state.discovered[c.id] and FIELD_SKILL[c.field] then
+					local cur = bestOf[c.field]
+					if not cur or rank[c.rarity] > rank[cur.rarity] or (rank[c.rarity] == rank[cur.rarity] and c.id < cur.id) then
+						bestOf[c.field] = c
+					end
+				end
+			end
+			local picks = {}
+			for _, c in bestOf do
+				table.insert(picks, c)
+			end
+			table.sort(picks, function(a, b)
+				if rank[a.rarity] ~= rank[b.rarity] then
+					return rank[a.rarity] > rank[b.rarity]
+				end
+				return a.id < b.id
+			end)
+			for i = 1, math.min(5, #picks) do
+				local c = picks[i]
+				table.insert(cards, { kind = FIELD_KIND[c.field] or "book", name = c.name, skill = FIELD_SKILL[c.field] })
+			end
+			-- 만난 항해자는 우군이 된다
+			local metIds = {}
+			for id in (state.diplo and state.diplo.met) or {} do
+				table.insert(metIds, id)
+			end
+			table.sort(metIds)
+			local friends = 0
+			for _, id in metIds do
+				local v = D.Specialties.VoyagerById[id]
+				if v and friends < 2 and not v.rival then
+					friends += 1
+					table.insert(cards, { kind = "friend", name = v.name, skill = ROLE_SKILL[v.role] or "scout" })
+				end
+			end
+			if state.diplo and (state.diplo.rivalN or 0) >= 5 then
+				table.insert(cards, { kind = "friend", name = "칼레브", skill = "luck" })
+			end
+			table.insert(cards, { kind = "ship", name = D.Ships.Ships[state.ship.id] and D.Ships.Ships[state.ship.id].name or "배", skill = SHIP_SKILL[state.ship.id] or "focus" })
+			view.deck = { cards = cards }
+		end
+
 		view.lastBattle = state.lastBattle
 		view.voyageEvent = state.voyageEvent
 		return view

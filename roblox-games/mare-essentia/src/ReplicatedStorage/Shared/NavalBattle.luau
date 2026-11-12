@@ -505,6 +505,22 @@ function NavalBattle.play(opts)
 	-- 3개 위치(선수·중앙·선미 갑판)에서 우리 부대와 해적 부대가 맞붙는다. 결과와 피해는 서버 전투 기록 그대로이고,
 	-- 적의 의도(돌격·방어·사격)를 보고 맞는 태세를 고르면 "간파!"로 기동 점수가 오른다 (돌격 > 사격 > 방어 > 돌격).
 	local boardingOn = false
+	local CHIP_ICON = { crew = "🃏", relic = "💎", animal = "🐾", book = "📖", friend = "🤝", ship = "⚓" }
+	local CHIP_COLOR = { crew = Color3.fromRGB(70, 50, 30), relic = Color3.fromRGB(70, 56, 90), animal = Color3.fromRGB(48, 78, 56), book = Color3.fromRGB(40, 62, 92), friend = Color3.fromRGB(90, 56, 48), ship = Color3.fromRGB(44, 64, 78) }
+	-- 카드 스킬 (active = 눌러서 한 번 쓰는 카드, 나머지는 패시브)
+	local SKILL = {
+		command = { name = "지휘", desc = "이번 대결을 간파로 인정", active = true },
+		volley = { name = "일제사격", desc = "이번 대결을 간파로 인정 +7", active = true },
+		heal = { name = "응급처치", desc = "가장 다친 부대 회복", active = true },
+		focus = { name = "기동", desc = "적의 의도를 본다", active = true },
+		rally = { name = "사기 고취", desc = "기동 점수 +12", active = true },
+		analyze = { name = "약점 분석", desc = "적의 의도를 본다", active = true },
+		scout = { name = "정찰", desc = "적의 의도를 본다", active = true },
+		beast = { name = "맹수의 기세", desc = "기동 점수 +14", active = true },
+		ward = { name = "수호", desc = "처음 맞는 공격을 막는다" },
+		luck = { name = "행운", desc = "최종 기동 점수 x1.3" },
+		insight = { name = "통찰", desc = "처음 두 대결의 의도를 미리 본다" },
+	}
 	local STANCES = { "돌격", "사격", "방어" }
 	local BEATS = { ["돌격"] = "사격", ["사격"] = "방어", ["방어"] = "돌격" }
 	local function startBoarding(onEnd)
@@ -573,6 +589,71 @@ function NavalBattle.play(opts)
 			ours[k] = mkCard(0.25, y, ourNames[k], Color3.fromRGB(91, 181, 120))
 			theirs[k] = mkCard(0.75, y, theirNames[k], Color3.fromRGB(214, 82, 76))
 		end
+		-- 카드 패: 주인공·동료·유물·동물 카드. 눌러서 쓰는 카드는 한 번씩만 쓴다.
+		local boost = { auto = false, flair = 0, reveal = false, heal = false }
+		local wardLeft, insightLeft, luckOn = 0, 0, false
+		do
+			local deck = opts.deck
+			local row = Instance.new("Frame")
+			row.Position = UDim2.new(0.02, 0, 0, 54)
+			row.Size = UDim2.new(0.96, 0, 0, 80)
+			row.BackgroundTransparency = 1
+			row.Parent = g
+			local lay = Instance.new("UIListLayout")
+			lay.FillDirection = Enum.FillDirection.Horizontal
+			lay.Wraps = true
+			lay.Padding = UDim.new(0, 6)
+			lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			lay.Parent = row
+			local function chip(kind, who, skill)
+				local def = SKILL[skill]
+				if not def then
+					return
+				end
+				if skill == "ward" then wardLeft += 1 elseif skill == "insight" then insightLeft = 2 elseif skill == "luck" then luckOn = true end
+				local b = Instance.new("TextButton")
+				b.Size = UDim2.fromOffset(150, 36)
+				b.BackgroundColor3 = CHIP_COLOR[kind] or Color3.fromRGB(70, 50, 30)
+				b.TextColor3 = Color3.fromRGB(250, 236, 200)
+				b.Font = Enum.Font.GothamBold
+				b.TextSize = 11
+				b.TextWrapped = true
+				b.Text = string.format("%s%s\n%s%s", CHIP_ICON[kind] or "🃏", who, def.name, if def.active then "" else " (패시브)")
+				b.BorderSizePixel = 0
+				b.AutoButtonColor = def.active
+				b.Parent = row
+				local c = Instance.new("UICorner")
+				c.CornerRadius = UDim.new(0, 8)
+				c.Parent = b
+				if def.active then
+					b.Activated:Connect(function()
+						if b.Active == false then
+							return
+						end
+						b.Active = false
+						b.BackgroundColor3 = Color3.fromRGB(40, 36, 32)
+						b.TextTransparency = 0.5
+						Sfx.play("sfx_click", 0.7, 1.3)
+						if skill == "command" or skill == "volley" then
+							boost.auto = true
+							boost.flair += if skill == "volley" then 7 else 0
+						elseif skill == "heal" then
+							boost.heal = true
+							flair += 8
+						elseif skill == "rally" then
+							flair += 12
+						elseif skill == "beast" then
+							boost.flair += 14
+						else
+							boost.reveal = true
+						end
+					end)
+				end
+			end
+			for _, c in (deck and deck.cards) or {} do
+				chip(c.kind, c.name, c.skill)
+			end
+		end
 		-- 태세 버튼
 		local choice = nil
 		local btns = {}
@@ -628,20 +709,49 @@ function NavalBattle.play(opts)
 				local tgtKey = if e.player then "foe" else "me"
 				-- 적의 의도를 보여 주고 태세를 고를 시간을 준다
 				local enemyStance = STANCES[math.random(1, 3)]
-				for _, c in { theirs[lane] } do
-					c.intent.Text = "의도: " .. enemyStance
+				local seen = insightLeft > 0
+				if seen then
+					insightLeft -= 1
 				end
+				boost.reveal = seen
+				theirs[lane].intent.Text = if seen then "의도: " .. enemyStance else "의도: ❓"
 				choice = nil
 				for _, o in btns do
 					o.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
 				end
-				info.Text = "적의 의도를 보고 태세를 골라요!"
-				task.wait(1.6)
+				info.Text = if seen then "적의 의도가 보인다! 태세를 골라요" else "의도를 모른다... 카드로 알아내거나 감으로 골라요!"
+				local waited = 0
+				while waited < 2.0 and not finished do
+					task.wait(0.1)
+					waited += 0.1
+					if boost.reveal then
+						theirs[lane].intent.Text = "의도: " .. enemyStance
+						boost.reveal = false
+					end
+				end
 				if finished then
 					break
 				end
 				theirs[lane].intent.Text = ""
-				if choice == nil then
+				flair += boost.flair
+				boost.flair = 0
+				if boost.heal then
+					boost.heal = false
+					local low = ours[1]
+					for _, oc in ours do
+						if oc.hp < low.hp then
+							low = oc
+						end
+					end
+					low.hp = math.min(1, low.hp + 0.3)
+					low.fill.Size = UDim2.fromScale(low.hp, 1)
+				end
+				if boost.auto then
+					boost.auto = false
+					flair += 18
+					info.Text = "카드의 힘! " .. e.text
+					Sfx.play("sfx_fanfare", 0.4, 1.4)
+				elseif choice == nil then
 					info.Text = e.text
 				elseif BEATS[choice] == enemyStance then
 					flair += 18
@@ -659,7 +769,16 @@ function NavalBattle.play(opts)
 				task.wait(0.18)
 				Sfx.play("sfx_hit", 0.9, 1.2 + math.random() * 0.3)
 				shake = 1.4
-				def.hp = math.max(0, def.hp - drop(tgtKey) / math.max(1, hits[tgtKey][lane]))
+				local warded = false
+				if not e.player and wardLeft > 0 then
+					wardLeft -= 1
+					warded = true
+					flair += 10
+					info.Text = "수호 카드가 공격을 막았다!"
+				end
+				if not warded then
+					def.hp = math.max(0, def.hp - drop(tgtKey) / math.max(1, hits[tgtKey][lane]))
+				end
 				def.fill.Size = UDim2.fromScale(def.hp, 1)
 				def.frame.BackgroundColor3 = Color3.fromRGB(140, 40, 36)
 				local pop = label(g, "-" .. tostring(e.crew > 0 and e.crew or 1), 26, Color3.fromRGB(255, 120, 100))
@@ -673,6 +792,9 @@ function NavalBattle.play(opts)
 				TweenService:Create(att.frame, TweenInfo.new(0.2), { Position = att.home }):Play()
 				def.frame.BackgroundColor3 = Color3.fromRGB(44, 32, 24)
 				task.wait(0.35)
+			end
+			if luckOn then
+				flair = math.floor(flair * 1.3)
 			end
 			info.Text = if opts.winner == "a" then "해적들이 무기를 내려놓았다!" elseif opts.winner == "b" then "갑판이 밀렸다..." else "양쪽이 갈라섰다."
 			task.wait(1.4)
