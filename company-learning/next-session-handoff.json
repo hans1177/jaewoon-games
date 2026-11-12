@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "DIRECT_CODE_ON_MAIN_PARTIAL_TEST_PASS_POSTDEPLOY_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__LATEST_RUNTIME_UNVERIFIED",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -310,7 +310,10 @@
       "WHEN_ALL_PROVEN_ACCEPTANCE_MET_REPORT_WITH_MAIN_SHA_RUNTIME_AND_DEPLOYMENT_PROOF",
       "CHECK_NO_TEST_FAIL_ON_NEWEST_720253B2_RUN_43299864507",
       "CHECK_MAGIC_FOREST_LATEST_HEAD_PUBLISH_SHA_AND_BROWSER_SMOKE",
-      "PRESERVE_LOD_REPEATED_INSTANCES_AND_SUBJECT_PARENT_GROUPING"
+      "PRESERVE_LOD_REPEATED_INSTANCES_AND_SUBJECT_PARENT_GROUPING",
+      "AFTER_ALL_PREVIEW_AND_SOURCE_COMMITS_FETCH_LIVE_WEB_GAMES_PUBLISH_MANIFEST_AND_PROVE_SOURCE_SHA_EQUALS_EXACT_MAIN",
+      "READ_RUN_LOGS_IF_BROWSER_SMOKE_FAILED_DONT_RELABEL_TIMEOUT_PASS",
+      "WHEN_18_ITEMS_ALL_PASSED_RECONCILE_THIS_HANDOFF_AND_DISABLE_HOURLY_AUTOMATION_ONLY_IF_USER_AGREES"
     ],
     "implemented": [
       "assets/vibe-studio-animation.js:WORLD_SPACE_FOOT_CONTACT_ANCHORS,MOTION_MATCHER_REAL_CLIP_IDS,MASKED_LAYER_BLEND",
@@ -318,14 +321,20 @@
       "assets/vibe-adaptive-climb-ik.mjs:OPTIONAL_AXIAL_DISCOVERY,WORLD_SPACE_TARGET_API,JOINT_LIMIT_CCD,RESET",
       "assets/vibe-cinematic-polish.mjs:FRAME_BUDGET_QUALITY,AUTHORED_LOD_ONLY,STATIC_INSTANCING,SHADOW_TIER_CONTROL",
       "assets/vibe-model-preview.html:AUTHORED_LOD_REAL_BINDING,STATIC_BATCH_BINDING,ADAPTIVE_SHADOWS,DESKTOP_OPTIONAL_BLOOM,EXISTING_PBR_STYLE_TUNING,ACCESSIBLE_IMPACT_BUTTON",
-      "qa/vibe-motion-engine.test.mjs,qa/vibe-premium-character-pipeline.test.mjs,qa/vibe-cinematic-polish.test.mjs,qa/vibe-adaptive-climb-ik.test.mjs: BEHAVIORAL_QA_CASES"
+      "qa/vibe-motion-engine.test.mjs,qa/vibe-premium-character-pipeline.test.mjs,qa/vibe-cinematic-polish.test.mjs,qa/vibe-adaptive-climb-ik.test.mjs: BEHAVIORAL_QA_CASES",
+      "assets/vibe-studio-animation.js:PHYSICS_INSPIRED_BOUNDED_DIRECTIONAL_HIT_REACTION",
+      "assets/vibe-model-preview.html:REAL_HIT_VISUAL_BINDING_TO_EXISTING_ONDAMAGE_CALLBACK",
+      "qa/vibe-studio-systems.test.mjs:PHYSICAL_PRESENTATION_QA_CASE",
+      "assets/vibe-cinematic-polish.mjs:FIX_REPEATED_LOD_INSTANCES_KEEP_ALL_MESHES_AT_SELECTED_LEVEL"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
       "GitHub Actions Vibe Integrated Regression run 43298886139 on 36385807: SUCCESS",
       "GitHub Actions Vibe QA run 43297811360 on 86f24344: SUCCESS",
       "GitHub Actions Vibe Integrated Regression run 43297811418 on 86f24344: SUCCESS",
-      "GitHub Actions Magic Forest Static Play 43298451993 on ce1153bd: SUCCESS (older snapshot; not proof of latest 720253b2)"
+      "GitHub Actions Magic Forest Static Play 43298451993 on ce1153bd: SUCCESS (older snapshot; not proof of latest 720253b2)",
+      "Vibe Integrated Regression 43299864735 on 720253b2: SUCCESS",
+      "Vibe Integrated Regression 43300155842 on 500f95cc: SUCCESS"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -337,15 +346,19 @@
       "IN_GAME_RIG_RETARGET_IK_MOTION_MATCH_CONSUMERS_BEYOND_MODEL_PREVIEW",
       "POST_PUBLICATION_BROWSER_SMOKE_AND_EXACT_SHA_DEPLOY_AFTER_PREVIEW_BUTTON_CORRECTION",
       "POST_SOURCE_LOD_GROUPING_CHANGE_720253B2_VIBE_QA_QUEUED",
-      "LATEST_MAIN_EXACT_PUBLISHED_DEPLOY_POST_SMOKE"
+      "LATEST_MAIN_EXACT_PUBLISHED_DEPLOY_POST_SMOKE",
+      "LATEST_MAIN_3F907A60_VIBE_QA_43300274224_PENDING",
+      "LATEST_MAIN_3F907A60_INTEGRATED_REGRESSION_43300274342_RUNNING",
+      "LATEST_MAIN_3F907A60_PAGES_POSTPUBLICATION_43300274309_PENDING"
     ],
-    "lastObservedMain": "720253b2b0d3854175231061f8bfea7a4fe528d4",
+    "lastObservedMain": "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
       "GitHub Pages post-publication run 43297676199 FAILED at qa/vibe-browser-smoke.mjs:337 locator for impact button '타격 연출 테스트' missing, preview button label was '타격 연출'. Fixed main commit f940f5fc; latest exact deployed runtime not yet verified.",
       "Existing UI accessibility/static test may require source updates; never change required QA thresholds merely to force PASS.",
-      "Previous post-publication smoke 43297676199 button locator mismatch; label was changed at f940f5fc and needs exact new source live proof."
+      "Previous post-publication smoke 43297676199 button locator mismatch; label was changed at f940f5fc and needs exact new source live proof.",
+      "Magic Forest Static Play 43299263110 success is SUPERSEDED, log says POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY=720de189; NOT exact postdeployment proof for 3f907a60 or newer."
     ],
     "commits": [
       "3ccf0aa352ca5a479c57d6391e5c7264abfb3a9e",
@@ -362,7 +375,10 @@
       "d5cade33f02e7d70496dd8ca15777c2d607a33b1",
       "720de189c853568b1d31d0013c95a4cc6bb4155b",
       "2610c040932940ca56f511634f4d03e05e5ad98c",
-      "720253b2b0d3854175231061f8bfea7a4fe528d4"
+      "720253b2b0d3854175231061f8bfea7a4fe528d4",
+      "500f95ccb3aa3c8b9b0e39796860ac28a8da4284",
+      "eaca945f98e3c8f72f5666b7e869d6ddbde4b7ff",
+      "3f907a6026385bfc1b7b0f64a8a2cbbfe5f7dba5"
     ]
   }
 }
