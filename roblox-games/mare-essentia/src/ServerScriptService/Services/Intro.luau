@@ -88,7 +88,9 @@ return function(D, S)
 		if not table.find(state.companions, id) then
 			local ok, msg = S.Perk.handlers.Recruit(state, { companionId = id })
 			if not ok then
-				return false, msg
+				-- 시작 안내가 여기서 영영 막히면 안 된다: 자리가 가득 찬 경우 등은 사유만 알리고 다음 단계로 넘어간다
+				i.companion = true
+				return true, string.format("%s (동료는 나중에 주점에서 만날 수 있어요)", tostring(msg))
 			end
 			i.companion = true
 			return true, msg
