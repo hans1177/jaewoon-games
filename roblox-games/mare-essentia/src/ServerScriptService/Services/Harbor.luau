@@ -46,6 +46,53 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- 항구는 스스로도 자란다: 항구에 도착하면 마지막으로 들른 뒤 흐른 날수만큼 도시가 저절로 발전한다.
+	-- 이미 번영한 항구일수록 빨리 자라고, 큰 항구(4단계 이상)는 스스로 못 자라 투자가 필요하다.
+	-- 투자한 항구는 번창한 만큼 세금 일부를 투자자(플레이어)에게 보내온다.
+	local SELF_GROW_CAP = H.THRESHOLDS[4] - 1
+	local function grow(state)
+		local msgs = {}
+		if state._growPort == state.portId then
+			return msgs
+		end
+		local first = state._growPort == nil
+		state._growPort = state.portId
+		state.harborSeen = state.harborSeen or {}
+		local seen = state.harborSeen[state.portId]
+		state.harborSeen[state.portId] = state.day
+		if first or not seen then
+			return msgs
+		end
+		local elapsed = math.min(state.day - seen, 180)
+		if elapsed <= 0 then
+			state.harborSeen[state.portId] = seen
+			return msgs
+		end
+		local inv = invested(state)
+		local before = levelAt(state)
+		if inv < SELF_GROW_CAP then
+			local gain = math.floor(elapsed * (1.2 + before * 1.5))
+			if gain > 0 then
+				state.harbor[state.portId] = math.min(SELF_GROW_CAP, inv + gain)
+				table.insert(msgs, string.format("%s가 그사이 스스로 자랐다 (+%d)", D.Ports.Ports[state.portId].name, gain))
+				local after = levelAt(state)
+				if after > before then
+					table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
+				end
+			end
+		end
+		-- 투자한 항구의 세금 수익
+		local stake = state.harbor[state.portId] or 0
+		if stake >= H.OPTIONS[1] then
+			local tax = math.floor(stake * 0.0006 * math.min(elapsed, 120))
+			if tax > 0 then
+				state.coins += tax
+				table.insert(msgs, string.format("항구가 번창해 세금 일부를 보내왔다: %d코인", tax))
+			end
+		end
+		return msgs
+	end
+
 	-- 길드 의뢰 보드
 	local function sortedGoods()
 		local ids = {}
@@ -209,5 +256,6 @@ return function(D, S)
 		invested = invested,
 		intel = intel,
 		boardHere = boardHere,
+		grow = grow,
 	}
 end
