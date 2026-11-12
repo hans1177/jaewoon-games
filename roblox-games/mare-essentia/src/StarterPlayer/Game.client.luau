@@ -658,25 +658,55 @@ do
 	ic.Parent = inset
 end
 local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(620, 900)
+sizeLimit.MaxSize = Vector2.new(1020, 900)
 sizeLimit.Parent = main
+
+-- 항해 기록의 표제지: 시설 이름, 현재 항구와 선박 정보를 분리한다.
+H.pageMasthead = Instance.new("Frame")
+H.pageMasthead.Name = "BookMasthead"
+H.pageMasthead.Position = UDim2.fromOffset(4, 4)
+H.pageMasthead.Size = UDim2.new(1, -8, 0, 74)
+H.pageMasthead.BackgroundColor3 = COLORS.paper
+H.pageMasthead.BorderSizePixel = 0
+H.pageMasthead.Parent = mainInner
+corner(H.pageMasthead, 7)
+local function pageRule(parent, position, size)
+	local rule = Instance.new("Frame")
+	rule.BorderSizePixel = 0
+	rule.BackgroundColor3 = UI_BRASS_DARK
+	rule.BackgroundTransparency = 0.35
+	rule.Position = position
+	rule.Size = size
+	rule.Parent = parent
+	return rule
+end
+pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -5), UDim2.new(1, -72, 0, 1))
+H.pageDetails = mkLabel(H.pageMasthead, "", 11, COLORS.brown, true)
+H.pageDetails.AutomaticSize = Enum.AutomaticSize.None
+H.pageDetails.Position = UDim2.fromOffset(65, 36)
+H.pageDetails.Size = UDim2.new(1, -74, 0, 32)
+H.pageDetails.TextTruncate = Enum.TextTruncate.AtEnd
 
 local headerLabel = Instance.new("TextLabel")
 headerLabel.BackgroundTransparency = 1
-headerLabel.Position = UDim2.fromOffset(66, 4)
-headerLabel.Size = UDim2.new(1, -216, 0, 44)
+headerLabel.Position = UDim2.fromOffset(69, 8)
+headerLabel.Size = UDim2.new(1, -174, 0, 29)
 headerLabel.TextXAlignment = Enum.TextXAlignment.Left
 headerLabel.TextYAlignment = Enum.TextYAlignment.Top
-headerLabel.TextWrapped = true
-headerLabel.TextSize = 13
+headerLabel.TextScaled = true
+headerLabel.TextTruncate = Enum.TextTruncate.AtEnd
+headerLabel.TextSize = 23
 headerLabel.Font = Enum.Font.GothamBold
-headerLabel.TextColor3 = COLORS.text
+headerLabel.TextColor3 = COLORS.ink
+local mastheadSize = Instance.new("UITextSizeConstraint")
+mastheadSize.MaxTextSize = 23
+mastheadSize.Parent = headerLabel
 headerLabel.Text = "불러오는 중..."
 headerLabel.Parent = mainInner
 
 -- 시설 주인 초상화 (대항해시대 온라인의 NPC 얼굴 창처럼)
 local portraitFrame = Instance.new("ViewportFrame")
-portraitFrame.Position = UDim2.fromOffset(8, 2)
+portraitFrame.Position = UDim2.fromOffset(11, 12)
 portraitFrame.Size = UDim2.fromOffset(52, 52)
 portraitFrame.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
 portraitFrame.Ambient = Color3.fromRGB(190, 190, 200)
@@ -698,7 +728,7 @@ portraitFrame.CurrentCamera = portraitCam
 -- 등록된 실사 NPC 초상화가 있으면 기존 3D 초상 위에 표시한다.
 local portraitImage = Instance.new("ImageLabel")
 portraitImage.Name = "NpcPortrait"
-portraitImage.Position = UDim2.fromOffset(8, 2)
+portraitImage.Position = UDim2.fromOffset(11, 12)
 portraitImage.Size = UDim2.fromOffset(52, 52)
 portraitImage.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
 portraitImage.BorderSizePixel = 0
@@ -1019,9 +1049,9 @@ local function setPortrait(groupName)
 	portraitCam.CFrame = CFrame.lookAt(head + Vector3.new(0, 0.2, size.Y * 1.2), head)
 end
 
-local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(132, 34), text = "0" })
+local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(94, 28), text = "0", theme = H.bookTheme })
 coinChip.AnchorPoint = Vector2.new(1, 0)
-coinChip.Position = UDim2.new(1, -8, 0, 4)
+coinChip.Position = UDim2.new(1, -10, 0, 7)
 coinChip.Parent = mainInner
 
 local tabBar = Instance.new("Frame")
@@ -1049,6 +1079,33 @@ local contentLayout = Instance.new("UIListLayout")
 contentLayout.Padding = UDim.new(0, 5)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
+
+-- 넓은 화면은 왼쪽 책갈피, 좁은 화면은 상단 한 줄 목차를 사용한다.
+H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 86), UDim2.new(0, 1, 1, -94))
+function H.layoutBook()
+	local wide = mainInner.AbsoluteSize.X >= 610
+	local tabs = tabBar.Visible
+	H.bookSpine.Visible = tabs and wide
+	if tabs and wide then
+		tabBar.Position = UDim2.fromOffset(8, 86)
+		tabBar.Size = UDim2.new(0, 116, 1, -94)
+		tabLayout.CellSize = UDim2.new(1, 0, 0, 44)
+		tabLayout.CellPadding = UDim2.fromOffset(0, 6)
+		content.Position = UDim2.fromOffset(142, 86)
+		content.Size = UDim2.new(1, -150, 1, -94)
+	else
+		tabBar.Position = UDim2.fromOffset(8, 86)
+		tabBar.Size = UDim2.new(1, -16, 0, 40)
+		tabLayout.CellSize = UDim2.new(0.25, -4, 0, 40)
+		tabLayout.CellPadding = UDim2.fromOffset(5, 0)
+		local top = if tabs then 134 else 86
+		content.Position = UDim2.fromOffset(8, top)
+		content.Size = UDim2.new(1, -16, 1, -top - 8)
+	end
+end
+mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
+tabBar:GetPropertyChangedSignal("Visible"):Connect(H.layoutBook)
+H.layoutBook()
 
 local menuToggle = CommonUI.CreatePrimaryButton({ name = "MenuToggle", text = "메뉴", size = UDim2.fromOffset(80, 40), minHeight = 40, minWidth = 60 })
 menuToggle.AnchorPoint = Vector2.new(0, 0)
@@ -4502,11 +4559,40 @@ end
 local function renderCodexOverview()
 	local cx = view.codex
 	add(function()
-		return mkLabel(content, string.format("세계 백과 %d / %d (%d%%)%s", cx.found, cx.total, math.floor(cx.found * 100 / math.max(1, cx.total)), if cx.rank then ("  ·  " .. cx.rank) else ""), 16, COLORS.gold, true)
+		local cover = Instance.new("Frame")
+		cover.Size = UDim2.new(1, -6, 0, 126)
+		cover.BackgroundColor3 = COLORS.paper
+		cover.BorderSizePixel = 0
+		cover.ClipsDescendants = true
+		corner(cover, 8)
+		local illustration = Instance.new("ImageLabel")
+		illustration.BackgroundTransparency = 1
+		illustration.Size = UDim2.fromScale(0.35, 1)
+		illustration.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
+		illustration.ScaleType = Enum.ScaleType.Crop
+		illustration.Parent = cover
+		pageRule(cover, UDim2.fromScale(0.35, 0), UDim2.new(0, 2, 1, 0))
+		local title = mkLabel(cover, "세계 백과", 23, COLORS.ink, true)
+		title.Position = UDim2.new(0.35, 13, 0, 13)
+		title.Size = UDim2.new(0.65, -22, 0, 30)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local status = mkLabel(cover, string.format("발견 %d / %d", cx.found, cx.total), 15, COLORS.brown, true)
+		status.Position = UDim2.new(0.35, 13, 0, 51)
+		status.Size = UDim2.new(0.65, -22, 0, 22)
+		status.AutomaticSize = Enum.AutomaticSize.None
+		local track = pageRule(cover, UDim2.new(0.35, 13, 0, 81), UDim2.new(0.65, -26, 0, 4))
+		local fill = pageRule(track, UDim2.fromOffset(0, 0), UDim2.fromScale(math.clamp(cx.found / math.max(1, cx.total), 0, 1), 1))
+		fill.BackgroundColor3 = COLORS.brown
+		fill.BackgroundTransparency = 0
+		if cx.rank then
+			local rank = mkLabel(cover, cx.rank, 12, COLORS.ink, false)
+			rank.Position = UDim2.new(0.35, 13, 0, 93)
+			rank.Size = UDim2.new(0.65, -22, 0, 22)
+			rank.AutomaticSize = Enum.AutomaticSize.None
+		end
+		return cover
 	end)
-	add(function()
-		return mkLabel(content, "분야를 눌러 카드를 모아 보세요. 분야마다 25·50·75·100%를 채울 때 보상이 있어요.", 12, COLORS.muted, false)
-	end)
+
 	add(function()
 		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드의 위력과 효과", {
 			{ text = "열기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
@@ -5371,7 +5457,7 @@ function H.renderTabs()
 	end
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
-		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.grey, UDim2.fromOffset(68, 38), function()
+		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
 			currentTab = id
 			if id ~= "battle" then
 				equipped = nil
@@ -5393,7 +5479,9 @@ function H.renderTabs()
 			label.Position = UDim2.fromOffset(29, 0)
 			label.Size = UDim2.new(1, -32, 1, 0)
 			label.Font = b.Font
-			label.TextSize = 11
+			label.TextSize = 12
+			label.TextWrapped = true
+			label.TextXAlignment = Enum.TextXAlignment.Left
 			label.TextColor3 = b.TextColor3
 			label.Text = TAB_NAME[id]
 			label.Parent = b
@@ -6370,8 +6458,8 @@ function render()
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
 		tabBar.Visible = false
-		content.Position = UDim2.fromOffset(8, 52)
-		content.Size = UDim2.new(1, -16, 1, -60)
+		H.pageDetails.Text = ""
+		H.layoutBook()
 		if message ~= "" then
 			add(function() return mkLabel(content, message, 13, if messageOk then COLORS.gold else COLORS.red, true) end)
 		end
@@ -6380,14 +6468,14 @@ function render()
 	end
 
 	tabBar.Visible = true
-	content.Position = UDim2.fromOffset(8, 100)
-	content.Size = UDim2.new(1, -16, 1, -108)
+	H.layoutBook()
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
 	setPortrait(grp.name)
-	headerLabel.Text = string.format("%s · %s\n%s %s  선체 %d/%d  화물 %d/%d",
-		grp.name, grp.keeper, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
+	headerLabel.Text = grp.name
+	H.pageDetails.Text = string.format("%s · %s\n%s · 선체 %d/%d · 화물 %d/%d",
+		p.portName, grp.keeper, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	H.renderTabs()
@@ -6423,7 +6511,7 @@ function H.showTitle()
 	root.BackgroundTransparency = 1
 	root.Parent = layer
 	local box = Instance.new("Frame")
-	box.BackgroundColor3 = COLORS.cover
+	box.BackgroundColor3 = COLORS.leather
 	box.BackgroundTransparency = 0.04
 	box.BorderSizePixel = 0
 	box.Parent = root
@@ -6439,7 +6527,8 @@ function H.showTitle()
 	local pages = Instance.new("ScrollingFrame")
 	pages.Size = UDim2.new(1, -12, 1, -12)
 	pages.Position = UDim2.fromOffset(6, 6)
-	pages.BackgroundTransparency = 1
+	pages.BackgroundColor3 = COLORS.paper
+	corner(pages, 6)
 	pages.BorderSizePixel = 0
 	pages.ScrollBarThickness = 3
 	pages.ScrollBarImageColor3 = UI_BRASS
@@ -6449,7 +6538,7 @@ function H.showTitle()
 	pages.Parent = box
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 8)
-	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6)
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 15), UDim.new(0, 15)
 	pad.Parent = pages
 	local list = Instance.new("UIListLayout")
 	list.Padding = UDim.new(0, 8)
@@ -6468,10 +6557,10 @@ function H.showTitle()
 	local head = Instance.new("Frame")
 	head.LayoutOrder = 1
 	head.Size = UDim2.new(1, 0, 0, 52)
-	head.BackgroundColor3 = COLORS.paper
+	head.BackgroundTransparency = 1
 	head.BorderSizePixel = 0
 	head.Parent = pages
-	corner(head, 6)
+	pageRule(head, UDim2.new(0, 2, 1, -3), UDim2.new(1, -4, 0, 1))
 	local seal = Instance.new("ImageLabel")
 	seal.Size = UDim2.fromOffset(34, 34)
 	seal.Position = UDim2.fromOffset(10, 9)
@@ -6480,7 +6569,7 @@ function H.showTitle()
 	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
 	seal.ImageColor3 = COLORS.brown
 	seal.Parent = head
-	local title = mkLabel(head, "선장의 항해 일지", 19, COLORS.ink, true)
+	local title = mkLabel(head, "선장의 항해 일지", 22, COLORS.ink, true)
 	title.Position = UDim2.fromOffset(53, 0)
 	title.Size = UDim2.new(1, -60, 1, 0)
 	title.AutomaticSize = Enum.AutomaticSize.None
@@ -6496,12 +6585,12 @@ function H.showTitle()
 		resume.LayoutOrder = 2
 		resume.TextSize = 18
 		resume.TextColor3 = COLORS.ink
-		local log = mkLabel(pages, string.format("%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), 13, COLORS.text, false, 3)
+		local log = mkLabel(pages, string.format("%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), 13, COLORS.brown, true, 3)
 		log.TextXAlignment = Enum.TextXAlignment.Center
 	end
 	local confirmed = false
 	local newBtn
-	newBtn = mkButton(pages, "새로운 항해", if view then COLORS.blue else COLORS.gold, UDim2.new(1, 0, 0, 50), function()
+	newBtn = mkButton(pages, "새로운 항해", if view then COLORS.leather else COLORS.gold, UDim2.new(1, 0, 0, 50), function()
 		if view and not confirmed then
 			confirmed = true
 			newBtn.Text = "저장이 사라져요. 한 번 더 누르면 새로 시작"
@@ -6527,12 +6616,12 @@ function H.showTitle()
 	horizontal.FillDirection = Enum.FillDirection.Horizontal
 	horizontal.Padding = UDim.new(0, 8)
 	horizontal.Parent = controls
-	mkButton(controls, "설정", COLORS.coverRaised, UDim2.new(0.5, -4, 1, 0), function() openOptions() end)
+	mkButton(controls, "설정", COLORS.leather, UDim2.new(0.5, -4, 1, 0), function() openOptions() end)
 	local function musicLabel()
 		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
 	end
 	local musicBtn
-	musicBtn = mkButton(controls, musicLabel(), COLORS.coverRaised, UDim2.new(0.5, -4, 1, 0), function()
+	musicBtn = mkButton(controls, musicLabel(), COLORS.leather, UDim2.new(0.5, -4, 1, 0), function()
 		Sfx.setMusicEnabled(not Sfx.state())
 		musicBtn.Text = musicLabel()
 	end)
