@@ -77,4 +77,9 @@ return {
  sfx_cargo_drop="rbxassetid://89230499794380",
  sfx_workshop_chop="rbxassetid://97074628739544",
  sfx_quest_book_close="rbxassetid://87632116827097",
+ sfx_naval_cannon="rbxassetid://112862937391821",
+ sfx_naval_hull_hit="rbxassetid://94903753935271",
+ sfx_naval_splash="rbxassetid://108965232471057",
+ sfx_naval_ram="rbxassetid://103763240843899",
+ sfx_naval_sink="rbxassetid://105783328504051",
 }
