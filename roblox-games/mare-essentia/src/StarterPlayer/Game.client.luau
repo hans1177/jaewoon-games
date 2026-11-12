@@ -1661,6 +1661,7 @@ local function sail(portId)
 	Sfx.music("music_sea")
 	Sfx.ambient({ "sfx_waves", "sfx_wind" })
 	Sfx.play("sfx_sail")
+	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
 		local vk = view and view.voyageEvent and view.voyageEvent.kind
@@ -6136,6 +6137,14 @@ end)
 
 openTab = function(tabId)
 	currentTab = tabId
+	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
+	if tabId == "map" then
+		Sfx.play("sfx_chart_unfold", 0.28)
+	elseif tabId == "codex" or tabId == "quest" then
+		Sfx.play("sfx_book_turn", 0.24)
+	elseif tabId == "crew" then
+		Sfx.play("sfx_ship_cabin_door", 0.25)
+	end
 	if tabId ~= "battle" then
 		equipped = nil
 	end
