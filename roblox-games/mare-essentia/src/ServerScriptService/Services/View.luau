@@ -444,6 +444,8 @@ return function(D, S)
 					id = q.id,
 					name = q.name,
 					summary = q.summary,
+					story = q.story,
+					strand = q.strand or (if q.companionId then "companion" else nil),
 					kind = q.kind,
 					progress = S.Quest.progress(state, q),
 					amount = q.amount,
@@ -456,7 +458,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, story = q.story, strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 

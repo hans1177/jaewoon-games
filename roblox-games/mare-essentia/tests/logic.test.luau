@@ -1674,6 +1674,23 @@ do
 	check("companions sanitized", back and #back.companions == 2 and back.companions[1] == "c_merian" and back.companions[2] == "c_boyle")
 	check("bad specialty dropped", back and back.specialty == nil)
 
+	-- 지역 주점 동료: 사연을 들어야 영입
+	do
+		local hs = newState("france")
+		hs.fame, hs.coins = 100, 5000
+		check("hero locked before story", not handlers.Recruit(hs, { companionId = "h_england" }))
+		hs.story.h_england_1 = 1
+		check("hero recruit after story", handlers.Recruit(hs, { companionId = "h_england" }) and table.find(hs.companions, "h_england") ~= nil)
+		for _, c in D.Specialties.Companions do
+			if c.requiresStory then
+				check("hero story exists " .. c.id, D.Story.ById[c.requiresStory] ~= nil and D.Story.ById[c.requiresStory].portId == c.homePort)
+				check("hero talk " .. c.id, D.CompanionTalk.Talk[c.id] ~= nil)
+			end
+		end
+		local qs = newState("england")
+		qs.history.seen.a, qs.history.seen.b = 1, 1
+		check("history quest progress", S.Quest.progressAny(qs, D.Quests.ById.q_hist_2) == 2)
+	end
 	-- 출신 성분
 	do
 		local base = S.State.new("england", 1700, nil)

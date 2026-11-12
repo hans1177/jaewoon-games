@@ -1278,8 +1278,22 @@ local function call(action, payload)
 			snd = "sfx_fanfare"
 		elseif action == "BuyGear" or action == "BuyShip" or action == "BuyEscort" or action == "Invest" or action == "Feast" then
 			snd = "sfx_coin"
-		elseif action == "Sail" then
+		elseif action == "Sail" or action == "HistoryChoose" then
 			snd = "sfx_horn"
+		elseif action == "Accept" or action == "PlayStory" then
+			snd = "sfx_bell" -- 퀘스트·이야기의 시작을 알리는 종
+		elseif action == "Claim" or action == "IntroCompanion" then
+			snd = "sfx_fanfare" -- 퀘스트 완료·새 동료
+		elseif action == "TurnIn" then
+			snd = "sfx_coin"
+		elseif action == "IntroName" then
+			snd = "sfx_buy" -- 장부에 도장 찍는 소리
+		end
+		local msg = result.message or ""
+		if not snd and string.find(msg, "퀘스트 조건 달성", 1, true) then
+			snd = "sfx_bell"
+		elseif (action == "Claim" or action == "Accept") and string.find(msg, "+", 1, true) and string.find(msg, "코인", 1, true) then
+			task.delay(0.5, Sfx.play, "sfx_coin") -- 보상 코인이 들어오는 소리
 		end
 		if snd then
 			Sfx.play(snd)
@@ -2097,7 +2111,20 @@ function playStory(ev)
 	overlay.ZIndex = 60
 	local layer = overlayGui("Overlay", 20)
 	overlay.Parent = layer
-	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
+	-- 장면 분위기에 맞는 음악: 끝나면 원래 음악으로 돌아간다
+	local prevStoryMusic = Sfx.currentName()
+	do
+		local mood = ({ tavern = "music_market", storm = "music_battle", palace = "music_harbor", library = "music_harbor", observatory = "music_sea", ruins = "music_sea", harbor = "music_harbor" })[ev.art]
+		if mood then
+			Sfx.music(mood)
+		end
+	end
+	overlay.Destroying:Connect(function()
+		if prevStoryMusic then
+			Sfx.music(prevStoryMusic)
+		end
+		task.defer(function() layer:Destroy() end)
+	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
 	H.paintScene(picture, ev.art)
@@ -4361,6 +4388,10 @@ function RENDERERS.quest()
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "진행 중인 퀘스트가 없어요.", 13, COLORS.muted, false) end)
 	end
+	local STRAND = { companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
+	local function strandText(q)
+		return (if q.strand then "[" .. STRAND[q.strand] .. "] " else "") .. q.summary .. (if q.story then "\n" .. q.story else "")
+	end
 	for _, q in view.quests.active do
 		add(function()
 			local buttons = {}
@@ -4368,7 +4399,7 @@ function RENDERERS.quest()
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
 			table.insert(buttons, { text = "보상", color = COLORS.green, onClick = function() call("Claim", { questId = q.id }) end, enabled = q.progress >= q.amount })
-			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", q.summary, math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, 68)
+			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 120 else 68)
 		end)
 	end
 	add(function() return mkHeader(content, "받을 수 있는 퀘스트") end)
@@ -4381,9 +4412,9 @@ function RENDERERS.quest()
 		add(function()
 			if q.auto then
 				-- 발견·방문·연구 퀘스트는 수락하지 않아도 조건을 채우면 자동으로 보고되고 보상이 들어온다
-				return mkRow(content, q.name, string.format("%s\n자동 보고 · 진행 %d/%d · 보상 %d코인", q.summary, math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, 64)
+				return mkRow(content, q.name, string.format("%s\n자동 보고 · 진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, if q.story then 116 else 64)
 			end
-			return mkRow(content, q.name, string.format("%s\n보상 %d코인", q.summary, q.rewardCoins), {
+			return mkRow(content, q.name, string.format("%s\n보상 %d코인", strandText(q), q.rewardCoins), {
 				{ text = "수락", color = COLORS.blue, onClick = function() call("Accept", { questId = q.id }) end },
 			}, 64)
 		end)
@@ -5476,8 +5507,7 @@ renderTitle = function()
 	end
 	local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
 	local pro = N.Prologues[cur.id]
-	local hero = if pro then string.match(pro.title, "·%s*(.+)$") else nil
-	tLabel(info, cur.name .. (if hero then "  ·  " .. hero else ""), 17, GOLD, true)
+	tLabel(info, cur.name, 17, GOLD, true)
 	tLabel(info, "출발 항구  " .. PortData.Ports[cur.startPort].name, 12, COLORS.text, true)
 	tLabel(info, cur.summary, 12, COLORS.muted, false)
 
@@ -5859,16 +5889,24 @@ end)
 do
 	local popupFor, popupGui = nil, nil
 	local dismissed = {}
+	local histPrev = nil
 	local function closePopup()
 		if popupGui then
 			popupGui:Destroy()
 			popupGui = nil
 			popupFor = nil
+			if histPrev then
+				Sfx.music(histPrev)
+				histPrev = nil
+			end
 		end
 	end
 	local function openPopup(ev)
 		closePopup()
 		popupFor = ev.id
+		histPrev = Sfx.currentName()
+		Sfx.music("music_sea") -- 장중한 바다 음악으로 사건의 무게를 더한다
+		Sfx.play("sfx_bell")
 		local layer = overlayGui("HistoryEvent", 55)
 		popupGui = layer
 		local dim = Instance.new("Frame")
@@ -6170,6 +6208,7 @@ end
 	local function reveal(value, name)
 		local layer = overlayGui("PortraitReveal", 59)
 		local big = portraitImg(layer, value, 240, 300)
+		Sfx.play("sfx_fanfare", 0.6)
 		if big then
 			big.AnchorPoint = Vector2.new(0.5, 0.5)
 			big.Position = UDim2.fromScale(0.3, 0.45)
