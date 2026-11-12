@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-cp8qnm",
+      "worker": "vibe2",
+      "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
+      "gameId": "dice-battle-board",
+      "files": [
+        "roblox-games/dice-battle-board/client/Game.client.luau",
+        "roblox-games/dice-battle-board/shared/GameConfig.luau",
+        "roblox-games/dice-battle-board/server/Game.server.luau",
+        "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+        "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+        "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "d697ef97538bf1a8827eae26f115c11e1cbe0171",
+      "runId": "43303231787",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-12T20:51:37.073Z",
+      "expiresAt": "2026-11-12T21:36:37.073Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:dice-battle-board-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
