@@ -42,14 +42,15 @@ local CARD_STAGE = {
 	hero_captain = { art="CardArt/event_cook_voyage", actor={"People","OldClassy_Male"}, prop={"Naval","ship-large"}, motion="command", scene="기함의 선장" },
 	ironclad = { art="CardArt/event_anglo_dutch_war", actor={"People","KayKit_Knight"}, prop={"Relics","shield-rectangle"}, motion="guard", scene="철갑 방어" },
 	sniper = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Male"}, motion="aim", scene="전술 저격" },
-	-- 등록된 실제 '맹수' 3D 모델 없음: 다른 동물을 맹수로 바꿔치기하지 않는다.
-	beast = { art="CardArt/event_uluru", motion="storm", scene="맹수의 기세" },
-	-- 문화권 병종: 현존하는 해당 역할의 전용 모델이 없으면 승인된 무기 또는 지역 도감 도판만 쓴다.
+	-- 직접 제작한 고유 도판 5종. 3D 임의 모델 대신 원화 중심의 행동 장면으로 구분한다.
+	-- Open Cloud 원화 등록 ID가 AssetIds에 있을 때만 전용 삽화를 사용한다.
+	beast = { art="CardArt/event_uluru", newArt="CardArt/event_unit_beast", motion="pounce", scene="파도 헤치며 도약하는 호랑이" },
+	-- 문화권별 실제 역할과 장비를 보존하고, 미확인 복식/3D 모델을 임의 대체하지 않는다.
 	samurai = { art="CardArt/event_chart_east_asia", prop={"Relics","weapon-sword"}, motion="slash", scene="동아시아 검술" },
-	firelance = { art="CardArt/event_chart_east_asia", motion="fire", scene="화창병의 화염" },
-	jaguar = { art="CardArt/event_chart_south_america", motion="thrust", scene="신대륙 재규어 전사" },
-	janissary = { art="CardArt/event_chart_mediterranean", motion="aim", scene="오스만 예니체리" },
-	camel = { art="CardArt/event_chart_indian_ocean", motion="swell", scene="사막 기병의 진군" },
+	firelance = { art="CardArt/event_chart_east_asia", newArt="CardArt/event_unit_firelance", motion="fire", scene="화창병의 화염 분출" },
+	jaguar = { art="CardArt/event_chart_south_america", newArt="CardArt/event_unit_jaguar", motion="pounce", scene="흑요석 검의 재규어 전사" },
+	janissary = { art="CardArt/event_chart_mediterranean", newArt="CardArt/event_unit_janissary", motion="aim", scene="오스만 예니체리의 일제 사격" },
+	camel = { art="CardArt/event_chart_indian_ocean", newArt="CardArt/event_unit_camel", motion="gallop", scene="모래바람을 가르는 낙타 기병" },
 	raider = { art="CardArt/event_piracy", actor={"People","Pirate_Male"}, prop={"Naval","ship-pirate-small"}, motion="board", scene="해상 습격대" },
 	-- 특수 카드는 실제 규칙(날씨·소각·순풍·군기·회군)과 같은 사건으로 표현한다.
 	scorch = { art="CardArt/event_harbor_fire", prop={"Naval","ship-wreck"}, motion="fire", scene="화염에 휩싸인 갑판" },
@@ -861,7 +862,7 @@ function NavalBattle.play(opts)
 			painting.BackgroundTransparency = 1
 			painting.ScaleType = Enum.ScaleType.Crop
 			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
-			local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
+			local artKey = (CARD_STAGE[c.id] and ((CARD_STAGE[c.id].newArt and AssetIds[CARD_STAGE[c.id].newArt] and CARD_STAGE[c.id].newArt) or CARD_STAGE[c.id].art)) or CARD_SEA
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
 			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
@@ -1056,14 +1057,28 @@ function NavalBattle.play(opts)
 				local wave = math.sin(elapsed * (if spec.motion == "storm" then 3.4 else 2.15))
 				local pulse = math.max(0, math.sin(elapsed * 2.7 - 1)) ^ 5
 				local wind = math.sin(elapsed * 1.17)
-				image.Position = UDim2.fromScale(0.5 + (if spec.motion == "retreat" then 0.09 * wind else 0.013 * wind), 0.5 + (if spec.motion == "storm" or spec.motion == "beast" then 0.031 else 0.014) * wave)
+				-- 고유 인물 도판은 카드 내부에서 전진·반동·질주로 몸의 움직임을 표현한다.
+				local lunge = if spec.motion == "pounce" then 0.048 * pulse
+					elseif spec.motion == "gallop" then 0.025 * math.sin(elapsed * 5.8)
+					elseif spec.motion == "aim" then -0.018 * pulse
+					else 0
+				image.Position = UDim2.fromScale(
+					0.5 + (if spec.motion == "retreat" then 0.09 * wind else 0.013 * wind) - lunge,
+					0.5 + (if spec.motion == "storm" or spec.motion == "pounce" then 0.031
+						elseif spec.motion == "gallop" then 0.023 else 0.014) * wave - 0.018 * math.abs(lunge))
+				image.Rotation = if spec.motion == "pounce" then -2.8 * pulse
+					elseif spec.motion == "gallop" then 1.1 * wave else 0
 				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.08, 0.72 + wave * 0.027)
 				mist.BackgroundTransparency = if spec.motion == "storm" or spec.motion == "fog" then 0.48 + 0.14 * wave
 					elseif spec.motion == "fire" then 0.62 + 0.2 * pulse
+					elseif spec.motion == "gallop" then 0.6 + 0.16 * wave
+					elseif spec.motion == "pounce" then 0.69 + 0.13 * pulse
 					elseif spec.motion == "clear" or spec.motion == "wind" then 0.82 + 0.06 * wave
 					else 0.74 + 0.05 * wave
 				combatFlash.BackgroundTransparency = if spec.motion == "fire" then 1 - 0.45 * pulse
 					elseif spec.motion == "storm" then if math.sin(elapsed * 0.53) > 0.985 then 0.57 else 1
+					elseif spec.motion == "pounce" then 1 - 0.22 * pulse
+					elseif spec.motion == "aim" then 1 - 0.28 * pulse
 					elseif spec.motion == "heal" or spec.motion == "guard" or spec.motion == "clear" then 0.94 + 0.05 * wind
 					else 1
 				shine.Position = UDim2.fromScale((elapsed % 5) / 5 * 1.8 - 0.5, -0.2)
@@ -1167,7 +1182,7 @@ function NavalBattle.play(opts)
 			if not card then focusFrame.Visible = false; return end
 			focusFrame.Visible = true
 			local meta = CARD_STAGE[card.id]
-			local artKey = if meta then meta.art else CARD_SEA
+			local artKey = if meta then (if meta.newArt and AssetIds[meta.newArt] then meta.newArt else meta.art) else CARD_SEA
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusName.Text = card.name
 			local row = if card.row then BC.ROW_NAME[card.row] or "" else "전술"
@@ -1295,7 +1310,7 @@ function NavalBattle.play(opts)
 				image.Size = UDim2.fromScale(1.17, 1.17)
 				image.BackgroundTransparency = 1
 				image.ScaleType = Enum.ScaleType.Crop
-				local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
+				local artKey = (CARD_STAGE[c.id] and ((CARD_STAGE[c.id].newArt and AssetIds[CARD_STAGE[c.id].newArt] and CARD_STAGE[c.id].newArt) or CARD_STAGE[c.id].art)) or CARD_SEA
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
 				image.Parent = art
