@@ -13,6 +13,7 @@ on:
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
       - 'tools/devloop/assets_wanted.py'
       - 'tools/mare-essentia-upload-assets.mjs'
+      - 'roblox-games/mare-essentia/tools/make_cargo.mjs'
   # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
   schedule:
     - cron: '20 19 * * *'
@@ -54,6 +55,42 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Author pending exact Cargo models in existing inbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          node roblox-games/mare-essentia/tools/make_cargo.mjs
+
+      - name: Persist owner-requested original Cargo candidates to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- roblox-games/mare-essentia/assets/inbox/Cargo/
+          if git diff --cached --quiet; then
+            echo "NO_NEW_CARGO_FILES"
+          else
+            git commit -m "Mare Essentia: preserve 44 original Cargo 3D candidates"
+            pushed=false
+            for attempt in 1 2 3 4; do
+              git fetch --no-tags --depth=32 origin main
+              if ! git merge-base --is-ancestor FETCH_HEAD HEAD; then
+                git rebase FETCH_HEAD
+              fi
+              if git push origin HEAD:main; then
+                pushed=true
+                break
+              fi
+            done
+            if [[ "$pushed" != "true" ]]; then
+              echo "::error::CARGO_MAIN_PERSIST_FAILED"
+              exit 1
+            fi
+            echo "CARGO_MAIN_PERSIST_SUCCESS"
+          fi
+          echo "CARGO_SOURCE_ONLY=YES CARGO_RUNTIME_VERIFIED=NO"
 
       - name: Practice and verify approved trade goods using existing asset ledger
         id: trade_goods
