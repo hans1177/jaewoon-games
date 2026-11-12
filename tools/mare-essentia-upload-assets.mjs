@@ -281,7 +281,7 @@ for (const item of plan) {
     }
     const form = new FormData();
     form.set('request', JSON.stringify({
-      assetType: item.assetType, displayName: 'MareEssentia ' + id,
+      assetType: item.assetType, displayName: ('MareEssentia ' + id).slice(0, 48),
       description: item.assetType !== 'Model'
         ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
           : item.kind === 'CardArt' ? 'Original illustrated discovery art for Mare Essentia; subject sources and atlas coordinates in assets/SOURCES.md and assets/cardart/world-catalog.json'
