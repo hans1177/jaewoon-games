@@ -546,6 +546,11 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/local m = tpl:Clone\(\)/);
   assert.match(client,/local world = Instance\.new\("WorldModel"\)/);
   assert.match(client,/if #itemMotion >= 10 then return end/);
+  // 실제 Cargo 표본은 작은 화면에서 모서리 투영에 맞춰 확대하며 리스트 회전을 제한한다.
+  assert.match(client,/if kind == "Cargo" and px < 90 then/);
+  assert.match(client,/cf:VectorToWorldSpace\(Vector3\.new\(half\.X \* x, half\.Y \* y, half\.Z \* z\)\)/);
+  assert.match(client,/reach = fitted \* 1\.06/);
+  assert.match(client,/if px >= 90 then\s+addItemMotion/);
   assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
 });
 
