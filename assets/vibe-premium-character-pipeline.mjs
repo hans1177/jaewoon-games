@@ -1,4 +1,5 @@
-// Authoring bridge for original premium stylized character assets.
+// 파일명: assets/vibe-premium-character-pipeline.mjs
+// [메인] 승인된 실제 캐릭터의 리그·변형·표정 제어. 원본 메쉬 자동대체 금지.
 // Supports imported GLTF skinned meshes, facial blendshapes, finger bones, keyframe tracks and PBR textures.
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 export const VIBE_FACE_CHANNELS=Object.freeze(['browInnerUp','browDownLeft','browDownRight','eyeBlinkLeft','eyeBlinkRight','eyeWideLeft','eyeWideRight','cheekPuff','jawOpen','mouthSmileLeft','mouthSmileRight','mouthFrownLeft','mouthFrownRight','mouthPucker','mouthFunnel','mouthClose','noseSneerLeft','noseSneerRight']);
@@ -84,6 +85,135 @@ export async function applyVibePBRTextures(THREE,model,{baseColor,normal,roughne
  });
  return {textures,dispose(){for(const texture of Object.values(textures))texture.dispose()}};
 }
+// [메인: 리그 검사] 실측 스킨 가중치와 본 구성을 진단한다. 결손을 가짜 뼈로 대체하지 않는다.
+export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
+ if(!model?.traverse)throw Error('A Three.js model is required');
+ const bones=[],skinned=[],issues=[];let sampled=0,unweighted=0,unnormalized=0,invalidWeights=0;
+ model.traverse(o=>{
+  if(o?.isBone)bones.push(o);
+  if(!o?.isSkinnedMesh)return;
+  skinned.push(o);
+  const a=o.geometry?.attributes?.skinWeight;
+  if(!a||!Number.isInteger(a.count)||a.count<1){issues.push('MISSING_SKIN_WEIGHTS:'+String(o.name||'unnamed'));return;}
+  const count=Math.min(a.count,Math.max(1,Math.floor(sampleLimit))),step=Math.max(1,Math.floor(a.count/count));
+  for(let i=0;i<a.count&&sampled<sampleLimit;i+=step){
+   const comps=a.itemSize||4;let sum=0;
+   for(let j=0;j<comps;j++){const v=Number(a.getComponent?a.getComponent(i,j):a.array?.[i*comps+j]);if(!Number.isFinite(v)||v<0){invalidWeights++;continue;}sum+=v;}
+   sampled++;if(sum<.0001)unweighted++;else if(Math.abs(sum-1)>.035)unnormalized++;
+  }
+ });
+ if(!bones.length)issues.push('NO_BONES');
+ if(!skinned.length)issues.push('NO_SKINNED_MESH');
+ if(unweighted)issues.push('UNWEIGHTED_VERTICES');
+ if(unnormalized)issues.push('NON_NORMALIZED_SKIN_WEIGHTS');
+ if(invalidWeights)issues.push('INVALID_SKIN_WEIGHTS');
+ return Object.freeze({bones:bones.length,skinnedMeshes:skinned.length,weightsSampled:sampled,
+  unweighted,unnormalized,invalidWeights,issues:Object.freeze(issues),
+  productionEligible:issues.length===0,rigRepairPerformed:false,sourcePreserved:true});
+}
+
+// [유틸: 본 식별] 주요 로블록스·믹사모·블렌더 이름을 기존 실제 본에 대응한다.
+function canonicalVibeRigBone(name){
+ let n=String(name||'').toLowerCase().replace(/^mixamorig:?/,'').replace(/[^a-z0-9]/g,'');
+ let side='';
+ if(n.startsWith('left')){side='l';n=n.slice(4)}
+ else if(n.startsWith('right')){side='r';n=n.slice(5)}
+ else if(n.endsWith('left')){side='l';n=n.slice(0,-4)}
+ else if(n.endsWith('right')){side='r';n=n.slice(0,-5)}
+ else if(n.length>2&&/[lr]$/.test(n)){side=n.slice(-1);n=n.slice(0,-1)}
+ const synonyms={arm:'upperarm',forearm:'lowerarm',hand:'hand',upleg:'upperleg',thigh:'upperleg',leg:'lowerleg',
+  calf:'lowerleg',foot:'foot',toe:'toe',wrist:'hand',hips:'hips',pelvis:'hips'};
+ return side+(synonyms[n]||n);
+}
+
+// [메인: 리타게팅] 서로 다른 승인 모델의 실제 뼈 회전만 복사한다. 위치/게임 Root는 불변.
+export function createVibeRigRetargeter(sourceModel,targetModel,{mapping={},weight=1}={}){
+ if(!sourceModel?.traverse||!targetModel?.traverse)throw Error('Source and target models required');
+ const source=new Map(),target=new Map();
+ sourceModel.traverse(o=>{if(o?.isBone&&o.quaternion?.clone)source.set(canonicalVibeRigBone(o.name),o)});
+ targetModel.traverse(o=>{if(o?.isBone&&o.quaternion?.clone)target.set(canonicalVibeRigBone(o.name),o)});
+ const pairs=[],missing=[];
+ for(const [key,dest] of target){
+  if(/^(?:hips|root|lhips|rhips)$/.test(key))continue;
+  const sourceKey=canonicalVibeRigBone(mapping[dest.name]||dest.name);
+  const donor=source.get(sourceKey);
+  if(!donor){missing.push(dest.name);continue;}
+  pairs.push({donor,dest,sourceRest:donor.quaternion.clone(),targetRest:dest.quaternion.clone()});
+ }
+ const blend=clamp(Number(weight)||0);
+ return {
+  matched:pairs.length,missing:Object.freeze(missing),
+  update(){
+   for(const pair of pairs){
+    const delta=pair.sourceRest.clone().invert().multiply(pair.donor.quaternion);
+    const end=pair.targetRest.clone().multiply(delta);
+    pair.dest.quaternion.copy(pair.targetRest).slerp(end,blend);
+   }
+   return pairs.length;
+  },
+  reset(){for(const pair of pairs)pair.dest.quaternion.copy(pair.targetRest)}
+ };
+}
+
+// [메인: 관절 제약] 현재 본의 휴식 포즈를 기준으로 안전 회전 범위를 적용한다.
+export function createVibeJointConstraints(model,{limits={}}={}){
+ if(!model?.traverse)throw Error('A Three.js model is required');
+ const joints=new Map();
+ model.traverse(o=>{
+  if(!o?.isBone||!o.rotation)return;
+  const key=canonicalVibeRigBone(o.name),bound=limits[o.name]||limits[key];
+  if(!bound)return;
+  joints.set(key,{bone:o,rest:{x:o.rotation.x,y:o.rotation.y,z:o.rotation.z},
+   max:{x:Math.max(0,Number(bound.x)||0),y:Math.max(0,Number(bound.y)||0),z:Math.max(0,Number(bound.z)||0)}});
+ });
+ return{
+  supported:[...joints.keys()],
+  apply(pose={}){
+   let adjusted=0;
+   for(const [name,angle] of Object.entries(pose)){
+    const joint=joints.get(canonicalVibeRigBone(name));if(!joint)continue;
+    for(const axis of ['x','y','z']){
+     if(!Number.isFinite(angle?.[axis]))continue;
+     joint.bone.rotation[axis]=joint.rest[axis]+Math.max(-joint.max[axis],Math.min(joint.max[axis],angle[axis]));
+    }
+    adjusted++;
+   }
+   return adjusted;
+  },
+  reset(){for(const j of joints.values())for(const axis of ['x','y','z'])j.bone.rotation[axis]=j.rest[axis]}
+ };
+}
+
+// [메인: 옷·근육] 원본의 실제 보조 모프만 부드럽게 구동하며 새 메쉬나 가짜 모프를 생성하지 않는다.
+export function createVibeSecondaryDeformation(model,{channels=['clothSwing','hairSwing','muscleFlex','capeSwing'],response=10}={}){
+ if(!model?.traverse)throw Error('A Three.js model is required');
+ const targets=new Map();
+ model.traverse(mesh=>{
+  if(!mesh?.morphTargetDictionary||!mesh?.morphTargetInfluences)return;
+  for(const name of channels){
+   const index=mesh.morphTargetDictionary[name];if(!Number.isInteger(index))continue;
+   if(!targets.has(name))targets.set(name,[]);
+   targets.get(name).push({mesh,index,rest:Number(mesh.morphTargetInfluences[index])||0});
+  }
+ });
+ return{
+  available:[...targets.keys()],
+  update(dt,signals={}){
+   if(!Number.isFinite(dt)||dt<=0)return 0;
+   const alpha=1-Math.exp(-Math.min(.1,dt)*Math.max(.1,response));
+   for(const [name,entries] of targets){
+    const goal=clamp(Number(signals[name])||0);
+    for(const {mesh,index,rest} of entries){
+     const current=Number(mesh.morphTargetInfluences[index])||0;
+     mesh.morphTargetInfluences[index]=current+(Math.max(0,Math.min(1,rest+goal))-current)*alpha;
+    }
+   }
+   return targets.size;
+  },
+  reset(){for(const entries of targets.values())for(const {mesh,index,rest} of entries)mesh.morphTargetInfluences[index]=rest}
+ };
+}
+
 export const vibePremiumAssetSpec=Object.freeze({
  geometry:{recommendedTriangles:[25000,85000],lods:3,uvSets:2},
  face:{blendshapeChannels:VIBE_FACE_CHANNELS.length,eyeControls:2,jawJoint:true},
