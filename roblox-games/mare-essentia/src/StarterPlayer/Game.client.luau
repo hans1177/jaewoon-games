@@ -303,8 +303,7 @@ local SHIP_ICON = {
 	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
 }
 
--- 아이템 표시 연출: 큰 3D 아이템은 천천히 회전(3D), 큰 상품 그림은 기울기·숨쉬기(2.5D 카드)로 입체감을 준다.
--- 화면에 남아 있는 것만, 최대 10개까지 한 곳에서 갱신해 모바일 부담을 막는다. (새 도형은 만들지 않고 기존 모델·그림만 움직인다)
+-- 화면에 남아 있는 큰 입체 표본만 최대 10개까지 회전시킨다.
 local itemMotion = {}
 local itemMotionConn
 local function addItemMotion(entry)
@@ -319,13 +318,8 @@ local function addItemMotion(entry)
 			if not e.gui.Parent or not e.gui:IsDescendantOf(game) then
 				table.remove(itemMotion, i)
 			elseif e.gui.AbsoluteSize.X > 0 then
-				if e.model then
-					local a = t * 0.8 + e.phase
-					e.model:PivotTo(CFrame.new(e.center) * CFrame.Angles(0, a, 0) * CFrame.new(-e.center) * e.base)
-				else
-					e.gui.Rotation = math.sin(t * 1.3 + e.phase) * 3.5
-					if e.scale then e.scale.Scale = 1 + math.sin(t * 1.9 + e.phase) * 0.03 end
-				end
+				local a = t * 0.8 + e.phase
+				e.model:PivotTo(CFrame.new(e.center) * CFrame.Angles(0, a, 0) * CFrame.new(-e.center) * e.base)
 			end
 		end
 		if #itemMotion == 0 and itemMotionConn then
@@ -335,17 +329,36 @@ local function addItemMotion(entry)
 	end)
 end
 
+-- 삽화·초상·입체 표본은 같은 백과사전 받침 위에 표시한다.
+function H.iconPaper(gui, px)
+	gui.BackgroundColor3 = COLORS.paper
+	gui.BackgroundTransparency = 0
+	gui.BorderSizePixel = 0
+	gui.ClipsDescendants = true
+	corner(gui, if px < 36 then 4 else 6)
+	local wash = Instance.new("UIGradient")
+	wash.Color = ColorSequence.new(Color3.fromRGB(255, 254, 247), Color3.fromRGB(216, 195, 160))
+	wash.Rotation = 90
+	wash.Parent = gui
+	local border = Instance.new("UIStroke")
+	border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	border.Color = COLORS.brown
+	border.Thickness = 1
+	border.Transparency = 0.18
+	border.Parent = gui
+end
+
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
-	if kind == "Portraits" and portraitOffset and AssetIds["Portraits/" .. asset] then
+	if kind == "Portraits" and AssetIds["Portraits/" .. asset] then
 		local portrait = Instance.new("ImageLabel")
 		portrait.Size = UDim2.fromOffset(px, px)
-		portrait.BorderSizePixel = 0
-		portrait.BackgroundTransparency = 1
 		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
-		portrait.ImageRectOffset = portraitOffset
-		portrait.ImageRectSize = Vector2.new(256, 336)
-		portrait.ScaleType = Enum.ScaleType.Crop
-		corner(portrait, 8)
+		if portraitOffset then
+			portrait.ImageRectOffset = portraitOffset
+			portrait.ImageRectSize = Vector2.new(256, 336)
+		end
+		portrait.ScaleType = if portraitOffset then Enum.ScaleType.Crop else Enum.ScaleType.Fit
+		H.iconPaper(portrait, px)
 		portrait.Parent = parent
 		return portrait
 	end
@@ -354,34 +367,18 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
 		card.Size = UDim2.fromOffset(px, px)
-		card.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
-		card.BorderSizePixel = 0
-		corner(card, 8)
-		local gradient = Instance.new("UIGradient")
-		gradient.Color = ColorSequence.new(Color3.fromRGB(39, 50, 65), Color3.fromRGB(17, 23, 35))
-		gradient.Rotation = 90
-		gradient.Parent = card
+		H.iconPaper(card, px)
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
-			-- [2.5D] 같은 승인 원본의 그림·그림자층만 겹친다. 파츠·가짜 모델 생성 없음.
-			local imageId = "rbxassetid://" .. tostring(assetId)
-			local depth = math.max(2, math.floor(px * 0.07))
-			local shadow = Instance.new("ImageLabel")
-			shadow.Name = "DepthShadow"
-			shadow.Size = UDim2.new(1, -depth, 1, -depth)
-			shadow.Position = UDim2.fromOffset(depth, depth)
-			shadow.BackgroundTransparency = 1
-			shadow.Image = imageId
-			shadow.ImageColor3 = Color3.fromRGB(10, 12, 20)
-			shadow.ImageTransparency = 0.35
-			shadow.ScaleType = Enum.ScaleType.Fit
-			shadow.Parent = card
+			local inset = math.max(2, math.floor(px * 0.12))
 			local art = Instance.new("ImageLabel")
 			art.Name = "OriginalArt"
-			art.Size = UDim2.new(1, -depth, 1, -depth)
+			art.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
+			art.Position = UDim2.fromOffset(inset, inset)
 			art.BackgroundTransparency = 1
-			art.Image = imageId
+			art.Image = "rbxassetid://" .. tostring(assetId)
 			art.ScaleType = Enum.ScaleType.Fit
+			if kind == "Menu" then art.ImageColor3 = COLORS.brown end
 			art.Parent = card
 		else
 			-- 등록된 그림이 없는 경우 기존 상품 이름을 보존한다.
@@ -392,37 +389,22 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			nameTile.TextWrapped = true
 			nameTile.TextScaled = true
 			nameTile.Font = Enum.Font.GothamBold
-			nameTile.TextColor3 = Color3.fromRGB(232, 209, 154)
+			nameTile.TextColor3 = COLORS.ink
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 8), UDim.new(0, 8)
 			pad.Parent = nameTile
 			nameTile.Parent = card
 		end
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = Color3.fromRGB(214, 170, 82)
-		stroke.Transparency = 0.5
-		stroke.Parent = card
 		card.Parent = parent
-		if px >= 60 and assetId then
-			local sc = Instance.new("UIScale")
-			sc.Parent = card
-			addItemMotion({ gui = card, scale = sc })
-		end
 		return card
 	end
 	-- [교역품 3D] 승인된 Cargo 모델만 표시하고, 지연 로딩 동안에는 동일 상품 원화를 유지한다.
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
-	vf.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
-	vf.Ambient = Color3.fromRGB(148, 160, 177)
-	vf.LightColor = Color3.fromRGB(255, 237, 205)
-	vf.LightDirection = Vector3.new(-1, -1.5, -0.6).Unit
-	corner(vf, 8)
-	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(214, 170, 82)
-	st.Thickness = 1.5
-	st.Transparency = 0.3
-	st.Parent = vf
+	H.iconPaper(vf, px)
+	vf.Ambient = Color3.fromRGB(184, 173, 154)
+	vf.LightColor = Color3.fromRGB(255, 238, 204)
+	vf.LightDirection = Vector3.new(-0.8, -1.6, -0.55).Unit
 	local cam = Instance.new("Camera")
 	cam.FieldOfView = 35
 	cam.Parent = vf
@@ -474,7 +456,9 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		if originalId or knownId then
 			local image = Instance.new("ImageLabel")
 			image.Name = if originalId then "ApprovedGoodsArt" else "RegisteredModelThumbnail"
-			image.Size = UDim2.fromScale(1, 1)
+			local inset = math.max(2, math.floor(px * 0.10))
+			image.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
+			image.Position = UDim2.fromOffset(inset, inset)
 			image.BackgroundTransparency = 1
 			image.Image = if originalId then "rbxassetid://" .. tostring(originalId)
 				else "rbxthumb://type=Asset&id=" .. tostring(knownId) .. "&w=150&h=150"
@@ -488,7 +472,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			nameTile.Size = UDim2.fromScale(1, 1)
 			nameTile.Text = labelText or "자산 준비"
 			nameTile.TextWrapped = true
-			nameTile.TextColor3 = Color3.fromRGB(232, 209, 154)
+			nameTile.TextColor3 = COLORS.ink
 			nameTile.Font = Enum.Font.GothamBold
 			nameTile.TextSize = math.min(14, math.max(10, px / 4))
 			nameTile.Parent = vf
@@ -1217,17 +1201,12 @@ for i, d in H.DOCK do
 	menuLabel.TextColor3 = Color3.fromRGB(250, 236, 200)
 	menuLabel.Text = d[2]
 	menuLabel.Parent = b
-	local menuAssetId = AssetIds["Menu/" .. d[1]] or (if d[1] == "crew" then AssetIds["Menu/harbor"] else nil)
-	if menuAssetId then
-		local image = Instance.new("ImageLabel")
-		image.Name = "Icon"
-		image.BackgroundTransparency = 1
-		image.AnchorPoint = Vector2.new(0.5, 0)
-		image.Position = UDim2.new(0.5, 0, 0, 3)
-		image.Size = UDim2.fromOffset(31, 31)
-		image.ScaleType = Enum.ScaleType.Fit
-		image.Image = "rbxassetid://" .. tostring(menuAssetId)
-		image.Parent = b
+	local menuKey = if d[1] == "crew" and not AssetIds["Menu/crew"] then "harbor" else d[1]
+	if AssetIds["Menu/" .. menuKey] then
+		local icon = modelIcon(b, "Menu", menuKey, nil, 31)
+		icon.Name = "Icon"
+		icon.AnchorPoint = Vector2.new(0.5, 0)
+		icon.Position = UDim2.new(0.5, 0, 0, 3)
 	end
 	corner(b, 8)
 	do
@@ -5403,17 +5382,11 @@ function H.renderTabs()
 		if currentTab == id then
 			b.TextColor3 = Color3.fromRGB(32, 22, 8)
 		end
-		local menuAssetId = AssetIds["Menu/" .. id]
-		if menuAssetId then
+		if AssetIds["Menu/" .. id] then
 			b.Text = ""
-			local image = Instance.new("ImageLabel")
-			image.Name = "Icon"
-			image.BackgroundTransparency = 1
-			image.Position = UDim2.new(0, 4, 0.5, -12)
-			image.Size = UDim2.fromOffset(24, 24)
-			image.ScaleType = Enum.ScaleType.Fit
-			image.Image = "rbxassetid://" .. tostring(menuAssetId)
-			image.Parent = b
+			local icon = modelIcon(b, "Menu", id, nil, 24)
+			icon.Name = "Icon"
+			icon.Position = UDim2.new(0, 4, 0.5, -12)
 			local label = Instance.new("TextLabel")
 			label.Name = "Label"
 			label.BackgroundTransparency = 1
@@ -6505,6 +6478,7 @@ function H.showTitle()
 	seal.BackgroundTransparency = 1
 	seal.ScaleType = Enum.ScaleType.Fit
 	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
+	seal.ImageColor3 = COLORS.brown
 	seal.Parent = head
 	local title = mkLabel(head, "선장의 항해 일지", 19, COLORS.ink, true)
 	title.Position = UDim2.fromOffset(53, 0)
