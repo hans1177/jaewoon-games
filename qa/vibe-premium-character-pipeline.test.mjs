@@ -2,6 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 mobile preview exposes real model load failure instead of fallback PASS',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(html,/status\.dataset\.modelLoad='failed'/);
+ assert.match(html,/실제 모델 검증 실패/);
+ assert.match(html,/대체 캐릭터는 검증 대상 아님/);
+ assert.match(html,/console\.error\('\[Vibe 5\.9\] 실제 모델 로딩 실패'/);
+});
 test('facial channels control blendshape weights',()=>{
  const mesh={morphTargetDictionary:{jawOpen:0,smile:1},morphTargetInfluences:[0,0]};
  const model={traverse(fn){fn(mesh)}};
