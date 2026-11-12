@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-vj34p",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-studio-evolution-roblox-stability-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+        "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+        "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau"
+      ],
+      "baseSha": "3126db67b122e1e170dbd15178f108ce9987c593",
+      "runId": "43149930832",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-12T04:00:55.517Z",
+      "expiresAt": "2026-11-12T04:45:55.517Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
