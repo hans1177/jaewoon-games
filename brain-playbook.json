@@ -154,6 +154,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1794459561399
+    },
+    "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 항해, 교역, 백과#8c3d8a4956": {
+      "sig": "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 항해, 교역, 백과",
+      "kind": "ui",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "search": "local TABS = {",
+          "replace": "local TABS = {\n\t{ id = \"status\", name = \"상태\" },\n\t{ id = \"harbor\", name = \"항구\" },\n\t{ id = \"crew\", name = \"동료\" },\n\t{ id = \"yard\", name = \"조선소\" },\n}"
+        }
+      ],
+      "summary": "불필요한 탭 퀘스트·항해·교역·백과를 UI 탭 목록에서 제거했습니다",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1794460190639
     }
   }
 }
