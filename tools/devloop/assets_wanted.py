@@ -170,7 +170,10 @@ def trade_goods_practice():
             glb_valid = (len(header) == 12 and header[:4] == b"glTF"
                          and struct.unpack("<I", header[4:8])[0] == 2)
         registry_valid = (bool(asset) and bool(re.fullmatch(r"[1-9][0-9]*", str(asset.get("assetId") or "")))
-                          and asset.get("assetType") == "Model" and asset.get("license") == "CC0-1.0"
+                          and asset.get("assetType") == "Model"
+                          and asset.get("license") in ("CC0-1.0", "PROJECT_ORIGINAL_ART")
+                          and (asset.get("license") != "PROJECT_ORIGINAL_ART"
+                               or asset.get("sourceSha256") == source_hash)
                           and asset.get("usePermissionGranted") is True)
         goods_rights = (bool(good_image) and good_image.get("assetType") == "Image"
                         and good_image.get("usePermissionGranted") is True)
@@ -200,7 +203,7 @@ def trade_goods_practice():
     }
     three_d_audit = {
         "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
-        "method": "EXACT_GOOD_ROLE_REGISTERED_CC0_GLB_SOURCE_HASH_UNIVERSE_RIGHTS",
+        "method": "EXACT_GOOD_ROLE_REGISTERED_CC0_OR_PROJECT_ORIGINAL_GLB_SOURCE_HASH_UNIVERSE_RIGHTS",
         "autoUpdateTrigger": "EXISTING_ASSET_REGISTER_WORKFLOW_ON_APPROVED_SOURCE_CHANGE",
         "nativeRuntimeVerified": False, "automaticRuntimePromotionAllowed": False,
         "noUnconditionalSelfRequeue": True, "noNewPipeline": True,

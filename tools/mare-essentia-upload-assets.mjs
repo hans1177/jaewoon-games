@@ -87,11 +87,20 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const ext = path.extname(f).toLowerCase();
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
-    plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
+    // [원본 증빙] 기존 Cargo 업로더가 프로젝트 자체 제작 메시의 파일별 라이선스를 그대로 읽는다.
+    let sourceLicense = null;
+    if (kind === 'Cargo') {
+      try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, f + '.license.json'), 'utf8')); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (sourceLicense && (sourceLicense.license !== 'PROJECT_ORIGINAL_ART'
+        || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
+        throw new Error('CARGO_ORIGINAL_SOURCE_METADATA_INVALID:' + f);
+    }
+    plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext, sourceLicense,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: kind === 'Cargo' && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
         : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png', ...VIBE_DRAWN_GOODS].includes(f) ? 'PROJECT_ORIGINAL_ART'
@@ -158,6 +167,11 @@ for (const item of plan) {
   const id = item.kind + '/' + item.name;
   const originalBytes = await fs.readFile(item.file);
   const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
+  if (item.sourceLicense && item.sourceLicense.sourceSha256 !== sourceSha256) {
+    failures.push(id + ': CARGO_ORIGINAL_SHA256_MISMATCH');
+    console.error('CARGO_ORIGINAL_SHA256_MISMATCH', id);
+    continue;
+  }
   if (blockedHashes.has(sourceSha256)) {
     delete registry.assets[id];
     previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
@@ -291,6 +305,8 @@ for (const item of plan) {
           : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
+        : item.assetType === 'Model' && item.license === 'PROJECT_ORIGINAL_ART'
+        ? 'Original 3D commodity model for Mare Essentia; individual source and hash in assets/cargo/*.license.json'
         : 'CC0 model for Mare Essentia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
@@ -307,7 +323,7 @@ for (const item of plan) {
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
     registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...(item.kind === 'Goods' && item.assetType === 'Image' ? {sourceSha256} : {})};
+      ...(item.kind === 'Goods' && item.assetType === 'Image' || item.sourceLicense ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);
