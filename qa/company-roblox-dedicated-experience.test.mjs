@@ -767,9 +767,9 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
   assert.match(ui,/local chosenYear = 1700/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
-  assert.match(server,/local START_YEARS = \\{ \\[1517\\] = true/);
-  assert.doesNotMatch(server,/\\[1492\\] = true/);
-  assert.match(state,/num\\(saved.startYear, 1700, 1500, 1800\\)/);
+  assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
+  assert.doesNotMatch(server,/\[1492\] = true/);
+  assert.match(state,/num\(saved.startYear, 1700, 1500, 1800\)/);
   for(const name of names){
     const glb=fs.readFileSync(base+name+'.glb');
     assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB');
