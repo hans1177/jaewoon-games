@@ -230,10 +230,13 @@ local function onInvoke(player, action, payload)
 	end
 
 	local now = os.clock()
-	if now - session.lastAction < RATE_LIMIT then
-		return reply(session.state, false, "너무 빨라요")
+	-- 화면 갱신용 읽기 요청(State)은 속도 제한에서 뺀다: 이것이 직전 클릭을 "너무 빨라요"로 막던 원인
+	if action ~= "State" then
+		if now - session.lastAction < RATE_LIMIT then
+			return reply(session.state, false, "너무 빨라요")
+		end
+		session.lastAction = now
 	end
-	session.lastAction = now
 
 	-- 새 게임: 나라와 시작 연도 선택
 	if action == "NewGame" then
