@@ -6652,6 +6652,7 @@ end
 	local TweenService = game:GetService("TweenService")
 	local dlg = nil
 	local function closeDlg()
+		H.introDlgStep = nil
 		if dlg then
 			dlg:Destroy()
 			dlg = nil
@@ -6980,6 +6981,7 @@ end
 	end
 
 	local function runStep(step)
+		task.defer(function() H.introDlgStep = step end) -- 안내창이 열린 뒤에 기록한다 (closeDlg가 지우므로)
 		local c = view.captain
 		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
 		if step == "name" then
@@ -7118,6 +7120,11 @@ end
 				openingShown = false
 			end
 			local c = view and view.captain
+			-- 서버에서 이미 다음 단계로 넘어갔는데 옛 안내창이 남아 있으면 닫는다 (화면에 갇히지 않게)
+			if dlg and c and H.introDlgStep and c.step ~= H.introDlgStep and not H.openingPending then
+				H.introDlgStep = nil
+				closeDlg()
+			end
 			if c and not newGameMode and not sceneHold and not dlg and c.step ~= "done" then
 				local want = main.Visible and not H.openingPending
 				if want and last ~= c.step then
