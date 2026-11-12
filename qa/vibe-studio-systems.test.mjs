@@ -222,3 +222,14 @@ test('cross-system scenario stops on failed command',async()=>{
  const r=await runner.run({commands:[{id:'1',type:'one',actorId:'p'},{id:'2',type:'two',actorId:'p'}]});
  assert.equal(r.ok,false);assert.equal(r.results.length,2);
 });
+
+test('Vibe 5.9 directional impact is bounded visual-only response and clears after recovery',()=>{
+ const h=makeHitReaction({duration:.5,staggerThreshold:50,maxOffset:.25,maxTilt:.12});
+ const event=h.hit({now:1,damage:50,impulse:{x:4,z:0}});
+ assert.equal(event.stagger,true);assert.equal(event.visualOnly,true);
+ const active=h.update(1.25);
+ assert.equal(active.active,true);assert.ok(active.displacement.x>0);
+ assert.ok(active.displacement.x<=.25&&active.tilt<=.12);
+ assert.equal(h.update(1.6).tilt,0);
+ h.reset();assert.equal(h.update(1.6).active,false);
+});
