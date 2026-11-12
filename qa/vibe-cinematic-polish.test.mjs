@@ -251,6 +251,46 @@ test('Vibe 5.9 LOD selection uses the individual authored object world position'
  lod.reset();assert.ok(rows.every(r=>r.visible));
 });
 
+test('Vibe 5.9 GPU instancing keeps attached children, mirrored assets and existing instances visible',()=>{
+ class InstancedMesh{
+  constructor(geometry,material,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.layers={mask:1};this.matrices=[]}
+  setMatrixAt(i,matrix){this.matrices[i]=matrix}
+  dispose(){this.disposed=true}
+ }
+ const geometry={uuid:'approved-geo'},material={uuid:'approved-mat'};
+ const mesh=(i,patch={})=>({isMesh:true,visible:true,name:'ApprovedMesh'+i,geometry,material,
+  children:[],scale:{x:1,y:1,z:1},matrix:{i},updateMatrix(){},...patch});
+ const approved=Array.from({length:4},(_,i)=>mesh(i));
+ const mirrored=mesh(4,{scale:{x:-1,y:1,z:1}});
+ const attached=mesh(5,{children:[{visible:true,name:'attached-authoring-detail'}]});
+ const alreadyInstanced=mesh(6,{isInstancedMesh:true});
+ const withHook=mesh(7);withHook.onBeforeRender=()=>{};
+ const unrenderable=mesh(8,{scale:{x:0,y:1,z:1}});
+ const all=[...approved,mirrored,attached,alreadyInstanced,withHook,unrenderable];
+ const root={children:[...all],add(o){this.children.push(o)},remove(o){this.children.splice(this.children.indexOf(o),1)}};
+ const batch=batchVibeExistingStaticMeshes({InstancedMesh},root,{minimum:4});
+ assert.equal(batch.batched,4);
+ assert.equal(batch.drawCallsSaved,3);
+ assert.ok(approved.every(o=>!o.visible));
+ assert.ok(all.slice(4).every(o=>o.visible));
+ assert.equal(attached.children[0].visible,true);
+ assert.equal(root.children.length,10);
+ batch.dispose();
+ assert.ok(all.every(o=>o.visible));
+ assert.equal(root.children.length,9);
+});
+test('Vibe 5.9 refuses GPU batching when source mesh identifiers are absent',()=>{
+ class InstancedMesh{constructor(){throw Error('invalid asset accidentally instanced')}}
+ const meshes=Array.from({length:4},(_,i)=>({isMesh:true,visible:true,geometry:{},material:{},
+  name:'Unidentified'+i,matrix:{i},updateMatrix(){}}));
+ const root={children:[...meshes],add(o){this.children.push(o)},remove(){}};
+ const batch=batchVibeExistingStaticMeshes({InstancedMesh},root,{minimum:2});
+ assert.equal(batch.batched,0);
+ assert.equal(batch.drawCallsSaved,0);
+ assert.equal(root.children.length,4);
+ assert.ok(meshes.every(o=>o.visible));
+ batch.dispose();
+});
 test('Vibe 5.9 static batching preserves shadow, layer, render-order and culling differences',()=>{
  class InstancedMesh{
   constructor(geometry,material,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.layers={mask:1};this.matrices=[]}
