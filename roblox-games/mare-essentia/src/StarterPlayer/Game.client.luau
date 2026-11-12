@@ -2765,6 +2765,30 @@ function RENDERERS.harbor()
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
+	if h.economy then
+		add(function()
+			local e = h.economy
+			local lines = {
+				string.format("경제 국면: %s · %s", e.regimeName, h.portType or ""),
+				string.format("경기지수 %d (100=평시) · 물가지수 %d · 최근 거래 %d개", e.index, e.priceIndex, e.trade),
+				string.format("실업률 %d%% · 임금지수 %d · 금리 %.1f%%", e.unemployment, e.wage, e.interest),
+				string.format("%s 가치 %d (100=기준) · 인구 %s%d", e.currency.name, e.currency.index, if e.migration >= 0 then "유입 +" else "유출 ", e.migration),
+				string.format("학자 기술 합계 %d → 단계 %d개 이상 열린 품목에 반영", e.techSum, math.floor(e.techSum / 6)),
+			}
+			if e.festival then table.insert(lines, "축제: " .. e.festival) end
+			for _, b in e.boosts or {} do
+				table.insert(lines, string.format("부흥: %s (%d일 남음)", b.name, b.left))
+			end
+			for _, ev in e.events or {} do
+				table.insert(lines, string.format("%s: %s (%d일 남음)", if ev.kind == "disaster" then "재해" else "행운", ev.title, ev.left))
+			end
+			for i, n in e.news or {} do
+				if i <= 4 then table.insert(lines, "📰 " .. n) end
+			end
+			if h.nextProduce then table.insert(lines, string.format("다음 특산 %s: %d단계 또는 관련 학문 기술", h.nextProduce.name, h.nextProduce.level)) end
+			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
+		end)
+	end
 	add(function()
 		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
 		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
@@ -5554,7 +5578,14 @@ syncScene = function()
 		end
 		portLevel = shownLv
 	end
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local econKind = view.harbor and view.harbor.regime and view.harbor.regime.kind or "normal"
+	local eco = view.harbor and view.harbor.economy or {}
+	local boostIds = {}
+	for _, b in eco.boosts or {} do
+		table.insert(boostIds, b.id or b.name)
+	end
+	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
@@ -5564,6 +5595,12 @@ syncScene = function()
 		portName = p.portName,
 		level = portLevel,
 		construction = construction,
+		econ = econKind,
+		econIndex = eco.index,
+		unemployment = eco.unemployment,
+		vacancy = eco.vacancy,
+		migration = eco.migration,
+		boosts = boostIds,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,

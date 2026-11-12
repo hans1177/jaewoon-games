@@ -46,6 +46,22 @@ STYLE.tropic = variant(STYLE.med,
 	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
 	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
 
+STYLE.china = variant(STYLE.med,
+	{ C(176, 60, 48), C(206, 160, 70), C(226, 214, 190), C(120, 72, 52), C(150, 52, 44) },
+	{ C(54, 62, 70), C(70, 74, 80), C(40, 90, 84) }, C(110, 140, 84), C(150, 138, 120), 0.85)
+STYLE.seasia = variant(STYLE.med,
+	{ C(150, 112, 72), C(176, 138, 88), C(124, 92, 60), C(204, 176, 120), C(96, 120, 76) },
+	{ C(120, 100, 56), C(100, 120, 60), C(140, 112, 64) }, C(80, 138, 72), C(168, 146, 104), 1.2)
+STYLE.pacific = variant(STYLE.med,
+	{ C(214, 190, 140), C(196, 164, 112), C(232, 214, 170), C(170, 140, 96) },
+	{ C(176, 150, 84), C(150, 130, 70) }, C(226, 212, 160), C(232, 218, 176), 0.9)
+STYLE.wafrica = variant(STYLE.med,
+	{ C(196, 128, 88), C(176, 108, 74), C(214, 156, 110), C(150, 92, 64), C(226, 190, 140) },
+	{ C(160, 130, 76), C(140, 112, 64) }, C(176, 150, 96), C(190, 150, 110), 0.7)
+STYLE.creole = variant(STYLE.med,
+	{ C(120, 190, 200), C(244, 200, 110), C(236, 140, 150), C(160, 200, 140), C(246, 238, 214) },
+	{ C(176, 84, 56), C(90, 100, 110) }, C(130, 164, 92), C(204, 190, 158), 0.5)
+
 -- 유럽 문화권별 건축: 이베리아(회칠 벽·붉은 기와), 이탈리아(파스텔 벽·운하), 프랑스(크림색 석회암·청회색 지붕),
 -- 영국(목골·회색 석재), 한자(가파른 붉은 벽돌 박공)
 STYLE.iberia = variant(STYLE.med,
@@ -114,7 +130,12 @@ for key, list in {
 	swahili = { "zanzibar", "kilwa", "mombasa", "mogadishu", "mozambique", "aden", "mocha", "muscat" },
 	malabar = { "calicut", "cochin", "goa", "colombo", "madras", "calcutta", "diu", "surat", "malacca" },
 	japan = { "nagasaki", "osaka", "edo", "hakodate" },
-	colonial = { "veracruz", "havana", "campeche", "santo_domingo", "san_juan", "cartagena_indias", "portobelo", "acapulco", "panama", "la_guaira", "callao", "guayaquil", "valparaiso", "montevideo", "buenos_aires", "manila" },
+	colonial = { "veracruz", "campeche", "santo_domingo", "cartagena_indias", "portobelo", "acapulco", "panama", "la_guaira", "callao", "guayaquil", "valparaiso", "montevideo", "buenos_aires", "rio", "salvador", "recife", "belem", "manila", "san_juan" },
+	creole = { "havana", "kingston", "nassau", "bridgetown", "port_of_spain", "paramaribo", "new_orleans", "charleston" },
+	china = { "macau", "canton", "amoy", "ningbo", "shanghai", "tianjin", "tainan", "hoi_an" },
+	seasia = { "bangkok", "rangoon", "singapore", "batavia", "makassar", "ternate", "ambon", "banda", "brunei" },
+	pacific = { "sydney", "hobart", "perth", "darwin", "auckland", "port_moresby", "suva", "tahiti", "honolulu", "guam" },
+	wafrica = { "praia", "saint_louis", "dakar", "bissau", "freetown", "elmina", "ouidah", "lagos", "calabar", "sao_tome", "luanda", "benguela", "st_helena" },
 } do
 	for _, id in list do
 		REGION[id] = key
@@ -129,6 +150,7 @@ local HEADWEAR_15C = {
 	north = "wide", stone = "wide", brick = "wide", nordic = "wide", med = "wide",
 	ottoman = "turban", desert = "turban", malabar = "turban",
 	swahili = "kofia", japan = "kasa", tropic = "straw", colonial = "straw",
+	china = "kasa", seasia = "kasa", pacific = "straw", wafrica = "kofia", creole = "straw",
 }
 
 -- 문화권별 복식 (옷 색·모자). 주민·점원·이야기 인물이 같은 마을 사람처럼 보이게 한다.
@@ -148,6 +170,11 @@ local OUTFIT = {
 	swahili = { coats = { OC(250, 248, 240), OC(246, 240, 224), OC(60, 70, 130), OC(214, 160, 70) }, hat = "kofia", hats = { OC(250, 248, 240), OC(236, 226, 200) }, trousers = { OC(240, 234, 220) } },
 	malabar = { coats = { OC(250, 246, 236), OC(236, 162, 54), OC(70, 140, 80), OC(200, 70, 60) }, hat = "turban", hats = { OC(246, 240, 226), OC(230, 150, 50) }, trousers = { OC(248, 244, 232) } },
 	japan = { coats = { OC(54, 70, 120), OC(150, 52, 60), OC(70, 100, 80), OC(110, 96, 140), OC(210, 190, 130) }, hat = "kasa", hats = { OC(196, 164, 100), OC(170, 140, 84) }, trousers = { OC(48, 52, 70) } },
+	china = { coats = { OC(176, 48, 44), OC(46, 96, 110), OC(214, 170, 60), OC(60, 60, 90), OC(236, 226, 200) }, hat = "kasa", hats = { OC(196, 164, 100), OC(40, 40, 46) }, trousers = { OC(40, 44, 60) } },
+	seasia = { coats = { OC(220, 150, 50), OC(70, 130, 90), OC(176, 60, 80), OC(240, 232, 210) }, hat = "kasa", hats = { OC(206, 176, 110), OC(170, 140, 84) }, trousers = { OC(60, 70, 110), OC(120, 70, 50) } },
+	pacific = { coats = { OC(240, 236, 224), OC(210, 90, 70), OC(60, 150, 170), OC(236, 190, 70) }, hat = "straw", hats = { OC(206, 176, 110) }, trousers = { OC(236, 230, 210) } },
+	wafrica = { coats = { OC(214, 160, 50), OC(60, 100, 150), OC(190, 60, 50), OC(240, 232, 210), OC(70, 130, 80) }, hat = "kofia", hats = { OC(240, 232, 210), OC(214, 160, 50) }, trousers = { OC(236, 226, 200), OC(60, 70, 120) } },
+	creole = { coats = { OC(240, 226, 190), OC(70, 150, 170), OC(220, 110, 130), OC(250, 210, 90), OC(120, 170, 110) }, hat = "wide", hats = { OC(236, 228, 200), OC(206, 176, 110) } },
 	colonial = { coats = { OC(220, 120, 80), OC(236, 220, 170), OC(70, 150, 140), OC(176, 70, 90), OC(120, 90, 60) }, hat = "wide", hats = { OC(206, 176, 110), OC(120, 84, 56), OC(236, 228, 200) } },
 }
 
@@ -173,12 +200,18 @@ local PROFILE = {
 	malabar = { S = 14, gapf = 0.9, fl0 = 1, flGrow = 0, streets = { -64, -118 }, alley = 4.5, gap = 1.35, wMul = 0.9, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.8, jz = 2, jx = 1.6 },
 	japan = { S = 12, gapf = 0.05, fl0 = 1, flGrow = 1, streets = { -44, -62, -80, -98, -116, -134, -152 }, alley = 2.4, gap = 0.7, wMul = 0.85, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.3, jx = 0.3 },
 	colonial = { S = 17, gapf = 0.2, fl0 = 1, flGrow = 1, streets = { -56, -96, -136 }, alley = 5, gap = 1, wMul = 1.05, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.95, jz = 0.5, jx = 0.5 },
+	china = { S = 13, gapf = 0.04, fl0 = 1, flGrow = 1, streets = { -46, -66, -86, -106, -126, -146 }, alley = 2.6, gap = 0.7, wMul = 0.9, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.3, jx = 0.3 },
+	seasia = { S = 14, gapf = 1.0, fl0 = 1, flGrow = 0, streets = { -60, -110 }, alley = 5, gap = 1.5, wMul = 0.85, dAdd = -1, flAdd = 0, flMax = 1, dens = 0.75, jz = 2.2, jx = 1.8, fence = true },
+	pacific = { S = 14, gapf = 1.6, fl0 = 1, flGrow = 0, streets = { -80 }, alley = 6, gap = 2.0, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.6, jz = 3, jx = 2.4, fence = true },
+	wafrica = { S = 14, gapf = 0.5, fl0 = 1, flGrow = 0, streets = { -56, -100, -144 }, alley = 3.5, gap = 1.1, wMul = 0.9, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.9, jz = 1.6, jx = 1.4 },
+	creole = { S = 15, gapf = 0.15, fl0 = 1, flGrow = 1, streets = { -54, -92, -130 }, alley = 4.5, gap = 0.95, wMul = 1, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.95, jz = 0.8, jx = 0.8 },
 	tropic = { S = 14, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
 }
 
 STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
 STYLE.iberia.mat, STYLE.italy.mat, STYLE.france.mat, STYLE.britain.mat, STYLE.hanse.mat = Enum.Material.Concrete, Enum.Material.Concrete, Enum.Material.Limestone, Enum.Material.Slate, Enum.Material.Brick
 STYLE.ottoman.mat, STYLE.swahili.mat, STYLE.malabar.mat, STYLE.japan.mat, STYLE.colonial.mat = Enum.Material.Limestone, Enum.Material.Concrete, Enum.Material.Wood, Enum.Material.WoodPlanks, Enum.Material.Concrete
+STYLE.china.mat, STYLE.seasia.mat, STYLE.pacific.mat, STYLE.wafrica.mat, STYLE.creole.mat = Enum.Material.WoodPlanks, Enum.Material.Wood, Enum.Material.Wood, Enum.Material.Sand, Enum.Material.Concrete
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 

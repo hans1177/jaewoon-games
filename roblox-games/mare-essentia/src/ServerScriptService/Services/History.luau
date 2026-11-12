@@ -63,6 +63,19 @@ return function(D, S)
 
 	local function mult(state, portId, goodId)
 		local m = histMult(state, portId, goodId)
+		-- 거시경제 국면: 인플레·디플레, 교역품 분류별·지역별 차등
+		local port = D.Ports.Ports[portId]
+		if port then
+			-- 역사적 근거·발전도에 맞지 않는 특산/수요는 할인·할증을 받지 않는다
+			local yr = state.startYear + math.floor(state.day / 365)
+			local rid = D.Regions.of(port).id
+			local role = D.Harbor.role(port, rid, yr, D.Harbor.effLevel(D.Harbor.level(state.harbor[portId] or 0), S.Knowledge and S.Knowledge.techSum(state, portId)), goodId, S.Knowledge and S.Knowledge.disciplineOpens(state, portId, goodId))
+			local base = if table.find(port.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(port.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
+			local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
+			m *= now / base
+			m /= (D.Harbor.currencyIndex(port.country, yr))
+			m *= D.Harbor.priceMult(D.Harbor.regime(state.startYear + math.floor(state.day / 365)), D.Regions.of(port).id, goodId)
+		end
 		-- 전쟁 중인 나라의 항구는 무기·자재 값이 오른다
 		return if S.Diplomacy then m * S.Diplomacy.mult(state, portId, goodId) else m
 	end

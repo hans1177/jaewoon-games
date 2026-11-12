@@ -52,6 +52,20 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- 거시경제 국면·미개발 특산 보정 (History.mult 에 항상 곱해진다)
+local function macroOf(st, portId, goodId)
+	local p = D.Ports.Ports[portId]
+	local rid = D.Regions.of(p).id
+	local yr = st.startYear + math.floor(st.day / 365)
+	local m = D.Harbor.priceMult(D.Harbor.regime(yr), rid, goodId)
+	local role = D.Harbor.role(p, rid, yr, D.Harbor.effLevel(D.Harbor.level(st.harbor[portId] or 0), S.Knowledge.techSum(st, portId)), goodId)
+	local base = if table.find(p.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(p.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
+	local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
+	return m * now / base / (D.Harbor.currencyIndex(p.country, yr))
+end
+local function near(a, b)
+	return math.abs(a - b) < 1e-9
+end
 local function check(name, cond, detail)
 	if cond then
 		passed += 1
@@ -1852,7 +1866,7 @@ do
 	local base = D.TradeMath.getPrice("london", "wine", 1, 1)
 	local before = st.coins
 	local ok = handlers.Buy(st, { goodId = "wine", amount = 1 }, c2)
-	check("event raises buy price", ok and before - st.coins == D.TradeMath.getPrice("london", "wine", 1, 1.4) and before - st.coins > base)
+	check("event raises buy price", ok and before - st.coins == D.TradeMath.getPrice("london", "wine", 1, 1.4 * macroOf(st, "london", "wine")) and before - st.coins > base)
 	local v = S.View.build(st, c2)
 	local wine
 	for _, g in v.goods do
@@ -2085,8 +2099,70 @@ do
 	check("invest works", ok and st.coins == 9000 and st.harbor[st.portId] == 1000 and st.fame == fame0 + 10)
 	check("harbor level 2 at 1000", S.Harbor.level(st) == 2)
 	check("harbor sell bonus", S.Harbor.sellBonus(st) == 0.01)
+	do
+		local H = D.Harbor
+		check("regime 1520 inflation", H.regime(1520).kind == "inflation" and H.regime(1520).price > 1)
+		check("regime 1636 tulip bubble", H.regime(1636).id == "tulip_mania")
+		check("regime 1640 crash", H.regime(1640).kind == "bust")
+		check("regime 1630 depression", H.regime(1630).kind == "depression")
+		check("vitality boom > depression", H.vitality(H.regime(1580), "europe", { "silver" }, 0) > H.vitality(H.regime(1630), "europe", { "silver" }, 0))
+		check("vitality depression shrinks europe", H.vitality(H.regime(1630), "europe", { "wool" }, 0) < 0.5)
+		check("depression milder far away", H.vitality(H.regime(1630), "far_east", { "wool" }, 0) > 0.8)
+		check("trade activity boosts", H.vitality(H.regime(1700), "europe", { "tea" }, 1) > H.vitality(H.regime(1700), "europe", { "tea" }, 0))
+		check("war: strategic up, luxury down", H.priceMult(H.regime(1630), "europe", "iron") > 1 and H.priceMult(H.regime(1630), "europe", "silk") < 1)
+		check("war price weaker in far east", H.priceMult(H.regime(1630), "far_east", "iron") < H.priceMult(H.regime(1630), "europe", "iron"))
+		check("native specialties only at lv1", #H.activeProduces({ "a", "b", "c", "d", "e" }, 1) == 2)
+		check("specialties unlock with level", #H.activeProduces({ "a", "b", "c", "d", "e" }, 2) == 3 and #H.activeProduces({ "a", "b", "c", "d", "e" }, 4) == 5)
+		check("origin: tea not native to europe", not H.isLocal("tea", "europe", 1600) and H.isLocal("tea", "far_east", 1600))
+		check("transplant: sugar new world after 1550", not H.isLocal("sugar", "new_world", 1540) and H.isLocal("sugar", "new_world", 1560))
+		check("producesOf drops non-local", #H.producesOf({ "tea", "wool" }, "europe", 1600) == 1)
+		check("demandsOf excludes own specialties", #H.demandsOf({ "wool", "tea", "silk" }, "europe", 1600, { "wool" }) == 2)
+		check("port waves differ", H.portWave("london", 400) ~= H.portWave("canton", 400))
+		check("port wave bounded", H.portWave("london", 123) > 0.7 and H.portWave("london", 123) < 1.3)
+		check("festival in window", H.festivalAt("europe", 47) ~= nil and H.festivalAt("europe", 200) == nil)
+		check("tech raises effective level", H.effLevel(1, 6) == 2 and H.effLevel(4, 30) == H.MAX_LEVEL and H.effLevel(2, 0) == 2)
+		do
+			local base = { level = 3, techSum = 12, luxury = 1, regime = H.regime(1580), prevRegime = H.regime(1580), activity = 0, shipyard = false, navTech = 0 }
+			local function fires(id, c)
+				for _, rv in H.REVIVALS do
+					if rv.id == id then return rv.cond(c) end
+				end
+				return false
+			end
+			check("culture revival fires", fires("culture", base))
+			check("culture revival blocked in depression", not fires("culture", { level = 3, techSum = 12, luxury = 1, regime = H.regime(1630), prevRegime = H.regime(1630), activity = 0, shipyard = false, navTech = 0 }))
+			check("culture revival needs tech", not fires("culture", { level = 3, techSum = 5, luxury = 1, regime = H.regime(1580), prevRegime = H.regime(1580), activity = 0, shipyard = false, navTech = 0 }))
+			check("economic revival after deflation ends", fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1682), prevRegime = H.regime(1679), activity = 0.5, shipyard = false, navTech = 0 }))
+			check("no economic revival while still depressed", not fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1630), prevRegime = H.regime(1626), activity = 0.5, shipyard = false, navTech = 0 }))
+			check("no economic revival without trade", not fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1682), prevRegime = H.regime(1679), activity = 0.1, shipyard = false, navTech = 0 }))
+			check("fair needs activity", fires("fair", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1700), prevRegime = H.regime(1700), activity = 0.9, shipyard = false, navTech = 0 }))
+		end
+		check("weak currency: ottoman 1700 < netherlands 1700", (H.currencyIndex("ottoman", 1700)) < (H.currencyIndex("netherlands", 1700)))
+		check("currency interpolates", (function() local a = H.currencyIndex("spain", 1590) return a < 1.05 and a > 0.86 end)())
+		check("unknown currency neutral", (H.currencyIndex("atlantis", 1600)) == 1)
+		check("spillover from adjacent disaster", H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50) < 1)
+		check("no spillover before lag", H.spillover("europe", { { endDay = 100, startDay = 45, region = "new_world", kind = "disaster" } }, 50) == 1)
+		check("no spillover from far region", H.spillover("europe", { { endDay = 100, startDay = 10, region = "pacific", kind = "disaster" } }, 50) == 1)
+		check("immunity softens spillover", H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50, 0.5) > H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50, 0))
+		check("windfall for matching specialty", (H.windfall({ "rice", "wool" }, { { id = "famine", endDay = 100, startDay = 10, region = "indian", kind = "disaster", title = "흉작" } }, D.WorldEvents.ById, "europe", 50)) > 1)
+		check("no windfall without matching goods", (H.windfall({ "marble" }, { { id = "famine", endDay = 100, startDay = 10, region = "indian", kind = "disaster", title = "흉작" } }, D.WorldEvents.ById, "europe", 50)) == 1)
+		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
+	end
 	local v = S.View.build(st, ctx)
 	check("view harbor", v.harbor.level == 2 and v.harbor.invested == 1000 and v.harbor.nextAt == 2000)
+	check("view regime", type(v.harbor.regime) == "table" and type(v.harbor.regime.name) == "string" and type(v.harbor.portType) == "string")
+	do
+		local eco = v.harbor.economy
+		check("economy news/currency/vacancy", type(eco.news) == "table" and type(eco.currency.name) == "string" and type(eco.vacancy) == "number" and type(eco.migration) == "number")
+		check("economy panel", type(eco) == "table" and type(eco.index) == "number" and type(eco.priceIndex) == "number" and type(eco.events) == "table" and type(eco.regimeName) == "string")
+		st.portTech = { [st.portId] = {} }
+		local ds = S.Knowledge.portDisciplines(st.portId)
+		if #ds > 0 then
+			st.portTech[st.portId][ds[1]] = 6
+			check("port tech counted", S.Knowledge.techSum(st, st.portId) >= 1)
+			st.portTech = {}
+		end
+	end
 	check("view discounted supply cost", v.shipyard.supplyCost == math.floor(S.Shipyard.SUPPLY_COST * 0.95) or v.shipyard.supplyCost == math.max(1, math.floor(S.Shipyard.SUPPLY_COST * 0.95)))
 	for _ = 1, 3 do
 		act(st, "Invest", { amount = 3000 })
@@ -2704,10 +2780,10 @@ do
 	local okH, msgH = act(stH, "HistoryChoose", { choice = 2 })
 	check("역사: 선택하면 처리됨", okH == true and stH.history.seen[first] == 2, tostring(msgH))
 	stH.history.fx = { { goods = { "wool" }, regions = { "europe" }, mult = 0.5, untilDay = stH.day + 10 } }
-	check("역사: 지역 시세 효과가 적용됨", S.History.mult(stH, "london", "wool") == 0.5 and S.History.mult(stH, "london", "tea") == 1)
+	check("역사: 지역 시세 효과가 적용됨", near(S.History.mult(stH, "london", "wool"), 0.5 * macroOf(stH, "london", "wool")) and near(S.History.mult(stH, "london", "tea"), macroOf(stH, "london", "tea")))
 	stH.day += 11
 	S.History.tick(stH)
-	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	check("역사: 기간이 지나면 효과가 사라짐", near(S.History.mult(stH, "london", "wool"), macroOf(stH, "london", "wool")))
 	extraTests()
 	-- 항구 건물 계통
 	local PB = D.PortBuildings

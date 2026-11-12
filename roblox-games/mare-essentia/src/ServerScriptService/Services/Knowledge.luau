@@ -734,5 +734,38 @@ return function(D, S)
 		handlers = handlers, goodsMult = goodsMult, speedBonus = K.speedBonus, viewOf = viewOf,
 		reportableCount = reportableCount, scholarDisciplines = scholarDisciplines,
 		supplyMult = supplyMult, researchOf = researchOf, understoodIn = understoodIn,
+		techLevel = function(state, portId, disc)
+			return techLevelOf(state, portId, disc)
+		end,
+		-- 학문 기술이 일어난 항구에서는 그 학문의 품목을 직접 생산하기 시작한다 (화학→염료·유리, 식물학→향료·차 ...)
+		disciplineOpens = function(state, portId, goodId)
+			for _, d in portDisciplines(portId) do
+				if table.find(K.DisciplineGoods[d] or {}, goodId) and techLevelOf(state, portId, d) >= 1 then
+					return true, d
+				end
+			end
+			return false
+		end,
+		portDisciplines = portDisciplines, techSum = function(state, portId)
+			local n = 0
+			for _, d in portDisciplines(portId) do
+				n += techLevelOf(state, portId, d)
+			end
+			return n
+		end,
+		-- 학자들의 자율 연구: 항구가 번영할수록 빠르고, 불황·재해에는 멈춘다
+		autoResearch = function(state, portId, points)
+			local gained = 0
+			state.portTech = state.portTech or {}
+			state.portTech[portId] = state.portTech[portId] or {}
+			for _, d in portDisciplines(portId) do
+				local before = techLevelOf(state, portId, d)
+				state.portTech[portId][d] = math.min(60, techPoints(state, portId, d) + points)
+				if techLevelOf(state, portId, d) > before then
+					gained += 1
+				end
+			end
+			return gained
+		end,
 	}
 end

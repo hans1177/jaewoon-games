@@ -92,14 +92,18 @@ return function(D, S)
 			end
 		end
 		view.goods = {}
+		local lv0 = D.Harbor.effLevel(D.Harbor.level(state.harbor[port.id] or 0), S.Knowledge.techSum(state, port.id))
+		local rid0 = D.Regions.of(port).id
+		local yr0 = state.startYear + math.floor(state.day / 365)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
 			local mult = ctx.market:get(port.id, goodId)
 			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
 			local tag = ""
-			if table.find(port.produces, goodId) then
+			local role = D.Harbor.role(port, rid0, yr0, lv0, goodId, S.Knowledge.disciplineOpens(state, port.id, goodId))
+			if role == "produce" then
 				tag = "특산"
-			elseif table.find(port.demands, goodId) then
+			elseif role == "demand" then
 				tag = "수요"
 			end
 			table.insert(view.goods, {
@@ -594,7 +598,11 @@ return function(D, S)
 		do
 			local inv = S.Harbor.invested(state)
 			local lv = S.Harbor.level(state)
+			local rg = D.Harbor.regime(state.startYear + math.floor(state.day / 365))
 			view.harbor = {
+				regime = { id = rg.id, name = rg.name, kind = rg.kind, note = rg.note, price = rg.price },
+				portType = D.Harbor.portType(port.produces),
+				economy = S.Harbor.economyOf(state, port.id),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
@@ -606,11 +614,22 @@ return function(D, S)
 				produces = {},
 				demands = {},
 			}
-			for _, id in port.produces do
-				table.insert(view.harbor.produces, D.Ports.Goods[id].name)
+			local full = D.Harbor.producesOf(port.produces, rid0, yr0)
+			local lvE = lv0
+			for i, id in full do
+				if lvE >= D.Harbor.unlockLevel(i) or S.Knowledge.disciplineOpens(state, port.id, id) then
+					table.insert(view.harbor.produces, D.Ports.Goods[id].name)
+				else
+					view.harbor.nextProduce = view.harbor.nextProduce or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }
+				end
 			end
-			for _, id in port.demands do
-				table.insert(view.harbor.demands, D.Ports.Goods[id].name)
+			local dem = D.Harbor.demandsOf(port.demands, rid0, yr0, port.produces)
+			for i, id in dem do
+				if lvE >= D.Harbor.unlockLevel(i) then
+					table.insert(view.harbor.demands, D.Ports.Goods[id].name)
+				else
+					view.harbor.nextDemand = view.harbor.nextDemand or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }
+				end
 			end
 		end
 

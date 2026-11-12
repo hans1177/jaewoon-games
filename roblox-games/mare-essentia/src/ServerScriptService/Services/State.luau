@@ -74,6 +74,9 @@ return function(D)
 			stations = {}, -- 배의 자리 (자리 id → 동료 id)
 			affinity = {},
 			harbor = {},
+			harborBoost = {}, -- "항구|부흥" → 끝나는 날
+			harborPaid = {}, -- 플레이어가 직접 투자한 누적액 (불황에도 지켜진다)
+			harborTrade = {}, -- 항구별 최근 교역량 (항구 활력 계산용)
 			harborSeen = {}, -- 항구별 마지막으로 들른 날 (자체 성장 계산용)
 			bank = { deposit = 0, loan = 0, lastDay = 0 },
 			contract = nil,
@@ -546,6 +549,22 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.harborBoost) == "table" then
+			for k, v in saved.harborBoost do
+				if type(k) == "string" and #k < 60 and type(v) == "number" then
+					s.harborBoost[k] = math.floor(math.clamp(v, 0, 1e7))
+				end
+			end
+		end
+		for _, key in { "harborPaid", "harborTrade" } do
+			if type(saved[key]) == "table" then
+				for id, v in saved[key] do
+					if type(id) == "string" and D.Ports.Ports[id] then
+						s[key][id] = math.floor(num(v, 0, 0, 1e9))
+					end
+				end
+			end
+		end
 		if type(saved.harborSeen) == "table" then
 			for id, v in saved.harborSeen do
 				if type(id) == "string" and D.Ports.Ports[id] then
@@ -849,6 +868,9 @@ return function(D)
 			affinity = state.affinity,
 			harbor = state.harbor,
 			harborSeen = state.harborSeen,
+			harborBoost = state.harborBoost,
+			harborPaid = state.harborPaid,
+			harborTrade = state.harborTrade,
 			bank = state.bank,
 			contract = state.contract,
 			title = state.title,
