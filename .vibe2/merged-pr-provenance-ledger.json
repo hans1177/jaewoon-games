@@ -222541,11 +222541,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_08b5a9b2f09781187aed3cb4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12990",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "169d4cd79bd10e62786fd670822b25fac4aecc94",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12990,
+        "baseBranch": "main",
+        "headBranch": "claude/menupolish",
+        "baseSha": "169d4cd79bd10e62786fd670822b25fac4aecc94",
+        "headSha": "b7ddca15d97ffebf83617d9233abdc75d1cc9318",
+        "mergeCommitSha": "40923ff1541e82bcc92762e6eed929c7bda1b51d",
+        "mergedAt": "2026-11-12T22:41:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0fca7cc988f2c4984a12e9c4c1e0f806b5603666790a1e840595cf7cdb661179",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/menupolish",
+        "candidateSha": "b7ddca15d97ffebf83617d9233abdc75d1cc9318"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 411,
+        "deletedLineCount": 135,
+        "changedFiles": [
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-premium-character-pipeline.mjs",
+          "company-learning/next-session-handoff.json",
+          "qa-log/addendum-20261112-2225Z.md",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-premium-character-pipeline.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-cinematic-polish.mjs",
+          "assets/vibe-premium-character-pipeline.mjs",
+          "company-learning/next-session-handoff.json",
+          "qa/vibe-cinematic-polish.test.mjs",
+          "qa/vibe-premium-character-pipeline.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12990",
+        "merge-commit:40923ff1541e82bcc92762e6eed929c7bda1b51d",
+        "base-main:169d4cd79bd10e62786fd670822b25fac4aecc94"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1772
+    "total": 1773
   }
 }
