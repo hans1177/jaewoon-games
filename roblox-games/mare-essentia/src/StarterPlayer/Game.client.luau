@@ -1438,7 +1438,7 @@ hudStroke(coinCard, 2)
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
 local HUD_MENU_ART = {
-	gear = "status", deck = "codex", auto = "route", help = "quest",
+	gear = "tech", deck = "battle", auto = "harbor",
 	view = "view", trade = "trade", crew = "harbor", route = "route",
 	journal = "codex", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
@@ -1472,9 +1472,10 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Parent = button
 		end
 	else
-		button.Text = string.sub(label, 1, 1)
-		button.TextSize = 24
-		button.Font = Enum.Font.GothamBold
+		button.Text = if key == "help" then "?" else string.sub(label, 1, 1)
+		button.TextSize = 34
+		button.TextYAlignment = Enum.TextYAlignment.Top
+		button.Font = Enum.Font.GothamBlack
 		button.TextColor3 = Color3.fromRGB(255, 240, 204)
 	end
 	if dockItem then
@@ -1512,7 +1513,7 @@ dock.Name = "Dock"
 dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
-dock.Position = UDim2.new(1, -8, 0, 62)
+dock.Position = UDim2.new(1, -8, 0, 80)
 dock.Size = UDim2.fromOffset(206, 160)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -1555,13 +1556,13 @@ do
 	viewBtn.TextSize = 14
 	viewBtn.TextXAlignment = Enum.TextXAlignment.Left
 	viewBtn.TextColor3 = Color3.fromRGB(255, 218, 120)
-	viewBtn.Text = "▸ 걷기"
+	viewBtn.Text = "걷기로 전환"
 	viewBtn.AutoButtonColor = false
 	viewBtn.Parent = hud
 	H.shadowOf(viewBtn :: any)
 	viewBtn.Activated:Connect(function()
 		overview = not overview
-		viewBtn.Text = if overview then "▸ 걷기" else "▸ 전경 보기"
+		viewBtn.Text = if overview then "걷기로 전환" else "전경으로 전환"
 		applyView()
 	end)
 end
@@ -1569,18 +1570,18 @@ end
 -- 시스템 · 내 카드 · 자동항해 · 도움말
 local render
 local openOptions
-local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정")
+local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정", true)
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -152, 0, 3)
+gear.Position = UDim2.new(1, -218, 0, 3)
 do
-	local auto = H.hudShortcut(hud, "AutoVoyageButton", "auto", "자동항해")
+	local auto = H.hudShortcut(hud, "AutoVoyageButton", "auto", "자동항해", true)
 	auto.AnchorPoint = Vector2.new(1, 0)
-	auto.Position = UDim2.new(1, -56, 0, 3)
+	auto.Position = UDim2.new(1, -78, 0, 3)
 	auto.Activated:Connect(function()
 		player:SetAttribute("ManualHelm", false)
 		openTab("route")
 	end)
-	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말")
+	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
 	help.Position = UDim2.new(1, -8, 0, 3)
 	help.Activated:Connect(function() openOptions(true) end)
@@ -1594,9 +1595,9 @@ end)
 do
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
-	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드")
+	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -104, 0, 3)
+	deckBtn.Position = UDim2.new(1, -148, 0, 3)
 	local open = nil
 	function H.openDeck()
 		if open then
@@ -7989,13 +7990,6 @@ end
 	chip.Visible = false
 	chip.Parent = H.hudCard
 	corner(chip, 3)
-	do
-		local cst = Instance.new("UIStroke")
-		cst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		cst.Color = Color3.fromRGB(143, 103, 77)
-		cst.Thickness = 1.25
-		cst.Parent = chip
-	end
 	local chipKey = nil
 	local chipName = mkLabel(chip, "", 13, Color3.fromRGB(246, 208, 130), true)
 	chipName.AnchorPoint = Vector2.new(0.5, 0)
