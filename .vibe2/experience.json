@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165659,105 +165657,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c1335909c2731dc2d82a6f84",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:ef0f7523b78a9e295d57"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_37188d645ab09ca9b32c39e0",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:d0450d14d58b1d2b1640"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_af606082e8398d5b5f48b99d",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:1228a54501f4c5e56b22"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_9b520bb37d1bb4cb7a4e4a41",
           "taskId": "exorcist-office-existing-web-assessment-v1",
           "workKey": null,
@@ -167762,6 +167661,105 @@
             "actions-run:43131672623",
             "reservation-id:43131672623:1",
             "capability-application-sample:d521c746a2cb8f3f2cb6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_86c64513f52bf42d8ec712c8",
+          "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:f1df34adbe4ac5405693"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5b0bba8228f30cb122e810c9",
+          "taskId": "fantasy-survival-web-autonomous-build-up-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+            "capability_ctrace_7ca73b83002c115cfd34f506",
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:43bc188d2d877fc63b35"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7e74269cf25281ffc323eb0e",
+          "taskId": "fifty-days-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:5e873d6da56f2718e331"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172690,72 +172688,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7d4c7deca7e67b4c6bcc7766",
-          "taskId": "defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:1e4f80b1798518bea9f7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_6435d192ec8921509d0b4ddb",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:ef0f7523b78a9e295d57"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_637ec2dbe6a95034f40ae402",
           "taskId": "dice-battle-board-existing-web-assessment-v1",
           "workKey": null,
@@ -174793,6 +174725,72 @@
             "actions-run:43130662717",
             "reservation-id:43130662717:1",
             "capability-application-sample:98f79723ac6da6958d55"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5464dcaf32c3852c49e38020",
+          "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:f1df34adbe4ac5405693"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f1e1959f767b835fceef6a39",
+          "taskId": "fifty-days-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:5e873d6da56f2718e331"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189194,72 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_d1fa3ccd135e3e24efb820fc",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:ef0f7523b78a9e295d57"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_fd433e98ddb18b13a484f38a",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:d0450d14d58b1d2b1640"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c09f0783fb3b3de3a214398f",
           "taskId": "dice-battle-board-existing-web-assessment-v1",
           "workKey": null,
@@ -191297,6 +191229,72 @@
             "actions-run:43130662717",
             "reservation-id:43130662717:1",
             "capability-application-sample:458343aadd0ec0d94935"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a5d37cb97b46126e0ed012a2",
+          "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:f1df34adbe4ac5405693"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_99125d35fd042d0d87403303",
+          "taskId": "fifty-days-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:5e873d6da56f2718e331"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196245,72 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_55956164e22bd9e12cf320ae",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:ef0f7523b78a9e295d57"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_95e64e154b4ba459a51cd14d",
-          "taskId": "dice-battle-board-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:d0450d14d58b1d2b1640"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3d9eee115081a740f06d1410",
           "taskId": "dice-battle-board-existing-web-assessment-v1",
           "workKey": null,
@@ -198348,6 +198280,72 @@
             "actions-run:43130662717",
             "reservation-id:43130662717:1",
             "capability-application-sample:458343aadd0ec0d94935"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_919ef50cf92643cc8775325d",
+          "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:f1df34adbe4ac5405693"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3cab0e9d8a22ae9d916f34b6",
+          "taskId": "fifty-days-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:5e873d6da56f2718e331"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201191,72 +201189,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_db7c560ce5ec4ae3d012ee4d",
-          "taskId": "defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:842fa048eb68d789324f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_cb9d53089db43c87619d2fba",
-          "taskId": "defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:11e7edc3bb3cc1bf9b68d95a18520c7a541b7669",
-            "actions-run:43107814749",
-            "reservation-id:43107814749:1",
-            "capability-application-sample:1e4f80b1798518bea9f7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_70297d830bd080157d3c354f",
           "taskId": "dice-battle-board-existing-web-assessment-v1",
           "workKey": null,
@@ -203294,6 +203226,72 @@
             "actions-run:43130662717",
             "reservation-id:43130662717:1",
             "capability-application-sample:1544f55ab3c58c6440d6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2373fb0ab4fe760a7f110ba3",
+          "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:f1df34adbe4ac5405693"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_21dfe1023cef365928e52e8f",
+          "taskId": "fifty-days-web-startup-spatial-repair-v3",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:5e873d6da56f2718e331"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -224648,39 +224646,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_51e33687060f7a18234f2833",
-          "taskId": "fantasy-survival-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
-            "capability_ctrace_7ca73b83002c115cfd34f506",
-            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
-            "capability_ctrace_363cfebe4daa49dc2935b54a",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:62994668deec4b22412a66c63652d6c911790c88",
-            "actions-run:40973507738",
-            "reservation-id:40973507738:1",
-            "capability-application-sample:4711dc9ac72cd93661c9"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5be23f3f4c26218d0ca3d726",
           "taskId": "fantasy-survival-existing-web-assessment-v1",
           "workKey": null,
@@ -226751,6 +226716,39 @@
             "actions-run:43118211967",
             "reservation-id:43118211967:1",
             "capability-application-sample:fdf00f0fe7b853bb5e10"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_475af6e38b32a756cae205c0",
+          "taskId": "fantasy-survival-web-autonomous-build-up-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+            "capability_ctrace_7ca73b83002c115cfd34f506",
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:43bc188d2d877fc63b35"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -350844,39 +350842,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cd088b43a9bf639a6ab35807",
-          "taskId": "fantasy-survival-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
-            "capability_ctrace_7ca73b83002c115cfd34f506",
-            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
-            "capability_ctrace_363cfebe4daa49dc2935b54a",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:fad76d97f44ccdffb9cf41c8fb1d32c299194bd2",
-            "actions-run:40991809227",
-            "reservation-id:40991809227:1",
-            "capability-application-sample:248e6b2a644aa733118f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_ea296b1eccde4f5ebe5a3d16",
           "taskId": "fantasy-survival-web-autonomous-build-up-v1",
           "workKey": null,
@@ -352947,6 +352912,39 @@
             "actions-run:43123712026",
             "reservation-id:43123712026:1",
             "capability-application-sample:ecc47d8e35ac864bf0c7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_08707aeb8880cfcbea07f208",
+          "taskId": "fantasy-survival-web-autonomous-build-up-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+            "capability_ctrace_7ca73b83002c115cfd34f506",
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:43bc188d2d877fc63b35"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -430726,39 +430724,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_063a0982151dd397af410b5e",
-          "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7ca73b83002c115cfd34f506",
-            "capability_ctrace_add9f850a5c6718ba0ccd4e9",
-            "capability_ctrace_8e7517e86942412741f7c649",
-            "capability_ctrace_1d2e4cf6170886ff50d1a51d",
-            "capability_ctrace_86ad81b28b1f3a3015aea87f"
-          ],
-          "evidence": [
-            "base-main:c39f03b3350a4f6080a7cc1befea9bd25c582bac",
-            "actions-run:42263183424",
-            "reservation-id:42263183424:1",
-            "capability-application-sample:fa3a5658fdc5a1892c1e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_f5dff081462535f7022a251a",
           "taskId": "fantasy-survival-existing-web-assessment-v1",
           "workKey": null,
@@ -432835,6 +432800,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0bbb5561f73b1c9cddf84b76",
+          "taskId": "fantasy-survival-web-autonomous-build-up-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+            "capability_ctrace_7ca73b83002c115cfd34f506",
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:43bc188d2d877fc63b35"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -432977,39 +432975,6 @@
       "confirmations": 15,
       "confidence": 0.9375,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_827a98f061cc0da4f6769fa7",
-          "taskId": "fantasy-survival-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
-            "capability_ctrace_7ca73b83002c115cfd34f506",
-            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
-            "capability_ctrace_363cfebe4daa49dc2935b54a",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:62994668deec4b22412a66c63652d6c911790c88",
-            "actions-run:40973507738",
-            "reservation-id:40973507738:1",
-            "capability-application-sample:4711dc9ac72cd93661c9"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_58db4db62f6fb3f40419a935",
@@ -435082,6 +435047,39 @@
             "actions-run:43118211967",
             "reservation-id:43118211967:1",
             "capability-application-sample:fdf00f0fe7b853bb5e10"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_dfeb22c8c0683f295465a576",
+          "taskId": "fantasy-survival-web-autonomous-build-up-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+            "capability_ctrace_7ca73b83002c115cfd34f506",
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:30236ca1d104ccde548b137282b3882c225af8e3",
+            "actions-run:43131405554",
+            "reservation-id:43131405554:1",
+            "capability-application-sample:43bc188d2d877fc63b35"
           ],
           "observedAt": null,
           "rawCodeStored": false,
