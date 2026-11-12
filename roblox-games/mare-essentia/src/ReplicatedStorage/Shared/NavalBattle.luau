@@ -580,7 +580,7 @@ function NavalBattle.play(opts)
 		local actions = {} -- 내가 한 행동 기록: 서버가 같은 시드로 다시 돌려 승패를 확인한다
 		if cfg then
 			BC.useKind(cfg.kind)
-			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards }, { fighter = cfg.foe, boss = opts.isBoss == true })
+			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction }, { fighter = cfg.foe, boss = opts.isBoss == true })
 		else
 			BC.useKind("boarding")
 			local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)
@@ -865,7 +865,7 @@ function NavalBattle.play(opts)
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
 		end
-		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
+		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료", armor = "철갑", snipe = "저격" }
 
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.

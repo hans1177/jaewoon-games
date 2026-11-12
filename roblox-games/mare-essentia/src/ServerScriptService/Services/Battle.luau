@@ -3,6 +3,7 @@
 
 return function(D, S)
 	local handlers = {}
+	local deckFaction = setmetatable({}, { __mode = "k" }) -- 그 카드 패의 문화권 덱 (나라에서 정해진다)
 	local deckCache = setmetatable({}, { __mode = "k" }) -- View 가 마지막으로 만든 카드 패 (서버가 카드 대결을 검증할 때 쓴다)
 
 	-- 스킬을 쓸 수 없는 이유 (쓸 수 있으면 nil)
@@ -222,7 +223,7 @@ return function(D, S)
 			end
 		end
 		local c = pb.card
-		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state] }, { fighter = c.foe, boss = c.boss }, actions)
+		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state], faction = deckFaction[state] }, { fighter = c.foe, boss = c.boss }, actions)
 		if not r then
 			return false, "카드 기록이 규칙에 맞지 않아요"
 		end
@@ -279,5 +280,5 @@ return function(D, S)
 		return true, "자동스킬 우선순위를 저장했어요"
 	end
 
-	return { handlers = handlers, deckCache = deckCache, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
+	return { handlers = handlers, deckCache = deckCache, deckFaction = deckFaction, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
 end
