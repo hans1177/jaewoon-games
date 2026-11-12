@@ -502,19 +502,18 @@ test('Mare publisher rejects stale GUI Decal and ungranted registry assets befor
 });
 
 
-// [비주얼] 기존 진짜 Cargo 메시를 상품 상세 3D에 사용하고, 작은 상품은 동일 승인 그림의 2.5D 카드로 표현한다.
 // [대항해시대 시작 화면] 시설 탭마다 유일한 표시 이름이 있어야 Roblox Text에 nil이 전달되지 않는다.
 test('Mare facility tabs provide unique nonempty labels for every rendered group',()=>{
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const tabsSection=client.match(/local TABS = \\{([\\s\\S]*?)\\n\\}/);
-  const groupsSection=client.match(/local GROUPS = \\{([\\s\\S]*?)\\n\\}/);
+  const tabsSection=client.match(/local TABS = \{([\s\S]*?)\n\}/);
+  const groupsSection=client.match(/local GROUPS = \{([\s\S]*?)\n\}/);
   assert.ok(tabsSection&&groupsSection,'facility tab definitions exist');
   const names=new Map();
-  for(const m of tabsSection[1].matchAll(/\\{\\s*id\\s*=\\s*"([a-z_]+)",\\s*name\\s*=\\s*"([^"]+)"\\s*\\}/g)){
+  for(const m of tabsSection[1].matchAll(/\{\s*id\s*=\s*"([a-z_]+)",\s*name\s*=\s*"([^"]+)"\s*\}/g)){
     assert.equal(names.has(m[1]),false,'duplicate tab label: '+m[1]);
     names.set(m[1],m[2]);
   }
-  const used=[...groupsSection[1].matchAll(/tabs\\s*=\\s*\\{([^}]+)\\}/g)]
+  const used=[...groupsSection[1].matchAll(/tabs\s*=\s*\{([^}]+)\}/g)]
     .flatMap(m=>[...m[1].matchAll(/"([a-z_]+)"/g)].map(v=>v[1]));
   assert.ok(used.length>0,'facility tabs exist');
   for(const id of used)assert.ok(names.get(id),'facility tab has no Text label: '+id);
@@ -523,6 +522,7 @@ test('Mare facility tabs provide unique nonempty labels for every rendered group
   assert.equal(names.get('explore'),'탐험');
 });
 
+// [비주얼] 기존 진짜 Cargo 메시를 상품 상세 3D에 사용하고, 작은 상품은 동일 승인 그림의 2.5D 카드로 표현한다.
 test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5D licensed artwork',()=>{
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
