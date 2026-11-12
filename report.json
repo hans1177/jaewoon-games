@@ -1,5 +1,5 @@
 {
- "sourceRevision": "4cfab95ae8da733ab317e12e1235a665dc6b5461",
+ "sourceRevision": "68fd93738530816e624aab1df3856121c0724312",
  "log": [
   {
    "step": 1,
@@ -452,7 +452,7 @@
   {
    "step": 97,
    "ctx": "Client",
-   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   1/12턴 (내 턴) ERR n=1 first=Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: single part asset create call failed HTTP StatusCode: -1, Message: ). PBR textures may not be visible in game. Change a T\ntext"
+   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   1/12턴 (내 턴) ERR n=0 first=\ntext"
   },
   {
    "step": 98,
@@ -472,7 +472,7 @@
   {
    "step": 103,
    "ctx": "Client",
-   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=567.9951171875, 230.32708740234375, 57.025390625 on=true parent=VoyageScene fog=1419.6207275390625 brightness=2.028273582458496 atmo=0.3700000047683716 camdist=57.56401824951172\ntext"
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568, 230.1771697998047, 57.0234375 on=true parent=VoyageScene fog=1628.9344482421875 brightness=2.0286223888397217 atmo=0.3700000047683716 camdist=57.55915832519531\ntext"
   },
   {
    "step": 105,
@@ -507,12 +507,12 @@
   {
    "step": 114,
    "ctx": "Client",
-   "out": "LOGS(7): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: single part asset create call failed HTTP StatusCode: -1, Message: ). PBR texture\ntext"
+   "out": "LOGS(6): ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
   },
   {
    "step": 115,
    "ctx": "Server",
-   "out": "LOGS(19): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/event_angkor rbxassetid://90783710214595 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_anglo_dutch_war rbxassetid://113404061062686 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_boston_tea rbxassetid://109655723686183 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_bumper_harvest rbxassetid://111084199034741 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_calm_seas rbxassetid://86783464374932 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canal_opened rbxassetid://106273212786026 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canton_system rbxassetid://106942780605150 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_cape_colony rbxassetid://119155445382706 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_caribbean rbxassetid://96282600339572 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_east_asia rbxassetid://108128417584636 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_indian_ocean rbxassetid://96896200287224 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_mediterranean rbxassetid://112821491289063 status=TIMEOUT_16S // Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: single part asset create call failed HTTP StatusCode: -1, Message: ). PBR texture\ntext"
+   "out": "LOGS(18): ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/event_angkor rbxassetid://90783710214595 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_anglo_dutch_war rbxassetid://113404061062686 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_boston_tea rbxassetid://109655723686183 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_bumper_harvest rbxassetid://111084199034741 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_calm_seas rbxassetid://86783464374932 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canal_opened rbxassetid://106273212786026 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canton_system rbxassetid://106942780605150 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_cape_colony rbxassetid://119155445382706 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_caribbean rbxassetid://96282600339572 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_east_asia rbxassetid://108128417584636 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_indian_ocean rbxassetid://96896200287224 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_mediterranean rbxassetid://112821491289063 status=TIMEOUT_16S\ntext"
   }
  ],
  "errors": [],
@@ -522,15 +522,9 @@
    "Client",
    "Server"
   ],
-  "errorCount": 1,
+  "errorCount": 0,
   "warningCount": 18,
-  "errors": [
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: single part asset create call failed HTTP StatusCode: -1, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry."
-   }
-  ]
+  "errors": []
  },
  "summary": {
   "plannedSteps": 116,
@@ -549,7 +543,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 233061,
+      "bytes": 233117,
       "width": 0,
       "height": 0,
       "pass": true
@@ -572,7 +566,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 260149,
+      "bytes": 260112,
       "width": 0,
       "height": 0,
       "pass": true
@@ -596,7 +590,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 259929,
+      "bytes": 259884,
       "width": 0,
       "height": 0,
       "pass": true
@@ -611,7 +605,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 134679,
+      "bytes": 133043,
       "width": 0,
       "height": 0,
       "pass": true
@@ -624,7 +618,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0162737369537354,
+    "brightness": 2.0162250995635986,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -635,7 +629,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 186773,
+      "bytes": 186570,
       "width": 0,
       "height": 0,
       "pass": true
@@ -648,7 +642,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019390821456909,
+    "brightness": 2.0193777084350586,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -659,7 +653,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158933,
+      "bytes": 158224,
       "width": 0,
       "height": 0,
       "pass": true
@@ -672,7 +666,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.021523952484131,
+    "brightness": 2.0214033126831055,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -683,7 +677,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 202631,
+      "bytes": 202255,
       "width": 0,
       "height": 0,
       "pass": true
@@ -696,7 +690,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.023691177368164,
+    "brightness": 2.023526191711426,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -707,7 +701,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194980,
+      "bytes": 195733,
       "width": 0,
       "height": 0,
       "pass": true
@@ -722,7 +716,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 186543,
+      "bytes": 188002,
       "width": 0,
       "height": 0,
       "pass": true
@@ -737,7 +731,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 199989,
+      "bytes": 199215,
       "width": 0,
       "height": 0,
       "pass": true
@@ -752,7 +746,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 205240,
+      "bytes": 204150,
       "width": 0,
       "height": 0,
       "pass": true
@@ -767,7 +761,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 202052,
+      "bytes": 203433,
       "width": 0,
       "height": 0,
       "pass": true
@@ -782,7 +776,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203544,
+      "bytes": 204306,
       "width": 0,
       "height": 0,
       "pass": true
@@ -797,7 +791,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 189087,
+      "bytes": 190487,
       "width": 0,
       "height": 0,
       "pass": true
@@ -812,7 +806,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197504,
+      "bytes": 195658,
       "width": 0,
       "height": 0,
       "pass": true
@@ -827,7 +821,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 189934,
+      "bytes": 189332,
       "width": 0,
       "height": 0,
       "pass": true
@@ -842,7 +836,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 199228,
+      "bytes": 198934,
       "width": 0,
       "height": 0,
       "pass": true
@@ -943,7 +937,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105205,
+      "bytes": 104066,
       "width": 0,
       "height": 0,
       "pass": true
@@ -957,7 +951,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96252,
+      "bytes": 94947,
       "width": 0,
       "height": 0,
       "pass": true
@@ -971,7 +965,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102995,
+      "bytes": 102586,
       "width": 0,
       "height": 0,
       "pass": true
@@ -999,7 +993,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 111376,
+      "bytes": 111022,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1013,7 +1007,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197651,
+      "bytes": 206167,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1359,8 +1353,8 @@
     },
     "Haggle": {
      "invalid": 0,
-     "rejected": 50,
-     "accepted": 19,
+     "rejected": 39,
+     "accepted": 30,
      "calls": 69
     },
     "Explore": {
@@ -1383,9 +1377,9 @@
    },
    "calls": 1751,
    "issues": [],
-   "rejected": 1641,
+   "rejected": 1630,
    "failed": 0,
-   "accepted": 107
+   "accepted": 118
   }
  },
  "assetRegistryAudit": {
@@ -1577,7 +1571,7 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4174,
+    "contentRefs": 4176,
     "complete": false
    }
   }
