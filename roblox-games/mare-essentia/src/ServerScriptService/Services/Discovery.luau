@@ -23,6 +23,10 @@ return function(D, S)
 		S.State.gainXp(state, "adventure", RARITY_XP[card.rarity] or 15, msgs)
 		S.Perk.gainSpec(state, card.field, RARITY_XP[card.rarity] or 15, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
+		local DROP = { Common = 0.15, Uncommon = 0.25, Rare = 0.4, Epic = 0.6, Legendary = 1 }
+		if math.random() < (DROP[card.rarity] or 0.15) then
+			S.Cardbook.reward(state, "discover", msgs, math.random, card.field)
+		end
 		return true
 	end
 
@@ -67,6 +71,9 @@ return function(D, S)
 		state.stats.explored += 1
 
 		local msgs = { string.format("%s 탐험 (%d일)", site.name, site.days) }
+		if ctx.rng() < 0.45 then
+			S.Cardbook.reward(state, "explore", msgs, ctx.rng)
+		end
 		local cardId = remaining[1 + math.floor(ctx.rng() * #remaining) % #remaining]
 		local field = D.Cards.ById[cardId].field
 		local chance = math.min(0.95, 0.55 + D.Careers.discoverBonus(lv) + S.Perk.discoverBonus(state, field))

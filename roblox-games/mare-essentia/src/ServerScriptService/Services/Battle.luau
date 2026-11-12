@@ -223,7 +223,7 @@ return function(D, S)
 			end
 		end
 		local c = pb.card
-		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state], faction = deckFaction[state] }, { fighter = c.foe, boss = c.boss }, actions)
+		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state], faction = deckFaction[state], book = S.Cardbook.deckSpec(state) }, { fighter = c.foe, boss = c.boss }, actions)
 		if not r then
 			return false, "카드 기록이 규칙에 맞지 않아요"
 		end

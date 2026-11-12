@@ -15,6 +15,7 @@ local D = {
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
 	BoardingCards = require("./Shared/BoardingCards"),
+	CardBook = require("./Shared/CardBook"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
@@ -3227,6 +3228,36 @@ do
 		check("신대륙: 점수가 같으면 판을 이긴다", mt.wins.me == 1 and mt.wins.foe == 0)
 		local me = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "east_asia", "europe")
 		check("동아시아: 첫 판 선공", me.turn == "me")
+	end
+	-- 카드 수집책: 시작 덱·획득·강화(동은금)·덱 규칙·저장 정리
+	do
+		local CBk = D.CardBook
+		local book = CBk.new("europe")
+		check("수집책: 시작하면 문화권 기본 덱을 가진다", (book.owned.pikeman or 0) == 2 and CBk.validateDeck(book, BC.Factions.europe.roster))
+		check("수집책: 저장한 덱이 없으면 자동 덱", #CBk.deckIds(book, "europe") == #BC.Factions.europe.roster)
+		local id = CBk.drop(book, "quest", math.random)
+		check("수집책: 획득하면 보유가 늘어난다", (book.owned[id] or 0) >= 1)
+		CBk.grant(book, "swordsman", 3)
+		local ok1 = CBk.upgrade(book, "swordsman", 1000)
+		check("강화: 같은 카드 3장 이상이면 동→은", ok1 and CBk.tierOf(book, "swordsman") == 2)
+		local ok2, msg2 = CBk.upgrade(book, "swordsman", 1000)
+		check("강화: 장수가 모자라면 실패", not ok2 and string.find(msg2, "장 더") ~= nil)
+		CBk.grant(book, "swordsman", 5)
+		local ok3 = CBk.upgrade(book, "swordsman", 1000)
+		check("강화: 은→금", ok3 and CBk.tierOf(book, "swordsman") == 3)
+		check("강화: 금 위로는 없다", not CBk.upgrade(book, "swordsman", 1000))
+		check("강화: 영웅·특수 카드는 강화하지 않는다", CBk.upgradeInfo(book, "horn") == nil and CBk.upgradeInfo(book, "hero_blade") == nil)
+		local spec = { ids = { "swordsman", "swordsman" }, tier = book.tier }
+		local deck = BC.playerDeck({}, math.random, "europe", spec)
+		check("덱: 금 단계 부대는 점수 +2", deck[1].power == 4 + 2 and deck[1].tier == 3)
+		check("덱 규칙: 15장 미만은 거절", not CBk.validateDeck(book, { "swordsman", "swordsman" }))
+		local many = {}
+		for _ = 1, 4 do table.insert(many, "hero_blade") end
+		for _ = 1, 15 do table.insert(many, "swordsman") end
+		CBk.grant(book, "hero_blade", 4)
+		check("덱 규칙: 영웅 4장은 거절", not CBk.validateDeck(book, many))
+		local clean = CBk.sanitize({ owned = { fake = 3, pikeman = 2 }, tier = { pikeman = 9 }, deck = { "fake" } }, "europe")
+		check("저장 정리: 모르는 카드 제거·단계 범위 제한", clean.owned.fake == nil and clean.owned.pikeman == 2 and clean.tier.pikeman == 3 and clean.deck == nil)
 	end
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()

@@ -732,7 +732,8 @@ return function(D, S)
 			for _, cid in state.companions do
 				local c = D.Specialties.CompanionById[cid]
 				if c and #cards < 4 then
-					table.insert(cards, { kind = "crew", name = c.name, skill = STATION_SKILL[D.Specialties.CompanionStation[cid] or ""] or "analyze" })
+					local aff = (state.affinity and state.affinity[cid]) or 0
+					table.insert(cards, { kind = "crew", name = c.name, skill = STATION_SKILL[D.Specialties.CompanionStation[cid] or ""] or "analyze", tier = math.clamp(1 + math.floor(aff / 40), 1, 3) })
 				end
 			end
 			-- 분야마다 가장 귀한 발견 하나씩, 귀한 순서로 5장
@@ -779,7 +780,9 @@ return function(D, S)
 			end
 			table.insert(cards, { kind = "ship", name = D.Ships.Ships[state.ship.id] and D.Ships.Ships[state.ship.id].name or "배", skill = SHIP_SKILL[state.ship.id] or "focus" })
 			local faction = D.BoardingCards.factionOf(state.nationId)
-			view.deck = { cards = cards, faction = faction }
+			local spec = S.Cardbook.deckSpec(state)
+			view.deck = { cards = cards, faction = faction, book = { ids = spec.ids, tier = spec.tier } }
+			view.cardbook = { owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction
