@@ -49,6 +49,7 @@ import {createVibeEnemyDummy} from './vibe-enemy-training-dummy.mjs';
 import {createClimbMotion} from './vibe-climb-motion.mjs';
 import {createVibeDamageReceiver,checkVibeMeleeHit} from './vibe-combat-climb-ik.mjs';
 import {createAdaptiveClimbIK,discoverClimbSkeleton} from './vibe-adaptive-climb-ik.mjs';
+import {makeHitReaction} from './vibe-studio-animation.js';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
@@ -140,7 +141,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){heldKeys.c
 for(const action of ['idle','walk','run','attack','wave','react']){const button=document.createElement('button');button.textContent=({idle:'대기',walk:'걷기',run:'달리기',attack:'공격',wave:'인사',react:'반응'})[action];button.setAttribute('aria-label',action);button.addEventListener('click',()=>handAnimation?.play(action));studioControls.append(button)}
 const emotionPicker=document.createElement('select');emotionPicker.setAttribute('aria-label','표정');for(const emotion of ['neutral','joy','fear','pain']){const option=document.createElement('option');option.value=emotion;option.textContent=emotion;emotionPicker.append(option)}studioControls.append(emotionPicker);
 const lightingPicker=document.createElement('select');lightingPicker.setAttribute('aria-label','장면 조명');for(const name of ['forest','volcano','laboratory']){const option=document.createElement('option');option.value=name;option.textContent=name;lightingPicker.append(option)}lightingPicker.addEventListener('change',()=>lightingDirector.transition(lightingPicker.value,1.2));studioControls.append(lightingPicker);
-const playerHealth=createVibeDamageReceiver({health:100,onDamage:event=>{status.textContent='체력 '+event.health+'/100'+(event.dead?' · 쓰러짐':'');presentation.cue('impact',{shake:.16,flash:.08,label:'피격'})}});let parryActive=false;
+const visualHitReaction=makeHitReaction({duration:.45,maxTilt:.09});
+ const playerHealth=createVibeDamageReceiver({health:100,onDamage:event=>{visualHitReaction.hit({now:window.performance.now()/1000,damage:event.amount,impulse:{x:.7,z:.7}});status.textContent='체력 '+event.health+'/100'+(event.dead?' · 쓰러짐':'');presentation.cue('impact',{shake:.16,flash:.08,label:'피격'})}});let parryActive=false;
 const trainingEnemy=createVibeEnemyDummy(THREE,scene,{onHit:()=>{if(!activeModel||parryActive)return;const facing=new THREE.Vector3(0,0,1).applyQuaternion(trainingEnemy.root.quaternion);if(checkVibeMeleeHit({attacker:{position:trainingEnemy.root.position,forward:{x:facing.x,z:facing.z}},target:activeModel,range:2.5}))playerHealth.hit(15)},onTelegraph:()=>{parryActive=false;status.textContent='적 공격 예고 — P키 패링'}});
 const survivalDisplay=mountSurvivalDisplay(document);const survivalEffects=createSurvivalSceneEffects(THREE,{scene,camera});const ledgeController=createLedgeRaycastController(THREE,{scene});let survivalVisible=false;
 const worldBridge=createVibeWorldBridge(THREE,scene);const worldVfx=createVibeWorldVfx(THREE,scene);let previousBuildings=0;
@@ -222,7 +224,7 @@ function draw(now){
    fieldOfView:view.fov,reducedMotion:gameUi.ui.settings.reducedMotion
   });
  }
- if(activeModel){const acting=characterPerformance.update(delta);activeModel.rotation.z=acting.secondarySway*.12;}presentation.update(delta);authoredLOD?.update(camera);
+ if(activeModel){const acting=characterPerformance.update(delta);activeModel.rotation.z=acting.secondarySway*.12+visualHitReaction.update(window.performance.now()/1000).tilt;}presentation.update(delta);authoredLOD?.update(camera);
   if(cinematicComposer)cinematicComposer.render(delta);else renderer.render(scene,camera);
   desktopQuality?.sample(delta,{drawCalls:renderer.info.render.calls});
  // [실제 화면 평가] 동일 카메라 프레임의 중앙/주변 25점을 읽어 제한된 노출 보정을 전후 비교한다.

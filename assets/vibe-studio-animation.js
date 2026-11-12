@@ -95,17 +95,30 @@ export function makeLookAtRig({maxYaw=Math.PI/2,maxPitch=Math.PI/4,followRate=8}
   reset(){yaw=0;pitch=0;}
  };
 }
-export function makeHitReaction({duration=.4,staggerThreshold=50}={}){
- let until=0,intensity=0,direction={x:0,z:0};
+// [메인: 물리 피격 표현] 실제 체력·피격 판정을 변경하지 않는 관성 반동/기울기만 반환한다.
+export function makeHitReaction({duration=.4,staggerThreshold=50,maxOffset=.25,maxTilt=.12}={}){
+ let started=0,until=0,intensity=0,direction={x:0,z:0};
+ const durationSafe=Math.max(.01,Number.isFinite(duration)?duration:.4);
  return{
   hit({now,damage,impulse={x:0,z:0}}){
-   if(!Number.isFinite(now)||damage<=0)return null;
-   intensity=clamp(damage/staggerThreshold,0,1);
-   direction={x:impulse.x||0,z:impulse.z||0};
-   until=Math.max(until,now+duration);
-   return{stagger:intensity>=1,until};
+   if(!Number.isFinite(now)||!Number.isFinite(damage)||damage<=0)return null;
+   intensity=clamp(damage/Math.max(1,staggerThreshold),0,1);
+   const x=Number.isFinite(impulse?.x)?impulse.x:0,z=Number.isFinite(impulse?.z)?impulse.z:0;
+   const length=Math.hypot(x,z);
+   direction=length>1e-6?{x:x/length,z:z/length}:{x:0,z:0};
+   started=now;until=Math.max(until,now+durationSafe);
+   return{stagger:intensity>=1,until,visualOnly:true};
   },
-  update(now){const remaining=Math.max(0,until-now);return{active:remaining>0,weight:duration>0?intensity*clamp(remaining/duration,0,1):0,direction};}
+  update(now){
+   const remaining=Math.max(0,until-(Number.isFinite(now)?now:until));
+   const progress=clamp((Math.max(0,(Number.isFinite(now)?now:until)-started))/durationSafe,0,1);
+   const envelope=remaining>0?Math.sin(Math.PI*progress)*intensity:0;
+   const weight=remaining>0?intensity*clamp(remaining/durationSafe,0,1):0;
+   return{active:remaining>0,weight,direction:{...direction},visualOnly:true,
+    displacement:{x:direction.x*envelope*Math.max(0,maxOffset),z:direction.z*envelope*Math.max(0,maxOffset)},
+    tilt:direction.x*envelope*Math.max(0,maxTilt)};
+  },
+  reset(){started=0;until=0;intensity=0;direction={x:0,z:0};}
  };
 }
 export function makeCameraResponse({maxShake=.6,decay=6,deadZone=.04}={}){
