@@ -96,12 +96,12 @@ test('대기열이 2개 이상이면 쉬고, 연속 실패한 점검은 감점�
   assert.ok(plan.includes('inputs[script]=' + GAMES['mare-essentia'].scripts.combat));
 });
 
-test('워크플로: 30분 주기, 끄는 변수, 결과·원장 수집, main 이 아닌 데이터 브랜치에만 저장(API)', () => {
+test('워크플로: 10분 주기, 끄는 변수, 결과·원장 수집, main 이 아닌 데이터 브랜치에만 저장(API)', () => {
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
-  assert.match(y, /cron: '7,22,37,52 \* \* \* \*'/);
+  assert.match(y, /cron: '8-58\/10 \* \* \* \*'/);
   assert.match(y, /vars\.VIBE_AUTOPILOT != 'off'/);
   assert.match(y, /actions: write/);
-  assert.match(y, /node tools\/vibe-autopilot\.mjs --run --queued "\$QUEUED"/);
+  assert.match(y, /node tools\/vibe-autopilot\.mjs --run --game mare-essentia --queued "\$QUEUED"/);
   assert.match(y, /-studio-frames/);
   assert.match(y, /branch=vibe-gym-data/);
   assert.doesNotMatch(y, /git push/);
@@ -117,10 +117,14 @@ test('종합 점검 스크립트는 시작 버튼이 없어도 멈추지 않는�
   assert.ok(d.some(s => s.type === 'luau' && /HEALTH_ERR/.test(s.code)));
 });
 
-test('점검이 끝날 때마다 이어 실행(workflow_run)되고, 방금 보냈으면 5분은 쉬어 연속 실패 루프를 막는다', () => {
+test('Studio 완료와 System AI 완료로 10분 예약 누락을 복구하고 5분 재발송을 막는다', () => {
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
-  assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture'\]\s*\n\s*types: \[completed\]/);
-  assert.match(y, /cron: '7,22,37,52 \* \* \* \*'/);                          // 안전망은 그대로
+  assert.match(y, /workflow_run:\s*\n\s*workflows: \['Devloop Studio Capture', 'Company System AI Workers'\]\s*\n\s*types: \[completed\]/);
+  assert.match(y, /cron: '8-58\/10 \* \* \* \*'/);                          // 안전망은 그대로
+  assert.match(y, /AUTOPILOT_FALLBACK_SKIP=RECENT_DECISION/);
+  assert.match(y, /lastDecisionAt/);
+  assert.match(y, /if: env\.AUTOPILOT_SKIP != 'true'/);
+  assert.match(fs.readFileSync('tools/vibe-autopilot.mjs', 'utf8'), /ledger\.lastDecisionAt = decisionAt/);
   const b = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
   assert.match(b, /workflows: \['Vibe Autopilot'\]/);
   const now = Date.now();
