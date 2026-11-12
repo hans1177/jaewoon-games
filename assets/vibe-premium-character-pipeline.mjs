@@ -26,16 +26,25 @@ export function createVibeFacialRig(model,{mapping={}}={}){
 }
 const fingers=['Thumb','Index','Middle','Ring','Pinky'];
 export function createVibeHandRig(model,{leftPrefix='LeftHand',rightPrefix='RightHand'}={}){
+ if(!model?.traverse)throw Error('A Three.js model is required');
+ // [실제 리그 인식] 원본 Mixamo/Blender/Unity 손가락 본의 이름만 대응한다. 본 생성·스킨 변경 금지.
+ const normalize=name=>String(name||'').toLowerCase().replace(/^mixamorig:?/,'').replace(/[^a-z0-9]/g,'');
  const bones=new Map();
- model.traverse(object=>{if(object.isBone)bones.set(object.name.toLowerCase(),object)});
+ model.traverse(object=>{
+  if(!object?.isBone||!object.rotation||!Number.isFinite(object.rotation.x))return;
+  const key=normalize(object.name);
+  if(key&&!bones.has(key))bones.set(key,object);
+ });
  const hands={};
  for(const [side,prefix] of [['left',leftPrefix],['right',rightPrefix]]){
   hands[side]={};
   for(const finger of fingers){
    const chain=[];
    for(let i=1;i<=3;i++){
-    const candidates=[prefix+finger+i,side+'_'+finger.toLowerCase()+'_'+String(i).padStart(2,'0'),side+finger+i];
-    const bone=candidates.map(name=>bones.get(name.toLowerCase())).find(Boolean);
+    const no=String(i).padStart(2,'0'),suffix=side==='left'?'L':'R';
+    const candidates=[prefix+finger+i,side+'_'+finger.toLowerCase()+'_'+no,
+     side+finger+i,side+'Hand'+finger+i,finger+no+suffix,finger+i+suffix];
+    const bone=candidates.map(name=>bones.get(normalize(name))).find(Boolean);
     if(bone)chain.push({bone,rest:bone.rotation.x});
    }
    hands[side][finger.toLowerCase()]=chain;

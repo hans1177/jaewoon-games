@@ -10,6 +10,29 @@ test('facial channels control blendshape weights',()=>{
  rig.pose({mouthSmileLeft:1,mouthSmileRight:1});assert.equal(mesh.morphTargetInfluences[1],1);
  rig.reset();assert.deepEqual(mesh.morphTargetInfluences,[0,0]);
 });
+test('Vibe 5.9 imported Mixamo and Blender finger names map to original bones',()=>{
+ const left={isBone:true,name:'mixamorig:LeftHandIndex1',rotation:{x:.12}};
+ const right={isBone:true,name:'index.02.R',rotation:{x:-.2}};
+ const model={traverse(fn){fn(left);fn(right)}};
+ const hand=createVibeHandRig(model);
+ assert.equal(hand.hands.left.index.length,1);
+ assert.equal(hand.hands.right.index.length,1);
+ assert.equal(hand.curl('left','index',1),1);
+ assert.equal(hand.curl('right','index',1),1);
+ assert.ok(left.rotation.x<.12);
+ assert.ok(right.rotation.x>-.2);
+ hand.reset();
+ assert.equal(left.rotation.x,.12);
+ assert.equal(right.rotation.x,-.2);
+});
+test('Vibe 5.9 preview applies hand poses after authored clip update without creating bones',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.ok(html.includes("handGestureButton.addEventListener('click',()=>{"));
+ assert.ok(html.includes("if(handGesture&&handRig){handRig.gesture('left',handGesture);handRig.gesture('right',handGesture)}"));
+ assert.ok(html.includes('if(!supported)'));
+ assert.ok(html.includes('if(!handGesture)handRig.reset()'));
+});
+
 test('finger rig applies gesture to named bones',()=>{
  const bone={isBone:true,name:'LeftHandIndex1',rotation:{x:0}};
  const model={traverse(fn){fn(bone)}};
