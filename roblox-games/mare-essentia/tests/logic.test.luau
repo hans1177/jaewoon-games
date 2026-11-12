@@ -52,6 +52,20 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- 거시경제 국면·미개발 특산 보정 (History.mult 에 항상 곱해진다)
+local function macroOf(st, portId, goodId)
+	local p = D.Ports.Ports[portId]
+	local rid = D.Regions.of(p).id
+	local yr = st.startYear + math.floor(st.day / 365)
+	local m = D.Harbor.priceMult(D.Harbor.regime(yr), rid, goodId)
+	local role = D.Harbor.role(p, rid, yr, D.Harbor.level(st.harbor[portId] or 0), goodId)
+	local base = if table.find(p.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(p.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
+	local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
+	return m * now / base
+end
+local function near(a, b)
+	return math.abs(a - b) < 1e-9
+end
 local function check(name, cond, detail)
 	if cond then
 		passed += 1
@@ -1852,7 +1866,7 @@ do
 	local base = D.TradeMath.getPrice("london", "wine", 1, 1)
 	local before = st.coins
 	local ok = handlers.Buy(st, { goodId = "wine", amount = 1 }, c2)
-	check("event raises buy price", ok and before - st.coins == D.TradeMath.getPrice("london", "wine", 1, 1.4) and before - st.coins > base)
+	check("event raises buy price", ok and before - st.coins == D.TradeMath.getPrice("london", "wine", 1, 1.4 * macroOf(st, "london", "wine")) and before - st.coins > base)
 	local v = S.View.build(st, c2)
 	local wine
 	for _, g in v.goods do
@@ -2099,6 +2113,10 @@ do
 		check("war price weaker in far east", H.priceMult(H.regime(1630), "far_east", "iron") < H.priceMult(H.regime(1630), "europe", "iron"))
 		check("native specialties only at lv1", #H.activeProduces({ "a", "b", "c", "d", "e" }, 1) == 2)
 		check("specialties unlock with level", #H.activeProduces({ "a", "b", "c", "d", "e" }, 2) == 3 and #H.activeProduces({ "a", "b", "c", "d", "e" }, 4) == 5)
+		check("origin: tea not native to europe", not H.isLocal("tea", "europe", 1600) and H.isLocal("tea", "far_east", 1600))
+		check("transplant: sugar new world after 1550", not H.isLocal("sugar", "new_world", 1540) and H.isLocal("sugar", "new_world", 1560))
+		check("producesOf drops non-local", #H.producesOf({ "tea", "wool" }, "europe", 1600) == 1)
+		check("demandsOf excludes local goods", #H.demandsOf({ "wool", "tea", "silk" }, "europe", 1600) == 2)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)
@@ -2721,10 +2739,10 @@ do
 	local okH, msgH = act(stH, "HistoryChoose", { choice = 2 })
 	check("역사: 선택하면 처리됨", okH == true and stH.history.seen[first] == 2, tostring(msgH))
 	stH.history.fx = { { goods = { "wool" }, regions = { "europe" }, mult = 0.5, untilDay = stH.day + 10 } }
-	check("역사: 지역 시세 효과가 적용됨", S.History.mult(stH, "london", "wool") == 0.5 and S.History.mult(stH, "london", "tea") == 1)
+	check("역사: 지역 시세 효과가 적용됨", near(S.History.mult(stH, "london", "wool"), 0.5 * macroOf(stH, "london", "wool")) and near(S.History.mult(stH, "london", "tea"), macroOf(stH, "london", "tea")))
 	stH.day += 11
 	S.History.tick(stH)
-	check("역사: 기간이 지나면 효과가 사라짐", S.History.mult(stH, "london", "wool") == 1)
+	check("역사: 기간이 지나면 효과가 사라짐", near(S.History.mult(stH, "london", "wool"), macroOf(stH, "london", "wool")))
 	extraTests()
 	-- 항구 건물 계통
 	local PB = D.PortBuildings

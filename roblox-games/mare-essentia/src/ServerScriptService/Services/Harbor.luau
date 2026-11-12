@@ -10,6 +10,20 @@ return function(D, S)
 		return state.harbor[portId or state.portId] or 0
 	end
 
+	-- 발전 단계가 오르면서 새로 열린 특산품·교역품
+	local function newlyOpen(port, before, after, year)
+		local rid = D.Regions.of(port).id
+		local out = {}
+		for _, list in { H.producesOf(port.produces, rid, year), H.demandsOf(port.demands, rid, year) } do
+			for i, g in list do
+				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
+					table.insert(out, g)
+				end
+			end
+		end
+		return out
+	end
+
 	local function levelAt(state, portId)
 		return H.level(invested(state, portId))
 	end
@@ -43,10 +57,8 @@ return function(D, S)
 		local after = levelAt(state)
 		if after > before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
-			for i, g in D.Ports.Ports[state.portId].produces do
-				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
-					table.insert(msgs, string.format("새 특산품이 생겼다: %s", D.Ports.Goods[g].name))
-				end
+			for _, g in newlyOpen(D.Ports.Ports[state.portId], before, after, state.startYear + math.floor(state.day / 365)) do
+				table.insert(msgs, string.format("새 교역 품목이 열렸다: %s", D.Ports.Goods[g].name))
 			end
 		end
 		S.Perk.gainSpec(state, "trade", math.floor(amount / 40), msgs)
@@ -84,7 +96,7 @@ return function(D, S)
 		local activity = (state.harborTrade[state.portId] or 0) / 150
 		state.harborTrade[state.portId] = nil
 		local region = D.Regions.of(port).id
-		local vit = H.vitality(regime, region, port.produces, activity)
+		local vit = H.vitality(regime, region, H.producesOf(port.produces, region, year), activity)
 		if vit >= 0.5 and inv < SELF_GROW_CAP then
 			local gain = math.floor(elapsed * (1.2 + before * 1.5) * vit)
 			if gain > 0 then
@@ -103,10 +115,8 @@ return function(D, S)
 		local after = levelAt(state)
 		if after > before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
-			for i, g in port.produces do
-				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
-					table.insert(msgs, string.format("새 특산품이 생겼다: %s", D.Ports.Goods[g].name))
-				end
+			for _, g in newlyOpen(port, before, after, year) do
+				table.insert(msgs, string.format("새 교역 품목이 열렸다: %s", D.Ports.Goods[g].name))
 			end
 		elseif after < before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 위축됐다", H.NAMES[after]))

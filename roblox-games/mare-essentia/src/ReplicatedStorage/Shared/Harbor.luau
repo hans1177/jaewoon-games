@@ -41,9 +41,93 @@ function Harbor.activeProduces(produces: { string }, level: number): { string }
 	end
 	return out
 end
-function Harbor.isActiveProduce(produces: { string }, goodId: string, level: number): boolean
-	local i = table.find(produces, goodId)
-	return i ~= nil and level >= Harbor.unlockLevel(i)
+-- 사실 근거: 교역품마다 원산 지역이 있고, 다른 지역에서는 이식된 해부터 난다 (사탕수수→신대륙 1550, 커피→자바·카리브 1700대 등).
+-- 원산이 적혀 있지 않은 품목(소금·목재·가죽·생선 등)은 어디서나 난다.
+Harbor.ORIGIN = {
+	spice = { "indian", "far_east" }, pepper = { "indian", "far_east" }, cloves = { "far_east" }, nutmeg = { "far_east" }, cinnamon = { "indian" },
+	silk = { "far_east", "indian" }, porcelain = { "far_east" }, tea = { "far_east" }, lacquer = { "far_east" }, camphor = { "far_east" },
+	sake = { "far_east" }, jade = { "far_east" }, sugar = { "indian", "far_east" }, coffee = { "indian" }, carpet = { "indian", "far_east" },
+	incense = { "indian", "w_africa" }, dates = { "indian", "w_africa" }, saffron = { "europe", "indian" }, indigo = { "indian" },
+	pearls = { "indian", "new_world" }, gems = { "indian", "new_world" }, ivory = { "w_africa", "indian" }, ebony = { "w_africa", "indian" },
+	gold = { "w_africa", "new_world" }, palm_oil = { "w_africa" }, gum_arabic = { "w_africa", "indian" }, cotton = { "indian", "w_africa", "new_world", "far_east" },
+	silver = { "new_world", "europe", "far_east" }, cocoa = { "new_world" }, mahogany = { "new_world" }, logwood = { "new_world" }, maize = { "new_world" },
+	vanilla = { "new_world" }, cochineal = { "new_world" }, brazilwood = { "new_world", "far_east" }, feathers = { "new_world", "pacific" },
+	kauri = { "pacific" }, sealskin = { "pacific", "new_world", "europe" }, sandalwood = { "indian", "pacific" }, sandalwood_hi = { "pacific" },
+	pearl_shell = { "pacific", "indian" }, rum = { "new_world" }, ginseng = { "far_east", "new_world" },
+	wool = { "europe" }, coal = { "europe" }, cheese = { "europe" }, wine = { "europe" }, amber = { "europe" }, glass = { "europe" }, beer = { "europe" },
+	olive_oil = { "europe", "indian" }, whale_oil = { "europe", "new_world" }, tin = { "europe", "far_east" }, marble = { "europe", "indian" },
+	coral = { "europe", "indian" }, raisins = { "europe", "indian" }, linen = { "europe" }, fur = { "europe", "new_world" },
+	rice = { "far_east", "indian" }, copper = { "europe", "far_east", "new_world" },
+}
+-- 이식·전파: 이 해부터 해당 지역에서도 난다
+Harbor.TRANSPLANT = {
+	sugar = { new_world = 1550, w_africa = 1520, europe = 1500 },
+	coffee = { far_east = 1700, new_world = 1720, w_africa = 1750 },
+	rice = { new_world = 1690, europe = 1500, w_africa = 1500 },
+	cotton = { europe = 1790, pacific = 1800 },
+	wine = { new_world = 1560, w_africa = 1650, indian = 1650, pacific = 1800 },
+	wool = { pacific = 1797, new_world = 1600 },
+	cocoa = { w_africa = 1700, far_east = 1780 },
+	porcelain = { europe = 1710 },
+	silk = { europe = 1500 },
+	indigo = { new_world = 1600, w_africa = 1650 },
+	rum = { europe = 1700, indian = 1700 },
+	maize = { europe = 1550, w_africa = 1550, far_east = 1550, indian = 1550 },
+	tea = { indian = 1830 },
+	cloth = {},
+}
+local function nativeIn(goodId: string, region: string, year: number): boolean
+	local o = Harbor.ORIGIN[goodId]
+	if not o or table.find(o, region) then
+		return true
+	end
+	local t = Harbor.TRANSPLANT[goodId]
+	return t ~= nil and t[region] ~= nil and year >= t[region]
+end
+Harbor.isLocal = nativeIn
+
+-- 그 항구가 그 해에 낼 수 있는 특산품: 토착(원산 지역) 먼저, 이식된 것은 뒤. 원산이 맞지 않는 품목은 제외.
+function Harbor.producesOf(produces: { string }, region: string, year: number): { string }
+	local native, later = {}, {}
+	for _, g in produces do
+		local o = Harbor.ORIGIN[g]
+		if not o or table.find(o, region) then
+			table.insert(native, g)
+		elseif nativeIn(g, region, year) then
+			table.insert(later, g)
+		end
+	end
+	for _, g in later do
+		table.insert(native, g)
+	end
+	return native
+end
+
+-- 교역품(수요): 제 땅에서 나지 않는 물건을 비싸게 산다.
+function Harbor.demandsOf(demands: { string }, region: string, year: number): { string }
+	local out = {}
+	for _, g in demands do
+		if not (Harbor.ORIGIN[g] and nativeIn(g, region, year)) then
+			table.insert(out, g)
+		end
+	end
+	return out
+end
+
+-- 발전도에 따라 열린 목록 (특산·교역품 공통: 2개로 시작해 항구가 크면 늘어난다)
+function Harbor.openList(list: { string }, level: number): { string }
+	return Harbor.activeProduces(list, level)
+end
+
+-- 이 항구에서 이 상품이 지금 맡는 역할: "produce"(싸다) · "demand"(비싸다) · nil
+function Harbor.role(port, region: string, year: number, level: number, goodId: string): string?
+	if table.find(Harbor.openList(Harbor.producesOf(port.produces, region, year), level), goodId) then
+		return "produce"
+	end
+	if table.find(Harbor.openList(Harbor.demandsOf(port.demands, region, year), level), goodId) then
+		return "demand"
+	end
+	return nil
 end
 
 -- 교역품 분류: 경제 국면은 분류마다 다르게 작용한다 (전쟁엔 전략물자↑·사치품↓, 호황엔 사치품·향신료↑).
