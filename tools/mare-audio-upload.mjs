@@ -46,6 +46,29 @@ function prepareVerifiedCC0(track){
     if(original.length<512||original.length>12*1024*1024)
       throw Error('CC0_AUDIO_ARCHIVE_ENTRY_SIZE_INVALID');
     sourceEvidence={sourceArchiveSha256:source.sha256,sourceEntry:matches[0]};
+  }else if(track.sourceDownloadUrl && !track.sourceFile){
+    // 외부 CC0 원본을 실제 내려받아 원본 SHA-256을 고정하고 게임 전용 OGG로 변환한다.
+    // 원본은 OpenGameArt 개별 곡 페이지의 CC0 확인 후 등록한 URL만 허용한다.
+    if(!/^https:\/\/opengameart\.org\/content\/[a-z0-9-]+$/.test(String(track.sourceUrl||''))
+      ||!/^https:\/\/opengameart\.org\/sites\/default\/files\/[A-Za-z0-9%_.()+-]+$/.test(String(track.sourceDownloadUrl||''))
+      ||!track.creator||track.sourceLicenseCheckedOn!=='2026-11-12')
+      throw Error('CC0_AUDIO_EXTERNAL_SOURCE_NOT_APPROVED');
+    original=execFileSync('curl',['--fail','--location','--silent','--show-error',
+      '--retry','3','--connect-timeout','15','--max-time','120',
+      '--max-filesize','36000000','--',track.sourceDownloadUrl],
+      {timeout:140000,maxBuffer:40*1024*1024});
+    if(original.length<1500||original.length>36000000)
+      throw Error('CC0_AUDIO_EXTERNAL_SOURCE_SIZE_INVALID');
+    const originalHash=crypto.createHash('sha256').update(original).digest('hex');
+    if(track.sourceSha256&&track.sourceSha256!==originalHash)
+      throw Error('CC0_AUDIO_EXTERNAL_SOURCE_HASH_MISMATCH');
+    if(!track.sourceSha256){
+      if(process.env.AUDIO_CC0_PREFLIGHT!=='1')
+        throw Error('CC0_AUDIO_EXTERNAL_SOURCE_HASH_NOT_LOCKED');
+      track.sourceSha256=originalHash;
+    }
+    sourceEvidence={sourceDownloadUrl:track.sourceDownloadUrl,sourceSha256:originalHash,
+      sourceLicenseCheckedOn:track.sourceLicenseCheckedOn};
   }else{
     if(!track.sourceFile?.startsWith(cc0Base)||!/^[a-f0-9]{40}$/.test(String(track.sourceGitBlobSha1||'')))
       throw Error('CC0_AUDIO_ORIGINAL_METADATA_INVALID');
@@ -63,7 +86,8 @@ function prepareVerifiedCC0(track){
   const output=dir+'/'+track.file;
   fs.mkdirSync(dir+'/out',{recursive:true});
   execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i','pipe:0',
-    '-vn','-ac','1','-ar','32000','-af',track.editFilter,'-c:a','libvorbis','-q:a','3',output],
+    '-vn','-t',String(track.maxSeconds||180),'-ac','1','-ar','32000','-af',track.editFilter,
+    '-c:a','libvorbis','-q:a','3',output],
     {input:original,timeout:120000,maxBuffer:8*1024*1024});
   if(!fs.existsSync(output)||fs.statSync(output).size<1500)
     throw Error('CC0_AUDIO_DERIVATIVE_TOO_SMALL');
@@ -88,6 +112,10 @@ if(process.env.AUDIO_CC0_PREFLIGHT==='1'){
       +' original='+evidence.sourceSha256+' derived='
       +crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
     passed++;
+  }
+  // 새 다운로드 원본 해시를 동일 manifest에 고정해 PR에 같이 보관한다.
+  if(meta.tracks.some(t=>t.sourceDownloadUrl&&!t.sourceFile&&t.sourceSha256)){
+    fs.writeFileSync(dir+'/manifest.json',JSON.stringify(meta,null,1)+'\n');
   }
   console.log('AUDIO_CC0_PREFLIGHT_OK '+passed);
   process.exit(0);
