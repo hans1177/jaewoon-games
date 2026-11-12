@@ -1253,7 +1253,7 @@ local function setPortrait(groupName)
 	portraitCam.CFrame = CFrame.lookAt(head + Vector3.new(0, 0.2, size.Y * 1.2), head)
 end
 
-local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(94, 28), text = "0", theme = H.bookTheme })
+local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(124, 28), text = "0", theme = H.bookTheme })
 coinChip.AnchorPoint = Vector2.new(1, 0)
 coinChip.Position = UDim2.new(1, -10, 0, 7)
 coinChip.Parent = mainInner
