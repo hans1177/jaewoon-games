@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local NavalBattle = {}
@@ -675,8 +676,12 @@ function NavalBattle.play(opts)
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local group = spec and assets and assets:FindFirstChild(spec[1])
 			local template = group and group:FindFirstChild(spec[2])
-			local view, model, center, bounds, pivot
-			if template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true) then
+			local hasProp = template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true)
+			local showActor = not card.special and card.id ~= "beast"
+			local view, world, camera, model, center, bounds, pivot
+			local actor, grip, neck
+			local active = true
+			if hasProp or showActor then
 				view = Instance.new("ViewportFrame")
 				view.Size = UDim2.fromScale(1, 1)
 				view.BackgroundTransparency = 1
@@ -685,18 +690,74 @@ function NavalBattle.play(opts)
 				view.LightDirection = Vector3.new(-1, -1, -0.5).Unit
 				view.ZIndex = image.ZIndex + 1
 				view.Parent = art
-				model = template:Clone()
-				model.Parent = view
-				local box
-				box, bounds = model:GetBoundingBox()
-				center = box.Position
-				pivot = model:GetPivot()
-				local cam = Instance.new("Camera")
-				cam.FieldOfView = 34
-				local distance = math.max(bounds.Magnitude, 0.1) * 1.85
-				cam.CFrame = CFrame.lookAt(center + Vector3.new(0.85, 0.48, 1).Unit * distance, center)
-				cam.Parent = view
-				view.CurrentCamera = cam
+				world = Instance.new("WorldModel")
+				world.Parent = view
+				camera = Instance.new("Camera")
+				camera.FieldOfView = 34
+				camera.Parent = view
+				view.CurrentCamera = camera
+				if hasProp then
+					model = template:Clone()
+					model.Parent = world
+					local box
+					box, bounds = model:GetBoundingBox()
+					center, pivot = box.Position, model:GetPivot()
+					local distance = math.max(bounds.Magnitude, 0.1) * 1.85
+					camera.CFrame = CFrame.lookAt(center + Vector3.new(0.85, 0.48, 1).Unit * distance, center)
+				end
+				if showActor then
+					task.defer(function()
+						if not active then return end
+						local actorWorld = Instance.new("WorldModel")
+						local seed = 0
+						for i = 1, #card.id do
+							seed = (seed * 31 + string.byte(card.id, i)) % 100000
+						end
+						local role = if card.ability == "spy" then "Rogue" elseif card.id == "axeman" then "Barbarian" else "Sailor"
+						local coat = if card.hero then Color3.fromRGB(117, 48, 39)
+							elseif card.row == "cannon" then Color3.fromRGB(122, 83, 54)
+							else Color3.fromRGB(60, 87, 107)
+						local ok, rig = pcall(Pose.createR15, actorWorld, Vector3.zero, 0, coat, Random.new(seed), role, 5.8)
+						if not active or not ok or not rig then
+							actorWorld:Destroy()
+							return
+						end
+						rig.Parent = world
+						actorWorld:Destroy()
+						actor = rig
+						neck = actor:FindFirstChild("Neck", true)
+						local weaponHand = if card.id == "shieldman" then "LeftHand" else "RightHand"
+						local hand = actor:FindFirstChild(weaponHand)
+						grip = hand and hand:FindFirstChild(weaponHand .. "GripAttachment")
+						local focus = Vector3.new(0, 3.85, 0)
+						camera.CFrame = CFrame.lookAt(focus + Vector3.new(3.2, 0.55, -7.3), focus)
+						if model then
+							if spec[3] == "swing" or card.id == "shieldman" then
+								model:ScaleTo(model:GetScale() * (if card.id == "shieldman" then 1.65 else 2.65) / math.max(bounds.Magnitude, 0.01))
+								local box, size = model:GetBoundingBox()
+								local longAxis = if size.Y >= math.max(size.X, size.Z) then Vector3.yAxis
+									elseif size.X >= size.Z then Vector3.xAxis else Vector3.zAxis
+								local length = math.max(size.X, size.Y, size.Z)
+								pivot = CFrame.new(longAxis * (if card.id == "shieldman" then 0 else length * 0.34)) * box:ToObjectSpace(model:GetPivot())
+								if not grip or not grip:IsA("Attachment") then
+									grip = nil
+									model:Destroy()
+									model = nil
+								end
+							elseif spec[3] == "recoil" then
+								model:ScaleTo(model:GetScale() * 3.1 / math.max(bounds.Magnitude, 0.01))
+								local box
+								box, bounds = model:GetBoundingBox()
+								pivot = CFrame.new(Vector3.new(1.45, 2.3, -0.9) - box.Position) * model:GetPivot()
+								model:PivotTo(pivot)
+								center = Vector3.new(1.45, 2.3, -0.9)
+							else
+								model:Destroy()
+								model = nil
+							end
+						end
+					end)
+				end
 			end
 
 			local light = Instance.new("Frame")
@@ -721,6 +782,7 @@ function NavalBattle.play(opts)
 			local motion
 			local destroying
 			local function stop()
+				active = false
 				motion:Disconnect()
 				destroying:Disconnect()
 				image.Position = UDim2.fromScale(0.5, 0.5)
@@ -736,6 +798,23 @@ function NavalBattle.play(opts)
 				image.Position = UDim2.fromScale(0.5 + 0.048 * math.sin(elapsed * 1.8), 0.5 + 0.035 * math.cos(elapsed * 2.1))
 				sweep.Offset = Vector2.new(cycle - 1, 0)
 				light.BackgroundTransparency = 0.7 - 0.3 * strike
+				if actor then
+					local action = math.clamp(((elapsed + 0.2) % 2.8 - 0.75) / 0.85, 0, 1)
+					if card.ability == "medic" then
+						Pose.work(actor, "stir", elapsed)
+					elseif card.row == "cannon" then
+						Pose.work(actor, "hammer", elapsed)
+					else
+						Pose.animateR15(actor, { phase = elapsed * 4, moving = card.ability == "spy", t = elapsed, attack = action })
+					end
+					if neck and (neck:IsA("Motor6D") or neck:IsA("AnimationConstraint")) then
+						neck.Transform *= CFrame.Angles(0.07 * math.sin(elapsed * 2.1), 0.27 * math.sin(elapsed * 1.6), 0)
+					end
+					if model and grip and (spec[3] == "swing" or card.id == "shieldman") then
+						model:PivotTo(grip.WorldCFrame * pivot)
+						return
+					end
+				end
 				if not model then return end
 				local roll, recoil = 0, 0
 				if spec[3] == "swing" then
@@ -751,6 +830,7 @@ function NavalBattle.play(opts)
 					* CFrame.Angles(0, 0.25 * math.sin(elapsed * 2.3), roll) * CFrame.new(-center) * pivot)
 			end)
 			destroying = art.Destroying:Connect(function()
+				active = false
 				motion:Disconnect()
 			end)
 			return stop
