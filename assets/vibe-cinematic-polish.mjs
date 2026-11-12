@@ -222,7 +222,8 @@ export function createVibeAuthoredMeshLOD(THREE,root,{distances=[12,30]}={}){
    const step=steps.filter(value=>Number.isFinite(value)&&distance>=value).length;
    for(const group of groups){
     const level=group.levels[Math.min(step,group.levels.length-1)];
-    for(const row of group.rows)row.mesh.visible=row.level===level&&row.visible;
+    // LOD 보조 메쉬는 제작 시 숨겨져 있어도 선택된 레벨에서 보여야 한다. reset은 원래 가시성 복원.
+    for(const row of group.rows)row.mesh.visible=row.level===level;
    }
    return groups.length;
   },
