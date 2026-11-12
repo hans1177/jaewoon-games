@@ -1676,6 +1676,10 @@ do
 				local function playCardOnly(title, build, action, payload)
 					if inField then return end
 					inField = true
+					if open then
+						open:Destroy()
+						open = nil
+					end
 					main.Visible = false
 					NavalBattle.play({
 						shipId = view and view.ship and view.ship.id,
