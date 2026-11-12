@@ -156,5 +156,7 @@ test('mare story/event audio uses verified CC0 parents and decodable game-specif
     encoding:'utf8',timeout:180000,maxBuffer:1024*1024
   });
   assert.equal(run.status,0,('AUDIO_CC0_PREFLIGHT_FAILED\n'+String(run.stdout||'')+'\n'+String(run.stderr||'')).slice(-6000));
-  assert.match(run.stdout,new RegExp('AUDIO_CC0_PREFLIGHT_OK '+cc0Count));
+  // 사전 점검은 CC0 파생곡과 오너 오리지널 곡(서아프리카 북 음악)을 함께 센다.
+  const ownerCount=manifest.tracks.filter(x=>x.source==='OWNER_ORIGINAL_COMPOSITION').length;
+  assert.match(run.stdout,new RegExp('AUDIO_CC0_PREFLIGHT_OK '+(cc0Count+ownerCount)));
 });
