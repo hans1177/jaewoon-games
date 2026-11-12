@@ -5339,9 +5339,10 @@ do
 		if overview then
 			camera.CameraType = Enum.CameraType.Scriptable
 			camera.FieldOfView = 62
-			if root then
-				root.Anchored = true -- 전경에서 숨긴 캐릭터는 허공에서 낙하하지 않게 고정한다.
-				char:PivotTo(CFrame.new(-200, 8, 0))
+			if root and sceneSpawn then
+				-- 전경에서도 캐릭터를 실제 항구 바닥에 세운다. 허공(-200, 8, 0) 대기를 금지한다.
+				char:PivotTo(sceneSpawn)
+				root.Anchored = true
 			end
 		else
 			camera.CameraType = Enum.CameraType.Custom
