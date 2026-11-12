@@ -2252,7 +2252,20 @@ function PortScene.build(info, onFacility)
 			w.CanQuery = false
 			w.CastShadow = false
 		end
-		wall(Vector3.new(1, 40, 440), CFrame.new(22.5, 18, 225.5))
+		-- 둘째 잔교(z=46) 입구(z 42.5~49.5)는 열어 두고 양옆·끝을 막는다
+		wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
+		wall(Vector3.new(1, 40, 395.5), CFrame.new(22.5, 18, 247.25))
+		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 42))
+		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 50))
+		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
+		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
+		do
+			local floor = part(folder, Vector3.new(622, 2, 880), CFrame.new(-289, -1, 0), Color3.new(1, 1, 1))
+			floor.Name = "SafetyFloor"
+			floor.Transparency = 1
+			floor.CanQuery = false
+			floor.CastShadow = false
+		end
 		wall(Vector3.new(1, 40, 440), CFrame.new(22.5, 18, -225.5))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, 5.6))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, -5.6))
