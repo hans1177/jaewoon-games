@@ -689,6 +689,36 @@ test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
 });
 
 // [공식 Studio 회귀] 양·닭 수입 FBX는 허용 자산을 유지한 채 원본 배율·실제 3D 크기를 검증한다.
+// [문화권별 3D 주택 검증] 라이선스·체험 권한·입면·재질을 기존 마을 빌더와 함께 확인한다.
+test('Mare cultural house facades use approved CC0 doors and preserve glass and metal',()=>{
+  const root='roblox-games/mare-essentia';
+  const culture=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortCultures.luau','utf8');
+  const scene=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const ids=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
+  const arch=culture.split('local HOUSE_ARCH = {')[1]?.split('\n}\nfor culture, architecture in HOUSE_ARCH')[0];
+  assert.ok(arch,'regional house architecture table must exist');
+  const doors=[...arch.matchAll(/\bentry = "([^"]+)"/g)].map(x=>x[1]);
+  assert.equal(doors.length,20,'all non-East Asian regional houses need authentic doorway variants');
+  for(const asset of new Set([...doors,...[...arch.matchAll(/\b(?:roof|trim) = "([^"]+)"/g)].map(x=>x[1])])){
+    const key='Town/'+asset;
+    assert.equal(registry[key]?.license,'CC0-1.0',key);
+    assert.equal(registry[key]?.usePermissionGranted,true,key);
+    assert.ok(ids.includes('["'+key+'"]'),key+' registered');
+  }
+  for(const name of ['north','nordic','hanse','iberia','italy','france','britain','ottoman','swahili','malabar','seasia','wafrica']){
+    const row=arch.split('\n').find(line=>line.trimStart().startsWith(name+' = {'));
+    assert.ok(row?.includes('entry = "'),name+' must use a region-appropriate door');
+  }
+  assert.match(arch,/japan = \{[^\n]*eastAsiaEntry = true/);
+  assert.match(arch,/china = \{[^\n]*eastAsiaEntry = true/);
+  assert.match(scene,/architecture\.entry and not vacant and seed % 3 == 1/);
+  assert.match(scene,/HarborDoorDetail/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Glass/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Metal/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Neon/);
+});
+
 test('Mare harbor animals preserve imported mesh scale and verify final bounds',()=>{
   const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   assert.match(scene,/local isAnimal = kind == "Animals"/);
