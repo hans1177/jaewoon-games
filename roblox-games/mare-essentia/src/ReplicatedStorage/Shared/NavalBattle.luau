@@ -501,314 +501,239 @@ function NavalBattle.play(opts)
 	end
 
 	local shake = 0
-	-- 접현 백병전 장면: 배가 오래 붙어 있으면 화면이 카드 대결로 바뀐다.
-	-- 3개 위치(선수·중앙·선미 갑판)에서 우리 부대와 해적 부대가 맞붙는다. 결과와 피해는 서버 전투 기록 그대로이고,
-	-- 적의 의도(돌격·방어·사격)를 보고 맞는 태세를 고르면 "간파!"로 기동 점수가 오른다 (돌격 > 사격 > 방어 > 돌격).
+	-- 접현 카드 전투: 배가 맞닿으면 화면이 카드판으로 바뀐다. 규칙은 BoardingCards (3줄 × 3판 2선승, 병종 상성).
+	-- 전투 결과 자체는 서버 판정 그대로이고, 카드전의 승패는 기동 점수(명성 보너스)에만 반영된다.
+	local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
-	local CHIP_ICON = { crew = "🃏", relic = "💎", animal = "🐾", book = "📖", friend = "🤝", ship = "⚓" }
-	local CHIP_COLOR = { crew = Color3.fromRGB(70, 50, 30), relic = Color3.fromRGB(70, 56, 90), animal = Color3.fromRGB(48, 78, 56), book = Color3.fromRGB(40, 62, 92), friend = Color3.fromRGB(90, 56, 48), ship = Color3.fromRGB(44, 64, 78) }
-	-- 카드 스킬 (active = 눌러서 한 번 쓰는 카드, 나머지는 패시브)
-	local SKILL = {
-		command = { name = "지휘", desc = "이번 대결을 간파로 인정", active = true },
-		volley = { name = "일제사격", desc = "이번 대결을 간파로 인정 +7", active = true },
-		heal = { name = "응급처치", desc = "가장 다친 부대 회복", active = true },
-		focus = { name = "기동", desc = "적의 의도를 본다", active = true },
-		rally = { name = "사기 고취", desc = "기동 점수 +12", active = true },
-		analyze = { name = "약점 분석", desc = "적의 의도를 본다", active = true },
-		scout = { name = "정찰", desc = "적의 의도를 본다", active = true },
-		beast = { name = "맹수의 기세", desc = "기동 점수 +14", active = true },
-		ward = { name = "수호", desc = "처음 맞는 공격을 막는다" },
-		luck = { name = "행운", desc = "최종 기동 점수 x1.3" },
-		insight = { name = "통찰", desc = "처음 두 대결의 의도를 미리 본다" },
-	}
-	local STANCES = { "돌격", "사격", "방어" }
-	local BEATS = { ["돌격"] = "사격", ["사격"] = "방어", ["방어"] = "돌격" }
+	local ROW_ICON = { melee = "⚔", ranged = "🔫", cannon = "💣" }
 	local function startBoarding(onEnd)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
+		local rng = function()
+			return math.random()
+		end
+		local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)
+		local foeDeck, foeLeader = BC.enemyDeck(opts.isBoss == true, rng)
+		local m = BC.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
+
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
+		table.insert(conns, { Disconnect = function()
+			if g.Parent then
+				g:Destroy()
+			end
+		end })
 		local bg = Instance.new("Frame")
 		bg.Size = UDim2.fromScale(1, 1)
 		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
 		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(26, 20, 16) }):Play()
-		local title = label(g, "⚔ 접현 백병전", 30, Color3.fromRGB(246, 208, 130))
-		title.Position = UDim2.new(0.5, -200, 0, 16)
-		title.Size = UDim2.fromOffset(400, 40)
-		local info = label(g, "", 16, Color3.fromRGB(250, 236, 200))
-		info.Position = UDim2.new(0.5, -300, 1, -150)
-		info.Size = UDim2.fromOffset(600, 44)
-		info.TextWrapped = true
-		local lanesName = { "선수 갑판", "중앙 갑판", "선미 갑판" }
-		local ourNames = { "돌격대", "사수대", "방패병" }
-		local theirNames = if opts.isBoss then { "해적 호위", "해적 총잡이", "해적 두목" } else { "해적 칼잡이", "해적 총잡이", "해적 부두목" }
-		local function mkCard(x, y, name, color)
-			local f = Instance.new("Frame")
-			f.Position = UDim2.new(x, -120, 0, y)
-			f.Size = UDim2.fromOffset(240, 78)
-			f.BackgroundColor3 = Color3.fromRGB(44, 32, 24)
-			f.BorderSizePixel = 0
-			f.Parent = g
-			local c = Instance.new("UICorner")
-			c.CornerRadius = UDim.new(0, 10)
-			c.Parent = f
-			local st = Instance.new("UIStroke")
-			st.Color = color
-			st.Thickness = 2
-			st.Parent = f
-			local nm = label(f, name, 18, Color3.fromRGB(250, 236, 200))
-			nm.Position = UDim2.fromOffset(8, 6)
-			nm.Size = UDim2.new(1, -16, 0, 22)
-			local intent = label(f, "", 15, Color3.fromRGB(255, 190, 120))
-			intent.Position = UDim2.fromOffset(8, 30)
-			intent.Size = UDim2.new(1, -16, 0, 20)
-			local back = Instance.new("Frame")
-			back.Position = UDim2.new(0, 8, 1, -20)
-			back.Size = UDim2.new(1, -16, 0, 10)
-			back.BackgroundColor3 = Color3.fromRGB(20, 16, 14)
-			back.BorderSizePixel = 0
-			back.Parent = f
-			local fill = Instance.new("Frame")
-			fill.Size = UDim2.fromScale(1, 1)
-			fill.BackgroundColor3 = color
-			fill.BorderSizePixel = 0
-			fill.Parent = back
-			return { frame = f, fill = fill, intent = intent, hp = 1, home = f.Position }
-		end
-		local ours, theirs = {}, {}
-		for k = 1, 3 do
-			local y = 70 + (k - 1) * 100
-			local ln = label(g, lanesName[k], 14, Color3.fromRGB(190, 170, 130))
-			ln.Position = UDim2.new(0.5, -60, 0, y + 28)
-			ln.Size = UDim2.fromOffset(120, 20)
-			ours[k] = mkCard(0.25, y, ourNames[k], Color3.fromRGB(91, 181, 120))
-			theirs[k] = mkCard(0.75, y, theirNames[k], Color3.fromRGB(214, 82, 76))
-		end
-		-- 카드 패: 주인공·동료·유물·동물 카드. 눌러서 쓰는 카드는 한 번씩만 쓴다.
-		local boost = { auto = false, flair = 0, reveal = false, heal = false }
-		local wardLeft, insightLeft, luckOn = 0, 0, false
-		do
-			local deck = opts.deck
-			local row = Instance.new("Frame")
-			row.Position = UDim2.new(0.02, 0, 0, 54)
-			row.Size = UDim2.new(0.96, 0, 0, 80)
-			row.BackgroundTransparency = 1
-			row.Parent = g
-			local lay = Instance.new("UIListLayout")
-			lay.FillDirection = Enum.FillDirection.Horizontal
-			lay.Wraps = true
-			lay.Padding = UDim.new(0, 6)
-			lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
-			lay.Parent = row
-			local function chip(kind, who, skill)
-				local def = SKILL[skill]
-				if not def then
-					return
-				end
-				if skill == "ward" then wardLeft += 1 elseif skill == "insight" then insightLeft = 2 elseif skill == "luck" then luckOn = true end
-				local b = Instance.new("TextButton")
-				b.Size = UDim2.fromOffset(150, 36)
-				b.BackgroundColor3 = CHIP_COLOR[kind] or Color3.fromRGB(70, 50, 30)
-				b.TextColor3 = Color3.fromRGB(250, 236, 200)
-				b.Font = Enum.Font.GothamBold
-				b.TextSize = 11
-				b.TextWrapped = true
-				b.Text = string.format("%s%s\n%s%s", CHIP_ICON[kind] or "🃏", who, def.name, if def.active then "" else " (패시브)")
-				b.BorderSizePixel = 0
-				b.AutoButtonColor = def.active
-				b.Parent = row
-				local c = Instance.new("UICorner")
-				c.CornerRadius = UDim.new(0, 8)
-				c.Parent = b
-				if def.active then
-					b.Activated:Connect(function()
-						if b.Active == false then
-							return
-						end
-						b.Active = false
-						b.BackgroundColor3 = Color3.fromRGB(40, 36, 32)
-						b.TextTransparency = 0.5
-						Sfx.play("sfx_click", 0.7, 1.3)
-						if skill == "command" or skill == "volley" then
-							boost.auto = true
-							boost.flair += if skill == "volley" then 7 else 0
-						elseif skill == "heal" then
-							boost.heal = true
-							flair += 8
-						elseif skill == "rally" then
-							flair += 12
-						elseif skill == "beast" then
-							boost.flair += 14
-						else
-							boost.reveal = true
-						end
-					end)
-				end
-			end
-			for _, c in (deck and deck.cards) or {} do
-				chip(c.kind, c.name, c.skill)
-			end
-		end
-		-- 태세 버튼
-		local choice = nil
-		local btns = {}
-		for i, nmS in STANCES do
+
+		local header = label(g, "", 18, Color3.fromRGB(246, 208, 130))
+		header.Position = UDim2.fromScale(0.02, 0.01)
+		header.Size = UDim2.fromScale(0.7, 0.07)
+		header.TextXAlignment = Enum.TextXAlignment.Left
+		local info = label(g, "", 15, Color3.fromRGB(250, 236, 200))
+		info.Position = UDim2.fromScale(0.02, 0.08)
+		info.Size = UDim2.fromScale(0.96, 0.05)
+		info.TextXAlignment = Enum.TextXAlignment.Left
+		info.TextTruncate = Enum.TextTruncate.AtEnd
+
+		local boardFrame = Instance.new("Frame")
+		boardFrame.Position = UDim2.fromScale(0.02, 0.14)
+		boardFrame.Size = UDim2.fromScale(0.96, 0.56)
+		boardFrame.BackgroundTransparency = 1
+		boardFrame.Parent = g
+		local handFrame = Instance.new("Frame")
+		handFrame.Position = UDim2.fromScale(0.02, 0.72)
+		handFrame.Size = UDim2.fromScale(0.74, 0.26)
+		handFrame.BackgroundTransparency = 1
+		handFrame.Parent = g
+		local handLay = Instance.new("UIListLayout")
+		handLay.FillDirection = Enum.FillDirection.Horizontal
+		handLay.Padding = UDim.new(0, 5)
+		handLay.Parent = handFrame
+
+		local function mkSide(text, y, color, onClick)
 			local b = Instance.new("TextButton")
-			b.Text = (if nmS == "돌격" then "⚔ " elseif nmS == "사격" then "🔫 " else "🛡 ") .. nmS
-			b.AnchorPoint = Vector2.new(0.5, 1)
-			b.Position = UDim2.new(0.5, (i - 2) * 150, 1, -24)
-			b.Size = UDim2.fromOffset(136, 56)
-			b.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
+			b.Text = text
+			b.Position = UDim2.fromScale(0.78, y)
+			b.Size = UDim2.fromScale(0.2, 0.075)
+			b.BackgroundColor3 = color
 			b.TextColor3 = Color3.fromRGB(250, 236, 200)
 			b.Font = Enum.Font.GothamBold
-			b.TextSize = 20
+			b.TextScaled = true
 			b.BorderSizePixel = 0
 			b.Parent = g
 			local c = Instance.new("UICorner")
-			c.CornerRadius = UDim.new(0, 12)
+			c.CornerRadius = UDim.new(0, 10)
 			c.Parent = b
-			b.Activated:Connect(function()
-				choice = nmS
-				for _, o in btns do
-					o.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
-				end
-				b.BackgroundColor3 = Color3.fromRGB(150, 110, 50)
-				Sfx.play("sfx_click", 0.6)
-			end)
-			table.insert(btns, b)
+			b.Activated:Connect(onClick)
+			return b
 		end
-		-- 카드별 피해 단계 계산: 진 쪽은 끝에 쓰러지고 이긴 쪽은 일부만 다친다
-		local hits = { me = { 0, 0, 0 }, foe = { 0, 0, 0 } }
-		for i, e in meleeQueue do
-			local lane = (i - 1) % 3 + 1
-			local tgt = if e.player then "foe" else "me"
-			hits[tgt][lane] += 1
-		end
-		local drop = function(target)
-			if opts.winner == "a" then
-				return if target == "foe" then 1 else 0.45
-			elseif opts.winner == "b" then
-				return if target == "me" then 1 else 0.45
+
+		local render
+		local auto = false
+		local function afterAction(ok, msg, res)
+			if not ok then
+				info.Text = msg or ""
+				return
 			end
-			return 0.55
+			info.Text = msg or ""
+			if res then
+				info.Text = string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe, if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
+				Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_hit", 0.6, 1)
+			else
+				Sfx.play("sfx_click", 0.6, 1.1)
+			end
+			render()
 		end
-		task.spawn(function()
-			task.wait(0.8)
-			for i, e in meleeQueue do
-				if finished then
-					break
+		local passBtn = mkSide("멈추기", 0.72, Color3.fromRGB(100, 54, 44), function()
+			if m.turn == "me" and not m.over then
+				afterAction(BC.pass(m, "me"))
+			end
+		end)
+		local leaderBtn = mkSide("지도자 능력", 0.81, Color3.fromRGB(70, 56, 90), function()
+			if m.turn == "me" and not m.over then
+				afterAction(BC.useLeader(m, "me"))
+			end
+		end)
+		mkSide("자동 진행", 0.9, Color3.fromRGB(44, 64, 78), function()
+			auto = true
+		end)
+
+		local function chip(parent, c, w, h, power)
+			local f = Instance.new("TextLabel")
+			f.Size = UDim2.new(0, w, 1, 0)
+			f.BackgroundColor3 = if c.hero then Color3.fromRGB(120, 90, 30) elseif c.special then Color3.fromRGB(70, 56, 90) else Color3.fromRGB(58, 44, 34)
+			f.TextColor3 = Color3.fromRGB(250, 236, 200)
+			f.Font = Enum.Font.GothamBold
+			f.TextScaled = true
+			f.BorderSizePixel = 0
+			f.Text = string.format("%s\n%s", c.name, tostring(power or c.power or ""))
+			f.Parent = parent
+			local cc = Instance.new("UICorner")
+			cc.CornerRadius = UDim.new(0, 6)
+			cc.Parent = f
+			return f
+		end
+		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
+
+		render = function()
+			for _, ch in boardFrame:GetChildren() do
+				ch:Destroy()
+			end
+			for _, ch in handFrame:GetChildren() do
+				if ch:IsA("TextButton") then
+					ch:Destroy()
 				end
-				local lane = (i - 1) % 3 + 1
-				local att = if e.player then ours[lane] else theirs[lane]
-				local def = if e.player then theirs[lane] else ours[lane]
-				local tgtKey = if e.player then "foe" else "me"
-				-- 적의 의도를 보여 주고 태세를 고를 시간을 준다
-				local enemyStance = STANCES[math.random(1, 3)]
-				local seen = insightLeft > 0
-				if seen then
-					insightLeft -= 1
+			end
+			local weather = {}
+			for _, row in BC.ROWS do
+				if m.weather[row] then
+					table.insert(weather, BC.ROW_NAME[row] .. " 약화")
 				end
-				boost.reveal = seen
-				theirs[lane].intent.Text = if seen then "의도: " .. enemyStance else "의도: ❓"
-				choice = nil
-				for _, o in btns do
-					o.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
+			end
+			header.Text = string.format("⚔ 접현 카드전  %d판   우리 %s  해적 %s   점수 %d : %d   %s   손패 %d / 해적 %d   %s",
+				m.round, string.rep("●", m.wins.me) .. string.rep("○", 2 - math.min(2, m.wins.me)), string.rep("●", m.wins.foe) .. string.rep("○", 2 - math.min(2, m.wins.foe)),
+				BC.total(m, "me"), BC.total(m, "foe"), if #weather > 0 then "🌫 " .. table.concat(weather, ", ") else "", #m.hand.me, #m.hand.foe,
+				if m.turn == "me" and not m.over then "▶ 내 차례" else "해적 차례")
+			-- 줄: 위 3줄은 해적(포·사격·근접), 아래 3줄은 우리(근접·사격·포)
+			local order = { { "foe", "cannon" }, { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" }, { "me", "cannon" } }
+			for k, o in order do
+				local side, row = o[1], o[2]
+				local rf = Instance.new("Frame")
+				rf.Position = UDim2.fromScale(0, (k - 1) / 6)
+				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
+				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(34, 44, 34) else Color3.fromRGB(48, 30, 28)
+				rf.BorderSizePixel = 0
+				rf.Parent = boardFrame
+				local mult, adv, dis = BC.rowMatchup(m, side, row)
+				local tag = label(rf, string.format("%s %s\n%d%s", ROW_ICON[row], BC.ROW_NAME[row], BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then " ▲상성" elseif dis then " ▼불리" else ""), 13, Color3.fromRGB(246, 208, 130))
+				tag.Position = UDim2.fromOffset(4, 0)
+				tag.Size = UDim2.new(0, 96, 1, 0)
+				tag.TextXAlignment = Enum.TextXAlignment.Left
+				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
+				local cards = Instance.new("Frame")
+				cards.Position = UDim2.fromOffset(104, 3)
+				cards.Size = UDim2.new(1, -108, 1, -6)
+				cards.BackgroundTransparency = 1
+				cards.Parent = rf
+				local lay = Instance.new("UIListLayout")
+				lay.FillDirection = Enum.FillDirection.Horizontal
+				lay.Padding = UDim.new(0, 4)
+				lay.Parent = cards
+				for idx, c in m.rows[side][row] do
+					chip(cards, c, 62, 0, BC.cardPower(m, side, row, idx))
 				end
-				info.Text = if seen then "적의 의도가 보인다! 태세를 골라요" else "의도를 모른다... 카드로 알아내거나 감으로 골라요!"
-				local waited = 0
-				while waited < 2.0 and not finished do
-					task.wait(0.1)
-					waited += 0.1
-					if boost.reveal then
-						theirs[lane].intent.Text = "의도: " .. enemyStance
-						boost.reveal = false
+			end
+			-- 손패
+			for i, c in m.hand.me do
+				local b = Instance.new("TextButton")
+				b.Size = UDim2.new(0, 84, 1, 0)
+				b.BackgroundColor3 = if c.hero then Color3.fromRGB(120, 90, 30) elseif c.special then Color3.fromRGB(70, 56, 90) else Color3.fromRGB(58, 44, 34)
+				b.TextColor3 = Color3.fromRGB(250, 236, 200)
+				b.Font = Enum.Font.GothamBold
+				b.TextScaled = true
+				b.BorderSizePixel = 0
+				b.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
+				local sub = if c.special then c.text else string.format("%s %s%s", ROW_ICON[c.row], BC.ROW_NAME[c.row], if c.ability then " · " .. (ABIL[c.ability] or "") else "")
+				b.Text = string.format("%s\n%s\n%s", c.name, tostring(c.power or "✦"), sub)
+				b.Parent = handFrame
+				local cc = Instance.new("UICorner")
+				cc.CornerRadius = UDim.new(0, 8)
+				cc.Parent = b
+				b.Activated:Connect(function()
+					if m.turn == "me" and not m.over then
+						afterAction(BC.play(m, "me", i))
 					end
-				end
-				if finished then
-					break
-				end
-				theirs[lane].intent.Text = ""
-				flair += boost.flair
-				boost.flair = 0
-				if boost.heal then
-					boost.heal = false
-					local low = ours[1]
-					for _, oc in ours do
-						if oc.hp < low.hp then
-							low = oc
-						end
-					end
-					low.hp = math.min(1, low.hp + 0.3)
-					low.fill.Size = UDim2.fromScale(low.hp, 1)
-				end
-				if boost.auto then
-					boost.auto = false
-					flair += 18
-					info.Text = "카드의 힘! " .. e.text
-					Sfx.play("sfx_fanfare", 0.4, 1.4)
-				elseif choice == nil then
-					info.Text = e.text
-				elseif BEATS[choice] == enemyStance then
-					flair += 18
-					info.Text = "간파! " .. e.text
-					Sfx.play("sfx_fanfare", 0.4, 1.4)
-				elseif choice == enemyStance then
-					flair += 6
-					info.Text = "맞부딪쳤다. " .. e.text
-				else
-					info.Text = e.text
-				end
-				-- 돌진 → 피해
-				local dir = if e.player then 1 else -1
-				TweenService:Create(att.frame, TweenInfo.new(0.16), { Position = att.home + UDim2.fromOffset(dir * 60, 0) }):Play()
-				task.wait(0.18)
-				Sfx.play("sfx_hit", 0.9, 1.2 + math.random() * 0.3)
-				shake = 1.4
-				local warded = false
-				if not e.player and wardLeft > 0 then
-					wardLeft -= 1
-					warded = true
-					flair += 10
-					info.Text = "수호 카드가 공격을 막았다!"
-				end
-				if not warded then
-					def.hp = math.max(0, def.hp - drop(tgtKey) / math.max(1, hits[tgtKey][lane]))
-				end
-				def.fill.Size = UDim2.fromScale(def.hp, 1)
-				def.frame.BackgroundColor3 = Color3.fromRGB(140, 40, 36)
-				local pop = label(g, "-" .. tostring(e.crew > 0 and e.crew or 1), 26, Color3.fromRGB(255, 120, 100))
-				pop.Position = def.frame.Position + UDim2.fromOffset(100, -12)
-				pop.Size = UDim2.fromOffset(40, 30)
-				TweenService:Create(pop, TweenInfo.new(0.7), { Position = pop.Position - UDim2.fromOffset(0, 40), TextTransparency = 1 }):Play()
-				task.delay(0.8, function()
-					pop:Destroy()
 				end)
-				task.wait(0.15)
-				TweenService:Create(att.frame, TweenInfo.new(0.2), { Position = att.home }):Play()
-				def.frame.BackgroundColor3 = Color3.fromRGB(44, 32, 24)
-				task.wait(0.35)
 			end
-			if luckOn then
-				flair = math.floor(flair * 1.3)
+			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
+			leaderBtn.Text = if m.leaderUsed.me then "지도자 (사용함)" else "지도자: " .. BC.Leaders[m.leader.me].name
+			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0
+		end
+		render()
+		info.Text = string.format("병종 상성 — 근접 > 포 > 사격 > 근접. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
+
+		task.spawn(function()
+			task.wait(1.0)
+			local guard = 0
+			while not m.over and not finished and guard < 600 do
+				guard += 1
+				if m.turn == "foe" then
+					task.wait(0.9)
+					local ok, msg, res = BC.ai(m, "foe")
+					if ok then
+						afterAction(ok, "해적: " .. (msg or ""), res)
+					end
+				elseif auto then
+					task.wait(0.5)
+					local ok, msg, res = BC.ai(m, "me")
+					if ok then
+						afterAction(ok, msg, res)
+					end
+				else
+					task.wait(0.1)
+				end
 			end
-			info.Text = if opts.winner == "a" then "해적들이 무기를 내려놓았다!" elseif opts.winner == "b" then "갑판이 밀렸다..." else "양쪽이 갈라섰다."
-			task.wait(1.4)
+			if finished then
+				return
+			end
+			local wonMatch = m.winner == "me"
+			flair += m.wins.me * 40 + (if wonMatch then 110 else 0)
+			info.Text = if wonMatch then "갑판을 제압했다!" elseif m.winner == "foe" then "갑판에서 밀렸다..." else "승부가 나지 않았다."
+			task.wait(1.8)
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
 			task.wait(0.5)
 			g:Destroy()
 			boardingOn = false
 			onEnd()
 		end)
-		table.insert(conns, { Disconnect = function()
-			if g.Parent then
-				g:Destroy()
-			end
-		end })
 	end
 
 	-- 적 포탄 낙하 경고: 바다 위 붉은 원. 포탄이 떨어질 때 원 밖에 있으면 "회피"로 콤보가 쌓인다.
