@@ -152,7 +152,8 @@ jobs:
           NODE
 
       - name: Validate Vibe runtime visual quality contract
-        run: node --test qa/vibe-visual-runtime-quality.test.mjs
+        # [Vibe 5.9] 기존 검사 단계에서 실제 리깅·관절·모션·렌더 회귀검사도 실행한다.
+        run: node --test qa/vibe-visual-runtime-quality.test.mjs qa/vibe-premium-character-pipeline.test.mjs qa/vibe-adaptive-climb-ik.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-cinematic-polish.test.mjs
 
       - name: Validate composable motion director
         run: node --test qa/vibe-motion-director.test.mjs

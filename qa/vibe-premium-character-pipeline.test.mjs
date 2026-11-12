@@ -28,15 +28,38 @@ test('asset spec describes face, hand and texture requirements',()=>{
 
 test('Vibe 5.9 rig audit blocks missing skin weights and accepts normalized approved skin',()=>{
  const bones={isBone:true,name:'LeftHand'};
- const mesh={isSkinnedMesh:true,name:'Body',geometry:{attributes:{skinWeight:{
-  count:2,itemSize:4,getComponent:(i,j)=>j===0?1:0
- }}}};
+ const mesh={isSkinnedMesh:true,name:'Body',skeleton:{bones:[bones]},geometry:{attributes:{
+  skinWeight:{count:2,itemSize:4,getComponent:(i,j)=>j===0?1:0},
+  skinIndex:{count:2,itemSize:4,getComponent:(i,j)=>0}
+ }}};
  const model={traverse(fn){fn(bones);fn(mesh)}};
  const result=inspectVibeCharacterRig(model);
  assert.equal(result.productionEligible,true);assert.equal(result.weightsSampled,2);
  const bad=inspectVibeCharacterRig({traverse(fn){fn(bones);fn({...mesh,geometry:{attributes:{}}})}});
  assert.equal(bad.productionEligible,false);
  assert.ok(bad.issues.some(issue=>issue.includes('MISSING_SKIN_WEIGHTS')));
+});
+
+test('Vibe 5.9 rejects skinned geometry without actual bound bones or skin indices',()=>{
+ const bone={isBone:true,name:'Hips'},weights={count:2,itemSize:4,getComponent:(i,j)=>j===0?1:0};
+ const indices={count:2,itemSize:4,getComponent:()=>0};
+ const noSkeleton={isSkinnedMesh:true,name:'Body',geometry:{attributes:{skinWeight:weights,skinIndex:indices}}};
+ const model=mesh=>({traverse(fn){fn(bone);fn(mesh)}});
+ const a=inspectVibeCharacterRig(model(noSkeleton));
+ assert.equal(a.coverageComplete,true);assert.equal(a.productionEligible,false);
+ assert.ok(a.issues.includes('MISSING_BOUND_SKELETON:Body'));
+ const noIndex={...noSkeleton,skeleton:{bones:[bone]},geometry:{attributes:{skinWeight:weights}}};
+ const b=inspectVibeCharacterRig(model(noIndex));
+ assert.equal(b.coverageComplete,true);assert.equal(b.productionEligible,false);
+ assert.ok(b.issues.includes('MISSING_SKIN_INDICES:Body'));
+ const invalid={...noSkeleton,skeleton:{bones:[{}]}};
+ const c=inspectVibeCharacterRig(model(invalid));
+ assert.equal(c.productionEligible,false);
+ assert.ok(c.issues.includes('INVALID_BOUND_BONES:Body'));
+ const approved={...noSkeleton,skeleton:{bones:[bone]}};
+ assert.equal(inspectVibeCharacterRig(model(approved)).productionEligible,true);
+ assert.equal(approved.geometry.attributes.skinWeight,weights);
+ assert.equal(approved.geometry.attributes.skinIndex,indices);
 });
 
 test('Vibe 5.9 rig audit checks later meshes under a shared sample budget',()=>{
@@ -69,8 +92,10 @@ test('Vibe 5.9 rig audit detects out-of-range bound bone indices without mutatin
 
 test('Vibe 5.9 rig QA keeps partial real skin weights unverified',()=>{
  const bone={isBone:true,name:'Spine'};
- const mesh={isSkinnedMesh:true,name:'Body',geometry:{attributes:{skinWeight:{count:10,itemSize:4,
-  getComponent:(i,j)=>j===0?1:0}}}};
+ const mesh={isSkinnedMesh:true,name:'Body',skeleton:{bones:[bone]},geometry:{attributes:{
+  skinWeight:{count:10,itemSize:4,getComponent:(i,j)=>j===0?1:0},
+  skinIndex:{count:10,itemSize:4,getComponent:()=>0}
+ }}};
  const model={traverse(fn){fn(bone);fn(mesh)}};
  const partial=inspectVibeCharacterRig(model,{sampleLimit:3});
  assert.equal(partial.totalVertices,10);
@@ -86,8 +111,8 @@ test('Vibe 5.9 rig QA keeps partial real skin weights unverified',()=>{
 test('Vibe 5.9 rig QA fully inspects uneven mesh sizes within budget',()=>{
  const bone={isBone:true,name:'Spine'};
  const attribute=n=>({count:n,itemSize:4,getComponent:(i,j)=>j===0?1:0});
- const meshes=[1,9].map((n,i)=>({isSkinnedMesh:true,name:'Mesh'+i,
-  geometry:{attributes:{skinWeight:attribute(n)}}}));
+ const meshes=[1,9].map((n,i)=>({isSkinnedMesh:true,name:'Mesh'+i,skeleton:{bones:[bone]},
+  geometry:{attributes:{skinWeight:attribute(n),skinIndex:{count:n,itemSize:4,getComponent:()=>0}}}}));
  const model={traverse(fn){fn(bone);meshes.forEach(fn)}};
  const full=inspectVibeCharacterRig(model,{sampleLimit:10});
  assert.equal(full.weightsSampled,10);
