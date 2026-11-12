@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-13s0gm3",
+      "worker": "vibe2",
+      "taskId": "realistic-builder-studio-evolution-core-fun-v8",
+      "gameId": "realistic-builder",
+      "files": [
+        "web-games/realistic-builder/index.html"
+      ],
+      "baseSha": "b233e9cbffe2825ecb6540bfc82b79d9455c1592",
+      "runId": "43241169495",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-12T15:07:02.173Z",
+      "expiresAt": "2026-11-12T15:52:02.173Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:realistic-builder-studio-evolution-core-fun-v8"
+      ]
+    }
+  ]
 }
