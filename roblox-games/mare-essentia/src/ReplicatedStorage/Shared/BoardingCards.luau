@@ -208,9 +208,33 @@ local function other(side)
 end
 B.other = other
 
+-- 해역 규칙: 시드로 정한다. 그 줄은 매 판 약해진 채 시작한다 ('맑음'·'순풍' 카드로 걷어 낼 수 있다)
+B.SEA_RULES = {
+	{ id = "calm", name = "잔잔한 바다", text = "특별한 규칙이 없어요" },
+	{ id = "storm", name = "폭풍 해역", row = "cannon", text = "포 줄이 매 판 약해진 채 시작해요" },
+	{ id = "fog", name = "안개 해역", row = "ranged", text = "사격 줄이 매 판 약해진 채 시작해요" },
+	{ id = "melee", name = "혼전 해역", row = "melee", text = "근접 줄이 매 판 약해진 채 시작해요" },
+}
+function B.seaRule(seed)
+	local r = (math.floor(seed / 7) % 8)
+	return B.SEA_RULES[if r < 4 then 1 elseif r < 6 then 2 elseif r < 7 then 3 else 4]
+end
+-- 적 성격: 돌격형은 끝까지 카드를 내고, 신중형은 앞서면 일찍 멈춘다
+B.STYLES = {
+	rush = { name = "돌격형", margin = 24, text = "앞서도 멈추지 않고 몰아쳐요" },
+	steady = { name = "균형형", margin = 14, text = "보통으로 싸워요" },
+	careful = { name = "신중형", margin = 7, text = "앞서면 카드를 아끼며 일찍 멈춰요" },
+}
+function B.foeStyle(seed)
+	local r = math.floor(seed / 3) % 3
+	return if r == 0 then "rush" elseif r == 1 then "steady" else "careful"
+end
+
 function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFaction)
 	local m = {
 		faction = { me = myFaction, foe = foeFaction },
+		style = { foe = "steady" },
+		sea = nil,
 		rows = { me = { melee = {}, ranged = {}, cannon = {} }, foe = { melee = {}, ranged = {}, cannon = {} } },
 		hand = { me = {}, foe = {} },
 		deck = { me = myDeck, foe = foeDeck },
@@ -246,12 +270,12 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 	return m
 end
 
-local function logLine(m, text)
+local function logLine(m: any, text)
 	table.insert(m.log, text)
 end
 
 -- 줄 합계: 날씨 → 결속 → 사기 → 무기 상성 → 병종 상성 순으로 계산한다
-function B.cardPower(m, side, row, idx)
+function B.cardPower(m: any, side, row, idx)
 	local list = m.rows[side][row]
 	local c = list[idx]
 	if not c then
@@ -300,7 +324,7 @@ function B.cardPower(m, side, row, idx)
 	return p
 end
 
-function B.rowRaw(m, side, row)
+function B.rowRaw(m: any, side, row)
 	local sum = 0
 	for i in m.rows[side][row] do
 		sum += B.cardPower(m, side, row, i)
@@ -309,7 +333,7 @@ function B.rowRaw(m, side, row)
 end
 
 -- 병종 상성: 내 줄이 이길 수 있는 상대 줄에 카드가 있으면 ×1.3, 나를 이기는 줄이 있으면 ×0.85
-function B.rowMatchup(m, side, row)
+function B.rowMatchup(m: any, side, row)
 	local foe = m.rows[other(side)]
 	local adv = #foe[B.ROW_BEATS[row]] > 0
 	local dis = false
@@ -328,7 +352,7 @@ function B.rowMatchup(m, side, row)
 	return mult, adv, dis
 end
 
-function B.rowTotal(m, side, row)
+function B.rowTotal(m: any, side, row)
 	local raw = B.rowRaw(m, side, row)
 	if raw == 0 then
 		return 0
@@ -344,7 +368,7 @@ function B.rowTotal(m, side, row)
 	return heroSum + math.floor((raw - heroSum) * mult + 0.5)
 end
 
-function B.total(m, side)
+function B.total(m: any, side)
 	local sum = 0
 	for _, row in B.ROWS do
 		sum += B.rowTotal(m, side, row)
@@ -352,7 +376,7 @@ function B.total(m, side)
 	return sum
 end
 
-local function strongestNonHero(m, sides)
+local function strongestNonHero(m: any, sides)
 	local best, hits = 0, {}
 	for _, side in sides do
 		for _, row in B.ROWS do
@@ -371,7 +395,7 @@ local function strongestNonHero(m, sides)
 	return best, hits
 end
 
-local function removeHits(m, hits)
+local function removeHits(m: any, hits)
 	-- 뒤에서부터 지워야 번호가 어긋나지 않는다
 	table.sort(hits, function(a, b)
 		if a[1] ~= b[1] or a[2] ~= b[2] then
@@ -387,7 +411,7 @@ local function removeHits(m, hits)
 	end
 end
 
-local function drawCards(m, side, n)
+local function drawCards(m: any, side, n)
 	for _ = 1, n do
 		local c = table.remove(m.deck[side])
 		if c then
@@ -396,7 +420,7 @@ local function drawCards(m, side, n)
 	end
 end
 
-local function nextTurn(m, side)
+local function nextTurn(m: any, side)
 	if m.over then
 		return
 	end
@@ -407,7 +431,14 @@ local function nextTurn(m, side)
 	end
 end
 
-local function roundEnd(m)
+local function applySea(m: any)
+	if m.sea and m.sea.row then
+		m.weather[m.sea.row] = true
+	end
+end
+B.applySea = applySea
+
+local function roundEnd(m: any)
 	local a, b = B.total(m, "me"), B.total(m, "foe")
 	local winner = nil
 	if a > b then
@@ -459,6 +490,7 @@ local function roundEnd(m)
 		m.passed[side] = false
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
+	applySea(m)
 	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
 	if m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3 then
@@ -480,7 +512,7 @@ local function roundEnd(m)
 end
 
 -- 군기: 일반 카드 점수가 가장 큰 줄(동점이면 근접·사격·포 순)
-local function bestHornRow(m, side)
+local function bestHornRow(m: any, side)
 	local bestRow, bestSum = nil, 0
 	for _, row in B.ROWS do
 		if not m.horn[side][row] then
@@ -499,7 +531,7 @@ local function bestHornRow(m, side)
 end
 
 -- 저격수: 적의 점수 합이 10 이상인 줄 가운데 가장 센 줄에서 가장 센 일반 카드를 쓰러뜨린다
-local function snipeTarget(m, side)
+local function snipeTarget(m: any, side)
 	local foe = other(side)
 	local bestRow, bestTotal = nil, 9
 	for _, row in B.ROWS do
@@ -527,7 +559,7 @@ local function snipeTarget(m, side)
 end
 
 -- 회군: 치료병이 필드에 있으면 그 카드, 없으면 가장 약한 일반 카드를 손으로 되돌린다
-local function decoyTarget(m, side)
+local function decoyTarget(m: any, side)
 	local pick
 	for _, row in B.ROWS do
 		for i, c in m.rows[side][row] do
@@ -543,7 +575,7 @@ local function decoyTarget(m, side)
 end
 
 -- 카드 내기: 부대는 자기 줄에 (첩자는 적 줄에), 특수 카드는 즉시 발동한다. 반환: ok, 설명, 판이 끝났으면 그 결과
-function B.play(m, side, handIdx)
+function B.play(m: any, side, handIdx)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return false, "지금은 낼 수 없어요"
 	end
@@ -642,7 +674,7 @@ function B.play(m, side, handIdx)
 	return true, msg, result, act, c
 end
 
-function B.pass(m, side)
+function B.pass(m: any, side)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return false, "지금은 멈출 수 없어요"
 	end
@@ -655,7 +687,7 @@ function B.pass(m, side)
 	return true, "멈췄다", nil, { "s" }
 end
 
-function B.useLeader(m, side)
+function B.useLeader(m: any, side)
 	if m.over or m.turn ~= side or m.leaderUsed[side] then
 		return false, "지금은 쓸 수 없어요"
 	end
@@ -683,7 +715,77 @@ function B.useLeader(m, side)
 end
 
 -- 컴퓨터(해적)의 한 수: 이기고 있으면 멈추고, 지고 있으면 가장 효율 좋은 카드를 낸다
-function B.ai(m, side)
+-- 카드 한 장을 내면 (내 점수 - 상대 점수)가 얼마나 달라질지 미리 계산한다 (AI 판단과 '추천 수' 표시가 같이 쓴다)
+function B.gainOf(m: any, side, c)
+	local foe = other(side)
+	local mine, theirs = B.total(m, side), B.total(m, foe)
+	local gain
+	if c.special == "scorch" then
+		local best, hits = strongestNonHero(m, { "me", "foe" })
+		local lost = 0
+		for _, h in hits do
+			lost += (if h[1] == side then -1 else 1) * B.cardPower(m, h[1], h[2], h[3])
+		end
+		gain = if best >= 6 then lost else -5
+	elseif c.special == "weather" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
+		m.weather[c.row] = true
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather[c.row] = prev
+		gain = after - before
+	elseif c.special == "clear" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
+		m.weather = { melee = false, ranged = false, cannon = false }
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather = saved
+		gain = after - before
+	elseif c.special == "wind" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
+		m.weather = { melee = false, ranged = false, cannon = false }
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather = saved
+		gain = after - before + 2
+	elseif c.special == "horn" then
+		local row = bestHornRow(m, side)
+		if row then
+			local before = B.total(m, side) - B.total(m, foe)
+			m.horn[side][row] = true
+			local after = B.total(m, side) - B.total(m, foe)
+			m.horn[side][row] = nil
+			gain = after - before
+		else
+			gain = -5
+		end
+	elseif c.special == "decoy" then
+		local pick = decoyTarget(m, side)
+		gain = if pick and pick.score >= 100 then 3 else -4
+	else
+		local target = if c.ability == "spy" then foe else side
+		local before = B.total(m, side) - B.total(m, foe)
+		table.insert(m.rows[target][c.row], c)
+		local after = B.total(m, side) - B.total(m, foe)
+		table.remove(m.rows[target][c.row])
+		gain = after - before
+		if c.ability == "spy" then
+			gain += 4 -- 카드 2장을 뽑는 값
+		elseif c.ability == "snipe" then
+			local fside, _, _, bp = snipeTarget(m, side)
+			if fside then
+				gain += bp
+			end
+		end
+		-- 센 카드는 아끼고 작은 카드부터 쓴다 (앞서고 있을 때)
+		if mine >= theirs then
+			gain -= c.power * 0.4
+		end
+	end
+	return gain
+end
+
+function B.ai(m: any, side)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return nil
 	end
@@ -694,7 +796,8 @@ function B.ai(m, side)
 		return B.pass(m, side)
 	end
 	-- 두 판을 이겼거나 카드가 아깝다면 크게 앞설 때 멈춘다
-	if mine > theirs + 14 and m.wins[side] + m.wins[foe] > 0 then
+	local margin = (B.STYLES[m.style and m.style[side] or "steady"] or B.STYLES.steady).margin
+	if mine > theirs + margin and m.wins[side] + m.wins[foe] > 0 then
 		return B.pass(m, side)
 	end
 	if not m.leaderUsed[side] and #m.hand[side] <= 4 and not m.passed[foe] then
@@ -703,69 +806,7 @@ function B.ai(m, side)
 	-- 점수를 가장 많이 올리는 카드 찾기 (미리 내 보고 계산한 뒤 되돌린다)
 	local bestI, bestGain = nil, -1e9
 	for i, c in m.hand[side] do
-		local gain
-		if c.special == "scorch" then
-			local best, hits = strongestNonHero(m, { "me", "foe" })
-			local lost = 0
-			for _, h in hits do
-				lost += (if h[1] == side then -1 else 1) * B.cardPower(m, h[1], h[2], h[3])
-			end
-			gain = if best >= 6 then lost else -5
-		elseif c.special == "weather" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
-			m.weather[c.row] = true
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather[c.row] = prev
-			gain = after - before
-		elseif c.special == "clear" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
-			m.weather = { melee = false, ranged = false, cannon = false }
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather = saved
-			gain = after - before
-		elseif c.special == "wind" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
-			m.weather = { melee = false, ranged = false, cannon = false }
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather = saved
-			gain = after - before + 2
-		elseif c.special == "horn" then
-			local row = bestHornRow(m, side)
-			if row then
-				local before = B.total(m, side) - B.total(m, foe)
-				m.horn[side][row] = true
-				local after = B.total(m, side) - B.total(m, foe)
-				m.horn[side][row] = nil
-				gain = after - before
-			else
-				gain = -5
-			end
-		elseif c.special == "decoy" then
-			local pick = decoyTarget(m, side)
-			gain = if pick and pick.score >= 100 then 3 else -4
-		else
-			local target = if c.ability == "spy" then foe else side
-			local before = B.total(m, side) - B.total(m, foe)
-			table.insert(m.rows[target][c.row], c)
-			local after = B.total(m, side) - B.total(m, foe)
-			table.remove(m.rows[target][c.row])
-			gain = after - before
-			if c.ability == "spy" then
-				gain += 4 -- 카드 2장을 뽑는 값
-			elseif c.ability == "snipe" then
-				local fside, _, _, bp = snipeTarget(m, side)
-				if fside then
-					gain += bp
-				end
-			end
-			-- 센 카드는 아끼고 작은 카드부터 쓴다 (앞서고 있을 때)
-			if mine >= theirs then
-				gain -= c.power * 0.4
-			end
-		end
+		local gain = B.gainOf(m, side, c)
 		if gain > bestGain then
 			bestI, bestGain = i, gain
 		end
@@ -860,7 +901,11 @@ function B.build(kind, seed, my, foe)
 		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
 		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
 	end
-	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
+	local m = B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
+	m.sea = B.seaRule(seed)
+	m.style.foe = B.foeStyle(seed)
+	applySea(m)
+	return m
 end
 
 -- 서버 검증: 시드와 플레이어의 행동 기록으로 한 판을 처음부터 다시 돌린다.
@@ -887,6 +932,72 @@ function B.replay(kind, seed, my, foe, actions)
 	end
 	if actions[i] ~= nil then return nil end
 	return { winner = m.winner, wins = { me = m.wins.me, foe = m.wins.foe } }
+end
+
+
+-- ── 도움말: 추천 수, 적 정찰, 동료 조언 ───────────────────────────────────────────
+-- 손패 번호 → 그 카드를 냈을 때 점수 차(내 점수 - 상대 점수) 변화. 추천 수 표시에 쓴다.
+function B.hint(m: any, side)
+	local out, bestI, bestGain = {}, nil, -1e9
+	for i, c in m.hand[side] do
+		local g = B.gainOf(m, side, c)
+		out[i] = math.floor(g + 0.5)
+		if g > bestGain then bestI, bestGain = i, g end
+	end
+	return out, bestI
+end
+
+-- 출항 전 정찰: 적의 문화권·성격·해역 규칙·약한 줄을 알려 준다
+function B.scout(seed, foe)
+	local foeFac = foe and foe.faction or (if foe and foe.boss then nil else B.foeFaction(seed))
+	local deck = B.enemyDeck(foe and foe.boss == true, B.seeded(seed + 13), foeFac)
+	local rows = { melee = 0, ranged = 0, cannon = 0 }
+	for _, c in deck do
+		if c.row and c.power then rows[c.row] += c.power end
+	end
+	local weak, weakV = "melee", 1e9
+	for _, r in B.ROWS do
+		if rows[r] < weakV then weak, weakV = r, rows[r] end
+	end
+	local sea = B.seaRule(seed)
+	local style = B.STYLES[B.foeStyle(seed)]
+	return {
+		faction = foeFac and B.Factions[foeFac] and B.Factions[foeFac].name or "해적 두목",
+		style = style.name, styleText = style.text, sea = sea.name, seaText = sea.text,
+		weakRow = weak, weakName = B.ROW_NAME[weak], counterRow = ({ melee = "ranged", ranged = "cannon", cannon = "melee" })[weak],
+	}
+end
+
+-- 동료 조언: 지금 상황에 맞는 한마디 (없으면 nil). 한 판에 한 번만 보이도록 부르는 쪽이 조절한다.
+function B.advice(m: any, side)
+	if m.over or m.turn ~= side or m.passed[side] then return nil end
+	local foe = other(side)
+	local mine, theirs = B.total(m, side), B.total(m, foe)
+	local _, bestI = B.hint(m, side)
+	if m.passed[foe] and mine > theirs then
+		return "상대가 멈췄어요. 지금 멈추면 이번 판은 우리 거예요!"
+	end
+	if m.passed[foe] and mine <= theirs and #m.hand[side] > 0 then
+		return "상대가 멈췄어요. 이기려면 지금 점수를 넘겨야 해요."
+	end
+	if theirs > mine + 12 then
+		for _, c in m.hand[side] do
+			if c.special == "scorch" or c.ability == "snipe" then
+				return "많이 밀려요. 소각이나 저격수로 가장 센 카드를 노려 보세요."
+			end
+		end
+		return "점수가 크게 밀려요. 이번 판을 버리고 다음 판을 노리는 것도 방법이에요."
+	end
+	for _, row in B.ROWS do
+		local _, adv, dis = B.rowMatchup(m, side, row)
+		if dis and #m.rows[side][row] > 0 then
+			return string.format("%s 줄이 상성에서 밀려요. 상성이 맞는 줄에 카드를 내 보세요.", B.ROW_NAME[row])
+		end
+	end
+	if bestI and #m.hand[side] <= 3 and m.wins[side] + m.wins[foe] == 0 then
+		return "손패가 얼마 안 남았어요. 첫 판은 아끼고 멈추는 것도 좋아요."
+	end
+	return nil
 end
 
 return B

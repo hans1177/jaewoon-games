@@ -747,6 +747,34 @@ function NavalBattle.play(opts)
 		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
+		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
+		local adviceTag = label(panel, "", 13, Color3.fromRGB(255, 233, 170), true)
+		adviceTag.Position = UDim2.fromScale(0.02, 0.575)
+		adviceTag.Size = UDim2.fromScale(0.74, 0.13)
+		adviceTag.TextScaled = true
+		adviceTag.TextWrapped = true
+		adviceTag.BackgroundColor3 = Color3.fromRGB(40, 33, 26)
+		adviceTag.BackgroundTransparency = 0.25
+		adviceTag.Visible = false
+		adviceTag.ZIndex = 20
+		local adviceRound, adviceCount, adviceToken = 0, 0, 0
+		local function sayAdvice(text, seconds)
+			adviceToken += 1
+			local mine = adviceToken
+			adviceTag.Text = text
+			adviceTag.Visible = true
+			task.delay(seconds or 7, function()
+				if adviceToken == mine and adviceTag.Parent then adviceTag.Visible = false end
+			end)
+		end
+		do
+			local sc = BC.scout(cfg and cfg.seed or 1, { boss = opts.isBoss == true })
+			task.delay(0.6, function()
+				if adviceTag.Parent then
+					sayAdvice(string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
+				end
+			end)
+		end
 		local handFrame = Instance.new("ScrollingFrame")
 		handFrame.Position = UDim2.fromScale(0.02, 0.72)
 		handFrame.Size = UDim2.fromScale(0.74, 0.26)
@@ -1225,7 +1253,15 @@ function NavalBattle.play(opts)
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
 			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
 			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
-			weatherTag.Text = if #weather > 0 then table.concat(weather, " · ") else string.format("%d판째", m.round)
+			weatherTag.Text = (if #weather > 0 then table.concat(weather, " · ") else string.format("%d판째", m.round))
+				.. (if m.sea and m.sea.id ~= "calm" then " · " .. m.sea.name else "")
+			if m.turn == "me" and not m.over and adviceRound ~= m.round and adviceCount < 3 then
+				local tip = BC.advice(m, "me")
+				if tip then
+					adviceRound, adviceCount = m.round, adviceCount + 1
+					sayAdvice(string.format("%s: %s", opts.advisorName or "동료", tip), 7)
+				end
+			end
 			header.Text = string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
 				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
 				if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
@@ -1264,7 +1300,11 @@ function NavalBattle.play(opts)
 					chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
 				end
 			end
-			-- 손패
+			-- 손패 (내 차례에는 카드마다 '추천 수' 점수 변화를 보여 준다)
+			local hints, bestHint = {}, nil
+			if m.turn == "me" and not m.over then
+				hints, bestHint = BC.hint(m, "me")
+			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 88, 1, -10)
@@ -1331,6 +1371,18 @@ function NavalBattle.play(opts)
 				power.TextStrokeTransparency = 1
 				power.ZIndex = 4
 				frameEdge(power, brass, 5)
+				if hints[i] then
+					local g = hints[i]
+					local tipLabel = label(b, string.format("%s%d", if g >= 0 then "+" else "", g), 13, if g > 0 then Color3.fromRGB(150, 235, 150) elseif g < 0 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(230, 220, 200), true)
+					tipLabel.AnchorPoint = Vector2.new(1, 0)
+					tipLabel.Position = UDim2.new(1, -4, 0, 5)
+					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
+					tipLabel.Text = (if i == bestHint then "추천 " else "") .. tipLabel.Text
+					tipLabel.TextStrokeTransparency = 1
+					tipLabel.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
+					tipLabel.BackgroundTransparency = 0.2
+					tipLabel.ZIndex = 8
+				end
 				b.Parent = handFrame
 				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 

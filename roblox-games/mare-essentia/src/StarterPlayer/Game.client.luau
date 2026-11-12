@@ -1723,6 +1723,21 @@ do
 					{ text = "용병 180", color = COLORS.gold, onClick = function() refreshAfter("CardTavern") end },
 				}, 74)
 				summary.LayoutOrder = 2
+				local rec = mkRow(builder, "추천 덱 (보유 카드로 자동 구성)", "돌격: 근접+군기 · 포격: 사격·포+저격 · 운영: 첩자·치료·회군", {
+					{ text = "돌격", color = COLORS.red, onClick = function() refreshAfter("CardRecommend", { style = "rush" }) end },
+					{ text = "포격", color = COLORS.blue, onClick = function() refreshAfter("CardRecommend", { style = "gun" }) end },
+					{ text = "운영", color = COLORS.green, onClick = function() refreshAfter("CardRecommend", { style = "balance" }) end },
+				}, 64)
+				rec.LayoutOrder = 3
+				local slotBox = (view and view.cardbook and view.cardbook.slots) or {}
+				for slot = 1, CBk.SLOTS do
+					local sl = slotBox[slot]
+					local row = mkRow(builder, string.format("저장 칸 %d: %s", slot, if sl then sl.name .. " (" .. #sl.ids .. "장)" else "비어 있음"), "지금 편집 중인 덱을 저장하거나, 저장한 덱을 불러와요", {
+						{ text = "저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSlotSave", { slot = slot, ids = ids, name = string.format("덱 %d", slot) }) end },
+						{ text = "불러옴", color = COLORS.blue, enabled = sl ~= nil, onClick = function() refreshAfter("CardSlotUse", { slot = slot }) end },
+					}, 52)
+					row.LayoutOrder = 3 + slot
+				end
 				local order = {}
 				for id in book.owned do table.insert(order, id) end
 				table.sort(order, function(x, y)
@@ -2046,6 +2061,12 @@ local function call(action, payload)
 				return names
 			end)(),
 			weatherName = view.weather and view.weather.name,
+			advisorName = (function()
+				for _, c in (view.companions and view.companions.list) or {} do
+					if c.joined then return c.name end
+				end
+				return nil
+			end)(),
 			wind = view.weather and view.weather.wind,
 			windAngle = ((view.weather and string.byte(view.weather.id or "x", 1) or 0) * 47) % 360,
 			enemyName = lb.enemy,
