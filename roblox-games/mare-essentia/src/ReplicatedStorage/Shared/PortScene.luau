@@ -410,7 +410,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		-- 문화권별 승인된 지붕창·박공·창호 메시를 일부 주택에만 올려 주택 형태를 차별화한다.
 		-- 기존 본체 메시와 충돌하지 않도록 장식만 비충돌로 두고, 주택/시설의 고유 판정은 유지한다.
 		local _, ext = mesh:GetBoundingBox()
-		if architecture.roof and houseTier >= 2 and not vacant and seed % 3 == 0 then
+		if architecture.roof and not vacant and seed % (if houseTier >= 3 then 3 else 4) == 0 then
 			local roof = importedModel(parent, "Town", architecture.roof,
 				pos + Vector3.new(0, ext.Y * 0.78, front * ext.Z * 0.28),
 				ext.X * 0.45, false, style.roofs[rng:NextInteger(1, #style.roofs)])
@@ -419,7 +419,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(roof, style, "roof")
 			end
 		end
-		if architecture.trim and houseTier >= 2 and not vacant and seed % 2 == 0 then
+		if architecture.trim and not vacant and seed % (if houseTier >= 3 then 2 else 3) == 0 then
 			local trim = importedModel(parent, "Town", architecture.trim,
 				pos + Vector3.new(ext.X * 0.2, ext.Y * 0.40, front * ext.Z * 0.51),
 				ext.X * 0.26, false, tintColor)
