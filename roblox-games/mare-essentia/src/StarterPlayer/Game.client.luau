@@ -13,6 +13,7 @@ local sceneSpawn = nil
 local H: { [string]: any } = {} -- 화면 보조 상태는 사용 전 먼저 준비한다. 제목/아이콘 런타임 오류 방지.
 local gui = Instance.new("ScreenGui")
 gui.Name = "MareEssentiaGui"
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -814,93 +815,9 @@ main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
 main.BackgroundColor3 = COLORS.cover
 main.Parent = gui
+-- 시설 페이지는 읽을 수 있는 본문 면을 바로 노출한다.
 mainInner.BackgroundColor3 = COLORS.coverRaised
--- 표지와 제본은 본문 및 조작 요소보다 뒤에 둔다.
-mainInner.ZIndex = main.ZIndex + 3
 mainInner.BackgroundTransparency = 0.08
-do
-	local st = Instance.new("UIStroke")
-	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	st.Color = Color3.fromRGB(214, 170, 82)
-	st.Thickness = 2.5
-	st.Parent = main
-	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromRGB(95, 65, 44), Color3.fromRGB(33, 23, 20))
-	grad.Rotation = 90
-	grad.Parent = main
-
-	bookMaterial(main, "leather", 196)
-	-- [책 등 장정] 낡은 가죽 표지를 따라 손으로 꿰맨 실밥을 남긴다.
-	for i = 1, 24 do
-		for _, top in { true, false } do
-			local stitch = Instance.new("Frame")
-			stitch.Name = "LeatherStitch"
-			stitch.BackgroundColor3 = Color3.fromRGB(206, 165, 110)
-			stitch.BackgroundTransparency = 0.29
-			stitch.BorderSizePixel = 0
-			stitch.AnchorPoint = Vector2.new(0.5, 0)
-			stitch.Position = UDim2.new(i / 25, 0, if top then 0 else 1, if top then 7 else -12)
-			stitch.Size = UDim2.fromOffset(2, 5)
-			stitch.Rotation = 24
-			stitch.ZIndex = main.ZIndex + 1
-			stitch.Parent = main
-		end
-	end
-	for i = 1, 12 do
-		for _, left in { true, false } do
-			local stitch = Instance.new("Frame")
-			stitch.Name = "LeatherSpineStitch"
-			stitch.BackgroundColor3 = Color3.fromRGB(206, 165, 110)
-			stitch.BackgroundTransparency = 0.33
-			stitch.BorderSizePixel = 0
-			stitch.Position = UDim2.new(if left then 0 else 1, if left then 7 else -11, i / 13, 0)
-			stitch.Size = UDim2.fromOffset(5, 2)
-			stitch.Rotation = -18
-			stitch.ZIndex = main.ZIndex + 1
-			stitch.Parent = main
-		end
-	end
-	-- [모서리 제본] 낡은 황동 압정의 바깥 고리와 안쪽 눌림.
-	for _, pos in { Vector2.new(0, 0), Vector2.new(1, 0), Vector2.new(0, 1), Vector2.new(1, 1) } do
-		local stud = Instance.new("Frame")
-		stud.Name = "BookCornerRivet"
-		stud.AnchorPoint = pos
-		stud.Position = UDim2.new(pos.X, if pos.X == 0 then 12 else -12, pos.Y, if pos.Y == 0 then 12 else -12)
-		stud.Size = UDim2.fromOffset(10, 10)
-		stud.BackgroundColor3 = Color3.fromRGB(195, 151, 73)
-		stud.BorderSizePixel = 0
-		stud.ZIndex = main.ZIndex + 2
-		stud.Parent = main
-		corner(stud, 5)
-		local insetDot = Instance.new("Frame")
-		insetDot.Name = "RivetPunch"
-		insetDot.AnchorPoint = Vector2.new(0.5, 0.5)
-		insetDot.Position = UDim2.fromScale(0.5, 0.5)
-		insetDot.Size = UDim2.fromOffset(4, 4)
-		insetDot.BackgroundColor3 = Color3.fromRGB(92, 61, 36)
-		insetDot.BorderSizePixel = 0
-		insetDot.ZIndex = stud.ZIndex + 1
-		insetDot.Parent = stud
-		corner(insetDot, 3)
-	end
-	-- 안쪽 가는 테두리 (액자 느낌)
-	local inset = Instance.new("Frame")
-	inset.Name = "InnerFrame"
-	inset.BackgroundTransparency = 1
-	inset.Position = UDim2.fromOffset(5, 5)
-	inset.Size = UDim2.new(1, -10, 1, -10)
-	inset.ZIndex = 0
-	inset.Parent = main
-	local ist = Instance.new("UIStroke")
-	ist.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	ist.Color = Color3.fromRGB(120, 92, 44)
-	ist.Thickness = 1
-	ist.Transparency = 0.3
-	ist.Parent = inset
-	local ic = Instance.new("UICorner")
-	ic.CornerRadius = UDim.new(0, 8)
-	ic.Parent = inset
-end
 local sizeLimit = Instance.new("UISizeConstraint")
 sizeLimit.MaxSize = Vector2.new(1020, 900)
 sizeLimit.Parent = main
@@ -6729,102 +6646,26 @@ titleGui.Enabled = false
 ;(function()
 	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
 	root.ClipsDescendants = true
-	local sky = Instance.new("UIGradient")
-	sky.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(88, 151, 182)),
-		ColorSequenceKeypoint.new(0.58, Color3.fromRGB(240, 190, 127)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(26, 70, 91)),
-	})
-	sky.Rotation = 90
-	root.BackgroundColor3 = Color3.new(1, 1, 1)
-	sky.Parent = root
-	local function painting(name)
-		local art = Instance.new("ImageLabel")
-		art.Name = name
-		art.BackgroundTransparency = 1
-		art.Size = UDim2.fromScale(1, 1)
-		art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
-		art.ScaleType = Enum.ScaleType.Crop
-		art.Parent = root
-		return art
-	end
-	local backdrop = painting("TitleVoyageIllustration")
-	local water = painting("TitlePaintedWater")
-	water.Position = UDim2.fromScale(0, 0.56)
-	water.Size = UDim2.fromScale(1, 0.46)
-	water.ImageRectOffset = Vector2.new(0, 313)
-	water.ImageRectSize = Vector2.new(384, 71)
-	water.ScaleType = Enum.ScaleType.Stretch
-	water.Visible = false
-	local blend = Instance.new("UIGradient")
-	blend.Rotation = 90
-	blend.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.26, 0), NumberSequenceKeypoint.new(1, 0),
-	})
-	blend.Parent = water
-	local sun = mkBox(root, UDim2.fromScale(0.19, 0.24), UDim2.fromOffset(86, 86), Color3.fromRGB(255, 230, 164), 0.12)
-	sun.AnchorPoint = Vector2.new(0.5, 0.5)
-	sun.ZIndex = 2
-	corner(sun, 48)
-	local rays = mkBox(root, UDim2.fromScale(0.15, 0.15), UDim2.fromScale(0.55, 0.48), Color3.fromRGB(255, 219, 149), 0.45)
+	local art = Instance.new("ImageLabel")
+	art.Name = "TitleVoyageIllustration"
+	art.AnchorPoint = Vector2.new(0.5, 0.5)
+	art.Position = UDim2.fromScale(0.5, 0.5)
+	art.Size = UDim2.fromScale(1.06, 1.06)
+	art.BackgroundTransparency = 1
+	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
+	art.ScaleType = Enum.ScaleType.Crop
+	art.Parent = root
+
+	local rays = mkBox(root, UDim2.fromScale(0.03, 0), UDim2.fromScale(0.72, 0.68), Color3.fromRGB(255, 226, 170), 0.62)
 	rays.ZIndex = 2
 	local rayFade = Instance.new("UIGradient")
-	rayFade.Rotation = 23
+	rayFade.Rotation = 30
 	rayFade.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.45, 0.52),
-		NumberSequenceKeypoint.new(0.55, 0.87), NumberSequenceKeypoint.new(1, 1),
+		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.38, 1),
+		NumberSequenceKeypoint.new(0.49, 0.48), NumberSequenceKeypoint.new(0.60, 1),
+		NumberSequenceKeypoint.new(1, 1),
 	})
 	rayFade.Parent = rays
-
-	local stage = Instance.new("ViewportFrame")
-	stage.Name = "TitleLiveShips"
-	stage.BackgroundTransparency = 1
-	stage.ZIndex = 3
-	stage.Ambient = Color3.fromRGB(143, 155, 166)
-	stage.LightColor = Color3.fromRGB(255, 224, 173)
-	stage.Parent = root
-	local world = Instance.new("WorldModel")
-	world.Parent = stage
-	local camera = Instance.new("Camera")
-	camera.FieldOfView = 38
-	camera.CFrame = CFrame.lookAt(Vector3.new(30, 9, 32), Vector3.new(0, 4, 0))
-	camera.Parent = stage
-	stage.CurrentCamera = camera
-	local ship, shipHome, gullSource
-	local birds = {}
-	local function clone(source, span)
-		if not source or not source:IsA("Model") or not source:FindFirstChildWhichIsA("BasePart", true) then return nil end
-		local copy = source:Clone()
-		local box, ext = copy:GetBoundingBox()
-		copy:ScaleTo(copy:GetScale() * span / math.max(ext.X, ext.Z, 0.01))
-		box, ext = copy:GetBoundingBox()
-		copy:PivotTo(CFrame.new(0, ext.Y * 0.28, 0) * box:ToObjectSpace(copy:GetPivot()))
-		copy.Parent = world
-		return copy
-	end
-	local function refreshModels()
-		local library = ReplicatedStorage:FindFirstChild("MareAssets")
-		if not library then return end
-		if not ship then
-			local naval = library:FindFirstChild("Naval")
-			ship = clone(naval and naval:FindFirstChild("ship-large"), 24)
-			if ship then
-				shipHome = ship:GetPivot()
-				backdrop.Visible = false
-				water.Visible = true
-			end
-		end
-		if not gullSource and AssetIds["Animals/seagull"] then
-			local animals = library:FindFirstChild("Animals")
-			gullSource = animals and animals:FindFirstChild("seagull")
-			if gullSource then
-				for i = 1, 3 do
-					local bird = clone(gullSource, 2.3 - i * 0.22)
-					if bird then table.insert(birds, { model = bird, index = i }) end
-				end
-			end
-		end
-	end
 
 	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(23, 26, 30), 0.28)
 	shade.ZIndex = 4
@@ -6853,8 +6694,6 @@ titleGui.Enabled = false
 
 	local function layout()
 		local portrait = root.AbsoluteSize.X < root.AbsoluteSize.Y
-		stage.Position = if portrait then UDim2.fromScale(0, 0.16) else UDim2.fromScale(-0.04, 0.16)
-		stage.Size = if portrait then UDim2.fromScale(1, 0.48) else UDim2.fromScale(0.68, 0.80)
 		shadeFade.Rotation = if portrait then 90 else 0
 		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.055, 0, 0, 74)
 		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
@@ -6884,28 +6723,16 @@ titleGui.Enabled = false
 			return
 		end
 		if touch then hideTouch(touch) end
-		refreshModels()
-		local started, nextRefresh, last = os.clock(), 0, 0
+		local started, last = os.clock(), 0
 		curtain.BackgroundTransparency = 0
 		connection = game:GetService("RunService").RenderStepped:Connect(function()
 			local now = os.clock()
 			if now - last < 1 / 30 then return end
 			last = now
 			local t = now - started
-			if t >= nextRefresh then nextRefresh = t + 1; refreshModels() end
 			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
-			sun.Position = UDim2.fromScale(0.19 + math.sin(t * 0.20) * 0.034, 0.24 - math.sin(t * 0.12) * 0.023)
 			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
-			stage.LightDirection = Vector3.new(-0.58 + math.sin(t * 0.26) * 0.27, -0.7, -0.45).Unit
-			if ship then
-				ship:PivotTo(CFrame.new(math.sin(t * 0.26) * 2.6, math.sin(t * 1.24) * 0.55, 0)
-					* shipHome * CFrame.Angles(math.sin(t * 1.1) * 0.026, math.sin(t * 0.52) * 0.11, math.sin(t * 0.92) * 0.075))
-			end
-			for _, bird in birds do
-				local x = (t * (3 + bird.index * 0.5) + bird.index * 17) % 70 - 35
-				local y = 14 + bird.index * 1.3 + math.sin(t * 1.35 + bird.index) * 0.6
-				bird.model:PivotTo(CFrame.new(x, y, -13 - bird.index * 2) * CFrame.Angles(0, math.pi / 2, math.sin(t * 0.9 + bird.index) * 0.13))
-			end
+			art.Position = UDim2.fromScale(0.5 + math.sin(t * 0.17) * 0.012, 0.5 + math.sin(t * 0.22) * 0.009)
 		end)
 	end)
 end)()
@@ -7398,21 +7225,6 @@ function H.showTitle()
 		edgeFade.Transparency = 0.28
 		edgeFade.Thickness = 1.5
 		edgeFade.Parent = leaf
-	end
-	-- 종이 테두리 일부가 닳아 가죽이 드러난 흔적.
-	local wear = Random.new(1517)
-	for _, top in { true, false } do
-		for i = 1, 13 do
-			local cut = Instance.new("Frame")
-			cut.BorderSizePixel = 0
-			cut.BackgroundColor3 = COLORS.leather
-			cut.AnchorPoint = Vector2.new(0.5, 0.5)
-			cut.Position = UDim2.new((i + wear:NextNumber(-0.24, 0.24)) / 14, 0, if top then 0 else 1, if top then 7 else -7)
-			cut.Size = UDim2.fromOffset(wear:NextInteger(3, 13), wear:NextInteger(2, 5))
-			cut.Rotation = wear:NextInteger(-27, 27)
-			cut.ZIndex = box.ZIndex + 2
-			cut.Parent = box
-		end
 	end
 	local pages = Instance.new("ScrollingFrame")
 	pages.Size = UDim2.new(1, -12, 1, -12)
@@ -8043,8 +7855,25 @@ end
 		shade.Parent = layer
 		TweenService:Create(shade, TweenInfo.new(0.6), { BackgroundTransparency = 0.25 }):Play()
 		local prevMusic = Sfx.currentName()
+		local closed = false
+		local function closeReveal()
+			if closed then return end
+			closed = true
+			layer:Destroy()
+			pcall(Sfx.music, prevMusic or nil)
+			portraitKey = nil
+		end
+		local skip = mkButton(layer, "넘기기", COLORS.leather, UDim2.fromOffset(92, 44), closeReveal)
+		skip.AnchorPoint = Vector2.new(1, 0)
+		skip.Position = UDim2.new(1, -18, 0, 54)
+		skip.ZIndex = 12
+		task.delay(9, closeReveal)
 		pcall(Sfx.music, "music_story_palace")
 		Sfx.play("sfx_book_turn", 0.7)
+		local camera = workspace.CurrentCamera
+		local viewHeight = if camera then camera.ViewportSize.Y else 600
+		local pictureHeight = math.clamp(math.floor(viewHeight * 0.64), 136, 328)
+		local pictureWidth = math.floor(pictureHeight * 268 / 328)
 		local frame = Instance.new("Frame")
 		frame.AnchorPoint = Vector2.new(0.5, 0.5)
 		frame.Position = UDim2.fromScale(0.5, 0.46)
@@ -8058,8 +7887,9 @@ end
 		fst.Color = BRASS
 		fst.Thickness = 5
 		fst.Parent = frame
-		TweenService:Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(268, 328) }):Play()
+		TweenService:Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(pictureWidth, pictureHeight) }):Play()
 		task.wait(0.8)
+		if closed then return end
 		local canvas = Instance.new("Frame")
 		canvas.AnchorPoint = Vector2.new(0.5, 0.5)
 		canvas.Position = UDim2.fromScale(0.5, 0.5)
@@ -8068,11 +7898,11 @@ end
 		canvas.BorderSizePixel = 0
 		canvas.ClipsDescendants = true
 		canvas.Parent = frame
-		local big = portraitImg(canvas, value, 240, 300)
+		local big = portraitImg(canvas, value, pictureWidth - 28, pictureHeight - 28)
 		local cap = mkLabel(layer, "", 24, Color3.fromRGB(246, 208, 130), true)
 		cap.AnchorPoint = Vector2.new(0.5, 0)
-		cap.Position = UDim2.new(0.5, 0, 0.46, 190)
-		cap.Size = UDim2.fromOffset(360, 30)
+		cap.Position = UDim2.new(0.5, 0, 0.46, pictureHeight / 2 + 12)
+		cap.Size = UDim2.new(0.84, 0, 0, 42)
 		cap.AutomaticSize = Enum.AutomaticSize.None
 		cap.TextXAlignment = Enum.TextXAlignment.Center
 		if big then
@@ -8093,16 +7923,19 @@ end
 				})
 				if step % 3 == 1 then Sfx.play("sfx_sail_fabric", 0.35, 1.5) end -- 붓이 캔버스를 쓰는 소리
 				task.wait(0.22)
+				if closed then return end
 			end
 			wipe:Destroy()
 		else
 			task.wait(2)
+			if closed then return end
 		end
 		Sfx.play("sfx_fanfare", 0.6)
 		Sfx.play("sfx_bell", 0.5)
 		cap.Text = name
 		TweenService:Create(fst, TweenInfo.new(0.5), { Thickness = 8 }):Play()
 		task.wait(2.2)
+		if closed then return end
 		-- 선장실 벽으로: 액자가 작아져 화면 왼쪽(선장실 초상 자리)으로 걸린다
 		cap.Text = "선장실 벽에 초상이 걸렸다"
 		Sfx.play("sfx_ship_cabin_door", 0.6)
@@ -8111,9 +7944,7 @@ end
 		}):Play()
 		TweenService:Create(shade, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
 		task.wait(1.1)
-		layer:Destroy()
-		pcall(Sfx.music, prevMusic or nil)
-		portraitKey = nil -- 선장실 초상을 새로 그린다
+		closeReveal()
 	end
 
 	local function nationPortraits()
