@@ -9,12 +9,23 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
  const mixer=new THREE.AnimationMixer(character),actions=new Map();
  for(const clip of clips)if(clip?.name)actions.set(clip.name.toLowerCase(),mixer.clipAction(clip));
  let active=null;
+ // [메인: 원본 모션 탐색] 엔진 상태와 원본 GLB 이름을 연결한다. 없는 원본은 생성/대체하지 않는다.
  const play=(state,{blendSeconds=.15}={})=>{
-  const key=state.toLowerCase().replace(/-/g,'');
-  const match=[...actions.entries()].find(([name])=>name.replace(/[^a-z0-9]/g,'').includes(key))?.[1];
+  const raw=String(state||'').toLowerCase(),key=raw.replace(/[^a-z0-9]/g,'');
+  const aliases={
+   idle:['stand'],jog:['run','walk'],sprint:['run'],strafe:['sidestep'],
+   'light-attack':['attack','slash'],'heavy-attack':['heavyattack','attack'],
+   dodge:['evade','roll'],land:['landing'],fall:['falling'],climb:['climbing']
+  };
+  const names=[key,...(aliases[raw]||[])];
+  const clipEntries=[...actions.entries()].map(([name,action])=>({name:name.replace(/[^a-z0-9]/g,''),action}));
+  let match=null;
+  for(const expected of names){match=clipEntries.find(row=>row.name===expected)?.action;if(match)break;}
+  if(!match)for(const expected of names){match=clipEntries.find(row=>expected&&row.name.includes(expected))?.action;if(match)break;}
   if(!match||match===active)return false;
-  match.reset().fadeIn(blendSeconds).play();
-  if(active)active.fadeOut(blendSeconds);
+  const duration=Number.isFinite(blendSeconds)?Math.max(0,Math.min(.5,blendSeconds)):.15;
+  match.reset().fadeIn(duration).play();
+  if(active)active.fadeOut(duration);
   active=match;return true;
  };
  const engine=new VibeMotionEngine(design,{play});

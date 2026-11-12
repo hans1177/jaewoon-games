@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import {VibeMotionEngine, createFixedStepMotionLoop} from '../assets/vibe-motion-engine.mjs';
+import {connectVibeCharacter} from '../assets/vibe-character-adapter.mjs';
 import {makeFootPlant,makeMotionMatcher,makeLayeredPoseBlender} from '../assets/vibe-studio-animation.js';
 const design=JSON.parse(readFileSync(new URL('../assets/vibe-visual-design-system.json',import.meta.url)));
 test('genre presets and movement states',()=>{
@@ -55,6 +56,38 @@ test('action cancellation window prevents early queued dodge and recovers to idl
  recovery.enter('light-attack');recovery.update(.1);recovery.update(.1);
  assert.equal(recovery.state,'idle');
  assert.throws(()=>engine.registerActionRule('dodge',{duration:-1}));
+});
+
+test('Vibe 5.9 real GLB clips map sprint to authored Run without fabricating a clip',async()=>{
+ const previousFetch=globalThis.fetch,played=[],actions=new Map();
+ globalThis.fetch=async()=>({ok:true,json:async()=>design});
+ const THREE={AnimationMixer:class{
+  clipAction(clip){
+   if(!actions.has(clip.name))actions.set(clip.name,{
+    name:clip.name,reset(){return this},fadeIn(){return this},
+    play(){played.push(this.name);return this},fadeOut(){return this}
+   });
+   return actions.get(clip.name);
+  }
+  update(){}stopAllAction(){}uncacheRoot(){}
+ }};
+ try{
+  const adapter=await connectVibeCharacter({character:{},clips:[{name:'Idle'},{name:'Walk'},{name:'Run'}],THREE});
+  assert.equal(adapter.play('walk'),true);
+  assert.equal(adapter.play('sprint'),true);
+  assert.equal(adapter.play('jog'),true);
+  assert.equal(adapter.play('fly'),false);
+  assert.deepEqual(played,['Walk','Run','Walk']);
+  adapter.move({speed:.95});
+  assert.equal(adapter.engine.state,'sprint');
+  adapter.dispose();
+ }finally{globalThis.fetch=previousFetch}
+});
+test('Vibe 5.9 desktop 3D preview targets smooth frames while mobile retains its budget',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.ok(html.includes('if(now-last<(mobileView?33:16))return'));
+ assert.ok(html.includes('targetFps:55'));
+ assert.ok(html.includes("if(mobileView){"));
 });
 
 test('Vibe 5.9 world-space foot locks do not mutate source positions and release on swing',()=>{
