@@ -61,6 +61,7 @@ return function(D, S)
 
 	-- 해전 결과를 상태에 반영한다 (pb: 미리 계산해 둔 전투 결과)
 	local function settle(state, msgs, pb)
+		S.Tactics.awardNavalMastery(state, pb.winner == "a", msgs)
 		-- 선단의 보태진 선체는 기함이 아니라 선단 전체가 나눠 입는다: 받은 피해를 기함·선단 배에 나눈다
 		local bonus = S.State.fleetHull(state)
 		local damage = math.max(0, state.ship.hull + bonus - math.floor(pb.hull))

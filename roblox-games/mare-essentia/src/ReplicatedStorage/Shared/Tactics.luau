@@ -28,6 +28,9 @@ function T.makeUnit(spec)
 	assert(c, "unknown class " .. tostring(spec.class))
 	local lv = math.max(1, math.floor(spec.level or 1))
 	local power = spec.power or 1
+	local weapon = Data.PersonalGear.weapon[spec.weaponTier or 1]
+	local armor = Data.PersonalGear.armor[spec.armorTier or 1]
+	local promotionBonus = if spec.promoted then 1 else 0
 	local hp = math.floor((c.hp + 2 * (lv - 1)) * power)
 	local unit = {
 		id = spec.id,
@@ -35,12 +38,13 @@ function T.makeUnit(spec)
 		class = spec.class,
 		team = spec.team,
 		level = lv,
+		memberId = spec.memberId,
 		hp = hp,
 		maxHp = hp,
-		atk = math.floor((c.atk + math.floor((lv - 1) * 0.6)) * power),
-		def = c.def + math.floor((lv - 1) * 0.4),
+		atk = math.floor((c.atk + math.floor((lv - 1) * 0.6)) * power) + weapon.atk + promotionBonus,
+		def = c.def + armor.def + promotionBonus + math.floor((lv - 1) * 0.4),
 		spd = c.spd + math.floor((lv - 1) * 0.3),
-		move = c.move,
+		move = math.max(1, c.move + armor.move),
 		rangeMin = c.range[1],
 		rangeMax = c.range[2],
 		weapon = c.weapon,
@@ -52,7 +56,7 @@ function T.makeUnit(spec)
 		boss = spec.boss == true,
 		ai = spec.ai,
 		beast = c.beast == true,
-		heal = c.heal,
+		heal = if c.heal then c.heal + weapon.heal else nil,
 		pierce = c.pierce or 0,
 		lead = spec.lead == true,
 	}
@@ -142,6 +146,7 @@ function T.newBattle(map, party, opts)
 			local u = T.makeUnit({
 				id = spec.id, name = spec.name, class = spec.class, team = "player", level = spec.level,
 				skills = spec.skills, x = slot.x, y = slot.y, lead = spec.lead,
+				memberId = spec.memberId, weaponTier = spec.weaponTier, armorTier = spec.armorTier, promoted = spec.promoted,
 			})
 			table.insert(b.units, u)
 		end

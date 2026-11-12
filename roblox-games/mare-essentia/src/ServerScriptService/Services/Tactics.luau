@@ -42,7 +42,15 @@ return function(D, S)
 			class = "lancer"
 			table.insert(skills, "bulwark")
 		end
-		if c.role == "포수" then
+		if c.role == "갑판장" or c.role == "광산 출신 선원" then
+			class = "axeman"
+		elseif c.role == "몰락 귀족" then
+			class = "rider"
+		elseif c.role == "옛 영지 시종" then
+			class = "knight"
+		elseif c.role == "낭인 무사" then
+			class = "swordsman"
+		elseif c.role == "포수" or c.role == "포술장" or c.role == "갤리온 포수" then
 			class = "gunner"
 		elseif c.role == "의사" then
 			class = "scholar"
@@ -64,16 +72,152 @@ return function(D, S)
 		return skills
 	end
 
+	-- 역할에서 정한 기본 병종을 유지하고, 장비·숙련은 동료의 고유 ID에 붙인다.
+	local function memberSpec(state, id, level, index)
+		if id == "p1" then
+			return { id = "p1", name = (state.captain and state.captain.name) or "주인공",
+				class = (state.partyTraining and state.partyTraining.p1 and state.partyTraining.p1.class) or "swordsman",
+				level = level, skills = leadSkills(state), lead = true }
+		end
+		return companionSpec(D.Specialties.CompanionById[id], level, index)
+	end
+
+	local function training(state, id)
+		return (state.partyTraining and state.partyTraining[id]) or { xp = 0 }
+	end
+
+	local function masteryLevel(row)
+		return 1 + math.floor(row.xp / Data.MasteryPerLevel)
+	end
+
+	local function addMastery(state, id, amount, msgs)
+		state.partyTraining = state.partyTraining or {}
+		local row = training(state, id)
+		local before = masteryLevel(row)
+		row.xp = math.min(Data.MaxMastery, row.xp + amount)
+		state.partyTraining[id] = row
+		if masteryLevel(row) > before then
+			local name = memberSpec(state, id, 1, 1).name
+			table.insert(msgs, string.format("%s 병종 숙련 Lv.%d", name, masteryLevel(row)))
+		end
+	end
+
+	local function awardNavalMastery(state, victory, msgs)
+		local amount = if victory then 12 else 6
+		addMastery(state, "p1", amount, msgs)
+		for _, id in state.companions do
+			if D.Specialties.CompanionById[id] then
+				local assigned = false
+				for _, occupant in state.stations do
+					if occupant == id then assigned = true; break end
+				end
+				addMastery(state, id, if assigned then amount else math.floor(amount / 2), msgs)
+			end
+		end
+	end
+
+	local function trainingView(state)
+		local rows = {}
+		local ids = table.clone(state.companions)
+		table.insert(ids, 1, "p1")
+		for index, id in ids do
+			local spec = memberSpec(state, id, 1, index)
+			local row = training(state, id)
+			local promotion = Data.Promotions[spec.class]
+			local level = masteryLevel(row)
+			local result = { id = id, name = spec.name, level = level, xp = row.xp % Data.MasteryPerLevel,
+				xpNext = Data.MasteryPerLevel, maxLevel = row.xp >= Data.MaxMastery,
+				class = if row.promoted then promotion.name else Data.Classes[spec.class].name,
+				promotion = promotion.name, promotionSkill = Data.Skills[promotion.skill].name,
+				canPromote = not row.promoted and level >= Data.PromotionLevel,
+				gear = {} }
+			if id == "p1" then
+				result.classes = {}
+				for class in Data.Promotions do
+					table.insert(result.classes, { id = class, name = Data.Classes[class].name, selected = class == spec.class,
+						weapon = Data.Weapons[Data.Classes[class].weapon], move = Data.Classes[class].move })
+				end
+				table.sort(result.classes, function(a, b) return a.id < b.id end)
+			end
+			for _, slot in { "weapon", "armor" } do
+				local items = {}
+				for tier, item in Data.PersonalGear[slot] do
+					local name = if slot == "weapon" then item.name .. " · " .. Data.Weapons[Data.Classes[spec.class].weapon] else item.name
+					local stats = if slot == "weapon" then string.format("공격 +%d", item.atk)
+						else string.format("방어 +%d · 이동 %+d", item.def, item.move)
+					if slot == "weapon" and Data.Classes[spec.class].heal then
+						stats = string.format("공격 +%d · 치료 +%d", item.atk, item.heal)
+					end
+					table.insert(items, { name = name, tier = tier, level = item.level, stats = stats,
+						equipped = (row[slot] or 1) == tier, price = if tier <= (row[slot .. "Owned"] or 1) then 0 else item.price })
+				end
+				result.gear[slot] = items
+			end
+			table.insert(rows, result)
+		end
+		return rows
+	end
+
+	function handlers.PartyTraining(state, p)
+		local id = p.memberId
+		if type(id) ~= "string" or (id ~= "p1" and not table.find(state.companions, id)) then
+			return false, "편성된 선장이나 동료만 바꿀 수 있어요"
+		end
+		if state.pendingBattle or state.tbattle then
+			return false, "전투를 마친 뒤 병종과 장비를 바꿀 수 있어요"
+		end
+		local row = training(state, id)
+		local level = masteryLevel(row)
+		if p.class ~= nil then
+			local class = p.class
+			if id ~= "p1" or type(class) ~= "string" or not Data.Promotions[class] then return false, "선택할 수 없는 병종이에요" end
+			local previous = row.class or "swordsman"
+			if class == previous then return false, "이미 선택한 병종이에요" end
+			row.classTraining = row.classTraining or {}
+			row.classTraining[previous] = { weapon = row.weapon, weaponOwned = row.weaponOwned, promoted = row.promoted }
+			local nextClass = row.classTraining[class] or {}
+			row.class, row.weapon, row.weaponOwned, row.promoted = class, nextClass.weapon, nextClass.weaponOwned, nextClass.promoted
+		elseif p.promote == true then
+			if row.promoted or level < Data.PromotionLevel then return false, "승급 조건을 확인하세요" end
+			row.promoted = true
+		else
+			local slot, tier = p.slot, p.tier
+			local items = type(slot) == "string" and Data.PersonalGear[slot]
+			local item = items and type(tier) == "number" and tier >= 1 and tier <= #items and items[tier]
+			if not item or level < item.level then return false, "장비 조건을 확인하세요" end
+			local owned = row[slot .. "Owned"] or 1
+			-- 상위 장비를 사면 해당 단계 이하 장비로 무료 교체할 수 있다.
+			if tier > owned then
+				if state.coins < item.price then return false, "코인이 부족해요" end
+				state.coins -= item.price
+				row[slot .. "Owned"] = tier
+			end
+			row[slot] = tier
+		end
+		state.partyTraining = state.partyTraining or {}
+		state.partyTraining[id] = row
+		return true, if p.class ~= nil then "주인공 병종을 바꿨어요" elseif p.promote == true then "병종이 승급했어요" else "개인 장비를 장착했어요"
+	end
+
 	-- 편성: 주인공 + 동료 + 선원(5자리까지)
 	local function buildParty(state)
 		local level = math.max(1, state.careers.battle.level, math.floor((state.careers.adventure.level + state.careers.battle.level) / 2))
-		local party = { { id = "p1", name = "주인공", class = "swordsman", level = level, skills = leadSkills(state), lead = true } }
-		local idx = 0
-		for _, cid in state.companions do
-			local c = D.Specialties.CompanionById[cid]
-			if c and #party < 5 then
-				idx += 1
-				table.insert(party, companionSpec(c, level, idx))
+		local party = {}
+		local ids = table.clone(state.companions)
+		table.insert(ids, 1, "p1")
+		for index, id in ids do
+			if #party >= 5 then break end
+			if id == "p1" or D.Specialties.CompanionById[id] then
+				local spec = memberSpec(state, id, level, index - 1)
+				local row = training(state, id)
+				spec.memberId, spec.weaponTier, spec.armorTier, spec.promoted = id, row.weapon, row.armor, row.promoted
+				spec.level += math.floor((masteryLevel(row) - 1) / 4)
+				if row.promoted then
+					local promotion = Data.Promotions[spec.class]
+					spec.name ..= " · " .. promotion.name
+					if not table.find(spec.skills, promotion.skill) then table.insert(spec.skills, promotion.skill) end
+				end
+				table.insert(party, spec)
 			end
 		end
 		local crewKinds = {
@@ -157,6 +301,13 @@ return function(D, S)
 			return
 		end
 		local rank = Rules.rank(b)
+		if site then
+			for _, unit in b.units do
+				if unit.team == "player" and unit.memberId then
+					addMastery(state, unit.memberId, 15, msgs)
+				end
+			end
+		end
 		local mult = Data.RankMult[rank] or 1
 		local minLevel = site and site.minLevel or 1
 		local coins = math.floor((40 + 30 * minLevel + 25 * #b.found) * mult) + b.bonusCoins
@@ -232,5 +383,5 @@ return function(D, S)
 		return true, ""
 	end
 
-	return { handlers = handlers, buildParty = buildParty, finish = finish }
+	return { handlers = handlers, buildParty = buildParty, finish = finish, trainingView = trainingView, awardNavalMastery = awardNavalMastery }
 end

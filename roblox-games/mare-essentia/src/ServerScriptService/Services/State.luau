@@ -63,6 +63,7 @@ return function(D)
 			academy = { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }, -- 학회 발표·박람회 기록 (shown: 전시한 카드)
 			reported = {}, -- 학자에게 보고해 이해한 지식(카드 id → true)
 			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
+			partyTraining = {}, -- 주인공 및 동료 ID별 병종 숙련도와 장비
 			scholarsMet = {},
 			captain = {}, -- 선장 { name, portrait }
 			intro = { name = false, companion = false, portrait = false }, -- 시작 안내 진행
@@ -362,6 +363,39 @@ return function(D)
 					and #s.companions < D.Specialties.slotsFor(D.Ships.Ships[s.ship.id].class)
 				then
 					table.insert(s.companions, id)
+				end
+			end
+		end
+		if type(saved.partyTraining) == "table" then
+			for id, row in saved.partyTraining do
+				if type(id) == "string" and (id == "p1" or D.Specialties.CompanionById[id]) and type(row) == "table" then
+					local xp = math.floor(num(row.xp, 0, 0, D.TacticsData.MaxMastery))
+					local level = 1 + math.floor(xp / D.TacticsData.MasteryPerLevel)
+					local unit = { xp = xp, promoted = row.promoted == true and level >= D.TacticsData.PromotionLevel }
+					for slot, items in D.TacticsData.PersonalGear do
+						local owned = math.floor(num(row[slot .. "Owned"], 1, 1, #items))
+						while items[owned].level > level do owned -= 1 end
+						unit[slot .. "Owned"] = owned
+						unit[slot] = math.floor(num(row[slot], 1, 1, owned))
+					end
+					if id == "p1" then
+						unit.class = type(row.class) == "string" and D.TacticsData.Promotions[row.class] and row.class or "swordsman"
+						unit.classTraining = {}
+						if type(row.classTraining) == "table" then
+							for class in D.TacticsData.Promotions do
+								local savedClass = row.classTraining[class]
+								if type(savedClass) == "table" then
+									local owned = math.floor(num(savedClass.weaponOwned, 1, 1, #D.TacticsData.PersonalGear.weapon))
+									while D.TacticsData.PersonalGear.weapon[owned].level > level do owned -= 1 end
+									unit.classTraining[class] = {
+										weaponOwned = owned, weapon = math.floor(num(savedClass.weapon, 1, 1, owned)),
+										promoted = savedClass.promoted == true and level >= D.TacticsData.PromotionLevel,
+									}
+								end
+							end
+						end
+					end
+					s.partyTraining[id] = unit
 				end
 			end
 		end
@@ -793,6 +827,7 @@ return function(D)
 			order = state.order,
 			orderPatrols = state.orderPatrols,
 			peopleTalked = state.peopleTalked,
+			partyTraining = state.partyTraining,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
 			captain = state.captain,

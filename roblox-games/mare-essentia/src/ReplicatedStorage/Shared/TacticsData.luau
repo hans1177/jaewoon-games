@@ -41,6 +41,37 @@ Data.Classes = {
 	bear = { name = "곰", weapon = "fang", hp = 34, atk = 9, def = 4, spd = 3, move = 4, range = { 1, 1 }, beast = true, summary = "튼튼한 큰 짐승" },
 }
 
+-- 병종별 승급과 개인 장비. 항해 장비와 별개로 지상전 유닛에만 적용한다.
+Data.PromotionLevel = 5
+Data.MasteryPerLevel = 25
+Data.MaxMastery = 475
+Data.Promotions = {
+	swordsman = { name = "검성", skill = "riposte" },
+	lancer = { name = "근위 창병", skill = "bulwark" },
+	axeman = { name = "돌격 도끼병", skill = "charge" },
+	archer = { name = "명궁", skill = "aim" },
+	gunner = { name = "정예 총병", skill = "hawkeye" },
+	scholar = { name = "군의학자", skill = "field_medic" },
+	rider = { name = "중기병", skill = "charge" },
+	knight = { name = "철벽 근위병", skill = "bulwark" },
+	rogue = { name = "정예 정찰병", skill = "lucky" },
+}
+Data.Weapons = {
+	sword = "검", spear = "창", axe = "도끼", bow = "활", gun = "총", staff = "지팡이",
+}
+Data.PersonalGear = {
+	weapon = {
+		{ name = "기본 무기", price = 0, level = 1, atk = 0, heal = 0 },
+		{ name = "정제 무기", price = 180, level = 3, atk = 2, heal = 2 },
+		{ name = "정예 무기", price = 420, level = 5, atk = 4, heal = 4 },
+	},
+	armor = {
+		{ name = "기본 복장", price = 0, level = 1, def = 0, move = 0 },
+		{ name = "가죽 방어구", price = 140, level = 2, def = 1, move = 0 },
+		{ name = "사슬 방어구", price = 300, level = 4, def = 3, move = -1 },
+	},
+}
+
 -- 스킬(패시브). 효과 이름은 Tactics.luau 가 읽는다.
 Data.Skills = {
 	charge = { name = "돌격", summary = "3칸 이상 움직인 뒤 공격하면 공격 +3" },

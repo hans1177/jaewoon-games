@@ -190,6 +190,7 @@ return function(D, S)
 			local nat = D.Ports.Nations[port.country]
 			view.rep = { name = if nat then nat.name else port.country, value = state.rep[port.country] or 0, bonus = S.Trade.repBonus(state), tariff = S.Trade.tariffRate(state) }
 		end
+		view.partyTraining = S.Tactics.trainingView(state)
 		view.gear = { slots = D.Gear.SLOTS, list = {} }
 		for _, g in D.Gear.Items do
 			table.insert(view.gear.list, {

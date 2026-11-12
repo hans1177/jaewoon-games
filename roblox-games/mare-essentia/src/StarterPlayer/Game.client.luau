@@ -2798,7 +2798,64 @@ function RENDERERS.harbor()
 	end
 end
 
+local trainingMember
+local choosingCaptainClass = false
 function RENDERERS.crew()
+	add(function() return mkHeader(content, "지상전 병종과 개인 장비") end)
+	for _, member in view.partyTraining or {} do
+		add(function()
+			local mastery = if member.maxLevel then "최대 숙련" else string.format("숙련 %d/%d", member.xp, member.xpNext)
+			local sub = string.format("%s · Lv.%d · %s", member.class, member.level, mastery)
+			return mkRow(content, member.name, sub, { {
+				text = if trainingMember == member.id then "닫기" else "장비·승급",
+				color = COLORS.blue, onClick = function()
+					trainingMember = if trainingMember == member.id then nil else member.id
+					render()
+				end,
+			} }, 66)
+		end)
+		if trainingMember == member.id then
+			if member.classes then
+				add(function()
+					return mkButton(content, if choosingCaptainClass then "병종 목록 닫기" else "주인공 병종 바꾸기", COLORS.blue,
+						UDim2.new(1, -6, 0, 44), function()
+							choosingCaptainClass = not choosingCaptainClass
+							render()
+						end, true)
+				end)
+				if choosingCaptainClass then
+					for _, class in member.classes do
+						add(function()
+							return mkRow(content, class.name, string.format("%s · 기본 이동 %d", class.weapon, class.move), { {
+								text = if class.selected then "선택됨" else "선택", color = COLORS.blue, enabled = not class.selected,
+								onClick = function() call("PartyTraining", { memberId = member.id, class = class.id }) end,
+							} }, 60)
+						end)
+					end
+				end
+			end
+			if member.canPromote then
+				add(function()
+					return mkRow(content, member.promotion, "승급 기술 · " .. member.promotionSkill, { {
+						text = "승급", color = COLORS.green,
+						onClick = function() call("PartyTraining", { memberId = member.id, promote = true }) end,
+					} }, 66)
+				end)
+			end
+			for _, slot in { "weapon", "armor" } do
+				for _, item in member.gear[slot] do
+					add(function()
+						local hint = string.format("%s · 병종 Lv.%d%s", item.stats, item.level, if item.price > 0 then " · " .. item.price .. "코인" else "")
+						return mkRow(content, item.name, hint, { {
+							text = if item.equipped then "장착 중" elseif item.price > 0 then "구매·장착" else "장착",
+							color = COLORS.blue, enabled = not item.equipped and member.level >= item.level,
+							onClick = function() call("PartyTraining", { memberId = member.id, slot = slot, tier = item.tier }) end,
+						} }, 66)
+					end)
+				end
+			end
+		end
+	end
 	add(function() return mkHeader(content, "동료와 대화") end)
 	add(function()
 		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
