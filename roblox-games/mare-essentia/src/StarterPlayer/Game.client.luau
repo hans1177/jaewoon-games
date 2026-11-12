@@ -6781,10 +6781,16 @@ end
 			grid.Parent = win
 		end
 		local note = mkLabel(win, "", 13, Color3.fromRGB(240, 150, 120), false, 4)
-		local go = mkButton(win, spec.button or "확인", COLORS.gold, UDim2.new(1, 0, 0, 42), function()
+		local submit
+		local go = mkButton(win, spec.button or "확인", COLORS.gold, UDim2.new(1, 0, 0, 42), function() submit() end, true)
+		function submit()
 			local value = nil
 			if box then
 				value = box.Text
+				-- Studio 자동 점검은 글자를 입력할 수 없다: 비워 두면 기본 이름으로 진행한다
+				if (value == nil or string.match(value, "^%s*$")) and game:GetService("RunService"):IsStudio() then
+					value = "새 선장"
+				end
 			elseif spec.portraits then
 				value = picked
 				if not value then
@@ -6808,8 +6814,16 @@ end
 					closeDlg()
 				end
 			end
-		end, true)
+		end
 		go.LayoutOrder = 5
+		if box then
+			-- 엔터로도 확인한다
+			box.FocusLost:Connect(function(enterPressed)
+				if enterPressed and dlg == layer then
+					submit()
+				end
+			end)
+		end
 	end
 
 	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기). 위쪽 정보창 아래에 둔다.
