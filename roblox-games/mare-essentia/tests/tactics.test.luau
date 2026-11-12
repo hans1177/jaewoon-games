@@ -502,6 +502,38 @@ do
 	check("결정적: 같은 판을 두 번 해도 결과가 같음", play() == play())
 end
 
+-- 6. 전투 카드 ------------------------------------------------------------
+do
+	local BCt = require("./Shared/BoardingCards")
+	local allOk = true
+	for id in BCt.Units do if not T.cardFx(id, 1) then allOk = false end end
+	for id in BCt.Specials do if not T.cardFx(id, 1) then allOk = false end end
+	check("카드: 효과표가 모든 카드에 있다", allOk)
+	check("카드: 금 단계가 더 강하다", T.cardFx("swordsman", 3).n > T.cardFx("swordsman", 1).n)
+	local map = Maps.List[1]
+	local b = T.newBattle(map, defaultParty(3), { enemyLevel = 1, pool = {} })
+	local deck = { "swordsman", "musketeer", "gunner", "surgeon", "horn", "decoy", "wind", "shieldman", "sniper", "hero_blade", "scout", "scorch", "swivel", "pikeman", "culverin" }
+	T.initCards(b, deck, {}, 7)
+	check("카드: 손패 5장, 에너지 3", #b.hand == 5 and b.energy == 3 and #b.pile == 10)
+	local b2 = T.newBattle(map, defaultParty(3), { enemyLevel = 1, pool = {} })
+	T.initCards(b2, deck, {}, 7)
+	check("카드: 같은 시드는 같은 손패", table.concat(b.hand, ",") == table.concat(b2.hand, ","))
+	b.hand = { "swordsman", "musketeer", "surgeon", "horn" }
+	b.energy = 3
+	local hero = T.getUnit(b, "p1")
+	local foe = T.alive(b, "enemy")[1]
+	local base = T.damage(b, hero, foe, false)
+	check("카드: 적에게 근접 강화는 못 쓴다", select(1, T.playCard(b, 1, foe.id)) == false)
+	check("카드: 근접 카드로 공격 +2", select(1, T.playCard(b, 1, hero.id)) == true and T.damage(b, hero, foe, false) == base + 2 and b.energy == 2 and #b.hand == 3)
+	local hp = foe.hp
+	check("카드: 사격 카드는 적에게 피해", select(1, T.playCard(b, 1, foe.id)) == true and foe.hp < hp)
+	hero.hp = 1
+	check("카드: 치료 카드", select(1, T.playCard(b, 1, hero.id)) == true and hero.hp > 1)
+	check("카드: 에너지가 모자라면 거절", select(1, T.playCard(b, 1)) == false)
+	T.endTurn(b)
+	check("카드: 새 턴에 에너지 회복·손패 5장·버프 해제", b.energy == 3 and #b.hand == 5 and hero.buffAtk == nil)
+end
+
 print(string.format("전술 테스트: 통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tactics tests failed")
