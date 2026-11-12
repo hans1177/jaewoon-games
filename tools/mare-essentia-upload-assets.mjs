@@ -83,7 +83,8 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
-    if (kind === 'CardArt' && !/^(?:world_(?:0[1-9]|[1-9][0-9]{1,2})|event_[a-z_]+)\.jpg$/.test(f)) continue;
+    if (kind === 'CardArt' && !/^(?:world_(?:0[1-9]|[1-9][0-9]{1,2})|event_[a-z_]+)\.jpg$/.test(f)
+        && !['event_title_ship.png', 'event_title_parchment.png'].includes(f)) continue;
     const ext = path.extname(f).toLowerCase();
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
