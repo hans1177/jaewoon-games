@@ -1247,7 +1247,8 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,true);
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(runtimeWorkflow,/if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
+ assert.match(runtimeWorkflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
@@ -1280,7 +1281,8 @@ test('runtime QA validates Cloud independently while optional Studio is exact op
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
-  assert.match(workflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(workflow,/if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
+ assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
