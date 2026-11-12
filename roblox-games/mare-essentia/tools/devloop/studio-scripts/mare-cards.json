@@ -1,0 +1,112 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Deck') return 'DEV Deck'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "k0_deck"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService(\"Players\").LocalPlayer.PlayerGui local V=workspace.CurrentCamera.ViewportSize local out={} local n=0 local btns={} for _,d in ipairs(P:GetDescendants()) do if d:IsA(\"GuiObject\") and d.Visible and d.AbsoluteSize.X>1 then local g=d:FindFirstAncestorOfClass(\"ScreenGui\") if g and g.Enabled and g.Name~=\"Chat\" then if (d:IsA(\"TextButton\") or d:IsA(\"TextLabel\")) and d.Text~=\"\" then n+=1 local inScroll=d:FindFirstAncestorOfClass(\"ScrollingFrame\")~=nil if d.TextBounds.X>d.AbsoluteSize.X+3 or d.TextBounds.Y>d.AbsoluteSize.Y+3 then table.insert(out,\"CUT[\"..string.sub(d.Text,1,24)..\"] box=\"..math.floor(d.AbsoluteSize.X)..\"x\"..math.floor(d.AbsoluteSize.Y)..\" text=\"..math.floor(d.TextBounds.X)..\"x\"..math.floor(d.TextBounds.Y)) end if not inScroll and (d.AbsolutePosition.X+d.AbsoluteSize.X>V.X+3 or d.AbsolutePosition.Y+d.AbsoluteSize.Y>V.Y+3 or d.AbsolutePosition.X<-3) then table.insert(out,\"OFF[\"..string.sub(d.Text,1,24)..\"]\") end if d:IsA(\"TextButton\") and not inScroll then table.insert(btns,d) end end end end end for i=1,#btns do for j=i+1,#btns do local a,b=btns[i],btns[j] if a.Parent==b.Parent and a.ZIndex==b.ZIndex then local ox=math.min(a.AbsolutePosition.X+a.AbsoluteSize.X,b.AbsolutePosition.X+b.AbsoluteSize.X)-math.max(a.AbsolutePosition.X,b.AbsolutePosition.X) local oy=math.min(a.AbsolutePosition.Y+a.AbsoluteSize.Y,b.AbsolutePosition.Y+b.AbsoluteSize.Y)-math.max(a.AbsolutePosition.Y,b.AbsolutePosition.Y) if ox>6 and oy>6 and #a.Text>0 and #b.Text>0 then table.insert(out,\"OVERLAP[\"..string.sub(a.Text,1,12)..\"|\"..string.sub(b.Text,1,12)..\"]\") end end end end local msg=\"\" for i=1,math.min(#out,14) do msg=msg..\" ; \"..out[i] end return \"CHK deck view=\"..math.floor(V.X)..\"x\"..math.floor(V.Y)..\" texts=\"..n..\" issues=\"..#out..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Practice') return 'DEV Practice'"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "k1_practice"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService(\"Players\").LocalPlayer.PlayerGui local V=workspace.CurrentCamera.ViewportSize local out={} local n=0 local btns={} for _,d in ipairs(P:GetDescendants()) do if d:IsA(\"GuiObject\") and d.Visible and d.AbsoluteSize.X>1 then local g=d:FindFirstAncestorOfClass(\"ScreenGui\") if g and g.Enabled and g.Name~=\"Chat\" then if (d:IsA(\"TextButton\") or d:IsA(\"TextLabel\")) and d.Text~=\"\" then n+=1 local inScroll=d:FindFirstAncestorOfClass(\"ScrollingFrame\")~=nil if d.TextBounds.X>d.AbsoluteSize.X+3 or d.TextBounds.Y>d.AbsoluteSize.Y+3 then table.insert(out,\"CUT[\"..string.sub(d.Text,1,24)..\"] box=\"..math.floor(d.AbsoluteSize.X)..\"x\"..math.floor(d.AbsoluteSize.Y)..\" text=\"..math.floor(d.TextBounds.X)..\"x\"..math.floor(d.TextBounds.Y)) end if not inScroll and (d.AbsolutePosition.X+d.AbsoluteSize.X>V.X+3 or d.AbsolutePosition.Y+d.AbsoluteSize.Y>V.Y+3 or d.AbsolutePosition.X<-3) then table.insert(out,\"OFF[\"..string.sub(d.Text,1,24)..\"]\") end if d:IsA(\"TextButton\") and not inScroll then table.insert(btns,d) end end end end end for i=1,#btns do for j=i+1,#btns do local a,b=btns[i],btns[j] if a.Parent==b.Parent and a.ZIndex==b.ZIndex then local ox=math.min(a.AbsolutePosition.X+a.AbsoluteSize.X,b.AbsolutePosition.X+b.AbsoluteSize.X)-math.max(a.AbsolutePosition.X,b.AbsolutePosition.X) local oy=math.min(a.AbsolutePosition.Y+a.AbsoluteSize.Y,b.AbsolutePosition.Y+b.AbsoluteSize.Y)-math.max(a.AbsolutePosition.Y,b.AbsolutePosition.Y) if ox>6 and oy>6 and #a.Text>0 and #b.Text>0 then table.insert(out,\"OVERLAP[\"..string.sub(a.Text,1,12)..\"|\"..string.sub(b.Text,1,12)..\"]\") end end end end local msg=\"\" for i=1,math.min(#out,14) do msg=msg..\" ; \"..out[i] end return \"CHK practice view=\"..math.floor(V.X)..\"x\"..math.floor(V.Y)..\" texts=\"..n..\" issues=\"..#out..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return 'DEVRESULT '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local e={} for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then table.insert(e,string.sub(m.message,1,160)) end end local msg=\"\" for i=math.max(1,#e-5),#e do msg=msg..\" ; \"..e[i] end return \"ERR Client count=\"..#e..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local f=game:GetService('ServerStorage'):FindFirstChild('StudioQAInvoke') local pl=game.Players:GetPlayers()[1] if not f or not pl then return 'TAC_START no hook' end local r=f:Invoke(pl,'QATactics',{mapId='plain_road'}) return 'TAC_START ok='..tostring(r and r.ok)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') r:InvokeServer('State',{}) workspace:SetAttribute('DevCall','State') return 'x'"
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tactics') return 'DEV Tactics'"
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "k2_tactics_hand"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService(\"Players\").LocalPlayer.PlayerGui local V=workspace.CurrentCamera.ViewportSize local out={} local n=0 local btns={} for _,d in ipairs(P:GetDescendants()) do if d:IsA(\"GuiObject\") and d.Visible and d.AbsoluteSize.X>1 then local g=d:FindFirstAncestorOfClass(\"ScreenGui\") if g and g.Enabled and g.Name~=\"Chat\" then if (d:IsA(\"TextButton\") or d:IsA(\"TextLabel\")) and d.Text~=\"\" then n+=1 local inScroll=d:FindFirstAncestorOfClass(\"ScrollingFrame\")~=nil if d.TextBounds.X>d.AbsoluteSize.X+3 or d.TextBounds.Y>d.AbsoluteSize.Y+3 then table.insert(out,\"CUT[\"..string.sub(d.Text,1,24)..\"] box=\"..math.floor(d.AbsoluteSize.X)..\"x\"..math.floor(d.AbsoluteSize.Y)..\" text=\"..math.floor(d.TextBounds.X)..\"x\"..math.floor(d.TextBounds.Y)) end if not inScroll and (d.AbsolutePosition.X+d.AbsoluteSize.X>V.X+3 or d.AbsolutePosition.Y+d.AbsoluteSize.Y>V.Y+3 or d.AbsolutePosition.X<-3) then table.insert(out,\"OFF[\"..string.sub(d.Text,1,24)..\"]\") end if d:IsA(\"TextButton\") and not inScroll then table.insert(btns,d) end end end end end for i=1,#btns do for j=i+1,#btns do local a,b=btns[i],btns[j] if a.Parent==b.Parent and a.ZIndex==b.ZIndex then local ox=math.min(a.AbsolutePosition.X+a.AbsoluteSize.X,b.AbsolutePosition.X+b.AbsoluteSize.X)-math.max(a.AbsolutePosition.X,b.AbsolutePosition.X) local oy=math.min(a.AbsolutePosition.Y+a.AbsoluteSize.Y,b.AbsolutePosition.Y+b.AbsoluteSize.Y)-math.max(a.AbsolutePosition.Y,b.AbsolutePosition.Y) if ox>6 and oy>6 and #a.Text>0 and #b.Text>0 then table.insert(out,\"OVERLAP[\"..string.sub(a.Text,1,12)..\"|\"..string.sub(b.Text,1,12)..\"]\") end end end end local msg=\"\" for i=1,math.min(#out,14) do msg=msg..\" ; \"..out[i] end return \"CHK tactics view=\"..math.floor(V.X)..\"x\"..math.floor(V.Y)..\" texts=\"..n..\" issues=\"..#out..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('State',{}) local t=a.view and a.view.tactics if not t then return 'HAND none' end local out='HAND n='..#t.hand..' energy='..t.energy local res=r:InvokeServer('TacticsCard',{index=1,targetId=(t.units[1] and t.units[1].id)}) return out..' play1='..tostring(res and res.ok)..' '..tostring(res and res.message)"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local e={} for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then table.insert(e,string.sub(m.message,1,160)) end end local msg=\"\" for i=math.max(1,#e-5),#e do msg=msg..\" ; \"..e[i] end return \"ERR Client count=\"..#e..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local e={} for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then table.insert(e,string.sub(m.message,1,160)) end end local msg=\"\" for i=math.max(1,#e-5),#e do msg=msg..\" ; \"..e[i] end return \"ERR Server count=\"..#e..msg"
+ }
+]
