@@ -4,6 +4,7 @@
 -- 무작위 요소가 없다: 같은 입력이면 항상 같은 결과가 나온다 (그래서 미리 보기와 검증이 정확하다).
 
 local Data = require(script.Parent.TacticsData)
+local BC = (require(script.Parent.BoardingCards) :: any)
 
 local T = {}
 
@@ -262,7 +263,7 @@ end
 
 -- 한 번 공격이 주는 피해. isCounter 는 반격 여부. 맞는 쪽의 지형을 반영한다.
 function T.damage(b, a, d, isCounter)
-	local atk = a.atk + triangle(a, d)
+	local atk = a.atk + triangle(a, d) + (a.buffAtk or 0)
 	if T.hasSkill(a, "charge") and not isCounter and a.movedDist >= 3 then
 		atk += 3
 	end
@@ -276,7 +277,7 @@ function T.damage(b, a, d, isCounter)
 	if T.hasSkill(a, "naturalist") and d.beast then
 		atk += 3
 	end
-	local def = d.def + (dt and dt.def or 0)
+	local def = d.def + (dt and dt.def or 0) + (d.buffDef or 0)
 	if T.hasSkill(d, "bulwark") and dt and dt.def > 0 then
 		def += 2
 	end
@@ -564,10 +565,20 @@ local function enemyAct(b, e, field)
 end
 
 local function startTurn(b)
+	for _, u in b.units do
+		if u.buffMove then
+			u.move -= u.buffMove
+		end
+		u.buffAtk, u.buffDef, u.buffMove = nil, nil, nil
+	end
 	for _, u in T.alive(b, "player") do
 		u.acted = false
 		u.movedDist = 0
 	end
+	if b.pile then
+		b.energy = T.ENERGY
+	end
+	T.drawCards(b)
 	for _, u in b.units do
 		if u.hp > 0 then
 			local t = T.terrainAt(b, u.x, u.y)
@@ -579,6 +590,199 @@ local function startTurn(b)
 			end
 		end
 	end
+end
+
+
+-- ── 전투 카드 (해전과 같은 수집책 덱을 지상전 행동으로 쓴다) ────────────────────────────────
+-- 손패 5장, 매 턴 에너지 3. 카드는 유닛의 일반 행동(이동·공격)에 더해 쓰는 보조 행동이다.
+T.HAND, T.ENERGY = 5, 3
+
+-- 카드 효과표: 줄·능력·특수 카드에 따라 정해진다. tier(1~3)마다 효과 +1.
+function T.cardFx(id, tier)
+	local d = BC.Units[id] or BC.Specials[id]
+	if not d then
+		return nil
+	end
+	local t = math.clamp(tier or 1, 1, 3) - 1
+	if d.special == "horn" then
+		return { cost = 2, target = "none", text = "모든 아군 공격 +" .. (2 + t), kind = "horn", n = 2 + t, name = d.name }
+	elseif d.special == "wind" then
+		return { cost = 1, target = "ally", text = "이동 +" .. (2 + t), kind = "wind", n = 2 + t, name = d.name }
+	elseif d.special == "decoy" then
+		return { cost = 1, target = "ally", text = "한 번 더 행동", kind = "again", n = 1, name = d.name }
+	elseif d.special == "scorch" then
+		return { cost = 2, target = "none", text = "가장 센 적에게 " .. (6 + 2 * t) .. " 피해", kind = "scorch", n = 6 + 2 * t, name = d.name }
+	elseif d.special then
+		return { cost = 1, target = "none", text = "안개: 적 방어 -1 (이번 턴)", kind = "fog", n = 1, name = d.name }
+	end
+	if d.ability == "medic" then
+		return { cost = 1, target = "ally", text = "체력 +" .. (6 + 2 * t), kind = "heal", n = 6 + 2 * t, name = d.name }
+	elseif d.ability == "morale" then
+		return { cost = 1, target = "ally", text = "방어 +" .. (3 + t), kind = "guard", n = 3 + t, name = d.name }
+	elseif d.ability == "spy" then
+		return { cost = 1, target = "none", text = "카드 2장을 뽑는다", kind = "draw", n = 2, name = d.name }
+	elseif d.ability == "armor" then
+		return { cost = 1, target = "ally", text = "방어 +" .. (3 + t), kind = "guard", n = 3 + t, name = d.name }
+	end
+	if d.hero then
+		return { cost = 2, target = "enemy", text = (d.power) .. " 피해 (방어 무시)", kind = "smite", n = d.power + t, name = d.name }
+	elseif d.row == "melee" then
+		return { cost = 1, target = "ally", text = "공격 +" .. (2 + t), kind = "rally", n = 2 + t, name = d.name }
+	elseif d.row == "ranged" then
+		return { cost = 1, target = "enemy", text = (3 + t) .. " 피해 (어디서나)", kind = "shot", n = 3 + t, name = d.name }
+	else
+		return { cost = 2, target = "enemy", text = "대상과 옆 적에게 " .. (3 + t) .. " 피해", kind = "blast", n = 3 + t, name = d.name }
+	end
+end
+
+local function nextRand(b)
+	b.cardSeed = (b.cardSeed * 1103515245 + 12345) % 2147483648
+	return b.cardSeed / 2147483648
+end
+
+-- 덱을 섞어 전투에 붙인다. deckIds: 카드 id 목록, tiers: id -> 단계
+function T.initCards(b, deckIds, tiers, seed)
+	b.cardSeed = (seed or 12345) % 2147483648
+	b.tiers = tiers or {}
+	local pile = {}
+	for _, id in deckIds do
+		if BC.Units[id] or BC.Specials[id] then
+			table.insert(pile, id)
+		end
+	end
+	for i = #pile, 2, -1 do
+		local j = 1 + math.floor(nextRand(b) * i)
+		pile[i], pile[j] = pile[j], pile[i]
+	end
+	b.pile, b.hand, b.discard = pile, {}, {}
+	b.energy = T.ENERGY
+	T.drawCards(b, T.HAND)
+end
+
+function T.drawCards(b, count)
+	if not b.pile then
+		return
+	end
+	count = count or (T.HAND - #b.hand)
+	for _ = 1, math.max(0, count) do
+		if #b.hand >= 8 then
+			break
+		end
+		if #b.pile == 0 then
+			b.pile, b.discard = b.discard, {}
+			for i = #b.pile, 2, -1 do
+				local j = 1 + math.floor(nextRand(b) * i)
+				b.pile[i], b.pile[j] = b.pile[j], b.pile[i]
+			end
+		end
+		local id = table.remove(b.pile)
+		if not id then
+			break
+		end
+		table.insert(b.hand, id)
+	end
+end
+
+-- 카드 한 장 쓰기. target: 유닛 id (카드 효과표의 target 이 ally/enemy 일 때)
+function T.playCard(b, index, targetId)
+	if b.status ~= "active" or b.phase ~= "player" or not b.hand then
+		return false, "지금은 카드를 쓸 수 없어요"
+	end
+	local id = b.hand[index]
+	if not id then
+		return false, "그 카드가 없어요"
+	end
+	local fx = T.cardFx(id, b.tiers and b.tiers[id])
+	if b.energy < fx.cost then
+		return false, "에너지가 모자라요"
+	end
+	local target
+	if fx.target ~= "none" then
+		target = type(targetId) == "string" and T.getUnit(b, targetId)
+		if not target or target.hp <= 0 then
+			return false, "대상을 골라 주세요"
+		end
+		if (fx.target == "ally") ~= (target.team == "player") then
+			return false, if fx.target == "ally" then "아군을 골라야 해요" else "적을 골라야 해요"
+		end
+	end
+	local msg
+	if fx.kind == "rally" then
+		target.buffAtk = (target.buffAtk or 0) + fx.n
+		msg = string.format("%s: %s 공격 +%d", fx.name, target.name, fx.n)
+	elseif fx.kind == "guard" then
+		target.buffDef = (target.buffDef or 0) + fx.n
+		msg = string.format("%s: %s 방어 +%d", fx.name, target.name, fx.n)
+	elseif fx.kind == "heal" then
+		local before = target.hp
+		target.hp = math.min(target.maxHp, target.hp + fx.n)
+		msg = string.format("%s: %s 체력 +%d", fx.name, target.name, target.hp - before)
+	elseif fx.kind == "wind" then
+		target.move += fx.n
+		target.buffMove = (target.buffMove or 0) + fx.n
+		msg = string.format("%s: %s 이동 +%d", fx.name, target.name, fx.n)
+	elseif fx.kind == "again" then
+		if not target.acted then
+			return false, "이미 행동한 아군에게만 쓸 수 있어요"
+		end
+		target.acted = false
+		target.movedDist = 0
+		msg = string.format("%s: %s가 한 번 더 움직인다", fx.name, target.name)
+	elseif fx.kind == "horn" then
+		for _, u in T.alive(b, "player") do
+			u.buffAtk = (u.buffAtk or 0) + fx.n
+		end
+		msg = string.format("%s: 아군 모두 공격 +%d", fx.name, fx.n)
+	elseif fx.kind == "fog" then
+		for _, u in T.alive(b, "enemy") do
+			u.buffDef = (u.buffDef or 0) - fx.n
+		end
+		msg = string.format("%s: 적 방어 -%d", fx.name, fx.n)
+	elseif fx.kind == "draw" then
+		table.remove(b.hand, index)
+		table.insert(b.discard, id)
+		b.energy -= fx.cost
+		T.drawCards(b, fx.n)
+		addLog(b, string.format("%s: 카드 %d장을 뽑았다", fx.name, fx.n))
+		return true, string.format("%s: 카드 %d장을 뽑았다", fx.name, fx.n), true
+	else
+		-- 직접 피해: shot / blast / smite / scorch
+		local victims = {}
+		if fx.kind == "scorch" then
+			local best
+			for _, e in T.alive(b, "enemy") do
+				if not best or e.hp > best.hp then
+					best = e
+				end
+			end
+			if best then
+				victims = { best }
+			end
+		elseif fx.kind == "blast" then
+			for _, e in T.alive(b, "enemy") do
+				if e == target or dist(e.x, e.y, target.x, target.y) == 1 then
+					table.insert(victims, e)
+				end
+			end
+		else
+			victims = { target }
+		end
+		local lines = {}
+		for _, v in victims do
+			local dmg = if fx.kind == "smite" then fx.n else math.max(1, fx.n - math.max(0, v.def - 4))
+			v.hp = math.max(0, v.hp - dmg)
+			table.insert(lines, string.format("%s: %s에게 %d 피해%s", fx.name, v.name, dmg, if v.hp <= 0 then " (쓰러짐)" else ""))
+		end
+		msg = table.concat(lines, "\n")
+	end
+	table.remove(b.hand, index)
+	table.insert(b.discard, id)
+	b.energy -= fx.cost
+	for line in string.gmatch(msg, "[^\n]+") do
+		addLog(b, line)
+	end
+	T.checkEnd(b)
+	return true, msg
 end
 
 -- 플레이어 턴을 끝내고 적 턴을 진행한 뒤 다음 턴을 연다.

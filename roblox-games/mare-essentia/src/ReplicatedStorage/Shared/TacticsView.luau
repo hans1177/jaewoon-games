@@ -69,13 +69,18 @@ function TacticsView.open(opts)
 
 	local screenH = gui.AbsoluteSize.Y > 0 and gui.AbsoluteSize.Y or 600
 	local bottomH = if screenH < 560 then 112 else 150
-	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
+	local handH = if battle.hand then 74 else 0
+	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH - handH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
 	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = LEATHER, BorderSizePixel = 0 }, root)
 	local info = label(bottom, "", 14, TEXT, UDim2.fromOffset(10, 6), UDim2.new(0.58, -14, 1, -12))
 	local logLabel = label(bottom, "", 13, Color3.fromRGB(190, 182, 160), UDim2.new(0.58, 0, 0, 6), UDim2.new(0.42, -10, 0, 74))
 	local btnRow = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -10, 1, -8), Size = UDim2.new(0.42, -10, 0, math.min(64, bottomH - 16)), BackgroundTransparency = 1 }, bottom)
 	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Center }, btnRow)
 
+	local handBar = make("ScrollingFrame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -bottomH), Size = UDim2.new(1, 0, 0, handH), BackgroundColor3 = Color3.fromRGB(40, 32, 27), BorderSizePixel = 0, ScrollBarThickness = 0, CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X, Visible = handH > 0 }, root)
+	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), VerticalAlignment = Enum.VerticalAlignment.Center }, handBar)
+	make("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) }, handBar)
+	local cardSel = nil -- 고른 손패 번호
 	local selected = nil -- 고른 내 유닛 id
 	local pending = nil -- { x, y }: 이동하기로 정한 칸
 	local aimId = nil -- 공격(치료)하려고 고른 대상 id
@@ -117,7 +122,7 @@ function TacticsView.open(opts)
 			end
 			notice = result.message or ""
 		end
-		selected, pending, aimId = nil, nil, nil
+		selected, pending, aimId, cardSel = nil, nil, nil, nil
 		rebuild()
 	end
 
@@ -168,6 +173,46 @@ function TacticsView.open(opts)
 			table.insert(recent, battle.log[i])
 		end
 		logLabel.Text = (if notice ~= "" then notice .. "\n" else "") .. table.concat(recent, "\n")
+	end
+
+	local function drawHand()
+		for _, c in handBar:GetChildren() do
+			if c:IsA("GuiObject") then
+				c:Destroy()
+			end
+		end
+		if not battle.hand or battle.status ~= "active" then
+			return
+		end
+		local en = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromOffset(46, 60), Text = string.format("에너지\n%d/%d", battle.energy or 0, Rules.ENERGY), TextSize = 14, TextColor3 = Color3.fromRGB(255, 226, 120), Font = Enum.Font.GothamBold, LayoutOrder = 0 }, handBar)
+		en.TextWrapped = true
+		for i, id in battle.hand do
+			local fx = Rules.cardFx(id, battle.tiers and battle.tiers[id])
+			if fx then
+				local usable = (battle.energy or 0) >= fx.cost and battle.phase == "player"
+				local chosen = cardSel == i
+				local c = make("TextButton", {
+					Size = UDim2.fromOffset(104, 62), LayoutOrder = i, AutoButtonColor = true, BorderSizePixel = 0,
+					BackgroundColor3 = if chosen then Color3.fromRGB(226, 190, 100) else PAPER, BackgroundTransparency = if usable then 0 else 0.45,
+					Text = string.format("%s  (%d)\n%s", fx.name, fx.cost, fx.text), TextSize = 12, TextWrapped = true, TextColor3 = INK, Font = Enum.Font.GothamMedium,
+				}, handBar)
+				make("UICorner", { CornerRadius = UDim.new(0, 6) }, c)
+				make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = if chosen then Color3.fromRGB(255, 226, 120) else BRASS, Thickness = 2 }, c)
+				c.Activated:Connect(function()
+					if not usable or busy then
+						return
+					end
+					if fx.target == "none" then
+						cardSel = nil
+						send("TacticsCard", { index = i })
+					else
+						cardSel = if chosen then nil else i
+						notice = if cardSel then (if fx.target == "ally" then "카드를 쓸 아군을 누르세요" else "카드를 쓸 적을 누르세요") else ""
+						rebuild()
+					end
+				end)
+			end
+		end
 	end
 
 	local function drawButtons()
@@ -340,6 +385,12 @@ function TacticsView.open(opts)
 					if battle.status ~= "active" or battle.phase ~= "player" or busy then
 						return
 					end
+					if cardSel then
+						local idx = cardSel
+						cardSel = nil
+						send("TacticsCard", { index = idx, targetId = u.id })
+						return
+					end
 					local selNow = unitById(selected)
 					if selNow and not selNow.acted then
 						local key = u.x .. "," .. u.y
@@ -361,6 +412,7 @@ function TacticsView.open(opts)
 		end
 
 		drawInfo()
+		drawHand()
 		drawButtons()
 		drawResult()
 		building = false

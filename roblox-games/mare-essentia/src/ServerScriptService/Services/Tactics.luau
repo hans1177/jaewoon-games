@@ -280,6 +280,8 @@ return function(D, S)
 		state.ship.supplies -= need
 		S.State.advanceDays(state, site.days)
 		local battle = Rules.newBattle(map, buildParty(state), { enemyLevel = math.max(1, site.minLevel), pool = pool })
+		local spec = S.Cardbook.deckSpec(state)
+		Rules.initCards(battle, spec.ids, spec.tier, math.random(1, 2000000000))
 		battle.siteId = site.id
 		battle.siteName = site.name
 		battle.biome = map.biome
@@ -357,6 +359,23 @@ return function(D, S)
 		end
 		after(state, msgs)
 		return true, table.concat(msgs, "\n")
+	end
+
+	function handlers.TacticsCard(state, p)
+		local b = state.tbattle
+		if not b or b.status ~= "active" then
+			return false, "진행 중인 전술 전투가 없어요"
+		end
+		if type(p.index) ~= "number" then
+			return false, "잘못된 요청"
+		end
+		local ok, msg = Rules.playCard(b, math.floor(p.index), p.targetId)
+		if not ok then
+			return false, msg
+		end
+		local msgs = { msg }
+		after(state, msgs)
+		return true, msg
 	end
 
 	function handlers.TacticsEnd(state)
