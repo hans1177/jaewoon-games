@@ -234,7 +234,7 @@ local KEEPER_ROLE = {
 }
 local OC = Color3.fromRGB
 local currentKey = "north"
-local currentYear = 1492
+local currentYear = 1700
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
@@ -1423,7 +1423,7 @@ function PortScene.build(info, onFacility)
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	currentKey = styleKeyOf(style)
-	currentYear = if type(info.year) == "number" then info.year else 1492
+	currentYear = if type(info.year) == "number" then info.year else 1700
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
