@@ -190,7 +190,11 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(workflow,/roblox-studio-mcp-cloud-runner\.md/);
   assert.match(workflow,/ROBLOX_HOSTED_WINDOWS_DEPLOYMENT_READY=NO/);
   assert.doesNotMatch(workflow,/ROBLOX_OPEN_CLOUD_API_KEY|ROBLOX_COOKIE|roblosecurity/i);
-  assert.match(live,/if: \$\{\{ !cancelled\(\) \}\}/);
+  // 실제 플레이 job은 승인된 후보가 있을 때만 실행되며 인증된 Windows Studio를 사용해야 한다.
+  const studioJob=live.slice(live.indexOf('\n  studio-mcp-auto-play:'));
+  assert.ok(studioJob.startsWith('\n  studio-mcp-auto-play:'),'official Studio job required');
+  assert.ok(studioJob.includes("if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'"));
+  assert.ok(studioJob.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.match(live,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(install,/https:\/\/setup\.rbxcdn\.com\/RobloxStudioInstaller\.exe/);
   assert.match(install,/Get-AuthenticodeSignature/);
