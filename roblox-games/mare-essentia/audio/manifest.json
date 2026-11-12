@@ -84,14 +84,14 @@
    "file": "out/sfx_waves.ogg",
    "label": "앰비언트: 파도",
    "loop": true,
-   "seconds": 21.0
+   "seconds": 21
   },
   {
    "name": "sfx_wind",
    "file": "out/sfx_wind.ogg",
    "label": "앰비언트: 바람",
    "loop": true,
-   "seconds": 17.0
+   "seconds": 17
   },
   {
    "name": "sfx_gull",
@@ -133,7 +133,7 @@
    "file": "out/sfx_horn.ogg",
    "label": "효과음: 뱃고동",
    "loop": false,
-   "seconds": 2.0
+   "seconds": 2
   },
   {
    "name": "sfx_sail",
@@ -141,6 +141,21 @@
    "label": "효과음: 돛",
    "loop": false,
    "seconds": 0.9
+  },
+  {
+   "name": "music_pirate",
+   "file": "out/music_pirate.ogg",
+   "label": "음악: 해적·사략선 사건",
+   "loop": true,
+   "license": "CC0-1.0",
+   "source": "VERIFIED_CC0_ORIGINAL_DERIVATIVE",
+   "creator": "beardalaxy",
+   "sourceUrl": "https://opengameart.org/content/pirate-ship-theme-loop",
+   "sourceFile": "web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg",
+   "sourceGitBlobSha1": "a8388f549590a69c4c771bb60c116b8c266a2fb8",
+   "editFilter": "highpass=f=65,lowpass=f=5700,volume=0.72",
+   "derivedOnUpload": true,
+   "status": "PENDING_UPLOAD_AND_NATIVE_RUNTIME_QA"
   }
  ]
 }
