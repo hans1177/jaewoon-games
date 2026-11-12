@@ -73,3 +73,46 @@ test('리그 키트 가족 표가 Luau 모듈과 같고 이족·사족·뱀·날
   assert.equal(classify(['Wing1.L','Wing1.R','Torso']).id,'winged');
   assert.equal(classify(['Nothing']).id,'static');
 });
+
+test('마레 15세기 시작 연도·문화권 R15 외형·후대 모자 차단 검증', () => {
+  const base='roblox-games/mare-essentia/';
+  const client=fs.readFileSync(base+'src/StarterPlayer/Game.client.luau','utf8');
+  const server=fs.readFileSync(base+'src/ServerScriptService/Core.server.luau','utf8');
+  const state=fs.readFileSync(base+'src/ServerScriptService/Services/State.luau','utf8');
+  const scene=fs.readFileSync(base+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const cultures=fs.readFileSync(base+'src/ReplicatedStorage/Shared/PortCultures.luau','utf8');
+  const pose=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  assert.match(client,/local chosenYear = 1492/);
+  assert.match(client,/\{ 1492, "1492년/);
+  assert.match(server,/\[1492\] = true/);
+  assert.match(state,/num\(saved\.startYear, 1700, 1492, 1800\)/);
+  assert.match(scene,/currentYear = if type\(info\.year\) == "number" then info\.year else 1492/);
+  assert.match(scene,/if year < 1500 then/);
+  assert.match(scene,/Cultures\.HEADWEAR_15C\[currentKey\]/);
+  assert.match(scene,/outfit\.culture = currentKey/);
+  assert.match(scene,/outfit\.profession =/);
+  assert.doesNotMatch(scene,/if year < 1500 then\s*outfit\.hat = nil\s*outfit\.hair = nil/);
+  for (const [culture,hat] of [['britain','wide'],['iberia','wide'],['ottoman','turban'],['swahili','kofia'],['malabar','turban'],['japan','kasa']]) {
+    assert.match(cultures,new RegExp('\\b'+culture+' = "'+hat+'"'));
+  }
+  for (const key of ['AppearanceYear','AppearanceCulture','AppearanceProfession']) assert.ok(pose.includes(key));
+});
+
+test('마레 R15 후보 메시 16종은 다운로드돼 있으나 장착 검증 전에는 자동 승인되지 않는다', () => {
+  const base='roblox-games/mare-essentia/assets/inbox/People/';
+  const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
+    'male_ranger_body','male_ranger_legs','female_ranger_body','female_ranger_legs',
+    'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed',
+    'hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard'];
+  for (const name of names) {
+    const bytes=fs.readFileSync(base+name+'.glb');
+    assert.equal(bytes.subarray(0,4).toString('ascii'),'glTF',name+' GLB magic');
+    assert.ok(bytes.length>1000,name+' nonempty model');
+    const meta=JSON.parse(fs.readFileSync(base+name+'.glb.license.json','utf8'));
+    assert.equal(meta.license,'CC0-1.0');
+    assert.equal(meta.status,'STAGED_ONLY');
+    assert.equal(meta.publicationAllowed,false);
+    assert.match(meta.rigCompatibility,/PENDING_ROBLOX_R15/);
+    assert.ok(meta.source?.startsWith('https://'));
+  }
+});
