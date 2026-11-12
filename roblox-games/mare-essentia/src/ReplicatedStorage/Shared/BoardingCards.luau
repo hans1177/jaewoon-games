@@ -430,6 +430,7 @@ function B.play(m, side, handIdx)
 	end
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. msg)
 	nextTurn(m, side)
+	local act = { "p", handIdx }
 	local result = nil
 	if #m.hand[side] == 0 and not m.passed[side] then
 		-- 손패가 없으면 자동으로 멈춘다
@@ -440,7 +441,7 @@ function B.play(m, side, handIdx)
 			m.turn = other(side)
 		end
 	end
-	return true, msg, result
+	return true, msg, result, act
 end
 
 function B.pass(m, side)
@@ -450,10 +451,10 @@ function B.pass(m, side)
 	m.passed[side] = true
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. "이번 판은 여기까지")
 	if m.passed[other(side)] then
-		return true, "양쪽이 멈췄다", roundEnd(m)
+		return true, "양쪽이 멈췄다", roundEnd(m), { "s" }
 	end
 	m.turn = other(side)
-	return true, "멈췄다", nil
+	return true, "멈췄다", nil, { "s" }
 end
 
 function B.useLeader(m, side)
@@ -480,7 +481,7 @@ function B.useLeader(m, side)
 		end
 	end
 	logLine(m, (if side == "me" then "우리 " else "해적 ") .. msg)
-	return true, msg
+	return true, msg, nil, { "l" }
 end
 
 -- 컴퓨터(해적)의 한 수: 이기고 있으면 멈추고, 지고 있으면 가장 효율 좋은 카드를 낸다
@@ -514,9 +515,10 @@ function B.ai(m, side)
 			gain = if best >= 6 then lost else -5
 		elseif c.special == "weather" then
 			local before = B.total(m, side) - B.total(m, foe)
+			local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
 			m.weather[c.row] = true
 			local after = B.total(m, side) - B.total(m, foe)
-			m.weather[c.row] = false
+			m.weather[c.row] = prev
 			gain = after - before
 		elseif c.special == "clear" then
 			local before = B.total(m, side) - B.total(m, foe)
@@ -551,6 +553,115 @@ function B.ai(m, side)
 		return B.pass(m, side)
 	end
 	return B.play(m, side, bestI)
+end
+
+
+-- ── 해전 카드: 포격전(선체 대 선체)과 접현전을 같은 규칙으로 치른다 ─────────────────────
+-- 시드 난수: 클라이언트와 서버가 같은 패·같은 선공으로 시작해, 서버가 기록(actions)만 보고 승패를 다시 계산한다.
+function B.seeded(seed)
+	local s = (math.floor(tonumber(seed) or 1) % 2147483646) + 1
+	return function()
+		s = (s * 48271) % 2147483647
+		return (s - 1) / 2147483646
+	end
+end
+
+local ROW_NAMES = {
+	boarding = { melee = "근접", ranged = "사격", cannon = "포" },
+	gunnery = { melee = "충각", ranged = "소포", cannon = "주포" },
+}
+-- 화면에 쓰는 줄 이름을 전투 종류에 맞게 바꾼다
+function B.useKind(kind)
+	for row, name in ROW_NAMES[kind] or ROW_NAMES.boarding do
+		B.ROW_NAME[row] = name
+	end
+end
+
+-- 포격전 덱: 배의 능력(함포 수·포 위력·승조원·충각)이 곧 카드가 된다.
+-- f = { cannons, cannonMult, crew, hull, level }
+function B.gunneryDeck(f, deckCards, rng, isBoss)
+	local out = {}
+	local function add(def, n, power, name)
+		for _ = 1, n do
+			local c = copy(def)
+			if power then c.power = power end
+			if name then c.name = name end
+			table.insert(out, c)
+		end
+	end
+	local cannons = math.max(1, f.cannons or 4)
+	local mult = f.cannonMult or 1
+	local lvBonus = math.floor((f.level or 1) / 6)
+	local gun = math.clamp(math.floor(2 + mult * 2 + lvBonus), 3, 9)
+	add(B.Units.gunner, math.clamp(math.floor(cannons / 4 + 0.5), 3, 8), gun, "함포")
+	add(B.Units.swivel, 2, math.clamp(gun - 1, 2, 8), "선회포")
+	if cannons >= 16 then add(B.Units.culverin, if cannons >= 40 then 2 else 1, gun * 2, "장거리포") end
+	local crew = f.crew or 20
+	add(B.Units.musketeer, math.clamp(math.floor(crew / 18 + 0.5), 2, 5), 4 + lvBonus, "소총수")
+	add(B.Units.sharpshooter, 1, 6 + lvBonus, "저격수")
+	add(B.Units.scout, 2, nil, "망루병")
+	add(B.Units.swordsman, 2, 5 + lvBonus, "충각 돌격")
+	add(B.Units.surgeon, 1, nil, "응급 수리공")
+	add(B.Units.shieldman, 1, nil, "방패 갑판병")
+	table.insert(out, copy(B.Specials.storm))
+	table.insert(out, copy(B.Specials.fog))
+	table.insert(out, copy(B.Specials.clear))
+	local leader = "draw"
+	if deckCards then
+		-- 게임에서 얻은 카드(영웅·특수)도 그대로 들어온다
+		local extra, lead = B.playerDeck(deckCards, rng)
+		for _, c in extra do
+			if c.hero or c.special then table.insert(out, c) end
+		end
+		leader = lead
+	end
+	if isBoss then
+		add(B.Units.culverin, 1, gun * 2 + 2, "괴수의 일격")
+		table.insert(out, copy(B.Specials.scorch))
+		leader = "snipe"
+	end
+	return shuffle(out, rng), leader
+end
+
+-- 한 판의 시작: 클라이언트(화면)와 서버(검증)가 똑같이 부른다. 시드가 같으면 패·선공이 같다.
+--   kind: "gunnery" | "boarding"   my = { fighter, deckCards }   foe = { fighter, boss }
+function B.build(kind, seed, my, foe)
+	local rng = B.seeded(seed)
+	local myDeck, myLeader, foeDeck, foeLeader
+	if kind == "gunnery" then
+		myDeck, myLeader = B.gunneryDeck(my.fighter or {}, my.deckCards, B.seeded(seed + 7), false)
+		foeDeck, foeLeader = B.gunneryDeck(foe.fighter or {}, nil, B.seeded(seed + 13), foe.boss == true)
+	else
+		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7))
+		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13))
+	end
+	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng)
+end
+
+-- 서버 검증: 시드와 플레이어의 행동 기록으로 한 판을 처음부터 다시 돌린다.
+-- 규칙에 어긋나거나 끝나지 않으면 nil. 반환: { winner = "me"|"foe"|"draw", wins = {me, foe} }
+function B.replay(kind, seed, my, foe, actions)
+	local m = B.build(kind, seed, my, foe)
+	local i, guard = 1, 0
+	while not m.over do
+		guard += 1
+		if guard > 400 then return nil end
+		if m.turn == "foe" then
+			if not B.ai(m, "foe") then return nil end
+		else
+			local a = actions[i]
+			i += 1
+			if type(a) ~= "table" then return nil end
+			local ok
+			if a[1] == "p" then ok = B.play(m, "me", math.floor(tonumber(a[2]) or 0))
+			elseif a[1] == "s" then ok = B.pass(m, "me")
+			elseif a[1] == "l" then ok = B.useLeader(m, "me")
+			end
+			if not ok then return nil end
+		end
+	end
+	if actions[i] ~= nil then return nil end
+	return { winner = m.winner, wins = { me = m.wins.me, foe = m.wins.foe } }
 end
 
 return B

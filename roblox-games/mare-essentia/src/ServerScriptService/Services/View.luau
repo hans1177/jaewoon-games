@@ -779,6 +779,7 @@ return function(D, S)
 			end
 			table.insert(cards, { kind = "ship", name = D.Ships.Ships[state.ship.id] and D.Ships.Ships[state.ship.id].name or "배", skill = SHIP_SKILL[state.ship.id] or "focus" })
 			view.deck = { cards = cards }
+			if S.Battle and S.Battle.deckCache then S.Battle.deckCache[state] = cards end
 		end
 
 		view.lastBattle = state.lastBattle

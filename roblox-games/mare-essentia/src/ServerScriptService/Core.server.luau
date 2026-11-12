@@ -22,6 +22,7 @@ local D = {
 	Careers = require(Shared:WaitForChild("Careers")),
 	Voyage = require(Shared:WaitForChild("Voyage")),
 	Combat = require(Shared:WaitForChild("Combat")),
+	BoardingCards = require(Shared:WaitForChild("BoardingCards")),
 	Bosses = require(Shared:WaitForChild("Bosses")),
 	Specialties = require(Shared:WaitForChild("Specialties")),
 	CompanionTalk = require(Shared:WaitForChild("CompanionTalk")),
