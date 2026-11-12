@@ -264,15 +264,11 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	-- 머리카락·치마는 15세기에도 존재하므로 지우지 않는다.
 	-- 실제 R15 의상 메시와 문화별 전용 모자는 장착 QA 후에만 사용한다.
 	if year < 1500 then
-		local earlyHats = { ottoman = "turban", desert = "turban", malabar = "turban",
-			swahili = "kofia", japan = "kasa", tropic = "straw", colonial = "straw",
-			iberia = "wide", italy = "wide", france = "wide", britain = "wide",
-			hanse = "wide" }
 		-- 병사·후드 입은 인물과 모자를 벗는 설정은 유지한다.
 		if role == "Knight" or role == "Rogue_Hooded" or outfit.age == "child" then
 			outfit.hat = nil
 		else
-			outfit.hat = earlyHats[currentKey] or "wide"
+			outfit.hat = Cultures.HEADWEAR_15C[currentKey] or "wide"
 		end
 	elseif outfit.hat == "tricorn" and year < 1680 then
 		outfit.hat = "wide"
