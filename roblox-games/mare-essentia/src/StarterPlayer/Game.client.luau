@@ -815,7 +815,9 @@ main.Position = UDim2.fromScale(0.5, 0.5)
 main.BackgroundColor3 = COLORS.cover
 main.Parent = gui
 mainInner.BackgroundColor3 = COLORS.coverRaised
-bookMaterial(mainInner, "leather", 180)
+-- 표지와 제본은 본문 및 조작 요소보다 뒤에 둔다.
+mainInner.ZIndex = main.ZIndex + 3
+mainInner.BackgroundTransparency = 0.08
 do
 	local st = Instance.new("UIStroke")
 	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -6647,206 +6649,140 @@ function H.startNewGame()
 end
 
 -- 시작 화면: 백과사전 원화와 표지 제목
-local titleGui = overlayGui("TitleBackdrop", -5)
+local titleGui = overlayGui("TitleBackdrop", 1)
+titleGui.ScreenInsets = Enum.ScreenInsets.None
+titleGui.ClipToDeviceSafeArea = false
 titleGui.Enabled = false
-do
-	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
+;(function()
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
 	root.ClipsDescendants = true
-	local picture = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
-	picture.ClipsDescendants = true
-	-- 액자(고정) 안에서 그림만 파도처럼 천천히 흔들린다
-	local plate = mkBox(picture, UDim2.fromScale(0.3, 0.6), UDim2.fromScale(0.5, 0.68), COLORS.cover)
-	plate.Name = "TitleVoyagePlate"
-	plate.AnchorPoint = Vector2.new(0.5, 0.5)
-	plate.ClipsDescendants = true
-	plate.ZIndex = 1
-	local art = Instance.new("ImageLabel")
-	art.Name = "TitleVoyageIllustration"
-	art.AnchorPoint = Vector2.new(0.5, 0.5)
-	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(1.1, 1.1)
-	art.BackgroundTransparency = 1
-	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
-	art.ScaleType = Enum.ScaleType.Crop
-	art.ImageColor3 = Color3.fromRGB(226, 208, 170) -- 바랜 판화 느낌
-	art.ZIndex = 1
-	art.Parent = plate
-	do
-		local frame = Instance.new("UIStroke")
-		frame.Color = Color3.fromRGB(196, 158, 84)
-		frame.Thickness = 3
-		frame.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		frame.Parent = plate
-		local sea = Instance.new("UIGradient")
-		sea.Color = ColorSequence.new(Color3.fromRGB(12, 24, 38), Color3.fromRGB(28, 54, 74))
-		sea.Rotation = 90
-		sea.Parent = picture
+	local sky = Instance.new("UIGradient")
+	sky.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(88, 151, 182)),
+		ColorSequenceKeypoint.new(0.58, Color3.fromRGB(240, 190, 127)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(26, 70, 91)),
+	})
+	sky.Rotation = 90
+	root.BackgroundColor3 = Color3.new(1, 1, 1)
+	sky.Parent = root
+	local function painting(name)
+		local art = Instance.new("ImageLabel")
+		art.Name = name
+		art.BackgroundTransparency = 1
+		art.Size = UDim2.fromScale(1, 1)
+		art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
+		art.ScaleType = Enum.ScaleType.Crop
+		art.Parent = root
+		return art
+	end
+	local backdrop = painting("TitleVoyageIllustration")
+	local water = painting("TitlePaintedWater")
+	water.Position = UDim2.fromScale(0, 0.56)
+	water.Size = UDim2.fromScale(1, 0.46)
+	water.ImageRectOffset = Vector2.new(0, 313)
+	water.ImageRectSize = Vector2.new(384, 71)
+	water.ScaleType = Enum.ScaleType.Stretch
+	water.Visible = false
+	local blend = Instance.new("UIGradient")
+	blend.Rotation = 90
+	blend.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.26, 0), NumberSequenceKeypoint.new(1, 0),
+	})
+	blend.Parent = water
+	local sun = mkBox(root, UDim2.fromScale(0.19, 0.24), UDim2.fromOffset(86, 86), Color3.fromRGB(255, 230, 164), 0.12)
+	sun.AnchorPoint = Vector2.new(0.5, 0.5)
+	sun.ZIndex = 2
+	corner(sun, 48)
+	local rays = mkBox(root, UDim2.fromScale(0.15, 0.15), UDim2.fromScale(0.55, 0.48), Color3.fromRGB(255, 219, 149), 0.45)
+	rays.ZIndex = 2
+	local rayFade = Instance.new("UIGradient")
+	rayFade.Rotation = 23
+	rayFade.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.45, 0.52),
+		NumberSequenceKeypoint.new(0.55, 0.87), NumberSequenceKeypoint.new(1, 1),
+	})
+	rayFade.Parent = rays
+
+	local stage = Instance.new("ViewportFrame")
+	stage.Name = "TitleLiveShips"
+	stage.BackgroundTransparency = 1
+	stage.ZIndex = 3
+	stage.Ambient = Color3.fromRGB(143, 155, 166)
+	stage.LightColor = Color3.fromRGB(255, 224, 173)
+	stage.Parent = root
+	local world = Instance.new("WorldModel")
+	world.Parent = stage
+	local camera = Instance.new("Camera")
+	camera.FieldOfView = 38
+	camera.CFrame = CFrame.lookAt(Vector3.new(30, 9, 32), Vector3.new(0, 4, 0))
+	camera.Parent = stage
+	stage.CurrentCamera = camera
+	local ship, shipHome, gullSource
+	local birds = {}
+	local function clone(source, span)
+		if not source or not source:IsA("Model") or not source:FindFirstChildWhichIsA("BasePart", true) then return nil end
+		local copy = source:Clone()
+		local box, ext = copy:GetBoundingBox()
+		copy:ScaleTo(copy:GetScale() * span / math.max(ext.X, ext.Z, 0.01))
+		box, ext = copy:GetBoundingBox()
+		copy:PivotTo(CFrame.new(0, ext.Y * 0.28, 0) * box:ToObjectSpace(copy:GetPivot()))
+		copy.Parent = world
+		return copy
+	end
+	local function refreshModels()
+		local library = ReplicatedStorage:FindFirstChild("MareAssets")
+		if not library then return end
+		if not ship then
+			local naval = library:FindFirstChild("Naval")
+			ship = clone(naval and naval:FindFirstChild("ship-large"), 24)
+			if ship then
+				shipHome = ship:GetPivot()
+				backdrop.Visible = false
+				water.Visible = true
+			end
+		end
+		if not gullSource and AssetIds["Animals/seagull"] then
+			local animals = library:FindFirstChild("Animals")
+			gullSource = animals and animals:FindFirstChild("seagull")
+			if gullSource then
+				for i = 1, 3 do
+					local bird = clone(gullSource, 2.3 - i * 0.22)
+					if bird then table.insert(birds, { model = bird, index = i }) end
+				end
+			end
+		end
 	end
 
-	-- (지역 변수 한도를 넘지 않게 함수 안에서 만든다)
-	;(function()
-		-- 살아 있는 배: 등록된 선박 모델이 파도에 흔들리고, 먼 바다엔 작은 배가 천천히 지나간다. 물보라 줄무늬와 갈매기가 움직인다.
-		local RS = game:GetService("RunService")
-		local stage = Instance.new("ViewportFrame")
-		stage.Name = "TitleLiveShips"
-		stage.BackgroundTransparency = 1
-		stage.Size = UDim2.fromScale(1, 1)
-		stage.ZIndex = 1
-		stage.Ambient = Color3.fromRGB(150, 150, 164)
-		stage.LightColor = Color3.fromRGB(255, 226, 180)
-		stage.LightDirection = Vector3.new(-0.6, -1, -0.5).Unit
-		stage.Parent = picture
-		local stageWorld = Instance.new("WorldModel")
-		stageWorld.Parent = stage
-		local stageCam = Instance.new("Camera")
-		stageCam.FieldOfView = 38
-		stageCam.Parent = stage
-		stage.CurrentCamera = stageCam
-		local liveShips = {}
-		do
-			local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
-			local group = lib and lib:FindFirstChild("Naval")
-			local function addShip(asset, length, x, z, speed)
-				local tpl = group and group:FindFirstChild(asset)
-				if not (tpl and tpl:IsA("Model")) then return end
-				local m = tpl:Clone()
-				m.Parent = stageWorld
-				local ok = pcall(function()
-					local _, ext = m:GetBoundingBox()
-					m:ScaleTo(length / math.max(ext.X, ext.Z, 0.01))
-					local box, size = m:GetBoundingBox()
-					local base = CFrame.new(x, -box.Position.Y + size.Y * 0.3, z)
-					if size.Z > size.X then base *= CFrame.Angles(0, math.pi / 2, 0) end
-					m:PivotTo(base * (box:ToObjectSpace(m:GetPivot())) )
-				end)
-				if ok then
-					table.insert(liveShips, { model = m, home = m:GetPivot(), x = x, z = z, speed = speed, length = length, phase = #liveShips * 1.7 })
-				else
-					m:Destroy()
-				end
-			end
-			addShip("ship-small", 10, -60, -80, 2.4)
-			addShip("ship-small", 7, 40, -120, 1.6)
-		end
-		stageCam.CFrame = CFrame.lookAt(Vector3.new(-6, 11, 84), Vector3.new(-12, 8, 0))
-		-- 물보라 줄무늬(앞쪽일수록 빠르고 크다)와 갈매기
-		local streaks, gulls = {}, {}
-		do
-			local rng = Random.new(77)
-			for i = 1, 0 do
-				local y = 0.8 + rng:NextNumber() * 0.16
-				local f = Instance.new("Frame")
-				f.BorderSizePixel = 0
-				f.BackgroundColor3 = Color3.fromRGB(236, 244, 248)
-				f.BackgroundTransparency = 0.55 + rng:NextNumber() * 0.25
-				f.Size = UDim2.new(0, 30 + (y - 0.55) * 220 * rng:NextNumber(), 0, 1 + math.floor((y - 0.55) * 5))
-				f.ZIndex = 2
-				f.Parent = picture
-				table.insert(streaks, { f = f, x = rng:NextNumber(), y = y, v = 0.01 + (y - 0.55) * 0.05 })
-			end
-			for i = 1, 5 do
-				local g = Instance.new("Frame")
-				g.BackgroundTransparency = 1
-				local w = 22 + i * 5
-				g.Size = UDim2.fromOffset(w, w * 0.5)
-				g.ZIndex = 3
-				g.Parent = picture
-				local wings = {}
-				for side = -1, 1, 2 do
-					local wing = Instance.new("Frame")
-					wing.AnchorPoint = Vector2.new(if side < 0 then 1 else 0, 0.5)
-					wing.Position = UDim2.fromScale(0.5, 0.5)
-					wing.Size = UDim2.new(0.5, 0, 0, math.max(2, math.floor(w / 12)))
-					wing.BackgroundColor3 = Color3.fromRGB(250, 248, 240)
-					wing.BorderSizePixel = 0
-					wing.Parent = g
-					corner(wing, 2)
-					table.insert(wings, { f = wing, side = side })
-				end
-				local body = Instance.new("Frame")
-				body.AnchorPoint = Vector2.new(0.5, 0.5)
-				body.Position = UDim2.fromScale(0.5, 0.5)
-				body.Size = UDim2.fromOffset(math.max(3, w / 8), math.max(3, w / 8))
-				body.BackgroundColor3 = Color3.fromRGB(236, 232, 222)
-				body.BorderSizePixel = 0
-				body.Parent = g
-				corner(body, 4)
-				table.insert(gulls, { f = g, wings = wings, x = rng:NextNumber(), y = 0.1 + rng:NextNumber() * 0.3, v = 0.01 + rng:NextNumber() * 0.01, ph = rng:NextNumber() * 6, flap = 3 + rng:NextNumber() * 2 })
-			end
-		end
-		local liveConn
-		local function startLive()
-			if liveConn then return end
-			local last = 0
-			liveConn = RS.RenderStepped:Connect(function(dt)
-				local now = os.clock()
-				if now - last < 1 / 30 then return end
-				last = now
-				for _, s in liveShips do
-					local roll = math.sin(now * 0.8 + s.phase) * 0.045
-					local pitch = math.sin(now * 0.6 + s.phase * 2) * 0.02
-					local bob = math.sin(now * 1.1 + s.phase) * 0.5
-					local drift = if s.speed > 0 then ((now * s.speed + 120) % 240) - 120 - s.x else 0
-					s.model:PivotTo(CFrame.new(drift, bob, 0) * s.home * CFrame.Angles(pitch, 0, roll))
-				end
-				for _, k in streaks do
-					k.x = (k.x + k.v * 1/30 * 6) % 1.15
-					k.f.Position = UDim2.fromScale(k.x - 0.1, k.y)
-				end
-				for _, g in gulls do
-					g.x = (g.x + g.v * 1/30 * 3) % 1.2
-					g.f.Position = UDim2.new(g.x - 0.1, 0, g.y + math.sin(now * 1.6 + g.ph) * 0.012, 0)
-					local lift = 12 + math.sin(now * g.flap + g.ph) * 24
-					for _, w in g.wings do w.f.Rotation = -w.side * lift end
-				end
-			end)
-		end
-		local function stopLive()
-			if liveConn then liveConn:Disconnect() liveConn = nil end
-		end
-		titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-			if titleGui.Enabled then startLive() else stopLive() end
-		end)
-		if titleGui.Enabled then startLive() end
-
-	end)()
-
-	local veil = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.leather)
-	veil.ZIndex = 2
-	local fade = Instance.new("UIGradient")
-	fade.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.54, 1),
-		NumberSequenceKeypoint.new(0.78, 0.48), NumberSequenceKeypoint.new(1, 0),
-	})
-	fade.Parent = veil
-	local shade = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.35), Color3.fromRGB(43, 33, 25))
-	shade.ZIndex = 2
+	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(23, 26, 30), 0.28)
+	shade.ZIndex = 4
 	local shadeFade = Instance.new("UIGradient")
-	shadeFade.Rotation = 90
-	shadeFade.Transparency = NumberSequence.new(0.12, 1)
+	shadeFade.Transparency = NumberSequence.new(1, 0)
 	shadeFade.Parent = shade
-
 	local heading = mkLabel(root, "마레 에센시아", 46, COLORS.paper, true)
+	heading.Font = Enum.Font.Antique
 	heading.AutomaticSize = Enum.AutomaticSize.None
 	heading.TextScaled = true
 	heading.TextWrapped = false
 	heading.TextStrokeColor3 = COLORS.ink
-	heading.TextStrokeTransparency = 1
-	heading.ZIndex = 4
-	local headingLimit = Instance.new("UITextSizeConstraint")
-	headingLimit.MaxTextSize = 46
-	headingLimit.Parent = heading
+	heading.TextStrokeTransparency = 0.48
+	heading.ZIndex = 6
+	local limit = Instance.new("UITextSizeConstraint")
+	limit.MaxTextSize = 46
+	limit.Parent = heading
 	local subtitle = mkLabel(root, "학문의 바다", 19, Color3.fromRGB(251, 223, 167), true)
+	subtitle.Font = Enum.Font.Antique
 	subtitle.AutomaticSize = Enum.AutomaticSize.None
 	subtitle.TextStrokeColor3 = COLORS.ink
-	subtitle.TextStrokeTransparency = 1
-	subtitle.ZIndex = 4
+	subtitle.TextStrokeTransparency = 0.6
+	subtitle.ZIndex = 6
+	local curtain = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(19, 24, 30), 1)
+	curtain.ZIndex = 8
 
 	local function layout()
-		local size = root.AbsoluteSize
-		local portrait = size.X < size.Y
-		picture.Size = if portrait then UDim2.fromScale(1, 0.72) else UDim2.fromScale(0.70, 1)
-		fade.Rotation = if portrait then 90 else 0
+		local portrait = root.AbsoluteSize.X < root.AbsoluteSize.Y
+		stage.Position = if portrait then UDim2.fromScale(0, 0.16) else UDim2.fromScale(-0.04, 0.16)
+		stage.Size = if portrait then UDim2.fromScale(1, 0.48) else UDim2.fromScale(0.68, 0.80)
+		shadeFade.Rotation = if portrait then 90 else 0
 		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.055, 0, 0, 74)
 		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
 		heading.TextXAlignment = if portrait then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
@@ -6857,14 +6793,49 @@ do
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
 	layout()
 
-	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
-		Rotation = 1.2,
-		Position = UDim2.fromScale(0.5, 0.515),
-	})
+	local connection, previousTouch
+	local playerGui = player:WaitForChild("PlayerGui")
+	local function hideTouch(guiObject)
+		if guiObject.Name == "TouchGui" and guiObject:IsA("ScreenGui") and titleGui.Enabled then
+			previousTouch = guiObject.Enabled
+			guiObject.Enabled = false
+		end
+	end
+	playerGui.ChildAdded:Connect(hideTouch)
 	titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-		if titleGui.Enabled then drift:Play() else drift:Pause() end
+		if connection then connection:Disconnect(); connection = nil end
+		local touch = playerGui:FindFirstChild("TouchGui")
+		if not titleGui.Enabled then
+			if touch and previousTouch ~= nil then touch.Enabled = previousTouch end
+			previousTouch = nil
+			return
+		end
+		if touch then hideTouch(touch) end
+		refreshModels()
+		local started, nextRefresh, last = os.clock(), 0, 0
+		curtain.BackgroundTransparency = 0
+		connection = game:GetService("RunService").RenderStepped:Connect(function()
+			local now = os.clock()
+			if now - last < 1 / 30 then return end
+			last = now
+			local t = now - started
+			if t >= nextRefresh then nextRefresh = t + 1; refreshModels() end
+			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
+			sun.Position = UDim2.fromScale(0.19 + math.sin(t * 0.20) * 0.034, 0.24 - math.sin(t * 0.12) * 0.023)
+			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
+			stage.LightDirection = Vector3.new(-0.58 + math.sin(t * 0.26) * 0.27, -0.7, -0.45).Unit
+			if ship then
+				ship:PivotTo(CFrame.new(math.sin(t * 0.26) * 2.6, math.sin(t * 1.24) * 0.55, 0)
+					* shipHome * CFrame.Angles(math.sin(t * 1.1) * 0.026, math.sin(t * 0.52) * 0.11, math.sin(t * 0.92) * 0.075))
+			end
+			for _, bird in birds do
+				local x = (t * (3 + bird.index * 0.5) + bird.index * 17) % 70 - 35
+				local y = 14 + bird.index * 1.3 + math.sin(t * 1.35 + bird.index) * 0.6
+				bird.model:PivotTo(CFrame.new(x, y, -13 - bird.index * 2) * CFrame.Angles(0, math.pi / 2, math.sin(t * 0.9 + bird.index) * 0.13))
+			end
+		end)
 	end)
-end
+end)()
 -- 타이틀 오른쪽 선택 패널: 나라(3열 카드) → 시대(3칸) → 출항 버튼 순서로, 스크롤 없이 한눈에 보이게 짠다
 local GOLD = Color3.fromRGB(226, 182, 92)
 local titlePanel = Instance.new("Frame")
@@ -7355,6 +7326,21 @@ function H.showTitle()
 		edgeFade.Thickness = 1.5
 		edgeFade.Parent = leaf
 	end
+	-- 종이 테두리 일부가 닳아 가죽이 드러난 흔적.
+	local wear = Random.new(1517)
+	for _, top in { true, false } do
+		for i = 1, 13 do
+			local cut = Instance.new("Frame")
+			cut.BorderSizePixel = 0
+			cut.BackgroundColor3 = COLORS.leather
+			cut.AnchorPoint = Vector2.new(0.5, 0.5)
+			cut.Position = UDim2.new((i + wear:NextNumber(-0.24, 0.24)) / 14, 0, if top then 0 else 1, if top then 7 else -7)
+			cut.Size = UDim2.fromOffset(wear:NextInteger(3, 13), wear:NextInteger(2, 5))
+			cut.Rotation = wear:NextInteger(-27, 27)
+			cut.ZIndex = box.ZIndex + 2
+			cut.Parent = box
+		end
+	end
 	local pages = Instance.new("ScrollingFrame")
 	pages.Size = UDim2.new(1, -12, 1, -12)
 	pages.Position = UDim2.fromOffset(6, 6)
@@ -7406,6 +7392,9 @@ function H.showTitle()
 	title.Size = UDim2.new(1, -60, 1, 0)
 	title.AutomaticSize = Enum.AutomaticSize.None
 	title.TextYAlignment = Enum.TextYAlignment.Center
+	title.Font = Enum.Font.Antique
+	title.TextStrokeColor3 = INK_SOFT
+	title.TextStrokeTransparency = 0.75
 
 	if view then
 		local resume = mkButton(pages, "이어하기", COLORS.gold, UDim2.new(1, 0, 0, 50), function()
