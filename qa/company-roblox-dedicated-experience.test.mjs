@@ -589,8 +589,8 @@ test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(client,/copper = "copper-bar"/);
   assert.match(client,/silver = "silver-bar"/);
   assert.match(client,/gems = "gems-sack"/);
-  assert.doesNotMatch(client,/\bbeer = \{ "Cargo"/);
-  assert.doesNotMatch(client,/\bsake = \{ "Cargo"/);
+  assert.match(client,/local RESTRICTED_CARGO_ICON = \{/);
+  assert.match(client,/if not RESTRICTED_CARGO_ICON\[goodsId\]/);
   const registered=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
   const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
   const match=client.match(/for goodsId, cargoAsset in \{([\s\S]*?)\}\s*do\s*if AssetIds\["Cargo\//);
@@ -626,23 +626,32 @@ test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(planner,/autoReplaceWithoutRuntimeReview:false/);
 });
 
-test('Mare trade uses approved ingredients and neutral cargo models for alcohol goods',()=>{
+test('Mare trade keeps alcohol in four tinted barrels and tobacco in plain Cargo bag',()=>{
   const root='roblox-games/mare-essentia';
   const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
-  const approved=JSON.parse(fs.readFileSync(root+'/assets/APPROVED_IMAGES.json','utf8')).approved;
-  assert.match(client,/SAFE_INGREDIENT_ICON = \{ beer = "beer_grain", sake = "sake_rice" \}/);
-  assert.match(client,/AssetIds\["Goods\/" \.\. ingredient\]/);
-  assert.match(client,/\bwine = \{ "Cargo", "barrel", Color3\.fromRGB\(\d+, \d+, \d+\) \}/);
-  for(const ingredient of ['beer_grain','sake_rice']){
-    assert.ok(approved['Goods/'+ingredient],'unapproved: '+ingredient);
-    if(assets['Goods/'+ingredient]){
-      assert.equal(assets['Goods/'+ingredient].usePermissionGranted,true);
-      assert.equal(assets['Goods/'+ingredient].assetType,'Image');
-    }
+  const match=client.match(/local RESTRICTED_CARGO_ICON = \{([\s\S]*?)\n\}/);
+  assert.ok(match,'restricted cargo map must be in existing GOOD_ICON flow');
+  const entries=[...match[1].matchAll(/\b(beer|sake|wine|rum) = \{ "Cargo", "barrel", Color3\.fromRGB\((\d+), (\d+), (\d+)\) \}/g)];
+  assert.deepEqual(entries.map(e=>e[1]).sort(),['beer','rum','sake','wine']);
+  const colors=entries.map(e=>e.slice(2).join(','));
+  assert.equal(new Set(colors).size,4,'one barrel mesh must have four distinct color tints');
+  assert.match(match[1],/\btobacco = \{ "Cargo", "bag", Color3\.fromRGB\(\d+, \d+, \d+\) \}/);
+  for(const name of ['barrel','bag']){
+    const asset=assets['Cargo/'+name];
+    assert.equal(asset?.assetType,'Model',name);
+    assert.equal(asset?.license,'CC0-1.0',name);
+    assert.equal(asset?.usePermissionGranted,true,name);
+    assert.ok(asset.assetId,name);
   }
-  for(const banned of ['beer','sake','wine','tobacco'])
-    assert.equal(assets['Goods/'+banned],undefined);
+  assert.match(client,/GOOD_ICON\[id\] = if AssetIds\[neutral\[1\] \.\. "\/" \.\. neutral\[2\]\] then neutral else \{ "Menu", "trade" \}/);
+  assert.match(client,/if not RESTRICTED_CARGO_ICON\[goodsId\]/);
+  assert.doesNotMatch(client,/SAFE_INGREDIENT_ICON/);
+  // 제한 품목의 차단된 전용 이미지·새 모델을 재등록하지 않는다.
+  for(const id of ['beer','sake','rum','wine','tobacco']){
+    assert.equal(assets['Goods/'+id],undefined);
+    assert.equal(assets['Cargo/'+id],undefined);
+  }
 });
 
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
