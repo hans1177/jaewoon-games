@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
+local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local PortData = require(script.Parent:WaitForChild("Ports"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
@@ -18,6 +19,7 @@ local PortScene = {}
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 local MED, STYLE, REGION, PROFILE, OUTFIT = Cultures.MED, Cultures.STYLE, Cultures.REGION, Cultures.PROFILE, Cultures.OUTFIT
 local C = Color3.fromRGB
+local PORT_CLOCK_EPOCH = os.clock()
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
 local GOOD_MESH = {
@@ -2193,76 +2195,56 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- 항구 다듬기 -------------------------------------------------------------
-	-- 하늘·빛: 늦은 오후의 따뜻한 바다 분위기
+	-- 지역 하늘색을 일출·한낮·황혼·밤의 전환과 함께 보존한다.
+	local Lighting = game:GetService("Lighting")
+	local LOOK = {
+		north = { amb = Color3.fromRGB(116, 122, 140), haze = Color3.fromRGB(192, 206, 226), dens = 0.36 },
+		med = { amb = Color3.fromRGB(132, 124, 118), haze = Color3.fromRGB(224, 214, 196), dens = 0.28 },
+		iberia = { amb = Color3.fromRGB(138, 122, 108), haze = Color3.fromRGB(236, 210, 176), dens = 0.28 },
+		italy = { amb = Color3.fromRGB(134, 124, 114), haze = Color3.fromRGB(230, 212, 188), dens = 0.28 },
+		ottoman = { amb = Color3.fromRGB(142, 120, 100), haze = Color3.fromRGB(240, 206, 160), dens = 0.30 },
+		swahili = { amb = Color3.fromRGB(136, 122, 100), haze = Color3.fromRGB(236, 214, 168), dens = 0.30 },
+		malabar = { amb = Color3.fromRGB(134, 122, 104), haze = Color3.fromRGB(238, 208, 160), dens = 0.32 },
+		japan = { amb = Color3.fromRGB(128, 116, 126), haze = Color3.fromRGB(218, 200, 214), dens = 0.40 },
+		colonial = { amb = Color3.fromRGB(122, 122, 118), haze = Color3.fromRGB(210, 220, 214), dens = 0.30 },
+		desert = { amb = Color3.fromRGB(140, 124, 100), haze = Color3.fromRGB(240, 220, 176), dens = 0.30 },
+		tropic = { amb = Color3.fromRGB(104, 124, 116), haze = Color3.fromRGB(186, 230, 224), dens = 0.26 },
+		china = { amb = Color3.fromRGB(132, 116, 112), haze = Color3.fromRGB(230, 200, 196), dens = 0.36 },
+		seasia = { amb = Color3.fromRGB(108, 124, 108), haze = Color3.fromRGB(200, 226, 196), dens = 0.34 },
+		pacific = { amb = Color3.fromRGB(110, 128, 132), haze = Color3.fromRGB(190, 232, 236), dens = 0.20 },
+		wafrica = { amb = Color3.fromRGB(132, 116, 96), haze = Color3.fromRGB(236, 200, 150), dens = 0.30 },
+		creole = { amb = Color3.fromRGB(128, 122, 120), haze = Color3.fromRGB(240, 214, 200), dens = 0.28 },
+	}
+	local look = LOOK[currentKey] or LOOK.med
 	do
-		local Lighting = game:GetService("Lighting")
-		-- 질감·소재는 모두 같게, 하늘빛과 저녁 분위기는 문화권(항구)마다 다르게
-		local LOOK = {
-			north = { clock = 14, amb = Color3.fromRGB(116, 122, 140), haze = Color3.fromRGB(192, 206, 226), dens = 0.36 },
-			med = { clock = 15.5, amb = Color3.fromRGB(132, 124, 118), haze = Color3.fromRGB(224, 214, 196), dens = 0.28 },
-			iberia = { clock = 16, amb = Color3.fromRGB(138, 122, 108), haze = Color3.fromRGB(236, 210, 176), dens = 0.28 },
-			italy = { clock = 15.5, amb = Color3.fromRGB(134, 124, 114), haze = Color3.fromRGB(230, 212, 188), dens = 0.28 },
-			ottoman = { clock = 16.5, amb = Color3.fromRGB(142, 120, 100), haze = Color3.fromRGB(240, 206, 160), dens = 0.30 },
-			swahili = { clock = 16, amb = Color3.fromRGB(136, 122, 100), haze = Color3.fromRGB(236, 214, 168), dens = 0.30 },
-			malabar = { clock = 16.5, amb = Color3.fromRGB(134, 122, 104), haze = Color3.fromRGB(238, 208, 160), dens = 0.32 },
-			japan = { clock = 17, amb = Color3.fromRGB(128, 116, 126), haze = Color3.fromRGB(218, 200, 214), dens = 0.40 },
-			colonial = { clock = 15, amb = Color3.fromRGB(122, 122, 118), haze = Color3.fromRGB(210, 220, 214), dens = 0.30 },
-			desert = { clock = 12.5, amb = Color3.fromRGB(140, 124, 100), haze = Color3.fromRGB(240, 220, 176), dens = 0.30 },
-			china = { clock = 17, amb = Color3.fromRGB(132, 116, 112), haze = Color3.fromRGB(230, 200, 196), dens = 0.36 },
-			seasia = { clock = 14, amb = Color3.fromRGB(108, 124, 108), haze = Color3.fromRGB(200, 226, 196), dens = 0.34 },
-			pacific = { clock = 12.5, amb = Color3.fromRGB(110, 128, 132), haze = Color3.fromRGB(190, 232, 236), dens = 0.20 },
-			wafrica = { clock = 15, amb = Color3.fromRGB(132, 116, 96), haze = Color3.fromRGB(236, 200, 150), dens = 0.30 },
-			creole = { clock = 16, amb = Color3.fromRGB(128, 122, 120), haze = Color3.fromRGB(240, 214, 200), dens = 0.28 },
-			tropic = { clock = 13, amb = Color3.fromRGB(104, 124, 116), haze = Color3.fromRGB(186, 230, 224), dens = 0.26 },
-		}
-		local look = LOOK[currentKey] or LOOK.med
-		Lighting.ClockTime = look.clock
-		Lighting.Brightness = 2.0
-		Lighting.Ambient = Color3.fromRGB(96, 98, 110):Lerp(look.amb, 0.5)
-		Lighting.OutdoorAmbient = look.amb
-		Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
-		Lighting.GlobalShadows = true
-		local atmos = Lighting:FindFirstChild("MareAtmosphere")
-		if not atmos then
-			atmos = Instance.new("Atmosphere")
-			atmos.Name = "MareAtmosphere"
-			atmos.Parent = Lighting
-		end
-		local econ = info and info.econ
+		local econ = info.econ
 		if econ == "depression" or econ == "bust" then
-			Lighting.Brightness = 1.6
-			look = { clock = look.clock, amb = look.amb:Lerp(Color3.fromRGB(110, 112, 118), 0.5), haze = look.haze:Lerp(Color3.fromRGB(170, 172, 180), 0.55), dens = look.dens + 0.08 }
-			Lighting.OutdoorAmbient = look.amb
-			atmos.Color = look.haze
-		elseif econ == "boom" or econ == "bubble" then
-			Lighting.Brightness = 2.2
-		end
-		atmos.Density = look.dens
-		atmos.Offset = 0.2
-		atmos.Color = look.haze
-		atmos.Decay = Color3.fromRGB(120, 140, 170)
-		atmos.Glare = 0.35
-		atmos.Haze = 1.4
-		if not Lighting:FindFirstChild("MareGrade") then
-			local cc = Instance.new("ColorCorrectionEffect")
-			cc.Name = "MareGrade"
-			cc.Saturation = 0.12
-			cc.Contrast = 0.04
-			cc.TintColor = Color3.fromRGB(255, 255, 255)
-			cc.Parent = Lighting
-			local bloom = Instance.new("BloomEffect")
-			bloom.Name = "MareBloom"
-			bloom.Intensity = 0.2
-			bloom.Size = 28
-			bloom.Threshold = 2.2
-			bloom.Parent = Lighting
-			local rays = Instance.new("SunRaysEffect")
-			rays.Name = "MareRays"
-			rays.Intensity = 0.08
-			rays.Spread = 0.6
-			rays.Parent = Lighting
+			look = { amb = look.amb:Lerp(Color3.fromRGB(110, 112, 118), 0.5), haze = look.haze:Lerp(Color3.fromRGB(170, 172, 180), 0.55), dens = look.dens + 0.08 }
 		end
 	end
+	Lighting.GlobalShadows = true
+	local atmos = Lighting:FindFirstChild("MareAtmosphere")
+	if not atmos then
+		atmos = Instance.new("Atmosphere")
+		atmos.Name = "MareAtmosphere"
+		atmos.Parent = Lighting
+	end
+	atmos.Offset = 0.2
+	atmos.Decay = Color3.fromRGB(120, 140, 170)
+	if not Lighting:FindFirstChild("MareGrade") then
+		local cc = Instance.new("ColorCorrectionEffect")
+		cc.Name = "MareGrade"
+		cc.Parent = Lighting
+		local bloom = Instance.new("BloomEffect")
+		bloom.Name = "MareBloom"
+		bloom.Size = 28
+		bloom.Parent = Lighting
+		local rays = Instance.new("SunRaysEffect")
+		rays.Name = "MareRays"
+		rays.Spread = 0.6
+		rays.Parent = Lighting
+	end
+
 	-- 안전망: 어떤 이유로든 바다나 허공으로 떨어지면 광장으로 되돌린다
 	do
 		local conn
@@ -2282,69 +2264,121 @@ function PortScene.build(info, onFacility)
 			end
 		end)
 	end
-	-- 낮과 밤: 실시간 10분이 하루. 밤이 되면 하늘이 어두워지고 가로등·등불이 켜진다
-	do
-		local Lighting = game:GetService("Lighting")
-		local DAY_SECONDS = 600
-		local startClock = 13.5
-		local t0 = os.clock()
-		local function lerpC(a, b, t)
-			return a:Lerp(b, t)
-		end
-		local lights, lastScan = {}, -10
-		local conn
-		conn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then
-				conn:Disconnect()
-				return
-			end
-			if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
-				return
-			end
-			local now = os.clock()
-			local clock = (startClock + (now - t0) / DAY_SECONDS * 24) % 24
-			-- 해 높이: 6시 일출, 12시 정오, 18시 일몰
-			local sun = math.sin((clock - 6) / 12 * math.pi)
-			local day = math.clamp(sun * 3 + 0.35, 0, 1) -- 낮 1, 밤 0 (해 뜨고 질 때 부드럽게)
-			local night = 1 - day
-			Lighting.ClockTime = clock
-			Lighting.Brightness = 0.5 + 1.5 * day
-			Lighting.Ambient = lerpC(Color3.fromRGB(34, 40, 70), Color3.fromRGB(96, 98, 110), day)
-			Lighting.OutdoorAmbient = lerpC(Color3.fromRGB(40, 48, 84), Color3.fromRGB(122, 124, 138), day)
-			local atmos = Lighting:FindFirstChild("MareAtmosphere")
-			if atmos then
-				atmos.Color = lerpC(Color3.fromRGB(60, 72, 110), Color3.fromRGB(199, 214, 235), day)
-			end
-			local bloom = Lighting:FindFirstChild("MareBloom")
-			if bloom then
-				bloom.Threshold = 2.2 - 0.6 * night
-				bloom.Intensity = 0.2 + 0.08 * night
-			end
-			local grade = Lighting:FindFirstChild("MareGrade")
-			if grade then
-				grade.TintColor = lerpC(Color3.fromRGB(190, 205, 255), Color3.fromRGB(255, 255, 255), day)
-			end
-			if now - lastScan > 3 then
-				lastScan = now
-				lights = {}
-				for _, d in folder:GetDescendants() do
-					if d:IsA("PointLight") then
-						if not d:GetAttribute("BaseB") then
-							d:SetAttribute("BaseB", d.Brightness)
-							d:SetAttribute("BaseR", d.Range)
-						end
-						table.insert(lights, d)
-					end
-				end
-			end
-			for _, l in lights do
-				if l.Parent then
-					l.Brightness = l:GetAttribute("BaseB") * (0.3 + 1.3 * night)
-					l.Range = l:GetAttribute("BaseR") * (1 + 0.4 * night)
-				end
-			end
-		end)
+	-- 한낮의 열기, 새벽 해무, 황혼의 따뜻한 빛과 야간 등불을 같은 시간축에 맞춘다.
+	local latitude = (PortData.Ports[info.portId] or {}).lat or 0
+	local temperate = math.abs(latitude) >= 25 and not warmShore
+	local cold = math.abs(latitude) >= 39 and not warmShore
+	local seasons = {
+		{ tint = C(221, 236, 255), ground = C(190, 207, 211), sea = C(47, 83, 109), sun = 0.065, day = 9.3, haze = 1.55 },
+		{ tint = C(240, 255, 233), ground = C(102, 141, 78), sea = C(41, 125, 145), sun = 0.12, day = 12, haze = 1.18 },
+		{ tint = C(255, 238, 200), ground = C(138, 140, 80), sea = C(34, 126, 169), sun = 0.26, day = 14.4, haze = 1.8 },
+		{ tint = C(255, 220, 186), ground = C(158, 113, 64), sea = C(46, 100, 130), sun = 0.11, day = 11.5, haze = 1.4 },
+	}
+	local seasonIndex, season
+	local ground = plate or folder:FindFirstChild("Ground")
+	local snowAnchor, snow
+	if cold then
+		snowAnchor = part(folder, Vector3.new(60, 0.25, 60), CFrame.new(0, 24, 0), Color3.new(1, 1, 1))
+		snowAnchor.Transparency = 1
+		snowAnchor.CanCollide, snowAnchor.CanQuery, snowAnchor.CanTouch = false, false, false
+		snowAnchor.CastShadow = false
+		snow = Instance.new("ParticleEmitter")
+		snow.Texture = "rbxasset://textures/particles/smoke_main.dds"
+		snow.Rate = 0
+		snow.Lifetime = NumberRange.new(2, 3.5)
+		snow.Speed = NumberRange.new(3, 7)
+		snow.Acceleration = Vector3.new(4, -3.8, 1)
+		snow.EmissionDirection = Enum.NormalId.Bottom
+		snow.SpreadAngle = Vector2.new(25, 25)
+		snow.Size = NumberSequence.new(0.33, 0.18)
+		snow.Transparency = NumberSequence.new(0.25, 0.9)
+		snow.Color = ColorSequence.new(C(229, 243, 255))
+		snow.LightEmission = 0.15
+		snow.Parent = snowAnchor
 	end
+
+	local function setDay(day)
+		local index = Voyage.season(tonumber(day) or 0, latitude)
+		if seasonIndex == index then return end
+		seasonIndex = index
+		season = seasons[index]
+		if ground and ground:IsA("BasePart") then
+			local frosted = cold and index == 1
+			ground.Material = if frosted then Enum.Material.Snow else Enum.Material.Grass
+			ground.Color = if frosted then season.ground elseif temperate then style.ground:Lerp(season.ground, 0.48) else style.ground
+		end
+		water.Color = if temperate then season.sea else C(32, 118, 160):Lerp(season.sea, 0.25)
+	end
+	setDay(info.day)
+
+	local grade = Lighting:FindFirstChild("MareGrade")
+	local bloom = Lighting:FindFirstChild("MareBloom")
+	local rays = Lighting:FindFirstChild("MareRays")
+	local lights = {}
+	local function registerLight(item)
+		if item:IsA("PointLight") then
+			table.insert(lights, { light = item, brightness = item.Brightness, range = item.Range })
+		end
+	end
+	for _, item in folder:GetDescendants() do registerLight(item) end
+	local lightConn = folder.DescendantAdded:Connect(registerLight)
+	local updateAt = 0
+	local climateConn = RunService.Heartbeat:Connect(function()
+		local now = os.clock()
+		if now < updateAt then return end
+		updateAt = now + 0.10
+		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
+			if snow then snow.Rate = 0 end
+			return
+		end
+		local clock = (8.2 + (now - PORT_CLOCK_EPOCH) * 24 / 600) % 24
+		local daylight = if temperate then season.day else 12
+		local sunrise, sunset = 12 - daylight / 2, 12 + daylight / 2
+		local day = math.clamp(math.min(clock - sunrise, sunset - clock) + 0.55, 0, 1)
+		local night = 1 - day
+		local dawn = math.max(0, 1 - math.abs(clock - sunrise) / 2)
+		local dusk = math.max(0, 1 - math.abs(clock - sunset) / 2)
+		local noon = math.max(0, 1 - math.abs(clock - 12) / 4)
+		Lighting.ClockTime = clock
+		Lighting.Brightness = 0.46 + 1.52 * day + season.sun * noon
+		Lighting.Ambient = C(37, 44, 72):Lerp(look.amb, day * 0.62)
+		Lighting.OutdoorAmbient = C(43, 52, 87):Lerp(look.amb, day)
+		Lighting.ColorShift_Top = C(244, 248, 255):Lerp(C(255, 190, 136), dusk * 0.72)
+		atmos.Color = C(79, 92, 127):Lerp(look.haze, day):Lerp(C(241, 177, 137), dusk * 0.43)
+		atmos.Density = look.dens + dawn * 0.12 + (if cold and seasonIndex == 1 then 0.07 else 0)
+		atmos.Glare = season.sun * day * noon
+		atmos.Haze = season.haze + dawn * 1.5
+		if grade then
+			grade.TintColor = C(193, 214, 253):Lerp(season.tint, day):Lerp(C(255, 220, 192), dusk * 0.35)
+			grade.Saturation = 0.09 - night * 0.16
+			grade.Contrast = 0.04
+		end
+		if bloom then
+			bloom.Threshold = 2.2 - night * 0.55
+			bloom.Intensity = 0.17 + night * 0.12 + season.sun * noon
+		end
+		if rays then rays.Intensity = season.sun * day * (0.38 + noon * 0.62) end
+		for _, entry in lights do
+			if entry.light.Parent then
+				entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)
+				entry.light.Range = entry.range * (0.82 + 0.6 * night)
+			end
+		end
+		if snow then
+			local character = Players.LocalPlayer and Players.LocalPlayer.Character
+			local root = character and character:FindFirstChild("HumanoidRootPart")
+			if root then
+				local center = root.Position
+				snowAnchor.Position = Vector3.new(math.min(center.X, 18), 23, center.Z)
+			end
+			snow.Rate = if seasonIndex == 1 then 18 + dawn * 9 else 0
+		end
+	end)
+	folder.Destroying:Connect(function()
+		lightConn:Disconnect()
+		climateConn:Disconnect()
+	end)
+
 	-- 물가: 거품 띠와 바위
 	do
 		local foam = part(folder, Vector3.new(3, 0.2, 300), CFrame.new(21.5, 0.45, 0), Color3.fromRGB(240, 246, 250), Enum.Material.SmoothPlastic)
@@ -2650,7 +2684,7 @@ function PortScene.build(info, onFacility)
 		conn:Disconnect()
 	end)
 
-	local controls = {}
+	local controls = { setDay = setDay }
 	-- 출항 연출 시작. 배가 부두를 떠난다. 걸리는 시간(초)을 돌려준다.
 	function controls.depart(dur)
 		anim = { kind = "depart", start = os.clock(), dur = dur or 5 }

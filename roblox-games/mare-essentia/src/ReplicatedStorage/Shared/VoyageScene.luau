@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
 local VoyageScene = {}
+local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
@@ -116,9 +117,7 @@ local function weatherAt(path, cum, total, progress, day, rng)
 			end
 		end
 	end
-	local month = math.floor(((day or 0) % 365) / (365 / 12))
-	if lat < 0 then month = (month + 6) % 12 end
-	local season = math.floor(((month + 1) % 12) / 3) + 1
+	local season = Voyage.season(day or 0, lat)
 	local latitude = math.abs(lat)
 	local region, choices
 	if latitude >= 48 then
