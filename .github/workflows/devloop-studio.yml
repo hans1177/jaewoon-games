@@ -12,6 +12,8 @@ on:
       - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'
       - 'roblox-games/mare-essentia/src/**'
+      # Rojo 자산 폴더·빌드 트리 변경도 공식 Studio로 검증한다.
+      - 'roblox-games/mare-essentia/default.project.json'
   workflow_dispatch:
     inputs:
       game:
