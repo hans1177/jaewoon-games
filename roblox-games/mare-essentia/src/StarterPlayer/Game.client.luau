@@ -1587,15 +1587,7 @@ local function call(action, payload)
 		main.Visible = false
 		audioLock = true
 		Sfx.music("music_battle")
-		task.spawn(function()
-			while audioLock and inField do
-				Sfx.play("sfx_cannon", 0.55 + math.random() * 0.3)
-				task.wait(0.8 + math.random() * 1.4)
-				if math.random() < 0.4 then
-					Sfx.play("sfx_hit", 0.5)
-				end
-			end
-		end)
+		-- 포격·착탄·파도·선체 충격음은 실제 해전 3D 장면에 맞춰 재생한다.
 		NavalBattle.play({
 			shipId = view.ship and view.ship.id,
 			shipName = view.ship and view.ship.name,
