@@ -2171,12 +2171,20 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
-	local style = if REGION[info.portId] and STYLE[REGION[info.portId]] then STYLE[REGION[info.portId]] elseif MED[info.portId] then STYLE.med else STYLE.north
+	-- [지역별 건축] 기존 항구 문화권을 따르되, 로도스·파마구스타는 점령 연도 이후 오스만 양식으로 전환한다.
+	-- 건축·복식에만 적용하며 교역·경제·저장 데이터는 그대로 유지한다.
+	local year = if type(info.year) == "number" then info.year else 1700
+	local culture = REGION[info.portId]
+	if (info.portId == "rhodes" and year >= 1522)
+		or (info.portId == "famagusta" and year >= 1571) then
+		culture = "ottoman"
+	end
+	local style = if culture and STYLE[culture] then STYLE[culture] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	houseTier = sceneLevel
 	currentKey = styleKeyOf(style)
-	currentYear = if type(info.year) == "number" then info.year else 1700
+	currentYear = year
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
