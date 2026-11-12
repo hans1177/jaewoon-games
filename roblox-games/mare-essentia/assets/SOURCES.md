@@ -796,3 +796,25 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `town/` | quaternius_well.glb | Quaternius · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
 | `town/` | quaternius_window_gothic.glb | Quaternius · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
 | `town/` | quaternius_window_square.glb | Quaternius · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+
+
+## 2026-11-12 동물·항구 생활 모델 (CC0 원본, 런타임 미검증)
+
+품목별 일치가 확인된 원본만 사용하며, 게임 규칙·경제·저장·기존 자산 ID를 변경하지 않았다. 모델 원본 확보는 Roblox Asset ID 발급·Universe 권한·게임 화면 품질 검증이 아니며, 등록은 기존 업로드 워크플로와 런타임 검사를 따른다. 술 관련 소품은 포함하지 않는다.
+
+농장 동물 6종의 출처는 Quaternius Farm Animal Pack (CC0): https://quaternius.com/packs/farmanimal.html . 바이너리 수급 고정 커밋: https://github.com/MichaelJBaumli/VR-Ag-Demo/tree/8c8ed64b7f6c8d8a4b0768d44490a120cbe5e6f6/VR-Ag-Demo-Godot/assets/Farm%20Animals%20Animated%20by%20Quaternius/FBX . 바이너리 Git SHA는 원본과 동일함을 확인했다. 닭은 기존 Quaternius 공용 원본, 건물·소품은 기존 fantasy-survival Kenney 공용 원본을 복제 없이 재사용한다.
+
+| 파일 | 대상 | 제작자·라이선스 | 라이선스 출처 | SHA-256 |
+|---|---|---|---|---|
+| `animals/cow.fbx` | 소 | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d` |
+| `animals/horse.fbx` | 말 | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90` |
+| `animals/sheep.fbx` | 양 | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `4a3fc559cc9f37e3e3f216af1dab30cb411ec9b268eb98676f1d5c18a430d33e` |
+| `animals/pig.fbx` | 돼지 | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `bdf5e149a974ffc2431546f30ea568d7c41f916d7bd87187f1532c45778a9a23` |
+| `animals/llama.fbx` | 라마 | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `3ff44fd03d5793701b228cf88f00e776f89afefdb3de0b226fee807908ae79c9` |
+| `animals/dog-pug.fbx` | 개(퍼그) | Quaternius · CC0-1.0 | https://quaternius.com/packs/farmanimal.html | `c05e127a5b10edd059478113f542f691717635b47d7a57317d07e7310a764ff0` |
+| `animals/chicken.fbx` | 닭 | Quaternius · CC0-1.0 | https://opengameart.org/content/textured-cute-monster-pack | `e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794` |
+| `town/watermill.glb` | 물레방아 | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit | `38dac94afcf84ea072603f558d96a843d45eea2f64321ad8f31c6a5cbff1b498` |
+| `town/wheel.glb` | 수레바퀴 | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit | `9dcffeb5b591f949b8488775592c224a8ba7988d94b0ba205fe5486730c28b30` |
+| `town/workbench-anvil.glb` | 모루 작업대 | Kenney · CC0-1.0 | https://kenney.nl/assets/survival-kit | `b92fb534e0f6db92565529a8cc15753fb0ddbf35c3f5bcc718aaabb7d31e4a07` |
+
+추가 확보 필요: 염소·당나귀·고양이·비둘기·낙타·코끼리·살아 있는 칠면조, 어망·어망 건조틀·닻·빨래줄·연·공. `cargo/turkey.glb`는 조리된 요리이므로 살아 있는 칠면조를 대신하지 않는다. 바다 갈매기·기존 밧줄·수레·풍차는 중복 등록하지 않는다.

@@ -79,7 +79,7 @@ if (!creatorId) {
 const plan = [];
 // 2026-11-11 오너 승인으로 바이브가 직접 그린 평면 벡터 교역품(소스: assets/goods/src/)
 const VIBE_DRAWN_GOODS = ['feathers','cloves','nutmeg','cinnamon','lacquer','camphor','ginseng','vanilla','cochineal','sealskin','guano','nitrate','ambergris','gum_arabic','beer_grain','sake_rice','brazilwood','cocoa','copper','ebony','gems','gold','jade','kauri','logwood','mahogany','maize','palm_oil','pearl_shell','sandalwood','sandalwood_hi','silver'].map(n => n + '.png');
-if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
+if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.

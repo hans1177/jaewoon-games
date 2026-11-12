@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
@@ -640,4 +641,27 @@ test('Mare trade uses approved ingredients and neutral cargo models for alcohol 
   }
   for(const banned of ['beer','sake','wine','tobacco'])
     assert.equal(assets['Goods/'+banned],undefined);
+});
+
+test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
+  const root='roblox-games/mare-essentia';
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.ok(uploader.includes("['animals', 'Animals']"));
+  const wanted=JSON.parse(fs.readFileSync(root+'/assets-wanted.seed.json','utf8'));
+  const animals=wanted.find(row=>row.id==='mare-farm-animals');
+  const props=wanted.find(row=>row.id==='mare-harbor-life-props');
+  assert.equal(animals?.autoBindWithoutRuntimeProof,false);
+  assert.equal(props?.autoBindWithoutRuntimeProof,false);
+  assert.equal(animals?.sourceReady.length,7);
+  assert.equal(animals?.missing.length,7);
+  assert.ok(props.missing.includes('fishing-net'));
+  const ledger=fs.readFileSync(root+'/assets/SOURCES.md','utf8');
+  const expected={"animals/cow.fbx":"0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d","animals/horse.fbx":"6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90","animals/sheep.fbx":"4a3fc559cc9f37e3e3f216af1dab30cb411ec9b268eb98676f1d5c18a430d33e","animals/pig.fbx":"bdf5e149a974ffc2431546f30ea568d7c41f916d7bd87187f1532c45778a9a23","animals/llama.fbx":"3ff44fd03d5793701b228cf88f00e776f89afefdb3de0b226fee807908ae79c9","animals/dog-pug.fbx":"c05e127a5b10edd059478113f542f691717635b47d7a57317d07e7310a764ff0","animals/chicken.fbx":"e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794","town/watermill.glb":"38dac94afcf84ea072603f558d96a843d45eea2f64321ad8f31c6a5cbff1b498","town/wheel.glb":"9dcffeb5b591f949b8488775592c224a8ba7988d94b0ba205fe5486730c28b30","town/workbench-anvil.glb":"b92fb534e0f6db92565529a8cc15753fb0ddbf35c3f5bcc718aaabb7d31e4a07"};
+  for(const [relative,sha] of Object.entries(expected)){
+    const bytes=fs.readFileSync(root+'/assets/'+relative);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,relative);
+    assert.ok(ledger.includes(sha),relative+' provenance');
+    if(relative.endsWith('.fbx'))assert.equal(bytes.subarray(0,18).toString(),'Kaydara FBX Binary',relative);
+    else assert.equal(bytes.subarray(0,4).toString(),'glTF',relative);
+  }
 });
