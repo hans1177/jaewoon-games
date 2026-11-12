@@ -54,7 +54,7 @@ export function createAdaptiveClimbIK(THREE,{avatar,rig=discoverClimbSkeleton(av
     joint.quaternion.premultiply(localDelta).normalize();
     if(limit<Math.PI){
      const rest=bounds.get(joint),angle=rest.angleTo(joint.quaternion);
-     if(angle>limit)joint.quaternion.copy(rest).slerp(joint.quaternion,limit/angle);
+     if(angle>limit){const solved=joint.quaternion.clone();joint.quaternion.copy(rest).slerp(solved,limit/angle);}
     }
    }
    avatar.updateMatrixWorld(true);error=pos(tip).distanceTo(target);if(error<tolerance)break;
