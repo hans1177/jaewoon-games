@@ -66,7 +66,7 @@ def build(first_wait, prefer, n):
 def write(path, steps):
     json.dump(steps, open(path, 'w'), ensure_ascii=False, indent=1)
 
-mare_steps = build(35000, ["새 게임", "프랑스", "1700", "출항하기", "교역", "조선", "퀘스트", "항해", "지도", "기술", "항구", "설정"], 30)
+mare_steps = build(35000, ["새 게임", "프랑스", "1700", "출항하기", "장부에 올린다", "함께 가자", "이 얼굴로 그려 주세요", "항해를 시작한다", "교역", "조선", "퀘스트", "항해", "지도", "기술", "항구", "설정"], 30)
 # 마지막 두 탐색은 아직 방문하지 않은 버튼이 있을 때만 클릭한다.
 for step in [step for step in mare_steps if step["type"] == "click_from_luau"][-2:]:
     step["optional"] = True

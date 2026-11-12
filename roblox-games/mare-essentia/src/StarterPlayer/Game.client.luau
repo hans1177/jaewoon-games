@@ -6715,6 +6715,7 @@ end
 		dim.BackgroundColor3 = Color3.new(0, 0, 0)
 		dim.BackgroundTransparency = 0.55
 		dim.BorderSizePixel = 0
+		dim.Active = true -- 대화 뒤의 탭·버튼이 눌리지 않게 입력을 막는다
 		dim.Parent = layer
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 1)
@@ -6807,6 +6808,9 @@ end
 				end
 			elseif spec.portraits then
 				value = picked
+				if not value and game:GetService("RunService"):IsStudio() and spec.portraits[1] then
+					value = spec.portraits[1] -- Studio 자동 점검은 초상을 고를 수 없어 첫 초상으로 진행
+				end
 				if not value then
 					note.Text = "마음에 드는 초상을 골라 주세요"
 					return
