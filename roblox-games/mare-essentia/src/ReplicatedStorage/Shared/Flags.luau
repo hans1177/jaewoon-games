@@ -13,7 +13,10 @@ local FLAGS = {
 	swahili = { { 0, 0, 1, 0.34, Color3.fromRGB(40, 150, 90) }, { 0, 0.33, 1, 0.34, Color3.fromRGB(240, 240, 236) }, { 0, 0.66, 1, 0.34, Color3.fromRGB(30, 50, 100) }, { "o", 0.5, 0.5, 0.26, R } },
 	malabar = { { 0, 0, 1, 1, Color3.fromRGB(232, 164, 44) }, { 0, 0.7, 1, 0.3, Color3.fromRGB(50, 120, 70) }, { "o", 0.5, 0.38, 0.3, R } },
 	japan = { { 0, 0, 1, 1, W }, { "o", 0.5, 0.5, 0.5, Color3.fromRGB(190, 30, 50) } },
-	new_spain = { { 0, 0, 1, 1, W }, { 0.44, 0, 0.12, 1, R }, { 0, 0.44, 1, 0.12, R }, { 0, 0, 1, 0.08, Color3.fromRGB(206, 168, 54) }, { 0, 0.92, 1, 0.08, Color3.fromRGB(206, 168, 54) } },
+	new_spain = { { 0, 0, 1, 1, W }, { "r", 0.5, 0.5, 1.25, 0.16, 35, R }, { "r", 0.5, 0.5, 1.25, 0.16, -35, R } },
+	denmark = { { 0, 0, 1, 1, R }, { 0.28, 0, 0.14, 1, W }, { 0, 0.43, 1, 0.14, W } },
+	sweden = { { 0, 0, 1, 1, Color3.fromRGB(0, 106, 167) }, { 0.3, 0, 0.14, 1, Color3.fromRGB(254, 204, 0) }, { 0, 0.43, 1, 0.14, Color3.fromRGB(254, 204, 0) } },
+	venice = { { 0, 0, 1, 1, Color3.fromRGB(170, 30, 45) }, { 0, 0, 1, 0.08, Color3.fromRGB(226, 182, 92) }, { 0, 0.92, 1, 0.08, Color3.fromRGB(226, 182, 92) }, { "o", 0.5, 0.5, 0.42, Color3.fromRGB(226, 182, 92) }, { "o", 0.5, 0.5, 0.3, Color3.fromRGB(170, 30, 45) }, { "o", 0.5, 0.5, 0.12, Color3.fromRGB(226, 182, 92) } },
 }
 local FALLBACK = { { 0, 0, 1, 1, Color3.fromRGB(60, 80, 120) } }
 
@@ -36,7 +39,13 @@ function Flags.build(parent, nationId, w, h)
 	for _, sh in FLAGS[nationId] or FALLBACK do
 		local f = Instance.new("Frame")
 		f.BorderSizePixel = 0
-		if sh[1] == "o" then
+		if sh[1] == "r" then
+			f.AnchorPoint = Vector2.new(0.5, 0.5)
+			f.Position = UDim2.fromScale(sh[2], sh[3])
+			f.Size = UDim2.fromOffset(sh[4] * w, sh[5] * h)
+			f.Rotation = sh[6]
+			f.BackgroundColor3 = sh[7]
+		elseif sh[1] == "o" then
 			f.AnchorPoint = Vector2.new(0.5, 0.5)
 			f.Position = UDim2.fromScale(sh[2], sh[3])
 			f.Size = UDim2.fromOffset(sh[4] * w, sh[4] * w)
