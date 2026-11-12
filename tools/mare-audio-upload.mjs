@@ -4,6 +4,8 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const dir='roblox-games/mare-essentia/audio';
@@ -85,10 +87,19 @@ function prepareVerifiedCC0(track){
   const originalSha256=crypto.createHash('sha256').update(original).digest('hex');
   const output=dir+'/'+track.file;
   fs.mkdirSync(dir+'/out',{recursive:true});
-  execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i','pipe:0',
-    '-vn','-t',String(track.maxSeconds||180),'-ac','1','-ar','32000','-af',track.editFilter,
-    '-c:a','libvorbis','-q:a','3',output],
-    {input:original,timeout:120000,maxBuffer:8*1024*1024});
+  // 길이가 긴 MP3/WAV 원본을 pipe:0으로 잘라 읽으면 ffmpeg 조기 종료 시 EPIPE가 난다.
+  // 단일 책임 함수에서 임시 원본 파일 입력으로 변환한 다음 즉시 정리한다.
+  const tmpDir=fs.mkdtempSync(path.join(os.tmpdir(),'mare-audio-'));
+  const tmpSource=path.join(tmpDir,'original.audio');
+  try{
+    fs.writeFileSync(tmpSource,original);
+    execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i',tmpSource,
+      '-vn','-t',String(track.maxSeconds||180),'-ac','1','-ar','32000','-af',track.editFilter,
+      '-c:a','libvorbis','-q:a','3',output],
+      {timeout:120000,maxBuffer:8*1024*1024});
+  }finally{
+    fs.rmSync(tmpDir,{recursive:true,force:true});
+  }
   if(!fs.existsSync(output)||fs.statSync(output).size<1500)
     throw Error('CC0_AUDIO_DERIVATIVE_TOO_SMALL');
   // 파생물과 부모 원본을 업로드 영수증에 함께 기록한다.
