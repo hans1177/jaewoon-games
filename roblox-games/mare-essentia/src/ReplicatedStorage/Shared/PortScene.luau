@@ -1328,8 +1328,10 @@ local function placeSignature(folder, info)
 		end
 		return
 	end
-	for _, e in list or {} do
-		importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
+	if list then
+		for _, e in list do
+			importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
+		end
 	end
 	if european and sceneLevel >= 4 then
 		-- 바닷가 건물은 기존 모델을 국별로 골라 쓴다. 새 자산·충돌하는 랜드마크 생성은 없다.
