@@ -158,13 +158,9 @@ task.spawn(function()
 		warn("[Sfx] 소리를 불러오지 못해 대체 소리를 씁니다:", name)
 	end
 end)
-	end)
-	for _, probe in probes do
-		probe:Destroy()
-	end
-end)
 
 -- 현재 항구의 나라 → 해역 → 기존 항구·교역소 BGM 순으로 적용.
+-- 지역별 교역 전용곡이 없으면 이미 승인된 그 해역의 테마곡을 사용한다.
 function Sfx.portMusic(port, market)
 	if not port then
 		Sfx.music(if market then "music_market" else "music_harbor")
@@ -175,7 +171,7 @@ function Sfx.portMusic(port, market)
 	local portId = tostring(port.id or "")
 	if market then
 		Sfx.music(firstReady("music_market_port_" .. portId, "music_market_nation_" .. country,
-			"music_market_region_" .. region, "music_market"))
+			"music_market_region_" .. region, "music_region_" .. region, "music_market"))
 	else
 		Sfx.music(firstReady("music_port_" .. portId, "music_nation_" .. country,
 			"music_region_" .. region, "music_harbor"))
