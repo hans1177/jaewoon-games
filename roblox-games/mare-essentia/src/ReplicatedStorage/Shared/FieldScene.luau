@@ -344,7 +344,7 @@ function FieldScene.start(opts)
 	hpBack.AnchorPoint = Vector2.new(0.5, 0)
 	hpBack.Position = UDim2.new(0.5, 0, 0, 86)
 	hpBack.Size = UDim2.fromOffset(240, 14)
-	hpBack.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+	hpBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	hpBack.BorderSizePixel = 0
 	hpBack.Parent = gui
 	do
