@@ -100,6 +100,77 @@
     "OpenGameArt CC0 검 소리 묶음(라이선스 확인 필수)"
    ],
    "inboxPath": "assets/inbox/Audio/"
+  },
+  {
+   "id": "mare-farm-animals",
+   "kind": "Animals",
+   "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
+   "status": "source-registered-runtime-unverified",
+   "sourceReady": [
+    "cow",
+    "horse",
+    "sheep",
+    "pig",
+    "llama",
+    "dog-pug",
+    "chicken"
+   ],
+   "missing": [
+    "goat",
+    "donkey",
+    "cat",
+    "pigeon",
+    "camel",
+    "elephant",
+    "turkey"
+   ],
+   "candidates": [
+    "Quaternius Farm Animal Pack (CC0)",
+    "Quaternius Ultimate Animated Animal Pack (CC0)",
+    "원본 라이선스와 종별 형태·해시를 확인한 무료 CC0 모델"
+   ],
+   "sourceFolder": "assets/animals/",
+   "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
+   "autoBindWithoutRuntimeProof": false
+  },
+  {
+   "id": "mare-harbor-life-props",
+   "kind": "Town",
+   "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
+   "status": "partly-source-registered-runtime-unverified",
+   "newlyRegistered": [
+    "watermill",
+    "wheel",
+    "workbench-anvil"
+   ],
+   "alreadyInGameSources": [
+    "town/cart.glb",
+    "town/windmill.glb",
+    "relics/rope-bundle-a.glb",
+    "relics/rope-bundle-b.glb",
+    "naval/mast-ropes.glb"
+   ],
+   "missing": [
+    "fishing-net",
+    "net-drying-frame",
+    "anchor",
+    "clothesline",
+    "kite",
+    "play-ball"
+   ],
+   "suggestedNext": [
+    "harbor-crane",
+    "ship-repair-slipway",
+    "fish-stall",
+    "customs-house-sign",
+    "quayside-handcart"
+   ],
+   "blocked": [
+    "beer-barrel",
+    "wine-prop"
+   ],
+   "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
+   "autoBindWithoutRuntimeProof": false
   }
  ],
  "codeReferencesNotRegistered": [],
