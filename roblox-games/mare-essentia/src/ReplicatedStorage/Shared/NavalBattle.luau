@@ -556,17 +556,59 @@ function NavalBattle.play(opts)
 				g:Destroy()
 			end
 		end })
+		local paper = Color3.fromRGB(224, 205, 163)
+		local ink = Color3.fromRGB(49, 37, 27)
+		local brass = Color3.fromRGB(158, 113, 59)
+		local rowIcons = { melee = "Menu/battle", ranged = "Menu/chart_compass", cannon = "Menu/chart_anchor" }
+
+		local function frameEdge(gui, color, radius)
+			local curve = Instance.new("UICorner")
+			curve.CornerRadius = UDim.new(0, radius)
+			curve.Parent = gui
+			local stroke = Instance.new("UIStroke")
+			stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			stroke.Color = color
+			stroke.Parent = gui
+			return stroke
+		end
+
+		local function emblem(parent, assetKey, position, size)
+			local icon = Instance.new("ImageLabel")
+			icon.AnchorPoint = Vector2.new(0, 0.5)
+			icon.Position = position
+			icon.Size = size
+			icon.BackgroundTransparency = 1
+			icon.ScaleType = Enum.ScaleType.Fit
+			icon.Image = "rbxassetid://" .. AssetIds[assetKey]
+			icon.Parent = parent
+			return icon
+		end
+
 		local bg = Instance.new("Frame")
 		bg.Size = UDim2.fromScale(1, 1)
 		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
-		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(26, 20, 16) }):Play()
+		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(46, 35, 28) }):Play()
 
-		local header = label(g, "", 18, Color3.fromRGB(246, 208, 130))
-		header.Position = UDim2.fromScale(0.02, 0.01)
-		header.Size = UDim2.fromScale(0.7, 0.07)
+		local titleBar = Instance.new("Frame")
+		titleBar.Position = UDim2.fromScale(0.02, 0.012)
+		titleBar.Size = UDim2.fromScale(0.96, 0.063)
+		titleBar.BackgroundColor3 = paper
+		titleBar.BorderSizePixel = 0
+		titleBar.Parent = g
+		frameEdge(titleBar, brass, 5)
+		emblem(titleBar, "Menu/codex", UDim2.fromScale(0.015, 0.5), UDim2.fromScale(0.065, 0.88))
+		local header = label(titleBar, "", 18, ink)
+		header.Position = UDim2.fromScale(0.09, 0)
+		header.Size = UDim2.fromScale(0.89, 1)
 		header.TextXAlignment = Enum.TextXAlignment.Left
+		header.TextStrokeTransparency = 1
+		header.TextScaled = true
+		header.TextWrapped = true
+		local headerLimit = Instance.new("UITextSizeConstraint")
+		headerLimit.MaxTextSize = 18
+		headerLimit.Parent = header
 		local info = label(g, "", 15, Color3.fromRGB(250, 236, 200))
 		info.Position = UDim2.fromScale(0.02, 0.08)
 		info.Size = UDim2.fromScale(0.96, 0.05)
@@ -600,20 +642,25 @@ function NavalBattle.play(opts)
 		handLay.Padding = UDim.new(0, 5)
 		handLay.Parent = handFrame
 
-		local function mkSide(text, y, color, onClick)
+		local function mkSide(text, y, color, assetKey, onClick)
 			local b = Instance.new("TextButton")
-			b.Text = text
+			b.Text = ""
 			b.Position = UDim2.fromScale(0.78, y)
 			b.Size = UDim2.fromScale(0.2, 0.075)
 			b.BackgroundColor3 = color
-			b.TextColor3 = Color3.fromRGB(250, 236, 200)
-			b.Font = Enum.Font.GothamBold
-			b.TextScaled = true
 			b.BorderSizePixel = 0
 			b.Parent = g
-			local c = Instance.new("UICorner")
-			c.CornerRadius = UDim.new(0, 10)
-			c.Parent = b
+			frameEdge(b, brass, 5)
+			emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
+			local title = label(b, text, 14, Color3.fromRGB(250, 236, 200))
+			title.Name = "Caption"
+			title.Position = UDim2.fromScale(0.34, 0)
+			title.Size = UDim2.fromScale(0.62, 1)
+			title.TextScaled = true
+			title.TextWrapped = true
+			local limit = Instance.new("UITextSizeConstraint")
+			limit.MaxTextSize = 15
+			limit.Parent = title
 			b.Activated:Connect(onClick)
 			return b
 		end
@@ -639,34 +686,31 @@ function NavalBattle.play(opts)
 			end
 			render()
 		end
-		local passBtn = mkSide("멈추기", 0.72, Color3.fromRGB(100, 54, 44), function()
+		local passBtn = mkSide("멈추기", 0.72, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(BC.pass(m, "me"))
 			end
 		end)
-		local leaderBtn = mkSide("지도자 능력", 0.81, Color3.fromRGB(70, 56, 90), function()
+		local leaderBtn = mkSide("지도자 능력", 0.81, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(BC.useLeader(m, "me"))
 			end
 		end)
-		mkSide("자동 진행", 0.9, Color3.fromRGB(44, 64, 78), function()
+		mkSide("자동 진행", 0.9, Color3.fromRGB(46, 72, 69), "Menu/route", function()
 			auto = true
 		end)
 
-		local function chip(parent, c, w, h, power)
+		local function chip(parent, c, w, power)
 			local f = Instance.new("TextLabel")
 			f.Size = UDim2.new(0, w, 1, 0)
-			f.BackgroundColor3 = if c.hero then Color3.fromRGB(120, 90, 30) elseif c.special then Color3.fromRGB(70, 56, 90) else Color3.fromRGB(58, 44, 34)
-			f.TextColor3 = Color3.fromRGB(250, 236, 200)
+			f.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120) else paper
+			f.TextColor3 = ink
 			f.Font = Enum.Font.GothamBold
 			f.TextScaled = true
 			f.BorderSizePixel = 0
 			f.Text = string.format("%s\n%s", c.name, tostring(power or c.power or ""))
 			f.Parent = parent
-			local cc = Instance.new("UICorner")
-			cc.CornerRadius = UDim.new(0, 6)
-			cc.Parent = f
-			return f
+			frameEdge(f, brass, 4)
 		end
 		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
 
@@ -856,10 +900,11 @@ function NavalBattle.play(opts)
 					table.insert(weather, BC.ROW_NAME[row] .. " 약화")
 				end
 			end
-			header.Text = string.format("⚔ 접현 카드전  %d판   우리 %s  해적 %s   점수 %d : %d   %s   손패 %d / 해적 %d   %s",
-				m.round, string.rep("●", m.wins.me) .. string.rep("○", 2 - math.min(2, m.wins.me)), string.rep("●", m.wins.foe) .. string.rep("○", 2 - math.min(2, m.wins.foe)),
-				BC.total(m, "me"), BC.total(m, "foe"), if #weather > 0 then "🌫 " .. table.concat(weather, ", ") else "", #m.hand.me, #m.hand.foe,
-				if m.turn == "me" and not m.over then "▶ 내 차례" else "해적 차례")
+			header.Text = string.format("접현 전투 · %d판   우리 %d : %d 해적   ·   %s",
+				m.round, BC.total(m, "me"), BC.total(m, "foe"),
+				if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
+			header.Text ..= string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
 			-- 줄: 위 3줄은 해적(포·사격·근접), 아래 3줄은 우리(근접·사격·포)
 			local order = { { "foe", "cannon" }, { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" }, { "me", "cannon" } }
 			for k, o in order do
@@ -867,13 +912,15 @@ function NavalBattle.play(opts)
 				local rf = Instance.new("Frame")
 				rf.Position = UDim2.fromScale(0, (k - 1) / 6)
 				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
-				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(34, 44, 34) else Color3.fromRGB(48, 30, 28)
+				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(68, 76, 65) else Color3.fromRGB(88, 58, 50)
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
+				frameEdge(rf, brass, 4)
+				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
-				local tag = label(rf, string.format("%s %s\n%d%s", ROW_ICON[row], BC.ROW_NAME[row], BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then " ▲상성" elseif dis then " ▼불리" else ""), 13, Color3.fromRGB(246, 208, 130))
-				tag.Position = UDim2.fromOffset(4, 0)
-				tag.Size = UDim2.new(0, 96, 1, 0)
+				local tag = label(rf, string.format("%s\n%d%s", BC.ROW_NAME[row], BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then " ▲상성" elseif dis then " ▼불리" else ""), 13, Color3.fromRGB(246, 208, 130))
+				tag.Position = UDim2.fromOffset(29, 0)
+				tag.Size = UDim2.new(0, 68, 1, 0)
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
 				local cards = Instance.new("Frame")
@@ -887,7 +934,7 @@ function NavalBattle.play(opts)
 				lay.Padding = UDim.new(0, 4)
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					chip(cards, c, 62, 0, BC.cardPower(m, side, row, idx))
+					chip(cards, c, 62, BC.cardPower(m, side, row, idx))
 				end
 			end
 			-- 손패
@@ -895,7 +942,8 @@ function NavalBattle.play(opts)
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 88, 1, -10)
 				b.LayoutOrder = i
-				b.BackgroundColor3 = if c.hero then Color3.fromRGB(120, 90, 30) elseif c.special then Color3.fromRGB(70, 56, 90) else Color3.fromRGB(58, 44, 34)
+				b.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120)
+					elseif c.special then Color3.fromRGB(198, 193, 218) else paper
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
 				b.TextScaled = true
@@ -921,18 +969,23 @@ function NavalBattle.play(opts)
 				local artKey = if c.id == "scorch" then CARD_FIRE elseif c.id == "storm" or c.id == "fog" or c.id == "melee_fog" then CARD_STORM else CARD_SEA
 				image.Image = "rbxassetid://" .. AssetIds[artKey]
 				image.Parent = art
-				local caption = label(b, string.format("%s  %s", c.name, tostring(c.power or "✦")), 13, Color3.fromRGB(250, 236, 200), true)
-				caption.Position = UDim2.fromScale(0.04, 0.65)
-				caption.Size = UDim2.fromScale(0.92, 0.35)
+				local caption = label(b, c.name, 13, ink, true)
+				caption.Position = UDim2.fromScale(0.25, 0.65)
+				caption.Size = UDim2.fromScale(0.71, 0.35)
 				caption.TextScaled = true
+				caption.TextStrokeTransparency = 1
+				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
+				emblem(b, iconKey, UDim2.fromScale(0.035, 0.82), UDim2.fromScale(0.20, 0.25))
+				local power = label(b, tostring(c.power or "✦"), 13, ink, true)
+				power.Position = UDim2.fromOffset(5, 5)
+				power.Size = UDim2.fromOffset(21, 20)
+				power.BackgroundColor3 = paper
+				power.BackgroundTransparency = 0
+				power.TextStrokeTransparency = 1
+				power.ZIndex = 4
+				frameEdge(power, brass, 5)
 				b.Parent = handFrame
-				local cc = Instance.new("UICorner")
-				cc.CornerRadius = UDim.new(0, 8)
-				cc.Parent = b
-				local edge = Instance.new("UIStroke")
-				edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-				edge.Color = Color3.fromRGB(162, 120, 66)
-				edge.Parent = b
+				local edge = frameEdge(b, brass, 6)
 
 				b.Activated:Connect(function()
 					if playing or auto or finished or m.turn ~= "me" or m.over then
@@ -941,7 +994,7 @@ function NavalBattle.play(opts)
 					if selected ~= b then
 						if selected then
 							TweenService:Create(selected, TweenInfo.new(0.12), { Rotation = 0 }):Play()
-							selected.UIStroke.Color = Color3.fromRGB(162, 120, 66)
+							selected.UIStroke.Color = brass
 						end
 						if stopCardMotion then stopCardMotion() end
 						stopCardMotion = animateCardArt(art, image, c)
@@ -988,7 +1041,7 @@ function NavalBattle.play(opts)
 				end)
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
-			leaderBtn.Text = if m.leaderUsed.me then "지도자 (사용함)" else "지도자: " .. BC.Leaders[m.leader.me].name
+			leaderBtn.Caption.Text = if m.leaderUsed.me then "지도자 (사용함)" else "지도자: " .. BC.Leaders[m.leader.me].name
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0
 		end
 		render()
