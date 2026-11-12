@@ -6826,9 +6826,10 @@ end
 				end
 			elseif ok == nil then
 				note.Text = "서버 응답이 늦어요. 잠시 후 다시 눌러 주세요."
-			elseif ok == false and msg == "너무 빨라요" then
+			elseif ok == false and msg == "너무 빨라요" and (spec.retries or 0) < 5 then
+				spec.retries = (spec.retries or 0) + 1
 				note.Text = ""
-				task.delay(0.7, function() if dlg == layer then submit() end end) -- 조용히 한 번 더
+				task.delay(0.7, function() if dlg == layer then submit() end end) -- 조용히 몇 번 더
 			elseif ok == false then
 				note.Text = tostring(msg or "")
 				if msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요" then
