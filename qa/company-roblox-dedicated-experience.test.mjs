@@ -670,6 +670,17 @@ test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
   }
 });
 
+// [공식 Studio 경고 회귀] 수입 FBX 동물의 축·단위를 바로잡고 실제 배치 크기까지 검사한다.
+test('Mare harbor animals preserve imported mesh scale and verify final bounds',()=>{
+  const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  assert.match(scene,/local isAnimal = kind == "Animals"/);
+  assert.match(scene,/elseif isAnimal then math\.max\(ext\.X, ext\.Y, ext\.Z\)/);
+  assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
+  assert.match(scene,/m:GetScale\(\) \* ratio/);
+  assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
+  assert.match(scene,/local m = k and importedModel\(folder, "Animals"/);
+});
+
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
   const root='roblox-games/mare-essentia';
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
