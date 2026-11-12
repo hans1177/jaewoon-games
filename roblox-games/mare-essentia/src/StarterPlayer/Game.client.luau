@@ -5719,7 +5719,7 @@ do
 	task.spawn(function()
 		local library = ReplicatedStorage:WaitForChild("MareAssets", 20)
 		if not library then return end
-		for _, kind in { "Naval", "Town" } do
+		for kind in pairs({ Naval = true, Town = true }) do
 			local folder = library:FindFirstChild(kind)
 			if folder then
 				folder.ChildAdded:Connect(function()
