@@ -56,3 +56,7 @@
 
 - 2026-11-12 13:21(KST, 04:21Z 커밋) 바이브: 클릭 28/30(선택 2건 건너뜀), 프레임 31장, 단계 185/185, Client/Server 콘솔 error 0. errors STUDIO_ASSET_AUDIT_FAILED 1건: ① Server preload CardArt 12개 TIMEOUT_16S(오탐 패턴 유지) ② 새로 보임: 모델 감사 Animals/* 10개(donkey·cat·cow·chicken·dog-pug·horse·llama·elephant·sheep·pig) INVALID_MODEL(581/591 로드). registry 869 PASS. c07·c20 jpg 직접 확인: 길드 서기 이름 입력 창이 교역소를 계속 덮고 있음(게임 오류 아님), 글자·초상·3D 배경 정상. 코드 수정 없음(다른 작업이 진행 중이라 충돌 피함), 재배포 안 함.
 - 큐 추가: Animals/* 10개가 실제 모델 문제인지(새 동물 추가 직후 미반영인지) 다음 점검에서 같은 10개인지 확인. 길드 이름 창 자동 통과 아직 미반영.
+
+- 2026-11-12 14:3x(KST, run 43160303288, 05:22Z) 바이브: 점검 스크립트 u0~u6 7장 버전(클릭 없음), 22/22 단계, errors 비어 있음. 새로 보임: 콘솔 error 1건 'Unable to assign property Text. string expected, got nil'(출처 미확인, 실제 화면엔 빈 글자 없음). u1·u2 jpg 확인: 교역소·조선소 위에 시작 메뉴('새 게임·설정·음악')가 떠 있는 상태로 캡처됨(점검 스크립트 특성), 교역소 '융단' 옆 □ 여전히 보임.
+- 고친 것: □ 원인은 ✦(신상품)·▽(할인) 기호가 폰트에 없어서로 판단 → Game.client.luau 교역소 목록·카드의 두 기호를 '(신상)'·'(할인)' 글자로 교체. 재배포 요청.
+- 큐: ① Text nil 콘솔 오류 출처 찾기(다음 점검에서 같은 오류인지, 클릭 있는 점검에서 어디서 나는지) ② 융단 □ 사라졌는지 확인 ③ Animals/* 10개 INVALID_MODEL 확인 ④ 길드 이름 창 자동 통과.
