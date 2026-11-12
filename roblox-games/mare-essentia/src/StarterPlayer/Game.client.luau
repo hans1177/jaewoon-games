@@ -676,6 +676,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	row.Parent = parent
 	do
 		local rs = Instance.new("UIStroke")
+		rs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		rs.Color = INK_EDGE
 		rs.Thickness = 1.3
 		rs.Transparency = 0.15
@@ -702,31 +703,6 @@ local function mkRow(parent, title, subtitle, buttons, height)
 			NumberSequenceKeypoint.new(0.92, 0.95), NumberSequenceKeypoint.new(1, 0.2),
 		})
 		burn.Parent = patina
-		-- 모서리에 찍힌 밀랍 인장
-		local seal = Instance.new("TextLabel")
-		seal.Name = "WaxSeal"
-		seal.AnchorPoint = Vector2.new(0.5, 0.5)
-		seal.Position = UDim2.new(1, -9, 0, 9)
-		seal.Size = UDim2.fromOffset(14, 14)
-		seal.BackgroundColor3 = WAX
-		seal.Text = ""
-		seal.ZIndex = 3
-		seal.Parent = row
-		corner(seal, 7)
-		local sealEdge = Instance.new("UIStroke")
-		sealEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		sealEdge.Color = Color3.fromRGB(96, 24, 20)
-		sealEdge.Thickness = 1
-		local sealCore = Instance.new("Frame") -- 밀랍이 눌린 안쪽 원
-		sealCore.AnchorPoint = Vector2.new(0.5, 0.5)
-		sealCore.Position = UDim2.fromScale(0.5, 0.5)
-		sealCore.Size = UDim2.fromScale(0.5, 0.5)
-		sealCore.BackgroundColor3 = Color3.fromRGB(186, 74, 62)
-		sealCore.BorderSizePixel = 0
-		sealCore.ZIndex = 4
-		sealCore.Parent = seal
-		corner(sealCore, 4)
-		sealEdge.Parent = seal
 		local bar = Instance.new("Frame")
 		bar.Name = "AccentBar"
 		bar.BackgroundColor3 = UI_BRASS
@@ -815,6 +791,7 @@ mainInner.BackgroundColor3 = COLORS.coverRaised
 bookMaterial(mainInner, "leather", 180)
 do
 	local st = Instance.new("UIStroke")
+	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	st.Color = Color3.fromRGB(214, 170, 82)
 	st.Thickness = 2.5
 	st.Parent = main
@@ -832,6 +809,7 @@ do
 	inset.ZIndex = 0
 	inset.Parent = main
 	local ist = Instance.new("UIStroke")
+	ist.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	ist.Color = Color3.fromRGB(120, 92, 44)
 	ist.Thickness = 1
 	ist.Transparency = 0.3
@@ -913,6 +891,7 @@ do
 	c.CornerRadius = UDim.new(0, 8)
 	c.Parent = portraitFrame
 	local st = Instance.new("UIStroke")
+	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	st.Color = Color3.fromRGB(214, 170, 82)
 	st.Thickness = 2
 	st.Parent = portraitFrame
@@ -936,6 +915,7 @@ do
 	c.CornerRadius = UDim.new(0, 8)
 	c.Parent = portraitImage
 	local st = Instance.new("UIStroke")
+	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	st.Color = Color3.fromRGB(214, 170, 82)
 	st.Thickness = 2
 	st.Parent = portraitImage
@@ -2596,6 +2576,7 @@ local function playEpilogue(msg, opts)
 		l.TextTransparency = 1
 		l.ZIndex = 8
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = 1.5
 		st.Color = Color3.new(0, 0, 0)
 		st.Transparency = 1
@@ -2736,6 +2717,7 @@ function playStory(ev)
 		ph.ImageRectSize = Vector2.new(256, 336)
 		corner(ph, 10)
 		local pst = Instance.new("UIStroke")
+		pst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		pst.Color = Color3.fromRGB(214, 170, 82)
 		pst.Thickness = 3
 		pst.Parent = ph
@@ -2814,7 +2796,7 @@ function playStory(ev)
 	chapter.TextSize = 15
 	chapter.TextXAlignment = Enum.TextXAlignment.Center
 	chapter.TextColor3 = Color3.new(1, 1, 1)
-	chapter.TextStrokeTransparency = 0.4
+	chapter.TextStrokeTransparency = 1
 	chapter.Text = (if ev.chapter then ev.chapter .. " · " else "") .. ev.title
 	chapter.ZIndex = 61
 	chapter.Parent = overlay
@@ -3946,6 +3928,7 @@ function RENDERERS.trade()
 			corner(cardF, 10)
 			cardF.Parent = grid
 			local st = Instance.new("UIStroke")
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			st.Color = if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else Color3.fromRGB(70, 84, 104)
 			st.Thickness = 1.5
 			st.Parent = cardF
@@ -4677,6 +4660,7 @@ function H.showCardDetail(card)
 	local viewportHeight = if camera then camera.ViewportSize.Y else 600
 	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
 	local artBorder = Instance.new("UIStroke")
+	artBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	artBorder.Color = brown
 	artBorder.Parent = art
 	corner(art, 5)
@@ -6005,6 +5989,7 @@ openOptions = function()
 	win.Parent = layer
 	corner(win, 16)
 	local wst = Instance.new("UIStroke")
+	wst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	wst.Color = BRASS
 	wst.Thickness = 2.5
 	wst.Parent = win
@@ -6171,6 +6156,7 @@ function H.playWonderScene(cardId)
 	ratio.AspectRatio = 16 / 9
 	ratio.Parent = frame
 	local fstroke = Instance.new("UIStroke")
+	fstroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	fstroke.Thickness = 3
 	fstroke.Color = Color3.fromRGB(212, 168, 74)
 	fstroke.Parent = frame
@@ -6229,7 +6215,7 @@ function H.playWonderScene(cardId)
 	cap.Size = UDim2.new(0.9, 0, 0, 74)
 	cap.BackgroundTransparency = 1
 	cap.TextColor3 = Color3.fromRGB(246, 232, 200)
-	cap.TextStrokeTransparency = 0.4
+	cap.TextStrokeTransparency = 1
 	cap.Font = Enum.Font.Gotham
 	cap.TextSize = 17
 	cap.TextWrapped = true
@@ -6313,7 +6299,7 @@ function H.playWonderScene(cardId)
 		-- 3) 제목과 자막
 		task.delay(4.5, function()
 			if alive then
-				TS:Create(ttl, TweenInfo.new(1), { TextTransparency = 0, TextStrokeTransparency = 0.5 }):Play()
+				TS:Create(ttl, TweenInfo.new(1), { TextTransparency = 0, TextStrokeTransparency = 1 }):Play()
 			end
 		end)
 		for i, line in sc.lines do
@@ -6363,24 +6349,29 @@ do
 	root.ClipsDescendants = true
 	local picture = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
 	picture.ClipsDescendants = true
+	-- 액자(고정) 안에서 그림만 파도처럼 천천히 흔들린다
+	local plate = mkBox(picture, UDim2.fromScale(0.3, 0.6), UDim2.fromScale(0.5, 0.68), COLORS.cover)
+	plate.Name = "TitleVoyagePlate"
+	plate.AnchorPoint = Vector2.new(0.5, 0.5)
+	plate.ClipsDescendants = true
+	plate.ZIndex = 1
 	local art = Instance.new("ImageLabel")
 	art.Name = "TitleVoyageIllustration"
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(0.5, 0.78)
-	art.Position = UDim2.fromScale(0.3, 0.52)
+	art.Size = UDim2.fromScale(1.1, 1.1)
 	art.BackgroundTransparency = 1
 	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
 	art.ScaleType = Enum.ScaleType.Crop
 	art.ImageColor3 = Color3.fromRGB(226, 208, 170) -- 바랜 판화 느낌
 	art.ZIndex = 1
-	art.Parent = picture
+	art.Parent = plate
 	do
 		local frame = Instance.new("UIStroke")
 		frame.Color = Color3.fromRGB(196, 158, 84)
 		frame.Thickness = 3
 		frame.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		frame.Parent = art
+		frame.Parent = plate
 		local sea = Instance.new("UIGradient")
 		sea.Color = ColorSequence.new(Color3.fromRGB(12, 24, 38), Color3.fromRGB(28, 54, 74))
 		sea.Rotation = 90
@@ -6437,7 +6428,7 @@ do
 		local streaks, gulls = {}, {}
 		do
 			local rng = Random.new(77)
-			for i = 1, 7 do
+			for i = 1, 0 do
 				local y = 0.8 + rng:NextNumber() * 0.16
 				local f = Instance.new("Frame")
 				f.BorderSizePixel = 0
@@ -6448,18 +6439,34 @@ do
 				f.Parent = picture
 				table.insert(streaks, { f = f, x = rng:NextNumber(), y = y, v = 0.01 + (y - 0.55) * 0.05 })
 			end
-			for i = 1, 0 do
-				local g = Instance.new("TextLabel")
+			for i = 1, 5 do
+				local g = Instance.new("Frame")
 				g.BackgroundTransparency = 1
-				g.Text = "︶︶"
-				g.Font = Enum.Font.GothamBold
-				g.TextSize = 12 + i * 2
-				g.TextColor3 = Color3.fromRGB(246, 246, 240)
-				g.TextTransparency = 0.15
-				g.Size = UDim2.fromOffset(40, 16)
+				local w = 22 + i * 5
+				g.Size = UDim2.fromOffset(w, w * 0.5)
 				g.ZIndex = 3
 				g.Parent = picture
-				table.insert(gulls, { f = g, x = rng:NextNumber(), y = 0.12 + rng:NextNumber() * 0.28, v = 0.012 + rng:NextNumber() * 0.012, ph = rng:NextNumber() * 6 })
+				local wings = {}
+				for side = -1, 1, 2 do
+					local wing = Instance.new("Frame")
+					wing.AnchorPoint = Vector2.new(if side < 0 then 1 else 0, 0.5)
+					wing.Position = UDim2.fromScale(0.5, 0.5)
+					wing.Size = UDim2.new(0.5, 0, 0, math.max(2, math.floor(w / 12)))
+					wing.BackgroundColor3 = Color3.fromRGB(250, 248, 240)
+					wing.BorderSizePixel = 0
+					wing.Parent = g
+					corner(wing, 2)
+					table.insert(wings, { f = wing, side = side })
+				end
+				local body = Instance.new("Frame")
+				body.AnchorPoint = Vector2.new(0.5, 0.5)
+				body.Position = UDim2.fromScale(0.5, 0.5)
+				body.Size = UDim2.fromOffset(math.max(3, w / 8), math.max(3, w / 8))
+				body.BackgroundColor3 = Color3.fromRGB(236, 232, 222)
+				body.BorderSizePixel = 0
+				body.Parent = g
+				corner(body, 4)
+				table.insert(gulls, { f = g, wings = wings, x = rng:NextNumber(), y = 0.1 + rng:NextNumber() * 0.3, v = 0.01 + rng:NextNumber() * 0.01, ph = rng:NextNumber() * 6, flap = 3 + rng:NextNumber() * 2 })
 			end
 		end
 		local liveConn
@@ -6484,6 +6491,8 @@ do
 				for _, g in gulls do
 					g.x = (g.x + g.v * 1/30 * 3) % 1.2
 					g.f.Position = UDim2.new(g.x - 0.1, 0, g.y + math.sin(now * 1.6 + g.ph) * 0.012, 0)
+					local lift = 12 + math.sin(now * g.flap + g.ph) * 24
+					for _, w in g.wings do w.f.Rotation = -w.side * lift end
 				end
 			end)
 		end
@@ -6517,7 +6526,7 @@ do
 	heading.TextScaled = true
 	heading.TextWrapped = false
 	heading.TextStrokeColor3 = COLORS.ink
-	heading.TextStrokeTransparency = 0.48
+	heading.TextStrokeTransparency = 1
 	heading.ZIndex = 4
 	local headingLimit = Instance.new("UITextSizeConstraint")
 	headingLimit.MaxTextSize = 46
@@ -6525,7 +6534,7 @@ do
 	local subtitle = mkLabel(root, "학문의 바다", 19, Color3.fromRGB(251, 223, 167), true)
 	subtitle.AutomaticSize = Enum.AutomaticSize.None
 	subtitle.TextStrokeColor3 = COLORS.ink
-	subtitle.TextStrokeTransparency = 0.45
+	subtitle.TextStrokeTransparency = 1
 	subtitle.ZIndex = 4
 
 	local function layout()
@@ -6533,7 +6542,7 @@ do
 		local portrait = size.X < size.Y
 		picture.Size = if portrait then UDim2.fromScale(1, 0.72) else UDim2.fromScale(0.70, 1)
 		fade.Rotation = if portrait then 90 else 0
-		heading.Position = if portrait then UDim2.fromScale(0.07, 0.12) else UDim2.fromScale(0.065, 0.145)
+		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.055, 0, 0, 74)
 		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
 		heading.TextXAlignment = if portrait then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 		subtitle.Position = heading.Position + UDim2.fromOffset(0, heading.Size.Y.Offset + 2)
@@ -6543,9 +6552,9 @@ do
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
 	layout()
 
-	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(14, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
-		Size = UDim2.fromScale(1.13, 1.13),
-		Position = UDim2.fromScale(0.49, 0.49),
+	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+		Rotation = 1.2,
+		Position = UDim2.fromScale(0.5, 0.515),
 	})
 	titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 		if titleGui.Enabled then drift:Play() else drift:Pause() end
@@ -6760,6 +6769,7 @@ renderTitle = function()
 	bookMaterial(box, "parchment", 170)
 	do
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Color = GOLD
 		st.Transparency = 0.55
 		st.Parent = box
@@ -6993,6 +7003,7 @@ function H.showTitle()
 	corner(box, 11)
 	bookMaterial(box, "leather", 196)
 	local edge = Instance.new("UIStroke")
+	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	edge.Color = UI_BRASS
 	edge.Thickness = 1.5
 	edge.Parent = box
@@ -7195,6 +7206,7 @@ do
 		win.Parent = layer
 		corner(win, 16)
 		local wst = Instance.new("UIStroke")
+		wst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		wst.Color = BRASS
 		wst.Thickness = 2.5
 		wst.Parent = win
@@ -7323,6 +7335,7 @@ end
 		im.ImageRectSize = size
 		corner(im, 8)
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Color = Color3.fromRGB(214, 170, 82)
 		st.Thickness = 2
 		st.Parent = im
@@ -7372,6 +7385,7 @@ end
 		win.Parent = layer
 		corner(win, 16)
 		local wst = Instance.new("UIStroke")
+		wst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		wst.Color = BRASS
 		wst.Thickness = 2.5
 		wst.Parent = win
@@ -7542,6 +7556,7 @@ end
 	corner(chip, 8)
 	do
 		local cst = Instance.new("UIStroke")
+		cst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		cst.Color = BRASS
 		cst.Thickness = 1.5
 		cst.Parent = chip
@@ -7632,6 +7647,7 @@ end
 		frame.Parent = layer
 		corner(frame, 6)
 		local fst = Instance.new("UIStroke")
+		fst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		fst.Color = BRASS
 		fst.Thickness = 5
 		fst.Parent = frame

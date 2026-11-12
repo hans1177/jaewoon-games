@@ -14,34 +14,52 @@ local NavalBattle = {}
 
 local ORIGIN = Vector3.new(6000, 0, 0)
 
--- 접현 카드 원화와 등록 모델
+-- 해상전투에서 사용하는 기존 등록 도감 이미지
 local CARD_SEA = "CardArt/event_calm_seas"
-local CARD_STORM = "CardArt/event_storm"
-local CARD_FIRE = "CardArt/event_harbor_fire"
-local CARD_MODELS = {
-	sword = { "Relics", "weapon-sword", "swing" },
-	spear = { "Relics", "weapon-spear", "swing" },
-	cannon = { "Naval", "cannon", "recoil" },
-	shieldman = { "Relics", "shield-round", "brace" },
-	swivel = { "Naval", "cannon-mobile", "recoil" },
-	hero_captain = { "Naval", "ship-small", "swell" },
-	surgeon = { "Cargo", "mortar-pestle", "brace" },
-	hero_medic = { "Cargo", "mortar-pestle", "brace" },
-	fog = { "Naval", "ship-small", "swell" },
-	storm = { "Naval", "ship-small", "swell" },
-	clear = { "Naval", "ship-small", "swell" },
+
+-- 카드별 판화: 게임에 이미 등록된 백과사전 도판을 재사용한다.
+local CARD_ART = {
+	swordsman="CardArt/event_piracy",axeman="CardArt/event_anglo_dutch_war",
+	pikeman="CardArt/event_royal_charter",shieldman="CardArt/event_cape_colony",
+	boatswain="CardArt/event_cook_voyage",surgeon="CardArt/event_new_plant",
+	musketeer="CardArt/event_anglo_dutch_war",sharpshooter="CardArt/event_piracy",
+	scout="CardArt/event_chart_world",gunner="CardArt/event_anglo_dutch_war",
+	swivel="CardArt/event_harbor_fire",culverin="CardArt/event_anglo_dutch_war",
+	hero_blade="CardArt/event_royal_charter",hero_marksman="CardArt/event_piracy",
+	hero_cannon="CardArt/event_anglo_dutch_war",hero_spy="CardArt/event_chart_caribbean",
+	hero_medic="CardArt/event_new_plant",hero_captain="CardArt/event_cook_voyage",
+	beast="CardArt/event_piracy",scorch="CardArt/event_harbor_fire",
+	fog="CardArt/event_calm_seas",storm="CardArt/event_storm",
+	melee_fog="CardArt/event_hurricane",clear="CardArt/event_calm_seas",
 }
 
--- 카드 원화: 등록된 백과사전 판화 중 장면이 맞는 것을 쓴다 (해전 전용 판화는 따로 그려 받아야 한다)
-local CARD_ART = {
-	gunner = "CardArt/event_anglo_dutch_war", swivel = "CardArt/event_anglo_dutch_war", culverin = "CardArt/event_anglo_dutch_war",
-	musketeer = "CardArt/event_piracy", sharpshooter = "CardArt/event_piracy", scout = "CardArt/event_chart_world",
-	swordsman = "CardArt/event_piracy", axeman = "CardArt/event_piracy", pikeman = "CardArt/event_piracy",
-	shieldman = "CardArt/event_royal_charter", boatswain = "CardArt/event_cook_voyage", surgeon = "CardArt/event_new_plant",
-	beast = "CardArt/event_treasure_wreck", hero_blade = "CardArt/event_piracy", hero_marksman = "CardArt/event_anglo_dutch_war",
-	hero_cannon = "CardArt/event_anglo_dutch_war", hero_spy = "CardArt/event_chart_world", hero_medic = "CardArt/event_new_plant",
-	hero_captain = "CardArt/event_cook_voyage", fog = "CardArt/event_calm_seas", storm = "CardArt/event_storm",
-	melee_fog = "CardArt/event_hurricane", clear = "CardArt/event_calm_seas", scorch = "CardArt/event_harbor_fire",
+-- 카드 24종마다 실제 등록된 사람·무기·선박 모델을 움직이는 삽화로 연결한다.
+-- 없는 맹수/무기 모델은 임의 파츠나 다른 동물로 대체하지 않는다.
+local CARD_STAGE = {
+	swordsman={actor={"People","Soldier_Male"},prop={"Relics","weapon-sword"},style="slash"},
+	axeman={actor={"People","KayKit_Barbarian"},style="slash"},
+	pikeman={actor={"People","BlueSoldier_Male"},prop={"Relics","weapon-spear"},style="thrust"},
+	shieldman={actor={"People","Soldier_Male"},prop={"Relics","shield-round"},style="guard"},
+	boatswain={actor={"People","Worker_Male"},prop={"Relics","rope-bundle-a"},style="signal"},
+	surgeon={actor={"People","Doctor_Male_Young"},prop={"Cargo","mortar-pestle"},style="heal"},
+	musketeer={actor={"People","BlueSoldier_Male"},style="aim"},
+	sharpshooter={actor={"People","Soldier_Female"},style="aim"},
+	scout={actor={"People","Pirate_Female"},prop={"Relics","compass-base"},style="scout"},
+	gunner={actor={"People","Worker_Male"},prop={"Naval","cannon"},style="fire"},
+	swivel={actor={"People","Pirate_Male"},prop={"Naval","cannon-mobile"},style="fire"},
+	culverin={prop={"Naval","cannon"},style="fire"},
+	hero_blade={actor={"People","OldClassy_Male"},prop={"Relics","weapon-sword"},style="slash"},
+	hero_marksman={actor={"People","Soldier_Female"},style="aim"},
+	hero_cannon={actor={"People","BlueSoldier_Male"},prop={"Naval","cannon"},style="fire"},
+	hero_spy={actor={"People","Pirate_Female"},prop={"Relics","map-rolled"},style="scout"},
+	hero_medic={actor={"People","Doctor_Female_Young"},prop={"Cargo","mortar-pestle"},style="heal"},
+	hero_captain={actor={"People","OldClassy_Male"},prop={"Naval","ship-large"},style="signal"},
+	beast={style="swell"},
+	scorch={prop={"Naval","ship-wreck"},style="fire"},
+	fog={prop={"Naval","ship-small"},style="fog"},
+	storm={prop={"Naval","ship-pirate-medium"},style="storm"},
+	melee_fog={prop={"Naval","ship-pirate-small"},style="storm"},
+	clear={prop={"Naval","boat-sail-a"},style="swell"},
 }
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
@@ -776,7 +794,7 @@ function NavalBattle.play(opts)
 		local auto = false
 		local playing = false
 		local selected
-		local stopCardMotion
+		local cardMotions = {}
 		local rowTargets = { me = {}, foe = {} }
 		local function afterAction(ok, msg, res, card, side)
 			if ok and card and onPlay then onPlay(side, card) end
@@ -808,191 +826,208 @@ function NavalBattle.play(opts)
 			auto = true
 		end)
 
+		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
 		local function chip(parent, c, w, power)
-			local f = Instance.new("TextLabel")
+			local f = Instance.new("Frame")
 			f.Size = UDim2.new(0, w, 1, 0)
-			f.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120) else paper
-			f.TextColor3 = ink
-			f.Font = Enum.Font.GothamBold
-			f.TextScaled = true
+			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
-			f.Text = string.format("%s\n%s", c.name, tostring(power or c.power or ""))
 			f.Parent = parent
-			frameEdge(f, brass, 4)
+			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			local painting = Instance.new("ImageLabel")
+			painting.Name = "EncyclopediaPlate"
+			painting.Size = UDim2.fromScale(1, 0.8)
+			painting.BackgroundTransparency = 1
+			painting.ScaleType = Enum.ScaleType.Crop
+			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
+			local artKey = CARD_ART[c.id] or CARD_SEA
+			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+			painting.Parent = f
+			local blackWash = Instance.new("UIGradient")
+			blackWash.Rotation = 90
+			blackWash.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.35),
+				NumberSequenceKeypoint.new(0.48, 1),
+				NumberSequenceKeypoint.new(1, 0.3),
+			})
+			blackWash.Parent = painting
+			local tag = label(f, c.name, 11, Color3.fromRGB(255, 237, 188), true)
+			tag.Position = UDim2.fromScale(0.03, 0.04)
+			tag.Size = UDim2.fromScale(0.94, 0.38)
+			tag.TextScaled = true
+			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
+			stamp.AnchorPoint = Vector2.new(0.5, 1)
+			stamp.Position = UDim2.fromScale(0.5, 0.97)
+			stamp.Size = UDim2.fromScale(0.62, 0.29)
+			stamp.TextScaled = true
+			stamp.TextStrokeTransparency = 1
+			stamp.BackgroundColor3 = paper
+			stamp.BackgroundTransparency = 0
+			frameEdge(stamp, brass, 4)
 		end
 		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
 
-		-- 한 번에 선택한 카드 한 장의 원화와 모델만 움직인다.
+		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
+		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
 		local function animateCardArt(art, image, card)
-			local spec = CARD_MODELS[card.id] or CARD_MODELS[card.weapon]
+			local spec = CARD_STAGE[card.id] or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
-			local group = spec and assets and assets:FindFirstChild(spec[1])
-			local template = group and group:FindFirstChild(spec[2])
-			local hasProp = template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true)
-			local showActor = not card.special and card.id ~= "beast"
-			local view, world, camera, model, center, bounds, pivot
-			local actor, grip, neck
-			local active = true
-			if hasProp or showActor then
+			local function template(key)
+				local folder = key and assets and assets:FindFirstChild(key[1])
+				local source = folder and folder:FindFirstChild(key[2])
+				return if source and source:IsA("Model") and source:FindFirstChildWhichIsA("BasePart", true) then source else nil
+			end
+			local actorSource, propSource = template(spec.actor), template(spec.prop)
+			local view, actor, prop, actorPivot, propPivot, shoulder
+			if actorSource or propSource then
 				view = Instance.new("ViewportFrame")
+				view.Name = "AnimatedEncyclopedia"
 				view.Size = UDim2.fromScale(1, 1)
 				view.BackgroundTransparency = 1
-				view.Ambient = Color3.fromRGB(156, 161, 174)
-				view.LightColor = Color3.fromRGB(255, 231, 187)
-				view.LightDirection = Vector3.new(-1, -1, -0.5).Unit
+				view.Ambient = Color3.fromRGB(130, 110, 93)
+				view.LightColor = Color3.fromRGB(250, 222, 171)
+				view.LightDirection = Vector3.new(-0.7, -1, -0.3).Unit
 				view.ZIndex = image.ZIndex + 1
 				view.Parent = art
-				world = Instance.new("WorldModel")
+				local world = Instance.new("WorldModel")
 				world.Parent = view
-				camera = Instance.new("Camera")
-				camera.FieldOfView = 34
+				local camera = Instance.new("Camera")
+				camera.FieldOfView = 38
+				camera.CFrame = CFrame.lookAt(Vector3.new(6, 4.3, 11.5), Vector3.new(0, 2.3, 0))
 				camera.Parent = view
 				view.CurrentCamera = camera
-				if hasProp then
-					model = template:Clone()
+				local function mount(source, extent, x, y, z, person)
+					local model = source:Clone()
 					model.Parent = world
-					local box
-					box, bounds = model:GetBoundingBox()
-					center, pivot = box.Position, model:GetPivot()
-					local distance = math.max(bounds.Magnitude, 0.1) * 1.85
-					camera.CFrame = CFrame.lookAt(center + Vector3.new(0.85, 0.48, 1).Unit * distance, center)
-				end
-				if showActor then
-					task.defer(function()
-						if not active then return end
-						local actorWorld = Instance.new("WorldModel")
-						local seed = 0
-						for i = 1, #card.id do
-							seed = (seed * 31 + string.byte(card.id, i)) % 100000
+					for _, part in model:GetDescendants() do
+						if part:IsA("BasePart") then
+							part.Anchored = true
+							part.CanCollide = false
+							part.CanTouch = false
+							part.CanQuery = false
 						end
-						local role = if card.ability == "spy" then "Rogue" elseif card.id == "axeman" then "Barbarian" else "Sailor"
-						local coat = if card.hero then Color3.fromRGB(117, 48, 39)
-							elseif card.row == "cannon" then Color3.fromRGB(122, 83, 54)
-							else Color3.fromRGB(60, 87, 107)
-						local ok, rig = pcall(Pose.createR15, actorWorld, Vector3.zero, 0, coat, Random.new(seed), role, 5.8)
-						if not active or not ok or not rig then
-							actorWorld:Destroy()
-							return
-						end
-						rig.Parent = world
-						actorWorld:Destroy()
-						actor = rig
-						neck = actor:FindFirstChild("Neck", true)
-						local weaponHand = if card.id == "shieldman" then "LeftHand" else "RightHand"
-						local hand = actor:FindFirstChild(weaponHand)
-						grip = hand and hand:FindFirstChild(weaponHand .. "GripAttachment")
-						local focus = Vector3.new(0, 3.85, 0)
-						camera.CFrame = CFrame.lookAt(focus + Vector3.new(3.2, 0.55, -7.3), focus)
-						if model then
-							if spec[3] == "swing" or card.id == "shieldman" then
-								model:ScaleTo(model:GetScale() * (if card.id == "shieldman" then 1.65 else 2.65) / math.max(bounds.Magnitude, 0.01))
-								local box, size = model:GetBoundingBox()
-								local longAxis = if size.Y >= math.max(size.X, size.Z) then Vector3.yAxis
-									elseif size.X >= size.Z then Vector3.xAxis else Vector3.zAxis
-								local length = math.max(size.X, size.Y, size.Z)
-								pivot = CFrame.new(longAxis * (if card.id == "shieldman" then 0 else length * 0.34)) * box:ToObjectSpace(model:GetPivot())
-								if not grip or not grip:IsA("Attachment") then
-									grip = nil
-									model:Destroy()
-									model = nil
-								end
-							elseif spec[3] == "recoil" then
-								model:ScaleTo(model:GetScale() * 3.1 / math.max(bounds.Magnitude, 0.01))
-								local box
-								box, bounds = model:GetBoundingBox()
-								pivot = CFrame.new(Vector3.new(1.45, 2.3, -0.9) - box.Position) * model:GetPivot()
-								model:PivotTo(pivot)
-								center = Vector3.new(1.45, 2.3, -0.9)
-							else
-								model:Destroy()
-								model = nil
-							end
-						end
+					end
+					local ok = pcall(function()
+						local _, dim = model:GetBoundingBox()
+						local maxdim = if person then dim.Y else math.max(dim.X, dim.Y, dim.Z)
+						model:ScaleTo(model:GetScale() * extent / math.max(maxdim, 0.05))
+						local box = model:GetBoundingBox()
+						model:PivotTo(CFrame.new(x, y, z) * CFrame.new(-box.Position) * model:GetPivot())
 					end)
+					if not ok then model:Destroy(); return nil, nil end
+					return model, model:GetPivot()
 				end
+				if actorSource then
+					actor, actorPivot = mount(actorSource, 4.6, if propSource then -1.2 else 0, 2.4, 0, true)
+					if actor then shoulder = actor:FindFirstChild("RightShoulder", true) end
+				end
+				if propSource then
+					local ship = spec.style == "fog" or spec.style == "storm" or spec.style == "swell" or card.id == "hero_captain" or card.id == "scorch"
+					prop, propPivot = mount(propSource, if ship then 5.5 elseif card.row == "cannon" then 3.2 else 2.3,
+						if actorSource then 1.95 else 0, if ship then 1.75 else 1.95, if ship then -1.5 else 0.6, false)
+				end
+				if not actor and not prop then view:Destroy(); view = nil end
 			end
 
-			local light = Instance.new("Frame")
-			light.Size = UDim2.fromScale(1, 1)
-			light.BackgroundColor3 = if card.id == "scorch" or card.row == "cannon" then Color3.fromRGB(255, 166, 78)
-				elseif card.id == "fog" or card.id == "storm" then Color3.fromRGB(192, 212, 239)
-				else Color3.fromRGB(255, 229, 173)
-			light.BorderSizePixel = 0
-			light.BackgroundTransparency = 0.65
-			light.ZIndex = image.ZIndex + 2
-			light.Parent = art
-			local sweep = Instance.new("UIGradient")
-			sweep.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.43, 1),
-				NumberSequenceKeypoint.new(0.53, 0), NumberSequenceKeypoint.new(0.7, 1),
+			-- 판화와 움직이는 오브젝트를 한 카드 내부에 한정한다.
+			local wash = Instance.new("Frame")
+			wash.Size = UDim2.fromScale(1, 1)
+			wash.BackgroundColor3 = if spec.style == "fire" then Color3.fromRGB(165, 82, 39)
+				elseif spec.style == "storm" then Color3.fromRGB(65, 82, 95)
+				else Color3.fromRGB(147, 116, 72)
+			wash.BackgroundTransparency = 0.84
+			wash.BorderSizePixel = 0
+			wash.ZIndex = image.ZIndex + 2
+			wash.Parent = art
+			local vignette = Instance.new("UIGradient")
+			vignette.Rotation = 90
+			vignette.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.28), NumberSequenceKeypoint.new(0.35, 1),
+				NumberSequenceKeypoint.new(0.73, 1), NumberSequenceKeypoint.new(1, 0.22),
+			})
+			vignette.Parent = wash
+			local mist = Instance.new("Frame")
+			mist.Name = "MovingSeaSpray"
+			mist.Position = UDim2.fromScale(-0.25, 0.72)
+			mist.Size = UDim2.fromScale(1.5, 0.28)
+			mist.BackgroundColor3 = if spec.style == "fire" then Color3.fromRGB(244, 183, 114)
+				else Color3.fromRGB(209, 215, 197)
+			mist.BackgroundTransparency = 0.75
+			mist.BorderSizePixel = 0
+			mist.ZIndex = image.ZIndex + 3
+			mist.Parent = art
+			local fade = Instance.new("UIGradient")
+			fade.Rotation = 90
+			fade.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.45, 0.65),
+				NumberSequenceKeypoint.new(0.8, 0.33), NumberSequenceKeypoint.new(1, 1),
+			})
+			fade.Parent = mist
+			local shine = Instance.new("Frame")
+			shine.Size = UDim2.fromScale(0.19, 1.4)
+			shine.Position = UDim2.fromScale(-0.5, -0.2)
+			shine.BackgroundColor3 = Color3.fromRGB(255, 229, 160)
+			shine.BackgroundTransparency = 0.88
+			shine.BorderSizePixel = 0
+			shine.Rotation = 23
+			shine.ZIndex = image.ZIndex + 4
+			shine.Parent = art
+			local beam = Instance.new("UIGradient")
+			beam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.2),
 				NumberSequenceKeypoint.new(1, 1),
 			})
-			sweep.Rotation = 28
-			sweep.Parent = light
-
-			local elapsed, lastUpdate = 0, -1
-			local motion
-			local destroying
+			beam.Parent = shine
+			local active, elapsed, sampled = true, 0, 0
+			local motion, destroying
 			local function stop()
+				if not active then return end
 				active = false
-				motion:Disconnect()
-				destroying:Disconnect()
-				image.Position = UDim2.fromScale(0.5, 0.5)
+				if motion then motion:Disconnect() end
+				if destroying then destroying:Disconnect() end
 				if view then view:Destroy() end
-				light:Destroy()
+				wash:Destroy()
+				mist:Destroy()
+				shine:Destroy()
 			end
 			motion = RunService.RenderStepped:Connect(function(dt)
-				elapsed += dt
-				if elapsed - lastUpdate < 1 / 30 then return end
-				lastUpdate = elapsed
-				local cycle = elapsed % 2
-				local strike = math.sin(math.pi * math.clamp(cycle / 0.5, 0, 1))
-				image.Position = UDim2.fromScale(0.5 + 0.048 * math.sin(elapsed * 1.8), 0.5 + 0.035 * math.cos(elapsed * 2.1))
-				sweep.Offset = Vector2.new(cycle - 1, 0)
-				light.BackgroundTransparency = 0.7 - 0.3 * strike
-				if actor then
-					local action = math.clamp(((elapsed + 0.2) % 2.8 - 0.75) / 0.85, 0, 1)
-					if card.ability == "medic" then
-						Pose.work(actor, "stir", elapsed)
-					elseif card.row == "cannon" then
-						Pose.work(actor, "hammer", elapsed)
-					else
-						Pose.animateR15(actor, { phase = elapsed * 4, moving = card.ability == "spy", t = elapsed, attack = action })
-					end
-					if neck and (neck:IsA("Motor6D") or neck:IsA("AnimationConstraint")) then
-						neck.Transform *= CFrame.Angles(0.07 * math.sin(elapsed * 2.1), 0.27 * math.sin(elapsed * 1.6), 0)
-					end
-					if model and grip and (spec[3] == "swing" or card.id == "shieldman") then
-						model:PivotTo(grip.WorldCFrame * pivot)
-						return
+				if not active then return end
+				elapsed += math.min(dt, 0.1)
+				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
+				-- 모바일: 비선택 카드 15fps, 선택 카드 24fps 상한.
+				if elapsed - sampled < (if focused then 1 / 24 else 1 / 15) then return end
+				sampled = elapsed
+				local wave = math.sin(elapsed * 2.15)
+				local pulse = math.max(0, math.sin(elapsed * 2.7 - 1)) ^ 5
+				image.Position = UDim2.fromScale(0.5 + 0.013 * math.sin(elapsed * 0.8), 0.5 + 0.014 * math.cos(elapsed * 0.85))
+				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.08, 0.72 + wave * 0.027)
+				mist.BackgroundTransparency = if spec.style == "storm" or spec.style == "fog" then 0.48 + 0.14 * wave else 0.74 + 0.05 * wave
+				shine.Position = UDim2.fromScale((elapsed % 5) / 5 * 1.8 - 0.5, -0.2)
+				shine.BackgroundTransparency = if focused or card.hero then 0.73 else 0.93
+				if actor and actorPivot then
+					local attack = spec.style == "slash" or spec.style == "thrust"
+					actor:PivotTo(actorPivot * CFrame.new(0, 0.06 * wave, 0) * CFrame.Angles(0, if attack then -0.12 * pulse else 0.035 * wave, 0.025 * wave))
+					if shoulder and shoulder:IsA("Motor6D") then
+						shoulder.Transform = CFrame.Angles(if attack then -0.28 * pulse else -0.06 * wave, 0, 0)
 					end
 				end
-				if not model then return end
-				local roll, recoil = 0, 0
-				if spec[3] == "swing" then
-					roll = -0.52 * strike
-				elseif spec[3] == "recoil" then
-					recoil = -bounds.Magnitude * 0.11 * strike
-				elseif spec[3] == "swell" then
-					roll = 0.13 * math.sin(elapsed * 3.2)
-				else
-					roll = 0.12 * strike
+				if prop and propPivot then
+					local ship = spec.style == "storm" or spec.style == "fog" or spec.style == "swell"
+					prop:PivotTo(propPivot * CFrame.new(if spec.style == "fire" then -0.38 * pulse else 0, 0.045 * wave, 0)
+						* CFrame.Angles(0, 0.08 * math.sin(elapsed * 0.7), if ship then 0.11 * wave else -0.17 * pulse))
 				end
-				model:PivotTo(CFrame.new(center + Vector3.new(recoil, 0, recoil))
-					* CFrame.Angles(0, 0.25 * math.sin(elapsed * 2.3), roll) * CFrame.new(-center) * pivot)
+				if view then
+					view.LightColor = if spec.style == "fire" and pulse > 0.6 then Color3.fromRGB(255, 166, 83)
+						else Color3.fromRGB(250, 222, 171)
+				end
 			end)
-			destroying = art.Destroying:Connect(function()
-				active = false
-				motion:Disconnect()
-			end)
+			destroying = art.Destroying:Connect(stop)
 			return stop
 		end
 
 		render = function()
-			if stopCardMotion then
-				stopCardMotion()
-				stopCardMotion = nil
-			end
+			for _, stop in cardMotions do stop() end
+			table.clear(cardMotions)
 			selected = nil
 			for _, ch in boardFrame:GetChildren() do
 				ch:Destroy()
@@ -1059,8 +1094,8 @@ function NavalBattle.play(opts)
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 88, 1, -10)
 				b.LayoutOrder = i
-				b.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120)
-					elseif c.special then Color3.fromRGB(198, 193, 218) else paper
+				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
+					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
 				b.TextScaled = true
@@ -1073,10 +1108,20 @@ function NavalBattle.play(opts)
 				art.Archivable = false
 				art.Position = UDim2.fromOffset(3, 3)
 				art.Size = UDim2.new(1, -6, 0.65, -3)
-				art.BackgroundColor3 = Color3.fromRGB(31, 45, 56)
+				art.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
 				art.BorderSizePixel = 0
 				art.ClipsDescendants = true
 				art.Parent = b
+				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
+				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
+				local parchmentBand = Instance.new("Frame")
+				parchmentBand.Name = "ParchmentCaption"
+				parchmentBand.Position = UDim2.fromScale(0.025, 0.65)
+				parchmentBand.Size = UDim2.fromScale(0.95, 0.33)
+				parchmentBand.BackgroundColor3 = if c.hero then Color3.fromRGB(243, 215, 153) else paper
+				parchmentBand.BorderSizePixel = 0
+				parchmentBand.Parent = b
+				frameEdge(parchmentBand, brass, 3)
 				local image = Instance.new("ImageLabel")
 				image.AnchorPoint = Vector2.new(0.5, 0.5)
 				image.Position = UDim2.fromScale(0.5, 0.5)
@@ -1084,13 +1129,16 @@ function NavalBattle.play(opts)
 				image.BackgroundTransparency = 1
 				image.ScaleType = Enum.ScaleType.Crop
 				local artKey = CARD_ART[c.id] or (if c.row == "cannon" then "CardArt/event_anglo_dutch_war" elseif c.hero then "CardArt/event_cook_voyage" else CARD_SEA)
-				image.Image = "rbxassetid://" .. AssetIds[artKey]
+				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+				image.ImageColor3 = Color3.fromRGB(231, 210, 175)
 				image.Parent = art
+				table.insert(cardMotions, animateCardArt(art, image, c))
 				local caption = label(b, c.name, 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.65)
 				caption.Size = UDim2.fromScale(0.71, 0.35)
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
+				caption.Font = Enum.Font.Antique
 				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.82), UDim2.fromScale(0.20, 0.25))
 				local power = label(b, tostring(c.power or "✦"), 13, ink, true)
@@ -1102,7 +1150,7 @@ function NavalBattle.play(opts)
 				power.ZIndex = 4
 				frameEdge(power, brass, 5)
 				b.Parent = handFrame
-				local edge = frameEdge(b, brass, 6)
+				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
 				b.Activated:Connect(function()
 					if playing or auto or finished or m.turn ~= "me" or m.over then
@@ -1112,9 +1160,9 @@ function NavalBattle.play(opts)
 						if selected then
 							TweenService:Create(selected, TweenInfo.new(0.12), { Rotation = 0 }):Play()
 							selected.UIStroke.Color = brass
+							selected:SetAttribute("ArtFocused", false)
 						end
-						if stopCardMotion then stopCardMotion() end
-						stopCardMotion = animateCardArt(art, image, c)
+						b:SetAttribute("ArtFocused", true)
 						selected = b
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
