@@ -21,7 +21,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 H.startupCover = Instance.new("Frame")
 H.startupCover.Name = "StartLoading"
 H.startupCover.Size = UDim2.fromScale(1, 1)
-H.startupCover.BackgroundColor3 = Color3.fromRGB(24, 58, 89)
+H.startupCover.BackgroundColor3 = Color3.fromRGB(54, 40, 28)
 H.startupCover.BorderSizePixel = 0
 H.startupCover.ZIndex = 200
 H.startupCover.Parent = gui
@@ -32,8 +32,8 @@ H.startupLabel.Position = UDim2.fromScale(0.5, 0.5)
 H.startupLabel.Size = UDim2.fromScale(0.88, 0.2)
 H.startupLabel.BackgroundTransparency = 1
 H.startupLabel.Text = "학문의 바다\n항구와 항해 기록을 불러오는 중..."
-H.startupLabel.Font = Enum.Font.GothamBold
-H.startupLabel.TextColor3 = Color3.fromRGB(253, 226, 166)
+H.startupLabel.Font = Enum.Font.Antique
+H.startupLabel.TextColor3 = Color3.fromRGB(242, 216, 171)
 H.startupLabel.TextScaled = true
 H.startupLabel.TextWrapped = true
 H.startupLabel.ZIndex = 201
@@ -90,29 +90,31 @@ pcall(function()
 end)
 
 -- 백과사전 공통 표지와 본문 색
+-- [고서적 UI] 표지=낡은 가죽, 내지=미색 양피지, 버튼=색을 아끼는 황동·잉크 인쇄.
+-- 메뉴·상점·전투·지도는 기존 사건/입력 흐름을 그대로 두고 색상만 통일한다.
 local COLORS = {
-	cover = Color3.fromRGB(26, 34, 40),
-	coverRaised = Color3.fromRGB(49, 57, 60),
-	leather = Color3.fromRGB(56, 43, 35),
-	paper = Color3.fromRGB(237, 222, 188),
-	ink = Color3.fromRGB(51, 37, 25),
-	brown = Color3.fromRGB(114, 75, 43),
-	text = Color3.fromRGB(246, 238, 220),
-	muted = Color3.fromRGB(176, 166, 146),
-	row = Color3.fromRGB(49, 45, 40),
-	blue = Color3.fromRGB(50, 83, 106),
-	green = Color3.fromRGB(66, 116, 93),
-	red = Color3.fromRGB(144, 63, 48),
-	gold = Color3.fromRGB(226, 176, 78),
-	grey = Color3.fromRGB(83, 74, 62),
+	cover = Color3.fromRGB(42, 32, 25),
+	coverRaised = Color3.fromRGB(74, 53, 39),
+	leather = Color3.fromRGB(66, 44, 31),
+	paper = Color3.fromRGB(225, 202, 159),
+	ink = Color3.fromRGB(49, 35, 23),
+	brown = Color3.fromRGB(103, 69, 42),
+	text = Color3.fromRGB(244, 226, 190),
+	muted = Color3.fromRGB(191, 165, 121),
+	row = Color3.fromRGB(60, 44, 32),
+	blue = Color3.fromRGB(64, 80, 78),
+	green = Color3.fromRGB(71, 99, 75),
+	red = Color3.fromRGB(137, 58, 44),
+	gold = Color3.fromRGB(207, 159, 77),
+	grey = Color3.fromRGB(108, 88, 65),
 	steam = Color3.fromRGB(150, 110, 70),
 }
 -- 양피지·잉크 테마: 가죽 책상 위에 놓인 양피지 줄, 잉크 글씨, 밀랍 인장
-local PARCHMENT_TOP, PARCHMENT_BOTTOM = Color3.fromRGB(241, 227, 192), Color3.fromRGB(214, 192, 148)
+local PARCHMENT_TOP, PARCHMENT_BOTTOM = Color3.fromRGB(241, 224, 185), Color3.fromRGB(201, 169, 119)
 local INK, INK_SOFT, INK_EDGE = Color3.fromRGB(52, 36, 24), Color3.fromRGB(108, 82, 56), Color3.fromRGB(96, 68, 40)
 local WAX = Color3.fromRGB(150, 44, 38)
-local UI_BRASS = Color3.fromRGB(214, 170, 82)
-local UI_BRASS_DARK = Color3.fromRGB(120, 92, 44)
+local UI_BRASS = Color3.fromRGB(205, 160, 76)
+local UI_BRASS_DARK = Color3.fromRGB(111, 76, 39)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
@@ -209,7 +211,7 @@ local function mkLabel(parent, text, size, color, bold, order)
 	l.TextYAlignment = Enum.TextYAlignment.Top
 	l.TextSize = size or 14
 	l.TextColor3 = color or COLORS.text
-	l.Font = if bold then Enum.Font.GothamBold else Enum.Font.Gotham
+	l.Font = if bold then Enum.Font.Antique else Enum.Font.Gotham
 	if order then
 		l.LayoutOrder = order
 	end
@@ -342,14 +344,14 @@ function H.iconPaper(gui, px)
 	gui.ClipsDescendants = true
 	corner(gui, if px < 36 then 4 else 6)
 	local wash = Instance.new("UIGradient")
-	wash.Color = ColorSequence.new(Color3.fromRGB(255, 254, 247), Color3.fromRGB(216, 195, 160))
+	wash.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 	wash.Rotation = 90
 	wash.Parent = gui
 	local border = Instance.new("UIStroke")
 	border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	border.Color = COLORS.brown
-	border.Thickness = 1
-	border.Transparency = 0.18
+	border.Color = INK_EDGE
+	border.Thickness = if px < 36 then 1 else 1.4
+	border.Transparency = 0.1
 	border.Parent = gui
 end
 
@@ -536,32 +538,48 @@ local function withIcon(row, kind, asset, tint, px, portraitOffset)
 	return icon
 end
 
+-- [양피지 버튼] 인터랙션은 그대로 유지하고 모든 기능 버튼을 동일한 인쇄물 양식으로 통일한다.
 local function mkButton(parent, text, color, size, onClick, enabled)
 	local b = Instance.new("TextButton")
 	b.Text = text
 	b.Size = size
-	b.BackgroundColor3 = if enabled == false then COLORS.grey else color
-	b.TextColor3 = COLORS.text
-	b.Font = Enum.Font.GothamBold
-	b.TextSize = 13
+	local active = enabled ~= false
+	local highlighted = color == COLORS.gold or color == UI_BRASS
+	b.BackgroundColor3 = if not active then Color3.fromRGB(170, 150, 116)
+		elseif highlighted then Color3.fromRGB(222, 191, 130) else COLORS.paper
+	b.TextColor3 = if active then INK else Color3.fromRGB(107, 95, 76)
+	b.Font = Enum.Font.Antique
+	b.TextSize = 14
 	b.TextWrapped = true
-	b.AutoButtonColor = enabled ~= false
+	b.AutoButtonColor = active
 	b.BorderSizePixel = 0
-	corner(b, 10)
+	corner(b, 5)
 	b.Parent = parent
 	do
 		local grad = Instance.new("UIGradient")
-		grad.Color = ColorSequence.new(Color3.fromRGB(255, 244, 230), Color3.fromRGB(170, 160, 150))
+		grad.Color = ColorSequence.new(
+			if highlighted then Color3.fromRGB(248, 224, 164) else Color3.fromRGB(246, 229, 193),
+			if highlighted then Color3.fromRGB(187, 147, 79) else Color3.fromRGB(196, 163, 112)
+		)
 		grad.Rotation = 90
 		grad.Parent = b
 		local bs = Instance.new("UIStroke")
-		bs.Color = if enabled == false then Color3.fromRGB(100, 100, 108) else Color3.fromRGB(58, 34, 22)
-		bs.Thickness = 1.6
-		bs.Transparency = if enabled == false then 0.5 else 0.05
+		bs.Color = if active then INK_EDGE else Color3.fromRGB(128, 110, 83)
+		bs.Thickness = if highlighted then 2 else 1.4
+		bs.Transparency = if active then 0.08 else 0.4
 		bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		bs.Parent = b
+		-- 기존 버튼의 기능색은 좌측 얇은 색띠로 남겨 구매/판매/위험 행동을 구별한다.
+		local mark = Instance.new("Frame")
+		mark.Name = "BookRibbon"
+		mark.BackgroundColor3 = if not active then COLORS.grey else (color or INK_EDGE)
+		mark.BackgroundTransparency = if active then 0.08 else 0.55
+		mark.BorderSizePixel = 0
+		mark.Position = UDim2.fromOffset(4, 5)
+		mark.Size = UDim2.new(0, 3, 1, -10)
+		mark.Parent = b
 	end
-	if enabled ~= false and onClick then
+	if active and onClick then
 		b.Activated:Connect(function()
 			Sfx.play("sfx_click")
 			onClick()
@@ -576,7 +594,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	row.Size = UDim2.new(1, -6, 0, height or 60)
 	row.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	row.BorderSizePixel = 0
-	corner(row, 5)
+	corner(row, 4)
 	row.Parent = parent
 	do
 		local rs = Instance.new("UIStroke")
@@ -667,8 +685,12 @@ local function mkHeader(parent, text)
 	l.AutomaticSize = Enum.AutomaticSize.None
 	l.TextYAlignment = Enum.TextYAlignment.Center
 	l.BackgroundTransparency = 0
-	l.BackgroundColor3 = Color3.fromRGB(226, 205, 160)
-	corner(l, 4)
+	l.BackgroundColor3 = Color3.fromRGB(218, 190, 139)
+	corner(l, 3)
+	local headingWash = Instance.new("UIGradient")
+	headingWash.Color = ColorSequence.new(Color3.fromRGB(239, 218, 174), Color3.fromRGB(191, 155, 105))
+	headingWash.Rotation = 90
+	headingWash.Parent = l
 	local pad = Instance.new("UIPadding")
 	pad.PaddingLeft = UDim.new(0, 10)
 	pad.Parent = l
@@ -694,7 +716,7 @@ end
 H.bookTheme = CommonUI.CreateTheme({
 	Panel = COLORS.cover, PanelRaised = COLORS.coverRaised, PanelInset = COLORS.leather,
 	Border = UI_BRASS_DARK, BorderBright = UI_BRASS, Text = COLORS.text, MutedText = COLORS.muted,
-	Primary = COLORS.blue, PrimaryTop = Color3.fromRGB(69, 106, 128), PrimaryBottom = COLORS.cover,
+	Primary = COLORS.brown, PrimaryTop = Color3.fromRGB(163, 115, 65), PrimaryBottom = COLORS.leather,
 	Accent = COLORS.gold, Positive = COLORS.green, Danger = COLORS.red,
 })
 local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16), theme = H.bookTheme })
@@ -709,7 +731,7 @@ do
 	st.Thickness = 2.5
 	st.Parent = main
 	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 200))
+	grad.Color = ColorSequence.new(Color3.fromRGB(250, 236, 206), Color3.fromRGB(167, 130, 87))
 	grad.Rotation = 90
 	grad.Parent = main
 	-- 안쪽 가는 테두리 (액자 느낌)
@@ -742,7 +764,19 @@ H.pageMasthead.Size = UDim2.new(1, -8, 0, 74)
 H.pageMasthead.BackgroundColor3 = COLORS.paper
 H.pageMasthead.BorderSizePixel = 0
 H.pageMasthead.Parent = mainInner
-corner(H.pageMasthead, 7)
+corner(H.pageMasthead, 5)
+do
+	local wash = Instance.new("UIGradient")
+	wash.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
+	wash.Rotation = 90
+	wash.Parent = H.pageMasthead
+	local edge = Instance.new("UIStroke")
+	edge.Color = INK_EDGE
+	edge.Thickness = 1.5
+	edge.Transparency = 0.12
+	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	edge.Parent = H.pageMasthead
+end
 local function pageRule(parent, position, size)
 	local rule = Instance.new("Frame")
 	rule.BorderSizePixel = 0
@@ -769,7 +803,7 @@ headerLabel.TextYAlignment = Enum.TextYAlignment.Top
 headerLabel.TextScaled = true
 headerLabel.TextTruncate = Enum.TextTruncate.AtEnd
 headerLabel.TextSize = 23
-headerLabel.Font = Enum.Font.GothamBold
+headerLabel.Font = Enum.Font.Antique
 headerLabel.TextColor3 = COLORS.ink
 local mastheadSize = Instance.new("UITextSizeConstraint")
 mastheadSize.MaxTextSize = 23
@@ -1219,7 +1253,7 @@ hud.Parent = gui
 
 local card = Instance.new("Frame")
 card.BackgroundColor3 = NAVY
-card.BackgroundTransparency = 0.08
+card.BackgroundTransparency = 0.02
 card.Position = UDim2.fromOffset(8, 8)
 card.Size = UDim2.fromOffset(250, 66)
 H.hudCard = card
@@ -1228,7 +1262,7 @@ corner(card, 10)
 hudStroke(card, 2)
 do
 	local g = Instance.new("UIGradient")
-	g.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 200))
+	g.Color = ColorSequence.new(Color3.fromRGB(236, 209, 159), Color3.fromRGB(138, 99, 64))
 	g.Rotation = 90
 	g.Parent = card
 end
@@ -1238,7 +1272,7 @@ local function hudText(parent, pos, size, textSize, color, align)
 	l.BackgroundTransparency = 1
 	l.Position = pos
 	l.Size = size
-	l.Font = Enum.Font.GothamBold
+	l.Font = Enum.Font.Antique
 	l.TextSize = textSize
 	l.TextColor3 = color
 	l.TextXAlignment = align or Enum.TextXAlignment.Left
@@ -1322,9 +1356,9 @@ for i, d in H.DOCK do
 	b.Name = "Menu_" .. d[1]
 	b.LayoutOrder = i
 	b.Size = UDim2.fromOffset(48, 54)
-	b.BackgroundColor3 = NAVY2
+	b.BackgroundColor3 = Color3.fromRGB(198, 169, 119)
 	b.AutoButtonColor = true
-	b.Font = Enum.Font.GothamBold
+	b.Font = Enum.Font.Antique
 	b.TextSize = 11
 	b.TextColor3 = Color3.fromRGB(250, 236, 200)
 	b.Text = ""
@@ -1335,9 +1369,9 @@ for i, d in H.DOCK do
 	menuLabel.BackgroundTransparency = 1
 	menuLabel.Position = UDim2.fromOffset(1, 35)
 	menuLabel.Size = UDim2.new(1, -2, 0, 17)
-	menuLabel.Font = Enum.Font.GothamBold
+	menuLabel.Font = Enum.Font.Antique
 	menuLabel.TextSize = 10
-	menuLabel.TextColor3 = Color3.fromRGB(250, 236, 200)
+	menuLabel.TextColor3 = INK
 	menuLabel.Text = d[2]
 	menuLabel.Parent = b
 	local menuKey = if d[1] == "crew" and not AssetIds["Menu/crew"] then "harbor" else d[1]
@@ -1350,7 +1384,7 @@ for i, d in H.DOCK do
 	corner(b, 8)
 	do
 		local g = Instance.new("UIGradient")
-		g.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(170, 170, 180))
+		g.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 		g.Rotation = 90
 		g.Parent = b
 	end
@@ -1379,8 +1413,8 @@ gear.Name = "OptionsButton"
 gear.AnchorPoint = Vector2.new(1, 0)
 gear.Position = UDim2.new(1, -8, 0, 188)
 gear.Size = UDim2.fromOffset(112, 38)
-gear.BackgroundColor3 = NAVY2
-gear.Font = Enum.Font.GothamBold
+gear.BackgroundColor3 = COLORS.leather
+gear.Font = Enum.Font.Antique
 gear.TextSize = 14
 gear.TextColor3 = Color3.fromRGB(250, 236, 200)
 gear.Text = "⚙ 설정"
@@ -1401,8 +1435,8 @@ do
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
 	deckBtn.Position = UDim2.new(1, -128, 0, 8)
 	deckBtn.Size = UDim2.fromOffset(100, 34)
-	deckBtn.BackgroundColor3 = NAVY2
-	deckBtn.Font = Enum.Font.GothamBold
+	deckBtn.BackgroundColor3 = COLORS.leather
+	deckBtn.Font = Enum.Font.Antique
 	deckBtn.TextSize = 14
 	deckBtn.TextColor3 = Color3.fromRGB(250, 236, 200)
 	deckBtn.Text = "🃏 내 카드"
@@ -3869,7 +3903,7 @@ function RENDERERS.trade()
 	local function mkInput(parent, placeholder, text, width, onChanged)
 		local box = Instance.new("TextBox")
 		box.Size = UDim2.new(0, width, 0, 34)
-		box.BackgroundColor3 = Color3.fromRGB(30, 40, 56)
+		box.BackgroundColor3 = COLORS.coverRaised
 		box.TextColor3 = COLORS.text
 		box.PlaceholderText = placeholder
 		box.PlaceholderColor3 = COLORS.muted
@@ -6401,7 +6435,7 @@ do
 
 	end)()
 
-	local veil = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
+	local veil = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.leather)
 	veil.ZIndex = 2
 	local fade = Instance.new("UIGradient")
 	fade.Transparency = NumberSequence.new({
@@ -6409,7 +6443,7 @@ do
 		NumberSequenceKeypoint.new(0.78, 0.48), NumberSequenceKeypoint.new(1, 0),
 	})
 	fade.Parent = veil
-	local shade = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.35), Color3.fromRGB(18, 26, 32))
+	local shade = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.35), Color3.fromRGB(43, 33, 25))
 	shade.ZIndex = 2
 	local shadeFade = Instance.new("UIGradient")
 	shadeFade.Rotation = 90
@@ -6467,19 +6501,38 @@ do
 	lim.MaxSize = Vector2.new(720, 9999)
 	lim.Parent = titlePanel
 end
-titlePanel.BackgroundColor3 = COLORS.cover
-titlePanel.BackgroundTransparency = 0.08
+titlePanel.BackgroundColor3 = COLORS.paper
+titlePanel.BackgroundTransparency = 0
 titlePanel.BorderSizePixel = 0
 titlePanel.Visible = false
 titlePanel.ZIndex = 10
 titlePanel.Parent = titleGui
-corner(titlePanel, 16)
+corner(titlePanel, 6)
 do
+	-- [타이틀] 책장을 뜯어낸 듯한 종이 가장자리와 양쪽 갈색 테두리.
+	local wash = Instance.new("UIGradient")
+	wash.Color = ColorSequence.new(PARCHMENT_TOP, Color3.fromRGB(191, 158, 106))
+	wash.Rotation = 90
+	wash.Parent = titlePanel
 	local st = Instance.new("UIStroke")
+	st.Color = INK_EDGE
+	st.Thickness = 2.5
 	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	st.Color = GOLD
-	st.Thickness = 2
 	st.Parent = titlePanel
+	local margin = Instance.new("Frame")
+	margin.Name = "WornPaperMargin"
+	margin.Position = UDim2.fromOffset(5, 5)
+	margin.Size = UDim2.new(1, -10, 1, -10)
+	margin.BackgroundTransparency = 1
+	margin.BorderSizePixel = 0
+	margin.ZIndex = 10
+	margin.Parent = titlePanel
+	local line = Instance.new("UIStroke")
+	line.Color = Color3.fromRGB(140, 99, 56)
+	line.Thickness = 1
+	line.Transparency = 0.42
+	line.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	line.Parent = margin
 end
 local titleScroll = Instance.new("ScrollingFrame")
 titleScroll.BackgroundTransparency = 1
@@ -6503,7 +6556,11 @@ do
 end
 
 local function tLabel(parent, text, size, color, bold, order)
-	local l = mkLabel(parent, text, size, color, bold, order)
+	-- 표제지의 모든 설명은 진한 먹색: 옛 남색 패널용 밝은 글씨를 양피지에 남기지 않는다.
+	local inkColor = if color == COLORS.text then INK
+		elseif color == COLORS.muted then INK_SOFT
+		elseif color == GOLD then INK_EDGE else color
+	local l = mkLabel(parent, text, size, inkColor, bold, order)
 	l.Size = UDim2.new(1, 0, 0, 0)
 	l.ZIndex = 12
 	return l
@@ -6538,7 +6595,7 @@ renderTitle = function()
 		cur = list[1]
 	end
 
-	local head = tLabel(titleScroll, "⚓  항해를 시작하세요  ⚓", 24, GOLD, true, nxt())
+	local head = tLabel(titleScroll, "❧  항해자의 연대기  ❧", 24, INK, true, nxt())
 	head.TextXAlignment = Enum.TextXAlignment.Center
 	do
 		local rule = Instance.new("Frame")
@@ -6576,12 +6633,12 @@ renderTitle = function()
 		card.AutoButtonColor = false
 		card.BorderSizePixel = 0
 		card.ZIndex = 13
-		card.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
+		card.BackgroundColor3 = if selected then Color3.fromRGB(226, 190, 128) else Color3.fromRGB(234, 214, 177)
 		corner(card, 10)
 		local st = Instance.new("UIStroke")
 		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = if selected then 2.5 else 1
-		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
+		st.Color = if selected then INK_EDGE else Color3.fromRGB(151, 114, 75)
 		st.Parent = card
 		local flag = require(Shared:WaitForChild("Flags")).build(card, n.id, 34, 24)
 		flag.Position = UDim2.fromOffset(8, 13)
@@ -6591,12 +6648,12 @@ renderTitle = function()
 				d.ZIndex = 15
 			end
 		end
-		local nm = mkLabel(card, n.name, 15, if selected then GOLD else COLORS.text, true)
+		local nm = mkLabel(card, n.name, 15, INK, true)
 		nm.Position = UDim2.fromOffset(48, 6)
 		nm.Size = UDim2.new(1, -52, 0, 20)
 		nm.AutomaticSize = Enum.AutomaticSize.None
 		nm.ZIndex = 14
-		local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 11, COLORS.muted, false)
+		local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 11, INK_SOFT, false)
 		sub.Position = UDim2.fromOffset(48, 27)
 		sub.Size = UDim2.new(1, -52, 0, 16)
 		sub.AutomaticSize = Enum.AutomaticSize.None
@@ -6613,7 +6670,7 @@ renderTitle = function()
 	local box = Instance.new("Frame")
 	box.Size = UDim2.new(1, 0, 0, 0)
 	box.AutomaticSize = Enum.AutomaticSize.Y
-	box.BackgroundColor3 = COLORS.row
+	box.BackgroundColor3 = Color3.fromRGB(236, 215, 177)
 	box.BorderSizePixel = 0
 	box.LayoutOrder = nxt()
 	box.ZIndex = 12
@@ -6676,19 +6733,19 @@ renderTitle = function()
 			b.AutoButtonColor = false
 			b.BorderSizePixel = 0
 			b.ZIndex = 13
-			b.BackgroundColor3 = if sel then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
+			b.BackgroundColor3 = if sel then Color3.fromRGB(226, 190, 128) else Color3.fromRGB(234, 214, 177)
 			corner(b, 10)
 			local bst = Instance.new("UIStroke")
 			bst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			bst.Thickness = if sel then 2.5 else 1
-			bst.Color = if sel then GOLD else Color3.fromRGB(64, 78, 98)
+			bst.Color = if sel then INK_EDGE else Color3.fromRGB(151, 114, 75)
 			bst.Parent = b
-			local n1 = mkLabel(b, o.name, 14, if sel then GOLD else COLORS.text, true)
+			local n1 = mkLabel(b, o.name, 14, INK, true)
 			n1.Position = UDim2.fromOffset(8, 4)
 			n1.Size = UDim2.new(1, -12, 0, 18)
 			n1.AutomaticSize = Enum.AutomaticSize.None
 			n1.ZIndex = 14
-			local n2 = mkLabel(b, o.perkText, 11, COLORS.muted, false)
+			local n2 = mkLabel(b, o.perkText, 11, INK_SOFT, false)
 			n2.Position = UDim2.fromOffset(8, 23)
 			n2.Size = UDim2.new(1, -12, 0, 36)
 			n2.AutomaticSize = Enum.AutomaticSize.None
@@ -6749,7 +6806,7 @@ renderTitle = function()
 	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), H.startNewGame, true)
 	go.ZIndex = 13
 	go.TextSize = 22
-	go.TextColor3 = Color3.fromRGB(22, 14, 4)
+	go.TextColor3 = INK
 	do
 		local gst = Instance.new("UIStroke")
 		gst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -7281,7 +7338,7 @@ end
 		if spec.input then
 			box = Instance.new("TextBox")
 			box.Size = UDim2.new(1, 0, 0, 40)
-			box.BackgroundColor3 = Color3.fromRGB(26, 38, 58)
+			box.BackgroundColor3 = COLORS.coverRaised
 			box.BorderSizePixel = 0
 			box.TextColor3 = COLORS.text
 			box.PlaceholderText = spec.input
