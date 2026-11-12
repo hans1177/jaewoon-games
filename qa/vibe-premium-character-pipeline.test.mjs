@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation} from '../assets/vibe-premium-character-pipeline.mjs';
+import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
 test('facial channels control blendshape weights',()=>{
  const mesh={morphTargetDictionary:{jawOpen:0,smile:1},morphTargetInfluences:[0,0]};
  const model={traverse(fn){fn(mesh)}};
@@ -26,6 +26,46 @@ test('asset spec describes face, hand and texture requirements',()=>{
  assert.equal(vibePremiumAssetSpec.textures.baseColor,4096);
 });
 
+test('Vibe 5.9 PBR cleanup restores shared real material maps and disposes only loaded textures',async()=>{
+ const previousMap={id:'original'},previousNormal={id:'normal'},disposals=[],requested=[];
+ const shared={isMeshStandardMaterial:true,map:previousMap,normalMap:previousNormal};
+ const separate={isMeshStandardMaterial:true,map:null};
+ const model={traverse(fn){fn({isMesh:true,material:shared});fn({isMesh:true,material:[shared,separate]})}};
+ const textureLoader={async loadAsync(url){
+  requested.push(url);
+  return{dispose(){disposals.push(url)}};
+ }};
+ const result=await applyVibePBRTextures({SRGBColorSpace:'srgb'},model,
+  {baseColor:'approved-color',normal:'approved-normal'},{textureLoader,maxAnisotropy:32});
+ assert.deepEqual(requested,['approved-color','approved-normal']);
+ assert.equal(result.textures.map.colorSpace,'srgb');
+ assert.equal(result.textures.map.anisotropy,8);
+ assert.equal(shared.map,result.textures.map);
+ assert.equal(shared.normalMap,result.textures.normalMap);
+ assert.equal(separate.map,result.textures.map);
+ assert.equal(separate.normalMap,result.textures.normalMap);
+ result.dispose();
+ assert.equal(shared.map,previousMap);
+ assert.equal(shared.normalMap,previousNormal);
+ assert.equal(separate.map,null);
+ assert.equal(Object.hasOwn(separate,'normalMap'),false);
+ assert.deepEqual(disposals,['approved-color','approved-normal']);
+ result.dispose();
+ assert.equal(disposals.length,2);
+});
+test('Vibe 5.9 PBR loader failure keeps authored materials unchanged and frees loaded maps',async()=>{
+ const old={id:'existing'},material={isMeshStandardMaterial:true,map:old};
+ const model={traverse(fn){fn({isMesh:true,material})}};
+ let loadedDisposed=0,calls=0;
+ const textureLoader={async loadAsync(){
+  if(++calls===2)throw Error('texture source unavailable');
+  return{dispose(){loadedDisposed++}};
+ }};
+ await assert.rejects(()=>applyVibePBRTextures({SRGBColorSpace:'srgb'},model,
+  {baseColor:'approved-color',normal:'missing-normal'},{textureLoader}),/source unavailable/);
+ assert.equal(material.map,old);
+ assert.equal(loadedDisposed,1);
+});
 test('Vibe 5.9 rig audit blocks missing skin weights and accepts normalized approved skin',()=>{
  const bones={isBone:true,name:'LeftHand'};
  const mesh={isSkinnedMesh:true,name:'Body',skeleton:{bones:[bones]},geometry:{attributes:{
