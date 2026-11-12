@@ -351,40 +351,29 @@ test('Forest private publish and original asset workflows require the dedicated 
 });
 
 
-// [실제 1980 배포 이벤트 회귀] Owner Mare는 run-name에 SHA가 들어가 workflow_run.name이 고정값이 아니다.
-// workflow_run.path를 비교해 정상 게시 완료가 두 게임 Studio QA로 이어지도록 보장한다.
-test('Studio Auto QA routes dynamic owner publisher run-name by stable workflow path',()=>{
+// [대항해시대 전용] 현행 오너 정책대로 대항해시대 게시 완료만 공식 Studio MCP 재검증한다.
+// 실행 이름 대신 변하지 않는 workflow_run.path를 확인하고, 마력숲 Studio 실행을 금지한다.
+test('Studio Auto QA routes Mare publisher by stable workflow path without running Forest Studio',()=>{
   const studio=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   const mare=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
   assert.ok(mare.includes('run-name: Owner Mare Essentia publish ·'));
   assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
-  assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml'"));
-  assert.ok(studio.includes('github.event.workflow_run.path }}'));
-  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish'"));
-  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences'"));
+  assert.ok(!studio.includes("github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml'"));
   assert.ok(studio.includes("github.event.workflow_run.conclusion == 'success'"));
   assert.ok(studio.includes("github.event.workflow_run.head_branch == 'main'"));
-  assert.ok(studio.includes('no Forest source or publisher change, skip'));
+  assert.ok(studio.includes('if [ "$game" != mare-essentia ]; then exit 0; fi'));
   assert.ok(studio.includes('studio already queued/running for $game on $head, skip duplicate'));
+  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish'"));
 });
 
-// [마력숲·대항해시대] 기존 게시 후 두 게임 모두 공식 Studio PC 검사를 요청한다.
-// 권한 403은 배포 실패로 유지하고 Studio 검사와 구분한다.
-test('Forest publisher completion dispatches independent Studio QA for both games',()=>{
+test('Mare publisher completion dispatches only Mare official Studio QA',()=>{
   const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
-  assert.ok(qa.includes("github.event.workflow_run.event == 'push'"));
-  assert.ok(qa.includes("github.event.workflow_run.event == 'workflow_dispatch'"));
+  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
   assert.ok(qa.includes("github.event.workflow_run.head_branch == 'main'"));
-  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'failure'"));
-  assert.ok(qa.includes('github.event.workflow_run.head_sha'));
-  assert.ok(qa.includes('no Forest source or publisher change, skip'));
-  assert.ok(qa.includes('games="mare-essentia fantasy-survival"'));
-  assert.ok(qa.includes('for game in $games; do'));
-  assert.ok(qa.includes('select((.display_title // "") | contains(" · " + $game + " ·"))'));
-  assert.ok(qa.includes('continue'));
+  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'success'"));
   assert.ok(qa.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  assert.ok(qa.includes('script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
+  assert.ok(!qa.includes('script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
+  assert.ok(qa.includes('select((.display_title // "") | contains(" · " + $game + " ·"))'));
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(!qa.includes('schedule:'));
 });
@@ -495,10 +484,18 @@ test('Mare publisher rejects stale GUI Decal and ungranted registry assets befor
   assert.ok(publisher.indexOf('MARE_GUI_ASSET_NOT_IMAGE') < publisher.indexOf('- name: Build Mare Essentia place with pinned Rojo'));
   assert.match(publisher,/'usePermissionGranted'|"usePermissionGranted"/);
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
-  const imageRows=Object.entries(assets).filter(([key])=>/^(Goods|Menu|Portraits)\//.test(key));
-  assert.equal(imageRows.length,68);
+  // [현행 전체 자산] 고정 수량이 아닌 원본 등록표·Luau 전수 일치로 무단 변경을 감지한다.
+  const imageRows=Object.entries(assets).filter(([key])=>/^(Goods|Menu|Portraits|CardArt)\//.test(key));
+  const luau=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const active=new Map([...luau.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)].map(row=>[row[1],row[2]]));
+  assert.ok(imageRows.length>=68);
+  assert.equal(imageRows.length,Object.values(assets).filter(row=>row.assetType==='Image').length);
+  assert.equal(Object.keys(assets).length,active.size);
   assert.ok(imageRows.every(([,row])=>row.assetType==='Image'&&row.usePermissionGranted===true));
-  assert.equal(Object.keys(assets).length,456);
+  for(const [key,row] of Object.entries(assets)){
+    assert.equal(String(row.assetId),active.get(key),'asset registry and Luau mismatch: '+key);
+    assert.equal(row.usePermissionGranted,true,'ungranted asset: '+key);
+  }
 });
 
 
@@ -519,8 +516,10 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
   }
   assert.equal(assets['Cargo/glass-wine']?.assetType,'Model');
   assert.match(client,/GOOD_ICON\[goodsId\] = \{ "Cargo", cargoAsset, nil, "Goods\/" \.\. goodsId \}/);
-  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "grapes" \}/);
-  assert.match(client,/if kind == "Cargo" and px <= 60 and smallArt and AssetIds\[smallArt\] then/);
+  // [표현 제한] 술 4종은 승인된 공용 나무통, 전용 상품 이미지는 금지.
+  assert.match(client,/wine = \{ "Cargo", "barrel", Color3\.fromRGB\(112, 45, 64\) \}/);
+  for(const good of ['beer','sake','rum','wine'])assert.equal(assets['Goods/'+good],undefined);
+  assert.match(client,/if kind == "Goods" or kind == "Menu" or \(kind == "Cargo" and px < 64 and type\(smallArt\) == "string" and AssetIds\[smallArt\]\) then/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
