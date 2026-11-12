@@ -348,6 +348,36 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
 	variation *= style.sizeMul or 1
 	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
+	-- 동아시아 건축 세트: 등록된 eastasia 몸체를 층수만큼 쌓고 처마 지붕을 얹어 일반 집과 실루엣이 다르다
+	if style.kit == "eastasia" then
+		local size = math.max(w, d) * variation * HOUSE_SCALE
+		local base = importedModel(parent, "Town", "eastasia-base", pos, size, true, tintColor)
+		if base then
+			base.Name = "HarborHouse"
+			uniformMaterial(base, style)
+			local _, ext = base:GetBoundingBox()
+			local top = pos.Y + ext.Y
+			for _ = 2, math.clamp(floors or 1, 1, 3) do
+				local upper = importedModel(parent, "Town", "eastasia-base", Vector3.new(pos.X, top, pos.Z), size * 0.94, true, tintColor)
+				if not upper then break end
+				upper.Name = "HarborHouse"
+				uniformMaterial(upper, style)
+				local _, e2 = upper:GetBoundingBox()
+				top += e2.Y
+			end
+			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * 1.22, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			if roof then
+				roof.Name = "HarborRoof"
+				uniformMaterial(roof, style)
+			end
+			if vacant then
+				for k = -1, 1 do
+					importedModel(parent, "Town", "fence_straight", pos + Vector3.new(k * 4, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
+				end
+			end
+			return base:FindFirstChildWhichIsA("BasePart", true)
+		end
+	end
 	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then

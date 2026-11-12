@@ -211,6 +211,7 @@ local PROFILE = {
 STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
 STYLE.iberia.mat, STYLE.italy.mat, STYLE.france.mat, STYLE.britain.mat, STYLE.hanse.mat = Enum.Material.Concrete, Enum.Material.Concrete, Enum.Material.Limestone, Enum.Material.Slate, Enum.Material.Brick
 STYLE.ottoman.mat, STYLE.swahili.mat, STYLE.malabar.mat, STYLE.japan.mat, STYLE.colonial.mat = Enum.Material.Limestone, Enum.Material.Concrete, Enum.Material.Wood, Enum.Material.WoodPlanks, Enum.Material.Concrete
+STYLE.china.kit, STYLE.japan.kit = "eastasia", "eastasia"
 STYLE.china.mat, STYLE.seasia.mat, STYLE.pacific.mat, STYLE.wafrica.mat, STYLE.creole.mat = Enum.Material.WoodPlanks, Enum.Material.Wood, Enum.Material.Wood, Enum.Material.Sand, Enum.Material.Concrete
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
