@@ -25,12 +25,29 @@
       "n": 1,
       "lastAt": 1794456573012,
       "last": "REJECTED"
+    },
+    "mare-essentia:ui-missing": {
+      "n": 1,
+      "lastAt": 1794457170073,
+      "last": "APPLIED"
     }
   },
-  "merged": [],
+  "merged": [
+    {
+      "at": 1794457322477,
+      "fp": "mare-essentia:ui-missing",
+      "pr": 12712,
+      "files": [
+        "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+      ],
+      "provider": "gemini:gemini-3.6-flash",
+      "sig": "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 항해, 교역, 백과",
+      "pbKey": "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 항해, 교역, 백과#6b6636729a"
+    }
+  ],
   "day": {
-    "date": "",
-    "count": 0
+    "date": "2026-11-12",
+    "count": 1
   },
   "providers": {
     "github-models:openai/gpt-4.1-mini": {
@@ -76,9 +93,9 @@
       "lastAt": 1794456573012
     },
     "gemini:gemini-3.6-flash": {
-      "ok": 2,
+      "ok": 3,
       "fail": 4,
-      "lastAt": 1794456573012,
+      "lastAt": 1794457170072,
       "quotaUntil": 1794428598527
     }
   }
