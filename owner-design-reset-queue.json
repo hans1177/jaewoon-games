@@ -1012,13 +1012,13 @@
           "Noob Army Tycoon"
         ],
         "A_REPRESENTATIVE_GAME_REFERENCE": {
-        "name": "Noob Army Tycoon",
-        "gameGenre": "전략",
-        "systemFamily": "기지 시설 확장과 자동 병력 생산에 따른 전선 진격",
-        "playerChoice": "전투 보상으로 어떤 기지 시설과 병력 생산 계열을 먼저 늘릴지 선택한다",
-        "source": "OWNER_DIRECT_APPROVED_ABSTRACT_REFERENCE_2026-10-27"
-      },
-      "B_SYSTEM_REFERENCE": {
+          "name": "Noob Army Tycoon",
+          "gameGenre": "전략",
+          "systemFamily": "기지 시설 확장과 자동 병력 생산에 따른 전선 진격",
+          "playerChoice": "전투 보상으로 어떤 기지 시설과 병력 생산 계열을 먼저 늘릴지 선택한다",
+          "source": "OWNER_DIRECT_APPROVED_ABSTRACT_REFERENCE_2026-10-27"
+        },
+        "B_SYSTEM_REFERENCE": {
           "scope": "B_EXISTING_GAME_SYSTEMS",
           "systemFamily": "기존 생물집 건설·자동 출격·생물 진화와 서버 판정 전투",
           "playerChoice": "골드로 3열 슬롯 건설/8종 생물집 선택, 10단계 진화·일꾼·연구 투자 순서를 결정해 자동 출격과 전초 거점 점령·성문 공성 결과를 바꾼다.",
@@ -1027,6 +1027,134 @@
       },
       "requestedAt": "2026-10-27T01:34:00+09:00",
       "updatedAt": "2026-10-27T01:34:00+09:00"
+    },
+    {
+      "revision": "OWNER-MARE-VIBE-CONTINUATION-20261112",
+      "gameId": "mare-essentia",
+      "gameName": "Mare Essentia: Explorer's Encyclopedia",
+      "status": "ACTIVE",
+      "seed": {
+        "version": 2,
+        "seedId": "OWNER-PRESERVE-MARE-ESSENTIA-20261112",
+        "gameId": "mare-essentia",
+        "gameName": "Mare Essentia: Explorer's Encyclopedia",
+        "status": "ACTIVE",
+        "generation": "OWNER_REDESIGN_RESET",
+        "ownerResetRevision": "OWNER-MARE-VIBE-CONTINUATION-20261112",
+        "GAME_CATEGORY": "STORY_COMPLETE_RPG",
+        "REFERENCE_GAMES": [],
+        "REFERENCE_INPUTS": [
+          {
+            "type": "ORIGINAL_MATERIAL",
+            "value": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ports.luau, PortScene.luau, PortCultures.luau, VoyageScene.luau: existing ports, sailing, trades and regional architecture"
+          },
+          {
+            "type": "ORIGINAL_MATERIAL",
+            "value": "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau and Services/State.luau: authoritative gameplay, MareEssentia_v2 saves and canonical state"
+          }
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "기존 항구의 특산품 수요와 가격을 비교해 교역 항로를 고르고 자금·화물을 실제 상태로 관리한다.",
+          "기존 범선·증기선, 계절·기후 변화, 위험 항해와 해전·탐험·지식 카드 수집을 이어간다.",
+          "백과사전 그림체로 항구별 문화권 건축·재질·지붕·마을 사계절·모바일 UI를 일관되게 높인다."
+        ],
+        "CORE_LOOP": [
+          "항구·시대·국가를 선택하고 기존 교역품 가격과 배의 선원·보급·화물 상태를 읽는다.",
+          "교역·선박·항로를 선택하고 출항하여 계절·기후·전투·탐험 사건을 경험한 뒤 자금·지도·도감 상태를 변화시킨다.",
+          "학자·학회·연구·퀘스트로 지식을 보고하고 명성·항로·증기 연구를 확장한 뒤 기존 저장과 함께 다음 항구로 이어간다."
+        ],
+        "DISTINCT_IDENTITY": "Mare Essentia는 문화권별 역사 항구를 오가며 실제 가격 변화·항해 위험·해전·현장 발견과 세계 백과 완성을 하나의 진행으로 묶는 기존 Roblox 항해 RPG다. 기존 문화권별 항구와 계절·날씨, 3D 화물과 선박, 연구·탐험·저장을 보존하며 반복 개선한다.",
+        "GAMEPLAY_SKETCH": {
+          "version": 1,
+          "source": "OWNER_EXISTING_ROBLOX_GAME_PRESERVATION",
+          "worldModel": "기존 Roblox 항구 3D 마을·바다·선박·탐험 지점과 지역별 기후·계절, 교역 데이터·도감·연구·퀘스트. 게임 상태는 서버 Core/GameAction과 State에서 판정·저장한다.",
+          "actors": [
+            "플레이어 선장·학자: 항구를 방문하고 상품을 사고팔며 항해·탐험·연구·학회 보고를 선택한다.",
+            "항구 주민·시설 담당자·학자와 동료: 시설 이용·발견·퀘스트·승무원과 세계 지식으로 진행을 연결한다.",
+            "선박·해적·항해 날씨·유적: 기존 전투·사건·보급 위험과 발견 보상을 제공한다."
+          ],
+          "interactionChains": [
+            "항구 특산품 비교 -> 구매 -> 서버 자금·적재량 변화 -> 출항 -> 도착 항구 가격 비교 -> 판매 -> 선박·항로 선택",
+            "항해 사건·탐험 -> 실제 발견·전투·도감 카드 -> 학자·학회 보고 -> 기술·명성·연구 보상 -> 새로운 목적지",
+            "항구 진입 -> 등록된 CC0 마을 모델·지역별 주택과 백과사전 UI 표시 -> 모바일 시설 터치 -> 기존 서버 판정"
+          ],
+          "stateMachine": [
+            "NEW_OR_LOAD_SAVE",
+            "PORT_AND_TRADE_CHOICE",
+            "SHIP_AND_ROUTE_PREPARE",
+            "SAIL_WEATHER_EVENT",
+            "EXPLORE_OR_BATTLE",
+            "ARRIVE_REPORT_AND_RESEARCH",
+            "SAVE_AND_CONTINUE"
+          ],
+          "firstPlayableCycle": [
+            "기존 MareEssentia_v2 저장을 불러오거나 허용된 시대와 국가로 시작한다.",
+            "모바일 항구에서 교역품 가격·화물칸과 자금을 확인한다.",
+            "상품을 구매하고 선박 보급과 목적 항로를 선택한다.",
+            "출항하여 바람·계절·사건 또는 전투·탐험을 경험한다.",
+            "다른 항구에 도착해 상품을 판매하거나 지식 카드를 발견한다.",
+            "학자·연구·퀘스트 또는 백과사전에서 보상을 확인하고 진행도를 저장한다."
+          ],
+          "expansionPlan": [
+            "기존 Town CC0 승인 모델을 활용해 문화권별 주택 실루엣·출입구·시장·랜드마크의 시각 차이를 검증하고 개선한다.",
+            "기존 PortScene·VoyageScene의 항구/항해 시즌·폭풍·물보라·조명 연출을 모바일 성능 범위에서 개선한다.",
+            "교역품 3D·탭·버튼·폰트와 백과사전 UI의 시각 언어를 통합하고 기존 사용자 행동/저장과 결합한다."
+          ],
+          "longGoalScenario": [
+            "항구 간 가격·위험 차이를 활용해 교역 자산과 배를 성장시킨다.",
+            "다른 문화권의 항구·유적·현장 탐험을 연결해 지식과 기술 트리를 확장한다.",
+            "시대가 열리면서 더 먼 항로·발견·연구를 이어가 세계 백과를 완성한다."
+          ],
+          "validationRisks": [
+            "MareEssentia_v2 DataStore 키·필드, 교역 가격·시작 연도·선박·체력·드랍률·보상·세이브/복구와 서버 판정 의미를 임의로 변경하지 않는다.",
+            "파츠·임의 조립 모델·근거 없는 CC0 자산·미허가 에셋·wrapper/그림자 파이프라인을 추가하지 않는다.",
+            "F0~F9·원본 해시·권한·동일 전용 Place 게시와 모바일/실플레이 QA 증거 없이 통과·출시라고 하지 않는다."
+          ]
+        },
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "OWNER_EXISTING_GAME_PRESERVATION",
+          "targetMarketScope": "CURRENT_GAME_IDENTITY",
+          "available": false,
+          "hardPassFailGate": false,
+          "note": "기존 소스와 게임성 보존 목적. 새로운 외부 시장 성과 수치 주장 없음."
+        },
+        "TARGET_AUDIENCE": "항해·교역·탐험·지식 도감과 역사적 항구 체험을 즐기는 모바일 Roblox 플레이어",
+        "TARGET_SESSION_DIRECTION": "교역·항해·발견·연구의 기존 루프를 유지하면서 항구별 문화권 시각 차이와 입력 피드백을 매번 개선한다.",
+        "TARGET_SESSION_MINUTES": 30,
+        "INITIAL_TARGET_PLATFORM": "ROBLOX",
+        "INITIAL_PLAY_MODE": "SINGLE",
+        "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+        "CROSS_PLATFORM_EXPANSION_VALUE": "ROBLOX_ONLY_EXISTING_GAME",
+        "TRANSFORMATION_MODE": "REINTERPRETATION",
+        "SOURCE_CODE_RULE": "PRESERVE_EXISTING_IMPLEMENTATION_AND_MODIFY_RESPONSIBLE_SYSTEMS_DIRECTLY",
+        "OWNER_REBUILD_MODE": "PRESERVATION_PRESENTATION_UPGRADE",
+        "REUSE_PRIOR_DESIGN_BASELINE": false,
+        "REUSE_PRIOR_ARTBOOK": false,
+        "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": true,
+        "CANONICAL_IMPLEMENTATION_SOURCE": "roblox-games/mare-essentia",
+        "SAVE_POLICY": "PRESERVE_EXISTING_MareEssentia_v2_DATASTORE_AND_FIELDS",
+        "MOBILE_FIRST": true,
+        "productionClass": "DESIGN_ONLY",
+        "productionClassSource": "OWNER_DIRECT_CANONICAL_VIBE_CONTINUATION_INTAKE",
+        "lifecycleState": "DESIGN_ONLY",
+        "UNITY_WEB_VALIDATION_SURFACE": {
+          "role": "VALIDATION_SURFACE_ONLY",
+          "canonicalSourceRoot": "unity-games/mare-essentia",
+          "outputRoot": "web-games/mare-essentia",
+          "sameCanonicalUnityProjectRequired": true,
+          "nativeReleaseGate": false,
+          "developmentAdmissionGate": false,
+          "legacyDirectWebAuthoring": false
+        },
+        "OWNER_LATEST_DESIGN_REQUEST": "2026-11-12 사용자 직접 요청: 대항해시대(Mare Essentia)도 교역품처럼 Vibe 후속 반복 자동개발에 기존 canonical DESIGN_ONLY→검증→개발 대기열→Vibe2 24h→F0~F9→전용 Roblox Place 게시→재검증→다음 개선 순서로 연결한다. 교역·항해·해전·탐험·연구·문화권별 3D 항구·마을·계절·날씨·백과사전 UI를 계속 품질 개선하되 기존 게임·세이브·배포 대상은 보존한다. 비용 발생 서비스, 금지된 임의 파츠/모델, 임시우회·섀도 파이프라인 사용 금지. 승인된 CC0 실물 모델과 원본·사용 권한, 정확한 런타임 QA가 통과된 변경만 채택한다. 기존 설계·안전·보안·출시 관문은 완화하지 않는다.",
+        "B_SYSTEM_REFERENCE": {
+          "scope": "B_EXISTING_GAME_SYSTEMS",
+          "systemFamily": "기존 항구 교역·항로 항해·자동 해전·학자·백과사전 연구 연결",
+          "playerChoice": "상품과 목적 항로, 배의 보급·업그레이드 및 지식 발견·보고·연구를 선택해 서버 자금·항해 위험·도감과 진행 상태를 바꾼다.",
+          "source": "roblox-games/mare-essentia/docs/DESIGN.md"
+        }
+      },
+      "requestedAt": "2026-11-12T21:18:00+09:00"
     }
   ],
   "ownerImmediateDevelopmentStart": {
