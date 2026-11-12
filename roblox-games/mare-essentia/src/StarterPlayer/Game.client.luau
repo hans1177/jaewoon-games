@@ -112,10 +112,57 @@ local chosenNation = "england"
 local chosenYear = 1700
 local newGameMode = false -- 저장된 게임이 있어도 새로 시작하는 선택 화면을 보여 준다
 
+local H: { [string]: any } = {} -- 화면 보조 상태는 사용 전 먼저 준비한다. 제목/아이콘 런타임 오류 방지.
 local gui = Instance.new("ScreenGui")
 gui.Name = "MareEssentiaGui"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
+
+-- [시작 화면] 서버 상태를 받는 동안 공중 캐릭터와 빈 하늘이 노출되지 않도록 UI를 즉시 덮는다.
+-- 월드/저장 데이터는 손대지 않고 서버 응답 직후 기존 시작 메뉴로 넘긴다.
+H.startupCover = Instance.new("Frame")
+H.startupCover.Name = "StartLoading"
+H.startupCover.Size = UDim2.fromScale(1, 1)
+H.startupCover.BackgroundColor3 = Color3.fromRGB(24, 58, 89)
+H.startupCover.BorderSizePixel = 0
+H.startupCover.ZIndex = 200
+H.startupCover.Parent = gui
+H.startupLabel = Instance.new("TextLabel")
+H.startupLabel.Name = "LoadingMessage"
+H.startupLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+H.startupLabel.Position = UDim2.fromScale(0.5, 0.5)
+H.startupLabel.Size = UDim2.fromScale(0.88, 0.2)
+H.startupLabel.BackgroundTransparency = 1
+H.startupLabel.Text = "학문의 바다\n항구와 항해 기록을 불러오는 중..."
+H.startupLabel.Font = Enum.Font.GothamBold
+H.startupLabel.TextColor3 = Color3.fromRGB(253, 226, 166)
+H.startupLabel.TextScaled = true
+H.startupLabel.TextWrapped = true
+H.startupLabel.ZIndex = 201
+H.startupLabel.Parent = H.startupCover
+do
+	local size = Instance.new("UITextSizeConstraint")
+	size.MaxTextSize = 27
+	size.MinTextSize = 13
+	size.Parent = H.startupLabel
+end
+
+-- [캐릭터 스폰] 항구가 클라이언트에 만들어지기 전에는 바닥이 없으므로 추락을 막는다.
+-- 실제 걸어 다니는 시점에는 아래 applyView에서 고정을 해제한다.
+function H.placeCharacterOnSpawn(character)
+	local root = character:WaitForChild("HumanoidRootPart", 10)
+	if not root then return end
+	if sceneSpawn and not overview then
+		character:PivotTo(sceneSpawn)
+		root.Anchored = false
+	else
+		root.Anchored = true
+	end
+end
+player.CharacterAdded:Connect(H.placeCharacterOnSpawn)
+if player.Character then
+	task.defer(H.placeCharacterOnSpawn, player.Character)
+end
 
 -- 전체 화면 장면(항해 연출, 이야기, 카드 상세)은 별도 ScreenGui에 띄운다.
 -- 같은 화면에 두면 ZIndex 규칙 때문에 장면의 그림이 배경 뒤로 숨는 문제가 있었다.
@@ -228,8 +275,6 @@ H.TEXT_ICONS = {
 	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "key" }, { "카드", "Relics", "key" }, { "발견", "Relics", "key" },
 	{ "이야기", "Relics", "key" },
 }
-local H: { [string]: any } = {}
-
 function H.iconFor(title, subtitle)
 	for _, t in H.TITLE_ICONS do
 		if string.find(title, t[1], 1, true) then
@@ -5292,7 +5337,8 @@ do
 			camera.CameraType = Enum.CameraType.Scriptable
 			camera.FieldOfView = 62
 			if root then
-				char:PivotTo(CFrame.new(-200, 8, 0)) -- 마을 뒤에 숨겨 둔다
+				root.Anchored = true -- 전경에서 숨긴 캐릭터는 허공에서 낙하하지 않게 고정한다.
+				char:PivotTo(CFrame.new(-200, 8, 0))
 			end
 		else
 			camera.CameraType = Enum.CameraType.Custom
@@ -5301,8 +5347,9 @@ do
 			if hum then
 				camera.CameraSubject = hum
 			end
-			if char and sceneSpawn then
+			if char and root and sceneSpawn then
 				char:PivotTo(sceneSpawn)
+				root.Anchored = false -- 실제 항구 바닥에 옮긴 뒤 걷기 조작 복구
 			end
 		end
 	end
@@ -6432,13 +6479,21 @@ task.spawn(function()
 			message = ""
 			render()
 			H.showTitle()
+			-- 실제 시작 메뉴가 완성된 뒤에만 로딩 화면을 닫는다.
+			if H.startupCover then
+				H.startupCover:Destroy()
+				H.startupCover = nil
+			end
 			return
 		end
 		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다
 		task.wait(0.5)
 	end
 	message, messageOk = "서버에 연결하지 못했어요", false
-	render()
+	if H.startupLabel then
+		H.startupLabel.Text = "서버 연결에 실패했어.\n재접속해서 다시 시도해 줘."
+	end
+	warn("[MareEssentia] 시작 상태 수신 실패: 게임 시작 메뉴를 열지 않음")
 end)
 
 openTab = function(tabId)
