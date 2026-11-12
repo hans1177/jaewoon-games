@@ -4864,18 +4864,55 @@ local function renderCodexOverview()
 function H.renderCodexField()
 if codexField == "boarding" then
 	local BC = require(Shared:WaitForChild("BoardingCards"))
+	BC.useKind("boarding") -- 해전 대결 뒤에 줄 이름이 바뀌어 있을 수 있으니 도감은 기본 이름으로 되돌려 보여 준다
+	local ROW_SEA = { melee = "충각", ranged = "소포", cannon = "주포" }
 	add(function()
-		return mkRow(content, "접현 전투 카드", "근접은 포, 포는 사격, 사격은 근접에 유리해요.", {
+		return mkRow(content, "해전 카드 도감", "해적과 싸우면 카드 대결로 승패가 갈려요. 카드에서 이기면 전체 승리예요.", {
 			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
 		}, 58)
 	end)
+	-- 규칙 요약
+	add(function() return mkHeader(content, "대결 규칙") end)
+	for _, rule in {
+		{ "3줄 × 3판 2선승", "줄은 근접·사격·포 세 줄이에요. 해전에서는 충각·소포·주포로 불러요. 세 줄 합계가 큰 쪽이 그 판을 이겨요." },
+		{ "내 차례에 할 수 있는 일", "카드 한 장 내기 · 이번 판 멈추기 · 지도자 능력(한 판에 한 번). 둘 다 멈추면 그 판이 끝나요." },
+		{ "병종 상성", string.format("근접 > 포 > 사격 > 근접. 유리한 줄은 합계 ×%.1f, 불리한 줄은 ×%.2f. 영웅은 상성에 흔들리지 않아요.", BC.ADV, BC.DIS) },
+		{ "무기 상성", "근접 줄끼리는 검 > 도끼 > 창 > 검. 유리하면 위력 +1, 불리하면 -1이에요." },
+		{ "날씨와 소각", "안개·폭풍·혼전은 한 줄을 모두 1로 줄여요. 맑음이 걷어 내요. 소각은 가장 센 일반 카드를 쓰러뜨려요. 영웅은 안전해요." },
+	} do
+		add(function() return mkRow(content, rule[1], rule[2], {}, 64) end)
+	end
+	add(function() return mkHeader(content, "능력") end)
+	for _, ab in {
+		{ "결속", "같은 이름의 카드가 같은 줄에 모이면 각각 위력이 배가 돼요." },
+		{ "사기", "같은 줄의 다른 아군 카드에 위력 +1을 줘요." },
+		{ "첩자", "적 줄에 놓이지만 내 손패에 카드 두 장을 뽑아요." },
+		{ "치료", "버린 일반 카드 중 가장 센 것을 되살려요." },
+	} do
+		add(function() return mkRow(content, ab[1], ab[2], {}, 50) end)
+	end
+	add(function() return mkHeader(content, "지도자 능력 (한 판에 한 번)") end)
+	for _, id in { "draw", "clear", "snipe" } do
+		local ld = BC.Leaders[id]
+		add(function() return mkRow(content, ld.name, ld.text, {}, 50) end)
+	end
+	-- 내가 가진 카드: 게임에서 이룬 일이 카드가 된다
+	local owned = view.deck and view.deck.cards or {}
+	if #owned > 0 then
+		add(function() return mkHeader(content, string.format("내 특별 카드 %d장 (영웅·특수)", #owned)) end)
+		for _, c in owned do
+			local info = BC.SkillInfo[c.skill]
+			add(function() return mkRow(content, c.name, if info then info.name .. " · " .. info.text else "", {}, 56) end)
+		end
+	end
+	add(function() return mkHeader(content, string.format("병종 카드 전체 %d종", (function() local n = 0 for _ in BC.Units do n += 1 end for _ in BC.Specials do n += 1 end return n end)())) end)
 	for _, rowId in { "melee", "ranged", "cannon", "special" } do
 		local units = {}
 		for _, unit in (if rowId == "special" then BC.Specials else BC.Units) do
 			if rowId == "special" or unit.row == rowId then table.insert(units, unit) end
 		end
 		table.sort(units, function(a, b) return a.name < b.name end)
-		add(function() return mkLabel(content, BC.ROW_NAME[rowId] or "특수 카드", 16, COLORS.gold, true) end)
+		add(function() return mkLabel(content, if rowId == "special" then "특수 카드" else string.format("%s 줄  (해전: %s)", BC.ROW_NAME[rowId], ROW_SEA[rowId]), 16, COLORS.gold, true) end)
 		add(function()
 			local grid = Instance.new("Frame")
 			grid.BackgroundTransparency = 1
