@@ -356,9 +356,11 @@ function Sfx.merchantGreeting(port)
 	end
 end
 
--- 파도·바람 같은 앰비언트 루프 (names: 목록, nil 이면 끈다)
-function Sfx.ambient(names)
-	local key = table.concat(names or {}, "|")
+-- 파도·바람 같은 앰비언트 루프. 해전 중에는 gain으로 배경음을 낮춰 포격을 가리지 않는다.
+-- names: 목록, nil 이면 끈다. 기본 1은 기존 항구·항해의 음량을 그대로 보존한다.
+function Sfx.ambient(names, gain)
+	local level = math.clamp(tonumber(gain) or 1, 0, 1)
+	local key = table.concat(names or {}, "|") .. ":" .. string.format("%.2f", level)
 	if ambientKey == key then
 		return
 	end
@@ -375,7 +377,7 @@ function Sfx.ambient(names)
 		local s = make(name, sfxGroup)
 		if s then
 			s.Looped = true
-			local target = s.Volume
+			local target = s.Volume * level
 			s.Volume = 0
 			s:Play()
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
