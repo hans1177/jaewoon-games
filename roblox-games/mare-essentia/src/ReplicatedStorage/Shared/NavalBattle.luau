@@ -793,7 +793,7 @@ function NavalBattle.play(opts)
 			if hullHit then 6 + math.random() * 3 else 0.4,
 			(math.random() - 0.5) * 6
 		)
-		Sfx.play("sfx_cannon", 0.82, 0.92 + math.random() * 0.16)
+		Sfx.play("sfx_naval_cannon", 0.82, 0.92 + math.random() * 0.16, "sfx_cannon")
 		if hullHit then
 			task.delay(0.9, function()
 				if not finished then
@@ -820,12 +820,12 @@ function NavalBattle.play(opts)
 				end
 				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
 				if hullHit then
-					Sfx.play("sfx_hit", 0.78, 0.88 + math.random() * 0.2)
+					Sfx.play("sfx_naval_hull_hit", 0.78, 0.88 + math.random() * 0.2, "sfx_hit")
 					if math.random() < 0.4 then
 						Sfx.play("sfx_creak", 0.3, 0.85 + math.random() * 0.18)
 					end
 				else
-					Sfx.play("sfx_splash", 0.55, 0.9 + math.random() * 0.22)
+					Sfx.play("sfx_naval_splash", 0.55, 0.9 + math.random() * 0.22, "sfx_splash")
 				end
 				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to),
 					if hullHit then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(150, 225, 245),
@@ -1033,9 +1033,8 @@ function NavalBattle.play(opts)
 						end)
 					end
 					Sfx.play("sfx_horn")
-					Sfx.play("sfx_boarding_slash", 0.9, 1)
-					Sfx.play("sfx_creak", 0.9, 0.8)
-					Sfx.play("sfx_hit", 1, 0.7)
+					Sfx.play("sfx_naval_ram", 0.68, 0.96, "sfx_creak")
+					Sfx.play("sfx_boarding_slash", 0.46, 1)
 				end
 			else
 				-- 백병전: 남은 기록을 차례로 보여 준다
@@ -1068,9 +1067,8 @@ function NavalBattle.play(opts)
 					meHp, foeHp = meEnd, foeEnd
 					if loser then
 						sinkStart = now
-						-- 침몰 장면의 목재 울림과 큰 물보라를 한 번만 재생한다.
-						Sfx.play("sfx_creak", 0.6, 0.74)
-						Sfx.play("sfx_splash", 0.62, 0.8)
+						-- CC0 함선 침몰 효과음을 한 번만 재생한다. 미등록이면 기존 물보라로 대체한다.
+						Sfx.play("sfx_naval_sink", 0.64, 0.94, "sfx_splash")
 					end
 					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
