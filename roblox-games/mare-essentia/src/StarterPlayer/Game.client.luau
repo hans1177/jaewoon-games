@@ -1319,21 +1319,11 @@ hud.Visible = false
 hud.Parent = gui
 
 local card = Instance.new("Frame")
-card.BackgroundColor3 = NAVY
-card.BackgroundTransparency = 0.02
+card.BackgroundTransparency = 1
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(250, 66)
+card.Size = UDim2.fromOffset(188, 67)
 H.hudCard = card
 card.Parent = hud
-corner(card, 10)
-hudStroke(card, 2)
-do
-	local g = Instance.new("UIGradient")
-	g.Color = ColorSequence.new(Color3.fromRGB(106, 69, 45), Color3.fromRGB(38, 26, 21))
-	g.Rotation = 90
-	g.Parent = card
-	bookMaterial(card, "leather", 160)
-end
 
 local function hudText(parent, pos, size, textSize, color, align)
 	local l = Instance.new("TextLabel")
@@ -1349,21 +1339,26 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-H.hudName = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, BRASS)
-H.hudCoin = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
-H.hudPort = hudText(card, UDim2.fromOffset(62, 21), UDim2.new(1, -70, 0, 14), 11, COLORS.text)
+H.hudName = hudText(card, UDim2.fromOffset(45, 0), UDim2.fromOffset(143, 16), 12, COLORS.paper)
+H.hudCoin = hudText(card, UDim2.fromOffset(45, 16), UDim2.fromOffset(143, 14), 11, Color3.fromRGB(255, 229, 170))
+H.hudPort = hudText(card, UDim2.fromOffset(45, 30), UDim2.fromOffset(143, 14), 11, COLORS.paper)
 local hullBack = Instance.new("Frame")
-hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
-hullBack.Position = UDim2.fromOffset(62, 38)
-hullBack.Size = UDim2.new(1, -70, 0, 7)
+hullBack.BackgroundColor3 = Color3.fromRGB(39, 31, 26)
+hullBack.Position = UDim2.fromOffset(45, 46)
+hullBack.Size = UDim2.fromOffset(139, 4)
 hullBack.Parent = card
-corner(hullBack, 4)
+corner(hullBack, 2)
 local hullFill = Instance.new("Frame")
 hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.Parent = hullBack
-corner(hullFill, 4)
-H.hudShip = hudText(card, UDim2.fromOffset(62, 48), UDim2.new(1, -70, 0, 14), 10, COLORS.muted)
+corner(hullFill, 2)
+H.hudShip = hudText(card, UDim2.fromOffset(45, 52), UDim2.fromOffset(143, 14), 11, COLORS.paper)
+for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
+	label.TextStrokeColor3 = Color3.fromRGB(28, 22, 19)
+	label.TextStrokeTransparency = 0.18
+	label.TextTruncate = Enum.TextTruncate.AtEnd
+end
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
 local banner = Instance.new("Frame")
@@ -1389,134 +1384,147 @@ coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
 corner(coinCard, 10)
 hudStroke(coinCard, 2)
 
+-- 화면 위에 떠 있는 항해 도구. 그림과 터치 영역만 두고 메뉴 판은 제거한다.
+function H.hudShortcut(parent, name, key, label)
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Size = UDim2.fromOffset(46, 46)
+	button.BackgroundTransparency = 1
+	button.Text = ""
+	button.AutoButtonColor = false
+	button:SetAttribute("ActionLabel", label)
+	button.Parent = parent
+	local art = AssetIds["Menu/" .. key]
+	if art then
+		local shadow = Instance.new("ImageLabel")
+		shadow.BackgroundTransparency = 1
+		shadow.Size = UDim2.fromOffset(35, 35)
+		shadow.Position = UDim2.fromOffset(6, 7)
+		shadow.Image = "rbxassetid://" .. tostring(art)
+		shadow.ScaleType = Enum.ScaleType.Fit
+		shadow.ImageColor3 = Color3.fromRGB(34, 24, 19)
+		shadow.Parent = button
+		local icon = shadow:Clone()
+		icon.Position = UDim2.fromOffset(5, 4)
+		icon.ImageColor3 = Color3.fromRGB(253, 226, 174)
+		icon.Parent = button
+	else
+		local ivory = Color3.fromRGB(235, 202, 150)
+		local patina = Color3.fromRGB(64, 47, 37)
+		local function mark(x, y, w, h, radius, rotation, outline, fill)
+			local shape = Instance.new("Frame")
+			shape.Position = UDim2.fromOffset(x, y)
+			shape.Size = UDim2.fromOffset(w, h)
+			shape.BorderSizePixel = 0
+			shape.BackgroundColor3 = fill or ivory
+			shape.BackgroundTransparency = if outline then 1 else 0
+			shape.Rotation = rotation
+			shape.Parent = button
+			corner(shape, radius)
+			local edge = Instance.new("UIStroke")
+			edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			edge.Color = if outline then ivory else patina
+			edge.Thickness = if outline then 2 else 1
+			edge.Parent = shape
+		end
+		if key == "crew" then
+			mark(25, 10, 10, 10, 5, 0, false)
+			mark(23, 22, 16, 11, 5, 0, false)
+			mark(10, 11, 13, 13, 7, 0, false)
+			mark(5, 26, 24, 12, 6, 0, false)
+		elseif key == "journal" then
+			mark(7, 11, 15, 24, 2, -8, true)
+			mark(23, 11, 15, 24, 2, 8, true)
+			mark(11, 18, 7, 2, 1, -8, false)
+			mark(11, 24, 8, 2, 1, -8, false)
+			mark(27, 19, 7, 2, 1, 8, false)
+			mark(27, 25, 7, 2, 1, 8, false)
+		elseif key == "deck" then
+			mark(8, 10, 18, 27, 2, -17, true)
+			mark(20, 9, 18, 28, 2, 12, false)
+			mark(25, 18, 8, 8, 1, 45, false, patina)
+		elseif key == "gear" then
+			for i = 0, 7 do
+				local angle = i * math.pi / 4
+				mark(20 + math.sin(angle) * 14, 19 - math.cos(angle) * 14, 6, 8, 1, i * 45, false)
+			end
+			mark(10, 10, 26, 26, 13, 0, false)
+			mark(17, 17, 12, 12, 6, 0, false, patina)
+		end
+	end
+	local scale = Instance.new("UIScale")
+	scale.Parent = button
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			scale.Scale = 0.94
+		end
+	end)
+	button.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			scale.Scale = 1
+		end
+	end)
+	return button
+end
+
 local dock = Instance.new("ScrollingFrame")
 dock.Name = "Dock"
-dock.BackgroundColor3 = NAVY
-dock.BackgroundTransparency = if AssetIds["Menu/leather_grain"] then 0.89 else 0.15
+dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
-dock.Position = UDim2.new(1, -8, 0, -50) -- 상단 인셋(약 57)만큼 올려 화면 맨 위에 붙인다 -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
-dock.Size = UDim2.fromOffset(112, 232)
+dock.Position = UDim2.new(1, -8, 0, 51)
+dock.Size = UDim2.new(0, 100, 1, -160)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
+dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
--- [HUD 장정] 목록의 배치·터치를 건드리지 않고 별도 가죽 표면을 뒤에 깐다.
-local dockLeatherId = AssetIds["Menu/leather_grain"]
-if dockLeatherId then
-	local leather = Instance.new("ImageLabel")
-	leather.Name = "DockLeather"
-	leather.BackgroundColor3 = COLORS.leather
-	leather.BackgroundTransparency = 0
-	leather.BorderSizePixel = 0
-	leather.AnchorPoint = dock.AnchorPoint
-	leather.Position = dock.Position
-	leather.Size = dock.Size
-	leather.Image = "rbxassetid://" .. tostring(dockLeatherId)
-	leather.ImageTransparency = 0.08
-	leather.ScaleType = Enum.ScaleType.Tile
-	leather.TileSize = UDim2.fromOffset(144, 144)
-	leather.Active = false
-	leather.Parent = hud
-	corner(leather, 10)
-	local seam = Instance.new("UIStroke")
-	seam.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	seam.Color = Color3.fromRGB(183, 136, 73)
-	seam.Thickness = 1.3
-	seam.Transparency = 0.36
-	seam.Parent = leather
-end
 dock.Parent = hud
-corner(dock, 10)
-hudStroke(dock, 1.5)
-local dockLayout = Instance.new("UIGridLayout")
-dockLayout.CellSize = UDim2.fromOffset(48, 54)
-dockLayout.CellPadding = UDim2.fromOffset(4, 4)
-dockLayout.SortOrder = Enum.SortOrder.LayoutOrder
-dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-dockLayout.Parent = dock
-local dockPad = Instance.new("UIPadding")
-dockPad.PaddingTop, dockPad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5)
-dockPad.Parent = dock
+do
+	local limit = Instance.new("UISizeConstraint")
+	limit.MaxSize = Vector2.new(100, 294)
+	limit.Parent = dock
+	local grid = Instance.new("UIGridLayout")
+	grid.CellSize = UDim2.fromOffset(46, 46)
+	grid.CellPadding = UDim2.fromOffset(2, 2)
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	grid.Parent = dock
+end
 
 H.DOCK = {
-	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "map", "일지" },
+	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "journal", "일지" },
 	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
 for i, d in H.DOCK do
-	local b = Instance.new("TextButton")
-	b.Name = "Menu_" .. d[1]
+	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[1], d[2])
 	b.LayoutOrder = i
-	b.Size = UDim2.fromOffset(48, 54)
-	b.BackgroundColor3 = Color3.fromRGB(198, 169, 119)
-	b.AutoButtonColor = true
-	b.Font = Enum.Font.Antique
-	b.TextSize = 11
-	b.TextColor3 = Color3.fromRGB(250, 236, 200)
-	b.Text = ""
-	b.Parent = dock
-	-- 메뉴 그림과 이름은 함께 유지해서 터치와 읽기를 지원한다.
-	local menuLabel = Instance.new("TextLabel")
-	menuLabel.Name = "Label"
-	menuLabel.BackgroundTransparency = 1
-	menuLabel.Position = UDim2.fromOffset(1, 35)
-	menuLabel.Size = UDim2.new(1, -2, 0, 17)
-	menuLabel.Font = Enum.Font.Antique
-	menuLabel.TextSize = 10
-	menuLabel.TextColor3 = INK
-	menuLabel.Text = d[2]
-	menuLabel.Parent = b
-	local menuKey = if d[1] == "crew" and not AssetIds["Menu/crew"] then "harbor" else d[1]
-	if AssetIds["Menu/" .. menuKey] then
-		local icon = modelIcon(b, "Menu", menuKey, nil, 31)
-		icon.Name = "Icon"
-		icon.AnchorPoint = Vector2.new(0.5, 0)
-		icon.Position = UDim2.new(0.5, 0, 0, 3)
-	end
-	corner(b, 8)
-	do
-		local g = Instance.new("UIGradient")
-		g.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
-		g.Rotation = 90
-		g.Parent = b
-		bookMaterial(b, "parchment", 108)
-	end
-	local bs = Instance.new("UIStroke")
-	bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 글자가 아니라 테두리에만 (기본값은 글자에 번짐)
-	bs.Color = BRASS
-	bs.Thickness = 1
-	bs.Transparency = 0.35
-	bs.Parent = b
 	b.Activated:Connect(function()
 		if d[1] == "view" then
 			overview = not overview
-			menuLabel.Text = if overview then "걷기" else "전경"
+			b:SetAttribute("ActionLabel", if overview then "걷기" else "전경")
 			applyView()
+		elseif d[1] == "journal" then
+			openTab("map", "journal")
 		else
 			openTab(d[1])
 		end
 	end)
 end
 
--- 설정 창 (대항해 계열 게임의 시스템 메뉴처럼): 소리 · 화면 · 도움말 · 게임 관리를 한 창에 모았다 ------------------
+-- 설정 · 지도 · 내 카드
 local render
 local openOptions
-local gear = Instance.new("TextButton")
-gear.Name = "OptionsButton"
+local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정")
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -8, 0, 188)
-gear.Size = UDim2.fromOffset(112, 38)
-gear.BackgroundColor3 = COLORS.leather
-gear.Font = Enum.Font.Antique
-gear.TextSize = 14
-gear.TextColor3 = Color3.fromRGB(250, 236, 200)
-gear.Text = "⚙ 설정"
-gear.Parent = hud
-corner(gear, 10)
-local gearGrain = bookMaterial(gear, "leather", 120)
-if gearGrain then gearGrain.ImageTransparency = 0.77 end
-hudStroke(gear, 1.5)
+gear.Position = UDim2.new(1, -104, 0, 3)
+do
+	local chart = H.hudShortcut(hud, "ChartButton", "chart_folded_map", "지도")
+	chart.AnchorPoint = Vector2.new(1, 0)
+	chart.Position = UDim2.new(1, -56, 0, 3)
+	chart.Activated:Connect(function() openTab("map", "chart") end)
+end
 gear.Activated:Connect(function()
 	Sfx.play("sfx_click")
 	openOptions()
@@ -1526,19 +1534,9 @@ end)
 do
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
-	local deckBtn = Instance.new("TextButton")
-	deckBtn.Name = "DeckButton"
+	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드")
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -128, 0, 8)
-	deckBtn.Size = UDim2.fromOffset(100, 34)
-	deckBtn.BackgroundColor3 = COLORS.leather
-	deckBtn.Font = Enum.Font.Antique
-	deckBtn.TextSize = 14
-	deckBtn.TextColor3 = Color3.fromRGB(250, 236, 200)
-	deckBtn.Text = "🃏 내 카드"
-	deckBtn.Parent = hud
-	corner(deckBtn, 10)
-	hudStroke(deckBtn, 1.5)
+	deckBtn.Position = UDim2.new(1, -8, 0, 3)
 	local open = nil
 	function H.openDeck()
 		if open then
@@ -1773,13 +1771,28 @@ do
 	end)
 end
 
+H.hudCalendar = {
+	months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+	seasons = { "겨울", "봄", "여름", "가을" },
+	voyage = require(Shared:WaitForChild("Voyage")),
+}
 function H.updateHud(p, ship)
-	H.hudName.Text = string.format("%s · %d년", p.nation, p.year)
-	H.hudPort.Text = "항구  " .. tostring(p.portName)
+	local calendar = H.hudCalendar
+	local day = math.floor(p.day or 0)
+	local monthDay = day % 365 + 1
+	local month = 1
+	while monthDay > calendar.months[month] do
+		monthDay -= calendar.months[month]
+		month += 1
+	end
+	local port = PortData.Ports[p.portId]
+	local season = calendar.seasons[calendar.voyage.season(day, port and port.lat or 0)]
+	H.hudName.Text = string.format("%d년 %d월 %d일 · %s", p.year, month, monthDay, season)
+	H.hudPort.Text = tostring(p.portName) .. " · " .. tostring(ship.name)
 	hudBanner.Text = tostring(p.portName)
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then COLORS.red else COLORS.green
-	H.hudShip.Text = string.format("%s  화물 %d/%d  명성 %d", ship.name, ship.cargoUsed, ship.cargoCapacity, p.fame)
+	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
 end
 
@@ -1799,10 +1812,17 @@ bubble.Parent = hud
 corner(bubble, 12)
 hudStroke(bubble, 2)
 do
-	local limit = Instance.new("UISizeConstraint")
-	limit.MinSize = Vector2.new(220, 0)
-	limit.MaxSize = Vector2.new(380, 1000)
-	limit.Parent = bubble
+	local function layoutBubble()
+		local width = hud.AbsoluteSize.X
+		local left = if width >= 580 then 206 else 8
+		local right = if width >= 580 then 160 else 112
+		local bubbleWidth = math.clamp(width - left - right, 1, 380)
+		bubble.AnchorPoint = Vector2.new(0, 0)
+		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 580 then 8 else 82)
+		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
+	end
+	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
+	layoutBubble()
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
 	pad.Parent = bubble
@@ -5700,8 +5720,8 @@ H.SEA_NAMES = {
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
 function RENDERERS.map()
-	-- 일지: 지금 어디서 무엇을 하는지, 겪은 사건, 기다리는 사건을 먼저 보여 주고 아래에 항해 지도를 둔다
-	do
+	-- 상단 바로가기는 지도를, 항해 일지는 기록을 먼저 펼친다.
+	if H.mapPage ~= "chart" then
 		local p = view.player
 		add(function() return mkHeader(content, "항해 일지") end)
 		add(function()
@@ -5716,8 +5736,16 @@ function RENDERERS.map()
 				add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
 			end
 		end
-		add(function() return mkHeader(content, "항해 지도") end)
+		if H.mapPage == "journal" then
+			add(function()
+				return mkButton(content, "항해 지도 펼치기", COLORS.blue, UDim2.new(1, -6, 0, 44), function()
+					openTab("map", "chart")
+				end)
+			end)
+			return
+		end
 	end
+	add(function() return mkHeader(content, "항해 지도") end)
 	-- 한 번에 현재 보고 있는 지도 한 장만 화면에 붙인다.
 	local chartImage = H.selectedChart and AssetIds["CardArt/event_chart_" .. H.selectedChart]
 	add(function()
@@ -6019,6 +6047,7 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
 			currentTab = id
+			H.mapPage = nil
 			if id ~= "battle" then
 				equipped = nil
 			end
@@ -6149,6 +6178,7 @@ syncScene = function()
 		arrive = arriveNext,
 	}, function(tab)
 		currentTab = tab
+		H.mapPage = nil
 		menuToggle.Visible = false
 		if tab == "trade" then
 			openTradeHall()
@@ -6646,15 +6676,27 @@ titleGui.Enabled = false
 ;(function()
 	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
 	root.ClipsDescendants = true
+	local seaId = AssetIds["CardArt/event_title_sea"]
+	local shipId = AssetIds["CardArt/event_title_ship"]
+	local layered = seaId ~= nil and shipId ~= nil
 	local art = Instance.new("ImageLabel")
-	art.Name = "TitleVoyageIllustration"
-	art.AnchorPoint = Vector2.new(0.5, 0.5)
-	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(1.06, 1.06)
+	art.Name = "TitleSea"
+	art.AnchorPoint = Vector2.new(0.5, 1)
+	art.Position = UDim2.fromScale(0.5, 1)
+	art.Size = UDim2.fromScale(1, 1)
 	art.BackgroundTransparency = 1
-	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
-	art.ScaleType = Enum.ScaleType.Crop
+	art.Image = "rbxassetid://" .. tostring(if layered then seaId else AssetIds["CardArt/event_calm_seas"])
+	art.ScaleType = if layered then Enum.ScaleType.Stretch else Enum.ScaleType.Crop
 	art.Parent = root
+	local ship = Instance.new("ImageLabel")
+	ship.Name = "TitlePaintedShip"
+	ship.BackgroundTransparency = 1
+	ship.AnchorPoint = Vector2.new(0.5, 0.5)
+	ship.ZIndex = 3
+	ship.Visible = layered
+	if shipId then ship.Image = "rbxassetid://" .. tostring(shipId) end
+	ship.Parent = root
+	local waterline, shipX, shipY, waveHeight = 0, 0, 0, 0
 
 	local rays = mkBox(root, UDim2.fromScale(0.03, 0), UDim2.fromScale(0.72, 0.68), Color3.fromRGB(255, 226, 170), 0.62)
 	rays.ZIndex = 2
@@ -6693,7 +6735,19 @@ titleGui.Enabled = false
 	curtain.ZIndex = 8
 
 	local function layout()
-		local portrait = root.AbsoluteSize.X < root.AbsoluteSize.Y
+		local width, height = root.AbsoluteSize.X, root.AbsoluteSize.Y
+		local portrait = width < height
+		if layered then
+			local seaHeight = if portrait then height * 2.05 else math.max(height, math.min(width * 0.68, height * 1.5))
+			art.Size = UDim2.fromOffset(math.max(width, seaHeight * 0.72), seaHeight)
+			local shipSize = math.min(width * (if portrait then 0.85 else 0.48), height * (if portrait then 0.45 else 0.79))
+			waterline = height - seaHeight * 0.19
+			shipX = width * (if portrait then 0.5 else 0.29)
+			shipY = waterline - shipSize * 0.43
+			waveHeight = math.clamp(shipSize * 0.016, 2, 8)
+			ship.Size = UDim2.fromOffset(shipSize, shipSize)
+			ship.Position = UDim2.fromOffset(shipX, shipY)
+		end
 		shadeFade.Rotation = if portrait then 90 else 0
 		heading.Position = if portrait then UDim2.new(0.07, 0, 0, 74) else UDim2.new(0.055, 0, 0, 74)
 		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
@@ -6732,7 +6786,12 @@ titleGui.Enabled = false
 			local t = now - started
 			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
 			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
-			art.Position = UDim2.fromScale(0.5 + math.sin(t * 0.17) * 0.012, 0.5 + math.sin(t * 0.22) * 0.009)
+			if layered then
+				local swell = t * 1.04
+				ship.Position = UDim2.fromOffset(shipX + math.sin(t * 0.35) * waveHeight * 0.36,
+					shipY + (math.sin(swell) + math.sin(t * 1.71) * 0.26) * waveHeight)
+				ship.Rotation = math.sin(swell + 0.65) * 2.4 + math.sin(t * 0.57) * 0.7
+			end
 		end)
 	end)
 end)()
@@ -7178,14 +7237,19 @@ function H.showTitle()
 	box.BorderSizePixel = 0
 	box.Parent = root
 	corner(box, 5)
-	local grain = bookMaterial(box, "parchment", 360)
-	if grain then grain.ImageTransparency = 0.22 end
-	local edge = Instance.new("UIStroke")
-	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	edge.Color = COLORS.brown
-	edge.Thickness = 1
-	edge.Transparency = 0.25
-	edge.Parent = box
+	local paperId = AssetIds["CardArt/event_title_parchment"]
+	if paperId then
+		box.BackgroundTransparency = 1
+		local sheet = Instance.new("ImageLabel")
+		sheet.Name = "TornParchment"
+		sheet.BackgroundTransparency = 1
+		sheet.Size = UDim2.fromScale(1, 1)
+		sheet.Image = "rbxassetid://" .. tostring(paperId)
+		sheet.Parent = box
+	else
+		local grain = bookMaterial(box, "parchment", 360)
+		if grain then grain.ImageTransparency = 0.22 end
+	end
 	local bounds = Instance.new("UISizeConstraint")
 	bounds.MaxSize = Vector2.new(420, if view then 286 else 200)
 	bounds.Parent = box
@@ -7202,8 +7266,8 @@ function H.showTitle()
 	pages.ZIndex = box.ZIndex + 1
 	pages.Parent = box
 	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 12), UDim.new(0, 12)
-	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 15), UDim.new(0, 15)
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 18), UDim.new(0, 18)
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 25), UDim.new(0, 25)
 	pad.Parent = pages
 	local list = Instance.new("UIListLayout")
 	list.Padding = UDim.new(0, 8)
@@ -7336,12 +7400,13 @@ task.spawn(function()
 	warn("[MareEssentia] 시작 상태 수신 실패: 게임 시작 메뉴를 열지 않음")
 end)
 
-openTab = function(tabId)
+openTab = function(tabId, mapPage)
 	currentTab = tabId
+	H.mapPage = mapPage
 	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
-	if tabId == "map" then
+	if tabId == "map" and mapPage ~= "journal" then
 		Sfx.play("sfx_chart_unfold", 0.28)
-	elseif tabId == "codex" or tabId == "quest" then
+	elseif tabId == "codex" or tabId == "quest" or mapPage == "journal" then
 		Sfx.play("sfx_book_turn", 0.24)
 	elseif tabId == "crew" then
 		Sfx.play("sfx_ship_cabin_door", 0.25)
@@ -7514,7 +7579,7 @@ end
 		end
 		return nil
 	end
-	local function portraitImg(parent, value, w, h)
+	local function portraitImg(parent, value, w, h, paper)
 		local atlas, off, size = H.capPortraitAsset(value)
 		if not atlas then
 			return nil
@@ -7522,17 +7587,20 @@ end
 		local im = Instance.new("ImageLabel")
 		im.Size = UDim2.fromOffset(w, h)
 		im.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
+		im.BackgroundTransparency = if paper then 1 else 0
 		im.BorderSizePixel = 0
 		im.ScaleType = Enum.ScaleType.Crop
 		im.Image = "rbxassetid://" .. tostring(atlas)
 		im.ImageRectOffset = off
 		im.ImageRectSize = size
-		corner(im, 8)
-		local st = Instance.new("UIStroke")
-		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		st.Color = Color3.fromRGB(214, 170, 82)
-		st.Thickness = 2
-		st.Parent = im
+				corner(im, if paper then 2 else 8)
+		if not paper then
+			local st = Instance.new("UIStroke")
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			st.Color = Color3.fromRGB(214, 170, 82)
+			st.Thickness = 2
+			st.Parent = im
+		end
 		im.Parent = parent
 		return im
 	end
@@ -7737,22 +7805,20 @@ end
 	end
 
 	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기). 위쪽 정보창 아래에 둔다.
-	local chipGui = overlayGui("CaptainChip", 12)
 	local chip = Instance.new("Frame")
 	chip.AnchorPoint = Vector2.new(0, 0)
-	chip.Position = UDim2.fromOffset(5, 5)
-	chip.Size = UDim2.fromOffset(52, 56)
-	chip.BackgroundColor3 = COLORS.cover
-	chip.BackgroundTransparency = 0
+	chip.Position = UDim2.fromOffset(1, 3)
+	chip.Size = UDim2.fromOffset(39, 54)
+	chip.BackgroundTransparency = 1
 	chip.BorderSizePixel = 0
 	chip.Visible = false
 	chip.Parent = H.hudCard
-	corner(chip, 8)
+	corner(chip, 3)
 	do
 		local cst = Instance.new("UIStroke")
 		cst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		cst.Color = BRASS
-		cst.Thickness = 1.5
+		cst.Color = Color3.fromRGB(143, 103, 77)
+		cst.Thickness = 1.25
 		cst.Parent = chip
 	end
 	local chipKey = nil
@@ -7801,7 +7867,7 @@ end
 		chipName.Text = c.name or "선장"
 		chipSub.Text = "🏳 " .. tostring(view.player.nation)
 		chipSub2.Text = if c.origin then c.origin.name else ""
-		local face = portraitImg(chip, c.portrait, 52, 56)
+		local face = portraitImg(chip, c.portrait, 37, 52, true)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -7809,10 +7875,10 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 48, 34)
-			face.Position = UDim2.fromOffset(2, 11)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 35, 25)
+			face.Position = UDim2.fromOffset(2, 14)
 		else
-			face.Position = UDim2.fromOffset(0, 0)
+			face.Position = UDim2.fromOffset(1, 1)
 		end
 		face.Name = "ChipFace"
 	end
@@ -7820,7 +7886,7 @@ end
 	-- 화가가 완성한 초상을 크게 보여 준 뒤 칩으로 줄어든다
 	local function reveal(value, name)
 		-- 화가 연출: 어두워진 화면 한가운데 화첩이 열리고, 붓질 소리와 함께 초상이 위에서 아래로 그려진 뒤
-		-- 액자에 담겨 선장실 벽으로 걸린다.
+		-- 화첩의 종이 초상으로 완성된다.
 		local layer = overlayGui("PortraitReveal", 59)
 		local shade = Instance.new("Frame")
 		shade.Size = UDim2.fromScale(1, 1)
@@ -7853,28 +7919,35 @@ end
 		frame.AnchorPoint = Vector2.new(0.5, 0.5)
 		frame.Position = UDim2.fromScale(0.5, 0.46)
 		frame.Size = UDim2.fromOffset(0, 0)
-		frame.BackgroundColor3 = Color3.fromRGB(58, 40, 28)
+		frame.BackgroundColor3 = Color3.fromRGB(224, 198, 153)
 		frame.BorderSizePixel = 0
 		frame.Parent = layer
-		corner(frame, 6)
-		local fst = Instance.new("UIStroke")
-		fst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		fst.Color = BRASS
-		fst.Thickness = 5
-		fst.Parent = frame
+		corner(frame, 3)
+		local paperId = AssetIds["CardArt/event_title_parchment"]
+		if paperId then
+			frame.BackgroundTransparency = 1
+			local sheet = Instance.new("ImageLabel")
+			sheet.BackgroundTransparency = 1
+			sheet.Size = UDim2.fromScale(1, 1)
+			sheet.Image = "rbxassetid://" .. tostring(paperId)
+			sheet.Parent = frame
+		else
+			local grain = bookMaterial(frame, "parchment", 128)
+			if grain then grain.ImageTransparency = 0.19 end
+		end
 		TweenService:Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(pictureWidth, pictureHeight) }):Play()
 		task.wait(0.8)
 		if closed then return end
 		local canvas = Instance.new("Frame")
 		canvas.AnchorPoint = Vector2.new(0.5, 0.5)
 		canvas.Position = UDim2.fromScale(0.5, 0.5)
-		canvas.Size = UDim2.new(1, -28, 1, -28)
-		canvas.BackgroundColor3 = Color3.fromRGB(232, 218, 188)
+		canvas.Size = UDim2.new(1, -18, 1, -18)
+		canvas.BackgroundTransparency = 1
 		canvas.BorderSizePixel = 0
 		canvas.ClipsDescendants = true
 		canvas.Parent = frame
-		local big = portraitImg(canvas, value, pictureWidth - 28, pictureHeight - 28)
-		local cap = mkLabel(layer, "", 24, Color3.fromRGB(246, 208, 130), true)
+		local big = portraitImg(canvas, value, pictureWidth - 18, pictureHeight - 18, true)
+		local cap = mkLabel(layer, "", 24, COLORS.paper, true)
 		cap.AnchorPoint = Vector2.new(0.5, 0)
 		cap.Position = UDim2.new(0.5, 0, 0.46, pictureHeight / 2 + 12)
 		cap.Size = UDim2.new(0.84, 0, 0, 42)
@@ -7908,10 +7981,9 @@ end
 		Sfx.play("sfx_fanfare", 0.6)
 		Sfx.play("sfx_bell", 0.5)
 		cap.Text = name
-		TweenService:Create(fst, TweenInfo.new(0.5), { Thickness = 8 }):Play()
 		task.wait(2.2)
 		if closed then return end
-		-- 선장실 벽으로: 액자가 작아져 화면 왼쪽(선장실 초상 자리)으로 걸린다
+		-- 종이 초상이 작아져 선장실 초상 자리로 이동한다
 		cap.Text = "선장실 벽에 초상이 걸렸다"
 		Sfx.play("sfx_ship_cabin_door", 0.6)
 		TweenService:Create(frame, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
