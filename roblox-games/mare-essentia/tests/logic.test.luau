@@ -3288,6 +3288,34 @@ do
 		local ok1 = CBr.saveSlot(bk, 2, "돌격덱", ids1)
 		check("저장 칸: 저장하고 불러온다", ok1 and CBr.useSlot(bk, 2) and #bk.deck == #ids1)
 		check("저장 칸: 없는 칸은 거절", not CBr.saveSlot(bk, 5, "x", ids1) and not CBr.useSlot(bk, 3))
+		-- 3장 중 1장 고르기 / 연습전 / 하루 퍼즐
+		local bp = CBr.new("europe")
+		local offered = CBr.offer(bp, "boss", math.random)
+		check("보상 3장: 서로 다른 3장", #offered == 3 and offered[1] ~= offered[2] and offered[2] ~= offered[3] and offered[1] ~= offered[3])
+		local before = 0
+		for _, n in bp.owned do before += n end
+		check("보상 3장: 잘못된 번호는 거절", not CBr.choose(bp, 4))
+		check("보상 3장: 고르면 1장 늘고 보상이 사라진다", CBr.choose(bp, 2) and bp.pick == nil and (function() local t = 0 for _, n in bp.owned do t += n end return t == before + 1 end)())
+		local sane = CBr.sanitize({ pick = { ids = offered }, puzzleDay = 5, practiceDone = true }, "europe")
+		check("저장/불러오기: 보상·퍼즐 기록 유지", sane.pick ~= nil and sane.puzzleDay == 5 and sane.practiceDone == true)
+		local solved = 0
+		for day = 20000, 20011 do
+			local _, limit = BC.puzzle(day)
+			local found = false
+			for a = 1, 5 do
+				if BC.puzzleReplay(day, { { "p", a } }) then found = true end
+				for b = 1, 4 do
+					if not found and BC.puzzleReplay(day, { { "p", a }, { "p", b } }) then found = true end
+					for c = 1, (if limit >= 3 then 3 else 0) do
+						if not found and BC.puzzleReplay(day, { { "p", a }, { "p", b }, { "p", c } }) then found = true end
+					end
+				end
+			end
+			if found then solved += 1 end
+		end
+		check("해전 퍼즐: 12일 모두 풀린다", solved == 12, tostring(solved))
+		check("해전 퍼즐: 아무것도 안 하면 못 이긴다", not BC.puzzleReplay(20001, {}))
+		check("해전 퍼즐: 같은 날은 같은 문제", (function() local a = BC.puzzle(20010) local b = BC.puzzle(20010) return BC.total(a, "foe") == BC.total(b, "foe") end)())
 	end
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()

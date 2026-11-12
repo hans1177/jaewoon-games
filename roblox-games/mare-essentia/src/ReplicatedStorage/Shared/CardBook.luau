@@ -87,6 +87,30 @@ function CB.drop(book: any, source: string, rng: () -> number, field: string?): 
 	return id, string.format("%s에서 전투 카드 「%s」를 얻었다", CB.SOURCE_NAME[source] or "보상", d.name)
 end
 
+-- 이긴 뒤 보상: 서로 다른 카드 3장을 보여 주고 1장을 고른다
+function CB.offer(book: any, source: string, rng: () -> number, field: string?): { string }
+	local ids = {}
+	local tries = 0
+	while #ids < 3 and tries < 60 do
+		tries += 1
+		local flavored = field and CB.FIELD_CARD[field]
+		local id = if flavored and #ids == 0 and rng() < 0.5 then flavored else CB.roll(source, rng)
+		if not table.find(ids, id) then table.insert(ids, id) end
+	end
+	book.pick = { ids = ids, source = source }
+	return ids
+end
+
+function CB.choose(book: any, index: number): (boolean, string)
+	local pick = book.pick
+	if not pick then return false, "고를 카드가 없어요" end
+	local id = pick.ids[index]
+	if not id then return false, "잘못된 선택이에요" end
+	book.pick = nil
+	CB.grant(book, id, 1)
+	return true, string.format("전투 카드 「%s」를 얻었다", def(id).name)
+end
+
 function CB.upgradeInfo(book: any, id: string): any
 	local tier = CB.tierOf(book, id)
 	local step = CB.UPGRADE[tier]
@@ -161,6 +185,15 @@ function CB.sanitize(saved: any, factionId: string?): any
 			end
 		end
 	end
+	if type(saved.pick) == "table" and type(saved.pick.ids) == "table" then
+		local ids = {}
+		for _, id in saved.pick.ids do
+			if type(id) == "string" and def(id) then table.insert(ids, id) end
+		end
+		if #ids >= 2 and #ids <= 3 then book.pick = { ids = ids, source = "boss" } end
+	end
+	if type(saved.puzzleDay) == "number" then book.puzzleDay = math.floor(saved.puzzleDay) end
+	if saved.practiceDone == true then book.practiceDone = true end
 	if type(saved.deck) == "table" then
 		local ids = {}
 		for _, id in saved.deck do

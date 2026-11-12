@@ -580,7 +580,10 @@ function NavalBattle.play(opts)
 		end
 		local m
 		local actions = {} -- 내가 한 행동 기록: 서버가 같은 시드로 다시 돌려 승패를 확인한다
-		if cfg then
+		if cfg and cfg.prebuilt then
+			BC.useKind("boarding")
+			m = cfg.prebuilt()
+		elseif cfg then
 			BC.useKind(cfg.kind)
 			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction, book = opts.deck and opts.deck.book }, { fighter = cfg.foe, boss = opts.isBoss == true })
 		else
@@ -593,7 +596,7 @@ function NavalBattle.play(opts)
 			if ok and act then table.insert(actions, act) end
 			return ok, msg, res, card, "me"
 		end
-		local TITLE = if cfg then "해전 카드 대결" else "접현 전투"
+		local TITLE = if cfg and cfg.title then cfg.title elseif cfg then "해전 카드 대결" else "접현 전투"
 
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
@@ -1839,7 +1842,7 @@ function NavalBattle.play(opts)
 					end
 				end
 				-- 두 배가 맞닿으면 바로 접현 (백병전)
-				if opts.card and not cardStarted and d < 95 then
+				if opts.card and not cardStarted and (d < 95 or opts.cardOnly) then
 					cardStarted, cardBusy = true, true
 					hint.Text = ""
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"

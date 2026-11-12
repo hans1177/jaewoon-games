@@ -782,7 +782,7 @@ return function(D, S)
 			local faction = D.BoardingCards.factionOf(state.nationId)
 			local spec = S.Cardbook.deckSpec(state)
 			view.deck = { cards = cards, faction = faction, book = { ids = spec.ids, tier = spec.tier } }
-			view.cardbook = { owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots }
+			view.cardbook = { owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, puzzleDone = S.Cardbook.get(state).puzzleDay == math.floor(os.time() / 86400), practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400) }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction

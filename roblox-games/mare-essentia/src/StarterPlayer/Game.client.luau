@@ -1725,6 +1725,52 @@ do
 					{ text = "용병 180", color = COLORS.gold, onClick = function() refreshAfter("CardTavern") end },
 				}, 74)
 				summary.LayoutOrder = 2
+				local bk = bookOf()
+				local function playCardOnly(title, build, action, payload)
+					if inField then return end
+					inField = true
+					main.Visible = false
+					NavalBattle.play({
+						shipId = view and view.ship and view.ship.id,
+						enemyName = title,
+						cardOnly = true,
+						card = { prebuilt = build, title = title },
+						deck = view and view.deck,
+						onCards = function(acts)
+							payload.actions = acts
+							local r = call(action, payload)
+							return if r and r.ok then "a" else "b"
+						end,
+						onDone = function()
+							inField = false
+							main.Visible = true
+							render()
+						end,
+					})
+				end
+				if bk.pick then
+					local pr = mkRow(builder, "승리 보상: 카드 1장을 고르세요", "고르지 않으면 이 창을 열 때마다 다시 물어봐요", (function()
+						local bts = {}
+						for i, id in bk.pick do
+							local cd = CBk.def and CBk.def(id)
+							table.insert(bts, { text = (cd and cd.name or id), color = COLORS.gold, onClick = function() refreshAfter("CardPick", { index = i }) end })
+						end
+						return bts
+					end)(), 64)
+					pr.LayoutOrder = 0
+				end
+				local train = mkRow(builder, "연습전 · 오늘의 해전 퍼즐", "연습전: 정해진 패로 규칙을 배우는 첫 판 / 퍼즐: 하루 하나, 적은 장수로 역전", {
+					{ text = "연습전", color = COLORS.green, onClick = function()
+						playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {})
+					end },
+					{ text = if bk.puzzleDone then "퍼즐 완료" else "오늘 퍼즐", color = COLORS.blue, enabled = not bk.puzzleDone, onClick = function()
+						local day = bk.day or math.floor(os.time() / 86400)
+						local m, limit = BC.puzzle(day)
+						if not m then return end
+						playCardOnly(string.format("해전 퍼즐 (%d장 이내로 역전!)", limit), function() return (BC.puzzle(day)) end, "CardPuzzle", { day = day })
+					end },
+				}, 64)
+				train.LayoutOrder = 3
 				local rec = mkRow(builder, "추천 덱 (보유 카드로 자동 구성)", "돌격: 근접+군기 · 포격: 사격·포+저격 · 운영: 첩자·치료·회군", {
 					{ text = "돌격", color = COLORS.red, onClick = function() refreshAfter("CardRecommend", { style = "rush" }) end },
 					{ text = "포격", color = COLORS.blue, onClick = function() refreshAfter("CardRecommend", { style = "gun" }) end },
@@ -2039,6 +2085,12 @@ local function call(action, payload)
 	render()
 	if tradeHallRefresh then
 		tradeHallRefresh()
+	end
+	-- 이긴 뒤 카드 고르기 보상이 생기면 덱 창을 열어 준다
+	if result.ok and action ~= "CardPick" and view and view.cardbook and view.cardbook.pick and H.openDeck and not inField then
+		task.delay(1.5, function()
+			if view and view.cardbook and view.cardbook.pick and not inField then H.openDeck() end
+		end)
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
 	if result.ok and (action == "Hunt" or action == "ChallengeBoss") and view and view.lastBattle and not inField then

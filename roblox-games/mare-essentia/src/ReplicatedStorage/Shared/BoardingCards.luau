@@ -1000,4 +1000,110 @@ function B.advice(m: any, side)
 	return nil
 end
 
+local function copyUnit(id)
+	local d = B.Units[id] or B.Specials[id]
+	if not d then return nil end
+	return copy(d)
+end
+
+-- ── 오늘의 해전 퍼즐: 상대가 이미 멈춘 판에서, 정해진 패로 카드 몇 장 안에 이겨라 ──────────────────
+local function copyMatch(m)
+	local function cloneCard(c) return table.clone(c) end
+	local function cloneList(l)
+		local out = {}
+		for i, c in l do out[i] = cloneCard(c) end
+		return out
+	end
+	local n = table.clone(m)
+	n.rows, n.hand, n.deck, n.grave = {}, {}, {}, {}
+	for _, side in { "me", "foe" } do
+		n.rows[side] = {}
+		for _, row in B.ROWS do n.rows[side][row] = cloneList(m.rows[side][row]) end
+		n.hand[side] = cloneList(m.hand[side])
+		n.deck[side] = cloneList(m.deck[side])
+		n.grave[side] = cloneList(m.grave[side])
+	end
+	n.weather = table.clone(m.weather)
+	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
+	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
+	n.log = {}
+	return n
+end
+
+local PUZZLE_POOL = { "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "boatswain", "surgeon", "musketeer", "musketeer", "sharpshooter", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper", "horn", "wind", "scorch", "scout" }
+
+-- 하루 하나. 같은 날이면 모두 같은 문제 (day = 1970년부터 센 날수)
+function B.puzzle(day: number)
+	for attempt = 0, 120 do
+		local rng = B.seeded(day * 7919 + 13 + attempt * 104729)
+		local function pick() return PUZZLE_POOL[math.floor(rng() * #PUZZLE_POOL) + 1] end
+		local m = B.newMatch({}, "draw", {}, "draw", rng, nil, nil)
+		m.turn = "me"
+		-- 상대 판: 카드 3~5장을 이미 깔고 멈췄다
+		for _ = 1, 3 + math.floor(rng() * 3) do
+			local c = copyUnit(pick())
+			if c and not c.special then table.insert(m.rows.foe[c.row], c) end
+		end
+		-- 내 판: 이미 깔린 카드 1~2장
+		for _ = 1, 1 + math.floor(rng() * 2) do
+			local c = copyUnit(pick())
+			if c and not c.special then table.insert(m.rows.me[c.row], c) end
+		end
+		for _ = 1, 5 do
+			local c = copyUnit(pick())
+			if c then table.insert(m.hand.me, c) end
+		end
+		m.passed.foe = true
+		m.round, m.wins = 3, { me = 1, foe = 1 } -- 이 판이 끝나면 전투 끝
+		-- 풀이 찾기: 손패 순서를 모두 시도해 가장 적은 장수를 구한다
+		local best = nil
+		local function search(state, used)
+			if best and used >= best then return end
+			if B.total(state, "me") > B.total(state, "foe") and used > 0 then
+				best = used
+				return
+			end
+			if used >= 3 then return end
+			for i = 1, #state.hand.me do
+				local nm = copyMatch(state)
+				nm.turn = "me"
+				local ok = B.play(nm, "me", i)
+				if ok then search(nm, used + 1) end
+			end
+		end
+		if B.total(m, "me") <= B.total(m, "foe") then
+			search(m, 0)
+			if best and best >= 2 then
+				m.puzzle = { day = day, limit = best }
+				return m, best
+			end
+		end
+	end
+	return nil, 0
+end
+
+-- 서버 확인: 오늘 문제에 대한 행동 기록이 규칙을 지키고 제한 안에서 이겼는가
+function B.puzzleReplay(day: number, actions: { any }): boolean
+	local m, limit = B.puzzle(day)
+	if not m then return false end
+	local plays = 0
+	for _, a in actions do
+		if type(a) ~= "table" then return false end
+		if a[1] == "p" then
+			plays += 1
+			if plays > limit then return false end
+			if not B.play(m, "me", math.floor(tonumber(a[2]) or 0)) then return false end
+		elseif a[1] == "s" then
+			if not B.pass(m, "me") then return false end
+		else
+			return false
+		end
+		if m.over then break end
+	end
+	if not m.over then
+		B.pass(m, "me")
+	end
+	return m.over == true and m.winner == "me"
+end
+
 return B
