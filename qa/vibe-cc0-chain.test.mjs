@@ -134,7 +134,6 @@ test('mare story/event audio uses verified CC0 parents and decodable game-specif
   const listing=spawnSync('unzip',['-Z','-1',archive],{encoding:'utf8',timeout:30000});
   assert.equal(listing.status,0,String(listing.stderr||''));
   const entries=listing.stdout.split(/\r?\n/);
-  console.log('MARE_AUDIO_ZIP_ENTRY_SAMPLE '+JSON.stringify(entries.slice(0,75)));
   for(const track of archiveEntries){
     const matches=entries.filter(e=>e===track.sourceEntry||e.endsWith('/'+track.sourceEntry));
     assert.equal(matches.length,1,'missing or duplicate CC0 entry '+track.sourceEntry);
