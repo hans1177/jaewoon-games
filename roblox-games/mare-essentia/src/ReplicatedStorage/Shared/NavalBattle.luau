@@ -125,6 +125,15 @@ function NavalBattle.play(opts)
 	folder.Name = "BattleScene"
 	folder.Parent = workspace
 
+	-- 해전 전용 파도·바람·폭풍 환경음. 포격을 가리지 않도록 배경 음량을 낮춘다.
+	local weather = string.lower(tostring(opts.weatherName or ""))
+	local roughSeas = string.find(weather, "폭풍", 1, true) ~= nil
+		or string.find(weather, "태풍", 1, true) ~= nil
+		or string.find(weather, "폭우", 1, true) ~= nil
+		or string.find(weather, "storm", 1, true) ~= nil
+		or string.find(weather, "squall", 1, true) ~= nil
+	Sfx.ambient(if roughSeas then { "sfx_ambience_storm", "sfx_waves" } else { "sfx_waves", "sfx_wind" }, 0.55)
+
 	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
@@ -777,9 +786,21 @@ function NavalBattle.play(opts)
 	-- 대포 한 발
 	local function shoot(fromPos, toPos, fx)
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
-		local to = ORIGIN + toPos + Vector3.new((math.random() - 0.5) * 10, 6 + math.random() * 3, (math.random() - 0.5) * 6)
-		Sfx.play("sfx_cannon", nil, 0.9 + math.random() * 0.25)
-		task.delay(0.9, Sfx.play, "sfx_cannon_reload", 0.45, 1) -- 장전 소리
+		-- 서버 기록의 확정 타격만 선체에 맞히고, 나머지 포탄은 수면에 떨어뜨린다.
+		local hullHit = fx ~= nil
+		local to = ORIGIN + toPos + Vector3.new(
+			(math.random() - 0.5) * 10,
+			if hullHit then 6 + math.random() * 3 else 0.4,
+			(math.random() - 0.5) * 6
+		)
+		Sfx.play("sfx_cannon", 0.82, 0.92 + math.random() * 0.16)
+		if hullHit then
+			task.delay(0.9, function()
+				if not finished then
+					Sfx.play("sfx_cannon_reload", 0.34, 0.95 + math.random() * 0.1)
+				end
+			end)
+		end
 		local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
 		task.delay(0.15, function()
 			flash:Destroy()
