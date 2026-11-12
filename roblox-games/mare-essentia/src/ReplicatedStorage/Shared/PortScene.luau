@@ -1802,7 +1802,7 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 3) 부두: 둘째 잔교, 배 여러 척, 하역장
 	local pier = part(folder, Vector3.new(44, 0.8, 7), CFrame.new(44, 1.6, 46), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	pier.CanCollide = false
+	pier.CanCollide = true
 	pier.Transparency = 1
 	for x = 30, 62, 16 do
 		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
