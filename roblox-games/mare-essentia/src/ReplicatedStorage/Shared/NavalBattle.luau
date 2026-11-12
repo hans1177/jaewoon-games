@@ -278,6 +278,25 @@ function NavalBattle.play(opts)
 		wl.TextXAlignment = Enum.TextXAlignment.Left
 	end
 
+	-- 돛 조종: 바람을 등지면 빠르고 맞바람이면 느리다 (바람 방향은 화살표와 같다)
+	local windRad = math.rad(opts.windAngle or 0)
+	local windPower = math.clamp(opts.wind or 1, 0.4, 1.6)
+	local function windFactor(theta)
+		-- 배의 진행 방향과 바람이 불어가는 방향이 같으면 +1(순풍), 반대면 -1(맞바람)
+		local c = math.cos(theta - windRad)
+		return 1 + c * 0.32 * windPower
+	end
+	local sailLabel = label(gui, "", 14, Color3.fromRGB(150, 220, 255))
+	sailLabel.AnchorPoint = Vector2.new(0.5, 0)
+	sailLabel.Position = UDim2.new(0.5, 0, 0, 62)
+	sailLabel.Size = UDim2.fromOffset(190, 20)
+	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
+	local flair, combo, dodged = 0, 0, 0
+	local comboLabel = label(gui, "", 22, Color3.fromRGB(255, 226, 120))
+	comboLabel.AnchorPoint = Vector2.new(0.5, 0)
+	comboLabel.Position = UDim2.new(0.5, 0, 0, 200)
+	comboLabel.Size = UDim2.fromOffset(300, 30)
+
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
 	subtitle.Position = UDim2.new(0.5, 0, 1, -76)
@@ -321,7 +340,7 @@ function NavalBattle.play(opts)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onDone then
-			opts.onDone()
+			opts.onDone(math.floor(flair))
 		end
 	end
 
@@ -482,6 +501,43 @@ function NavalBattle.play(opts)
 	end
 
 	local shake = 0
+	-- 적 포탄 낙하 경고: 바다 위 붉은 원. 포탄이 떨어질 때 원 밖에 있으면 "회피"로 콤보가 쌓인다.
+	local function warnRing(center)
+		local ring = part(folder, Vector3.new(0.4, 26, 26), CFrame.new(ORIGIN + center + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(235, 60, 50), Enum.Material.Neon, Enum.PartType.Cylinder)
+		ring.Transparency = 0.45
+		local t0 = os.clock()
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			local k = (os.clock() - t0) / 0.9
+			if k >= 1 or finished then
+				conn:Disconnect()
+				ring:Destroy()
+				return
+			end
+			ring.Transparency = 0.45 + k * 0.5
+			ring.Size = Vector3.new(0.4, 26 - k * 8, 26 - k * 8)
+		end)
+		task.delay(0.9, function()
+			if finished then
+				return
+			end
+			if (me.pos - center).Magnitude > 20 then
+				dodged += 1
+				combo += 1
+				flair += 10 + combo * 2
+				comboLabel.Text = string.format("회피! 콤보 x%d", combo)
+				Sfx.play("sfx_click", 0.6, 1.2 + combo * 0.05)
+				task.delay(1.2, function()
+					if comboLabel.Text:sub(1, 6) == "회피!" then
+						comboLabel.Text = ""
+					end
+				end)
+			else
+				combo = 0
+				comboLabel.Text = ""
+			end
+		end)
+	end
 	-- 대포 한 발
 	local function shoot(fromPos, toPos, fx)
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
@@ -582,7 +638,10 @@ function NavalBattle.play(opts)
 					steerToward(me, if gap(a1) < gap(a2) then a1 else a2, dt, 0.8)
 				end
 			end
-			me.speed = 19 * (stickThrottle or throttle)
+			local wf = windFactor(me.theta)
+			me.speed = 19 * (stickThrottle or throttle) * wf
+			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
+			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			me.pos += forward(me.theta) * me.speed * dt
 
 			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
@@ -591,7 +650,7 @@ function NavalBattle.play(opts)
 			local bearing = math.atan2(toMe.Z, toMe.X)
 			local want = bearing + (if dist > 55 then 0.15 elseif dist < 32 then -1.9 else 1.45)
 			steerToward(foe, want, dt, 1.1)
-			foe.speed = if dist > 55 then 17 else 11
+			foe.speed = (if dist > 55 then 17 else 11) * windFactor(foe.theta)
 			foe.pos += forward(foe.theta) * foe.speed * dt
 			if phase == "board" then
 				-- 접현: 서로 가까이 붙는다
@@ -663,6 +722,7 @@ function NavalBattle.play(opts)
 				end
 				if d < 95 and now >= nextFoeFire and meDone < #foeQueue then
 					nextFoeFire = now + 1.45
+					warnRing(me.pos + forward(me.theta) * me.speed * 0.9)
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
 					for k = 0, volley - 1 do
@@ -782,7 +842,8 @@ function NavalBattle.play(opts)
 
 		-- 카메라: 우리 배 뒤쪽 위에서 따라간다
 		shake = math.max(0, shake - 0.06)
-		cam.FieldOfView = 62 + math.min(shake, 2.5) * 2.2 + (me.speed / 19) * 4
+		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.2, 0, 1) * 10 else 0
+		cam.FieldOfView = 62 + math.min(shake, 2.5) * 2.2 + (me.speed / 19) * 6 + killZoom
 		local f = forward(me.theta)
 		local focus = ORIGIN + me.pos + (foe.pos - me.pos) * 0.35
 		local camPos = ORIGIN + me.pos - f * 52 + Vector3.new(0, 30, 0)
