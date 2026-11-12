@@ -73,6 +73,7 @@ return function(D)
 			stations = {}, -- 배의 자리 (자리 id → 동료 id)
 			affinity = {},
 			harbor = {},
+			harborSeen = {}, -- 항구별 마지막으로 들른 날 (자체 성장 계산용)
 			bank = { deposit = 0, loan = 0, lastDay = 0 },
 			contract = nil,
 			title = 0,
@@ -511,6 +512,13 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.harborSeen) == "table" then
+			for id, v in saved.harborSeen do
+				if type(id) == "string" and D.Ports.Ports[id] then
+					s.harborSeen[id] = math.floor(num(v, 0, 0, 1e7))
+				end
+			end
+		end
 		if type(saved.bosses) == "table" then
 			for id, rec in saved.bosses do
 				if type(id) == "string" and D.Bosses.ById[id] and type(rec) == "table" then
@@ -805,6 +813,7 @@ return function(D)
 			stations = state.stations,
 			affinity = state.affinity,
 			harbor = state.harbor,
+			harborSeen = state.harborSeen,
 			bank = state.bank,
 			contract = state.contract,
 			title = state.title,

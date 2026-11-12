@@ -3000,6 +3000,40 @@ do
 	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == #K.Disciplines, tostring(view.knowledge))
 end
 
+-- 항구 자체 성장과 세금 수익
+do
+	local gs = S.State.new("england", 1700, nil)
+	gs.portId = "london"
+	S.Harbor.grow(gs) -- 첫 도착 기록
+	gs.portId = "amsterdam"
+	S.Harbor.grow(gs)
+	gs.day += 60
+	gs.portId = "london"
+	local base = gs.harbor.london or 0
+	local m1 = S.Harbor.grow(gs)
+	check("항구는 시간이 지나면 스스로 자란다", (gs.harbor.london or 0) > base and #m1 > 0)
+	gs.harbor.paris = 3000
+	gs.harbor.amsterdam = 3000
+	gs.portId = "amsterdam"
+	gs.day += 100
+	local coins0 = gs.coins
+	S.Harbor.grow(gs)
+	check("투자한 항구는 세금을 보내온다", gs.coins > coins0)
+	gs.harbor.rouen = 7000
+	gs.portId = "rouen"
+	S.Harbor.grow(gs)
+	gs.day += 100
+	S.Harbor.grow(gs)
+	gs.portId = "london"
+	S.Harbor.grow(gs)
+	gs.portId = "rouen"
+	gs.day += 100
+	S.Harbor.grow(gs)
+	check("큰 항구는 스스로 더 자라지 않는다", gs.harbor.rouen == 7000)
+	local gr = S.State.sanitize(S.State.serialize(gs))
+	check("자체 성장 기록이 저장된다", gr.harborSeen.london ~= nil)
+end
+
 -- 퀘스트 이야기: 모든 퀘스트에 사연과 결말이 있고, 채워지지 않은 자리표시가 남지 않는다
 do
 	local bad = 0
