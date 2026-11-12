@@ -14,6 +14,7 @@ local D = {
 	Careers = require("./Shared/Careers"),
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
+	BoardingCards = require("./Shared/BoardingCards"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
@@ -916,6 +917,40 @@ do
 	act(fl, "ResolveBattle", { flee = true })
 	check("flee failure settles battle", fl.pendingBattle == nil and fl.lastBattle.fled == false)
 	check("resolve without battle fails", not (act(fl, "ResolveBattle", {})))
+
+	-- 카드 대결: 카드에서 이기면 전체 승리, 서버가 기록을 다시 돌려 검증한다
+	do
+		local BCx = D.BoardingCards
+		local function cardRun(tamper)
+			local cs = newState()
+			local dd = S.State.shipDef(cs)
+			cs.ship.hull, cs.ship.crew = dd.hull, dd.crew
+			act(cs, "Hunt", {})
+			local card = cs.pendingBattle.card
+			local m = BCx.build("gunnery", card.seed, { fighter = card.my, deckCards = S.Battle.deckCache[cs] }, { fighter = card.foe })
+			local acts, g = {}, 0
+			while not m.over and g < 400 do
+				g += 1
+				local side = m.turn
+				local ok, _, _, a = BCx.ai(m, side)
+				if side == "me" and ok then table.insert(acts, a) end
+			end
+			if tamper then table.insert(acts, { "p", 99 }) end
+			return cs, acts, m
+		end
+		local cs, acts, m = cardRun(false)
+		local c1 = cs.coins
+		local okC = act(cs, "CardBattle", { actions = acts })
+		local expect = if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw"
+		check("card battle: server replay agrees with the table", okC and cs.pendingBattle.winner == expect)
+		act(cs, "ResolveBattle", {})
+		check("card win means total victory", (m.winner ~= "me") or cs.coins > c1)
+		check("card loss means defeat", (m.winner ~= "foe") or cs.stats.battlesLost >= 1)
+		check("card result cannot be submitted twice", not act(cs, "CardBattle", { actions = acts }))
+		local cs2, acts2 = cardRun(true)
+		check("tampered card record rejected", not act(cs2, "CardBattle", { actions = acts2 }))
+		check("garbage card record rejected", not act(cs2, "CardBattle", { actions = { "x" } }))
+	end
 
 	-- 승패에 따라 보상/손실이 다르다
 	local win = newState()

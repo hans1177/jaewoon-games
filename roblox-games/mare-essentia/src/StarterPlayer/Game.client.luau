@@ -1698,6 +1698,11 @@ local function call(action, payload)
 			winner = lb.winner,
 			reason = lb.reason,
 			isBoss = action == "ChallengeBoss",
+			card = lb.card,
+			onCards = function(actions)
+				call("CardBattle", { actions = actions })
+				return view and view.lastBattle and view.lastBattle.winner
+			end,
 			canFlee = lb.canFlee == true,
 			onFlee = function()
 				resolved = true
@@ -1716,8 +1721,9 @@ local function call(action, payload)
 				end
 				inField = false
 				audioLock = false
-				Sfx.play(if lb.winner == "a" then "sfx_fanfare" else "sfx_error")
-				Sfx.music(if lb.winner == "a" then Sfx.questEndMusic(true) else Sfx.questEndMusic(false))
+				local finalWinner = (view and view.lastBattle and view.lastBattle.winner) or lb.winner
+				Sfx.play(if finalWinner == "a" then "sfx_fanfare" else "sfx_error")
+				Sfx.music(if finalWinner == "a" then Sfx.questEndMusic(true) else Sfx.questEndMusic(false))
 				applyView()
 				main.Visible = true
 				render()

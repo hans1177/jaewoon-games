@@ -3,6 +3,7 @@
 
 return function(D, S)
 	local handlers = {}
+	local deckCache = setmetatable({}, { __mode = "k" }) -- View 가 마지막으로 만든 카드 패 (서버가 카드 대결을 검증할 때 쓴다)
 
 	-- 스킬을 쓸 수 없는 이유 (쓸 수 있으면 nil)
 	local function skillBlock(state, s)
@@ -122,12 +123,20 @@ return function(D, S)
 		local enemy = D.Combat.pirate(enemyLv, ctx.rng)
 		local me = playerFighter(state)
 		local result = D.Combat.run(me, enemy, ctx.rng)
+		-- 카드 대결: 시드와 두 배의 능력을 클라이언트에 알려 주고, 승패는 카드 대결 기록을 서버가 다시 돌려 정한다.
+		local card = {
+			seed = math.floor(ctx.rng() * 1000000) + 1,
+			my = { cannons = me.cannons, cannonMult = me.cannonMult, crew = me.crew, level = me.level },
+			foe = { cannons = enemy.cannons, cannonMult = enemy.cannonMult, crew = enemy.crew, level = enemyLv },
+		}
 		local pb = {
 			hull = result.a.hull, crew = result.a.crew, fuel = result.a.fuel, startFuel = me.fuel,
 			winner = result.winner, reason = result.reason, reward = D.Combat.pirateReward(enemyLv),
 			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
+			startHull = state.ship.hull, startCrew = state.ship.crew,
 		}
-		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
+		if deferred then pb.card = card end
+		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true, card = if deferred then card else nil }
 		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
 		for _, line in S.Perk.companionLines(state, "battle") do
 			table.insert(msgs, line)
@@ -193,6 +202,47 @@ return function(D, S)
 		return true, string.format("멋진 기동! 명성 +%d", fame)
 	end
 
+	-- 카드 대결 결과: 플레이어의 행동 기록을 같은 시드로 처음부터 다시 돌려 승패를 정한다. (카드에서 이기면 전체 승리)
+	function handlers.CardBattle(state, p)
+		local pb = state.pendingBattle
+		if not pb or not pb.card or pb.cardDone then
+			return false, "진행 중인 카드 대결이 없어요"
+		end
+		local actions = type(p) == "table" and p.actions
+		if type(actions) ~= "table" or #actions > 200 then
+			return false, "잘못된 요청"
+		end
+		for _, a in actions do
+			if type(a) ~= "table" or type(a[1]) ~= "string" then
+				return false, "잘못된 요청"
+			end
+		end
+		local c = pb.card
+		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state] }, { fighter = c.foe }, actions)
+		if not r then
+			return false, "카드 기록이 규칙에 맞지 않아요"
+		end
+		pb.cardDone = true
+		local lost, took = r.wins.foe, r.wins.me -- 내가 잃은 판 수, 내가 딴 판 수
+		pb.hull = math.max(1, math.floor(pb.startHull * (1 - 0.15 * lost)))
+		pb.crew = math.max(1, math.floor(pb.startCrew * (1 - 0.1 * lost)))
+		if r.winner == "me" then
+			pb.winner = "a"
+			pb.reason = if lost == 0 then "surrender" else "boarded"
+		elseif r.winner == "foe" then
+			pb.winner = "b"
+			pb.reason = "sunk"
+		else
+			pb.winner = "draw"
+			pb.reason = "stalemate"
+		end
+		local lb = state.lastBattle
+		if lb then
+			lb.winner, lb.reason, lb.cardRounds = pb.winner, pb.reason, { me = took, foe = lost }
+		end
+		return true, ""
+	end
+
 	function handlers.ResolveBattle(state, p, ctx)
 		return resolve(state, ctx, p ~= nil and p.flee == true)
 	end
@@ -225,5 +275,5 @@ return function(D, S)
 		return true, "자동스킬 우선순위를 저장했어요"
 	end
 
-	return { handlers = handlers, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
+	return { handlers = handlers, deckCache = deckCache, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
 end

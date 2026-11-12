@@ -333,7 +333,7 @@ function NavalBattle.play(opts)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
-	local hint = label(gui, "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
+	local hint = label(gui, if opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 0)
 	hint.Position = UDim2.new(0.5, 0, 0, 164)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
@@ -516,6 +516,11 @@ function NavalBattle.play(opts)
 	else
 		meEnd, foeEnd = 0.45, 0.45
 	end
+	-- 카드 대결 모드: 승패는 카드 대결이 정한다 (카드에서 이기면 전체 승리). 그 전까지 선체는 멀쩡하게 둔다.
+	local cardStarted, cardBusy, cardDone = false, false, false
+	if opts.card then
+		meEnd, foeEnd = 1, 1
+	end
 	local meHp, foeHp = 1, 1
 	local meDone, foeDone = 0, 0 -- 소비한 포격 수
 
@@ -536,15 +541,28 @@ function NavalBattle.play(opts)
 	local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
 	local ROW_ICON = { melee = "⚔", ranged = "🔫", cannon = "💣" }
-	local function startBoarding(onEnd)
+	local function startBoarding(cfg, onEnd)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
 		local rng = function()
 			return math.random()
 		end
-		local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)
-		local foeDeck, foeLeader = BC.enemyDeck(opts.isBoss == true, rng)
-		local m = BC.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
+		local m
+		local actions = {} -- 내가 한 행동 기록: 서버가 같은 시드로 다시 돌려 승패를 확인한다
+		if cfg then
+			BC.useKind(cfg.kind)
+			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards }, { fighter = cfg.foe, boss = opts.isBoss == true })
+		else
+			BC.useKind("boarding")
+			local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)
+			local foeDeck, foeLeader = BC.enemyDeck(opts.isBoss == true, rng)
+			m = BC.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
+		end
+		local function mine(ok, msg, res, act)
+			if ok and act then table.insert(actions, act) end
+			return ok, msg, res
+		end
+		local TITLE = if cfg then "해전 카드 대결" else "접현 전투"
 
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
@@ -592,7 +610,37 @@ function NavalBattle.play(opts)
 		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
-		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(46, 35, 28) }):Play()
+		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
+		-- 퀜트식 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
+		local wood = Instance.new("UIGradient")
+		wood.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 48, 34)),
+			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(34, 25, 20)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(58, 40, 29)),
+		})
+		wood.Rotation = 90
+		wood.Parent = bg
+		local chartMark = Instance.new("ImageLabel")
+		chartMark.AnchorPoint = Vector2.new(0.5, 0.5)
+		chartMark.Position = UDim2.fromScale(0.6, 0.42)
+		chartMark.Size = UDim2.fromScale(0.5, 0.78)
+		chartMark.BackgroundTransparency = 1
+		chartMark.ScaleType = Enum.ScaleType.Fit
+		chartMark.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
+		chartMark.ImageTransparency = 0.9
+		chartMark.ImageColor3 = Color3.fromRGB(214, 170, 96)
+		chartMark.Parent = bg
+		local battleLine = Instance.new("Frame")
+		battleLine.AnchorPoint = Vector2.new(0, 0.5)
+		battleLine.Position = UDim2.fromScale(0.2, 0.42)
+		battleLine.Size = UDim2.fromScale(0.78, 0.004)
+		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
+		battleLine.BorderSizePixel = 0
+		battleLine.ZIndex = 3
+		battleLine.Parent = bg
+		local lineFade = Instance.new("UIGradient")
+		lineFade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.9), NumberSequenceKeypoint.new(0.5, 0), NumberSequenceKeypoint.new(1, 0.9) })
+		lineFade.Parent = battleLine
 
 		local titleBar = Instance.new("Frame")
 		titleBar.Position = UDim2.fromScale(0.02, 0.012)
@@ -619,10 +667,52 @@ function NavalBattle.play(opts)
 		info.TextTruncate = Enum.TextTruncate.AtEnd
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(0.02, 0.14)
-		boardFrame.Size = UDim2.fromScale(0.96, 0.56)
+		boardFrame.Position = UDim2.fromScale(0.2, 0.14)
+		boardFrame.Size = UDim2.fromScale(0.78, 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
+		-- 왼쪽 정보판(퀜트처럼): 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
+		local panel = Instance.new("Frame")
+		panel.Position = UDim2.fromScale(0.02, 0.14)
+		panel.Size = UDim2.fromScale(0.17, 0.56)
+		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
+		panel.BorderSizePixel = 0
+		panel.Parent = g
+		frameEdge(panel, brass, 6)
+		local function sidePlate(y, color)
+			local plate = Instance.new("Frame")
+			plate.Position = UDim2.fromScale(0.05, y)
+			plate.Size = UDim2.fromScale(0.9, 0.4)
+			plate.BackgroundColor3 = color
+			plate.BorderSizePixel = 0
+			plate.Parent = panel
+			frameEdge(plate, brass, 5)
+			local who = label(plate, "", 14, Color3.fromRGB(250, 236, 200), true)
+			who.Position = UDim2.fromScale(0.04, 0.02)
+			who.Size = UDim2.fromScale(0.92, 0.2)
+			who.TextScaled = true
+			local total = label(plate, "0", 30, Color3.fromRGB(46, 33, 22), true)
+			total.AnchorPoint = Vector2.new(0.5, 0.5)
+			total.Position = UDim2.fromScale(0.5, 0.52)
+			total.Size = UDim2.fromScale(0.6, 0.42)
+			total.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+			total.BackgroundTransparency = 0
+			total.TextScaled = true
+			total.TextStrokeTransparency = 1
+			frameEdge(total, Color3.fromRGB(255, 226, 150), 99)
+			local gems = label(plate, "", 18, Color3.fromRGB(255, 120, 96), true)
+			gems.Position = UDim2.fromScale(0.04, 0.78)
+			gems.Size = UDim2.fromScale(0.92, 0.2)
+			gems.TextScaled = true
+			return { who = who, total = total, gems = gems, plate = plate }
+		end
+		local foePlate = sidePlate(0.02, Color3.fromRGB(88, 58, 50))
+		local mePlate = sidePlate(0.58, Color3.fromRGB(58, 74, 62))
+		local weatherTag = label(panel, "", 13, Color3.fromRGB(192, 212, 239), true)
+		weatherTag.Position = UDim2.fromScale(0.04, 0.435)
+		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
+		weatherTag.TextScaled = true
+		weatherTag.TextWrapped = true
 		local handFrame = Instance.new("ScrollingFrame")
 		handFrame.Position = UDim2.fromScale(0.02, 0.72)
 		handFrame.Size = UDim2.fromScale(0.74, 0.26)
@@ -691,12 +781,12 @@ function NavalBattle.play(opts)
 		end
 		local passBtn = mkSide("멈추기", 0.72, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
-				afterAction(BC.pass(m, "me"))
+				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
 		local leaderBtn = mkSide("지도자 능력", 0.81, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
-				afterAction(BC.useLeader(m, "me"))
+				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
 		mkSide("자동 진행", 0.9, Color3.fromRGB(46, 72, 69), "Menu/route", function()
@@ -903,8 +993,16 @@ function NavalBattle.play(opts)
 					table.insert(weather, BC.ROW_NAME[row] .. " 약화")
 				end
 			end
-			header.Text = string.format("접현 전투 · %d판   우리 %d : %d 해적   ·   %s",
-				m.round, BC.total(m, "me"), BC.total(m, "foe"),
+			foePlate.who.Text = (opts.enemyName or "해적") .. (if m.passed.foe then " · 멈춤" elseif m.turn == "foe" and not m.over then " · 차례" else "")
+			mePlate.who.Text = (opts.shipName or "우리 배") .. (if m.passed.me then " · 멈춤" elseif m.turn == "me" and not m.over then " · 내 차례" else "")
+			foePlate.total.Text = tostring(BC.total(m, "foe"))
+			mePlate.total.Text = tostring(BC.total(m, "me"))
+			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
+			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
+			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
+			weatherTag.Text = if #weather > 0 then table.concat(weather, " · ") else string.format("%d판째", m.round)
+			header.Text = string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
 				if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
 			header.Text ..= string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
 				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
@@ -1040,7 +1138,7 @@ function NavalBattle.play(opts)
 					art.Parent = b
 					flight:Destroy()
 					b.Visible = true
-					afterAction(BC.play(m, "me", i))
+					afterAction(mine(BC.play(m, "me", i)))
 				end)
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
@@ -1067,8 +1165,9 @@ function NavalBattle.play(opts)
 				elseif auto then
 					task.wait(0.5)
 					if finished or playing or m.turn ~= "me" or m.over then continue end
-					local ok, msg, res = BC.ai(m, "me")
+					local ok, msg, res, act = BC.ai(m, "me")
 					if ok then
+						mine(ok, msg, res, act)
 						afterAction(ok, msg, res)
 					end
 				else
@@ -1080,13 +1179,17 @@ function NavalBattle.play(opts)
 			end
 			local wonMatch = m.winner == "me"
 			flair += m.wins.me * 40 + (if wonMatch then 110 else 0)
-			info.Text = if wonMatch then "갑판을 제압했다!" elseif m.winner == "foe" then "갑판에서 밀렸다..." else "승부가 나지 않았다."
+			if cfg then
+				info.Text = if wonMatch then "카드 대결에서 이겼다! 전투 승리!" elseif m.winner == "foe" then "카드 대결에서 졌다..." else "승부가 나지 않았다."
+			else
+				info.Text = if wonMatch then "갑판을 제압했다!" elseif m.winner == "foe" then "갑판에서 밀렸다..." else "승부가 나지 않았다."
+			end
 			task.wait(1.8)
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
 			task.wait(0.5)
 			g:Destroy()
 			boardingOn = false
-			onEnd()
+			onEnd(m, actions)
 		end)
 	end
 
@@ -1326,7 +1429,7 @@ function NavalBattle.play(opts)
 			if phase == "duel" then
 				local d = (foe.pos - me.pos).Magnitude
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
-				if d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
+				if not opts.card and d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
 					nextMeFire = now + 1.15
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
@@ -1343,7 +1446,7 @@ function NavalBattle.play(opts)
 						end)
 					end
 				end
-				if d < 95 and now >= nextFoeFire and meDone < #foeQueue then
+				if not opts.card and d < 95 and now >= nextFoeFire and meDone < #foeQueue then
 					nextFoeFire = now + 1.45
 					warnRing(me.pos + forward(me.theta) * me.speed * 0.9)
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
@@ -1360,7 +1463,37 @@ function NavalBattle.play(opts)
 					end
 				end
 				-- 두 배가 맞닿으면 바로 접현 (백병전)
-				if d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue) then
+				if opts.card and not cardStarted and d < 95 then
+					cardStarted, cardBusy = true, true
+					hint.Text = ""
+					subtitle.Text = "사정거리 안! 카드 대결 시작!"
+					shake = 1.6
+					Sfx.play("sfx_horn")
+					Sfx.play("sfx_naval_ram", 0.5, 1.05, "sfx_creak")
+					task.delay(1.0, function()
+						if finished then return end
+						startBoarding(opts.card, function(m, acts)
+							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
+							local res = opts.onCards and opts.onCards(acts)
+							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
+							opts.winner = if w == "a" or w == "b" then w else nil
+							loser = if w == "a" then "foe" elseif w == "b" then "me" else nil
+							if w == "a" then
+								foeEnd, meEnd = 0, math.clamp(1 - 0.25 * m.wins.foe, 0.3, 1)
+							elseif w == "b" then
+								meEnd, foeEnd = 0, math.clamp(1 - 0.25 * m.wins.me, 0.3, 1)
+							else
+								meEnd, foeEnd = 0.45, 0.45
+							end
+							cardBusy, cardDone = false, true
+							melIdx = #meleeQueue
+							boardStart = os.clock() - 100
+							phase = "board"
+							subtitle.Text = if w == "a" then "적선이 항복하고 가라앉는다!" elseif w == "b" then "우리 배가 무너진다..." else "서로 물러났다."
+						end)
+					end)
+				end
+				if not opts.card and (d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue)) then
 					phase = "board"
 					boardStart = now
 					hint.Text = ""
@@ -1369,7 +1502,7 @@ function NavalBattle.play(opts)
 					if #meleeQueue > 0 then
 						task.delay(1.2, function()
 							if not finished and phase == "board" and not boardingOn then
-								startBoarding(function()
+								startBoarding(nil, function()
 									melIdx = #meleeQueue
 									boardStart = os.clock() - 100
 								end)
@@ -1489,6 +1622,9 @@ function NavalBattle.play(opts)
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
 	task.delay(130, function()
+		while cardBusy and not finished do -- 카드 대결 중에는 시간을 재촉하지 않는다
+			task.wait(1)
+		end
 		if not finished then
 			finish()
 		end
