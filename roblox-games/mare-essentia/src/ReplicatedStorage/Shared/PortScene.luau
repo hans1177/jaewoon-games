@@ -1,7 +1,7 @@
 --!nonstrict
 -- 파일명: PortScene.luau
--- 항구 3D 장면 (클라이언트 전용, 보기용). 도형(Part)으로 항구 마을·부두·배·갈매기를 만든다.
--- 항구마다 지역 양식(북유럽 / 지중해)과 시설(교역소, 조선소, 은행, 길드, 왕궁, 항만청)이 달라진다.
+-- 항구 3D 장면 (클라이언트 전용, 보기용). 승인된 3D 모델로 문화권별 마을과 시설을 표현한다.
+-- 주택은 PortCultures의 지역별 석조·벽돌·목조 재질과 지붕·창호·증축 규칙을 따른다.
 -- 판정에는 쓰이지 않는다. 시설 앞의 ProximityPrompt를 누르면 onFacility(탭 id)가 불린다.
 
 local RunService = game:GetService("RunService")
@@ -321,35 +321,24 @@ end
 -- 캐릭터(약 5스터드)에 비해 집이 장난감처럼 작아 보여서 전체적으로 키운다 (대신 간격도 같이 넓힌다)
 local HOUSE_SCALE = 1.45
 
--- 한 마을의 건물은 재질을 하나로 통일한다 (벽·별채·굴뚝이 제각각 다른 재질로 보이지 않게)
-local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다): 낮을수록 가난한 목조, 높을수록 그 문화권의 번듯한 재료
-local STONE_MATS = { [Enum.Material.Brick] = true, [Enum.Material.Cobblestone] = true, [Enum.Material.Slate] = true, [Enum.Material.Limestone] = true }
-local function uniformMaterial(m, style)
-	local mat = style.mat
-	-- 돌·벽돌 문화권도 초기엔 목조 오두막으로 시작해, 발전하면서 석조로 바뀐다
-	if mat and STONE_MATS[mat] then
-		if houseTier <= 1 then mat = Enum.Material.Wood elseif houseTier == 2 then mat = Enum.Material.WoodPlanks end
-	end
+-- 건물 발전도는 낡음/증축으로 표현한다. 지역의 석조·벽돌·목조 재질을 다른 문화권의 목재로 덮지 않는다.
+local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다)
+local function uniformMaterial(m, style, surface)
+	local architecture = style.house
+	local mat = if surface == "roof" then (architecture and architecture.roofMat) or style.mat
+		elseif surface == "trim" then (architecture and architecture.trimMat) or style.mat
+		elseif surface == "entry" then (architecture and architecture.entryMat) or style.mat
+		else style.mat
 	if not (m and mat) then return end
 	for _, p in m:GetDescendants() do
-		if p:IsA("BasePart") then
+		-- 수입 원본의 유리창·금속 장식·발광등을 석조/목조로 덮지 않는다.
+		if p:IsA("BasePart") and p.Material ~= Enum.Material.Glass
+			and p.Material ~= Enum.Material.Metal and p.Material ~= Enum.Material.Neon then
 			p.Material = mat
 		end
 	end
 end
 
--- 문화권별 건축 특성: 기후·실제 건축 전통에 따라 굴뚝·발코니·수레·고상(高床)·천막·야자수가 다르다
-local function setOf(...) local s = {} for _, k in { ... } do s[k] = true end return s end
-local TRAIT = {
-	chimney = setOf("north", "brick", "stone", "nordic", "britain", "hanse", "france", "japan"), -- 추운 곳만 난로 굴뚝
-	balcony = setOf("iberia", "italy", "france", "creole", "colonial", "med", "malabar"), -- 지중해·식민지풍 발코니
-	cart = setOf("hanse", "italy", "ottoman", "malabar", "china", "swahili", "seasia", "med"), -- 장터 수레
-	stilt = setOf("seasia", "pacific"), -- 고상식 집(기둥 위에 지음)
-	tent = setOf("desert", "ottoman", "swahili", "wafrica", "pacific"), -- 초기엔 천막 야영
-	palm = setOf("tropic", "seasia", "pacific", "creole", "wafrica", "swahili", "malabar", "colonial"),
-}
-local STYLE_KEY = {}
-for k, v in STYLE do STYLE_KEY[v] = k end
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
@@ -364,6 +353,8 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	end
 	-- 위치로 정한 크기 변주(0.86~1.08배)와 180도 뒤집기로 같은 집이 반복돼 보이지 않게 한다
 	local seed = math.floor(math.abs(pos.X * 3 + pos.Z * 5))
+	local architecture = style.house or {}
+	local front = if pos.Z > 0 then -1 else 1
 	local variation = 0.86 + (seed % 7) * 0.037
 	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
@@ -389,7 +380,13 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * 1.22, false, style.roofs[rng:NextInteger(1, #style.roofs)])
 			if roof then
 				roof.Name = "HarborRoof"
-				uniformMaterial(roof, style)
+				uniformMaterial(roof, style, "roof")
+			end
+			-- 동아시아의 집 앞은 기존 승인된 계단 메시로 구분한다. 시설 출입 판정은 바꾸지 않는다.
+			if architecture.eastAsiaEntry and not vacant and houseTier >= 2 and seed % 3 == 0 then
+				local stairs = importedModel(parent, "Town", "eastasia-stairs",
+					pos + Vector3.new(0, 0, front * size * 0.48), size * 0.34, false)
+				if stairs then stairs.Name = "HarborEntrance" end
 			end
 			if vacant then
 				for k = -1, 1 do
@@ -400,15 +397,6 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		end
 	end
 	local variant = "house"
-	local ckey = STYLE_KEY[style]
-	if ckey and TRAIT.stilt[ckey] and not vacant then
-		for sx = -1, 1, 2 do
-			for sz = -1, 1, 2 do
-				importedModel(parent, "Town", "fence_post", pos + Vector3.new(sx * w * 0.32, 0, sz * d * 0.32), 3.2, false)
-			end
-		end
-		pos = pos + Vector3.new(0, 2.6, 0)
-	end
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
@@ -422,37 +410,61 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				importedModel(parent, "Town", "fence_straight", pos + Vector3.new(k * 4, 0, 0) + Vector3.new(0, 0, if pos.Z > 0 then -math.max(w, d) * 0.7 else math.max(w, d) * 0.7), 4, false)
 			end
 		end
-		-- 집마다 같은 실루엣이 되지 않게, 위치로 정한 일부 집 용마루에 승인된 굴뚝(Town/chimney)을 얹는다
+		-- 문화권별 승인된 지붕창·박공·창호 메시를 일부 주택에만 올려 주택 형태를 차별화한다.
+		-- 기존 본체 메시와 충돌하지 않도록 장식만 비충돌로 두고, 주택/시설의 고유 판정은 유지한다.
+		local _, ext = mesh:GetBoundingBox()
+		if architecture.roof and not vacant and seed % (if houseTier >= 3 then 3 else 4) == 0 then
+			local roof = importedModel(parent, "Town", architecture.roof,
+				pos + Vector3.new(0, ext.Y * 0.78, front * ext.Z * 0.28),
+				ext.X * 0.45, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			if roof then
+				roof.Name = "HarborRoofDetail"
+				uniformMaterial(roof, style, "roof")
+			end
+		end
+		if architecture.trim and not vacant and seed % (if houseTier >= 3 then 2 else 3) == 0 then
+			local trim = importedModel(parent, "Town", architecture.trim,
+				pos + Vector3.new(ext.X * 0.2, ext.Y * 0.40, front * ext.Z * 0.51),
+				ext.X * 0.26, false, style.roofs[1]:Lerp(tintColor, 0.3))
+			if trim then
+				trim.Name = "HarborWindowDetail"
+				uniformMaterial(trim, style, "trim")
+			end
+		end
+		-- 승인된 문의 둥근 아치/목재 형태로 집 입면을 구분한다.
+		-- 고정된 일부 주택에만 비충돌 장식으로 두어 모바일 객체 수와 기존 출입 기능을 보호한다.
+		if architecture.entry and not vacant and seed % 3 == 1 then
+			local doorway = importedModel(parent, "Town", architecture.entry,
+				pos + Vector3.new(0, 0, front * ext.Z * 0.52),
+				ext.X * 0.29, false)
+			if doorway then
+				doorway.Name = "HarborDoorDetail"
+				uniformMaterial(doorway, style, "entry")
+			end
+		end
 		local size = math.max(w, d) * variation
-		-- 네 채 중 한 채는 옆에 작은 별채를 붙여 ㄱ자 집처럼 보이게 한다
-		if seed % 4 == 1 then
+		-- 별채·굴뚝·발코니는 해당 문화권의 건축형식과 건조 환경에 맞는 곳에만 배치한다.
+		if architecture.annex and seed % 4 == 1 then
 			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.95, 0, size * 0.25), size * 0.62 * HOUSE_SCALE, true, tintColor)
 			if annex then
 				annex.Name = "HarborAnnex"
 				uniformMaterial(annex, style)
 			end
 		end
-		if variant ~= "house_chimney" and ckey and TRAIT.chimney[ckey] and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
+		if architecture.chimney and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
 		end
-		-- 발전한 항구(3단계↑)에선 일부 집 앞에 발코니(Town/balcony-wall-fence)를 달아 실루엣을 다양하게 한다
-		if houseTier >= 3 and ckey and TRAIT.balcony[ckey] and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
-			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, if pos.Z > 0 then -size * 0.52 else size * 0.52), size * 0.7, false, tintColor)
+		if architecture.balcony and houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
+			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, front * size * 0.52), size * 0.7, false, tintColor)
 			if bal then
 				bal.Name = "HarborBalcony"
-				uniformMaterial(bal, style)
+				uniformMaterial(bal, style, "trim")
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
-		if houseTier >= 3 and ckey and TRAIT.cart[ckey] and not vacant and seed % 5 == 2 then
+		if houseTier >= 4 and not vacant and seed % 5 == 2 then
 			importedModel(parent, "Town", "cart", pos + Vector3.new(size * 0.8, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
-		end
-		if ckey and TRAIT.tent[ckey] and houseTier <= 2 and seed % 3 == 1 then
-			importedModel(parent, "Terrain", "tent-detailedopen", pos + Vector3.new(size * 0.9, 0, -size * 0.6), 6, false)
-		end
-		if ckey and TRAIT.palm[ckey] and houseTier >= 2 and seed % 3 == 2 then
-			importedModel(parent, "Naval", "palm-bend", pos + Vector3.new(-size * 0.8, 0, size * 0.6), 9, false)
 		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end

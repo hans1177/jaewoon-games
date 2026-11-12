@@ -537,15 +537,23 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
-  assert.match(client,/shadow\.Name = "DepthShadow"/);
+  // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
-  assert.match(client,/shadow\.Image = imageId/);
-  assert.match(client,/art\.Image = imageId/);
-  assert.match(client,/local imageId = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
-  assert.equal(client.split('image.Image = "rbxassetid://" .. tostring(menuAssetId)').length-1,2);
+  assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
+  assert.match(client,/art\.ScaleType = Enum\.ScaleType\.Fit/);
+  assert.match(client,/if kind == "Menu" then art\.ImageColor3 = COLORS\.brown end/);
+  // 모델 로딩 전에는 같은 교역품 원화, 원화가 없으면 해당 모델의 Roblox 섬네일만 쓴다.
+  assert.match(client,/image\.Name = if originalId then "ApprovedGoodsArt" else "RegisteredModelThumbnail"/);
+  assert.match(client,/image\.Image = if originalId then "rbxassetid:\/\/" \.\. tostring\(originalId\)/);
+  assert.match(client,/else "rbxthumb:\/\/type=Asset&id=" \.\. tostring\(knownId\) \.\. "&w=150&h=150"/);
   assert.match(client,/local m = tpl:Clone\(\)/);
   assert.match(client,/local world = Instance\.new\("WorldModel"\)/);
   assert.match(client,/if #itemMotion >= 10 then return end/);
+  // 실제 Cargo 표본은 작은 화면에서 모서리 투영에 맞춰 확대하며 리스트 회전을 제한한다.
+  assert.match(client,/if kind == "Cargo" and px < 90 then/);
+  assert.match(client,/cf:VectorToWorldSpace\(Vector3\.new\(half\.X \* x, half\.Y \* y, half\.Z \* z\)\)/);
+  assert.match(client,/reach = fitted \* 1\.06/);
+  assert.match(client,/if px >= 90 then\s+addItemMotion/);
   assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
 });
 
@@ -684,6 +692,36 @@ test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
 });
 
 // [공식 Studio 회귀] 양·닭 수입 FBX는 허용 자산을 유지한 채 원본 배율·실제 3D 크기를 검증한다.
+// [문화권별 3D 주택 검증] 라이선스·체험 권한·입면·재질을 기존 마을 빌더와 함께 확인한다.
+test('Mare cultural house facades use approved CC0 doors and preserve glass and metal',()=>{
+  const root='roblox-games/mare-essentia';
+  const culture=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortCultures.luau','utf8');
+  const scene=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const ids=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets;
+  const arch=culture.split('local HOUSE_ARCH = {')[1]?.split('\n}\nfor culture, architecture in HOUSE_ARCH')[0];
+  assert.ok(arch,'regional house architecture table must exist');
+  const doors=[...arch.matchAll(/\bentry = "([^"]+)"/g)].map(x=>x[1]);
+  assert.equal(doors.length,20,'all non-East Asian regional houses need authentic doorway variants');
+  for(const asset of new Set([...doors,...[...arch.matchAll(/\b(?:roof|trim) = "([^"]+)"/g)].map(x=>x[1])])){
+    const key='Town/'+asset;
+    assert.equal(registry[key]?.license,'CC0-1.0',key);
+    assert.equal(registry[key]?.usePermissionGranted,true,key);
+    assert.ok(ids.includes('["'+key+'"]'),key+' registered');
+  }
+  for(const name of ['north','nordic','hanse','iberia','italy','france','britain','ottoman','swahili','malabar','seasia','wafrica']){
+    const row=arch.split('\n').find(line=>line.trimStart().startsWith(name+' = {'));
+    assert.ok(row?.includes('entry = "'),name+' must use a region-appropriate door');
+  }
+  assert.match(arch,/japan = \{[^\n]*eastAsiaEntry = true/);
+  assert.match(arch,/china = \{[^\n]*eastAsiaEntry = true/);
+  assert.match(scene,/architecture\.entry and not vacant and seed % 3 == 1/);
+  assert.match(scene,/HarborDoorDetail/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Glass/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Metal/);
+  assert.match(scene,/p\.Material ~= Enum\.Material\.Neon/);
+});
+
 test('Mare harbor animals preserve imported mesh scale and verify final bounds',()=>{
   const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   assert.match(scene,/local isAnimal = kind == "Animals"/);
@@ -766,7 +804,8 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
   const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
-  assert.match(ui,/local chosenYear = 1700/);
+  // 현재 첫 선택 시대는 1517년이며, 기존 저장의 1700년 기본값은 별도로 보존한다.
+  assert.match(ui,/local chosenYear = 1517/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
   assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
   assert.doesNotMatch(server,/\[1492\] = true/);
