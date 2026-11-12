@@ -884,6 +884,7 @@ function NavalBattle.play(opts)
 	local melIdx = 0
 	local lastT = os.clock()
 	local escortFire = os.clock() + 3
+	local nextHullSound = os.clock() + 5
 
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		if finished then
@@ -925,6 +926,14 @@ function NavalBattle.play(opts)
 			if phase == "board" then
 				-- 접현: 서로 가까이 붙는다
 				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 1.6)
+			end
+			-- 함선이 파도를 가르는 목재·돛천 소리: 5~9초에 한 번만 재생한다.
+			if now >= nextHullSound then
+				nextHullSound = now + 5 + math.random() * 4
+				if me.speed > 5 then
+					Sfx.play(if math.random() < 0.7 then "sfx_creak" else "sfx_sail_fabric",
+						0.24, 0.88 + math.random() * 0.16)
+				end
 			end
 			-- 경계 밖으로 나가지 않게 가운데로 되돌린다
 			for _, sh in (if opts.canFlee and not fleeTried then { foe } else { me, foe }) do
@@ -1059,6 +1068,9 @@ function NavalBattle.play(opts)
 					meHp, foeHp = meEnd, foeEnd
 					if loser then
 						sinkStart = now
+						-- 침몰 장면의 목재 울림과 큰 물보라를 한 번만 재생한다.
+						Sfx.play("sfx_creak", 0.6, 0.74)
+						Sfx.play("sfx_splash", 0.62, 0.8)
 					end
 					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
