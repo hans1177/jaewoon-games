@@ -25,6 +25,25 @@ test('Vibe 5.9 imported Mixamo and Blender finger names map to original bones',(
  assert.equal(left.rotation.x,.12);
  assert.equal(right.rotation.x,-.2);
 });
+test('Vibe 5.9 rejects invalid mobile finger input without corrupting imported bones',()=>{
+ const left={isBone:true,name:'mixamorig:LeftHandIndex1',rotation:{x:.12}};
+ const right={isBone:true,name:'RightHandIndex1',rotation:{x:-.2}};
+ const model={traverse(fn){fn(left);fn(right)}};
+ const hand=createVibeHandRig(model);
+ for(const invalid of [NaN,Infinity,-Infinity,undefined]){
+  assert.throws(()=>hand.curl('left','index',invalid),/Invalid finger curl amount/);
+  assert.throws(()=>hand.curl('right','index',invalid),/Invalid finger curl amount/);
+  assert.equal(left.rotation.x,.12);
+  assert.equal(right.rotation.x,-.2);
+ }
+ assert.equal(hand.curl('left','index',2),1);
+ assert.equal(hand.curl('right','index',-1),1);
+ assert.ok(Number.isFinite(left.rotation.x));
+ assert.ok(Number.isFinite(right.rotation.x));
+ hand.reset();
+ assert.equal(left.rotation.x,.12);
+ assert.equal(right.rotation.x,-.2);
+});
 test('Vibe 5.9 preview applies hand poses after authored clip update without creating bones',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.ok(html.includes("handGestureButton.addEventListener('click',()=>{"));
