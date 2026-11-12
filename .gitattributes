@@ -65,3 +65,13 @@ roblox-games/mare-essentia/audio/out/sfx_deck_step*.ogg -filter -diff -merge -te
 roblox-games/mare-essentia/audio/out/sfx_equipment_wear.ogg -filter -diff -merge -text
 roblox-games/mare-essentia/audio/out/sfx_rope_*.ogg -filter -diff -merge -text
 roblox-games/mare-essentia/audio/out/sfx_workshop_chop.ogg -filter -diff -merge -text
+
+# 추가 36개 음원 중 퀘스트/선박조작 12종도 LFS 포인터가 아닌 진짜 CC0 OGG를 배포한다.
+roblox-games/mare-essentia/audio/out/music_quest_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_anchor_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_rope_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_deck_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_boarding_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_equipment_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_cargo_drop.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_workshop_*.ogg -filter -diff -merge -text
