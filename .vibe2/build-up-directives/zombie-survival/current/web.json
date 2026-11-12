@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "zombie-survival-build-up-g2-969c31a77c99",
-  "directiveFingerprint": "969c31a77c99a982540b7f25129d4f9b769b2a29e2eac32393c108f0b2b9ad5e",
-  "previousDirectiveFingerprint": "1272a4634dfb538921f298fd031717da4e89bdbecf3e3fce3b0c014e8731717f",
-  "forbiddenRepeatFingerprint": "1272a4634dfb538921f298fd031717da4e89bdbecf3e3fce3b0c014e8731717f",
+  "directiveId": "zombie-survival-build-up-g1-5ba15fa4a329",
+  "directiveFingerprint": "5ba15fa4a3296e7cb746a4d5b0fadfdc0117b4a61ea80c8b490263aa35dd2379",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "zombie-survival",
   "gameName": "좀비 생존기",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/zombie-survival",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
-    "previousDesignFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "zombie-survival",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
     "sourceTreeFingerprint": "518eff6090c1e52e4297a87e64ee6cdc008ac96b7c715894d9be3899fc60602b",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/zombie-survival",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/zombie-survival",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/zombie-survival/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/zombie-survival/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addWeaponToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addBuilding",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "nearbyLocker",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addChest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "gunStats",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/zombie-survival/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/zombie-survival/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addWeaponToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addBuilding",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "nearbyLocker",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addChest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "gunStats",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/zombie-survival/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/zombie-survival/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addWeaponToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addBuilding",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "nearbyLocker",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addChest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "gunStats",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/zombie-survival/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/zombie-survival/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addWeaponToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addBuilding",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "nearbyLocker",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "addChest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/zombie-survival/index.html",
+            "symbol": "gunStats",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/zombie-survival/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/zombie-survival/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4443,14 +4585,6 @@
       },
       {
         "file": "web-games/zombie-survival/index.html",
-        "line": 572,
-        "kind": "FUNCTION",
-        "symbol": "refreshUpgradePanel",
-        "context": "function refreshUpgradePanel(){",
-        "score": 74
-      },
-      {
-        "file": "web-games/zombie-survival/index.html",
         "line": 468,
         "kind": "FUNCTION",
         "symbol": "nearbyLocker",
@@ -4523,19 +4657,19 @@
       },
       {
         "file": "web-games/zombie-survival/index.html",
+        "line": 572,
+        "kind": "FUNCTION",
+        "symbol": "refreshUpgradePanel",
+        "context": "function refreshUpgradePanel(){",
+        "score": 58
+      },
+      {
+        "file": "web-games/zombie-survival/index.html",
         "line": 597,
         "kind": "FUNCTION",
         "symbol": "updateHud",
         "context": "function updateHud(){",
         "score": 58
-      },
-      {
-        "file": "web-games/zombie-survival/index.html",
-        "line": 566,
-        "kind": "FUNCTION",
-        "symbol": "upgradeCost",
-        "context": "function upgradeCost(kind){",
-        "score": 50
       },
       {
         "file": "web-games/zombie-survival/index.html",
@@ -4575,6 +4709,14 @@
         "kind": "FUNCTION",
         "symbol": "interactGunLocker",
         "context": "function interactGunLocker(locker){",
+        "score": 42
+      },
+      {
+        "file": "web-games/zombie-survival/index.html",
+        "line": 566,
+        "kind": "FUNCTION",
+        "symbol": "upgradeCost",
+        "context": "function upgradeCost(kind){",
         "score": 42
       },
       {
@@ -4620,13 +4762,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "2c88f0f6d5aba3fda4bacee0a5f922aa94cf4de3e656459a3d6beb1b35011dfd",
-    "currentSourceTreeFingerprint": "518eff6090c1e52e4297a87e64ee6cdc008ac96b7c715894d9be3899fc60602b",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5770,9 +5906,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"좀비 생존기\", 현재 책임 소스는 web-games/zombie-survival/index.html::addWeaponToInventory, web-games/zombie-survival/index.html::addBuilding, web-games/zombie-survival/index.html::refreshUpgradePanel, web-games/zombie-survival/index.html::nearbyLocker, web-games/zombie-survival/index.html::addChest, web-games/zombie-survival/index.html::gunStats, web-games/zombie-survival/index.html::updateBuildingSpawners, web-games/zombie-survival/index.html::collectWorldItem이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"좀비 생존기\", 현재 책임 소스는 web-games/zombie-survival/index.html::addWeaponToInventory, web-games/zombie-survival/index.html::addBuilding, web-games/zombie-survival/index.html::nearbyLocker, web-games/zombie-survival/index.html::addChest, web-games/zombie-survival/index.html::gunStats, web-games/zombie-survival/index.html::updateBuildingSpawners, web-games/zombie-survival/index.html::collectWorldItem, web-games/zombie-survival/index.html::collectNearbyGroundItem이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/zombie-survival/index.html::addWeaponToInventory, web-games/zombie-survival/index.html::addBuilding, web-games/zombie-survival/index.html::refreshUpgradePanel, web-games/zombie-survival/index.html::nearbyLocker, web-games/zombie-survival/index.html::addChest, web-games/zombie-survival/index.html::gunStats, web-games/zombie-survival/index.html::updateBuildingSpawners, web-games/zombie-survival/index.html::collectWorldItem에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/zombie-survival/index.html::addWeaponToInventory, web-games/zombie-survival/index.html::addBuilding, web-games/zombie-survival/index.html::nearbyLocker, web-games/zombie-survival/index.html::addChest, web-games/zombie-survival/index.html::gunStats, web-games/zombie-survival/index.html::updateBuildingSpawners, web-games/zombie-survival/index.html::collectWorldItem, web-games/zombie-survival/index.html::collectNearbyGroundItem에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "좀비 생존기를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5936,8 +6072,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 10 applicable domain(s); focus=CORE_FUN; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 10 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5947,10 +6083,9 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -5986,7 +6121,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 179,
+        "score": 37,
         "gapDomains": [
           "AUDIO_VISUAL_TIMING"
         ]
@@ -6100,12 +6235,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "518eff6090c1e52e4297a87e64ee6cdc008ac96b7c715894d9be3899fc60602b",
-    "priorSourceFingerprint": "2c88f0f6d5aba3fda4bacee0a5f922aa94cf4de3e656459a3d6beb1b35011dfd",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6607,11 +6742,11 @@
       "gameId": "zombie-survival",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 1,
         "actorClass": "PLAYER",
         "sourceOwnerFile": "web-games/zombie-survival/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6623,7 +6758,7 @@
           "variants": [],
           "gameId": "zombie-survival",
           "actorClass": "PLAYER",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7275,15 +7410,6 @@
       },
       {
         "file": "web-games/zombie-survival/index.html",
-        "line": 572,
-        "kind": "FUNCTION",
-        "symbol": "refreshUpgradePanel",
-        "currentBehavior": "function refreshUpgradePanel(){",
-        "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 refreshUpgradePanel의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/zombie-survival/index.html",
         "line": 468,
         "kind": "FUNCTION",
         "symbol": "nearbyLocker",
@@ -7326,6 +7452,15 @@
         "currentBehavior": "function collectWorldItem(item){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectWorldItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/zombie-survival/index.html",
+        "line": 429,
+        "kind": "FUNCTION",
+        "symbol": "collectNearbyGroundItem",
+        "currentBehavior": "function collectNearbyGroundItem(){",
+        "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectNearbyGroundItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
@@ -7338,12 +7473,6 @@
       {
         "file": "web-games/zombie-survival/index.html",
         "symbol": "addBuilding",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/zombie-survival/index.html",
-        "symbol": "refreshUpgradePanel",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7374,6 +7503,12 @@
       {
         "file": "web-games/zombie-survival/index.html",
         "symbol": "collectWorldItem",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/zombie-survival/index.html",
+        "symbol": "collectNearbyGroundItem",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7459,6 +7594,37 @@
         "symbol": "addWeaponToInventory",
         "context": "function addWeaponToInventory(id,equip=true){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "makeGun",
+            "renderInventory",
+            "updateHud"
+          ],
+          "calledBy": [
+            "openNearestChest",
+            "interactGunLocker"
+          ],
+          "stateReads": [
+            "player",
+            "id",
+            "gun"
+          ],
+          "stateWrites": [
+            "player",
+            "gun"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function addWeaponToInventory(id,equip=true){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 addWeaponToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::addWeaponToInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7471,21 +7637,57 @@
         "symbol": "addBuilding",
         "context": "function addBuilding(id,type,x,y,w,h,doorSide='bottom'){",
         "score": 74,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "addChest",
+            "addWorldItem"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "keys",
+            "WEAPONS",
+            "BUILDING_TYPES",
+            "buildings",
+            "gunLockers",
+            "config",
+            "b",
+            "doorX",
+            "ammoKeys",
+            "i",
+            "ammoKey",
+            "id",
+            "push",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "buildings",
+            "gunLockers",
+            "config",
+            "b",
+            "doorX",
+            "ammoKeys",
+            "i"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PLACEMENT",
+            "PRESENTATION",
+            "WORLD",
+            "INTERACTION",
+            "COMBAT",
+            "AI",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function addBuilding(id,type,x,y,w,h,doorSide='bottom'){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 addBuilding의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::addBuilding이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/zombie-survival/index.html",
-        "line": 572,
-        "kind": "FUNCTION",
-        "symbol": "refreshUpgradePanel",
-        "context": "function refreshUpgradePanel(){",
-        "score": 74,
-        "currentBehavior": "function refreshUpgradePanel(){",
-        "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 refreshUpgradePanel의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/zombie-survival/index.html::refreshUpgradePanel이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7495,6 +7697,31 @@
         "symbol": "nearbyLocker",
         "context": "function nearbyLocker(){",
         "score": 66,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "interactNearby",
+            "draw"
+          ],
+          "stateReads": [
+            "player",
+            "gunLockers",
+            "locker",
+            "x",
+            "y"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nearbyLocker(){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearbyLocker의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::nearbyLocker이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7507,6 +7734,34 @@
         "symbol": "addChest",
         "context": "function addChest(building,x,y){",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "addBuilding"
+          ],
+          "stateReads": [
+            "chests",
+            "id",
+            "push",
+            "x",
+            "y",
+            "r"
+          ],
+          "stateWrites": [
+            "chests"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INTERACTION",
+            "PLACEMENT",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function addChest(building,x,y){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 addChest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::addChest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7519,6 +7774,33 @@
         "symbol": "gunStats",
         "context": "function gunStats(){",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "tryShoot"
+          ],
+          "stateReads": [
+            "WEAPONS",
+            "player",
+            "b",
+            "g",
+            "id",
+            "gun"
+          ],
+          "stateWrites": [
+            "b",
+            "g"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function gunStats(){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 gunStats의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::gunStats이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7531,6 +7813,53 @@
         "symbol": "updateBuildingSpawners",
         "context": "function updateBuildingSpawners(dt){",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "spawnZombieAt",
+            "rand"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "player",
+            "zombies",
+            "buildings",
+            "b",
+            "doorX",
+            "distance",
+            "aliveFromThisBuilding",
+            "angle",
+            "sx",
+            "sy",
+            "id",
+            "z",
+            "x",
+            "y",
+            "dt"
+          ],
+          "stateWrites": [
+            "b",
+            "distance",
+            "aliveFromThisBuilding",
+            "angle",
+            "sx",
+            "sy"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PLACEMENT",
+            "PRESENTATION",
+            "CORE_STATE",
+            "INTERACTION",
+            "COMBAT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateBuildingSpawners(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateBuildingSpawners의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::updateBuildingSpawners이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7543,9 +7872,86 @@
         "symbol": "collectWorldItem",
         "context": "function collectWorldItem(item){",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "showLoot",
+            "renderInventory",
+            "updateHud"
+          ],
+          "calledBy": [
+            "collectNearbyGroundItem",
+            "update"
+          ],
+          "stateReads": [
+            "WEAPONS",
+            "player",
+            "ammoKey",
+            "ammo",
+            "key",
+            "before"
+          ],
+          "stateWrites": [
+            "player",
+            "ammo",
+            "key",
+            "before"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "COMBAT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function collectWorldItem(item){",
         "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectWorldItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/zombie-survival/index.html::collectWorldItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/zombie-survival/index.html",
+        "line": 429,
+        "kind": "FUNCTION",
+        "symbol": "collectNearbyGroundItem",
+        "context": "function collectNearbyGroundItem(){",
+        "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist2",
+            "collectWorldItem"
+          ],
+          "calledBy": [
+            "interactNearby"
+          ],
+          "stateReads": [
+            "player",
+            "groundItems",
+            "best",
+            "d"
+          ],
+          "stateWrites": [
+            "best",
+            "d"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function collectNearbyGroundItem(){",
+        "intendedBehavior": "CORE_FUN primary goal \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 좀비 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectNearbyGroundItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/zombie-survival/index.html::collectNearbyGroundItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/zombie-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7642,8 +8048,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 좀비 생존기의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7662,8 +8068,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7709,12 +8115,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7777,5 +8183,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.110Z"
+  "generatedAt": "2026-11-12T07:32:20.866Z"
 }
