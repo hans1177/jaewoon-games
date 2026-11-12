@@ -2,6 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 real GLB portrait framing uses both camera frustum axes',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(html,/box\.getBoundingSphere\(new THREE\.Sphere\(\)\)\.radius/);
+ assert.match(html,/Math\.atan\(Math\.tan\(halfVerticalFov\)\*camera\.aspect\)/);
+ assert.match(html,/Math\.sin\(Math\.min\(halfVerticalFov,halfHorizontalFov\)\)/);
+ assert.match(html,/cameraOffset\.set\(1\.5,\.9,2\.2\)\.normalize\(\)\.multiplyScalar\(fitDistance\)/);
+});
 test('Vibe 5.9 mobile preview exposes real model load failure instead of fallback PASS',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(html,/status\.dataset\.modelLoad='failed'/);
