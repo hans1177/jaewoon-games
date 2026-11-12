@@ -717,10 +717,10 @@ return function(D, S)
 		-- 백병전 카드 패: 게임 곳곳의 성과가 카드가 된다. 효과는 해전 장면의 기동 점수에만 쓰인다 (전투 결과는 서버 판정).
 		--  주인공·동료(스킬 카드) / 발견한 지식·유물·동물(분야별 카드) / 만난 항해자(우군 카드) / 지금 타는 배(선박 카드) / 라이벌의 인정
 		do
-			local STATION_SKILL = { gunner = "volley", surgeon = "heal", helm = "focus", boatswain = "rally", mate = "analyze", scholar = "analyze" }
+			local STATION_SKILL = { gunner = "volley", surgeon = "heal", helm = "wind", boatswain = "banner", mate = "retreat", scholar = "analyze" }
 			local FIELD_SKILL = {
-				Zoology = "beast", Botany = "heal", Medicine = "heal", Astronomy = "insight", Navigation = "focus", Geography = "scout",
-				Weather = "ward", Physics = "ward", Chemistry = "volley", Mineral = "rally", Relic = "luck", Site = "luck", Art = "rally",
+				Zoology = "beast", Botany = "heal", Medicine = "heal", Astronomy = "snipe", Navigation = "focus", Geography = "scout",
+				Weather = "ward", Physics = "armor", Chemistry = "volley", Mineral = "rally", Relic = "luck", Site = "luck", Art = "rally",
 				Architecture = "ward", Language = "analyze", Philosophy = "analyze", Myth = "luck", Shipbuilding = "ward", Goods = "rally",
 			}
 			local FIELD_KIND = { Zoology = "animal", Relic = "relic", Site = "relic", Art = "relic", Architecture = "relic", Mineral = "relic", Myth = "relic" }
@@ -778,8 +778,12 @@ return function(D, S)
 				table.insert(cards, { kind = "friend", name = "칼레브", skill = "luck" })
 			end
 			table.insert(cards, { kind = "ship", name = D.Ships.Ships[state.ship.id] and D.Ships.Ships[state.ship.id].name or "배", skill = SHIP_SKILL[state.ship.id] or "focus" })
-			view.deck = { cards = cards }
-			if S.Battle and S.Battle.deckCache then S.Battle.deckCache[state] = cards end
+			local faction = D.BoardingCards.factionOf(state.nationId)
+			view.deck = { cards = cards, faction = faction }
+			if S.Battle and S.Battle.deckCache then
+				S.Battle.deckCache[state] = cards
+				S.Battle.deckFaction[state] = faction
+			end
 		end
 
 		view.lastBattle = state.lastBattle

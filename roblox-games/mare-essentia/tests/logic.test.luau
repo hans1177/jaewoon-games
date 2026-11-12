@@ -3208,6 +3208,26 @@ do
 		BC.play(md, "me", 1)
 		check("회군: 치료병을 손으로 되돌린다", #md.rows.me.melee == 1 and md.hand.me[1] and md.hand.me[1].id == "surgeon")
 	end
+	-- 문화권 덱: 다섯 문화권의 덱과 고유 능력
+	do
+		check("문화권: 다섯 덱이 모두 있다", #BC.FactionOrder == 5)
+		for _, f in BC.FactionOrder do
+			local deck = BC.playerDeck({}, math.random, f)
+			check("문화권 덱 크기: " .. f, #deck >= 17)
+		end
+		check("나라→문화권: 일본=동아시아, 오스만=중동, 누에바 에스파냐=신대륙, 영국=유럽",
+			BC.factionOf("japan") == "east_asia" and BC.factionOf("ottoman") == "middle_east" and BC.factionOf("new_spain") == "new_world" and BC.factionOf("england") == "europe")
+		local mt = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "new_world", "europe")
+		mt.turn = "me"
+		table.insert(mt.rows.me.melee, { id = "a", name = "a", row = "melee", power = 5 })
+		table.insert(mt.rows.foe.melee, { id = "b", name = "b", row = "melee", power = 5 })
+		mt.hand.me, mt.hand.foe = { { id = "z", name = "z", row = "melee", power = 1 } }, { { id = "y", name = "y", row = "melee", power = 1 } }
+		BC.pass(mt, "me")
+		BC.pass(mt, "foe")
+		check("신대륙: 점수가 같으면 판을 이긴다", mt.wins.me == 1 and mt.wins.foe == 0)
+		local me = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "east_asia", "europe")
+		check("동아시아: 첫 판 선공", me.turn == "me")
+	end
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()
 	table.insert(m.rows.me.melee, { id = "h", name = "h", row = "melee", power = 10, hero = true })

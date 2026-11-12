@@ -47,6 +47,7 @@ B.Specials = {
 	storm = { id = "storm", name = "폭풍", special = "weather", row = "cannon", text = "포 줄이 모두 1로 줄어든다" },
 	melee_fog = { id = "melee_fog", name = "혼전", special = "weather", row = "melee", text = "근접 줄이 모두 1로 줄어든다" },
 	clear = { id = "clear", name = "맑음", special = "clear", text = "모든 날씨를 걷어 낸다" },
+	wind = { id = "wind", name = "순풍", special = "wind", text = "날씨를 걷어 내고 카드 한 장을 뽑는다" },
 	horn = { id = "horn", name = "군기", special = "horn", text = "내 가장 센 줄의 일반 카드 점수가 두 배" },
 	decoy = { id = "decoy", name = "회군", special = "decoy", text = "내 필드의 약한 카드를 손으로 되돌린다 (치료병 우선)" },
 }
@@ -69,6 +70,7 @@ end
 local SKILL_CARD = {
 	command = "hero_captain", volley = "hero_cannon", heal = "hero_medic", focus = "hero_spy", rally = "boatswain", analyze = "scout",
 	scout = "scout", beast = "beast", ward = "clear", luck = "scorch", insight = "fog",
+	banner = "horn", retreat = "decoy", wind = "wind", snipe = "sniper", armor = "ironclad",
 }
 B.SkillCard = SKILL_CARD
 -- 카드 스킬 설명 (개인 카드 창에서 보여 준다)
@@ -83,11 +85,46 @@ B.SkillInfo = {
 	beast = { name = "맹수의 기세", text = "카드전에서 근접 7의 맹수가 된다" },
 	ward = { name = "수호", text = "카드전에서 '맑음'(날씨 해제) 특수 카드가 된다" },
 	luck = { name = "행운", text = "카드전에서 '소각'(가장 센 비영웅 제거) 특수 카드가 된다" },
+	banner = { name = "군기", text = "카드전에서 '군기'(가장 센 줄 점수 두 배) 특수 카드가 된다" },
+	retreat = { name = "회군", text = "카드전에서 '회군'(필드 카드를 손으로 되돌림) 특수 카드가 된다" },
+	wind = { name = "순풍", text = "카드전에서 '순풍'(날씨 해제 + 카드 한 장 뽑기) 특수 카드가 된다" },
+	snipe = { name = "저격", text = "카드전에서 점수 10 이상 줄을 노리는 저격수가 된다" },
+	armor = { name = "철갑", text = "카드전에서 날씨에 점수가 줄지 않는 철갑병이 된다" },
 	insight = { name = "통찰", text = "카드전에서 '안개'(사격 줄 약화) 특수 카드가 된다" },
 }
 local SKILL_SPECIAL = { ward = "clear", luck = "scorch", insight = "fog" }
 
 local BASE_ROSTER = { "swordsman", "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "musketeer", "scout", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper", "horn", "decoy", "sharpshooter", "axeman", "pikeman", "musketeer" }
+
+-- 문화권 덱: 나라마다 부대 구성과 고유 능력(패시브)이 다르다
+B.Units.samurai = { id = "samurai", name = "사무라이", row = "melee", power = 6, weapon = "sword" }
+B.Units.firelance = { id = "firelance", name = "화창병", row = "ranged", power = 3, weapon = "gun", ability = "bond" }
+B.Units.jaguar = { id = "jaguar", name = "재규어 전사", row = "melee", power = 5, weapon = "axe" }
+B.Units.janissary = { id = "janissary", name = "예니체리", row = "ranged", power = 4, weapon = "gun", ability = "bond" }
+B.Units.camel = { id = "camel", name = "낙타 기병", row = "melee", power = 5, weapon = "spear" }
+B.Units.raider = { id = "raider", name = "해상 습격대", row = "melee", power = 4, weapon = "sword", ability = "bond" }
+B.Factions = {
+	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "draw",
+		roster = { "swordsman", "gunner", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "decoy", "musketeer", "sharpshooter", "scout", "sniper", "gunner", "culverin", "gunner", "horn", "decoy" } },
+	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "snipe",
+		roster = { "scout", "samurai", "samurai", "axeman", "shieldman", "boatswain", "surgeon", "firelance", "firelance", "firelance", "sharpshooter", "sniper", "sharpshooter", "swivel", "swivel", "swordsman", "horn" } },
+	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "clear",
+		roster = { "jaguar", "jaguar", "axeman", "horn", "beast", "beast", "shieldman", "surgeon", "scout", "scout", "scout", "sniper", "musketeer", "gunner", "swordsman", "decoy", "scorch" } },
+	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "snipe",
+		roster = { "camel", "camel", "pikeman", "axeman", "ironclad", "janissary", "swordsman", "camel", "sharpshooter", "scout", "janissary", "culverin", "culverin", "swivel", "surgeon", "horn", "ironclad" } },
+	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "draw",
+		roster = { "raider", "raider", "raider", "swordsman", "pikeman", "surgeon", "surgeon", "musketeer", "scout", "sniper", "swivel", "swivel", "swivel", "gunner", "wind", "ironclad", "decoy" } },
+}
+B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia" }
+B.NationFaction = {
+	england = "europe", netherlands = "europe", france = "europe", denmark = "europe", sweden = "europe", venice = "europe", spain = "europe", portugal = "europe",
+	ottoman = "middle_east", swahili = "middle_east",
+	japan = "east_asia", china = "east_asia", korea = "east_asia",
+	malabar = "southeast_asia", new_spain = "new_world",
+}
+function B.factionOf(nationId)
+	return B.NationFaction[nationId or ""] or "europe"
+end
 
 local function shuffle(list, rng)
 	for i = #list, 2, -1 do
@@ -98,12 +135,13 @@ local function shuffle(list, rng)
 end
 
 -- 내 덱: 기본 부대 + 게임에서 얻은 카드(deckCards = view.deck.cards)가 영웅·특수 카드가 된다
-function B.playerDeck(deckCards, rng)
+function B.playerDeck(deckCards, rng, factionId)
 	local out = {}
-	for _, id in BASE_ROSTER do
+	local fac = B.Factions[factionId or ""]
+	for _, id in (if fac then fac.roster else BASE_ROSTER) do
 		table.insert(out, copy(B.Units[id] or B.Specials[id]))
 	end
-	local leader = "draw"
+	local leader = if fac then fac.leader else "draw"
 	for i, c in deckCards or {} do
 		local id = SKILL_CARD[c.skill]
 		if id then
@@ -126,11 +164,15 @@ function B.playerDeck(deckCards, rng)
 end
 
 -- 해적 덱: 두목이면 영웅과 대포가 더 많다
-function B.enemyDeck(isBoss, rng)
+function B.enemyDeck(isBoss, rng, factionId)
 	local ids = { "swordsman", "swordsman", "axeman", "axeman", "pikeman", "pikeman", "pikeman", "surgeon", "musketeer", "musketeer", "sharpshooter", "scout", "scout", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper" }
+	local fac = B.Factions[factionId or ""]
+	if fac and not isBoss then
+		ids = fac.roster
+	end
 	local out = {}
 	for _, id in ids do
-		table.insert(out, copy(B.Units[id]))
+		table.insert(out, copy(B.Units[id] or B.Specials[id]))
 	end
 	table.insert(out, copy(B.Specials.storm))
 	if isBoss then
@@ -142,7 +184,12 @@ function B.enemyDeck(isBoss, rng)
 		table.insert(out, copy(B.Units.culverin))
 		table.insert(out, copy(B.Specials.scorch))
 	end
-	return shuffle(out, rng), if isBoss then "snipe" else "draw"
+	return shuffle(out, rng), if isBoss then "snipe" elseif fac then fac.leader else "draw"
+end
+
+-- 적 문화권: 시드로 정한다 (클라이언트와 서버가 같은 값을 얻는다). 두목은 따로 정하지 않는다.
+function B.foeFaction(seed)
+	return B.FactionOrder[(math.floor(seed) % #B.FactionOrder) + 1]
 end
 
 local function other(side)
@@ -150,8 +197,9 @@ local function other(side)
 end
 B.other = other
 
-function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
+function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFaction)
 	local m = {
+		faction = { me = myFaction, foe = foeFaction },
 		rows = { me = { melee = {}, ranged = {}, cannon = {} }, foe = { melee = {}, ranged = {}, cannon = {} } },
 		hand = { me = {}, foe = {} },
 		deck = { me = myDeck, foe = foeDeck },
@@ -170,7 +218,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
 		log = {},
 	}
 	for _, side in { "me", "foe" } do
-		for _ = 1, B.HAND do
+		for _ = 1, B.HAND + (if m.faction[side] == "southeast_asia" or m.faction[side] == "new_world" then 1 else 0) do
 			local c = table.remove(m.deck[side])
 			if c then
 				table.insert(m.hand[side], c)
@@ -179,6 +227,10 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
 	end
 	if rng() < 0.5 then
 		m.turn = "foe"
+	end
+	-- 동아시아: 첫 판 선공 (양쪽 모두 같으면 그대로)
+	if (m.faction.me == "east_asia") ~= (m.faction.foe == "east_asia") then
+		m.turn = if m.faction.me == "east_asia" then "me" else "foe"
 	end
 	return m
 end
@@ -210,7 +262,7 @@ function B.cardPower(m, side, row, idx)
 		end
 		for j, o in list do
 			if j ~= idx and o.ability == "morale" and not o.hero then
-				p += 1
+				p += (if m.faction and m.faction[side] == "east_asia" then 2 else 1)
 			end
 		end
 		-- 근접끼리 무기 상성
@@ -354,16 +406,44 @@ local function roundEnd(m)
 		winner = "foe"
 		m.wins.foe += 1
 	else
-		m.wins.me += 1
-		m.wins.foe += 1
+		local meNw, foeNw = m.faction and m.faction.me == "new_world", m.faction and m.faction.foe == "new_world"
+		if meNw and not foeNw then
+			winner = "me"
+			m.wins.me += 1
+		elseif foeNw and not meNw then
+			winner = "foe"
+			m.wins.foe += 1
+		else
+			m.wins.me += 1
+			m.wins.foe += 1
+		end
 	end
 	logLine(m, string.format("%d판 종료: %d 대 %d — %s", m.round, a, b, if winner == "me" then "우리가 이겼다" elseif winner == "foe" then "해적이 이겼다" else "무승부"))
 	for _, side in { "me", "foe" } do
+		-- 중동: 가장 센 일반 카드 하나는 판이 끝나도 필드에 남는다
+		local keep, keepRow = nil, nil
+		if m.faction and m.faction[side] == "middle_east" then
+			local bp = 0
+			for _, row in B.ROWS do
+				for i, c in m.rows[side][row] do
+					if not c.hero and c.power > bp and c.power <= 5 then
+						keep, keepRow, bp = c, row, c.power
+					end
+				end
+			end
+		end
 		for _, row in B.ROWS do
 			for _, c in m.rows[side][row] do
-				table.insert(m.grave[side], c)
+				if c ~= keep then
+					table.insert(m.grave[side], c)
+				end
 			end
 			m.rows[side][row] = {}
+		end
+		if keep and not (m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3) then
+			table.insert(m.rows[side][keepRow], keep)
+		elseif keep then
+			table.insert(m.grave[side], keep)
 		end
 		m.passed[side] = false
 	end
@@ -380,6 +460,10 @@ local function roundEnd(m)
 		-- 한 판 지날 때마다 카드 한 장씩 보충
 		drawCards(m, "me", 1)
 		drawCards(m, "foe", 1)
+		-- 유럽: 판을 이기면 한 장 더
+		if winner and m.faction and m.faction[winner] == "europe" then
+			drawCards(m, winner, 1)
+		end
 	end
 	return result
 end
@@ -475,6 +559,11 @@ function B.play(m, side, handIdx)
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "날씨가 걷혔다"
 		table.insert(m.grave[side], c)
+	elseif c.special == "wind" then
+		m.weather = { melee = false, ranged = false, cannon = false }
+		drawCards(m, side, 1)
+		msg = "순풍! 날씨가 걷히고 카드를 한 장 뽑았다"
+		table.insert(m.grave[side], c)
 	elseif c.special == "horn" then
 		local row = bestHornRow(m, side)
 		if row then
@@ -502,8 +591,9 @@ function B.play(m, side, handIdx)
 		table.insert(m.rows[target][c.row], c)
 		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[c.row])
 		if c.ability == "spy" then
-			drawCards(m, side, 2)
-			msg ..= " (첩자: 카드 2장을 뽑았다)"
+			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
+			drawCards(m, side, n)
+			msg ..= string.format(" (첩자: 카드 %d장을 뽑았다)", n)
 		elseif c.ability == "snipe" then
 			local fside, frow, fi = snipeTarget(m, side)
 			if fside then
@@ -624,6 +714,13 @@ function B.ai(m, side)
 			local after = B.total(m, side) - B.total(m, foe)
 			m.weather = saved
 			gain = after - before
+		elseif c.special == "wind" then
+			local before = B.total(m, side) - B.total(m, foe)
+			local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
+			m.weather = { melee = false, ranged = false, cannon = false }
+			local after = B.total(m, side) - B.total(m, foe)
+			m.weather = saved
+			gain = after - before + 2
 		elseif c.special == "horn" then
 			local row = bestHornRow(m, side)
 			if row then
@@ -743,15 +840,16 @@ end
 --   kind: "gunnery" | "boarding"   my = { fighter, deckCards }   foe = { fighter, boss }
 function B.build(kind, seed, my, foe)
 	local rng = B.seeded(seed)
+	local foeFac = foe.faction or (if foe.boss then nil else B.foeFaction(seed))
 	local myDeck, myLeader, foeDeck, foeLeader
 	if kind == "gunnery" then
 		myDeck, myLeader = B.gunneryDeck(my.fighter or {}, my.deckCards, B.seeded(seed + 7), false)
 		foeDeck, foeLeader = B.gunneryDeck(foe.fighter or {}, nil, B.seeded(seed + 13), foe.boss == true)
 	else
-		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7))
-		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13))
+		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction)
+		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
 	end
-	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng)
+	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
 end
 
 -- 서버 검증: 시드와 플레이어의 행동 기록으로 한 판을 처음부터 다시 돌린다.
