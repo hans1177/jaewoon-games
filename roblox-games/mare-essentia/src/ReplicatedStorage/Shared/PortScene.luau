@@ -109,11 +109,11 @@ end
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(300, 64)
+	bb.Size = UDim2.fromScale(13, 3) -- 스터드 단위: 멀수록 자연스럽게 작아진다
 	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
-	bb.MaxDistance = 160
+	bb.MaxDistance = 110
 	local plate = Instance.new("Frame")
 	plate.Size = UDim2.fromScale(1, 1)
 	plate.BackgroundColor3 = Color3.fromRGB(62, 42, 30)
@@ -130,11 +130,11 @@ local function sign(parent, adornee, text, color, height)
 	c.CornerRadius = UDim.new(0, 12)
 	c.Parent = plate
 	local badge = Instance.new("TextLabel")
-	badge.Size = UDim2.fromOffset(48, 48)
-	badge.Position = UDim2.new(0, 8, 0.5, -24)
+	badge.Size = UDim2.fromScale(0.2, 0.84)
+	badge.Position = UDim2.fromScale(0.03, 0.08)
 	badge.BackgroundColor3 = color or Color3.fromRGB(150, 110, 40)
 	badge.Text = signIcon(text)
-	badge.TextSize = 30
+	badge.TextScaled = true
 	badge.Font = Enum.Font.GothamBold
 	badge.TextColor3 = Color3.new(1, 1, 1)
 	local bc = Instance.new("UICorner")
@@ -146,8 +146,8 @@ local function sign(parent, adornee, text, color, height)
 	bs.Parent = badge
 	badge.Parent = plate
 	local l = Instance.new("TextLabel")
-	l.Size = UDim2.new(1, -66, 1, -8)
-	l.Position = UDim2.fromOffset(60, 4)
+	l.Size = UDim2.fromScale(0.72, 0.8)
+	l.Position = UDim2.fromScale(0.26, 0.1)
 	l.BackgroundTransparency = 1
 	l.TextColor3 = Color3.fromRGB(255, 244, 214)
 	l.Font = Enum.Font.GothamBlack
@@ -159,8 +159,8 @@ local function sign(parent, adornee, text, color, height)
 	ts.Thickness = 2
 	ts.Parent = l
 	local lim = Instance.new("UITextSizeConstraint")
-	lim.MaxTextSize = 34
-	lim.MinTextSize = 14
+	lim.MaxTextSize = 60
+	lim.MinTextSize = 8
 	lim.Parent = l
 	l.Parent = plate
 	plate.Parent = bb
@@ -1750,10 +1750,13 @@ function PortScene.build(info, onFacility)
 	local plate = workspace:FindFirstChild("Baseplate")
 	if plate then
 		plate.Color = style.ground
+		-- 항공 시점에서 땅 모서리가 보이지 않게 넓힌다 (바다는 x>20 이라 서쪽으로만 확장)
+		plate.Size = Vector3.new(2600, plate.Size.Y, 2600)
+		plate.Position = Vector3.new(-1280, plate.Position.Y, 0)
 		plate.Material = Enum.Material.Grass
 	else
 		-- 로블록스 기본 Baseplate가 없는 빌드: 항구 땅(서쪽)과 바다 밑바닥을 직접 만든다
-		local land = part(folder, Vector3.new(900, 4, 900), CFrame.new(-430, -2, 0), style.ground, Enum.Material.Grass)
+		local land = part(folder, Vector3.new(2600, 4, 2600), CFrame.new(-1280, -2, 0), style.ground, Enum.Material.Grass)
 		land.Name = "Ground"
 		part(folder, Vector3.new(1400, 4, 1000), CFrame.new(430, -12, 0), Color3.fromRGB(176, 160, 120), Enum.Material.Sand)
 	end
@@ -1880,7 +1883,7 @@ function PortScene.build(info, onFacility)
 		if f.always or (f.key and fac[f.key]) then
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
 			local grow = 1.8 + 0.06 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민보다 훨씬 크게(교역소·조선소·주점이 한눈에 보이게): 1단계 1.8배 → 5단계 약 2.04배
-			local tone = f.color:Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
+			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
 			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d * grow / 2 - 2 else f.pos.Z + f.d * grow / 2 + 2
