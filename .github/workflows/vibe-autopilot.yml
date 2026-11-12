@@ -35,12 +35,12 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p build/reports
-          for g in fantasy-survival mare-essentia; do
+          for g in mare-essentia; do
             gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-autopilot-report" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-studio-frames" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || rm -f "build/reports/${g}.json"
           done
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json 2>/dev/null || rm -f build/autopilot-ledger.json
           : > build/heads.txt
-          for g in fantasy-survival mare-essentia; do
+          for g in mare-essentia; do
             sha=$(gh api "repos/${GITHUB_REPOSITORY}/commits?sha=main&path=roblox-games/${g}&per_page=1" --jq '.[0].sha // ""' 2>/dev/null || true)
             echo "${g}=${sha}" >> build/heads.txt
           done
@@ -54,7 +54,7 @@ jobs:
       - name: Decide and request the next check
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node tools/vibe-autopilot.mjs --run --queued "$QUEUED" --ledger build/autopilot-ledger.json --reports build/reports --heads build/heads.json
+        run: node tools/vibe-autopilot.mjs --run --game mare-essentia --queued "$QUEUED" --ledger build/autopilot-ledger.json --reports build/reports --heads build/heads.json
       - name: Save ledger and work orders to vibe-gym-data (never main)
         env:
           GH_TOKEN: ${{ github.token }}

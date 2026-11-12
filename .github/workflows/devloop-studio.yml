@@ -32,7 +32,7 @@ concurrency:
   queue: max
 jobs:
   capture:
-    if: github.repository == 'hans1177/jaewoon-games'
+    if: github.repository == 'hans1177/jaewoon-games' && (github.event_name == 'push' || inputs.game == 'mare-essentia')
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 50
     steps:

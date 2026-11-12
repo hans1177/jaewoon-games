@@ -777,7 +777,12 @@ H.captainChoices = {}
 for _, nid in NATION_LIST do
 	local out = {}
 	for i = 1, 6 do
-		local sheet, c = if i <= 4 then H.freeCell(nid, 0, 14) else H.freeCell(nid, 15, 19)
+		local sheet, c
+		if i <= 4 then
+			sheet, c = H.freeCell(nid, 0, 14)
+		else
+			sheet, c = H.freeCell(nid, 15, 19)
+		end
 		if not sheet and i > 4 then sheet, c = H.freeCell(nid, 0, 14) end
 		if sheet then table.insert(out, "cp:" .. sheet .. ":" .. c) end
 	end

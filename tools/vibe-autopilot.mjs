@@ -122,10 +122,11 @@ export function payoff(rec) {
   return rec.ema ?? 0.5;
 }
 
-export function scoreTasks({ signals, ledger, now = Date.now(), queued = 0, heads = {} }) {
+export function scoreTasks({ signals, ledger, now = Date.now(), queued = 0, heads = {}, gameId = '' }) {
   const rows = [];
   const hist = ledger.history || [];
   for (const game of Object.keys(GAMES)) {
+    if (gameId && game !== gameId) continue;
     const s = signals[game] || parseReport(null);
     const found = findingsFrom(game, s);
     for (const kind of Object.keys(GAMES[game].scripts)) {
@@ -173,8 +174,8 @@ function why({ sinceMin, found, penalty, repeat, fresh, unchanged }) {
 }
 
 // Studio 는 한 대뿐이라 한 번에 하나만 보낸다. 대기열이 2개 이상이면 쉰다.
-export function decide({ signals, ledger, now = Date.now(), queued = 0, budget = 1, heads = {} }) {
-  const rows = scoreTasks({ signals, ledger, now, queued, heads });
+export function decide({ signals, ledger, now = Date.now(), queued = 0, budget = 1, heads = {}, gameId = '' }) {
+  const rows = scoreTasks({ signals, ledger, now, queued, heads, gameId });
   if (queued >= 2) return { picks: [], rows, skipped: `Studio 대기열이 ${queued}개라 이번엔 쉰다` };
   // 점검이 연달아 실패해도 계속 돌지 않게, 방금 보냈으면 10분은 쉰다(점검이 끝날 때마다 이어 실행되는 구조의 안전판)
   if (ledger.lastDispatchAt && (now - ledger.lastDispatchAt) / 60000 < MIN_GAP_MIN) return { picks: [], rows, skipped: `방금 점검을 보냈다(${MIN_GAP_MIN}분 간격)` };
@@ -245,7 +246,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const reports = {}, signals = {};
   for (const g of Object.keys(GAMES)) { reports[g] = readJson(path.join(reportsDir, g + '.json'), null); signals[g] = parseReport(reports[g]); }
   ledger = learn({ ledger, reports, signals });
-  const d = decide({ signals, ledger, queued, heads, budget: Number(arg('budget') || 1) });
+  const d = decide({ signals, ledger, queued, heads, gameId: arg('game'), budget: Number(arg('budget') || 1) });
   console.log('상위 점검 후보:');
   for (const r of d.rows.slice(0, 6)) console.log(` ${r.blocked ? '·' : '▶'} ${r.game} ${r.kind} 점수 ${r.score} — ${r.why}`);
   if (d.skipped) console.log('건너뜀:', d.skipped);
