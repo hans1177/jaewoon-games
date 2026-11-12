@@ -5493,7 +5493,8 @@ syncScene = function()
 		end
 		portLevel = shownLv
 	end
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local econKind = view.harbor and view.harbor.regime and view.harbor.regime.kind or "normal"
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		return
 	end
@@ -5502,6 +5503,7 @@ syncScene = function()
 		portName = p.portName,
 		level = portLevel,
 		construction = construction,
+		econ = econKind,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,

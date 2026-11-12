@@ -705,6 +705,27 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	if lvl >= 3 then
 		stay(Vector3.new(-29, 0, -12), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
 	end
+	-- 경제 국면 연출: 호황·버블엔 상점 증축 비계와 활기, 불황·붕괴엔 문 닫은 가게(판자 울타리·빈 통)
+	do
+		local econ = info.econ
+		local boomy = econ == "boom" or econ == "bubble"
+		local bleak = econ == "depression" or econ == "bust" or econ == "recession" or econ == "deflation"
+		local spots = { Vector3.new(-40, 0, 20), Vector3.new(-40, 0, -20), Vector3.new(-74, 0, 20), Vector3.new(-74, 0, -20), Vector3.new(-100, 0, 20), Vector3.new(-100, 0, -20) }
+		local n = if econ == "bust" or econ == "depression" or econ == "bubble" then 4 elseif boomy or bleak then 2 else 0
+		for i = 1, n do
+			local at = spots[i]
+			if boomy then
+				importedModel(folder, "Terrain", "wood-structure", at, 9, false)
+				importedModel(folder, "Cargo", "barrel", at + Vector3.new(4, 0, 0), 2.4, false)
+				importedModel(folder, "Terrain", "log-stack", at + Vector3.new(-4, 0, 0), 3.2, false)
+			else
+				for k = -1, 1 do
+					importedModel(folder, "Town", "fence_straight", at + Vector3.new(k * 5, 0, 0), 5, false)
+				end
+				importedModel(folder, "Cargo", "barrel", at + Vector3.new(0, 0, if at.Z > 0 then -3 else 3), 2.4, false)
+			end
+		end
+	end
 	-- 발전도 상승 공사: 새 단계가 열리면 바로 바뀌지 않고, 공사 기간 동안 비계·자재 더미와
 	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
 	if info.construction then
@@ -2206,6 +2227,15 @@ function PortScene.build(info, onFacility)
 			atmos = Instance.new("Atmosphere")
 			atmos.Name = "MareAtmosphere"
 			atmos.Parent = Lighting
+		end
+		local econ = info and info.econ
+		if econ == "depression" or econ == "bust" then
+			Lighting.Brightness = 1.6
+			look = { clock = look.clock, amb = look.amb:Lerp(Color3.fromRGB(110, 112, 118), 0.5), haze = look.haze:Lerp(Color3.fromRGB(170, 172, 180), 0.55), dens = look.dens + 0.08 }
+			Lighting.OutdoorAmbient = look.amb
+			atmos.Color = look.haze
+		elseif econ == "boom" or econ == "bubble" then
+			Lighting.Brightness = 2.2
 		end
 		atmos.Density = look.dens
 		atmos.Offset = 0.2
