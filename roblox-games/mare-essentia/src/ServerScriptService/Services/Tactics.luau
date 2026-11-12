@@ -316,7 +316,7 @@ return function(D, S)
 		state.stats.battlesWon += 1
 		table.insert(msgs, string.format("전술 탐험 성공! 등급 %s (%d턴) +%d코인", rank, b.turn - 1, coins))
 		if math.random() < 0.6 then
-			S.Cardbook.reward(state, "explore", msgs)
+			S.Cardbook.offer(state, "explore", msgs)
 		end
 		for _, cardId in b.found do
 			S.Discovery.grantCard(state, cardId, msgs)
