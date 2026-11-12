@@ -66,3 +66,7 @@
 
 - 2026-11-12 17:3x(KST, 08:25Z 커밋, 소스 b44121b) 바이브: 새 점검(탭 순회 17장 버전) — 단계 72/72, 클릭 3/3, 프레임 17/17, 모델 591/591·registry 869 PASS, 클라이언트 이미지 278/278. errors STUDIO_ASSET_AUDIT_FAILED 1건(Server preload CardArt 12개 TIMEOUT_16S 오탐 패턴 유지). 새로 보임: 소리 1개 music_region_w_africa(rbxassetid 87116162360580) 'Asset is not approved for the requester'(소리 76/77). 교역·지도 탭 jpg 확인: 글자·초상·3D 배경 정상.
 - 큐 추가: 서아프리카 음악 1개 승인/권한 확인(mare-audio-upload 재업로드 필요할 수 있음, 시크릿 필요 가능). 코드 수정 없음, 재배포 안 함.
+
+- 2026-11-12 19:2x(KST, 10:22Z 커밋, 소스 763db3a) 바이브: 새 점검 — 단계 116/116, 클릭 7/7, 프레임 29/29, 모델 591/591·registry 869 PASS, 클라이언트 이미지 278/278. **출항하기 클릭 후 게임 진입 성공**(INTRO_OK, 선장실·교역소 창 정상). intro_done·tab_harbor jpg 직접 확인: 글자·초상·3D 배경(하늘+바다·배·울타리) 정상, 하늘만 나오는 문제 해소로 보임. errors STUDIO_ASSET_AUDIT_FAILED 1건 = Server preload CardArt 12개 TIMEOUT_16S(오탐 패턴 유지) + 소리 music_region_w_africa(123867841859579 / 이전 기록 87116162360580) 'not approved for the requester'(소리 81/82).
+- 못 고침(사람 작업): 서아프리카 음악 1개 권한 — mare-audio-upload 재업로드에 owner 시크릿 필요. 코드 수정 없음, 재배포 안 함.
+- 큐: ① 서아프리카 음악 재업로드/권한(시크릿 복구 후) ② 길드 이름 창 자동 통과 ③ 항구 3D 배경 다음 점검에서 한 번 더 확인.
