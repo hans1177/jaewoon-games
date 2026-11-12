@@ -752,3 +752,39 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
   assert.equal(animals.actualStudioAnimationVerified,false);
   assert.equal(animals.autoBindWithoutRuntimeProof,false);
 });
+
+test('Mare 1492 start preserves 15th-century R15 visual rules and existing later-era saves',()=> {
+  const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
+  const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
+  const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  assert.match(ui,/local chosenYear = 1492/);
+  assert.match(ui,/\\{ 1492, "1492년 ★추천"/);
+  assert.match(server,/\\[1492\\] = true, \\[1517\\] = true/);
+  assert.match(state,/num\\(saved.startYear, 1700, 1492, 1800\\)/);
+  assert.match(ui,/p.portId \\.\\. "\\|Y" \\.\\. tostring\\(p.year\\)/);
+  assert.match(port,/currentYear = if type\\(info.year\\) == "number" then info.year else 1492/);
+  assert.match(port,/if year < 1500 then\\s+outfit.hat = nil\\s+outfit.hair = nil\\s+outfit.skirt = nil/);
+  assert.match(port,/outfit.profession = if extra and extra.profession then extra.profession else role/);
+  assert.match(pose,/model:SetAttribute\\("AppearanceCulture", outfit.culture\\)/);
+  assert.match(pose,/model:SetAttribute\\("AppearanceProfession", outfit.profession\\)/);
+});
+
+test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
+  const base='roblox-games/mare-essentia/assets/inbox/People/';
+  const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
+    'male_ranger_body','male_ranger_legs','female_ranger_body','female_ranger_legs',
+    'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed','hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard'];
+  for(const name of names){
+    const glb=fs.readFileSync(base+name+'.glb');
+    assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB');
+    assert.equal(glb.readUInt32LE(4),2,name+' glTF version');
+    assert.equal(glb.readUInt32LE(8),glb.length,name+' glTF length');
+    const m=JSON.parse(fs.readFileSync(base+name+'.glb.license.json','utf8'));
+    assert.equal(m.license,'CC0-1.0');
+    assert.equal(m.publicationAllowed,false);
+    assert.match(m.source,/quaternius.com/);
+    assert.match(m.sourceGitBlobSha1,/^[0-9a-f]{40}$/);
+  }
+});
