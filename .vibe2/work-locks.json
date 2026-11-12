@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1llwbs1",
+      "worker": "vibe2",
+      "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+      "gameId": "dice-battle-board",
+      "files": [
+        "web-games/dice-battle-board/index.html"
+      ],
+      "baseSha": "742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+      "runId": "43123992405",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-12T00:15:22.468Z",
+      "expiresAt": "2026-11-12T01:00:22.468Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:dice-battle-board-web-startup-spatial-repair-v2"
+      ]
+    }
+  ]
 }
