@@ -298,3 +298,13 @@ test('Vibe 5.9 LOD keeps all repeated authored meshes at chosen detail level',()
  assert.ok(rows.filter(x=>x.visible).every(x=>x.name==='Forest_LOD1'));
  controller.reset();assert.equal(rows.filter(x=>x.visible).length,6);
 });
+
+
+test('Vibe 5.9 approved GLTF preview uses one motion adapter and applies actual input movement',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.ok(html.includes('characterMotion.move({speed:Math.min(1,motionState.speed'));
+ assert.ok(html.includes('if(activeModel&&!climbMotion?.busy()&&playerHealth.alive)'));
+ assert.ok(html.includes("animationPicker.addEventListener('change',()=>adapter.play(animationPicker.value))"));
+ assert.ok(!html.includes('mixer=new THREE.AnimationMixer(model)'));
+ assert.ok(!html.includes('adapter.action(\'idle\')'));
+});
