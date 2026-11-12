@@ -683,6 +683,76 @@ function B.useLeader(m, side)
 end
 
 -- 컴퓨터(해적)의 한 수: 이기고 있으면 멈추고, 지고 있으면 가장 효율 좋은 카드를 낸다
+-- 카드 한 장을 내면 (내 점수 - 상대 점수)가 얼마나 달라질지 미리 계산한다 (AI 판단과 '추천 수' 표시가 같이 쓴다)
+function B.gainOf(m, side, c)
+	local foe = other(side)
+	local mine, theirs = B.total(m, side), B.total(m, foe)
+	local gain
+	if c.special == "scorch" then
+		local best, hits = strongestNonHero(m, { "me", "foe" })
+		local lost = 0
+		for _, h in hits do
+			lost += (if h[1] == side then -1 else 1) * B.cardPower(m, h[1], h[2], h[3])
+		end
+		gain = if best >= 6 then lost else -5
+	elseif c.special == "weather" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
+		m.weather[c.row] = true
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather[c.row] = prev
+		gain = after - before
+	elseif c.special == "clear" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
+		m.weather = { melee = false, ranged = false, cannon = false }
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather = saved
+		gain = after - before
+	elseif c.special == "wind" then
+		local before = B.total(m, side) - B.total(m, foe)
+		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
+		m.weather = { melee = false, ranged = false, cannon = false }
+		local after = B.total(m, side) - B.total(m, foe)
+		m.weather = saved
+		gain = after - before + 2
+	elseif c.special == "horn" then
+		local row = bestHornRow(m, side)
+		if row then
+			local before = B.total(m, side) - B.total(m, foe)
+			m.horn[side][row] = true
+			local after = B.total(m, side) - B.total(m, foe)
+			m.horn[side][row] = nil
+			gain = after - before
+		else
+			gain = -5
+		end
+	elseif c.special == "decoy" then
+		local pick = decoyTarget(m, side)
+		gain = if pick and pick.score >= 100 then 3 else -4
+	else
+		local target = if c.ability == "spy" then foe else side
+		local before = B.total(m, side) - B.total(m, foe)
+		table.insert(m.rows[target][c.row], c)
+		local after = B.total(m, side) - B.total(m, foe)
+		table.remove(m.rows[target][c.row])
+		gain = after - before
+		if c.ability == "spy" then
+			gain += 4 -- 카드 2장을 뽑는 값
+		elseif c.ability == "snipe" then
+			local fside, _, _, bp = snipeTarget(m, side)
+			if fside then
+				gain += bp
+			end
+		end
+		-- 센 카드는 아끼고 작은 카드부터 쓴다 (앞서고 있을 때)
+		if mine >= theirs then
+			gain -= c.power * 0.4
+		end
+	end
+	return gain
+end
+
 function B.ai(m, side)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return nil
@@ -703,69 +773,7 @@ function B.ai(m, side)
 	-- 점수를 가장 많이 올리는 카드 찾기 (미리 내 보고 계산한 뒤 되돌린다)
 	local bestI, bestGain = nil, -1e9
 	for i, c in m.hand[side] do
-		local gain
-		if c.special == "scorch" then
-			local best, hits = strongestNonHero(m, { "me", "foe" })
-			local lost = 0
-			for _, h in hits do
-				lost += (if h[1] == side then -1 else 1) * B.cardPower(m, h[1], h[2], h[3])
-			end
-			gain = if best >= 6 then lost else -5
-		elseif c.special == "weather" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
-			m.weather[c.row] = true
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather[c.row] = prev
-			gain = after - before
-		elseif c.special == "clear" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
-			m.weather = { melee = false, ranged = false, cannon = false }
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather = saved
-			gain = after - before
-		elseif c.special == "wind" then
-			local before = B.total(m, side) - B.total(m, foe)
-			local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
-			m.weather = { melee = false, ranged = false, cannon = false }
-			local after = B.total(m, side) - B.total(m, foe)
-			m.weather = saved
-			gain = after - before + 2
-		elseif c.special == "horn" then
-			local row = bestHornRow(m, side)
-			if row then
-				local before = B.total(m, side) - B.total(m, foe)
-				m.horn[side][row] = true
-				local after = B.total(m, side) - B.total(m, foe)
-				m.horn[side][row] = nil
-				gain = after - before
-			else
-				gain = -5
-			end
-		elseif c.special == "decoy" then
-			local pick = decoyTarget(m, side)
-			gain = if pick and pick.score >= 100 then 3 else -4
-		else
-			local target = if c.ability == "spy" then foe else side
-			local before = B.total(m, side) - B.total(m, foe)
-			table.insert(m.rows[target][c.row], c)
-			local after = B.total(m, side) - B.total(m, foe)
-			table.remove(m.rows[target][c.row])
-			gain = after - before
-			if c.ability == "spy" then
-				gain += 4 -- 카드 2장을 뽑는 값
-			elseif c.ability == "snipe" then
-				local fside, _, _, bp = snipeTarget(m, side)
-				if fside then
-					gain += bp
-				end
-			end
-			-- 센 카드는 아끼고 작은 카드부터 쓴다 (앞서고 있을 때)
-			if mine >= theirs then
-				gain -= c.power * 0.4
-			end
-		end
+		local gain = B.gainOf(m, side, c)
 		if gain > bestGain then
 			bestI, bestGain = i, gain
 		end
