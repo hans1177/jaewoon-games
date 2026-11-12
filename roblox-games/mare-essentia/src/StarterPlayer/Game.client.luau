@@ -1003,6 +1003,12 @@ local function setPortrait(groupName)
 	if heroNation then
 		heroId, heroOffset, heroSize = H.heroPortraitAsset(heroNation)
 	end
+	-- 선장실에는 시작할 때 화가가 그려 준 내 초상이 걸린다
+	local capValue = nil
+	if groupName == "선장실" and view and view.captain and type(view.captain.portrait) == "string" and H.capPortraitAsset then
+		heroId, heroOffset, heroSize = H.capPortraitAsset(view.captain.portrait)
+		capValue = if heroId then view.captain.portrait else nil
+	end
 	local imageId = heroId or regionalId
 		or (if tile and FACILITY_ATLAS then FACILITY_ATLAS
 			elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
@@ -1010,7 +1016,7 @@ local function setPortrait(groupName)
 	local offset = heroOffset or regionalOffset
 		or (if imageId and imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
 			elseif imageId and imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else nil)
-	local identity = groupName .. ":" .. tostring(heroNation or portId or "") .. ":" .. tostring(imageId) .. ":" .. tostring(offset)
+	local identity = groupName .. ":" .. tostring(capValue or heroNation or portId or "") .. ":" .. tostring(imageId) .. ":" .. tostring(offset)
 	if portraitKey == identity then
 		return
 	end
@@ -6829,11 +6835,18 @@ end
 (function()
 	local TweenService = game:GetService("TweenService")
 	local dlg = nil
+	local dlgPrevMusic = nil
 	local function closeDlg()
 		H.introDlgStep = nil
 		if dlg then
 			dlg:Destroy()
 			dlg = nil
+			-- 장면 음악이 있었다면 원래 곡으로 되돌린다
+			if dlgPrevMusic ~= nil then
+				local prev = dlgPrevMusic
+				dlgPrevMusic = nil
+				pcall(Sfx.music, prev or nil)
+			end
 		end
 	end
 	-- value: "hero:국가" | "npc:항구:칸" → 이미지, 오프셋, 크기
@@ -6896,6 +6909,26 @@ end
 		dim.BorderSizePixel = 0
 		dim.Active = true -- 대화 뒤의 탭·버튼이 눌리지 않게 입력을 막는다
 		dim.Parent = layer
+		-- 영화 같은 레터박스: 위아래 검은 띠가 밀려 들어오고, 장면 음악과 첫 효과음이 깔린다
+		for _, top in { true, false } do
+			local bar = Instance.new("Frame")
+			bar.AnchorPoint = Vector2.new(0, if top then 0 else 1)
+			bar.Position = UDim2.new(0, 0, if top then 0 else 1, 0)
+			bar.Size = UDim2.new(1, 0, 0, 0)
+			bar.BackgroundColor3 = Color3.new(0, 0, 0)
+			bar.BorderSizePixel = 0
+			bar.Parent = layer
+			TweenService:Create(bar, TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(1, 0, 0.09, 0) }):Play()
+		end
+		if spec.music then
+			if dlgPrevMusic == nil then
+				dlgPrevMusic = Sfx.currentName() or false
+			end
+			pcall(Sfx.music, spec.music)
+		end
+		if spec.sting then
+			Sfx.play(spec.sting, 0.55)
+		end
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 1)
 		win.Position = UDim2.new(0.5, 0, 1, -24)
@@ -6921,7 +6954,32 @@ end
 		list.SortOrder = Enum.SortOrder.LayoutOrder
 		list.Parent = win
 		mkLabel(win, spec.speaker .. (if spec.role then "  ·  " .. spec.role else ""), 18, Color3.fromRGB(246, 208, 130), true, 1)
-		mkLabel(win, spec.text, 15, COLORS.text, false, 2)
+		local bodyLabel = mkLabel(win, spec.text, 15, COLORS.text, false, 2)
+		-- 글자가 한 자씩 나타나고, 몇 글자마다 작은 소리가 난다. 글을 누르면 한꺼번에 보인다.
+		do
+			local total = utf8.len(spec.text) or #spec.text
+			if bodyLabel and total > 0 and not workspace:GetAttribute("QAAutoIntro") then
+				bodyLabel.MaxVisibleGraphemes = 0
+				local skipped = false
+				local hit = Instance.new("TextButton")
+				hit.BackgroundTransparency = 1
+				hit.Text = ""
+				hit.Size = UDim2.fromScale(1, 1)
+				hit.ZIndex = 5
+				hit.Parent = bodyLabel
+				hit.Activated:Connect(function() skipped = true end)
+				task.spawn(function()
+					for i = 1, total do
+						if skipped or not bodyLabel.Parent then break end
+						bodyLabel.MaxVisibleGraphemes = i
+						if i % 5 == 0 then Sfx.play("sfx_click", 0.1, 1.7) end
+						task.wait(0.022)
+					end
+					if bodyLabel.Parent then bodyLabel.MaxVisibleGraphemes = -1 end
+					hit:Destroy()
+				end)
+			end
+		end
 		local box
 		if spec.input then
 			box = Instance.new("TextBox")
@@ -7119,23 +7177,87 @@ end
 
 	-- 화가가 완성한 초상을 크게 보여 준 뒤 칩으로 줄어든다
 	local function reveal(value, name)
+		-- 화가 연출: 어두워진 화면 한가운데 화첩이 열리고, 붓질 소리와 함께 초상이 위에서 아래로 그려진 뒤
+		-- 액자에 담겨 선장실 벽으로 걸린다.
 		local layer = overlayGui("PortraitReveal", 59)
-		local big = portraitImg(layer, value, 240, 300)
-		Sfx.play("sfx_fanfare", 0.6)
+		local shade = Instance.new("Frame")
+		shade.Size = UDim2.fromScale(1, 1)
+		shade.BackgroundColor3 = Color3.new(0, 0, 0)
+		shade.BackgroundTransparency = 1
+		shade.BorderSizePixel = 0
+		shade.Parent = layer
+		TweenService:Create(shade, TweenInfo.new(0.6), { BackgroundTransparency = 0.25 }):Play()
+		local prevMusic = Sfx.currentName()
+		pcall(Sfx.music, "music_story_palace")
+		Sfx.play("sfx_book_turn", 0.7)
+		local frame = Instance.new("Frame")
+		frame.AnchorPoint = Vector2.new(0.5, 0.5)
+		frame.Position = UDim2.fromScale(0.5, 0.46)
+		frame.Size = UDim2.fromOffset(0, 0)
+		frame.BackgroundColor3 = Color3.fromRGB(58, 40, 28)
+		frame.BorderSizePixel = 0
+		frame.Parent = layer
+		corner(frame, 6)
+		local fst = Instance.new("UIStroke")
+		fst.Color = BRASS
+		fst.Thickness = 5
+		fst.Parent = frame
+		TweenService:Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(268, 328) }):Play()
+		task.wait(0.8)
+		local canvas = Instance.new("Frame")
+		canvas.AnchorPoint = Vector2.new(0.5, 0.5)
+		canvas.Position = UDim2.fromScale(0.5, 0.5)
+		canvas.Size = UDim2.new(1, -28, 1, -28)
+		canvas.BackgroundColor3 = Color3.fromRGB(232, 218, 188)
+		canvas.BorderSizePixel = 0
+		canvas.ClipsDescendants = true
+		canvas.Parent = frame
+		local big = portraitImg(canvas, value, 240, 300)
+		local cap = mkLabel(layer, "", 24, Color3.fromRGB(246, 208, 130), true)
+		cap.AnchorPoint = Vector2.new(0.5, 0)
+		cap.Position = UDim2.new(0.5, 0, 0.46, 190)
+		cap.Size = UDim2.fromOffset(360, 30)
+		cap.AutomaticSize = Enum.AutomaticSize.None
+		cap.TextXAlignment = Enum.TextXAlignment.Center
 		if big then
 			big.AnchorPoint = Vector2.new(0.5, 0.5)
-			big.Position = UDim2.fromScale(0.3, 0.45)
-			local cap = mkLabel(layer, name, 22, Color3.fromRGB(246, 208, 130), true)
-			cap.AnchorPoint = Vector2.new(0.5, 0)
-			cap.Position = UDim2.new(0.3, 0, 0.45, 170)
-			cap.Size = UDim2.fromOffset(300, 30)
-			cap.AutomaticSize = Enum.AutomaticSize.None
-			cap.TextXAlignment = Enum.TextXAlignment.Center
-			task.wait(2.4)
-			TweenService:Create(big, TweenInfo.new(0.6), { Size = UDim2.fromOffset(90, 96), Position = UDim2.new(0, 60, 0.4, 55) }):Play()
-			task.wait(0.7)
+			big.Position = UDim2.fromScale(0.5, 0.5)
+			-- 위에서 아래로 그려지는 붓질: 그림 아래쪽부터 투명하다가 점점 드러난다
+			local wipe = Instance.new("UIGradient")
+			wipe.Rotation = 90
+			wipe.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.001, 1), NumberSequenceKeypoint.new(1, 1) })
+			wipe.Parent = big
+			for step = 1, 11 do
+				local edge = step / 12
+				wipe.Transparency = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 0),
+					NumberSequenceKeypoint.new(math.max(edge - 0.001, 0), 0),
+					NumberSequenceKeypoint.new(math.min(edge + 0.04, 1), 1),
+					NumberSequenceKeypoint.new(1, 1),
+				})
+				if step % 3 == 1 then Sfx.play("sfx_sail_fabric", 0.35, 1.5) end -- 붓이 캔버스를 쓰는 소리
+				task.wait(0.22)
+			end
+			wipe:Destroy()
+		else
+			task.wait(2)
 		end
+		Sfx.play("sfx_fanfare", 0.6)
+		Sfx.play("sfx_bell", 0.5)
+		cap.Text = name
+		TweenService:Create(fst, TweenInfo.new(0.5), { Thickness = 8 }):Play()
+		task.wait(2.2)
+		-- 선장실 벽으로: 액자가 작아져 화면 왼쪽(선장실 초상 자리)으로 걸린다
+		cap.Text = "선장실 벽에 초상이 걸렸다"
+		Sfx.play("sfx_ship_cabin_door", 0.6)
+		TweenService:Create(frame, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			Size = UDim2.fromOffset(90, 110), Position = UDim2.new(0, 70, 0.36, 60),
+		}):Play()
+		TweenService:Create(shade, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
+		task.wait(1.1)
 		layer:Destroy()
+		pcall(Sfx.music, prevMusic or nil)
+		portraitKey = nil -- 선장실 초상을 새로 그린다
 	end
 
 	local function nationPortraits()
@@ -7163,11 +7285,12 @@ end
 		local c = view.captain
 		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
 		if step == "name" then
-			openDlg({ speaker = "길드 서기", role = role, input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
+			openDlg({ speaker = "길드 서기", role = role, music = "music_market", sting = "sfx_bell", input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
 				text = "(배에서 내리는 당신에게 상인 길드의 서기가 다가온다) 처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
 				function(v)
 					local r = call("IntroName", { name = v })
 					if r and r.ok then
+						Sfx.play("sfx_contract_stamp", 0.7)
 						closeDlg()
 					end
 					return r and r.ok, r and r.message
@@ -7178,17 +7301,18 @@ end
 				call("IntroCompanion", {})
 				return
 			end
-			openDlg({ speaker = who.name, role = who.role, button = "함께 가자",
+			openDlg({ speaker = who.name, role = who.role, music = "music_story_tavern", sting = "sfx_story_tavern", button = "함께 가자",
 				text = string.format("(주점 구석에서 다가온다) 당신이 새로 온 선장이군요. 소문을 들었어요. 대가는 필요 없습니다. 같은 고향 사람끼리, 항해에 보탬이 되고 싶어요. 저를 태워 주시겠어요? (%s)", who.role) },
 				function()
 					local r = call("IntroCompanion", {})
 					if r and r.ok then
+						Sfx.play("sfx_quest_accept", 0.6)
 						closeDlg()
 					end
 					return r and r.ok, r and r.message
 				end)
 		else
-			openDlg({ speaker = "떠돌이 화가", role = role, portraits = nationPortraits(), button = "이 얼굴로 그려 주세요",
+			openDlg({ speaker = "떠돌이 화가", role = role, music = "music_story_harbor", sting = "sfx_story_library", portraits = nationPortraits(), button = "이 얼굴로 그려 주세요",
 				text = string.format("%s 선장님이시죠? 저는 항구를 떠돌며 항해자 화첩을 만들고 있어요. 바다로 나간 사람들의 얼굴을 남기면, 훗날 그들의 이야기가 사라지지 않거든요. 대가는 받지 않을게요. 어떤 모습으로 그려 드릴까요?", c.name or "선장") },
 				function(v)
 					local name = c.name or "선장"
@@ -7208,7 +7332,7 @@ end
 	function H.openingScene()
 		local pro = require(Shared:WaitForChild("Narrative")).Prologues[chosenNation]
 		local portName = view and view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].name or "항구"
-		openDlg({ speaker = "이야기", role = (pro and pro.title) or ("프롤로그 · " .. portName),
+		openDlg({ speaker = "이야기", role = (pro and pro.title) or ("프롤로그 · " .. portName), music = "music_sea", sting = "sfx_horn",
 			text = (pro and pro.text) or (portName .. " 부두에 새 선장이 첫발을 디딘다."), button = "항해를 시작한다" },
 			function()
 				closeDlg()
