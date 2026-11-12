@@ -7032,6 +7032,8 @@ end
 	goalBar.Font = Enum.Font.GothamBold
 	goalBar.TextSize = 13
 	goalBar.TextColor3 = Color3.fromRGB(246, 208, 130)
+	goalBar.TextStrokeTransparency = 1 -- 작은 글자에 테두리가 겹쳐 번져 보이던 문제
+	goalBar.TextTruncate = Enum.TextTruncate.AtEnd
 	goalBar.Text = ""
 	goalBar.Visible = false
 	goalBar.Parent = goalGui
@@ -7047,7 +7049,7 @@ end
 	end)
 	local function refreshGoal()
 		local c = view and view.captain
-		if not c or newGameMode or H.tutorialHidden or H.openingPending then
+		if not c or newGameMode or H.tutorialHidden or H.openingPending or dlg then -- 안내 창이 열려 있으면 같은 말을 띠로 또 보이지 않는다
 			goalBar.Visible = false
 			return
 		end
