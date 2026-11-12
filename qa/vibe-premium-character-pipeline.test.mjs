@@ -2,6 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 real model preview hides training enemy until combat input',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/activeModel=model;storybookWorld\.setDecorationsVisible\(false\);trainingEnemy\.root\.visible=false/);
+ assert.match(preview,/if\(event\.code==='KeyO'\)\{trainingEnemy\.root\.visible=true;trainingEnemy\.attack\(\);\}/);
+ assert.match(preview,/trainingEnemy\.update\(delta\)/);
+});
 test('Vibe 5.9 imported model preview hides world occluders without hiding terrain',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  const world=readFileSync(new URL('../assets/vibe-storybook-cinematics.mjs',import.meta.url),'utf8');
