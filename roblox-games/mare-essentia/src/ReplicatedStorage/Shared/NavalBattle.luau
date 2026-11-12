@@ -17,49 +17,49 @@ local ORIGIN = Vector3.new(6000, 0, 0)
 -- 해상전투에서 사용하는 기존 등록 도감 이미지
 local CARD_SEA = "CardArt/event_calm_seas"
 
--- 카드별 판화: 게임에 이미 등록된 백과사전 도판을 재사용한다.
-local CARD_ART = {
-	swordsman="CardArt/event_piracy",axeman="CardArt/event_anglo_dutch_war",
-	pikeman="CardArt/event_royal_charter",shieldman="CardArt/event_cape_colony",
-	boatswain="CardArt/event_cook_voyage",surgeon="CardArt/event_new_plant",
-	musketeer="CardArt/event_anglo_dutch_war",sharpshooter="CardArt/event_piracy",
-	scout="CardArt/event_chart_world",gunner="CardArt/event_anglo_dutch_war",
-	swivel="CardArt/event_harbor_fire",culverin="CardArt/event_anglo_dutch_war",
-	hero_blade="CardArt/event_royal_charter",hero_marksman="CardArt/event_piracy",
-	hero_cannon="CardArt/event_anglo_dutch_war",hero_spy="CardArt/event_chart_caribbean",
-	hero_medic="CardArt/event_new_plant",hero_captain="CardArt/event_cook_voyage",
-	beast="CardArt/event_piracy",scorch="CardArt/event_harbor_fire",
-	fog="CardArt/event_calm_seas",storm="CardArt/event_storm",
-	melee_fog="CardArt/event_hurricane",clear="CardArt/event_calm_seas",
-}
-
--- 카드 24종마다 실제 등록된 사람·무기·선박 모델을 움직이는 삽화로 연결한다.
--- 없는 맹수/무기 모델은 임의 파츠나 다른 동물로 대체하지 않는다.
+-- 파일명: NavalBattle.luau / 해전 카드 원화 목록
+-- 백과사전 화풍: 기존 등록 도판을 배경으로 사용하고, 역할과 맞는 승인된 모델·동작만 입힌다.
+-- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
+-- 이 목록은 BoardingCards.luau 병종·특수 카드의 실제 id를 정확히 따라간다.
 local CARD_STAGE = {
-	swordsman={actor={"People","Soldier_Male"},prop={"Relics","weapon-sword"},style="slash"},
-	axeman={actor={"People","KayKit_Barbarian"},style="slash"},
-	pikeman={actor={"People","BlueSoldier_Male"},prop={"Relics","weapon-spear"},style="thrust"},
-	shieldman={actor={"People","Soldier_Male"},prop={"Relics","shield-round"},style="guard"},
-	boatswain={actor={"People","Worker_Male"},prop={"Relics","rope-bundle-a"},style="signal"},
-	surgeon={actor={"People","Doctor_Male_Young"},prop={"Cargo","mortar-pestle"},style="heal"},
-	musketeer={actor={"People","BlueSoldier_Male"},style="aim"},
-	sharpshooter={actor={"People","Soldier_Female"},style="aim"},
-	scout={actor={"People","Pirate_Female"},prop={"Relics","compass-base"},style="scout"},
-	gunner={actor={"People","Worker_Male"},prop={"Naval","cannon"},style="fire"},
-	swivel={actor={"People","Pirate_Male"},prop={"Naval","cannon-mobile"},style="fire"},
-	culverin={prop={"Naval","cannon"},style="fire"},
-	hero_blade={actor={"People","OldClassy_Male"},prop={"Relics","weapon-sword"},style="slash"},
-	hero_marksman={actor={"People","Soldier_Female"},style="aim"},
-	hero_cannon={actor={"People","BlueSoldier_Male"},prop={"Naval","cannon"},style="fire"},
-	hero_spy={actor={"People","Pirate_Female"},prop={"Relics","map-rolled"},style="scout"},
-	hero_medic={actor={"People","Doctor_Female_Young"},prop={"Cargo","mortar-pestle"},style="heal"},
-	hero_captain={actor={"People","OldClassy_Male"},prop={"Naval","ship-large"},style="signal"},
-	beast={style="swell"},
-	scorch={prop={"Naval","ship-wreck"},style="fire"},
-	fog={prop={"Naval","ship-small"},style="fog"},
-	storm={prop={"Naval","ship-pirate-medium"},style="storm"},
-	melee_fog={prop={"Naval","ship-pirate-small"},style="storm"},
-	clear={prop={"Naval","boat-sail-a"},style="swell"},
+	swordsman = { art="CardArt/event_piracy", actor={"People","Soldier_Male"}, prop={"Relics","weapon-sword"}, motion="slash", scene="갑판 검술" },
+	axeman = { art="CardArt/event_piracy", actor={"People","KayKit_Barbarian"}, motion="slash", scene="선상 도끼 전투" },
+	pikeman = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, prop={"Relics","weapon-spear"}, motion="thrust", scene="장창 방진" },
+	shieldman = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Male"}, prop={"Relics","shield-round"}, motion="guard", scene="갑판 방어선" },
+	boatswain = { art="CardArt/event_cook_voyage", actor={"People","Worker_Male"}, prop={"Relics","rope-bundle-a"}, motion="command", scene="갑판장의 명령" },
+	surgeon = { art="CardArt/event_plague_wave", actor={"People","Doctor_Male_Young"}, prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장 치료소" },
+	musketeer = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, motion="aim", scene="소총 사격대" },
+	sharpshooter = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Female"}, motion="aim", scene="돛대 위 조준" },
+	scout = { art="CardArt/event_chart_world", actor={"People","Pirate_Female"}, prop={"Relics","compass-base"}, motion="scout", scene="해상 정찰" },
+	gunner = { art="CardArt/event_anglo_dutch_war", actor={"People","Worker_Male"}, prop={"Naval","cannon"}, motion="fire", scene="함포 발사" },
+	swivel = { art="CardArt/event_anglo_dutch_war", actor={"People","Pirate_Male"}, prop={"Naval","cannon-mobile"}, motion="fire", scene="선회포 사격" },
+	culverin = { art="CardArt/event_anglo_dutch_war", prop={"Naval","cannon"}, motion="fire", scene="장거리 함포" },
+	hero_blade = { art="CardArt/event_piracy", actor={"People","OldClassy_Male"}, prop={"Relics","weapon-sword"}, motion="slash", scene="백전노장의 지휘" },
+	hero_marksman = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Female"}, motion="aim", scene="전설의 명사수" },
+	hero_cannon = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, prop={"Naval","cannon"}, motion="fire", scene="포술장의 일제사격" },
+	hero_spy = { art="CardArt/event_chart_caribbean", actor={"People","Pirate_Female"}, prop={"Relics","map-rolled"}, motion="scout", scene="비밀 해도" },
+	hero_medic = { art="CardArt/event_plague_wave", actor={"People","Doctor_Female_Young"}, prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장의 명의" },
+	hero_captain = { art="CardArt/event_cook_voyage", actor={"People","OldClassy_Male"}, prop={"Naval","ship-large"}, motion="command", scene="기함의 선장" },
+	ironclad = { art="CardArt/event_anglo_dutch_war", actor={"People","KayKit_Knight"}, prop={"Relics","shield-rectangle"}, motion="guard", scene="철갑 방어" },
+	sniper = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Male"}, motion="aim", scene="전술 저격" },
+	-- 등록된 실제 '맹수' 3D 모델 없음: 다른 동물을 맹수로 바꿔치기하지 않는다.
+	beast = { art="CardArt/event_uluru", motion="storm", scene="맹수의 기세" },
+	-- 문화권 병종: 현존하는 해당 역할의 전용 모델이 없으면 승인된 무기 또는 지역 도감 도판만 쓴다.
+	samurai = { art="CardArt/event_chart_east_asia", prop={"Relics","weapon-sword"}, motion="slash", scene="동아시아 검술" },
+	firelance = { art="CardArt/event_chart_east_asia", motion="fire", scene="화창병의 화염" },
+	jaguar = { art="CardArt/event_chart_south_america", motion="thrust", scene="신대륙 재규어 전사" },
+	janissary = { art="CardArt/event_chart_mediterranean", motion="aim", scene="오스만 예니체리" },
+	camel = { art="CardArt/event_chart_indian_ocean", motion="swell", scene="사막 기병의 진군" },
+	raider = { art="CardArt/event_piracy", actor={"People","Pirate_Male"}, prop={"Naval","ship-pirate-small"}, motion="board", scene="해상 습격대" },
+	-- 특수 카드는 실제 규칙(날씨·소각·순풍·군기·회군)과 같은 사건으로 표현한다.
+	scorch = { art="CardArt/event_harbor_fire", prop={"Naval","ship-wreck"}, motion="fire", scene="화염에 휩싸인 갑판" },
+	fog = { art="CardArt/event_calm_seas", prop={"Naval","ship-small"}, motion="fog", scene="짙은 해무" },
+	storm = { art="CardArt/event_storm", prop={"Naval","ship-pirate-medium"}, motion="storm", scene="거친 폭풍우" },
+	melee_fog = { art="CardArt/event_hurricane", prop={"Naval","ship-pirate-small"}, motion="storm", scene="혼전과 시계 불량" },
+	clear = { art="CardArt/event_calm_seas", prop={"Naval","boat-sail-a"}, motion="clear", scene="구름 걷힌 바다" },
+	wind = { art="CardArt/event_calm_seas", prop={"Naval","boat-sail-b"}, motion="wind", scene="순풍을 받는 돛" },
+	horn = { art="CardArt/event_royal_charter", prop={"Naval","flag-high"}, motion="command", scene="선단 군기 신호" },
+	decoy = { art="CardArt/event_piracy", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
 }
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
@@ -569,7 +569,8 @@ function NavalBattle.play(opts)
 	-- 전투 결과 자체는 서버 판정 그대로이고, 카드전의 승패는 기동 점수(명성 보너스)에만 반영된다.
 	local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
-	local ROW_ICON = { melee = "⚔", ranged = "🔫", cannon = "💣" }
+	-- 능력의 본래 효과를 유지하면서 카드 인장·선택 설명에 동일하게 표시한다.
+	local ROW_ICON = { melee = "근접", ranged = "사격", cannon = "포격" }
 	local function startBoarding(cfg, onEnd, onPlay)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
@@ -840,7 +841,7 @@ function NavalBattle.play(opts)
 			painting.BackgroundTransparency = 1
 			painting.ScaleType = Enum.ScaleType.Crop
 			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
-			local artKey = CARD_ART[c.id] or CARD_SEA
+			local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = f
 			local blackWash = Instance.new("UIGradient")
@@ -865,7 +866,12 @@ function NavalBattle.play(opts)
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
 		end
-		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료", armor = "철갑", snipe = "저격" }
+		local ABIL = { bond="결속", morale="사기", spy="첩자", medic="치료", armor="철갑", snipe="저격" }
+		local ABIL_DETAIL = {
+			bond="같은 병종 결속 · 최대 3배", morale="같은 줄 강화 · 동아시아 보너스",
+			spy="적진에 배치하고 카드 2장 확보 · 신대륙 3장", medic="버린 일반 카드 중 가장 강한 병종 복귀",
+			armor="폭풍·안개 등 날씨 감점 무효", snipe="조건을 만족한 적 부대를 저격",
+		}
 
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
@@ -1043,8 +1049,12 @@ function NavalBattle.play(opts)
 					table.insert(weather, BC.ROW_NAME[row] .. " 약화")
 				end
 			end
-			foePlate.who.Text = (opts.enemyName or "해적") .. (if m.passed.foe then " · 멈춤" elseif m.turn == "foe" and not m.over then " · 차례" else "")
-			mePlate.who.Text = (opts.shipName or "우리 배") .. (if m.passed.me then " · 멈춤" elseif m.turn == "me" and not m.over then " · 내 차례" else "")
+			local foeCulture = m.faction and m.faction.foe and BC.Factions[m.faction.foe]
+			local myCulture = m.faction and m.faction.me and BC.Factions[m.faction.me]
+			foePlate.who.Text = (opts.enemyName or "해적") .. (if foeCulture then " · " .. foeCulture.name else "")
+				.. (if m.passed.foe then " · 멈춤" elseif m.turn == "foe" and not m.over then " · 차례" else "")
+			mePlate.who.Text = (opts.shipName or "우리 배") .. (if myCulture then " · " .. myCulture.name else "")
+				.. (if m.passed.me then " · 멈춤" elseif m.turn == "me" and not m.over then " · 내 차례" else "")
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
 			mePlate.total.Text = tostring(BC.total(m, "me"))
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
@@ -1128,7 +1138,7 @@ function NavalBattle.play(opts)
 				image.Size = UDim2.fromScale(1.17, 1.17)
 				image.BackgroundTransparency = 1
 				image.ScaleType = Enum.ScaleType.Crop
-				local artKey = CARD_ART[c.id] or (if c.row == "cannon" then "CardArt/event_anglo_dutch_war" elseif c.hero then "CardArt/event_cook_voyage" else CARD_SEA)
+				local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = Color3.fromRGB(231, 210, 175)
 				image.Parent = art
@@ -1166,7 +1176,8 @@ function NavalBattle.play(opts)
 						selected = b
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
-						info.Text = c.name .. " · " .. sub .. " · 한 번 더 누르면 사용"
+						info.Text = c.name .. " · " .. (if c.special then (c.text or "전술 카드") elseif c.ability then (ABIL_DETAIL[c.ability] or sub) else sub)
+							.. (if c.hero then " · 영웅: 날씨·소각 면역" else "") .. " · 다시 누르면 사용"
 						return
 					end
 
