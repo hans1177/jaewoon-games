@@ -5619,42 +5619,9 @@ end
 -- 타이틀(새 게임) 화면 배경: 월드가 비치지 않게 가리고, 해 질 녘 바다와 배 실루엣, 게임 이름을 직접 그려 분위기를 만든다
 local titleGui = overlayGui("TitleBackdrop", -5)
 titleGui.Enabled = false
-local titleShip
-local refreshTitlePreview
-do
-	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(14, 20, 40))
-	root.ClipsDescendants = true
-	local sky = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.66), Color3.new(1, 1, 1))
-	local g = Instance.new("UIGradient")
-	g.Rotation = 90
-	g.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 70, 114)),
-		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(85, 149, 183)),
-		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(233, 169, 124)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 190, 110)),
-	})
-	g.Parent = sky
-	local starRng = Random.new(7)
-	for _ = 1, 40 do
-		local st = mkBox(sky, UDim2.fromScale(starRng:NextNumber(), starRng:NextNumber() * 0.5), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 244, 220), starRng:NextNumber(0.2, 0.7))
-		st.ZIndex = 2
-	end
-	local sun = mkRound(root, UDim2.fromScale(0.2, 0.64), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
-	sun.ZIndex = 2
-	local sea = mkBox(root, UDim2.fromScale(0, 0.64), UDim2.fromScale(1, 0.36), Color3.new(1, 1, 1))
-	sea.ZIndex = 3
-	local sg = Instance.new("UIGradient")
-	sg.Rotation = 90
-	sg.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 181)),
-		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(45, 101, 135)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 18, 38)),
-	})
-	sg.Parent = sea
-	for i = 1, 9 do
-		local w = mkBox(sea, UDim2.fromScale(0.04 + (i * 0.37) % 0.8, 0.08 + i * 0.09), UDim2.fromScale(0.1 + (i % 3) * 0.04, 0.012), Color3.fromRGB(255, 200, 150), 0.7)
-		w.ZIndex = 4
-	end
+-- 3D 항구 미리보기의 책임 함수. 상위 UI 블록의 Luau 지역변수 200개 제한을 넘기지 않는다.
+function H.buildTitlePreview(root)
+	local titleShip
 	-- 파일명: Game.client.luau / 3D 타이틀
 	-- 승인된 항구·범선 원본 모델만 미리보기에 복제한다. 저장과 월드 파츠는 건드리지 않는다.
 	local preview = Instance.new("ViewportFrame")
@@ -5701,7 +5668,7 @@ do
 		model.Parent = world
 		return model
 	end
-	refreshTitlePreview = function()
+	H.refreshTitlePreview = function()
 		if not titleGui.Enabled then return end
 		local desired = SHIP_MODELS[view and view.ship and view.ship.id] or "ship-large"
 		if desired ~= shipName then
@@ -5723,11 +5690,11 @@ do
 			local folder = library:FindFirstChild(kind)
 			if folder then
 				folder.ChildAdded:Connect(function()
-					if titleGui.Enabled then task.defer(refreshTitlePreview) end
+					if titleGui.Enabled then task.defer(H.refreshTitlePreview) end
 				end)
 			end
 		end
-		refreshTitlePreview()
+		H.refreshTitlePreview()
 	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if not titleGui.Enabled then return end
@@ -5751,6 +5718,43 @@ do
 	if workspace.CurrentCamera then
 		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(titlePreviewLayout)
 	end
+end
+
+do
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(14, 20, 40))
+	root.ClipsDescendants = true
+	local sky = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.66), Color3.new(1, 1, 1))
+	local g = Instance.new("UIGradient")
+	g.Rotation = 90
+	g.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 70, 114)),
+		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(85, 149, 183)),
+		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(233, 169, 124)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 190, 110)),
+	})
+	g.Parent = sky
+	local starRng = Random.new(7)
+	for _ = 1, 40 do
+		local st = mkBox(sky, UDim2.fromScale(starRng:NextNumber(), starRng:NextNumber() * 0.5), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 244, 220), starRng:NextNumber(0.2, 0.7))
+		st.ZIndex = 2
+	end
+	local sun = mkRound(root, UDim2.fromScale(0.2, 0.64), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
+	sun.ZIndex = 2
+	local sea = mkBox(root, UDim2.fromScale(0, 0.64), UDim2.fromScale(1, 0.36), Color3.new(1, 1, 1))
+	sea.ZIndex = 3
+	local sg = Instance.new("UIGradient")
+	sg.Rotation = 90
+	sg.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 181)),
+		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(45, 101, 135)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 18, 38)),
+	})
+	sg.Parent = sea
+	for i = 1, 9 do
+		local w = mkBox(sea, UDim2.fromScale(0.04 + (i * 0.37) % 0.8, 0.08 + i * 0.09), UDim2.fromScale(0.1 + (i % 3) * 0.04, 0.012), Color3.fromRGB(255, 200, 150), 0.7)
+		w.ZIndex = 4
+	end
+	H.buildTitlePreview(root)
 	-- 게임 이름
 	local function titleText(text, y, size, color, font)
 		local l = Instance.new("TextLabel")
@@ -6140,7 +6144,7 @@ function H.setTitleMode(on)
 	titlePanel.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
 	titlePanel.Position = if portrait then UDim2.new(0.5, 0, 1, -8) else UDim2.new(1, -14, 0.5, 0)
 	titlePanel.Size = if portrait then UDim2.new(0.94, 0, 0.70, 0) else UDim2.new(0.58, 0, 1, -28)
-	if titleGui.Enabled and refreshTitlePreview then refreshTitlePreview() end
+	if titleGui.Enabled and H.refreshTitlePreview then H.refreshTitlePreview() end
 	if on then
 		main.Visible = false
 	elseif H.wasTitle then
@@ -6204,7 +6208,7 @@ function H.showTitle()
 	H.titleMenuOpen = true
 	titleGui.Enabled = true
 	titlePanel.Visible = false
-	if refreshTitlePreview then refreshTitlePreview() end
+	if H.refreshTitlePreview then H.refreshTitlePreview() end
 	local function leave()
 		H.titleMenuOpen = false
 		layer:Destroy()
