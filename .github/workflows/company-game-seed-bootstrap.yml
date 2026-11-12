@@ -83,6 +83,43 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --test qa/company-game-seed-gameplay-sketch.test.mjs
 
+      # 오너가 직접 요청한 기존 대항해시대 등록에 한해 비활성화된 정규 설계 승격기를 복구한다.
+      # 설계 PASS, 저장, F0~F9 검증은 그대로 유지한다.
+      - name: Restore canonical design promotion for approved Mare preservation intake
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const intake=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
+          const request=(intake.requests||[]).find(x=>x.gameId==='mare-essentia'
+            &&x.status==='ACTIVE'&&x.seed?.gameId==='mare-essentia'
+            &&x.seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+            &&x.seed?.OWNER_REBUILD_MODE==='PRESERVATION_PRESENTATION_UPGRADE');
+          if(!request)throw Error('MARE_OWNER_PRESERVATION_REQUEST_REQUIRED');
+          if(policy.permanentProjectRemoval?.ids?.includes('mare-essentia'))
+            throw Error('MARE_OWNER_REMOVAL_LOCK');
+          NODE
+          workflow_state="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-design-promotion-sync.yml" --jq '.state')"
+          case "$workflow_state" in
+            active)
+              echo 'MARE_CANONICAL_DESIGN_PROMOTION=ALREADY_ACTIVE'
+              ;;
+            disabled_manually|disabled_inactivity)
+              gh workflow enable company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY"
+              echo "MARE_CANONICAL_DESIGN_PROMOTION=ENABLED:$workflow_state"
+              ;;
+            *)
+              echo "MARE_CANONICAL_DESIGN_PROMOTION_UNVERIFIED=$workflow_state" >&2
+              exit 1
+              ;;
+          esac
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-design-promotion-sync.yml" --jq '.state')" = active
+          echo 'MARE_CANONICAL_DESIGN_PROMOTION_STATE=ACTIVE_VERIFIED'
+
       - name: Decide creation mode
         id: need
         shell: bash
@@ -94,6 +131,15 @@ jobs:
           const state=loadSeedState();
           const initial=!state.bootstrapCompletedAt;
           const pending=initial?[]:pendingPortfolioSeedRequests(state);
+          // 오너가 명시한 기존 게임 등록은 다른 게임의 진행 여부와 독립적으로 반영한다.
+          const ownerIntake=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
+          const pendingOwner=(ownerIntake.requests||[]).filter(request=>{
+            const seed=request.seed||{};
+            if(request.status!=='ACTIVE'||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION!==true
+              ||seed.OWNER_REBUILD_MODE!=='PRESERVATION_PRESENTATION_UPGRADE')return false;
+            return !(state.seeds||[]).some(existing=>existing.gameId===seed.gameId
+              &&existing.seedId===seed.seedId&&existing.status==='ACTIVE');
+          });
           let otherWork=false;
           try{
             const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
@@ -106,9 +152,10 @@ jobs:
           const now=Math.floor(Date.now()/1000);
           const mainIdle24h=lastMain>0&&(now-lastMain)>=86400;
           const idleEligible=!initial&&!pending.length&&!otherWork&&mainIdle24h;
-          const need=initial||pending.length>0||idleEligible;
-          const reason=initial?'HISTORICAL_BOOTSTRAP':pending.length?'PORTFOLIO_REQUEST':'IDLE_24H_AUTONOMOUS_PRODUCTION';
-          const count=initial?6:pending.length?Math.min(3,pending.length):idleEligible?3:0;
+          const need=initial||pendingOwner.length>0||pending.length>0||idleEligible;
+          const reason=initial?'HISTORICAL_BOOTSTRAP':pendingOwner.length?'OWNER_PRESERVATION_INTAKE':pending.length?'PORTFOLIO_REQUEST':'IDLE_24H_AUTONOMOUS_PRODUCTION';
+          const count=initial?6:pendingOwner.length?0:pending.length?Math.min(3,pending.length):idleEligible?3:0;
+          console.log('OWNER_PRESERVATION_INTAKE_PENDING='+pendingOwner.map(x=>x.gameId).join(','));
           console.log(`model=${need?'true':'false'}`);
           console.log(`reason=${need?reason:'NO_CREATION_REQUIRED'}`);
           console.log(`request_count=${count}`);
