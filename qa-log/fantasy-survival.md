@@ -49,3 +49,6 @@
 - 2026-11-12 02:08(KST, run 43064146928) 바이브: 점검 정상 — 클릭 30/30, 프레임 31장, errors 비어 있음. 환경 설정 창 jpg(c12) 직접 확인: 글자·버튼 정상. 'permission for Asset' 시크릿 복구 대기(사람 작업) 그대로. 코드 수정 없음, 재배포 안 함.
 
 - 2026-11-12 08:2x(KST, 08:21 커밋) 바이브: 점검 실패 — errors "step2:Cannot read properties of undefined (reading 'includes')", 이어하기는 optional 로 건너뜀, 모험 시작 클릭 후 중단(클릭 0 집계, 프레임 0). 원인: 실행기 tools/company-development-roblox-studio-local-play.mjs 2815행에서 click_text 단계의 st.code(없음)에 .includes 호출. 수정: String(st.code||'') 로 방어. 게임 코드 문제 아님. 다음 점검에서 클릭 30/30 되는지 확인.
+
+- 2026-11-12 09:2x(KST, 09:07 촬영, 커밋 742dbfa) 바이브: 점검 통과 — 9/9 단계, 클릭 2/2, 프레임 1장(ap_game), errors 비어 있음. ap_game jpg 직접 확인: 초원·HUD·퀘스트·미니맵·하단 슬롯 글자 정상. 새 점검(HEALTH_*)에서 HEALTH_ASSET fail=17 total=20 발견: 스킬트리 아이콘 등 rbxassetid 17개 로드 실패(HEALTH_ERR 0, 몬스터 64, 파츠 517, 하늘 sky=false). 원인 후보: tools/fantasy-skilltree-icons.mjs 가 옛 universe 10773436325 에만 사용 권한을 줘서 새 마력숲(10775310122)에서는 not authorized. 수정: 권한 대상에 새 universe 추가(옛 것도 유지), 영수증에 grantedUniverseIds 기록. 이 수정은 owner 시크릿(ROBLOX_OPEN_CLOUD_API_KEY)이 있어야 효과가 나므로 시크릿 복구 후 fantasy-skilltree-icons 워크플로 재실행 필요(사람 작업).
+- 큐 추가: 다음 점검 HEALTH_ASSET fail 개수가 줄었는지, 17개 ID 중 스킬 아이콘 4개 외 13개가 무엇인지(위 'permission for Asset' 목록과 겹치는지) 확인.
