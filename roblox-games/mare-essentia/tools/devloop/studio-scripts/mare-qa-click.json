@@ -1,7 +1,7 @@
 [
  {
   "type": "wait",
-  "ms": 35000
+  "ms": 28000
  },
  {
   "type": "capture",
@@ -15,25 +15,84 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
  },
  {
   "type": "wait",
-  "ms": 600
+  "ms": 400
  },
  {
   "type": "click_from_luau",
   "ctx": "Client",
-  "label": "auto01",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+  "label": "title01",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
  },
  {
   "type": "wait",
-  "ms": 12000
+  "ms": 2000
  },
  {
   "type": "capture",
-  "name": "c01"
+  "name": "t01"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"프랑스\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "title02",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"프랑스\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "capture",
+  "name": "t02"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"출항하기\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "title03",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"출항하기\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "t03"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local step,a='?',nil for i=1,14 do task.wait(1.5) a=r:InvokeServer('State',{}) step=(a and a.view and a.view.captain and a.view.captain.step) or '?' if step=='done' then break end end if step=='done' then return 'INTRO_OK' end local note='INTRO_STUCK step='..tostring(step) if step=='name' then local x=r:InvokeServer('IntroName',{name='QA선장'}) note=note..' name='..tostring(x and x.ok) task.wait(0.3) step='companion' end if step=='companion' then local x=r:InvokeServer('IntroCompanion',{}) note=note..' comp='..tostring(x and x.ok) task.wait(0.3) step='portrait' end if step=='portrait' then local x=r:InvokeServer('IntroPortrait',{portrait='hero:england'}) note=note..' portrait='..tostring(x and x.ok) end task.wait(0.5) workspace:SetAttribute('DevCall','State') return note"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "intro_done"
  },
  {
   "type": "luau",
@@ -43,25 +102,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_harbor') return 'tab harbor'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto02",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c02"
+  "name": "tab_harbor"
  },
  {
   "type": "luau",
@@ -71,25 +120,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_trade') return 'tab trade'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto03",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c03"
+  "name": "tab_trade"
  },
  {
   "type": "luau",
@@ -99,25 +138,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_route') return 'tab route'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto04",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c04"
+  "name": "tab_route"
  },
  {
   "type": "luau",
@@ -127,25 +156,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_map') return 'tab map'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto05",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c05"
+  "name": "tab_map"
  },
  {
   "type": "luau",
@@ -155,25 +174,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_yard') return 'tab yard'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto06",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c06"
+  "name": "tab_yard"
  },
  {
   "type": "luau",
@@ -183,25 +192,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_quest') return 'tab quest'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto07",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c07"
+  "name": "tab_quest"
  },
  {
   "type": "luau",
@@ -211,25 +210,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_explore') return 'tab explore'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto08",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c08"
+  "name": "tab_explore"
  },
  {
   "type": "luau",
@@ -239,25 +228,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_battle') return 'tab battle'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto09",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c09"
+  "name": "tab_battle"
  },
  {
   "type": "luau",
@@ -267,25 +246,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_codex') return 'tab codex'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto10",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c10"
+  "name": "tab_codex"
  },
  {
   "type": "luau",
@@ -295,25 +264,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_tech') return 'tab tech'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto11",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c11"
+  "name": "tab_tech"
  },
  {
   "type": "luau",
@@ -323,25 +282,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_status') return 'tab status'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto12",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c12"
+  "name": "tab_status"
  },
  {
   "type": "luau",
@@ -351,503 +300,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+  "code": "workspace:SetAttribute('DevCall','Tab_crew') return 'tab crew'"
  },
  {
   "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto13",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
+  "ms": 2500
  },
  {
   "type": "capture",
-  "name": "c13"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto14",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c14"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto15",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c15"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto16",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c16"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto17",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c17"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto18",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c18"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto19",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c19"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto20",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c20"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto21",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c21"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto22",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c22"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto23",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c23"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto24",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c24"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto25",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c25"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto26",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c26"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto27",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c27"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto28",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c28"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto29",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)",
-  "optional": true
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c29"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
- },
- {
-  "type": "wait",
-  "ms": 600
- },
- {
-  "type": "click_from_luau",
-  "ctx": "Client",
-  "label": "auto30",
-  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"새 게임\",\"프랑스\",\"1700\",\"출항하기\",\"장부에 올린다\",\"함께 가자\",\"이 얼굴로 그려 주세요\",\"항해를 시작한다\",\"교역\",\"조선\",\"퀘스트\",\"항해\",\"지도\",\"기술\",\"항구\",\"설정\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)",
-  "optional": true
- },
- {
-  "type": "wait",
-  "ms": 2200
- },
- {
-  "type": "capture",
-  "name": "c30"
+  "name": "tab_crew"
  },
  {
   "type": "luau",
@@ -863,10 +324,5 @@
   "type": "luau",
   "ctx": "Server",
   "code": "local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then out[#out+1]=string.sub(m.message,1,160) end end return 'LOGS('..#out..'): '..table.concat(out,' // ')"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "return 'clicked='..tostring(workspace:GetAttribute('QADone'))"
  }
 ]

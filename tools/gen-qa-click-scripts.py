@@ -66,12 +66,35 @@ def build(first_wait, prefer, n):
 def write(path, steps):
     json.dump(steps, open(path, 'w'), ensure_ascii=False, indent=1)
 
-mare_steps = build(35000, ["새 게임", "프랑스", "1700", "출항하기", "장부에 올린다", "함께 가자", "이 얼굴로 그려 주세요", "항해를 시작한다", "교역", "조선", "퀘스트", "항해", "지도", "기술", "항구", "설정"], 30)
-# 시작 안내 대화(이름·동료·초상)는 클릭 좌표 대신 게임이 스스로 넘기게 켠다
-mare_steps.insert(2, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('QAAutoIntro', true) return 'QAAutoIntro on'"})
-# 마지막 두 탐색은 아직 방문하지 않은 버튼이 있을 때만 클릭한다.
-for step in [step for step in mare_steps if step["type"] == "click_from_luau"][-2:]:
-    step["optional"] = True
+# 대항해시대: 제목 화면은 실제 클릭, 시작 안내는 자동 진행+서버 상태로 확인, 이후는 화면 열기 명령(DevCall)으로 탭을 직접 연다.
+INTRO_CHECK = (
+    "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local step,a='?',nil "
+    "for i=1,14 do task.wait(1.5) a=r:InvokeServer('State',{}) step=(a and a.view and a.view.captain and a.view.captain.step) or '?' if step=='done' then break end end "
+    "if step=='done' then return 'INTRO_OK' end local note='INTRO_STUCK step='..tostring(step) "
+    "if step=='name' then local x=r:InvokeServer('IntroName',{name='QA선장'}) note=note..' name='..tostring(x and x.ok) task.wait(0.3) step='companion' end "
+    "if step=='companion' then local x=r:InvokeServer('IntroCompanion',{}) note=note..' comp='..tostring(x and x.ok) task.wait(0.3) step='portrait' end "
+    "if step=='portrait' then local x=r:InvokeServer('IntroPortrait',{portrait='hero:england'}) note=note..' portrait='..tostring(x and x.ok) end "
+    "task.wait(0.5) workspace:SetAttribute('DevCall','State') return note"
+)
+TABS = ["harbor", "trade", "route", "map", "yard", "quest", "explore", "battle", "codex", "tech", "status", "crew"]
+
+def build_mare():
+    S = [{"type": "wait", "ms": 28000}, {"type": "capture", "name": "c00_start"},
+         {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('QAAutoIntro', true) return 'QAAutoIntro on'"}]
+    for i, label in enumerate(["새 게임", "프랑스", "출항하기"], 1):
+        S += [{"type": "luau", "ctx": "Client", "code": pick([label], 'scroll')}, {"type": "wait", "ms": 400},
+              {"type": "click_from_luau", "ctx": "Client", "label": "title%02d" % i, "code": pick([label], 'click')},
+              {"type": "wait", "ms": (9000 if i == 3 else 2000)}, {"type": "capture", "name": "t%02d" % i}]
+    S += [{"type": "luau", "ctx": "Client", "code": INTRO_CHECK}, {"type": "wait", "ms": 2500},
+          {"type": "capture", "name": "intro_done"}, {"type": "luau", "ctx": "Client", "code": TEXTS}]
+    for t in TABS:
+        S += [{"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevCall','Tab_%s') return 'tab %s'" % (t, t)},
+              {"type": "wait", "ms": 2500}, {"type": "capture", "name": "tab_" + t},
+              {"type": "luau", "ctx": "Client", "code": TEXTS}]
+    S += [{"type": "luau", "ctx": "Client", "code": LOGS}, {"type": "luau", "ctx": "Server", "code": LOGS}]
+    return S
+
+mare_steps = build_mare()
 write('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', mare_steps)
 write('roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json',
       build(30000, ["모험 시작", "이어하기", "가방", "제작", "도감", "기사단", "스킬트리", "설정", "자동질주", "시작", "퀘스트", "인벤", "스킬", "상점", "지도"], 30))
