@@ -78,6 +78,63 @@ Harbor.REVIVALS = {
 }
 Harbor.REVIVAL_COOLDOWN = 365
 
+-- 경제 전염: 교역로로 이어진 이웃 지역의 큰 재해·행운이 20일 뒤부터 번져 온다
+Harbor.ADJACENT = {
+	europe = { "w_africa", "indian", "new_world" }, w_africa = { "europe", "new_world", "indian" },
+	new_world = { "europe", "w_africa", "pacific" }, indian = { "europe", "far_east", "w_africa" },
+	far_east = { "indian", "pacific" }, pacific = { "far_east", "new_world" },
+}
+Harbor.SPILL_LAG = 20
+function Harbor.spillover(region: string, active: { any }?, day: number): number
+	local m = 1
+	local near = Harbor.ADJACENT[region]
+	if not near or not active then
+		return m
+	end
+	for _, ev in active do
+		if ev.endDay >= day and day - ev.startDay >= Harbor.SPILL_LAG and table.find(near, ev.region) then
+			m *= if ev.kind == "disaster" then 0.85 else 1.07
+		end
+	end
+	return math.clamp(m, 0.6, 1.3)
+end
+
+-- 화폐 가치: 주화의 은 함량·신용이 나라마다 해마다 달라, 약한 화폐의 항구는 물가가 높다 (1.0 = 기준)
+Harbor.CURRENCY = {
+	spain = { name = "에스파냐 레알", pts = { { 1500, 1.05 }, { 1560, 0.97 }, { 1620, 0.86 }, { 1700, 0.82 }, { 1800, 0.9 } } },
+	netherlands = { name = "길더", pts = { { 1500, 1.0 }, { 1609, 1.08 }, { 1700, 1.12 }, { 1800, 1.05 } } },
+	england = { name = "파운드", pts = { { 1500, 0.92 }, { 1560, 1.0 }, { 1700, 1.06 }, { 1800, 1.1 } } },
+	france = { name = "리브르", pts = { { 1500, 1.0 }, { 1700, 0.94 }, { 1790, 0.8 } } },
+	portugal = { name = "크루자두", pts = { { 1500, 1.0 }, { 1600, 0.92 }, { 1750, 0.9 } } },
+	ottoman = { name = "악체", pts = { { 1500, 1.0 }, { 1600, 0.7 }, { 1700, 0.62 }, { 1800, 0.55 } } },
+	china = { name = "은량", pts = { { 1500, 1.0 }, { 1600, 1.2 }, { 1750, 1.25 } } },
+	japan = { name = "일본 은화", pts = { { 1500, 0.95 }, { 1600, 1.1 }, { 1700, 1.0 } } },
+}
+for alias, base in {
+	new_spain = "spain", sicily = "spain", panama = "spain", rio_de_la_plata = "spain", brazil = "portugal", malabar = "portugal",
+	levant = "ottoman", algeria = "ottoman", tripoli = "ottoman", yemen = "ottoman", scotland = "england", korea = "china",
+	moluccas = "netherlands", malay = "netherlands",
+} do
+	Harbor.CURRENCY[alias] = Harbor.CURRENCY[base]
+end
+function Harbor.currencyIndex(country: string, year: number): (number, string)
+	local c = Harbor.CURRENCY[country]
+	if not c then
+		return 1, "현지 주화"
+	end
+	local pts = c.pts
+	if year <= pts[1][1] then
+		return pts[1][2], c.name
+	end
+	for i = 2, #pts do
+		if year <= pts[i][1] then
+			local a, b = pts[i - 1], pts[i]
+			return a[2] + (b[2] - a[2]) * (year - a[1]) / (b[1] - a[1]), c.name
+		end
+	end
+	return pts[#pts][2], c.name
+end
+
 -- 해금 단계: 항구 단계에 그 항구 학자들의 기술 수준 합(techSum)이 더해진다 (기술 6점마다 +1단계, 최대 5)
 function Harbor.effLevel(level: number, techSum: number?): number
 	return math.min(Harbor.MAX_LEVEL, level + math.floor((techSum or 0) / 6))

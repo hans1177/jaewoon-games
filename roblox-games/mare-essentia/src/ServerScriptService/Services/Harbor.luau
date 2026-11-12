@@ -129,6 +129,7 @@ return function(D, S)
 		end
 		-- 항구 고유 파동, 지역 축제, 진행 중인 재해·행운 (실제 사건은 World 가 일으킨다)
 		vit *= H.portWave(port.id, state.day)
+		vit *= H.spillover(region, state.world and state.world.active, state.day)
 		local fest = H.festivalAt(region, state.day)
 		if fest then
 			vit *= 1.25
@@ -204,7 +205,7 @@ return function(D, S)
 		local lvl = H.level(state.harbor[portId] or 0)
 		local trade = (state.harborTrade and state.harborTrade[portId]) or 0
 		local own = H.producesOf(port.produces, region, year)
-		local vit = H.vitality(regime, region, own, trade / 150) * H.portWave(portId, state.day)
+		local vit = H.vitality(regime, region, own, trade / 150) * H.portWave(portId, state.day) * H.spillover(region, state.world and state.world.active, state.day)
 		local fest = H.festivalAt(region, state.day)
 		local events = {}
 		for _, ev in (state.world and state.world.active) or {} do
@@ -231,7 +232,40 @@ return function(D, S)
 		local unemployment = math.clamp(math.floor(30 - vit * 18 + 0.5), 2, 35)
 		local wage = math.floor(100 * math.sqrt(math.max(vit, 0.1)) * priceIdx / 100 + 0.5)
 		local interest = math.clamp(math.floor((4 + (priceIdx - 100) * 0.8 + (vit * 100 - 100) * 0.03) * 10 + 0.5) / 10, 1, 15)
+		-- 이민·빈집: 번영하면 이민자가 몰리고, 실업이 심하면 집이 비어 간다
+		local migration = math.clamp(math.floor((vit - 1) * 100 + 0.5), -30, 40) -- + 유입 / - 유출 (‰ 환산 아님, 지표)
+		local vacancy = math.clamp((unemployment - 14) / 60, 0, 0.35)
+		local cur, curName = H.currencyIndex(port.country, year)
+		-- 경제 신문: 지표에서 자동으로 만든 헤드라인
+		local news = {}
+		if regime.note ~= "" then
+			table.insert(news, string.format("%s: %s", regime.name, regime.note))
+		end
+		for _, ev in events do
+			table.insert(news, string.format("%s (%s)", ev.title, if ev.kind == "disaster" then "재해" else "행운"))
+		end
+		for _, b in boosts do
+			table.insert(news, string.format("%s 한창 — 앞으로 %d일", b.name, b.left))
+		end
+		if fest then
+			table.insert(news, fest.name .. " 준비로 장터가 들썩인다")
+		end
+		if cur < 0.9 then
+			table.insert(news, string.format("%s 가치 하락, 물가가 오른다", curName))
+		elseif cur > 1.08 then
+			table.insert(news, string.format("%s 강세, 수입품이 싸진다", curName))
+		end
+		local sp = H.spillover(region, state.world and state.world.active, state.day)
+		if sp < 0.95 then
+			table.insert(news, "이웃 지역의 재난 소식이 교역로를 타고 번져 온다")
+		elseif sp > 1.04 then
+			table.insert(news, "이웃 지역의 호황이 교역로를 타고 번져 온다")
+		end
+		if unemployment >= 20 then
+			table.insert(news, "일자리를 잃은 이들이 부두를 서성인다")
+		end
 		return {
+			news = news, migration = migration, vacancy = vacancy, currency = { name = curName, index = math.floor(cur * 100 + 0.5) },
 			unemployment = unemployment, wage = wage, interest = interest,
 			boosts = boosts,
 			index = math.floor(vit * 100 + 0.5), -- 경기지수 (100 = 평시, 50 미만이면 쇠퇴)

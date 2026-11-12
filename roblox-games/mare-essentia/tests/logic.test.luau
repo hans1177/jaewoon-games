@@ -61,7 +61,7 @@ local function macroOf(st, portId, goodId)
 	local role = D.Harbor.role(p, rid, yr, D.Harbor.effLevel(D.Harbor.level(st.harbor[portId] or 0), S.Knowledge.techSum(st, portId)), goodId)
 	local base = if table.find(p.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(p.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
 	local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
-	return m * now / base
+	return m * now / base / (D.Harbor.currencyIndex(p.country, yr))
 end
 local function near(a, b)
 	return math.abs(a - b) < 1e-9
@@ -2137,6 +2137,12 @@ do
 			check("no economic revival without trade", not fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1682), prevRegime = H.regime(1679), activity = 0.1, shipyard = false, navTech = 0 }))
 			check("fair needs activity", fires("fair", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1700), prevRegime = H.regime(1700), activity = 0.9, shipyard = false, navTech = 0 }))
 		end
+		check("weak currency: ottoman 1700 < netherlands 1700", (H.currencyIndex("ottoman", 1700)) < (H.currencyIndex("netherlands", 1700)))
+		check("currency interpolates", (function() local a = H.currencyIndex("spain", 1590) return a < 1.05 and a > 0.86 end)())
+		check("unknown currency neutral", (H.currencyIndex("atlantis", 1600)) == 1)
+		check("spillover from adjacent disaster", H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50) < 1)
+		check("no spillover before lag", H.spillover("europe", { { endDay = 100, startDay = 45, region = "new_world", kind = "disaster" } }, 50) == 1)
+		check("no spillover from far region", H.spillover("europe", { { endDay = 100, startDay = 10, region = "pacific", kind = "disaster" } }, 50) == 1)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)
@@ -2144,6 +2150,7 @@ do
 	check("view regime", type(v.harbor.regime) == "table" and type(v.harbor.regime.name) == "string" and type(v.harbor.portType) == "string")
 	do
 		local eco = v.harbor.economy
+		check("economy news/currency/vacancy", type(eco.news) == "table" and type(eco.currency.name) == "string" and type(eco.vacancy) == "number" and type(eco.migration) == "number")
 		check("economy panel", type(eco) == "table" and type(eco.index) == "number" and type(eco.priceIndex) == "number" and type(eco.events) == "table" and type(eco.regimeName) == "string")
 		st.portTech = { [st.portId] = {} }
 		local ds = S.Knowledge.portDisciplines(st.portId)

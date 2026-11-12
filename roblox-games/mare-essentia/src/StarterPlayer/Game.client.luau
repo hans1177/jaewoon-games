@@ -2772,6 +2772,7 @@ function RENDERERS.harbor()
 				string.format("경제 국면: %s · %s", e.regimeName, h.portType or ""),
 				string.format("경기지수 %d (100=평시) · 물가지수 %d · 최근 거래 %d개", e.index, e.priceIndex, e.trade),
 				string.format("실업률 %d%% · 임금지수 %d · 금리 %.1f%%", e.unemployment, e.wage, e.interest),
+				string.format("%s 가치 %d (100=기준) · 인구 %s%d", e.currency.name, e.currency.index, if e.migration >= 0 then "유입 +" else "유출 ", e.migration),
 				string.format("학자 기술 합계 %d → 단계 %d개 이상 열린 품목에 반영", e.techSum, math.floor(e.techSum / 6)),
 			}
 			if e.festival then table.insert(lines, "축제: " .. e.festival) end
@@ -2780,6 +2781,9 @@ function RENDERERS.harbor()
 			end
 			for _, ev in e.events or {} do
 				table.insert(lines, string.format("%s: %s (%d일 남음)", if ev.kind == "disaster" then "재해" else "행운", ev.title, ev.left))
+			end
+			for i, n in e.news or {} do
+				if i <= 4 then table.insert(lines, "📰 " .. n) end
 			end
 			if h.nextProduce then table.insert(lines, string.format("다음 특산 %s: %d단계 또는 관련 학문 기술", h.nextProduce.name, h.nextProduce.level)) end
 			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
@@ -5594,6 +5598,8 @@ syncScene = function()
 		econ = econKind,
 		econIndex = eco.index,
 		unemployment = eco.unemployment,
+		vacancy = eco.vacancy,
+		migration = eco.migration,
 		boosts = boostIds,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,

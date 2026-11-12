@@ -73,6 +73,7 @@ return function(D, S)
 			local base = if table.find(port.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(port.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
 			local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
 			m *= now / base
+			m /= (D.Harbor.currencyIndex(port.country, yr))
 			m *= D.Harbor.priceMult(D.Harbor.regime(state.startYear + math.floor(state.day / 365)), D.Regions.of(port).id, goodId)
 		end
 		-- 전쟁 중인 나라의 항구는 무기·자재 값이 오른다

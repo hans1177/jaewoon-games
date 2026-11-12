@@ -332,9 +332,15 @@ local function uniformMaterial(m, style)
 	end
 end
 
+local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
+	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
+	local vacant = vacancyRate > 0 and ((math.floor(math.abs(pos.X * 11 + pos.Z * 17)) % 100) / 100) < vacancyRate
+	if vacant then
+		tintColor = tintColor:Lerp(Color3.fromRGB(96, 94, 92), 0.55)
+	end
 	-- 위치로 정한 크기 변주(0.86~1.08배)와 180도 뒤집기로 같은 집이 반복돼 보이지 않게 한다
 	local seed = math.floor(math.abs(pos.X * 3 + pos.Z * 5))
 	local variation = 0.86 + (seed % 7) * 0.037
@@ -350,6 +356,11 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		if (seed // 7) % 2 == 1 then
 			local c = mesh:GetBoundingBox().Position
 			mesh:PivotTo(CFrame.new(c) * CFrame.Angles(0, math.pi, 0) * CFrame.new(-c) * mesh:GetPivot())
+		end
+		if vacant then
+			for k = -1, 1 do
+				importedModel(parent, "Town", "fence_straight", pos + Vector3.new(k * 4, 0, 0) + Vector3.new(0, 0, if pos.Z > 0 then -math.max(w, d) * 0.7 else math.max(w, d) * 0.7), 4, false)
+			end
 		end
 		-- 집마다 같은 실루엣이 되지 않게, 위치로 정한 일부 집 용마루에 승인된 굴뚝(Town/chimney)을 얹는다
 		local size = math.max(w, d) * variation
@@ -770,6 +781,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(-30 - k * 10, 0, 27), 9, false)
 				importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(-30 - k * 10, 0, -27), 9, false)
 			end
+		end
+		if (info.migration or 0) >= 25 then
+			-- 이민자 천막촌: 성벽 밖 빈터에 천막과 모닥불
+			for k = 0, 2 do
+				importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(-176, 0, -30 + k * 30), 9, false)
+			end
+			importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-168, 0, 0), 3.6, false)
 		end
 		if has.maritime or has.economic then
 			for _, z in { -12, 12 } do
@@ -1876,6 +1894,7 @@ end
 -- 장면 만들기. info: { portId, portName, shipId, hasShipyard, facilities = { "bank", ... }, storyCount }
 -- 돌려주는 값: { folder, spawn = 캐릭터를 둘 위치, stop = 애니메이션 정지 함수 }
 function PortScene.build(info, onFacility)
+	vacancyRate = info.vacancy or 0
 	local old = workspace:FindFirstChild("PortScene")
 	if old then
 		old:Destroy()
