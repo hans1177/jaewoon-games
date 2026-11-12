@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-11-12T06:14:17.536Z",
+  "generatedAt": "2026-11-12T06:27:43.496Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -15,7 +15,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -75,7 +75,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -124,36 +124,6 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
       "gameId": "human-go-temp",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -165,40 +135,10 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "mare-essentia",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -225,7 +165,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -255,7 +195,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -285,7 +225,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -375,7 +315,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -555,7 +495,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -585,7 +525,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -705,7 +645,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 3,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1035,7 +975,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1095,7 +1035,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
