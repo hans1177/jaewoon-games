@@ -192,7 +192,7 @@ function NavalBattle.play(opts)
 		back.AnchorPoint = Vector2.new(if side == "L" then 0 else 1, 0)
 		back.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 62)
 		back.Size = UDim2.fromOffset(230, 16)
-		back.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+		back.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		back.BorderSizePixel = 0
 		back.Parent = gui
 		local c = Instance.new("UICorner")
@@ -239,7 +239,7 @@ function NavalBattle.play(opts)
 	local function card(row, name, color, star)
 		local f = Instance.new("Frame")
 		f.Size = UDim2.fromOffset(if star then 96 else 82, 46)
-		f.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+		f.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		f.BackgroundTransparency = 0.15
 		f.BorderSizePixel = 0
 		f.Parent = row
@@ -291,7 +291,7 @@ function NavalBattle.play(opts)
 		wind.AnchorPoint = Vector2.new(0.5, 0)
 		wind.Position = UDim2.new(0.5, 0, 0, 24)
 		wind.Size = UDim2.fromOffset(190, 34)
-		wind.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+		wind.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		wind.BackgroundTransparency = 0.15
 		wind.BorderSizePixel = 0
 		wind.Parent = gui
@@ -380,7 +380,7 @@ function NavalBattle.play(opts)
 		b.AnchorPoint = anchor or Vector2.new(0, 1)
 		b.Position = pos
 		b.Size = size
-		b.BackgroundColor3 = Color3.fromRGB(28, 46, 70)
+		b.BackgroundColor3 = Color3.fromRGB(50, 83, 106)
 		b.TextColor3 = Color3.fromRGB(250, 236, 200)
 		b.Font = Enum.Font.GothamBold
 		b.TextSize = 26

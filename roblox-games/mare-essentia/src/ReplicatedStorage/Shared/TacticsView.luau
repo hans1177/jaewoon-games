@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: TacticsView.luau
 -- 지상 탐험 턴제 전술 화면 (클라이언트 전용). 파이어 엠블럼처럼 격자 위에서 유닛을 눌러 이동·공격·대기한다.
 -- 판정은 전부 서버가 한다. 이 화면은 같은 규칙(Tactics)으로 이동 범위·사거리·예상 피해를 미리 보여 주고,
 -- 행동은 invoke("TacticsAct", ...)로 서버에 요청한 뒤 돌려받은 전투 상태로 다시 그린다.
@@ -19,6 +20,11 @@ local TILE_COLOR = {
 }
 local TILE_MARK = { f = "숲", h = "언덕", w = "물", ["~"] = "늪", r = "터", ["+"] = "진지", ["#"] = "", W = "" }
 local TEXT = Color3.fromRGB(246, 238, 220)
+local COVER = Color3.fromRGB(26, 34, 40)
+local LEATHER = Color3.fromRGB(56, 43, 35)
+local PAPER = Color3.fromRGB(237, 222, 188)
+local INK = Color3.fromRGB(51, 37, 25)
+local BRASS = Color3.fromRGB(158, 113, 59)
 local PLAYER_COLOR = Color3.fromRGB(70, 120, 200)
 local ENEMY_COLOR = Color3.fromRGB(190, 70, 64)
 
@@ -43,7 +49,8 @@ local function button(parent, text, color, pos, sz, onClick)
 		Text = text, TextSize = 15, TextColor3 = TEXT, Font = Enum.Font.GothamBold, BackgroundColor3 = color, AutoButtonColor = true,
 		Position = pos, Size = sz, BorderSizePixel = 0,
 	}, parent)
-	make("UICorner", { CornerRadius = UDim.new(0, 8) }, b)
+	make("UICorner", { CornerRadius = UDim.new(0, 6) }, b)
+	make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = BRASS }, b)
 	b.Activated:Connect(onClick)
 	return b
 end
@@ -53,16 +60,17 @@ function TacticsView.open(opts)
 	local battle = opts.battle
 	local invoke = opts.invoke
 	local gui = make("ScreenGui", { Name = "TacticsView", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 80, ZIndexBehavior = Enum.ZIndexBehavior.Sibling }, Players.LocalPlayer:WaitForChild("PlayerGui"))
-	local root = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(18, 20, 26), BorderSizePixel = 0 }, gui)
+	local root = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = COVER, BorderSizePixel = 0 }, gui)
 
-	local topBar = make("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = Color3.fromRGB(30, 32, 40), BorderSizePixel = 0 }, root)
-	local title = label(topBar, "", 16, TEXT, UDim2.fromOffset(12, 5), UDim2.new(1, -24, 0, 34))
+	local topBar = make("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = PAPER, BorderSizePixel = 0 }, root)
+	local title = label(topBar, "", 16, INK, UDim2.fromOffset(12, 5), UDim2.new(1, -24, 0, 34))
 	title.TextYAlignment = Enum.TextYAlignment.Center
+	make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = BRASS }, topBar)
 
 	local screenH = gui.AbsoluteSize.Y > 0 and gui.AbsoluteSize.Y or 600
 	local bottomH = if screenH < 560 then 112 else 150
 	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
-	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = Color3.fromRGB(30, 32, 40), BorderSizePixel = 0 }, root)
+	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = LEATHER, BorderSizePixel = 0 }, root)
 	local info = label(bottom, "", 14, TEXT, UDim2.fromOffset(10, 6), UDim2.new(0.58, -14, 1, -12))
 	local logLabel = label(bottom, "", 13, Color3.fromRGB(190, 182, 160), UDim2.new(0.58, 0, 0, 6), UDim2.new(0.42, -10, 0, 74))
 	local btnRow = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -10, 1, -8), Size = UDim2.new(0.42, -10, 0, math.min(64, bottomH - 16)), BackgroundTransparency = 1 }, bottom)
@@ -175,24 +183,24 @@ function TacticsView.open(opts)
 		end
 		if sel and not sel.acted then
 			if aimId then
-				button(btnRow, if sel.heal then "치료!" else "공격!", Color3.fromRGB(168, 66, 58), UDim2.new(), sz, function()
+				button(btnRow, if sel.heal then "치료!" else "공격!", Color3.fromRGB(144, 63, 48), UDim2.new(), sz, function()
 					local from = pending or { x = sel.x, y = sel.y }
 					send("TacticsAct", { unitId = sel.id, kind = if sel.heal then "heal" else "attack", x = from.x, y = from.y, targetId = aimId })
 				end)
 			end
-			button(btnRow, "대기", Color3.fromRGB(58, 98, 150), UDim2.new(), sz, function()
+			button(btnRow, "대기", Color3.fromRGB(50, 83, 106), UDim2.new(), sz, function()
 				local from = pending or { x = sel.x, y = sel.y }
 				send("TacticsAct", { unitId = sel.id, kind = "wait", x = from.x, y = from.y })
 			end)
-			button(btnRow, "취소", Color3.fromRGB(70, 72, 82), UDim2.new(), sz, function()
+			button(btnRow, "취소", Color3.fromRGB(83, 74, 62), UDim2.new(), sz, function()
 				selected, pending, aimId = nil, nil, nil
 				rebuild()
 			end)
 		else
-			button(btnRow, "턴 종료", Color3.fromRGB(70, 140, 92), UDim2.new(), sz, function()
+			button(btnRow, "턴 종료", Color3.fromRGB(66, 116, 93), UDim2.new(), sz, function()
 				send("TacticsEnd", {})
 			end)
-			button(btnRow, "후퇴", Color3.fromRGB(70, 72, 82), UDim2.new(), sz, function()
+			button(btnRow, "후퇴", Color3.fromRGB(83, 74, 62), UDim2.new(), sz, function()
 				send("TacticsLeave", {})
 				closeAll()
 			end)
@@ -209,13 +217,13 @@ function TacticsView.open(opts)
 			oldShade:Destroy()
 		end
 		local shade = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = 20, Name = "ResultShade" }, root)
-		local card = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(0.86, 0, 0, 230), BackgroundColor3 = Color3.fromRGB(36, 38, 48), BorderSizePixel = 0, ZIndex = 21 }, shade)
+		local card = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(0.86, 0, 0, 230), BackgroundColor3 = COVER, BorderSizePixel = 0, ZIndex = 21 }, shade)
 		make("UICorner", { CornerRadius = UDim.new(0, 12) }, card)
 		local head = label(card, if won then "승리!" else "패배…", 26, if won then Color3.fromRGB(226, 176, 78) else Color3.fromRGB(190, 70, 64), UDim2.fromOffset(16, 12), UDim2.new(1, -32, 0, 36))
 		head.ZIndex = 22
 		local body = label(card, notice, 14, TEXT, UDim2.fromOffset(16, 54), UDim2.new(1, -32, 0, 110))
 		body.ZIndex = 22
-		local b = button(card, "닫기", Color3.fromRGB(70, 140, 92), UDim2.new(0.5, -60, 1, -56), UDim2.fromOffset(120, 44), function()
+		local b = button(card, "닫기", Color3.fromRGB(66, 116, 93), UDim2.new(0.5, -60, 1, -56), UDim2.fromOffset(120, 44), function()
 			send("TacticsLeave", {})
 			closeAll()
 		end)
