@@ -100,7 +100,7 @@ return function(D, S)
 			local mult = ctx.market:get(port.id, goodId)
 			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
 			local tag = ""
-			local role = D.Harbor.role(port, rid0, yr0, lv0, goodId)
+			local role = D.Harbor.role(port, rid0, yr0, lv0, goodId, S.Knowledge.disciplineOpens(state, port.id, goodId))
 			if role == "produce" then
 				tag = "특산"
 			elseif role == "demand" then
@@ -602,6 +602,7 @@ return function(D, S)
 			view.harbor = {
 				regime = { id = rg.id, name = rg.name, kind = rg.kind, note = rg.note, price = rg.price },
 				portType = D.Harbor.portType(port.produces),
+				economy = S.Harbor.economyOf(state, port.id),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
@@ -616,7 +617,7 @@ return function(D, S)
 			local full = D.Harbor.producesOf(port.produces, rid0, yr0)
 			local lvE = lv0
 			for i, id in full do
-				if lvE >= D.Harbor.unlockLevel(i) then
+				if lvE >= D.Harbor.unlockLevel(i) or S.Knowledge.disciplineOpens(state, port.id, id) then
 					table.insert(view.harbor.produces, D.Ports.Goods[id].name)
 				else
 					view.harbor.nextProduce = view.harbor.nextProduce or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }

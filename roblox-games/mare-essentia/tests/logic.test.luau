@@ -2126,6 +2126,17 @@ do
 	local v = S.View.build(st, ctx)
 	check("view harbor", v.harbor.level == 2 and v.harbor.invested == 1000 and v.harbor.nextAt == 2000)
 	check("view regime", type(v.harbor.regime) == "table" and type(v.harbor.regime.name) == "string" and type(v.harbor.portType) == "string")
+	do
+		local eco = v.harbor.economy
+		check("economy panel", type(eco) == "table" and type(eco.index) == "number" and type(eco.priceIndex) == "number" and type(eco.events) == "table" and type(eco.regimeName) == "string")
+		st.portTech = { [st.portId] = {} }
+		local ds = S.Knowledge.portDisciplines(st.portId)
+		if #ds > 0 then
+			st.portTech[st.portId][ds[1]] = 6
+			check("port tech counted", S.Knowledge.techSum(st, st.portId) >= 1)
+			st.portTech = {}
+		end
+	end
 	check("view discounted supply cost", v.shipyard.supplyCost == math.floor(S.Shipyard.SUPPLY_COST * 0.95) or v.shipyard.supplyCost == math.max(1, math.floor(S.Shipyard.SUPPLY_COST * 0.95)))
 	for _ = 1, 3 do
 		act(st, "Invest", { amount = 3000 })

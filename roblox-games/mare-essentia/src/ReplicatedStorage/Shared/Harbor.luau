@@ -161,8 +161,8 @@ function Harbor.openList(list: { string }, level: number): { string }
 end
 
 -- 이 항구에서 이 상품이 지금 맡는 역할: "produce"(싸다) · "demand"(비싸다) · nil
-function Harbor.role(port, region: string, year: number, level: number, goodId: string): string?
-	if table.find(Harbor.openList(Harbor.producesOf(port.produces, region, year), level), goodId) then
+function Harbor.role(port, region: string, year: number, level: number, goodId: string, forced: boolean?): string?
+	if table.find(Harbor.openList(Harbor.producesOf(port.produces, region, year), level), goodId) or (forced and table.find(Harbor.producesOf(port.produces, region, year), goodId)) then
 		return "produce"
 	end
 	if table.find(Harbor.openList(Harbor.demandsOf(port.demands, region, year, port.produces), level), goodId) then

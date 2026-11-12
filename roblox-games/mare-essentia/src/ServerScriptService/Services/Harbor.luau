@@ -165,6 +165,42 @@ return function(D, S)
 		return msgs
 	end
 
+	-- 항구 경제 지표판: 경기·물가·교역·학자 연구 속도·진행 중 사건·축제를 한 번에 본다.
+	local function economyOf(state, portId)
+		local port = D.Ports.Ports[portId]
+		local year = state.startYear + math.floor(state.day / 365)
+		local regime = H.regime(year)
+		local region = D.Regions.of(port).id
+		local lvl = H.level(state.harbor[portId] or 0)
+		local trade = (state.harborTrade and state.harborTrade[portId]) or 0
+		local own = H.producesOf(port.produces, region, year)
+		local vit = H.vitality(regime, region, own, trade / 150) * H.portWave(portId, state.day)
+		local fest = H.festivalAt(region, state.day)
+		local events = {}
+		for _, ev in (state.world and state.world.active) or {} do
+			if ev.region == region and ev.endDay >= state.day then
+				table.insert(events, { title = ev.title, kind = ev.kind, left = ev.endDay - state.day })
+			end
+		end
+		local techSum = S.Knowledge.techSum(state, portId)
+		-- 가격지수: 이 항구 품목들의 국면 물가 평균 (100 = 평시)
+		local sum, n = 0, 0
+		for id in D.Ports.Goods do
+			sum += H.priceMult(regime, region, id)
+			n += 1
+		end
+		return {
+			index = math.floor(vit * 100 + 0.5), -- 경기지수 (100 = 평시, 50 미만이면 쇠퇴)
+			priceIndex = math.floor(sum / n * 100 + 0.5),
+			trade = trade,
+			research = math.floor(0.04 * vit * (1 + lvl * 0.3) * 365 + 0.5), -- 학자 연구 점수/년
+			techSum = techSum,
+			festival = fest and fest.name or nil,
+			events = events,
+			regimeName = regime.name,
+		}
+	end
+
 	-- 길드 의뢰 보드
 	local function sortedGoods()
 		local ids = {}
@@ -329,5 +365,6 @@ return function(D, S)
 		intel = intel,
 		boardHere = boardHere,
 		grow = grow,
+		economyOf = economyOf,
 	}
 end

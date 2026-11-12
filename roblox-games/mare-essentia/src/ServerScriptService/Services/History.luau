@@ -69,7 +69,7 @@ return function(D, S)
 			-- 역사적 근거·발전도에 맞지 않는 특산/수요는 할인·할증을 받지 않는다
 			local yr = state.startYear + math.floor(state.day / 365)
 			local rid = D.Regions.of(port).id
-			local role = D.Harbor.role(port, rid, yr, D.Harbor.effLevel(D.Harbor.level(state.harbor[portId] or 0), S.Knowledge and S.Knowledge.techSum(state, portId)), goodId)
+			local role = D.Harbor.role(port, rid, yr, D.Harbor.effLevel(D.Harbor.level(state.harbor[portId] or 0), S.Knowledge and S.Knowledge.techSum(state, portId)), goodId, S.Knowledge and S.Knowledge.disciplineOpens(state, portId, goodId))
 			local base = if table.find(port.produces, goodId) then D.TradeMath.PRODUCE_MULT elseif table.find(port.demands, goodId) then D.TradeMath.DEMAND_MULT else 1
 			local now = if role == "produce" then D.TradeMath.PRODUCE_MULT elseif role == "demand" then D.TradeMath.DEMAND_MULT else 1
 			m *= now / base

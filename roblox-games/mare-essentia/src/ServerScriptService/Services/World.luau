@@ -47,7 +47,9 @@ return function(D, S)
 			end
 		end
 		local stages = state.portStages and state.portStages[state.portId] and state.portStages[state.portId].guard or 0
-		return math.min(0.8, math.min(0.5, n * 0.02) + math.min(0.4, stages * 0.08) + math.min(0.1, S.People.discCount(state, guard) * 0.01))
+		-- 이 항구 학자들의 기술: 의학→역병, 건축→지진·화재, 지리·항해→폭풍·해적 같은 대비가 현지에서 나온다
+		local local_ = S.Knowledge and S.Knowledge.techLevel(state, state.portId, guard) or 0
+		return math.min(0.8, math.min(0.24, local_ * 0.06) + math.min(0.5, n * 0.02) + math.min(0.4, stages * 0.08) + math.min(0.1, S.People.discCount(state, guard) * 0.01))
 	end
 
 	local function validGoods(list)
