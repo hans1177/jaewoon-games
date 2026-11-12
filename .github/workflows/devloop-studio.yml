@@ -474,16 +474,18 @@ jobs:
             summary, path: 'runs/' + runId};
           const merged = [record, ...history.filter(row => row.runId !== runId)];
           const kept = [];
+          const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
           for (const row of merged) {
-            if ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
-                (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6))
+            if (Date.parse(row.at) >= cutoff &&
+                ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
               kept.push(row);
             else if (/^runs\/[0-9]+$/.test(row.path || ''))
               fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
           }
-          fs.writeFileSync(indexFile, JSON.stringify({version: 1, latest: record,
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
             lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
-          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', '',
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', 'Retention: 7 days, full 4 runs and others 6 runs', '',
             '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
             ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
           fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
