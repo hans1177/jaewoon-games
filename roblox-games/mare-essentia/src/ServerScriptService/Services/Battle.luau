@@ -168,7 +168,11 @@ return function(D, S)
 			state.lastBattle.fled = false
 		end
 		state.lastBattle.pending = false
-		settle(state, msgs, pb)
+		if pb.bossId then
+			S.Boss.settlePending(state, pb, msgs)
+		else
+			settle(state, msgs, pb)
+		end
 		return true, table.concat(msgs, "\n")
 	end
 
@@ -218,7 +222,7 @@ return function(D, S)
 			end
 		end
 		local c = pb.card
-		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state] }, { fighter = c.foe }, actions)
+		local r = D.BoardingCards.replay("gunnery", c.seed, { fighter = c.my, deckCards = deckCache[state] }, { fighter = c.foe, boss = c.boss }, actions)
 		if not r then
 			return false, "카드 기록이 규칙에 맞지 않아요"
 		end
