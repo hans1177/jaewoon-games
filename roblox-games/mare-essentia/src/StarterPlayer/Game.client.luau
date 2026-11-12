@@ -163,7 +163,7 @@ local postPrice = {}
 local busy = false
 local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
-local chosenYear = 1700
+local chosenYear = 1492
 local newGameMode = false -- 저장된 게임이 있어도 새로 시작하는 선택 화면을 보여 준다
 
 -- 전체 화면 장면(항해 연출, 이야기, 카드 상세)은 별도 ScreenGui에 띄운다.
@@ -6214,16 +6214,17 @@ renderTitle = function()
 	-- ③ 시대
 	tLabel(titleScroll, "③ 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
+		{ 1492, "1492년 ★추천", "15세기 대항해의 시작" },
 		{ 1517, "1517년", "종교개혁의 시작" },
 		{ 1600, "1600년", "동인도회사의 새벽" },
 		{ 1625, "1625년", "30년 전쟁의 시대" },
 		{ 1650, "1650년", "과학혁명의 시작" },
-		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
+		{ 1700, "1700년", "상업·학문 교류의 확대" },
 		{ 1750, "1750년", "분류학의 시대" },
 	}
 	local rowF = Instance.new("Frame")
 	rowF.BackgroundTransparency = 1
-	rowF.Size = UDim2.new(1, 0, 0, 128)
+	rowF.Size = UDim2.new(1, 0, 0, 196)
 	rowF.LayoutOrder = nxt()
 	rowF.ZIndex = 12
 	rowF.Parent = titleScroll
