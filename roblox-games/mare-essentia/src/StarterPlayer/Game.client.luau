@@ -107,6 +107,10 @@ local COLORS = {
 	grey = Color3.fromRGB(83, 74, 62),
 	steam = Color3.fromRGB(150, 110, 70),
 }
+-- 양피지·잉크 테마: 가죽 책상 위에 놓인 양피지 줄, 잉크 글씨, 밀랍 인장
+local PARCHMENT_TOP, PARCHMENT_BOTTOM = Color3.fromRGB(241, 227, 192), Color3.fromRGB(214, 192, 148)
+local INK, INK_SOFT, INK_EDGE = Color3.fromRGB(52, 36, 24), Color3.fromRGB(108, 82, 56), Color3.fromRGB(96, 68, 40)
+local WAX = Color3.fromRGB(150, 44, 38)
 local UI_BRASS = Color3.fromRGB(214, 170, 82)
 local UI_BRASS_DARK = Color3.fromRGB(120, 92, 44)
 
@@ -543,17 +547,17 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	b.TextWrapped = true
 	b.AutoButtonColor = enabled ~= false
 	b.BorderSizePixel = 0
-	corner(b, 7)
+	corner(b, 10)
 	b.Parent = parent
 	do
 		local grad = Instance.new("UIGradient")
-		grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(196, 196, 196))
+		grad.Color = ColorSequence.new(Color3.fromRGB(255, 244, 230), Color3.fromRGB(170, 160, 150))
 		grad.Rotation = 90
 		grad.Parent = b
 		local bs = Instance.new("UIStroke")
-		bs.Color = if enabled == false then Color3.fromRGB(100, 100, 108) else UI_BRASS
-		bs.Thickness = 1.2
-		bs.Transparency = if enabled == false then 0.5 else 0.15
+		bs.Color = if enabled == false then Color3.fromRGB(100, 100, 108) else Color3.fromRGB(58, 34, 22)
+		bs.Thickness = 1.6
+		bs.Transparency = if enabled == false then 0.5 else 0.05
 		bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		bs.Parent = b
 	end
@@ -570,20 +574,39 @@ end
 local function mkRow(parent, title, subtitle, buttons, height)
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1, -6, 0, height or 60)
-	row.BackgroundColor3 = COLORS.row
+	row.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	row.BorderSizePixel = 0
-	corner(row, 6)
+	corner(row, 5)
 	row.Parent = parent
 	do
 		local rs = Instance.new("UIStroke")
-		rs.Color = UI_BRASS_DARK
-		rs.Thickness = 1
-		rs.Transparency = 0.45
+		rs.Color = INK_EDGE
+		rs.Thickness = 1.3
+		rs.Transparency = 0.15
 		rs.Parent = row
+		-- 낡은 양피지: 위는 밝고 아래는 누렇게 바랜 그라데이션
 		local grad = Instance.new("UIGradient")
-		grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(205, 205, 210))
+		grad.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 		grad.Rotation = 90
 		grad.Parent = row
+		-- 모서리에 찍힌 밀랍 인장
+		local seal = Instance.new("TextLabel")
+		seal.Name = "WaxSeal"
+		seal.AnchorPoint = Vector2.new(0.5, 0.5)
+		seal.Position = UDim2.new(1, -9, 0, 9)
+		seal.Size = UDim2.fromOffset(14, 14)
+		seal.BackgroundColor3 = WAX
+		seal.Text = "✦"
+		seal.TextSize = 9
+		seal.TextColor3 = Color3.fromRGB(232, 150, 130)
+		seal.Font = Enum.Font.GothamBold
+		seal.ZIndex = 3
+		seal.Parent = row
+		corner(seal, 7)
+		local sealEdge = Instance.new("UIStroke")
+		sealEdge.Color = Color3.fromRGB(96, 24, 20)
+		sealEdge.Thickness = 1
+		sealEdge.Parent = seal
 		local bar = Instance.new("Frame")
 		bar.Name = "AccentBar"
 		bar.BackgroundColor3 = UI_BRASS
@@ -604,9 +627,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	textBox.Parent = row
 	local layout = Instance.new("UIListLayout")
 	layout.Parent = textBox
-	mkLabel(textBox, title, 14, COLORS.text, true)
+	mkLabel(textBox, title, 14, INK, true)
 	if subtitle and subtitle ~= "" then
-		mkLabel(textBox, subtitle, 12, COLORS.muted, false)
+		mkLabel(textBox, subtitle, 12, INK_SOFT, false)
 	end
 
 	if buttons then
@@ -624,14 +647,24 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, "◆ " .. text, 15, COLORS.gold, true)
-	l.Size = UDim2.new(1, -8, 0, 24)
+	local l = mkLabel(parent, "❦ " .. text, 15, INK, true)
+	l.Size = UDim2.new(1, -8, 0, 26)
 	l.AutomaticSize = Enum.AutomaticSize.None
 	l.TextYAlignment = Enum.TextYAlignment.Center
+	l.BackgroundTransparency = 0
+	l.BackgroundColor3 = Color3.fromRGB(226, 205, 160)
+	corner(l, 4)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 10)
+	pad.Parent = l
+	local ribbonEdge = Instance.new("UIStroke")
+	ribbonEdge.Color = INK_EDGE
+	ribbonEdge.Thickness = 1.2
+	ribbonEdge.Parent = l
 	local rule = Instance.new("Frame")
 	rule.Name = "Rule"
-	rule.BackgroundColor3 = UI_BRASS
-	rule.BackgroundTransparency = 0.45
+	rule.BackgroundColor3 = INK_EDGE
+	rule.BackgroundTransparency = 0.3
 	rule.BorderSizePixel = 0
 	rule.AnchorPoint = Vector2.new(0, 1)
 	rule.Position = UDim2.new(0, 0, 1, 0)
