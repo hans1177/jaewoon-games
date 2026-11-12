@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: NavalBattle.luau
 -- 해전 연출 (클라이언트 전용). 서버가 자동 해전을 계산한 뒤 돌려준 전투 기록(log)을
 -- 두 배의 포격·접현 장면으로 다시 보여 준다. 결과는 서버가 이미 정했고, 이 장면은 보기용이다.
 
@@ -557,13 +558,25 @@ function NavalBattle.play(opts)
 		boardFrame.Size = UDim2.fromScale(0.96, 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
-		local handFrame = Instance.new("Frame")
+		local handFrame = Instance.new("ScrollingFrame")
 		handFrame.Position = UDim2.fromScale(0.02, 0.72)
 		handFrame.Size = UDim2.fromScale(0.74, 0.26)
 		handFrame.BackgroundTransparency = 1
+		handFrame.BorderSizePixel = 0
+		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
+		handFrame.AutomaticCanvasSize = Enum.AutomaticSize.X
+		handFrame.CanvasSize = UDim2.fromOffset(0, 0)
+		handFrame.ScrollBarThickness = 4
+		handFrame.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 73)
+		local handPadding = Instance.new("UIPadding")
+		handPadding.PaddingTop = UDim.new(0, 10)
+		handPadding.PaddingBottom = UDim.new(0, 8)
+		handPadding.PaddingLeft = UDim.new(0, 3)
+		handPadding.Parent = handFrame
 		handFrame.Parent = g
 		local handLay = Instance.new("UIListLayout")
 		handLay.FillDirection = Enum.FillDirection.Horizontal
+		handLay.SortOrder = Enum.SortOrder.LayoutOrder
 		handLay.Padding = UDim.new(0, 5)
 		handLay.Parent = handFrame
 
@@ -587,6 +600,9 @@ function NavalBattle.play(opts)
 
 		local render
 		local auto = false
+		local playing = false
+		local selected
+		local rowTargets = { me = {}, foe = {} }
 		local function afterAction(ok, msg, res)
 			if not ok then
 				info.Text = msg or ""
@@ -603,12 +619,12 @@ function NavalBattle.play(opts)
 			render()
 		end
 		local passBtn = mkSide("멈추기", 0.72, Color3.fromRGB(100, 54, 44), function()
-			if m.turn == "me" and not m.over then
+			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(BC.pass(m, "me"))
 			end
 		end)
 		local leaderBtn = mkSide("지도자 능력", 0.81, Color3.fromRGB(70, 56, 90), function()
-			if m.turn == "me" and not m.over then
+			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(BC.useLeader(m, "me"))
 			end
 		end)
@@ -634,6 +650,7 @@ function NavalBattle.play(opts)
 		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
 
 		render = function()
+			selected = nil
 			for _, ch in boardFrame:GetChildren() do
 				ch:Destroy()
 			end
@@ -673,6 +690,7 @@ function NavalBattle.play(opts)
 				cards.Size = UDim2.new(1, -108, 1, -6)
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
+				rowTargets[side][row] = cards
 				local lay = Instance.new("UIListLayout")
 				lay.FillDirection = Enum.FillDirection.Horizontal
 				lay.Padding = UDim.new(0, 4)
@@ -684,7 +702,8 @@ function NavalBattle.play(opts)
 			-- 손패
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 84, 1, 0)
+				b.Size = UDim2.new(0, 88, 1, -10)
+				b.LayoutOrder = i
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(120, 90, 30) elseif c.special then Color3.fromRGB(70, 56, 90) else Color3.fromRGB(58, 44, 34)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
@@ -697,10 +716,58 @@ function NavalBattle.play(opts)
 				local cc = Instance.new("UICorner")
 				cc.CornerRadius = UDim.new(0, 8)
 				cc.Parent = b
+				local edge = Instance.new("UIStroke")
+				edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+				edge.Color = Color3.fromRGB(162, 120, 66)
+				edge.Parent = b
+
 				b.Activated:Connect(function()
-					if m.turn == "me" and not m.over then
-						afterAction(BC.play(m, "me", i))
+					if playing or auto or finished or m.turn ~= "me" or m.over then
+						return
 					end
+					if selected ~= b then
+						if selected then
+							TweenService:Create(selected, TweenInfo.new(0.12), { Rotation = 0 }):Play()
+							selected.UIStroke.Color = Color3.fromRGB(162, 120, 66)
+						end
+						selected = b
+						edge.Color = Color3.fromRGB(255, 215, 126)
+						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
+						info.Text = c.name .. " · " .. sub .. " · 한 번 더 누르면 사용"
+						return
+					end
+
+					playing = true
+					local side = if c.ability == "spy" then "foe" else "me"
+					local target = if c.special then boardFrame else rowTargets[side][c.row]
+					local flight = b:Clone()
+					flight.Active = false
+					flight.Interactable = false
+					flight.AnchorPoint = Vector2.new(0.5, 0.5)
+					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
+					local start = b.AbsolutePosition + b.AbsoluteSize / 2 - bg.AbsolutePosition
+					local finishAt = target.AbsolutePosition - bg.AbsolutePosition + Vector2.new(
+						if c.special then target.AbsoluteSize.X / 2 else math.min(math.max(31, target.AbsoluteSize.X - 31), 31 + 66 * #m.rows[side][c.row]),
+						target.AbsoluteSize.Y / 2
+					)
+					flight.Position = UDim2.fromOffset(start.X, start.Y)
+					flight.ZIndex = 20
+					flight.Parent = bg
+					b.Visible = false
+					local flightTween = TweenService:Create(flight, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						Position = UDim2.fromOffset(finishAt.X, finishAt.Y),
+						Size = UDim2.fromOffset(if c.special then 76 else 62, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
+						Rotation = 0,
+					})
+					flightTween:Play()
+					flightTween.Completed:Wait()
+					playing = false
+					if finished or not g.Parent then
+						return
+					end
+					flight:Destroy()
+					b.Visible = true
+					afterAction(BC.play(m, "me", i))
 				end)
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
@@ -715,14 +782,18 @@ function NavalBattle.play(opts)
 			local guard = 0
 			while not m.over and not finished and guard < 600 do
 				guard += 1
-				if m.turn == "foe" then
+				if playing then
+					task.wait(0.1)
+				elseif m.turn == "foe" then
 					task.wait(0.9)
+					if finished then break end
 					local ok, msg, res = BC.ai(m, "foe")
 					if ok then
 						afterAction(ok, "해적: " .. (msg or ""), res)
 					end
 				elseif auto then
 					task.wait(0.5)
+					if finished or playing or m.turn ~= "me" or m.over then continue end
 					local ok, msg, res = BC.ai(m, "me")
 					if ok then
 						afterAction(ok, msg, res)
