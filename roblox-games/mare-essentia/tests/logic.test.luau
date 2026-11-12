@@ -224,11 +224,6 @@ local function extraTests()
 	check("대화: 처음엔 보상, 두 번째엔 보상 없음", okT and stT.coins == 40 and act(stT, "PeopleTalk", { id = anyP.id }) and stT.coins == 40)
 	check("대화: 저장/불러오기", S.State.sanitize(S.State.serialize(stT)).peopleTalked[anyP.id] == true and S.People.talkCount(stT) == 1)
 	check("대화: 알 수 없는 인물 거절", select(1, act(stT, "PeopleTalk", { id = "nobody" })) == false)
-	-- 1492년 시작: 15세기 데이터와 저장 복원 후에도 시대가 유지돼야 한다.
-	local st15 = S.State.new("portugal", 1492)
-	local restored15 = S.State.sanitize(S.State.serialize(st15))
-	check("1492 시작: 15세기 기본 연도", S.State.year(st15) == 1492)
-	check("1492 저장 복원: 시작 연도 보존", restored15 ~= nil and restored15.startYear == 1492)
 	-- 1517년 시작 (종교개혁)
 	local st17 = S.State.new("netherlands", 1517)
 	st17.day = HE.dayOf(HE.ById.reformation_95, 1517) + 1

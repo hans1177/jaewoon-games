@@ -228,6 +228,99 @@ function FieldScene.start(opts)
 		placeModel(folder, "Terrain", "campfire-logs", ORIGIN + Vector3.new(28, 0, -24), 3.4, false)
 	end
 
+	-- 실제 도시·유적 랜드마크: 탐험 지점 이름에 맞는 건축물 군을 시작 지점 맞은편에 세운다.
+	-- 등록된 실제 3D 모델만 조합한다 (새 도형 금지). 항목: { 종류, 모델, 크기, dx, dz, 충돌, 회전(도) }
+	do
+		local function ringOf(kind, asset, size, r, n, solid)
+			local t = {}
+			for i = 0, n - 1 do
+				local a = i / n * math.pi * 2
+				table.insert(t, { kind, asset, size, math.cos(a) * r, math.sin(a) * r, solid })
+			end
+			return t
+		end
+		local function rowOf(kind, asset, size, x0, x1, n, dz, solid)
+			local t = {}
+			for i = 0, n - 1 do
+				table.insert(t, { kind, asset, size, x0 + (x1 - x0) * i / math.max(1, n - 1), dz, solid })
+			end
+			return t
+		end
+		local function cat(...)
+			local out = {}
+			for _, l in { ... } do
+				for _, e in l do table.insert(out, e) end
+			end
+			return out
+		end
+		local CATHEDRAL = cat({ { "Town", "church", 38, 0, 0, true }, { "Town", "bell-tower", 28, -24, 6, true }, { "Town", "fountain-round", 8, 0, 26, true },
+			{ "Town", "bench_A", 4, -8, 24 }, { "Town", "bench_A", 4, 8, 24 } }, rowOf("Town", "house", 16, -40, 40, 4, -22, true))
+		local MOSQUE = cat({ { "Town", "temple-stone", 36, 0, 0, true }, { "Terrain", "pillar-obelisk", 24, 26, 4, true }, { "Terrain", "pillar-obelisk", 24, -26, 4, true },
+			{ "Town", "fountain-round", 8, 0, 26, true } }, rowOf("Terrain", "column", 9, -20, 20, 5, 20))
+		local GREEK = cat(rowOf("Terrain", "greek-column", 12, -30, 30, 8, -14, true), rowOf("Terrain", "greek-column", 12, -30, 30, 8, 14, true),
+			{ { "Terrain", "greek-statue", 10, 0, 0, true }, { "Terrain", "greek-ruins-a", 16, -36, 0, true }, { "Terrain", "greek-ruins-b", 16, 36, 0, true },
+			{ "Terrain", "greek-amphitheater", 30, 0, -34, true } })
+		local STONES = cat(ringOf("Terrain", "mystic-column", 12, 22, 10, true), { { "Terrain", "mystic-stone-arch", 16, 0, 0, true }, { "Terrain", "mystic-broken-column", 9, 8, 6, true } })
+		local FORT = cat({ { "Castle", "fortress", 44, 0, 0, true } }, rowOf("Castle", "wall", 14, -36, 36, 6, 30, true), rowOf("Castle", "wall", 14, -36, 36, 6, -30, true),
+			{ { "Castle", "flag-banner-long", 12, -12, 24 }, { "Castle", "flag-banner-long", 12, 12, 24 } })
+		local TOWER = cat({ { "Castle", "fortress", 40, 0, 0, true }, { "Castle", "tower-hexagon-base", 12, -30, -26, true }, { "Castle", "tower-hexagon-mid", 12, -30, -26, true },
+			{ "Castle", "tower-hexagon-roof", 12, -30, -26, true }, { "Castle", "tower-hexagon-base", 12, 30, -26, true }, { "Castle", "tower-hexagon-mid", 12, 30, -26, true },
+			{ "Castle", "tower-hexagon-roof", 12, 30, -26, true }, { "Castle", "bridge-draw", 14, 0, 32, true } }, rowOf("Castle", "wall", 14, -40, 40, 6, -40, true))
+		local DOCKS = cat({ { "Naval", "structure-platform-dock", 40, 0, -20, true }, { "Naval", "boat-fishing-small", 12, 14, -34 }, { "Town", "windmill", 24, -34, 10, true } },
+			rowOf("Cargo", "barrel", 3, -24, 24, 6, 12), rowOf("Town", "house", 18, -40, 40, 3, 30, true), { { "Town", "stall-red", 7, -14, 18 }, { "Town", "stall-green", 7, 14, 18 } })
+		local LIGHT = cat({ { "Naval", "tower-complete-large", 40, 0, 0, true }, { "Naval", "tower-complete-small", 14, 20, 14, true } }, rowOf("Cargo", "barrel", 3, -14, 14, 4, 18))
+		local OLDTOWN = cat(rowOf("Town", "house", 18, -42, 42, 5, -20, true), rowOf("Town", "house", 18, -42, 42, 5, 22, true),
+			{ { "Town", "fountain-square", 12, 0, 0, true }, { "Town", "bell-tower", 24, 0, -34, true }, { "Town", "stall-red", 7, -14, 6 }, { "Town", "stall-green", 7, 14, 6 } })
+		local LANDMARKS = {
+			{ { "런던탑", "런던 유적" }, TOWER }, { { "대성당", "몽생미셸", "세비야", "팔레르모" }, CATHEDRAL },
+			{ { "하기아", "알함브라", "모스크", "이스탄불" }, MOSQUE }, { { "파르테논", "로마", "폼페이", "아테네", "수도교" }, GREEK },
+			{ { "솔즈베리", "선돌", "환상열석", "보인", "봉분", "룬석", "신석기" }, STONES },
+			{ { "성채", "성벽", "방벽", "성 바위", "에든버러 성" }, FORT }, { { "등대" }, LIGHT },
+			{ { "부두", "창고", "크레인", "운하" }, DOCKS }, { { "구시가", "한자 회관", "광장" }, OLDTOWN },
+		}
+		local nm = opts.name or ""
+		for _, lm in LANDMARKS do
+			local hit = false
+			for _, w in lm[1] do
+				if string.find(nm, w, 1, true) then hit = true break end
+			end
+			if hit then
+				local c = ORIGIN + Vector3.new(0, 0, -10)
+				local first
+				for _, e in lm[2] do
+					local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
+					first = first or m
+				end
+				local adorn = first and (first:IsA("BasePart") and first or first:FindFirstChildWhichIsA("BasePart", true))
+				if adorn then
+					local bb = Instance.new("BillboardGui")
+					bb.Adornee = adorn
+					bb.Size = UDim2.fromOffset(300, 56)
+					bb.StudsOffset = Vector3.new(0, 34, 0)
+					bb.MaxDistance = 400
+					bb.AlwaysOnTop = true
+					local l = Instance.new("TextLabel")
+					l.Size = UDim2.fromScale(1, 1)
+					l.BackgroundColor3 = Color3.fromRGB(58, 40, 28)
+					l.TextColor3 = Color3.fromRGB(255, 244, 214)
+					l.Font = Enum.Font.GothamBlack
+					l.TextSize = 24
+					l.Text = "🏛️ " .. nm
+					local st = Instance.new("UIStroke")
+					st.Color = Color3.fromRGB(232, 190, 96)
+					st.Thickness = 2
+					st.Parent = l
+					local cr = Instance.new("UICorner")
+					cr.CornerRadius = UDim.new(0, 12)
+					cr.Parent = l
+					l.Parent = bb
+					bb.Parent = adorn
+				end
+				break
+			end
+		end
+	end
+
 	-- 상태
 	local hp, maxHp = 100, 100
 	local found = 0
