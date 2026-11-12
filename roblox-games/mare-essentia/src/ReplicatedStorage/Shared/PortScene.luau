@@ -322,8 +322,14 @@ end
 local HOUSE_SCALE = 1.45
 
 -- 한 마을의 건물은 재질을 하나로 통일한다 (벽·별채·굴뚝이 제각각 다른 재질로 보이지 않게)
+local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다): 낮을수록 가난한 목조, 높을수록 그 문화권의 번듯한 재료
+local STONE_MATS = { [Enum.Material.Brick] = true, [Enum.Material.Cobblestone] = true, [Enum.Material.Slate] = true, [Enum.Material.Limestone] = true }
 local function uniformMaterial(m, style)
 	local mat = style.mat
+	-- 돌·벽돌 문화권도 초기엔 목조 오두막으로 시작해, 발전하면서 석조로 바뀐다
+	if mat and STONE_MATS[mat] then
+		if houseTier <= 1 then mat = Enum.Material.Wood elseif houseTier == 2 then mat = Enum.Material.WoodPlanks end
+	end
 	if not (m and mat) then return end
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") then
@@ -337,6 +343,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
 	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
+	if houseTier <= 1 then
+		tintColor = tintColor:Lerp(Color3.fromRGB(176, 150, 100), 0.25) -- 초가·통나무 느낌으로 바랜 색
+	end
 	local vacant = vacancyRate > 0 and ((math.floor(math.abs(pos.X * 11 + pos.Z * 17)) % 100) / 100) < vacancyRate
 	if vacant then
 		tintColor = tintColor:Lerp(Color3.fromRGB(96, 94, 92), 0.55)
@@ -402,7 +411,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(annex, style)
 			end
 		end
-		if variant ~= "house_chimney" and math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
+		if variant ~= "house_chimney" and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
 		end
@@ -1934,6 +1943,7 @@ function PortScene.build(info, onFacility)
 	local style = if REGION[info.portId] and STYLE[REGION[info.portId]] then STYLE[REGION[info.portId]] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
+	houseTier = sceneLevel
 	currentKey = styleKeyOf(style)
 	currentYear = if type(info.year) == "number" then info.year else 1700
 	local fac = {}
