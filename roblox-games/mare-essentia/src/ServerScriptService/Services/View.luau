@@ -279,7 +279,7 @@ return function(D, S)
 					{ "교역소에서 특산품을 사 보기", cargoAny or visited >= 2 or state.day > 1 },
 					{ "다른 항구로 출항하기", visited >= 2 },
 					{ "주점에서 동료 영입하기", #state.companions > 0 },
-					{ "의뢰 수락하기 (이야기·퀘스트 탭)", hasQuest },
+					{ "소문을 듣거나 사람과 이야기해 일지에 의뢰 올리기", hasQuest },
 					{ "항구 3곳 방문하기", visited >= 3 },
 				}
 				local left = 0
