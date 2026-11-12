@@ -9,9 +9,21 @@ local IDS = require(script.Parent:WaitForChild("AudioIds"))
 local broken: { [string]: boolean } = {}
 local Regions = require(script.Parent:WaitForChild("Regions"))
 
--- 기본 음량 (0~1)
+-- 기본 음량: 지역·스토리 원본의 인코딩 감쇠(0.50~0.64)를 상쇄한다.
+-- 기존 음악·효과음의 기본값과 사용자 전체 음량/켜기 설정은 유지한다.
 local VOLUME = {
 	music_harbor = 0.7, music_sea = 0.75, music_battle = 0.8, music_market = 0.65,
+	music_pirate = 0.80,
+	music_region_europe = 0.98, music_region_w_africa = 1.08,
+	music_region_new_world = 0.98, music_region_indian = 1.05,
+	music_region_far_east = 0.98, music_region_pacific = 0.98,
+	music_story_tavern = 0.95, music_story_storm = 1.07, music_story_ruins = 1.07,
+	music_story_harbor = 1.00, music_story_palace = 1.08,
+	music_history_war = 1.02, music_history_trade = 0.95,
+	music_history_exploration = 0.95, music_history_discovery = 0.95,
+	music_history_disaster = 1.10,
+	music_wonder_temple = 1.12, music_wonder_nature = 1.07,
+	music_quest_victory = 0.92, music_quest_defeat = 1.04,
 	sfx_waves = 0.5, sfx_wind = 0.35,
 }
 
