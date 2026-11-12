@@ -2121,6 +2121,22 @@ do
 		check("port wave bounded", H.portWave("london", 123) > 0.7 and H.portWave("london", 123) < 1.3)
 		check("festival in window", H.festivalAt("europe", 47) ~= nil and H.festivalAt("europe", 200) == nil)
 		check("tech raises effective level", H.effLevel(1, 6) == 2 and H.effLevel(4, 30) == H.MAX_LEVEL and H.effLevel(2, 0) == 2)
+		do
+			local base = { level = 3, techSum = 12, luxury = 1, regime = H.regime(1580), prevRegime = H.regime(1580), activity = 0, shipyard = false, navTech = 0 }
+			local function fires(id, c)
+				for _, rv in H.REVIVALS do
+					if rv.id == id then return rv.cond(c) end
+				end
+				return false
+			end
+			check("culture revival fires", fires("culture", base))
+			check("culture revival blocked in depression", not fires("culture", { level = 3, techSum = 12, luxury = 1, regime = H.regime(1630), prevRegime = H.regime(1630), activity = 0, shipyard = false, navTech = 0 }))
+			check("culture revival needs tech", not fires("culture", { level = 3, techSum = 5, luxury = 1, regime = H.regime(1580), prevRegime = H.regime(1580), activity = 0, shipyard = false, navTech = 0 }))
+			check("economic revival after deflation ends", fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1682), prevRegime = H.regime(1679), activity = 0.5, shipyard = false, navTech = 0 }))
+			check("no economic revival while still depressed", not fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1630), prevRegime = H.regime(1626), activity = 0.5, shipyard = false, navTech = 0 }))
+			check("no economic revival without trade", not fires("economic", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1682), prevRegime = H.regime(1679), activity = 0.1, shipyard = false, navTech = 0 }))
+			check("fair needs activity", fires("fair", { level = 2, techSum = 0, luxury = 0, regime = H.regime(1700), prevRegime = H.regime(1700), activity = 0.9, shipyard = false, navTech = 0 }))
+		end
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)

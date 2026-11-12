@@ -56,6 +56,28 @@ function Harbor.festivalAt(region: string, day: number)
 	return nil
 end
 
+-- 항구 부흥: 조건이 갖춰지면 저절로 일어나 한동안 활력(vit)·학자 연구 속도(res)가 오른다. 끝나면 1년 뒤에야 다시 일어날 수 있다.
+-- ctx: level, techSum, regime, prevRegime(3년 전 국면), activity(0~1), luxury(사치품 특산 수), shipyard, navTech(지리·조선 기술 합)
+local BAD = { depression = true, bust = true, deflation = true, recession = true }
+Harbor.REVIVALS = {
+	{ id = "culture", name = "문화 부흥", days = 120, vit = 1.4, res = 1.5,
+		cond = function(c) return c.level >= 3 and c.techSum >= 12 and c.luxury >= 1 and not BAD[c.regime.kind] end,
+		text = "화가·학자·장인이 모여들어 도시가 르네상스를 맞았다" },
+	{ id = "economic", name = "경제 부흥", days = 150, vit = 1.6, res = 1.1,
+		cond = function(c) return BAD[c.prevRegime.kind] == true and not BAD[c.regime.kind] and c.activity >= 0.3 end,
+		text = "긴 불황이 끝나고 상인들이 돌아와 가게마다 불이 켜졌다" },
+	{ id = "scholarly", name = "학술 황금기", days = 180, vit = 1.15, res = 2.0,
+		cond = function(c) return c.techSum >= 18 and c.level >= 4 and not BAD[c.regime.kind] end,
+		text = "학회와 학교가 번성해 새 발견이 잇따른다" },
+	{ id = "fair", name = "교역 박람회 붐", days = 90, vit = 1.3, res = 1.0,
+		cond = function(c) return c.activity >= 0.8 and c.level >= 2 end,
+		text = "전국의 상인이 몰려 큰 장이 열렸다" },
+	{ id = "maritime", name = "해양 부흥", days = 150, vit = 1.25, res = 1.2,
+		cond = function(c) return c.shipyard and c.navTech >= 2 and not BAD[c.regime.kind] end,
+		text = "조선소가 새 배를 쏟아내고 항로가 넓어진다" },
+}
+Harbor.REVIVAL_COOLDOWN = 365
+
 -- 해금 단계: 항구 단계에 그 항구 학자들의 기술 수준 합(techSum)이 더해진다 (기술 6점마다 +1단계, 최대 5)
 function Harbor.effLevel(level: number, techSum: number?): number
 	return math.min(Harbor.MAX_LEVEL, level + math.floor((techSum or 0) / 6))

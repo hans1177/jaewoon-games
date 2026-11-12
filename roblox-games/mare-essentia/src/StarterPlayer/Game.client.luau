@@ -2774,6 +2774,9 @@ function RENDERERS.harbor()
 				string.format("학자 기술 합계 %d → 단계 %d개 이상 열린 품목에 반영", e.techSum, math.floor(e.techSum / 6)),
 			}
 			if e.festival then table.insert(lines, "축제: " .. e.festival) end
+			for _, b in e.boosts or {} do
+				table.insert(lines, string.format("부흥: %s (%d일 남음)", b.name, b.left))
+			end
 			for _, ev in e.events or {} do
 				table.insert(lines, string.format("%s: %s (%d일 남음)", if ev.kind == "disaster" then "재해" else "행운", ev.title, ev.left))
 			end

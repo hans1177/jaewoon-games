@@ -97,6 +97,36 @@ return function(D, S)
 		state.harborTrade[state.portId] = nil
 		local region = D.Regions.of(port).id
 		local vit = H.vitality(regime, region, H.producesOf(port.produces, region, year), activity)
+		-- 항구 부흥: 조건이 맞으면 발동, 진행 중이면 활력·연구 속도 보너스
+		state.harborBoost = state.harborBoost or {}
+		local techNow = S.Knowledge.techSum(state, state.portId)
+		local resMult = 1
+		do
+			local lux = 0
+			for _, g in H.producesOf(port.produces, region, year) do
+				if H.categoryOf(g) == "luxury" then
+					lux += 1
+				end
+			end
+			local ctx = {
+				level = before, techSum = techNow, regime = regime, prevRegime = H.regime(year - 3),
+				activity = activity, luxury = lux, shipyard = port.shipyard == true,
+				navTech = S.Knowledge.techLevel(state, state.portId, "geography") + S.Knowledge.techLevel(state, state.portId, "shipbuilding"),
+			}
+			for _, rv in H.REVIVALS do
+				local key = state.portId .. "|" .. rv.id
+				local untilDay = state.harborBoost[key]
+				if untilDay and untilDay >= state.day then
+					vit *= rv.vit
+					resMult *= rv.res
+				elseif (not untilDay or state.day >= untilDay + H.REVIVAL_COOLDOWN) and rv.cond(ctx) then
+					state.harborBoost[key] = state.day + rv.days
+					vit *= rv.vit
+					resMult *= rv.res
+					table.insert(msgs, string.format("%s에 '%s'이 찾아왔다! %s", port.name, rv.name, rv.text))
+				end
+			end
+		end
 		-- 항구 고유 파동, 지역 축제, 진행 중인 재해·행운 (실제 사건은 World 가 일으킨다)
 		vit *= H.portWave(port.id, state.day)
 		local fest = H.festivalAt(region, state.day)
@@ -133,7 +163,7 @@ return function(D, S)
 		-- 이 항구 학자들의 자율 연구: 번영하면 빨라지고, 불황·재해에는 멈춘다
 		local techBefore = S.Knowledge.techSum(state, state.portId)
 		if vit >= 0.8 then
-			local pts = math.floor(elapsed * 0.04 * vit * (1 + before * 0.3) + 0.5)
+			local pts = math.floor(elapsed * 0.04 * vit * resMult * (1 + before * 0.3) + 0.5)
 			if pts > 0 and S.Knowledge.autoResearch(state, state.portId, pts) > 0 then
 				table.insert(msgs, string.format("%s의 학자들이 연구를 진전시켰다 (기술 수준 상승)", port.name))
 			end
@@ -189,7 +219,15 @@ return function(D, S)
 			sum += H.priceMult(regime, region, id)
 			n += 1
 		end
+		local boosts = {}
+		for _, rv in H.REVIVALS do
+			local u = state.harborBoost and state.harborBoost[portId .. "|" .. rv.id]
+			if u and u >= state.day then
+				table.insert(boosts, { name = rv.name, left = u - state.day })
+			end
+		end
 		return {
+			boosts = boosts,
 			index = math.floor(vit * 100 + 0.5), -- 경기지수 (100 = 평시, 50 미만이면 쇠퇴)
 			priceIndex = math.floor(sum / n * 100 + 0.5),
 			trade = trade,
