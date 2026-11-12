@@ -80,6 +80,7 @@ const cinematic=new VibeCinematicDirector({adapter:{
 }});
 const characterPerformance=createCharacterPerformance();
 let handAnimation=null,facialRig=null,handRig=null,keyframePlayer=null,expressionDirector=null;
+let handGesture=null; // [손 동작] 실제 원본 본이 있는 GLTF에만 재생 이후 보조 포즈를 적용한다.
 const premiumActions=new VibeActionDirector({onCue:event=>{if(event.type==='impact-window')screenFx.add('flash',{duration:.12,strength:.25})}});
 const locomotion=new VibeLocomotionPolish({onStep:()=>{const cue=audioCues.plan('footstep',{now:window.performance.now()/1000});if(cue)atmosphericSound.play('footstep',{volume:cue.volume})}});
 const screenFx=new VibeScreenFxDirector();const audioCues=createVibeAudioCuePlanner();const heldKeys=new Set(),touchKeys=new Set();
@@ -183,6 +184,21 @@ const impactButton=document.createElement('button');impactButton.textContent='�
 impactButton.addEventListener('click',()=>presentation.cue('impact',{shake:.3,hitStop:.045,flash:.12,sound:'impact',label:'타격'}));
 const motionToggle=document.createElement('label');motionToggle.innerHTML='<input type="checkbox"> 움직임 감소';studioControls.append(motionToggle);motionToggle.querySelector('input').addEventListener('change',e=>presentation.engine.setAccessibility({reducedMotion:e.target.checked}));const clipNames=[];
 const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');studioControls.append(animationPicker);
+// [메인: 손 제스처] 별도 엔진이나 외부 에셋 없이 현재 승인된 원본 모델의 본을 사용한다.
+const handGestureButton=document.createElement('button');handGestureButton.type='button';
+handGestureButton.textContent='손 제스처: 원본';handGestureButton.setAttribute('aria-label','실제 손가락 제스처 변경');
+handGestureButton.addEventListener('click',()=>{
+ if(!url||!activeModel||!handRig){status.textContent='손가락 본이 있는 실제 GLTF 모델이 필요해';return;}
+ const supported=Object.values(handRig.hands).some(hand=>Object.values(hand).some(chain=>chain.length));
+ if(!supported){status.textContent='원본 모델에 인식 가능한 손가락 본이 없어';return;}
+ const gestures=[null,'grip','fist','point'],labels=['원본','잡기','주먹','가리키기'];
+ const next=(gestures.indexOf(handGesture)+1)%gestures.length;
+ handGesture=gestures[next];
+ if(!handGesture)handRig.reset();
+ handGestureButton.textContent='손 제스처: '+labels[next];
+ status.textContent='기존 본 손 제스처 · '+labels[next];
+});
+studioControls.append(handGestureButton);
 const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()});
 // [실제 픽셀 진단] 25개 화면 좌표에서 WebGL 읽기. 테스트 마커/가상 점수는 시각 품질 증거가 아니다.
 const reviewButton=document.createElement('button');reviewButton.textContent='실제 화면 품질 진단';
@@ -229,7 +245,10 @@ function draw(now){
  if(now-last<(mobileView?33:16))return;
  last=now;
  const delta=Math.min(clock.getDelta(),.1);const input={x:Number(heldKeys.has('KeyD')||heldKeys.has('ArrowRight')||touchKeys.has('ArrowRight'))-Number(heldKeys.has('KeyA')||heldKeys.has('ArrowLeft')||touchKeys.has('ArrowLeft')),z:Number(heldKeys.has('KeyS')||heldKeys.has('ArrowDown')||touchKeys.has('ArrowDown'))-Number(heldKeys.has('KeyW')||heldKeys.has('ArrowUp')||touchKeys.has('ArrowUp'))};const actionState=premiumActions.update(delta);const motionState=locomotion.update(delta,{input,speed:resolveVibeGenre(genrePicker.value).movement.speed,locked:actionState.movementLocked});if(characterMotion){characterMotion.move({speed:Math.min(1,motionState.speed/Math.max(.1,resolveVibeGenre(genrePicker.value).movement.speed)),direction:motionState.facing,grounded:!climbMotion?.busy()});characterMotion.update(delta)}else mixer?.update(delta);if(activeModel&&!climbMotion?.busy()&&playerHealth.alive){activeModel.position.x+=motionState.velocity.x*delta;activeModel.position.z+=motionState.velocity.z*delta;if(handAnimation){if(motionState.speed>.15&&handAnimation.action!=='walk')handAnimation.play('walk');if(motionState.speed<=.15&&handAnimation.action==='walk')handAnimation.play('idle');}}if(climbMotion?.busy())climbMotion.update(delta);playerHealth.tick(delta);trainingEnemy.update(delta);storybookWorld.update(delta);if(survivalVisible){const vitals=survivalDisplay.tick(delta,{sprinting:heldKeys.has('ShiftLeft')});survivalEffects.update(vitals,{reducedMotion:gameUi.ui.settings.reducedMotion})}if(heldKeys.has('KeyE')&&activeModel){const p=activeModel.position;const ledge=ledgeController.find({x:p.x,y:p.y,z:p.z});if(ledge.canGrab){climbMotion=createClimbMotion(activeModel);climbMotion.begin(ledge);climbLedge=ledge.landing;const rig=discoverClimbSkeleton(activeModel);climbRig=createAdaptiveClimbIK(THREE,{avatar:activeModel,rig});status.textContent='난간 잡기 · 매달리기 · 올라가기';heldKeys.delete('KeyE')}}const built=worldBridge.sync(gameUi.gameplay.snapshot());if(built>previousBuildings)worldVfx.burst({x:1,y:1,z:1});previousBuildings=built;worldVfx.update(delta);genreMusic.update();genreMotion?.update(delta);fxOverlay.render(screenFx.update(delta));const actingEmotion=cinematicEmotion&&window.performance.now()<cinematicEmotionUntil?cinematicEmotion:emotionPicker.value;
- handAnimation?.update(delta,{emotion:actingEmotion});keyframePlayer?.update(delta);lightingDirector.update(delta);if(expressionDirector){expressionDirector.set(actingEmotion==='neutral'?'neutral':actingEmotion==='joy'?'joy':actingEmotion==='fear'?'fear':'pain');expressionDirector.update(delta,{reducedMotion:gameUi.ui.settings.reducedMotion})}if(facialRig&& !handAnimation){facialRig.pose({mouthSmileLeft:emotionPicker.value==='joy'?.7:0,mouthSmileRight:emotionPicker.value==='joy'?.7:0,browInnerUp:emotionPicker.value==='fear'?.6:0,jawOpen:emotionPicker.value==='pain'?.4:0})}if(climbMotion?.busy())climbRig?.update(climbLedge,{phase:climbMotion.phase,weight:.65});if(showcaseActive)cinematic.update(delta);
+ handAnimation?.update(delta,{emotion:actingEmotion});keyframePlayer?.update(delta);
+// [메인: 관절 포즈] 기존 애니메이션 믹서가 갱신된 뒤 실제 손가락 본에만 선택 제스처를 적용한다.
+if(handGesture&&handRig){handRig.gesture('left',handGesture);handRig.gesture('right',handGesture)}
+lightingDirector.update(delta);if(expressionDirector){expressionDirector.set(actingEmotion==='neutral'?'neutral':actingEmotion==='joy'?'joy':actingEmotion==='fear'?'fear':'pain');expressionDirector.update(delta,{reducedMotion:gameUi.ui.settings.reducedMotion})}if(facialRig&& !handAnimation){facialRig.pose({mouthSmileLeft:emotionPicker.value==='joy'?.7:0,mouthSmileRight:emotionPicker.value==='joy'?.7:0,browInnerUp:emotionPicker.value==='fear'?.6:0,jawOpen:emotionPicker.value==='pain'?.4:0})}if(climbMotion?.busy())climbRig?.update(climbLedge,{phase:climbMotion.phase,weight:.65});if(showcaseActive)cinematic.update(delta);
  // [메인: 구도] 장르별 카메라 화각과 추적 관성을 적용하되 쇼케이스 트랙은 덮어쓰지 않는다.
  else if(activeModel){
   const view=resolveVibeGenre(genrePicker.value).camera;
