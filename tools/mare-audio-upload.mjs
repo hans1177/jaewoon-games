@@ -30,7 +30,7 @@ function prepareVerifiedCC0(track){
     // CC0 Kenney RPG 음원 묶음은 이미 저장소에 다운로드 원본/원본 SHA-256 장부가 있다.
     if(track.sourceFile!==cc0PackDir+'kenney-rpg-sfx-50.zip'
       ||!/^[a-f0-9]{64}$/.test(track.sourceArchiveSha256)
-      ||!/^Audio\/[A-Za-z0-9_]+\.ogg$/.test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
+      ||!/^OGG\/[A-Za-z0-9_]+\.ogg$/.test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
     const source=cc0PackManifest.packs?.find(x=>x.file==='kenney-rpg-sfx-50.zip');
     if(!source||source.licenseDeclared!=='CC0-1.0'
       ||source.licenseSourceUrl!==track.sourceUrl||source.sourceUrl!==track.sourceDownloadUrl
