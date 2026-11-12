@@ -2,6 +2,11 @@
 # 기존 마리 에센시아 CC0 오디오 등록 작업. 등록 ID/영수증은 main 직접 쓰기 대신 기존 PR 검토로 전달한다.
 name: Mare Audio Upload
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mare-audio-upload.yml'
+      - 'roblox-games/mare-essentia/audio/manifest.json'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -45,7 +50,7 @@ jobs:
         continue-on-error: true
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
+          MARE_UNIVERSE_ID: ${{ inputs.universe_id || '10775310508' }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
           AUDIO_FRESH: '0'
         run: node tools/mare-audio-upload.mjs
