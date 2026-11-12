@@ -88,16 +88,22 @@ pcall(function()
 	tcs.ChatInputBarConfiguration.Enabled = false
 end)
 
--- 디자인 시스템: 짙은 남색 바탕 + 가죽빛 행 + 황동 테두리 + 양피지빛 글씨 (대항해시대 풍)
+-- 백과사전 공통 표지와 본문 색
 local COLORS = {
+	cover = Color3.fromRGB(26, 34, 40),
+	coverRaised = Color3.fromRGB(49, 57, 60),
+	leather = Color3.fromRGB(56, 43, 35),
+	paper = Color3.fromRGB(237, 222, 188),
+	ink = Color3.fromRGB(51, 37, 25),
+	brown = Color3.fromRGB(114, 75, 43),
 	text = Color3.fromRGB(246, 238, 220),
 	muted = Color3.fromRGB(176, 166, 146),
-	row = Color3.fromRGB(34, 36, 44),
-	blue = Color3.fromRGB(58, 98, 150),
-	green = Color3.fromRGB(70, 140, 92),
-	red = Color3.fromRGB(168, 66, 58),
+	row = Color3.fromRGB(49, 45, 40),
+	blue = Color3.fromRGB(50, 83, 106),
+	green = Color3.fromRGB(66, 116, 93),
+	red = Color3.fromRGB(144, 63, 48),
 	gold = Color3.fromRGB(226, 176, 78),
-	grey = Color3.fromRGB(70, 72, 82),
+	grey = Color3.fromRGB(83, 74, 62),
 	steam = Color3.fromRGB(150, 110, 70),
 }
 local UI_BRASS = Color3.fromRGB(214, 170, 82)
@@ -630,10 +636,16 @@ end
 
 -- 메인 화면 구조 ------------------------------------------------------------
 
-local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16) })
+H.bookTheme = CommonUI.CreateTheme({
+	Panel = COLORS.cover, PanelRaised = COLORS.coverRaised, PanelInset = COLORS.leather,
+	Border = UI_BRASS_DARK, BorderBright = UI_BRASS, Text = COLORS.text, MutedText = COLORS.muted,
+	Primary = COLORS.blue, PrimaryTop = Color3.fromRGB(69, 106, 128), PrimaryBottom = COLORS.cover,
+	Accent = COLORS.gold, Positive = COLORS.green, Danger = COLORS.red,
+})
+local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16), theme = H.bookTheme })
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
-main.BackgroundColor3 = Color3.fromRGB(16, 24, 36)
+main.BackgroundColor3 = COLORS.cover
 main.Parent = gui
 do
 	local st = Instance.new("UIStroke")
@@ -1064,8 +1076,8 @@ menuToggle.BackgroundTransparency = 1
 menuToggle.Text = ""
 
 -- 대항해시대 온라인풍 HUD: 좌상단 선장 카드, 우상단 소지금, 하단 메뉴 독 -----------------
-local NAVY = Color3.fromRGB(14, 24, 38)
-local NAVY2 = Color3.fromRGB(28, 46, 70)
+local NAVY = COLORS.cover
+local NAVY2 = COLORS.coverRaised
 local BRASS = Color3.fromRGB(214, 170, 82)
 
 local function hudStroke(obj, thickness)
@@ -3959,7 +3971,7 @@ local function openYardHall()
 	main.Visible = false
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
-	root.BackgroundColor3 = Color3.fromRGB(26, 32, 40)
+	root.BackgroundColor3 = COLORS.cover
 	root.BorderSizePixel = 0
 	root.Parent = layer
 	local scroll = Instance.new("ScrollingFrame")
@@ -4327,9 +4339,7 @@ function H.showCardDetail(card)
 	local fieldDef = if card.combat then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
 	local article = if card.found then require(Shared:WaitForChild("KnowledgeCards")).Articles[card.id] else nil
 	local tweens = game:GetService("TweenService")
-	local paper = Color3.fromRGB(237, 222, 188)
-	local ink = Color3.fromRGB(51, 37, 25)
-	local brown = Color3.fromRGB(114, 75, 43)
+	local paper, ink, brown = COLORS.paper, COLORS.ink, COLORS.brown
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.fromScale(1, 1)
 	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -5604,7 +5614,7 @@ openOptions = function()
 	win.AnchorPoint = Vector2.new(0.5, 0.5)
 	win.Position = UDim2.fromScale(0.5, 0.5)
 	win.Size = UDim2.new(0, 540, 0.86, 0)
-	win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	win.BackgroundColor3 = COLORS.cover
 	win.BorderSizePixel = 0
 	win.Parent = layer
 	corner(win, 16)
@@ -5959,186 +5969,77 @@ function H.startNewGame()
 	end
 end
 
--- 타이틀(새 게임) 화면 배경: 월드가 비치지 않게 가리고, 해 질 녘 바다와 배 실루엣, 게임 이름을 직접 그려 분위기를 만든다
+-- 시작 화면: 백과사전 원화와 표지 제목
 local titleGui = overlayGui("TitleBackdrop", -5)
 titleGui.Enabled = false
--- 3D 항구 미리보기의 책임 함수. 상위 UI 블록의 Luau 지역변수 200개 제한을 넘기지 않는다.
-function H.buildTitlePreview(root)
-	local titleShip
-	-- 파일명: Game.client.luau / 3D 타이틀
-	-- 승인된 항구·범선 원본 모델만 미리보기에 복제한다. 저장과 월드 파츠는 건드리지 않는다.
-	local preview = Instance.new("ViewportFrame")
-	preview.Name = "TitleHarbor3D"
-	preview.BackgroundTransparency = 1
-	preview.Position = UDim2.fromScale(-0.04, 0.23)
-	preview.Size = UDim2.fromScale(0.72, 0.72)
-	preview.Ambient = Color3.fromRGB(147, 175, 194)
-	preview.LightColor = Color3.fromRGB(255, 233, 191)
-	preview.LightDirection = Vector3.new(-0.6, -0.7, -0.4)
-	preview.ZIndex = 5
-	preview.Parent = root
-	local world = Instance.new("WorldModel")
-	world.Parent = preview
-	local camera = Instance.new("Camera")
-	camera.FieldOfView = 40
-	camera.Parent = preview
-	preview.CurrentCamera = camera
-	local shipName, dockModel
-	local SHIP_MODELS = {
-		caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-pirate-medium",
-		galleon = "ship-large", paddle_steamer = "ship-pirate-small",
-		ironclad_frigate = "ship-pirate-medium",
-	}
-	local function approvedClone(kind, name, at, span, angle, sink)
-		local library = ReplicatedStorage:FindFirstChild("MareAssets")
-		local folder = library and library:FindFirstChild(kind)
-		local original = folder and folder:FindFirstChild(name)
-		if not (original and original:IsA("Model")) then return nil end
-		local model = original:Clone()
-		for _, part in model:GetDescendants() do
-			if part:IsA("BasePart") then
-				part.Anchored = true
-				part.CanCollide = false
-				part.CanTouch = false
-				part.CanQuery = false
-			end
-		end
-		local bounds = model:GetExtentsSize()
-		local longest = math.max(bounds.X, bounds.Y, bounds.Z)
-		if longest < 0.01 then model:Destroy(); return nil end
-		model:ScaleTo(model:GetScale() * span / longest)
-		model:PivotTo(CFrame.new(at) * CFrame.Angles(0, math.rad(angle), 0))
-		-- 바닥면을 물높이(at.Y)에 맞춘다: 모델 중심이 아니라 밑바닥이 수면에 닿게 (둥둥 뜨는 느낌 방지)
-		local cf, size = model:GetBoundingBox()
-		local drop = (cf.Position.Y - size.Y / 2) - at.Y + (sink or 0)
-		model:PivotTo(model:GetPivot() - Vector3.new(0, drop, 0))
-		model:SetAttribute("PivotLift", model:GetPivot().Position.Y - at.Y)
-		model.Parent = world
-		return model
-	end
-	-- 수면: 배 둘레에 은은한 물결 원판을 깔아 배·부두가 물 위에 놓인 것처럼 보이게 한다
-	for i, spec in { { 34, 0.78, Color3.fromRGB(70, 130, 160) }, { 24, 0.6, Color3.fromRGB(110, 170, 185) }, { 15, 0.45, Color3.fromRGB(180, 215, 215) } } do
-		local disc = Instance.new("Part")
-		disc.Shape = Enum.PartType.Cylinder
-		disc.Anchored, disc.CanCollide, disc.CanTouch, disc.CanQuery = true, false, false, false
-		disc.Material = Enum.Material.SmoothPlastic
-		disc.Color = spec[3]
-		disc.Transparency = spec[2]
-		disc.Size = Vector3.new(0.12, spec[1], spec[1])
-		disc.CFrame = CFrame.new(3 + i, -0.55 - i * 0.02, -2) * CFrame.Angles(0, 0, math.pi / 2)
-		disc.Parent = world
-	end
-	H.refreshTitlePreview = function()
-		if not titleGui.Enabled then return end
-		local desired = SHIP_MODELS[view and view.ship and view.ship.id] or "ship-large"
-		if desired ~= shipName then
-			if titleShip then titleShip:Destroy(); titleShip = nil end
-			titleShip = approvedClone("Naval", desired, Vector3.new(0, -0.5, 0), 12.5, -22, 0.35)
-			if titleShip then shipName = desired end
-		end
-		if not dockModel then
-			dockModel = approvedClone("Naval", "structure-platform-dock", Vector3.new(15, -0.5, -4), 10, 78, 0.2)
-		end
-	end
-	task.spawn(function()
-		local library = ReplicatedStorage:WaitForChild("MareAssets", 20)
-		if not library then return end
-		for kind in pairs({ Naval = true, Town = true }) do
-			local folder = library:FindFirstChild(kind)
-			if folder then
-				folder.ChildAdded:Connect(function()
-					if titleGui.Enabled then task.defer(H.refreshTitlePreview) end
-				end)
-			end
-		end
-		H.refreshTitlePreview()
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if not titleGui.Enabled then return end
-		local t = os.clock()
-		if titleShip and titleShip.Parent then
-			titleShip:PivotTo(CFrame.new(0, -0.5 + (titleShip:GetAttribute("PivotLift") or 0) + math.sin(t * 0.9) * 0.1, 0)
-				* CFrame.Angles(math.sin(t * 0.5) * 0.016, math.rad(-22) + math.sin(t * 0.16) * 0.10, math.sin(t) * 0.013))
-		end
-		camera.CFrame = CFrame.lookAt(
-			Vector3.new(23 + math.sin(t * 0.11) * 2, 11.5, 26 + math.cos(t * 0.11) * 2),
-			Vector3.new(0, 0, -3))
-	end)
-	local function titlePreviewLayout()
-		local currentCamera = workspace.CurrentCamera
-		local size = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
-		local portrait = size.Y > size.X
-		preview.Position = if portrait then UDim2.fromScale(-0.12, 0.28) else UDim2.fromScale(-0.04, 0.23)
-		preview.Size = if portrait then UDim2.fromScale(1.16, 0.49) else UDim2.fromScale(0.72, 0.72)
-	end
-	titlePreviewLayout()
-	if workspace.CurrentCamera then
-		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(titlePreviewLayout)
-	end
-end
-
 do
-	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(14, 20, 40))
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
 	root.ClipsDescendants = true
-	local sky = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.66), Color3.new(1, 1, 1))
-	local g = Instance.new("UIGradient")
-	g.Rotation = 90
-	g.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 70, 114)),
-		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(85, 149, 183)),
-		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(233, 169, 124)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 190, 110)),
+	local picture = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
+	picture.ClipsDescendants = true
+	local art = Instance.new("ImageLabel")
+	art.Name = "TitleVoyageIllustration"
+	art.AnchorPoint = Vector2.new(0.5, 0.5)
+	art.Position = UDim2.fromScale(0.5, 0.5)
+	art.Size = UDim2.fromScale(1.06, 1.06)
+	art.BackgroundTransparency = 1
+	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
+	art.ScaleType = Enum.ScaleType.Crop
+	art.Parent = picture
+
+	local veil = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
+	veil.ZIndex = 2
+	local fade = Instance.new("UIGradient")
+	fade.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.54, 1),
+		NumberSequenceKeypoint.new(0.78, 0.48), NumberSequenceKeypoint.new(1, 0),
 	})
-	g.Parent = sky
-	local starRng = Random.new(7)
-	for _ = 1, 40 do
-		local st = mkBox(sky, UDim2.fromScale(starRng:NextNumber(), starRng:NextNumber() * 0.5), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 244, 220), starRng:NextNumber(0.2, 0.7))
-		st.ZIndex = 2
+	fade.Parent = veil
+	local shade = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.35), Color3.fromRGB(18, 26, 32))
+	shade.ZIndex = 2
+	local shadeFade = Instance.new("UIGradient")
+	shadeFade.Rotation = 90
+	shadeFade.Transparency = NumberSequence.new(0.12, 1)
+	shadeFade.Parent = shade
+
+	local heading = mkLabel(root, "마레 에센시아", 46, COLORS.paper, true)
+	heading.AutomaticSize = Enum.AutomaticSize.None
+	heading.TextScaled = true
+	heading.TextWrapped = false
+	heading.TextStrokeColor3 = COLORS.ink
+	heading.TextStrokeTransparency = 0.48
+	heading.ZIndex = 4
+	local headingLimit = Instance.new("UITextSizeConstraint")
+	headingLimit.MaxTextSize = 46
+	headingLimit.Parent = heading
+	local subtitle = mkLabel(root, "학문의 바다", 19, Color3.fromRGB(251, 223, 167), true)
+	subtitle.AutomaticSize = Enum.AutomaticSize.None
+	subtitle.TextStrokeColor3 = COLORS.ink
+	subtitle.TextStrokeTransparency = 0.45
+	subtitle.ZIndex = 4
+
+	local function layout()
+		local size = root.AbsoluteSize
+		local portrait = size.X < size.Y
+		picture.Size = if portrait then UDim2.fromScale(1, 0.72) else UDim2.fromScale(0.70, 1)
+		fade.Rotation = if portrait then 90 else 0
+		heading.Position = if portrait then UDim2.fromScale(0.07, 0.045) else UDim2.fromScale(0.055, 0.075)
+		heading.Size = if portrait then UDim2.new(0.86, 0, 0, 46) else UDim2.new(0.51, 0, 0, 61)
+		heading.TextXAlignment = if portrait then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
+		subtitle.Position = heading.Position + UDim2.fromOffset(0, heading.Size.Y.Offset + 2)
+		subtitle.Size = UDim2.new(heading.Size.X.Scale, 0, 0, 26)
+		subtitle.TextXAlignment = heading.TextXAlignment
 	end
-	local sun = mkRound(root, UDim2.fromScale(0.2, 0.64), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
-	sun.ZIndex = 2
-	local sea = mkBox(root, UDim2.fromScale(0, 0.64), UDim2.fromScale(1, 0.36), Color3.new(1, 1, 1))
-	sea.ZIndex = 3
-	local sg = Instance.new("UIGradient")
-	sg.Rotation = 90
-	sg.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 181)),
-		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(45, 101, 135)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 18, 38)),
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+	layout()
+
+	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(14, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+		Size = UDim2.fromScale(1.13, 1.13),
+		Position = UDim2.fromScale(0.49, 0.49),
 	})
-	sg.Parent = sea
-	for i = 1, 9 do
-		local w = mkBox(sea, UDim2.fromScale(0.04 + (i * 0.37) % 0.8, 0.08 + i * 0.09), UDim2.fromScale(0.1 + (i % 3) * 0.04, 0.012), Color3.fromRGB(255, 200, 150), 0.7)
-		w.ZIndex = 4
-	end
-	H.buildTitlePreview(root)
-	-- 게임 이름
-	local function titleText(text, y, size, color, font)
-		local l = Instance.new("TextLabel")
-		l.BackgroundTransparency = 1
-		l.AnchorPoint = Vector2.new(0.5, 0)
-		local currentCamera = workspace.CurrentCamera
-		local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
-		local portrait = screen.Y > screen.X
-		l.Position = UDim2.new(if portrait then 0.5 else 0.29, 0, if portrait then y * 0.65 else y, 0)
-		l.Size = UDim2.new(if portrait then 0.90 else 0.53, 0, 0, size + 14)
-		l.Text = text
-		l.TextSize = size
-		l.TextScaled = true
-		local limit = Instance.new("UITextSizeConstraint")
-		limit.MaxTextSize = size
-		limit.MinTextSize = 12
-		limit.Parent = l
-		l.Font = font
-		l.TextColor3 = color
-		l.TextStrokeTransparency = 0.5
-		l.ZIndex = 8
-		l.Parent = root
-		return l
-	end
-	titleText("MARE ESSENTIA", 0.12, 38, Color3.fromRGB(246, 208, 130), Enum.Font.GothamBlack)
-	titleText("학문의 바다", 0.12 + 0.11, 26, Color3.fromRGB(240, 232, 215), Enum.Font.GothamBold)
-	titleText("지식을 싣고, 미지의 바다를 건너라", 0.12 + 0.2, 16, Color3.fromRGB(214, 200, 180), Enum.Font.Gotham)
+	titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+		if titleGui.Enabled then drift:Play() else drift:Pause() end
+	end)
 end
 -- 타이틀 오른쪽 선택 패널: 나라(3열 카드) → 시대(3칸) → 출항 버튼 순서로, 스크롤 없이 한눈에 보이게 짠다
 local GOLD = Color3.fromRGB(226, 182, 92)
@@ -6152,7 +6053,7 @@ do
 	lim.MaxSize = Vector2.new(720, 9999)
 	lim.Parent = titlePanel
 end
-titlePanel.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
+titlePanel.BackgroundColor3 = COLORS.cover
 titlePanel.BackgroundTransparency = 0.08
 titlePanel.BorderSizePixel = 0
 titlePanel.Visible = false
@@ -6297,7 +6198,7 @@ renderTitle = function()
 	local box = Instance.new("Frame")
 	box.Size = UDim2.new(1, 0, 0, 0)
 	box.AutomaticSize = Enum.AutomaticSize.Y
-	box.BackgroundColor3 = Color3.fromRGB(20, 28, 42)
+	box.BackgroundColor3 = COLORS.row
 	box.BorderSizePixel = 0
 	box.LayoutOrder = nxt()
 	box.ZIndex = 12
@@ -6453,7 +6354,6 @@ function H.setTitleMode(on)
 	titlePanel.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
 	titlePanel.Position = if portrait then UDim2.new(0.5, 0, 1, -8) else UDim2.new(1, -14, 0.5, 0)
 	titlePanel.Size = if portrait then UDim2.new(0.94, 0, 0.70, 0) else UDim2.new(0.58, 0, 1, -28)
-	if titleGui.Enabled and H.refreshTitlePreview then H.refreshTitlePreview() end
 	if on then
 		main.Visible = false
 	elseif H.wasTitle then
@@ -6517,89 +6417,103 @@ function H.showTitle()
 	H.titleMenuOpen = true
 	titleGui.Enabled = true
 	titlePanel.Visible = false
-	if H.refreshTitlePreview then H.refreshTitlePreview() end
+	local visibility = main:GetPropertyChangedSignal("Visible"):Connect(function()
+		if H.titleMenuOpen and main.Visible then main.Visible = false end
+	end)
+	layer.Destroying:Connect(function() visibility:Disconnect() end)
 	local function leave()
 		H.titleMenuOpen = false
 		layer:Destroy()
 	end
-	-- 시작 메뉴가 떠 있는 동안 게임 본 화면이 뒤에 비치지 않게 계속 숨긴다
-	task.spawn(function()
-		while H.titleMenuOpen do
-			main.Visible = false
-			task.wait(0.1)
-		end
-	end)
+
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundTransparency = 1
-	root.BorderSizePixel = 0
 	root.Parent = layer
-
 	local box = Instance.new("Frame")
-	local currentCamera = workspace.CurrentCamera
-	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
-	local portrait = screen.Y > screen.X
-	box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
-	box.Position = if portrait then UDim2.new(0.5, 0, 1, -18) else UDim2.new(1, -18, 0.5, 0)
-	box.Size = if portrait then UDim2.new(0.91, 0, 0, 330) else UDim2.new(0.4, 0, 0, 330)
-	box.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
-	box.BackgroundTransparency = 0.1
+	box.BackgroundColor3 = COLORS.cover
+	box.BackgroundTransparency = 0.04
 	box.BorderSizePixel = 0
 	box.Parent = root
-	corner(box, 16)
-	do
-		local st = Instance.new("UIStroke")
-		st.Color = Color3.fromRGB(226, 182, 92)
-		st.Thickness = 2
-		st.Parent = box
-		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(440, 400)
-		lim.MinSize = Vector2.new(280, 300)
-		lim.Parent = box
-		local pad = Instance.new("UIPadding")
-		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 16), UDim.new(0, 14)
-		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 18), UDim.new(0, 18)
-		pad.Parent = box
-		local lay = Instance.new("UIListLayout")
-		lay.Padding = UDim.new(0, 10)
-		lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		lay.SortOrder = Enum.SortOrder.LayoutOrder
-		lay.Parent = box
-	end
-	local head = mkLabel(box, "선장의 항해 일지", 20, Color3.fromRGB(246, 208, 130), true, 1)
-	head.Size = UDim2.new(1, 0, 0, 26)
-	head.AutomaticSize = Enum.AutomaticSize.None
-	head.TextXAlignment = Enum.TextXAlignment.Center
+	corner(box, 11)
+	local edge = Instance.new("UIStroke")
+	edge.Color = UI_BRASS
+	edge.Thickness = 1.5
+	edge.Parent = box
+	local bounds = Instance.new("UISizeConstraint")
+	bounds.MaxSize = Vector2.new(460, if view then 318 else 230)
+	bounds.Parent = box
 
-	local function big(label, color, order, height, onClick)
-		local b = mkButton(box, label, color, UDim2.new(1, 0, 0, height), onClick, true)
-		b.TextSize = 22
-		b.LayoutOrder = order
-		local st = Instance.new("UIStroke")
-		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		st.Color = Color3.fromRGB(255, 226, 150)
-		st.Transparency = 0.4
-		st.Thickness = 1.5
-		st.Parent = b
-		return b
+	local pages = Instance.new("ScrollingFrame")
+	pages.Size = UDim2.new(1, -12, 1, -12)
+	pages.Position = UDim2.fromOffset(6, 6)
+	pages.BackgroundTransparency = 1
+	pages.BorderSizePixel = 0
+	pages.ScrollBarThickness = 3
+	pages.ScrollBarImageColor3 = UI_BRASS
+	pages.ScrollingDirection = Enum.ScrollingDirection.Y
+	pages.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	pages.CanvasSize = UDim2.new()
+	pages.Parent = box
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 8)
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6)
+	pad.Parent = pages
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 8)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = pages
+
+	local function placeMenu()
+		local portrait = root.AbsoluteSize.Y > root.AbsoluteSize.X
+		box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
+		box.Position = if portrait then UDim2.new(0.5, 0, 1, -22) else UDim2.new(1, -20, 0.53, 0)
+		box.Size = if portrait then UDim2.fromScale(0.92, 0.47) else UDim2.new(0.41, 0, 0.84, 0)
 	end
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(placeMenu)
+	placeMenu()
+
+	local head = Instance.new("Frame")
+	head.LayoutOrder = 1
+	head.Size = UDim2.new(1, 0, 0, 52)
+	head.BackgroundColor3 = COLORS.paper
+	head.BorderSizePixel = 0
+	head.Parent = pages
+	corner(head, 6)
+	local seal = Instance.new("ImageLabel")
+	seal.Size = UDim2.fromOffset(34, 34)
+	seal.Position = UDim2.fromOffset(10, 9)
+	seal.BackgroundTransparency = 1
+	seal.ScaleType = Enum.ScaleType.Fit
+	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
+	seal.Parent = head
+	local title = mkLabel(head, "선장의 항해 일지", 19, COLORS.ink, true)
+	title.Position = UDim2.fromOffset(53, 0)
+	title.Size = UDim2.new(1, -60, 1, 0)
+	title.AutomaticSize = Enum.AutomaticSize.None
+	title.TextYAlignment = Enum.TextYAlignment.Center
+
 	if view then
-		local cont = big(string.format("▶  이어하기\n%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), Color3.fromRGB(206, 154, 56), 2, 76, function()
+		local resume = mkButton(pages, "이어하기", COLORS.gold, UDim2.new(1, 0, 0, 50), function()
 			leave()
 			titleGui.Enabled = false
 			main.Visible = wasMain
 			menuToggle.Visible = not wasMain
 		end)
-		cont.TextSize = 19
-		cont.TextColor3 = Color3.fromRGB(22, 14, 4)
+		resume.LayoutOrder = 2
+		resume.TextSize = 18
+		resume.TextColor3 = COLORS.ink
+		local log = mkLabel(pages, string.format("%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), 13, COLORS.text, false, 3)
+		log.TextXAlignment = Enum.TextXAlignment.Center
 	end
 	local confirmed = false
 	local newBtn
-	newBtn = big("⚓  새로운 항해", Color3.fromRGB(34, 52, 82), if view then 3 else 2, if view then 56 else 76, function()
+	newBtn = mkButton(pages, "새로운 항해", if view then COLORS.blue else COLORS.gold, UDim2.new(1, 0, 0, 50), function()
 		if view and not confirmed then
 			confirmed = true
 			newBtn.Text = "저장이 사라져요. 한 번 더 누르면 새로 시작"
-			newBtn.TextSize = 15
+			newBtn.TextColor3 = COLORS.text
+			newBtn.TextSize = 14
 			newBtn.BackgroundColor3 = COLORS.red
 			return
 		end
@@ -6607,32 +6521,28 @@ function H.showTitle()
 		newGameMode = true
 		render()
 	end)
-	local row = Instance.new("Frame")
-	row.BackgroundTransparency = 1
-	row.Size = UDim2.new(1, 0, 0, 44)
-	row.LayoutOrder = 4
-	row.Parent = box
-	local rl = Instance.new("UIListLayout")
-	rl.FillDirection = Enum.FillDirection.Horizontal
-	rl.Padding = UDim.new(0, 8)
-	rl.Parent = row
-	local setBtn = mkButton(row, "⚙ 설정", Color3.fromRGB(44, 56, 74), UDim2.new(0.5, -4, 1, 0), function() openOptions() end, true)
-	setBtn.TextSize = 15
+	newBtn.LayoutOrder = 4
+	newBtn.TextSize = 18
+	if not view then newBtn.TextColor3 = COLORS.ink end
+
+	local controls = Instance.new("Frame")
+	controls.BackgroundTransparency = 1
+	controls.Size = UDim2.new(1, 0, 0, 44)
+	controls.LayoutOrder = 5
+	controls.Parent = pages
+	local horizontal = Instance.new("UIListLayout")
+	horizontal.FillDirection = Enum.FillDirection.Horizontal
+	horizontal.Padding = UDim.new(0, 8)
+	horizontal.Parent = controls
+	mkButton(controls, "설정", COLORS.coverRaised, UDim2.new(0.5, -4, 1, 0), function() openOptions() end)
 	local function musicLabel()
-		local on = Sfx.state()
-		return if on then "🔊 음악 켜짐" else "🔇 음악 꺼짐"
+		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
 	end
 	local musicBtn
-	musicBtn = mkButton(row, musicLabel(), Color3.fromRGB(44, 56, 74), UDim2.new(0.5, -4, 1, 0), function()
-		local on = Sfx.state()
-		Sfx.setMusicEnabled(not on)
+	musicBtn = mkButton(controls, musicLabel(), COLORS.coverRaised, UDim2.new(0.5, -4, 1, 0), function()
+		Sfx.setMusicEnabled(not Sfx.state())
 		musicBtn.Text = musicLabel()
-	end, true)
-	musicBtn.TextSize = 15
-	local foot = mkLabel(box, "진행은 자동으로 저장돼요 · 화면을 누르면 소리가 켜져요", 12, COLORS.muted, false, 5)
-	foot.Size = UDim2.new(1, 0, 0, 18)
-	foot.AutomaticSize = Enum.AutomaticSize.None
-	foot.TextXAlignment = Enum.TextXAlignment.Center
+	end)
 	Sfx.music("music_harbor")
 end
 
@@ -6722,7 +6632,7 @@ do
 		win.Position = UDim2.fromScale(0.5, 0.5)
 		win.Size = UDim2.new(0, 520, 0, 0)
 		win.AutomaticSize = Enum.AutomaticSize.Y
-		win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
 		win.Parent = layer
 		corner(win, 16)
@@ -6872,7 +6782,7 @@ end
 		win.Position = UDim2.new(0.5, 0, 1, -24)
 		win.Size = UDim2.new(0, 540, 0, 0)
 		win.AutomaticSize = Enum.AutomaticSize.Y
-		win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
 		win.Parent = layer
 		corner(win, 16)
@@ -7014,7 +6924,7 @@ end
 	chip.AnchorPoint = Vector2.new(0, 0)
 	chip.Position = UDim2.fromOffset(5, 5)
 	chip.Size = UDim2.fromOffset(52, 56)
-	chip.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	chip.BackgroundColor3 = COLORS.cover
 	chip.BackgroundTransparency = 0
 	chip.BorderSizePixel = 0
 	chip.Visible = false
@@ -7195,7 +7105,7 @@ end
 	goalBar.AnchorPoint = Vector2.new(0.5, 0)
 	goalBar.Position = UDim2.new(0.5, 0, 0, 6)
 	goalBar.Size = UDim2.fromOffset(430, 28)
-	goalBar.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	goalBar.BackgroundColor3 = COLORS.cover
 	goalBar.BackgroundTransparency = 0.1
 	goalBar.AutoButtonColor = false
 	goalBar.Font = Enum.Font.GothamBold
