@@ -212925,11 +212925,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_867282d6c37bc74047a5cd66",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12838",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "763db3a795b45fecd0a60513842fa3caab3d8ca6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12838,
+        "baseBranch": "main",
+        "headBranch": "mare-illustrated-combat-ui",
+        "baseSha": "763db3a795b45fecd0a60513842fa3caab3d8ca6",
+        "headSha": "46dfeb11ff84141e00472727135c939069406a84",
+        "mergeCommitSha": "99bd4d4ca938ff0bd5fea6678564b0318a7390ea",
+        "mergedAt": "2026-11-12T10:12:34Z",
+        "authorLogin": "hans1177",
+        "titleHash": "4009132a9aa98010627fa4be72a99e61a4e5fc9069b131b11c1a11debce764fd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-illustrated-combat-ui",
+        "candidateSha": "46dfeb11ff84141e00472727135c939069406a84"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 25,
+        "deletedLineCount": 17,
+        "changedFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12838",
+        "merge-commit:99bd4d4ca938ff0bd5fea6678564b0318a7390ea",
+        "base-main:763db3a795b45fecd0a60513842fa3caab3d8ca6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1693
+    "total": 1694
   }
 }
