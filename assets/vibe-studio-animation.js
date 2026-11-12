@@ -1,4 +1,5 @@
-// Runtime animation orchestration with stable transitions and authored timing markers.
+// 파일명: assets/vibe-studio-animation.js
+// [메인] 런타임 모션 선택·접지·레이어 블렌딩. 원본 클립과 게임 판정은 수정하지 않는다.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,Number.isFinite(n)?n:a));
 const mix=(a,b,t)=>a+(b-a)*t;
 const angleDelta=(a,b)=>Math.atan2(Math.sin(b-a),Math.cos(b-a));
@@ -54,20 +55,30 @@ export function makeAnimationEventQueue({maxEvents=128}={}){
   pending(){return pending.length;}
  };
 }
+// [메인: 접지] 기존 접지 이벤트를 유지하고, 월드 좌표 고정 목표를 선택적으로 제공한다.
 export function makeFootPlant({stride=.9,contactFraction=.16}={}){
  let previousPhase=0,steps=0;
+ const locked=new Map();
+ const validFoot=point=>point&&['x','y','z'].every(k=>Number.isFinite(point[k]));
  return{
-  update({phase,speed,grounded=true}){
-   const contacts=[];
-   if(!grounded||speed<.1){previousPhase=phase;return contacts;}
+  update({phase,speed,grounded=true,feet={}}){
+   const contacts=[],p=((Number(phase)||0)%1+1)%1;
+   if(!grounded||speed<.1){previousPhase=p;locked.clear();return contacts;}
    for(const [name,marker] of [['left',0],['right',.5]]){
-    const crossed=phase>=previousPhase?(previousPhase<marker&&phase>=marker):(marker>previousPhase||marker<=phase);
-    if(crossed){contacts.push({foot:name,strength:clamp(speed/stride,0,1),duration:contactFraction});steps++;}
+    const crossed=p>=previousPhase?(previousPhase<marker&&p>=marker):(marker>previousPhase||marker<=p);
+    const stance=((p-marker+1)%1)<.5;
+    if(!stance)locked.delete(name);
+    if(stance&&!locked.has(name)&&validFoot(feet?.[name])){
+     const foot=feet[name];locked.set(name,{x:foot.x,y:foot.y,z:foot.z});
+    }
+    if(crossed){contacts.push({foot:name,strength:clamp(speed/stride,0,1),duration:contactFraction,
+     worldTarget:locked.has(name)?{...locked.get(name)}:null});steps++;}
    }
-   previousPhase=phase;return contacts;
+   previousPhase=p;return contacts;
   },
+  getTargets(){return Object.fromEntries([...locked].map(([name,pos])=>[name,{...pos}]));},
   get steps(){return steps;},
-  reset(){previousPhase=0;steps=0;}
+  reset(){previousPhase=0;steps=0;locked.clear();}
  };
 }
 export function makeLookAtRig({maxYaw=Math.PI/2,maxPitch=Math.PI/4,followRate=8}={}){
@@ -132,5 +143,67 @@ export function makePoseInterpolator({maxGap=.2}={}){
    return out;
   },
   reset(){last=null;}
+ };
+}
+
+// [메인: 모션 매칭] 승인된 실제 애니메이션 후보 사이에서 속도·방향·발 접지·포즈를 비교한다.
+// 클립을 생성하지 않으며 sourceClipId가 없는 후보는 선택하지 않는다.
+export function makeMotionMatcher({hysteresis=.08,weights={speed:2,turn:1,heading:1,contact:1.5,pose:1}}={}){
+ let previous=null;
+ const finite=(n,f=0)=>Number.isFinite(n)?n:f;
+ const featureDistance=(target={},candidate={})=>{
+  const speed=Math.abs(finite(target.speed)-finite(candidate.speed));
+  const turn=Math.abs(finite(target.turn)-finite(candidate.turn));
+  const heading=Math.abs(angleDelta(finite(target.heading),finite(candidate.heading)))/Math.PI;
+  const left=Number(Boolean(target.leftFootPlanted)!==Boolean(candidate.leftFootPlanted));
+  const right=Number(Boolean(target.rightFootPlanted)!==Boolean(candidate.rightFootPlanted));
+  const a=Array.isArray(target.pose)?target.pose:[],b=Array.isArray(candidate.pose)?candidate.pose:[];
+  const n=Math.min(a.length,b.length,64);let pose=0;
+  for(let i=0;i<n;i++)pose+=Math.abs(angleDelta(finite(a[i]),finite(b[i])))/Math.PI;
+  return speed*Math.max(0,finite(weights.speed,2))+turn*Math.max(0,finite(weights.turn,1))+
+   heading*Math.max(0,finite(weights.heading,1))+(left+right)*.5*Math.max(0,finite(weights.contact,1.5))+
+   (n?pose/n:0)*Math.max(0,finite(weights.pose,1));
+ };
+ return{
+  select({features={},candidates=[]}={}){
+   const valid=candidates.filter(c=>c&&typeof c.sourceClipId==='string'&&c.sourceClipId.trim()&&c.features&&typeof c.features==='object');
+   if(!valid.length)return{selected:null,score:null,candidatesScored:0,reason:'NO_REAL_SOURCE_CLIPS'};
+   const ranked=valid.map(c=>({candidate:c,score:featureDistance(features,c.features)}))
+    .sort((a,b)=>a.score-b.score||String(a.candidate.sourceClipId).localeCompare(String(b.candidate.sourceClipId)));
+   const same=ranked.find(row=>row.candidate.sourceClipId===previous);
+   const selected=same&&same.score<=ranked[0].score+Math.max(0,finite(hysteresis,.08))?same:ranked[0];
+   previous=selected.candidate.sourceClipId;
+   return{selected:previous,score:selected.score,candidatesScored:ranked.length,
+    reason:selected===same?'CONTINUITY':'BEST_FEATURE_MATCH'};
+  },
+  reset(){previous=null;},
+  get current(){return previous;}
+ };
+}
+
+// [메인: 포즈 레이어] 하체 이동 포즈를 유지한 채 승인된 상체·표정 트랙을 혼합한다.
+// 본 이름/채널을 새로 만들거나 원본 클립을 수정하지 않는다.
+export function makeLayeredPoseBlender(){
+ const channels=['x','y','z','rx','ry','rz'];
+ return{
+  blend({base={},layers=[]}={}){
+   const result=Object.fromEntries(Object.entries(base).map(([bone,pose])=>[bone,{...pose}]));
+   for(const layer of layers){
+    if(!layer||!layer.pose)continue;
+    const weight=clamp(Number(layer.weight)||0,0,1);
+    if(weight<=0)continue;
+    const mask=Array.isArray(layer.mask)?new Set(layer.mask):null;
+    for(const [bone,pose] of Object.entries(layer.pose)){
+     if((mask&&!mask.has(bone))||!result[bone])continue;
+     for(const channel of channels){
+      const value=pose?.[channel],prior=result[bone][channel];
+      if(!Number.isFinite(value)||!Number.isFinite(prior))continue;
+      result[bone][channel]=layer.additive?prior+value*weight:
+       channel.startsWith('r')?prior+angleDelta(prior,value)*weight:mix(prior,value,weight);
+     }
+    }
+   }
+   return result;
+  }
  };
 }
