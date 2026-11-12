@@ -3,6 +3,7 @@
 이 저장소에서 작업하는 모든 GPT·코딩 에이전트는 작업 전에 최신 main의 다음 중앙문서를 읽어야 한다.
 
 - company-learning/platform-release-roadmap.json
+  - **주의:** 이 파일은 1MB 초과라 GitHub Contents API·일부 커넥터에서 내용이 "비어 있음(encoding:none)"으로 보인다. 비어 있는 것이 아니다. 작은 요약본 `company-learning/platform-release-roadmap.brief.json`을 먼저 읽고, 전체는 raw URL(raw.githubusercontent.com/hans1177/jaewoon-games/main/company-learning/platform-release-roadmap.json)이나 git clone으로 읽는다. "중앙 배포 정책이 비어 있어 검증 불가"로 멈추지 않는다.
 - company-learning/company-log-map.json
 - company-learning/company-architecture-map.json
 - company-learning/security-immune-system.json
