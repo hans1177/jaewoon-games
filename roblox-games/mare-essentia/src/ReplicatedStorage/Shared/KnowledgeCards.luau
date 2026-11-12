@@ -822,7 +822,35 @@ for _, c in Cards do
 	ById[c.id] = c
 end
 
+-- 백과사전 상세 해설. 위키백과 문서를 참고해 한국어로 직접 요약했다.
+local Articles: { [string]: { topic: string, details: string, context: string } } = {
+	nav_compass_rose = { topic = "Compass_rose", details = "동서남북에서 출발해 중간 방향을 반복해 나누면 32방위가 된다.", context = "해도와 나침반에서 방향을 읽는 기준으로 썼다. 자북과 진북이 다른 곳에서는 편차를 고려해야 한다." },
+	nav_portolan = { topic = "Portolan_chart", details = "중세 지중해와 흑해를 그린 해도에는 연안 항구 이름과 여러 방향으로 뻗는 선이 촘촘히 들어갔다.", context = "선원은 출발지와 목적지 사이의 방향을 읽는 데 이 선을 이용했다. 바다 쪽에 집중한 구성 덕분에 항구 사이를 오가는 데 특히 유용했다." },
+	nav_dead_reckoning = { topic = "Dead_reckoning", details = "마지막으로 확인한 위치에서 항해 방향과 속도, 경과 시간을 합쳐 새 위치를 추정한다.", context = "바람과 해류가 배를 옆으로 밀면 오차가 누적되므로, 육지 표지나 천체 관측으로 위치를 다시 맞춘다." },
+	nav_log_line = { topic = "Chip_log", details = "줄 끝의 나무판이 물을 받아 느려지면, 짧은 시간 동안 풀려 나간 줄의 매듭을 센다.", context = "시간과 매듭 간격을 맞춰 배가 물에 대해 움직이는 속도를 구했다. 해류가 흐르면 육지 기준 속도와 달라진다." },
+	nav_lead_line = { topic = "Sounding_line", details = "눈금이 있는 줄 끝에 납추를 달아 바닥에 닿을 때까지 내린다. 추 밑의 오목한 곳에 기름을 발라 모래나 진흙을 묻혀 올리기도 했다.", context = "항구나 암초에 접근할 때 수심과 바닥 상태를 파악할 수 있었다. 조석이 바뀌면 같은 자리의 수심도 달라진다." },
+	nav_cross_staff = { topic = "Cross-staff", details = "긴 막대를 눈 가까이에 두고 가로대를 움직여 수평선과 천체가 양끝에 동시에 들어오게 한다.", context = "막대의 눈금으로 천체 고도를 읽었다. 태양 관측 때는 해를 바라봐야 하는 불편이 있었다." },
+	nav_backstaff = { topic = "Backstaff", details = "관측자가 태양을 등진 채 한쪽 부품의 그림자를 기준선에 맞추고 수평선을 본다.", context = "태양을 직접 바라보지 않고 고도를 잴 수 있었다. 그림자가 흐릿해지는 날에는 정렬이 어려웠다." },
+	nav_octant = { topic = "Octant_(instrument)", details = "45도짜리 호와 두 거울을 써서 최대 약 90도의 각도를 잰다. 반사된 천체 영상과 실제 수평선을 포개 눈금을 읽는다.", context = "18세기에 등장한 반사식 관측기다. 수평선과 천체가 시야에 함께 들어와 흔들리는 배에서도 관측하기 쉬워졌다." },
+	nav_chronometer = { topic = "Marine_chronometer", details = "기준 항구의 시각을 바다에서도 일정하게 유지하도록 만든 정밀 시계다.", context = "현지의 태양시와 기준 시각을 비교해 경도를 구했다. 한 시간 차이는 경도 약 15도에 해당한다." },
+	nav_mercator = { topic = "Mercator_projection", details = "경선을 평행한 세로선으로 그리고 극 쪽으로 갈수록 위선 사이 간격을 넓힌다.", context = "일정한 나침반 방위로 가는 항로가 지도 위에서 직선이 된다. 극에 가까운 지역의 면적이 크게 확대된다." },
+	nav_longitude_problem = { topic = "History_of_longitude", details = "현지 시각과 기준 지역 시각의 차이로 동서 위치를 알 수 있지만, 항해 중 기준 시각을 보존하기가 어려웠다.", context = "천체 사이 각도를 재는 월거리법과 정밀한 해상 시계가 대표 해법이었다. 두 방법 모두 관측과 계산이 필요했다." },
+	nav_lighthouse = { topic = "Lighthouse", details = "해안이나 섬의 높은 곳에서 빛을 보내 배가 멀리서 항구와 위험한 연안을 알아보게 하는 구조물이다.", context = "등대마다 점멸 횟수나 간격을 달리하면 밤에도 어떤 등대인지 구분할 수 있다." },
+	nav_buoy = { topic = "Buoy", details = "부력이 있는 표체를 물에 띄운다. 항로 표지용 부표는 보통 닻이나 사슬에 연결해 정해진 곳에 머물게 한다.", context = "색과 모양, 불빛을 보고 항로의 경계나 암초 위치를 파악한다. 항해할 때는 현지 표지 체계를 확인해야 한다." },
+	nav_pilot_book = { topic = "Sailing_Directions", details = "해도에 담기 어려운 접근 경로, 조류, 닻을 내릴 곳, 눈에 띄는 육상 표지를 글로 정리한 기록이다.", context = "처음 가는 항구에서는 해도와 함께 읽어 좁은 물길의 진입 순서나 피해야 할 위험을 파악할 수 있다." },
+	nav_star_compass = { topic = "Polynesian_navigation", details = "별이 수평선에서 뜨고 지는 방향을 기억해 머릿속에 방위 체계를 만든다.", context = "태평양 항해사들은 별뿐 아니라 너울, 바람, 새의 움직임도 함께 살펴 방향과 육지의 단서를 찾았다." },
+	relic_astrolabe = { topic = "Mariner%27s_astrolabe", details = "항해용 천체관측의는 금속 원판을 매달고 회전하는 조준자로 태양이나 별의 고도를 읽는다.", context = "바람의 영향을 줄이는 개방형 구조와 묵직한 몸체가 쓰였다. 관측한 고도는 위도를 추정하는 데 활용됐다." },
+	relic_astrolabe_arab = { topic = "Astrolabe", details = "눈금판 위에서 별자리 위치를 나타내는 망과 조준자를 돌려 하늘의 위치 관계를 읽는 기구다.", context = "이슬람권에서 시간 계산과 천체 관측에 널리 연구되었다. 육상의 다목적 관측의와 항해용으로 단순화한 관측의는 구조가 다르다." },
+	relic_sextant = { topic = "Sextant", details = "60도 호와 거울을 갖춘 관측기로, 천체의 반사 영상을 수평선에 겹쳐 각도를 읽는다.", context = "관측 시각과 천체의 위치를 함께 계산하면 해상에서 위치선을 구할 수 있다. 18세기에 발달한 기구다." },
+	relic_chronometer = { topic = "Marine_chronometer", details = "배의 흔들림과 온도 변화 속에서도 기준 시각을 유지하도록 설계한 정밀 시계다.", context = "관측한 현지 태양시와 비교해 경도를 계산했다. 항구를 떠나기 전 기준 시각에 맞추는 절차가 중요했다." },
+	relic_runestone = { topic = "Runestone", details = "룬 문자를 새긴 돌로, 스칸디나비아에서는 사망자를 기리거나 가족 관계와 업적을 기록하는 데 자주 쓰였다.", context = "도로와 다리 주변에 세운 사례도 있다. 짧은 문구라도 당시의 이름, 신앙, 원정에 관한 단서가 된다." },
+	relic_aeolipile = { topic = "Aeolipile", details = "물에서 생긴 증기가 구형 용기에 들어가 굽은 관으로 빠져나가면 반작용으로 용기가 돈다.", context = "알렉산드리아의 헤론이 기록한 회전 장치다. 증기 분출로 운동을 얻는 원리를 보여 준다." },
+	pac_navigation_stick = { topic = "Marshall_Islands_stick_chart", details = "막대를 엮어 너울의 방향과 섬 주변에서 나타나는 파동의 변화를 표현한다. 일부에는 섬을 나타내는 조개가 달렸다.", context = "마셜 제도 항해사는 출항 전에 관계를 익혔다. 항해 중 펼쳐 보는 일반 해도와 쓰임이 달랐다." },
+	pac_moai = { topic = "Moai", details = "라파누이 사람들이 만든 거대한 인물 석상이다. 많은 석상이 라노라라쿠 채석장의 화산성 암석으로 만들어졌다.", context = "일부는 제단 위에 세워져 공동체의 조상이나 권위를 나타냈다고 해석된다. 석상마다 크기와 운반 이력이 다르다." },
+}
+
 return {
+	Articles = Articles,
 	Cards = Cards,
 	ById = ById,
 }
