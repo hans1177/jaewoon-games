@@ -2005,6 +2005,7 @@ function PortScene.build(info, onFacility)
 			elseif v.role == "순례 사제" then { "Mage", Color3.fromRGB(200, 190, 160) }
 			elseif v.role == "해적" or v.role == "사략선장" then { "Barbarian", Color3.fromRGB(40, 40, 50) }
 			else { "Rogue", Color3.fromRGB(150, 110, 60) }
+		if v.id == "v_caleb" then look = { "Rogue_Hooded", Color3.fromRGB(30, 30, 38) } end
 		local m = villager(folder, Vector3.new(16 + i * 5, 0, 14 - i * 3), -math.pi / 2, look[2], rng, look[1])
 		if m then
 			m.Name = "Voyager_" .. tostring(v.id)

@@ -1770,6 +1770,22 @@ do
 		check("voyager: 항구에 머무는 항해자가 화면에 보임", found ~= nil)
 		local okMeet = H.VoyagerMeet(dv, { id = found })
 		check("voyager: 만나기 + 명성", okMeet and dv.fame >= 1 and dv.diplo.met[found])
+		-- 라이벌 칼레브: 만날수록 관계가 쌓이고 5번째에 인정받는다
+		local rv = S.State.new("england", 1700, nil)
+		local cv = D.Specialties.VoyagerById.v_caleb
+		local meets, lastMsg = 0, ""
+		for day = 0, 400 do
+			rv.day = day
+			local at = S.Diplomacy.voyagerAt(cv, day)
+			if at.docked then
+				rv.portId = at.docked
+				local okC, msgC = H.VoyagerMeet(rv, { id = "v_caleb" })
+				if okC and rv.diplo.rivalN > meets then meets = rv.diplo.rivalN lastMsg = msgC end
+			end
+		end
+		check("라이벌: 5번 만나면 인정받는다", rv.diplo.rivalN == 5 and string.find(lastMsg, "인정", 1, true) ~= nil, tostring(rv.diplo.rivalN))
+		local rs = S.State.sanitize(S.State.serialize(rv))
+		check("라이벌: 저장 후에도 인연이 남는다", rs.diplo.rivalN == 5)
 		check("voyager: 다른 항구의 사람은 못 만남", not H.VoyagerMeet(dv, { id = "v_nakamura" }) or S.Diplomacy.voyagerAt(D.Specialties.VoyagerById.v_nakamura, dv.day).docked == "amsterdam")
 	end
 	-- 시작 안내: 이름 → 첫 동료 → 초상화

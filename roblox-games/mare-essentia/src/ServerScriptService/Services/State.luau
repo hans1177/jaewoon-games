@@ -53,7 +53,7 @@ return function(D)
 			orderPatrols = 0,
 			peopleTalked = {}, -- 대화를 나눈 인물 (인물 id → true)
 			peopleClaimed = {}, -- 인물 백과 보상 받은 단계 (필요 인원 문자열 → true)
-			diplo = { rep = {}, passUntil = 0, met = {}, honor = {}, warSeen = {} }, -- 국가 관계: 세력별 호감·통행 증서·만난 항해자·명예 시민·전쟁 알림
+			diplo = { rep = {}, passUntil = 0, met = {}, honor = {}, warSeen = {}, rivalN = 0, rivalDay = -99 }, -- 국가 관계: 세력별 호감·통행 증서·만난 항해자·명예 시민·전쟁 알림
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
@@ -603,6 +603,8 @@ return function(D)
 				if (v == "on" or v == "end") and type(id) == "string" and #id <= 30 then di.warSeen[id] = v end
 			end
 			di.passUntil = num(dv.passUntil, 0, 0, 1e9)
+			di.rivalN = math.floor(num(dv.rivalN, 0, 0, 5))
+			di.rivalDay = math.floor(num(dv.rivalDay, -99, -99, 1e9))
 			if type(dv.last) == "string" and D.Ports.Ports[dv.last] then di.last = dv.last end
 		end
 		if type(saved.pace) == "table" then

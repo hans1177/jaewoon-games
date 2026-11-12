@@ -21,6 +21,8 @@ return function(D, S)
 		d.honor = d.honor or {}
 		d.warSeen = d.warSeen or {}
 		d.passUntil = d.passUntil or 0
+		d.rivalN = d.rivalN or 0
+		d.rivalDay = d.rivalDay or -99
 		return d
 	end
 	local function year(state)
@@ -217,6 +219,16 @@ return function(D, S)
 		return g and D.Ports.Goods[g] and D.Ports.Goods[g].name or nil
 	end
 
+	-- 라이벌 상인 칼레브: 만날 때마다 관계가 한 걸음씩 바뀐다 (적수 → 인정 → 손잡기)
+	local RIVAL = {
+		"칼레브가 비웃으며 장부를 덮는다. \"신출내기 선장이군. 이 바다의 값은 내가 정하오. 방해나 마시오.\"",
+		"칼레브의 눈썹이 꿈틀한다. \"또 당신이오? 내 거래처를 건드린 게 우연은 아니겠지. 다음엔 안 봐줍니다.\"",
+		"칼레브가 한숨을 쉰다. \"솔직히 말하면 당신의 장부가 부럽소. 우리 상회가 이렇게 흔들린 건 처음이오.\"",
+		"칼레브가 먼저 술잔을 내민다. \"한 가지 알려 주겠소. 이 항구의 값은 곧 오를 거요. 내가 틀린 적은 없소.\"",
+		"칼레브가 모자를 벗는다. \"졌소. 이제 같은 바다의 동업자라 부르겠소. 검은 깃발 상회의 인정이오.\"",
+	}
+	local RIVAL_GAP = 10
+
 	local function rumor(state, v, at)
 		local mine = myPower(state)
 		local prevName, toName = portName(at.prev), portName(at.to)
@@ -254,6 +266,25 @@ return function(D, S)
 		local at = voyagerAt(v, state.day)
 		if at.docked ~= state.portId then
 			return false, "그 사람은 이 항구에 없어요"
+		end
+		if v.rival then
+			local n = d.rivalN
+			local line = RIVAL[math.min(n + 1, #RIVAL)]
+			local msg = string.format("%s: %s", v.name, line)
+			if state.day - d.rivalDay >= RIVAL_GAP and n < #RIVAL then
+				d.rivalN = n + 1
+				d.rivalDay = state.day
+				d.met[id] = true
+				if d.rivalN == #RIVAL then
+					state.fame += 15
+					state.coins += 400
+					msg ..= "\n라이벌의 인정을 받았다. 명성 +15, 400코인"
+				else
+					state.fame += 1
+					msg ..= string.format("\n(라이벌과의 인연 %d/%d)", d.rivalN, #RIVAL)
+				end
+			end
+			return true, msg
 		end
 		local text, good = rumor(state, v, at)
 		local msg = string.format("%s(%s): \"%s\"", v.name, ROLE_NAME[v.role], text)

@@ -411,6 +411,7 @@ local Voyagers = {
 	{ id = "v_dirk", name = "디르크 데 즈바르트", role = "privateer", power = "netherlands", circuit = { "rotterdam", "cadiz", "cape_town", "batavia" }, stay = 4, leg = 22 },
 	{ id = "v_red", name = "붉은 수염 안젤로", role = "pirate", power = "none", circuit = { "nassau", "port_of_spain", "bridgetown", "santo_domingo" }, stay = 3, leg = 8 },
 	{ id = "v_jade", name = "옥빛 장 부인", role = "pirate", power = "none", circuit = { "canton", "macau", "hoi_an", "malacca" }, stay = 3, leg = 10 },
+	{ id = "v_caleb", name = "칼레브 힐 (검은 깃발 상회)", role = "merchant", power = "none", rival = true, circuit = { "london", "amsterdam", "rouen", "lisbon", "venice" }, stay = 5, leg = 13 },
 	{ id = "v_tomas", name = "토마스 신부", role = "pilgrim", power = "spain", circuit = { "seville", "manila", "macau", "nagasaki" }, stay = 8, leg = 30 },
 }
 local VoyagerById = {}
