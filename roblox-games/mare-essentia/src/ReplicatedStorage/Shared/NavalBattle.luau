@@ -501,6 +501,194 @@ function NavalBattle.play(opts)
 	end
 
 	local shake = 0
+	-- 접현 백병전 장면: 배가 오래 붙어 있으면 화면이 카드 대결로 바뀐다.
+	-- 3개 위치(선수·중앙·선미 갑판)에서 우리 부대와 해적 부대가 맞붙는다. 결과와 피해는 서버 전투 기록 그대로이고,
+	-- 적의 의도(돌격·방어·사격)를 보고 맞는 태세를 고르면 "간파!"로 기동 점수가 오른다 (돌격 > 사격 > 방어 > 돌격).
+	local boardingOn = false
+	local STANCES = { "돌격", "사격", "방어" }
+	local BEATS = { ["돌격"] = "사격", ["사격"] = "방어", ["방어"] = "돌격" }
+	local function startBoarding(onEnd)
+		boardingOn = true
+		local TweenService = game:GetService("TweenService")
+		local g = Instance.new("ScreenGui")
+		g.Name = "BoardingGui"
+		g.ResetOnSpawn = false
+		g.DisplayOrder = 40
+		g.Parent = player:WaitForChild("PlayerGui")
+		local bg = Instance.new("Frame")
+		bg.Size = UDim2.fromScale(1, 1)
+		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		bg.BorderSizePixel = 0
+		bg.Parent = g
+		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(26, 20, 16) }):Play()
+		local title = label(g, "⚔ 접현 백병전", 30, Color3.fromRGB(246, 208, 130))
+		title.Position = UDim2.new(0.5, -200, 0, 16)
+		title.Size = UDim2.fromOffset(400, 40)
+		local info = label(g, "", 16, Color3.fromRGB(250, 236, 200))
+		info.Position = UDim2.new(0.5, -300, 1, -150)
+		info.Size = UDim2.fromOffset(600, 44)
+		info.TextWrapped = true
+		local lanesName = { "선수 갑판", "중앙 갑판", "선미 갑판" }
+		local ourNames = { "돌격대", "사수대", "방패병" }
+		local theirNames = if opts.isBoss then { "해적 호위", "해적 총잡이", "해적 두목" } else { "해적 칼잡이", "해적 총잡이", "해적 부두목" }
+		local function mkCard(x, y, name, color)
+			local f = Instance.new("Frame")
+			f.Position = UDim2.new(x, -120, 0, y)
+			f.Size = UDim2.fromOffset(240, 78)
+			f.BackgroundColor3 = Color3.fromRGB(44, 32, 24)
+			f.BorderSizePixel = 0
+			f.Parent = g
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(0, 10)
+			c.Parent = f
+			local st = Instance.new("UIStroke")
+			st.Color = color
+			st.Thickness = 2
+			st.Parent = f
+			local nm = label(f, name, 18, Color3.fromRGB(250, 236, 200))
+			nm.Position = UDim2.fromOffset(8, 6)
+			nm.Size = UDim2.new(1, -16, 0, 22)
+			local intent = label(f, "", 15, Color3.fromRGB(255, 190, 120))
+			intent.Position = UDim2.fromOffset(8, 30)
+			intent.Size = UDim2.new(1, -16, 0, 20)
+			local back = Instance.new("Frame")
+			back.Position = UDim2.new(0, 8, 1, -20)
+			back.Size = UDim2.new(1, -16, 0, 10)
+			back.BackgroundColor3 = Color3.fromRGB(20, 16, 14)
+			back.BorderSizePixel = 0
+			back.Parent = f
+			local fill = Instance.new("Frame")
+			fill.Size = UDim2.fromScale(1, 1)
+			fill.BackgroundColor3 = color
+			fill.BorderSizePixel = 0
+			fill.Parent = back
+			return { frame = f, fill = fill, intent = intent, hp = 1, home = f.Position }
+		end
+		local ours, theirs = {}, {}
+		for k = 1, 3 do
+			local y = 70 + (k - 1) * 100
+			local ln = label(g, lanesName[k], 14, Color3.fromRGB(190, 170, 130))
+			ln.Position = UDim2.new(0.5, -60, 0, y + 28)
+			ln.Size = UDim2.fromOffset(120, 20)
+			ours[k] = mkCard(0.25, y, ourNames[k], Color3.fromRGB(91, 181, 120))
+			theirs[k] = mkCard(0.75, y, theirNames[k], Color3.fromRGB(214, 82, 76))
+		end
+		-- 태세 버튼
+		local choice = nil
+		local btns = {}
+		for i, nmS in STANCES do
+			local b = Instance.new("TextButton")
+			b.Text = (if nmS == "돌격" then "⚔ " elseif nmS == "사격" then "🔫 " else "🛡 ") .. nmS
+			b.AnchorPoint = Vector2.new(0.5, 1)
+			b.Position = UDim2.new(0.5, (i - 2) * 150, 1, -24)
+			b.Size = UDim2.fromOffset(136, 56)
+			b.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
+			b.TextColor3 = Color3.fromRGB(250, 236, 200)
+			b.Font = Enum.Font.GothamBold
+			b.TextSize = 20
+			b.BorderSizePixel = 0
+			b.Parent = g
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(0, 12)
+			c.Parent = b
+			b.Activated:Connect(function()
+				choice = nmS
+				for _, o in btns do
+					o.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
+				end
+				b.BackgroundColor3 = Color3.fromRGB(150, 110, 50)
+				Sfx.play("sfx_click", 0.6)
+			end)
+			table.insert(btns, b)
+		end
+		-- 카드별 피해 단계 계산: 진 쪽은 끝에 쓰러지고 이긴 쪽은 일부만 다친다
+		local hits = { me = { 0, 0, 0 }, foe = { 0, 0, 0 } }
+		for i, e in meleeQueue do
+			local lane = (i - 1) % 3 + 1
+			local tgt = if e.player then "foe" else "me"
+			hits[tgt][lane] += 1
+		end
+		local drop = function(target)
+			if opts.winner == "a" then
+				return if target == "foe" then 1 else 0.45
+			elseif opts.winner == "b" then
+				return if target == "me" then 1 else 0.45
+			end
+			return 0.55
+		end
+		task.spawn(function()
+			task.wait(0.8)
+			for i, e in meleeQueue do
+				if finished then
+					break
+				end
+				local lane = (i - 1) % 3 + 1
+				local att = if e.player then ours[lane] else theirs[lane]
+				local def = if e.player then theirs[lane] else ours[lane]
+				local tgtKey = if e.player then "foe" else "me"
+				-- 적의 의도를 보여 주고 태세를 고를 시간을 준다
+				local enemyStance = STANCES[math.random(1, 3)]
+				for _, c in { theirs[lane] } do
+					c.intent.Text = "의도: " .. enemyStance
+				end
+				choice = nil
+				for _, o in btns do
+					o.BackgroundColor3 = Color3.fromRGB(60, 44, 30)
+				end
+				info.Text = "적의 의도를 보고 태세를 골라요!"
+				task.wait(1.6)
+				if finished then
+					break
+				end
+				theirs[lane].intent.Text = ""
+				if choice == nil then
+					info.Text = e.text
+				elseif BEATS[choice] == enemyStance then
+					flair += 18
+					info.Text = "간파! " .. e.text
+					Sfx.play("sfx_fanfare", 0.4, 1.4)
+				elseif choice == enemyStance then
+					flair += 6
+					info.Text = "맞부딪쳤다. " .. e.text
+				else
+					info.Text = e.text
+				end
+				-- 돌진 → 피해
+				local dir = if e.player then 1 else -1
+				TweenService:Create(att.frame, TweenInfo.new(0.16), { Position = att.home + UDim2.fromOffset(dir * 60, 0) }):Play()
+				task.wait(0.18)
+				Sfx.play("sfx_hit", 0.9, 1.2 + math.random() * 0.3)
+				shake = 1.4
+				def.hp = math.max(0, def.hp - drop(tgtKey) / math.max(1, hits[tgtKey][lane]))
+				def.fill.Size = UDim2.fromScale(def.hp, 1)
+				def.frame.BackgroundColor3 = Color3.fromRGB(140, 40, 36)
+				local pop = label(g, "-" .. tostring(e.crew > 0 and e.crew or 1), 26, Color3.fromRGB(255, 120, 100))
+				pop.Position = def.frame.Position + UDim2.fromOffset(100, -12)
+				pop.Size = UDim2.fromOffset(40, 30)
+				TweenService:Create(pop, TweenInfo.new(0.7), { Position = pop.Position - UDim2.fromOffset(0, 40), TextTransparency = 1 }):Play()
+				task.delay(0.8, function()
+					pop:Destroy()
+				end)
+				task.wait(0.15)
+				TweenService:Create(att.frame, TweenInfo.new(0.2), { Position = att.home }):Play()
+				def.frame.BackgroundColor3 = Color3.fromRGB(44, 32, 24)
+				task.wait(0.35)
+			end
+			info.Text = if opts.winner == "a" then "해적들이 무기를 내려놓았다!" elseif opts.winner == "b" then "갑판이 밀렸다..." else "양쪽이 갈라섰다."
+			task.wait(1.4)
+			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
+			task.wait(0.5)
+			g:Destroy()
+			boardingOn = false
+			onEnd()
+		end)
+		table.insert(conns, { Disconnect = function()
+			if g.Parent then
+				g:Destroy()
+			end
+		end })
+	end
+
 	-- 적 포탄 낙하 경고: 바다 위 붉은 원. 포탄이 떨어질 때 원 밖에 있으면 "회피"로 콤보가 쌓인다.
 	local function warnRing(center)
 		local ring = part(folder, Vector3.new(0.4, 26, 26), CFrame.new(ORIGIN + center + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(235, 60, 50), Enum.Material.Neon, Enum.PartType.Cylinder)
@@ -743,13 +931,25 @@ function NavalBattle.play(opts)
 					hint.Text = ""
 					subtitle.Text = "두 배가 접현했다! 백병전!"
 					shake = 2.2
+					if #meleeQueue > 0 then
+						task.delay(1.2, function()
+							if not finished and phase == "board" and not boardingOn then
+								startBoarding(function()
+									melIdx = #meleeQueue
+									boardStart = os.clock() - 100
+								end)
+							end
+						end)
+					end
 					Sfx.play("sfx_horn")
 					Sfx.play("sfx_creak", 0.9, 0.8)
 					Sfx.play("sfx_hit", 1, 0.7)
 				end
 			else
 				-- 백병전: 남은 기록을 차례로 보여 준다
-				if now - boardStart > 0.7 + melIdx * 0.55 and melIdx < #meleeQueue then
+				if boardingOn then
+					-- 카드 대결 장면이 진행 중이다
+				elseif now - boardStart > 0.7 + melIdx * 0.55 and melIdx < #meleeQueue and #meleeQueue == 0 then
 					melIdx += 1
 					local e = meleeQueue[melIdx]
 					shake = 1.4
@@ -851,7 +1051,7 @@ function NavalBattle.play(opts)
 	end))
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
-	task.delay(75, function()
+	task.delay(130, function()
 		if not finished then
 			finish()
 		end
