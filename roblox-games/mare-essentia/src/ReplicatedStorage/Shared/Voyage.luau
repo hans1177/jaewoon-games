@@ -103,6 +103,13 @@ local WEATHERS: { { any } } = {
 	{ 92, "rain", "비", 0.95, "비가 와요. 안개와 암초에 주의해요" },
 	{ 100, "storm", "폭풍 접근", 0.9, "폭풍이 올 수 있어요. 하루 기다리는 것도 방법이에요" },
 }
+-- 게임 날짜를 반구별 계절로 변환한다. 1 겨울, 2 봄, 3 여름, 4 가을.
+function Voyage.season(day: number, latitude: number): number
+	local month = math.floor((day % 365) / (365 / 12))
+	if latitude < 0 then month = (month + 6) % 12 end
+	return math.floor(((month + 1) % 12) / 3) + 1
+end
+
 function Voyage.weather(day: number, portId: string): Weather
 	local h = day * 131 + 7
 	for i = 1, #portId do

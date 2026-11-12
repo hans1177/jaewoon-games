@@ -5495,6 +5495,7 @@ syncScene = function()
 	end
 	local key = p.portId .. "|Y" .. tostring(p.year) .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
+		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
 	local ok, res = pcall(PortScene.build, {
@@ -5507,6 +5508,7 @@ syncScene = function()
 		facilities = view.facilities,
 		palaceName = view.palace and view.palace.name,
 		year = p.year,
+		day = p.day,
 		storyCount = #(view.story or {}),
 		companions = crew,
 		voyagers = view.diplo and view.diplo.voyagers,
