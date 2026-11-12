@@ -1089,7 +1089,7 @@ function NavalBattle.play(opts)
 					view.LightColor = if spec.motion == "fire" and pulse > 0.6 then Color3.fromRGB(255, 166, 83)
 						else Color3.fromRGB(250, 222, 171)
 				end
-			end)
+			end
 			destroying = art.Destroying:Connect(stop)
 			return { step = step, stop = stop }
 		end
