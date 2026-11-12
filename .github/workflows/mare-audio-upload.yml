@@ -8,10 +8,10 @@ on:
         required: false
         default: '10775310508'
       fresh:
-        description: '0 = 기존 업로드 보존 (CC0 원본 교체 전 전체 재업로드 금지)'
+        description: '1 = 이전 등록 기록을 무시하고 새 계정으로 다시 올림'
         type: string
         required: false
-        default: '0'
+        default: '1'
 
 permissions:
   contents: write
