@@ -5209,14 +5209,15 @@ syncScene = function()
 	end
 	-- 서버가 CC0 모델을 불러오는 동안(최대 약 25초) 기다렸다가 장면을 만든다
 	local RS = game:GetService("ReplicatedStorage")
-	if not RS:GetAttribute("MareAssetsReady") then
+	if not RS:GetAttribute("MareAssetsReady") and not H.assetWaitDone then
 		if not assetWaitStarted then
 			assetWaitStarted = true
 			task.spawn(function()
 				local t0 = os.clock()
-				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 30 do
+				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 45 do
 					task.wait(0.3)
 				end
+				H.assetWaitDone = true -- 모델이 덜 와도 장면은 만든다 (하늘에 캐릭터만 뜨는 것 방지)
 				sceneKey = nil
 				if view then
 					syncScene()
@@ -7084,4 +7085,14 @@ task.spawn(function()
 			openTab(string.sub(dc, 5))
 		end
 	end
+end)
+
+-- 시작 직후(항구 정보가 오기 전)에도 고정 시점 카메라를 쓰고 캐릭터를 치워, 빈 하늘에 캐릭터만 떠 보이지 않게 한다
+task.spawn(function()
+	for _ = 1, 40 do
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then break end
+		task.wait(0.25)
+	end
+	local ok, err = pcall(applyView)
+	if not ok then warn("[Game] 시작 시점 설정 실패", err) end
 end)
