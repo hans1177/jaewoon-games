@@ -1,5 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation} from '../assets/vibe-premium-character-pipeline.mjs';
 test('facial channels control blendshape weights',()=>{
  const mesh={morphTargetDictionary:{jawOpen:0,smile:1},morphTargetInfluences:[0,0]};
@@ -66,6 +67,41 @@ test('Vibe 5.9 rig audit detects out-of-range bound bone indices without mutatin
  assert.equal(indices.getComponent(0,0),3);
 });
 
+test('Vibe 5.9 rig QA keeps partial real skin weights unverified',()=>{
+ const bone={isBone:true,name:'Spine'};
+ const mesh={isSkinnedMesh:true,name:'Body',geometry:{attributes:{skinWeight:{count:10,itemSize:4,
+  getComponent:(i,j)=>j===0?1:0}}}};
+ const model={traverse(fn){fn(bone);fn(mesh)}};
+ const partial=inspectVibeCharacterRig(model,{sampleLimit:3});
+ assert.equal(partial.totalVertices,10);
+ assert.equal(partial.weightsSampled,3);
+ assert.equal(partial.coverageComplete,false);
+ assert.equal(partial.productionEligible,false);
+ assert.ok(partial.issues.includes('RIG_AUDIT_COVERAGE_INCOMPLETE'));
+ const full=inspectVibeCharacterRig(model,{sampleLimit:10});
+ assert.equal(full.weightsSampled,10);
+ assert.equal(full.coverageComplete,true);
+ assert.equal(full.productionEligible,true);
+});
+test('Vibe 5.9 rig QA fully inspects uneven mesh sizes within budget',()=>{
+ const bone={isBone:true,name:'Spine'};
+ const attribute=n=>({count:n,itemSize:4,getComponent:(i,j)=>j===0?1:0});
+ const meshes=[1,9].map((n,i)=>({isSkinnedMesh:true,name:'Mesh'+i,
+  geometry:{attributes:{skinWeight:attribute(n)}}}));
+ const model={traverse(fn){fn(bone);meshes.forEach(fn)}};
+ const full=inspectVibeCharacterRig(model,{sampleLimit:10});
+ assert.equal(full.weightsSampled,10);
+ assert.equal(full.coverageComplete,true);
+ assert.equal(full.productionEligible,true);
+ assert.equal(inspectVibeCharacterRig(model,{sampleLimit:9}).productionEligible,false);
+});
+test('Vibe 5.9 GLTF preview displays real rig audit without mutating the mesh',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.ok(html.includes('inspectVibeCharacterRig(activeModel,{sampleLimit:4096})'));
+ assert.ok(html.includes('report.coverageComplete'));
+ assert.ok(html.includes('studioControls.append(rigAuditButton)'));
+ assert.ok(html.includes('if(!url||!activeModel)'));
+});
 test('Vibe 5.9 joint constraints honor rest and reset without adding bones',()=>{
  const bone={isBone:true,name:'LeftHand',rotation:{x:.2,y:0,z:0}};
  const model={traverse(fn){fn(bone)}};
