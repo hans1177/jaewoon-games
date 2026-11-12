@@ -69,7 +69,7 @@ function TacticsView.open(opts)
 
 	local screenH = gui.AbsoluteSize.Y > 0 and gui.AbsoluteSize.Y or 600
 	local bottomH = if screenH < 560 then 112 else 150
-	local handH = if battle.hand then 74 else 0
+	local handH = if battle.hand then (if screenH < 560 then 60 else 74) else 0
 	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH - handH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
 	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = LEATHER, BorderSizePixel = 0 }, root)
 	local info = label(bottom, "", 14, TEXT, UDim2.fromOffset(10, 6), UDim2.new(0.58, -14, 1, -12))
@@ -78,7 +78,7 @@ function TacticsView.open(opts)
 	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Center }, btnRow)
 
 	local handBar = make("ScrollingFrame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -bottomH), Size = UDim2.new(1, 0, 0, handH), BackgroundColor3 = Color3.fromRGB(40, 32, 27), BorderSizePixel = 0, ScrollBarThickness = 0, CanvasSize = UDim2.new(0, 0, 0, 0), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X, Visible = handH > 0 }, root)
-	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), VerticalAlignment = Enum.VerticalAlignment.Center }, handBar)
+	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder }, handBar)
 	make("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) }, handBar)
 	local cardSel = nil -- 고른 손패 번호
 	local selected = nil -- 고른 내 유닛 id
@@ -184,7 +184,7 @@ function TacticsView.open(opts)
 		if not battle.hand or battle.status ~= "active" then
 			return
 		end
-		local en = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromOffset(46, 60), Text = string.format("에너지\n%d/%d", battle.energy or 0, Rules.ENERGY), TextSize = 14, TextColor3 = Color3.fromRGB(255, 226, 120), Font = Enum.Font.GothamBold, LayoutOrder = 0 }, handBar)
+		local en = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromOffset(46, handH - 14), Text = string.format("에너지\n%d/%d", battle.energy or 0, Rules.ENERGY), TextSize = 14, TextColor3 = Color3.fromRGB(255, 226, 120), Font = Enum.Font.GothamBold, LayoutOrder = 0 }, handBar)
 		en.TextWrapped = true
 		for i, id in battle.hand do
 			local fx = Rules.cardFx(id, battle.tiers and battle.tiers[id])
@@ -192,7 +192,7 @@ function TacticsView.open(opts)
 				local usable = (battle.energy or 0) >= fx.cost and battle.phase == "player"
 				local chosen = cardSel == i
 				local c = make("TextButton", {
-					Size = UDim2.fromOffset(104, 62), LayoutOrder = i, AutoButtonColor = true, BorderSizePixel = 0,
+					Size = UDim2.fromOffset(104, handH - 12), LayoutOrder = i, AutoButtonColor = true, BorderSizePixel = 0,
 					BackgroundColor3 = if chosen then Color3.fromRGB(226, 190, 100) else PAPER, BackgroundTransparency = if usable then 0 else 0.45,
 					Text = string.format("%s  (%d)\n%s", fx.name, fx.cost, fx.text), TextSize = 12, TextWrapped = true, TextColor3 = INK, Font = Enum.Font.GothamMedium,
 				}, handBar)

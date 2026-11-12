@@ -93,7 +93,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('State',{}) local t=a.view and a.view.tactics if not t then return 'HAND none' end local out='HAND n='..#t.hand..' energy='..t.energy local res=r:InvokeServer('TacticsCard',{index=1,targetId=(t.units[1] and t.units[1].id)}) return out..' play1='..tostring(res and res.ok)..' '..tostring(res and res.message)"
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('State',{}) local t=a.view and a.view.tactics if not t then return 'HAND none' end local out='HAND n='..#t.hand..' energy='..t.energy task.wait(0.6) local res=r:InvokeServer('TacticsCard',{index=1,targetId=(t.units[1] and t.units[1].id)}) return out..' play1='..tostring(res and res.ok)..' '..tostring(res and res.message)"
  },
  {
   "type": "wait",
