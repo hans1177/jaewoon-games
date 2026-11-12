@@ -135,11 +135,18 @@ local function shuffle(list, rng)
 end
 
 -- 내 덱: 기본 부대 + 게임에서 얻은 카드(deckCards = view.deck.cards)가 영웅·특수 카드가 된다
-function B.playerDeck(deckCards, rng, factionId)
+-- book = { ids = 덱 카드 id 목록, tier = { id → 1~3 } } 이면 그 덱을 쓴다 (수집책). 부대는 단계마다 점수 +1.
+function B.playerDeck(deckCards, rng, factionId, book)
 	local out = {}
 	local fac = B.Factions[factionId or ""]
-	for _, id in (if fac then fac.roster else BASE_ROSTER) do
-		table.insert(out, copy(B.Units[id] or B.Specials[id]))
+	for _, id in (if book and book.ids then book.ids elseif fac then fac.roster else BASE_ROSTER) do
+		local card = copy(B.Units[id] or B.Specials[id])
+		local tier = book and book.tier and book.tier[id] or 1
+		if tier > 1 and card.power and not card.hero then
+			card.power += tier - 1
+		end
+		card.tier = tier
+		table.insert(out, card)
 	end
 	local leader = if fac then fac.leader else "draw"
 	for i, c in deckCards or {} do
@@ -147,6 +154,10 @@ function B.playerDeck(deckCards, rng, factionId)
 		if id then
 			local def = B.Units[id] or B.Specials[id]
 			local card = copy(def)
+			if c.tier and c.tier > 1 and card.power then
+				card.power += c.tier - 1
+				card.tier = c.tier
+			end
 			if card.special then
 				card.name = def.name .. "(" .. (c.name or "") .. ")"
 			else
@@ -846,7 +857,7 @@ function B.build(kind, seed, my, foe)
 		myDeck, myLeader = B.gunneryDeck(my.fighter or {}, my.deckCards, B.seeded(seed + 7), false)
 		foeDeck, foeLeader = B.gunneryDeck(foe.fighter or {}, nil, B.seeded(seed + 13), foe.boss == true)
 	else
-		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction)
+		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
 		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
 	end
 	return B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)

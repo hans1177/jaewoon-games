@@ -581,7 +581,7 @@ function NavalBattle.play(opts)
 		local actions = {} -- 내가 한 행동 기록: 서버가 같은 시드로 다시 돌려 승패를 확인한다
 		if cfg then
 			BC.useKind(cfg.kind)
-			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction }, { fighter = cfg.foe, boss = opts.isBoss == true })
+			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction, book = opts.deck and opts.deck.book }, { fighter = cfg.foe, boss = opts.isBoss == true })
 		else
 			BC.useKind("boarding")
 			local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)

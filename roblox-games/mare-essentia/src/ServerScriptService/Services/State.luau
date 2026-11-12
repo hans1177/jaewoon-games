@@ -685,6 +685,9 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.cardbook) == "table" then
+			s.cardbook = D.CardBook.sanitize(saved.cardbook, D.BoardingCards.factionOf(s.nationId))
+		end
 		if type(saved.stocks) == "table" then
 			local k = saved.stocks
 			for _, field in { "held", "cost" } do
@@ -845,6 +848,7 @@ return function(D)
 			landmarks = state.landmarks,
 			history = state.history,
 			stocks = state.stocks,
+			cardbook = state.cardbook,
 			portStages = state.portStages,
 			pace = state.pace,
 			world = state.world,

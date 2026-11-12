@@ -1648,7 +1648,97 @@ do
 		list.Parent = win
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
+		lay.SortOrder = Enum.SortOrder.LayoutOrder
 		lay.Parent = list
+		-- ── 퀸트식 덱 구성: 보유 카드를 골라 덱을 짜고, 같은 카드를 모아 동→은→금으로 강화한다 ──
+		do
+			local CBk = require(Shared:WaitForChild("CardBook"))
+			local builder = Instance.new("Frame")
+			builder.BackgroundTransparency = 1
+			builder.Size = UDim2.new(1, -6, 0, 0)
+			builder.AutomaticSize = Enum.AutomaticSize.Y
+			builder.LayoutOrder = 0
+			builder.Parent = list
+			local bl = Instance.new("UIListLayout")
+			bl.Padding = UDim.new(0, 5)
+			bl.SortOrder = Enum.SortOrder.LayoutOrder
+			bl.Parent = builder
+			local want = nil
+			local function bookOf() return (view and view.cardbook) or { owned = {}, tier = {}, ids = {} } end
+			local function resetWant()
+				want = {}
+				for _, id in bookOf().ids do want[id] = (want[id] or 0) + 1 end
+			end
+			local function wantList()
+				local ids = {}
+				for id, n in want do for _ = 1, n do table.insert(ids, id) end end
+				table.sort(ids)
+				return ids
+			end
+			local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
+			local fill
+			local function refreshAfter(action, payload)
+				call(action, payload)
+				if open then resetWant() fill() end
+			end
+			fill = function()
+				for _, ch in builder:GetChildren() do
+					if not ch:IsA("UIListLayout") then ch:Destroy() end
+				end
+				local book = bookOf()
+				local ids = wantList()
+				local okDeck, why = CBk.validateDeck(book, ids)
+				local heroes, specials = 0, 0
+				for _, id in ids do
+					if CBk.isHero(id) then heroes += 1 end
+					if CBk.isSpecial(id) then specials += 1 end
+				end
+				local head = mkHeader(builder, "덱 구성 (퀘스트·발견·탐험·주점에서 새 카드를 모아요)")
+				head.LayoutOrder = 1
+				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
+					if okDeck then "이 덱으로 싸울 수 있어요" else "덱을 고쳐 주세요: " .. tostring(why), {
+					{ text = "덱 저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSetDeck", { ids = ids }) end },
+					{ text = "자동 덱", color = COLORS.blue, onClick = function() refreshAfter("CardAutoDeck") end },
+					{ text = "용병 180", color = COLORS.gold, onClick = function() refreshAfter("CardTavern") end },
+				}, 74)
+				summary.LayoutOrder = 2
+				local order = {}
+				for id in book.owned do table.insert(order, id) end
+				table.sort(order, function(x, y)
+					local dx, dy = CBk.def(x), CBk.def(y)
+					local kx = (dx.hero and 0 or dx.special and 3 or 1)
+					local ky = (dy.hero and 0 or dy.special and 3 or 1)
+					if kx ~= ky then return kx < ky end
+					if (dx.power or 0) ~= (dy.power or 0) then return (dx.power or 0) > (dy.power or 0) end
+					return x < y
+				end)
+				for i, id in order do
+					local n = book.owned[id] or 0
+					if n > 0 then
+						local d = CBk.def(id)
+						local tier = book.tier[id] or 1
+						local info = CBk.upgradeInfo(book, id)
+						local kind = if d.special then "특수" elseif d.hero then "영웅" else string.format("%s 줄 · 점수 %d", BC.ROW_NAME[d.row], d.power + tier - 1)
+						local sub = string.format("%s · 보유 %d장%s%s", kind, n, if d.ability then " · " .. (({ bond = "결속", morale = "사기", spy = "첩자", medic = "치료", armor = "철갑", snipe = "저격" })[d.ability] or "") else "", if d.text then " · " .. d.text else "")
+						if info then
+							sub ..= string.format("\n강화 → %s: 같은 카드 %d장+1 보유, %d코인", CBk.TIER_NAME[tier + 1], info.copies, info.coins)
+						end
+						local row = mkRow(builder, string.format("[%s] %s  덱 %d/%d", CBk.TIER_NAME[tier], d.name, want[id] or 0, n), sub, {
+							{ text = "+", color = COLORS.green, enabled = (want[id] or 0) < n, onClick = function() want[id] = (want[id] or 0) + 1 fill() end },
+							{ text = "−", color = COLORS.red, enabled = (want[id] or 0) > 0, onClick = function() want[id] = (want[id] or 0) - 1 if want[id] <= 0 then want[id] = nil end fill() end },
+							{ text = "강화", color = COLORS.gold, enabled = info ~= nil and n >= info.copies + 1, onClick = function() refreshAfter("CardUpgrade", { id = id }) end },
+						}, if info then 78 else 62)
+						row.LayoutOrder = 10 + i
+						local bar = row:FindFirstChild("AccentBar")
+						if bar then bar.BackgroundColor3 = TIER_COLOR[tier] end
+					end
+				end
+				local sep = mkHeader(builder, "동료·발견 카드 (자동으로 합류해요)")
+				sep.LayoutOrder = 9000
+			end
+			resetWant()
+			fill()
+		end
 		for _, c in cards do
 			local info = BC.SkillInfo[c.skill]
 			local unitId = BC.SkillCard[c.skill]
