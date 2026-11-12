@@ -122,6 +122,15 @@ for key, list in {
 end
 
 
+-- 15세기 말 문화권별 기본 머리쓰개. 후대 삼각모는 현재 시대에서만 유지한다.
+-- 이 표는 역사적 배경에 맞는 기본 분류다. 정밀 R15 메시가 승인되면 같은 문화권 항목에 연결한다.
+local HEADWEAR_15C = {
+	iberia = "wide", italy = "wide", france = "wide", britain = "wide", hanse = "wide",
+	north = "wide", stone = "wide", brick = "wide", nordic = "wide", med = "wide",
+	ottoman = "turban", desert = "turban", malabar = "turban",
+	swahili = "kofia", japan = "kasa", tropic = "straw", colonial = "straw",
+}
+
 -- 문화권별 복식 (옷 색·모자). 주민·점원·이야기 인물이 같은 마을 사람처럼 보이게 한다.
 local OC = Color3.fromRGB
 local OUTFIT = {
@@ -173,4 +182,4 @@ STYLE.ottoman.mat, STYLE.swahili.mat, STYLE.malabar.mat, STYLE.japan.mat, STYLE.
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 
-return { MED = MED, STYLE = STYLE, REGION = REGION, PROFILE = PROFILE, OUTFIT = OUTFIT }
+return { MED = MED, STYLE = STYLE, REGION = REGION, PROFILE = PROFILE, OUTFIT = OUTFIT, HEADWEAR_15C = HEADWEAR_15C }
