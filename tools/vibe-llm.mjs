@@ -30,11 +30,11 @@ export async function listGeminiModels({ key, fetchFn = fetch }) {
   return (await r.json()).models || [];
 }
 
-export async function geminiCall({ key, model, prompt, fetchFn = fetch }) {
+export async function geminiCall({ key, model, prompt, images = [], fetchFn = fetch }) {
   const r = await post(fetchFn, `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } })
+    body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }, ...images.map(inlineData => ({ inlineData }))] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } })
   });
   if (!r.ok) throw new LlmError(`GEMINI_${model}_HTTP_${r.status}`, { status: r.status, retryable: true });
   const j = await r.json();
@@ -58,11 +58,12 @@ export async function openaiCompatCall({ url, key, model, prompt, fetchFn = fetc
 }
 
 // providers: [{name, call: async(prompt)=>text}] 를 순서대로 시도한다. trace 는 시도마다 {name, ok, status, message}.
-export async function askChain({ prompt, providers, log = () => {} }) {
+export async function askChain({ prompt, images = [], providers, log = () => {} }) {
   const trace = [];
   for (const p of providers) {
+    if (images.length && !p.acceptsImages) continue;
     try {
-      const text = await p.call(prompt);
+      const text = await p.call(prompt, images);
       trace.push({ name: p.name, ok: true });
       log(`LLM_OK ${p.name}`);
       return { text, provider: p.name, errors: trace.filter(t => !t.ok).map(t => `${t.name}:${t.message}`), trace };
@@ -108,7 +109,7 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
     let models = [];
     const forced = String(env.VIBE_BRAIN_GEMINI_MODELS || '').split(',').map(s => s.trim()).filter(Boolean);
     try { models = forced.length ? forced : pickGeminiModels(await listGeminiModels({ key: env.GEMINI_API_KEY, fetchFn })); } catch (e) { log('GEMINI_MODEL_LIST_FAILED ' + e.message); }
-    for (const m of models) providers.push({ name: 'gemini:' + m, call: prompt => geminiCall({ key: env.GEMINI_API_KEY, model: m, prompt, fetchFn }) });
+    for (const m of models) providers.push({ name: 'gemini:' + m, acceptsImages: true, call: (prompt, images) => geminiCall({ key: env.GEMINI_API_KEY, model: m, prompt, images, fetchFn }) });
   }
   // 2순위: Mistral Codestral(코드 전용, 무료 하루 약 2000회, 전화번호 인증 필요). 키(MISTRAL_CODESTRAL_API_KEY)가 있을 때만.
   if (env.MISTRAL_CODESTRAL_API_KEY) {
