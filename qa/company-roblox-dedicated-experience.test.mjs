@@ -537,12 +537,14 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
-  assert.match(client,/shadow\.Name = "DepthShadow"/);
+  // [현행 백과사전 표본] 레거시 그림자/옛 메뉴 썸네일 대신 현재 원화·종이·테두리 검증.
   assert.match(client,/art\.Name = "OriginalArt"/);
-  assert.match(client,/shadow\.Image = imageId/);
-  assert.match(client,/art\.Image = imageId/);
-  assert.match(client,/local imageId = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
-  assert.equal(client.split('image.Image = "rbxassetid://" .. tostring(menuAssetId)').length-1,2);
+  assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
+  assert.match(client,/art\.Parent = card/);
+  assert.match(client,/H\.iconPaper\(vf, px\)/);
+  assert.match(client,/local border = Instance\.new\("UIStroke"\)/);
+  assert.match(client,/if originalId or knownId then/);
+  assert.match(client,/image\.Image = if originalId then "rbxassetid:\/\/" \.\. tostring\(originalId\)/);
   assert.match(client,/local m = tpl:Clone\(\)/);
   assert.match(client,/local world = Instance\.new\("WorldModel"\)/);
   assert.match(client,/if #itemMotion >= 10 then return end/);
@@ -771,7 +773,7 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
   const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
-  assert.match(ui,/local chosenYear = 1700/);
+  assert.match(ui,/local chosenYear = 1517/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
   assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
   assert.doesNotMatch(server,/\[1492\] = true/);
