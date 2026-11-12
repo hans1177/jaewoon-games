@@ -611,8 +611,8 @@ end
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
-	local function person(pos, facing, spec)
-		local extra = { year = year, age = spec.age or "adult" }
+	local function person(pos, facing, spec, profession)
+		local extra = { year = year, age = spec.age or "adult", profession = spec.profession or profession or spec.role or "villager" }
 		local female = spec.female
 		local old = extra.age == "elder"
 		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
@@ -641,12 +641,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		table.insert(walkers, t)
 	end
 	local function stay(pos, target, kind, spec)
-		local fig = person(pos, faceTo(pos, target), spec or {})
+		local fig = person(pos, faceTo(pos, target), spec or {}, kind)
 		addTask(fig, { kind = kind, mode = "stay" })
 		return fig
 	end
 	local function path(a, b, kind, speed, spec, over)
-		local fig = person(a, faceTo(a, b), spec or {})
+		local fig = person(a, faceTo(a, b), spec or {}, kind)
 		local len = (b - a).Magnitude
 		if fig then
 			local p = fig:GetPivot().Position
