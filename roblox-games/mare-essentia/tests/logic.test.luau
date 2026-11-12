@@ -3183,6 +3183,31 @@ do
 	table.insert(m.rows.foe.cannon, { id = "b", name = "b", row = "cannon", power = 10, weapon = "cannon" })
 	check("상성: 근접이 포를 이기면 ×1.3", BC.rowTotal(m, "me", "melee") == 13)
 	check("상성: 포는 근접에 밀려 ×0.85", BC.rowTotal(m, "foe", "cannon") == 9)
+	-- 새 전략 카드: 군기(두 배), 철갑(날씨 면역), 저격수, 회군
+	do
+		local mh = blank()
+		table.insert(mh.rows.me.ranged, { id = "x", name = "x", row = "ranged", power = 5 })
+		mh.hand.me = { table.clone(BC.Specials.horn) }
+		BC.play(mh, "me", 1)
+		check("군기: 가장 센 줄 점수가 두 배", BC.rowRaw(mh, "me", "ranged") == 10)
+		local mw = blank()
+		table.insert(mw.rows.me.melee, table.clone(BC.Units.ironclad))
+		table.insert(mw.rows.me.melee, table.clone(BC.Units.swordsman))
+		mw.weather.melee = true
+		check("철갑: 날씨에도 점수가 줄지 않는다", BC.cardPower(mw, "me", "melee", 1) == 4 and BC.cardPower(mw, "me", "melee", 2) == 1)
+		local ms = blank()
+		table.insert(ms.rows.foe.melee, { id = "k", name = "k", row = "melee", power = 8 })
+		table.insert(ms.rows.foe.melee, { id = "j", name = "j", row = "melee", power = 5 })
+		ms.hand.me = { table.clone(BC.Units.sniper) }
+		BC.play(ms, "me", 1)
+		check("저격수: 점수 10 이상 줄에서 가장 센 카드를 쓰러뜨린다", #ms.rows.foe.melee == 1 and ms.rows.foe.melee[1].power == 5)
+		local md = blank()
+		table.insert(md.rows.me.melee, table.clone(BC.Units.surgeon))
+		table.insert(md.rows.me.melee, table.clone(BC.Units.axeman))
+		md.hand.me = { table.clone(BC.Specials.decoy) }
+		BC.play(md, "me", 1)
+		check("회군: 치료병을 손으로 되돌린다", #md.rows.me.melee == 1 and md.hand.me[1] and md.hand.me[1].id == "surgeon")
+	end
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()
 	table.insert(m.rows.me.melee, { id = "h", name = "h", row = "melee", power = 10, hero = true })

@@ -4638,6 +4638,8 @@ function H.showCombatCard(unit, origin, skill)
 		morale = "같은 줄의 다른 아군 카드에 위력 1을 더해요.",
 		spy = "적군 줄에 배치하고 내 손패에 카드 두 장을 뽑아요.",
 		medic = "버린 일반 카드 가운데 위력이 가장 높은 카드를 되살려요.",
+		armor = "날씨(안개·폭풍·혼전)에 점수가 줄지 않아요.",
+		snipe = "낼 때 점수 10 이상인 적 줄에서 가장 센 일반 카드를 쓰러뜨려요.",
 	}
 	local effect = unit.text or effects[unit.ability] or "지정된 병종 줄에 배치해 전투력을 더해요."
 	if unit.hero then

@@ -820,7 +820,7 @@ function NavalBattle.play(opts)
 			f.Parent = parent
 			frameEdge(f, brass, 4)
 		end
-		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
+		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료", armor = "철갑", snipe = "저격" }
 
 		-- 한 번에 선택한 카드 한 장의 원화와 모델만 움직인다.
 		local function animateCardArt(art, image, card)

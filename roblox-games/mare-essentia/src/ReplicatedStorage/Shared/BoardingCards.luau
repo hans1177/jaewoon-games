@@ -36,6 +36,8 @@ B.Units = {
 	hero_spy = { id = "hero_spy", name = "밀정", row = "ranged", power = 4, weapon = "gun", hero = true, ability = "spy" },
 	hero_medic = { id = "hero_medic", name = "명의", row = "melee", power = 3, weapon = "sword", hero = true, ability = "medic" },
 	hero_captain = { id = "hero_captain", name = "선장", row = "melee", power = 10, weapon = "sword", hero = true },
+	ironclad = { id = "ironclad", name = "철갑병", row = "melee", power = 4, weapon = "spear", ability = "armor" },
+	sniper = { id = "sniper", name = "저격수", row = "ranged", power = 4, weapon = "gun", ability = "snipe" },
 	beast = { id = "beast", name = "맹수", row = "melee", power = 7, weapon = "axe" },
 }
 -- 특수 카드
@@ -45,6 +47,8 @@ B.Specials = {
 	storm = { id = "storm", name = "폭풍", special = "weather", row = "cannon", text = "포 줄이 모두 1로 줄어든다" },
 	melee_fog = { id = "melee_fog", name = "혼전", special = "weather", row = "melee", text = "근접 줄이 모두 1로 줄어든다" },
 	clear = { id = "clear", name = "맑음", special = "clear", text = "모든 날씨를 걷어 낸다" },
+	horn = { id = "horn", name = "군기", special = "horn", text = "내 가장 센 줄의 일반 카드 점수가 두 배" },
+	decoy = { id = "decoy", name = "회군", special = "decoy", text = "내 필드의 약한 카드를 손으로 되돌린다 (치료병 우선)" },
 }
 -- 지도자 능력 (한 판당 한 번)
 B.Leaders = {
@@ -83,7 +87,7 @@ B.SkillInfo = {
 }
 local SKILL_SPECIAL = { ward = "clear", luck = "scorch", insight = "fog" }
 
-local BASE_ROSTER = { "swordsman", "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "musketeer", "scout", "gunner", "gunner", "swivel", "culverin" }
+local BASE_ROSTER = { "swordsman", "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "musketeer", "scout", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper", "horn", "decoy", "sharpshooter", "axeman", "pikeman", "musketeer" }
 
 local function shuffle(list, rng)
 	for i = #list, 2, -1 do
@@ -97,7 +101,7 @@ end
 function B.playerDeck(deckCards, rng)
 	local out = {}
 	for _, id in BASE_ROSTER do
-		table.insert(out, copy(B.Units[id]))
+		table.insert(out, copy(B.Units[id] or B.Specials[id]))
 	end
 	local leader = "draw"
 	for i, c in deckCards or {} do
@@ -123,21 +127,20 @@ end
 
 -- 해적 덱: 두목이면 영웅과 대포가 더 많다
 function B.enemyDeck(isBoss, rng)
-	local ids = { "swordsman", "swordsman", "axeman", "axeman", "pikeman", "pikeman", "pikeman", "surgeon", "musketeer", "musketeer", "sharpshooter", "scout", "scout", "gunner", "gunner", "swivel", "culverin" }
+	local ids = { "swordsman", "swordsman", "axeman", "axeman", "pikeman", "pikeman", "pikeman", "surgeon", "musketeer", "musketeer", "sharpshooter", "scout", "scout", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper" }
 	local out = {}
 	for _, id in ids do
 		table.insert(out, copy(B.Units[id]))
 	end
 	table.insert(out, copy(B.Specials.storm))
 	if isBoss then
+		table.insert(out, copy(B.Specials.horn))
 		local boss = copy(B.Units.hero_blade)
 		boss.name = "해적 두목"
 		boss.power = 11
 		table.insert(out, boss)
 		table.insert(out, copy(B.Units.culverin))
 		table.insert(out, copy(B.Specials.scorch))
-	else
-		table.insert(out, copy(B.Units.beast))
 	end
 	return shuffle(out, rng), if isBoss then "snipe" else "draw"
 end
@@ -154,6 +157,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng)
 		deck = { me = myDeck, foe = foeDeck },
 		grave = { me = {}, foe = {} },
 		weather = { melee = false, ranged = false, cannon = false },
+		horn = { me = {}, foe = {} },
 		wins = { me = 0, foe = 0 },
 		passed = { me = false, foe = false },
 		leader = { me = myLeader or "draw", foe = foeLeader or "draw" },
@@ -192,7 +196,7 @@ function B.cardPower(m, side, row, idx)
 	end
 	local p = c.power
 	if not c.hero then
-		if m.weather[row] then
+		if m.weather[row] and c.ability ~= "armor" then
 			p = 1
 		end
 		if c.ability == "bond" then
@@ -225,6 +229,9 @@ function B.cardPower(m, side, row, idx)
 			elseif beaten and not beats then
 				p = math.max(1, p - 1)
 			end
+		end
+		if m.horn and m.horn[side][row] then
+			p *= 2
 		end
 	end
 	return p
@@ -361,6 +368,7 @@ local function roundEnd(m)
 		m.passed[side] = false
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
+	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
 	if m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3 then
 		m.over = true
@@ -374,6 +382,69 @@ local function roundEnd(m)
 		drawCards(m, "foe", 1)
 	end
 	return result
+end
+
+-- 군기: 일반 카드 점수가 가장 큰 줄(동점이면 근접·사격·포 순)
+local function bestHornRow(m, side)
+	local bestRow, bestSum = nil, 0
+	for _, row in B.ROWS do
+		if not m.horn[side][row] then
+			local sum = 0
+			for i, c in m.rows[side][row] do
+				if not c.hero then
+					sum += B.cardPower(m, side, row, i)
+				end
+			end
+			if sum > bestSum then
+				bestRow, bestSum = row, sum
+			end
+		end
+	end
+	return bestRow, bestSum
+end
+
+-- 저격수: 적의 점수 합이 10 이상인 줄 가운데 가장 센 줄에서 가장 센 일반 카드를 쓰러뜨린다
+local function snipeTarget(m, side)
+	local foe = other(side)
+	local bestRow, bestTotal = nil, 9
+	for _, row in B.ROWS do
+		local t = B.rowTotal(m, foe, row)
+		if t > bestTotal then
+			bestRow, bestTotal = row, t
+		end
+	end
+	if not bestRow then
+		return nil
+	end
+	local bi, bp = nil, 0
+	for i, c in m.rows[foe][bestRow] do
+		if not c.hero then
+			local p = B.cardPower(m, foe, bestRow, i)
+			if p > bp then
+				bi, bp = i, p
+			end
+		end
+	end
+	if bi then
+		return foe, bestRow, bi, bp
+	end
+	return nil
+end
+
+-- 회군: 치료병이 필드에 있으면 그 카드, 없으면 가장 약한 일반 카드를 손으로 되돌린다
+local function decoyTarget(m, side)
+	local pick
+	for _, row in B.ROWS do
+		for i, c in m.rows[side][row] do
+			if not c.hero then
+				local score = (if c.ability == "medic" then 100 else 0) - c.power
+				if not pick or score > pick.score then
+					pick = { row = row, i = i, score = score }
+				end
+			end
+		end
+	end
+	return pick
 end
 
 -- 카드 내기: 부대는 자기 줄에 (첩자는 적 줄에), 특수 카드는 즉시 발동한다. 반환: ok, 설명, 판이 끝났으면 그 결과
@@ -404,6 +475,25 @@ function B.play(m, side, handIdx)
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "날씨가 걷혔다"
 		table.insert(m.grave[side], c)
+	elseif c.special == "horn" then
+		local row = bestHornRow(m, side)
+		if row then
+			m.horn[side][row] = true
+			msg = string.format("군기! %s 줄 점수가 두 배", B.ROW_NAME[row])
+		else
+			msg = "군기 — 높일 줄이 없었다"
+		end
+		table.insert(m.grave[side], c)
+	elseif c.special == "decoy" then
+		local pick = decoyTarget(m, side)
+		if pick then
+			local back = table.remove(m.rows[side][pick.row], pick.i)
+			table.insert(m.hand[side], back)
+			msg = string.format("회군! %s을(를) 손으로 되돌렸다", back.name)
+		else
+			msg = "회군 — 되돌릴 카드가 없었다"
+		end
+		table.insert(m.grave[side], c)
 	else
 		local target = side
 		if c.ability == "spy" then
@@ -414,6 +504,13 @@ function B.play(m, side, handIdx)
 		if c.ability == "spy" then
 			drawCards(m, side, 2)
 			msg ..= " (첩자: 카드 2장을 뽑았다)"
+		elseif c.ability == "snipe" then
+			local fside, frow, fi = snipeTarget(m, side)
+			if fside then
+				local dead = table.remove(m.rows[fside][frow], fi)
+				table.insert(m.grave[fside], dead)
+				msg ..= string.format(" (저격: %s 쓰러뜨림)", dead.name)
+			end
 		elseif c.ability == "medic" then
 			local best, bi = nil, nil
 			for i, g in m.grave[side] do
@@ -527,6 +624,20 @@ function B.ai(m, side)
 			local after = B.total(m, side) - B.total(m, foe)
 			m.weather = saved
 			gain = after - before
+		elseif c.special == "horn" then
+			local row = bestHornRow(m, side)
+			if row then
+				local before = B.total(m, side) - B.total(m, foe)
+				m.horn[side][row] = true
+				local after = B.total(m, side) - B.total(m, foe)
+				m.horn[side][row] = nil
+				gain = after - before
+			else
+				gain = -5
+			end
+		elseif c.special == "decoy" then
+			local pick = decoyTarget(m, side)
+			gain = if pick and pick.score >= 100 then 3 else -4
 		else
 			local target = if c.ability == "spy" then foe else side
 			local before = B.total(m, side) - B.total(m, foe)
@@ -536,6 +647,11 @@ function B.ai(m, side)
 			gain = after - before
 			if c.ability == "spy" then
 				gain += 4 -- 카드 2장을 뽑는 값
+			elseif c.ability == "snipe" then
+				local fside, _, _, bp = snipeTarget(m, side)
+				if fside then
+					gain += bp
+				end
 			end
 			-- 센 카드는 아끼고 작은 카드부터 쓴다 (앞서고 있을 때)
 			if mine >= theirs then
