@@ -16,9 +16,22 @@ for id, key in Cultures.REGION do
 	check(Cultures.STYLE[key] ~= nil, id .. " → 알 수 없는 양식 " .. key)
 	check(Data.Ports[id] ~= nil, "REGION 에 없는 항구 id: " .. id)
 end
+-- 모든 항구는 문화권·주택 형식·거리 배치가 정확히 하나의 기존 양식으로 이어져야 한다.
+for id in Data.Ports do
+	local key = Cultures.REGION[id]
+	check(key ~= nil, id .. " 문화권 누락")
+	if key then
+		check(Cultures.STYLE[key] ~= nil, id .. " 건축 양식 누락")
+		check(Cultures.PROFILE[key] ~= nil, id .. " 거리 배치 누락")
+		check(Cultures.STYLE[key] ~= nil and Cultures.STYLE[key].house ~= nil, id .. " 주택 형식 누락")
+	end
+end
+-- 역사적 전환 직전의 양식: 1522년 로도스, 1571년 파마구스타 이후는 PortScene에서 오스만으로 변경한다.
+check(Cultures.REGION.rhodes == "med", "로도스 전환 이전 기본 양식")
+check(Cultures.REGION.famagusta == "italy", "파마구스타 전환 이전 기본 양식")
 for id, n in Data.Nations do
 	check(Data.Ports[n.startPort] ~= nil, id .. " 시작 항구 없음")
-	check(Cultures.REGION[n.startPort] ~= nil or Cultures.MED[n.startPort] ~= nil or true, "")
+	check(Cultures.REGION[n.startPort] ~= nil, id .. " 시작 항구 문화권 누락")
 end
 -- 시작 항구 9곳은 반드시 고유 양식을 가진다
 for _, id in { "london", "amsterdam", "rouen", "lisbon", "istanbul", "zanzibar", "calicut", "nagasaki", "veracruz" } do
