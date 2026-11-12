@@ -2116,7 +2116,7 @@ do
 		check("origin: tea not native to europe", not H.isLocal("tea", "europe", 1600) and H.isLocal("tea", "far_east", 1600))
 		check("transplant: sugar new world after 1550", not H.isLocal("sugar", "new_world", 1540) and H.isLocal("sugar", "new_world", 1560))
 		check("producesOf drops non-local", #H.producesOf({ "tea", "wool" }, "europe", 1600) == 1)
-		check("demandsOf excludes local goods", #H.demandsOf({ "wool", "tea", "silk" }, "europe", 1600) == 2)
+		check("demandsOf excludes own specialties", #H.demandsOf({ "wool", "tea", "silk" }, "europe", 1600, { "wool" }) == 2)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)

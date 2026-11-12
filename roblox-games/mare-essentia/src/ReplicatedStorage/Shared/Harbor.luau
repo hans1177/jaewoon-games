@@ -103,11 +103,13 @@ function Harbor.producesOf(produces: { string }, region: string, year: number): 
 	return native
 end
 
--- 교역품(수요): 제 땅에서 나지 않는 물건을 비싸게 산다.
-function Harbor.demandsOf(demands: { string }, region: string, year: number): { string }
+-- 교역품(수요): 지역 간 교역은 같은 물건도 오가므로(영국 양모→네덜란드 직조업) 원산 필터 없이,
+-- 그 항구가 스스로 내는 특산품만 뺀다.
+function Harbor.demandsOf(demands: { string }, region: string, year: number, produces: { string }?): { string }
 	local out = {}
+	local own = if produces then Harbor.producesOf(produces, region, year) else {}
 	for _, g in demands do
-		if not (Harbor.ORIGIN[g] and nativeIn(g, region, year)) then
+		if not table.find(own, g) then
 			table.insert(out, g)
 		end
 	end
@@ -124,7 +126,7 @@ function Harbor.role(port, region: string, year: number, level: number, goodId: 
 	if table.find(Harbor.openList(Harbor.producesOf(port.produces, region, year), level), goodId) then
 		return "produce"
 	end
-	if table.find(Harbor.openList(Harbor.demandsOf(port.demands, region, year), level), goodId) then
+	if table.find(Harbor.openList(Harbor.demandsOf(port.demands, region, year, port.produces), level), goodId) then
 		return "demand"
 	end
 	return nil

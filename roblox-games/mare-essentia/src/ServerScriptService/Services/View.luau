@@ -621,7 +621,7 @@ return function(D, S)
 					view.harbor.nextProduce = view.harbor.nextProduce or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }
 				end
 			end
-			local dem = D.Harbor.demandsOf(port.demands, rid0, yr0)
+			local dem = D.Harbor.demandsOf(port.demands, rid0, yr0, port.produces)
 			for i, id in dem do
 				if lv >= D.Harbor.unlockLevel(i) then
 					table.insert(view.harbor.demands, D.Ports.Goods[id].name)

@@ -14,7 +14,7 @@ return function(D, S)
 	local function newlyOpen(port, before, after, year)
 		local rid = D.Regions.of(port).id
 		local out = {}
-		for _, list in { H.producesOf(port.produces, rid, year), H.demandsOf(port.demands, rid, year) } do
+		for _, list in { H.producesOf(port.produces, rid, year), H.demandsOf(port.demands, rid, year, port.produces) } do
 			for i, g in list do
 				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
 					table.insert(out, g)
