@@ -1,5 +1,5 @@
 // 파일명: tools/mare-audio-upload.mjs
-// 마리 에센시아 오리지널 합성 음악·효과음(roblox-games/mare-essentia/audio)을 로블록스 Audio 자산으로 등록하고
+// 마리 에센시아의 검증된 CC0 파생 음악·효과음(roblox-games/mare-essentia/audio)을 로블록스 Audio 자산으로 등록하고
 // Universe 사용 권한을 승인한 뒤 Shared/AudioIds.luau 에 실제 ID만 기록한다. 같은 해시는 다시 올리지 않는다.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -197,3 +197,5 @@ const lines=meta.tracks.filter(t=>receipts[t.name]?.granted).map(t=>' '+t.name+'
 fs.writeFileSync(idsPath,
   '-- 업로드 워크플로(mare-audio-upload)가 기록한 음악·효과음 ID. 등록과 권한 승인이 끝난 것만 들어간다. 없으면 소리 없이 지나간다.\nreturn {\n'+lines.join('\n')+'\n}\n');
 console.log('AUDIO_IDS_WRITTEN count='+lines.length+' failures='+failures);
+// 일부 음원/권한 실패를 성공으로 숨기지 않는다. 이미 승인된 ID와 영수증은 복구용으로 보존.
+if(failures>0)process.exitCode=1;
