@@ -34,3 +34,26 @@ assets/shared/forest/*.fbx -filter -diff -merge -text
 
 # Mare Essentia CC0 주민 모델은 실제 FBX 원본 바이너리로 보존한다.
 roblox-games/mare-essentia/assets/people/*.fbx -filter -diff -merge -text
+
+# 마리 에센시아 검증된 CC0 파생 오디오는 GitHub의 실제 바이너리로 보관한다.
+# 기존 자체 합성/LFS 음원은 변환하지 않으며 기존 ID와 저장을 보호한다.
+roblox-games/mare-essentia/audio/out/music_pirate.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/music_region_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/music_story_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/music_history_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/music_wonder_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_story_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_event_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_wonder_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_ambience_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_quest_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_cannon_reload.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_metal_clash.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_chart_unfold.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_book_turn.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_sail_fabric.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_coin_pouch.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_contract_stamp.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_cargo_fabric.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_ship_cabin_door.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_treasure_chest.ogg -filter -diff -merge -text
