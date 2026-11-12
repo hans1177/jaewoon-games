@@ -32,7 +32,7 @@ function prepareVerifiedCC0(track){
   // 예전 PR에서 12개가 Git LFS 포인터로 저장됐다면 실제 LFS OGG를 복원해 일반 Git 바이너리로 승격한다.
   const locked=preservedReceipts[track.name];
   if(locked?.granted){
-    const validId=/^[1-9]\\d*$/.test(String(locked.assetId||''));
+    const validId=/^[1-9]\d*$/.test(String(locked.assetId||''));
     const validHash=/^[a-f0-9]{64}$/.test(String(locked.sha256||''));
     let validOrigin=false;
     if(track.sourceArchiveSha256){
@@ -46,7 +46,7 @@ function prepareVerifiedCC0(track){
         && locked.sourceEntry===track.sourceEntry
         && /^[a-f0-9]{64}$/.test(String(locked.sourceSha256||''));
     }else if(track.sourceDownloadUrl&&!track.sourceFile){
-      validOrigin=/^https:\\/\\/opengameart\\.org\\/content\\/[a-z0-9-]+$/.test(String(track.sourceUrl||''))
+      validOrigin=/^https:\/\/opengameart\.org\/content\/[a-z0-9-]+$/.test(String(track.sourceUrl||''))
         && track.sourceLicenseCheckedOn==='2026-11-12'
         && locked.sourceSha256===track.sourceSha256
         && locked.sourceDownloadUrl===track.sourceDownloadUrl
