@@ -42,7 +42,7 @@ return {
  sfx_ship_cabin_door="rbxassetid://72463948206564",
  sfx_treasure_chest="rbxassetid://112281999883063",
  music_region_europe="rbxassetid://84752619840740",
- music_region_w_africa="rbxassetid://87116162360580",
+ music_region_w_africa="rbxassetid://123867841859579",
  music_region_new_world="rbxassetid://80865460835601",
  music_region_indian="rbxassetid://118631257193245",
  music_region_far_east="rbxassetid://74165727287906",
