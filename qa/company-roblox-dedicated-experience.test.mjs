@@ -760,15 +760,15 @@ test('Mare 1492 start preserves 15th-century R15 visual rules and existing later
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   assert.match(ui,/local chosenYear = 1492/);
-  assert.match(ui,/\\{ 1492, "1492년 ★추천"/);
-  assert.match(server,/\\[1492\\] = true, \\[1517\\] = true/);
-  assert.match(state,/num\\(saved.startYear, 1700, 1492, 1800\\)/);
-  assert.match(ui,/p.portId \\.\\. "\\|Y" \\.\\. tostring\\(p.year\\)/);
-  assert.match(port,/currentYear = if type\\(info.year\\) == "number" then info.year else 1492/);
-  assert.match(port,/if year < 1500 then\\s+outfit.hat = nil\\s+outfit.hair = nil\\s+outfit.skirt = nil/);
+  assert.match(ui,/\{ 1492, "1492년 ★추천"/);
+  assert.match(server,/\[1492\] = true, \[1517\] = true/);
+  assert.match(state,/num\(saved.startYear, 1700, 1492, 1800\)/);
+  assert.match(ui,/p.portId \.\. "\|Y" \.\. tostring\(p.year\)/);
+  assert.match(port,/currentYear = if type\(info.year\) == "number" then info.year else 1492/);
+  assert.match(port,/if year < 1500 then\s+outfit.hat = nil\s+outfit.hair = nil\s+outfit.skirt = nil/);
   assert.match(port,/outfit.profession = if extra and extra.profession then extra.profession else role/);
-  assert.match(pose,/model:SetAttribute\\("AppearanceCulture", outfit.culture\\)/);
-  assert.match(pose,/model:SetAttribute\\("AppearanceProfession", outfit.profession\\)/);
+  assert.match(pose,/model:SetAttribute\("AppearanceCulture", outfit.culture\)/);
+  assert.match(pose,/model:SetAttribute\("AppearanceProfession", outfit.profession\)/);
 });
 
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
