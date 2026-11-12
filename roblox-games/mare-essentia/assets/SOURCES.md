@@ -828,3 +828,16 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 |---|---|---|---|---|
 | `town/cart-high.glb` | 항구 하역·마차용 높이 있는 수레 | Kenney Fantasy Town Kit 2.0 · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit | `c9d656399c42e6fb47f406ae31eb637ad0c1bfea45300209f4e2f2c405e94eb6` |
 | `town/workbench-grind.glb` | 대장간 공구 연마 작업대 | Kenney Survival Kit · CC0-1.0 | https://kenney.nl/assets/survival-kit | `6da609c418bba7ee8f8402d8f6783fa1d45c3c6391202c31cd4d25a710d37a20` |
+
+
+### 2026-11-12 시대·지역별 추가 실물 3종 (원본 보존·게임 배치 보류)
+
+*출처 보증*: Kenney Cube Pets 2.0 동봉 `License.txt`는 CC0(개인·상업 이용 가능)를 명시하며, Quaternius 닻의 공개 모델 페이지에도 CC0가 명시된다. 아래 원본은 각각 고정 Git Blob SHA와 신규 Blob SHA 일치를 검증했고 GLB 2.0 메시를 확인했다. 목록은 소유권·원본 검수용이며 **로블록스 업로드·Universe 사용 권한·실제 Studio 화풍/성능 성공을 뜻하지 않는다.**
+
+| 원본 | 대상 | 제작자/무료 권한 | 원본 링크 | 원본 Git Blob | SHA-256 |
+|---|---|---|---|---|---|
+| `animals/cat.glb` | 고양이 | Kenney Cube Pets 2.0 · CC0-1.0 | https://kenney.nl/assets/cube-pets / [바이너리 출처](https://github.com/mPhpMaster/wavebreak-godot-game/blob/HEAD/assets/kenney/cube-pets/animal-cat.glb) | `91f9b1bccbe0aa4c4c563b298def62b4f8054dcc` | `1e73aaf7d497dd7d2946badf92d189d2333f163e66dced91feb446bc9bdee850` |
+| `animals/elephant.glb` | 코끼리 | Kenney Cube Pets 2.0 · CC0-1.0 | https://kenney.nl/assets/cube-pets / [바이너리 출처](https://github.com/mPhpMaster/wavebreak-godot-game/blob/HEAD/assets/kenney/cube-pets/animal-elephant.glb) | `19e27278610ed24d0fa89cd3f2dbbaab4683c3d2` | `0831346fb8ddb8e99e42e3f92fb48858551049dc7ea49e641d90fdfc65e057be` |
+| `naval/anchor.glb` | 닻 | Quaternius · CC0-1.0 | https://poly.pizza/m/ejWQny9Gcz / [바이너리 출처](https://github.com/amarnotcool/ABYSS/blob/468cd31632ebf7f7a466713a1dc483d02a965ca2/public/assets/models/anchor.glb) | `7744e423c1f71f16af058a7ecc99ed4cc30239ba` | `f629c05a217c380daf5b04d00e21ac398829eb746f908db4ecefd760c3892dc7` |
+
+**시대 배치 제한:** 고양이는 항구 창고·거리, 코끼리는 인도양/말라바르 지역 장식, 닻은 돛단배 항구에 한정한다. 저다각형 동물의 비례·눈·재질이 기존 게임 화풍에 맞는지는 반드시 실제 화면으로 확인하고, 화면 검증 전 자동 배치하거나 고급 완성품으로 승격하지 않는다. 종교·지역에 따른 돼지 배치도 무차별 자동 적용하지 않는다. 20세기식 기계·현대 어구·주류 소품은 제외한다.
