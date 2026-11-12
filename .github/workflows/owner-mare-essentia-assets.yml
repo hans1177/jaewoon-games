@@ -12,6 +12,7 @@ on:
       - 'roblox-games/mare-essentia/assets/**'
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
       - 'tools/devloop/assets_wanted.py'
+      - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'tools/mare-essentia-upload-assets.mjs'
   # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
   schedule:
