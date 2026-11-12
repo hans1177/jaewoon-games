@@ -165657,72 +165657,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_38dd1ba0b91dc24a53a76797",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:f0172a5227f5b79e2758da00401f7f2f52a42159",
-            "actions-run:43112075952",
-            "reservation-id:43112075952:1",
-            "capability-application-sample:88dd6d6bf8ecb544ff7e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_1934c8d30ba72d1360693bb3",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:f0172a5227f5b79e2758da00401f7f2f52a42159",
-            "actions-run:43112075952",
-            "reservation-id:43112075952:1",
-            "capability-application-sample:30bf1727acf382996f18"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_819d1385216f06cd765daa55",
           "taskId": "line-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -167760,6 +167694,72 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:ae7ed4a6ffafaf71abc9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a01fb84e52a02f2637c02a4e",
+          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "dice-battle-board",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:2403042f3600014d1cc4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_dd1cc8d42d98491b264ab568",
+          "taskId": "line-defense-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:3ea619447d3180d094e2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172688,39 +172688,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4b6cfb4ebd4a41020429347d",
-          "taskId": "gem-survivor-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "gem-survivor",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:56e15e47e6d4d61c2417da7f5b78acdf561dba42",
-            "actions-run:43110684002",
-            "reservation-id:43110684002:1",
-            "capability-application-sample:f60797554a6724c801ce"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_fb4abae1955e81305be665a7",
           "taskId": "gem-survivor-existing-web-assessment-v1",
           "workKey": null,
@@ -174791,6 +174758,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:ae7ed4a6ffafaf71abc9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_50c0d2a42e5256de5589c4cc",
+          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "dice-battle-board",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:2403042f3600014d1cc4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189192,39 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cf95e8c3df6e132c7f4acf06",
-          "taskId": "mini-empire-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "mini-empire",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:f0172a5227f5b79e2758da00401f7f2f52a42159",
-            "actions-run:43112075952",
-            "reservation-id:43112075952:1",
-            "capability-application-sample:4bc99bd5ea6d61dda3f0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_be1a926fd56295dfb70a3ac3",
           "taskId": "mini-empire-existing-web-assessment-v1",
           "workKey": null,
@@ -191301,6 +191268,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_327886458117db9441738c7b",
+          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "dice-battle-board",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:2403042f3600014d1cc4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -191473,39 +191473,6 @@
       "confirmations": 15,
       "confidence": 0.9375,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_e637c3e906c05d94fee0dd93",
-          "taskId": "line-defense-web-startup-spatial-repair-v4",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:dcf227cc2cce5821fa1d46726cbe9da004f89456",
-            "actions-run:42762354205",
-            "reservation-id:42762354205:1",
-            "capability-application-sample:8e6f9fcc4ff55093a4d4"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_9cbcf917b94f1b47c830a21f",
@@ -193578,6 +193545,39 @@
             "actions-run:43121511472",
             "reservation-id:43121511472:1",
             "capability-application-sample:608f1aede7de24040292"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a567cf9223966283a2140b06",
+          "taskId": "line-defense-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:3ea619447d3180d094e2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196243,39 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cafe05952e30a19d95a344c1",
-          "taskId": "mini-empire-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "mini-empire",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:f0172a5227f5b79e2758da00401f7f2f52a42159",
-            "actions-run:43112075952",
-            "reservation-id:43112075952:1",
-            "capability-application-sample:4bc99bd5ea6d61dda3f0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8ffa350aafa819c31a9a00eb",
           "taskId": "mini-empire-existing-web-assessment-v1",
           "workKey": null,
@@ -198346,6 +198313,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:ae7ed4a6ffafaf71abc9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_676715249b2ac7fc9af4d03d",
+          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "dice-battle-board",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:2403042f3600014d1cc4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201189,39 +201189,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_710a56fdd6e237c4b72ca336",
-          "taskId": "gem-survivor-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "gem-survivor",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:56e15e47e6d4d61c2417da7f5b78acdf561dba42",
-            "actions-run:43110684002",
-            "reservation-id:43110684002:1",
-            "capability-application-sample:f60797554a6724c801ce"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0dec0f12a5e7acade3d87bfd",
           "taskId": "gem-survivor-existing-web-assessment-v1",
           "workKey": null,
@@ -203292,6 +203259,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:e3c0ddd3f41abf432df1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_712c172eb3f08d7497f64d72",
+          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "dice-battle-board",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:2403042f3600014d1cc4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -303976,39 +303976,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_36f45941faa57c39c9e67b2b",
-          "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:21a81421620c8a60218d4d2f68545901a910942f",
-            "actions-run:43114068647",
-            "reservation-id:43114068647:1",
-            "capability-application-sample:e8ff9259a4c2b9da9d4b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8145bbc98fd5ead1a1cc955c",
           "taskId": "exorcist-office-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -306079,6 +306046,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:3a58eb813e9be159b8b3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7f5ff2ae80bd0e61b5375932",
+          "taskId": "fifty-days-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:ff9b8eddbff93f0b7e43"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -313000,39 +313000,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_10b0fd0bc1da7f7c3466e069",
-          "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:21a81421620c8a60218d4d2f68545901a910942f",
-            "actions-run:43114068647",
-            "reservation-id:43114068647:1",
-            "capability-application-sample:e8ff9259a4c2b9da9d4b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b46bf0448860d510ec550a30",
           "taskId": "exorcist-office-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -315103,6 +315070,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:3a58eb813e9be159b8b3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_307c8f6b6863062a518e6bd4",
+          "taskId": "fifty-days-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:ff9b8eddbff93f0b7e43"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -335810,39 +335810,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7167ad6ed7edba67e1c74dab",
-          "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:21a81421620c8a60218d4d2f68545901a910942f",
-            "actions-run:43114068647",
-            "reservation-id:43114068647:1",
-            "capability-application-sample:e8ff9259a4c2b9da9d4b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_793abdb029cea00a327df00c",
           "taskId": "exorcist-office-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -337913,6 +337880,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:3a58eb813e9be159b8b3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cdefe50d5ff1d6f8d803a864",
+          "taskId": "fifty-days-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:ff9b8eddbff93f0b7e43"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -341490,39 +341490,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_54327a9917807b733583f7d7",
-          "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:21a81421620c8a60218d4d2f68545901a910942f",
-            "actions-run:43114068647",
-            "reservation-id:43114068647:1",
-            "capability-application-sample:72299d7906342940ff20"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_124248862a9f309e53cbab03",
           "taskId": "deep-diver-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -343593,6 +343560,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:3a58eb813e9be159b8b3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_baca7b8fa17cef3235022e97",
+          "taskId": "fifty-days-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:ff9b8eddbff93f0b7e43"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -360101,39 +360101,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_323285874d845116735d95a2",
-          "taskId": "line-defense-studio-evolution-roblox-usability-v3",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_0be1b657978bacf1ebbc24ea"
-          ],
-          "evidence": [
-            "base-main:77f8eaf99307c9d98762be90ff280e3224732dab",
-            "actions-run:42407294213",
-            "reservation-id:42407294213:1",
-            "capability-application-sample:1c02f0cb1a83a4489e3e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_e05718f8b2170a542db8d08e",
           "taskId": "line-defense-studio-evolution-roblox-usability-v3",
           "workKey": null,
@@ -362203,6 +362170,39 @@
             "actions-run:43121511472",
             "reservation-id:43121511472:1",
             "capability-application-sample:608f1aede7de24040292"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_548e91389bde9caff4521cf9",
+          "taskId": "line-defense-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:3ea619447d3180d094e2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -405859,39 +405859,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_0fe108cec40089bfd5d548c5",
-          "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:21a81421620c8a60218d4d2f68545901a910942f",
-            "actions-run:43114068647",
-            "reservation-id:43114068647:1",
-            "capability-application-sample:e8ff9259a4c2b9da9d4b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_e2cf606092c0d745888a31de",
           "taskId": "exorcist-office-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -407962,6 +407929,39 @@
             "actions-run:43122581383",
             "reservation-id:43122581383:1",
             "capability-application-sample:3a58eb813e9be159b8b3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b55352372e06f540841ee92f",
+          "taskId": "fifty-days-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:ff9b8eddbff93f0b7e43"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -417445,39 +417445,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_606f889e268394a898287eeb",
-          "taskId": "line-defense-studio-evolution-roblox-usability-v3",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_0be1b657978bacf1ebbc24ea"
-          ],
-          "evidence": [
-            "base-main:77f8eaf99307c9d98762be90ff280e3224732dab",
-            "actions-run:42407294213",
-            "reservation-id:42407294213:1",
-            "capability-application-sample:1c02f0cb1a83a4489e3e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_96af1778e2ac8371776214de",
           "taskId": "line-defense-studio-evolution-roblox-usability-v3",
           "workKey": null,
@@ -419547,6 +419514,39 @@
             "actions-run:43121511472",
             "reservation-id:43121511472:1",
             "capability-application-sample:608f1aede7de24040292"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c359655c2c17962c8f45898a",
+          "taskId": "line-defense-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:3ea619447d3180d094e2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -441923,39 +441923,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_e721a8af553b8115a71927ca",
-          "taskId": "line-defense-studio-evolution-roblox-usability-v3",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_0be1b657978bacf1ebbc24ea"
-          ],
-          "evidence": [
-            "base-main:77f8eaf99307c9d98762be90ff280e3224732dab",
-            "actions-run:42407294213",
-            "reservation-id:42407294213:1",
-            "capability-application-sample:1c02f0cb1a83a4489e3e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4b9be99fd8bb0beb1c675980",
           "taskId": "line-defense-studio-evolution-roblox-usability-v3",
           "workKey": null,
@@ -444025,6 +443992,39 @@
             "actions-run:43121511472",
             "reservation-id:43121511472:1",
             "capability-application-sample:608f1aede7de24040292"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ac003b83f0a801a0d6c37440",
+          "taskId": "line-defense-studio-evolution-roblox-usability-v2",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "base-main:742dbfae6b1bee9daaa4afcb5d689fd041e1dcb5",
+            "actions-run:43123992405",
+            "reservation-id:43123992405:1",
+            "capability-application-sample:3ea619447d3180d094e2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
