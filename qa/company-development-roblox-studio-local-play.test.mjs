@@ -23,6 +23,7 @@ import {
   assertCurrentStudioWorkflowHead,
   runStudioMultiplayerAudit,
   runOfficialStudioMcpPlay,
+  runStudioScript,
   stopOwnedStudioMultiplayerTests,
   validateStudioPlaceArtifactPreOpen,
   evaluateStudioSaveRejoin,
@@ -2036,7 +2037,7 @@ test('dead-start Studio product evidence enters repair-required instead of infra
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('GAME_START'));
 });
 
-test('dead-start failure captures the live viewport before stopping and preserves observed world evidence',{skip:process.platform==='win32'},async()=>{
+test('dead-start failure captures console errors and the live viewport before stopping and preserves observed world evidence',{skip:process.platform==='win32'},async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'studio-failure-capture-'));
   const executable=path.join(dir,'mcp.cjs');
   const events=path.join(dir,'events.jsonl');
@@ -2047,7 +2048,7 @@ test('dead-start failure captures the live viewport before stopping and preserve
 const fs=require('node:fs');
 const readline=require('node:readline');
 const names=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
-let playing=false;
+let playing=false,consoleReads=0;
 readline.createInterface({input:process.stdin}).on('line',line=>{
  const req=JSON.parse(line);if(req.id==null)return;
  let result={};
@@ -2062,6 +2063,13 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
    const marker=args.code.match(/ROBLOX_STUDIO_ACTUAL_PLAY_(?:CORE|WORLD|RUNTIME)=/)[0];
    const data=marker.includes('CORE')?{player:{characterPresent:true,humanoidPresent:true,health:0,maxHealth:100,humanoidState:'Dead',rootY:-500}}:marker.includes('WORLD')?{world:{floorBelowPlayer:false,collidablePartCount:0}}:{};
    result={content:[{type:'text',text:marker+JSON.stringify(data)}]};
+  }
+  if(name==='get_console_output'){
+   consoleReads++;
+   const entries=[{messageType:3,message:'Menu: attempt to index nil'}];
+   if(consoleReads===1)entries.push({messageType:3,message:'Startup-only error'});
+   if(consoleReads===2)entries.push({messageType:3,message:'Abort-only error'});
+   result={content:[{type:'text',text:JSON.stringify(entries)}]};
   }
   if(name==='screen_capture')result=playing?{content:[{type:'image',mimeType:'image/png',data:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='}]}:{isError:true,content:[{type:'text',text:'viewport already stopped'}]};
  }
@@ -2078,11 +2086,25 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
     assert.ok(capture>=0&&stop>capture);
     assert.equal(calls[capture].playing,true);
     assert.equal(report.runtimeVerified,false);
+    const consoleCalls=calls.map((call,index)=>({call,index})).filter(({call})=>call.name==='get_console_output');
+    assert.equal(consoleCalls.length,2);
+    assert.ok(consoleCalls.every(({call,index})=>call.playing&&index<stop));
+    assert.equal(report.capabilities.consoleCapture,true);
+    assert.equal(report.consoleCaptures.startup.captured,true);
+    assert.equal(report.consoleCaptures.abort.captured,true);
+    assert.equal(report.metrics.consoleErrorCount,3);
+    assert.deepEqual(report.errors.filter(row=>row.type==='studio-console-error').map(row=>row.signature).sort(),
+      ['Abort-only error','Menu: attempt to index nil','Startup-only error']);
     assert.equal(report.captureFiles.length,1);
     assert.ok(fs.statSync(report.captureFiles[0].path).size>0);
     assert.equal(report.runtimeProbes.initialClient.player.rootY,-500);
     assert.equal(report.runtimeProbes.initialClient.world.floorBelowPlayer,false);
     assert.equal(report.errors.some(x=>x.type==='studio-capture-evidence-error'),false);
+    const scripted=await runStudioScript({mcpCommand:executable,expectedStudioName:'test',outDir:dir,steps:[]});
+    assert.equal(scripted.consoleCapture.captured,true);
+    assert.equal(scripted.consoleCapture.errorCount,2);
+    assert.ok(scripted.consoleCapture.errors.some(row=>row.signature==='Startup-only error'));
+
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 

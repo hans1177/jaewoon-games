@@ -2698,7 +2698,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
   fs.mkdirSync(outDir,{recursive:true});
   const report={
     sourceRevision:clean(sourceRevision),
-    log:[],errors:[],
+    log:[],errors:[],consoleCapture:{captured:false},
     summary:{
       plannedSteps:steps.length,
       completedSteps:0,
@@ -3128,6 +3128,22 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     }
   }catch(e){report.errors.push(clean(e?.message||e).slice(0,400));}
   finally{
+    if(started&&studioId){
+      try{
+        const tool=client.tool('get_console_output');
+        const args={};setStudioId(args,tool.inputSchema||{},studioId);
+        const response=await client.call('get_console_output',fillRequired(args,tool.inputSchema||{}));
+        if(response==null)throw new Error('ROBLOX_STUDIO_MCP_CONSOLE_RESPONSE_MISSING');
+        const classification=classifyStudioConsoleOutput(response);
+        report.consoleCapture={
+          captured:true,errorCount:classification.errors.length,
+          warningCount:classification.warningCount,
+          errors:classification.errors
+        };
+      }catch{
+        report.consoleCapture={captured:false};
+      }
+    }
     if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch(e){report.errors.push('stop:'+clean(e?.message||e).slice(0,200));}}
     client.close();
   }
@@ -3153,6 +3169,25 @@ export async function runOfficialStudioMcpPlay({
   let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={},saveRejoinSummary=null,multiplayerAuditSummary=null;
   const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
   const timelineProbes=[];
+  const consoleCaptures={};
+  const consoleErrors=new Map();
+  // 같은 Play 세션의 시작·종료 로그에서 중복 오류를 제거한다.
+  const captureConsole=async phase=>{
+    const tool=client.tool('get_console_output');
+    const args={};setStudioId(args,tool.inputSchema||{},studioId);
+    const response=await client.call('get_console_output',fillRequired(args,tool.inputSchema||{}));
+    if(response==null)throw new Error('ROBLOX_STUDIO_MCP_CONSOLE_RESPONSE_MISSING');
+    const classification=classifyStudioConsoleOutput(response,{ownedSourceText:gameOwnedSourceText});
+    consoleResult=response;
+    consoleCaptures[phase]={
+      captured:true,
+      errorCount:classification.errors.length,
+      warningCount:classification.warningCount,
+      structuredEntryCount:classification.structuredEntryCount
+    };
+    for(const row of classification.errors)consoleErrors.set(row.signature,row);
+    return classification;
+  };
   try{
     await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
@@ -3217,6 +3252,8 @@ export async function runOfficialStudioMcpPlay({
       throw new Error('ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:'+detail);
     }
     await wait(2500);
+    try{await captureConsole('startup');}
+    catch{consoleCaptures.startup={captured:false};}
 
     if(actualPlayContract?.required===true){
       initialClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
@@ -3815,9 +3852,7 @@ export async function runOfficialStudioMcpPlay({
       }
     }
 
-    const consoleTool=client.tool('get_console_output');
-    const consoleArgs=fillRequired((()=>{const a={};setStudioId(a,consoleTool.inputSchema||{},studioId);return a;})(),consoleTool.inputSchema||{});
-    consoleResult=await client.call('get_console_output',consoleArgs);
+    const consoleClassification=await captureConsole('final');
     checkpoint('console-output-captured',true);
 
     characterMotionRuntime=collectCharacterMotionRuntimeEvidence(consoleResult);
@@ -3833,7 +3868,6 @@ export async function runOfficialStudioMcpPlay({
       }
     }
 
-    const consoleClassification=classifyStudioConsoleOutput(consoleResult,{ownedSourceText:gameOwnedSourceText});
     const consoleText=consoleClassification.consoleText;
     const diagnosticPatterns=[
       /Script Runtime Error/i,
@@ -3864,8 +3898,8 @@ export async function runOfficialStudioMcpPlay({
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
     console.log('ROBLOX_STUDIO_MCP_LOCAL_UNPUBLISHED_DATASTORE_SUPPRESSED='+(consoleClassification.localUnpublishedDataStoreSuppressed===true?'YES':'NO'));
     console.log('ROBLOX_STUDIO_EXTERNAL_ANIMATION_WARNING_SUPPRESSED='+Number(consoleClassification.externalAnimationAssetWarningsSuppressed||0));
-    for(const row of consoleClassification.errors)errors.push(row);
-    const brokenAssets=consoleClassification.errors.filter(row=>row.type==='studio-asset-load-error');
+    for(const row of consoleErrors.values())errors.push(row);
+    const brokenAssets=[...consoleErrors.values()].filter(row=>row.type==='studio-asset-load-error');
     scenarioCoverage.push({id:'visual-asset-load-integrity',pass:brokenAssets.length===0,required:true});
     if(brokenAssets.length){
       qualityFailureKinds.push('visual-asset-load-integrity');
@@ -3877,7 +3911,7 @@ export async function runOfficialStudioMcpPlay({
         observed:{assetErrors:brokenAssets.map(row=>row.signature).slice(0,8)}
       });
     }
-    checkpoint('no-release-blocking-runtime-errors',consoleClassification.errors.length===0);
+    checkpoint('no-release-blocking-runtime-errors',consoleErrors.size===0);
 
     if(!started){
       try{
@@ -3963,6 +3997,7 @@ export async function runOfficialStudioMcpPlay({
         characterMotionRuntime:characterMotionRuntime?.required===true,
         executeLuauRuntimeProbe:actualPlayContract?.required===true
       },
+      consoleCaptures,
       auditProfile:auditMode,
       timelineProbeCount:timelineProbes.length,
       scenarioContractRequired:actualPlayContract?.required===true,
@@ -3991,7 +4026,7 @@ export async function runOfficialStudioMcpPlay({
         beforeFrameCount:beforeImages.length,
         afterFrameCount:afterImages.length,
         distinctFrameChange:beforeImages.length>0&&afterImages.length>0&&beforeImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(',')!==afterImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(','),
-        consoleErrorCount:consoleClassification.errors.length,
+        consoleErrorCount:consoleErrors.size,
         consoleWarningCount:consoleClassification.warningCount,
         consoleStructuredEntryCount:consoleClassification.structuredEntryCount,
         characterMotionRuntimeRequired:characterMotionRuntime?.required===true,
@@ -4125,6 +4160,15 @@ export async function runOfficialStudioMcpPlay({
     }else{
       errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature});
     }
+    if(studioId&&client.tools.has('get_console_output')&&(
+      started||checkpoints.some(row=>row.id==='play-mode-started'&&row.pass===true)
+    )){
+      try{await captureConsole('abort');}
+      catch{consoleCaptures.abort={captured:false};}
+    }
+    for(const row of consoleErrors.values()){
+      if(!errors.some(error=>error.type===row.type&&error.signature===row.signature))errors.push(row);
+    }
     if(studioId&&captureDirectory&&client.tools.has('screen_capture')){
       try{
         const tool=client.tool('screen_capture');
@@ -4143,7 +4187,8 @@ export async function runOfficialStudioMcpPlay({
       studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified:false,
-      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
+      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:consoleResult!=null,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
+      consoleCaptures,
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
@@ -4151,7 +4196,7 @@ export async function runOfficialStudioMcpPlay({
       runtimeProbes:{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe,rejoinClient:rejoinClientProbe},
       actions,checkpoints,errors,
       captureFiles:[...beforeImages,...afterImages].map(({path,sha256,bytes,mimeType})=>({path,sha256,bytes,mimeType})),
-      metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
+      metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:consoleErrors.size},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
     };
     if(output)writeJson(output,result);
