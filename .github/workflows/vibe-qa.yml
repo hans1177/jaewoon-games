@@ -324,6 +324,9 @@ jobs:
       - name: Verify CC0 source acquisition, native production and registry recovery
         run: |
           python -m py_compile assets/native-authoring/build-game-visual.py
+          # 신규 오디오의 부모 해시뿐 아니라 실제 인코딩·디코딩도 검증한다.
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg unzip
           node --test qa/vibe-cc0-chain.test.mjs
 
       - name: Run integrated regression
