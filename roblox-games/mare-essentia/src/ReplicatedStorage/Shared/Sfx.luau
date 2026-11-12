@@ -204,6 +204,11 @@ function Sfx.historyCue(ev)
 	return firstReady("sfx_event_notice", "sfx_bell")
 end
 
+-- 전투·의뢰 결과 직후의 짧은 곡 (없으면 항구 곡으로 돌아간다)
+function Sfx.questEndMusic(won)
+	return firstReady(if won then "music_quest_victory" else "music_quest_defeat", "music_harbor")
+end
+
 -- 불가사의 발견 화면의 특별 곡이 없는 동안은 기존 원더 음악을 보존한다.
 function Sfx.wonderMusic(mood, fallback)
 	return firstReady("music_wonder_" .. tostring(mood or "temple"), fallback, "music_sea")
