@@ -343,6 +343,8 @@ if game:GetService("RunService"):IsStudio() then
 				local map = D.TacticsMaps.ById[type(payload) == "table" and payload.mapId or "plain_road"] or D.TacticsMaps.ById.plain_road
 				local b = D.Tactics.newBattle(map, S.Tactics.buildParty(session.state), { enemyLevel = 1, pool = { "qa_card" } })
 				b.siteId, b.siteName, b.biome = "qa_" .. map.id, "점검 맵", map.biome
+				local spec = S.Cardbook.deckSpec(session.state)
+				D.Tactics.initCards(b, spec.ids, spec.tier, 4242)
 				session.state.tbattle = b
 				return reply(session.state, true, map.intro)
 			end
