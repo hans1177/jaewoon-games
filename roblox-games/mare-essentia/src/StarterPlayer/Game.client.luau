@@ -219,6 +219,28 @@ local function mkLabel(parent, text, size, color, bold, order)
 	return l
 end
 
+-- [양피지·가죽 원본 재질] 승인된 원화를 바탕으로 화면 요소의 실제 표면에 반복 인쇄한다.
+-- 하나의 기존 게임 UI 흐름에서만 사용한다. 미등록 자산은 종전 배경색으로 안전하게 표시한다.
+local function bookMaterial(gui, finish, tilePx)
+	local key = if finish == "leather" then "Menu/leather_grain" else "Menu/parchment_grain"
+	local id = AssetIds[key]
+	if not id then return nil end
+	local grain = Instance.new("ImageLabel")
+	grain.Name = "BookMaterial"
+	grain.BackgroundTransparency = 1
+	grain.BorderSizePixel = 0
+	grain.Image = "rbxassetid://" .. tostring(id)
+	grain.ScaleType = Enum.ScaleType.Tile
+	grain.TileSize = UDim2.fromOffset(tilePx or 192, tilePx or 192)
+	grain.Size = UDim2.fromScale(1, 1)
+	grain.ImageTransparency = 0.06
+	grain.ZIndex = gui.ZIndex
+	grain.Active = false
+	grain.Parent = gui
+	corner(grain, if finish == "leather" then 8 else 5)
+	return grain
+end
+
 -- 교역품: 일반 상품은 승인된 전용 원본을 쓴다. 표현 제한 상품만 기존 중립 화물 외형을 사용한다.
 local GOOD_ICON = {}
 -- [표현 제한] 술 4종은 동일한 승인 나무통 메시의 색상만 변경한다.
@@ -347,6 +369,7 @@ function H.iconPaper(gui, px)
 	wash.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 	wash.Rotation = 90
 	wash.Parent = gui
+	if gui:IsA("Frame") then bookMaterial(gui, "parchment", 108) end
 	local border = Instance.new("UIStroke")
 	border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	border.Color = INK_EDGE
@@ -538,46 +561,101 @@ local function withIcon(row, kind, asset, tint, px, portraitOffset)
 	return icon
 end
 
--- [양피지 버튼] 인터랙션은 그대로 유지하고 모든 기능 버튼을 동일한 인쇄물 양식으로 통일한다.
+-- [가죽 장정의 양피지 버튼] 재질·음각·손으로 찍힌 황동 리벳. 클릭·활성/비활성 로직 보존.
 local function mkButton(parent, text, color, size, onClick, enabled)
 	local b = Instance.new("TextButton")
 	b.Text = text
 	b.Size = size
 	local active = enabled ~= false
 	local highlighted = color == COLORS.gold or color == UI_BRASS
-	b.BackgroundColor3 = if not active then Color3.fromRGB(170, 150, 116)
-		elseif highlighted then Color3.fromRGB(222, 191, 130) else COLORS.paper
-	b.TextColor3 = if active then INK else Color3.fromRGB(107, 95, 76)
+	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 151, 116)
+		elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
+	b.TextColor3 = if active then INK else Color3.fromRGB(108, 92, 69)
 	b.Font = Enum.Font.Antique
 	b.TextSize = 14
 	b.TextWrapped = true
 	b.AutoButtonColor = active
 	b.BorderSizePixel = 0
-	corner(b, 5)
+	corner(b, 6)
 	b.Parent = parent
 	do
 		local grad = Instance.new("UIGradient")
 		grad.Color = ColorSequence.new(
-			if highlighted then Color3.fromRGB(248, 224, 164) else Color3.fromRGB(246, 229, 193),
-			if highlighted then Color3.fromRGB(187, 147, 79) else Color3.fromRGB(196, 163, 112)
+			if highlighted then Color3.fromRGB(241, 210, 146) else Color3.fromRGB(231, 207, 166),
+			if highlighted then Color3.fromRGB(187, 142, 77) else Color3.fromRGB(192, 153, 100)
 		)
 		grad.Rotation = 90
 		grad.Parent = b
-		local bs = Instance.new("UIStroke")
-		bs.Color = if active then INK_EDGE else Color3.fromRGB(128, 110, 83)
-		bs.Thickness = if highlighted then 2 else 1.4
-		bs.Transparency = if active then 0.08 else 0.4
-		bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		bs.Parent = b
-		-- 기존 버튼의 기능색은 좌측 얇은 색띠로 남겨 구매/판매/위험 행동을 구별한다.
+		local grain = bookMaterial(b, "parchment", 148)
+		if grain and highlighted then
+			grain.ImageColor3 = Color3.fromRGB(249, 226, 178)
+		end
+		local edge = Instance.new("UIStroke")
+		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		edge.Color = if active then INK_EDGE else Color3.fromRGB(128, 108, 82)
+		edge.Thickness = if highlighted then 2.3 else 1.6
+		edge.Transparency = if active then 0.06 else 0.38
+		edge.Parent = b
+		-- 깊이를 주는 안쪽 인쇄 테두리
+		local bevel = Instance.new("Frame")
+		bevel.Name = "PressedEdge"
+		bevel.BackgroundTransparency = 1
+		bevel.BorderSizePixel = 0
+		bevel.Position = UDim2.fromOffset(3, 3)
+		bevel.Size = UDim2.new(1, -6, 1, -6)
+		bevel.ZIndex = b.ZIndex + 1
+		bevel.Parent = b
+		corner(bevel, 4)
+		local inner = Instance.new("UIStroke")
+		inner.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		inner.Color = Color3.fromRGB(120, 84, 43)
+		inner.Thickness = 1
+		inner.Transparency = 0.72
+		inner.Parent = bevel
 		local mark = Instance.new("Frame")
 		mark.Name = "BookRibbon"
 		mark.BackgroundColor3 = if not active then COLORS.grey else (color or INK_EDGE)
-		mark.BackgroundTransparency = if active then 0.08 else 0.55
+		mark.BackgroundTransparency = if active then 0.16 else 0.55
 		mark.BorderSizePixel = 0
-		mark.Position = UDim2.fromOffset(4, 5)
-		mark.Size = UDim2.new(0, 3, 1, -10)
+		mark.Position = UDim2.fromOffset(5, 8)
+		mark.Size = UDim2.new(0, 4, 1, -16)
+		mark.ZIndex = b.ZIndex + 1
 		mark.Parent = b
+		corner(mark, 2)
+		local rivet = Instance.new("Frame")
+		rivet.Name = "BrassRivet"
+		rivet.AnchorPoint = Vector2.new(1, 0.5)
+		rivet.Position = UDim2.new(1, -7, 0.5, 0)
+		rivet.Size = UDim2.fromOffset(5, 5)
+		rivet.BackgroundColor3 = UI_BRASS_DARK
+		rivet.BackgroundTransparency = 0.18
+		rivet.BorderSizePixel = 0
+		rivet.ZIndex = b.ZIndex + 1
+		rivet.Parent = b
+		corner(rivet, 3)
+		-- 인쇄 글자가 실제 종이 텍스처 아래로 가라앉지 않도록 별도 잉크 층을 둔다.
+		-- TextButton.Text 자체는 그대로 유지해 기존 상태 변경과 접근성을 보존한다.
+		if grain then
+			b.TextTransparency = 1
+			local caption = Instance.new("TextLabel")
+			caption.Name = "PrintedCaption"
+			caption.BackgroundTransparency = 1
+			caption.Position = UDim2.fromOffset(10, 2)
+			caption.Size = UDim2.new(1, -20, 1, -4)
+			caption.Text = b.Text
+			caption.TextColor3 = b.TextColor3
+			caption.TextSize = b.TextSize
+			caption.Font = b.Font
+			caption.TextWrapped = true
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			caption.TextYAlignment = Enum.TextYAlignment.Center
+			caption.ZIndex = b.ZIndex + 2
+			caption.Active = false
+			caption.Parent = b
+			b:GetPropertyChangedSignal("Text"):Connect(function() caption.Text = b.Text end)
+			b:GetPropertyChangedSignal("TextColor3"):Connect(function() caption.TextColor3 = b.TextColor3 end)
+			b:GetPropertyChangedSignal("TextSize"):Connect(function() caption.TextSize = b.TextSize end)
+		end
 	end
 	if active and onClick then
 		b.Activated:Connect(function()
@@ -608,38 +686,23 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		grad.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 		grad.Rotation = 90
 		grad.Parent = row
-		-- 낡은 종이: 가장자리가 그을리고 얼룩이 번진 느낌
-		do
-			local burn = Instance.new("Frame")
-			burn.Name = "AgedEdge"
-			burn.Size = UDim2.fromScale(1, 1)
-			burn.BackgroundColor3 = Color3.fromRGB(92, 58, 26)
-			burn.BorderSizePixel = 0
-			burn.ZIndex = 1
-			burn.Parent = row
-			corner(burn, 5)
-			local bg = Instance.new("UIGradient")
-			bg.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.38), NumberSequenceKeypoint.new(0.12, 0.86),
-				NumberSequenceKeypoint.new(0.88, 0.86), NumberSequenceKeypoint.new(1, 0.3),
-			})
-			bg.Parent = burn
-			local seed = #title * 31 + (height or 60)
-			for i = 1, 3 do
-				local k = (seed * (i + 3)) % 97 / 97
-				local blot = Instance.new("Frame")
-				blot.Name = "Stain"
-				blot.AnchorPoint = Vector2.new(0.5, 0.5)
-				blot.Position = UDim2.fromScale(0.15 + k * 0.7, 0.3 + ((k * 7) % 1) * 0.5)
-				blot.Size = UDim2.fromOffset(22 + k * 26, 14 + k * 14)
-				blot.BackgroundColor3 = Color3.fromRGB(150, 104, 52)
-				blot.BackgroundTransparency = 0.86
-				blot.BorderSizePixel = 0
-				blot.ZIndex = 1
-				blot.Parent = row
-				corner(blot, 12)
-			end
-		end
+		-- 종이 표면은 실제 섬유 이미지, 테두리에는 옅게 스민 잉크.
+		bookMaterial(row, "parchment", 192)
+		local patina = Instance.new("Frame")
+		patina.Name = "AgedEdge"
+		patina.BackgroundColor3 = Color3.fromRGB(122, 71, 31)
+		patina.BackgroundTransparency = 0.93
+		patina.BorderSizePixel = 0
+		patina.Size = UDim2.fromScale(1, 1)
+		patina.ZIndex = 1
+		patina.Parent = row
+		corner(patina, 4)
+		local burn = Instance.new("UIGradient")
+		burn.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.18), NumberSequenceKeypoint.new(0.08, 0.95),
+			NumberSequenceKeypoint.new(0.92, 0.95), NumberSequenceKeypoint.new(1, 0.2),
+		})
+		burn.Parent = patina
 		local bar = Instance.new("Frame")
 		bar.Name = "AccentBar"
 		bar.BackgroundColor3 = UI_BRASS
@@ -724,6 +787,8 @@ main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
 main.BackgroundColor3 = COLORS.cover
 main.Parent = gui
+mainInner.BackgroundColor3 = COLORS.coverRaised
+bookMaterial(mainInner, "leather", 180)
 do
 	local st = Instance.new("UIStroke")
 	st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -731,9 +796,10 @@ do
 	st.Thickness = 2.5
 	st.Parent = main
 	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromRGB(250, 236, 206), Color3.fromRGB(167, 130, 87))
+	grad.Color = ColorSequence.new(Color3.fromRGB(95, 65, 44), Color3.fromRGB(33, 23, 20))
 	grad.Rotation = 90
 	grad.Parent = main
+	bookMaterial(main, "leather", 196)
 	-- 안쪽 가는 테두리 (액자 느낌)
 	local inset = Instance.new("Frame")
 	inset.Name = "InnerFrame"
@@ -770,6 +836,7 @@ do
 	wash.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 	wash.Rotation = 90
 	wash.Parent = H.pageMasthead
+	bookMaterial(H.pageMasthead, "parchment", 236)
 	local edge = Instance.new("UIStroke")
 	edge.Color = INK_EDGE
 	edge.Thickness = 1.5
@@ -1262,9 +1329,10 @@ corner(card, 10)
 hudStroke(card, 2)
 do
 	local g = Instance.new("UIGradient")
-	g.Color = ColorSequence.new(Color3.fromRGB(236, 209, 159), Color3.fromRGB(138, 99, 64))
+	g.Color = ColorSequence.new(Color3.fromRGB(106, 69, 45), Color3.fromRGB(38, 26, 21))
 	g.Rotation = 90
 	g.Parent = card
+	bookMaterial(card, "leather", 160)
 end
 
 local function hudText(parent, pos, size, textSize, color, align)
@@ -1387,6 +1455,7 @@ for i, d in H.DOCK do
 		g.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
 		g.Rotation = 90
 		g.Parent = b
+		bookMaterial(b, "parchment", 108)
 	end
 	local bs = Instance.new("UIStroke")
 	bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 글자가 아니라 테두리에만 (기본값은 글자에 번짐)
@@ -1420,6 +1489,8 @@ gear.TextColor3 = Color3.fromRGB(250, 236, 200)
 gear.Text = "⚙ 설정"
 gear.Parent = hud
 corner(gear, 10)
+local gearGrain = bookMaterial(gear, "leather", 120)
+if gearGrain then gearGrain.ImageTransparency = 0.77 end
 hudStroke(gear, 1.5)
 gear.Activated:Connect(function()
 	Sfx.play("sfx_click")
@@ -6514,6 +6585,7 @@ do
 	wash.Color = ColorSequence.new(PARCHMENT_TOP, Color3.fromRGB(191, 158, 106))
 	wash.Rotation = 90
 	wash.Parent = titlePanel
+	bookMaterial(titlePanel, "parchment", 228)
 	local st = Instance.new("UIStroke")
 	st.Color = INK_EDGE
 	st.Thickness = 2.5
@@ -6533,6 +6605,24 @@ do
 	line.Transparency = 0.42
 	line.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	line.Parent = margin
+	-- 황동 압정: 찢긴 장정이 아니라 실제 항해일지의 귀퉁이를 고정한 흔적.
+	for _, xy in { Vector2.new(10, 10), Vector2.new(0, 10), Vector2.new(10, 0), Vector2.new(0, 0) } do
+		local nail = Instance.new("Frame")
+		nail.Name = "BrassStud"
+		nail.AnchorPoint = Vector2.new(if xy.X == 0 then 1 else 0, if xy.Y == 0 then 1 else 0)
+		nail.Position = UDim2.new(if xy.X == 0 then 1 else 0, if xy.X == 0 then -12 else 12,
+			if xy.Y == 0 then 1 else 0, if xy.Y == 0 then -12 else 12)
+		nail.Size = UDim2.fromOffset(7, 7)
+		nail.BackgroundColor3 = UI_BRASS
+		nail.ZIndex = 12
+		nail.BorderSizePixel = 0
+		nail.Parent = titlePanel
+		corner(nail, 4)
+		local engraving = Instance.new("UIStroke")
+		engraving.Color = UI_BRASS_DARK
+		engraving.Thickness = 1
+		engraving.Parent = nail
+	end
 end
 local titleScroll = Instance.new("ScrollingFrame")
 titleScroll.BackgroundTransparency = 1
@@ -6595,7 +6685,7 @@ renderTitle = function()
 		cur = list[1]
 	end
 
-	local head = tLabel(titleScroll, "❧  항해자의 연대기  ❧", 24, INK, true, nxt())
+	local head = tLabel(titleScroll, "항해자의 연대기", 24, INK, true, nxt())
 	head.TextXAlignment = Enum.TextXAlignment.Center
 	do
 		local rule = Instance.new("Frame")
@@ -6634,7 +6724,8 @@ renderTitle = function()
 		card.BorderSizePixel = 0
 		card.ZIndex = 13
 		card.BackgroundColor3 = if selected then Color3.fromRGB(226, 190, 128) else Color3.fromRGB(234, 214, 177)
-		corner(card, 10)
+		corner(card, 8)
+		bookMaterial(card, "parchment", 146)
 		local st = Instance.new("UIStroke")
 		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = if selected then 2.5 else 1
@@ -6674,7 +6765,8 @@ renderTitle = function()
 	box.BorderSizePixel = 0
 	box.LayoutOrder = nxt()
 	box.ZIndex = 12
-	corner(box, 12)
+	corner(box, 10)
+	bookMaterial(box, "parchment", 170)
 	do
 		local st = Instance.new("UIStroke")
 		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -6909,6 +7001,7 @@ function H.showTitle()
 	box.BorderSizePixel = 0
 	box.Parent = root
 	corner(box, 11)
+	bookMaterial(box, "leather", 196)
 	local edge = Instance.new("UIStroke")
 	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	edge.Color = UI_BRASS
