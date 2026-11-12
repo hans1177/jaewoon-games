@@ -10,6 +10,7 @@ local function model(proxy, kind, name)
 	local m = proxy("Model")
 	return setmetatable({}, { __index = function(_, k)
 		if k == "IsA" then return function(_, c) return c == "Model" or c == "BasePart" or c == "MeshPart" end end
+		if k == "GetScale" then return function() return 1 end end
 		return m[k]
 	end, __newindex = function() end, __iter = function() return function() return nil end end })
 end

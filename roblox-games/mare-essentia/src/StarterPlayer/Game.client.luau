@@ -214,14 +214,14 @@ for goodsId in PortData.Goods do
 end
 
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
-local TITLE_ICONS = {
+H.TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
 	{ "유적", "Castle", "tower-square-base" }, { "천문", "Relics", "key" }, { "화학", "Relics", "potion" }, { "물리", "Cargo", "bucket" },
 	{ "지리", "Naval", "ship-small" }, { "철학", "Interior", "bookcaseclosed" }, { "의학", "Cargo", "mortar-pestle" }, { "신화", "Relics", "weapon-sword" },
 	{ "항해술", "Naval", "ship-medium" }, { "기상", "Naval", "flag-pennant" }, { "건축", "Town", "house" }, { "예술", "Relics", "shield-round" },
 	{ "교역품", "Cargo", "box-open" }, { "조선", "Naval", "ship-large" }, { "언어", "Interior", "bookcaseopenlow" },
 }
-local TEXT_ICONS = {
+H.TEXT_ICONS = {
 	{ "코인 투자", "Relics", "coin" }, { "예금", "Relics", "coin" }, { "→", "Cargo", "box-open" }, { "면허", "Relics", "shield-round" },
 	{ "보험", "Relics", "shield-rectangle" }, { "알현", "Castle", "flag-banner-short" }, { "소문", "Cargo", "mug" },
 	{ "납품", "Cargo", "box-open" }, { "해전", "Relics", "weapon-sword" }, { "승리", "Relics", "weapon-sword" }, { "방문", "Naval", "ship-small" },
@@ -231,13 +231,13 @@ local TEXT_ICONS = {
 local H: { [string]: any } = {}
 
 function H.iconFor(title, subtitle)
-	for _, t in TITLE_ICONS do
+	for _, t in H.TITLE_ICONS do
 		if string.find(title, t[1], 1, true) then
 			return t
 		end
 	end
 	local both = title .. " " .. (subtitle or "")
-	for _, t in TEXT_ICONS do
+	for _, t in H.TEXT_ICONS do
 		if string.find(both, t[1], 1, true) then
 			return t
 		end
@@ -1059,9 +1059,9 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-local hudName = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, BRASS)
-local hudCoin = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
-local hudPort = hudText(card, UDim2.fromOffset(62, 21), UDim2.new(1, -70, 0, 14), 11, COLORS.text)
+H.hudName = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, BRASS)
+H.hudCoin = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
+H.hudPort = hudText(card, UDim2.fromOffset(62, 21), UDim2.new(1, -70, 0, 14), 11, COLORS.text)
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
 hullBack.Position = UDim2.fromOffset(62, 38)
@@ -1073,7 +1073,7 @@ hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.Parent = hullBack
 corner(hullFill, 4)
-local hudShip = hudText(card, UDim2.fromOffset(62, 48), UDim2.new(1, -70, 0, 14), 10, COLORS.muted)
+H.hudShip = hudText(card, UDim2.fromOffset(62, 48), UDim2.new(1, -70, 0, 14), 10, COLORS.muted)
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
 local banner = Instance.new("Frame")
@@ -1124,12 +1124,12 @@ local dockPad = Instance.new("UIPadding")
 dockPad.PaddingTop, dockPad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5)
 dockPad.Parent = dock
 
-local DOCK = {
+H.DOCK = {
 	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "map", "일지" },
 	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
-for i, d in DOCK do
+for i, d in H.DOCK do
 	local b = Instance.new("TextButton")
 	b.Name = "Menu_" .. d[1]
 	b.LayoutOrder = i
@@ -1209,13 +1209,13 @@ gear.Activated:Connect(function()
 end)
 
 function H.updateHud(p, ship)
-	hudName.Text = string.format("%s · %d년", p.nation, p.year)
-	hudPort.Text = "항구  " .. tostring(p.portName)
+	H.hudName.Text = string.format("%s · %d년", p.nation, p.year)
+	H.hudPort.Text = "항구  " .. tostring(p.portName)
 	hudBanner.Text = tostring(p.portName)
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then COLORS.red else COLORS.green
-	hudShip.Text = string.format("%s  화물 %d/%d  명성 %d", ship.name, ship.cargoUsed, ship.cargoCapacity, p.fame)
-	hudCoin.Text = tostring(p.coins) .. " 코인"
+	H.hudShip.Text = string.format("%s  화물 %d/%d  명성 %d", ship.name, ship.cargoUsed, ship.cargoCapacity, p.fame)
+	H.hudCoin.Text = tostring(p.coins) .. " 코인"
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -1263,9 +1263,9 @@ local function bubbleLabel(order, textSize, color)
 	l.Parent = bubble
 	return l
 end
-local bubbleWho = bubbleLabel(1, 14, COLORS.gold)
-local bubbleLine = bubbleLabel(2, 13, COLORS.text)
-local bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
+H.bubbleWho = bubbleLabel(1, 14, COLORS.gold)
+H.bubbleLine = bubbleLabel(2, 13, COLORS.text)
+H.bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
 local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
 local bubbleKey, bubbleToken = nil, 0
 function H.hideBubble()
@@ -1288,9 +1288,9 @@ local function refreshBubble()
 	end
 	local first = bubbleKey == nil
 	bubbleKey = key
-	bubbleWho.Text = "💬 " .. tostring(adv.who)
-	bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
-	bubbleAdvice.Text = "조언: " .. tostring(adv.text)
+	H.bubbleWho.Text = "💬 " .. tostring(adv.who)
+	H.bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
+	H.bubbleAdvice.Text = "조언: " .. tostring(adv.text)
 	bubbleNext.Text = if adv.next then "▶ 다음 할 일: " .. adv.next else ""
 	bubbleNext.Visible = adv.next ~= nil
 	bubbleToken += 1
@@ -4741,7 +4741,7 @@ function H.chartForPort(portId)
 	return H.CHART_BY_PORT_REGION[region or ""]
 end
 
-local SEA_NAMES = {
+H.SEA_NAMES = {
 	{ "북해", 56.2, 3.2 }, { "대서양", 47.5, -9 }, { "지중해", 38.6, 4 }, { "발트해", 57.3, 19.5 },
 	{ "영국해협", 50.0, -2.0 }, { "비스케이만", 45.0, -5.2 }, { "티레니아해", 40.0, 11.8 }, { "아드리아해", 43.0, 15.6 },
 	{ "아일랜드해", 53.9, -4.9 }, { "노르웨이해", 61.6, 1 }, { "이오니아해", 37.8, 18.5 }, { "리구리아해", 43.4, 8.3 },
@@ -4863,7 +4863,7 @@ function RENDERERS.map()
 				drawLand(frame)
 			end
 			-- 해역 이름
-			for _, sea in (if worldImg then {} else SEA_NAMES) do
+			for _, sea in (if worldImg then {} else H.SEA_NAMES) do
 				local lb = Instance.new("TextLabel")
 				lb.AnchorPoint = Vector2.new(0.5, 0.5)
 				lb.Position = UDim2.fromScale(mapX(sea[3]), mapY(sea[2]))
@@ -5230,7 +5230,7 @@ local function closeOptions()
 		optionsGui = nil
 	end
 end
-local HELP_LINES = {
+H.HELP_LINES = {
 	"⚓ 기본 흐름",
 	"1. 교역소에서 특산품을 싸게 삽니다.",
 	"2. 항만청(지도)에서 수요가 높은 항구로 출항합니다.",
@@ -5366,7 +5366,7 @@ openOptions = function()
 			{ text = if helpOpen then "접기" else "보기", color = COLORS.blue, onClick = function() helpOpen = not helpOpen; draw() end },
 		})
 		if helpOpen then
-			local hl = mkLabel(body, table.concat(HELP_LINES, "\n"), 14, COLORS.text, false, nxt())
+			local hl = mkLabel(body, table.concat(H.HELP_LINES, "\n"), 14, COLORS.text, false, nxt())
 			hl.Size = UDim2.new(1, -16, 0, 0)
 		end
 		section("🗂 게임")
@@ -6634,9 +6634,21 @@ end
 					return
 				end
 			end
-			local ok, msg = onDone(value)
-			if ok == false then
+			local okCall, ok, msg = pcall(onDone, value)
+			if not okCall then
+				-- 서버에는 이미 반영됐을 수 있으니 화면이 멈추지 않게 다음 단계로 넘어갈 수 있게 한다
+				warn("[Game] 시작 안내 대화 오류:", ok)
+				note.Text = "화면 처리 중 문제가 생겼어요. 다시 눌러 주세요."
+				if view and view.captain and view.captain.portrait and spec.portraits then
+					closeDlg()
+				end
+			elseif ok == nil then
+				note.Text = "서버 응답이 늦어요. 잠시 후 다시 눌러 주세요."
+			elseif ok == false then
 				note.Text = tostring(msg or "")
+				if msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요" then
+					closeDlg()
+				end
 			end
 		end, true)
 		go.LayoutOrder = 5
