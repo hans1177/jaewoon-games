@@ -1701,6 +1701,28 @@ do
 		check("origin roundtrip", S.State.sanitize(S.State.serialize(noble)).origin == "noble")
 		check("bad origin ignored", S.State.new("england", 1700, "king").origin == nil)
 	end
+	-- 일지: 소문·대화로 퀘스트가 자동 시작, 조건 채우면 자동 완료
+	do
+		local jq = S.State.new("england", 1700, nil)
+		local msgs = {}
+		jq.portId = "amsterdam"
+		local q1 = S.Quest.offer(jq, msgs, "소문을 들었다")
+		check("일지: 소문으로 퀘스트가 자동 시작됨", q1 ~= nil and jq.quests.active[q1.id] ~= nil and #msgs == 1, tostring(q1 and q1.id))
+		local before = 0
+		for _ in jq.quests.active do before += 1 end
+		for _ = 1, 10 do S.Quest.offer(jq, {}, "x") end
+		local n = 0
+		for _ in jq.quests.active do n += 1 end
+		check("일지: 동시 진행 5개 한도", n <= 5)
+		local jv = S.View.build(jq, ctx)
+		check("일지: 화면에 완료 목록 필드", jv.quests.done ~= nil and jv.autoStory == nil)
+		local js = S.State.new("england", 1700, nil)
+		js.portId = "london"
+		js.fame = 50
+		local um = {}
+		S.Story.autoTrigger(js, um)
+		check("일지: 중요 인물 자동 이벤트 후보 조건", js.autoStory == nil or D.Story.ById[js.autoStory] ~= nil)
+	end
 	-- 국가 관계·전쟁·항해자
 	do
 		local H = handlers

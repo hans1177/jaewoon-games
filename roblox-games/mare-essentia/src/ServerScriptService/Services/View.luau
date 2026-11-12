@@ -411,6 +411,7 @@ return function(D, S)
 		view.pace = S.Pace.viewOf(state)
 		view.world = S.World.viewOf(state)
 		view.diplo = S.Diplomacy.viewOf(state)
+		view.autoStory = state.autoStory
 	view.order = S.Order.viewOf(state)
 	view.room = S.Room.viewOf(state)
 		view.people = S.People.viewOf(state)
@@ -434,11 +435,16 @@ return function(D, S)
 		end
 
 		-- 퀘스트
-		view.quests = { active = {}, available = {}, doneCount = 0, otherPortDeliver = 0 }
+		view.quests = { active = {}, available = {}, doneCount = 0, otherPortDeliver = 0, done = {} }
 		local shownDeliver = 0
-		for _ in state.quests.done do
+		for id in state.quests.done do
 			view.quests.doneCount += 1
+			local dq = D.Quests.ById[id]
+			if dq then
+				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand })
+			end
 		end
+		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
 		for _, q in D.Quests.Quests do
 			if state.quests.active[q.id] then
 				table.insert(view.quests.active, {

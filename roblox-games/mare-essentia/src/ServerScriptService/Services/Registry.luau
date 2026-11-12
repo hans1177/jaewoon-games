@@ -41,5 +41,23 @@ return function(D)
 		end
 	end
 
+	-- 사람을 만나 이야기하면(동료 대화·인물 대화·항해자 인사·이야기 장면) 일지에 새 퀘스트가 자동으로 올라온다
+	for _, name in { "Talk", "PeopleTalk", "VoyagerMeet", "PlayStory" } do
+		local fn = handlers[name]
+		if fn then
+			handlers[name] = function(state, p, ctx)
+				local ok, msg = fn(state, p, ctx)
+				if ok then
+					local extra = {}
+					S.Quest.offer(state, extra, "이야기를 나누다 의뢰를 받았다", if type(p) == "table" and type(p.companionId) == "string" then p.companionId else nil)
+					if #extra > 0 then
+						msg = (if msg and msg ~= "" then msg .. "\n" else "") .. table.concat(extra, "\n")
+					end
+				end
+				return ok, msg
+			end
+		end
+	end
+
 	return { S = S, handlers = handlers }
 end
