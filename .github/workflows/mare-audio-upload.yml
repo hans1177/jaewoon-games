@@ -62,7 +62,9 @@ jobs:
           set -euo pipefail
           git config user.name 'mare-audio-upload'
           git config user.email 'actions@users.noreply.github.com'
-          git add roblox-games/mare-essentia/audio/uploaded.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau
+          git add roblox-games/mare-essentia/audio/manifest.json roblox-games/mare-essentia/audio/uploaded.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau
+          # 원본 다운로드·해시 검증 후 생성된 실제 CC0 OGG도 동일한 기존 PR에 담는다.
+          node --input-type=module -e 'import fs from "node:fs"; import {execFileSync} from "node:child_process"; const dir="roblox-games/mare-essentia/audio"; const m=JSON.parse(fs.readFileSync(dir+"/manifest.json","utf8")); const paths=m.tracks.filter(t=>t.license==="CC0-1.0").map(t=>dir+"/"+t.file).filter(p=>fs.existsSync(p)); if(paths.length)execFileSync("git",["add","--",...paths]); console.log("AUDIO_BINARIES_STAGED",paths.length);'
           if git diff --cached --quiet; then echo 'AUDIO_IDS_ALREADY_CURRENT'; exit 0; fi
           branch="assets/mare-audio-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git switch -c "$branch"
