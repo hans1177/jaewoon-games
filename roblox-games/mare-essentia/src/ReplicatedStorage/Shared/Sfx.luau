@@ -5,6 +5,8 @@ local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 
 local IDS = require(script.Parent:WaitForChild("AudioIds"))
+-- 불러오기에 실패한 소리(권한 미승인·삭제 등)는 건너뛰고 다음 대체 소리를 쓴다
+local broken: { [string]: boolean } = {}
 local Regions = require(script.Parent:WaitForChild("Regions"))
 
 -- 기본 음량 (0~1)
@@ -48,7 +50,7 @@ end
 
 -- 효과음 한 번 (같은 소리는 너무 자주 겹치지 않게 0.05초 간격)
 function Sfx.play(name, volume, speed)
-	if not sfxOn or not IDS[name] then
+	if not sfxOn or not IDS[name] or broken[name] then
 		return
 	end
 	local now = os.clock()
@@ -89,7 +91,7 @@ function Sfx.music(name)
 			old:Destroy()
 		end)
 	end
-	if not name or not IDS[name] then
+	if not name or not IDS[name] or broken[name] then
 		return
 	end
 	local s = make(name, musicGroup)
@@ -110,12 +112,57 @@ end
 local function firstReady(...)
 	for i = 1, select("#", ...) do
 		local name = select(i, ...)
-		if name and IDS[name] then
+		if name and IDS[name] and not broken[name] then
 			return name
 		end
 	end
 	return nil
 end
+
+-- 시작하고 잠시 뒤 등록된 소리를 미리 불러와 실패한 이름을 기록한다. 일시적 실패일 수 있어 한 번 더 확인한 뒤에만 막는다.
+task.spawn(function()
+	task.wait(8)
+	local ContentProvider = game:GetService("ContentProvider")
+	local function probe(names)
+		local failed, byContent, sounds = {}, {}, {}
+		for _, name in names do
+			local snd = Instance.new("Sound")
+			snd.Name = "Probe_" .. name
+			snd.SoundId = IDS[name]
+			sounds[#sounds + 1] = snd
+			byContent[IDS[name]] = name
+		end
+		pcall(function()
+			ContentProvider:PreloadAsync(sounds, function(contentId, status)
+				if status ~= Enum.AssetFetchStatus.Success and byContent[contentId] then
+					failed[#failed + 1] = byContent[contentId]
+				end
+			end)
+		end)
+		for _, snd in sounds do
+			snd:Destroy()
+		end
+		return failed
+	end
+	local all = {}
+	for name in IDS do
+		all[#all + 1] = name
+	end
+	local first = probe(all)
+	if #first == 0 then
+		return
+	end
+	task.wait(5)
+	for _, name in probe(first) do
+		broken[name] = true
+		warn("[Sfx] 소리를 불러오지 못해 대체 소리를 씁니다:", name)
+	end
+end)
+	end)
+	for _, probe in probes do
+		probe:Destroy()
+	end
+end)
 
 -- 현재 항구의 나라 → 해역 → 기존 항구·교역소 BGM 순으로 적용.
 function Sfx.portMusic(port, market)
