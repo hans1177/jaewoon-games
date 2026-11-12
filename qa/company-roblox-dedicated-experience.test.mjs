@@ -478,7 +478,7 @@ test('Mare publisher rejects stale GUI Decal and ungranted registry assets befor
   assert.ok(imageRows.length>=65,'registered image catalog includes all allowed trade goods');
   assert.ok(imageRows.every(([,row])=>row.assetType==='Image'&&row.usePermissionGranted===true));
   const ids=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
-  const active=new Map([...ids.matchAll(/\\["([^"]+)"\\]\\s*=\\s*(\\d+)/g)].map(m=>[m[1],m[2]]));
+  const active=new Map([...ids.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)].map(m=>[m[1],m[2]]));
   assert.equal(Object.keys(assets).length,active.size,'every registered asset stays bound to its Lua id');
   for(const [key,row] of Object.entries(assets)){
     assert.equal(String(row.assetId),active.get(key),key+' id mismatch');
@@ -524,9 +524,11 @@ test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5
   }
   assert.equal(assets['Cargo/glass-wine']?.assetType,'Model');
   assert.match(client,/GOOD_ICON\[goodsId\] = \{ "Cargo", cargoAsset, nil, "Goods\/" \.\. goodsId \}/);
-  assert.match(client,/local RESTRICTED_CARGO_ICON = \\{/);
+  assert.match(client,/local RESTRICTED_CARGO_ICON = \{/);
+  const neutralCargo=client.split('local RESTRICTED_CARGO_ICON = {')[1].split('\n}')[0];
   for(const good of ['beer','sake','wine','rum']){
-    assert.match(client,new RegExp('\\\\b'+good+' = \\\\{ "Cargo", "barrel", Color3\\\\.fromRGB\\\\('),good+' remains the neutral registered barrel');
+    assert.ok(neutralCargo.includes(good+' = { "Cargo", "barrel", Color3.fromRGB('),
+      good+' remains the neutral registered barrel');
   }
   assert.match(client,/kind == "Cargo" and px < 64 and type\(smallArt\) == "string" and AssetIds\[smallArt\]/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
