@@ -920,6 +920,26 @@ do
 	st.Thickness = 2
 	st.Parent = portraitImage
 end
+-- [선장실] 초상화가 완성되기 전에는 파란 물음표를 표시한다.
+local captainPlaceholder = Instance.new("TextLabel")
+captainPlaceholder.Name = "CaptainPortraitPending"
+captainPlaceholder.Position = UDim2.fromOffset(11, 12)
+captainPlaceholder.Size = UDim2.fromOffset(52, 52)
+captainPlaceholder.BackgroundColor3 = Color3.fromRGB(35, 88, 150)
+captainPlaceholder.BorderSizePixel = 0
+captainPlaceholder.Text = "?"
+captainPlaceholder.Font = Enum.Font.GothamBlack
+captainPlaceholder.TextSize = 38
+captainPlaceholder.TextColor3 = Color3.fromRGB(234, 246, 255)
+captainPlaceholder.Visible = false
+captainPlaceholder.Parent = mainInner
+corner(captainPlaceholder, 8)
+local pendingStroke = Instance.new("UIStroke")
+pendingStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+pendingStroke.Color = Color3.fromRGB(214, 170, 82)
+pendingStroke.Thickness = 2
+pendingStroke.Parent = captainPlaceholder
+
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
@@ -1197,8 +1217,10 @@ local function setPortrait(groupName)
 		return
 	end
 	portraitKey = identity
-	portraitImage.Visible = imageId ~= nil
-	portraitFrame.Visible = imageId == nil
+	local pendingCaptainPortrait = groupName == "선장실" and heroId == nil
+	captainPlaceholder.Visible = pendingCaptainPortrait
+	portraitImage.Visible = imageId ~= nil and not pendingCaptainPortrait
+	portraitFrame.Visible = imageId == nil and not pendingCaptainPortrait
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
 	portraitImage.ImageRectOffset = offset or Vector2.zero
 	portraitImage.ImageRectSize = heroSize or regionalSize or (if offset then PORTRAIT_SIZE else Vector2.zero)
@@ -1208,7 +1230,7 @@ local function setPortrait(groupName)
 			c:Destroy()
 		end
 	end
-	if imageId then
+	if imageId or pendingCaptainPortrait then
 		return
 	end
 	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
@@ -1319,11 +1341,19 @@ hud.Visible = false
 hud.Parent = gui
 
 local card = Instance.new("Frame")
-card.BackgroundTransparency = 1
+card.BackgroundColor3 = Color3.fromRGB(233, 215, 180)
+card.BackgroundTransparency = 0.04
+card.BorderSizePixel = 0
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(204, 81)
+card.Size = UDim2.fromOffset(290, 114)
 H.hudCard = card
 card.Parent = hud
+corner(card, 10)
+hudStroke(card, 2)
+local cardWash = Instance.new("UIGradient")
+cardWash.Rotation = 90
+cardWash.Color = ColorSequence.new(Color3.fromRGB(248, 231, 193), Color3.fromRGB(202, 173, 123))
+cardWash.Parent = card
 
 local function hudText(parent, pos, size, textSize, color, align)
 	local l = Instance.new("TextLabel")
@@ -1339,24 +1369,27 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-H.hudName = hudText(card, UDim2.fromOffset(53, 0), UDim2.fromOffset(151, 19), 15, COLORS.paper)
-H.hudCoin = hudText(card, UDim2.fromOffset(53, 19), UDim2.fromOffset(151, 18), 14, Color3.fromRGB(255, 229, 170))
-H.hudPort = hudText(card, UDim2.fromOffset(53, 37), UDim2.fromOffset(151, 18), 14, COLORS.paper)
+-- [왼쪽 정보] 날짜 · 코인 · 항구 · 내구도 · 화물을 일정 간격으로 표시한다.
+H.hudName = hudText(card, UDim2.fromOffset(70, 7), UDim2.new(1, -78, 0, 24), 16, Color3.fromRGB(47, 30, 20))
+H.hudCoin = hudText(card, UDim2.fromOffset(70, 31), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(91, 49, 20))
+H.hudPort = hudText(card, UDim2.fromOffset(70, 55), UDim2.new(1, -78, 0, 23), 15, Color3.fromRGB(56, 40, 27))
 local hullBack = Instance.new("Frame")
-hullBack.BackgroundColor3 = Color3.fromRGB(39, 31, 26)
-hullBack.Position = UDim2.fromOffset(53, 55)
-hullBack.Size = UDim2.fromOffset(145, 4)
+hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
+hullBack.Position = UDim2.fromOffset(70, 82)
+hullBack.Size = UDim2.new(1, -82, 0, 5)
+hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 2)
 local hullFill = Instance.new("Frame")
 hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
+hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 2)
-H.hudShip = hudText(card, UDim2.fromOffset(53, 62), UDim2.fromOffset(151, 18), 14, COLORS.paper)
+H.hudShip = hudText(card, UDim2.fromOffset(70, 90), UDim2.new(1, -78, 0, 21), 14, Color3.fromRGB(54, 37, 25))
 for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
-	label.TextStrokeColor3 = Color3.fromRGB(28, 22, 19)
-	label.TextStrokeTransparency = 0.18
+	label.Font = Enum.Font.GothamBold
+	label.TextStrokeTransparency = 1
 	label.TextTruncate = Enum.TextTruncate.AtEnd
 end
 
@@ -1384,60 +1417,70 @@ coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
 corner(coinCard, 10)
 hudStroke(coinCard, 2)
 
--- 화면 위에 떠 있는 항해 도구. 그림과 터치 영역만 두고 메뉴 판은 제거한다.
--- 항해 도구용 직접 제작 선화. 각 경로는 32픽셀 도안의 꼭짓점이다.
-H.hudEngravings = {
-	gear = {{11,3,21,3,22,7,26,6,30,13,27,16,30,20,26,27,22,26,21,30,11,30,10,26,6,27,2,20,5,16,2,13,6,6,10,7,11,3},{16,10,21,12,23,16,21,21,16,23,11,21,9,16,11,12,16,10}},
-	deck = {{3,8,17,4,23,26,8,30,3,8},{15,5,28,8,26,30,12,27,15,5},{21,12,25,18,20,23,17,17,21,12}},
-	auto = {{4,20,29,20,25,27,9,27,4,20},{16,4,16,19},{17,5,26,17,17,17},{14,8,6,17,14,17},{2,30,7,29,12,30,18,29,23,30,30,29}},
-	help = {{16,2,24,5,29,12,29,21,23,28,15,30,7,27,3,21,3,11,8,5,16,2},{11,11,14,8,20,9,22,13,16,18,16,21},{16,25,16,26}},
-	view = {{5,17,16,7,28,17,16,26,5,17},{12,17,16,13,20,17,16,21,12,17}},
-	trade = {{16,3,16,28},{7,29,25,29},{4,10,28,10},{7,10,2,21,12,21,7,10},{25,10,20,21,30,21,25,10}},
-	crew = {{11,4,15,6,17,10,15,14,11,16,7,14,5,10,7,6,11,4},{2,29,3,23,7,19,15,19,19,23,20,29,2,29},{20,7,25,6,28,9,28,13,24,16,21,14},{22,19,27,19,30,23,30,27,24,27}},
-	route = {{16,2,26,7,30,16,26,25,16,30,6,25,2,16,6,7,16,2},{22,9,18,19,10,24,13,14,22,9},{13,14,18,19}},
-	journal = {{5,4,21,4,21,26,5,28,5,4},{8,9,16,9},{8,14,15,14},{8,19,13,19},{15,25,27,6,30,4,29,12,23,19,18,20}},
-	chart = {{3,7,11,4,21,8,29,5,29,26,21,29,11,25,3,28,3,7},{11,4,11,25},{21,8,21,29},{6,19,15,13,25,18}},
-	yard = {{4,22,29,22,25,28,9,28,4,22},{6,18,6,4,22,4,22,15},{6,11,13,4},{22,15,19,18,16,15}},
-	explore = {{3,24,20,8,25,13,9,29,3,24},{18,7,23,2,30,9,25,14},{11,18,16,23}},
-	codex = {{3,6,12,6,16,10,20,6,29,6,29,25,20,25,16,28,12,25,3,25,3,6},{16,10,16,28},{6,12,12,12},{20,12,26,12},{6,17,12,17},{20,17,26,17}},
-	tech = {{12,3,21,3},{14,3,14,12,5,25,8,29,25,29,28,25,19,12,19,3},{10,20,23,20},{17,24,18,24}},
-	quest = {{6,4,25,4,25,28,6,28,6,4},{10,11,12,13,16,9},{18,11,22,11},{10,20,12,22,16,18},{18,20,22,20}},
-	battle = {{4,3,9,5,26,24,22,28,6,9,4,3},{28,3,23,5,6,24,10,28,26,9,28,3},{2,22,11,30},{21,30,30,22}},
-	status = {{16,3,28,8,27,19,23,25,16,30,9,25,5,19,4,8,16,3},{8,16,13,16,16,10,19,21,22,16,25,16}},
+-- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
+local HUD_MENU_ART = {
+	gear = "status", deck = "codex", auto = "route", help = "quest",
+	view = "view", trade = "trade", crew = "harbor", route = "route",
+	journal = "codex", chart = "map", yard = "yard", explore = "explore",
+	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
-function H.hudShortcut(parent, name, key, label)
+function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(44, 44)
-	button.BackgroundTransparency = 1
+	button.Size = UDim2.fromOffset(if dockItem then 60 else 44, if dockItem then 68 else 44)
+	button.BackgroundColor3 = Color3.fromRGB(229, 205, 158)
+	button.BackgroundTransparency = 0.04
+	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	for _, path in H.hudEngravings[key] do
-		for i = 1, #path - 2, 2 do
-			local x, y = path[i], path[i + 1]
-			local dx, dy = path[i + 2] - x, path[i + 3] - y
-			local line = Instance.new("Frame")
-			line.AnchorPoint = Vector2.new(0.5, 0.5)
-			line.Position = UDim2.fromOffset(6 + x + dx / 2, 6 + y + dy / 2)
-			line.Size = UDim2.fromOffset(math.sqrt(dx * dx + dy * dy) + 1, 2)
-			line.Rotation = math.deg(math.atan2(dy, dx))
-			line.BackgroundColor3 = Color3.fromRGB(247, 216, 165)
-			line.BorderSizePixel = 0
-			corner(line, 1)
-			local ink = Instance.new("UIStroke")
-			ink.Color = Color3.fromRGB(60, 40, 28)
-			ink.Thickness = 1.15
-			ink.Parent = line
-			line.Parent = button
-		end
+	corner(button, 8)
+	local stroke = Instance.new("UIStroke")
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Color = Color3.fromRGB(97, 60, 32)
+	stroke.Thickness = 1.7
+	stroke.Parent = button
+	local wash = Instance.new("UIGradient")
+	wash.Rotation = 90
+	wash.Color = ColorSequence.new(Color3.fromRGB(247, 226, 179), Color3.fromRGB(203, 162, 105))
+	wash.Parent = button
+	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	if artId then
+		local art = Instance.new("ImageLabel")
+		art.Name = "MenuArt"
+		art.AnchorPoint = Vector2.new(0.5, 0)
+		art.Position = UDim2.new(0.5, 0, 0, if dockItem then 5 else 6)
+		art.Size = UDim2.fromOffset(if dockItem then 34 else 32, if dockItem then 34 else 32)
+		art.BackgroundTransparency = 1
+		art.Image = "rbxassetid://" .. tostring(artId)
+		art.ImageColor3 = Color3.fromRGB(78, 49, 29)
+		art.ScaleType = Enum.ScaleType.Fit
+		art.Parent = button
+	else
+		button.Text = string.sub(label, 1, 1)
+		button.TextSize = 22
+		button.Font = Enum.Font.GothamBold
+		button.TextColor3 = Color3.fromRGB(78, 49, 29)
+	end
+	if dockItem then
+		local caption = Instance.new("TextLabel")
+		caption.Name = "MenuName"
+		caption.BackgroundTransparency = 1
+		caption.Position = UDim2.fromOffset(2, 41)
+		caption.Size = UDim2.new(1, -4, 0, 23)
+		caption.Font = Enum.Font.GothamBold
+		caption.TextSize = 12
+		caption.TextWrapped = true
+		caption.TextColor3 = Color3.fromRGB(58, 38, 22)
+		caption.Text = label
+		caption.Parent = button
 	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = button
 	button.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-			scale.Scale = 0.94
+			scale.Scale = 0.95
 		end
 	end)
 	button.InputEnded:Connect(function(input)
@@ -1453,26 +1496,24 @@ dock.Name = "Dock"
 dock.BackgroundTransparency = 1
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
-dock.Position = UDim2.new(1, -8, 0, 51)
-dock.Size = UDim2.fromOffset(140, 44)
+dock.Position = UDim2.new(1, -8, 0, 62)
+dock.Size = UDim2.fromOffset(194, 350)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
-do
-	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(140, 272)
-	limit.Parent = dock
-	local grid = Instance.new("UIGridLayout")
-	grid.CellSize = UDim2.fromOffset(44, 44)
-	grid.CellPadding = UDim2.fromOffset(2, 2)
-	grid.SortOrder = Enum.SortOrder.LayoutOrder
-	grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
-	grid.FillDirectionMaxCells = 3
-	grid.Parent = dock
-end
+local dockGrid = Instance.new("UIGridLayout")
+dockGrid.CellSize = UDim2.fromOffset(60, 68)
+dockGrid.CellPadding = UDim2.fromOffset(6, 5)
+dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
+dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
+dockGrid.FillDirectionMaxCells = 3
+dockGrid.Parent = dock
+local dockLimit = Instance.new("UISizeConstraint")
+dockLimit.MaxSize = Vector2.new(194, 350)
+dockLimit.Parent = dock
 
 H.DOCK = {
 	{ "view", "걷기" }, { "trade", "교역" }, { "crew", "동료" }, { "route", "항해" }, { "journal", "일지" }, { "chart", "지도" },
@@ -1480,7 +1521,7 @@ H.DOCK = {
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
 for i, d in H.DOCK do
-	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[1], d[2])
+	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[1], d[2], true)
 	b.LayoutOrder = i
 	b.Activated:Connect(function()
 		if d[1] == "view" then
@@ -1817,12 +1858,16 @@ hudStroke(bubble, 2)
 do
 	local function layoutBubble()
 		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
-		local rows = math.clamp(math.floor((height - 146 + 2) / 46), 1, 5)
-		dock.Size = UDim2.fromOffset(140, rows * 46 - 2)
+		local compact = width < 610
+		dockGrid.FillDirectionMaxCells = if compact then 2 else 3
+		dockGrid.CellSize = UDim2.fromOffset(if compact then 64 else 60, 68)
+		dock.Position = UDim2.new(1, -8, 0, if compact then 168 else 62)
+		dock.Size = UDim2.fromOffset(if compact then 136 else 194, math.clamp(height - (if compact then 220 else 170), 116, 350))
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
-		local left = if width >= 610 then 222 else 8
-		local right = if width >= 610 then 200 else 152
-		local bubbleWidth = math.clamp(width - left - right, 1, 380)
+		card.Size = UDim2.fromOffset(if compact then 252 else 290, 114)
+		local left = if compact then 8 else 310
+		local right = if compact then 148 else 220
+		local bubbleWidth = math.clamp(width - left - right, 1, 430)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
@@ -1860,7 +1905,7 @@ H.bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
 local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
 do
 	local textSizes = {
-		[H.hudName] = 15, [H.hudCoin] = 14, [H.hudPort] = 14, [H.hudShip] = 14,
+		[H.hudName] = 16, [H.hudCoin] = 16, [H.hudPort] = 15, [H.hudShip] = 14,
 		[H.bubbleWho] = 14, [H.bubbleLine] = 13, [H.bubbleAdvice] = 13, [bubbleNext] = 12,
 	}
 	local function updateSize()
@@ -3694,13 +3739,6 @@ function RENDERERS.status()
 			{ text = "작게", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); render() end },
 			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
 		}, 52)
-	end)
-	add(function() return mkHeader(content, "시작 가이드") end)
-	add(function()
-		return mkLabel(content, "메뉴·상품 그림: Lorc · Delapouite · Lord Berandas · Skoll / game-icons.net / CC BY 3.0\n사프란: Tiny Speck·Bart / CC0 · 대추야자·건포도: 게임 전용 벡터 원화\n색상·재질 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
-	end)
-	add(function()
-		return mkLabel(content, "1) 교역: 특산(싸게)을 사서 수요(비싸게) 항구에 팔아요. ▲▼는 시장 사건으로 값이 움직이는 품목이에요.\n2) 항해: 항구를 옮기면 날짜가 지나고 보급품이 줄어요. 증기선은 석탄을 태워요.\n3) 탐험·도감: 항구 근처에서 카드를 발견하면 명성과 코인을 얻고, 학자를 만나 지식을 전수받아요.\n4) 연구: 증기 지식을 모으면 증기선과 증기 스킬이 열려요.\n5) 전투: 사략선 사냥으로 경험을 쌓고, 레벨이 오르면 신화 괴물에 도전해요.", 12, COLORS.muted, false)
 	end)
 	add(function() return mkHeader(content, "전문 분야") end)
 	for _, sp in view.specialties.list do
@@ -6074,10 +6112,11 @@ function H.renderTabs()
 			render()
 		end, true)
 		b.LayoutOrder = i
+		if id == "status" then b.TextSize = 18 end
 		if currentTab == id then
 			b.TextColor3 = Color3.fromRGB(32, 22, 8)
 		end
-		if AssetIds["Menu/" .. id] then
+		if id ~= "status" and AssetIds["Menu/" .. id] then
 			b.Text = ""
 			local icon = modelIcon(b, "Menu", id, nil, 24)
 			icon.Name = "Icon"
@@ -6470,6 +6509,12 @@ openOptions = function(helpOnly)
 					})
 				end
 			end
+		end
+		if not helpOnly then
+			section("그림 출처")
+			local credits = mkLabel(body, "메뉴·상품 그림: Lorc · Delapouite · Lord Berandas · Skoll / game-icons.net / CC BY 3.0\n사프란: Tiny Speck·Bart / CC0 · 대추야자·건포도: 게임 전용 원화", 12, COLORS.text, false, nxt())
+			credits.Size = UDim2.new(1, -12, 0, 0)
+			credits.AutomaticSize = Enum.AutomaticSize.Y
 		end
 		local back = mkButton(body, "게임으로 돌아가기", COLORS.gold, UDim2.new(1, -4, 0, 46), closeOptions, true)
 		back.LayoutOrder = nxt()
@@ -7663,7 +7708,8 @@ end
 		dim.BorderSizePixel = 0
 		dim.Active = true -- 대화 뒤의 탭·버튼이 눌리지 않게 입력을 막는다
 		dim.Parent = layer
-		-- 영화 같은 레터박스: 위아래 검은 띠가 밀려 들어오고, 장면 음악과 첫 효과음이 깔린다
+		-- [화가 연출] 전체 화면 검은 띠는 초상화를 그리는 장면에만 적용한다.
+		if spec.portraits then
 		for _, top in { true, false } do
 			local bar = Instance.new("Frame")
 			bar.AnchorPoint = Vector2.new(0, if top then 0 else 1)
@@ -7673,6 +7719,7 @@ end
 			bar.BorderSizePixel = 0
 			bar.Parent = layer
 			TweenService:Create(bar, TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(1, 0, 0.09, 0) }):Play()
+		end
 		end
 		if spec.music then
 			if dlgPrevMusic == nil then
@@ -7708,7 +7755,61 @@ end
 		list.Padding = UDim.new(0, 10)
 		list.SortOrder = Enum.SortOrder.LayoutOrder
 		list.Parent = win
-		mkLabel(win, spec.speaker .. (if spec.role then "  ·  " .. spec.role else ""), 18, Color3.fromRGB(246, 208, 130), true, 1)
+		-- [인물 대화] 페드루와 동료는 각자의 실제 등록 초상을 보여 준다.
+		local speakerBar = Instance.new("Frame")
+		speakerBar.Name = "SpeakerPortraitHeader"
+		speakerBar.Size = UDim2.new(1, 0, 0, 86)
+		speakerBar.BackgroundColor3 = Color3.fromRGB(65, 48, 35)
+		speakerBar.BorderSizePixel = 0
+		speakerBar.LayoutOrder = 1
+		speakerBar.Parent = win
+		corner(speakerBar, 8)
+		local portraitSpec = nil
+		if string.find(spec.speaker, "페드루", 1, true) then
+			portraitSpec = COMPANION_PORTRAIT.n_portugal
+		elseif view and view.companions and view.companions.list then
+			for _, member in view.companions.list do
+				if member.name == spec.speaker then
+					portraitSpec = COMPANION_PORTRAIT[member.id]
+					break
+				end
+			end
+		end
+		local tile = if string.find(spec.speaker, "서기", 1, true) or string.find(spec.speaker, "화가", 1, true) then "scholar"
+			elseif string.find(spec.speaker, "상인", 1, true) then "merchant"
+			elseif string.find(spec.speaker, "주점", 1, true) then "tavern"
+			else "hero"
+		local portraitId = if portraitSpec then AssetIds["Portraits/" .. portraitSpec.atlas]
+			elseif FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS
+			else PORTRAIT_ATLAS
+		local portraitOffset = if portraitSpec then portraitSpec.offset
+			elseif portraitId == FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_TILE[tile]
+			else PORTRAIT_TILE[tile]
+		local face = Instance.new("ImageLabel")
+		face.Name = "SpeakerFace"
+		face.Position = UDim2.fromOffset(6, 5)
+		face.Size = UDim2.fromOffset(65, 76)
+		face.BackgroundColor3 = Color3.fromRGB(52, 77, 105)
+		face.BorderSizePixel = 0
+		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
+		face.ImageRectOffset = portraitOffset or Vector2.zero
+		face.ImageRectSize = if portraitOffset then PORTRAIT_SIZE else Vector2.zero
+		face.ScaleType = Enum.ScaleType.Crop
+		face.Parent = speakerBar
+		corner(face, 6)
+		local faceBorder = Instance.new("UIStroke")
+		faceBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		faceBorder.Color = BRASS
+		faceBorder.Thickness = 1.5
+		faceBorder.Parent = face
+		local speakerName = mkLabel(speakerBar, spec.speaker, 19, Color3.fromRGB(249, 223, 169), true)
+		speakerName.Position = UDim2.fromOffset(82, 9)
+		speakerName.Size = UDim2.new(1, -92, 0, 32)
+		speakerName.AutomaticSize = Enum.AutomaticSize.None
+		local speakerRole = mkLabel(speakerBar, spec.role or "항해 기록", 14, Color3.fromRGB(225, 198, 165), false)
+		speakerRole.Position = UDim2.fromOffset(82, 44)
+		speakerRole.Size = UDim2.new(1, -92, 0, 25)
+		speakerRole.AutomaticSize = Enum.AutomaticSize.None
 		local bodyLabel = mkLabel(win, spec.text, 15, COLORS.text, false, 2)
 		-- 글자가 한 자씩 나타나고, 몇 글자마다 작은 소리가 난다. 글을 누르면 한꺼번에 보인다.
 		do
@@ -7853,8 +7954,8 @@ end
 	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기). 위쪽 정보창 아래에 둔다.
 	local chip = Instance.new("Frame")
 	chip.AnchorPoint = Vector2.new(0, 0)
-	chip.Position = UDim2.fromOffset(1, 3)
-	chip.Size = UDim2.fromOffset(47, 66)
+	chip.Position = UDim2.fromOffset(7, 9)
+	chip.Size = UDim2.fromOffset(56, 82)
 	chip.BackgroundTransparency = 1
 	chip.BorderSizePixel = 0
 	chip.Visible = false
@@ -7913,7 +8014,7 @@ end
 		chipName.Text = c.name or "선장"
 		chipSub.Text = "🏳 " .. tostring(view.player.nation)
 		chipSub2.Text = if c.origin then c.origin.name else ""
-		local face = portraitImg(chip, c.portrait, 45, 64, true)
+		local face = portraitImg(chip, c.portrait, 54, 80, true)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -7921,8 +8022,8 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 43, 30)
-			face.Position = UDim2.fromOffset(2, 18)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 52, 34)
+			face.Position = UDim2.fromOffset(2, 23)
 		else
 			face.Position = UDim2.fromOffset(1, 1)
 		end
