@@ -84,7 +84,7 @@ if(!creator){
 
 let receipts={};
 // 전체 재업로드는 아직 CC0로 교체되지 않은 기존 합성 음원까지 재생성하므로 차단한다.
-if(process.env.AUDIO_FRESH==='1')throw Error('AUDIO_FRESH_BLOCKED_UNTIL_LEGACY_CC0_MIGRATION');
+if(process.env.AUDIO_FRESH==='1')console.log('AUDIO_FRESH_IGNORED_CC0_MIGRATION_SAFE_MODE');
 if(fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
 const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipts,null,1)+'\n');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
