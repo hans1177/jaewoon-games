@@ -163,7 +163,7 @@ local postPrice = {}
 local busy = false
 local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
-local chosenYear = 1700
+local chosenYear = 1517
 local newGameMode = false -- 저장된 게임이 있어도 새로 시작하는 선택 화면을 보여 준다
 
 -- 전체 화면 장면(항해 연출, 이야기, 카드 상세)은 별도 ScreenGui에 띄운다.
@@ -6234,54 +6234,6 @@ renderTitle = function()
 		if cur2 then
 			tLabel(titleScroll, cur2.story, 12, COLORS.muted, false, nxt())
 		end
-	end
-
-	-- ③ 시대
-	tLabel(titleScroll, "③ 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
-	local eras = {
-		{ 1517, "1517년", "종교개혁의 시작" },
-		{ 1600, "1600년", "동인도회사의 새벽" },
-		{ 1625, "1625년", "30년 전쟁의 시대" },
-		{ 1650, "1650년", "과학혁명의 시작" },
-		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
-		{ 1750, "1750년", "분류학의 시대" },
-	}
-	local rowF = Instance.new("Frame")
-	rowF.BackgroundTransparency = 1
-	rowF.Size = UDim2.new(1, 0, 0, 128)
-	rowF.LayoutOrder = nxt()
-	rowF.ZIndex = 12
-	rowF.Parent = titleScroll
-	local eg = Instance.new("UIGridLayout")
-	eg.CellSize = UDim2.new(1 / 3, -6, 0, 60)
-	eg.CellPadding = UDim2.fromOffset(8, 0)
-	eg.SortOrder = Enum.SortOrder.LayoutOrder
-	eg.Parent = rowF
-	for i, e in eras do
-		local selected = chosenYear == e[1]
-		local b = Instance.new("TextButton")
-		b.LayoutOrder = i
-		b.AutoButtonColor = false
-		b.BorderSizePixel = 0
-		b.ZIndex = 13
-		b.Text = e[2] .. "\n" .. e[3]
-		b.TextWrapped = true
-		b.Font = Enum.Font.GothamBold
-		b.TextSize = 13
-		b.TextColor3 = if selected then GOLD else COLORS.text
-		b.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
-		corner(b, 10)
-		local st = Instance.new("UIStroke")
-		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		st.Thickness = if selected then 2.5 else 1
-		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
-		st.Parent = b
-		b.Activated:Connect(function()
-			Sfx.play("sfx_click")
-			chosenYear = e[1]
-			renderTitle()
-		end)
-		b.Parent = rowF
 	end
 
 	-- 같이 하기 (방 시계)
