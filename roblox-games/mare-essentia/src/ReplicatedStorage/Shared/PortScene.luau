@@ -1048,6 +1048,186 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 end
 
 -- 발전도 랜드마크 자리(양쪽 큰길 뒤). 집은 이 자리를 피해 짓는다.
+-- 주요 항구의 상징 건축물: 광장 맞은편(개요 카메라에 보이는 자리)에 그 도시를 알아볼 수 있는 실루엣을 세운다.
+-- 등록된 실제 CC0 모델만 조합한다 (직접 만든 도형 없음). 좌표는 앵커(-30, 0, -66) 기준.
+local SIG_ANCHOR = Vector3.new(-30, 0, -66)
+local SIG = {}
+do
+	local function one(kind, asset, size, dx, dz, y)
+		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz, y = y or 0 }
+	end
+	local function stack(kind, parts, size, dx, dz)
+		local out = {}
+		for i, a in parts do
+			table.insert(out, one(kind, a, size, dx, dz, (i - 1) * size * 0.9))
+		end
+		return out
+	end
+	local function cat(...)
+		local out = {}
+		for _, list in { ... } do
+			if list.kind then
+				table.insert(out, list)
+			else
+				for _, e in list do table.insert(out, e) end
+			end
+		end
+		return out
+	end
+	local flagAt = function(dx, dz) return one("Castle", "flag-banner-long", 10, dx, dz) end
+	local palms = function(dx) return cat(one("Naval", "palm-detailed-straight", 14, dx, -14), one("Naval", "palm-detailed-straight", 14, dx + 6, 14)) end
+	local pagoda = stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0)
+	local minarets = function(r) return cat(stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, -r, -r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, r, -r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, -r, r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, r, r)) end
+	local keep = function(big) return cat(one("Castle", "fortress", big, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 11, -big * 0.6, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 11, big * 0.6, 0), flagAt(0, big * 0.5)) end
+	local lighthouse = stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0)
+	local campanile = function(size) return cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-top-roof" }, size, 0, 0), one("Town", "church", 22, 18, 6)) end
+	local windmills = cat(one("Town", "windmill", 24, -12, 0), one("Town", "windmill", 22, 14, 6), one("Town", "bell-tower", 26, 0, -16))
+	local belem = cat(one("Naval", "tower-complete-large", 30, 0, 0), one("Naval", "tower-complete-small", 14, 14, 10), flagAt(-10, 0))
+	local mission = cat(one("Town", "church", 30, 0, 0), one("Town", "bell-tower", 26, -16, 6), palms(18))
+	local rock = cat(one("Town", "rock-wide", 52, 0, 0), one("Town", "rock-wide", 34, 22, 8))
+	SIG.london = keep(34)
+	SIG.edinburgh = cat(one("Town", "rock-wide", 40, 0, 0), keep(26))
+	SIG.amsterdam = windmills
+	SIG.hamburg = cat(one("Town", "church", 28, 0, 0), one("Town", "bell-tower", 30, -16, 0))
+	SIG.lisbon = belem
+	SIG.seville = cat(stack("Town", { "bell-tower", "bell-tower" }, 22, 0, 0), one("Castle", "wall", 20, 18, 0), one("Castle", "wall", 20, -18, 0))
+	SIG.venice = cat(campanile(12), one("Terrain", "column", 14, -14, 14), one("Terrain", "column", 14, -22, 14))
+	SIG.genoa = lighthouse
+	SIG.valletta = cat(one("Castle", "fortress", 36, 0, 0), one("Castle", "wall", 22, 20, 12), one("Castle", "wall", 22, -20, 12))
+	SIG.istanbul = cat(one("Town", "temple-stone", 36, 0, 0), minarets(18))
+	SIG.alexandria = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-hexagon-top" }, 12, 0, 0), flagAt(10, 0))
+	SIG.cape_town = keep(32)
+	SIG.cartagena_indias = cat(one("Castle", "fortress", 34, 0, 0), one("Castle", "wall", 22, 20, 8), one("Castle", "wall", 22, -20, 8))
+	SIG.havana = cat(one("Castle", "fortress", 30, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 10, 18, 0), flagAt(0, 14))
+	SIG.veracruz = cat(one("Castle", "fortress", 30, 0, 0), palms(20))
+	SIG.rio = rock
+	SIG.salvador = mission
+	SIG.goa = mission
+	SIG.malacca = cat(one("Castle", "gate", 22, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 12, 16, 0), palms(-18))
+	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
+	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
+	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
+	SIG.macau = cat(one("Town", "church", 26, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 22, 4))
+	SIG.shanghai = pagoda
+	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
+	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
+	SIG.edo = SIG.osaka
+	SIG.batavia = cat(one("Town", "bell-tower", 30, 0, 0), one("Town", "church", 22, 18, 6), palms(-18))
+	SIG.manila = cat(one("Castle", "fortress", 30, 0, 0), one("Town", "church", 22, 22, 6))
+	-- 그 밖의 주요 항구
+	local spire = function(parts, size, dx, dz) return stack("Castle", parts, size, dx, dz) end
+	local SQ = { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-top-roof" }
+	local HEX = { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }
+	local fort = function(size) return cat(one("Castle", "fortress", size, 0, 0), one("Castle", "wall", 22, size * 0.6, 10), one("Castle", "wall", 22, -size * 0.6, 10), flagAt(0, size * 0.5)) end
+	local fortPalms = function(size) return cat(fort(size), palms(size * 0.8)) end
+	local cathedral = function() return cat(one("Town", "church", 32, 0, 0), one("Town", "bell-tower", 34, -18, 0), one("Town", "bell-tower", 28, 18, 0)) end
+	local walledChurch = function() return cat(one("Town", "church", 26, 0, 0), one("Town", "bell-tower", 26, -16, 0), one("Castle", "wall", 24, 0, 18), one("Castle", "wall", 24, 20, 18), one("Castle", "wall", 24, -20, 18)) end
+	local colonialChurch = function() return cat(one("Town", "church", 26, 0, 0), one("Town", "bell-tower", 28, -16, 0)) end
+	local mosque = function(minaretSize) return cat(one("Town", "temple-stone", 30, 0, 0), spire(HEX, minaretSize, 18, -8), spire(HEX, minaretSize, 18, 8)) end
+	local shrine = cat(one("Town", "temple-stone", 22, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 18, 0))
+	local pacificSet = cat(one("Terrain", "statue-ring", 16, -12, 0), one("Terrain", "statue-ring", 16, 0, 0), one("Terrain", "statue-ring", 16, 12, 0), palms(20))
+	SIG.naples = cat(one("Town", "rock-wide", 48, -22, 0), one("Castle", "fortress", 26, 16, 6))
+	SIG.marseille = cat(one("Town", "rock-wide", 30, 0, 0), one("Town", "church", 22, 0, 0, 12), one("Castle", "fortress", 20, 26, 8))
+	SIG.barcelona = cat(spire(HEX, 9, -12, 0), spire(HEX, 11, 0, 0), spire(HEX, 9, 12, 0), one("Town", "church", 24, 0, 16))
+	SIG.bordeaux = cathedral()
+	SIG.rouen = cathedral()
+	SIG.porto = cat(spire(SQ, 11, 0, 0), one("Town", "church", 22, 18, 6))
+	SIG.cadiz = cat(fort(26), lighthouse)
+	SIG.dublin = cat(spire(HEX, 10, 0, 0), one("Town", "church", 24, 18, 6))
+	SIG.glasgow = walledChurch()
+	SIG.copenhagen = cat(spire(SQ, 10, 0, 0), one("Castle", "fortress", 24, 20, 8))
+	SIG.stockholm = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "church", 22, 22, 6))
+	SIG.bergen = cat(one("Town", "church", 24, 0, 0), one("Castle", "wall", 24, 18, 12), one("Castle", "wall", 24, -18, 12))
+	SIG.oslo = fort(28)
+	SIG.helsinki = cat(one("Town", "church", 28, 0, 0), one("Castle", "wall", 24, 0, 16))
+	SIG.st_petersburg = cat(one("Castle", "fortress", 30, 0, 0), spire(SQ, 10, 22, 0))
+	SIG.gdansk = cat(one("Naval", "tower-watch", 26, 0, 0), one("Town", "church", 26, 20, 6))
+	SIG.riga = walledChurch()
+	SIG.tallinn = walledChurch()
+	SIG.lubeck = cat(cathedral(), one("Castle", "gate", 22, 0, 20))
+	SIG.koenigsberg = cat(one("Castle", "fortress", 26, 0, 0), one("Town", "church", 22, 22, 6))
+	SIG.visby = walledChurch()
+	SIG.antwerp = cat(spire(SQ, 12, 0, 0), one("Town", "church", 26, 20, 6))
+	SIG.rotterdam = windmills
+	SIG.plymouth = cat(lighthouse, fort(24))
+	SIG.boston = colonialChurch()
+	SIG.new_york = cat(one("Town", "windmill", 22, -10, 0), fort(24))
+	SIG.philadelphia = cat(one("Town", "bell-tower", 30, 0, 0), one("Town", "church", 22, 18, 6))
+	SIG.charleston = cat(colonialChurch(), palms(18))
+	SIG.new_orleans = cat(colonialChurch(), palms(18))
+	SIG.quebec = cat(fort(30), one("Town", "church", 22, 22, 8))
+	SIG.halifax = fort(28)
+	SIG.st_johns = fort(24)
+	SIG.san_francisco = mission
+	SIG.kingston = fortPalms(24)
+	SIG.bridgetown = fortPalms(22)
+	SIG.nassau = fortPalms(22)
+	SIG.santo_domingo = cat(colonialChurch(), fort(24))
+	SIG.san_juan = cat(fort(34), palms(22))
+	SIG.panama = mission
+	SIG.callao = fort(26)
+	SIG.valparaiso = mission
+	SIG.buenos_aires = cat(colonialChurch(), one("Town", "fountain-round", 10, 18, 8))
+	SIG.montevideo = fort(24)
+	SIG.acapulco = fortPalms(28)
+	SIG.lagos = cat(one("Terrain", "tent-detailedopen", 14, 0, 0), palms(14))
+	SIG.luanda = fortPalms(26)
+	SIG.dakar = cat(one("Terrain", "pillar-obelisk", 24, 0, 0), palms(16))
+	SIG.elmina = fortPalms(34)
+	SIG.mombasa = fort(32)
+	SIG.kilwa = cat(one("Terrain", "greek-ruins-a", 20, 0, 0), one("Terrain", "pillar-obelisk", 22, 18, 6), palms(-16))
+	SIG.mogadishu = mosque(8)
+	SIG.aden = cat(one("Castle", "fortress", 24, 0, 0), spire(SQ, 10, 20, 0))
+	SIG.muscat = cat(one("Castle", "fortress", 24, -14, 0), one("Castle", "fortress", 22, 16, 4), one("Naval", "tower-watch", 22, 0, 18))
+	SIG.jeddah = mosque(8)
+	SIG.basra = cat(one("Town", "temple-stone", 24, 0, 0), palms(16))
+	SIG.surat = fort(28)
+	SIG.cochin = cat(one("Town", "church", 26, 0, 0), palms(16))
+	SIG.colombo = fortPalms(26)
+	SIG.madras = fort(28)
+	SIG.calcutta = cat(fort(28), one("Town", "church", 22, 24, 6))
+	SIG.rangoon = cat(spire(HEX, 9, 0, 0), one("Town", "temple-stone", 22, 16, 8), spire(HEX, 6, -14, 0), spire(HEX, 6, 14, -6))
+	SIG.bangkok = cat(one("Town", "temple-tower", 30, 0, 0), one("Town", "temple-stone", 20, 18, 8))
+	SIG.singapore = cat(one("Town", "bell-tower", 26, 0, 0), palms(16))
+	SIG.hoi_an = shrine
+	SIG.brunei = cat(one("Terrain", "wood-support", 8, -8, 0), one("Terrain", "wood-support", 8, 8, 0), palms(14))
+	SIG.ternate = fortPalms(24)
+	SIG.banda = fortPalms(22)
+	SIG.tianjin = pagoda
+	SIG.ningbo = shrine
+	SIG.amoy = shrine
+	SIG.busan = shrine
+	SIG.incheon = shrine
+	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
+	SIG.sydney = cat(lighthouse, one("Town", "windmill", 20, 16, 6))
+	SIG.honolulu = pacificSet
+	SIG.tahiti = pacificSet
+	SIG.auckland = pacificSet
+	SIG.tunis = mosque(8)
+	SIG.algiers = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "temple-stone", 20, 22, 6))
+	SIG.tripoli = fort(26)
+	SIG.casablanca = cat(one("Town", "temple-stone", 34, 0, 0), spire({ "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-top-roof" }, 9, 22, 0))
+	SIG.beirut = fort(24)
+	SIG.acre = cat(fort(26), one("Castle", "wall", 24, 0, 20))
+	SIG.smyrna = cat(one("Town", "temple-stone", 24, 0, 0), one("Castle", "fortress", 22, 22, 6))
+	SIG.syracuse = cat(one("Terrain", "greek-ruins-a", 22, 0, 0), one("Town", "church", 22, 20, 6))
+	SIG.palermo = cat(one("Town", "church", 28, 0, 0), one("Terrain", "greek-ruins-a", 16, 20, 6))
+	SIG.split = cat(one("Castle", "wall", 24, 0, 0), one("Castle", "wall", 24, 22, 0), one("Terrain", "column", 12, -14, 8), one("Town", "bell-tower", 26, 0, 14))
+	SIG.ragusa = cat(one("Castle", "wall", 24, 0, 0), one("Castle", "wall", 24, 22, 0), one("Castle", "wall", 24, -22, 0), one("Castle", "fortress", 22, 0, 16), one("Town", "bell-tower", 24, 14, 10))
+	SIG.corfu = fort(26)
+	SIG.candia = fort(26)
+end
+
+local function placeSignature(folder, info)
+	local list = SIG[info.portId]
+	if not list then
+		return
+	end
+	for _, e in list do
+		importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true)
+	end
+end
+
 local LM_SITES = {
 	Vector3.new(-112, 0, 34), Vector3.new(-112, 0, -34), Vector3.new(-150, 0, 46), Vector3.new(-150, 0, -46),
 	Vector3.new(-190, 0, 40), Vector3.new(-190, 0, -40), Vector3.new(-72, 0, 72), Vector3.new(-72, 0, -72),
@@ -2680,6 +2860,7 @@ function PortScene.build(info, onFacility)
 
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
+	placeSignature(folder, info)
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
