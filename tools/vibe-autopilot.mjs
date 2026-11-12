@@ -43,6 +43,7 @@ export const GAMES = {
       ports: M + 'mare-startports.json',
       portcompare: M + 'mare-portcompare.json',
       town: M + 'mare-town.json',
+      cards: M + 'mare-cards.json',
       assetsizes: M + 'asset-sizes.json'
     }
   }
@@ -63,6 +64,7 @@ export const KINDS = {
   europe: { base: 2, cooldown: 12 * 60, area: '유럽 항구 점검', group: 'world' },
   ports: { base: 2, cooldown: 12 * 60, area: '시작 항구 점검', group: 'world' },
   portcompare: { base: 2, cooldown: 12 * 60, area: '항구 비교 점검', group: 'world' },
+  cards: { base: 4, cooldown: 3 * 60, area: '카드 화면(덱·연습전·지상전 손패) 점검', group: 'cards' },
   town: { base: 2.5, cooldown: 10 * 60, area: '마을 배경 점검', group: 'background' },
   region: { base: 2.5, cooldown: 10 * 60, area: '지역별 배경 점검', group: 'background' },
   sky: { base: 2, cooldown: 12 * 60, area: '하늘·대기 점검', group: 'background' },
@@ -74,7 +76,7 @@ export const KINDS = {
 
 // ---- 신호 읽기: Studio report.json 의 HEALTH_* 줄을 구조로 바꾼다 -----------------------------
 export function parseReport(report) {
-  const s = { ok: false, err: 0, errFirst: '', assetFail: 0, assetTotal: 0, failedIds: [], mobs: null, mobHp: null, parts: null, ui: {}, light: null, aborted: false, captured: 0, studioErrors: [] };
+  const s = { ok: false, err: 0, errFirst: '', assetFail: 0, assetTotal: 0, failedIds: [], mobs: null, mobHp: null, parts: null, cardIssues: [], cardErr: 0, ui: {}, light: null, aborted: false, captured: 0, studioErrors: [] };
   if (!report || typeof report !== 'object') return s;
   s.aborted = !!report.summary?.abortedEarly;
   s.captured = Number(report.summary?.capturedFrames || 0);
@@ -84,6 +86,11 @@ export function parseReport(report) {
   const last = re => { let m, v = null; const g = new RegExp(re, 'g'); while ((m = g.exec(text))) v = m; return v; };
   let m = last('HEALTH_ERR n=(\\d+) first=([^\\n]*)');
   if (m) { s.ok = true; s.err = +m[1]; s.errFirst = m[2].trim(); }
+  for (const mm of text.matchAll(/CHK (\w+) view=(\S+) texts=\d+ issues=(\d+)([^\n]*)/g)) {
+    s.ok = true;
+    if (+mm[3] > 0) s.cardIssues.push(`${mm[1]}(${mm[2]}): ${mm[4].replace(/^\s*;\s*/, '').slice(0, 160)}`);
+  }
+  for (const mm of text.matchAll(/ERR (Client|Server) count=(\d+)/g)) s.cardErr += +mm[2];
   m = last('HEALTH_ASSET fail=(\\d+) total=(\\d+) ids=([^\\n]*)');
   if (m) { s.ok = true; s.assetFail = +m[1]; s.assetTotal = +m[2]; s.failedIds = m[3].split(',').map(x => x.replace(/\D/g, '')).filter(Boolean); }
   m = last('HEALTH_WORLD mobs=(\\d+) mobhp=(\\d+) parts=(\\d+)');
@@ -102,6 +109,8 @@ export function findingsFrom(game, s) {
   if (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length))
     f.push({ id: 'studio-unreachable', kind: 'infra', task: 'health', text: 'Studio 점검이 중간에 멈춤: ' + (s.studioErrors[0] || '원인 불명') });
   if (s.err > 0) f.push({ id: 'console-errors', kind: 'error', task: 'health', text: `콘솔 오류 ${s.err}건. 첫 오류: ${s.errFirst}` });
+  if (s.cardErr > 0) f.push({ id: 'card-console-errors', kind: 'error', task: 'cards', text: `카드 화면 점검 중 콘솔 오류 ${s.cardErr}건` });
+  if (s.cardIssues.length) f.push({ id: 'card-ui-issues', kind: 'ui', task: 'cards', text: '카드 화면 글자 잘림/겹침: ' + s.cardIssues.slice(0, 3).join(' | ') });
   if (s.assetFail > 0) f.push({ id: 'asset-fail', kind: 'asset_link', task: 'health', text: `화면 이미지 ${s.assetFail}/${s.assetTotal} 불러오기 실패. ID: ${s.failedIds.slice(0, 8).join(',')}`, ids: s.failedIds });
   if (s.ok && s.mobs === 0) f.push({ id: 'no-mobs', kind: 'combat', task: 'combat', text: '월드에 몹이 하나도 없음(전투 점검 필요)' });
   const ui = Object.entries(s.ui).filter(([, v]) => v === 0).map(([k]) => k);
