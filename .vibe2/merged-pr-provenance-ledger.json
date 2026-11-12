@@ -211083,11 +211083,168 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3c060a52f203994ae71b8c7c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12813",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8624e990d192d2da2bf69ca58b9d6f51029f773f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12813,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-15c-outfit-pack-no-era-change-20261112",
+        "baseSha": "8624e990d192d2da2bf69ca58b9d6f51029f773f",
+        "headSha": "b5172fa96521e1daef58b087149b214db29c91a5",
+        "mergeCommitSha": "418a6847227674081c0ef8b182fdeaa9fdad2047",
+        "mergedAt": "2026-11-12T09:25:54Z",
+        "authorLogin": "hans1177",
+        "titleHash": "211cf38f3eeff65c9442be03adb34283d8201d5b8e90ef8e01212f646acbf2e5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-15c-outfit-pack-no-era-change-20261112",
+        "candidateSha": "b5172fa96521e1daef58b087149b214db29c91a5"
+      },
+      "changeStats": {
+        "changedFileCount": 27,
+        "codingRelevantFileCount": 16,
+        "addedLineCount": 150,
+        "deletedLineCount": 32,
+        "changedFiles": [
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_arms.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_feet.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_acc_pauldrons.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_acc_pauldrons.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_arms.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_feet.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_arms.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_feet.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_acc_pauldron.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_acc_pauldron.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_arms.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_feet_boots.glb",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_feet_boots.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_peasant_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_acc_pauldrons.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/female_ranger_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_peasant_feet.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_acc_pauldron.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_arms.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/People/male_ranger_feet_boots.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12813",
+        "merge-commit:418a6847227674081c0ef8b182fdeaa9fdad2047",
+        "base-main:8624e990d192d2da2bf69ca58b9d6f51029f773f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1680
+    "total": 1681
   }
 }
