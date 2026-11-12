@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__IMPORTED_FINGER_GESTURE_ENABLED_PENDING_QA_AND_NATIVE_VISUAL_VERIFICATION",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__ATTACK_MARKER_FRAME_SKIP_FIX_PENDING_CI_AND_NATIVE_RUNTIME",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,10 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "VERIFY_NEXT_ATTACK_MARKER_MAIN_SHA_VIBE_QA_AND_INTEGRATED_REGRESSION",
+      "VERIFY_POST_PUBLICATION_BROWSER_EXACT_SHA_AND_REAL_AUTHORED_ATTACK_HIT_TIMES",
+      "VERIFY_APPROVED_REAL_GLTFS_HAND_GESTURE_MOBILE_RENDER",
+      "DO_NOT_MARK_SKIPPED_POSTPUB_AS_PASS",
       "READ_CURRENT_MAIN_CANONICAL_FOUR_AND_AGENTS_BEFORE_WRITES",
       "VERIFY_648d6205_VIBE_QA_43313575442_INCLUDES_ACTUAL_FINGER_TESTS_AND_PBR_REGRESSION",
       "VERIFY_648d6205_VIBE_INTEGRATED_REGRESSION_43313575363_AND_MAGIC_FOREST_STATIC_PLAY_43313575425_EXACT_SOURCE_POSTPUB_BROWSER",
@@ -398,7 +402,10 @@
       "aea0bc82 Vibe QA run 43312073966 SUCCESS including targeted rig/IK/motion/graphics tests in existing stage",
       "aea0bc82 Vibe Integrated Regression run 43312074106 SUCCESS",
       "61e18c0 Vibe Integrated Regression run 43312661446 SUCCESS",
-      "61e18c0 Magic Forest Static Play 43312661617 completed SUCCESS and WEB_PAGES_LIVE_SOURCE_SHA=61e18c0 in postpub job 131514254756, but BROWSER_SETUP_SUPERSEDED_BY=2bab9a3 so does NOT prove exact live browser functionality"
+      "61e18c0 Magic Forest Static Play 43312661617 completed SUCCESS and WEB_PAGES_LIVE_SOURCE_SHA=61e18c0 in postpub job 131514254756, but BROWSER_SETUP_SUPERSEDED_BY=2bab9a3 so does NOT prove exact live browser functionality",
+      "648d6205 Vibe QA 43313575442 SUCCESS",
+      "648d6205 Vibe Integrated Regression 43313575363 SUCCESS",
+      "648d6205 Magic Forest Static Play 43313575425 SUCCESS; post-publication-3d-smoke SKIPPED not verified"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -448,7 +455,9 @@
       "648d6205 Vibe Integrated Regression 43313575363 IN_PROGRESS at checkpoint",
       "648d6205 Magic Forest Static Play 43313575425 IN_PROGRESS at checkpoint",
       "648d6205 REAL APPROVED GLTF MESH_FINGER_VISUAL_PLAYBACK_AND_TOUCH_GESTURE_BROWSER_RESULT_UNVERIFIED",
-      "61e18c0 Vibe QA 43312661952 CANCELLED_BY_NEW_MAIN, NOT PASS"
+      "61e18c0 Vibe QA 43312661952 CANCELLED_BY_NEW_MAIN, NOT PASS",
+      "CURRENT_2026_11_13_ATTACK_MARKER_FRAME_SKIP_SOURCE_CHANGE_PENDING_MAIN_QA",
+      "648d6205 POSTPUB_BROWSER_JOB_SKIPPED_REAL_HAND_RUNTIME_UNVERIFIED"
     ],
     "lastObservedMain": "648d62053b217fab917b5ca886ae9e23aadac32f",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
@@ -495,26 +504,23 @@
       "648d62053b217fab917b5ca886ae9e23aadac32f"
     ],
     "latestDirectWork": {
-      "sourceBase": "dc6900f91a8477f9023d0ddee1a698b09d86fbd6",
-      "implementationCommits": [
-        "648d62053b217fab917b5ca886ae9e23aadac32f"
-      ],
+      "sourceBase": "9e35ec4b82cb3faa5cb98db3230e132e173ce2e5",
+      "implementationCommits": [],
       "modifiedExistingFiles": [
-        "assets/vibe-premium-character-pipeline.mjs",
-        "assets/vibe-model-preview.html",
-        "qa/vibe-premium-character-pipeline.test.mjs"
+        "assets/vibe-studio-animation.js",
+        "qa/vibe-studio-systems.test.mjs",
+        "company-learning/next-session-handoff.json"
       ],
-      "scope": "REAL_APPROVED_GLTF_HAND_FINGER_BONE_NAME_ALIASES+TOUCH_GESTURE_PREVIEW_AFTER_AUTHORED_ANIMATION",
+      "scope": "ATTACK_TIMELINE_DROPPED_FRAME_AUTHORED_HIT_MARKER_RECOVERY_NO_DAMAGE_AUTHORITY_CHANGE",
       "qa": {
-        "vibeQa": "IN_PROGRESS_43313575442",
-        "integrated": "IN_PROGRESS_43313575363",
-        "pages": "IN_PROGRESS_43313575425",
-        "previousPbrReg": "SUCCESS_43312661446",
-        "previousPbrBrowser": "SUPERSEDED_NOT_PASS_43312661617"
+        "priorHandVibeQa": "SUCCESS_43313575442",
+        "priorHandIntegrated": "SUCCESS_43313575363",
+        "priorHandPages": "SUCCESS_43313575425_POSTPUB_SMOKE_SKIPPED",
+        "newRun": "PENDING"
       },
-      "postPublish": "LATEST_EXACT_APPROVED_GLTF_HAND_VISUAL_TOUCH_UNVERIFIED",
+      "postPublish": "UNVERIFIED",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Reload current main, canonical policy 4+AGENTS. Check exact Actions run IDs 43313575442, 43313575363, 43313575425, verify Mixamo/Blender hand aliases in approved GLTF with actual browser frames/touch and that hand gesture removal restores. Prior PBR pages was superseded, not exact browser QA. No new folders/pipelines, avoid changing saves or authority."
+      "nextWorkerInstruction": "Verify exact new commit Vibe QA + Integrated Regression and Pages postpub. Confirm node test Vibe 5.9 attack timeline dropped-frame marker cases actually executed. Verify real authored GLTF mobile hand animation and attack marker time in browser; prior hand Pages postpub smoke skipped."
     }
   }
 }

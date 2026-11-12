@@ -126,6 +126,23 @@ test('attack timeline emits hit marker once',()=>{
  assert.equal(a.update(.32).events.length,0);
  assert.equal(a.update(.61).phase,'IDLE');
 });
+test('Vibe 5.9 attack timeline preserves authored hit markers across dropped frames',()=>{
+ const a=makeAttackTimeline({windup:.2,active:.2,recovery:.3,hitMarkers:[.16,.02,.09]});
+ assert.equal(a.start(10),true);
+ const jumped=a.update(10.45);
+ assert.equal(jumped.phase,'RECOVERY');
+ assert.deepEqual(jumped.events.map(e=>e.marker),[1,2,0]);
+ assert.deepEqual(jumped.events.map(e=>e.time),[10.22,10.29,10.36]);
+ assert.equal(a.update(10.5).events.length,0);
+ assert.deepEqual(a.update(10.71).events.map(e=>e.type),['COMPLETE']);
+});
+test('Vibe 5.9 attack markers do not fire before their authored active time',()=>{
+ const a=makeAttackTimeline({windup:.2,active:.2,recovery:.2,hitMarkers:[.1]});
+ a.start(0);
+ assert.deepEqual(a.update(.29).events,[]);
+ assert.deepEqual(a.update(.3).events.map(e=>e.marker),[0]);
+ assert.deepEqual(a.update(.61).events.map(e=>e.type),['COMPLETE']);
+});
 test('animation event queue orders events and deduplicates IDs',()=>{
  const q=makeAnimationEventQueue();
  q.schedule({id:'b',at:2,type:'HIT'});q.schedule({id:'a',at:1,type:'STEP'});
