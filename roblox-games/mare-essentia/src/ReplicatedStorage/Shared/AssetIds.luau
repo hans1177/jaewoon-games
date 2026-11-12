@@ -618,6 +618,7 @@ return {
 	["Town/bench_A"] = 83889449887905,
 	["Town/bench_B"] = 102558093797548,
 	["Town/cart"] = 104181817802631,
+	["Town/cart-high"] = 131745631138792,
 	["Town/chimney"] = 86684420021270,
 	["Town/chimney-base"] = 107195315884209,
 	["Town/chimney-top"] = 120602074971507,
@@ -777,4 +778,5 @@ return {
 	["Town/wheel"] = 106692581965653,
 	["Town/windmill"] = 124744982400234,
 	["Town/workbench-anvil"] = 72094044297354,
+	["Town/workbench-grind"] = 96115114127004,
 }
