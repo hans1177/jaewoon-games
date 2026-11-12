@@ -489,6 +489,8 @@ local DELIVER = {
 	{ "{giver}의 창고는 비었고 빚쟁이는 {port} 부두에서 기다린다. {good} {n}개가 제때 닿아야 가게 문이 열려 있다.", "{good}이(가) {port}에 닿자 {giver}가 말없이 손을 잡았다. \"이제 한 계절은 더 버팁니다.\"" },
 	{ "{port}의 혼례 연회가 사흘 뒤다. {giver}는 {good} {n}개 없이는 체면을 잃는다고 한숨짓는다.", "연회는 성대했다. {giver}가 당신 몫의 자리를 맨 앞에 마련해 두었다." },
 	{ "겨울이 오기 전 {port}에 {good} {n}개가 닿아야 한다. {giver}는 이 한 번의 뱃길에 가문의 이름을 걸었다.", "{port}의 눈이 내리기 직전에 닿았다. {giver}는 \"당신이 우리를 살렸어요\"라고 적은 쪽지를 남겼다." },
+	{ "검은 깃발 상회의 칼레브가 {port}의 {good}을(를) 싹쓸이하려 한다. {giver}가 속삭인다. \"그자보다 먼저 {n}개를 대 주세요.\"", "칼레브의 창고는 헛걸음이었다. 부두에서 마주친 그는 모자 끝만 슬쩍 올리며 말했다. \"다음엔 안 집니다, 선장.\"" },
+	{ "{port} 부두에 소문이 돈다. 칼레브의 상회가 {giver}의 거래처를 하나씩 빼앗고 있다고. {good} {n}개가 반격의 첫 수다.", "{giver}의 거래처가 돌아왔다. 칼레브가 보낸 사람이 멀리서 이 광경을 지켜보다 사라졌다." },
 	{ "경쟁 상인이 {port}의 {good} 시세를 노리고 있다. {giver}는 한발 앞서 {n}개를 풀어 값을 지키고 싶어 한다.", "시세는 당신 덕에 지켜졌다. 경쟁 상인은 부두에서 이를 갈았고, {giver}는 웃었다." },
 }
 local STORY_KIND: { [string]: { { string } } } = {
@@ -529,6 +531,28 @@ local STORY_KIND: { [string]: { { string } } } = {
 }
 local KIND_ALIAS = { field = "field", discover = "discover", tactics_biome = "tactics", tactics_rank = "tactics", tactics_goal = "tactics", understand_card = "understand", people_talk = "people" }
 
+-- 연속 퀘스트(after 로 이어진 줄)는 장(章)의 위치에 따라 이야기가 쌓인다: 도입 → 고비 → 결말
+local CHAIN: { [string]: { { string } } } = {
+	first = {
+		{ "이야기의 시작이다. 이 일이 어디로 이어질지는 아직 아무도 모른다. 다만 한 번 발을 들이면 되돌리기 어렵다는 예감이 든다.", "첫 장이 끝났다. 탁자 위에 다음 장을 암시하는 봉인된 편지가 놓여 있었다." },
+		{ "처음엔 사소한 부탁이었다. 그러나 부탁한 사람의 눈빛에는 사소하지 않은 무언가가 있었다.", "일은 끝났지만 의문이 남았다. 그 사람은 왜 그렇게 서둘렀을까." },
+	},
+	mid = {
+		{ "일은 예상보다 커졌다. 돌아설 수도 있지만, 여기까지 온 이상 끝을 보고 싶어진다.", "고비를 하나 넘겼다. 그러나 누군가가 이 모든 것을 지켜보고 있다는 낌새가 짙어졌다." },
+		{ "앞선 일의 여파가 돌아왔다. 처음의 약속이 이제 더 무거운 책임이 되었다.", "한 매듭이 풀리자 더 큰 매듭이 드러났다. 이야기는 이제 당신 손을 떠나 흐르기 시작했다." },
+	},
+	last = {
+		{ "긴 이야기의 끝자락이다. 지금까지 쌓은 모든 것이 이 마지막 일에서 시험대에 오른다.", "모든 것이 맞물렸다. 시작할 때는 몰랐던 이 일의 의미가 이제야 선명해졌다. 이야기는 당신의 이름으로 닫혔다." },
+		{ "마지막 장이 열렸다. 처음 이 일을 맡을 때의 그 망설임이 지금은 아득하게 느껴진다.", "끝이 왔다. 되돌아보면 모든 길이 이곳으로 이어져 있었다." },
+	},
+}
+local NEXT_OF: { [string]: string } = {}
+for _, qq in Quests do
+	if qq.after then
+		NEXT_OF[qq.after] = qq.id
+	end
+end
+
 local function Story(q: Quest, goodName: string?, portName: string?): (string, string)
 	local vars = { giver = pick(q.id, GIVERS), good = goodName or "물건", port = portName or "그 항구", n = tostring(q.amount) }
 	local set: { { string } } = STORY_KIND.default
@@ -545,6 +569,20 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 		h += string.byte(q.id, i) * 3
 	end
 	local t = set[h % #set + 1]
+	if q.after or NEXT_OF[q.id] then
+		-- 장 번호와 위치 (앞으로 거슬러 센다)
+		local depth, cur = 1, q
+		while cur.after and ById[cur.after] and depth < 20 do
+			cur = ById[cur.after]
+			depth += 1
+		end
+		local role = if not q.after then "first" elseif NEXT_OF[q.id] then "mid" else "last"
+		local list = CHAIN[role]
+		local c = list[h % #list + 1]
+		local base = q.story or fill(t[1], vars)
+		local tag = string.format("제%d장. ", depth)
+		return tag .. base, fill(c[2], vars)
+	end
 	local hook = q.story or fill(t[1], vars)
 	return hook, fill(t[2], vars)
 end
