@@ -796,8 +796,19 @@ function NavalBattle.play(opts)
 		local playing = false
 		local selected
 		local cardMotions = {}
+		-- 모든 카드가 공유하는 단일 프레임 갱신. 손패 10장 + 최근 전장 2장도 모바일에서 관리한다.
+		local lastPlayed = { me = nil, foe = nil }
+		local cardMotionStep = RunService.RenderStepped:Connect(function(dt)
+			for _, moving in cardMotions do moving.step(dt) end
+		end)
+		g.Destroying:Connect(function()
+			cardMotionStep:Disconnect()
+			for _, moving in cardMotions do moving.stop() end
+			table.clear(cardMotions)
+		end)
 		local rowTargets = { me = {}, foe = {} }
 		local function afterAction(ok, msg, res, card, side)
+			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
 				info.Text = msg or ""
@@ -828,22 +839,32 @@ function NavalBattle.play(opts)
 		end)
 
 		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
-		local function chip(parent, c, w, power)
+		local animateCardArt
+		local function chip(parent, c, w, power, moving)
 			local f = Instance.new("Frame")
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
 			f.Parent = parent
 			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			local plate = Instance.new("Frame")
+			plate.Size = UDim2.fromScale(1, 0.8)
+			plate.BackgroundColor3 = Color3.fromRGB(90, 68, 46)
+			plate.ClipsDescendants = true
+			plate.BorderSizePixel = 0
+			plate.Parent = f
 			local painting = Instance.new("ImageLabel")
 			painting.Name = "EncyclopediaPlate"
-			painting.Size = UDim2.fromScale(1, 0.8)
+			painting.AnchorPoint = Vector2.new(0.5, 0.5)
+			painting.Position = UDim2.fromScale(0.5, 0.5)
+			painting.Size = UDim2.fromScale(1.12, 1.12)
 			painting.BackgroundTransparency = 1
 			painting.ScaleType = Enum.ScaleType.Crop
 			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
 			local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-			painting.Parent = f
+			painting.Parent = plate
+			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
 			blackWash.Transparency = NumberSequence.new({
@@ -875,7 +896,7 @@ function NavalBattle.play(opts)
 
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
-		local function animateCardArt(art, image, card)
+		animateCardArt = function(art, image, card)
 			local spec = CARD_STAGE[card.id] or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local function template(key)
@@ -928,7 +949,7 @@ function NavalBattle.play(opts)
 					if actor then shoulder = actor:FindFirstChild("RightShoulder", true) end
 				end
 				if propSource then
-					local ship = spec.style == "fog" or spec.style == "storm" or spec.style == "swell" or card.id == "hero_captain" or card.id == "scorch"
+					local ship = spec.motion == "fog" or spec.motion == "storm" or spec.motion == "swell" or card.id == "hero_captain" or card.id == "scorch"
 					prop, propPivot = mount(propSource, if ship then 5.5 elseif card.row == "cannon" then 3.2 else 2.3,
 						if actorSource then 1.95 else 0, if ship then 1.75 else 1.95, if ship then -1.5 else 0.6, false)
 				end
@@ -938,8 +959,8 @@ function NavalBattle.play(opts)
 			-- 판화와 움직이는 오브젝트를 한 카드 내부에 한정한다.
 			local wash = Instance.new("Frame")
 			wash.Size = UDim2.fromScale(1, 1)
-			wash.BackgroundColor3 = if spec.style == "fire" then Color3.fromRGB(165, 82, 39)
-				elseif spec.style == "storm" then Color3.fromRGB(65, 82, 95)
+			wash.BackgroundColor3 = if spec.motion == "fire" then Color3.fromRGB(165, 82, 39)
+				elseif spec.motion == "storm" then Color3.fromRGB(65, 82, 95)
 				else Color3.fromRGB(147, 116, 72)
 			wash.BackgroundTransparency = 0.84
 			wash.BorderSizePixel = 0
@@ -956,7 +977,7 @@ function NavalBattle.play(opts)
 			mist.Name = "MovingSeaSpray"
 			mist.Position = UDim2.fromScale(-0.25, 0.72)
 			mist.Size = UDim2.fromScale(1.5, 0.28)
-			mist.BackgroundColor3 = if spec.style == "fire" then Color3.fromRGB(244, 183, 114)
+			mist.BackgroundColor3 = if spec.motion == "fire" then Color3.fromRGB(244, 183, 114)
 				else Color3.fromRGB(209, 215, 197)
 			mist.BackgroundTransparency = 0.75
 			mist.BorderSizePixel = 0
@@ -985,54 +1006,96 @@ function NavalBattle.play(opts)
 			})
 			beam.Parent = shine
 			local active, elapsed, sampled = true, 0, 0
-			local motion, destroying
+			local destroying
+			-- 같은 회화풍의 고서 캡션이 그림 위에 겹치되 카드 이름·전투력은 가리지 않는다.
+			local inscription = Instance.new("TextLabel")
+			inscription.Name = "EngravingCaption"
+			inscription.Position = UDim2.fromScale(0.04, 0.03)
+			inscription.Size = UDim2.fromScale(0.92, 0.19)
+			inscription.BackgroundColor3 = Color3.fromRGB(39, 32, 28)
+			inscription.BackgroundTransparency = 0.49
+			inscription.BorderSizePixel = 0
+			inscription.Text = spec.scene or card.name
+			inscription.TextColor3 = Color3.fromRGB(249, 223, 178)
+			inscription.TextSize = 11
+			inscription.TextScaled = true
+			inscription.Font = Enum.Font.Antique
+			inscription.TextStrokeTransparency = 0.5
+			inscription.ZIndex = image.ZIndex + 5
+			inscription.Parent = art
+			local combatFlash = Instance.new("Frame")
+			combatFlash.Name = "WeatherAndMuzzleFlash"
+			combatFlash.Position = UDim2.fromScale(0, 0)
+			combatFlash.Size = UDim2.fromScale(1, 1)
+			combatFlash.BackgroundColor3 = if spec.motion == "fire" then Color3.fromRGB(255, 171, 69)
+				elseif spec.motion == "heal" or spec.motion == "clear" then Color3.fromRGB(225, 235, 193)
+				elseif spec.motion == "storm" then Color3.fromRGB(185, 207, 247)
+				else Color3.fromRGB(237, 204, 136)
+			combatFlash.BackgroundTransparency = 1
+			combatFlash.BorderSizePixel = 0
+			combatFlash.ZIndex = image.ZIndex + 4
+			combatFlash.Parent = art
 			local function stop()
 				if not active then return end
 				active = false
-				if motion then motion:Disconnect() end
 				if destroying then destroying:Disconnect() end
 				if view then view:Destroy() end
 				wash:Destroy()
 				mist:Destroy()
 				shine:Destroy()
+				inscription:Destroy()
+				combatFlash:Destroy()
 			end
-			motion = RunService.RenderStepped:Connect(function(dt)
+			local function step(dt)
 				if not active then return end
 				elapsed += math.min(dt, 0.1)
 				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
 				-- 모바일: 비선택 카드 15fps, 선택 카드 24fps 상한.
 				if elapsed - sampled < (if focused then 1 / 24 else 1 / 15) then return end
 				sampled = elapsed
-				local wave = math.sin(elapsed * 2.15)
+				local wave = math.sin(elapsed * (if spec.motion == "storm" then 3.4 else 2.15))
 				local pulse = math.max(0, math.sin(elapsed * 2.7 - 1)) ^ 5
-				image.Position = UDim2.fromScale(0.5 + 0.013 * math.sin(elapsed * 0.8), 0.5 + 0.014 * math.cos(elapsed * 0.85))
+				local wind = math.sin(elapsed * 1.17)
+				image.Position = UDim2.fromScale(0.5 + (if spec.motion == "retreat" then 0.09 * wind else 0.013 * wind), 0.5 + (if spec.motion == "storm" or spec.motion == "beast" then 0.031 else 0.014) * wave)
 				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.08, 0.72 + wave * 0.027)
-				mist.BackgroundTransparency = if spec.style == "storm" or spec.style == "fog" then 0.48 + 0.14 * wave else 0.74 + 0.05 * wave
+				mist.BackgroundTransparency = if spec.motion == "storm" or spec.motion == "fog" then 0.48 + 0.14 * wave
+					elseif spec.motion == "fire" then 0.62 + 0.2 * pulse
+					elseif spec.motion == "clear" or spec.motion == "wind" then 0.82 + 0.06 * wave
+					else 0.74 + 0.05 * wave
+				combatFlash.BackgroundTransparency = if spec.motion == "fire" then 1 - 0.45 * pulse
+					elseif spec.motion == "storm" then if math.sin(elapsed * 0.53) > 0.985 then 0.57 else 1
+					elseif spec.motion == "heal" or spec.motion == "guard" or spec.motion == "clear" then 0.94 + 0.05 * wind
+					else 1
 				shine.Position = UDim2.fromScale((elapsed % 5) / 5 * 1.8 - 0.5, -0.2)
 				shine.BackgroundTransparency = if focused or card.hero then 0.73 else 0.93
 				if actor and actorPivot then
-					local attack = spec.style == "slash" or spec.style == "thrust"
-					actor:PivotTo(actorPivot * CFrame.new(0, 0.06 * wave, 0) * CFrame.Angles(0, if attack then -0.12 * pulse else 0.035 * wave, 0.025 * wave))
+					local attack = spec.motion == "slash" or spec.motion == "thrust" or spec.motion == "board"
+					actor:PivotTo(actorPivot * CFrame.new(0, 0.06 * wave, 0) * CFrame.Angles(0, if attack then -0.25 * pulse else 0.055 * wave, 0.025 * wave))
 					if shoulder and shoulder:IsA("Motor6D") then
-						shoulder.Transform = CFrame.Angles(if attack then -0.28 * pulse else -0.06 * wave, 0, 0)
+						shoulder.Transform = CFrame.Angles(if attack then -0.52 * pulse
+							elseif spec.motion == "command" then -0.18 * wind
+							elseif spec.motion == "aim" then -0.11 else -0.06 * wave, 0, 0)
 					end
 				end
 				if prop and propPivot then
-					local ship = spec.style == "storm" or spec.style == "fog" or spec.style == "swell"
-					prop:PivotTo(propPivot * CFrame.new(if spec.style == "fire" then -0.38 * pulse else 0, 0.045 * wave, 0)
-						* CFrame.Angles(0, 0.08 * math.sin(elapsed * 0.7), if ship then 0.11 * wave else -0.17 * pulse))
+					local ship = spec.motion == "storm" or spec.motion == "fog" or spec.motion == "swell"
+						or spec.motion == "wind" or spec.motion == "retreat" or spec.motion == "clear" or spec.motion == "board"
+					prop:PivotTo(propPivot * CFrame.new(if spec.motion == "fire" then -0.38 * pulse elseif spec.motion == "retreat" then -0.65 * wind else 0, 0.045 * wave, 0)
+						* CFrame.Angles(0, 0.08 * math.sin(elapsed * 0.7), if ship then (if spec.motion == "storm" then 0.19 else 0.11) * wave
+							elseif spec.motion == "guard" then -0.1 * wind
+							else -0.17 * pulse))
 				end
 				if view then
-					view.LightColor = if spec.style == "fire" and pulse > 0.6 then Color3.fromRGB(255, 166, 83)
+					view.LightColor = if spec.motion == "fire" and pulse > 0.6 then Color3.fromRGB(255, 166, 83)
 						else Color3.fromRGB(250, 222, 171)
 				end
 			end)
 			destroying = art.Destroying:Connect(stop)
-			return stop
+			return { step = step, stop = stop }
 		end
 
 		render = function()
-			for _, stop in cardMotions do stop() end
+			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 			selected = nil
 			for _, ch in boardFrame:GetChildren() do
@@ -1096,7 +1159,7 @@ function NavalBattle.play(opts)
 				lay.Padding = UDim.new(0, 4)
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					chip(cards, c, 62, BC.cardPower(m, side, row, idx))
+					chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
 				end
 			end
 			-- 손패
@@ -1123,6 +1186,13 @@ function NavalBattle.play(opts)
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
+				local kindText = if c.special then "전술" elseif c.hero then "영웅" elseif c.ability then (ABIL[c.ability] or "") else (ROW_ICON[c.row] or "")
+				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
+				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
+				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
+				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
+				kindLabel.TextStrokeTransparency = 0.28
+				kindLabel.ZIndex = 8
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
 				parchmentBand.Name = "ParchmentCaption"
@@ -1140,7 +1210,7 @@ function NavalBattle.play(opts)
 				image.ScaleType = Enum.ScaleType.Crop
 				local artKey = (CARD_STAGE[c.id] and CARD_STAGE[c.id].art) or CARD_SEA
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-				image.ImageColor3 = Color3.fromRGB(231, 210, 175)
+				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
 				image.Parent = art
 				table.insert(cardMotions, animateCardArt(art, image, c))
 				local caption = label(b, c.name, 13, ink, true)
@@ -1151,7 +1221,7 @@ function NavalBattle.play(opts)
 				caption.Font = Enum.Font.Antique
 				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.82), UDim2.fromScale(0.20, 0.25))
-				local power = label(b, tostring(c.power or "✦"), 13, ink, true)
+				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
 				power.Size = UDim2.fromOffset(21, 20)
 				power.BackgroundColor3 = paper
