@@ -537,12 +537,15 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
-  assert.match(client,/shadow\.Name = "DepthShadow"/);
+  // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
-  assert.match(client,/shadow\.Image = imageId/);
-  assert.match(client,/art\.Image = imageId/);
-  assert.match(client,/local imageId = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
-  assert.equal(client.split('image.Image = "rbxassetid://" .. tostring(menuAssetId)').length-1,2);
+  assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
+  assert.match(client,/art\.ScaleType = Enum\.ScaleType\.Fit/);
+  assert.match(client,/if kind == "Menu" then art\.ImageColor3 = COLORS\.brown end/);
+  // 모델 로딩 전에는 같은 교역품 원화, 원화가 없으면 해당 모델의 Roblox 섬네일만 쓴다.
+  assert.match(client,/image\.Name = if originalId then "ApprovedGoodsArt" else "RegisteredModelThumbnail"/);
+  assert.match(client,/image\.Image = if originalId then "rbxassetid:\/\/" \.\. tostring\(originalId\)/);
+  assert.match(client,/else "rbxthumb:\/\/type=Asset&id=" \.\. tostring\(knownId\) \.\. "&w=150&h=150"/);
   assert.match(client,/local m = tpl:Clone\(\)/);
   assert.match(client,/local world = Instance\.new\("WorldModel"\)/);
   assert.match(client,/if #itemMotion >= 10 then return end/);
@@ -801,7 +804,8 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
   const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
-  assert.match(ui,/local chosenYear = 1700/);
+  // 현재 첫 선택 시대는 1517년이며, 기존 저장의 1700년 기본값은 별도로 보존한다.
+  assert.match(ui,/local chosenYear = 1517/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
   assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
   assert.doesNotMatch(server,/\[1492\] = true/);
