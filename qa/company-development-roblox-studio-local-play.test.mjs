@@ -3820,6 +3820,23 @@ test('Mare Studio click script retains complete audit and prioritizes sailing ma
   assert.ok(picks.every(step=>step.code.includes(expected)));
 });
 
+// [대항해시대] Studio에서 반복된 닭·양·돼지 수입본 배율 오류는 목표 크기를 실측해 방지한다.
+test('Mare registered animal FBX models allow small canonical scales while verifying world size',()=>{
+  const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  for(const species of ['chicken','sheep','pig']){
+    assert.equal(registry['Animals/'+species]?.assetType,'Model',species);
+    assert.equal(registry['Animals/'+species]?.usePermissionGranted,true,species);
+  }
+  const importer=scene.slice(scene.indexOf('local function importedModel('),scene.indexOf('-- 등불:',scene.indexOf('local function importedModel(')));
+  assert.ok(importer.includes('local minScale = if kind == "Animals" then 0.00001 else 0.01'));
+  assert.ok(importer.includes('m:ScaleTo(scale)'));
+  assert.ok(importer.includes('local _, scaledSize = m:GetBoundingBox()'));
+  assert.ok(importer.includes('math.abs(scaledAxis - desiredSize) > desiredSize * 0.15'));
+  assert.ok(importer.includes('error("동물 모델 목표 크기 불일치")'));
+  assert.ok(importer.includes('m:Destroy()'),'invalid models must be discarded, not placed as oversized geometry');
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
