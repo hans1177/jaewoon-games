@@ -5073,7 +5073,7 @@ syncScene = function()
 		table.insert(crewIds, c.id)
 	end
 	local portLevel = (view.harbor and view.harbor.level) or 1
-	local key = p.portId .. "|L" .. portLevel .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",")
+	local key = p.portId .. "|L" .. portLevel .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		return
 	end
@@ -5088,6 +5088,7 @@ syncScene = function()
 		year = p.year,
 		storyCount = #(view.story or {}),
 		companions = crew,
+		voyagers = view.diplo and view.diplo.voyagers,
 		arrive = arriveNext,
 	}, function(tab)
 		currentTab = tab
