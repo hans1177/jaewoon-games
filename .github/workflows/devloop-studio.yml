@@ -163,7 +163,7 @@ jobs:
             if ($studioAttempt -ge 2) { break }
             $attemptReport = $null
             if (Test-Path -LiteralPath $reportFile) {
-              try { $attemptReport = Get-Content -LiteralPath $reportFile -Raw | ConvertFrom-Json } catch {}
+              try { $attemptReport = Get-Content -LiteralPath $reportFile -Encoding UTF8 -Raw | ConvertFrom-Json } catch {}
             }
             $attemptErrors = @($attemptReport.errors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
             $rpcStalled = $attemptErrors.Count -gt 0 -and
@@ -182,15 +182,40 @@ jobs:
               evidenceScope = 'WORKFLOW_FAILURE_DIAGNOSTIC_ONLY_NOT_STUDIO_PLAY'
             } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportFile -Encoding UTF8
           }
+          # Windows PowerShell only consumes fields needed for routing. Keep the full UTF-8 evidence intact.
+          $triageFile = Join-Path $env:RUNNER_TEMP 'mare-studio-triage.json'
+          Remove-Item -LiteralPath $triageFile -ErrorAction SilentlyContinue
+          $readReport = @'
+          const fs = require('node:fs');
+          const [source, output] = process.argv.slice(2);
+          const report = JSON.parse(fs.readFileSync(source, 'utf8').replace(/^\uFEFF/, ''));
+          if (!report || !Array.isArray(report.errors) || !Array.isArray(report.log)) {
+            throw new Error('STUDIO_REPORT_SHAPE_INVALID');
+          }
+          const audit = report.assetAudit;
+          const capture = report.consoleCapture;
+          fs.writeFileSync(output, JSON.stringify({
+            sourceRevision: report.sourceRevision,
+            errors: report.errors,
+            log: report.log.filter(row => row?.ctx === 'Client' || row?.ctx === 'Server')
+              .map(row => ({ctx: row.ctx, out: row.out})),
+            assetAudit: audit ? {
+              models: {status: audit.models?.status},
+              registered: {status: audit.registered?.status},
+              features: {status: audit.features?.status}
+            } : null,
+            consoleCapture: capture ? {captured: capture.captured,
+              errors: (Array.isArray(capture.errors) ? capture.errors : [])
+                .map(row => ({type: row?.type, signature: row?.signature}))} : null
+          }), 'utf8');
+          '@
           try {
-            $report = Get-Content $reportFile -Raw | ConvertFrom-Json
+            $readReport | & node - $reportFile $triageFile
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_INVALID_JSON' }
+            $report = Get-Content -LiteralPath $triageFile -Encoding UTF8 -Raw | ConvertFrom-Json
           } catch {
-            [ordered]@{
-              log = @()
-              errors = @('STUDIO_REPORT_INVALID_JSON')
-              evidenceScope = 'WORKFLOW_FAILURE_DIAGNOSTIC_ONLY_NOT_STUDIO_PLAY'
-            } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportFile -Encoding UTF8
-            $report = Get-Content $reportFile -Raw | ConvertFrom-Json
+            Write-Warning 'STUDIO_REPORT_TRIAGE_FAILED_RAW_EVIDENCE_RETAINED'
+            $report = [pscustomobject]@{ log = @(); errors = @('STUDIO_REPORT_INVALID_JSON') }
           }
           # [런타임 진단] 실제 Studio 결과만 사용한다. 실패해도 증거를 먼저 저장한다.
           $qaStage = ''

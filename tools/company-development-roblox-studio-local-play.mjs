@@ -2974,7 +2974,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     // 전체 승인 이미지·기존 음원까지 Client에서 직접 로드해 검증하며, 일부 ID만 확인해 PASS하지 않는다.
     // 자산 등록번호/원본/권한은 변경하지 않고, 한 항목이라도 로드되지 않으면 원래 FAIL을 유지한다.
     if(mareScript&&!report.summary.abortedEarly&&report.assetAudit?.registered?.status==='FAIL'
-      &&report.assetAudit?.models?.status==='PASS'&&report.assetRegistryAudit?.status==='PASS'){
+      &&report.assetRegistryAudit?.status==='PASS'){
       const media=report.assetAudit.registered;
       const failed=media.failedMedia;
       const root=fs.existsSync(path.join('main','roblox-games','mare-essentia'))
@@ -3095,7 +3095,9 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           media.clientVerified=true;
           media.soundClientVerified=true;
           media.authority='OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED';
-          report.errors=report.errors.filter(error=>error!=='STUDIO_ASSET_AUDIT_FAILED');
+          if(report.assetAudit?.models?.status==='PASS'){
+            report.errors=report.errors.filter(error=>error!=='STUDIO_ASSET_AUDIT_FAILED');
+          }
           console.log('STUDIO_MARE_IMAGES_REAL_CLIENT_LOADED='+imageRows.length);
           console.log('STUDIO_MARE_SOUNDS_REAL_CLIENT_LOADED='+soundRows.length);
         }
