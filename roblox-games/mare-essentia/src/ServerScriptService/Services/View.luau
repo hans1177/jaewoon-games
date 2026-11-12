@@ -782,7 +782,7 @@ return function(D, S)
 			local faction = D.BoardingCards.factionOf(state.nationId)
 			local spec = S.Cardbook.deckSpec(state)
 			view.deck = { cards = cards, faction = faction, book = { ids = spec.ids, tier = spec.tier } }
-			view.cardbook = { owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids }
+			view.cardbook = { owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction

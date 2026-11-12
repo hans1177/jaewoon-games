@@ -3259,6 +3259,36 @@ do
 		local clean = CBk.sanitize({ owned = { fake = 3, pikeman = 2 }, tier = { pikeman = 9 }, deck = { "fake" } }, "europe")
 		check("저장 정리: 모르는 카드 제거·단계 범위 제한", clean.owned.fake == nil and clean.owned.pikeman == 2 and clean.tier.pikeman == 3 and clean.deck == nil)
 	end
+	-- 해전 도움말·해역 규칙·적 성격·추천 덱·저장 칸
+	do
+		local mh = BC.build("boarding", 4242, { deckCards = {}, faction = "europe" }, { boss = false })
+		local hints, bestI = BC.hint(mh, "me")
+		check("추천 수: 손패마다 점수 변화를 계산한다", #hints == #mh.hand.me and bestI ~= nil)
+		local sc = BC.scout(4242, { boss = false })
+		check("적 정찰: 문화권·성격·해역·약한 줄을 알려 준다", sc.faction ~= nil and sc.style ~= nil and sc.sea ~= nil and sc.weakName ~= nil)
+		local seas = {}
+		for s2 = 1, 80 do seas[BC.seaRule(s2 * 7).id] = true end
+		check("해역 규칙: 여러 종류가 나온다", seas.calm and (seas.storm or seas.fog))
+		local mst = BC.build("boarding", 7 * 4 + 7 * 8 * 100, { deckCards = {}, faction = "europe" }, { boss = false })
+		check("해역 규칙: 시작할 때 그 줄이 약해진다", mst.sea.row == nil or mst.weather[mst.sea.row] == true)
+		local adviceSeen = 0
+		for _ = 1, 5 do
+			local mm = BC.build("boarding", math.random(1, 9999), { deckCards = {}, faction = "europe" }, { boss = false })
+			mm.turn = "me"
+			if BC.advice(mm, "me") then adviceSeen += 1 end
+		end
+		check("동료 조언: 오류 없이 문구 또는 nil", adviceSeen >= 0)
+		local CBr = D.CardBook
+		local bk = CBr.new("europe")
+		for _, st in { "rush", "gun", "balance" } do
+			local ids = CBr.recommend(bk, st)
+			check("추천 덱: " .. st .. " 은(는) 규칙에 맞는다", ids ~= nil and CBr.validateDeck(bk, ids))
+		end
+		local ids1 = CBr.recommend(bk, "rush")
+		local ok1 = CBr.saveSlot(bk, 2, "돌격덱", ids1)
+		check("저장 칸: 저장하고 불러온다", ok1 and CBr.useSlot(bk, 2) and #bk.deck == #ids1)
+		check("저장 칸: 없는 칸은 거절", not CBr.saveSlot(bk, 5, "x", ids1) and not CBr.useSlot(bk, 3))
+	end
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()
 	table.insert(m.rows.me.melee, { id = "h", name = "h", row = "melee", power = 10, hero = true })

@@ -59,6 +59,32 @@ return function(D, S)
 		return CB.setDeck(C.get(state), list)
 	end
 
+	function handlers.CardRecommend(state, p)
+		local style = type(p) == "table" and p.style
+		if style ~= "rush" and style ~= "gun" and style ~= "balance" then return false, "잘못된 요청" end
+		local book = C.get(state)
+		local ids = CB.recommend(book, style)
+		if not ids then return false, "카드가 모자라 추천 덱을 만들 수 없어요" end
+		local ok, msg = CB.setDeck(book, ids)
+		if not ok then return false, msg end
+		return true, string.format("%s을(를) 짰다: %s", CB.RECOMMEND[style].name, CB.RECOMMEND[style].text)
+	end
+
+	function handlers.CardSlotSave(state, p)
+		if type(p) ~= "table" or type(p.slot) ~= "number" or type(p.ids) ~= "table" or #p.ids > 60 then return false, "잘못된 요청" end
+		local list = {}
+		for _, id in p.ids do
+			if type(id) ~= "string" then return false, "잘못된 요청" end
+			table.insert(list, id)
+		end
+		return CB.saveSlot(C.get(state), math.floor(p.slot), p.name, list)
+	end
+
+	function handlers.CardSlotUse(state, p)
+		if type(p) ~= "table" or type(p.slot) ~= "number" then return false, "잘못된 요청" end
+		return CB.useSlot(C.get(state), math.floor(p.slot))
+	end
+
 	function handlers.CardAutoDeck(state)
 		C.get(state).deck = nil
 		return true, "문화권 기본 덱으로 되돌렸다"

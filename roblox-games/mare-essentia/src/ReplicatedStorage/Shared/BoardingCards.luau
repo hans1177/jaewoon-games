@@ -270,12 +270,12 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 	return m
 end
 
-local function logLine(m, text)
+local function logLine(m: any, text)
 	table.insert(m.log, text)
 end
 
 -- 줄 합계: 날씨 → 결속 → 사기 → 무기 상성 → 병종 상성 순으로 계산한다
-function B.cardPower(m, side, row, idx)
+function B.cardPower(m: any, side, row, idx)
 	local list = m.rows[side][row]
 	local c = list[idx]
 	if not c then
@@ -324,7 +324,7 @@ function B.cardPower(m, side, row, idx)
 	return p
 end
 
-function B.rowRaw(m, side, row)
+function B.rowRaw(m: any, side, row)
 	local sum = 0
 	for i in m.rows[side][row] do
 		sum += B.cardPower(m, side, row, i)
@@ -333,7 +333,7 @@ function B.rowRaw(m, side, row)
 end
 
 -- 병종 상성: 내 줄이 이길 수 있는 상대 줄에 카드가 있으면 ×1.3, 나를 이기는 줄이 있으면 ×0.85
-function B.rowMatchup(m, side, row)
+function B.rowMatchup(m: any, side, row)
 	local foe = m.rows[other(side)]
 	local adv = #foe[B.ROW_BEATS[row]] > 0
 	local dis = false
@@ -352,7 +352,7 @@ function B.rowMatchup(m, side, row)
 	return mult, adv, dis
 end
 
-function B.rowTotal(m, side, row)
+function B.rowTotal(m: any, side, row)
 	local raw = B.rowRaw(m, side, row)
 	if raw == 0 then
 		return 0
@@ -368,7 +368,7 @@ function B.rowTotal(m, side, row)
 	return heroSum + math.floor((raw - heroSum) * mult + 0.5)
 end
 
-function B.total(m, side)
+function B.total(m: any, side)
 	local sum = 0
 	for _, row in B.ROWS do
 		sum += B.rowTotal(m, side, row)
@@ -376,7 +376,7 @@ function B.total(m, side)
 	return sum
 end
 
-local function strongestNonHero(m, sides)
+local function strongestNonHero(m: any, sides)
 	local best, hits = 0, {}
 	for _, side in sides do
 		for _, row in B.ROWS do
@@ -395,7 +395,7 @@ local function strongestNonHero(m, sides)
 	return best, hits
 end
 
-local function removeHits(m, hits)
+local function removeHits(m: any, hits)
 	-- 뒤에서부터 지워야 번호가 어긋나지 않는다
 	table.sort(hits, function(a, b)
 		if a[1] ~= b[1] or a[2] ~= b[2] then
@@ -411,7 +411,7 @@ local function removeHits(m, hits)
 	end
 end
 
-local function drawCards(m, side, n)
+local function drawCards(m: any, side, n)
 	for _ = 1, n do
 		local c = table.remove(m.deck[side])
 		if c then
@@ -420,7 +420,7 @@ local function drawCards(m, side, n)
 	end
 end
 
-local function nextTurn(m, side)
+local function nextTurn(m: any, side)
 	if m.over then
 		return
 	end
@@ -431,14 +431,14 @@ local function nextTurn(m, side)
 	end
 end
 
-local function applySea(m)
+local function applySea(m: any)
 	if m.sea and m.sea.row then
 		m.weather[m.sea.row] = true
 	end
 end
 B.applySea = applySea
 
-local function roundEnd(m)
+local function roundEnd(m: any)
 	local a, b = B.total(m, "me"), B.total(m, "foe")
 	local winner = nil
 	if a > b then
@@ -512,7 +512,7 @@ local function roundEnd(m)
 end
 
 -- 군기: 일반 카드 점수가 가장 큰 줄(동점이면 근접·사격·포 순)
-local function bestHornRow(m, side)
+local function bestHornRow(m: any, side)
 	local bestRow, bestSum = nil, 0
 	for _, row in B.ROWS do
 		if not m.horn[side][row] then
@@ -531,7 +531,7 @@ local function bestHornRow(m, side)
 end
 
 -- 저격수: 적의 점수 합이 10 이상인 줄 가운데 가장 센 줄에서 가장 센 일반 카드를 쓰러뜨린다
-local function snipeTarget(m, side)
+local function snipeTarget(m: any, side)
 	local foe = other(side)
 	local bestRow, bestTotal = nil, 9
 	for _, row in B.ROWS do
@@ -559,7 +559,7 @@ local function snipeTarget(m, side)
 end
 
 -- 회군: 치료병이 필드에 있으면 그 카드, 없으면 가장 약한 일반 카드를 손으로 되돌린다
-local function decoyTarget(m, side)
+local function decoyTarget(m: any, side)
 	local pick
 	for _, row in B.ROWS do
 		for i, c in m.rows[side][row] do
@@ -575,7 +575,7 @@ local function decoyTarget(m, side)
 end
 
 -- 카드 내기: 부대는 자기 줄에 (첩자는 적 줄에), 특수 카드는 즉시 발동한다. 반환: ok, 설명, 판이 끝났으면 그 결과
-function B.play(m, side, handIdx)
+function B.play(m: any, side, handIdx)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return false, "지금은 낼 수 없어요"
 	end
@@ -674,7 +674,7 @@ function B.play(m, side, handIdx)
 	return true, msg, result, act, c
 end
 
-function B.pass(m, side)
+function B.pass(m: any, side)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return false, "지금은 멈출 수 없어요"
 	end
@@ -687,7 +687,7 @@ function B.pass(m, side)
 	return true, "멈췄다", nil, { "s" }
 end
 
-function B.useLeader(m, side)
+function B.useLeader(m: any, side)
 	if m.over or m.turn ~= side or m.leaderUsed[side] then
 		return false, "지금은 쓸 수 없어요"
 	end
@@ -716,7 +716,7 @@ end
 
 -- 컴퓨터(해적)의 한 수: 이기고 있으면 멈추고, 지고 있으면 가장 효율 좋은 카드를 낸다
 -- 카드 한 장을 내면 (내 점수 - 상대 점수)가 얼마나 달라질지 미리 계산한다 (AI 판단과 '추천 수' 표시가 같이 쓴다)
-function B.gainOf(m, side, c)
+function B.gainOf(m: any, side, c)
 	local foe = other(side)
 	local mine, theirs = B.total(m, side), B.total(m, foe)
 	local gain
@@ -785,7 +785,7 @@ function B.gainOf(m, side, c)
 	return gain
 end
 
-function B.ai(m, side)
+function B.ai(m: any, side)
 	if m.over or m.turn ~= side or m.passed[side] then
 		return nil
 	end
@@ -937,7 +937,7 @@ end
 
 -- ── 도움말: 추천 수, 적 정찰, 동료 조언 ───────────────────────────────────────────
 -- 손패 번호 → 그 카드를 냈을 때 점수 차(내 점수 - 상대 점수) 변화. 추천 수 표시에 쓴다.
-function B.hint(m, side)
+function B.hint(m: any, side)
 	local out, bestI, bestGain = {}, nil, -1e9
 	for i, c in m.hand[side] do
 		local g = B.gainOf(m, side, c)
@@ -969,7 +969,7 @@ function B.scout(seed, foe)
 end
 
 -- 동료 조언: 지금 상황에 맞는 한마디 (없으면 nil). 한 판에 한 번만 보이도록 부르는 쪽이 조절한다.
-function B.advice(m, side)
+function B.advice(m: any, side)
 	if m.over or m.turn ~= side or m.passed[side] then return nil end
 	local foe = other(side)
 	local mine, theirs = B.total(m, side), B.total(m, foe)
