@@ -871,7 +871,7 @@ local HERO_TILE = {
 function H.heroPortraitAsset(nationId)
 	local year = if view and view.player and not newGameMode then view.player.year else chosenYear
 	local atlas = if year and year >= 1700 then AssetIds["Portraits/heroes_color"]
-		elseif year and year < 1600 then AssetIds["Portraits/heroes_1517"] else nil
+		elseif year and year >= 1500 and year < 1600 then AssetIds["Portraits/heroes_1517"] else nil
 	local tile = HERO_TILE[nationId]
 	if atlas and tile then
 		return atlas, tile, HERO_SIZE
