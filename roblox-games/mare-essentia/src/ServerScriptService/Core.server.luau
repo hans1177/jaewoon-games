@@ -151,7 +151,13 @@ local function loadSession(player)
 		end
 		if ok then
 			if saved ~= nil then
-				session.state = S.State.sanitize(saved)
+				local okS, st = pcall(S.State.sanitize, saved)
+				if okS then
+					session.state = st
+				else
+					session.canSave = false
+					warn("[Core] sanitize failed:", st)
+				end
 			end
 		else
 			-- 읽기에 실패했다면 기존 데이터를 덮어쓰지 않도록 이번 접속은 저장하지 않는다.

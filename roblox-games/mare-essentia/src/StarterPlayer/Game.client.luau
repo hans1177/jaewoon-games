@@ -1028,7 +1028,8 @@ local card = Instance.new("Frame")
 card.BackgroundColor3 = NAVY
 card.BackgroundTransparency = 0.08
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(226, 66)
+card.Size = UDim2.fromOffset(250, 66)
+H.hudCard = card
 card.Parent = hud
 corner(card, 10)
 hudStroke(card, 2)
@@ -1053,13 +1054,13 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-local hudName = hudText(card, UDim2.fromOffset(8, 4), UDim2.new(1, -16, 0, 16), 12, BRASS)
-local hudCoin = hudText(card, UDim2.fromOffset(8, 4), UDim2.new(1, -16, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
-local hudPort = hudText(card, UDim2.fromOffset(8, 21), UDim2.new(1, -16, 0, 14), 11, COLORS.text)
+local hudName = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, BRASS)
+local hudCoin = hudText(card, UDim2.fromOffset(62, 4), UDim2.new(1, -70, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
+local hudPort = hudText(card, UDim2.fromOffset(62, 21), UDim2.new(1, -70, 0, 14), 11, COLORS.text)
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
-hullBack.Position = UDim2.fromOffset(8, 38)
-hullBack.Size = UDim2.new(1, -16, 0, 7)
+hullBack.Position = UDim2.fromOffset(62, 38)
+hullBack.Size = UDim2.new(1, -70, 0, 7)
 hullBack.Parent = card
 corner(hullBack, 4)
 local hullFill = Instance.new("Frame")
@@ -1067,7 +1068,7 @@ hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.Parent = hullBack
 corner(hullFill, 4)
-local hudShip = hudText(card, UDim2.fromOffset(8, 48), UDim2.new(1, -16, 0, 14), 10, COLORS.muted)
+local hudShip = hudText(card, UDim2.fromOffset(62, 48), UDim2.new(1, -70, 0, 14), 10, COLORS.muted)
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
 local banner = Instance.new("Frame")
@@ -1217,7 +1218,7 @@ local bubble = Instance.new("Frame")
 bubble.Name = "CompanionBubble"
 bubble.AnchorPoint = Vector2.new(0.5, 0)
 bubble.Position = UDim2.new(0.5, 0, 0, 8)
-bubble.Size = UDim2.new(0.42, 0, 0, 0)
+bubble.Size = UDim2.new(0.34, 0, 0, 0)
 bubble.AutomaticSize = Enum.AutomaticSize.Y
 bubble.BackgroundColor3 = NAVY
 bubble.BackgroundTransparency = 0.05
@@ -1230,7 +1231,7 @@ hudStroke(bubble, 2)
 do
 	local limit = Instance.new("UISizeConstraint")
 	limit.MinSize = Vector2.new(220, 0)
-	limit.MaxSize = Vector2.new(460, 1000)
+	limit.MaxSize = Vector2.new(380, 1000)
 	limit.Parent = bubble
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
@@ -6172,9 +6173,7 @@ task.spawn(function()
 			H.showTitle()
 			return
 		end
-		if result and not result.loading then
-			return
-		end
+		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다
 		task.wait(0.5)
 	end
 	message, messageOk = "서버에 연결하지 못했어요", false
@@ -6328,7 +6327,9 @@ end
 			if not atlas or not c then
 				return nil
 			end
-			return atlas, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
+			-- 1280x1344 시트는 로블록스가 1024 높이로 줄여 쓰므로 칸 좌표도 같은 비율로 줄인다
+			local k = 1024 / 1344
+			return atlas, Vector2.new(c % 5 * 256 * k, math.floor(c / 5) * 336 * k), Vector2.new(256 * k, 336 * k)
 		end
 		local nation = string.match(value, "^hero:([%w_]+)$")
 		if nation then
@@ -6475,23 +6476,24 @@ end
 	local chipGui = overlayGui("CaptainChip", 12)
 	local chip = Instance.new("Frame")
 	chip.AnchorPoint = Vector2.new(0, 0)
-	chip.Position = UDim2.new(0, 4, 0.36, 0)
-	chip.Size = UDim2.fromOffset(92, 168)
+	chip.Position = UDim2.fromOffset(5, 5)
+	chip.Size = UDim2.fromOffset(52, 56)
 	chip.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
-	chip.BackgroundTransparency = 0.08
+	chip.BackgroundTransparency = 0
 	chip.BorderSizePixel = 0
 	chip.Visible = false
-	chip.Parent = chipGui
-	corner(chip, 12)
+	chip.Parent = H.hudCard
+	corner(chip, 8)
 	do
 		local cst = Instance.new("UIStroke")
 		cst.Color = BRASS
-		cst.Thickness = 2
+		cst.Thickness = 1.5
 		cst.Parent = chip
 	end
 	local chipKey = nil
 	local chipName = mkLabel(chip, "", 13, Color3.fromRGB(246, 208, 130), true)
 	chipName.AnchorPoint = Vector2.new(0.5, 0)
+	chipName.Visible = false
 	chipName.Position = UDim2.new(0.5, 0, 0, 104)
 	chipName.Size = UDim2.new(1, -8, 0, 18)
 	chipName.AutomaticSize = Enum.AutomaticSize.None
@@ -6499,6 +6501,7 @@ end
 	chipName.TextTruncate = Enum.TextTruncate.AtEnd
 	local chipSub = mkLabel(chip, "", 10, COLORS.muted, false)
 	chipSub.AnchorPoint = Vector2.new(0.5, 0)
+	chipSub.Visible = false
 	chipSub.Position = UDim2.new(0.5, 0, 0, 123)
 	chipSub.Size = UDim2.new(1, -8, 0, 16)
 	chipSub.AutomaticSize = Enum.AutomaticSize.None
@@ -6507,6 +6510,7 @@ end
 	chipSub.TextColor3 = Color3.fromRGB(150, 205, 255)
 	local chipSub2 = mkLabel(chip, "", 10, COLORS.muted, false)
 	chipSub2.AnchorPoint = Vector2.new(0.5, 0)
+	chipSub2.Visible = false
 	chipSub2.Position = UDim2.new(0.5, 0, 0, 142)
 	chipSub2.Size = UDim2.new(1, -8, 0, 16)
 	chipSub2.AutomaticSize = Enum.AutomaticSize.None
@@ -6532,7 +6536,7 @@ end
 		chipName.Text = c.name or "선장"
 		chipSub.Text = "🏳 " .. tostring(view.player.nation)
 		chipSub2.Text = if c.origin then c.origin.name else ""
-		local face = portraitImg(chip, c.portrait, 78, 96)
+		local face = portraitImg(chip, c.portrait, 52, 56)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -6540,10 +6544,10 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 78, 56)
-			face.Position = UDim2.fromOffset(7, 26)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 48, 34)
+			face.Position = UDim2.fromOffset(2, 11)
 		else
-			face.Position = UDim2.fromOffset(7, 5)
+			face.Position = UDim2.fromOffset(0, 0)
 		end
 		face.Name = "ChipFace"
 	end
