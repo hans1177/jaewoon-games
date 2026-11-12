@@ -7486,6 +7486,7 @@ end)
 
 openTab = function(tabId, mapPage)
 	currentTab = tabId
+	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
 	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
 	if tabId == "map" and mapPage ~= "journal" then
