@@ -338,6 +338,18 @@ local function uniformMaterial(m, style)
 	end
 end
 
+-- 문화권별 건축 특성: 기후·실제 건축 전통에 따라 굴뚝·발코니·수레·고상(高床)·천막·야자수가 다르다
+local function setOf(...) local s = {} for _, k in { ... } do s[k] = true end return s end
+local TRAIT = {
+	chimney = setOf("north", "brick", "stone", "nordic", "britain", "hanse", "france", "japan"), -- 추운 곳만 난로 굴뚝
+	balcony = setOf("iberia", "italy", "france", "creole", "colonial", "med", "malabar"), -- 지중해·식민지풍 발코니
+	cart = setOf("hanse", "italy", "ottoman", "malabar", "china", "swahili", "seasia", "med"), -- 장터 수레
+	stilt = setOf("seasia", "pacific"), -- 고상식 집(기둥 위에 지음)
+	tent = setOf("desert", "ottoman", "swahili", "wafrica", "pacific"), -- 초기엔 천막 야영
+	palm = setOf("tropic", "seasia", "pacific", "creole", "wafrica", "swahili", "malabar", "colonial"),
+}
+local STYLE_KEY = {}
+for k, v in STYLE do STYLE_KEY[v] = k end
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
@@ -388,6 +400,15 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		end
 	end
 	local variant = "house"
+	local ckey = STYLE_KEY[style]
+	if ckey and TRAIT.stilt[ckey] and not vacant then
+		for sx = -1, 1, 2 do
+			for sz = -1, 1, 2 do
+				importedModel(parent, "Town", "fence_post", pos + Vector3.new(sx * w * 0.32, 0, sz * d * 0.32), 3.2, false)
+			end
+		end
+		pos = pos + Vector3.new(0, 2.6, 0)
+	end
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
@@ -411,12 +432,12 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(annex, style)
 			end
 		end
-		if variant ~= "house_chimney" and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
+		if variant ~= "house_chimney" and ckey and TRAIT.chimney[ckey] and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
 		end
 		-- 발전한 항구(3단계↑)에선 일부 집 앞에 발코니(Town/balcony-wall-fence)를 달아 실루엣을 다양하게 한다
-		if houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
+		if houseTier >= 3 and ckey and TRAIT.balcony[ckey] and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
 			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, if pos.Z > 0 then -size * 0.52 else size * 0.52), size * 0.7, false, tintColor)
 			if bal then
 				bal.Name = "HarborBalcony"
@@ -424,8 +445,14 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
-		if houseTier >= 4 and not vacant and seed % 5 == 2 then
+		if houseTier >= 3 and ckey and TRAIT.cart[ckey] and not vacant and seed % 5 == 2 then
 			importedModel(parent, "Town", "cart", pos + Vector3.new(size * 0.8, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
+		end
+		if ckey and TRAIT.tent[ckey] and houseTier <= 2 and seed % 3 == 1 then
+			importedModel(parent, "Terrain", "tent-detailedopen", pos + Vector3.new(size * 0.9, 0, -size * 0.6), 6, false)
+		end
+		if ckey and TRAIT.palm[ckey] and houseTier >= 2 and seed % 3 == 2 then
+			importedModel(parent, "Naval", "palm-bend", pos + Vector3.new(-size * 0.8, 0, size * 0.6), 9, false)
 		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end
