@@ -14,25 +14,9 @@ local NavalBattle = {}
 
 local ORIGIN = Vector3.new(6000, 0, 0)
 
--- 접현 카드 원화와 등록 모델
+-- 해상전투에서 사용하는 기존 등록 도감 이미지
 local CARD_SEA = "CardArt/event_calm_seas"
-local CARD_STORM = "CardArt/event_storm"
-local CARD_FIRE = "CardArt/event_harbor_fire"
-local CARD_MODELS = {
-	sword = { "Relics", "weapon-sword", "swing" },
-	spear = { "Relics", "weapon-spear", "swing" },
-	cannon = { "Naval", "cannon", "recoil" },
-	shieldman = { "Relics", "shield-round", "brace" },
-	swivel = { "Naval", "cannon-mobile", "recoil" },
-	hero_captain = { "Naval", "ship-small", "swell" },
-	surgeon = { "Cargo", "mortar-pestle", "brace" },
-	hero_medic = { "Cargo", "mortar-pestle", "brace" },
-	fog = { "Naval", "ship-small", "swell" },
-	storm = { "Naval", "ship-small", "swell" },
-	clear = { "Naval", "ship-small", "swell" },
-}
 
--- 카드 원화: 등록된 백과사전 판화 중 장면이 맞는 것을 쓴다 (해전 전용 판화는 따로 그려 받아야 한다)
 -- 카드별 판화: 게임에 이미 등록된 백과사전 도판을 재사용한다.
 local CARD_ART = {
 	swordsman="CardArt/event_piracy",axeman="CardArt/event_anglo_dutch_war",
@@ -842,17 +826,44 @@ function NavalBattle.play(opts)
 			auto = true
 		end)
 
+		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
 		local function chip(parent, c, w, power)
-			local f = Instance.new("TextLabel")
+			local f = Instance.new("Frame")
 			f.Size = UDim2.new(0, w, 1, 0)
-			f.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120) else paper
-			f.TextColor3 = ink
-			f.Font = Enum.Font.GothamBold
-			f.TextScaled = true
+			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
-			f.Text = string.format("%s\n%s", c.name, tostring(power or c.power or ""))
 			f.Parent = parent
-			frameEdge(f, brass, 4)
+			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			local painting = Instance.new("ImageLabel")
+			painting.Name = "EncyclopediaPlate"
+			painting.Size = UDim2.fromScale(1, 0.8)
+			painting.BackgroundTransparency = 1
+			painting.ScaleType = Enum.ScaleType.Crop
+			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
+			local artKey = CARD_ART[c.id] or CARD_SEA
+			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+			painting.Parent = f
+			local blackWash = Instance.new("UIGradient")
+			blackWash.Rotation = 90
+			blackWash.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.35),
+				NumberSequenceKeypoint.new(0.48, 1),
+				NumberSequenceKeypoint.new(1, 0.3),
+			})
+			blackWash.Parent = painting
+			local tag = label(f, c.name, 11, Color3.fromRGB(255, 237, 188), true)
+			tag.Position = UDim2.fromScale(0.03, 0.04)
+			tag.Size = UDim2.fromScale(0.94, 0.38)
+			tag.TextScaled = true
+			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
+			stamp.AnchorPoint = Vector2.new(0.5, 1)
+			stamp.Position = UDim2.fromScale(0.5, 0.97)
+			stamp.Size = UDim2.fromScale(0.62, 0.29)
+			stamp.TextScaled = true
+			stamp.TextStrokeTransparency = 1
+			stamp.BackgroundColor3 = paper
+			stamp.BackgroundTransparency = 0
+			frameEdge(stamp, brass, 4)
 		end
 		local ABIL = { bond = "결속", morale = "사기", spy = "첩자", medic = "치료" }
 
@@ -1083,8 +1094,8 @@ function NavalBattle.play(opts)
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 88, 1, -10)
 				b.LayoutOrder = i
-				b.BackgroundColor3 = if c.hero then Color3.fromRGB(232, 194, 120)
-					elseif c.special then Color3.fromRGB(198, 193, 218) else paper
+				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
+					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
 				b.TextScaled = true
@@ -1101,6 +1112,16 @@ function NavalBattle.play(opts)
 				art.BorderSizePixel = 0
 				art.ClipsDescendants = true
 				art.Parent = b
+				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
+				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
+				local parchmentBand = Instance.new("Frame")
+				parchmentBand.Name = "ParchmentCaption"
+				parchmentBand.Position = UDim2.fromScale(0.025, 0.65)
+				parchmentBand.Size = UDim2.fromScale(0.95, 0.33)
+				parchmentBand.BackgroundColor3 = if c.hero then Color3.fromRGB(243, 215, 153) else paper
+				parchmentBand.BorderSizePixel = 0
+				parchmentBand.Parent = b
+				frameEdge(parchmentBand, brass, 3)
 				local image = Instance.new("ImageLabel")
 				image.AnchorPoint = Vector2.new(0.5, 0.5)
 				image.Position = UDim2.fromScale(0.5, 0.5)
@@ -1117,6 +1138,7 @@ function NavalBattle.play(opts)
 				caption.Size = UDim2.fromScale(0.71, 0.35)
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
+				caption.Font = Enum.Font.Antique
 				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.82), UDim2.fromScale(0.20, 0.25))
 				local power = label(b, tostring(c.power or "✦"), 13, ink, true)
@@ -1128,7 +1150,7 @@ function NavalBattle.play(opts)
 				power.ZIndex = 4
 				frameEdge(power, brass, 5)
 				b.Parent = handFrame
-				local edge = frameEdge(b, brass, 6)
+				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
 				b.Activated:Connect(function()
 					if playing or auto or finished or m.turn ~= "me" or m.over then
