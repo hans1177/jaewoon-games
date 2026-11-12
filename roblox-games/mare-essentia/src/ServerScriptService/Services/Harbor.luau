@@ -129,7 +129,15 @@ return function(D, S)
 		end
 		-- 항구 고유 파동, 지역 축제, 진행 중인 재해·행운 (실제 사건은 World 가 일으킨다)
 		vit *= H.portWave(port.id, state.day)
-		vit *= H.spillover(region, state.world and state.world.active, state.day)
+		local immunity = math.min(0.6, techNow * 0.03)
+		vit *= H.spillover(region, state.world and state.world.active, state.day, immunity)
+		do
+			local wf, cause = H.windfall(H.producesOf(port.produces, region, year), state.world and state.world.active, D.WorldEvents.ById, region, state.day)
+			if wf > 1 then
+				vit *= wf
+				table.insert(msgs, string.format("%s: 이웃의 재난(%s)으로 우리 특산 수요가 늘었다", port.name, cause))
+			end
+		end
 		local fest = H.festivalAt(region, state.day)
 		if fest then
 			vit *= 1.25
@@ -205,7 +213,7 @@ return function(D, S)
 		local lvl = H.level(state.harbor[portId] or 0)
 		local trade = (state.harborTrade and state.harborTrade[portId]) or 0
 		local own = H.producesOf(port.produces, region, year)
-		local vit = H.vitality(regime, region, own, trade / 150) * H.portWave(portId, state.day) * H.spillover(region, state.world and state.world.active, state.day)
+		local vit = H.vitality(regime, region, own, trade / 150) * H.portWave(portId, state.day) * H.spillover(region, state.world and state.world.active, state.day, math.min(0.6, S.Knowledge.techSum(state, portId) * 0.03)) * (H.windfall(own, state.world and state.world.active, D.WorldEvents.ById, region, state.day))
 		local fest = H.festivalAt(region, state.day)
 		local events = {}
 		for _, ev in (state.world and state.world.active) or {} do
@@ -255,7 +263,11 @@ return function(D, S)
 		elseif cur > 1.08 then
 			table.insert(news, string.format("%s 강세, 수입품이 싸진다", curName))
 		end
-		local sp = H.spillover(region, state.world and state.world.active, state.day)
+		local wfm, wfCause = H.windfall(own, state.world and state.world.active, D.WorldEvents.ById, region, state.day)
+		if wfm > 1 then
+			table.insert(news, string.format("이웃의 재난(%s)으로 우리 특산품 주문이 밀려든다", wfCause))
+		end
+		local sp = H.spillover(region, state.world and state.world.active, state.day, math.min(0.6, techSum * 0.03))
 		if sp < 0.95 then
 			table.insert(news, "이웃 지역의 재난 소식이 교역로를 타고 번져 온다")
 		elseif sp > 1.04 then

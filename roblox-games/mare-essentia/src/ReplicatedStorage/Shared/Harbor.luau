@@ -85,7 +85,8 @@ Harbor.ADJACENT = {
 	far_east = { "indian", "pacific" }, pacific = { "far_east", "new_world" },
 }
 Harbor.SPILL_LAG = 20
-function Harbor.spillover(region: string, active: { any }?, day: number): number
+-- immunity(0~0.6): 학자 기술이 높은 항구는 검역·방벽·비축으로 이웃의 충격을 덜 받는다 (재난 쪽만 완화)
+function Harbor.spillover(region: string, active: { any }?, day: number, immunity: number?): number
 	local m = 1
 	local near = Harbor.ADJACENT[region]
 	if not near or not active then
@@ -96,7 +97,33 @@ function Harbor.spillover(region: string, active: { any }?, day: number): number
 			m *= if ev.kind == "disaster" then 0.85 else 1.07
 		end
 	end
+	if m < 1 and immunity and immunity > 0 then
+		m = 1 - (1 - m) * (1 - math.clamp(immunity, 0, 0.6))
+	end
 	return math.clamp(m, 0.6, 1.3)
+end
+
+-- 반대 방향의 전염(수혜): 이웃 지역의 재난으로 값이 오른 품목을 내는 항구는 특수를 누린다
+-- (기근이 든 곳에 곡물을 내는 항구, 전쟁터 옆에서 철을 내는 항구). byId: 사건 id → 사건 정의(goods 목록)
+function Harbor.windfall(produces: { string }, active: { any }?, byId: any, region: string, day: number): (number, string?)
+	local near = Harbor.ADJACENT[region]
+	if not near or not active or not byId then
+		return 1, nil
+	end
+	local m, cause = 1, nil
+	for _, ev in active do
+		local def = byId[ev.id]
+		if def and ev.kind == "disaster" and ev.endDay >= day and day - ev.startDay >= Harbor.SPILL_LAG and table.find(near, ev.region) then
+			for _, g in produces do
+				if def.goods and table.find(def.goods, g) then
+					m *= 1.12
+					cause = cause or ev.title
+					break
+				end
+			end
+		end
+	end
+	return math.min(m, 1.4), cause
 end
 
 -- 화폐 가치: 주화의 은 함량·신용이 나라마다 해마다 달라, 약한 화폐의 항구는 물가가 높다 (1.0 = 기준)

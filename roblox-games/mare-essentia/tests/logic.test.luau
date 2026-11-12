@@ -2143,6 +2143,9 @@ do
 		check("spillover from adjacent disaster", H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50) < 1)
 		check("no spillover before lag", H.spillover("europe", { { endDay = 100, startDay = 45, region = "new_world", kind = "disaster" } }, 50) == 1)
 		check("no spillover from far region", H.spillover("europe", { { endDay = 100, startDay = 10, region = "pacific", kind = "disaster" } }, 50) == 1)
+		check("immunity softens spillover", H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50, 0.5) > H.spillover("europe", { { endDay = 100, startDay = 10, region = "new_world", kind = "disaster" } }, 50, 0))
+		check("windfall for matching specialty", (H.windfall({ "rice", "wool" }, { { id = "famine", endDay = 100, startDay = 10, region = "indian", kind = "disaster", title = "흉작" } }, D.WorldEvents.ById, "europe", 50)) > 1)
+		check("no windfall without matching goods", (H.windfall({ "marble" }, { { id = "famine", endDay = 100, startDay = 10, region = "indian", kind = "disaster", title = "흉작" } }, D.WorldEvents.ById, "europe", 50)) == 1)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)
