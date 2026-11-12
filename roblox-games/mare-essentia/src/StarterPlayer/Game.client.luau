@@ -5309,7 +5309,31 @@ syncScene = function()
 		table.insert(crewIds, c.id)
 	end
 	local portLevel = (view.harbor and view.harbor.level) or 1
-	local key = p.portId .. "|L" .. portLevel .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	-- 발전도가 오르면 마을이 바로 바뀌지 않고, 공사 기간(일꾼이 짓는 모습)을 거친 뒤 새 단계로 바뀐다
+	H.shownLv = H.shownLv or {}
+	H.buildDue = H.buildDue or {}
+	local shownLv = H.shownLv[p.portId]
+	if shownLv == nil or portLevel < shownLv then
+		shownLv = portLevel
+		H.shownLv[p.portId] = portLevel
+	end
+	local construction = nil
+	if portLevel > shownLv then
+		local secs = math.clamp(40 * (portLevel - shownLv), 40, 120)
+		construction = { to = portLevel, seconds = secs }
+		if not H.buildDue[p.portId] then
+			H.buildDue[p.portId] = true
+			local pid = p.portId
+			task.delay(secs, function()
+				H.buildDue[pid] = nil
+				H.shownLv[pid] = nil -- 다음 동기화에서 현재 단계로 확정
+				sceneKey = nil
+				if syncScene then pcall(syncScene) end
+			end)
+		end
+		portLevel = shownLv
+	end
+	local key = p.portId .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		return
 	end
@@ -5317,6 +5341,7 @@ syncScene = function()
 		portId = p.portId,
 		portName = p.portName,
 		level = portLevel,
+		construction = construction,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,

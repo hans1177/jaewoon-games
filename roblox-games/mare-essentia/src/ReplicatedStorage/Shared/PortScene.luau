@@ -93,36 +93,76 @@ local function gableRoof(parent, center, w, d, h, color)
 	wedge(parent, Vector3.new(w, h, d / 2), CFrame.new(center + Vector3.new(0, h / 2, d / 4)) * CFrame.Angles(0, math.pi, 0), color)
 end
 
+local SIGN_ICONS = {
+	{ "교역", "💰" }, { "주점", "🍺" }, { "항만", "⚓" }, { "은행", "🏦" }, { "길드", "📜" }, { "서재", "🔬" },
+	{ "도서관", "📚" }, { "조선", "🔨" }, { "왕궁", "👑" }, { "총독", "👑" }, { "이야기", "❗" },
+}
+local function signIcon(text)
+	for _, e in SIGN_ICONS do
+		if text:find(e[1], 1, true) then return e[2] end
+	end
+	return "⛵"
+end
+
+-- 방문시설 간판: 짙은 목판 + 금테 + 둥근 아이콘 배지 + 굵은 글씨 (멀리서도 읽히게 크게)
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(210, 46)
+	bb.Size = UDim2.fromOffset(300, 64)
 	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
-	bb.MaxDistance = 90
-	local l = Instance.new("TextLabel")
-	l.Size = UDim2.fromScale(1, 1)
-	l.BackgroundColor3 = color or Color3.fromRGB(30, 34, 44)
-	l.BackgroundTransparency = 0.05
-	l.TextColor3 = Color3.new(1, 1, 1)
-	l.Font = Enum.Font.GothamBold
-	l.TextScaled = false
-	l.TextSize = 26
-	l.TextWrapped = false
-	l.TextTruncate = Enum.TextTruncate.AtEnd
-	l.Text = text
+	bb.MaxDistance = 160
+	local plate = Instance.new("Frame")
+	plate.Size = UDim2.fromScale(1, 1)
+	plate.BackgroundColor3 = Color3.fromRGB(62, 42, 30)
+	plate.BorderSizePixel = 0
+	local grad = Instance.new("UIGradient")
+	grad.Color = ColorSequence.new(Color3.fromRGB(96, 66, 44), Color3.fromRGB(46, 30, 22))
+	grad.Rotation = 90
+	grad.Parent = plate
 	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(230, 196, 120)
-	st.Thickness = 1.5
-	st.Parent = l
+	st.Color = Color3.fromRGB(232, 190, 96)
+	st.Thickness = 2.5
+	st.Parent = plate
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 8)
-	c.Parent = l
-	local pad = Instance.new("UIPadding")
-	pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 4), UDim.new(0, 4)
-	pad.Parent = l
-	l.Parent = bb
+	c.CornerRadius = UDim.new(0, 12)
+	c.Parent = plate
+	local badge = Instance.new("TextLabel")
+	badge.Size = UDim2.fromOffset(48, 48)
+	badge.Position = UDim2.new(0, 8, 0.5, -24)
+	badge.BackgroundColor3 = color or Color3.fromRGB(150, 110, 40)
+	badge.Text = signIcon(text)
+	badge.TextSize = 30
+	badge.Font = Enum.Font.GothamBold
+	badge.TextColor3 = Color3.new(1, 1, 1)
+	local bc = Instance.new("UICorner")
+	bc.CornerRadius = UDim.new(1, 0)
+	bc.Parent = badge
+	local bs = Instance.new("UIStroke")
+	bs.Color = Color3.fromRGB(232, 190, 96)
+	bs.Thickness = 2
+	bs.Parent = badge
+	badge.Parent = plate
+	local l = Instance.new("TextLabel")
+	l.Size = UDim2.new(1, -66, 1, -8)
+	l.Position = UDim2.fromOffset(60, 4)
+	l.BackgroundTransparency = 1
+	l.TextColor3 = Color3.fromRGB(255, 244, 214)
+	l.Font = Enum.Font.GothamBlack
+	l.TextScaled = true
+	l.TextXAlignment = Enum.TextXAlignment.Left
+	l.Text = text
+	local ts = Instance.new("UIStroke")
+	ts.Color = Color3.fromRGB(30, 18, 10)
+	ts.Thickness = 2
+	ts.Parent = l
+	local lim = Instance.new("UITextSizeConstraint")
+	lim.MaxTextSize = 34
+	lim.MinTextSize = 14
+	lim.Parent = l
+	l.Parent = plate
+	plate.Parent = bb
 	bb.Parent = parent
 	return bb
 end
@@ -655,6 +695,31 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	if lvl >= 3 then
 		stay(Vector3.new(-29, 0, -12), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
 	end
+	-- 발전도 상승 공사: 새 단계가 열리면 바로 바뀌지 않고, 공사 기간 동안 비계·자재 더미와
+	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
+	if info.construction then
+		local sites = { Vector3.new(-40, 0, 17), Vector3.new(-40, 0, -17), Vector3.new(-74, 0, 17), Vector3.new(-74, 0, -17), Vector3.new(-100, 0, 17), Vector3.new(-100, 0, -17) }
+		local n = math.min(#sites, 2 * math.max(1, (info.construction.to or lvl + 1) - lvl) + 2)
+		for i = 1, n do
+			local at = sites[i]
+			local zs = if at.Z > 0 then 1 else -1
+			importedModel(folder, "Terrain", "wood-structure", at, 10, false)
+			importedModel(folder, "Terrain", "wood-support", at + Vector3.new(6, 0, 0), 7, false)
+			importedModel(folder, "Terrain", "log-stack", at + Vector3.new(-6, 0, zs * 2), 4, false)
+			importedModel(folder, "Cargo", "wood-planks-stack-small", at + Vector3.new(-3, 0, -zs * 5), 2.8, false)
+			importedModel(folder, "Town", "cart", at + Vector3.new(9, 0, -zs * 5), 4, false)
+			importedModel(folder, "Town", "workbench-anvil", at + Vector3.new(-9, 0, -zs * 3), 3, false)
+			local mark = part(folder, Vector3.new(1, 1, 1), CFrame.new(at + Vector3.new(0, 0, 0)), Color3.new(1, 1, 1))
+			mark.Transparency = 1
+			mark.CanCollide = false
+			sign(folder, mark, "🚧 공사 중", Color3.fromRGB(200, 120, 30), 9)
+			for k = 1, 3 do
+				local wp = at + Vector3.new(-3 + k * 3, 0, -zs * 3.2)
+				stay(wp, at + Vector3.new(0, 0, 0), if k == 2 then "stoop" else "hammer", { role = "Barbarian", hat = "cap" })
+			end
+			path(at + Vector3.new(-8, 0, -zs * 8), at + Vector3.new(10, 0, -zs * 8), "carry", 1.7, { role = "Barbarian", hat = "cap" })
+		end
+	end
 	-- 건축: 널빤지를 쌓고 벽을 세우는 목수 (2단계부터)
 	if lvl >= 2 then
 		importedModel(folder, "Town", "wall-wood", Vector3.new(-52, 0, 11.5), 8, false)
@@ -866,6 +931,21 @@ local function densify(folder, info, style, rng, walkers, made)
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens, 0.3, 0.97)
 	local smokers = 0
 	local X_END = -190
+	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
+	local dz = seeded(info.portId .. "district")
+	local slots = { Vector3.new(-134, 0, 70), Vector3.new(-134, 0, -70), Vector3.new(-178, 0, 70), Vector3.new(-178, 0, -70) }
+	for i = #slots, 2, -1 do
+		local j = dz:NextInteger(1, i)
+		slots[i], slots[j] = slots[j], slots[i]
+	end
+	local districts = { { kind = "religious", at = slots[1] }, { kind = "market", at = slots[2] }, { kind = "farm", at = slots[3] } } -- slots[4] 는 주거지 그대로
+	local function reserved(x, z)
+		if x > -104 and math.abs(z) > 20 and math.abs(z) < 54 then return true end
+		for _, d in districts do
+			if math.abs(x - d.at.X) < 24 and math.abs(z - d.at.Z) < 22 then return true end
+		end
+		return false
+	end
 	local function onStreet(x)
 		for _, sx in streetsX do
 			if math.abs(x - sx) < S / 2 + P.alley / 2 + 1 then
@@ -878,7 +958,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	local function fillRow(z, t, xStart)
 		local x = xStart
 		while x > X_END do
-			if not onStreet(x) and rng:NextNumber() < dens then
+			if not onStreet(x) and not reserved(x, z) and rng:NextNumber() < dens then
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
 				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
@@ -917,6 +997,56 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for _, sx in streetsX do
 		strip(folder, style, sx, 0, P.alley, 2 * (38 + pairsN * laneL) + 6)
+	end
+	-- 구역 내용 (등록된 실제 3D 모델만 사용)
+	do
+		local function put(kind, asset, size, x, z, solid, yaw)
+			local m = importedModel(folder, kind, asset, Vector3.new(x, 0, z), size, solid == true)
+			if m and yaw then rotateAround(m, Vector3.new(x, 0, z), yaw) end
+			return m
+		end
+		local hotKey = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "desert" or key == "tropic"
+		for _, d in districts do
+			local cx, cz = d.at.X, d.at.Z
+			local face = if cz > 0 then 0 else math.pi
+			if d.kind == "religious" then
+				if key == "japan" then
+					put("Town", "temple-tower", 26, cx, cz, true, face)
+					put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
+				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" then
+					put("Town", "temple-stone", 28, cx, cz, true, face)
+					put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true)
+				else
+					put("Town", "church", 30, cx, cz, true, face)
+					put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
+				end
+				for k = -1, 1, 2 do
+					lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
+				end
+			elseif d.kind == "market" then
+				for k = -2, 2 do
+					put("Town", if k % 2 == 0 then "stall-red" else "stall-green", 7, cx + k * 8, cz + (if cz > 0 then -8 else 8), false, face)
+					put("Town", if k % 2 == 0 then "stall-green" else "stall-red", 7, cx + k * 8, cz + (if cz > 0 then 8 else -8), false, face + math.pi)
+				end
+				put("Town", "cart", 4, cx - 14, cz, false)
+				put("Cargo", "barrel", 2.6, cx + 14, cz + 2, false)
+				put("Cargo", "box-open", 2.4, cx + 12, cz - 2, false)
+				put("Town", "bench_A", 3.6, cx, cz, false)
+				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
+			else -- farm
+				local crops = if hotKey then { "crops-cornstagec", "crop-melon", "crop-pumpkin" } else { "crops-wheatstagea", "crop-turnip", "crop-carrot" }
+				for row = -1, 1 do
+					for k = -3, 3 do
+						put("Terrain", crops[(row + 1) % #crops + 1], 5, cx + k * 5, cz + row * 7, false)
+					end
+				end
+				for k = -3, 3 do
+					put("Town", "fence", 5, cx + k * 5.5, cz + (if cz > 0 then 12 else -12), false)
+				end
+				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 24, cx + 18, cz, true, face)
+				put("Terrain", "log-stack", 4, cx - 16, cz + 4, false)
+			end
+		end
 	end
 	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
 	do
@@ -1346,6 +1476,29 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 	end
 
+	-- 6-b) 광장 중앙: 이 마을의 핵심 정체성 상징물 (길 축을 막지 않게 분수 반대편에 둔다)
+	do
+		local ax, az = -8, 11
+		local function big(kind, asset, size) return importedModel(folder, kind, asset, Vector3.new(ax, 0, az), size, true) end
+		if key == "med" or key == "iberia" or key == "italy" then
+			big("Terrain", "statue-column", 20)
+		elseif key == "ottoman" then
+			for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" } do
+				importedModel(folder, "Castle", part_, Vector3.new(ax, (k - 1) * 8, az), 9, true)
+			end
+		elseif key == "swahili" then
+			big("Terrain", "pillar-obelisk", 24)
+		elseif key == "malabar" or key == "tropic" then
+			big("Terrain", "statue-ring", 20)
+		elseif key == "japan" then
+			big("Town", "temple-tower", 24)
+		elseif key == "desert" then
+			big("Terrain", "egypt-obelisk", 28)
+		else
+			big("Town", "bell-tower", 24)
+		end
+	end
+
 	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
 	local WZ, WX = 150, -204
 	local walled = lvl >= 3
@@ -1525,7 +1678,7 @@ function PortScene.build(info, onFacility)
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())
 	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
 	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
-	part(folder, Vector3.new(96, 0.3, 50), CFrame.new(-34, 0.14, 0), roadColor(style), roadMat())
+	part(folder, Vector3.new(100, 0.3, 74), CFrame.new(-38, 0.14, 0), roadColor(style), roadMat())
 	for _, sz in { 57, -57 } do
 		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
 	end
@@ -1540,18 +1693,18 @@ function PortScene.build(info, onFacility)
 
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
-		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 32), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
-		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
-		{ name = "항만청", tab = "route", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
-		{ name = "은행", tab = "harbor", pos = Vector3.new(-48, 0, 32), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
-		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-48, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
-		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-82, 0, 32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
-		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-82, 0, -32), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
+		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
+		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
+		{ name = "항만청", tab = "route", pos = Vector3.new(8, 0, 58), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
+		{ name = "은행", tab = "harbor", pos = Vector3.new(-50, 0, 36), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
+		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-50, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
+		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-88, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
+		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-88, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
-			local grow = 1.25 + 0.04 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민(5.8)보다 훨씬 크게: 1단계 1.25배 → 5단계 약 1.4배
+			local grow = 1.8 + 0.06 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민보다 훨씬 크게(교역소·조선소·주점이 한눈에 보이게): 1단계 1.8배 → 5단계 약 2.04배
 			local tone = f.color:Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
 			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
@@ -1617,9 +1770,9 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
-		local shed = house(folder, Vector3.new(0, 0, -50), 14, 12, 2, style, rng, Color3.fromRGB(150, 118, 84))
+		local shed = house(folder, Vector3.new(-4, 0, -52), 14 * 1.9, 12 * 1.9, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
-		prompt(folder, Vector3.new(8, 3, -50), "조선소", "들어가기", "yard", onFacility)
+		prompt(folder, Vector3.new(8, 3, -52), "조선소", "들어가기", "yard", onFacility)
 	end
 
 	-- 왕궁: 큰길 끝
