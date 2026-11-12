@@ -1,11 +1,11 @@
-# 바이브 자동 판단기: 30분마다 Studio 점검 결과를 읽고, 지금 가장 가치 있는 점검 하나를 스스로 골라 Studio 에 요청한다.
+# 바이브 자동 판단기: 10분마다 Studio 점검 결과를 읽고, 지금 가장 가치 있는 점검 하나를 스스로 골라 Studio 에 요청한다.
 # 같은 점검을 되풀이하지 않는다(최근 기록 감점, 안 해 본 영역 가산, 코드 변화 없으면 건너뜀). 결과로 배우고 작업 지시서를 남긴다.
 # 끄기: 저장소 변수 VIBE_AUTOPILOT=off.
 name: Vibe Autopilot
 run-name: Vibe Autopilot · ${{ github.run_number }}
 on:
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    - cron: '7,17,27,37,47,57 * * * *'
   # 시간 예약(cron)은 GitHub 가 건너뛰는 일이 잦아서, Studio 점검이 끝날 때마다 이어서 실행한다(결과를 읽고 다음 점검을 고른다).
   workflow_run:
     workflows: ['Devloop Studio Capture']
