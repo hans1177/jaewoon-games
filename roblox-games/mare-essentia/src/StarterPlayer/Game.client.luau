@@ -1338,6 +1338,11 @@ do
 			row.BackgroundTransparency = 0.2
 			row.BackgroundColor3 = NAVY2
 			corner(row, 8)
+			if unit then
+				mkButton(list, "전투 카드 펼치기", COLORS.blue, UDim2.new(1, -8, 0, 36), function()
+					H.showCombatCard(unit, c.name, info)
+				end)
+			end
 		end
 		local note = mkLabel(list, "병종 상성: 근접 > 포 > 사격 > 근접. 유리한 줄은 ×1.3, 불리한 줄은 ×0.85. 새 지식·유물·동물·항해자를 만날수록 카드가 늘어요.", 12, COLORS.muted, false)
 		note.TextWrapped = true
@@ -4268,92 +4273,171 @@ local function paintCardArt(parent, card, fieldDef, fitImage)
 end
 
 function H.showCardDetail(card)
-	local fieldDef = findField(card.field)
+	local fieldDef = if card.combat then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
+	local article = if card.found then require(Shared:WaitForChild("KnowledgeCards")).Articles[card.id] else nil
+	local tweens = game:GetService("TweenService")
+	local paper = Color3.fromRGB(237, 222, 188)
+	local ink = Color3.fromRGB(51, 37, 25)
+	local brown = Color3.fromRGB(114, 75, 43)
 	local overlay = Instance.new("TextButton")
 	overlay.Size = UDim2.fromScale(1, 1)
 	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
-	overlay.BackgroundTransparency = 0.45
+	overlay.BackgroundTransparency = 1
 	overlay.Text = ""
 	overlay.AutoButtonColor = false
 	overlay.ZIndex = 40
-	local layer = overlayGui("Overlay", 20)
+	local layer = overlayGui("Overlay", 60)
 	overlay.Parent = layer
 	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
+
 	local box = Instance.new("Frame")
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
 	box.Position = UDim2.fromScale(0.5, 0.5)
-	box.Size = UDim2.fromScale(0.9, 0.88)
-	local bounds = Instance.new("UISizeConstraint")
-	bounds.MaxSize = Vector2.new(560, 540)
-	bounds.Parent = box
-	box.BackgroundColor3 = COLORS.row
+	box.Size = UDim2.fromScale(0.18, 0.94)
+	box.BackgroundColor3 = brown
+	box.BorderSizePixel = 0
+	box.ClipsDescendants = true
 	box.ZIndex = 41
-	corner(box, 14)
+	local bounds = Instance.new("UISizeConstraint")
+	bounds.MaxSize = Vector2.new(920, 960)
+	bounds.Parent = box
+	corner(box, 8)
 	box.Parent = overlay
-	local stroke = Instance.new("UIStroke")
-	stroke.Thickness = 3
-	stroke.Color = if card.found then (RARITY_COLOR[card.rarity] or COLORS.muted) else COLORS.grey
-	stroke.Parent = box
-	local art = Instance.new("Frame")
-	art.Position = UDim2.fromOffset(10, 10)
-	art.Size = UDim2.new(1, -20, 0.46, 0)
-	art.BackgroundColor3 = COLORS.grey
-	art.ZIndex = 42
-	corner(art, 10)
-	art.Parent = box
-	paintCardArt(art, card, fieldDef, true)
-	for _, d in art:GetDescendants() do
-		if d:IsA("GuiObject") then
-			d.ZIndex = 43
-		end
-	end
+
 	local body = Instance.new("ScrollingFrame")
-	body.BackgroundTransparency = 1
+	body.Position = UDim2.fromOffset(8, 8)
+	body.Size = UDim2.new(1, -16, 1, -62)
+	body.BackgroundColor3 = paper
 	body.BorderSizePixel = 0
-	body.Position = UDim2.new(0, 10, 0.46, 18)
-	body.Size = UDim2.new(1, -20, 0.54, -76)
 	body.CanvasSize = UDim2.new()
 	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	body.ScrollBarThickness = 3
+	body.ScrollingDirection = Enum.ScrollingDirection.Y
+	body.ScrollBarThickness = 4
+	body.ScrollBarImageColor3 = brown
 	body.ZIndex = 42
 	body.Parent = box
+	local margin = Instance.new("UIPadding")
+	margin.PaddingTop = UDim.new(0, 14)
+	margin.PaddingBottom = UDim.new(0, 14)
+	margin.PaddingLeft = UDim.new(0, 14)
+	margin.PaddingRight = UDim.new(0, 10)
+	margin.Parent = body
 	local lay = Instance.new("UIListLayout")
-	lay.Padding = UDim.new(0, 4)
+	lay.Padding = UDim.new(0, 7)
+	lay.SortOrder = Enum.SortOrder.LayoutOrder
 	lay.Parent = body
+
 	local rarity = RARITY_NAMES[card.rarity] or card.rarity
-	local title = mkLabel(body, string.format("%s  [%s · %s]", card.name, fieldDef.name, rarity), 17, if card.found then (RARITY_COLOR[card.rarity] or COLORS.text) else COLORS.muted, true)
-	mkLabel(body, card.description, 14, COLORS.text, false)
-	if card.found then
-		mkLabel(body, string.format("발견 방법: %s\n도감 등록 보상: %d코인 · 명성 +%d", card.source, card.coins, card.fame), 12, COLORS.muted, false)
+	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 13, brown, true, 1)
+	mkLabel(body, card.name, 25, ink, true, 2)
+	local art = Instance.new("Frame")
+	art.LayoutOrder = 3
+	local camera = workspace.CurrentCamera
+	local viewportHeight = if camera then camera.ViewportSize.Y else 600
+	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
+	local artBorder = Instance.new("UIStroke")
+	artBorder.Color = brown
+	artBorder.Parent = art
+	corner(art, 5)
+	art.Parent = body
+	paintCardArt(art, card, fieldDef, true)
+
+	mkLabel(body, card.description, 16, ink, false, 4)
+	if card.combat then
+		mkLabel(body, "전투에서 하는 일", 16, brown, true, 5)
+		mkLabel(body, card.combat.effect, 15, ink, false, 6)
+		if card.combat.origin then
+			mkLabel(body, "연결된 카드  " .. card.combat.origin, 13, brown, false, 7)
+		end
+	elseif card.found then
+		if article then
+			mkLabel(body, "특징과 원리", 16, brown, true, 5)
+			mkLabel(body, article.details, 15, ink, false, 6)
+			mkLabel(body, "쓰임과 배경", 16, brown, true, 7)
+			mkLabel(body, article.context, 15, ink, false, 8)
+		end
+		mkLabel(body, "게임 속 발견 기록", 16, brown, true, 9)
+		mkLabel(body, string.format("발견 방법  %s\n등록 보상  %d코인 · 명성 +%d", card.source, card.coins, card.fame), 13, ink, false, 10)
+		if article then
+			local topic = article.topic:gsub("_", " "):gsub("%%27", "'")
+			mkLabel(body, "본문 참고  위키백과 · " .. topic, 12, brown, false, 11)
+		end
 		if card.credit then
-			mkLabel(body, "그림 출처: " .. card.credit, 11, COLORS.muted, false)
+			mkLabel(body, "삽화 출처  " .. card.credit, 11, brown, false, 12)
 		end
 	else
-		mkLabel(body, "아직 발견하지 못한 카드예요. 분야 설명의 '모으는 방법'을 참고하세요.", 12, COLORS.muted, false)
+		mkLabel(body, "발견하면 이 항목의 삽화와 해설을 읽을 수 있어요.", 13, brown, false, 5)
 	end
-	for _, d in body:GetDescendants() do
-		if d:IsA("GuiObject") then
-			d.ZIndex = 43
-		end
-	end
-	title.ZIndex = 43
+
 	local replayScene = require(Shared:WaitForChild("WonderScenes")).Scenes[card.id]
-	if card.found and replayScene then
-		local rp = mkButton(body, "🎬 원더 연출 다시 보기", COLORS.blue, UDim2.new(1, 0, 0, 40), function()
+	if not card.combat and card.found and replayScene then
+		local replay = mkButton(body, "원더 연출 다시 보기", COLORS.blue, UDim2.new(1, -8, 0, 40), function()
 			overlay:Destroy()
 			H.playWonderScene(card.id)
 		end, true)
-		rp.ZIndex = 43
+		replay.LayoutOrder = 13
 	end
-	local close = mkButton(box, "닫기", COLORS.gold, UDim2.new(1, -20, 0, 44), function()
+	for _, child in body:GetDescendants() do
+		if child:IsA("GuiObject") then
+			child.ZIndex = 43
+		end
+	end
+	local close = mkButton(box, "책 덮기", COLORS.gold, UDim2.new(1, -16, 0, 42), function()
 		overlay:Destroy()
 	end, true)
 	close.AnchorPoint = Vector2.new(0.5, 1)
-	close.Position = UDim2.new(0.5, 0, 1, -8)
+	close.Position = UDim2.new(0.5, 0, 1, -7)
 	close.ZIndex = 43
 	overlay.Activated:Connect(function()
 		overlay:Destroy()
 	end)
+
+	-- 책등 폭에서 펼쳐지며 종이 위로 접힌 면의 그림자가 스쳐 간다.
+	local fold = Instance.new("Frame")
+	fold.Size = UDim2.fromScale(1, 1)
+	fold.BackgroundColor3 = brown
+	fold.BorderSizePixel = 0
+	fold.ZIndex = 44
+	fold.Parent = box
+	local foldGradient = Instance.new("UIGradient")
+	foldGradient.Transparency = NumberSequence.new(0.16, 1)
+	foldGradient.Parent = fold
+	tweens:Create(overlay, TweenInfo.new(0.22), { BackgroundTransparency = 0.44 }):Play()
+	tweens:Create(box, TweenInfo.new(0.32, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Size = UDim2.fromScale(0.97, 0.95) }):Play()
+	local reveal = tweens:Create(fold, TweenInfo.new(0.36, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Position = UDim2.fromScale(1, 0), BackgroundTransparency = 1,
+	})
+	reveal.Completed:Once(function() fold:Destroy() end)
+	reveal:Play()
+end
+
+function H.showCombatCard(unit, origin, skill)
+	local BC = require(Shared:WaitForChild("BoardingCards"))
+	local effects = {
+		bond = "같은 이름의 결속 카드가 같은 줄에 모이면 위력이 커져요.",
+		morale = "같은 줄의 다른 아군 카드에 위력 1을 더해요.",
+		spy = "적군 줄에 배치하고 내 손패에 카드 두 장을 뽑아요.",
+		medic = "버린 일반 카드 가운데 위력이 가장 높은 카드를 되살려요.",
+	}
+	local effect = unit.text or effects[unit.ability] or "지정된 병종 줄에 배치해 전투력을 더해요."
+	if unit.hero then
+		effect ..= "\n영웅은 날씨와 소각의 영향을 받지 않아요."
+	end
+	if skill then
+		effect ..= "\n" .. skill.name .. " · " .. skill.text
+	end
+	local artKey = if unit.special == "scorch" then "event_harbor_fire"
+		elseif unit.special == "weather" then "event_storm" else "event_calm_seas"
+	H.showCardDetail({
+		id = unit.id,
+		name = unit.name,
+		found = true,
+		rarity = if unit.special then "특수" elseif unit.hero then "영웅" else "병종",
+		description = if unit.special then "접현전에서 즉시 효과를 내는 카드예요."
+			else string.format("%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power),
+		image = "rbxassetid://" .. AssetIds["CardArt/" .. artKey],
+		combat = { effect = effect, origin = origin },
+	})
 end
 
 local function tierRows(list: { any }, scope: string, labelFmt: string)
@@ -4382,6 +4466,13 @@ local function renderCodexOverview()
 	end)
 	add(function()
 		return mkLabel(content, "분야를 눌러 카드를 모아 보세요. 분야마다 25·50·75·100%를 채울 때 보상이 있어요.", 12, COLORS.muted, false)
+	end)
+	add(function()
+		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드의 위력과 효과", {
+			{ text = "열기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
+		}, 60)
+		withIcon(row, "Menu", "battle", nil, 44)
+		return row
 	end)
 	for _, f in cx.fields do
 		add(function()
@@ -4535,6 +4626,31 @@ local function renderCodexOverview()
 	end
 
 function H.renderCodexField()
+if codexField == "boarding" then
+	local BC = require(Shared:WaitForChild("BoardingCards"))
+	add(function()
+		return mkRow(content, "접현 전투 카드", "근접은 포, 포는 사격, 사격은 근접에 유리해요.", {
+			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
+		}, 58)
+	end)
+	for _, rowId in { "melee", "ranged", "cannon", "special" } do
+		local units = {}
+		for _, unit in (if rowId == "special" then BC.Specials else BC.Units) do
+			if rowId == "special" or unit.row == rowId then table.insert(units, unit) end
+		end
+		table.sort(units, function(a, b) return a.name < b.name end)
+		add(function() return mkLabel(content, BC.ROW_NAME[rowId] or "특수 카드", 16, COLORS.gold, true) end)
+		for _, unit in units do
+			add(function()
+				local detail = if unit.special then unit.text else string.format("기본 전투력 %d%s", unit.power, if unit.hero then " · 영웅" else "")
+				return mkRow(content, unit.name, detail, {
+					{ text = "펼치기", color = COLORS.blue, onClick = function() H.showCombatCard(unit) end },
+				}, 52)
+			end)
+		end
+	end
+	return
+end
 if string.sub(codexField, 1, 2) == "p:" then
 	local cid = string.sub(codexField, 3)
 	local cat = nil
