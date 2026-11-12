@@ -1,0 +1,20 @@
+[
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "capture",
+  "name": "t0_title"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService(\"Players\").LocalPlayer.PlayerGui local V=workspace.CurrentCamera.ViewportSize local out={} local n=0 local btns={} for _,d in ipairs(P:GetDescendants()) do if d:IsA(\"GuiObject\") and d.Visible and d.AbsoluteSize.X>1 then local g=d:FindFirstAncestorOfClass(\"ScreenGui\") if g and g.Enabled and g.Name~=\"Chat\" then if (d:IsA(\"TextButton\") or d:IsA(\"TextLabel\")) and d.Text~=\"\" then n+=1 local inScroll=d:FindFirstAncestorOfClass(\"ScrollingFrame\")~=nil if d.TextBounds.X>d.AbsoluteSize.X+3 or d.TextBounds.Y>d.AbsoluteSize.Y+3 then table.insert(out,\"CUT[\"..string.sub(d.Text,1,24)..\"] box=\"..math.floor(d.AbsoluteSize.X)..\"x\"..math.floor(d.AbsoluteSize.Y)..\" text=\"..math.floor(d.TextBounds.X)..\"x\"..math.floor(d.TextBounds.Y)) end if not inScroll and (d.AbsolutePosition.X+d.AbsoluteSize.X>V.X+3 or d.AbsolutePosition.Y+d.AbsoluteSize.Y>V.Y+3 or d.AbsolutePosition.X<-3) then table.insert(out,\"OFF[\"..string.sub(d.Text,1,24)..\"]\") end if d:IsA(\"TextButton\") and not inScroll then table.insert(btns,d) end end end end end for i=1,#btns do for j=i+1,#btns do local a,b=btns[i],btns[j] if a.Parent==b.Parent and a.ZIndex==b.ZIndex then local ox=math.min(a.AbsolutePosition.X+a.AbsoluteSize.X,b.AbsolutePosition.X+b.AbsoluteSize.X)-math.max(a.AbsolutePosition.X,b.AbsolutePosition.X) local oy=math.min(a.AbsolutePosition.Y+a.AbsoluteSize.Y,b.AbsolutePosition.Y+b.AbsoluteSize.Y)-math.max(a.AbsolutePosition.Y,b.AbsolutePosition.Y) if ox>6 and oy>6 and #a.Text>0 and #b.Text>0 then table.insert(out,\"OVERLAP[\"..string.sub(a.Text,1,12)..\"|\"..string.sub(b.Text,1,12)..\"]\") end end end end local msg=\"\" for i=1,math.min(#out,14) do msg=msg..\" ; \"..out[i] end return \"CHK deck view=\"..math.floor(V.X)..\"x\"..math.floor(V.Y)..\" texts=\"..n..\" issues=\"..#out..msg"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local c=0 for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then c+=1 end end return \"ERR Client count=\"..c"
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local BC=require(RS.Shared.BoardingCards) local out={}\nlocal function solve(day) for a=1,6 do if BC.puzzleReplay(day,{{'p',a}}) then return {{'p',a}} end for b=1,5 do if BC.puzzleReplay(day,{{'p',a},{'p',b}}) then return {{'p',a},{'p',b}} end for c=1,4 do if BC.puzzleReplay(day,{{'p',a},{'p',b},{'p',c}}) then return {{'p',a},{'p',b},{'p',c}} end end end end return nil end\nlocal function call(n,p) task.wait(0.7) return r:InvokeServer(n,p) end\nlocal day=math.floor(os.time()/86400)\nlocal s0=solve(0) local sd=solve(day)\ntable.insert(out,'FLOW solve_practice ok='..tostring(s0~=nil)) table.insert(out,'FLOW solve_today ok='..tostring(sd~=nil))\nlocal res=call('CardPractice',{actions=s0 or {}}) table.insert(out,'FLOW practice_win ok='..tostring(res and res.ok))\nres=call('CardPractice',{actions=s0 or {}}) table.insert(out,'FLOW practice_repeat_no_second_reward ok='..tostring(res and res.ok and tostring(res.message):find('처음 한 번') ~= nil))\nres=call('CardPractice',{actions={}}) table.insert(out,'FLOW practice_empty_rejected ok='..tostring(res and res.ok==false))\nres=call('CardPuzzle',{day=day,actions={}}) table.insert(out,'FLOW puzzle_wrong_rejected ok='..tostring(res and res.ok==false))\nres=call('CardPuzzle',{day=day-1,actions=sd or {}}) table.insert(out,'FLOW puzzle_old_day_rejected ok='..tostring(res and res.ok==false))\nres=call('CardPuzzle',{day=day,actions=sd or {}}) table.insert(out,'FLOW puzzle_win ok='..tostring(res and res.ok))\nres=call('CardPuzzle',{day=day,actions=sd or {}}) table.insert(out,'FLOW puzzle_once_per_day ok='..tostring(res and res.ok==false))\nres=call('CardPick',{index=1}) table.insert(out,'FLOW pick_without_offer_rejected ok='..tostring(res and res.ok==false))\nres=call('CardAutoDeck',{}) table.insert(out,'FLOW autodeck ok='..tostring(res and res.ok))\nres=call('CardRecommend',{style='balance'}) table.insert(out,'FLOW recommend ok='..tostring(res~=nil and (res.ok or tostring(res.message):find('모자라')~=nil)))\nlocal stt=call('State',{}) local ids=stt and stt.view and stt.view.deck and stt.view.deck.book and stt.view.deck.book.ids or {} res=call('CardSlotSave',{slot=1,ids=ids,name='시험'}) table.insert(out,'FLOW slot_save ok='..tostring(res and res.ok))\nres=call('CardSlotUse',{slot=1}) table.insert(out,'FLOW slot_use ok='..tostring(res and res.ok))\nres=call('CardSlotUse',{slot=9}) table.insert(out,'FLOW slot_bad_rejected ok='..tostring(res and res.ok==false))\nreturn table.concat(out,'\\n')"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local c=0 for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then c+=1 end end return \"ERR Client count=\"..c"
+ }
+]
