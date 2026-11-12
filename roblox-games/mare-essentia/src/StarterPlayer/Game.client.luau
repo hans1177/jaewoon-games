@@ -596,16 +596,23 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		seal.Position = UDim2.new(1, -9, 0, 9)
 		seal.Size = UDim2.fromOffset(14, 14)
 		seal.BackgroundColor3 = WAX
-		seal.Text = "✦"
-		seal.TextSize = 9
-		seal.TextColor3 = Color3.fromRGB(232, 150, 130)
-		seal.Font = Enum.Font.GothamBold
+		seal.Text = ""
 		seal.ZIndex = 3
 		seal.Parent = row
 		corner(seal, 7)
 		local sealEdge = Instance.new("UIStroke")
+		sealEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		sealEdge.Color = Color3.fromRGB(96, 24, 20)
 		sealEdge.Thickness = 1
+		local sealCore = Instance.new("Frame") -- 밀랍이 눌린 안쪽 원
+		sealCore.AnchorPoint = Vector2.new(0.5, 0.5)
+		sealCore.Position = UDim2.fromScale(0.5, 0.5)
+		sealCore.Size = UDim2.fromScale(0.5, 0.5)
+		sealCore.BackgroundColor3 = Color3.fromRGB(186, 74, 62)
+		sealCore.BorderSizePixel = 0
+		sealCore.ZIndex = 4
+		sealCore.Parent = seal
+		corner(sealCore, 4)
 		sealEdge.Parent = seal
 		local bar = Instance.new("Frame")
 		bar.Name = "AccentBar"
@@ -647,7 +654,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, "❦ " .. text, 15, INK, true)
+	local l = mkLabel(parent, "◆ " .. text, 15, INK, true)
 	l.Size = UDim2.new(1, -8, 0, 26)
 	l.AutomaticSize = Enum.AutomaticSize.None
 	l.TextYAlignment = Enum.TextYAlignment.Center
@@ -658,6 +665,7 @@ local function mkHeader(parent, text)
 	pad.PaddingLeft = UDim.new(0, 10)
 	pad.Parent = l
 	local ribbonEdge = Instance.new("UIStroke")
+	ribbonEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 글자가 아니라 테두리에만 (기본값은 글자에 번짐)
 	ribbonEdge.Color = INK_EDGE
 	ribbonEdge.Thickness = 1.2
 	ribbonEdge.Parent = l
