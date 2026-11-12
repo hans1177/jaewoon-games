@@ -66,6 +66,21 @@ local SKILL_CARD = {
 	command = "hero_captain", volley = "hero_cannon", heal = "hero_medic", focus = "hero_spy", rally = "boatswain", analyze = "scout",
 	scout = "scout", beast = "beast", ward = "clear", luck = "scorch", insight = "fog",
 }
+B.SkillCard = SKILL_CARD
+-- 카드 스킬 설명 (개인 카드 창에서 보여 준다)
+B.SkillInfo = {
+	command = { name = "지휘", text = "카드전에서 영웅 '선장'(10)이 된다" },
+	volley = { name = "일제사격", text = "카드전에서 영웅 포(9)가 된다. 지도자 능력: 저격" },
+	heal = { name = "응급처치", text = "카드전에서 치료 능력의 영웅이 된다" },
+	focus = { name = "기동", text = "카드전에서 첩자 영웅이 된다. 지도자 능력: 항로 개척" },
+	rally = { name = "사기 고취", text = "카드전에서 사기 +1을 주는 갑판장이 된다" },
+	analyze = { name = "약점 분석", text = "카드전에서 첩자(카드 2장 뽑기)가 된다" },
+	scout = { name = "정찰", text = "카드전에서 첩자가 된다" },
+	beast = { name = "맹수의 기세", text = "카드전에서 근접 7의 맹수가 된다" },
+	ward = { name = "수호", text = "카드전에서 '맑음'(날씨 해제) 특수 카드가 된다" },
+	luck = { name = "행운", text = "카드전에서 '소각'(가장 센 비영웅 제거) 특수 카드가 된다" },
+	insight = { name = "통찰", text = "카드전에서 '안개'(사격 줄 약화) 특수 카드가 된다" },
+}
 local SKILL_SPECIAL = { ward = "clear", luck = "scorch", insight = "fog" }
 
 local BASE_ROSTER = { "swordsman", "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "musketeer", "scout", "gunner", "gunner", "swivel", "culverin" }

@@ -1208,6 +1208,101 @@ gear.Activated:Connect(function()
 	openOptions()
 end)
 
+-- 개인 카드 창: 내가 가진 카드(주인공·동료·지식·유물·동물·우군·배)와 지도자 능력을 보여 준다 (오른쪽 위 버튼)
+do
+	local BC = require(Shared:WaitForChild("BoardingCards"))
+	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
+	local deckBtn = Instance.new("TextButton")
+	deckBtn.Name = "DeckButton"
+	deckBtn.AnchorPoint = Vector2.new(1, 0)
+	deckBtn.Position = UDim2.new(1, -128, 0, 8)
+	deckBtn.Size = UDim2.fromOffset(100, 34)
+	deckBtn.BackgroundColor3 = NAVY2
+	deckBtn.Font = Enum.Font.GothamBold
+	deckBtn.TextSize = 14
+	deckBtn.TextColor3 = Color3.fromRGB(250, 236, 200)
+	deckBtn.Text = "🃏 내 카드"
+	deckBtn.Parent = hud
+	corner(deckBtn, 10)
+	hudStroke(deckBtn, 1.5)
+	local open = nil
+	function H.openDeck()
+		if open then
+			open:Destroy()
+			open = nil
+			return
+		end
+		local layer = overlayGui("DeckWindow", 56)
+		open = layer
+		local dim = Instance.new("TextButton")
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.5
+		dim.Text = ""
+		dim.AutoButtonColor = false
+		dim.Parent = layer
+		dim.Activated:Connect(function()
+			layer:Destroy()
+			open = nil
+		end)
+		local win = Instance.new("Frame")
+		win.AnchorPoint = Vector2.new(0.5, 0.5)
+		win.Position = UDim2.fromScale(0.5, 0.5)
+		win.Size = UDim2.new(0.8, 0, 0.8, 0)
+		win.BackgroundColor3 = NAVY
+		win.BorderSizePixel = 0
+		win.Parent = layer
+		corner(win, 14)
+		hudStroke(win, 2)
+		local cons = Instance.new("UISizeConstraint")
+		cons.MaxSize = Vector2.new(620, 460)
+		cons.Parent = win
+		local deck = view and view.deck
+		local cards = (deck and deck.cards) or {}
+		local title = mkLabel(win, string.format("🃏 내 카드 (%d장) — 접현 카드전에서 쓰여요", #cards), 18, Color3.fromRGB(246, 208, 130), true)
+		title.Position = UDim2.fromOffset(14, 10)
+		title.Size = UDim2.new(1, -28, 0, 26)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local list = Instance.new("ScrollingFrame")
+		list.Position = UDim2.fromOffset(10, 44)
+		list.Size = UDim2.new(1, -20, 1, -54)
+		list.BackgroundTransparency = 1
+		list.BorderSizePixel = 0
+		list.ScrollBarThickness = 5
+		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		list.CanvasSize = UDim2.new()
+		list.Parent = win
+		local lay = Instance.new("UIListLayout")
+		lay.Padding = UDim.new(0, 5)
+		lay.Parent = list
+		for _, c in cards do
+			local info = BC.SkillInfo[c.skill]
+			local unitId = BC.SkillCard[c.skill]
+			local unit = unitId and (BC.Units[unitId] or BC.Specials[unitId])
+			local unitText = ""
+			if unit then
+				unitText = if unit.special then "특수 카드" else string.format("%s 줄 · 전투력 %d%s", BC.ROW_NAME[unit.row], unit.power, if unit.hero then " · 영웅" else "")
+			end
+			local row = mkLabel(list, string.format("%s  %s\n스킬: %s — %s\n%s", KIND[c.kind] or "🃏", c.name, info and info.name or c.skill, info and info.text or "", unitText), 13, COLORS.text, false)
+			row.AutomaticSize = Enum.AutomaticSize.Y
+			row.Size = UDim2.new(1, -8, 0, 0)
+			row.TextWrapped = true
+			row.TextXAlignment = Enum.TextXAlignment.Left
+			row.BackgroundTransparency = 0.2
+			row.BackgroundColor3 = NAVY2
+			corner(row, 8)
+		end
+		local note = mkLabel(list, "병종 상성: 근접 > 포 > 사격 > 근접. 유리한 줄은 ×1.3, 불리한 줄은 ×0.85. 새 지식·유물·동물·항해자를 만날수록 카드가 늘어요.", 12, COLORS.muted, false)
+		note.TextWrapped = true
+		note.Size = UDim2.new(1, -8, 0, 0)
+		note.AutomaticSize = Enum.AutomaticSize.Y
+	end
+	deckBtn.Activated:Connect(function()
+		Sfx.play("sfx_click")
+		H.openDeck()
+	end)
+end
+
 function H.updateHud(p, ship)
 	hudName.Text = string.format("%s · %d년", p.nation, p.year)
 	hudPort.Text = "항구  " .. tostring(p.portName)
