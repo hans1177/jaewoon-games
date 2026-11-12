@@ -760,8 +760,9 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     'male_peasant_arms','male_peasant_feet','female_peasant_arms','female_peasant_feet',
     'male_ranger_arms','male_ranger_feet_boots','female_ranger_arms','female_ranger_feet',
     'male_ranger_acc_pauldron','female_ranger_acc_pauldrons',
-    'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed','hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard'];
-  assert.equal(names.length,26);
+    'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed','hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard',
+    'head_f','head_m','rig_f','rig_m'];
+  assert.equal(names.length,30);
   const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
   const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
@@ -781,5 +782,7 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     assert.equal(m.status,"STAGED_ONLY");
     assert.match(m.source,/quaternius.com/);
     assert.match(m.sourceGitBlobSha1,/^[0-9a-f]{40}$/);
+    const actualGitSha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
+    assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
   }
 });
