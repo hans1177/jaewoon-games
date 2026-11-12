@@ -221175,11 +221175,148 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_41bccdfd1921e93c810dce11",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12960",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ea71cb5661150d44f3c193b1e9ddfe870e7fd11a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12960,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-mobile-ui-portraits-20261113",
+        "baseSha": "ea71cb5661150d44f3c193b1e9ddfe870e7fd11a",
+        "headSha": "126a82b6024d9ab5cb53473e0b70c64f222c483c",
+        "mergeCommitSha": "bf45c3d4f5833e1c3ee79e786d4c2b23c396ef2f",
+        "mergedAt": "2026-11-12T19:01:34Z",
+        "authorLogin": "hans1177",
+        "titleHash": "abaa4deae95f2a40dcab87bb72356619b0dc835cd308b8f3ad7ec0aeb215dc1a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-mobile-ui-portraits-20261113",
+        "candidateSha": "126a82b6024d9ab5cb53473e0b70c64f222c483c"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 277,
+        "deletedLineCount": 107,
+        "changedFiles": [
+          "docs/devloop/VISUAL_LADDER_mare-essentia.md",
+          "qa-log/addendum-20261112-1800Z.md",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardflow.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cards.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-title.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "tools/vibe-autopilot.mjs",
+          "vibe-ladder-status.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/TacticsView.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardflow.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cards.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-title.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "tools/vibe-autopilot.mjs",
+          "vibe-ladder-status.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12960",
+        "merge-commit:bf45c3d4f5833e1c3ee79e786d4c2b23c396ef2f",
+        "base-main:ea71cb5661150d44f3c193b1e9ddfe870e7fd11a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1761
+    "total": 1762
   }
 }
