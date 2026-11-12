@@ -478,7 +478,7 @@ jobs:
             Where-Object { $allowed -notcontains $_.Name } | Remove-Item -Recurse -Force
           ([ordered]@{ version = 1; game = [string]$env:CAP_GAME; retentionDays = 7; runs = $kept }) |
             ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $dst 'history.json') -Encoding UTF8
-          $gallery = @('# 스튜디오 점검 사진 이력', '', '최신: [사진](./) · [검사표](checklist.json) · [전체 이력](history.json)', '', '보관: 정밀 12회 / 자동 8회 / 기타 4회, 최대 7일', '', '| 실행 | 결과 | 사진 | 변경된 파일 |', '|---|---|---:|---:|')
+          $gallery = @('# Studio QA capture history', '', 'Latest: [Screenshots](./) | [Checklist](checklist.json) | [All runs](history.json)', '', 'Retention: full 12 / autopilot 8 / other 4, maximum 7 days', '', '| Run | Status | Screenshots | Changed files |', '|---|---|---:|---:|')
           foreach ($item in $kept) {
             $gallery += "| [$($item.kind) #$($item.runId)](runs/$($item.runId)/) | $($item.status) | $($item.frames) | $($item.changedFrames) |"
           }
