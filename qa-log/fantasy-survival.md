@@ -52,3 +52,5 @@
 
 - 2026-11-12 09:2x(KST, 09:07 촬영, 커밋 742dbfa) 바이브: 점검 통과 — 9/9 단계, 클릭 2/2, 프레임 1장(ap_game), errors 비어 있음. ap_game jpg 직접 확인: 초원·HUD·퀘스트·미니맵·하단 슬롯 글자 정상. 새 점검(HEALTH_*)에서 HEALTH_ASSET fail=17 total=20 발견: 스킬트리 아이콘 등 rbxassetid 17개 로드 실패(HEALTH_ERR 0, 몬스터 64, 파츠 517, 하늘 sky=false). 원인 후보: tools/fantasy-skilltree-icons.mjs 가 옛 universe 10773436325 에만 사용 권한을 줘서 새 마력숲(10775310122)에서는 not authorized. 수정: 권한 대상에 새 universe 추가(옛 것도 유지), 영수증에 grantedUniverseIds 기록. 이 수정은 owner 시크릿(ROBLOX_OPEN_CLOUD_API_KEY)이 있어야 효과가 나므로 시크릿 복구 후 fantasy-skilltree-icons 워크플로 재실행 필요(사람 작업).
 - 큐 추가: 다음 점검 HEALTH_ASSET fail 개수가 줄었는지, 17개 ID 중 스킬 아이콘 4개 외 13개가 무엇인지(위 'permission for Asset' 목록과 겹치는지) 확인.
+
+- 2026-11-12 11:18(KST, run 43139576980) 바이브: 점검 실패 — screen_capture DMN_RSRVD_FOCUSED, 클릭 0/30, 프레임 0장(Studio Play/MCP 꺼짐 재발, 코드 문제 아님). 사람 확인 필요: PC Studio 에서 마력숲 열고 오른쪽 아래 MCP 켜기. HEALTH_ASSET 17개 확인은 다음 정상 점검으로 미룸. 코드 수정 없음, 재배포 안 함.
