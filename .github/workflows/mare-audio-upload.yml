@@ -1,5 +1,5 @@
 # 파일명: .github/workflows/mare-audio-upload.yml
-# 기존 마리 에센시아 CC0 오디오 등록 작업. 등록 ID/영수증은 main 직접 쓰기 대신 기존 PR 검토로 전달한다.
+# 기존 마리 에센시아 CC0·오너 원곡 등록 작업. 등록 ID/영수증은 main 직접 쓰기 대신 기존 PR 검토로 전달한다.
 name: Mare Audio Upload
 on:
   push:
@@ -44,7 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg unzip
+          sudo apt-get install -y -qq ffmpeg unzip python3-numpy
+          python3 roblox-games/mare-essentia/audio/synth.py --west-africa
           AUDIO_CC0_PREFLIGHT=1 node tools/mare-audio-upload.mjs
       - name: Upload verified audio and grant Universe use
         id: upload
@@ -74,7 +75,7 @@ jobs:
           const manifest=JSON.parse(fs.readFileSync(base+'manifest.json','utf8'));
           const receipts=JSON.parse(fs.readFileSync(base+'uploaded.json','utf8'));
           const paths=[];
-          for(const track of manifest.tracks.filter(track=>track.license==='CC0-1.0')){
+          for(const track of manifest.tracks.filter(track=>track.license==='CC0-1.0'||track.name==='music_region_w_africa')){
             const file=base+track.file;
             if(!fs.existsSync(file))throw Error('AUDIO_BINARY_MISSING '+track.name);
             const bytes=fs.readFileSync(file);
@@ -102,7 +103,7 @@ jobs:
           git push origin "HEAD:$branch"
           gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
             --title 'assets(mare): bind verified audio IDs' \
-            --body 'CC0 원본·해시와 파일 디코딩은 오디오 등록 단계에서 확인. 업로드 결과와 Universe 사용 권한 기록을 반영할 후보. 실제 Roblox Studio/모바일 재생·볼륨·루프 QA 및 F0~F9를 완료 전제로 주장하지 않는다.'
+            --body 'CC0 원본 또는 오너 원곡·해시와 파일 디코딩은 오디오 등록 단계에서 확인. 업로드 결과와 Universe 사용 권한 기록을 반영할 후보. 실제 Roblox Studio/모바일 재생·볼륨·루프 QA 및 F0~F9를 완료 전제로 주장하지 않는다.'
       - name: Report upload failures accurately
         if: ${{ always() && steps.upload.outcome == 'failure' }}
         run: |

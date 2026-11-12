@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """마리 에센시아 오리지널 음악·효과음 합성기 (코드로 직접 합성한 창작물).
 실행: python3 synth.py  → out/*.ogg + manifest.json 생성. 외부 샘플·저작물 사용 없음."""
-import numpy as np, subprocess, json, os, wave
+import numpy as np, subprocess, json, os, wave, sys
 SR = 32000
 rng = np.random.default_rng(7)
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
@@ -87,12 +87,12 @@ class Track:
         x[:len(tail)] += tail  # 이음매 없이 이어지게 꼬리를 앞에 접는다
         return norm(reverb(x, 1.8, rv), 0.8)
 
-def write_ogg(name, x):
+def write_ogg(name, x, quality=3):
     wav = os.path.join(OUT, name + ".wav"); ogg = os.path.join(OUT, name + ".ogg")
     pcm = (np.clip(x, -1, 1) * 32767).astype(np.int16)
     with wave.open(wav, "wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes(pcm.tobytes())
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libvorbis", "-q:a", "3", ogg], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libvorbis", "-q:a", str(quality), ogg], check=True)
     os.remove(wav)
 
 # --- 음악 ---
@@ -161,6 +161,72 @@ def music_market():
         T.add(flute(m, d * b * 0.9), t, 0.5); t += d * b
     return T.done(secs, 0.2)
 
+
+# --- 오너 창작 서아프리카 타악기 (112 BPM · 16마디 · 외부 샘플 없음) ---
+def music_region_w_africa():
+    beat=60.0/112; bars=16; n=round(SR*bars*4*beat)
+    r=np.random.default_rng(1177); song=np.zeros(n,dtype=np.float64)
+    def add(x,at,gain=1.0):
+        i=round(at*SR)%n; a=np.asarray(x,dtype=np.float64)*gain; end=i+len(a)
+        if end<=n: song[i:end]+=a
+        else:
+            size=n-i; song[i:]+=a[:size]; song[:len(a)-size]+=a[size:]
+    def low_drum(freq=80,dur=.4):
+        t=np.arange(round(dur*SR))/SR; hz=freq*(.76+1.1*np.exp(-t*28))
+        phase=2*np.pi*np.cumsum(hz)/SR
+        body=(np.sin(phase)+.19*np.sin(2*phase))*np.exp(-t*8)
+        slap=r.standard_normal(len(t))*np.exp(-t*53)*.14
+        return (body+slap)*(1-np.exp(-t*180))
+    def hand_drum(freq=185,dur=.23):
+        t=np.arange(round(dur*SR))/SR; hz=freq*(.87+.57*np.exp(-t*45))
+        phase=np.cumsum(hz)/SR
+        sound=(np.sin(2*np.pi*phase)+.3*np.sin(2*np.pi*2.05*phase))*np.exp(-t*19)
+        noise=r.standard_normal(len(t)); noise[1:]-=noise[:-1]*.72
+        return (sound+noise*np.exp(-t*44)*.21)*(1-np.exp(-t*220))
+    def shaker(dur=.085):
+        t=np.arange(round(dur*SR))/SR; noise=r.standard_normal(len(t))
+        noise-=np.convolve(noise,np.ones(10)/10,mode='same')
+        return .24*noise*np.exp(-t*44)*(1-np.exp(-t*360))
+    def wood_note(note,dur=.48):
+        t=np.arange(round(dur*SR))/SR; f=440*2**((note-69)/12)
+        tone=np.sin(2*np.pi*f*t)+.38*np.sin(2*np.pi*f*3.98*t)+.16*np.sin(2*np.pi*f*9.1*t)
+        return tone*np.exp(-t*8)*(1-np.exp(-t*150))
+    def low_note(note,dur=.52):
+        t=np.arange(round(dur*SR))/SR; f=440*2**((note-69)/12)
+        tone=np.sin(2*np.pi*f*t)+.2*np.sin(4*np.pi*f*t)
+        return tone*np.exp(-t*7)*(1-np.exp(-t*60))
+    roots=[38,41,43,38]*4
+    motifs=[
+      [(0.,65),(.75,69),(1.5,72),(2.5,69),(3.25,67)],
+      [(0.,62),(1.,67),(1.75,69),(2.5,65),(3.5,62)],
+      [(.25,67),(1.,69),(1.75,72),(2.75,74),(3.5,72)],
+      [(0.,69),(.75,65),(1.5,62),(2.5,67),(3.25,65)]]
+    for bar in range(bars):
+        start=bar*4*beat; root=roots[bar]
+        for b,v in [(0,.79),(1.5,.66),(2.75,.75)]:
+            add(low_drum(82 if b==0 else 70),start+b*beat,v)
+        if bar%4==3: add(low_drum(96,.25),start+3.65*beat,.49)
+        for b,f,v in [(.5,205,.48),(1,190,.54),(2.25,225,.46),(3.25,174,.54)]:
+            add(hand_drum(f),start+b*beat,v)
+        if bar%2==1:
+            add(hand_drum(236,.18),start+1.75*beat,.35)
+            add(hand_drum(244,.18),start+3.75*beat,.3)
+        for step in range(16):
+            b=step/4+(.025 if step%2 else 0)
+            v=.15 if step%4==0 else (.11 if step%2==0 else .075)
+            add(shaker(),start+b*beat,v)
+        for b,note,v in [(0,root,.32),(2,root+7,.24)]:
+            add(low_note(note),start+b*beat,v)
+        for b,note in motifs[bar%4]:
+            add(wood_note(note),start+b*beat,.15 if bar<4 else .21)
+        if bar%4==3:
+            for k,note in enumerate([74,72,69,67]):
+                add(wood_note(note,.26),start+(3.05+k*.22)*beat,.11)
+    song=np.tanh(song*1.08); song-=np.mean(song)
+    song*=.81/max(1e-8,np.max(np.abs(song)))
+    write_ogg("music_region_w_africa",song,quality=4)
+    print("OWNER_WEST_AFRICA_ORIGINAL",round(n/SR,2),"seconds")
+
 # --- 효과음 ---
 def sfx_click(): n = int(SR * .06); t = np.arange(n) / SR; return norm(np.sin(2*np.pi*1400*t) * np.exp(-t*70) + hp_fast(rng.standard_normal(n), 3000) * np.exp(-t*90) * .3, .6)
 def sfx_coin():
@@ -208,6 +274,10 @@ def sfx_horn(): n = int(SR*2); t = np.arange(n)/SR; return norm((np.sin(2*np.pi*
 def sfx_sail(): n = int(SR*.9); t = np.arange(n)/SR; return norm(lp_fast(hp_fast(rng.standard_normal(n), 300), 2600) * np.sin(np.pi*t/.9)**2 * (1+.6*np.sin(2*np.pi*14*t)), .6)
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--west-africa"]:
+        music_region_w_africa()
+        sys.exit(0)
+    if sys.argv[1:]: raise SystemExit("Unknown track")
     items = [
         ("music_harbor", music_harbor, "음악: 항구", True), ("music_sea", music_sea, "음악: 항해", True),
         ("music_battle", music_battle, "음악: 해전", True), ("music_market", music_market, "음악: 교역소", True),

@@ -23,6 +23,28 @@ const cc0Manifest=JSON.parse(fs.readFileSync(cc0Base+'manifest.json','utf8'));
 const cc0PackDir='assets/external/simple-rpg/priority-v1/';
 const cc0PackManifest=JSON.parse(fs.readFileSync(cc0PackDir+'manifest.json','utf8'));
 
+// 오너가 이번 서아프리카 곡의 저작권과 게임 사용·등록을 명시적으로 승인했다.
+function prepareOwnerOriginalMusic(t){
+  if(t.name!=='music_region_w_africa'||t.file!=='out/music_region_w_africa.ogg'
+     ||t.source!=='OWNER_ORIGINAL_COMPOSITION'||t.license!=='OWNER_CREATED_AUDIO'
+     ||t.creator!=='GAME_OWNER'||t.ownerAuthorized!==true||t.externalSamplesUsed!==false
+     ||t.compositionPath!=='audio/synth.py#music_region_w_africa'
+     ||!/^[a-f0-9]{64}$/.test(String(t.sha256||'')))
+    throw Error('OWNER_ORIGINAL_MUSIC_PROVENANCE_INVALID');
+  const file=dir+'/'+t.file;
+  if(!fs.existsSync(file))throw Error('OWNER_ORIGINAL_MUSIC_MISSING');
+  const b=fs.readFileSync(file); const sha=crypto.createHash('sha256').update(b).digest('hex');
+  if(b.length<12000||b.subarray(0,4).toString()!=='OggS'||sha!==t.sha256)
+    throw Error('OWNER_ORIGINAL_MUSIC_HASH_INVALID');
+  const p=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries','format=duration',
+    '-of','json',file],{encoding:'utf8',timeout:10000}));
+  if(!Number.isFinite(Number(p.format?.duration))||Math.abs(Number(p.format.duration)-t.durationSeconds)>.15)
+    throw Error('OWNER_ORIGINAL_MUSIC_LENGTH_INVALID');
+  return {license:'OWNER_CREATED_AUDIO',source:'OWNER_ORIGINAL_COMPOSITION',
+    creator:'GAME_OWNER',ownerAuthorized:true,externalSamplesUsed:false,
+    compositionPath:t.compositionPath,compositionSha256:sha};
+}
+
 function prepareVerifiedCC0(track){
   if(track.license!=='CC0-1.0'||track.source!=='VERIFIED_CC0_ORIGINAL_DERIVATIVE'
     ||!/^out\/[a-z0-9_]+\.ogg$/.test(track.file)
@@ -172,11 +194,11 @@ function prepareVerifiedCC0(track){
 
 // API 키 없이 원본 권리/해시/파생 음원의 디코더까지 검사하는 수동 검증 모드.
 if(process.env.AUDIO_CC0_PREFLIGHT==='1'){
-  const tracks=meta.tracks.filter(t=>t.license==='CC0-1.0');
+  const tracks=meta.tracks.filter(t=>t.license==='CC0-1.0'||t.name==='music_region_w_africa');
   let passed=0,unavailable=0;
   for(const t of tracks){
     try{
-      const evidence=prepareVerifiedCC0(t);
+      const evidence=t.license==='CC0-1.0'?prepareVerifiedCC0(t):prepareOwnerOriginalMusic(t);
       const file=dir+'/'+t.file;
       const info=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries',
         'format=duration,size','-of','json',file],{encoding:'utf8',timeout:15000}));
@@ -256,7 +278,8 @@ let failures=0;
 
 for(const t of meta.tracks){
   try{
-    const provenance=t.license==='CC0-1.0'?prepareVerifiedCC0(t):null;
+    const provenance=t.license==='CC0-1.0'?prepareVerifiedCC0(t):
+      (t.name==='music_region_w_africa'?prepareOwnerOriginalMusic(t):null);
     const bytes=fs.readFileSync(dir+'/'+t.file);
     const sha=crypto.createHash('sha256').update(bytes).digest('hex');
     let rec=receipts[t.name]||{};
@@ -271,7 +294,9 @@ for(const t of meta.tracks){
       const form=new FormData();
       form.append('request',JSON.stringify({
         assetType:'Audio',displayName:('Mare '+t.label).slice(0,50),
-        description:('CC0 original derivative for Mare Essentia. '+t.sourceUrl+' sha256 '+sha).slice(0,950),
+        description:(t.source==='OWNER_ORIGINAL_COMPOSITION'
+          ?'Original game owner composition; no third-party samples; sha256 '+sha
+          :'CC0 original derivative for Mare Essentia. '+t.sourceUrl+' sha256 '+sha).slice(0,950),
         creationContext:{creator},
       }));
       form.append('fileContent',new Blob([bytes],{type:'audio/ogg'}),t.name+'.ogg');

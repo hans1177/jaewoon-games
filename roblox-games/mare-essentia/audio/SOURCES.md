@@ -93,3 +93,11 @@
 - 해전: Eldritch Grim, [Pirate Indenture](https://opengameart.org/content/pirate-indenture) (CC0, 루프).
 - 주점: Bobjt, [Crowded Pub](https://opengameart.org/content/crowded-pub) (CC0, OGG/MP3).
 - 문화권 악기·리듬 적합성은 시대와 국가별로 별도 확인하고, 유럽 중세 음악을 다른 문화권 대표곡으로 오표시하지 않는다.
+
+## 2026-11-12 서아프리카 오너 창작 음악
+
+- 사용자가 직접 작곡·소유했다고 명시한 34.29초(112 BPM, 16마디) 원곡을 `music_region_w_africa`에 지정.
+- 외부 샘플·외부 멜로디 사용 없음. 기존 `audio/synth.py` 안에서 재현. 파일 SHA-256 `a5c9a7c568edef9b6a41b7be77d18832d325fa6cf09f80808fae7d0419166340`.
+- 오너 지정 해당 음악에 한정한 중앙규칙 예외를 기록. 타 음원 CC0 검증과 기존 합성곡 등록 금지 보호는 유지.
+- 새 ID와 Universe 사용 권한이 기록되기 전까지 기존 서아프리카 자산은 변경하지 않음.
+- 등록 워크플로·ID PR·로블록스 본게임 게시·모바일 실재생은 별도 증거로 확인.
