@@ -781,6 +781,20 @@ do
 		end
 	end
 
+	-- 화가가 그려 주는 초상 후보: 그 지역 교역소 사람들 10칸 (1700년 이후 화풍)
+	function H.npcCellAsset(portId, cell)
+		local port = portId and PortData.Ports[portId]
+		if not port then
+			return nil
+		end
+		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
+		local atlas = region and AssetIds["Portraits/npc_" .. region]
+		if not atlas or type(cell) ~= "number" or cell < 0 or cell > 9 then
+			return nil
+		end
+		return atlas, Vector2.new(cell % 5 * 200, math.floor(cell / 5) * 200), Vector2.new(200, 200)
+	end
+
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
@@ -807,19 +821,7 @@ do
 end
 
 local function setPortrait(groupName)
-	-- 새 게임 선택 중에는 선택한 주인공, 이어하기에서는 저장된 주인공의 얼굴을 유지한다.
 	local heroNation = nil
-	if groupName == "선장실" then
-		heroNation = chosenNation
-		if view and view.player and not newGameMode then
-			for id, nation in PortData.Nations do
-				if nation.name == view.player.nation then
-					heroNation = id
-					break
-				end
-			end
-		end
-	end
 	local tile = PORTRAIT_GROUP[groupName]
 	local portId = view and view.player and view.player.portId
 	local regionalId, regionalOffset, regionalSize = H.facilityPortraitAsset(portId, tile)
@@ -1955,55 +1957,9 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
--- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
+-- 주인공 초상 대신 국가 국기를 보여 준다 (선택 화면·오프닝·에필로그)
 local function heroPortrait(parent, nationId, w, h)
-	local atlas, tile, size = H.heroPortraitAsset(nationId)
-	if atlas and tile then
-		local photo = Instance.new("ImageLabel")
-		photo.Name = "HeroPortrait"
-		photo.Size = UDim2.fromOffset(w, h)
-		photo.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
-		photo.BorderSizePixel = 0
-		photo.ScaleType = Enum.ScaleType.Crop
-		photo.Image = "rbxassetid://" .. tostring(atlas)
-		photo.ImageRectOffset = tile
-		photo.ImageRectSize = size
-		corner(photo, 10)
-		local st = Instance.new("UIStroke")
-		st.Color = Color3.fromRGB(214, 170, 82)
-		st.Thickness = 2
-		st.Parent = photo
-		photo.Parent = parent
-		return photo
-	end
-	local vf = Instance.new("ViewportFrame")
-	vf.Size = UDim2.fromOffset(w, h)
-	vf.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
-	vf.Ambient = Color3.fromRGB(170, 170, 178)
-	vf.LightColor = Color3.fromRGB(255, 236, 205)
-	vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
-	corner(vf, 10)
-	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(214, 170, 82)
-	st.Thickness = 2
-	st.Parent = vf
-	local cam = Instance.new("Camera")
-	cam.FieldOfView = 32
-	cam.Parent = vf
-	vf.CurrentCamera = cam
-	local world = Instance.new("WorldModel")
-	world.Parent = vf
-	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
-	local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("선장", nationId))
-	local m = portraitPerson(world, "hero" .. nationId, "Rogue_Hooded", tpl)
-	if m then
-		local cf, size = m:GetBoundingBox()
-		local focus = cf.Position + Vector3.new(0, size.Y * 0.3, 0)
-		cam.FieldOfView = 36
-		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.2, 0.1, -1).Unit * (size.Y * 0.95), focus)
-	end
-	vf.Parent = parent
-	return vf
+	return require(Shared:WaitForChild("Flags")).build(parent, nationId, w, math.floor(w * 0.68))
 end
 
 local function playEpilogue(msg, opts)
@@ -5175,7 +5131,7 @@ function H.startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
 	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
-	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart, room = H.roomMode == true })
+	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, origin = H.chosenOrigin, restart = restart, room = H.roomMode == true })
 	if not (result and result.ok) then
 		sceneHold = false
 	end
@@ -5456,31 +5412,13 @@ renderTitle = function()
 		st.Thickness = if selected then 2.5 else 1
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
-		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
-		local faceAtlas, faceTile, faceSize = H.heroPortraitAsset(n.id)
-		if faceAtlas and faceTile then
-			local face = Instance.new("ImageLabel")
-			face.Name = "NationHeroPortrait"
-			face.Position = UDim2.fromOffset(8, 4)
-			face.Size = UDim2.fromOffset(32, 42)
-			face.BackgroundColor3 = Color3.fromRGB(25, 32, 45)
-			face.BorderSizePixel = 0
-			face.ScaleType = Enum.ScaleType.Crop
-			face.Image = "rbxassetid://" .. tostring(faceAtlas)
-			face.ImageRectOffset = faceTile
-			face.ImageRectSize = faceSize
-			face.ZIndex = 14
-			corner(face, 6)
-			face.Parent = card
-		else
-			local badge = mkRound(card, UDim2.fromOffset(8, 9), UDim2.fromOffset(32, 32), NATION_COLOR[n.id] or COLORS.blue, 0, Vector2.new(0, 0))
-			badge.ZIndex = 14
-			local ch = mkLabel(badge, string.sub(n.name, 1, 3), 15, Color3.new(1, 1, 1), true)
-			ch.Size = UDim2.fromScale(1, 1)
-			ch.AutomaticSize = Enum.AutomaticSize.None
-			ch.TextXAlignment = Enum.TextXAlignment.Center
-			ch.TextYAlignment = Enum.TextYAlignment.Center
-			ch.ZIndex = 15
+		local flag = require(Shared:WaitForChild("Flags")).build(card, n.id, 34, 24)
+		flag.Position = UDim2.fromOffset(8, 13)
+		flag.ZIndex = 14
+		for _, d in flag:GetDescendants() do
+			if d:IsA("GuiObject") then
+				d.ZIndex = 15
+			end
 		end
 		local nm = mkLabel(card, n.name, 15, if selected then GOLD else COLORS.text, true)
 		nm.Position = UDim2.fromOffset(48, 6)
@@ -5543,8 +5481,65 @@ renderTitle = function()
 	tLabel(info, "출발 항구  " .. PortData.Ports[cur.startPort].name, 12, COLORS.text, true)
 	tLabel(info, cur.summary, 12, COLORS.muted, false)
 
-	-- ② 시대
-	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
+	-- ② 출신 성분
+	tLabel(titleScroll, "② 어떤 집안에서 자랐나요?", 15, COLORS.muted, true, nxt())
+	do
+		local Sp = require(Shared:WaitForChild("Specialties"))
+		H.chosenOrigin = H.chosenOrigin or "merchant"
+		local og = Instance.new("Frame")
+		og.BackgroundTransparency = 1
+		og.Size = UDim2.new(1, 0, 0, 0)
+		og.AutomaticSize = Enum.AutomaticSize.Y
+		og.LayoutOrder = nxt()
+		og.ZIndex = 12
+		local ogl = Instance.new("UIGridLayout")
+		ogl.CellSize = UDim2.new(0.5, -4, 0, 62)
+		ogl.CellPadding = UDim2.fromOffset(8, 8)
+		ogl.SortOrder = Enum.SortOrder.LayoutOrder
+		ogl.Parent = og
+		for i, o in Sp.Origins do
+			local sel = H.chosenOrigin == o.id
+			local b = Instance.new("TextButton")
+			b.LayoutOrder = i
+			b.Text = ""
+			b.AutoButtonColor = false
+			b.BorderSizePixel = 0
+			b.ZIndex = 13
+			b.BackgroundColor3 = if sel then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
+			corner(b, 10)
+			local bst = Instance.new("UIStroke")
+			bst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			bst.Thickness = if sel then 2.5 else 1
+			bst.Color = if sel then GOLD else Color3.fromRGB(64, 78, 98)
+			bst.Parent = b
+			local n1 = mkLabel(b, o.name, 14, if sel then GOLD else COLORS.text, true)
+			n1.Position = UDim2.fromOffset(8, 4)
+			n1.Size = UDim2.new(1, -12, 0, 18)
+			n1.AutomaticSize = Enum.AutomaticSize.None
+			n1.ZIndex = 14
+			local n2 = mkLabel(b, o.perkText, 11, COLORS.muted, false)
+			n2.Position = UDim2.fromOffset(8, 23)
+			n2.Size = UDim2.new(1, -12, 0, 36)
+			n2.AutomaticSize = Enum.AutomaticSize.None
+			n2.TextWrapped = true
+			n2.TextYAlignment = Enum.TextYAlignment.Top
+			n2.ZIndex = 14
+			b.Activated:Connect(function()
+				Sfx.play("sfx_click")
+				H.chosenOrigin = o.id
+				renderTitle()
+			end)
+			b.Parent = og
+		end
+		og.Parent = titleScroll
+		local cur2 = Sp.OriginById[H.chosenOrigin]
+		if cur2 then
+			tLabel(titleScroll, cur2.story, 12, COLORS.muted, false, nxt())
+		end
+	end
+
+	-- ③ 시대
+	tLabel(titleScroll, "③ 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
 		{ 1517, "1517년", "종교개혁의 시작" },
 		{ 1600, "1600년", "동인도회사의 새벽" },
@@ -5960,6 +5955,325 @@ do
 		end
 	end)
 end
+
+-- 시작 안내: 교역소(이름) → 주점(첫 동료) → 화가(초상화) / 선장 초상 칩
+(function()
+	local TweenService = game:GetService("TweenService")
+	local dlg = nil
+	local function closeDlg()
+		if dlg then
+			dlg:Destroy()
+			dlg = nil
+		end
+	end
+	-- value: "hero:국가" | "npc:항구:칸" → 이미지, 오프셋, 크기
+	function H.capPortraitAsset(value)
+		if type(value) ~= "string" then
+			return nil
+		end
+		local nation = string.match(value, "^hero:([%w_]+)$")
+		if nation then
+			return H.heroPortraitAsset(nation)
+		end
+		local port, cell = string.match(value, "^npc:([%w_]+):(%d)$")
+		if port then
+			return H.npcCellAsset(port, tonumber(cell))
+		end
+		return nil
+	end
+	local function portraitImg(parent, value, w, h)
+		local atlas, off, size = H.capPortraitAsset(value)
+		if not atlas then
+			return nil
+		end
+		local im = Instance.new("ImageLabel")
+		im.Size = UDim2.fromOffset(w, h)
+		im.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
+		im.BorderSizePixel = 0
+		im.ScaleType = Enum.ScaleType.Crop
+		im.Image = "rbxassetid://" .. tostring(atlas)
+		im.ImageRectOffset = off
+		im.ImageRectSize = size
+		corner(im, 8)
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(214, 170, 82)
+		st.Thickness = 2
+		st.Parent = im
+		im.Parent = parent
+		return im
+	end
+
+	-- spec: speaker, role, text, input(placeholder), choices(list of {label,value}), portraits(list of values), button
+	local function openDlg(spec, onDone)
+		closeDlg()
+		local layer = overlayGui("IntroDialog", 58)
+		dlg = layer
+		local dim = Instance.new("Frame")
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.55
+		dim.BorderSizePixel = 0
+		dim.Parent = layer
+		local win = Instance.new("Frame")
+		win.AnchorPoint = Vector2.new(0.5, 1)
+		win.Position = UDim2.new(0.5, 0, 1, -24)
+		win.Size = UDim2.new(0, 540, 0, 0)
+		win.AutomaticSize = Enum.AutomaticSize.Y
+		win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+		win.BorderSizePixel = 0
+		win.Parent = layer
+		corner(win, 16)
+		local wst = Instance.new("UIStroke")
+		wst.Color = BRASS
+		wst.Thickness = 2.5
+		wst.Parent = win
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(580, 700)
+		lim.MinSize = Vector2.new(280, 120)
+		lim.Parent = win
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
+		pad.Parent = win
+		local list = Instance.new("UIListLayout")
+		list.Padding = UDim.new(0, 10)
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.Parent = win
+		mkLabel(win, spec.speaker .. (if spec.role then "  ·  " .. spec.role else ""), 18, Color3.fromRGB(246, 208, 130), true, 1)
+		mkLabel(win, spec.text, 15, COLORS.text, false, 2)
+		local box
+		if spec.input then
+			box = Instance.new("TextBox")
+			box.Size = UDim2.new(1, 0, 0, 40)
+			box.BackgroundColor3 = Color3.fromRGB(26, 38, 58)
+			box.BorderSizePixel = 0
+			box.TextColor3 = COLORS.text
+			box.PlaceholderText = spec.input
+			box.PlaceholderColor3 = COLORS.muted
+			box.Text = ""
+			box.TextSize = 18
+			box.Font = Enum.Font.GothamBold
+			box.ClearTextOnFocus = false
+			box.LayoutOrder = 3
+			corner(box, 8)
+			box.Parent = win
+		end
+		local picked = nil
+		if spec.portraits then
+			local grid = Instance.new("Frame")
+			grid.BackgroundTransparency = 1
+			grid.Size = UDim2.new(1, 0, 0, 0)
+			grid.AutomaticSize = Enum.AutomaticSize.Y
+			grid.LayoutOrder = 3
+			local gl = Instance.new("UIGridLayout")
+			gl.CellSize = UDim2.fromOffset(84, 84)
+			gl.CellPadding = UDim2.fromOffset(8, 8)
+			gl.SortOrder = Enum.SortOrder.LayoutOrder
+			gl.Parent = grid
+			local frames = {}
+			for i, v in spec.portraits do
+				local cell = Instance.new("TextButton")
+				cell.LayoutOrder = i
+				cell.Text = ""
+				cell.AutoButtonColor = false
+				cell.BackgroundTransparency = 1
+				cell.BorderSizePixel = 0
+				local im = portraitImg(cell, v, 84, 84)
+				local st = im and im:FindFirstChildOfClass("UIStroke")
+				frames[v] = st
+				cell.Activated:Connect(function()
+					Sfx.play("sfx_click")
+					picked = v
+					for pv, pst in frames do
+						pst.Color = if pv == v then Color3.fromRGB(120, 230, 140) else Color3.fromRGB(214, 170, 82)
+						pst.Thickness = if pv == v then 4 else 2
+					end
+				end)
+				cell.Parent = grid
+			end
+			grid.Parent = win
+		end
+		local note = mkLabel(win, "", 13, Color3.fromRGB(240, 150, 120), false, 4)
+		local go = mkButton(win, spec.button or "확인", COLORS.gold, UDim2.new(1, 0, 0, 42), function()
+			local value = nil
+			if box then
+				value = box.Text
+			elseif spec.portraits then
+				value = picked
+				if not value then
+					note.Text = "마음에 드는 초상을 골라 주세요"
+					return
+				end
+			end
+			local ok, msg = onDone(value)
+			if ok == false then
+				note.Text = tostring(msg or "")
+			end
+		end, true)
+		go.LayoutOrder = 5
+	end
+
+	-- 화면 왼쪽 선장 초상 칩 (초상화를 받으면 얼굴, 그 전에는 국기)
+	local chipGui = overlayGui("CaptainChip", 12)
+	local chip = Instance.new("Frame")
+	chip.AnchorPoint = Vector2.new(0, 0.5)
+	chip.Position = UDim2.new(0, 8, 0.42, 0)
+	chip.Size = UDim2.fromOffset(92, 132)
+	chip.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	chip.BackgroundTransparency = 0.15
+	chip.BorderSizePixel = 0
+	chip.Visible = false
+	chip.Parent = chipGui
+	corner(chip, 10)
+	local chipKey = nil
+	local chipName = mkLabel(chip, "", 12, Color3.fromRGB(246, 208, 130), true)
+	chipName.AnchorPoint = Vector2.new(0.5, 1)
+	chipName.Position = UDim2.new(0.5, 0, 1, -4)
+	chipName.Size = UDim2.new(1, -6, 0, 18)
+	chipName.AutomaticSize = Enum.AutomaticSize.None
+	chipName.TextXAlignment = Enum.TextXAlignment.Center
+	chipName.TextTruncate = Enum.TextTruncate.AtEnd
+	local function refreshChip()
+		local c = view and view.captain
+		local show = c ~= nil and not newGameMode
+		chip.Visible = show
+		if not show then
+			return
+		end
+		local key = tostring(c.portrait) .. "|" .. tostring(c.name) .. "|" .. tostring(view.player and view.player.year)
+		if key == chipKey then
+			return
+		end
+		chipKey = key
+		for _, ch in chip:GetChildren() do
+			if ch.Name == "ChipFace" then
+				ch:Destroy()
+			end
+		end
+		chipName.Text = c.name or "선장"
+		local face = portraitImg(chip, c.portrait, 80, 100)
+		if not face then
+			local nid = nil
+			for id, n in PortData.Nations do
+				if n.name == view.player.nation then
+					nid = id
+				end
+			end
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 80, 54)
+			face.Position = UDim2.fromOffset(6, 20)
+		else
+			face.Position = UDim2.fromOffset(6, 6)
+		end
+		face.Name = "ChipFace"
+	end
+
+	-- 화가가 완성한 초상을 크게 보여 준 뒤 칩으로 줄어든다
+	local function reveal(value, name)
+		local layer = overlayGui("PortraitReveal", 59)
+		local big = portraitImg(layer, value, 240, 300)
+		if big then
+			big.AnchorPoint = Vector2.new(0.5, 0.5)
+			big.Position = UDim2.fromScale(0.3, 0.45)
+			local cap = mkLabel(layer, name, 22, Color3.fromRGB(246, 208, 130), true)
+			cap.AnchorPoint = Vector2.new(0.5, 0)
+			cap.Position = UDim2.new(0.3, 0, 0.45, 170)
+			cap.Size = UDim2.fromOffset(300, 30)
+			cap.AutomaticSize = Enum.AutomaticSize.None
+			cap.TextXAlignment = Enum.TextXAlignment.Center
+			task.wait(2.4)
+			TweenService:Create(big, TweenInfo.new(0.6), { Size = UDim2.fromOffset(80, 100), Position = UDim2.new(0, 54, 0.42, -26) }):Play()
+			task.wait(0.7)
+		end
+		layer:Destroy()
+	end
+
+	local function nationPortraits()
+		local out = {}
+		for id in PortData.Nations do
+			table.insert(out, "hero:" .. id)
+		end
+		table.sort(out)
+		local portId = view.player.portId
+		if (view.player.year or 0) >= 1700 then
+			for cell = 0, 9 do
+				if H.npcCellAsset(portId, cell) then
+					table.insert(out, "npc:" .. portId .. ":" .. cell)
+				end
+			end
+		end
+		return out
+	end
+
+	local function runStep(step)
+		local c = view.captain
+		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
+		if step == "name" then
+			openDlg({ speaker = "길드 서기", role = role, input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
+				text = "처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
+				function(v)
+					local r = call("IntroName", { name = v })
+					if r and r.ok then
+						closeDlg()
+					end
+					return r and r.ok, r and r.message
+				end)
+		elseif step == "companion" then
+			local who = c.companion
+			if not who then
+				call("IntroCompanion", {})
+				return
+			end
+			openDlg({ speaker = who.name, role = who.role, button = "함께 가자",
+				text = string.format("(주점 구석에서 다가온다) 당신이 새로 온 선장이군요. 소문을 들었어요. 대가는 필요 없습니다. 같은 고향 사람끼리, 항해에 보탬이 되고 싶어요. 저를 태워 주시겠어요? (%s)", who.role) },
+				function()
+					local r = call("IntroCompanion", {})
+					if r and r.ok then
+						closeDlg()
+					end
+					return r and r.ok, r and r.message
+				end)
+		else
+			openDlg({ speaker = "떠돌이 화가", role = role, portraits = nationPortraits(), button = "이 얼굴로 그려 주세요",
+				text = string.format("%s 선장님이시죠? 저는 항구를 떠돌며 항해자 화첩을 만들고 있어요. 바다로 나간 사람들의 얼굴을 남기면, 훗날 그들의 이야기가 사라지지 않거든요. 대가는 받지 않을게요. 어떤 모습으로 그려 드릴까요?", c.name or "선장") },
+				function(v)
+					local name = c.name or "선장"
+					local r = call("IntroPortrait", { portrait = v })
+					if r and r.ok then
+						closeDlg()
+						task.spawn(function()
+							reveal(v, name)
+						end)
+					end
+					return r and r.ok, r and r.message
+				end)
+		end
+	end
+
+	task.spawn(function()
+		local last = nil
+		while true do
+			task.wait(0.7)
+			pcall(refreshChip)
+			local c = view and view.captain
+			if c and not newGameMode and not sceneHold and not dlg and c.step ~= "done" then
+				local want = (c.step == "name" and main.Visible and (currentTab == "trade" or currentTab == "harbor"))
+					or (c.step == "companion" and main.Visible and (currentTab == "quest" or currentTab == "explore" or currentTab == "battle"))
+					or (c.step == "portrait" and main.Visible)
+				if want and last ~= c.step then
+					last = c.step
+					task.wait(0.4)
+					if view and view.captain and view.captain.step == c.step and not dlg then
+						local ok, err = pcall(runStep, c.step)
+						if not ok then
+							warn("[Game] 시작 안내 오류:", err)
+						end
+					end
+				elseif not want then
+					last = nil
+				end
+			end
+		end
+	end)
+end)()
 
 -- 개발 캡처용: 로컬에서 "DevCall" 속성에 State 를 넣으면 화면을 서버 상태로 새로 그린다 (읽기 전용 요청만)
 task.spawn(function()

@@ -218,7 +218,23 @@ for _, c in Companions do
 	CompanionById[c.id] = c
 end
 
+-- 출신 성분: 새 게임에서 하나를 고른다. 시작 자금·명성과 평생 가는 작은 혜택이 달라진다.
+local Origins: { { id: string, name: string, story: string, perkText: string, coins: number, fame: number, supplies: number?, perk: { [string]: any }? } } = {
+	{ id = "farmer", name = "농부의 자식", story = "흙과 계절을 알고, 굶주림을 견딘다", perkText = "치료 효과 +8% · 식량 +15", coins = 0, fame = 0, supplies = 15, perk = { healMult = 0.08 } },
+	{ id = "noble", name = "몰락한 귀족", story = "가문의 이름과 남은 재산이 있다", perkText = "시작 자금 +400 · 명성 +12", coins = 400, fame = 12 },
+	{ id = "merchant", name = "상인 집안", story = "어릴 때부터 장부와 흥정에 익숙하다", perkText = "판매 값 +4% · 시작 자금 +100", coins = 100, fame = 0, perk = { sellBonus = 0.04 } },
+	{ id = "sailor", name = "뱃사람의 자식", story = "바람과 파도를 읽는 눈이 있다", perkText = "항해 속도 +4%", coins = 0, fame = 0, perk = { speedMult = 0.04 } },
+	{ id = "soldier", name = "퇴역 군인", story = "화약과 규율을 안다", perkText = "대포 위력 +8%", coins = 0, fame = 0, perk = { cannonMult = 0.08 } },
+	{ id = "scholar", name = "학자 집안", story = "책과 편지 속에서 자랐다", perkText = "식물·동물·지리 카드 발견 +10% · 명성 +5", coins = 0, fame = 5, perk = { discoverFields = { "Botany", "Zoology", "Geography" }, discoverBonus = 0.1 } },
+}
+local OriginById = {}
+for _, o in Origins do
+	OriginById[o.id] = o
+end
+
 return {
+	Origins = Origins,
+	OriginById = OriginById,
 	Specialties = Specialties,
 	SpecialtyById = SpecialtyById,
 	Companions = Companions,

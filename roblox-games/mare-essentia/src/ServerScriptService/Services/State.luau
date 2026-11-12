@@ -14,14 +14,15 @@ return function(D)
 		return math.clamp(v, lo, hi)
 	end
 
-	function State.new(nationId, startYear)
+	function State.new(nationId, startYear, originId)
 		local nation = D.Ports.Nations[nationId]
 		assert(nation, "unknown nation: " .. tostring(nationId))
 		local def = D.Ships.Ships.caravel
 		return {
 			nationId = nationId,
-			coins = 500 + nation.startCoins,
-			fame = 0,
+			coins = 500 + nation.startCoins + (if originId and D.Specialties.OriginById[originId] then D.Specialties.OriginById[originId].coins else 0),
+			fame = if originId and D.Specialties.OriginById[originId] then D.Specialties.OriginById[originId].fame else 0,
+			origin = if originId and D.Specialties.OriginById[originId] then originId else nil,
 			day = 0,
 			startYear = startYear,
 			portId = nation.startPort,
@@ -62,6 +63,8 @@ return function(D)
 			reported = {}, -- 학자에게 보고해 이해한 지식(카드 id → true)
 			tactics = { cleared = {} }, -- 지상 전술 탐험 기록: 지점 id → { rank, turns, biome }
 			scholarsMet = {},
+			captain = {}, -- 선장 { name, portrait }
+			intro = { name = false, companion = false, portrait = false }, -- 시작 안내 진행
 			bosses = {},
 			specialty = nil,
 			specLevels = {},
@@ -697,6 +700,25 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.origin) == "string" and D.Specialties.OriginById[saved.origin] then
+			s.origin = saved.origin
+		end
+		if type(saved.captain) == "table" then
+			local nm = saved.captain.name
+			if type(nm) == "string" and utf8.len(nm) and utf8.len(nm) <= 12 and not string.match(nm, "%c") then
+				s.captain.name = nm
+			end
+			local pt = saved.captain.portrait
+			if type(pt) == "string" and #pt <= 40 and string.match(pt, "^[%w_:]+$") then
+				s.captain.portrait = pt
+			end
+		end
+		-- 예전 저장은 시작 안내를 이미 마친 것으로 본다
+		if type(saved.intro) == "table" then
+			s.intro = { name = saved.intro.name == true, companion = saved.intro.companion == true, portrait = saved.intro.portrait == true }
+		else
+			s.intro = { name = true, companion = true, portrait = true }
+		end
 		return s
 	end
 
@@ -734,6 +756,9 @@ return function(D)
 			peopleTalked = state.peopleTalked,
 			tactics = state.tactics,
 			scholarsMet = state.scholarsMet,
+			captain = state.captain,
+			origin = state.origin,
+			intro = state.intro,
 			bosses = state.bosses,
 			specialty = state.specialty,
 			specLevels = state.specLevels,

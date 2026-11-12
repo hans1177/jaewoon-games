@@ -16,7 +16,7 @@ cp "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$TMP/Shared/"
 cp "$ROOT"/src/ServerScriptService/Services/*.luau "$TMP/Services/"
 cp "$ROOT"/tests/*.luau "$TMP/"
 # Roblox 엔진 전용(3D 장면)은 CLI 로 분석·실행할 수 없어 제외한다
-rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/TacticsView.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/PortCultures.luau
+rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/TacticsView.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/PortCultures.luau
 
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 

@@ -33,6 +33,10 @@ return function(D, S)
 			hasShipyard = port.shipyard,
 		}
 
+		view.captain = S.Intro.viewOf(state)
+		local og = state.origin and D.Specialties.OriginById[state.origin]
+		view.captain.origin = og and { id = og.id, name = og.name, perkText = og.perkText } or nil
+
 		view.ship = {
 			id = def.id,
 			name = def.name,
