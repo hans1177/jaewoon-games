@@ -1009,6 +1009,84 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 end
 
 -- 발전도 랜드마크 자리(양쪽 큰길 뒤). 집은 이 자리를 피해 짓는다.
+-- 주요 항구의 상징 건축물: 광장 맞은편(개요 카메라에 보이는 자리)에 그 도시를 알아볼 수 있는 실루엣을 세운다.
+-- 등록된 실제 CC0 모델만 조합한다 (직접 만든 도형 없음). 좌표는 앵커(-30, 0, -66) 기준.
+local SIG_ANCHOR = Vector3.new(-30, 0, -66)
+local SIG = {}
+do
+	local function one(kind, asset, size, dx, dz, y)
+		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz, y = y or 0 }
+	end
+	local function stack(kind, parts, size, dx, dz)
+		local out = {}
+		for i, a in parts do
+			table.insert(out, one(kind, a, size, dx, dz, (i - 1) * size * 0.9))
+		end
+		return out
+	end
+	local function cat(...)
+		local out = {}
+		for _, list in { ... } do
+			if list.kind then
+				table.insert(out, list)
+			else
+				for _, e in list do table.insert(out, e) end
+			end
+		end
+		return out
+	end
+	local flagAt = function(dx, dz) return one("Castle", "flag-banner-long", 10, dx, dz) end
+	local palms = function(dx) return cat(one("Naval", "palm-detailed-straight", 14, dx, -14), one("Naval", "palm-detailed-straight", 14, dx + 6, 14)) end
+	local pagoda = stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0)
+	local minarets = function(r) return cat(stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, -r, -r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, r, -r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, -r, r), stack("Castle", { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-roof" }, 7, r, r)) end
+	local keep = function(big) return cat(one("Castle", "fortress", big, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 11, -big * 0.6, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 11, big * 0.6, 0), flagAt(0, big * 0.5)) end
+	local lighthouse = stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0)
+	local campanile = function(size) return cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-top-roof" }, size, 0, 0), one("Town", "church", 22, 18, 6)) end
+	local windmills = cat(one("Town", "windmill", 24, -12, 0), one("Town", "windmill", 22, 14, 6), one("Town", "bell-tower", 26, 0, -16))
+	local belem = cat(one("Naval", "tower-complete-large", 30, 0, 0), one("Naval", "tower-complete-small", 14, 14, 10), flagAt(-10, 0))
+	local mission = cat(one("Town", "church", 30, 0, 0), one("Town", "bell-tower", 26, -16, 6), palms(18))
+	local rock = cat(one("Town", "rock-wide", 52, 0, 0), one("Town", "rock-wide", 34, 22, 8))
+	SIG.london = keep(34)
+	SIG.edinburgh = cat(one("Town", "rock-wide", 40, 0, 0), keep(26))
+	SIG.amsterdam = windmills
+	SIG.hamburg = cat(one("Town", "church", 28, 0, 0), one("Town", "bell-tower", 30, -16, 0))
+	SIG.lisbon = belem
+	SIG.seville = cat(stack("Town", { "bell-tower", "bell-tower" }, 22, 0, 0), one("Castle", "wall", 20, 18, 0), one("Castle", "wall", 20, -18, 0))
+	SIG.venice = cat(campanile(12), one("Terrain", "column", 14, -14, 14), one("Terrain", "column", 14, -22, 14))
+	SIG.genoa = lighthouse
+	SIG.valletta = cat(one("Castle", "fortress", 36, 0, 0), one("Castle", "wall", 22, 20, 12), one("Castle", "wall", 22, -20, 12))
+	SIG.istanbul = cat(one("Town", "temple-stone", 36, 0, 0), minarets(18))
+	SIG.alexandria = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-hexagon-top" }, 12, 0, 0), flagAt(10, 0))
+	SIG.cape_town = keep(32)
+	SIG.cartagena_indias = cat(one("Castle", "fortress", 34, 0, 0), one("Castle", "wall", 22, 20, 8), one("Castle", "wall", 22, -20, 8))
+	SIG.havana = cat(one("Castle", "fortress", 30, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 10, 18, 0), flagAt(0, 14))
+	SIG.veracruz = cat(one("Castle", "fortress", 30, 0, 0), palms(20))
+	SIG.rio = rock
+	SIG.salvador = mission
+	SIG.goa = mission
+	SIG.malacca = cat(one("Castle", "gate", 22, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 12, 16, 0), palms(-18))
+	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
+	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
+	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
+	SIG.macau = cat(one("Town", "church", 26, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 22, 4))
+	SIG.shanghai = pagoda
+	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
+	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
+	SIG.edo = SIG.osaka
+	SIG.batavia = cat(one("Town", "bell-tower", 30, 0, 0), one("Town", "church", 22, 18, 6), palms(-18))
+	SIG.manila = cat(one("Castle", "fortress", 30, 0, 0), one("Town", "church", 22, 22, 6))
+end
+
+local function placeSignature(folder, info)
+	local list = SIG[info.portId]
+	if not list then
+		return
+	end
+	for _, e in list do
+		importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true)
+	end
+end
+
 local LM_SITES = {
 	Vector3.new(-112, 0, 34), Vector3.new(-112, 0, -34), Vector3.new(-150, 0, 46), Vector3.new(-150, 0, -46),
 	Vector3.new(-190, 0, 40), Vector3.new(-190, 0, -40), Vector3.new(-72, 0, 72), Vector3.new(-72, 0, -72),
@@ -2640,6 +2718,7 @@ function PortScene.build(info, onFacility)
 
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
+	placeSignature(folder, info)
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
