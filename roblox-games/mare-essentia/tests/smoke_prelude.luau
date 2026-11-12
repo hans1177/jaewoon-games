@@ -1,3 +1,4 @@
+warn = warn or function() end -- 평범한 luau에는 warn이 없다
 -- Roblox 엔진 목업 (스모크 테스트용). PortScene/PortCultures 앞에 붙여서 쓴다.
 local State = require("./mockstate")
 local function proxy(name)
