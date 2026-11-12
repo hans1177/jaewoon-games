@@ -6241,7 +6241,7 @@ renderTitle = function()
 	local eras = {
 		{ 1517, "1517년 · 개척기", "탐험과 종교개혁" },
 		{ 1600, "1600년 · 무역전쟁", "동인도회사의 새벽" },
-		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
+		{ 1700, "1700년 · 증기", "증기 기술의 새벽" },
 	}
 	local rowF = Instance.new("Frame")
 	rowF.BackgroundTransparency = 1
