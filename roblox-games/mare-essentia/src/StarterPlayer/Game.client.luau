@@ -6244,24 +6244,29 @@ do
 	root.ClipsDescendants = true
 	local picture = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
 	picture.ClipsDescendants = true
+	-- 액자(고정) 안에서 그림만 파도처럼 천천히 흔들린다
+	local plate = mkBox(picture, UDim2.fromScale(0.3, 0.6), UDim2.fromScale(0.5, 0.68), COLORS.cover)
+	plate.Name = "TitleVoyagePlate"
+	plate.AnchorPoint = Vector2.new(0.5, 0.5)
+	plate.ClipsDescendants = true
+	plate.ZIndex = 1
 	local art = Instance.new("ImageLabel")
 	art.Name = "TitleVoyageIllustration"
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
-	art.Size = UDim2.fromScale(0.5, 0.68)
-	art.Position = UDim2.fromScale(0.3, 0.6)
+	art.Size = UDim2.fromScale(1.1, 1.1)
 	art.BackgroundTransparency = 1
 	art.Image = "rbxassetid://" .. AssetIds["CardArt/event_calm_seas"]
 	art.ScaleType = Enum.ScaleType.Crop
 	art.ImageColor3 = Color3.fromRGB(226, 208, 170) -- 바랜 판화 느낌
 	art.ZIndex = 1
-	art.Parent = picture
+	art.Parent = plate
 	do
 		local frame = Instance.new("UIStroke")
 		frame.Color = Color3.fromRGB(196, 158, 84)
 		frame.Thickness = 3
 		frame.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		frame.Parent = art
+		frame.Parent = plate
 		local sea = Instance.new("UIGradient")
 		sea.Color = ColorSequence.new(Color3.fromRGB(12, 24, 38), Color3.fromRGB(28, 54, 74))
 		sea.Rotation = 90
@@ -6318,7 +6323,7 @@ do
 		local streaks, gulls = {}, {}
 		do
 			local rng = Random.new(77)
-			for i = 1, 7 do
+			for i = 1, 0 do
 				local y = 0.8 + rng:NextNumber() * 0.16
 				local f = Instance.new("Frame")
 				f.BorderSizePixel = 0
@@ -6329,18 +6334,34 @@ do
 				f.Parent = picture
 				table.insert(streaks, { f = f, x = rng:NextNumber(), y = y, v = 0.01 + (y - 0.55) * 0.05 })
 			end
-			for i = 1, 0 do
-				local g = Instance.new("TextLabel")
+			for i = 1, 5 do
+				local g = Instance.new("Frame")
 				g.BackgroundTransparency = 1
-				g.Text = "︶︶"
-				g.Font = Enum.Font.GothamBold
-				g.TextSize = 12 + i * 2
-				g.TextColor3 = Color3.fromRGB(246, 246, 240)
-				g.TextTransparency = 0.15
-				g.Size = UDim2.fromOffset(40, 16)
+				local w = 22 + i * 5
+				g.Size = UDim2.fromOffset(w, w * 0.5)
 				g.ZIndex = 3
 				g.Parent = picture
-				table.insert(gulls, { f = g, x = rng:NextNumber(), y = 0.12 + rng:NextNumber() * 0.28, v = 0.012 + rng:NextNumber() * 0.012, ph = rng:NextNumber() * 6 })
+				local wings = {}
+				for side = -1, 1, 2 do
+					local wing = Instance.new("Frame")
+					wing.AnchorPoint = Vector2.new(if side < 0 then 1 else 0, 0.5)
+					wing.Position = UDim2.fromScale(0.5, 0.5)
+					wing.Size = UDim2.new(0.5, 0, 0, math.max(2, math.floor(w / 12)))
+					wing.BackgroundColor3 = Color3.fromRGB(250, 248, 240)
+					wing.BorderSizePixel = 0
+					wing.Parent = g
+					corner(wing, 2)
+					table.insert(wings, { f = wing, side = side })
+				end
+				local body = Instance.new("Frame")
+				body.AnchorPoint = Vector2.new(0.5, 0.5)
+				body.Position = UDim2.fromScale(0.5, 0.5)
+				body.Size = UDim2.fromOffset(math.max(3, w / 8), math.max(3, w / 8))
+				body.BackgroundColor3 = Color3.fromRGB(236, 232, 222)
+				body.BorderSizePixel = 0
+				body.Parent = g
+				corner(body, 4)
+				table.insert(gulls, { f = g, wings = wings, x = rng:NextNumber(), y = 0.1 + rng:NextNumber() * 0.3, v = 0.01 + rng:NextNumber() * 0.01, ph = rng:NextNumber() * 6, flap = 3 + rng:NextNumber() * 2 })
 			end
 		end
 		local liveConn
@@ -6365,6 +6386,8 @@ do
 				for _, g in gulls do
 					g.x = (g.x + g.v * 1/30 * 3) % 1.2
 					g.f.Position = UDim2.new(g.x - 0.1, 0, g.y + math.sin(now * 1.6 + g.ph) * 0.012, 0)
+					local lift = 12 + math.sin(now * g.flap + g.ph) * 24
+					for _, w in g.wings do w.f.Rotation = -w.side * lift end
 				end
 			end)
 		end
@@ -6424,9 +6447,9 @@ do
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
 	layout()
 
-	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(14, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
-		Size = UDim2.fromScale(0.53, 0.72),
-		Position = UDim2.fromScale(0.3, 0.6),
+	local drift = game:GetService("TweenService"):Create(art, TweenInfo.new(6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+		Rotation = 1.2,
+		Position = UDim2.fromScale(0.5, 0.515),
 	})
 	titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 		if titleGui.Enabled then drift:Play() else drift:Pause() end
