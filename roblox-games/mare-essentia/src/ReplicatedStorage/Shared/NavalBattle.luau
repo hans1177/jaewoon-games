@@ -937,20 +937,27 @@ function NavalBattle.play(opts)
 				return if source and source:IsA("Model") and source:FindFirstChildWhichIsA("BasePart", true) then source else nil
 			end
 			local actorSource, propSource = template(spec.actor), template(spec.prop)
-			local view, actor, prop, actorPivot, propPivot, shoulder
-			if actorSource or propSource then
+			local view, actor, prop, actorPivot, propPivot, shoulder, camera
+			local sceneFailed = false
+			-- 모바일 최적화: 손패 전체는 2D 판화로 표시하고, 선택·확대된 카드만 실제 모델을 렌더한다.
+			local function releaseScene()
+				if view then view:Destroy() end
+				view, actor, prop, actorPivot, propPivot, shoulder, camera = nil, nil, nil, nil, nil, nil, nil
+			end
+			local function ensureScene()
+				if view or sceneFailed or (not actorSource and not propSource) then return end
 				view = Instance.new("ViewportFrame")
 				view.Name = "AnimatedEncyclopedia"
 				view.Size = UDim2.fromScale(1, 1)
 				view.BackgroundTransparency = 1
-				view.Ambient = Color3.fromRGB(130, 110, 93)
+				view.Ambient = Color3.fromRGB(131, 108, 85)
 				view.LightColor = Color3.fromRGB(250, 222, 171)
 				view.LightDirection = Vector3.new(-0.7, -1, -0.3).Unit
 				view.ZIndex = image.ZIndex + 1
 				view.Parent = art
 				local world = Instance.new("WorldModel")
 				world.Parent = view
-				local camera = Instance.new("Camera")
+				camera = Instance.new("Camera")
 				camera.FieldOfView = 38
 				camera.CFrame = CFrame.lookAt(Vector3.new(6, 4.3, 11.5), Vector3.new(0, 2.3, 0))
 				camera.Parent = view
@@ -985,7 +992,10 @@ function NavalBattle.play(opts)
 					prop, propPivot = mount(propSource, if ship then 5.5 elseif card.row == "cannon" then 3.2 else 2.3,
 						if actorSource then 1.95 else 0, if ship then 1.75 else 1.95, if ship then -1.5 else 0.6, false)
 				end
-				if not actor and not prop then view:Destroy(); view = nil end
+				if not actor and not prop then
+					sceneFailed = true
+					releaseScene()
+				end
 			end
 
 			-- 판화와 움직이는 오브젝트를 한 카드 내부에 한정한다.
@@ -1071,7 +1081,7 @@ function NavalBattle.play(opts)
 				if not active then return end
 				active = false
 				if destroying then destroying:Disconnect() end
-				if view then view:Destroy() end
+				releaseScene()
 				wash:Destroy()
 				mist:Destroy()
 				shine:Destroy()
@@ -1082,58 +1092,76 @@ function NavalBattle.play(opts)
 				if not active then return end
 				elapsed += math.min(dt, 0.1)
 				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
+				if focused then ensureScene() elseif view then releaseScene() end
 				-- 모바일: 비선택 카드 15fps, 선택 카드 24fps 상한.
 				if elapsed - sampled < (if focused then 1 / 24 else 1 / 15) then return end
 				sampled = elapsed
-				local wave = math.sin(elapsed * (if spec.motion == "storm" then 3.4 else 2.15))
-				local pulse = math.max(0, math.sin(elapsed * 2.7 - 1)) ^ 5
+				local motion = spec.motion or "wind"
+				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
 				local wind = math.sin(elapsed * 1.17)
-				-- 고유 인물 도판은 카드 내부에서 전진·반동·질주로 몸의 움직임을 표현한다.
-				local lunge = if spec.motion == "pounce" then 0.048 * pulse
-					elseif spec.motion == "gallop" then 0.025 * math.sin(elapsed * 5.8)
-					elseif spec.motion == "aim" then -0.018 * pulse
-					else 0
-				image.Position = UDim2.fromScale(
-					0.5 + (if spec.motion == "retreat" then 0.09 * wind else 0.013 * wind) - lunge,
-					0.5 + (if spec.motion == "storm" or spec.motion == "pounce" then 0.031
-						elseif spec.motion == "gallop" then 0.023 else 0.014) * wave - 0.018 * math.abs(lunge))
-				image.Rotation = if spec.motion == "pounce" then -2.8 * pulse
-					elseif spec.motion == "gallop" then 1.1 * wave else 0
-				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.08, 0.72 + wave * 0.027)
-				mist.BackgroundTransparency = if spec.motion == "storm" or spec.motion == "fog" then 0.48 + 0.14 * wave
-					elseif spec.motion == "fire" then 0.62 + 0.2 * pulse
-					elseif spec.motion == "gallop" then 0.6 + 0.16 * wave
-					elseif spec.motion == "pounce" then 0.69 + 0.13 * pulse
-					elseif spec.motion == "clear" or spec.motion == "wind" then 0.82 + 0.06 * wave
-					else 0.74 + 0.05 * wave
-				combatFlash.BackgroundTransparency = if spec.motion == "fire" then 1 - 0.45 * pulse
-					elseif spec.motion == "storm" then if math.sin(elapsed * 0.53) > 0.985 then 0.57 else 1
-					elseif spec.motion == "pounce" then 1 - 0.22 * pulse
-					elseif spec.motion == "aim" then 1 - 0.28 * pulse
-					elseif spec.motion == "heal" or spec.motion == "guard" or spec.motion == "clear" then 0.94 + 0.05 * wind
+				local beat = (elapsed % (if motion == "storm" then 3.8 else 2.9)) / (if motion == "storm" then 3.8 else 2.9)
+				local impact = math.exp(-((beat - 0.48) * 15) ^ 2)
+				local prepare = math.exp(-((beat - 0.31) * 6) ^ 2)
+				local attack = motion == "slash" or motion == "thrust" or motion == "board"
+				local gunshot = motion == "fire" or motion == "aim"
+				local leap = motion == "pounce" or motion == "gallop"
+				local recoil = if gunshot then 0.46 * impact else 0
+				local lunge = if attack then 0.8 * impact elseif motion == "pounce" then 0.9 * impact else 0
+				-- 배경은 가볍게 패럴랙스, 캐릭터·무기·함선은 독립된 장면 안에서 실제 동작한다.
+				local pan = (if motion == "retreat" then 0.07 else 0.018) * wind
+				image.Position = UDim2.fromScale(0.5 + pan - 0.045 * lunge + 0.02 * recoil,
+					0.5 + (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact)
+				image.Rotation = if motion == "storm" then 1.2 * wave elseif motion == "gallop" then 0.8 * wave else 0
+				image.Size = UDim2.fromScale(1.17 + (if focused then 0.04 else 0) + 0.025 * impact, 1.17 + (if focused then 0.04 else 0) + 0.025 * impact)
+				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.11, 0.72 + wave * 0.038)
+				mist.BackgroundTransparency = if motion == "storm" or motion == "fog" then 0.44 + 0.15 * wave
+					elseif motion == "fire" then 0.65 - 0.2 * impact
+					elseif leap then 0.64 + 0.2 * wave
+					elseif motion == "clear" or motion == "wind" then 0.83 + 0.05 * wave
+					else 0.75 + 0.05 * wave
+				combatFlash.BackgroundTransparency = if gunshot then 1 - 0.65 * impact
+					elseif motion == "storm" then if math.sin(elapsed * 0.54) > 0.978 then 0.36 else 1
+					elseif attack or motion == "pounce" then 1 - 0.24 * impact
+					elseif motion == "heal" or motion == "clear" then 0.94 + 0.05 * wind
 					else 1
-				shine.Position = UDim2.fromScale((elapsed % 5) / 5 * 1.8 - 0.5, -0.2)
-				shine.BackgroundTransparency = if focused or card.hero then 0.73 else 0.93
+				shine.Position = UDim2.fromScale((elapsed % 5.5) / 5.5 * 1.8 - 0.5, -0.2)
+				shine.BackgroundTransparency = if focused or card.hero then 0.74 else 0.94
 				if actor and actorPivot then
-					local attack = spec.motion == "slash" or spec.motion == "thrust" or spec.motion == "board"
-					actor:PivotTo(actorPivot * CFrame.new(0, 0.06 * wave, 0) * CFrame.Angles(0, if attack then -0.25 * pulse else 0.055 * wave, 0.025 * wave))
+					local jump = if motion == "pounce" then 0.95 * impact
+						elseif motion == "gallop" then 0.24 * math.abs(wave)
+						elseif motion == "heal" then -0.22 * prepare else 0.06 * wave
+					local advance = if motion == "retreat" then 0.7 * wind elseif leap then 0.55 * impact else lunge
+					local turn = if motion == "scout" then -0.3 * wind
+						elseif motion == "guard" then 0.2 * prepare
+						elseif attack then -0.55 * impact
+						elseif gunshot then 0.12 * impact else 0.05 * wave
+					actor:PivotTo(actorPivot * CFrame.new(0, jump, -advance + recoil)
+						* CFrame.Angles(if gunshot then 0.16 * impact else 0,
+							turn, if motion == "slash" then -0.13 * impact else 0.022 * wave))
 					if shoulder and shoulder:IsA("Motor6D") then
-						shoulder.Transform = CFrame.Angles(if attack then -0.52 * pulse
-							elseif spec.motion == "command" then -0.18 * wind
-							elseif spec.motion == "aim" then -0.11 else -0.06 * wave, 0, 0)
+						shoulder.Transform = CFrame.Angles(
+							if attack then -1.08 * impact + 0.28 * prepare
+							elseif motion == "command" then -0.75 * prepare
+							elseif gunshot then -0.22 + 0.32 * impact
+							elseif motion == "heal" then -0.34 * prepare
+							else -0.08 * wave, 0, if motion == "slash" then 0.38 * impact else 0)
 					end
 				end
 				if prop and propPivot then
-					local ship = spec.motion == "storm" or spec.motion == "fog" or spec.motion == "swell"
-						or spec.motion == "wind" or spec.motion == "retreat" or spec.motion == "clear" or spec.motion == "board"
-					prop:PivotTo(propPivot * CFrame.new(if spec.motion == "fire" then -0.38 * pulse elseif spec.motion == "retreat" then -0.65 * wind else 0, 0.045 * wave, 0)
-						* CFrame.Angles(0, 0.08 * math.sin(elapsed * 0.7), if ship then (if spec.motion == "storm" then 0.19 else 0.11) * wave
-							elseif spec.motion == "guard" then -0.1 * wind
-							else -0.17 * pulse))
+					local ship = motion == "storm" or motion == "fog" or motion == "wind" or motion == "retreat" or motion == "clear" or motion == "board"
+					local roll = if ship then (if motion == "storm" then 0.3 else 0.13) * wave
+						elseif motion == "slash" then -1.05 * impact + 0.36 * prepare
+						elseif motion == "thrust" then -0.48 * impact
+						elseif motion == "guard" then -0.28 * prepare
+						elseif gunshot then 0.16 * impact else 0.08 * wave
+					local slide = if motion == "fire" then -0.54 * impact elseif motion == "retreat" then -0.6 * wind elseif attack then -0.3 * impact else 0
+					prop:PivotTo(propPivot * CFrame.new(slide, 0.07 * wave, if motion == "thrust" then -0.8 * impact else 0)
+						* CFrame.Angles(0, 0.09 * wind, roll))
 				end
-				if view then
-					view.LightColor = if spec.motion == "fire" and pulse > 0.6 then Color3.fromRGB(255, 166, 83)
-						else Color3.fromRGB(250, 222, 171)
+				if view and camera then
+					local shake = if gunshot then 0.15 * impact elseif motion == "storm" then 0.08 * wave else 0
+					camera.CFrame = CFrame.lookAt(Vector3.new(6 + shake, 4.3 + 0.08 * wave, 11.5 - 0.18 * impact), Vector3.new(0, 2.3 + 0.07 * wave, 0))
+					view.LightColor = if gunshot and impact > 0.5 then Color3.fromRGB(255, 175, 98) else Color3.fromRGB(250, 222, 171)
 				end
 			end
 			destroying = art.Destroying:Connect(stop)
@@ -1145,8 +1173,16 @@ function NavalBattle.play(opts)
 		local focusFrame = Instance.new("Frame")
 		focusFrame.Name = "NavalCardCodexPreview"
 		focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-		focusFrame.Position = UDim2.fromScale(0.55, 0.47)
-		focusFrame.Size = UDim2.fromOffset(186, 252)
+		focusFrame.Position = UDim2.fromScale(0.5, 0.415)
+		focusFrame.Size = UDim2.fromScale(0.74, 0.57)
+		local focusBounds = Instance.new("UISizeConstraint")
+		focusBounds.MaxSize = Vector2.new(355, 490)
+		focusBounds.MinSize = Vector2.new(190, 235)
+		focusBounds.Parent = focusFrame
+		local focusRatio = Instance.new("UIAspectRatioConstraint")
+		focusRatio.AspectRatio = 0.69
+		focusRatio.DominantAxis = Enum.DominantAxis.Height
+		focusRatio.Parent = focusFrame
 		focusFrame.BackgroundColor3 = Color3.fromRGB(50, 35, 25)
 		focusFrame.BackgroundTransparency = 0.02
 		focusFrame.BorderSizePixel = 0
@@ -1167,8 +1203,8 @@ function NavalBattle.play(opts)
 		focusPaper.Parent = focusFrame
 		local focusArtwork = Instance.new("Frame")
 		focusArtwork.Name = "CodexPainting"
-		focusArtwork.Position = UDim2.fromOffset(6, 27)
-		focusArtwork.Size = UDim2.new(1, -12, 0, 153)
+		focusArtwork.Position = UDim2.fromScale(0.035, 0.095)
+		focusArtwork.Size = UDim2.fromScale(0.93, 0.64)
 		focusArtwork.BackgroundColor3 = Color3.fromRGB(77, 58, 43)
 		focusArtwork.BorderSizePixel = 0
 		focusArtwork.ClipsDescendants = true
@@ -1184,14 +1220,14 @@ function NavalBattle.play(opts)
 		focusImage.ZIndex = 52
 		focusImage.Parent = focusArtwork
 		local focusName = label(focusFrame, "", 17, Color3.fromRGB(247, 211, 151), true)
-		focusName.Position = UDim2.fromOffset(8, 4)
-		focusName.Size = UDim2.new(1, -16, 0, 23)
+		focusName.Position = UDim2.fromScale(0.045, 0.017)
+		focusName.Size = UDim2.fromScale(0.8, 0.075)
 		focusName.TextStrokeTransparency = 0.38
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
-		focusRule.Position = UDim2.new(0, 8, 0, 184)
-		focusRule.Size = UDim2.new(1, -16, 0, 61)
+		focusRule.Position = UDim2.fromScale(0.035, 0.75)
+		focusRule.Size = UDim2.fromScale(0.93, 0.17)
 		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
 		focusRule.BackgroundTransparency = 0.08
 		focusRule.BorderSizePixel = 0
@@ -1201,6 +1237,31 @@ function NavalBattle.play(opts)
 		focusRule.Font = Enum.Font.Antique
 		focusRule.ZIndex = 52
 		frameEdge(focusRule, brass, 4)
+		-- 확대 도판에서도 기존 두 번 누르기와 동일한 전투 판정을 호출한다.
+		local focusUse = Instance.new("TextButton")
+		focusUse.Name = "UseCard"
+		focusUse.Position = UDim2.fromScale(0.035, 0.926)
+		focusUse.Size = UDim2.fromScale(0.93, 0.067)
+		focusUse.Text = "카드 사용"
+		focusUse.TextScaled = true
+		focusUse.Font = Enum.Font.Antique
+		focusUse.TextColor3 = Color3.fromRGB(51, 36, 24)
+		focusUse.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+		focusUse.ZIndex = 55
+		focusUse.Parent = focusFrame
+		frameEdge(focusUse, brass, 4)
+		local focusClose = Instance.new("TextButton")
+		focusClose.Name = "CloseCard"
+		focusClose.Position = UDim2.fromScale(0.85, 0.017)
+		focusClose.Size = UDim2.fromScale(0.11, 0.075)
+		focusClose.BackgroundColor3 = Color3.fromRGB(85, 55, 41)
+		focusClose.TextColor3 = Color3.fromRGB(247, 226, 181)
+		focusClose.Text = "×"
+		focusClose.TextScaled = true
+		focusClose.ZIndex = 55
+		focusClose.Parent = focusFrame
+		frameEdge(focusClose, brass, 4)
+		local selectedPlay
 		local focusMotion
 		local function showCardCodex(card)
 			if focusMotion then
@@ -1210,7 +1271,12 @@ function NavalBattle.play(opts)
 				end
 				focusMotion = nil
 			end
-			if not card then focusFrame.Visible = false; return end
+			if not card then
+				focusArtwork:SetAttribute("ArtFocused", false)
+				focusFrame.Visible = false
+				return
+			end
+			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
 			local meta = CARD_STAGE[card.id]
 			local artKey = if meta then (if meta.newArt and AssetIds[meta.newArt] then meta.newArt else meta.art) else CARD_SEA
@@ -1226,7 +1292,21 @@ function NavalBattle.play(opts)
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
 			table.insert(cardMotions, focusMotion)
 		end
+		focusClose.Activated:Connect(function()
+			if selected and selected.Parent then
+				selected.Rotation = 0
+				selected.UIStroke.Color = brass
+				selected:SetAttribute("ArtFocused", false)
+			end
+			selected = nil
+			selectedPlay = nil
+			showCardCodex(nil)
+		end)
+		focusUse.Activated:Connect(function()
+			if selectedPlay then selectedPlay() end
+		end)
 		render = function()
+			selectedPlay = nil
 			showCardCodex(nil)
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
@@ -1310,7 +1390,11 @@ function NavalBattle.play(opts)
 			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 88, 1, -10)
+				b.Size = UDim2.new(0, 140, 1, -10)
+				local cardRatio = Instance.new("UIAspectRatioConstraint")
+				cardRatio.AspectRatio = 0.69
+				cardRatio.DominantAxis = Enum.DominantAxis.Height
+				cardRatio.Parent = b
 				b.LayoutOrder = i
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
@@ -1325,7 +1409,7 @@ function NavalBattle.play(opts)
 				art.Name = "Artwork"
 				art.Archivable = false
 				art.Position = UDim2.fromOffset(3, 3)
-				art.Size = UDim2.new(1, -6, 0.65, -3)
+				art.Size = UDim2.new(1, -6, 0.69, -3)
 				art.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
 				art.BorderSizePixel = 0
 				art.ClipsDescendants = true
@@ -1341,8 +1425,8 @@ function NavalBattle.play(opts)
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
 				parchmentBand.Name = "ParchmentCaption"
-				parchmentBand.Position = UDim2.fromScale(0.025, 0.65)
-				parchmentBand.Size = UDim2.fromScale(0.95, 0.33)
+				parchmentBand.Position = UDim2.fromScale(0.025, 0.69)
+				parchmentBand.Size = UDim2.fromScale(0.95, 0.29)
 				parchmentBand.BackgroundColor3 = if c.hero then Color3.fromRGB(243, 215, 153) else paper
 				parchmentBand.BorderSizePixel = 0
 				parchmentBand.Parent = b
@@ -1359,13 +1443,13 @@ function NavalBattle.play(opts)
 				image.Parent = art
 				table.insert(cardMotions, animateCardArt(art, image, c))
 				local caption = label(b, c.name, 13, ink, true)
-				caption.Position = UDim2.fromScale(0.25, 0.65)
-				caption.Size = UDim2.fromScale(0.71, 0.35)
+				caption.Position = UDim2.fromScale(0.25, 0.7)
+				caption.Size = UDim2.fromScale(0.71, 0.27)
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
 				caption.Font = Enum.Font.Antique
 				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
-				emblem(b, iconKey, UDim2.fromScale(0.035, 0.82), UDim2.fromScale(0.20, 0.25))
+				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
 				power.Size = UDim2.fromOffset(21, 20)
@@ -1389,26 +1473,8 @@ function NavalBattle.play(opts)
 				b.Parent = handFrame
 				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
-				b.Activated:Connect(function()
-					if playing or auto or finished or m.turn ~= "me" or m.over then
-						return
-					end
-					if selected ~= b then
-						if selected then
-							TweenService:Create(selected, TweenInfo.new(0.12), { Rotation = 0 }):Play()
-							selected.UIStroke.Color = brass
-							selected:SetAttribute("ArtFocused", false)
-						end
-						b:SetAttribute("ArtFocused", true)
-						showCardCodex(c)
-						selected = b
-						edge.Color = Color3.fromRGB(255, 215, 126)
-						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
-						info.Text = c.name .. " · " .. (if c.special then (c.text or "전술 카드") elseif c.ability then (ABIL_DETAIL[c.ability] or sub) else sub)
-							.. (if c.hero then " · 영웅: 날씨·소각 면역" else "") .. " · 다시 누르면 사용"
-						return
-					end
-
+				local function playChosenCard()
+					if playing or auto or finished or m.turn ~= "me" or m.over or selected ~= b or not b.Parent then return end
 					playing = true
 					showCardCodex(nil)
 					local side = if c.ability == "spy" then "foe" else "me"
@@ -1436,13 +1502,31 @@ function NavalBattle.play(opts)
 					flightTween:Play()
 					flightTween.Completed:Wait()
 					playing = false
-					if finished or not g.Parent then
-						return
-					end
+					if finished or not g.Parent then return end
 					art.Parent = b
 					flight:Destroy()
 					b.Visible = true
 					afterAction(mine(BC.play(m, "me", i)))
+				end
+				b.Activated:Connect(function()
+					if playing or auto or finished or m.turn ~= "me" or m.over then return end
+					if selected ~= b then
+						if selected and selected.Parent then
+							selected.Rotation = 0
+							selected.UIStroke.Color = brass
+							selected:SetAttribute("ArtFocused", false)
+						end
+						b:SetAttribute("ArtFocused", true)
+						showCardCodex(c)
+						selected = b
+						selectedPlay = playChosenCard
+						edge.Color = Color3.fromRGB(255, 215, 126)
+						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
+						info.Text = c.name .. " · " .. (if c.special then (c.text or "전술 카드") elseif c.ability then (ABIL_DETAIL[c.ability] or sub) else sub)
+								.. (if c.hero then " · 영웅: 날씨·소각 면역" else "") .. " · 크게 보고 사용 버튼 또는 다시 눌러 사용"
+						return
+					end
+					playChosenCard()
 				end)
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
