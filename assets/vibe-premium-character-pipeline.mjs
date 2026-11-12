@@ -88,27 +88,53 @@ export async function applyVibePBRTextures(THREE,model,{baseColor,normal,roughne
 // [메인: 리그 검사] 실측 스킨 가중치와 본 구성을 진단한다. 결손을 가짜 뼈로 대체하지 않는다.
 export function inspectVibeCharacterRig(model,{sampleLimit=4096}={}){
  if(!model?.traverse)throw Error('A Three.js model is required');
- const bones=[],skinned=[],issues=[];let sampled=0,unweighted=0,unnormalized=0,invalidWeights=0;
- model.traverse(o=>{
-  if(o?.isBone)bones.push(o);
-  if(!o?.isSkinnedMesh)return;
-  skinned.push(o);
-  const a=o.geometry?.attributes?.skinWeight;
-  if(!a||!Number.isInteger(a.count)||a.count<1){issues.push('MISSING_SKIN_WEIGHTS:'+String(o.name||'unnamed'));return;}
-  const count=Math.min(a.count,Math.max(1,Math.floor(sampleLimit))),step=Math.max(1,Math.floor(a.count/count));
-  for(let i=0;i<a.count&&sampled<sampleLimit;i+=step){
-   const comps=a.itemSize||4;let sum=0;
-   for(let j=0;j<comps;j++){const v=Number(a.getComponent?a.getComponent(i,j):a.array?.[i*comps+j]);if(!Number.isFinite(v)||v<0){invalidWeights++;continue;}sum+=v;}
+ // [리그 검사] 메쉬를 먼저 수집해 검사 예산을 공정하게 배분한다. 원본 스킨 데이터는 수정하지 않는다.
+ const bones=[],skinned=[],issues=[];let sampled=0,unweighted=0,unnormalized=0,invalidWeights=0,invalidIndices=0;
+ model.traverse(o=>{if(o?.isBone)bones.push(o);if(o?.isSkinnedMesh)skinned.push(o)});
+ const budget=Number.isFinite(sampleLimit)?Math.max(1,Math.min(65536,Math.floor(sampleLimit))):4096;
+ if(skinned.length>budget)issues.push('RIG_AUDIT_COVERAGE_INCOMPLETE');
+ for(const [meshIndex,mesh] of skinned.entries()){
+  const name=String(mesh.name||'unnamed');
+  const weights=mesh.geometry?.attributes?.skinWeight;
+  if(!weights||!Number.isInteger(weights.count)||weights.count<1){
+   issues.push('MISSING_SKIN_WEIGHTS:'+name);continue;
+  }
+  const components=weights.itemSize||4;
+  if(!Number.isInteger(components)||components<1||components>4){
+   issues.push('INVALID_SKIN_INFLUENCE_COUNT:'+name);continue;
+  }
+  const indices=mesh.geometry?.attributes?.skinIndex;
+  const boneCount=Array.isArray(mesh.skeleton?.bones)?mesh.skeleton.bones.length:null;
+  if(boneCount===0)issues.push('EMPTY_BOUND_SKELETON:'+name);
+  if(boneCount!==null&&!indices)issues.push('MISSING_SKIN_INDICES:'+name);
+  if(indices&&(indices.count!==weights.count||indices.itemSize<components))
+   issues.push('SKIN_INDEX_LAYOUT_MISMATCH:'+name);
+  // 메쉬가 많을 때도 뒤쪽 메쉬를 반드시 검사한다. 예산 미달은 통과시키지 않는다.
+  const quota=Math.floor(budget/skinned.length)+(meshIndex<budget%skinned.length?1:0);
+  const count=Math.min(weights.count,quota);
+  for(let k=0;k<count;k++){
+   const i=Math.floor((k+.5)*weights.count/count);
+   let sum=0;
+   for(let j=0;j<components;j++){
+    const value=Number(weights.getComponent?weights.getComponent(i,j):weights.array?.[i*components+j]);
+    if(!Number.isFinite(value)||value<0||value>1){invalidWeights++;continue;}
+    sum+=value;
+    if(value>0&&indices&&indices.count===weights.count&&indices.itemSize>=components){
+     const joint=Number(indices.getComponent?indices.getComponent(i,j):indices.array?.[i*indices.itemSize+j]);
+     if(!Number.isInteger(joint)||joint<0||(boneCount!==null&&joint>=boneCount))invalidIndices++;
+    }
+   }
    sampled++;if(sum<.0001)unweighted++;else if(Math.abs(sum-1)>.035)unnormalized++;
   }
- });
+ }
  if(!bones.length)issues.push('NO_BONES');
  if(!skinned.length)issues.push('NO_SKINNED_MESH');
  if(unweighted)issues.push('UNWEIGHTED_VERTICES');
  if(unnormalized)issues.push('NON_NORMALIZED_SKIN_WEIGHTS');
  if(invalidWeights)issues.push('INVALID_SKIN_WEIGHTS');
+ if(invalidIndices)issues.push('INVALID_SKIN_INDICES');
  return Object.freeze({bones:bones.length,skinnedMeshes:skinned.length,weightsSampled:sampled,
-  unweighted,unnormalized,invalidWeights,issues:Object.freeze(issues),
+  unweighted,unnormalized,invalidWeights,invalidIndices,issues:Object.freeze(issues),
   productionEligible:issues.length===0,rigRepairPerformed:false,sourcePreserved:true});
 }
 
