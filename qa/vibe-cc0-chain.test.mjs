@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 import {produceRegisteredCc0Asset} from '../tools/vibe2-asset-production-plan.mjs';
 
 const binary=Buffer.alloc(20);
@@ -105,4 +106,55 @@ test('Blender CC0 actor/building profiles remain source-bound and registry prese
   assert.match(sync,/verifiedDerivativeFingerprints/);
   assert.match(sync,/sourceDependencyIds:/);
   assert.match(sync,/productionVerified:false,verifiedCompanyReusable:false/);
+});
+
+
+test('mare story/event audio uses verified CC0 parents and decodable game-specific derivatives',()=>{
+  const root=new URL('../',import.meta.url).pathname;
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,'roblox-games/mare-essentia/audio/manifest.json'),'utf8'));
+  const pack=JSON.parse(fs.readFileSync(path.join(root,'assets/external/simple-rpg/priority-v1/manifest.json'),'utf8'));
+  const verifiedPack=pack.packs.find(x=>x.file==='kenney-rpg-sfx-50.zip');
+  const archiveEntries=manifest.tracks.filter(x=>x.sourceArchiveSha256);
+  assert.equal(archiveEntries.length,20);
+  assert.equal(manifest.tracks.filter(x=>x.license==='CC0-1.0').length,21);
+  assert.equal(new Set(manifest.tracks.map(x=>x.name)).size,manifest.tracks.length);
+  assert.equal(new Set(archiveEntries.map(x=>x.sourceEntry)).size,20);
+  assert.ok(archiveEntries.every(x=>x.sourceArchiveSha256===verifiedPack.sha256));
+  assert.equal(crypto.createHash('sha256').update(
+    fs.readFileSync(path.join(root,'assets/external/simple-rpg/priority-v1/kenney-rpg-sfx-50.zip'))
+  ).digest('hex'),verifiedPack.sha256);
+  // FFmpeg 없는 범용 QA 러너에서도 원본 권리·바이트 검증은 생략하지 않는다.
+  const pirate=manifest.tracks.find(x=>x.name==='music_pirate');
+  const pirateSource=fs.readFileSync(path.join(root,pirate.sourceFile));
+  const pirateBlob=crypto.createHash('sha1')
+    .update(Buffer.from('blob '+pirateSource.length+'\0')).update(pirateSource).digest('hex');
+  assert.equal(pirateBlob,pirate.sourceGitBlobSha1);
+  assert.equal(pirateSource.subarray(0,4).toString(),'OggS');
+  const archive=path.join(root,'assets/external/simple-rpg/priority-v1/kenney-rpg-sfx-50.zip');
+  const listing=spawnSync('unzip',['-Z','-1',archive],{encoding:'utf8',timeout:30000});
+  assert.equal(listing.status,0,String(listing.stderr||''));
+  const entries=listing.stdout.split(/\r?\n/);
+  for(const track of archiveEntries){
+    const matches=entries.filter(e=>e===track.sourceEntry||e.endsWith('/'+track.sourceEntry));
+    assert.equal(matches.length,1,'missing or duplicate CC0 entry '+track.sourceEntry);
+    const original=spawnSync('unzip',['-p',archive,matches[0]],{maxBuffer:16*1024*1024,timeout:30000});
+    assert.equal(original.status,0,'cannot unpack CC0 '+track.sourceEntry);
+    assert.equal(original.stdout.subarray(0,4).toString(),'OggS');
+  }
+  console.log('MARE_CC0_AUDIO_SOURCE_BYTES_VALID 21');
+  const encoder=spawnSync('ffmpeg',['-version'],{encoding:'utf8'});
+  const inspector=spawnSync('ffprobe',['-version'],{encoding:'utf8'});
+  if(encoder.error?.code==='ENOENT'||inspector.error?.code==='ENOENT'){
+    console.log('MARE_CC0_DERIVATIVE_CODEC_UNAVAILABLE_NO_RUNTIME_PASS');
+    return;
+  }
+  assert.equal(encoder.status,0);
+  assert.equal(inspector.status,0);
+  const run=spawnSync(process.execPath,['tools/mare-audio-upload.mjs'],{
+    cwd:root,
+    env:{...process.env,AUDIO_CC0_PREFLIGHT:'1'},
+    encoding:'utf8',timeout:180000,maxBuffer:1024*1024
+  });
+  assert.equal(run.status,0,('AUDIO_CC0_PREFLIGHT_FAILED\n'+String(run.stdout||'')+'\n'+String(run.stderr||'')).slice(-6000));
+  assert.match(run.stdout,/AUDIO_CC0_PREFLIGHT_OK 21/);
 });

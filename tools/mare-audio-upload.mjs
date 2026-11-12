@@ -3,6 +3,7 @@
 // Universe 사용 권한을 승인한 뒤 Shared/AudioIds.luau 에 실제 ID만 기록한다. 같은 해시는 다시 올리지 않는다.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const dir='roblox-games/mare-essentia/audio';
@@ -12,6 +13,85 @@ const idsPath='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.
 const universeId=process.env.MARE_UNIVERSE_ID||'10774821253';
 if(meta.source!=='OWNER_REQUESTED_ORIGINAL_SYNTH_SCORE'||meta.license!=='OWNER_CREATED_AUDIO')throw Error('AUDIO_PROVENANCE_INVALID');
 
+// 신규 자산은 기존 저장소에 보관된 CC0 원본의 해시·허락·다운로드 출처를 검증한 뒤
+// 이 게임 전용 변형 OGG를 만든다. 기존 자체 합성 음원은 등록 기록만 보존한다.
+const cc0Base='web-games/ocean-voyage/assets/cc0/';
+const cc0Manifest=JSON.parse(fs.readFileSync(cc0Base+'manifest.json','utf8'));
+const cc0PackDir='assets/external/simple-rpg/priority-v1/';
+const cc0PackManifest=JSON.parse(fs.readFileSync(cc0PackDir+'manifest.json','utf8'));
+
+function prepareVerifiedCC0(track){
+  if(track.license!=='CC0-1.0'||track.source!=='VERIFIED_CC0_ORIGINAL_DERIVATIVE'
+    ||!/^out\/[a-z0-9_]+\.ogg$/.test(track.file)
+    ||!/^[a-z0-9=,._-]+$/.test(String(track.editFilter||'')))throw Error('CC0_AUDIO_METADATA_INVALID');
+
+  let original,sourceEvidence;
+  if(track.sourceArchiveSha256){
+    // CC0 Kenney RPG 음원 묶음은 이미 저장소에 다운로드 원본/원본 SHA-256 장부가 있다.
+    if(track.sourceFile!==cc0PackDir+'kenney-rpg-sfx-50.zip'
+      ||!/^[a-f0-9]{64}$/.test(track.sourceArchiveSha256)
+      ||!/^OGG\/[A-Za-z0-9_]+\.ogg$/.test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
+    const source=cc0PackManifest.packs?.find(x=>x.file==='kenney-rpg-sfx-50.zip');
+    if(!source||source.licenseDeclared!=='CC0-1.0'
+      ||source.licenseSourceUrl!==track.sourceUrl||source.sourceUrl!==track.sourceDownloadUrl
+      ||source.sha256!==track.sourceArchiveSha256)throw Error('CC0_AUDIO_ARCHIVE_RIGHTS_INVALID');
+    const bytes=fs.readFileSync(track.sourceFile);
+    if(bytes.length!==source.bytes
+      ||crypto.createHash('sha256').update(bytes).digest('hex')!==source.sha256)
+      throw Error('CC0_AUDIO_ARCHIVE_HASH_MISMATCH');
+    const list=execFileSync('unzip',['-Z','-1',track.sourceFile],{encoding:'utf8',maxBuffer:1024*1024}).split(/\r?\n/);
+    const matches=list.filter(x=>x===track.sourceEntry||x.endsWith('/'+track.sourceEntry));
+    if(matches.length!==1)throw Error('CC0_AUDIO_ARCHIVE_ENTRY_MISSING_OR_AMBIGUOUS');
+    original=execFileSync('unzip',['-p',track.sourceFile,matches[0]],{maxBuffer:16*1024*1024,timeout:30000});
+    if(original.length<512||original.length>12*1024*1024)
+      throw Error('CC0_AUDIO_ARCHIVE_ENTRY_SIZE_INVALID');
+    sourceEvidence={sourceArchiveSha256:source.sha256,sourceEntry:matches[0]};
+  }else{
+    if(!track.sourceFile?.startsWith(cc0Base)||!/^[a-f0-9]{40}$/.test(String(track.sourceGitBlobSha1||'')))
+      throw Error('CC0_AUDIO_ORIGINAL_METADATA_INVALID');
+    const relative=track.sourceFile.slice(cc0Base.length);
+    const approved=cc0Manifest.assets.find(x=>x.path===relative);
+    if(!approved||approved.license!=='CC0-1.0'||approved.sourceUrl!==track.sourceUrl
+      ||approved.gitBlobSha1!==track.sourceGitBlobSha1)throw Error('CC0_AUDIO_LICENSE_EVIDENCE_INVALID');
+    original=fs.readFileSync(track.sourceFile);
+    const gitBlob=crypto.createHash('sha1').update(Buffer.from('blob '+original.length+'\0')).update(original).digest('hex');
+    if(gitBlob!==track.sourceGitBlobSha1)throw Error('CC0_AUDIO_SOURCE_HASH_MISMATCH');
+    sourceEvidence={sourceGitBlobSha1:gitBlob};
+  }
+
+  const originalSha256=crypto.createHash('sha256').update(original).digest('hex');
+  const output=dir+'/'+track.file;
+  fs.mkdirSync(dir+'/out',{recursive:true});
+  execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i','pipe:0',
+    '-vn','-ac','1','-ar','32000','-af',track.editFilter,'-c:a','libvorbis','-q:a','3',output],
+    {input:original,timeout:120000,maxBuffer:8*1024*1024});
+  if(!fs.existsSync(output)||fs.statSync(output).size<1500)
+    throw Error('CC0_AUDIO_DERIVATIVE_TOO_SMALL');
+  // 파생물과 부모 원본을 업로드 영수증에 함께 기록한다.
+  console.log('AUDIO_CC0_SOURCE_VERIFIED '+track.name+' source_sha256='+originalSha256);
+  return {sourceSha256:originalSha256,...sourceEvidence,license:'CC0-1.0',sourceUrl:track.sourceUrl};
+}
+
+// API 키 없이 원본 권리/해시/파생 음원의 디코더까지 검사하는 수동 검증 모드.
+if(process.env.AUDIO_CC0_PREFLIGHT==='1'){
+  const tracks=meta.tracks.filter(t=>t.license==='CC0-1.0');
+  let passed=0;
+  for(const t of tracks){
+    const evidence=prepareVerifiedCC0(t);
+    const file=dir+'/'+t.file;
+    const info=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries',
+      'format=duration,size','-of','json',file],{encoding:'utf8',timeout:15000}));
+    const duration=Number(info.format?.duration);
+    if(!Number.isFinite(duration)||duration<0.05||duration>180)
+      throw Error('CC0_AUDIO_INVALID_DURATION:'+t.name);
+    console.log('AUDIO_CC0_PREFLIGHT_PASS '+t.name+' duration='+duration.toFixed(2)
+      +' original='+evidence.sourceSha256+' derived='
+      +crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+    passed++;
+  }
+  console.log('AUDIO_CC0_PREFLIGHT_OK '+passed);
+  process.exit(0);
+}
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
 if(!key)throw Error('ROBLOX_OPEN_CLOUD_API_KEY_MISSING');
@@ -54,21 +134,31 @@ if(!creator){
 }
 
 let receipts={};
-if(process.env.AUDIO_FRESH!=='1'&&fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
+// 전체 재업로드는 아직 CC0로 교체되지 않은 기존 합성 음원까지 재생성하므로 차단한다.
+if(process.env.AUDIO_FRESH==='1')console.log('AUDIO_FRESH_IGNORED_CC0_MIGRATION_SAFE_MODE');
+if(fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
 const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipts,null,1)+'\n');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let failures=0;
 
 for(const t of meta.tracks){
   try{
+    const provenance=t.license==='CC0-1.0'?prepareVerifiedCC0(t):null;
     const bytes=fs.readFileSync(dir+'/'+t.file);
     const sha=crypto.createHash('sha256').update(bytes).digest('hex');
     let rec=receipts[t.name]||{};
+    // 자체 합성 원본은 중앙 CC0 정책상 새로운 업로드 금지. 기존 유효한 연결은 보존.
+    if(!provenance){
+      if(rec.sha256!==sha||!rec.granted||!/^[1-9]\d*$/.test(String(rec.assetId)))
+        throw Error('AUDIO_LEGACY_CC0_REPLACEMENT_REQUIRED');
+      console.log('AUDIO_LEGACY_PRESERVED '+t.name);
+      continue;
+    }
     if(!(rec.sha256===sha&&/^[1-9]\d*$/.test(String(rec.assetId)))){
       const form=new FormData();
       form.append('request',JSON.stringify({
         assetType:'Audio',displayName:('Mare '+t.label).slice(0,50),
-        description:'Original synthesized audio for Mare Essentia. No samples. sha256 '+sha,
+        description:('CC0 original derivative for Mare Essentia. '+t.sourceUrl+' sha256 '+sha).slice(0,950),
         creationContext:{creator},
       }));
       form.append('fileContent',new Blob([bytes],{type:'audio/ogg'}),t.name+'.ogg');
@@ -81,7 +171,7 @@ for(const t of meta.tracks){
       }
       const assetId=String(op.response?.assetId||'');
       if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('AUDIO_UPLOAD_FAILED:'+String(op.error?.message||'').slice(0,120));
-      rec={sha256:sha,assetId,granted:false};
+      rec={sha256:sha,assetId,granted:false,...provenance};
       receipts[t.name]=rec;save();
       console.log('AUDIO_UPLOADED '+t.name+'='+assetId);
       await sleep(2500);
@@ -96,6 +186,8 @@ for(const t of meta.tracks){
       rec.granted=true;receipts[t.name]=rec;save();
       console.log('AUDIO_GRANTED '+t.name);
     }
+    Object.assign(rec,provenance);
+    receipts[t.name]=rec;save();
   }catch(e){
     failures++;
     console.log('AUDIO_FAILED '+t.name+' '+String(e.message||e).slice(0,200));

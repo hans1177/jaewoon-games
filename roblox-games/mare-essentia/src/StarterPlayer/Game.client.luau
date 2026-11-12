@@ -1722,6 +1722,7 @@ local function sail(portId)
 	Sfx.music("music_sea")
 	Sfx.ambient({ "sfx_waves", "sfx_wind" })
 	Sfx.play("sfx_sail")
+	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
 		local vk = view and view.voyageEvent and view.voyageEvent.kind
@@ -2202,14 +2203,10 @@ function playStory(ev)
 	overlay.ZIndex = 60
 	local layer = overlayGui("Overlay", 20)
 	overlay.Parent = layer
-	-- 장면 분위기에 맞는 음악: 끝나면 원래 음악으로 돌아간다
+	-- 스토리 성격에 맞춰 기존 오디오 제어기에서 BGM·시작 효과음을 선택한다.
 	local prevStoryMusic = Sfx.currentName()
-	do
-		local mood = ({ tavern = "music_market", storm = "music_battle", palace = "music_harbor", library = "music_harbor", observatory = "music_sea", ruins = "music_sea", harbor = "music_harbor" })[ev.art]
-		if mood then
-			Sfx.music(mood)
-		end
-	end
+	Sfx.music(Sfx.storyMusic(ev))
+	Sfx.play(Sfx.storyCue(ev), 0.38)
 	overlay.Destroying:Connect(function()
 		if prevStoryMusic then
 			Sfx.music(prevStoryMusic)
@@ -3097,6 +3094,10 @@ end
 local function openTradeHall()
 	Sfx.play("sfx_bell")
 	closeTradeHall()
+	-- 상인이 교역소 입장 시 현지어로 짧게 인사한다. 별도 인사 자막은 넣지 않는다.
+	if view and view.player then
+		Sfx.merchantGreeting(PortData.Ports[view.player.portId])
+	end
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
 	local root = Instance.new("Frame")
@@ -3192,7 +3193,7 @@ local function openTradeHall()
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
-		local say = (message ~= "" and message) or string.format("어서 오시오! %s 시세는 날마다 달라진다오.", p.portName)
+		local say = (message ~= "" and message) or string.format("%s 시세는 날마다 달라진다오.", p.portName)
 		local sl = mkLabel(bubble, say, 16, Color3.fromRGB(50, 36, 24), true)
 		sl.Position = UDim2.fromOffset(10, 8)
 		sl.Size = UDim2.new(1, -20, 1, -16)
@@ -5452,8 +5453,8 @@ function H.playWonderScene(cardId)
 	hint.Text = "화면을 누르면 건너뛰기"
 	hint.ZIndex = 110
 	hint.Parent = root
-	Sfx.music(mood.music)
-	Sfx.play(mood.sfx)
+	Sfx.music(Sfx.wonderMusic(sc.mood, mood.music))
+	Sfx.play(Sfx.wonderCue(sc.mood, mood.sfx))
 
 	local function finish()
 		if not alive then
@@ -5996,9 +5997,10 @@ function render()
 	order = 0
 	H.clearContent()
 	if not audioLock then
-		Sfx.music(if view and currentTab == "trade" then "music_market" else "music_harbor")
+		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
+			view ~= nil and currentTab == "trade")
 		if view then
-			Sfx.ambient({ "sfx_waves" })
+			Sfx.portAmbient(PortData.Ports[view.player.portId])
 		end
 	end
 
@@ -6182,6 +6184,14 @@ end)
 
 openTab = function(tabId)
 	currentTab = tabId
+	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
+	if tabId == "map" then
+		Sfx.play("sfx_chart_unfold", 0.28)
+	elseif tabId == "codex" or tabId == "quest" then
+		Sfx.play("sfx_book_turn", 0.24)
+	elseif tabId == "crew" then
+		Sfx.play("sfx_ship_cabin_door", 0.25)
+	end
 	if tabId ~= "battle" then
 		equipped = nil
 	end
@@ -6216,8 +6226,8 @@ do
 		closePopup()
 		popupFor = ev.id
 		histPrev = Sfx.currentName()
-		Sfx.music("music_sea") -- 장중한 바다 음악으로 사건의 무게를 더한다
-		Sfx.play("sfx_bell")
+		Sfx.music(Sfx.historyMusic(ev)) -- 사건의 종류(전쟁·재난·교역·탐험 등)에 맞는 곡으로 전환
+		Sfx.play(Sfx.historyCue(ev), 0.4)
 		local layer = overlayGui("HistoryEvent", 55)
 		popupGui = layer
 		local dim = Instance.new("Frame")
