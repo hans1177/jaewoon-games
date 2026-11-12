@@ -103,6 +103,10 @@ B.Units.jaguar = { id = "jaguar", name = "재규어 전사", row = "melee", powe
 B.Units.janissary = { id = "janissary", name = "예니체리", row = "ranged", power = 4, weapon = "gun", ability = "bond" }
 B.Units.camel = { id = "camel", name = "낙타 기병", row = "melee", power = 5, weapon = "spear" }
 B.Units.raider = { id = "raider", name = "해상 습격대", row = "melee", power = 4, weapon = "sword", ability = "bond" }
+-- 두목 전용 영웅: 두목을 쓰러뜨린 뒤 보상 후보에만 나온다 (일반 뽑기에는 나오지 않는다)
+B.Units.boss_kraken = { id = "boss_kraken", name = "크라켄의 촉수", row = "cannon", power = 8, weapon = "cannon", hero = true }
+B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row = "melee", power = 8, weapon = "spear", hero = true }
+B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "draw",
 		roster = { "swordsman", "gunner", "pikeman", "pikeman", "shieldman", "surgeon", "musketeer", "decoy", "musketeer", "sharpshooter", "scout", "sniper", "gunner", "culverin", "gunner", "horn", "decoy" } },

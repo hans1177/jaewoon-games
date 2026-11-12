@@ -88,13 +88,16 @@ function CB.drop(book: any, source: string, rng: () -> number, field: string?): 
 end
 
 -- 이긴 뒤 보상: 서로 다른 카드 3장을 보여 주고 1장을 고른다
-function CB.offer(book: any, source: string, rng: () -> number, field: string?): { string }
+CB.BOSS_CARD = { kraken = "boss_kraken", sea_serpent = "boss_serpent", siren = "boss_siren" }
+
+function CB.offer(book: any, source: string, rng: () -> number, field: string?, extra: string?): { string }
 	local ids = {}
+	if extra and def(extra) then table.insert(ids, extra) end
 	local tries = 0
 	while #ids < 3 and tries < 60 do
 		tries += 1
 		local flavored = field and CB.FIELD_CARD[field]
-		local id = if flavored and #ids == 0 and rng() < 0.5 then flavored else CB.roll(source, rng)
+		local id = if flavored and #ids <= 1 and rng() < 0.5 then flavored else CB.roll(source, rng)
 		if not table.find(ids, id) then table.insert(ids, id) end
 	end
 	book.pick = { ids = ids, source = source }
