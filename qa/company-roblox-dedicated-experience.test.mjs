@@ -656,6 +656,13 @@ test('Mare trade keeps four tinted barrels and removes retired goods',()=>{
   const sites=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Sites.luau','utf8');
   assert.doesNotMatch(sites,/am_peace_pipe/);
   assert.match(state,/s\.coins = math\.min\(1e9, s\.coins \+/);
+  assert.match(state,/q_tobacco_amsterdam = "q_logwood_amsterdam"/);
+  assert.match(state,/q_tobacco_oslo = "q_logwood_oslo"/);
+  assert.match(state,/q_tobacco_amsterdam2 = "q_logwood_amsterdam2"/);
+  const quests=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Quests.luau','utf8');
+  for(const id of ['q_logwood_amsterdam','q_logwood_oslo','q_logwood_amsterdam2'])
+    assert.match(quests,new RegExp('id = "'+id+'".*goodId = "logwood"'));
+  assert.doesNotMatch(quests,/goodId = "tobacco"/);
   // 제한 품목의 차단된 전용 이미지·새 모델을 재등록하지 않는다.
   for(const id of ['beer','sake','rum','wine']){
     assert.equal(assets['Goods/'+id],undefined);

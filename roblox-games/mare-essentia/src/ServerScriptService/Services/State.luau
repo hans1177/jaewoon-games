@@ -306,10 +306,17 @@ return function(D)
 			end
 		end
 		if type(saved.quests) == "table" then
+			-- [저장 호환] 기존 금지 품목 납품 임무는 동일 보상·납품 수량의 합법적인 목재 교역으로 이어간다.
+			local oldQuests = {
+				q_tobacco_amsterdam = "q_logwood_amsterdam",
+				q_tobacco_oslo = "q_logwood_oslo",
+				q_tobacco_amsterdam2 = "q_logwood_amsterdam2",
+			}
 			if type(saved.quests.active) == "table" then
 				for id, q in saved.quests.active do
-					if D.Quests.ById[id] and type(q) == "table" then
-						s.quests.active[id] = {
+					local currentId = oldQuests[id] or id
+					if D.Quests.ById[currentId] and type(q) == "table" then
+						s.quests.active[currentId] = {
 							delivered = math.floor(num(q.delivered, 0, 0, 1e6)),
 							baseWins = math.floor(num(q.baseWins, 0, 0, 1e9)),
 						}
@@ -318,8 +325,9 @@ return function(D)
 			end
 			if type(saved.quests.done) == "table" then
 				for id, v in saved.quests.done do
-					if v == true and D.Quests.ById[id] then
-						s.quests.done[id] = true
+					local currentId = oldQuests[id] or id
+					if v == true and D.Quests.ById[currentId] then
+						s.quests.done[currentId] = true
 					end
 				end
 			end
