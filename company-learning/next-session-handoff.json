@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__LATEST_GLF_SOURCE_MOTION_RENDER_QA_PENDING",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__RIG_AUDIT_AND_PREVIEW_WIRING_QA_SUCCESS_RUNTIME_UNVERIFIED",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,6 +298,12 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
+      "REFRESH_MAIN_HEAD_AND_VALIDATE_CANONICAL_POLICY4_AND_AGENTS_BEFORE_ANY_WRITE",
+      "CHECK_MAGIC_FOREST_STATIC_PLAY_43310327776_FOR_B52F047_EXACT_SHA_AND_POST_PUBLICATION_BROWSER_RESULT_NOT_ONLY_WORKFLOW_CONCLUSION",
+      "EXECUTE_OR_FIND_EXACT_QA_VIBE_PREMIUM_CHARACTER_PIPELINE_TEST_MJS_ON_B52F047_AND_ASSERT_THREE_NEW_CASES_PASS",
+      "CHECK_PREVIEW_GLTF_RIG_AUDIT_BUTTON_IN_REAL_APPROVED_SKINNED_MODEL_AND_ENSURE_NO_SOURCE_MUTATION_OR_SAVE_CHANGE",
+      "IF_PAGES_BUILD_SUPERSEDED_FIND_NEWER_EXACT_SHA_MATCH_DO_NOT_CLAIM_PASS",
+      "KEEP_18_FEATURE_TRACK_IN_EXISTING_PIPELINE_AND_FIX_VERIFIED_RUNTIME_FAILS_BEFORE_MARKING_COMPLETE",
       "RELOAD_CURRENT_MAIN_AND_POLICY4_AGENTS_AFTER_HANDOFF",
       "FETCH_CI_43308046687_43308046407_43308046425_AND_LATEST_SOURCE_SHA",
       "VERIFY_RUN_ALIAS_REAL_APPROVED_GLTF_RUN_AND_JOG_SOURCE_CLIPS_IN_LIVE_PREVIEW_WITH_NO_DUPLICATE_MIXER",
@@ -338,7 +344,10 @@
       "qa/vibe-cinematic-polish.test.mjs:AUTHORED_LOD_NEAR_AND_FAR_GROUP_TEST;STATIC_BATCH_DIFFERENT_RENDER_STATE_TEST (8f6fb30)",
       "assets/vibe-character-adapter.mjs:AUTHORED_GLTF_CLIP_ALIAS_MATCHING_WALK_JOG_SPRINT_RUN_WITH_DEDUPE_AND_SAFE_ABSENT_CLIPS (dc660e24)",
       "assets/vibe-model-preview.html:DESKTOP_FRAME_CAP_60FPS_AND_55FPS_RENDER_QUALITY_CONTROLLER_TARGET_PRESERVE_MOBILE_30FPS (dc660e24)",
-      "qa/vibe-motion-engine.test.mjs:AUTHOR_SOURCE_CLIP_ALIAS_BEHAVIOR_AND_DESKTOP_FRAME_BUDGET_TESTS (dc660e24/fb70c9ec)"
+      "qa/vibe-motion-engine.test.mjs:AUTHOR_SOURCE_CLIP_ALIAS_BEHAVIOR_AND_DESKTOP_FRAME_BUDGET_TESTS (dc660e24/fb70c9ec)",
+      "assets/vibe-premium-character-pipeline.mjs:READ_ONLY_SKIN_AUDIT_TOTAL_VERTICES_COVERAGE_COMPLETE_FAIL_CLOSED_WHEN_PARTIAL_AND_FULL_AUDIT_FOR_TOTAL_WITHIN_BUDGET (b52f047)",
+      "assets/vibe-model-preview.html:REAL_GLTF_RIG_AUDIT_BUTTON_DISPLAYS_BONES_SAMPLED_TOTAL_AND_UNVERIFIED_OR_ERROR_WITHOUT_MUTATION (b52f047)",
+      "qa/vibe-premium-character-pipeline.test.mjs:THREE_NEW_CASES_PARTIAL_COVERAGE_UNEVEN_MESH_BUDGET_AND_PREVIEW_AUDIT_WIRING (b52f047)"
     ],
     "verified": [
       "GitHub Actions Vibe QA run 43298886149 on 36385807: SUCCESS",
@@ -354,7 +363,9 @@
       "8f6fb304 Vibe Integrated Regression GitHub Actions run 43307517488 SUCCESS (verified from Actions run state)",
       "7388bdb0 Vibe QA run 43307118779 SUCCESS and Vibe Integrated Regression run 43307118796 SUCCESS",
       "eb49063a Vibe QA 43306014838 SUCCESS and Vibe Integrated Regression 43306014606 SUCCESS",
-      "8f6fb304 Vibe QA run 43307517213 SUCCESS and Integrated Regression run 43307517488 SUCCESS"
+      "8f6fb304 Vibe QA run 43307517213 SUCCESS and Integrated Regression run 43307517488 SUCCESS",
+      "b52f047 Vibe QA 43310327659 SUCCESS confirmed on exact source commit",
+      "b52f047 Vibe Integrated Regression 43310327626 SUCCESS confirmed on exact source commit"
     ],
     "unverified": [
       "NEWER_MAIN_720DE189_FULL_QA_AND_RUNTIME",
@@ -386,9 +397,13 @@
       "fb70c9ec Vibe QA run 43308046687 in progress at checkpoint",
       "fb70c9ec Vibe Integrated Regression run 43308046407 queued at checkpoint",
       "fb70c9ec Magic Forest Static Play run 43308046425 pending at checkpoint",
-      "CURRENT_MAIN_EXACT_LIVE_MOBILE_BROWSER_SAVE_RUN_NOT_CONFIRMED"
+      "CURRENT_MAIN_EXACT_LIVE_MOBILE_BROWSER_SAVE_RUN_NOT_CONFIRMED",
+      "b52f047 Magic Forest Static Play 43310327776 deploy in progress at 2026-11-13 KST checkpoint",
+      "b52f047 NEW_QA_VIBE_PREMIUM_CHARACTER_PIPELINE_THREE_TESTS_EXECUTION_NOT_INDEPENDENTLY_ATTESTED_BY_VIBE_QA_OR_INTEGRATED_RUNS; VERIFY_PAGES_WORKFLOW_TEST_PATH_OR_RUN_DIRECT_NODE_TEST",
+      "b52f047 APPROVED_GLTF_REAL_BROWSER_RIG_AUDIT_CLICK_REAL_PIXEL_RUNTIME_NOT_VERIFIED",
+      "LATEST_MAIN_AT_FINAL_HANDOFF_PUBLISHED_SOURCE_SHA_BROWSER_MOBILE_TOUCH_AND_SAVE_NOT_VERIFIED"
     ],
-    "lastObservedMain": "fb70c9ec89510e15709450a406c1745f765a0983",
+    "lastObservedMain": "02d6e9669f1d439c4e7d12c8f3812e18ec41231a",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -424,31 +439,29 @@
       "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175",
       "8f6fb3040d7af2a68822864c8c093cae3560dd95",
       "dc660e244b038cfd11e0e976919c808ea342b38e",
-      "fb70c9ec89510e15709450a406c1745f765a0983"
+      "fb70c9ec89510e15709450a406c1745f765a0983",
+      "b52f04761578dcd1d53f859766aa979cf8d8a4c7"
     ],
     "latestDirectWork": {
-      "sourceBase": "7a22073ad47fc4451d28a01844600b0fc79960bf",
+      "sourceBase": "6dc0a45abe238b073eb7530e34dfb793c48076bc",
       "implementationCommits": [
-        "8f6fb3040d7af2a68822864c8c093cae3560dd95",
-        "dc660e244b038cfd11e0e976919c808ea342b38e",
-        "fb70c9ec89510e15709450a406c1745f765a0983"
+        "b52f04761578dcd1d53f859766aa979cf8d8a4c7"
       ],
       "modifiedExistingFiles": [
-        "assets/vibe-cinematic-polish.mjs",
-        "qa/vibe-cinematic-polish.test.mjs",
-        "assets/vibe-character-adapter.mjs",
+        "assets/vibe-premium-character-pipeline.mjs",
         "assets/vibe-model-preview.html",
-        "qa/vibe-motion-engine.test.mjs"
+        "qa/vibe-premium-character-pipeline.test.mjs"
       ],
-      "scope": "PER_OBJECT_LOD_GFX; INSTANCING_RENDER_STATE; AUTHOR_CLIP_RUN_ALIAS; DESKTOP_60FPS_PRESENTATION",
+      "scope": "READ_ONLY_COMPLETE_SKIN_COVERAGE_CHECK_AND_REAL_GLTF_PREVIEW_RIG_DIAGNOSTICS",
       "qa": {
-        "graphics": "VIBE_QA_SUCCESS_43307517213; INTEGRATED_SUCCESS_43307517488",
-        "latest": "RUNNING_43308046687; QUEUED_43308046407",
-        "live": "PENDING_43308046425"
+        "vibeQa": "SUCCESS_43310327659",
+        "integratedRegression": "SUCCESS_43310327626",
+        "pages": "IN_PROGRESS_43310327776",
+        "specificNewTests": "NOT_INDEPENDENTLY_ATTESTED"
       },
-      "postPublish": "LATEST_COMMIT_UNVERIFIED",
+      "postPublish": "LATEST_EXACT_SOURCE_RUNTIME_NOT_YET_PROVEN",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "Inspect live main, canonical policy four and AGENTS; use Actions run IDs to get actual QA status, confirm exact published SHA (do not count superseded), validate GLTF clip alias in browser and real model, continue outstanding features with real approved assets; no duplicate pipelines."
+      "nextWorkerInstruction": "Refresh current main and 4 central policies plus AGENTS, inspect b52f047 changes and GitHub Actions 43310327776 for exact postpublication; check source tests executed (Vibe QA success may not run premium test file); verify real approved glTF browser, then continue motion/graphics 18 features without unapproved meshes or shadow pipelines."
     }
   }
 }
