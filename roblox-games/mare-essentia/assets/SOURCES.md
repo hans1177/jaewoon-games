@@ -841,3 +841,16 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 | `naval/anchor.glb` | 닻 | Quaternius · CC0-1.0 | https://poly.pizza/m/ejWQny9Gcz / [바이너리 출처](https://github.com/amarnotcool/ABYSS/blob/468cd31632ebf7f7a466713a1dc483d02a965ca2/public/assets/models/anchor.glb) | `7744e423c1f71f16af058a7ecc99ed4cc30239ba` | `f629c05a217c380daf5b04d00e21ac398829eb746f908db4ecefd760c3892dc7` |
 
 **시대 배치 제한:** 고양이는 항구 창고·거리, 코끼리는 인도양/말라바르 지역 장식, 닻은 돛단배 항구에 한정한다. 저다각형 동물의 비례·눈·재질이 기존 게임 화풍에 맞는지는 반드시 실제 화면으로 확인하고, 화면 검증 전 자동 배치하거나 고급 완성품으로 승격하지 않는다. 종교·지역에 따른 돼지 배치도 무차별 자동 적용하지 않는다. 20세기식 기계·현대 어구·주류 소품은 제외한다.
+
+
+### 2026-11-12 당나귀 원본 정적 메시 등록 (애니메이션 미검증)
+
+Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**을 고정 원본 리비전 `a3aaca61260eee91a1ffb05904b90b03094d829d`에서 확보했다. CC0 1.0 Universal 원본 License.txt 확인.
+원본: https://quaternius.com/packs/ultimateanimatedanimals.html
+배포 이력: https://github.com/xxfrigorizxx/The-Legacy-Of-Seroka/tree/a3aaca61260eee91a1ffb05904b90b03094d829d/_tmp_quaternius_animals/OBJ
+
+- `animals/donkey-source.obj`: **원본 Git Blob SHA-1** `31869de9664710b0b035b4441cab17cacf6e3925`, 1,002개 위치, 1,020개 법선, 1,022개 면
+- `animals/donkey-source.mtl`: **원본 Git Blob SHA-1** `8637f52251852454564167b8e71839108fa1b5b7`, 원본 8종 재질의 색상
+- `animals/donkey.glb`: **형식 변환 결과 Git Blob SHA-1** `408de349a14a3d270441fc61033f09646cdca866`, 148,700바이트 GLB 2.0, 원본 정점/법선과 8재질을 그대로 재구성하고 기존 면을 2,000개 삼각형으로만 나눴다.
+
+기존 오픈 클라우드 업로더는 `.glb`만 모델 등록하고 `.obj/.mtl` 원본은 건드리지 않는다. **애니메이션 0개**인 정적 원본이므로 움직이는 당나귀로 자동 사용하거나 이동 동작을 성공 처리하지 않는다. Roblox Model ID·Universe 권한·실제 마레 에센티아 화면 검증 후에만 게임에서 배치한다.
