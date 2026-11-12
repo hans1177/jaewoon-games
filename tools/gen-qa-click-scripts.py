@@ -66,7 +66,10 @@ def build(first_wait, prefer, n):
 def write(path, steps):
     json.dump(steps, open(path, 'w'), ensure_ascii=False, indent=1)
 
-write('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json',
-      build(35000, ["새 게임", "프랑스", "1700", "출항하기", "교역", "조선", "퀘스트", "항해", "지도", "기술", "항구", "설정"], 30))
+mare_steps = build(35000, ["새 게임", "프랑스", "1700", "출항하기", "교역", "조선", "퀘스트", "항해", "지도", "기술", "항구", "설정"], 30)
+# 마지막 두 탐색은 아직 방문하지 않은 버튼이 있을 때만 클릭한다.
+for step in [step for step in mare_steps if step["type"] == "click_from_luau"][-2:]:
+    step["optional"] = True
+write('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', mare_steps)
 write('roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json',
       build(30000, ["모험 시작", "이어하기", "가방", "제작", "도감", "기사단", "스킬트리", "설정", "자동질주", "시작", "퀘스트", "인벤", "스킬", "상점", "지도"], 30))

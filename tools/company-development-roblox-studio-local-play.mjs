@@ -2704,6 +2704,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
       completedSteps:0,
       plannedClicks:steps.filter(st=>st.type==='click_text'||st.type==='click_from_luau').length,
       successfulClicks:0,
+      skippedOptionalClicks:0,
       plannedFrames:steps.filter(st=>st.type==='capture').length,
       capturedFrames:0,
       abortedEarly:false
@@ -2789,9 +2790,10 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           const out=await luau(st.type==='click_text'?'Client':(st.ctx||'Client'),code);
           const m=out.match(/(?:^|\n)\s*(-?\d+),(-?\d+)(?=\s|$)/);
           const label=st.type==='click_text'?st.text:(st.label||'luau');
-          if(!m&&st.optional===true){
-            // 저장 데이터가 없으면 '이어하기' 같은 선택 버튼은 없다. 건너뛰고 다음 단계로 간다.
+          if(!m&&st.optional===true&&/^NONE(?:\r?\ntext)?$/.test(out.trim())){
+            // 선택 버튼이 실제로 없을 때만 생략한다. 다른 응답 오류는 기존 실패로 처리한다.
             report.log.push({step:n,click:label,at:'OPTIONAL_SKIPPED',out:out.slice(0,300)});
+            report.summary.skippedOptionalClicks++;
             report.summary.completedSteps=n+1;
             continue;
           }
@@ -3120,7 +3122,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         }
       }
     }
-    if(!report.errors.length&&report.summary.successfulClicks!==report.summary.plannedClicks){
+    if(!report.errors.length&&report.summary.successfulClicks+report.summary.skippedOptionalClicks!==report.summary.plannedClicks){
       report.errors.push('STUDIO_CLICK_COVERAGE_INCOMPLETE');
     }
     if(!report.errors.length&&report.summary.capturedFrames<report.summary.plannedFrames){
