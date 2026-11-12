@@ -103,7 +103,7 @@
   "id": "mare-farm-animals",
   "kind": "Animals",
   "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
-  "status": "source-registered-runtime-unverified",
+  "status": "source-in-repository-pending-game-runtime-verification",
   "sourceReady": [
    "cow",
    "horse",
@@ -114,7 +114,9 @@
    "chicken",
    "cat",
    "elephant",
-   "donkey"
+   "donkey",
+   "parrot",
+   "crab"
   ],
   "missing": [
    "goat",
@@ -172,6 +174,12 @@
    ],
    "goat": [
     "유럽·지중해·아프리카 목장, 원본 부족"
+   ],
+   "parrot": [
+    "열대·스와힐리·말라바르·식민지 항구, 발전 3단계 이상"
+   ],
+   "crab": [
+    "연안·부두, 발전 2단계 이상"
    ]
   },
   "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
@@ -179,13 +187,16 @@
   "animationPending": [
    "donkey"
   ],
-  "actualStudioAnimationVerified": false
+  "actualStudioAnimationVerified": false,
+  "gameBindings": [
+   "PortScene.densify 동물·지역별 배치, 기존 CC0 모델만 사용"
+  ]
  },
  {
   "id": "mare-harbor-life-props",
   "kind": "Town",
   "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
-  "status": "partly-source-registered-runtime-unverified",
+  "status": "source-registered-game-binding-added-runtime-unverified",
   "newlyRegistered": [
    "watermill",
    "wheel",
@@ -243,6 +254,9 @@
    "play-ball": [
     "가죽·천 등 시대 재질만 후보"
    ]
-  }
+  },
+  "gameBindings": [
+   "PortScene.densify 닻·수레·물레방아·모루·연마대 배치"
+  ]
  }
 ]

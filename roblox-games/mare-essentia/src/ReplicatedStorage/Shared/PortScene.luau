@@ -1029,6 +1029,57 @@ local function densify(folder, info, style, rng, walkers, made)
 		importedModel(folder, "Naval", "ship-pirate-small", Vector3.new(80, 0.8, 90), 20, false)
 	end
 
+
+	-- [시대별 항구] 기존 승인 모델. 충돌과 게임 경제·저장은 변경하지 않는다.
+	importedModel(folder, "Naval", "anchor", Vector3.new(21, 1.9, 43), 3.8, false)
+	if lvl >= 2 then
+		importedModel(folder, "Town", "cart-high", Vector3.new(14, 0, 35), 5.6, false)
+		importedModel(folder, "Town", "wheel", Vector3.new(10, 0, 37), 2.2, false)
+		importedModel(folder, "Town", "workbench-anvil", Vector3.new(-50, 0, 20), 4.2, false)
+		if lvl >= 4 then
+			importedModel(folder, "Town", "workbench-grind", Vector3.new(-57, 0, 21), 4.2, false)
+		end
+	end
+	-- 물레방아는 운하가 있는 북해 항구·베네치아에만 배치한다.
+	if lvl >= 3 and (key == "brick" or info.portId == "venice") then
+		importedModel(folder, "Town", "watermill", Vector3.new(-144, 0, 68), 12, false)
+	end
+
+	-- [항구 동물] 정적 승인 실물 모델만 사용. 이동·생체 애니메이션 완성이라고 표시하지 않는다.
+	-- 모델은 한 종 한 개체로 제한하고 모바일 자산 부하를 억제한다.
+	for _, animal in {
+		{ "cow", -213, 30, 5.8 },
+		{ "horse", -201, 41, 5.6 },
+		{ "sheep", -248, 29, 4.0 },
+		{ "chicken", -220, 24, 1.6 },
+	} do
+		importedModel(folder, "Animals", animal[1], Vector3.new(animal[2], 0, animal[3]), animal[4], false)
+	end
+	if lvl >= 2 then
+		importedModel(folder, "Animals", "donkey", Vector3.new(-203, 0, -39), 4.8, false)
+		importedModel(folder, "Animals", "cat", Vector3.new(-37, 0, 24), 2.0, false)
+		if key == "iberia" or key == "italy" or key == "france" or key == "britain"
+			or key == "hanse" or key == "brick" or key == "nordic" then
+			importedModel(folder, "Animals", "dog-pug", Vector3.new(-58, 0, -18), 2.5, false)
+		end
+		importedModel(folder, "Animals", "crab", Vector3.new(10, 1.8, 48), 1.3, false)
+	end
+	-- 돼지는 주로 유럽/아메리카 농장. 오스만·스와힐리·말라바르 항구는 제외한다.
+	if lvl >= 3 and (key == "iberia" or key == "italy" or key == "france"
+		or key == "britain" or key == "hanse" or key == "brick"
+		or key == "nordic" or key == "north" or key == "stone" or key == "colonial") then
+		importedModel(folder, "Animals", "pig", Vector3.new(-253, 0, -28), 4.4, false)
+	end
+	-- 라마: 안데스. 코끼리: 인도양 교역항. 앵무새: 열대 연안.
+	if info.portId == "callao" or info.portId == "guayaquil" or info.portId == "valparaiso" then
+		importedModel(folder, "Animals", "llama", Vector3.new(-227, 0, 41), 5.0, false)
+	elseif key == "malabar" and lvl >= 3 then
+		importedModel(folder, "Animals", "elephant", Vector3.new(-228, 0, 54), 10, false)
+	end
+	if lvl >= 3 and (key == "tropic" or key == "swahili" or key == "malabar" or key == "colonial") then
+		importedModel(folder, "Animals", "parrot", Vector3.new(-62, 0, 44), 2.2, false)
+	end
+
 	-- 4) 생활감 소품: 담장, 수레, 통, 횃불
 	for _, side in { 1, -1 } do
 		for x = -30, -150, -24 do

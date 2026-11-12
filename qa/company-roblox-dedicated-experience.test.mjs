@@ -652,7 +652,7 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
   const props=wanted.find(row=>row.id==='mare-harbor-life-props');
   assert.equal(animals?.autoBindWithoutRuntimeProof,false);
   assert.equal(props?.autoBindWithoutRuntimeProof,false);
-  assert.equal(animals?.sourceReady.length,10);
+  assert.equal(animals?.sourceReady.length,12);
   assert.equal(animals?.missing.length,4);
   assert.ok(props.missing.includes('fishing-net'));
   assert.ok(!props.missing.includes('anchor'));
@@ -660,7 +660,7 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
   assert.ok(animals.regionalUseGuidance.elephant.some(x=>x.includes('말라바르')));
   assert.equal(animals.visualQualityStatus,'SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA');
   const ledger=fs.readFileSync(root+'/assets/SOURCES.md','utf8');
-  const expected={"animals/cow.fbx":"0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d","animals/horse.fbx":"6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90","animals/sheep.fbx":"4a3fc559cc9f37e3e3f216af1dab30cb411ec9b268eb98676f1d5c18a430d33e","animals/pig.fbx":"bdf5e149a974ffc2431546f30ea568d7c41f916d7bd87187f1532c45778a9a23","animals/llama.fbx":"3ff44fd03d5793701b228cf88f00e776f89afefdb3de0b226fee807908ae79c9","animals/dog-pug.fbx":"c05e127a5b10edd059478113f542f691717635b47d7a57317d07e7310a764ff0","animals/chicken.fbx":"e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794","town/watermill.glb":"38dac94afcf84ea072603f558d96a843d45eea2f64321ad8f31c6a5cbff1b498","town/wheel.glb":"9dcffeb5b591f949b8488775592c224a8ba7988d94b0ba205fe5486730c28b30","town/workbench-anvil.glb":"b92fb534e0f6db92565529a8cc15753fb0ddbf35c3f5bcc718aaabb7d31e4a07","town/cart-high.glb":"c9d656399c42e6fb47f406ae31eb637ad0c1bfea45300209f4e2f2c405e94eb6","town/workbench-grind.glb":"6da609c418bba7ee8f8402d8f6783fa1d45c3c6391202c31cd4d25a710d37a20","animals/cat.glb":"1e73aaf7d497dd7d2946badf92d189d2333f163e66dced91feb446bc9bdee850","animals/elephant.glb":"0831346fb8ddb8e99e42e3f92fb48858551049dc7ea49e641d90fdfc65e057be","naval/anchor.glb":"f629c05a217c380daf5b04d00e21ac398829eb746f908db4ecefd760c3892dc7"};
+  const expected={"animals/cow.fbx":"0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d","animals/horse.fbx":"6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90","animals/sheep.fbx":"4a3fc559cc9f37e3e3f216af1dab30cb411ec9b268eb98676f1d5c18a430d33e","animals/pig.fbx":"bdf5e149a974ffc2431546f30ea568d7c41f916d7bd87187f1532c45778a9a23","animals/llama.fbx":"3ff44fd03d5793701b228cf88f00e776f89afefdb3de0b226fee807908ae79c9","animals/dog-pug.fbx":"c05e127a5b10edd059478113f542f691717635b47d7a57317d07e7310a764ff0","animals/chicken.fbx":"e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794","town/watermill.glb":"38dac94afcf84ea072603f558d96a843d45eea2f64321ad8f31c6a5cbff1b498","town/wheel.glb":"9dcffeb5b591f949b8488775592c224a8ba7988d94b0ba205fe5486730c28b30","town/workbench-anvil.glb":"b92fb534e0f6db92565529a8cc15753fb0ddbf35c3f5bcc718aaabb7d31e4a07","town/cart-high.glb":"c9d656399c42e6fb47f406ae31eb637ad0c1bfea45300209f4e2f2c405e94eb6","town/workbench-grind.glb":"6da609c418bba7ee8f8402d8f6783fa1d45c3c6391202c31cd4d25a710d37a20","animals/cat.glb":"1e73aaf7d497dd7d2946badf92d189d2333f163e66dced91feb446bc9bdee850","animals/elephant.glb":"0831346fb8ddb8e99e42e3f92fb48858551049dc7ea49e641d90fdfc65e057be","naval/anchor.glb":"f629c05a217c380daf5b04d00e21ac398829eb746f908db4ecefd760c3892dc7","animals/parrot.glb":"4e12fe4e71e30c0191d5f3cab2a166e57e57356e6b449f4d5dc8cef685a00d82","animals/crab.glb":"746a79430011055ab50f5b646ef6e890a6730644d504c28623f1716f0b11d257"};
   for(const [relative,sha] of Object.entries(expected)){
     const bytes=fs.readFileSync(root+'/assets/'+relative);
     assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,relative);
@@ -700,4 +700,34 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
   assert.ok(animals.animationPending.includes('donkey'));
   assert.equal(animals.actualStudioAnimationVerified,false);
   assert.equal(animals.autoBindWithoutRuntimeProof,false);
+});
+
+
+test('Mare historical harbor animals and props use canonical source loader and regional placement',()=>{
+  const root='roblox-games/mare-essentia';
+  const project=JSON.parse(fs.readFileSync(root+'/default.project.json','utf8'));
+  assert.equal(project.tree.ReplicatedStorage.MareAssets.Animals.$className,'Folder');
+  const loader=fs.readFileSync(root+'/src/ServerScriptService/AssetLoader.server.luau','utf8');
+  assert.match(loader,/local order = \{ Animals = 0\.5, Town = 1, Naval = 2, Cargo = 3/);
+  assert.match(loader,/pcall\(InsertService\.LoadAsset/);
+  assert.match(loader,/local group = library:FindFirstChild\(item\.kind\)/);
+  const ids=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  for(const animal of ['cat','chicken','cow','dog-pug','donkey','elephant','horse','llama','pig','sheep'])
+    assert.ok(ids.includes('["Animals/'+animal+'"]'),animal+' not in registered IDs');
+  const scene=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  for(const animal of ['cow','horse','sheep','chicken','donkey','cat','dog-pug','crab','pig','llama','elephant','parrot'])
+    assert.ok(scene.includes('"Animals", "'+animal+'"')||scene.includes('{ "'+animal+'", '),animal+' scene binding absent');
+  for(const prop of ['anchor','cart-high','wheel','workbench-anvil','workbench-grind','watermill'])
+    assert.ok(scene.includes('"'+prop+'"'),prop+' scene binding absent');
+  assert.match(scene,/info\.portId == "callao"/);
+  assert.match(scene,/key == "malabar" and lvl >= 3/);
+  assert.match(scene,/key == "brick" or info\.portId == "venice"/);
+  assert.match(scene,/if lvl >= 3 and \(key == "tropic"/);
+  assert.doesNotMatch(scene,/"Animals", "(?:turkey|camel|pigeon|goat)"/);
+  assert.doesNotMatch(scene,/Instance\.new\("Ball"\)/);
+  const wanted=JSON.parse(fs.readFileSync(root+'/assets-wanted.seed.json','utf8'));
+  const animals=wanted.find(x=>x.id==='mare-farm-animals');
+  assert.equal(animals.autoBindWithoutRuntimeProof,false);
+  assert.ok(animals.sourceReady.includes('parrot'));
+  assert.ok(animals.sourceReady.includes('crab'));
 });

@@ -854,3 +854,15 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - `animals/donkey.glb`: **형식 변환 결과 Git Blob SHA-1** `408de349a14a3d270441fc61033f09646cdca866`, 148,700바이트 GLB 2.0, 원본 정점/법선과 8재질을 그대로 재구성하고 기존 면을 2,000개 삼각형으로만 나눴다.
 
 기존 오픈 클라우드 업로더는 `.glb`만 모델 등록하고 `.obj/.mtl` 원본은 건드리지 않는다. **애니메이션 0개**인 정적 원본이므로 움직이는 당나귀로 자동 사용하거나 이동 동작을 성공 처리하지 않는다. Roblox Model ID·Universe 권한·실제 마레 에센티아 화면 검증 후에만 게임에서 배치한다.
+
+
+### 2026-11-12 시대별 항구 생태 추가 (CC0 원본, 게임 연결)
+
+Kenney Cube Pets 2.0의 원본 라이선스 `License.txt`가 CC0 1.0을 명시한다. 새 모델은 GLB 2.0 메시·원본 Git Blob 일치 확인 후 기존 자산 업로더로만 등록한다. 공개 게임 게시 및 모바일/Roblox 시각 품질은 별도 검증 대상이다.
+
+| 모델 | 목적 | 출처·라이선스 | 원본 Git Blob | 원본 SHA-256 |
+|---|---|---|---|---|
+| `animals/parrot.glb` | 앵무새 | [Kenney Cube Pets](https://kenney.nl/assets/cube-pets) · CC0-1.0 ([바이너리](https://github.com/mPhpMaster/wavebreak-godot-game/blob/HEAD/assets/kenney/cube-pets/animal-parrot.glb)) | `cd57c8ca4ad6deb8e3e2ceb85ce4a45da3d30557` | `4e12fe4e71e30c0191d5f3cab2a166e57e57356e6b449f4d5dc8cef685a00d82` |
+| `animals/crab.glb` | 해안 게 | [Kenney Cube Pets](https://kenney.nl/assets/cube-pets) · CC0-1.0 ([바이너리](https://github.com/mPhpMaster/wavebreak-godot-game/blob/HEAD/assets/kenney/cube-pets/animal-crab.glb)) | `719e24966504a60a93eb32b582144c8b1a8d4076` | `746a79430011055ab50f5b646ef6e890a6730644d504c28623f1716f0b11d257` |
+
+`PortScene.densify`는 새 모델을 가게·해안·농장·지역 생태에 배치하되 실제 게임 연도·문화권/발전도 제한을 사용한다. `default.project.json`의 기존 `MareAssets` 라이브러리에 Animals 폴더를 추가하고, 기존 `AssetLoader.server.luau`에서 범선 선로드 순서를 보존하면서 동물을 우선 로드한다. 경제·보상·저장키·이동 물리·공개 전환 변경 없음. **동물 모델의 실제 움직임, Roblox 화면 렌더링, 모바일 성능·게시 성공은 검증 전 성공 선언 금지.**

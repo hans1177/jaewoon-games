@@ -19,7 +19,8 @@ if not ok or type(ids) ~= "table" then
 end
 
 -- 메인 화면에서 쓰는 모델부터 로드하고, 나머지는 기존 폴더로 계속 채운다.
-local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castle = 6, Relics = 7, People = 8 }
+local order = { Animals = 0.5, Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castle = 6, Relics = 7, People = 8 }
+-- 범선 우선순위 유지, 동물은 항구 장면 구축 전에 가급적 먼저 로드한다.
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
