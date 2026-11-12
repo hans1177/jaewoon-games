@@ -28,20 +28,13 @@
         "version": 1,
         "pass": true,
         "source": "design/deep-diver/2026-10-31/design-revised.json",
-        "date": "2026-10-31",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
         "commonCoreReady": true,
         "platformProfiles": {
           "ROBLOX": true,
           "UNITY": true,
           "distinct": true
-        }
+        },
+        "migratedFromLegacy": false
       },
       "platformDesignProfiles": {
         "ROBLOX": {
@@ -59,7 +52,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-12T03:09:33.666Z",
+      "updatedAt": "2026-11-12T03:13:57.412Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1373,7 +1366,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-12T03:07:26.917Z",
+      "updatedAt": "2026-11-12T03:13:57.855Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3838,7 +3831,16 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-12T03:10:24.993Z"
       },
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "daechung-rpg",
@@ -3922,7 +3924,16 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-12T03:10:24.993Z"
       },
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "horror-escape-room",
@@ -4006,7 +4017,16 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-12T03:10:24.993Z"
       },
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "forgotten-continent",
@@ -4066,7 +4086,16 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-12T03:10:24.993Z",
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "baeksu-war",
@@ -4150,7 +4179,16 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-12T03:10:24.993Z"
       },
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "room-survival",
@@ -4210,10 +4248,19 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-12T03:10:24.993Z",
-      "updatedAt": "2026-11-12T03:10:24.993Z"
+      "updatedAt": "2026-11-12T03:13:57.855Z",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-12T03:13:57.412Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-11-12T03:11:26.813Z",
+  "updatedAt": "2026-11-12T03:13:57.855Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
