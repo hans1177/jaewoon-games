@@ -5,7 +5,7 @@ name: Vibe Autopilot
 run-name: Vibe Autopilot · ${{ github.run_number }}
 on:
   schedule:
-    - cron: '7,17,27,37,47,57 * * * *'
+    - cron: '8-58/10 * * * *'
   # 시간 예약(cron)은 GitHub 가 건너뛰는 일이 잦아서, Studio 점검이 끝날 때마다 이어서 실행한다(결과를 읽고 다음 점검을 고른다).
   workflow_run:
     workflows: ['Devloop Studio Capture']
