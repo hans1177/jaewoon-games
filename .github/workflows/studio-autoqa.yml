@@ -20,6 +20,10 @@ on:
       - 'roblox-games/mare-essentia/src/**'
       # Rojo 자산 폴더·빌드 트리 변경도 공식 Studio로 검증한다.
       - 'roblox-games/mare-essentia/default.project.json'
+  # [정밀검사] 코드 변경이 없어도 매일 12:43(한국시간)에 기존 116단계 스크립트를 자동 요청한다.
+  # GitHub 예약 누락 시 기존 push·게시 완료 이벤트와 수동 요청 경로가 유지된다.
+  schedule:
+    - cron: '43 3 * * *'
   workflow_run:
     workflows: ["Owner Mare Essentia Direct Publish"]
     types: [completed]
