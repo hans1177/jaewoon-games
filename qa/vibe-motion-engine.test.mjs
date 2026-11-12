@@ -74,10 +74,10 @@ test('Vibe 5.9 real GLB clips map sprint to authored Run without fabricating a c
  try{
   const adapter=await connectVibeCharacter({character:{},clips:[{name:'Idle'},{name:'Walk'},{name:'Run'}],THREE});
   assert.equal(adapter.play('walk'),true);
-  assert.equal(adapter.play('sprint'),true);
   assert.equal(adapter.play('jog'),true);
+  assert.equal(adapter.play('sprint'),false); // jog와 sprint가 같은 실제 Run 클립이면 재시작하지 않는다.
   assert.equal(adapter.play('fly'),false);
-  assert.deepEqual(played,['Walk','Run','Walk']);
+  assert.deepEqual(played,['Walk','Run']);
   adapter.move({speed:.95});
   assert.equal(adapter.engine.state,'sprint');
   adapter.dispose();
