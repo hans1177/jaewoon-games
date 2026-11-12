@@ -6226,6 +6226,116 @@ do
 	art.ScaleType = Enum.ScaleType.Crop
 	art.Parent = picture
 
+	-- (지역 변수 한도를 넘지 않게 함수 안에서 만든다)
+	;(function()
+		-- 살아 있는 배: 등록된 선박 모델이 파도에 흔들리고, 먼 바다엔 작은 배가 천천히 지나간다. 물보라 줄무늬와 갈매기가 움직인다.
+		local RS = game:GetService("RunService")
+		local stage = Instance.new("ViewportFrame")
+		stage.Name = "TitleLiveShips"
+		stage.BackgroundTransparency = 1
+		stage.Size = UDim2.fromScale(1, 1)
+		stage.ZIndex = 1
+		stage.Ambient = Color3.fromRGB(150, 150, 164)
+		stage.LightColor = Color3.fromRGB(255, 226, 180)
+		stage.LightDirection = Vector3.new(-0.6, -1, -0.5).Unit
+		stage.Parent = picture
+		local stageWorld = Instance.new("WorldModel")
+		stageWorld.Parent = stage
+		local stageCam = Instance.new("Camera")
+		stageCam.FieldOfView = 38
+		stageCam.Parent = stage
+		stage.CurrentCamera = stageCam
+		local liveShips = {}
+		do
+			local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+			local group = lib and lib:FindFirstChild("Naval")
+			local function addShip(asset, length, x, z, speed)
+				local tpl = group and group:FindFirstChild(asset)
+				if not (tpl and tpl:IsA("Model")) then return end
+				local m = tpl:Clone()
+				m.Parent = stageWorld
+				local ok = pcall(function()
+					local _, ext = m:GetBoundingBox()
+					m:ScaleTo(length / math.max(ext.X, ext.Z, 0.01))
+					local box, size = m:GetBoundingBox()
+					local base = CFrame.new(x, -box.Position.Y + size.Y * 0.3, z)
+					if size.Z > size.X then base *= CFrame.Angles(0, math.pi / 2, 0) end
+					m:PivotTo(base * (box:ToObjectSpace(m:GetPivot())) )
+				end)
+				if ok then
+					table.insert(liveShips, { model = m, home = m:GetPivot(), x = x, z = z, speed = speed, length = length, phase = #liveShips * 1.7 })
+				else
+					m:Destroy()
+				end
+			end
+			addShip("ship-large", 46, 8, 0, 0)
+			addShip("ship-small", 17, -60, -60, 2.4)
+		end
+		stageCam.CFrame = CFrame.lookAt(Vector3.new(-6, 11, 84), Vector3.new(-12, 8, 0))
+		-- 물보라 줄무늬(앞쪽일수록 빠르고 크다)와 갈매기
+		local streaks, gulls = {}, {}
+		do
+			local rng = Random.new(77)
+			for i = 1, 16 do
+				local y = 0.58 + rng:NextNumber() * 0.38
+				local f = Instance.new("Frame")
+				f.BorderSizePixel = 0
+				f.BackgroundColor3 = Color3.fromRGB(236, 244, 248)
+				f.BackgroundTransparency = 0.55 + rng:NextNumber() * 0.25
+				f.Size = UDim2.new(0, 30 + (y - 0.55) * 220 * rng:NextNumber(), 0, 1 + math.floor((y - 0.55) * 5))
+				f.ZIndex = 2
+				f.Parent = picture
+				table.insert(streaks, { f = f, x = rng:NextNumber(), y = y, v = 0.01 + (y - 0.55) * 0.05 })
+			end
+			for i = 1, 4 do
+				local g = Instance.new("TextLabel")
+				g.BackgroundTransparency = 1
+				g.Text = "︶︶"
+				g.Font = Enum.Font.GothamBold
+				g.TextSize = 12 + i * 2
+				g.TextColor3 = Color3.fromRGB(246, 246, 240)
+				g.TextTransparency = 0.15
+				g.Size = UDim2.fromOffset(40, 16)
+				g.ZIndex = 3
+				g.Parent = picture
+				table.insert(gulls, { f = g, x = rng:NextNumber(), y = 0.12 + rng:NextNumber() * 0.28, v = 0.012 + rng:NextNumber() * 0.012, ph = rng:NextNumber() * 6 })
+			end
+		end
+		local liveConn
+		local function startLive()
+			if liveConn then return end
+			local last = 0
+			liveConn = RS.RenderStepped:Connect(function(dt)
+				local now = os.clock()
+				if now - last < 1 / 30 then return end
+				last = now
+				for _, s in liveShips do
+					local roll = math.sin(now * 0.8 + s.phase) * 0.045
+					local pitch = math.sin(now * 0.6 + s.phase * 2) * 0.02
+					local bob = math.sin(now * 1.1 + s.phase) * 0.5
+					local drift = if s.speed > 0 then ((now * s.speed + 120) % 240) - 120 - s.x else 0
+					s.model:PivotTo(CFrame.new(drift, bob, 0) * s.home * CFrame.Angles(pitch, 0, roll))
+				end
+				for _, k in streaks do
+					k.x = (k.x + k.v * 1/30 * 6) % 1.15
+					k.f.Position = UDim2.fromScale(k.x - 0.1, k.y)
+				end
+				for _, g in gulls do
+					g.x = (g.x + g.v * 1/30 * 3) % 1.2
+					g.f.Position = UDim2.new(g.x - 0.1, 0, g.y + math.sin(now * 1.6 + g.ph) * 0.012, 0)
+				end
+			end)
+		end
+		local function stopLive()
+			if liveConn then liveConn:Disconnect() liveConn = nil end
+		end
+		titleGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+			if titleGui.Enabled then startLive() else stopLive() end
+		end)
+		if titleGui.Enabled then startLive() end
+
+	end)()
+
 	local veil = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), COLORS.cover)
 	veil.ZIndex = 2
 	local fade = Instance.new("UIGradient")
