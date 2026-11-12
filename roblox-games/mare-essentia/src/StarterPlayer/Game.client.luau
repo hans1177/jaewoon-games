@@ -717,8 +717,8 @@ for id, spec in {
 	h_england = { "north_atlantic", 15 }, h_netherlands = { "north_atlantic", 1 }, h_france = { "north_atlantic", 16 },
 	h_ottoman = { "mediterranean", 19 }, h_swahili = { "east_africa_red_sea", 5 }, h_malabar = { "indian", 1 },
 	h_japan = { "pacific", 15 }, h_new_spain = { "americas", 3 }, h_portugal = { "mediterranean", 15 },
-	t_priest = { "faith_christian", 0 }, t_nun = { "faith_christian", 16 }, t_monk = { "faith_buddhist", 2 }, t_bhikkhuni = { "faith_buddhist", 17 },
-	t_scribe = { "faith_indian_ocean", 1 }, t_pilgrim = { "faith_indian_ocean", 7 },
+	t_priest = { "faith_christian", 0 }, t_nun = { "faith_christian", 16 }, t_monk = { "faith_buddhist", 3 }, t_bhikkhuni = { "faith_buddhist", 17 },
+	t_scribe = { "faith_indian_ocean", 3 }, t_pilgrim = { "faith_indian_ocean", 4 },
 } do
 	if AssetIds["Portraits/companions_" .. spec[1]] then
 		COMPANION_PORTRAIT[id] = { atlas = "companions_" .. spec[1], offset = Vector2.new(spec[2] % 5 * 256, math.floor(spec[2] / 5) * 336) }
