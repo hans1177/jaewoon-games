@@ -7171,76 +7171,38 @@ function H.showTitle()
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundTransparency = 1
 	root.Parent = layer
+	-- 한 장의 항해 기록. 종이결은 본문과 조작 뒤에만 깐다.
 	local box = Instance.new("Frame")
-	box.BackgroundColor3 = COLORS.leather
-	box.BackgroundTransparency = 0.04
+	box.Name = "VoyageLogPage"
+	box.BackgroundColor3 = COLORS.paper
 	box.BorderSizePixel = 0
 	box.Parent = root
-	corner(box, 11)
-	bookMaterial(box, "leather", 196)
-	-- [메뉴 표지] 안쪽 눌린 가죽 봉제 홈.
-	local binding = Instance.new("Frame")
-	binding.Name = "BookSewnMargin"
-	binding.BackgroundTransparency = 1
-	binding.Position = UDim2.fromOffset(4, 4)
-	binding.Size = UDim2.new(1, -8, 1, -8)
-	binding.ZIndex = box.ZIndex + 1
-	binding.Parent = box
-	corner(binding, 9)
-	local thread = Instance.new("UIStroke")
-	thread.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	thread.Color = Color3.fromRGB(207, 172, 119)
-	thread.Transparency = 0.49
-	thread.Thickness = 1
-	thread.Parent = binding
+	corner(box, 5)
+	local grain = bookMaterial(box, "parchment", 360)
+	if grain then grain.ImageTransparency = 0.22 end
 	local edge = Instance.new("UIStroke")
 	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	edge.Color = UI_BRASS
-	edge.Thickness = 1.5
+	edge.Color = COLORS.brown
+	edge.Thickness = 1
+	edge.Transparency = 0.25
 	edge.Parent = box
 	local bounds = Instance.new("UISizeConstraint")
-	bounds.MaxSize = Vector2.new(460, if view then 318 else 230)
+	bounds.MaxSize = Vector2.new(420, if view then 286 else 200)
 	bounds.Parent = box
 
-	-- [안쪽 책장] 메뉴 속지는 가죽 표지 위에 놓인 진짜 종이 질감의 한 장으로 그린다.
-	local pageId = AssetIds["Menu/parchment_grain"]
-	if pageId then
-		local leaf = Instance.new("ImageLabel")
-		leaf.Name = "ParchmentBookPage"
-		leaf.Position = UDim2.fromOffset(6, 6)
-		leaf.Size = UDim2.new(1, -12, 1, -12)
-		leaf.BackgroundColor3 = COLORS.paper
-		leaf.BackgroundTransparency = 0
-		leaf.BorderSizePixel = 0
-		leaf.Image = "rbxassetid://" .. tostring(pageId)
-		leaf.ScaleType = Enum.ScaleType.Tile
-		leaf.TileSize = UDim2.fromOffset(220, 220)
-		leaf.ZIndex = box.ZIndex
-		leaf.Active = false
-		leaf.Parent = box
-		corner(leaf, 6)
-		local edgeFade = Instance.new("UIStroke")
-		edgeFade.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		edgeFade.Color = Color3.fromRGB(112, 77, 43)
-		edgeFade.Transparency = 0.28
-		edgeFade.Thickness = 1.5
-		edgeFade.Parent = leaf
-	end
 	local pages = Instance.new("ScrollingFrame")
-	pages.Size = UDim2.new(1, -12, 1, -12)
-	pages.Position = UDim2.fromOffset(6, 6)
-	pages.BackgroundColor3 = COLORS.paper
-	pages.BackgroundTransparency = if pageId then 0.98 else 0
-	corner(pages, 6)
+	pages.Size = UDim2.fromScale(1, 1)
+	pages.BackgroundTransparency = 1
 	pages.BorderSizePixel = 0
 	pages.ScrollBarThickness = 3
-	pages.ScrollBarImageColor3 = UI_BRASS
+	pages.ScrollBarImageColor3 = COLORS.brown
 	pages.ScrollingDirection = Enum.ScrollingDirection.Y
 	pages.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	pages.CanvasSize = UDim2.new()
+	pages.ZIndex = box.ZIndex + 1
 	pages.Parent = box
 	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 8)
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 12), UDim.new(0, 12)
 	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 15), UDim.new(0, 15)
 	pad.Parent = pages
 	local list = Instance.new("UIListLayout")
@@ -7251,7 +7213,7 @@ function H.showTitle()
 	local function placeMenu()
 		local portrait = root.AbsoluteSize.Y > root.AbsoluteSize.X
 		box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
-		box.Position = if portrait then UDim2.new(0.5, 0, 1, -22) else UDim2.new(1, -20, 0.53, 0)
+		box.Position = if portrait then UDim2.new(0.5, 0, 1, -22) else UDim2.new(1, -30, 0.56, 0)
 		box.Size = if portrait then UDim2.fromScale(0.92, 0.47) else UDim2.new(0.41, 0, 0.84, 0)
 	end
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(placeMenu)
@@ -7281,28 +7243,45 @@ function H.showTitle()
 	title.TextStrokeColor3 = INK_SOFT
 	title.TextStrokeTransparency = 0.75
 
+	local function action(parent, text, size, primary, callback)
+		local b = Instance.new("TextButton")
+		b.Size = size
+		b.Text = text
+		b.Font = if primary then Enum.Font.GothamBold else Enum.Font.GothamMedium
+		b.TextSize = if primary then 19 else 15
+		b.TextColor3 = if primary then Color3.fromRGB(250, 232, 193) else INK
+		b.BackgroundColor3 = Color3.fromRGB(35, 54, 59)
+		b.BackgroundTransparency = if primary then 0 else 1
+		b.BorderSizePixel = 0
+		b.TextWrapped = true
+		b.Parent = parent
+		corner(b, 4)
+		b.Activated:Connect(function()
+			Sfx.play("sfx_click")
+			callback()
+		end)
+		return b
+	end
 	if view then
-		local resume = mkButton(pages, "이어하기", COLORS.gold, UDim2.new(1, 0, 0, 50), function()
+		local log = mkLabel(pages, string.format("%s · %d년\n소지금 %d코인", view.player.portName, view.player.year, view.player.coins), 15, INK_SOFT, false, 2)
+		log.Size = UDim2.new(1, 0, 0, 0)
+		local resume = action(pages, "이어하기", UDim2.new(1, 0, 0, 49), true, function()
 			leave()
 			titleGui.Enabled = false
 			main.Visible = wasMain
 			menuToggle.Visible = not wasMain
 		end)
-		resume.LayoutOrder = 2
-		resume.TextSize = 18
-		resume.TextColor3 = COLORS.ink
-		local log = mkLabel(pages, string.format("%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), 13, COLORS.brown, true, 3)
-		log.TextXAlignment = Enum.TextXAlignment.Center
+		resume.LayoutOrder = 3
 	end
 	local confirmed = false
 	local newBtn
-	newBtn = mkButton(pages, "새로운 항해", if view then COLORS.leather else COLORS.gold, UDim2.new(1, 0, 0, 50), function()
+	newBtn = action(pages, "새로운 항해", UDim2.new(1, 0, 0, 44), not view, function()
 		if view and not confirmed then
 			confirmed = true
-			newBtn.Text = "저장이 사라져요. 한 번 더 누르면 새로 시작"
+			newBtn.Text = "저장을 지우고 새로 시작"
 			newBtn.TextColor3 = COLORS.text
-			newBtn.TextSize = 14
 			newBtn.BackgroundColor3 = COLORS.red
+			newBtn.BackgroundTransparency = 0
 			return
 		end
 		leave()
@@ -7310,27 +7289,23 @@ function H.showTitle()
 		render()
 	end)
 	newBtn.LayoutOrder = 4
-	newBtn.TextSize = 18
-	if not view then newBtn.TextColor3 = COLORS.ink end
 
 	local controls = Instance.new("Frame")
 	controls.BackgroundTransparency = 1
-	controls.Size = UDim2.new(1, 0, 0, 44)
+	controls.Size = UDim2.new(1, 0, 0, 46)
 	controls.LayoutOrder = 5
 	controls.Parent = pages
-	local horizontal = Instance.new("UIListLayout")
-	horizontal.FillDirection = Enum.FillDirection.Horizontal
-	horizontal.Padding = UDim.new(0, 8)
-	horizontal.Parent = controls
-	mkButton(controls, "설정", COLORS.leather, UDim2.new(0.5, -4, 1, 0), function() openOptions() end)
+	pageRule(controls, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1))
+	action(controls, "설정", UDim2.new(0.5, 0, 1, 0), false, openOptions)
 	local function musicLabel()
 		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
 	end
 	local musicBtn
-	musicBtn = mkButton(controls, musicLabel(), COLORS.leather, UDim2.new(0.5, -4, 1, 0), function()
+	musicBtn = action(controls, musicLabel(), UDim2.new(0.5, 0, 1, 0), false, function()
 		Sfx.setMusicEnabled(not Sfx.state())
 		musicBtn.Text = musicLabel()
 	end)
+	musicBtn.Position = UDim2.fromScale(0.5, 0)
 	Sfx.music("music_harbor")
 end
 
