@@ -6239,16 +6239,13 @@ renderTitle = function()
 	-- ③ 시대
 	tLabel(titleScroll, "③ 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
-		{ 1517, "1517년", "종교개혁의 시작" },
-		{ 1600, "1600년", "동인도회사의 새벽" },
-		{ 1625, "1625년", "30년 전쟁의 시대" },
-		{ 1650, "1650년", "과학혁명의 시작" },
+		{ 1517, "1517년 · 개척기", "탐험과 종교개혁" },
+		{ 1600, "1600년 · 무역전쟁", "동인도회사의 새벽" },
 		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
-		{ 1750, "1750년", "분류학의 시대" },
 	}
 	local rowF = Instance.new("Frame")
 	rowF.BackgroundTransparency = 1
-	rowF.Size = UDim2.new(1, 0, 0, 128)
+	rowF.Size = UDim2.new(1, 0, 0, 68)
 	rowF.LayoutOrder = nxt()
 	rowF.ZIndex = 12
 	rowF.Parent = titleScroll
