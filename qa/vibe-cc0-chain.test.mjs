@@ -155,5 +155,5 @@ test('mare story/event audio uses verified CC0 parents and decodable game-specif
     encoding:'utf8',timeout:180000,maxBuffer:1024*1024
   });
   assert.equal(run.status,0,('AUDIO_CC0_PREFLIGHT_FAILED\n'+String(run.stdout||'')+'\n'+String(run.stderr||'')).slice(-6000));
-  assert.match(run.stdout,/AUDIO_CC0_PREFLIGHT_OK 21/);
+  assert.match(run.stdout,/AUDIO_CC0_PREFLIGHT_OK 57/);
 });
