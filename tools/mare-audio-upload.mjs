@@ -11,6 +11,7 @@ import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs'
 const dir='roblox-games/mare-essentia/audio';
 const meta=JSON.parse(fs.readFileSync(dir+'/manifest.json','utf8'));
 const receiptPath=dir+'/uploaded.json';
+const preservedReceipts=fs.existsSync(receiptPath)?JSON.parse(fs.readFileSync(receiptPath,'utf8')):{};
 const idsPath='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau';
 const universeId=process.env.MARE_UNIVERSE_ID||'10774821253';
 if(meta.source!=='OWNER_REQUESTED_ORIGINAL_SYNTH_SCORE'||meta.license!=='OWNER_CREATED_AUDIO')throw Error('AUDIO_PROVENANCE_INVALID');
@@ -26,6 +27,60 @@ function prepareVerifiedCC0(track){
   if(track.license!=='CC0-1.0'||track.source!=='VERIFIED_CC0_ORIGINAL_DERIVATIVE'
     ||!/^out\/[a-z0-9_]+\.ogg$/.test(track.file)
     ||!/^[a-z0-9=,._-]+$/.test(String(track.editFilter||'')))throw Error('CC0_AUDIO_METADATA_INVALID');
+
+  // 기존 승인된 오디오는 재인코딩/재등록하지 않는다. 원본 해시 장부와 자산 바이트가 맞아야 재사용한다.
+  // 예전 PR에서 12개가 Git LFS 포인터로 저장됐다면 실제 LFS OGG를 복원해 일반 Git 바이너리로 승격한다.
+  const locked=preservedReceipts[track.name];
+  if(locked?.granted){
+    const validId=/^[1-9]\\d*$/.test(String(locked.assetId||''));
+    const validHash=/^[a-f0-9]{64}$/.test(String(locked.sha256||''));
+    let validOrigin=false;
+    if(track.sourceArchiveSha256){
+      const pack=cc0PackManifest.packs?.find(p=>p.file==='kenney-rpg-sfx-50.zip');
+      validOrigin=track.sourceFile===cc0PackDir+'kenney-rpg-sfx-50.zip'
+        && pack?.licenseDeclared==='CC0-1.0'
+        && pack?.sha256===track.sourceArchiveSha256
+        && pack?.sourceUrl===track.sourceDownloadUrl
+        && pack?.licenseSourceUrl===track.sourceUrl
+        && locked.sourceArchiveSha256===track.sourceArchiveSha256
+        && locked.sourceEntry===track.sourceEntry
+        && /^[a-f0-9]{64}$/.test(String(locked.sourceSha256||''));
+    }else if(track.sourceDownloadUrl&&!track.sourceFile){
+      validOrigin=/^https:\\/\\/opengameart\\.org\\/content\\/[a-z0-9-]+$/.test(String(track.sourceUrl||''))
+        && track.sourceLicenseCheckedOn==='2026-11-12'
+        && locked.sourceSha256===track.sourceSha256
+        && locked.sourceDownloadUrl===track.sourceDownloadUrl
+        && /^[a-f0-9]{64}$/.test(String(track.sourceSha256||''));
+    }else{
+      const approved=cc0Manifest.assets?.find(x=>x.path===String(track.sourceFile||'').slice(cc0Base.length));
+      validOrigin=track.sourceFile?.startsWith(cc0Base)
+        && approved?.license==='CC0-1.0'
+        && approved?.sourceUrl===track.sourceUrl
+        && approved?.gitBlobSha1===track.sourceGitBlobSha1
+        && locked.sourceGitBlobSha1===track.sourceGitBlobSha1;
+    }
+    if(!validId||!validHash||locked.license!=='CC0-1.0'
+      ||locked.sourceUrl!==track.sourceUrl||!validOrigin)
+      throw Error('AUDIO_PRESERVED_PROVENANCE_INVALID:'+track.name);
+    const output=dir+'/'+track.file;
+    if(!fs.existsSync(output))throw Error('AUDIO_PRESERVED_BINARY_MISSING:'+track.name);
+    let bytes=fs.readFileSync(output);
+    if(bytes.toString('utf8',0,48).startsWith('version https://git-lfs.github.com/spec/v1')){
+      bytes=execFileSync('git',['lfs','smudge'],{input:bytes,maxBuffer:24*1024*1024,timeout:120000});
+      fs.writeFileSync(output,bytes);
+      console.log('AUDIO_LFS_BINARY_RESTORED '+track.name);
+    }
+    if(bytes.length<1500||bytes.subarray(0,4).toString()!=='OggS'
+      ||crypto.createHash('sha256').update(bytes).digest('hex')!==locked.sha256)
+      throw Error('AUDIO_PRESERVED_BINARY_HASH_MISMATCH:'+track.name);
+    console.log('AUDIO_CC0_PRESERVED '+track.name+' asset='+locked.assetId);
+    return {sourceSha256:locked.sourceSha256,
+      ...(locked.sourceArchiveSha256?{sourceArchiveSha256:locked.sourceArchiveSha256,sourceEntry:locked.sourceEntry}:{}),
+      ...(locked.sourceDownloadUrl?{sourceDownloadUrl:locked.sourceDownloadUrl,
+        sourceLicenseCheckedOn:track.sourceLicenseCheckedOn}:{}),
+      ...(locked.sourceGitBlobSha1?{sourceGitBlobSha1:locked.sourceGitBlobSha1}:{}),
+      license:'CC0-1.0',sourceUrl:track.sourceUrl};
+  }
 
   let original,sourceEvidence;
   if(track.sourceArchiveSha256){
@@ -192,10 +247,9 @@ if(!creator){
   creator=unique[0];
 }
 
-let receipts={};
+let receipts={...preservedReceipts};
 // 전체 재업로드는 아직 CC0로 교체되지 않은 기존 합성 음원까지 재생성하므로 차단한다.
 if(process.env.AUDIO_FRESH==='1')console.log('AUDIO_FRESH_IGNORED_CC0_MIGRATION_SAFE_MODE');
-if(fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
 const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipts,null,1)+'\n');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let failures=0;
