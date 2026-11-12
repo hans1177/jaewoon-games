@@ -818,10 +818,22 @@ function NavalBattle.play(opts)
 				if finished then
 					return
 				end
-				Sfx.play("sfx_hit", 0.8, 0.85 + math.random() * 0.2)
-				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to), Color3.fromRGB(255, 150, 60), Enum.Material.Neon, Enum.PartType.Ball)
-				local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)), Color3.fromRGB(90, 90, 96), Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-				smoke.Transparency = 0.3
+				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
+				if hullHit then
+					Sfx.play("sfx_hit", 0.78, 0.88 + math.random() * 0.2)
+					if math.random() < 0.4 then
+						Sfx.play("sfx_creak", 0.3, 0.85 + math.random() * 0.18)
+					end
+				else
+					Sfx.play("sfx_splash", 0.55, 0.9 + math.random() * 0.22)
+				end
+				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to),
+					if hullHit then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(150, 225, 245),
+					Enum.Material.Neon, Enum.PartType.Ball)
+				local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)),
+					if hullHit then Color3.fromRGB(90, 90, 96) else Color3.fromRGB(205, 232, 240),
+					Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+				smoke.Transparency = if hullHit then 0.3 else 0.52
 				local s0 = os.clock()
 				local c2
 				c2 = RunService.Heartbeat:Connect(function()
