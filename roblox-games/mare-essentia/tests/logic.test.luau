@@ -2097,6 +2097,8 @@ do
 		check("trade activity boosts", H.vitality(H.regime(1700), "europe", { "tea" }, 1) > H.vitality(H.regime(1700), "europe", { "tea" }, 0))
 		check("war: strategic up, luxury down", H.priceMult(H.regime(1630), "europe", "iron") > 1 and H.priceMult(H.regime(1630), "europe", "silk") < 1)
 		check("war price weaker in far east", H.priceMult(H.regime(1630), "far_east", "iron") < H.priceMult(H.regime(1630), "europe", "iron"))
+		check("native specialties only at lv1", #H.activeProduces({ "a", "b", "c", "d", "e" }, 1) == 2)
+		check("specialties unlock with level", #H.activeProduces({ "a", "b", "c", "d", "e" }, 2) == 3 and #H.activeProduces({ "a", "b", "c", "d", "e" }, 4) == 5)
 		check("port type", H.portType({ "pepper", "cloves", "silk" }) == "향신료 항구")
 	end
 	local v = S.View.build(st, ctx)

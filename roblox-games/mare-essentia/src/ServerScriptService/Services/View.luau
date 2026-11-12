@@ -92,12 +92,13 @@ return function(D, S)
 			end
 		end
 		view.goods = {}
+		local lv0 = D.Harbor.level(state.harbor[port.id] or 0)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
 			local mult = ctx.market:get(port.id, goodId)
 			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
 			local tag = ""
-			if table.find(port.produces, goodId) then
+			if D.Harbor.isActiveProduce(port.produces, goodId, lv0) then
 				tag = "특산"
 			elseif table.find(port.demands, goodId) then
 				tag = "수요"
@@ -609,8 +610,12 @@ return function(D, S)
 				produces = {},
 				demands = {},
 			}
-			for _, id in port.produces do
-				table.insert(view.harbor.produces, D.Ports.Goods[id].name)
+			for i, id in port.produces do
+				if lv >= D.Harbor.unlockLevel(i) then
+					table.insert(view.harbor.produces, D.Ports.Goods[id].name)
+				else
+					view.harbor.nextProduce = view.harbor.nextProduce or { name = D.Ports.Goods[id].name, level = D.Harbor.unlockLevel(i) }
+				end
 			end
 			for _, id in port.demands do
 				table.insert(view.harbor.demands, D.Ports.Goods[id].name)

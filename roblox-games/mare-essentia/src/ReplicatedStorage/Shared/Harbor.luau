@@ -22,6 +22,30 @@ function Harbor.level(invested: number): number
 	return lv
 end
 
+-- 특산품 해금: 처음엔 그 땅의 토착 특산 2가지뿐이고, 항구가 발전(기술·시설·교역 축적)할 때마다 하나씩 더 생긴다.
+-- produces 목록은 토착 → 후발 순서로 적혀 있다.
+Harbor.NATIVE_COUNT = 2
+Harbor.UNLOCK_LEVEL = { 2, 3, 4 } -- 3번째 특산은 2단계, 4번째는 3단계, 그 이상은 4단계
+function Harbor.unlockLevel(index: number): number
+	if index <= Harbor.NATIVE_COUNT then
+		return 1
+	end
+	return Harbor.UNLOCK_LEVEL[index - Harbor.NATIVE_COUNT] or 4
+end
+function Harbor.activeProduces(produces: { string }, level: number): { string }
+	local out = {}
+	for i, g in produces do
+		if level >= Harbor.unlockLevel(i) then
+			table.insert(out, g)
+		end
+	end
+	return out
+end
+function Harbor.isActiveProduce(produces: { string }, goodId: string, level: number): boolean
+	local i = table.find(produces, goodId)
+	return i ~= nil and level >= Harbor.unlockLevel(i)
+end
+
 -- 교역품 분류: 경제 국면은 분류마다 다르게 작용한다 (전쟁엔 전략물자↑·사치품↓, 호황엔 사치품·향신료↑).
 Harbor.CATEGORY_NAMES = { food = "식량", luxury = "사치품", precious = "귀금속", spice = "향신료", colonial = "기호품", textile = "섬유", dye = "염료", strategic = "전략물자", raw = "원자재" }
 Harbor.CATEGORY = {}

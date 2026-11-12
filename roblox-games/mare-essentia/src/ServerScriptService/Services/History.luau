@@ -66,6 +66,11 @@ return function(D, S)
 		-- 거시경제 국면: 인플레·디플레, 교역품 분류별·지역별 차등
 		local port = D.Ports.Ports[portId]
 		if port then
+			-- 아직 개발되지 않은 특산품은 싸지 않다 (특산 할인 취소)
+			local idx = table.find(port.produces, goodId)
+			if idx and not D.Harbor.isActiveProduce(port.produces, goodId, D.Harbor.level(state.harbor[portId] or 0)) then
+				m /= D.TradeMath.PRODUCE_MULT
+			end
 			m *= D.Harbor.priceMult(D.Harbor.regime(state.startYear + math.floor(state.day / 365)), D.Regions.of(port).id, goodId)
 		end
 		-- 전쟁 중인 나라의 항구는 무기·자재 값이 오른다

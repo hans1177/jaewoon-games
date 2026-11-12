@@ -43,6 +43,11 @@ return function(D, S)
 		local after = levelAt(state)
 		if after > before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
+			for i, g in D.Ports.Ports[state.portId].produces do
+				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
+					table.insert(msgs, string.format("새 특산품이 생겼다: %s", D.Ports.Goods[g].name))
+				end
+			end
 		end
 		S.Perk.gainSpec(state, "trade", math.floor(amount / 40), msgs)
 		return true, table.concat(msgs, "\n")
@@ -98,6 +103,11 @@ return function(D, S)
 		local after = levelAt(state)
 		if after > before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 발전했다!", H.NAMES[after]))
+			for i, g in port.produces do
+				if H.unlockLevel(i) > before and H.unlockLevel(i) <= after then
+					table.insert(msgs, string.format("새 특산품이 생겼다: %s", D.Ports.Goods[g].name))
+				end
+			end
 		elseif after < before then
 			table.insert(msgs, string.format("항구가 '%s'(으)로 위축됐다", H.NAMES[after]))
 		end

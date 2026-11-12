@@ -6,6 +6,7 @@ local Data = require(script.Parent.Ports)
 local TradeMath = {}
 
 local PRODUCE_MULT = 0.7 -- 특산품은 싸다
+TradeMath.PRODUCE_MULT = PRODUCE_MULT
 local DEMAND_MULT = 1.4 -- 수요 품목은 비싸다
 local STEP = 0.02 -- 한 개 거래당 재고 계수 변동
 local MIN_STOCK_MULT = 0.5
