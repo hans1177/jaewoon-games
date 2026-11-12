@@ -3299,7 +3299,7 @@ local function openTradeHall()
 			local gi = GOOD_ICON[g.id]
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, -230, 0, 26)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -3490,7 +3490,7 @@ function RENDERERS.trade()
 			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " ✦" else "") .. (if g.cheaper then " ▽" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
+			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
 			nm.Position = UDim2.fromOffset(76, 6)
 			nm.Size = UDim2.new(1, -150, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
