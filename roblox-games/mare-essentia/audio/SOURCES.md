@@ -58,6 +58,15 @@
 
 단순 피치·속도만 바꾼 동일 곡을 서로 다른 국가의 전통 음악이라고 표시하지 않는다. **이 국가별 슬롯은 아직 음원 없음.**
 
+## 교역소 상인 짧은 음성 인사
+
+- 기존 `Shared/Sfx.luau`의 `Sfx.merchantGreeting`을 `Game.client.luau` 교역소 최초 진입에만 연결한다. 거래 품목 갱신/말풍선 재작성에서는 반복 실행하지 않는다.
+- 기본 `AudioTextToSpeech` 및 `AudioDeviceOutput`를 사용하므로 음성 파일 추가·외부 유료 서비스·새 배포 경로가 없다.
+- 현지 언어와 음성 사용: 영어·프랑스어·독일어·이탈리아어·스페인어·포르투갈어·아랍어·중국어·일본어·한국어. 미지원 언어는 잘못된 지역 음성으로 위장하지 않고 간단한 영어 인사로 대체한다. 재생에는 별도 자막이 없다.
+- 전투/스토리와 무관한 **한마디 인사만** 재생, 동일 사용자 12초 내 중복 인사 억제. 기존 효과음 켜기·끄기 및 음량 설정을 반영한다. 로블록스 TTS 기본 사용량 한도 내 운영하며 유료 확장은 사용하지 않는다.
+- 참고: https://create.roblox.com/docs/reference/engine/classes/AudioTextToSpeech 및 https://create.roblox.com/docs/audio/objects
+- 실제 Studio/모바일 TTS 음량·목소리 자연스러움·현지 언어 출력은 검증 전. 본 문서는 실기기 PASS 근거가 아니다.
+
 ## 스토리·역사 사건·원더 연출
 
 - 스토리 7종 장면: `tavern`, `storm`, `palace`, `library`, `observatory`, `ruins`, `harbor`. 음악 `music_story_<art>`, 효과음 `sfx_story_<art>`가 없으면 기존 테마와 기존 효과음.
