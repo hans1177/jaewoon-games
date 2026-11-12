@@ -5554,6 +5554,21 @@ do
 			end
 		end
 	end
+	-- 바다·바닥 아래로 떨어지면 항구 시작 지점으로 되돌린다 (걷다가 물에 빠지는 사고 방지)
+	task.spawn(function()
+		while true do
+			task.wait(0.4)
+			local char = player.Character
+			local root = char and char:FindFirstChild("HumanoidRootPart")
+			if root and sceneSpawn and not inField and not workspace:GetAttribute("VoyageActive") then
+				local p = root.Position
+				if p.Y < -3 and p.X < 400 and p.X > -900 then
+					root.AssemblyLinearVelocity = Vector3.zero
+					char:PivotTo(sceneSpawn)
+				end
+			end
+		end
+	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		local camera = workspace.CurrentCamera
 		if workspace:GetAttribute("ShotCF") or workspace:GetAttribute("VoyageActive") then
