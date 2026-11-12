@@ -62,7 +62,7 @@ local STORE_NAME = "MareEssentia_v2"
 local RATE_LIMIT = 0.1
 local AUTOSAVE_INTERVAL = 15 -- DataStore 쓰기 제한(키당 6초에 1회)을 넘지 않도록 변경된 세션만 이 주기로 저장
 local MARKET_INTERVAL = 5
-local START_YEARS = { [1517] = true, [1600] = true, [1625] = true, [1650] = true, [1700] = true, [1750] = true }
+local START_YEARS = { [1492] = true, [1517] = true, [1600] = true, [1625] = true, [1650] = true, [1700] = true, [1750] = true }
 
 local random = Random.new()
 local market = S.MarketClass.new()

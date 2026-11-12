@@ -234,9 +234,11 @@ local KEEPER_ROLE = {
 }
 local OC = Color3.fromRGB
 local currentKey = "north"
+local currentYear = 1492
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
+	local year = if extra and type(extra.year) == "number" then extra.year else currentYear
 	local outfit
 	if o then
 		outfit = {
@@ -253,14 +255,21 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 		for k, v in extra do
 			outfit[k] = v
 		end
-		-- 시대 복식: 삼각모는 17세기 후반 이후, 그 전에는 챙 넓은 모자
-		if outfit.hat == "tricorn" and (extra.year or 1700) < 1680 then
-			outfit.hat = "wide"
-		end
-		if extra.noHat then
-			outfit.hat = nil
-		end
 	end
+	outfit = outfit or {}
+	outfit.year = year
+	outfit.culture = currentKey
+	outfit.profession = if extra and extra.profession then extra.profession else role
+	-- 15세기: 후대 모자뿐 아니라 Part 조립으로 만들어진 가짜 의상·머리카락은 새로 붙이지 않는다.
+	-- 실제 승인된 15세기 R15 복식·머리 메시의 장착 검증이 끝나면 그 메시만 사용한다.
+	if year < 1500 then
+		outfit.hat = nil
+		outfit.hair = nil
+		outfit.skirt = nil
+	elseif outfit.hat == "tricorn" and year < 1680 then
+		outfit.hat = "wide"
+	end
+	if extra and extra.noHat then outfit.hat = nil end
 	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8, outfit)
 	if figure then figure.Name = "Villager" end
 	return figure
@@ -600,10 +609,10 @@ local function penAt(i, n)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
-	local year = info.year or 1700
+	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
-	local function person(pos, facing, spec)
-		local extra = { year = year, age = spec.age or "adult" }
+	local function person(pos, facing, spec, profession)
+		local extra = { year = year, age = spec.age or "adult", profession = spec.profession or profession or spec.role or "villager" }
 		local female = spec.female
 		local old = extra.age == "elder"
 		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
@@ -632,12 +641,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		table.insert(walkers, t)
 	end
 	local function stay(pos, target, kind, spec)
-		local fig = person(pos, faceTo(pos, target), spec or {})
+		local fig = person(pos, faceTo(pos, target), spec or {}, kind)
 		addTask(fig, { kind = kind, mode = "stay" })
 		return fig
 	end
 	local function path(a, b, kind, speed, spec, over)
-		local fig = person(a, faceTo(a, b), spec or {})
+		local fig = person(a, faceTo(a, b), spec or {}, kind)
 		local len = (b - a).Magnitude
 		if fig then
 			local p = fig:GetPivot().Position
@@ -1414,6 +1423,7 @@ function PortScene.build(info, onFacility)
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	currentKey = styleKeyOf(style)
+	currentYear = if type(info.year) == "number" then info.year else 1492
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true

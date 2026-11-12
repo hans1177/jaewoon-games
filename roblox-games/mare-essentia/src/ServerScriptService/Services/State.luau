@@ -231,7 +231,7 @@ return function(D)
 		if type(saved) ~= "table" or not D.Ports.Nations[saved.nationId] then
 			return nil
 		end
-		local s = State.new(saved.nationId, math.floor(num(saved.startYear, 1700, 1500, 1800)))
+		local s = State.new(saved.nationId, math.floor(num(saved.startYear, 1700, 1492, 1800)))
 		s.coins = math.floor(num(saved.coins, s.coins, 0, 1e9))
 		s.fame = math.floor(num(saved.fame, 0, 0, 1e9))
 		s.day = math.floor(num(saved.day, 0, 0, 1e6))
