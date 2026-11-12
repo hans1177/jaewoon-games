@@ -1896,6 +1896,7 @@ local epilogueMessage = nil
 local function sail(portId)
 	local from = view.player.portName
 	local fromId = view.player.portId
+	local departureDay = view.player.day
 	local days, steam = 1, view.ship.steam
 	for _, r in view.routes do
 		if r.id == portId then
@@ -1982,6 +1983,7 @@ local function sail(portId)
 			shipId = view.ship.id,
 			steam = steam,
 			days = days,
+			departureDay = departureDay,
 			path = SeaRoutes.path(fromId, portId, PortData.Ports),
 			fromName = from,
 			toName = view.player.portName,
