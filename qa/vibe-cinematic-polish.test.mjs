@@ -242,3 +242,15 @@ test('Vibe 5.9 graphics are attached to the existing WebGL preview, not a duplic
  }
  assert.match(html,/else renderer\.render\(scene,camera\)/);
 });
+
+test('Vibe 5.9 LOD keeps all repeated authored meshes at chosen detail level',()=>{
+ class Vec3{set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(v){return Math.hypot(this.x-v.x,this.y-v.y,this.z-v.z)}}
+ const parent={},rows=[];
+ for(let level=0;level<=1;level++)for(let n=0;n<3;n++)rows.push({parent,isMesh:true,name:'Forest_LOD'+level,visible:true});
+ const root={traverse(fn){rows.forEach(fn)},getWorldPosition(v){return v.set(0,0,0)}};
+ const controller=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[5]});
+ controller.update({position:{x:0,y:0,z:8}});
+ assert.equal(rows.filter(x=>x.visible).length,3);
+ assert.ok(rows.filter(x=>x.visible).every(x=>x.name==='Forest_LOD1'));
+ controller.reset();assert.equal(rows.filter(x=>x.visible).length,6);
+});
