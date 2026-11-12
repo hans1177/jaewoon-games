@@ -854,3 +854,16 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - `animals/donkey.glb`: **형식 변환 결과 Git Blob SHA-1** `408de349a14a3d270441fc61033f09646cdca866`, 148,700바이트 GLB 2.0, 원본 정점/법선과 8재질을 그대로 재구성하고 기존 면을 2,000개 삼각형으로만 나눴다.
 
 기존 오픈 클라우드 업로더는 `.glb`만 모델 등록하고 `.obj/.mtl` 원본은 건드리지 않는다. **애니메이션 0개**인 정적 원본이므로 움직이는 당나귀로 자동 사용하거나 이동 동작을 성공 처리하지 않는다. Roblox Model ID·Universe 권한·실제 마레 에센티아 화면 검증 후에만 게임에서 배치한다.
+| `portraits/` | companions_africa.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_americas.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_atlantic.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_east_africa_red_sea.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_faith_buddhist.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_faith_christian.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_faith_indian_ocean.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_indian.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_mediterranean.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_north_atlantic.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_oceania.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_pacific.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
+| `portraits/` | companions_west_africa.jpg | Mare Essentia project art · PROJECT_ORIGINAL_ART | Mare Essentia companion portraits, original fictional artwork |
