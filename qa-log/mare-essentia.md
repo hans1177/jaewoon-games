@@ -63,3 +63,6 @@
 
 - 2026-11-12 16:2x(KST, run 43172130486, 소스 d1ada96) 바이브: 새 점검 정상 — 단계 185/185, 클릭 29/30(선택 1건 건너뜀), 프레임 31장, errors 비어 있음, 콘솔 error 0(경고 18). 모델 591/591 PASS(→ Animals 10개 INVALID_MODEL 해결 확인), registry 869 PASS, 클라이언트 이미지 278/278·소리 41/41 로드(미로드 0 → 앞의 미로드 82개 해결). c07·c25 jpg 직접 확인: 길드 서기 이름 창이 여전히 교역소를 덮음(게임 오류 아님), 글자·초상·3D 배경 정상. Server preload CardArt 12개 TIMEOUT_16S 는 오탐 패턴 유지. 코드 수정 없음, 재배포 안 함.
 - 큐: ① 길드 이름 창 자동 통과(점검 스크립트) ② Text nil 콘솔 오류는 이번엔 안 나옴(error 0) — 다시 나오면 추적 ③ 융단 □ 는 클릭 있는 점검에서 확인 못 함(창이 가림).
+
+- 2026-11-12 17:3x(KST, 08:25Z 커밋, 소스 b44121b) 바이브: 새 점검(탭 순회 17장 버전) — 단계 72/72, 클릭 3/3, 프레임 17/17, 모델 591/591·registry 869 PASS, 클라이언트 이미지 278/278. errors STUDIO_ASSET_AUDIT_FAILED 1건(Server preload CardArt 12개 TIMEOUT_16S 오탐 패턴 유지). 새로 보임: 소리 1개 music_region_w_africa(rbxassetid 87116162360580) 'Asset is not approved for the requester'(소리 76/77). 교역·지도 탭 jpg 확인: 글자·초상·3D 배경 정상.
+- 큐 추가: 서아프리카 음악 1개 승인/권한 확인(mare-audio-upload 재업로드 필요할 수 있음, 시크릿 필요 가능). 코드 수정 없음, 재배포 안 함.
