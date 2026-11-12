@@ -3983,11 +3983,12 @@ test('Mare unresponsive server preload keeps strict client evidence gate',()=>{
 // [대항해시대 실물 로딩 재시도] 누락한 승인 자산만 같은 Studio Client에서 한 번 재확인한다.
 test('Mare Client retries missing media once while requiring complete approved IsLoaded evidence',()=>{
   const script=helper.slice(helper.indexOf('export async function runStudioScript('),helper.indexOf('export async function runOfficialStudioMcpPlay('));
-  assert.ok(script.includes('for(let attempt=1;attempt<=2;attempt++)'));
+  assert.ok(script.includes('const batchSize=60;'));
+  assert.ok(script.includes('await auditBatch(allRows.slice(offset,offset+batchSize))'));
   assert.ok(script.includes('pendingRows=allRows.filter(row=>'));
-  assert.ok(script.includes('proof.missing.length+proof.soundMissing.length>8'));
-  assert.ok(script.includes("throw Error('STUDIO_CLIENT_MEDIA_RETRY_EVIDENCE_INVALID')"));
-  assert.ok(script.includes("throw Error('STUDIO_CLIENT_MEDIA_RETRY_KEYS_INVALID')"));
+  assert.ok(script.includes('missingCount>0&&missingCount<=8'));
+  assert.ok(script.includes("throw Error('STUDIO_CLIENT_MEDIA_BATCH_EVIDENCE_INVALID')"));
+  assert.ok(script.includes('missing.every(key=>allowed.has(key))'));
   assert.ok(script.includes('proof.expected===imageRows.length&&proof.loaded===imageRows.length'));
   assert.ok(script.includes('proof.soundExpected===soundRows.length&&proof.soundLoaded===soundRows.length'));
 });

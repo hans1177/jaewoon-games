@@ -3008,78 +3008,81 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           ||failed.some(row=>row?.status!=='TIMEOUT_16S'
             ||byKey.get(String(row?.key||''))!==String(row?.id||'')))
           throw Error('STUDIO_CLIENT_MEDIA_NOT_EXCLUSIVE_PRELOAD_TIMEOUT');
-        // [실물 이미지 재검증] 전체 Client 감사 후 누락된 승인 자산만 같은 Studio에서 한 번 더 검증한다.
-        // 두 번 모두 공식 IsLoaded 증거가 있어야 PASS한다. 각 호출은 MCP 45초 제한 안에서 끝낸다.
-        let pendingRows=allRows;
-        let proof=null;
-        for(let attempt=1;attempt<=2;attempt++){
-        const luauRows=pendingRows.map(row=>'{kind='+JSON.stringify(row.kind)+',key='
-          +JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
-        const auditClientCode="local rows={"+luauRows+"} "
-          +"local shared=game:GetService('ReplicatedStorage'):WaitForChild('Shared') "
-          +"local currentImages=require(shared:WaitForChild('AssetIds')) "
-          +"local currentSounds=require(shared:WaitForChild('AudioIds')) "
-          +"local p=game:GetService('Players').LocalPlayer "
-          +"local h=game:GetService('HttpService') "
-          +"local g=Instance.new('ScreenGui') g.Name='MareStudioMediaAudit' "
-          +"g.ResetOnSpawn=false g.DisplayOrder=1000 g.IgnoreGuiInset=true g.Parent=p:WaitForChild('PlayerGui') "
-          +"local folder=Instance.new('Folder') folder.Name='MareStudioSoundAudit' folder.Parent=game:GetService('SoundService') "
-          +"local labels={} local sounds={} "
-          +"for i,row in ipairs(rows) do "
-          +"local live=if row.kind=='Image' then 'rbxassetid://'..tostring(currentImages[row.key]) else tostring(currentSounds[row.key]) "
-          +"if live~=row.id then error('STUDIO_MEDIA_SOURCE_MISMATCH:'..row.key) end "
-          +"if row.kind=='Image' then "
-          +"local img=Instance.new('ImageLabel') img.Name='Media'..i "
-          +"img.BackgroundTransparency=1 img.BorderSizePixel=0 "
-          +"img.Size=UDim2.fromOffset(24,24) "
-          +"img.Position=UDim2.fromOffset(((#labels)%10)*24,math.floor(#labels/10)*24) "
-          +"img.Image=row.id img.Visible=true img.Parent=g labels[#labels+1]={image=img,key=row.key} "
-          +"else "
-          +"local sound=Instance.new('Sound') sound.Name='Audio'..i sound.SoundId=row.id sound.Parent=folder "
-          +"sounds[#sounds+1]={sound=sound,key=row.key} end end "
-          +"local loaded=0 local soundLoaded=0 local stop=os.clock()+30 "
-          +"repeat loaded=0 for _,row in ipairs(labels) do if row.image.IsLoaded then loaded+=1 end end "
-          +"soundLoaded=0 for _,row in ipairs(sounds) do if row.sound.IsLoaded then soundLoaded+=1 end end "
-          +"if (loaded==#labels and soundLoaded==#sounds) or os.clock()>=stop then break end task.wait(0.25) until false "
-          +"local missing={} for _,row in ipairs(labels) do "
-          +"if not row.image.IsLoaded then table.insert(missing,row.key) end end "
-          +"local soundMissing={} for _,row in ipairs(sounds) do "
-          +"if not row.sound.IsLoaded then table.insert(soundMissing,row.key) end end "
-          +"local result={expected=#labels,loaded=#labels-#missing,missing=missing, "
-          +"soundExpected=#sounds,soundLoaded=#sounds-#soundMissing,soundMissing=soundMissing, "
-          +"mode='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'} "
-          +"g:Destroy() folder:Destroy() return 'MARE_CLIENT_IMAGE_AUDIT='..h:JSONEncode(result)";
-        const response=await luau('Client',auditClientCode);
-        const marker=response.split(/\r?\n/).find(line=>line.startsWith('MARE_CLIENT_IMAGE_AUDIT='));
-        if(!marker)throw Error('STUDIO_CLIENT_IMAGE_RESPONSE_MISSING');
-        const currentProof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
-        if(attempt===1){
-          proof=currentProof;
-        }else{
-          const imageCount=pendingRows.filter(row=>row.kind==='Image').length;
-          const soundCount=pendingRows.length-imageCount;
+        // 10열×6행으로 한 화면에 들어오는 수만큼 렌더링해 IsLoaded를 직접 검증한다.
+        const batchSize=60;
+        const auditBatch=async pendingRows=>{
+          const luauRows=pendingRows.map(row=>'{kind='+JSON.stringify(row.kind)+',key='
+            +JSON.stringify(row.key)+',id='+JSON.stringify(row.id)+'}').join(',');
+          const auditClientCode="local rows={"+luauRows+"} "
+            +"local shared=game:GetService('ReplicatedStorage'):WaitForChild('Shared') "
+            +"local currentImages=require(shared:WaitForChild('AssetIds')) "
+            +"local currentSounds=require(shared:WaitForChild('AudioIds')) "
+            +"local p=game:GetService('Players').LocalPlayer "
+            +"local h=game:GetService('HttpService') "
+            +"local g=Instance.new('ScreenGui') g.Name='MareStudioMediaAudit' "
+            +"g.ResetOnSpawn=false g.DisplayOrder=1000 g.IgnoreGuiInset=true g.Parent=p:WaitForChild('PlayerGui') "
+            +"local folder=Instance.new('Folder') folder.Name='MareStudioSoundAudit' folder.Parent=game:GetService('SoundService') "
+            +"local labels={} local sounds={} "
+            +"for i,row in ipairs(rows) do "
+            +"local live=if row.kind=='Image' then 'rbxassetid://'..tostring(currentImages[row.key]) else tostring(currentSounds[row.key]) "
+            +"if live~=row.id then error('STUDIO_MEDIA_SOURCE_MISMATCH:'..row.key) end "
+            +"if row.kind=='Image' then "
+            +"local img=Instance.new('ImageLabel') img.Name='Media'..i "
+            +"img.BackgroundTransparency=1 img.BorderSizePixel=0 "
+            +"img.Size=UDim2.fromOffset(24,24) "
+            +"img.Position=UDim2.fromOffset(((#labels)%10)*24,math.floor(#labels/10)*24) "
+            +"img.Image=row.id img.Visible=true img.Parent=g labels[#labels+1]={image=img,key=row.key} "
+            +"else "
+            +"local sound=Instance.new('Sound') sound.Name='Audio'..i sound.SoundId=row.id sound.Parent=folder "
+            +"sounds[#sounds+1]={sound=sound,key=row.key} end end "
+            +"local loaded=0 local soundLoaded=0 local stop=os.clock()+30 "
+            +"repeat loaded=0 for _,row in ipairs(labels) do if row.image.IsLoaded then loaded+=1 end end "
+            +"soundLoaded=0 for _,row in ipairs(sounds) do if row.sound.IsLoaded then soundLoaded+=1 end end "
+            +"if (loaded==#labels and soundLoaded==#sounds) or os.clock()>=stop then break end task.wait(0.25) until false "
+            +"local missing={} for _,row in ipairs(labels) do "
+            +"if not row.image.IsLoaded then table.insert(missing,row.key) end end "
+            +"local soundMissing={} for _,row in ipairs(sounds) do "
+            +"if not row.sound.IsLoaded then table.insert(soundMissing,row.key) end end "
+            +"local result={expected=#labels,loaded=#labels-#missing,missing=missing, "
+            +"soundExpected=#sounds,soundLoaded=#sounds-#soundMissing,soundMissing=soundMissing, "
+            +"mode='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'} "
+            +"g:Destroy() folder:Destroy() return 'MARE_CLIENT_IMAGE_AUDIT='..h:JSONEncode(result)";
+          const response=await luau('Client',auditClientCode);
+          const marker=response.split(/\r?\n/).find(line=>line.startsWith('MARE_CLIENT_IMAGE_AUDIT='));
+          if(!marker)throw Error('STUDIO_CLIENT_IMAGE_RESPONSE_MISSING');
+          const currentProof=JSON.parse(marker.slice('MARE_CLIENT_IMAGE_AUDIT='.length));
+          const images=new Set(pendingRows.filter(row=>row.kind==='Image').map(row=>row.key));
+          const sounds=new Set(pendingRows.filter(row=>row.kind==='Sound').map(row=>row.key));
+          const matches=(missing,allowed)=>Array.isArray(missing)
+            &&new Set(missing).size===missing.length&&missing.every(key=>allowed.has(key));
           if(currentProof.mode!=='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
-            ||currentProof.expected!==imageCount||currentProof.soundExpected!==soundCount
-            ||!Array.isArray(currentProof.missing)||!Array.isArray(currentProof.soundMissing)
-            ||currentProof.loaded!==imageCount-currentProof.missing.length
-            ||currentProof.soundLoaded!==soundCount-currentProof.soundMissing.length)
-            throw Error('STUDIO_CLIENT_MEDIA_RETRY_EVIDENCE_INVALID');
+            ||currentProof.expected!==images.size||currentProof.soundExpected!==sounds.size
+            ||!matches(currentProof.missing,images)||!matches(currentProof.soundMissing,sounds)
+            ||currentProof.loaded!==images.size-currentProof.missing.length
+            ||currentProof.soundLoaded!==sounds.size-currentProof.soundMissing.length)
+            throw Error('STUDIO_CLIENT_MEDIA_BATCH_EVIDENCE_INVALID');
+          return currentProof;
+        };
+        const proof={mode:'VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED',
+          expected:imageRows.length,soundExpected:soundRows.length,missing:[],soundMissing:[],batches:0};
+        for(let offset=0;offset<allRows.length;offset+=batchSize){
+          const batch=await auditBatch(allRows.slice(offset,offset+batchSize));
+          proof.missing.push(...batch.missing);
+          proof.soundMissing.push(...batch.soundMissing);
+          proof.batches++;
+        }
+        const missingCount=proof.missing.length+proof.soundMissing.length;
+        if(missingCount>0&&missingCount<=8){
+          const imageMissing=new Set(proof.missing),soundMissing=new Set(proof.soundMissing);
+          const pendingRows=allRows.filter(row=>row.kind==='Image'?imageMissing.has(row.key):soundMissing.has(row.key));
+          const retry=await auditBatch(pendingRows);
           proof.firstPassMissing={images:proof.missing,sounds:proof.soundMissing};
-          proof.missing=currentProof.missing;
-          proof.soundMissing=currentProof.soundMissing;
-          proof.loaded=proof.expected-proof.missing.length;
-          proof.soundLoaded=proof.soundExpected-proof.soundMissing.length;
+          proof.missing=retry.missing;
+          proof.soundMissing=retry.soundMissing;
           proof.retryVerified=true;
         }
-        if(proof?.mode!=='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
-          ||!Array.isArray(proof.missing)||!Array.isArray(proof.soundMissing))break;
-        if(proof.missing.length===0&&proof.soundMissing.length===0)break;
-        if(attempt!==1||proof.missing.length+proof.soundMissing.length>8)break;
-        const imageMissing=new Set(proof.missing),soundMissing=new Set(proof.soundMissing);
-        pendingRows=allRows.filter(row=>row.kind==='Image'?imageMissing.has(row.key):soundMissing.has(row.key));
-        if(pendingRows.length!==imageMissing.size+soundMissing.size)throw Error('STUDIO_CLIENT_MEDIA_RETRY_KEYS_INVALID');
-        console.log('STUDIO_MARE_CLIENT_MISSING_RETRY='+JSON.stringify({images:proof.missing,sounds:proof.soundMissing}));
-        }
+        proof.loaded=proof.expected-proof.missing.length;
+        proof.soundLoaded=proof.soundExpected-proof.soundMissing.length;
         report.clientImageAudit=proof;
         console.log('STUDIO_SCRIPT_MARE_CLIENT_IMAGE_AUDIT='+JSON.stringify(proof).slice(0,1600));
         if(proof.mode==='VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED'
