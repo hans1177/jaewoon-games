@@ -177,7 +177,7 @@ picker.addEventListener('change',restyle);
 const resize=()=>{const w=Math.max(1,innerWidth),h=Math.max(1,innerHeight);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);cinematicComposer?.setSize(w,h)};addEventListener('resize',resize);resize();
 let mixer=null, characterMotion=null;
 const showcaseButton=document.createElement('button');showcaseButton.textContent='카메라 연출';studioControls.append(showcaseButton);showcaseButton.addEventListener('click',()=>{const p=camera.position.clone();cinematic.addTrack('showcase',[{at:0,position:p,lookAt:{x:0,y:0,z:0},fov:camera.fov},{at:1.6,position:{x:p.z*.8,y:p.y*1.15,z:-p.x*.8},lookAt:{x:0,y:0,z:0},fov:38},{at:3.2,position:p,lookAt:{x:0,y:0,z:0},fov:45}],{stageBeats:true,onComplete:()=>{showcaseActive=false}});showcaseActive=true});
-const impactButton=document.createElement('button');impactButton.textContent='타격 연출';studioControls.append(impactButton);
+const impactButton=document.createElement('button');impactButton.textContent='타격 연출 테스트';studioControls.append(impactButton);
 impactButton.addEventListener('click',()=>presentation.cue('impact',{shake:.3,hitStop:.045,flash:.12,sound:'impact',label:'타격'}));
 const motionToggle=document.createElement('label');motionToggle.innerHTML='<input type="checkbox"> 움직임 감소';studioControls.append(motionToggle);motionToggle.querySelector('input').addEventListener('change',e=>presentation.engine.setAccessibility({reducedMotion:e.target.checked}));const clipNames=[];
 const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');studioControls.append(animationPicker);
