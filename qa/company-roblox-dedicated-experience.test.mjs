@@ -607,7 +607,9 @@ test('Mare trade 70-item 3D practice stays source-bound and feeds existing Vibe 
   }
   const script=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
   assert.match(script,/TRADE_GOODS_SOURCE_SECTION_UNVERIFIED/);
-  assert.match(script,/EXACT_GOOD_ROLE_REGISTERED_CC0_GLB_SOURCE_HASH_UNIVERSE_RIGHTS/);
+  assert.match(script,/EXACT_GOOD_ROLE_REGISTERED_CC0_OR_PROJECT_ORIGINAL_GLB_SOURCE_HASH_UNIVERSE_RIGHTS/);
+  assert.match(script,/asset\.get\("license"\) in \("CC0-1\.0", "PROJECT_ORIGINAL_ART"\)/);
+  assert.match(script,/asset\.get\("sourceSha256"\) == source_hash/);
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
