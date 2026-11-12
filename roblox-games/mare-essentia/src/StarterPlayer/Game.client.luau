@@ -7364,6 +7364,7 @@ end
 		local gs = Instance.new("UIStroke")
 		gs.Color = BRASS
 		gs.Thickness = 1.5
+		gs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 기본값(Contextual)은 버튼 글자에도 테두리를 입혀 번져 보인다
 		gs.Parent = goalBar
 	end
 	goalBar.Activated:Connect(function()
