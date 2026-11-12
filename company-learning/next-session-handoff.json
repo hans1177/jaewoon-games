@@ -246,7 +246,7 @@
   "ownerVibe59GraphicsMotion18": {
     "requestedAt": "2026-11-13",
     "ownerRequest": "VIBE_MAKER_5_9_GRAPHICS_8_AND_RIG_MOTION_DESIGN_10",
-    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__LATEST_RUNTIME_UNVERIFIED",
+    "status": "PARTIALLY_IMPLEMENTED_ON_MAIN__NEW_GLTF_PREVIEW_MOTION_FIX_RUNTIME_UNVERIFIED",
     "scope": {
       "graphics": [
         "LOD_MESH",
@@ -298,30 +298,13 @@
       "qa/jaewoon-graphics-engine.test.cjs"
     ],
     "nextActions": [
-      "RECHECK_NEXT_MAIN_EXACT_COMMIT_AFTER_HANDOFF_AND_FETCH_RUNS_43306014838_43306014606_43306014340",
-      "VERIFY_AUTHORED_LOD_HIDDEN_DEFAULT_ACTIVATION_IN_REAL_APPROVED_GLTF_RUNTIME",
-      "AFTER_CHANGE_FETCH_LATEST_MAIN_AND_REVALIDATE_CENTRAL_POLICY",
-      "CHECK_VIBE_QA_43305654308_AND_INTEGRATED_REGRESSION_43305654543_AND_MAGIC_FOREST_STATIC_PLAY_43305654480_OUTCOMES_ON_8fdd29e9",
-      "IF_MAGIC_FOREST_3D_MOBILE_SMOKE_MOVEMENT_FAILS_READ_EXACT_JOB_AND_FIND_RESPONSIBLE_RUNTIME_FIX_WITHOUT_WEAKENING_ASSERTIONS",
-      "RUN_REAL_SKINNED_GLTF_MULTI_MESH_RIG_AUDIT_AND_CONFIRMED_WEBGL_BATCH_SCENE_TO_ATTEST_EFFECT_BEYOND_MOCK_QA",
-      "VERIFY_PUBLISHED_MANIFEST_SOURCE_SHA_EQUALS_LATEST_MAIN_AND_POST_DEPLOY_BROWSER_MOBILE_TOUCH_SAVE",
-      "CONTINUE_ALL_18_FEATURES_SCOPE_PRIORITIZING_REAL_NATIVE_MODEL_INTEGRATION_NO_UNAPPROVED_ASSET_CREATION",
-      "REFRESH_MAIN_AND_RE_READ_CENTRAL_FOUR_AGENTS",
-      "CHECK_EXISTING_CI_RUNS_QA_VIBE_AND_MAGIC_FOREST_PAGES_FOR_LATEST_MAIN_SHA",
-      "IF_BROWSER_SMOKE_FAILS_READ_JOB_LOG_AND_FIX_EXISTING_RESPONSIBLE_PREVIEW_SOURCE",
-      "RUN_VERIFY_UNIT_MOTION_RIG_GRAPHICS_TESTS_AND_FIX_IMPLEMENTATION_NOT_ASSERTIONS",
-      "CONNECT_REAL_AUTHORED_BONE_IK_RETARGET_MOTION_MIX_IN_GAMES_ONLY_WITH_APPROVED_NATIVE_MODELS",
-      "IMPLEMENT_SAFE_FREE_WEBGPU_OPTIONAL_RENDERER_ONLY_WITH_BROAD_BROWSER_FALLBACK_PROOF",
-      "IMPROVE_AUTO_RIG_REPAIR_WITHOUT_FABRICATING_BONES_OR_REPLACING_SOURCE",
-      "RECORD_RUNTIME_SCREENSHOT_FPS_GPU_AND_WEB_PUBLISHED_SOURCE_SHA_EVIDENCE",
-      "UPDATE_THIS_CHECKPOINT_AFTER_EACH_VERIFIED_MAIN_COMMIT",
-      "WHEN_ALL_PROVEN_ACCEPTANCE_MET_REPORT_WITH_MAIN_SHA_RUNTIME_AND_DEPLOYMENT_PROOF",
-      "CHECK_NO_TEST_FAIL_ON_NEWEST_720253B2_RUN_43299864507",
-      "CHECK_MAGIC_FOREST_LATEST_HEAD_PUBLISH_SHA_AND_BROWSER_SMOKE",
-      "PRESERVE_LOD_REPEATED_INSTANCES_AND_SUBJECT_PARENT_GROUPING",
-      "AFTER_ALL_PREVIEW_AND_SOURCE_COMMITS_FETCH_LIVE_WEB_GAMES_PUBLISH_MANIFEST_AND_PROVE_SOURCE_SHA_EQUALS_EXACT_MAIN",
-      "READ_RUN_LOGS_IF_BROWSER_SMOKE_FAILED_DONT_RELABEL_TIMEOUT_PASS",
-      "WHEN_18_ITEMS_ALL_PASSED_RECONCILE_THIS_HANDOFF_AND_DISABLE_HOURLY_AUTOMATION_ONLY_IF_USER_AGREES"
+      "FETCH_EXACT_7388_VIBE_QA_INTEGRATED_AND_MAGIC_FOREST_PAGES_RUNS_AND_LOGS",
+      "VERIFY_APPROVED_REAL_GLTF_PREVIEW_WASD_TOUCH_MOVE_AND_ANIMATION_SELECTOR_WITH_ONE_MIXER",
+      "CHECK_43306014838_43306014606_43306014340_OUTCOMES",
+      "INVESTIGATE_WILD_SURVIVAL_MOVEMENT_RESPONSE_DELAYED_WITH_EXACT_BROWSER_EVIDENCE",
+      "VERIFY_EXACT_PUBLISHED_SHA_AND_POST_DEPLOY_MOBILE_SAVE_INPUT",
+      "CONTINUE_GRAPHICS_8_MOTION_10_ONLY_WITH_APPROVED_REAL_MODELS",
+      "READ_CENTRAL_FOUR_AND_AGENTS_BEFORE_ANY_FURTHER_WRITE"
     ],
     "implemented": [
       "assets/vibe-studio-animation.js:WORLD_SPACE_FOOT_CONTACT_ANCHORS,MOTION_MATCHER_REAL_CLIP_IDS,MASKED_LAYER_BLEND",
@@ -374,9 +357,11 @@
       "eb49063a4 Vibe QA run 43306014838 QUEUED at checkpoint",
       "eb49063a4 Vibe Integrated Regression run 43306014606 QUEUED at checkpoint",
       "eb49063a4 Magic Forest Static Play run 43306014340 PENDING at checkpoint",
-      "EXACT_PUBLISHED_SHA_MATCHES_NEWEST_MAIN_AFTER_FINAL_HANDOFF_NOT_ATTESTED"
+      "EXACT_PUBLISHED_SHA_MATCHES_NEWEST_MAIN_AFTER_FINAL_HANDOFF_NOT_ATTESTED",
+      "7388 GLTF preview actual browser runtime keyboard touch movement and clip switching",
+      "7388 exact QA and postdeployment Pages SHA match"
     ],
-    "lastObservedMain": "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175",
+    "lastObservedMain": "7388bdb0a5f31c8d73499ea4ea0682c098907866",
     "scheduling": "AUTOMATION_EVERY_HOUR_KST_DOES_NOT_ATTEST_COMPLETION",
     "updatedAt": "2026-11-13",
     "knownFailures": [
@@ -384,7 +369,8 @@
       "Existing UI accessibility/static test may require source updates; never change required QA thresholds merely to force PASS.",
       "Previous post-publication smoke 43297676199 button locator mismatch; label was changed at f940f5fc and needs exact new source live proof.",
       "Magic Forest Static Play 43299263110 success is SUPERSEDED, log says POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY=720de189; NOT exact postdeployment proof for 3f907a60 or newer.",
-      "GitHub Pages Magic Forest Static Play 43300424718 on d697ef9 failed its post-publication browser test after exact source SHA matched: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED, failureStage MOVEMENT_RESPONSE_DELAYED (only 11 frames and seven sim ticks over 2 seconds). This is separate from inspected graphics/rig changes and may be runner/WebGL responsiveness; do not mark PASS or weaken movement QA. Inspect live game source and reproduction evidence before changing gameplay."
+      "GitHub Pages Magic Forest Static Play 43300424718 on d697ef9 failed its post-publication browser test after exact source SHA matched: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED, failureStage MOVEMENT_RESPONSE_DELAYED (only 11 frames and seven sim ticks over 2 seconds). This is separate from inspected graphics/rig changes and may be runner/WebGL responsiveness; do not mark PASS or weaken movement QA. Inspect live game source and reproduction evidence before changing gameplay.",
+      "5a2d58f6 company central policy contract QA run 43306098449 FAILURE; inspect before asserting release compliance"
     ],
     "commits": [
       "3ccf0aa352ca5a479c57d6391e5c7264abfb3a9e",
@@ -410,28 +396,25 @@
       "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175"
     ],
     "latestDirectWork": {
-      "sourceBase": "d697ef97538bf1a8827eae26f115c11e1cbe0171",
+      "sourceBase": "8a3d554ce68e65e9139cbea99b128c7395cffe4b",
       "implementationCommits": [
-        "7edb5b1ee05ae5147313e9c0c1ef021b5d57b18e",
-        "8fdd29e937d4065e4012f48bed8328ccf138011f",
-        "eb49063a4e9530dcf8ef9a2f07cc29cad2e6f175"
+        "416711bd86e74ab1173ae16b19d12e6258879e47",
+        "7388bdb0a5f31c8d73499ea4ea0682c098907866"
       ],
       "modifiedExistingFiles": [
-        "assets/vibe-premium-character-pipeline.mjs",
-        "qa/vibe-premium-character-pipeline.test.mjs",
-        "assets/vibe-cinematic-polish.mjs",
+        "assets/vibe-model-preview.html",
         "qa/vibe-cinematic-polish.test.mjs"
       ],
-      "scope": "MULTI_MESH_RIG_WEIGHT_INDEX_AUDIT; STATIC_BATCH_VISIBILITY_TRANSPARENCY_AND_MATRIX; AUTHORING_HIDDEN_LOD_LEVEL_ACTIVATION",
+      "scope": "ONE EXISTING THREE ANIMATION MIXER THROUGH CONNECT_VIBE_CHARACTER; REAL INPUT-DRIVEN MOVEMENT FOR APPROVED GLTF; REMOVE DUPLICATE PLAYBACK; REGRESSION ASSERTIONS",
       "qa": {
-        "integratedRegressionFor7edb5b1": "SUCCESS_ACTIONS_RUN_43305376717",
-        "qaFor8fdd29e": "SUCCESS_ACTIONS_RUN_43305654308",
-        "regressionFor8fdd29e": "SUCCESS_ACTIONS_RUN_43305654543",
-        "latestEb49063": "QUEUED_ACTIONS_RUN_43306014838_AND_43306014606"
+        "historical8fddVibeQA": "SUCCESS_43305654308",
+        "historical8fddIntegrated": "SUCCESS_43305654543",
+        "current7388": "PENDING_RUN_DISCOVERY_AND_VERIFICATION",
+        "pages4167": "IN_PROGRESS_43307105105"
       },
-      "postPublish": "UNVERIFIED_AS_LATEST_MAIN_CHANGES",
+      "postPublish": "UNVERIFIED_FOR_7388",
       "sourceAndGameplayPreserved": true,
-      "nextWorkerInstruction": "First fetch live main+policy4+AGENTS; then read this handoff and Actions 43306014838/43306014606/43306014340; do not reimplement reviewed fixes; investigate exact live wild-survival movement smoke failure only with evidence; continue 18 items and re-record."
+      "nextWorkerInstruction": "Fetch latest main/policy4/AGENTS and exact Vibe QA + Integrated + Pages for 7388; inspect preview browser runtime with approved model; do not mark PASS from static test alone; check existing movement smoke failure and fix evidence-based."
     }
   }
 }
