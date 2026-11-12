@@ -3,12 +3,13 @@
 local State = require("./mockstate")
 local PortScene = require("./PortScene")
 local Cultures = require("./PortCultures")
-local ports = { "london", "amsterdam", "rouen", "lisbon", "istanbul", "zanzibar", "calicut", "nagasaki", "veracruz", "venice", "hamburg", "bergen", "sydney", "aden", "cape_town", "canton", "osaka", "alexandria", "havana", "goa", "malacca", "rio", "valletta", "seville", "genoa", "shanghai", "batavia", "manila", "cartagena_indias", "edinburgh", "macau", "salvador", "edo", "naples", "marseille", "barcelona", "rouen", "casablanca", "rangoon", "honolulu", "split", "ragusa", "kilwa", "muscat", "elmina", "quebec", "san_juan", "tunis", "hoi_an" }
--- 문화권마다 최소 한 곳은 반드시 포함
-local seen = {}
-for _, id in ports do seen[Cultures.REGION[id] or "?"] = true end
-for id, key in Cultures.REGION do
-	if not seen[key] then seen[key] = true table.insert(ports, id) end
+-- 일부 대표 항구만 테스트하던 기존 사각지대 제거: 실제 등록 항구 181곳 전수를 검증한다.
+local Ports = require("./Ports")
+local ports = {}
+for id in Ports.Ports do table.insert(ports, id) end
+table.sort(ports)
+for _, id in ports do
+	if not Cultures.REGION[id] then error("문화권 미등록 항구: " .. id) end
 end
 local fails, built = 0, 0
 for _, id in ports do
@@ -17,6 +18,29 @@ for _, id in ports do
 			PortScene.build({ portId = id, portName = id, level = lvl, shipId = "galleon", hasShipyard = true, facilities = { "bank", "guild", "harbormaster", "market" }, storyCount = 0, companions = {} }, function() end)
 		end)
 		if ok then built += 1 else fails += 1 print(("실패: %s L%d — %s"):format(id, lvl, tostring(err))) end
+	end
+end
+-- 점령 연도 경계 전후도 실제 장면 생성 경로로 확인한다. 스모크는 형태의 렌더링 품질을 보장하지 않는다.
+local eraBuilt = 0
+for _, entry in {
+	{ id = "rhodes", before = 1521, after = 1522 },
+	{ id = "famagusta", before = 1570, after = 1571 },
+} do
+	for _, year in { entry.before, entry.after } do
+		local ok, err = pcall(function()
+			PortScene.build({
+				portId = entry.id, portName = entry.id, level = 3, year = year,
+				shipId = "galleon", hasShipyard = true,
+				facilities = { "bank", "guild", "harbormaster", "market" },
+				storyCount = 0, companions = {},
+			}, function() end)
+		end)
+		if ok then
+			eraBuilt += 1
+		else
+			fails += 1
+			print(("시대별 항구 실패: %s %d년 — %s"):format(entry.id, year, tostring(err)))
+		end
 	end
 end
 local miss = {}
@@ -37,5 +61,5 @@ for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 	end
 end
 local used = 0 for _ in State.used do used += 1 end
-print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 에셋 %d종 요청, 실패 %d"):format(#ports, built, used, fails))
+print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 시대 전환 %d/4건, 에셋 %d종 요청, 실패 %d"):format(#ports, built, eraBuilt, used, fails))
 if fails > 0 then error("스모크 빌드 실패") end
