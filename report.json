@@ -1,0 +1,1101 @@
+{
+ "sourceRevision": "7d3691cb2a2114b2e5018676db2569921a3cb20d",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "SCROLLED 설정\ntext"
+  },
+  {
+   "step": 4,
+   "click": "auto01",
+   "at": "568,221",
+   "out": "568,221 CLICK=설정\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 221
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 6,
+   "capture": "c01",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "studioStateAfterFirstClick": "- Current Studio Mode: Play\n- Available DataModels: Client, Server\n- Focused DataModel in the viewport: Client\ntext"
+  },
+  {
+   "step": 7,
+   "postClickProbeContext": "Server",
+   "status": "OK",
+   "out": "STUDIO_POST_CLICK_PING\ntext"
+  },
+  {
+   "step": 7,
+   "postClickProbeContext": "Client",
+   "status": "OK",
+   "out": "STUDIO_POST_CLICK_PING\ntext"
+  },
+  {
+   "step": 7,
+   "postClickUiProbe": "UI_ROOT_COUNT",
+   "status": "OK",
+   "out": "ROOT_COUNT=10\ntext"
+  },
+  {
+   "step": 7,
+   "postClickUiProbe": "UI_DESC_COUNT",
+   "status": "OK",
+   "out": "DESC_COUNT=5726\ntext"
+  },
+  {
+   "step": 7,
+   "postClickUiProbe": "UI_LABEL_COUNT",
+   "status": "OK",
+   "out": "LABEL_COUNT=1017\ntext"
+  },
+  {
+   "step": 7,
+   "postClickUiProbe": "UI_FIRST_TEXT",
+   "status": "OK",
+   "out": "FIRST_TEXT=여기를 클릭하거나 \"/\" 키를 누\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "SCROLLED 자동질주 OFF\ntext"
+  },
+  {
+   "step": 10,
+   "click": "auto02",
+   "at": "1080,153",
+   "out": "1080,153 CLICK=자동질주 OFF\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1080,
+      "y": 153
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 12,
+   "capture": "c02",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SCROLLED Label\ntext"
+  },
+  {
+   "step": 16,
+   "click": "auto03",
+   "at": "990,243",
+   "out": "990,243 CLICK=Label\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 990,
+      "y": 243
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "capture": "c03",
+   "files": 1
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "SCROLLED R15Skill3\ntext"
+  },
+  {
+   "step": 22,
+   "click": "auto04",
+   "at": "1010,171",
+   "out": "1010,171 CLICK=R15Skill3\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1010,
+      "y": 171
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 24,
+   "capture": "c04",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "SCROLLED ReferencePrimarySword\ntext"
+  },
+  {
+   "step": 28,
+   "click": "auto05",
+   "at": "1076,242",
+   "out": "1076,242 CLICK=ReferencePrimarySword\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1076,
+      "y": 242
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 30,
+   "capture": "c05",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "SCROLLED 효과음  75%\ntext"
+  },
+  {
+   "step": 34,
+   "click": "auto06",
+   "at": "568,83",
+   "out": "568,83 CLICK=효과음  75%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 36,
+   "capture": "c06",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "SCROLLED 효과음  100%\ntext"
+  },
+  {
+   "step": 40,
+   "click": "auto07",
+   "at": "568,83",
+   "out": "568,83 CLICK=효과음  100%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 42,
+   "capture": "c07",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "SCROLLED 효과음  0%\ntext"
+  },
+  {
+   "step": 46,
+   "click": "auto08",
+   "at": "568,83",
+   "out": "568,83 CLICK=효과음  0%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 48,
+   "capture": "c08",
+   "files": 1
+  },
+  {
+   "step": 49,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "SCROLLED 효과음  25%\ntext"
+  },
+  {
+   "step": 52,
+   "click": "auto09",
+   "at": "568,83",
+   "out": "568,83 CLICK=효과음  25%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 54,
+   "capture": "c09",
+   "files": 1
+  },
+  {
+   "step": 55,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "SCROLLED 효과음  50%\ntext"
+  },
+  {
+   "step": 58,
+   "click": "auto10",
+   "at": "568,83",
+   "out": "568,83 CLICK=효과음  50%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 60,
+   "capture": "c10",
+   "files": 1
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "SCROLLED 환경음  75%\ntext"
+  },
+  {
+   "step": 64,
+   "click": "auto11",
+   "at": "568,135",
+   "out": "568,135 CLICK=환경음  75%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 135
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 66,
+   "capture": "c11",
+   "files": 1
+  },
+  {
+   "step": 67,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "SCROLLED 환경음  100%\ntext"
+  },
+  {
+   "step": 70,
+   "click": "auto12",
+   "at": "568,135",
+   "out": "568,135 CLICK=환경음  100%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 135
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 72,
+   "capture": "c12",
+   "files": 1
+  },
+  {
+   "step": 73,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "SCROLLED 환경음  0%\ntext"
+  },
+  {
+   "step": 76,
+   "click": "auto13",
+   "at": "568,135",
+   "out": "568,135 CLICK=환경음  0%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 135
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 78,
+   "capture": "c13",
+   "files": 1
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "SCROLLED 환경음  25%\ntext"
+  },
+  {
+   "step": 82,
+   "click": "auto14",
+   "at": "568,135",
+   "out": "568,135 CLICK=환경음  25%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 135
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 84,
+   "capture": "c14",
+   "files": 1
+  },
+  {
+   "step": 85,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "SCROLLED 환경음  50%\ntext"
+  },
+  {
+   "step": 88,
+   "click": "auto15",
+   "at": "568,135",
+   "out": "568,135 CLICK=환경음  50%\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 135
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 90,
+   "capture": "c15",
+   "files": 1
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "SCROLLED 카메라  ·  자유 3D\ntext"
+  },
+  {
+   "step": 94,
+   "click": "auto16",
+   "at": "568,187",
+   "out": "568,187 CLICK=카메라  ·  자유 3D\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 187
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 96,
+   "capture": "c16",
+   "files": 1
+  },
+  {
+   "step": 97,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "SCROLLED 카메라  ·  근접 3D\ntext"
+  },
+  {
+   "step": 100,
+   "click": "auto17",
+   "at": "568,187",
+   "out": "568,187 CLICK=카메라  ·  근접 3D\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 187
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 102,
+   "capture": "c17",
+   "files": 1
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 104,
+   "ctx": "Client",
+   "out": "SCROLLED 카메라  ·  2.5D 경사\ntext"
+  },
+  {
+   "step": 106,
+   "click": "auto18",
+   "at": "568,187",
+   "out": "568,187 CLICK=카메라  ·  2.5D 경사\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 187
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 108,
+   "capture": "c18",
+   "files": 1
+  },
+  {
+   "step": 109,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "SCROLLED 돌아가기\ntext"
+  },
+  {
+   "step": 112,
+   "click": "auto19",
+   "at": "568,243",
+   "out": "568,243 CLICK=돌아가기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 243
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 114,
+   "capture": "c19",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "SCROLLED 모험 시작\ntext"
+  },
+  {
+   "step": 118,
+   "click": "auto20",
+   "at": "568,117",
+   "out": "568,117 CLICK=모험 시작\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 568,
+      "y": 117
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 120,
+   "capture": "c20",
+   "files": 1
+  },
+  {
+   "step": 121,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전신 · 장비 · 숙련도 | 탐험 수첩 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "NONE\ntext"
+  },
+  {
+   "step": 124,
+   "click": "auto21",
+   "at": "160,150",
+   "out": "160,150 CLICK=❖ [메인] 01 · 낯선 초원\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 160,
+      "y": 150
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 126,
+   "capture": "c21",
+   "files": 1
+  },
+  {
+   "step": 127,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 메인 · 의뢰 · 지금 목표 | 탐험  /  퀘스트 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "SCROLLED 퀘스트\ntext"
+  },
+  {
+   "step": 130,
+   "click": "auto22",
+   "at": "151,184",
+   "out": "151,184 CLICK=퀘스트\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 151,
+      "y": 184
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 132,
+   "capture": "c22",
+   "files": 1
+  },
+  {
+   "step": 133,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 메인 · 의뢰 · 지금 목표 | 탐험  /  퀘스트 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "SCROLLED 인벤토리\ntext"
+  },
+  {
+   "step": 136,
+   "click": "auto23",
+   "at": "151,161",
+   "out": "151,161 CLICK=인벤토리\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 151,
+      "y": 161
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 138,
+   "capture": "c23",
+   "files": 1
+  },
+  {
+   "step": 139,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 보유 · 제작법 · 아이템 상세 | 탐험  /  인벤토리 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "SCROLLED 기사단 연대기\ntext"
+  },
+  {
+   "step": 142,
+   "click": "auto24",
+   "at": "477,258",
+   "out": "477,258 CLICK=기사단 연대기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 477,
+      "y": 258
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 144,
+   "capture": "c24",
+   "files": 1
+  },
+  {
+   "step": 145,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 보유 · 제작법 · 아이템 상세 | 탐험  /  인벤토리 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 146,
+   "ctx": "Client",
+   "out": "SCROLLED 기사단 방패\ntext"
+  },
+  {
+   "step": 148,
+   "click": "auto25",
+   "at": "367,219",
+   "out": "367,219 CLICK=기사단 방패\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 367,
+      "y": 219
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 150,
+   "capture": "c25",
+   "files": 1
+  },
+  {
+   "step": 151,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 보유 · 제작법 · 아이템 상세 | 탐험  /  인벤토리 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 152,
+   "ctx": "Client",
+   "out": "SCROLLED 대장간 모루에서 제작\ntext"
+  },
+  {
+   "step": 154,
+   "click": "auto26",
+   "at": "838,250",
+   "out": "838,250 CLICK=대장간 모루에서 제작\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 838,
+      "y": 250
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 156,
+   "capture": "c26",
+   "files": 1
+  },
+  {
+   "step": 157,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 보유 · 제작법 · 아이템 상세 | 탐험  /  인벤토리 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 158,
+   "ctx": "Client",
+   "out": "SCROLLED 기사단 예식검\ntext"
+  },
+  {
+   "step": 160,
+   "click": "auto27",
+   "at": "587,162",
+   "out": "587,162 CLICK=기사단 예식검\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 587,
+      "y": 162
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 162,
+   "capture": "c27",
+   "files": 1
+  },
+  {
+   "step": 163,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 보유 · 제작법 · 아이템 상세 | 탐험  /  인벤토리 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 164,
+   "ctx": "Client",
+   "out": "SCROLLED 스킬\ntext"
+  },
+  {
+   "step": 166,
+   "click": "auto28",
+   "at": "151,183",
+   "out": "151,183 CLICK=스킬\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 151,
+      "y": 183
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 168,
+   "capture": "c28",
+   "files": 1
+  },
+  {
+   "step": 169,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전투 기술과 성장 | 탐험  /  스킬 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 170,
+   "ctx": "Client",
+   "out": "SCROLLED 기사단의 맹세\ntext"
+  },
+  {
+   "step": 172,
+   "click": "auto29",
+   "at": "443,183",
+   "out": "443,183 CLICK=기사단의 맹세\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 443,
+      "y": 183
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 174,
+   "capture": "c29",
+   "files": 1
+  },
+  {
+   "step": 175,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전투 기술과 성장 | 탐험  /  스킬 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 176,
+   "ctx": "Client",
+   "out": "SCROLLED 사용  ·  기사단의 맹세\ntext"
+  },
+  {
+   "step": 178,
+   "click": "auto30",
+   "at": "346,183",
+   "out": "346,183 CLICK=사용  ·  기사단의 맹세\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 346,
+      "y": 183
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 180,
+   "capture": "c30",
+   "files": 1
+  },
+  {
+   "step": 181,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 전투 기술과 성장 | 탐험  /  스킬 | ※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n빨간  | 끌어서 회전 | Anyanguy1980 | 공격 | 방어\ntext"
+  },
+  {
+   "step": 182,
+   "ctx": "Client",
+   "out": "LOGS(25): ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://120799643869835 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://77258836345522 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://77258836345522 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://108733651071071 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://101876091951426 failed due to: Requester does not have permission for Asset.\ntext"
+  },
+  {
+   "step": 183,
+   "ctx": "Server",
+   "out": "LOGS(25): 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://130739931462450 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: villageRoof: Requester does not have permission for Asset. // ContentId: rbxassetid://118825509898110 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://102755178923561 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: villageStoneWall: Requester does not have permission for Asset. // ContentId: rbxassetid://118825509898110 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://82851713385022 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: villageRoofEnd: Requester does not have permission for Asset. // ContentId: rbxassetid://118825509898110 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://102755178923561 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: villageStoneWall: Requester does not have permission for Asset. // ContentId: rbxassetid://118825509898110 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://82851713385022 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: villageRoofEnd: Requester does not have permission for Asset. // ContentId: rbxassetid://85078081802173 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://71333073665947 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://121029196724745 failed due to: Requester does not have permission for Asset. // ContentId: rbxassetid://118825509898110 failed due to: Requester does not have permission for Asset. // 마력숲 CC0 초원 자산 로딩/권한 실패: item_star: Requester does not have permission for Asset. // ContentId: rbxassetid://119892018255220 failed due to: Requester does not have permission for Asset.\ntext"
+  },
+  {
+   "step": 184,
+   "ctx": "Client",
+   "out": "clicked=|설정@19,9|자동질주 OFF@52,6|Label@47,10|R15Skill3@48,6|ReferencePrimarySword@51,10|효과음  75%@19,3|효과음  100%@19,3|효과음  0%@19,3|효과음  25%@19,3|효과음  50%@19,3|환경음  75%@19,5|환경음  100%@19,5|환경음  0%@19,5|환경음  25%@19,5|환경음  50%@19,5|카메라  ·  자유 3D@19,8|카메라  ·  근접 3D@19,8|카메라  ·  2.5D 경사@19,8|돌아가기@19,11|모험 시작@19,4|❖ [메인] 01 · 낯선 초원@0,3|퀘스트@MeadowMenuTabs5,4|인벤토리@MeadowMenuTabs5,2|기사단 연대기@MeadowInventoryItemScroll21,3|기사단 방패@MeadowInventoryItemScroll15,82|대장간 모루에서 제작@MeadowPage233,0|기사단 예식검@MeadowInventoryItemScroll26,108|스킬@MeadowMenuTabs5,3|기사단의 맹세@MeadowPage718,22|사용  ·  기사단의 맹세@MeadowPage710,0\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 185,
+  "completedSteps": 185,
+  "plannedClicks": 30,
+  "successfulClicks": 30,
+  "plannedFrames": 31,
+  "capturedFrames": 31,
+  "abortedEarly": false
+ }
+}
