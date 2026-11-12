@@ -322,8 +322,14 @@ end
 local HOUSE_SCALE = 1.45
 
 -- 한 마을의 건물은 재질을 하나로 통일한다 (벽·별채·굴뚝이 제각각 다른 재질로 보이지 않게)
+local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다): 낮을수록 가난한 목조, 높을수록 그 문화권의 번듯한 재료
+local STONE_MATS = { [Enum.Material.Brick] = true, [Enum.Material.Cobblestone] = true, [Enum.Material.Slate] = true, [Enum.Material.Limestone] = true }
 local function uniformMaterial(m, style)
 	local mat = style.mat
+	-- 돌·벽돌 문화권도 초기엔 목조 오두막으로 시작해, 발전하면서 석조로 바뀐다
+	if mat and STONE_MATS[mat] then
+		if houseTier <= 1 then mat = Enum.Material.Wood elseif houseTier == 2 then mat = Enum.Material.WoodPlanks end
+	end
 	if not (m and mat) then return end
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") then
@@ -337,6 +343,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
 	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
+	if houseTier <= 1 then
+		tintColor = tintColor:Lerp(Color3.fromRGB(176, 150, 100), 0.25) -- 초가·통나무 느낌으로 바랜 색
+	end
 	local vacant = vacancyRate > 0 and ((math.floor(math.abs(pos.X * 11 + pos.Z * 17)) % 100) / 100) < vacancyRate
 	if vacant then
 		tintColor = tintColor:Lerp(Color3.fromRGB(96, 94, 92), 0.55)
@@ -348,6 +357,36 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
 	variation *= style.sizeMul or 1
 	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
+	-- 동아시아 건축 세트: 등록된 eastasia 몸체를 층수만큼 쌓고 처마 지붕을 얹어 일반 집과 실루엣이 다르다
+	if style.kit == "eastasia" then
+		local size = math.max(w, d) * variation * HOUSE_SCALE
+		local base = importedModel(parent, "Town", "eastasia-base", pos, size, true, tintColor)
+		if base then
+			base.Name = "HarborHouse"
+			uniformMaterial(base, style)
+			local _, ext = base:GetBoundingBox()
+			local top = pos.Y + ext.Y
+			for _ = 2, math.clamp(floors or 1, 1, 3) do
+				local upper = importedModel(parent, "Town", "eastasia-base", Vector3.new(pos.X, top, pos.Z), size * 0.94, true, tintColor)
+				if not upper then break end
+				upper.Name = "HarborHouse"
+				uniformMaterial(upper, style)
+				local _, e2 = upper:GetBoundingBox()
+				top += e2.Y
+			end
+			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * 1.22, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			if roof then
+				roof.Name = "HarborRoof"
+				uniformMaterial(roof, style)
+			end
+			if vacant then
+				for k = -1, 1 do
+					importedModel(parent, "Town", "fence_straight", pos + Vector3.new(k * 4, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
+				end
+			end
+			return base:FindFirstChildWhichIsA("BasePart", true)
+		end
+	end
 	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
@@ -372,9 +411,21 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(annex, style)
 			end
 		end
-		if variant ~= "house_chimney" and math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
+		if variant ~= "house_chimney" and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
+		end
+		-- 발전한 항구(3단계↑)에선 일부 집 앞에 발코니(Town/balcony-wall-fence)를 달아 실루엣을 다양하게 한다
+		if houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
+			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, if pos.Z > 0 then -size * 0.52 else size * 0.52), size * 0.7, false, tintColor)
+			if bal then
+				bal.Name = "HarborBalcony"
+				uniformMaterial(bal, style)
+			end
+		end
+		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
+		if houseTier >= 4 and not vacant and seed % 5 == 2 then
+			importedModel(parent, "Town", "cart", pos + Vector3.new(size * 0.8, 0, if pos.Z > 0 then -size * 0.7 else size * 0.7), 4, false)
 		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end
@@ -2084,6 +2135,7 @@ function PortScene.build(info, onFacility)
 	local style = if REGION[info.portId] and STYLE[REGION[info.portId]] then STYLE[REGION[info.portId]] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
+	houseTier = sceneLevel
 	currentKey = styleKeyOf(style)
 	currentYear = if type(info.year) == "number" then info.year else 1700
 	local fac = {}
