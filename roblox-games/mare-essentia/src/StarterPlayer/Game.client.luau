@@ -4775,6 +4775,135 @@ function RENDERERS.map()
 				end
 			end
 		end
+<<<<<<< Updated upstream
+=======
+		for id, pt in PortData.Ports do
+			local isHere = (id == view.player.portId)
+			local dot = Instance.new("TextButton")
+			dot.AnchorPoint = Vector2.new(0.5, 0.5)
+			dot.Position = UDim2.fromScale(mapX(pt.lon), mapY(pt.lat))
+			local small = worldImg ~= nil
+			dot.Size = UDim2.fromOffset(if isHere then (if small then 12 else 18) else (if small then 8 else 14), if isHere then (if small then 12 else 18) else (if small then 8 else 14))
+			dot.Text = ""
+			dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
+			dot.BorderSizePixel = 1
+			dot.Parent = frame
+			-- 현재 항구는 닻 아이콘으로 크게 표시
+			local anchorIcon = if isHere and worldImg then AssetIds["Menu/chart_anchor"] else nil
+			if anchorIcon then
+				local ai = Instance.new("ImageLabel")
+				ai.AnchorPoint = Vector2.new(0.5, 0.5)
+				ai.Position = UDim2.fromScale(0.5, 0.5)
+				ai.Size = UDim2.fromOffset(30, 30)
+				ai.BackgroundTransparency = 1
+				ai.Image = "rbxassetid://" .. tostring(anchorIcon)
+				ai.ZIndex = 5
+				ai.Parent = dot
+			end
+			local corner = Instance.new("UICorner")
+			corner.CornerRadius = UDim.new(1, 0)
+			corner.Parent = dot
+			local tag = Instance.new("TextLabel")
+			tag.BackgroundTransparency = 1
+			tag.Position = UDim2.fromOffset(12, -8)
+			tag.Size = UDim2.fromOffset(60, 14)
+			tag.Text = pt.name
+			tag.Font = Enum.Font.GothamBold
+			tag.TextSize = 10
+			tag.TextColor3 = Color3.new(1, 1, 1)
+			tag.TextXAlignment = Enum.TextXAlignment.Left
+			tag.Parent = dot
+			dot.Activated:Connect(function()
+				selectedPort = id
+				render()
+			end)
+		end
+		return frame
+	end)
+	add(function()
+		return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
+	end)
+	-- 국가 관계·전쟁·다른 항해자
+	if view.diplo then
+		local dp = view.diplo
+		local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
+		add(function()
+			return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
+		end)
+		if #dp.wars == 0 then
+			add(function() return mkLabel(content, "지금은 큰 전쟁이 없어요. 항구들이 평화롭게 오가요.", 12, COLORS.muted, false) end)
+		end
+		for _, w in dp.wars do
+			add(function()
+				return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
+			end)
+		end
+		add(function()
+			local parts = {}
+			for _, r in dp.rel do
+				table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
+			end
+			return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
+		end)
+		add(function()
+			return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
+				{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
+				{ text = string.format("증서 %d", dp.passCost), color = COLORS.blue, onClick = function() call("DiploPass", {}) end, enabled = true },
+			}, 84)
+		end)
+		add(function()
+			return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
+		end)
+		if #dp.voyagers == 0 then
+			add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
+		end
+		for _, v in dp.voyagers do
+			add(function()
+				return mkRow(content, string.format("%s · %s (%s)", v.name, v.role, v.power), v.text, {
+					{ text = if v.met then "대화" else "인사", color = COLORS.green, onClick = function() call("VoyagerMeet", { id = v.id }) end, enabled = true },
+				}, 96)
+			end)
+		end
+		if #dp.sea > 0 then
+			add(function()
+				local lines = {}
+				for _, v in dp.sea do
+					table.insert(lines, string.format("%s(%s) %s → %s %d%%", v.name, v.role, v.from, v.to, v.pct))
+				end
+				return mkLabel(content, "🌊 항해 중: " .. table.concat(lines, " · "), 11, COLORS.muted, false)
+			end)
+		end
+	end
+	-- 해역 확대도: 선택한 항구(없으면 현재 항구)가 속한 해역의 그림 지도
+	do
+		local focus = selectedPort or view.player.portId
+		local region = H.regionOfPort(focus)
+		local chart = ({
+			north_sea = "north_sea", atlantic_europe = "west_europe", mediterranean = "mediterranean", west_africa = "west_africa",
+			east_africa = "indian_ocean", red_sea = "indian_ocean", south_asia = "indian_ocean", southeast_asia = "southeast_asia",
+			east_asia = "east_asia",
+		})[region or ""]
+		if region == "americas" then
+			local pt = PortData.Ports[focus]
+			chart = if pt and pt.lat < 12 then "south_america" else "caribbean"
+		end
+		local img = chart and AssetIds["CardArt/event_chart_" .. chart]
+		if img then
+			add(function()
+				local mapW = math.max(200, content.AbsoluteSize.X - 10)
+				local pic = Instance.new("ImageLabel")
+				pic.Size = UDim2.new(1, -6, 0, math.floor(mapW * 992 / 1586))
+				pic.BackgroundTransparency = 1
+				pic.Image = "rbxassetid://" .. tostring(img)
+				pic.ScaleType = Enum.ScaleType.Fit
+				corner(pic, 8)
+				return pic
+			end)
+			add(function()
+				return mkLabel(content, string.format("%s 해역도", PortData.Ports[focus].name), 12, COLORS.muted, false)
+			end)
+		end
+>>>>>>> Stashed changes
 	end
 	if chartImage then
 		local ports = {}

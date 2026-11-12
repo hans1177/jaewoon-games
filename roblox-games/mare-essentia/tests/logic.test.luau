@@ -1701,6 +1701,55 @@ do
 		check("origin roundtrip", S.State.sanitize(S.State.serialize(noble)).origin == "noble")
 		check("bad origin ignored", S.State.new("england", 1700, "king").origin == nil)
 	end
+	-- 국가 관계·전쟁·항해자
+	do
+		local H = handlers
+		local d1 = S.State.new("england", 1590, nil)
+		d1.portId = "london"
+		S.Diplomacy.tick(d1) -- 첫 틱: 현재 항구 기록
+		check("diplo: 1590 영국-에스파냐 전쟁 중", S.Diplomacy.relation("england", "spain", 1590) == "war")
+		check("diplo: 영국-네덜란드는 1590 평화", S.Diplomacy.relation("england", "netherlands", 1590) == nil)
+		check("diplo: 같은 편 동맹", S.Diplomacy.relation("england", "netherlands", 1703) == "ally")
+		local before = d1.coins
+		d1.portId = "seville"
+		local msgs = S.Diplomacy.tick(d1)
+		check("diplo: 적국 항구 입항세", d1.coins < before and #msgs >= 1, tostring(d1.coins))
+		d1.passUntil = nil
+		d1.diplo.passUntil = d1.day + 30
+		d1.portId = "lisbon"
+		d1.portId = "cadiz"
+		local c2 = d1.coins
+		S.Diplomacy.tick(d1)
+		check("diplo: 통행 증서가 있으면 입항세 면제", d1.coins == c2)
+		check("diplo: 전시 철 값 상승", S.Diplomacy.mult(d1, "seville", "iron") > 1 and S.Diplomacy.mult(d1, "london", "wine") == 1)
+		d1.coins = 1000
+		check("diplo: 적국엔 선물 불가", not H.DiploGift(d1, {}))
+		d1.portId = "lisbon"
+		S.Diplomacy.tick(d1)
+		check("diplo: 우호국엔 선물 가능", H.DiploGift(d1, {}) and d1.coins == 800 and d1.diplo.rep.portugal >= 12)
+		local back = S.State.sanitize(S.State.serialize(d1))
+		check("diplo: 저장·복원", back.diplo.rep.portugal == d1.diplo.rep.portugal and back.diplo.warSeen.w_armada ~= nil)
+		-- 항해자: 정해진 항로를 돈다
+		local v = D.Specialties.VoyagerById.v_hendrik
+		local seen, docked = {}, 0
+		for day = 0, 200 do
+			local at = S.Diplomacy.voyagerAt(v, day)
+			if at.docked then docked += 1 seen[at.docked] = true end
+		end
+		check("voyager: 여러 항구에 들르고 바다에도 나감", docked > 10 and docked < 200 and seen.amsterdam and seen.venice)
+		local dv = S.State.new("england", 1700, nil)
+		dv.portId = "amsterdam"
+		local found = nil
+		for day = 0, 120 do
+			dv.day = day
+			for _, vv in S.Diplomacy.viewOf(dv).voyagers do found = found or vv.id end
+			if found then break end
+		end
+		check("voyager: 항구에 머무는 항해자가 화면에 보임", found ~= nil)
+		local okMeet = H.VoyagerMeet(dv, { id = found })
+		check("voyager: 만나기 + 명성", okMeet and dv.fame >= 1 and dv.diplo.met[found])
+		check("voyager: 다른 항구의 사람은 못 만남", not H.VoyagerMeet(dv, { id = "v_nakamura" }) or S.Diplomacy.voyagerAt(D.Specialties.VoyagerById.v_nakamura, dv.day).docked == "amsterdam")
+	end
 	-- 시작 안내: 이름 → 첫 동료 → 초상화
 	do
 		local it = newState("england")

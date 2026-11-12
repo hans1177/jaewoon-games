@@ -313,7 +313,101 @@ local RegionSheets = {
 	americas = "americas", south_asia = "indian", east_asia = "pacific", southeast_asia = "pacific",
 }
 
+-- 국가(세력)와 역사 속 전쟁, 그리고 바다를 오가는 다른 항해자들 -----------------------------
+-- 세력: 항구의 country 가 어느 세력에 속하는지. 속하지 않은 곳은 중립(자유 항구)이다.
+local Powers = {
+	{ id = "england", name = "영국" }, { id = "spain", name = "에스파냐" }, { id = "portugal", name = "포르투갈" },
+	{ id = "netherlands", name = "네덜란드" }, { id = "france", name = "프랑스" }, { id = "ottoman", name = "오스만 제국" },
+	{ id = "venice", name = "베네치아" }, { id = "denmark", name = "덴마크" }, { id = "sweden", name = "스웨덴" },
+	{ id = "hanse", name = "한자 도시" }, { id = "japan", name = "일본" }, { id = "china", name = "중국·조선" },
+	{ id = "swahili", name = "스와힐리·오만" }, { id = "malabar", name = "말라바르" },
+}
+local PowerName: { [string]: string } = {}
+for _, p in Powers do
+	PowerName[p.id] = p.name
+end
+local PowerCountries: { [string]: { string } } = {
+	england = { "england", "scotland", "ireland", "new_england", "pennsylvania", "carolina", "jamaica", "barbados", "bahamas" },
+	spain = { "spain", "new_spain", "cuba", "hispaniola", "puerto_rico", "venezuela", "new_granada", "panama", "quito", "peru", "chile", "rio_de_la_plata", "philippines", "canary", "mallorca", "sardinia", "naples", "sicily" },
+	portugal = { "portugal", "brazil", "madeira", "azores", "cape_verde", "sao_tome", "angola", "mozambique", "portuguese_india", "macau" },
+	netherlands = { "netherlands", "new_netherland", "suriname" },
+	france = { "france", "new_france", "louisiana" },
+	ottoman = { "ottoman", "egypt", "levant", "tunisia", "algeria", "tripoli", "greece", "rhodes", "cyprus", "hejaz", "yemen", "mesopotamia" },
+	venice = { "venice", "dalmatia" },
+	denmark = { "denmark", "norway" },
+	sweden = { "sweden", "finland", "estonia", "livonia" },
+	hanse = { "germany", "gotland" },
+	japan = { "japan" },
+	china = { "china", "korea", "formosa" },
+	swahili = { "swahili", "somalia", "oman" },
+	malabar = { "malabar" },
+}
+local CountryPower: { [string]: string } = {}
+for power, list in PowerCountries do
+	for _, c in list do
+		CountryPower[c] = power
+	end
+end
+-- 게임 속 출신 국가 → 세력 (누에바 에스파냐는 에스파냐 편)
+local NationPower = { new_spain = "spain" }
+
+-- 전쟁: a 편과 b 편의 세력들, 시작·끝 해(from~to). 전쟁 중에는 양쪽 세력의 항구에서 무기·건축 자재 수요가 늘고,
+-- 우리 세력과 싸우는 나라의 항구에 들어가면 입항세를 문다.
+local Wars = {
+	{ id = "w_eighty", title = "에스파냐-네덜란드 80년 전쟁", a = { "spain" }, b = { "netherlands" }, from = 1568, to = 1648, text = "바다 거지들이 에스파냐의 항구와 은 함대를 노린다." },
+	{ id = "w_armada", title = "영국-에스파냐 전쟁", a = { "england" }, b = { "spain" }, from = 1585, to = 1604, text = "무적함대가 영국 해협으로 향하고, 사략선이 대서양을 가른다." },
+	{ id = "w_ottoman_venice1", title = "프레베자·키프로스 전쟁", a = { "ottoman" }, b = { "venice", "spain" }, from = 1537, to = 1573, text = "지중해의 패권을 놓고 갤리 함대가 맞붙는다. 레판토 해전이 그 끝자락이다." },
+	{ id = "w_dutch_port", title = "네덜란드-포르투갈 해상 전쟁", a = { "netherlands" }, b = { "portugal" }, from = 1602, to = 1661, text = "향신료 항구마다 동인도회사와 포르투갈 요새가 맞선다." },
+	{ id = "w_thirty", title = "30년 전쟁", a = { "france", "sweden", "netherlands" }, b = { "spain" }, from = 1618, to = 1648, text = "유럽 대륙의 전쟁이 곡물과 철 값을 흔든다." },
+	{ id = "w_danish_swedish", title = "덴마크-스웨덴 발트 전쟁", a = { "denmark" }, b = { "sweden" }, from = 1611, to = 1721, text = "발트해의 해협 통행권을 놓고 두 왕국이 거듭 싸운다." },
+	{ id = "w_ottoman_venice2", title = "크레타 전쟁", a = { "ottoman" }, b = { "venice" }, from = 1645, to = 1669, text = "칸디아 요새를 둘러싼 25년의 포위전." },
+	{ id = "w_anglo_dutch", title = "영국-네덜란드 전쟁", a = { "england" }, b = { "netherlands" }, from = 1652, to = 1674, text = "항해법을 둘러싸고 두 상업 강국이 북해에서 싸운다." },
+	{ id = "w_franco_dutch", title = "프랑스-네덜란드 전쟁", a = { "france" }, b = { "netherlands" }, from = 1672, to = 1678, text = "프랑스 군이 저지대를 치고, 암스테르담은 제방을 터뜨려 맞선다." },
+	{ id = "w_nine_years", title = "9년 전쟁", a = { "france" }, b = { "england", "netherlands", "spain" }, from = 1689, to = 1697, text = "대동맹이 프랑스의 해군과 상선을 노린다." },
+	{ id = "w_succession", title = "에스파냐 왕위 계승 전쟁", a = { "france", "spain" }, b = { "england", "netherlands", "portugal" }, from = 1702, to = 1713, text = "왕위를 둘러싸고 유럽 전체가 편을 갈랐다. 지브롤터가 영국 손에 넘어간다." },
+	{ id = "w_great_northern", title = "대북방 전쟁", a = { "sweden" }, b = { "denmark", "hanse" }, from = 1700, to = 1721, text = "카를 12세의 스웨덴이 발트해 패권을 걸고 싸운다." },
+	{ id = "w_jenkins", title = "젱킨스의 귀 전쟁", a = { "england" }, b = { "spain" }, from = 1739, to = 1748, text = "카리브해에서 밀수 단속선과 영국 상선이 충돌한다." },
+	{ id = "w_seven_years", title = "7년 전쟁", a = { "england", "portugal" }, b = { "france", "spain" }, from = 1756, to = 1763, text = "북미·카리브·인도까지 번진 최초의 세계 전쟁." },
+	{ id = "w_american", title = "미국 독립 전쟁", a = { "england" }, b = { "france", "spain", "netherlands" }, from = 1778, to = 1783, text = "프랑스 함대가 영국 해상 보급선을 끊으려 한다." },
+	{ id = "w_swahili_portugal1", title = "포르투갈의 동아프리카 정복", a = { "portugal" }, b = { "swahili" }, from = 1505, to = 1512, text = "킬와와 몸바사가 포르투갈 함대의 포격을 받는다." },
+	{ id = "w_malabar_portugal", title = "사무티리-포르투갈 전쟁", a = { "portugal" }, b = { "malabar" }, from = 1500, to = 1513, text = "캘리컷의 사무티리가 후추 항구를 지키려 포르투갈과 싸운다." },
+	{ id = "w_oman_portugal", title = "오만-포르투갈 전쟁", a = { "portugal" }, b = { "swahili" }, from = 1650, to = 1698, text = "오만 함대가 무스카트에서 몸바사까지 포르투갈 요새를 하나씩 무너뜨린다." },
+	{ id = "w_imjin", title = "임진왜란", a = { "japan" }, b = { "china" }, from = 1592, to = 1598, text = "일본군이 조선에 상륙하고, 이순신의 수군이 남해를 막아선다." },
+}
+-- 전쟁 때 값이 오르는 물자
+local WarGoods = { "iron", "timber", "coal", "cloth" }
+
+-- 다른 항해자들: 정해진 항로를 돌며 항구에 머문다 (날짜만으로 위치가 정해져 누구에게나 같다).
+-- circuit: 오가는 항구들, stay: 항구에 머무는 날, leg: 한 구간 항해 날수, from/to: 활동 연도(게임 속)
+local Voyagers = {
+	{ id = "v_hendrik", name = "헨드릭 판 데르 불", role = "merchant", power = "netherlands", circuit = { "amsterdam", "lisbon", "venice", "istanbul" }, stay = 5, leg = 14 },
+	{ id = "v_maria", name = "마리아 데 소사", role = "merchant", power = "portugal", circuit = { "lisbon", "luanda", "salvador", "lisbon" }, stay = 6, leg = 20 },
+	{ id = "v_giovanni", name = "조반니 모체니고", role = "merchant", power = "venice", circuit = { "venice", "alexandria", "istanbul", "ragusa" }, stay = 5, leg = 12 },
+	{ id = "v_ahmed", name = "아흐메드 레이스", role = "merchant", power = "ottoman", circuit = { "istanbul", "alexandria", "jeddah", "aden" }, stay = 5, leg = 14 },
+	{ id = "v_nakamura", name = "나카무라 젠에몬", role = "merchant", power = "japan", circuit = { "nagasaki", "macau", "hoi_an", "nagasaki" }, stay = 6, leg = 16 },
+	{ id = "v_suleiman", name = "술레이만 알 하르티", role = "merchant", power = "swahili", circuit = { "zanzibar", "mombasa", "muscat", "calicut" }, stay = 5, leg = 15 },
+	{ id = "v_vasco", name = "바스쿠 아폰수", role = "explorer", power = "portugal", circuit = { "lisbon", "funchal", "cape_town", "mozambique", "goa" }, stay = 4, leg = 24, from = 1500 },
+	{ id = "v_anne", name = "앤 윌러비", role = "explorer", power = "england", circuit = { "plymouth", "st_johns", "boston", "kingston" }, stay = 4, leg = 22 },
+	{ id = "v_cartier", name = "자크 드 라 로셸", role = "explorer", power = "france", circuit = { "la_rochelle", "quebec", "new_orleans", "la_rochelle" }, stay = 4, leg = 22 },
+	{ id = "v_diego", name = "디에고 데 라 베가", role = "soldier", power = "spain", circuit = { "seville", "havana", "veracruz", "cartagena_indias" }, stay = 7, leg = 22 },
+	{ id = "v_hartmann", name = "하르트만 소령", role = "soldier", power = "sweden", circuit = { "stockholm", "riga", "gdansk", "gothenburg" }, stay = 6, leg = 9 },
+	{ id = "v_james", name = "제임스 퀸 대위", role = "soldier", power = "england", circuit = { "hull", "gibraltar", "valletta", "plymouth" }, stay = 6, leg = 12 },
+	{ id = "v_beatrice", name = "베아트리스 드 몽모랑시", role = "soldier", power = "france", circuit = { "toulon", "algiers", "marseille", "rouen" }, stay = 5, leg = 10 },
+	{ id = "v_barbarossa", name = "카라 알리 레이스", role = "privateer", power = "ottoman", circuit = { "algiers", "tunis", "tripoli", "valletta" }, stay = 4, leg = 7 },
+	{ id = "v_drake", name = "에드워드 퍼셀", role = "privateer", power = "england", circuit = { "plymouth", "las_palmas", "nassau", "kingston" }, stay = 4, leg = 16 },
+	{ id = "v_dirk", name = "디르크 데 즈바르트", role = "privateer", power = "netherlands", circuit = { "rotterdam", "cadiz", "cape_town", "batavia" }, stay = 4, leg = 22 },
+	{ id = "v_red", name = "붉은 수염 안젤로", role = "pirate", power = "none", circuit = { "nassau", "port_of_spain", "bridgetown", "santo_domingo" }, stay = 3, leg = 8 },
+	{ id = "v_jade", name = "옥빛 장 부인", role = "pirate", power = "none", circuit = { "canton", "macau", "hoi_an", "malacca" }, stay = 3, leg = 10 },
+	{ id = "v_tomas", name = "토마스 신부", role = "pilgrim", power = "spain", circuit = { "seville", "manila", "macau", "nagasaki" }, stay = 8, leg = 30 },
+}
+local VoyagerById = {}
+for _, v in Voyagers do
+	VoyagerById[v.id] = v
+end
+
 return {
+	Powers = Powers, PowerName = PowerName, CountryPower = CountryPower, NationPower = NationPower, Wars = Wars, WarGoods = WarGoods,
+	Voyagers = Voyagers, VoyagerById = VoyagerById,
 	PortraitSheets = PortraitSheets,
 	RegionSheets = RegionSheets,
 	Origins = Origins,
