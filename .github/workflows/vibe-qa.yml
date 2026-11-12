@@ -1,11 +1,13 @@
 name: Vibe QA
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'assets/asset-manifest.json'
       - 'assets/vibe-*.js'
+      - 'assets/vibe-*.mjs'
       - 'assets/game-content.js'
       - 'assets/game-kit.js'
       - 'assets/game-blueprint.js'
