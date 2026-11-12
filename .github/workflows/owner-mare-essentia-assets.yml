@@ -128,7 +128,29 @@ jobs:
         if: always()
         shell: bash
         run: |
+          set -euo pipefail
           python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods
+          if [[ "${{ github.event_name }}" != "schedule" ]]; then
+            python3 - <<'PY'
+          import json
+          report = json.load(open("roblox-games/mare-essentia/assets-wanted.json", encoding="utf-8"))
+          audit = report["tradeGoods3DPractice"]
+          s = audit["stats"]
+          complete = (s["targetCount"] == 70 and s["visualRestricted"] == 5
+                      and s["registeredSourceChecked"] == 65
+                      and s["missingExactModel"] == 0 and s["unverified"] == 0)
+          if not complete:
+              raise SystemExit("TRADE_GOODS_3D_REGISTRATION_NOT_COMPLETE:" + json.dumps(s))
+          for row in audit["goods"]:
+              if row["state"] == "VISUAL_POLICY_RESTRICTED":
+                  continue
+              if (row["state"] != "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING"
+                  or not row["assetId"] or not row["sourceSha256"] or not row["source"]):
+                  raise SystemExit("TRADE_GOODS_3D_ITEM_NOT_VERIFIED:" + row["id"])
+          print("TRADE_GOODS_3D_ALL_ALLOWED_REGISTERED_WITH_UNIVERSE_RIGHTS=65")
+          print("TRADE_GOODS_3D_RUNTIME_AND_VISUAL_QA=UNVERIFIED")
+          PY
+          fi
 
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
         if: always()
