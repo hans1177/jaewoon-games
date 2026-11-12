@@ -176,8 +176,18 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		if axis < 0.01 then error("빈 모델") end
 		-- 야자나무는 잎이 넓어 가로 기준으로 줄이면 줄기가 뒤틀려 보인다: 높이 기준으로 맞춘다
 		local scale = desiredSize * (if isPalm then 1.5 else 1) / axis
-		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
+		-- [동물 실물] 원본 FBX의 큰 수입 단위를 실제 크기로 맞출 때 0.01보다 작은 배율도 필요하다.
+		-- 다른 건물·선박의 기존 보호 범위는 그대로 두고, 동물만 별도로 허용한 뒤 실측한다.
+		local minScale = if kind == "Animals" then 0.00001 else 0.01
+		if scale < minScale or scale > 100 then error("비정상적인 모델 배율") end
 		m:ScaleTo(scale)
+		if kind == "Animals" then
+			local _, scaledSize = m:GetBoundingBox()
+			local scaledAxis = math.max(scaledSize.X, scaledSize.Z)
+			if math.abs(scaledAxis - desiredSize) > desiredSize * 0.15 then
+				error("동물 모델 목표 크기 불일치")
+			end
+		end
 		if kind ~= "People" then
 			local _, size = m:GetBoundingBox()
 			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
