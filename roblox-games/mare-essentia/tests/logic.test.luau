@@ -3032,6 +3032,82 @@ do
 	check("카드 패: 지식 카드와 우군 카드", kinds.book and kinds.friend)
 end
 
+-- 접현 카드 전투: 상성·능력·규칙
+do
+	local BC = require("./Shared/BoardingCards")
+	local r = function() return math.random() end
+	local function blank()
+		local m = BC.newMatch({}, "draw", {}, "draw", r)
+		m.turn = "me"
+		return m
+	end
+	-- 병종 상성: 근접 > 포 > 사격 > 근접
+	local m = blank()
+	table.insert(m.rows.me.melee, { id = "a", name = "a", row = "melee", power = 10, weapon = "gun" })
+	table.insert(m.rows.foe.cannon, { id = "b", name = "b", row = "cannon", power = 10, weapon = "cannon" })
+	check("상성: 근접이 포를 이기면 ×1.3", BC.rowTotal(m, "me", "melee") == 13)
+	check("상성: 포는 근접에 밀려 ×0.85", BC.rowTotal(m, "foe", "cannon") == 9)
+	-- 영웅은 상성에 흔들리지 않는다
+	m = blank()
+	table.insert(m.rows.me.melee, { id = "h", name = "h", row = "melee", power = 10, hero = true })
+	table.insert(m.rows.foe.cannon, { id = "b", name = "b", row = "cannon", power = 10 })
+	check("상성: 영웅은 그대로", BC.rowTotal(m, "me", "melee") == 10)
+	-- 결속
+	m = blank()
+	for _ = 1, 2 do table.insert(m.rows.me.ranged, { id = "mus", name = "총병", row = "ranged", power = 5, ability = "bond" }) end
+	check("결속: 같은 카드 둘이면 각각 2배", BC.rowTotal(m, "me", "ranged") == 20)
+	-- 날씨
+	m.weather.ranged = true
+	check("날씨: 안개면 사격 줄이 1씩", BC.rowTotal(m, "me", "ranged") == 4)
+	-- 무기 상성 (근접끼리)
+	m = blank()
+	table.insert(m.rows.me.melee, { id = "sw", name = "검", row = "melee", power = 4, weapon = "sword" })
+	table.insert(m.rows.foe.melee, { id = "ax", name = "도끼", row = "melee", power = 5, weapon = "axe" })
+	check("무기 상성: 검이 도끼를 이기면 +1", BC.cardPower(m, "me", "melee", 1) == 5)
+	check("무기 상성: 도끼는 검에 -1", BC.cardPower(m, "foe", "melee", 1) == 4)
+	-- 첩자: 적 줄에 놓고 2장을 뽑는다
+	m = blank()
+	m.hand.me = { { id = "scout", name = "척후", row = "ranged", power = 2, ability = "spy" } }
+	m.deck.me = { { id = "x", name = "x", row = "melee", power = 1 }, { id = "y", name = "y", row = "melee", power = 1 } }
+	BC.play(m, "me", 1)
+	check("첩자: 적 줄에 놓이고 2장 뽑는다", #m.rows.foe.ranged == 1 and #m.hand.me == 2)
+	-- 소각: 영웅은 안 쓰러진다
+	m = blank()
+	table.insert(m.rows.foe.melee, { id = "h", name = "h", row = "melee", power = 12, hero = true })
+	table.insert(m.rows.foe.melee, { id = "n", name = "n", row = "melee", power = 8 })
+	m.hand.me = { BC.Specials.scorch }
+	BC.play(m, "me", 1)
+	check("소각: 영웅은 남고 가장 센 일반 카드가 쓰러진다", #m.rows.foe.melee == 1 and m.rows.foe.melee[1].hero == true)
+	-- 판 규칙: 둘 다 멈추면 합계로 승부, 2선승이면 끝
+	m = blank()
+	m.hand.me = { { id = "k", name = "k", row = "melee", power = 5 } }
+	m.hand.foe = { { id = "k2", name = "k2", row = "melee", power = 2 } }
+	BC.play(m, "me", 1)
+	m.turn = "foe"
+	BC.play(m, "foe", 1)
+	local ok1, _, res = BC.pass(m, m.turn)
+	check("판 규칙: 양쪽 손패가 비면 자동으로 판이 끝난다", m.round == 2 or m.over or res ~= nil)
+	-- 컴퓨터끼리 수백 판: 항상 끝나고 오류가 없다
+	local ended, bad = 0, 0
+	for g = 1, 300 do
+		math.randomseed(g)
+		local d1, l1 = BC.playerDeck({ { skill = "command", name = "나" }, { skill = "volley", name = "포술가" }, { skill = "luck", name = "유물" } }, r)
+		local d2, l2 = BC.enemyDeck(g % 5 == 0, r)
+		local gm = BC.newMatch(d1, l1, d2, l2, r)
+		local guard = 0
+		while not gm.over and guard < 400 do
+			guard += 1
+			local okAi = BC.ai(gm, gm.turn)
+			if okAi == nil then
+				bad += 1
+				break
+			end
+		end
+		if gm.over then ended += 1 else bad += 1 end
+	end
+	check("카드 전투: 컴퓨터끼리 300판이 모두 끝난다", ended == 300 and bad == 0, tostring(ended) .. "/" .. tostring(bad))
+end
+
 -- 항구 자체 성장과 세금 수익
 do
 	local gs = S.State.new("england", 1700, nil)
