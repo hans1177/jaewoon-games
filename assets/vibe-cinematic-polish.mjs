@@ -159,7 +159,7 @@ export function createVibeExpressionDirector(face,{blinkSeconds=3.4,transitionSe
  };
 }
 // [메인: 실제 프레임 예산] 품질 변경을 안정화하고 기존 렌더러 설정을 직접 제어한다.
-export function createVibeRenderQualityController(renderer,{mobile=false,maxPixelRatio=2,minPixelRatio=.8,initialTier='HIGH',onTierChange=null}={}){
+export function createVibeRenderQualityController(renderer,{mobile=false,maxPixelRatio=2,minPixelRatio=.8,initialTier='HIGH',targetFps=60,onTierChange=null}={}){
  if(!renderer?.setPixelRatio||!renderer?.shadowMap)throw Error('Three.js renderer required');
  const limit=Math.max(minPixelRatio,Number(maxPixelRatio)||1),floor=Math.max(.5,Math.min(limit,Number(minPixelRatio)||.8));
  const tiers=['LOW','MID','HIGH'];let index=Math.max(0,tiers.indexOf(String(initialTier).toUpperCase()));
@@ -179,7 +179,7 @@ export function createVibeRenderQualityController(renderer,{mobile=false,maxPixe
    if(!Number.isFinite(dt)||dt<=0)return null;
    elapsed+=Math.min(.25,dt);frames++;
    if(elapsed<3)return null;
-   const fps=frames/elapsed,target=mobile?29:55;
+   const fps=frames/elapsed,target=Math.max(12,Math.min(120,Number(targetFps)|| (mobile?29:55)));
    if(fps<target*.8||drawCalls>450){slowWindows++;fastWindows=0;}
    else if(fps>target*.98&&drawCalls<250){fastWindows++;slowWindows=0;}
    else{slowWindows=0;fastWindows=0;}
@@ -232,7 +232,7 @@ export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=fal
  if(!root?.children||animated)return{batched:0,drawCallsSaved:0,dispose(){}};
  const groups=new Map(),hidden=[],batches=[];
  for(const o of root.children){
-  if(!o?.isMesh||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||o.material instanceof Array)continue;
+  if(!o?.isMesh||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||/[._-]LOD[0-9]+$/i.test(o.name||'')||o.material instanceof Array)continue;
   if(!o.geometry||!o.material)continue;
   const key=String(o.geometry.uuid||o.geometry.id)+':'+String(o.material.uuid||o.material.id);
   if(!groups.has(key))groups.set(key,[]);
