@@ -5950,7 +5950,7 @@ function render()
 		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
 			view ~= nil and currentTab == "trade")
 		if view then
-			Sfx.ambient({ "sfx_waves" })
+			Sfx.portAmbient(PortData.Ports[view.player.portId])
 		end
 	end
 
