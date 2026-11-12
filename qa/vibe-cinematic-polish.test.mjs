@@ -217,6 +217,23 @@ test('Vibe 5.9 only switches between artist-authored LOD meshes and keeps the or
  lod.reset();assert.ok(rows.every(x=>x.visible));
 });
 
+test('Vibe 5.9 authored LOD activates initially hidden lower-detail geometry and reset restores authoring',()=>{
+ class Vec3{set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(v){return Math.hypot(this.x-v.x,this.y-v.y,this.z-v.z)}}
+ const parent={},high={parent,isMesh:true,name:'Cliff_LOD0',visible:true};
+ const low={parent,isMesh:true,name:'Cliff_LOD1',visible:false};
+ const root={traverse(fn){fn(high);fn(low)},getWorldPosition(v){return v.set(0,0,0)}};
+ const lod=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[10]});
+ lod.update({position:{x:0,y:0,z:25}});
+ assert.equal(high.visible,false);
+ assert.equal(low.visible,true);
+ lod.update({position:{x:0,y:0,z:2}});
+ assert.equal(high.visible,true);
+ assert.equal(low.visible,false);
+ lod.reset();
+ assert.equal(high.visible,true);
+ assert.equal(low.visible,false);
+});
+
 test('Vibe 5.9 batches only repeated nonanimated static source meshes and disposes safely',()=>{
  class InstancedMesh{
   constructor(geo,mat,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.matrices=[]}
