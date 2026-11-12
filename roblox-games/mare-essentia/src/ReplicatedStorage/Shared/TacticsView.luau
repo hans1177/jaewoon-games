@@ -288,7 +288,7 @@ function TacticsView.open(opts)
 		if W < 10 or H < 10 then
 			W, H = 360, 360
 		end
-		local ts = math.max(20, math.floor(math.min((W - 8) / battle.w, (H - 8) / battle.h)))
+		local ts = math.max(12, math.floor(math.min((W - 8) / battle.w, (H - 8) / battle.h)))
 		local ox = math.floor((W - ts * battle.w) / 2)
 		local oy = math.floor((H - ts * battle.h) / 2)
 		title.Text = string.format("%s — %s   |   %s   |   %d/%d턴 (%s)", battle.siteName or "", battle.name, (Data.Objectives[battle.objective] or {}).name or "", math.min(battle.turn, battle.turnLimit), battle.turnLimit, if battle.phase == "player" then "내 턴" else "적 턴")
