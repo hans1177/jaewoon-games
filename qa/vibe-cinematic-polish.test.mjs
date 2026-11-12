@@ -3,7 +3,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeRenderedScene,inspectVibeCharacterAsset,vibeLightingPresets} from '../assets/vibe-cinematic-polish.mjs';
+import {createVibeLightingDirector,createVibeShotComposer,createVibeExpressionDirector,inspectVibeRenderedScene,inspectVibeCharacterAsset,vibeLightingPresets,createVibeRenderQualityController,createVibeAuthoredMeshLOD,batchVibeExistingStaticMeshes} from '../assets/vibe-cinematic-polish.mjs';
 test('expressions emit facial muscle channels and speech cues',()=>{
  const frames=[];const director=createVibeExpressionDirector({pose:p=>frames.push(p)});
  director.set('fear');director.update(.05,{speaking:true});
@@ -195,4 +195,50 @@ test('3D preview connects five art directors without extra model primitives',()=
  assert.match(html,/visualReviewBaseline\.result\.luminance/);
  assert.match(html,/if\(asset&&\(\!/);
  assert.doesNotMatch(html,/storybookWorld\.dispose\(\);storybookWorld=createVibeStorybookWorld/);
+});
+
+test('Vibe 5.9 real renderer quality degrades after sustained high draw calls and restores source settings',()=>{
+ const calls=[],renderer={shadowMap:{enabled:true},getPixelRatio(){return this.ratio||1.5},setPixelRatio(v){this.ratio=v;calls.push(v)}};
+ const quality=createVibeRenderQualityController(renderer,{mobile:true,maxPixelRatio:1.5,targetFps:29});
+ for(let i=0;i<65;i++)quality.sample(.1,{drawCalls:500});
+ assert.equal(quality.tier,'MID');
+ assert.ok(renderer.ratio<1.5);
+ quality.dispose();assert.equal(renderer.ratio,1.5);assert.equal(renderer.shadowMap.enabled,true);
+});
+
+test('Vibe 5.9 only switches between artist-authored LOD meshes and keeps the originals',()=>{
+ class Vec3{constructor(x=0,y=0,z=0){this.x=x;this.y=y;this.z=z}set(x,y,z){this.x=x;this.y=y;this.z=z;return this}distanceTo(v){return Math.hypot(this.x-v.x,this.y-v.y,this.z-v.z)}}
+ const rows=[0,1,2].map(i=>({isMesh:true,name:'Tree_LOD'+i,visible:true}));
+ const root={traverse(fn){rows.forEach(fn)},getWorldPosition(v){return v.set(0,0,0)}};
+ const lod=createVibeAuthoredMeshLOD({Vector3:Vec3},root,{distances:[5,15]});
+ assert.equal(lod.groups,1);
+ lod.update({position:new Vec3(0,0,2)});assert.deepEqual(rows.map(x=>x.visible),[true,false,false]);
+ lod.update({position:new Vec3(0,0,20)});assert.deepEqual(rows.map(x=>x.visible),[false,false,true]);
+ lod.reset();assert.ok(rows.every(x=>x.visible));
+});
+
+test('Vibe 5.9 batches only repeated nonanimated static source meshes and disposes safely',()=>{
+ class InstancedMesh{
+  constructor(geo,mat,count){this.count=count;this.instanceMatrix={needsUpdate:false};this.matrices=[]}
+  setMatrixAt(i,m){this.matrices[i]=m}
+  dispose(){this.disposed=true}
+ }
+ const geometry={uuid:'geo-a'},material={uuid:'mat-a'};
+ const rows=Array.from({length:4},(_,i)=>({isMesh:true,name:'Tree'+i,visible:true,
+  geometry,material,matrix:{i},updateMatrix(){},castShadow:false,receiveShadow:true}));
+ rows.push({isMesh:true,isSkinnedMesh:true,geometry,material,visible:true});
+ const root={children:[...rows],add(x){this.children.push(x)},remove(x){this.children.splice(this.children.indexOf(x),1)}};
+ const batch=batchVibeExistingStaticMeshes({InstancedMesh},root,{minimum:4});
+ assert.equal(batch.batched,4);assert.equal(batch.drawCallsSaved,3);
+ assert.equal(rows[4].visible,true);assert.ok(rows.slice(0,4).every(x=>!x.visible));
+ batch.dispose();assert.ok(rows.every(x=>x.visible));assert.equal(root.children.length,5);
+});
+
+test('Vibe 5.9 graphics are attached to the existing WebGL preview, not a duplicate runtime',()=>{
+ const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ for(const symbol of ['createVibeAuthoredMeshLOD(THREE,model)','batchVibeExistingStaticMeshes(THREE,model',
+  'desktopQuality?.sample(delta','lightingDirector.setShadowQuality(fps<22','new bloomModule.UnrealBloomPass']){
+  assert.ok(html.includes(symbol),symbol);
+ }
+ assert.match(html,/else renderer\.render\(scene,camera\)/);
 });
