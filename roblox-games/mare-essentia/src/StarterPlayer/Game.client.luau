@@ -1889,7 +1889,14 @@ local function sail(portId)
 	end
 	sceneHold = true
 	audioLock = true
-	Sfx.music("music_sea")
+	-- 항해 중에도 목적지 해역의 승인된 지역 테마곡을 들려준다.
+	-- 별도 해역곡을 받을 수 없을 때만 기존 항해곡을 유지한다.
+	local destination = PortData.Ports[portId]
+	if destination then
+		Sfx.portMusic(destination, false)
+	else
+		Sfx.music("music_sea")
+	end
 	Sfx.ambient({ "sfx_waves", "sfx_wind" })
 	Sfx.play("sfx_sail")
 	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
