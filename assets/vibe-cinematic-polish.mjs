@@ -239,11 +239,20 @@ export function batchVibeExistingStaticMeshes(THREE,root,{minimum=4,animated=fal
  if(!root?.children||animated)return{batched:0,drawCallsSaved:0,dispose(){}};
  const groups=new Map(),hidden=[],batches=[];
  for(const o of root.children){
-  if(!o?.isMesh||!o.visible||o.isSkinnedMesh||o.morphTargetInfluences?.length||o.userData?.noBatch||
+  // [GPU 배칭: 원본 보존] 자식 장식·기존 인스턴스·맞춤 렌더 콜백을 합치면 실제 메시가 사라진다.
+  if(!o?.isMesh||!o.visible||o.isInstancedMesh||o.isSkinnedMesh||o.morphTargetInfluences?.length||
+   o.children?.length||o.userData?.noBatch||Object.prototype.hasOwnProperty.call(o,'onBeforeRender')||
    o.matrixAutoUpdate===false||o.material?.transparent===true||/[._-]LOD[0-9]+$/i.test(o.name||'')||Array.isArray(o.material))continue;
+  // [GPU 배칭: 행렬] Three.js 인스턴스는 음수 행렬식(거울상), 0 스케일을 지원하지 않는다.
+  const scale=o.scale;
+  if(scale&&(![scale.x,scale.y,scale.z].every(Number.isFinite)||scale.x*scale.y*scale.z<=0))continue;
   if(!o.geometry||!o.material)continue;
+  // UUID와 ID가 둘 다 없는 임시 객체를 같은 에셋으로 잘못 묶지 않는다.
+  const geometryKey=o.geometry.uuid??o.geometry.id,materialKey=o.material.uuid??o.material.id;
+  if(!(typeof geometryKey==='string'&&geometryKey||Number.isSafeInteger(geometryKey))||
+   !(typeof materialKey==='string'&&materialKey||Number.isSafeInteger(materialKey)))continue;
   // [GPU 배칭] 개별 조명 그림자·레이어·렌더 순서가 다르면 절대 한 호출로 합치지 않는다.
-  const key=[o.geometry.uuid||o.geometry.id,o.material.uuid||o.material.id,
+  const key=[geometryKey,materialKey,
    Number(Boolean(o.castShadow)),Number(Boolean(o.receiveShadow)),o.renderOrder??0,
    o.layers?.mask??1,Number(o.frustumCulled!==false)].join(':');
   if(!groups.has(key))groups.set(key,[]);
