@@ -89,16 +89,24 @@ function prepareVerifiedCC0(track){
   fs.mkdirSync(dir+'/out',{recursive:true});
   // 길이가 긴 MP3/WAV 원본을 pipe:0으로 잘라 읽으면 ffmpeg 조기 종료 시 EPIPE가 난다.
   // 단일 책임 함수에서 임시 원본 파일 입력으로 변환한 다음 즉시 정리한다.
-  const tmpDir=fs.mkdtempSync(path.join(os.tmpdir(),'mare-audio-'));
-  const tmpSource=path.join(tmpDir,'original.audio');
-  try{
-    fs.writeFileSync(tmpSource,original);
-    execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i',tmpSource,
-      '-vn','-t',String(track.maxSeconds||180),'-ac','1','-ar','32000','-af',track.editFilter,
-      '-c:a','libvorbis','-q:a','3',output],
-      {timeout:120000,maxBuffer:8*1024*1024});
-  }finally{
-    fs.rmSync(tmpDir,{recursive:true,force:true});
+  if(track.legacyConversion===true && !track.maxSeconds){
+    // 이미 운영 중인 21개 CC0 원본은 기존 인코딩을 유지해 ID와 바이너리를 바꾸지 않는다.
+    execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i','pipe:0',
+      '-vn','-ac','1','-ar','32000','-af',track.editFilter,'-c:a','libvorbis','-q:a','3',output],
+      {input:original,timeout:120000,maxBuffer:8*1024*1024});
+  }else{
+    // 신규 긴 음악만 임시 파일로 읽어 -t 범위 내 변환하며 원본은 작업 직후 삭제한다.
+    const tmpDir=fs.mkdtempSync(path.join(os.tmpdir(),'mare-audio-'));
+    const tmpSource=path.join(tmpDir,'original.audio');
+    try{
+      fs.writeFileSync(tmpSource,original);
+      execFileSync('ffmpeg',['-nostdin','-y','-loglevel','error','-i',tmpSource,
+        '-vn','-t',String(track.maxSeconds||180),'-ac','1','-ar','32000','-af',track.editFilter,
+        '-c:a','libvorbis','-q:a','3',output],
+        {timeout:120000,maxBuffer:8*1024*1024});
+    }finally{
+      fs.rmSync(tmpDir,{recursive:true,force:true});
+    }
   }
   if(!fs.existsSync(output)||fs.statSync(output).size<1500)
     throw Error('CC0_AUDIO_DERIVATIVE_TOO_SMALL');
