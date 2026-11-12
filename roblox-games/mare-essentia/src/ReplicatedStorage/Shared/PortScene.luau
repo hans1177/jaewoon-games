@@ -327,10 +327,13 @@ local function uniformMaterial(m, style, surface)
 	local architecture = style.house
 	local mat = if surface == "roof" then (architecture and architecture.roofMat) or style.mat
 		elseif surface == "trim" then (architecture and architecture.trimMat) or style.mat
+		elseif surface == "entry" then (architecture and architecture.entryMat) or style.mat
 		else style.mat
 	if not (m and mat) then return end
 	for _, p in m:GetDescendants() do
-		if p:IsA("BasePart") then
+		-- 수입 원본의 유리창·금속 장식·발광등을 석조/목조로 덮지 않는다.
+		if p:IsA("BasePart") and p.Material ~= Enum.Material.Glass
+			and p.Material ~= Enum.Material.Metal and p.Material ~= Enum.Material.Neon then
 			p.Material = mat
 		end
 	end
@@ -422,10 +425,21 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		if architecture.trim and not vacant and seed % (if houseTier >= 3 then 2 else 3) == 0 then
 			local trim = importedModel(parent, "Town", architecture.trim,
 				pos + Vector3.new(ext.X * 0.2, ext.Y * 0.40, front * ext.Z * 0.51),
-				ext.X * 0.26, false, tintColor)
+				ext.X * 0.26, false, style.roofs[1]:Lerp(tintColor, 0.3))
 			if trim then
 				trim.Name = "HarborWindowDetail"
 				uniformMaterial(trim, style, "trim")
+			end
+		end
+		-- 승인된 문의 둥근 아치/목재 형태로 집 입면을 구분한다.
+		-- 고정된 일부 주택에만 비충돌 장식으로 두어 모바일 객체 수와 기존 출입 기능을 보호한다.
+		if architecture.entry and not vacant and seed % 3 == 1 then
+			local doorway = importedModel(parent, "Town", architecture.entry,
+				pos + Vector3.new(0, 0, front * ext.Z * 0.52),
+				ext.X * 0.29, false)
+			if doorway then
+				doorway.Name = "HarborDoorDetail"
+				uniformMaterial(doorway, style, "entry")
 			end
 		end
 		local size = math.max(w, d) * variation
