@@ -215737,11 +215737,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_31c082663629ef8d1e2bede2",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12882",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "799c0ce34f7a932a253d52eddf570f64c1435537",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12882,
+        "baseBranch": "main",
+        "headBranch": "claude/card-naval",
+        "baseSha": "799c0ce34f7a932a253d52eddf570f64c1435537",
+        "headSha": "925d262e01aa94de76be92d06418a5e49d584dab",
+        "mergeCommitSha": "fdd6ea2f2d62139fcd49e1982ac49aee28ee1b7f",
+        "mergedAt": "2026-11-12T12:25:26Z",
+        "authorLogin": "hans1177",
+        "titleHash": "502fd076d4017445743125e66c9a403b160b0e16be3f3586bdc8ccdbc105eaa9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/card-naval",
+        "candidateSha": "925d262e01aa94de76be92d06418a5e49d584dab"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 369,
+        "deletedLineCount": 29,
+        "changedFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BoardingCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Battle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BoardingCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Battle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12882",
+        "merge-commit:fdd6ea2f2d62139fcd49e1982ac49aee28ee1b7f",
+        "base-main:799c0ce34f7a932a253d52eddf570f64c1435537"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1716
+    "total": 1717
   }
 }
