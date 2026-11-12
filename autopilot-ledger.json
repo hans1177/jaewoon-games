@@ -12,10 +12,10 @@
     },
     "mare-essentia:health": {
       "lastAt": 1794469273527,
-      "pending": true,
+      "pending": false,
       "lastSha": "86ada50c5e9a72da18bc7d24b59bbf238b7898fd",
-      "runs": 5,
-      "ema": 0.916,
+      "runs": 6,
+      "ema": 0.941,
       "failStreak": 0,
       "lastResult": "FOUND"
     },
@@ -141,7 +141,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=15 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=1\\nHEALTH_UI 퀘스트=1 항해=7 교역=1 백과=1\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
+    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=15 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=1 항해=8 교역=1 백과=1\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -164,8 +164,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:no-mobs",
       "firstAt": 1794371928830,
-      "lastAt": 1794462200681,
-      "seen": 5,
+      "lastAt": 1794469881552,
+      "seen": 6,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sky-missing": {
@@ -176,20 +176,20 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sky-missing",
       "firstAt": 1794371928830,
-      "lastAt": 1794462200681,
-      "seen": 5,
+      "lastAt": 1794469881552,
+      "seen": 6,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sparse-world": {
       "id": "sparse-world",
       "kind": "background",
       "task": "background",
-      "text": "월드 부품이 적음(1)",
+      "text": "월드 부품이 적음(18)",
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sparse-world",
       "firstAt": 1794371928830,
-      "lastAt": 1794462200681,
-      "seen": 5,
+      "lastAt": 1794469881552,
+      "seen": 6,
       "resolvedAt": 1794375225082
     },
     "fantasy-survival:asset-fail": {
