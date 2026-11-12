@@ -516,6 +516,7 @@ local Sites: { Site } = {
 	{ id = "neworleans_delta", name = "미시시피 삼각주", portId = "new_orleans", minLevel = 3, days = 2, pool = { "geo_mississippi", "am_iguana", "am_victoria_lily" } },
 	{ id = "nassau_pirates", name = "나소 해적 소굴", portId = "nassau", minLevel = 2, days = 1, pool = { "am_pirate_code", "am_blackbeard_flag", "geo_bahama_banks" } },
 	{ id = "havana_fort", name = "아바나 항구 요새", portId = "havana", minLevel = 2, days = 1, pool = { "site_castillo_havana", "geo_florida_strait" } },
+	{ id = "havana_orchard", name = "아바나 과수원", portId = "havana", minLevel = 2, days = 1, pool = { "am_pineapple" } },
 	{ id = "veracruz_road", name = "멕시코시티 가는 길", portId = "veracruz", minLevel = 4, days = 3, pool = { "site_teotihuacan", "am_aztec_calendar", "am_obsidian_aztec" } },
 	{ id = "campeche_maya", name = "마야 해안 유적", portId = "campeche", minLevel = 3, days = 2, pool = { "site_chichen_itza", "am_maya_stela", "am_jade_maya", "am_ceiba" } },
 	{ id = "kingston_royal", name = "포트로열", portId = "kingston", minLevel = 3, days = 2, pool = { "site_port_royal", "am_buccaneer_grill", "am_pirate_code" } },
