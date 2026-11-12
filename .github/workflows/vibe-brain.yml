@@ -45,6 +45,13 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p build
+          if git fetch --no-tags --depth=1 origin refs/heads/mare-essentia-autopilot-report; then
+            git update-ref refs/vibe/brain-studio-report FETCH_HEAD
+            source_sha=$(git show refs/vibe/brain-studio-report:report.json | jq -r '.sourceRevision // empty')
+            if [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]; then
+              git cat-file -e "$source_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$source_sha"
+            fi
+          fi
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
@@ -57,7 +64,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
         run: |
@@ -109,7 +116,9 @@ jobs:
           body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
           pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$(printf "$body")" --jq .number)
           echo "PR #$pr"
-          if [ "${MERGE_ON:-off}" = "on" ]; then
+          if [[ "$fp" == *:visual:* ]]; then
+            echo "화면 수정 후보는 Studio 재검증이 필요해 PR만 열어 두었다."
+          elif [ "${MERGE_ON:-off}" = "on" ]; then
             gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash >/dev/null && merged=yes || merged=no
             if [ "$merged" = "yes" ]; then node tools/vibe-brain.mjs --record-merged "$pr" --ledger build/brain-ledger.json --out build/brain-result.json; echo "MERGED #$pr"; fi
           else
