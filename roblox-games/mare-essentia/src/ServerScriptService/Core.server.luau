@@ -233,7 +233,11 @@ local function onInvoke(player, action, payload)
 		if type(nationId) ~= "string" or not D.Ports.Nations[nationId] or not START_YEARS[year] then
 			return { ok = false, message = "잘못된 선택이에요" }
 		end
-		local newState = S.State.new(nationId, year)
+		local originId = if type(payload.origin) == "string" and D.Specialties.OriginById[payload.origin] then payload.origin else "merchant"
+		local newState = S.State.new(nationId, year, originId)
+		if D.Specialties.OriginById[originId].supplies then
+			newState.ship.supplies += D.Specialties.OriginById[originId].supplies
+		end
 		if payload.room == true then
 			-- 방 시계: 이미 열린 방이 있으면 그 시대로만 들어갈 수 있다
 			local info = S.Room.info

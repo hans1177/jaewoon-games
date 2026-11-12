@@ -1674,6 +1674,37 @@ do
 	check("companions sanitized", back and #back.companions == 2 and back.companions[1] == "c_merian" and back.companions[2] == "c_boyle")
 	check("bad specialty dropped", back and back.specialty == nil)
 
+	-- 출신 성분
+	do
+		local base = S.State.new("england", 1700, nil)
+		local noble = S.State.new("england", 1700, "noble")
+		local sailor = S.State.new("england", 1700, "sailor")
+		check("noble richer", noble.coins == base.coins + 400 and noble.fame == 12)
+		check("sailor faster", S.Perk.speedMult(sailor) > S.Perk.speedMult(base))
+		check("origin roundtrip", S.State.sanitize(S.State.serialize(noble)).origin == "noble")
+		check("bad origin ignored", S.State.new("england", 1700, "king").origin == nil)
+	end
+	-- 시작 안내: 이름 → 첫 동료 → 초상화
+	do
+		local it = newState("england")
+		local H = handlers
+		check("intro step name", S.Intro.step(it) == "name")
+		check("companion blocked before name", not H.IntroCompanion(it, {}))
+		check("bad name rejected", not H.IntroName(it, { name = "   " }) and not H.IntroName(it, { name = "열두글자를넘기는아주긴이름입니다" }))
+		check("name ok", H.IntroName(it, { name = "  한스  " }) and it.captain.name == "한스")
+		check("name once", not H.IntroName(it, { name = "다른" }))
+		check("portrait blocked early", not H.IntroPortrait(it, { portrait = "hero:england" }))
+		local coins = it.coins
+		check("free companion", H.IntroCompanion(it, {}) and table.find(it.companions, "n_england") and it.coins == coins)
+		check("bad portrait", not H.IntroPortrait(it, { portrait = "npc:nowhere:3" }) and not H.IntroPortrait(it, { portrait = "x" }))
+		check("portrait ok", H.IntroPortrait(it, { portrait = "npc:london:4" }) and S.Intro.step(it) == "done")
+		local rt = S.State.sanitize(S.State.serialize(it))
+		check("intro roundtrip", rt.captain.name == "한스" and rt.captain.portrait == "npc:london:4" and rt.intro.portrait)
+		local old = S.State.serialize(it)
+		old.intro = nil
+		check("old save skips intro", S.Intro.step(S.State.sanitize(old)) == "done")
+	end
+
 	-- 발견 확률이 실제로 오르는지 (식물학자가 식물 카드 탐험에서 더 자주 발견)
 	local function hits(spec)
 		local n = 0

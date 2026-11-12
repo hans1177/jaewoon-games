@@ -36,6 +36,10 @@ return function(D, S)
 			local k = Sp.levelMult(specLevel(state, state.specialty))
 			table.insert(list, scaled(Sp.SpecialtyById[state.specialty].perk, k))
 		end
+		local origin = state.origin and Sp.OriginById[state.origin]
+		if origin and origin.perk then
+			table.insert(list, origin.perk)
+		end
 		for _, id in state.companions do
 			local c = Sp.CompanionById[id]
 			if c then
