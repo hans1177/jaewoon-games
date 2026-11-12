@@ -29,6 +29,7 @@ local musicOn, sfxOn = true, true
 local musicLevel, sfxLevel = 1.5, 1.5
 local currentMusic, currentName = nil, nil
 local ambient = {}
+local ambientKey = nil -- 같은 항구 화면을 다시 그릴 때 환경음을 중복 재생하지 않는다
 local lastPlayed = {}
 
 local function make(name, parent)
@@ -134,6 +135,18 @@ function Sfx.portMusic(port, market)
 	end
 end
 
+-- 항구의 지역 환경음도 승인된 ID가 있으면 우선 적용하고, 없으면 기존 파도로 유지한다.
+function Sfx.portAmbient(port)
+	if not port then
+		Sfx.ambient({ "sfx_waves" })
+		return
+	end
+	local region = Regions.of(port).id
+	Sfx.ambient({ firstReady("sfx_ambience_port_" .. tostring(port.id or ""),
+		"sfx_ambience_nation_" .. tostring(port.country or ""),
+		"sfx_ambience_region_" .. region, "sfx_waves") })
+end
+
 -- 대사·스토리 장면별 선곡. 해적 사건은 검증된 CC0 원본 기반 음원이 등록되면 우선 사용한다.
 function Sfx.storyMusic(ev)
 	local art = tostring(ev.art or "harbor")
@@ -202,6 +215,11 @@ end
 
 -- 파도·바람 같은 앰비언트 루프 (names: 목록, nil 이면 끈다)
 function Sfx.ambient(names)
+	local key = table.concat(names or {}, "|")
+	if ambientKey == key then
+		return
+	end
+	ambientKey = key
 	for _, s in ambient do
 		local tw = TweenService:Create(s, TweenInfo.new(1.2), { Volume = 0 })
 		tw:Play()
