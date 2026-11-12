@@ -204400,11 +204400,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4a0ca68feee9c95104cbfe92",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12677",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8d7fbb37bb00544a32c4a7c92f26b731590b89ee",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12677,
+        "baseBranch": "main",
+        "headBranch": "claude/mare-diplomacy",
+        "baseSha": "8d7fbb37bb00544a32c4a7c92f26b731590b89ee",
+        "headSha": "c81333516ad55b89d6864d7cb6cd50c644f8cdc7",
+        "mergeCommitSha": "e09ced817f92908706f32f2aecc4b74f3f28236b",
+        "mergedAt": "2026-11-12T02:20:19Z",
+        "authorLogin": "hans1177",
+        "titleHash": "cb7d5f1492deb1c480e4c791094e73cba60140765b3bc2ccc4a24dbbc667bee3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/mare-diplomacy",
+        "candidateSha": "c81333516ad55b89d6864d7cb6cd50c644f8cdc7"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 646,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Specialties.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Diplomacy.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/History.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Specialties.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Diplomacy.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/History.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12677",
+        "merge-commit:e09ced817f92908706f32f2aecc4b74f3f28236b",
+        "base-main:8d7fbb37bb00544a32c4a7c92f26b731590b89ee"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1627
+    "total": 1628
   }
 }
