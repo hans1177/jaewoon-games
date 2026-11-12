@@ -6,6 +6,62 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
+-- 캐릭터와 로딩 표시는 모듈·서버 대기보다 먼저 준비한다.
+local overview = true -- 항구 전경(고정 시점) / 걷기 전환
+local sceneSpawn = nil
+local H: { [string]: any } = {} -- 화면 보조 상태는 사용 전 먼저 준비한다. 제목/아이콘 런타임 오류 방지.
+local gui = Instance.new("ScreenGui")
+gui.Name = "MareEssentiaGui"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- [시작 화면] 서버 상태를 받는 동안 공중 캐릭터와 빈 하늘이 노출되지 않도록 UI를 즉시 덮는다.
+-- 월드/저장 데이터는 손대지 않고 서버 응답 직후 기존 시작 메뉴로 넘긴다.
+H.startupCover = Instance.new("Frame")
+H.startupCover.Name = "StartLoading"
+H.startupCover.Size = UDim2.fromScale(1, 1)
+H.startupCover.BackgroundColor3 = Color3.fromRGB(24, 58, 89)
+H.startupCover.BorderSizePixel = 0
+H.startupCover.ZIndex = 200
+H.startupCover.Parent = gui
+H.startupLabel = Instance.new("TextLabel")
+H.startupLabel.Name = "LoadingMessage"
+H.startupLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+H.startupLabel.Position = UDim2.fromScale(0.5, 0.5)
+H.startupLabel.Size = UDim2.fromScale(0.88, 0.2)
+H.startupLabel.BackgroundTransparency = 1
+H.startupLabel.Text = "학문의 바다\n항구와 항해 기록을 불러오는 중..."
+H.startupLabel.Font = Enum.Font.GothamBold
+H.startupLabel.TextColor3 = Color3.fromRGB(253, 226, 166)
+H.startupLabel.TextScaled = true
+H.startupLabel.TextWrapped = true
+H.startupLabel.ZIndex = 201
+H.startupLabel.Parent = H.startupCover
+do
+	local size = Instance.new("UITextSizeConstraint")
+	size.MaxTextSize = 27
+	size.MinTextSize = 13
+	size.Parent = H.startupLabel
+end
+
+-- [캐릭터 스폰] 항구가 클라이언트에 만들어지기 전에는 바닥이 없으므로 추락을 막는다.
+-- 실제 걸어 다니는 시점에는 아래 applyView에서 고정을 해제한다.
+function H.placeCharacterOnSpawn(character)
+	local root = character:WaitForChild("HumanoidRootPart", 10)
+	if not root then return end
+	if sceneSpawn and not overview then
+		character:PivotTo(sceneSpawn)
+		root.Anchored = false
+	else
+		root.Anchored = true
+	end
+end
+player.CharacterAdded:Connect(H.placeCharacterOnSpawn)
+if player.Character then
+	task.defer(H.placeCharacterOnSpawn, player.Character)
+end
+
+
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
@@ -91,8 +147,6 @@ local currentTab = "status"
 local syncScene
 local openTab
 local applyView
-local overview = true -- 항구 전경(고정 시점) / 걷기 전환
-local sceneSpawn = nil
 local inField = false -- 필드 탐험 장면 중에는 항구 전경 카메라를 멈춘다
 local assetWaitStarted = false
 local sceneKey = nil
@@ -111,58 +165,6 @@ local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
 local chosenYear = 1700
 local newGameMode = false -- 저장된 게임이 있어도 새로 시작하는 선택 화면을 보여 준다
-
-local H: { [string]: any } = {} -- 화면 보조 상태는 사용 전 먼저 준비한다. 제목/아이콘 런타임 오류 방지.
-local gui = Instance.new("ScreenGui")
-gui.Name = "MareEssentiaGui"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
--- [시작 화면] 서버 상태를 받는 동안 공중 캐릭터와 빈 하늘이 노출되지 않도록 UI를 즉시 덮는다.
--- 월드/저장 데이터는 손대지 않고 서버 응답 직후 기존 시작 메뉴로 넘긴다.
-H.startupCover = Instance.new("Frame")
-H.startupCover.Name = "StartLoading"
-H.startupCover.Size = UDim2.fromScale(1, 1)
-H.startupCover.BackgroundColor3 = Color3.fromRGB(24, 58, 89)
-H.startupCover.BorderSizePixel = 0
-H.startupCover.ZIndex = 200
-H.startupCover.Parent = gui
-H.startupLabel = Instance.new("TextLabel")
-H.startupLabel.Name = "LoadingMessage"
-H.startupLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-H.startupLabel.Position = UDim2.fromScale(0.5, 0.5)
-H.startupLabel.Size = UDim2.fromScale(0.88, 0.2)
-H.startupLabel.BackgroundTransparency = 1
-H.startupLabel.Text = "학문의 바다\n항구와 항해 기록을 불러오는 중..."
-H.startupLabel.Font = Enum.Font.GothamBold
-H.startupLabel.TextColor3 = Color3.fromRGB(253, 226, 166)
-H.startupLabel.TextScaled = true
-H.startupLabel.TextWrapped = true
-H.startupLabel.ZIndex = 201
-H.startupLabel.Parent = H.startupCover
-do
-	local size = Instance.new("UITextSizeConstraint")
-	size.MaxTextSize = 27
-	size.MinTextSize = 13
-	size.Parent = H.startupLabel
-end
-
--- [캐릭터 스폰] 항구가 클라이언트에 만들어지기 전에는 바닥이 없으므로 추락을 막는다.
--- 실제 걸어 다니는 시점에는 아래 applyView에서 고정을 해제한다.
-function H.placeCharacterOnSpawn(character)
-	local root = character:WaitForChild("HumanoidRootPart", 10)
-	if not root then return end
-	if sceneSpawn and not overview then
-		character:PivotTo(sceneSpawn)
-		root.Anchored = false
-	else
-		root.Anchored = true
-	end
-end
-player.CharacterAdded:Connect(H.placeCharacterOnSpawn)
-if player.Character then
-	task.defer(H.placeCharacterOnSpawn, player.Character)
-end
 
 -- 전체 화면 장면(항해 연출, 이야기, 카드 상세)은 별도 ScreenGui에 띄운다.
 -- 같은 화면에 두면 ZIndex 규칙 때문에 장면의 그림이 배경 뒤로 숨는 문제가 있었다.
