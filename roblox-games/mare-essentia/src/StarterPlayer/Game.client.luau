@@ -4529,22 +4529,22 @@ function RENDERERS.battle()
 end
 
 local selectedPort = nil
-local selectedChart = nil
-local showChartPicker = false
-local CHART_REGIONS = {
+H.selectedChart = nil
+H.showChartPicker = false
+H.CHART_REGIONS = {
 	{ "north_sea", "북해" }, { "west_europe", "서유럽" },
 	{ "mediterranean", "지중해" }, { "west_africa", "서아프리카" },
 	{ "indian_ocean", "인도양" }, { "southeast_asia", "동남아시아" },
 	{ "east_asia", "동아시아" }, { "caribbean", "카리브해·북아메리카" },
 	{ "south_america", "남아메리카" }, { "pacific", "태평양" },
 }
-local CHART_BY_PORT_REGION = {
+H.CHART_BY_PORT_REGION = {
 	north_sea = "north_sea", atlantic_europe = "west_europe", mediterranean = "mediterranean",
 	west_africa = "west_africa", east_africa = "indian_ocean", red_sea = "indian_ocean",
 	south_asia = "indian_ocean", southeast_asia = "southeast_asia", east_asia = "east_asia",
 }
 
-local function chartForPort(portId)
+function H.chartForPort(portId)
 	local pt = PortData.Ports[portId]
 	if not pt then return nil end
 	local region = H.regionOfPort(portId)
@@ -4553,7 +4553,7 @@ local function chartForPort(portId)
 		if pt.lat < 12 and pt.lon < -70 then return "pacific", "south_america" end
 		return if pt.lat < 12 then "south_america" else "caribbean"
 	end
-	return CHART_BY_PORT_REGION[region or ""]
+	return H.CHART_BY_PORT_REGION[region or ""]
 end
 
 local SEA_NAMES = {
@@ -4583,32 +4583,32 @@ function RENDERERS.map()
 		add(function() return mkHeader(content, "항해 지도") end)
 	end
 	-- 한 번에 현재 보고 있는 지도 한 장만 화면에 붙인다.
-	local chartImage = selectedChart and AssetIds["CardArt/event_chart_" .. selectedChart]
+	local chartImage = H.selectedChart and AssetIds["CardArt/event_chart_" .. H.selectedChart]
 	add(function()
 		local controls = Instance.new("Frame")
 		controls.Size = UDim2.new(1, -6, 0, 44)
 		controls.BackgroundTransparency = 1
 		mkButton(controls, "세계지도", if chartImage then COLORS.grey else COLORS.blue, UDim2.new(0.5, -3, 1, 0), function()
-			selectedChart = nil
-			showChartPicker = false
+			H.selectedChart = nil
+			H.showChartPicker = false
 			render()
 		end)
-		local regions = mkButton(controls, if showChartPicker then "해역 목록 닫기" else "해역 선택", COLORS.blue, UDim2.new(0.5, -3, 1, 0), function()
-			showChartPicker = not showChartPicker
+		local regions = mkButton(controls, if H.showChartPicker then "해역 목록 닫기" else "해역 선택", COLORS.blue, UDim2.new(0.5, -3, 1, 0), function()
+			H.showChartPicker = not H.showChartPicker
 			render()
 		end)
 		regions.Position = UDim2.new(0.5, 3, 0, 0)
 		return controls
 	end)
-	if showChartPicker then
-		for _, entry in CHART_REGIONS do
+	if H.showChartPicker then
+		for _, entry in H.CHART_REGIONS do
 			local key, label = entry[1], entry[2]
 			if AssetIds["CardArt/event_chart_" .. key] then
 				add(function()
-					return mkButton(content, label, if key == selectedChart then COLORS.gold else COLORS.grey, UDim2.new(1, -6, 0, 44), function()
-						selectedChart = key
+					return mkButton(content, label, if key == H.selectedChart then COLORS.gold else COLORS.grey, UDim2.new(1, -6, 0, 44), function()
+						H.selectedChart = key
 						selectedPort = nil
-						showChartPicker = false
+						H.showChartPicker = false
 						render()
 					end)
 				end)
@@ -4617,8 +4617,8 @@ function RENDERERS.map()
 	end
 
 	if chartImage then
-		for _, entry in CHART_REGIONS do
-			if entry[1] == selectedChart then
+		for _, entry in H.CHART_REGIONS do
+			if entry[1] == H.selectedChart then
 				add(function() return mkHeader(content, entry[2]) end)
 				break
 			end
@@ -4758,71 +4758,6 @@ function RENDERERS.map()
 			return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
 		end)
 	end
-	local function addSelectedRoute()
-		if selectedPort and selectedPort ~= view.player.portId then
-			for _, r in view.routes do
-				if r.id == selectedPort then
-					add(function()
-						if r.locked then
-							return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
-								{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
-							}, 56)
-						end
-						return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
-							{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
-						}, 56)
-					end)
-				end
-			end
-		end
-<<<<<<< Updated upstream
-=======
-		for id, pt in PortData.Ports do
-			local isHere = (id == view.player.portId)
-			local dot = Instance.new("TextButton")
-			dot.AnchorPoint = Vector2.new(0.5, 0.5)
-			dot.Position = UDim2.fromScale(mapX(pt.lon), mapY(pt.lat))
-			local small = worldImg ~= nil
-			dot.Size = UDim2.fromOffset(if isHere then (if small then 12 else 18) else (if small then 8 else 14), if isHere then (if small then 12 else 18) else (if small then 8 else 14))
-			dot.Text = ""
-			dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
-			dot.BorderSizePixel = 1
-			dot.Parent = frame
-			-- 현재 항구는 닻 아이콘으로 크게 표시
-			local anchorIcon = if isHere and worldImg then AssetIds["Menu/chart_anchor"] else nil
-			if anchorIcon then
-				local ai = Instance.new("ImageLabel")
-				ai.AnchorPoint = Vector2.new(0.5, 0.5)
-				ai.Position = UDim2.fromScale(0.5, 0.5)
-				ai.Size = UDim2.fromOffset(30, 30)
-				ai.BackgroundTransparency = 1
-				ai.Image = "rbxassetid://" .. tostring(anchorIcon)
-				ai.ZIndex = 5
-				ai.Parent = dot
-			end
-			local corner = Instance.new("UICorner")
-			corner.CornerRadius = UDim.new(1, 0)
-			corner.Parent = dot
-			local tag = Instance.new("TextLabel")
-			tag.BackgroundTransparency = 1
-			tag.Position = UDim2.fromOffset(12, -8)
-			tag.Size = UDim2.fromOffset(60, 14)
-			tag.Text = pt.name
-			tag.Font = Enum.Font.GothamBold
-			tag.TextSize = 10
-			tag.TextColor3 = Color3.new(1, 1, 1)
-			tag.TextXAlignment = Enum.TextXAlignment.Left
-			tag.Parent = dot
-			dot.Activated:Connect(function()
-				selectedPort = id
-				render()
-			end)
-		end
-		return frame
-	end)
-	add(function()
-		return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
-	end)
 	-- 국가 관계·전쟁·다른 항해자
 	if view.diplo then
 		local dp = view.diplo
@@ -4874,42 +4809,29 @@ function RENDERERS.map()
 			end)
 		end
 	end
-	-- 해역 확대도: 선택한 항구(없으면 현재 항구)가 속한 해역의 그림 지도
-	do
-		local focus = selectedPort or view.player.portId
-		local region = H.regionOfPort(focus)
-		local chart = ({
-			north_sea = "north_sea", atlantic_europe = "west_europe", mediterranean = "mediterranean", west_africa = "west_africa",
-			east_africa = "indian_ocean", red_sea = "indian_ocean", south_asia = "indian_ocean", southeast_asia = "southeast_asia",
-			east_asia = "east_asia",
-		})[region or ""]
-		if region == "americas" then
-			local pt = PortData.Ports[focus]
-			chart = if pt and pt.lat < 12 then "south_america" else "caribbean"
+	local function addSelectedRoute()
+		if selectedPort and selectedPort ~= view.player.portId then
+			for _, r in view.routes do
+				if r.id == selectedPort then
+					add(function()
+						if r.locked then
+							return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
+								{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
+							}, 56)
+						end
+						return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
+							{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
+						}, 56)
+					end)
+				end
+			end
 		end
-		local img = chart and AssetIds["CardArt/event_chart_" .. chart]
-		if img then
-			add(function()
-				local mapW = math.max(200, content.AbsoluteSize.X - 10)
-				local pic = Instance.new("ImageLabel")
-				pic.Size = UDim2.new(1, -6, 0, math.floor(mapW * 992 / 1586))
-				pic.BackgroundTransparency = 1
-				pic.Image = "rbxassetid://" .. tostring(img)
-				pic.ScaleType = Enum.ScaleType.Fit
-				corner(pic, 8)
-				return pic
-			end)
-			add(function()
-				return mkLabel(content, string.format("%s 해역도", PortData.Ports[focus].name), 12, COLORS.muted, false)
-			end)
-		end
->>>>>>> Stashed changes
 	end
 	if chartImage then
 		local ports = {}
 		for id, port in PortData.Ports do
-			local primary, secondary = chartForPort(id)
-			if primary == selectedChart or secondary == selectedChart then
+			local primary, secondary = H.chartForPort(id)
+			if primary == H.selectedChart or secondary == H.selectedChart then
 				table.insert(ports, { id = id, name = port.name })
 			end
 		end
@@ -4932,12 +4854,12 @@ function RENDERERS.map()
 		end
 	elseif selectedPort then
 		addSelectedRoute()
-		local chart = chartForPort(selectedPort)
+		local chart = H.chartForPort(selectedPort)
 		if chart and AssetIds["CardArt/event_chart_" .. chart] then
 			add(function()
 				return mkButton(content, "선택한 항구의 해역 확대", COLORS.blue, UDim2.new(1, -6, 0, 44), function()
-					selectedChart = chart
-					showChartPicker = false
+					H.selectedChart = chart
+					H.showChartPicker = false
 					render()
 				end)
 			end)
@@ -5502,6 +5424,8 @@ function H.startNewGame()
 		sceneHold = false
 		main.Visible = true
 		menuToggle.Visible = false
+		H.openingPending = true
+		H.tutorialHidden = false
 		render()
 	end
 end
@@ -5659,7 +5583,12 @@ renderTitle = function()
 			table.insert(list, n)
 		end
 	end
-	table.sort(list, function(a, b) return a.id < b.id end)
+	local NATION_ORDER = { "england", "netherlands", "france", "spain", "portugal", "denmark", "sweden", "venice", "ottoman", "swahili", "malabar", "china", "japan", "korea", "new_spain" }
+	table.sort(list, function(a, b)
+		local ia, ib = table.find(NATION_ORDER, a.id) or 99, table.find(NATION_ORDER, b.id) or 99
+		if ia ~= ib then return ia < ib end
+		return a.id < b.id
+	end)
 	local cur = PortData.Nations[chosenNation]
 	if not cur or cur.hidden then
 		chosenNation = list[1].id
@@ -6431,8 +6360,8 @@ end
 	local chipGui = overlayGui("CaptainChip", 12)
 	local chip = Instance.new("Frame")
 	chip.AnchorPoint = Vector2.new(0, 0)
-	chip.Position = UDim2.new(0, 8, 0.4, 0)
-	chip.Size = UDim2.fromOffset(104, 150)
+	chip.Position = UDim2.new(0, 4, 0.36, 0)
+	chip.Size = UDim2.fromOffset(92, 168)
 	chip.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
 	chip.BackgroundTransparency = 0.08
 	chip.BorderSizePixel = 0
@@ -6448,18 +6377,26 @@ end
 	local chipKey = nil
 	local chipName = mkLabel(chip, "", 13, Color3.fromRGB(246, 208, 130), true)
 	chipName.AnchorPoint = Vector2.new(0.5, 0)
-	chipName.Position = UDim2.new(0.5, 0, 0, 108)
+	chipName.Position = UDim2.new(0.5, 0, 0, 104)
 	chipName.Size = UDim2.new(1, -8, 0, 18)
 	chipName.AutomaticSize = Enum.AutomaticSize.None
 	chipName.TextXAlignment = Enum.TextXAlignment.Center
 	chipName.TextTruncate = Enum.TextTruncate.AtEnd
 	local chipSub = mkLabel(chip, "", 10, COLORS.muted, false)
 	chipSub.AnchorPoint = Vector2.new(0.5, 0)
-	chipSub.Position = UDim2.new(0.5, 0, 0, 127)
+	chipSub.Position = UDim2.new(0.5, 0, 0, 123)
 	chipSub.Size = UDim2.new(1, -8, 0, 16)
 	chipSub.AutomaticSize = Enum.AutomaticSize.None
 	chipSub.TextXAlignment = Enum.TextXAlignment.Center
 	chipSub.TextTruncate = Enum.TextTruncate.AtEnd
+	chipSub.TextColor3 = Color3.fromRGB(150, 205, 255)
+	local chipSub2 = mkLabel(chip, "", 10, COLORS.muted, false)
+	chipSub2.AnchorPoint = Vector2.new(0.5, 0)
+	chipSub2.Position = UDim2.new(0.5, 0, 0, 142)
+	chipSub2.Size = UDim2.new(1, -8, 0, 16)
+	chipSub2.AutomaticSize = Enum.AutomaticSize.None
+	chipSub2.TextXAlignment = Enum.TextXAlignment.Center
+	chipSub2.TextTruncate = Enum.TextTruncate.AtEnd
 	local function refreshChip()
 		local c = view and view.captain
 		local show = c ~= nil and not newGameMode
@@ -6478,8 +6415,9 @@ end
 			end
 		end
 		chipName.Text = c.name or "선장"
-		chipSub.Text = (if c.origin then c.origin.name else view.player.nation)
-		local face = portraitImg(chip, c.portrait, 90, 96)
+		chipSub.Text = "🏳 " .. tostring(view.player.nation)
+		chipSub2.Text = if c.origin then c.origin.name else ""
+		local face = portraitImg(chip, c.portrait, 78, 96)
 		if not face then
 			local nid = nil
 			for id, n in PortData.Nations do
@@ -6487,10 +6425,10 @@ end
 					nid = id
 				end
 			end
-			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 90, 62)
-			face.Position = UDim2.fromOffset(7, 22)
+			face = require(Shared:WaitForChild("Flags")).build(chip, nid, 78, 56)
+			face.Position = UDim2.fromOffset(7, 26)
 		else
-			face.Position = UDim2.fromOffset(7, 7)
+			face.Position = UDim2.fromOffset(7, 5)
 		end
 		face.Name = "ChipFace"
 	end
@@ -6539,7 +6477,7 @@ end
 		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
 		if step == "name" then
 			openDlg({ speaker = "길드 서기", role = role, input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
-				text = "처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
+				text = "(배에서 내리는 당신에게 상인 길드의 서기가 다가온다) 처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
 				function(v)
 					local r = call("IntroName", { name = v })
 					if r and r.ok then
@@ -6579,16 +6517,90 @@ end
 		end
 	end
 
+	-- 오프닝 이벤트 장면: 시작 항구에 닿자마자 3인칭 서술로 이야기를 열고, 곧바로 이름·동료·초상 안내로 이어진다
+	function H.openingScene()
+		local pro = require(Shared:WaitForChild("Narrative")).Prologues[chosenNation]
+		local portName = view and view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].name or "항구"
+		openDlg({ speaker = "이야기", role = (pro and pro.title) or ("프롤로그 · " .. portName),
+			text = (pro and pro.text) or (portName .. " 부두에 새 선장이 첫발을 디딘다."), button = "항해를 시작한다" },
+			function()
+				closeDlg()
+				Sfx.play("sfx_fanfare", 0.5)
+				H.openingPending = false
+				return true
+			end)
+	end
+
+	-- 첫걸음 안내 띠: 지금 할 일을 한 줄로 보여 준다 (끝나면 사라진다)
+	local goalGui = overlayGui("TutorialGoal", 11)
+	local goalBar = Instance.new("TextButton")
+	goalBar.AnchorPoint = Vector2.new(0.5, 0)
+	goalBar.Position = UDim2.new(0.5, 0, 0, 6)
+	goalBar.Size = UDim2.fromOffset(430, 28)
+	goalBar.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	goalBar.BackgroundTransparency = 0.1
+	goalBar.AutoButtonColor = false
+	goalBar.Font = Enum.Font.GothamBold
+	goalBar.TextSize = 13
+	goalBar.TextColor3 = Color3.fromRGB(246, 208, 130)
+	goalBar.Text = ""
+	goalBar.Visible = false
+	goalBar.Parent = goalGui
+	corner(goalBar, 14)
+	do
+		local gs = Instance.new("UIStroke")
+		gs.Color = BRASS
+		gs.Thickness = 1.5
+		gs.Parent = goalBar
+	end
+	goalBar.Activated:Connect(function()
+		H.tutorialHidden = true
+	end)
+	local function refreshGoal()
+		local c = view and view.captain
+		if not c or newGameMode or H.tutorialHidden or H.openingPending then
+			goalBar.Visible = false
+			return
+		end
+		local p, ship = view.player, view.ship
+		local sailed = p and (p.day or 0) > 0
+		local goals = {
+			{ done = c.step ~= "name", text = "상인 길드 서기에게 이름을 올리세요" },
+			{ done = c.step == "portrait" or c.step == "done", text = "주점 동료를 맞이하세요" },
+			{ done = c.step == "done", text = "떠돌이 화가에게 초상을 받으세요" },
+			{ done = sailed or (ship and ship.cargoUsed or 0) > 0, text = "교역 탭에서 이 항구의 특산품을 사세요" },
+			{ done = sailed, text = "지도 탭에서 다른 항구로 출항하세요" },
+		}
+		local n, next_ = 0, nil
+		for _, g in goals do
+			if g.done then n += 1 elseif not next_ then next_ = g end
+		end
+		if not next_ then
+			H.tutorialHidden = true
+			goalBar.Visible = false
+			return
+		end
+		goalBar.Visible = main.Visible
+		goalBar.Text = string.format("▶ 첫걸음 %d/%d · %s  (눌러서 닫기)", n, #goals, next_.text)
+	end
+
 	task.spawn(function()
 		local last = nil
+		local openingShown = false
 		while true do
 			task.wait(0.7)
 			pcall(refreshChip)
+			pcall(refreshGoal)
+			if H.openingPending and not openingShown and view and not newGameMode and not sceneHold and not dlg and main.Visible then
+				openingShown = true
+				pcall(H.openingScene)
+			end
+			if not H.openingPending then
+				openingShown = false
+			end
 			local c = view and view.captain
 			if c and not newGameMode and not sceneHold and not dlg and c.step ~= "done" then
-				local want = (c.step == "name" and main.Visible and (currentTab == "trade" or currentTab == "harbor"))
-					or (c.step == "companion" and main.Visible and (currentTab == "quest" or currentTab == "explore" or currentTab == "battle"))
-					or (c.step == "portrait" and main.Visible)
+				local want = main.Visible and not H.openingPending
 				if want and last ~= c.step then
 					last = c.step
 					task.wait(0.4)
