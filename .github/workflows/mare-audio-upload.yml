@@ -63,8 +63,37 @@ jobs:
           git config user.name 'mare-audio-upload'
           git config user.email 'actions@users.noreply.github.com'
           git add roblox-games/mare-essentia/audio/manifest.json roblox-games/mare-essentia/audio/uploaded.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau
-          # 원본 다운로드·해시 검증 후 생성된 실제 CC0 OGG도 동일한 기존 PR에 담는다.
-          node --input-type=module -e 'import fs from "node:fs"; import {execFileSync} from "node:child_process"; const dir="roblox-games/mare-essentia/audio"; const m=JSON.parse(fs.readFileSync(dir+"/manifest.json","utf8")); const paths=m.tracks.filter(t=>t.license==="CC0-1.0").map(t=>dir+"/"+t.file).filter(p=>fs.existsSync(p)); if(paths.length)execFileSync("git",["add","--",...paths]); console.log("AUDIO_BINARIES_STAGED",paths.length);'
+          # 다운로드·변환된 실제 OGG를 Git LFS 포인터가 아닌 일반 Git 바이너리로 저장한다.
+          # 업로드 영수증의 SHA-256과 작업트리/스테이징 바이너리 모두 일치해야 PR을 생성한다.
+          node --input-type=module <<'AUDIO_ASSET_VERIFY'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          const base='roblox-games/mare-essentia/audio/';
+          const manifest=JSON.parse(fs.readFileSync(base+'manifest.json','utf8'));
+          const receipts=JSON.parse(fs.readFileSync(base+'uploaded.json','utf8'));
+          const paths=[];
+          for(const track of manifest.tracks.filter(track=>track.license==='CC0-1.0')){
+            const file=base+track.file;
+            if(!fs.existsSync(file))throw Error('AUDIO_BINARY_MISSING '+track.name);
+            const bytes=fs.readFileSync(file);
+            if(bytes.subarray(0,4).toString()!=='OggS')throw Error('AUDIO_BINARY_NOT_OGG '+track.name);
+            const sha=crypto.createHash('sha256').update(bytes).digest('hex');
+            const receipt=receipts[track.name];
+            if(!receipt?.granted || receipt.sha256!==sha || !/^[1-9][0-9]*$/.test(String(receipt.assetId||'')))
+              throw Error('AUDIO_BINARY_UPLOAD_RECEIPT_MISMATCH '+track.name);
+            paths.push(file);
+          }
+          // 복구 대상 12개가 과거 LFS 포인터였더라도 새로 검증된 실제 OGG 바이트를 스테이징한다.
+          if(paths.length)execFileSync('git',['-c','filter.lfs.clean=cat','add','--',...paths]);
+          for(const file of paths){
+            const staged=execFileSync('git',['show',':'+file],{maxBuffer:12*1024*1024});
+            const actual=fs.readFileSync(file);
+            if(staged.subarray(0,4).toString()!=='OggS' || !staged.equals(actual))
+              throw Error('AUDIO_GIT_STAGED_POINTER_OR_MISMATCH '+file);
+          }
+          console.log('AUDIO_REAL_BINARIES_STAGED '+paths.length);
+          AUDIO_ASSET_VERIFY
           if git diff --cached --quiet; then echo 'AUDIO_IDS_ALREADY_CURRENT'; exit 0; fi
           branch="assets/mare-audio-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git switch -c "$branch"
