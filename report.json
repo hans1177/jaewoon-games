@@ -1,20 +1,20 @@
 {
- "sourceRevision": "38c988fd029804ba8e285fde1bff60a593a7e298",
+ "sourceRevision": "9d0477f4ee1d49feb5d7b07f0e8d1bed45f73345",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
    "step": 2,
-   "ctx": "Client",
-   "out": "build ok=true nil\ntext"
+   "capture": "ap_game",
+   "files": 1
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "Workspace.Terrain Terrain size=2044, 252, 2044 pos=0, 0, 0 col=0.639216, 0.635294, 0.647059 mat=Enum.Material.Plastic\nWorkspace.PortScene.Ground Part size=2048, 4, 2048 pos=-1280, -2, 0 col=0.737255, 0.729412, 0.635294 mat=Enum.Material.Grass\nWorkspace.PortScene.Part Part size=1400, 4, 1000 pos=430, -12, 0 col=0.690196, 0.627451, 0.470588 mat=Enum.Material.Sand\nWorkspace.PortScene.Part Part size=1300, 1, 1000 pos=670, 0.30000001192092896, 0 col=0.184314, 0.32549, 0.427451 mat=Enum.Material.Glass\nWorkspace.PortScene.SafetyFloor Part size=622, 2, 880 pos=-289, -1, 0 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1, 40, 900 pos=-600, 18, 0 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1200, 40, 1 pos=0, 18, 440 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1200, 40, 1 pos=0, 18, -440 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nterrainEmpty=-32000, -32000, -32000; 32000, 32000, 32000\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -34,8 +34,8 @@
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 0,
-  "capturedFrames": 0,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
