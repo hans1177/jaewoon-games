@@ -1,100 +1,15 @@
 {
- "sourceRevision": "7fc666a6ba87c33ff88e22ed82e1aa6826cc94f9",
+ "sourceRevision": "5bfb5f3dd3898d05382f1ca7829c17df1ba8b617",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "LAB ok R15NPC\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "LABPOSE pose_00_idle\ntext"
-  },
-  {
-   "step": 5,
-   "capture": "pose_00_idle",
-   "files": 1
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "LABPOSE pose_01_walk\ntext"
-  },
-  {
-   "step": 8,
-   "capture": "pose_01_walk",
-   "files": 1
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "LABPOSE pose_02_walk\ntext"
-  },
-  {
-   "step": 11,
-   "capture": "pose_02_walk",
-   "files": 1
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "LABPOSE pose_03_walk\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "pose_03_walk",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "LABPOSE pose_04_walk\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "pose_04_walk",
-   "files": 1
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "LABPOSE pose_05_run\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "pose_05_run",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "LABPOSE pose_06_run\ntext"
-  },
-  {
-   "step": 23,
-   "capture": "pose_06_run",
-   "files": 1
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "LABPOSE pose_07_attack\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "pose_07_attack",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "LABPOSE sit\ntext"
-  },
-  {
-   "step": 29,
-   "capture": "pose_08_sit",
-   "files": 1
+   "out": "OBJ MareEssentiaGui.Hud Frame vis=false 0,0 1136x322 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame Frame vis=true 8,8 262x114 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,10 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,33 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,56 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 80,84 130x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.Frame Frame vis=true 80,84 130x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,93 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,11 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,34 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,57 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,94 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 15,17 56x82 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,121 48x18 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,140 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,159 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace Frame vis=true 17,40 52x34 bgT=0 stroke=true\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 17,40 52x34 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 27,46 21x21 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 32,48 18x18 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 48,54 6x6 bgT=0 stroke=false\ntext"
   }
  ],
  "errors": [],
@@ -105,17 +20,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 19,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 30,
-  "completedSteps": 30,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 9,
-  "capturedFrames": 9,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
