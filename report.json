@@ -1,170 +1,140 @@
 {
- "sourceRevision": "aa28170a64811395300c41e3bf972e2935139b4c",
+ "sourceRevision": "7d9b6cb62f56754243039b1e1c2f4149083abe97",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 6,
-   "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
-  },
-  {
-   "step": 8,
-   "capture": "f_trade",
+   "step": 7,
+   "capture": "01_top",
    "files": 1
   },
   {
-   "step": 9,
+   "step": 8,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=114 issues=0\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
+   "capture": "02_plaza",
+   "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "killed=true\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 12,
-   "ctx": "Client",
-   "out": "DEV Tab route\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "f_route",
+   "step": 13,
+   "capture": "03_street",
    "files": 1
   },
   {
-   "step": 15,
+   "step": 14,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=767 issues=0\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 16,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
+   "capture": "04_dock",
+   "files": 1
   },
   {
    "step": 17,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
+   "step": 19,
+   "capture": "05_aerial",
    "files": 1
   },
   {
-   "step": 21,
+   "step": 20,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=146 issues=0\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
+   "capture": "06_backstreet",
+   "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
   },
   {
    "step": 26,
-   "capture": "f_quest",
-   "files": 1
+   "ctx": "Client",
+   "out": "parts=1925 meshparts=1687 models=1764 houses=11\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=236 issues=0\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=4.999998092651367\ntext"
   },
   {
    "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
   },
   {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
+   "step": 31,
+   "capture": "08_harbor_npc_sparring_02",
    "files": 1
   },
   {
    "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=469 issues=0\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
   },
   {
    "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
   },
   {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
+   "step": 37,
+   "capture": "08_harbor_npc_sparring_05",
    "files": 1
   },
   {
    "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=131 issues=0\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
   },
   {
    "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "capture": "08_harbor_npc_sparring_08",
+   "files": 1
   }
  ],
  "errors": [],
@@ -179,13 +149,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
