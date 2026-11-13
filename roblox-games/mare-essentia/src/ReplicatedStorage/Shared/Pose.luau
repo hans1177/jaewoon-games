@@ -68,6 +68,8 @@ local Players = game:GetService("Players")
 local r15Template = nil
 local r15Unavailable = false
 local rigMotors = setmetatable({}, { __mode = "k" })
+-- R15 모션 전환: 게임 데이터에 저장하지 않는 NPC별 관절 보간 상태.
+local r15ActionBlends = setmetatable({}, { __mode = "k" })
 
 -- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
 -- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
@@ -625,8 +627,24 @@ function Pose.makeR15Action(model, state, progress, t)
 	if not m then return false end
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 then return false end
+	-- 잘못된 동작 요청이 들어와도 기존 관절 자세를 지우지 않는다.
+	if state ~= "idle" and state ~= "walk" and state ~= "run" and state ~= "attack"
+		and state ~= "shoot" and state ~= "reload" and state ~= "guard"
+		and state ~= "hurt" and state ~= "cheer" and state ~= "talk" then
+		return false
+	end
 	local p = math.clamp(tonumber(progress) or 0, 0, 1)
 	local time = tonumber(t) or 0
+	local blend = r15ActionBlends[model]
+	if not blend then
+		blend = { state = state, applied = {} }
+		r15ActionBlends[model] = blend
+	elseif blend.state ~= state then
+		-- 이전 프레임의 실제 관절 자세에서 새 동작으로 부드럽게 이어진다.
+		blend.from = table.clone(blend.applied)
+		blend.changedAt = time
+		blend.state = state
+	end
 	local A = CFrame.Angles
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
@@ -692,9 +710,20 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.rightArm, A(-0.7 + math.sin(time * 3) * 0.3, 0, -0.2))
 		set(m.rightElbow, A(-0.6, 0, 0))
 		set(m.neck, A(0, math.sin(time) * 0.16, 0))
-	else
-		return false
 	end
+	-- 히트/공격은 반응성을 유지하고, 일반 자세만 조금 더 길게 연결한다.
+	local duration = if state == "attack" or state == "hurt" then 0.10 else 0.18
+	local elapsed = if blend.from then math.clamp((time - blend.changedAt) / duration, 0, 1) else 1
+	local eased = elapsed * elapsed * (3 - 2 * elapsed)
+	for _, joint in m do
+		if joint and joint:IsA("Motor6D") then
+			if blend.from then
+				joint.Transform = (blend.from[joint] or CFrame.identity):Lerp(joint.Transform, eased)
+			end
+			blend.applied[joint] = joint.Transform
+		end
+	end
+	if elapsed >= 1 then blend.from = nil end
 	return true
 end
 
