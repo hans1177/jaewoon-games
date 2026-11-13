@@ -5230,8 +5230,13 @@ export function runVibe2AutoPlanner({
   const robloxDistillationLedger=readJson(resolvedRobloxDistillationFile,{version:1,records:[]});
   const robloxPlaybooks=readJson(path.join(repoRoot,'company-learning','vibe3-task-playbooks.json'),{});
   const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
+  // [오너 웹 자동개발 중지] 무거운 작업 계획보다 먼저 기존 큐의 불필요한 웹 자동개발을 덜어낸다.
+  // 원래 queueBefore와 마지막 계획 결과의 차이는 기존 저장 비교기에서 검증·영속화한다.
+  const planningQueue=process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1'
+    ?synchronizeOwnerDevelopmentHolds(queueBefore,centralPresentationPolicy(repoRoot)||{})
+    :queueBefore;
   const webTesterState=readJson(path.join(path.dirname(path.resolve(resolvedQueueFile)),'tester-debug-tickets.json'),{});
-  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:{...readJson(developmentQueueFile,{items:[]}),webPlaytestObservations:webTesterState.webPlaytestObservations||[]},queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks,runnerPressure:readJson(resolvedControlFile,{})});
+  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:{...readJson(developmentQueueFile,{items:[]}),webPlaytestObservations:webTesterState.webPlaytestObservations||[]},queue:planningQueue,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks,runnerPressure:readJson(resolvedControlFile,{})});
   if(ownerRobloxPatch){
     // 기존 중앙 문서 네 개가 검증되기 전에는 큐도 변경하지 않는다.
     const centralFiles=['platform-release-roadmap.json','company-log-map.json',
