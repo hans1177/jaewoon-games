@@ -28,8 +28,9 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
   if(!match)return false;
   if(match===active)return true;
   const duration=Number.isFinite(blendSeconds)?Math.max(0,Math.min(.5,blendSeconds)):.15;
-  match.reset().fadeIn(duration).play();
-  if(active)active.fadeOut(duration);
+  // [메인: 동작 혼합] 원본 클립 전환 시 이전 페이드 잔여값을 지우고 실제 교차 혼합한다.
+  match.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();
+  if(active){if(duration>0)match.crossFadeFrom(active,duration,true);else active.stop();}
   active=match;return true;
  };
  const engine=new VibeMotionEngine(design,{play});
