@@ -1,0 +1,65 @@
+[
+  {
+    "type": "wait",
+    "ms": 35000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() require(RS.Shared.PortScene).build({portId='lisbon',portName='Lisbon',shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster','palace'},storyCount=1,companions={}},function() end) end) assert(ok,'PORT_BUILD_FAILED '..tostring(err)) local f=workspace:FindFirstChild('PortScene') assert(f and f:GetAttribute('R15SparringTest')==true,'SPARRING_NOT_ACTIVE') return 'SPARRING_ACTIVE'"
+  },
+  {
+    "type": "wait",
+    "ms": 4000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=assert(workspace:FindFirstChild('PortScene'),'NO_PORT_SCENE') local a={} for _,m in ipairs(f:GetDescendants()) do if m:IsA('Model') and m.Name=='Villager' then a[#a+1]=m end end assert(#a>=2,'NO_TWO_VILLAGERS') local bestA,bestB,best= nil,nil,math.huge for i=1,#a do for j=i+1,#a do local d=(a[i]:GetPivot().Position-a[j]:GetPivot().Position).Magnitude if d<best then best=d bestA=a[i] bestB=a[j] end end end assert(bestA and bestB and best<8,'SPARRING_PAIR_NOT_FOUND') local center=(bestA:GetPivot().Position+bestB:GetPivot().Position)*0.5 local camera=workspace.CurrentCamera camera.CameraType=Enum.CameraType.Scriptable camera.FieldOfView=42 game:GetService('RunService'):BindToRenderStep('MareSparringShot',Enum.RenderPriority.Last.Value+1,function() if bestA.Parent and bestB.Parent then local mid=(bestA:GetPivot().Position+bestB:GetPivot().Position)*0.5 camera.CameraType=Enum.CameraType.Scriptable camera.CFrame=CFrame.lookAt(mid+Vector3.new(0,6,15),mid+Vector3.new(0,2.8,0)) camera.FieldOfView=42 end end) return 'SPARRING_CAMERA_PAIR_DISTANCE='..tostring(best)"
+  },
+  {
+    "type": "wait",
+    "ms": 1500
+  },
+  {
+    "type": "capture",
+    "name": "sparring_01_guard"
+  },
+  {
+    "type": "wait",
+    "ms": 500
+  },
+  {
+    "type": "capture",
+    "name": "sparring_02_attack"
+  },
+  {
+    "type": "wait",
+    "ms": 500
+  },
+  {
+    "type": "capture",
+    "name": "sparring_03_hit"
+  },
+  {
+    "type": "wait",
+    "ms": 500
+  },
+  {
+    "type": "capture",
+    "name": "sparring_04_motion"
+  },
+  {
+    "type": "wait",
+    "ms": 500
+  },
+  {
+    "type": "capture",
+    "name": "sparring_05_motion"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "game:GetService('RunService'):UnbindFromRenderStep('MareSparringShot') return 'SPARRING_CAPTURE_DONE'"
+  }
+]
