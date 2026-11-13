@@ -185,6 +185,7 @@ test('canonical Gemini pool failures defer only verified two-slot provider coold
     'OPENROUTER:google/gemma-4-31b-it:free:HTTP_429:NEXT_RETRY_AT='+resumeAt,
     prefix+'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_400:NEXT_RETRY_AT='+resumeAt,
     prefix+'gemini-3.8-flash:HTTP_429:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3x8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt,
     prefix+'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:CONTENT_POLICY_BLOCKED:NEXT_RETRY_AT='+resumeAt
   ];
   for(const [expected,messages] of [[true,allowed],[false,denied]]){
