@@ -2727,7 +2727,7 @@ function PortScene.build(info, onFacility)
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
 					local pos = Vector3.new(w.cx + math.cos(a) * w.r, 0, w.cz + math.sin(a) * w.r)
-					local hop = math.abs(math.sin(now * 7 + w.phase)) * 0.25
+					local hop = 0
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
 					Pose.makeR15Action(w.model, "walk", 0, now * w.speed + w.phase)
@@ -2751,7 +2751,7 @@ function PortScene.build(info, onFacility)
 				end
 				local rot = w.base - w.base.Position
 				local pos = w.base.Position + w.base.LookVector * d
-				local bob = if moving then math.abs(math.sin(now * 6 + w.phase)) * 0.15 else 0
+				local bob = 0 -- 위아래 흔들림은 걸음 모션(Pose)이 발걸음과 맞춰 처리한다
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
 				Pose.makeR15Action(w.model, if moving then "walk" else "idle", 0, now * w.speed + w.phase)
 				if not moving then
@@ -3144,7 +3144,7 @@ function PortScene.build(info, onFacility)
 					end
 					local moving = dist > 1.2
 					local faceDir = if moving then delta.Unit else look
-					local bob = if moving then math.abs(math.sin(now * 7 + f.phase)) * 0.12 else 0
+					local bob = 0
 					local at = f.pos + Vector3.new(0, f.baseY + bob, 0)
 					f.model:PivotTo(CFrame.lookAt(at, at + faceDir))
 					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, now + f.phase)
