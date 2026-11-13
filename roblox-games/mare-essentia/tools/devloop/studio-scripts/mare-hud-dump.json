@@ -28,6 +28,6 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local P=game.Players.LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('GuiObject') and d.Visible and d.AbsolutePosition.X<330 and d.AbsolutePosition.Y<190 and d.AbsoluteSize.X>20 then local st=d:FindFirstChildOfClass('UIStroke') local path=d:GetFullName():gsub('Players.[^.]+.PlayerGui.','') table.insert(out,'OBJ '..path..' '..d.ClassName..' '..math.floor(d.AbsolutePosition.X)..','..math.floor(d.AbsolutePosition.Y)..' '..math.floor(d.AbsoluteSize.X)..'x'..math.floor(d.AbsoluteSize.Y)..' bgT='..d.BackgroundTransparency..' stroke='..tostring(st~=nil)) end end return table.concat(out,'\\n')"
+  "code": "local P=game.Players.LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('GuiObject') and d.Visible and d.AbsoluteSize.X>4 then local path=d:GetFullName():gsub('Players.[^.]+.PlayerGui.','') if path:find('MareEssentiaGui.Hud') and d.AbsolutePosition.X<340 and d.AbsolutePosition.Y<200 then local st=d:FindFirstChildOfClass('UIStroke') table.insert(out,'OBJ '..path..' '..d.ClassName..' '..math.floor(d.AbsolutePosition.X)..','..math.floor(d.AbsolutePosition.Y)..' '..math.floor(d.AbsoluteSize.X)..'x'..math.floor(d.AbsoluteSize.Y)..' bgT='..d.BackgroundTransparency..' stroke='..tostring(st~=nil)) end end end return table.concat(out,'\\n')"
  }
 ]
