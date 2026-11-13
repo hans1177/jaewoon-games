@@ -31,8 +31,14 @@ export function recordWebVibeRecoveryFailure(queue,id,{now=new Date().toISOStrin
   // 유틸: 실제 worker의 무료 제공자 제한만 대기 처리한다. 인증·정책·소스 오류는 기존 제한 유지.
   const providerLine=String(failureLog).split(/\r?\n/).find(line=>line.startsWith(
     'WEB_VIBE_WORKER_BLOCKED=GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'));
-  const transient=providerLine&&/:(?:HTTP_(?:429|500|502|503|504)|COOLDOWN|TRANSPORT_OR_TIMEOUT)(?:,|:|$)/.test(providerLine)
-    &&! /:(?:HTTP_(?:400|401|402|403|404)|EMPTY_OUTPUT)(?:,|:|$)/.test(providerLine);
+  // [무료 공급자] Gemini 두 슬롯이 일시 장애일 때만 소스 재시도를 보존한다.
+  // 다른 무료 경로의 HTTP 400은 Gemini 한도 실패를 소스 오류로 바꾸지 않는다.
+  const transientGeminiStatuses='(?:HTTP_(?:429|500|502|503|504)|COOLDOWN|TRANSPORT_OR_TIMEOUT)';
+  const geminiTransient=providerLine&&['gemini-3.8-flash','gemini-3.5-flash-lite'].every(model=>
+    new RegExp('(?:^|[:,])'+model+':'+transientGeminiStatuses+'(?=,|:NEXT_RETRY_AT=|$)').test(providerLine));
+  const transient=geminiTransient
+    &&!/(?:AUTH_OR_BILLING_BLOCKED|CONTENT_POLICY_BLOCKED|NONZERO_COST_RESPONSE_BLOCKED)/.test(providerLine)
+    &&! /:(?:HTTP_(?:401|402|403)|EMPTY_OUTPUT)(?:,|:|$)/.test(providerLine);
   if(transient){
     const advertised=Date.parse(providerLine.match(/:NEXT_RETRY_AT=([^\s]+)/)?.[1]||'');
     const nextAt=Number.isFinite(advertised)&&advertised>at?advertised:at+30*60_000;
