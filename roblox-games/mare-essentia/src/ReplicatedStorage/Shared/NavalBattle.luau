@@ -1095,7 +1095,7 @@ function NavalBattle.play(opts)
 				if focused then ensureScene() elseif view then releaseScene() end
 				-- [모션] 확대 도판은 실제 렌더 프레임마다, 나머지 카드는 최대 30fps로 갱신한다.
 				-- 실제 갱신율은 기기 성능과 Roblox 렌더링에 따른다.
-				if not focused and elapsed - sampled < 1 / 30 then return end
+				if not focused and elapsed - sampled < 1 / 30 - 0.002 then return end
 				sampled = elapsed
 				local motion = spec.motion or "wind"
 				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
@@ -1174,11 +1174,11 @@ function NavalBattle.play(opts)
 		local focusFrame = Instance.new("Frame")
 		focusFrame.Name = "NavalCardCodexPreview"
 		focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-		focusFrame.Position = UDim2.fromScale(0.5, 0.415)
-		focusFrame.Size = UDim2.fromScale(0.74, 0.57)
+		focusFrame.Position = UDim2.fromScale(0.5, 0.5)
+		focusFrame.Size = UDim2.fromScale(0.9, 0.82)
 		local focusBounds = Instance.new("UISizeConstraint")
-		focusBounds.MaxSize = Vector2.new(355, 490)
-		focusBounds.MinSize = Vector2.new(190, 235)
+		focusBounds.MaxSize = Vector2.new(430, 620)
+		focusBounds.MinSize = Vector2.new(145, 210)
 		focusBounds.Parent = focusFrame
 		local focusRatio = Instance.new("UIAspectRatioConstraint")
 		focusRatio.AspectRatio = 0.69
@@ -1190,7 +1190,23 @@ function NavalBattle.play(opts)
 		focusFrame.ClipsDescendants = true
 		focusFrame.Visible = false
 		focusFrame.ZIndex = 50
+		-- [확대 카드] 어두운 배경을 터치하면 선택을 취소하고 기존 카드 대전으로 돌아간다.
+		local focusShade = Instance.new("TextButton")
+		focusShade.Name = "CardFocusBackdrop"
+		focusShade.Size = UDim2.fromScale(1, 1)
+		focusShade.BackgroundColor3 = Color3.new(0, 0, 0)
+		focusShade.BackgroundTransparency = 1
+		focusShade.BorderSizePixel = 0
+		focusShade.Text = ""
+		focusShade.AutoButtonColor = false
+		focusShade.Visible = false
+		focusShade.ZIndex = 49
+		focusShade.Parent = g
 		focusFrame.Parent = g
+		local focusScale = Instance.new("UIScale")
+		focusScale.Scale = 1
+		focusScale.Parent = focusFrame
+		local focusTween
 		local focusEdge = frameEdge(focusFrame, Color3.fromRGB(224, 179, 99), 7)
 		focusEdge.Thickness = 3
 		local focusPaper = Instance.new("ImageLabel")
@@ -1211,6 +1227,15 @@ function NavalBattle.play(opts)
 		focusArtwork.ClipsDescendants = true
 		focusArtwork.ZIndex = 51
 		focusArtwork.Parent = focusFrame
+		local focusTap = Instance.new("TextButton")
+		focusTap.Name = "UseEnlargedCard"
+		focusTap.Size = UDim2.fromScale(1, 1)
+		focusTap.BackgroundTransparency = 1
+		focusTap.BorderSizePixel = 0
+		focusTap.Text = ""
+		focusTap.AutoButtonColor = false
+		focusTap.ZIndex = 59
+		focusTap.Parent = focusArtwork
 		local focusImage = Instance.new("ImageLabel")
 		focusImage.AnchorPoint = Vector2.new(0.5, 0.5)
 		focusImage.Position = UDim2.fromScale(0.5, 0.5)
@@ -1272,13 +1297,25 @@ function NavalBattle.play(opts)
 				end
 				focusMotion = nil
 			end
+			if focusTween then focusTween:Cancel(); focusTween = nil end
 			if not card then
 				focusArtwork:SetAttribute("ArtFocused", false)
 				focusFrame.Visible = false
+				focusShade.Visible = false
 				return
 			end
+			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
+			local screenSize = bg.AbsoluteSize
+			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
+			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
+			focusScale.Scale = 0.78
+			focusShade.BackgroundTransparency = 1
+			focusShade.Visible = true
 			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
+			TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play()
+			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
+			focusTween:Play()
 			local meta = CARD_STAGE[card.id]
 			local artKey = if meta then (if meta.newArt and AssetIds[meta.newArt] then meta.newArt else meta.art) else CARD_SEA
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
@@ -1293,7 +1330,7 @@ function NavalBattle.play(opts)
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
 			table.insert(cardMotions, focusMotion)
 		end
-		focusClose.Activated:Connect(function()
+		local function closeCardCodex()
 			if selected and selected.Parent then
 				selected.Rotation = 0
 				selected.UIStroke.Color = brass
@@ -1302,8 +1339,13 @@ function NavalBattle.play(opts)
 			selected = nil
 			selectedPlay = nil
 			showCardCodex(nil)
-		end)
+		end
+		focusClose.Activated:Connect(closeCardCodex)
+		focusShade.Activated:Connect(closeCardCodex)
 		focusUse.Activated:Connect(function()
+			if selectedPlay then selectedPlay() end
+		end)
+		focusTap.Activated:Connect(function()
 			if selectedPlay then selectedPlay() end
 		end)
 		render = function()
