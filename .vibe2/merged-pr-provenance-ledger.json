@@ -229295,11 +229295,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6f84f4edb2174102ed475c99",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13084",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "bdf99aeeaff506788628fa83d9de1d73d316e2a3",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13084,
+        "baseBranch": "main",
+        "headBranch": "qa-log-20261113-1530z",
+        "baseSha": "bdf99aeeaff506788628fa83d9de1d73d316e2a3",
+        "headSha": "d3267f37eb83189f713f9b3fabe8a4766f10dfbe",
+        "mergeCommitSha": "d8839ef9d8bc8fb0e8711b577b93d4380e0ca8db",
+        "mergedAt": "2026-11-13T15:24:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "75bb113ef076ffdfb0dbe186b05f75eab4d4a75106ebeb952f002aff74e872b7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "qa-log-20261113-1530z",
+        "candidateSha": "d3267f37eb83189f713f9b3fabe8a4766f10dfbe"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 4,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "assets/shared/tycoon/after-school.ogg",
+          "assets/shared/tycoon/busy-cafe.ogg",
+          "assets/shared/tycoon/purchase.ogg",
+          "assets/shared/tycoon/reward.ogg",
+          "assets/shared/tycoon/school-bell.ogg",
+          "assets/shared/tycoon/school-day.ogg",
+          "assets/shared/tycoon/ui-tap.ogg",
+          "assets/shared/tycoon/upgrade.ogg",
+          "qa-log/fantasy-survival.md",
+          "qa-log/mare-essentia.md",
+          "roblox-games/mare-essentia/assets/animals/chicken.fbx",
+          "roblox-games/mare-essentia/assets/animals/cow.fbx",
+          "roblox-games/mare-essentia/assets/animals/dog-pug.fbx",
+          "roblox-games/mare-essentia/assets/animals/horse.fbx",
+          "roblox-games/mare-essentia/assets/animals/llama.fbx",
+          "roblox-games/mare-essentia/assets/animals/pig.fbx",
+          "roblox-games/mare-essentia/assets/animals/sheep.fbx"
+        ],
+        "codingRelevantFiles": [
+          "assets/shared/tycoon/after-school.ogg",
+          "assets/shared/tycoon/busy-cafe.ogg",
+          "assets/shared/tycoon/purchase.ogg",
+          "assets/shared/tycoon/reward.ogg",
+          "assets/shared/tycoon/school-bell.ogg",
+          "assets/shared/tycoon/school-day.ogg",
+          "assets/shared/tycoon/ui-tap.ogg",
+          "assets/shared/tycoon/upgrade.ogg"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13084",
+        "merge-commit:d8839ef9d8bc8fb0e8711b577b93d4380e0ca8db",
+        "base-main:bdf99aeeaff506788628fa83d9de1d73d316e2a3"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1828
+    "total": 1829
   }
 }
