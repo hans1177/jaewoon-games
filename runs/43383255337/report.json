@@ -1,0 +1,56 @@
+{
+ "sourceRevision": "41418240b9de01ca6d852507090d4b1e5e2db45d",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "LAB miss=\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "lab_trees",
+   "files": 1
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "LAB miss=\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "lab_crops",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "LAB miss=\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "lab_animals",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 10,
+  "completedSteps": 10,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
+  "abortedEarly": false
+ }
+}
