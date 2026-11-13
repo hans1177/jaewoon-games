@@ -94,6 +94,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  # [오너 지시 2026-11-13] 웹게임 자동개발 중지. Roblox/학습/소스 유지.
+  VIBE2_WEB_AUTO_DEV_DISABLED: '1'
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
