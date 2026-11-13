@@ -66,6 +66,15 @@ local CARD_STAGE = {
 -- [지역별 오브젝트 도판] 기존 등록 그림과 카드 자체 스킬·장면 데이터를 그대로 연결한다.
 local function cardArtworkKey(card)
 	local spec = CARD_STAGE[card.id] or card.stage
+	-- [지역별 고유 카드] 승인·등록된 Image가 있으면 우선 적용, 없으면 원래 해역 도판을 유지한다.
+	local id = tostring(card.id or "")
+	local region, serial = string.match(id, "^([a-z][a-z])_(%d%d)$")
+	local slot = tonumber(serial)
+	if (region == "eu" or region == "ea" or region == "me" or region == "nw" or region == "af")
+		and slot and slot >= 1 and slot <= 30 then
+		local artwork = "CardArt/" .. id
+		if AssetIds[artwork] then return artwork end
+	end
 	if not spec then return CARD_SEA end
 	if spec.newArt and AssetIds[spec.newArt] then return spec.newArt end
 	return spec.art or CARD_SEA
