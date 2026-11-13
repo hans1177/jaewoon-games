@@ -15,6 +15,20 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('IntroName',{name='Tester'}) local b=r:InvokeServer('IntroCompanion',{}) return 'INTRO name='..tostring(a and a.ok)..' comp='..tostring(b and b.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Tab:trade') return 'DEV Tab trade'"
  },
  {
@@ -34,6 +48,11 @@
   "type": "luau",
   "ctx": "Client",
   "code": "return 'DEVRESULT '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
  },
  {
   "type": "luau",
@@ -61,6 +80,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Tab:yard') return 'DEV Tab yard'"
  },
  {
@@ -80,6 +104,11 @@
   "type": "luau",
   "ctx": "Client",
   "code": "return 'DEVRESULT '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
  },
  {
   "type": "luau",
@@ -107,6 +136,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Tab:codex') return 'DEV Tab codex'"
  },
  {
@@ -126,6 +160,11 @@
   "type": "luau",
   "ctx": "Client",
   "code": "return 'DEVRESULT '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
  },
  {
   "type": "luau",
