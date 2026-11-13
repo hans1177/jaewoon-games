@@ -2,6 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 GLB reload clears previous authored clips and mixer',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/if\(characterMotion\)\{characterMotion\.dispose\(\);characterMotion=null;\}/);
+ assert.match(preview,/clipNames\.length=0;clipDurations\.length=0;animationPicker\.replaceChildren\(\)/);
+ assert.match(preview,/previewClipElapsed=0;previewClipIndex=0;previewAutoCycle=false;previewManualMotion=false/);
+});
 test('Vibe 5.9 model switches replace stale animation selection listeners',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/animationPicker\.onchange=\(\)=>\{if\(characterMotion!==adapter\)return/);
