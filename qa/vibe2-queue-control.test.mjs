@@ -3939,3 +3939,39 @@ test('Unity OWNER_HOLD never reserves development capacity while Web and Roblox 
   assert.equal(batch.queue.tasks.find(task=>task.id==='held-unity').ownerDevelopmentHold,true);
   assert.equal(batch.queue.tasks.find(task=>task.id==='held-unity').status,'queued');
 });
+
+test('오너 웹게임 자동개발 중지는 막힌 웹 작업을 이력으로 보내고 로블록스·학습을 보존한다',()=>{
+  const previous=process.env.VIBE2_WEB_AUTO_DEV_DISABLED;
+  process.env.VIBE2_WEB_AUTO_DEV_DISABLED='1';
+  try{
+    const task=(id,target,department,status)=>({id,gameId:id,target,department,
+      type:department==='development'?'implementation':'research',status,goal:'existing work',
+      sourceRoot:target+'-games/'+id,responsibleFiles:['index.html'],evidence:[]});
+    const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+      {...task('web-blocked','web','development','blocked'),blocker:'OFFLINE_RECIPE_UNAVAILABLE'},
+      {...task('web-queued','web','development','queued'),ownerDirective:true},
+      {...task('web-running','web','development','running'),reservationId:'old-run:1',
+        reservationRunId:'old-run',reservedAt:'2026-11-13T00:00:00Z'},
+      task('web-research','web','learning','queued'),
+      task('roblox-cards','roblox','development','queued')
+    ]});
+    const synced=synchronizeOwnerDevelopmentHolds(queue,{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}},{catalog:{games:[]}});
+    for(const id of ['web-blocked','web-queued','web-running']){
+      const row=synced.tasks.find(item=>item.id===id);
+      assert.equal(row.status,'cancelled');
+      assert.equal(row.ownerDevelopmentHold,true);
+      assert.equal(row.blocker,'owner-web-auto-development-disabled');
+      assert.equal(row.reservationId,null);
+      assert.ok(row.evidence.includes('owner-web-auto-development-stop:2026-11-13'));
+    }
+    assert.equal(synced.tasks.find(item=>item.id==='web-research').status,'queued');
+    assert.equal(synced.tasks.find(item=>item.id==='roblox-cards').status,'queued');
+    const again=synchronizeOwnerDevelopmentHolds(synced,{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}},{catalog:{games:[]}});
+    assert.deepEqual(again.tasks.map(row=>[row.id,row.status,row.blocker]),synced.tasks.map(row=>[row.id,row.status,row.blocker]));
+    const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,lane:'game-primary',policy:{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}}});
+    assert.ok(batch.tasks.every(row=>row.target!=='web'));
+  }finally{
+    if(previous===undefined)delete process.env.VIBE2_WEB_AUTO_DEV_DISABLED;
+    else process.env.VIBE2_WEB_AUTO_DEV_DISABLED=previous;
+  }
+});
