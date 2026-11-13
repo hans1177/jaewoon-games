@@ -62,6 +62,15 @@ local CARD_STAGE = {
 	horn = { art="CardArt/event_royal_charter", prop={"Naval","flag-high"}, motion="command", scene="선단 군기 신호" },
 	decoy = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
 }
+
+-- [지역별 오브젝트 도판] 기존 등록 그림과 카드 자체 스킬·장면 데이터를 그대로 연결한다.
+local function cardArtworkKey(card)
+	local spec = CARD_STAGE[card.id] or card.stage
+	if not spec then return CARD_SEA end
+	if spec.newArt and AssetIds[spec.newArt] then return spec.newArt end
+	return spec.art or CARD_SEA
+end
+
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
@@ -893,7 +902,7 @@ function NavalBattle.play(opts)
 			painting.BackgroundTransparency = 1
 			painting.ScaleType = Enum.ScaleType.Crop
 			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
-			local artKey = (CARD_STAGE[c.id] and ((CARD_STAGE[c.id].newArt and AssetIds[CARD_STAGE[c.id].newArt] and CARD_STAGE[c.id].newArt) or CARD_STAGE[c.id].art)) or CARD_SEA
+			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
 			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
@@ -929,7 +938,7 @@ function NavalBattle.play(opts)
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
 		animateCardArt = function(art, image, card)
-			local spec = CARD_STAGE[card.id] or {}
+			local spec = CARD_STAGE[card.id] or card.stage or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local function template(key)
 				local folder = key and assets and assets:FindFirstChild(key[1])
@@ -1316,8 +1325,7 @@ function NavalBattle.play(opts)
 			TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play()
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
-			local meta = CARD_STAGE[card.id]
-			local artKey = if meta then (if meta.newArt and AssetIds[meta.newArt] then meta.newArt else meta.art) else CARD_SEA
+			local artKey = cardArtworkKey(card)
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusName.Text = card.name
 			local row = if card.row then BC.ROW_NAME[card.row] or "" else "전술"
@@ -1326,7 +1334,7 @@ function NavalBattle.play(opts)
 				elseif card.ability then ABIL_DETAIL[card.ability] or (ABIL[card.ability] or "")
 				elseif card.hero then "영웅 · 날씨와 소각의 영향을 받지 않음"
 				else "병종 상성을 고려해 전투 줄에 배치"
-			focusRule.Text = row .. strength .. "\n" .. description
+			focusRule.Text = row .. strength .. "\n" .. description .. (if card.lore then "\n" .. card.lore else "")
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
 			table.insert(cardMotions, focusMotion)
 		end
@@ -1458,7 +1466,7 @@ function NavalBattle.play(opts)
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
-				local kindText = if c.special then "전술" elseif c.hero then "영웅" elseif c.ability then (ABIL[c.ability] or "") else (ROW_ICON[c.row] or "")
+				local kindText = if c.category then c.category elseif c.special then "전술" elseif c.hero then "영웅" elseif c.ability then (ABIL[c.ability] or "") else (ROW_ICON[c.row] or "")
 				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
 				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
 				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
@@ -1480,7 +1488,7 @@ function NavalBattle.play(opts)
 				image.Size = UDim2.fromScale(1.17, 1.17)
 				image.BackgroundTransparency = 1
 				image.ScaleType = Enum.ScaleType.Crop
-				local artKey = (CARD_STAGE[c.id] and ((CARD_STAGE[c.id].newArt and AssetIds[CARD_STAGE[c.id].newArt] and CARD_STAGE[c.id].newArt) or CARD_STAGE[c.id].art)) or CARD_SEA
+				local artKey = cardArtworkKey(c)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
 				image.Parent = art
