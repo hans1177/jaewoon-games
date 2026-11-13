@@ -1,0 +1,45 @@
+[
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(0,-300,0)) end local old=workspace:FindFirstChild('AssetLab') if old then old:Destroy() end local f=Instance.new('Folder') f.Name='AssetLab' f.Parent=workspace local fl=Instance.new('Part') fl.Anchored=true fl.Size=Vector3.new(400,1,60) fl.Position=Vector3.new(0,-0.5,0) fl.Color=Color3.fromRGB(120,150,90) fl.Parent=f local lib=RS.MareAssets local names={'tree-oak','tree-pinedefaulta','tree-default-fall','plant-bush','tree','tree-high','tree-crooked','tree_large','tree_tiny','palm-bend','palm-detailed-straight'} local miss={} local x=-(#names-1)*7/2 for i,n in ipairs(names) do local found for _,g in ipairs(lib:GetChildren()) do local m=g:FindFirstChild(n) if m then found=m break end end if found and found:IsA('Model') then local m=found:Clone() for _,p in ipairs(m:GetDescendants()) do if p:IsA('BasePart') then p.Anchored=true end end m.Parent=f local cf,sz=m:GetBoundingBox() local s=8/math.max(sz.X,sz.Y,sz.Z) m:ScaleTo(s) cf,sz=m:GetBoundingBox() m:PivotTo(m:GetPivot()+Vector3.new(x-cf.Position.X,-(cf.Position.Y-sz.Y/2),-cf.Position.Z)) local t=Instance.new('Part') t.Anchored=true t.Transparency=1 t.Size=Vector3.new(1,1,1) t.Position=Vector3.new(x,10,0) t.Parent=f local bb=Instance.new('BillboardGui') bb.Size=UDim2.fromOffset(120,24) bb.AlwaysOnTop=true bb.Adornee=t bb.Parent=t local l=Instance.new('TextLabel') l.Size=UDim2.fromScale(1,1) l.BackgroundColor3=Color3.new(0,0,0) l.TextColor3=Color3.new(1,1,1) l.TextSize=14 l.Text=n..'/'..found.Parent.Name l.Parent=bb else miss[#miss+1]=n end x+=7 end local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=40 cam.CFrame=CFrame.lookAt(Vector3.new(0,5,96),Vector3.new(0,4,0)) return 'LAB miss='..table.concat(miss,',')"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "lab_trees"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(0,-300,0)) end local old=workspace:FindFirstChild('AssetLab') if old then old:Destroy() end local f=Instance.new('Folder') f.Name='AssetLab' f.Parent=workspace local fl=Instance.new('Part') fl.Anchored=true fl.Size=Vector3.new(400,1,60) fl.Position=Vector3.new(0,-0.5,0) fl.Color=Color3.fromRGB(120,150,90) fl.Parent=f local lib=RS.MareAssets local names={'crop-carrot','crop-melon','crop-pumpkin','crop-turnip','crops-cornstagec','crops-wheatstagea','crops-wheatstageb','cabbage','pumpkin','corn','rice','cauliflower','carrot','eggplant'} local miss={} local x=-(#names-1)*7/2 for i,n in ipairs(names) do local found for _,g in ipairs(lib:GetChildren()) do local m=g:FindFirstChild(n) if m then found=m break end end if found and found:IsA('Model') then local m=found:Clone() for _,p in ipairs(m:GetDescendants()) do if p:IsA('BasePart') then p.Anchored=true end end m.Parent=f local cf,sz=m:GetBoundingBox() local s=8/math.max(sz.X,sz.Y,sz.Z) m:ScaleTo(s) cf,sz=m:GetBoundingBox() m:PivotTo(m:GetPivot()+Vector3.new(x-cf.Position.X,-(cf.Position.Y-sz.Y/2),-cf.Position.Z)) local t=Instance.new('Part') t.Anchored=true t.Transparency=1 t.Size=Vector3.new(1,1,1) t.Position=Vector3.new(x,10,0) t.Parent=f local bb=Instance.new('BillboardGui') bb.Size=UDim2.fromOffset(120,24) bb.AlwaysOnTop=true bb.Adornee=t bb.Parent=t local l=Instance.new('TextLabel') l.Size=UDim2.fromScale(1,1) l.BackgroundColor3=Color3.new(0,0,0) l.TextColor3=Color3.new(1,1,1) l.TextSize=14 l.Text=n..'/'..found.Parent.Name l.Parent=bb else miss[#miss+1]=n end x+=7 end local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=40 cam.CFrame=CFrame.lookAt(Vector3.new(0,5,119),Vector3.new(0,4,0)) return 'LAB miss='..table.concat(miss,',')"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "lab_crops"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(0,-300,0)) end local old=workspace:FindFirstChild('AssetLab') if old then old:Destroy() end local f=Instance.new('Folder') f.Name='AssetLab' f.Parent=workspace local fl=Instance.new('Part') fl.Anchored=true fl.Size=Vector3.new(400,1,60) fl.Position=Vector3.new(0,-0.5,0) fl.Color=Color3.fromRGB(120,150,90) fl.Parent=f local lib=RS.MareAssets local names={'cow','horse','sheep','pig','llama','donkey','dog-pug','cat','chicken','elephant'} local miss={} local x=-(#names-1)*7/2 for i,n in ipairs(names) do local found for _,g in ipairs(lib:GetChildren()) do local m=g:FindFirstChild(n) if m then found=m break end end if found and found:IsA('Model') then local m=found:Clone() for _,p in ipairs(m:GetDescendants()) do if p:IsA('BasePart') then p.Anchored=true end end m.Parent=f local cf,sz=m:GetBoundingBox() local s=8/math.max(sz.X,sz.Y,sz.Z) m:ScaleTo(s) cf,sz=m:GetBoundingBox() m:PivotTo(m:GetPivot()+Vector3.new(x-cf.Position.X,-(cf.Position.Y-sz.Y/2),-cf.Position.Z)) local t=Instance.new('Part') t.Anchored=true t.Transparency=1 t.Size=Vector3.new(1,1,1) t.Position=Vector3.new(x,10,0) t.Parent=f local bb=Instance.new('BillboardGui') bb.Size=UDim2.fromOffset(120,24) bb.AlwaysOnTop=true bb.Adornee=t bb.Parent=t local l=Instance.new('TextLabel') l.Size=UDim2.fromScale(1,1) l.BackgroundColor3=Color3.new(0,0,0) l.TextColor3=Color3.new(1,1,1) l.TextSize=14 l.Text=n..'/'..found.Parent.Name l.Parent=bb else miss[#miss+1]=n end x+=7 end local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=40 cam.CFrame=CFrame.lookAt(Vector3.new(0,5,89),Vector3.new(0,4,0)) return 'LAB miss='..table.concat(miss,',')"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "lab_animals"
+ }
+]
