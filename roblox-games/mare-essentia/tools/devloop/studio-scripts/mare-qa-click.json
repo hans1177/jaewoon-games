@@ -598,5 +598,135 @@
   {
     "type": "capture",
     "name": "harbor_npc_sparring_08"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"idle\") return \"R15_MOTION_IDLE\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_idle"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"walk\") return \"R15_MOTION_WALK\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_walk"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"run\") return \"R15_MOTION_RUN\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_run"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"attack\") return \"R15_MOTION_ATTACK\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_attack"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"shoot\") return \"R15_MOTION_SHOOT\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_shoot"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"reload\") return \"R15_MOTION_RELOAD\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_reload"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"guard\") return \"R15_MOTION_GUARD\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_guard"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"hurt\") return \"R15_MOTION_HURT\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_hurt"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"cheer\") return \"R15_MOTION_CHEER\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_cheer"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"talk\") return \"R15_MOTION_TALK\""
+  },
+  {
+    "type": "wait",
+    "ms": 550
+  },
+  {
+    "type": "capture",
+    "name": "harbor_motion_talk"
   }
 ]
