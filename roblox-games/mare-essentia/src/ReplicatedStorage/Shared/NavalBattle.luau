@@ -606,6 +606,13 @@ function NavalBattle.play(opts)
 		local locale = string.lower(tostring(player.LocaleId or "en-us"))
 		local english = string.sub(locale, 1, 2) ~= "ko"
 		local function t(ko, en) return if english then en else ko end
+		local ABIL = { bond="결속", morale="사기", spy="첩자", medic="치료", armor="철갑", snipe="저격" }
+		local ABIL_DETAIL = {
+			bond="같은 병종 결속 · 최대 3배", morale="같은 줄 강화 · 동아시아 보너스",
+			spy="적진에 배치하고 카드 2장 확보 · 신대륙 3장", medic="버린 일반 카드 중 가장 강한 병종 복귀",
+			armor="폭풍·안개 등 날씨 감점 무효", snipe="조건을 만족한 적 부대를 저격",
+		}
+
 		local englishRows = { melee = "Melee", ranged = "Ranged", cannon = "Cannon" }
 		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark" }
 		local englishAbilities = { bond = "Bond", morale = "Morale", spy = "Spy", medic = "Medic", armor = "Armor", snipe = "Snipe" }
@@ -647,13 +654,7 @@ function NavalBattle.play(opts)
 		local function cardDescription(c)
 			if not english then
 				if c.special then return c.text or "전술 카드" end
-				if c.ability then return ({
-					bond = "같은 병종 결속 · 최대 3배", morale = "같은 줄 강화 · 동아시아 보너스",
-					spy = "적진에 배치하고 카드 2장 확보 · 신대륙 3장",
-					medic = "버린 일반 카드 중 가장 강한 병종 복귀",
-					armor = "폭풍·안개 등 날씨 감점 무효",
-					snipe = "조건을 만족한 적 부대를 저격",
-				})[c.ability] or "" end
+				if c.ability then return ABIL_DETAIL[c.ability] or "" end
 				return if c.hero then "영웅 · 날씨와 소각의 영향을 받지 않음" else "병종 상성을 고려해 전투 줄에 배치"
 			end
 			if c.special == "weather" then return "Set ordinary units in the " .. rowName(c.row) .. " row to 1 strength" end
@@ -1015,13 +1016,6 @@ function NavalBattle.play(opts)
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
 		end
-		local ABIL = { bond="결속", morale="사기", spy="첩자", medic="치료", armor="철갑", snipe="저격" }
-		local ABIL_DETAIL = {
-			bond="같은 병종 결속 · 최대 3배", morale="같은 줄 강화 · 동아시아 보너스",
-			spy="적진에 배치하고 카드 2장 확보 · 신대륙 3장", medic="버린 일반 카드 중 가장 강한 병종 복귀",
-			armor="폭풍·안개 등 날씨 감점 무효", snipe="조건을 만족한 적 부대를 저격",
-		}
-
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
 		animateCardArt = function(art, image, card)
