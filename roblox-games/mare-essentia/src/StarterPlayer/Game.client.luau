@@ -87,6 +87,14 @@ task.spawn(function()
 		pcall(function()
 			game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
 		end)
+		-- 새 채팅(TextChatService)의 창·입력줄이 왼쪽 위에 회색 테두리로 남는 것도 끈다
+		pcall(function()
+			local tcs = game:GetService("TextChatService")
+			local win = tcs:FindFirstChildOfClass("ChatWindowConfiguration")
+			if win then win.Enabled = false end
+			local bar = tcs:FindFirstChildOfClass("ChatInputBarConfiguration")
+			if bar then bar.Enabled = false end
+		end)
 		local legacyChat = player:FindFirstChild("PlayerGui") and player.PlayerGui:FindFirstChild("Chat")
 		if legacyChat then
 			legacyChat:Destroy()

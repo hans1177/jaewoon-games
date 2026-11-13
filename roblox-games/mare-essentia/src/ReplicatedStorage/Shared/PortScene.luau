@@ -113,7 +113,7 @@ local SIGN_MODELS = {
 	{ "천문대", "Relics", "magnifying-glass" }, { "학술원", "Relics", "journal-open" }, { "동물원", "Cargo", "ivory" }, { "제철", "Cargo", "iron-bars" },
 	{ "교역", "Cargo", "chest" }, { "주점", "Cargo", "barrel" }, { "항만", "Relics", "rope-bundle-a" }, { "은행", "Cargo", "gems-chest" },
 	{ "길드", "Relics", "map-rolled" }, { "서재", "Relics", "drafting-compass" }, { "도서관", "Relics", "journal-closed" }, { "조선", "Relics", "hammer" },
-	{ "왕궁", "Cargo", "gold" }, { "총독", "Cargo", "gold" }, { "이야기", "Relics", "key" }, { "공사", "Relics", "saw" },
+	{ "왕궁", "Cargo", "gold" }, { "총독", "Cargo", "gold" }, { "이야기", "Relics", "key" }, { "공사", "Relics", "saw" }, { "마굿간", "Cargo", "bucket" }, { "축사", "Cargo", "wool" },
 }
 local function signModel(text)
 	for _, e in SIGN_MODELS do
@@ -123,7 +123,35 @@ local function signModel(text)
 end
 
 -- 방문시설 간판: 큰 3D 아이콘 + 아래 작은 이름표 (멀리서도 무슨 건물인지 보이게)
-local function sign(parent, adornee, text, color, height)
+local function sign(parent, adornee, text, color, height, compact)
+	if compact then
+		-- 사람 이름표: 작고 단순한 글씨 판
+		local nb = Instance.new("BillboardGui")
+		nb.Adornee = adornee
+		nb.Size = UDim2.fromScale(7, 1.5)
+		nb.StudsOffset = Vector3.new(0, (height or 4) + 1.5, 0)
+		nb.AlwaysOnTop = false
+		nb.LightInfluence = 0
+		nb.MaxDistance = 60
+		local pl = Instance.new("TextLabel")
+		pl.Size = UDim2.fromScale(1, 1)
+		pl.BackgroundColor3 = Color3.fromRGB(46, 30, 22)
+		pl.BackgroundTransparency = 0.15
+		pl.TextColor3 = Color3.fromRGB(255, 244, 214)
+		pl.Font = Enum.Font.GothamBold
+		pl.TextScaled = true
+		pl.Text = text
+		local cc = Instance.new("UICorner")
+		cc.CornerRadius = UDim.new(0, 6)
+		cc.Parent = pl
+		local sk = Instance.new("UIStroke")
+		sk.Color = color or Color3.fromRGB(232, 190, 96)
+		sk.Thickness = 1.5
+		sk.Parent = pl
+		pl.Parent = nb
+		nb.Parent = parent
+		return nb
+	end
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
 	bb.Size = UDim2.fromScale(9, 9.5) -- 스터드 단위: 멀수록 자연스럽게 작아진다
@@ -237,7 +265,29 @@ local SHIP_MESH = {
 	paddle_steamer = "ship-pirate-small", ironclad_frigate = "ship-pirate-medium",
 }
 
+-- 색이 입혀지지 않은 수입 모델(회색·옅은 파랑으로 보임)에 자연스러운 색을 입힌다.
+local ANIMAL_TINT = {
+	cow = Color3.fromRGB(168, 118, 84), horse = Color3.fromRGB(136, 88, 58), sheep = Color3.fromRGB(240, 236, 224),
+	pig = Color3.fromRGB(238, 170, 160), llama = Color3.fromRGB(214, 192, 152), donkey = Color3.fromRGB(128, 116, 104),
+	["dog-pug"] = Color3.fromRGB(196, 156, 104), cat = Color3.fromRGB(86, 80, 76), chicken = Color3.fromRGB(250, 246, 236),
+	elephant = Color3.fromRGB(128, 126, 130),
+}
+local ASSET_TINT = {
+	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(58, 108, 70), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	["plant-bush"] = Color3.fromRGB(78, 128, 58), tree_large = Color3.fromRGB(70, 124, 76), tree_tiny = Color3.fromRGB(76, 130, 80),
+	["crops-wheatstagea"] = Color3.fromRGB(216, 184, 92), ["crops-wheatstageb"] = Color3.fromRGB(176, 190, 92), ["crops-cornstagec"] = Color3.fromRGB(150, 172, 72),
+	["crop-carrot"] = Color3.fromRGB(230, 128, 48), ["crop-melon"] = Color3.fromRGB(110, 168, 78), ["crop-pumpkin"] = Color3.fromRGB(230, 138, 40), ["crop-turnip"] = Color3.fromRGB(226, 214, 232),
+}
+local function assetTint(kind, asset)
+	if kind == "Animals" then return ANIMAL_TINT[asset] end
+	if ASSET_TINT[asset] then return ASSET_TINT[asset] end
+	if string.find(asset, "fence", 1, true) then return Color3.fromRGB(142, 102, 64) end
+	if string.find(asset, "rock-", 1, true) then return Color3.fromRGB(148, 142, 134) end
+	return nil
+end
+
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	tint = tint or assetTint(kind, asset)
 	local library = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = library and library:FindFirstChild(kind)
 	local template = group and group:FindFirstChild(asset)
@@ -1054,6 +1104,23 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					end
 				end
 			end
+			-- 지붕 있는 축사: 말·당나귀·라마는 마굿간, 소·양·돼지·코끼리는 축사. 이름표 위에 3D 아이콘이 뜬다.
+			if #stock > 0 then
+				local sp = stock[(i - 1) % #stock + 1]
+				local isStable = sp == "horse" or sp == "donkey" or sp == "llama"
+				local roofAt = Vector3.new(c.X, 6.6, c.Z)
+				for _, cx in { -7.4, 7.4 } do
+					for _, cz in { -5.4, 5.4 } do
+						local post = part(folder, Vector3.new(0.7, 6.6, 0.7), CFrame.new(c.X + cx, 3.3, c.Z + cz), Color3.fromRGB(104, 72, 44), Enum.Material.Wood)
+						post.CanCollide = false
+					end
+				end
+				gableRoof(folder, roofAt, 17, 13, 3.2, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
+				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X, 6.6, c.Z), Color3.new(1, 1, 1))
+				anchor.Transparency = 1
+				anchor.CanCollide, anchor.CanQuery = false, false
+				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 2)
+			end
 			if has.chicken and i == 1 then
 				for _ = 1, 2 do
 					animal("chicken", c + Vector3.new(rng:NextNumber(-12, -10), 0, rng:NextNumber(-4, 4)))
@@ -1544,10 +1611,19 @@ local function densify(folder, info, style, rng, walkers, made)
 				put("Town", "bench_A", 3.6, cx, cz, false)
 				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
 			else -- farm
-				local crops = if hotKey then { "crops-cornstagec", "crop-melon", "crop-pumpkin" } else { "crops-wheatstagea", "crop-turnip", "crop-carrot" }
+				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
+				local crops
+				if key == "japan" or key == "china" or key == "seasia" then
+					crops = { { "Terrain", "crops-wheatstageb", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
+				elseif hotKey then
+					crops = { { "Cargo", "corn", 3.2 }, { "Cargo", "pumpkin", 2.8 }, { "Terrain", "crop-melon", 5 } }
+				else
+					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
+				end
 				for row = -1, 1 do
+					local cr = crops[(row + 1) % #crops + 1]
 					for k = -3, 3 do
-						put("Terrain", crops[(row + 1) % #crops + 1], 5, cx + k * 5, cz + row * 7, false)
+						put(cr[1], cr[2], cr[3], cx + k * 5, cz + row * 7, false)
 					end
 				end
 				for k = -3, 3 do
@@ -2187,7 +2263,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
 	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
-	local trees = if key == "japan" then { "tree-pinedefaulta", "tree-pinedefaulta", "tree-oak" } elseif hot then { "palm-detailed-straight", "tree-crooked", "tree_large" } elseif cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
+	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" } elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" } elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
 	for i = 1, 150 do
 		local side = if i % 2 == 0 then 1 else -1
 		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
@@ -2197,7 +2273,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for i = 1, 30 do
 		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
-		importedModel(folder, "Terrain", trees[1] == "tree-pinedefaulta" and "tree-pinedefaulta" or "tree-oak", pos, rng:NextNumber(8, 13), false)
+		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town", trees[1], pos, rng:NextNumber(8, 13), false)
 	end
 end
 
@@ -2659,7 +2735,7 @@ function PortScene.build(info, onFacility)
 	if (info.storyCount or 0) > 0 then
 		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded", true)
 		local npcPart = n and (n:FindFirstChild("Head") or n:FindFirstChildWhichIsA("BasePart", true))
-		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
+		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4, true) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
 	end
 	-- 광장을 오가는 주민
@@ -2746,7 +2822,7 @@ function PortScene.build(info, onFacility)
 					local hop = 0
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
-					Pose.makeR15Action(w.model, "walk", 0, now * w.speed + w.phase)
+					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
 				end
 			elseif w.model.Parent then
 				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
@@ -2769,7 +2845,15 @@ function PortScene.build(info, onFacility)
 				local pos = w.base.Position + w.base.LookVector * d
 				local bob = 0 -- 위아래 흔들림은 걸음 모션(Pose)이 발걸음과 맞춰 처리한다
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
-				Pose.makeR15Action(w.model, if moving then "walk" else "idle", 0, now * w.speed + w.phase)
+				if moving then
+					-- 발걸음은 실제로 걸은 거리에 맞춘다 (돌아올 때도 앞으로 걷는 모션)
+					w.trav = (w.trav or 0) + math.abs(d - (w.lastD or d))
+					w.lastD = d
+					Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
+				else
+					w.lastD = d
+					Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
+				end
 				if not moving then
 					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor(w.phase * 7) % #IDLE_POOL) + 1], now + w.phase)
 				elseif w.kind then
@@ -3109,7 +3193,7 @@ function PortScene.build(info, onFacility)
 			if v then
 				v.Name = "Companion_" .. c.id
 				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
-				if tag then sign(folder, tag, c.name, Color3.fromRGB(40, 90, 150), 4) end
+				if tag then sign(folder, tag, c.name, Color3.fromRGB(40, 90, 150), 4, true) end
 				local at = v:GetPivot().Position
 				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7 })
 			end
@@ -3128,7 +3212,7 @@ function PortScene.build(info, onFacility)
 		if m then
 			m.Name = "Voyager_" .. tostring(v.id)
 			local tag = m:FindFirstChild("Head") or m:FindFirstChildWhichIsA("BasePart", true)
-			if tag then sign(folder, tag, v.name .. " (" .. v.role .. ")", Color3.fromRGB(110, 80, 30), 4) end
+			if tag then sign(folder, tag, v.name .. " (" .. v.role .. ")", Color3.fromRGB(110, 80, 30), 4, true) end
 		end
 	end
 	local followConn
