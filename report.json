@@ -4,87 +4,17 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "play ok=true nil\ntext"
   },
   {
    "step": 3,
-   "ctx": "Client",
-   "out": "DEV Deck\ntext"
+   "capture": "b1_start",
+   "files": 1
   },
   {
    "step": 5,
-   "capture": "k0_deck",
+   "capture": "b2_mid",
    "files": 1
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=345 issues=0\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "k1_practice",
-   "files": 1
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "CHK practice view=1136x380 texts=267 issues=0\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "DEVRESULT Practice true nil\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 13,
-   "ctx": "Server",
-   "out": "TAC_START ok=true\ntext"
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEV Tactics\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "k2_tactics_hand",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "CHK tactics view=1136x380 texts=298 issues=0\ntext"
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "HAND n=5 energy=3 play1=false 너무 빨라요\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Server",
-   "out": "ERR Server count=0\ntext"
   }
  ],
  "errors": [],
@@ -95,17 +25,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 6,
+  "completedSteps": 6,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
