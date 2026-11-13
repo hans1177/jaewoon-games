@@ -1388,7 +1388,7 @@ H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 22), 15
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
 hullBack.Position = UDim2.fromOffset(72, 76)
-hullBack.Size = UDim2.new(1, -82, 0, 6)
+hullBack.Size = UDim2.fromOffset(130, 6)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 2)
@@ -1912,7 +1912,7 @@ do
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
 		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
 		local left = if compact then 8 else 282
-		local right = if compact then 148 else 284
+		local right = if compact then 148 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 430)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
