@@ -875,3 +875,33 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
   assert.match(readme,/1536×864/);
 });
+
+test('Mare 150 regional card illustrations remain source complete and SHA-approved before Roblox registration', () => {
+  const root='roblox-games/mare-essentia/';
+  const manifest=JSON.parse(fs.readFileSync(root+'assets/cardart/region-art.json','utf8'));
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.equal(manifest.count,150);
+  assert.equal(manifest.cards.length,150);
+  assert.equal(new Set(manifest.cards.map(c=>c.id)).size,150);
+  assert.equal(manifest.license,'PROJECT_ORIGINAL_ART');
+  for(const prefix of ['eu','ea','me','nw','af']){
+    const names=manifest.cards.filter(c=>c.id.startsWith(prefix+'_')).map(c=>c.id);
+    assert.deepEqual(names,Array.from({length:30},(_,i)=>prefix+'_'+String(i+1).padStart(2,'0')));
+    for(const name of names){
+      const art=fs.readFileSync(root+'assets/cardart/src/'+name+'.svg','utf8');
+      assert.match(art,/<svg\b/,'missing SVG '+name);
+      assert.match(art,/<title>/,'missing art subject '+name);
+    }
+  }
+  // [기존 정식 등록기] 5개 덱의 원본 PNG만 받고 미승인 해시·차단 이미지·권한 미확인은 거절한다.
+  assert.ok(uploader.includes("['event_title_ship.png', 'event_title_parchment.png']"));
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)\\.png'));
+  assert.ok(uploader.includes("const regionalCardArt = item.kind === 'CardArt'"));
+  assert.ok(uploader.includes("approvedImages[id] !== sourceSha256"));
+  assert.ok(uploader.includes("REGIONAL_CARD_ART_NOT_APPROVED"));
+  assert.ok(uploader.includes("REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD"));
+  assert.ok(uploader.includes("blockedHashes.has(sourceSha256)"));
+  assert.ok(uploader.includes("previousTypeAssets.set(id, {...old})"));
+  assert.ok(uploader.includes("registry.assets[id].sourceSha256 = sourceSha256"));
+  assert.ok(uploader.includes("usePermissionGranted !== true"));
+});
