@@ -2679,14 +2679,14 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("R15SparringStage", Vector3.new(0, 120, 0))
 		for _, fighter in sparring do
 			fighter.mode = "sparring"
-			fighter.model:SetAttribute("R15MotionStageActor", true)
 		end
 		print("[MareEssentia] 항구 R15 대련 테스트 시작: 기존 주민 2명")
 	elseif RunService:IsStudio() then
 		warn("[MareEssentia] 항구 R15 대련 테스트 불가: 주민 모델 2명 미만")
 	end
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
-	local walkConn = RunService.Heartbeat:Connect(function()
+	-- 공식 Motor6D.Transform 적용 시점: Animator 갱신 후, 물리 처리 직전.
+	local walkConn = RunService.PreSimulation:Connect(function()
 		local now = os.clock()
 		for _, w in walkers do
 			if w.mode == "sparring" and w.model.Parent and sparring then
