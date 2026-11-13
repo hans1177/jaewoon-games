@@ -1,95 +1,170 @@
 {
- "sourceRevision": "d804da8fc668e89fa8e312ab3a2e95b15ed30c92",
+ "sourceRevision": "0af8ae7d4f3dba440cd1e81e85c38e7df7693a6a",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "INTRO name=true comp=true\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 7,
-   "capture": "01_top",
-   "files": 1
+   "step": 6,
+   "ctx": "Client",
+   "out": "DEV Tab trade\ntext"
   },
   {
    "step": 8,
+   "capture": "f_trade",
+   "files": 1
+  },
+  {
+   "step": 9,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "CHK deck view=1136x380 texts=111 issues=0\ntext"
   },
   {
    "step": 10,
-   "capture": "02_plaza",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:trade true nil\ntext"
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "killed=true\ntext"
   },
   {
-   "step": 13,
-   "capture": "03_street",
-   "files": 1
+   "step": 12,
+   "ctx": "Client",
+   "out": "DEV Tab route\ntext"
   },
   {
    "step": 14,
+   "capture": "f_route",
+   "files": 1
+  },
+  {
+   "step": 15,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "CHK deck view=1136x380 texts=769 issues=0\ntext"
   },
   {
    "step": 16,
-   "capture": "04_dock",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:route true nil\ntext"
   },
   {
    "step": 17,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 19,
-   "capture": "05_aerial",
-   "files": 1
+   "step": 18,
+   "ctx": "Client",
+   "out": "DEV Tab yard\ntext"
   },
   {
    "step": 20,
+   "capture": "f_yard",
+   "files": 1
+  },
+  {
+   "step": 21,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "CHK deck view=1136x380 texts=142 issues=0\ntext"
   },
   {
    "step": 22,
-   "capture": "06_backstreet",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:yard true nil\ntext"
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 25,
-   "capture": "07_wall",
-   "files": 1
+   "step": 24,
+   "ctx": "Client",
+   "out": "DEV Tab quest\ntext"
   },
   {
    "step": 26,
+   "capture": "f_quest",
+   "files": 1
+  },
+  {
+   "step": 27,
    "ctx": "Client",
-   "out": "parts=1925 meshparts=1687 models=1764 houses=11\ntext"
+   "out": "CHK deck view=1136x380 texts=238 issues=0\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:quest true nil\ntext"
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "DEV Tab codex\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "f_codex",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=471 issues=0\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:codex true nil\ntext"
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "DEV Tab status\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "f_status",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=133 issues=0\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:status true nil\ntext"
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -104,13 +179,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 27,
-  "completedSteps": 27,
+  "plannedSteps": 42,
+  "completedSteps": 42,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 7,
-  "capturedFrames": 7,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
