@@ -872,7 +872,14 @@ test('Mare 5-continent seven animated visual candidates reject geometric sources
     'reuse existing render loop');
   assert.doesNotMatch(source,/GalleonCannonSmoke|GalleonWave|activeGalleonViews/);
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
-  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|3[0-5])'));
+  // 150장 기존 슬롯과 175장 목표의 신규 31~35번만 허용한다. 임의 ID/확장자 차단.
+  const cardArtFilename = /^(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|3[0-5])\\.png$/;
+  for (const region of ['eu','ea','me','nw','af']) {
+    for (const n of [1,30,31,35]) assert.equal(cardArtFilename.test(region+'_'+String(n).padStart(2,'0')+'.png'),true);
+    for (const n of [0,36,99]) assert.equal(cardArtFilename.test(region+'_'+String(n).padStart(2,'0')+'.png'),false);
+  }
+  assert.equal(cardArtFilename.test('eu_31.gif'),false);
   assert.match(uploader,/approvedImages\[id\] !== hash/);
   const wanted=JSON.parse(fs.readFileSync(base+'assets-wanted.json','utf8'));
   const job=wanted.wanted.find(row=>row.id==='regional-naval-gwent-150');
