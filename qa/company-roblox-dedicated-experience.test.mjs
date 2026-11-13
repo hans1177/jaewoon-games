@@ -830,80 +830,29 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   }
 });
 
-test('Mare eu_03 galleon source separates active art channels without changing combat or claiming native QA',()=>{
+test('Mare eu_03 GIF uses sequential frames without layered hull motion',()=>{
   const base='roblox-games/mare-essentia/';
   const manifest=JSON.parse(fs.readFileSync(base+'assets/cardart/region-art.json','utf8'));
   const card=manifest.cards.find(row=>row.id==='eu_03');
-  assert.ok(card);
+  assert.equal(manifest.cards.length,150);
   assert.deepEqual([card.name,card.row,card.skill,card.motion,card.power,card.registered],
     ['갈레온','cannon','armor','fire',6,false]);
-  assert.equal(manifest.cards.length,150);
-  const battleCards=fs.readFileSync(base+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
-  assert.match(battleCards,/B\.Units\.eu_03 = \{[^\n]+row="cannon", power=6, weapon="cannon", ability="armor"/);
-  const svg=fs.readFileSync(base+'assets/cardart/src/eu_03.svg','utf8');
-  assert.match(svg,/"production":"SOURCE_ONLY_NATIVE_QA_REQUIRED"/);
-  assert.match(svg,/"license":"PROJECT_ORIGINAL_ART"/);
-  const required=['water-back','water-front','ship','hull','armor',
-    'mast-fore','mast-main','mast-aft','sails-fore','sails-main','sails-aft',
-    'flag-fore','flag-main','flag-aft','cannon-smoke','cannon-flash'];
-  for(const name of required)assert.match(svg,new RegExp('id="eu03-'+name+'"'),name);
-  for(const motion of ['hull-roll','sail-billow','flag-furl','water-swell','broadside','cannon-plume'])
-    assert.ok(svg.includes('@keyframes eu03-'+motion),'missing motion: '+motion);
-  assert.match(svg,/prefers-reduced-motion:reduce/);
-  const ids=[...svg.matchAll(/id="(eu03-[^"]+)"/g)].map(row=>row[1]);
-  assert.equal(new Set(ids).size,ids.length,'duplicate component ID');
-  const stack=[];
-  for(const match of svg.matchAll(/<\/?([A-Za-z][A-Za-z0-9:.-]*)\b[^>]*>/g)){
-    const token=match[0],tag=match[1];
-    if(token.startsWith('</'))assert.equal(stack.pop(),tag,'SVG layer nesting');
-    else if(!token.endsWith('/>'))stack.push(tag);
-  }
-  assert.deepEqual(stack,[],'all SVG groups closed');
+  const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.match(source,/local artwork = "CardArt\/" \.\. id/);
+  assert.match(source,/if AssetIds\[artwork\] then return artwork end/);
+  assert.match(source,/if card.id == "eu_03" and AssetIds\["CardArt\/eu_03"\] then/);
+  assert.match(source,/image.ImageRectSize = Vector2.new\(256, 192\)/);
+  assert.match(source,/local frame = math.floor\(elapsed \/ 0.08\) % 16/);
+  assert.match(source,/image.ImageRectOffset = Vector2.new\(\(frame % 4\) \* 256, math.floor\(frame \/ 4\) \* 192\)/);
+  assert.match(source,/destroying = art.Destroying:Connect\(stop\)/);
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1);
+  assert.doesNotMatch(source,/GalleonCannonSmoke|GalleonWave|activeGalleonViews/);
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
+  assert.match(uploader,/approvedImages\[id\] !== hash/);
   const wanted=JSON.parse(fs.readFileSync(base+'assets-wanted.json','utf8'));
   const job=wanted.wanted.find(row=>row.id==='regional-naval-gwent-150');
   assert.equal(job.productionVerified,false);
   assert.equal(job.runtimeVerified,false);
   assert.equal(job.deploymentRequested,false);
-  // 새 지역 원화는 이미지 승인·등록 후에만 기존 전투 UI에 연결된다.
-  const naval=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
-  assert.match(naval,/local artwork = "CardArt\/" \.\. id/);
-  assert.match(naval,/if AssetIds\[artwork\] then return artwork end/);
-  assert.match(naval,/if not spec then return CARD_SEA end/);
-  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
-  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
-  assert.match(uploader,/approvedImages\[id\] !== hash/);
-  assert.match(uploader,/assetType: image \? 'Image' : 'Model'/);
-});
-
-test('Mare galleon card moves original sail and flag meshes at up to 60fps without adding a render loop',()=>{
-  const file='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau';
-  const source=fs.readFileSync(file,'utf8');
-  assert.match(source,/eu_03 = \{ art="CardArt\/event_chart_west_europe", prop=\{"Naval","ship-pirate-large"\}, motion="fire"/);
-  assert.match(source,/local activeGalleonViews = 0/);
-  assert.match(source,/activeGalleonViews < 2/);
-  assert.match(source,/local interval = if focused or card\.id == "eu_03" then 1 \/ 60 else 1 \/ 30/);
-  assert.match(source,/sampled = if sinceSample > interval \* 3 then elapsed else sampled \+ interval/);
-  assert.match(source,/elapsed \+= math\.max\(0, dt\)/);
-  assert.match(source,/art:GetAttribute\("ArtFocused"\) == true/);
-  assert.match(source,/art\.Parent ~= nil and art\.Parent:GetAttribute\("ArtFocused"\) == true/);
-  assert.match(source,/rest = propPivot:ToObjectSpace\(part\.CFrame\)/);
-  assert.match(source,/local yaw = \(if item\.kind == "flag" then 0\.16 else 0\.055\) \* math\.sin\(phase\)/);
-  assert.match(source,/item\.part\.CFrame = shipFrame \* item\.rest \* CFrame\.Angles\(pitch, yaw, 0\)/);
-  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,
-    'keep the existing shared card render loop, no per-card render connection');
-  assert.match(source,/cardMotionStep:Disconnect\(\)/);
-  assert.match(source,/if card\.id == "eu_03" then activeGalleonViews = math\.max\(0, activeGalleonViews - 1\) end/);
-
-  // 배·돛·깃발과 별개로 포연·파도를 3겹씩 재생하고 카드를 닫으면 해제한다.
-  assert.match(source,/local galleonWaves, galleonSmoke = \{\}, \{\}/);
-  assert.match(source,/wave.Name = "GalleonWave" \.\. index/);
-  assert.match(source,/puff.Name = "GalleonCannonSmoke" \.\. index/);
-  assert.match(source,/local phase = elapsed \* \(1\.18 \+ index \* 0\.16\) \+ index \* 1\.21/);
-  assert.match(source,/local smokeElapsed = \(beat - 0\.48 \+ 1\) % 1/);
-  assert.match(source,/puff.BackgroundTransparency = if age < 0\.34 then 0\.36 \+ 0\.64 \* progress else 1/);
-  assert.match(source,/for _, wave in galleonWaves do wave:Destroy\(\) end/);
-  assert.match(source,/for _, puff in galleonSmoke do puff:Destroy\(\) end/);
-  assert.doesNotMatch(source,/RunService:Set3dRenderingEnabled\(false\)/);
-  const cards=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
-  assert.match(cards,/B\.Units\.eu_03 = \{[^\n]+row="cannon", power=6, weapon="cannon", ability="armor"/);
 });
