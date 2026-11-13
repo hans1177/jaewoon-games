@@ -769,6 +769,11 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 
 export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
+  // [오너 자동개발 중지] 웹게임 제작만 제외한다. 웹 관련 학습과 기존 게임·저장 자료는 유지한다.
+  if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1'
+    &&clean(target||task?.target||task?.selectedTask?.target).toLowerCase()==='web'
+    &&clean(task?.department||task?.selectedTask?.department).toLowerCase()==='development'
+    &&clean(task?.type||task?.selectedTask?.type).toLowerCase()==='implementation')return true;
   const newestOwnerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   const scope=newestOwnerScope||policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
   const selected=task?.selectedTask||{};
@@ -915,6 +920,19 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
   const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
+    // [기존 대기열 정리] 승인되지 않은 웹게임 자동개발을 재시도하지 않는다.
+    // 작업 본문·검증 기록은 보관하고, 실행 가능한 큐에서만 이력 레인으로 옮긴다.
+    const stopWebAutoDev=process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1'
+      &&clean(task.target).toLowerCase()==='web'
+      &&clean(task.department).toLowerCase()==='development'
+      &&clean(task.type).toLowerCase()==='implementation';
+    if(stopWebAutoDev&&task.status!=='cancelled'&&task.status!=='verified'){
+      return {...task,...clearedReservation(),status:'cancelled',
+        blocker:'owner-web-auto-development-disabled',
+        ownerDevelopmentHold:true,
+        lastOutcome:'CANCELLED_BY_OWNER_WEB_AUTO_DEV_STOP',
+        evidence:[...new Set([...(task.evidence||[]),'owner-web-auto-development-stop:2026-11-13'])]};
+    }
     const game=games.get(clean(task.gameId));
     const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||permanentlyDeletedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
       ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
