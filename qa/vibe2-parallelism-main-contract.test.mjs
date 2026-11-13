@@ -23,10 +23,10 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/with:\n\s+ref: main/);
   assert.match(recoveryFast,/git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main \+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core --quiet/);
   assert.match(recoveryFast,/git worktree add --no-checkout --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
-  assert.match(recoveryFast,/git -C "\\$control" config extensions\\.worktreeConfig true/);
-  assert.match(recoveryFast,/git -C "\\$control" sparse-checkout set --cone \\.vibe2/);
-  assert.match(recoveryFast,/git -C "\\$control" checkout HEAD/);
-  assert.match(recoveryFast,/\\n  recover:\\n    runs-on: ubuntu-slim\\n    timeout-minutes: 6/);
+  assert.match(recoveryFast,/git -C "\$control" config extensions\.worktreeConfig true/);
+  assert.match(recoveryFast,/git -C "\$control" sparse-checkout set --cone \.vibe2/);
+  assert.match(recoveryFast,/git -C "\$control" checkout HEAD/);
+  assert.match(recoveryFast,/\n  recover:\n    runs-on: ubuntu-slim\n    timeout-minutes: 6/);
   assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
   assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
 });
@@ -39,9 +39,9 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
   try{
     fs.mkdirSync(path.join(repo,'.vibe2','queue'),{recursive:true});
     fs.mkdirSync(path.join(repo,'web-games','unrelated'),{recursive:true});
-    fs.writeFileSync(path.join(repo,'.vibe2','queue.json'),'{"tasks":[]}\\n');
-    fs.writeFileSync(path.join(repo,'.vibe2','queue','part.json'),'{"tasks":[]}\\n');
-    fs.writeFileSync(path.join(repo,'web-games','unrelated','index.html'),'<main>unchanged</main>\\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','queue.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','queue','part.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'web-games','unrelated','index.html'),'<main>unchanged</main>\n');
     git(repo,'init','-q');
     git(repo,'config','user.name','Vibe Recovery QA');
     git(repo,'config','user.email','vibe-recovery-qa@example.invalid');
@@ -56,7 +56,7 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
     assert.ok(fs.existsSync(path.join(control,'.vibe2','queue','part.json')));
     assert.equal(fs.existsSync(path.join(control,'web-games','unrelated','index.html')),false);
     assert.ok(fs.existsSync(path.join(repo,'web-games','unrelated','index.html')));
-    fs.writeFileSync(path.join(control,'.vibe2','queue.json'),'{"tasks":[{"id":"recovered"}]}\\n');
+    fs.writeFileSync(path.join(control,'.vibe2','queue.json'),'{"tasks":[{"id":"recovered"}]}\n');
     git(control,'add','.vibe2/queue.json');
     git(control,'commit','-m','recovery-checkpoint');
     assert.match(git(control,'show','HEAD:.vibe2/queue.json'),/recovered/);
