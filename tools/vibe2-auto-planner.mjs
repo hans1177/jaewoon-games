@@ -4530,7 +4530,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
         '실제 원화 파일·레이어·모션 소스와 전후 화면·모바일 연속 프레임 근거가 확보된 경우에만 같은 승인 경로로 후속 149장을 확장한다. 소재별 중복 구도·애매한 문화권·인물 자산 금지.',
         '원본 및 가공 해시·CC0 권리·기존 소비자·파일 경로를 검증한다. 부족한 CC0 원본은 정확한 GAP로 기록하고 기존 자산/전투 표현은 보존한다.',
         '기존 카드 번호·덱 최대 30·포격 판정·데미지·세이브 구조·보상·기존 탭 확대는 변경하지 않는다. 오너는 배포를 요청하지 않았다. 실측 전 PASS 또는 배포 성공을 주장하지 않는다.'
-      ].join('\\n');
+      ].join('\n');
       const files=[
         assetRoot+'/assets-wanted.json',
         assetRoot+'/assets/cardart/region-art.json',
