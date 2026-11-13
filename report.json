@@ -1,35 +1,135 @@
 {
- "sourceRevision": "1f66bb30ad81e76d75df59a5b0b7512f04418505",
+ "sourceRevision": "0c98bbabfee58a871959e41b9748ea175853193b",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 2,
-   "ctx": "Client",
-   "out": "mobs=4 FieldEnemy@3084.533935546875, 3.195251941680908, -9.039889335632324;FieldEnemy@2942.984130859375, 3.1954774856567383, -13.161352157592773;FieldEnemy@2996.04638671875, 3.1963963508605957, -59.864707946777344;FieldEnemy@2960.356689453125, 3.254135847091675, 15.572220802307129\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "DEV Tab trade\ntext"
   },
   {
    "step": 5,
-   "capture": "f1_start",
+   "capture": "f_trade",
    "files": 1
   },
   {
    "step": 6,
    "ctx": "Client",
-   "out": "err=true table: 0x5989e82c9f715b8d done=nil humanoids=4 models=118 parts=132 cam=3091.533935546875, 7.695251941680908, -22.03989028930664 hrp=3000, 4, 86\ntext"
+   "out": "CHK deck view=1136x380 texts=172 issues=0\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:trade true nil\ntext"
   },
   {
    "step": 8,
-   "capture": "f2_later",
+   "ctx": "Client",
+   "out": "DEV Tab route\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "f_route",
    "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=835 issues=0\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:route true nil\ntext"
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "DEV Tab yard\ntext"
+  },
+  {
+   "step": 15,
+   "capture": "f_yard",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=208 issues=0\ntext"
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:yard true nil\ntext"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "DEV Tab quest\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "f_quest",
+   "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=304 issues=0\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:quest true nil\ntext"
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "DEV Tab codex\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "f_codex",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=537 issues=0\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:codex true nil\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "DEV Tab status\ntext"
+  },
+  {
+   "step": 30,
+   "capture": "f_status",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=199 issues=0\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:status true nil\ntext"
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -40,17 +140,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 19,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 9,
-  "completedSteps": 9,
+  "plannedSteps": 34,
+  "completedSteps": 34,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 2,
-  "capturedFrames": 2,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
