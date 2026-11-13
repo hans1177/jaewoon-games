@@ -23,12 +23,12 @@ local PORT_CLOCK_EPOCH = os.clock()
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
 local GOOD_MESH = {
-	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "barrel", Color3.fromRGB(112, 32, 54) }, beer = { "Cargo", "barrel", Color3.fromRGB(196, 138, 46) }, sake = { "Cargo", "barrel", Color3.fromRGB(226, 214, 186) }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
-	cloth = { "Cargo", "textiles-stack-large" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
-	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bars" }, silver = { "Cargo", "silver-bars" }, gold = { "Cargo", "gold-bars" },
-	gems = { "Cargo", "gems-pile-small" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
-	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-planks-stack-small" },
-	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(104, 62, 36) },
+	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "barrel", Color3.fromRGB(112, 45, 64) }, beer = { "Cargo", "barrel", Color3.fromRGB(174, 115, 48) }, sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
+	cloth = { "Cargo", "textiles-a" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
+	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bar" }, silver = { "Cargo", "silver-bar" }, gold = { "Cargo", "gold-bar" },
+	gems = { "Cargo", "gems-sack" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
+	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) },
+	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) },
 	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
