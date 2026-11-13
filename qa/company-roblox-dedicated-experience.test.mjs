@@ -904,4 +904,9 @@ test('Mare 150 regional card illustrations remain source complete and SHA-approv
   assert.ok(uploader.includes("previousTypeAssets.set(id, {...old})"));
   assert.ok(uploader.includes("registry.assets[id].sourceSha256 = sourceSha256"));
   assert.ok(uploader.includes("usePermissionGranted !== true"));
+  const cardArt=fs.readFileSync(root+'src/ReplicatedStorage/Shared/CardArt.luau','utf8');
+  assert.ok(cardArt.includes('local originalRegional = (region == "eu"'));
+  assert.ok(cardArt.includes('Mare Essentia 자체 제작 5대륙 카드 원화'));
+  assert.ok(cardArt.includes('elseif originalRegional then "PROJECT_ORIGINAL_ART"'));
+  assert.ok(cardArt.includes('if c then c.license'),'existing external credit must take priority');
 });
