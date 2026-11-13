@@ -2112,16 +2112,6 @@ function NavalBattle.play(opts)
 					hint.Text = ""
 					subtitle.Text = "두 배가 접현했다! 백병전!"
 					shake = 2.2
-					if #meleeQueue > 0 then
-						task.delay(1.2, function()
-							if not finished and phase == "board" and not boardingOn then
-								startBoarding(nil, function()
-									melIdx = #meleeQueue
-									boardStart = os.clock() - 100
-								end)
-							end
-						end)
-					end
 					Sfx.play("sfx_horn")
 					Sfx.play("sfx_naval_ram", 0.68, 0.96, "sfx_creak")
 					Sfx.play("sfx_boarding_slash", 0.46, 1)
@@ -2130,7 +2120,7 @@ function NavalBattle.play(opts)
 				-- 백병전: 남은 기록을 차례로 보여 준다
 				if boardingOn then
 					-- 카드 대결 장면이 진행 중이다
-				elseif now - boardStart > 0.7 + melIdx * 0.55 and melIdx < #meleeQueue and #meleeQueue == 0 then
+				elseif now - boardStart > 0.7 + melIdx * 0.55 and melIdx < #meleeQueue then
 					melIdx += 1
 					local e = meleeQueue[melIdx]
 					shake = 1.4

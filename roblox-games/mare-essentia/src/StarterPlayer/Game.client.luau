@@ -150,6 +150,7 @@ local TABS = {
 	{ id = "map", name = "일지" },
 	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
+	{ id = "gwent", name = "퀜트" },
 }
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
@@ -157,7 +158,7 @@ local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "explore", "battle" } },
+	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "explore", "battle", "gwent" } },
 	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
@@ -5885,13 +5886,43 @@ function RENDERERS.quest()
 	end
 end
 
+-- 주점의 퀜트 게임: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
+function RENDERERS.gwent()
+	add(function()
+		return mkRow(content, "퀜트 (카드 대결)", "주점 탁자에서 카드로 겨루는 게임이에요. 3줄·3판 2선승, 병종 상성(근접>포>사격>근접). 이기면 새 카드를 얻어요.", {
+			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
+		}, 84)
+	end)
+	add(function()
+		return mkRow(content, "연습전", "정해진 패로 규칙을 배우는 첫 판이에요. 부담 없이 시작하세요.", {
+			{ text = "시작", color = COLORS.green, onClick = function()
+				if H.openDeck then H.openDeck() end
+				task.defer(function()
+					if H.devCards and H.devCards.practice then H.devCards.practice() end
+				end)
+			end },
+		}, 64)
+	end)
+	add(function()
+		local bk = view and view.cardbook
+		return mkRow(content, "오늘의 퍼즐", "하루 하나, 적은 장수로 역전하는 퍼즐이에요.", {
+			{ text = if bk and bk.puzzleDone then "완료" else "도전", color = COLORS.gold, enabled = not (bk and bk.puzzleDone), onClick = function()
+				if H.openDeck then H.openDeck() end
+				task.defer(function()
+					if H.devCards and H.devCards.puzzle then H.devCards.puzzle() end
+				end)
+			end },
+		}, 64)
+	end)
+end
+
 function RENDERERS.battle()
 	local lo = view.loadout
 	if not equipped then
 		equipped = table.clone(lo.equipped)
 	end
 	add(function()
-		return mkRow(content, "사략선 사냥", "바다에서 해적을 찾아 카드 대결 해전을 벌여요. 카드에서 이기면 승리! (1일 소요)", {
+		return mkRow(content, "사략선 사냥", "바다에서 해적을 찾아 해전을 벌여요. 대포와 백병전으로 승부! (1일 소요)", {
 			{ text = "출격", color = COLORS.red, onClick = function() call("Hunt") end },
 		}, 56)
 	end)
@@ -5900,7 +5931,7 @@ function RENDERERS.battle()
 		add(function()
 			local sub = string.format("%s\n격파 %d회%s", b.summary, b.defeated, if b.blocked then " · " .. b.blocked else "")
 			return mkRow(content, b.name, sub, {
-				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id, cards = true }) end },
+				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end },
 			}, 76)
 		end)
 	end
@@ -6322,7 +6353,7 @@ H.TAB_ICON = {
 	cards = { "Relics", "journal-closed" }, status = { "Menu", "status" }, harbor = { "Menu", "harbor" },
 	crew = { "Relics", "shield-round" }, yard = { "Menu", "yard" }, codex = { "Menu", "codex" },
 	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
-	battle = { "Menu", "battle" },
+	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
