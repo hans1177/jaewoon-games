@@ -50,13 +50,13 @@ test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual sel
  assert.match(preview,/previewClipElapsed>=switchAt/);
  assert.match(preview,/characterMotion\.play\(clipNames\[previewClipIndex\]\)/);
  assert.match(preview,/animationPicker\.value=clipNames\[previewClipIndex\]/);
- assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;\}/);
- assert.match(preview,/characterMotion\.mixer\.update\(delta\)/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;previewClipElapsed=0;/);
+ assert.match(preview,/characterMotion\.mixer\.update\(Math\.min\(delta,\.1\)\)/);
 });
 test('Vibe 5.9 manually selected original clip is not overridden by idle engine on every frame',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewManualMotion=false/);
- assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;\}/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;previewClipElapsed=0;/);
  assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)\{previewManualMotion=false;previewAutoCycle=false;\}/);
  assert.match(preview,/if\(!previewManualMotion\)characterMotion\.update\(delta\)/);
 });
