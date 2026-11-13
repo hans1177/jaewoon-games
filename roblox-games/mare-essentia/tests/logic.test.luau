@@ -3414,7 +3414,7 @@ do
 				or english.name == card.name then broken += 1 end
 			if index > 30 then
 				expanded += 1
-				if not card.stage or not card.stage.art or not card.stage.motion then broken += 1 end
+				if not card or not card.stage or not card.stage.art or not card.stage.motion then broken += 1 end
 			end
 		end
 		check("카드 지역별 35장: " .. prefix, regional == 35)
