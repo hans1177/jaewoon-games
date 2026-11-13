@@ -75,6 +75,15 @@ local function cardArtworkKey(card)
 	return spec.art or CARD_SEA
 end
 
+-- [카드 덱 표시] 기존 5개 지역 카드 ID만 읽어 테두리와 분류 표식을 구분한다.
+local CARD_DECK = {
+	eu = { ko = "유럽", en = "Europe", color = Color3.fromRGB(214, 174, 106) },
+	ea = { ko = "동아시아", en = "East Asia", color = Color3.fromRGB(94, 192, 167) },
+	me = { ko = "중동", en = "Middle East", color = Color3.fromRGB(220, 165, 101) },
+	nw = { ko = "신대륙", en = "New World", color = Color3.fromRGB(104, 173, 216) },
+	af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(204, 128, 94) },
+}
+
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
@@ -1607,6 +1616,8 @@ function NavalBattle.play(opts)
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
 				cardRatio.Parent = b
 				b.LayoutOrder = i
+				local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+				local regionDeck = if regionId then CARD_DECK[regionId] else nil
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
@@ -1625,7 +1636,18 @@ function NavalBattle.play(opts)
 				art.BorderSizePixel = 0
 				art.ClipsDescendants = true
 				art.Parent = b
-				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
+				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) elseif regionDeck then regionDeck.color else Color3.fromRGB(153, 115, 70), 3)
+				if regionDeck then
+					local origin = label(b, if english then regionDeck.en else regionDeck.ko, 10, Color3.fromRGB(255, 248, 222), true)
+					origin.Name = "CardDeckOrigin"
+					origin.Position = UDim2.fromScale(0.57, 0.56)
+					origin.Size = UDim2.fromScale(0.4, 0.1)
+					origin.BackgroundColor3 = regionDeck.color
+					origin.BackgroundTransparency = 0.24
+					origin.TextScaled = true
+					origin.TextXAlignment = Enum.TextXAlignment.Center
+					origin.ZIndex = 8
+				end
 				local kindText = if c.category then (if english then englishCategories[c.category] or c.category else c.category)
 					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
 					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
