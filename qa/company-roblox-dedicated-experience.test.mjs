@@ -856,3 +856,35 @@ test('Mare eu_03 GIF uses sequential frames without layered hull motion',()=>{
   assert.equal(job.runtimeVerified,false);
   assert.equal(job.deploymentRequested,false);
 });
+
+test('Mare five continent decks and four categories remain distinct on hand board and enlarged cards',()=>{
+  const root='roblox-games/mare-essentia/';
+  const src=fs.readFileSync(root+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const manifest=JSON.parse(fs.readFileSync(root+'assets/cardart/region-art.json','utf8'));
+  assert.equal(manifest.cards.length,150);
+  const decks=['eu','ea','me','nw','af'];
+  const categories=['선박','유물','동물','지형·원더'];
+  for(const region of decks)assert.equal(manifest.cards.filter(x=>x.id.startsWith(region+'_')).length,30,region);
+  for(const category of categories)assert.ok(manifest.cards.some(x=>x.category===category),category);
+  assert.match(src,/local deckPalette = \{/);
+  assert.match(src,/local categoryPalette = \{/);
+  assert.match(src,/local function cardVisualStyle\(card\)/);
+  for(const region of decks)assert.match(src,new RegExp('\\b'+region+' = \\{ ko = '),region);
+  for(const category of categories)assert.ok(src.includes('["'+category+'"] = { ko ='),category);
+  assert.match(src,/deckLabel.Name = "CardDeck"/);
+  assert.match(src,/kindLabel.Name = "CardCategory"/);
+  assert.match(src,/focusDeck.Name = "DeckCategory"/);
+  assert.match(src,/focusDeck.Text = deckName \.\. " · " \.\. categoryName/);
+  assert.match(src,/focusEdge.Color = deckColor/);
+  assert.match(src,/frameEdge\(f, deckColor, 4\)/);
+  assert.match(src,/local edge = frameEdge\(b, deckColor, 6\)/);
+  assert.match(src,/selected.UIStroke.Color = selected:GetAttribute\("DeckColor"\) or brass/);
+  assert.match(src,/cardRatio.AspectRatio = 0\.69/);
+  assert.match(src,/focusRatio.AspectRatio = 0\.69/);
+  assert.match(src,/b.Activated:Connect\(function\(\)/);
+  assert.match(src,/showCardCodex\(c\)/);
+  assert.match(src,/BC.play\(m, "me", i\)/);
+  assert.equal(src.split('RunService.RenderStepped:Connect(').length-1,1);
+  const battle=fs.readFileSync(root+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
+  assert.match(battle,/B.Units.eu_03 = \{[^\n]+power=6, weapon="cannon", ability="armor"/);
+});
