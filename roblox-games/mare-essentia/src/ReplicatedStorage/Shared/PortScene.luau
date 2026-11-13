@@ -2679,6 +2679,7 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("R15SparringStage", Vector3.new(0, 120, 0))
 		for _, fighter in sparring do
 			fighter.mode = "sparring"
+			fighter.model:SetAttribute("R15MotionStageActor", true)
 		end
 		print("[MareEssentia] 항구 R15 대련 테스트 시작: 기존 주민 2명")
 	elseif RunService:IsStudio() then
