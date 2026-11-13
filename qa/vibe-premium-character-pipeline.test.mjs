@@ -22,7 +22,7 @@ test('Vibe 5.9 model switches replace stale animation selection listeners',()=>{
 test('Vibe 5.9 authored clip resolver prioritizes exact names and action tokens',()=>{
  const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
  assert.match(adapter,/name\.split\(\/\[\^a-z0-9\]\+\/\)\.includes\(expected\)/);
- assert.match(adapter,/row\.name\.startsWith\(expected\)/);
+ assert.doesNotMatch(adapter,/row\.name\.startsWith\(expected\)/);
  assert.match(adapter,/\['cycle','loop','forward','inplace'\]\.some\(suffix=>token===expected\+suffix\)/);
  assert.doesNotMatch(adapter,/row\.name\.includes\(expected\)/);
 });
