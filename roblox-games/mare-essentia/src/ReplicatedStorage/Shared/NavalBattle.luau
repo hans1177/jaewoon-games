@@ -1213,7 +1213,8 @@ function NavalBattle.play(opts)
 			local function step(dt)
 				if not active then return end
 				elapsed += math.max(0, dt) -- 시간 기준 보간: 느린 기기에서도 속도가 누적 지연되지 않음.
-				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
+				local focused = art:GetAttribute("ArtFocused") == true
+					or (art.Parent ~= nil and art.Parent:GetAttribute("ArtFocused") == true)
 				-- 갈레온은 카드 위에서도 움직이되, 고비용 3D 뷰는 동시에 2개만 유지한다.
 				if focused or (card.id == "eu_03" and (view ~= nil or activeGalleonViews < 2)) then
 					ensureScene()
