@@ -366,7 +366,11 @@ test('Studio Auto QA routes Mare publisher by workflow path without launching Fo
   assert.ok(qa.includes('contains(" · fantasy-survival ·")')); // 기존 대기 마력숲 Studio는 취소만 한다.
   assert.doesNotMatch(qa,/gh workflow run devloop-studio\.yml[^\n]*fantasy-survival/);
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
-  assert.ok(!qa.includes('schedule:'));
+  // 승인된 대항해시대 단일 일일 정밀검사는 유지하되 중복 예약을 방지한다.
+  assert.match(qa,/  schedule:\n    - cron: '43 3 \* \* \*'/);
+  assert.equal(qa.split('  schedule:').length-1,1);
+  assert.match(qa,/if \[ "\$GITHUB_EVENT_NAME" = "schedule" \]; then/);
+  assert.match(qa,/STUDIO_DEEP_QA_SKIP=RECENT_FULL/);
 });
 
 // [배포키 일원화] 차단된 기존 API 키를 마력숲 에셋 자동 복구에서 재사용하지 않는다.
@@ -824,4 +828,81 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     const actualGitSha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
     assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
   }
+});
+
+test('Mare 5-continent seven animated visual candidates reject geometric sources and preserve tap to zoom',()=>{
+  const base='roblox-games/mare-essentia/';
+  const manifest=JSON.parse(fs.readFileSync(base+'assets/cardart/region-art.json','utf8'));
+  const ids=['eu_03','eu_24','ea_02','ea_18','me_21','nw_18','af_18'];
+  assert.equal(manifest.cards.length,150,'preserve existing 150 definitions');
+  for(const id of ids)assert.ok(manifest.cards.find(card=>card.id===id),id);
+  const galleon=manifest.cards.find(card=>card.id==='eu_03');
+  assert.deepEqual([galleon.name,galleon.row,galleon.skill,galleon.motion,galleon.power,galleon.registered],
+    ['갈레온','cannon','armor','fire',6,false]);
+  const stonehenge=manifest.cards.find(card=>card.id==='eu_24');
+  assert.equal(stonehenge.name,'스톤헨지');
+  assert.equal(stonehenge.category,'지형·원더');
+  assert.equal(stonehenge.power,9);
+  assert.equal(stonehenge.hero,true);
+  assert.equal(stonehenge.registered,false);
+  const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  for(const id of ids)assert.match(source,new RegExp('\\b'+id+' = true'),'animated candidate '+id);
+  for(const id of ['me_01','me_24','nw_24','af_01'])
+    assert.doesNotMatch(source,new RegExp('\\b'+id+' = true'),'reject primitive stand-in '+id);
+  assert.match(source,/local spriteKey = "CardArt\/" \.\. tostring\(card\.id or ""\)/);
+  assert.match(source,/if ANIMATED_CARD_IDS\[card\.id\] and AssetIds\[spriteKey\] then/);
+  assert.match(source,/image.ImageRectSize = Vector2.new\(256, 256\)/);
+  assert.match(source,/local frame = math.floor\(elapsed \/ 0.08\) % 16/);
+  assert.match(source,/image.ImageRectOffset = Vector2.new\(\(frame % 4\) \* 256, math.floor\(frame \/ 4\) \* 256\)/);
+  assert.match(source,/local artwork = "CardArt\/" \.\. id/);
+  assert.match(source,/if AssetIds\[artwork\] then return artwork end/);
+  assert.match(source,/if deckPalette\[prefix\] then return nil end/);
+  assert.match(source,/f.Name = "BoardCard"/);
+  assert.match(source,/f.Activated:Connect\(function\(\)/);
+  assert.match(source,/local showCardCodex/);
+  assert.match(source,/showCardCodex\(c\)/);
+  assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
+  assert.match(source,/cardRatio.AspectRatio = 0\.69/);
+  for(const deck of ['eu','ea','me','nw','af'])assert.match(source,new RegExp('\\b'+deck+' = \\{ ko = '),deck);
+  for(const category of ['선박','유물','동물','지형·원더'])assert.ok(source.includes('["'+category+'"] = { ko = '),category);
+  assert.match(source,/deckLabel.Name = "CardDeck"/);
+  assert.match(source,/kindLabel.Name = "CardCategory"/);
+  assert.match(source,/focusDeck.Name = "DeckCategory"/);
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,
+    'reuse existing render loop');
+  assert.doesNotMatch(source,/GalleonCannonSmoke|GalleonWave|activeGalleonViews/);
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
+  assert.match(uploader,/approvedImages\[id\] !== hash/);
+  const wanted=JSON.parse(fs.readFileSync(base+'assets-wanted.json','utf8'));
+  const job=wanted.wanted.find(row=>row.id==='regional-naval-gwent-150');
+  assert.equal(job.productionVerified,false);
+  assert.equal(job.runtimeVerified,false);
+  assert.equal(job.deploymentRequested,false);
+});
+
+test('Mare uses existing registered Petra and Machu Picchu assets without false ship-image substitutes',()=>{
+  const base='roblox-games/mare-essentia/';
+  const registry=fs.readFileSync(base+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const cards=fs.readFileSync(base+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
+  const naval=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const folder=base+'assets/cardart/';
+  const exact={
+    me_24:['event_petra.jpg','event_petra','페트라'],
+    nw_24:['event_machu_picchu.jpg','event_machu_picchu','마추픽추'],
+  };
+  for(const [id,[filename,key,name]] of Object.entries(exact)){
+    assert.ok(fs.statSync(folder+filename).size>100000,id+' existing original JPG');
+    assert.match(registry,new RegExp('\\["CardArt/'+key+'"\\] = \\d+'));
+    assert.ok(cards.includes('B.Units.'+id+' = { id="'+id+'", name="'+name+'"'),id);
+    assert.ok(cards.includes('art="CardArt/'+key+'"'),id+' keeps canonical registered source');
+  }
+  assert.match(naval,/local spec = CARD_STAGE\[card\.id\] or card\.stage/);
+  assert.match(naval,/if AssetIds\[artwork\] then return artwork end/);
+  assert.match(naval,/return spec\.art or CARD_SEA/);
+  assert.ok(fs.statSync(folder+'src/me_01.svg').size>10000);
+  assert.ok(fs.statSync(folder+'src/af_01.svg').size>10000);
+  for(const id of ['me_01','af_01'])assert.doesNotMatch(naval,new RegExp('\\b'+id+' = true'));
+  const disable=fs.readFileSync(folder+'DISABLED.md','utf8');
+  assert.match(disable,/fetch_card_art\.py/);
 });

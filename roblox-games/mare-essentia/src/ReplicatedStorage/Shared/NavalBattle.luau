@@ -17,6 +17,18 @@ local ORIGIN = Vector3.new(6000, 0, 0)
 -- 해상전투에서 사용하는 기존 등록 도감 이미지
 local CARD_SEA = "CardArt/event_calm_seas"
 
+-- [10장 제작 샘플] 전체 그림을 순서대로 재생하는 퀜트형 프레임 시트.
+-- 원화는 CardArt/카드ID 에 승인 등록한 4x4/256px 단일 이미지다. 구형 부위별 레이어 모션은 사용하지 않는다.
+local ANIMATED_CARD_IDS = {
+	-- [원화 품질] 도형식 그림은 제외. 스톤헨지는 실물 거석·안개 모션으로 재제작해 포함한다.
+	-- 7장 모두 GIF 소스 검수 후보일 뿐이며, Roblox 이미지 자산 등록과 실제 런타임 QA 전에는 미완료다.
+	eu_03 = true, eu_24 = true,
+	ea_02 = true, ea_18 = true,
+	me_21 = true,
+	nw_18 = true,
+	af_18 = true,
+}
+
 -- 파일명: NavalBattle.luau / 해전 카드 원화 목록
 -- 백과사전 화풍: 기존 등록 도판을 배경으로 사용하고, 역할과 맞는 승인된 모델·동작만 입힌다.
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
@@ -66,6 +78,15 @@ local CARD_STAGE = {
 -- [지역별 오브젝트 도판] 기존 등록 그림과 카드 자체 스킬·장면 데이터를 그대로 연결한다.
 local function cardArtworkKey(card)
 	local spec = CARD_STAGE[card.id] or card.stage
+	-- [지역 카드 GIF] 승인·등록된 4x4 프레임 시트만 기존 전투 카드에서 사용한다.
+	local id = tostring(card.id or "")
+	local region, serial = string.match(id, "^([a-z][a-z])_(%d%d)$")
+	local slot = tonumber(serial)
+	if (region == "eu" or region == "ea" or region == "me" or region == "nw" or region == "af")
+		and slot and slot >= 1 and slot <= 30 then
+		local artwork = "CardArt/" .. id
+		if AssetIds[artwork] then return artwork end
+	end
 	if not spec then return CARD_SEA end
 	if spec.newArt and AssetIds[spec.newArt] then return spec.newArt end
 	return spec.art or CARD_SEA
@@ -614,7 +635,31 @@ function NavalBattle.play(opts)
 		}
 
 		local englishRows = { melee = "Melee", ranged = "Ranged", cannon = "Cannon" }
-		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark" }
+		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Wonder" }
+		-- [카드 덱 / 분류] 기존 BoardingCards ID와 category만 시각적으로 구분한다. 전투·저장 구조 불변.
+		local deckPalette = {
+			eu = { ko = "유럽", en = "Europe", color = Color3.fromRGB(59, 96, 151) },
+			ea = { ko = "동아시아", en = "East Asia", color = Color3.fromRGB(159, 62, 70) },
+			me = { ko = "중동", en = "Middle East", color = Color3.fromRGB(60, 124, 117) },
+			nw = { ko = "신대륙", en = "New World", color = Color3.fromRGB(83, 129, 72) },
+			af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(171, 118, 55) },
+		}
+		local categoryPalette = {
+			["선박"] = { ko = "함선", en = "Ship", color = Color3.fromRGB(51, 85, 125) },
+			["유물"] = { ko = "유물", en = "Relic", color = Color3.fromRGB(140, 98, 51) },
+			["동물"] = { ko = "동물", en = "Animal", color = Color3.fromRGB(70, 105, 67) },
+			["지형·원더"] = { ko = "원더", en = "Wonder", color = Color3.fromRGB(111, 74, 139) },
+		}
+		local function cardVisualStyle(card)
+			local prefix = string.match(tostring(card.id or ""), "^(%a%a)_%d%d$")
+			local deck = deckPalette[prefix]
+			local group = categoryPalette[card.category]
+			return
+				if deck then (if english then deck.en else deck.ko) else t("공용", "Neutral"),
+				if group then (if english then group.en else group.ko) elseif card.special then t("전술", "Tactic") else t("병종", "Unit"),
+				if deck then deck.color else Color3.fromRGB(158, 113, 59),
+				if group then group.color else Color3.fromRGB(90, 71, 57)
+		end
 		local englishAbilities = { bond = "Bond", morale = "Morale", spy = "Spy", medic = "Medic", armor = "Armor", snipe = "Snipe" }
 		local englishDetails = {
 			bond = "Matching units bond together for up to triple strength",
@@ -969,13 +1014,19 @@ function NavalBattle.play(opts)
 
 		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
 		local animateCardArt
+		local showCardCodex
+		local selectedPlay
 		local function chip(parent, c, w, power, moving)
-			local f = Instance.new("Frame")
+			local f = Instance.new("TextButton")
+			f.Name = "BoardCard"
+			f.Text = ""
+			f.AutoButtonColor = false
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
 			f.Parent = parent
-			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			local deckName, categoryName, deckColor, groupColor = cardVisualStyle(c)
+			frameEdge(f, deckColor, 4)
 			local plate = Instance.new("Frame")
 			plate.Size = UDim2.fromScale(1, 0.8)
 			plate.BackgroundColor3 = Color3.fromRGB(90, 68, 46)
@@ -993,7 +1044,10 @@ function NavalBattle.play(opts)
 			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
-			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
+			if moving then
+				local motion = animateCardArt(plate, painting, c)
+				if motion then table.insert(cardMotions, motion) end
+			end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
 			blackWash.Transparency = NumberSequence.new({
@@ -1004,8 +1058,14 @@ function NavalBattle.play(opts)
 			blackWash.Parent = painting
 			local tag = label(f, cardName(c), 11, Color3.fromRGB(255, 237, 188), true)
 			tag.Position = UDim2.fromScale(0.03, 0.04)
-			tag.Size = UDim2.fromScale(0.94, 0.38)
+			tag.Size = UDim2.fromScale(0.94, 0.30)
 			tag.TextScaled = true
+			local classMark = label(f, deckName .. " · " .. categoryName, 9, Color3.fromRGB(255, 244, 219), true)
+			classMark.Position = UDim2.fromScale(0.03, 0.37)
+			classMark.Size = UDim2.fromScale(0.94, 0.20)
+			classMark.TextScaled = true
+			classMark.BackgroundColor3 = groupColor
+			classMark.BackgroundTransparency = 0.12
 			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
 			stamp.AnchorPoint = Vector2.new(0.5, 1)
 			stamp.Position = UDim2.fromScale(0.5, 0.97)
@@ -1015,10 +1075,48 @@ function NavalBattle.play(opts)
 			stamp.BackgroundColor3 = paper
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
+			-- [전장 카드] 적·아군 모두 한 번 탭하면 확대; 이미 놓은 카드는 다시 사용하지 못한다.
+			f.Activated:Connect(function()
+				if playing or finished or not f.Parent then return end
+				selectedPlay = nil
+				showCardCodex(c)
+			end)
 		end
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
 		animateCardArt = function(art, image, card)
+			-- [퀜트식 GIF 프레임] Roblox ImageLabel은 GIF 재생을 지원하지 않으므로
+			-- 승인된 16장 시트만 한 장의 이미지에서 순서대로 표시한다. 부위/레이어 보간 없음.
+			-- 원본 GIF: 16프레임 × 80ms, 5대륙 샘플 10종, 4열×4행(256×256). 카드 크기는 원래 0.69.
+			local spriteKey = "CardArt/" .. tostring(card.id or "")
+			if ANIMATED_CARD_IDS[card.id] and AssetIds[spriteKey] then
+				image.Image = "rbxassetid://" .. tostring(AssetIds[spriteKey])
+				image.ImageRectSize = Vector2.new(256, 256)
+				image.ImageRectOffset = Vector2.new(0, 0)
+				image.ImageColor3 = Color3.new(1, 1, 1)
+				local elapsed = 0
+				local active = true
+				local destroying
+				local function stop()
+					if not active then return end
+					active = false
+					if destroying then destroying:Disconnect() end
+					image.ImageRectSize = Vector2.zero
+					image.ImageRectOffset = Vector2.zero
+				end
+				local function step(dt)
+					if not active then return end
+					elapsed += math.max(0, dt)
+					local frame = math.floor(elapsed / 0.08) % 16
+					image.ImageRectOffset = Vector2.new((frame % 4) * 256, math.floor(frame / 4) * 256)
+				end
+				destroying = art.Destroying:Connect(stop)
+				return { step = step, stop = stop }
+			end
+			-- [단일 오브젝트] 5대륙 카드는 한 장의 등록 그림만 보여 준다.
+			-- GIF 미등록 카드를 3D 모델로 덮지 않으며, 기존 도판은 그대로 남긴다.
+			local prefix = string.match(tostring(card.id or ""), "^(%a%a)_%d%d$")
+			if deckPalette[prefix] then return nil end
 			local spec = CARD_STAGE[card.id] or card.stage or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local function template(key)
@@ -1337,10 +1435,18 @@ function NavalBattle.play(opts)
 		focusImage.Parent = focusArtwork
 		local focusName = label(focusFrame, "", 17, Color3.fromRGB(247, 211, 151), true)
 		focusName.Position = UDim2.fromScale(0.045, 0.017)
-		focusName.Size = UDim2.fromScale(0.8, 0.075)
+		focusName.Size = UDim2.fromScale(0.51, 0.075)
+		focusName.TextScaled = true
 		focusName.TextStrokeTransparency = 0.38
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
+		local focusDeck = label(focusFrame, "", 12, Color3.fromRGB(255, 243, 218), true)
+		focusDeck.Name = "DeckCategory"
+		focusDeck.Position = UDim2.fromScale(0.565, 0.017)
+		focusDeck.Size = UDim2.fromScale(0.27, 0.075)
+		focusDeck.TextScaled = true
+		focusDeck.BackgroundTransparency = 0.08
+		focusDeck.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
 		focusRule.Position = UDim2.fromScale(0.035, 0.75)
 		focusRule.Size = UDim2.fromScale(0.93, 0.17)
@@ -1377,9 +1483,8 @@ function NavalBattle.play(opts)
 		focusClose.ZIndex = 55
 		focusClose.Parent = focusFrame
 		frameEdge(focusClose, brass, 4)
-		local selectedPlay
 		local focusMotion
-		local function showCardCodex(card)
+		showCardCodex = function(card)
 			if focusMotion then
 				focusMotion.stop()
 				for i = #cardMotions, 1, -1 do
@@ -1409,18 +1514,23 @@ function NavalBattle.play(opts)
 			local artKey = cardArtworkKey(card)
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusName.Text = cardName(card)
+			local deckName, categoryName, deckColor, groupColor = cardVisualStyle(card)
+			focusDeck.Text = deckName .. " · " .. categoryName
+			focusDeck.BackgroundColor3 = groupColor
+			focusEdge.Color = deckColor
 			local row = if card.row then rowName(card.row) else t("전술", "Tactic")
 			local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 			local description = cardDescription(card)
 			local lore = cardLore(card)
 			focusRule.Text = row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
-			table.insert(cardMotions, focusMotion)
+			if focusMotion then table.insert(cardMotions, focusMotion) end
+			focusUse.Visible = selectedPlay ~= nil
 		end
 		local function closeCardCodex()
 			if selected and selected.Parent then
 				selected.Rotation = 0
-				selected.UIStroke.Color = brass
+				selected.UIStroke.Color = selected:GetAttribute("DeckColor") or brass
 				selected:SetAttribute("ArtFocused", false)
 			end
 			selected = nil
@@ -1433,7 +1543,7 @@ function NavalBattle.play(opts)
 			if selectedPlay then selectedPlay() end
 		end)
 		focusTap.Activated:Connect(function()
-			if selectedPlay then selectedPlay() end
+			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
 			selectedPlay = nil
@@ -1526,6 +1636,7 @@ function NavalBattle.play(opts)
 				hints, bestHint = BC.hint(m, "me")
 			end
 			for i, c in m.hand.me do
+				local deckName, categoryName, deckColor, groupColor = cardVisualStyle(c)
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 140, 1, -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
@@ -1535,6 +1646,7 @@ function NavalBattle.play(opts)
 				b.LayoutOrder = i
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
+				b:SetAttribute("DeckColor", deckColor)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
 				b.TextScaled = true
@@ -1552,13 +1664,21 @@ function NavalBattle.play(opts)
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
-				local kindText = if c.category then (if english then englishCategories[c.category] or c.category else c.category)
-					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
-					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
-					else rowName(c.row)
-				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
-				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
-				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
+				local deckLabel = label(b, deckName, 10, Color3.fromRGB(255, 242, 213), true)
+				deckLabel.Name = "CardDeck"
+				deckLabel.Position = UDim2.fromScale(0.20, 0.03)
+				deckLabel.Size = UDim2.fromScale(0.36, 0.14)
+				deckLabel.BackgroundColor3 = deckColor
+				deckLabel.BackgroundTransparency = 0.06
+				deckLabel.TextScaled = true
+				deckLabel.ZIndex = 8
+				local kindLabel = label(b, categoryName, 10, Color3.fromRGB(255, 242, 213), true)
+				kindLabel.Name = "CardCategory"
+				kindLabel.Position = UDim2.fromScale(0.57, 0.03)
+				kindLabel.Size = UDim2.fromScale(0.40, 0.14)
+				kindLabel.BackgroundColor3 = groupColor
+				kindLabel.BackgroundTransparency = 0.06
+				kindLabel.TextScaled = true
 				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
 				kindLabel.TextStrokeTransparency = 0.28
 				kindLabel.ZIndex = 8
@@ -1581,7 +1701,8 @@ function NavalBattle.play(opts)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
 				image.Parent = art
-				table.insert(cardMotions, animateCardArt(art, image, c))
+				local motion = animateCardArt(art, image, c)
+				if motion then table.insert(cardMotions, motion) end
 				local caption = label(b, cardName(c), 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.7)
 				caption.Size = UDim2.fromScale(0.71, 0.27)
@@ -1611,7 +1732,8 @@ function NavalBattle.play(opts)
 					tipLabel.ZIndex = 8
 				end
 				b.Parent = handFrame
-				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
+				local edge = frameEdge(b, deckColor, 6)
+				edge.Thickness = if c.hero then 3 else 2
 
 				local function playChosenCard()
 					if playing or auto or finished or m.turn ~= "me" or m.over or selected ~= b or not b.Parent then return end
@@ -1653,13 +1775,14 @@ function NavalBattle.play(opts)
 					if selected ~= b then
 						if selected and selected.Parent then
 							selected.Rotation = 0
-							selected.UIStroke.Color = brass
+							selected.UIStroke.Color = selected:GetAttribute("DeckColor") or brass
 							selected:SetAttribute("ArtFocused", false)
 						end
 						b:SetAttribute("ArtFocused", true)
 						showCardCodex(c)
 						selected = b
 						selectedPlay = playChosenCard
+						focusUse.Visible = true
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
 						info.Text = cardName(c) .. " · " .. cardDescription(c)
