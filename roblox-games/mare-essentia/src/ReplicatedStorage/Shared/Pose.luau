@@ -583,6 +583,67 @@ function Pose.animateR15(model, st)
 	end
 end
 
+-- [로블록스 전용 R15 모션 제작기] 기존 NPC 관절을 사용해 직업/스킬별 액션을 실시간 합성한다.
+-- 게임의 공격 판정·스킬 수치·저장 구조는 변경하지 않는다.
+-- state: idle, walk, run, attack, shoot, reload, guard, hurt, cheer, talk
+-- progress: 동작 진행률(0~1), t: 누적 시간(초)
+function Pose.makeR15Action(model, state, progress, t)
+	local m = rigMotors[model]
+	if not m then return false end
+	local humanoid = model:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 then return false end
+	local p = math.clamp(tonumber(progress) or 0, 0, 1)
+	local time = tonumber(t) or 0
+	local A = CFrame.Angles
+	local wave = math.sin(p * math.pi)
+	local function set(joint, cf)
+		if joint and joint:IsA("Motor6D") then joint.Transform = cf end
+	end
+	-- 모든 관절을 초기화해 이전 동작이 다음 동작에 남지 않도록 한다.
+	for _, joint in m do set(joint, CFrame.identity) end
+	if state == "idle" then
+		set(m.waist, A(math.sin(time * 2) * 0.025, 0, 0))
+	elseif state == "walk" or state == "run" then
+		local speed = if state == "run" then 9 else 5
+		local stride = math.sin(time * speed) * (if state == "run" then 0.85 else 0.48)
+		set(m.leftLeg, A(stride, 0, 0)); set(m.rightLeg, A(-stride, 0, 0))
+		set(m.leftArm, A(-stride * 0.7, 0, 0)); set(m.rightArm, A(stride * 0.7, 0, 0))
+		set(m.leftKnee, A(math.max(0, -stride) * 0.6, 0, 0))
+		set(m.rightKnee, A(math.max(0, stride) * 0.6, 0, 0))
+	elseif state == "attack" then
+		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
+		set(m.rightElbow, A(-0.4 - wave * 0.5, 0, 0))
+		set(m.waist, A(wave * 0.2, -wave * 0.4, 0))
+	elseif state == "shoot" then
+		set(m.rightArm, A(-1.5 - wave * 0.2, 0, -0.15))
+		set(m.rightElbow, A(-0.2, 0, 0))
+		set(m.leftArm, A(-1.2, 0, 0.3))
+		set(m.waist, A(-wave * 0.08, -wave * 0.15, 0))
+	elseif state == "reload" then
+		set(m.leftArm, A(-1.2, 0, 0.3)); set(m.rightArm, A(-1.1, 0, -0.2))
+		set(m.leftElbow, A(-0.7 - wave * 0.3, 0, 0))
+		set(m.rightElbow, A(-0.8 + wave * 0.3, 0, 0))
+	elseif state == "guard" then
+		set(m.leftArm, A(-1.1, 0, 0.45)); set(m.rightArm, A(-1.2, 0, -0.4))
+		set(m.leftElbow, A(-0.8, 0, 0)); set(m.rightElbow, A(-0.8, 0, 0))
+	elseif state == "hurt" then
+		set(m.waist, A(-wave * 0.35, 0, wave * 0.18))
+		set(m.leftArm, A(-wave * 0.65, 0, 0.2))
+		set(m.rightArm, A(-wave * 0.65, 0, -0.2))
+	elseif state == "cheer" then
+		set(m.leftArm, A(-2.3 + wave * 0.2, 0, 0.25))
+		set(m.rightArm, A(-2.3 + wave * 0.2, 0, -0.25))
+		set(m.waist, A(-wave * 0.12, 0, 0))
+	elseif state == "talk" then
+		set(m.rightArm, A(-0.7 + math.sin(time * 3) * 0.3, 0, -0.2))
+		set(m.rightElbow, A(-0.6, 0, 0))
+		set(m.neck, A(0, math.sin(time) * 0.16, 0))
+	else
+		return false
+	end
+	return true
+end
+
 -- 쓰러지는 모션: alpha 0 -> 1 동안 뒤로 눕고 점점 투명해진다
 function Pose.dieR15(model, alpha)
 	local m = rigMotors[model]
