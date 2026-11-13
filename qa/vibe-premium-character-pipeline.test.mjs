@@ -2,6 +2,11 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 preview clamps original animation mixer delta after stalls',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/characterMotion\.mixer\.update\(Math\.min\(delta,\.1\)\)/);
+ assert.doesNotMatch(preview,/characterMotion\.mixer\.update\(delta\)/);
+});
 test('Vibe 5.9 GLB reload clears previous authored clips and mixer',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/if\(characterMotion\)\{characterMotion\.dispose\(\);characterMotion=null;\}/);
