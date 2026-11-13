@@ -2687,11 +2687,17 @@ function PortScene.build(info, onFacility)
 				local target = Vector3.new(center.X - offset.X, position.Y, center.Z)
 				w.model:PivotTo(CFrame.lookAt(position, target))
 				-- 두 주민이 한 번씩 번갈아 공격하고 상대는 방어·피격 반응을 한다.
+				local showcase = folder:GetAttribute("R15MotionShowcase")
+				local selected = folder:GetAttribute("R15MotionState")
 				local cycle = now % 3.2
 				local attacking = if cycle < 1.6 then side < 0 else side > 0
 				local phase = cycle % 1.6
 				local action = if attacking then (if phase < 0.35 then "guard" elseif phase < 1.05 then "attack" else "guard") else (if phase < 0.7 then "guard" elseif phase < 1.1 then "hurt" else "guard")
 				local progress = if action == "attack" then (phase - 0.35) / 0.7 elseif action == "hurt" then (phase - 0.7) / 0.4 else 0
+				if showcase and type(selected) == "string" then
+					action = selected
+					progress = (math.sin(now * 2.5) + 1) * 0.5
+				end
 				if not Pose.makeR15Action(w.model, action, progress, now) and not w.motionWarned then
 					w.motionWarned = true
 					warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
