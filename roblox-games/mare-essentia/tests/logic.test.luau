@@ -919,40 +919,6 @@ do
 	check("flee failure settles battle", fl.pendingBattle == nil and fl.lastBattle.fled == false)
 	check("resolve without battle fails", not (act(fl, "ResolveBattle", {})))
 
-	-- 카드 대결: 카드에서 이기면 전체 승리, 서버가 기록을 다시 돌려 검증한다
-	do
-		local BCx = D.BoardingCards
-		local function cardRun(tamper)
-			local cs = newState()
-			local dd = S.State.shipDef(cs)
-			cs.ship.hull, cs.ship.crew = dd.hull, dd.crew
-			act(cs, "Hunt", {})
-			local card = cs.pendingBattle.card
-			local m = BCx.build("gunnery", card.seed, { fighter = card.my, deckCards = S.Battle.deckCache[cs] }, { fighter = card.foe })
-			local acts, g = {}, 0
-			while not m.over and g < 400 do
-				g += 1
-				local side = m.turn
-				local ok, _, _, a = BCx.ai(m, side)
-				if side == "me" and ok then table.insert(acts, a) end
-			end
-			if tamper then table.insert(acts, { "p", 99 }) end
-			return cs, acts, m
-		end
-		local cs, acts, m = cardRun(false)
-		local c1 = cs.coins
-		local okC = act(cs, "CardBattle", { actions = acts })
-		local expect = if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw"
-		check("card battle: server replay agrees with the table", okC and cs.pendingBattle.winner == expect)
-		act(cs, "ResolveBattle", {})
-		check("card win means total victory", (m.winner ~= "me") or cs.coins > c1)
-		check("card loss means defeat", (m.winner ~= "foe") or cs.stats.battlesLost >= 1)
-		check("card result cannot be submitted twice", not act(cs, "CardBattle", { actions = acts }))
-		local cs2, acts2 = cardRun(true)
-		check("tampered card record rejected", not act(cs2, "CardBattle", { actions = acts2 }))
-		check("garbage card record rejected", not act(cs2, "CardBattle", { actions = { "x" } }))
-	end
-
 	-- 승패에 따라 보상/손실이 다르다
 	local win = newState()
 	local c0 = win.coins
@@ -1587,31 +1553,6 @@ do
 	ok, msg = act(st, "ChallengeBoss", { bossId = "sea_serpent" })
 	check("boss cooldown blocks", not ok, msg)
 	check("view lists bosses", #S.View.build(st, ctx).bosses == #D.Bosses.Bosses)
-
-	-- 보스전 카드 대결: 결과를 보류했다가, 카드 기록을 서버가 검증해 확정한다
-	do
-		local bs = newState("england")
-		bs.careers.battle.level = 10
-		bs.ship.id = "galleon"
-		local bdef = S.State.shipDef(bs)
-		bs.ship.hull, bs.ship.crew = bdef.hull, bdef.crew
-		local okB = act(bs, "ChallengeBoss", { bossId = "sea_serpent", cards = true })
-		check("boss card mode defers the result", okB and bs.pendingBattle ~= nil and bs.pendingBattle.bossId == "sea_serpent" and bs.pendingBattle.card.boss == true)
-		local c = bs.pendingBattle.card
-		local mB = D.BoardingCards.build("gunnery", c.seed, { fighter = c.my, deckCards = S.Battle.deckCache[bs] }, { fighter = c.foe, boss = true })
-		local actsB, gB = {}, 0
-		while not mB.over and gB < 400 do
-			gB += 1
-			local side = mB.turn
-			local okA, _, _, a = D.BoardingCards.ai(mB, side)
-			if side == "me" and okA then table.insert(actsB, a) end
-		end
-		check("boss card record accepted", act(bs, "CardBattle", { actions = actsB }))
-		local coins0 = bs.coins
-		act(bs, "ResolveBattle", {})
-		check("boss card win pays reward, loss does not", (mB.winner ~= "me") or bs.coins > coins0)
-		check("boss card result settles", bs.pendingBattle == nil and bs.stats.battlesWon + bs.stats.battlesLost >= (if mB.winner == "draw" then 0 else 1))
-	end
 
 	-- 저장 왕복과 변조 방어
 	local saved = S.State.serialize(st)

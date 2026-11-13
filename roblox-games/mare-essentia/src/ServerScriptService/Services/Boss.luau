@@ -88,24 +88,6 @@ return function(D, S)
 		end
 		local result = D.Combat.run(me, foe, ctx.rng)
 
-		if type(p) == "table" and p.cards == true then
-			-- 카드 대결 모드: 결과는 보류하고, 클라이언트의 카드 대결 기록을 서버가 다시 돌려 확정한다
-			local card = {
-				seed = math.floor(ctx.rng() * 1000000) + 1,
-				my = { cannons = me.cannons, cannonMult = me.cannonMult, crew = me.crew, level = me.level },
-				foe = { cannons = foe.cannons, cannonMult = foe.cannonMult, crew = foe.crew, level = foe.level },
-				boss = true,
-			}
-			state.pendingBattle = {
-				bossId = boss.id, hull = result.a.hull, crew = result.a.crew, fuel = result.a.fuel, startFuel = startFuel,
-				winner = result.winner, reason = result.reason, fleeChance = 0, card = card,
-				startHull = state.ship.hull, startCrew = state.ship.crew,
-			}
-			state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = boss.name, canFlee = false, pending = true, card = card }
-			table.insert(msgs, "카드 대결로 승부를 가린다!")
-			return true, table.concat(msgs, "\n")
-		end
-
 		state.ship.hull = math.max(1, math.floor(result.a.hull))
 		state.ship.crew = math.max(1, math.floor(result.a.crew))
 		local used = startFuel - result.a.fuel
