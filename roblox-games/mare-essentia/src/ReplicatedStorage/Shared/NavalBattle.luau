@@ -1114,7 +1114,7 @@ function NavalBattle.play(opts)
 						end
 					end
 				end
-			if not actor and not prop then
+				if not actor and not prop then
 					sceneFailed = true
 					releaseScene()
 				end
@@ -1199,6 +1199,53 @@ function NavalBattle.play(opts)
 			combatFlash.BorderSizePixel = 0
 			combatFlash.ZIndex = image.ZIndex + 4
 			combatFlash.Parent = art
+
+			-- [갈레온 퀜트식 카드] 원본 선박 메시와 별개로 파도 3겹·함포 연기 3겹을 독립 재생한다.
+			-- 이미지/3D와 함께 기존 카드 RenderStepped 한 개에서만 갱신하며 새 파일·새 연결은 만들지 않는다.
+			local galleonWaves, galleonSmoke = {}, {}
+			if card.id == "eu_03" then
+				for index = 1, 3 do
+					local wave = Instance.new("Frame")
+					wave.Name = "GalleonWave" .. index
+					wave.AnchorPoint = Vector2.new(0, 0.5)
+					wave.Position = UDim2.fromScale(-0.17, 0.76 + index * 0.035)
+					wave.Size = UDim2.fromScale(1.28, 0.017 + index * 0.005)
+					wave.BackgroundColor3 = Color3.fromRGB(175, 213, 213)
+					wave.BackgroundTransparency = 0.84
+					wave.BorderSizePixel = 0
+					wave.ZIndex = image.ZIndex + 3
+					wave.Parent = art
+					local edge = Instance.new("UICorner")
+					edge.CornerRadius = UDim.new(1, 0)
+					edge.Parent = wave
+					local fadeWave = Instance.new("UIGradient")
+					fadeWave.Transparency = NumberSequence.new({
+						NumberSequenceKeypoint.new(0, 1),
+						NumberSequenceKeypoint.new(0.25, 0.3),
+						NumberSequenceKeypoint.new(0.7, 0.18),
+						NumberSequenceKeypoint.new(1, 1),
+					})
+					fadeWave.Parent = wave
+					table.insert(galleonWaves, wave)
+				end
+				for index = 1, 3 do
+					local puff = Instance.new("Frame")
+					puff.Name = "GalleonCannonSmoke" .. index
+					puff.AnchorPoint = Vector2.new(0.5, 0.5)
+					puff.Position = UDim2.fromScale(0.24 + index * 0.15, 0.66)
+					puff.Size = UDim2.fromScale(0.09, 0.065)
+					puff.BackgroundColor3 = Color3.fromRGB(213, 204, 177)
+					puff.BackgroundTransparency = 1
+					puff.BorderSizePixel = 0
+					puff.ZIndex = image.ZIndex + 4
+					puff.Parent = art
+					local round = Instance.new("UICorner")
+					round.CornerRadius = UDim.new(1, 0)
+					round.Parent = puff
+					table.insert(galleonSmoke, puff)
+				end
+			end
+
 			local function stop()
 				if not active then return end
 				active = false
@@ -1209,6 +1256,8 @@ function NavalBattle.play(opts)
 				shine:Destroy()
 				inscription:Destroy()
 				combatFlash:Destroy()
+				for _, wave in galleonWaves do wave:Destroy() end
+				for _, puff in galleonSmoke do puff:Destroy() end
 			end
 			local function step(dt)
 				if not active then return end
@@ -1256,6 +1305,28 @@ function NavalBattle.play(opts)
 					else 1
 				shine.Position = UDim2.fromScale((elapsed % 5.5) / 5.5 * 1.8 - 0.5, -0.2)
 				shine.BackgroundTransparency = if focused or card.hero then 0.74 else 0.94
+				-- [독립 파도] 각 물결이 서로 다른 주기로 움직여 선체 기울기와 같은 반복으로 보이지 않게 한다.
+				for index, waveLayer in galleonWaves do
+					local phase = elapsed * (1.18 + index * 0.16) + index * 1.21
+					waveLayer.Position = UDim2.fromScale(
+						-0.17 + 0.05 * math.sin(phase * 0.73),
+						0.76 + index * 0.035 + 0.017 * math.sin(phase))
+					waveLayer.Size = UDim2.fromScale(1.28 + 0.035 * math.sin(phase * 0.51), 0.017 + index * 0.005)
+					waveLayer.BackgroundTransparency = 0.81 + 0.075 * math.sin(phase * 1.13)
+				end
+				-- [독립 포연] 포격 순간에 생성되어 개별 상승·팽창·소멸하고 다음 발사 때 다시 시작한다.
+				local smokeElapsed = (beat - 0.48 + 1) % 1
+				for index, puff in galleonSmoke do
+					local age = (smokeElapsed - (index - 1) * 0.022 + 1) % 1
+					local progress = age / 0.34
+					puff.BackgroundTransparency = if age < 0.34 then 0.36 + 0.64 * progress else 1
+					if age < 0.34 then
+						puff.Position = UDim2.fromScale(
+							0.25 + (index - 1) * 0.15 + 0.07 * progress,
+							0.67 - 0.18 * progress + 0.022 * math.sin(elapsed * 0.85 + index))
+						puff.Size = UDim2.fromScale(0.09 + 0.12 * progress, 0.065 + 0.15 * progress)
+					end
+				end
 				if actor and actorPivot then
 					local jump = if motion == "pounce" then 0.95 * impact
 						elseif motion == "gallop" then 0.24 * math.abs(wave)
