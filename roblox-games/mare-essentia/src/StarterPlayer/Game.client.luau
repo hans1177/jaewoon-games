@@ -797,6 +797,16 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	if subtitle and subtitle ~= "" then
 		mkLabel(textBox, subtitle, 12, INK_SOFT, false)
 	end
+	-- 버튼이 많아 글자 칸이 좁아지면 부제가 줄바꿈되어 행 밖으로 잘린다. 글이 길면 행 높이를 늘려 맞춘다.
+	local baseHeight = height or 60
+	local function fitRowHeight()
+		local need = layout.AbsoluteContentSize.Y + 8
+		if need > baseHeight and row.Size.Y.Offset ~= need then
+			row.Size = UDim2.new(1, -6, 0, need)
+		end
+	end
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRowHeight)
+	task.defer(fitRowHeight)
 
 	if buttons then
 		for i, spec in buttons do
