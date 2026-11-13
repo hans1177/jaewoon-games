@@ -1820,9 +1820,9 @@ function NavalBattle.play(opts)
 				if active and mode.kind == "gun" then
 					Pose.work(c.rig, "hammer", now + c.idx * 0.3)
 				elseif active and (mode.kind == "melee" or mode.kind == "shoot") then
-					Pose.animateR15(c.rig, { phase = now * 4 + c.idx, moving = false, t = now, attack = math.clamp(((now + c.idx * 0.15) % 0.8) / 0.4, 0, 1) })
+					Pose.makeR15Action(c.rig, if mode.kind == "shoot" then "shoot" else "attack", math.clamp(((now + c.idx * 0.15) % 0.8) / 0.4, 0, 1), now)
 				else
-					Pose.animateR15(c.rig, { phase = now * 2 + c.idx, moving = false, t = now, attack = 0 })
+					Pose.makeR15Action(c.rig, "idle", 0, now + c.idx)
 				end
 			end
 		end
