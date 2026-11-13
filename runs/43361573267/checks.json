@@ -1,0 +1,147 @@
+{
+  "runId": "43361573267",
+  "kind": "studio",
+  "sourceRevision": "1f66bb30ad81e76d75df59a5b0b7512f04418505",
+  "result": "FAIL",
+  "failureStage": "STUDIO_EXECUTION",
+  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+  "summary": {
+    "plannedSteps": 14,
+    "completedSteps": 11,
+    "plannedClicks": 1,
+    "successfulClicks": 0,
+    "skippedOptionalClicks": 0,
+    "plannedFrames": 3,
+    "capturedFrames": 2,
+    "abortedEarly": true
+  },
+  "errors": [
+    "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
+  ],
+  "audits": {
+    "models": "NOT_RUN",
+    "registered": "NOT_RUN",
+    "features": "NOT_RUN",
+    "registry": "NOT_RUN"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 1,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 2,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 3,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 4,
+      "type": "capture",
+      "name": "t0_main",
+      "status": "PASS",
+      "screenshots": [
+        "t0_main-0.jpg"
+      ]
+    },
+    {
+      "step": 5,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 6,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 7,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 8,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 9,
+      "type": "capture",
+      "name": "t2_hall",
+      "status": "PASS",
+      "screenshots": [
+        "t2_hall-0.jpg"
+      ]
+    },
+    {
+      "step": 10,
+      "type": "click_text",
+      "name": "흥정하기",
+      "status": "FAIL",
+      "screenshots": []
+    },
+    {
+      "step": 11,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 12,
+      "type": "capture",
+      "name": "t3_haggle",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 13,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    }
+  ],
+  "screenshotComparison": [
+    {
+      "name": "t0_main-0.jpg",
+      "sha256": "a47bd52093ddfa436c5115706d9550e84a5f9310294af65196ead3ba2333449e",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43361573267/t0_main-0.jpg"
+    },
+    {
+      "name": "t2_hall-0.jpg",
+      "sha256": "f80c955ec8abc7e1ac6b39d0f32f1ba0cb250342dc803df58a339865ba37c7c4",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43361573267/t2_hall-0.jpg"
+    }
+  ],
+  "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
+  "previousRunId": "43361163225"
+}
