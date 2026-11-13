@@ -265,7 +265,29 @@ local SHIP_MESH = {
 	paddle_steamer = "ship-pirate-small", ironclad_frigate = "ship-pirate-medium",
 }
 
+-- 색이 입혀지지 않은 수입 모델(회색·옅은 파랑으로 보임)에 자연스러운 색을 입힌다.
+local ANIMAL_TINT = {
+	cow = Color3.fromRGB(168, 118, 84), horse = Color3.fromRGB(136, 88, 58), sheep = Color3.fromRGB(240, 236, 224),
+	pig = Color3.fromRGB(238, 170, 160), llama = Color3.fromRGB(214, 192, 152), donkey = Color3.fromRGB(128, 116, 104),
+	["dog-pug"] = Color3.fromRGB(196, 156, 104), cat = Color3.fromRGB(86, 80, 76), chicken = Color3.fromRGB(250, 246, 236),
+	elephant = Color3.fromRGB(128, 126, 130),
+}
+local ASSET_TINT = {
+	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(58, 108, 70), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	["plant-bush"] = Color3.fromRGB(78, 128, 58), tree_large = Color3.fromRGB(70, 124, 76), tree_tiny = Color3.fromRGB(76, 130, 80),
+	["crops-wheatstagea"] = Color3.fromRGB(216, 184, 92), ["crops-wheatstageb"] = Color3.fromRGB(176, 190, 92), ["crops-cornstagec"] = Color3.fromRGB(150, 172, 72),
+	["crop-carrot"] = Color3.fromRGB(230, 128, 48), ["crop-melon"] = Color3.fromRGB(110, 168, 78), ["crop-pumpkin"] = Color3.fromRGB(230, 138, 40), ["crop-turnip"] = Color3.fromRGB(226, 214, 232),
+}
+local function assetTint(kind, asset)
+	if kind == "Animals" then return ANIMAL_TINT[asset] end
+	if ASSET_TINT[asset] then return ASSET_TINT[asset] end
+	if string.find(asset, "fence", 1, true) then return Color3.fromRGB(142, 102, 64) end
+	if string.find(asset, "rock-", 1, true) then return Color3.fromRGB(148, 142, 134) end
+	return nil
+end
+
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	tint = tint or assetTint(kind, asset)
 	local library = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = library and library:FindFirstChild(kind)
 	local template = group and group:FindFirstChild(asset)
@@ -1589,10 +1611,19 @@ local function densify(folder, info, style, rng, walkers, made)
 				put("Town", "bench_A", 3.6, cx, cz, false)
 				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
 			else -- farm
-				local crops = if hotKey then { "crops-cornstagec", "crop-melon", "crop-pumpkin" } else { "crops-wheatstagea", "crop-turnip", "crop-carrot" }
+				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
+				local crops
+				if key == "japan" or key == "china" or key == "seasia" then
+					crops = { { "Terrain", "crops-wheatstageb", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
+				elseif hotKey then
+					crops = { { "Cargo", "corn", 3.2 }, { "Cargo", "pumpkin", 2.8 }, { "Terrain", "crop-melon", 5 } }
+				else
+					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
+				end
 				for row = -1, 1 do
+					local cr = crops[(row + 1) % #crops + 1]
 					for k = -3, 3 do
-						put("Terrain", crops[(row + 1) % #crops + 1], 5, cx + k * 5, cz + row * 7, false)
+						put(cr[1], cr[2], cr[3], cx + k * 5, cz + row * 7, false)
 					end
 				end
 				for k = -3, 3 do
@@ -2232,7 +2263,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
 	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
-	local trees = if key == "japan" then { "tree-pinedefaulta", "tree-pinedefaulta", "tree-oak" } elseif hot then { "palm-detailed-straight", "tree-crooked", "tree_large" } elseif cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
+	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" } elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" } elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
 	for i = 1, 150 do
 		local side = if i % 2 == 0 then 1 else -1
 		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
@@ -2242,7 +2273,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for i = 1, 30 do
 		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
-		importedModel(folder, "Terrain", trees[1] == "tree-pinedefaulta" and "tree-pinedefaulta" or "tree-oak", pos, rng:NextNumber(8, 13), false)
+		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town", trees[1], pos, rng:NextNumber(8, 13), false)
 	end
 end
 
