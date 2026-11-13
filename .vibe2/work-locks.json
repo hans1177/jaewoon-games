@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-11of91l",
+      "worker": "vibe2",
+      "taskId": "realistic-builder-studio-evolution-roblox-usability-v1",
+      "gameId": "realistic-builder",
+      "files": [
+        "roblox-games/realistic-builder/client/Game.client.luau",
+        "roblox-games/realistic-builder/shared/GameConfig.luau",
+        "roblox-games/realistic-builder/server/Game.server.luau",
+        "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
+        "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+        "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
+      ],
+      "baseSha": "e47f8b4db76d7c15ab495c94a5366e115dec9adb",
+      "runId": "43517301308",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-13T22:17:47.418Z",
+      "expiresAt": "2026-11-13T23:02:47.418Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:realistic-builder-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
