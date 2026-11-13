@@ -163,6 +163,24 @@ test('WEB provider cooldown preserves source budget and allows other owner games
     assert.equal(failed.exhausted,true);
     assert.equal(failed.queue.tasks[0].status,'blocked');
   }
+  // 실전 혼합 실패: Gemini 두 슬롯 429 + OpenRouter 고정 무료 모델 400.
+  const mixedLog='WEB_VIBE_WORKER_BLOCKED=GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'
+    +'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429,'
+    +'OPENROUTER:google/gemma-4-31b-it:free:HTTP_400:NEXT_RETRY_AT=2026-10-29T06:59:59.528Z';
+  const mixed=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:mixedLog});
+  assert.equal(mixed.failureClass,'PROVIDER_COOLDOWN');
+  assert.equal(mixed.attempts,2);
+  assert.equal(mixed.queue.tasks[0].status,'queued');
+  assert.equal(mixed.queue.tasks[0].recoveryNextAt,'2026-10-29T06:59:59.528Z');
+  assert.deepEqual(mixed.queue.tasks[1],other);
+  for(const line of [
+    mixedLog.replace('gemini-3.5-flash-lite:HTTP_429','gemini-3.5-flash-lite:HTTP_400'),
+    mixedLog.replace('gemini-3.8-flash:HTTP_429','gemini-3.8-flash:HTTP_403')
+  ]){
+    const denied=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:line});
+    assert.equal(denied.exhausted,true);
+    assert.equal(denied.queue.tasks[0].status,'blocked');
+  }
   const noDate=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:failureLog.split(':NEXT_RETRY_AT=')[0]});
   assert.equal(noDate.queue.tasks[0].recoveryNextAt,'2026-10-29T03:16:46.000Z');
   assert.equal(recordWebVibeRecoveryFailure({...queue,tasks:[{...task,status:'review'}]},task.id,{now,failureLog}).changed,false);
