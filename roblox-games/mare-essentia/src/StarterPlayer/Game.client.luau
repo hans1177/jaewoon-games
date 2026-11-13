@@ -437,7 +437,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
 		if portraitOffset then
 			portrait.ImageRectOffset = portraitOffset
-			portrait.ImageRectSize = Vector2.new(256, 336)
+			-- 정사각 칸에 세로로 긴 초상(256x336)을 넣으면 위아래가 잘려 머리가 잘린다: 위쪽 정사각(머리~어깨)만 쓴다.
+			portrait.ImageRectSize = Vector2.new(256, 256)
 		end
 		portrait.ScaleType = if portraitOffset then Enum.ScaleType.Crop else Enum.ScaleType.Fit
 		H.iconPaper(portrait, px)
@@ -992,6 +993,8 @@ local COMPANION_MODEL = {
 	n_england = "Casual3_Male", n_netherlands = "Casual2_Male", n_france = "OldClassy_Male",
 	n_portugal = "Casual_Male", n_ottoman = "Casual2_Male", n_swahili = "Worker_Male",
 	n_malabar = "Worker_Male", n_japan = "Soldier_Male", n_new_spain = "Worker_Male",
+	-- 초상이 아직 없는 인물도 빈칸 대신 알맞은 인물 모델로 연결한다
+	c_harrison = "OldClassy_Male", c_lind = "Doctor_Male_Old", n_china = "Casual_Male", n_spain = "Casual2_Male", n_korea = "Casual_Male",
 }
 -- 초상화 시트: 왼쪽부터 상인·항만 관리관·조선 장인 / 주점 주인·학자·항해가.
 -- 나이와 직업이 다른 인물을 사용한다. 나라·역할이 맞지 않으면 기존 인물 모델을 보존한다.
@@ -7919,7 +7922,11 @@ end
 		im.Image = "rbxassetid://" .. tostring(atlas)
 		im.ImageRectOffset = off
 		im.ImageRectSize = size
-				corner(im, if paper then 2 else 8)
+		-- 칸이 타일보다 넓으면 머리가 있는 위쪽부터 맞춰 자른다 (가운데 자르기는 정수리가 잘림)
+		if size.X > 0 and size.Y > 0 and w / h > size.X / size.Y then
+			im.ImageRectSize = Vector2.new(size.X, math.floor(size.X * h / w))
+		end
+		corner(im, if paper then 2 else 8)
 		if not paper then
 			local st = Instance.new("UIStroke")
 			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
