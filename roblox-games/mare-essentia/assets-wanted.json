@@ -1,1327 +1,1383 @@
 {
- "game": "mare-essentia",
- "wanted": [
-  {
-   "id": "hero-portraits-real",
-   "kind": "Portraits",
-   "purpose": "시작 주인공 9명 실존 인물 초상화",
-   "status": "blocked-needs-owner-upload",
-   "candidates": [
-    "위키미디어 공용: 1900년 이전 초상화(퍼블릭 도메인)만. 파일별 원본 URL 필수"
-   ],
-   "inboxPath": "assets/inbox/Portraits/<hero_id>.png"
-  },
-  {
-   "id": "npc-outfit-items",
-   "kind": "Outfits",
-   "purpose": "문화권별 의상 아이템(셔츠·바지·모자) 실물 모델",
-   "status": "missing",
-   "candidates": [
-    "Quaternius 의상 팩(CC0)",
-    "Kenney Mini Characters(CC0)"
-   ],
-   "inboxPath": "assets/inbox/People/"
-  },
-  {
-   "id": "mob-vfx-meshes",
-   "kind": "Naval",
-   "purpose": "전투 효과(포연·물보라) 메시",
-   "status": "missing",
-   "candidates": [
-    "Kenney Particle Pack(CC0)"
-   ],
-   "inboxPath": "assets/inbox/Naval/"
-  },
-  {
-   "id": "culture-landmarks",
-   "kind": "Terrain",
-   "purpose": "문화권 전용 랜드마크(돔 모스크·도리이·종탑)",
-   "status": "using-stand-ins",
-   "candidates": [
-    "Kenney Castle Kit / Fantasy Town Kit의 추가 부품(CC0)"
-   ],
-   "inboxPath": "assets/inbox/Castle/"
-  },
-  {
-   "id": "trade-goods-icons-missing",
-   "kind": "Goods",
-   "purpose": "16종 교역품의 승인 원본·최소 64px·해시·Roblox 자산 ID·체험 권한을 자동 검사. 맥주·청주 그림은 정책상 차단",
-   "status": "registered-rights-confirmed-game-qa-pending",
-   "candidates": [
-    "기존 등록 원본 우선 재사용(CC0 2종, 프로젝트 전용 원화 14종)",
-    "추가 원본은 품목 일치·라이선스·이미지 승인 해시 확인 후 기존 업로더만 사용"
-   ],
-   "inboxPath": "assets/inbox/Goods/<good_id>.png",
-   "goods": [
-    "feathers",
-    "cloves",
-    "nutmeg",
-    "cinnamon",
-    "indigo",
-    "rice",
-    "lacquer",
-    "camphor",
-    "ginseng",
-    "vanilla",
-    "cochineal",
-    "sealskin",
-    "guano",
-    "nitrate",
-    "ambergris",
-    "gum_arabic"
-   ],
-   "blockedGoods": [
-    "beer",
-    "sake"
-   ]
-  },
-  {
-   "id": "trade-goods-3d-models",
-   "kind": "Cargo",
-   "purpose": "게임의 현재 교역품 전종(Ports.luau)을 기존 승인 CC0 실물 3D와 정확히 대조한다. 부족 품목은 원본 후보·라이선스·원본 해시·Roblox Universe 권한·동일 빌드 시각검증 확보 전까지 미완성으로 둔다.",
-   "status": "registered-models-runtime-qa-pending",
-   "candidates": [
-    "검증된 회사 라이브러리와 현행 Cargo 실물 메시의 동일 품목 우선 사용",
-    "일치 품목이 없으면 CC0 실물 원본 확보·수정 후 동일 품목만 사용(기본 도형 파츠·임의 대체 금지)",
-    "기존 Vibe 자산 제작·디자인 경쟁·실제 Roblox 동일 버전 화면 검사만 사용"
-   ],
-   "inboxPath": "assets/inbox/Cargo/<good_id>.glb",
-   "autoPractice": "EXISTING_ASSET_REGISTER_WORKFLOW_AND_VIBE_ASSET_DEVELOPMENT",
-   "replacementGate": "LICENSE_SOURCE_HASH_UNIVERSE_PERMISSION_NATIVE_VISUAL_RUNTIME",
-   "noNewPipeline": true
-  },
-  {
-   "id": "naval-melee-audio",
-   "kind": "Audio",
-   "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
-   "status": "using-stand-ins",
-   "candidates": [
-    "Kenney Impact Sounds / RPG Audio(CC0)",
-    "OpenGameArt CC0 검 소리 묶음(라이선스 확인 필수)"
-   ],
-   "inboxPath": "assets/inbox/Audio/"
-  },
-  {
-   "id": "mare-farm-animals",
-   "kind": "Animals",
-   "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
-   "status": "source-registered-runtime-unverified",
-   "sourceReady": [
-    "cow",
-    "horse",
-    "sheep",
-    "pig",
-    "llama",
-    "dog-pug",
-    "chicken",
-    "cat",
-    "elephant",
-    "donkey"
-   ],
-   "missing": [
-    "goat",
-    "pigeon",
-    "camel",
-    "turkey"
-   ],
-   "candidates": [
-    "Quaternius Farm Animal Pack (CC0)",
-    "Quaternius Ultimate Animated Animal Pack (CC0)",
-    "원본 라이선스와 종별 형태·해시를 확인한 무료 CC0 모델"
-   ],
-   "sourceFolder": "assets/animals/",
-   "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
-   "autoBindWithoutRuntimeProof": false,
-   "regionalUseGuidance": {
-    "cow": [
-     "유럽·아프리카·아시아 농장"
-    ],
-    "horse": [
-     "유럽·오스만·인도양 마차·농장"
-    ],
-    "sheep": [
-     "유럽·오스만 목장"
-    ],
-    "pig": [
-     "지역·종교 관습에 맞는 농가만"
-    ],
-    "llama": [
-     "아메리카 안데스 지역만"
-    ],
-    "dog-pug": [
-     "유럽·아시아 거리·가정, 품종 시대 적합성 별도 확인"
-    ],
-    "chicken": [
-     "전 지역 농촌·시장"
-    ],
-    "cat": [
-     "항구 창고·거리, 고품질 화풍 확인 전 배치 금지"
-    ],
-    "elephant": [
-     "말라바르·인도양의 지역 장식용, 전투·수레에 자동 적용 금지"
-    ],
-    "camel": [
-     "오스만·홍해 지역, 원본 부족으로 아직 미배치"
-    ],
-    "turkey": [
-     "아메리카 및 16세기 이후 유입 지역, 원본 부족"
-    ],
-    "pigeon": [
-     "도시 광장·항구, 원본 부족"
-    ],
-    "donkey": [
-     "유럽·오스만·북아프리카의 짐 운반·항구. 현재 원본 정지형 메시만 등록, 실제 움직임·게임 내 화면 검증 전 배치 금지"
-    ],
-    "goat": [
-     "유럽·지중해·아프리카 목장, 원본 부족"
+  "game": "mare-essentia",
+  "wanted": [
+    {
+      "id": "hero-portraits-real",
+      "kind": "Portraits",
+      "purpose": "시작 주인공 9명 실존 인물 초상화",
+      "status": "blocked-needs-owner-upload",
+      "candidates": [
+        "위키미디어 공용: 1900년 이전 초상화(퍼블릭 도메인)만. 파일별 원본 URL 필수"
+      ],
+      "inboxPath": "assets/inbox/Portraits/<hero_id>.png"
+    },
+    {
+      "id": "npc-outfit-items",
+      "kind": "Outfits",
+      "purpose": "문화권별 의상 아이템(셔츠·바지·모자) 실물 모델",
+      "status": "missing",
+      "candidates": [
+        "Quaternius 의상 팩(CC0)",
+        "Kenney Mini Characters(CC0)"
+      ],
+      "inboxPath": "assets/inbox/People/"
+    },
+    {
+      "id": "mob-vfx-meshes",
+      "kind": "Naval",
+      "purpose": "전투 효과(포연·물보라) 메시",
+      "status": "missing",
+      "candidates": [
+        "Kenney Particle Pack(CC0)"
+      ],
+      "inboxPath": "assets/inbox/Naval/"
+    },
+    {
+      "id": "culture-landmarks",
+      "kind": "Terrain",
+      "purpose": "문화권 전용 랜드마크(돔 모스크·도리이·종탑)",
+      "status": "using-stand-ins",
+      "candidates": [
+        "Kenney Castle Kit / Fantasy Town Kit의 추가 부품(CC0)"
+      ],
+      "inboxPath": "assets/inbox/Castle/"
+    },
+    {
+      "id": "trade-goods-icons-missing",
+      "kind": "Goods",
+      "purpose": "16종 교역품의 승인 원본·최소 64px·해시·Roblox 자산 ID·체험 권한을 자동 검사. 맥주·청주 그림은 정책상 차단",
+      "status": "registered-rights-confirmed-game-qa-pending",
+      "candidates": [
+        "기존 등록 원본 우선 재사용(CC0 2종, 프로젝트 전용 원화 14종)",
+        "추가 원본은 품목 일치·라이선스·이미지 승인 해시 확인 후 기존 업로더만 사용"
+      ],
+      "inboxPath": "assets/inbox/Goods/<good_id>.png",
+      "goods": [
+        "feathers",
+        "cloves",
+        "nutmeg",
+        "cinnamon",
+        "indigo",
+        "rice",
+        "lacquer",
+        "camphor",
+        "ginseng",
+        "vanilla",
+        "cochineal",
+        "sealskin",
+        "guano",
+        "nitrate",
+        "ambergris",
+        "gum_arabic"
+      ],
+      "blockedGoods": [
+        "beer",
+        "sake"
+      ]
+    },
+    {
+      "id": "trade-goods-3d-models",
+      "kind": "Cargo",
+      "purpose": "게임의 현재 교역품 전종(Ports.luau)을 기존 승인 CC0 실물 3D와 정확히 대조한다. 부족 품목은 원본 후보·라이선스·원본 해시·Roblox Universe 권한·동일 빌드 시각검증 확보 전까지 미완성으로 둔다.",
+      "status": "registered-models-runtime-qa-pending",
+      "candidates": [
+        "검증된 회사 라이브러리와 현행 Cargo 실물 메시의 동일 품목 우선 사용",
+        "일치 품목이 없으면 CC0 실물 원본 확보·수정 후 동일 품목만 사용(기본 도형 파츠·임의 대체 금지)",
+        "기존 Vibe 자산 제작·디자인 경쟁·실제 Roblox 동일 버전 화면 검사만 사용"
+      ],
+      "inboxPath": "assets/inbox/Cargo/<good_id>.glb",
+      "autoPractice": "EXISTING_ASSET_REGISTER_WORKFLOW_AND_VIBE_ASSET_DEVELOPMENT",
+      "replacementGate": "LICENSE_SOURCE_HASH_UNIVERSE_PERMISSION_NATIVE_VISUAL_RUNTIME",
+      "noNewPipeline": true
+    },
+    {
+      "id": "naval-melee-audio",
+      "kind": "Audio",
+      "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
+      "status": "using-stand-ins",
+      "candidates": [
+        "Kenney Impact Sounds / RPG Audio(CC0)",
+        "OpenGameArt CC0 검 소리 묶음(라이선스 확인 필수)"
+      ],
+      "inboxPath": "assets/inbox/Audio/"
+    },
+    {
+      "id": "mare-farm-animals",
+      "kind": "Animals",
+      "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
+      "status": "source-registered-runtime-unverified",
+      "sourceReady": [
+        "cow",
+        "horse",
+        "sheep",
+        "pig",
+        "llama",
+        "dog-pug",
+        "chicken",
+        "cat",
+        "elephant",
+        "donkey"
+      ],
+      "missing": [
+        "goat",
+        "pigeon",
+        "camel",
+        "turkey"
+      ],
+      "candidates": [
+        "Quaternius Farm Animal Pack (CC0)",
+        "Quaternius Ultimate Animated Animal Pack (CC0)",
+        "원본 라이선스와 종별 형태·해시를 확인한 무료 CC0 모델"
+      ],
+      "sourceFolder": "assets/animals/",
+      "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
+      "autoBindWithoutRuntimeProof": false,
+      "regionalUseGuidance": {
+        "cow": [
+          "유럽·아프리카·아시아 농장"
+        ],
+        "horse": [
+          "유럽·오스만·인도양 마차·농장"
+        ],
+        "sheep": [
+          "유럽·오스만 목장"
+        ],
+        "pig": [
+          "지역·종교 관습에 맞는 농가만"
+        ],
+        "llama": [
+          "아메리카 안데스 지역만"
+        ],
+        "dog-pug": [
+          "유럽·아시아 거리·가정, 품종 시대 적합성 별도 확인"
+        ],
+        "chicken": [
+          "전 지역 농촌·시장"
+        ],
+        "cat": [
+          "항구 창고·거리, 고품질 화풍 확인 전 배치 금지"
+        ],
+        "elephant": [
+          "말라바르·인도양의 지역 장식용, 전투·수레에 자동 적용 금지"
+        ],
+        "camel": [
+          "오스만·홍해 지역, 원본 부족으로 아직 미배치"
+        ],
+        "turkey": [
+          "아메리카 및 16세기 이후 유입 지역, 원본 부족"
+        ],
+        "pigeon": [
+          "도시 광장·항구, 원본 부족"
+        ],
+        "donkey": [
+          "유럽·오스만·북아프리카의 짐 운반·항구. 현재 원본 정지형 메시만 등록, 실제 움직임·게임 내 화면 검증 전 배치 금지"
+        ],
+        "goat": [
+          "유럽·지중해·아프리카 목장, 원본 부족"
+        ]
+      },
+      "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
+      "visualQualityStatus": "SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA",
+      "animationPending": [
+        "donkey"
+      ],
+      "actualStudioAnimationVerified": false
+    },
+    {
+      "id": "mare-harbor-life-props",
+      "kind": "Town",
+      "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
+      "status": "partly-source-registered-runtime-unverified",
+      "newlyRegistered": [
+        "watermill",
+        "wheel",
+        "workbench-anvil",
+        "cart-high",
+        "workbench-grind",
+        "anchor"
+      ],
+      "alreadyInGameSources": [
+        "town/cart.glb",
+        "town/windmill.glb",
+        "relics/rope-bundle-a.glb",
+        "relics/rope-bundle-b.glb",
+        "naval/mast-ropes.glb"
+      ],
+      "missing": [
+        "fishing-net",
+        "net-drying-frame",
+        "clothesline",
+        "kite",
+        "play-ball"
+      ],
+      "suggestedNext": [
+        "harbor-crane",
+        "ship-repair-slipway",
+        "fish-stall",
+        "customs-house-sign"
+      ],
+      "blocked": [
+        "beer-barrel",
+        "wine-prop"
+      ],
+      "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
+      "autoBindWithoutRuntimeProof": false,
+      "eraScope": "돛단배 항구의 닻·밧줄·그물·양륙 작업이 우선. 현대식 플라스틱·전동 공구·현대 어선 장비는 불허.",
+      "regionalUseGuidance": {
+        "anchor": [
+          "유럽·지중해·인도양 돛단배 항구"
+        ],
+        "fishing-net": [
+          "전통 어업 항구; 아직 미확보"
+        ],
+        "net-drying-frame": [
+          "연안 어촌; 아직 미확보"
+        ],
+        "harbor-crane": [
+          "인력·수동 도르래식만 후보"
+        ],
+        "ship-repair-slipway": [
+          "목조 선박 정비 장소 후보"
+        ],
+        "kite": [
+          "시대·지역 사료에 맞는 어린이 놀이 후보"
+        ],
+        "play-ball": [
+          "가죽·천 등 시대 재질만 후보"
+        ]
+      }
+    },
+    {
+      "id": "regional-naval-gwent-150",
+      "kind": "CardArt",
+      "purpose": "오너 직접 요청: Vibe 5.9가 기존 해상전투 5개 문화권 × 각 30장(총 150장)에 독창적인 고품질 역사 회화 원화와 부위별 부드러운 카드 모션을 실제 제작한다. 먼저 eu_03 갈레온 1장 원화/파도/돛/깃발/선체/포격/연기 독립 모션을 실물 검증 후 확장. 인물/중복 원화/지도 대용/가짜 품질 인증 금지.",
+      "status": "requested-vibe-production-execution-unverified",
+      "ownerRequestIssue": "https://github.com/hans1177/jaewoon-games/issues/13011",
+      "productionOwner": "EXISTING_VIBE_5_9_GRAPHICS_PRODUCTION_ASSET_DEVELOPMENT",
+      "sourceOfCardDefinitions": "src/ReplicatedStorage/Shared/BoardingCards.luau",
+      "sourceOfCardMotion": "src/ReplicatedStorage/Shared/NavalBattle.luau",
+      "existingSourceManifest": "assets/cardart/region-art.json",
+      "sourceDirectory": "assets/cardart/src/",
+      "targetCount": 150,
+      "regionalDecks": [
+        "europe",
+        "east_asia",
+        "middle_east",
+        "new_world",
+        "africa"
+      ],
+      "deckComposition": {
+        "ships": 10,
+        "artifacts": 7,
+        "animals": 6,
+        "wondersAndTerrain": 7
+      },
+      "firstAcceptanceTarget": "eu_03",
+      "expectedArtifacts": [
+        "unique-historical-painterly-card-art",
+        "independently-animated-components",
+        "skill-matched-motion",
+        "actual-preview-quality-evidence",
+        "source-license-and-hash"
+      ],
+      "preserve": [
+        "gameplay-rule",
+        "deck-max-30",
+        "save-format",
+        "existing-card-ids",
+        "server-combat-outcome",
+        "mobile-tap-enlargement",
+        "existing-canonical-graphics-pipeline"
+      ],
+      "prohibited": [
+        "paid-api",
+        "unsupported-license",
+        "people",
+        "static-pan-substituted-for-object-motion",
+        "copy-paste-placeholders",
+        "false-runtime-pass",
+        "deployment-without-existing-gates"
+      ],
+      "inboxPath": "assets/inbox/CardArt/",
+      "deploymentRequested": false,
+      "productionVerified": false,
+      "runtimeVerified": false
+    }
+  ],
+  "codeReferencesNotRegistered": [],
+  "registry": null,
+  "inboxWaiting": [
+    "roblox-games/mare-essentia/assets/inbox/People/female_peasant_arms.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_peasant_body.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_peasant_feet.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_peasant_legs.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_acc_pauldrons.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_arms.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_body.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_feet.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_head_hood.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/female_ranger_legs.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_beard.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_buns.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_buzzed.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_buzzedfemale.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_long.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/hair_simpleparted.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/head_f.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/head_m.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_peasant_arms.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_peasant_body.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_peasant_feet.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_peasant_legs.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_acc_pauldron.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_arms.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_body.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_feet_boots.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_head_hood.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/male_ranger_legs.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/rig_f.glb",
+    "roblox-games/mare-essentia/assets/inbox/People/rig_m.glb"
+  ],
+  "tradeGoodsPractice": {
+    "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
+    "method": "PNG_HEADER_MIN_64PX_APPROVAL_SHA256_LICENSE_REGISTERED_RIGHTS",
+    "visualLegibilityMeasured": false,
+    "nativeRuntimeVerified": false,
+    "runtimePromotionAllowed": false,
+    "stats": {
+      "targetCount": 16,
+      "excludedCount": 2,
+      "registeredWithRights": 16,
+      "readyToRegister": 0,
+      "permissionPending": 0,
+      "blocked": 2,
+      "invalid": 0
+    },
+    "goods": [
+      {
+        "id": "feathers",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "93169918966471",
+        "sourceSha256": "6a92f3b1d55c36b49aa8bcf62da929f4481a5cdec11ef2ff3998f11388e5acf2",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "cloves",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "124601969340274",
+        "sourceSha256": "d592fbb1ae8d1a78785d7f6b01c2d4fa12ffb80bdfe42e255bcdf9dbc4a8375b",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "nutmeg",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "102192008209831",
+        "sourceSha256": "55197c8db655e5829cfe0361debc02722a0687b3353040e1da26161770356ecd",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "cinnamon",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "73055953150394",
+        "sourceSha256": "b61c0fe028f42f1e58a39bb1e97bb08ec473524e23a69413a026e9c5fe01176c",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "indigo",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "81907200507876",
+        "sourceSha256": "fba95d8b105a648168ebcd570b7471ebb1367feebcf98513e121582e5d9180c4",
+        "dimensions": [
+          64,
+          64
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "rice",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "137070133749622",
+        "sourceSha256": "30f7d91cbe2be2c7fefffdd9c6b35e9a447a704c0054800a1a2ea27b786f642f",
+        "dimensions": [
+          64,
+          64
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "lacquer",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "97111057525509",
+        "sourceSha256": "5e00f6160ae1b759668d4326c742a67c6fd107150f4e45982cc3ceadc4d01c22",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "camphor",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "71182633769869",
+        "sourceSha256": "734b42033e0493f26b1201781a446efca3007cddaeb269c2185f544db6ad96be",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "ginseng",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "70508993139898",
+        "sourceSha256": "0fffe87e1e73df33ff114cb725e0675141f4d171d29bc09a15b02994bb569551",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "vanilla",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "86823206793657",
+        "sourceSha256": "86da5bcea26f1d8b376677886975f764edf7041c0a71df16fb41dbb94ca0b5da",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "cochineal",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "130147221190174",
+        "sourceSha256": "4c4d81007d069e4d10517affe3adadce16a1dd02ec20722c5bdb3efc5c626aca",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "sealskin",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "76304776702681",
+        "sourceSha256": "861d205e19145f210149cfd767f765459fe0e3842822d3860a261b508161d755",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "guano",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "105482943063317",
+        "sourceSha256": "8bcb65ec61bff683d441b49c4bc4462f4f2ccf75dc87146a51af3fa232d46d4a",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "nitrate",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "133294766517131",
+        "sourceSha256": "86f01d8e1d931baab70eddc90d8999dd39e8d67e9e88afa103db58bfea198a66",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "ambergris",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "107143276141685",
+        "sourceSha256": "5f2871ef01cace4e9d90a969bdcea935a47df842e588ebdde6e6c9bd21c8c7e0",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "gum_arabic",
+        "state": "REGISTERED_RIGHTS_CONFIRMED",
+        "assetId": "99961255894018",
+        "sourceSha256": "bcf43f2b4789922f384adeb98e3470776f65e7f531e903f2d6da4de779d5edba",
+        "dimensions": [
+          512,
+          512
+        ],
+        "sourceFingerprintRecorded": true,
+        "approved": true,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "beer",
+        "state": "BLOCKED_BY_POLICY",
+        "assetId": null,
+        "sourceSha256": null,
+        "dimensions": null,
+        "sourceFingerprintRecorded": false,
+        "approved": false,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      },
+      {
+        "id": "sake",
+        "state": "BLOCKED_BY_POLICY",
+        "assetId": null,
+        "sourceSha256": null,
+        "dimensions": null,
+        "sourceFingerprintRecorded": false,
+        "approved": false,
+        "nativeStudioDisplayVerified": false,
+        "gamePublishedFromPractice": false
+      }
     ]
-   },
-   "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
-   "visualQualityStatus": "SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA",
-   "animationPending": [
-    "donkey"
-   ],
-   "actualStudioAnimationVerified": false
   },
-  {
-   "id": "mare-harbor-life-props",
-   "kind": "Town",
-   "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
-   "status": "partly-source-registered-runtime-unverified",
-   "newlyRegistered": [
-    "watermill",
-    "wheel",
-    "workbench-anvil",
-    "cart-high",
-    "workbench-grind",
-    "anchor"
-   ],
-   "alreadyInGameSources": [
-    "town/cart.glb",
-    "town/windmill.glb",
-    "relics/rope-bundle-a.glb",
-    "relics/rope-bundle-b.glb",
-    "naval/mast-ropes.glb"
-   ],
-   "missing": [
-    "fishing-net",
-    "net-drying-frame",
-    "clothesline",
-    "kite",
-    "play-ball"
-   ],
-   "suggestedNext": [
-    "harbor-crane",
-    "ship-repair-slipway",
-    "fish-stall",
-    "customs-house-sign"
-   ],
-   "blocked": [
-    "beer-barrel",
-    "wine-prop"
-   ],
-   "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
-   "autoBindWithoutRuntimeProof": false,
-   "eraScope": "돛단배 항구의 닻·밧줄·그물·양륙 작업이 우선. 현대식 플라스틱·전동 공구·현대 어선 장비는 불허.",
-   "regionalUseGuidance": {
-    "anchor": [
-     "유럽·지중해·인도양 돛단배 항구"
-    ],
-    "fishing-net": [
-     "전통 어업 항구; 아직 미확보"
-    ],
-    "net-drying-frame": [
-     "연안 어촌; 아직 미확보"
-    ],
-    "harbor-crane": [
-     "인력·수동 도르래식만 후보"
-    ],
-    "ship-repair-slipway": [
-     "목조 선박 정비 장소 후보"
-    ],
-    "kite": [
-     "시대·지역 사료에 맞는 어린이 놀이 후보"
-    ],
-    "play-ball": [
-     "가죽·천 등 시대 재질만 후보"
+  "tradeGoods3DPractice": {
+    "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
+    "method": "EXACT_GOOD_ROLE_REGISTERED_CC0_OR_PROJECT_ORIGINAL_GLB_SOURCE_HASH_UNIVERSE_RIGHTS",
+    "autoUpdateTrigger": "EXISTING_ASSET_REGISTER_WORKFLOW_ON_APPROVED_SOURCE_CHANGE",
+    "nativeRuntimeVerified": false,
+    "automaticRuntimePromotionAllowed": false,
+    "noUnconditionalSelfRequeue": true,
+    "noNewPipeline": true,
+    "stats": {
+      "targetCount": 69,
+      "visualRestricted": 4,
+      "registeredSourceChecked": 65,
+      "missingExactModel": 0,
+      "unverified": 0,
+      "runtimeVerified": 0
+    },
+    "goods": [
+      {
+        "id": "amber",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "amber",
+        "assetId": "139917927956022",
+        "source": "roblox-games/mare-essentia/assets/cargo/amber.glb",
+        "sourceSha256": "21ebb12b733d8507fb3548bdf62e7d5eb0d6fc6c3cb7cea824d55df5e42d9c58",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "ambergris",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "ambergris",
+        "assetId": "106581713200658",
+        "source": "roblox-games/mare-essentia/assets/cargo/ambergris.glb",
+        "sourceSha256": "b86e3fd35f6297a07cfbda497b8e0316a8466ff683dcb0b05f41e0430faa1f60",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "beer",
+        "state": "VISUAL_POLICY_RESTRICTED",
+        "cargoAsset": null,
+        "assetId": null,
+        "source": null,
+        "sourceSha256": null,
+        "license": null,
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "brazilwood",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "brazilwood",
+        "assetId": "105647748657026",
+        "source": "roblox-games/mare-essentia/assets/cargo/brazilwood.glb",
+        "sourceSha256": "935a38703896d01ea6e741fb475409b83514c8f271c395240765a561a2f29b78",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "camphor",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "camphor",
+        "assetId": "116021475662632",
+        "source": "roblox-games/mare-essentia/assets/cargo/camphor.glb",
+        "sourceSha256": "f528717ec7d6c3720dc71f88902ad6ceeb082198215a6b0effb30e7a2a436359",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "carpet",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "carpet",
+        "assetId": "82600671881914",
+        "source": "roblox-games/mare-essentia/assets/cargo/carpet.glb",
+        "sourceSha256": "ff9a7b3f8aa23f39dfb3741633bbb252ed6fbe8ce2032cb12ded4fb9be1c7853",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cheese",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cheese",
+        "assetId": "99508776052361",
+        "source": "roblox-games/mare-essentia/assets/cargo/cheese.glb",
+        "sourceSha256": "174083a09373e088a3562660c88e915bded2863e09b2ec9aa5636e97ea197c54",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cinnamon",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cinnamon",
+        "assetId": "98506709641979",
+        "source": "roblox-games/mare-essentia/assets/cargo/cinnamon.glb",
+        "sourceSha256": "5a80316d6c64fdb04ffdb3d00949d920f12affcccc7b5e69b1c568e04162c05b",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cloth",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "textiles-a",
+        "assetId": "101460356334232",
+        "source": "roblox-games/mare-essentia/assets/cargo/textiles-a.glb",
+        "sourceSha256": "ce81c2c7c15b73a3b3380eaeac3a32852321945c8d3d6a8b7425a8989eb19bee",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cloves",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cloves",
+        "assetId": "87070491328391",
+        "source": "roblox-games/mare-essentia/assets/cargo/cloves.glb",
+        "sourceSha256": "46afddf25b1a7b0d5b68f6dd5dfcc90cb4840dc84caf0b378f432e7b96bf3f78",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "coal",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "coal",
+        "assetId": "126577553286125",
+        "source": "roblox-games/mare-essentia/assets/cargo/coal.glb",
+        "sourceSha256": "5120154ee040004b5058af710b1760e3a89e568b62b3d18ec2e960c47661add0",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cochineal",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cochineal",
+        "assetId": "98628609703257",
+        "source": "roblox-games/mare-essentia/assets/cargo/cochineal.glb",
+        "sourceSha256": "41f062cdd4ecf0e00a379b5d60270bc11c0c6cbd38d53ecf58cb3c9d870ee6fb",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cocoa",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cocoa",
+        "assetId": "109103477170664",
+        "source": "roblox-games/mare-essentia/assets/cargo/cocoa.glb",
+        "sourceSha256": "7a532a86b31fe164bc964a392f6fcea10abf1b01abf839f5e3cbfb8880baa974",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "coffee",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cup-coffee",
+        "assetId": "126078647305155",
+        "source": "roblox-games/mare-essentia/assets/cargo/cup-coffee.glb",
+        "sourceSha256": "ec4e98349868f1eb2d4237490d53ccc87f16315f7431004ed018214a35023d5d",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "copper",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "copper-bar",
+        "assetId": "140267500005119",
+        "source": "roblox-games/mare-essentia/assets/cargo/copper-bar.glb",
+        "sourceSha256": "6e6e3d7a4287860f43dd5f2fe948e5077ddef291dfb05120d1901c2780816dc2",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "coral",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "coral",
+        "assetId": "75412057054750",
+        "source": "roblox-games/mare-essentia/assets/cargo/coral.glb",
+        "sourceSha256": "3b667f6e41c4677131c7589f8dbca886691eb74408cda95eb173e68f43b32c77",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "cotton",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cotton",
+        "assetId": "85711940567520",
+        "source": "roblox-games/mare-essentia/assets/cargo/cotton.glb",
+        "sourceSha256": "656a886e36e51e1e9ef16b4fce58662872270ef22239609a0e98c6dbb1086ae5",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "dates",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "dates",
+        "assetId": "121504136374389",
+        "source": "roblox-games/mare-essentia/assets/cargo/dates.glb",
+        "sourceSha256": "99b9d9ebc2543cf9973fe4e75087a358c22060b9cbe4e1fc920033b9b78736d7",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "ebony",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "ebony",
+        "assetId": "84175418154091",
+        "source": "roblox-games/mare-essentia/assets/cargo/ebony.glb",
+        "sourceSha256": "9732083dd7644009899f8514cdf6511509e0551d38e4f84d572a4c7d34df19aa",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "feathers",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "feathers",
+        "assetId": "127041954537867",
+        "source": "roblox-games/mare-essentia/assets/cargo/feathers.glb",
+        "sourceSha256": "1e8e49f657273ed9ee7200cbaed68517b3c997d7b99867ca4f9aee86a4a32507",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "fish",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "fish",
+        "assetId": "138680952262326",
+        "source": "roblox-games/mare-essentia/assets/cargo/fish.glb",
+        "sourceSha256": "4e0a385db54547264ed692e174cc7e001756262c71e8587acb22ec98e564146f",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "fur",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "fur",
+        "assetId": "88273227076921",
+        "source": "roblox-games/mare-essentia/assets/cargo/fur.glb",
+        "sourceSha256": "72fdb93ff1547be7733477531d770e303ad24886eab8134e727cf79ac0cbfb7e",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "gems",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "gems-sack",
+        "assetId": "111591163112964",
+        "source": "roblox-games/mare-essentia/assets/cargo/gems-sack.glb",
+        "sourceSha256": "c0f370505c8cec22c7bb4d8e05f0e935666b69e7860b42bd35954244334d3e8d",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "ginseng",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "ginseng",
+        "assetId": "131959937406712",
+        "source": "roblox-games/mare-essentia/assets/cargo/ginseng.glb",
+        "sourceSha256": "bebe176b8c3764487046c3a6305991c8743269716f4ba1ae75aa41e64ca04578",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "glass",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "glass",
+        "assetId": "77816365463265",
+        "source": "roblox-games/mare-essentia/assets/cargo/glass.glb",
+        "sourceSha256": "c7f74224b8880f79e3d08869c2ff08f2d955e65b501998f41ba5bcf4ec78b3c4",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "gold",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "gold",
+        "assetId": "79433178221148",
+        "source": "roblox-games/mare-essentia/assets/cargo/gold.glb",
+        "sourceSha256": "44dbb8f15433f0e511b14fe0a71e2c4a9184ec7a9c7fc368b88efd5d8548634c",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "guano",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "guano",
+        "assetId": "125047543524958",
+        "source": "roblox-games/mare-essentia/assets/cargo/guano.glb",
+        "sourceSha256": "9d323c8d399ccf9f735da6ee9b0ea8b5b0081cb651b7220791945e75184e0425",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "gum_arabic",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "gum_arabic",
+        "assetId": "100060535825708",
+        "source": "roblox-games/mare-essentia/assets/cargo/gum_arabic.glb",
+        "sourceSha256": "e76b5f7daa78c9ee208ef0701594efd572da175a0b7885a57247c538e7882ccd",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "incense",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "incense",
+        "assetId": "100213482253212",
+        "source": "roblox-games/mare-essentia/assets/cargo/incense.glb",
+        "sourceSha256": "bdb7768d22bea5b83ee8c5102194768037b3d6dae3379a6c4606df3b204a8bc6",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "indigo",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "indigo",
+        "assetId": "138071942132053",
+        "source": "roblox-games/mare-essentia/assets/cargo/indigo.glb",
+        "sourceSha256": "c6d046184ebca644041eec5b1e49251749ba31688af05d1dbc662b37810e2384",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "iron",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "iron-bars",
+        "assetId": "103883117426048",
+        "source": "roblox-games/mare-essentia/assets/cargo/iron-bars.glb",
+        "sourceSha256": "b6c05e0db465b6379952912f4a506da7cd2b2c2d5d9292c768d6cf74d64405ff",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "ivory",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "ivory",
+        "assetId": "122351918976565",
+        "source": "roblox-games/mare-essentia/assets/cargo/ivory.glb",
+        "sourceSha256": "f3a5c062dbab1ce1241b9c773452bcf14e13fa455fbca46d139e759890d97a69",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "jade",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "jade",
+        "assetId": "131787959511197",
+        "source": "roblox-games/mare-essentia/assets/cargo/jade.glb",
+        "sourceSha256": "a72ca77b84e3a570b88e2063f9d55813d3f49c21d0e9ed47b8c0b20a232bb0c3",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "kauri",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "kauri",
+        "assetId": "93846678534864",
+        "source": "roblox-games/mare-essentia/assets/cargo/kauri.glb",
+        "sourceSha256": "fce122041d74e7c09476add12d4cca70024ce7b59a745faab1f8ae60060de132",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "lacquer",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "lacquer",
+        "assetId": "99261367459479",
+        "source": "roblox-games/mare-essentia/assets/cargo/lacquer.glb",
+        "sourceSha256": "81f6bc53fe0e31d2ac7f9073455c9b56497d1b5ac9c1a8454839517e23ced170",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "leather",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "leather",
+        "assetId": "75162444261610",
+        "source": "roblox-games/mare-essentia/assets/cargo/leather.glb",
+        "sourceSha256": "dd5d525959a6069fb8cbaddf2a7e3a2b92fa8a8fd5c79bb333f995e78da89797",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "linen",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "linen",
+        "assetId": "96252225692704",
+        "source": "roblox-games/mare-essentia/assets/cargo/linen.glb",
+        "sourceSha256": "d45d2da474abffbfd7824e0b62da01ad4f0053607f1124dd9d0663628555ae66",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "logwood",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "logwood",
+        "assetId": "104428740065992",
+        "source": "roblox-games/mare-essentia/assets/cargo/logwood.glb",
+        "sourceSha256": "34ebd1045213ed845e56d059feb13ead5ea49b2b6e9289611ff48ab4b1498201",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "mahogany",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "mahogany",
+        "assetId": "112847177865568",
+        "source": "roblox-games/mare-essentia/assets/cargo/mahogany.glb",
+        "sourceSha256": "7577b4b35ce8edce4ef73136cc025b19de0ae0bd4aa50dd05948872eda9a9d3c",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "maize",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "corn",
+        "assetId": "85965883149358",
+        "source": "roblox-games/mare-essentia/assets/cargo/corn.glb",
+        "sourceSha256": "0306694d119f64f779e6c531010ee34f3d80eca2a0a7f32083ad4a7e70b902cf",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "marble",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "marble",
+        "assetId": "135094964775848",
+        "source": "roblox-games/mare-essentia/assets/cargo/marble.glb",
+        "sourceSha256": "764298a87ff341f31ccbe2155f677a80ef595735f6262bb26fa63c7c87f975dc",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "nitrate",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "nitrate",
+        "assetId": "138600334424138",
+        "source": "roblox-games/mare-essentia/assets/cargo/nitrate.glb",
+        "sourceSha256": "59c79ef9bb734c7f709af9d0a6ec6fec52f652eccecb0739396c8f77a3658acc",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "nutmeg",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "nutmeg",
+        "assetId": "104673258518959",
+        "source": "roblox-games/mare-essentia/assets/cargo/nutmeg.glb",
+        "sourceSha256": "3bd204bfd393274348bab1d6a113bc582ef73016cec6bbe17e324388d91a9342",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "olive_oil",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "bottle-oil",
+        "assetId": "126035289002561",
+        "source": "roblox-games/mare-essentia/assets/cargo/bottle-oil.glb",
+        "sourceSha256": "79dfca092185a696434f560ab626377ccf357ce6073c87f8e256c718d1a9e085",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "palm_oil",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "palm_oil",
+        "assetId": "140538985036673",
+        "source": "roblox-games/mare-essentia/assets/cargo/palm_oil.glb",
+        "sourceSha256": "23847e167edfc0d2a777898b73dfd567bd1e888ed72370d25d93ff286130a474",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "pearl_shell",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "pearl_shell",
+        "assetId": "118323408264891",
+        "source": "roblox-games/mare-essentia/assets/cargo/pearl_shell.glb",
+        "sourceSha256": "73d587563748fe18d7448b7ed93d37639972d63fae6273817678a597ad6b5a65",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "pearls",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "pearls",
+        "assetId": "140240558448041",
+        "source": "roblox-games/mare-essentia/assets/cargo/pearls.glb",
+        "sourceSha256": "0545cd51194cd2723c45f574f437ac4922de775f80059266a6de5d86f84bd6f2",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "pepper",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "pepper-mill",
+        "assetId": "124776129808145",
+        "source": "roblox-games/mare-essentia/assets/cargo/pepper-mill.glb",
+        "sourceSha256": "68154432072d82d62775c59e9631c325fdda375e487874fcfa64f60bd952b547",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "porcelain",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "porcelain",
+        "assetId": "138683586472709",
+        "source": "roblox-games/mare-essentia/assets/cargo/porcelain.glb",
+        "sourceSha256": "35df3c1c3e6a3658728675ef00917f65504906def04603ff7410d34c4a7266ae",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "raisins",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "raisins",
+        "assetId": "124680131550754",
+        "source": "roblox-games/mare-essentia/assets/cargo/raisins.glb",
+        "sourceSha256": "d09dbadf690313deaebc3c75fa6033ca9f801ed96896b55ecaf7f25d4c1943e1",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "rice",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "rice",
+        "assetId": "118342282044814",
+        "source": "roblox-games/mare-essentia/assets/cargo/rice.glb",
+        "sourceSha256": "d1bcd416f4208017e8d19aa84f62326a6536f88347f957aae2eb99d2644b3a8a",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "rum",
+        "state": "VISUAL_POLICY_RESTRICTED",
+        "cargoAsset": null,
+        "assetId": null,
+        "source": null,
+        "sourceSha256": null,
+        "license": null,
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "saffron",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "saffron",
+        "assetId": "97261338263208",
+        "source": "roblox-games/mare-essentia/assets/cargo/saffron.glb",
+        "sourceSha256": "74285d4822855436900733ec258b72603321f8226be61462c38005251d331503",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "sake",
+        "state": "VISUAL_POLICY_RESTRICTED",
+        "cargoAsset": null,
+        "assetId": null,
+        "source": null,
+        "sourceSha256": null,
+        "license": null,
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "salt",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "shaker-salt",
+        "assetId": "101609950026320",
+        "source": "roblox-games/mare-essentia/assets/cargo/shaker-salt.glb",
+        "sourceSha256": "44a6178171b93ea70ba85aba4101cbb0774493be1edacdcfb6961f0464ce8f89",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "sandalwood",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "sandalwood",
+        "assetId": "111542779031359",
+        "source": "roblox-games/mare-essentia/assets/cargo/sandalwood.glb",
+        "sourceSha256": "8f7d4101eb719c33184bf5d1e1236d1926730d60a0c337a8ef4c2834e8c52dc0",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "sandalwood_hi",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "sandalwood_hi",
+        "assetId": "124275584996012",
+        "source": "roblox-games/mare-essentia/assets/cargo/sandalwood_hi.glb",
+        "sourceSha256": "a9b2eb18d99f1e701f9d52bd03f7c02fcdca9cf70c4a1a34537e813916cc8487",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "sealskin",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "sealskin",
+        "assetId": "93659087865574",
+        "source": "roblox-games/mare-essentia/assets/cargo/sealskin.glb",
+        "sourceSha256": "0bf6f02a6d810a1ec3d42798967f0abe4657d38c1a91922c756fada14a7f0d6b",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "silk",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "silk",
+        "assetId": "132090116531384",
+        "source": "roblox-games/mare-essentia/assets/cargo/silk.glb",
+        "sourceSha256": "3cebd84eb43aca619d396e0494aa9e1c50ffcb87799a2bf9ae3cb935f83c97de",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "silver",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "silver-bar",
+        "assetId": "115188390070488",
+        "source": "roblox-games/mare-essentia/assets/cargo/silver-bar.glb",
+        "sourceSha256": "c6ca3f618246a3ded65c93611878e60d3d8a25b77c38576e51a83b95eddcf525",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "spice",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "spice",
+        "assetId": "126021199231720",
+        "source": "roblox-games/mare-essentia/assets/cargo/spice.glb",
+        "sourceSha256": "f475b85ca469c5a7555ef056ff17a599214ad14dcb379bde573cc5b57c86e4ba",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "sugar",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "sugar",
+        "assetId": "110267926213740",
+        "source": "roblox-games/mare-essentia/assets/cargo/sugar.glb",
+        "sourceSha256": "5f9c8c03f574cf951b62606fd97cdab3b34d239bdaba148ad0a02c8355a19b90",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "tea",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "cup-tea",
+        "assetId": "121297455738434",
+        "source": "roblox-games/mare-essentia/assets/cargo/cup-tea.glb",
+        "sourceSha256": "2c464a7a3263344c1379e118cd96a78d49eee52b096aeee7a5146ef46b8a0ec4",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "timber",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "wood-log-stack",
+        "assetId": "130671498909949",
+        "source": "roblox-games/mare-essentia/assets/cargo/wood-log-stack.glb",
+        "sourceSha256": "457874838bb6ec6c0019a7087330b895b704d1ac572700b57077216f2ac43824",
+        "license": "CC0-1.0",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "tin",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "tin",
+        "assetId": "100814351708537",
+        "source": "roblox-games/mare-essentia/assets/cargo/tin.glb",
+        "sourceSha256": "91bfca150d1e29d9abaf3cc5556ec277c8544760b8785579addcc9cd371d1822",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "vanilla",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "vanilla",
+        "assetId": "79169633450020",
+        "source": "roblox-games/mare-essentia/assets/cargo/vanilla.glb",
+        "sourceSha256": "42215a7d736ce2ec7d676d161721a4c3d913d5a3a873875c8803605fcf2fee40",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "whale_oil",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "whale_oil",
+        "assetId": "121322801463080",
+        "source": "roblox-games/mare-essentia/assets/cargo/whale_oil.glb",
+        "sourceSha256": "6f191a413d32865b9803007173584421e27b7713da4c9c8efbc78f596d327b01",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "wine",
+        "state": "VISUAL_POLICY_RESTRICTED",
+        "cargoAsset": null,
+        "assetId": null,
+        "source": null,
+        "sourceSha256": null,
+        "license": null,
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      },
+      {
+        "id": "wool",
+        "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
+        "cargoAsset": "wool",
+        "assetId": "96341734789072",
+        "source": "roblox-games/mare-essentia/assets/cargo/wool.glb",
+        "sourceSha256": "12434a405c7d708bbf550c5428f601c3fe2c4c3f7d567c22b9bfb9e3aa92cde0",
+        "license": "PROJECT_ORIGINAL_ART",
+        "nativeRuntimeVerified": false,
+        "visualQualityPass": false
+      }
     ]
-   }
   }
- ],
- "codeReferencesNotRegistered": [],
- "registry": null,
- "inboxWaiting": [
-  "roblox-games/mare-essentia/assets/inbox/People/female_peasant_arms.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_peasant_body.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_peasant_feet.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_peasant_legs.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_acc_pauldrons.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_arms.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_body.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_feet.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_head_hood.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/female_ranger_legs.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_beard.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_buns.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_buzzed.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_buzzedfemale.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_long.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/hair_simpleparted.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/head_f.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/head_m.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_peasant_arms.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_peasant_body.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_peasant_feet.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_peasant_legs.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_acc_pauldron.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_arms.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_body.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_feet_boots.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_head_hood.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/male_ranger_legs.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/rig_f.glb",
-  "roblox-games/mare-essentia/assets/inbox/People/rig_m.glb"
- ],
- "tradeGoodsPractice": {
-  "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
-  "method": "PNG_HEADER_MIN_64PX_APPROVAL_SHA256_LICENSE_REGISTERED_RIGHTS",
-  "visualLegibilityMeasured": false,
-  "nativeRuntimeVerified": false,
-  "runtimePromotionAllowed": false,
-  "stats": {
-   "targetCount": 16,
-   "excludedCount": 2,
-   "registeredWithRights": 16,
-   "readyToRegister": 0,
-   "permissionPending": 0,
-   "blocked": 2,
-   "invalid": 0
-  },
-  "goods": [
-   {
-    "id": "feathers",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "93169918966471",
-    "sourceSha256": "6a92f3b1d55c36b49aa8bcf62da929f4481a5cdec11ef2ff3998f11388e5acf2",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "cloves",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "124601969340274",
-    "sourceSha256": "d592fbb1ae8d1a78785d7f6b01c2d4fa12ffb80bdfe42e255bcdf9dbc4a8375b",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "nutmeg",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "102192008209831",
-    "sourceSha256": "55197c8db655e5829cfe0361debc02722a0687b3353040e1da26161770356ecd",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "cinnamon",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "73055953150394",
-    "sourceSha256": "b61c0fe028f42f1e58a39bb1e97bb08ec473524e23a69413a026e9c5fe01176c",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "indigo",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "81907200507876",
-    "sourceSha256": "fba95d8b105a648168ebcd570b7471ebb1367feebcf98513e121582e5d9180c4",
-    "dimensions": [
-     64,
-     64
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "rice",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "137070133749622",
-    "sourceSha256": "30f7d91cbe2be2c7fefffdd9c6b35e9a447a704c0054800a1a2ea27b786f642f",
-    "dimensions": [
-     64,
-     64
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "lacquer",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "97111057525509",
-    "sourceSha256": "5e00f6160ae1b759668d4326c742a67c6fd107150f4e45982cc3ceadc4d01c22",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "camphor",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "71182633769869",
-    "sourceSha256": "734b42033e0493f26b1201781a446efca3007cddaeb269c2185f544db6ad96be",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "ginseng",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "70508993139898",
-    "sourceSha256": "0fffe87e1e73df33ff114cb725e0675141f4d171d29bc09a15b02994bb569551",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "vanilla",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "86823206793657",
-    "sourceSha256": "86da5bcea26f1d8b376677886975f764edf7041c0a71df16fb41dbb94ca0b5da",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "cochineal",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "130147221190174",
-    "sourceSha256": "4c4d81007d069e4d10517affe3adadce16a1dd02ec20722c5bdb3efc5c626aca",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "sealskin",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "76304776702681",
-    "sourceSha256": "861d205e19145f210149cfd767f765459fe0e3842822d3860a261b508161d755",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "guano",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "105482943063317",
-    "sourceSha256": "8bcb65ec61bff683d441b49c4bc4462f4f2ccf75dc87146a51af3fa232d46d4a",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "nitrate",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "133294766517131",
-    "sourceSha256": "86f01d8e1d931baab70eddc90d8999dd39e8d67e9e88afa103db58bfea198a66",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "ambergris",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "107143276141685",
-    "sourceSha256": "5f2871ef01cace4e9d90a969bdcea935a47df842e588ebdde6e6c9bd21c8c7e0",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "gum_arabic",
-    "state": "REGISTERED_RIGHTS_CONFIRMED",
-    "assetId": "99961255894018",
-    "sourceSha256": "bcf43f2b4789922f384adeb98e3470776f65e7f531e903f2d6da4de779d5edba",
-    "dimensions": [
-     512,
-     512
-    ],
-    "sourceFingerprintRecorded": true,
-    "approved": true,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "beer",
-    "state": "BLOCKED_BY_POLICY",
-    "assetId": null,
-    "sourceSha256": null,
-    "dimensions": null,
-    "sourceFingerprintRecorded": false,
-    "approved": false,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   },
-   {
-    "id": "sake",
-    "state": "BLOCKED_BY_POLICY",
-    "assetId": null,
-    "sourceSha256": null,
-    "dimensions": null,
-    "sourceFingerprintRecorded": false,
-    "approved": false,
-    "nativeStudioDisplayVerified": false,
-    "gamePublishedFromPractice": false
-   }
-  ]
- },
- "tradeGoods3DPractice": {
-  "authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
-  "method": "EXACT_GOOD_ROLE_REGISTERED_CC0_OR_PROJECT_ORIGINAL_GLB_SOURCE_HASH_UNIVERSE_RIGHTS",
-  "autoUpdateTrigger": "EXISTING_ASSET_REGISTER_WORKFLOW_ON_APPROVED_SOURCE_CHANGE",
-  "nativeRuntimeVerified": false,
-  "automaticRuntimePromotionAllowed": false,
-  "noUnconditionalSelfRequeue": true,
-  "noNewPipeline": true,
-  "stats": {
-   "targetCount": 69,
-   "visualRestricted": 4,
-   "registeredSourceChecked": 65,
-   "missingExactModel": 0,
-   "unverified": 0,
-   "runtimeVerified": 0
-  },
-  "goods": [
-   {
-    "id": "amber",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "amber",
-    "assetId": "139917927956022",
-    "source": "roblox-games/mare-essentia/assets/cargo/amber.glb",
-    "sourceSha256": "21ebb12b733d8507fb3548bdf62e7d5eb0d6fc6c3cb7cea824d55df5e42d9c58",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "ambergris",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "ambergris",
-    "assetId": "106581713200658",
-    "source": "roblox-games/mare-essentia/assets/cargo/ambergris.glb",
-    "sourceSha256": "b86e3fd35f6297a07cfbda497b8e0316a8466ff683dcb0b05f41e0430faa1f60",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "beer",
-    "state": "VISUAL_POLICY_RESTRICTED",
-    "cargoAsset": null,
-    "assetId": null,
-    "source": null,
-    "sourceSha256": null,
-    "license": null,
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "brazilwood",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "brazilwood",
-    "assetId": "105647748657026",
-    "source": "roblox-games/mare-essentia/assets/cargo/brazilwood.glb",
-    "sourceSha256": "935a38703896d01ea6e741fb475409b83514c8f271c395240765a561a2f29b78",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "camphor",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "camphor",
-    "assetId": "116021475662632",
-    "source": "roblox-games/mare-essentia/assets/cargo/camphor.glb",
-    "sourceSha256": "f528717ec7d6c3720dc71f88902ad6ceeb082198215a6b0effb30e7a2a436359",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "carpet",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "carpet",
-    "assetId": "82600671881914",
-    "source": "roblox-games/mare-essentia/assets/cargo/carpet.glb",
-    "sourceSha256": "ff9a7b3f8aa23f39dfb3741633bbb252ed6fbe8ce2032cb12ded4fb9be1c7853",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cheese",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cheese",
-    "assetId": "99508776052361",
-    "source": "roblox-games/mare-essentia/assets/cargo/cheese.glb",
-    "sourceSha256": "174083a09373e088a3562660c88e915bded2863e09b2ec9aa5636e97ea197c54",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cinnamon",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cinnamon",
-    "assetId": "98506709641979",
-    "source": "roblox-games/mare-essentia/assets/cargo/cinnamon.glb",
-    "sourceSha256": "5a80316d6c64fdb04ffdb3d00949d920f12affcccc7b5e69b1c568e04162c05b",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cloth",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "textiles-a",
-    "assetId": "101460356334232",
-    "source": "roblox-games/mare-essentia/assets/cargo/textiles-a.glb",
-    "sourceSha256": "ce81c2c7c15b73a3b3380eaeac3a32852321945c8d3d6a8b7425a8989eb19bee",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cloves",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cloves",
-    "assetId": "87070491328391",
-    "source": "roblox-games/mare-essentia/assets/cargo/cloves.glb",
-    "sourceSha256": "46afddf25b1a7b0d5b68f6dd5dfcc90cb4840dc84caf0b378f432e7b96bf3f78",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "coal",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "coal",
-    "assetId": "126577553286125",
-    "source": "roblox-games/mare-essentia/assets/cargo/coal.glb",
-    "sourceSha256": "5120154ee040004b5058af710b1760e3a89e568b62b3d18ec2e960c47661add0",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cochineal",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cochineal",
-    "assetId": "98628609703257",
-    "source": "roblox-games/mare-essentia/assets/cargo/cochineal.glb",
-    "sourceSha256": "41f062cdd4ecf0e00a379b5d60270bc11c0c6cbd38d53ecf58cb3c9d870ee6fb",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cocoa",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cocoa",
-    "assetId": "109103477170664",
-    "source": "roblox-games/mare-essentia/assets/cargo/cocoa.glb",
-    "sourceSha256": "7a532a86b31fe164bc964a392f6fcea10abf1b01abf839f5e3cbfb8880baa974",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "coffee",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cup-coffee",
-    "assetId": "126078647305155",
-    "source": "roblox-games/mare-essentia/assets/cargo/cup-coffee.glb",
-    "sourceSha256": "ec4e98349868f1eb2d4237490d53ccc87f16315f7431004ed018214a35023d5d",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "copper",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "copper-bar",
-    "assetId": "140267500005119",
-    "source": "roblox-games/mare-essentia/assets/cargo/copper-bar.glb",
-    "sourceSha256": "6e6e3d7a4287860f43dd5f2fe948e5077ddef291dfb05120d1901c2780816dc2",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "coral",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "coral",
-    "assetId": "75412057054750",
-    "source": "roblox-games/mare-essentia/assets/cargo/coral.glb",
-    "sourceSha256": "3b667f6e41c4677131c7589f8dbca886691eb74408cda95eb173e68f43b32c77",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "cotton",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cotton",
-    "assetId": "85711940567520",
-    "source": "roblox-games/mare-essentia/assets/cargo/cotton.glb",
-    "sourceSha256": "656a886e36e51e1e9ef16b4fce58662872270ef22239609a0e98c6dbb1086ae5",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "dates",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "dates",
-    "assetId": "121504136374389",
-    "source": "roblox-games/mare-essentia/assets/cargo/dates.glb",
-    "sourceSha256": "99b9d9ebc2543cf9973fe4e75087a358c22060b9cbe4e1fc920033b9b78736d7",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "ebony",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "ebony",
-    "assetId": "84175418154091",
-    "source": "roblox-games/mare-essentia/assets/cargo/ebony.glb",
-    "sourceSha256": "9732083dd7644009899f8514cdf6511509e0551d38e4f84d572a4c7d34df19aa",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "feathers",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "feathers",
-    "assetId": "127041954537867",
-    "source": "roblox-games/mare-essentia/assets/cargo/feathers.glb",
-    "sourceSha256": "1e8e49f657273ed9ee7200cbaed68517b3c997d7b99867ca4f9aee86a4a32507",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "fish",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "fish",
-    "assetId": "138680952262326",
-    "source": "roblox-games/mare-essentia/assets/cargo/fish.glb",
-    "sourceSha256": "4e0a385db54547264ed692e174cc7e001756262c71e8587acb22ec98e564146f",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "fur",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "fur",
-    "assetId": "88273227076921",
-    "source": "roblox-games/mare-essentia/assets/cargo/fur.glb",
-    "sourceSha256": "72fdb93ff1547be7733477531d770e303ad24886eab8134e727cf79ac0cbfb7e",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "gems",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "gems-sack",
-    "assetId": "111591163112964",
-    "source": "roblox-games/mare-essentia/assets/cargo/gems-sack.glb",
-    "sourceSha256": "c0f370505c8cec22c7bb4d8e05f0e935666b69e7860b42bd35954244334d3e8d",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "ginseng",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "ginseng",
-    "assetId": "131959937406712",
-    "source": "roblox-games/mare-essentia/assets/cargo/ginseng.glb",
-    "sourceSha256": "bebe176b8c3764487046c3a6305991c8743269716f4ba1ae75aa41e64ca04578",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "glass",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "glass",
-    "assetId": "77816365463265",
-    "source": "roblox-games/mare-essentia/assets/cargo/glass.glb",
-    "sourceSha256": "c7f74224b8880f79e3d08869c2ff08f2d955e65b501998f41ba5bcf4ec78b3c4",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "gold",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "gold",
-    "assetId": "79433178221148",
-    "source": "roblox-games/mare-essentia/assets/cargo/gold.glb",
-    "sourceSha256": "44dbb8f15433f0e511b14fe0a71e2c4a9184ec7a9c7fc368b88efd5d8548634c",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "guano",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "guano",
-    "assetId": "125047543524958",
-    "source": "roblox-games/mare-essentia/assets/cargo/guano.glb",
-    "sourceSha256": "9d323c8d399ccf9f735da6ee9b0ea8b5b0081cb651b7220791945e75184e0425",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "gum_arabic",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "gum_arabic",
-    "assetId": "100060535825708",
-    "source": "roblox-games/mare-essentia/assets/cargo/gum_arabic.glb",
-    "sourceSha256": "e76b5f7daa78c9ee208ef0701594efd572da175a0b7885a57247c538e7882ccd",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "incense",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "incense",
-    "assetId": "100213482253212",
-    "source": "roblox-games/mare-essentia/assets/cargo/incense.glb",
-    "sourceSha256": "bdb7768d22bea5b83ee8c5102194768037b3d6dae3379a6c4606df3b204a8bc6",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "indigo",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "indigo",
-    "assetId": "138071942132053",
-    "source": "roblox-games/mare-essentia/assets/cargo/indigo.glb",
-    "sourceSha256": "c6d046184ebca644041eec5b1e49251749ba31688af05d1dbc662b37810e2384",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "iron",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "iron-bars",
-    "assetId": "103883117426048",
-    "source": "roblox-games/mare-essentia/assets/cargo/iron-bars.glb",
-    "sourceSha256": "b6c05e0db465b6379952912f4a506da7cd2b2c2d5d9292c768d6cf74d64405ff",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "ivory",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "ivory",
-    "assetId": "122351918976565",
-    "source": "roblox-games/mare-essentia/assets/cargo/ivory.glb",
-    "sourceSha256": "f3a5c062dbab1ce1241b9c773452bcf14e13fa455fbca46d139e759890d97a69",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "jade",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "jade",
-    "assetId": "131787959511197",
-    "source": "roblox-games/mare-essentia/assets/cargo/jade.glb",
-    "sourceSha256": "a72ca77b84e3a570b88e2063f9d55813d3f49c21d0e9ed47b8c0b20a232bb0c3",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "kauri",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "kauri",
-    "assetId": "93846678534864",
-    "source": "roblox-games/mare-essentia/assets/cargo/kauri.glb",
-    "sourceSha256": "fce122041d74e7c09476add12d4cca70024ce7b59a745faab1f8ae60060de132",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "lacquer",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "lacquer",
-    "assetId": "99261367459479",
-    "source": "roblox-games/mare-essentia/assets/cargo/lacquer.glb",
-    "sourceSha256": "81f6bc53fe0e31d2ac7f9073455c9b56497d1b5ac9c1a8454839517e23ced170",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "leather",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "leather",
-    "assetId": "75162444261610",
-    "source": "roblox-games/mare-essentia/assets/cargo/leather.glb",
-    "sourceSha256": "dd5d525959a6069fb8cbaddf2a7e3a2b92fa8a8fd5c79bb333f995e78da89797",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "linen",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "linen",
-    "assetId": "96252225692704",
-    "source": "roblox-games/mare-essentia/assets/cargo/linen.glb",
-    "sourceSha256": "d45d2da474abffbfd7824e0b62da01ad4f0053607f1124dd9d0663628555ae66",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "logwood",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "logwood",
-    "assetId": "104428740065992",
-    "source": "roblox-games/mare-essentia/assets/cargo/logwood.glb",
-    "sourceSha256": "34ebd1045213ed845e56d059feb13ead5ea49b2b6e9289611ff48ab4b1498201",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "mahogany",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "mahogany",
-    "assetId": "112847177865568",
-    "source": "roblox-games/mare-essentia/assets/cargo/mahogany.glb",
-    "sourceSha256": "7577b4b35ce8edce4ef73136cc025b19de0ae0bd4aa50dd05948872eda9a9d3c",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "maize",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "corn",
-    "assetId": "85965883149358",
-    "source": "roblox-games/mare-essentia/assets/cargo/corn.glb",
-    "sourceSha256": "0306694d119f64f779e6c531010ee34f3d80eca2a0a7f32083ad4a7e70b902cf",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "marble",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "marble",
-    "assetId": "135094964775848",
-    "source": "roblox-games/mare-essentia/assets/cargo/marble.glb",
-    "sourceSha256": "764298a87ff341f31ccbe2155f677a80ef595735f6262bb26fa63c7c87f975dc",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "nitrate",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "nitrate",
-    "assetId": "138600334424138",
-    "source": "roblox-games/mare-essentia/assets/cargo/nitrate.glb",
-    "sourceSha256": "59c79ef9bb734c7f709af9d0a6ec6fec52f652eccecb0739396c8f77a3658acc",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "nutmeg",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "nutmeg",
-    "assetId": "104673258518959",
-    "source": "roblox-games/mare-essentia/assets/cargo/nutmeg.glb",
-    "sourceSha256": "3bd204bfd393274348bab1d6a113bc582ef73016cec6bbe17e324388d91a9342",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "olive_oil",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "bottle-oil",
-    "assetId": "126035289002561",
-    "source": "roblox-games/mare-essentia/assets/cargo/bottle-oil.glb",
-    "sourceSha256": "79dfca092185a696434f560ab626377ccf357ce6073c87f8e256c718d1a9e085",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "palm_oil",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "palm_oil",
-    "assetId": "140538985036673",
-    "source": "roblox-games/mare-essentia/assets/cargo/palm_oil.glb",
-    "sourceSha256": "23847e167edfc0d2a777898b73dfd567bd1e888ed72370d25d93ff286130a474",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "pearl_shell",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "pearl_shell",
-    "assetId": "118323408264891",
-    "source": "roblox-games/mare-essentia/assets/cargo/pearl_shell.glb",
-    "sourceSha256": "73d587563748fe18d7448b7ed93d37639972d63fae6273817678a597ad6b5a65",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "pearls",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "pearls",
-    "assetId": "140240558448041",
-    "source": "roblox-games/mare-essentia/assets/cargo/pearls.glb",
-    "sourceSha256": "0545cd51194cd2723c45f574f437ac4922de775f80059266a6de5d86f84bd6f2",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "pepper",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "pepper-mill",
-    "assetId": "124776129808145",
-    "source": "roblox-games/mare-essentia/assets/cargo/pepper-mill.glb",
-    "sourceSha256": "68154432072d82d62775c59e9631c325fdda375e487874fcfa64f60bd952b547",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "porcelain",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "porcelain",
-    "assetId": "138683586472709",
-    "source": "roblox-games/mare-essentia/assets/cargo/porcelain.glb",
-    "sourceSha256": "35df3c1c3e6a3658728675ef00917f65504906def04603ff7410d34c4a7266ae",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "raisins",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "raisins",
-    "assetId": "124680131550754",
-    "source": "roblox-games/mare-essentia/assets/cargo/raisins.glb",
-    "sourceSha256": "d09dbadf690313deaebc3c75fa6033ca9f801ed96896b55ecaf7f25d4c1943e1",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "rice",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "rice",
-    "assetId": "118342282044814",
-    "source": "roblox-games/mare-essentia/assets/cargo/rice.glb",
-    "sourceSha256": "d1bcd416f4208017e8d19aa84f62326a6536f88347f957aae2eb99d2644b3a8a",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "rum",
-    "state": "VISUAL_POLICY_RESTRICTED",
-    "cargoAsset": null,
-    "assetId": null,
-    "source": null,
-    "sourceSha256": null,
-    "license": null,
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "saffron",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "saffron",
-    "assetId": "97261338263208",
-    "source": "roblox-games/mare-essentia/assets/cargo/saffron.glb",
-    "sourceSha256": "74285d4822855436900733ec258b72603321f8226be61462c38005251d331503",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "sake",
-    "state": "VISUAL_POLICY_RESTRICTED",
-    "cargoAsset": null,
-    "assetId": null,
-    "source": null,
-    "sourceSha256": null,
-    "license": null,
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "salt",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "shaker-salt",
-    "assetId": "101609950026320",
-    "source": "roblox-games/mare-essentia/assets/cargo/shaker-salt.glb",
-    "sourceSha256": "44a6178171b93ea70ba85aba4101cbb0774493be1edacdcfb6961f0464ce8f89",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "sandalwood",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "sandalwood",
-    "assetId": "111542779031359",
-    "source": "roblox-games/mare-essentia/assets/cargo/sandalwood.glb",
-    "sourceSha256": "8f7d4101eb719c33184bf5d1e1236d1926730d60a0c337a8ef4c2834e8c52dc0",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "sandalwood_hi",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "sandalwood_hi",
-    "assetId": "124275584996012",
-    "source": "roblox-games/mare-essentia/assets/cargo/sandalwood_hi.glb",
-    "sourceSha256": "a9b2eb18d99f1e701f9d52bd03f7c02fcdca9cf70c4a1a34537e813916cc8487",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "sealskin",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "sealskin",
-    "assetId": "93659087865574",
-    "source": "roblox-games/mare-essentia/assets/cargo/sealskin.glb",
-    "sourceSha256": "0bf6f02a6d810a1ec3d42798967f0abe4657d38c1a91922c756fada14a7f0d6b",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "silk",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "silk",
-    "assetId": "132090116531384",
-    "source": "roblox-games/mare-essentia/assets/cargo/silk.glb",
-    "sourceSha256": "3cebd84eb43aca619d396e0494aa9e1c50ffcb87799a2bf9ae3cb935f83c97de",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "silver",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "silver-bar",
-    "assetId": "115188390070488",
-    "source": "roblox-games/mare-essentia/assets/cargo/silver-bar.glb",
-    "sourceSha256": "c6ca3f618246a3ded65c93611878e60d3d8a25b77c38576e51a83b95eddcf525",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "spice",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "spice",
-    "assetId": "126021199231720",
-    "source": "roblox-games/mare-essentia/assets/cargo/spice.glb",
-    "sourceSha256": "f475b85ca469c5a7555ef056ff17a599214ad14dcb379bde573cc5b57c86e4ba",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "sugar",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "sugar",
-    "assetId": "110267926213740",
-    "source": "roblox-games/mare-essentia/assets/cargo/sugar.glb",
-    "sourceSha256": "5f9c8c03f574cf951b62606fd97cdab3b34d239bdaba148ad0a02c8355a19b90",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "tea",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "cup-tea",
-    "assetId": "121297455738434",
-    "source": "roblox-games/mare-essentia/assets/cargo/cup-tea.glb",
-    "sourceSha256": "2c464a7a3263344c1379e118cd96a78d49eee52b096aeee7a5146ef46b8a0ec4",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "timber",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "wood-log-stack",
-    "assetId": "130671498909949",
-    "source": "roblox-games/mare-essentia/assets/cargo/wood-log-stack.glb",
-    "sourceSha256": "457874838bb6ec6c0019a7087330b895b704d1ac572700b57077216f2ac43824",
-    "license": "CC0-1.0",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "tin",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "tin",
-    "assetId": "100814351708537",
-    "source": "roblox-games/mare-essentia/assets/cargo/tin.glb",
-    "sourceSha256": "91bfca150d1e29d9abaf3cc5556ec277c8544760b8785579addcc9cd371d1822",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "vanilla",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "vanilla",
-    "assetId": "79169633450020",
-    "source": "roblox-games/mare-essentia/assets/cargo/vanilla.glb",
-    "sourceSha256": "42215a7d736ce2ec7d676d161721a4c3d913d5a3a873875c8803605fcf2fee40",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "whale_oil",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "whale_oil",
-    "assetId": "121322801463080",
-    "source": "roblox-games/mare-essentia/assets/cargo/whale_oil.glb",
-    "sourceSha256": "6f191a413d32865b9803007173584421e27b7713da4c9c8efbc78f596d327b01",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "wine",
-    "state": "VISUAL_POLICY_RESTRICTED",
-    "cargoAsset": null,
-    "assetId": null,
-    "source": null,
-    "sourceSha256": null,
-    "license": null,
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   },
-   {
-    "id": "wool",
-    "state": "REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING",
-    "cargoAsset": "wool",
-    "assetId": "96341734789072",
-    "source": "roblox-games/mare-essentia/assets/cargo/wool.glb",
-    "sourceSha256": "12434a405c7d708bbf550c5428f601c3fe2c4c3f7d567c22b9bfb9e3aa92cde0",
-    "license": "PROJECT_ORIGINAL_ART",
-    "nativeRuntimeVerified": false,
-    "visualQualityPass": false
-   }
-  ]
- }
 }
