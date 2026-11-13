@@ -1002,8 +1002,13 @@ function NavalBattle.play(opts)
 
 		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
 		local animateCardArt
+		local showCardCodex
+		local selectedPlay
 		local function chip(parent, c, w, power, moving)
-			local f = Instance.new("Frame")
+			local f = Instance.new("TextButton")
+			f.Name = "BoardCard"
+			f.Text = ""
+			f.AutoButtonColor = false
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
@@ -1027,7 +1032,10 @@ function NavalBattle.play(opts)
 			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
-			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
+			if moving then
+				local motion = animateCardArt(plate, painting, c)
+				if motion then table.insert(cardMotions, motion) end
+			end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
 			blackWash.Transparency = NumberSequence.new({
@@ -1055,6 +1063,12 @@ function NavalBattle.play(opts)
 			stamp.BackgroundColor3 = paper
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
+			-- [전장 카드] 적·아군 모두 한 번 탭하면 확대; 이미 놓은 카드는 다시 사용하지 못한다.
+			f.Activated:Connect(function()
+				if playing or finished or not f.Parent then return end
+				selectedPlay = nil
+				showCardCodex(c)
+			end)
 		end
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
@@ -1086,6 +1100,10 @@ function NavalBattle.play(opts)
 				destroying = art.Destroying:Connect(stop)
 				return { step = step, stop = stop }
 			end
+			-- [단일 오브젝트] 5대륙 카드는 한 장의 등록 그림만 보여 준다.
+			-- GIF 미등록 카드를 3D 모델로 덮지 않으며, 기존 도판은 그대로 남긴다.
+			local prefix = string.match(tostring(card.id or ""), "^(%a%a)_%d%d$")
+			if deckPalette[prefix] then return nil end
 			local spec = CARD_STAGE[card.id] or card.stage or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local function template(key)
@@ -1452,9 +1470,8 @@ function NavalBattle.play(opts)
 		focusClose.ZIndex = 55
 		focusClose.Parent = focusFrame
 		frameEdge(focusClose, brass, 4)
-		local selectedPlay
 		local focusMotion
-		local function showCardCodex(card)
+		showCardCodex = function(card)
 			if focusMotion then
 				focusMotion.stop()
 				for i = #cardMotions, 1, -1 do
@@ -1494,7 +1511,8 @@ function NavalBattle.play(opts)
 			local lore = cardLore(card)
 			focusRule.Text = row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
-			table.insert(cardMotions, focusMotion)
+			if focusMotion then table.insert(cardMotions, focusMotion) end
+			focusUse.Visible = selectedPlay ~= nil
 		end
 		local function closeCardCodex()
 			if selected and selected.Parent then
@@ -1512,7 +1530,7 @@ function NavalBattle.play(opts)
 			if selectedPlay then selectedPlay() end
 		end)
 		focusTap.Activated:Connect(function()
-			if selectedPlay then selectedPlay() end
+			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
 			selectedPlay = nil
@@ -1670,7 +1688,8 @@ function NavalBattle.play(opts)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
 				image.Parent = art
-				table.insert(cardMotions, animateCardArt(art, image, c))
+				local motion = animateCardArt(art, image, c)
+				if motion then table.insert(cardMotions, motion) end
 				local caption = label(b, cardName(c), 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.7)
 				caption.Size = UDim2.fromScale(0.71, 0.27)
@@ -1750,6 +1769,7 @@ function NavalBattle.play(opts)
 						showCardCodex(c)
 						selected = b
 						selectedPlay = playChosenCard
+						focusUse.Visible = true
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
 						info.Text = cardName(c) .. " · " .. cardDescription(c)
