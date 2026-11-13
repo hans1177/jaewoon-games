@@ -31,6 +31,34 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
 });
 
+test('Recovery Fast skips no-op control writes but persists newly created or changed queues',()=>{
+  // [큐 CAS 경합] 476개 작업을 매번 재포장하고 원격 브랜치에 밀어 넣던 무변경 루프를 막는다.
+  const before=recoveryFast.indexOf('state_before="$(node -e "$semantic_queue_digest_js"');
+  const after=recoveryFast.indexOf('state_after="$(node -e "$semantic_queue_digest_js"');
+  const guard=recoveryFast.indexOf('if [ "$newly_created_queue_files" -eq 0 ] && [ "$state_before" = "$state_after" ]');
+  const pack=recoveryFast.indexOf('storage-pack --queue=.vibe2/queue.json');
+  assert.ok(before>=0&&after>before&&guard>after&&pack>guard);
+  assert.match(recoveryFast,/newly_created_queue_files=1/);
+  assert.match(recoveryFast,/VIBE2_RECOVERY_FAST_WRITE=NO_SEMANTIC_CHANGE/);
+  assert.match(recoveryFast,/if git push origin HEAD:vibe2-unreal-core/);
+  const source=recoveryFast.match(/^\s+semantic_queue_digest_js='([^'\n]+)'/m)?.[1];
+  assert.ok(source&&source.includes('JSON.stringify(JSON.parse('));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-recovery-semantic-'));
+  try{
+    const files=['queue.json','system-ai-queue.json','recovery-queue.json'].map(name=>path.join(root,name));
+    for(let i=0;i<files.length;i++)fs.writeFileSync(files[i],JSON.stringify({version:1,tasks:[{id:'task-'+i,status:'queued'}]})+'\n');
+    const digest=()=>execFileSync(process.execPath,['-e',source,...files],{encoding:'utf8'}).trim();
+    const original=digest();
+    assert.match(original,/^[a-f0-9]{64}$/);
+    for(const file of files)fs.writeFileSync(file,JSON.stringify(JSON.parse(fs.readFileSync(file,'utf8')),null,2)+'\n');
+    assert.equal(digest(),original,'JSON formatting must not trigger a control write');
+    const recovery=JSON.parse(fs.readFileSync(files[2],'utf8'));
+    recovery.tasks[0].status='requeued';
+    fs.writeFileSync(files[2],JSON.stringify(recovery));
+    assert.notEqual(digest(),original,'real recovery state must still persist');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Recovery Fast sparse control worktree checks out only the canonical queue and can commit state',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-recovery-sparse-'));
   const repo=path.join(root,'source');

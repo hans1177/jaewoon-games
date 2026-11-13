@@ -83,8 +83,17 @@ jobs:
             node tools/vibe2-queue-control.mjs storage-unpack --queue="$control/.vibe2/queue.json"
 
             test -f "$control/.vibe2/queue.json"
+            # [복구 무변경] 신규 큐 파일의 최초 저장은 건너뛰지 않는다.
+            newly_created_queue_files=0
+            if [ ! -f "$control/.vibe2/system-ai-queue.json" ] || [ ! -f "$control/.vibe2/recovery-queue.json" ]; then
+              newly_created_queue_files=1
+            fi
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
             test -f "$control/.vibe2/recovery-queue.json" || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > "$control/.vibe2/recovery-queue.json"
+            # JSON 서식만 다시 기록한 실행은 복구 상태 변경이 아니다.
+            # 기존 3개 큐의 의미값만 비교하고 로그·비밀값은 출력하지 않는다.
+            semantic_queue_digest_js='const fs=require("node:fs"),crypto=require("node:crypto"),hash=crypto.createHash("sha256");for(const file of process.argv.slice(1)){hash.update(JSON.stringify(JSON.parse(fs.readFileSync(file,"utf8"))));hash.update("|");}process.stdout.write(hash.digest("hex"));'
+            state_before="$(node -e "$semantic_queue_digest_js" "$control/.vibe2/queue.json" "$control/.vibe2/system-ai-queue.json" "$control/.vibe2/recovery-queue.json")"
 
             # Source the failing step only from GitHub's own job conclusions. Never execute log text.
             deployment_args=()
@@ -183,6 +192,15 @@ jobs:
             # 누적 대기 작업 수는 새 복구가 아니다. 이번 호출이 돌려보낸 작업만 즉시 예약한다.
             vibe_requeued="$(awk -F= '$1 == "RECOVERY_GAME_REQUEUED_COUNT" { print $2 }' /tmp/vibe2-recovery-fast/dispatch.log)"
             [[ "$vibe_requeued" =~ ^[0-9]+$ ]]
+
+            # [복구 무변경] 회복/재배정이 없고 저장된 상태가 동일하면
+            # 대용량 queue pack과 경합하기 쉬운 control 브랜치 푸시를 생략한다.
+            state_after="$(node -e "$semantic_queue_digest_js" "$control/.vibe2/queue.json" "$control/.vibe2/system-ai-queue.json" "$control/.vibe2/recovery-queue.json")"
+            if [ "$newly_created_queue_files" -eq 0 ] && [ "$state_before" = "$state_after" ]; then
+              echo 'VIBE2_RECOVERY_FAST_WRITE=NO_SEMANTIC_CHANGE'
+              changed=0
+              break
+            fi
 
             cd "$control"
             git config user.name 'jaewoon-vibe2-recovery-fast'
