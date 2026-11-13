@@ -22,26 +22,26 @@ local CARD_SEA = "CardArt/event_calm_seas"
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
 -- 이 목록은 BoardingCards.luau 병종·특수 카드의 실제 id를 정확히 따라간다.
 local CARD_STAGE = {
-	swordsman = { art="CardArt/event_piracy", actor={"People","Soldier_Male"}, prop={"Relics","weapon-sword"}, motion="slash", scene="갑판 검술" },
-	axeman = { art="CardArt/event_piracy", actor={"People","KayKit_Barbarian"}, motion="slash", scene="선상 도끼 전투" },
-	pikeman = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, prop={"Relics","weapon-spear"}, motion="thrust", scene="장창 방진" },
-	shieldman = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Male"}, prop={"Relics","shield-round"}, motion="guard", scene="갑판 방어선" },
-	boatswain = { art="CardArt/event_cook_voyage", actor={"People","Worker_Male"}, prop={"Relics","rope-bundle-a"}, motion="command", scene="갑판장의 명령" },
-	surgeon = { art="CardArt/event_plague_wave", actor={"People","Doctor_Male_Young"}, prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장 치료소" },
-	musketeer = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, motion="aim", scene="소총 사격대" },
-	sharpshooter = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Female"}, motion="aim", scene="돛대 위 조준" },
-	scout = { art="CardArt/event_chart_world", actor={"People","Pirate_Female"}, prop={"Relics","compass-base"}, motion="scout", scene="해상 정찰" },
-	gunner = { art="CardArt/event_anglo_dutch_war", actor={"People","Worker_Male"}, prop={"Naval","cannon"}, motion="fire", scene="함포 발사" },
-	swivel = { art="CardArt/event_anglo_dutch_war", actor={"People","Pirate_Male"}, prop={"Naval","cannon-mobile"}, motion="fire", scene="선회포 사격" },
-	culverin = { art="CardArt/event_anglo_dutch_war", prop={"Naval","cannon"}, motion="fire", scene="장거리 함포" },
-	hero_blade = { art="CardArt/event_piracy", actor={"People","OldClassy_Male"}, prop={"Relics","weapon-sword"}, motion="slash", scene="백전노장의 지휘" },
-	hero_marksman = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Female"}, motion="aim", scene="전설의 명사수" },
-	hero_cannon = { art="CardArt/event_anglo_dutch_war", actor={"People","BlueSoldier_Male"}, prop={"Naval","cannon"}, motion="fire", scene="포술장의 일제사격" },
-	hero_spy = { art="CardArt/event_chart_caribbean", actor={"People","Pirate_Female"}, prop={"Relics","map-rolled"}, motion="scout", scene="비밀 해도" },
-	hero_medic = { art="CardArt/event_plague_wave", actor={"People","Doctor_Female_Young"}, prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장의 명의" },
-	hero_captain = { art="CardArt/event_cook_voyage", actor={"People","OldClassy_Male"}, prop={"Naval","ship-large"}, motion="command", scene="기함의 선장" },
-	ironclad = { art="CardArt/event_anglo_dutch_war", actor={"People","KayKit_Knight"}, prop={"Relics","shield-rectangle"}, motion="guard", scene="철갑 방어" },
-	sniper = { art="CardArt/event_anglo_dutch_war", actor={"People","Soldier_Male"}, motion="aim", scene="전술 저격" },
+	swordsman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="board", scene="소형 공격선 접현" },
+	axeman = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-pirate-medium"}, motion="board", scene="중형 공격선 돌격" },
+	pikeman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-small"}, motion="board", scene="소형 범선 선수 돌진" },
+	shieldman = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-large"}, motion="guard", scene="대형 함선 방어" },
+	boatswain = { art="CardArt/event_chart_world", prop={"Relics","rope-bundle-a"}, motion="command", scene="갑판장의 명령" },
+	surgeon = { art="CardArt/event_chart_world", prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장 치료소" },
+	musketeer = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-medium"}, motion="fire", scene="함포 엄호선" },
+	sharpshooter = { art="CardArt/event_chart_mediterranean", prop={"Naval","ship-pirate-small"}, motion="aim", scene="소형선 정밀 사격" },
+	scout = { art="CardArt/event_chart_world", prop={"Naval","boat-sail-a"}, motion="scout", scene="항로 정찰선" },
+	gunner = { art="CardArt/event_chart_west_europe", prop={"Naval","cannon"}, motion="fire", scene="함포 발사" },
+	swivel = { art="CardArt/event_chart_west_europe", prop={"Naval","cannon-mobile"}, motion="fire", scene="선회포 사격" },
+	culverin = { art="CardArt/event_chart_west_europe", prop={"Naval","cannon"}, motion="fire", scene="장거리 함포" },
+	hero_blade = { art="CardArt/event_chart_mediterranean", prop={"Naval","ship-pirate-large"}, motion="board", scene="기함 접현 작전" },
+	hero_marksman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-large"}, motion="aim", scene="기함 사격 지휘" },
+	hero_cannon = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-large"}, motion="fire", scene="대형 함선 일제포격" },
+	hero_spy = { art="CardArt/event_chart_caribbean", prop={"Naval","ship-pirate-small"}, motion="scout", scene="정찰선 비밀 항로" },
+	hero_medic = { art="CardArt/event_chart_world", prop={"Cargo","mortar-pestle"}, motion="heal", scene="전장의 명의" },
+	hero_captain = { art="CardArt/event_chart_world", prop={"Naval","ship-large"}, motion="command", scene="기함의 선장" },
+	ironclad = { art="CardArt/event_chart_west_europe", prop={"Relics","shield-rectangle"}, motion="guard", scene="철갑 방어" },
+	sniper = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-small"}, motion="aim", scene="소형선 조준 사격" },
 	-- 직접 제작한 고유 도판 5종. 3D 임의 모델 대신 원화 중심의 행동 장면으로 구분한다.
 	-- Open Cloud 원화 등록 ID가 AssetIds에 있을 때만 전용 삽화를 사용한다.
 	beast = { art="CardArt/event_uluru", newArt="CardArt/event_unit_beast", motion="pounce", scene="파도 헤치며 도약하는 호랑이" },
@@ -51,7 +51,7 @@ local CARD_STAGE = {
 	jaguar = { art="CardArt/event_chart_south_america", newArt="CardArt/event_unit_jaguar", motion="pounce", scene="흑요석 검의 재규어 전사" },
 	janissary = { art="CardArt/event_chart_mediterranean", newArt="CardArt/event_unit_janissary", motion="aim", scene="오스만 예니체리의 일제 사격" },
 	camel = { art="CardArt/event_chart_indian_ocean", newArt="CardArt/event_unit_camel", motion="gallop", scene="모래바람을 가르는 낙타 기병" },
-	raider = { art="CardArt/event_piracy", actor={"People","Pirate_Male"}, prop={"Naval","ship-pirate-small"}, motion="board", scene="해상 습격대" },
+	raider = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="board", scene="해상 습격대" },
 	-- 특수 카드는 실제 규칙(날씨·소각·순풍·군기·회군)과 같은 사건으로 표현한다.
 	scorch = { art="CardArt/event_harbor_fire", prop={"Naval","ship-wreck"}, motion="fire", scene="화염에 휩싸인 갑판" },
 	fog = { art="CardArt/event_calm_seas", prop={"Naval","ship-small"}, motion="fog", scene="짙은 해무" },
@@ -60,7 +60,7 @@ local CARD_STAGE = {
 	clear = { art="CardArt/event_calm_seas", prop={"Naval","boat-sail-a"}, motion="clear", scene="구름 걷힌 바다" },
 	wind = { art="CardArt/event_calm_seas", prop={"Naval","boat-sail-b"}, motion="wind", scene="순풍을 받는 돛" },
 	horn = { art="CardArt/event_royal_charter", prop={"Naval","flag-high"}, motion="command", scene="선단 군기 신호" },
-	decoy = { art="CardArt/event_piracy", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
+	decoy = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
 }
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
@@ -988,7 +988,7 @@ function NavalBattle.play(opts)
 					if actor then shoulder = actor:FindFirstChild("RightShoulder", true) end
 				end
 				if propSource then
-					local ship = spec.motion == "fog" or spec.motion == "storm" or spec.motion == "swell" or card.id == "hero_captain" or card.id == "scorch"
+					local ship = (spec.prop and spec.prop[1] == "Naval" and (string.sub(spec.prop[2], 1, 5) == "ship-" or string.sub(spec.prop[2], 1, 5) == "boat-")) or spec.motion == "fog" or spec.motion == "storm" or card.id == "hero_captain" or card.id == "scorch"
 					prop, propPivot = mount(propSource, if ship then 5.5 elseif card.row == "cannon" then 3.2 else 2.3,
 						if actorSource then 1.95 else 0, if ship then 1.75 else 1.95, if ship then -1.5 else 0.6, false)
 				end
@@ -1093,8 +1093,9 @@ function NavalBattle.play(opts)
 				elapsed += math.min(dt, 0.1)
 				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
 				if focused then ensureScene() elseif view then releaseScene() end
-				-- 모바일: 비선택 카드 15fps, 선택 카드 24fps 상한.
-				if elapsed - sampled < (if focused then 1 / 24 else 1 / 15) then return end
+				-- [모션] 확대 도판은 실제 렌더 프레임마다, 나머지 카드는 최대 30fps로 갱신한다.
+				-- 실제 갱신율은 기기 성능과 Roblox 렌더링에 따른다.
+				if not focused and elapsed - sampled < 1 / 30 then return end
 				sampled = elapsed
 				local motion = spec.motion or "wind"
 				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
@@ -1148,7 +1149,7 @@ function NavalBattle.play(opts)
 					end
 				end
 				if prop and propPivot then
-					local ship = motion == "storm" or motion == "fog" or motion == "wind" or motion == "retreat" or motion == "clear" or motion == "board"
+					local ship = (spec.prop and spec.prop[1] == "Naval" and (string.sub(spec.prop[2], 1, 5) == "ship-" or string.sub(spec.prop[2], 1, 5) == "boat-")) or motion == "storm" or motion == "fog" or motion == "wind" or motion == "retreat" or motion == "clear" or motion == "board"
 					local roll = if ship then (if motion == "storm" then 0.3 else 0.13) * wave
 						elseif motion == "slash" then -1.05 * impact + 0.36 * prepare
 						elseif motion == "thrust" then -0.48 * impact
