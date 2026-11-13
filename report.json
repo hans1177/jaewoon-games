@@ -1,170 +1,40 @@
 {
- "sourceRevision": "cd996bd81ee9d8eeef4db4c8252ca734abb7625b",
+ "sourceRevision": "10bac2687b7ae4fc50578152af9d55989cf4a605",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 3,
-   "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "capture": "v1_start",
+   "files": 1
   },
   {
    "step": 5,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
+   "capture": "v2_event",
+   "files": 1
   },
   {
    "step": 6,
    "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=567.9951171875, 230.2750244140625, 57.025390625 on=true parent=VoyageScene fog=2600 brightness=1 atmo=0.25 camdist=57.56278991699219\ntext"
   },
   {
    "step": 8,
-   "capture": "f_trade",
+   "capture": "v3_event2",
    "files": 1
   },
   {
-   "step": 9,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=110 issues=0\ntext"
-  },
-  {
    "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
+   "capture": "v4_late",
+   "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "killed=true\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "DEV Tab route\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "f_route",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=768 issues=0\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=141 issues=0\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "f_quest",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=237 issues=0\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=470 issues=0\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=132 issues=0\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
-  },
-  {
-   "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "out": "nil\ntext"
   }
  ],
  "errors": [],
@@ -175,17 +45,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 12,
+  "completedSteps": 12,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
   "abortedEarly": false
  }
 }
