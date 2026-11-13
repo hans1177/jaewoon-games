@@ -336,8 +336,12 @@ end
 
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 H.TITLE_ICONS = {
+	-- 전투 기술: 이름에 맞는 3D 아이콘 (연구 필요 문구의 물약 아이콘으로 떨어지지 않게 먼저 찾는다)
+	{ "갈고리", "Naval", "anchor" }, { "맹수", "Animals", "elephant" }, { "울음", "Animals", "cat" }, { "약초", "Cargo", "mortar-pestle" },
+	{ "치료", "Cargo", "mortar-pestle" }, { "포격", "Naval", "cannon" }, { "돌격", "Relics", "weapon-sword" }, { "방어", "Relics", "shield-round" },
+	{ "왜관", "Castle", "gate" }, { "학자 · 비어", "Interior", "bookcaseclosed" },
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
-	{ "유적", "Castle", "tower-square-base" }, { "천문", "Relics", "key" }, { "화학", "Relics", "potion" }, { "물리", "Cargo", "bucket" },
+	{ "유적", "Castle", "tower-square-base" }, { "천문", "Relics", "compass-base" }, { "화학", "Relics", "potion" }, { "물리", "Cargo", "parts-cog" },
 	{ "지리", "Naval", "ship-small" }, { "철학", "Interior", "bookcaseclosed" }, { "의학", "Cargo", "mortar-pestle" }, { "신화", "Relics", "weapon-sword" },
 	{ "항해술", "Naval", "ship-medium" }, { "기상", "Naval", "flag-pennant" }, { "건축", "Town", "house" }, { "예술", "Relics", "shield-round" },
 	{ "교역품", "Cargo", "box-open" }, { "조선", "Naval", "ship-large" }, { "언어", "Interior", "bookcaseopenlow" },
@@ -346,7 +350,7 @@ H.TEXT_ICONS = {
 	{ "코인 투자", "Relics", "coin" }, { "예금", "Relics", "coin" }, { "→", "Cargo", "box-open" }, { "면허", "Relics", "shield-round" },
 	{ "보험", "Relics", "shield-rectangle" }, { "알현", "Castle", "flag-banner-short" }, { "소문", "Cargo", "mug" },
 	{ "납품", "Cargo", "box-open" }, { "해전", "Relics", "weapon-sword" }, { "승리", "Relics", "weapon-sword" }, { "방문", "Naval", "ship-small" },
-	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "key" }, { "카드", "Relics", "key" }, { "발견", "Relics", "key" },
+	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "journal-open" }, { "카드", "Relics", "journal-open" }, { "발견", "Relics", "map-rolled" },
 	{ "이야기", "Relics", "key" },
 }
 function H.iconFor(title, subtitle)
@@ -6296,11 +6300,12 @@ RENDERERS.yard = renderYard
 
 -- 탭 아이콘: 이미 등록된 3D 모델(Relics·Naval·People)을 한 가지 표현으로 통일해 쓴다.
 H.TAB_ICON = {
-	quest = { "Relics", "journal-open" }, route = { "Relics", "drafting-compass" }, trade = { "Naval", "chest" },
-	cards = { "Relics", "journal-closed" }, status = { "Naval", "anchor" }, harbor = { "Naval", "dock-corner" },
-	crew = { "People", "Pirate_Male" }, yard = { "Naval", "ship-small" }, codex = { "Relics", "magnifying-glass" },
-	tech = { "Relics", "blueprint" }, map = { "Relics", "map-rolled" }, explore = { "Relics", "lantern" },
-	battle = { "Naval", "cannon" },
+	-- 탭 아이콘은 화면 오른쪽 위 메뉴와 같은 그림(Menu)을 써서 통일한다. 그림이 없는 동료는 3D 소품.
+	quest = { "Menu", "quest" }, route = { "Menu", "route" }, trade = { "Menu", "trade" },
+	cards = { "Relics", "journal-closed" }, status = { "Menu", "status" }, harbor = { "Menu", "harbor" },
+	crew = { "Relics", "shield-round" }, yard = { "Menu", "yard" }, codex = { "Menu", "codex" },
+	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
+	battle = { "Menu", "battle" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
