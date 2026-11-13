@@ -854,7 +854,7 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/origin\.Name = "CardDeckOrigin"/);
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
-  for(const region of ['eu','ea','me','nw','af'])assert.match(source,new RegExp('\\\\t'+region+' = \\{ ko = '));
+  for(const region of ['eu','ea','me','nw','af'])assert.ok(source.includes(`\t${region} = { ko = `),region+' region origin');
   assert.match(uploader,/event_\[a-z_\]\+\|battle_board\)\\\.jpg/);
   assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
   assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
