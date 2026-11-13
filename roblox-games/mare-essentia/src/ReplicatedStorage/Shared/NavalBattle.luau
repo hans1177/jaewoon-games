@@ -868,9 +868,10 @@ function NavalBattle.play(opts)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
-		local adviceTag = label(panel, "", 13, Color3.fromRGB(255, 233, 170), true)
-		adviceTag.Position = UDim2.fromScale(0.02, 0.575)
-		adviceTag.Size = UDim2.fromScale(0.74, 0.13)
+		-- 점수판(panel) 안에 두면 내 점수 칸과 겹치므로, 안내 줄(info) 자리에 잠깐 덮어 보여 준다
+		local adviceTag = label(g, "", 14, Color3.fromRGB(255, 233, 170), true)
+		adviceTag.Position = UDim2.fromScale(0.02, 0.08)
+		adviceTag.Size = UDim2.fromScale(0.96, 0.05)
 		adviceTag.TextScaled = true
 		adviceTag.TextWrapped = true
 		adviceTag.BackgroundColor3 = Color3.fromRGB(40, 33, 26)
