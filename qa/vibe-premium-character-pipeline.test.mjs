@@ -2,6 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 authored clip resolver prioritizes exact names and action tokens',()=>{
+ const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
+ assert.match(adapter,/name\.split\(\/\[\^a-z0-9\]\+\/\)\.includes\(expected\)/);
+ assert.match(adapter,/row\.name\.startsWith\(expected\)/);
+ assert.doesNotMatch(adapter,/row\.name\.includes\(expected\)/);
+});
 test('Vibe 5.9 authored clip transitions use crossfade and reset stale weights',()=>{
  const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
  assert.match(adapter,/match\.reset\(\)\.setEffectiveWeight\(1\)\.setEffectiveTimeScale\(1\)\.play\(\)/);
