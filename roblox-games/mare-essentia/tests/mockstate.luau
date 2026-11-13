@@ -22,8 +22,9 @@ local function model(proxy, kind, name)
 		end end
 		if k == "GetBoundingBox" then return function()
 			local center, original = m:GetBoundingBox()
-			-- [스모크 모델 크기] Roblox GetBoundingBox의 Vector3 크기와 Magnitude를 보존한다.
-			return center, Vector3.new(original.X * scale, original.Y * scale, original.Z * scale)
+			-- [스모크 모델 크기] 모듈별 격리 환경에서도 Roblox Vector3의 Magnitude를 유지한다.
+			local x, y, z = original.X * scale, original.Y * scale, original.Z * scale
+			return center, { X = x, Y = y, Z = z, Magnitude = math.sqrt(x * x + y * y + z * z) }
 		end end
 		return m[k]
 	end, __newindex = function() end, __iter = function() return function() return nil end end })
