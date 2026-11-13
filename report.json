@@ -1,5 +1,5 @@
 {
- "sourceRevision": "810a2fe34c3ef08d5f13d73e9d46ba6c1d1b7d39",
+ "sourceRevision": "38c988fd029804ba8e285fde1bff60a593a7e298",
  "log": [
   {
    "step": 1,
@@ -14,127 +14,7 @@
   {
    "step": 4,
    "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 7,
-   "capture": "01_top",
-   "files": 1
-  },
-  {
-   "step": 8,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 10,
-   "capture": "02_plaza",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 13,
-   "capture": "03_street",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 16,
-   "capture": "04_dock",
-   "files": 1
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 19,
-   "capture": "05_aerial",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "06_backstreet",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "07_wall",
-   "files": 1
-  },
-  {
-   "step": 26,
-   "ctx": "Client",
-   "out": "parts=3604 meshparts=3132 models=3514 houses=12\ntext"
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=5\ntext"
-  },
-  {
-   "step": 29,
-   "capture": "08_harbor_npc_sparring_01",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "capture": "08_harbor_npc_sparring_02",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "capture": "08_harbor_npc_sparring_03",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "capture": "08_harbor_npc_sparring_04",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "capture": "08_harbor_npc_sparring_05",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "capture": "08_harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 41,
-   "capture": "08_harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "08_harbor_npc_sparring_08",
-   "files": 1
+   "out": "Workspace.Terrain Terrain size=2044, 252, 2044 pos=0, 0, 0 col=0.639216, 0.635294, 0.647059 mat=Enum.Material.Plastic\nWorkspace.PortScene.Ground Part size=2048, 4, 2048 pos=-1280, -2, 0 col=0.737255, 0.729412, 0.635294 mat=Enum.Material.Grass\nWorkspace.PortScene.Part Part size=1400, 4, 1000 pos=430, -12, 0 col=0.690196, 0.627451, 0.470588 mat=Enum.Material.Sand\nWorkspace.PortScene.Part Part size=1300, 1, 1000 pos=670, 0.30000001192092896, 0 col=0.184314, 0.32549, 0.427451 mat=Enum.Material.Glass\nWorkspace.PortScene.SafetyFloor Part size=622, 2, 880 pos=-289, -1, 0 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1, 40, 900 pos=-600, 18, 0 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1200, 40, 1 pos=0, 18, 440 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nWorkspace.PortScene.Part Part size=1200, 40, 1 pos=0, 18, -440 col=1, 1, 1 mat=Enum.Material.SmoothPlastic\nterrainEmpty=-32000, -32000, -32000; 32000, 32000, 32000\ntext"
   }
  ],
  "errors": [],
@@ -149,13 +29,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 44,
-  "completedSteps": 44,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 15,
-  "capturedFrames": 15,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
