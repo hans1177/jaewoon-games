@@ -864,4 +864,13 @@ test('Mare eu_03 galleon source separates active art channels without changing c
   assert.equal(job.productionVerified,false);
   assert.equal(job.runtimeVerified,false);
   assert.equal(job.deploymentRequested,false);
+  // 새 지역 원화는 이미지 승인·등록 후에만 기존 전투 UI에 연결된다.
+  const naval=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.match(naval,/local artwork = "CardArt\/" \.\. id/);
+  assert.match(naval,/if AssetIds\[artwork\] then return artwork end/);
+  assert.match(naval,/if not spec then return CARD_SEA end/);
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
+  assert.match(uploader,/approvedImages\[id\] !== hash/);
+  assert.match(uploader,/assetType: image \? 'Image' : 'Model'/);
 });
