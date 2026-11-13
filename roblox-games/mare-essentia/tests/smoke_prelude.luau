@@ -42,6 +42,15 @@ local function vec(x, y, z)
 	local v = { X = x, Y = y, Z = z }
 	v.Magnitude = math.sqrt(x * x + y * y + z * z)
 	return setmetatable(v, {
+		-- [스모크 벡터] 실제 Roblox Vector3의 정규화 방향을 모사한다.
+		__index = function(self, key)
+			if key == "Unit" then
+				local length = self.Magnitude
+				if length <= 0 then return vec(0, 0, 0) end
+				return vec(self.X / length, self.Y / length, self.Z / length)
+			end
+			return nil
+		end,
 		__add = function(a, b) return vec(a.X + b.X, a.Y + b.Y, a.Z + b.Z) end,
 		__sub = function(a, b) return vec(a.X - b.X, a.Y - b.Y, a.Z - b.Z) end,
 		__mul = function(a, b)
