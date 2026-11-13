@@ -830,18 +830,24 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   }
 });
 
-test('Mare 5-continent six approved visual candidates exclude geometry sources and preserve tap to zoom',()=>{
+test('Mare 5-continent seven animated visual candidates reject geometric sources and preserve tap to zoom',()=>{
   const base='roblox-games/mare-essentia/';
   const manifest=JSON.parse(fs.readFileSync(base+'assets/cardart/region-art.json','utf8'));
-  const ids=['eu_03','ea_02','ea_18','me_21','nw_18','af_18'];
+  const ids=['eu_03','eu_24','ea_02','ea_18','me_21','nw_18','af_18'];
   assert.equal(manifest.cards.length,150,'preserve existing 150 definitions');
   for(const id of ids)assert.ok(manifest.cards.find(card=>card.id===id),id);
   const galleon=manifest.cards.find(card=>card.id==='eu_03');
   assert.deepEqual([galleon.name,galleon.row,galleon.skill,galleon.motion,galleon.power,galleon.registered],
     ['갈레온','cannon','armor','fire',6,false]);
+  const stonehenge=manifest.cards.find(card=>card.id==='eu_24');
+  assert.equal(stonehenge.name,'스톤헨지');
+  assert.equal(stonehenge.category,'지형·원더');
+  assert.equal(stonehenge.power,9);
+  assert.equal(stonehenge.hero,true);
+  assert.equal(stonehenge.registered,false);
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   for(const id of ids)assert.match(source,new RegExp('\\b'+id+' = true'),'animated candidate '+id);
-  for(const id of ['eu_24','me_01','me_24','nw_24','af_01'])
+  for(const id of ['me_01','me_24','nw_24','af_01'])
     assert.doesNotMatch(source,new RegExp('\\b'+id+' = true'),'reject primitive stand-in '+id);
   assert.match(source,/local spriteKey = "CardArt\/" \.\. tostring\(card\.id or ""\)/);
   assert.match(source,/if ANIMATED_CARD_IDS\[card\.id\] and AssetIds\[spriteKey\] then/);
