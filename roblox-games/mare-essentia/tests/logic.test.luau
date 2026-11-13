@@ -3233,7 +3233,22 @@ do
 	do
 		local CBk = D.CardBook
 		local book = CBk.new("europe")
-		check("수집책: 시작하면 문화권 기본 덱을 가진다", (book.owned.pikeman or 0) == 2 and CBk.validateDeck(book, BC.Factions.europe.roster))
+		check("수집책: 시작하면 문화권 기본 덱을 가진다", #BC.Factions.europe.roster == 30
+			and (book.owned.eu_03 or 0) == 1 and (book.owned.pikeman or 0) == 0
+			and CBk.validateDeck(book, BC.Factions.europe.roster))
+		-- 현재 문화권 기본 덱의 30개 실물 카드 ID를 그대로 보유하며 저장 덱 검증에 적합한지 확인한다.
+		for _, factionId in BC.FactionOrder do
+			local faction = BC.Factions[factionId]
+			local starter = CBk.new(factionId)
+			local ownedCount = 0
+			local matches = true
+			for _, id in faction.roster do
+				ownedCount += starter.owned[id] or 0
+				if (starter.owned[id] or 0) ~= 1 then matches = false end
+			end
+			check("수집책: 문화권 30장 기본 덱 소유·검사 " .. factionId,
+				#faction.roster == 30 and ownedCount == 30 and matches and CBk.validateDeck(starter, faction.roster))
+		end
 		check("수집책: 저장한 덱이 없으면 자동 덱", #CBk.deckIds(book, "europe") == #BC.Factions.europe.roster)
 		local id = CBk.drop(book, "quest", math.random)
 		check("수집책: 획득하면 보유가 늘어난다", (book.owned[id] or 0) >= 1)
