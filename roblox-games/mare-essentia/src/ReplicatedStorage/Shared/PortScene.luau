@@ -303,7 +303,12 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			p.Anchored = true
 			p.CanCollide = solid == true
 			p.CanTouch = false
-			if tint and p:IsA("MeshPart") then p.Color = tint end
+			if tint and p:IsA("MeshPart") then
+				p.Color = tint
+				-- 질감(SurfaceAppearance)이 있는 모델은 MeshPart.Color 가 무시되므로 질감 쪽 색도 함께 곱한다
+				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
+				if sa then sa.Color = tint end
+			end
 		end
 	end
 	if not hasParts then m:Destroy(); return nil end
