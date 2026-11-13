@@ -22,8 +22,6 @@ local CARD_SEA = "CardArt/event_calm_seas"
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
 -- 이 목록은 BoardingCards.luau 병종·특수 카드의 실제 id를 정확히 따라간다.
 local CARD_STAGE = {
-	-- [퀜트형 고유 카드] 원본 등록 선박의 선체/돛/깃발 메시를 실제 카드 장면에서 별도로 보간한다.
-	eu_03 = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-pirate-large"}, motion="fire", scene="갈레온 장갑 선체 · 일제포격" },
 	swordsman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="board", scene="소형 공격선 접현" },
 	axeman = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-pirate-medium"}, motion="board", scene="중형 공격선 돌격" },
 	pikeman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-small"}, motion="board", scene="소형 범선 선수 돌진" },
@@ -68,7 +66,7 @@ local CARD_STAGE = {
 -- [지역별 오브젝트 도판] 기존 등록 그림과 카드 자체 스킬·장면 데이터를 그대로 연결한다.
 local function cardArtworkKey(card)
 	local spec = CARD_STAGE[card.id] or card.stage
-	-- [지역별 고유 카드] 승인·등록된 Image가 있으면 우선 적용, 없으면 원래 해역 도판을 유지한다.
+	-- [지역 카드 GIF] 승인·등록된 4x4 프레임 시트만 기존 전투 카드에서 사용한다.
 	local id = tostring(card.id or "")
 	local region, serial = string.match(id, "^([a-z][a-z])_(%d%d)$")
 	local slot = tonumber(serial)
@@ -933,7 +931,6 @@ function NavalBattle.play(opts)
 		local playing = false
 		local selected
 		local cardMotions = {}
-		local activeGalleonViews = 0 -- 모바일: 갈레온 비확대 3D 카드 최대 2개. 나머지는 원화 기반.
 		-- 모든 카드가 공유하는 단일 프레임 갱신. 손패 10장 + 최근 전장 2장도 모바일에서 관리한다.
 		local lastPlayed = { me = nil, foe = nil }
 		local cardMotionStep = RunService.RenderStepped:Connect(function(dt)
@@ -1031,6 +1028,33 @@ function NavalBattle.play(opts)
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
 		animateCardArt = function(art, image, card)
+			-- [퀜트식 GIF 프레임] Roblox ImageLabel은 GIF 재생을 지원하지 않으므로
+			-- 승인된 16장 시트만 한 장의 이미지에서 순서대로 표시한다. 부위/레이어 보간 없음.
+			-- 원본 GIF: 16프레임 × 80ms, 등록 대상: CardArt/eu_03, 4열×4행(256×192).
+			if card.id == "eu_03" and AssetIds["CardArt/eu_03"] then
+				image.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/eu_03"])
+				image.ImageRectSize = Vector2.new(256, 192)
+				image.ImageRectOffset = Vector2.new(0, 0)
+				image.ImageColor3 = Color3.new(1, 1, 1)
+				local elapsed = 0
+				local active = true
+				local destroying
+				local function stop()
+					if not active then return end
+					active = false
+					if destroying then destroying:Disconnect() end
+					image.ImageRectSize = Vector2.zero
+					image.ImageRectOffset = Vector2.zero
+				end
+				local function step(dt)
+					if not active then return end
+					elapsed += math.max(0, dt)
+					local frame = math.floor(elapsed / 0.08) % 16
+					image.ImageRectOffset = Vector2.new((frame % 4) * 256, math.floor(frame / 4) * 192)
+				end
+				destroying = art.Destroying:Connect(stop)
+				return { step = step, stop = stop }
+			end
 			local spec = CARD_STAGE[card.id] or card.stage or {}
 			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
 			local function template(key)
@@ -1040,22 +1064,16 @@ function NavalBattle.play(opts)
 			end
 			local actorSource, propSource = template(spec.actor), template(spec.prop)
 			local view, actor, prop, actorPivot, propPivot, shoulder, camera
-			local shipParts = {} -- 등록 GLB의 기존 돛/깃발 MeshPart만 사용. 클론 외 원본 불변.
 			local sceneFailed = false
 			-- 모바일 최적화: 손패 전체는 2D 판화로 표시하고, 선택·확대된 카드만 실제 모델을 렌더한다.
 			local function releaseScene()
-				if view then
-					view:Destroy()
-					if card.id == "eu_03" then activeGalleonViews = math.max(0, activeGalleonViews - 1) end
-				end
-				table.clear(shipParts)
+				if view then view:Destroy() end
 				view, actor, prop, actorPivot, propPivot, shoulder, camera = nil, nil, nil, nil, nil, nil, nil
 			end
 			local function ensureScene()
 				if view or sceneFailed or (not actorSource and not propSource) then return end
 				view = Instance.new("ViewportFrame")
 				view.Name = "AnimatedEncyclopedia"
-				if card.id == "eu_03" then activeGalleonViews += 1 end
 				view.Size = UDim2.fromScale(1, 1)
 				view.BackgroundTransparency = 1
 				view.Ambient = Color3.fromRGB(131, 108, 85)
@@ -1099,20 +1117,6 @@ function NavalBattle.play(opts)
 					local ship = (spec.prop and spec.prop[1] == "Naval" and (string.sub(spec.prop[2], 1, 5) == "ship-" or string.sub(spec.prop[2], 1, 5) == "boat-")) or spec.motion == "fog" or spec.motion == "storm" or card.id == "hero_captain" or card.id == "scorch"
 					prop, propPivot = mount(propSource, if ship then 5.5 elseif card.row == "cannon" then 3.2 else 2.3,
 						if actorSource then 1.95 else 0, if ship then 1.75 else 1.95, if ship then -1.5 else 0.6, false)
-				end
-				-- [갈레온 실물 메시] 원본 GLB의 sail-a/sail-b/flag-c 하위 부품을 독립 보간한다.
-				if card.id == "eu_03" and prop and propPivot then
-					for _, part in prop:GetDescendants() do
-						if part:IsA("BasePart") then
-							local name = string.lower(part.Name)
-							local kind = if string.find(name, "sail", 1, true) then "sail"
-								elseif string.find(name, "flag", 1, true) then "flag" else nil
-							if kind then
-								table.insert(shipParts, { part = part, kind = kind,
-									rest = propPivot:ToObjectSpace(part.CFrame), phase = #shipParts * 0.93 })
-							end
-						end
-					end
 				end
 				if not actor and not prop then
 					sceneFailed = true
@@ -1199,53 +1203,6 @@ function NavalBattle.play(opts)
 			combatFlash.BorderSizePixel = 0
 			combatFlash.ZIndex = image.ZIndex + 4
 			combatFlash.Parent = art
-
-			-- [갈레온 퀜트식 카드] 원본 선박 메시와 별개로 파도 3겹·함포 연기 3겹을 독립 재생한다.
-			-- 이미지/3D와 함께 기존 카드 RenderStepped 한 개에서만 갱신하며 새 파일·새 연결은 만들지 않는다.
-			local galleonWaves, galleonSmoke = {}, {}
-			if card.id == "eu_03" then
-				for index = 1, 3 do
-					local wave = Instance.new("Frame")
-					wave.Name = "GalleonWave" .. index
-					wave.AnchorPoint = Vector2.new(0, 0.5)
-					wave.Position = UDim2.fromScale(-0.17, 0.76 + index * 0.035)
-					wave.Size = UDim2.fromScale(1.28, 0.017 + index * 0.005)
-					wave.BackgroundColor3 = Color3.fromRGB(175, 213, 213)
-					wave.BackgroundTransparency = 0.84
-					wave.BorderSizePixel = 0
-					wave.ZIndex = image.ZIndex + 3
-					wave.Parent = art
-					local edge = Instance.new("UICorner")
-					edge.CornerRadius = UDim.new(1, 0)
-					edge.Parent = wave
-					local fadeWave = Instance.new("UIGradient")
-					fadeWave.Transparency = NumberSequence.new({
-						NumberSequenceKeypoint.new(0, 1),
-						NumberSequenceKeypoint.new(0.25, 0.3),
-						NumberSequenceKeypoint.new(0.7, 0.18),
-						NumberSequenceKeypoint.new(1, 1),
-					})
-					fadeWave.Parent = wave
-					table.insert(galleonWaves, wave)
-				end
-				for index = 1, 3 do
-					local puff = Instance.new("Frame")
-					puff.Name = "GalleonCannonSmoke" .. index
-					puff.AnchorPoint = Vector2.new(0.5, 0.5)
-					puff.Position = UDim2.fromScale(0.24 + index * 0.15, 0.66)
-					puff.Size = UDim2.fromScale(0.09, 0.065)
-					puff.BackgroundColor3 = Color3.fromRGB(213, 204, 177)
-					puff.BackgroundTransparency = 1
-					puff.BorderSizePixel = 0
-					puff.ZIndex = image.ZIndex + 4
-					puff.Parent = art
-					local round = Instance.new("UICorner")
-					round.CornerRadius = UDim.new(1, 0)
-					round.Parent = puff
-					table.insert(galleonSmoke, puff)
-				end
-			end
-
 			local function stop()
 				if not active then return end
 				active = false
@@ -1256,28 +1213,16 @@ function NavalBattle.play(opts)
 				shine:Destroy()
 				inscription:Destroy()
 				combatFlash:Destroy()
-				for _, wave in galleonWaves do wave:Destroy() end
-				for _, puff in galleonSmoke do puff:Destroy() end
 			end
 			local function step(dt)
 				if not active then return end
-				elapsed += math.max(0, dt) -- 시간 기준 보간: 느린 기기에서도 속도가 누적 지연되지 않음.
-				local focused = art:GetAttribute("ArtFocused") == true
-					or (art.Parent ~= nil and art.Parent:GetAttribute("ArtFocused") == true)
-				-- 갈레온은 카드 위에서도 움직이되, 고비용 3D 뷰는 동시에 2개만 유지한다.
-				if focused or (card.id == "eu_03" and (view ~= nil or activeGalleonViews < 2)) then
-					ensureScene()
-				elseif view then
-					releaseScene()
-				end
-				-- [60fps 목표] 확대 카드·갈레온은 렌더 프레임마다 최대 60회, 일반 손패는 30회.
-				-- Roblox 실제 fps는 기기 실측 전까지 미검증으로 유지한다.
-				local interval = if focused or card.id == "eu_03" then 1 / 60 else 1 / 30
-				local sinceSample = elapsed - sampled
-				if sinceSample < interval - 0.002 then return end
-				-- [프레임 안정성] 잔여 시간을 보존해 90/120/144Hz 기기에서도 60회 목표에 접근한다.
-				-- 긴 일시정지 뒤에는 갱신을 몰아서 처리하지 않는다.
-				sampled = if sinceSample > interval * 3 then elapsed else sampled + interval
+				elapsed += math.min(dt, 0.1)
+				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
+				if focused then ensureScene() elseif view then releaseScene() end
+				-- [모션] 확대 도판은 실제 렌더 프레임마다, 나머지 카드는 최대 30fps로 갱신한다.
+				-- 실제 갱신율은 기기 성능과 Roblox 렌더링에 따른다.
+				if not focused and elapsed - sampled < 1 / 30 - 0.002 then return end
+				sampled = elapsed
 				local motion = spec.motion or "wind"
 				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
 				local wind = math.sin(elapsed * 1.17)
@@ -1308,28 +1253,6 @@ function NavalBattle.play(opts)
 					else 1
 				shine.Position = UDim2.fromScale((elapsed % 5.5) / 5.5 * 1.8 - 0.5, -0.2)
 				shine.BackgroundTransparency = if focused or card.hero then 0.74 else 0.94
-				-- [독립 파도] 각 물결이 서로 다른 주기로 움직여 선체 기울기와 같은 반복으로 보이지 않게 한다.
-				for index, waveLayer in galleonWaves do
-					local phase = elapsed * (1.18 + index * 0.16) + index * 1.21
-					waveLayer.Position = UDim2.fromScale(
-						-0.17 + 0.05 * math.sin(phase * 0.73),
-						0.76 + index * 0.035 + 0.017 * math.sin(phase))
-					waveLayer.Size = UDim2.fromScale(1.28 + 0.035 * math.sin(phase * 0.51), 0.017 + index * 0.005)
-					waveLayer.BackgroundTransparency = 0.81 + 0.075 * math.sin(phase * 1.13)
-				end
-				-- [독립 포연] 포격 순간에 생성되어 개별 상승·팽창·소멸하고 다음 발사 때 다시 시작한다.
-				local smokeElapsed = (beat - 0.48 + 1) % 1
-				for index, puff in galleonSmoke do
-					local age = (smokeElapsed - (index - 1) * 0.022 + 1) % 1
-					local progress = age / 0.34
-					puff.BackgroundTransparency = if age < 0.34 then 0.36 + 0.64 * progress else 1
-					if age < 0.34 then
-						puff.Position = UDim2.fromScale(
-							0.25 + (index - 1) * 0.15 + 0.07 * progress,
-							0.67 - 0.18 * progress + 0.022 * math.sin(elapsed * 0.85 + index))
-						puff.Size = UDim2.fromScale(0.09 + 0.12 * progress, 0.065 + 0.15 * progress)
-					end
-				end
 				if actor and actorPivot then
 					local jump = if motion == "pounce" then 0.95 * impact
 						elseif motion == "gallop" then 0.24 * math.abs(wave)
@@ -1361,17 +1284,6 @@ function NavalBattle.play(opts)
 					local slide = if motion == "fire" then -0.54 * impact elseif motion == "retreat" then -0.6 * wind elseif attack then -0.3 * impact else 0
 					prop:PivotTo(propPivot * CFrame.new(slide, 0.07 * wave, if motion == "thrust" then -0.8 * impact else 0)
 						* CFrame.Angles(0, 0.09 * wind, roll))
-					-- [퀜트형 계층] 선체의 현재 피벗을 기준으로 각 부품을 독립적인 시간 함수로 움직인다.
-					-- 원본 배/카드 규칙은 변경하지 않고 복제된 ViewportFrame 메시만 수정한다.
-					if card.id == "eu_03" then
-						local shipFrame = prop:GetPivot()
-						for _, item in shipParts do
-							local phase = elapsed * (if item.kind == "flag" then 3.7 else 1.6) + item.phase
-							local yaw = (if item.kind == "flag" then 0.16 else 0.055) * math.sin(phase)
-							local pitch = (if item.kind == "flag" then 0.07 else 0.025) * math.sin(phase * 0.83)
-							item.part.CFrame = shipFrame * item.rest * CFrame.Angles(pitch, yaw, 0)
-						end
-					end
 				end
 				if view and camera then
 					local shake = if gunshot then 0.15 * impact elseif motion == "storm" then 0.08 * wave else 0
