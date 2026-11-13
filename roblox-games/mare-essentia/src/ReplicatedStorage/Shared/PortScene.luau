@@ -2622,7 +2622,7 @@ function PortScene.build(info, onFacility)
 					local hop = math.abs(math.sin(now * 7 + w.phase)) * 0.25
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
-					Pose.walkR15(w.model, now * w.speed * 5 + w.phase, true)
+					Pose.makeR15Action(w.model, "walk", 0, now * w.speed + w.phase)
 				end
 			elseif w.model.Parent then
 				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
@@ -2645,7 +2645,7 @@ function PortScene.build(info, onFacility)
 				local pos = w.base.Position + w.base.LookVector * d
 				local bob = if moving then math.abs(math.sin(now * 6 + w.phase)) * 0.15 else 0
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
-				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, moving)
+				Pose.makeR15Action(w.model, if moving then "walk" else "idle", 0, now * w.speed + w.phase)
 				if not moving then
 					Pose.work(w.model, w.idleKind or "talk", now + w.phase)
 				elseif w.kind then
@@ -3039,7 +3039,7 @@ function PortScene.build(info, onFacility)
 					local bob = if moving then math.abs(math.sin(now * 7 + f.phase)) * 0.12 else 0
 					local at = f.pos + Vector3.new(0, f.baseY + bob, 0)
 					f.model:PivotTo(CFrame.lookAt(at, at + faceDir))
-					Pose.walkR15(f.model, now * 9 + f.phase, moving)
+					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, now + f.phase)
 				end
 			end
 		end)
