@@ -33,6 +33,14 @@ local GOOD_MESH = {
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
 setmetatable(GOOD_MESH, { __index = function() return { "Cargo", "box-open" } end })
+-- 상품 종류별 진열 크기 배율: 작은 물건(보석·향신료·찻잔)은 작게, 큰 물건(통·목재·천 더미)은 크게 보여 종류가 한눈에 구분되게 한다.
+local GOOD_SIZE = {
+	gems = 0.75, pearls = 0.7, pepper = 0.8, salt = 0.8, olive_oil = 0.9, coffee = 0.75, tea = 0.75, cocoa = 0.8, honey = 0.8, lemon = 0.8, coconut = 0.85,
+	wine = 1.2, beer = 1.2, sake = 1.2, rum = 1.2, timber = 1.3, mahogany = 1.25, cloth = 1.2, silk = 1.2, grain = 1.1, sugar = 1.1,
+}
+local function goodSize(good, size)
+	return size * (GOOD_SIZE[good] or 1)
+end
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
@@ -1725,7 +1733,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			local mesh = GOOD_MESH[good]
 			-- 문 앞 진열: 상품 3D 모델 더미와 통
 			for j = -1, 1 do
-				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), 2.8, false, mesh[3])
+				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), goodSize(good, 2.8), false, mesh[3])
 			end
 			importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
 			importedModel(folder, "Cargo", "box-open", at + Vector3.new(-7.6, 0, 7.4), 2.4, false)
@@ -2021,7 +2029,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			local mesh = GOOD_MESH[good]
 			if mesh then
 				for kk = 1, 3 do
-					importedModel(folder, mesh[1], mesh[2], Vector3.new(x + (kk - 2) * 1.8, 2.5, z), 1.8, false, mesh[3])
+					importedModel(folder, mesh[1], mesh[2], Vector3.new(x + (kk - 2) * 1.8, 2.5, z), goodSize(good, 1.8), false, mesh[3])
 				end
 			end
 		end
@@ -2111,7 +2119,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		for k = 1, 4 do
 			local good = made[(i + k) % math.max(1, #made) + 1] or "cheese"
 			local mesh = GOOD_MESH[good]
-			importedModel(folder, mesh[1], mesh[2], spot + Vector3.new((k - 2.5) * 1.7, 2.5, 0), 1.8, false, mesh[3])
+			importedModel(folder, mesh[1], mesh[2], spot + Vector3.new((k - 2.5) * 1.7, 2.5, 0), goodSize(good, 1.8), false, mesh[3])
 		end
 	end
 
@@ -3205,7 +3213,7 @@ function PortScene.build(info, onFacility)
 		for index, good in showcase do
 			local stand = stalls[math.ceil(index / 4)]
 			local mesh = GOOD_MESH[good]
-			importedModel(folder, mesh[1], mesh[2], stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), 1.8, false, mesh[3])
+			importedModel(folder, mesh[1], mesh[2], stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), goodSize(good, 1.8), false, mesh[3])
 		end
 		-- 큰길 가로등과 울타리, 광장 분수
 		for _, x in { -30, -75, -120 } do
