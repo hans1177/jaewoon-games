@@ -882,6 +882,7 @@ test('Mare galleon card moves original sail and flag meshes at up to 60fps witho
   assert.match(source,/local activeGalleonViews = 0/);
   assert.match(source,/activeGalleonViews < 2/);
   assert.match(source,/local interval = if focused or card\.id == "eu_03" then 1 \/ 60 else 1 \/ 30/);
+  assert.match(source,/sampled = if sinceSample > interval \* 3 then elapsed else sampled \+ interval/);
   assert.match(source,/elapsed \+= math\.max\(0, dt\)/);
   assert.match(source,/art:GetAttribute\("ArtFocused"\) == true/);
   assert.match(source,/art\.Parent ~= nil and art\.Parent:GetAttribute\("ArtFocused"\) == true/);
