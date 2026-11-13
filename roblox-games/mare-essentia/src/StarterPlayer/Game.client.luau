@@ -7607,13 +7607,33 @@ end
 -- 시작 --------------------------------------------------------------------
 
 task.spawn(function()
+	-- 서버가 늦으면 얼마나 기다렸는지 화면에 보여 준다(멈춘 것처럼 보이지 않게)
+	local startedAt = os.clock()
+	task.spawn(function()
+		while H.startupCover and H.startupLabel do
+			task.wait(1)
+			if H.startupCover and H.startupLabel then
+				H.startupLabel.Text = string.format("학문의 바다\n항구와 항해 기록을 불러오는 중... (%d초)", math.floor(os.clock() - startedAt))
+			end
+		end
+	end)
 	for _ = 1, 30 do
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
 			H.roomInfo = result.room
 			message = ""
-			render()
-			H.showTitle()
+			-- 화면을 그리다 오류가 나도 로딩 화면에 갇히지 않게 하고, 오류 내용을 보여 준다.
+			local okDraw, errDraw = pcall(function()
+				render()
+				H.showTitle()
+			end)
+			if not okDraw then
+				warn("[MareEssentia] 시작 화면 오류: " .. tostring(errDraw))
+				if H.startupLabel then
+					H.startupLabel.Text = "시작 화면 오류\n" .. string.sub(tostring(errDraw), 1, 160)
+				end
+				task.wait(8)
+			end
 			-- 실제 시작 메뉴가 완성된 뒤에만 로딩 화면을 닫는다.
 			if H.startupCover then
 				H.startupCover:Destroy()
