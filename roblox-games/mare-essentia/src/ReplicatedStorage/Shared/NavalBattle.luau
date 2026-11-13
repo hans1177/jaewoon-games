@@ -834,7 +834,27 @@ function NavalBattle.play(opts)
 		adviceTag.Visible = false
 		adviceTag.ZIndex = 20
 		local adviceRound, adviceCount, adviceToken = 0, 0, 0
+
 		local function sayAdvice(text, seconds)
+			if english then
+				if string.find(text, "정찰:", 1, true) then
+					text = "Scout: counter the enemy's weakest row."
+				elseif string.find(text, "상대가 멈췄어요. 지금 멈추면", 1, true) then
+					text = "The opponent passed. Pass now to win this round!"
+				elseif string.find(text, "상대가 멈췄어요. 이기려면", 1, true) then
+					text = "The opponent passed. Take the lead before passing."
+				elseif string.find(text, "많이 밀려요", 1, true) then
+					text = "You are behind. Scorch or Snipe can remove a powerful enemy."
+				elseif string.find(text, "점수가 크게 밀려요", 1, true) then
+					text = "You are far behind. Consider saving cards for the next round."
+				elseif string.find(text, "상성에서 밀려요", 1, true) then
+					text = "This row has a disadvantage. Use a more favorable row."
+				elseif string.find(text, "손패가 얼마", 1, true) then
+					text = "Your hand is almost empty. Consider passing to save cards."
+				else
+					text = "Check the row matchups before choosing a card."
+				end
+			end
 			adviceToken += 1
 			local mine = adviceToken
 			adviceTag.Text = text
@@ -916,12 +936,15 @@ function NavalBattle.play(opts)
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
-				info.Text = msg or ""
+				info.Text = if english then "Action unavailable" else msg or ""
 				return
 			end
-			info.Text = msg or ""
+			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
 			if res then
-				info.Text = string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe, if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
+				info.Text = if english then string.format("Round %d — You %d : Pirates %d %s", res.round, res.me, res.foe,
+					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
+					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
+						if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
 				Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_hit", 0.6, 1)
 				Sfx.play("sfx_metal_clash", 0.7, 1)
 			else
@@ -1435,34 +1458,41 @@ function NavalBattle.play(opts)
 			local weather = {}
 			for _, row in BC.ROWS do
 				if m.weather[row] then
-					table.insert(weather, BC.ROW_NAME[row] .. " 약화")
+					table.insert(weather, rowName(row) .. t(" 약화", " weakened"))
 				end
 			end
 			local foeCulture = m.faction and m.faction.foe and BC.Factions[m.faction.foe]
 			local myCulture = m.faction and m.faction.me and BC.Factions[m.faction.me]
-			foePlate.who.Text = (opts.enemyName or "해적") .. (if foeCulture then " · " .. foeCulture.name else "")
-				.. (if m.passed.foe then " · 멈춤" elseif m.turn == "foe" and not m.over then " · 차례" else "")
-			mePlate.who.Text = (opts.shipName or "우리 배") .. (if myCulture then " · " .. myCulture.name else "")
-				.. (if m.passed.me then " · 멈춤" elseif m.turn == "me" and not m.over then " · 내 차례" else "")
+			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
+				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
+				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
+			mePlate.who.Text = (if english then "Your ship" else opts.shipName or "우리 배")
+				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
+				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
 			mePlate.total.Text = tostring(BC.total(m, "me"))
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
 			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
 			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
-			weatherTag.Text = (if #weather > 0 then table.concat(weather, " · ") else string.format("%d판째", m.round))
-				.. (if m.sea and m.sea.id ~= "calm" then " · " .. m.sea.name else "")
+			weatherTag.Text = (if #weather > 0 then table.concat(weather, " · ") else t(string.format("%d판째", m.round), string.format("Round %d", m.round)))
+				.. (if m.sea and m.sea.id ~= "calm" and not english then " · " .. m.sea.name else "")
 			if m.turn == "me" and not m.over and adviceRound ~= m.round and adviceCount < 3 then
 				local tip = BC.advice(m, "me")
 				if tip then
 					adviceRound, adviceCount = m.round, adviceCount + 1
-					sayAdvice(string.format("%s: %s", opts.advisorName or "동료", tip), 7)
+					sayAdvice(if english then tip else string.format("%s: %s", opts.advisorName or "동료", tip), 7)
 				end
 			end
-			header.Text = string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+			header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
 				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
-				if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
-			header.Text ..= string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+				if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
+				else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+					TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
+					if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
+			header.Text ..= if english then string.format("\nWins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
 				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
+				else string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
 			-- 줄: 위 3줄은 해적(포·사격·근접), 아래 3줄은 우리(근접·사격·포)
 			local order = { { "foe", "cannon" }, { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" }, { "me", "cannon" } }
 			for k, o in order do
@@ -1477,7 +1507,7 @@ function NavalBattle.play(opts)
 				frameEdge(rf, brass, 4)
 				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
-				local tag = label(rf, string.format("%s\n%d%s", BC.ROW_NAME[row], BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then " ▲상성" elseif dis then " ▼불리" else ""), 13, Color3.fromRGB(246, 208, 130))
+				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else ""), 13, Color3.fromRGB(246, 208, 130))
 				tag.Position = UDim2.fromOffset(29, 0)
 				tag.Size = UDim2.new(0, 68, 1, 0)
 				tag.TextXAlignment = Enum.TextXAlignment.Left
@@ -1580,7 +1610,7 @@ function NavalBattle.play(opts)
 					tipLabel.AnchorPoint = Vector2.new(1, 0)
 					tipLabel.Position = UDim2.new(1, -4, 0, 5)
 					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
-					tipLabel.Text = (if i == bestHint then "추천 " else "") .. tipLabel.Text
+					tipLabel.Text = (if i == bestHint then t("추천 ", "Best ") else "") .. tipLabel.Text
 					tipLabel.TextStrokeTransparency = 1
 					tipLabel.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 					tipLabel.BackgroundTransparency = 0.2
@@ -1638,19 +1668,23 @@ function NavalBattle.play(opts)
 						selectedPlay = playChosenCard
 						edge.Color = Color3.fromRGB(255, 215, 126)
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
-						info.Text = c.name .. " · " .. (if c.special then (c.text or "전술 카드") elseif c.ability then (ABIL_DETAIL[c.ability] or sub) else sub)
-								.. (if c.hero then " · 영웅: 날씨·소각 면역" else "") .. " · 크게 보고 사용 버튼 또는 다시 눌러 사용"
+						info.Text = cardName(c) .. " · " .. cardDescription(c)
+							.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
+							.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
 						return
 					end
 					playChosenCard()
 				end)
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
-			leaderBtn.Caption.Text = if m.leaderUsed.me then "지도자 (사용함)" else "지도자: " .. BC.Leaders[m.leader.me].name
+			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
+				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0
 		end
 		render()
-		info.Text = string.format("병종 상성 — 근접 > 포 > 사격 > 근접. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
+		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
+			englishLeaders[m.leader.me] or "Command")
+			else string.format("병종 상성 — 근접 > 포 > 사격 > 근접. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
 
 		task.spawn(function()
 			task.wait(1.0)
