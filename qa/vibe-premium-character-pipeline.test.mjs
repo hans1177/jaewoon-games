@@ -2,6 +2,15 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 source clip matching recognizes common authored action variants',()=>{
+ const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
+ assert.match(adapter,/walk:\['walk','walking','locomotionwalk'\]/);
+ assert.match(adapter,/run:\['run','running','sprint'\]/);
+ assert.match(adapter,/wave:\['wave','waving','greet','greeting'\]/);
+ assert.match(adapter,/react:\['react','reaction','hitreact','damage'\]/);
+ assert.match(adapter,/if\(match===active\)return true/);
+ assert.match(adapter,/if\(!match\)return false/);
+});
 test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual selection',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewAutoCycle=gltf\.animations\.length>1/);
