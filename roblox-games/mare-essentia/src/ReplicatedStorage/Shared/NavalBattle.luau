@@ -20,11 +20,13 @@ local CARD_SEA = "CardArt/event_calm_seas"
 -- [10장 제작 샘플] 전체 그림을 순서대로 재생하는 퀜트형 프레임 시트.
 -- 원화는 CardArt/카드ID 에 승인 등록한 4x4/256px 단일 이미지다. 구형 부위별 레이어 모션은 사용하지 않는다.
 local ANIMATED_CARD_IDS = {
-	eu_03 = true, eu_24 = true,
+	-- [오너 원화 검수] 초안 도형/다른 함선으로 대체된 그림은 프레임 모션에서 제외한다.
+	-- 이 6장은 원화 16프레임 후보이며, 등록·실기기 QA 전엔 기존 도판으로 표시된다.
+	eu_03 = true,
 	ea_02 = true, ea_18 = true,
-	me_01 = true, me_24 = true,
-	nw_18 = true, nw_24 = true,
-	af_01 = true, af_18 = true,
+	me_21 = true,
+	nw_18 = true,
+	af_18 = true,
 }
 
 -- 파일명: NavalBattle.luau / 해전 카드 원화 목록
