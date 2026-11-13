@@ -3440,6 +3440,36 @@ do
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end
 
+-- [다국어 지역 카드] 원문/영어판은 같은 150개 ID를 쓰며 5덱 30장 구성이 유지된다.
+do
+	local BC = D.BoardingCards
+	local total, broken = 0, 0
+	for _, prefix in { "eu", "ea", "me", "nw", "af" } do
+		local count = 0
+		for index = 1, 30 do
+			local id = string.format("%s_%02d", prefix, index)
+			local card = BC.Units[id] or BC.Specials[id]
+			local translation = BC.CardEnglish[id]
+			count += 1
+			total += 1
+			if not card or not translation or type(translation.name) ~= "string" or #translation.name < 3
+				or type(translation.lore) ~= "string" or #translation.lore < 15 or translation.name == card.name then
+				broken += 1
+			end
+		end
+		check("지역 카드 영어 이름·설명 30장: " .. prefix, count == 30)
+	end
+	local surplus = 0
+	for key in BC.CardEnglish do
+		if not string.match(key, "^(eu|ea|me|nw|af)_%d%d$") then
+			-- Luau 정규식은 '|' 교차 패턴을 지원하지 않으므로 접두어 길이를 직접 확인한다.
+			local prefix = string.sub(key, 1, 2)
+			if prefix ~= "eu" and prefix ~= "ea" and prefix ~= "me" and prefix ~= "nw" and prefix ~= "af" then surplus += 1 end
+		end
+	end
+	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and broken == 0 and surplus == 0, tostring(broken) .. "/" .. tostring(surplus))
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")
