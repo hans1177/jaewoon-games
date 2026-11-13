@@ -679,7 +679,12 @@ end
 -- 항구 발전도(1~5)와 지역별 마을 배치 ------------------------------------------
 local sceneLevel = 1
 local function roadMat()
-	return if sceneLevel <= 1 then Enum.Material.Ground else Enum.Material.Cobblestone
+	-- 발전도별 바닥: 흙 → 자갈 → 포석 → 화강암 → 대리석
+	return if sceneLevel <= 1 then Enum.Material.Ground
+		elseif sceneLevel == 2 then Enum.Material.Pebble
+		elseif sceneLevel == 3 then Enum.Material.Cobblestone
+		elseif sceneLevel == 4 then Enum.Material.Granite
+		else Enum.Material.Marble
 end
 local function roadColor(style)
 	if sceneLevel <= 1 then
@@ -2356,6 +2361,19 @@ function PortScene.build(info, onFacility)
 		part(folder, Vector3.new(1400, 4, 1000), CFrame.new(430, -12, 0), Color3.fromRGB(176, 160, 120), Enum.Material.Sand)
 	end
 
+	-- 마을 바닥판: 땅 사이 구멍이 보이지 않게 마을 전체를 한 장으로 덮고, 발전도에 따라 흙→자갈→포석→화강암→대리석으로 바뀐다.
+	do
+		local lvlColor = {
+			Color3.fromRGB(122, 96, 66), Color3.fromRGB(150, 138, 120), Color3.fromRGB(150, 146, 140),
+			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
+		}
+		local floor = part(folder, Vector3.new(300, 0.3, 340), CFrame.new(-130, 0.02, 0),
+			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
+		floor.Name = "TownFloor"
+		floor.CanCollide = true
+		floor.CanQuery = true
+	end
+
 	-- 바다(동쪽, x > 20)와 부두
 	local water = part(folder, Vector3.new(1300, 1, 1000), CFrame.new(670, 0.3, 0), Color3.fromRGB(32, 118, 160), Enum.Material.Glass)
 	water.Transparency = 0.28
@@ -2462,19 +2480,44 @@ function PortScene.build(info, onFacility)
 
 	-- 광장
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())
-	part(folder, Vector3.new(130, 0.25, 22), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
+	part(folder, Vector3.new(130, 0.25, 22 + 1.5 * (sceneLevel - 1)), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
 	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
 	part(folder, Vector3.new(100, 0.3, 74), CFrame.new(-38, 0.14, 0), roadColor(style), roadMat())
 	for _, sz in { 57, -57 } do
-		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
+		part(folder, Vector3.new(120, 0.25, 8 + sceneLevel), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
 	end
 	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
-		part(folder, Vector3.new(4, 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
+		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
 	-- 광장 분수도 CC0 수입 메쉬 우선
 	if true then
 		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
 		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+	end
+
+	-- 마을 광장: 중앙 분수를 둘러싼 원형 광장. 발전도가 오를수록 바닥이 흙 → 자갈 → 포석 → 화강암 → 대리석으로 고급스러워진다.
+	do
+		local plazaMat = { Enum.Material.Ground, Enum.Material.Pebble, Enum.Material.Cobblestone, Enum.Material.Granite, Enum.Material.Marble }
+		local plazaCol = {
+			Color3.fromRGB(128, 100, 70), Color3.fromRGB(156, 144, 126), Color3.fromRGB(158, 152, 144),
+			Color3.fromRGB(176, 174, 178), Color3.fromRGB(232, 228, 218),
+		}
+		local function disc(radius, y, color, mat)
+			local d = part(folder, Vector3.new(0.3, radius * 2, radius * 2), CFrame.new(-6, y, 0) * CFrame.Angles(0, 0, math.pi / 2), color, mat, Enum.PartType.Cylinder)
+			d.CanCollide = true
+			return d
+		end
+		disc(24, 0.17, plazaCol[sceneLevel], plazaMat[sceneLevel])
+		if sceneLevel >= 2 then disc(19, 0.2, plazaCol[sceneLevel]:Lerp(Color3.new(0.3, 0.26, 0.22), 0.25), plazaMat[math.max(1, sceneLevel - 1)]) end
+		if sceneLevel >= 3 then disc(13, 0.23, plazaCol[sceneLevel]:Lerp(Color3.new(1, 1, 1), 0.2), plazaMat[sceneLevel]) end
+		if sceneLevel >= 4 then disc(10.5, 0.26, Color3.fromRGB(214, 170, 82), Enum.Material.Metal) end
+		if sceneLevel >= 4 then disc(10, 0.29, plazaCol[sceneLevel], plazaMat[sceneLevel]) end
+		if sceneLevel >= 2 then
+			for i = 0, 7 do
+				local a = i / 8 * math.pi * 2
+				lantern(folder, Vector3.new(-6 + math.cos(a) * 22, 0, math.sin(a) * 22), 3)
+			end
+		end
 	end
 
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
