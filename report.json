@@ -14,127 +14,7 @@
   {
    "step": 4,
    "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 7,
-   "capture": "01_top",
-   "files": 1
-  },
-  {
-   "step": 8,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 10,
-   "capture": "02_plaza",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 13,
-   "capture": "03_street",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 16,
-   "capture": "04_dock",
-   "files": 1
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 19,
-   "capture": "05_aerial",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "06_backstreet",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "07_wall",
-   "files": 1
-  },
-  {
-   "step": 26,
-   "ctx": "Client",
-   "out": "parts=1867 meshparts=1598 models=1810 houses=11\ntext"
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=5\ntext"
-  },
-  {
-   "step": 29,
-   "capture": "08_harbor_npc_sparring_01",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "capture": "08_harbor_npc_sparring_02",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "capture": "08_harbor_npc_sparring_03",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "capture": "08_harbor_npc_sparring_04",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "capture": "08_harbor_npc_sparring_05",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "capture": "08_harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 41,
-   "capture": "08_harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "08_harbor_npc_sparring_08",
-   "files": 1
+   "out": "HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\n -70 ..............................HHHHHHH.T\n -66 .............................HHHHHHHH.T\n -62 ............................HHHHHHHHH.T\n -58 ...........................HHHHHHHHHH.T\n -54 ..H........................HHHHHHHHHHHT\n -50 ......HHHHHHH...HHHHHH.....HHHHHHHHHHHT\n -46 ......HHHHHHHH..HHHHHHH....HHHHHHHHHHHT\n -42 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHHHHHT\n -38 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -34 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -30 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHH.HHT\n -26 ......HHHHHHHH..HHHHHHH....HHHHHHHH.HHT\n -22 ......HHHHHHH...HHHHHH.....HHHHHHHH...T\n -18 ..........................H.HHHHHH..H.T\n -14 ...H.....H....HH...HHHH..HH.H.......HHT\n -10 ...H.....H....HH...HHHH.....H....H..HHT\n  -6 ..............H......H...H.......H....T\n  -2 ..............................HH.....HH\n   2 ..............................HH......H\n   6 .......HH.....H......H...H...HHHH.....T\n  10 ..HH...HH.....H....H.HH.....HHHHHH....T\n  14 ..HH..........H......HH..H..HHHHHH..H.T\n  18 .....................HH....HHHHHHHHHHHT\n  22 .........HHHHHH....HHHHHH..HHHHHHHHHHHT\n  26 .........HHHHHH...HHHHHHH.HHHHHHHHHHH.T\n  30 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHHH.T\n  34 .....H.HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  38 .......HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  42 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHH..T\n  46 .......HHHHHHHH...HHHHHHH.HHHHHHHHHHHHH\n  50 .......HHHHHHHH....HHHHHH..HHHHHHHHHHHT\n  54 ...........................HHHHHHHHHHHT\n  58 .................................HHHHHT\n  62 ..........................HH.HHHHHHHHHT\n  66 ..........................HH....HHHHHHT\n  70 .H...............................HHHHHT\nBAD 33\nTRANSP 22,-70 Part\nTRANSP 22,-66 Part\nTRANSP 22,-62 Part\nTRANSP 22,-58 Part\nTRANSP 22,-54 Part\nTRANSP 22,-50 Part\nTRANSP 22,-46 Part\nTRANSP 22,-42 Part\nTRANSP 22,-38 Part\nTRANSP 22,-34 Part\nTRANSP 22,-30 Part\nTRANSP 22,-26 Part\nTRANSP 22,-22 Part\nTRANSP 22,-18 Part\nTRANSP 22,-14 Part\nTRANSP 22,-10 Part\nTRANSP 22,-6 Part\nTRANSP 22,6 Part\nTRANSP 22,10 Part\nTRANSP 22,14 Part\nTRANSP 22,18 Part\nTRANSP 22,22 Part\nTRANSP 22,26 Part\nTRANSP 22,30 Part\nTRANSP 22,34 Part\nTRANSP 22,38 Part\nTRANSP 22,42 Part\nTRANSP 22,50 Part\nTRANSP 22,54 Part\nTRANSP 22,58 Part\nTRANSP 22,62 Part\nTRANSP 22,66 Part\nTRANSP 22,70 Part\ntext"
   }
  ],
  "errors": [],
@@ -149,13 +29,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 44,
-  "completedSteps": 44,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 15,
-  "capturedFrames": 15,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
