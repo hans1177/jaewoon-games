@@ -2592,6 +2592,9 @@ function PortScene.build(info, onFacility)
 		for _, fighter in sparring do
 			fighter.mode = "sparring"
 		end
+		print("[MareEssentia] 항구 R15 대련 테스트 시작: 기존 주민 2명")
+	elseif RunService:IsStudio() then
+		warn("[MareEssentia] 항구 R15 대련 테스트 불가: 주민 모델 2명 미만")
 	end
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	local walkConn = RunService.Heartbeat:Connect(function()
@@ -2607,7 +2610,10 @@ function PortScene.build(info, onFacility)
 				local cycle = (now + (if side < 0 then 0 else 0.42)) % 2.4
 				local action = if cycle < 0.65 then "guard" elseif cycle < 1.45 then "attack" elseif cycle < 1.85 then "hurt" else "idle"
 				local progress = if action == "attack" then (cycle - 0.65) / 0.8 elseif action == "hurt" then (cycle - 1.45) / 0.4 else 0
-				Pose.makeR15Action(w.model, action, progress, now)
+				if not Pose.makeR15Action(w.model, action, progress, now) and not w.motionWarned then
+					w.motionWarned = true
+					warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
+				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
 					Pose.work(w.model, w.kind, now + w.phase)
