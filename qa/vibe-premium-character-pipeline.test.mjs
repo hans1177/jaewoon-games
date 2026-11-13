@@ -2,6 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 mobile motion buttons play imported GLB clips and report missing clips',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/if\(characterMotion\)\{const played=characterMotion\.play\(action\)/);
+ assert.match(preview,/원본에 해당 동작이 없거나 이미 재생 중/);
+ assert.match(preview,/if\(handAnimation\)handAnimation\.play\(action\)/);
+});
 test('Vibe 5.9 real model preview hides training enemy until combat input',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/activeModel=model;storybookWorld\.setDecorationsVisible\(false\);trainingEnemy\.root\.visible=false/);
