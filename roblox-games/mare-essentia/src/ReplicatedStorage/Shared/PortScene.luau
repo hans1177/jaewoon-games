@@ -123,7 +123,7 @@ local function signModel(text)
 end
 
 -- 방문시설 간판: 큰 3D 아이콘 + 아래 작은 이름표 (멀리서도 무슨 건물인지 보이게)
-local function sign(parent, adornee, text, color, height, compact)
+local function sign(parent, adornee, text, color, height, compact, iconModel)
 	if compact then
 		-- 사람 이름표: 작고 단순한 글씨 판
 		local nb = Instance.new("BillboardGui")
@@ -161,6 +161,7 @@ local function sign(parent, adornee, text, color, height, compact)
 	bb.MaxDistance = 130
 	-- 3D 아이콘 (위쪽 80%)
 	local kind, asset = signModel(text)
+	if iconModel then kind, asset = iconModel[1], iconModel[2] end
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromScale(1, 0.78)
 	vf.BackgroundTransparency = 1
@@ -1660,6 +1661,38 @@ local function densify(folder, info, style, rng, walkers, made)
 					npc(k * 10 - 2, k * 7, face, "hoe", "stay", { role = "Barbarian", extra = { hat = "straw" } })
 				end
 				npc(-18, 10, -math.pi / 2, "carry", "path", { role = "Rogue", len = 34, idle = "stoop" })
+			end
+		end
+	end
+	-- 특산품 구역: 이 항구의 생산품마다 관련 건물(공방·양조장·제재소 …)을 세우고, 지붕 위 간판에 그 상품의 3D 아이콘을 단다.
+	do
+		local SPECIAL_NAME = {
+			wool = "양모 공방", coal = "탄광 사무소", tin = "주석 광산", spice = "향신료 창고", cheese = "치즈 공방", tea = "다원",
+			porcelain = "도자기 가마", wine = "와이너리", cloth = "직물 공방", salt = "염전", amber = "호박 공방", fish = "어시장",
+			beer = "양조장", whale_oil = "고래기름 공장", iron = "제철소", timber = "제재소", copper = "구리 광산", silver = "은광",
+			gold = "금광", sugar = "제당소", coffee = "커피 농원", silk = "비단 공방", pearls = "진주 양식장", olive_oil = "올리브 압착장",
+			honey = "양봉장", sake = "사케 양조장", rum = "럼 증류소", grain = "제분소", cocoa = "카카오 농원", mahogany = "목재소",
+			gems = "보석 세공소", sugar_cane = "제당소", fruit = "과수원", grapes = "포도원", lemon = "레몬 농원", maize = "옥수수 농장",
+			coconut = "코코넛 농원", meat = "햄 공방", pepper = "후추 농원",
+		}
+		local goods = made
+		local n = math.min(#goods, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
+		local origin = Vector3.new(-178, 0, -86)
+		local face = math.pi
+		for k = 1, n do
+			local good = goods[k]
+			local at = origin + Vector3.new((k - (n + 1) / 2) * 20, 0, 0)
+			local wall = Color3.fromRGB(190, 170, 140):Lerp(Color3.fromRGB(150, 120, 90), rng:NextNumber(0, 0.5))
+			local body = house(folder, at, 14, 11, if lvl >= 4 then 2 else 1, style, rng, wall)
+			local mesh = GOOD_MESH[good]
+			-- 문 앞 진열: 상품 3D 모델 더미와 통
+			for j = -1, 1 do
+				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), 2.8, false, mesh[3])
+			end
+			importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
+			importedModel(folder, "Cargo", "box-open", at + Vector3.new(-7.6, 0, 7.4), 2.4, false)
+			if body then
+				sign(folder, body, SPECIAL_NAME[good] or "특산품 공방", Color3.fromRGB(150, 110, 40), (if lvl >= 4 then 2 else 1) * 3 + 6, false, { mesh[1], mesh[2] })
 			end
 		end
 	end
