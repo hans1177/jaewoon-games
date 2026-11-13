@@ -68,7 +68,7 @@ function TacticsView.open(opts)
 	make("UIStroke", { ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = BRASS }, topBar)
 
 	local screenH = gui.AbsoluteSize.Y > 0 and gui.AbsoluteSize.Y or 600
-	local bottomH = if screenH < 560 then 112 else 150
+	local bottomH = if screenH < 560 then 96 else 150
 	local handH = if battle.hand then (if screenH < 560 then 60 else 74) else 0
 	local boardHolder = make("Frame", { Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 1, -44 - bottomH - handH), BackgroundTransparency = 1, ClipsDescendants = true }, root)
 	local bottom = make("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, bottomH), BackgroundColor3 = LEATHER, BorderSizePixel = 0 }, root)
