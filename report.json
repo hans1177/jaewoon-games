@@ -1,75 +1,15 @@
 {
- "sourceRevision": "9a5f657f9f170dcb4361f50658759f5cb10528f0",
+ "sourceRevision": "421bac217b5aaeecf744628ae7df67c12e1b5f9e",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "true\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
-   "capture": "u0_main",
-   "files": 1
-  },
-  {
-   "step": 4,
    "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 6,
-   "capture": "u1_hall",
-   "files": 1
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "u2_yard",
-   "files": 1
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 12,
-   "capture": "u3_options",
-   "files": 1
-  },
-  {
-   "step": 13,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 15,
-   "capture": "u4_status",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "u5_route",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 21,
-   "capture": "u6_quest",
-   "files": 1
+   "out": "OBJ MareEssentiaGui.Hud Frame vis=false 0,0 1136x322 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame Frame vis=true 8,8 262x114 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,10 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,33 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,56 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 80,84 180x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.Frame Frame vis=true 80,84 180x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,93 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,11 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,34 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,57 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,94 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 15,17 56x82 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,121 48x18 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,140 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,159 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace Frame vis=true 17,40 52x34 bgT=0 stroke=true\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 17,40 52x34 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 27,46 21x21 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 32,48 18x18 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 48,54 6x6 bgT=0 stroke=false\ntext"
   }
  ],
  "errors": [],
@@ -84,13 +24,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 22,
-  "completedSteps": 22,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 7,
-  "capturedFrames": 7,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
