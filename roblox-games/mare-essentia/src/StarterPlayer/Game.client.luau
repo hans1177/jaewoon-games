@@ -4564,23 +4564,13 @@ local function renderYard()
 	end)
 	add(function()
 		local sh = view.ship
-		local row = mkRow(content, "내 배 · " .. sh.name, "", nil, 128)
+		local row = mkRow(content, "내 배 · " .. sh.name, string.format("선체 %d/%d\n포 %d · 속도 %d\n화물 %d/%d\n선원 %d/%d", sh.hull, sh.maxHull, sh.cannons, sh.speed, sh.cargoUsed, sh.cargoCapacity, sh.crew, sh.maxCrew), nil, 128)
 		local si = SHIP_ICON[sh.id]
 		if si then
 			withIcon(row, si[1], si[2], si[3], 120)
 		end
 		return row
 	end)
-	do
-		local sh = view.ship
-		local hullPct = sh.hull / math.max(1, sh.maxHull)
-		H.statStrip({
-			{ "선체", string.format("%d/%d", sh.hull, sh.maxHull), tone = if hullPct < 0.35 then "bad" elseif hullPct >= 0.8 then "good" else "key" },
-			{ "포 · 속도", string.format("%d · %d", sh.cannons, sh.speed), tone = "key" },
-			{ "화물", string.format("%d/%d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
-			{ "선원", string.format("%d/%d", sh.crew, sh.maxCrew), tone = if sh.crew < sh.maxCrew * 0.5 then "bad" else "good" },
-		})
-	end
 	add(function()
 		return mkRow(content, "정비와 보급", string.format("수리 %d코인/1 · 선원 %d코인/명 · 보급품 %d코인/개", yard.repairCost, yard.hireCost, yard.supplyCost), {
 			{ text = "수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = yard.available },
