@@ -2,17 +2,69 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 preview clamps original animation mixer delta after stalls',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/characterMotion\.mixer\.update\(Math\.min\(delta,\.1\)\)/);
+ assert.doesNotMatch(preview,/characterMotion\.mixer\.update\(delta\)/);
+});
+test('Vibe 5.9 GLB reload clears previous authored clips and mixer',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/if\(characterMotion\)\{characterMotion\.dispose\(\);characterMotion=null;\}/);
+ assert.match(preview,/clipNames\.length=0;clipDurations\.length=0;animationPicker\.replaceChildren\(\)/);
+ assert.match(preview,/previewClipElapsed=0;previewClipIndex=0;previewAutoCycle=false;previewManualMotion=false/);
+});
+test('Vibe 5.9 model switches replace stale animation selection listeners',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/animationPicker\.onchange=\(\)=>\{if\(characterMotion!==adapter\)return/);
+ assert.match(preview,/previewClipIndex=Math\.max\(0,clipNames\.indexOf\(animationPicker\.value\)\)/);
+ assert.doesNotMatch(preview,/animationPicker\.addEventListener\('change'/);
+});
+test('Vibe 5.9 authored clip resolver prioritizes exact names and action tokens',()=>{
+ const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
+ assert.match(adapter,/name\.split\(\/\[\^a-z0-9\]\+\/\)\.includes\(expected\)/);
+ assert.match(adapter,/row\.name\.startsWith\(expected\)/);
+ assert.match(adapter,/\['cycle','loop','forward','inplace'\]\.some\(suffix=>token===expected\+suffix\)/);
+ assert.doesNotMatch(adapter,/row\.name\.includes\(expected\)/);
+});
+test('Vibe 5.9 authored clip transitions use crossfade and reset stale weights',()=>{
+ const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
+ assert.match(adapter,/match\.reset\(\)\.setEffectiveWeight\(1\)\.setEffectiveTimeScale\(1\)\.play\(\)/);
+ assert.match(adapter,/match\.crossFadeFrom\(active,duration,true\)/);
+ assert.match(adapter,/else active\.stop\(\)/);
+ assert.doesNotMatch(adapter,/match\.reset\(\)\.fadeIn\(duration\)\.play\(\)/);
+});
+test('Vibe 5.9 source clip matching recognizes common authored action variants',()=>{
+ const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
+ assert.match(adapter,/walk:\['walk','walking','locomotionwalk'\]/);
+ assert.match(adapter,/run:\['run','running','sprint'\]/);
+ assert.match(adapter,/wave:\['wave','waving','greet','greeting'\]/);
+ assert.match(adapter,/react:\['react','reaction','hitreact','damage'\]/);
+ assert.match(adapter,/if\(match===active\)return true/);
+ assert.match(adapter,/if\(!match\)return false/);
+});
+test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual selection',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/previewAutoCycle=gltf\.animations\.length>1/);
+ assert.match(preview,/clipDurations\.push\(clip\.duration\)/);
+ assert.match(preview,/Math\.max\(\.35,Math\.min\(8,Number\.isFinite\(clipDuration\)\?clipDuration:3\)\)/);
+ assert.match(preview,/const switchAt=Math\.max\(\.2,clipSeconds-\.15\)/);
+ assert.match(preview,/previewClipElapsed>=switchAt/);
+ assert.match(preview,/characterMotion\.play\(clipNames\[previewClipIndex\]\)/);
+ assert.match(preview,/animationPicker\.value=clipNames\[previewClipIndex\]/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;previewClipElapsed=0;/);
+ assert.match(preview,/characterMotion\.mixer\.update\(Math\.min\(delta,\.1\)\)/);
+});
 test('Vibe 5.9 manually selected original clip is not overridden by idle engine on every frame',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewManualMotion=false/);
- assert.match(preview,/if\(played\)previewManualMotion=true/);
- assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)previewManualMotion=false;else characterMotion\.mixer\.update\(delta\)\}/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;previewClipElapsed=0;/);
+ assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)\{previewManualMotion=false;previewAutoCycle=false;\}/);
  assert.match(preview,/if\(!previewManualMotion\)characterMotion\.update\(delta\)/);
 });
 test('Vibe 5.9 mobile motion buttons play imported GLB clips and report missing clips',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/if\(characterMotion\)\{const played=characterMotion\.play\(action\)/);
- assert.match(preview,/원본에 해당 동작이 없거나 이미 재생 중/);
+ assert.match(preview,/원본에 해당 동작 없음 또는 이미 재생 중/);
  assert.match(preview,/if\(handAnimation\)handAnimation\.play\(action\)/);
 });
 test('Vibe 5.9 real model preview hides training enemy until combat input',()=>{

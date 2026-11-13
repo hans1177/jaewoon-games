@@ -4,16 +4,7 @@
 name: Devloop Studio Capture
 run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ github.sha }}
 on:
-  # [메인] 마력숲 UI 수집 진단 변경이 main에 병합되면 기존 Windows Studio 검사를 자동 재실행한다.
-  push:
-    branches: [main]
-    paths:
-      - 'tools/gen-qa-click-scripts.py'
-      - 'tools/company-development-roblox-studio-local-play.mjs'
-      - 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'
-      - 'roblox-games/mare-essentia/src/**'
-      # Rojo 자산 폴더·빌드 트리 변경도 공식 Studio로 검증한다.
-      - 'roblox-games/mare-essentia/default.project.json'
+  # push 트리거는 뺐다: 병합마다 Studio가 줄을 서서 서로 취소되던 문제. 점검은 vibe-autopilot(주기 실행)과 수동 실행이 맡는다.
   workflow_dispatch:
     inputs:
       game:

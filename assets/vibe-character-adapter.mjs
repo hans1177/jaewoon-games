@@ -13,19 +13,27 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
  const play=(state,{blendSeconds=.15}={})=>{
   const raw=String(state||'').toLowerCase(),key=raw.replace(/[^a-z0-9]/g,'');
   const aliases={
-   idle:['stand'],jog:['run','walk'],sprint:['run'],strafe:['sidestep'],
-   'light-attack':['attack','slash'],'heavy-attack':['heavyattack','attack'],
-   dodge:['evade','roll'],land:['landing'],fall:['falling'],climb:['climbing']
+   idle:['idle','stand','breathing'],walk:['walk','walking','locomotionwalk'],run:['run','running','sprint'],
+   jog:['jog','jogging','run','walk'],sprint:['sprint','run','running'],strafe:['sidestep','strafe'],
+   attack:['attack','slash','strike','hit'],wave:['wave','waving','greet','greeting'],
+   react:['react','reaction','hitreact','damage'],'light-attack':['lightattack','attack','slash'],
+   'heavy-attack':['heavyattack','attack'],dodge:['evade','roll'],land:['landing'],
+   fall:['falling'],climb:['climbing']
   };
   const names=[key,...(aliases[raw]||[])];
   const clipEntries=[...actions.entries()].map(([name,action])=>({name:name.replace(/[^a-z0-9]/g,''),action}));
   let match=null;
   for(const expected of names){match=clipEntries.find(row=>row.name===expected)?.action;if(match)break;}
-  if(!match)for(const expected of names){match=clipEntries.find(row=>expected&&row.name.includes(expected))?.action;if(match)break;}
-  if(!match||match===active)return false;
+  // [원본 클립 이름] 장식 접두어보다 정확한 동작 단어를 우선하고 유사 동작 오인식을 차단한다.
+  if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).includes(expected))?.[1];if(match)break;}
+  if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).some(token=>token===expected||['cycle','loop','forward','inplace'].some(suffix=>token===expected+suffix)))?.[1];if(match)break;}
+  if(!match)for(const expected of names){match=clipEntries.find(row=>expected&&row.name.startsWith(expected))?.action;if(match)break;}
+  if(!match)return false;
+  if(match===active)return true;
   const duration=Number.isFinite(blendSeconds)?Math.max(0,Math.min(.5,blendSeconds)):.15;
-  match.reset().fadeIn(duration).play();
-  if(active)active.fadeOut(duration);
+  // [메인: 동작 혼합] 원본 클립 전환 시 이전 페이드 잔여값을 지우고 실제 교차 혼합한다.
+  match.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();
+  if(active){if(duration>0)match.crossFadeFrom(active,duration,true);else active.stop();}
   active=match;return true;
  };
  const engine=new VibeMotionEngine(design,{play});
