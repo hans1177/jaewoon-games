@@ -2,6 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 manually selected original clip is not overridden by idle engine on every frame',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/previewManualMotion=false/);
+ assert.match(preview,/if\(played\)previewManualMotion=true/);
+ assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)previewManualMotion=false;else characterMotion\.mixer\.update\(delta\)\}/);
+ assert.match(preview,/if\(!previewManualMotion\)characterMotion\.update\(delta\)/);
+});
 test('Vibe 5.9 mobile motion buttons play imported GLB clips and report missing clips',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/if\(characterMotion\)\{const played=characterMotion\.play\(action\)/);
