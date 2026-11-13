@@ -571,11 +571,11 @@ jobs:
             # Keep executable reservation, isolation, worker, and security contracts blocking.
             # Full source/model transport fixtures stay in independent Core QA; actual central
             # work contracts and candidate reconciliation remain blocking at reservation.
-            (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
+            (cd /tmp/vibe2-main && VIBE2_WEB_AUTO_DEV_DISABLED=0 node --test --test-concurrency=4 \
             qa/vibe2-central-work-contract.test.mjs \
             qa/vibe2-candidate-reconcile.test.mjs)
             # Current active development authority, worker identity, per-file conflicts, and owner holds.
-            (cd /tmp/vibe2-main && node --test --test-name-pattern='^active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts$' qa/vibe2-queue-control.test.mjs)
+            (cd /tmp/vibe2-main && VIBE2_WEB_AUTO_DEV_DISABLED=0 node --test --test-name-pattern='^active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts$' qa/vibe2-queue-control.test.mjs)
             fi
             echo 'contract_regression_passed=true' >> "$GITHUB_OUTPUT"
             echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
@@ -3315,7 +3315,7 @@ jobs:
             else
               echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION'
             set +e
-            (cd "$contract_root" && node --test --test-concurrency=4 \
+            (cd "$contract_root" && VIBE2_WEB_AUTO_DEV_DISABLED=0 node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/company-build-up-experience-quality.test.mjs \
             qa/vibe2-native-asset-production.test.mjs \
