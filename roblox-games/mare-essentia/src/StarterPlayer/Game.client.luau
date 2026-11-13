@@ -858,13 +858,13 @@ pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -4), UDim2.new(1, -72, 0, 1))
 H.pageDetails = mkLabel(H.pageMasthead, "", 11, COLORS.brown, true)
 H.pageDetails.AutomaticSize = Enum.AutomaticSize.None
 H.pageDetails.Position = UDim2.fromOffset(65, 33)
-H.pageDetails.Size = UDim2.new(1, -74, 0, 18)
+H.pageDetails.Size = UDim2.new(1, -230, 0, 18)
 H.pageDetails.TextTruncate = Enum.TextTruncate.AtEnd
 
 local headerLabel = Instance.new("TextLabel")
 headerLabel.BackgroundTransparency = 1
 headerLabel.Position = UDim2.fromOffset(69, 8)
-headerLabel.Size = UDim2.new(1, -174, 0, 29)
+headerLabel.Size = UDim2.new(1, -230, 0, 29)
 headerLabel.TextXAlignment = Enum.TextXAlignment.Left
 headerLabel.TextYAlignment = Enum.TextYAlignment.Top
 headerLabel.TextScaled = true
@@ -1255,7 +1255,7 @@ end
 
 local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(124, 28), text = "0", theme = H.bookTheme })
 coinChip.AnchorPoint = Vector2.new(1, 0)
-coinChip.Position = UDim2.new(1, -10, 0, 7)
+coinChip.Position = UDim2.new(1, -56, 0, 15)
 coinChip.Parent = mainInner
 
 local tabBar = Instance.new("Frame")
@@ -1369,7 +1369,7 @@ H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 22), 15
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
 hullBack.Position = UDim2.fromOffset(72, 76)
-hullBack.Size = UDim2.fromOffset(150, 6)
+hullBack.Size = UDim2.new(1, -82, 0, 6)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 2)
@@ -1446,7 +1446,7 @@ local HUD_MENU_ART = {
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(if dockItem then 72 else 44, if dockItem then 78 else 44)
+	button.Size = UDim2.fromOffset(if dockItem then 44 else 44, if dockItem then 58 else 44)
 	button.BackgroundTransparency = 1 -- 배경 없이 그림만
 	button.BorderSizePixel = 0
 	button.Text = ""
@@ -1454,7 +1454,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
 	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	local artSize = if dockItem then 48 else 34
+	local artSize = if dockItem then 32 else 34
 	local artTop = if dockItem then 3 else 4
 	if artId then
 		for i = 1, 2 do
@@ -1482,10 +1482,10 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(0, 54)
-		caption.Size = UDim2.new(1, 0, 0, 20)
+		caption.Position = UDim2.fromOffset(0, 38)
+		caption.Size = UDim2.new(1, 0, 0, 18)
 		caption.Font = Enum.Font.GothamBold
-		caption.TextSize = 14
+		caption.TextSize = 12
 		caption.TextWrapped = false
 		caption.ZIndex = 3
 		caption.TextColor3 = Color3.fromRGB(255, 244, 214)
@@ -1522,14 +1522,14 @@ dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
 local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(72, 78)
-dockGrid.CellPadding = UDim2.fromOffset(6, 5)
+dockGrid.CellSize = UDim2.fromOffset(44, 58)
+dockGrid.CellPadding = UDim2.fromOffset(4, 4)
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
-dockGrid.FillDirectionMaxCells = 3
+dockGrid.FillDirectionMaxCells = 6
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(228, 164)
+dockLimit.MaxSize = Vector2.new(300, 200)
 dockLimit.Parent = dock
 
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
@@ -1869,39 +1869,31 @@ do
 	local function layoutBubble()
 		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
 		local compact = width < 610
-		dockGrid.FillDirectionMaxCells = if compact then 2 else 3
-		dockGrid.CellSize = UDim2.fromOffset(if compact then 64 else 60, 68)
-		-- 오른쪽 위: 시스템 4개(걷기·내 카드·설정·도움말)를 먼저, 그 아래 시설 6개. 서로 겹치지 않게 한곳에서 배치한다.
+		-- 오른쪽 위: 시설 6개 한 줄, 그 아래 시스템 4개를 같은 칸(오른쪽 4칸)에 맞춰 둔다.
+		local CW, CH, GAP = 44, 58, 4
+		local cols = if compact then 3 else 6
+		dockGrid.FillDirectionMaxCells = cols
+		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
+		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
+		local rows = math.ceil(6 / cols)
+		local dockH = rows * CH + (rows - 1) * GAP
+		dock.Position = UDim2.new(1, -8, 0, 4)
+		dock.Size = UDim2.fromOffset(cols * CW + (cols - 1) * GAP, dockH)
 		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "ViewToggle" }
-		local sysTop, sysH
-		if compact then
-			for i, n in sysOrder do
-				local b = hud:FindFirstChild(n)
-				if b then
-					b.Size = UDim2.fromOffset(64, 68)
-					b.AnchorPoint = Vector2.new(1, 0)
-					b.Position = UDim2.new(1, -8 - ((i - 1) % 2) * 70, 0, 4 + math.floor((i - 1) / 2) * 73)
-				end
+		for i, n in sysOrder do
+			local b = hud:FindFirstChild(n)
+			if b then
+				b.Size = UDim2.fromOffset(CW, CH)
+				b.AnchorPoint = Vector2.new(1, 0)
+				local col = (i - 1) % cols
+				local row = math.floor((i - 1) / cols)
+				b.Position = UDim2.new(1, -8 - col * (CW + GAP), 0, 4 + dockH + GAP + row * (CH + GAP))
 			end
-			sysTop, sysH = 4, 141
-		else
-			for i, n in sysOrder do
-				local b = hud:FindFirstChild(n)
-				if b then
-					b.Size = UDim2.fromOffset(52, 68)
-					b.AnchorPoint = Vector2.new(1, 0)
-					b.Position = UDim2.new(1, -8 - (i - 1) * 56, 0, 4)
-				end
-			end
-			sysTop, sysH = 4, 68
 		end
-		local dockTop = sysTop + sysH + 6
-		dock.Position = UDim2.new(1, -8, 0, dockTop)
-		dock.Size = UDim2.fromOffset(if compact then 136 else 194, math.clamp(height - dockTop - 8, 100, 350))
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
-		card.Size = UDim2.fromOffset(if compact then 252 else 290, 114)
-		local left = if compact then 8 else 310
-		local right = if compact then 148 else 220
+		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
+		local left = if compact then 8 else 282
+		local right = if compact then 148 else 284
 		local bubbleWidth = math.clamp(width - left - right, 1, 430)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
@@ -6154,12 +6146,29 @@ function H.renderTabs()
 		end
 		b.TextSize = 16 -- 탭은 글자만: 그림 없이 크고 또렷하게
 	end
-	local fold = mkButton(tabBar, "닫기", COLORS.red, UDim2.fromOffset(60, 38), function()
-		main.Visible = false
-		menuToggle.Visible = true
-	end, true)
-	fold.LayoutOrder = #g.tabs + 1
 end
+
+-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼
+H.closeX = Instance.new("TextButton")
+H.closeX.Name = "CloseX"
+H.closeX.AnchorPoint = Vector2.new(1, 0)
+H.closeX.Position = UDim2.new(1, -8, 0, 8)
+H.closeX.Size = UDim2.fromOffset(40, 40)
+H.closeX.BackgroundColor3 = COLORS.red
+H.closeX.Text = "×"
+H.closeX.Font = Enum.Font.GothamBold
+H.closeX.TextSize = 30
+H.closeX.TextColor3 = Color3.fromRGB(255, 244, 214)
+H.closeX.AutoButtonColor = true
+H.closeX.ZIndex = 30
+H.closeX.Parent = mainInner
+corner(H.closeX, 8)
+hudStroke(H.closeX, 1.5)
+H.closeX.Activated:Connect(function()
+	Sfx.play("sfx_click")
+	main.Visible = false
+	menuToggle.Visible = true
+end)
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
@@ -7297,7 +7306,7 @@ function render()
 		return
 	end
 
-	tabBar.Visible = true
+	tabBar.Visible = #groupOf(currentTab).tabs > 1 -- 탭이 하나뿐이면 시설 이름과 겹치므로 탭 줄을 숨긴다
 	H.layoutBook()
 
 	local p, ship = view.player, view.ship
@@ -8360,7 +8369,22 @@ task.spawn(function()
 			openTradeHall()
 		end
 		local dc = workspace:GetAttribute("DevCall")
-		if dc == "Yard" then
+		if type(dc) == "string" and dc:sub(1, 4) == "Tab:" then
+			-- 개발 캡처용: 시설 창(trade/route/yard/quest/codex/status)을 이름으로 연다
+			workspace:SetAttribute("DevCall", nil)
+			local okTab, errTab = pcall(function()
+				-- 타이틀 메뉴가 열려 있으면 먼저 닫는다(게임 화면 위에 창이 열리게)
+				if H.titleMenuOpen then
+					H.titleMenuOpen = false
+					local tg = player:WaitForChild("PlayerGui"):FindFirstChild("TitleGui")
+					if tg then tg:Destroy() end
+					titleGui.Enabled = false
+					menuToggle.Visible = false
+				end
+				openTab(dc:sub(5))
+			end)
+			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
+		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
 			openYardHall()
 		elseif dc == "Deck" then
