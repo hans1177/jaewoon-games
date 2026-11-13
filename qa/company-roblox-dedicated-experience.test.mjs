@@ -825,3 +825,30 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
   }
 });
+
+test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
+  assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
+  assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
+  assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
+  assert.match(source,/boardArt.ImageTransparency = if cfg then 0\.64/);
+  assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
+  assert.match(source,/boardShade.Parent = boardWash/);
+  assert.match(source,/handTray.Name = "NavalCardHandTray"/);
+  assert.match(source,/handFrame.Position = UDim2.fromScale\(0\.02, 0\.72\)/);
+  assert.match(source,/boardFrame.Position = UDim2.fromScale\(0\.2, 0\.14\)/);
+  assert.match(source,/boardFrame.Size = UDim2.fromScale\(0\.78, 0\.56\)/);
+  assert.match(source,/local order = \{ \{ "foe", "cannon" \}, \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \}, \{ "me", "cannon" \} \}/);
+  assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
+  assert.match(source,/laneStroke.Thickness = 1/);
+  assert.match(source,/BC.rowMatchup\(m, side, row\)/);
+  assert.match(source,/BC.play\(m, "me", i\)/);
+  assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
+  assert.match(uploader,/event_\[a-z_\]\+\|battle_board\)\\\.jpg/);
+  assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
+  assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
+  assert.match(readme,/1536×864/);
+});
