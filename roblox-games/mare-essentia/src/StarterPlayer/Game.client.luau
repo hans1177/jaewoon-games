@@ -23,6 +23,7 @@ H.startupCover = Instance.new("Frame")
 H.startupCover.Name = "StartLoading"
 H.startupCover.Size = UDim2.fromScale(1, 1)
 H.startupCover.BackgroundColor3 = Color3.fromRGB(54, 40, 28)
+H.startupCover.BackgroundTransparency = 1
 H.startupCover.BorderSizePixel = 0
 H.startupCover.ZIndex = 200
 H.startupCover.Parent = gui
