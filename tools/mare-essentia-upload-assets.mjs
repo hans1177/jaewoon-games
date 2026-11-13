@@ -83,8 +83,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
+    // [5대륙 카드] 기존 CardArt 승인 경로에서만 150장 PNG를 등록한다. SVG 원본은 Roblox 이미지로 직접 올리지 않는다.
     if (kind === 'CardArt' && !/^(?:world_(?:0[1-9]|[1-9][0-9]{1,2})|event_[a-z_]+|battle_board)\.jpg$/.test(f)
-        && !['event_title_ship.png', 'event_title_parchment.png'].includes(f)) continue;
+        && !['event_title_ship.png', 'event_title_parchment.png'].includes(f)
+        && !/^(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)\.png$/.test(f)) continue;
     const ext = path.extname(f).toLowerCase();
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
@@ -195,6 +197,21 @@ for (const item of plan) {
       console.log('GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
+  // [카드 원화 해시] 카드 ID는 그대로 유지하며, 승인받은 지역 원화만 교체한다. 미승인 이미지는 기존 등록 ID를 보존한다.
+  const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)$/.test(item.name);
+  if (regionalCardArt) {
+    if (approvedImages[id] !== sourceSha256) {
+      console.log('REGIONAL_CARD_ART_NOT_APPROVED', id);
+      if (registry.assets[id]?.assetId) failures.push(id + ': REGIONAL_CARD_ART_APPROVAL_HASH_MISMATCH');
+      continue;
+    }
+    const old = registry.assets[id];
+    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+      previousTypeAssets.set(id, {...old});
+      delete registry.assets[id];
+      console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+    }
+  }
   // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
   if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
@@ -209,7 +226,7 @@ for (const item of plan) {
     registry.assets[id].source = item.file;
     // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
     // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
-    if (item.kind === 'Goods' && item.assetType === 'Image')
+    if ((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt)
       registry.assets[id].sourceSha256 = sourceSha256;
     if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
     console.log('SKIP_ALREADY_REGISTERED', id);
@@ -326,7 +343,7 @@ for (const item of plan) {
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
     registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...(item.kind === 'Goods' && item.assetType === 'Image' || item.sourceLicense ? {sourceSha256} : {})};
+      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt || item.sourceLicense ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);
