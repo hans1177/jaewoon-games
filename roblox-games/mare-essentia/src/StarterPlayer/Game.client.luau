@@ -1113,6 +1113,8 @@ local PORTRAIT_GROUP = {
 }
 -- 국가별 주인공 9명은 3x3 시트의 서로 다른 실제 인물 사진/원화를 사용한다.
 -- 이 시트를 기존 초상화 컴포넌트에서 공유하므로 새 UI 구조는 필요 없다.
+-- [초상] 메서드 외부에서는 쓰지 않는 데이터의 지역변수 수명 제한.
+do
 local HERO_ATLAS = AssetIds["Portraits/heroes"]
 local HERO_SIZE = Vector2.new(256, 336)
 -- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
@@ -1152,6 +1154,7 @@ function H.heroPortraitAsset(nationId)
 		return HERO_NEW_ATLAS, oldTile, HERO_NEW_SIZE
 	end
 	return HERO_ATLAS, tile, HERO_SIZE
+end
 end
 
 do
@@ -1410,6 +1413,9 @@ end
 H.hudName = hudText(card, UDim2.fromOffset(70, 8), UDim2.new(1, -78, 0, 20), 16, Color3.fromRGB(47, 30, 20))
 H.hudCoin = hudText(card, UDim2.fromOffset(70, 28), UDim2.new(1, -78, 0, 20), 16, Color3.fromRGB(91, 49, 20))
 H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 20), 15, Color3.fromRGB(56, 40, 27))
+local hullFill, hullText
+-- [HUD] 외부 렌더러가 쓰는 두 값만 남기고 장식 구성 변수는 여기서 해제한다.
+do
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
 hullBack.Position = UDim2.fromOffset(72, 70)
@@ -1421,7 +1427,7 @@ local hullStroke = Instance.new("UIStroke")
 hullStroke.Color = Color3.fromRGB(214, 170, 82)
 hullStroke.Thickness = 1.5
 hullStroke.Parent = hullBack
-local hullFill = Instance.new("Frame")
+hullFill = Instance.new("Frame")
 hullFill.BackgroundColor3 = Color3.fromRGB(214, 40, 36)
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.BorderSizePixel = 0
@@ -1454,7 +1460,7 @@ for t = 1, 9 do
 	tick.Size = UDim2.new(0, 1, 1, 0)
 	tick.Parent = hullTicks
 end
-local hullText = Instance.new("TextLabel")
+hullText = Instance.new("TextLabel")
 hullText.BackgroundTransparency = 1
 hullText.Size = UDim2.fromScale(1, 1)
 hullText.Font = Enum.Font.GothamBold
@@ -1497,8 +1503,12 @@ for _, label in { H.hudName, H.hudCoin, H.hudPort, H.hudShip } do
 	H.shadowOf(label)
 end
 hullBack.BackgroundColor3 = Color3.fromRGB(22, 16, 11)
+end
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
+local hudBanner
+-- [상단 현판] 임시 프레임의 스코프를 분리하고 실제 텍스트 참조만 남긴다.
+do
 local banner = Instance.new("Frame")
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Position = UDim2.new(0.5, 0, 0, 8)
@@ -1508,9 +1518,12 @@ banner.Parent = hud
 banner.Visible = false -- 상단 중앙 항구 이름은 쓰지 않는다
 corner(banner, 8)
 hudStroke(banner, 2)
-local hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
+hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
 hudBanner.TextSize = 15
+end
 
+-- [코인 카드] 카드 생성 직후 임시 변수 해제.
+do
 local coinCard = Instance.new("Frame")
 coinCard.BackgroundColor3 = NAVY
 coinCard.BackgroundTransparency = 0.08
@@ -1521,9 +1534,12 @@ coinCard.Parent = hud
 coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
 corner(coinCard, 10)
 hudStroke(coinCard, 2)
+end
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
 -- 시스템 4개는 시설 6개와 색으로 구분한다(같은 원화를 쓰는 곳은 색을 바꿔 중복처럼 안 보이게).
+-- [항해 도구] 아이콘 데이터는 바로 아래 H.hudShortcut 메서드에만 유지한다.
+do
 local HUD_MENU_TINT = {
 	view = Color3.fromRGB(196, 222, 246), gear = Color3.fromRGB(196, 222, 246),
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
@@ -1597,6 +1613,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		end
 	end)
 	return button
+end
 end
 
 -- 오른쪽 아이콘은 로블록스 상단 바 높이를 무시하고 화면 맨 위에 붙인다(왼쪽 카드는 기존 위치 유지).
