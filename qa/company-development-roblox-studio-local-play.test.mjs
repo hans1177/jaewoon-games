@@ -3748,7 +3748,10 @@ test('Mare first-click QA verifies actual selection screen and never confirms de
 test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures',()=>{
   const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(workflow.includes('name: Studio Auto QA'));
-  assert.ok(!workflow.includes('  schedule:'));
+  // 기존 오너 지정 매일 12:43 KST 정밀검사를 유지한다.
+  assert.match(workflow,/  schedule:\n    - cron: '43 3 \* \* \*'/);
+  assert.equal(workflow.split('  schedule:').length-1,1);
+  assert.match(workflow,/STUDIO_DEEP_QA_SKIP=RUNNER_QUEUE/);
   assert.ok(workflow.includes('roblox-games/mare-essentia/src/**'));
   assert.ok(!workflow.includes('roblox-games/fantasy-survival/'));
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
