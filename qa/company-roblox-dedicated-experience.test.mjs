@@ -858,6 +858,17 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/origin\\.Name = "CardDeckOrigin"/);
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
+  // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.
+  assert.ok(source.includes('local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('playedCard.Activated:Connect(function()'));
+  assert.ok(source.includes('showCardCodex(c, true)'),'played card must open read-only zoom');
+  assert.ok(source.includes('focusUse.Visible = not readOnly'),'played card must not be playable again');
+  assert.ok(source.includes('if selectedPlay then selectedPlay() else closeCardCodex() end'),'read-only art tap must close');
+  assert.ok(source.includes('local f = Instance.new("TextButton")'),'deployed card supports touch activation');
+  const playedStart=source.indexOf('playedCard.Activated:Connect(function()');
+  const playedEnd=source.indexOf('\n\t\t\t\t\tend)',playedStart);
+  assert.ok(playedEnd>playedStart && playedEnd-playedStart<500);
+  assert.doesNotMatch(source.slice(playedStart,playedEnd),/BC\.play\(|afterAction\(|playChosenCard/);
   for(const region of ['eu','ea','me','nw','af'])assert.ok(source.includes(`\t${region} = { ko = `),region+' region origin');
   assert.match(uploader,/event_\[a-z_\]\+\|battle_board\)\\\.jpg/);
   assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
