@@ -22,7 +22,11 @@ local function proxy(name)
 		if k == "Connect" then return function() return proxy("conn") end end
 		return proxy(tostring(k))
 	end
-	mt.__newindex = function() end
+	-- [스모크] 실제 Camera.FieldOfView는 대입 후 읽을 수 있어야 한다.
+	-- 나머지 동적 Roblox 속성은 기존 경량 목업 동작을 유지한다.
+	mt.__newindex = function(self, key, value)
+		if name == "Camera" and key == "FieldOfView" then rawset(self, key, value) end
+	end
 	mt.__call = function() return proxy(name .. "()") end
 	mt.__iter = function() return function() return nil end end
 	for _, op in { "__add", "__sub", "__mul", "__div", "__idiv", "__mod", "__unm" } do
