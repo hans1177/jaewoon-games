@@ -919,20 +919,18 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
   const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
-  return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
-    // [기존 대기열 정리] 승인되지 않은 웹게임 자동개발을 재시도하지 않는다.
-    // 작업 본문·검증 기록은 보관하고, 실행 가능한 큐에서만 이력 레인으로 옮긴다.
-    const stopWebAutoDev=process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1'
-      &&clean(task.target).toLowerCase()==='web'
-      &&clean(task.department).toLowerCase()==='development'
-      &&clean(task.type).toLowerCase()==='implementation';
-    if(stopWebAutoDev&&task.status!=='cancelled'&&task.status!=='verified'){
-      return {...task,...clearedReservation(),status:'cancelled',
-        blocker:'owner-web-auto-development-disabled',
-        ownerDevelopmentHold:true,
-        lastOutcome:'CANCELLED_BY_OWNER_WEB_AUTO_DEV_STOP',
-        evidence:[...new Set([...(task.evidence||[]),'owner-web-auto-development-stop:2026-11-13'])]};
-    }
+  // [대기열 경량화] 구형 웹 자동개발의 상세 기록은 Git 이전 커밋에 보존한다.
+  // 현재 실행 큐에서는 해당 항목을 제거해 재예약을 막고, 기존 packVibeQueueStorage가
+  // 더 이상 참조되지 않는 활성 task 조각을 안전하게 정리하도록 한다.
+  const runnableTasks=queue.tasks.filter(task=>{
+    if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED!=='1'
+      ||clean(task.target).toLowerCase()!=='web'
+      ||clean(task.department).toLowerCase()!=='development'
+      ||clean(task.type).toLowerCase()!=='implementation')return true;
+    return !(['queued','running','blocked','failed'].includes(clean(task.status).toLowerCase())
+      ||(task.status==='cancelled'&&task.blocker==='owner-web-auto-development-disabled'));
+  });
+  return createVibeContinuousQueue({...queue,tasks:runnableTasks.map(task=>{
     const game=games.get(clean(task.gameId));
     const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||permanentlyDeletedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
       ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());

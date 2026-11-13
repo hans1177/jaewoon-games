@@ -3957,13 +3957,9 @@ test('오너 웹게임 자동개발 중지는 막힌 웹 작업을 이력으로 
     ]});
     const synced=synchronizeOwnerDevelopmentHolds(queue,{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}},{catalog:{games:[]}});
     for(const id of ['web-blocked','web-queued','web-running']){
-      const row=synced.tasks.find(item=>item.id===id);
-      assert.equal(row.status,'cancelled');
-      assert.equal(row.ownerDevelopmentHold,true);
-      assert.equal(row.blocker,'owner-web-auto-development-disabled');
-      assert.equal(row.reservationId,null);
-      assert.ok(row.evidence.includes('owner-web-auto-development-stop:2026-11-13'));
+      assert.equal(synced.tasks.some(item=>item.id===id),false);
     }
+    assert.equal(synced.tasks.length,2,'불필요한 웹 개발은 제외하고 학습·로블록스만 보관한다');
     assert.equal(synced.tasks.find(item=>item.id==='web-research').status,'queued');
     assert.equal(synced.tasks.find(item=>item.id==='roblox-cards').status,'queued');
     const again=synchronizeOwnerDevelopmentHolds(synced,{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}},{catalog:{games:[]}});
