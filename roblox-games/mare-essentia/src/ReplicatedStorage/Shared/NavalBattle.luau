@@ -17,6 +17,16 @@ local ORIGIN = Vector3.new(6000, 0, 0)
 -- 해상전투에서 사용하는 기존 등록 도감 이미지
 local CARD_SEA = "CardArt/event_calm_seas"
 
+-- [10장 제작 샘플] 전체 그림을 순서대로 재생하는 퀜트형 프레임 시트.
+-- 원화는 CardArt/카드ID 에 승인 등록한 4x4/256px 단일 이미지다. 구형 부위별 레이어 모션은 사용하지 않는다.
+local ANIMATED_CARD_IDS = {
+	eu_03 = true, eu_24 = true,
+	ea_02 = true, ea_18 = true,
+	me_01 = true, me_24 = true,
+	nw_18 = true, nw_24 = true,
+	af_01 = true, af_18 = true,
+}
+
 -- 파일명: NavalBattle.luau / 해전 카드 원화 목록
 -- 백과사전 화풍: 기존 등록 도판을 배경으로 사용하고, 역할과 맞는 승인된 모델·동작만 입힌다.
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
@@ -1075,10 +1085,11 @@ function NavalBattle.play(opts)
 		animateCardArt = function(art, image, card)
 			-- [퀜트식 GIF 프레임] Roblox ImageLabel은 GIF 재생을 지원하지 않으므로
 			-- 승인된 16장 시트만 한 장의 이미지에서 순서대로 표시한다. 부위/레이어 보간 없음.
-			-- 원본 GIF: 16프레임 × 80ms, 등록 대상: CardArt/eu_03, 4열×4행(256×192).
-			if card.id == "eu_03" and AssetIds["CardArt/eu_03"] then
-				image.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/eu_03"])
-				image.ImageRectSize = Vector2.new(256, 192)
+			-- 원본 GIF: 16프레임 × 80ms, 5대륙 샘플 10종, 4열×4행(256×256). 카드 크기는 원래 0.69.
+			local spriteKey = "CardArt/" .. tostring(card.id or "")
+			if ANIMATED_CARD_IDS[card.id] and AssetIds[spriteKey] then
+				image.Image = "rbxassetid://" .. tostring(AssetIds[spriteKey])
+				image.ImageRectSize = Vector2.new(256, 256)
 				image.ImageRectOffset = Vector2.new(0, 0)
 				image.ImageColor3 = Color3.new(1, 1, 1)
 				local elapsed = 0
@@ -1095,7 +1106,7 @@ function NavalBattle.play(opts)
 					if not active then return end
 					elapsed += math.max(0, dt)
 					local frame = math.floor(elapsed / 0.08) % 16
-					image.ImageRectOffset = Vector2.new((frame % 4) * 256, math.floor(frame / 4) * 192)
+					image.ImageRectOffset = Vector2.new((frame % 4) * 256, math.floor(frame / 4) * 256)
 				end
 				destroying = art.Destroying:Connect(stop)
 				return { step = step, stop = stop }
