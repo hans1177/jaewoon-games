@@ -39,7 +39,7 @@ concurrency:
 jobs:
   recover:
     runs-on: ubuntu-slim
-    timeout-minutes: 3
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,8 +73,13 @@ jobs:
             git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/main >/dev/null
             git worktree prune
-            git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
+            # [복구 제어] 수천 개 게임 파일을 펼치지 않고 기존 제어 큐만 체크아웃한다.
+            # 공유된 main 작업 트리는 그대로 두고 제어 worktree에만 sparse 설정을 적용한다.
+            git worktree add --no-checkout --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control
+            git -C "$control" config extensions.worktreeConfig true
+            git -C "$control" sparse-checkout set --cone .vibe2
+            git -C "$control" checkout HEAD >/dev/null
             node tools/vibe2-queue-control.mjs storage-unpack --queue="$control/.vibe2/queue.json"
 
             test -f "$control/.vibe2/queue.json"
