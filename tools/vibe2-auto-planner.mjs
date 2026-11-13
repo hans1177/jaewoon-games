@@ -4503,6 +4503,61 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     assetRegistryCache?.set(cacheKey,boundAssetRegistry);
     return boundAssetRegistry;
   };
+  // [지역 카드 원화] 기존 ASSET_DEVELOPMENT에서 등록된 CC0 수요를 실제 작업으로 연결한다.
+  // 별도 큐·워커·유료 API를 만들지 않으며, 권리/소스 검증 전에는 원화를 생성·승인하지 않는다.
+  let regionalCardArtTask=null;
+  if(project.engine==='roblox'&&project.gameId==='mare-essentia'
+    &&posix(project.projectPath)==='roblox-games/mare-essentia'
+    &&assetProductionEnabled(repoRoot)){
+    const assetRoot='roblox-games/mare-essentia';
+    const order=readJson(sourceFile(repoRoot,assetRoot+'/assets-wanted.json'),{wanted:[]});
+    const demand=(order.wanted||[]).find(row=>row?.id==='regional-naval-gwent-150'
+      &&row?.kind==='CardArt'&&row?.status==='requested-vibe-production-execution-unverified'
+      &&row?.productionVerified===false&&row?.deploymentRequested===false);
+    const art=readJson(sourceFile(repoRoot,assetRoot+'/assets/cardart/region-art.json'),null);
+    const target=art?.cards?.find(row=>row?.id==='eu_03'&&row?.category==='선박');
+    const requestId='mare-essentia-roblox-cardart-cc0-production-v1';
+    if(demand&&demand.targetCount===150&&art?.count===150&&art.cards.length===150
+      &&target?.name==='갈레온'&&!hasTask(queue,requestId)
+      &&fs.existsSync(sourceFile(repoRoot,assetRoot+'/assets/cardart/src/eu_03.svg'))){
+      const goal=[
+        '[GRAPHICS_PRODUCTION] [ASSET_DEVELOPMENT] [CARD_ART_CC0_PRODUCTION]',
+        '대항해시대 해상전투 카드 5개 지역 × 30장, 총 150장. 유럽/동아시아/중동/신대륙/아프리카별 선박 10·유물 7·동물 6·지형/원더 7장. 인물·초상화 제외.',
+        '현재 assets/cardart/region-art.json의 고유 카드 ID/지역/설명/스킬/모션과 BoardingCards.luau의 실제 전투 스킬을 먼저 대조한다.',
+        '첫 실물 제작·검증 대상은 eu_03 갈레온. 역사적으로 맞는 CC0 사진/회화 원본 URL, 명시된 CC0 라이선스, 다운로드 원본 SHA256을 확보한 후 기존 바이브 그래픽 제작기가 게임별 회화풍 색·질감·구도·레벨을 변형한다.',
+        '현재 assets/cardart/src의 기존 자체 제작 SVG 150장은 참조 수요 목록일 뿐 CC0 원본이나 고품질 완료 자산으로 승격하지 않는다. 자체 제작 fallback·불분명한 권리·유료 API·무관한 배/동물 대용을 금지한다.',
+        '갈레온 선체/돛/깃발/파도/연기/포구 섬광은 검증된 원본에서 분리 가능한 실제 계층만 사용하고, 기존 Vibe 모션 디렉터와 NavalBattle.luau의 렌더 책임 경로에서 포격 스킬에 맞는 자연스러운 키프레임·보간·후행 움직임을 제작한다. 단순 이미지 전체 흔들기는 완료로 인정하지 않는다.',
+        '실제 원화 파일·레이어·모션 소스와 전후 화면·모바일 연속 프레임 근거가 확보된 경우에만 같은 승인 경로로 후속 149장을 확장한다. 소재별 중복 구도·애매한 문화권·인물 자산 금지.',
+        '원본 및 가공 해시·CC0 권리·기존 소비자·파일 경로를 검증한다. 부족한 CC0 원본은 정확한 GAP로 기록하고 기존 자산/전투 표현은 보존한다.',
+        '기존 카드 번호·덱 최대 30·포격 판정·데미지·세이브 구조·보상·기존 탭 확대는 변경하지 않는다. 오너는 배포를 요청하지 않았다. 실측 전 PASS 또는 배포 성공을 주장하지 않는다.'
+      ].join('\\n');
+      const files=[
+        assetRoot+'/assets-wanted.json',
+        assetRoot+'/assets/cardart/region-art.json',
+        assetRoot+'/assets/cardart/src/eu_03.svg'
+      ];
+      const out=task(requestId,project,goal,files,'high','medium',[
+        'asset-production-parallel:v1',
+        'graphics-production:REGIONAL_CARDART',
+        'asset-production-no-paid-api:YES',
+        'asset-production-cc0-original-and-modification-only',
+        'owner-source-request:issue-13011',
+        'cc0-original-license-hash-required',
+        'graphics-pass-real-asset-binding-runtime-required',
+        'presentation-preserve-gameplay-semantics',
+        'mobile-performance-qa-required',
+        'asset-production-candidate-not-release',
+        'card-art-source-manifest:region-art.json'
+      ]);
+      out.assetProductionLane=true;
+      out.executionLane='ASSET_DEVELOPMENT';
+      out.workUnits=6;
+      out.speculativeEligible=false;
+      out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+      out.atomicCompletionRequired=true;
+      regionalCardArtTask=out;
+    }
+  }
   if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
     const motionRoot='assets/roblox/world-ghosts/motions';
     const registry=sourceBoundRegistry();
@@ -4535,7 +4590,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
           lockedSource:[objectBindingEvidence,clipBindingEvidence,'local state="walk"'],preservedAxes:{}},
         evidence:[...(currentConsumers.includes(project.gameId)?['asset-current-consumer:'+project.gameId]:[]),'asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
     }
-    if(tasks.length)return tasks;
+    if(tasks.length)return uniqueTaskCandidates([regionalCardArtTask,...tasks]);
   }
   const pilot=isAssetProductionPilot(project,repoRoot);
   const weatherPilot=isWeatherPresentationPilot(project,repoRoot);
@@ -4544,6 +4599,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
   const normalStudioTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired!==true);
   if(project.engine==='roblox'){
     if(project.queueRobloxQualityBuildUpRequired===true)return uniqueTaskCandidates([
+      regionalCardArtTask,
       ...holisticBackfillTasks,
       findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       ...normalStudioTasks,
@@ -4554,6 +4610,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     ]);
     return uniqueTaskCandidates([
       findRobloxInternalPlaytestTask(project,repoRoot,queue),
+      regionalCardArtTask,
       ...holisticBackfillTasks,
       findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
