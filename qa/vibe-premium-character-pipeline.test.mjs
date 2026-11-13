@@ -2,6 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 model switches replace stale animation selection listeners',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/animationPicker\.onchange=\(\)=>\{if\(characterMotion!==adapter\)return/);
+ assert.match(preview,/previewClipIndex=Math\.max\(0,clipNames\.indexOf\(animationPicker\.value\)\)/);
+ assert.doesNotMatch(preview,/animationPicker\.addEventListener\('change'/);
+});
 test('Vibe 5.9 authored clip resolver prioritizes exact names and action tokens',()=>{
  const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
  assert.match(adapter,/name\.split\(\/\[\^a-z0-9\]\+\/\)\.includes\(expected\)/);
