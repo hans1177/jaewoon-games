@@ -731,34 +731,34 @@ function NavalBattle.play(opts)
 		})
 		wood.Rotation = 90
 		wood.Parent = bg
-		-- [전투판 배경] 오너 원화는 기존 CardArt 업로더의 SHA 승인 및 Roblox 등록 후만 표시한다.
-		-- 아직 미등록이면 기존 등록 세계 해도를 은은한 바탕으로 사용하며, 카드 규칙은 그대로 둔다.
-		local boardArtKey = if AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
+		-- [전투판 원화] 실제 흙·돌 전장만 기존 CardArt/battle_board 승인·등록 ID로 표시한다.
+		-- 등록 전에는 기존 목재 바탕을 사용하며, 세계지도·판타지 그림을 끼우지 않는다.
+		local boardImageReady = AssetIds["CardArt/battle_board"] ~= nil
 		local boardArt = Instance.new("ImageLabel")
 		boardArt.Name = "NavalCardBattleBoard"
 		boardArt.Size = UDim2.fromScale(1, 1)
 		boardArt.BackgroundTransparency = 1
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
-		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.Image = if boardImageReady then "rbxassetid://" .. tostring(AssetIds["CardArt/battle_board"]) else ""
+		boardArt.ImageTransparency = if cfg then 0.2 else 0.1
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
-		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
+		-- [가독성] 푸른색 효과 대신 중성 갈색 그림자로 6줄 카드와 상태 문구를 보존한다.
 		local boardWash = Instance.new("Frame")
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
-		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if cfg then 0.84 else 0.73
+		boardWash.BackgroundColor3 = Color3.fromRGB(35, 31, 27)
+		boardWash.BackgroundTransparency = if boardImageReady then 0.83 else 0.92
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
 		local boardShade = Instance.new("UIGradient")
 		boardShade.Rotation = 90
 		boardShade.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.06),
-			NumberSequenceKeypoint.new(0.52, 0.38),
-			NumberSequenceKeypoint.new(1, 0.10),
+			NumberSequenceKeypoint.new(0, 0.18),
+			NumberSequenceKeypoint.new(0.52, 0.54),
+			NumberSequenceKeypoint.new(1, 0.23),
 		})
 		boardShade.Parent = boardWash
 		local chartMark = Instance.new("ImageLabel")
@@ -768,7 +768,7 @@ function NavalBattle.play(opts)
 		chartMark.BackgroundTransparency = 1
 		chartMark.ScaleType = Enum.ScaleType.Fit
 		chartMark.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
-		chartMark.ImageTransparency = if boardArtKey == "CardArt/battle_board" then 1 else 0.92
+		chartMark.ImageTransparency = if boardImageReady then 1 else 0.92
 		chartMark.ImageColor3 = Color3.fromRGB(214, 170, 96)
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
@@ -1543,30 +1543,31 @@ function NavalBattle.play(opts)
 				local rf = Instance.new("Frame")
 				rf.Position = UDim2.fromScale(0, (k - 1) / 6)
 				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
-				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
-				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
-				rf.BackgroundTransparency = if cfg then 0.53 else 0.32
+				-- [6열 전장] 적·아군 줄을 흙과 석재 톤으로 구분하고 실제 배경을 비치게 한다.
+				-- 행·병종·카드 효과·전투 계산은 기존 그대로 유지한다.
+				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(56, 61, 52) else Color3.fromRGB(73, 59, 50)
+				rf.BackgroundTransparency = if boardImageReady then 0.53 elseif cfg then 0.42 else 0.3
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
 				local laneGradient = Instance.new("UIGradient")
 				laneGradient.Color = if side == "me" then ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(21, 68, 91)),
-					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(12, 32, 52)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(27, 58, 76)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 83, 72)),
+					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 46, 40)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(68, 74, 63)),
 				}) else ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(91, 45, 60)),
-					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(43, 26, 47)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(74, 34, 53)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 70, 58)),
+					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(52, 43, 37)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(82, 64, 54)),
 				})
 				laneGradient.Rotation = 0
 				laneGradient.Parent = rf
-				local laneStroke = frameEdge(rf, Color3.fromRGB(188, 142, 79), 4)
-				laneStroke.Transparency = 0.14
+				local laneStroke = frameEdge(rf, Color3.fromRGB(151, 132, 104), 4)
+				laneStroke.Transparency = 0.22
 				laneStroke.Thickness = 1
 				local laneAccent = Instance.new("Frame")
 				laneAccent.Name = "SideLaneAccent"
 				laneAccent.Size = UDim2.new(0, 3, 1, 0)
-				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(88, 170, 212) else Color3.fromRGB(214, 115, 110)
+				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(142, 153, 133) else Color3.fromRGB(154, 127, 103)
 				laneAccent.BorderSizePixel = 0
 				laneAccent.Parent = rf
 				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))

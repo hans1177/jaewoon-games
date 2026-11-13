@@ -8,11 +8,11 @@
 - 이 폴더는 원화 **소스**다. SVG를 등록 가능한 PNG로 변환하고 미술 검수·자산 검증 후, 기존 `tools/mare-essentia-upload-assets.mjs` 경로로 등록해야 게임에서 표시된다. 등록 완료·실제 재생·배포를 주장하지 않는다.
 - 기존 카드 밸런스, 저장 식별자, 카드 덱 최대치 30장, 전투 엔진은 이 원화 추가로 변경하지 않는다.
 
-## 해전 카드게임판 배경 (원본 단일 이미지)
+## 해전 카드게임판 배경 (현실적인 전장, 단일 원화)
 
-- 16:9 `1536×864` JPG `assets/cardart/battle_board.jpg` 원화 시안이 2026-11-13 제작됐다. 배치: 푸른 황금 대리석 전장, 6개 배치 줄에 맞는 나침반, 범선·항구·횃불 장식. 캐릭터·카드·버튼·글자 없는 **배경 전용** 이미지다.
-- 생성 결과는 현재 대화 파일 `mare_battle_board.jpg`(SHA-256: `8673d3c0400c070031b10bc38bb941015a52d002f4a95c556cbdcc6d3fbe1b44`)이다. PNG 원화도 별도 보관.
-- **아직 GitHub에 실제 JPG 바이너리 미업로드, `APPROVED_IMAGES.json`에 SHA 미등록, Roblox AssetIds에 `CardArt/battle_board` 미등록**. 이미 등록됐거나 게임이 새 원화로 동작했다고 주장하지 않는다.
-- 기존 `NavalBattle.luau`의 단일 `CardArt/battle_board` 키로만 연결한다. 등록 전에는 기존 승인 `CardArt/event_chart_world`를 깔고 6개 전투 줄·손패 금속 테두리·색상 대비를 같은 함수 안에서 보여 준다.
-- 승인 시 실제 JPG를 **기존 `assets/cardart/`에 직접 저장**하고 기존 `tools/mare-essentia-upload-assets.mjs`와 `assets/APPROVED_IMAGES.json` 승인 경로를 그대로 사용해야 한다. 승인 우회·새 업로더·자동 공개 배포는 금지.
-- 전투 규칙·카드 150장·덱 제한·저장 구조 및 터치 확대 변경 없음. 배경 실화면 품질·폰에서의 가독성·Roblox Studio 검증 전에는 품질 완료로 표시하지 않는다.
+- 2026-11-13 새 원화는 **1280×720 JPG** `assets/cardart/battle_board.jpg` 한 장이다. 채도 낮은 흙바닥·돌담·망가진 야영 장비·중세 성채가 있는 전장이고, **마법광·하늘섬·고래·우주·과도한 푸른색 효과가 없다.**
+- 실제 출력 파일은 현재 대화의 `battle_board.jpg` (SHA-256: `64ba978e3941166be9224ca524851543de5954211570389f16f5dda88685cd74`)로 보관한다. 이것은 인물·카드·텍스트가 없는 **배경 전용 이미지**다.
+- **GitHub에 실제 JPG 바이너리 미업로드**, `assets/APPROVED_IMAGES.json`에 새 SHA 미승인, Roblox `AssetIds["CardArt/battle_board"]` 미등록. 따라서 새 전장 원화는 아직 실게임에서 표시되지 않는다.
+- 기존 `NavalBattle.luau`의 단일 `CardArt/battle_board` 경로를 직접 유지한다. **승인·등록된 ID가 있으면 현실적인 전장 배경만 표시**, 없으면 기존 목재 바탕을 유지한다. 미승인 상태에 다른 화풍 이미지나 세계 지도를 끼워 넣지 않는다.
+- 적 3줄·아군 3줄 총 6줄, 카드 손패, 전투 규칙·150장 능력·저장 키, 터치 확대는 변경하지 않는다. 전장 6줄에는 흐린 갈색·올리브 계열 반투명 색상을 적용해 아군과 적군을 구분하고 실제 원화가 보이게 한다.
+- 배포는 신규 업로더 없이 `tools/mare-essentia-upload-assets.mjs`의 기존 이미지 원본 SHA 승인·Roblox 자산 등록·Studio 실제 시각 QA를 거쳐야 한다. 이 검증 전에는 배경 적용/배포를 완료로 표시하지 않는다.
