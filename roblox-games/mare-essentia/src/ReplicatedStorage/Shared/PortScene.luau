@@ -363,8 +363,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		end
 		if SOLID_TREES[asset] then
 			local c2, sz = m:GetBoundingBox()
-			local w = math.max(sz.X, sz.Z) * 0.11
-			local h = sz.Y * 0.34
+			local w = math.max(sz.X, sz.Z) * 0.2
+			local h = sz.Y * 0.4
 			local trunk = Instance.new("Part")
 			trunk.Shape = Enum.PartType.Cylinder
 			trunk.Size = Vector3.new(h, w, w)
