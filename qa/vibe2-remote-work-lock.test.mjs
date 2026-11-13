@@ -403,3 +403,67 @@ test('remote acquire falls back to GitHub Actions run identity for older queued 
     else process.env.GITHUB_RUN_ATTEMPT = previousAttempt;
   }
 });
+
+// [병렬 Work Lock] 실제 27개 워커 fan-in 중 409 경합으로 기존 8회 한도를 소진한 사례 회귀.
+test('remote release tolerates more than eight concurrent state updates without releasing another worker lock', async () => {
+  const held = activeLock({ id: 'held-by-vibe', worker: 'vibe2', taskId: 'owner-original' });
+  const other = activeLock({ id: 'independent-lock', worker: 'chatgpt', taskId: 'different-task', files: ['other/file.luau'] });
+  let reads = 0;
+  let writes = 0;
+  let delays = 0;
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') {
+      reads += 1;
+      return jsonResponse(200, { sha: 'state-' + reads, content: encodedState([held, other]) });
+    }
+    writes += 1;
+    const written = JSON.parse(Buffer.from(JSON.parse(options.body).content, 'base64').toString('utf8'));
+    assert.deepEqual(written.locks.map(lock => lock.id), ['independent-lock']);
+    assert.equal(JSON.parse(options.body).sha, 'state-' + reads);
+    if (writes <= 10) return jsonResponse(409, {});
+    return jsonResponse(200, { commit: { sha: 'released-after-cas-contention' } });
+  };
+  const result = await releaseRemoteVibeWorkLock({ worker: 'vibe2', id: 'held-by-vibe' }, {
+    context, fetchImpl, delay: async () => { delays += 1; }
+  });
+  assert.equal(result.released, true);
+  assert.equal(result.remoteUpdated, true);
+  assert.equal(result.attempt, 11);
+  assert.equal(reads, 11);
+  assert.equal(writes, 11);
+  assert.equal(delays, 10);
+});
+
+test('remote release remains fail closed after sixteen simultaneous state write races', async () => {
+  const held = activeLock({ id: 'busy-release-lock', worker: 'vibe2' });
+  let writes = 0;
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') return jsonResponse(200, { sha: 'busy-' + writes, content: encodedState([held]) });
+    writes += 1;
+    return jsonResponse(409, {});
+  };
+  const result = await releaseRemoteVibeWorkLock({ worker: 'vibe2', id: held.id }, { context, fetchImpl, delay: noDelay });
+  assert.equal(result.released, false);
+  assert.equal(result.reason, 'transient-state-update-race');
+  assert.equal(result.transient, true);
+  assert.equal(result.contention, true);
+  assert.equal(result.attempt, 16);
+  assert.equal(writes, 16);
+});
+
+test('acquisition keeps original eight-attempt cap during heavy contention', async () => {
+  let writes = 0;
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') return jsonResponse(200, { sha: 'busy-' + writes, content: encodedState([]) });
+    writes += 1;
+    return jsonResponse(409, {});
+  };
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2', task: 'acquire-still-eight', game: 'demo',
+    files: 'roblox-games/demo/server/Game.server.luau', 'base-sha': 'pinned-main'
+  }, { context, fetchImpl, delay: noDelay, maxAttempts: 99 });
+  assert.equal(result.acquired, false);
+  assert.equal(result.reason, 'transient-state-update-race');
+  assert.equal(result.attempt, 8);
+  assert.equal(writes, 8);
+});
