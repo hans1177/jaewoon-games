@@ -883,6 +883,8 @@ test('Mare galleon card moves original sail and flag meshes at up to 60fps witho
   assert.match(source,/activeGalleonViews < 2/);
   assert.match(source,/local interval = if focused or card\.id == "eu_03" then 1 \/ 60 else 1 \/ 30/);
   assert.match(source,/elapsed \+= math\.max\(0, dt\)/);
+  assert.match(source,/art:GetAttribute\("ArtFocused"\) == true/);
+  assert.match(source,/art\.Parent ~= nil and art\.Parent:GetAttribute\("ArtFocused"\) == true/);
   assert.match(source,/rest = propPivot:ToObjectSpace\(part\.CFrame\)/);
   assert.match(source,/local yaw = \(if item\.kind == "flag" then 0\.16 else 0\.055\) \* math\.sin\(phase\)/);
   assert.match(source,/item\.part\.CFrame = shipFrame \* item\.rest \* CFrame\.Angles\(pitch, yaw, 0\)/);
