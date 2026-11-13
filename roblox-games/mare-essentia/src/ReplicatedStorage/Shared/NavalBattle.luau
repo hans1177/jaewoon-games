@@ -63,8 +63,12 @@ local CARD_STAGE = {
 	decoy = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
 }
 
--- [지역별 오브젝트 도판] 기존 등록 그림과 카드 자체 스킬·장면 데이터를 그대로 연결한다.
+-- [지역별 오브젝트 도판] 등록·승인된 개별 카드 그림을 우선하고, 없는 카드는 기존 도판을 보존한다.
 local function cardArtworkKey(card)
+	if type(card.id) == "string" then
+		local individualArt = "CardArt/" .. card.id
+		if AssetIds[individualArt] then return individualArt end
+	end
 	local spec = CARD_STAGE[card.id] or card.stage
 	if not spec then return CARD_SEA end
 	if spec.newArt and AssetIds[spec.newArt] then return spec.newArt end
