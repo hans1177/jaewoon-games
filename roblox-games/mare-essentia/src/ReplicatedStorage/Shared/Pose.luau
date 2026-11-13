@@ -576,10 +576,10 @@ function Pose.animateR15(model, st)
 		m.rightLeg.Transform = CFrame.Angles(-sw * 0.7, 0, 0)
 	end
 	if m.leftKnee then
-		m.leftKnee.Transform = CFrame.Angles(if moving then math.max(0, -sw) * 0.9 else 0, 0, 0)
+		m.leftKnee.Transform = CFrame.Angles(if moving then -math.max(0, -sw) * 0.9 else 0, 0, 0)
 	end
 	if m.rightKnee then
-		m.rightKnee.Transform = CFrame.Angles(if moving then math.max(0, sw) * 0.9 else 0, 0, 0)
+		m.rightKnee.Transform = CFrame.Angles(if moving then -math.max(0, sw) * 0.9 else 0, 0, 0)
 	end
 end
 
@@ -602,14 +602,33 @@ function Pose.makeR15Action(model, state, progress, t)
 	-- 모든 관절을 초기화해 이전 동작이 다음 동작에 남지 않도록 한다.
 	for _, joint in m do set(joint, CFrame.identity) end
 	if state == "idle" then
-		set(m.waist, A(math.sin(time * 2) * 0.025, 0, 0))
+		-- 숨쉬기 + 체중 이동 + 가끔 두리번: 가만히 서 있어도 살아 있게
+		set(m.waist, A(math.sin(time * 1.7) * 0.02, math.sin(time * 0.5) * 0.06, 0))
+		set(m.root, CFrame.new(math.sin(time * 0.45) * 0.05, 0, 0) * A(0, 0, math.sin(time * 0.45) * 0.025))
+		set(m.neck, A(math.sin(time * 0.9) * 0.04, math.sin(time * 0.37) * 0.3, 0))
+		set(m.leftArm, A(math.sin(time * 1.1) * 0.03, 0, 0.07)); set(m.rightArm, A(-math.sin(time * 1.1) * 0.03, 0, -0.07))
+		set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 	elseif state == "walk" or state == "run" then
-		local speed = if state == "run" then 9 else 5
-		local stride = math.sin(time * speed) * (if state == "run" then 0.85 else 0.48)
-		set(m.leftLeg, A(stride, 0, 0)); set(m.rightLeg, A(-stride, 0, 0))
-		set(m.leftArm, A(-stride * 0.7, 0, 0)); set(m.rightArm, A(stride * 0.7, 0, 0))
-		set(m.leftKnee, A(math.max(0, -stride) * 0.6, 0, 0))
-		set(m.rightKnee, A(math.max(0, stride) * 0.6, 0, 0))
+		-- 걸음 주기: 발 앞으로(무릎 굽힘) → 딛기 → 뒤로 밀기. 반대 팔이 같이 흔들리고 몸이 위아래·좌우로 자연스럽게 흔들린다.
+		local run = state == "run"
+		local w = time * (if run then 1 else 1.5) * (if run then 9 else 1) -- 걷기는 이동 속도에 비례한 시간이 들어온다
+		local s, c = math.sin(w), math.cos(w)
+		local amp = if run then 0.95 else 0.5
+		local kneeAmp = if run then 1.5 else 0.75
+		set(m.leftLeg, A(s * amp, 0, 0)); set(m.rightLeg, A(-s * amp, 0, 0))
+		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
+		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
+		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
+		-- 팔은 반대쪽 다리와 함께 흔든다 (앞으로 = 음수)
+		local armAmp = amp * (if run then 1.0 else 0.85)
+		set(m.leftArm, A(s * armAmp, 0, 0.06)); set(m.rightArm, A(-s * armAmp, 0, -0.06))
+		local elbowBase = if run then 0.9 else 0.22
+		set(m.leftElbow, A(-(elbowBase + math.max(0, -s) * (if run then 0.5 else 0.35)), 0, 0))
+		set(m.rightElbow, A(-(elbowBase + math.max(0, s) * (if run then 0.5 else 0.35)), 0, 0))
+		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.28 else 0.11)
+		set(m.root, CFrame.new(0, bob, 0) * A(if run then -0.2 else -0.04, s * (if run then 0.1 else 0.06), s * 0.03))
+		set(m.waist, A(if run then -0.05 else 0, -s * (if run then 0.16 else 0.1), 0))
+		set(m.neck, A(if run then 0.1 else 0, s * 0.04, 0))
 	elseif state == "attack" then
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
 		set(m.rightElbow, A(-0.4 - wave * 0.5, 0, 0))
