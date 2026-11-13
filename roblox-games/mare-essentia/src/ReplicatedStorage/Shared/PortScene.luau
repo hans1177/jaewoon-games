@@ -133,8 +133,6 @@ local function sign(parent, adornee, text, color, height)
 	bb.MaxDistance = 130
 	-- 3D 아이콘 (위쪽 80%)
 	local kind, asset = signModel(text)
-	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
-	local template = lib and lib:FindFirstChild(kind) and lib[kind]:FindFirstChild(asset)
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromScale(1, 0.78)
 	vf.BackgroundTransparency = 1
@@ -145,10 +143,23 @@ local function sign(parent, adornee, text, color, height)
 	cam.FieldOfView = 32
 	cam.Parent = vf
 	vf.CurrentCamera = cam
-	local shown = false
-	if template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true) then
-		local world = Instance.new("WorldModel")
-		world.Parent = vf
+	vf.Parent = bb
+	local world = Instance.new("WorldModel")
+	world.Parent = vf
+	-- 모델은 서버가 늦게 올릴 수 있어서 뜰 때까지 기다린다. 그동안은 이모지가 자리를 채운다.
+	local em = Instance.new("TextLabel")
+	em.Size = UDim2.fromScale(1, 0.78)
+	em.BackgroundTransparency = 1
+	em.Text = signIcon(text)
+	em.TextScaled = true
+	em.Font = Enum.Font.GothamBold
+	em.TextColor3 = Color3.new(1, 1, 1)
+	em.Parent = bb
+	local function tryShow()
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local group = lib and lib:FindFirstChild(kind)
+		local template = group and group:FindFirstChild(asset)
+		if not (template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true)) then return false end
 		local m = template:Clone()
 		for _, p in m:GetDescendants() do
 			if p:IsA("BasePart") then p.Anchored = true end
@@ -157,20 +168,17 @@ local function sign(parent, adornee, text, color, height)
 		local cf, size = m:GetBoundingBox()
 		local reach = math.max(size.Magnitude * 0.5, 0.1) / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.05
 		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
-		shown = true
+		em:Destroy()
+		return true
 	end
-	if shown then
-		vf.Parent = bb
-	else
-		vf:Destroy()
-		local em = Instance.new("TextLabel")
-		em.Size = UDim2.fromScale(1, 0.78)
-		em.BackgroundTransparency = 1
-		em.Text = signIcon(text)
-		em.TextScaled = true
-		em.Font = Enum.Font.GothamBold
-		em.TextColor3 = Color3.new(1, 1, 1)
-		em.Parent = bb
+	if not tryShow() then
+		task.spawn(function()
+			for _ = 1, 40 do
+				task.wait(1)
+				if not bb.Parent then return end
+				if tryShow() then return end
+			end
+		end)
 	end
 	-- 작은 이름표 (아래쪽)
 	local plate = Instance.new("Frame")
@@ -680,7 +688,7 @@ end
 local sceneLevel = 1
 local function roadMat()
 	-- 발전도별 바닥: 흙 → 자갈 → 포석 → 화강암 → 대리석
-	return if sceneLevel <= 1 then Enum.Material.Ground
+	return if sceneLevel <= 1 then Enum.Material.Sand
 		elseif sceneLevel == 2 then Enum.Material.Pebble
 		elseif sceneLevel == 3 then Enum.Material.Cobblestone
 		elseif sceneLevel == 4 then Enum.Material.Granite
@@ -688,7 +696,7 @@ local function roadMat()
 end
 local function roadColor(style)
 	if sceneLevel <= 1 then
-		return style.street:Lerp(Color3.fromRGB(120, 96, 66), 0.65)
+		return style.street:Lerp(Color3.fromRGB(176, 146, 104), 0.65)
 	end
 	return style.street
 end
@@ -2365,7 +2373,7 @@ function PortScene.build(info, onFacility)
 	-- 마을 바닥판: 땅 사이 구멍이 보이지 않게 마을 전체를 한 장으로 덮고, 발전도에 따라 흙→자갈→포석→화강암→대리석으로 바뀐다.
 	do
 		local lvlColor = {
-			Color3.fromRGB(122, 96, 66), Color3.fromRGB(150, 138, 120), Color3.fromRGB(150, 146, 140),
+			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
 		local floor = part(folder, Vector3.new(300, 0.3, 340), CFrame.new(-130, 0.02, 0),
@@ -2500,7 +2508,7 @@ function PortScene.build(info, onFacility)
 	do
 		local plazaMat = { Enum.Material.Ground, Enum.Material.Pebble, Enum.Material.Cobblestone, Enum.Material.Granite, Enum.Material.Marble }
 		local plazaCol = {
-			Color3.fromRGB(128, 100, 70), Color3.fromRGB(156, 144, 126), Color3.fromRGB(158, 152, 144),
+			Color3.fromRGB(190, 158, 112), Color3.fromRGB(176, 164, 146), Color3.fromRGB(166, 160, 152),
 			Color3.fromRGB(176, 174, 178), Color3.fromRGB(232, 228, 218),
 		}
 		local function disc(radius, y, color, mat)
