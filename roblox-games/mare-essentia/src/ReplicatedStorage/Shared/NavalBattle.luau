@@ -1692,7 +1692,7 @@ function NavalBattle.play(opts)
 					if finished then break end
 					local ok, msg, res, _, playedCard = BC.ai(m, "foe")
 					if ok then
-						afterAction(ok, "해적: " .. (msg or ""), res, playedCard, "foe")
+						afterAction(ok, if english then "Pirates" else "해적: " .. (msg or ""), res, playedCard, "foe")
 					end
 				elseif auto then
 					task.wait(0.5)
@@ -1712,9 +1712,13 @@ function NavalBattle.play(opts)
 			local wonMatch = m.winner == "me"
 			flair += m.wins.me * 40 + (if wonMatch then 110 else 0)
 			if cfg then
-				info.Text = if wonMatch then "카드 대결에서 이겼다! 전투 승리!" elseif m.winner == "foe" then "카드 대결에서 졌다..." else "승부가 나지 않았다."
+				info.Text = if wonMatch then t("카드 대결에서 이겼다! 전투 승리!", "You won the card battle!")
+					elseif m.winner == "foe" then t("카드 대결에서 졌다...", "You lost the card battle.")
+					else t("승부가 나지 않았다.", "The battle ended in a draw.")
 			else
-				info.Text = if wonMatch then "갑판을 제압했다!" elseif m.winner == "foe" then "갑판에서 밀렸다..." else "승부가 나지 않았다."
+				info.Text = if wonMatch then t("갑판을 제압했다!", "You seized the deck!")
+					elseif m.winner == "foe" then t("갑판에서 밀렸다...", "Your crew was pushed back.")
+					else t("승부가 나지 않았다.", "The battle ended in a draw.")
 			end
 			task.wait(1.8)
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
