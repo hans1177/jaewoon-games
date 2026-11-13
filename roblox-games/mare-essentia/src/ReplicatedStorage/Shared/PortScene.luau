@@ -2003,8 +2003,8 @@ local function densify(folder, info, style, rng, walkers, made)
 			end
 			if lay.farm then
 				-- 우리 서쪽으로 넓게 펼쳐진 밭
-				for rz = -14, 14, 7 do
-					rowOf("Terrain", if rz % 14 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 5, c.X - 26, c.X - 120, 8, c.Z + rz)
+				for rz = -21, 21, 6 do
+					rowOf("Terrain", if rz % 12 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 6.5, c.X - 26, c.X - 130, 5, c.Z + rz)
 				end
 			end
 		end
@@ -2505,16 +2505,18 @@ function PortScene.build(info, onFacility)
 		fac[k] = true
 	end
 
+	-- 먼 땅: 잔디 질감은 어둡게 보여서, 색을 밝은 풀색 쪽으로 옮긴다
+	local farGround = style.ground:Lerp(Color3.fromRGB(150, 190, 96), 0.55):Lerp(Color3.new(1, 1, 1), 0.18)
 	local plate = workspace:FindFirstChild("Baseplate")
 	if plate then
-		plate.Color = style.ground
+		plate.Color = farGround
 		-- 항공 시점에서 땅 모서리가 보이지 않게 넓힌다 (바다는 x>20 이라 서쪽으로만 확장)
 		plate.Size = Vector3.new(2600, plate.Size.Y, 2600)
 		plate.Position = Vector3.new(-1280, plate.Position.Y, 0)
 		plate.Material = Enum.Material.Grass
 	else
 		-- 로블록스 기본 Baseplate가 없는 빌드: 항구 땅(서쪽)과 바다 밑바닥을 직접 만든다
-		local land = part(folder, Vector3.new(2600, 4, 2600), CFrame.new(-1280, -2, 0), style.ground, Enum.Material.Grass)
+		local land = part(folder, Vector3.new(2600, 4, 2600), CFrame.new(-1280, -2, 0), farGround, Enum.Material.Grass)
 		land.Name = "Ground"
 		part(folder, Vector3.new(1400, 4, 1000), CFrame.new(430, -12, 0), Color3.fromRGB(176, 160, 120), Enum.Material.Sand)
 	end
