@@ -847,9 +847,9 @@ local function zoneLayout(portId, lvl)
 	lay.pens = math.clamp(5 - lvl + (if lay.farm then 1 else 0) - (if lay.fish then 1 else 0), 1, 4)
 	return lay
 end
--- 가축 울타리 중심 (마을 서쪽 끝, 16x12)
+-- 가축 울타리 중심 (마을 서쪽 끝, 40x30의 큰 우리)
 local function penAt(i, n)
-	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 24)
+	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 44)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
@@ -1100,8 +1100,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				if sp == "elephant" then
 					animal(sp, c)
 				else
-					for k = 1, math.min(2 + (lvl % 2), 3) do
-						animal(sp, c + Vector3.new(rng:NextNumber(-5, 5), 0, rng:NextNumber(-3, 3)))
+					for k = 1, 5 + (lvl % 3) do
+						animal(sp, c + Vector3.new(rng:NextNumber(-16, 16), 0, rng:NextNumber(-11, 11)))
 					end
 				end
 			end
@@ -1109,18 +1109,19 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			if #stock > 0 then
 				local sp = stock[(i - 1) % #stock + 1]
 				local isStable = sp == "horse" or sp == "donkey" or sp == "llama"
-				local roofAt = Vector3.new(c.X, 6.6, c.Z)
-				for _, cx in { -7.4, 7.4 } do
-					for _, cz in { -5.4, 5.4 } do
-						local post = part(folder, Vector3.new(0.7, 6.6, 0.7), CFrame.new(c.X + cx, 3.3, c.Z + cz), Color3.fromRGB(104, 72, 44), Enum.Material.Wood)
+				-- 우리의 서쪽 절반(20x30)에 높은 지붕을 얹는다. 동쪽 절반은 열린 방목장.
+				local roofAt = Vector3.new(c.X - 10, 9, c.Z)
+				for _, cx in { -19, -1 } do
+					for _, cz in { -14, 0, 14 } do
+						local post = part(folder, Vector3.new(1, 9, 1), CFrame.new(c.X + cx, 4.5, c.Z + cz), Color3.fromRGB(104, 72, 44), Enum.Material.Wood)
 						post.CanCollide = false
 					end
 				end
-				gableRoof(folder, roofAt, 17, 13, 3.2, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
-				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X, 6.6, c.Z), Color3.new(1, 1, 1))
+				gableRoof(folder, roofAt, 21, 31, 5, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
+				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X - 10, 9, c.Z), Color3.new(1, 1, 1))
 				anchor.Transparency = 1
 				anchor.CanCollide, anchor.CanQuery = false, false
-				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 2)
+				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 6)
 			end
 			if has.chicken and i == 1 then
 				for _ = 1, 2 do
@@ -1297,7 +1298,7 @@ do
 	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
 	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
 	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
-	SIG.macau = cat(one("Town", "church", 26, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 22, 4))
+	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
 	SIG.shanghai = pagoda
 	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
 	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
@@ -1384,7 +1385,7 @@ do
 	SIG.calcutta = cat(fort(28), one("Town", "church", 22, 24, 6))
 	SIG.rangoon = cat(spire(HEX, 9, 0, 0), one("Town", "temple-stone", 22, 16, 8), spire(HEX, 6, -14, 0), spire(HEX, 6, 14, -6))
 	SIG.bangkok = cat(one("Town", "temple-tower", 30, 0, 0), one("Town", "temple-stone", 20, 18, 8))
-	SIG.singapore = cat(one("Town", "bell-tower", 26, 0, 0), palms(16))
+	SIG.singapore = cat(one("Town", "temple-tower", 26, 0, 0), palms(16)) -- 동남아 항구: 종탑 대신 사원 탑
 	SIG.hoi_an = shrine
 	SIG.brunei = cat(one("Terrain", "wood-support", 8, -8, 0), one("Terrain", "wood-support", 8, 8, 0), palms(14))
 	SIG.ternate = fortPalms(24)
@@ -1621,17 +1622,18 @@ local function densify(folder, info, style, rng, walkers, made)
 				else
 					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
 				end
-				for row = -1, 1 do
-					local cr = crops[(row + 1) % #crops + 1]
-					for k = -3, 3 do
-						put(cr[1], cr[2], cr[3], cx + k * 5, cz + row * 7, false)
+				-- 매우 넓은 농경지: 7줄 x 17칸, 줄마다 다른 작물
+				for row = -3, 3 do
+					local cr = crops[(row + 3) % #crops + 1]
+					for k = -8, 8 do
+						put(cr[1], cr[2], cr[3], cx + k * 6, cz + row * 8, false)
 					end
 				end
-				for k = -3, 3 do
-					put("Town", "fence", 5, cx + k * 5.5, cz + (if cz > 0 then 12 else -12), false)
+				for k = -9, 9 do
+					put("Town", "fence", 5, cx + k * 5.5, cz + (if cz > 0 then 29 else -29), false)
 				end
-				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 24, cx + 18, cz, true, face)
-				put("Terrain", "log-stack", 4, cx - 16, cz + 4, false)
+				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
+				put("Terrain", "log-stack", 4, cx - 56, cz + 4, false)
 			end
 			-- 구역별 주민: 하는 일이 다르다 (광장에만 몰려 있지 않게)
 			local function npc(dx, dz, yaw, kind, mode, spec)
@@ -1953,19 +1955,21 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- 농원구역(마을 서쪽 끝): 가축 울타리와 밭. 작은 마을일수록 울타리가 많고 큰 항구는 장터로 바뀐다.
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
-			for dx = -6, 6, 4 do
-				for _, dz in { -6, 6 } do
+			for dx = -18, 18, 4 do
+				for _, dz in { -15, 15 } do
 					one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
 				end
 			end
-			for dz = -4, 4, 4 do
-				for _, dx in { -8, 8 } do
+			for dz = -12, 12, 4 do
+				for _, dx in { -20, 20 } do
 					rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
 				end
 			end
 			if lay.farm then
-				rowOf("Terrain", "crops-wheatstagea", 4, c.X - 22, c.X - 44, 7, c.Z - 3)
-				rowOf("Terrain", "crops-wheatstageb", 4, c.X - 22, c.X - 44, 7, c.Z + 3)
+				-- 우리 서쪽으로 넓게 펼쳐진 밭
+				for rz = -14, 14, 7 do
+					rowOf("Terrain", if rz % 14 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 5, c.X - 26, c.X - 120, 8, c.Z + rz)
+				end
 			end
 		end
 		-- 상업구역(큰길 안쪽): 수레와 장터. 생산품이 많은 무역 항구일수록 가판이 늘어난다.
@@ -2246,7 +2250,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			big("Terrain", "pillar-obelisk", 22)
 		elseif key == "creole" then
 			big("Terrain", "statue-column", 18)
-		elseif key == "japan" or key == "china" then
+		elseif key == "japan" or key == "china" or key == "seasia" then
 			big("Town", "temple-tower", 24)
 		elseif key == "desert" then
 			big("Terrain", "egypt-obelisk", 28)
@@ -2371,7 +2375,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				put("Town", "bench_A", 3.6, x + 8, z + front * 8, false)
 			elseif lm.id == "academy" then
 				body = house(folder, Vector3.new(x, 0, z), 28, 20, 3, style, rng, Color3.fromRGB(196, 184, 170))
-				put("Town", "bell-tower", 20, x + 17, z, true)
+				put("Town", if key == "japan" or key == "china" or key == "seasia" then "temple-stone" else "bell-tower", 20, x + 17, z, true)
 				for k = -1, 1, 2 do put("Terrain", "column", 9, x + k * 7, z + front * 13, false) end
 			elseif lm.id == "zoo" then
 				ring(x, z, 17, 17, "fence_straight")
