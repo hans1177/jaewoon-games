@@ -107,62 +107,96 @@ local function signIcon(text)
 	return "⛵"
 end
 
--- 방문시설 간판: 짙은 목판 + 금테 + 둥근 아이콘 배지 + 굵은 글씨 (멀리서도 읽히게 크게)
+-- 간판 3D 아이콘: 승인된 MareAssets 모델 (없으면 이모지로 대체)
+local SIGN_MODELS = {
+	{ "증권", "Cargo", "gold-bars" }, { "박물관", "Cargo", "jade" }, { "극장", "Relics", "shield-round" }, { "식물원", "Cargo", "pineapple" },
+	{ "천문대", "Relics", "magnifying-glass" }, { "학술원", "Relics", "journal-open" }, { "동물원", "Cargo", "ivory" }, { "제철", "Cargo", "iron-bars" },
+	{ "교역", "Cargo", "chest" }, { "주점", "Cargo", "barrel" }, { "항만", "Relics", "rope-bundle-a" }, { "은행", "Cargo", "gems-chest" },
+	{ "길드", "Relics", "map-rolled" }, { "서재", "Relics", "drafting-compass" }, { "도서관", "Relics", "journal-closed" }, { "조선", "Relics", "hammer" },
+	{ "왕궁", "Cargo", "gold" }, { "총독", "Cargo", "gold" }, { "이야기", "Relics", "key" }, { "공사", "Relics", "saw" },
+}
+local function signModel(text)
+	for _, e in SIGN_MODELS do
+		if text:find(e[1], 1, true) then return e[2], e[3] end
+	end
+	return "Relics", "compass-base"
+end
+
+-- 방문시설 간판: 큰 3D 아이콘 + 아래 작은 이름표 (멀리서도 무슨 건물인지 보이게)
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromScale(13, 3) -- 스터드 단위: 멀수록 자연스럽게 작아진다
-	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
+	bb.Size = UDim2.fromScale(9, 9.5) -- 스터드 단위: 멀수록 자연스럽게 작아진다
+	bb.StudsOffset = Vector3.new(0, (height or 4) + 5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
-	bb.MaxDistance = 110
+	bb.MaxDistance = 130
+	-- 3D 아이콘 (위쪽 80%)
+	local kind, asset = signModel(text)
+	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+	local template = lib and lib:FindFirstChild(kind) and lib[kind]:FindFirstChild(asset)
+	local vf = Instance.new("ViewportFrame")
+	vf.Size = UDim2.fromScale(1, 0.78)
+	vf.BackgroundTransparency = 1
+	vf.Ambient = Color3.fromRGB(205, 198, 184)
+	vf.LightColor = Color3.fromRGB(255, 247, 224)
+	vf.LightDirection = Vector3.new(-0.8, -1.6, -0.55).Unit
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 32
+	cam.Parent = vf
+	vf.CurrentCamera = cam
+	local shown = false
+	if template and template:IsA("Model") and template:FindFirstChildWhichIsA("BasePart", true) then
+		local world = Instance.new("WorldModel")
+		world.Parent = vf
+		local m = template:Clone()
+		for _, p in m:GetDescendants() do
+			if p:IsA("BasePart") then p.Anchored = true end
+		end
+		m.Parent = world
+		local cf, size = m:GetBoundingBox()
+		local reach = math.max(size.Magnitude * 0.5, 0.1) / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.05
+		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
+		shown = true
+	end
+	if shown then
+		vf.Parent = bb
+	else
+		vf:Destroy()
+		local em = Instance.new("TextLabel")
+		em.Size = UDim2.fromScale(1, 0.78)
+		em.BackgroundTransparency = 1
+		em.Text = signIcon(text)
+		em.TextScaled = true
+		em.Font = Enum.Font.GothamBold
+		em.TextColor3 = Color3.new(1, 1, 1)
+		em.Parent = bb
+	end
+	-- 작은 이름표 (아래쪽)
 	local plate = Instance.new("Frame")
-	plate.Size = UDim2.fromScale(1, 1)
+	plate.AnchorPoint = Vector2.new(0.5, 1)
+	plate.Position = UDim2.fromScale(0.5, 1)
+	plate.Size = UDim2.fromScale(1, 0.2)
 	plate.BackgroundColor3 = Color3.fromRGB(62, 42, 30)
 	plate.BorderSizePixel = 0
-	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromRGB(96, 66, 44), Color3.fromRGB(46, 30, 22))
-	grad.Rotation = 90
-	grad.Parent = plate
 	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(232, 190, 96)
-	st.Thickness = 2.5
+	st.Color = color and color:Lerp(Color3.fromRGB(232, 190, 96), 0.5) or Color3.fromRGB(232, 190, 96)
+	st.Thickness = 2
 	st.Parent = plate
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 12)
+	c.CornerRadius = UDim.new(0, 8)
 	c.Parent = plate
-	local badge = Instance.new("TextLabel")
-	badge.Size = UDim2.fromScale(0.2, 0.84)
-	badge.Position = UDim2.fromScale(0.03, 0.08)
-	badge.BackgroundColor3 = color or Color3.fromRGB(150, 110, 40)
-	badge.Text = signIcon(text)
-	badge.TextScaled = true
-	badge.Font = Enum.Font.GothamBold
-	badge.TextColor3 = Color3.new(1, 1, 1)
-	local bc = Instance.new("UICorner")
-	bc.CornerRadius = UDim.new(1, 0)
-	bc.Parent = badge
-	local bs = Instance.new("UIStroke")
-	bs.Color = Color3.fromRGB(232, 190, 96)
-	bs.Thickness = 2
-	bs.Parent = badge
-	badge.Parent = plate
 	local l = Instance.new("TextLabel")
-	l.Size = UDim2.fromScale(0.72, 0.8)
-	l.Position = UDim2.fromScale(0.26, 0.1)
+	l.Size = UDim2.fromScale(0.94, 0.8)
+	l.Position = UDim2.fromScale(0.03, 0.1)
 	l.BackgroundTransparency = 1
 	l.TextColor3 = Color3.fromRGB(255, 244, 214)
-	l.Font = Enum.Font.GothamBlack
+	l.Font = Enum.Font.GothamBold
 	l.TextScaled = true
-	l.TextXAlignment = Enum.TextXAlignment.Left
 	l.Text = text
-	local ts = Instance.new("UIStroke")
-	ts.Color = Color3.fromRGB(30, 18, 10)
-	ts.Thickness = 2
-	ts.Parent = l
 	local lim = Instance.new("UITextSizeConstraint")
-	lim.MaxTextSize = 60
-	lim.MinTextSize = 8
+	lim.MaxTextSize = 40
+	lim.MinTextSize = 6
 	lim.Parent = l
 	l.Parent = plate
 	plate.Parent = bb
