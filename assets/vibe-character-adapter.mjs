@@ -26,6 +26,7 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
   for(const expected of names){match=clipEntries.find(row=>row.name===expected)?.action;if(match)break;}
   // [원본 클립 이름] 장식 접두어보다 정확한 동작 단어를 우선하고 유사 동작 오인식을 차단한다.
   if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).includes(expected))?.[1];if(match)break;}
+  if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).some(token=>token===expected||['cycle','loop','forward','inplace'].some(suffix=>token===expected+suffix)))?.[1];if(match)break;}
   if(!match)for(const expected of names){match=clipEntries.find(row=>expected&&row.name.startsWith(expected))?.action;if(match)break;}
   if(!match)return false;
   if(match===active)return true;
