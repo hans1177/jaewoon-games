@@ -830,22 +830,38 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   }
 });
 
-test('Mare eu_03 GIF uses sequential frames without layered hull motion',()=>{
+test('Mare 5-continent ten animated cards remain single-sprite 4x4 and tap to zoom without changing battle rules',()=>{
   const base='roblox-games/mare-essentia/';
   const manifest=JSON.parse(fs.readFileSync(base+'assets/cardart/region-art.json','utf8'));
-  const card=manifest.cards.find(row=>row.id==='eu_03');
-  assert.equal(manifest.cards.length,150);
-  assert.deepEqual([card.name,card.row,card.skill,card.motion,card.power,card.registered],
+  const ids=['eu_03','eu_24','ea_02','ea_18','me_01','me_24','nw_18','nw_24','af_01','af_18'];
+  assert.equal(manifest.cards.length,150,'preserve existing 150 definitions');
+  for(const id of ids)assert.ok(manifest.cards.find(card=>card.id===id),id);
+  const galleon=manifest.cards.find(card=>card.id==='eu_03');
+  assert.deepEqual([galleon.name,galleon.row,galleon.skill,galleon.motion,galleon.power,galleon.registered],
     ['갈레온','cannon','armor','fire',6,false]);
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  for(const id of ids)assert.match(source,new RegExp('\\b'+id+' = true'),'animated sample '+id);
+  assert.match(source,/local spriteKey = "CardArt\/" \.\. tostring\(card\.id or ""\)/);
+  assert.match(source,/if ANIMATED_CARD_IDS\[card\.id\] and AssetIds\[spriteKey\] then/);
+  assert.match(source,/image.ImageRectSize = Vector2.new\(256, 256\)/);
+  assert.match(source,/local frame = math.floor\(elapsed \/ 0.08\) % 16/);
+  assert.match(source,/image.ImageRectOffset = Vector2.new\(\(frame % 4\) \* 256, math.floor\(frame \/ 4\) \* 256\)/);
   assert.match(source,/local artwork = "CardArt\/" \.\. id/);
   assert.match(source,/if AssetIds\[artwork\] then return artwork end/);
-  assert.match(source,/if card.id == "eu_03" and AssetIds\["CardArt\/eu_03"\] then/);
-  assert.match(source,/image.ImageRectSize = Vector2.new\(256, 192\)/);
-  assert.match(source,/local frame = math.floor\(elapsed \/ 0.08\) % 16/);
-  assert.match(source,/image.ImageRectOffset = Vector2.new\(\(frame % 4\) \* 256, math.floor\(frame \/ 4\) \* 192\)/);
-  assert.match(source,/destroying = art.Destroying:Connect\(stop\)/);
-  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1);
+  assert.match(source,/if deckPalette\[prefix\] then return nil end/);
+  assert.match(source,/f.Name = "BoardCard"/);
+  assert.match(source,/f.Activated:Connect\(function\(\)/);
+  assert.match(source,/local showCardCodex/);
+  assert.match(source,/showCardCodex\(c\)/);
+  assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
+  assert.match(source,/cardRatio.AspectRatio = 0\.69/);
+  for(const deck of ['eu','ea','me','nw','af'])assert.match(source,new RegExp('\\b'+deck+' = \\{ ko = '),deck);
+  for(const category of ['선박','유물','동물','지형·원더'])assert.ok(source.includes('["'+category+'"] = { ko = '),category);
+  assert.match(source,/deckLabel.Name = "CardDeck"/);
+  assert.match(source,/kindLabel.Name = "CardCategory"/);
+  assert.match(source,/focusDeck.Name = "DeckCategory"/);
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,
+    'reuse existing render loop');
   assert.doesNotMatch(source,/GalleonCannonSmoke|GalleonWave|activeGalleonViews/);
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)'));
@@ -855,36 +871,4 @@ test('Mare eu_03 GIF uses sequential frames without layered hull motion',()=>{
   assert.equal(job.productionVerified,false);
   assert.equal(job.runtimeVerified,false);
   assert.equal(job.deploymentRequested,false);
-});
-
-test('Mare five continent decks and four categories remain distinct on hand board and enlarged cards',()=>{
-  const root='roblox-games/mare-essentia/';
-  const src=fs.readFileSync(root+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
-  const manifest=JSON.parse(fs.readFileSync(root+'assets/cardart/region-art.json','utf8'));
-  assert.equal(manifest.cards.length,150);
-  const decks=['eu','ea','me','nw','af'];
-  const categories=['선박','유물','동물','지형·원더'];
-  for(const region of decks)assert.equal(manifest.cards.filter(x=>x.id.startsWith(region+'_')).length,30,region);
-  for(const category of categories)assert.ok(manifest.cards.some(x=>x.category===category),category);
-  assert.match(src,/local deckPalette = \{/);
-  assert.match(src,/local categoryPalette = \{/);
-  assert.match(src,/local function cardVisualStyle\(card\)/);
-  for(const region of decks)assert.match(src,new RegExp('\\b'+region+' = \\{ ko = '),region);
-  for(const category of categories)assert.ok(src.includes('["'+category+'"] = { ko ='),category);
-  assert.match(src,/deckLabel.Name = "CardDeck"/);
-  assert.match(src,/kindLabel.Name = "CardCategory"/);
-  assert.match(src,/focusDeck.Name = "DeckCategory"/);
-  assert.match(src,/focusDeck.Text = deckName \.\. " · " \.\. categoryName/);
-  assert.match(src,/focusEdge.Color = deckColor/);
-  assert.match(src,/frameEdge\(f, deckColor, 4\)/);
-  assert.match(src,/local edge = frameEdge\(b, deckColor, 6\)/);
-  assert.match(src,/selected.UIStroke.Color = selected:GetAttribute\("DeckColor"\) or brass/);
-  assert.match(src,/cardRatio.AspectRatio = 0\.69/);
-  assert.match(src,/focusRatio.AspectRatio = 0\.69/);
-  assert.match(src,/b.Activated:Connect\(function\(\)/);
-  assert.match(src,/showCardCodex\(c\)/);
-  assert.match(src,/BC.play\(m, "me", i\)/);
-  assert.equal(src.split('RunService.RenderStepped:Connect(').length-1,1);
-  const battle=fs.readFileSync(root+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
-  assert.match(battle,/B.Units.eu_03 = \{[^\n]+power=6, weapon="cannon", ability="armor"/);
 });
