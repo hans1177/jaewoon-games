@@ -8363,7 +8363,17 @@ task.spawn(function()
 		if type(dc) == "string" and dc:sub(1, 4) == "Tab:" then
 			-- 개발 캡처용: 시설 창(trade/route/yard/quest/codex/status)을 이름으로 연다
 			workspace:SetAttribute("DevCall", nil)
-			local okTab, errTab = pcall(function() openTab(dc:sub(5)) end)
+			local okTab, errTab = pcall(function()
+				-- 타이틀 메뉴가 열려 있으면 먼저 닫는다(게임 화면 위에 창이 열리게)
+				if H.titleMenuOpen then
+					H.titleMenuOpen = false
+					local tg = player:WaitForChild("PlayerGui"):FindFirstChild("TitleGui")
+					if tg then tg:Destroy() end
+					titleGui.Enabled = false
+					menuToggle.Visible = false
+				end
+				openTab(dc:sub(5))
+			end)
 			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
 		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
