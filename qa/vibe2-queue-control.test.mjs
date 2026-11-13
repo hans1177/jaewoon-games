@@ -146,7 +146,7 @@ test('free AI quota exhaustion waits for provider retry window without using gam
     taskId:task.id,reservationId:task.reservationId,variant:'primary',outcome:'FAIL',
     blocker:'source-candidate-generation-failed',
     candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',
-      message:'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt}
+      message:'GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt}
   };
   const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[task]}),[result]);
   const waiting=settled.queue.tasks.find(row=>row.id===task.id);
@@ -168,6 +168,43 @@ test('free AI quota exhaustion waits for provider retry window without using gam
 
 
 // [무모델] 새 로블록스 원본 생성기 버전은 즉시 1회 재검토하고, 동일 버전 재실패는 차단한다.
+// [공급자 복구] 다른 무료 제공자 오류는 Gemini 풀 한도 증거를 무효화하지 않는다.
+test('canonical Gemini pool failures defer only verified two-slot provider cooldowns',()=>{
+  const now=new Date().toISOString(),resumeAt=new Date(Date.now()+3600000).toISOString();
+  const base={id:'free-provider-wait',gameId:'game-a',target:'web',department:'development',
+    type:'implementation',goal:'fix existing source',sourceRoot:'web-games/game-a',
+    responsibleFiles:['index.html'],status:'running',retries:3,maxRetries:5,
+    reservationId:'provider-lease',reservationRunId:'7788',reservedAt:now,evidence:[]};
+  const prefix='GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:';
+  const allowed=[
+    prefix+'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429,OPENROUTER:google/gemma-4-31b-it:free:HTTP_400:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3.8-flash:HTTP_404,gemini-3.5-flash-lite:COOLDOWN:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3.8-flash:HTTP_503,gemini-3.5-flash-lite:TRANSPORT_OR_TIMEOUT:NEXT_RETRY_AT='+resumeAt
+  ];
+  const denied=[
+    'OPENROUTER:google/gemma-4-31b-it:free:HTTP_429:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_400:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3.8-flash:HTTP_429:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3x8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt,
+    prefix+'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:CONTENT_POLICY_BLOCKED:NEXT_RETRY_AT='+resumeAt
+  ];
+  for(const [expected,messages] of [[true,allowed],[false,denied]]){
+    for(const message of messages){
+      const result={taskId:base.id,reservationId:base.reservationId,variant:'primary',outcome:'FAIL',
+        blocker:'source-candidate-generation-failed',
+        candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',message}};
+      const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[base]}),[result]);
+      assert.equal(settled.applied.some(row=>row.outcome==='DEFERRED_EXTERNAL_QUOTA'),expected,message);
+      if(expected){
+        assert.equal(settled.queue.tasks[0].status,'blocked');
+        assert.equal(settled.queue.tasks[0].blocker,'EXTERNAL_AI_QUOTA_COOLDOWN');
+        assert.equal(settled.queue.tasks[0].retries,3);
+        assert.equal(settled.queue.tasks[0].reservationId,null);
+      }
+    }
+  }
+});
+
 test('model-free Roblox source misses retry once per source worker revision without hourly delay',()=>{
   const first={id:'no-model-roblox',gameId:'island-a',target:'roblox',department:'development',type:'implementation',
     goal:'repair exact existing source',sourceRoot:'roblox-games/island-a',responsibleFiles:['server/Game.server.luau'],
