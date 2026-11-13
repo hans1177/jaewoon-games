@@ -1457,7 +1457,7 @@ hudStroke(coinCard, 2)
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
 local HUD_MENU_ART = {
-	gear = "tech", deck = "battle", auto = "harbor",
+	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
 	view = "view", trade = "trade", crew = "harbor", route = "route",
 	journal = "codex", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
@@ -6207,6 +6207,14 @@ RENDERERS.yard = renderYard
 
 -- 전체 그리기 -----------------------------------------------------------------
 
+-- 탭 아이콘: 이미 등록된 3D 모델(Relics·Naval·People)을 한 가지 표현으로 통일해 쓴다.
+H.TAB_ICON = {
+	quest = { "Relics", "journal-open" }, route = { "Relics", "drafting-compass" }, trade = { "Naval", "chest" },
+	cards = { "Relics", "journal-closed" }, status = { "Naval", "anchor" }, harbor = { "Naval", "dock-corner" },
+	crew = { "People", "Pirate_Male" }, yard = { "Naval", "ship-small" }, codex = { "Relics", "magnifying-glass" },
+	tech = { "Relics", "blueprint" }, map = { "Relics", "map-rolled" }, explore = { "Relics", "lantern" },
+	battle = { "Naval", "cannon" },
+}
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
@@ -6229,7 +6237,17 @@ function H.renderTabs()
 		if currentTab == id then
 			b.TextColor3 = Color3.fromRGB(32, 22, 8)
 		end
-		b.TextSize = 16 -- 탭은 글자만: 그림 없이 크고 또렷하게
+		b.TextSize = 16
+		local ti = H.TAB_ICON[id]
+		if ti then
+			local icon = modelIcon(b, ti[1], ti[2], nil, 30, TAB_NAME[id])
+			icon.Name = "TabIcon"
+			icon.Position = UDim2.new(0, 5, 0.5, -15)
+			icon.ZIndex = b.ZIndex + 2
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft = UDim.new(0, 36)
+			pad.Parent = b
+		end
 	end
 end
 
