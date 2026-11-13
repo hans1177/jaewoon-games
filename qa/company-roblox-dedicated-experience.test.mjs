@@ -826,29 +826,33 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
   }
 });
 
-test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
+test('Mare muted battlefield board uses approved existing image and keeps six original combat lanes', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
-  assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
+  assert.match(source,/local boardImageReady = AssetIds\["CardArt\/battle_board"\] ~= nil/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if cfg then 0\.64/);
+  assert.match(source,/boardArt.Image = if boardImageReady then "rbxassetid:\/\/" \..* else ""/);
+  assert.match(source,/boardArt.ImageTransparency = if cfg then 0\.2 else 0\.1/);
+  assert.match(source,/boardWash.BackgroundColor3 = Color3.fromRGB\(35, 31, 27\)/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
-  assert.match(source,/boardShade.Parent = boardWash/);
+  assert.match(source,/chartMark.ImageTransparency = if boardImageReady then 1 else 0\.92/);
+  assert.doesNotMatch(source,/local boardArtKey = .*CardArt\/event_chart_world/);
+  assert.match(source,/rf.BackgroundTransparency = if boardImageReady then 0\.53/);
+  assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
+  assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
   assert.match(source,/handFrame.Position = UDim2.fromScale\(0\.02, 0\.72\)/);
   assert.match(source,/boardFrame.Position = UDim2.fromScale\(0\.2, 0\.14\)/);
   assert.match(source,/boardFrame.Size = UDim2.fromScale\(0\.78, 0\.56\)/);
   assert.match(source,/local order = \{ \{ "foe", "cannon" \}, \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \}, \{ "me", "cannon" \} \}/);
-  assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
-  assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
   assert.match(source,/BC.play\(m, "me", i\)/);
   assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
   assert.match(uploader,/event_\[a-z_\]\+\|battle_board\)\\\.jpg/);
-  assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
-  assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
-  assert.match(readme,/1536×864/);
+  assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'approved SHA gate must remain');
+  assert.match(readme,/GitHub.*JPG.*미업로드/);
+  assert.match(readme,/1280×720/);
 });
