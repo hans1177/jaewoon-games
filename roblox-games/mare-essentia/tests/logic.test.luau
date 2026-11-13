@@ -3459,15 +3459,13 @@ do
 		end
 		check("지역 카드 영어 이름·설명 30장: " .. prefix, count == 30)
 	end
-	local surplus = 0
+	local englishCount = 0
 	for key in BC.CardEnglish do
-		if not string.match(key, "^(eu|ea|me|nw|af)_%d%d$") then
-			-- Luau 정규식은 '|' 교차 패턴을 지원하지 않으므로 접두어 길이를 직접 확인한다.
-			local prefix = string.sub(key, 1, 2)
-			if prefix ~= "eu" and prefix ~= "ea" and prefix ~= "me" and prefix ~= "nw" and prefix ~= "af" then surplus += 1 end
-		end
+		englishCount += 1
+		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and broken == 0 and surplus == 0, tostring(broken) .. "/" .. tostring(surplus))
+	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and englishCount == 150 and broken == 0,
+		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
