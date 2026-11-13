@@ -1,0 +1,20 @@
+[
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local Pose=require(RS.Shared.Pose) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(0,-200,0)) end local folder=Instance.new('Folder') folder.Name='PoseLab' folder.Parent=workspace local floor=Instance.new('Part') floor.Anchored=true floor.Size=Vector3.new(60,1,60) floor.Position=Vector3.new(0,-0.5,0) floor.Color=Color3.fromRGB(150,140,120) floor.Parent=folder local model=Pose.createR15(folder,Vector3.new(0,0,0),0,Color3.fromRGB(120,60,50),Random.new(3),'sailor',5.2) if not model then return 'LAB create failed' end _G.LabModel=model local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=CFrame.lookAt(Vector3.new(11,3,0),Vector3.new(0,2.6,0)) cam.FieldOfView=35 return 'LAB ok '..model.Name"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local m=_G.LabModel local root=m:FindFirstChild('HumanoidRootPart') if not root then return 'PROBE no root' end local fwd=root.CFrame.LookVector local out={'PROBE fwd='..tostring(fwd)..' anchored='..tostring(root.Anchored)} local function J(n) return m:FindFirstChild(n,true) end local function probe(jn,angle,part) local mo=J(jn) local pt=m:FindFirstChild(part,true) if not mo or not pt then out[#out+1]='PROBE '..jn..' missing '..tostring(mo~=nil)..tostring(pt~=nil) return end mo.Transform=CFrame.identity task.wait(0.1) local p0=pt.Position mo.Transform=CFrame.Angles(angle,0,0) task.wait(0.1) local p1=pt.Position mo.Transform=CFrame.identity local d=p1-p0 out[#out+1]=string.format('PROBE %s %+.1f -> %s fwd=%.2f up=%.2f',jn,angle,part,d:Dot(fwd),d.Y) end probe('LeftHip',0.6,'LeftFoot') probe('LeftKnee',0.6,'LeftFoot') probe('LeftKnee',-0.6,'LeftFoot') probe('LeftShoulder',-1.0,'LeftHand') probe('LeftShoulder',1.0,'LeftHand') probe('LeftElbow',-0.8,'LeftHand') probe('LeftElbow',0.8,'LeftHand') probe('Waist',0.4,'Head') probe('Root',0.3,'Head') local names={} for _,j in ipairs(m:GetDescendants()) do if j:IsA('Motor6D') then names[#names+1]=j.Name end end out[#out+1]='PROBE joints '..table.concat(names,',') return table.concat(out,'\\n')"
+ }
+]

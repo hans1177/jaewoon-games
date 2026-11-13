@@ -1,0 +1,25 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local n={} local lib=RS:FindFirstChild(\"MareAssets\") if lib then for _,k in ipairs(lib:GetChildren()) do n[#n+1]=k.Name..\":\"..#k:GetChildren() end end return \"ready=\"..tostring(RS:GetAttribute(\"MareAssetsReady\"))..\" \"..table.concat(n,\",\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local RS=game:GetService(\"ReplicatedStorage\") local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId=\"lisbon\",portName=\"Lisbon\",shipId=\"galleon\",hasShipyard=true,facilities={\"bank\",\"guild\",\"harbormaster\",\"palace\"},storyCount=1,companions={{id=\"c_halley\",name=\"Halley\"},{id=\"c_merian\",name=\"Merian\"}}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end return \"build ok=\"..tostring(ok)..\" \"..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 8000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local rp=RaycastParams.new() rp.FilterType=Enum.RaycastFilterType.Exclude local ex={} local c=game.Players.LocalPlayer.Character if c then table.insert(ex,c) end rp.FilterDescendantsInstances=ex local rows={} local bad={} for z=-70,70,4 do local line={} for x=-130,24,4 do local r=workspace:Raycast(Vector3.new(x,60,z),Vector3.new(0,-200,0),rp) local ch='?' if not r then ch='X' bad[#bad+1]='NOHIT '..x..','..z else local p=r.Instance local nm=p.Name if nm=='SafetyFloor' then ch='S' bad[#bad+1]='SAFETY '..x..','..z elseif r.Position.Y<-0.4 then ch='L' bad[#bad+1]='LOW '..x..','..z..' y='..string.format('%.1f',r.Position.Y)..' '..nm elseif p.Transparency>0.4 then ch='T' bad[#bad+1]='TRANSP '..x..','..z..' '..nm elseif p.Material==Enum.Material.Water or nm=='Terrain' then ch='W' elseif r.Position.Y>1.5 then ch='H' else ch='.' end end line[#line+1]=ch end rows[#rows+1]=string.format('%4d ',z)..table.concat(line) end return 'HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\\n'..table.concat(rows,'\\n')..'\\nBAD '..#bad..'\\n'..table.concat(bad,'\\n',1,math.min(#bad,60))"
+ }
+]
