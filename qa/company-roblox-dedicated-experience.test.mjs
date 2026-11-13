@@ -892,6 +892,16 @@ test('Mare galleon card moves original sail and flag meshes at up to 60fps witho
     'keep the existing shared card render loop, no per-card render connection');
   assert.match(source,/cardMotionStep:Disconnect\(\)/);
   assert.match(source,/if card\.id == "eu_03" then activeGalleonViews = math\.max\(0, activeGalleonViews - 1\) end/);
+
+  // 배·돛·깃발과 별개로 포연·파도를 3겹씩 재생하고 카드를 닫으면 해제한다.
+  assert.match(source,/local galleonWaves, galleonSmoke = \{\}, \{\}/);
+  assert.match(source,/wave.Name = "GalleonWave" \.\. index/);
+  assert.match(source,/puff.Name = "GalleonCannonSmoke" \.\. index/);
+  assert.match(source,/local phase = elapsed \* \(1\.18 \+ index \* 0\.16\) \+ index \* 1\.21/);
+  assert.match(source,/local smokeElapsed = \(beat - 0\.48 \+ 1\) % 1/);
+  assert.match(source,/puff.BackgroundTransparency = if age < 0\.34 then 0\.36 \+ 0\.64 \* progress else 1/);
+  assert.match(source,/for _, wave in galleonWaves do wave:Destroy\(\) end/);
+  assert.match(source,/for _, puff in galleonSmoke do puff:Destroy\(\) end/);
   assert.doesNotMatch(source,/RunService:Set3dRenderingEnabled\(false\)/);
   const cards=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
   assert.match(cards,/B\.Units\.eu_03 = \{[^\n]+row="cannon", power=6, weapon="cannon", ability="armor"/);
