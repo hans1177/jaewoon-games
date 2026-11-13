@@ -201,6 +201,20 @@ local function corner(obj, radius)
 	c.Parent = obj
 end
 
+-- 모든 시설 창 공통: 숫자+단위는 진한 호박색, 잠김/부족은 붉은색, 이득은 초록색으로 강조한다.
+local RICH_UNITS = { "코인", "척", "명", "일", "개", "단계", "km", "점", "%" }
+function H.rich(text: string): string
+	local t = text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+	for _, u in RICH_UNITS do
+		local up = u:gsub("%%", "%%%%")
+		t = t:gsub("([%+%-]?%d[%d,%.]*)" .. up, '<font color="#9a4f0a"><b>%1' .. up .. "</b></font>")
+	end
+	t = t:gsub("(🔒[^\n]*)", '<font color="#a62a1f">%1</font>')
+	t = t:gsub("(장착중)", '<font color="#2f7a3a"><b>%1</b></font>')
+	return t
+end
+H.richParent = nil -- 시설 창 본문(content)이 만들어지면 지정된다
+
 local function mkLabel(parent, text, size, color, bold, order)
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
@@ -217,6 +231,10 @@ local function mkLabel(parent, text, size, color, bold, order)
 		l.LayoutOrder = order
 	end
 	l.Parent = parent
+	if H.richParent and (parent == H.richParent or (parent.Name == "RowText" and parent.Parent and parent.Parent.Parent == H.richParent)) and not bold then
+		l.RichText = true
+		l.Text = H.rich(text)
+	end
 	return l
 end
 
@@ -1279,6 +1297,7 @@ content.CanvasSize = UDim2.new()
 content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
 content.Parent = mainInner
+H.richParent = content
 local contentLayout = Instance.new("UIListLayout")
 contentLayout.Padding = UDim.new(0, 5)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -3255,6 +3274,58 @@ local function add(builder)
 	return obj
 end
 
+-- 핵심 수치 띠: 칸마다 작은 이름 + 큰 값(색으로 좋음/나쁨/중요 구분). 모든 시설 창 공통.
+-- items = { { label, value, tone = "good" | "bad" | "key" | nil }, ... }
+H.TONE = { good = Color3.fromRGB(47, 122, 58), bad = Color3.fromRGB(166, 42, 31), key = Color3.fromRGB(154, 79, 10) }
+function H.statStrip(items)
+	add(function()
+		local strip = Instance.new("Frame")
+		strip.BackgroundTransparency = 1
+		strip.Size = UDim2.new(1, -6, 0, 50)
+		local lay = Instance.new("UIListLayout")
+		lay.FillDirection = Enum.FillDirection.Horizontal
+		lay.Padding = UDim.new(0, 6)
+		lay.SortOrder = Enum.SortOrder.LayoutOrder
+		lay.Parent = strip
+		for i, it in items do
+			local chip = Instance.new("Frame")
+			chip.LayoutOrder = i
+			chip.Size = UDim2.new(1 / #items, -6 * (#items - 1) / #items, 1, 0)
+			chip.BackgroundColor3 = Color3.fromRGB(236, 214, 170)
+			chip.BorderSizePixel = 0
+			corner(chip, 6)
+			chip.Parent = strip
+			local st = Instance.new("UIStroke")
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			st.Color = INK_EDGE
+			st.Transparency = 0.4
+			st.Parent = chip
+			local lb = Instance.new("TextLabel")
+			lb.BackgroundTransparency = 1
+			lb.Position = UDim2.fromOffset(8, 4)
+			lb.Size = UDim2.new(1, -16, 0, 16)
+			lb.Font = Enum.Font.Gotham
+			lb.TextSize = 12
+			lb.TextXAlignment = Enum.TextXAlignment.Left
+			lb.TextColor3 = INK_SOFT
+			lb.Text = it[1]
+			lb.Parent = chip
+			local vl = Instance.new("TextLabel")
+			vl.BackgroundTransparency = 1
+			vl.Position = UDim2.fromOffset(8, 20)
+			vl.Size = UDim2.new(1, -16, 0, 26)
+			vl.Font = Enum.Font.GothamBold
+			vl.TextSize = 18
+			vl.TextXAlignment = Enum.TextXAlignment.Left
+			vl.TextTruncate = Enum.TextTruncate.AtEnd
+			vl.TextColor3 = H.TONE[it.tone or "key"] or INK
+			vl.Text = it[2]
+			vl.Parent = chip
+		end
+		return strip
+	end)
+end
+
 local intelName
 local addRumorPanel
 local RENDERERS: { [string]: any } = {}
@@ -3266,28 +3337,26 @@ function RENDERERS.harbor()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
 	if h.economy then
-		add(function()
-			local e = h.economy
-			local lines = {
-				string.format("경제 국면: %s · %s", e.regimeName, h.portType or ""),
-				string.format("경기지수 %d (100=평시) · 물가지수 %d · 최근 거래 %d개", e.index, e.priceIndex, e.trade),
-				string.format("실업률 %d%% · 임금지수 %d · 금리 %.1f%%", e.unemployment, e.wage, e.interest),
-				string.format("%s 가치 %d (100=기준) · 인구 %s%d", e.currency.name, e.currency.index, if e.migration >= 0 then "유입 +" else "유출 ", e.migration),
-				string.format("학자 기술 합계 %d → 단계 %d개 이상 열린 품목에 반영", e.techSum, math.floor(e.techSum / 6)),
-			}
-			if e.festival then table.insert(lines, "축제: " .. e.festival) end
-			for _, b in e.boosts or {} do
-				table.insert(lines, string.format("부흥: %s (%d일 남음)", b.name, b.left))
-			end
-			for _, ev in e.events or {} do
-				table.insert(lines, string.format("%s: %s (%d일 남음)", if ev.kind == "disaster" then "재해" else "행운", ev.title, ev.left))
-			end
-			for i, n in e.news or {} do
-				if i <= 4 then table.insert(lines, "📰 " .. n) end
-			end
-			if h.nextProduce then table.insert(lines, string.format("다음 특산 %s: %d단계 또는 관련 학문 기술", h.nextProduce.name, h.nextProduce.level)) end
-			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
-		end)
+		local e = h.economy
+		H.statStrip({
+			{ "경기지수", tostring(e.index), tone = if e.index >= 100 then "good" else "bad" },
+			{ "물가지수", tostring(e.priceIndex), tone = "key" },
+			{ "실업률", string.format("%d%%", e.unemployment), tone = if e.unemployment > 12 then "bad" else "good" },
+			{ "인구", (if e.migration >= 0 then "+" else "") .. tostring(e.migration), tone = if e.migration >= 0 then "good" else "bad" },
+		})
+		local lines = { string.format("%s · %s · 금리 %.1f%% · %s 가치 %d", e.regimeName, h.portType or "", e.interest, e.currency.name, e.currency.index) }
+		if e.festival then table.insert(lines, "축제: " .. e.festival) end
+		for _, b in e.boosts or {} do
+			table.insert(lines, string.format("부흥: %s (%d일 남음)", b.name, b.left))
+		end
+		for _, ev in e.events or {} do
+			table.insert(lines, string.format("%s: %s (%d일 남음)", if ev.kind == "disaster" then "재해" else "행운", ev.title, ev.left))
+		end
+		for i, n in e.news or {} do
+			if i <= 2 then table.insert(lines, "소식: " .. n) end
+		end
+		if h.nextProduce then table.insert(lines, string.format("다음 특산 %s: %d단계 또는 관련 학문 기술", h.nextProduce.name, h.nextProduce.level)) end
+		add(function() return mkLabel(content, table.concat(lines, "\n"), 13, COLORS.text, false) end)
 	end
 	add(function()
 		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
@@ -4246,26 +4315,22 @@ local function openTradeHall()
 end
 
 function RENDERERS.trade()
-	if view.guide then
-		add(function()
-			return mkLabel(content, "💡 교역 요령: 이 항구의 특산품은 싸게 사고, '수요'가 높은 다른 항구에 가서 팔면 이익이 남아요. 지도 탭에서 갈 곳을 고르세요.", 14, COLORS.gold, true)
-		end)
-	end
-	add(function()
-		return mkRow(content, "교역소 입장 (별도 화면)", "상인과 마주 보고 물건을 고르고 흥정해요", {
-			{ text = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
-		}, 60)
-	end)
-	add(function()
-		return mkLabel(content, "‘암’ 버튼 = 암시장 판매: 관세 없이 +10%, 하지만 들키면 압수와 벌금(우호도가 높을수록 덜 들켜요)", 12, COLORS.muted, false)
-	end)
 	if view.rep then
-		add(function()
-			return mkLabel(content, string.format("%s 우호도 %d/100 · 되파는 비율 +%.1f%% (이 나라에 팔수록 올라요) · 관세 %.1f%%", view.rep.name, view.rep.value, view.rep.bonus * 100, view.rep.tariff * 100), 15, COLORS.text, true)
-		end)
+		local r = view.rep
+		H.statStrip({
+			{ r.name .. " 우호", string.format("%d/100", r.value), tone = if r.value >= 50 then "good" else "key" },
+			{ "되파는 비율", string.format("+%.1f%%", r.bonus * 100), tone = "good" },
+			{ "관세", string.format("%.1f%%", r.tariff * 100), tone = if r.tariff > 0.1 then "bad" else "key" },
+			{ "동료 감각", intelName(view.intel or 0), tone = "key" },
+		})
 	end
 	add(function()
-		return mkLabel(content, string.format("동료의 장사 감각: %s (동료가 있으면 시장·귀띔 정보가 정확해져요)", intelName(view.intel or 0)), 14, COLORS.muted, false)
+		return mkRow(content, "교역소 입장", "상인과 마주 보고 사고팔며 흥정해요", {
+			{ text = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
+		}, 56)
+	end)
+	add(function()
+		return mkLabel(content, "요령: 특산품은 싸게 사고, 수요가 높은 항구에서 팔아요. 암시장 판매는 관세가 없고 +10%지만 들키면 압수돼요.", 12, COLORS.muted, false)
 	end)
 	H.addStoryPanel()
 	if view.news and #view.news > 0 then
@@ -4499,11 +4564,11 @@ local function renderYard()
 		}, 64)
 	end)
 	if not yard.available then
-		add(function() return mkLabel(content, "이 항구에는 조선소가 없어서 배를 살 수 없어요. 수리도 조선소가 있는 항구에서만 할 수 있어요.", 13, COLORS.gold, false) end)
+		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
 	end
 	local rf = view.refit
 	add(function()
-		return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지비 15코인/척/일", view.fleet.price, view.fleet.needFame), {
+		return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
 			{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
 			{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
 		}, 84)
@@ -4511,7 +4576,7 @@ local function renderYard()
 	-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
 	add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
 	add(function()
-		return mkLabel(content, string.format("화물칸이 더해져요(+%d) · 속도는 가장 느린 배에 맞춰져요(%d) · 해전에서 포와 선체가 보태져요 · 유지비 %d코인/척/일 · 다음 배는 명성 %d 필요", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
+		return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
 	end)
 	for _, f in view.fleet.ships do
 		add(function()
@@ -4534,7 +4599,7 @@ local function renderYard()
 	end
 	add(function() return mkHeader(content, string.format("개조 (우리 배: 등급 %d · %s)", rf.class, rf.className)) end)
 	add(function()
-		return mkLabel(content, "새 배를 사면 대포와 보강은 초기화돼요. 대포가 무거울수록 화물칸이 줄어요.", 12, COLORS.muted, false)
+		return mkLabel(content, "새 배를 사면 개조가 초기화돼요. 대포가 무거울수록 화물이 줄어요.", 12, COLORS.muted, false)
 	end)
 	for _, c in rf.cannons do
 		add(function()
@@ -5653,7 +5718,7 @@ function RENDERERS.quest()
 	end
 	add(function() return mkHeader(content, string.format("📖 일지 · 진행 중 %d", #view.quests.active)) end)
 	if #view.quests.active == 0 then
-		add(function() return mkLabel(content, "아직 적힌 이야기가 없어요. 항구에서 소문을 듣거나 사람들과 이야기를 나눠 보세요.", 13, COLORS.muted, true) end)
+		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
 	end
 	for _, q in view.quests.active do
 		add(function()
@@ -5661,7 +5726,7 @@ function RENDERERS.quest()
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
-			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인 (조건을 채우면 자동 지급)", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 124 else 76)
+			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 124 else 76)
 		end)
 	end
 	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
@@ -5679,7 +5744,7 @@ function RENDERERS.quest()
 	end
 	if (view.quests.otherPortDeliver or 0) > 0 or #view.quests.available > #autos then
 		add(function()
-			return mkLabel(content, "아직 모르는 의뢰와 이야기가 더 있어요. 다른 항구의 소문과 사람들에게서 듣게 돼요.", 12, COLORS.muted, true)
+			return mkLabel(content, "다른 항구의 소문과 사람들에게서 더 많은 의뢰를 들을 수 있어요.", 12, COLORS.muted, true)
 		end)
 	end
 	if #view.quests.done > 0 then
