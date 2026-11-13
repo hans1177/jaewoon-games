@@ -635,6 +635,8 @@ function Pose.makeR15Action(model, state, progress, t)
 	end
 	local p = math.clamp(tonumber(progress) or 0, 0, 1)
 	local time = tonumber(t) or 0
+	-- t는 걸음거리/동작 위상일 수도 있으므로 실제 경과시간으로 보간한다.
+	local blendTime = os.clock()
 	local blend = r15ActionBlends[model]
 	if not blend then
 		blend = { state = state, applied = {} }
@@ -642,7 +644,7 @@ function Pose.makeR15Action(model, state, progress, t)
 	elseif blend.state ~= state then
 		-- 이전 프레임의 실제 관절 자세에서 새 동작으로 부드럽게 이어진다.
 		blend.from = table.clone(blend.applied)
-		blend.changedAt = time
+		blend.changedAt = blendTime
 		blend.state = state
 	end
 	local A = CFrame.Angles
@@ -713,7 +715,7 @@ function Pose.makeR15Action(model, state, progress, t)
 	end
 	-- 히트/공격은 반응성을 유지하고, 일반 자세만 조금 더 길게 연결한다.
 	local duration = if state == "attack" or state == "hurt" then 0.10 else 0.18
-	local elapsed = if blend.from then math.clamp((time - blend.changedAt) / duration, 0, 1) else 1
+	local elapsed = if blend.from then math.clamp((blendTime - blend.changedAt) / duration, 0, 1) else 1
 	local eased = elapsed * elapsed * (3 - 2 * elapsed)
 	for _, joint in m do
 		if joint and joint:IsA("Motor6D") then
