@@ -874,3 +874,23 @@ test('Mare eu_03 galleon source separates active art channels without changing c
   assert.match(uploader,/approvedImages\[id\] !== hash/);
   assert.match(uploader,/assetType: image \? 'Image' : 'Model'/);
 });
+
+test('Mare galleon card moves original sail and flag meshes at up to 60fps without adding a render loop',()=>{
+  const file='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau';
+  const source=fs.readFileSync(file,'utf8');
+  assert.match(source,/eu_03 = \{ art="CardArt\/event_chart_west_europe", prop=\{"Naval","ship-pirate-large"\}, motion="fire"/);
+  assert.match(source,/local activeGalleonViews = 0/);
+  assert.match(source,/activeGalleonViews < 2/);
+  assert.match(source,/local interval = if focused or card\.id == "eu_03" then 1 \/ 60 else 1 \/ 30/);
+  assert.match(source,/elapsed \+= math\.max\(0, dt\)/);
+  assert.match(source,/rest = propPivot:ToObjectSpace\(part\.CFrame\)/);
+  assert.match(source,/local yaw = \(if item\.kind == "flag" then 0\.16 else 0\.055\) \* math\.sin\(phase\)/);
+  assert.match(source,/item\.part\.CFrame = shipFrame \* item\.rest \* CFrame\.Angles\(pitch, yaw, 0\)/);
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,2,
+    'keep existing shared card motion and naval scene loops, no per-card render connection');
+  assert.match(source,/cardMotionStep:Disconnect\(\)/);
+  assert.match(source,/if card\.id == "eu_03" then activeGalleonViews = math\.max\(0, activeGalleonViews - 1\) end/);
+  assert.doesNotMatch(source,/RunService:Set3dRenderingEnabled\(false\)/);
+  const cards=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
+  assert.match(cards,/B\.Units\.eu_03 = \{[^\n]+row="cannon", power=6, weapon="cannon", ability="armor"/);
+});
