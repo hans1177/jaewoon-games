@@ -1,15 +1,140 @@
 {
- "sourceRevision": "5bfb5f3dd3898d05382f1ca7829c17df1ba8b617",
+ "sourceRevision": "9a5f657f9f170dcb4361f50658759f5cb10528f0",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "OBJ MareEssentiaGui.Hud Frame vis=false 0,0 1136x322 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame Frame vis=true 8,8 262x114 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,10 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,33 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,56 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 80,84 130x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.Frame Frame vis=true 80,84 130x6 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabel TextLabel vis=true 78,93 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,11 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,34 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,57 184x22 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.TextLabelShadow TextLabel vis=true 79,94 184x20 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame Frame vis=true 15,17 56x82 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,121 48x18 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,140 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.TextLabel TextLabel vis=false 19,159 48x16 bgT=1 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace Frame vis=true 17,40 52x34 bgT=0 stroke=true\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 17,40 52x34 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 27,46 21x21 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 32,48 18x18 bgT=0 stroke=false\nOBJ MareEssentiaGui.Hud.Frame.Frame.ChipFace.Frame Frame vis=true 48,54 6x6 bgT=0 stroke=false\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "parts=1925 meshparts=1687 models=1764 houses=11\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=4.999998092651367\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "capture": "08_harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "capture": "08_harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "capture": "08_harbor_npc_sparring_08",
+   "files": 1
   }
  ],
  "errors": [],
@@ -24,13 +149,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 4,
-  "completedSteps": 4,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 0,
-  "capturedFrames": 0,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
