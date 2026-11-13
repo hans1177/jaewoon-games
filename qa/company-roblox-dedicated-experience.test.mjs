@@ -366,7 +366,11 @@ test('Studio Auto QA routes Mare publisher by workflow path without launching Fo
   assert.ok(qa.includes('contains(" · fantasy-survival ·")')); // 기존 대기 마력숲 Studio는 취소만 한다.
   assert.doesNotMatch(qa,/gh workflow run devloop-studio\.yml[^\n]*fantasy-survival/);
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
-  assert.ok(!qa.includes('schedule:'));
+  // 승인된 대항해시대 단일 일일 정밀검사는 유지하되 중복 예약을 방지한다.
+  assert.match(qa,/  schedule:\n    - cron: '43 3 \* \* \*'/);
+  assert.equal(qa.split('  schedule:').length-1,1);
+  assert.match(qa,/if \[ "\$GITHUB_EVENT_NAME" = "schedule" \]; then/);
+  assert.match(qa,/STUDIO_DEEP_QA_SKIP=RECENT_FULL/);
 });
 
 // [배포키 일원화] 차단된 기존 API 키를 마력숲 에셋 자동 복구에서 재사용하지 않는다.
