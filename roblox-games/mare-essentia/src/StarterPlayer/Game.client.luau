@@ -11,10 +11,6 @@ local player = Players.LocalPlayer
 local overview = true -- 항구 전경(고정 시점) / 걷기 전환
 local sceneSpawn = nil
 local H: { [string]: any } = {} -- 화면 보조 상태는 사용 전 먼저 준비한다. 제목/아이콘 런타임 오류 방지.
--- 기본 채팅창은 쓰지 않는다: 왼쪽 위에 빈 둥근 테두리가 남아 HUD가 지저분해 보이던 원인이다.
-pcall(function()
-	game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
-end)
 local gui = Instance.new("ScreenGui")
 gui.Name = "MareEssentiaGui"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
