@@ -303,8 +303,12 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			p.Anchored = true
 			p.CanCollide = solid == true
 			p.CanTouch = false
-			if tint and p:IsA("MeshPart") then
+			if tint then
 				p.Color = tint
+				-- Part + SpecialMesh 형태로 수입된 모델은 메시의 VertexColor 로 곱한다
+				for _, ch in p:GetChildren() do
+					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+				end
 				-- 질감(SurfaceAppearance)이 있는 모델은 MeshPart.Color 가 무시되므로 질감 쪽 색도 함께 곱한다
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
 				if sa then sa.Color = tint end
