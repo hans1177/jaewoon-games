@@ -274,8 +274,10 @@ local ANIMAL_TINT = {
 	elephant = Color3.fromRGB(128, 126, 130),
 }
 local ASSET_TINT = {
-	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(58, 108, 70), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
-	["plant-bush"] = Color3.fromRGB(78, 128, 58), tree_large = Color3.fromRGB(70, 124, 76), tree_tiny = Color3.fromRGB(76, 130, 80),
+	["tree-oak"] = Color3.fromRGB(255, 238, 120), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	["plant-bush"] = Color3.fromRGB(78, 128, 58), -- 수입 나무의 잎 질감이 청록색이라, 노란 기운을 곱해 자연스러운 초록으로 만든다
+	tree_large = Color3.fromRGB(255, 238, 120), tree_tiny = Color3.fromRGB(255, 238, 120), tree = Color3.fromRGB(255, 238, 120),
+	["tree-high"] = Color3.fromRGB(255, 238, 120), ["tree-crooked"] = Color3.fromRGB(255, 238, 120),
 	["crops-wheatstagea"] = Color3.fromRGB(216, 184, 92), ["crops-wheatstageb"] = Color3.fromRGB(176, 190, 92), ["crops-cornstagec"] = Color3.fromRGB(150, 172, 72),
 	["crop-carrot"] = Color3.fromRGB(230, 128, 48), ["crop-melon"] = Color3.fromRGB(110, 168, 78), ["crop-pumpkin"] = Color3.fromRGB(230, 138, 40), ["crop-turnip"] = Color3.fromRGB(226, 214, 232),
 }
