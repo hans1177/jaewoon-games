@@ -720,6 +720,7 @@ local function palmOk(portId, style)
 end
 
 -- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
+local IDLE_POOL = { "talk", "lean", "point", "wave", "talk", "write" } -- 멈춰 선 주민이 저마다 다른 동작을 한다
 local stallSpots = {}
 local SKIN_HAIR = { Color3.fromRGB(48, 36, 30), Color3.fromRGB(86, 60, 40), Color3.fromRGB(150, 110, 60), Color3.fromRGB(30, 28, 30) }
 local GRAY_HAIR = Color3.fromRGB(206, 204, 200)
@@ -2761,7 +2762,7 @@ function PortScene.build(info, onFacility)
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
 				Pose.makeR15Action(w.model, if moving then "walk" else "idle", 0, now * w.speed + w.phase)
 				if not moving then
-					Pose.work(w.model, w.idleKind or "talk", now + w.phase)
+					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor(w.phase * 7) % #IDLE_POOL) + 1], now + w.phase)
 				elseif w.kind then
 					Pose.work(w.model, w.kind, now + w.phase)
 				elseif w.elder then

@@ -522,6 +522,39 @@ function Pose.work(model, kind, t)
 		local g = math.max(0, math.sin(t * 1.4))
 		set(m.rightArm, A(-0.5 - g * 1.2, 0, -0.5)); set(m.rightElbow, A(-0.5, 0, 0))
 		set(m.leftArm, A(-0.3, 0, 0.25)); set(m.neck, A(0, math.sin(t * 0.7) * 0.4, 0))
+	elseif kind == "write" then
+		-- 장부 쓰기: 고개를 숙이고 오른손이 작게 움직인다
+		set(m.waist, A(0.2, 0, 0)); set(m.neck, A(0.3, 0, 0))
+		set(m.leftArm, A(-0.9, 0, 0.25)); set(m.leftElbow, A(-1.0, 0, 0))
+		set(m.rightArm, A(-1.0, 0, -0.1)); set(m.rightElbow, A(-1.1 + math.sin(t * 6) * 0.08, 0, 0))
+	elseif kind == "lift" then
+		-- 짐 들었다 놓기: 허리 숙여 들어올림
+		local s = (math.sin(t * 1.3) + 1) / 2
+		set(m.waist, A(0.6 - s * 0.55, 0, 0))
+		set(m.leftArm, A(-0.4 - s * 1.0, 0, 0.1)); set(m.rightArm, A(-0.4 - s * 1.0, 0, -0.1))
+		set(m.leftElbow, A(-0.3 - s * 0.8, 0, 0)); set(m.rightElbow, A(-0.3 - s * 0.8, 0, 0))
+		set(m.leftKnee, A(-0.5 + s * 0.4, 0, 0)); set(m.rightKnee, A(-0.5 + s * 0.4, 0, 0))
+		set(m.leftLeg, A(0.35 - s * 0.3, 0, 0)); set(m.rightLeg, A(0.35 - s * 0.3, 0, 0))
+	elseif kind == "wave" then
+		-- 멀리 인사
+		local g = math.sin(t * 5)
+		set(m.rightArm, A(-2.5, 0, -0.35 + g * 0.3)); set(m.rightElbow, A(-0.5 + g * 0.2, 0, 0))
+		set(m.neck, A(0, 0.15, 0))
+	elseif kind == "point" then
+		-- 손가락으로 가리키며 설명
+		local g = math.max(0, math.sin(t * 0.8))
+		set(m.rightArm, A(-1.5 * (0.3 + g * 0.7), 0, -0.5 * g)); set(m.rightElbow, A(-0.1, 0, 0))
+		set(m.neck, A(0, math.sin(t * 0.4) * 0.4, 0)); set(m.leftArm, A(-0.2, 0, 0.3))
+	elseif kind == "lean" then
+		-- 벽에 기대 쉼: 팔짱
+		set(m.waist, A(-0.1, 0.1, 0)); set(m.root, CFrame.new(0, 0, 0.15) * A(-0.08, 0, 0))
+		set(m.leftArm, A(-0.8, 0, -0.5)); set(m.rightArm, A(-0.8, 0, 0.5))
+		set(m.leftElbow, A(-1.5, 0, 0)); set(m.rightElbow, A(-1.5, 0, 0))
+		set(m.neck, A(0, math.sin(t * 0.5) * 0.35, 0)); set(m.leftLeg, A(0.1, 0, 0.05)); set(m.rightLeg, A(-0.15, 0, -0.05))
+	elseif kind == "pray" then
+		set(m.waist, A(0.18, 0, 0)); set(m.neck, A(0.35, 0, 0))
+		set(m.leftArm, A(-1.0, 0, -0.15)); set(m.rightArm, A(-1.0, 0, 0.15))
+		set(m.leftElbow, A(-1.5, 0, 0)); set(m.rightElbow, A(-1.5, 0, 0))
 	elseif kind == "bell" then
 		local s = math.max(0, math.sin(t * 1.2))
 		set(m.rightArm, A(-2.2 + s * 0.6, 0, -0.1)); set(m.leftArm, A(-2.2 + s * 0.6, 0, 0.1))
