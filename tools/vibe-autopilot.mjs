@@ -44,6 +44,9 @@ export const GAMES = {
       portcompare: M + 'mare-portcompare.json',
       town: M + 'mare-town.json',
       cards: M + 'mare-cards.json',
+      facilities: M + 'mare-facilities.json',
+      holes: M + 'mare-holes.json',
+      poselab: M + 'mare-poselab.json',
       assetsizes: M + 'asset-sizes.json'
     }
   }
@@ -65,6 +68,9 @@ export const KINDS = {
   ports: { base: 2, cooldown: 12 * 60, area: '시작 항구 점검', group: 'world' },
   portcompare: { base: 2, cooldown: 12 * 60, area: '항구 비교 점검', group: 'world' },
   cards: { base: 4, cooldown: 3 * 60, area: '카드 화면(덱·연습전·지상전 손패) 점검', group: 'cards' },
+  facilities: { base: 4, cooldown: 4 * 60, area: '시설 창 6개 열어 글자 잘림·겹침 점검', group: 'ui' },
+  holes: { base: 6, cooldown: 6 * 60, area: '마을 바닥 구멍 위치 탐지', group: 'background' },
+  poselab: { base: 6, cooldown: 6 * 60, area: 'NPC 관절 방향 측정', group: 'combat' },
   town: { base: 2.5, cooldown: 10 * 60, area: '마을 배경 점검', group: 'background' },
   region: { base: 2.5, cooldown: 10 * 60, area: '지역별 배경 점검', group: 'background' },
   sky: { base: 2, cooldown: 12 * 60, area: '하늘·대기 점검', group: 'background' },
