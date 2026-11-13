@@ -1,0 +1,1755 @@
+{
+ "sourceRevision": "81e87402094dd4023b1eb4ec211c9ceeaafa1f2e",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "SCROLLED 새로운 항해\ntext"
+  },
+  {
+   "step": 5,
+   "click": "title01",
+   "at": "896,154",
+   "out": "896,154 CLICK=새로운 항해\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 896,
+      "y": 154
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 7,
+   "capture": "t01",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "SCROLLED 프랑스\ntext"
+  },
+  {
+   "step": 10,
+   "click": "title02",
+   "at": "1001,66",
+   "out": "1001,66 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1001,
+      "y": 66
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 12,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓  출항하기\ntext"
+  },
+  {
+   "step": 15,
+   "click": "title03",
+   "at": "792,262",
+   "out": "792,262 CLICK=⚓  출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 792,
+      "y": 262
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 17,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "intro_done",
+   "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 선장 | 선장실 | 999989515 | 상태 | 동료 | 초상화가 완성되었다 | ◆ 선박\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 24,
+   "capture": "tab_harbor",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 상인 길드 | 교역소 | 999989515 | 교역 | 항구 | ◆ 이스탄불 · 작은 정박지 (1단계) | 특산: 사프란, 비단\n수요: 양모, 모피\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "tab trade\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "tab_trade",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 상인 길드 | 교역소 | 999989515 | 교역 | 항구 | 💡 교역 요령: 이 항구의 특산품은 싸게 사고, '수요'가 높은 다른 항 | 교역소 입장 (별도 화면)\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "tab route\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "tab_route",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 항만 관리관 | 항만청 | 999989515 | 항해 | 일지 | 오늘 날씨: 역풍 (바람 x0.85) — 맞바람이에요. 시간이 더 걸려요 | 하루 기다리기\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "tab map\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "tab_map",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 항만 관리관 | 항만청 | 999989515 | 항해 | 일지 | ◆ 항해 일지 | 오스만 제국 · 1650년 0일째 · 이스탄불에 정박 중\n코인 99998\ntext"
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "tab yard\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "tab_yard",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 조선 장인 | 조선소 | 999989515 | 조선소 | 정비와 보급 | 수리 2코인/1 · 선원 8코인/명 · 보급품 4코인/개 | 수리\ntext"
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "tab quest\ntext"
+  },
+  {
+   "step": 44,
+   "capture": "tab_quest",
+   "files": 1
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 주점 주인 | 주점 | 999989515 | 퀘스트 | 탐험 | 전투 | ◆ 📖 일지 · 진행 중 5\ntext"
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 48,
+   "capture": "tab_explore",
+   "files": 1
+  },
+  {
+   "step": 49,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 주점 주인 | 주점 | 999989515 | 퀘스트 | 탐험 | 전투 | ◆ 탐험 지점\ntext"
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "tab battle\ntext"
+  },
+  {
+   "step": 52,
+   "capture": "tab_battle",
+   "files": 1
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 주점 주인 | 주점 | 999989515 | 퀘스트 | 탐험 | 전투 | 사략선 사냥\ntext"
+  },
+  {
+   "step": 54,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 56,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 57,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 학자 | 학자의 서재 | 999989515 | 백과사전 | 연구 | 세계 백과 | 발견 0 / 784\ntext"
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 60,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 학자 | 학자의 서재 | 999989515 | 백과사전 | 연구 | 증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 | 증기 펌프\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 64,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 선장 | 선장실 | 999989515 | 상태 | 동료 | ◆ 선박 | 플루트선\ntext"
+  },
+  {
+   "step": 66,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 68,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 69,
+   "ctx": "Client",
+   "out": "TEXTS: 여기를 클릭하거나 \"/\" 키를 누른 후 채팅을 시작하세요 | Leave channel <XX>? | 채팅창에 '/?' 또는 '/help'를 입력하면 채팅 명령어 목록을 볼  | 이스탄불 · 선장 | 선장실 | 999989515 | 상태 | 동료 | ◆ 지상전 병종과 개인 장비 | 새 선장\ntext"
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "TAC_NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 71,
+   "ctx": "Server",
+   "out": "TAC_START ok=true msg=들판 한가운데 산적들이 길을 막고 있다. 낮은 둔덕을 차지하고 맞서자.\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "TAC_VIEW tactics=true\ntext"
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "x\ntext"
+  },
+  {
+   "step": 76,
+   "capture": "t0_explore",
+   "files": 1
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "TAC_OPEN TACTICS_OPEN true nil\ntext"
+  },
+  {
+   "step": 79,
+   "capture": "t1_board",
+   "files": 1
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "TAC_UI gui=true tiles=115 units=8\ntext"
+  },
+  {
+   "step": 81,
+   "click": "luau",
+   "at": "473,32",
+   "out": "473,32\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 473,
+      "y": 32
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 83,
+   "capture": "t2_selected",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 85,
+   "click": "luau",
+   "at": "491,32",
+   "out": "491,32\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 491,
+      "y": 32
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 87,
+   "capture": "t3_move_chosen",
+   "files": 1
+  },
+  {
+   "step": 88,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 89,
+   "click": "luau",
+   "at": "1015,282",
+   "out": "1015,282\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1015,
+      "y": 282
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 91,
+   "capture": "t4_waited",
+   "files": 1
+  },
+  {
+   "step": 92,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 93,
+   "click": "luau",
+   "at": "1015,282",
+   "out": "1015,282\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1015,
+      "y": 282
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 95,
+   "capture": "t5_enemy_turn",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 97,
+   "ctx": "Client",
+   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   1/12턴 (내 턴) ERR n=0 first=\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "v1_start",
+   "files": 1
+  },
+  {
+   "step": 102,
+   "capture": "v2_event",
+   "files": 1
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=567.9951171875, 230.54159545898438, 57.0234375 on=true parent=VoyageScene fog=2280.489990234375 brightness=2.028263568878174 atmo=0.3700000047683716 camdist=57.56911849975586\ntext"
+  },
+  {
+   "step": 105,
+   "capture": "v3_event2",
+   "files": 1
+  },
+  {
+   "step": 107,
+   "capture": "v4_late",
+   "files": 1
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "nil\ntext"
+  },
+  {
+   "step": 109,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 111,
+   "capture": "b1_start",
+   "files": 1
+  },
+  {
+   "step": 113,
+   "capture": "b2_mid",
+   "files": 1
+  },
+  {
+   "step": 114,
+   "ctx": "Client",
+   "out": "LOGS(6): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+  },
+  {
+   "step": 115,
+   "ctx": "Server",
+   "out": "LOGS(18): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/event_angkor rbxassetid://90783710214595 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_anglo_dutch_war rbxassetid://113404061062686 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_boston_tea rbxassetid://109655723686183 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_bumper_harvest rbxassetid://111084199034741 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_calm_seas rbxassetid://86783464374932 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canal_opened rbxassetid://106273212786026 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_canton_system rbxassetid://106942780605150 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_cape_colony rbxassetid://119155445382706 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_caribbean rbxassetid://96282600339572 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_east_asia rbxassetid://108128417584636 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_indian_ocean rbxassetid://96896200287224 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/event_chart_mediterranean rbxassetid://112821491289063 status=TIMEOUT_16S\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 118,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=3.514714241027832\ntext"
+  },
+  {
+   "step": 121,
+   "capture": "harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 123,
+   "capture": "harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "capture": "harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 127,
+   "capture": "harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 129,
+   "capture": "harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 131,
+   "capture": "harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 133,
+   "capture": "harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 135,
+   "capture": "harbor_npc_sparring_08",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 136,
+  "completedSteps": 136,
+  "plannedClicks": 7,
+  "successfulClicks": 7,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 37,
+  "capturedFrames": 37,
+  "abortedEarly": false
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 233040,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 260162,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "새로운 항해",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 259935,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 129041,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0162057876586914,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_done",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 184437,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0194337368011475,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157199,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.021470308303833,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_trade",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 200926,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0235939025878906,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_route",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 203431,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 202583,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_yard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 204337,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_quest",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 208778,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 206557,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_battle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 207930,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 193361,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 203666,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 191879,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 199582,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t0_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 73972,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t1_board",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 73972,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t2_selected",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 72344,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t3_move_chosen",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 72413,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t4_waited",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 70240,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t5_enemy_turn",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 70240,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 104633,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v2_event",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98719,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v3_event2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101572,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v4_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 4289,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 111099,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b2_mid",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 202638,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 188751,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 192415,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 191063,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_04",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 189863,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_05",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 192790,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_06",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 190569,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_07",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 193145,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_08",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 196095,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  }
+ ],
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 591,
+   "errors": [],
+   "failed": 0,
+   "registered": 591
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 365,
+   "models": 591,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 956,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://90783710214595",
+      "key": "AssetIds.CardArt/event_angkor",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://113404061062686",
+      "key": "AssetIds.CardArt/event_anglo_dutch_war",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://109655723686183",
+      "key": "AssetIds.CardArt/event_boston_tea",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://111084199034741",
+      "key": "AssetIds.CardArt/event_bumper_harvest",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://86783464374932",
+      "key": "AssetIds.CardArt/event_calm_seas",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://106273212786026",
+      "key": "AssetIds.CardArt/event_canal_opened",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://106942780605150",
+      "key": "AssetIds.CardArt/event_canton_system",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://119155445382706",
+      "key": "AssetIds.CardArt/event_cape_colony",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://96282600339572",
+      "key": "AssetIds.CardArt/event_chart_caribbean",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://108128417584636",
+      "key": "AssetIds.CardArt/event_chart_east_asia",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://96896200287224",
+      "key": "AssetIds.CardArt/event_chart_indian_ocean",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://112821491289063",
+      "key": "AssetIds.CardArt/event_chart_mediterranean",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
+   },
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "PASS",
+   "coverage": {
+    "Visit": {
+     "invalid": 0,
+     "rejected": 46,
+     "accepted": 0,
+     "calls": 46
+    },
+    "BuyFleetShip": {
+     "invalid": 0,
+     "rejected": 4,
+     "accepted": 2,
+     "calls": 6
+    },
+    "VoyageBonus": {
+     "invalid": 0,
+     "rejected": 181,
+     "accepted": 0,
+     "calls": 181
+    },
+    "PlayStory": {
+     "invalid": 0,
+     "rejected": 224,
+     "accepted": 3,
+     "calls": 227
+    },
+    "Hunt": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Audience": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "BuyShip": {
+     "invalid": 0,
+     "rejected": 5,
+     "accepted": 1,
+     "calls": 6
+    },
+    "HireCrew": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyPlating": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyMap": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "NewGame": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "WaitDay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "SetSpecialty": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 5,
+     "calls": 5
+    },
+    "Talk": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 2,
+     "calls": 49
+    },
+    "Borrow": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "QAGrant": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Sell": {
+     "invalid": 0,
+     "rejected": 49,
+     "accepted": 21,
+     "calls": 70
+    },
+    "Buy": {
+     "invalid": 0,
+     "rejected": 49,
+     "accepted": 21,
+     "calls": 70
+    },
+    "Repair": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Sail": {
+     "invalid": 0,
+     "rejected": 176,
+     "accepted": 5,
+     "calls": 181
+    },
+    "Research": {
+     "invalid": 0,
+     "rejected": 6,
+     "accepted": 0,
+     "calls": 6
+    },
+    "Withdraw": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuySupplies": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "DismissEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ToggleGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "VoyageChoice": {
+     "invalid": 0,
+     "rejected": 179,
+     "accepted": 2,
+     "calls": 181
+    },
+    "ResolveBattle": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Repay": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Recruit": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 2,
+     "calls": 49
+    },
+    "Accept": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 5,
+     "calls": 8
+    },
+    "Feast": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "TalkChoice": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyInsurance": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "State": {
+     "invalid": 0,
+     "rejected": 2,
+     "accepted": 0,
+     "calls": 2
+    },
+    "Rumor": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ChallengeBoss": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 0,
+     "calls": 3
+    },
+    "Deposit": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyLicense": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Haggle": {
+     "invalid": 0,
+     "rejected": 45,
+     "accepted": 24,
+     "calls": 69
+    },
+    "Explore": {
+     "invalid": 0,
+     "rejected": 553,
+     "accepted": 0,
+     "calls": 553
+    },
+    "BuyCannon": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 2,
+     "calls": 5
+    }
+   },
+   "observed": {
+    "naval-resolved": 1,
+    "quest-accepted": 5,
+    "voyage-arrived": 5,
+    "naval-encounter": 1
+   },
+   "calls": 1751,
+   "issues": [],
+   "rejected": 1629,
+   "failed": 0,
+   "accepted": 119
+  }
+ },
+ "assetRegistryAudit": {
+  "registered": 874,
+  "activeIds": 874,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 283,
+  "soundExpected": 82,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 7,
+  "loaded": 283,
+  "soundLoaded": 82
+ },
+ "assetOwnership": {
+  "reportedFailedIds": [
+   "90783710214595",
+   "113404061062686",
+   "109655723686183",
+   "111084199034741",
+   "86783464374932",
+   "106273212786026",
+   "106942780605150",
+   "119155445382706",
+   "96282600339572",
+   "108128417584636",
+   "96896200287224",
+   "112821491289063"
+  ],
+  "contexts": {
+   "Server": {
+    "owners": {
+     "112821491289063": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_mediterranean"
+      ]
+     },
+     "111084199034741": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_bumper_harvest"
+      ]
+     },
+     "96282600339572": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_caribbean"
+      ]
+     },
+     "96896200287224": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_indian_ocean"
+      ]
+     },
+     "109655723686183": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_boston_tea"
+      ]
+     },
+     "106942780605150": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_canton_system"
+      ]
+     },
+     "90783710214595": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_angkor"
+      ]
+     },
+     "113404061062686": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_anglo_dutch_war"
+      ]
+     },
+     "106273212786026": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_canal_opened"
+      ]
+     },
+     "108128417584636": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_east_asia"
+      ]
+     },
+     "119155445382706": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_cape_colony"
+      ]
+     },
+     "86783464374932": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_calm_seas"
+      ]
+     }
+    },
+    "scanned": 9880,
+    "contentRefs": 1712,
+    "complete": true
+   },
+   "Client": {
+    "owners": {
+     "112821491289063": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_mediterranean"
+      ]
+     },
+     "111084199034741": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_bumper_harvest"
+      ]
+     },
+     "96282600339572": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_caribbean"
+      ]
+     },
+     "96896200287224": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_indian_ocean"
+      ]
+     },
+     "109655723686183": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_boston_tea"
+      ]
+     },
+     "106942780605150": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_canton_system"
+      ]
+     },
+     "90783710214595": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_angkor"
+      ]
+     },
+     "113404061062686": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_anglo_dutch_war"
+      ]
+     },
+     "106273212786026": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_canal_opened"
+      ]
+     },
+     "108128417584636": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_chart_east_asia"
+      ]
+     },
+     "119155445382706": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_cape_colony"
+      ]
+     },
+     "86783464374932": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/event_calm_seas"
+      ]
+     }
+    },
+    "scanned": 25001,
+    "contentRefs": 4055,
+    "complete": false
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 37,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
