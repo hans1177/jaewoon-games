@@ -81,8 +81,18 @@ local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
 -- 기본 채팅창이 게임 창 위 탭을 가려서 끈다 (이 게임은 채팅이 필요 없다)
-pcall(function()
-	game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
+task.spawn(function()
+	-- 시작 직후에는 코어 UI가 아직 준비되지 않아 한 번에 실패할 수 있어서 여러 번 시도하고, 남은 기본 채팅창은 지운다.
+	for _ = 1, 20 do
+		pcall(function()
+			game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
+		end)
+		local legacyChat = player:FindFirstChild("PlayerGui") and player.PlayerGui:FindFirstChild("Chat")
+		if legacyChat then
+			legacyChat:Destroy()
+		end
+		task.wait(0.5)
+	end
 end)
 pcall(function()
 	local tcs = game:GetService("TextChatService")
@@ -1382,12 +1392,12 @@ local function hudText(parent, pos, size, textSize, color, align)
 end
 
 -- [왼쪽 정보] 날짜 · 코인 · 항구 · 내구도 · 화물을 일정 간격으로 표시한다.
-H.hudName = hudText(card, UDim2.fromOffset(70, 2), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(47, 30, 20))
-H.hudCoin = hudText(card, UDim2.fromOffset(70, 25), UDim2.new(1, -78, 0, 22), 16, Color3.fromRGB(91, 49, 20))
-H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 22), 15, Color3.fromRGB(56, 40, 27))
+H.hudName = hudText(card, UDim2.fromOffset(70, 8), UDim2.new(1, -78, 0, 20), 16, Color3.fromRGB(47, 30, 20))
+H.hudCoin = hudText(card, UDim2.fromOffset(70, 28), UDim2.new(1, -78, 0, 20), 16, Color3.fromRGB(91, 49, 20))
+H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 20), 15, Color3.fromRGB(56, 40, 27))
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
-hullBack.Position = UDim2.fromOffset(72, 76)
+hullBack.Position = UDim2.fromOffset(72, 72)
 hullBack.Size = UDim2.fromOffset(130, 6)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
@@ -1398,7 +1408,7 @@ hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 2)
-H.hudShip = hudText(card, UDim2.fromOffset(70, 85), UDim2.new(1, -78, 0, 20), 14, Color3.fromRGB(54, 37, 25))
+H.hudShip = hudText(card, UDim2.fromOffset(70, 76), UDim2.new(1, -78, 0, 16), 14, Color3.fromRGB(54, 37, 25))
 -- 글자 그림자: 글자 바깥에 번지는 효과(UIStroke) 대신 같은 글자를 1픽셀 아래에 어둡게 깔아 또렷하게 읽히게 한다.
 function H.shadowOf(label: TextLabel)
 	local sh = label:Clone()
@@ -1456,6 +1466,11 @@ corner(coinCard, 10)
 hudStroke(coinCard, 2)
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
+-- 시스템 4개는 시설 6개와 색으로 구분한다(같은 원화를 쓰는 곳은 색을 바꿔 중복처럼 안 보이게).
+local HUD_MENU_TINT = {
+	view = Color3.fromRGB(196, 222, 246), gear = Color3.fromRGB(196, 222, 246),
+	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
+}
 local HUD_MENU_ART = {
 	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
 	view = "view", trade = "trade", crew = "harbor", route = "route",
@@ -1484,7 +1499,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Size = UDim2.fromOffset(artSize, artSize)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(artId)
-			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else Color3.fromRGB(255, 240, 204)
+			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204))
 			art.ImageTransparency = if i == 1 then 0.45 else 0
 			art.ScaleType = Enum.ScaleType.Fit
 			art.ZIndex = i
@@ -1527,6 +1542,24 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	return button
 end
 
+-- 오른쪽 아이콘은 로블록스 상단 바 높이를 무시하고 화면 맨 위에 붙인다(왼쪽 카드는 기존 위치 유지).
+local hudTopGui = Instance.new("ScreenGui")
+hudTopGui.Name = "MareEssentiaHudTop"
+hudTopGui.ResetOnSpawn = false
+hudTopGui.IgnoreGuiInset = true
+hudTopGui.DisplayOrder = gui.DisplayOrder
+hudTopGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+hudTopGui.Enabled = hud.Visible
+hudTopGui.Parent = player:WaitForChild("PlayerGui")
+local hudTop = Instance.new("Frame")
+hudTop.Name = "HudTop"
+hudTop.BackgroundTransparency = 1
+hudTop.Size = UDim2.fromScale(1, 1)
+hudTop.Parent = hudTopGui
+hud:GetPropertyChangedSignal("Visible"):Connect(function()
+	hudTopGui.Enabled = hud.Visible
+end)
+
 local dock = Instance.new("ScrollingFrame")
 dock.Name = "Dock"
 dock.BackgroundTransparency = 1
@@ -1539,7 +1572,7 @@ dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
-dock.Parent = hud
+dock.Parent = hudTop
 local dockGrid = Instance.new("UIGridLayout")
 dockGrid.CellSize = UDim2.fromOffset(44, 58)
 dockGrid.CellPadding = UDim2.fromOffset(4, 4)
@@ -1568,15 +1601,15 @@ end
 local render
 local openOptions
 local SYS_Y = 170
-local gear = H.hudShortcut(hud, "OptionsButton", "gear", "설정", true)
+local gear = H.hudShortcut(hudTop, "OptionsButton", "gear", "설정", true)
 gear.AnchorPoint = Vector2.new(1, 0)
 gear.Position = UDim2.new(1, -86, 0, SYS_Y)
 do
-	local help = H.hudShortcut(hud, "HelpButton", "help", "도움말", true)
+	local help = H.hudShortcut(hudTop, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
 	help.Position = UDim2.new(1, -8, 0, SYS_Y)
 	help.Activated:Connect(function() openOptions(true) end)
-	local walk = H.hudShortcut(hud, "ViewToggle", "view", "걷기", true)
+	local walk = H.hudShortcut(hudTop, "ViewToggle", "view", "걷기", true)
 	walk.AnchorPoint = Vector2.new(1, 0)
 	walk.Position = UDim2.new(1, -242, 0, SYS_Y)
 	walk.Activated:Connect(function()
@@ -1595,7 +1628,7 @@ end)
 do
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
-	local deckBtn = H.hudShortcut(hud, "DeckButton", "deck", "내 카드", true)
+	local deckBtn = H.hudShortcut(hudTop, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
 	deckBtn.Position = UDim2.new(1, -164, 0, SYS_Y)
 	local open = nil
@@ -1896,17 +1929,17 @@ do
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
 		local rows = math.ceil(6 / cols)
 		local dockH = rows * CH + (rows - 1) * GAP
-		dock.Position = UDim2.new(1, -8, 0, 4)
+		dock.Position = UDim2.new(1, -8, 0, 6)
 		dock.Size = UDim2.fromOffset(cols * CW + (cols - 1) * GAP, dockH)
 		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "ViewToggle" }
 		for i, n in sysOrder do
-			local b = hud:FindFirstChild(n)
+			local b = hudTop:FindFirstChild(n)
 			if b then
 				b.Size = UDim2.fromOffset(CW, CH)
 				b.AnchorPoint = Vector2.new(1, 0)
 				local col = (i - 1) % cols
 				local row = math.floor((i - 1) / cols)
-				b.Position = UDim2.new(1, -8 - col * (CW + GAP), 0, 4 + dockH + GAP + row * (CH + GAP))
+				b.Position = UDim2.new(1, -8 - col * (CW + GAP), 0, 6 + dockH + GAP + row * (CH + GAP))
 			end
 		end
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
@@ -8172,6 +8205,13 @@ end
 			face.Position = UDim2.fromOffset(1, 1)
 		end
 		face.Name = "ChipFace"
+		if not face:FindFirstChildOfClass("UIStroke") then
+			local gold = Instance.new("UIStroke")
+			gold.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			gold.Color = BRASS
+			gold.Thickness = 2
+			gold.Parent = face
+		end
 	end
 
 	-- 화가가 완성한 초상을 크게 보여 준 뒤 칩으로 줄어든다
