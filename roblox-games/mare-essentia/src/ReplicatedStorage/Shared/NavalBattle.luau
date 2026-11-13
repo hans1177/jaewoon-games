@@ -1273,8 +1273,11 @@ function NavalBattle.play(opts)
 				-- [60fps 목표] 확대 카드·갈레온은 렌더 프레임마다 최대 60회, 일반 손패는 30회.
 				-- Roblox 실제 fps는 기기 실측 전까지 미검증으로 유지한다.
 				local interval = if focused or card.id == "eu_03" then 1 / 60 else 1 / 30
-				if elapsed - sampled < interval - 0.002 then return end
-				sampled = elapsed
+				local sinceSample = elapsed - sampled
+				if sinceSample < interval - 0.002 then return end
+				-- [프레임 안정성] 잔여 시간을 보존해 90/120/144Hz 기기에서도 60회 목표에 접근한다.
+				-- 긴 일시정지 뒤에는 갱신을 몰아서 처리하지 않는다.
+				sampled = if sinceSample > interval * 3 then elapsed else sampled + interval
 				local motion = spec.motion or "wind"
 				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
 				local wind = math.sin(elapsed * 1.17)
