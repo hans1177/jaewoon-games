@@ -255,6 +255,33 @@ B.Units.af_28 = { id="af_28", name="킬리만자로", category="지형·원더",
 B.Specials.af_29 = { id="af_29", name="벵겔라 해류", category="지형·원더", lore="아프리카 남서 해안을 따라 흐르는 찬 해류", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="벵겔라 해류" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·원더", lore="서아프리카에 먼지와 건조한 공기를 보내는 바람", stage={ art="CardArt/event_drought", motion="storm", scene="하르마탄 바람" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
 
+-- [175장 지역 카드 확장] 기존 30장 기본 덱·드랍 확률·전투·저장 불변. 승인 이미지 전에는 기존 도판만 사용한다.
+B.Units.eu_31 = { id="eu_31", name="코르벳", category="선박", lore="유럽 해안을 순찰하던 소형 기동 군함", stage={ art="CardArt/event_title_ship", motion="wind", scene="코르벳" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.eu_32 = { id="eu_32", name="해양 크로노미터", category="유물", lore="경도 측정을 도와 긴 항해의 위치 계산을 개선한 정밀 시계", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="해양 크로노미터" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.eu_33 = { id="eu_33", name="바다수달", category="동물", lore="차가운 북태평양 해역에 사는 해양 포유류", stage={ art="CardArt/event_chart_north_sea", motion="pounce", scene="바다수달" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.eu_34 = { id="eu_34", name="몽생미셸", category="지형·원더", lore="프랑스 노르망디 갯벌 위에 세워진 섬 수도원", stage={ art="CardArt/event_chart_west_europe", motion="clear", scene="몽생미셸" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.eu_35 = { id="eu_35", name="도버 해협", category="지형·원더", lore="영국과 프랑스 사이의 좁고 중요한 해협", stage={ art="CardArt/event_chart_north_sea", motion="clear", scene="도버 해협" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.ea_31 = { id="ea_31", name="조선 조운선", category="선박", lore="조선의 곡식과 세곡을 연안으로 실어 나르던 운송선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 조운선" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.ea_32 = { id="ea_32", name="혼천의", category="유물", lore="하늘의 움직임과 천체 위치를 관찰하던 전통 천문 기구", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="혼천의" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.ea_33 = { id="ea_33", name="두루미", category="동물", lore="동아시아 습지에 서식하는 머리 붉은 대형 두루미", stage={ art="CardArt/event_chart_east_asia", motion="pounce", scene="두루미" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.ea_34 = { id="ea_34", name="수원 화성", category="지형·원더", lore="조선 후기 수원에 축조된 성곽과 방어 시설", stage={ art="CardArt/event_chart_east_asia", motion="clear", scene="수원 화성" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.ea_35 = { id="ea_35", name="제주 주상절리", category="지형·원더", lore="제주도 해안에 형성된 현무암 기둥 절벽", stage={ art="CardArt/event_chart_east_asia", motion="clear", scene="제주 주상절리" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.me_31 = { id="me_31", name="오만 붐선", category="선박", lore="아라비아해와 인도양을 항해하던 길고 날렵한 다우선", stage={ art="CardArt/event_chart_indian_ocean", motion="wind", scene="오만 붐선" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.me_32 = { id="me_32", name="다마스쿠스 금속 세공", category="유물", lore="시리아 장인들이 제작한 정교한 금속 공예품", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="다마스쿠스 금속 세공" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.me_33 = { id="me_33", name="사막매", category="동물", lore="아라비아 사막의 하늘을 나는 사냥 매", stage={ art="CardArt/event_chart_indian_ocean", motion="pounce", scene="사막매" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.me_34 = { id="me_34", name="이스파한 이맘 광장", category="지형·원더", lore="이란 이스파한에 조성된 대규모 역사 광장", stage={ art="CardArt/event_chart_mediterranean", motion="clear", scene="이스파한 이맘 광장" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.me_35 = { id="me_35", name="와디 룸", category="지형·원더", lore="요르단 남부의 붉은 사암 절벽과 사막 계곡", stage={ art="CardArt/event_petra", motion="clear", scene="와디 룸" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.nw_31 = { id="nw_31", name="이누이트 우미악", category="선박", lore="북극 해안에서 짐과 사람을 나르던 큰 가죽배", stage={ art="CardArt/event_chart_world", motion="wind", scene="이누이트 우미악" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.nw_32 = { id="nw_32", name="마야 흑요석 거울", category="유물", lore="검은 화산유리를 연마해 만든 메소아메리카 거울", stage={ art="CardArt/event_chichen", motion="scout", scene="마야 흑요석 거울" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.nw_33 = { id="nw_33", name="북극여우", category="동물", lore="북아메리카 북극권의 겨울을 견디는 작은 여우", stage={ art="CardArt/event_chart_world", motion="pounce", scene="북극여우" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.nw_34 = { id="nw_34", name="팔렝케", category="지형·원더", lore="열대 숲에 남은 고대 마야 도시의 석조 유적", stage={ art="CardArt/event_chichen", motion="clear", scene="팔렝케" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.nw_35 = { id="nw_35", name="앙헬 폭포", category="지형·원더", lore="남아메리카 기아나 고원의 거대한 수직 폭포", stage={ art="CardArt/event_chart_south_america", motion="clear", scene="앙헬 폭포" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.af_31 = { id="af_31", name="모잠비크 다우선", category="선박", lore="동아프리카 모잠비크 연안을 따라 항해한 무역 다우선", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="모잠비크 다우선" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.af_32 = { id="af_32", name="메로에 금 장신구", category="유물", lore="고대 누비아 메로에 왕국에서 제작된 금 장신구", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="메로에 금 장신구" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.af_33 = { id="af_33", name="오카피", category="동물", lore="중앙아프리카 열대 우림에 사는 기린과 동물", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="오카피" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.af_34 = { id="af_34", name="메로에 피라미드", category="지형·원더", lore="수단 누비아의 고대 왕릉 피라미드 군", stage={ art="CardArt/event_giza", motion="clear", scene="메로에 피라미드" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.af_35 = { id="af_35", name="나미브 사막", category="지형·원더", lore="아프리카 남서부 대서양 해안을 따라 펼쳐진 사막", stage={ art="CardArt/event_chart_west_africa", motion="clear", scene="나미브 사막" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+
 -- [다국어 카드 도감] 카드 ID와 전투 규칙은 불변. 원본 한국어 이름/설명은 카드 데이터에 보존한다.
 -- 다른 국가 공용 화면에서 사용하는 영어 제목/설명. 이미지에는 문자를 넣지 않는다.
 B.CardEnglish = {
@@ -408,6 +435,32 @@ B.CardEnglish = {
 	af_28 = { name = "Mount Kilimanjaro", lore = "A towering volcanic mountain of East Africa." },
 	af_29 = { name = "Benguela Current", lore = "A cold ocean current flowing along southwestern Africa." },
 	af_30 = { name = "Harmattan Wind", lore = "A dry dusty wind blowing across West Africa." },
+	-- [175장 지역 카드 확장] 신규 31~35번의 영어 이름·설명.
+	eu_31 = { name = "Corvette", lore = "A compact European warship suited to coastal patrols." },
+	eu_32 = { name = "Marine Chronometer", lore = "A precise clock that helped navigators determine longitude at sea." },
+	eu_33 = { name = "Sea Otter", lore = "A marine mammal living in cold North Pacific waters." },
+	eu_34 = { name = "Mont Saint-Michel", lore = "An island abbey surrounded by Normandy tidal flats." },
+	eu_35 = { name = "Strait of Dover", lore = "The narrow passage between England and France." },
+	ea_31 = { name = "Joseon Grain Transport Ship", lore = "A Korean ship that transported grain along the coast." },
+	ea_32 = { name = "Armillary Sphere", lore = "An astronomical instrument for mapping the heavens." },
+	ea_33 = { name = "Red-crowned Crane", lore = "A crane native to the wetlands of East Asia." },
+	ea_34 = { name = "Hwaseong Fortress", lore = "A fortified walled city built in late Joseon Korea." },
+	ea_35 = { name = "Jeju Columnar Joints", lore = "Basalt columns along the volcanic coast of Jeju." },
+	me_31 = { name = "Omani Boom", lore = "A long dhow used for Omani Indian Ocean trade." },
+	me_32 = { name = "Damascus Metalwork", lore = "Intricate metal craftsmanship from Damascus." },
+	me_33 = { name = "Desert Falcon", lore = "A swift falcon hunting over Arabian deserts." },
+	me_34 = { name = "Naqsh-e Jahan Square", lore = "A monumental historic square in Isfahan, Iran." },
+	me_35 = { name = "Wadi Rum", lore = "A sandstone desert valley in southern Jordan." },
+	nw_31 = { name = "Inuit Umiak", lore = "A large skin-covered boat for Arctic coastal transport." },
+	nw_32 = { name = "Maya Obsidian Mirror", lore = "A polished volcanic-glass mirror from Mesoamerica." },
+	nw_33 = { name = "Arctic Fox", lore = "A fox adapted to North American Arctic winters." },
+	nw_34 = { name = "Palenque", lore = "An ancient Maya city amid tropical forests." },
+	nw_35 = { name = "Angel Falls", lore = "A towering waterfall in the Guiana Highlands." },
+	af_31 = { name = "Mozambican Dhow", lore = "A dhow trading along the Mozambique coast." },
+	af_32 = { name = "Meroe Gold Ornament", lore = "A gold ornament made in the kingdom of Meroe." },
+	af_33 = { name = "Okapi", lore = "A forest-dwelling relative of the giraffe." },
+	af_34 = { name = "Pyramids of Meroe", lore = "Ancient royal pyramids in Nubia, Sudan." },
+	af_35 = { name = "Namib Desert", lore = "An ancient desert along southwestern Africa." },
 }
 
 -- 두목 전용 영웅: 두목을 쓰러뜨린 뒤 보상 후보에만 나온다 (일반 뽑기에는 나오지 않는다)

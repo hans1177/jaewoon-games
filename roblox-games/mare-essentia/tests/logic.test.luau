@@ -3396,32 +3396,49 @@ do
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end
 
--- [다국어 지역 카드] 원문/영어판은 같은 150개 ID를 쓰며 5덱 30장 구성이 유지된다.
+-- [175장 지역 카드] 신규 정의와 30장 기본 덱·확률·저장 상한을 함께 검사한다.
 do
 	local BC = D.BoardingCards
-	local total, broken = 0, 0
+	local CBk = D.CardBook
+	local total, broken, expanded = 0, 0, 0
+	local categories = { ["선박"] = true, ["유물"] = true, ["동물"] = true, ["지형·원더"] = true }
 	for _, prefix in { "eu", "ea", "me", "nw", "af" } do
-		local count = 0
-		for index = 1, 30 do
+		local regional = 0
+		for index = 1, 35 do
 			local id = string.format("%s_%02d", prefix, index)
-			local card = BC.Units[id] or BC.Specials[id]
-			local translation = BC.CardEnglish[id]
-			count += 1
+			local card, english = BC.Units[id] or BC.Specials[id], BC.CardEnglish[id]
+			regional += 1
 			total += 1
-			if not card or not translation or type(translation.name) ~= "string" or #translation.name < 3
-				or type(translation.lore) ~= "string" or #translation.lore < 15 or translation.name == card.name then
-				broken += 1
+			if not card or not english or not categories[card.category] or type(english.name) ~= "string"
+				or #english.name < 3 or type(english.lore) ~= "string" or #english.lore < 15
+				or english.name == card.name then broken += 1 end
+			if index > 30 then
+				expanded += 1
+				if not card.stage or not card.stage.art or not card.stage.motion then broken += 1 end
 			end
 		end
-		check("지역 카드 영어 이름·설명 30장: " .. prefix, count == 30)
+		check("카드 지역별 35장: " .. prefix, regional == 35)
 	end
-	local englishCount = 0
-	for key in BC.CardEnglish do
-		englishCount += 1
-		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
+	local localized = 0
+	for id in BC.CardEnglish do
+		localized += 1
+		if not BC.Units[id] and not BC.Specials[id] then broken += 1 end
 	end
-	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and englishCount == 150 and broken == 0,
-		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
+	check("175장 다국어 카드 정의", total == 175 and localized == 175 and expanded == 25 and broken == 0, tostring(total) .. "/" .. tostring(localized) .. "/" .. tostring(expanded) .. "/" .. tostring(broken))
+	local invalid = 0
+	for _, factionId in BC.FactionOrder do
+		local roster = BC.Factions[factionId].roster
+		if #roster ~= 30 then invalid += 1 end
+		for _, id in roster do
+			if string.match(id, "^%a%a_3[1-5]$") then invalid += 1 end
+		end
+	end
+	for _, pool in CBk.POOLS do
+		for _, id in pool do
+			if string.match(id, "^%a%a_3[1-5]$") then invalid += 1 end
+		end
+	end
+	check("30장 기본 덱·드랍 풀·제한값 불변", invalid == 0 and CBk.MIN_DECK == 15 and CBk.MAX_DECK == 30 and CBk.MAX_HEROES == 3 and CBk.MAX_SPECIALS == 6)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
