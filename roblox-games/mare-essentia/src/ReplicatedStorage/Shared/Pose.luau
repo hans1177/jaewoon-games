@@ -631,17 +631,7 @@ function Pose.makeR15Action(model, state, progress, t)
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
 		if joint and joint:IsA("Motor6D") then
-			-- Studio 전용 모션 무대에서는 애니메이터가 덮어쓰는 Transform 대신 기준 C0에 적용한다.
-			if model:GetAttribute("R15MotionStageActor") then
-				local base = joint:GetAttribute("R15MotionBaseC0")
-				if typeof(base) ~= "CFrame" then
-					base = joint.C0
-					joint:SetAttribute("R15MotionBaseC0", base)
-				end
-				joint.C0 = base * cf
-			else
-				joint.Transform = cf
-			end
+			joint.Transform = cf
 		end
 	end
 	-- 모든 관절을 초기화해 이전 동작이 다음 동작에 남지 않도록 한다.
