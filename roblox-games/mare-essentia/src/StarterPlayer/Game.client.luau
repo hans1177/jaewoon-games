@@ -1152,18 +1152,18 @@ end
 
 do
 	local countries = {
-		atlantic_europe = { "france", "spain", "portugal", "ireland", "madeira", "azores", "canary" },
+		atlantic_europe = { "france", "spain", "portugal", "ireland", "madeira", "azores", "canary", "gibraltar", "st_helena" },
 		mediterranean = { "italy", "venice", "tuscany", "naples", "sicily", "malta", "greece", "levant", "ottoman", "ragusa", "crete", "rhodes", "cyprus", "dalmatia", "papal", "mallorca", "sardinia", "corsica" },
-		red_sea = { "egypt", "yemen", "hejaz", "oman" },
-		west_africa = { "senegal", "guinea", "sierra_leone", "gold_coast", "dahomey", "benin", "niger_delta" },
+		red_sea = { "egypt", "yemen", "hejaz", "oman", "persia", "mesopotamia", "algeria", "tripoli", "tunisia", "morocco" },
+		west_africa = { "senegal", "guinea", "sierra_leone", "gold_coast", "dahomey", "benin", "niger_delta", "angola", "cape_verde", "sao_tome" },
 		americas = { "canada", "newfoundland", "new_france", "new_england", "new_netherland", "pennsylvania", "carolina", "louisiana",
 			"bahamas", "cuba", "new_spain", "jamaica", "hispaniola", "puerto_rico", "barbados", "trinidad", "venezuela", "new_granada",
-			"panama", "suriname", "brazil", "rio_de_la_plata", "quito", "peru", "chile" },
-		north_sea = { "england", "netherlands", "denmark", "sweden", "norway", "scotland", "germany" },
-		east_africa = { "swahili", "somalia", "mozambique" },
+			"panama", "suriname", "brazil", "rio_de_la_plata", "quito", "peru", "chile", "california", "pacific_northwest" },
+		north_sea = { "england", "netherlands", "denmark", "sweden", "norway", "scotland", "germany", "austria", "estonia", "finland", "gotland", "livonia", "poland", "prussia", "russia", "russian_america" },
+		east_africa = { "swahili", "somalia", "mozambique", "cape" },
 		east_asia = { "china", "japan", "korea", "macau", "formosa" },
-		south_asia = { "gujarat", "portuguese_india", "malabar", "ceylon", "coromandel", "bengal" },
-		southeast_asia = { "malay", "vietnam", "java", "celebes", "moluccas", "borneo" },
+		south_asia = { "gujarat", "portuguese_india", "malabar", "ceylon", "coromandel", "bengal", "mauritius" },
+		southeast_asia = { "malay", "vietnam", "java", "celebes", "moluccas", "borneo", "burma", "siam", "philippines", "new_guinea", "marianas", "fiji", "polynesia", "hawaii", "new_zealand", "australia", "tasmania" },
 	}
 	local mediterraneanPorts = { marseille = true, toulon = true, barcelona = true, valencia = true, cartagena = true, malaga = true }
 	local regionByCountry = {}
@@ -1200,7 +1200,7 @@ do
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
-		if not port or not playerView or (playerView.year or 0) < 1700 or (role ~= "merchant" and role ~= "tavern") then
+		if not port or not playerView or (role ~= "merchant" and role ~= "tavern") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
 			return nil
 		end
 		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
