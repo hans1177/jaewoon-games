@@ -2,13 +2,13 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "43487644819",
+    "runId": "43488486046",
     "kind": "deep",
-    "at": "2026-11-13T19:02:45.532Z",
+    "at": "2026-11-13T19:07:58.886Z",
     "sourceRevision": "02c0039393d4dd6a11a746face76e41b115c6c51",
     "result": "PASS",
     "frames": 47,
-    "changedFrames": 46,
+    "changedFrames": 41,
     "summary": {
       "plannedSteps": 166,
       "completedSteps": 166,
@@ -19,10 +19,30 @@
       "capturedFrames": 47,
       "abortedEarly": false
     },
-    "path": "runs/43487644819"
+    "path": "runs/43488486046"
   },
-  "lastDeepAt": "2026-11-13T19:02:45.532Z",
+  "lastDeepAt": "2026-11-13T19:07:58.886Z",
   "runs": [
+    {
+      "runId": "43488486046",
+      "kind": "deep",
+      "at": "2026-11-13T19:07:58.886Z",
+      "sourceRevision": "02c0039393d4dd6a11a746face76e41b115c6c51",
+      "result": "PASS",
+      "frames": 47,
+      "changedFrames": 41,
+      "summary": {
+        "plannedSteps": 166,
+        "completedSteps": 166,
+        "plannedClicks": 7,
+        "successfulClicks": 7,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 47,
+        "capturedFrames": 47,
+        "abortedEarly": false
+      },
+      "path": "runs/43488486046"
+    },
     {
       "runId": "43487644819",
       "kind": "deep",
@@ -182,26 +202,6 @@
         "abortedEarly": false
       },
       "path": "runs/43463236823"
-    },
-    {
-      "runId": "43462363448",
-      "kind": "deep",
-      "at": "2026-11-13T16:31:32.662Z",
-      "sourceRevision": "13656d4f4ac09763713dd8f8251ece7f3590fa80",
-      "result": "PASS",
-      "frames": 47,
-      "changedFrames": 40,
-      "summary": {
-        "plannedSteps": 166,
-        "completedSteps": 166,
-        "plannedClicks": 7,
-        "successfulClicks": 7,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 47,
-        "capturedFrames": 47,
-        "abortedEarly": false
-      },
-      "path": "runs/43462363448"
     },
     {
       "runId": "43461410762",
