@@ -880,3 +880,29 @@ test('Mare 5-continent seven animated visual candidates reject geometric sources
   assert.equal(job.runtimeVerified,false);
   assert.equal(job.deploymentRequested,false);
 });
+
+test('Mare uses existing registered Petra and Machu Picchu assets without false ship-image substitutes',()=>{
+  const base='roblox-games/mare-essentia/';
+  const registry=fs.readFileSync(base+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const cards=fs.readFileSync(base+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
+  const naval=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const folder=base+'assets/cardart/';
+  const exact={
+    me_24:['event_petra.jpg','event_petra','페트라'],
+    nw_24:['event_machu_picchu.jpg','event_machu_picchu','마추픽추'],
+  };
+  for(const [id,[filename,key,name]] of Object.entries(exact)){
+    assert.ok(fs.statSync(folder+filename).size>100000,id+' existing original JPG');
+    assert.match(registry,new RegExp('\\["CardArt/'+key+'"\\] = \\d+'));
+    assert.ok(cards.includes('B.Units.'+id+' = { id="'+id+'", name="'+name+'"'),id);
+    assert.ok(cards.includes('art="CardArt/'+key+'"'),id+' keeps canonical registered source');
+  }
+  assert.match(naval,/local spec = CARD_STAGE\[card\.id\] or card\.stage/);
+  assert.match(naval,/if AssetIds\[artwork\] then return artwork end/);
+  assert.match(naval,/return spec\.art or CARD_SEA/);
+  assert.ok(fs.statSync(folder+'src/me_01.svg').size>10000);
+  assert.ok(fs.statSync(folder+'src/af_01.svg').size>10000);
+  for(const id of ['me_01','af_01'])assert.doesNotMatch(naval,new RegExp('\\b'+id+' = true'));
+  const disable=fs.readFileSync(folder+'DISABLED.md','utf8');
+  assert.match(disable,/fetch_card_art\.py/);
+});
