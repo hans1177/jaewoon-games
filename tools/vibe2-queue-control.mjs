@@ -20,6 +20,7 @@ import {
   EXTERNAL_MATRIX_BATCH_MAX
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
+import { GEMINI_FREE_MODELS } from './vibe2-gemini-free-rotation.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, ownerFirstRunnerAllocation, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
 import { repairStaleAutonomousQueue, rerouteRepeatingAutoFailures, requeueCooledDownAutoFailures, checkAutonomousCandidate } from './vibe2-autonomous-operations.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
@@ -1344,12 +1345,19 @@ export function applyVibeFanInResults(queueInput, results = []) {
     }
     // 외부 무료 API의 한도 또는 확인된 공급자 대기 상태는 게임 소스 실패로 누적하지 않는다.
     // 기존 재시도 횟수와 학습 평가를 변경하지 않고, 정해진 시각에 기존 큐로 복귀한다.
-    const quotaFailures=passes.length===0&&variants.length>0&&variants.every(row=>
-      clean(row.outcome).toUpperCase()==='FAIL'
-      &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
-      &&/(?:HTTP_429|GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE[^\n]*:COOLDOWN)/.test(clean(row?.candidateFailure?.message))
-      &&/NEXT_RETRY_AT=/.test(clean(row?.candidateFailure?.message))
-    );
+    const quotaFailures=passes.length===0&&variants.length>0&&variants.every(row=>{
+      const message=clean(row?.candidateFailure?.message);
+      // [무료 모델] 실제 Gemini 2슬롯이 각각 제공자 냉각 상태인 경우에만 소스 재시도를 보존한다.
+      // 타 제공자의 단독 429/400 또는 출처 불명 429는 전체 모델 풀의 쿼터 증거가 아니다.
+      // Gemini 404/5xx도 기존 제공자 냉각 처리 대상이며 다른 무료 경로의 400은 소스 오류가 아니다.
+      const providerCooldown='(?:HTTP_(?:404|429|500|502|503|504)|COOLDOWN|TRANSPORT_OR_TIMEOUT|EMPTY_OUTPUT)';
+      return clean(row.outcome).toUpperCase()==='FAIL'
+        &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
+        &&message.startsWith('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:')
+        &&GEMINI_FREE_MODELS.every(model=>new RegExp('(?:^|[:,])'+model+':'+providerCooldown+'(?=,|:NEXT_RETRY_AT=|$)').test(message))
+        &&/NEXT_RETRY_AT=/.test(message)
+        &&!/(?:AUTH_OR_BILLING_BLOCKED|CONTENT_POLICY_BLOCKED|NONZERO_COST_RESPONSE_BLOCKED)/.test(message);
+    });
     if(quotaFailures){
       const retryTimes=variants.map(row=>{
         const stamp=/NEXT_RETRY_AT=([0-9TZ:.-]+)/.exec(clean(row?.candidateFailure?.message))?.[1];
