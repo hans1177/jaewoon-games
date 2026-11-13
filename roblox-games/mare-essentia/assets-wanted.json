@@ -302,6 +302,17 @@
    "deploymentRequested": false,
    "productionVerified": false,
    "runtimeVerified": false
+  },
+  {
+   "id": "menu-icons-painted-missing",
+   "kind": "Menu",
+   "purpose": "UI 아이콘(손그림 황금 톤) 미구현분: 동료(crew), 카드(deck), 설정(gear), 도움말(help), 자동(auto), 천문(망원경), 전투기술(갈고리·맹수 울음·약초)",
+   "status": "missing",
+   "candidates": [
+    "기존 Menu/* 손그림과 같은 화풍으로 새로 제작 (바이브 제작 요청)",
+    "없으면 Cargo/Relics/Naval 3D 모델로 임시 연결(적용됨)"
+   ],
+   "inboxPath": "assets/inbox/Menu/"
   }
  ],
  "codeReferencesNotRegistered": [],
