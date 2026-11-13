@@ -2480,14 +2480,14 @@ function PortScene.build(info, onFacility)
 
 	-- 광장
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())
-	part(folder, Vector3.new(130, 0.25, 22), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
+	part(folder, Vector3.new(130, 0.25, 22 + 1.5 * (sceneLevel - 1)), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
 	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
 	part(folder, Vector3.new(100, 0.3, 74), CFrame.new(-38, 0.14, 0), roadColor(style), roadMat())
 	for _, sz in { 57, -57 } do
-		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
+		part(folder, Vector3.new(120, 0.25, 8 + sceneLevel), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
 	end
 	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
-		part(folder, Vector3.new(4, 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
+		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
 	-- 광장 분수도 CC0 수입 메쉬 우선
 	if true then
