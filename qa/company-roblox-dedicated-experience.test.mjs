@@ -847,6 +847,10 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/BC.play\(m, "me", i\)/);
   assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
+  // 검증 등록된 개별 카드만 우선, 미등록 카드는 승인된 기존 그림을 유지한다.
+  assert.match(source,/local individualArt = "CardArt\/" \.\. card\.id/);
+  assert.match(source,/if AssetIds\[individualArt\] then return individualArt end/);
+  assert.match(source,/if spec\.newArt and AssetIds\[spec\.newArt\] then return spec\.newArt end/);
   assert.match(uploader,/event_\[a-z_\]\+\|battle_board\)\\\.jpg/);
   assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
   assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
