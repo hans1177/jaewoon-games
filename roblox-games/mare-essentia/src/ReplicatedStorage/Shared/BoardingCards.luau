@@ -258,7 +258,7 @@ B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·�
 -- [175장 지역 카드 확장] 기존 30장 기본 덱·드랍 확률·전투·저장 불변. 승인 이미지 전에는 기존 도판만 사용한다.
 B.Units.eu_31 = { id="eu_31", name="코르벳", category="선박", lore="유럽 해안을 순찰하던 소형 기동 군함", stage={ art="CardArt/event_title_ship", motion="wind", scene="코르벳" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.eu_32 = { id="eu_32", name="해양 크로노미터", category="유물", lore="경도 측정을 도와 긴 항해의 위치 계산을 개선한 정밀 시계", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="해양 크로노미터" }, row="ranged", power=3, weapon="gun", ability="spy" }
-B.Units.eu_33 = { id="eu_33", name="바다수달", category="동물", lore="차가운 북태평양 해역에 사는 해양 포유류", stage={ art="CardArt/event_chart_north_sea", motion="pounce", scene="바다수달" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.eu_33 = { id="eu_33", name="유라시아수달", category="동물", lore="유럽의 강과 습지에 살며 물고기를 사냥하는 수달", stage={ art="CardArt/event_chart_north_sea", motion="pounce", scene="바다수달" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.eu_34 = { id="eu_34", name="몽생미셸", category="지형·원더", lore="프랑스 노르망디 갯벌 위에 세워진 섬 수도원", stage={ art="CardArt/event_chart_west_europe", motion="clear", scene="몽생미셸" }, row="melee", power=5, weapon="sword", ability="armor" }
 B.Units.eu_35 = { id="eu_35", name="도버 해협", category="지형·원더", lore="영국과 프랑스 사이의 좁고 중요한 해협", stage={ art="CardArt/event_chart_north_sea", motion="clear", scene="도버 해협" }, row="cannon", power=5, weapon="cannon", ability="morale" }
 B.Units.ea_31 = { id="ea_31", name="조선 조운선", category="선박", lore="조선의 곡식과 세곡을 연안으로 실어 나르던 운송선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 조운선" }, row="ranged", power=4, weapon="gun", ability="spy" }
@@ -438,7 +438,7 @@ B.CardEnglish = {
 	-- [175장 지역 카드 확장] 신규 31~35번의 영어 이름·설명.
 	eu_31 = { name = "Corvette", lore = "A compact European warship suited to coastal patrols." },
 	eu_32 = { name = "Marine Chronometer", lore = "A precise clock that helped navigators determine longitude at sea." },
-	eu_33 = { name = "Sea Otter", lore = "A marine mammal living in cold North Pacific waters." },
+	eu_33 = { name = "Eurasian Otter", lore = "An otter living along European rivers and wetlands." },
 	eu_34 = { name = "Mont Saint-Michel", lore = "An island abbey surrounded by Normandy tidal flats." },
 	eu_35 = { name = "Strait of Dover", lore = "The narrow passage between England and France." },
 	ea_31 = { name = "Joseon Grain Transport Ship", lore = "A Korean ship that transported grain along the coast." },
