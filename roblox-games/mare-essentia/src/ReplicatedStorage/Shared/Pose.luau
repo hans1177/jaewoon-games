@@ -656,9 +656,9 @@ function Pose.makeR15Action(model, state, progress, t)
 	elseif state == "walk" or state == "run" then
 		-- 걸음 주기: 발 앞으로(무릎 굽힘) → 딛기 → 뒤로 밀기. 반대 팔이 같이 흔들리고 몸이 위아래·좌우로 자연스럽게 흔들린다.
 		local run = state == "run"
-		local w = time * (if run then 1 else 1.5) * (if run then 9 else 1) -- 걷기는 이동 속도에 비례한 시간이 들어온다
+		local w = if run then time * 9 else time -- 걷기는 "이동한 거리(라디안으로 환산)"가 들어와 발이 땅 위에서 미끄러지지 않는다
 		local s, c = math.sin(w), math.cos(w)
-		local amp = if run then 0.95 else 0.5
+		local amp = if run then 0.95 else 0.62
 		local kneeAmp = if run then 1.5 else 0.75
 		set(m.leftLeg, A(s * amp, 0, 0)); set(m.rightLeg, A(-s * amp, 0, 0))
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
