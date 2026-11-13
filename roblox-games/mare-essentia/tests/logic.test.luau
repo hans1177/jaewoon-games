@@ -3233,7 +3233,13 @@ do
 	do
 		local CBk = D.CardBook
 		local book = CBk.new("europe")
-		check("수집책: 시작하면 문화권 기본 덱을 가진다", (book.owned.pikeman or 0) == 2 and CBk.validateDeck(book, BC.Factions.europe.roster))
+		local rosterOk = #BC.Factions.europe.roster > 0
+		for _, rid in BC.Factions.europe.roster do
+			local want = 0
+			for _, other in BC.Factions.europe.roster do if other == rid then want += 1 end end
+			if (book.owned[rid] or 0) ~= want then rosterOk = false end
+		end
+		check("수집책: 시작하면 문화권 기본 덱을 가진다", rosterOk and CBk.validateDeck(book, BC.Factions.europe.roster))
 		check("수집책: 저장한 덱이 없으면 자동 덱", #CBk.deckIds(book, "europe") == #BC.Factions.europe.roster)
 		local id = CBk.drop(book, "quest", math.random)
 		check("수집책: 획득하면 보유가 늘어난다", (book.owned[id] or 0) >= 1)
