@@ -1,0 +1,15 @@
+[
+ {
+  "type": "wait",
+  "ms": 45000
+ },
+ {
+  "type": "capture",
+  "name": "hud0"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService(\"Players\").LocalPlayer.PlayerGui local V=workspace.CurrentCamera.ViewportSize local r={} local function add(d) if d:IsA(\"GuiObject\") and d.Visible then table.insert(r,{n=d.Name,x=d.AbsolutePosition.X,y=d.AbsolutePosition.Y,w=d.AbsoluteSize.X,h=d.AbsoluteSize.Y}) end end local names={ViewToggle=1,DeckButton=1,OptionsButton=1,HelpButton=1,Dock=1,CaptainCard=1,CompanionBubble=1} for _,d in ipairs(P:GetDescendants()) do if names[d.Name] or d.Name:sub(1,5)==\"Menu_\" then add(d) end end local out={\"VIEW \"..math.floor(V.X)..\"x\"..math.floor(V.Y)} for i=1,#r do local a=r[i] table.insert(out,\"RECT \"..a.n..\" \"..math.floor(a.x)..\",\"..math.floor(a.y)..\" \"..math.floor(a.w)..\"x\"..math.floor(a.h)) for j=i+1,#r do local b=r[j] local sk=(a.n==\"Dock\" and b.n:sub(1,5)==\"Menu_\") or (b.n==\"Dock\" and a.n:sub(1,5)==\"Menu_\") if not sk and a.x<b.x+b.w and b.x<a.x+a.w and a.y<b.y+b.h and b.y<a.y+a.h then table.insert(out,\"CHK overlap \"..a.n..\" x \"..b.n) end end end return table.concat(out,\"\\n\")"
+ }
+]
