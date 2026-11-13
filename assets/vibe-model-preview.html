@@ -234,7 +234,7 @@ if(gltf.animations?.length){
   connectVibeCharacter({character:model,clips:gltf.animations,genre:picker.value,THREE}).then(adapter=>{
    if(activeModel!==model){adapter.dispose();return;}
    characterMotion=adapter;
-   animationPicker.addEventListener('change',()=>{const played=adapter.play(animationPicker.value);if(played){previewManualMotion=true;previewAutoCycle=false;}status.textContent=played?'원본 애니메이션 재생 · '+animationPicker.value:'이미 재생 중 · '+animationPicker.value;});
+   animationPicker.onchange=()=>{if(characterMotion!==adapter)return;const played=adapter.play(animationPicker.value);if(played){previewManualMotion=true;previewAutoCycle=false;previewClipElapsed=0;previewClipIndex=Math.max(0,clipNames.indexOf(animationPicker.value));}status.textContent=played?'원본 애니메이션 재생 · '+animationPicker.value:'원본 동작 연결 실패 · '+animationPicker.value;};
    // [원본 모션 자동 검증] 실제 GLB에 존재하는 클립만 순차 재생한다.
    previewClipElapsed=0;previewClipIndex=0;previewAutoCycle=gltf.animations.length>1;previewManualMotion=true;
    adapter.play(gltf.animations[0].name,{blendSeconds:0});
