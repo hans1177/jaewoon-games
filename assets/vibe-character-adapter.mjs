@@ -28,11 +28,16 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
   if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).includes(expected))?.[1];if(match)break;}
   if(!match)for(const expected of names){match=[...actions.entries()].find(([name])=>expected&&name.split(/[^a-z0-9]+/).some(token=>token===expected||['cycle','loop','forward','inplace'].some(suffix=>token===expected+suffix)))?.[1];if(match)break;}
   if(!match)return false;
-  if(match===active)return true;
+  // 같은 원본 동작의 재시작을 막는다. 다른 엔진 상태가 같은 Run을 가리켜도 유지한다.
+  if(match===active)return false;
   const duration=Number.isFinite(blendSeconds)?Math.max(0,Math.min(.5,blendSeconds)):.15;
-  // [메인: 동작 혼합] 원본 클립 전환 시 이전 페이드 잔여값을 지우고 실제 교차 혼합한다.
-  match.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();
-  if(active){if(duration>0)match.crossFadeFrom(active,duration,true);else active.stop();}
+  // [메인: 동작 혼합] 실제 THREE AnimationAction의 페이드 인/아웃으로 교차 전환한다.
+  match.reset();
+  if(duration>0){
+   match.fadeIn(duration);
+   if(active)active.fadeOut(duration);
+  }else if(active)active.stop();
+  match.play();
   active=match;return true;
  };
  const engine=new VibeMotionEngine(design,{play});
