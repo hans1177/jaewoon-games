@@ -1354,7 +1354,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       return clean(row.outcome).toUpperCase()==='FAIL'
         &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
         &&message.startsWith('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:')
-        &&GEMINI_FREE_MODELS.every(model=>new RegExp('(?:^|[:,])'+model+':'+providerCooldown+'(?=,|:NEXT_RETRY_AT=|$)').test(message))
+        &&GEMINI_FREE_MODELS.every(model=>new RegExp('(?:^|[:,])'+model.replaceAll('.','\\.')+':'+providerCooldown+'(?=,|:NEXT_RETRY_AT=|$)').test(message))
         &&/NEXT_RETRY_AT=/.test(message)
         &&!/(?:AUTH_OR_BILLING_BLOCKED|CONTENT_POLICY_BLOCKED|NONZERO_COST_RESPONSE_BLOCKED)/.test(message);
     });
