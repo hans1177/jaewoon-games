@@ -577,13 +577,15 @@ function FieldScene.start(opts)
 					return
 				end
 			end
-			Pose.animateR15(e.model, {
-				phase = (now - e.spawnT) * e.speed * 1.5,
-				moving = dist < 38 and dist > 3.2,
-				t = now - e.spawnT,
-				attack = (now - e.swingAt) / 0.5,
-				hurt = math.max(0, 1 - (now - e.hurtAt) / 0.3),
-			})
+			local hurtProgress = (now - e.hurtAt) / 0.3
+			local attackProgress = (now - e.swingAt) / 0.5
+			if hurtProgress >= 0 and hurtProgress < 1 then
+				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
+			elseif attackProgress >= 0 and attackProgress < 1 then
+				Pose.makeR15Action(e.model, "attack", attackProgress, now - e.spawnT)
+			else
+				Pose.makeR15Action(e.model, if dist < 38 and dist > 3.2 then "run" else "idle", 0, now - e.spawnT)
+			end
 		end
 	end))
 
