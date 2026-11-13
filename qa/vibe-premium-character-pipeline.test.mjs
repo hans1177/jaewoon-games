@@ -26,12 +26,15 @@ test('Vibe 5.9 authored clip resolver prioritizes exact names and action tokens'
  assert.match(adapter,/\['cycle','loop','forward','inplace'\]\.some\(suffix=>token===expected\+suffix\)/);
  assert.doesNotMatch(adapter,/row\.name\.includes\(expected\)/);
 });
-test('Vibe 5.9 authored clip transitions use crossfade and reset stale weights',()=>{
+test('Vibe 5.9 authored clip transitions fade native actions and clear previous playback',()=>{
  const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
- assert.match(adapter,/match\.reset\(\)\.setEffectiveWeight\(1\)\.setEffectiveTimeScale\(1\)\.play\(\)/);
- assert.match(adapter,/match\.crossFadeFrom\(active,duration,true\)/);
- assert.match(adapter,/else active\.stop\(\)/);
- assert.doesNotMatch(adapter,/match\.reset\(\)\.fadeIn\(duration\)\.play\(\)/);
+ assert.match(adapter,/match\.reset\(\)/);
+ assert.match(adapter,/if\(duration>0\)\{/);
+ assert.match(adapter,/match\.fadeIn\(duration\)/);
+ assert.match(adapter,/if\(active\)active\.fadeOut\(duration\)/);
+ assert.match(adapter,/else if\(active\)active\.stop\(\)/);
+ assert.match(adapter,/match\.play\(\)/);
+ assert.doesNotMatch(adapter,/match\.reset\(\)\.setEffectiveWeight\(1\)\.setEffectiveTimeScale\(1\)\.play\(\)/);
 });
 test('Vibe 5.9 source clip matching recognizes common authored action variants',()=>{
  const adapter=readFileSync(new URL('../assets/vibe-character-adapter.mjs',import.meta.url),'utf8');
@@ -39,7 +42,7 @@ test('Vibe 5.9 source clip matching recognizes common authored action variants',
  assert.match(adapter,/run:\['run','running','sprint'\]/);
  assert.match(adapter,/wave:\['wave','waving','greet','greeting'\]/);
  assert.match(adapter,/react:\['react','reaction','hitreact','damage'\]/);
- assert.match(adapter,/if\(match===active\)return true/);
+ assert.match(adapter,/if\(match===active\)return false/);
  assert.match(adapter,/if\(!match\)return false/);
 });
 test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual selection',()=>{
