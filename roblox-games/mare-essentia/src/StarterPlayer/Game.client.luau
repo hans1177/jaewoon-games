@@ -1871,8 +1871,33 @@ do
 		local compact = width < 610
 		dockGrid.FillDirectionMaxCells = if compact then 2 else 3
 		dockGrid.CellSize = UDim2.fromOffset(if compact then 64 else 60, 68)
-		dock.Position = UDim2.new(1, -8, 0, if compact then 168 else 62)
-		dock.Size = UDim2.fromOffset(if compact then 136 else 194, math.clamp(height - (if compact then 220 else 170), 116, 350))
+		-- 오른쪽 위: 시스템 4개(걷기·내 카드·설정·도움말)를 먼저, 그 아래 시설 6개. 서로 겹치지 않게 한곳에서 배치한다.
+		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "ViewToggle" }
+		local sysTop, sysH
+		if compact then
+			for i, n in sysOrder do
+				local b = hud:FindFirstChild(n)
+				if b then
+					b.Size = UDim2.fromOffset(64, 68)
+					b.AnchorPoint = Vector2.new(1, 0)
+					b.Position = UDim2.new(1, -8 - ((i - 1) % 2) * 70, 0, 4 + math.floor((i - 1) / 2) * 73)
+				end
+			end
+			sysTop, sysH = 4, 141
+		else
+			for i, n in sysOrder do
+				local b = hud:FindFirstChild(n)
+				if b then
+					b.Size = UDim2.fromOffset(52, 68)
+					b.AnchorPoint = Vector2.new(1, 0)
+					b.Position = UDim2.new(1, -8 - (i - 1) * 56, 0, 4)
+				end
+			end
+			sysTop, sysH = 4, 68
+		end
+		local dockTop = sysTop + sysH + 6
+		dock.Position = UDim2.new(1, -8, 0, dockTop)
+		dock.Size = UDim2.fromOffset(if compact then 136 else 194, math.clamp(height - dockTop - 8, 100, 350))
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
 		card.Size = UDim2.fromOffset(if compact then 252 else 290, 114)
 		local left = if compact then 8 else 310
