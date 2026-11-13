@@ -2666,6 +2666,8 @@ function PortScene.build(info, onFacility)
 	local sparring = if RunService:IsStudio() and #walkers >= 2 then { walkers[1], walkers[2] } else nil
 	if sparring then
 		folder:SetAttribute("R15SparringTest", true)
+		-- 스튜디오 전용 독립 모션 무대: 항구 장애물과 분리하고 기존 주민 모델만 재사용한다.
+		folder:SetAttribute("R15SparringStage", Vector3.new(0, 120, 0))
 		for _, fighter in sparring do
 			fighter.mode = "sparring"
 		end
@@ -2679,9 +2681,9 @@ function PortScene.build(info, onFacility)
 		for _, w in walkers do
 			if w.mode == "sparring" and w.model.Parent and sparring then
 				local side = if w == sparring[1] then -1 else 1
-				local center = (sparring[1].base.Position + sparring[2].base.Position) * 0.5
+				local center = folder:GetAttribute("R15SparringStage") or ((sparring[1].base.Position + sparring[2].base.Position) * 0.5)
 				local offset = Vector3.new(side * 2.5, 0, 0)
-				local position = Vector3.new(center.X + offset.X, w.base.Position.Y, center.Z)
+				local position = Vector3.new(center.X + offset.X, center.Y, center.Z)
 				local target = Vector3.new(center.X - offset.X, position.Y, center.Z)
 				w.model:PivotTo(CFrame.lookAt(position, target))
 				-- 두 주민이 한 번씩 번갈아 공격하고 상대는 방어·피격 반응을 한다.
