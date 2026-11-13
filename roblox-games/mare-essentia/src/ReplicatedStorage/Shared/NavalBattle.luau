@@ -623,7 +623,31 @@ function NavalBattle.play(opts)
 		}
 
 		local englishRows = { melee = "Melee", ranged = "Ranged", cannon = "Cannon" }
-		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark" }
+		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Wonder" }
+		-- [카드 덱 / 분류] 기존 BoardingCards ID와 category만 시각적으로 구분한다. 전투·저장 구조 불변.
+		local deckPalette = {
+			eu = { ko = "유럽", en = "Europe", color = Color3.fromRGB(59, 96, 151) },
+			ea = { ko = "동아시아", en = "East Asia", color = Color3.fromRGB(159, 62, 70) },
+			me = { ko = "중동", en = "Middle East", color = Color3.fromRGB(60, 124, 117) },
+			nw = { ko = "신대륙", en = "New World", color = Color3.fromRGB(83, 129, 72) },
+			af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(171, 118, 55) },
+		}
+		local categoryPalette = {
+			["선박"] = { ko = "함선", en = "Ship", color = Color3.fromRGB(51, 85, 125) },
+			["유물"] = { ko = "유물", en = "Relic", color = Color3.fromRGB(140, 98, 51) },
+			["동물"] = { ko = "동물", en = "Animal", color = Color3.fromRGB(70, 105, 67) },
+			["지형·원더"] = { ko = "원더", en = "Wonder", color = Color3.fromRGB(111, 74, 139) },
+		}
+		local function cardVisualStyle(card)
+			local prefix = string.match(tostring(card.id or ""), "^(%a%a)_%d%d$")
+			local deck = deckPalette[prefix]
+			local group = categoryPalette[card.category]
+			return
+				if deck then (if english then deck.en else deck.ko) else t("공용", "Neutral"),
+				if group then (if english then group.en else group.ko) elseif card.special then t("전술", "Tactic") else t("병종", "Unit"),
+				if deck then deck.color else Color3.fromRGB(158, 113, 59),
+				if group then group.color else Color3.fromRGB(90, 71, 57)
+		end
 		local englishAbilities = { bond = "Bond", morale = "Morale", spy = "Spy", medic = "Medic", armor = "Armor", snipe = "Snipe" }
 		local englishDetails = {
 			bond = "Matching units bond together for up to triple strength",
@@ -984,7 +1008,8 @@ function NavalBattle.play(opts)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
 			f.Parent = parent
-			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			local deckName, categoryName, deckColor, groupColor = cardVisualStyle(c)
+			frameEdge(f, deckColor, 4)
 			local plate = Instance.new("Frame")
 			plate.Size = UDim2.fromScale(1, 0.8)
 			plate.BackgroundColor3 = Color3.fromRGB(90, 68, 46)
@@ -1013,8 +1038,14 @@ function NavalBattle.play(opts)
 			blackWash.Parent = painting
 			local tag = label(f, cardName(c), 11, Color3.fromRGB(255, 237, 188), true)
 			tag.Position = UDim2.fromScale(0.03, 0.04)
-			tag.Size = UDim2.fromScale(0.94, 0.38)
+			tag.Size = UDim2.fromScale(0.94, 0.30)
 			tag.TextScaled = true
+			local classMark = label(f, deckName .. " · " .. categoryName, 9, Color3.fromRGB(255, 244, 219), true)
+			classMark.Position = UDim2.fromScale(0.03, 0.37)
+			classMark.Size = UDim2.fromScale(0.94, 0.20)
+			classMark.TextScaled = true
+			classMark.BackgroundColor3 = groupColor
+			classMark.BackgroundTransparency = 0.12
 			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
 			stamp.AnchorPoint = Vector2.new(0.5, 1)
 			stamp.Position = UDim2.fromScale(0.5, 0.97)
@@ -1373,10 +1404,18 @@ function NavalBattle.play(opts)
 		focusImage.Parent = focusArtwork
 		local focusName = label(focusFrame, "", 17, Color3.fromRGB(247, 211, 151), true)
 		focusName.Position = UDim2.fromScale(0.045, 0.017)
-		focusName.Size = UDim2.fromScale(0.8, 0.075)
+		focusName.Size = UDim2.fromScale(0.51, 0.075)
+		focusName.TextScaled = true
 		focusName.TextStrokeTransparency = 0.38
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
+		local focusDeck = label(focusFrame, "", 12, Color3.fromRGB(255, 243, 218), true)
+		focusDeck.Name = "DeckCategory"
+		focusDeck.Position = UDim2.fromScale(0.565, 0.017)
+		focusDeck.Size = UDim2.fromScale(0.27, 0.075)
+		focusDeck.TextScaled = true
+		focusDeck.BackgroundTransparency = 0.08
+		focusDeck.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
 		focusRule.Position = UDim2.fromScale(0.035, 0.75)
 		focusRule.Size = UDim2.fromScale(0.93, 0.17)
@@ -1445,6 +1484,10 @@ function NavalBattle.play(opts)
 			local artKey = cardArtworkKey(card)
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusName.Text = cardName(card)
+			local deckName, categoryName, deckColor, groupColor = cardVisualStyle(card)
+			focusDeck.Text = deckName .. " · " .. categoryName
+			focusDeck.BackgroundColor3 = groupColor
+			focusEdge.Color = deckColor
 			local row = if card.row then rowName(card.row) else t("전술", "Tactic")
 			local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 			local description = cardDescription(card)
@@ -1456,7 +1499,7 @@ function NavalBattle.play(opts)
 		local function closeCardCodex()
 			if selected and selected.Parent then
 				selected.Rotation = 0
-				selected.UIStroke.Color = brass
+				selected.UIStroke.Color = selected:GetAttribute("DeckColor") or brass
 				selected:SetAttribute("ArtFocused", false)
 			end
 			selected = nil
@@ -1562,6 +1605,7 @@ function NavalBattle.play(opts)
 				hints, bestHint = BC.hint(m, "me")
 			end
 			for i, c in m.hand.me do
+				local deckName, categoryName, deckColor, groupColor = cardVisualStyle(c)
 				local b = Instance.new("TextButton")
 				b.Size = UDim2.new(0, 140, 1, -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
@@ -1571,6 +1615,7 @@ function NavalBattle.play(opts)
 				b.LayoutOrder = i
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
+				b:SetAttribute("DeckColor", deckColor)
 				b.TextColor3 = Color3.fromRGB(250, 236, 200)
 				b.Font = Enum.Font.GothamBold
 				b.TextScaled = true
@@ -1588,13 +1633,21 @@ function NavalBattle.play(opts)
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) else Color3.fromRGB(153, 115, 70), 3)
-				local kindText = if c.category then (if english then englishCategories[c.category] or c.category else c.category)
-					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
-					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
-					else rowName(c.row)
-				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
-				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
-				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
+				local deckLabel = label(b, deckName, 10, Color3.fromRGB(255, 242, 213), true)
+				deckLabel.Name = "CardDeck"
+				deckLabel.Position = UDim2.fromScale(0.20, 0.03)
+				deckLabel.Size = UDim2.fromScale(0.36, 0.14)
+				deckLabel.BackgroundColor3 = deckColor
+				deckLabel.BackgroundTransparency = 0.06
+				deckLabel.TextScaled = true
+				deckLabel.ZIndex = 8
+				local kindLabel = label(b, categoryName, 10, Color3.fromRGB(255, 242, 213), true)
+				kindLabel.Name = "CardCategory"
+				kindLabel.Position = UDim2.fromScale(0.57, 0.03)
+				kindLabel.Size = UDim2.fromScale(0.40, 0.14)
+				kindLabel.BackgroundColor3 = groupColor
+				kindLabel.BackgroundTransparency = 0.06
+				kindLabel.TextScaled = true
 				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
 				kindLabel.TextStrokeTransparency = 0.28
 				kindLabel.ZIndex = 8
@@ -1647,7 +1700,8 @@ function NavalBattle.play(opts)
 					tipLabel.ZIndex = 8
 				end
 				b.Parent = handFrame
-				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
+				local edge = frameEdge(b, deckColor, 6)
+				edge.Thickness = if c.hero then 3 else 2
 
 				local function playChosenCard()
 					if playing or auto or finished or m.turn ~= "me" or m.over or selected ~= b or not b.Parent then return end
@@ -1689,7 +1743,7 @@ function NavalBattle.play(opts)
 					if selected ~= b then
 						if selected and selected.Parent then
 							selected.Rotation = 0
-							selected.UIStroke.Color = brass
+							selected.UIStroke.Color = selected:GetAttribute("DeckColor") or brass
 							selected:SetAttribute("ArtFocused", false)
 						end
 						b:SetAttribute("ArtFocused", true)
