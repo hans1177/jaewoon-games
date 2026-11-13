@@ -2,6 +2,15 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer,vibePremiumAssetSpec,inspectVibeCharacterRig,createVibeRigRetargeter,createVibeJointConstraints,createVibeSecondaryDeformation,applyVibePBRTextures} from '../assets/vibe-premium-character-pipeline.mjs';
+test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual selection',()=>{
+ const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ assert.match(preview,/previewAutoCycle=gltf\.animations\.length>1/);
+ assert.match(preview,/previewClipElapsed>=3/);
+ assert.match(preview,/characterMotion\.play\(clipNames\[previewClipIndex\]\)/);
+ assert.match(preview,/animationPicker\.value=clipNames\[previewClipIndex\]/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;\}/);
+ assert.match(preview,/characterMotion\.mixer\.update\(delta\)/);
+});
 test('Vibe 5.9 manually selected original clip is not overridden by idle engine on every frame',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewManualMotion=false/);
