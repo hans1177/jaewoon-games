@@ -273,6 +273,10 @@ local ANIMAL_TINT = {
 	["dog-pug"] = Color3.fromRGB(196, 156, 104), cat = Color3.fromRGB(86, 80, 76), chicken = Color3.fromRGB(250, 246, 236),
 	elephant = Color3.fromRGB(128, 126, 130),
 }
+-- 질감 팔레트가 청록색인 나무: 질감을 지우고 초록 단색으로 칠한 뒤 갈색 줄기를 덧댄다
+local SOLID_TREES = {
+	tree = Color3.fromRGB(86, 142, 64), ["tree-high"] = Color3.fromRGB(62, 118, 66), ["tree-crooked"] = Color3.fromRGB(96, 146, 60),
+}
 local ASSET_TINT = {
 	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
 	["plant-bush"] = Color3.fromRGB(78, 128, 58), -- 수입 나무의 잎 질감이 청록색이라, 노란 기운을 곱해 자연스러운 초록으로 만든다
@@ -307,6 +311,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				p.Color = tint
 				-- 질감이 있는 메시는 UsePartColor 를 켜야 Color 가 질감에 곱해진다(없는 속성이면 무시)
 				pcall(function() (p :: any).UsePartColor = true end)
+				if SOLID_TREES[asset] and p:IsA("MeshPart") then
+					p.TextureID = ""
+					p.Color = SOLID_TREES[asset]
+				end
 				-- Part + SpecialMesh 형태로 수입된 모델은 메시의 VertexColor 로 곱한다
 				for _, ch in p:GetChildren() do
 					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
@@ -352,6 +360,21 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		m:PivotTo(CFrame.new(bottomPosition - bottom) * m:GetPivot())
 		if kind == "People" then
 			Pose.relaxArms(m)
+		end
+		if SOLID_TREES[asset] then
+			local c2, sz = m:GetBoundingBox()
+			local w = math.max(sz.X, sz.Z) * 0.11
+			local h = sz.Y * 0.34
+			local trunk = Instance.new("Part")
+			trunk.Shape = Enum.PartType.Cylinder
+			trunk.Size = Vector3.new(h, w, w)
+			trunk.CFrame = CFrame.new(c2.Position.X, c2.Position.Y - sz.Y / 2 + h / 2, c2.Position.Z) * CFrame.Angles(0, 0, math.pi / 2)
+			trunk.Color = Color3.fromRGB(122, 86, 54)
+			trunk.Material = Enum.Material.Wood
+			trunk.Anchored = true
+			trunk.CanCollide = false
+			trunk.CanTouch = false
+			trunk.Parent = m
 		end
 	end)
 	if not ok then
