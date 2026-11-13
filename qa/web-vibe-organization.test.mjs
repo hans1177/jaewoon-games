@@ -173,9 +173,16 @@ test('WEB provider cooldown preserves source budget and allows other owner games
   assert.equal(mixed.queue.tasks[0].status,'queued');
   assert.equal(mixed.queue.tasks[0].recoveryNextAt,'2026-10-29T06:59:59.528Z');
   assert.deepEqual(mixed.queue.tasks[1],other);
+  // 무료 Gemini 404는 공급자 냉각, 다른 공급자 400은 해당 판단의 근거가 아니다.
+  const unavailable=recordWebVibeRecoveryFailure(queue,task.id,{now,
+    failureLog:failureLog.replace('gemini-3.8-flash:HTTP_429','gemini-3.8-flash:HTTP_404')});
+  assert.equal(unavailable.failureClass,'PROVIDER_COOLDOWN');
+  assert.equal(unavailable.attempts,2);
+  assert.equal(unavailable.queue.tasks[0].status,'queued');
   for(const line of [
     mixedLog.replace('gemini-3.5-flash-lite:HTTP_429','gemini-3.5-flash-lite:HTTP_400'),
-    mixedLog.replace('gemini-3.8-flash:HTTP_429','gemini-3.8-flash:HTTP_403')
+    mixedLog.replace('gemini-3.8-flash:HTTP_429','gemini-3.8-flash:HTTP_403'),
+    mixedLog.replace('gemini-3.8-flash:HTTP_429','gemini-3x8-flash:HTTP_429')
   ]){
     const denied=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:line});
     assert.equal(denied.exhausted,true);
