@@ -886,8 +886,8 @@ test('Mare galleon card moves original sail and flag meshes at up to 60fps witho
   assert.match(source,/rest = propPivot:ToObjectSpace\(part\.CFrame\)/);
   assert.match(source,/local yaw = \(if item\.kind == "flag" then 0\.16 else 0\.055\) \* math\.sin\(phase\)/);
   assert.match(source,/item\.part\.CFrame = shipFrame \* item\.rest \* CFrame\.Angles\(pitch, yaw, 0\)/);
-  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,2,
-    'keep existing shared card motion and naval scene loops, no per-card render connection');
+  assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,
+    'keep the existing shared card render loop, no per-card render connection');
   assert.match(source,/cardMotionStep:Disconnect\(\)/);
   assert.match(source,/if card\.id == "eu_03" then activeGalleonViews = math\.max\(0, activeGalleonViews - 1\) end/);
   assert.doesNotMatch(source,/RunService:Set3dRenderingEnabled\(false\)/);
