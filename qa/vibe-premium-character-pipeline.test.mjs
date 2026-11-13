@@ -15,8 +15,9 @@ test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual sel
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewAutoCycle=gltf\.animations\.length>1/);
  assert.match(preview,/clipDurations\.push\(clip\.duration\)/);
- assert.match(preview,/Math\.max\(2,Math\.min\(8,Number\.isFinite\(clipDuration\)\?clipDuration:3\)\)/);
- assert.match(preview,/previewClipElapsed>=clipSeconds/);
+ assert.match(preview,/Math\.max\(\.35,Math\.min\(8,Number\.isFinite\(clipDuration\)\?clipDuration:3\)\)/);
+ assert.match(preview,/const switchAt=Math\.max\(\.2,clipSeconds-\.15\)/);
+ assert.match(preview,/previewClipElapsed>=switchAt/);
  assert.match(preview,/characterMotion\.play\(clipNames\[previewClipIndex\]\)/);
  assert.match(preview,/animationPicker\.value=clipNames\[previewClipIndex\]/);
  assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;\}/);
