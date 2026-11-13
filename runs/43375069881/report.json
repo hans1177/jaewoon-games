@@ -1,0 +1,121 @@
+{
+ "sourceRevision": "7fc666a6ba87c33ff88e22ed82e1aa6826cc94f9",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "LAB ok R15NPC\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "LABPOSE pose_00_idle\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "pose_00_idle",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "LABPOSE pose_01_walk\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "pose_01_walk",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "LABPOSE pose_02_walk\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "pose_02_walk",
+   "files": 1
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "LABPOSE pose_03_walk\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "pose_03_walk",
+   "files": 1
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "LABPOSE pose_04_walk\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "pose_04_walk",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "LABPOSE pose_05_run\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "pose_05_run",
+   "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "LABPOSE pose_06_run\ntext"
+  },
+  {
+   "step": 23,
+   "capture": "pose_06_run",
+   "files": 1
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "LABPOSE pose_07_attack\ntext"
+  },
+  {
+   "step": 26,
+   "capture": "pose_07_attack",
+   "files": 1
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "LABPOSE sit\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "pose_08_sit",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 19,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 30,
+  "completedSteps": 30,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 9,
+  "capturedFrames": 9,
+  "abortedEarly": false
+ }
+}
