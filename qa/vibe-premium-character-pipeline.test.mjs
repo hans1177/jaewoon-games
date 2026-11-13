@@ -14,14 +14,14 @@ test('Vibe 5.9 auto-cycles authored GLB clips on mobile and stops for manual sel
 test('Vibe 5.9 manually selected original clip is not overridden by idle engine on every frame',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/previewManualMotion=false/);
- assert.match(preview,/if\(played\)previewManualMotion=true/);
- assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)previewManualMotion=false;else characterMotion\.mixer\.update\(delta\)\}/);
+ assert.match(preview,/if\(played\)\{previewManualMotion=true;previewAutoCycle=false;\}/);
+ assert.match(preview,/if\(previewManualMotion\)\{if\(motionState\.speed>\.15\)\{previewManualMotion=false;previewAutoCycle=false;\}/);
  assert.match(preview,/if\(!previewManualMotion\)characterMotion\.update\(delta\)/);
 });
 test('Vibe 5.9 mobile motion buttons play imported GLB clips and report missing clips',()=>{
  const preview=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.match(preview,/if\(characterMotion\)\{const played=characterMotion\.play\(action\)/);
- assert.match(preview,/원본에 해당 동작이 없거나 이미 재생 중/);
+ assert.match(preview,/원본에 해당 동작 없음 또는 이미 재생 중/);
  assert.match(preview,/if\(handAnimation\)handAnimation\.play\(action\)/);
 });
 test('Vibe 5.9 real model preview hides training enemy until combat input',()=>{
