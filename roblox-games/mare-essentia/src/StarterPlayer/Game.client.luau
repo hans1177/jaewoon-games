@@ -4554,8 +4554,23 @@ function RENDERERS.route()
 	end
 end
 
+local openYardHall
 local function renderYard()
 	local yard = view.shipyard
+	add(function()
+		return mkRow(content, "조선소 입장", "조선 장인과 배·대포·보강을 크게 보며 고르고 사요", {
+			{ text = "입장", color = COLORS.gold, onClick = function() openYardHall() end, enabled = yard.available },
+		}, 56)
+	end)
+	add(function()
+		local sh = view.ship
+		local row = mkRow(content, "내 배 · " .. sh.name, string.format("선체 %d/%d · 포 %d · 속도 %d · 화물 %d/%d · 선원 %d/%d", sh.hull, sh.maxHull, sh.cannons, sh.speed, sh.cargoUsed, sh.cargoCapacity, sh.crew, sh.maxCrew), nil, 140)
+		local si = SHIP_ICON[sh.id]
+		if si then
+			withIcon(row, si[1], si[2], si[3], 120)
+		end
+		return row
+	end)
 	add(function()
 		return mkRow(content, "정비와 보급", string.format("수리 %d코인/1 · 선원 %d코인/명 · 보급품 %d코인/개", yard.repairCost, yard.hireCost, yard.supplyCost), {
 			{ text = "수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = yard.available },
@@ -4580,10 +4595,13 @@ local function renderYard()
 	end)
 	for _, f in view.fleet.ships do
 		add(function()
-			return mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
+			local frow = mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
 				{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
 				{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
-			}, 72)
+			}, 96)
+			local fsi = SHIP_ICON[f.id or ""] or SHIP_ICON.frigate
+			withIcon(frow, fsi[1], fsi[2], fsi[3], 80)
+			return frow
 		end)
 	end
 	if #view.fleet.ships < view.fleet.max then
@@ -4610,8 +4628,8 @@ local function renderYard()
 			local crow = mkRow(content, c.name, sub, {
 				{ text = if c.owned then "장착중" else (if c.price == 0 then "기본" else tostring(c.price)), color = COLORS.steam, onClick = function() call("BuyCannon", { cannonId = c.id }) end,
 					enabled = yard.available and not c.owned and not c.locked },
-			}, 80)
-			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 56)
+			}, 104)
+			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
 			return crow
 		end)
 	end
@@ -4622,9 +4640,11 @@ local function renderYard()
 			if np.locked then
 				sub ..= "\n" .. np.locked
 			end
-			return mkRow(content, "선체 보강: " .. np.name, sub, {
+			local prow = mkRow(content, "선체 보강: " .. np.name, sub, {
 				{ text = tostring(np.price), color = COLORS.green, onClick = function() call("BuyPlating", {}) end, enabled = yard.available and not np.locked },
-			}, 70)
+			}, 104)
+			withIcon(prow, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
+			return prow
 		end)
 	end
 	add(function() return mkHeader(content, "배 목록") end)
@@ -4645,21 +4665,21 @@ local function renderYard()
 			}, 128)
 			local si = SHIP_ICON[s.id]
 			if si then
-				withIcon(row, si[1], si[2], si[3], 72)
+				withIcon(row, si[1], si[2], si[3], 100)
 			end
 			-- 성능 막대: 화물·속도·선체를 한눈에 비교
 			local stats = { { "화물", s.cargo, maxCargo, COLORS.gold }, { "속도", s.speed, maxSpeed, COLORS.blue }, { "선체", s.hull, maxHull, COLORS.green } }
 			for i, st in stats do
 				local y = 76 + (i - 1) * 16
 				local lb = mkLabel(row, string.format("%s %d", st[1], st[2]), 11, COLORS.muted, false)
-				lb.Position = UDim2.fromOffset(88, y - 2)
+				lb.Position = UDim2.fromOffset(116, y - 2)
 				lb.Size = UDim2.fromOffset(70, 14)
 				lb.AutomaticSize = Enum.AutomaticSize.None
 				local back = Instance.new("Frame")
 				back.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
 				back.BorderSizePixel = 0
-				back.Position = UDim2.new(0, 162, 0, y)
-				back.Size = UDim2.new(1, -250, 0, 8)
+				back.Position = UDim2.new(0, 190, 0, y)
+				back.Size = UDim2.new(1, -278, 0, 8)
 				back.Parent = row
 				corner(back, 4)
 				local fill = Instance.new("Frame")
@@ -4676,7 +4696,7 @@ end
 
 
 -- 조선소 별도 화면: 조선 장인과 마주 보고 정비·보급·배 구입·개조를 한다 (기존 조선소 목록을 큰 화면에 그대로 쓴다)
-local function openYardHall()
+function openYardHall()
 	Sfx.play("sfx_creak")
 	closeTradeHall()
 	local layer = overlayGui("TradeHallGui", 15)
