@@ -2584,11 +2584,31 @@ function PortScene.build(info, onFacility)
 			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(8, 18), speed = rng:NextNumber(1.6, 2.6), phase = rng:NextNumber(0, 10) })
 		end
 	end
+	-- [Studio 전용] 기존 광장 주민 2명을 활용한 R15 모션 대련 테스트.
+	-- 실제 전투 판정·체력·저장·경제에는 영향을 주지 않으며 라이브에서는 실행하지 않는다.
+	local sparring = if RunService:IsStudio() and #walkers >= 2 then { walkers[1], walkers[2] } else nil
+	if sparring then
+		folder:SetAttribute("R15SparringTest", true)
+		for _, fighter in sparring do
+			fighter.mode = "sparring"
+		end
+	end
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	local walkConn = RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		for _, w in walkers do
-			if w.mode == "stay" then
+			if w.mode == "sparring" and w.model.Parent and sparring then
+				local side = if w == sparring[1] then -1 else 1
+				local center = (sparring[1].base.Position + sparring[2].base.Position) * 0.5
+				local offset = Vector3.new(side * 2.5, 0, 0)
+				local position = Vector3.new(center.X + offset.X, w.base.Position.Y, center.Z)
+				local target = Vector3.new(center.X - offset.X, position.Y, center.Z)
+				w.model:PivotTo(CFrame.lookAt(position, target))
+				local cycle = (now + (if side < 0 then 0 else 0.42)) % 2.4
+				local action = if cycle < 0.65 then "guard" elseif cycle < 1.45 then "attack" elseif cycle < 1.85 then "hurt" else "idle"
+				local progress = if action == "attack" then (cycle - 0.65) / 0.8 elseif action == "hurt" then (cycle - 1.45) / 0.4 else 0
+				Pose.makeR15Action(w.model, action, progress, now)
+			elseif w.mode == "stay" then
 				if w.model.Parent then
 					Pose.work(w.model, w.kind, now + w.phase)
 				end
