@@ -8360,7 +8360,12 @@ task.spawn(function()
 			openTradeHall()
 		end
 		local dc = workspace:GetAttribute("DevCall")
-		if dc == "Yard" then
+		if type(dc) == "string" and dc:sub(1, 4) == "Tab:" then
+			-- 개발 캡처용: 시설 창(trade/route/yard/quest/codex/status)을 이름으로 연다
+			workspace:SetAttribute("DevCall", nil)
+			local okTab, errTab = pcall(function() openTab(dc:sub(5)) end)
+			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
+		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
 			openYardHall()
 		elseif dc == "Deck" then
