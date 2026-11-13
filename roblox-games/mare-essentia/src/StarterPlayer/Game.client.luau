@@ -1405,18 +1405,60 @@ H.hudCoin = hudText(card, UDim2.fromOffset(70, 28), UDim2.new(1, -78, 0, 20), 16
 H.hudPort = hudText(card, UDim2.fromOffset(70, 48), UDim2.new(1, -78, 0, 20), 15, Color3.fromRGB(56, 40, 27))
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(70, 52, 33)
-hullBack.Position = UDim2.fromOffset(72, 72)
-hullBack.Size = UDim2.fromOffset(130, 6)
+hullBack.Position = UDim2.fromOffset(72, 70)
+hullBack.Size = UDim2.fromOffset(150, 14)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
-corner(hullBack, 2)
+corner(hullBack, 4)
+local hullStroke = Instance.new("UIStroke")
+hullStroke.Color = Color3.fromRGB(214, 170, 82)
+hullStroke.Thickness = 1.5
+hullStroke.Parent = hullBack
 local hullFill = Instance.new("Frame")
-hullFill.BackgroundColor3 = COLORS.green
+hullFill.BackgroundColor3 = Color3.fromRGB(214, 40, 36)
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
-corner(hullFill, 2)
-H.hudShip = hudText(card, UDim2.fromOffset(70, 76), UDim2.new(1, -78, 0, 16), 14, Color3.fromRGB(54, 37, 25))
+corner(hullFill, 4)
+-- 질감: 위는 밝고 아래는 짙은 붉은 그라데이션 + 윗면 하이라이트 + 세로 줄무늬
+local hullGrad = Instance.new("UIGradient")
+hullGrad.Color = ColorSequence.new(Color3.fromRGB(255, 120, 96), Color3.fromRGB(150, 16, 20))
+hullGrad.Rotation = 90
+hullGrad.Parent = hullFill
+local hullShine = Instance.new("Frame")
+hullShine.BackgroundColor3 = Color3.new(1, 1, 1)
+hullShine.BackgroundTransparency = 0.72
+hullShine.Size = UDim2.new(1, -4, 0.32, 0)
+hullShine.Position = UDim2.fromOffset(2, 1)
+hullShine.BorderSizePixel = 0
+hullShine.Parent = hullFill
+corner(hullShine, 3)
+local hullTicks = Instance.new("Frame")
+hullTicks.BackgroundTransparency = 1
+hullTicks.Size = UDim2.fromScale(1, 1)
+hullTicks.ZIndex = 3
+hullTicks.Parent = hullBack
+for t = 1, 9 do
+	local tick = Instance.new("Frame")
+	tick.BackgroundColor3 = Color3.fromRGB(40, 8, 8)
+	tick.BackgroundTransparency = 0.6
+	tick.BorderSizePixel = 0
+	tick.Position = UDim2.new(t / 10, 0, 0, 0)
+	tick.Size = UDim2.new(0, 1, 1, 0)
+	tick.Parent = hullTicks
+end
+local hullText = Instance.new("TextLabel")
+hullText.BackgroundTransparency = 1
+hullText.Size = UDim2.fromScale(1, 1)
+hullText.Font = Enum.Font.GothamBold
+hullText.TextSize = 11
+hullText.TextColor3 = Color3.new(1, 1, 1)
+hullText.TextStrokeColor3 = Color3.fromRGB(40, 6, 6)
+hullText.TextStrokeTransparency = 0.25
+hullText.ZIndex = 5
+hullText.Text = ""
+hullText.Parent = hullBack
+H.hudShip = hudText(card, UDim2.fromOffset(70, 86), UDim2.new(1, -78, 0, 16), 14, Color3.fromRGB(54, 37, 25))
 -- 글자 그림자: 글자 바깥에 번지는 효과(UIStroke) 대신 같은 글자를 1픽셀 아래에 어둡게 깔아 또렷하게 읽히게 한다.
 function H.shadowOf(label: TextLabel)
 	local sh = label:Clone()
@@ -1905,7 +1947,8 @@ function H.updateHud(p, ship)
 	H.hudPort.Text = tostring(p.portName) .. " · " .. tostring(ship.name)
 	hudBanner.Text = tostring(p.portName)
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
-	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then COLORS.red else COLORS.green
+	hullText.Text = string.format("선체 %d/%d", math.floor(ship.hull), math.floor(ship.maxHull))
+	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
 end
