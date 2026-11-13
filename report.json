@@ -1,15 +1,35 @@
 {
- "sourceRevision": "0bf6638c7c95e909054a290f94d25287011bdf0d",
+ "sourceRevision": "1f66bb30ad81e76d75df59a5b0b7512f04418505",
  "log": [
   {
    "step": 1,
-   "capture": "hud0",
-   "files": 1
+   "ctx": "Client",
+   "out": "started\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "VIEW 1136x380\nRECT Dock 934,78 194x164\nRECT Menu_trade 936,78 60x68\nRECT Menu_route 1002,78 60x68\nRECT Menu_yard 1068,78 60x68\nRECT Menu_quest 936,151 60x68\nRECT Menu_codex 1002,151 60x68\nRECT Menu_status 1068,151 60x68\nRECT OptionsButton 1020,4 52x68\nRECT HelpButton 1076,4 52x68\nRECT ViewToggle 908,4 52x68\nRECT DeckButton 964,4 52x68\ntext"
+   "out": "mobs=4 FieldEnemy@3084.533935546875, 3.195251941680908, -9.039889335632324;FieldEnemy@2942.984130859375, 3.1954774856567383, -13.161352157592773;FieldEnemy@2996.04638671875, 3.1963963508605957, -59.864707946777344;FieldEnemy@2960.356689453125, 3.254135847091675, 15.572220802307129\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "f1_start",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "err=true table: 0x5989e82c9f715b8d done=nil humanoids=4 models=118 parts=132 cam=3091.533935546875, 7.695251941680908, -22.03989028930664 hrp=3000, 4, 86\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "f2_later",
+   "files": 1
   }
  ],
  "errors": [],
@@ -20,17 +40,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 3,
-  "completedSteps": 3,
+  "plannedSteps": 9,
+  "completedSteps": 9,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
