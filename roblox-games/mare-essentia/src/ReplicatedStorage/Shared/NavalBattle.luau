@@ -1037,7 +1037,10 @@ function NavalBattle.play(opts)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
 			f.Parent = parent
-			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) else brass, 4)
+			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
+			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+			local regionDeck = if regionId then CARD_DECK[regionId] else nil
+			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)
 			local plate = Instance.new("Frame")
 			plate.Size = UDim2.fromScale(1, 0.8)
 			plate.BackgroundColor3 = Color3.fromRGB(90, 68, 46)
@@ -1470,12 +1473,17 @@ function NavalBattle.play(opts)
 			focusTween:Play()
 			local artKey = cardArtworkKey(card)
 			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-			focusName.Text = cardName(card)
+			-- [확대 카드] 지역 덱과 선박·유물·동물·원더 분류를 판독할 수 있게 표시한다.
+			local regionId = if type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
+			local regionDeck = if regionId then CARD_DECK[regionId] else nil
+			focusEdge.Color = if regionDeck then regionDeck.color else brass
+			focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
 			local row = if card.row then rowName(card.row) else t("전술", "Tactic")
+			local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
 			local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 			local description = cardDescription(card)
 			local lore = cardLore(card)
-			focusRule.Text = row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
+			focusRule.Text = category .. row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
 			focusMotion = animateCardArt(focusArtwork, focusImage, card)
 			table.insert(cardMotions, focusMotion)
 		end
