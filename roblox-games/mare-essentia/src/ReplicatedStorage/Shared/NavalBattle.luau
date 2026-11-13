@@ -714,7 +714,7 @@ function NavalBattle.play(opts)
 
 		local boardFrame = Instance.new("Frame")
 		boardFrame.Position = UDim2.fromScale(0.2, 0.14)
-		boardFrame.Size = UDim2.fromScale(0.78, 0.56)
+		boardFrame.Size = UDim2.fromScale(0.78, 0.53)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판(퀜트처럼): 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
@@ -760,10 +760,14 @@ function NavalBattle.play(opts)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
-		local adviceTag = label(panel, "", 13, Color3.fromRGB(255, 233, 170), true)
-		adviceTag.Position = UDim2.fromScale(0.02, 0.575)
-		adviceTag.Size = UDim2.fromScale(0.74, 0.13)
+		-- 좁은 왼쪽 정보판 안에 두면 점수판과 겹치므로, 판 바로 아래 빈 띠(손패 위)에 둔다.
+		local adviceTag = label(g, "", 13, Color3.fromRGB(255, 233, 170), true)
+		adviceTag.Position = UDim2.fromScale(0.02, 0.675)
+		adviceTag.Size = UDim2.fromScale(0.74, 0.04)
 		adviceTag.TextScaled = true
+		local adviceLimit = Instance.new("UITextSizeConstraint")
+		adviceLimit.MaxTextSize = 14
+		adviceLimit.Parent = adviceTag
 		adviceTag.TextWrapped = true
 		adviceTag.BackgroundColor3 = Color3.fromRGB(40, 33, 26)
 		adviceTag.BackgroundTransparency = 0.25
@@ -1514,8 +1518,11 @@ function NavalBattle.play(opts)
 					local tipLabel = label(b, string.format("%s%d", if g >= 0 then "+" else "", g), 13, if g > 0 then Color3.fromRGB(150, 235, 150) elseif g < 0 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(230, 220, 200), true)
 					tipLabel.AnchorPoint = Vector2.new(1, 0)
 					tipLabel.Position = UDim2.new(1, -4, 0, 5)
-					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
-					tipLabel.Text = (if i == bestHint then "추천 " else "") .. tipLabel.Text
+					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 38 else 28, 20)
+					-- '추천' 글자는 카드 폭보다 길어 이름과 겹치므로 별 표시로 줄인다.
+					tipLabel.Text = (if i == bestHint then "★" else "") .. tipLabel.Text
+					tipLabel.TextScaled = true
+					tipLabel.TextWrapped = false
 					tipLabel.TextStrokeTransparency = 1
 					tipLabel.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 					tipLabel.BackgroundTransparency = 0.2
