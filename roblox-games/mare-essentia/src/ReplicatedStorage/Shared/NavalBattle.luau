@@ -1032,7 +1032,9 @@ function NavalBattle.play(opts)
 		-- 전투판에 내려놓은 카드는 손패와 같은 판화·금박·점수 인장을 쓴다.
 		local animateCardArt
 		local function chip(parent, c, w, power, moving)
-			local f = Instance.new("Frame")
+			local f = Instance.new("TextButton")
+			f.Text = ""
+			f.AutoButtonColor = false
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
@@ -1080,6 +1082,7 @@ function NavalBattle.play(opts)
 			stamp.BackgroundColor3 = paper
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
+			return f
 		end
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
 		-- 기존 실물 모델만 복제하며 손패 변경/종료 시 재생을 완전히 해제한다.
@@ -1444,7 +1447,7 @@ function NavalBattle.play(opts)
 		frameEdge(focusClose, brass, 4)
 		local selectedPlay
 		local focusMotion
-		local function showCardCodex(card)
+		local function showCardCodex(card, readOnly)
 			if focusMotion then
 				focusMotion.stop()
 				for i = #cardMotions, 1, -1 do
@@ -1459,6 +1462,8 @@ function NavalBattle.play(opts)
 				focusShade.Visible = false
 				return
 			end
+			-- [배치 카드] 손패가 아닌 전장 카드는 읽기 전용 확대만 허용한다.
+			focusUse.Visible = not readOnly
 			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
 			local screenSize = bg.AbsoluteSize
 			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
@@ -1503,7 +1508,7 @@ function NavalBattle.play(opts)
 			if selectedPlay then selectedPlay() end
 		end)
 		focusTap.Activated:Connect(function()
-			if selectedPlay then selectedPlay() end
+			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
 			selectedPlay = nil
@@ -1608,7 +1613,12 @@ function NavalBattle.play(opts)
 				lay.Padding = UDim.new(0, 4)
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
+					local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
+					playedCard.Activated:Connect(function()
+						if playing or finished then return end
+						closeCardCodex()
+						showCardCodex(c, true)
+					end)
 				end
 			end
 			-- 손패 (내 차례에는 카드마다 '추천 수' 점수 변화를 보여 준다)
