@@ -1298,7 +1298,7 @@ do
 	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
 	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
 	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
-	SIG.macau = cat(one("Town", "church", 26, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 22, 4))
+	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
 	SIG.shanghai = pagoda
 	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
 	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
@@ -1385,7 +1385,7 @@ do
 	SIG.calcutta = cat(fort(28), one("Town", "church", 22, 24, 6))
 	SIG.rangoon = cat(spire(HEX, 9, 0, 0), one("Town", "temple-stone", 22, 16, 8), spire(HEX, 6, -14, 0), spire(HEX, 6, 14, -6))
 	SIG.bangkok = cat(one("Town", "temple-tower", 30, 0, 0), one("Town", "temple-stone", 20, 18, 8))
-	SIG.singapore = cat(one("Town", "bell-tower", 26, 0, 0), palms(16))
+	SIG.singapore = cat(one("Town", "temple-tower", 26, 0, 0), palms(16)) -- 동남아 항구: 종탑 대신 사원 탑
 	SIG.hoi_an = shrine
 	SIG.brunei = cat(one("Terrain", "wood-support", 8, -8, 0), one("Terrain", "wood-support", 8, 8, 0), palms(14))
 	SIG.ternate = fortPalms(24)
@@ -2250,7 +2250,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			big("Terrain", "pillar-obelisk", 22)
 		elseif key == "creole" then
 			big("Terrain", "statue-column", 18)
-		elseif key == "japan" or key == "china" then
+		elseif key == "japan" or key == "china" or key == "seasia" then
 			big("Town", "temple-tower", 24)
 		elseif key == "desert" then
 			big("Terrain", "egypt-obelisk", 28)
@@ -2375,7 +2375,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				put("Town", "bench_A", 3.6, x + 8, z + front * 8, false)
 			elseif lm.id == "academy" then
 				body = house(folder, Vector3.new(x, 0, z), 28, 20, 3, style, rng, Color3.fromRGB(196, 184, 170))
-				put("Town", "bell-tower", 20, x + 17, z, true)
+				put("Town", if key == "japan" or key == "china" or key == "seasia" then "temple-stone" else "bell-tower", 20, x + 17, z, true)
 				for k = -1, 1, 2 do put("Terrain", "column", 9, x + k * 7, z + front * 13, false) end
 			elseif lm.id == "zoo" then
 				ring(x, z, 17, 17, "fence_straight")
