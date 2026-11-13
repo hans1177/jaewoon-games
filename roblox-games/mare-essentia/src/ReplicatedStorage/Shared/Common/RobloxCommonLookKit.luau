@@ -92,8 +92,17 @@ Kit.Presets = {
     bloom = { Intensity = 0.5, Size = 32, Threshold = 0.95 },
     sunRays = { Intensity = 0.14, Spread = 0.8 },
   },
+  ["auto-bca046"] = {
+    title = "자동 발견 조명 bca046",
+    mood = "오전 따뜻한 빛, 밝음",
+    lighting = { Brightness = 3.7, ClockTime = 9.1, Ambient = Color3.fromRGB(209, 192, 178), OutdoorAmbient = Color3.fromRGB(240, 221, 205), ColorShift_Top = Color3.fromRGB(255, 173, 101), EnvironmentDiffuseScale = 0.6, EnvironmentSpecularScale = 0.3, ExposureCompensation = 0.1, ShadowSoftness = 0.84 },
+    atmosphere = { Density = 0.28, Offset = 0.15, Color = Color3.fromRGB(255, 236, 210), Decay = Color3.fromRGB(255, 205, 170), Glare = 0.1, Haze = 1.2 },
+    colorCorrection = { Brightness = 0.02, Contrast = 0.06, Saturation = 0.16, TintColor = Color3.fromRGB(255, 244, 230) },
+    bloom = { Intensity = 0.35, Size = 28, Threshold = 1.1 },
+    sunRays = { Intensity = 0.08, Spread = 0.7 },
+  },
 }
-Kit.Order = { "storybook", "dark-fantasy", "cozy", "horror", "sci-fi", "wuxia", "bright-adventure", "auto-ddb25c", "auto-82a008" }
+Kit.Order = { "storybook", "dark-fantasy", "cozy", "horror", "sci-fi", "wuxia", "bright-adventure", "auto-ddb25c", "auto-82a008", "auto-bca046" }
 -- END GENERATED PRESETS
 
 local PREFIX = "VibeLook"
