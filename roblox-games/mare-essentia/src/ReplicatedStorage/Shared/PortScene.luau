@@ -3065,8 +3065,10 @@ function PortScene.build(info, onFacility)
 		season = seasons[index]
 		if ground and ground:IsA("BasePart") then
 			local frosted = cold and index == 1
-			ground.Material = if frosted then Enum.Material.Snow else Enum.Material.Grass
-			ground.Color = if frosted then season.ground elseif temperate then style.ground:Lerp(season.ground, 0.48) else style.ground
+			-- 잔디 질감은 멀리서 어두운 회색으로 보여서 매끈한 재질에 밝은 풀색을 쓴다(눈 덮인 계절만 눈 질감)
+			ground.Material = if frosted then Enum.Material.Snow else Enum.Material.SmoothPlastic
+			local base = if frosted then season.ground elseif temperate then style.ground:Lerp(season.ground, 0.48) else style.ground
+			ground.Color = if frosted then base else base:Lerp(Color3.fromRGB(122, 164, 84), 0.7)
 		end
 		water.Color = if temperate then season.sea else C(32, 118, 160):Lerp(season.sea, 0.25)
 	end
