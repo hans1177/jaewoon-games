@@ -971,6 +971,8 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
   return contract?.enabled===true&&clean(first.gameId)===clean(project.gameId)&&['unity','roblox','web'].includes(clean(project.engine).toLowerCase());
 }
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
+  // [오너 웹 자동개발 중지] 기존 웹게임의 수동 수정 권한은 건드리지 않고 자율 기획만 제외한다.
+  if(project.engine==='web'&&process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1')return false;
   const policy=centralPresentationPolicy(repoRoot);
   const ownerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   if(policy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_OWNER_SCOPE_REQUIRED');
