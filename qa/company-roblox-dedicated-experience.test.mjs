@@ -825,3 +825,39 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
   }
 });
+
+test('Mare eu_03 galleon source separates active art channels without changing combat or claiming native QA',()=>{
+  const base='roblox-games/mare-essentia/';
+  const manifest=JSON.parse(fs.readFileSync(base+'assets/cardart/region-art.json','utf8'));
+  const card=manifest.cards.find(row=>row.id==='eu_03');
+  assert.ok(card);
+  assert.deepEqual([card.name,card.row,card.skill,card.motion,card.power,card.registered],
+    ['갈레온','cannon','armor','fire',6,false]);
+  assert.equal(manifest.cards.length,150);
+  const battleCards=fs.readFileSync(base+'src/ReplicatedStorage/Shared/BoardingCards.luau','utf8');
+  assert.match(battleCards,/B\.Units\.eu_03 = \{[^\n]+row="cannon", power=6, weapon="cannon", ability="armor"/);
+  const svg=fs.readFileSync(base+'assets/cardart/src/eu_03.svg','utf8');
+  assert.match(svg,/"production":"SOURCE_ONLY_NATIVE_QA_REQUIRED"/);
+  assert.match(svg,/"license":"PROJECT_ORIGINAL_ART"/);
+  const required=['water-back','water-front','ship','hull','armor',
+    'mast-fore','mast-main','mast-aft','sails-fore','sails-main','sails-aft',
+    'flag-fore','flag-main','flag-aft','cannon-smoke','cannon-flash'];
+  for(const name of required)assert.match(svg,new RegExp('id="eu03-'+name+'"'),name);
+  for(const motion of ['hull-roll','sail-billow','flag-furl','water-swell','broadside','cannon-plume'])
+    assert.ok(svg.includes('@keyframes eu03-'+motion),'missing motion: '+motion);
+  assert.match(svg,/prefers-reduced-motion:reduce/);
+  const ids=[...svg.matchAll(/id="(eu03-[^"]+)"/g)].map(row=>row[1]);
+  assert.equal(new Set(ids).size,ids.length,'duplicate component ID');
+  const stack=[];
+  for(const match of svg.matchAll(/<\/?([A-Za-z][A-Za-z0-9:.-]*)\b[^>]*>/g)){
+    const token=match[0],tag=match[1];
+    if(token.startsWith('</'))assert.equal(stack.pop(),tag,'SVG layer nesting');
+    else if(!token.endsWith('/>'))stack.push(tag);
+  }
+  assert.deepEqual(stack,[],'all SVG groups closed');
+  const wanted=JSON.parse(fs.readFileSync(base+'assets-wanted.json','utf8'));
+  const job=wanted.wanted.find(row=>row.id==='regional-naval-gwent-150');
+  assert.equal(job.productionVerified,false);
+  assert.equal(job.runtimeVerified,false);
+  assert.equal(job.deploymentRequested,false);
+});
