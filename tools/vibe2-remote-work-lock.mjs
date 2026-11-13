@@ -201,12 +201,12 @@ export function remoteWorkLockRetryDelayMs(identity, attempt) {
   return Math.min(2500, 200 + Math.max(1, Number(attempt) || 1) * 150 + jitter);
 }
 
-function operationOptions(options = {}) {
+function operationOptions(options = {}, attemptCeiling = 8) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   if (typeof fetchImpl !== 'function') throw new Error('fetch implementation required');
   const context = options.context || createRemoteWorkLockContext(options.contextOverrides || {});
   const delay = typeof options.delay === 'function' ? options.delay : defaultDelay;
-  const maxAttempts = Math.max(1, Math.min(8, Number(options.maxAttempts) || 8));
+  const maxAttempts = Math.max(1, Math.min(attemptCeiling, Number(options.maxAttempts) || attemptCeiling));
   const gitTransport = options.gitTransport === null
     ? null
     : options.gitTransport || (options.fetchImpl ? null : createGitCasTransport(options.gitOptions));
@@ -266,7 +266,9 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
 }
 
 export async function releaseRemoteVibeWorkLock(args = {}, options = {}) {
-  const { fetchImpl, context: ctx, delay, maxAttempts, gitTransport } = operationOptions(options);
+  // 실패 후보의 잠금 해제는 병렬 상태 업데이트와 충돌하므로 획득(8회)과 분리해 최대 16회 재판정한다.
+  // 모든 반복에서 최신 잠금 상태와 blob SHA를 새로 읽으며 소유자 및 CAS 규칙은 그대로 유지한다.
+  const { fetchImpl, context: ctx, delay, maxAttempts, gitTransport } = operationOptions(options, 16);
   const lockId = clean(args.id);
   const worker = clean(args.worker) || 'vibe2';
   if (!lockId) throw new Error('work-lock id required');
