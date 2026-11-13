@@ -1074,6 +1074,19 @@ function NavalBattle.play(opts)
 			tag.Position = UDim2.fromScale(0.03, 0.04)
 			tag.Size = UDim2.fromScale(0.94, 0.38)
 			tag.TextScaled = true
+			-- [배치 카드 식별] 작은 카드도 5대륙과 선박·유물·동물·원더를 원화 위에서 구분한다.
+			local category = if c.category then (if english then englishCategories[c.category] or c.category else c.category)
+				elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero") else rowName(c.row)
+			local origin = if regionDeck then (if english then string.upper(regionId) else regionDeck.ko) .. " · " else ""
+			local identity = label(f, origin .. category, 9, Color3.fromRGB(255, 245, 218), true)
+			identity.Name = "PlayedCardIdentity"
+			identity.Position = UDim2.fromScale(0.025, 0.48)
+			identity.Size = UDim2.fromScale(0.95, 0.16)
+			identity.BackgroundColor3 = if regionDeck then regionDeck.color else Color3.fromRGB(75, 56, 40)
+			identity.BackgroundTransparency = 0.13
+			identity.TextScaled = true
+			identity.TextStrokeTransparency = 0.48
+			identity.ZIndex = 8
 			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
 			stamp.AnchorPoint = Vector2.new(0.5, 1)
 			stamp.Position = UDim2.fromScale(0.5, 0.97)
