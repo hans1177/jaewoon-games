@@ -3960,6 +3960,20 @@ do
 	end
 end
 
+-- 카드 그림: 대륙 카드가 가리키는 그림 키는 모두 업로드된 에셋이어야 한다 (없으면 빈 그림이 된다)
+do
+	local BCm = require("./Shared/BoardingCards")
+	local AssetsAll = require("./Shared/AssetIds")
+	local bad, total = {}, 0
+	for id, u in BCm.Units do
+		if u.stage and u.stage.art then
+			total += 1
+			if not AssetsAll[u.stage.art] then table.insert(bad, id .. ":" .. u.stage.art) end
+		end
+	end
+	check("카드 그림 키가 모두 등록돼 있다 (" .. total .. "장)", #bad == 0, table.concat(bad, ", "))
+end
+
 -- 이야기 이벤트 초상화: 이벤트가 열리는 항구의 지역 초상 시트가 있어야 빈 초상화가 안 생긴다
 do
 	local Story = require("./Shared/Story")

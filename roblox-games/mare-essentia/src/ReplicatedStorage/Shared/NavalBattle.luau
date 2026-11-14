@@ -85,6 +85,9 @@ local CARD_DECK = {
 	af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(204, 128, 94) },
 }
 
+-- 지도자 얼굴: 등록·업로드된 인물 초상만 연결한다 (없는 지도자는 이름 글자)
+local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
+
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
@@ -1951,6 +1954,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
 			foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
 			mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
+			-- 등록된 인물 초상이 있는 지도자는 글자 대신 얼굴을 보여 준다
+			for _, pair in { { mePlate, m.leader.me }, { foePlate, m.leader.foe } } do
+				local face = LEADER_FACE[pair[2]]
+				local img = face and AssetIds[face]
+				local old = pair[1].leader:FindFirstChild("Face")
+				if old then old:Destroy() end
+				if img then
+					pair[1].leader.Text = ""
+					local f = Instance.new("ImageLabel")
+					f.Name = "Face"
+					f.Size = UDim2.fromScale(1, 1)
+					f.BackgroundTransparency = 1
+					f.ScaleType = Enum.ScaleType.Crop
+					f.Image = "rbxassetid://" .. tostring(img)
+					local fc = Instance.new("UICorner")
+					fc.CornerRadius = UDim.new(1, 0)
+					fc.Parent = f
+					f.Parent = pair[1].leader
+				end
+			end
 			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
 			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
