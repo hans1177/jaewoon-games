@@ -2130,6 +2130,68 @@ function NavalBattle.play(opts)
 
 	-- 대포 한 발
 	local kick = 0 -- 포격·피격 때 순간적으로 화각이 튀는 정도
+	-- 화면 가운데 잠깐 뜨는 한 줄 연출 글자
+	local function popText(text, color)
+		local l = label(gui, text, 30, color)
+		l.AnchorPoint = Vector2.new(0.5, 0.5)
+		l.Position = UDim2.new(0.5, 0, 0.3, 0)
+		l.Size = UDim2.fromOffset(420, 44)
+		l.TextStrokeTransparency = 0.2
+		l.ZIndex = 20
+		local t0 = os.clock()
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			local k = (os.clock() - t0) / 1.4
+			if k >= 1 or finished then
+				conn:Disconnect()
+				l:Destroy()
+				return
+			end
+			l.Position = UDim2.new(0.5, 0, 0.3 - k * 0.06, 0)
+			l.TextTransparency = math.max(0, (k - 0.6) / 0.4)
+			l.TextStrokeTransparency = 0.2 + l.TextTransparency * 0.8
+			l.TextSize = 30 + (1 - k) * 8
+		end)
+	end
+	-- 돛대가 부러져 바다로 쓰러진다 (체력이 크게 줄어든 첫 순간)
+	local function dismast(sh)
+		sh.dismasted = true
+		local base = ORIGIN + sh.pos + Vector3.new(0, 6, 0)
+		local pole = part(folder, Vector3.new(22, 1.4, 1.4), CFrame.new(base + Vector3.new(0, 11, 0)), Color3.fromRGB(110, 76, 44), Enum.Material.Wood, Enum.PartType.Cylinder)
+		local sail = part(folder, Vector3.new(14, 10, 0.3), CFrame.new(base + Vector3.new(0, 16, 0)), Color3.fromRGB(235, 228, 205), Enum.Material.Fabric)
+		local dirSide = if math.random() < 0.5 then 1 else -1
+		local t0 = os.clock()
+		Sfx.play("sfx_creak", 0.7, 0.7)
+		FX.splinters(base + Vector3.new(0, 4, 0), 14)
+		FX.smoke(base + Vector3.new(0, 3, 0), 3, 3.2, true)
+		shake = math.max(shake, 2)
+		kick = math.max(kick, 8)
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			local k = math.clamp((os.clock() - t0) / 1.6, 0, 1)
+			if finished then
+				conn:Disconnect()
+				pole:Destroy()
+				sail:Destroy()
+				return
+			end
+			local ang = k * k * 1.45
+			local cf = CFrame.new(base) * CFrame.Angles(0, 0, ang * dirSide) * CFrame.new(0, 11 - k * 4, 0)
+			pole.CFrame = cf * CFrame.Angles(0, 0, math.pi / 2)
+			sail.CFrame = CFrame.new(base) * CFrame.Angles(0, 0, ang * dirSide) * CFrame.new(0, 16 - k * 6, 0)
+			if k >= 1 then
+				conn:Disconnect()
+				local at = Vector3.new(pole.Position.X, 0, pole.Position.Z)
+				FX.splash(at)
+				Sfx.play("sfx_naval_splash", 0.7, 0.75)
+				shake = math.max(shake, 1.2)
+				task.delay(2.5, function()
+					pole:Destroy()
+					sail:Destroy()
+				end)
+			end
+		end)
+	end
 	local function shoot(fromPos, toPos, fx, nc)
 		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
@@ -2446,6 +2508,9 @@ function NavalBattle.play(opts)
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
 					e = meQueue[math.min(#meQueue, (foeDone + 1))]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
+					if volley >= 3 then
+						popText(if volley >= 4 then "일제 사격!!" else "일제 사격!", Color3.fromRGB(255, 200, 90))
+					end
 					for k = 0, volley - 1 do
 						task.delay(k * 0.08, function()
 							if not finished then
@@ -2619,6 +2684,10 @@ function NavalBattle.play(opts)
 		-- 손상 연출: 체력이 줄수록 연기, 더 줄면 불길이 오른다
 		for _, side in { { me, meHp, loser == "me" }, { foe, foeHp, loser == "foe" } } do
 			local sh, hp = side[1] :: any, side[2] :: number
+			if not side[3] and hp < 0.5 and not sh.dismasted then
+				dismast(sh)
+				popText(if sh == me then "돛대가 부러졌다!" else "적선의 돛대가 부러졌다!", if sh == me then Color3.fromRGB(255, 130, 110) else Color3.fromRGB(255, 226, 120))
+			end
 			if not side[3] and hp < 0.55 and math.random() < (0.55 - hp) * 0.5 then
 				local at = ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * sh.length * 0.6, 8 + math.random() * 5, (math.random() - 0.5) * 6)
 				FX.smoke(at, 1, 2.2, true)
