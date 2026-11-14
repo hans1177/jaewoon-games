@@ -99,9 +99,9 @@ return function(D, S)
 
 		local msgs = {}
 		local days = plan.days
-		if event.kind == "tailwind" and days > 1 then
+		if (event.kind == "tailwind" or event.kind == "current") and days > 1 then
 			days -= 1
-		elseif event.kind == "fog" then
+		elseif event.kind == "fog" or event.kind == "vortex" then
 			days += 1
 		end
 
@@ -155,7 +155,7 @@ return function(D, S)
 		local usedSingle = singles[event.kind] == true
 		for _ = 1, math.min(3, math.floor(days / 8)) do
 			local extra = D.Voyage.rollEvent(ctx.rng, days, weather.id)
-			if extra.kind ~= "none" and extra.kind ~= "tailwind" and extra.kind ~= "fog" and not (singles[extra.kind] and usedSingle) then
+			if extra.kind ~= "none" and extra.kind ~= "tailwind" and extra.kind ~= "fog" and extra.kind ~= "current" and extra.kind ~= "vortex" and not (singles[extra.kind] and usedSingle) then
 				if singles[extra.kind] then usedSingle = true end
 				table.insert(events, extra)
 			end
@@ -231,6 +231,114 @@ return function(D, S)
 				table.insert(msgs, "멀리서 거대한 고래가 물을 뿜었다! 선원들이 환호했다 (명성 +1)")
 				moraleAdd(event.amount)
 				S.Discovery.grantCard(state, "zoo_whale", msgs)
+			elseif event.kind == "current" then
+				table.insert(msgs, "숨은 해류를 타고 하루를 아꼈다! 선원들이 환호했다")
+				moraleAdd(4)
+			elseif event.kind == "wreck" then
+				local c = math.floor(80 + 170 * ctx.rng())
+				state.coins += c
+				table.insert(msgs, string.format("침몰선을 발견해 보물 상자를 건졌다! 코인 +%d", c))
+				if ctx.rng() < 0.25 then
+					giveMap(state, ctx, msgs)
+				end
+			elseif event.kind == "rainbow" then
+				state.fame += 1
+				table.insert(msgs, "하늘에 쌍무지개가 걸렸다. 길조라며 모두 기뻐했다 (명성 +1)")
+				moraleAdd(6)
+			elseif event.kind == "mermaid" then
+				table.insert(msgs, "어디선가 인어의 노래가 들렸다... 선원들의 마음이 한껏 들떴다")
+				moraleAdd(10)
+				if ctx.rng() < 0.12 then
+					S.Discovery.grantCard(state, "myth_selkie", msgs)
+				end
+			elseif event.kind == "pigeon" then
+				state.coins += 25
+				table.insert(msgs, "전서구가 항구 소식을 물어다 주었다. 정보 사례로 25코인을 벌었다")
+				moraleAdd(3)
+			elseif event.kind == "bottle" then
+				table.insert(msgs, "옛 선장의 병 편지를 건졌다. 지도 한 장이 들어 있었다")
+				giveMap(state, ctx, msgs)
+			elseif event.kind == "rats" then
+				local lost = math.min(state.ship.supplies, math.floor(8 + 12 * ctx.rng()))
+				state.ship.supplies -= lost
+				table.insert(msgs, string.format("쥐떼가 창고를 갉아먹었다! 보급품 -%d", lost))
+				moraleAdd(-3)
+			elseif event.kind == "vortex" then
+				table.insert(msgs, "거대한 소용돌이에 휘말려 항로를 벗어났다. 하루가 더 걸렸다")
+				moraleAdd(-3)
+			elseif event.kind == "fire" then
+				local dmg = math.max(1, math.floor(def.hull * 0.05))
+				state.ship.hull = math.max(1, state.ship.hull - dmg)
+				table.insert(msgs, string.format("선상 화재! 불은 껐지만 선체 -%d", dmg))
+				moraleAdd(-4)
+			elseif event.kind == "mutiny" then
+				if state.morale < 50 then
+					local loss = math.min(state.ship.crew - 1, 1 + math.floor(2 * ctx.rng()))
+					if loss > 0 then
+						state.ship.crew -= loss
+					end
+					table.insert(msgs, string.format("사기가 바닥난 선원들이 반란을 일으켰다! %d명이 배를 떠났다", math.max(loss, 0)))
+					moraleAdd(-10)
+				else
+					table.insert(msgs, "불만이 터졌지만 선장의 설득으로 반란을 가라앉혔다")
+					moraleAdd(-3)
+				end
+			elseif event.kind == "shark" then
+				local loss = if state.ship.crew > 2 and ctx.rng() < 0.5 then 1 else 0
+				state.ship.crew -= loss
+				local lost = math.min(state.ship.supplies, 5)
+				state.ship.supplies -= lost
+				table.insert(msgs, if loss > 0 then "상어 떼가 덮쳤다! 선원 1명을 잃고 그물이 찢어졌다" else "상어 떼가 그물을 찢고 달아났다")
+				moraleAdd(-3)
+			elseif event.kind == "cursed" then
+				local c = math.floor(150 + 150 * ctx.rng())
+				state.coins += c
+				table.insert(msgs, string.format("저주받은 보물을 손에 넣었다. 코인 +%d, 그러나 선원들이 수군거린다...", c))
+				moraleAdd(-12)
+			elseif event.kind == "phantom" then
+				local c = math.floor(100 + 150 * ctx.rng())
+				state.coins += c
+				state.fame += 1
+				table.insert(msgs, string.format("유령선을 따라가 보니 숨은 보물이 있었다! 코인 +%d, 명성 +1", c))
+				moraleAdd(-4)
+				if ctx.rng() < 0.12 then
+					S.Discovery.grantCard(state, "myth_ghost_light", msgs)
+				end
+			elseif event.kind == "kraken" then
+				if state.ship.hull > def.hull * 0.6 then
+					state.fame += 3
+					table.insert(msgs, "크라켄이 나타났다! 대포를 쏘아 물리쳤다 (명성 +3)")
+					moraleAdd(6)
+					if ctx.rng() < 0.3 then
+						S.Discovery.grantCard(state, "myth_leviathan", msgs)
+					end
+				else
+					local dmg = math.max(1, math.floor(def.hull * 0.25))
+					state.ship.hull = math.max(1, state.ship.hull - dmg)
+					table.insert(msgs, string.format("크라켄이 나타났다! 간신히 도망쳤지만 선체 -%d", dmg))
+					moraleAdd(-8)
+				end
+			elseif event.kind == "volcano" then
+				state.fame += 2
+				state.coins += 50
+				table.insert(msgs, "바다에서 화산이 솟아 새 섬이 생겼다! 이름을 붙였다 (명성 +2, 코인 +50)")
+				moraleAdd(5)
+			elseif event.kind == "meteor" then
+				state.fame += 1
+				table.insert(msgs, "밤하늘에 별똥별이 쏟아졌다. 모두 소원을 빌었다 (명성 +1)")
+				moraleAdd(5)
+			elseif event.kind == "rival" then
+				if ctx.rng() < 0.5 then
+					state.coins += 100
+					state.fame += 1
+					table.insert(msgs, "라이벌 선장과 항해 경주를 벌여 이겼다! 코인 +100, 명성 +1")
+					moraleAdd(5)
+				else
+					local c = math.min(state.coins, 50)
+					state.coins -= c
+					table.insert(msgs, string.format("라이벌 선장과 경주에서 졌다. 내기 돈 %d코인을 잃었다", c))
+					moraleAdd(-3)
+				end
 			elseif event.kind == "pirates" then
 				S.Battle.encounter(state, ctx, msgs)
 			end
