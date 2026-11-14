@@ -1,5 +1,5 @@
 {
- "sourceRevision": "5d39fff512fcad046c98958c4b8afd5ef85f01b0",
+ "sourceRevision": "8c62ab6456deb11255b2204d7d05796ae82b289c",
  "log": [
   {
    "step": 1,
@@ -14,7 +14,7 @@
   {
    "step": 5,
    "ctx": "Client",
-   "out": "faced 19.949283599853516\ntext"
+   "out": "faced 113.77761840820312\ntext"
   },
   {
    "step": 6,
@@ -34,7 +34,7 @@
   {
    "step": 11,
    "ctx": "Client",
-   "out": "faced 7.000010967254639\ntext"
+   "out": "faced 9.594212532043457\ntext"
   },
   {
    "step": 12,
@@ -69,12 +69,27 @@
   {
    "step": 23,
    "ctx": "Client",
-   "out": "ready=true err=true table: 0x5144e7c1839ae466 btns=공격|철수|0.4|6.2|3.2\ntext"
+   "out": "ready=true err=true table: 0xcece76440123c14d btns=공격|철수|0.2|6.2|3.1|방어\ntext"
   },
   {
    "step": 24,
    "ctx": "Client",
-   "out": "MOVE anchored=false moved=16.4 ws=18 mobs=4\ntext"
+   "out": "MOVE anchored=false moved=16.5 ws=18 mobs=4\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 27,
+   "capture": "c6_guard",
+   "files": 1
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
   }
  ],
  "errors": [],
@@ -89,13 +104,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 25,
-  "completedSteps": 25,
+  "plannedSteps": 29,
+  "completedSteps": 29,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
