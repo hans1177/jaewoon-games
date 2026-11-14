@@ -19,7 +19,7 @@ for key, assetId in AssetIds do
 		-- [5대륙 카드 원화] 기존 원본 SVG에서 제작·승인된 이미지에 위키백과 출처를 잘못 붙이지 않는다.
 		local region, digits = string.match(cardId, "^(%a%a)_(%d%d)$")
 		local cardNumber = tonumber(digits or "")
-		local originalRegional = (region == "eu" or region == "ea" or region == "me" or region == "nw" or region == "af")
+		local originalRegional = (region == "eu" or region == "ea" or region == "me" or region == "nw" or region == "af" or region == "sa")
 			and cardNumber ~= nil and cardNumber >= 1 and cardNumber <= 30
 		Art[cardId] = {
 			image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=420&h=420",

@@ -13,14 +13,15 @@ CB.MAX_COPIES = 3 -- 같은 카드는 덱에 세 장까지
 CB.LOST_MAX = 10 -- 미지의 땅 카드는 덱에 열 장까지 (내 대륙 카드가 중심이어야 한다)
 CB.PROVISION_BASE = 150 -- 보급 한도 (지도자가 조금 더해 준다)
 -- 카드 id 앞 두 글자 → 대륙. 접두사가 없는 카드(기본 병종·지식 카드)는 어느 덱에서나 쓴다.
-CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", lo = "lost" }
+CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", sa = "southeast_asia", lo = "lost" }
 function CB.continentOf(id: string): string?
 	local pre = string.match(id, "^(%a%a)_%d%d$")
 	return pre and CB.CONTINENT_PREFIX[pre] or nil
 end
-function CB.provisionLimit(factionId: string?): number
+function CB.provisionLimit(factionId: string?, leaderId: string?): number
 	local fac = BC.Factions[factionId or ""]
-	local leader = fac and BC.Leaders[fac.leader]
+	local pick = if fac and fac.leaders and leaderId and table.find(fac.leaders, leaderId) then leaderId else (fac and fac.leader)
+	local leader = pick and BC.Leaders[pick]
 	return CB.PROVISION_BASE + (leader and leader.provision or 0)
 end
 function CB.deckCost(ids: { string }): number
@@ -290,6 +291,10 @@ function CB.sanitize(saved: any, factionId: string?): any
 		end
 		if #ids >= 2 and #ids <= 3 then book.pick = { ids = ids, source = "boss" } end
 	end
+	local fac2 = BC.Factions[factionId or ""]
+	if type(saved.leader) == "string" and fac2 and fac2.leaders and table.find(fac2.leaders, saved.leader) then
+		book.leader = saved.leader
+	end
 	if type(saved.puzzleDay) == "number" then book.puzzleDay = math.floor(saved.puzzleDay) end
 	if saved.practiceDone == true then book.practiceDone = true end
 	if type(saved.duelDay) == "number" then book.duelDay = math.floor(saved.duelDay) end
@@ -427,6 +432,17 @@ function CB.knowledgeBonus(discovered, cardsById)
 		bonus[row] = b
 	end
 	return bonus, n
+end
+
+
+-- 지도자 고르기: 그 대륙의 지도자만 고를 수 있다
+function CB.setLeader(book: any, factionId: string?, leaderId: string): (boolean, string)
+	local fac = BC.Factions[factionId or ""]
+	if not (fac and fac.leaders and table.find(fac.leaders, leaderId)) then
+		return false, "이 대륙의 지도자가 아니에요"
+	end
+	book.leader = leaderId
+	return true, BC.Leaders[leaderId].name .. " 지도자로 정했어요"
 end
 
 return CB

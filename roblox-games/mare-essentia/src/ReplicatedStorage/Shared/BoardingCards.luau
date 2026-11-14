@@ -74,6 +74,33 @@ B.Leaders = {
 	draw = { id = "draw", name = "지휘", text = "카드 한 장을 더 뽑는다", provision = 10 },
 	clear = { id = "clear", name = "항로 개척", text = "날씨를 걷어 낸다", provision = 15 },
 	snipe = { id = "snipe", name = "저격", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5 },
+	-- 유럽 정복자 지도자: 필드 밖에 서서 한 판에 한 번 능력을 쓴다
+	napoleon = { fx = "hornRanged", id = "napoleon", name = "나폴레옹", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "europe", era = "정복자" },
+	caesar = { fx = "draw2", id = "caesar", name = "카이사르", text = "카드를 두 장 뽑는다", provision = 12, faction = "europe", era = "정복자" },
+	alexander = { fx = "bonusMelee", id = "alexander", name = "알렉산드로스", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "europe", era = "정복자" },
+	charlemagne = { fx = "restore", id = "charlemagne", name = "샤를마뉴", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "europe", era = "정복자" },
+	elizabeth = { fx = "clearBonusRanged", id = "elizabeth", name = "엘리자베스 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "europe", era = "해양" },
+	-- 동아시아
+	genghis = { fx = "bonusMelee", id = "genghis", name = "칭기즈 칸", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "east_asia", era = "정복자" },
+	qinshi = { fx = "hornMelee", id = "qinshi", name = "진시황", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
+	nobunaga = { fx = "hornRanged", id = "nobunaga", name = "오다 노부나가", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
+	yisunsin = { fx = "snipe", id = "yisunsin", name = "이순신", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "east_asia", era = "해양" },
+	-- 신대륙
+	pachacuti = { fx = "draw2", id = "pachacuti", name = "파차쿠텍", text = "카드를 두 장 뽑는다", provision = 12, faction = "new_world", era = "정복자" },
+	montezuma = { fx = "hornMelee", id = "montezuma", name = "몬테수마 2세", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "new_world", era = "제국" },
+	sittingbull = { fx = "clearBonusRanged", id = "sittingbull", name = "시팅 불", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "new_world", era = "수호" },
+	-- 중동
+	saladin = { fx = "snipe", id = "saladin", name = "살라딘", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "middle_east", era = "수호" },
+	suleiman = { fx = "hornRanged", id = "suleiman", name = "술레이만 대제", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "middle_east", era = "제국" },
+	cyrus = { fx = "restore", id = "cyrus", name = "키루스 대왕", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "middle_east", era = "정복자" },
+	-- 남·동남아
+	rajaraja = { fx = "clearBonusRanged", id = "rajaraja", name = "라자라자 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "southeast_asia", era = "해양" },
+	tranhungdao = { fx = "snipe", id = "tranhungdao", name = "쩐흥다오", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "southeast_asia", era = "수호" },
+	akbar = { fx = "hornRanged", id = "akbar", name = "악바르", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "southeast_asia", era = "통일" },
+	-- 아프리카
+	mansa = { fx = "draw2", id = "mansa", name = "만사 무사", text = "카드를 두 장 뽑는다", provision = 12, faction = "africa", era = "부유" },
+	hannibal = { fx = "snipe", id = "hannibal", name = "한니발", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "africa", era = "정복자" },
+	shaka = { fx = "bonusMelee", id = "shaka", name = "샤카 줄루", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "africa", era = "정복자" },
 }
 
 -- 보급 비용: 덱의 카드 비용 합이 한도(CardBook.PROVISION_BASE + 지도자 보너스)를 넘지 못한다.
@@ -82,7 +109,7 @@ function B.cost(card: any): number
 	if card.special then
 		return if card.special == "horn" then 5 elseif card.special == "scorch" then 6 else 4
 	end
-	local v = (card.power or 0) + (if card.ability then 1 else 0) + (if card.hero then 3 else 0)
+	local v = (card.power or 0) + (if card.ability then 1 else 0) + (if card.hero then 3 else 0) + (if card.cause then 1 else 0) + (if card.fuse then 2 else 0)
 	if type(card.id) == "string" and string.sub(card.id, 1, 3) == "lo_" then
 		v += 1
 	end
@@ -135,9 +162,9 @@ B.Units.janissary = { id = "janissary", name = "예니체리", row = "ranged", p
 B.Units.camel = { id = "camel", name = "낙타 기병", row = "melee", power = 5, weapon = "spear" }
 B.Units.raider = { id = "raider", name = "해상 습격대", row = "melee", power = 4, weapon = "sword", ability = "bond" }
 -- [지역 해전 오브젝트] 5개 지역 × 30장. 기존 전투 판정·세이브 ID·기존 카드 유지.
-B.Units.eu_01 = { id="eu_01", name="카라벨", category="선박", lore="포르투갈 원양 탐사의 기동성 높은 소형 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="카라벨", prop={"Naval","ship-small"} }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.eu_01 = { id="eu_01", name="카라벨", category="선박", lore="포르투갈 원양 탐사의 기동성 높은 소형 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="카라벨", prop={"Naval","ship-small"} }, row="ranged", power=4, weapon="gun", ability="spy", cause="eu_35" }
 B.Units.eu_02 = { id="eu_02", name="카라크", category="선박", lore="먼바다 무역과 장거리 항해에 쓰인 대형 범선", stage={ art="CardArt/event_title_ship", motion="fire", scene="카라크" }, row="cannon", power=5, weapon="cannon", ability="bond" }
-B.Units.eu_03 = { id="eu_03", name="갈레온", category="선박", lore="함포 배치를 강화한 대서양 대형 군선", stage={ art="CardArt/event_title_ship", motion="fire", scene="갈레온", prop={"Naval","ship-pirate-large"} }, row="cannon", power=6, weapon="cannon", ability="armor" }
+B.Units.eu_03 = { id="eu_03", name="갈레온", category="선박", lore="함포 배치를 강화한 대서양 대형 군선", stage={ art="CardArt/event_title_ship", motion="fire", scene="갈레온", prop={"Naval","ship-pirate-large"} }, row="cannon", power=6, weapon="cannon", ability="armor", cause="eu_34" }
 B.Units.eu_04 = { id="eu_04", name="코그", category="선박", lore="중세 북유럽과 발트해의 상선", stage={ art="CardArt/event_title_ship", motion="board", scene="코그" }, row="melee", power=5, weapon="sword", ability="bond" }
 B.Units.eu_05 = { id="eu_05", name="플루이트", category="선박", lore="네덜란드의 화물 적재 중심 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="플루이트", prop={"Naval","ship-medium"} }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.eu_06 = { id="eu_06", name="프리깃", category="선박", lore="정찰과 기동전에 뛰어난 유럽 군함", stage={ art="CardArt/event_title_ship", motion="fire", scene="프리깃", prop={"Naval","ship-large"} }, row="cannon", power=7, weapon="cannon", ability="bond" }
@@ -165,6 +192,21 @@ B.Specials.eu_27 = { id="eu_27", name="지브롤터 해협", category="지형·�
 B.Units.eu_28 = { id="eu_28", name="베네치아 운하", category="지형·원더", lore="유럽의 지형·원더 유산 · 베네치아 운하", stage={ art="CardArt/event_canal_opened", motion="clear", scene="베네치아 운하" }, row="ranged", power=4, weapon="gun" }
 B.Units.eu_29 = { id="eu_29", name="노르웨이 피오르", category="지형·원더", lore="유럽의 지형·원더 유산 · 노르웨이 피오르", stage={ art="CardArt/event_chart_west_europe", motion="clear", scene="노르웨이 피오르" }, row="melee", power=5, weapon="spear" }
 B.Specials.eu_30 = { id="eu_30", name="북해 안개", category="지형·원더", lore="북해 항로의 시야를 가리는 안개", stage={ art="CardArt/event_calm_seas", motion="storm", scene="북해 안개" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.eu_31 = { id="eu_31", name="백년전쟁", category="사건", lore="잉글랜드와 프랑스가 1세기 가까이 싸운 전쟁", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="백년전쟁" }, row="melee", power=4, weapon="axe" }
+B.Units.eu_32 = { id="eu_32", name="대항해 시대", category="사건", lore="유럽이 바다 너머로 뻗어 나간 탐험의 시대", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="대항해 시대" }, row="ranged", power=3, weapon="gun", cause="eu_35" }
+B.Units.eu_33 = { id="eu_33", name="산업혁명", category="사건", lore="증기와 기계가 세상을 바꾼 대변화", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="산업혁명" }, row="cannon", power=4, weapon="cannon" }
+B.Units.eu_34 = { id="eu_34", name="화약", category="기술", lore="중국에서 건너와 전쟁을 바꾼 폭발 가루", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="화약" }, row="cannon", power=3, weapon="cannon" }
+B.Units.eu_35 = { id="eu_35", name="나침반", category="기술", lore="먼바다에서 방향을 잡게 해 준 도구", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="나침반" }, row="ranged", power=3, weapon="gun" }
+B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백년전쟁에서 프랑스를 이끈 소녀 지도자", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="잔 다르크" }, row="melee", power=5, weapon="sword", cause="eu_31" }
+B.Units.eu_37 = { id="eu_37", name="콜럼버스", category="인물", lore="대서양을 건너 신대륙에 닿은 항해가", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="콜럼버스" }, row="ranged", power=5, weapon="gun", cause="eu_32" }
+B.Units.eu_38 = { id="eu_38", name="웰링턴 공작", category="인물", lore="워털루에서 나폴레옹을 꺾은 영국 장군", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="웰링턴 공작" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
+B.Units.eu_39 = { id="eu_39", name="넬슨 제독", category="인물", lore="갈레온을 이은 함대로 트라팔가르를 이긴 제독", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="넬슨 제독" }, row="cannon", power=6, weapon="cannon", cause="eu_03" }
+B.Units.eu_40 = { id="eu_40", name="창병 방진", category="병종", lore="창을 촘촘히 세워 기병을 막은 보병 진형", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="창병 방진" }, row="melee", power=4, weapon="spear" }
+B.Specials.eu_41 = { id="eu_41", name="휴전 협정", category="사건", lore="전쟁을 멈추게 한 협정", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="휴전 협정" }, special="refute", refuteKind="사건", text="상대 카드 중 사건에서 이어진 연쇄 보너스를 끊는다" }
+B.Specials.eu_42 = { id="eu_42", name="암살", category="인물", lore="핵심 인물을 노린 은밀한 공격", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="암살" }, special="refute", refuteKind="인물", text="상대 카드 중 인물에서 이어진 연쇄 보너스를 끊는다" }
+B.Specials.eu_43 = { id="eu_43", name="봉쇄", category="기술", lore="기술과 물자가 들어오는 길을 막는 작전", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="봉쇄" }, special="refute", refuteKind="기술", text="상대 카드 중 기술에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.eu_44 = { id="eu_44", name="머스킷 부대", category="병종", lore="화약 무기로 무장한 보병 부대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="머스킷 부대" }, row="ranged", power=3, weapon="gun", fuse={"eu_34","eu_40"} }
+B.Units.eu_45 = { id="eu_45", name="철갑 함대", category="선박", lore="산업혁명이 낳은 강철 군함 함대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="철갑 함대" }, row="cannon", power=3, weapon="cannon", fuse={"eu_33","eu_06"} }
 B.Units.ea_01 = { id="ea_01", name="판옥선", category="선박", lore="넓은 갑판과 함포를 갖춘 조선 수군 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="판옥선" }, row="cannon", power=4, weapon="cannon", ability="spy" }
 B.Units.ea_02 = { id="ea_02", name="거북선", category="선박", lore="덮개형 상갑판이 특징인 조선 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="거북선" }, row="cannon", power=5, weapon="cannon", ability="bond" }
 B.Units.ea_03 = { id="ea_03", name="조선 세견선", category="선박", lore="동아시아의 선박 유산 · 조선 세견선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 세견선" }, row="ranged", power=6, weapon="gun", ability="armor" }
@@ -285,6 +327,36 @@ B.Specials.af_27 = { id="af_27", name="사하라 사막", category="지형·원�
 B.Units.af_28 = { id="af_28", name="킬리만자로", category="지형·원더", lore="아프리카의 지형·원더 유산 · 킬리만자로", stage={ art="CardArt/event_chart_west_africa", motion="clear", scene="킬리만자로" }, row="ranged", power=4, weapon="gun" }
 B.Specials.af_29 = { id="af_29", name="벵겔라 해류", category="지형·원더", lore="아프리카 남서 해안을 따라 흐르는 찬 해류", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="벵겔라 해류" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·원더", lore="서아프리카에 먼지와 건조한 공기를 보내는 바람", stage={ art="CardArt/event_drought", motion="storm", scene="하르마탄 바람" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.sa_01 = { id="sa_01", name="말레이 프라우", category="선박", lore="말레이 해역을 누비던 날렵한 쌍돛배", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말레이 프라우" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.sa_02 = { id="sa_02", name="촐라 전함", category="선박", lore="인도양을 건너 동남아까지 닿은 남인도 해군의 큰 배", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="촐라 전함" }, row="cannon", power=6, weapon="cannon", ability="armor" }
+B.Units.sa_03 = { id="sa_03", name="아랍 다우", category="선박", lore="계절풍을 타고 인도양을 오간 삼각돛 무역선", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="아랍 다우" }, row="ranged", power=5, weapon="gun", ability="bond" }
+B.Units.sa_04 = { id="sa_04", name="중국 정크", category="선박", lore="대나무 돛과 칸막이 선창으로 유명한 큰 범선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="중국 정크" }, row="melee", power=5, weapon="sword", ability="morale" }
+B.Units.sa_05 = { id="sa_05", name="코라코라 전선", category="선박", lore="필리핀과 말루쿠 해역의 노 젓는 전투선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="코라코라 전선" }, row="melee", power=5, weapon="axe", ability="bond" }
+B.Units.sa_06 = { id="sa_06", name="말라바르 쾌속선", category="선박", lore="남인도 서해안의 빠른 무역·해적 대응선", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말라바르 쾌속선" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.sa_07 = { id="sa_07", name="무굴 상선", category="선박", lore="구자라트 항구에서 출항한 무굴 제국의 무역선", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="무굴 상선" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.sa_08 = { id="sa_08", name="대형 바지선", category="선박", lore="강과 운하로 군량을 나르던 평저선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="대형 바지선" }, row="melee", power=6, weapon="spear" }
+B.Units.sa_09 = { id="sa_09", name="향신료 대선단", category="선박", lore="정향과 후추를 가득 싣고 바다를 가로지르던 거대 선단", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="향신료 대선단" }, row="cannon", power=9, weapon="cannon", hero=true }
+B.Units.sa_10 = { id="sa_10", name="앙코르 청동종", category="유물", lore="크메르 사원에서 울리던 큰 종", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="앙코르 청동종" }, row="melee", power=4, weapon="axe", ability="morale" }
+B.Units.sa_11 = { id="sa_11", name="청화 자기", category="유물", lore="바닷길을 따라 퍼진 푸른 무늬 도자기", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="청화 자기" }, row="melee", power=4, weapon="sword", ability="armor" }
+B.Units.sa_12 = { id="sa_12", name="후추 자루", category="유물", lore="말라바르 해안의 값비싼 검은 후추", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="후추 자루" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.sa_13 = { id="sa_13", name="정향 상자", category="유물", lore="말루쿠 제도에서만 나던 귀한 향신료", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="정향 상자" }, row="ranged", power=4, weapon="gun", ability="morale" }
+B.Units.sa_14 = { id="sa_14", name="힌두 청동상", category="유물", lore="남인도 장인이 만든 춤추는 신의 청동상", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="힌두 청동상" }, row="melee", power=5, weapon="spear", ability="bond" }
+B.Specials.sa_15 = { id="sa_15", name="마자파힛 깃발", category="유물", lore="섬 제국이 군사를 모으려 내건 큰 깃발", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="마자파힛 깃발" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
+B.Units.sa_16 = { id="sa_16", name="인도코끼리", category="동물", lore="전투와 운반에 쓰인 거대한 코끼리", stage={ art="CardArt/event_chart_southeast_asia", motion="gallop", scene="인도코끼리" }, row="melee", power=8, weapon="sword" }
+B.Units.sa_17 = { id="sa_17", name="벵골호랑이", category="동물", lore="갠지스 삼각주의 맹수", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="벵골호랑이" }, row="melee", power=6, weapon="axe" }
+B.Units.sa_18 = { id="sa_18", name="코모도왕도마뱀", category="동물", lore="인도네시아 섬에 사는 거대한 도마뱀", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="코모도왕도마뱀" }, row="melee", power=5, weapon="spear", ability="armor" }
+B.Units.sa_19 = { id="sa_19", name="인도코뿔소", category="동물", lore="두꺼운 가죽으로 몸을 지키는 큰 짐승", stage={ art="CardArt/event_chart_southeast_asia", motion="gallop", scene="인도코뿔소" }, row="melee", power=7, weapon="sword" }
+B.Units.sa_20 = { id="sa_20", name="오랑우탄", category="동물", lore="보르네오와 수마트라 숲의 붉은 유인원", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="오랑우탄" }, row="melee", power=5, weapon="axe", ability="morale" }
+B.Units.sa_21 = { id="sa_21", name="인도공작", category="동물", lore="남아시아의 화려한 깃털 새", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="인도공작" }, row="ranged", power=4, weapon="gun", ability="bond" }
+B.Units.sa_22 = { id="sa_22", name="앙코르와트", category="지형·원더", lore="크메르 제국이 세운 거대한 힌두 사원", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="앙코르와트" }, row="melee", power=9, hero=true }
+B.Units.sa_23 = { id="sa_23", name="보로부두르", category="지형·원더", lore="자바 섬의 거대한 불교 사원", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="보로부두르" }, row="melee", power=5, weapon="axe", ability="armor" }
+B.Specials.sa_24 = { id="sa_24", name="말라카 해협", category="지형·원더", lore="인도양과 태평양을 잇는 좁은 바닷길", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말라카 해협" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
+B.Specials.sa_25 = { id="sa_25", name="몬순 폭우", category="지형·원더", lore="바닷길을 때리는 계절 폭풍", stage={ art="CardArt/event_chart_southeast_asia", motion="storm", scene="몬순 폭우" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.sa_26 = { id="sa_26", name="하롱베이", category="지형·원더", lore="바다 위에 기암이 솟은 베트남의 만", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="하롱베이" }, row="ranged", power=4, weapon="gun" }
+B.Units.sa_27 = { id="sa_27", name="타지마할", category="지형·원더", lore="무굴 황제가 세운 흰 대리석 묘당", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="타지마할" }, row="ranged", power=9, weapon="gun", hero=true }
+B.Units.sa_28 = { id="sa_28", name="향신료 무역", category="사건", lore="동남아 향신료가 세계 무역을 바꾼 흐름", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="향신료 무역" }, row="ranged", power=3, weapon="gun" }
+B.Units.sa_29 = { id="sa_29", name="말라카 술탄", category="인물", lore="말라카 해협을 지배한 해상 왕국의 군주", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="말라카 술탄" }, row="melee", power=5, weapon="sword", cause="sa_28" }
+B.Specials.sa_30 = { id="sa_30", name="향신료 독점", category="기술", lore="물자가 오가는 길을 쥐어 상대를 말려 죽이는 수", stage={ art="CardArt/event_chart_southeast_asia", motion="storm", scene="향신료 독점" }, special="refute", refuteKind="기술", text="상대 카드 중 기술에서 이어진 연쇄 보너스를 끊는다" }
 B.Units.lo_01 = { id="lo_01", name="아틀란티스", category="지형·원더", lore="플라톤이 전한, 바다 속으로 가라앉았다는 전설의 섬나라", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="아틀란티스" }, row="ranged", power=9, weapon="gun", hero=true }
 B.Units.lo_02 = { id="lo_02", name="무 대륙", category="지형·원더", lore="태평양에 가라앉았다고 전해지는 잃어버린 대륙", stage={ art="CardArt/event_calm_seas", motion="wind", scene="무 대륙" }, row="cannon", power=9, weapon="cannon", hero=true }
 B.Units.lo_03 = { id="lo_03", name="엘도라도", category="지형·원더", lore="남미 밀림 깊숙이 숨었다는 황금의 도시", stage={ art="CardArt/event_machu_picchu", motion="clear", scene="엘도라도" }, row="melee", power=9, weapon="axe", hero=true }
@@ -349,6 +421,21 @@ B.CardEnglish = {
 	eu_28 = { name = "Venetian Canals", lore = "Waterways linking the islands and trading quarters of Venice." },
 	eu_29 = { name = "Norwegian Fjords", lore = "Deep glacial inlets cut into Norway's rugged coast." },
 	eu_30 = { name = "North Sea Fog", lore = "A blanket of sea fog that obscures the northern trade routes." },
+	eu_31 = { name = "Hundred Years' War", lore = "A long war between England and France lasting over a century." },
+	eu_32 = { name = "Age of Discovery", lore = "An era when Europe sailed far across the oceans to explore." },
+	eu_33 = { name = "Industrial Revolution", lore = "A great change as steam and machines reshaped the world." },
+	eu_34 = { name = "Gunpowder", lore = "An explosive powder that changed warfare across the world." },
+	eu_35 = { name = "Compass", lore = "A tool that let sailors keep their bearing on the open sea." },
+	eu_36 = { name = "Joan of Arc", lore = "A young leader who rallied France during the Hundred Years' War." },
+	eu_37 = { name = "Columbus", lore = "A navigator who crossed the Atlantic and reached the New World." },
+	eu_38 = { name = "Duke of Wellington", lore = "The British general who defeated Napoleon at Waterloo." },
+	eu_39 = { name = "Admiral Nelson", lore = "An admiral who won at Trafalgar with a galleon-descended fleet." },
+	eu_40 = { name = "Pike Square", lore = "A dense infantry formation of pikes that stopped cavalry." },
+	eu_41 = { name = "Armistice", lore = "An agreement that brought a war to a halt." },
+	eu_42 = { name = "Assassination", lore = "A covert strike aimed at a key figure." },
+	eu_43 = { name = "Blockade", lore = "An operation that cuts off the routes of tech and supplies." },
+	eu_44 = { name = "Musket Regiment", lore = "An infantry regiment armed with gunpowder weapons." },
+	eu_45 = { name = "Ironclad Fleet", lore = "A fleet of steel warships born of the Industrial Revolution." },
 	ea_01 = { name = "Panokseon", lore = "A Korean naval warship with a wide upper deck and mounted cannon." },
 	ea_02 = { name = "Turtle Ship", lore = "A Joseon fighting vessel known for its covered upper deck." },
 	ea_03 = { name = "Joseon Segyeonseon", lore = "A Korean diplomatic vessel used for maritime journeys." },
@@ -469,6 +556,36 @@ B.CardEnglish = {
 	af_28 = { name = "Mount Kilimanjaro", lore = "A towering volcanic mountain of East Africa." },
 	af_29 = { name = "Benguela Current", lore = "A cold ocean current flowing along southwestern Africa." },
 	af_30 = { name = "Harmattan Wind", lore = "A dry dusty wind blowing across West Africa." },
+	sa_01 = { name = "Malay Prau", lore = "A swift outrigger sailing boat of the Malay seas." },
+	sa_02 = { name = "Chola Warship", lore = "A large South Indian naval vessel that reached Southeast Asia." },
+	sa_03 = { name = "Arab Dhow", lore = "A lateen-sail trade ship that rode the monsoon across the ocean." },
+	sa_04 = { name = "Chinese Junk", lore = "A big sailing ship known for its battened sails and bulkheads." },
+	sa_05 = { name = "Korakora War Canoe", lore = "An oared war vessel of the Philippine and Maluku waters." },
+	sa_06 = { name = "Malabar Cutter", lore = "A fast trade and anti-pirate ship of the south Indian coast." },
+	sa_07 = { name = "Mughal Merchantman", lore = "A trading ship that sailed from Gujarati ports for the Mughals." },
+	sa_08 = { name = "Great Barge", lore = "A flat-bottomed barge that carried supplies along rivers and canals." },
+	sa_09 = { name = "Spice Armada", lore = "A huge fleet carrying cloves and pepper across the sea." },
+	sa_10 = { name = "Angkor Bronze Bell", lore = "A large bell that once rang in Khmer temples." },
+	sa_11 = { name = "Blue-and-White Porcelain", lore = "Blue patterned ceramics spread along the sea routes." },
+	sa_12 = { name = "Pepper Sacks", lore = "The valuable black pepper of the Malabar coast." },
+	sa_13 = { name = "Clove Chest", lore = "A precious spice that grew only in the Maluku islands." },
+	sa_14 = { name = "Hindu Bronze Statue", lore = "A bronze statue of a dancing god made by South Indian artisans." },
+	sa_15 = { name = "Majapahit Banner", lore = "A great banner raised to rally an island empire." },
+	sa_16 = { name = "Indian Elephant", lore = "A huge elephant used in war and for carrying loads." },
+	sa_17 = { name = "Bengal Tiger", lore = "A fierce big cat of the Ganges delta." },
+	sa_18 = { name = "Komodo Dragon", lore = "A giant lizard that lives on islands of Indonesia." },
+	sa_19 = { name = "Indian Rhinoceros", lore = "A large beast that guards itself with thick hide." },
+	sa_20 = { name = "Orangutan", lore = "A red ape of the forests of Borneo and Sumatra." },
+	sa_21 = { name = "Indian Peafowl", lore = "A showy feathered bird of South Asia." },
+	sa_22 = { name = "Angkor Wat", lore = "A vast Hindu temple built by the Khmer Empire." },
+	sa_23 = { name = "Borobudur", lore = "A massive Buddhist temple on the island of Java." },
+	sa_24 = { name = "Strait of Malacca", lore = "The narrow sea lane linking the Indian Ocean and the Pacific." },
+	sa_25 = { name = "Monsoon Rains", lore = "Seasonal storms that batter the sea lanes of the region." },
+	sa_26 = { name = "Ha Long Bay", lore = "A Vietnamese bay with limestone peaks rising from the sea." },
+	sa_27 = { name = "Taj Mahal", lore = "A white marble mausoleum built by a Mughal emperor." },
+	sa_28 = { name = "Spice Trade", lore = "The flow of spices that reshaped world commerce." },
+	sa_29 = { name = "Sultan of Malacca", lore = "The ruler of a maritime kingdom that held the Malacca Strait." },
+	sa_30 = { name = "Spice Monopoly", lore = "A scheme to seize control of the routes that carry tech and goods." },
 	lo_01 = { name = "Atlantis", lore = "A legendary island nation said to have sunk beneath the sea." },
 	lo_02 = { name = "Land of Mu", lore = "A lost continent said to lie beneath the Pacific." },
 	lo_03 = { name = "El Dorado", lore = "A city of gold hidden deep in the South American jungle." },
@@ -506,22 +623,22 @@ B.Units.boss_kraken = { id = "boss_kraken", name = "크라켄의 촉수", row = 
 B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row = "melee", power = 8, weapon = "spear", hero = true }
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
-	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "draw",
-		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30"} },
-	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "snipe",
+	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
+		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
+	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
-	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "clear",
+	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30"} },
-	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "snipe",
+	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30"} },
-	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "draw",
-		roster = { "raider", "raider", "raider", "swordsman", "pikeman", "surgeon", "surgeon", "musketeer", "scout", "sniper", "swivel", "swivel", "swivel", "gunner", "wind", "ironclad", "decoy" } },
+	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", leaders = { "rajaraja", "tranhungdao", "akbar" },
+		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
-	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "draw",
+	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30" } },
 }
-B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "africa", "lost" }
+B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
 B.NationFaction = {
 	england = "europe", netherlands = "europe", france = "europe", denmark = "europe", sweden = "europe", venice = "europe", spain = "europe", portugal = "europe",
 	ottoman = "middle_east", swahili = "africa",
@@ -555,6 +672,9 @@ function B.playerDeck(deckCards, rng, factionId, book)
 		table.insert(out, card)
 	end
 	local leader = if fac then fac.leader else "draw"
+	if fac and fac.leaders and book and book.leader and table.find(fac.leaders, book.leader) then
+		leader = book.leader
+	end
 	for i, c in deckCards or {} do
 		local id = SKILL_CARD[c.skill]
 		if id then
@@ -653,6 +773,8 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		leaderUsed = { me = false, foe = false },
 		turn = "me",
 		played = { me = 0, foe = 0 },
+		refuted = { me = {}, foe = {} },
+		rowBonus = { me = {}, foe = {} },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -681,6 +803,29 @@ local function logLine(m: any, text)
 	table.insert(m.log, text)
 end
 
+-- 연쇄: 원인 카드가 내 필드에 있고, 그 분류가 반증으로 끊기지 않았을 때만 켜진다
+local function defOf(id)
+	return B.Units[id] or B.Specials[id]
+end
+
+function B.chainActive(m: any, side, c: any): boolean
+	if not c.cause then
+		return false
+	end
+	local def = defOf(c.cause)
+	if not def or (m.refuted and m.refuted[side] and m.refuted[side][def.category or ""]) then
+		return false
+	end
+	for _, row in B.ROWS do
+		for _, o in m.rows[side][row] do
+			if o ~= c and o.id == c.cause then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -- 줄 합계: 날씨 → 결속 → 사기 → 무기 상성 → 병종 상성 순으로 계산한다
 function B.cardPower(m: any, side, row, idx)
 	local list = m.rows[side][row]
@@ -706,6 +851,12 @@ function B.cardPower(m: any, side, row, idx)
 			if j ~= idx and o.ability == "morale" and not o.hero then
 				p += (if m.faction and m.faction[side] == "east_asia" then 2 else 1)
 			end
+		end
+		if c.cause and B.chainActive(m, side, c) then
+			p += 2
+		end
+		if m.rowBonus and m.rowBonus[side][row] then
+			p += m.rowBonus[side][row]
 		end
 		-- 근접끼리 무기 상성
 		if row == "melee" and c.weapon and B.WEAPON_BEATS[c.weapon] then
@@ -882,6 +1033,8 @@ local function roundEnd(m: any)
 		m.passed[side] = false
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
+	m.refuted = { me = {}, foe = {} }
+	m.rowBonus = { me = {}, foe = {} }
 	applySea(m)
 	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
@@ -1017,6 +1170,11 @@ function B.play(m: any, side, handIdx)
 			msg = "군기 — 높일 줄이 없었다"
 		end
 		table.insert(m.grave[side], c)
+	elseif c.special == "refute" then
+		m.refuted = m.refuted or { me = {}, foe = {} }
+		m.refuted[other(side)][c.refuteKind or ""] = true
+		msg = string.format("반증! 상대의 %s 연쇄가 끊겼다", c.refuteKind or "")
+		table.insert(m.grave[side], c)
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		if pick then
@@ -1032,8 +1190,37 @@ function B.play(m: any, side, handIdx)
 		if c.ability == "spy" then
 			target = other(side)
 		end
+		local fused = false
+		if c.fuse then
+			local parts = {}
+			for _, id in c.fuse do
+				for _, row in B.ROWS do
+					for _, o in m.rows[side][row] do
+						if o.id == id and not o.hero and not parts[id] then
+							parts[id] = { card = o, row = row }
+						end
+					end
+				end
+			end
+			if parts[c.fuse[1]] and parts[c.fuse[2]] then
+				local sum = 0
+				for _, part in parts do
+					sum += part.card.power
+					table.remove(m.rows[side][part.row], table.find(m.rows[side][part.row], part.card))
+					table.insert(m.grave[side], part.card)
+				end
+				c.power = sum + 3
+				c.fused = true
+				fused = true
+			end
+		end
 		table.insert(m.rows[target][lane(c)], c)
 		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[lane(c)])
+		if fused then
+			msg ..= " (합치기! 재료 둘이 하나가 됐다. 낸 카드 수에 세지 않는다)"
+		elseif c.cause and B.chainActive(m, side, c) then
+			msg ..= " (연쇄! 점수 +2)"
+		end
 		if c.ability == "spy" then
 			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
 			drawCards(m, side, n)
@@ -1063,7 +1250,7 @@ function B.play(m: any, side, handIdx)
 	nextTurn(m, side)
 	local act = { "p", handIdx }
 	local result = nil
-	m.played[side] = (m.played[side] or 0) + 1
+	m.played[side] = (m.played[side] or 0) + (if c.fused then 0 else 1)
 	if (#m.hand[side] == 0 or m.played[side] >= B.ROUND_CARDS) and not m.passed[side] then
 		-- 손패가 없거나 한 판 카드 수를 다 쓰면 자동으로 멈춘다
 		m.passed[side] = true
@@ -1094,20 +1281,40 @@ function B.useLeader(m: any, side)
 		return false, "지금은 쓸 수 없어요"
 	end
 	local id = m.leader[side]
+	local ld = B.Leaders[id]
+	local fx = if ld and ld.fx then ld.fx else id
+	local nm = if ld then ld.name else id
 	m.leaderUsed[side] = true
 	local msg
-	if id == "draw" then
+	if fx == "draw" then
 		drawCards(m, side, 1)
 		msg = "지휘: 카드를 한 장 더 뽑았다"
-	elseif id == "clear" then
+	elseif fx == "clear" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "항로 개척: 날씨가 걷혔다"
+	elseif fx == "hornRanged" or fx == "hornMelee" then
+		local row = if fx == "hornRanged" then "ranged" else "melee"
+		m.horn[side][row] = true
+		msg = string.format("%s: %s 점수가 두 배!", nm, B.ROW_NAME[row])
+	elseif fx == "draw2" then
+		drawCards(m, side, 2)
+		msg = nm .. ": 카드를 두 장 뽑았다"
+	elseif fx == "bonusMelee" then
+		m.rowBonus[side].melee = (m.rowBonus[side].melee or 0) + 1
+		msg = nm .. ": 전열이 모두 +1"
+	elseif fx == "restore" then
+		m.refuted[side] = {}
+		msg = nm .. ": 끊긴 연쇄가 되살아났다"
+	elseif fx == "clearBonusRanged" then
+		m.weather = { melee = false, ranged = false, cannon = false }
+		m.rowBonus[side].ranged = (m.rowBonus[side].ranged or 0) + 1
+		msg = nm .. ": 날씨가 걷히고 후열이 +1"
 	else
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
 			-- 동점이면 첫 하나만
 			removeHits(m, { hits[1] })
-			msg = string.format("저격: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", best)
+			msg = string.format("%s: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", if fx == "snipe" and nm ~= "snipe" then nm else "저격", best)
 		else
 			msg = "저격 — 맞힐 카드가 없었다"
 		end
@@ -1161,6 +1368,15 @@ function B.gainOf(m: any, side, c)
 		else
 			gain = -5
 		end
+	elseif c.special == "refute" then
+		m.refuted = m.refuted or { me = {}, foe = {} }
+		local kind = c.refuteKind or ""
+		local before = B.total(m, side) - B.total(m, foe)
+		local prev = m.refuted[foe][kind]
+		m.refuted[foe][kind] = true
+		local after = B.total(m, side) - B.total(m, foe)
+		m.refuted[foe][kind] = prev
+		gain = if after > before then after - before else -3
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		gain = if pick and pick.score >= 100 then 3 else -4
@@ -1438,6 +1654,8 @@ local function copyMatch(m)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
 	n.played = table.clone(m.played or { me = 0, foe = 0 })
+	n.rowBonus = { me = table.clone((m.rowBonus or {}).me or {}), foe = table.clone((m.rowBonus or {}).foe or {}) }
+	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
 	return n
 end

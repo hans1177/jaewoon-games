@@ -3380,7 +3380,7 @@ do
 	end
 	-- 문화권 덱: 다섯 문화권의 덱과 고유 능력
 	do
-		check("문화권: 여섯 덱(다섯 대륙 + 미지의 땅)이 모두 있다", #BC.FactionOrder == 6)
+		check("문화권: 일곱 덱(여섯 대륙 + 미지의 땅)이 모두 있다", #BC.FactionOrder == 7)
 		for _, f in BC.FactionOrder do
 			local deck = BC.playerDeck({}, math.random, f)
 			check("문화권 덱 크기: " .. f, #deck >= 17)
@@ -3426,14 +3426,14 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == 30 and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 else 30) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
 			local eb = CBk.new("europe")
 			local base = CBk.deckIds(eb, "europe")
 			check("덱 규칙: 시작 자동 덱은 25장이고 보급 한도 안이다", #base >= 25 and CBk.deckCost(base) <= CBk.provisionLimit("europe"))
-			check("덱 규칙: 보급 한도는 150 + 지도자 보너스", CBk.provisionLimit("europe") == 160 and CBk.provisionLimit("east_asia") == 155)
+			check("덱 규칙: 보급 한도는 150 + 지도자 보너스", CBk.provisionLimit("europe") == 160 and CBk.provisionLimit("east_asia") == 160)
 			local fat = table.clone(base)
 			for i = 1, 30 do CBk.grant(eb, "lo_01", 1) end
 			for _ = 1, 4 do table.insert(fat, "lo_01") end
@@ -3694,9 +3694,10 @@ end
 do
 	local BC = D.BoardingCards
 	local total, broken = 0, 0
-	for _, prefix in { "eu", "ea", "me", "nw", "af", "lo" } do
+	for _, prefix in { "eu", "ea", "me", "nw", "af", "sa", "lo" } do
 		local count = 0
-		for index = 1, 30 do
+		local per = if prefix == "eu" then 45 else 30
+		for index = 1, per do
 			local id = string.format("%s_%02d", prefix, index)
 			local card = BC.Units[id] or BC.Specials[id]
 			local translation = BC.CardEnglish[id]
@@ -3707,15 +3708,173 @@ do
 				broken += 1
 			end
 		end
-		check("지역 카드 영어 이름·설명 30장: " .. prefix, count == 30)
+		check("지역 카드 영어 이름·설명: " .. prefix, count == per)
 	end
 	local englishCount = 0
 	for key in BC.CardEnglish do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("180장 영어판·한국어판 카드 연결 보존", total == 180 and englishCount == 180 and broken == 0,
+	check("225장 영어판·한국어판 카드 연결 보존", total == 225 and englishCount == 225 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
+end
+
+
+-- [인과 카드] 연쇄·반증·합치기
+do
+	local BC = D.BoardingCards
+	local function fresh()
+		local m = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "europe", "europe")
+		m.turn = "me"
+		m.hand = { me = {}, foe = {} }
+		for _ = 1, 4 do -- 손패가 비면 자동으로 멈추므로 여분 카드를 둔다
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.foe, table.clone(BC.Units.swordsman))
+		end
+		return m
+	end
+	local function give(m, side, id)
+		local def = BC.Units[id] or BC.Specials[id]
+		local c = table.clone(def)
+		table.insert(m.hand[side], c)
+		return #m.hand[side]
+	end
+	-- 연쇄: 백년전쟁 → 잔 다르크
+	local m = fresh()
+	local base = BC.Units.eu_36.power
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	local alone = BC.cardPower(m, "me", "melee", 1)
+	check("연쇄: 원인이 없으면 보너스 없음", alone == base, alone)
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	local chained
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("연쇄: 원인이 있으면 +2", chained == base + 2, chained)
+	-- 반증: 사건을 끊으면 연쇄가 꺼진다
+	m.turn = "foe"
+	BC.play(m, "foe", give(m, "foe", "eu_41"))
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("반증: 사건 연쇄가 끊긴다", chained == base, chained)
+	-- 반증은 다른 분류 연쇄에는 안 통한다 (암살은 인물만)
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	m.turn = "foe"
+	BC.play(m, "foe", give(m, "foe", "eu_42"))
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("반증: 분류가 다르면 연쇄가 그대로", chained == base + 2, chained)
+	-- 합치기: 화약 + 창병 방진 → 머스킷 부대
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_34")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_40")); m.turn = "me"
+	local playedBefore = m.played.me
+	BC.play(m, "me", give(m, "me", "eu_44"))
+	local n, fusedPower = 0, 0
+	for _, row in { "melee", "ranged" } do
+		for _, c in m.rows.me[row] do
+			n += 1
+			if c.id == "eu_44" then fusedPower = c.power end
+		end
+	end
+	check("합치기: 재료 둘이 사라지고 하나가 남는다", n == 1 and fusedPower == BC.Units.eu_34.power + BC.Units.eu_40.power + 3, n .. "/" .. fusedPower)
+	check("합치기: 낸 카드 수에 세지 않는다", m.played.me == playedBefore, m.played.me)
+	-- 합치기 재료가 없으면 평범한 카드
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_44"))
+	check("합치기: 재료가 없으면 기본 점수로 나온다", BC.cardPower(m, "me", "ranged", 1) == BC.Units.eu_44.power)
+	-- 분류 값은 모두 정해져 있다
+	local kinds = { ["인물"] = 0, ["사건"] = 0, ["기술"] = 0 }
+	for i = 31, 45 do
+		local d = BC.Units["eu_" .. i] or BC.Specials["eu_" .. i]
+		if kinds[d.category] then kinds[d.category] += 1 end
+	end
+	check("인과 분류: 인물·사건·기술 카드가 모두 있다", kinds["인물"] >= 3 and kinds["사건"] >= 3 and kinds["기술"] >= 2)
+	local bad = 0
+	for _, tbl in { BC.Units, BC.Specials } do
+		for _, c in tbl do
+			if c.cause and not (BC.Units[c.cause] or BC.Specials[c.cause]) then bad += 1 end
+			if c.fuse and not (BC.Units[c.fuse[1]] and BC.Units[c.fuse[2]]) then bad += 1 end
+		end
+	end
+	check("인과 카드의 원인·재료 id가 모두 실제 카드", bad == 0, bad)
+end
+
+
+-- [지도자] 유럽 정복자 지도자 5명
+do
+	local BC = D.BoardingCards
+	local CBk = D.CardBook
+	local fac = BC.Factions.europe
+	check("지도자: 유럽 지도자 5명이 모두 정의돼 있다", #fac.leaders == 5 and fac.leader == "napoleon")
+	for _, id in fac.leaders do
+		local ld = BC.Leaders[id]
+		check("지도자 정의: " .. id, ld ~= nil and #ld.name > 0 and #ld.text > 0 and (ld.provision or 0) > 0)
+	end
+	local function match(leader)
+		local m = BC.newMatch({}, leader, {}, "draw", function() return 0.9 end, "europe", "europe")
+		m.turn = "me"
+		for _ = 1, 4 do
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.foe, table.clone(BC.Units.swordsman))
+		end
+		table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
+		return m
+	end
+	local m = match("napoleon")
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
+	local before = BC.total(m, "me")
+	BC.useLeader(m, "me")
+	check("나폴레옹: 후열 점수가 두 배", BC.total(m, "me") == before * 2, BC.total(m, "me"))
+	m = match("caesar")
+	local h = #m.hand.me
+	BC.useLeader(m, "me")
+	check("카이사르: 카드 두 장", #m.hand.me == h + 2, #m.hand.me)
+	m = match("alexander")
+	table.insert(m.rows.me.melee, table.clone(BC.Units.swordsman))
+	before = BC.total(m, "me")
+	BC.useLeader(m, "me")
+	check("알렉산드로스: 전열 +1", BC.total(m, "me") == before + 1)
+	m = match("charlemagne")
+	m.refuted.me["사건"] = true
+	BC.useLeader(m, "me")
+	check("샤를마뉴: 끊긴 연쇄를 되살린다", next(m.refuted.me) == nil)
+	m = match("elizabeth")
+	m.weather.ranged = true
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
+	BC.useLeader(m, "me")
+	check("엘리자베스: 날씨를 걷고 후열 +1", m.weather.ranged == false and BC.total(m, "me") == BC.Units.gunner.power + 1)
+	local ok2 = BC.useLeader(m, "me")
+	check("지도자는 한 판에 한 번만", ok2 == false)
+	local book = CBk.new("europe")
+	local okSet = CBk.setLeader(book, "europe", "caesar")
+	local badSet = CBk.setLeader(book, "europe", "samurai")
+	check("지도자 고르기: 같은 대륙만 가능", okSet == true and badSet == false and book.leader == "caesar")
+	local _, ldr = BC.playerDeck({}, function() return 0.5 end, "europe", { ids = CBk.deckIds(book, "europe"), tier = {}, leader = "caesar" })
+	check("선택한 지도자가 전투에 쓰인다", ldr == "caesar", ldr)
+	check("지도자마다 보급 한도가 다르다", CBk.provisionLimit("europe", "elizabeth") == CBk.PROVISION_BASE + 15 and CBk.provisionLimit("europe", "charlemagne") == CBk.PROVISION_BASE + 8)
+	check("저장 정리에서 지도자가 유지된다", CBk.sanitize({ leader = "alexander" }, "europe").leader == "alexander" and CBk.sanitize({ leader = "samurai" }, "europe").leader == nil)
+end
+
+
+-- [지도자] 모든 대륙 지도자는 능력이 실제로 동작한다
+do
+	local BC = D.BoardingCards
+	for _, fid in { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa" } do
+		local f = BC.Factions[fid]
+		check("대륙 지도자 3명 이상: " .. fid, f.leaders ~= nil and #f.leaders >= 3 and table.find(f.leaders, f.leader) ~= nil)
+		for _, lid in f.leaders or {} do
+			local ld = BC.Leaders[lid]
+			check("지도자 소속 일치: " .. lid, ld ~= nil and ld.faction == fid and ld.fx ~= nil)
+			local m = BC.newMatch({}, lid, {}, "draw", function() return 0.9 end, fid, "europe")
+			m.turn = "me"
+			table.insert(m.rows.foe.melee, table.clone(BC.Units.swordsman))
+			table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			local okUse = BC.useLeader(m, "me")
+			check("지도자 능력 사용: " .. lid, okUse == true and m.leaderUsed.me == true)
+		end
+	end
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
