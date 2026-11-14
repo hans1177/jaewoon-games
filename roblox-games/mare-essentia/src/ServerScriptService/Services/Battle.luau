@@ -214,6 +214,8 @@ return function(D, S)
 			settle(state, msgs, pb)
 			if pb.job and pb.winner == "a" then
 				S.Tavern.settleHunt(state, pb.job, msgs)
+			elseif pb.job then
+				S.Tavern.failHunt(state, pb.job, msgs)
 			end
 			-- 대규모 해전 의뢰 중이면 다음 파도로 잇거나 작전을 끝낸다
 			local war = state.war

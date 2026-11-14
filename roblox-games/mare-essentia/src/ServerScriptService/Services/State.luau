@@ -70,6 +70,7 @@ return function(D)
 			intro = { name = false, companion = false, portrait = false }, -- 시작 안내 진행
 			bosses = {},
 			tavernJobs = {},
+			tavernQ = {}, -- 주점: active={id,src,due}, offer={kind,ids,port,day}, rumorEvent, grandSeen
 			specialty = nil,
 			advDone = {}, -- 끝낸 안내·조언 (조언 id → true)
 			specAuto = false, -- 직업이 카드 성과로 자동 배정된 상태 (처음 한 번은 무료로 바꿀 수 있다)
@@ -626,6 +627,29 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.tavernQ) == "table" then
+			local t = saved.tavernQ
+			local q = s.tavernQ
+			local function sid(v)
+				return type(v) == "string" and #v < 40 and v or nil
+			end
+			if type(t.active) == "table" and sid(t.active.id) then
+				q.active = { id = t.active.id, src = sid(t.active.src) or "job", due = math.floor(num(t.active.due, 0, 0, 1e7)) }
+			end
+			if type(t.offer) == "table" and type(t.offer.ids) == "table" and sid(t.offer.port) then
+				local list = {}
+				for i = 1, math.min(3, #t.offer.ids) do
+					if sid(t.offer.ids[i]) then
+						table.insert(list, t.offer.ids[i])
+					end
+				end
+				if #list > 0 then
+					q.offer = { kind = sid(t.offer.kind) or "job", ids = list, port = t.offer.port, day = math.floor(num(t.offer.day, 0, 0, 1e7)) }
+				end
+			end
+			q.rumorEvent = sid(t.rumorEvent)
+			q.grandSeen = if type(t.grandSeen) == "string" and #t.grandSeen < 80 then t.grandSeen else nil
+		end
 		if type(saved.stats) == "table" then
 			s.stats.battlesWon = math.floor(num(saved.stats.battlesWon, 0, 0, 1e9))
 			s.stats.battlesLost = math.floor(num(saved.stats.battlesLost, 0, 0, 1e9))
@@ -911,6 +935,7 @@ return function(D)
 			intro = state.intro,
 			bosses = state.bosses,
 			tavernJobs = state.tavernJobs,
+			tavernQ = state.tavernQ,
 			specialty = state.specialty,
 			advDone = state.advDone,
 			specAuto = state.specAuto,

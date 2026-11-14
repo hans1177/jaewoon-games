@@ -10,12 +10,17 @@ return function(D, S)
 	local TOPIC_SEAT = { ship = "boatswain", crew = "boatswain", cargo = "mate", trade = "mate", medical = "surgeon", gun = "gunner", knowledge = "scholar", route = "helm", guide = "helm" }
 	local DEFAULT_WHO = { id = nil, name = "늙은 항해사 베르나르", role = "항해사" }
 
+	-- 전문 분야 조언(자기 자리가 따로 있는 주제): 그 자리 동료가 말한다
+	local SPECIALIST = { ship = true, crew = true, medical = true, gun = true, knowledge = true }
+
+	-- 누가 말하나: 전문 분야는 그 자리 동료, 그 밖의 모든 조언과 메뉴 안내는 부선장 자리 동료.
+	-- 부선장 자리가 비어 있는(초반) 동안은 첫 동료가 조언자 역할을 맡는다.
 	local function speaker(state, topic)
-		local seat = TOPIC_SEAT[topic] or "helm"
-		local id = state.stations[seat]
-		if not id then
-			id = state.companions[1]
+		local id
+		if SPECIALIST[topic] then
+			id = state.stations[TOPIC_SEAT[topic] or "helm"]
 		end
+		id = id or state.stations.mate or state.companions[1]
 		local c = id and Sp.CompanionById[id]
 		if c then
 			return { id = c.id, name = c.name, role = c.role or "동료" }
@@ -34,8 +39,8 @@ return function(D, S)
 		{ id = "g_explore", topic = "knowledge", tab = "explore", label = "탐험하러",
 			text = "항구 근처 탐험 지점에서 도감 카드를 모을 수 있어요. 카드를 모으면 직업이 생기고 카드 배틀도 강해져요.",
 			done = function(state) return next(state.discovered) ~= nil end },
-		{ id = "g_quest", topic = "guide", tab = "quest", label = "주점으로",
-			text = "주점에서는 소문과 의뢰를 들을 수 있어요. 의뢰를 끝내면 보상과 명성이 쌓여요.",
+		{ id = "g_quest", topic = "guide", tab = "board", label = "주점으로",
+			text = "주점에서 소문을 듣거나 술을 사 주면 일감을 받아요. 둘 중 하나를 골라 맡으면 되고, 실패해도 명성은 안 떨어져요. 구석의 수상한 손님은 어렵지만 보상이 커요 (실패하면 명성 하락).",
 			done = function(state) return next(state.quests.active) ~= nil or next(state.quests.done) ~= nil end },
 		{ id = "g_tech", topic = "knowledge", tab = "tech", label = "서재로",
 			text = "학자를 찾아 발견한 카드를 보고하면 그 지식을 이해하게 돼요. 이해한 지식은 항해 속도와 교역에 실제로 도움이 돼요.",
@@ -43,6 +48,9 @@ return function(D, S)
 		{ id = "g_crew", topic = "ship", tab = "crew", label = "선장실로",
 			text = "동료는 직책에 맞는 자리에 앉아야 효과가 커요. 선장실에서 자리를 정하거나 자동 배치를 눌러 보세요.",
 			done = function(state) return #state.companions == 0 and false end },
+		{ id = "g_deck", topic = "guide", tab = "gwent", label = "덱 짜러 가기",
+			text = "내 카드 화면에서 덱을 짜요. 왼쪽에서 카드를 누르면 오른쪽 덱에 들어가고, 아래 '자동 덱'을 누르면 알아서 채워 줘요. 처음엔 자동 덱으로 시작해 보세요.",
+			done = function(state) return false end },
 		{ id = "g_cards", topic = "guide", tab = "gwent", label = "카드 배틀로",
 			text = "카드 배틀은 주점이 본무대예요. 해전과 지상전에서는 같은 카드가 보조로 쓰이고, 학문 카드를 모을수록 강해져요.",
 			done = function(state) return false end },
@@ -124,8 +132,35 @@ return function(D, S)
 			add("quest_open", 25, "guide", "일지에 진행 중인 의뢰가 있어요. 조건을 확인해 볼까요?", "quest", "주점으로", true)
 		end
 
+		-- 길잡이: 지금 무엇을 하면 좋을지 방향을 짚어 준다 (부선장 자리 동료가 말한다)
+		do
+			local tq = state.tavernQ or {}
+			local discovered, understood = 0, D.KnowledgeTree.understoodCount(state)
+			for _ in state.discovered do
+				discovered += 1
+			end
+			if discovered > understood then
+				add("dir_report", 36, "guide", string.format("발견만 한 카드가 %d장 있어요. 학자에게 보고하면 이해한 지식이 되어 항해와 교역에 도움이 돼요.", discovered - understood), "scholar", "학자에게", false)
+			end
+			if not tq.active and next(state.quests.active) == nil and state.day >= 3 then
+				add("dir_tavern", 34, "guide", "지금 맡은 일이 없어요. 주점에서 소문을 듣거나 술을 사 주고 일감을 받아 보죠. 실패해도 명성은 그대로예요.", "board", "주점으로", false)
+			end
+			if state.specialty then
+				add("dir_career", 28, "guide", "직업을 키우려면 그 계열 카드를 더 모으고 관련 의뢰를 끝내는 게 빨라요. 일지에서 진행도를 확인해 봐요.", "quest", "일지 보기", false)
+			end
+			if discovered < 8 and state.day >= 10 then
+				add("dir_explore", 27, "guide", "도감이 아직 얇아요. 항구 근처 탐험에서 카드를 모으면 직업과 카드 배틀이 함께 풀려요.", "explore", "탐험하러", false)
+			end
+			if (state.stats.battlesWon or 0) < 3 and state.day >= 15 then
+				add("dir_battle", 26, "guide", "명성과 보상을 빨리 쌓으려면 해전도 도움이 돼요. 선체를 고친 뒤 전투 본부에서 의뢰를 받아 보죠.", "battle", "전투 본부로", false)
+			end
+			if state.fame >= 60 and state.coins >= 2000 then
+				add("dir_far", 24, "guide", "명성도 코인도 넉넉해졌어요. 이제 더 먼 바다의 항구로 나가 새로운 특산품과 의뢰를 만나 볼 때예요.", "route", "항로 보기", false)
+			end
+		end
+
 		-- 초반 안내: 아직 안 끝난 첫 단계 하나만 보여 준다 (하루 120일 안에서만)
-		if state.day < 120 then
+		if state.day < 200 then
 			for i, g in GUIDE do
 				if not state.advDone[g.id] and not g.done(state) then
 					add(g.id, 100 - i, g.topic, g.text, g.tab, g.label, true)

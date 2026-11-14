@@ -4,6 +4,8 @@
 -- 연도·사건은 게임 설정이며 구현 전 출처 확인이 필요하다 (docs/CATALOG.md).
 -- ports 또는 region(Regions.List 의 id) 중 하나로 장소를 정하고, from~to 연도 안에서만 보인다.
 
+local Data = require(script.Parent.TavernData)
+
 return function(D, S)
 	local handlers = {}
 
@@ -93,9 +95,30 @@ return function(D, S)
 			} },
 	}
 
+	-- 지역 이야기·전설·수상한 손님 의뢰를 같은 표에 합친다
+	for _, list in { Data.LOCAL, Data.LEGEND, Data.SHADY } do
+		for _, j in list do
+			table.insert(JOBS, j)
+		end
+	end
+	-- 그 지역·그 시기에 항구에 들어서면 자동으로 맡는 큰 사건
+	for _, id in { "armada_scout", "london_rebuild", "lisbon_quake_relief", "anglo_dutch_privateer", "baltic_privateer" } do
+		for _, j in JOBS do
+			if j.id == id then
+				j.grand = true
+			end
+		end
+	end
+
 	local JOB_BY_ID = {}
 	for _, j in JOBS do
 		JOB_BY_ID[j.id] = j
+	end
+
+	local DRINK_COST = 30
+	local function tq(state)
+		state.tavernQ = state.tavernQ or {}
+		return state.tavernQ
 	end
 
 	local function regionOf(state)
@@ -104,6 +127,9 @@ return function(D, S)
 	end
 
 	local function here(state, j)
+		if j.any then
+			return true
+		end
 		if j.ports then
 			return table.find(j.ports, state.portId) ~= nil
 		end
@@ -138,7 +164,7 @@ return function(D, S)
 	local function view(state)
 		local out = {}
 		for _, j in JOBS do
-			if here(state, j) and active(state, j) then
+			if not j.shady and not j.legend and here(state, j) and active(state, j) then
 				local choices
 				if j.choices then
 					choices = {}
@@ -166,7 +192,155 @@ return function(D, S)
 		state.tavernJobs[jobId] = state.day
 		state.coins += j.coins
 		state.fame += j.fame
+		local q = tq(state)
+		if q.active and q.active.id == jobId then
+			q.active = nil
+		end
 		table.insert(msgs, string.format("의뢰 완수! '%s' — 보상 %d코인, 명성 +%d", j.name, j.coins, j.fame))
+	end
+
+	-- 의뢰 전투에서 졌을 때: 수상한 손님 의뢰만 명성이 떨어진다 (일반 의뢰는 벌이 없다)
+	local function failHunt(state, jobId, msgs)
+		local j = JOB_BY_ID[jobId]
+		local q = tq(state)
+		if not j or not q.active or q.active.id ~= jobId then
+			return
+		end
+		q.active = nil
+		if j.shady then
+			local loss = math.min(state.fame, j.failFame or 20)
+			state.fame -= loss
+			table.insert(msgs, string.format("의뢰 실패. '%s' — 뒷골목에 소문이 돌았다 (명성 -%d)", j.name, loss))
+		else
+			table.insert(msgs, string.format("의뢰를 마치지 못했다. '%s' — 다음 기회에 (벌은 없어요)", j.name))
+		end
+	end
+
+	-- 지금 이 항구에서 맡을 수 있는 일반 의뢰 (전투·납품)
+	local function easyPool(state)
+		local out = {}
+		for _, j in JOBS do
+			if (j.kind == "hunt" or j.kind == "deliver") and not j.shady and not j.legend and here(state, j) and active(state, j) and not state.tavernJobs[j.id] then
+				table.insert(out, j)
+			end
+		end
+		return out
+	end
+	local function shadyPool(state)
+		local out = {}
+		for _, j in Data.SHADY do
+			if active(state, j) and not state.tavernJobs[j.id] then
+				table.insert(out, j)
+			end
+		end
+		return out
+	end
+	local function draw(list, n, rng)
+		local pool, out = table.clone(list), {}
+		while #out < n and #pool > 0 do
+			table.insert(out, table.remove(pool, math.floor(rng() * #pool) + 1))
+		end
+		return out
+	end
+	local function ids(list)
+		local out = {}
+		for _, j in list do
+			table.insert(out, j.id)
+		end
+		return out
+	end
+
+	-- 수상한 손님이 지금 이 주점에 있는가 (항구·날짜로 정해진다: 며칠 머물다 사라진다)
+	local function strangerHere(state)
+		local h = 0
+		for i = 1, #state.portId do
+			h = (h * 31 + string.byte(state.portId, i)) % 100003
+		end
+		h = (h + math.floor(state.day / 4) * 7919) % 100
+		return h < 38 and #shadyPool(state) > 0
+	end
+
+	-- 기한이 지난 의뢰 정리
+	local function expire(state)
+		local q = tq(state)
+		local a = q.active
+		if a and state.day > a.due then
+			local j = JOB_BY_ID[a.id]
+			q.active = nil
+			if j and j.shady then
+				local loss = math.min(state.fame, j.failFame or 20)
+				state.fame -= loss
+				q.note = string.format("기한이 지났다. '%s' 의뢰는 무산됐다 (명성 -%d)", j.name, loss)
+			elseif j then
+				q.note = string.format("기한이 지났다. '%s' 의뢰는 다른 이에게 넘어갔다 (벌은 없어요)", j.name)
+			end
+		end
+	end
+
+	-- 그 지역·그 연도의 큰 사건은 항구에 들어서면 자동으로 맡는다
+	local function autoGrand(state)
+		local q = tq(state)
+		if q.active then
+			return
+		end
+		for _, j in JOBS do
+			if j.grand and here(state, j) and active(state, j) and not state.tavernJobs[j.id] and q.grandSeen ~= j.id .. ":" .. state.portId then
+				q.grandSeen = j.id .. ":" .. state.portId
+				q.active = { id = j.id, src = "grand", due = state.day + (j.days or 60) }
+				q.note = string.format("큰 사건: '%s' — 항구가 술렁인다. 일지에 올렸다.", j.name)
+				return
+			end
+		end
+	end
+
+	local function describe(state, j)
+		local g = j.good and D.Ports.Goods[j.good]
+		return {
+			id = j.id, kind = j.kind, tag = j.tag, name = j.name, text = j.text,
+			coins = j.coins, fame = j.fame, good = g and g.name, amount = j.amount, enemy = j.enemy,
+			shady = j.shady == true, failFame = j.failFame, blocked = blockReason(state, j),
+			choices = j.choices and (function()
+				local out = {}
+				for _, c in j.choices do
+					table.insert(out, { label = c.label, hint = c.hint, locked = c.cost ~= nil and state.coins < c.cost })
+				end
+				return out
+			end)() or nil,
+		}
+	end
+
+	-- 주점 화면: 맡은 의뢰 · 제안 · 수상한 손님 · 소문 이벤트
+	local function questView(state)
+		expire(state)
+		autoGrand(state)
+		local q = tq(state)
+		local out = { drinkCost = DRINK_COST, stranger = strangerHere(state), note = q.note, offer = {} }
+		q.note = nil
+		if q.active then
+			local j = JOB_BY_ID[q.active.id]
+			if j then
+				out.active = describe(state, j)
+				out.active.src = q.active.src
+				out.active.left = math.max(0, q.active.due - state.day)
+				out.active.here = here(state, j)
+			end
+		end
+		if q.offer and q.offer.port == state.portId then
+			out.offerKind = q.offer.kind
+			for _, id in q.offer.ids do
+				local j = JOB_BY_ID[id]
+				if j then
+					table.insert(out.offer, describe(state, j))
+				end
+			end
+		end
+		if q.rumorEvent then
+			local j = JOB_BY_ID[q.rumorEvent]
+			if j and j.kind == "event" and not state.tavernJobs[j.id] and (j.any or here(state, j)) then
+				out.rumorEvent = describe(state, j)
+			end
+		end
+		return out
 	end
 
 	function handlers.TavernJob(state, p, ctx)
@@ -183,6 +357,10 @@ return function(D, S)
 			state.coins += j.coins
 			state.fame += j.fame
 			state.tavernJobs[j.id] = state.day
+			local q = tq(state)
+			if q.active and q.active.id == j.id then
+				q.active = nil
+			end
 			return true, string.format("'%s' 완수! 보상 %d코인, 명성 +%d", j.name, j.coins, j.fame)
 		elseif j.kind == "event" then
 			local c = j.choices[type(p.choice) == "number" and math.floor(p.choice) or 0]
@@ -193,6 +371,13 @@ return function(D, S)
 				return false, "코인이 모자라요"
 			end
 			state.tavernJobs[j.id] = state.day
+			local q = tq(state)
+			if q.active and q.active.id == j.id then
+				q.active = nil
+			end
+			if q.rumorEvent == j.id then
+				q.rumorEvent = nil
+			end
 			local msgs = {}
 			if c.cost then
 				state.coins -= c.cost
@@ -207,7 +392,7 @@ return function(D, S)
 				text = r.text
 			end
 			state.coins = math.max(0, state.coins + coins)
-			state.fame += fame
+			state.fame = math.max(0, state.fame + fame)
 			table.insert(msgs, text)
 			if coins ~= 0 or fame ~= 0 then
 				table.insert(msgs, string.format("%s%s", if coins ~= 0 then string.format("코인 %+d", coins) else "", if fame ~= 0 then string.format("%s명성 %+d", if coins ~= 0 then " · " else "", fame) else ""))
@@ -222,5 +407,144 @@ return function(D, S)
 		end
 	end
 
-	return { handlers = handlers, view = view, settleHunt = settleHunt, jobs = JOBS }
+	local function setOffer(state, kind, list)
+		tq(state).offer = { kind = kind, ids = ids(list), port = state.portId, day = state.day }
+	end
+
+	-- 술을 사 주면 주인이 일감 두 개를 보여 준다. 아주 가끔은 전설급 의뢰를 먼저 건넨다.
+	function handlers.TavernDrink(state, _p, ctx)
+		local q = tq(state)
+		if q.active then
+			return false, "이미 맡은 의뢰가 있어요. 끝내거나 포기한 뒤 오세요"
+		end
+		if state.coins < DRINK_COST then
+			return false, "술값이 모자라요"
+		end
+		state.coins -= DRINK_COST
+		local y = S.State.year(state)
+		if ctx.rng() < 0.06 then
+			local legends = {}
+			for _, j in Data.LEGEND do
+				if y >= j.from and y <= j.to and not state.tavernJobs[j.id] then
+					table.insert(legends, j)
+				end
+			end
+			if #legends > 0 then
+				local j = legends[math.floor(ctx.rng() * #legends) + 1]
+				q.active = { id = j.id, src = "legend", due = state.day + (j.days or 40) }
+				q.offer = nil
+				return true, string.format("주인이 잔을 닦다 말고 목소리를 낮춘다.\n전설 의뢰: '%s'\n%s", j.name, j.text)
+			end
+		end
+		local picks = draw(easyPool(state), 2, ctx.rng)
+		if #picks == 0 then
+			return true, "주인이 어깨를 으쓱한다. '오늘은 마땅한 일이 없소. 다른 때에 다시 오시오.'"
+		end
+		setOffer(state, "job", picks)
+		return true, "주인이 잔을 채우며 일감을 꺼낸다. '둘 중에 고르시오.' (맡지 않아도 돼요)"
+	end
+
+	function handlers.TavernStranger(state, _p, ctx)
+		if not strangerHere(state) then
+			return false, "구석 자리가 비어 있어요"
+		end
+		local picks = draw(shadyPool(state), 2, ctx.rng)
+		if #picks == 0 then
+			return false, "손님이 고개를 젓고 일어선다"
+		end
+		setOffer(state, "shady", picks)
+		return true, "수상한 손님이 맞은편 의자를 가리킨다. '둘 중 하나요. 실패하면 소문이 따라다닐 거요.'"
+	end
+
+	function handlers.TavernPick(state, p, ctx)
+		local q = tq(state)
+		local offer = q.offer
+		if not offer or offer.port ~= state.portId then
+			return false, "제안이 사라졌어요"
+		end
+		if q.active then
+			return false, "이미 맡은 의뢰가 있어요"
+		end
+		local id = type(p) == "table" and offer.ids[math.floor(tonumber(p.index) or 0)]
+		local j = id and JOB_BY_ID[id]
+		if not j then
+			return false, "고를 수 있는 의뢰가 아니에요"
+		end
+		q.active = { id = j.id, src = if j.shady then "shady" else "job", due = state.day + (j.days or 25) }
+		q.offer = nil
+		local tail = if j.shady then " (실패·포기하면 명성 -" .. tostring(j.failFame or 20) .. ")" else " (실패해도 명성은 그대로예요)"
+		return true, string.format("'%s' 의뢰를 맡았다%s", j.name, tail)
+	end
+
+	function handlers.TavernDecline(state)
+		tq(state).offer = nil
+		return true, "손을 저었다"
+	end
+
+	function handlers.TavernAbandon(state)
+		local q = tq(state)
+		if not q.active then
+			return false, "맡은 의뢰가 없어요"
+		end
+		local j = JOB_BY_ID[q.active.id]
+		q.active = nil
+		if j and j.shady then
+			local loss = math.min(state.fame, j.failFame or 20)
+			state.fame -= loss
+			return true, string.format("의뢰를 접었다. 손님은 아무 말 없이 사라졌다 (명성 -%d)", loss)
+		end
+		return true, "의뢰를 접었다 (벌은 없어요)"
+	end
+
+	-- 주인에게 소문 듣기: 무료. 지역 소식이거나, 선택이 걸린 사건이거나, 때로는 일감으로 이어진다.
+	function handlers.TavernRumor(state, _p, ctx)
+		local q = tq(state)
+		local r = ctx.rng()
+		if r < 0.3 then
+			local events = {}
+			for _, j in JOBS do
+				if j.kind == "event" and not j.shady and here(state, j) and active(state, j) and not state.tavernJobs[j.id] then
+					table.insert(events, j)
+				end
+			end
+			if #events > 0 then
+				local j = events[math.floor(ctx.rng() * #events) + 1]
+				q.rumorEvent = j.id
+				return true, string.format("주인이 소곤댄다. '%s'\n(선택이 걸린 소식이에요. 아래에서 골라 보세요)", j.name)
+			end
+		elseif r < 0.5 and not q.active then
+			local picks = draw(easyPool(state), 1, ctx.rng)
+			if #picks > 0 then
+				setOffer(state, "rumor", picks)
+				return true, "소문을 듣다 보니 도움이 필요한 사람 이야기가 나왔다. 일감으로 이어질 것 같다."
+			end
+		end
+		local port = D.Ports.Ports[state.portId]
+		local rid = port and D.Regions.of(port).id
+		local lines = Data.RUMORS[rid] or Data.RUMORS.europe
+		return true, "주인이 말한다. \"" .. lines[math.floor(ctx.rng() * #lines) + 1] .. "\""
+	end
+
+	-- 같이 다니는 동료와 술잔을 나누며 대화: 호감도가 오르고, 이야기 속에서 일감이 튀어나오기도 한다.
+	function handlers.TavernTalk(state, _p, ctx)
+		if #state.companions == 0 then
+			return false, "함께하는 동료가 없어요"
+		end
+		local id = state.companions[math.floor(ctx.rng() * #state.companions) + 1]
+		local q = tq(state)
+		local ok, msg = S.Perk.handlers.Talk(state, { companionId = id }, ctx)
+		if not ok then
+			return ok, msg
+		end
+		if not q.active and ctx.rng() < 0.3 then
+			local picks = draw(easyPool(state), 1, ctx.rng)
+			if #picks > 0 then
+				setOffer(state, "talk", picks)
+				msg ..= "\n(대화 중 동료가 이 항구의 일감 이야기를 꺼냈다)"
+			end
+		end
+		return true, msg
+	end
+
+	return { handlers = handlers, view = view, questView = questView, settleHunt = settleHunt, failHunt = failHunt, jobs = JOBS }
 end
