@@ -1,75 +1,30 @@
 {
- "sourceRevision": "b5341a5ad5a0529e93fa01e05f0ea90699acb1ce",
+ "sourceRevision": "aedde8f058ad8a3742b8828d236a664a9cf2c9ca",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "DEV Deck\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "faced 19.932592391967773\ntext"
-  },
-  {
-   "step": 6,
-   "capture": "c1_approach",
-   "files": 1
+   "out": "GALLERY none\ntext"
   },
   {
    "step": 7,
-   "ctx": "Client",
-   "out": "attack\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "c2_attack",
+   "capture": "gal1",
    "files": 1
   },
   {
-   "step": 11,
+   "step": 8,
    "ctx": "Client",
-   "out": "faced 6.999947547912598\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "heavy\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "c3_heavy",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "spin\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "c4_spin",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "dash\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "c5_dash",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ready=true err=true table: 0x543f7813d7f42b63 btns=공격|철수|0.3|6.2|3.1\ntext"
+   "out": "ERRORS 0\ntext"
   }
  ],
  "errors": [],
@@ -84,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 9,
+  "completedSteps": 9,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
