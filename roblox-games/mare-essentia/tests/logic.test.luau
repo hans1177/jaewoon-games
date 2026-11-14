@@ -1641,6 +1641,66 @@ do
 		end)())
 	end
 
+	-- [학문 분류] 7대 분류와 스킬 트리 무결성
+	do
+		local K = D.KnowledgeTree
+		check("학문 분류: 7대 분류", #K.Domains == 7)
+		local bad, perDomain = 0, {}
+		for _, row in K.Taxonomy do
+			if not K.DomainById[row.domain or ""] then bad += 1; print("나쁜 분류", row.id) end
+			if row.parent and not K.TaxonomyById[row.parent] then bad += 1; print("나쁜 부모", row.id, row.parent) end
+			perDomain[row.domain] = (perDomain[row.domain] or 0) + 1
+			-- 부모를 따라가면 반드시 뿌리에 닿아야 한다 (순환 금지)
+			local cur, hops = row, 0
+			while cur.parent and hops < 50 do cur = K.TaxonomyById[cur.parent]; hops += 1 end
+			if hops >= 50 then bad += 1; print("순환", row.id) end
+		end
+		check("학문 분류: 모든 학문이 분류·부모가 올바르고 순환 없음", bad == 0, tostring(bad))
+		local seen, dup = {}, 0
+		for _, row in K.Taxonomy do if seen[row.id] then dup += 1 end seen[row.id] = true end
+		check("학문 분류: id 중복 없음", dup == 0)
+		local thin = 0
+		for _, dm in K.Domains do if (perDomain[dm.id] or 0) < 4 then thin += 1 end end
+		check("학문 분류: 모든 분류에 학문 4개 이상", thin == 0)
+		local unmapped = 0
+		for _, d in K.Disciplines do if not K.DomainOf[d.id] then unmapped += 1 end end
+		check("학문 분류: 연구 중인 학문은 모두 분류에 속함", unmapped == 0)
+		local stv = newState("england")
+		local kv = S.Knowledge.viewOf(stv)
+		check("학문 분류: 화면에 7대 분류 표시", kv.domains ~= nil and #kv.domains == 7)
+	end
+	-- [직업] 학문 계열 직업: 잠금·자동 배정·거장 부직업
+	do
+		local Sp = D.Specialties
+		local noXp = 0
+		for _, sp in Sp.Specialties do if #sp.xpOn == 0 then noXp += 1 end end
+		check("직업: 모든 직업에 경험치 분야가 있음", noXp == 0)
+		local s1 = newState("england")
+		local ok1 = act(s1, "SetSpecialty", { specialtyId = "astronomer" })
+		check("직업: 카드가 모자라면 학문 직업은 잠김", not ok1 and s1.specialty == nil)
+		local n = 0
+		for _, c in D.Cards.Cards do
+			if c.field == "Astronomy" and n < Sp.UNLOCK_CARDS then s1.discovered[c.id] = true; n += 1 end
+		end
+		check("직업: 카드 5장이면 학문 직업을 고를 수 있음", act(s1, "SetSpecialty", { specialtyId = "astronomer" }) and s1.specialty == "astronomer")
+		-- 자동 배정
+		local s2 = newState("england")
+		local msgs = {}
+		local got = 0
+		for _, c in D.Cards.Cards do
+			if c.field == "Medicine" and got < Sp.AUTO_CARDS then S.Discovery.grantCard(s2, c.id, msgs); got += 1 end
+		end
+		check("직업: 카드 3장이면 계열 직업이 자동 배정됨", s2.specialty ~= nil and s2.specAuto == true, tostring(s2.specialty))
+		local c0 = s2.coins
+		check("직업: 자동 배정 뒤 첫 변경은 무료", act(s2, "SetSpecialty", { specialtyId = "merchant" }) and s2.coins == c0 and s2.specAuto == false)
+		-- 부직업
+		local s3 = newState("england")
+		s3.specialty = "merchant"
+		check("직업: 거장이 아니면 부직업 불가", not act(s3, "SetSubSpecialty", { specialtyId = "botanist" }))
+		s3.specLevels.merchant = { level = Sp.MAX_LEVEL, xp = 0 }
+		check("직업: 거장이면 부직업 가능", act(s3, "SetSubSpecialty", { specialtyId = "botanist" }) and s3.subSpecialty == "botanist")
+		check("직업: 같은 분야 다시 보내면 부직업 해제", act(s3, "SetSubSpecialty", { specialtyId = "botanist" }) and s3.subSpecialty == nil)
+	end
 	local st = newState("england")
 	local ok, msg = act(st, "SetSpecialty", { specialtyId = "nope" })
 	check("bad specialty rejected", not ok)

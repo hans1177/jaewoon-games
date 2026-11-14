@@ -36,6 +36,9 @@ return function(D, S)
 			local k = Sp.levelMult(specLevel(state, state.specialty))
 			table.insert(list, scaled(Sp.SpecialtyById[state.specialty].perk, k))
 		end
+		if state.subSpecialty and Sp.SpecialtyById[state.subSpecialty] and specLevel(state, state.specialty or "") >= Sp.SUB_LEVEL then
+			table.insert(list, scaled(Sp.SpecialtyById[state.subSpecialty].perk, Sp.SUB_MULT)) -- 부직업: 절반 효과
+		end
 		local origin = state.origin and Sp.OriginById[state.origin]
 		if origin and origin.perk then
 			table.insert(list, origin.perk)
@@ -166,6 +169,53 @@ return function(D, S)
 		end
 	end
 
+	-- 이 직업 계열(xpOn 중 카드 분야)의 발견 카드 수
+	local function cardsIn(state, sp)
+		local n = 0
+		for id in state.discovered do
+			local card = D.Cards.ById[id]
+			if card and table.find(sp.xpOn, card.field) then
+				n += 1
+			end
+		end
+		return n
+	end
+
+	local function unlocked(state, sp)
+		return sp.free == true or cardsIn(state, sp) >= Sp.UNLOCK_CARDS
+	end
+
+	-- 카드를 가장 많이 모은 계열의 직업 (동률이면 표의 앞쪽, 하나도 없으면 nil)
+	local function recommend(state, minCards, exceptId)
+		local best, bestN = nil, 0
+		for _, sp in Sp.Specialties do
+			if sp.id ~= exceptId then
+				local n = cardsIn(state, sp)
+				if n >= minCards and n > bestN then
+					best, bestN = sp, n
+				end
+			end
+		end
+		return best, bestN
+	end
+
+	-- 직업이 없을 때 한 계열 카드가 모이면 자동 배정 (카드 습득 성과)
+	local function autoAssign(state, msgs)
+		if state.specialty then
+			return false
+		end
+		local sp, n = recommend(state, Sp.AUTO_CARDS, nil)
+		if not sp then
+			return false
+		end
+		state.specialty = sp.id
+		state.specAuto = true
+		if msgs then
+			table.insert(msgs, string.format("직업 배정: %s (%s 카드 %d장을 모은 성과) — 마음에 안 들면 한 번은 무료로 바꿀 수 있어요", sp.name, sp.name, n))
+		end
+		return true
+	end
+
 	function handlers.SetSpecialty(state, p)
 		local sp = type(p.specialtyId) == "string" and Sp.SpecialtyById[p.specialtyId]
 		if not sp then
@@ -174,13 +224,43 @@ return function(D, S)
 		if state.specialty == sp.id then
 			return false, "이미 이 분야예요"
 		end
-		local fee = if state.specialty then Sp.CHANGE_FEE else 0
+		if not unlocked(state, sp) then
+			return false, string.format("%s는 관련 카드를 %d장 이상 발견해야 고를 수 있어요 (현재 %d장)", sp.name, Sp.UNLOCK_CARDS, cardsIn(state, sp))
+		end
+		local fee = if state.specialty and not state.specAuto then Sp.CHANGE_FEE else 0
 		if state.coins < fee then
 			return false, string.format("분야를 바꾸려면 %d코인이 필요해요", fee)
 		end
 		state.coins -= fee
 		state.specialty = sp.id
+		state.specAuto = false
+		if state.subSpecialty == sp.id then
+			state.subSpecialty = nil
+		end
 		return true, string.format("전문 분야: %s%s", sp.name, if fee > 0 then string.format(" (-%d코인)", fee) else "")
+	end
+
+	-- 부직업: 주직업이 거장(Lv.5)이면 하나 더 고른다 (효과 절반). 같은 id 를 다시 보내면 해제.
+	function handlers.SetSubSpecialty(state, p)
+		local sp = type(p.specialtyId) == "string" and Sp.SpecialtyById[p.specialtyId]
+		if not sp then
+			return false, "잘못된 전문 분야예요"
+		end
+		if not state.specialty or specLevel(state, state.specialty) < Sp.SUB_LEVEL then
+			return false, "주직업이 거장(전문 Lv.5)이 되어야 부직업을 가질 수 있어요"
+		end
+		if sp.id == state.specialty then
+			return false, "주직업과 같은 분야는 고를 수 없어요"
+		end
+		if state.subSpecialty == sp.id then
+			state.subSpecialty = nil
+			return true, "부직업을 해제했어요"
+		end
+		if not unlocked(state, sp) then
+			return false, string.format("%s는 관련 카드를 %d장 이상 발견해야 해요 (현재 %d장)", sp.name, Sp.UNLOCK_CARDS, cardsIn(state, sp))
+		end
+		state.subSpecialty = sp.id
+		return true, string.format("부직업: %s (효과 절반)", sp.name)
 	end
 
 	-- 영입 불가 사유 (가능하면 nil)
@@ -428,6 +508,10 @@ return function(D, S)
 		handlers = handlers,
 		companionLines = companionLines,
 		gainSpec = gainSpec,
+		autoAssign = autoAssign,
+		cardsIn = cardsIn,
+		specUnlocked = unlocked,
+		recommendSpec = recommend,
 		addAffinity = addAffinity,
 		specLevel = specLevel,
 		affinityOf = affinityOf,

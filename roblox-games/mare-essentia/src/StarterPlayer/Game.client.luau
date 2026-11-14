@@ -4002,18 +4002,38 @@ function RENDERERS.status()
 			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
 		}, 52)
 	end)
-	add(function() return mkHeader(content, "전문 분야") end)
+	add(function() return mkHeader(content, "직업 (학문 계열) — 카드를 모을수록 직업이 자라요") end)
+	add(function()
+		local sv = view.specialties
+		local msg = "카드를 가장 많이 모은 계열이 직업으로 자동 배정돼요. 직접 고르려면 그 계열 카드가 " .. sv.unlockCards .. "장 필요해요. 직업 등급: 견습 → 숙련 → 명인 → 대가 → 거장"
+		if sv.auto then
+			msg ..= "  (자동 배정됨 — 한 번은 무료로 바꿀 수 있어요)"
+		end
+		return mkLabel(content, msg, 12, COLORS.muted, false)
+	end)
 	for _, sp in view.specialties.list do
 		add(function()
-			local mine = view.specialties.current == sp.id
-			local sub = sp.summary .. string.format(" · 전문 Lv.%d", sp.level) .. (if sp.nextXp > 0 then string.format(" (%d/%d)", sp.xp, sp.nextXp) else " (최대)")
-			if view.specialties.current and not mine then
-				sub ..= string.format(" · 변경 %d코인", view.specialties.changeFee)
+			local sv = view.specialties
+			local mine = sv.current == sp.id
+			local isSub = sv.sub == sp.id
+			local sub = sp.summary .. string.format(" · [%s] 전문 Lv.%d", sp.rank, sp.level) .. (if sp.nextXp > 0 then string.format(" (%d/%d)", sp.xp, sp.nextXp) else " (최대)")
+			if sp.domain then
+				sub = "[" .. sp.domain .. "] " .. sub
 			end
-			return mkRow(content, sp.name .. (if mine then "  ✔" else ""), sub, {
-				{ text = if mine then "선택됨" else "선택", color = if mine then COLORS.gold else COLORS.blue, enabled = not mine,
-					onClick = function() call("SetSpecialty", { specialtyId = sp.id }) end },
-			}, 56)
+			if not sp.unlocked then
+				sub ..= string.format(" · 잠김: 관련 카드 %d/%d장", sp.cards, sv.unlockCards)
+			elseif sv.current and not mine and sv.changeFee > 0 then
+				sub ..= string.format(" · 변경 %d코인", sv.changeFee)
+			end
+			local title = sp.name .. (if mine then "  ✔ 주직업" elseif isSub then "  ✔ 부직업" else "") .. (if sv.recommend == sp.id and not mine then "  ★추천" else "")
+			local buttons = {
+				{ text = if mine then "선택됨" else if sp.unlocked then "선택" else "잠김", color = if mine then COLORS.gold else if sp.unlocked then COLORS.blue else COLORS.grey,
+					enabled = (not mine) and sp.unlocked, onClick = function() call("SetSpecialty", { specialtyId = sp.id }) end },
+			}
+			if sv.subOpen and not mine and sp.unlocked then
+				table.insert(buttons, { text = if isSub then "부직업 해제" else "부직업", color = COLORS.green, onClick = function() call("SetSubSpecialty", { specialtyId = sp.id }) end })
+			end
+			return mkRow(content, title, sub, buttons, 64)
 		end)
 	end
 	add(function() return mkHeader(content, string.format("항해 장비 (장착 최대 %d개)", view.gear.slots)) end)
@@ -5671,6 +5691,19 @@ local function renderCodexOverview()
 			end
 			return mkLabel(content, g.region .. (if g.open then " (열림)" else "") .. " — " .. table.concat(parts, "  "), 13, if g.open then COLORS.green else COLORS.text, false)
 		end)
+	end
+	add(function() return mkHeader(content, "인류 학문 7대 분류 (연구 중 ✔ / 연구 예정 ·)") end)
+	for _, dm in (view.knowledge and view.knowledge.domains or {}) do
+		add(function()
+			return mkLabel(content, string.format("■ %s — 연구 중 %d / 전체 %d  · %s", dm.name, dm.active, dm.count, dm.summary), 13, COLORS.gold, false)
+		end)
+		for _, r in dm.rows do
+			add(function()
+				local mark = if r.planned then "·" else "✔"
+				local tail = if r.planned then "  (연구 예정)" else string.format("  이해 %d/%d%s", r.done or 0, r.total or 0, if r.open then "" else " · 잠김")
+				return mkLabel(content, string.rep("    ", r.depth + 1) .. mark .. " " .. r.name .. tail, 12, if r.planned then COLORS.muted else COLORS.text, false)
+			end)
+		end
 	end
 	add(function() return mkHeader(content, "학문 계통도 (뿌리에서 갈라져 나온 순서)") end)
 	for _, t in (view.knowledge and view.knowledge.tree or {}) do

@@ -13,7 +13,7 @@ export type Perk = {
 	healMult: number?, -- 열병·괴혈병·사기 하락 감소 (0.5 = 절반)
 }
 
-export type Specialty = { id: string, name: string, summary: string, perk: Perk, xpOn: { string } } -- xpOn: 경험치를 주는 카드 분야 또는 "voyage"/"trade"
+export type Specialty = { id: string, name: string, summary: string, perk: Perk, xpOn: { string }, free: boolean?, domain: string? } -- xpOn: 경험치를 주는 카드 분야 또는 "voyage"/"trade"
 
 export type Companion = {
 	id: string,
@@ -32,16 +32,37 @@ export type Companion = {
 }
 
 local Specialties: { Specialty } = {
-	{ id = "botanist", name = "식물학자", summary = "식물·약용·의학 카드 발견 확률 +25%",
+	{ id = "botanist", free = true, domain = "natural", name = "식물학자", summary = "식물·약용·의학 카드 발견 확률 +25%",
 		perk = { discoverFields = { "Botany", "Medicine" }, discoverBonus = 0.25 }, xpOn = { "Botany", "Medicine" } },
-	{ id = "zoologist", name = "동물학자", summary = "동물 카드 발견 확률 +25%",
+	{ id = "zoologist", free = true, domain = "natural", name = "동물학자", summary = "동물 카드 발견 확률 +25%",
 		perk = { discoverFields = { "Zoology" }, discoverBonus = 0.25 }, xpOn = { "Zoology" } },
-	{ id = "collector", name = "유물수집가", summary = "유물·유적·광물·예술·건축·언어 카드 등록 코인 +50%",
+	{ id = "collector", free = true, domain = "humanities", name = "유물수집가", summary = "유물·유적·광물·예술·건축·언어 카드 등록 코인 +50%",
 		perk = { coinFields = { "Relic", "Site", "Mineral", "Art", "Architecture", "Language" }, coinMult = 0.5 }, xpOn = { "Relic", "Site", "Mineral", "Art", "Architecture", "Language" } },
-	{ id = "cartographer", name = "지도제작자", summary = "항해 속도 +10%",
+	{ id = "cartographer", free = true, domain = "applied", name = "지도제작자", summary = "항해 속도 +10%",
 		perk = { speedMult = 0.1 }, xpOn = { "voyage", "Geography", "Astronomy", "Navigation", "Weather", "Shipbuilding" } },
-	{ id = "merchant", name = "무역가", summary = "되파는 비율 +2%",
+	{ id = "merchant", free = true, domain = "social", name = "무역가", summary = "되파는 비율 +2%",
 		perk = { sellBonus = 0.02 }, xpOn = { "trade", "Goods" } },
+	-- 학문 계열 직업: 그 계열 카드를 UNLOCK_CARDS 장 이상 발견하면 고를 수 있다 (카드를 가장 많이 모은 계열은 자동 배정·추천)
+	{ id = "astronomer", domain = "natural", name = "천문학자", summary = "천문·기상 카드 발견 확률 +20%, 항해 속도 +6%",
+		perk = { discoverFields = { "Astronomy", "Weather" }, discoverBonus = 0.2, speedMult = 0.06 }, xpOn = { "Astronomy", "Weather" } },
+	{ id = "physicist", domain = "natural", name = "자연철학자", summary = "물리·화학·철학 카드 등록 코인 +50%",
+		perk = { coinFields = { "Physics", "Chemistry", "Philosophy" }, coinMult = 0.5 }, xpOn = { "Physics", "Chemistry", "Philosophy" } },
+	{ id = "geologist", domain = "natural", name = "광물학자", summary = "광물 카드 발견 확률 +25%, 광물·유적 카드 등록 코인 +30%",
+		perk = { discoverFields = { "Mineral" }, discoverBonus = 0.25, coinFields = { "Mineral", "Site" }, coinMult = 0.3 }, xpOn = { "Mineral" } },
+	{ id = "physician", domain = "applied", name = "의사", summary = "의학 카드 발견 확률 +25%, 열병·괴혈병 피해 30% 감소",
+		perk = { discoverFields = { "Medicine" }, discoverBonus = 0.25, healMult = 0.3 }, xpOn = { "Medicine" } },
+	{ id = "shipwright", domain = "applied", name = "조선 장인", summary = "조선·건축 카드 등록 코인 +50%, 포격 +8%",
+		perk = { coinFields = { "Shipbuilding", "Architecture" }, coinMult = 0.5, cannonMult = 0.08 }, xpOn = { "Shipbuilding", "Architecture" } },
+	{ id = "navigator", domain = "applied", name = "항해가", summary = "항해술·지리 카드 발견 확률 +20%, 항해 속도 +8%",
+		perk = { discoverFields = { "Navigation", "Geography" }, discoverBonus = 0.2, speedMult = 0.08 }, xpOn = { "Navigation", "Geography" } },
+	{ id = "linguist", domain = "humanities", name = "언어학자", summary = "언어 카드 발견 확률 +25%, 언어·유물 카드 등록 코인 +30%",
+		perk = { discoverFields = { "Language" }, discoverBonus = 0.25, coinFields = { "Language", "Relic" }, coinMult = 0.3 }, xpOn = { "Language" } },
+	{ id = "mythologist", domain = "humanities", name = "신화·민속학자", summary = "신화 카드 발견 확률 +30%",
+		perk = { discoverFields = { "Myth" }, discoverBonus = 0.3 }, xpOn = { "Myth" } },
+	{ id = "historian", domain = "humanities", name = "역사가", summary = "유적·유물 카드 발견 확률 +20%",
+		perk = { discoverFields = { "Site", "Relic" }, discoverBonus = 0.2 }, xpOn = { "Site", "Relic" } },
+	{ id = "artist", domain = "arts", name = "예술가", summary = "예술 카드 발견 확률 +20%, 예술 카드 등록 코인 +60%",
+		perk = { discoverFields = { "Art" }, discoverBonus = 0.2, coinFields = { "Art" }, coinMult = 0.6 }, xpOn = { "Art" } },
 }
 
 local Companions: { Companion } = {
@@ -478,4 +499,12 @@ return {
 	end,
 	CHANGE_FEE = 200, -- 전문 분야를 바꿀 때의 비용 (처음 고를 때는 무료)
 	MAX_COMPANIONS = 2,
+	UNLOCK_CARDS = 5, -- 학문 계열 직업을 고르려면 그 계열 카드를 이만큼 발견해야 한다
+	AUTO_CARDS = 3, -- 직업이 없을 때 한 계열 카드가 이만큼 모이면 자동 배정
+	SUB_LEVEL = 5, -- 이 전문 레벨(거장)이 되면 부직업을 하나 더 가진다
+	SUB_MULT = 0.5, -- 부직업 효과 배율
+	RANK_NAMES = { "견습", "숙련", "명인", "대가", "거장" },
+	rankName = function(level: number): string
+		return ({ "견습", "숙련", "명인", "대가", "거장" })[math.clamp(level, 1, 5)]
+	end,
 }

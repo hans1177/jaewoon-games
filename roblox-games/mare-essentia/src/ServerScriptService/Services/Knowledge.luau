@@ -652,6 +652,39 @@ return function(D, S)
 			end
 		end
 		walk(nil, 0)
+		-- 인류 학문 분류(7대 분류): 연구 중인 학문과 연구 예정 학문을 분류별 가지로 보여 준다
+		out.domains = {}
+		for _, dm in K.Domains do
+			local rows, count, active = {}, 0, 0
+			local function dwalk(parentId, depth)
+				for _, t in K.Taxonomy do
+					local inDomain = t.domain == dm.id
+					local isRoot = parentId == nil and (t.parent == nil or (K.TaxonomyById[t.parent] and K.TaxonomyById[t.parent].domain ~= dm.id))
+					if inDomain and ((parentId == nil and isRoot) or (parentId ~= nil and t.parent == parentId)) then
+						count += 1
+						local row = { id = t.id, name = t.name, depth = depth, planned = t.planned }
+						if not t.planned then
+							active += 1
+							row.open = K.disciplineOpen(state, t.id)
+							local done, total = 0, 0
+							for _, node in K.Nodes do
+								if node.disc == t.id then
+									total += 1
+									if K.understood(state, node.id) then
+										done += 1
+									end
+								end
+							end
+							row.done, row.total = done, total
+						end
+						table.insert(rows, row)
+						dwalk(t.id, depth + 1)
+					end
+				end
+			end
+			dwalk(nil, 0)
+			table.insert(out.domains, { id = dm.id, name = dm.name, summary = dm.summary, count = count, active = active, rows = rows })
+		end
 		do
 			local r, lvl, discs = researchOf(state, state.portId)
 			local names = {}
