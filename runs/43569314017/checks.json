@@ -1,0 +1,103 @@
+{
+  "runId": "43569314017",
+  "kind": "studio",
+  "sourceRevision": "2d6a8a82d5aaa5c52ae49b899770db822b739540",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
+  "summary": {
+    "plannedSteps": 8,
+    "completedSteps": 8,
+    "plannedClicks": 0,
+    "successfulClicks": 0,
+    "skippedOptionalClicks": 0,
+    "plannedFrames": 2,
+    "capturedFrames": 2,
+    "abortedEarly": false
+  },
+  "errors": [],
+  "audits": {
+    "models": "NOT_RUN",
+    "registered": "NOT_RUN",
+    "features": "NOT_RUN",
+    "registry": "NOT_RUN"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 1,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 2,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 3,
+      "type": "capture",
+      "name": "t1",
+      "status": "PASS",
+      "screenshots": [
+        "t1-0.jpg"
+      ]
+    },
+    {
+      "step": 4,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 5,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 6,
+      "type": "capture",
+      "name": "t2",
+      "status": "PASS",
+      "screenshots": [
+        "t2-0.jpg"
+      ]
+    },
+    {
+      "step": 7,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    }
+  ],
+  "screenshotComparison": [
+    {
+      "name": "t1-0.jpg",
+      "sha256": "f9510e7ed0fc3b49471ce215dd849935bf192e451f1c3c932509116daf0c0613",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43569314017/t1-0.jpg"
+    },
+    {
+      "name": "t2-0.jpg",
+      "sha256": "0081dd1aac08138781e46b4db02eecaa444deea0d377962c3ba360e04f111717",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43569314017/t2-0.jpg"
+    }
+  ],
+  "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
+  "previousRunId": "43568911999"
+}
