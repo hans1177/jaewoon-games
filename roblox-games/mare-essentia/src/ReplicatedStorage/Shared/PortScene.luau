@@ -934,6 +934,36 @@ local function penAt(i, n)
 	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 44)
 end
 
+local LIVESTOCK_BY_KEY = {
+	iberia = { "sheep", "donkey", "pig", "chicken", "dog" }, italy = { "donkey", "chicken", "cat", "dog" },
+	france = { "cow", "sheep", "chicken", "dog" }, britain = { "sheep", "cow", "horse", "dog" },
+	brick = { "cow", "horse", "cat", "chicken" }, hanse = { "horse", "pig", "dog", "chicken" },
+	nordic = { "sheep", "horse", "cow", "dog" }, tropic = { "pig", "chicken", "dog", "cat" },
+	desert = { "donkey", "cat", "chicken" }, med = { "donkey", "cat", "chicken", "sheep" },
+	ottoman = { "donkey", "cat", "sheep", "chicken" }, swahili = { "donkey", "chicken", "cat", "cow" },
+	malabar = { "elephant", "cow", "chicken", "cat" }, japan = { "cat", "chicken", "pig", "dog" },
+	colonial = { "llama", "horse", "pig", "chicken", "dog" },
+	creole = { "horse", "chicken", "dog", "cat" }, china = { "pig", "chicken", "dog", "cat" },
+	seasia = { "cow", "pig", "chicken", "dog" }, pacific = { "pig", "chicken", "dog" },
+	wafrica = { "cow", "sheep", "chicken", "dog" },
+}
+-- 가축이 사는 곳: 돼지만 울타리 우리(지붕 있는 돼지우리), 소·양·말·당나귀·라마는 열린 풀밭에서 풀을 뜯는다.
+-- 말·당나귀는 짐과 사람을 나르는 짐승이라 장터·큰길에서 일하고, 소는 밭을 갈거나 수레를 끈다. 코끼리는 일터에서 짐을 나른다.
+local PEN_KIND = { pig = "sty", cow = "pasture", sheep = "pasture", llama = "pasture", donkey = "pasture", horse = "pasture", elephant = "work" }
+local function penKindAt(key, i)
+	local list = {}
+	for _, sp in LIVESTOCK_BY_KEY[key] or LIVESTOCK_BY_KEY.britain do
+		if PEN_KIND[sp] then
+			table.insert(list, sp)
+		end
+	end
+	if #list == 0 then
+		return nil, nil
+	end
+	local sp = list[(i - 1) % #list + 1]
+	return sp, PEN_KIND[sp]
+end
+
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
@@ -1125,19 +1155,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	end
 	-- 동물: 지역마다 키우는 가축과 마을 동물 (풀을 뜯고, 모이를 쪼고, 꼬리를 흔든다). 모델이 없으면 건너뛴다.
 	do
-		local SPECIES = {
-			iberia = { "sheep", "donkey", "pig", "chicken", "dog" }, italy = { "donkey", "chicken", "cat", "dog" },
-			france = { "cow", "sheep", "chicken", "dog" }, britain = { "sheep", "cow", "horse", "dog" },
-			brick = { "cow", "horse", "cat", "chicken" }, hanse = { "horse", "pig", "dog", "chicken" },
-			nordic = { "sheep", "horse", "cow", "dog" }, tropic = { "pig", "chicken", "dog", "cat" },
-			desert = { "donkey", "cat", "chicken" }, med = { "donkey", "cat", "chicken", "sheep" },
-			ottoman = { "donkey", "cat", "sheep", "chicken" }, swahili = { "donkey", "chicken", "cat", "cow" },
-			malabar = { "elephant", "cow", "chicken", "cat" }, japan = { "cat", "chicken", "pig", "dog" },
-			colonial = { "llama", "horse", "pig", "chicken", "dog" },
-			creole = { "horse", "chicken", "dog", "cat" }, china = { "pig", "chicken", "dog", "cat" },
-			seasia = { "cow", "pig", "chicken", "dog" }, pacific = { "pig", "chicken", "dog" },
-			wafrica = { "cow", "sheep", "chicken", "dog" },
-		}
+		local SPECIES = LIVESTOCK_BY_KEY
 		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
 		local KIND = {
 			cow = { 3.4, "graze" }, horse = { 3.8, "graze" }, sheep = { 2.3, "graze" }, pig = { 2.2, "peck" }, llama = { 3.2, "graze" },
@@ -1168,30 +1186,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				w.rate = rng:NextNumber(0.3, 0.6)
 			end
 		end
-		local stock = {}
-		for _, sp in list do
-			if sp == "cow" or sp == "sheep" or sp == "pig" or sp == "horse" or sp == "llama" or sp == "donkey" or sp == "elephant" then
-				table.insert(stock, sp)
-			end
-		end
-		-- 1) 농원구역: 울타리 안의 가축 (울타리가 많은 작은 마을일수록 가축이 많다)
+		-- 1) 목축구역: 돼지는 작은 우리에, 소·양·말은 울타리 없는 풀밭에서 풀을 뜯는다 (발전도가 높을수록 떼가 크고 양치기와 개가 붙는다)
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
-				if sp == "elephant" then
-					animal(sp, c)
-				else
-					for k = 1, 5 + (lvl % 3) do
-						animal(sp, c + Vector3.new(rng:NextNumber(-16, 16), 0, rng:NextNumber(-11, 11)))
-					end
+			local sp, kind = penKindAt(key, i)
+			if kind == "sty" then
+				for k = 1, 3 + lvl do
+					animal(sp, c + Vector3.new(rng:NextNumber(-14, 14), 0, rng:NextNumber(-9, 9)))
 				end
-			end
-			-- 지붕 있는 축사: 말·당나귀·라마는 마굿간, 소·양·돼지·코끼리는 축사. 이름표 위에 3D 아이콘이 뜬다.
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
-				local isStable = sp == "horse" or sp == "donkey" or sp == "llama"
-				-- 우리의 서쪽 절반(20x30)에 높은 지붕을 얹는다. 동쪽 절반은 열린 방목장.
+				-- 지붕 있는 돼지우리 (우리의 서쪽 절반)
 				local roofAt = Vector3.new(c.X - 10, 9, c.Z)
 				for _, cx in { -19, -1 } do
 					for _, cz in { -14, 0, 14 } do
@@ -1199,17 +1202,34 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 						post.CanCollide = false
 					end
 				end
-				gableRoof(folder, roofAt, 21, 31, 5, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
+				gableRoof(folder, roofAt, 21, 31, 5, Color3.fromRGB(170, 140, 84))
 				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X - 10, 9, c.Z), Color3.new(1, 1, 1))
 				anchor.Transparency = 1
 				anchor.CanCollide, anchor.CanQuery = false, false
-				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 6)
+				sign(folder, anchor, "돼지우리", Color3.fromRGB(110, 80, 30), 6)
+			elseif kind == "pasture" then
+				local herd = if sp == "sheep" then 4 + lvl * 2 else 3 + lvl
+				for k = 1, herd do
+					roam(sp, c + Vector3.new(rng:NextNumber(-36, 8), 0, rng:NextNumber(-17, 17)), 14)
+				end
+				if lvl >= 2 then
+					path(Vector3.new(c.X - 30, 0, c.Z + 12), Vector3.new(c.X + 4, 0, c.Z + 12), "look", 1.1, { role = "Barbarian", hat = "straw", hatColor = Color3.fromRGB(196, 164, 100) })
+				end
+				if has.dog and (sp == "sheep" or sp == "cow") then
+					roam("dog", c + Vector3.new(-12, 0, 8), 12)
+				end
+			elseif kind == "work" then
+				animal(sp, c)
 			end
 			if has.chicken and i == 1 then
 				for _ = 1, 2 do
 					animal("chicken", c + Vector3.new(rng:NextNumber(-12, -10), 0, rng:NextNumber(-4, 4)))
 				end
 			end
+		end
+		-- 밭갈이: 소(없으면 당나귀)가 밭 가장자리에서 쟁기를 끈다
+		if lvl >= 2 and (has.cow or has.donkey) then
+			roam(if has.cow then "cow" else "donkey", Vector3.new(-226, 0, 21), 5)
 		end
 		-- 2) 상업구역: 수레를 끄는 짐승이 장터 옆에 묶여 있다
 		if lvl >= 2 then
@@ -2037,14 +2057,17 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- 농원구역(마을 서쪽 끝): 가축 울타리와 밭. 작은 마을일수록 울타리가 많고 큰 항구는 장터로 바뀐다.
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
-			for dx = -18, 18, 4 do
-				for _, dz in { -15, 15 } do
-					one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
+			local _, penKind = penKindAt(key, i)
+			if penKind == "sty" then -- 울타리는 돼지우리에만 둔다. 소·양·말이 노는 풀밭은 열려 있다.
+				for dx = -18, 18, 4 do
+					for _, dz in { -15, 15 } do
+						one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
+					end
 				end
-			end
-			for dz = -12, 12, 4 do
-				for _, dx in { -20, 20 } do
-					rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
+				for dz = -12, 12, 4 do
+					for _, dx in { -20, 20 } do
+						rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
+					end
 				end
 			end
 			if lay.farm then
