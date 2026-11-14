@@ -241,6 +241,14 @@ function VoyageScene.play(info)
 	local bandFrame, bandMark, shipMark, scoreLabel
 	local LATSCALE = 22
 	local ringList, ringParts, nextRing = {}, {}, 1
+	local shakeAmp, fovBoost = 0, 0
+	local goShown, resultShown = false, false
+	local firstVisitFlag = info.firstVisit == true
+	local ringPopup = function(_text: string, _color: Color3) end
+	local redFlash = function() end
+	local burstAt = function(_pos: Vector3, _color: Color3, _count: number) end
+	local ringPulse = {}
+	local s_speedLines = nil
 	local tally = Rings.newTally()
 	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
@@ -352,19 +360,136 @@ function VoyageScene.play(info)
 					table.insert(ringParts, rock or false)
 					continue
 				end
-				local disk = Instance.new("Part")
-				disk.Shape = Enum.PartType.Cylinder
-				disk.Size = Vector3.new(0.8, rad * 2, rad * 2)
-				disk.CFrame = CFrame.fromMatrix(c + Vector3.new(0, rad * 0.9 + 1, 0), Vector3.new(d.X, 0, d.Z).Unit, Vector3.yAxis)
-				disk.Anchored = true
-				disk.CanCollide = false
-				disk.CanQuery = false
-				disk.Material = Enum.Material.Neon
-				disk.Color = if r.bonus then Color3.fromRGB(120, 230, 255) else Color3.fromRGB(255, 205, 80)
-				disk.Transparency = 0.55
-				disk.Parent = folder
-				table.insert(ringParts, disk)
+				-- 바람 고리: 작은 빛 구슬 16개가 원을 이루고, 안쪽은 옅게 빛난다. 가까워질수록 맥동한다.
+				local grp = Instance.new("Model")
+				grp.Name = "WindRing"
+				local right = Vector3.new(d.X, 0, d.Z).Unit
+				local center = c + Vector3.new(0, rad * 0.9 + 1, 0)
+				local col = if r.bonus then Color3.fromRGB(120, 230, 255) else Color3.fromRGB(255, 205, 80)
+				for bi = 1, 16 do
+					local ang = bi / 16 * math.pi * 2
+					local bead = Instance.new("Part")
+					bead.Shape = Enum.PartType.Ball
+					bead.Size = Vector3.one * (rad * 0.16)
+					bead.CFrame = CFrame.new(center + Vector3.new(0, math.sin(ang) * rad, 0) + Vector3.new(-right.Z, 0, right.X) * math.cos(ang) * rad)
+					bead.Anchored = true
+					bead.CanCollide = false
+					bead.CanQuery = false
+					bead.CanTouch = false
+					bead.Material = Enum.Material.Neon
+					bead.Color = col
+					bead.Transparency = 0.1
+					bead.Parent = grp
+				end
+				local glow = Instance.new("Part")
+				glow.Shape = Enum.PartType.Cylinder
+				glow.Size = Vector3.new(0.3, rad * 2, rad * 2)
+				glow.CFrame = CFrame.fromMatrix(center, right, Vector3.yAxis)
+				glow.Anchored = true
+				glow.CanCollide = false
+				glow.CanQuery = false
+				glow.CanTouch = false
+				glow.Material = Enum.Material.Neon
+				glow.Color = col
+				glow.Transparency = 0.82
+				glow.Name = "Glow"
+				glow.Parent = grp
+				grp.Parent = folder
+				table.insert(ringParts, grp)
+				table.insert(ringPulse, { grp = grp, glow = glow, base = glow.Size, at = r.at })
 			end
+		end
+		-- 효과: 통과 글자, 붉은 화면 번쩍임, 빛 알갱이 폭발, 속도선
+		do
+			local function mkPopup(): TextLabel
+				local l = Instance.new("TextLabel")
+				l.BackgroundTransparency = 1
+				l.AnchorPoint = Vector2.new(0.5, 0.5)
+				l.Position = UDim2.fromScale(0.5, 0.40)
+				l.Size = UDim2.fromOffset(420, 56)
+				l.Font = Enum.Font.GothamBlack
+				l.TextSize = 40
+				l.TextStrokeTransparency = 0.2
+				l.TextTransparency = 1
+				l.TextStrokeTransparency = 1
+				l.ZIndex = 9
+				l.Parent = gui
+				return l
+			end
+			local popLabel = mkPopup()
+			local popToken = 0
+			ringPopup = function(text: string, color: Color3)
+				popToken += 1
+				local my = popToken
+				popLabel.Text = text
+				popLabel.TextColor3 = color
+				popLabel.Position = UDim2.fromScale(0.5, 0.40)
+				popLabel.TextTransparency = 0
+				popLabel.TextStrokeTransparency = 0.3
+				task.spawn(function()
+					for i = 1, 14 do
+						if my ~= popToken then
+							return
+						end
+						popLabel.Position = UDim2.fromScale(0.5, 0.40 - i * 0.006)
+						popLabel.TextTransparency = i / 14
+						popLabel.TextStrokeTransparency = 0.3 + 0.7 * i / 14
+						task.wait(0.03)
+					end
+				end)
+			end
+			local flashFrame = Instance.new("Frame")
+			flashFrame.Size = UDim2.fromScale(1, 1)
+			flashFrame.BackgroundColor3 = Color3.fromRGB(220, 40, 30)
+			flashFrame.BackgroundTransparency = 1
+			flashFrame.BorderSizePixel = 0
+			flashFrame.ZIndex = 8
+			flashFrame.Parent = gui
+			redFlash = function()
+				task.spawn(function()
+					for i = 0, 8 do
+						flashFrame.BackgroundTransparency = 0.55 + i * 0.056
+						task.wait(0.03)
+					end
+					flashFrame.BackgroundTransparency = 1
+				end)
+			end
+			-- 빛 알갱이: 한 번만 만들어 두고 위치를 옮겨 가며 터뜨린다
+			local burstPart = Instance.new("Part")
+			burstPart.Anchored = true
+			burstPart.CanCollide = false
+			burstPart.CanQuery = false
+			burstPart.CanTouch = false
+			burstPart.Transparency = 1
+			burstPart.Size = Vector3.one
+			burstPart.Parent = folder
+			local em = Instance.new("ParticleEmitter")
+			em.Rate = 0
+			em.Lifetime = NumberRange.new(0.5, 0.9)
+			em.Speed = NumberRange.new(14, 30)
+			em.SpreadAngle = Vector2.new(180, 180)
+			em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1.6), NumberSequenceKeypoint.new(1, 0) })
+			em.LightEmission = 1
+			em.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+			em.Parent = burstPart
+			burstAt = function(position: Vector3, color: Color3, count: number)
+				burstPart.Position = position
+				em.Color = ColorSequence.new(color)
+				em:Emit(count)
+			end
+			-- 속도선: 화면 가장자리에서 중앙을 향해 흐르는 가는 선 (콤보가 쌓일수록 진해진다)
+			local lines = {}
+			for li = 1, 14 do
+				local ln = Instance.new("Frame")
+				ln.AnchorPoint = Vector2.new(0.5, 0.5)
+				ln.BackgroundColor3 = Color3.new(1, 1, 1)
+				ln.BorderSizePixel = 0
+				ln.BackgroundTransparency = 1
+				ln.ZIndex = 4
+				ln.Parent = gui
+				table.insert(lines, { f = ln, ang = li / 14 * math.pi * 2 + (li % 3) * 0.13, ph = li * 0.37 })
+			end
+			s_speedLines = lines
 		end
 		-- 자동 항해 전환 (처음 가는 항구는 직접 항해만)
 		local autoSw = Instance.new("TextButton")
@@ -1297,13 +1422,50 @@ function VoyageScene.play(info)
 					if r.hazard then
 						ok = not ok -- 암초는 피해야 성공
 					end
+					local prevCombo = tally.combo
 					Rings.record(tally, r, ok)
 					local part = ringParts[nextRing]
-					if part and part:IsA("BasePart") then
-						part.Color = if ok then Color3.fromRGB(110, 240, 140) else Color3.fromRGB(240, 90, 80)
-						part.Transparency = 0.2
-						task.delay(0.5, function()
-							part.Transparency = 1
+					local p3, d3 = positionAt(pts, cum, r.at * total)
+					local hitPos = p3 + Vector3.new(-d3.Z, 0, d3.X) * r.lat * LATSCALE + Vector3.new(0, 8, 0)
+					if r.hazard then
+						if not ok then
+							redFlash()
+							shakeAmp = 2.2
+							burstAt(pos + Vector3.new(0, 4, 0), Color3.fromRGB(235, 245, 255), 40)
+							ringPopup("암초 충돌!", Color3.fromRGB(255, 110, 90))
+							Sfx.play("sfx_splash", 0.8)
+							Sfx.play("sfx_creak", 0.6)
+						end
+					elseif ok then
+						local perfect = math.abs(lat - r.lat) <= Rings.radius(r) * 0.4
+						burstAt(hitPos, if r.bonus then Color3.fromRGB(120, 230, 255) else Color3.fromRGB(255, 215, 90), if perfect then 36 else 18)
+						local label = if perfect then "PERFECT!" else "GOOD"
+						if tally.combo >= 3 then
+							label = label .. string.format("  ×%d", tally.combo)
+						end
+						ringPopup(label, if perfect then Color3.fromRGB(255, 226, 110) else Color3.fromRGB(190, 240, 255))
+						Sfx.play("sfx_coin", 0.45, math.min(1.5, 0.9 + tally.combo * 0.06))
+						if tally.combo == 5 or tally.combo == 10 then
+							Sfx.play("sfx_horn", 0.5, 1.2)
+						end
+					else
+						shakeAmp = math.max(shakeAmp, 0.6)
+						ringPopup(if prevCombo >= 3 then "콤보 끊김..." else "MISS", Color3.fromRGB(255, 150, 120))
+						Sfx.play("sfx_creak", 0.35)
+					end
+					if part and part:IsA("Model") then
+						for _, bp in part:GetDescendants() do
+							if bp:IsA("BasePart") then
+								bp.Color = if ok then Color3.fromRGB(110, 240, 140) else Color3.fromRGB(240, 90, 80)
+								bp.Transparency = 0.15
+							end
+						end
+						task.delay(0.55, function()
+							for _, bp in part:GetDescendants() do
+								if bp:IsA("BasePart") then
+									bp.Transparency = 1
+								end
+							end
 						end)
 					end
 					nextRing += 1
@@ -1318,6 +1480,34 @@ function VoyageScene.play(info)
 				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 암초 충돌!" else "")
 			end
 			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
+			-- 다가오는 고리는 맥동하며 빛난다
+			for _, rp in ringPulse do
+				local ahead = rp.at - dist / total
+				if ahead > -0.02 and ahead < 0.2 and rp.glow.Transparency < 0.99 then
+					local pulse = 0.5 + 0.5 * math.sin(t * 8 + rp.at * 30)
+					rp.glow.Transparency = 0.7 + 0.2 * pulse
+				end
+			end
+			-- 속도선과 시야각: 콤보가 쌓일수록 빨라 보인다
+			do
+				local want = if autoRing then 0 else math.min(tally.combo, 10) * 1.5
+				fovBoost += (want - fovBoost) * math.min(1, dt * 3)
+				if s_speedLines then
+					local strength = if autoRing then 0 else math.clamp((tally.combo - 1) / 8, 0, 1)
+					for _, ln in s_speedLines do
+						if strength <= 0.02 then
+							ln.f.BackgroundTransparency = 1
+						else
+							local u = (t * (1.4 + strength) + ln.ph) % 1
+							local r0 = 0.28 + u * 0.7
+							ln.f.Position = UDim2.fromScale(0.5 + math.cos(ln.ang) * r0 * 0.75, 0.5 + math.sin(ln.ang) * r0 * 0.5)
+							ln.f.Size = UDim2.fromOffset(2, 26 + 90 * u * strength)
+							ln.f.Rotation = math.deg(ln.ang) + 90
+							ln.f.BackgroundTransparency = 1 - 0.45 * strength * (1 - math.abs(u - 0.5) * 2)
+						end
+					end
+				end
+			end
 			pos = pos + Vector3.new(-dir.Z, 0, dir.X) * lat * LATSCALE
 		end
 		-- 뱃머리는 부드럽게 항로 방향으로 돈다
@@ -1560,12 +1750,45 @@ function VoyageScene.play(info)
 		if camera.CameraType ~= Enum.CameraType.Scriptable then
 			camera.CameraType = Enum.CameraType.Scriptable
 		end
-		camera.FieldOfView = 66
+		camera.FieldOfView = 66 + fovBoost
 		local sway = math.sin(t * 0.25) * 0.9
 		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-54, 19, 0)
-		camera.CFrame = CFrame.lookAt(back.Position + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
+		shakeAmp *= math.max(0, 1 - dt * 4)
+		local shakeOff = Vector3.new(math.sin(t * 53) * shakeAmp, math.sin(t * 67) * shakeAmp, 0)
+		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
 		ui(k, t)
 
+		if manual and not goShown and t > 0.3 then
+			goShown = true
+			ringPopup(if firstVisitFlag then "첫 항구! 직접 항해!" else "GO!", Color3.fromRGB(255, 240, 160))
+			Sfx.play("sfx_horn", 0.5)
+		end
+		if k > 0.9 and manual and not resultShown and tally.total > 0 and not skipped then
+			resultShown = true
+			local sc = Rings.score(tally)
+			local st = Rings.stars(sc)
+			local panel = Instance.new("Frame")
+			panel.AnchorPoint = Vector2.new(0.5, 0.5)
+			panel.Position = UDim2.fromScale(0.5, 0.45)
+			panel.Size = UDim2.fromOffset(320, 150)
+			panel.BackgroundColor3 = Color3.fromRGB(12, 24, 40)
+			panel.BackgroundTransparency = 0.2
+			panel.ZIndex = 12
+			panel.Parent = gui
+			local pc = Instance.new("UICorner")
+			pc.CornerRadius = UDim.new(0, 14)
+			pc.Parent = panel
+			local lbl = Instance.new("TextLabel")
+			lbl.BackgroundTransparency = 1
+			lbl.Size = UDim2.fromScale(1, 1)
+			lbl.Font = Enum.Font.GothamBold
+			lbl.TextSize = 22
+			lbl.TextColor3 = Color3.fromRGB(255, 232, 140)
+			lbl.ZIndex = 13
+			lbl.Text = string.format("%s\n통과 %d/%d  (%d%%)\n최고 콤보 %d · 충돌 %d", string.rep("★", st) .. string.rep("☆", 3 - st), tally.hits, tally.total, math.floor(sc * 100 + 0.5), tally.best, tally.crashes)
+			lbl.Parent = panel
+			Sfx.play(if st >= 2 then "sfx_fanfare" else "sfx_bell", 0.6)
+		end
 		if k > 0.93 and not fading then
 			fading = true
 			fade.Visible = true
