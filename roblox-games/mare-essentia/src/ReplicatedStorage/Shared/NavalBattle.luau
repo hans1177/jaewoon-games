@@ -356,8 +356,8 @@ function NavalBattle.play(opts)
 	local function bar(side, name)
 		local back = Instance.new("Frame")
 		back.AnchorPoint = Vector2.new(if side == "L" then 0 else 1, 0)
-		back.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 62)
-		back.Size = UDim2.fromOffset(230, 16)
+		back.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 34)
+		back.Size = UDim2.new(0.33, 0, 0, 22)
 		back.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		back.BorderSizePixel = 0
 		back.Parent = gui
@@ -378,13 +378,18 @@ function NavalBattle.play(opts)
 		c2.Parent = fill
 		local nm = label(gui, name, 14)
 		nm.AnchorPoint = Vector2.new(if side == "L" then 0 else 1, 0)
-		nm.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 40)
-		nm.Size = UDim2.fromOffset(230, 20)
+		nm.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 12)
+		nm.Size = UDim2.new(0.33, 0, 0, 20)
 		nm.TextXAlignment = if side == "L" then Enum.TextXAlignment.Left else Enum.TextXAlignment.Right
-		return fill
+		nm.TextSize = 16
+		-- 막대 위에 선체 % 숫자를 크게 표시한다
+		local pct = label(back, "100%", 14, Color3.fromRGB(255, 255, 255), true)
+		pct.Size = UDim2.fromScale(1, 1)
+		pct.ZIndex = 5
+		return fill, pct
 	end
-	local meFill = bar("L", "우리 배")
-	local foeFill = bar("R", opts.enemyName or "해적선")
+	local meFill, mePct = bar("L", "우리 배")
+	local foeFill, foePct = bar("R", opts.enemyName or "해적선")
 
 	-- 선단 카드: 대항해시대 온라인처럼 우리 배와 적 배를 카드로 늘어놓고, 배마다 선체 막대를 보여 준다
 	local function cardRow(anchorX, posX, posY, color)
@@ -440,12 +445,12 @@ function NavalBattle.play(opts)
 	end
 	local myCards, foeCards = {}, {}
 	do
-		local mine = cardRow(0, 0, 112)
+		local mine = cardRow(0, 0, 66)
 		table.insert(myCards, { c = card(mine, opts.shipName or "기함", Color3.fromRGB(91, 181, 120), true), share = 1 })
 		for _, f in opts.fleet or {} do
 			table.insert(myCards, { c = card(mine, f, Color3.fromRGB(91, 181, 120), false), share = 0.5 })
 		end
-		local theirs = cardRow(1, 1, 112)
+		local theirs = cardRow(1, 1, 66)
 		table.insert(foeCards, { c = card(theirs, opts.enemyName or "해적선", Color3.fromRGB(214, 82, 76), true), share = 1 })
 		for i = 1, if opts.isBoss then 0 else 2 do
 			table.insert(foeCards, { c = card(theirs, "호위선", Color3.fromRGB(214, 120, 76), false), share = 0.4 })
@@ -658,9 +663,36 @@ function NavalBattle.play(opts)
 	local steerDir, throttle = 0, 1
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(120, 70), Vector2.new(1, 1))
 	speedBtn.TextSize = 18
-	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 62), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
+	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
+	-- 스킬 버튼: 가속 버튼 옆에 둔다. 쿨타임이 돌면 남은 초를 보여 준다 (결과는 서버가 정하므로 전투 연출·기동만 돕는다)
+	local SKILLS = {
+		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62), x = -156 },
+		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170), x = -270 },
+	}
+	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
+	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
+	local skillBtn = {}
+	local function useSkill(sk)
+		local now = os.clock()
+		if now < skillReady[sk.id] or opts.cardOnly then
+			return
+		end
+		skillReady[sk.id] = now + sk.cd
+		skillUntil[sk.id] = now + sk.dur
+		skillPop(sk.text .. "!", sk.col)
+	end
+	for _, sk in SKILLS do
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, -24), UDim2.fromOffset(104, 70), Vector2.new(1, 1))
+		b.TextSize = 16
+		b.BackgroundColor3 = sk.col
+		b.Visible = not opts.cardOnly
+		b.Activated:Connect(function()
+			useSkill(sk)
+		end)
+		skillBtn[sk.id] = b
+	end
 	-- 가상 스틱: 좌우 = 방향 전환, 위/아래 = 속도 (모바일 중심)
 	local stickBase = Instance.new("Frame")
 	stickBase.AnchorPoint = Vector2.new(0, 1)
@@ -736,6 +768,11 @@ function NavalBattle.play(opts)
 	table.insert(conns, UIS.InputBegan:Connect(function(i, gp)
 		if gp then
 			return
+		end
+		for _, sk in SKILLS do
+			if i.KeyCode == sk.key then
+				useSkill(sk)
+			end
 		end
 		if i.KeyCode == Enum.KeyCode.A or i.KeyCode == Enum.KeyCode.Left then
 			steerDir = 1
@@ -2224,6 +2261,7 @@ function NavalBattle.play(opts)
 			l.TextSize = 30 + (1 - k) * 8
 		end)
 	end
+	skillPop = popText
 	-- 돛대가 부러져 바다로 쓰러진다 (체력이 크게 줄어든 첫 순간)
 	local function dismast(sh)
 		sh.dismasted = true
@@ -2485,7 +2523,7 @@ function NavalBattle.play(opts)
 
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
-			me.theta += steerDir * 1.5 * dt
+			me.theta += steerDir * (if now < skillUntil.evade then 2.6 else 1.5) * dt
 			-- 조종 보조: 스틱을 놓고 있으면 적선에 옆면(포 방향)을 자동으로 맞춘다
 			if steerDir == 0 and phase == "duel" then
 				local dv = foe.pos - me.pos
@@ -2499,7 +2537,7 @@ function NavalBattle.play(opts)
 				end
 			end
 			local wf = windFactor(me.theta)
-			me.speed = myTop * (stickThrottle or throttle) * wf
+			me.speed = myTop * (stickThrottle or throttle) * wf * (if now < skillUntil.evade then 1.3 else 1)
 			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			if cardBusy then me.speed = 0 end
@@ -2584,7 +2622,7 @@ function NavalBattle.play(opts)
 				if d < 45 then CH.flash("melee") end
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
 				if not opts.card and d < cannon.range and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
-					nextMeFire = now + cannon.cd
+					nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
 					e = meQueue[math.min(#meQueue, (foeDone + 1))]
@@ -2828,6 +2866,22 @@ function NavalBattle.play(opts)
 		FX.update(dt)
 		meFill.Size = UDim2.fromScale(meHp, 1)
 		foeFill.Size = UDim2.fromScale(foeHp, 1)
+		mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
+		foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
+		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		for _, sk in SKILLS do
+			local b = skillBtn[sk.id]
+			local left = skillReady[sk.id] - now
+			if now < skillUntil[sk.id] then
+				b.Text = sk.text .. "\n발동 중"
+			elseif left > 0 then
+				b.Text = string.format("%d초", math.ceil(left))
+				b.BackgroundColor3 = Color3.fromRGB(60, 62, 70)
+			else
+				b.Text = sk.text
+				b.BackgroundColor3 = sk.col
+			end
+		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
 		for _, mc in myCards do
 			local v = 1 - (1 - meHp) * mc.share
