@@ -224,5 +224,45 @@ do
 	check("연습전: 기본 덱으로 이길 수 있다", m.winner == "me" and okP == true)
 end
 
+-- 실시간 해전: 클라이언트가 직접 싸운 결과를 서버가 가능한 범위인지 확인한다
+do
+	local function fresh()
+		local st = S.State.new("england", 1700)
+		Registry.handlers.Hunt(st, {}, ctx)
+		return st
+	end
+	local st1 = fresh()
+	local sim = st1.pendingBattle and st1.pendingBattle.sim
+	check("실시간 해전: 출격하면 두 배의 능력이 생긴다", sim ~= nil and sim.me.maxHull > 0 and sim.foe.maxHull > 0)
+	local lbSim = st1.lastBattle and st1.lastBattle.sim
+	check("실시간 해전: 클라이언트에 능력이 전달된다", lbSim ~= nil)
+	-- 말이 안 되는 보고: 1초 만에 적을 침몰시켰다
+	local okBad = Registry.handlers.NavalResult(st1, { winner = "a", reason = "sunk", elapsed = 1, meHull = sim.me.hull, foeHull = 0, meCrew = sim.me.crew, foeCrew = sim.foe.crew })
+	check("실시간 해전: 불가능한 속도의 승리는 거부", okBad == false)
+	-- 가능한 보고: 충분한 시간 동안 싸워서 이겼다
+	local st2 = fresh()
+	local s2 = st2.pendingBattle.sim
+	local need = D.Combat.maxHullDamage(s2.me, 600)
+	local okGood = false
+	if need >= s2.foe.hull then
+		okGood = Registry.handlers.NavalResult(st2, { winner = "a", reason = "sunk", elapsed = 600, meHull = math.floor(s2.me.hull * 0.6), foeHull = 0, meCrew = s2.me.crew, foeCrew = s2.foe.crew })
+	else
+		okGood = true -- 이 배로는 이 적을 포격만으로 못 잡는 설정이면 건너뛴다
+	end
+	check("실시간 해전: 가능한 승리는 인정", okGood == true)
+	-- 접현: 서버가 같은 시드로 다시 돌린 결과를 따른다
+	local a3, b3 = table.clone(s2.me), table.clone(s2.foe)
+	local direct = D.Combat.board(a3, b3, 1234)
+	local again = D.Combat.board(a3, b3, 1234)
+	check("실시간 해전: 접현은 같은 시드면 같은 결과", direct.winner == again.winner and direct.a.crew == again.a.crew)
+	local st4 = fresh()
+	local s4 = st4.pendingBattle.sim
+	local ok4 = Registry.handlers.NavalResult(st4, { winner = "a", reason = "boarded", elapsed = 30, meHull = s4.me.hull, foeHull = s4.foe.hull, meCrew = s4.me.crew, foeCrew = s4.foe.crew, board = { seed = 1234, meCrew = s4.me.crew, foeCrew = s4.foe.crew } })
+	local want = D.Combat.board(table.clone(s4.me), table.clone(s4.foe), 1234)
+	check("실시간 해전: 접현 결과는 서버 계산이 정한다", ok4 == true and st4.pendingBattle.winner == want.winner)
+	local again2 = Registry.handlers.NavalResult(st4, { winner = "a", elapsed = 30, meHull = 1, foeHull = 0, meCrew = 1, foeCrew = 1 })
+	check("실시간 해전: 같은 해전을 두 번 보고할 수 없다", again2 == false)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

@@ -138,10 +138,18 @@ return function(D, S)
 			crew = result.a.crew + math.floor(math.max(0, me.crew - result.a.crew) * me.cardSupport.medic),
 			winner = result.winner, reason = result.reason, reward = D.Combat.pirateReward(enemyLv),
 			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
-			startHull = state.ship.hull, startCrew = state.ship.crew,
+			startHull = state.ship.hull, startCrew = state.ship.crew, medic = me.cardSupport.medic,
 		}
 		-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다 (카드 대결은 주점의 지식 카드 배틀에서만 한다)
 		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
+		if deferred then
+			-- 실시간 해전: 클라이언트가 두 배의 능력으로 직접 싸운다. 서버는 끝난 뒤 결과가 말이 되는지만 확인한다.
+			local keep = function(f)
+				return { name = f.name, hull = f.hull, maxHull = f.maxHull, crew = f.crew, maxCrew = f.maxCrew, cannons = f.cannons, speed = f.speed, cannonMult = f.cannonMult, meleeMult = f.meleeMult, pumpReduction = f.pumpReduction, level = f.level, steam = f.steam, fuel = f.fuel, skills = table.clone(f.skills) }
+			end
+			pb.sim = { me = keep(me), foe = keep(enemy), done = false }
+			state.lastBattle.sim = { me = pb.sim.me, foe = pb.sim.foe }
+		end
 		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
 		if #me.cardSupport.lines > 0 then
 			table.insert(msgs, "카드 지원: " .. table.concat(me.cardSupport.lines, " · "))
@@ -251,6 +259,96 @@ return function(D, S)
 		local lb = state.lastBattle
 		if lb then
 			lb.winner, lb.reason, lb.cardRounds = pb.winner, pb.reason, { me = took, foe = lost }
+		end
+		return true, ""
+	end
+
+	-- 실시간 해전 결과: 클라이언트가 직접 싸운 결과를 보내오면 서버는 그 시간에 낼 수 있는 피해인지만 확인한다.
+	-- 말이 안 되는 보고는 버리고 서버가 미리 돌려 둔 자동 해전 결과를 쓴다.
+	function handlers.NavalResult(state, p)
+		local pb = state.pendingBattle
+		local sim = pb and pb.sim
+		if not sim or sim.done then
+			return false, "진행 중인 실시간 해전이 없어요"
+		end
+		sim.done = true
+		if type(p) ~= "table" then
+			return false, "잘못된 요청"
+		end
+		local function num(v, lo, hi): number
+			if type(v) ~= "number" or v ~= v then
+				return -1
+			end
+			return math.clamp(v, lo, hi)
+		end
+		local me, foe = sim.me, sim.foe
+		local elapsed = num(p.elapsed, 0, 900)
+		local meHull = num(p.meHull, 0, me.maxHull)
+		local foeHull = num(p.foeHull, 0, foe.maxHull)
+		local meCrew = num(p.meCrew, 0, me.maxCrew)
+		local foeCrew = num(p.foeCrew, 0, foe.maxCrew)
+		if elapsed < 0 or meHull < 0 or foeHull < 0 or meCrew < 0 or foeCrew < 0 then
+			return false, "잘못된 보고"
+		end
+		-- 그 시간 동안 낼 수 있는 피해보다 많이 줬다고 하면 거부
+		-- (내가 입은 피해는 이미 입은 선체 손상에서 시작하므로 전투 시작 때의 선체를 기준으로 본다)
+		local toFoe = D.Combat.maxHullDamage(me, elapsed) + 1
+		local toMe = D.Combat.maxHullDamage(foe, elapsed) + 1
+		if (foe.hull - foeHull) > toFoe or (me.hull - meHull) > toMe then
+			return false, "보고가 규칙에 맞지 않아요"
+		end
+		-- 포격으로 줄어드는 선원은 선체 피해의 일부뿐이다
+		if (foe.crew - foeCrew) > toFoe * 0.25 + 1 or (me.crew - meCrew) > toMe * 0.25 + 1 then
+			if not (type(p.board) == "table") then
+				return false, "보고가 규칙에 맞지 않아요"
+			end
+		end
+		local winner, reason = p.winner, p.reason
+		if winner ~= "a" and winner ~= "b" and winner ~= "draw" then
+			return false, "잘못된 보고"
+		end
+		if p.board and type(p.board) == "table" and type(p.board.seed) == "number" then
+			-- 접현: 서버가 같은 시드로 백병전을 다시 돌려 승패와 선원 수를 정한다
+			local mc = num(p.board.meCrew, 1, me.maxCrew)
+			if mc < 0 then
+				mc = meCrew
+			end
+			local fc = num(p.board.foeCrew, 1, foe.maxCrew)
+			if fc < 0 then
+				fc = foeCrew
+			end
+			if (foe.crew - fc) > toFoe * 0.25 + 1 or (me.crew - mc) > toMe * 0.25 + 1 then
+				return false, "보고가 규칙에 맞지 않아요"
+			end
+			local a2 = table.clone(me)
+			a2.hull, a2.crew = math.max(1, meHull), math.max(1, mc)
+			local b2 = table.clone(foe)
+			b2.hull, b2.crew = math.max(1, foeHull), math.max(1, fc)
+			local r = D.Combat.board(a2, b2, math.floor(p.board.seed))
+			winner, reason = r.winner, r.reason
+			meCrew, foeCrew = r.a.crew, r.b.crew
+		elseif winner == "a" then
+			if foeHull > 0 then
+				return false, "승리 보고가 맞지 않아요"
+			end
+			reason = "sunk"
+		elseif winner == "b" then
+			if meHull > 0 then
+				return false, "패배 보고가 맞지 않아요"
+			end
+			reason = "sunk"
+		else
+			reason = "stalemate"
+		end
+		if winner == "a" and elapsed < 6 then
+			return false, "너무 빠른 승리예요"
+		end
+		pb.hull = math.max(1, math.floor(meHull))
+		pb.crew = math.max(1, math.floor(meCrew + math.max(0, me.crew - meCrew) * (pb.medic or 0)))
+		pb.winner, pb.reason = winner, reason
+		local lb = state.lastBattle
+		if lb then
+			lb.winner, lb.reason = winner, reason
 		end
 		return true, ""
 	end

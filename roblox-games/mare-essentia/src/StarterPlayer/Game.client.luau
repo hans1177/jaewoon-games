@@ -2400,6 +2400,11 @@ local function call(action, payload)
 			reason = lb.reason,
 			isBoss = action == "ChallengeBoss",
 			card = lb.card,
+			sim = if lb.pending and not lb.card then lb.sim else nil, -- 실시간 해전: 두 배의 능력으로 직접 싸운다
+			onResult = function(claim)
+				call("NavalResult", claim)
+				return view and view.lastBattle and view.lastBattle.winner
+			end,
 			onCards = function(actions)
 				call("CardBattle", { actions = actions })
 				return view and view.lastBattle and view.lastBattle.winner
