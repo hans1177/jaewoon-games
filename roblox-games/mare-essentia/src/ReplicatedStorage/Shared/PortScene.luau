@@ -285,6 +285,13 @@ local ANIMAL_TINT = {
 local SOLID_TREES = {
 	tree = Color3.fromRGB(86, 142, 64), ["tree-high"] = Color3.fromRGB(62, 118, 66), ["tree-crooked"] = Color3.fromRGB(96, 146, 60),
 }
+-- 질감 팔레트가 푸른빛이라 색 곱셈이 먹지 않는 바위·풍차: 질감을 지우고 단색으로 칠한다
+local function solidTint(asset)
+	if string.find(asset, "rocks-sand", 1, true) then return Color3.fromRGB(196, 176, 140) end
+	if string.find(asset, "rock", 1, true) then return Color3.fromRGB(150, 144, 134) end
+	if asset == "windmill" then return Color3.fromRGB(226, 206, 170) end
+	return nil
+end
 local ASSET_TINT = {
 	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
 	windmill = Color3.fromRGB(238, 220, 186),
@@ -321,9 +328,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				p.Color = tint
 				-- 질감이 있는 메시는 UsePartColor 를 켜야 Color 가 질감에 곱해진다(없는 속성이면 무시)
 				pcall(function() (p :: any).UsePartColor = true end)
-				if SOLID_TREES[asset] and p:IsA("MeshPart") then
+				local sc = SOLID_TREES[asset] or solidTint(asset)
+				if sc and p:IsA("MeshPart") then
 					p.TextureID = ""
-					p.Color = SOLID_TREES[asset]
+					p.Color = sc
 				end
 				-- Part + SpecialMesh 형태로 수입된 모델은 메시의 VertexColor 로 곱한다
 				for _, ch in p:GetChildren() do
