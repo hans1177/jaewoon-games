@@ -1,0 +1,71 @@
+{
+ "sourceRevision": "0983c1809939ec1a9d6740c75225316dc97d957a",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "quest\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "w_quest",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "yard\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "w_yard",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "harbor\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "w_harbor",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 15,
+  "completedSteps": 15,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
+  "abortedEarly": false
+ }
+}
