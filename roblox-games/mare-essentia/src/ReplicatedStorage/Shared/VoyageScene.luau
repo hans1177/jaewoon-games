@@ -362,6 +362,8 @@ function VoyageScene.play(info)
 	local helmStartDist = math.max((helmDest - pts[1]).Magnitude, 1)
 	local windFrom = 0
 	local tackSide = 1
+	local helmShoals, helmCurrents = {}, {}
+	local d0n = Vector3.new(1, 0, 0)
 	local helmMsg, windLabel, speedLabel, distLabel, trimFill, mapFrame, mapShip, mapDest, windArrow, autoBtn
 	local MAP = 150
 	local function wrapAngle(a)
@@ -385,6 +387,7 @@ function VoyageScene.play(info)
 		skip.Visible = false
 		do
 			local d0 = helmDest - pts[1]
+			d0n = d0.Unit
 			helmYaw = yawOf(d0.Unit)
 			-- 항로가 바람에 80~160도 비껴가게 두어 기본 코스로도 갈 수 있게 한다
 			local seed = 0
@@ -393,6 +396,30 @@ function VoyageScene.play(info)
 			end
 			local sign = if seed % 2 == 0 then 1 else -1
 			windFrom = helmYaw + sign * math.rad(80 + (seed % 80))
+		end
+		-- 대항해시대식 해상 요소: 암초 지대(속도 저하)와 해류(같은 방향이면 가속)
+		do
+			local dirv = d0n
+			local perp = Vector3.new(-dirv.Z, 0, dirv.X)
+			local span = helmDest - pts[1]
+			for i, f in { 0.28, 0.5, 0.72 } do
+				local side = (if i % 2 == 0 then 1 else -1) * (38 + 22 * ((i * 7) % 3))
+				local c = pts[1] + span * f + perp * side
+				table.insert(helmShoals, c)
+				if info.place then
+					for j = 1, 3 do
+						local m = info.place(folder, "Town", "rock-wide", ORIGIN, 9 + j * 2)
+						if m then
+							m:PivotTo(CFrame.new(c.X + (j - 2) * 14, -2.5, c.Z + (j % 2) * 12) * CFrame.Angles(0, j * 1.7, 0))
+						end
+					end
+				end
+			end
+			for i, f in { 0.4, 0.66 } do
+				local c = pts[1] + span * f + perp * ((if i == 1 then -1 else 1) * 25)
+				local ang = yawOf(dirv) + (if i == 1 then 0.4 else -0.4)
+				table.insert(helmCurrents, { pos = c, dir = Vector3.new(math.cos(ang), 0, -math.sin(ang)) })
+			end
 		end
 		hint.Text = "스틱·WASD로 조종 · 위/아래(W/S)로 돛 펴기/접기 · 금색 깃발이 목적지"
 		local function mkLabel(size, pos, text, anchor)
@@ -1142,6 +1169,22 @@ function VoyageScene.play(info)
 			end
 			local baseSpeed = speedNow * 1.2
 			local targetSpeed = baseSpeed * helmTrim * eff
+			local seaNote = ""
+			for _, c in helmShoals do
+				if (Vector3.new(helmPos.X - c.X, 0, helmPos.Z - c.Z)).Magnitude < 42 then
+					targetSpeed *= 0.45
+					seaNote = "암초 지대! 속도가 크게 줄어요"
+				end
+			end
+			for _, cu in helmCurrents do
+				if (Vector3.new(helmPos.X - cu.pos.X, 0, helmPos.Z - cu.pos.Z)).Magnitude < 70 then
+					local hd = Vector3.new(math.cos(helmYaw), 0, -math.sin(helmYaw))
+					if hd:Dot(cu.dir) > 0 then
+						targetSpeed *= 1.3
+						seaNote = "해류를 탔어요! 가속"
+					end
+				end
+			end
 			helmSpeed += (targetSpeed - helmSpeed) * math.min(1, dt * 0.9)
 			local turnRate = 0.95 * (0.35 + 0.65 * math.min(1, helmSpeed / math.max(baseSpeed * 0.5, 1)))
 			helmYaw -= math.clamp(steer, -1, 1) * turnRate * dt -- 오른쪽(+)으로 틀면 yaw 가 줄어든다
@@ -1159,7 +1202,7 @@ function VoyageScene.play(info)
 			distLabel.Text = string.format("목적지까지 %d", math.floor(remaining))
 			trimFill.Size = UDim2.fromScale(1, helmTrim)
 			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
-			helmMsg.Text = if autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
+			helmMsg.Text = if seaNote ~= "" then seaNote elseif autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
 			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
 			local mid = (pts[1] + helmDest) / 2
 			local half = math.max(helmStartDist * 0.75, 260)
