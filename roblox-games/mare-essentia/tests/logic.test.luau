@@ -3960,6 +3960,24 @@ do
 	end
 end
 
+-- 이야기 이벤트 초상화: 이벤트가 열리는 항구의 지역 초상 시트가 있어야 빈 초상화가 안 생긴다
+do
+	local Story = require("./Shared/Story")
+	local Assets = require("./Shared/AssetIds")
+	local CR = D.CultureRegions
+	local missing, total = {}, 0
+	for _, e in Story.Events do
+		if e.portId then
+			total += 1
+			local region = if CR.ofPort then CR.ofPort(D.Ports.Ports or D.Ports, e.portId) else nil
+			if not region or not Assets["Portraits/npc_" .. region] then
+				table.insert(missing, e.id .. ":" .. tostring(e.portId) .. ":" .. tostring(region))
+			end
+		end
+	end
+	check("이야기 이벤트 항구의 지역 초상 시트 존재 (" .. total .. "개)", #missing == 0, table.concat(missing, ", "))
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")

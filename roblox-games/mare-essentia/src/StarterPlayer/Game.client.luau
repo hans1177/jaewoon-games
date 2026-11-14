@@ -3375,11 +3375,12 @@ function playStory(ev)
 	elseif string.find(npcName, "주점", 1, true) or string.find(npcName, "선술집", 1, true) then
 		tile = "tavern"
 	end
-	-- 서로 다른 문화권의 인물에게 유럽형 얼굴을 무리하게 재사용하지 않는다.
-	if string.find(npcName, "인도", 1, true) or string.find(npcName, "일본", 1, true)
-		or string.find(npcName, "오사카", 1, true) or string.find(npcName, "킬와", 1, true)
-		or string.find(npcName, "스와힐리", 1, true) or string.find(npcName, "오스만", 1, true) then
-		tile = nil
+	-- 빈 초상화 방지: 직업이 시설 초상과 안 맞아도 이벤트가 열린 항구의 지역 사람 얼굴을 쓴다(문화권은 항구가 정한다).
+	-- 항해사·도선사는 항만 일꾼 칸, 그 밖의 일반 인물은 주점 손님 칸.
+	if tile == "hero" then
+		tile = "harbor"
+	elseif not tile then
+		tile = "tavern"
 	end
 	-- 동료 사연이면 그 동료의 그린 초상을 쓴다
 	local cid = ev.id and string.match(ev.id, "^(h_[%w_]+)_%d+$")
@@ -3413,7 +3414,7 @@ function playStory(ev)
 	-- 지역(인종·문화권)에 맞는 현재 항구 사람 얼굴을 먼저 쓰고, 없을 때만 공용 시설 초상을 쓴다.
 	local regId, regOffset, regSize
 	if tile and not cport then
-		local curPort = view and view.player and view.player.portId
+		local curPort = ev.portId or (view and view.player and view.player.portId)
 		regId, regOffset, regSize = H.facilityPortraitAsset(curPort, tile)
 	end
 	local storyImageId = if regId then regId
