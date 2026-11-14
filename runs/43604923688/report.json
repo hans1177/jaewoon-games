@@ -1,0 +1,46 @@
+{
+ "sourceRevision": "f1e09ef4ee98170d08b0be98c5bbd89fd97a9678",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "ANIMALS london L1 ok=true horse:4@(-231,23) dog:7@(-129,-2) cow:4@(-232,-20) sheep:12@(-227,0) \ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ANIMALS london L4 ok=true horse:1@(-127,11) dog:9@(-115,4) cow:8@(-220,20) sheep:12@(-227,-23) \ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "ANIMALS istanbul L3 ok=true sheep:10@(-227,21) donkey:16@(-212,-11) \ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 5,
+  "completedSteps": 5,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
+  "abortedEarly": false
+ }
+}
