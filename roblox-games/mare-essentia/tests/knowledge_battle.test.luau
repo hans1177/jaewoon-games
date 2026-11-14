@@ -523,5 +523,18 @@ do
 	check("바다 괴물: 유령선과 해상전투가 시작된다", okG == true and stG.pendingBattle ~= nil and stG.pendingBattle.bossId == "ghost_ship")
 end
 
+
+-- 지도자 고르기 (서버 처리·덱 반영)
+do
+	local stL = S.State.new("england", 1700)
+	local okL, msgL = Registry.handlers.CardSetLeader(stL, { id = "caesar" })
+	check("지도자 고르기: 같은 대륙 지도자 선택", okL == true and S.Cardbook.get(stL).leader == "caesar", msgL)
+	check("지도자 고르기: 덱 설계에 반영", S.Cardbook.deckSpec(stL).leader == "caesar")
+	local okBad = Registry.handlers.CardSetLeader(stL, { id = "samurai" })
+	check("지도자 고르기: 다른 대륙 지도자는 거절", okBad == false and S.Cardbook.get(stL).leader == "caesar")
+	local okType = Registry.handlers.CardSetLeader(stL, { id = 5 })
+	check("지도자 고르기: 잘못된 요청 거절", okType == false)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

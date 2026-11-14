@@ -36,7 +36,7 @@ return function(D, S)
 		local book = C.get(state)
 		local faction = D.BoardingCards.factionOf(state.nationId)
 		local bonus = CB.knowledgeBonus(state.discovered, D.Cards.ById) -- 학문 카드를 모을수록 병종 카드가 강해진다
-		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction, bonus = bonus }
+		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction, bonus = bonus, leader = book.leader }
 	end
 
 	-- 해전 카드 지원: 해전은 카드를 직접 내지 않는다. 내 덱 구성에 따라 효과가 자동으로 붙는다.
@@ -209,6 +209,23 @@ return function(D, S)
 			table.insert(list, id)
 		end
 		return CB.setDeck(C.get(state), list)
+	end
+
+	function handlers.CardSetLeader(state, p)
+		local id = type(p) == "table" and p.id
+		if type(id) ~= "string" then return false, "잘못된 요청" end
+		local book = C.get(state)
+		local faction = D.BoardingCards.factionOf(state.nationId)
+		local prev = book.leader
+		local ok, msg = CB.setLeader(book, faction, id)
+		if not ok then return false, msg end
+		-- 지도자를 바꾸면 보급 한도가 달라지므로, 지금 덱이 넘치면 되돌린다
+		local valid, why = CB.validateDeck(book, CB.deckIds(book, faction))
+		if not valid then
+			book.leader = prev
+			return false, "이 지도자로는 지금 덱의 보급이 모자라요: " .. tostring(why)
+		end
+		return true, msg
 	end
 
 	function handlers.CardRecommend(state, p)
