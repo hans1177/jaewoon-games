@@ -225,6 +225,15 @@ return function(D, S)
 		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
 		state.voyageEvent = { kind = event.kind, won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
 
+		-- 바다에서 만난 생물·현상·전설 (해상 도감 카드)
+		do
+			local seaCard = D.SeaCards.roll(from.lat, from.lon, to.lat, to.lon, event.kind, days, ctx.rng, state.discovered)
+			if seaCard then
+				table.insert(msgs, "바다에서 특별한 것을 보았다!")
+				S.Discovery.grantCard(state, seaCard, msgs)
+			end
+		end
+
 		-- 장거리 항해 기록에서 해류를 발견할 수 있다
 		if days >= 10 and ctx.rng() < 0.35 then
 			S.Discovery.grantCard(state, "geo_gulfstream", msgs)

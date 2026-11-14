@@ -12,6 +12,7 @@ local ServicesFolder = script.Parent:WaitForChild("Services")
 local D = {
 	Ports = require(Shared:WaitForChild("Ports")),
 	PortEras = require(Shared:WaitForChild("PortEras")),
+	SeaCards = require(Shared:WaitForChild("SeaCards")),
 	Ships = require(Shared:WaitForChild("Ships")),
 	Tech = require(Shared:WaitForChild("Tech")),
 	Skills = require(Shared:WaitForChild("Skills")),

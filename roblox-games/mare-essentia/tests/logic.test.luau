@@ -4,6 +4,7 @@
 local D = {
 	Ports = require("./Shared/Ports"),
 	PortEras = require("./Shared/PortEras"),
+	SeaCards = require("./Shared/SeaCards"),
 	Ships = require("./Shared/Ships"),
 	Tech = require("./Shared/Tech"),
 	Skills = require("./Shared/Skills"),
@@ -1475,6 +1476,29 @@ do
 	check("view routes (시대에 맞는 항구만)", #v.routes == (function() local n = 0 for id in D.Ports.Ports do if D.PortEras.isOpen(id, 1700) then n += 1 end end return n - 1 end)())
 	check("1700년에는 시드니 항로가 보이지 않음", (function() for _, r in v.routes do if r.id == "sydney" then return false end end return true end)())
 	check("PortEras: 뉴욕은 1517년엔 닫히고 1650년엔 열림", not D.PortEras.isOpen("new_york", 1517) and D.PortEras.isOpen("new_york", 1650) and D.PortEras.isOpen("london", 1517))
+	do -- 해상 도감 카드
+		local allValid, boxOk = true, true
+		for _, row in D.SeaCards.Rows do
+			if not D.Cards.ById[row.id] then allValid = false end
+			if not row.box or #row.box ~= 4 or row.chance <= 0 or row.chance > 1 then boxOk = false end
+		end
+		check("SeaCards: 모든 행이 실제 카드", allValid)
+		check("SeaCards: 구역·확률 값", boxOk)
+		local none = {}
+		-- 리스본→사우바도르(열대 대서양 한가운데): 날치 등이 후보, rng=0 이면 반드시 만난다
+		local got = D.SeaCards.roll(38.7, -9.1, -13, -38.5, "calm", 30, function() return 0 end, none)
+		check("SeaCards: 열대 대서양에서 카드를 만남", got ~= nil and D.Cards.ById[got] ~= nil, tostring(got))
+		check("SeaCards: rng 가 크면 못 만남", D.SeaCards.roll(38.7, -9.1, -13, -38.5, "calm", 30, function() return 0.999 end, none) == nil)
+		local taken = {}
+		for _, row in D.SeaCards.Rows do taken[row.id] = true end
+		check("SeaCards: 이미 얻은 카드는 안 나옴", D.SeaCards.roll(38.7, -9.1, -13, -38.5, "calm", 30, function() return 0 end, taken) == nil)
+		check("SeaCards: 사건 전용 카드는 그 사건에서만", D.SeaCards.roll(10, -70, 20, -60, "ghost", 20, function() return 0 end, (function() local t2 = {} for _, row in D.SeaCards.Rows do if row.event ~= "ghost" then t2[row.id] = true end end return t2 end)()) == "myth_dutchman")
+		local seaIds = {}
+		for _, row in D.SeaCards.Rows do seaIds[row.id] = true end
+		local n = 0
+		for _ in seaIds do n += 1 end
+		check("SeaCards: 해상 카드 40장 이상", n >= 40, n)
+	end
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
