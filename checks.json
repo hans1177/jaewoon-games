@@ -1,18 +1,18 @@
 {
-  "runId": "43639988932",
+  "runId": "43641531135",
   "kind": "studio",
-  "sourceRevision": "3b8c61e7ae49cf7e777ca56f4fb58672f92e35a9",
+  "sourceRevision": "f2a656dea4bae2e9b8328da3a759a84afc85df19",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 24,
-    "completedSteps": 24,
+    "plannedSteps": 25,
+    "completedSteps": 25,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 3,
-    "capturedFrames": 3,
+    "plannedFrames": 4,
+    "capturedFrames": 4,
     "abortedEarly": false
   },
   "errors": [],
@@ -60,16 +60,14 @@
     },
     {
       "step": 5,
-      "type": "capture",
-      "name": "k0_deck",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "k0_deck-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 6,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -90,12 +88,10 @@
     },
     {
       "step": 9,
-      "type": "capture",
-      "name": "k1_practice",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "k1_practice-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 10,
@@ -106,7 +102,7 @@
     },
     {
       "step": 11,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -120,7 +116,7 @@
     },
     {
       "step": 13,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -134,21 +130,23 @@
     },
     {
       "step": 15,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "r01",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "r01-0.jpg"
+      ]
     },
     {
       "step": 16,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 17,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -156,15 +154,15 @@
     {
       "step": 18,
       "type": "capture",
-      "name": "k2_tactics_hand",
+      "name": "r02",
       "status": "PASS",
       "screenshots": [
-        "k2_tactics_hand-0.jpg"
+        "r02-0.jpg"
       ]
     },
     {
       "step": 19,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -178,14 +176,16 @@
     },
     {
       "step": 21,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "r03",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "r03-0.jpg"
+      ]
     },
     {
       "step": 22,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -196,28 +196,43 @@
       "name": "",
       "status": "PASS",
       "screenshots": []
+    },
+    {
+      "step": 24,
+      "type": "capture",
+      "name": "r04",
+      "status": "PASS",
+      "screenshots": [
+        "r04-0.jpg"
+      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "k0_deck-0.jpg",
-      "sha256": "d8bf3663e434f0386b6d94d9cdc91defedcb8f7948cea45bd9464d230a1953ae",
+      "name": "r01-0.jpg",
+      "sha256": "0759fb0bed17260face00d7168e5d50ae11757b78ebc4c8418552a6761983b20",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43639988932/k0_deck-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43641531135/r01-0.jpg"
     },
     {
-      "name": "k1_practice-0.jpg",
-      "sha256": "cebdc467ea5582cba438746fb3062b48d90df82f2cecff25a7f203bc0752ffc5",
+      "name": "r02-0.jpg",
+      "sha256": "dd0d868241e30eb32449548c226e1226af2835cf4cfb75e461ec8a742aa4f987",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43639988932/k1_practice-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43641531135/r02-0.jpg"
     },
     {
-      "name": "k2_tactics_hand-0.jpg",
-      "sha256": "a3ef808438114b3a2f352b7ce7e804f1bc8365eac47eb0c1189cf1fd56cbaa72",
+      "name": "r03-0.jpg",
+      "sha256": "49fef2db7768f67ae231b09b5c78ab9895b88a515aaecf6c4225a0d26e605809",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43639988932/k2_tactics_hand-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43641531135/r03-0.jpg"
+    },
+    {
+      "name": "r04-0.jpg",
+      "sha256": "4ef75416d199c2d75a2477f64721f1b9c559e43334c928f1cb7367466e485ce7",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43641531135/r04-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43639552891"
+  "previousRunId": "43639988932"
 }
