@@ -2337,6 +2337,7 @@ local function call(action, payload)
 		NavalBattle.play({
 			shipId = view.ship and view.ship.id,
 			shipName = view.ship and view.ship.name,
+			cardEffects = view.navalEffects,
 			fleet = (function()
 				local names = {}
 				for _, f in (view.fleet and view.fleet.ships) or {} do

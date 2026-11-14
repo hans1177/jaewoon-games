@@ -407,6 +407,87 @@ function NavalBattle.play(opts)
 	banner.TextTransparency = 1
 	banner.TextStrokeTransparency = 1
 
+	-- 카드 지원 표시판: 덱의 지식 카드가 해전을 자동으로 거드는 효과. 발동할 때마다 해당 줄이 번쩍이고 문구가 떠오른다.
+	local CH = { chips = {}, shown = {} }
+	do
+		local entries = opts.cardEffects or {}
+		if #entries > 0 and not opts.cardOnly then
+			local panel = Instance.new("Frame")
+			panel.Position = UDim2.new(0, 10, 0.3, 0)
+			panel.Size = UDim2.fromOffset(190, 24 + #entries * 30)
+			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
+			panel.BackgroundTransparency = 0.35
+			panel.BorderSizePixel = 0
+			panel.Parent = gui
+			local pc = Instance.new("UICorner")
+			pc.CornerRadius = UDim.new(0, 8)
+			pc.Parent = panel
+			local head = label(panel, "🃏 카드 지원 (자동)", 12, Color3.fromRGB(246, 208, 130))
+			head.Position = UDim2.fromOffset(8, 3)
+			head.Size = UDim2.new(1, -16, 0, 18)
+			head.TextXAlignment = Enum.TextXAlignment.Left
+			for i, e in entries do
+				local chip = Instance.new("Frame")
+				chip.Position = UDim2.fromOffset(6, 24 + (i - 1) * 30)
+				chip.Size = UDim2.new(1, -12, 0, 26)
+				chip.BackgroundColor3 = Color3.fromRGB(70, 56, 42)
+				chip.BorderSizePixel = 0
+				chip.Parent = panel
+				local cc = Instance.new("UICorner")
+				cc.CornerRadius = UDim.new(0, 6)
+				cc.Parent = chip
+				local cn = table.concat(e.cards or {}, "·")
+				local t = label(chip, string.format("%s  %s", e.text, cn), 11, Color3.fromRGB(240, 226, 190), false)
+				t.Size = UDim2.new(1, -8, 1, 0)
+				t.Position = UDim2.fromOffset(6, 0)
+				t.TextXAlignment = Enum.TextXAlignment.Left
+				t.TextTruncate = Enum.TextTruncate.AtEnd
+				CH.chips[e.kind] = { frame = chip, entry = e }
+			end
+		end
+	end
+	local KIND_COLOR = { melee = Color3.fromRGB(220, 120, 90), cannon = Color3.fromRGB(240, 180, 80), speed = Color3.fromRGB(110, 190, 230), pump = Color3.fromRGB(110, 200, 160), medic = Color3.fromRGB(150, 220, 130) }
+	local KIND_PHRASE = { melee = "접현 카드가 칼날을 벼린다", cannon = "포 카드가 조준을 돕는다", speed = "항해 카드가 바람을 읽는다", pump = "조선 카드가 물을 막는다", medic = "의학 카드가 부상자를 살린다" }
+	function CH.flash(kind)
+		local c = CH.chips[kind]
+		if not c or CH.shown[kind] and os.clock() - CH.shown[kind] < 2.5 then
+			return
+		end
+		CH.shown[kind] = os.clock()
+		local TweenService = game:GetService("TweenService")
+		local col = KIND_COLOR[kind] or Color3.fromRGB(240, 200, 100)
+		c.frame.BackgroundColor3 = col
+		TweenService:Create(c.frame, TweenInfo.new(0.9), { BackgroundColor3 = Color3.fromRGB(70, 56, 42) }):Play()
+		-- 화면 가운데 위로 효과 문구가 떠올랐다 사라진다
+		local pop = label(gui, string.format("✦ %s · %s", (c.entry.cards or {})[1] or "카드", c.entry.text), 22, col)
+		pop.AnchorPoint = Vector2.new(0.5, 0.5)
+		pop.Position = UDim2.fromScale(0.5, 0.3)
+		pop.Size = UDim2.fromOffset(420, 30)
+		pop.ZIndex = 30
+		local sub = label(gui, KIND_PHRASE[kind] or "", 14, Color3.fromRGB(240, 230, 200), false)
+		sub.AnchorPoint = Vector2.new(0.5, 0.5)
+		sub.Position = UDim2.fromScale(0.5, 0.3)
+		sub.Size = UDim2.fromOffset(420, 20)
+		sub.ZIndex = 30
+		sub.Position = UDim2.fromScale(0.5, 0.3) + UDim2.fromOffset(0, 26)
+		for _, l in { pop, sub } do
+			TweenService:Create(l, TweenInfo.new(1.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Position = l.Position - UDim2.fromOffset(0, 40), TextTransparency = 1, TextStrokeTransparency = 1,
+			}):Play()
+			task.delay(1.7, function() l:Destroy() end)
+		end
+	end
+	-- 전투가 시작되면 지원 효과를 차례로 알린다
+	task.spawn(function()
+		task.wait(1.2)
+		for _, kind in { "speed", "cannon", "melee", "pump" } do
+			if CH.chips[kind] then
+				CH.flash(kind)
+				task.wait(0.7)
+			end
+		end
+	end)
+
 	local finished = false
 	local conns = {}
 	-- 모바일: 기본 이동 스틱/점프 버튼이 조종 버튼을 가리므로 해전 중에는 끈다
@@ -589,9 +670,11 @@ function NavalBattle.play(opts)
 		if toPlayer then
 			meDone += 1
 			meHp = math.clamp(1 - (1 - meEnd) * (meDone / math.max(1, #foeQueue)), meEnd, 1)
+			if meHp < 0.5 then CH.flash("pump") end
 		else
 			foeDone += 1
 			foeHp = math.clamp(1 - (1 - foeEnd) * (foeDone / math.max(1, #meQueue)), foeEnd, 1)
+			if foeDone % 3 == 1 then CH.flash("cannon") end
 		end
 		subtitle.Text = e.text
 	end
@@ -2295,6 +2378,7 @@ function NavalBattle.play(opts)
 			end
 			if phase == "duel" then
 				local d = (foe.pos - me.pos).Magnitude
+				if d < 45 then CH.flash("melee") end
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
 				if not opts.card and d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
 					nextMeFire = now + 1.15
@@ -2407,6 +2491,7 @@ function NavalBattle.play(opts)
 						Sfx.play("sfx_naval_sink", 0.64, 0.94, "sfx_splash")
 					end
 					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
+					CH.flash("medic")
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
 					banner.TextTransparency = 0
 					banner.TextStrokeTransparency = 0.3
