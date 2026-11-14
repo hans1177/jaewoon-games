@@ -12,7 +12,7 @@ return function(D, S)
 		if e.nation and e.nation ~= state.nationId then
 			return "다른 주인공의 이야기"
 		end
-		if e.portId ~= state.portId then
+		if D.PortEras.homeOf(e.portId, S.State.year(state)) ~= state.portId then
 			return "다른 항구"
 		end
 		if e.minFame and state.fame < e.minFame then
