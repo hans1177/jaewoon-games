@@ -1,18 +1,18 @@
 {
-  "runId": "43611226233",
+  "runId": "43611297779",
   "kind": "studio",
-  "sourceRevision": "a79864c710616f9c696e5885900b55a611aae288",
+  "sourceRevision": "af1042c8a1b248acc5c5ef93ff2ddd4ae011ae66",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 44,
-    "completedSteps": 44,
+    "plannedSteps": 38,
+    "completedSteps": 38,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 15,
-    "capturedFrames": 15,
+    "plannedFrames": 12,
+    "capturedFrames": 12,
     "abortedEarly": false
   },
   "errors": [],
@@ -53,10 +53,12 @@
     },
     {
       "step": 4,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "lisbon_L3_top",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "lisbon_L3_top-0.jpg"
+      ]
     },
     {
       "step": 5,
@@ -75,10 +77,10 @@
     {
       "step": 7,
       "type": "capture",
-      "name": "01_top",
+      "name": "lisbon_L3_street",
       "status": "PASS",
       "screenshots": [
-        "01_top-0.jpg"
+        "lisbon_L3_street-0.jpg"
       ]
     },
     {
@@ -98,10 +100,10 @@
     {
       "step": 10,
       "type": "capture",
-      "name": "02_plaza",
+      "name": "venice_L3_top",
       "status": "PASS",
       "screenshots": [
-        "02_plaza-0.jpg"
+        "venice_L3_top-0.jpg"
       ]
     },
     {
@@ -121,10 +123,10 @@
     {
       "step": 13,
       "type": "capture",
-      "name": "03_street",
+      "name": "venice_L3_street",
       "status": "PASS",
       "screenshots": [
-        "03_street-0.jpg"
+        "venice_L3_street-0.jpg"
       ]
     },
     {
@@ -144,10 +146,10 @@
     {
       "step": 16,
       "type": "capture",
-      "name": "04_dock",
+      "name": "rouen_L3_top",
       "status": "PASS",
       "screenshots": [
-        "04_dock-0.jpg"
+        "rouen_L3_top-0.jpg"
       ]
     },
     {
@@ -167,10 +169,10 @@
     {
       "step": 19,
       "type": "capture",
-      "name": "05_aerial",
+      "name": "rouen_L3_street",
       "status": "PASS",
       "screenshots": [
-        "05_aerial-0.jpg"
+        "rouen_L3_street-0.jpg"
       ]
     },
     {
@@ -190,10 +192,10 @@
     {
       "step": 22,
       "type": "capture",
-      "name": "06_backstreet",
+      "name": "london_L3_top",
       "status": "PASS",
       "screenshots": [
-        "06_backstreet-0.jpg"
+        "london_L3_top-0.jpg"
       ]
     },
     {
@@ -213,10 +215,10 @@
     {
       "step": 25,
       "type": "capture",
-      "name": "07_wall",
+      "name": "london_L3_street",
       "status": "PASS",
       "screenshots": [
-        "07_wall-0.jpg"
+        "london_L3_street-0.jpg"
       ]
     },
     {
@@ -228,26 +230,26 @@
     },
     {
       "step": 27,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 28,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 29,
+      "step": 28,
       "type": "capture",
-      "name": "08_harbor_npc_sparring_01",
+      "name": "hamburg_L3_top",
       "status": "PASS",
       "screenshots": [
-        "08_harbor_npc_sparring_01-0.jpg"
+        "hamburg_L3_top-0.jpg"
       ]
+    },
+    {
+      "step": 29,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 30,
@@ -259,43 +261,41 @@
     {
       "step": 31,
       "type": "capture",
-      "name": "08_harbor_npc_sparring_02",
+      "name": "hamburg_L3_street",
       "status": "PASS",
       "screenshots": [
-        "08_harbor_npc_sparring_02-0.jpg"
+        "hamburg_L3_street-0.jpg"
       ]
     },
     {
       "step": 32,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 33,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_03",
-      "status": "PASS",
-      "screenshots": [
-        "08_harbor_npc_sparring_03-0.jpg"
-      ]
-    },
-    {
-      "step": 34,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 35,
+      "step": 34,
       "type": "capture",
-      "name": "08_harbor_npc_sparring_04",
+      "name": "bergen_L3_top",
       "status": "PASS",
       "screenshots": [
-        "08_harbor_npc_sparring_04-0.jpg"
+        "bergen_L3_top-0.jpg"
       ]
+    },
+    {
+      "step": 35,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 36,
@@ -307,153 +307,87 @@
     {
       "step": 37,
       "type": "capture",
-      "name": "08_harbor_npc_sparring_05",
+      "name": "bergen_L3_street",
       "status": "PASS",
       "screenshots": [
-        "08_harbor_npc_sparring_05-0.jpg"
-      ]
-    },
-    {
-      "step": 38,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 39,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_06",
-      "status": "PASS",
-      "screenshots": [
-        "08_harbor_npc_sparring_06-0.jpg"
-      ]
-    },
-    {
-      "step": 40,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 41,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_07",
-      "status": "PASS",
-      "screenshots": [
-        "08_harbor_npc_sparring_07-0.jpg"
-      ]
-    },
-    {
-      "step": 42,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 43,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_08",
-      "status": "PASS",
-      "screenshots": [
-        "08_harbor_npc_sparring_08-0.jpg"
+        "bergen_L3_street-0.jpg"
       ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "01_top-0.jpg",
-      "sha256": "ab68e1a87252528893081a26cb33df9be1d93d5dfc50d0916fa9b71e4228623a",
+      "name": "bergen_L3_street-0.jpg",
+      "sha256": "1732d7e687b80531407bc82e7780f5e96b6258cdf1eee2a87244e4fbc08dff4f",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/01_top-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/bergen_L3_street-0.jpg"
     },
     {
-      "name": "02_plaza-0.jpg",
-      "sha256": "b447c61eca219fa53c50e2fe3444ce384372cf4ec3beab0bd42d33752a971258",
+      "name": "bergen_L3_top-0.jpg",
+      "sha256": "b23c2838d147379f5c5205376c9b9960c06b43b166f27f02160f15ef55ab64c2",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/02_plaza-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/bergen_L3_top-0.jpg"
     },
     {
-      "name": "03_street-0.jpg",
-      "sha256": "045df8e73ec6674c8b4293d618dbcc452d83e04018ec27574b0764c35f99741b",
+      "name": "hamburg_L3_street-0.jpg",
+      "sha256": "41a129fd7b17b8077c40c06105f488f2982773de550beb0d2b932661ddfb2ec3",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/03_street-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/hamburg_L3_street-0.jpg"
     },
     {
-      "name": "04_dock-0.jpg",
-      "sha256": "f7c9d7f0b390970c04aa6eca6810eb6a0cfa482daf40d6d7e10de035ec4c1003",
+      "name": "hamburg_L3_top-0.jpg",
+      "sha256": "075d925e35ce0248b1892c4f25b3078cc0cfec2177601c618074babe0ed6024f",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/04_dock-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/hamburg_L3_top-0.jpg"
     },
     {
-      "name": "05_aerial-0.jpg",
-      "sha256": "13adbe2341860dec9381334581aabe87c29fa31eaec73de4184949cd133111a8",
+      "name": "lisbon_L3_street-0.jpg",
+      "sha256": "e42710c135d836cada986be2e50fe5fba0d85b9b4eeb81fcb122b9299902b9df",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/05_aerial-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/lisbon_L3_street-0.jpg"
     },
     {
-      "name": "06_backstreet-0.jpg",
-      "sha256": "e7ee1331987ce7d28338432cda488fb0799fff623f8b1ba1adb32409e58301a4",
+      "name": "lisbon_L3_top-0.jpg",
+      "sha256": "66be071c60f5f5ef04aed88950d2a8186c1d88f61888644f00436d51605ade51",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/06_backstreet-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/lisbon_L3_top-0.jpg"
     },
     {
-      "name": "07_wall-0.jpg",
-      "sha256": "2f9ff2dd2b6739e9cf94a5ef9ff773f1ca55db34bc9c7b5a2ccc87b6495ede10",
+      "name": "london_L3_street-0.jpg",
+      "sha256": "1a61fc003bbcc8cfc9e592cb2f3914ccd4e1ec971fb1bd1b00295590105305da",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/07_wall-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/london_L3_street-0.jpg"
     },
     {
-      "name": "08_harbor_npc_sparring_01-0.jpg",
-      "sha256": "4b6a96847f70ea40550604ee084e3b9f1d4a941c0449017e9eb10f0f3dc13d96",
+      "name": "london_L3_top-0.jpg",
+      "sha256": "ab02bf08bf050b7882c505fce1f73548a703236d9bd26d0fbcf966e7b16c47f1",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_01-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/london_L3_top-0.jpg"
     },
     {
-      "name": "08_harbor_npc_sparring_02-0.jpg",
-      "sha256": "4b6a96847f70ea40550604ee084e3b9f1d4a941c0449017e9eb10f0f3dc13d96",
+      "name": "rouen_L3_street-0.jpg",
+      "sha256": "eb57d6d54d944710a60e9dc17867e821e70da7bcc1013188f3b496048c0c3d5f",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_02-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/rouen_L3_street-0.jpg"
     },
     {
-      "name": "08_harbor_npc_sparring_03-0.jpg",
-      "sha256": "4b6a96847f70ea40550604ee084e3b9f1d4a941c0449017e9eb10f0f3dc13d96",
+      "name": "rouen_L3_top-0.jpg",
+      "sha256": "f8a3e6890c67aa598b3190a1a47a6f4c97986b09787329b93bf332c81b28c11a",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_03-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/rouen_L3_top-0.jpg"
     },
     {
-      "name": "08_harbor_npc_sparring_04-0.jpg",
-      "sha256": "4b6a96847f70ea40550604ee084e3b9f1d4a941c0449017e9eb10f0f3dc13d96",
+      "name": "venice_L3_street-0.jpg",
+      "sha256": "f6c8f1ceb8a351780c7703b06c78bb6c061d10abd533cf8930e7abcd60b8d553",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_04-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/venice_L3_street-0.jpg"
     },
     {
-      "name": "08_harbor_npc_sparring_05-0.jpg",
-      "sha256": "4b6a96847f70ea40550604ee084e3b9f1d4a941c0449017e9eb10f0f3dc13d96",
+      "name": "venice_L3_top-0.jpg",
+      "sha256": "bbeed7ef3996761a71199b611116876e12bd6742e8a5fa9808b1fafc2e196d41",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_05-0.jpg"
-    },
-    {
-      "name": "08_harbor_npc_sparring_06-0.jpg",
-      "sha256": "f2c50999a08bf71ce86abd7fb430cde7a084370c68654afb0e09038dc4a68d44",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_06-0.jpg"
-    },
-    {
-      "name": "08_harbor_npc_sparring_07-0.jpg",
-      "sha256": "253a82ef7ef8d24aa32b4e6921cfc906537cae5316c4356a706e31b1df3f88aa",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_07-0.jpg"
-    },
-    {
-      "name": "08_harbor_npc_sparring_08-0.jpg",
-      "sha256": "29c7b38226f8e9e477441fcbba59420e4658002cd194ec1bcbc1a24fd752a381",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611226233/08_harbor_npc_sparring_08-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43611297779/venice_L3_top-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43610591005"
+  "previousRunId": "43611226233"
 }
