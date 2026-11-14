@@ -1,0 +1,51 @@
+{
+ "sourceRevision": "48435cfcd8f120753eef44582579c93a8ddadc8e",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "DEV Deck\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "cb1",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "cb2",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 10,
+  "completedSteps": 10,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
