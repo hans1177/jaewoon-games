@@ -1,0 +1,101 @@
+{
+ "sourceRevision": "50b12f1b127220bd983e0d3151b2671676968f27",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "closed 2\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "SAIL\ntext"
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "RING scene=false \ntext"
+  },
+  {
+   "step": 15,
+   "capture": "r01",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "RING scene=false \ntext"
+  },
+  {
+   "step": 18,
+   "capture": "r02",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "RING scene=false \ntext"
+  },
+  {
+   "step": 21,
+   "capture": "r03",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "RING scene=false \ntext"
+  },
+  {
+   "step": 24,
+   "capture": "r04",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 25,
+  "completedSteps": 25,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
+  "abortedEarly": false
+ }
+}
