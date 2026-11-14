@@ -1903,6 +1903,101 @@ function NavalBattle.play(opts)
 			end
 		end)
 	end
+	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
+	local FX = { list = {}, wakeAt = {}, dmgAt = {}, cam = nil }
+	local C_SMOKE, C_DARK, C_WATER, C_WOOD = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245), Color3.fromRGB(104, 70, 40)
+	function FX.spawn(size, pos, color, material, shape, vel, life, o)
+		if #FX.list > 260 then
+			return
+		end
+		o = o or {}
+		local p = part(folder, size, if o.upright then CFrame.new(pos) * CFrame.Angles(0, 0, math.pi / 2) else CFrame.new(pos), color, material, shape)
+		p.Transparency = o.t0 or 0
+		table.insert(FX.list, { p = p, vel = vel or Vector3.zero, life = life, age = 0, grow = o.grow or 0, g = o.g or 0, t0 = o.t0 or 0, size = size, flat = o.flat, ring = o.ring })
+	end
+	function FX.update(dt)
+		for i = #FX.list, 1, -1 do
+			local f = FX.list[i]
+			f.age += dt
+			local k = f.age / f.life
+			if k >= 1 then
+				f.p:Destroy()
+				table.remove(FX.list, i)
+			else
+				f.vel += Vector3.new(0, -f.g * dt, 0)
+				local grow = 1 + f.grow * k
+				f.p.Size = if f.ring then Vector3.new(f.size.X, f.size.Y * grow, f.size.Z * grow) elseif f.flat then Vector3.new(f.size.X * grow, f.size.Y, f.size.Z * grow) else f.size * grow
+				f.p.Position += f.vel * dt
+				f.p.Transparency = f.t0 + (1 - f.t0) * k * k
+			end
+		end
+	end
+	-- 연기 덩어리 n개 (dark = 불탄 검은 연기)
+	function FX.smoke(pos, n, scale, dark)
+		for _ = 1, n do
+			local r = scale * (0.7 + math.random() * 0.6)
+			FX.spawn(Vector3.new(r, r, r), pos + Vector3.new((math.random() - 0.5) * 3, 0, (math.random() - 0.5) * 3),
+				if dark then C_DARK else C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball,
+				Vector3.new((math.random() - 0.5) * 3, 3 + math.random() * 4, (math.random() - 0.5) * 3), 1.6 + math.random() * 0.8, { grow = 2.6, t0 = 0.25 })
+		end
+	end
+	-- 나무 파편과 불똥
+	function FX.splinters(pos, n)
+		for _ = 1, n do
+			local w = 0.3 + math.random() * 0.7
+			FX.spawn(Vector3.new(w, w * 0.4, w * 2.2), pos, C_WOOD, Enum.Material.Wood, nil,
+				Vector3.new((math.random() - 0.5) * 26, 8 + math.random() * 14, (math.random() - 0.5) * 26), 1.1 + math.random() * 0.6, { g = 38 })
+		end
+		for _ = 1, math.floor(n / 2) do
+			FX.spawn(Vector3.new(0.5, 0.5, 0.5), pos, Color3.fromRGB(255, 190, 80), Enum.Material.Neon, Enum.PartType.Ball,
+				Vector3.new((math.random() - 0.5) * 34, 6 + math.random() * 16, (math.random() - 0.5) * 34), 0.6 + math.random() * 0.3, { g = 30 })
+		end
+	end
+	function FX.flame(pos, scale)
+		FX.spawn(Vector3.new(scale, scale, scale), pos + Vector3.new((math.random() - 0.5) * 4, 0, (math.random() - 0.5) * 4), Color3.fromRGB(255, 130, 40), Enum.Material.Neon, Enum.PartType.Ball,
+			Vector3.new((math.random() - 0.5) * 2, 6 + math.random() * 3, (math.random() - 0.5) * 2), 0.8, { grow = -0.6 })
+	end
+	-- 물기둥과 퍼지는 물결
+	function FX.splash(pos)
+		FX.spawn(Vector3.new(3, 2.4, 2.4), pos + Vector3.new(0, 1.5, 0), C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Cylinder, Vector3.new(0, 11, 0), 0.9, { grow = 0.8, t0 = 0.2, g = 14, upright = true })
+		FX.spawn(Vector3.new(0.3, 3, 3), pos + Vector3.new(0, 0.3, 0), C_WATER, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, 1.1, { grow = 7, t0 = 0.35, ring = true, upright = true })
+		for _ = 1, 6 do
+			FX.spawn(Vector3.new(0.6, 0.6, 0.6), pos, C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Ball,
+				Vector3.new((math.random() - 0.5) * 12, 8 + math.random() * 8, (math.random() - 0.5) * 12), 0.9, { g = 30, t0 = 0.2 })
+		end
+	end
+	-- 포구 화염과 연기
+	function FX.muzzle(from, dir)
+		FX.spawn(Vector3.new(4.5, 4.5, 4.5), from, Color3.fromRGB(255, 205, 100), Enum.Material.Neon, Enum.PartType.Ball, dir * 8, 0.25, { grow = 1.2 })
+		FX.smoke(from + dir * 3, 3, 3.2, false)
+	end
+	-- 배 뒤로 길게 남는 항적
+	function FX.wake(sh, key, now)
+		local last = FX.wakeAt[key]
+		local moved = last and (sh.pos - last.pos).Magnitude or 0
+		if not last or now - last.t >= 0.09 then
+			FX.wakeAt[key] = { pos = sh.pos, t = now }
+			if moved > 0.15 then
+				local back = ORIGIN + sh.pos - Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta)) * (sh.length * 0.46) + Vector3.new(0, 0.25, 0)
+				FX.spawn(Vector3.new(2.6, 0.2, 2.6), back, Color3.fromRGB(240, 248, 252), Enum.Material.SmoothPlastic, nil, Vector3.zero, 1.7, { grow = 2.4, t0 = 0.3, flat = true })
+				FX.spawn(Vector3.new(1.4, 0.2, 1.4), ORIGIN + sh.pos + Vector3.new(math.cos(sh.theta) * sh.length * 0.5, 0.25, math.sin(sh.theta) * sh.length * 0.5), Color3.fromRGB(240, 248, 252), Enum.Material.SmoothPlastic, nil, Vector3.zero, 0.9, { grow = 1.6, t0 = 0.4, flat = true })
+			end
+		end
+	end
+	-- 피해가 쌓이면 연기가 오르고, 더 심하면 불이 붙는다
+	function FX.damage(sh, key, now)
+		local hp = sh.hp or 1
+		if hp >= 0.65 or (FX.dmgAt[key] or 0) > now then
+			return
+		end
+		FX.dmgAt[key] = now + (if hp < 0.35 then 0.16 else 0.3)
+		local at = ORIGIN + sh.pos + Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta)) * ((math.random() - 0.5) * sh.length * 0.6) + Vector3.new(0, 9, 0)
+		FX.smoke(at, 1, 3 + (1 - hp) * 3, true)
+		if hp < 0.35 then
+			FX.flame(at, 2.6)
+		end
+	end
+
 	-- 대포 한 발
 	local function shoot(fromPos, toPos, fx)
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
@@ -1914,6 +2009,8 @@ function NavalBattle.play(opts)
 			(math.random() - 0.5) * 6
 		)
 		Sfx.play("sfx_naval_cannon", 0.82, 0.92 + math.random() * 0.16, "sfx_cannon")
+		FX.muzzle(from, (to - from).Unit)
+		shake = math.max(shake, if hullHit then 0.7 else 0.35)
 		if hullHit then
 			task.delay(0.9, function()
 				if not finished then
@@ -1931,7 +2028,11 @@ function NavalBattle.play(opts)
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
-			ball.CFrame = CFrame.new(from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * 14, 0))
+			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * 14, 0)
+			ball.CFrame = CFrame.new(bpos)
+			if u < 1 and math.random() < 0.5 then
+				FX.spawn(Vector3.new(0.9, 0.9, 0.9), bpos, C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball, Vector3.zero, 0.5, { grow = 1.5, t0 = 0.4 }) -- 포탄 꼬리
+			end
 			if u >= 1 then
 				conn:Disconnect()
 				ball:Destroy()
@@ -1946,6 +2047,13 @@ function NavalBattle.play(opts)
 					end
 				else
 					Sfx.play("sfx_naval_splash", 0.55, 0.9 + math.random() * 0.22, "sfx_splash")
+				end
+				if hullHit then
+					FX.splinters(to, 9)
+					FX.smoke(to + Vector3.new(0, 2, 0), 3, 3.4, true)
+					shake = math.max(shake, 1.3)
+				else
+					FX.splash(to)
 				end
 				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to),
 					if hullHit then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(150, 225, 245),
@@ -1980,13 +2088,24 @@ function NavalBattle.play(opts)
 	local function forward(theta)
 		return Vector3.new(math.cos(theta), 0, math.sin(theta))
 	end
-	local function poseShip(sh, t, extra)
-		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5, 0) * CFrame.Angles(0, 0, math.sin(t * 0.9 + sh.length) * 0.03)
-		local cf = CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot
-		if extra then
-			cf = extra * cf
+	-- sink: nil 또는 { k = 0~1 침몰 진행, side = ±1 기우는 쪽 }
+	local function poseShip(sh, t, sink)
+		-- 방향을 틀면 바깥쪽으로 기울고(롤), 속도가 붙으면 선수가 살짝 든다. 피해가 쌓이면 한쪽으로 기울며 가라앉는다.
+		local dTheta = (sh.theta - (sh.lastTheta or sh.theta) + math.pi) % (math.pi * 2) - math.pi
+		sh.lastTheta = sh.theta
+		sh.roll = (sh.roll or 0) + (math.clamp(dTheta * 9, -0.3, 0.3) - (sh.roll or 0)) * 0.12
+		local hp = sh.hp or 1
+		local heel = (1 - hp) * 0.28 * (sh.heelSide or 1)
+		local pitch = math.clamp((sh.speed or 0) / 90, 0, 0.1) + math.sin(t * 0.9 + sh.length) * 0.03
+		local dip, rollAdd, pitchAdd = -(1 - hp) * 1.6, 0, 0
+		if sink then
+			local k = sink.k
+			dip -= k * k * 22
+			rollAdd = sink.side * k * 1.15
+			pitchAdd = -k * 0.42 -- 선수부터 가라앉는다
 		end
-		sh.model:PivotTo(cf)
+		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5 + dip, 0) * CFrame.Angles(-sh.roll + heel + rollAdd, 0, pitch + pitchAdd)
+		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
 	end
 
 	-- 카드 대결 무대: 두 배 갑판 위에 로블록스 캐릭터 선원이 서 있고, 카드를 낼 때마다 그 줄의 병종이 움직인다
@@ -2316,22 +2435,46 @@ function NavalBattle.play(opts)
 		end
 
 		-- 배 그리기 (침몰 연출 포함)
-		local meExtra, foeExtra
+		me.hp, foe.hp = meHp, foeHp
+		local meSink, foeSink
 		if sinkStart then
-			local k = math.clamp((now - sinkStart) / 2.2, 0, 1)
-			local sink = CFrame.new(0, -k * 12, 0) * CFrame.Angles(0, 0, (if loser == "me" then -1 else 1) * k * 0.5)
+			local k = math.clamp((now - sinkStart) / 2.8, 0, 1)
+			local sink = { k = k, side = if loser == "me" then -1 else 1 }
 			if loser == "me" then
-				meExtra = sink
+				meSink = sink
 			else
-				foeExtra = sink
+				foeSink = sink
+			end
+			-- 가라앉는 동안 연기·파편·거품
+			local sunk = if loser == "me" then me else foe
+			if k < 0.95 and math.random() < 0.55 then
+				local at = ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 10, 0) + Vector3.new((math.random() - 0.5) * sunk.length * 0.7, 0, (math.random() - 0.5) * 8)
+				FX.smoke(at, 1, 4, true)
+				if math.random() < 0.5 then
+					FX.flame(at, 3)
+				end
+				if math.random() < 0.3 then
+					FX.splinters(at, 3)
+				end
+				if k > 0.5 and math.random() < 0.5 then
+					FX.splash(Vector3.new(at.X, 0, at.Z))
+				end
 			end
 		end
-		poseShip(me, now, meExtra)
-		poseShip(foe, now, foeExtra)
+		poseShip(me, now, meSink)
+		poseShip(foe, now, foeSink)
 		updateCrews(now)
 		for _, e in escorts do
 			poseShip(e, now, nil)
 		end
+		FX.wake(me, "me", now)
+		FX.wake(foe, "foe", now)
+		for i, e in escorts do
+			FX.wake(e, "e" .. i, now)
+		end
+		FX.damage(me, "me", now)
+		FX.damage(foe, "foe", now)
+		FX.update(dt)
 		meFill.Size = UDim2.fromScale(meHp, 1)
 		foeFill.Size = UDim2.fromScale(foeHp, 1)
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
@@ -2351,13 +2494,15 @@ function NavalBattle.play(opts)
 			end
 		end
 
-		-- 카메라: 우리 배 뒤쪽 위에서 따라간다
+		-- 카메라: 두 배가 모두 보이도록 넓게 잡는다. 거리가 벌어질수록 뒤로·위로 물러나고, 부드럽게 따라간다.
 		shake = math.max(0, shake - 0.06)
-		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.2, 0, 1) * 10 else 0
-		cam.FieldOfView = 62 + math.min(shake, 2.5) * 2.2 + (me.speed / 19) * 6 + killZoom
+		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
+		cam.FieldOfView = 74 + math.min(shake, 2.5) * 2 + (me.speed / 19) * 5 + killZoom
 		local f = forward(me.theta)
-		local focus = ORIGIN + me.pos + (foe.pos - me.pos) * 0.35
-		local camPos = ORIGIN + me.pos - f * 52 + Vector3.new(0, 30, 0)
+		local sep = (foe.pos - me.pos)
+		local dist = sep.Magnitude
+		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
+		local camPos = ORIGIN + me.pos - f * (58 + dist * 0.3) + Vector3.new(0, 38 + dist * 0.2, 0)
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
@@ -2365,9 +2510,11 @@ function NavalBattle.play(opts)
 			local perp = Vector3.new(-dir.Z, 0, dir.X)
 			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
 			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
-			camPos = ORIGIN + mid + perp * 92 + Vector3.new(0, 34, 0)
+			camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
 		end
-		cam.CFrame = CFrame.lookAt(camPos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), focus + Vector3.new(0, 4, 0))
+		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
+		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
+		cam.CFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
 	end))
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
