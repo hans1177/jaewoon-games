@@ -58,6 +58,14 @@ function prepareOwnerOriginalMusic(t){
     compositionPath:t.compositionPath,compositionSha256:sha};
 }
 
+// 승인된 CC0 효과음 묶음(원본 ZIP 해시 장부가 있는 것만)과 허용하는 ZIP 엔트리 형태
+const SFX_ARCHIVES={
+  'kenney-rpg-sfx-50.zip':/^OGG\/[A-Za-z0-9_]+\.ogg$/,
+  'rpg-sfx-95.zip':/^RPG Sound Pack\/[a-z]+\/[A-Za-z0-9_-]+\.wav$/,
+  'rpg-sfx-80.zip':/^[a-z0-9_]+\.ogg$/,
+};
+const archiveName=t=>String(t.sourceFile||'').startsWith(cc0PackDir)?String(t.sourceFile).slice(cc0PackDir.length):'';
+
 function prepareVerifiedCC0(track){
   if(track.license!=='CC0-1.0'||track.source!=='VERIFIED_CC0_ORIGINAL_DERIVATIVE'
     ||!/^out\/[a-z0-9_]+\.ogg$/.test(track.file)
@@ -71,8 +79,8 @@ function prepareVerifiedCC0(track){
     const validHash=/^[a-f0-9]{64}$/.test(String(locked.sha256||''));
     let validOrigin=false;
     if(track.sourceArchiveSha256){
-      const pack=cc0PackManifest.packs?.find(p=>p.file==='kenney-rpg-sfx-50.zip');
-      validOrigin=track.sourceFile===cc0PackDir+'kenney-rpg-sfx-50.zip'
+      const pack=cc0PackManifest.packs?.find(p=>p.file===archiveName(track));
+      validOrigin=!!SFX_ARCHIVES[archiveName(track)]
         && pack?.licenseDeclared==='CC0-1.0'
         && pack?.sha256===track.sourceArchiveSha256
         && pack?.sourceUrl===track.sourceDownloadUrl
@@ -120,10 +128,10 @@ function prepareVerifiedCC0(track){
   let original,sourceEvidence;
   if(track.sourceArchiveSha256){
     // CC0 Kenney RPG 음원 묶음은 이미 저장소에 다운로드 원본/원본 SHA-256 장부가 있다.
-    if(track.sourceFile!==cc0PackDir+'kenney-rpg-sfx-50.zip'
+    if(!SFX_ARCHIVES[archiveName(track)]
       ||!/^[a-f0-9]{64}$/.test(track.sourceArchiveSha256)
-      ||!/^OGG\/[A-Za-z0-9_]+\.ogg$/.test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
-    const source=cc0PackManifest.packs?.find(x=>x.file==='kenney-rpg-sfx-50.zip');
+      ||!SFX_ARCHIVES[archiveName(track)].test(track.sourceEntry||''))throw Error('CC0_AUDIO_ARCHIVE_METADATA_INVALID');
+    const source=cc0PackManifest.packs?.find(x=>x.file===archiveName(track));
     if(!source||source.licenseDeclared!=='CC0-1.0'
       ||source.licenseSourceUrl!==track.sourceUrl||source.sourceUrl!==track.sourceDownloadUrl
       ||source.sha256!==track.sourceArchiveSha256)throw Error('CC0_AUDIO_ARCHIVE_RIGHTS_INVALID');

@@ -921,6 +921,53 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
 	-- 능력의 본래 효과를 유지하면서 카드 인장·선택 설명에 동일하게 표시한다.
 	local ROW_ICON = { melee = "근접", ranged = "사격", cannon = "포격" }
+	-- 카드 종류별 효과음 (공용 CC0 음원 파생). 새 소리가 아직 등록 전이면 기존 소리로 대신한다.
+	local function cardSfx(c, side)
+		local q = if side == "foe" then 0.8 else 1
+		local function s(name, vol, speed, fb, wait)
+			if wait then
+				task.delay(wait, function() Sfx.play(name, vol * q, speed, fb) end)
+			else
+				Sfx.play(name, vol * q, speed, fb)
+			end
+		end
+		s("sfx_card_place", 0.6, 1, "sfx_boarding_draw")
+		local sp = c.special
+		if sp == "scorch" then
+			s("sfx_card_fire", 0.8, 1, "sfx_naval_cannon")
+			s("sfx_naval_hull_hit", 0.6, 0.9, "sfx_hit", 0.25)
+		elseif sp == "weather" then
+			s("sfx_card_magic", 0.7, 1, "sfx_wind")
+			s(if c.row == "cannon" then "sfx_ambience_storm" else "sfx_wind", 0.5, 1, nil, 0.2)
+		elseif sp == "clear" then
+			s("sfx_card_magic", 0.6, 1.2, "sfx_wind")
+			s("sfx_gull", 0.4, 1, nil, 0.3)
+		elseif sp == "wind" then
+			s("sfx_sail", 0.7, 1, "sfx_sail_fabric", 0.1)
+			s("sfx_card_deal", 0.6, 1, "sfx_book_turn", 0.35)
+		elseif sp == "horn" then
+			s("sfx_horn", 0.7, 1, nil, 0.1)
+		elseif sp == "decoy" then
+			s("sfx_rope_pull", 0.6, 1, nil, 0.1)
+		elseif sp then
+			s("sfx_book_turn", 0.6, 1, nil, 0.1)
+		else
+			if c.row == "ranged" then
+				s("sfx_card_volley", 0.7, 1, "sfx_rope_release", 0.08)
+			elseif c.row == "cannon" then
+				s("sfx_naval_cannon", 0.6, 1.1, "sfx_cannon", 0.08)
+			else
+				s("sfx_card_swing", 0.7, 1, "sfx_metal_clash", 0.08)
+			end
+			local ab = c.ability
+			if ab == "spy" then s("sfx_ship_cabin_door", 0.6, 1, nil, 0.3)
+			elseif ab == "medic" then s("sfx_card_ring", 0.6, 1, "sfx_bell", 0.3)
+			elseif ab == "bond" then s("sfx_card_armor", 0.6, 1, "sfx_rope_pull", 0.3)
+			elseif ab == "morale" then s("sfx_card_chain", 0.6, 1, "sfx_horn", 0.3)
+			elseif ab == "snipe" then s("sfx_naval_cannon", 0.7, 0.9, "sfx_cannon", 0.3) end
+			if c.hero then s("sfx_card_blade", 0.6, 1, "sfx_fanfare", 0.15) end
+		end
+	end
 	local function startBoarding(cfg, onEnd, onPlay)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
@@ -1376,7 +1423,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
 				info.Text = if english then "Action unavailable" else msg or ""
+				Sfx.play("sfx_error", 0.5, 1)
 				return
+			end
+			if card then
+				cardSfx(card, side)
+			elseif side == "foe" then
+				Sfx.play("sfx_anchor_lower", 0.4, 1.1, "sfx_rope_pull")
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
 			if res then
@@ -1384,20 +1437,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
 					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
 						if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
-				Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_hit", 0.6, 1)
-				Sfx.play("sfx_metal_clash", 0.7, 1)
-			else
-				Sfx.play("sfx_boarding_draw", 0.7, 1) -- 카드를 내는 손짓(칼 뽑는 소리)
+				task.delay(0.5, function()
+					Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_naval_hull_hit", 0.6, 1, "sfx_hit")
+					Sfx.play("sfx_metal_clash", 0.5, 1)
+				end)
 			end
 			render()
 		end
 		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
 		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
@@ -1417,9 +1472,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				return
 			end
 			info.Text = if english then "Swapped one card" else msg or ""
+			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
 		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/route", function()
+			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
 
@@ -2235,6 +2292,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							selected:SetAttribute("ArtFocused", false)
 						end
 						b:SetAttribute("ArtFocused", true)
+						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 						showCardCodex(c)
 						selected = b
 						selectedPlay = playChosenCard
@@ -2312,6 +2370,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				return
 			end
 			local wonMatch = m.winner == "me"
+			if wonMatch then Sfx.play("sfx_quest_reward", 0.7, 1, "sfx_fanfare")
+			elseif m.winner == "foe" then Sfx.play("sfx_naval_sink", 0.6, 1, "sfx_hit") end
 			flair += m.wins.me * 40 + (if wonMatch then 110 else 0)
 			if cfg then
 				info.Text = if wonMatch then t("카드 대결에서 이겼다! 전투 승리!", "You won the card battle!")
