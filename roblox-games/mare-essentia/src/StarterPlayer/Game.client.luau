@@ -1247,7 +1247,7 @@ do
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
-		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
+		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard" and role ~= "scholar") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
 			return nil
 		end
 		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
@@ -1264,6 +1264,14 @@ do
 		local seed = 0
 		for index = 1, #portId do
 			seed = (seed * 31 + string.byte(portId, index)) % 101
+		end
+		if role == "scholar" then
+			-- 학자: 같은 지역 시트의 교역소 칸 중 항만 관리관·조선 장인 칸을 뺀 한 칸(항구마다 고정)
+			local c = (seed * 3 + 5) % 10
+			while c == reserved.harbor or c == reserved.yard do
+				c = (c + 1) % 10
+			end
+			return atlas, Vector2.new(c % 5 * 200, math.floor(c / 5) * 200), Vector2.new(200, 200)
 		end
 		local rotation = math.floor((playerView.day or 0) / 30)
 		-- 격달로 새 지역 인물 시트의 젊은 인물이 가게를 맡는다
@@ -3299,7 +3307,14 @@ function playStory(ev)
 		tpl = nil
 	end
 	-- 흑백 스케치 시트(npcs_new·characters·merchant)는 쓰지 않는다. 색이 있는 시설 초상만 쓰고, 없으면 아래 3D 인물 모델로 대신한다.
-	local storyImageId = if tile and FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS else nil
+	-- 지역(인종·문화권)에 맞는 현재 항구 사람 얼굴을 먼저 쓰고, 없을 때만 공용 시설 초상을 쓴다.
+	local regId, regOffset, regSize
+	if tile and not cport then
+		local curPort = view and view.player and view.player.portId
+		regId, regOffset, regSize = H.facilityPortraitAsset(curPort, tile)
+	end
+	local storyImageId = if regId then regId
+		elseif tile and FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS else nil
 	if storyImageId then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "NpcPortrait"
@@ -3310,8 +3325,8 @@ function playStory(ev)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
 		photo.Image = "rbxassetid://" .. tostring(storyImageId)
-		photo.ImageRectOffset = FACILITY_TILE[tile]
-		photo.ImageRectSize = PORTRAIT_SIZE
+		photo.ImageRectOffset = if regId then regOffset else FACILITY_TILE[tile]
+		photo.ImageRectSize = if regId then regSize else PORTRAIT_SIZE
 		photo.Parent = picture
 	elseif cport then
 		-- 그린 초상을 이미 올렸다
@@ -9176,10 +9191,16 @@ end
 		if not portraitSpec and tile == "hero" then
 			heroId, heroOffset = H.heroPortraitAsset(chosenNation)
 		end
+		local regId, regOffset, regSize
+		if not portraitSpec and tile ~= "hero" then
+			regId, regOffset, regSize = H.facilityPortraitAsset(view and view.player and view.player.portId, tile)
+		end
 		local portraitId = if portraitSpec then AssetIds["Portraits/" .. portraitSpec.atlas]
+			elseif regId then regId
 			elseif FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS
 			else heroId
 		local portraitOffset = if portraitSpec then portraitSpec.offset
+			elseif regId then regOffset
 			elseif portraitId == FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_TILE[tile]
 			else heroOffset
 		local face = Instance.new("ImageLabel")
@@ -9191,7 +9212,7 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		face.ImageRectSize = if portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		corner(face, 6)
