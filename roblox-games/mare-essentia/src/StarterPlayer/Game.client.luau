@@ -2736,8 +2736,8 @@ local function sail(portId)
 					local back = 34 + k * 26
 					local side = 22 * (1 - k * 0.7)
 					c.CameraType = Enum.CameraType.Scriptable
-					c.FieldOfView = 62
-					c.CFrame = CFrame.lookAt(p + Vector3.new(-back, 13 + k * 5, side), p + Vector3.new(16, 2, 0))
+					c.FieldOfView = 60 + k * 10 -- 멀어질수록 화각이 넓어져 바다가 펼쳐진다
+					c.CFrame = CFrame.lookAt(p + Vector3.new(-back, 13 + k * 5, side), p + Vector3.new(16 + k * 10, 2, 0))
 				end)
 			end
 			task.wait(dur)
