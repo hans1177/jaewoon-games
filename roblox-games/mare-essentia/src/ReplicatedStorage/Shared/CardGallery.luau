@@ -2,6 +2,7 @@
 -- 내 카드 갤러리: 퀸트식 카드 타일 격자 + 큰 카드 보기. (표시만 다룬다 — 덱 규칙·저장은 CardBook/서버가 그대로 맡는다)
 -- 타일: 그림·이름·점수 동그라미·보유 수·동은금 테두리. 금 카드는 은은히 반짝이고, 큰 카드 그림은 천천히 움직인다.
 local TweenService = game:GetService("TweenService")
+local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local Gallery = {}
 
@@ -194,9 +195,9 @@ local function showDetail(ctx, id)
 			corner(b, 6)
 			if enabled then b.Activated:Connect(fn) end
 		end
-		btn("덱에 +", Color3.fromRGB(52, 120, 70), (want[id] or 0) < owned, function() ctx.onWant(id, 1) showDetail(ctx, id) end)
-		btn("덱에서 −", Color3.fromRGB(130, 58, 52), (want[id] or 0) > 0, function() ctx.onWant(id, -1) showDetail(ctx, id) end)
-		btn("강화", Color3.fromRGB(150, 118, 40), up ~= nil and owned >= up.copies + 1, function() ctx.onUpgrade(id) showDetail(ctx, nil) end)
+		btn("덱에 +", Color3.fromRGB(52, 120, 70), (want[id] or 0) < owned, function() Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click") ctx.onWant(id, 1) showDetail(ctx, id) end)
+		btn("덱에서 −", Color3.fromRGB(130, 58, 52), (want[id] or 0) > 0, function() Sfx.play("sfx_click", 0.5, 0.9) ctx.onWant(id, -1) showDetail(ctx, id) end)
+		btn("강화", Color3.fromRGB(150, 118, 40), up ~= nil and owned >= up.copies + 1, function() Sfx.play("sfx_card_coin", 0.7, 1, "sfx_coin") ctx.onUpgrade(id) showDetail(ctx, nil) end)
 	end
 	local close = Instance.new("TextButton")
 	close.Text = "✕"
@@ -343,7 +344,7 @@ function Gallery.build(parent, ctx, order)
 							TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) }):Play()
 						end
 					end
-					tile.Activated:Connect(function() showDetail(ctx, id) end)
+					tile.Activated:Connect(function() Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click") showDetail(ctx, id) end)
 				end
 			end
 		end
@@ -358,7 +359,7 @@ function Gallery.build(parent, ctx, order)
 			more.BorderSizePixel = 0
 			more.Parent = grid
 			corner(more, 8)
-			more.Activated:Connect(function() state.page += 1 rebuild() end)
+			more.Activated:Connect(function() Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn") state.page += 1 rebuild() end)
 		elseif n == 0 then
 			local e = newLabel(grid, "이 분류에는 아직 카드가 없어요", 14)
 			e.Size = UDim2.fromOffset(300, 30)
@@ -384,6 +385,7 @@ function Gallery.build(parent, ctx, order)
 		corner(b, 15)
 		chipBtns[f.id] = b
 		b.Activated:Connect(function()
+			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
 			state.filter, state.page = f.id, 1
 			paintChips()
 			rebuild()
