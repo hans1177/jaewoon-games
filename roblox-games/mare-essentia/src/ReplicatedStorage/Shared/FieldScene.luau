@@ -9,6 +9,31 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
+local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+-- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
+local okVfx, CommonVFX = pcall(function()
+	return require(script.Parent:WaitForChild("CommonVFX", 5))
+end)
+if not okVfx then
+	CommonVFX = nil
+end
+
+-- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
+local function addIcon(button: TextButton, key: string)
+	local id = (AssetIds :: any)[key]
+	if not id then
+		return
+	end
+	local img = Instance.new("ImageLabel")
+	img.BackgroundTransparency = 1
+	img.Image = "rbxassetid://" .. tostring(id)
+	img.AnchorPoint = Vector2.new(0.5, 0.4)
+	img.Position = UDim2.fromScale(0.5, 0.4)
+	img.Size = UDim2.fromScale(0.62, 0.62)
+	img.ImageTransparency = 0.05
+	img.Parent = button
+	button.TextYAlignment = Enum.TextYAlignment.Bottom
+end
 
 local FieldScene = {}
 
@@ -495,6 +520,7 @@ function FieldScene.start(opts)
 	local UserInputService = game:GetService("UserInputService")
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -150, 0.5, -10), Vector2.new(0.5, 0.5))
 	attackBtn.TextSize = 22
+	addIcon(attackBtn, "Menu/action_fist")
 	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(1, -12, 0, 56), Vector2.new(1, 0))
 	retreat.Activated:Connect(function()
 		finish("retreat")
@@ -580,11 +606,17 @@ function FieldScene.start(opts)
 	table.insert(conns, { Disconnect = function()
 		fxPart:Destroy()
 	end })
-	local function burst(at: Vector3, n: number, big: boolean?)
+	local function burst(at: Vector3, n: number, big: boolean?, kind: string?)
 		fxPart.Position = at
 		sparks:Emit(n)
 		if big then
 			slash:Emit(3)
+		end
+		if CommonVFX then
+			local fn = if kind == "dodge" then "CreateDodgeEvasionPulse" elseif kind == "telegraph" then "CreateAttackTelegraphPulse" elseif big then "CreateCriticalBurst" else "CreateImpactFlash"
+			pcall(function()
+				CommonVFX[fn]({ cframe = CFrame.new(at), scale = if big then 1.4 else 1, parent = workspace })
+			end)
 		end
 	end
 	local function popDamage(model: Model, dmg: number, crit: boolean)
@@ -627,6 +659,136 @@ function FieldScene.start(opts)
 			h:Destroy()
 		end)
 	end
+
+	-- 맞았을 때 화면 반응: 붉은 테두리와 짧은 카메라 흔들림
+	local hurtFlash = Instance.new("Frame")
+	hurtFlash.Size = UDim2.fromScale(1, 1)
+	hurtFlash.BackgroundTransparency = 1
+	hurtFlash.BorderSizePixel = 0
+	hurtFlash.Active = false
+	hurtFlash.ZIndex = 2
+	hurtFlash.Parent = gui
+	local hurtStroke = Instance.new("UIStroke")
+	hurtStroke.Color = Color3.fromRGB(220, 40, 40)
+	hurtStroke.Thickness = 26
+	hurtStroke.Transparency = 1
+	hurtStroke.Parent = hurtFlash
+	local shakeUntil, shakeAmp = 0, 0
+	local function hurtReact(power: number)
+		hurtStroke.Transparency = 0.35
+		shakeUntil, shakeAmp = os.clock() + 0.25, power
+	end
+	table.insert(conns, RunService.RenderStepped:Connect(function(dt)
+		-- 붉은 테두리는 서서히 사라지고, 체력이 낮으면 계속 은은하게 깜빡인다
+		local low = pl.hp / pl.maxHp < 0.3
+		local target = if low then 0.78 + 0.1 * math.sin(os.clock() * 5) else 1
+		hurtStroke.Transparency += (target - hurtStroke.Transparency) * math.min(1, dt * 4)
+		local cam = workspace.CurrentCamera
+		if cam and os.clock() < shakeUntil then
+			local k = (shakeUntil - os.clock()) / 0.25 * shakeAmp
+			cam.CFrame = cam.CFrame * CFrame.new(math.sin(os.clock() * 70) * 0.25 * k, math.sin(os.clock() * 83) * 0.25 * k, 0)
+		end
+	end))
+
+	-- 궁수 화살 궤적: 두 끝점 사이에 빔을 잠깐 그린다 (모양 파트 없이 보이지 않는 좌표만 쓴다)
+	local function arrowTrail(from: Vector3, to: Vector3)
+		local function anchorAt(pos: Vector3)
+			local a = Instance.new("Part")
+			a.Anchored, a.CanCollide, a.CanQuery, a.CanTouch = true, false, false, false
+			a.Transparency = 1
+			a.Size = Vector3.one * 0.1
+			a.Position = pos
+			a.Parent = workspace
+			local at = Instance.new("Attachment")
+			at.Parent = a
+			return a, at
+		end
+		local a0, at0 = anchorAt(from)
+		local a1, at1 = anchorAt(to)
+		local beam = Instance.new("Beam")
+		beam.Attachment0, beam.Attachment1 = at0, at1
+		beam.Width0, beam.Width1 = 0.5, 0.15
+		beam.Color = ColorSequence.new(Color3.fromRGB(255, 232, 150), Color3.fromRGB(255, 150, 70))
+		beam.LightEmission = 1
+		beam.FaceCamera = true
+		beam.Transparency = NumberSequence.new(0.1)
+		beam.Parent = a0
+		task.delay(0.22, function()
+			a0:Destroy()
+			a1:Destroy()
+		end)
+	end
+
+	-- 바닥 범위 예고: 두목 내려치기처럼 넓은 공격이 닿을 자리를 붉은 원으로 보여 준다
+	local function groundRing(center: Vector3, radius: number, dur: number)
+		local ring = Instance.new("Part")
+		ring.Shape = Enum.PartType.Cylinder
+		ring.Anchored, ring.CanCollide, ring.CanQuery, ring.CanTouch = true, false, false, false
+		ring.Material = Enum.Material.Neon
+		ring.Color = Color3.fromRGB(255, 60, 50)
+		ring.Transparency = 0.7
+		ring.Size = Vector3.new(0.25, radius * 2, radius * 2)
+		ring.CFrame = CFrame.new(center.X, center.Y + 0.2, center.Z) * CFrame.Angles(0, 0, math.pi / 2)
+		ring.Parent = workspace
+		task.spawn(function()
+			local t0 = os.clock()
+			while ring.Parent and os.clock() - t0 < dur do
+				local k = (os.clock() - t0) / dur
+				ring.Transparency = 0.75 - 0.4 * k
+				task.wait()
+			end
+			ring:Destroy()
+		end)
+	end
+
+	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
+	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
+	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	comboLabel.Position = UDim2.fromScale(0.5, 0.62)
+	comboLabel.Size = UDim2.fromOffset(300, 40)
+	comboLabel.TextTransparency = 1
+	local function showCombo(text: string)
+		comboLabel.Text = text
+		comboLabel.TextTransparency = 0
+		task.spawn(function()
+			for i = 1, 14 do
+				comboLabel.TextTransparency = i / 14
+				comboLabel.Position = UDim2.fromScale(0.5, 0.62 - i * 0.004)
+				task.wait(0.03)
+			end
+		end)
+	end
+
+	local function nearest(hrp, range)
+		local best, bestD = nil, range
+		for _, e in enemies do
+			local d = (e.root.Position - hrp.Position).Magnitude
+			if d < bestD then
+				best, bestD = e, d
+			end
+		end
+		return best
+	end
+
+	-- 가장 가까운 적 표시: 발밑에 ▼ 표식
+	local lockBb = Instance.new("BillboardGui")
+	lockBb.Size = UDim2.fromOffset(34, 34)
+	lockBb.StudsOffset = Vector3.new(0, 6.6, 0)
+	lockBb.AlwaysOnTop = true
+	lockBb.Enabled = false
+	lockBb.Parent = gui
+	local lockLbl = label(lockBb, "▼", 26, Color3.fromRGB(255, 226, 120))
+	lockLbl.Size = UDim2.fromScale(1, 1)
+	local lockTarget = nil
+	table.insert(conns, RunService.Heartbeat:Connect(function()
+		local _, hrp = char3()
+		local best = if hrp then nearest(hrp, 30) else nil
+		if best ~= lockTarget then
+			lockTarget = best
+			lockBb.Adornee = if best then best.root else nil
+		end
+		lockBb.Enabled = best ~= nil
+	end))
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?)
@@ -683,7 +845,7 @@ function FieldScene.start(opts)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
-			burst(hrp.Position, 24, false)
+			burst(hrp.Position, 24, false, "dodge")
 			say("회피! 잠깐 무적")
 			return
 		end
@@ -704,7 +866,7 @@ function FieldScene.start(opts)
 					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
 				end
 				if AC.inReach(mv.range * STUD + 3, mv.arc, dist, ang) then
-					strikeEnemy(e, mult, hrp.Position, if mv.stagger then 5 else 2.5, mv.stagger)
+					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3))
 					hits += 1
 				end
 			end
@@ -712,6 +874,10 @@ function FieldScene.start(opts)
 				say("헛손질")
 			elseif moveId == "rush" and combo >= 3 then
 				say("3연타 마무리!")
+				showCombo("3연타!")
+				shakeUntil, shakeAmp = os.clock() + 0.2, 0.8
+			elseif moveId == "rush" and hits > 0 then
+				showCombo(string.format("%d연타", combo))
 			elseif hits > 0 and mv.label then
 				say(mv.label .. (if hits > 1 then string.format(" %d명 적중", hits) else ""))
 			end
@@ -748,6 +914,7 @@ function FieldScene.start(opts)
 	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), -226)
 	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), -150)
 	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), -74)
+	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		AC.regen(pl, 1 / 60)
@@ -807,6 +974,10 @@ function FieldScene.start(opts)
 			local event, hit = AC.stepEnemy(e.ac, dtc, dist)
 			if event == "telegraph" then
 				e.warnUntil = now + e.ac.def.windup
+				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
+				if e.ac.def.aoe then
+					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
+				end
 				e.parryAt = nil
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
 				if not e.warn then
@@ -834,6 +1005,9 @@ function FieldScene.start(opts)
 				end
 			elseif event == "strike" then
 				e.swingAt = now
+				if e.ac.def.keepAway then
+					arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
+				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
@@ -841,6 +1015,7 @@ function FieldScene.start(opts)
 					local dealt = AC.takeHit(pl, e.ac.def.dmg, now, nil)
 					if dealt > 0 then
 						say("공격을 받았다!")
+						hurtReact(if e.ac.def.boss then 2 else 1)
 						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
 						refresh()
 						if pl.hp <= 0 then
@@ -884,6 +1059,22 @@ function FieldScene.start(opts)
 	-- 캐릭터를 필드로 옮긴다
 	local char = player.Character or player.CharacterAdded:Wait()
 	char:PivotTo(CFrame.new(spawn))
+	-- 항구 전경에서는 캐릭터가 고정(Anchored)되어 있다. 탐험에서는 걸어 다닐 수 있어야 하므로 풀어 준다.
+	local fieldRoot = char:FindFirstChild("HumanoidRootPart")
+	if fieldRoot and fieldRoot:IsA("BasePart") then
+		fieldRoot.Anchored = false
+	end
+	do
+		local fh = char:FindFirstChildOfClass("Humanoid")
+		if fh then
+			fh.PlatformStand = false
+			fh.Sit = false
+			fh.WalkSpeed = 18
+			fh.JumpPower = 50
+			fh.AutoRotate = true
+			fh:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end
+	end
 	local cam = workspace.CurrentCamera
 	cam.CameraType = Enum.CameraType.Custom
 	cam.FieldOfView = 70
