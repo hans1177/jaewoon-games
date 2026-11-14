@@ -879,6 +879,7 @@ function VoyageScene.play(info)
 		dolphins = "돌고래 떼!", whale = "고래다!",
 		school = "물고기떼 발견!", merchant = "상선을 만났다", fog = "짙은 안개", reef = "암초 조심!", rescue = "표류자 발견!",
 		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
+		current = "숨은 해류!", wreck = "침몰선 발견!", rainbow = "쌍무지개!", mermaid = "인어의 노래...", pigeon = "전서구 도착", bottle = "병 편지 발견", rats = "쥐떼 습격!", vortex = "소용돌이!", fire = "선상 화재!", mutiny = "선상 반란!", shark = "상어 떼!", cursed = "저주받은 보물", phantom = "유령선을 따라간다", kraken = "크라켄 출현!!", volcano = "바다 화산!", meteor = "별똥별!", rival = "라이벌과 경주!",
 	}
 	local banner = title:Clone()
 	banner.Position = UDim2.new(0, 0, 0.22, 0)

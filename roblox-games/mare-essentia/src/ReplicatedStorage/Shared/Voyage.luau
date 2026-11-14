@@ -90,6 +90,26 @@ local EVENT_WEIGHTS = {
 	{ "blockade", 5 }, -- 해상 봉쇄: 통행료
 	{ "dolphins", 7 }, -- 돌고래 떼: 사기 상승, 도감
 	{ "whale", 4 }, -- 고래 목격: 도감, 명성
+	-- 행운
+	{ "current", 4 }, -- 숨은 해류: 하루 단축
+	{ "wreck", 4 }, -- 침몰선 보물
+	{ "rainbow", 4 }, -- 쌍무지개
+	{ "mermaid", 2 }, -- 인어의 노래
+	{ "pigeon", 4 }, -- 전서구
+	{ "bottle", 3 }, -- 병 편지(지도)
+	-- 불운
+	{ "rats", 5 },
+	{ "vortex", 4 }, -- 소용돌이: 하루 지연
+	{ "fire", 4 },
+	{ "mutiny", 4 },
+	{ "shark", 4 },
+	{ "cursed", 3 },
+	-- 기막힌 사건
+	{ "phantom", 2 }, -- 유령선을 따라가다
+	{ "kraken", 3 }, -- 장거리 전용
+	{ "volcano", 2 },
+	{ "meteor", 3 },
+	{ "rival", 4 }, -- 라이벌 선장과 경주
 }
 
 -- rng: 0~1 사이 값을 돌려주는 함수
@@ -141,14 +161,20 @@ function Voyage.rollEvent(rng: () -> number, days: number, weatherId: string?): 
 	elseif weatherId == "calm" then
 		boost = { calm = 2, fever = 1.5 }
 	end
+	local function wOf(entry: { any }): number
+		if entry[1] == "kraken" and days < 10 then
+			return 0
+		end
+		return (entry[2] :: number) * (boost[entry[1] :: string] or 1)
+	end
 	local total = 0
 	for _, entry in EVENT_WEIGHTS do
-		total += (entry[2] :: number) * (boost[entry[1] :: string] or 1)
+		total += wOf(entry)
 	end
 	local roll = rng() * total
 	local picked = "calm"
 	for _, entry in EVENT_WEIGHTS do
-		roll -= (entry[2] :: number) * (boost[entry[1] :: string] or 1)
+		roll -= wOf(entry)
 		if roll <= 0 then
 			picked = entry[1] :: string
 			break

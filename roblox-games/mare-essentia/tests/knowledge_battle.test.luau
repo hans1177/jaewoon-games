@@ -354,5 +354,26 @@ do
 	check("의뢰판: 마친 의뢰는 저장된다", round == nil or round.tavernJobs.armada_scout ~= nil)
 end
 
+do
+	-- 해상 사건: 다양한 종류가 나오고, 크라켄은 장거리에서만 나온다
+	local seen: any = {}
+	local krakenShort = false
+	local rs = 12345
+	local function rng(): number
+		rs = (rs * 1103515245 + 12345) % 2147483648
+		return rs / 2147483648
+	end
+	for i = 1, 6000 do
+		local days = if i % 2 == 0 then 4 else 20
+		local e: any = D.Voyage.rollEvent(rng, days, nil)
+		seen[e.kind] = true
+		if e.kind == "kraken" and days < 10 then krakenShort = true end
+	end
+	local n = 0
+	for _ in seen do n += 1 end
+	check("해상 사건: 25종 이상 나온다", n >= 25)
+	check("해상 사건: 크라켄은 짧은 항해에 안 나온다", not krakenShort and seen.kraken == true)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
