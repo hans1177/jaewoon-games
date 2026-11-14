@@ -107,6 +107,9 @@ return function(D, S)
 			state.fame += reward.fame
 			state.stats.battlesWon += 1
 			table.insert(msgs, string.format("승리! 전리품 %d코인, 명성 +%d", coins, reward.fame))
+			if math.random() < (if pb.reason == "boarded" or pb.reason == "surrender" then 0.5 else 0.3) then
+				S.Cardbook.offerRegional(state, "naval", msgs) -- 해전 승리: 싸운 바다의 지역 카드가 후보에 든다
+			end
 			for _, line in S.Perk.companionLines(state, "win") do
 				table.insert(msgs, line)
 			end
