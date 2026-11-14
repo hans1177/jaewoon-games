@@ -1,0 +1,101 @@
+{
+ "sourceRevision": "5d9d348e4cc40f00654626fe973fcc9de0b8e902",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "closed 2\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "SAIL smyrna\ntext"
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 14,
+   "capture": "h01",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 17,
+   "capture": "h02",
+   "files": 1
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 20,
+   "capture": "h03",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 23,
+   "capture": "h04",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 24,
+  "completedSteps": 24,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
+  "abortedEarly": false
+ }
+}
