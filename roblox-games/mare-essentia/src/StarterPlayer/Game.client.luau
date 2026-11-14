@@ -839,6 +839,18 @@ local function mkRow(parent, title, subtitle, buttons, height)
 			b.Position = UDim2.new(1, -6 - (btnCount - i) * 68, 0.5, 0)
 		end
 	end
+	-- 좁은 화면에서는 글자가 여러 줄로 접혀 고정 높이를 넘으므로(CUT), 글자 높이에 맞춰 행을 늘린다.
+	local minH = height or 60
+	local function fitRow()
+		local need = layout.AbsoluteContentSize.Y + 12
+		if need > minH then
+			row.Size = UDim2.new(1, -6, 0, need)
+		else
+			row.Size = UDim2.new(1, -6, 0, minH)
+		end
+	end
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRow)
+	fitRow()
 	local ic = H.iconFor(title, subtitle)
 	if ic and (height or 60) >= 50 then
 		withIcon(row, ic[2], ic[3], nil, math.min(46, (height or 60) - 10))
