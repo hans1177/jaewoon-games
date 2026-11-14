@@ -79,7 +79,7 @@ function DeckBuilder.build(parent, ctx)
 
 	-- ── 위 상태줄 ──
 	local top = Instance.new("Frame")
-	top.Size = UDim2.new(1, -16, 0, 46)
+	top.Size = UDim2.new(1, -16, 0, 40)
 	top.Position = UDim2.fromOffset(8, 6)
 	top.BackgroundColor3 = PANEL
 	top.BorderSizePixel = 0
@@ -125,7 +125,7 @@ function DeckBuilder.build(parent, ctx)
 	local bottom = Instance.new("Frame")
 	bottom.AnchorPoint = Vector2.new(0, 1)
 	bottom.Position = UDim2.new(0, 8, 1, -6)
-	bottom.Size = UDim2.new(1, -16, 0, 52)
+	bottom.Size = UDim2.new(1, -16, 0, 44)
 	bottom.BackgroundTransparency = 1
 	bottom.Parent = root
 	local bl = Instance.new("UIListLayout")
@@ -137,12 +137,14 @@ function DeckBuilder.build(parent, ctx)
 	local practiceBtn = button(bottom, "", Color3.fromRGB(70, 130, 84), 18, function() ctx.startPractice() end)
 	local tavernBtn = button(bottom, "용병 고용 180", Color3.fromRGB(176, 136, 52), 16, function() ctx.act("CardTavern") end)
 	for _, b in { duelBtn, practiceBtn, tavernBtn } do b.Size = UDim2.new(0, 100, 1, 0) end
+	duelBtn.LayoutOrder, practiceBtn.LayoutOrder, tavernBtn.LayoutOrder = 1, 2, 6
+	bl.SortOrder = Enum.SortOrder.LayoutOrder
 
 	-- ── 가운데: 왼쪽 컬렉션 / 오른쪽 덱 ──
 	local body = Instance.new("Frame")
 	body.BackgroundTransparency = 1
-	body.Position = UDim2.fromOffset(8, 58)
-	body.Size = UDim2.new(1, -16, 1, -58 - 64)
+	body.Position = UDim2.fromOffset(8, 52)
+	body.Size = UDim2.new(1, -16, 1, -52 - 56)
 	body.Parent = root
 
 	local left = Instance.new("Frame")
@@ -204,31 +206,31 @@ function DeckBuilder.build(parent, ctx)
 	-- 오른쪽: 지도자 + 덱 목록 + 균형 + 도구
 	local leaderBox = Instance.new("Frame")
 	leaderBox.Position = UDim2.fromOffset(6, 6)
-	leaderBox.Size = UDim2.new(1, -12, 0, 62)
+	leaderBox.Size = UDim2.new(1, -12, 0, 50)
 	leaderBox.BackgroundColor3 = PANEL2
 	leaderBox.BorderSizePixel = 0
 	leaderBox.Parent = right
 	corner(leaderBox, 8)
 	local leaderName = text(leaderBox, "", 16, GOLD, true)
 	leaderName.Position = UDim2.fromOffset(40, 2)
-	leaderName.Size = UDim2.new(1, -80, 0, 22)
+	leaderName.Size = UDim2.new(1, -80, 0, 20)
 	leaderName.TextXAlignment = Enum.TextXAlignment.Left
-	local leaderText = text(leaderBox, "", 13, INK, false)
-	leaderText.Position = UDim2.fromOffset(40, 24)
-	leaderText.Size = UDim2.new(1, -80, 0, 36)
+	local leaderText = text(leaderBox, "", 12, INK, false)
+	leaderText.Position = UDim2.fromOffset(40, 21)
+	leaderText.Size = UDim2.new(1, -80, 0, 28)
 	leaderText.TextXAlignment = Enum.TextXAlignment.Left
 	leaderText.TextYAlignment = Enum.TextYAlignment.Top
 	local prevLeader = button(leaderBox, "<", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(-1) end end)
-	prevLeader.Position = UDim2.fromOffset(4, 14)
+	prevLeader.Position = UDim2.fromOffset(4, 8)
 	prevLeader.Size = UDim2.fromOffset(32, 34)
 	local nextLeader = button(leaderBox, ">", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(1) end end)
 	nextLeader.AnchorPoint = Vector2.new(1, 0)
-	nextLeader.Position = UDim2.new(1, -4, 0, 14)
+	nextLeader.Position = UDim2.new(1, -4, 0, 8)
 	nextLeader.Size = UDim2.fromOffset(32, 34)
 
 	local balance = Instance.new("Frame") -- 줄 균형 막대 3개
-	balance.Position = UDim2.fromOffset(6, 74)
-	balance.Size = UDim2.new(1, -12, 0, 22)
+	balance.Position = UDim2.fromOffset(6, 56)
+	balance.Size = UDim2.new(1, -12, 0, 20)
 	balance.BackgroundTransparency = 1
 	balance.Parent = right
 	local balLayout = Instance.new("UIListLayout")
@@ -249,8 +251,8 @@ function DeckBuilder.build(parent, ctx)
 	local deckScroll = Instance.new("ScrollingFrame")
 	deckScroll.BackgroundTransparency = 1
 	deckScroll.BorderSizePixel = 0
-	deckScroll.Position = UDim2.fromOffset(6, 102)
-	deckScroll.Size = UDim2.new(1, -12, 1, -102 - 118)
+	deckScroll.Position = UDim2.fromOffset(6, 82)
+	deckScroll.Size = UDim2.new(1, -12, 1, -82 - 64)
 	deckScroll.ScrollBarThickness = 5
 	deckScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	deckScroll.CanvasSize = UDim2.new()
@@ -263,24 +265,14 @@ function DeckBuilder.build(parent, ctx)
 	local tools = Instance.new("Frame")
 	tools.AnchorPoint = Vector2.new(0, 1)
 	tools.Position = UDim2.new(0, 6, 1, -6)
-	tools.Size = UDim2.new(1, -12, 0, 110)
+	tools.Size = UDim2.new(1, -12, 0, 58)
 	tools.BackgroundTransparency = 1
 	tools.Parent = right
 	local statusLine = text(tools, "", 14, Color3.fromRGB(150, 225, 150), true)
-	statusLine.Size = UDim2.new(1, 0, 0, 34)
+	statusLine.Size = UDim2.new(1, 0, 0, 20)
 	statusLine.TextXAlignment = Enum.TextXAlignment.Left
 	statusLine.TextYAlignment = Enum.TextYAlignment.Top
-	local row1 = Instance.new("Frame")
-	row1.BackgroundTransparency = 1
-	row1.Position = UDim2.fromOffset(0, 36)
-	row1.Size = UDim2.new(1, 0, 0, 34)
-	row1.Parent = tools
-	local r1 = Instance.new("UIListLayout")
-	r1.FillDirection = Enum.FillDirection.Horizontal
-	r1.Padding = UDim.new(0, 5)
-	r1.HorizontalFlex = Enum.UIFlexAlignment.Fill
-	r1.Parent = row1
-	local saveBtn = button(row1, "덱 저장", Color3.fromRGB(52, 120, 70), 16, function()
+	local saveBtn = button(bottom, "덱 저장", Color3.fromRGB(52, 120, 70), 16, function()
 		if cur.okDeck then
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			ctx.act("CardSetDeck", { ids = cur.ids })
@@ -288,13 +280,16 @@ function DeckBuilder.build(parent, ctx)
 			Sfx.play("sfx_error", 0.4, 1)
 		end
 	end)
-	local autoBtn = button(row1, "자동 덱", Color3.fromRGB(60, 96, 140), 15, function() ctx.act("CardAutoDeck") end)
-	local recBtn = button(row1, "추천 덱", Color3.fromRGB(110, 90, 60), 15, function() recPop.Visible = not recPop.Visible end)
-	for _, b in { saveBtn, autoBtn, recBtn } do b.Size = UDim2.new(0, 60, 1, 0) end
+	local autoBtn = button(bottom, "자동 덱", Color3.fromRGB(60, 96, 140), 15, function() ctx.act("CardAutoDeck") end)
+	local recBtn = button(bottom, "추천 덱", Color3.fromRGB(110, 90, 60), 15, function() recPop.Visible = not recPop.Visible end)
+	for i, b in { saveBtn, autoBtn, recBtn } do
+		b.Size = UDim2.new(0, 60, 1, 0)
+		b.LayoutOrder = 2 + i
+	end
 	local row2 = Instance.new("Frame")
 	row2.BackgroundTransparency = 1
-	row2.Position = UDim2.fromOffset(0, 74)
-	row2.Size = UDim2.new(1, 0, 0, 34)
+	row2.Position = UDim2.fromOffset(0, 24)
+	row2.Size = UDim2.new(1, 0, 0, 32)
 	row2.Parent = tools
 	local r2 = Instance.new("UIListLayout")
 	r2.FillDirection = Enum.FillDirection.Horizontal
@@ -311,14 +306,14 @@ function DeckBuilder.build(parent, ctx)
 	slotSaveBtn.Size = UDim2.new(0, 60, 1, 0)
 	-- 추천 덱 선택 (눌렀을 때만 뜨는 작은 창)
 	recPop = Instance.new("Frame")
-	recPop.AnchorPoint = Vector2.new(0, 1)
-	recPop.Position = UDim2.new(0, 6, 1, -118)
-	recPop.Size = UDim2.new(1, -12, 0, 44)
+	recPop.AnchorPoint = Vector2.new(0.5, 1)
+	recPop.Position = UDim2.new(0.5, 0, 1, -54)
+	recPop.Size = UDim2.new(0.6, 0, 0, 44)
 	recPop.BackgroundColor3 = Color3.fromRGB(26, 20, 16)
 	recPop.BorderSizePixel = 0
 	recPop.Visible = false
 	recPop.ZIndex = 30
-	recPop.Parent = right
+	recPop.Parent = root
 	corner(recPop, 8)
 	local rpl = Instance.new("UIListLayout")
 	rpl.FillDirection = Enum.FillDirection.Horizontal
