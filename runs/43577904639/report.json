@@ -1,5 +1,5 @@
 {
- "sourceRevision": "6be8f3e6044fadb289711fd5171e1b043756c529",
+ "sourceRevision": "f388edd1f40fdadd67562673bcd4d901a71fe0cf",
  "log": [
   {
    "step": 1,
@@ -29,37 +29,17 @@
   {
    "step": 10,
    "ctx": "Client",
-   "out": "deck\ntext"
+   "out": "closed 2\ntext"
   },
   {
-   "step": 12,
+   "step": 11,
    "ctx": "Client",
-   "out": "practice\ntext"
+   "out": "SHIP Workspace.PortScene.Ship ext=13.574028015136719, 28.175373077392578, 24.885713577270508 bboxpos=50.31000518798828, 13.035649299621582, 16.035337448120117 pivlook=-0.9997580647468567, 0.0219955462962389, 4.370081185811614e-08 bbxlook=-0.9997580647468567, 0.0219955462962389, 4.370081185811614e-08\ntext"
   },
   {
-   "step": 14,
-   "capture": "p1",
+   "step": 13,
+   "capture": "top",
    "files": 1
-  },
-  {
-   "step": 16,
-   "capture": "p2",
-   "files": 1
-  },
-  {
-   "step": 18,
-   "capture": "p3",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "capture": "p4",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -74,13 +54,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 22,
-  "completedSteps": 22,
+  "plannedSteps": 14,
+  "completedSteps": 14,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
