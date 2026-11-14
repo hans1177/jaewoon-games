@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
+local AC = require(script.Parent:WaitForChild("ActionCombat"))
 
 local FieldScene = {}
 
@@ -322,7 +323,8 @@ function FieldScene.start(opts)
 	end
 
 	-- 상태
-	local hp, maxHp = 100, 100
+	local pl = AC.newPlayer(100)
+	local BASE_DMG = 10
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
 	local finished = false
@@ -374,8 +376,8 @@ function FieldScene.start(opts)
 
 	local function refresh()
 		title.Text = string.format("%s  발견 %d/%d  적 %d", opts.name or "탐험", found, nodeCount, #enemies)
-		hpFill.Size = UDim2.fromScale(math.clamp(hp / maxHp, 0, 1), 1)
-		hpFill.BackgroundColor3 = if hp / maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
+		hpFill.Size = UDim2.fromScale(math.clamp(pl.hp / pl.maxHp, 0, 1), 1)
+		hpFill.BackgroundColor3 = if pl.hp / pl.maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
 	end
 	local noteToken = 0
 	local function say(text)
@@ -483,10 +485,14 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		table.insert(enemies, { model = model, root = root, hp = def[3], maxHp = def[3], dmg = def[4], speed = def[5], bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
+		local kinds = { "grunt", "archer", "shield" }
+		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 3 + 1])
+		tag.Text = ac.def.name
+		table.insert(enemies, { ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
 
-	-- 입력 버튼
+	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
+	local UserInputService = game:GetService("UserInputService")
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -150, 0.5, -10), Vector2.new(0.5, 0.5))
 	attackBtn.TextSize = 22
 	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(1, -12, 0, 56), Vector2.new(1, 0))
@@ -494,43 +500,154 @@ function FieldScene.start(opts)
 		finish("retreat")
 	end)
 
-	local lastAttack = 0
-	local function attack()
-		if finished then
-			return
-		end
-		local now = os.clock()
-		if now - lastAttack < 0.45 then
-			return
-		end
-		lastAttack = now
+	local swingKind, swingT0, swingDur = nil, 0, 0
+	local function char3()
 		local char = player.Character
-		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		if not hrp then
+		return char, char and char:FindFirstChild("HumanoidRootPart")
+	end
+
+	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
+	local function startSwing(kind, dur)
+		swingKind, swingT0, swingDur = kind, os.clock(), dur
+	end
+	pcall(function()
+		RunService:UnbindFromRenderStep("FieldSwing")
+	end)
+	RunService:BindToRenderStep("FieldSwing", Enum.RenderPriority.Character.Value + 5, function()
+		if not swingKind then
 			return
 		end
-		local best, bestD = nil, 10
-		for _, e in enemies do
-			local d = (e.root.Position - hrp.Position).Magnitude
-			if d < bestD then
-				best, bestD = e, d
+		local char = player.Character
+		if not char then
+			return
+		end
+		local p = (os.clock() - swingT0) / swingDur
+		if p >= 1 then
+			swingKind = nil
+			return
+		end
+		local function joint(partName, jointName)
+			local part = char:FindFirstChild(partName)
+			local j2 = part and part:FindFirstChild(jointName)
+			return if j2 and j2:IsA("Motor6D") then j2 else nil
+		end
+		local sh, el, waist = joint("RightUpperArm", "RightShoulder"), joint("RightLowerArm", "RightElbow"), joint("UpperTorso", "Waist")
+		local wind = math.min(p / 0.3, 1) -- 뒤로 젖힘
+		local strike = math.clamp((p - 0.3) / 0.35, 0, 1) -- 내려침
+		if swingKind == "spin" then
+			if waist then waist.Transform = CFrame.Angles(0, p * math.pi * 4, 0) end
+			if sh then sh.Transform = CFrame.Angles(0, 0, -1.4) end
+		else
+			local power = if swingKind == "heavy" then 1.3 else 1
+			if sh then sh.Transform = CFrame.Angles(-2.6 * wind * (1 - strike) + 0.8 * strike * power, 0, -0.3 * wind) end
+			if el then el.Transform = CFrame.Angles(-1.2 * wind * (1 - strike), 0, 0) end
+			if waist then waist.Transform = CFrame.Angles(0.15 * strike, 0.5 * wind * (1 - strike) - 0.6 * strike, 0) end
+		end
+	end)
+	table.insert(conns, { Disconnect = function()
+		pcall(function()
+			RunService:UnbindFromRenderStep("FieldSwing")
+		end)
+	end })
+
+	-- 효과: 베기 궤적·타격 불꽃(입자)과 맞은 적 붉게 번쩍임, 떠오르는 피해 숫자
+	local fxPart = Instance.new("Part")
+	fxPart.Anchored = true
+	fxPart.CanCollide = false
+	fxPart.CanQuery = false
+	fxPart.Transparency = 1
+	fxPart.Size = Vector3.one
+	fxPart.Name = "FieldFx"
+	fxPart.Parent = workspace
+	local sparks = Instance.new("ParticleEmitter")
+	sparks.Rate = 0
+	sparks.Lifetime = NumberRange.new(0.25, 0.5)
+	sparks.Speed = NumberRange.new(14, 26)
+	sparks.SpreadAngle = Vector2.new(180, 180)
+	sparks.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.7), NumberSequenceKeypoint.new(1, 0) })
+	sparks.LightEmission = 1
+	sparks.Color = ColorSequence.new(Color3.fromRGB(255, 226, 120), Color3.fromRGB(255, 120, 60))
+	sparks.Parent = fxPart
+	local slash = Instance.new("ParticleEmitter")
+	slash.Rate = 0
+	slash.Lifetime = NumberRange.new(0.2, 0.3)
+	slash.Speed = NumberRange.new(0, 2)
+	slash.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 4), NumberSequenceKeypoint.new(1, 8) })
+	slash.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
+	slash.LightEmission = 1
+	slash.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(150, 210, 255))
+	slash.Parent = fxPart
+	table.insert(conns, { Disconnect = function()
+		fxPart:Destroy()
+	end })
+	local function burst(at: Vector3, n: number, big: boolean?)
+		fxPart.Position = at
+		sparks:Emit(n)
+		if big then
+			slash:Emit(3)
+		end
+	end
+	local function popDamage(model: Model, dmg: number, crit: boolean)
+		local root = model:FindFirstChild("HumanoidRootPart")
+		if not root then
+			return
+		end
+		local bb = Instance.new("BillboardGui")
+		bb.Size = UDim2.fromOffset(90, 40)
+		bb.StudsOffset = Vector3.new(0, 5, 0)
+		bb.AlwaysOnTop = true
+		bb.Adornee = root
+		local l = Instance.new("TextLabel")
+		l.BackgroundTransparency = 1
+		l.Size = UDim2.fromScale(1, 1)
+		l.Font = Enum.Font.GothamBlack
+		l.TextScaled = true
+		l.Text = tostring(dmg)
+		l.TextColor3 = if crit then Color3.fromRGB(255, 200, 70) else Color3.fromRGB(255, 255, 255)
+		l.TextStrokeTransparency = 0.2
+		l.Parent = bb
+		bb.Parent = gui
+		task.spawn(function()
+			for i = 1, 16 do
+				bb.StudsOffset = Vector3.new(0, 5 + i * 0.18, 0)
+				l.TextTransparency = i / 16
+				l.TextStrokeTransparency = 0.2 + 0.8 * i / 16
+				task.wait(0.03)
 			end
+			bb:Destroy()
+		end)
+	end
+	local function flashHit(model: Model)
+		local h = Instance.new("Highlight")
+		h.FillColor = Color3.fromRGB(255, 70, 60)
+		h.FillTransparency = 0.35
+		h.OutlineTransparency = 1
+		h.Parent = model
+		task.delay(0.15, function()
+			h:Destroy()
+		end)
+	end
+
+	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG, mult, e.ac.state ~= "stagger", stagger)
+		e.hp = e.ac.hp
+		e.hurtAt = os.clock()
+		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
+		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+		if away.Magnitude > 0.1 and not e.ac.def.boss then
+			e.model:PivotTo(e.model:GetPivot() + away.Unit * knock)
 		end
-		if not best then
-			say("가까운 적이 없다")
-			return
-		end
-		best.hp -= 1
-		best.hurtAt = os.clock()
-		best.bar.Size = UDim2.fromScale(math.max(best.hp, 0) / best.maxHp, 1)
-		-- 밀려나는 연출
-		local away = (best.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
-		if away.Magnitude > 0.1 then
-			best.model:PivotTo(best.model:GetPivot() + away.Unit * 2.5)
-		end
-		if best.hp <= 0 then
-			table.remove(enemies, table.find(enemies, best))
-			local dying = best.model
+		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
+		flashHit(e.model)
+		popDamage(e.model, dealt, mult >= 1.5)
+		if died then
+			local idx = table.find(enemies, e)
+			if idx then
+				table.remove(enemies, idx)
+			end
+			if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
+			local dying = e.model
 			task.spawn(function()
 				local t0 = os.clock()
 				while dying.Parent and os.clock() - t0 < 0.7 do
@@ -539,11 +656,136 @@ function FieldScene.start(opts)
 				end
 				dying:Destroy()
 			end)
-			say(if best.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
 		end
-		refresh()
 	end
-	attackBtn.Activated:Connect(attack)
+
+	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
+	local STUD = 2 -- 규칙의 거리 1 = 2 스터드
+	local function useMove(moveId: string)
+		if finished then
+			return
+		end
+		local _, hrp = char3()
+		if not hrp then
+			return
+		end
+		local now = os.clock()
+		local ok, mult, mv = AC.tryMove(pl, moveId, now)
+		if not ok then
+			if mv and pl.stamina < mv.stamina then
+				say("기력이 부족해요")
+			end
+			return
+		end
+		if moveId == "dodge" then
+			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+			if look.Magnitude > 0.1 then
+				hrp.CFrame = hrp.CFrame + look.Unit * 14
+			end
+			burst(hrp.Position, 24, false)
+			say("회피! 잠깐 무적")
+			return
+		end
+		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
+		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
+		local combo = pl.combo
+		task.delay(if kind == "slash" then 0.12 else 0.22, function()
+			if finished then
+				return
+			end
+			local hits = 0
+			for _, e in table.clone(enemies) do
+				local to = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
+				local dist = to.Magnitude
+				local ang = 0
+				if dist > 0.1 then
+					local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
+				end
+				if AC.inReach(mv.range * STUD + 3, mv.arc, dist, ang) then
+					strikeEnemy(e, mult, hrp.Position, if mv.stagger then 5 else 2.5, mv.stagger)
+					hits += 1
+				end
+			end
+			if hits == 0 and moveId == "rush" then
+				say("헛손질")
+			elseif moveId == "rush" and combo >= 3 then
+				say("3연타 마무리!")
+			elseif hits > 0 and mv.label then
+				say(mv.label .. (if hits > 1 then string.format(" %d명 적중", hits) else ""))
+			end
+			refresh()
+		end)
+	end
+	local function useAttack() useMove("rush") end
+	local function useHeavy() useMove("heavy") end
+	local function useSpin() useMove("sweep") end
+	local function useDash() useMove("dodge") end
+	attackBtn.Activated:Connect(useAttack)
+
+	local staminaBack = Instance.new("Frame")
+	staminaBack.Size = UDim2.fromOffset(160, 8)
+	staminaBack.Position = UDim2.new(0, 16, 0, 84)
+	staminaBack.BackgroundColor3 = Color3.fromRGB(30, 36, 48)
+	staminaBack.BorderSizePixel = 0
+	staminaBack.Parent = gui
+	local staminaFill = Instance.new("Frame")
+	staminaFill.Size = UDim2.fromScale(1, 1)
+	staminaFill.BackgroundColor3 = Color3.fromRGB(240, 200, 80)
+	staminaFill.BorderSizePixel = 0
+	staminaFill.Parent = staminaBack
+	local skillBtns = {}
+	local function mkSkill(key, label, color, x)
+		local b = btn(gui, label, color, UDim2.fromOffset(70, 70), UDim2.new(1, x, 0.5, 78), Vector2.new(0.5, 0.5))
+		b.TextSize = 15
+		b.Activated:Connect(function()
+			useMove(key)
+		end)
+		skillBtns[key] = { btn = b, label = label }
+	end
+	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), -226)
+	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), -150)
+	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), -74)
+	table.insert(conns, RunService.Heartbeat:Connect(function()
+		local now = os.clock()
+		AC.regen(pl, 1 / 60)
+		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
+		for key, sb in skillBtns do
+			local left = (pl.cd[key] or 0) - now
+			if left > 0 then
+				sb.btn.Text = string.format("%.1f", left)
+				sb.btn.BackgroundTransparency = 0.5
+			else
+				sb.btn.Text = sb.label
+				sb.btn.BackgroundTransparency = 0
+			end
+		end
+	end))
+	table.insert(conns, UserInputService.InputBegan:Connect(function(input, processed)
+		if processed or finished then
+			return
+		end
+		if input.KeyCode == Enum.KeyCode.F then
+			useAttack()
+		elseif input.KeyCode == Enum.KeyCode.Q then
+			useHeavy()
+		elseif input.KeyCode == Enum.KeyCode.E then
+			useSpin()
+		elseif input.KeyCode == Enum.KeyCode.R then
+			useDash()
+		end
+	end))
+	-- 개발 캡처용: DevFieldSkill 속성에 attack/heavy/spin/dash 를 넣으면 그 동작을 쓴다
+	table.insert(conns, RunService.Heartbeat:Connect(function()
+		local dev = workspace:GetAttribute("DevFieldSkill")
+		if dev then
+			workspace:SetAttribute("DevFieldSkill", nil)
+			local map = { attack = "rush", heavy = "heavy", spin = "sweep", dash = "dodge" }
+			useMove(map[dev] or dev)
+		end
+	end))
+	workspace:SetAttribute("FieldCombatReady", true)
 
 	-- 적 이동·공격
 	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
@@ -556,26 +798,75 @@ function FieldScene.start(opts)
 			return
 		end
 		local now = os.clock()
-		for _, e in enemies do
+		local dtc = math.min(dt, 0.1)
+		for _, e in table.clone(enemies) do
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
-			local dist = flat.Magnitude
-			if dist < 38 and dist > 3.2 then
-				local step = flat.Unit * math.min(e.speed * dt, dist - 3)
-				local target = e.model:GetPivot().Position + step
-				e.model:PivotTo(CFrame.new(target) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
-			elseif dist <= 3.6 and now >= e.nextHit then
-				e.nextHit = now + 1.2
-				e.swingAt = now
-				hp = math.max(0, hp - e.dmg)
-				say("공격을 받았다!")
-				refresh()
-				if hp <= 0 then
-					task.defer(function()
-						finish("defeat")
-					end)
-					return
+			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			local event, hit = AC.stepEnemy(e.ac, dtc, dist)
+			if event == "telegraph" then
+				e.warnUntil = now + e.ac.def.windup
+				e.parryAt = nil
+				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
+				if not e.warn then
+					local h = Instance.new("Highlight")
+					h.FillColor = Color3.fromRGB(255, 40, 40)
+					h.FillTransparency = 0.55
+					h.OutlineColor = Color3.fromRGB(255, 80, 60)
+					h.Parent = e.model
+					e.warn = h
+					local bbw = Instance.new("BillboardGui")
+					bbw.Size = UDim2.fromOffset(44, 44)
+					bbw.StudsOffset = Vector3.new(0, 8.5, 0)
+					bbw.AlwaysOnTop = true
+					bbw.Adornee = e.root
+					local wl = Instance.new("TextLabel")
+					wl.Size = UDim2.fromScale(1, 1)
+					wl.BackgroundTransparency = 1
+					wl.Text = "!"
+					wl.TextColor3 = Color3.fromRGB(255, 70, 60)
+					wl.Font = Enum.Font.GothamBlack
+					wl.TextScaled = true
+					wl.Parent = bbw
+					bbw.Parent = gui
+					e.warnBb = bbw
 				end
+			elseif event == "strike" then
+				e.swingAt = now
+				if e.warn then e.warn:Destroy() e.warn = nil end
+				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
+				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
+				if hit then
+					local dealt = AC.takeHit(pl, e.ac.def.dmg, now, nil)
+					if dealt > 0 then
+						say("공격을 받았다!")
+						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
+						refresh()
+						if pl.hp <= 0 then
+							task.defer(function()
+								finish("defeat")
+							end)
+							return
+						end
+					else
+						say("피했다!")
+					end
+				else
+					say("헛쳤다! 지금이 기회")
+				end
+			end
+			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
+			local wish = AC.moveWish(e.ac, dist)
+			if wish ~= 0 and flat.Magnitude > 0.1 then
+				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
+				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + step) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+			elseif flat.Magnitude > 0.1 and e.ac.state ~= "idle" and e.ac.state ~= "stagger" then
+				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+			end
+			if e.warn and now > (e.warnUntil or 0) + 0.3 then
+				e.warn:Destroy()
+				e.warn = nil
+				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 			end
 			local hurtProgress = (now - e.hurtAt) / 0.3
 			local attackProgress = (now - e.swingAt) / 0.5
@@ -584,7 +875,7 @@ function FieldScene.start(opts)
 			elseif attackProgress >= 0 and attackProgress < 1 then
 				Pose.makeR15Action(e.model, "attack", attackProgress, now - e.spawnT)
 			else
-				Pose.makeR15Action(e.model, if dist < 38 and dist > 3.2 then "run" else "idle", 0, now - e.spawnT)
+				Pose.makeR15Action(e.model, if wish ~= 0 then "run" else "idle", 0, now - e.spawnT)
 			end
 		end
 	end))
@@ -601,7 +892,7 @@ function FieldScene.start(opts)
 	end
 
 	refresh()
-	say("발견물을 찾아 조사하자. 적은 공격 버튼으로!")
+	say("공격 F(3연타) · 강타 Q · 회전베기 E · 회피 R. 적이 붉게 변하면 공격 예고!")
 	return { finish = finish }
 end
 
