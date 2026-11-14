@@ -1,51 +1,32 @@
 {
- "sourceRevision": "73b1a0fcf9bee4bbcefcc5dc91270f7e3913f44e",
+ "sourceRevision": "a98f1057959da5e7d55efe2f1b2ab87f5d30d28c",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 2,
-   "ctx": "Client",
-   "out": "ANIMALS london L1 ok=true horse:4@(-231,23) dog:7@(-129,-2) cow:4@(-232,-20) sheep:12@(-228,-1) \ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ANIMALS london L4 ok=true horse:1@(-127,11) dog:9@(-115,4) cow:8@(-220,20) sheep:12@(-222,-21) \ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "ANIMALS istanbul L3 ok=true sheep:10@(-226,18) donkey:16@(-210,-13) \ntext"
-  },
-  {
-   "step": 5,
-   "capture": "animals_done",
-   "files": 1
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.19\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.19\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 6,
-  "completedSteps": 6,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
