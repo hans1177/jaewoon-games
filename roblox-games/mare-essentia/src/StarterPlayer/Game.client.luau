@@ -371,7 +371,7 @@ function H.iconFor(title, subtitle)
 	return nil
 end
 local SHIP_ICON = {
-	caravel = { "Naval", "ship-small" }, fluyt = { "Naval", "ship-medium" }, frigate = { "Naval", "ship-large" },
+	caravel = { "Naval", "ship-small" }, fluyt = { "Naval", "ship-medium" }, frigate = { "Naval", "frigate" },
 	galleon = { "Naval", "ship-pirate-large" }, paddle_steamer = { "Naval", "ship-medium", Color3.fromRGB(70, 70, 78) },
 	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
 }
