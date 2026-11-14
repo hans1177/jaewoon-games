@@ -825,6 +825,15 @@ local Rows: { { any } } = {
 	{ "site_tenochtitlan", "테노치티틀란", "Site", "Epic", "호수 위에 세운 아즈텍의 수도. 둑길과 운하로 이어진 도시였다.", "지역 대장정 보상", 100, 300 },
 }
 
+-- 군사학 카드(지역별 병종)는 MilitaryCards 표에서 가져온다 (전투 능력도 거기서 정한다)
+do
+	local Military = require(script.Parent.MilitaryCards)
+	for _, m in Military.List do
+		local rw = (Military.Reward :: any)[m.rarity]
+		table.insert(Rows, { m.id, m.name, "Military", m.rarity, m.desc, "병학 기록·전투 보상", rw[1], rw[2] })
+	end
+end
+
 local Cards: { Card } = {}
 for _, r in Rows do
 	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8]))

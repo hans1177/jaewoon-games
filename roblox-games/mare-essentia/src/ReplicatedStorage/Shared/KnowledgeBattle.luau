@@ -2,12 +2,13 @@
 -- 지식 카드 = 전투 카드. 백과사전 카드 하나하나가 전투 능력(줄·위력·능력)을 가진다.
 -- 능력은 카드의 분야·희귀도·id 로만 정해져서(무작위 없음) 저장 데이터가 필요 없고 서버·클라이언트가 똑같이 계산한다.
 local KC = require(script.Parent.KnowledgeCards)
+local Military = require(script.Parent.MilitaryCards)
 
 local KB = {}
 
 -- 분야 → 전투 줄: 인문·사회 = 근접, 자연과학 = 사격, 응용·공학 = 포
 KB.FIELD_ROW = {
-	Philosophy = "melee", Language = "melee", Myth = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
+	Military = "melee", Philosophy = "melee", Language = "melee", Myth = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
 	Astronomy = "ranged", Physics = "ranged", Chemistry = "ranged", Geography = "ranged", Weather = "ranged", Botany = "ranged", Zoology = "ranged", Mineral = "ranged",
 	Medicine = "cannon", Architecture = "cannon", Shipbuilding = "cannon", Navigation = "cannon",
 }
@@ -30,13 +31,18 @@ end
 function KB.derive(specialTexts: any): (any, any)
 	local units, specials = {}, {}
 	for _, c in KC.Cards do
-		local row = KB.FIELD_ROW[c.field] or "ranged"
+		local mil = Military.ById[c.id]
+		local row = if mil then mil.row else (KB.FIELD_ROW[c.field] or "ranged")
 		local h = hash(c.id)
 		local tbl = KB.POWER[c.rarity] or KB.POWER.Common
 		local power = tbl[h % #tbl + 1]
 		local rare = c.rarity == "Rare" or c.rarity == "Epic" or c.rarity == "Legendary"
 		local kind = KB.FIELD_SPECIAL[c.field]
-		if kind and rare and c.rarity ~= "Legendary" and h % 7 == 0 then
+		if mil then
+			-- 군사학 카드: 줄·무기·위력·능력을 표에서 그대로 쓴다
+			units[c.id] = { id = c.id, name = c.name, row = mil.row, power = mil.power, weapon = mil.weapon, ability = mil.ability,
+				hero = c.rarity == "Legendary" or nil, knowledge = true, field = c.field, rarity = c.rarity, region = mil.region }
+		elseif kind and rare and c.rarity ~= "Legendary" and h % 7 == 0 then
 			specials[c.id] = { id = c.id, name = c.name, special = kind, text = specialTexts[kind], knowledge = true, field = c.field, rarity = c.rarity }
 		else
 			local weapons = WEAPONS[row]
@@ -62,12 +68,17 @@ function KB.starter(): { string }
 	local per, out = { melee = 0, ranged = 0, cannon = 0 }, {}
 	for _, c in KC.Cards do
 		local row = KB.FIELD_ROW[c.field]
-		if c.rarity == "Common" and row and per[row] < 6 then
+		if c.rarity == "Common" and row and per[row] < 6 and c.field ~= "Military" then
 			per[row] += 1
 			table.insert(out, c.id)
 		end
 	end
 	return out
+end
+
+-- 문화권으로 시작하면 처음부터 가지는 군사학 카드 (줄마다 한 장씩)
+function KB.regionStarter(factionId: string?): { string }
+	return Military.Starters[factionId or ""] or {}
 end
 
 -- 보상 풀(등급별 id 목록, 카드 표 순서 그대로)
