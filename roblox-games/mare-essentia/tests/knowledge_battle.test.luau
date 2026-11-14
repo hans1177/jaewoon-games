@@ -25,6 +25,7 @@ local D = {
 	CardBook = require("./Shared/CardBook"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	Rings = require("./Shared/Rings"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
 	Narrative = require("./Shared/Narrative"),
 	Gear = require("./Shared/Gear"),
@@ -551,6 +552,7 @@ end
 
 do
 	local Rg = require("./Shared/Rings")
+	check("초보 우대: 레벨별 버프", D.Voyage.rookie(1) >= D.Voyage.rookie(5) and D.Voyage.rookie(5) > D.Voyage.rookie(7) and D.Voyage.rookie(7) > 0 and D.Voyage.rookie(8) == 0)
 	local base = { at = 0.5, lat = 0, big = false, bonus = false }
 	local wide = { at = 0.5, lat = 0, big = false, bonus = false, rm = 1.4 }
 	check("동료 효과: 고리 판정 확대", Rg.radius(wide) > Rg.radius(base) and Rg.hit(wide, 0.28) and not Rg.hit(base, 0.28))
