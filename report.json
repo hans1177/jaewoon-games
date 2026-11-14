@@ -1,90 +1,30 @@
 {
- "sourceRevision": "32d87798ed347ead3de5c2167e6ed0f89ac0ac32",
+ "sourceRevision": "d7d5124d6b5e7eb59e5e3f8cc24762e9f77cf13d",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "DEV Deck\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "holes_lisbon_port",
+   "files": 1
   },
   {
    "step": 5,
-   "capture": "k0_deck",
-   "files": 1
+   "ctx": "Client",
+   "out": "HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\n -70 ..............................HHHHHHH.T\n -66 .............................HHHHHHHH.T\n -62 ............................HHHHHHHHH.T\n -58 ...........................HHHHHHHHHH.T\n -54 .....HH.....H..............HHHHHHHHHHHT\n -50 ......HHHHHHH...HHHHHH.....HHHHHHHHHHHT\n -46 ......HHHHHHHH..HHHHHHH....HHHHHHHHHHHT\n -42 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHHHHHT\n -38 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -34 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -30 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHH.HHT\n -26 ......HHHHHHHH..HHHHHHH....HHHHHHHH.HHT\n -22 ......HHHHHHH...HHHHHH.....HHHHHHHH...T\n -18 ..........................H.HHHHHH..H.T\n -14 ...H.....H....HH...HHHH..HH.H.......HHT\n -10 ...H.....H....HH...HHHH.....H....H..HHT\n  -6 ..............H......H...H.......H.H..T\n  -2 ..............................HH......H\n   2 .....................H........HH......H\n   6 .......HH.....H......H...H...HHHH.....T\n  10 ..HH...HH.....H....H.HH.....HHHHHH....T\n  14 ..HH..........H......HH..H..HHHHHH..H.T\n  18 .....................HH....HHHHHHHHHHHT\n  22 .........HHHHHH....HHHHHH..HHHHHHHHHHHT\n  26 .........HHHHHH...HHHHHHH.HHHHHHHHHH..T\n  30 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHHH.T\n  34 .......HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  38 .......HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  42 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHH..T\n  46 .......HHHHHHHH...HHHHHHH.HHHHHHHHHHHHH\n  50 .......HHHHHHHH....HHHHHH..HHHHHHHHHHHT\n  54 .........H..H.H..H.........HHHHHHHHHHHT\n  58 .................................HHHHHT\n  62 ..........................HH.HHHHHHHHHT\n  66 ..........................HH....HHHHHHT\n  70 HH...............................HHHHHT\nBAD 33\nTRANSP 22,-70 Part\nTRANSP 22,-66 Part\nTRANSP 22,-62 Part\nTRANSP 22,-58 Part\nTRANSP 22,-54 Part\nTRANSP 22,-50 Part\nTRANSP 22,-46 Part\nTRANSP 22,-42 Part\nTRANSP 22,-38 Part\nTRANSP 22,-34 Part\nTRANSP 22,-30 Part\nTRANSP 22,-26 Part\nTRANSP 22,-22 Part\nTRANSP 22,-18 Part\nTRANSP 22,-14 Part\nTRANSP 22,-10 Part\nTRANSP 22,-6 Part\nTRANSP 22,6 Part\nTRANSP 22,10 Part\nTRANSP 22,14 Part\nTRANSP 22,18 Part\nTRANSP 22,22 Part\nTRANSP 22,26 Part\nTRANSP 22,30 Part\nTRANSP 22,34 Part\nTRANSP 22,38 Part\nTRANSP 22,42 Part\nTRANSP 22,50 Part\nTRANSP 22,54 Part\nTRANSP 22,58 Part\nTRANSP 22,62 Part\nTRANSP 22,66 Part\nTRANSP 22,70 Part\ntext"
   },
   {
    "step": 6,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=468 issues=0\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "k1_practice",
+   "capture": "holes_ground_scan",
    "files": 1
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "CHK practice view=1136x380 texts=251 issues=0\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "DEVRESULT Practice true nil\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 13,
-   "ctx": "Server",
-   "out": "TAC_START ok=true\ntext"
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEV Tactics\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "k2_tactics_hand",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "CHK tactics view=1136x380 texts=282 issues=0\ntext"
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "HAND n=5 energy=3 play1=false 너무 빨라요\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Server",
-   "out": "ERR Server count=0\ntext"
   }
  ],
  "errors": [],
@@ -99,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 7,
+  "completedSteps": 7,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
