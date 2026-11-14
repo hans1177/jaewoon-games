@@ -1,0 +1,111 @@
+{
+ "sourceRevision": "535093662efe630f71d8ccc2eb0e4693e348b8f7",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "london_L1_close",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "london_L1_over",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "london_L4_close",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "london_L4_over",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "istanbul_L3_close",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "istanbul_L3_over",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "malacca_L3_close",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "malacca_L3_over",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 26,
+  "completedSteps": 26,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 8,
+  "capturedFrames": 8,
+  "abortedEarly": false
+ }
+}
