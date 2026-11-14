@@ -1,20 +1,70 @@
 {
- "sourceRevision": "75adafcbabdf0a74daa30cfec4aa50e4f2016780",
+ "sourceRevision": "5946ba74041a526582b004aeb4e4a0dfc2d3d3c2",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 2,
-   "capture": "ap_game",
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "SAIL smyrna\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "s1",
    "files": 1
   },
   {
-   "step": 4,
+   "step": 14,
+   "capture": "s2",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "capture": "s3",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "capture": "s4",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "s5",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "s6",
+   "files": 1
+  },
+  {
+   "step": 23,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -29,13 +79,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 24,
+  "completedSteps": 24,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }

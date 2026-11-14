@@ -1,5 +1,5 @@
 {
- "sourceRevision": "0983c1809939ec1a9d6740c75225316dc97d957a",
+ "sourceRevision": "5946ba74041a526582b004aeb4e4a0dfc2d3d3c2",
  "log": [
   {
    "step": 1,
@@ -14,35 +14,55 @@
   {
    "step": 5,
    "ctx": "Client",
-   "out": "quest\ntext"
+   "out": "tab\ntext"
   },
   {
    "step": 7,
-   "capture": "w_quest",
-   "files": 1
+   "ctx": "Client",
+   "out": "tab\ntext"
   },
   {
-   "step": 8,
+   "step": 9,
    "ctx": "Client",
-   "out": "yard\ntext"
+   "out": "killed 1\ntext"
   },
   {
    "step": 10,
-   "capture": "w_yard",
-   "files": 1
-  },
-  {
-   "step": 11,
    "ctx": "Client",
-   "out": "harbor\ntext"
+   "out": "SAIL smyrna\ntext"
   },
   {
-   "step": 13,
-   "capture": "w_harbor",
+   "step": 12,
+   "capture": "s1",
    "files": 1
   },
   {
    "step": 14,
+   "capture": "s2",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "capture": "s3",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "capture": "s4",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "s5",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "s6",
+   "files": 1
+  },
+  {
+   "step": 23,
    "ctx": "Client",
    "out": "ERR Client count=0\ntext"
   }
@@ -59,13 +79,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 15,
-  "completedSteps": 15,
+  "plannedSteps": 24,
+  "completedSteps": 24,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
