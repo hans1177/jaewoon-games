@@ -206,6 +206,8 @@ end
 -- opts: { shipId, enemyName, log, winner, reason, isBoss, onDone }
 -- 직접 조종하는 해전: 왼쪽·오른쪽으로 배를 돌리고 가속하면, 사정거리 안에서 대포가 자동으로 나간다.
 -- 맞는 순서와 피해량은 서버가 계산한 전투 기록을 따르므로 결과는 서버 판정과 같다.
+NavalBattle.cardArtworkKey = cardArtworkKey
+
 function NavalBattle.play(opts)
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("BattleScene")

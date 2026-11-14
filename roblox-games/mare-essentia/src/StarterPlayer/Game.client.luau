@@ -78,6 +78,7 @@ local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
 local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
+local CardGallery = require(Shared:WaitForChild("CardGallery"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -1974,37 +1975,31 @@ do
 					}, 52)
 					row.LayoutOrder = 3 + slot
 				end
-				local order = {}
-				for id in book.owned do table.insert(order, id) end
-				table.sort(order, function(x, y)
+				-- 퀸트식 카드 갤러리: 타일 격자·필터·큰 카드 보기·획득처 (보유하지 않은 카드는 어둡게 보여 줘요)
+				local catalog = {}
+				for id in BC.Units do table.insert(catalog, id) end
+				for id in BC.Specials do table.insert(catalog, id) end
+				table.sort(catalog, function(x, y)
 					local dx, dy = CBk.def(x), CBk.def(y)
+					local ox, oy = (book.owned[x] or 0) > 0, (book.owned[y] or 0) > 0
+					if ox ~= oy then return ox end
 					local kx = (dx.hero and 0 or dx.special and 3 or 1)
 					local ky = (dy.hero and 0 or dy.special and 3 or 1)
 					if kx ~= ky then return kx < ky end
 					if (dx.power or 0) ~= (dy.power or 0) then return (dx.power or 0) > (dy.power or 0) end
 					return x < y
 				end)
-				for i, id in order do
-					local n = book.owned[id] or 0
-					if n > 0 then
-						local d = CBk.def(id)
-						local tier = book.tier[id] or 1
-						local info = CBk.upgradeInfo(book, id)
-						local kind = if d.special then "특수" elseif d.hero then "영웅" else string.format("%s 줄 · 점수 %d", BC.ROW_NAME[d.row], d.power + tier - 1)
-						local sub = string.format("%s · 보유 %d장%s%s", kind, n, if d.ability then " · " .. (({ bond = "결속", morale = "사기", spy = "첩자", medic = "치료", armor = "철갑", snipe = "저격" })[d.ability] or "") else "", if d.text then " · " .. d.text else "")
-						if info then
-							sub ..= string.format("\n강화 → %s: 같은 카드 %d장+1 보유, %d코인", CBk.TIER_NAME[tier + 1], info.copies, info.coins)
-						end
-						local row = mkRow(builder, string.format("[%s] %s  덱 %d/%d", CBk.TIER_NAME[tier], d.name, want[id] or 0, n), sub, {
-							{ text = "+", color = COLORS.green, enabled = (want[id] or 0) < n, onClick = function() want[id] = (want[id] or 0) + 1 fill() end },
-							{ text = "−", color = COLORS.red, enabled = (want[id] or 0) > 0, onClick = function() want[id] = (want[id] or 0) - 1 if want[id] <= 0 then want[id] = nil end fill() end },
-							{ text = "강화", color = COLORS.gold, enabled = info ~= nil and n >= info.copies + 1, onClick = function() refreshAfter("CardUpgrade", { id = id }) end },
-						}, if info then 78 else 62)
-						row.LayoutOrder = 10 + i
-						local bar = row:FindFirstChild("AccentBar")
-						if bar then bar.BackgroundColor3 = TIER_COLOR[tier] end
-					end
-				end
+				local gal = CardGallery.build(builder, {
+					CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey, overlay = win,
+					getBook = bookOf, getWant = function() return want end,
+					onWant = function(id, delta)
+						want[id] = (want[id] or 0) + delta
+						if want[id] <= 0 then want[id] = nil end
+						fill()
+					end,
+					onUpgrade = function(id) refreshAfter("CardUpgrade", { id = id }) end,
+				}, catalog)
+				gal.LayoutOrder = 10
 				local sep = mkHeader(builder, "동료·발견 카드 (자동으로 합류해요)")
 				sep.LayoutOrder = 9000
 			end
