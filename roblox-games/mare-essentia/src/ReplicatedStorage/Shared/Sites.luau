@@ -565,6 +565,12 @@ local Sites: { Site } = {
 	{ id = "pac_survey_18", name = "시드니 일대 탐사 19", portId = "sydney", minLevel = 3, days = 1, pool = { "geo_pacific_vast", "geo_kilauea", "geo_doldrums_pacific" } },
 	{ id = "pac_survey_19", name = "호바트 일대 탐사 20", portId = "hobart", minLevel = 4, days = 2, pool = { "geo_fiord_nz", "geo_aleutians", "geo_inside_passage" } },
 	{ id = "pac_survey_20", name = "퍼스 일대 탐사 21", portId = "perth", minLevel = 1, days = 3, pool = { "geo_torres_strait", "geo_south_pacific_gyre" } },
+	-- 군사학 카드: 문화권마다 병기고·전장에서 그 지역의 병종을 발견한다
+	{ id = "london_tower_armory", name = "런던 탑 병기고", portId = "london", minLevel = 2, days = 2, pool = { "mil_hoplite", "mil_longbowman", "mil_trebuchet", "mil_legionary", "mil_crossbowman", "mil_ballista", "mil_swiss_pike", "mil_viking_raider", "mil_knight", "mil_tercio", "mil_siege_tower", "mil_macedonian_phalanx", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
+	{ id = "nagasaki_armory", name = "나가사키 무기고", portId = "nagasaki", minLevel = 2, days = 2, pool = { "mil_ashigaru", "mil_joseon_archer", "mil_choi_cannon", "mil_han_crossbow", "mil_fire_lance", "mil_ming_musket", "mil_samurai_bushi", "mil_mongol_archer", "mil_hwacha", "mil_kheshig", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
+	{ id = "veracruz_battlefield", name = "베라크루스 옛 전장", portId = "veracruz", minLevel = 2, days = 2, pool = { "mil_jaguar_warrior", "mil_inca_sling", "mil_battering_ram", "mil_atlatl", "mil_macuahuitl", "mil_iroquois", "mil_conquistador", "mil_eagle_warrior", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
+	{ id = "istanbul_arsenal", name = "이스탄불 병기창", portId = "istanbul", minLevel = 2, days = 2, pool = { "mil_saracen_archer", "mil_camel_rider", "mil_manjaniq", "mil_janissary", "mil_mamluk", "mil_greek_fire", "mil_great_bombard", "mil_saladin_guard", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
+	{ id = "mombasa_fort", name = "몸바사 요새 기록", portId = "mombasa", minLevel = 2, days = 2, pool = { "mil_nubian_archer", "mil_ethiopian_spear", "mil_stone_thrower", "mil_songhai_cavalry", "mil_ashanti_musket", "mil_berber_raider", "mil_mali_horse", "mil_hannibal_elephants", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
 }
 
 return {

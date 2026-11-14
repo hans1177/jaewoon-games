@@ -48,6 +48,9 @@ function CB.new(factionId: string?): any
 	for _, id in CB.STARTER do
 		book.owned[id] = 1
 	end
+	for _, id in KB.regionStarter(factionId) do
+		book.owned[id] = 1
+	end
 	return book
 end
 
@@ -201,6 +204,9 @@ function CB.sanitize(saved: any, factionId: string?): any
 		end
 	end
 	for _, id in CB.STARTER do
+		book.owned[id] = math.max(1, book.owned[id] or 0)
+	end
+	for _, id in KB.regionStarter(factionId) do
 		book.owned[id] = math.max(1, book.owned[id] or 0)
 	end
 	if type(saved.tier) == "table" then
