@@ -343,6 +343,15 @@ function VoyageScene.play(info)
 				local p, d = positionAt(pts, cum, r.at * total)
 				local c = p + Vector3.new(-d.Z, 0, d.X) * r.lat * LATSCALE
 				local rad = Rings.radius(r) * LATSCALE
+				if r.hazard then
+					-- 암초: 에셋 바위 모델 (도형으로 만들지 않는다)
+					local rock = info.place and info.place(folder, "Town", "rock-wide", ORIGIN, 14)
+					if rock then
+						rock:PivotTo(CFrame.new(c.X, -2.5, c.Z) * CFrame.Angles(0, r.at * 40, 0))
+					end
+					table.insert(ringParts, rock or false)
+					continue
+				end
 				local disk = Instance.new("Part")
 				disk.Shape = Enum.PartType.Cylinder
 				disk.Size = Vector3.new(0.8, rad * 2, rad * 2)
@@ -1251,7 +1260,7 @@ function VoyageScene.play(info)
 			mapShip.Rotation = -math.deg(helmYaw)
 			windArrow.Rotation = -math.deg(windFrom + math.pi)
 		else
-			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) else 1))
+			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) * (if tally.stun > 0 then 0.6 else 1) else 1))
 			pos, dir = positionAt(pts, cum, dist)
 		end
 		if manual then
@@ -1281,12 +1290,16 @@ function VoyageScene.play(info)
 				end
 				nextRing = #ringList + 1
 			else
+				tally.stun = math.max(0, tally.stun - dt)
 				while ringList[nextRing] and dist / total >= ringList[nextRing].at do
 					local r = ringList[nextRing]
 					local ok = Rings.hit(r, lat)
+					if r.hazard then
+						ok = not ok -- 암초는 피해야 성공
+					end
 					Rings.record(tally, r, ok)
 					local part = ringParts[nextRing]
-					if part then
+					if part and part:IsA("BasePart") then
 						part.Color = if ok then Color3.fromRGB(110, 240, 140) else Color3.fromRGB(240, 90, 80)
 						part.Transparency = 0.2
 						task.delay(0.5, function()
@@ -1302,7 +1315,7 @@ function VoyageScene.play(info)
 					bandFrame.Position = UDim2.fromScale(0.5 + nr.lat * 0.45, 0.5)
 					bandFrame.BackgroundColor3 = if Rings.hit(nr, lat) then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(230, 190, 80)
 				end
-				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo))
+				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 암초 충돌!" else "")
 			end
 			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
 			pos = pos + Vector3.new(-dir.Z, 0, dir.X) * lat * LATSCALE

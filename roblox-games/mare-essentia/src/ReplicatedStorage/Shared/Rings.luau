@@ -2,7 +2,7 @@
 -- 파도타기 수동 항해: 항로를 따라 날아오는 바람 고리를 스틱으로 통과한다. 순수 계산이라 로직 테스트로 검증한다.
 local Rings = {}
 
-export type Ring = { at: number, lat: number, big: boolean, bonus: boolean }
+export type Ring = { at: number, lat: number, big: boolean, bonus: boolean, hazard: boolean? }
 
 -- 사건이 나온 구간은 고리가 달라진다(암초=좁은 간격 좌우 지그재그, 폭풍=흔들림, 돌고래·고래=보너스 줄)
 local PATTERN_SPAN = 0.16
@@ -17,6 +17,12 @@ function Rings.build(rng: () -> number, days: number, eventKind: string?, level:
 		-- 이전 고리에서 너무 멀지 않게(손가락 한 번에 닿을 거리) 옮긴다
 		lat = math.clamp(lat + (rng() * 2 - 1) * 0.7, -0.8, 0.8)
 		table.insert(list, { at = at, lat = lat, big = (level or 0) >= 0.5, bonus = false })
+	end
+	-- 암초: 고리 사이에 끼어 있다. 고리와 반대쪽에 두어 피할 수 있게 한다.
+	local rings = #list
+	for i = 1, rings - 1, 3 do
+		local a, b = list[i], list[i + 1]
+		table.insert(list, { at = (a.at + b.at) / 2, lat = if a.lat > 0 then -0.6 else 0.6, big = false, bonus = false, hazard = true })
 	end
 	if eventKind == "dolphins" or eventKind == "whale" or eventKind == "wreck" or eventKind == "rainbow" then
 		-- 가운데 구간에 보너스 고리 줄
@@ -51,13 +57,24 @@ function Rings.speedMult(combo: number): number
 	return 1 + math.min(combo, 10) * 0.04
 end
 
-export type Tally = { hits: number, total: number, combo: number, best: number, points: number }
+export type Tally = { hits: number, total: number, combo: number, best: number, points: number, crashes: number, stun: number }
 
 function Rings.newTally(): Tally
-	return { hits = 0, total = 0, combo = 0, best = 0, points = 0 }
+	return { hits = 0, total = 0, combo = 0, best = 0, points = 0, crashes = 0, stun = 0 }
 end
 
+-- 암초(hazard)는 ok = 피했는가. 부딪히면 콤보가 끊기고 잠깐 느려진다(stun 초).
 function Rings.record(t: Tally, r: Ring, ok: boolean)
+	if r.hazard then
+		if ok then
+			t.points += 0.2
+		else
+			t.crashes += 1
+			t.combo = 0
+			t.stun = 1.2
+		end
+		return
+	end
 	t.total += 1
 	if ok then
 		t.hits += 1
@@ -74,7 +91,17 @@ function Rings.score(t: Tally): number
 	if t.total == 0 then
 		return 0
 	end
-	return math.clamp(t.hits / t.total, 0, 1)
+	return math.clamp(t.hits / t.total - t.crashes * 0.08, 0, 1)
+end
+
+-- 별 1~3개
+function Rings.stars(score: number): number
+	if score >= 0.9 then
+		return 3
+	elseif score >= 0.6 then
+		return 2
+	end
+	return 1
 end
 
 -- 서버가 받는 점수의 보상: 코인 = 항해일수 × 점수² × 12 (상한 있음). 명성은 90% 이상일 때만 +1.

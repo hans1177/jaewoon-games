@@ -2727,6 +2727,15 @@ local function sail(portId)
 	Sfx.play("sfx_sail")
 	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
 	local result = call("Sail", { portId = portId })
+	-- 서버 속도 제한("너무 빨라요")에 걸리면 출항이 조용히 사라지던 문제: 잠깐 뒤 몇 번 다시 시도한다
+	for _ = 1, 5 do
+		if result and result.ok == false and result.message == "너무 빨라요" then
+			task.wait(0.45)
+			result = call("Sail", { portId = portId })
+		else
+			break
+		end
+	end
 	workspace:SetAttribute("DevSailResult", tostring(result and result.ok) .. ":" .. tostring(result and result.message))
 	if result and result.ok then
 		local vk = view and view.voyageEvent and view.voyageEvent.kind

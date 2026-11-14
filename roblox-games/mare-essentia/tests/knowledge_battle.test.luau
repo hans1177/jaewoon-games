@@ -457,14 +457,49 @@ do
 	check("고리: 돌고래 사건에는 보너스 고리가 나온다", bonusN == 5)
 	local t = R.newTally()
 	for _, r in long do R.record(t, r, R.hit(r, r.lat)) end
-	check("고리: 정확히 가면 점수 1.0, 콤보가 쌓이고 속도가 오른다", R.score(t) == 1 and t.best == #long and R.speedMult(t.combo) > 1.3)
+	local ringsOnly = 0
+	for _, r in long do if not r.hazard then ringsOnly += 1 end end
+	check("고리: 정확히 가면 점수 1.0, 콤보가 쌓이고 속도가 오른다", R.score(t) == 1 and t.best == ringsOnly and R.speedMult(t.combo) > 1.3)
 	local t2 = R.newTally()
-	for i, r in long do R.record(t2, r, i % 2 == 0) end
+	local k = 0
+	for _, r in long do
+		if not r.hazard then
+			k += 1
+			R.record(t2, r, k % 2 == 0)
+		end
+	end
 	check("고리: 번갈아 놓치면 콤보가 쌓이지 않는다", t2.best == 1 and R.speedMult(t2.combo) <= 1.04)
 	local c1, f1 = R.reward(10, 1)
 	local c0, f0 = R.reward(10, 0.3)
 	local cx = R.reward(100000, 5)
 	check("고리: 보상은 점수에 비례하고 상한이 있다", c1 > c0 and f1 == 1 and f0 == 0 and cx <= 300)
+end
+
+do
+	-- 고리 항해: 암초와 별
+	local R = require("./Shared/Rings")
+	local rs = 99
+	local function rng(): number
+		rs = (rs * 1103515245 + 12345) % 2147483648
+		return rs / 2147483648
+	end
+	local list = R.build(rng, 10, nil, 0)
+	local hz, rg = 0, 0
+	for _, r in list do
+		if r.hazard then hz += 1 else rg += 1 end
+	end
+	check("암초: 고리 사이에 암초가 끼어 있다", hz >= 2 and rg >= 6)
+	local t = R.newTally()
+	for _, r in list do
+		if r.hazard then R.record(t, r, true) else R.record(t, r, R.hit(r, r.lat)) end
+	end
+	check("암초: 다 피하고 고리를 모두 먹으면 만점·별 3개", R.score(t) == 1 and R.stars(R.score(t)) == 3 and t.crashes == 0)
+	local t2 = R.newTally()
+	for _, r in list do
+		if r.hazard then R.record(t2, r, false) else R.record(t2, r, R.hit(r, r.lat)) end
+	end
+	check("암초: 부딪히면 점수가 깎이고 콤보가 끊긴다", t2.crashes == hz and R.score(t2) < 1 and t2.stun > 0)
+	check("별: 점수 구간별로 1~3개", R.stars(0.95) == 3 and R.stars(0.7) == 2 and R.stars(0.1) == 1)
 end
 
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
