@@ -1,0 +1,19 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local AS=game:GetService('AssetService') local out={} for _,id in ipairs({81997694699949,114218279981511,128241137974417}) do local ok,res=pcall(function() local ei=AS:CreateEditableImageAsync(Content.fromAssetId(id)) return tostring(ei.Size) end) out[#out+1]=id..' '..tostring(ok)..' '..tostring(res) end return table.concat(out,' | ')"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "imgsize"
+ }
+]
