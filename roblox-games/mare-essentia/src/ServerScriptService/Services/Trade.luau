@@ -37,6 +37,15 @@ return function(D, S)
 		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state) + S.Harbor.sellBonus(state) + S.Order.sellBonus(state) + S.Facility.titleBonus(state) + repBonus(state) + S.Build.sellBonus(state))
 	end
 
+	-- 시세 수첩: 직접 거래한 물건은 그 항구의 팔값을 적어 둔다 (동료 없이도 나중에 비교할 수 있다)
+	local function noteBook(state, ctx, goodId)
+		local m = ctx.market:get(state.portId, goodId)
+		local e = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
+		state.priceBook = state.priceBook or {}
+		state.priceBook[goodId] = state.priceBook[goodId] or {}
+		state.priceBook[goodId][state.portId] = { sell = T.sellPrice(state.portId, goodId, m, sellRateFor(state), e), day = state.day }
+	end
+
 	function handlers.Buy(state, p, ctx)
 		local goodId, amount = p.goodId, parseAmount(p.amount)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
@@ -69,6 +78,7 @@ return function(D, S)
 		ctx.market:set(state.portId, goodId, mult)
 		state.harborTrade = state.harborTrade or {}
 		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + amount
+		noteBook(state, ctx, goodId)
 		return true, string.format("%s %d개 구매 (-%d)", D.Ports.Goods[goodId].name, amount, total)
 	end
 
@@ -137,6 +147,7 @@ return function(D, S)
 		end
 		state.harborTrade = state.harborTrade or {}
 		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + (tonumber(amount) or 0)
+		noteBook(state, ctx, goodId)
 		if profit > 0 then
 			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
 			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)

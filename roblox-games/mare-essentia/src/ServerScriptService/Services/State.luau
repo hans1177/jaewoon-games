@@ -81,6 +81,7 @@ return function(D)
 			harborBoost = {}, -- "항구|부흥" → 끝나는 날
 			harborPaid = {}, -- 플레이어가 직접 투자한 누적액 (불황에도 지켜진다)
 			harborTrade = {}, -- 항구별 최근 교역량 (항구 활력 계산용)
+			priceBook = {}, -- 시세 수첩: 직접 거래해 본 물건의 항구별 팔값 { 물건id = { 항구id = { sell, day } } }
 			harborSeen = {}, -- 항구별 마지막으로 들른 날 (자체 성장 계산용)
 			bank = { deposit = 0, loan = 0, lastDay = 0 },
 			contract = nil,
@@ -578,6 +579,19 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.priceBook) == "table" then
+			for gid, byPort in saved.priceBook do
+				if type(gid) == "string" and D.Ports.Goods[gid] and type(byPort) == "table" then
+					local clean = {}
+					for pid, e in byPort do
+						if type(pid) == "string" and D.Ports.Ports[pid] and type(e) == "table" then
+							clean[pid] = { sell = math.floor(num(e.sell, 0, 0, 1e7)), day = math.floor(num(e.day, 0, 0, 1e7)) }
+						end
+					end
+					s.priceBook[gid] = clean
+				end
+			end
+		end
 		for _, key in { "harborPaid", "harborTrade" } do
 			if type(saved[key]) == "table" then
 				for id, v in saved[key] do
@@ -901,6 +915,7 @@ return function(D)
 			harborBoost = state.harborBoost,
 			harborPaid = state.harborPaid,
 			harborTrade = state.harborTrade,
+			priceBook = state.priceBook,
 			bank = state.bank,
 			contract = state.contract,
 			title = state.title,

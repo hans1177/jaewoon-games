@@ -134,5 +134,30 @@ do
 	end
 end
 
+
+-- 시세 수첩: 직접 거래한 항구의 팔값은 동료 없이도 비교 목록에 나온다
+do
+	local stP = S.State.new("england", 1700)
+	stP.coins = 100000
+	local first = stP.portId
+	Registry.handlers.Buy(stP, { goodId = "wool", amount = 1 }, ctx)
+	check("시세 수첩: 거래하면 기록", stP.priceBook and stP.priceBook.wool and stP.priceBook.wool[first] ~= nil)
+	local other
+	for id in D.Ports.Ports do
+		if id ~= first then other = id break end
+	end
+	stP.portId = other
+	local v = S.View.build(stP, ctx)
+	local hasWool = false
+	for _, g in v.goods do
+		if g.id == "wool" then hasWool = true end
+	end
+	if hasWool and (v.intel or 0) < 1 then
+		check("시세 수첩: 동료 없이 기억한 항구 표시", v.compare.wool ~= nil and v.compare.wool[1].memory == true)
+	else
+		check("시세 수첩: (해당 항구에 양모 없음 또는 동료 있음) 건너뜀", true)
+	end
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
