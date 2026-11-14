@@ -2825,6 +2825,7 @@ local function sail(portId)
 			rings = player:GetAttribute("ManualHelm") ~= false or firstVisit, -- 기본은 직접 항해(바람 고리). 처음 가는 항구는 반드시 직접 항해
 			firstVisit = firstVisit,
 			crew = view.crew,
+			tutorial = view.sailTutorial,
 			traffic = (function()
 				-- 이 해역의 교역선(지역 전통 배)과 여러 나라 함대
 				local POOL = {

@@ -252,6 +252,8 @@ function VoyageScene.play(info)
 	local ringPulse = {}
 	local s_speedLines = nil
 	local s_comboGlow = nil
+	local sideBtns = {}
+	local s_guide = nil
 	local tally = Rings.newTally()
 	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
@@ -332,6 +334,7 @@ function VoyageScene.play(info)
 			b.Font = Enum.Font.GothamBold
 			b.ZIndex = 8
 			b.Parent = gui
+			sideBtns[side] = b
 			local c = Instance.new("UICorner")
 			c.Parent = b
 			b.MouseButton1Down:Connect(function() held[side] = true end)
@@ -352,8 +355,25 @@ function VoyageScene.play(info)
 			ringList = Rings.build(rng, info.days, info.event and info.event.kind, info.level)
 			-- 동료 효과: 항해 속도 보너스 1%당 고리 판정 +2% (최대 +50%)
 			local crewSpeed = if info.crew then math.max(0, info.crew.speed or 0) else 0
-			crewRm = 1 + math.min(0.5, crewSpeed * 2)
-			crewHeal = if info.crew then math.clamp(info.crew.heal or 0, 0, 0.8) else 0
+			local rookie = if info.crew then math.max(0, info.crew.rookie or 0) else 0
+			crewRm = (1 + math.min(0.5, crewSpeed * 2)) * (1 + rookie)
+			crewHeal = math.max(if info.crew then math.clamp(info.crew.heal or 0, 0, 0.8) else 0, math.min(0.8, rookie * 2))
+			if rookie > 0 then
+				local badge = Instance.new("TextLabel")
+				badge.BackgroundColor3 = Color3.fromRGB(40, 90, 60)
+				badge.BackgroundTransparency = 0.25
+				badge.AnchorPoint = Vector2.new(0, 0)
+				badge.Position = UDim2.new(0, 14, 0, 120)
+				badge.Size = UDim2.fromOffset(250, 28)
+				badge.Font = Enum.Font.GothamBold
+				badge.TextSize = 15
+				badge.TextColor3 = Color3.fromRGB(190, 255, 200)
+				badge.Text = "🍀 순풍의 가호 · 초보 선장 우대"
+				badge.ZIndex = 6
+				badge.Parent = gui
+				local badgeCorner = Instance.new("UICorner")
+				badgeCorner.Parent = badge
+			end
 			for _, r0 in ringList do
 				r0.rm = crewRm
 			end
@@ -514,6 +534,37 @@ function VoyageScene.play(info)
 			gs.Parent = glow
 			glow.Parent = gui
 			s_comboGlow = gs
+			-- 첫 항해 안내: 다음 고리 방향을 큰 화살표로 알려 주고, 눌러야 할 버튼을 빛낸다
+			if info.tutorial and manual then
+				local g = Instance.new("TextLabel")
+				g.BackgroundTransparency = 1
+				g.AnchorPoint = Vector2.new(0.5, 0.5)
+				g.Position = UDim2.fromScale(0.5, 0.3)
+				g.Size = UDim2.fromOffset(360, 70)
+				g.Font = Enum.Font.GothamBlack
+				g.TextSize = 54
+				g.TextColor3 = Color3.fromRGB(255, 226, 110)
+				g.TextStrokeTransparency = 0.3
+				g.ZIndex = 9
+				g.Text = ""
+				g.Parent = gui
+				local guideHint = Instance.new("TextLabel")
+				guideHint.BackgroundColor3 = Color3.fromRGB(12, 24, 40)
+				guideHint.BackgroundTransparency = 0.25
+				guideHint.AnchorPoint = Vector2.new(0.5, 0)
+				guideHint.Position = UDim2.new(0.5, 0, 0.3, 46)
+				guideHint.Size = UDim2.fromOffset(420, 52)
+				guideHint.Font = Enum.Font.GothamMedium
+				guideHint.TextSize = 16
+				guideHint.TextWrapped = true
+				guideHint.TextColor3 = Color3.fromRGB(255, 244, 214)
+				guideHint.Text = "첫 항해! 화살표 쪽으로 ◀ ▶ (또는 A·D, 화면 드래그)를 눌러\n금빛 고리 한가운데로 배를 보내세요"
+				guideHint.ZIndex = 9
+				guideHint.Parent = gui
+				local guideCorner = Instance.new("UICorner")
+				guideCorner.Parent = guideHint
+				s_guide = { arrow = g, hint = guideHint }
+			end
 		end
 		-- 자동 항해 전환 (처음 가는 항구는 직접 항해만)
 		local autoSw = Instance.new("TextButton")
@@ -1558,6 +1609,35 @@ function VoyageScene.play(info)
 			do
 				local want = if autoRing then 0 else math.min(tally.combo, 10) * 1.5
 				fovBoost += (want - fovBoost) * math.min(1, dt * 3)
+				if s_guide then
+					if autoRing or tally.hits >= 4 then
+						s_guide.arrow:Destroy()
+						s_guide.hint:Destroy()
+						s_guide = nil
+						for _, sb in sideBtns do
+							sb.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
+						end
+					else
+						local target = nil
+						for ni = nextRing, #ringList do
+							if not ringList[ni].hazard then
+								target = ringList[ni]
+								break
+							end
+						end
+						local pulse = 0.5 + 0.5 * math.sin(t * 7)
+						if target then
+							local diff = target.lat - lat
+							local inside = math.abs(diff) <= Rings.radius(target) * 0.7
+							s_guide.arrow.Text = if inside then "✔ 좋아요!" elseif diff > 0 then "▶▶▶" else "◀◀◀"
+							s_guide.arrow.TextTransparency = 0.1 + 0.3 * pulse
+							for side, sb in sideBtns do
+								local need = (side == "r" and diff > 0 or side == "l" and diff < 0) and not inside
+								sb.BackgroundColor3 = if need then Color3.fromRGB(230, 180, 60):Lerp(Color3.fromRGB(255, 240, 150), pulse) else Color3.fromRGB(40, 80, 130)
+							end
+						end
+					end
+				end
 				if s_comboGlow then
 					local gl = if autoRing then 0 else math.clamp((tally.combo - 2) / 8, 0, 1)
 					s_comboGlow.Transparency = 1 - 0.55 * gl * (0.75 + 0.25 * math.sin(t * 6))

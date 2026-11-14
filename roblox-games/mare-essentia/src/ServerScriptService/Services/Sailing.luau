@@ -517,7 +517,11 @@ return function(D, S)
 				stats.routeStars[route] = math.max(stats.routeStars[route] or 0, st)
 			end
 		end
-		local cm = if auto then 0.5 else 1
+		local rookie = D.Voyage.rookie(state.careers.adventure.level)
+		local cm = if auto then 0.5 else 1 + rookie * 1.5 -- 초보 우대: 수동 보상 +45%(레벨 1~2)
+		if not auto then
+			stats.sailTutorialDone = true
+		end
 		local msgs = {}
 		table.insert(msgs, (if auto then "[자동 항해] " else "") .. string.rep("★", score >= 0.9 and 3 or score >= 0.6 and 2 or 1) .. string.rep("☆", score >= 0.9 and 0 or score >= 0.6 and 1 or 2) .. string.format(" 바람 고리 %d%%", math.floor(score * 100)))
 		local coinBonus = math.min(300, math.floor(days * score * score * 12 * cm))
@@ -542,14 +546,17 @@ return function(D, S)
 		end
 		-- 수동으로 잘 탈수록 행운, 못 탈수록 불운이 따른다 (자동 항해에는 없음)
 		local luckRoll = if auto then 1 else math.random()
-		if score >= 0.9 and luckRoll < 0.4 then
+		if score >= 0.9 and luckRoll < 0.4 + rookie then
 			local extra = math.min(400, 40 + days * 15)
 			state.coins += extra
 			table.insert(msgs, string.format("순풍 행운! 바람이 도와 뜻밖의 이득을 봤다. 코인 +%d", extra))
-		elseif score < 0.4 and luckRoll < 0.3 then
+		elseif score < 0.4 and luckRoll < 0.3 and rookie == 0 then
 			local loss = math.min(state.coins, days * 4)
 			state.coins -= loss
 			table.insert(msgs, string.format("역풍 불운.. 돛이 찢어져 수리비로 코인 -%d", loss))
+		end
+		if rookie > 0 and not auto then
+			table.insert(msgs, string.format("【%s】 초보 선장 우대: 보상 +%d%%, 행운 확률 증가, 역풍 불운 면제", D.Voyage.ROOKIE_NAME, math.floor(rookie * 150)))
 		end
 		return true, table.concat(msgs, "\n")
 	end

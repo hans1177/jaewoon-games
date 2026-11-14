@@ -871,7 +871,13 @@ return function(D, S)
 		view.visitedPorts = state.stats.visited
 		view.seaBoss = state.seaBoss
 		-- 수동 항해에 반영되는 동료 효과: 항해 속도 보너스→고리 판정 확대, 의사 효과→충돌 후 멈춤 단축
-		view.crew = { speed = S.Perk.speedMult(state) - 1, heal = S.Perk.healReduction(state) }
+		local extra: any = {
+			crew = { speed = S.Perk.speedMult(state) - 1, heal = S.Perk.healReduction(state), rookie = D.Voyage.rookie(state.careers.adventure.level) },
+			sailTutorial = not (state.stats :: any).sailTutorialDone,
+		}
+		for k, v in extra do
+			(view :: any)[k] = v
+		end
 		return view
 	end
 
