@@ -1396,6 +1396,24 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
+		local mullBtn
+		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.63, Color3.fromRGB(70, 58, 38), "Menu/route", function()
+			if playing or auto or finished or m.turn ~= "me" or m.over then return end
+			local idx = selected and selected.Parent and selected:GetAttribute("HandIdx")
+			if not idx then
+				info.Text = t("바꿀 카드를 먼저 눌러 고르세요", "Tap a card to swap first")
+				return
+			end
+			local ok, msg, _res, act = BC.mulligan(m, "me", idx)
+			selected = nil
+			if ok and act then table.insert(actions, act) end
+			if not ok then
+				info.Text = if english then "Cannot swap now" else msg or ""
+				return
+			end
+			info.Text = if english then "Swapped one card" else msg or ""
+			render()
+		end)
 		mkSide(t("자동 진행", "Auto Play"), 0.9, Color3.fromRGB(46, 72, 69), "Menu/route", function()
 			auto = true
 		end)
@@ -2113,6 +2131,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					tipLabel.ZIndex = 8
 				end
 				b.Parent = handFrame
+				b:SetAttribute("HandIdx", i)
 				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
 				local function playChosenCard()
@@ -2189,6 +2208,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
+			do
+				local left = if m.round == 1 and (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
+				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
+				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
+			end
 			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0

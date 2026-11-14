@@ -21,6 +21,7 @@ B.ROW_NAME = { melee = "전열", ranged = "후열", cannon = "후열" }
 B.WEAPON_BEATS = { sword = "axe", axe = "spear", spear = "sword" }
 B.ADV, B.DIS = 1.3, 0.85
 B.HAND = 10
+B.MULLIGAN = 3 -- 첫 판에서 카드를 내기 전에 손패를 바꿀 수 있는 장수
 
 -- 병종: row, power, weapon, ability
 B.Units = {
@@ -623,19 +624,19 @@ B.Units.boss_kraken = { id = "boss_kraken", name = "크라켄의 촉수", row = 
 B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row = "melee", power = 8, weapon = "spear", hero = true }
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
-	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
+	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
-	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
+	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
-	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", leaders = { "pachacuti", "montezuma", "sittingbull" },
+	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30"} },
-	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", leaders = { "saladin", "suleiman", "cyrus" },
+	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30"} },
-	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", leaders = { "rajaraja", "tranhungdao", "akbar" },
+	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
-	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", leaders = { "mansa", "hannibal", "shaka" },
+	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
@@ -669,6 +670,9 @@ function B.playerDeck(deckCards, rng, factionId, book)
 			card.power += tier - 1
 		end
 		card.tier = tier
+		if fac and fac.specialty and card.category == fac.specialty and card.power and not card.hero then
+			card.power += 1 -- 대륙 특징: 그 대륙의 대표 분류 카드는 조금 더 강하다
+		end
 		table.insert(out, card)
 	end
 	local leader = if fac then fac.leader else "draw"
@@ -709,7 +713,11 @@ function B.enemyDeck(isBoss, rng, factionId)
 	end
 	local out = {}
 	for _, id in ids do
-		table.insert(out, copy(B.Units[id] or B.Specials[id]))
+		local card = copy(B.Units[id] or B.Specials[id])
+		if fac and not isBoss and fac.specialty and card.category == fac.specialty and card.power and not card.hero then
+			card.power += 1
+		end
+		table.insert(out, card)
 	end
 	table.insert(out, copy(B.Specials.storm))
 	if isBoss then
@@ -775,6 +783,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		played = { me = 0, foe = 0 },
 		refuted = { me = {}, foe = {} },
 		rowBonus = { me = {}, foe = {} },
+		mulligan = { me = B.MULLIGAN, foe = 0 },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -1276,6 +1285,27 @@ function B.pass(m: any, side)
 	return true, "멈췄다", nil, { "s" }
 end
 
+-- 멀리건: 첫 판에서 카드를 내기 전에 손패 한 장을 덱 맨 아래로 돌려보내고 새로 한 장 뽑는다 (총 B.MULLIGAN장)
+function B.mulligan(m: any, side, handIdx)
+	if m.over or m.round ~= 1 or (m.played[side] or 0) > 0 then
+		return false, "지금은 바꿀 수 없어요"
+	end
+	if ((m.mulligan or {})[side] or 0) <= 0 then
+		return false, "바꿀 수 있는 장수를 다 썼어요"
+	end
+	local c = m.hand[side][handIdx]
+	if not c or #m.deck[side] == 0 then
+		return false, "바꿀 카드가 없어요"
+	end
+	table.remove(m.hand[side], handIdx)
+	table.insert(m.deck[side], 1, c) -- 덱 맨 아래 (뽑는 쪽은 끝)
+	drawCards(m, side, 1)
+	m.mulligan[side] -= 1
+	local msg = string.format("손패 교체: %s을(를) 돌려보내고 새 카드를 뽑았다 (남은 교체 %d장)", c.name, m.mulligan[side])
+	logLine(m, (if side == "me" then "우리: " else "해적: ") .. msg)
+	return true, msg, nil, { "m", handIdx }
+end
+
 function B.useLeader(m: any, side)
 	if m.over or m.turn ~= side or m.leaderUsed[side] then
 		return false, "지금은 쓸 수 없어요"
@@ -1553,6 +1583,7 @@ function B.replay(kind, seed, my, foe, actions)
 			if a[1] == "p" then ok = B.play(m, "me", math.floor(tonumber(a[2]) or 0))
 			elseif a[1] == "s" then ok = B.pass(m, "me")
 			elseif a[1] == "l" then ok = B.useLeader(m, "me")
+			elseif a[1] == "m" then ok = B.mulligan(m, "me", math.floor(tonumber(a[2]) or 0))
 			end
 			if not ok then return nil end
 		end
@@ -1654,6 +1685,7 @@ local function copyMatch(m)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
 	n.played = table.clone(m.played or { me = 0, foe = 0 })
+	n.mulligan = table.clone(m.mulligan or { me = 0, foe = 0 })
 	n.rowBonus = { me = table.clone((m.rowBonus or {}).me or {}), foe = table.clone((m.rowBonus or {}).foe or {}) }
 	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
