@@ -287,6 +287,7 @@ local SOLID_TREES = {
 }
 local ASSET_TINT = {
 	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	windmill = Color3.fromRGB(238, 220, 186),
 	["plant-bush"] = Color3.fromRGB(78, 128, 58), -- 수입 나무의 잎 질감이 청록색이라, 노란 기운을 곱해 자연스러운 초록으로 만든다
 	tree_large = Color3.fromRGB(78, 132, 66), tree_tiny = Color3.fromRGB(84, 138, 70), tree = Color3.fromRGB(255, 238, 120),
 	["tree-high"] = Color3.fromRGB(255, 238, 120), ["tree-crooked"] = Color3.fromRGB(255, 238, 120),
@@ -297,7 +298,8 @@ local function assetTint(kind, asset)
 	if kind == "Animals" then return ANIMAL_TINT[asset] end
 	if ASSET_TINT[asset] then return ASSET_TINT[asset] end
 	if string.find(asset, "fence", 1, true) then return Color3.fromRGB(142, 102, 64) end
-	if string.find(asset, "rock-", 1, true) then return Color3.fromRGB(148, 142, 134) end
+	if string.find(asset, "rocks-sand", 1, true) then return Color3.fromRGB(196, 176, 140) end
+	if string.find(asset, "rock", 1, true) then return Color3.fromRGB(148, 142, 134) end
 	return nil
 end
 
