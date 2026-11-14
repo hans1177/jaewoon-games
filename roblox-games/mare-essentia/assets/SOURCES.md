@@ -997,3 +997,4 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `portraits/` | job_15_pirate.png | AI generated (도구 미상, 사용자 제공 4x4 시트) · PROJECT_ORIGINAL_ART | ai-generated |
 | `portraits/` | job_16_interpreter.png | AI generated (도구 미상, 사용자 제공 4x4 시트) · PROJECT_ORIGINAL_ART | ai-generated |
 | `portraits/` | job_01_captain_hd.png | AI generated (도구 미상, 사용자 제공 단독 초상) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | job_02_navigator_hd.png | AI generated (도구 미상, 사용자 제공 단독 초상) · PROJECT_ORIGINAL_ART | ai-generated |
