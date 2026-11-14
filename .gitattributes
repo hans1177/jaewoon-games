@@ -77,3 +77,9 @@ roblox-games/mare-essentia/audio/out/sfx_cargo_drop.ogg -filter -diff -merge -te
 roblox-games/mare-essentia/audio/out/sfx_workshop_*.ogg -filter -diff -merge -text
 # 해전 CC0 원본 기반으로 변환한 음향은 LFS 포인터가 아닌 실제 음원 파일로 저장한다.
 roblox-games/mare-essentia/audio/out/sfx_naval_*.ogg -filter -diff -merge -text
+
+# 카드배틀·해전 효과음 신규 CC0 파생 OGG도 LFS 포인터가 아닌 일반 바이너리로 저장한다.
+roblox-games/mare-essentia/audio/out/sfx_card_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_ui_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_skill_*.ogg -filter -diff -merge -text
+roblox-games/mare-essentia/audio/out/sfx_naval_wood.ogg -filter -diff -merge -text
