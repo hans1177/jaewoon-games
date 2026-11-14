@@ -349,8 +349,22 @@ return function(D, S)
 			end
 		end
 
+		view.counsel = S.Advice.list(state) -- 동료 조언 (view.advice 는 항구 인사말이 이미 쓴다)
 		-- 조선소
 		view.shipyard = { available = port.shipyard, ships = {}, supplyCost = math.max(1, math.floor(S.Shipyard.SUPPLY_COST * S.Harbor.costMult(state))), hireCost = math.max(1, math.floor(S.Shipyard.HIRE_COST * S.Harbor.costMult(state))), repairCost = math.max(1, math.floor(S.Shipyard.REPAIR_COST * S.Harbor.costMult(state))) }
+		do
+			-- 수리: 기함과 선단의 부족한 선체 합계와 전부 고칠 때의 비용
+			local def0 = S.State.shipDef(state)
+			local missing, maxHull = def0.hull - state.ship.hull, def0.hull
+			for _, f in state.fleet do
+				local fd = D.Ships.Ships[f.id]
+				missing += fd.hull - f.hull
+				maxHull += fd.hull
+			end
+			view.shipyard.missing = math.max(0, missing)
+			view.shipyard.maxHull = maxHull
+			view.shipyard.repairTotal = math.max(0, missing) * view.shipyard.repairCost
+		end
 		for _, shipId in D.Ships.Order do
 			local s = D.Ships.Ships[shipId]
 			local locked = nil
