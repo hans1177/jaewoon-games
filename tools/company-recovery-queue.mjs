@@ -60,15 +60,19 @@ export function enqueueRecovery(queueInput,row={},options={}){
     const canonical=canonicalId?queue.tasks.find(x=>x.id===canonicalId):null;
     const target=reactivateDispatched&&canonical?.status==='dispatched'?canonical:existing;
     const reactivated=reactivateDispatched&&target.status==='dispatched';
-    const tasks=queue.tasks.map(x=>x.id!==target.id?x:{...x,
-      status:reactivated?'queued':x.status,
-      priority:item.priority||x.priority,gameId:item.gameId||x.gameId,responsibleFiles:uniq([...(x.responsibleFiles||[]),...(item.responsibleFiles||[])]),contextFiles:uniq([...(x.contextFiles||[]),...(item.contextFiles||[])]),goal:item.goal||x.goal,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
-      evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
-      checkpoint:item.checkpoint||x.checkpoint,sourceMutationRequired:item.sourceMutationRequired!==false,
-      sourceMutationBaseline:item.sourceMutationBaseline||item.checkpoint||x.sourceMutationBaseline||x.checkpoint||null,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
-      verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),
-      recurrenceCount:Math.max(Number(x.recurrenceCount||0),Number(item.recurrenceCount||0)),
-      updatedAt:now()
+    const tasks=queue.tasks.map(x=>{
+      if(x.id!==target.id)return x;
+      const next={...x,
+        status:reactivated?'queued':x.status,
+        priority:item.priority||x.priority,gameId:item.gameId||x.gameId,responsibleFiles:uniq([...(x.responsibleFiles||[]),...(item.responsibleFiles||[])]),contextFiles:uniq([...(x.contextFiles||[]),...(item.contextFiles||[])]),goal:item.goal||x.goal,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
+        evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
+        checkpoint:item.checkpoint||x.checkpoint,sourceMutationRequired:item.sourceMutationRequired!==false,
+        sourceMutationBaseline:item.sourceMutationBaseline||item.checkpoint||x.sourceMutationBaseline||x.checkpoint||null,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
+        verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),
+        recurrenceCount:Math.max(Number(x.recurrenceCount||0),Number(item.recurrenceCount||0))
+      };
+      // 복구 내용이 동일하면 시각만 갱신하지 않는다. 변경된 증거·체크포인트·재활성화는 그대로 저장한다.
+      return JSON.stringify(next)===JSON.stringify(x)?x:{...next,updatedAt:now()};
     });
     return{queue:{...queue,tasks},added:false,reactivated,id:target.id};
   }
