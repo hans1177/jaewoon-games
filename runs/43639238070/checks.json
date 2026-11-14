@@ -1,18 +1,18 @@
 {
-  "runId": "43635444844",
+  "runId": "43639238070",
   "kind": "studio",
-  "sourceRevision": "4c18542d44a5a7120adf1150f724c4c4957e3ca9",
+  "sourceRevision": "46e800779b39b2ed8c5152a2c636a1f123d6db66",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 10,
-    "completedSteps": 10,
+    "plannedSteps": 9,
+    "completedSteps": 9,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 2,
-    "capturedFrames": 2,
+    "plannedFrames": 1,
+    "capturedFrames": 1,
     "abortedEarly": false
   },
   "errors": [],
@@ -75,43 +75,28 @@
     {
       "step": 7,
       "type": "capture",
-      "name": "cb1",
+      "name": "gal1",
       "status": "PASS",
       "screenshots": [
-        "cb1-0.jpg"
+        "gal1-0.jpg"
       ]
     },
     {
       "step": 8,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 9,
-      "type": "capture",
-      "name": "cb2",
-      "status": "PASS",
-      "screenshots": [
-        "cb2-0.jpg"
-      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "cb1-0.jpg",
-      "sha256": "cf5b3965e4d8519d7294b0e6d0b33c7f6f2ab1a56cea867cba68e2431c57c35f",
+      "name": "gal1-0.jpg",
+      "sha256": "59b5198e508435ec54e9909b445be5264082b3ab3f57eef52fbc58b36e282ad6",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43635444844/cb1-0.jpg"
-    },
-    {
-      "name": "cb2-0.jpg",
-      "sha256": "5ec3dc71e67697f73c68da186b5048c5387b8974d4dcccc32467340a0ea641aa",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43635444844/cb2-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43639238070/gal1-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43634566376"
+  "previousRunId": "43639142312"
 }

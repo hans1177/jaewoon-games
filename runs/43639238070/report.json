@@ -1,5 +1,5 @@
 {
- "sourceRevision": "4c18542d44a5a7120adf1150f724c4c4957e3ca9",
+ "sourceRevision": "46e800779b39b2ed8c5152a2c636a1f123d6db66",
  "log": [
   {
    "step": 1,
@@ -14,17 +14,17 @@
   {
    "step": 5,
    "ctx": "Client",
-   "out": "DEV Practice\ntext"
+   "out": "GALLERY none\ntext"
   },
   {
    "step": 7,
-   "capture": "cb1",
+   "capture": "gal1",
    "files": 1
   },
   {
-   "step": 9,
-   "capture": "cb2",
-   "files": 1
+   "step": 8,
+   "ctx": "Client",
+   "out": "ERRORS 0\ntext"
   }
  ],
  "errors": [],
@@ -39,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 10,
-  "completedSteps": 10,
+  "plannedSteps": 9,
+  "completedSteps": 9,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 2,
-  "capturedFrames": 2,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }

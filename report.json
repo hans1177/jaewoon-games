@@ -1,80 +1,30 @@
 {
- "sourceRevision": "5d39fff512fcad046c98958c4b8afd5ef85f01b0",
+ "sourceRevision": "46e800779b39b2ed8c5152a2c636a1f123d6db66",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "DEV Deck\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "faced 19.949283599853516\ntext"
-  },
-  {
-   "step": 6,
-   "capture": "c1_approach",
-   "files": 1
+   "out": "GALLERY none\ntext"
   },
   {
    "step": 7,
-   "ctx": "Client",
-   "out": "attack\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "c2_attack",
+   "capture": "gal1",
    "files": 1
   },
   {
-   "step": 11,
+   "step": 8,
    "ctx": "Client",
-   "out": "faced 7.000010967254639\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "heavy\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "c3_heavy",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "spin\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "c4_spin",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "dash\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "c5_dash",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ready=true err=true table: 0x5144e7c1839ae466 btns=공격|철수|0.4|6.2|3.2\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "MOVE anchored=false moved=16.4 ws=18 mobs=4\ntext"
+   "out": "ERRORS 0\ntext"
   }
  ],
  "errors": [],
@@ -89,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 25,
-  "completedSteps": 25,
+  "plannedSteps": 9,
+  "completedSteps": 9,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
