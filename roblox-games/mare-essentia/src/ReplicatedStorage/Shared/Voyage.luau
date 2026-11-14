@@ -218,4 +218,18 @@ function Voyage.windMult(rng: () -> number): number
 	return 0.8 + 0.4 * rng()
 end
 
+-- 초보 우대 버프 "순풍의 가호": 모험 레벨 7까지 이어지고 레벨이 오를수록 서서히 약해진다.
+Voyage.ROOKIE_NAME = "순풍의 가호"
+function Voyage.rookie(adventureLevel: number): number
+	-- 레벨 1~3 은 최대 우대, 4~5 는 2/3, 6~7 은 1/3, 8 부터 사라진다
+	if adventureLevel <= 3 then
+		return 0.3
+	elseif adventureLevel <= 5 then
+		return 0.2
+	elseif adventureLevel <= 7 then
+		return 0.1
+	end
+	return 0
+end
+
 return Voyage

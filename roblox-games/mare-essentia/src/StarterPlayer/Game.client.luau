@@ -2825,6 +2825,7 @@ local function sail(portId)
 			rings = player:GetAttribute("ManualHelm") ~= false or firstVisit, -- 기본은 직접 항해(바람 고리). 처음 가는 항구는 반드시 직접 항해
 			firstVisit = firstVisit,
 			crew = view.crew,
+			tutorial = view.sailTutorial,
 			traffic = (function()
 				-- 이 해역의 교역선(지역 전통 배)과 여러 나라 함대
 				local POOL = {
@@ -2874,6 +2875,8 @@ local function sail(portId)
 		-- 바람 고리 점수 보상 (직접 항해를 한 경우만 점수가 온다)
 		if ok and type(err) == "number" then
 			call("VoyageBonus", { score = err })
+		elseif ok then
+			call("VoyageBonus", { auto = true }) -- 자동 항해: 최근 수동 실력에 따른 낮은 점수
 		end
 		-- 2) 도착한 항구의 3D 장면: 배가 먼 바다에서 들어와 정박
 		arriveNext = true
