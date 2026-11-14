@@ -138,34 +138,38 @@ return function(D, S)
 		return math.max(1, math.floor(base * S.Harbor.costMult(state)))
 	end
 
+	-- 조선소가 없는 항구에서도 응급 수리는 된다: 선체의 일정 비율(FIELD_CAP)까지만, 비용은 두 배
+	local FIELD_CAP, FIELD_MULT = 0.6, 2
 	function handlers.Repair(state)
-		if not currentPort(state).shipyard then
-			return false, "이 항구에는 조선소가 없어요"
-		end
+		local yard = currentPort(state).shipyard == true
 		local def = S.State.shipDef(state)
-		local missing = def.hull - state.ship.hull
+		local capOf = function(maxHull)
+			return if yard then maxHull else math.floor(maxHull * FIELD_CAP)
+		end
+		local unit = cost(state, REPAIR_COST) * (if yard then 1 else FIELD_MULT)
+		local missing = math.max(0, capOf(def.hull) - state.ship.hull)
 		for _, f in state.fleet do
-			missing += D.Ships.Ships[f.id].hull - f.hull
+			missing += math.max(0, capOf(D.Ships.Ships[f.id].hull) - f.hull)
 		end
 		if missing <= 0 then
-			return false, "수리할 곳이 없어요"
+			return false, if yard then "수리할 곳이 없어요" else "응급 수리는 선체 60%까지만 돼요. 조선소에서 마저 고치세요"
 		end
-		local points = math.min(missing, math.floor(state.coins / cost(state, REPAIR_COST)))
+		local points = math.min(missing, math.floor(state.coins / unit))
 		if points <= 0 then
 			return false, "코인이 부족해요"
 		end
-		state.coins -= points * cost(state, REPAIR_COST)
+		state.coins -= points * unit
 		-- 기함부터, 남는 만큼 선단 배를 고친다
 		local left = points
-		local own = math.min(left, def.hull - state.ship.hull)
+		local own = math.min(left, math.max(0, capOf(def.hull) - state.ship.hull))
 		state.ship.hull += own
 		left -= own
 		for _, f in state.fleet do
-			local n = math.min(left, D.Ships.Ships[f.id].hull - f.hull)
+			local n = math.min(left, math.max(0, capOf(D.Ships.Ships[f.id].hull) - f.hull))
 			f.hull += n
 			left -= n
 		end
-		return true, string.format("선체 +%d 수리 (-%d)", points, points * cost(state, REPAIR_COST))
+		return true, string.format("%s 선체 +%d (-%d)", if yard then "수리" else "응급 수리", points, points * unit)
 	end
 
 	function handlers.HireCrew(state, p)

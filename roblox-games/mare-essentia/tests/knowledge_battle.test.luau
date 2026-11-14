@@ -109,5 +109,30 @@ do
 	check("해전 카드 지원: 화면용 설명이 있다", #S.View.build(stN, ctx).navalSupport == #sup2.lines)
 end
 
+
+-- 응급 수리: 조선소 없는 항구에서도 선체 60%까지 (비용 2배), 조선소에서는 전부
+do
+	local stR = S.State.new("england", 1700)
+	local view0 = S.View.build(stR, ctx)
+	local noYardPort, yardPort
+	for id, p in D.Ports.Ports do
+		if p.shipyard then yardPort = yardPort or id else noYardPort = noYardPort or id end
+	end
+	check("응급 수리: 조선소 없는 항구 존재", noYardPort ~= nil)
+	if noYardPort then
+		stR.portId = noYardPort
+		stR.coins = 100000
+		local def = S.State.shipDef(stR)
+		stR.ship.hull = 1
+		local v = S.View.build(stR, ctx)
+		check("응급 수리: 화면에 응급 표시", v.shipyard.field == true and v.shipyard.missing == math.floor(def.hull * 0.6) - 1 and v.shipyard.fullMissing == def.hull - 1)
+		check("응급 수리: 가까운 조선소 안내", v.nearestYard ~= nil and v.nearestYard.name ~= nil)
+		local ok = Registry.handlers.Repair(stR, {}, ctx)
+		check("응급 수리: 60%까지만 수리", ok and stR.ship.hull == math.floor(def.hull * 0.6))
+		local again = Registry.handlers.Repair(stR, {}, ctx)
+		check("응급 수리: 더는 안 된다", not again)
+	end
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

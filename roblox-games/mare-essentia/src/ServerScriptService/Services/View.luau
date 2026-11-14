@@ -332,6 +332,12 @@ return function(D, S)
 
 		-- 항해 미리보기
 		view.routes = {}
+		local questTargets = {}
+		for _, q in D.Quests.Quests do
+			if state.quests.active[q.id] and q.portId then
+				questTargets[q.portId] = q.name
+			end
+		end
 		for _, portId in sortedKeys(D.Ports.Ports) do
 			if portId ~= port.id and D.PortEras.isOpen(portId, S.State.year(state)) then
 				local plan = S.Sailing.preview(state, portId)
@@ -340,6 +346,8 @@ return function(D, S)
 					region = region.name,
 					locked = if not D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), D.Regions.tierOf(portId, D.Ports.Ports[portId].lat, D.Ports.Ports[portId].lon)) then string.format("모험 Lv.%d 필요", region.minLevel) else nil,
 					id = portId,
+					yard = D.Ports.Ports[portId].shipyard == true,
+					quest = questTargets[portId],
 					name = D.Ports.Ports[portId].name,
 					days = plan.days,
 					supplies = plan.supplies,
@@ -349,21 +357,36 @@ return function(D, S)
 			end
 		end
 
+		do
+			-- 가장 가까운 조선소 (항로 목록에서 거리 순으로)
+			local best
+			for _, r in view.routes do
+				if r.yard and not r.locked and (not best or r.distanceKm < best.distanceKm) then
+					best = r
+				end
+			end
+			view.nearestYard = best and { id = best.id, name = best.name, days = best.days, distanceKm = best.distanceKm, supplies = best.supplies } or nil
+		end
 		view.counsel = S.Advice.list(state) -- 동료 조언 (view.advice 는 항구 인사말이 이미 쓴다)
 		-- 조선소
 		view.shipyard = { available = port.shipyard, ships = {}, supplyCost = math.max(1, math.floor(S.Shipyard.SUPPLY_COST * S.Harbor.costMult(state))), hireCost = math.max(1, math.floor(S.Shipyard.HIRE_COST * S.Harbor.costMult(state))), repairCost = math.max(1, math.floor(S.Shipyard.REPAIR_COST * S.Harbor.costMult(state))) }
 		do
 			-- 수리: 기함과 선단의 부족한 선체 합계와 전부 고칠 때의 비용
 			local def0 = S.State.shipDef(state)
-			local missing, maxHull = def0.hull - state.ship.hull, def0.hull
+			local capK = if port.shipyard then 1 else 0.6 -- 조선소 없는 항구는 응급 수리(선체 60%까지, 비용 2배)
+			local missing, maxHull = math.max(0, math.floor(def0.hull * capK) - state.ship.hull), def0.hull
+			local fullMissing = def0.hull - state.ship.hull
 			for _, f in state.fleet do
 				local fd = D.Ships.Ships[f.id]
-				missing += fd.hull - f.hull
+				missing += math.max(0, math.floor(fd.hull * capK) - f.hull)
+				fullMissing += fd.hull - f.hull
 				maxHull += fd.hull
 			end
 			view.shipyard.missing = math.max(0, missing)
+			view.shipyard.fullMissing = math.max(0, fullMissing)
 			view.shipyard.maxHull = maxHull
-			view.shipyard.repairTotal = math.max(0, missing) * view.shipyard.repairCost
+			view.shipyard.field = not port.shipyard
+			view.shipyard.repairTotal = math.max(0, missing) * view.shipyard.repairCost * (if port.shipyard then 1 else 2)
 		end
 		for _, shipId in D.Ships.Order do
 			local s = D.Ships.Ships[shipId]

@@ -4813,7 +4813,37 @@ function RENDERERS.route()
 	add(function()
 		return mkLabel(content, string.format("보급품 %d · 석탄 %d%s", ship.supplies, ship.coal, if ship.steam then " (증기선은 석탄을 태워요)" else ""), 13, COLORS.muted, false)
 	end)
-	for _, r in view.routes do
+	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
+	H.routeSort = H.routeSort or "near"
+	add(function()
+		local row = mkRow(content, "항로 정렬", "지금 선택: " .. ({ near = "가까운 순", quest = "의뢰 목적지 먼저", yard = "조선소 먼저", name = "이름순", region = "해역별" })[H.routeSort], {
+			{ text = "가까운 순", color = if H.routeSort == "near" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "near"; render() end },
+			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
+			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
+			{ text = "해역", color = if H.routeSort == "region" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "region"; render() end },
+			{ text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
+		}, 60)
+		return row
+	end)
+	local sorted = table.clone(view.routes)
+	local mode = H.routeSort
+	table.sort(sorted, function(a, b)
+		if (a.locked ~= nil) ~= (b.locked ~= nil) then
+			return a.locked == nil
+		end
+		if mode == "quest" and (a.quest ~= nil) ~= (b.quest ~= nil) then
+			return a.quest ~= nil
+		elseif mode == "yard" and a.yard ~= b.yard then
+			return a.yard
+		elseif mode == "region" and a.region ~= b.region then
+			return a.region < b.region
+		end
+		if a.distanceKm ~= b.distanceKm then
+			return a.distanceKm < b.distanceKm
+		end
+		return a.name < b.name
+	end)
+	for _, r in sorted do
 		add(function()
 			local warn = ""
 			if r.supplies > ship.supplies then
@@ -4826,7 +4856,8 @@ function RENDERERS.route()
 					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
 				}, 56)
 			end
-			return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
+			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km · 보급품 %d%s%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = "출항", color = COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
 		end)
@@ -4871,22 +4902,39 @@ end
 local function renderYard()
 	local yard = view.shipyard
 	H.counselRows(1)
+	if not yard.available and view.nearestYard then
+		add(function()
+			local ny = view.nearestYard
+			local r
+			for _, x in view.routes do
+				if x.id == ny.id then
+					r = x
+				end
+			end
+			return mkRow(content, "가장 가까운 조선소: " .. ny.name, string.format("%d일 · %d km · 보급품 %d\n여기서는 응급 수리만 돼요", ny.days, ny.distanceKm, ny.supplies), {
+				{ text = "그곳으로 출항", color = COLORS.blue, onClick = function() if r then confirmSail(r) end end },
+			}, 76)
+		end)
+	end
 	add(function()
 		local sh = view.ship
 		local maxH = math.max(1, yard.maxHull or sh.maxHull)
-		local cur = maxH - (yard.missing or 0)
+		local cur = maxH - (yard.fullMissing or yard.missing or 0)
 		local pct = math.floor(cur / maxH * 100 + 0.5)
 		local filled = math.floor(pct / 10 + 0.5)
 		local bar = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
 		local sub
 		if (yard.missing or 0) > 0 then
-			sub = string.format("%s  %d%%  (선체 %d/%d)\n부족한 선체 %d → 전부 수리 %d코인 (선체 1당 %d코인)", bar, pct, cur, maxH, yard.missing, yard.repairTotal, yard.repairCost)
+			sub = string.format("%s  %d%%  (선체 %d/%d)\n%s %d코인 (선체 1당 %d코인)", bar, pct, cur, maxH,
+				if yard.field then "응급 수리(선체 60%까지, 비용 2배) →" else "전부 수리 →", yard.repairTotal, yard.repairCost * (if yard.field then 2 else 1))
+		elseif yard.field and (yard.fullMissing or 0) > 0 then
+			sub = string.format("%s  %d%%\n응급 수리는 여기까지예요. 조선소가 있는 항구에서 마저 고치세요", bar, pct)
 		else
 			sub = string.format("%s  100%%\n수리할 곳이 없어요. 튼튼한 배예요!", bar)
 		end
-		return mkRow(content, "선박 수리", sub, {
-			{ text = if (yard.missing or 0) > 0 then string.format("전부 수리 %d", yard.repairTotal) else "수리 불필요", color = COLORS.green,
-				onClick = function() call("Repair") end, enabled = yard.available and (yard.missing or 0) > 0 },
+		return mkRow(content, if yard.field then "응급 수리" else "선박 수리", sub, {
+			{ text = if (yard.missing or 0) > 0 then string.format("%s %d", if yard.field then "응급 수리" else "전부 수리", yard.repairTotal) else "수리 불필요", color = COLORS.green,
+				onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
 		}, 92)
 	end)
 	add(function()
@@ -4905,7 +4953,7 @@ local function renderYard()
 	end)
 	add(function()
 		return mkRow(content, "정비와 보급", string.format("수리 %d코인/1 · 선원 %d코인/명 · 보급품 %d코인/개", yard.repairCost, yard.hireCost, yard.supplyCost), {
-			{ text = "수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = yard.available },
+			{ text = if yard.available then "수리" else "응급수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
 			{ text = "선원+5", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
 			{ text = "보급+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
 		}, 64)
@@ -6693,6 +6741,14 @@ function RENDERERS.map()
 					end
 				end
 			end
+			local questAt = {}
+			for _, r in view.routes do
+				if r.quest then
+					questAt[r.id] = r.quest
+				end
+			end
+			local nearYardId = view.nearestYard and view.nearestYard.id
+			H.mapMark = H.mapMark or "all"
 			for id, pt in PortData.Ports do
 				local isHere = (id == view.player.portId)
 				local dot = Instance.new("TextButton")
@@ -6702,6 +6758,22 @@ function RENDERERS.map()
 				dot.Size = UDim2.fromOffset(if isHere then (if small then 12 else 18) else (if small then 8 else 14), if isHere then (if small then 12 else 18) else (if small then 8 else 14))
 				dot.Text = ""
 				dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
+				local isYard, isQuest = pt.shipyard == true, questAt[id] ~= nil
+				if not isHere and id ~= selectedPort then
+					if isQuest then
+						dot.BackgroundColor3 = Color3.fromRGB(255, 150, 40)
+					elseif isYard then
+						dot.BackgroundColor3 = COLORS.green
+					end
+				end
+				if id == nearYardId then
+					dot.Size = UDim2.fromOffset(if small then 14 else 20, if small then 14 else 20) -- 가장 가까운 조선소는 크게
+				end
+				if H.mapMark == "yard" and not isYard and not isHere then
+					dot.BackgroundTransparency = 0.8
+				elseif H.mapMark == "quest" and not isQuest and not isHere then
+					dot.BackgroundTransparency = 0.8
+				end
 				dot.BorderSizePixel = 1
 				dot.Parent = frame
 				-- 현재 항구는 닻 아이콘으로 크게 표시
@@ -6723,7 +6795,7 @@ function RENDERERS.map()
 				tag.BackgroundTransparency = 1
 				tag.Position = UDim2.fromOffset(12, -8)
 				tag.Size = UDim2.fromOffset(60, 14)
-				tag.Text = pt.name
+				tag.Text = (if isQuest then "📜" elseif isYard and H.mapMark ~= "all" then "🔧" else "") .. pt.name .. (if id == nearYardId then " ⚓가까운 조선소" else "")
 				tag.Font = Enum.Font.GothamBold
 				tag.TextSize = 10
 				tag.TextColor3 = Color3.new(1, 1, 1)
@@ -6737,7 +6809,14 @@ function RENDERERS.map()
 			return frame
 		end)
 		add(function()
-			return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
+			return mkLabel(content, "금색=현재 항구 · 초록=조선소 · 주황=의뢰 목적지 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
+		end)
+		add(function()
+			return mkRow(content, "지도 보기", "강조할 항구를 고르세요", {
+				{ text = "전체", color = if H.mapMark == "all" then COLORS.gold else COLORS.blue, onClick = function() H.mapMark = "all"; render() end },
+				{ text = "조선소", color = if H.mapMark == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.mapMark = "yard"; render() end },
+				{ text = "의뢰", color = if H.mapMark == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.mapMark = "quest"; render() end },
+			}, 56)
 		end)
 	end
 	-- 국가 관계·전쟁·다른 항해자

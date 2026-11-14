@@ -77,7 +77,7 @@ return function(D, S)
 			if hasYard then
 				add("hull_low", 120, "ship", string.format("선장님, 선체가 %d%%밖에 안 남았어요! 이대로 출항하면 위험해요. 조선소에서 수리하죠.", pct), "yard", "조선소로 가서 수리")
 			else
-				add("hull_low_far", 115, "ship", string.format("선체가 %d%%예요. 이 항구에는 조선소가 없으니 조선소가 있는 항구로 가서 고쳐야 해요.", pct), "route", "항로 보기")
+				add("hull_low_far", 115, "ship", string.format("선체가 %d%%예요. 이 항구에는 조선소가 없어서 응급 수리(선체 60%%까지)만 돼요. 가까운 조선소로 가서 마저 고치죠.", pct), "yard", "수리 방법 보기")
 			end
 		elseif hr < 0.8 and hasYard then
 			add("hull_mid", 60, "ship", string.format("선체가 %d%%예요. 여기 조선소에 온 김에 손봐 두면 어떨까요?", pct), "yard", "조선소로")
