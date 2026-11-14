@@ -5643,6 +5643,8 @@ function H.showCardGain(card, moreCount)
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local tw = game:GetService("TweenService")
 	local tint = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
+	-- 효과음: 흔한 카드는 동전 소리, 희귀 이상은 종소리, 전설은 팡파르 (등록된 기존 효과음만 쓴다)
+	Sfx.play(if card.rarity == "Legendary" then "sfx_fanfare" elseif card.rarity == "Epic" or card.rarity == "Rare" then "sfx_bell" else "sfx_coin", 0.7, 1, "sfx_click")
 	local g = overlayGui("CardGain", 95)
 	local dim = Instance.new("TextButton")
 	dim.Size = UDim2.fromScale(1, 1)
@@ -5800,6 +5802,18 @@ function H.showCardGain(card, moreCount)
 	dim.Activated:Connect(close)
 	task.delay(4.5, close)
 end
+
+-- 개발 확인용: workspace 속성 DevCardGain 에 카드 id 를 넣으면 그 카드의 습득 연출을 보여 준다
+workspace:GetAttributeChangedSignal("DevCardGain"):Connect(function()
+	local id = workspace:GetAttribute("DevCardGain")
+	if type(id) ~= "string" or id == "" or not (view and view.codex) then return end
+	for _, c in view.codex.cards do
+		if c.id == id then
+			H.showCardGain(if c.found then c else { id = c.id, name = c.name ~= "???" and c.name or id, field = c.field, rarity = c.rarity, description = c.description, found = true }, 0)
+			break
+		end
+	end
+end)
 
 -- 도감에 새로 들어온 카드를 찾아 연출을 띄운다 (처음 한 번은 기록만 하고 띄우지 않는다)
 function H.checkNewCards()
