@@ -1,69 +1,74 @@
 {
- "sourceRevision": "2cddcc69d7ad1d28206a59872a03d6c8a55c3b1f",
+ "sourceRevision": "ef946e3415a149f78f29e0bad6507f237c7ea233",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "true\ntext"
   },
   {
    "step": 3,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "capture": "u0_main",
+   "files": 1
   },
   {
-   "step": 5,
+   "step": 4,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "x\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "u1_hall",
+   "files": 1
   },
   {
    "step": 7,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "x\ntext"
   },
   {
    "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
+   "capture": "u2_yard",
+   "files": 1
   },
   {
    "step": 10,
    "ctx": "Client",
-   "out": "closed 2\ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 11,
-   "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
+   "step": 12,
+   "capture": "u3_options",
+   "files": 1
   },
   {
    "step": 13,
    "ctx": "Client",
-   "out": "LABELS: \ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 14,
-   "capture": "h01",
+   "step": 15,
+   "capture": "u4_status",
    "files": 1
   },
   {
    "step": 16,
    "ctx": "Client",
-   "out": "LABELS: \ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 17,
-   "capture": "h02",
+   "step": 18,
+   "capture": "u5_route",
    "files": 1
   },
   {
    "step": 19,
    "ctx": "Client",
-   "out": "LABELS: \ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 20,
-   "capture": "h03",
+   "step": 21,
+   "capture": "u6_quest",
    "files": 1
   }
  ],
@@ -79,13 +84,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 21,
-  "completedSteps": 21,
+  "plannedSteps": 22,
+  "completedSteps": 22,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 7,
+  "capturedFrames": 7,
   "abortedEarly": false
  }
 }
