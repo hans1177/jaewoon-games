@@ -207,7 +207,7 @@ function NavalBattle.play(opts)
 		or string.find(weather, "squall", 1, true) ~= nil
 	Sfx.ambient(if roughSeas then { "sfx_ambience_storm", "sfx_waves" } else { "sfx_waves", "sfx_wind" }, 0.55)
 
-	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
+	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.SmoothPlastic)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
 
