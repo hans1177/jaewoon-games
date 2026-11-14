@@ -3466,7 +3466,7 @@ do
 		for s2 = 1, 80 do seas[BC.seaRule(s2 * 7).id] = true end
 		check("해역 규칙: 여러 종류가 나온다", seas.calm and (seas.storm or seas.fog))
 		local mst = BC.build("boarding", 7 * 4 + 7 * 8 * 100, { deckCards = {}, faction = "europe" }, { boss = false })
-		check("해역 규칙: 시작할 때 그 줄이 약해진다", mst.sea.row == nil or mst.weather[mst.sea.row] == true)
+		check("해역 규칙: 시작할 때 그 줄이 약해진다", mst.sea.row == nil or mst.weather[BC.lane({ row = mst.sea.row })] == true)
 		local adviceSeen = 0
 		for _ = 1, 5 do
 			local mm = BC.build("boarding", math.random(1, 9999), { deckCards = {}, faction = "europe" }, { boss = false })
