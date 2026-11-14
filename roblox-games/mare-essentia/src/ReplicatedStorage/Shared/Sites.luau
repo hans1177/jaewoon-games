@@ -408,6 +408,7 @@ local Sites: { Site } = {
 	{ id = "jeddah_reef", name = "홍해 산호초", portId = "jeddah", minLevel = 3, days = 2, pool = { "geo_red_sea", "zoo_whale_shark", "zoo_dugong" } },
 	{ id = "muscat_forts", name = "무스카트 쌍성", portId = "muscat", minLevel = 2, days = 1, pool = { "site_muscat_forts", "relic_dhow_model" } },
 	{ id = "muscat_pearl", name = "진주 어장", portId = "muscat", minLevel = 3, days = 2, pool = { "zoo_pearl_oyster", "min_pearl_raw", "geo_persian_gulf" } },
+	{ id = "muscat_persepolis", name = "페르시아 내륙 원정 (페르세폴리스)", portId = "muscat", minLevel = 4, days = 3, pool = { "site_persepolis" } },
 	{ id = "bandar_hormuz", name = "호르무즈 해협", portId = "bandar_abbas", minLevel = 3, days = 2, pool = { "geo_persian_gulf", "min_lapis", "relic_mughal_miniature" } },
 	{ id = "basra_canals", name = "바스라 대추야자 숲", portId = "basra", minLevel = 2, days = 1, pool = { "site_basra_canals", "bot_date_palm" } },
 	{ id = "basra_marsh", name = "메소포타미아 습지", portId = "basra", minLevel = 3, days = 2, pool = { "zoo_flamingo_lake", "bot_lotus", "geo_persian_gulf" } },
