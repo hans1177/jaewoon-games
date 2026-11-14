@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-b6t2md",
+      "worker": "vibe2",
+      "taskId": "fifty-days-studio-evolution-roblox-usability-v1",
+      "gameId": "fifty-days",
+      "files": [
+        "roblox-games/fifty-days/client/Game.client.luau",
+        "roblox-games/fifty-days/shared/GameConfig.luau",
+        "roblox-games/fifty-days/server/Game.server.luau",
+        "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+        "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "2505fdc7693657cfeb905d3a92b8846cd42d81af",
+      "runId": "43635403470",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-14T20:12:53.883Z",
+      "expiresAt": "2026-11-14T20:57:53.883Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fifty-days-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
