@@ -165,6 +165,26 @@ return function(D, S)
 				view.compare[g.id] = top
 			end
 		end
+		if view.intel < 1 then
+			-- 동료가 없어도: 직접 거래해 본 항구의 팔값은 수첩에서 알려 준다 (오래될수록 믿기 어렵다)
+			for _, g in view.goods do
+				local list = {}
+				for pid, e in (state.priceBook and state.priceBook[g.id]) or {} do
+					if pid ~= port.id then
+						table.insert(list, { name = D.Ports.Ports[pid].name, sell = e.sell, ago = math.max(0, state.day - e.day), memory = true })
+					end
+				end
+				table.sort(list, function(x, y)
+					if x.sell ~= y.sell then
+						return x.sell > y.sell
+					end
+					return x.name < y.name
+				end)
+				if #list > 0 then
+					view.compare[g.id] = { table.unpack(list, 1, math.min(3, #list)) }
+				end
+			end
+		end
 		view.supplyMax = S.State.maxSupplies()
 		view.board = {}
 		for _, b in S.Harbor.boardHere(state) do

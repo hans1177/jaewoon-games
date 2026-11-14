@@ -3521,6 +3521,55 @@ end
 -- 핵심 수치 띠: 칸마다 작은 이름 + 큰 값(색으로 좋음/나쁨/중요 구분). 모든 시설 창 공통.
 -- items = { { label, value, tone = "good" | "bad" | "key" | nil }, ... }
 H.TONE = { good = Color3.fromRGB(47, 122, 58), bad = Color3.fromRGB(166, 42, 31), key = Color3.fromRGB(154, 79, 10) }
+-- 지갑 줄: 가운데에 내 코인을 크게, 양옆에 지금 한 번에 처리할 일 (채우기·수리·납품)
+function H.walletBar(mode)
+	add(function()
+		local sh, sy, p = view.ship, view.shipyard, view.player
+		local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 70), Color3.fromRGB(58, 42, 28))
+		corner(f, 10)
+		local coin = mkLabel(f, "💰 " .. H.commas(p.coins), 24, Color3.fromRGB(255, 226, 120), true)
+		coin.AnchorPoint = Vector2.new(0.5, 0)
+		coin.Position = UDim2.new(0.5, 0, 0, 6)
+		coin.Size = UDim2.fromOffset(220, 30)
+		coin.AutomaticSize = Enum.AutomaticSize.None
+		coin.TextXAlignment = Enum.TextXAlignment.Center
+		local needCrew = math.max(0, sh.maxCrew - sh.crew)
+		local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
+		local info = mkLabel(f, string.format("선원 %d/%d · 보급 %d/%d · 선체 %d%%", sh.crew, sh.maxCrew, sh.supplies, view.supplyMax or 100, math.floor(sh.hull / math.max(1, sh.maxHull) * 100 + 0.5)), 12, Color3.fromRGB(230, 214, 180), false)
+		info.AnchorPoint = Vector2.new(0.5, 0)
+		info.Position = UDim2.new(0.5, 0, 0, 40)
+		info.Size = UDim2.fromOffset(300, 22)
+		info.AutomaticSize = Enum.AutomaticSize.None
+		info.TextXAlignment = Enum.TextXAlignment.Center
+		local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
+		local fill = mkButton(f, if cost > 0 then string.format("채우기\n%d", cost) else "준비 완료", COLORS.gold, UDim2.fromOffset(86, 54), function() call("Resupply", { what = "both" }) end, cost > 0)
+		fill.Position = UDim2.fromOffset(8, 8)
+		local right
+		if mode == "tavern" then
+			local n = 0
+			for _, q in view.quests.active do
+				if q.kind == "deliver" and q.progress >= q.amount then
+					n += 1
+				end
+			end
+			right = mkButton(f, if n > 0 then string.format("의뢰 납품\n%d건", n) else "납품할\n의뢰 없음", COLORS.green, UDim2.fromOffset(86, 54), function()
+				task.spawn(function()
+					for _, q in view.quests.active do
+						if q.kind == "deliver" and q.progress >= q.amount then
+							call("TurnIn", { questId = q.id })
+						end
+					end
+				end)
+			end, n > 0)
+		else
+			right = mkButton(f, if (sy.missing or 0) > 0 then string.format("%s\n%d", if sy.field then "응급 수리" else "수리", sy.repairTotal) else "선체 튼튼", COLORS.green, UDim2.fromOffset(86, 54), function() call("Repair") end, (sy.missing or 0) > 0)
+		end
+		right.AnchorPoint = Vector2.new(1, 0)
+		right.Position = UDim2.new(1, -8, 0, 8)
+		return f
+	end)
+end
+
 function H.statStrip(items)
 	add(function()
 		local strip = Instance.new("Frame")
@@ -3576,6 +3625,7 @@ local RENDERERS: { [string]: any } = {}
 
 function RENDERERS.harbor()
 	local h = view.harbor
+	H.walletBar("harbor")
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
@@ -4527,7 +4577,7 @@ local function openTradeHall()
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", (function()
 				local best = view.compare and view.compare[g.id] and view.compare[g.id][1]
-				return if best and best.name then " · 추천: " .. best.name else ""
+				return if best and best.name then (if best.memory then string.format(" · 기억: %s %d", best.name, best.sell) else " · 추천: " .. best.name) else ""
 			end)()), 13, INK_SOFT, false)
 			pr.TextTruncate = Enum.TextTruncate.AtEnd
 			pr.Position = UDim2.fromOffset(70, 34)
@@ -4672,10 +4722,11 @@ local function openTradeHall()
 				local lines = {}
 				if top then
 					for _, t in top do
-						table.insert(lines, if t.sell then string.format("%s  %d", t.name, t.sell) else t.name)
+						table.insert(lines, if t.memory then string.format("%s  %d (%d일 전 거래 기억)", t.name, t.sell, t.ago) elseif t.sell then string.format("%s  %d", t.name, t.sell) else t.name)
 					end
 				end
-				local cmpText = if (view.intel or 0) <= 0 then "다른 항구 시세: 장사 감각이 있는 동료가 필요해요"
+				local cmpText = if (view.intel or 0) <= 0 and #lines == 0 then "다른 항구 시세: 장사 감각이 있는 동료를 태우거나, 이 물건을 다른 항구에서 직접 거래해 보세요 (거래한 값은 수첩에 적혀요)"
+					elseif (view.intel or 0) <= 0 then "내 시세 수첩 (직접 거래한 항구, 값은 그때 기준)\n" .. table.concat(lines, "\n")
 					elseif #lines == 0 then "다른 항구 시세 정보 없음"
 					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
 				local cl = mkLabel(right, cmpText, 15, INK, false)
@@ -5007,6 +5058,7 @@ end
 
 local function renderYard()
 	local yard = view.shipyard
+	H.walletBar("yard")
 	H.counselRows(1)
 	if not yard.available and view.nearestYard then
 		add(function()
@@ -5347,6 +5399,7 @@ function H.startField(s)
 end
 
 function RENDERERS.explore()
+	H.walletBar("tavern")
 	-- 지상 전술 탐험: 격자 맵 턴제 전투. 서버가 전투를 만들어 주면 전술 화면을 연다.
 	local function openTactics()
 		if inField or not (view and view.tactics) then
@@ -6499,6 +6552,7 @@ function RENDERERS.tech()
 end
 
 function RENDERERS.quest()
+	H.walletBar("tavern")
 	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
 	local STRAND = { companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
 	local function strandText(q)
@@ -6547,6 +6601,7 @@ end
 
 -- 주점의 지식 카드 배틀: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
 function RENDERERS.gwent()
+	H.walletBar("tavern")
 	add(function()
 		return mkRow(content, "지식 카드 배틀", "주점 탁자에서 병종 카드로 겨루는 게임이에요. 3줄·3판 2선승, 줄 상성(근접>포>사격>근접). 이기면 새 카드를 얻어요. 학문 카드를 많이 모을수록 같은 계열 줄이 강해져요.", {
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
@@ -6587,6 +6642,7 @@ function RENDERERS.gwent()
 end
 
 function RENDERERS.battle()
+	H.walletBar("tavern")
 	local lo = view.loadout
 	if not equipped then
 		equipped = table.clone(lo.equipped)
