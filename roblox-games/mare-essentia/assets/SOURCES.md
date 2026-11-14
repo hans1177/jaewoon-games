@@ -1448,3 +1448,7 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `portraits/` | event_oceania_work_bg_18.png | AI generated (도구 미상, 사용자 제공 5x4 시트) · PROJECT_ORIGINAL_ART |  |
 | `portraits/` | event_oceania_work_bg_19.png | AI generated (도구 미상, 사용자 제공 5x4 시트) · PROJECT_ORIGINAL_ART |  |
 | `portraits/` | event_oceania_work_bg_20.png | AI generated (도구 미상, 사용자 제공 5x4 시트) · PROJECT_ORIGINAL_ART |  |
+| `cardart/` | scene_market_east_africa.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
+| `cardart/` | scene_market_ryukyu_japan.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
+| `cardart/` | scene_market_south_asia.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
+| `cardart/` | scene_market_southeast_asia.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
