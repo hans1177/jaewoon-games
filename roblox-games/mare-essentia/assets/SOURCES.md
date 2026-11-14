@@ -941,3 +941,42 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `cargo/` | whale_oil.glb | Vibe 5.9 owner-directed original · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-12 (SHA256: cargo/whale_oil.glb.license.json) |
 | `cargo/` | wool.glb | Vibe 5.9 owner-directed original · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-12 (SHA256: cargo/wool.glb.license.json) |
 | `naval/` | frigate.glb | Vibe 5.9 AI-generated detailed frigate model · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-14 (SHA256: naval/frigate.glb.license.json) |
+| `people/` | female_peasant_arms.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_peasant_body.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_peasant_feet.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_peasant_legs.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_acc_pauldrons.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_arms.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_body.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_feet.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_head_hood.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | female_ranger_legs.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | hair_beard.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | hair_buns.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | hair_buzzed.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | hair_buzzedfemale.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | hair_long.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | hair_simpleparted.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | head_f.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | head_m.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | male_peasant_arms.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_peasant_body.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_peasant_feet.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_peasant_legs.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_acc_pauldron.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_arms.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_body.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_feet_boots.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_head_hood.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | male_ranger_legs.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/modularcharacteroutfitsfantasy.html |
+| `people/` | rig_f.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `people/` | rig_m.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/universalbasecharacters.html |
+| `portraits/` | townsfolk_01_navigator_f.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_02_apprentice_m.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_03_merchant_wife.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_04_headscarf_f.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_05_cap_sailor.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_06_curly_merchant.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_07_hairpin_f.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_08_strawhat_m.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
+| `portraits/` | townsfolk_09_green_jacket_f.png | AI generated (도구 미상, 사용자 제공 3x3 시트) · PROJECT_ORIGINAL_ART | ai-generated |
