@@ -3877,6 +3877,44 @@ do
 	end
 end
 
+
+-- [멀리건] 첫 판에서 카드를 내기 전에 손패를 3장까지 바꾼다
+do
+	local BC = D.BoardingCards
+	local function fresh()
+		local m = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "europe", "europe")
+		m.turn = "me"
+		for i = 1, 6 do
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			table.insert(m.deck.me, table.clone(if i % 2 == 0 then BC.Units.axeman else BC.Units.pikeman))
+		end
+		return m
+	end
+	local m = fresh()
+	local n = #m.hand.me
+	local first = m.hand.me[1].id
+	local ok1, _, _, act = BC.mulligan(m, "me", 1)
+	check("멀리건: 한 장 바꾸면 손패 수가 그대로", ok1 == true and #m.hand.me == n and m.mulligan.me == 2 and act[1] == "m")
+	BC.mulligan(m, "me", 1); BC.mulligan(m, "me", 1)
+	local ok4 = BC.mulligan(m, "me", 1)
+	check("멀리건: 3장까지만 바꿀 수 있다", ok4 == false and m.mulligan.me == 0)
+	m = fresh()
+	table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+	BC.play(m, "me", 1)
+	m.turn = "me"
+	local okLate = BC.mulligan(m, "me", 1)
+	check("멀리건: 카드를 낸 뒤에는 못 바꾼다", okLate == false)
+	m = fresh()
+	m.round = 2
+	check("멀리건: 첫 판에서만 가능하다", BC.mulligan(m, "me", 1) == false)
+	check("멀리건: 없는 카드 번호는 거절", BC.mulligan(fresh(), "me", 99) == false)
+	-- 기록(replay)에 멀리건이 들어가도 서버가 같은 결과로 다시 돌린다
+	local r = BC.replay("boarding", 11, { faction = "europe" }, {}, { { "m", 1 }, { "s" } })
+	check("멀리건: 기록 재생이 오류 없이 끝난다", r == nil or r.winner ~= nil)
+	local bad = BC.replay("boarding", 11, { faction = "europe" }, {}, { { "m", 99 }, { "s" } })
+	check("멀리건: 잘못된 기록은 거절", bad == nil)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")

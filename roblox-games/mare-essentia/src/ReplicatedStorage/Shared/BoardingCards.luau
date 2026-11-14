@@ -21,6 +21,7 @@ B.ROW_NAME = { melee = "전열", ranged = "후열", cannon = "후열" }
 B.WEAPON_BEATS = { sword = "axe", axe = "spear", spear = "sword" }
 B.ADV, B.DIS = 1.3, 0.85
 B.HAND = 10
+B.MULLIGAN = 3 -- 첫 판에서 카드를 내기 전에 손패를 바꿀 수 있는 장수
 
 -- 병종: row, power, weapon, ability
 B.Units = {
@@ -775,6 +776,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		played = { me = 0, foe = 0 },
 		refuted = { me = {}, foe = {} },
 		rowBonus = { me = {}, foe = {} },
+		mulligan = { me = B.MULLIGAN, foe = 0 },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -1276,6 +1278,27 @@ function B.pass(m: any, side)
 	return true, "멈췄다", nil, { "s" }
 end
 
+-- 멀리건: 첫 판에서 카드를 내기 전에 손패 한 장을 덱 맨 아래로 돌려보내고 새로 한 장 뽑는다 (총 B.MULLIGAN장)
+function B.mulligan(m: any, side, handIdx)
+	if m.over or m.round ~= 1 or (m.played[side] or 0) > 0 then
+		return false, "지금은 바꿀 수 없어요"
+	end
+	if ((m.mulligan or {})[side] or 0) <= 0 then
+		return false, "바꿀 수 있는 장수를 다 썼어요"
+	end
+	local c = m.hand[side][handIdx]
+	if not c or #m.deck[side] == 0 then
+		return false, "바꿀 카드가 없어요"
+	end
+	table.remove(m.hand[side], handIdx)
+	table.insert(m.deck[side], 1, c) -- 덱 맨 아래 (뽑는 쪽은 끝)
+	drawCards(m, side, 1)
+	m.mulligan[side] -= 1
+	local msg = string.format("손패 교체: %s을(를) 돌려보내고 새 카드를 뽑았다 (남은 교체 %d장)", c.name, m.mulligan[side])
+	logLine(m, (if side == "me" then "우리: " else "해적: ") .. msg)
+	return true, msg, nil, { "m", handIdx }
+end
+
 function B.useLeader(m: any, side)
 	if m.over or m.turn ~= side or m.leaderUsed[side] then
 		return false, "지금은 쓸 수 없어요"
@@ -1553,6 +1576,7 @@ function B.replay(kind, seed, my, foe, actions)
 			if a[1] == "p" then ok = B.play(m, "me", math.floor(tonumber(a[2]) or 0))
 			elseif a[1] == "s" then ok = B.pass(m, "me")
 			elseif a[1] == "l" then ok = B.useLeader(m, "me")
+			elseif a[1] == "m" then ok = B.mulligan(m, "me", math.floor(tonumber(a[2]) or 0))
 			end
 			if not ok then return nil end
 		end
@@ -1654,6 +1678,7 @@ local function copyMatch(m)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
 	n.played = table.clone(m.played or { me = 0, foe = 0 })
+	n.mulligan = table.clone(m.mulligan or { me = 0, foe = 0 })
 	n.rowBonus = { me = table.clone((m.rowBonus or {}).me or {}), foe = table.clone((m.rowBonus or {}).foe or {}) }
 	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
