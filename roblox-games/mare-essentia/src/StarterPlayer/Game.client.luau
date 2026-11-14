@@ -6770,6 +6770,31 @@ function RENDERERS.gwent()
 		}, 92)
 	end)
 	add(function()
+		-- 지금 대결에 쓰는 내 덱 (카드 보유·단계·나라 문화권으로 정해진다)
+		local BC = require(Shared:WaitForChild("BoardingCards"))
+		local bk = view and view.cardbook
+		local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
+		local cnt = { melee = 0, ranged = 0, cannon = 0, special = 0 }
+		local power = 0
+		for _, id in (bk and bk.ids) or {} do
+			local d = BC.Units[id] or BC.Specials[id]
+			if d then
+				if d.special then
+					cnt.special += 1
+				else
+					cnt[d.row] += 1
+					power += (d.power or 0) + (((bk.tier or {})[id] or 1) - 1)
+				end
+			end
+		end
+		local leader = fac and BC.Leaders[fac.leader]
+		local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
+		return mkRow(content, string.format("내 덱: %s · %d장", fac and fac.name or "기본", total),
+			string.format("근접 %d · 사격 %d · 포 %d · 특수 %d  (부대 점수 합 %d)\n지도자: %s — %s\n대결에서 덱을 섞어 손패 10장을 뽑고, 남은 카드는 덱 더미에 쌓여요.",
+				cnt.melee, cnt.ranged, cnt.cannon, cnt.special, power, leader and leader.name or "지휘", leader and leader.text or ""),
+			{ { text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end } }, 100)
+	end)
+	add(function()
 		local bk = view and view.cardbook
 		local names = { melee = "근접 = 인문·사회", ranged = "사격 = 자연과학", cannon = "포 = 응용·공학" }
 		local parts = {}
