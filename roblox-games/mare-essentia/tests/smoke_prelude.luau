@@ -7,6 +7,7 @@ local function proxy(name)
 	mt.__index = function(_, k)
 		if k == "X" or k == "Y" or k == "Z" or k == "R" or k == "G" or k == "B" or k == "Magnitude" then return 10 end
 		if k == "Name" or k == "ClassName" then return name end
+		if k == "Transparency" then return 0 end -- 실제 BasePart 기본값. 숫자 비교(< 1)가 가능해야 한다.
 		if k == "IsA" then return function() return true end end
 		if k == "FindFirstChild" or k == "FindFirstChildWhichIsA" or k == "WaitForChild" then
 			return function(self, n)
