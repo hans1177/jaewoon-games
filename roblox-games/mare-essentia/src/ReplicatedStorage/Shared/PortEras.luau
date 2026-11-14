@@ -17,6 +17,17 @@ PortEras.Since = {
 	helsinki = 1550, livorno = 1577, gothenburg = 1621, st_petersburg = 1703, trieste = 1719,
 }
 
+-- 시작 항구가 그 시대에 없는 나라는 가까운 항구에서 시작한다
+PortEras.StartFallback = { nagasaki = "osaka", veracruz = "havana", gothenburg = "stockholm" }
+
+function PortEras.startPortFor(nation, year: number): string
+	local id = nation.startPort
+	if PortEras.isOpen(id, year) then
+		return id
+	end
+	return PortEras.StartFallback[id] or id
+end
+
 function PortEras.openYear(portId: string): number
 	return PortEras.Since[portId] or 0
 end

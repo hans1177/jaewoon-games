@@ -247,6 +247,12 @@ local function extraTests()
 	S.History.tick(st17)
 	check("1517 시작: 가을에 95개조 반박문 사건이 닥침", st17.history.pending == "reformation_95", tostring(st17.history.pending))
 	check("1517 시작: 종교개혁 이후 사건이 16건", (function() local n = 0 for _, e in HE.Events do if e.year >= 1517 and e.year < 1600 then n += 1 end end return n end)() == 16)
+	check("1517 시작: 일본·스웨덴·누에바 에스파냐는 그 시대에 있던 항구에서 시작", (function()
+		local jp = S.State.new("japan", 1517)
+		local se = S.State.new("sweden", 1517)
+		local ns = S.State.new("new_spain", 1517)
+		return jp.portId == "osaka" and se.portId == "stockholm" and ns.portId == "havana" and S.State.new("japan", 1700).portId == "nagasaki"
+	end)())
 	check("1517 시작: 새 게임 요청이 받아들여짐", select(1, S.State.new("england", 1517)) ~= nil)
 	-- 원더 연출
 	local WSd = D.WonderScenes
