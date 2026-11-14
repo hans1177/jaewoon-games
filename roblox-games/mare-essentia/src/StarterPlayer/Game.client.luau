@@ -862,7 +862,7 @@ end
 local function mkHeader(parent, text)
 	local l = mkLabel(parent, "◆ " .. text, 15, INK, true)
 	l.Size = UDim2.new(1, -8, 0, 26)
-	l.AutomaticSize = Enum.AutomaticSize.None
+	l.AutomaticSize = Enum.AutomaticSize.Y -- 좁은 화면에서 긴 소제목이 두 줄이 되어도 잘리지 않게 (26은 최소 높이)
 	l.TextYAlignment = Enum.TextYAlignment.Center
 	l.BackgroundTransparency = 0
 	l.BackgroundColor3 = Color3.fromRGB(218, 190, 139)
@@ -1797,6 +1797,12 @@ do
 		title.Position = UDim2.fromOffset(14, 10)
 		title.Size = UDim2.new(1, -28, 0, 26)
 		title.AutomaticSize = Enum.AutomaticSize.None
+		title.TextScaled = true -- 좁은 화면에서 제목이 잘리지 않게 글자를 줄인다
+		title.TextWrapped = false
+		local titleLimit = Instance.new("UITextSizeConstraint")
+		titleLimit.MaxTextSize = 18
+		titleLimit.MinTextSize = 11
+		titleLimit.Parent = title
 		local list = Instance.new("ScrollingFrame")
 		list.Position = UDim2.fromOffset(10, 44)
 		list.Size = UDim2.new(1, -20, 1, -54)
