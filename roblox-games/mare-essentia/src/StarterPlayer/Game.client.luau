@@ -2771,6 +2771,31 @@ local function sail(portId)
 			weatherId = view.weather and view.weather.id,
 			event = view.voyageEvent,
 			helm = player:GetAttribute("ManualHelm") == true, -- 설정에서 켠 수동 항해
+			traffic = (function()
+				-- 이 해역의 교역선(지역 전통 배)과 여러 나라 함대
+				local POOL = {
+					europe = { "cog", "carrack", "galley", "fluyt", "caravel" },
+					w_africa = { "pirogue", "caravel", "nau", "fluyt" },
+					new_world = { "brigantine", "privateer", "manila_galleon", "caravel" },
+					indian = { "dhow", "baghlah", "mtepe", "pattamar", "kotia", "jahazi" },
+					far_east = { "junk", "prau", "sekibune", "geobukseon", "dhow" },
+					pacific = { "prau", "junk", "manila_galleon" },
+				}
+				local dest = PortData.Ports[portId]
+				local rid = dest and require(Shared:WaitForChild("Regions")).of(dest).id or "europe"
+				local ships = require(Shared:WaitForChild("Ships")).Ships
+				local names = {}
+				for id, def in ships do
+					names[id] = def.name
+				end
+				local fleets = {}
+				for _, f in { { "frigate", "영국 함대" }, { "galleon", "스페인 함대" }, { "corvette", "프랑스 함대" }, { "east_indiaman", "네덜란드 함대" }, { "nau", "포르투갈 함대" } } do
+					if ships[f[1]] then
+						table.insert(fleets, { id = f[1], name = f[2] })
+					end
+				end
+				return { merchants = POOL[rid] or POOL.europe, fleets = fleets, names = names }
+			end)(),
 		})
 		if not ok then
 			warn("[Game] 3D 항해 오류, 2D로 대체:", err)

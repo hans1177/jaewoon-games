@@ -943,6 +943,53 @@ function VoyageScene.play(info)
 		local ey = restY(es)
 		table.insert(escorts, { m = es, rot = CFrame.new(-ebase.Position) * ebase, y = ey, back = 34 + i * 12, side = ({ 28, -28, 52 })[i], phase = i * 1.7 })
 	end
+	-- 바다의 다른 배들: 그 해역의 교역선과 여러 나라 함대가 항로 둘레를 오간다 (수동 항해에서 더 많이)
+	local traffic = {}
+	do
+		local tf = info.traffic
+		if tf then
+			local count = if helm then 8 else 3
+			local trng = Random.new((info.departureDay or 1) * 31 + #pts)
+			for i = 1, count do
+				local isFleet = tf.fleets and #tf.fleets > 0 and i % 3 == 0
+				local def = if isFleet then tf.fleets[1 + (i // 3) % #tf.fleets] else (tf.merchants and tf.merchants[1 + (i * 7) % math.max(1, #tf.merchants)])
+				if def then
+					local id = if isFleet then def.id else def
+					local ok, m = pcall(info.makeShip, folder, id, ORIGIN + Vector3.new(0, 1.2, 0))
+					if ok and m then
+						pcall(function() m:ScaleTo(if isFleet then 1.5 else 1.3) end)
+						local mbase = m:GetPivot()
+						local my = restY(m)
+						local at = pts[math.clamp(math.floor(#pts * (0.1 + 0.8 * trng:NextNumber())) + 1, 1, #pts)]
+						local ang = trng:NextNumber() * math.pi * 2
+						local home = at + Vector3.new(math.cos(ang), 0, math.sin(ang)) * trng:NextNumber(90, 220)
+						local yawT = trng:NextNumber() * math.pi * 2
+						local tag
+						pcall(function()
+							local bb = Instance.new("BillboardGui")
+							bb.Size = UDim2.fromOffset(180, 36)
+							bb.StudsOffset = Vector3.new(0, 26, 0)
+							bb.AlwaysOnTop = true
+							bb.MaxDistance = 520
+							local lb = Instance.new("TextLabel")
+							lb.Size = UDim2.fromScale(1, 1)
+							lb.BackgroundTransparency = 1
+							lb.TextScaled = true
+							lb.Font = Enum.Font.GothamBold
+							lb.TextColor3 = if isFleet then Color3.fromRGB(255, 190, 120) else Color3.fromRGB(190, 235, 255)
+							lb.TextStrokeTransparency = 0.3
+							lb.Text = if isFleet then ("⚑ " .. def.name) else ("⛵ " .. (tf.names and tf.names[id] or "교역선"))
+							lb.Parent = bb
+							bb.Adornee = m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart", true)
+							bb.Parent = m
+							tag = bb
+						end)
+						table.insert(traffic, { m = m, rot = CFrame.new(-mbase.Position) * mbase, y = my, home = home, yaw = yawT, speed = if isFleet then trng:NextNumber(9, 14) else trng:NextNumber(5, 9), phase = i * 1.3, fleet = isFleet })
+					end
+				end
+			end
+		end
+	end
 	-- 한 항해에 하나의 강수 장치만 유지한다.
 	local precipAnchor, precip, hailAnchor, hailBurst
 	if weather.kind then
@@ -1308,6 +1355,19 @@ function VoyageScene.play(info)
 			local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.5
 			local bp = pos + Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * front + right * 14
 			barrel.CFrame = CFrame.new(bp.X, 0.3 + math.sin(t * 2) * 0.25, bp.Z) * CFrame.Angles(t * 0.4, t * 0.2, math.pi / 2)
+		end
+		for _, tr in traffic do
+			-- 제 갈 길로 천천히 항해한다. 멀어지면 방향을 틀어 항로 근처로 돌아온다.
+			tr.home += Vector3.new(math.cos(tr.yaw), 0, -math.sin(tr.yaw)) * tr.speed * dt
+			if (tr.home - pos).Magnitude > 420 then
+				local back = pos - tr.home
+				tr.yaw = math.atan2(-back.Z, back.X) + math.sin(tr.phase) * 0.6
+			end
+			if (tr.home - pos).Magnitude < 520 then
+				tr.m:PivotTo(CFrame.new(tr.home.X, tr.y + math.sin(t * 1.1 + tr.phase) * 0.45, tr.home.Z) * CFrame.Angles(0, tr.yaw, 0) * CFrame.Angles(math.sin(t * 0.9 + tr.phase) * 0.03, 0, math.sin(t * 0.7 + tr.phase) * 0.05) * tr.rot)
+			else
+				tr.m:PivotTo(CFrame.new(tr.home.X, -500, tr.home.Z))
+			end
 		end
 		for _, e in escorts do
 			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
