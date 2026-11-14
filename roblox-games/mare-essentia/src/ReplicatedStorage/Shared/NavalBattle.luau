@@ -693,6 +693,55 @@ function NavalBattle.play(opts)
 		end)
 		skillBtn[sk.id] = b
 	end
+	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
+	local reloadBack = Instance.new("Frame")
+	reloadBack.AnchorPoint = Vector2.new(1, 1)
+	reloadBack.Position = UDim2.new(1, -24, 1, -102)
+	reloadBack.Size = UDim2.fromOffset(350, 16)
+	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
+	reloadBack.BackgroundTransparency = 0.15
+	reloadBack.BorderSizePixel = 0
+	reloadBack.Visible = not opts.cardOnly
+	reloadBack.Parent = gui
+	do
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 8)
+		c.Parent = reloadBack
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(214, 170, 82)
+		st.Thickness = 1.5
+		st.Parent = reloadBack
+	end
+	local reloadFill = Instance.new("Frame")
+	reloadFill.Size = UDim2.fromScale(1, 1)
+	reloadFill.BackgroundColor3 = Color3.fromRGB(240, 180, 80)
+	reloadFill.BorderSizePixel = 0
+	reloadFill.Parent = reloadBack
+	do
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 8)
+		c.Parent = reloadFill
+	end
+	local reloadText = label(reloadBack, "포 장전", 12, Color3.fromRGB(255, 255, 255), true)
+	reloadText.Size = UDim2.fromScale(1, 1)
+	reloadText.ZIndex = 5
+	-- 적선까지 거리 표시
+	local distLabel = label(gui, "", 15, Color3.fromRGB(255, 255, 255))
+	distLabel.AnchorPoint = Vector2.new(0.5, 1)
+	distLabel.Position = UDim2.new(0.5, 0, 1, -36)
+	distLabel.Size = UDim2.fromOffset(340, 22)
+	distLabel.Visible = not opts.cardOnly
+	-- 적선이 화면 밖이면 가장자리에 방향 화살표
+	local foeArrow = label(gui, "➤", 34, Color3.fromRGB(255, 96, 84))
+	foeArrow.AnchorPoint = Vector2.new(0.5, 0.5)
+	foeArrow.Size = UDim2.fromOffset(40, 40)
+	foeArrow.Visible = false
+	foeArrow.ZIndex = 18
+	local foeArrowTag = label(gui, "", 12, Color3.fromRGB(255, 190, 180))
+	foeArrowTag.AnchorPoint = Vector2.new(0.5, 0.5)
+	foeArrowTag.Size = UDim2.fromOffset(90, 16)
+	foeArrowTag.Visible = false
+	foeArrowTag.ZIndex = 18
 	-- 가상 스틱: 좌우 = 방향 전환, 위/아래 = 속도 (모바일 중심)
 	local stickBase = Instance.new("Frame")
 	stickBase.AnchorPoint = Vector2.new(0, 1)
@@ -821,7 +870,9 @@ function NavalBattle.play(opts)
 	local meHp, foeHp = 1, 1
 	local meDone, foeDone = 0, 0 -- 소비한 포격 수
 
+	local dmgPop = function(_toPlayer, _amount) end -- 피해 숫자 (popText 근처에서 연결)
 	local function applyHit(toPlayer, e)
+		dmgPop(toPlayer, e and e.hull or 0)
 		if toPlayer then
 			meDone += 1
 			meHp = math.clamp(1 - (1 - meEnd) * (meDone / math.max(1, #foeQueue)), meEnd, 1)
@@ -2262,6 +2313,27 @@ function NavalBattle.play(opts)
 		end)
 	end
 	skillPop = popText
+	-- 피해 숫자: 맞은 배 위로 빨간(내 배)·노란(적) 숫자가 떠올랐다 사라진다
+	dmgPop = function(toPlayer, amount)
+		local sh = if toPlayer then me else foe
+		if finished or not sh or amount <= 0 then
+			return
+		end
+		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
+		if not on then
+			return
+		end
+		local inset = game:GetService("GuiService"):GetGuiInset()
+		local l = label(gui, "-" .. tostring(amount), 28, if toPlayer then Color3.fromRGB(255, 110, 96) else Color3.fromRGB(255, 226, 110))
+		l.AnchorPoint = Vector2.new(0.5, 0.5)
+		l.Size = UDim2.fromOffset(120, 36)
+		l.Position = UDim2.fromOffset(v.X - inset.X, v.Y - inset.Y)
+		l.TextStrokeTransparency = 0.1
+		l.ZIndex = 22
+		local TS = game:GetService("TweenService")
+		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		task.delay(1.2, function() l:Destroy() end)
+	end
 	-- 돛대가 부러져 바다로 쓰러진다 (체력이 크게 줄어든 첫 순간)
 	local function dismast(sh)
 		sh.dismasted = true
@@ -2866,6 +2938,40 @@ function NavalBattle.play(opts)
 		FX.update(dt)
 		meFill.Size = UDim2.fromScale(meHp, 1)
 		foeFill.Size = UDim2.fromScale(foeHp, 1)
+		if not opts.cardOnly then
+			local dv = (foe.pos - me.pos).Magnitude
+			local inRange = dv < cannon.range
+			distLabel.Text = string.format("적선 %d m · %s", math.floor(dv), if inRange then "사정거리 안 — 포격 중" elseif dv < cannon.range * 1.4 then "조금만 더 접근!" else "사정거리 밖")
+			distLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
+			local cdNow = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
+			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
+			reloadFill.Size = UDim2.fromScale(prog, 1)
+			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
+			reloadText.Text = if not inRange then "포 — 사거리 밖" elseif prog >= 1 then "포 발사 준비!" else "포 장전 중..."
+			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
+			local vp = cam.ViewportSize
+			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
+			foeArrow.Visible, foeArrowTag.Visible = not onScr, not onScr
+			if not onScr then
+				local c0 = vp / 2
+				local dir = Vector2.new(v.X, v.Y) - c0
+				if v.Z < 0 then
+					dir = -dir
+				end
+				if dir.Magnitude < 1 then
+					dir = Vector2.new(1, 0)
+				end
+				dir = dir.Unit
+				local kx = if math.abs(dir.X) > 1e-3 then (vp.X / 2 - 60) / math.abs(dir.X) else math.huge
+				local ky = if math.abs(dir.Y) > 1e-3 then (vp.Y / 2 - 120) / math.abs(dir.Y) else math.huge
+				local pt = c0 + dir * math.min(kx, ky)
+				local inset = game:GetService("GuiService"):GetGuiInset()
+				foeArrow.Position = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
+				foeArrow.Rotation = math.deg(math.atan2(dir.Y, dir.X))
+				foeArrowTag.Position = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
+				foeArrowTag.Text = string.format("적선 %dm", math.floor(dv))
+			end
+		end
 		mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
 		foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
 		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
