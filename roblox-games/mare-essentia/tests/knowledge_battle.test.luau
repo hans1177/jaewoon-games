@@ -536,5 +536,12 @@ do
 	check("지도자 고르기: 잘못된 요청 거절", okType == false)
 end
 
+do
+	local Rg = require("./Shared/Rings")
+	local base = { at = 0.5, lat = 0, big = false, bonus = false }
+	local wide = { at = 0.5, lat = 0, big = false, bonus = false, rm = 1.4 }
+	check("동료 효과: 고리 판정 확대", Rg.radius(wide) > Rg.radius(base) and Rg.hit(wide, 0.28) and not Rg.hit(base, 0.28))
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

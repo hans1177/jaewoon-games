@@ -243,6 +243,7 @@ function VoyageScene.play(info)
 	local ringList, ringParts, nextRing = {}, {}, 1
 	local shakeAmp, fovBoost = 0, 0
 	local goShown, resultShown = false, false
+	local crewRm, crewHeal = 1, 0
 	local firstVisitFlag = info.firstVisit == true
 	local ringPopup = function(_text: string, _color: Color3) end
 	local redFlash = function() end
@@ -347,6 +348,13 @@ function VoyageScene.play(info)
 				return rs / 2147483648
 			end
 			ringList = Rings.build(rng, info.days, info.event and info.event.kind, info.level)
+			-- 동료 효과: 항해 속도 보너스 1%당 고리 판정 +2% (최대 +50%)
+			local crewSpeed = if info.crew then math.max(0, info.crew.speed or 0) else 0
+			crewRm = 1 + math.min(0.5, crewSpeed * 2)
+			crewHeal = if info.crew then math.clamp(info.crew.heal or 0, 0, 0.8) else 0
+			for _, r0 in ringList do
+				r0.rm = crewRm
+			end
 			for _, r in ringList do
 				local p, d = positionAt(pts, cum, r.at * total)
 				local c = p + Vector3.new(-d.Z, 0, d.X) * r.lat * LATSCALE
@@ -1443,6 +1451,9 @@ function VoyageScene.play(info)
 					end
 					local prevCombo = tally.combo
 					Rings.record(tally, r, ok)
+					if r.hazard and not ok then
+						tally.stun *= (1 - crewHeal)
+					end
 					local part = ringParts[nextRing]
 					local p3, d3 = positionAt(pts, cum, r.at * total)
 					local hitPos = p3 + Vector3.new(-d3.Z, 0, d3.X) * r.lat * LATSCALE + Vector3.new(0, 8, 0)

@@ -870,6 +870,8 @@ return function(D, S)
 		view.voyageEvent = state.voyageEvent
 		view.visitedPorts = state.stats.visited
 		view.seaBoss = state.seaBoss
+		-- 수동 항해에 반영되는 동료 효과: 항해 속도 보너스→고리 판정 확대, 의사 효과→충돌 후 멈춤 단축
+		view.crew = { speed = S.Perk.speedMult(state) - 1, heal = S.Perk.healReduction(state) }
 		return view
 	end
 
