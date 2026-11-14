@@ -333,7 +333,7 @@ return function(D, S)
 		-- 항해 미리보기
 		view.routes = {}
 		for _, portId in sortedKeys(D.Ports.Ports) do
-			if portId ~= port.id then
+			if portId ~= port.id and D.PortEras.isOpen(portId, S.State.year(state)) then
 				local plan = S.Sailing.preview(state, portId)
 				local region = D.Regions.of(D.Ports.Ports[portId])
 				table.insert(view.routes, {

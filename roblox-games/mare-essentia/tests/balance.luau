@@ -4,6 +4,7 @@
 
 local D = {
 	Ports = require("./Shared/Ports"),
+	PortEras = require("./Shared/PortEras"),
 	Ships = require("./Shared/Ships"),
 	Tech = require("./Shared/Tech"),
 	Skills = require("./Shared/Skills"),
