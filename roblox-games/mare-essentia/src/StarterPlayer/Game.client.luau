@@ -374,6 +374,15 @@ local SHIP_ICON = {
 	galleon = { "Naval", "ship-pirate-large" }, paddle_steamer = { "Naval", "ship-medium", Color3.fromRGB(70, 70, 78) },
 	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
 }
+do
+	local ShipsMod = require(Shared:WaitForChild("Ships"))
+	for id, def in ShipsMod.Ships do
+		if def.visual and SHIP_ICON[def.visual] and not SHIP_ICON[id] then
+			local base = SHIP_ICON[def.visual]
+			SHIP_ICON[id] = { base[1], base[2], if def.tint then Color3.fromRGB(def.tint[1], def.tint[2], def.tint[3]) else base[3] }
+		end
+	end
+end
 
 -- 화면에 남아 있는 큰 입체 표본만 최대 10개까지 회전시킨다.
 local itemMotion = {}
@@ -1184,27 +1193,10 @@ end
 end
 
 do
-	local countries = {
-		atlantic_europe = { "france", "spain", "portugal", "ireland", "madeira", "azores", "canary", "gibraltar", "st_helena" },
-		mediterranean = { "italy", "venice", "tuscany", "naples", "sicily", "malta", "greece", "levant", "ottoman", "ragusa", "crete", "rhodes", "cyprus", "dalmatia", "papal", "mallorca", "sardinia", "corsica" },
-		red_sea = { "egypt", "yemen", "hejaz", "oman", "persia", "mesopotamia", "algeria", "tripoli", "tunisia", "morocco" },
-		west_africa = { "senegal", "guinea", "sierra_leone", "gold_coast", "dahomey", "benin", "niger_delta", "angola", "cape_verde", "sao_tome" },
-		americas = { "canada", "newfoundland", "new_france", "new_england", "new_netherland", "pennsylvania", "carolina", "louisiana",
-			"bahamas", "cuba", "new_spain", "jamaica", "hispaniola", "puerto_rico", "barbados", "trinidad", "venezuela", "new_granada",
-			"panama", "suriname", "brazil", "rio_de_la_plata", "quito", "peru", "chile", "california", "pacific_northwest" },
-		north_sea = { "england", "netherlands", "denmark", "sweden", "norway", "scotland", "germany", "austria", "estonia", "finland", "gotland", "livonia", "poland", "prussia", "russia", "russian_america" },
-		east_africa = { "swahili", "somalia", "mozambique", "cape" },
-		east_asia = { "china", "japan", "korea", "macau", "formosa" },
-		south_asia = { "gujarat", "portuguese_india", "malabar", "ceylon", "coromandel", "bengal", "mauritius" },
-		southeast_asia = { "malay", "vietnam", "java", "celebes", "moluccas", "borneo", "burma", "siam", "philippines", "new_guinea", "marianas", "fiji", "polynesia", "hawaii", "new_zealand", "australia", "tasmania" },
-	}
-	local mediterraneanPorts = { marseille = true, toulon = true, barcelona = true, valencia = true, cartagena = true, malaga = true }
-	local regionByCountry = {}
-	for region, ids in countries do
-		for _, id in ids do
-			regionByCountry[id] = region
-		end
-	end
+	local CultureRegions = require(Shared:WaitForChild("CultureRegions"))
+	local countries = CultureRegions.Countries
+	local mediterraneanPorts = CultureRegions.MediterraneanPorts
+	local regionByCountry = CultureRegions.RegionByCountry
 
 	-- 항구가 속한 해역 id (초상화 시트 고르기용)
 	function H.regionOfPort(portId)

@@ -24,6 +24,10 @@ return function(D, S)
 		if state.ship.id == def.id then
 			return false, "이미 이 배를 가지고 있어요"
 		end
+		local block = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
+		if block then
+			return false, block
+		end
 		if def.techReq and not state.tech[def.techReq] then
 			return false, "연구가 필요해요: " .. D.Tech.Tech[def.techReq].name
 		end
@@ -231,6 +235,10 @@ return function(D, S)
 		end
 		if not currentPort(state).shipyard then
 			return false, "선단에 배를 들이려면 조선소가 있는 항구여야 해요"
+		end
+		local fblock = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
+		if fblock then
+			return false, fblock
 		end
 		if #state.fleet >= S.State.MAX_FLEET then
 			return false, "선단은 기함 외에 최대 3척이에요"

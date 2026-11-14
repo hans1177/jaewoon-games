@@ -12,7 +12,7 @@ return function(D, S)
 		local nation = D.Ports.Nations[state.nationId]
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
-		return D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, D.Voyage.weather(state.day, state.portId).wind)
+		return D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, (if def.rowed then math.max(1, D.Voyage.weather(state.day, state.portId).wind) else D.Voyage.weather(state.day, state.portId).wind)) -- 노로 가는 배는 맞바람에도 느려지지 않는다
 	end
 
 	-- 보물지도: 목적지 항구 근처 해역에 묻힌 보물. 도착하면 찾는다.
@@ -94,7 +94,7 @@ return function(D, S)
 		local wind = weather.wind
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
-		local plan = D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, wind)
+		local plan = D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, if def.rowed then math.max(1, wind) else wind)
 		local event = D.Voyage.rollEvent(ctx.rng, plan.days, weather.id)
 
 		local msgs = {}

@@ -88,6 +88,15 @@ local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
 }
+-- 지역·나라 전용 배는 기본 배의 모델을 빌려 쓴다 (Ships.visual)
+do
+	local ShipsMod = require(script.Parent:WaitForChild("Ships"))
+	for id, def in ShipsMod.Ships do
+		if def.visual and not PLAYER_SHIP[id] then
+			PLAYER_SHIP[id] = PLAYER_SHIP[def.visual]
+		end
+	end
+end
 
 local function part(parent, size, cf, color, material, shape)
 	local p = Instance.new("Part")
