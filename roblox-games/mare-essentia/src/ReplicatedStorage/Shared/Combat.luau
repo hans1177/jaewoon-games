@@ -41,6 +41,20 @@ type Runtime = {
 
 local Combat = {}
 
+-- 실시간 해전 규칙 (클라이언트 장면과 서버 검증이 같은 값을 쓴다)
+Combat.SIM = {
+	volley = 0.32, -- 한 번 일제 포격으로 줄 수 있는 피해: 자동 해전 한 라운드 포격의 비율
+	minCd = 0.8, -- 포 발사 사이의 최소 간격(초)
+	skillMargin = 2.6, -- 스킬 배율의 최대치(검증 여유)
+}
+
+-- 이 배가 elapsed 초 동안 낼 수 있는 선체 피해의 최대치 (서버가 클라이언트 보고를 검증할 때 쓴다)
+function Combat.maxHullDamage(f: Fighter, elapsed: number): number
+	local base = f.cannons * 1.6 * f.cannonMult * 1.15 * 1.2
+	local volleys = math.floor(elapsed / Combat.SIM.minCd) + 1
+	return volleys * base * Combat.SIM.volley * Combat.SIM.skillMargin
+end
+
 local RANGED_ROUNDS = 5
 local BOARDING_ROUNDS = 12
 local MAX_LOG = 60
@@ -279,6 +293,11 @@ function Combat.run(a: Fighter, b: Fighter, rng: () -> number): Result
 		return finish("a", "surrender", round, log, ra, rb)
 	end
 
+	return Combat.boardingPhase(ra, rb, rng, say, round, log)
+end
+
+-- 접현 백병전만 따로 돌린다 (실시간 해전에서 두 배가 맞닿았을 때도 같은 규칙을 쓴다)
+function Combat.boardingPhase(ra: Runtime, rb: Runtime, rng: () -> number, say: (string) -> (), round: number, log: { string }): Result
 	say("두 배가 접현했다! 백병전 돌입")
 	for _ = 1, BOARDING_ROUNDS do
 		round += 1
@@ -305,6 +324,30 @@ function Combat.run(a: Fighter, b: Fighter, rng: () -> number): Result
 		return finish("b", "stalemate", round, log, ra, rb)
 	end
 	return finish("draw", "stalemate", round, log, ra, rb)
+end
+
+-- 실시간 해전용: 지금 선원 수로 곧바로 백병전을 돌린다. seed가 같으면 결과도 같다 (서버가 다시 돌려 확인한다).
+function Combat.board(a: Fighter, b: Fighter, seed: number): Result
+	-- 어느 기기에서나 같은 수열이 나오는 간단한 난수 (클라이언트와 서버가 같은 결과를 얻어야 한다)
+	local x = math.floor(seed) % 2147483647
+	if x <= 0 then
+		x += 2147483646
+	end
+	local function nextNumber(): number
+		x = (x * 48271) % 2147483647
+		return x / 2147483647
+	end
+	local ra = newRuntime(clone(a))
+	local rb = newRuntime(clone(b))
+	local log: { string } = {}
+	local function say(s: string)
+		if #log < MAX_LOG then
+			table.insert(log, s)
+		end
+	end
+	ra.luck = 0.85 + 0.3 * nextNumber()
+	rb.luck = 0.85 + 0.3 * nextNumber()
+	return Combat.boardingPhase(ra, rb, nextNumber, say, 0, log)
 end
 
 local PIRATE_NAMES = { "검은 갈매기호", "붉은 파도호", "안개 속의 늑대호", "녹슨 닻호", "북해의 독수리호" }

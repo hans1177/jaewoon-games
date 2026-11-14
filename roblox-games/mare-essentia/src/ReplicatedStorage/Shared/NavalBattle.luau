@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local Combat = require(script.Parent:WaitForChild("Combat"))
 
 local NavalBattle = {}
 
@@ -395,7 +396,7 @@ function NavalBattle.play(opts)
 	local function cardRow(anchorX, posX, posY, color)
 		local row = Instance.new("Frame")
 		row.AnchorPoint = Vector2.new(anchorX, 0)
-		row.Position = UDim2.new(posX, 0, 0, posY)
+		row.Position = UDim2.new(posX, if anchorX == 1 then -16 else 16, 0, posY)
 		row.Size = UDim2.fromOffset(0, 46)
 		row.AutomaticSize = Enum.AutomaticSize.X
 		row.BackgroundTransparency = 1
@@ -513,13 +514,13 @@ function NavalBattle.play(opts)
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
-	subtitle.Position = UDim2.new(0.5, 0, 1, -76)
+	subtitle.Position = UDim2.new(0.5, 0, 1, -96)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
-	local hint = label(gui, if opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
-	hint.AnchorPoint = Vector2.new(0.5, 0)
-	hint.Position = UDim2.new(0.5, 0, 0, 164)
+	local hint = label(gui, if opts.sim ~= nil and not opts.card and not opts.cardOnly then "배의 옆면을 적선 쪽으로 돌리면 대포가 나가요! 붉은 원은 적 포탄 낙하 지점 — 벗어나서 피하세요. 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요." elseif opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
+	hint.AnchorPoint = Vector2.new(0.5, 1)
+	hint.Position = UDim2.new(0.5, 0, 1, -150)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
 
@@ -536,7 +537,8 @@ function NavalBattle.play(opts)
 		local entries = opts.cardEffects or {}
 		if #entries > 0 and not opts.cardOnly then
 			local panel = Instance.new("Frame")
-			panel.Position = UDim2.new(0, 10, 0.3, 0)
+			panel.AnchorPoint = Vector2.new(1, 0)
+			panel.Position = UDim2.new(1, -16, 0, 122)
 			panel.Size = UDim2.fromOffset(190, 24 + #entries * 30)
 			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
 			panel.BackgroundTransparency = 0.35
@@ -661,16 +663,24 @@ function NavalBattle.play(opts)
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(120, 70), Vector2.new(1, 1))
-	speedBtn.TextSize = 18
+	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1))
+	speedBtn.TextSize = 20
+	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
 	-- 스킬 버튼: 가속 버튼 옆에 둔다. 쿨타임이 돌면 남은 초를 보여 준다 (결과는 서버가 정하므로 전투 연출·기동만 돕는다)
 	local SKILLS = {
-		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62), x = -156 },
-		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170), x = -270 },
+		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62) },
+		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170) },
 	}
+	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
+	for i, sk in SKILLS do
+		local n = #SKILLS
+		local ang = math.rad(if n == 1 then 135 else 100 + (i - 1) * (70 / (n - 1)))
+		sk.x = -72 + math.floor(math.cos(ang) * 124)
+		sk.y = -72 - math.floor(math.sin(ang) * 124)
+	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
 	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
 	local skillBtn = {}
@@ -684,8 +694,10 @@ function NavalBattle.play(opts)
 		skillPop(sk.text .. "!", sk.col)
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, -24), UDim2.fromOffset(104, 70), Vector2.new(1, 1))
-		b.TextSize = 16
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(78, 78), Vector2.new(0.5, 0.5))
+		b.TextSize = 14
+		b.TextWrapped = true
+		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		b.BackgroundColor3 = sk.col
 		b.Visible = not opts.cardOnly
 		b.Activated:Connect(function()
@@ -695,9 +707,9 @@ function NavalBattle.play(opts)
 	end
 	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
 	local reloadBack = Instance.new("Frame")
-	reloadBack.AnchorPoint = Vector2.new(1, 1)
-	reloadBack.Position = UDim2.new(1, -24, 1, -102)
-	reloadBack.Size = UDim2.fromOffset(350, 16)
+	reloadBack.AnchorPoint = Vector2.new(0.5, 1)
+	reloadBack.Position = UDim2.new(0.5, 0, 1, -62)
+	reloadBack.Size = UDim2.fromOffset(300, 20)
 	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	reloadBack.BackgroundTransparency = 0.15
 	reloadBack.BorderSizePixel = 0
@@ -836,7 +848,7 @@ function NavalBattle.play(opts)
 	end))
 
 	-- 전투 기록: 서로 순서대로 맞는 포격 큐와 마무리 백병전 큐
-	local events = parseLog(opts.log or {})
+	local events = parseLog(if opts.sim ~= nil and not opts.card and not opts.cardOnly then {} else (opts.log or {}))
 	local meQueue, foeQueue, meleeQueue = {}, {}, {}
 	local dmgToMe, dmgToFoe = 0, 0
 	for _, e in events do
@@ -868,6 +880,18 @@ function NavalBattle.play(opts)
 		meEnd, foeEnd = 1, 1
 	end
 	local meHp, foeHp = 1, 1
+	-- 실시간 해전: 두 배의 선체·선원을 장면 안에서 직접 깎는다. 서버는 끝난 뒤 보고만 검사한다.
+	local RT = opts.sim ~= nil and not opts.card and not opts.cardOnly
+	local rt = nil
+	if RT then
+		rt = {
+			meHull = opts.sim.me.hull, meMax = opts.sim.me.maxHull, meCrew = opts.sim.me.crew,
+			foeHull = opts.sim.foe.hull, foeMax = opts.sim.foe.maxHull, foeCrew = opts.sim.foe.crew,
+			start = os.clock(), ended = false, contact = 0, shots = 0, hits = 0,
+		}
+		meHp = rt.meHull / rt.meMax
+		foeHp = rt.foeHull / rt.foeMax
+	end
 	local meDone, foeDone = 0, 0 -- 소비한 포격 수
 
 	local dmgPop = function(_toPlayer, _amount) end -- 피해 숫자 (popText 근처에서 연결)
@@ -888,7 +912,7 @@ function NavalBattle.play(opts)
 	local shake = 0
 	-- 접현 카드 전투: 배가 맞닿으면 화면이 카드판으로 바뀐다. 규칙은 BoardingCards (3줄 × 3판 2선승, 병종 상성).
 	-- 전투 결과 자체는 서버 판정 그대로이고, 카드전의 승패는 기동 점수(명성 보너스)에만 반영된다.
-	local BC = require(script.Parent:WaitForChild("BoardingCards"))
+local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
 	-- 능력의 본래 효과를 유지하면서 카드 인장·선택 설명에 동일하게 표시한다.
 	local ROW_ICON = { melee = "근접", ranged = "사격", cannon = "포격" }
@@ -1146,7 +1170,7 @@ function NavalBattle.play(opts)
 			local total = label(plate, "0", 30, Color3.fromRGB(46, 33, 22), true)
 			total.AnchorPoint = Vector2.new(0.5, 0.5)
 			total.Position = UDim2.fromScale(0.5, 0.52)
-			total.Size = UDim2.fromScale(0.6, 0.42)
+			total.Size = UDim2.fromScale(0.4, 0.42)
 			total.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
 			total.BackgroundTransparency = 0
 			total.TextScaled = true
@@ -1156,7 +1180,41 @@ function NavalBattle.play(opts)
 			gems.Position = UDim2.fromScale(0.04, 0.78)
 			gems.Size = UDim2.fromScale(0.92, 0.2)
 			gems.TextScaled = true
-			return { who = who, total = total, gems = gems, plate = plate }
+			-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
+			local leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
+			leader.AnchorPoint = Vector2.new(0, 0.5)
+			leader.Position = UDim2.fromScale(0.03, 0.52)
+			leader.Size = UDim2.fromScale(0.27, 0.36)
+			leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
+			leader.BackgroundTransparency = 0
+			leader.TextScaled = true
+			leader.TextStrokeTransparency = 1
+			local ar = Instance.new("UIAspectRatioConstraint")
+			ar.Parent = leader
+			local rc = Instance.new("UICorner")
+			rc.CornerRadius = UDim.new(1, 0)
+			rc.Parent = leader
+			frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			local pile = Instance.new("Frame")
+			pile.AnchorPoint = Vector2.new(1, 0.5)
+			pile.Position = UDim2.fromScale(0.97, 0.52)
+			pile.Size = UDim2.fromScale(0.24, 0.4)
+			pile.BackgroundTransparency = 1
+			pile.Parent = plate
+			for k = 2, 0, -1 do
+				local sheet = Instance.new("Frame")
+				sheet.Position = UDim2.fromScale(0.0 + k * 0.08, 0.0 + k * 0.05)
+				sheet.Size = UDim2.fromScale(0.72, 0.82)
+				sheet.BackgroundColor3 = Color3.fromRGB(34 + k * 8, 56 + k * 8, 84 + k * 8)
+				sheet.BorderSizePixel = 0
+				sheet.Parent = pile
+				frameEdge(sheet, brass, 3)
+			end
+			local deckCount = label(pile, "", 14, Color3.fromRGB(250, 236, 200), true)
+			deckCount.Size = UDim2.fromScale(0.72, 0.82)
+			deckCount.TextScaled = true
+			deckCount.ZIndex = 5
+			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount }
 		end
 		local foePlate = sidePlate(0.02, Color3.fromRGB(88, 58, 50))
 		local mePlate = sidePlate(0.58, Color3.fromRGB(58, 74, 62))
@@ -1850,6 +1908,10 @@ function NavalBattle.play(opts)
 			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
+			foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
+			mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
+			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
+			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
 			mePlate.total.Text = tostring(BC.total(m, "me"))
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
@@ -2096,6 +2158,22 @@ function NavalBattle.play(opts)
 					playChosenCard()
 				end)
 			end
+			-- 부채꼴 손패: 가운데 카드는 곧게, 가장자리로 갈수록 기울인다
+			do
+				local cards = {}
+				for _, ch in handFrame:GetChildren() do
+					if ch:IsA("TextButton") then
+						table.insert(cards, ch)
+					end
+				end
+				table.sort(cards, function(a, b2) return a.LayoutOrder < b2.LayoutOrder end)
+				local mid = (#cards + 1) / 2
+				for idx, ch in cards do
+					if ch ~= selected then
+						ch.Rotation = math.clamp((idx - mid) * 2.2, -9, 9)
+					end
+				end
+			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
 			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
@@ -2156,7 +2234,7 @@ function NavalBattle.play(opts)
 	end
 
 	-- 적 포탄 낙하 경고: 바다 위 붉은 원. 포탄이 떨어질 때 원 밖에 있으면 "회피"로 콤보가 쌓인다.
-	local function warnRing(center)
+	local function warnRing(center, onLand)
 		local ring = part(folder, Vector3.new(0.4, 26, 26), CFrame.new(ORIGIN + center + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(235, 60, 50), Enum.Material.Neon, Enum.PartType.Cylinder)
 		ring.Transparency = 0.45
 		local t0 = os.clock()
@@ -2175,7 +2253,11 @@ function NavalBattle.play(opts)
 			if finished then
 				return
 			end
-			if (me.pos - center).Magnitude > 20 then
+			local radius = if os.clock() < skillUntil.evade then 11 else 20
+			if onLand then
+				onLand((me.pos - center).Magnitude <= radius)
+			end
+			if (me.pos - center).Magnitude > radius then
 				dodged += 1
 				combo += 1
 				flair += 10 + combo * 2
@@ -2574,7 +2656,7 @@ function NavalBattle.play(opts)
 	end
 
 	local sinkStart = nil
-	local loser = if opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
+	local loser = if RT then nil elseif opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	local fleeProgress, fleeTried = 0, false
 	local nextMeFire, nextFoeFire = os.clock() + 0.9, os.clock() + 1.7
@@ -2584,6 +2666,101 @@ function NavalBattle.play(opts)
 	local lastT = os.clock()
 	local escortFire = os.clock() + 3
 	local nextHullSound = os.clock() + 5
+
+	-- ===== 실시간 해전 규칙 =====
+	local function rtFinish(w, why, board, boardLog)
+		if not rt or rt.ended then
+			return
+		end
+		rt.ended = true
+		local now = os.clock()
+		local claim = {
+			winner = w, reason = why, elapsed = now - rt.start,
+			meHull = rt.meHull, foeHull = rt.foeHull, meCrew = rt.meCrew, foeCrew = rt.foeCrew, board = board,
+		}
+		local function setWinner(x)
+			opts.winner = if x == "a" or x == "b" then x else nil
+			loser = if x == "a" then "foe" elseif x == "b" then "me" else nil
+			local mh, fh = math.clamp(rt.meHull / rt.meMax, 0.12, 1), math.clamp(rt.foeHull / rt.foeMax, 0.12, 1)
+			if x == "a" then
+				meEnd, foeEnd = mh, 0
+			elseif x == "b" then
+				meEnd, foeEnd = 0, fh
+			else
+				meEnd, foeEnd = mh, fh
+			end
+		end
+		setWinner(w)
+		-- 서버에 결과를 알리고, 서버가 확인한 승패를 따른다
+		task.spawn(function()
+			local res = if opts.onResult then opts.onResult(claim) else nil
+			if res ~= nil and not finished then
+				setWinner(res)
+			end
+		end)
+		meleeQueue = {}
+		for _, e in parseLog(boardLog or {}) do
+			if e.kind == "melee" then
+				table.insert(meleeQueue, e)
+			end
+		end
+		melIdx = 0
+		rt.sunk = board == nil
+		boardStart = if board then now else now - 0.3
+		phase = "board"
+		hint.Text = ""
+		if board then
+			subtitle.Text = "두 배가 접현했다! 백병전!"
+			shake = 2.2
+			Sfx.play("sfx_horn")
+			Sfx.play("sfx_naval_ram", 0.68, 0.96, "sfx_creak")
+			Sfx.play("sfx_boarding_slash", 0.46, 1)
+		else
+			subtitle.Text = if w == "a" then "적선이 침몰한다!" elseif w == "b" then "우리 배가 가라앉는다..." else "서로 물러났다."
+		end
+	end
+	local function rtDamage(toPlayer, amount)
+		if not rt or rt.ended or amount <= 0 then
+			return
+		end
+		if toPlayer then
+			amount = amount * (1 - math.clamp(opts.sim.me.pumpReduction or 0, 0, 0.8))
+			rt.meHull = math.max(0, rt.meHull - amount)
+			rt.meCrew = math.max(1, rt.meCrew - amount * 0.06)
+			meHp = rt.meHull / rt.meMax
+			if meHp < 0.5 then CH.flash("pump") end
+		else
+			rt.foeHull = math.max(0, rt.foeHull - amount)
+			rt.foeCrew = math.max(1, rt.foeCrew - amount * 0.06)
+			foeHp = rt.foeHull / rt.foeMax
+			if rt.hits % 3 == 1 then CH.flash("cannon") end
+		end
+		dmgPop(toPlayer, math.max(1, math.floor(amount + 0.5)))
+		Sfx.play(if toPlayer then "sfx_hit" else "sfx_naval_hull_hit", 0.7, 0.9 + math.random() * 0.2, "sfx_hit")
+		if rt.foeHull <= 0 then
+			rt.foeHull = 0
+			rtFinish("a", "sunk")
+		elseif rt.meHull <= 0 then
+			rt.meHull = 0
+			rtFinish("b", "sunk")
+		end
+	end
+	local function rtBoard()
+		local fa = table.clone(opts.sim.me)
+		fa.hull, fa.crew = math.max(1, rt.meHull), math.max(1, math.floor(rt.meCrew))
+		local fb = table.clone(opts.sim.foe)
+		fb.hull, fb.crew = math.max(1, rt.foeHull), math.max(1, math.floor(rt.foeCrew))
+		local seed = math.random(1, 2000000000)
+		local r2 = Combat.board(fa, fb, seed)
+		local board = { seed = seed, meCrew = fa.crew, foeCrew = fb.crew }
+		rt.meCrew, rt.foeCrew = r2.a.crew, r2.b.crew
+		if r2.winner == "a" then
+			rt.foeHull = 0
+		elseif r2.winner == "b" then
+			rt.meHull = 0
+		end
+		rtFinish(r2.winner, r2.reason, board, r2.log)
+	end
 
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		if finished then
@@ -2633,7 +2810,7 @@ function NavalBattle.play(opts)
 			foe.speed = (if dist > 55 then 17 else 11) * windFactor(foe.theta)
 			if cardBusy then foe.speed = 0 end
 			foe.pos += forward(foe.theta) * foe.speed * dt
-			if phase == "board" then
+			if phase == "board" and not (rt and rt.sunk) then
 				-- 접현: 서로 가까이 붙는다
 				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 1.6)
 			end
@@ -2692,8 +2869,77 @@ function NavalBattle.play(opts)
 			if phase == "duel" then
 				local d = (foe.pos - me.pos).Magnitude
 				if d < 45 then CH.flash("melee") end
+				if RT and not rt.ended then
+					-- 내 포격: 사정거리 안에서 배의 옆면이 적선을 향할 때 나간다. 적이 움직인 만큼 빗나갈 수 있다.
+					local fwdv = forward(me.theta)
+					local toFoe = foe.pos - me.pos
+					local side = if toFoe.Magnitude > 0.1 then math.abs(fwdv:Cross(toFoe.Unit).Y) else 0
+					local inRange = d < cannon.range
+					if inRange and side > 0.5 and now >= nextMeFire then
+						nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
+						local lead = foe.pos + forward(foe.theta) * foe.speed * cannon.dur
+						local acc = math.clamp((side - 0.3) / 0.7, 0.35, 1) * (1 - 0.3 * d / cannon.range)
+						local base = opts.sim.me.cannons * 1.6 * opts.sim.me.cannonMult * (0.85 + 0.3 * math.random()) * Combat.SIM.volley
+						rt.shots += 1
+						local volley = if now < skillUntil.rapid then 3 else 2
+						for k = 0, volley - 1 do
+							task.delay(k * 0.08, function()
+								if finished or rt.ended then
+									return
+								end
+								shoot(me.pos, lead, if k == volley - 1 then function()
+									if rt.ended then
+										return
+									end
+									shake = 1.2
+									if (foe.pos - lead).Magnitude < 26 then
+										rt.hits += 1
+										rtDamage(false, base * acc)
+									else
+										popText("빗나감!", Color3.fromRGB(190, 200, 215))
+									end
+								end else nil, cannon)
+							end)
+						end
+					end
+					if now - rt.start > 9 and hint.Text:sub(1, 3) == "배의 " then
+						hint.Text = "" -- 처음 안내는 잠깐만 보여 준다
+					end
+					if inRange and side <= 0.5 and (hint.Text == "" or hint.Text:sub(1, 1) == "⚓") then
+						hint.Text = "⚓ 배의 옆면을 적선 쪽으로 돌리세요!"
+					elseif hint.Text:sub(1, 1) == "⚓" then
+						hint.Text = ""
+					end
+					-- 적의 포격: 낙하 지점에 붉은 원이 뜨고, 그 안에 있으면 맞는다
+					if d < 105 and now >= nextFoeFire then
+						nextFoeFire = now + 2.6
+						local ringC = me.pos + forward(me.theta) * me.speed * 0.9
+						local foeBase = opts.sim.foe.cannons * 1.6 * opts.sim.foe.cannonMult * (0.85 + 0.3 * math.random()) * Combat.SIM.volley
+						warnRing(ringC, function(hit)
+							if rt.ended then
+								return
+							end
+							if hit then
+								shake = 1.6
+								rtDamage(true, foeBase)
+							end
+						end)
+						shoot(foe.pos, ringC, nil)
+					end
+					-- 맞닿아 있으면 접현, 너무 오래 끌면 서로 물러난다
+					if d < 30 then
+						rt.contact += dt
+					else
+						rt.contact = math.max(0, rt.contact - dt)
+					end
+					if rt.contact >= 1.2 then
+						rtBoard()
+					elseif now - rt.start > 200 then
+						rtFinish("draw", "stalemate")
+					end
+				end
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
-				if not opts.card and d < cannon.range and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
+				if not opts.card and not RT and d < cannon.range and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
 					nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
@@ -2713,7 +2959,7 @@ function NavalBattle.play(opts)
 						end)
 					end
 				end
-				if not opts.card and d < 95 and now >= nextFoeFire and meDone < #foeQueue then
+				if not opts.card and not RT and d < 95 and now >= nextFoeFire and meDone < #foeQueue then
 					nextFoeFire = now + 1.45
 					warnRing(me.pos + forward(me.theta) * me.speed * 0.9)
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
@@ -2772,7 +3018,7 @@ function NavalBattle.play(opts)
 						end)
 					end)
 				end
-				if not opts.card and (d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue)) then
+				if not opts.card and not RT and (d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue)) then
 					phase = "board"
 					boardStart = now
 					hint.Text = ""
@@ -2972,8 +3218,13 @@ function NavalBattle.play(opts)
 				foeArrowTag.Text = string.format("적선 %dm", math.floor(dv))
 			end
 		end
-		mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
-		foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
+		if rt then
+			mePct.Text = string.format("%d / %d", math.ceil(meHp * rt.meMax), rt.meMax)
+			foePct.Text = string.format("%d / %d", math.ceil(foeHp * rt.foeMax), rt.foeMax)
+		else
+			mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
+			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
+		end
 		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
 		for _, sk in SKILLS do
 			local b = skillBtn[sk.id]
@@ -3009,12 +3260,12 @@ function NavalBattle.play(opts)
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 84 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		cam.FieldOfView = 72 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (100 + dist * 0.45) + Vector3.new(0, 62 + dist * 0.3, 0)
+		local camPos = ORIGIN + me.pos - f * (128 + dist * 0.5) + Vector3.new(0, math.min(80, 64 + dist * 0.14), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2

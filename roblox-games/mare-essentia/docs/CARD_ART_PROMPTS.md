@@ -32,3 +32,8 @@
 카드 이름과 설명을 받으면 그 소재만 그린다. 임의로 바꾸지 않는다.
 파일 이름은 카드id.png. 저장소 hans1177/jaewoon-games 의 roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md 를 읽을 수 있으면 먼저 읽고 따른다.
 ```
+
+## 이벤트(이야기) 장면 그림
+- 목록: `docs/story_art_prompts.csv` (event_id, title, place, prompt). 카드 그림과 달리 **컬러 일러스트, 16:9 가로**.
+- 파일 이름은 `story_<event_id>.png`, 위치는 `assets/inbox/CardArt/`, `.license.json` 은 카드 그림과 같은 방식.
+- 등록되면 `CardArt/story_<event_id>` 가 이벤트 장면 배경으로 자동 사용된다. 그림이 없는 이벤트는 도형 대신 그 항구의 3D 풍경을 어둡게 깔아 보여 준다.

@@ -88,14 +88,20 @@ return function(D, S)
 		end
 		local result = D.Combat.run(me, foe, ctx.rng)
 
-		state.ship.hull = math.max(1, math.floor(result.a.hull))
-		state.ship.crew = math.max(1, math.floor(result.a.crew))
-		local used = startFuel - result.a.fuel
-		if used > 0 then
-			S.State.removeCargo(state, "coal", math.min(used, state.cargo.coal or 0))
+		-- 실시간 해전: 클라이언트가 직접 싸우고, 서버는 결과가 말이 되는지만 확인한 뒤 정산한다.
+		-- (싸우지 않고 끝내면 서버가 미리 돌려 둔 자동 해전 결과로 정산한다)
+		local keep = function(f)
+			return { name = f.name, hull = f.hull, maxHull = f.maxHull, crew = f.crew, maxCrew = f.maxCrew, cannons = f.cannons, speed = f.speed, cannonMult = f.cannonMult, meleeMult = f.meleeMult, pumpReduction = f.pumpReduction, level = f.level, steam = f.steam, fuel = f.fuel, skills = table.clone(f.skills) }
 		end
-		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = boss.name }
-		settleOutcome(state, boss, rec, result.winner, msgs)
+		local sim = { me = keep(me), foe = keep(foe), done = false }
+		state.pendingBattle = {
+			bossId = boss.id,
+			hull = result.a.hull, crew = result.a.crew, fuel = result.a.fuel, startFuel = startFuel,
+			winner = result.winner, reason = result.reason,
+			startHull = state.ship.hull, startCrew = state.ship.crew, medic = me.cardSupport.medic,
+			sim = sim,
+		}
+		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = boss.name, canFlee = false, pending = true, sim = { me = sim.me, foe = sim.foe } }
 		return true, table.concat(msgs, "\n")
 	end
 

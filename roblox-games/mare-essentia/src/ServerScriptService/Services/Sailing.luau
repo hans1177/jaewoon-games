@@ -149,81 +149,95 @@ return function(D, S)
 		S.State.advanceDays(state, days)
 		table.insert(msgs, string.format("%s을(를) 출발해 %d일 만에 %s에 도착했다 (%d km)", from.name, days, to.name, math.floor(dist)))
 
+		-- 사건: 항해가 길수록 더 많이 만난다 (8일마다 +1, 최대 4번). 선택형·전투는 한 번만.
+		local events = { event }
+		local singles = { pirates = true, merchant = true, blockade = true }
+		local usedSingle = singles[event.kind] == true
+		for _ = 1, math.min(3, math.floor(days / 8)) do
+			local extra = D.Voyage.rollEvent(ctx.rng, days, weather.id)
+			if extra.kind ~= "none" and extra.kind ~= "tailwind" and extra.kind ~= "fog" and not (singles[extra.kind] and usedSingle) then
+				if singles[extra.kind] then usedSingle = true end
+				table.insert(events, extra)
+			end
+		end
+		for _, ev in events do
+			local event = ev
 		-- 사건
-		if event.kind == "calm" then
-			table.insert(msgs, "바다는 잔잔했다")
-		elseif event.kind == "tailwind" then
-			table.insert(msgs, "순풍을 타고 하루를 아꼈다")
-		elseif event.kind == "storm" then
-			local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")))
-			state.ship.hull = math.max(1, state.ship.hull - dmg)
-			table.insert(msgs, string.format("폭풍! 선체 -%d", dmg))
-			moraleAdd(-6)
-		elseif event.kind == "drift" then
-			state.coins += event.amount
-			table.insert(msgs, string.format("표류물을 건져 %d코인을 얻었다", event.amount))
-		elseif event.kind == "fever" then
-			local loss = math.min(event.amount, state.ship.crew - 1)
-			if loss > 0 then
-				state.ship.crew -= loss
-				table.insert(msgs, string.format("열병으로 선원 %d명을 잃었다", loss))
+			if event.kind == "calm" then
+				table.insert(msgs, "바다는 잔잔했다")
+			elseif event.kind == "tailwind" then
+				table.insert(msgs, "순풍을 타고 하루를 아꼈다")
+			elseif event.kind == "storm" then
+				local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")))
+				state.ship.hull = math.max(1, state.ship.hull - dmg)
+				table.insert(msgs, string.format("폭풍! 선체 -%d", dmg))
+				moraleAdd(-6)
+			elseif event.kind == "drift" then
+				state.coins += event.amount
+				table.insert(msgs, string.format("표류물을 건져 %d코인을 얻었다", event.amount))
+			elseif event.kind == "fever" then
+				local loss = math.min(event.amount, state.ship.crew - 1)
+				if loss > 0 then
+					state.ship.crew -= loss
+					table.insert(msgs, string.format("열병으로 선원 %d명을 잃었다", loss))
+				end
+			elseif event.kind == "school" then
+				local room = S.State.maxSupplies() - state.ship.supplies
+				local n = math.min(event.amount, room)
+				state.ship.supplies += n
+				table.insert(msgs, string.format("물고기떼를 만나 그물을 던졌다! 보급품 +%d", n))
+				moraleAdd(6)
+			elseif event.kind == "merchant" then
+				-- 상선 조우: 도착 후 어떻게 대할지 고른다 (VoyageChoice)
+				state.voyageChoice = { kind = "merchant", amount = event.amount }
+				table.insert(msgs, "항해 중 상선을 만났다")
+			elseif event.kind == "fog" then
+				table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
+				moraleAdd(-3)
+			elseif event.kind == "reef" then
+				local dmg = math.max(1, math.floor(def.hull * event.amount))
+				state.ship.hull = math.max(1, state.ship.hull - dmg)
+				table.insert(msgs, string.format("암초를 스쳤다! 선체 -%d", dmg))
+			elseif event.kind == "rescue" then
+				local n = math.min(event.amount, def.crew - state.ship.crew)
+				if n > 0 then
+					state.ship.crew += n
+					table.insert(msgs, string.format("표류하던 선원 %d명을 구했다. 그들이 합류했다", n))
+				else
+					state.coins += 30
+					table.insert(msgs, "표류하던 사람들을 구했다. 사례금 30코인을 받았다")
+				end
+			elseif event.kind == "island" then
+				state.coins += event.amount
+				state.fame += 1
+				table.insert(msgs, string.format("지도에 없는 섬을 발견했다! 명성 +1, 코인 +%d", event.amount))
+				moraleAdd(8)
+				if ctx.rng() < 0.35 then
+					giveMap(state, ctx, msgs)
+				end
+			elseif event.kind == "blockade" then
+				state.voyageChoice = { kind = "blockade", amount = event.amount }
+				table.insert(msgs, "해군이 항로를 봉쇄했다")
+			elseif event.kind == "ghost" then
+				state.fame += event.amount
+				table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
+				moraleAdd(-8)
+			elseif event.kind == "dolphins" then
+				table.insert(msgs, "돌고래 떼가 뱃머리를 따라왔다! 선원들의 사기가 올랐다")
+				moraleAdd(event.amount)
+				S.Discovery.grantCard(state, "zoo_dolphin", msgs)
+			elseif event.kind == "whale" then
+				state.fame += 1
+				table.insert(msgs, "멀리서 거대한 고래가 물을 뿜었다! 선원들이 환호했다 (명성 +1)")
+				moraleAdd(event.amount)
+				S.Discovery.grantCard(state, "zoo_whale", msgs)
+			elseif event.kind == "pirates" then
+				S.Battle.encounter(state, ctx, msgs)
 			end
-		elseif event.kind == "school" then
-			local room = S.State.maxSupplies() - state.ship.supplies
-			local n = math.min(event.amount, room)
-			state.ship.supplies += n
-			table.insert(msgs, string.format("물고기떼를 만나 그물을 던졌다! 보급품 +%d", n))
-			moraleAdd(6)
-		elseif event.kind == "merchant" then
-			-- 상선 조우: 도착 후 어떻게 대할지 고른다 (VoyageChoice)
-			state.voyageChoice = { kind = "merchant", amount = event.amount }
-			table.insert(msgs, "항해 중 상선을 만났다")
-		elseif event.kind == "fog" then
-			table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
-			moraleAdd(-3)
-		elseif event.kind == "reef" then
-			local dmg = math.max(1, math.floor(def.hull * event.amount))
-			state.ship.hull = math.max(1, state.ship.hull - dmg)
-			table.insert(msgs, string.format("암초를 스쳤다! 선체 -%d", dmg))
-		elseif event.kind == "rescue" then
-			local n = math.min(event.amount, def.crew - state.ship.crew)
-			if n > 0 then
-				state.ship.crew += n
-				table.insert(msgs, string.format("표류하던 선원 %d명을 구했다. 그들이 합류했다", n))
-			else
-				state.coins += 30
-				table.insert(msgs, "표류하던 사람들을 구했다. 사례금 30코인을 받았다")
-			end
-		elseif event.kind == "island" then
-			state.coins += event.amount
-			state.fame += 1
-			table.insert(msgs, string.format("지도에 없는 섬을 발견했다! 명성 +1, 코인 +%d", event.amount))
-			moraleAdd(8)
-			if ctx.rng() < 0.35 then
-				giveMap(state, ctx, msgs)
-			end
-		elseif event.kind == "blockade" then
-			state.voyageChoice = { kind = "blockade", amount = event.amount }
-			table.insert(msgs, "해군이 항로를 봉쇄했다")
-		elseif event.kind == "ghost" then
-			state.fame += event.amount
-			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
-			moraleAdd(-8)
-		elseif event.kind == "dolphins" then
-			table.insert(msgs, "돌고래 떼가 뱃머리를 따라왔다! 선원들의 사기가 올랐다")
-			moraleAdd(event.amount)
-			S.Discovery.grantCard(state, "zoo_dolphin", msgs)
-		elseif event.kind == "whale" then
-			state.fame += 1
-			table.insert(msgs, "멀리서 거대한 고래가 물을 뿜었다! 선원들이 환호했다 (명성 +1)")
-			moraleAdd(event.amount)
-			S.Discovery.grantCard(state, "zoo_whale", msgs)
-		elseif event.kind == "pirates" then
-			S.Battle.encounter(state, ctx, msgs)
 		end
 
 		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
-		state.voyageEvent = { kind = event.kind, won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
+		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
 
 		-- 바다에서 만난 생물·현상·전설 (해상 도감 카드)
 		do

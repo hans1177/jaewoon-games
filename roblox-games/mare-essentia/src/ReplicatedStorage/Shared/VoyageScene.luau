@@ -889,6 +889,19 @@ function VoyageScene.play(info)
 	banner.TextTransparency = 1
 	banner.TextStrokeTransparency = 1
 	banner.Parent = gui
+	-- 긴 항해의 추가 사건: 항해 진행도에 맞춰 차례로 알림이 뜬다
+	local extraKinds = {}
+	for i, kd in (ev.all or {}) do
+		if i > 1 then
+			table.insert(extraKinds, kd)
+		end
+	end
+	local banner2 = banner:Clone()
+	banner2.Position = UDim2.new(0, 0, 0.30, 0)
+	banner2.TextSize = 26
+	banner2.TextColor3 = Color3.fromRGB(190, 225, 255)
+	banner2.Text = ""
+	banner2.Parent = gui
 	if ev.kind == "dolphins" then
 		addSpray(18, 0.46, 16, 40, 3)
 		addSpray(-22, 0.5, 18, 40, 3)
@@ -1400,6 +1413,19 @@ function VoyageScene.play(info)
 				f.m:PivotTo(CFrame.new(p.X, if jump >= 0 then jump * 7 + 0.5 else -500, p.Z) * CFrame.Angles(0, yaw + math.pi / 2, -(1 - jump) * 0.8))
 			end
 
+			if #extraKinds > 0 then
+				local slot = math.floor(k * (#extraKinds + 1) * 1.0)
+				local within = (k * (#extraKinds + 1)) % 1
+				local kd = extraKinds[slot]
+				if kd and within > 0.15 and within < 0.55 then
+					banner2.Text = eventBanner[kd] or ""
+					banner2.TextTransparency = 0.1
+					banner2.TextStrokeTransparency = 0.4
+				else
+					banner2.TextTransparency = 1
+					banner2.TextStrokeTransparency = 1
+				end
+			end
 			banner.TextTransparency = 1 - math.clamp(intensity * 2.2, 0, 1)
 			banner.TextStrokeTransparency = 1 - math.clamp(intensity * 1.6, 0, 0.6)
 		end

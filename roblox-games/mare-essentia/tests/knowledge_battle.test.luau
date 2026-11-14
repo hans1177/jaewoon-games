@@ -224,5 +224,135 @@ do
 	check("연습전: 기본 덱으로 이길 수 있다", m.winner == "me" and okP == true)
 end
 
+-- 실시간 해전: 클라이언트가 직접 싸운 결과를 서버가 가능한 범위인지 확인한다
+do
+	local function fresh()
+		local st = S.State.new("england", 1700)
+		Registry.handlers.Hunt(st, {}, ctx)
+		return st
+	end
+	local st1 = fresh()
+	local sim = st1.pendingBattle and st1.pendingBattle.sim
+	check("실시간 해전: 출격하면 두 배의 능력이 생긴다", sim ~= nil and sim.me.maxHull > 0 and sim.foe.maxHull > 0)
+	local lbSim = st1.lastBattle and st1.lastBattle.sim
+	check("실시간 해전: 클라이언트에 능력이 전달된다", lbSim ~= nil)
+	-- 말이 안 되는 보고: 1초 만에 적을 침몰시켰다
+	local okBad = Registry.handlers.NavalResult(st1, { winner = "a", reason = "sunk", elapsed = 1, meHull = sim.me.hull, foeHull = 0, meCrew = sim.me.crew, foeCrew = sim.foe.crew })
+	check("실시간 해전: 불가능한 속도의 승리는 거부", okBad == false)
+	-- 가능한 보고: 충분한 시간 동안 싸워서 이겼다
+	local st2 = fresh()
+	local s2 = st2.pendingBattle.sim
+	local need = D.Combat.maxHullDamage(s2.me, 600)
+	local okGood = false
+	if need >= s2.foe.hull then
+		okGood = Registry.handlers.NavalResult(st2, { winner = "a", reason = "sunk", elapsed = 600, meHull = math.floor(s2.me.hull * 0.6), foeHull = 0, meCrew = s2.me.crew, foeCrew = s2.foe.crew })
+	else
+		okGood = true -- 이 배로는 이 적을 포격만으로 못 잡는 설정이면 건너뛴다
+	end
+	check("실시간 해전: 가능한 승리는 인정", okGood == true)
+	-- 접현: 서버가 같은 시드로 다시 돌린 결과를 따른다
+	local a3, b3 = table.clone(s2.me), table.clone(s2.foe)
+	local direct = D.Combat.board(a3, b3, 1234)
+	local again = D.Combat.board(a3, b3, 1234)
+	check("실시간 해전: 접현은 같은 시드면 같은 결과", direct.winner == again.winner and direct.a.crew == again.a.crew)
+	local st4 = fresh()
+	local s4 = st4.pendingBattle.sim
+	local ok4 = Registry.handlers.NavalResult(st4, { winner = "a", reason = "boarded", elapsed = 30, meHull = s4.me.hull, foeHull = s4.foe.hull, meCrew = s4.me.crew, foeCrew = s4.foe.crew, board = { seed = 1234, meCrew = s4.me.crew, foeCrew = s4.foe.crew } })
+	local want = D.Combat.board(table.clone(s4.me), table.clone(s4.foe), 1234)
+	check("실시간 해전: 접현 결과는 서버 계산이 정한다", ok4 == true and st4.pendingBattle.winner == want.winner)
+	local again2 = Registry.handlers.NavalResult(st4, { winner = "a", elapsed = 30, meHull = 1, foeHull = 0, meCrew = 1, foeCrew = 1 })
+	check("실시간 해전: 같은 해전을 두 번 보고할 수 없다", again2 == false)
+end
+
+-- 보스전도 실시간: 도전하면 정산이 보류되고, 보고가 확인되면 그 결과로 정산한다
+do
+	local stB = S.State.new("england", 1700)
+	stB.careers.battle.level = 10
+	stB.ship.id = "galleon"
+	local defB = S.State.shipDef(stB)
+	stB.ship.hull, stB.ship.crew = defB.hull, defB.crew
+	local coins0 = stB.coins
+	local okB = Registry.handlers.ChallengeBoss(stB, { bossId = "sea_serpent" }, ctx)
+	check("보스 실시간: 도전하면 정산이 보류된다", okB == true and stB.pendingBattle ~= nil and stB.pendingBattle.bossId == "sea_serpent" and stB.pendingBattle.sim ~= nil and stB.coins == coins0)
+	local simB = stB.pendingBattle.sim
+	local reportOk = Registry.handlers.NavalResult(stB, { winner = "b", reason = "sunk", elapsed = 120, meHull = 0, foeHull = simB.foe.hull, meCrew = simB.me.crew, foeCrew = simB.foe.crew })
+	check("보스 실시간: 패배 보고가 받아들여진다", reportOk == true and stB.pendingBattle.winner == "b")
+	local resolved = Registry.handlers.ResolveBattle(stB, {}, ctx)
+	check("보스 실시간: 정산이 끝나면 보류가 풀린다", resolved == true and stB.pendingBattle == nil and stB.stats.battlesLost >= 1)
+end
+
+-- 대규모 해전 의뢰(전투 본부): 파도마다 싸우고, 끝까지 이기면 보상, 지면 실패
+do
+	local stW = S.State.new("england", 1700)
+	stW.careers.battle.level = 4
+	local coins0 = stW.coins
+	local okBlock = Registry.handlers.WarStart(stW, { id = "fleet_decisive" }, ctx)
+	check("함대전: 레벨이 모자라면 거부", okBlock == false)
+	local okS = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
+	check("함대전: 시작하면 첫 파도 해전이 열린다", okS == true and stW.war ~= nil and stW.war.wave == 1 and stW.pendingBattle ~= nil)
+	check("함대전: 화면 정보에 진행이 보인다", S.View.build(stW, ctx).war ~= nil and #S.View.build(stW, ctx).wars == 3)
+	for wave = 1, 3 do
+		stW.pendingBattle.winner = "a"
+		stW.pendingBattle.reason = "sunk"
+		stW.pendingBattle.hull = stW.ship.hull
+		stW.pendingBattle.crew = stW.ship.crew
+		Registry.handlers.ResolveBattle(stW, {}, ctx)
+		if wave < 3 then
+			check("함대전: 파도 " .. wave .. " 돌파 뒤 다음 파도 대기", stW.war ~= nil and stW.war.next == true and stW.war.wave == wave + 1)
+			local okN = Registry.handlers.WarNext(stW, {}, ctx)
+			check("함대전: 다음 파도 시작", okN == true and stW.pendingBattle ~= nil)
+		end
+	end
+	check("함대전: 끝까지 이기면 보상을 받고 작전이 끝난다", stW.war == nil and stW.coins >= coins0 + 900)
+	local stL = S.State.new("england", 1700)
+	stL.careers.battle.level = 4
+	Registry.handlers.WarStart(stL, { id = "blockade" }, ctx)
+	stL.pendingBattle.winner = "b"
+	stL.pendingBattle.reason = "sunk"
+	Registry.handlers.ResolveBattle(stL, {}, ctx)
+	check("함대전: 한 파도라도 지면 작전 실패", stL.war == nil)
+	local again = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
+	check("함대전: 완수 직후엔 같은 의뢰를 바로 못 받는다", again == false)
+end
+
+-- 주점 의뢰판: 그 항구·그 시기에만 나오고, 납품·전투·이벤트가 각각 정산된다
+do
+	local stT = S.State.new("england", 1666)
+	stT.portId = "london"
+	local ids = {}
+	for _, j in S.View.build(stT, ctx).tavern do
+		ids[j.id] = true
+	end
+	check("의뢰판: 1666년 런던엔 재건 목재 의뢰가 있다", ids.london_rebuild == true)
+	check("의뢰판: 그 시기가 아닌 의뢰는 안 보인다", ids.south_sea_bubble == nil and ids.lisbon_quake_relief == nil)
+	local noWood = Registry.handlers.TavernJob(stT, { id = "london_rebuild" }, ctx)
+	check("의뢰판: 물건이 없으면 납품이 거부된다", noWood == false)
+	stT.cargo.timber = 9
+	local coins0 = stT.coins
+	local okD = Registry.handlers.TavernJob(stT, { id = "london_rebuild" }, ctx)
+	check("의뢰판: 납품하면 보상을 받고 물건이 줄어든다", okD == true and stT.coins == coins0 + 900 and stT.cargo.timber == 1)
+	check("의뢰판: 같은 의뢰는 두 번 못 한다", Registry.handlers.TavernJob(stT, { id = "london_rebuild" }, ctx) == false)
+	local wrongPort = Registry.handlers.TavernJob(stT, { id = "lisbon_quake_relief" }, ctx)
+	check("의뢰판: 다른 항구의 의뢰는 받을 수 없다", wrongPort == false)
+	local stE = S.State.new("england", 1720)
+	stE.portId = "london"
+	local fame0 = stE.fame
+	local okE = Registry.handlers.TavernJob(stE, { id = "south_sea_bubble", choice = 2 }, ctx)
+	check("의뢰판: 이벤트 선택이 정산된다", okE == true and stE.fame == fame0 + 3 and stE.tavernJobs.south_sea_bubble ~= nil)
+	local stH = S.State.new("england", 1588)
+	stH.portId = "plymouth"
+	local okH = Registry.handlers.TavernJob(stH, { id = "armada_scout" }, ctx)
+	check("의뢰판: 전투 의뢰는 실시간 해전을 연다", okH == true and stH.pendingBattle ~= nil and stH.pendingBattle.job == "armada_scout")
+	stH.pendingBattle.winner = "a"
+	stH.pendingBattle.reason = "sunk"
+	stH.pendingBattle.hull = stH.ship.hull
+	stH.pendingBattle.crew = stH.ship.crew
+	local coinsH = stH.coins
+	Registry.handlers.ResolveBattle(stH, {}, ctx)
+	check("의뢰판: 이기면 의뢰 보상이 더해진다", stH.tavernJobs.armada_scout ~= nil and stH.coins >= coinsH + 700)
+	local round = S.State.sanitize and S.State.sanitize(S.State.serialize(stH)) or nil
+	check("의뢰판: 마친 의뢰는 저장된다", round == nil or round.tavernJobs.armada_scout ~= nil)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

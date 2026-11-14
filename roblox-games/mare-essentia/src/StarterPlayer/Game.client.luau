@@ -138,6 +138,7 @@ local UI_BRASS_DARK = Color3.fromRGB(111, 76, 39)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
+	{ id = "board", name = "의뢰판" },
 	{ id = "quest", name = "퀘스트" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
@@ -146,6 +147,7 @@ local TABS = {
 	{ id = "harbor", name = "항구" },
 	{ id = "crew", name = "동료" },
 	{ id = "recruit", name = "동료" },
+	{ id = "scholar", name = "보고" },
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
@@ -153,6 +155,7 @@ local TABS = {
 	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
 	{ id = "gwent", name = "카드 배틀" },
+	{ id = "war", name = "함대전" },
 }
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
@@ -160,8 +163,9 @@ local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "recruit", "explore", "battle", "gwent" } },
-	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
+	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit", "explore" } }, -- 주점은 의뢰만 다룬다 (의뢰판: 이 항구·이 시기의 의뢰)
+	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "war", "gwent" } }, -- 해전·대규모 해전 의뢰·카드 배틀
+	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
 local function groupOf(tabId)
@@ -1032,7 +1036,7 @@ pendingStroke.Parent = captainPlaceholder
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
-	["주점"] = "Barbarian", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
 }
 -- 동료별 실제 등록된 인물 모델. 기존 3D 원본과 역할을 재사용하며 저장 데이터는 건드리지 않는다.
 -- 문화권·성별이 맞지 않는 공용 2D 얼굴을 다른 사람에게 강제로 할당하지 않는다.
@@ -1249,7 +1253,7 @@ do
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
-		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
+		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard" and role ~= "scholar") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
 			return nil
 		end
 		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
@@ -1266,6 +1270,14 @@ do
 		local seed = 0
 		for index = 1, #portId do
 			seed = (seed * 31 + string.byte(portId, index)) % 101
+		end
+		if role == "scholar" then
+			-- 학자: 같은 지역 시트의 교역소 칸 중 항만 관리관·조선 장인 칸을 뺀 한 칸(항구마다 고정)
+			local c = (seed * 3 + 5) % 10
+			while c == reserved.harbor or c == reserved.yard do
+				c = (c + 1) % 10
+			end
+			return atlas, Vector2.new(c % 5 * 200, math.floor(c / 5) * 200), Vector2.new(200, 200)
 		end
 		local rotation = math.floor((playerView.day or 0) / 30)
 		-- 격달로 새 지역 인물 시트의 젊은 인물이 가게를 맡는다
@@ -1600,7 +1612,7 @@ local HUD_MENU_TINT = {
 }
 local HUD_MENU_ART = {
 	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", route = "route",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
 	journal = "codex", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
@@ -1715,7 +1727,7 @@ dockLimit.Parent = dock
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
 H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
-	{ "quest", "주점", "quest" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
+	{ "board", "주점", "quest" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
@@ -2355,7 +2367,7 @@ local function call(action, payload)
 		end)
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
-	if result.ok and (action == "Hunt" or action == "ChallengeBoss") and view and view.lastBattle and not inField then
+	if result.ok and (action == "Hunt" or action == "ChallengeBoss" or action == "WarStart" or action == "WarNext" or action == "TavernJob") and view and view.lastBattle and not inField then
 		local lb = view.lastBattle
 		local resolved = false
 		inField = true
@@ -2400,6 +2412,11 @@ local function call(action, payload)
 			reason = lb.reason,
 			isBoss = action == "ChallengeBoss",
 			card = lb.card,
+			sim = if lb.pending and not lb.card then lb.sim else nil, -- 실시간 해전: 두 배의 능력으로 직접 싸운다
+			onResult = function(claim)
+				call("NavalResult", claim)
+				return view and view.lastBattle and view.lastBattle.winner
+			end,
 			onCards = function(actions)
 				call("CardBattle", { actions = actions })
 				return view and view.lastBattle and view.lastBattle.winner
@@ -2428,6 +2445,11 @@ local function call(action, payload)
 				applyView()
 				main.Visible = true
 				render()
+				task.delay(1.6, function()
+					if view and view.war and view.war.next and not inField then
+						call("WarNext")
+					end
+				end)
 			end,
 		})
 	end
@@ -3246,11 +3268,35 @@ function playStory(ev)
 	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	H.paintScene(picture, ev.art)
-	-- 일러스트 연출: 장면 종류에 맞는 그림을 깔고 천천히 다가가는 카메라 효과를 준다 (그림이 없으면 위의 단순 배경)
+	-- 배경 그림 우선순위: ① 이 이벤트 전용 그림(CardArt/story_<이벤트id>) ② 이 이벤트가 주는 지식카드의 그림 ③ 장면 종류별 공용 그림.
+	-- 어느 것도 없으면 UI 도형으로 그린 임시 배경은 쓰지 않고, 지금 서 있는 항구의 실제 3D 풍경을 어둡게 깔아 보여 준다.
 	do
 		local ILLUST = { tavern = "event_festival", harbor = "event_trade_boom", storm = "event_storm", palace = "event_royal_charter", ruins = "event_stonehenge", observatory = "event_principia", library = "event_principia" }
-		local img = AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
+		local img = AssetIds["CardArt/story_" .. tostring(ev.id or "")]
+		if not img then
+			pcall(function()
+				for _, choice in ev.choices or {} do
+					local cid = choice.effect and choice.effect.cardId
+					if cid and AssetIds["CardArt/" .. cid] then
+						img = AssetIds["CardArt/" .. cid]
+						break
+					end
+				end
+			end)
+		end
+		img = img or AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
+		if not img then
+			if ev.art == "epilogue" then
+				H.paintScene(picture, ev.art) -- 에필로그만 기존 연출 유지
+			else
+				overlay.BackgroundTransparency = 1
+				picture.BackgroundTransparency = 1
+				local dim = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.new(0, 0, 0))
+				dim.BackgroundTransparency = 0.12
+				local top = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
+				top.BackgroundTransparency = 0.78
+			end
+		end
 		if img then
 			local bg = Instance.new("ImageLabel")
 			bg.Name = "Illustration"
@@ -3332,7 +3378,14 @@ function playStory(ev)
 		tpl = nil
 	end
 	-- 흑백 스케치 시트(npcs_new·characters·merchant)는 쓰지 않는다. 색이 있는 시설 초상만 쓰고, 없으면 아래 3D 인물 모델로 대신한다.
-	local storyImageId = if tile and FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS else nil
+	-- 지역(인종·문화권)에 맞는 현재 항구 사람 얼굴을 먼저 쓰고, 없을 때만 공용 시설 초상을 쓴다.
+	local regId, regOffset, regSize
+	if tile and not cport then
+		local curPort = view and view.player and view.player.portId
+		regId, regOffset, regSize = H.facilityPortraitAsset(curPort, tile)
+	end
+	local storyImageId = if regId then regId
+		elseif tile and FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS else nil
 	if storyImageId then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "NpcPortrait"
@@ -3343,8 +3396,8 @@ function playStory(ev)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
 		photo.Image = "rbxassetid://" .. tostring(storyImageId)
-		photo.ImageRectOffset = FACILITY_TILE[tile]
-		photo.ImageRectSize = PORTRAIT_SIZE
+		photo.ImageRectOffset = if regId then regOffset else FACILITY_TILE[tile]
+		photo.ImageRectSize = if regId then regSize else PORTRAIT_SIZE
 		photo.Parent = picture
 	elseif cport then
 		-- 그린 초상을 이미 올렸다
@@ -4158,7 +4211,7 @@ function RENDERERS.status()
 	add(function()
 		local lines = view.navalSupport or {}
 		local text = if #lines > 0 then table.concat(lines, "\n") else "덱에 근접·사격·포 카드를 넣으면 해전에서 자동으로 거들어요."
-		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 주점에서 해요.", {
+		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 전투 본부에서 해요.", {
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 		}, 110)
 	end)
@@ -5493,6 +5546,7 @@ function RENDERERS.explore()
 			openTactics()
 		end
 	end
+	if not H.exploreScholarView then -- 서재의 보고 탭에서는 탐험 지점을 보이지 않는다
 	add(function() return mkHeader(content, "탐험 지점") end)
 	if view.tactics and view.tactics.status == "active" then
 		add(function()
@@ -5517,6 +5571,9 @@ function RENDERERS.explore()
 			return mkRow(content, s.name, sub, actions, 54)
 		end)
 	end
+	end
+	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
+	if not H.exploreScholarView then return end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
 	if #view.scholars == 0 then
 		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요.", 13, COLORS.muted, false) end)
@@ -6101,6 +6158,19 @@ workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
 	end
 end)
 
+-- 개발 확인용: workspace 속성 DevStory 에 이벤트 id 를 넣으면 그 이야기 장면을 바로 보여 준다(선택해도 저장되지 않는 미리보기)
+workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
+	local id = workspace:GetAttribute("DevStory")
+	if type(id) == "string" and id ~= "" and view then
+		task.spawn(function()
+			local ev = require(Shared:WaitForChild("Story")).ById[id]
+			if ev then
+				pcall(playStory, ev)
+			end
+		end)
+	end
+end)
+
 -- 개발 확인용: workspace 속성 DevTradeHall 를 켜면 교역소 화면을 연다
 workspace:GetAttributeChangedSignal("DevTradeHall"):Connect(function()
 	if workspace:GetAttribute("DevTradeHall") and view then
@@ -6614,6 +6684,15 @@ function RENDERERS.codex()
 	end
 end
 
+function RENDERERS.scholar()
+	H.exploreScholarView = true
+	local ok, err = pcall(RENDERERS.explore)
+	H.exploreScholarView = nil
+	if not ok then
+		error(err, 0)
+	end
+end
+
 function RENDERERS.tech()
 	add(function()
 		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 13, COLORS.muted, false)
@@ -6691,6 +6770,31 @@ function RENDERERS.gwent()
 		}, 92)
 	end)
 	add(function()
+		-- 지금 대결에 쓰는 내 덱 (카드 보유·단계·나라 문화권으로 정해진다)
+		local BC = require(Shared:WaitForChild("BoardingCards"))
+		local bk = view and view.cardbook
+		local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
+		local cnt = { melee = 0, ranged = 0, cannon = 0, special = 0 }
+		local power = 0
+		for _, id in (bk and bk.ids) or {} do
+			local d = BC.Units[id] or BC.Specials[id]
+			if d then
+				if d.special then
+					cnt.special += 1
+				else
+					cnt[d.row] += 1
+					power += (d.power or 0) + (((bk.tier or {})[id] or 1) - 1)
+				end
+			end
+		end
+		local leader = fac and BC.Leaders[fac.leader]
+		local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
+		return mkRow(content, string.format("내 덱: %s · %d장", fac and fac.name or "기본", total),
+			string.format("근접 %d · 사격 %d · 포 %d · 특수 %d  (부대 점수 합 %d)\n지도자: %s — %s\n대결에서 덱을 섞어 손패 10장을 뽑고, 남은 카드는 덱 더미에 쌓여요.",
+				cnt.melee, cnt.ranged, cnt.cannon, cnt.special, power, leader and leader.name or "지휘", leader and leader.text or ""),
+			{ { text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end } }, 100)
+	end)
+	add(function()
 		local bk = view and view.cardbook
 		local names = { melee = "근접 = 인문·사회", ranged = "사격 = 자연과학", cannon = "포 = 응용·공학" }
 		local parts = {}
@@ -6722,6 +6826,71 @@ function RENDERERS.gwent()
 			end },
 		}, 64)
 	end)
+end
+
+-- 전투 본부의 대규모 해전 의뢰: 여러 파도로 이어지는 작전
+function RENDERERS.board()
+	H.walletBar("tavern")
+	add(function()
+		return mkRow(content, "이 항구의 의뢰판", "지금 이 항구, 이 시대에만 나오는 일이에요. 역사 속 사건이나 지역 소문에서 나온 일이라, 다른 곳이나 다른 해에는 없어요.", nil, 72)
+	end)
+	local jobs = view.tavern or {}
+	if #jobs == 0 then
+		add(function() return mkRow(content, "오늘은 의뢰가 없어요", "다른 항구를 찾거나 시간이 흐른 뒤 다시 와 보세요.", nil, 56) end)
+		return
+	end
+	local KIND = { hunt = "전투", deliver = "납품", event = "소문" }
+	for _, j in jobs do
+		add(function()
+			local head = string.format("[%s·%s] %s", j.tag, KIND[j.kind] or "", j.name)
+			if j.done then
+				return mkRow(content, head, "✔ 마친 의뢰", nil, 48)
+			end
+			local sub = j.text
+			if j.kind == "hunt" then
+				sub ..= string.format("\n상대: %s · 보상 %d코인 · 명성 +%d", j.enemy, j.coins, j.fame)
+			elseif j.kind == "deliver" then
+				sub ..= string.format("\n%s %d개 · 보상 %d코인 · 명성 +%d", j.good or "", j.amount or 0, j.coins, j.fame)
+			end
+			if j.blocked then
+				sub ..= "\n🔒 " .. j.blocked
+			end
+			local buttons
+			if j.kind == "event" then
+				buttons = {}
+				for i, c in j.choices do
+					table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
+				end
+			else
+				buttons = { { text = if j.kind == "hunt" then "출격" else "납품", color = COLORS.red, enabled = j.blocked == nil, onClick = function() call("TavernJob", { id = j.id }) end } }
+			end
+			return mkRow(content, head, sub, buttons, 96 + (if j.kind == "event" then 30 * #buttons else 0))
+		end)
+	end
+end
+
+function RENDERERS.war()
+	H.walletBar("tavern")
+	add(function()
+		return mkRow(content, "대규모 해전 의뢰", "한 번의 출격이 아니라 여러 척을 차례로 상대하는 작전이에요. 파도마다 실시간으로 싸우고, 모두 돌파하면 큰 보상! 한 번이라도 지면 작전 실패예요. 파도 사이에 선체는 회복되지 않으니 아껴 싸우세요.", nil, 92)
+	end)
+	local w = view.war
+	if w then
+		add(function()
+			return mkRow(content, string.format("진행 중: %s (%d/%d파도)", w.name, w.wave, w.total), if w.next then "다음 적이 기다려요" else "전투를 마무리하세요", {
+				{ text = "계속", color = COLORS.red, enabled = w.next == true, onClick = function() call("WarNext") end },
+			}, 64)
+		end)
+	end
+	add(function() return mkHeader(content, "작전 의뢰") end)
+	for _, c in view.wars do
+		add(function()
+			local sub = string.format("%s\n%d파도 · 보상 %d코인 · 명성 +%d · 전투 Lv.%d%s", c.summary, c.waves, c.coins, c.fame, c.minLevel, if c.blocked then "\n🔒 " .. c.blocked else "")
+			return mkRow(content, c.name, sub, {
+				{ text = "참전", color = COLORS.red, enabled = c.blocked == nil and w == nil, onClick = function() call("WarStart", { id = c.id }) end },
+			}, 100)
+		end)
+	end
 end
 
 function RENDERERS.battle()
@@ -7193,7 +7362,7 @@ H.TAB_ICON = {
 	cards = { "Relics", "journal-closed" }, status = { "Menu", "status" }, harbor = { "Menu", "harbor" },
 	crew = { "Relics", "shield-round" }, yard = { "Menu", "yard" }, codex = { "Menu", "codex" },
 	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
-	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" },
+	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" }, war = { "Naval", "ship-large" }, board = { "Menu", "quest" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
@@ -9209,10 +9378,16 @@ end
 		if not portraitSpec and tile == "hero" then
 			heroId, heroOffset = H.heroPortraitAsset(chosenNation)
 		end
+		local regId, regOffset, regSize
+		if not portraitSpec and tile ~= "hero" then
+			regId, regOffset, regSize = H.facilityPortraitAsset(view and view.player and view.player.portId, tile)
+		end
 		local portraitId = if portraitSpec then AssetIds["Portraits/" .. portraitSpec.atlas]
+			elseif regId then regId
 			elseif FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS
 			else heroId
 		local portraitOffset = if portraitSpec then portraitSpec.offset
+			elseif regId then regOffset
 			elseif portraitId == FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_TILE[tile]
 			else heroOffset
 		local face = Instance.new("ImageLabel")
@@ -9224,7 +9399,7 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		face.ImageRectSize = if portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		corner(face, 6)
