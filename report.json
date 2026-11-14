@@ -1,170 +1,75 @@
 {
- "sourceRevision": "c9fdbec64e8875f5d7128ae0e5e424f06cfdc17b",
+ "sourceRevision": "d737437c32e4862f3dade267b5c6bf2f56077dec",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "out": "cam\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "faced 19.921375274658203\ntext"
   },
   {
    "step": 6,
-   "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
-  },
-  {
-   "step": 8,
-   "capture": "f_trade",
+   "capture": "c1_approach",
    "files": 1
   },
   {
-   "step": 9,
+   "step": 7,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=95 issues=0\ntext"
+   "out": "attack\ntext"
   },
   {
-   "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
+   "step": 9,
+   "capture": "c2_attack",
+   "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "killed=true\ntext"
+   "out": "faced 19.921375274658203\ntext"
   },
   {
    "step": 12,
    "ctx": "Client",
-   "out": "DEV Tab route\ntext"
+   "out": "heavy\ntext"
   },
   {
    "step": 14,
-   "capture": "f_route",
+   "capture": "c3_heavy",
    "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=580 issues=0\ntext"
   },
   {
    "step": 16,
    "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "spin\ntext"
   },
   {
    "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
+   "capture": "c4_spin",
    "files": 1
   },
   {
-   "step": 21,
+   "step": 20,
    "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=297 issues=0\ntext"
+   "out": "dash\ntext"
   },
   {
    "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
+   "capture": "c5_dash",
+   "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "f_quest",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=225 issues=0\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=552 issues=0\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=158 issues=0\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
-  },
-  {
-   "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "out": "ready=true err=true table: 0x7bdcbcc84d702f00 btns=공격|철수|0.4|6.2|3.2\ntext"
   }
  ],
  "errors": [],
@@ -175,17 +80,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 24,
+  "completedSteps": 24,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
   "abortedEarly": false
  }
 }
