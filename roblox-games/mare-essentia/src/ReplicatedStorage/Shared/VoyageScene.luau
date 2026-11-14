@@ -350,7 +350,7 @@ function VoyageScene.play(info)
 			for _, r in ringList do
 				local p, d = positionAt(pts, cum, r.at * total)
 				local c = p + Vector3.new(-d.Z, 0, d.X) * r.lat * LATSCALE
-				local rad = Rings.radius(r) * LATSCALE
+				local rad = Rings.radius(r) * LATSCALE * 1.25
 				if r.hazard then
 					-- 암초: 에셋 바위 모델 (도형으로 만들지 않는다)
 					local rock = info.place and info.place(folder, "Town", "rock-wide", ORIGIN, 14)
@@ -370,7 +370,7 @@ function VoyageScene.play(info)
 					local ang = bi / 16 * math.pi * 2
 					local bead = Instance.new("Part")
 					bead.Shape = Enum.PartType.Ball
-					bead.Size = Vector3.one * (rad * 0.16)
+					bead.Size = Vector3.one * (rad * 0.24)
 					bead.CFrame = CFrame.new(center + Vector3.new(0, math.sin(ang) * rad, 0) + Vector3.new(-right.Z, 0, right.X) * math.cos(ang) * rad)
 					bead.Anchored = true
 					bead.CanCollide = false
@@ -391,7 +391,7 @@ function VoyageScene.play(info)
 				glow.CanTouch = false
 				glow.Material = Enum.Material.Neon
 				glow.Color = col
-				glow.Transparency = 0.82
+				glow.Transparency = 0.65
 				glow.Name = "Glow"
 				glow.Parent = grp
 				grp.Parent = folder
@@ -1396,6 +1396,15 @@ function VoyageScene.play(info)
 			if held.r or UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
 				push += 1
 			end
+			if workspace:GetAttribute("DevAutoPlay") and not autoRing then
+				-- 개발용: 다음 고리 쪽으로 스스로 조종(캡처 검증 전용)
+				for ni = nextRing, #ringList do
+					if not ringList[ni].hazard then
+						dragTarget = ringList[ni].lat
+						break
+					end
+				end
+			end
 			if dragTarget then
 				push = math.clamp((dragTarget - lat) * 3, -1, 1)
 			end
@@ -1411,7 +1420,16 @@ function VoyageScene.play(info)
 				bandFrame.Visible = false
 				scoreLabel.Text = "자동 항해 중"
 				for _, dpart in ringParts do
-					dpart.Transparency = 1
+					if typeof(dpart) == "Instance" then
+						for _, bp in dpart:GetDescendants() do
+							if bp:IsA("BasePart") then
+								bp.Transparency = 1
+							end
+						end
+						if dpart:IsA("BasePart") then
+							dpart.Transparency = 1
+						end
+					end
 				end
 				nextRing = #ringList + 1
 			else
