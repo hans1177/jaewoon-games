@@ -1,5 +1,5 @@
 {
- "sourceRevision": "2cddcc69d7ad1d28206a59872a03d6c8a55c3b1f",
+ "sourceRevision": "d0817de7955e2d90fb57bfcea874fcff95bdf696",
  "log": [
   {
    "step": 1,
@@ -34,37 +34,12 @@
   {
    "step": 11,
    "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
+   "out": "ROUTE days=5,yard=true,name=이즈미르,region=유럽·지중해,id=smyrna,distanceKm=534,coal=0,supplies=35 SUP=31 CREW=16\ntext"
   },
   {
-   "step": 13,
+   "step": 12,
    "ctx": "Client",
-   "out": "LABELS: \ntext"
-  },
-  {
-   "step": 14,
-   "capture": "h01",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "LABELS: \ntext"
-  },
-  {
-   "step": 17,
-   "capture": "h02",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "LABELS: \ntext"
-  },
-  {
-   "step": 20,
-   "capture": "h03",
-   "files": 1
+   "out": "SAILRES ok=true res.ok=false err=너무 빨라요\ntext"
   }
  ],
  "errors": [],
@@ -79,13 +54,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 21,
-  "completedSteps": 21,
+  "plannedSteps": 14,
+  "completedSteps": 14,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
