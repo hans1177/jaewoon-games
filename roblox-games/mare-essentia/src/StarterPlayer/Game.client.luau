@@ -4248,6 +4248,18 @@ local function openTradeHall()
 			photo.ImageRectOffset = regionalOffset or (if FACILITY_ATLAS then FACILITY_TILE.merchant elseif PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero)
 			photo.ImageRectSize = regionalSize or (if FACILITY_ATLAS or PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero)
 			photo.Parent = left
+			-- 가로로 넓은 칸에 세로 초상을 넣으면 가운데만 보여 얼굴 윗부분이 잘린다: 위쪽부터 칸 비율만큼만 쓴다
+			local baseRect = photo.ImageRectSize
+			if baseRect.X > 0 and baseRect.Y > 0 then
+				local function fitTop()
+					local a2 = photo.AbsoluteSize
+					if a2.X > 0 and a2.Y > 0 then
+						photo.ImageRectSize = Vector2.new(baseRect.X, math.min(baseRect.Y, baseRect.X * a2.Y / a2.X))
+					end
+				end
+				fitTop()
+				photo:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitTop)
+			end
 		else
 			local vf = Instance.new("ViewportFrame")
 			vf.BackgroundTransparency = 1
