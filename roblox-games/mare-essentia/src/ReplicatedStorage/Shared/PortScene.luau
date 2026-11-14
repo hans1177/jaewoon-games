@@ -32,7 +32,13 @@ local GOOD_MESH = {
 	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
-setmetatable(GOOD_MESH, { __index = function() return { "Cargo", "box-open" } end })
+-- 표에 없는 교역품은 같은 이름의 3D 모델(등록돼 있으면)을, 그것도 없으면 열린 상자를 쓴다
+setmetatable(GOOD_MESH, { __index = function(_, good)
+	if type(good) == "string" and AssetIds["Cargo/" .. good] then
+		return { "Cargo", good }
+	end
+	return { "Cargo", "box-open" }
+end })
 -- 상품 종류별 진열 크기 배율: 작은 물건(보석·향신료·찻잔)은 작게, 큰 물건(통·목재·천 더미)은 크게 보여 종류가 한눈에 구분되게 한다.
 local GOOD_SIZE = {
 	gems = 0.75, pearls = 0.7, pepper = 0.8, salt = 0.8, olive_oil = 0.9, coffee = 0.75, tea = 0.75, cocoa = 0.8, honey = 0.8, lemon = 0.8, coconut = 0.85,
