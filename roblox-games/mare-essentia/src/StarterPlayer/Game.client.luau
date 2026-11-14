@@ -146,6 +146,7 @@ local TABS = {
 	{ id = "harbor", name = "항구" },
 	{ id = "crew", name = "동료" },
 	{ id = "recruit", name = "동료" },
+	{ id = "scholar", name = "보고" },
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
@@ -161,7 +162,7 @@ local GROUPS = {
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "recruit", "explore", "battle", "gwent" } },
-	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
+	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
 local function groupOf(tabId)
@@ -1606,7 +1607,7 @@ local HUD_MENU_TINT = {
 }
 local HUD_MENU_ART = {
 	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", route = "route",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
 	journal = "codex", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
@@ -3221,11 +3222,35 @@ function playStory(ev)
 	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	H.paintScene(picture, ev.art)
-	-- 일러스트 연출: 장면 종류에 맞는 그림을 깔고 천천히 다가가는 카메라 효과를 준다 (그림이 없으면 위의 단순 배경)
+	-- 배경 그림 우선순위: ① 이 이벤트 전용 그림(CardArt/story_<이벤트id>) ② 이 이벤트가 주는 지식카드의 그림 ③ 장면 종류별 공용 그림.
+	-- 어느 것도 없으면 UI 도형으로 그린 임시 배경은 쓰지 않고, 지금 서 있는 항구의 실제 3D 풍경을 어둡게 깔아 보여 준다.
 	do
 		local ILLUST = { tavern = "event_festival", harbor = "event_trade_boom", storm = "event_storm", palace = "event_royal_charter", ruins = "event_stonehenge", observatory = "event_principia", library = "event_principia" }
-		local img = AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
+		local img = AssetIds["CardArt/story_" .. tostring(ev.id or "")]
+		if not img then
+			pcall(function()
+				for _, choice in ev.choices or {} do
+					local cid = choice.effect and choice.effect.cardId
+					if cid and AssetIds["CardArt/" .. cid] then
+						img = AssetIds["CardArt/" .. cid]
+						break
+					end
+				end
+			end)
+		end
+		img = img or AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
+		if not img then
+			if ev.art == "epilogue" then
+				H.paintScene(picture, ev.art) -- 에필로그만 기존 연출 유지
+			else
+				overlay.BackgroundTransparency = 1
+				picture.BackgroundTransparency = 1
+				local dim = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.new(0, 0, 0))
+				dim.BackgroundTransparency = 0.12
+				local top = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
+				top.BackgroundTransparency = 0.78
+			end
+		end
 		if img then
 			local bg = Instance.new("ImageLabel")
 			bg.Name = "Illustration"
@@ -5475,6 +5500,7 @@ function RENDERERS.explore()
 			openTactics()
 		end
 	end
+	if not H.exploreScholarView then -- 서재의 보고 탭에서는 탐험 지점을 보이지 않는다
 	add(function() return mkHeader(content, "탐험 지점") end)
 	if view.tactics and view.tactics.status == "active" then
 		add(function()
@@ -5499,6 +5525,9 @@ function RENDERERS.explore()
 			return mkRow(content, s.name, sub, actions, 54)
 		end)
 	end
+	end
+	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
+	if not H.exploreScholarView then return end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
 	if #view.scholars == 0 then
 		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요.", 13, COLORS.muted, false) end)
@@ -6083,6 +6112,19 @@ workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
 	end
 end)
 
+-- 개발 확인용: workspace 속성 DevStory 에 이벤트 id 를 넣으면 그 이야기 장면을 바로 보여 준다(선택해도 저장되지 않는 미리보기)
+workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
+	local id = workspace:GetAttribute("DevStory")
+	if type(id) == "string" and id ~= "" and view then
+		task.spawn(function()
+			local ev = require(Shared:WaitForChild("Story")).ById[id]
+			if ev then
+				pcall(playStory, ev)
+			end
+		end)
+	end
+end)
+
 -- 개발 확인용: workspace 속성 DevTradeHall 를 켜면 교역소 화면을 연다
 workspace:GetAttributeChangedSignal("DevTradeHall"):Connect(function()
 	if workspace:GetAttribute("DevTradeHall") and view then
@@ -6593,6 +6635,15 @@ function RENDERERS.codex()
 		H.renderCodexField()
 	else
 		renderCodexOverview()
+	end
+end
+
+function RENDERERS.scholar()
+	H.exploreScholarView = true
+	local ok, err = pcall(RENDERERS.explore)
+	H.exploreScholarView = nil
+	if not ok then
+		error(err, 0)
 	end
 end
 
