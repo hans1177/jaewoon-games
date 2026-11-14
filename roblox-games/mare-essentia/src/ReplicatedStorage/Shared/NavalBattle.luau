@@ -2838,6 +2838,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							end)
 						end
 					end
+					if now - rt.start > 9 and hint.Text:sub(1, 3) == "배의 " then
+						hint.Text = "" -- 처음 안내는 잠깐만 보여 준다
+					end
 					if inRange and side <= 0.5 and (hint.Text == "" or hint.Text:sub(1, 1) == "⚓") then
 						hint.Text = "⚓ 배의 옆면을 적선 쪽으로 돌리세요!"
 					elseif hint.Text:sub(1, 1) == "⚓" then
