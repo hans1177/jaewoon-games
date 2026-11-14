@@ -1,0 +1,54 @@
+{
+ "sourceRevision": "c9c884085ed2aa8b8fd19cb08ae9e07733294d1e",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "true \ntext"
+  },
+  {
+   "step": 4,
+   "capture": "t0_main",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "hall\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "t2_hall",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "click": "흥정하기",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
+  }
+ ],
+ "errors": [
+  "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 14,
+  "completedSteps": 11,
+  "plannedClicks": 1,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 2,
+  "abortedEarly": true
+ }
+}

@@ -4,35 +4,33 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "play ok=true nil\ntext"
+   "out": "true \ntext"
   },
   {
-   "step": 3,
-   "capture": "n1",
+   "step": 4,
+   "capture": "t0_main",
    "files": 1
   },
   {
    "step": 5,
-   "capture": "n2",
-   "files": 1
-  },
-  {
-   "step": 7,
-   "capture": "n3",
-   "files": 1
+   "ctx": "Client",
+   "out": "hall\ntext"
   },
   {
    "step": 9,
-   "capture": "n4",
+   "capture": "t2_hall",
    "files": 1
   },
   {
-   "step": 11,
-   "capture": "n5",
-   "files": 1
+   "step": 10,
+   "click": "흥정하기",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
   }
  ],
- "errors": [],
+ "errors": [
+  "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
+ ],
  "consoleCapture": {
   "captured": true,
   "contexts": [
@@ -44,13 +42,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 12,
-  "completedSteps": 12,
-  "plannedClicks": 0,
+  "plannedSteps": 14,
+  "completedSteps": 11,
+  "plannedClicks": 1,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
-  "abortedEarly": false
+  "plannedFrames": 3,
+  "capturedFrames": 2,
+  "abortedEarly": true
  }
 }
