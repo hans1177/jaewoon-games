@@ -973,7 +973,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			boss_serpent = "Sea Serpent's Fang", boss_siren = "Siren's Song",
 		}
 		local englishFactions = { europe = "Europe", east_asia = "East Asia", middle_east = "Middle East", new_world = "New World", africa = "Africa" }
-		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I", genghis = "Genghis Khan", qinshi = "Qin Shi Huang", yisunsin = "Yi Sun-sin", pachacuti = "Pachacuti", montezuma = "Montezuma II", sittingbull = "Sitting Bull", saladin = "Saladin", suleiman = "Suleiman the Magnificent", cyrus = "Cyrus the Great", mansa = "Mansa Musa", hannibal = "Hannibal", shaka = "Shaka Zulu" }
+		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I", genghis = "Genghis Khan", qinshi = "Qin Shi Huang", yisunsin = "Yi Sun-sin", nobunaga = "Oda Nobunaga", pachacuti = "Pachacuti", montezuma = "Montezuma II", sittingbull = "Sitting Bull", saladin = "Saladin", suleiman = "Suleiman the Magnificent", cyrus = "Cyrus the Great", mansa = "Mansa Musa", hannibal = "Hannibal", shaka = "Shaka Zulu" }
 		local function cardName(c)
 			if not english then return c.name end
 			local en = BC.CardEnglish[c.id]

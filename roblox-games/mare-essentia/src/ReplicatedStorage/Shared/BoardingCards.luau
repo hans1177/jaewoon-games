@@ -83,6 +83,7 @@ B.Leaders = {
 	-- 동아시아
 	genghis = { fx = "bonusMelee", id = "genghis", name = "칭기즈 칸", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "east_asia", era = "정복자" },
 	qinshi = { fx = "hornMelee", id = "qinshi", name = "진시황", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
+	nobunaga = { fx = "hornRanged", id = "nobunaga", name = "오다 노부나가", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
 	yisunsin = { fx = "snipe", id = "yisunsin", name = "이순신", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "east_asia", era = "해양" },
 	-- 신대륙
 	pachacuti = { fx = "draw2", id = "pachacuti", name = "파차쿠텍", text = "카드를 두 장 뽑는다", provision = 12, faction = "new_world", era = "정복자" },
@@ -560,7 +561,7 @@ B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "r
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
-	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", leaders = { "genghis", "qinshi", "yisunsin" },
+	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30"} },
