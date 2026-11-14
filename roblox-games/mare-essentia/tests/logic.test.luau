@@ -3449,18 +3449,25 @@ do
 			CBk.grant(eb, "ea_01", 1)
 			foreign[1] = "ea_01"
 			check("덱 규칙: 다른 대륙 카드는 쓸 수 없다", not CBk.validateDeck(eb, foreign))
-			local rich = { "eu_10", "eu_10", "eu_24", "eu_24" }
-			CBk.grant(eb, "eu_10", 2)
-			CBk.grant(eb, "eu_24", 2)
-			local fillers = 0
-			for _, id in CBk.new("europe").owned and base or base do
-				if fillers < 21 and not CBk.isHero(id) and not CBk.isSpecial(id) and id ~= "eu_10" and id ~= "eu_24" then
-					fillers += 1
-					table.insert(rich, id)
-				end
+			local rich, heroN, pool = {}, 0, {}
+			for id in eb.owned do
+				if BC.Units[id] or BC.Specials[id] then table.insert(pool, id) end
 			end
-			for _, id in { "eu_03", "eu_05", "eu_07", "eu_09", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_18" } do
-				if #rich < 25 and not CBk.isHero(id) and not CBk.isSpecial(id) then table.insert(rich, id) end
+			table.sort(pool, function(x, y)
+				local cx, cy = BC.cost(BC.Units[x] or BC.Specials[x]), BC.cost(BC.Units[y] or BC.Specials[y])
+				if cx ~= cy then return cx > cy end
+				return x < y
+			end)
+			for _, id in pool do
+				if #rich >= 25 then break end
+				if CBk.isSpecial(id) then continue end
+				if CBk.isHero(id) then
+					if heroN >= CBk.MAX_HEROES then continue end
+					heroN += 1
+				end
+				if CBk.continentOf(id) == "lost" then continue end
+				CBk.grant(eb, id, 2)
+				for _ = 1, if CBk.isHero(id) then 1 else math.min(3, 25 - #rich) do table.insert(rich, id) end
 			end
 			local okRich, whyRich = CBk.validateDeck(eb, rich)
 			check("덱 규칙: 보급이 넘치면 거절", not okRich and string.find(tostring(whyRich), "보급", 1, true) ~= nil, tostring(#rich) .. " " .. tostring(whyRich))
