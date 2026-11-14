@@ -687,6 +687,7 @@ function NavalBattle.play(opts)
 		sk.y = -72 - math.floor(math.sin(ang) * 104)
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
+	local skillFx = function(_id, _dur) end -- FX 가 만들어진 뒤 연결된다
 	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
 	local skillBtn = {}
 	local function useSkill(sk)
@@ -697,6 +698,14 @@ function NavalBattle.play(opts)
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
 		skillPop(sk.text .. "!", sk.col)
+		skillFx(sk.id, sk.dur)
+		if sk.id == "rapid" then
+			Sfx.play("sfx_skill_rapid", 0.8, 1, "sfx_horn")
+			Sfx.play("sfx_naval_cannon", 0.5, 0.7, "sfx_cannon")
+		else
+			Sfx.play("sfx_skill_evade", 0.8, 1, "sfx_sail")
+			Sfx.play("sfx_naval_splash", 0.45, 1.2, "sfx_splash")
+		end
 	end
 	for _, sk in SKILLS do
 		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5))
@@ -2499,6 +2508,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- 물기둥과 퍼지는 물결
 	function FX.splash(pos)
+		FX.waterColumn(pos)
 		FX.spawn(Vector3.new(3, 2.4, 2.4), pos + Vector3.new(0, 1.5, 0), C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Cylinder, Vector3.new(0, 11, 0), 0.9, { grow = 0.8, t0 = 0.2, g = 14, upright = true })
 		FX.spawn(Vector3.new(0.3, 3, 3), pos + Vector3.new(0, 0.3, 0), C_WATER, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, 1.1, { grow = 7, t0 = 0.35, ring = true, upright = true })
 		for _ = 1, 6 do
@@ -2506,10 +2516,134 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Vector3.new((math.random() - 0.5) * 12, 8 + math.random() * 8, (math.random() - 0.5) * 12), 0.9, { g = 30, t0 = 0.2 })
 		end
 	end
-	-- 포구 화염과 연기
+	do -- 입자 연출용 지역 변수는 이 블록 안에만 둔다 (함수당 지역 변수 한도 때문)
+	local TweenService = game:GetService("TweenService")
+	-- [입자 연출] 엔진 입자(ParticleEmitter)를 한 번 터뜨리고 자동으로 치운다. 부품 수를 늘리지 않아 모바일에서도 가볍다.
+	local TEX = {
+		fire = "rbxasset://textures/particles/fire_main.dds",
+		smoke = "rbxasset://textures/particles/smoke_main.dds",
+		spark = "rbxasset://textures/particles/sparkles_main.dds",
+	}
+	local function emitterOn(parent, e)
+		local pe = Instance.new("ParticleEmitter")
+		pe.Texture = TEX[e.tex] or TEX.smoke
+		pe.Color = ColorSequence.new(e.c0, e.c1 or e.c0)
+		pe.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.s0), NumberSequenceKeypoint.new(1, e.s1 or e.s0) })
+		pe.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.a0 or 0.1), NumberSequenceKeypoint.new(0.7, e.a1 or 0.5), NumberSequenceKeypoint.new(1, 1) })
+		pe.Lifetime = NumberRange.new(e.life * 0.7, e.life)
+		pe.Speed = NumberRange.new(e.v0 or 0, e.v1 or e.v0 or 0)
+		pe.SpreadAngle = Vector2.new(e.spread or 180, e.spread or 180)
+		pe.Acceleration = e.acc or Vector3.zero
+		pe.Drag = e.drag or 0
+		pe.Rotation = NumberRange.new(0, 360)
+		pe.RotSpeed = NumberRange.new(-120, 120)
+		pe.LightEmission = e.glow or 0
+		pe.LockedToPart = false
+		pe.Rate = e.rate or 0
+		pe.Enabled = (e.rate or 0) > 0
+		pe.Parent = parent
+		return pe
+	end
+	local function lightFlash(parent, color, bright, range, dur)
+		local l = Instance.new("PointLight")
+		l.Color = color
+		l.Brightness = bright
+		l.Range = range
+		l.Parent = parent
+		TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 }):Play()
+	end
+	function FX.burst(pos, dir, list, light)
+		local anchor = Instance.new("Attachment") -- 보이는 부품 없이 지형에 붙여 입자만 터뜨린다
+		anchor.WorldCFrame = if dir then CFrame.lookAt(pos, pos + dir) else CFrame.new(pos)
+		anchor.Parent = workspace.Terrain
+		local longest = 1
+		for _, e in list do
+			local pe = emitterOn(anchor, e)
+			pe:Emit(e.n or 8)
+			longest = math.max(longest, e.life + 0.2)
+		end
+		if light then
+			lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3)
+		end
+		task.delay(longest, function() anchor:Destroy() end)
+	end
+	local ORANGE, YELLOW, RED = Color3.fromRGB(255, 150, 50), Color3.fromRGB(255, 226, 130), Color3.fromRGB(190, 52, 28)
+	local GREY, SOOT = Color3.fromRGB(150, 150, 155), Color3.fromRGB(48, 46, 46)
+	local FOAM, SEA = Color3.fromRGB(245, 252, 255), Color3.fromRGB(150, 205, 230)
+	-- 충격파 고리: 수면 위로 납작하게 퍼지는 링
+	function FX.shockRing(pos, color, size, life)
+		FX.spawn(Vector3.new(0.35, 2, 2), pos + Vector3.new(0, 0.6, 0), color, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, life or 0.7, { grow = size or 14, t0 = 0.25, ring = true, upright = true })
+	end
+	-- 포구 화염: 앞으로 뻗는 불꽃 + 화약 연기 + 번쩍임
 	function FX.muzzle(from, dir)
-		FX.spawn(Vector3.new(4.5, 4.5, 4.5), from, Color3.fromRGB(255, 205, 100), Enum.Material.Neon, Enum.PartType.Ball, dir * 8, 0.25, { grow = 1.2 })
-		FX.smoke(from + dir * 3, 3, 3.2, false)
+		FX.burst(from + dir * 2, dir, {
+			{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3, s1 = 7, life = 0.4, v0 = 18, v1 = 36, spread = 14, glow = 1, n = 9, a0 = 0 },
+			{ tex = "spark", c0 = YELLOW, s0 = 0.9, s1 = 0.2, life = 0.55, v0 = 30, v1 = 70, spread = 24, glow = 1, n = 14, acc = Vector3.new(0, -20, 0), a0 = 0 },
+			{ tex = "smoke", c0 = GREY, c1 = Color3.fromRGB(205, 205, 210), s0 = 3, s1 = 11, life = 1.6, v0 = 5, v1 = 14, spread = 30, n = 7, a0 = 0.35, drag = 2.5 },
+		}, { color = ORANGE, bright = 5, range = 28, dur = 0.22 })
+	end
+	-- 선체 명중: 불덩이 + 불똥 + 검은 연기 + 충격파
+	function FX.impact(pos, power)
+		power = power or 1
+		FX.burst(pos, nil, {
+			{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 4 + power, s1 = 10 + power * 2, life = 0.7, v0 = 4, v1 = 16, glow = 1, n = 10, a0 = 0 },
+			{ tex = "spark", c0 = YELLOW, s0 = 1.1, s1 = 0.2, life = 0.9, v0 = 22, v1 = 60, glow = 1, n = 22, acc = Vector3.new(0, -55, 0), a0 = 0 },
+			{ tex = "smoke", c0 = SOOT, c1 = GREY, s0 = 4, s1 = 15, life = 2.2, v0 = 3, v1 = 10, n = 8, a0 = 0.25, acc = Vector3.new(0, 7, 0), drag = 1.5 },
+		}, { color = ORANGE, bright = 9, range = 42, dur = 0.4 })
+		FX.shockRing(pos - Vector3.new(0, 4, 0), Color3.fromRGB(255, 205, 140), 16 + power * 2, 0.55)
+	end
+	-- 빗나간 포탄의 물기둥: 솟는 물안개 + 튀는 물방울 + 퍼지는 물결
+	function FX.waterColumn(pos)
+		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
+			{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 3, s1 = 13, life = 1.5, v0 = 14, v1 = 26, spread = 12, n = 10, a0 = 0.15, acc = Vector3.new(0, -14, 0), drag = 1 },
+			{ tex = "spark", c0 = SEA, s0 = 0.9, s1 = 0.3, life = 1.1, v0 = 18, v1 = 40, spread = 28, n = 26, acc = Vector3.new(0, -60, 0), a0 = 0.1, glow = 0.3 },
+		})
+		FX.shockRing(pos, FOAM, 12, 0.9)
+	end
+	-- 스킬 연출: 배에 붙은 입자를 지속시간 동안 켜 두고, 시작 순간 충격파를 낸다
+	function FX.skill(sh, id, dur)
+		local anchorPart = sh.model.PrimaryPart or sh.model:FindFirstChildWhichIsA("BasePart", true)
+		if not anchorPart then
+			return
+		end
+		local at = Instance.new("Attachment")
+		at.Parent = anchorPart
+		local list, light, ringColor
+		if id == "rapid" then
+			ringColor = ORANGE
+			list = {
+				{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3.5, s1 = 0.5, life = 0.8, v0 = 6, v1 = 14, spread = 60, glow = 1, rate = 38, a0 = 0 },
+				{ tex = "spark", c0 = YELLOW, s0 = 0.8, s1 = 0.2, life = 0.9, v0 = 14, v1 = 30, glow = 1, rate = 30, acc = Vector3.new(0, -20, 0), a0 = 0 },
+			}
+			light = { color = ORANGE, bright = 3, range = 30 }
+		else
+			ringColor = Color3.fromRGB(150, 220, 255)
+			list = {
+				{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 2.5, s1 = 6, life = 0.9, v0 = 22, v1 = 40, spread = 18, rate = 44, a0 = 0.35, drag = 3 },
+				{ tex = "spark", c0 = Color3.fromRGB(190, 235, 255), s0 = 0.9, s1 = 0.2, life = 0.7, v0 = 24, v1 = 50, spread = 25, glow = 1, rate = 36, a0 = 0 },
+			}
+			light = { color = Color3.fromRGB(150, 210, 255), bright = 2, range = 26 }
+		end
+		local ems = {}
+		for _, e in list do
+			table.insert(ems, emitterOn(at, e))
+		end
+		local lt = Instance.new("PointLight")
+		lt.Color, lt.Brightness, lt.Range = light.color, light.bright, light.range
+		lt.Parent = anchorPart
+		FX.shockRing(ORIGIN + sh.pos, ringColor, 26, 0.8)
+		FX.shockRing(ORIGIN + sh.pos, ringColor, 16, 0.55)
+		task.delay(dur, function()
+			for _, pe in ems do
+				pe.Enabled = false
+			end
+			TweenService:Create(lt, TweenInfo.new(0.5), { Brightness = 0 }):Play()
+			task.delay(2, function()
+				at:Destroy()
+				lt:Destroy()
+			end)
+		end)
+	end
 	end
 	-- 배 뒤로 길게 남는 항적
 	function FX.wake(sh, key, now)
@@ -2564,6 +2698,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	skillPop = popText
+	skillFx = function(id, dur)
+		if not finished then FX.skill(me, id, dur) end
+	end
 	-- 피해 숫자: 맞은 배 위로 빨간(내 배)·노란(적) 숫자가 떠올랐다 사라진다
 	dmgPop = function(toPlayer, amount)
 		local sh = if toPlayer then me else foe
@@ -2669,6 +2806,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
 				if hullHit then
 					Sfx.play("sfx_naval_hull_hit", 0.78, 0.88 + math.random() * 0.2, "sfx_hit")
+					Sfx.play("sfx_naval_wood", 0.55, 0.9 + math.random() * 0.25, "sfx_creak")
 					if math.random() < 0.4 then
 						Sfx.play("sfx_creak", 0.3, 0.85 + math.random() * 0.18)
 					end
@@ -2677,7 +2815,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				if hullHit then
 					FX.splinters(to, 9)
-					FX.smoke(to + Vector3.new(0, 2, 0), 3, 3.4, true)
+					FX.impact(to, nc.ball)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
 				else
