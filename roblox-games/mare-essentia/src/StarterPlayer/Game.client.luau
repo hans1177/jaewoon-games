@@ -2872,6 +2872,10 @@ local function sail(portId)
 	sceneHold = false
 	sceneKey = nil
 	audioLock = false
+	-- 바다에서 크라켄·유령선을 만났다면 도착 뒤 해상전투로 싸운다
+	if view and view.seaBoss then
+		call("ChallengeBoss", { bossId = view.seaBoss, sea = true })
+	end
 	if view and view.voyageChoice then
 		local vc = view.voyageChoice
 		vc.id = "voyage"

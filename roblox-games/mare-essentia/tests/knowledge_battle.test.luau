@@ -502,5 +502,26 @@ do
 	check("별: 점수 구간별로 1~3개", R.stars(0.95) == 3 and R.stars(0.7) == 2 and R.stars(0.1) == 1)
 end
 
+do
+	-- 바다 괴물: 크라켄·유령선은 항해 중 만났을 때만 바다에서 도전할 수 있다
+	local stK = S.State.new("england", 1700)
+	stK.ship.id = "galleon"
+	local defK = S.State.shipDef(stK)
+	stK.ship.hull, stK.ship.crew = defK.hull, defK.crew
+	stK.careers.battle.level = 10
+	local noSea = Registry.handlers.ChallengeBoss(stK, { bossId = "kraken", sea = true }, ctx)
+	check("바다 괴물: 만나지 않았으면 바다 도전이 거절된다", noSea == false and stK.pendingBattle == nil)
+	stK.seaBoss = "kraken"
+	local okK = Registry.handlers.ChallengeBoss(stK, { bossId = "kraken", sea = true }, ctx)
+	check("바다 괴물: 크라켄을 만나면 해상전투가 시작된다", okK == true and stK.pendingBattle ~= nil and stK.pendingBattle.bossId == "kraken" and stK.seaBoss == nil)
+	local stG = S.State.new("england", 1700)
+	stG.ship.id = "galleon"
+	stG.ship.hull, stG.ship.crew = defK.hull, defK.crew
+	stG.careers.battle.level = 6
+	stG.seaBoss = "ghost_ship"
+	local okG = Registry.handlers.ChallengeBoss(stG, { bossId = "ghost_ship", sea = true }, ctx)
+	check("바다 괴물: 유령선과 해상전투가 시작된다", okG == true and stG.pendingBattle ~= nil and stG.pendingBattle.bossId == "ghost_ship")
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
