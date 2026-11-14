@@ -1,0 +1,56 @@
+name: Vibe Asset Quality
+# 자산 품질 연습장(24시간): 5분마다 이미지 몇십 장을 심사하고, 점수 낮은 것은 결정론적으로 다듬어 "후보"만 만든다.
+# - main 의 자산은 바꾸지 않는다. 점수표·후보·상태는 전용 브랜치 vibe-asset-data 에만 쌓는다. 승인은 사람이 한다.
+# - 끄려면 저장소 변수 VIBE_ASSET_QUALITY=off. 한 번에 하나만 돈다(concurrency).
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: 한 회차에 심사할 장수
+        default: '60'
+permissions:
+  contents: write
+concurrency:
+  group: vibe-asset-quality
+  cancel-in-progress: false
+jobs:
+  practice:
+    if: ${{ vars.VIBE_ASSET_QUALITY != 'off' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 상태 브랜치 준비
+        run: |
+          git config user.name "vibe-asset-quality"
+          git config user.email "vibe-asset-quality@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin vibe-asset-data >/dev/null 2>&1; then
+            git fetch --depth=1 origin vibe-asset-data
+            git worktree add ../asset-state FETCH_HEAD
+          else
+            git worktree add --detach ../asset-state
+            (cd ../asset-state && git checkout --orphan vibe-asset-data && git rm -rf . >/dev/null 2>&1 || true)
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: 심사와 다듬기
+        run: |
+          python3 roblox-games/mare-essentia/tools/asset_quality.py \
+            --assets roblox-games/mare-essentia/assets \
+            --state ../asset-state/mare-essentia \
+            --batch "${{ github.event.inputs.batch || '60' }}"
+      - name: 결과 올리기
+        run: |
+          cd ../asset-state
+          git add -A
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -q -m "asset-quality: $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do
+            git push origin HEAD:vibe-asset-data && break
+            git fetch -q origin vibe-asset-data && git rebase -q FETCH_HEAD || true
+            sleep 3
+          done
