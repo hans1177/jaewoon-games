@@ -1,20 +1,90 @@
 {
- "sourceRevision": "adc2bdf8c0751c83be21ac6e9266e8648791cfb9",
+ "sourceRevision": "4d03dd68e461c8ab8eb03038f1c7492da3c1d4e8",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "play ok=true nil\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 3,
-   "capture": "b1_start",
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "x\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "lib_report",
    "files": 1
   },
   {
-   "step": 5,
-   "capture": "b2_mid",
+   "step": 10,
+   "ctx": "Client",
+   "out": "story npc_shanghai_weaver\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "ev_shanghai",
    "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "closed 1\ntext"
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "story npc_busan_envoy\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "ev_busan",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "closed 1\ntext"
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "story npc_incheon_clam\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "ev_incheon",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "closed 1\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "story npc_hull_whaler\ntext"
+  },
+  {
+   "step": 27,
+   "capture": "ev_whaler",
+   "files": 1
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "closed 1\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "ERR Client count=0 :: \ntext"
   }
  ],
  "errors": [],
@@ -25,17 +95,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 19,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 6,
-  "completedSteps": 6,
+  "plannedSteps": 31,
+  "completedSteps": 31,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 2,
-  "capturedFrames": 2,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
   "abortedEarly": false
  }
 }
