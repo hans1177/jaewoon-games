@@ -33,6 +33,51 @@ test('recovery wake counts unique newly dispatched queued games and preserves ac
   assert.deepEqual(systemOnly.gameRequeuedTaskIds,[]);
 });
 
+test('recovery escalation keeps identical records stable and saves substantive changes',()=>{
+  const source={
+    sourceQueue:'vibe',sourceTaskId:'stable-game',gameId:'stable-game',
+    failureStage:'WEB_RUNTIME',failureSignature:'INPUT_ERROR',
+    recoveryStrategy:'REPAIR_AND_REPLAY',verificationPlan:['RERUN_EXACT_FAILED_STAGE'],
+    checkpoint:'revision-a',evidence:['failure-cause:INPUT_ERROR']
+  };
+  const initial=enqueueRecovery({tasks:[]},source);
+  const original={...initial.queue,tasks:initial.queue.tasks.map(row=>({...row,updatedAt:'2026-01-01T00:00:00.000Z'}))};
+  const same=enqueueRecovery(original,source);
+  assert.equal(same.added,false);
+  assert.equal(same.reactivated,false);
+  assert.deepEqual(same.queue,original,'repeat wake must not rewrite updatedAt without a recovery change');
+
+  const enriched=enqueueRecovery(same.queue,{...source,evidence:[...source.evidence,'exact-stage-reproduced:YES']});
+  assert.ok(enriched.queue.tasks[0].evidence.includes('exact-stage-reproduced:YES'));
+  assert.notEqual(enriched.queue.tasks[0].updatedAt,original.tasks[0].updatedAt,'new evidence must be persisted');
+
+  const checkpoint=enqueueRecovery(enriched.queue,{...source,checkpoint:'revision-b',evidence:[...source.evidence,'exact-stage-reproduced:YES']});
+  assert.equal(checkpoint.queue.tasks[0].checkpoint,'revision-b');
+  assert.equal(checkpoint.queue.tasks[0].sourceMutationBaseline,'revision-b');
+
+  const dispatched={...checkpoint.queue,tasks:checkpoint.queue.tasks.map(row=>({...row,status:'dispatched',updatedAt:'2026-01-01T00:00:00.000Z'}))};
+  const reactivated=enqueueRecovery(dispatched,{...source,checkpoint:'revision-b'}, {reactivateDispatched:true});
+  assert.equal(reactivated.reactivated,true);
+  assert.equal(reactivated.queue.tasks[0].status,'queued');
+  assert.ok(reactivated.queue.tasks[0].evidence.includes('recovery-reactivated-after-source-refailure'));
+  assert.notEqual(reactivated.queue.tasks[0].updatedAt,dispatched.tasks[0].updatedAt);
+});
+
+test('recovery fast escalation with the same failed source has no semantic queue change',()=>{
+  const task={id:'stable-failure',gameId:'forest',target:'web',status:'failed',
+    sourceRoot:'web-games/forest',responsibleFiles:['web-games/forest/index.html'],
+    failureStage:'WEB_RUNTIME',failureSignature:'SAME_EXACT_FAILURE',sourceRevision:'rev-one',
+    evidence:['failure-cause:SAME_EXACT_FAILURE']};
+  const first=escalateRecoveryCandidates({gameQueueInput:{tasks:[task]}});
+  const stable={...first.queue,tasks:first.queue.tasks.map(row=>({...row,updatedAt:'2026-01-01T00:00:00.000Z'}))};
+  const repeated=escalateRecoveryCandidates({gameQueueInput:{tasks:[task]},recoveryInput:stable});
+  assert.deepEqual(repeated.queue,stable);
+  assert.deepEqual(repeated.added,[]);
+  const changed=escalateRecoveryCandidates({gameQueueInput:{tasks:[{...task,sourceRevision:'rev-two',evidence:[...task.evidence,'new-proof:YES']}]},recoveryInput:stable});
+  assert.equal(changed.queue.tasks[0].checkpoint,'rev-two');
+  assert.ok(changed.queue.tasks[0].evidence.includes('new-proof:YES'));
+});
+
 test('game recovery escalation uses the latest exact failure instead of historical cause markers',()=>{
   const gameQueueInput={tasks:[
     {id:'forest-current',gameId:'forest',target:'web',status:'failed',
