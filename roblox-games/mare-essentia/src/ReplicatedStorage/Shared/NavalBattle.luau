@@ -1938,7 +1938,7 @@ function NavalBattle.play(opts)
 			local r = scale * (0.7 + math.random() * 0.6)
 			FX.spawn(Vector3.new(r, r, r), pos + Vector3.new((math.random() - 0.5) * 3, 0, (math.random() - 0.5) * 3),
 				if dark then C_DARK else C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball,
-				Vector3.new((math.random() - 0.5) * 3, 3 + math.random() * 4, (math.random() - 0.5) * 3), 1.6 + math.random() * 0.8, { grow = 2.6, t0 = 0.25 })
+				Vector3.new((math.random() - 0.5) * 3, 3 + math.random() * 4, (math.random() - 0.5) * 3), 1.3 + math.random() * 0.6, { grow = if dark then 1.6 else 2.4, t0 = if dark then 0.55 else 0.3 })
 		end
 	end
 	-- 나무 파편과 불똥
@@ -1992,7 +1992,7 @@ function NavalBattle.play(opts)
 		end
 		FX.dmgAt[key] = now + (if hp < 0.35 then 0.16 else 0.3)
 		local at = ORIGIN + sh.pos + Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta)) * ((math.random() - 0.5) * sh.length * 0.6) + Vector3.new(0, 9, 0)
-		FX.smoke(at, 1, 3 + (1 - hp) * 3, true)
+		FX.smoke(at, 1, 2 + (1 - hp) * 2, true)
 		if hp < 0.35 then
 			FX.flame(at, 2.6)
 		end
@@ -2449,7 +2449,9 @@ function NavalBattle.play(opts)
 			local sunk = if loser == "me" then me else foe
 			if k < 0.95 and math.random() < 0.55 then
 				local at = ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 10, 0) + Vector3.new((math.random() - 0.5) * sunk.length * 0.7, 0, (math.random() - 0.5) * 8)
-				FX.smoke(at, 1, 4, true)
+				if math.random() < 0.3 then
+					FX.smoke(at, 1, 2.6, true)
+				end
 				if math.random() < 0.5 then
 					FX.flame(at, 3)
 				end
