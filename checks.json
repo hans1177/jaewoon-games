@@ -1,18 +1,18 @@
 {
-  "runId": "43603822428",
+  "runId": "43604912011",
   "kind": "studio",
-  "sourceRevision": "535093662efe630f71d8ccc2eb0e4693e348b8f7",
+  "sourceRevision": "78eb5069e51722e4195f664402388bd1fd36f8e5",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 26,
-    "completedSteps": 26,
+    "plannedSteps": 24,
+    "completedSteps": 24,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 8,
-    "capturedFrames": 8,
+    "plannedFrames": 3,
+    "capturedFrames": 3,
     "abortedEarly": false
   },
   "errors": [],
@@ -39,72 +39,70 @@
     },
     {
       "step": 2,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 3,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 4,
-      "type": "capture",
-      "name": "london_L1_close",
-      "status": "PASS",
-      "screenshots": [
-        "london_L1_close-0.jpg"
-      ]
-    },
-    {
-      "step": 5,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
+      "step": 5,
+      "type": "capture",
+      "name": "k0_deck",
+      "status": "PASS",
+      "screenshots": [
+        "k0_deck-0.jpg"
+      ]
+    },
+    {
       "step": 6,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 7,
-      "type": "capture",
-      "name": "london_L1_over",
-      "status": "PASS",
-      "screenshots": [
-        "london_L1_over-0.jpg"
-      ]
-    },
-    {
-      "step": 8,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 9,
+      "step": 8,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 10,
+      "step": 9,
       "type": "capture",
-      "name": "london_L4_close",
+      "name": "k1_practice",
       "status": "PASS",
       "screenshots": [
-        "london_L4_close-0.jpg"
+        "k1_practice-0.jpg"
       ]
+    },
+    {
+      "step": 10,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 11,
@@ -115,19 +113,17 @@
     },
     {
       "step": 12,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 13,
-      "type": "capture",
-      "name": "london_L4_over",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "london_L4_over-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 14,
@@ -145,35 +141,33 @@
     },
     {
       "step": 16,
-      "type": "capture",
-      "name": "istanbul_L3_close",
-      "status": "PASS",
-      "screenshots": [
-        "istanbul_L3_close-0.jpg"
-      ]
-    },
-    {
-      "step": 17,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 18,
+      "step": 17,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 19,
+      "step": 18,
       "type": "capture",
-      "name": "istanbul_L3_over",
+      "name": "k2_tactics_hand",
       "status": "PASS",
       "screenshots": [
-        "istanbul_L3_over-0.jpg"
+        "k2_tactics_hand-0.jpg"
       ]
+    },
+    {
+      "step": 19,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 20,
@@ -191,12 +185,10 @@
     },
     {
       "step": 22,
-      "type": "capture",
-      "name": "malacca_L3_close",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "malacca_L3_close-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 23,
@@ -204,74 +196,28 @@
       "name": "",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 25,
-      "type": "capture",
-      "name": "malacca_L3_over",
-      "status": "PASS",
-      "screenshots": [
-        "malacca_L3_over-0.jpg"
-      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "istanbul_L3_close-0.jpg",
-      "sha256": "3b06f872e24ffaafa570ec62506c358bc8ab134ea39569fb3cca0203f4b1a78c",
+      "name": "k0_deck-0.jpg",
+      "sha256": "6d63a817bba2fb2c5d55821034f53f2a6f35ffe6966609aa7743124e1b574c06",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/istanbul_L3_close-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43604912011/k0_deck-0.jpg"
     },
     {
-      "name": "istanbul_L3_over-0.jpg",
-      "sha256": "a0de679faceae01043e4574413b8769e239292e85a9f53d2d837b8d6b094afdf",
+      "name": "k1_practice-0.jpg",
+      "sha256": "683931471d4fc9fa94bb5cdf9c4034b459e3257dfa622dfa291f2101d1e8fd86",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/istanbul_L3_over-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43604912011/k1_practice-0.jpg"
     },
     {
-      "name": "london_L1_close-0.jpg",
-      "sha256": "0707e1829bea196377303ac6f064d38e0f4c2b7bbf681590326791c6b1a9dbad",
+      "name": "k2_tactics_hand-0.jpg",
+      "sha256": "282d6a4816ebd5cff633f16dce768c1f2b224f72e43f737382d371e7130dd476",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/london_L1_close-0.jpg"
-    },
-    {
-      "name": "london_L1_over-0.jpg",
-      "sha256": "89ab6b47f87980e46e7083c863d32bc43dba1a710cba46ded57dd18190dfb2d3",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/london_L1_over-0.jpg"
-    },
-    {
-      "name": "london_L4_close-0.jpg",
-      "sha256": "efe1f7c83b86c0f0ff86acbbcb0fe7a1145f92d7d1710c523d2b1f04869cab67",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/london_L4_close-0.jpg"
-    },
-    {
-      "name": "london_L4_over-0.jpg",
-      "sha256": "165b19c3f8064187aa9b17d23fbca8c80edc59bc1b205588b89ae05ea434f94f",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/london_L4_over-0.jpg"
-    },
-    {
-      "name": "malacca_L3_close-0.jpg",
-      "sha256": "faf5a340898752ab8224cf633e3d1105241fa9edd389f56330d699ec1fc5b302",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/malacca_L3_close-0.jpg"
-    },
-    {
-      "name": "malacca_L3_over-0.jpg",
-      "sha256": "c3156afdbd14523d1e7671157c263b5fbb65b3b5b6991f2c42a7a1058cc43779",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43603822428/malacca_L3_over-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43604912011/k2_tactics_hand-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43603510817"
+  "previousRunId": "43603822428"
 }
