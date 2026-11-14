@@ -943,7 +943,7 @@ function NavalBattle.play(opts)
 		bg.Parent = g
 		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
 		if cfg then
-			bg.BackgroundTransparency = 0.42 -- 뒤로 3D 해상 무대(두 배와 선원)가 비쳐 보인다
+			bg.BackgroundTransparency = if opts.cardOnly then 0.82 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
 		end
 		-- 카드 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
 		local wood = Instance.new("UIGradient")
@@ -964,7 +964,7 @@ function NavalBattle.play(opts)
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 1 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -972,7 +972,7 @@ function NavalBattle.play(opts)
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if opts.cardOnly then 0.97 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -1122,7 +1122,7 @@ function NavalBattle.play(opts)
 			local sc = BC.scout(cfg and cfg.seed or 1, { boss = opts.isBoss == true })
 			task.delay(0.6, function()
 				if adviceTag.Parent then
-					sayAdvice(string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
+					sayAdvice(if opts.cardOnly then string.format("정찰: 상대는 %s · %s 덱. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.weakName, BC.ROW_NAME[sc.counterRow]) else string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
 				end
 			end)
 		end
@@ -1759,7 +1759,7 @@ function NavalBattle.play(opts)
 			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
 				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
 				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
-			mePlate.who.Text = (if english then "Your ship" else opts.shipName or "우리 배")
+			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
