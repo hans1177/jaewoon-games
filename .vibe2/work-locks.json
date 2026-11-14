@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1kfivrz",
+      "worker": "vibe2",
+      "taskId": "deep-diver-studio-evolution-roblox-usability-v4",
+      "gameId": "deep-diver",
+      "files": [
+        "roblox-games/deep-diver/client/Game.client.luau",
+        "roblox-games/deep-diver/shared/GameConfig.luau",
+        "roblox-games/deep-diver/server/Game.server.luau",
+        "roblox-games/deep-diver/client/MaterialPresentation.client.luau",
+        "roblox-games/deep-diver/shared/RobloxCommonUI.luau",
+        "roblox-games/deep-diver/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "cae5827d81600981672e5d81c61df73ecd0fd3bc",
+      "runId": "43554174576",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-14T04:09:52.370Z",
+      "expiresAt": "2026-11-14T04:54:52.370Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:deep-diver-studio-evolution-roblox-usability-v4"
+      ]
+    }
+  ]
 }
