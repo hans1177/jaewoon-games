@@ -250,7 +250,7 @@ function NavalBattle.play(opts)
 	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(45, 0, -30), math.pi)
 	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
 	local escorts = {}
-	local escortCount = if opts.isBoss then 0 else 2
+	local escortCount = if opts.isBoss or opts.cardOnly then 0 else 2
 	for i = 1, escortCount do
 		local e = newShip("ship-pirate-small", 28, Vector3.new(80 + i * 40, 0, -70 + i * 80), math.pi + (i - 1.5) * 0.4)
 		e.speed = 5
@@ -276,6 +276,70 @@ function NavalBattle.play(opts)
 				al.nextFire = os.clock() + 2 + i * 0.6
 				table.insert(allies, al)
 			end
+		end
+	end
+
+	-- 주점 카드 대결 무대: 등록된 실내 소품(책장·램프·통·의자)으로 술집 안을 꾸민다
+	if opts.cardOnly then
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local function prop(group, name, pos, height, yaw)
+			local g = lib and lib:FindFirstChild(group)
+			local tpl = g and g:FindFirstChild(name)
+			if not (tpl and tpl:IsA("Model")) then
+				return nil
+			end
+			local m = tpl:Clone()
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+					d.CanCollide = false
+					d.CanQuery = false
+				end
+			end
+			m.Parent = folder
+			pcall(function()
+				local _, ext = m:GetBoundingBox()
+				m:ScaleTo(height / math.max(ext.Y, 0.01))
+				m:PivotTo(CFrame.Angles(0, yaw, 0) * m:GetPivot())
+				local c, sz = m:GetBoundingBox()
+				m:PivotTo(CFrame.new(ORIGIN + pos - Vector3.new(c.Position.X - ORIGIN.X, c.Position.Y - sz.Y / 2 - ORIGIN.Y, c.Position.Z - ORIGIN.Z)) * m:GetPivot())
+			end)
+			return m
+		end
+		local mid = (me.pos + foe.pos) / 2
+		local dir = (foe.pos - me.pos).Unit
+		local back = Vector3.new(dir.Z, 0, -dir.X) -- 카메라 반대쪽(벽 쪽)
+		local yawWall = math.atan2(-back.X, -back.Z)
+		-- 뒷벽 쪽에 책장·통·램프를 늘어놓는다
+		for i = -4, 4 do
+			local at = mid + back * 82 + dir * (i * 26)
+			if i % 3 == 0 then
+				prop("Cargo", "barrel", at + Vector3.new(0, 0, 0), 12, yawWall)
+			else
+				prop("Interior", "bookcaseclosedwide", at, 26, yawWall)
+			end
+		end
+		for i = -3, 3, 2 do
+			local at = mid + back * 76 + dir * (i * 26) + Vector3.new(0, 20, 0)
+			prop("Interior", "lampwall", at, 7, yawWall)
+		end
+		-- 탁자 둘레: 러그, 의자, 통, 술잔
+		for _, sh in { me, foe } do
+			prop("Interior", "rugrectangle", sh.pos + Vector3.new(0, 0.05, 0), 0.4, yawWall)
+			prop("Interior", "stoolbar", sh.pos + back * 14 + dir * 14, 6, 0)
+			prop("Interior", "stoolbar", sh.pos + back * 14 - dir * 14, 6, 0)
+			prop("Cargo", "mug", sh.pos + dir * 6 + Vector3.new(0, 4.6, 0), 1.6, 0)
+		end
+		prop("Cargo", "chest", mid + back * 38, 6, yawWall)
+		-- 따뜻한 촛불·램프 빛
+		for i, pos in { mid + Vector3.new(0, 28, 0), me.pos + Vector3.new(0, 18, 0), foe.pos + Vector3.new(0, 18, 0) } do
+			local lp = part(folder, Vector3.new(0.5, 0.5, 0.5), CFrame.new(ORIGIN + pos), Color3.fromRGB(255, 190, 110), Enum.Material.Neon, Enum.PartType.Ball)
+			lp.Transparency = 1
+			local light = Instance.new("PointLight")
+			light.Color = Color3.fromRGB(255, 190, 110)
+			light.Brightness = if i == 1 then 2.4 else 1.6
+			light.Range = if i == 1 then 120 else 70
+			light.Parent = lp
 		end
 	end
 
@@ -753,7 +817,7 @@ function NavalBattle.play(opts)
 			m = cfg.prebuilt()
 		elseif cfg then
 			BC.useKind(cfg.kind)
-			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction, book = opts.deck and opts.deck.book }, { fighter = cfg.foe, boss = opts.isBoss == true })
+			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = if cfg.book then nil else (opts.deck and opts.deck.cards), faction = opts.deck and opts.deck.faction, book = cfg.book or (opts.deck and opts.deck.book) }, { fighter = cfg.foe, boss = opts.isBoss == true })
 		else
 			BC.useKind("boarding")
 			local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)

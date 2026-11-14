@@ -196,5 +196,33 @@ do
 	check("카드 대결: 기록 검증 결과가 승패와 일치", okW == (m.winner == "me"))
 end
 
+
+-- 연습전: 기본 덱(새 지식 카드)만으로 이길 수 있다
+do
+	local stQ = S.State.new("england", 1700)
+	local pb = S.Cardbook.practiceBook(stQ)
+	local allKnowledge = #pb.ids >= 18
+	for _, id in pb.ids do
+		local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+		if not (d and d.knowledge) then allKnowledge = false end
+	end
+	check("연습전: 기본 덱은 모두 새 지식 카드", allKnowledge)
+	local B = D.BoardingCards
+	local m = B.build("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {})
+	local acts, guard = {}, 0
+	while not m.over and guard < 400 do
+		guard += 1
+		if m.turn == "foe" then B.ai(m, "foe")
+		else
+			local best = select(2, B.hint(m, "me"))
+			if best then table.insert(acts, { "p", best }) B.play(m, "me", best)
+			else table.insert(acts, { "s" }) B.pass(m, "me") end
+		end
+	end
+	local okP = Registry.handlers.CardPractice(stQ, { actions = acts }, ctx)
+	check("연습전: 서버 판정이 시뮬레이션과 일치", okP == (m.winner == "me"))
+	check("연습전: 기본 덱으로 이길 수 있다", m.winner == "me" and okP == true)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
