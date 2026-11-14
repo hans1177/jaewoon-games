@@ -3431,72 +3431,118 @@ function PortScene.build(info, onFacility)
 		x = math.clamp(x, 0, 1)
 		return x * x * (3 - 2 * x)
 	end
-	-- 모델 원본은 뱃머리가 +Z(긴 쪽이 Z)인 경우가 많다. 그대로 +X 로 밀면 옆으로 미끄러지므로 뱃머리를 진행 방향에 맞춘다.
-	local zLong = false
-	do
-		local _, ext = ship:GetBoundingBox()
-		zLong = ext.Z > ext.X
-	end
+	-- 배 모델의 기준 방향은 회전돼 있어서 모델 로컬 +X 가 월드 +X 가 아니다. 이동은 월드 좌표로 하고,
+	-- 뱃머리는 바다 쪽(+X)이다(바다 장면 VoyageScene 도 같은 모델을 뱃머리 +X 로 쓴다).
 	local basePos = shipBase.Position
 	local function yawAbout(angle)
 		return CFrame.new(basePos) * CFrame.Angles(0, angle, 0) * CFrame.new(-basePos)
 	end
-	local conn = RunService.Heartbeat:Connect(function()
-		local t = os.clock() - t0
-		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
-		if anim then
-			local a = math.clamp((os.clock() - anim.start) / anim.dur, 0, 1)
-			if anim.kind == "depart" then
-				-- 천천히 출발해 점점 빨라진다 (바다 쪽 +X 로 진행)
-				-- 처음 1/3 동안 뱃머리를 바다(+X)로 돌리고, 그다음 앞으로 가속한다. 돛이 바람을 받아 선체가 살짝 기운다.
-				local turn = smooth(a / 0.35)
-				local run = math.max(0, a - 0.12) / 0.88
-				local d = run * run * SEA_DIST
-				local heel = math.sin(math.min(a * 3, 1) * math.pi / 2) * 0.05
-				if zLong then
-					shipPose = CFrame.new(d, 0, 0) * yawAbout(turn * math.pi / 2) * shipPose * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02 + heel)
-				else
-					shipPose = shipPose * CFrame.new(d, 0, 0) * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02 + heel)
-				end
-			else
-				-- 먼 바다에서 들어와 감속하고, 끝에서 뱃머리를 바다 쪽으로 돌려 정박한다
-				local remain = 1 - smooth(a)
-				local turn = smooth((a - 0.7) / 0.3)
-				local lateral = (1 - turn) * 28
-				if zLong then
-					-- 뱃머리가 -X(항구 쪽)를 향해 들어오다가 정박 자리에서 원래 방향으로 돌아선다
-					shipPose = CFrame.new(remain * SEA_DIST, 0, lateral * remain) * yawAbout(-math.pi / 2 * (1 - turn)) * shipPose
-				else
-					shipPose = shipPose * CFrame.new(remain * SEA_DIST, 0, lateral * remain) * CFrame.Angles(0, math.pi * (1 - turn), 0)
-				end
-				if a >= 1 then
-					anim = nil
-				end
-			end
-			if anim and not anim.done then
-				-- 항적 파도: 배가 달릴 때 물보라가 따라온다
-				if not ship:FindFirstChild("Wake") then
-					local hull = ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
-					if hull then
-						local att = Instance.new("Attachment")
-						att.Name = "Wake"
-						att.Position = Vector3.new(0, -2, 0)
-						att.Parent = hull
-						local em = Instance.new("ParticleEmitter")
-						em.Name = "WakeFoam"
-						em.Texture = "rbxasset://textures/particles/smoke_main.dds"
-						em.Rate = 30
-						em.Lifetime = NumberRange.new(2, 3)
-						em.Speed = NumberRange.new(2, 4)
-						em.SpreadAngle = Vector2.new(60, 10)
-						em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 6) })
-						em.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1) })
-						em.Color = ColorSequence.new(Color3.fromRGB(235, 245, 255))
-						em.Parent = att
+	-- 월드 축 기준 선체 범위: 물보라를 선미·뱃머리·양옆에 붙이려고 한 번 잰다.
+	local minX, maxX, minY, minZ, maxZ = math.huge, -math.huge, math.huge, math.huge, -math.huge
+	for _, d in ship:GetDescendants() do
+		if d:IsA("BasePart") and d.Transparency < 1 then
+			local h = d.Size / 2
+			for sx = -1, 1, 2 do
+				for sy = -1, 1, 2 do
+					for sz = -1, 1, 2 do
+						local c = d.CFrame:PointToWorldSpace(Vector3.new(h.X * sx, h.Y * sy, h.Z * sz))
+						minX, maxX = math.min(minX, c.X), math.max(maxX, c.X)
+						minY = math.min(minY, c.Y)
+						minZ, maxZ = math.min(minZ, c.Z), math.max(maxZ, c.Z)
 					end
 				end
 			end
 		end
+	end
+	if minX == math.huge then
+		minX, maxX, minY, minZ, maxZ = basePos.X - 12, basePos.X + 12, basePos.Y - 2, basePos.Z - 4, basePos.Z + 4
+	end
+	local waterY = minY + 1.2
+	local midZ = (minZ + maxZ) / 2
+	local halfBeam = (maxZ - minZ) / 2
+	local foamParts = nil
+	local function ensureFoam()
+		if foamParts then
+			return foamParts
+		end
+		local hull = ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
+		if not hull then
+			return nil
+		end
+		local function emitter(worldPos, lookAt, life, size, alpha, accel, spread)
+			local att = Instance.new("Attachment")
+			att.Name = "Wake"
+			att.Parent = hull
+			att.WorldCFrame = CFrame.lookAt(worldPos, lookAt)
+			local em = Instance.new("ParticleEmitter")
+			em.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			em.Rate = 0
+			em.Lifetime = life
+			em.Size = size
+			em.Transparency = alpha
+			em.Acceleration = accel
+			em.EmissionDirection = Enum.NormalId.Front
+			em.SpreadAngle = spread
+			em.Color = ColorSequence.new(Color3.fromRGB(246, 252, 255), Color3.fromRGB(158, 206, 225))
+			em.LightEmission = 0.22
+			em.LockedToPart = false
+			em.Parent = att
+			return em
+		end
+		foamParts = { jets = {} }
+		-- 뱃머리 양옆: 앞 + 바깥 + 위로 튀는 물방울
+		for _, side in { -1, 1 } do
+			local p = Vector3.new(maxX - 3, waterY, midZ + side * halfBeam * 0.85)
+			local em = emitter(p, p + Vector3.new(0.26, 0.58, side * 0.78), NumberRange.new(0.4, 0.7), NumberSequence.new(0.7, 1.9),
+				NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.15), NumberSequenceKeypoint.new(0.35, 0.4), NumberSequenceKeypoint.new(1, 1) }),
+				Vector3.new(0, -40, 0), Vector2.new(22, 16))
+			em.Speed = NumberRange.new(6, 12)
+			table.insert(foamParts.jets, em)
+		end
+		-- 선미: 뒤로 번지는 하얀 항적
+		local sp = Vector3.new(minX + 1, waterY, midZ)
+		foamParts.stern = emitter(sp, sp + Vector3.new(-1, 0.14, 0), NumberRange.new(0.9, 1.6), NumberSequence.new(2.4, 7),
+			NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(0.5, 0.6), NumberSequenceKeypoint.new(1, 1) }),
+			Vector3.zero, Vector2.new(38, 5))
+		foamParts.stern.Speed = NumberRange.new(2, 5)
+		return foamParts
+	end
+	local function setFoam(flow)
+		local f = if flow > 0.02 then ensureFoam() else foamParts
+		if not f then
+			return
+		end
+		for _, em in f.jets do
+			em.Rate = math.floor(flow * 26)
+		end
+		f.stern.Rate = math.floor(flow * 18)
+	end
+	local conn = RunService.Heartbeat:Connect(function()
+		local t = os.clock() - t0
+		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
+		local flow = 0
+		if anim then
+			local a = math.clamp((os.clock() - anim.start) / anim.dur, 0, 1)
+			if anim.kind == "depart" then
+				-- 뱃머리가 바다(+X)를 향한 채 천천히 출발해 점점 빨라진다. 월드 +X 로 이동하므로 옆으로 미끄러지지 않는다.
+				local run = a * a
+				local d = run * SEA_DIST
+				local heel = math.sin(math.min(a * 3, 1) * math.pi / 2) * 0.05
+				shipPose = CFrame.new(d, 0, 0) * shipPose * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02 + heel)
+				flow = math.clamp(a * 2.2, 0, 1)
+			else
+				-- 먼 바다에서 뱃머리를 항구 쪽(-X)으로 돌려 들어와 감속하고, 끝에서 바다 쪽으로 돌아서 정박한다
+				local remain = 1 - smooth(a)
+				local turn = smooth((a - 0.7) / 0.3)
+				local lateral = (1 - turn) * 28
+				shipPose = CFrame.new(remain * SEA_DIST, 0, lateral * remain) * yawAbout(math.pi * (1 - turn)) * shipPose
+				flow = math.clamp(remain * 1.6, 0, 1)
+				if a >= 1 then
+					anim = nil
+				end
+			end
+		end
+		setFoam(if anim then flow else 0)
 		ship:PivotTo(shipPose)
 		for _, wheel in wheels do
 			wheel.model:PivotTo(shipPose * wheel.relative * CFrame.Angles(0, 0, t * 1.65))
