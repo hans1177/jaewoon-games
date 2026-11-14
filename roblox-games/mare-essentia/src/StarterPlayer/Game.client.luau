@@ -1873,13 +1873,28 @@ do
 				end
 				local head = mkHeader(builder, "덱 구성 (퀘스트·발견·탐험·주점에서 새 카드를 모아요)")
 				head.LayoutOrder = 1
-				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 보급 %d/%d · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, CBk.deckCost(ids), CBk.provisionLimit(book.faction), heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
+				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 보급 %d/%d · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, CBk.deckCost(ids), CBk.provisionLimit(book.faction, book.leader), heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
 					if okDeck then "이 덱으로 싸울 수 있어요" else "덱을 고쳐 주세요: " .. tostring(why), {
 					{ text = "덱 저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSetDeck", { ids = ids }) end },
 					{ text = "자동 덱", color = COLORS.blue, onClick = function() refreshAfter("CardAutoDeck") end },
 					{ text = "용병 180", color = COLORS.gold, onClick = function() refreshAfter("CardTavern") end },
 				}, 74)
 				summary.LayoutOrder = 2
+				do
+					local fac = BC.Factions[book.faction or ""]
+					if fac and fac.leaders then
+						local cur = book.leader or fac.leader
+						local btns = {}
+						for _, lid in fac.leaders do
+							local ld = BC.Leaders[lid]
+							table.insert(btns, { text = (if lid == cur then "● " else "") .. ld.name, color = if lid == cur then COLORS.gold else COLORS.blue, onClick = function() refreshAfter("CardSetLeader", { id = lid }) end })
+						end
+						local cd = BC.Leaders[cur]
+						local lrow = mkRow(builder, "지도자 (한 판에 한 번 쓰는 능력, 필드 밖에서 도와요)",
+							string.format("%s — %s · 보급 +%d", cd.name, cd.text, cd.provision or 0), btns, 74)
+						lrow.LayoutOrder = 3
+					end
+				end
 				local bk = bookOf()
 				local function playCardOnly(title, build, action, payload, cardCfg)
 					if inField then return end

@@ -223,7 +223,7 @@ function CB.validateDeck(book: any, ids: { string }): (boolean, string)
 	if heroes > CB.MAX_HEROES then return false, string.format("영웅은 %d장까지예요", CB.MAX_HEROES) end
 	if specials > CB.MAX_SPECIALS then return false, string.format("특수 카드는 %d장까지예요", CB.MAX_SPECIALS) end
 	if lost > CB.LOST_MAX then return false, string.format("미지의 땅 카드는 %d장까지예요", CB.LOST_MAX) end
-	local limit = CB.provisionLimit(book.faction)
+	local limit = CB.provisionLimit(book.faction, book.leader)
 	local cost = CB.deckCost(ids)
 	if cost > limit then return false, string.format("보급이 모자라요 (%d / %d)", cost, limit) end
 	return true, "ok"
@@ -350,7 +350,7 @@ function CB.recommend(book: any, style: string): { string }?
 		return a.id < b.id
 	end)
 	local ids, heroes, specials, spent = {}, 0, 0, 0
-	local limit = CB.provisionLimit(book.faction)
+	local limit = CB.provisionLimit(book.faction, book.leader)
 	local own = CB.continentOf((BC.Factions[book.faction or ""] and BC.Factions[book.faction].roster[1]) or "")
 	local copies, lost = {}, 0
 	for _, c in pool do
