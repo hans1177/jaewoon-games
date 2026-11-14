@@ -46,12 +46,29 @@ return function(D, S)
 		local spec = C.deckSpec(state)
 		local sums = { melee = 0, ranged = 0, cannon = 0 }
 		local n = {}
+		local byRow, byField = { melee = {}, ranged = {}, cannon = {} }, {}
 		for _, id in spec.ids do
 			local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
 			if d and not d.special and d.row then
-				sums[d.row] += (d.power or 0) + ((spec.tier[id] or 1) - 1)
+				local pw = (d.power or 0) + ((spec.tier[id] or 1) - 1)
+				sums[d.row] += pw
+				table.insert(byRow[d.row], { name = d.name, pw = pw })
 			end
-			if d and d.field then n[d.field] = (n[d.field] or 0) + 1 end
+			if d and d.field then
+				n[d.field] = (n[d.field] or 0) + 1
+				byField[d.field] = byField[d.field] or {}
+				table.insert(byField[d.field], { name = d.name, pw = d.power or 0 })
+			end
+		end
+		-- 해전 화면에 보여 줄 대표 카드 이름 (위력이 높은 순 최대 2장)
+		local function top(list: any, extra: any?): { string }
+			local all = {}
+			for _, e in list or {} do table.insert(all, e) end
+			for _, e in extra or {} do table.insert(all, e) end
+			table.sort(all, function(a, b) if a.pw ~= b.pw then return a.pw > b.pw end return a.name < b.name end)
+			local out = {}
+			for i = 1, math.min(2, #all) do table.insert(out, all[i].name) end
+			return out
 		end
 		local sup = {
 			meleeMult = math.min(0.12, sums.melee * 0.003 + sums.ranged * 0.0015),
@@ -62,11 +79,16 @@ return function(D, S)
 			lines = {},
 		}
 		local L = sup.lines
-		if sup.meleeMult > 0 then table.insert(L, string.format("접현 +%d%% (근접·사격 카드)", math.floor(sup.meleeMult * 100 + 0.5))) end
-		if sup.cannonMult > 0 then table.insert(L, string.format("포격 +%d%% (포·사격 카드)", math.floor(sup.cannonMult * 100 + 0.5))) end
-		if sup.speed > 0 then table.insert(L, string.format("속도 +%d (항해·천문·기상 카드)", sup.speed)) end
-		if sup.pump > 0 then table.insert(L, string.format("침수 방어 +%d%% (건축·조선 카드)", math.floor(sup.pump * 100 + 0.5))) end
-		if sup.medic > 0 then table.insert(L, string.format("전투 뒤 선원 회복 %d%% (의학 카드)", math.floor(sup.medic * 100 + 0.5))) end
+		sup.entries = {}
+		local function add(kind: string, line: string, short: string, cards: { string })
+			table.insert(L, line)
+			table.insert(sup.entries, { kind = kind, text = short, cards = cards })
+		end
+		if sup.meleeMult > 0 then add("melee", string.format("접현 +%d%% (근접·사격 카드)", math.floor(sup.meleeMult * 100 + 0.5)), string.format("접현 +%d%%", math.floor(sup.meleeMult * 100 + 0.5)), top(byRow.melee, byRow.ranged)) end
+		if sup.cannonMult > 0 then add("cannon", string.format("포격 +%d%% (포·사격 카드)", math.floor(sup.cannonMult * 100 + 0.5)), string.format("포격 +%d%%", math.floor(sup.cannonMult * 100 + 0.5)), top(byRow.cannon, byRow.ranged)) end
+		if sup.speed > 0 then add("speed", string.format("속도 +%d (항해·천문·기상 카드)", sup.speed), string.format("속도 +%d", sup.speed), top(byField.Navigation, byField.Astronomy)) end
+		if sup.pump > 0 then add("pump", string.format("침수 방어 +%d%% (건축·조선 카드)", math.floor(sup.pump * 100 + 0.5)), string.format("침수 방어 +%d%%", math.floor(sup.pump * 100 + 0.5)), top(byField.Architecture, byField.Shipbuilding)) end
+		if sup.medic > 0 then add("medic", string.format("전투 뒤 선원 회복 %d%% (의학 카드)", math.floor(sup.medic * 100 + 0.5)), string.format("선원 회복 %d%%", math.floor(sup.medic * 100 + 0.5)), top(byField.Medicine)) end
 		return sup
 	end
 
