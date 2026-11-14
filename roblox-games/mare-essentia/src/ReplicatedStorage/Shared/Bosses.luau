@@ -80,6 +80,25 @@ local Bosses: { Boss } = {
 		rewardXp = 320,
 		cardId = "myth_siren",
 	},
+	{
+		id = "ghost_ship",
+		name = "유령선",
+		summary = "항해 중 안개 속에서 나타나는 떠도는 유령선. 항구에서는 만날 수 없고 바다에서만 나타난다.",
+		portIds = {},
+		minBattleLevel = 5,
+		cooldownDays = 20,
+		hull = 210,
+		crew = 40,
+		cannons = 12,
+		cannonMult = 1,
+		meleeMult = 1.1,
+		steamRage = 1.0,
+		skills = { "broadside", "chain_shot", "cutlass_flurry" },
+		rewardCoins = 900,
+		rewardFame = 40,
+		rewardXp = 280,
+		cardId = "myth_dutchman",
+	},
 }
 
 local ById: { [string]: Boss } = {}

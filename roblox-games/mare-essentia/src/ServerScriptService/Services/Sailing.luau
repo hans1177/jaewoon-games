@@ -61,6 +61,7 @@ return function(D, S)
 		end
 		state.voyageChoice = nil
 		state.voyageBonusDays = nil
+		state.seaBoss = nil
 		local region = D.Regions.of(to)
 		local lvAdv = state.careers.adventure.level
 		local homeTier = D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId])
@@ -222,6 +223,10 @@ return function(D, S)
 				state.fame += event.amount
 				table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
 				moraleAdd(-8)
+				if ctx.rng() < 0.5 and S.Boss.blockReason(state, D.Bosses.ById.ghost_ship, true) == nil then
+					state.seaBoss = "ghost_ship"
+					table.insert(msgs, "유령선이 포문을 열었다! 해상전투가 벌어진다")
+				end
 			elseif event.kind == "dolphins" then
 				table.insert(msgs, "돌고래 떼가 뱃머리를 따라왔다! 선원들의 사기가 올랐다")
 				moraleAdd(event.amount)
@@ -304,6 +309,11 @@ return function(D, S)
 				if ctx.rng() < 0.12 then
 					S.Discovery.grantCard(state, "myth_ghost_light", msgs)
 				end
+			elseif event.kind == "kraken" and S.Boss.blockReason(state, D.Bosses.ById.kraken, true) == nil then
+				-- 해상전투: 항해가 끝나면 크라켄과 실제로 싸운다
+				state.seaBoss = "kraken"
+				table.insert(msgs, "거대한 크라켄이 배를 휘감았다! 해상전투가 벌어진다")
+				moraleAdd(-4)
 			elseif event.kind == "kraken" then
 				if state.ship.hull > def.hull * 0.6 then
 					state.fame += 3

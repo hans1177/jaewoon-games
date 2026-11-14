@@ -5,8 +5,8 @@ return function(D, S)
 	local handlers = {}
 
 	-- 도전할 수 없는 이유 (가능하면 nil)
-	local function blockReason(state, boss)
-		if not table.find(boss.portIds, state.portId) then
+	local function blockReason(state, boss, atSea)
+		if not atSea and not table.find(boss.portIds, state.portId) then
 			return "이 해역에서는 만날 수 없어요"
 		end
 		if state.careers.battle.level < boss.minBattleLevel then
@@ -65,13 +65,20 @@ return function(D, S)
 		if not boss then
 			return false, "알 수 없는 괴물이에요"
 		end
-		local reason = blockReason(state, boss)
+		-- 바다에서 만난 괴물(크라켄·유령선)은 항해가 끝난 뒤 한 번만 도전할 수 있다
+		local atSea = p.sea == true and state.seaBoss == boss.id
+		local reason = blockReason(state, boss, atSea)
 		if reason then
 			return false, reason
 		end
+		if atSea then
+			state.seaBoss = nil
+		end
 
 		local msgs = {}
-		S.State.advanceDays(state, 2)
+		if not atSea then
+			S.State.advanceDays(state, 2)
+		end
 		local rec = state.bosses[boss.id] or { defeated = 0, lastDay = -1e6 }
 		rec.lastDay = state.day
 		state.bosses[boss.id] = rec
