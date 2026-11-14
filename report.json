@@ -1,36 +1,33 @@
 {
- "sourceRevision": "94e081e9c94f2d69ce9f6573415255b5fae3484c",
+ "sourceRevision": "efa50e7dd445582fe0536cf867551b8a85a9e41d",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "true \ntext"
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
    "step": 4,
-   "capture": "t0_main",
-   "files": 1
-  },
-  {
-   "step": 5,
    "ctx": "Client",
-   "out": "hall\ntext"
+   "out": "npcs 5\ntext"
   },
   {
-   "step": 9,
-   "capture": "t2_hall",
+   "step": 6,
+   "capture": "n01",
    "files": 1
   },
   {
-   "step": 10,
-   "click": "흥정하기",
-   "at": "NOT_FOUND",
-   "out": "NONE\ntext"
+   "step": 8,
+   "capture": "n02",
+   "files": 1
   }
  ],
- "errors": [
-  "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
- ],
+ "errors": [],
  "consoleCapture": {
   "captured": true,
   "contexts": [
@@ -42,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 14,
-  "completedSteps": 11,
-  "plannedClicks": 1,
+  "plannedSteps": 9,
+  "completedSteps": 9,
+  "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
+  "plannedFrames": 2,
   "capturedFrames": 2,
-  "abortedEarly": true
+  "abortedEarly": false
  }
 }
