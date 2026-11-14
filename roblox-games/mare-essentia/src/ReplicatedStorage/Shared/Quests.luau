@@ -388,6 +388,64 @@ for _, ch in Chains do
 	end
 end
 
+-- 지역 대장정: 10개 해역마다 6단계 연속 퀘스트. 단계 보상으로 그 지역의 대표 유산(에픽 3장)을 받고, 마지막에 전설 유산을 얻는다.
+-- 이 유산 카드는 항구 탐험으로는 나오지 않는다 (대장정을 끝내야 얻는다). 교역·학문·해전·발견·항해가 두루 필요하다.
+local RegionalChains: { { any } } = {
+	{ "north_sea", "북해", "amsterdam", "wool", 8, "hamburg", "porcelain", 8, "Physics", "물리", { "site_hadrian_wall", "site_skara_brae", "site_brodgar" }, "site_stonehenge" },
+	{ "atlantic_europe", "대서양 연안", "lisbon", "iron", 8, "seville", "wool", 8, "Zoology", "동물", { "site_carnac", "site_newgrange", "site_rouen_cathedral" }, "site_giants_causeway" },
+	{ "mediterranean", "지중해", "venice", "iron", 10, "istanbul", "glass", 8, "Architecture", "건축", { "site_pompeii", "site_pont_du_gard", "site_hagia_sophia" }, "site_parthenon" },
+	{ "red_sea", "홍해와 북아프리카", "alexandria", "glass", 8, "aden", "rice", 10, "Language", "언어", { "site_petra", "site_pharos", "site_sphinx" }, "site_pyramid" },
+	{ "west_africa", "서아프리카", "elmina", "cloth", 8, "ouidah", "wine", 6, "Relic", "유물", { "relic_ife_head", "site_timbuktu", "relic_benin_bronzes" }, "relic_mansa_musa" },
+	{ "east_africa", "동아프리카", "kilwa", "cloth", 8, "zanzibar", "glass", 8, "Geography", "지리", { "site_kilwa", "relic_kilwa_coins", "site_cape_table" }, "site_great_zimbabwe" },
+	{ "south_asia", "남아시아", "calicut", "cloth", 8, "goa", "iron", 8, "Medicine", "의학", { "site_taj_agra", "site_hampi", "site_sanchi" }, "relic_iron_pillar" },
+	{ "southeast_asia", "동남아시아", "malacca", "porcelain", 8, "banda", "rice", 10, "Botany", "식물", { "site_borobudur", "site_bagan", "site_malacca_fort" }, "site_angkor" },
+	{ "east_asia", "동아시아", "canton", "silver", 6, "osaka", "silk", 8, "Art", "예술", { "site_himeji", "relic_zheng_he_fleet", "relic_scroll_painting" }, "site_forbidden_city" },
+	{ "americas", "아메리카", "havana", "cloth", 8, "portobelo", "iron", 8, "Mineral", "광물", { "site_tenochtitlan", "site_chichen_itza", "site_teotihuacan" }, "site_machu_picchu" },
+}
+for _, rc in RegionalChains do
+	local rid, rname, p1, g1, a1, p2, g2, a2, fld, fname, epics, legend = rc[1], rc[2], rc[3], rc[4], rc[5], rc[6], rc[7], rc[8], rc[9], rc[10], rc[11], rc[12]
+	local steps = {
+		{ "첫 짐", "deliver", g1, p1, a1 },
+		{ "지식", "field", fld, 3, epics[1] },
+		{ "파도", "win", 4 },
+		{ "큰 장", "deliver", g2, p2, a2, epics[2] },
+		{ "기록", "discover", 15, epics[3] },
+		{ "유산", "visit", 10, legend },
+	}
+	local prev: string? = nil
+	for i, st in steps do
+		local id = "q_rg_" .. rid .. "_" .. i
+		local q: any = {
+			id = id, name = rname .. "의 " .. st[1], after = prev, rewardCareer = "adventure",
+			rewardCoins = if i == 6 then 8000 else 500 * i + 400, rewardFame = if i == 6 then 200 else 20 * i + 10,
+			rewardXp = if i == 6 then 500 else 70 + 40 * i,
+		}
+		local title = rname .. " 대장정 " .. i .. "/6 — "
+		if st[2] == "deliver" then
+			q.kind, q.goodId, q.portId, q.amount = "deliver", st[3], st[4], st[5]
+			q.summary = title .. "교역품을 " .. tostring(st[4]) .. "에 납품"
+			q.rewardCardId = st[6]
+		elseif st[2] == "field" then
+			q.kind, q.fieldId, q.amount = "field", st[3], st[4]
+			q.summary = title .. fname .. " 도감 카드 " .. st[4] .. "장 발견"
+			q.rewardCardId = st[5]
+		elseif st[2] == "win" then
+			q.kind, q.amount = "win", st[3]
+			q.summary = title .. "해전에서 " .. st[3] .. "번 승리"
+		elseif st[2] == "discover" then
+			q.kind, q.amount = "discover", st[3]
+			q.summary = title .. "도감 카드 " .. st[3] .. "장 발견"
+			q.rewardCardId = st[4]
+		else
+			q.kind, q.amount = "visit", st[3]
+			q.summary = title .. "서로 다른 항구 " .. st[3] .. "곳 방문 (마지막 단계: 전설 유산)"
+			q.rewardCardId = st[4]
+		end
+		table.insert(Quests, q :: Quest)
+		prev = id
+	end
+end
+
 -- 증권거래소: 주식을 거래하고 배당을 받는 연속 퀘스트
 table.insert(Quests, { id = "q_stock_1", name = "첫 주주", summary = "증권거래소에서 주식 거래 3번 하기 (암스테르담·런던)", kind = "stock", amount = 3, rewardCoins = 600, rewardFame = 20, rewardCareer = "trade", rewardXp = 90 } :: Quest)
 table.insert(Quests, { id = "q_stock_2", name = "배당의 맛", summary = "주식 배당으로 코인 1000 받기", kind = "dividend", amount = 1000, after = "q_stock_1", rewardCoins = 1500, rewardFame = 40, rewardCareer = "trade", rewardXp = 160 } :: Quest)
