@@ -910,7 +910,7 @@ function NavalBattle.play(opts)
 	end
 
 	local shake = 0
-	-- 접현 카드 전투: 배가 맞닿으면 화면이 카드판으로 바뀐다. 규칙은 BoardingCards (3줄 × 3판 2선승, 병종 상성).
+	-- 접현 카드 전투: 배가 맞닿으면 화면이 카드판으로 바뀐다. 규칙은 BoardingCards (2줄 × 3판 2선승, 한 판 5장).
 	-- 전투 결과 자체는 서버 판정 그대로이고, 카드전의 승패는 기동 점수(명성 보너스)에만 반영된다.
 local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
@@ -948,7 +948,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			armor="폭풍·안개 등 날씨 감점 무효", snipe="조건을 만족한 적 부대를 저격",
 		}
 
-		local englishRows = { melee = "Melee", ranged = "Ranged", cannon = "Cannon" }
+		local englishRows = { melee = "Front", ranged = "Back", cannon = "Back" }
 		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark" }
 		local englishAbilities = { bond = "Bond", morale = "Morale", spy = "Spy", medic = "Medic", armor = "Armor", snipe = "Snipe" }
 		local englishDetails = {
@@ -990,7 +990,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if not english then
 				if c.special then return c.text or "전술 카드" end
 				if c.ability then return ABIL_DETAIL[c.ability] or "" end
-				return if c.hero then "영웅 · 날씨와 소각의 영향을 받지 않음" else "병종 상성을 고려해 전투 줄에 배치"
+				return if c.hero then "영웅 · 날씨와 소각의 영향을 받지 않음" else "병종에 맞는 줄(근접=전열, 사격·포=후열)에 배치"
 			end
 			if c.special == "weather" then return "Set ordinary units in the " .. rowName(c.row) .. " row to 1 strength" end
 			if c.special == "horn" then return "Double the ordinary unit score in your strongest row" end
@@ -1936,13 +1936,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
 				else string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
 					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
-			-- 줄: 위 3줄은 해적(포·사격·근접), 아래 3줄은 우리(근접·사격·포)
-			local order = { { "foe", "cannon" }, { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" }, { "me", "cannon" } }
+			-- 줄: 위 2줄은 상대(후열·전열), 아래 2줄은 우리(전열·후열)
+			local order = { { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" } }
 			for k, o in order do
 				local side, row = o[1], o[2]
 				local rf = Instance.new("Frame")
-				rf.Position = UDim2.fromScale(0, (k - 1) / 6)
-				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
+				rf.Position = UDim2.fromScale(0, (k - 1) / 4)
+				rf.Size = UDim2.fromScale(1, 1 / 4 - 0.016)
 				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
 				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
 				rf.BackgroundTransparency = if opts.cardOnly then 0.82 elseif cfg then 0.53 else 0.32
@@ -2106,7 +2106,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					playing = true
 					showCardCodex(nil)
 					local side = if c.ability == "spy" then "foe" else "me"
-					local target = if c.special then boardFrame else rowTargets[side][c.row]
+					local target = if c.special then boardFrame else rowTargets[side][BC.lane(c)]
 					local flight = b:Clone()
 					flight.Active = false
 					flight.Interactable = false
@@ -2182,7 +2182,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		render()
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
 			englishLeaders[m.leader.me] or "Command")
-			else string.format("병종 상성 — 근접 > 포 > 사격 > 근접. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
+			else string.format("전열(근접)·후열(사격·포), 한 판 5장. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
 
 		task.spawn(function()
 			task.wait(1.0)
