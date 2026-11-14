@@ -510,6 +510,7 @@ do
 	for id in BCt.Specials do if not T.cardFx(id, 1) then allOk = false end end
 	check("카드: 효과표가 모든 카드에 있다", allOk)
 	check("카드: 금 단계가 더 강하다", T.cardFx("swordsman", 3).n > T.cardFx("swordsman", 1).n)
+	check("카드: 학문 숙련 보너스가 효과를 올림", T.cardFx("swordsman", 1, { melee = 2 }).n == T.cardFx("swordsman", 1).n + 2 and T.cardFx("hero_blade", 1, { melee = 2 }).n == T.cardFx("hero_blade", 1).n)
 	local map = Maps.List[1]
 	local b = T.newBattle(map, defaultParty(3), { enemyLevel = 1, pool = {} })
 	local deck = { "swordsman", "musketeer", "gunner", "surgeon", "horn", "decoy", "wind", "shieldman", "sniper", "hero_blade", "scout", "scorch", "swivel", "pikeman", "culverin" }

@@ -187,7 +187,7 @@ function TacticsView.open(opts)
 		local en = make("TextLabel", { BackgroundTransparency = 1, Size = UDim2.fromOffset(46, handH - 14), Text = string.format("에너지\n%d/%d", battle.energy or 0, Rules.ENERGY), TextSize = 14, TextColor3 = Color3.fromRGB(255, 226, 120), Font = Enum.Font.GothamBold, LayoutOrder = 0 }, handBar)
 		en.TextWrapped = true
 		for i, id in battle.hand do
-			local fx = Rules.cardFx(id, battle.tiers and battle.tiers[id])
+			local fx = Rules.cardFx(id, battle.tiers and battle.tiers[id], battle.kbonus)
 			if fx then
 				local usable = (battle.energy or 0) >= fx.cost and battle.phase == "player"
 				local chosen = cardSel == i

@@ -598,12 +598,16 @@ end
 T.HAND, T.ENERGY = 5, 3
 
 -- 카드 효과표: 줄·능력·특수 카드에 따라 정해진다. tier(1~3)마다 효과 +1.
-function T.cardFx(id, tier)
+-- bonus: 학문 숙련 보너스 { melee=, ranged=, cannon= } — 병종 카드(영웅·특수 제외)의 단계 효과가 그만큼 더 강해진다
+function T.cardFx(id, tier, bonus)
 	local d = BC.Units[id] or BC.Specials[id]
 	if not d then
 		return nil
 	end
 	local t = math.clamp(tier or 1, 1, 3) - 1
+	if bonus and not d.special and not d.hero and bonus[d.row] then
+		t += bonus[d.row]
+	end
 	if d.special == "horn" then
 		return { cost = 2, target = "none", text = "모든 아군 공격 +" .. (2 + t), kind = "horn", n = 2 + t, name = d.name }
 	elseif d.special == "wind" then
@@ -641,8 +645,9 @@ local function nextRand(b)
 end
 
 -- 덱을 섞어 전투에 붙인다. deckIds: 카드 id 목록, tiers: id -> 단계
-function T.initCards(b, deckIds, tiers, seed)
+function T.initCards(b, deckIds, tiers, seed, bonus)
 	b.cardSeed = (seed or 12345) % 2147483648
+	b.kbonus = bonus
 	b.tiers = tiers or {}
 	local pile = {}
 	for _, id in deckIds do
@@ -692,7 +697,7 @@ function T.playCard(b, index, targetId)
 	if not id then
 		return false, "그 카드가 없어요"
 	end
-	local fx = T.cardFx(id, b.tiers and b.tiers[id])
+	local fx = T.cardFx(id, b.tiers and b.tiers[id], b.kbonus)
 	if b.energy < fx.cost then
 		return false, "에너지가 모자라요"
 	end

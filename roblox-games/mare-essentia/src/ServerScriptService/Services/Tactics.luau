@@ -281,7 +281,7 @@ return function(D, S)
 		S.State.advanceDays(state, site.days)
 		local battle = Rules.newBattle(map, buildParty(state), { enemyLevel = math.max(1, site.minLevel), pool = pool })
 		local spec = S.Cardbook.deckSpec(state)
-		Rules.initCards(battle, spec.ids, spec.tier, math.random(1, 2000000000))
+		Rules.initCards(battle, spec.ids, spec.tier, math.random(1, 2000000000), spec.bonus)
 		battle.siteId = site.id
 		battle.siteName = site.name
 		battle.biome = map.biome
