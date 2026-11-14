@@ -1642,6 +1642,32 @@ do
 		end)())
 	end
 
+	-- [동료 조언·자리 배치·수리]
+	do
+		local sa = newState("england")
+		sa.portId = "london"
+		local list = S.Advice.list(sa)
+		check("조언: 초반에는 안내 조언이 나옴", #list >= 1 and list[1].id == "g_trade", list[1] and list[1].id)
+		check("조언: 조언에 말하는 동료와 이동 화면이 있음", list[1].who.name ~= nil and list[1].tab ~= nil)
+		sa.ship.hull = 20
+		local l2 = S.Advice.list(sa)
+		check("조언: 선체가 적으면 수리 조언이 맨 위, 조선소로 이동", l2[1].id == "hull_low" and l2[1].tab == "yard", l2[1].id)
+		act(sa, "AdviceDone", { id = "g_trade" })
+		local gone = true
+		for _, a2 in S.Advice.list(sa) do if a2.id == "g_trade" then gone = false end end
+		check("조언: 끝낸 안내는 다시 안 나옴", gone)
+		local vy = S.View.build(sa, ctx)
+		check("조선소: 수리 비용 정보가 화면에 있음", vy.shipyard.missing > 0 and vy.shipyard.repairTotal == vy.shipyard.missing * vy.shipyard.repairCost)
+		check("조언: 화면에 조언 목록이 실림", vy.counsel ~= nil and #vy.counsel >= 1)
+		local sb = newState("england")
+		sb.fame = 500; sb.coins = 99999; sb.scholarsMet.harrison = true; sb.scholarsMet.newton = true
+		act(sb, "Recruit", { companionId = "c_harrison" })
+		act(sb, "Recruit", { companionId = "c_newton" })
+		sb.stations = {}
+		local okA = act(sb, "AutoStations", {})
+		check("자동 배치: 동료가 직책에 맞는 자리에 앉음", okA and sb.stations.helm == "c_harrison" and sb.stations.gunner == "c_newton")
+		check("자동 배치: 동료가 없으면 거절", not act(newState("england"), "AutoStations", {}))
+	end
 	-- [카드 배틀] 학문 숙련 보너스
 	do
 		local CBk = D.CardBook

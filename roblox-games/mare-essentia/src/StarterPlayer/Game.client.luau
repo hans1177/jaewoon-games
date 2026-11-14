@@ -2094,6 +2094,25 @@ H.bubbleWho = bubbleLabel(1, 14, COLORS.gold)
 H.bubbleLine = bubbleLabel(2, 13, COLORS.text)
 H.bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
 local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
+-- 동료 조언 말풍선의 행동 버튼: 누르면 그 화면(조선소·교역소 등)으로 바로 간다
+local function bubbleButton(order, color)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(1, 0, 0, 32)
+	b.LayoutOrder = order
+	b.BackgroundColor3 = color
+	b.TextColor3 = Color3.fromRGB(250, 246, 235)
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 13
+	b.ZIndex = 22
+	b.AutoButtonColor = true
+	b.Visible = false
+	b.BorderSizePixel = 0
+	b.Parent = bubble
+	corner(b, 6)
+	return b
+end
+H.bubbleGo = bubbleButton(5, Color3.fromRGB(70, 130, 84))
+H.bubbleSkip = bubbleButton(6, Color3.fromRGB(96, 96, 104))
 do
 	local textSizes = {
 		[H.hudName] = 16, [H.hudCoin] = 16, [H.hudPort] = 15, [H.hudShip] = 14,
@@ -2123,21 +2142,38 @@ local function refreshBubble()
 	if not adv or not hud.Visible then
 		return
 	end
-	local key = tostring(adv.who) .. "|" .. tostring(view.player and view.player.portName)
+	local counsel = view.counsel and view.counsel[1]
+	local key = tostring(adv.who) .. "|" .. tostring(view.player and view.player.portName) .. "|" .. tostring(counsel and counsel.id)
 	if key == bubbleKey then
 		return
 	end
 	local first = bubbleKey == nil
 	bubbleKey = key
-	H.bubbleWho.Text = "💬 " .. tostring(adv.who)
-	H.bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
-	H.bubbleAdvice.Text = "조언: " .. tostring(adv.text)
-	bubbleNext.Text = if adv.next then "▶ 다음 할 일: " .. adv.next else ""
-	bubbleNext.Visible = adv.next ~= nil
+	H.bubbleCounsel = counsel
+	if counsel then
+		-- 상황 조언이 있으면 그 동료가 직접 말한다: 수리·보급·초반 안내 등
+		H.bubbleWho.Text = string.format("💬 %s (%s)", counsel.who.name, counsel.who.role or "동료")
+		H.bubbleLine.Text = "\"" .. counsel.text .. "\""
+		H.bubbleAdvice.Text = ""
+		bubbleNext.Text = ""
+		bubbleNext.Visible = false
+		H.bubbleGo.Text = "▶ " .. counsel.label
+		H.bubbleGo.Visible = true
+		H.bubbleSkip.Text = "알겠어요"
+		H.bubbleSkip.Visible = counsel.dismissable == true
+	else
+		H.bubbleWho.Text = "💬 " .. tostring(adv.who)
+		H.bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
+		H.bubbleAdvice.Text = "조언: " .. tostring(adv.text)
+		bubbleNext.Text = if adv.next then "▶ 다음 할 일: " .. adv.next else ""
+		bubbleNext.Visible = adv.next ~= nil
+		H.bubbleGo.Visible = false
+		H.bubbleSkip.Visible = false
+	end
 	bubbleToken += 1
 	local token = bubbleToken
 	bubble.Visible = true
-	task.delay(if first then 16 else 10, function()
+	task.delay(if counsel then 40 elseif first then 16 else 10, function()
 		if bubbleToken == token then
 			bubble.Visible = false
 		end
@@ -2279,6 +2315,9 @@ local function call(action, payload)
 	if tradeHallRefresh then
 		tradeHallRefresh()
 	end
+	if H.cabinRefresh then
+		H.cabinRefresh()
+	end
 	-- 이긴 뒤 카드 고르기 보상이 생기면 덱 창을 열어 준다
 	if result.ok and action ~= "CardPick" and view and view.cardbook and view.cardbook.pick and H.openDeck and not inField then
 		task.delay(1.5, function()
@@ -2356,6 +2395,21 @@ local function call(action, payload)
 	end
 	return result
 end
+H.call = call
+H.bubbleGo.Activated:Connect(function()
+	local cs = H.bubbleCounsel
+	if cs then
+		H.hideBubble()
+		H.goAdvice(cs.tab)
+	end
+end)
+H.bubbleSkip.Activated:Connect(function()
+	local cs = H.bubbleCounsel
+	if cs then
+		H.hideBubble()
+		H.call("AdviceDone", { id = cs.id })
+	end
+end)
 
 local function amount()
 	return AMOUNTS[amountIndex]
@@ -3678,42 +3732,33 @@ function RENDERERS.harbor()
 			return brow
 		end)
 	end
-	add(function() return mkHeader(content, "항구 보급 (조선소가 없어도 돼요)") end)
+	add(function() return mkHeader(content, "출항 준비") end)
 	add(function()
+		local sh = view.ship
+		local sy = view.shipyard
 		local m = view.morale or 80
 		local mText = if m >= 70 then "높음" elseif m >= 40 then "보통" elseif m >= 25 then "낮음 ⚠" else "바닥 ⚠ 탈영 위험"
-		return mkLabel(content, string.format("선원 %d/%d · 보급품 %d/%d · 사기 %d (%s)\n선원 %d코인/명 · 보급품 %d코인/개", view.ship.crew, view.ship.maxCrew, view.ship.supplies, view.supplyMax or 100, m, mText, view.shipyard.hireCost, view.shipyard.supplyCost), 16, COLORS.text, true)
+		local needCrew = math.max(0, sh.maxCrew - sh.crew)
+		local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
+		local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
+		local full = needCrew == 0 and needSup == 0
+		local row = mkRow(content, if full then "✔ 출항 준비 완료" else "⚠ 채울 게 있어요",
+			string.format("선원 %d/%d · 보급품 %d/%d · 사기 %s", sh.crew, sh.maxCrew, sh.supplies, view.supplyMax or 100, mText), {
+			{ text = if full then "가득 참" else string.format("모두 채우기\n%d코인", cost), color = COLORS.gold,
+				onClick = function() call("Resupply", { what = "both" }) end },
+		}, 76)
+		return row
 	end)
 	add(function()
-		return mkRow(content, "선원 충원", "부족한 만큼 고용해요", {
-			{ text = "+5", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
-			{ text = "+10", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 10 }) end },
-			{ text = "가득", color = COLORS.green, onClick = function() call("Resupply", { what = "crew" }) end },
+		local a = view.auto or {}
+		local both = a.supplies and a.crew
+		return mkRow(content, "자동 채움 " .. (if both then "● 켜짐" else "○ 꺼짐"), "항구에 도착하면 보급품과 선원을 알아서 채워요", {
+			{ text = if both then "끄기" else "켜기", color = if both then COLORS.red else COLORS.green, onClick = function()
+				local v = not both
+				call("SetAuto", { key = "supplies", value = v })
+				call("SetAuto", { key = "crew", value = v })
+			end },
 		}, 64)
-	end)
-	add(function()
-		return mkRow(content, "보급품 채우기", "항해일수 × 선원 수만큼 쓰여요", {
-			{ text = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-			{ text = "+50", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 50 }) end },
-			{ text = "가득", color = COLORS.green, onClick = function() call("Resupply", { what = "supplies" }) end },
-		}, 64)
-	end)
-	add(function()
-		return mkRow(content, "한 번에 모두 채우기", "선원과 보급품을 가득", {
-			{ text = "모두", color = COLORS.gold, onClick = function() call("Resupply", { what = "both" }) end },
-		}, 52)
-	end)
-	add(function()
-		local on = view.auto and view.auto.supplies
-		return mkRow(content, "자동 보급 " .. (if on then "● 켜짐" else "○ 꺼짐"), "항구에 도착할 때마다 보급품을 채워요", {
-			{ text = if on then "끄기" else "켜기", color = if on then COLORS.red else COLORS.green, onClick = function() call("SetAuto", { key = "supplies", value = not on }) end },
-		}, 56)
-	end)
-	add(function()
-		local on = view.auto and view.auto.crew
-		return mkRow(content, "자동 선원 충원 " .. (if on then "● 켜짐" else "○ 꺼짐"), "항구에 도착할 때마다 빈 자리를 고용해요", {
-			{ text = if on then "끄기" else "켜기", color = if on then COLORS.red else COLORS.green, onClick = function() call("SetAuto", { key = "crew", value = not on }) end },
-		}, 56)
 	end)
 	add(function() return mkHeader(content, "교역소 투자") end)
 	for _, amt in h.options do
@@ -3851,6 +3896,17 @@ function RENDERERS.crew()
 	add(function() return mkHeader(content, "동료와 대화") end)
 	add(function()
 		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
+	end)
+	add(function() return mkHeader(content, string.format("내 배 · 동료 자리 %d칸", view.companions.max)) end)
+	add(function()
+		local sh = view.ship
+		local row = mkRow(content, sh.name .. "  (눌러서 선장실 열기)", string.format("선체 %d/%d · 선원 %d/%d · 포 %d · 속도 %d\n동료를 끌어다 자리에 앉힐 수 있어요", sh.hull, sh.maxHull, sh.crew, sh.maxCrew, sh.cannons, sh.speed), {
+			{ text = "선장실", color = COLORS.gold, onClick = function() H.openCabin() end },
+			{ text = "자동 배치", color = COLORS.green, onClick = function() call("AutoStations") end },
+		}, 120)
+		local si = SHIP_ICON[sh.id]
+		if si then withIcon(row, si[1], si[2], si[3], 96) end
+		return row
 	end)
 	add(function() return mkHeader(content, string.format("배의 자리 (이 배는 동료 %d명까지)", view.companions.max)) end)
 	add(function()
@@ -4761,8 +4817,61 @@ function RENDERERS.route()
 end
 
 local openYardHall
+-- 동료 조언 줄: 말하는 동료의 초상과 말, 그리고 바로 가는 버튼 (최대 n개)
+function H.counselRows(n)
+	for i, cs in (view.counsel or {}) do
+		if i > n then
+			break
+		end
+		add(function()
+			local row = mkRow(content, string.format("%s (%s)", cs.who.name, cs.who.role or "동료"), "\"" .. cs.text .. "\"", {
+				{ text = cs.label, color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end },
+				if cs.dismissable then { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end } else nil,
+			}, 96)
+			H.companionFace(row, cs.who.id, 64)
+			return row
+		end)
+	end
+end
+
+-- 동료 얼굴을 줄 왼쪽에 붙인다 (그린 초상 → 학자 초상 → 입체 모델 순서)
+function H.companionFace(row, id, px)
+	if not id then
+		return nil
+	end
+	local scholarId = string.match(id, "^c_(.+)$")
+	local portrait = COMPANION_PORTRAIT[id]
+	if portrait then
+		return withIcon(row, "Portraits", portrait.atlas, nil, px, portrait.offset)
+	elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+		return withIcon(row, "Portraits", "scholar_" .. scholarId, nil, px)
+	elseif COMPANION_MODEL[id] then
+		return withIcon(row, "People", COMPANION_MODEL[id], nil, px)
+	end
+	return nil
+end
+
 local function renderYard()
 	local yard = view.shipyard
+	H.counselRows(1)
+	add(function()
+		local sh = view.ship
+		local maxH = math.max(1, yard.maxHull or sh.maxHull)
+		local cur = maxH - (yard.missing or 0)
+		local pct = math.floor(cur / maxH * 100 + 0.5)
+		local filled = math.floor(pct / 10 + 0.5)
+		local bar = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
+		local sub
+		if (yard.missing or 0) > 0 then
+			sub = string.format("%s  %d%%  (선체 %d/%d)\n부족한 선체 %d → 전부 수리 %d코인 (선체 1당 %d코인)", bar, pct, cur, maxH, yard.missing, yard.repairTotal, yard.repairCost)
+		else
+			sub = string.format("%s  100%%\n수리할 곳이 없어요. 튼튼한 배예요!", bar)
+		end
+		return mkRow(content, "선박 수리", sub, {
+			{ text = if (yard.missing or 0) > 0 then string.format("전부 수리 %d", yard.repairTotal) else "수리 불필요", color = COLORS.green,
+				onClick = function() call("Repair") end, enabled = yard.available and (yard.missing or 0) > 0 },
+		}, 92)
+	end)
 	add(function()
 		return mkRow(content, "조선소 입장", "조선 장인과 배·대포·보강을 크게 보며 고르고 사요", {
 			{ text = "입장", color = COLORS.gold, onClick = function() openYardHall() end, enabled = yard.available },
@@ -7950,6 +8059,297 @@ task.spawn(function()
 	end
 	warn("[MareEssentia] 시작 상태 수신 실패: 게임 시작 메뉴를 열지 않음")
 end)
+
+-- ───── 선장실(내 배) 확대 화면: 동료 초상화를 끌어다 자리에 앉힌다 ─────
+-- 끌어 놓기가 어려운 기기를 위해 초상을 한 번 누른 뒤 자리를 누르는 방법도 된다. "자동 배치"는 직책에 가장 잘 맞게 한 번에 앉힌다.
+function H.openCabin()
+	if H.cabinGui then
+		H.cabinGui:Destroy()
+		H.cabinGui = nil
+	end
+	local UIS = game:GetService("UserInputService")
+	local g = overlayGui("CabinGui", 40)
+	H.cabinGui = g
+	local root = Instance.new("Frame")
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = COLORS.cover
+	root.BorderSizePixel = 0
+	root.Parent = g
+	local selected = nil -- 눌러서 고른 동료 id
+	local drag = nil -- { id, ghost, startPos, moved }
+	local slotFrames = {}
+	local build
+
+	local function close()
+		H.cabinRefresh = nil
+		if H.cabinGui then
+			H.cabinGui:Destroy()
+			H.cabinGui = nil
+		end
+	end
+	local function place(id, stationId)
+		selected = nil
+		call("Station", { companionId = id, station = stationId })
+	end
+	local function slotAt(pos)
+		for stId, f in slotFrames do
+			if f.Parent then
+				local a, s = f.AbsolutePosition, f.AbsoluteSize
+				if pos.X >= a.X and pos.X <= a.X + s.X and pos.Y >= a.Y and pos.Y <= a.Y + s.Y then
+					return stId
+				end
+			end
+		end
+		return nil
+	end
+	local function endDrag(pos)
+		if not drag then
+			return
+		end
+		local d = drag
+		drag = nil
+		d.ghost:Destroy()
+		if d.moved then
+			local stId = slotAt(pos)
+			if stId then
+				place(d.id, stId)
+			else
+				build()
+			end
+		else
+			selected = if selected == d.id then nil else d.id -- 누르기만 했으면 선택/해제
+			build()
+		end
+	end
+	local function startDrag(id, label, input)
+		if drag then
+			return
+		end
+		local ghost = Instance.new("TextLabel")
+		ghost.Size = UDim2.fromOffset(120, 34)
+		ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+		ghost.Position = UDim2.fromOffset(input.Position.X, input.Position.Y)
+		ghost.BackgroundColor3 = COLORS.gold
+		ghost.BackgroundTransparency = 0.1
+		ghost.TextColor3 = Color3.fromRGB(40, 28, 18)
+		ghost.Font = Enum.Font.GothamBold
+		ghost.TextSize = 14
+		ghost.Text = label
+		ghost.ZIndex = 100
+		ghost.Active = false
+		ghost.Parent = g
+		corner(ghost, 8)
+		drag = { id = id, ghost = ghost, startPos = Vector2.new(input.Position.X, input.Position.Y), moved = false }
+	end
+	local connMove = UIS.InputChanged:Connect(function(i)
+		if drag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
+			local p = Vector2.new(i.Position.X, i.Position.Y)
+			drag.ghost.Position = UDim2.fromOffset(p.X, p.Y)
+			if (p - drag.startPos).Magnitude > 8 then
+				drag.moved = true
+			end
+		end
+	end)
+	local connEnd = UIS.InputEnded:Connect(function(i)
+		if drag and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
+			endDrag(Vector2.new(i.Position.X, i.Position.Y))
+		end
+	end)
+	g.Destroying:Connect(function()
+		connMove:Disconnect()
+		connEnd:Disconnect()
+	end)
+
+	build = function()
+		if not g.Parent or not view then
+			return
+		end
+		for _, ch in root:GetChildren() do
+			ch:Destroy()
+		end
+		slotFrames = {}
+		local v = view.companions
+		local sh = view.ship
+		local W = root.AbsoluteSize.X
+		local wide = W >= 760
+
+		-- 윗줄
+		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 58), COLORS.paper)
+		corner(top, 6)
+		local title = mkLabel(top, "선장실 · " .. sh.name, 19, Color3.fromRGB(50, 36, 24), true)
+		title.Position = UDim2.fromOffset(12, 6)
+		title.Size = UDim2.new(1, -330, 0, 24)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local hint = mkLabel(top, "동료 초상을 끌어서 자리에 놓으세요 (누른 뒤 자리를 눌러도 돼요)", 12, Color3.fromRGB(90, 70, 50), false)
+		hint.Position = UDim2.fromOffset(12, 32)
+		hint.Size = UDim2.new(1, -330, 0, 20)
+		hint.AutomaticSize = Enum.AutomaticSize.None
+		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
+		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
+		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
+		local autoBtn = mkButton(top, "★ 자동 배치(추천)", COLORS.green, UDim2.fromOffset(160, 40), function() selected = nil; call("AutoStations") end, #v.stations > 0)
+		autoBtn.AnchorPoint = Vector2.new(1, 0.5)
+		autoBtn.Position = UDim2.new(1, -86, 0.5, 0)
+
+		-- 왼쪽: 큰 배 그림과 능력
+		local shipW = if wide then 0.42 else 1
+		local shipH = if wide then 1 else 0
+		local shipBox = mkBox(root, UDim2.fromOffset(8, 74), if wide then UDim2.new(shipW, -12, 1, -82) else UDim2.new(1, -16, 0, 190), COLORS.leather)
+		corner(shipBox, 8)
+		local si = SHIP_ICON[sh.id]
+		local px = if wide then 230 else 130
+		if si then
+			local icon = modelIcon(shipBox, si[1], si[2], si[3], px)
+			icon.AnchorPoint = Vector2.new(0.5, 0)
+			icon.Position = UDim2.new(0.5, 0, 0, 14)
+		end
+		local info = mkLabel(shipBox, string.format("%s\n선체 %d/%d · 포 %d · 속도 %d\n화물 %d/%d · 선원 %d/%d\n동료 자리 %d칸", sh.name, sh.hull, sh.maxHull, sh.cannons, sh.speed, sh.cargoUsed, sh.cargoCapacity, sh.crew, sh.maxCrew, v.max), 14, COLORS.text, false)
+		info.Position = UDim2.new(0, 10, 0, px + 24)
+		info.Size = UDim2.new(1, -20, 0, 90)
+		info.AutomaticSize = Enum.AutomaticSize.None
+		info.TextXAlignment = Enum.TextXAlignment.Center
+		local vac = v.vacancy
+		if vac and (vac.speed < 0 or vac.cannon < 0) then
+			local w = mkLabel(shipBox, "⚠ 조타수/포술장 자리가 비어 있어요 (" .. (if vac.speed < 0 then "속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "") .. ")", 12, COLORS.gold, true)
+			w.Position = UDim2.new(0, 10, 1, -44)
+			w.Size = UDim2.new(1, -20, 0, 36)
+			w.AutomaticSize = Enum.AutomaticSize.None
+		end
+
+		-- 오른쪽 위: 자리 칸 (2열)
+		local rx = if wide then shipW else 0
+		local rightPos = if wide then UDim2.new(rx, 4, 0, 74) else UDim2.fromOffset(8, 272)
+		local slotsH = math.ceil(#v.stations / 2) * 96 + 8
+		local slotsBox = mkBox(root, rightPos, if wide then UDim2.new(1 - rx, -12, 0, slotsH) else UDim2.new(1, -16, 0, slotsH), COLORS.leather)
+		corner(slotsBox, 8)
+		local grid = Instance.new("UIGridLayout")
+		grid.CellSize = UDim2.new(0.5, -8, 0, 88)
+		grid.CellPadding = UDim2.fromOffset(6, 8)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = slotsBox
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingLeft, pad.PaddingRight, pad.PaddingBottom = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 6)
+		pad.Parent = slotsBox
+		for idx, st in v.stations do
+			local slot = Instance.new("TextButton")
+			slot.LayoutOrder = idx
+			slot.Text = ""
+			slot.AutoButtonColor = false
+			slot.BackgroundColor3 = if st.seatId then (if st.matched then Color3.fromRGB(70, 104, 76) else Color3.fromRGB(112, 92, 62)) else Color3.fromRGB(58, 48, 40)
+			slot.BorderSizePixel = 0
+			slot.Parent = slotsBox
+			corner(slot, 8)
+			if selected then
+				local stroke = Instance.new("UIStroke")
+				stroke.Color = COLORS.gold
+				stroke.Thickness = 2
+				stroke.Parent = slot
+			end
+			slotFrames[st.id] = slot
+			slot.Activated:Connect(function()
+				if selected then
+					place(selected, st.id)
+				end
+			end)
+			local nm = mkLabel(slot, st.name, 14, COLORS.gold, true)
+			nm.Position = UDim2.fromOffset(78, 6)
+			nm.Size = UDim2.new(1, -84, 0, 20)
+			nm.AutomaticSize = Enum.AutomaticSize.None
+			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음 x1.2" else "  (다른 직책 x0.6)")) else "비어 있음 — 동료를 놓으세요", 12, COLORS.text, false)
+			desc.Position = UDim2.fromOffset(78, 28)
+			desc.Size = UDim2.new(1, -84, 0, 54)
+			desc.AutomaticSize = Enum.AutomaticSize.None
+			desc.TextYAlignment = Enum.TextYAlignment.Top
+			if st.seatId then
+				local face = H.companionFace(slot, st.seatId, 64)
+				if face then
+					face.Position = UDim2.fromOffset(8, 12)
+				end
+			end
+		end
+
+		-- 오른쪽 아래: 함께하는 동료 초상 (끌어서 놓기)
+		local listY = if wide then 74 + slotsH + 8 else 272 + slotsH + 8
+		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 1, -listY - 8), COLORS.leather)
+		corner(listBox, 8)
+		local lt = mkLabel(listBox, string.format("함께하는 동료 (%d/%d)", (function() local n = 0 for _, c in v.list do if c.joined then n += 1 end end return n end)(), v.max), 14, COLORS.gold, true)
+		lt.Position = UDim2.fromOffset(10, 6)
+		lt.Size = UDim2.new(1, -20, 0, 22)
+		lt.AutomaticSize = Enum.AutomaticSize.None
+		local sc = Instance.new("ScrollingFrame")
+		sc.Position = UDim2.fromOffset(6, 32)
+		sc.Size = UDim2.new(1, -12, 1, -38)
+		sc.BackgroundTransparency = 1
+		sc.BorderSizePixel = 0
+		sc.ScrollBarThickness = 5
+		sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		sc.CanvasSize = UDim2.new()
+		sc.Parent = listBox
+		local tg = Instance.new("UIGridLayout")
+		tg.CellSize = UDim2.fromOffset(104, 120)
+		tg.CellPadding = UDim2.fromOffset(8, 8)
+		tg.SortOrder = Enum.SortOrder.LayoutOrder
+		tg.Parent = sc
+		local any = false
+		for idx, c in v.list do
+			if c.joined then
+				any = true
+				local tile = Instance.new("TextButton")
+				tile.LayoutOrder = idx
+				tile.Text = ""
+				tile.AutoButtonColor = false
+				tile.BackgroundColor3 = if selected == c.id then Color3.fromRGB(150, 118, 52) else Color3.fromRGB(72, 58, 46)
+				tile.BorderSizePixel = 0
+				tile.Parent = sc
+				corner(tile, 8)
+				local face = H.companionFace(tile, c.id, 64)
+				if face then
+					face.Position = UDim2.new(0.5, -32, 0, 6)
+				end
+				local nl = mkLabel(tile, c.name, 12, COLORS.text, true)
+				nl.Position = UDim2.fromOffset(4, 72)
+				nl.Size = UDim2.new(1, -8, 0, 18)
+				nl.AutomaticSize = Enum.AutomaticSize.None
+				nl.TextXAlignment = Enum.TextXAlignment.Center
+				nl.TextTruncate = Enum.TextTruncate.AtEnd
+				local bl = mkLabel(tile, "어울림: " .. c.bestSeat, 11, COLORS.muted, false)
+				bl.Position = UDim2.fromOffset(4, 92)
+				bl.Size = UDim2.new(1, -8, 0, 22)
+				bl.AutomaticSize = Enum.AutomaticSize.None
+				bl.TextXAlignment = Enum.TextXAlignment.Center
+				tile.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						startDrag(c.id, c.name, input)
+					end
+				end)
+			end
+		end
+		if not any then
+			local none = mkLabel(sc, "아직 함께하는 동료가 없어요. 주점에서 동료를 만나 보세요.", 13, COLORS.muted, false)
+			none.Size = UDim2.new(1, -12, 0, 40)
+		end
+	end
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		if root.AbsoluteSize.X > 0 then
+			build()
+		end
+	end)
+	H.cabinRefresh = build
+	build()
+end
+
+-- 조언을 눌렀을 때 그 화면으로 바로 간다 (조선소·교역소는 전용 큰 화면)
+function H.goAdvice(tab)
+	if tab == "yard" then
+		currentTab = "yard"
+		openYardHall()
+	elseif tab == "trade" then
+		currentTab = "trade"
+		openTradeHall()
+	else
+		openTab(tab)
+	end
+end
 
 openTab = function(tabId, mapPage)
 	currentTab = tabId

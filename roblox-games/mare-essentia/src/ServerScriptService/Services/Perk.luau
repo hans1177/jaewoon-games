@@ -324,6 +324,40 @@ return function(D, S)
 		return want
 	end
 
+	-- 동료를 직책에 가장 잘 맞게 한 번에 앉힌다: 맞는 직책 자리를 먼저 채우고, 남은 동료는 빈 자리에 앉힌다.
+	function handlers.AutoStations(state)
+		if #state.companions == 0 then
+			return false, "함께하는 동료가 없어요"
+		end
+		local newSeat, placed = {}, {}
+		for _, id in state.companions do
+			local want = Sp.CompanionStation[id]
+			if want and newSeat[want] == nil then
+				newSeat[want] = id
+				placed[id] = true
+			end
+		end
+		for _, id in state.companions do
+			if not placed[id] then
+				for _, st in Sp.Stations do
+					if newSeat[st.id] == nil then
+						newSeat[st.id] = id
+						placed[id] = true
+						break
+					end
+				end
+			end
+		end
+		local matched = 0
+		for stId, who in newSeat do
+			if Sp.CompanionStation[who] == stId then
+				matched += 1
+			end
+		end
+		state.stations = newSeat
+		return true, string.format("동료 %d명을 앉혔어요 (직책에 딱 맞는 자리 %d명)", #state.companions, matched)
+	end
+
 	-- 동료를 다른 자리에 앉힌다. 그 자리에 앉은 동료가 있으면 서로 자리를 바꾼다.
 	function handlers.Station(state, p)
 		local id = type(p.companionId) == "string" and p.companionId
