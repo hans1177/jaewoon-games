@@ -3421,15 +3421,62 @@ do
 		local book = CBk.new("europe")
 		local starterId = CBk.STARTER[1]
 		check("수집책: 시작하면 지식 카드 18장을 가진다", #CBk.STARTER == 18 and (book.owned[starterId] or 0) == 1
-			and (book.owned.pikeman or 0) == 0 and CBk.validateDeck(book, CBk.STARTER) and BC.Units[starterId].knowledge == true)
+			and (book.owned.pikeman or 0) == 0 and CBk.validateDeck(book, CBk.deckIds(book, "europe")) and BC.Units[starterId].knowledge == true)
 		-- 모든 문화권이 같은 지식 카드로 시작하고, 문화권 부대 덱은 적 덱으로만 남는다.
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == 30 and CBk.validateDeck(starter, CBk.STARTER))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == 30 and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+		end
+		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
+		do
+			local eb = CBk.new("europe")
+			local base = CBk.deckIds(eb, "europe")
+			check("덱 규칙: 시작 자동 덱은 25장이고 보급 한도 안이다", #base >= 25 and CBk.deckCost(base) <= CBk.provisionLimit("europe"))
+			check("덱 규칙: 보급 한도는 150 + 지도자 보너스", CBk.provisionLimit("europe") == 160 and CBk.provisionLimit("east_asia") == 155)
+			local fat = table.clone(base)
+			for i = 1, 30 do CBk.grant(eb, "lo_01", 1) end
+			for _ = 1, 4 do table.insert(fat, "lo_01") end
+			check("덱 규칙: 같은 카드는 3장까지", not CBk.validateDeck(eb, fat))
+			local lostDeck = {}
+			for i = 1, 14 do
+				CBk.grant(eb, string.format("lo_%02d", i + 3), 1)
+				table.insert(lostDeck, string.format("lo_%02d", i + 3))
+			end
+			for i = 1, 11 do table.insert(lostDeck, base[i]) end
+			check("덱 규칙: 미지의 땅 카드는 10장까지", not CBk.validateDeck(eb, lostDeck))
+			local foreign = table.clone(base)
+			CBk.grant(eb, "ea_01", 1)
+			foreign[1] = "ea_01"
+			check("덱 규칙: 다른 대륙 카드는 쓸 수 없다", not CBk.validateDeck(eb, foreign))
+			local rich = { "eu_10", "eu_10", "eu_24", "eu_24" }
+			CBk.grant(eb, "eu_10", 2)
+			CBk.grant(eb, "eu_24", 2)
+			local fillers = 0
+			for _, id in CBk.new("europe").owned and base or base do
+				if fillers < 21 and not CBk.isHero(id) and not CBk.isSpecial(id) and id ~= "eu_10" and id ~= "eu_24" then
+					fillers += 1
+					table.insert(rich, id)
+				end
+			end
+			for _, id in { "eu_03", "eu_05", "eu_07", "eu_09", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_18" } do
+				if #rich < 25 and not CBk.isHero(id) and not CBk.isSpecial(id) then table.insert(rich, id) end
+			end
+			local okRich, whyRich = CBk.validateDeck(eb, rich)
+			check("덱 규칙: 보급이 넘치면 거절", not okRich and string.find(tostring(whyRich), "보급", 1, true) ~= nil, tostring(#rich) .. " " .. tostring(whyRich))
+			check("덱 규칙: 보급 비용은 4 아래로 내려가지 않는다", BC.cost({ power = 1 }) == 4 and BC.cost(BC.Units.eu_10) >= 12)
+			-- 미지의 땅 카드를 얻는 길이 있다
+			local got = false
+			local seed = 7
+			for _ = 1, 300 do
+				seed = (seed * 48271) % 2147483647
+				local r = (function() local x = seed return function() x = (x * 48271) % 2147483647 return (x - 1) / 2147483646 end end)()
+				if CBk.continentOf(CBk.roll("chest", r, nil)) == "lost" then got = true break end
+			end
+			check("덱 규칙: 보물상자에서 미지의 땅 카드가 나온다", got)
 		end
 		local autoIds = CBk.deckIds(book, "europe")
-		check("수집책: 저장한 덱이 없으면 자동 덱(15~30장·유효)", #autoIds >= 15 and #autoIds <= 30 and CBk.validateDeck(book, autoIds))
+		check("수집책: 저장한 덱이 없으면 자동 덱(25~40장·유효)", #autoIds >= 25 and #autoIds <= 40 and CBk.validateDeck(book, autoIds))
 		local id = CBk.drop(book, "quest", math.random)
 		check("수집책: 획득하면 보유가 늘어난다", (book.owned[id] or 0) >= 1)
 		CBk.grant(book, "swordsman", 3)
