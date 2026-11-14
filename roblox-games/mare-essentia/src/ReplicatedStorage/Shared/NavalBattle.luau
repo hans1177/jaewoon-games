@@ -1227,6 +1227,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		info.Size = UDim2.fromScale(0.96, 0.05)
 		info.TextXAlignment = Enum.TextXAlignment.Left
 		info.TextTruncate = Enum.TextTruncate.AtEnd
+		info.BackgroundTransparency = 0.45
+		info.BackgroundColor3 = Color3.fromRGB(46, 40, 34)
+		local infoCorner = Instance.new("UICorner")
+		infoCorner.CornerRadius = UDim.new(0, 8)
+		infoCorner.Parent = info
+		local infoPad = Instance.new("UIPadding")
+		infoPad.PaddingLeft = UDim.new(0, 10)
+		infoPad.Parent = info
 
 		local boardFrame = Instance.new("Frame")
 		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
@@ -1438,6 +1446,27 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			table.clear(cardMotions)
 		end)
 		local rowTargets = { me = {}, foe = {} }
+		-- 카드를 고르면 그 카드가 놓일 줄(특수 카드는 판 전체)이 금빛으로 깜빡여 어디에 놓이는지 바로 보이게 한다.
+		local dropGlow
+		local function clearDropHint()
+			if dropGlow then
+				pcall(function() dropGlow:Destroy() end)
+				dropGlow = nil
+			end
+		end
+		local function dropHint(c)
+			clearDropHint()
+			local side = if c.ability == "spy" then "foe" else "me"
+			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
+			if not target then return end
+			local st = Instance.new("UIStroke")
+			st.Name = "DropHint"
+			st.Color = Color3.fromRGB(255, 218, 120)
+			st.Thickness = 3
+			st.Parent = target
+			dropGlow = st
+			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
+		end
 		local function afterAction(ok, msg, res, card, side)
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
@@ -1984,6 +2013,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			table.insert(cardMotions, focusMotion)
 		end
 		local function closeCardCodex()
+			clearDropHint()
 			if selected and selected.Parent then
 				selected.Rotation = 0
 				selected.UIStroke.Color = brass
@@ -2002,6 +2032,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
+			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
 			for _, moving in cardMotions do moving.stop() end
@@ -2066,6 +2097,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					adviceRound, adviceCount = m.round, adviceCount + 1
 					sayAdvice(if english then tip else string.format("%s: %s", opts.advisorName or "동료", tip), 7)
 				end
+			end
+			-- 차례 띠: 내 차례는 초록, 적 차례는 붉은색. 안내 문구가 비어 있으면 할 일을 알려 준다.
+			info.BackgroundColor3 = if m.over then Color3.fromRGB(54, 46, 38)
+				elseif m.turn == "me" then Color3.fromRGB(34, 84, 52) else Color3.fromRGB(96, 42, 36)
+			if info.Text == "" and not m.over then
+				info.Text = if m.turn == "me" then t("내 차례 — 카드를 눌러 고르세요 (한 번 더 누르면 냅니다)", "Your turn — tap a card, tap again to play")
+					else t("해적이 생각 중…", "Pirates are thinking…")
 			end
 			header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
 				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
@@ -2314,6 +2352,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						b:SetAttribute("ArtFocused", true)
 						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 						showCardCodex(c)
+						dropHint(c)
 						selected = b
 						selectedPlay = playChosenCard
 						edge.Color = Color3.fromRGB(255, 215, 126)
