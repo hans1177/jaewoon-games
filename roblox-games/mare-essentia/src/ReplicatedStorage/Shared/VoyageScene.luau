@@ -13,6 +13,7 @@ local VoyageScene = {}
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 local HelmPhys = require(script.Parent:WaitForChild("Helm"))
+local Rings = require(script.Parent:WaitForChild("Rings"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
@@ -233,15 +234,18 @@ function VoyageScene.play(info)
 	end)
 
 	-- 직접 항해: 바람 띠 안에 배를 두면 점수가 오른다 (A/D·←/→ 또는 화면 버튼). 화면 도형만 쓴다.
-	local manual = info.manual == true
+	local manual = info.rings == true and not info.intro
 	local lat, latV = 0, 0
-	local inBand, bandTime = 0, 0
 	local held = { l = false, r = false }
 	local dragTarget = nil -- 막대를 손가락으로 끌 때 가고 싶은 위치(-1~1)
 	local bandFrame, bandMark, shipMark, scoreLabel
+	local LATSCALE = 22
+	local ringList, ringParts, nextRing = {}, {}, 1
+	local tally = Rings.newTally()
+	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
 		skip.Visible = false
-		hint.Text = "A/D·◀ ▶ 또는 막대를 끌어 초록 바람 띠 안에 머물러요"
+		hint.Text = "스틱·A/D·◀ ▶ 로 금색 바람 고리를 통과해요 · 연속 통과하면 빨라져요"
 		local track = Instance.new("Frame")
 		track.AnchorPoint = Vector2.new(0.5, 1)
 		track.Position = UDim2.new(0.5, 0, 1, -86)
@@ -323,6 +327,61 @@ function VoyageScene.play(info)
 			b.MouseButton1Up:Connect(function() held[side] = false end)
 			b.MouseLeave:Connect(function() held[side] = false end)
 		end
+		-- 항로를 따라 날아오는 금색 바람 고리 (표지 효과이므로 반투명 원판)
+		do
+			local seed = 17
+			for i = 1, #(info.fromName .. info.toName) do
+				seed = (seed * 31 + string.byte(info.fromName .. info.toName, i)) % 2147483647
+			end
+			local rs = seed
+			local function rng(): number
+				rs = (rs * 1103515245 + 12345) % 2147483648
+				return rs / 2147483648
+			end
+			ringList = Rings.build(rng, info.days, info.event and info.event.kind, info.level)
+			for _, r in ringList do
+				local p, d = positionAt(pts, cum, r.at * total)
+				local c = p + Vector3.new(-d.Z, 0, d.X) * r.lat * LATSCALE
+				local rad = Rings.radius(r) * LATSCALE
+				local disk = Instance.new("Part")
+				disk.Shape = Enum.PartType.Cylinder
+				disk.Size = Vector3.new(0.8, rad * 2, rad * 2)
+				disk.CFrame = CFrame.fromMatrix(c + Vector3.new(0, rad * 0.9 + 1, 0), Vector3.new(d.X, 0, d.Z).Unit, Vector3.yAxis)
+				disk.Anchored = true
+				disk.CanCollide = false
+				disk.CanQuery = false
+				disk.Material = Enum.Material.Neon
+				disk.Color = if r.bonus then Color3.fromRGB(120, 230, 255) else Color3.fromRGB(255, 205, 80)
+				disk.Transparency = 0.55
+				disk.Parent = folder
+				table.insert(ringParts, disk)
+			end
+		end
+		-- 자동 항해 전환 (처음 가는 항구는 직접 항해만)
+		local autoSw = Instance.new("TextButton")
+		autoSw.AnchorPoint = Vector2.new(1, 0)
+		autoSw.Position = UDim2.new(1, -16, 0, 150)
+		autoSw.Size = UDim2.fromOffset(190, 40)
+		autoSw.Font = Enum.Font.GothamBold
+		autoSw.TextSize = 15
+		autoSw.TextColor3 = Color3.new(1, 1, 1)
+		autoSw.ZIndex = 9
+		autoSw.Parent = gui
+		local asc = Instance.new("UICorner")
+		asc.Parent = autoSw
+		if info.firstVisit then
+			autoSw.Text = "처음 가는 항구: 직접 항해"
+			autoSw.BackgroundColor3 = Color3.fromRGB(90, 70, 40)
+			autoSw.Active = false
+		else
+			autoSw.Text = "자동 항해로 전환"
+			autoSw.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
+			autoSw.Activated:Connect(function()
+				autoRing = not autoRing
+				autoSw.Text = if autoRing then "직접 항해로 전환" else "자동 항해로 전환"
+				autoSw.BackgroundColor3 = if autoRing then Color3.fromRGB(60, 120, 80) else Color3.fromRGB(40, 80, 130)
+			end)
+		end
 	end
 
 	-- 수동 항해(helm): 스틱/WASD로 배를 직접 몰고, 바람 방향에 따라 속도가 달라진다.
@@ -341,7 +400,7 @@ function VoyageScene.play(info)
 		modeBadge.Font = Enum.Font.GothamBold
 		modeBadge.TextSize = 15
 		modeBadge.TextColor3 = Color3.fromRGB(255, 232, 170)
-		modeBadge.Text = if manual then "🌬 직접 항해 (바람 띠)" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
+		modeBadge.Text = if manual then "🌊 직접 항해 (바람 고리)" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
 		modeBadge.ZIndex = 9
 		modeBadge.Parent = gui
 		local mc = Instance.new("UICorner")
@@ -1192,7 +1251,7 @@ function VoyageScene.play(info)
 			mapShip.Rotation = -math.deg(helmYaw)
 			windArrow.Rotation = -math.deg(windFrom + math.pi)
 		else
-			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)))
+			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) else 1))
 			pos, dir = positionAt(pts, cum, dist)
 		end
 		if manual then
@@ -1211,18 +1270,42 @@ function VoyageScene.play(info)
 			if math.abs(lat) >= 1 then
 				latV = 0
 			end
-			-- 바람 띠: 천천히 좌우로 흔들리며 움직인다
-			local bandC = math.clamp(0.62 * math.sin(t * 0.55) + 0.28 * math.sin(t * 1.35 + 1), -0.78, 0.78)
-			bandTime += dt
-			local good = math.abs(lat - bandC) <= 0.15
-			if good then
-				inBand += dt
+			if autoRing then
+				-- 자동 항해: 고리는 판정하지 않고 배는 항로 한가운데로 돌아온다
+				dragTarget = nil
+				lat += (0 - lat) * math.min(1, dt * 2)
+				bandFrame.Visible = false
+				scoreLabel.Text = "자동 항해 중"
+				for _, dpart in ringParts do
+					dpart.Transparency = 1
+				end
+				nextRing = #ringList + 1
+			else
+				while ringList[nextRing] and dist / total >= ringList[nextRing].at do
+					local r = ringList[nextRing]
+					local ok = Rings.hit(r, lat)
+					Rings.record(tally, r, ok)
+					local part = ringParts[nextRing]
+					if part then
+						part.Color = if ok then Color3.fromRGB(110, 240, 140) else Color3.fromRGB(240, 90, 80)
+						part.Transparency = 0.2
+						task.delay(0.5, function()
+							part.Transparency = 1
+						end)
+					end
+					nextRing += 1
+				end
+				local nr = ringList[nextRing]
+				bandFrame.Visible = nr ~= nil
+				if nr then
+					bandFrame.Size = UDim2.new(Rings.radius(nr) * 0.9, 0, 1, 0)
+					bandFrame.Position = UDim2.fromScale(0.5 + nr.lat * 0.45, 0.5)
+					bandFrame.BackgroundColor3 = if Rings.hit(nr, lat) then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(230, 190, 80)
+				end
+				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo))
 			end
-			bandFrame.Position = UDim2.fromScale(0.5 + bandC * 0.45, 0.5)
-			bandFrame.BackgroundColor3 = if good then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(220, 170, 70)
 			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
-			scoreLabel.Text = string.format("순풍 유지 %d%%", math.floor(inBand / math.max(bandTime, 0.01) * 100))
-			pos = pos + Vector3.new(-dir.Z, 0, dir.X) * lat * 14
+			pos = pos + Vector3.new(-dir.Z, 0, dir.X) * lat * LATSCALE
 		end
 		-- 뱃머리는 부드럽게 항로 방향으로 돈다
 		local targetYaw = yawOf(dir)
@@ -1510,8 +1593,8 @@ function VoyageScene.play(info)
 	end
 	folder:Destroy()
 	gui:Destroy()
-	if manual and not skipped then
-		return inBand / math.max(bandTime, 0.01)
+	if manual and not skipped and tally.total > 0 then
+		return Rings.score(tally), tally.hits, tally.total
 	end
 	return nil
 end

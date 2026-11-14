@@ -433,5 +433,39 @@ do
 	check("수동 항해: 암초 지대는 속도를 줄이고 해류는 올린다", slow.speed < base.speed and fast.speed > base.speed)
 end
 
+do
+	-- 파도타기 수동 항해(고리)
+	local R = require("./Shared/Rings")
+	local rs = 7
+	local function rng(): number
+		rs = (rs * 1103515245 + 12345) % 2147483648
+		return rs / 2147483648
+	end
+	local short = R.build(rng, 2, nil, 0)
+	local long = R.build(rng, 20, nil, 0)
+	check("고리: 긴 항해일수록 고리가 많다", #long > #short and #short >= 6)
+	local sorted = true
+	local inRange = true
+	for i, r in long do
+		if i > 1 and long[i - 1].at > r.at then sorted = false end
+		if math.abs(r.lat) > 0.81 or r.at < 0 or r.at > 1 then inRange = false end
+	end
+	check("고리: 순서대로 나오고 범위 안에 있다", sorted and inRange)
+	local withBonus = R.build(rng, 6, "dolphins", 0)
+	local bonusN = 0
+	for _, r in withBonus do if r.bonus then bonusN += 1 end end
+	check("고리: 돌고래 사건에는 보너스 고리가 나온다", bonusN == 5)
+	local t = R.newTally()
+	for _, r in long do R.record(t, r, R.hit(r, r.lat)) end
+	check("고리: 정확히 가면 점수 1.0, 콤보가 쌓이고 속도가 오른다", R.score(t) == 1 and t.best == #long and R.speedMult(t.combo) > 1.3)
+	local t2 = R.newTally()
+	for i, r in long do R.record(t2, r, i % 2 == 0) end
+	check("고리: 번갈아 놓치면 콤보가 쌓이지 않는다", t2.best == 1 and R.speedMult(t2.combo) <= 1.04)
+	local c1, f1 = R.reward(10, 1)
+	local c0, f0 = R.reward(10, 0.3)
+	local cx = R.reward(100000, 5)
+	check("고리: 보상은 점수에 비례하고 상한이 있다", c1 > c0 and f1 == 1 and f0 == 0 and cx <= 300)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

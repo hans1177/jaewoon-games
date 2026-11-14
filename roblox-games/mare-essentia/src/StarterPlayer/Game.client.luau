@@ -2711,6 +2711,8 @@ local function sail(portId)
 			days = r.days
 		end
 	end
+	-- 처음 가는 항구는 자동 항해를 쓸 수 없다 (Sail 호출 전에 확인: 도착하면 방문 기록이 생긴다)
+	local firstVisit = not (view.visitedPorts and view.visitedPorts[portId])
 	sceneHold = true
 	audioLock = true
 	-- 항해 중에도 목적지 해역의 승인된 지역 테마곡을 들려준다.
@@ -2787,7 +2789,7 @@ local function sail(portId)
 			end
 		end)
 		-- 3D 바다 항해 (끝날 때까지 메뉴는 숨겨 둔다). 실패하면 예전 2D 연출로 대신한다.
-		local ok, err = pcall(VoyageScene.play, {
+		local ok, err, hits, ringTotal = pcall(VoyageScene.play, {
 			shipId = view.ship.id,
 			steam = steam,
 			days = days,
@@ -2800,7 +2802,8 @@ local function sail(portId)
 			escorts = math.min(3, (view.fleet and view.fleet.escorts or 0) + (view.fleet and view.fleet.ships and #view.fleet.ships or 0)),
 			weatherId = view.weather and view.weather.id,
 			event = view.voyageEvent,
-			helm = player:GetAttribute("ManualHelm") == true, -- 설정에서 켠 수동 항해
+			rings = player:GetAttribute("ManualHelm") ~= false or firstVisit, -- 기본은 직접 항해(바람 고리). 처음 가는 항구는 반드시 직접 항해
+			firstVisit = firstVisit,
 			traffic = (function()
 				-- 이 해역의 교역선(지역 전통 배)과 여러 나라 함대
 				local POOL = {
@@ -2846,6 +2849,10 @@ local function sail(portId)
 					g:Destroy()
 				end
 			end
+		end
+		-- 바람 고리 점수 보상 (직접 항해를 한 경우만 점수가 온다)
+		if ok and type(err) == "number" then
+			call("VoyageBonus", { score = err })
 		end
 		-- 2) 도착한 항구의 3D 장면: 배가 먼 바다에서 들어와 정박
 		arriveNext = true
@@ -2920,12 +2927,12 @@ local function confirmSail(r)
 	local modeBtn
 	local function paintMode()
 		-- 항해 장면은 ManualHelm 속성을 읽는다. 이 버튼도 같은 속성을 바꿔야 실제로 수동 항해가 된다.
-		local manualOn = player:GetAttribute("ManualHelm") == true
-		modeBtn.Text = if manualOn then "항해 방식: 직접 조종 (스틱·WASD)" else "항해 방식: 자동 항해"
+		local manualOn = player:GetAttribute("ManualHelm") ~= false
+		modeBtn.Text = if manualOn then "항해 방식: 직접 항해 (바람 고리 · 언제든 자동 전환)" else "항해 방식: 자동 항해"
 		modeBtn.BackgroundColor3 = if manualOn then COLORS.gold else COLORS.blue
 	end
 	modeBtn = mkButton(card, "", COLORS.blue, UDim2.new(1, -28, 0, 34), function()
-		player:SetAttribute("ManualHelm", not (player:GetAttribute("ManualHelm") == true))
+		player:SetAttribute("ManualHelm", not (player:GetAttribute("ManualHelm") ~= false))
 		paintMode()
 	end, true)
 	modeBtn.Position = UDim2.fromOffset(14, 182)
@@ -4223,8 +4230,8 @@ function RENDERERS.status()
 	end
 	add(function() return mkHeader(content, "항해 방식") end)
 	add(function()
-		local manualOn = player:GetAttribute("ManualHelm") == true
-		return mkRow(content, "수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종, 바람을 읽어 가요" else "꺼짐: 자동 항해", {
+		local manualOn = player:GetAttribute("ManualHelm") ~= false
+		return mkRow(content, "수동 항해", if manualOn then "켜짐(기본): 스틱으로 바람 고리를 통과해요. 가는 도중 자동으로 바꿀 수 있어요 (처음 가는 항구는 직접 항해만)" else "꺼짐: 자동 항해", {
 			{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue, onClick = function()
 				player:SetAttribute("ManualHelm", not manualOn)
 				render()
@@ -7728,8 +7735,8 @@ openOptions = function(helpOnly)
 		if not helpOnly then
 			section("⛵ 항해 방식")
 			do
-				local manualOn = player:GetAttribute("ManualHelm") == true
-				row("수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종" else "꺼짐: 자동 항해", {
+				local manualOn = player:GetAttribute("ManualHelm") ~= false
+				row("수동 항해", if manualOn then "켜짐(기본): 바람 고리 항해" else "꺼짐: 자동 항해", {
 					{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.green, onClick = function() player:SetAttribute("ManualHelm", not manualOn); draw() end },
 				})
 			end
