@@ -23,7 +23,7 @@ local PORT_CLOCK_EPOCH = os.clock()
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
 local GOOD_MESH = {
-	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "barrel", Color3.fromRGB(112, 45, 64) }, beer = { "Cargo", "barrel", Color3.fromRGB(174, 115, 48) }, sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
+	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "wine-red" }, beer = { "Cargo", "mug" }, sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
 	cloth = { "Cargo", "textiles-a" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
 	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bar" }, silver = { "Cargo", "silver-bar" }, gold = { "Cargo", "gold-bar" },
 	gems = { "Cargo", "gems-sack" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
@@ -32,6 +32,7 @@ local GOOD_MESH = {
 	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
+-- 통은 사케·럼만 쓴다: 와인은 병(wine-red), 맥주는 잔(mug)으로 모양 자체를 달리해 통 네 가지가 똑같아 보이던 문제를 줄인다 (모두 등록된 CC0 원본).
 -- 표에 없는 교역품은 같은 이름의 3D 모델(등록돼 있으면)을, 그것도 없으면 열린 상자를 쓴다
 setmetatable(GOOD_MESH, { __index = function(_, good)
 	if type(good) == "string" and AssetIds["Cargo/" .. good] then
@@ -42,7 +43,7 @@ end })
 -- 상품 종류별 진열 크기 배율: 작은 물건(보석·향신료·찻잔)은 작게, 큰 물건(통·목재·천 더미)은 크게 보여 종류가 한눈에 구분되게 한다.
 local GOOD_SIZE = {
 	gems = 0.75, pearls = 0.7, pepper = 0.8, salt = 0.8, olive_oil = 0.9, coffee = 0.75, tea = 0.75, cocoa = 0.8, honey = 0.8, lemon = 0.8, coconut = 0.85,
-	wine = 1.2, beer = 1.2, sake = 1.2, rum = 1.2, timber = 1.3, mahogany = 1.25, cloth = 1.2, silk = 1.2, grain = 1.1, sugar = 1.1,
+	wine = 1.0, beer = 0.9, sake = 1.2, rum = 1.2, timber = 1.3, mahogany = 1.25, cloth = 1.2, silk = 1.2, grain = 1.1, sugar = 1.1,
 }
 local function goodSize(good, size)
 	return size * (GOOD_SIZE[good] or 1)
