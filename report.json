@@ -1,90 +1,40 @@
 {
- "sourceRevision": "4d03dd68e461c8ab8eb03038f1c7492da3c1d4e8",
+ "sourceRevision": "5bb53ad960d557f3eb93bc07459cdcecba94aae7",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "play ok=true nil\ntext"
   },
   {
    "step": 3,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "lib_report",
+   "capture": "rt1",
    "files": 1
   },
   {
-   "step": 10,
-   "ctx": "Client",
-   "out": "story npc_shanghai_weaver\ntext"
+   "step": 5,
+   "capture": "rt2",
+   "files": 1
   },
   {
-   "step": 12,
-   "capture": "ev_shanghai",
+   "step": 7,
+   "capture": "rt3",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "rt4",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "capture": "rt5",
    "files": 1
   },
   {
    "step": 13,
-   "ctx": "Client",
-   "out": "closed 1\ntext"
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "story npc_busan_envoy\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "ev_busan",
+   "capture": "rt6",
    "files": 1
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "closed 1\ntext"
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "story npc_incheon_clam\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "ev_incheon",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "closed 1\ntext"
-  },
-  {
-   "step": 25,
-   "ctx": "Client",
-   "out": "story npc_hull_whaler\ntext"
-  },
-  {
-   "step": 27,
-   "capture": "ev_whaler",
-   "files": 1
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "closed 1\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "ERR Client count=0 :: \ntext"
   }
  ],
  "errors": [],
@@ -99,13 +49,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 31,
-  "completedSteps": 31,
+  "plannedSteps": 14,
+  "completedSteps": 14,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
