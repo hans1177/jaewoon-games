@@ -2427,6 +2427,25 @@ do
 	check("collection survives save", back.collected["Botany:1"] == true and back.collected["ALL:5"] == true)
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, collected = { ["Botany:1"] = true, ["bad key"] = true, ["x:1"] = "yes" } })
 	check("collection sanitized", evil.collected["Botany:1"] == true and evil.collected["bad key"] == nil and evil.collected["x:1"] == nil)
+	-- 카드 강화 (2단계부터 움직이는 삽화)
+	do
+		local s2 = newState("england")
+		local cid = D.Cards.Cards[1].id
+		check("upgrade needs discovery", not act(s2, "UpgradeCodexCard", { id = cid }))
+		s2.discovered[cid] = true
+		s2.coins = 0
+		check("upgrade needs coins", not act(s2, "UpgradeCodexCard", { id = cid }) and (s2.codexLevel[cid] or 0) == 0)
+		s2.coins = 1e6
+		check("upgrade 1", act(s2, "UpgradeCodexCard", { id = cid }) and s2.codexLevel[cid] == 1)
+		check("anim locked at level 1", S.View.build(s2, ctx).codex.cards[1].level == 1 and S.View.build(s2, ctx).codex.animLevel == 2)
+		check("upgrade 2,3", act(s2, "UpgradeCodexCard", { id = cid }) and act(s2, "UpgradeCodexCard", { id = cid }) and s2.codexLevel[cid] == 3)
+		check("upgrade capped", not act(s2, "UpgradeCodexCard", { id = cid }))
+		check("bad card id", not act(s2, "UpgradeCodexCard", { id = "nope" }))
+		local b2 = S.State.sanitize(S.State.serialize(s2))
+		check("level survives save", b2.codexLevel[cid] == 3)
+		local e2 = S.State.sanitize({ nationId = "england", startYear = 1700, discovered = { [cid] = true }, codexLevel = { [cid] = 99, nope = 2 } })
+		check("level sanitized", e2.codexLevel[cid] == 3 and e2.codexLevel.nope == nil)
+	end
 end
 
 -- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다

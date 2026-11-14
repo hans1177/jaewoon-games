@@ -53,6 +53,35 @@ return function(D, S)
 		return title
 	end
 
+	-- 카드 강화: 1~3단계. 2단계부터 움직이는 삽화가 열린다.
+	local MAX_LEVEL, ANIM_LEVEL = 3, 2
+	local RARITY_MULT = { Common = 1, Uncommon = 2, Rare = 3, Epic = 5, Legendary = 8 }
+	local function upgradeCost(card, level)
+		return 150 * (level + 1) * (RARITY_MULT[card.rarity] or 1)
+	end
+
+	function handlers.UpgradeCodexCard(state, p)
+		local card = type(p.id) == "string" and D.Cards.ById[p.id]
+		if not card or not state.discovered[card.id] then
+			return false, "발견한 카드만 강화할 수 있어요"
+		end
+		local level = state.codexLevel[card.id] or 0
+		if level >= MAX_LEVEL then
+			return false, "이미 최대 단계예요"
+		end
+		local cost = upgradeCost(card, level)
+		if state.coins < cost then
+			return false, string.format("%d코인이 필요해요", cost)
+		end
+		state.coins -= cost
+		state.codexLevel[card.id] = level + 1
+		local msg = string.format("'%s' 강화 %d단계! (-%d코인)", card.name, level + 1, cost)
+		if level + 1 == ANIM_LEVEL then
+			msg ..= "\n움직이는 삽화가 열렸어요"
+		end
+		return true, msg
+	end
+
 	function handlers.ClaimCollection(state, p)
 		local scope = p.scope
 		local tier = type(p.tier) == "number" and math.floor(p.tier)
@@ -88,5 +117,5 @@ return function(D, S)
 		return true, msg
 	end
 
-	return { handlers = handlers, summary = summary, rankTitle = rankTitle }
+	return { handlers = handlers, summary = summary, rankTitle = rankTitle, upgradeCost = upgradeCost, MAX_LEVEL = MAX_LEVEL, ANIM_LEVEL = ANIM_LEVEL }
 end
