@@ -998,3 +998,12 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `portraits/` | job_16_interpreter.png | AI generated (도구 미상, 사용자 제공 4x4 시트) · PROJECT_ORIGINAL_ART | ai-generated |
 | `portraits/` | job_01_captain_hd.png | AI generated (도구 미상, 사용자 제공 단독 초상) · PROJECT_ORIGINAL_ART | ai-generated |
 | `portraits/` | job_02_navigator_hd.png | AI generated (도구 미상, 사용자 제공 단독 초상) · PROJECT_ORIGINAL_ART | ai-generated |
+
+## 2026-11-15 탐험 전투 버튼 아이콘 2종 (마력숲 등록분과 같은 원본)
+
+출처: https://game-icons.net/about.html . CC BY 3.0. 저작자 Lorc(punch-blast), Darkzaitzev(acrobatic). 상업 이용·수정 가능, 저작자 표시. 마력숲(fantasy-survival)에서 같은 PNG를 이미 쓰고 있으며 원본 해시가 일치한다(`fantasy-survival/CC0-ASSET-REGISTRY.json`).
+
+| 파일 | 원본 | PNG SHA-256 |
+|---|---|---|
+| `icons/action_fist.png` | `lorc/punch-blast.png` | `cb7479f095304bf908deef0fd836470a9e176344c33fdf1926c5ea91acf15a91` |
+| `icons/action_dodge.png` | `darkzaitzev/acrobatic.png` | `3d5f8987d42e8633c62cb576b1daba3efca59e6917b776ae7a24db4976759176` |

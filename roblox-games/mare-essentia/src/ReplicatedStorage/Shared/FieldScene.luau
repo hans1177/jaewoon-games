@@ -9,6 +9,24 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
+local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+
+-- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
+local function addIcon(button: TextButton, key: string)
+	local id = (AssetIds :: any)[key]
+	if not id then
+		return
+	end
+	local img = Instance.new("ImageLabel")
+	img.BackgroundTransparency = 1
+	img.Image = "rbxassetid://" .. tostring(id)
+	img.AnchorPoint = Vector2.new(0.5, 0.4)
+	img.Position = UDim2.fromScale(0.5, 0.4)
+	img.Size = UDim2.fromScale(0.62, 0.62)
+	img.ImageTransparency = 0.05
+	img.Parent = button
+	button.TextYAlignment = Enum.TextYAlignment.Bottom
+end
 
 local FieldScene = {}
 
@@ -495,6 +513,7 @@ function FieldScene.start(opts)
 	local UserInputService = game:GetService("UserInputService")
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -150, 0.5, -10), Vector2.new(0.5, 0.5))
 	attackBtn.TextSize = 22
+	addIcon(attackBtn, "Menu/action_fist")
 	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(1, -12, 0, 56), Vector2.new(1, 0))
 	retreat.Activated:Connect(function()
 		finish("retreat")
@@ -747,6 +766,7 @@ function FieldScene.start(opts)
 	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), -226)
 	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), -150)
 	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), -74)
+	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		AC.regen(pl, 1 / 60)
