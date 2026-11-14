@@ -3616,11 +3616,11 @@ do
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end
 
--- [다국어 지역 카드] 원문/영어판은 같은 150개 ID를 쓰며 5덱 30장 구성이 유지된다.
+-- [다국어 지역 카드] 원문/영어판은 같은 180개 ID를 쓰며 6덱 30장 구성이 유지된다.
 do
 	local BC = D.BoardingCards
 	local total, broken = 0, 0
-	for _, prefix in { "eu", "ea", "me", "nw", "af" } do
+	for _, prefix in { "eu", "ea", "me", "nw", "af", "lo" } do
 		local count = 0
 		for index = 1, 30 do
 			local id = string.format("%s_%02d", prefix, index)
@@ -3640,7 +3640,7 @@ do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and englishCount == 150 and broken == 0,
+	check("180장 영어판·한국어판 카드 연결 보존", total == 180 and englishCount == 180 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
