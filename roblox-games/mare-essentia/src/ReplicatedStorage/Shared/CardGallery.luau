@@ -396,4 +396,6 @@ function Gallery.build(parent, ctx, order)
 	return box
 end
 
+Gallery.showDetail = showDetail
+
 return Gallery
