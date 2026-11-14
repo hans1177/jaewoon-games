@@ -246909,11 +246909,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b9eac72cbdd78f234adb4722",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13284",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7ccdd5096156e4a877cf169fda9c042c2327381f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13284,
+        "baseBranch": "main",
+        "headBranch": "feat/card-common-icons",
+        "baseSha": "7ccdd5096156e4a877cf169fda9c042c2327381f",
+        "headSha": "2fdf3e9937f2526a8c7b5372ac24fd2761c86f21",
+        "mergeCommitSha": "60dc21a9cced4ea0d43a3d8380e53dd9f8444728",
+        "mergedAt": "2026-11-14T20:03:14Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b53e6a9fa4917ce7f9f06ea27b9505a1b330608862524107131c21f0bd8fa0dd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/card-common-icons",
+        "candidateSha": "2fdf3e9937f2526a8c7b5372ac24fd2761c86f21"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 34,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/icons/cc0_axe.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_book.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_chest.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_crossbow.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_fireball.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_frostball.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_glove.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_goldcoins.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_helmet.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_no.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_shield.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_shield2.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_sword.png",
+          "roblox-games/mare-essentia/assets/icons/cc0_yes.png",
+          "roblox-games/mare-essentia/docs/CARD_ICON_PROMPTS.md"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13284",
+        "merge-commit:60dc21a9cced4ea0d43a3d8380e53dd9f8444728",
+        "base-main:7ccdd5096156e4a877cf169fda9c042c2327381f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1965
+    "total": 1966
   }
 }
