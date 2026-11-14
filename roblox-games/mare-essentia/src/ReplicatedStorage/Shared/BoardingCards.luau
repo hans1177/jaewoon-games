@@ -265,6 +265,36 @@ B.Specials.af_27 = { id="af_27", name="사하라 사막", category="지형·원�
 B.Units.af_28 = { id="af_28", name="킬리만자로", category="지형·원더", lore="아프리카의 지형·원더 유산 · 킬리만자로", stage={ art="CardArt/event_chart_west_africa", motion="clear", scene="킬리만자로" }, row="ranged", power=4, weapon="gun" }
 B.Specials.af_29 = { id="af_29", name="벵겔라 해류", category="지형·원더", lore="아프리카 남서 해안을 따라 흐르는 찬 해류", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="벵겔라 해류" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·원더", lore="서아프리카에 먼지와 건조한 공기를 보내는 바람", stage={ art="CardArt/event_drought", motion="storm", scene="하르마탄 바람" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.lo_01 = { id="lo_01", name="아틀란티스", category="지형·원더", lore="플라톤이 전한, 바다 속으로 가라앉았다는 전설의 섬나라", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="아틀란티스" }, row="ranged", power=9, weapon="gun", hero=true }
+B.Units.lo_02 = { id="lo_02", name="무 대륙", category="지형·원더", lore="태평양에 가라앉았다고 전해지는 잃어버린 대륙", stage={ art="CardArt/event_calm_seas", motion="wind", scene="무 대륙" }, row="cannon", power=9, weapon="cannon", hero=true }
+B.Units.lo_03 = { id="lo_03", name="엘도라도", category="지형·원더", lore="남미 밀림 깊숙이 숨었다는 황금의 도시", stage={ art="CardArt/event_machu_picchu", motion="clear", scene="엘도라도" }, row="melee", power=9, weapon="axe", hero=true }
+B.Units.lo_04 = { id="lo_04", name="레무리아", category="지형·원더", lore="인도양 어딘가에 있었다는 전설의 땅", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="레무리아" }, row="ranged", power=6, weapon="gun", ability="bond" }
+B.Units.lo_05 = { id="lo_05", name="샹그릴라", category="지형·원더", lore="산속에 숨은 이상향 이야기", stage={ art="CardArt/event_great_wall", motion="clear", scene="샹그릴라" }, row="melee", power=5, weapon="sword", ability="armor" }
+B.Units.lo_06 = { id="lo_06", name="바벨탑", category="유물", lore="하늘에 닿으려다 무너졌다는 탑 이야기", stage={ art="CardArt/event_giza", motion="clear", scene="바벨탑" }, row="cannon", power=6, weapon="cannon", ability="morale" }
+B.Units.lo_07 = { id="lo_07", name="실종된 로아노크 식민지", category="미스터리", lore="흔적 없이 사라진 식민지의 수수께끼", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="실종된 로아노크 식민지" }, row="melee", power=4, weapon="sword", ability="spy" }
+B.Units.lo_08 = { id="lo_08", name="프레스터 존의 왕국", category="미스터리", lore="동방 어딘가에 있다는 기독교 왕국의 소문", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="프레스터 존의 왕국" }, row="ranged", power=5, weapon="gun", ability="morale" }
+B.Units.lo_09 = { id="lo_09", name="메로에 왕국의 비밀", category="지형·원더", lore="잊힌 문명의 유적 이야기", stage={ art="CardArt/event_zimbabwe", motion="clear", scene="메로에 왕국의 비밀" }, row="melee", power=5, weapon="axe", ability="bond" }
+B.Units.lo_10 = { id="lo_10", name="이스터섬의 거인상", category="지형·원더", lore="누가 왜 세웠는지 알 수 없는 거대한 석상", stage={ art="CardArt/event_stonehenge", motion="clear", scene="이스터섬의 거인상" }, row="melee", power=6, weapon="axe", ability="armor" }
+B.Units.lo_11 = { id="lo_11", name="마추픽추의 비밀 창고", category="지형·원더", lore="잉카 유적에 숨겨졌다는 보물 이야기", stage={ art="CardArt/event_machu_picchu", motion="clear", scene="마추픽추의 비밀 창고" }, row="cannon", power=4, weapon="cannon", ability="bond" }
+B.Units.lo_12 = { id="lo_12", name="지하 도시 데린쿠유", category="지형·원더", lore="땅속 깊이 숨은 고대 도시", stage={ art="CardArt/event_petra", motion="clear", scene="지하 도시 데린쿠유" }, row="melee", power=5, weapon="axe", ability="armor" }
+B.Units.lo_13 = { id="lo_13", name="고대 신전의 수호상", category="유물", lore="잊힌 신전을 지킨다는 돌 수호자", stage={ art="CardArt/event_petra", motion="clear", scene="고대 신전의 수호상" }, row="melee", power=5, weapon="axe", ability="armor" }
+B.Units.lo_14 = { id="lo_14", name="크라켄", category="전설 생물", lore="배를 통째로 끌어내린다는 거대한 바다 괴물", stage={ art="CardArt/event_storm", motion="fire", scene="크라켄" }, row="cannon", power=10, weapon="cannon", hero=true }
+B.Units.lo_15 = { id="lo_15", name="용", category="전설 생물", lore="불을 뿜는 날개 달린 거대한 짐승", stage={ art="CardArt/event_hurricane", motion="fire", scene="용" }, row="ranged", power=10, weapon="gun", hero=true }
+B.Units.lo_16 = { id="lo_16", name="불사조", category="전설 생물", lore="재에서 다시 태어난다는 불꽃의 새", stage={ art="CardArt/event_drought", motion="clear", scene="불사조" }, row="ranged", power=8, weapon="gun", hero=true }
+B.Units.lo_17 = { id="lo_17", name="바다뱀", category="전설 생물", lore="뱃길을 막고 나타난다는 거대한 뱀", stage={ art="CardArt/event_calm_seas", motion="pounce", scene="바다뱀" }, row="melee", power=6, weapon="sword", ability="morale" }
+B.Units.lo_18 = { id="lo_18", name="인어", category="전설 생물", lore="노래로 선원을 홀린다는 바다의 존재", stage={ art="CardArt/event_calm_seas", motion="scout", scene="인어" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.lo_19 = { id="lo_19", name="그리폰", category="전설 생물", lore="독수리와 사자가 합쳐진 하늘의 수호자", stage={ art="CardArt/event_great_wall", motion="gallop", scene="그리폰" }, row="ranged", power=6, weapon="gun", ability="bond" }
+B.Units.lo_20 = { id="lo_20", name="해마 기병", category="전설 생물", lore="파도를 가르는 전설의 말", stage={ art="CardArt/event_chart_mediterranean", motion="gallop", scene="해마 기병" }, row="melee", power=5, weapon="spear", ability="morale" }
+B.Units.lo_21 = { id="lo_21", name="유령선 플라잉 더치맨", category="미스터리", lore="영원히 바다를 떠돈다는 저주받은 배", stage={ art="CardArt/event_title_ship", motion="wind", scene="유령선 플라잉 더치맨" }, row="cannon", power=7, weapon="cannon", ability="armor" }
+B.Units.lo_22 = { id="lo_22", name="사이렌의 노래", category="전설 생물", lore="듣는 이의 마음을 끌어당기는 노래", stage={ art="CardArt/event_calm_seas", motion="scout", scene="사이렌의 노래" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.lo_23 = { id="lo_23", name="고대 거인", category="전설 생물", lore="돌산처럼 우뚝 선 옛이야기 속의 거인", stage={ art="CardArt/event_stonehenge", motion="pounce", scene="고대 거인" }, row="melee", power=7, weapon="axe", ability="armor" }
+B.Units.lo_24 = { id="lo_24", name="안개의 정령", category="전설 생물", lore="안개 속에서 길을 흐리는 존재", stage={ art="CardArt/event_calm_seas", motion="scout", scene="안개의 정령" }, row="ranged", power=3, weapon="gun", ability="bond" }
+B.Specials.lo_25 = { id="lo_25", name="전설의 나침반", category="유물", lore="가야 할 곳을 가리킨다는 신비한 나침반", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="전설의 나침반" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배", }
+B.Specials.lo_26 = { id="lo_26", name="현자의 지도", category="유물", lore="잊힌 땅의 위치를 그린 지도", stage={ art="CardArt/event_chart_south_america", motion="wind", scene="현자의 지도" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다", }
+B.Specials.lo_27 = { id="lo_27", name="저주의 안개", category="미스터리", lore="시야를 가리고 힘을 앗아 가는 짙은 안개", stage={ art="CardArt/event_calm_seas", motion="storm", scene="저주의 안개" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="melee", }
+B.Specials.lo_28 = { id="lo_28", name="불의 폭풍", category="미스터리", lore="하늘을 붉게 물들이는 폭풍", stage={ art="CardArt/event_hurricane", motion="storm", scene="불의 폭풍" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged", }
+B.Specials.lo_29 = { id="lo_29", name="깊은 바다의 소용돌이", category="미스터리", lore="모든 것을 삼키는 거대한 소용돌이", stage={ art="CardArt/event_storm", motion="storm", scene="깊은 바다의 소용돌이" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="cannon", }
+B.Specials.lo_30 = { id="lo_30", name="신비한 등불", category="유물", lore="어둠 속에서 길을 비추는 불빛", stage={ art="CardArt/event_calm_seas", motion="scout", scene="신비한 등불" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배", }
 
 -- [다국어 카드 도감] 카드 ID와 전투 규칙은 불변. 원본 한국어 이름/설명은 카드 데이터에 보존한다.
 -- 다른 국가 공용 화면에서 사용하는 영어 제목/설명. 이미지에는 문자를 넣지 않는다.
@@ -419,6 +449,36 @@ B.CardEnglish = {
 	af_28 = { name = "Mount Kilimanjaro", lore = "A towering volcanic mountain of East Africa." },
 	af_29 = { name = "Benguela Current", lore = "A cold ocean current flowing along southwestern Africa." },
 	af_30 = { name = "Harmattan Wind", lore = "A dry dusty wind blowing across West Africa." },
+	lo_01 = { name = "Atlantis", lore = "A legendary island nation said to have sunk beneath the sea." },
+	lo_02 = { name = "Land of Mu", lore = "A lost continent said to lie beneath the Pacific." },
+	lo_03 = { name = "El Dorado", lore = "A city of gold hidden deep in the South American jungle." },
+	lo_04 = { name = "Lemuria", lore = "A legendary land once said to lie in the Indian Ocean." },
+	lo_05 = { name = "Shangri-La", lore = "A hidden paradise from tales set deep in the mountains." },
+	lo_06 = { name = "Tower of Babel", lore = "A tale of a tower raised to touch the sky." },
+	lo_07 = { name = "Lost Colony of Roanoke", lore = "A colony that vanished without a trace." },
+	lo_08 = { name = "Kingdom of Prester John", lore = "A rumored Christian kingdom far in the East." },
+	lo_09 = { name = "Secrets of Meroe", lore = "Tales of a forgotten civilization's ruins." },
+	lo_10 = { name = "Moai of Easter Island", lore = "Giant stone statues whose makers and purpose remain unclear." },
+	lo_11 = { name = "Hidden Vault of Machu Picchu", lore = "Tales of treasure hidden in Inca ruins." },
+	lo_12 = { name = "Derinkuyu Underground City", lore = "An ancient city hidden deep underground." },
+	lo_13 = { name = "Temple Guardian Statue", lore = "A stone guardian said to watch over a forgotten temple." },
+	lo_14 = { name = "Kraken", lore = "A giant sea monster said to drag whole ships under." },
+	lo_15 = { name = "Dragon", lore = "A great winged beast that breathes fire." },
+	lo_16 = { name = "Phoenix", lore = "A bird of flame said to be reborn from its ashes." },
+	lo_17 = { name = "Sea Serpent", lore = "A giant serpent said to bar sailors' paths." },
+	lo_18 = { name = "Mermaid", lore = "A sea being said to enchant sailors with song." },
+	lo_19 = { name = "Griffin", lore = "A sky guardian with an eagle's head and lion's body." },
+	lo_20 = { name = "Hippocampus Rider", lore = "A legendary steed that rides the waves." },
+	lo_21 = { name = "Flying Dutchman", lore = "A cursed ship said to sail the seas forever." },
+	lo_22 = { name = "Song of the Sirens", lore = "A song that pulls at the hearts of all who hear it." },
+	lo_23 = { name = "Ancient Giant", lore = "A giant from old tales who stands like a mountain." },
+	lo_24 = { name = "Mist Spirit", lore = "A being that clouds the way within the fog." },
+	lo_25 = { name = "Legendary Compass", lore = "A mystical compass said to point where you must go." },
+	lo_26 = { name = "Sage's Map", lore = "A map drawn of forgotten lands." },
+	lo_27 = { name = "Cursed Fog", lore = "A thick fog that dims sight and saps strength." },
+	lo_28 = { name = "Firestorm", lore = "A storm that turns the sky red." },
+	lo_29 = { name = "Abyssal Whirlpool", lore = "A vast whirlpool that swallows everything." },
+	lo_30 = { name = "Mystic Lantern", lore = "A light that shows the way in darkness." },
 }
 
 -- 두목 전용 영웅: 두목을 쓰러뜨린 뒤 보상 후보에만 나온다 (일반 뽑기에는 나오지 않는다)
@@ -436,10 +496,12 @@ B.Factions = {
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "draw",
 		roster = { "raider", "raider", "raider", "swordsman", "pikeman", "surgeon", "surgeon", "musketeer", "scout", "sniper", "swivel", "swivel", "swivel", "gunner", "wind", "ironclad", "decoy" } },
+	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
+		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "draw",
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30" } },
 }
-B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "africa" }
+B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "africa", "lost" }
 B.NationFaction = {
 	england = "europe", netherlands = "europe", france = "europe", denmark = "europe", sweden = "europe", venice = "europe", spain = "europe", portugal = "europe",
 	ottoman = "middle_east", swahili = "africa",
@@ -830,6 +892,13 @@ local function roundEnd(m: any)
 		-- 유럽: 판을 이기면 한 장 더
 		if winner and m.faction and m.faction[winner] == "europe" then
 			drawCards(m, winner, 1)
+		end
+		-- 미지의 땅: 판을 지면 두 장 더 (역전의 단서)
+		if winner and m.faction then
+			local loser = if winner == "me" then "foe" else "me"
+			if m.faction[loser] == "lost" then
+				drawCards(m, loser, 2)
+			end
 		end
 	end
 	return result
