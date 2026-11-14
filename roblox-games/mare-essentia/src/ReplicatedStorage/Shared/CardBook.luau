@@ -13,7 +13,7 @@ CB.MAX_COPIES = 3 -- 같은 카드는 덱에 세 장까지
 CB.LOST_MAX = 10 -- 미지의 땅 카드는 덱에 열 장까지 (내 대륙 카드가 중심이어야 한다)
 CB.PROVISION_BASE = 150 -- 보급 한도 (지도자가 조금 더해 준다)
 -- 카드 id 앞 두 글자 → 대륙. 접두사가 없는 카드(기본 병종·지식 카드)는 어느 덱에서나 쓴다.
-CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", lo = "lost" }
+CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", sa = "southeast_asia", lo = "lost" }
 function CB.continentOf(id: string): string?
 	local pre = string.match(id, "^(%a%a)_%d%d$")
 	return pre and CB.CONTINENT_PREFIX[pre] or nil

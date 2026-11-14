@@ -3380,7 +3380,7 @@ do
 	end
 	-- 문화권 덱: 다섯 문화권의 덱과 고유 능력
 	do
-		check("문화권: 여섯 덱(다섯 대륙 + 미지의 땅)이 모두 있다", #BC.FactionOrder == 6)
+		check("문화권: 일곱 덱(여섯 대륙 + 미지의 땅)이 모두 있다", #BC.FactionOrder == 7)
 		for _, f in BC.FactionOrder do
 			local deck = BC.playerDeck({}, math.random, f)
 			check("문화권 덱 크기: " .. f, #deck >= 17)
@@ -3433,7 +3433,7 @@ do
 			local eb = CBk.new("europe")
 			local base = CBk.deckIds(eb, "europe")
 			check("덱 규칙: 시작 자동 덱은 25장이고 보급 한도 안이다", #base >= 25 and CBk.deckCost(base) <= CBk.provisionLimit("europe"))
-			check("덱 규칙: 보급 한도는 150 + 지도자 보너스", CBk.provisionLimit("europe") == 160 and CBk.provisionLimit("east_asia") == 155)
+			check("덱 규칙: 보급 한도는 150 + 지도자 보너스", CBk.provisionLimit("europe") == 160 and CBk.provisionLimit("east_asia") == 160)
 			local fat = table.clone(base)
 			for i = 1, 30 do CBk.grant(eb, "lo_01", 1) end
 			for _ = 1, 4 do table.insert(fat, "lo_01") end
@@ -3694,7 +3694,7 @@ end
 do
 	local BC = D.BoardingCards
 	local total, broken = 0, 0
-	for _, prefix in { "eu", "ea", "me", "nw", "af", "lo" } do
+	for _, prefix in { "eu", "ea", "me", "nw", "af", "sa", "lo" } do
 		local count = 0
 		local per = if prefix == "eu" then 45 else 30
 		for index = 1, per do
@@ -3715,7 +3715,7 @@ do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("195장 영어판·한국어판 카드 연결 보존", total == 195 and englishCount == 195 and broken == 0,
+	check("225장 영어판·한국어판 카드 연결 보존", total == 225 and englishCount == 225 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
@@ -3860,7 +3860,7 @@ end
 -- [지도자] 모든 대륙 지도자는 능력이 실제로 동작한다
 do
 	local BC = D.BoardingCards
-	for _, fid in { "europe", "east_asia", "new_world", "middle_east", "africa" } do
+	for _, fid in { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa" } do
 		local f = BC.Factions[fid]
 		check("대륙 지도자 3명 이상: " .. fid, f.leaders ~= nil and #f.leaders >= 3 and table.find(f.leaders, f.leader) ~= nil)
 		for _, lid in f.leaders or {} do

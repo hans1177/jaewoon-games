@@ -93,6 +93,10 @@ B.Leaders = {
 	saladin = { fx = "snipe", id = "saladin", name = "살라딘", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "middle_east", era = "수호" },
 	suleiman = { fx = "hornRanged", id = "suleiman", name = "술레이만 대제", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "middle_east", era = "제국" },
 	cyrus = { fx = "restore", id = "cyrus", name = "키루스 대왕", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "middle_east", era = "정복자" },
+	-- 남·동남아
+	rajaraja = { fx = "clearBonusRanged", id = "rajaraja", name = "라자라자 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "southeast_asia", era = "해양" },
+	tranhungdao = { fx = "snipe", id = "tranhungdao", name = "쩐흥다오", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "southeast_asia", era = "수호" },
+	akbar = { fx = "hornRanged", id = "akbar", name = "악바르", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "southeast_asia", era = "통일" },
 	-- 아프리카
 	mansa = { fx = "draw2", id = "mansa", name = "만사 무사", text = "카드를 두 장 뽑는다", provision = 12, faction = "africa", era = "부유" },
 	hannibal = { fx = "snipe", id = "hannibal", name = "한니발", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "africa", era = "정복자" },
@@ -323,6 +327,36 @@ B.Specials.af_27 = { id="af_27", name="사하라 사막", category="지형·원�
 B.Units.af_28 = { id="af_28", name="킬리만자로", category="지형·원더", lore="아프리카의 지형·원더 유산 · 킬리만자로", stage={ art="CardArt/event_chart_west_africa", motion="clear", scene="킬리만자로" }, row="ranged", power=4, weapon="gun" }
 B.Specials.af_29 = { id="af_29", name="벵겔라 해류", category="지형·원더", lore="아프리카 남서 해안을 따라 흐르는 찬 해류", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="벵겔라 해류" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·원더", lore="서아프리카에 먼지와 건조한 공기를 보내는 바람", stage={ art="CardArt/event_drought", motion="storm", scene="하르마탄 바람" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.sa_01 = { id="sa_01", name="말레이 프라우", category="선박", lore="말레이 해역을 누비던 날렵한 쌍돛배", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말레이 프라우" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.sa_02 = { id="sa_02", name="촐라 전함", category="선박", lore="인도양을 건너 동남아까지 닿은 남인도 해군의 큰 배", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="촐라 전함" }, row="cannon", power=6, weapon="cannon", ability="armor" }
+B.Units.sa_03 = { id="sa_03", name="아랍 다우", category="선박", lore="계절풍을 타고 인도양을 오간 삼각돛 무역선", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="아랍 다우" }, row="ranged", power=5, weapon="gun", ability="bond" }
+B.Units.sa_04 = { id="sa_04", name="중국 정크", category="선박", lore="대나무 돛과 칸막이 선창으로 유명한 큰 범선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="중국 정크" }, row="melee", power=5, weapon="sword", ability="morale" }
+B.Units.sa_05 = { id="sa_05", name="코라코라 전선", category="선박", lore="필리핀과 말루쿠 해역의 노 젓는 전투선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="코라코라 전선" }, row="melee", power=5, weapon="axe", ability="bond" }
+B.Units.sa_06 = { id="sa_06", name="말라바르 쾌속선", category="선박", lore="남인도 서해안의 빠른 무역·해적 대응선", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말라바르 쾌속선" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.sa_07 = { id="sa_07", name="무굴 상선", category="선박", lore="구자라트 항구에서 출항한 무굴 제국의 무역선", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="무굴 상선" }, row="cannon", power=5, weapon="cannon", ability="morale" }
+B.Units.sa_08 = { id="sa_08", name="대형 바지선", category="선박", lore="강과 운하로 군량을 나르던 평저선", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="대형 바지선" }, row="melee", power=6, weapon="spear" }
+B.Units.sa_09 = { id="sa_09", name="향신료 대선단", category="선박", lore="정향과 후추를 가득 싣고 바다를 가로지르던 거대 선단", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="향신료 대선단" }, row="cannon", power=9, weapon="cannon", hero=true }
+B.Units.sa_10 = { id="sa_10", name="앙코르 청동종", category="유물", lore="크메르 사원에서 울리던 큰 종", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="앙코르 청동종" }, row="melee", power=4, weapon="axe", ability="morale" }
+B.Units.sa_11 = { id="sa_11", name="청화 자기", category="유물", lore="바닷길을 따라 퍼진 푸른 무늬 도자기", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="청화 자기" }, row="melee", power=4, weapon="sword", ability="armor" }
+B.Units.sa_12 = { id="sa_12", name="후추 자루", category="유물", lore="말라바르 해안의 값비싼 검은 후추", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="후추 자루" }, row="ranged", power=3, weapon="gun", ability="spy" }
+B.Units.sa_13 = { id="sa_13", name="정향 상자", category="유물", lore="말루쿠 제도에서만 나던 귀한 향신료", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="정향 상자" }, row="ranged", power=4, weapon="gun", ability="morale" }
+B.Units.sa_14 = { id="sa_14", name="힌두 청동상", category="유물", lore="남인도 장인이 만든 춤추는 신의 청동상", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="힌두 청동상" }, row="melee", power=5, weapon="spear", ability="bond" }
+B.Specials.sa_15 = { id="sa_15", name="마자파힛 깃발", category="유물", lore="섬 제국이 군사를 모으려 내건 큰 깃발", stage={ art="CardArt/event_chart_southeast_asia", motion="scout", scene="마자파힛 깃발" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
+B.Units.sa_16 = { id="sa_16", name="인도코끼리", category="동물", lore="전투와 운반에 쓰인 거대한 코끼리", stage={ art="CardArt/event_chart_southeast_asia", motion="gallop", scene="인도코끼리" }, row="melee", power=8, weapon="sword" }
+B.Units.sa_17 = { id="sa_17", name="벵골호랑이", category="동물", lore="갠지스 삼각주의 맹수", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="벵골호랑이" }, row="melee", power=6, weapon="axe" }
+B.Units.sa_18 = { id="sa_18", name="코모도왕도마뱀", category="동물", lore="인도네시아 섬에 사는 거대한 도마뱀", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="코모도왕도마뱀" }, row="melee", power=5, weapon="spear", ability="armor" }
+B.Units.sa_19 = { id="sa_19", name="인도코뿔소", category="동물", lore="두꺼운 가죽으로 몸을 지키는 큰 짐승", stage={ art="CardArt/event_chart_southeast_asia", motion="gallop", scene="인도코뿔소" }, row="melee", power=7, weapon="sword" }
+B.Units.sa_20 = { id="sa_20", name="오랑우탄", category="동물", lore="보르네오와 수마트라 숲의 붉은 유인원", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="오랑우탄" }, row="melee", power=5, weapon="axe", ability="morale" }
+B.Units.sa_21 = { id="sa_21", name="인도공작", category="동물", lore="남아시아의 화려한 깃털 새", stage={ art="CardArt/event_chart_southeast_asia", motion="pounce", scene="인도공작" }, row="ranged", power=4, weapon="gun", ability="bond" }
+B.Units.sa_22 = { id="sa_22", name="앙코르와트", category="지형·원더", lore="크메르 제국이 세운 거대한 힌두 사원", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="앙코르와트" }, row="melee", power=9, hero=true }
+B.Units.sa_23 = { id="sa_23", name="보로부두르", category="지형·원더", lore="자바 섬의 거대한 불교 사원", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="보로부두르" }, row="melee", power=5, weapon="axe", ability="armor" }
+B.Specials.sa_24 = { id="sa_24", name="말라카 해협", category="지형·원더", lore="인도양과 태평양을 잇는 좁은 바닷길", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말라카 해협" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
+B.Specials.sa_25 = { id="sa_25", name="몬순 폭우", category="지형·원더", lore="바닷길을 때리는 계절 폭풍", stage={ art="CardArt/event_chart_southeast_asia", motion="storm", scene="몬순 폭우" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.sa_26 = { id="sa_26", name="하롱베이", category="지형·원더", lore="바다 위에 기암이 솟은 베트남의 만", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="하롱베이" }, row="ranged", power=4, weapon="gun" }
+B.Units.sa_27 = { id="sa_27", name="타지마할", category="지형·원더", lore="무굴 황제가 세운 흰 대리석 묘당", stage={ art="CardArt/event_chart_southeast_asia", motion="clear", scene="타지마할" }, row="ranged", power=9, weapon="gun", hero=true }
+B.Units.sa_28 = { id="sa_28", name="향신료 무역", category="사건", lore="동남아 향신료가 세계 무역을 바꾼 흐름", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="향신료 무역" }, row="ranged", power=3, weapon="gun" }
+B.Units.sa_29 = { id="sa_29", name="말라카 술탄", category="인물", lore="말라카 해협을 지배한 해상 왕국의 군주", stage={ art="CardArt/event_chart_southeast_asia", motion="board", scene="말라카 술탄" }, row="melee", power=5, weapon="sword", cause="sa_28" }
+B.Specials.sa_30 = { id="sa_30", name="향신료 독점", category="기술", lore="물자가 오가는 길을 쥐어 상대를 말려 죽이는 수", stage={ art="CardArt/event_chart_southeast_asia", motion="storm", scene="향신료 독점" }, special="refute", refuteKind="기술", text="상대 카드 중 기술에서 이어진 연쇄 보너스를 끊는다" }
 B.Units.lo_01 = { id="lo_01", name="아틀란티스", category="지형·원더", lore="플라톤이 전한, 바다 속으로 가라앉았다는 전설의 섬나라", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="아틀란티스" }, row="ranged", power=9, weapon="gun", hero=true }
 B.Units.lo_02 = { id="lo_02", name="무 대륙", category="지형·원더", lore="태평양에 가라앉았다고 전해지는 잃어버린 대륙", stage={ art="CardArt/event_calm_seas", motion="wind", scene="무 대륙" }, row="cannon", power=9, weapon="cannon", hero=true }
 B.Units.lo_03 = { id="lo_03", name="엘도라도", category="지형·원더", lore="남미 밀림 깊숙이 숨었다는 황금의 도시", stage={ art="CardArt/event_machu_picchu", motion="clear", scene="엘도라도" }, row="melee", power=9, weapon="axe", hero=true }
@@ -522,6 +556,36 @@ B.CardEnglish = {
 	af_28 = { name = "Mount Kilimanjaro", lore = "A towering volcanic mountain of East Africa." },
 	af_29 = { name = "Benguela Current", lore = "A cold ocean current flowing along southwestern Africa." },
 	af_30 = { name = "Harmattan Wind", lore = "A dry dusty wind blowing across West Africa." },
+	sa_01 = { name = "Malay Prau", lore = "A swift outrigger sailing boat of the Malay seas." },
+	sa_02 = { name = "Chola Warship", lore = "A large South Indian naval vessel that reached Southeast Asia." },
+	sa_03 = { name = "Arab Dhow", lore = "A lateen-sail trade ship that rode the monsoon across the ocean." },
+	sa_04 = { name = "Chinese Junk", lore = "A big sailing ship known for its battened sails and bulkheads." },
+	sa_05 = { name = "Korakora War Canoe", lore = "An oared war vessel of the Philippine and Maluku waters." },
+	sa_06 = { name = "Malabar Cutter", lore = "A fast trade and anti-pirate ship of the south Indian coast." },
+	sa_07 = { name = "Mughal Merchantman", lore = "A trading ship that sailed from Gujarati ports for the Mughals." },
+	sa_08 = { name = "Great Barge", lore = "A flat-bottomed barge that carried supplies along rivers and canals." },
+	sa_09 = { name = "Spice Armada", lore = "A huge fleet carrying cloves and pepper across the sea." },
+	sa_10 = { name = "Angkor Bronze Bell", lore = "A large bell that once rang in Khmer temples." },
+	sa_11 = { name = "Blue-and-White Porcelain", lore = "Blue patterned ceramics spread along the sea routes." },
+	sa_12 = { name = "Pepper Sacks", lore = "The valuable black pepper of the Malabar coast." },
+	sa_13 = { name = "Clove Chest", lore = "A precious spice that grew only in the Maluku islands." },
+	sa_14 = { name = "Hindu Bronze Statue", lore = "A bronze statue of a dancing god made by South Indian artisans." },
+	sa_15 = { name = "Majapahit Banner", lore = "A great banner raised to rally an island empire." },
+	sa_16 = { name = "Indian Elephant", lore = "A huge elephant used in war and for carrying loads." },
+	sa_17 = { name = "Bengal Tiger", lore = "A fierce big cat of the Ganges delta." },
+	sa_18 = { name = "Komodo Dragon", lore = "A giant lizard that lives on islands of Indonesia." },
+	sa_19 = { name = "Indian Rhinoceros", lore = "A large beast that guards itself with thick hide." },
+	sa_20 = { name = "Orangutan", lore = "A red ape of the forests of Borneo and Sumatra." },
+	sa_21 = { name = "Indian Peafowl", lore = "A showy feathered bird of South Asia." },
+	sa_22 = { name = "Angkor Wat", lore = "A vast Hindu temple built by the Khmer Empire." },
+	sa_23 = { name = "Borobudur", lore = "A massive Buddhist temple on the island of Java." },
+	sa_24 = { name = "Strait of Malacca", lore = "The narrow sea lane linking the Indian Ocean and the Pacific." },
+	sa_25 = { name = "Monsoon Rains", lore = "Seasonal storms that batter the sea lanes of the region." },
+	sa_26 = { name = "Ha Long Bay", lore = "A Vietnamese bay with limestone peaks rising from the sea." },
+	sa_27 = { name = "Taj Mahal", lore = "A white marble mausoleum built by a Mughal emperor." },
+	sa_28 = { name = "Spice Trade", lore = "The flow of spices that reshaped world commerce." },
+	sa_29 = { name = "Sultan of Malacca", lore = "The ruler of a maritime kingdom that held the Malacca Strait." },
+	sa_30 = { name = "Spice Monopoly", lore = "A scheme to seize control of the routes that carry tech and goods." },
 	lo_01 = { name = "Atlantis", lore = "A legendary island nation said to have sunk beneath the sea." },
 	lo_02 = { name = "Land of Mu", lore = "A lost continent said to lie beneath the Pacific." },
 	lo_03 = { name = "El Dorado", lore = "A city of gold hidden deep in the South American jungle." },
@@ -567,14 +631,14 @@ B.Factions = {
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30"} },
-	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "draw",
-		roster = { "raider", "raider", "raider", "swordsman", "pikeman", "surgeon", "surgeon", "musketeer", "scout", "sniper", "swivel", "swivel", "swivel", "gunner", "wind", "ironclad", "decoy" } },
+	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", leaders = { "rajaraja", "tranhungdao", "akbar" },
+		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30" } },
 }
-B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "africa", "lost" }
+B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
 B.NationFaction = {
 	england = "europe", netherlands = "europe", france = "europe", denmark = "europe", sweden = "europe", venice = "europe", spain = "europe", portugal = "europe",
 	ottoman = "middle_east", swahili = "africa",
