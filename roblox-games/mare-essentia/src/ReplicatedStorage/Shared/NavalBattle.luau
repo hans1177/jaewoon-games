@@ -1170,7 +1170,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local total = label(plate, "0", 30, Color3.fromRGB(46, 33, 22), true)
 			total.AnchorPoint = Vector2.new(0.5, 0.5)
 			total.Position = UDim2.fromScale(0.5, 0.52)
-			total.Size = UDim2.fromScale(0.6, 0.42)
+			total.Size = UDim2.fromScale(0.4, 0.42)
 			total.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
 			total.BackgroundTransparency = 0
 			total.TextScaled = true
@@ -1180,7 +1180,41 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			gems.Position = UDim2.fromScale(0.04, 0.78)
 			gems.Size = UDim2.fromScale(0.92, 0.2)
 			gems.TextScaled = true
-			return { who = who, total = total, gems = gems, plate = plate }
+			-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
+			local leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
+			leader.AnchorPoint = Vector2.new(0, 0.5)
+			leader.Position = UDim2.fromScale(0.03, 0.52)
+			leader.Size = UDim2.fromScale(0.27, 0.36)
+			leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
+			leader.BackgroundTransparency = 0
+			leader.TextScaled = true
+			leader.TextStrokeTransparency = 1
+			local ar = Instance.new("UIAspectRatioConstraint")
+			ar.Parent = leader
+			local rc = Instance.new("UICorner")
+			rc.CornerRadius = UDim.new(1, 0)
+			rc.Parent = leader
+			frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			local pile = Instance.new("Frame")
+			pile.AnchorPoint = Vector2.new(1, 0.5)
+			pile.Position = UDim2.fromScale(0.97, 0.52)
+			pile.Size = UDim2.fromScale(0.24, 0.4)
+			pile.BackgroundTransparency = 1
+			pile.Parent = plate
+			for k = 2, 0, -1 do
+				local sheet = Instance.new("Frame")
+				sheet.Position = UDim2.fromScale(0.0 + k * 0.08, 0.0 + k * 0.05)
+				sheet.Size = UDim2.fromScale(0.72, 0.82)
+				sheet.BackgroundColor3 = Color3.fromRGB(34 + k * 8, 56 + k * 8, 84 + k * 8)
+				sheet.BorderSizePixel = 0
+				sheet.Parent = pile
+				frameEdge(sheet, brass, 3)
+			end
+			local deckCount = label(pile, "", 14, Color3.fromRGB(250, 236, 200), true)
+			deckCount.Size = UDim2.fromScale(0.72, 0.82)
+			deckCount.TextScaled = true
+			deckCount.ZIndex = 5
+			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount }
 		end
 		local foePlate = sidePlate(0.02, Color3.fromRGB(88, 58, 50))
 		local mePlate = sidePlate(0.58, Color3.fromRGB(58, 74, 62))
@@ -1874,6 +1908,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
+			foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
+			mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
+			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
+			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
 			mePlate.total.Text = tostring(BC.total(m, "me"))
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
@@ -2119,6 +2157,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end
 					playChosenCard()
 				end)
+			end
+			-- 부채꼴 손패: 가운데 카드는 곧게, 가장자리로 갈수록 기울인다
+			do
+				local cards = {}
+				for _, ch in handFrame:GetChildren() do
+					if ch:IsA("TextButton") then
+						table.insert(cards, ch)
+					end
+				end
+				table.sort(cards, function(a, b2) return a.LayoutOrder < b2.LayoutOrder end)
+				local mid = (#cards + 1) / 2
+				for idx, ch in cards do
+					if ch ~= selected then
+						ch.Rotation = math.clamp((idx - mid) * 2.2, -9, 9)
+					end
+				end
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
 			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
