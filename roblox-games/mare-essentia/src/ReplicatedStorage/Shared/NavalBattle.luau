@@ -88,6 +88,14 @@ local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
 }
+-- 대포 종류: 사거리·탄속(비행시간)·포물선 높이·탄 크기가 다르다
+local NC = {
+	swivel = { name = "선회포", range = 62, dur = 0.34, arc = 5, ball = 1.0, cd = 0.8 },
+	demi = { name = "중포", range = 95, dur = 0.5, arc = 14, ball = 1.5, cd = 1.15 },
+	culverin = { name = "장포", range = 135, dur = 0.8, arc = 24, ball = 1.7, cd = 1.5 },
+	mortar = { name = "구포", range = 85, dur = 1.0, arc = 42, ball = 2.2, cd = 2.0 },
+}
+local SHIP_CANNON = { caravel = "swivel", fluyt = "swivel", galley = "demi", xebec = "demi", frigate = "culverin", galleon = "mortar" }
 -- 지역·나라 전용 배는 기본 배의 모델을 빌려 쓴다 (Ships.visual)
 do
 	local ShipsMod = require(script.Parent:WaitForChild("Ships"))
@@ -227,7 +235,11 @@ function NavalBattle.play(opts)
 		local rot = base - base.Position
 		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y, length = length }
 	end
-	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", 40, Vector3.new(-45, 0, 30), 0)
+	local shipDef = require(script.Parent:WaitForChild("Ships")).Ships[opts.shipId or ""]
+	local myLen = if shipDef then math.clamp(26 + shipDef.hull * 0.1, 30, 52) else 40
+	local myTop = if shipDef then 12 + shipDef.speed * 1.2 else 19
+	local cannon = NC[SHIP_CANNON[opts.shipId or ""] or "demi"]
+	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", myLen, Vector3.new(-45, 0, 30), 0)
 	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(45, 0, -30), math.pi)
 	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
 	local escorts = {}
@@ -236,6 +248,28 @@ function NavalBattle.play(opts)
 		local e = newShip("ship-pirate-small", 28, Vector3.new(80 + i * 40, 0, -70 + i * 80), math.pi + (i - 1.5) * 0.4)
 		e.speed = 5
 		table.insert(escorts, e)
+	end
+
+	-- 아군 함대: 기함 뒤에서 대형을 짜고 따라오며 함께 포격한다 (연출용, 결과는 서버가 정한 대로)
+	local allies = {}
+	do
+		local ShipsMod = require(script.Parent:WaitForChild("Ships")).Ships
+		for i, id in (opts.fleetIds or {}) do
+			if i > 4 then
+				break
+			end
+			local fd = ShipsMod[id]
+			if fd then
+				local len = math.clamp(24 + fd.hull * 0.08, 26, 44)
+				local side = if i % 2 == 1 then 1 else -1
+				local al = newShip(PLAYER_SHIP[id] or "ship-small", len, me.pos + Vector3.new(-26 * math.ceil(i / 2), 0, 22 * side * math.ceil(i / 2)), 0)
+				al.nc = NC[SHIP_CANNON[id] or "demi"]
+				al.slot = Vector3.new(-30 * math.ceil(i / 2), 0, 24 * side * math.ceil(i / 2))
+				al.topSpeed = 12 + fd.speed * 1.2
+				al.nextFire = os.clock() + 2 + i * 0.6
+				table.insert(allies, al)
+			end
+		end
 	end
 
 	local cam = workspace.CurrentCamera
@@ -378,6 +412,19 @@ function NavalBattle.play(opts)
 		return 1 + c * 0.32 * windPower
 	end
 	local sailLabel = label(gui, "", 14, Color3.fromRGB(150, 220, 255))
+	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
+	rangeLabel.AnchorPoint = Vector2.new(0.5, 0)
+	rangeLabel.Position = UDim2.new(0.5, 0, 0, 84)
+	rangeLabel.Size = UDim2.fromOffset(300, 20)
+	-- 사거리 링 + 탄도 점선 미리보기 (사거리 안이면 초록, 밖이면 빨강)
+	local rangeRing = part(folder, Vector3.new(0.3, cannon.range * 2, cannon.range * 2), CFrame.new(ORIGIN) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(255, 226, 150), Enum.Material.Neon, Enum.PartType.Cylinder)
+	rangeRing.Transparency = 0.9
+	local trajDots = {}
+	for i = 1, 14 do
+		local d = part(folder, Vector3.new(0.8, 0.8, 0.8), CFrame.new(ORIGIN), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, Enum.PartType.Ball)
+		d.Transparency = 1
+		trajDots[i] = d
+	end
 	sailLabel.AnchorPoint = Vector2.new(0.5, 0)
 	sailLabel.Position = UDim2.new(0.5, 0, 0, 62)
 	sailLabel.Size = UDim2.fromOffset(190, 20)
@@ -2082,7 +2129,8 @@ function NavalBattle.play(opts)
 	end
 
 	-- 대포 한 발
-	local function shoot(fromPos, toPos, fx)
+	local function shoot(fromPos, toPos, fx, nc)
+		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
 		-- 서버 기록의 확정 타격만 선체에 맞히고, 나머지 포탄은 수면에 떨어뜨린다.
 		local hullHit = fx ~= nil
@@ -2105,13 +2153,13 @@ function NavalBattle.play(opts)
 		task.delay(0.15, function()
 			flash:Destroy()
 		end)
-		local ball = part(folder, Vector3.new(1.5, 1.5, 1.5), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
+		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
 		local t0 = os.clock()
-		local dur = 0.5
+		local dur = nc.dur
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
-			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * 14, 0)
+			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
 			ball.CFrame = CFrame.new(bpos)
 			if u < 1 and math.random() < 0.5 then
 				FX.spawn(Vector3.new(0.9, 0.9, 0.9), bpos, C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball, Vector3.zero, 0.5, { grow = 1.5, t0 = 0.4 }) -- 포탄 꼬리
@@ -2305,11 +2353,20 @@ function NavalBattle.play(opts)
 				end
 			end
 			local wf = windFactor(me.theta)
-			me.speed = 19 * (stickThrottle or throttle) * wf
+			me.speed = myTop * (stickThrottle or throttle) * wf
 			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			if cardBusy then me.speed = 0 end
 			me.pos += forward(me.theta) * me.speed * dt
+			-- 아군 함선은 기함 옆 대형 자리를 향해 따라간다
+			for _, al in allies do
+				local rot = CFrame.Angles(0, -me.theta, 0)
+				local slot = me.pos + rot:VectorToWorldSpace(al.slot)
+				local dv = slot - al.pos
+				al.theta = al.theta + (((math.atan2(dv.Z, dv.X) - al.theta + math.pi) % (math.pi * 2)) - math.pi) * math.min(1, dt * 2)
+				al.speed = math.min(al.topSpeed * 1.3, dv.Magnitude * 1.2)
+				al.pos += forward(al.theta) * al.speed * dt
+			end
 
 			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
 			local toMe = me.pos - foe.pos
@@ -2380,8 +2437,8 @@ function NavalBattle.play(opts)
 				local d = (foe.pos - me.pos).Magnitude
 				if d < 45 then CH.flash("melee") end
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
-				if not opts.card and d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
-					nextMeFire = now + 1.15
+				if not opts.card and d < cannon.range and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
+					nextMeFire = now + cannon.cd
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
 					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
 					e = meQueue[math.min(#meQueue, (foeDone + 1))]
@@ -2392,7 +2449,7 @@ function NavalBattle.play(opts)
 								shoot(me.pos, foe.pos, if k == volley - 1 then function()
 									shake = 1.2
 									applyHit(false, e)
-								end else nil)
+								end else nil, cannon)
 							end
 						end)
 					end
@@ -2519,6 +2576,14 @@ function NavalBattle.play(opts)
 			end
 		end
 
+		if phase == "duel" and not opts.card then
+			for _, al in allies do
+				if now >= al.nextFire and (foe.pos - al.pos).Magnitude < al.nc.range then
+					al.nextFire = now + al.nc.cd * 2.2 + math.random()
+					shoot(al.pos, foe.pos, nil, al.nc)
+				end
+			end
+		end
 		-- 배 그리기 (침몰 연출 포함)
 		me.hp, foe.hp = meHp, foeHp
 		local meSink, foeSink
@@ -2554,6 +2619,31 @@ function NavalBattle.play(opts)
 		for _, e in escorts do
 			poseShip(e, now, nil)
 		end
+		for _, al in allies do
+			poseShip(al, now, nil)
+		end
+		do
+			-- 사거리 링은 내 배를 따라다니고, 탄도 점선은 적선까지의 포물선을 보여준다
+			rangeRing.CFrame = CFrame.new(ORIGIN + me.pos + Vector3.new(0, 0.7, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+			local dd = (foe.pos - me.pos).Magnitude
+			local inRange = dd < cannon.range
+			rangeRing.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
+			rangeRing.Transparency = if inRange then 0.93 else 0.82
+			rangeLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
+			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
+			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
+			local a1 = ORIGIN + foe.pos + Vector3.new(0, 6, 0)
+			for i, dot in trajDots do
+				if aim then
+					local u = i / (#trajDots + 1)
+					dot.CFrame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
+					dot.Transparency = if inRange then 0.35 else 0.8
+					dot.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 130, 110)
+				else
+					dot.Transparency = 1
+				end
+			end
+		end
 		FX.wake(me, "me", now)
 		FX.wake(foe, "foe", now)
 		for i, e in escorts do
@@ -2584,7 +2674,7 @@ function NavalBattle.play(opts)
 		-- 카메라: 두 배가 모두 보이도록 넓게 잡는다. 거리가 벌어질수록 뒤로·위로 물러나고, 부드럽게 따라간다.
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
-		cam.FieldOfView = 74 + math.min(shake, 2.5) * 2 + (me.speed / 19) * 5 + killZoom
+		cam.FieldOfView = 74 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
