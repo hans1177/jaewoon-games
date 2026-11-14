@@ -5469,9 +5469,9 @@ function H.showCardDetail(card)
 	paintCardArt(art, card, fieldDef, true)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
-	local animLevel = (view and view.codex and view.codex.animLevel) or 2
 	local maxLevel = (view and view.codex and view.codex.maxLevel) or 3
-	local animated = card.found and not card.combat and (card.level or 0) >= animLevel
+	-- 모든 발견한 카드(지식·전투 동일)의 삽화가 항상 움직인다. 강화 단계는 움직임 해금과 무관하다.
+	local animated = card.found == true or card.combat == true
 	local artImg = art:FindFirstChildOfClass("ImageLabel")
 	if animated and artImg then
 		artImg.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -5494,9 +5494,7 @@ function H.showCardDetail(card)
 	if card.found and not card.combat and card.level ~= nil then
 		local lv = card.level
 		local text = string.format("강화 %d / %d단계", lv, maxLevel)
-		if lv < animLevel then
-			text ..= string.format("  ·  %d단계에 움직이는 삽화 해금", animLevel)
-		elseif animated then
+		if animated then
 			text ..= "  ·  움직이는 삽화 감상 중"
 		end
 		if not card.upCost then
