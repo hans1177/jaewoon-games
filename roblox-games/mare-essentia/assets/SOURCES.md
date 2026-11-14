@@ -1007,3 +1007,15 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 |---|---|---|
 | `icons/action_fist.png` | `lorc/punch-blast.png` | `cb7479f095304bf908deef0fd836470a9e176344c33fdf1926c5ea91acf15a91` |
 | `icons/action_dodge.png` | `darkzaitzev/acrobatic.png` | `3d5f8987d42e8633c62cb576b1daba3efca59e6917b776ae7a24db4976759176` |
+
+## 2026-11-15 전투 이펙트 스프라이트 5종 (공용 VFX 모듈과 같은 원본)
+
+출처: Kenney Particle Pack (https://kenney.nl/assets/particle-pack , OpenGameArt Particle Pack 80 sprites). CC0-1.0, 상업 이용·수정 가능. 원본 목록과 크레딧은 `assets/roblox/common-vfx-v1/sources/license.txt`.
+
+| 파일 | 원본 | PNG SHA-256 |
+|---|---|---|
+| `icons/vfx_spark.png` | `spark.png` | `4c8429d19fb97165a3702ac7ff7e7b41d292c8fb9956d674db7028243d86c8f3` |
+| `icons/vfx_ring.png` | `ring.png` | `697e6fa5948cc35cc779ae0b22995f5b17f0e02746406d05ec8548921e82ad1b` |
+| `icons/vfx_slash.png` | `slash.png` | `09d9e92bafef8d20d08f58b181bc3daebbe0396afd90cee3e5c7b1a4dff23e49` |
+| `icons/vfx_smoke.png` | `smoke.png` | `288b7a29b659030fe7da333159c641e2325e41e704c05b8c6db1531b59c09897` |
+| `icons/vfx_light.png` | `light.png` | `c9e0e947892b87cb71e110e60d85798810142b11aed154542c50b17dc93033b0` |

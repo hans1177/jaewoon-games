@@ -10,6 +10,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+-- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
+local okVfx, CommonVFX = pcall(function()
+	return require(script.Parent:WaitForChild("CommonVFX", 5))
+end)
+if not okVfx then
+	CommonVFX = nil
+end
 
 -- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
 local function addIcon(button: TextButton, key: string)
@@ -599,11 +606,17 @@ function FieldScene.start(opts)
 	table.insert(conns, { Disconnect = function()
 		fxPart:Destroy()
 	end })
-	local function burst(at: Vector3, n: number, big: boolean?)
+	local function burst(at: Vector3, n: number, big: boolean?, kind: string?)
 		fxPart.Position = at
 		sparks:Emit(n)
 		if big then
 			slash:Emit(3)
+		end
+		if CommonVFX then
+			local fn = if kind == "dodge" then "CreateDodgeEvasionPulse" elseif kind == "telegraph" then "CreateAttackTelegraphPulse" elseif big then "CreateCriticalBurst" else "CreateImpactFlash"
+			pcall(function()
+				CommonVFX[fn]({ cframe = CFrame.new(at), scale = if big then 1.4 else 1, parent = workspace })
+			end)
 		end
 	end
 	local function popDamage(model: Model, dmg: number, crit: boolean)
@@ -702,7 +715,7 @@ function FieldScene.start(opts)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
-			burst(hrp.Position, 24, false)
+			burst(hrp.Position, 24, false, "dodge")
 			say("회피! 잠깐 무적")
 			return
 		end
@@ -826,6 +839,7 @@ function FieldScene.start(opts)
 			local event, hit = AC.stepEnemy(e.ac, dtc, dist)
 			if event == "telegraph" then
 				e.warnUntil = now + e.ac.def.windup
+				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				e.parryAt = nil
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
 				if not e.warn then
