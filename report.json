@@ -1,69 +1,79 @@
 {
- "sourceRevision": "282d2b402ad9855b58c6f605172b75c1c7426f0f",
+ "sourceRevision": "ccf6a1d88900303c4ebdc3b50fa0db6ec4f62345",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 4,
-   "capture": "london_L1_pasture",
-   "files": 1
+   "out": "ok\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "tab\ntext"
   },
   {
    "step": 7,
-   "capture": "london_L1_side",
-   "files": 1
+   "ctx": "Client",
+   "out": "tab\ntext"
   },
   {
-   "step": 8,
+   "step": 9,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "killed 1\ntext"
   },
   {
    "step": 10,
-   "capture": "london_L4_pasture",
-   "files": 1
-  },
-  {
-   "step": 11,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "closed 2\ntext"
   },
   {
-   "step": 13,
-   "capture": "london_L4_side",
-   "files": 1
+   "step": 12,
+   "ctx": "Client",
+   "out": "SAIL smyrna\ntext"
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "HELM true scene=false \ntext"
   },
   {
-   "step": 16,
-   "capture": "istanbul_L3_pasture",
+   "step": 15,
+   "capture": "h01",
    "files": 1
   },
   {
    "step": 17,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "HELM true scene=false \ntext"
   },
   {
-   "step": 19,
-   "capture": "istanbul_L3_side",
+   "step": 18,
+   "capture": "h02",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 21,
+   "capture": "h03",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "HELM true scene=false \ntext"
+  },
+  {
+   "step": 24,
+   "capture": "h04",
    "files": 1
   }
  ],
@@ -79,13 +89,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 20,
-  "completedSteps": 20,
+  "plannedSteps": 25,
+  "completedSteps": 25,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
   "abortedEarly": false
  }
 }
