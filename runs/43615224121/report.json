@@ -1,0 +1,51 @@
+{
+ "sourceRevision": "f76a0faf7e9a6c65d12c339ef6685c09afae63ad",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "npcs 5 cam=72.7804946899414, 19.673158645629883, 52.71630859375 ys=1,6,6,10,1\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "n01",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "capture": "n02",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 9,
+  "completedSteps": 9,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
