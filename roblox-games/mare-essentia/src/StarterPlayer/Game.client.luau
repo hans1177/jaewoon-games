@@ -67,6 +67,7 @@ end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
+local PortEras = require(Shared:WaitForChild("PortEras"))
 local Geo = require(Shared:WaitForChild("Geo"))
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local PortScene = require(Shared:WaitForChild("PortScene"))
@@ -6785,7 +6786,7 @@ openOptions = function(helpOnly)
 						end },
 					})
 				else
-					row("새 게임", "나라와 시대를 다시 고릅니다", {
+					row("새 게임", "나라를 다시 고릅니다 (1517년 시작)", {
 						{ text = "새 게임", color = COLORS.red, onClick = function() confirmNew = true; draw() end },
 					})
 				end
@@ -7351,7 +7352,7 @@ renderTitle = function()
 		nm.Size = UDim2.new(1, -52, 0, 20)
 		nm.AutomaticSize = Enum.AutomaticSize.None
 		nm.ZIndex = 14
-		local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 11, INK_SOFT, false)
+		local sub = mkLabel(card, "⚓ " .. PortData.Ports[PortEras.startPortFor(n, 1517)].name, 11, INK_SOFT, false)
 		sub.Position = UDim2.fromOffset(48, 27)
 		sub.Size = UDim2.new(1, -52, 0, 16)
 		sub.AutomaticSize = Enum.AutomaticSize.None
@@ -7405,7 +7406,7 @@ renderTitle = function()
 	local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
 	local pro = N.Prologues[cur.id]
 	tLabel(info, cur.name, 17, GOLD, true)
-	tLabel(info, "출발 항구  " .. PortData.Ports[cur.startPort].name, 12, COLORS.text, true)
+	tLabel(info, "출발 항구  " .. PortData.Ports[PortEras.startPortFor(cur, 1517)].name, 12, COLORS.text, true)
 	tLabel(info, cur.summary, 12, COLORS.muted, false)
 
 	-- ② 출신 성분

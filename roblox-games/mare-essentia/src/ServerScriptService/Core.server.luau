@@ -248,15 +248,10 @@ local function onInvoke(player, action, payload)
 			return reply(session.state, false, "이미 진행 중인 게임이 있어요")
 		end
 		local nationId = payload.nationId
-		local year = payload.startYear
+		-- 모든 게임은 1517년에 시작한다 (시대 선택 없음). 요청의 startYear 는 무시한다.
+		local year = 1517
 		if type(nationId) ~= "string" or not D.Ports.Nations[nationId] or not START_YEARS[year] then
 			return { ok = false, message = "잘못된 선택이에요" }
-		end
-		do
-			local startPort = D.Ports.Nations[nationId].startPort
-			if not D.PortEras.isOpen(startPort, year) then
-				return { ok = false, message = string.format("%s은(는) %d년에는 아직 없는 항구예요. %d년 이후 시대를 골라 주세요", D.Ports.Ports[startPort].name, year, D.PortEras.openYear(startPort)) }
-			end
 		end
 		local originId = if type(payload.origin) == "string" and D.Specialties.OriginById[payload.origin] then payload.origin else "merchant"
 		local newState = S.State.new(nationId, year, originId)

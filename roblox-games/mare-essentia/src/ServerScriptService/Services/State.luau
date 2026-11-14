@@ -25,7 +25,7 @@ return function(D)
 			origin = if originId and D.Specialties.OriginById[originId] then originId else nil,
 			day = 0,
 			startYear = startYear,
-			portId = nation.startPort,
+			portId = D.PortEras.startPortFor(nation, startYear),
 			ship = { id = def.id, hull = def.hull, crew = def.crew, supplies = 30, cannon = "basic", plating = 0 },
 			license = 0,
 			insured = false,
@@ -46,7 +46,7 @@ return function(D)
 			careers = D.Careers.new(),
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
-			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
+			stats = { battlesWon = 0, battlesLost = 0, visited = { [D.PortEras.startPortFor(nation, startYear)] = true }, explored = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
 			room = nil, -- 방 시계에 참여 중이면 { id }
 			order = {}, -- 항구 치안 (항구 id → {v, day, patrolDay})
