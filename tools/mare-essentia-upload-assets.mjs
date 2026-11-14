@@ -5,6 +5,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10775310508';
@@ -90,23 +91,26 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (kind === 'CardArt' && !approvedCardNames.has(f) && !/^(?:world_(?:0[1-9]|[1-9][0-9]{1,2})|event_[a-z_]+|battle_board)\.jpg$/.test(f)
         && !['event_title_ship.png', 'event_title_parchment.png'].includes(f)
         && !/^(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)\.png$/.test(f)) continue;
-    const ext = path.extname(f).toLowerCase();
+    const compressedGlb = f.toLowerCase().endsWith('.glb.gz');
+    const ext = compressedGlb ? '.glb' : path.extname(f).toLowerCase();
+    const name = compressedGlb ? path.basename(f, '.glb.gz') : path.basename(f, ext);
+    const sourceFileName = compressedGlb ? f.slice(0, -3) : f;
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
-    // [원본 증빙] 기존 Cargo 업로더가 프로젝트 자체 제작 메시의 파일별 라이선스를 그대로 읽는다.
+    // [원본 증빙] Cargo와 Naval 모델은 파일별 라이선스·해시 증빙을 등록 파이프라인에서 확인한다.
     let sourceLicense = null;
-    if (kind === 'Cargo') {
-      try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, f + '.license.json'), 'utf8')); }
+    if (kind === 'Cargo' || kind === 'Naval') {
+      try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       if (sourceLicense && (sourceLicense.license !== 'PROJECT_ORIGINAL_ART'
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
-        throw new Error('CARGO_ORIGINAL_SOURCE_METADATA_INVALID:' + f);
+        throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
     }
-    plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext, sourceLicense,
+    plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: kind === 'Cargo' && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval') && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
@@ -173,11 +177,12 @@ if (studioRegrantPath) {
 }
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
-  const originalBytes = await fs.readFile(item.file);
+  const storedBytes = await fs.readFile(item.file);
+  const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
   const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
   if (item.sourceLicense && item.sourceLicense.sourceSha256 !== sourceSha256) {
-    failures.push(id + ': CARGO_ORIGINAL_SHA256_MISMATCH');
-    console.error('CARGO_ORIGINAL_SHA256_MISMATCH', id);
+    failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
+    console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
     continue;
   }
   if (blockedHashes.has(sourceSha256)) {
@@ -330,11 +335,11 @@ for (const item of plan) {
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
         : item.assetType === 'Model' && item.license === 'PROJECT_ORIGINAL_ART'
-        ? 'Original 3D commodity model for Mare Essentia; individual source and hash in assets/cargo/*.license.json'
+        ? 'Original 3D model for Mare Essentia; source, license, and SHA-256 in assets/' + item.kind.toLowerCase() + '/' + item.name + item.ext + '.license.json'
         : 'CC0 model for Mare Essentia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
-    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : ['.jpg', '.jpeg'].includes(uploadExt) ? 'image/jpeg' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file, item.ext) + uploadExt);
+    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : ['.jpg', '.jpeg'].includes(uploadExt) ? 'image/jpeg' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), item.name + uploadExt);
     const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
     if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
     let assetId = null;
