@@ -2018,7 +2018,7 @@ do
 				end)
 			end
 		end
-		local note = mkLabel(list, "병종 상성: 근접 > 포 > 사격 > 근접. 유리한 줄은 ×1.3, 불리한 줄은 ×0.85. 새 지식·유물·동물·항해자를 만날수록 카드가 늘어요.", 12, COLORS.muted, false)
+		local note = mkLabel(list, "줄은 전열(근접)과 후열(사격·포) 둘이에요. 한 판에 카드를 5장까지 낼 수 있어요. 새 지식·유물·동물·항해자를 만날수록 카드가 늘어요.", 12, COLORS.muted, false)
 		note.TextWrapped = true
 		note.Size = UDim2.new(1, -8, 0, 0)
 		note.AutomaticSize = Enum.AutomaticSize.Y
@@ -6468,7 +6468,7 @@ if codexField == "boarding" then
 	for _, rule in {
 		{ "3줄 × 3판 2선승", "줄은 근접·사격·포 세 줄이에요. 해전에서는 충각·소포·주포로 불러요. 세 줄 합계가 큰 쪽이 그 판을 이겨요." },
 		{ "내 차례에 할 수 있는 일", "카드 한 장 내기 · 이번 판 멈추기 · 지도자 능력(한 판에 한 번). 둘 다 멈추면 그 판이 끝나요." },
-		{ "병종 상성", string.format("근접 > 포 > 사격 > 근접. 유리한 줄은 합계 ×%.1f, 불리한 줄은 ×%.2f. 영웅은 상성에 흔들리지 않아요.", BC.ADV, BC.DIS) },
+		{ "줄과 판", "전열(근접)과 후열(사격·포) 두 줄이에요. 한 판에 카드를 5장까지 내고, 판이 끝나면 카드를 3장 더 뽑아요(손패 최대 10장)." },
 		{ "무기 상성", "근접 줄끼리는 검 > 도끼 > 창 > 검. 유리하면 위력 +1, 불리하면 -1이에요." },
 		{ "날씨와 소각", "안개·폭풍·혼전은 한 줄을 모두 1로 줄여요. 맑음이 걷어 내요. 소각은 가장 센 일반 카드를 쓰러뜨려요. 영웅은 안전해요." },
 	} do
@@ -6765,7 +6765,7 @@ end
 function RENDERERS.gwent()
 	H.walletBar("tavern")
 	add(function()
-		return mkRow(content, "지식 카드 배틀", "주점 탁자에서 병종 카드로 겨루는 게임이에요. 3줄·3판 2선승, 줄 상성(근접>포>사격>근접). 이기면 새 카드를 얻어요. 학문 카드를 많이 모을수록 같은 계열 줄이 강해져요.", {
+		return mkRow(content, "지식 카드 배틀", "주점 탁자에서 병종 카드로 겨루는 게임이에요. 전열·후열 2줄, 한 판 5장, 3판 2선승. 이기면 새 카드를 얻어요. 학문 카드를 많이 모을수록 같은 계열 줄이 강해져요.", {
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 		}, 92)
 	end)

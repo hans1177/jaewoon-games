@@ -8,9 +8,16 @@
 --   특수: 소각(가장 센 비영웅 제거) · 안개/폭풍/혼전(줄 하나를 1로) · 맑음(날씨 해제)
 local B = {}
 
-B.ROWS = { "melee", "ranged", "cannon" }
-B.ROW_NAME = { melee = "근접", ranged = "사격", cannon = "포" }
-B.ROW_BEATS = { melee = "cannon", cannon = "ranged", ranged = "melee" }
+B.ROWS = { "melee", "ranged" } -- 줄은 전열(근접)과 후열(사격·포) 둘뿐이다. 카드의 병종(row)은 그대로 남는다.
+B.ROUND_CARDS = 5 -- 한 판에 낼 수 있는 카드 수 (판을 빠르게)
+B.ROUND_DRAW = 3 -- 판이 끝날 때마다 뽑는 카드 수
+B.HAND_MAX = 10
+-- 카드가 놓이는 줄
+local function lane(c: any): string
+	return if c.row == "melee" then "melee" else "ranged"
+end
+B.lane = lane
+B.ROW_NAME = { melee = "전열", ranged = "후열", cannon = "후열" }
 B.WEAPON_BEATS = { sword = "axe", axe = "spear", spear = "sword" }
 B.ADV, B.DIS = 1.3, 0.85
 B.HAND = 10
@@ -632,6 +639,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		leader = { me = myLeader or "draw", foe = foeLeader or "draw" },
 		leaderUsed = { me = false, foe = false },
 		turn = "me",
+		played = { me = 0, foe = 0 },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -718,24 +726,9 @@ function B.rowRaw(m: any, side, row)
 	return sum
 end
 
--- 병종 상성: 내 줄이 이길 수 있는 상대 줄에 카드가 있으면 ×1.3, 나를 이기는 줄이 있으면 ×0.85
-function B.rowMatchup(m: any, side, row)
-	local foe = m.rows[other(side)]
-	local adv = #foe[B.ROW_BEATS[row]] > 0
-	local dis = false
-	for r, beaten in B.ROW_BEATS do
-		if beaten == row and #foe[r] > 0 then
-			dis = true
-		end
-	end
-	local mult = 1
-	if adv then
-		mult *= B.ADV
-	end
-	if dis then
-		mult *= B.DIS
-	end
-	return mult, adv, dis
+function B.rowMatchup(_m: any, _side, _row)
+	-- 줄 상성은 없앴다 (줄이 둘뿐이고, 다양성은 카드 능력으로 낸다). 화면 호환을 위해 함수는 남긴다.
+	return 1, false, false
 end
 
 function B.rowTotal(m: any, side, row)
@@ -819,7 +812,7 @@ end
 
 local function applySea(m: any)
 	if m.sea and m.sea.row then
-		m.weather[m.sea.row] = true
+		m.weather[lane({ row = m.sea.row })] = true
 	end
 end
 B.applySea = applySea
@@ -886,9 +879,11 @@ local function roundEnd(m: any)
 		m.round += 1
 		-- 이긴 쪽이 다음 판 선공 (무승부면 그대로)
 		m.turn = winner or m.turn
-		-- 한 판 지날 때마다 카드 한 장씩 보충
-		drawCards(m, "me", 1)
-		drawCards(m, "foe", 1)
+		-- 한 판 지날 때마다 카드를 보충한다 (손패는 열 장까지)
+		for _, side in { "me", "foe" } do
+			drawCards(m, side, math.max(0, math.min(B.ROUND_DRAW, B.HAND_MAX - #m.hand[side])))
+			m.played[side] = 0
+		end
 		-- 유럽: 판을 이기면 한 장 더
 		if winner and m.faction and m.faction[winner] == "europe" then
 			drawCards(m, winner, 1)
@@ -988,8 +983,8 @@ function B.play(m: any, side, handIdx)
 		end
 		table.insert(m.grave[side], c)
 	elseif c.special == "weather" then
-		m.weather[c.row] = true
-		msg = string.format("%s! %s 줄이 모두 약해졌다", c.name, B.ROW_NAME[c.row])
+		m.weather[lane(c)] = true
+		msg = string.format("%s! %s 줄이 모두 약해졌다", c.name, B.ROW_NAME[lane(c)])
 		table.insert(m.grave[side], c)
 	elseif c.special == "clear" then
 		m.weather = { melee = false, ranged = false, cannon = false }
@@ -1024,8 +1019,8 @@ function B.play(m: any, side, handIdx)
 		if c.ability == "spy" then
 			target = other(side)
 		end
-		table.insert(m.rows[target][c.row], c)
-		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[c.row])
+		table.insert(m.rows[target][lane(c)], c)
+		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[lane(c)])
 		if c.ability == "spy" then
 			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
 			drawCards(m, side, n)
@@ -1046,7 +1041,7 @@ function B.play(m: any, side, handIdx)
 			end
 			if best then
 				table.remove(m.grave[side], bi)
-				table.insert(m.rows[side][best.row], best)
+				table.insert(m.rows[side][lane(best)], best)
 				msg ..= string.format(" (치료: %s 되살림)", best.name)
 			end
 		end
@@ -1055,8 +1050,9 @@ function B.play(m: any, side, handIdx)
 	nextTurn(m, side)
 	local act = { "p", handIdx }
 	local result = nil
-	if #m.hand[side] == 0 and not m.passed[side] then
-		-- 손패가 없으면 자동으로 멈춘다
+	m.played[side] = (m.played[side] or 0) + 1
+	if (#m.hand[side] == 0 or m.played[side] >= B.ROUND_CARDS) and not m.passed[side] then
+		-- 손패가 없거나 한 판 카드 수를 다 쓰면 자동으로 멈춘다
 		m.passed[side] = true
 		if m.passed[other(side)] then
 			result = roundEnd(m)
@@ -1122,10 +1118,10 @@ function B.gainOf(m: any, side, c)
 		gain = if best >= 6 then lost else -5
 	elseif c.special == "weather" then
 		local before = B.total(m, side) - B.total(m, foe)
-		local prev = m.weather[c.row] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
-		m.weather[c.row] = true
+		local prev = m.weather[lane(c)] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
+		m.weather[lane(c)] = true
 		local after = B.total(m, side) - B.total(m, foe)
-		m.weather[c.row] = prev
+		m.weather[lane(c)] = prev
 		gain = after - before
 	elseif c.special == "clear" then
 		local before = B.total(m, side) - B.total(m, foe)
@@ -1158,9 +1154,9 @@ function B.gainOf(m: any, side, c)
 	else
 		local target = if c.ability == "spy" then foe else side
 		local before = B.total(m, side) - B.total(m, foe)
-		table.insert(m.rows[target][c.row], c)
+		table.insert(m.rows[target][lane(c)], c)
 		local after = B.total(m, side) - B.total(m, foe)
-		table.remove(m.rows[target][c.row])
+		table.remove(m.rows[target][lane(c)])
 		gain = after - before
 		if c.ability == "spy" then
 			gain += 4 -- 카드 2장을 뽑는 값
@@ -1225,8 +1221,8 @@ function B.seeded(seed)
 end
 
 local ROW_NAMES = {
-	boarding = { melee = "근접", ranged = "사격", cannon = "포" },
-	gunnery = { melee = "충각", ranged = "소포", cannon = "주포" },
+	boarding = { melee = "전열", ranged = "후열", cannon = "후열" },
+	gunnery = { melee = "충각", ranged = "포격", cannon = "포격" },
 }
 -- 화면에 쓰는 줄 이름을 전투 종류에 맞게 바꾼다
 function B.useKind(kind)
@@ -1353,9 +1349,9 @@ end
 function B.scout(seed, foe)
 	local foeFac = foe and foe.faction or (if foe and foe.boss then nil else B.foeFaction(seed))
 	local deck = B.enemyDeck(foe and foe.boss == true, B.seeded(seed + 13), foeFac)
-	local rows = { melee = 0, ranged = 0, cannon = 0 }
+	local rows = { melee = 0, ranged = 0 }
 	for _, c in deck do
-		if c.row and c.power then rows[c.row] += c.power end
+		if c.row and c.power then rows[lane(c)] += c.power end
 	end
 	local weak, weakV = "melee", 1e9
 	for _, r in B.ROWS do
@@ -1366,7 +1362,7 @@ function B.scout(seed, foe)
 	return {
 		faction = foeFac and B.Factions[foeFac] and B.Factions[foeFac].name or "해적 두목",
 		style = style.name, styleText = style.text, sea = sea.name, seaText = sea.text,
-		weakRow = weak, weakName = B.ROW_NAME[weak], counterRow = ({ melee = "ranged", ranged = "cannon", cannon = "melee" })[weak],
+		weakRow = weak, weakName = B.ROW_NAME[weak], counterRow = if weak == "melee" then "ranged" else "melee",
 	}
 end
 
@@ -1428,6 +1424,7 @@ local function copyMatch(m)
 	n.weather = table.clone(m.weather)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
+	n.played = table.clone(m.played or { me = 0, foe = 0 })
 	n.log = {}
 	return n
 end
@@ -1444,12 +1441,12 @@ function B.puzzle(day: number)
 		-- 상대 판: 카드 3~5장을 이미 깔고 멈췄다
 		for _ = 1, 3 + math.floor(rng() * 3) do
 			local c = copyUnit(pick())
-			if c and not c.special then table.insert(m.rows.foe[c.row], c) end
+			if c and not c.special then table.insert(m.rows.foe[lane(c)], c) end
 		end
 		-- 내 판: 이미 깔린 카드 1~2장
 		for _ = 1, 1 + math.floor(rng() * 2) do
 			local c = copyUnit(pick())
-			if c and not c.special then table.insert(m.rows.me[c.row], c) end
+			if c and not c.special then table.insert(m.rows.me[lane(c)], c) end
 		end
 		for _ = 1, 5 do
 			local c = copyUnit(pick())
