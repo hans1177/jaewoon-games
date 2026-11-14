@@ -2257,7 +2257,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		task.spawn(function()
 			task.wait(1.0)
 			local guard = 0 -- 실제로 낸 수만 센다 (생각하는 시간은 세지 않는다: 예전엔 60초가 지나면 판이 갑자기 끝났다)
-			while not m.over and not finished and guard < 400 do
+			-- 연습전은 시간제한 없음. 그 밖의 대결은 한 판 10분을 넘기면 "물러남"으로 끝낸다.
+			local deadline = if opts.enemyName == "연습전" then math.huge else os.clock() + 600
+			while not m.over and not finished and guard < 400 and os.clock() < deadline do
 				if playing then
 					task.wait(0.1)
 				elseif m.turn == "foe" then
