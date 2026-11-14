@@ -17,7 +17,8 @@ return function(D, S)
 	function C.deckSpec(state)
 		local book = C.get(state)
 		local faction = D.BoardingCards.factionOf(state.nationId)
-		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction }
+		local bonus = CB.knowledgeBonus(state.discovered, D.Cards.ById) -- 학문 카드를 모을수록 병종 카드가 강해진다
+		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction, bonus = bonus }
 	end
 
 	-- 새 카드 보상. 안내 문구를 msgs 에 붙인다.

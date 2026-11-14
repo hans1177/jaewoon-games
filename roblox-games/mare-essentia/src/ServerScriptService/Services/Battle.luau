@@ -136,7 +136,7 @@ return function(D, S)
 			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
 			startHull = state.ship.hull, startCrew = state.ship.crew,
 		}
-		-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다 (카드 대결은 주점의 퀜트 게임에서만 한다)
+		-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다 (카드 대결은 주점의 지식 카드 배틀에서만 한다)
 		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
 		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
 		for _, line in S.Perk.companionLines(state, "battle") do

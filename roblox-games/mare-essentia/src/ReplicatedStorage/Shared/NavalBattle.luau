@@ -744,7 +744,7 @@ function NavalBattle.play(opts)
 		if cfg then
 			bg.BackgroundTransparency = 0.42 -- 뒤로 3D 해상 무대(두 배와 선원)가 비쳐 보인다
 		end
-		-- 퀜트식 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
+		-- 카드 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
 		local wood = Instance.new("UIGradient")
 		wood.Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 48, 34)),
@@ -834,7 +834,7 @@ function NavalBattle.play(opts)
 		boardFrame.Size = UDim2.fromScale(0.78, 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
-		-- 왼쪽 정보판(퀜트처럼): 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
+		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
 		panel.Position = UDim2.fromScale(0.02, 0.14)
 		panel.Size = UDim2.fromScale(0.17, 0.56)

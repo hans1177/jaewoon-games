@@ -1214,6 +1214,15 @@ function B.build(kind, seed, my, foe)
 		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
 		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
 	end
+	-- 학문 숙련 보너스: 지식 카드를 모은 만큼 같은 계열 병종 카드의 부대 점수가 오른다 (영웅·특수 카드는 제외)
+	local kb = my.book and my.book.bonus
+	if kb then
+		for _, c in myDeck do
+			if c.power and not c.hero and not c.special and kb[c.row] then
+				c.power += kb[c.row]
+			end
+		end
+	end
 	local m = B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
 	m.sea = B.seaRule(seed)
 	m.style.foe = B.foeStyle(seed)
