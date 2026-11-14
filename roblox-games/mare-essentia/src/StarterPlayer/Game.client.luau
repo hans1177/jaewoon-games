@@ -5400,7 +5400,7 @@ function H.codexCardTile(grid, card, field, badge, tint, onClick)
 end
 
 function H.showCardDetail(card)
-	local fieldDef = if card.combat then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
+	local fieldDef = if card.combat and not card.field then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
 	local article = if card.found then require(Shared:WaitForChild("KnowledgeCards")).Articles[card.id] else nil
 	local tweens = game:GetService("TweenService")
 	local paper, ink, brown = COLORS.paper, COLORS.ink, COLORS.brown
@@ -5600,14 +5600,23 @@ function H.showCombatCard(unit, origin, skill)
 	if skill then
 		effect ..= "\n" .. skill.name .. " · " .. skill.text
 	end
+	-- 지식 카드 = 전투 카드: 도감의 그림·설명·분야를 그대로 쓴다
+	local kc = nil
+	if unit.knowledge and view and view.codex then
+		for _, c in view.codex.cards do
+			if c.id == unit.id then kc = c break end
+		end
+	end
 	H.showCardDetail({
 		id = unit.id,
 		name = unit.name,
 		found = true,
-		rarity = if unit.special then "특수" elseif unit.hero then "영웅" else "병종",
-		description = if unit.special then "접현전에서 즉시 효과를 내는 카드예요."
+		field = if kc then kc.field else nil,
+		rarity = if kc then kc.rarity elseif unit.special then "특수" elseif unit.hero then "영웅" else "병종",
+		description = if kc then kc.description .. (if unit.special then "" else string.format("\n%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power))
+			elseif unit.special then "접현전에서 즉시 효과를 내는 카드예요."
 			else string.format("%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power),
-		image = H.combatCardImage(unit),
+		image = if kc and kc.image then kc.image else H.combatCardImage(unit),
 		combat = { effect = effect, origin = origin },
 	})
 end

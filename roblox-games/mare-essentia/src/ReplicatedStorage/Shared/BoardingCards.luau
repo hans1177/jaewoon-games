@@ -51,6 +51,17 @@ B.Specials = {
 	horn = { id = "horn", name = "군기", special = "horn", text = "내 가장 센 줄의 일반 카드 점수가 두 배" },
 	decoy = { id = "decoy", name = "회군", special = "decoy", text = "내 필드의 약한 카드를 손으로 되돌린다 (치료병 우선)" },
 }
+-- 지식 카드 = 전투 카드: 백과사전 797장이 모두 전투 카드로 쓰인다 (능력은 KnowledgeBattle 규칙으로 정해진다)
+do
+	local KB = require(script.Parent.KnowledgeBattle)
+	local texts = {}
+	for _, kind in { "scorch", "wind", "clear", "horn", "decoy" } do
+		texts[kind] = B.Specials[kind].text
+	end
+	local units, specials = KB.derive(texts)
+	for id, d in units do B.Units[id] = d end
+	for id, d in specials do B.Specials[id] = d end
+end
 -- 지도자 능력 (한 판당 한 번)
 B.Leaders = {
 	draw = { id = "draw", name = "지휘", text = "카드 한 장을 더 뽑는다" },

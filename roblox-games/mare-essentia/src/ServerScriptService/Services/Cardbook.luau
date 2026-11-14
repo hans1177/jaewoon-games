@@ -10,7 +10,25 @@ return function(D, S)
 		if not state.cardbook then
 			state.cardbook = CB.new(D.BoardingCards.factionOf(state.nationId))
 		end
-		return state.cardbook
+		local book = state.cardbook
+		-- 도감에서 발견한 지식 카드는 곧 전투 카드다. 도감 강화 단계(2·3단계)가 전투 단계가 된다.
+		for id in state.discovered or {} do
+			local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+			if d and d.knowledge then
+				book.owned[id] = math.max(1, book.owned[id] or 0)
+				local lv = state.codexLevel and state.codexLevel[id] or 0
+				book.tier[id] = if lv >= 3 then 3 elseif lv >= 2 then 2 else nil
+			end
+		end
+		return book
+	end
+
+	-- 보상으로 받은 지식 카드는 도감에도 발견으로 기록된다
+	local function markDiscovered(state, id)
+		local d = id and (D.BoardingCards.Units[id] or D.BoardingCards.Specials[id])
+		if d and d.knowledge and state.discovered then
+			state.discovered[id] = true
+		end
 	end
 
 	-- 지금 쓰는 덱 (클라이언트와 서버가 같은 규칙으로 덱을 만들도록 id 목록과 단계를 돌려준다)
@@ -25,7 +43,8 @@ return function(D, S)
 	function C.reward(state, source, msgs, rng, field)
 		local book = C.get(state)
 		local r = rng or (state.rng) or math.random
-		local _, text = CB.drop(book, source, r, field)
+		local id, text = CB.drop(book, source, r, field)
+		markDiscovered(state, id)
 		if msgs then table.insert(msgs, text) end
 		return text
 	end
@@ -37,13 +56,16 @@ return function(D, S)
 			CB.choose(book, 1)
 		end
 		CB.offer(book, source, rng or math.random, field, extra)
-		if msgs then table.insert(msgs, "전투 카드 3장 중 1장을 고를 수 있다") end
+		if msgs then table.insert(msgs, "지식 카드 3장 중 1장을 고를 수 있다") end
 	end
 
 	function handlers.CardPick(state, p)
 		local i = type(p) == "table" and tonumber(p.index)
 		if not i then return false, "잘못된 요청" end
-		return CB.choose(C.get(state), math.floor(i))
+		local book = C.get(state)
+		local ok, msg = CB.choose(book, math.floor(i))
+		if ok then markDiscovered(state, book.lastGranted) end
+		return ok, msg
 	end
 
 	-- 연습전(정해진 패, 첫 승리 때만 보상) / 오늘의 해전 퍼즐(하루 한 번 보상)
@@ -135,7 +157,7 @@ return function(D, S)
 
 	function handlers.CardAutoDeck(state)
 		C.get(state).deck = nil
-		return true, "문화권 기본 덱으로 되돌렸다"
+		return true, "자동 덱으로 되돌렸다 (가진 카드로 균형 있게 짜요)"
 	end
 
 	return C
