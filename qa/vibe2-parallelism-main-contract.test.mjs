@@ -26,7 +26,7 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/git worktree add --no-checkout --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
   assert.match(recoveryFast,/git -C "\$control" config extensions\.worktreeConfig true/);
   assert.match(recoveryFast,/git -C "\$control" sparse-checkout set --no-cone --stdin/);
-  assert.ok(recoveryFast.includes("printf '%s\n' '/.vibe2/queue.json' '/.vibe2/system-ai-queue.json' '/.vibe2/recovery-queue.json' '/.vibe2/queue/'"));
+  assert.ok(recoveryFast.includes(String.raw`printf '%s\n' '/.vibe2/queue.json' '/.vibe2/system-ai-queue.json' '/.vibe2/recovery-queue.json' '/.vibe2/queue/'`));
   assert.doesNotMatch(recoveryFast,/sparse-checkout set --cone \.vibe2/);
   assert.match(recoveryFast,/VIBE2_RECOVERY_FAST_SPARSE=CONTROL_QUEUES_ONLY/);
   assert.match(recoveryFast,/git -C "\$control" checkout HEAD/);
