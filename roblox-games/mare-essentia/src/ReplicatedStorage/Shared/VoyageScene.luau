@@ -12,6 +12,7 @@ local UserInputService = game:GetService("UserInputService")
 local VoyageScene = {}
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local HelmPhys = require(script.Parent:WaitForChild("Helm"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
@@ -362,6 +363,8 @@ function VoyageScene.play(info)
 	local helmStartDist = math.max((helmDest - pts[1]).Magnitude, 1)
 	local windFrom = 0
 	local tackSide = 1
+	local helmShoals, helmCurrents = {}, {}
+	local d0n = Vector3.new(1, 0, 0)
 	local helmMsg, windLabel, speedLabel, distLabel, trimFill, mapFrame, mapShip, mapDest, windArrow, autoBtn
 	local MAP = 150
 	local function wrapAngle(a)
@@ -385,6 +388,7 @@ function VoyageScene.play(info)
 		skip.Visible = false
 		do
 			local d0 = helmDest - pts[1]
+			d0n = d0.Unit
 			helmYaw = yawOf(d0.Unit)
 			-- 항로가 바람에 80~160도 비껴가게 두어 기본 코스로도 갈 수 있게 한다
 			local seed = 0
@@ -393,6 +397,30 @@ function VoyageScene.play(info)
 			end
 			local sign = if seed % 2 == 0 then 1 else -1
 			windFrom = helmYaw + sign * math.rad(80 + (seed % 80))
+		end
+		-- 대항해시대식 해상 요소: 암초 지대(속도 저하)와 해류(같은 방향이면 가속)
+		do
+			local dirv = d0n
+			local perp = Vector3.new(-dirv.Z, 0, dirv.X)
+			local span = helmDest - pts[1]
+			for i, f in { 0.28, 0.5, 0.72 } do
+				local side = (if i % 2 == 0 then 1 else -1) * (38 + 22 * ((i * 7) % 3))
+				local c = pts[1] + span * f + perp * side
+				table.insert(helmShoals, c)
+				if info.place then
+					for j = 1, 3 do
+						local m = info.place(folder, "Town", "rock-wide", ORIGIN, 9 + j * 2)
+						if m then
+							m:PivotTo(CFrame.new(c.X + (j - 2) * 14, -2.5, c.Z + (j % 2) * 12) * CFrame.Angles(0, j * 1.7, 0))
+						end
+					end
+				end
+			end
+			for i, f in { 0.4, 0.66 } do
+				local c = pts[1] + span * f + perp * ((if i == 1 then -1 else 1) * 25)
+				local ang = yawOf(dirv) + (if i == 1 then 0.4 else -0.4)
+				table.insert(helmCurrents, { pos = c, dir = Vector3.new(math.cos(ang), 0, -math.sin(ang)) })
+			end
 		end
 		hint.Text = "스틱·WASD로 조종 · 위/아래(W/S)로 돛 펴기/접기 · 금색 깃발이 목적지"
 		local function mkLabel(size, pos, text, anchor)
@@ -879,6 +907,7 @@ function VoyageScene.play(info)
 		dolphins = "돌고래 떼!", whale = "고래다!",
 		school = "물고기떼 발견!", merchant = "상선을 만났다", fog = "짙은 안개", reef = "암초 조심!", rescue = "표류자 발견!",
 		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
+		current = "숨은 해류!", wreck = "침몰선 발견!", rainbow = "쌍무지개!", mermaid = "인어의 노래...", pigeon = "전서구 도착", bottle = "병 편지 발견", rats = "쥐떼 습격!", vortex = "소용돌이!", fire = "선상 화재!", mutiny = "선상 반란!", shark = "상어 떼!", cursed = "저주받은 보물", phantom = "유령선을 따라간다", kraken = "크라켄 출현!!", volcano = "바다 화산!", meteor = "별똥별!", rival = "라이벌과 경주!",
 	}
 	local banner = title:Clone()
 	banner.Position = UDim2.new(0, 0, 0.22, 0)
@@ -1118,34 +1147,24 @@ function VoyageScene.play(info)
 			if t > duration * 3.5 then
 				autoOn = true -- 너무 오래 걸리면 자동 항해로 마무리한다
 			end
+			local hs = { x = helmPos.X, z = helmPos.Z, yaw = helmYaw, trim = helmTrim, speed = helmSpeed }
 			if autoOn then
-				-- 자동 항해: 목적지로 가되 맞바람이면 지그재그(태킹)로 간다
-				local want = yawOf(toDest.Unit)
-				local rel = wrapAngle(want - windFrom)
-				if math.abs(rel) < math.rad(50) then
-					want = windFrom + tackSide * math.rad(52)
-					if math.abs(wrapAngle(want - helmYaw)) < 0.05 then
-						tackSide = -tackSide
-					end
-				end
-				steer = -math.clamp(wrapAngle(want - helmYaw) * 2.5, -1, 1)
-				trimIn = (0.95 - helmTrim) * 2
+				steer, trimIn, tackSide = HelmPhys.autopilot(hs, helmDest.X, helmDest.Z, windFrom, tackSide)
 			end
-			helmTrim = math.clamp(helmTrim + trimIn * dt * 0.6, 0.1, 1)
-			local gust = 1 + 0.12 * math.sin(t * 0.3) + 0.05 * math.sin(t * 0.9 + 1)
-			local eff
-			if info.steam then
-				eff = 0.95
-			else
-				eff = polar(wrapAngle(helmYaw - windFrom)) * gust
+			local shoalList, currentList = {}, {}
+			for _, c in helmShoals do
+				table.insert(shoalList, { x = c.X, z = c.Z })
 			end
-			local baseSpeed = speedNow * 1.2
-			local targetSpeed = baseSpeed * helmTrim * eff
-			helmSpeed += (targetSpeed - helmSpeed) * math.min(1, dt * 0.9)
-			local turnRate = 0.95 * (0.35 + 0.65 * math.min(1, helmSpeed / math.max(baseSpeed * 0.5, 1)))
-			helmYaw -= math.clamp(steer, -1, 1) * turnRate * dt -- 오른쪽(+)으로 틀면 yaw 가 줄어든다
+			for _, cu in helmCurrents do
+				table.insert(currentList, { x = cu.pos.X, z = cu.pos.Z, dx = cu.dir.X, dz = cu.dir.Z })
+			end
+			local seaNote = HelmPhys.step(hs, steer, trimIn, dt, {
+				windFrom = windFrom, baseSpeed = speedNow * 1.2, steam = info.steam, t = t,
+				shoals = shoalList, currents = currentList,
+			})
+			helmYaw, helmTrim, helmSpeed = hs.yaw, hs.trim, hs.speed
+			helmPos = Vector3.new(hs.x, helmPos.Y, hs.z)
 			local fwd0 = Vector3.new(math.cos(helmYaw), 0, -math.sin(helmYaw))
-			helmPos += fwd0 * helmSpeed * dt
 			pos, dir = helmPos, fwd0
 			toDest = helmDest - helmPos
 			remaining = Vector3.new(toDest.X, 0, toDest.Z).Magnitude
@@ -1158,7 +1177,7 @@ function VoyageScene.play(info)
 			distLabel.Text = string.format("목적지까지 %d", math.floor(remaining))
 			trimFill.Size = UDim2.fromScale(1, helmTrim)
 			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
-			helmMsg.Text = if autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
+			helmMsg.Text = if seaNote ~= "" then seaNote elseif autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
 			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
 			local mid = (pts[1] + helmDest) / 2
 			local half = math.max(helmStartDist * 0.75, 260)
