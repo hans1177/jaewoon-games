@@ -234143,11 +234143,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aab9bea6a05cfe74c80f8881",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13142",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "101253e0f41a187b116f686298ae3acf33e73c93",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13142,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-cardart-24f-20261114",
+        "baseSha": "101253e0f41a187b116f686298ae3acf33e73c93",
+        "headSha": "d3bdc3c6d13006366bf6a14a82c7d2a2c74466c6",
+        "mergeCommitSha": "5d03db73aea2e2f9184a42a0d7d0b63ad06db170",
+        "mergedAt": "2026-11-14T02:16:50Z",
+        "authorLogin": "hans1177",
+        "titleHash": "40df49b674559752b636e5f94b4021ae124609ff8010ef1ff008ac348dc1fae3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-cardart-24f-20261114",
+        "candidateSha": "d3bdc3c6d13006366bf6a14a82c7d2a2c74466c6"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 8,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/cardart/src/README.md",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_03.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_03_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_04.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_04_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_05.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_05_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_08.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_08_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_09.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_09_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_10.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_10_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_12.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_12_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_13.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_13_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_14.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_14_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_15.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_15_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_16.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_16_24f.jpg",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_17.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_17_24f.jpg"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13142",
+        "merge-commit:5d03db73aea2e2f9184a42a0d7d0b63ad06db170",
+        "base-main:101253e0f41a187b116f686298ae3acf33e73c93"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1868
+    "total": 1869
   }
 }
