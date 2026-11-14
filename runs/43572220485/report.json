@@ -1,0 +1,82 @@
+{
+ "sourceRevision": "00db2be9b05c4e3f9f2fd37f8cf50db2951a2ca6",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "SAIL smyrna\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "s1",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "s2",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "capture": "s3",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "capture": "s4",
+   "files": 1
+  },
+  {
+   "step": 15,
+   "capture": "s5",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "capture": "s6",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "ERR Client count=1\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 1,
+  "warningCount": 18,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "Players.Anyanguy1980.PlayerScripts.Client.Game:6030: attempt to index nil with 'Enabled'"
+   }
+  ]
+ },
+ "summary": {
+  "plannedSteps": 19,
+  "completedSteps": 19,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
+  "abortedEarly": false
+ }
+}
