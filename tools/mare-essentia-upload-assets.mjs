@@ -112,6 +112,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       assetType: image ? 'Image' : 'Model',
       license: (kind === 'Cargo' || kind === 'Naval') && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
+        : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
         : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png', ...VIBE_DRAWN_GOODS].includes(f) ? 'PROJECT_ORIGINAL_ART'
@@ -332,6 +333,7 @@ for (const item of plan) {
           : item.kind === 'Menu' && item.license === 'PROJECT_ORIGINAL_ART' ? 'Original aged parchment and embossed leather texture rendered for Mare Essentia book UI; approved hash in assets/APPROVED_IMAGES.json'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
           : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
+          : item.kind === 'Menu' && item.name.startsWith('vfx_') ? 'CC0 particle sprite (OpenGameArt Particle Pack, 80 sprites); same source as company common VFX; see assets/SOURCES.md'
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
         : item.assetType === 'Model' && item.license === 'PROJECT_ORIGINAL_ART'
