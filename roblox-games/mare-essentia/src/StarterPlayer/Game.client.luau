@@ -3070,6 +3070,26 @@ local function playEpilogue(msg, opts)
 	layer:Destroy()
 end
 
+-- 주점 소문: 삽화 위에 주점 주인이 귀띔해 주는 장면으로 보여 준다 (정보 내용은 그대로, 말투만 대사로)
+function H.playRumorScene(r)
+	local portId = view and view.player and view.player.portId
+	local port = portId and PortData.Ports[portId]
+	local lines = { "(잔을 닦다 슬쩍 몸을 기울인다) 선장, 술값은 받았으니 귀 좀 빌려 드리죠." }
+	for i, line in r.lines do
+		local speech = string.gsub(line, "^(.-): ", "%1 말이오? ", 1)
+		table.insert(lines, (if i == 1 then "(목소리를 낮추며) " elseif i == #r.lines then "(주위를 둘러보며) " else "") .. speech)
+	end
+	table.insert(lines, "이 얘기는 내가 했다고 하지 마시오. (다시 술잔을 닦기 시작한다)")
+	local atlas, offset, size = H.facilityPortraitAsset(portId, "tavern")
+	playStory({
+		id = "rumor", title = "주점 소문", chapter = if port then port.name else nil,
+		npc = "주점 주인", art = "tavern", lines = lines,
+		choices = { { text = "고맙소, 잘 들었소", index = 1 } },
+		submit = function() return { ok = true, message = "귀띔을 머릿속에 새겼다.\n(주점 화면의 '뱃사람 귀띔'에서 다시 볼 수 있어요)" } end,
+		regionalPortrait = if atlas then { assetId = atlas, offset = offset, size = size } else nil,
+	})
+end
+
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
@@ -3151,6 +3171,9 @@ function playStory(ev)
 	-- 동료 사연이면 그 동료의 그린 초상을 쓴다
 	local cid = ev.id and string.match(ev.id, "^(h_[%w_]+)_%d+$")
 	local cport = cid and COMPANION_PORTRAIT[cid]
+	if not cport and ev.regionalPortrait then -- 주점 소문 등: 그 항구 지역 사람 얼굴
+		cport = ev.regionalPortrait
+	end
 	if cport then
 		local ph = Instance.new("ImageLabel")
 		ph.Name = "NpcPortrait"
@@ -3159,9 +3182,9 @@ function playStory(ev)
 		ph.Size = UDim2.new(0, 250, 1, -14)
 		ph.BackgroundTransparency = 1
 		ph.ScaleType = Enum.ScaleType.Crop
-		ph.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. cport.atlas])
+		ph.Image = "rbxassetid://" .. tostring(cport.assetId or AssetIds["Portraits/" .. cport.atlas])
 		ph.ImageRectOffset = cport.offset
-		ph.ImageRectSize = Vector2.new(256, 336)
+		ph.ImageRectSize = cport.size or Vector2.new(256, 336)
 		corner(ph, 10)
 		local pst = Instance.new("UIStroke")
 		pst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -3694,7 +3717,12 @@ function RENDERERS.harbor()
 	add(function() return mkHeader(content, "주점") end)
 	add(function()
 		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품\n(지금 정보 수준: %s)", h.rumorCost, intelName(view.intel or 0)), {
-			{ text = "듣기", color = COLORS.blue, onClick = function() call("Rumor", {}) end },
+			{ text = "듣기", color = COLORS.blue, onClick = function()
+				local res = call("Rumor", {})
+				if res and res.ok and view and view.rumor and #view.rumor.lines > 0 then
+					H.playRumorScene(view.rumor)
+				end
+			end },
 		}, 72)
 	end)
 	addRumorPanel()
