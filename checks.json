@@ -1,18 +1,18 @@
 {
-  "runId": "43568671545",
+  "runId": "43568911999",
   "kind": "studio",
-  "sourceRevision": "83dfa6c7e253ff448a8eece4bf7dc32948fe381e",
-  "result": "FAIL",
-  "failureStage": "STUDIO_EXECUTION",
-  "failureSignature": "STUDIO_SCREENSHOTS_INCOMPLETE",
+  "sourceRevision": "858eb5399a165896fd38d3eea9f660d267fc9842",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
   "summary": {
-    "plannedSteps": 6,
-    "completedSteps": 6,
+    "plannedSteps": 24,
+    "completedSteps": 24,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 0,
-    "capturedFrames": 0,
+    "plannedFrames": 3,
+    "capturedFrames": 3,
     "abortedEarly": false
   },
   "errors": [],
@@ -60,13 +60,164 @@
     },
     {
       "step": 5,
+      "type": "capture",
+      "name": "k0_deck",
+      "status": "PASS",
+      "screenshots": [
+        "k0_deck-0.jpg"
+      ]
+    },
+    {
+      "step": 6,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 7,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 8,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 9,
+      "type": "capture",
+      "name": "k1_practice",
+      "status": "PASS",
+      "screenshots": [
+        "k1_practice-0.jpg"
+      ]
+    },
+    {
+      "step": 10,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 11,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 12,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 13,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 14,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 15,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 16,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 17,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 18,
+      "type": "capture",
+      "name": "k2_tactics_hand",
+      "status": "PASS",
+      "screenshots": [
+        "k2_tactics_hand-0.jpg"
+      ]
+    },
+    {
+      "step": 19,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 20,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 21,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 22,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 23,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     }
   ],
-  "screenshotComparison": [],
+  "screenshotComparison": [
+    {
+      "name": "k0_deck-0.jpg",
+      "sha256": "179a7abd87d70b935ea2111a3206ca95f5b83c6e3c39ad9be1bc4f07ed2098e6",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43568911999/k0_deck-0.jpg"
+    },
+    {
+      "name": "k1_practice-0.jpg",
+      "sha256": "53af0cafa83a889e2344bb286b30fd58e9eb666633caef5bce4e754e80d1bcab",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43568911999/k1_practice-0.jpg"
+    },
+    {
+      "name": "k2_tactics_hand-0.jpg",
+      "sha256": "282d6a4816ebd5cff633f16dce768c1f2b224f72e43f737382d371e7130dd476",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43568911999/k2_tactics_hand-0.jpg"
+    }
+  ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43568058467"
+  "previousRunId": "43568671545"
 }
