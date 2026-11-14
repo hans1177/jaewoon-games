@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-parallelism-main-contract.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -24,7 +25,10 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main \+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core --quiet/);
   assert.match(recoveryFast,/git worktree add --no-checkout --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
   assert.match(recoveryFast,/git -C "\$control" config extensions\.worktreeConfig true/);
-  assert.match(recoveryFast,/git -C "\$control" sparse-checkout set --cone \.vibe2/);
+  assert.match(recoveryFast,/git -C "\$control" sparse-checkout set --no-cone --stdin/);
+  assert.ok(recoveryFast.includes("printf '%s\n' '/.vibe2/queue.json' '/.vibe2/system-ai-queue.json' '/.vibe2/recovery-queue.json' '/.vibe2/queue/'"));
+  assert.doesNotMatch(recoveryFast,/sparse-checkout set --cone \.vibe2/);
+  assert.match(recoveryFast,/VIBE2_RECOVERY_FAST_SPARSE=CONTROL_QUEUES_ONLY/);
   assert.match(recoveryFast,/git -C "\$control" checkout HEAD/);
   assert.match(recoveryFast,/\n  recover:\n    runs-on: ubuntu-slim\n    timeout-minutes: 6/);
   assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
@@ -68,7 +72,11 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
     fs.mkdirSync(path.join(repo,'.vibe2','queue'),{recursive:true});
     fs.mkdirSync(path.join(repo,'web-games','unrelated'),{recursive:true});
     fs.writeFileSync(path.join(repo,'.vibe2','queue.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','system-ai-queue.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','recovery-queue.json'),'{"tasks":[]}\n');
     fs.writeFileSync(path.join(repo,'.vibe2','queue','part.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','coding-trace-ledger.json'),'{"entries":[1]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','experience.json'),'{"entries":[1]}\n');
     fs.writeFileSync(path.join(repo,'web-games','unrelated','index.html'),'<main>unchanged</main>\n');
     git(repo,'init','-q');
     git(repo,'config','user.name','Vibe Recovery QA');
@@ -78,10 +86,15 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
     git(repo,'branch','vibe2-unreal-core');
     git(repo,'worktree','add','--no-checkout','--detach',control,'vibe2-unreal-core');
     git(control,'config','extensions.worktreeConfig','true');
-    git(control,'sparse-checkout','set','--cone','.vibe2');
+    const queuePatterns=['/.vibe2/queue.json','/.vibe2/system-ai-queue.json','/.vibe2/recovery-queue.json','/.vibe2/queue/'];
+    execFileSync('git',['-C',control,'sparse-checkout','set','--no-cone','--stdin'],{input:queuePatterns.join('\n')+'\n',encoding:'utf8'});
     git(control,'checkout','HEAD');
     assert.ok(fs.existsSync(path.join(control,'.vibe2','queue.json')));
     assert.ok(fs.existsSync(path.join(control,'.vibe2','queue','part.json')));
+    assert.ok(fs.existsSync(path.join(control,'.vibe2','system-ai-queue.json')));
+    assert.ok(fs.existsSync(path.join(control,'.vibe2','recovery-queue.json')));
+    assert.equal(fs.existsSync(path.join(control,'.vibe2','coding-trace-ledger.json')),false);
+    assert.equal(fs.existsSync(path.join(control,'.vibe2','experience.json')),false);
     assert.equal(fs.existsSync(path.join(control,'web-games','unrelated','index.html')),false);
     assert.ok(fs.existsSync(path.join(repo,'web-games','unrelated','index.html')));
     fs.writeFileSync(path.join(control,'.vibe2','queue.json'),'{"tasks":[{"id":"recovered"}]}\n');
