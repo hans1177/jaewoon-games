@@ -10,17 +10,17 @@ return function(D, S)
 	local TOPIC_SEAT = { ship = "boatswain", crew = "boatswain", cargo = "mate", trade = "mate", medical = "surgeon", gun = "gunner", knowledge = "scholar", route = "helm", guide = "helm" }
 	local DEFAULT_WHO = { id = nil, name = "늙은 항해사 베르나르", role = "항해사" }
 
+	-- 전문 분야 조언(자기 자리가 따로 있는 주제): 그 자리 동료가 말한다
+	local SPECIALIST = { ship = true, crew = true, medical = true, gun = true, knowledge = true }
+
+	-- 누가 말하나: 전문 분야는 그 자리 동료, 그 밖의 모든 조언과 메뉴 안내는 부선장 자리 동료.
+	-- 부선장 자리가 비어 있는(초반) 동안은 첫 동료가 조언자 역할을 맡는다.
 	local function speaker(state, topic)
-		-- 부선장이 함께하면 모든 조언을 그가 한다 (메뉴 바로가기 안내역)
-		if table.find(state.companions, "t_mate") then
-			local m = Sp.CompanionById.t_mate
-			return { id = m.id, name = m.name, role = m.role or "부선장" }
+		local id
+		if SPECIALIST[topic] then
+			id = state.stations[TOPIC_SEAT[topic] or "helm"]
 		end
-		local seat = TOPIC_SEAT[topic] or "helm"
-		local id = state.stations[seat]
-		if not id then
-			id = state.companions[1]
-		end
+		id = id or state.stations.mate or state.companions[1]
 		local c = id and Sp.CompanionById[id]
 		if c then
 			return { id = c.id, name = c.name, role = c.role or "동료" }
