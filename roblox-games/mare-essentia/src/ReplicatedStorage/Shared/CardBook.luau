@@ -48,8 +48,10 @@ CB.SOURCES = {
 	quest = { common = 30, rare = 55, hero = 15 },
 	chest = { common = 20, rare = 55, hero = 25 },
 	boss = { common = 0, rare = 40, hero = 60 },
+	naval = { common = 45, rare = 45, hero = 10 }, -- 해전 승리
+	ground = { common = 50, rare = 42, hero = 8 }, -- 지상 전술 승리
 }
-CB.SOURCE_NAME = { discover = "발견", explore = "탐험", quest = "퀘스트", chest = "보물상자", boss = "두목 격파" }
+CB.SOURCE_NAME = { discover = "발견", explore = "탐험", quest = "퀘스트", chest = "보물상자", boss = "두목 격파", naval = "해전 승리", ground = "지상 전술" }
 
 local function def(id: string): any
 	return BC.Units[id] or BC.Specials[id]
@@ -139,6 +141,20 @@ local function fieldPick(book: any, field: string?, rng: () -> number): string?
 		pick = list[math.min(#list, math.floor(rng() * #list) + 1)]
 	end
 	return nil
+end
+
+-- 지역(해역) → 카드 대륙 접두어. 전투 보상이 싸운 바다의 지역 카드로 나오게 한다.
+CB.REGION_CONT = { europe = "eu", w_africa = "af", new_world = "nw", indian = "sa", far_east = "ea", pacific = "lo" }
+function CB.regionalPick(regionId: string?, book: any, rng: () -> number): string?
+	local cont = regionId and CB.REGION_CONT[regionId]
+	if not cont then return nil end
+	local list = {}
+	for id, d in BC.Units do
+		if id:sub(1, 3) == cont .. "_" and not d.hero and (book.owned[id] or 0) == 0 then table.insert(list, id) end
+	end
+	table.sort(list) -- 순서를 고정해 같은 난수에서 같은 결과가 나오게 한다
+	if #list == 0 then return nil end
+	return list[math.min(#list, math.floor(rng() * #list) + 1)]
 end
 
 function CB.drop(book: any, source: string, rng: () -> number, field: string?): (string, string)

@@ -318,7 +318,7 @@ return function(D, S)
 		state.stats.battlesWon += 1
 		table.insert(msgs, string.format("전술 탐험 성공! 등급 %s (%d턴) +%d코인", rank, b.turn - 1, coins))
 		if math.random() < 0.6 then
-			S.Cardbook.offer(state, "explore", msgs)
+			S.Cardbook.offerRegional(state, "ground", msgs) -- 지상 전술 승리: 그 지역의 카드가 후보에 든다
 		end
 		for _, cardId in b.found do
 			S.Discovery.grantCard(state, cardId, msgs)

@@ -103,6 +103,15 @@ return function(D, S)
 	end
 
 	-- 승리 보상: 카드 3장 중 1장 고르기 (이미 고르지 않은 보상이 있으면 그 보상은 무작위로 받는다)
+	-- 전투 승리 보상: 싸운 바다(현재 항구의 해역)의 지역 카드 한 장을 후보 맨 앞에 넣어 3장 중 고르게 한다.
+	function C.offerRegional(state, source, msgs, portId)
+		local port = D.Ports.Ports[portId or state.portId]
+		local rid = port and D.Regions.of(port).id
+		local book = C.get(state)
+		local extra = D.CardBook.regionalPick(rid, book, math.random)
+		C.offer(state, source, msgs, nil, nil, extra)
+	end
+
 	function C.offer(state, source, msgs, rng, field, extra)
 		local book = C.get(state)
 		if book.pick then

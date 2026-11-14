@@ -3992,6 +3992,20 @@ do
 	check("이야기 이벤트 항구의 지역 초상 시트 존재 (" .. total .. "개)", #missing == 0, table.concat(missing, ", "))
 end
 
+do -- 전투 보상 지역 카드: 6개 해역 모두 후보 카드가 있고 그 대륙 카드여야 한다
+	local CBk = D.CardBook
+	local book = CBk.new("europe")
+	local bad = {}
+	for region, cont in CBk.REGION_CONT do
+		local id = CBk.regionalPick(region, book, math.random)
+		if not id or id:sub(1, 3) ~= cont .. "_" then
+			table.insert(bad, region .. ":" .. tostring(id))
+		end
+	end
+	check("해역별 전투 보상 지역 카드 (6개 해역)", #bad == 0, table.concat(bad, ", "))
+	check("전투 보상 출처 정의 (naval/ground)", CBk.SOURCES.naval ~= nil and CBk.SOURCES.ground ~= nil)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")
