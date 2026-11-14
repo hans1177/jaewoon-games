@@ -3211,7 +3211,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (112 + dist * 0.45) + Vector3.new(0, 96 + dist * 0.38, 0)
+		local camPos = ORIGIN + me.pos - f * (128 + dist * 0.5) + Vector3.new(0, math.min(80, 64 + dist * 0.14), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
