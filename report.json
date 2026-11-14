@@ -4,42 +4,17 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "GAIN legendary\ntext"
-  },
-  {
-   "step": 5,
-   "capture": "g1_legendary",
+   "step": 2,
+   "capture": "ap_game",
    "files": 1
   },
   {
-   "step": 7,
+   "step": 4,
    "ctx": "Client",
-   "out": "GAIN common\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "g2_common",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "DEV Deck\ntext"
-  },
-  {
-   "step": 13,
-   "capture": "g3_deck",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "LOG \ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -54,13 +29,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 15,
-  "completedSteps": 15,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
