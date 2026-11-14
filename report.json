@@ -1,80 +1,90 @@
 {
- "sourceRevision": "fa1806652fb7214f59d0ad022b0143bdc76e0a46",
+ "sourceRevision": "9803a61a1f8fc2d36f6718d008374eda5f02f253",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "DEV Deck\ntext"
   },
   {
    "step": 5,
+   "capture": "k0_deck",
+   "files": 1
+  },
+  {
+   "step": 6,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "CHK deck view=1136x380 texts=692 issues=0\ntext"
   },
   {
    "step": 7,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "DEV Practice\ntext"
   },
   {
    "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
+   "capture": "k1_practice",
+   "files": 1
   },
   {
    "step": 10,
    "ctx": "Client",
-   "out": "closed 2\ntext"
+   "out": "CHK practice view=1136x380 texts=318 issues=0\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "DEVRESULT Practice true nil\ntext"
   },
   {
    "step": 12,
    "ctx": "Client",
-   "out": "SAIL\ntext"
+   "out": "ERR Client count=0\ntext"
+  },
+  {
+   "step": 13,
+   "ctx": "Server",
+   "out": "TAC_START ok=true\ntext"
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n표류물을 건져 68코인을 얻었다\n선단 유지비 -375 scene=true 콤보 0 · 통과 0/0 · 속도 ×1.00 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 15,
-   "capture": "r01",
-   "files": 1
-  },
-  {
-   "step": 17,
+   "step": 16,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n표류물을 건져 68코인을 얻었다\n선단 유지비 -375 scene=true 콤보 2 · 통과 2/2 · 속도 ×1.08 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "DEV Tactics\ntext"
   },
   {
    "step": 18,
-   "capture": "r02",
+   "capture": "k2_tactics_hand",
    "files": 1
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "CHK tactics view=1136x380 texts=349 issues=0\ntext"
   },
   {
    "step": 20,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n표류물을 건져 68코인을 얻었다\n선단 유지비 -375 scene=true 콤보 6 · 통과 6/6 · 속도 ×1.24 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "HAND n=5 energy=3 play1=false 너무 빨라요\ntext"
   },
   {
-   "step": 21,
-   "capture": "r03",
-   "files": 1
+   "step": 22,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   },
   {
    "step": 23,
-   "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n표류물을 건져 68코인을 얻었다\n선단 유지비 -375 scene=true 콤보 10 · 통과 10/10 · 속도 ×1.40 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리) | ★★★\n통과 9/9  (100%)\n최고 콤보 9 · 충돌 0\ntext"
-  },
-  {
-   "step": 24,
-   "capture": "r04",
-   "files": 1
+   "ctx": "Server",
+   "out": "ERR Server count=0\ntext"
   }
  ],
  "errors": [],
@@ -89,13 +99,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 25,
-  "completedSteps": 25,
+  "plannedSteps": 24,
+  "completedSteps": 24,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
   "abortedEarly": false
  }
 }
