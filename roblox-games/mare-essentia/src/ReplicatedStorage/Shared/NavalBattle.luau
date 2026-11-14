@@ -2256,15 +2256,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		task.spawn(function()
 			task.wait(1.0)
-			local guard = 0
-			while not m.over and not finished and guard < 600 do
-				guard += 1
+			local guard = 0 -- 실제로 낸 수만 센다 (생각하는 시간은 세지 않는다: 예전엔 60초가 지나면 판이 갑자기 끝났다)
+			while not m.over and not finished and guard < 400 do
 				if playing then
 					task.wait(0.1)
 				elseif m.turn == "foe" then
 					task.wait(0.9)
 					if finished then break end
 					local ok, msg, res, _, playedCard = BC.ai(m, "foe")
+					guard += 1
 					if ok then
 						afterAction(ok, if english then "Pirates" else "해적: " .. (msg or ""), res, playedCard, "foe")
 					end
@@ -2272,6 +2272,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					task.wait(0.5)
 					if finished or playing or m.turn ~= "me" or m.over then continue end
 					local ok, msg, res, act, playedCard = BC.ai(m, "me")
+					guard += 1
 					if ok then
 						mine(ok, msg, res, act, playedCard)
 						afterAction(ok, msg, res, playedCard, "me")
@@ -3067,7 +3068,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						if finished then return end
 						startBoarding(opts.card, function(m, acts)
 							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
-							local res = opts.onCards and opts.onCards(acts)
+							local okCards, res = true, nil
+							if opts.onCards then
+								okCards, res = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
+								if not okCards then res = nil end
+							end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
 							opts.winner = if w == "a" or w == "b" then w else nil
 							loser = if w == "a" then "foe" elseif w == "b" then "me" else nil
