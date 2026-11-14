@@ -224,7 +224,7 @@ function NavalBattle.play(opts)
 		or string.find(weather, "squall", 1, true) ~= nil
 	Sfx.ambient(if roughSeas then { "sfx_ambience_storm", "sfx_waves" } else { "sfx_waves", "sfx_wind" }, 0.55)
 
-	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
+	local sea = part(folder, Vector3.new(2600, 2, 2600), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
 	if opts.cardOnly then
@@ -246,8 +246,8 @@ function NavalBattle.play(opts)
 	local myLen = if shipDef then math.clamp(26 + shipDef.hull * 0.1, 30, 52) else 40
 	local myTop = if shipDef then 12 + shipDef.speed * 1.2 else 19
 	local cannon = NC[SHIP_CANNON[opts.shipId or ""] or "demi"]
-	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", myLen, Vector3.new(-45, 0, 30), 0)
-	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(45, 0, -30), math.pi)
+	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", myLen, Vector3.new(-80, 0, 50), 0)
+	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(80, 0, -50), math.pi)
 	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
 	local escorts = {}
 	local escortCount = if opts.isBoss or opts.cardOnly then 0 else 2
@@ -2537,14 +2537,14 @@ function NavalBattle.play(opts)
 			end
 			-- 경계 밖으로 나가지 않게 가운데로 되돌린다
 			for _, sh in (if opts.canFlee and not fleeTried then { foe } else { me, foe }) do
-				if sh.pos.Magnitude > 260 then
+				if sh.pos.Magnitude > 440 then
 					steerToward(sh, math.atan2(-sh.pos.Z, -sh.pos.X), dt, 1.5)
 				end
 			end
 
 			-- 도주: 해역 가장자리 밖으로 몇 초 버티면 도망 시도 (서버가 성공 여부를 판정)
 			if phase == "duel" and opts.canFlee and not fleeTried then
-				if me.pos.Magnitude > 230 then
+				if me.pos.Magnitude > 400 then
 					fleeProgress += dt
 					hint.Text = string.format("도주 중... %d%%", math.floor(math.min(1, fleeProgress / 2.5) * 100))
 					if fleeProgress >= 2.5 then
@@ -2854,7 +2854,7 @@ function NavalBattle.play(opts)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (74 + dist * 0.4) + Vector3.new(0, 46 + dist * 0.25, 0)
+		local camPos = ORIGIN + me.pos - f * (100 + dist * 0.45) + Vector3.new(0, 62 + dist * 0.3, 0)
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
