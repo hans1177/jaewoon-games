@@ -253,6 +253,11 @@ local function extraTests()
 		local ns = S.State.new("new_spain", 1517)
 		return jp.portId == "osaka" and se.portId == "stockholm" and ns.portId == "havana" and S.State.new("japan", 1700).portId == "nagasaki"
 	end)())
+	check("1517 시작: 일본 주인공의 시작 이야기가 오사카에서 열림", (function()
+		local jp = S.State.new("japan", 1517)
+		jp.fame = 100
+		return jp.portId == "osaka" and S.Story.blockReason(jp, D.Story.ById.h_japan_1) == nil
+	end)())
 	check("1517 시작: 새 게임 요청이 받아들여짐", select(1, S.State.new("england", 1517)) ~= nil)
 	-- 원더 연출
 	local WSd = D.WonderScenes

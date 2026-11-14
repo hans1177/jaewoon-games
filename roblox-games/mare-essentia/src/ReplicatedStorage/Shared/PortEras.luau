@@ -28,6 +28,14 @@ function PortEras.startPortFor(nation, year: number): string
 	return PortEras.StartFallback[id] or id
 end
 
+-- 이야기·인물이 묶인 항구가 그 시대에 닫혀 있으면, 같은 자리를 대신하는 항구로 본다(예: 나가사키 → 오사카)
+function PortEras.homeOf(portId: string, year: number): string
+	if PortEras.isOpen(portId, year) then
+		return portId
+	end
+	return PortEras.StartFallback[portId] or portId
+end
+
 function PortEras.openYear(portId: string): number
 	return PortEras.Since[portId] or 0
 end
