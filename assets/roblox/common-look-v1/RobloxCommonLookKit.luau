@@ -119,8 +119,17 @@ Kit.Presets = {
     bloom = { Intensity = 0.35, Size = 28, Threshold = 1.1 },
     sunRays = { Intensity = 0.08, Spread = 0.7 },
   },
+  ["auto-0d4721"] = {
+    title = "자동 발견 조명 0d4721",
+    mood = "한낮 따뜻한 빛, 밝음",
+    lighting = { Brightness = 3.15, ClockTime = 13.1, Ambient = Color3.fromRGB(110, 97, 86), OutdoorAmbient = Color3.fromRGB(126, 111, 99), ColorShift_Top = Color3.fromRGB(255, 193, 141), EnvironmentDiffuseScale = 0.6, EnvironmentSpecularScale = 0.4, ExposureCompensation = 0, ShadowSoftness = 0.49 },
+    atmosphere = { Density = 0.18, Offset = 0.1, Color = Color3.fromRGB(200, 220, 250), Decay = Color3.fromRGB(150, 180, 230), Glare = 0.2, Haze = 0.8 },
+    colorCorrection = { Brightness = 0, Contrast = 0.08, Saturation = 0.22, TintColor = Color3.fromRGB(255, 252, 245) },
+    bloom = { Intensity = 0.25, Size = 24, Threshold = 1.2 },
+    sunRays = { Intensity = 0.1, Spread = 0.75 },
+  },
 }
-Kit.Order = { "storybook", "dark-fantasy", "cozy", "horror", "sci-fi", "wuxia", "bright-adventure", "auto-ddb25c", "auto-82a008", "auto-bca046", "auto-86f12a", "auto-fa1ab7" }
+Kit.Order = { "storybook", "dark-fantasy", "cozy", "horror", "sci-fi", "wuxia", "bright-adventure", "auto-ddb25c", "auto-82a008", "auto-bca046", "auto-86f12a", "auto-fa1ab7", "auto-0d4721" }
 -- END GENERATED PRESETS
 
 local PREFIX = "VibeLook"
