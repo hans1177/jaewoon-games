@@ -468,7 +468,7 @@ function FieldScene.start(opts)
 	end
 
 	-- 적: 가까이 오면 쫓아와 때린다
-	local enemyCount = math.clamp(2 + math.floor((opts.danger or 1) / 2), 2, 6)
+	local enemyCount = math.clamp(3 + math.floor((opts.danger or 1) / 2), 3, 8)
 	for i = 1, enemyCount + 1 do
 		-- 마지막 한 마리는 두목(위험이 높은 곳에서만 나온다)
 		local isBoss = i == enemyCount + 1
@@ -560,7 +560,11 @@ function FieldScene.start(opts)
 		local sh, el, waist = joint("RightUpperArm", "RightShoulder"), joint("RightLowerArm", "RightElbow"), joint("UpperTorso", "Waist")
 		local wind = math.min(p / 0.3, 1) -- 뒤로 젖힘
 		local strike = math.clamp((p - 0.3) / 0.35, 0, 1) -- 내려침
-		if swingKind == "spin" then
+		if swingKind == "guard" then
+			if sh then sh.Transform = CFrame.Angles(-1.5, 0, 0.5) end
+			if el then el.Transform = CFrame.Angles(-1.4, 0, 0) end
+			if waist then waist.Transform = CFrame.Angles(0.1, 0, 0) end
+		elseif swingKind == "spin" then
 			if waist then waist.Transform = CFrame.Angles(0, p * math.pi * 4, 0) end
 			if sh then sh.Transform = CFrame.Angles(0, 0, -1.4) end
 		else
@@ -803,6 +807,27 @@ function FieldScene.start(opts)
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
+		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
+		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
+		local punchCam = workspace.CurrentCamera
+		if punchCam then
+			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
+			task.delay(0.1, function()
+				punchCam.FieldOfView = 70
+			end)
+		end
+		-- 두목은 체력이 절반 아래로 내려가면 격분한다(더 빠르고 공격 준비가 짧아진다)
+		if e.ac.def.boss and not e.enraged and not died and e.ac.hp <= e.maxHp * 0.5 then
+			e.enraged = true
+			local d2 = table.clone(e.ac.def)
+			d2.windup = d2.windup * 0.7
+			d2.recover = d2.recover * 0.7
+			d2.speed = d2.speed * 1.3
+			e.ac.def = d2
+			say("두목이 격분했다!")
+			hurtReact(1.5)
+			burst(e.root.Position + Vector3.new(0, 3, 0), 40, true)
+		end
 		if died then
 			local idx = table.find(enemies, e)
 			if idx then
@@ -819,6 +844,60 @@ function FieldScene.start(opts)
 				dying:Destroy()
 			end)
 			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
+			if e.boss or math.random() < 0.4 then
+				local heal = if e.boss then 30 else 12
+				pl.hp = math.min(pl.maxHp, pl.hp + heal)
+				popDamage(e.model, heal, false)
+				burst(e.root.Position + Vector3.new(0, 2, 0), 10, false)
+				refresh()
+			end
+		end
+	end
+
+	-- 손에 든 칼: 등록된 유물 모델(Relics/weapon-sword)을 오른손에 붙인다. 모델이 아직 안 불러와졌으면 맨손으로 싸운다.
+	do
+		local char0 = player.Character
+		local hand = char0 and (char0:FindFirstChild("RightHand") or char0:FindFirstChild("Right Arm"))
+		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+		local group = lib and lib:FindFirstChild("Relics")
+		local tpl = group and group:FindFirstChild("weapon-sword")
+		if hand and tpl and tpl:IsA("Model") then
+			local sword = tpl:Clone()
+			sword.Name = "FieldSword"
+			local rootPart
+			for _, bp in sword:GetDescendants() do
+				if bp:IsA("BasePart") then
+					bp.Anchored = false
+					bp.CanCollide = false
+					bp.CanTouch = false
+					bp.CanQuery = false
+					bp.Massless = true
+					rootPart = rootPart or bp
+				end
+			end
+			if rootPart then
+				local _, ext = sword:GetBoundingBox()
+				local longest = math.max(ext.X, ext.Y, ext.Z)
+				if longest > 0.05 then
+					pcall(function()
+						sword:ScaleTo(4.6 / longest)
+					end)
+				end
+				sword.Parent = char0
+				sword:PivotTo(hand.CFrame * CFrame.new(0, -0.5, -0.2) * CFrame.Angles(math.rad(-90), 0, 0))
+				for _, bp in sword:GetDescendants() do
+					if bp:IsA("BasePart") then
+						local w = Instance.new("WeldConstraint")
+						w.Part0 = hand
+						w.Part1 = bp
+						w.Parent = bp
+					end
+				end
+				table.insert(conns, { Disconnect = function()
+					sword:Destroy()
+				end })
+			end
 		end
 	end
 
@@ -884,6 +963,24 @@ function FieldScene.start(opts)
 			refresh()
 		end)
 	end
+	-- 방어: 누른 직후 0.25초는 완벽 방어(반격), 이후 1.2초는 막기(피해 70% 감소)
+	local function useGuard()
+		if finished then
+			return
+		end
+		local now = os.clock()
+		local ok = AC.tryMove(pl, "parry", now)
+		if not ok then
+			return
+		end
+		pl.parryAt = now
+		pl.guarding = true
+		startSwing("guard", 1.2)
+		say("방어 자세!")
+		task.delay(1.2, function()
+			pl.guarding = false
+		end)
+	end
 	local function useAttack() useMove("rush") end
 	local function useHeavy() useMove("heavy") end
 	local function useSpin() useMove("sweep") end
@@ -907,13 +1004,14 @@ function FieldScene.start(opts)
 		local b = btn(gui, label, color, UDim2.fromOffset(70, 70), UDim2.new(1, x, 0.5, 78), Vector2.new(0.5, 0.5))
 		b.TextSize = 15
 		b.Activated:Connect(function()
-			useMove(key)
+			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), -226)
 	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), -150)
 	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), -74)
+	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), -300)
 	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		local now = os.clock()
@@ -942,6 +1040,8 @@ function FieldScene.start(opts)
 			useSpin()
 		elseif input.KeyCode == Enum.KeyCode.R then
 			useDash()
+		elseif input.KeyCode == Enum.KeyCode.G then
+			useGuard()
 		end
 	end))
 	-- 개발 캡처용: DevFieldSkill 속성에 attack/heavy/spin/dash 를 넣으면 그 동작을 쓴다
@@ -950,7 +1050,7 @@ function FieldScene.start(opts)
 		if dev then
 			workspace:SetAttribute("DevFieldSkill", nil)
 			local map = { attack = "rush", heavy = "heavy", spin = "sweep", dash = "dodge" }
-			useMove(map[dev] or dev)
+			if dev == "guard" then useGuard() else useMove(map[dev] or dev) end
 		end
 	end))
 	workspace:SetAttribute("FieldCombatReady", true)
@@ -971,7 +1071,11 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
-			local event, hit = AC.stepEnemy(e.ac, dtc, dist)
+			local frozen = now < (e.holdUntil or 0)
+			local event, hit = nil, nil
+			if not frozen then
+				event, hit = AC.stepEnemy(e.ac, dtc, dist)
+			end
 			if event == "telegraph" then
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
@@ -1012,8 +1116,14 @@ function FieldScene.start(opts)
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
 				if hit then
-					local dealt = AC.takeHit(pl, e.ac.def.dmg, now, nil)
-					if dealt > 0 then
+					local dealt, parried = AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)
+					if parried then
+						say("완벽 방어! 반격 기회")
+						burst(hrp.Position + Vector3.new(0, 2, 0), 30, true)
+						e.ac.stagger = 1.4
+						e.ac.state = "stagger"
+						pl.stamina = math.min(AC.STAMINA_MAX, pl.stamina + 25)
+					elseif dealt > 0 then
 						say("공격을 받았다!")
 						hurtReact(if e.ac.def.boss then 2 else 1)
 						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
@@ -1032,7 +1142,7 @@ function FieldScene.start(opts)
 				end
 			end
 			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
-			local wish = AC.moveWish(e.ac, dist)
+			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			if wish ~= 0 and flat.Magnitude > 0.1 then
 				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
 				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + step) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))

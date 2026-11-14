@@ -153,7 +153,7 @@ end
 function VoyageScene.play(info)
 	local player = Players.LocalPlayer
 	local camera = workspace.CurrentCamera
-	local duration = math.clamp(8 + info.days * 0.9, 10, 24)
+	local duration = math.clamp(12 + info.days * 1.1, 16, 32)
 	local pts, cum, total = worldPath(info.path, duration * SPEED * (if info.steam then 1.25 else 1))
 	local speedNow = total / duration
 	local ev = info.event or { kind = "none" }
@@ -241,6 +241,7 @@ function VoyageScene.play(info)
 	local bandFrame, bandMark, shipMark, scoreLabel
 	local LATSCALE = 22
 	local ringList, ringParts, nextRing = {}, {}, 1
+	local itemList: { any }, itemParts, nextItem = {}, {}, 1
 	local shakeAmp, fovBoost = 0, 0
 	local goShown, resultShown = false, false
 	local crewRm, crewHeal = 1, 0
@@ -361,9 +362,13 @@ function VoyageScene.play(info)
 				local rad = Rings.radius(r) * LATSCALE * 1.25
 				if r.hazard then
 					-- 암초: 에셋 바위 모델 (도형으로 만들지 않는다)
-					local rock = info.place and info.place(folder, "Town", "rock-wide", ORIGIN, 14)
+					local kindAsset = if r.kind == "barrel" then { "Naval", "barrel", 6, 0.2 }
+						elseif r.kind == "pirate" then { "Naval", "ship-pirate-small", 16, -0.5 }
+						elseif r.kind == "ghost" then { "Naval", "ship-ghost", 16, -0.5 }
+						else { "Town", "rock-wide", 14, -2.5 }
+					local rock = info.place and info.place(folder, kindAsset[1], kindAsset[2], ORIGIN, kindAsset[3])
 					if rock then
-						rock:PivotTo(CFrame.new(c.X, -2.5, c.Z) * CFrame.Angles(0, r.at * 40, 0))
+						rock:PivotTo(CFrame.new(c.X, kindAsset[4], c.Z) * CFrame.Angles(0, r.at * 40, 0))
 					end
 					table.insert(ringParts, rock or false)
 					continue
@@ -405,6 +410,36 @@ function VoyageScene.play(info)
 				grp.Parent = folder
 				table.insert(ringParts, grp)
 				table.insert(ringPulse, { grp = grp, glow = glow, base = glow.Size, at = r.at })
+			end
+		end
+		-- 줍는 물건: 코인·보석·보물상자·유리병(순풍)·부표(충격 해제). 에셋 모델만 쓴다.
+		do
+			local rs2 = 4242
+			for i = 1, #(info.fromName .. info.toName) do
+				rs2 = (rs2 * 31 + string.byte(info.fromName .. info.toName, i)) % 2147483647
+			end
+			local function rng2(): number
+				rs2 = (rs2 * 1103515245 + 12345) % 2147483648
+				return rs2 / 2147483648
+			end
+			itemList = Rings.items(rng2, ringList)
+			local assetOf = {
+				coin = { "Relics", "coin", 3 },
+				gem = { "Cargo", "gem-medium", 3 },
+				chest = { "Naval", "chest", 4 },
+				bottle = { "Naval", "bottle-large", 4 },
+				buoy = { "Naval", "buoy", 4 },
+			}
+			for _, it in itemList do
+				local p, d = positionAt(pts, cum, it.at * total)
+				local c = p + Vector3.new(-d.Z, 0, d.X) * it.lat * LATSCALE
+				local a = assetOf[it.kind]
+				local m = info.place and info.place(folder, a[1], a[2], ORIGIN, a[3])
+				it.pos = Vector3.new(c.X, 2.2, c.Z)
+				if m then
+					m:PivotTo(CFrame.new(it.pos))
+				end
+				table.insert(itemParts, m or false)
 			end
 		end
 		-- 효과: 통과 글자, 붉은 화면 번쩍임, 빛 알갱이 폭발, 속도선
@@ -1393,7 +1428,7 @@ function VoyageScene.play(info)
 			mapShip.Rotation = -math.deg(helmYaw)
 			windArrow.Rotation = -math.deg(windFrom + math.pi)
 		else
-			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) * (if tally.stun > 0 then 0.6 else 1) else 1))
+			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) * (if tally.stun > 0 then 0.6 else 1) * (if tally.boost > 0 then 1.35 else 1) else 1))
 			pos, dir = positionAt(pts, cum, dist)
 		end
 		if manual then
@@ -1428,6 +1463,13 @@ function VoyageScene.play(info)
 				lat += (0 - lat) * math.min(1, dt * 2)
 				bandFrame.Visible = false
 				scoreLabel.Text = "자동 항해 중"
+				for _, ip in itemParts do
+					if typeof(ip) == "Instance" then
+						ip:Destroy()
+					end
+				end
+				itemParts = {}
+				nextItem = #itemList + 1
 				for _, dpart in ringParts do
 					if typeof(dpart) == "Instance" then
 						for _, bp in dpart:GetDescendants() do
@@ -1443,6 +1485,32 @@ function VoyageScene.play(info)
 				nextRing = #ringList + 1
 			else
 				tally.stun = math.max(0, tally.stun - dt)
+				tally.boost = math.max(0, tally.boost - dt)
+				while itemList[nextItem] and dist / total >= itemList[nextItem].at do
+					local it = itemList[nextItem]
+					local m = itemParts[nextItem]
+					if Rings.hitItem(it, lat) then
+						Rings.pickup(tally, it)
+						local label, col = "코인!", Color3.fromRGB(255, 215, 90)
+						if it.kind == "gem" then
+							label, col = "보석 획득!", Color3.fromRGB(150, 230, 255)
+						elseif it.kind == "chest" then
+							label, col = "보물상자! 행운!", Color3.fromRGB(255, 226, 110)
+						elseif it.kind == "bottle" then
+							label, col = "행운의 순풍! 속도 UP", Color3.fromRGB(140, 255, 200)
+						elseif it.kind == "buoy" then
+							label, col = "부표 수리! 충격 해제", Color3.fromRGB(255, 170, 120)
+						end
+						burstAt(it.pos + Vector3.new(0, 2, 0), col, 28)
+						ringPopup(label, col)
+						Sfx.play(if it.kind == "chest" or it.kind == "gem" then "sfx_horn" else "sfx_coin", 0.5, if it.kind == "coin" then 1.2 else 1)
+						if m and m:IsA("Model") then
+							m:Destroy()
+							itemParts[nextItem] = false
+						end
+					end
+					nextItem += 1
+				end
 				while ringList[nextRing] and dist / total >= ringList[nextRing].at do
 					local r = ringList[nextRing]
 					local ok = Rings.hit(r, lat)
@@ -1500,16 +1568,29 @@ function VoyageScene.play(info)
 					end
 					nextRing += 1
 				end
-				local nr = ringList[nextRing]
+				local nr = nil
+				for ni = nextRing, #ringList do
+					if not ringList[ni].hazard then
+						nr = ringList[ni]
+						break
+					end
+				end
 				bandFrame.Visible = nr ~= nil
 				if nr then
 					bandFrame.Size = UDim2.new(Rings.radius(nr) * 0.9, 0, 1, 0)
 					bandFrame.Position = UDim2.fromScale(0.5 + nr.lat * 0.45, 0.5)
 					bandFrame.BackgroundColor3 = if Rings.hit(nr, lat) then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(230, 190, 80)
 				end
-				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 암초 충돌!" else "")
+				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 충돌!" elseif tally.boost > 0 then " · 순풍!" else "")
 			end
 			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
+			-- 물건은 둥실 떠서 돈다
+			for ii = nextItem, math.min(#itemList, nextItem + 8) do
+				local m, it = itemParts[ii], itemList[ii]
+				if m and m:IsA("Model") and it then
+					m:PivotTo(CFrame.new(it.pos + Vector3.new(0, math.sin(t * 2.4 + ii) * 0.6, 0)) * CFrame.Angles(0, t * 1.8 + ii, 0))
+				end
+			end
 			-- 다가오는 고리는 맥동하며 빛난다
 			for _, rp in ringPulse do
 				local ahead = rp.at - dist / total
