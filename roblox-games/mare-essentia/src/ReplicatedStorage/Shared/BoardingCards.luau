@@ -75,11 +75,27 @@ B.Leaders = {
 	clear = { id = "clear", name = "항로 개척", text = "날씨를 걷어 낸다", provision = 15 },
 	snipe = { id = "snipe", name = "저격", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5 },
 	-- 유럽 정복자 지도자: 필드 밖에 서서 한 판에 한 번 능력을 쓴다
-	napoleon = { id = "napoleon", name = "나폴레옹", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "europe", era = "정복자" },
-	caesar = { id = "caesar", name = "카이사르", text = "카드를 두 장 뽑는다", provision = 12, faction = "europe", era = "정복자" },
-	alexander = { id = "alexander", name = "알렉산드로스", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "europe", era = "정복자" },
-	charlemagne = { id = "charlemagne", name = "샤를마뉴", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "europe", era = "정복자" },
-	elizabeth = { id = "elizabeth", name = "엘리자베스 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "europe", era = "해양" },
+	napoleon = { fx = "hornRanged", id = "napoleon", name = "나폴레옹", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "europe", era = "정복자" },
+	caesar = { fx = "draw2", id = "caesar", name = "카이사르", text = "카드를 두 장 뽑는다", provision = 12, faction = "europe", era = "정복자" },
+	alexander = { fx = "bonusMelee", id = "alexander", name = "알렉산드로스", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "europe", era = "정복자" },
+	charlemagne = { fx = "restore", id = "charlemagne", name = "샤를마뉴", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "europe", era = "정복자" },
+	elizabeth = { fx = "clearBonusRanged", id = "elizabeth", name = "엘리자베스 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "europe", era = "해양" },
+	-- 동아시아
+	genghis = { fx = "bonusMelee", id = "genghis", name = "칭기즈 칸", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "east_asia", era = "정복자" },
+	qinshi = { fx = "hornMelee", id = "qinshi", name = "진시황", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
+	yisunsin = { fx = "snipe", id = "yisunsin", name = "이순신", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "east_asia", era = "해양" },
+	-- 신대륙
+	pachacuti = { fx = "draw2", id = "pachacuti", name = "파차쿠텍", text = "카드를 두 장 뽑는다", provision = 12, faction = "new_world", era = "정복자" },
+	montezuma = { fx = "hornMelee", id = "montezuma", name = "몬테수마 2세", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "new_world", era = "제국" },
+	sittingbull = { fx = "clearBonusRanged", id = "sittingbull", name = "시팅 불", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "new_world", era = "수호" },
+	-- 중동
+	saladin = { fx = "snipe", id = "saladin", name = "살라딘", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "middle_east", era = "수호" },
+	suleiman = { fx = "hornRanged", id = "suleiman", name = "술레이만 대제", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "middle_east", era = "제국" },
+	cyrus = { fx = "restore", id = "cyrus", name = "키루스 대왕", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "middle_east", era = "정복자" },
+	-- 아프리카
+	mansa = { fx = "draw2", id = "mansa", name = "만사 무사", text = "카드를 두 장 뽑는다", provision = 12, faction = "africa", era = "부유" },
+	hannibal = { fx = "snipe", id = "hannibal", name = "한니발", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "africa", era = "정복자" },
+	shaka = { fx = "bonusMelee", id = "shaka", name = "샤카 줄루", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "africa", era = "정복자" },
 }
 
 -- 보급 비용: 덱의 카드 비용 합이 한도(CardBook.PROVISION_BASE + 지도자 보너스)를 넘지 못한다.
@@ -544,17 +560,17 @@ B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "r
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
-	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "snipe",
+	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", leaders = { "genghis", "qinshi", "yisunsin" },
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
-	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "clear",
+	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30"} },
-	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "snipe",
+	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "draw",
 		roster = { "raider", "raider", "raider", "swordsman", "pikeman", "surgeon", "surgeon", "musketeer", "scout", "sniper", "swivel", "swivel", "swivel", "gunner", "wind", "ironclad", "decoy" } },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
-	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "draw",
+	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "africa", "lost" }
@@ -1200,36 +1216,40 @@ function B.useLeader(m: any, side)
 		return false, "지금은 쓸 수 없어요"
 	end
 	local id = m.leader[side]
+	local ld = B.Leaders[id]
+	local fx = if ld and ld.fx then ld.fx else id
+	local nm = if ld then ld.name else id
 	m.leaderUsed[side] = true
 	local msg
-	if id == "draw" then
+	if fx == "draw" then
 		drawCards(m, side, 1)
 		msg = "지휘: 카드를 한 장 더 뽑았다"
-	elseif id == "clear" then
+	elseif fx == "clear" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "항로 개척: 날씨가 걷혔다"
-	elseif id == "napoleon" then
-		m.horn[side].ranged = true
-		msg = "나폴레옹: 후열 점수가 두 배!"
-	elseif id == "caesar" then
+	elseif fx == "hornRanged" or fx == "hornMelee" then
+		local row = if fx == "hornRanged" then "ranged" else "melee"
+		m.horn[side][row] = true
+		msg = string.format("%s: %s 점수가 두 배!", nm, B.ROW_NAME[row])
+	elseif fx == "draw2" then
 		drawCards(m, side, 2)
-		msg = "카이사르: 카드를 두 장 뽑았다"
-	elseif id == "alexander" then
+		msg = nm .. ": 카드를 두 장 뽑았다"
+	elseif fx == "bonusMelee" then
 		m.rowBonus[side].melee = (m.rowBonus[side].melee or 0) + 1
-		msg = "알렉산드로스: 전열이 모두 +1"
-	elseif id == "charlemagne" then
+		msg = nm .. ": 전열이 모두 +1"
+	elseif fx == "restore" then
 		m.refuted[side] = {}
-		msg = "샤를마뉴: 끊긴 연쇄가 되살아났다"
-	elseif id == "elizabeth" then
+		msg = nm .. ": 끊긴 연쇄가 되살아났다"
+	elseif fx == "clearBonusRanged" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		m.rowBonus[side].ranged = (m.rowBonus[side].ranged or 0) + 1
-		msg = "엘리자베스 1세: 날씨가 걷히고 후열이 +1"
+		msg = nm .. ": 날씨가 걷히고 후열이 +1"
 	else
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
 			-- 동점이면 첫 하나만
 			removeHits(m, { hits[1] })
-			msg = string.format("저격: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", best)
+			msg = string.format("%s: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", if fx == "snipe" and nm ~= "snipe" then nm else "저격", best)
 		else
 			msg = "저격 — 맞힐 카드가 없었다"
 		end

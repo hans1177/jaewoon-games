@@ -3856,6 +3856,27 @@ do
 	check("저장 정리에서 지도자가 유지된다", CBk.sanitize({ leader = "alexander" }, "europe").leader == "alexander" and CBk.sanitize({ leader = "samurai" }, "europe").leader == nil)
 end
 
+
+-- [지도자] 모든 대륙 지도자는 능력이 실제로 동작한다
+do
+	local BC = D.BoardingCards
+	for _, fid in { "europe", "east_asia", "new_world", "middle_east", "africa" } do
+		local f = BC.Factions[fid]
+		check("대륙 지도자 3명 이상: " .. fid, f.leaders ~= nil and #f.leaders >= 3 and table.find(f.leaders, f.leader) ~= nil)
+		for _, lid in f.leaders or {} do
+			local ld = BC.Leaders[lid]
+			check("지도자 소속 일치: " .. lid, ld ~= nil and ld.faction == fid and ld.fx ~= nil)
+			local m = BC.newMatch({}, lid, {}, "draw", function() return 0.9 end, fid, "europe")
+			m.turn = "me"
+			table.insert(m.rows.foe.melee, table.clone(BC.Units.swordsman))
+			table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			local okUse = BC.useLeader(m, "me")
+			check("지도자 능력 사용: " .. lid, okUse == true and m.leaderUsed.me == true)
+		end
+	end
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")
