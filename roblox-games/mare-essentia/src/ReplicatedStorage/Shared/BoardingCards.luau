@@ -212,15 +212,15 @@ B.Units.ea_01 = { id="ea_01", name="판옥선", category="선박", lore="넓은 
 B.Units.ea_02 = { id="ea_02", name="거북선", category="선박", lore="덮개형 상갑판이 특징인 조선 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="거북선" }, row="cannon", power=5, weapon="cannon", ability="bond", cause="ea_01" }
 B.Units.ea_03 = { id="ea_03", name="조선 세견선", category="선박", lore="동아시아의 선박 유산 · 조선 세견선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 세견선" }, row="ranged", power=6, weapon="gun", ability="armor" }
 B.Units.ea_04 = { id="ea_04", name="명나라 복선", category="선박", lore="동아시아의 선박 유산 · 명나라 복선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="명나라 복선" }, row="cannon", power=5, weapon="cannon", ability="bond" }
-B.Units.ea_05 = { id="ea_05", name="명나라 사선", category="선박", lore="동아시아의 선박 유산 · 명나라 사선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="명나라 사선" }, row="ranged", power=4, weapon="gun", ability="spy", cause="ea_04" }
+B.Units.ea_05 = { id="ea_05", name="명나라 사선", category="선박", lore="동아시아의 선박 유산 · 명나라 사선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="명나라 사선" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.ea_06 = { id="ea_06", name="중국 정크선", category="선박", lore="동아시아의 전통적인 돛살 범선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="중국 정크선" }, row="ranged", power=7, weapon="gun", ability="bond" }
-B.Units.ea_07 = { id="ea_07", name="명나라 보선", category="선박", lore="명대 대규모 원양항해에 쓰인 선박", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="명나라 보선" }, row="ranged", power=5, weapon="gun", ability="morale", cause="ea_04" }
+B.Units.ea_07 = { id="ea_07", name="명나라 보선", category="선박", lore="명대 대규모 원양항해에 쓰인 선박", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="명나라 보선" }, row="ranged", power=5, weapon="gun", ability="morale", cause="ea_33" }
 B.Units.ea_08 = { id="ea_08", name="아타케부네", category="선박", lore="일본 전국시대의 대형 전투선", stage={ art="CardArt/event_chart_east_asia", motion="board", scene="아타케부네" }, row="melee", power=4, weapon="axe", ability="spy" }
-B.Units.ea_09 = { id="ea_09", name="세키부네", category="선박", lore="일본 전국시대의 중형 전투선", stage={ art="CardArt/event_chart_east_asia", motion="board", scene="세키부네" }, row="melee", power=6, weapon="spear", cause="ea_08" }
+B.Units.ea_09 = { id="ea_09", name="세키부네", category="선박", lore="일본 전국시대의 중형 전투선", stage={ art="CardArt/event_chart_east_asia", motion="board", scene="세키부네" }, row="melee", power=6, weapon="spear" }
 B.Units.ea_10 = { id="ea_10", name="고바야", category="선박", lore="일본의 빠른 소형 전투선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="고바야" }, row="ranged", power=9, hero=true }
 B.Units.ea_11 = { id="ea_11", name="고려 청자", category="유물", lore="동아시아의 유물 유산 · 고려 청자", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="고려 청자" }, row="ranged", power=3, weapon="gun", ability="spy" }
-B.Units.ea_12 = { id="ea_12", name="조선 백자 달항아리", category="유물", lore="동아시아의 유물 유산 · 조선 백자 달항아리", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="조선 백자 달항아리" }, row="melee", power=4, weapon="axe", ability="morale", cause="ea_11" }
-B.Units.ea_13 = { id="ea_13", name="명대 청화백자", category="유물", lore="동아시아의 유물 유산 · 명대 청화백자", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="명대 청화백자" }, row="ranged", power=4, weapon="gun", ability="morale", cause="ea_12" }
+B.Units.ea_12 = { id="ea_12", name="조선 백자 달항아리", category="유물", lore="동아시아의 유물 유산 · 조선 백자 달항아리", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="조선 백자 달항아리" }, row="melee", power=4, weapon="axe", ability="morale" }
+B.Units.ea_13 = { id="ea_13", name="명대 청화백자", category="유물", lore="동아시아의 유물 유산 · 명대 청화백자", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="명대 청화백자" }, row="ranged", power=4, weapon="gun", ability="morale" }
 B.Units.ea_14 = { id="ea_14", name="일본 칠기함", category="유물", lore="동아시아의 유물 유산 · 일본 칠기함", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="일본 칠기함" }, row="melee", power=4, weapon="sword", ability="armor" }
 B.Units.ea_15 = { id="ea_15", name="중국 옥벽", category="유물", lore="동아시아의 유물 유산 · 중국 옥벽", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="중국 옥벽" }, row="cannon", power=5, weapon="cannon", ability="bond" }
 B.Units.ea_16 = { id="ea_16", name="류큐 칠기", category="유물", lore="동아시아의 유물 유산 · 류큐 칠기", stage={ art="CardArt/event_chart_east_asia", motion="scout", scene="류큐 칠기" }, row="ranged", power=3, weapon="gun", ability="spy" }
@@ -239,6 +239,9 @@ B.Units.ea_28 = { id="ea_28", name="후지산", category="지형·원더", lore=
 B.Units.ea_29 = { id="ea_29", name="태산", category="지형·원더", lore="동아시아의 지형·원더 유산 · 태산", stage={ art="CardArt/event_chart_east_asia", motion="clear", scene="태산" }, row="melee", power=5, weapon="spear" }
 B.Specials.ea_30 = { id="ea_30", name="동중국해 계절풍", category="지형·원더", lore="계절에 따라 항로의 방향과 속도를 바꾸는 바람", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="동중국해 계절풍" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.ea_31 = { id="ea_31", name="해상 봉쇄령", category="선박", lore="조정이 바닷길을 닫아 배의 이동을 막은 명령", stage={ art="CardArt/event_chart_world", motion="storm", scene="해상 봉쇄령" }, special="refute", refuteKind="선박", text="상대 카드 중 선박에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.ea_32 = { id="ea_32", name="정화의 원정", category="사건", lore="명나라 함대가 인도양까지 일곱 번 항해한 대원정", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="정화의 원정" }, row="ranged", power=3, weapon="gun" }
+B.Units.ea_33 = { id="ea_33", name="정화", category="인물", lore="대원정을 이끈 명나라의 환관 제독", stage={ art="CardArt/event_chart_east_asia", motion="board", scene="정화" }, row="melee", power=5, weapon="sword", cause="ea_32" }
+B.Units.ea_34 = { id="ea_34", name="화약 무기", category="기술", lore="중국에서 시작돼 동아시아 전쟁을 바꾼 화약 무기", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="화약 무기" }, row="cannon", power=4, weapon="cannon" }
 B.Units.me_01 = { id="me_01", name="아라비아 다우선", category="선박", lore="아라비아해의 전통적인 삼각돛 목선", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="아라비아 다우선" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.me_02 = { id="me_02", name="바갈라", category="선박", lore="페르시아만과 인도양을 누비던 대형 교역선", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="바갈라" }, row="ranged", power=5, weapon="gun", ability="bond" }
 B.Units.me_03 = { id="me_03", name="붐선", category="선박", lore="페르시아만의 장거리 화물 범선", stage={ art="CardArt/event_chart_mediterranean", motion="wind", scene="붐선" }, row="ranged", power=6, weapon="gun", ability="armor" }
@@ -253,8 +256,8 @@ B.Units.me_11 = { id="me_11", name="페르시아 황동 천문반", category="�
 B.Units.me_12 = { id="me_12", name="이즈니크 타일", category="유물", lore="중동의 유물 유산 · 이즈니크 타일", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="이즈니크 타일" }, row="melee", power=4, weapon="axe", ability="morale" }
 B.Units.me_13 = { id="me_13", name="다마스쿠스 강철검", category="유물", lore="중동의 유물 유산 · 다마스쿠스 강철검", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="다마스쿠스 강철검" }, row="ranged", power=4, weapon="gun", ability="morale" }
 B.Units.me_14 = { id="me_14", name="페르시아 양탄자", category="유물", lore="중동의 유물 유산 · 페르시아 양탄자", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="페르시아 양탄자" }, row="melee", power=4, weapon="sword", ability="armor" }
-B.Units.me_15 = { id="me_15", name="오스만 도자기 향로", category="유물", lore="중동의 유물 유산 · 오스만 도자기 향로", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="오스만 도자기 향로" }, row="cannon", power=5, weapon="cannon", ability="bond", cause="me_12" }
-B.Units.me_16 = { id="me_16", name="사산 왕조 은접시", category="유물", lore="중동의 유물 유산 · 사산 왕조 은접시", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="사산 왕조 은접시" }, row="ranged", power=3, weapon="gun", ability="spy", cause="me_15" }
+B.Units.me_15 = { id="me_15", name="오스만 도자기 향로", category="유물", lore="중동의 유물 유산 · 오스만 도자기 향로", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="오스만 도자기 향로" }, row="cannon", power=5, weapon="cannon", ability="bond" }
+B.Units.me_16 = { id="me_16", name="사산 왕조 은접시", category="유물", lore="중동의 유물 유산 · 사산 왕조 은접시", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="사산 왕조 은접시" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Specials.me_17 = { id="me_17", name="오스만 함대 군기", category="유물", lore="중동의 유물 유산 · 오스만 함대 군기", stage={ art="CardArt/event_chart_mediterranean", motion="scout", scene="오스만 함대 군기", prop={"Naval","flag-high"} }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
 B.Units.me_18 = { id="me_18", name="단봉낙타", category="동물", lore="중동의 동물 유산 · 단봉낙타", stage={ art="CardArt/event_chart_mediterranean", motion="pounce", scene="단봉낙타" }, row="melee", power=7, weapon="sword" }
 B.Units.me_19 = { id="me_19", name="아라비아오릭스", category="동물", lore="중동의 동물 유산 · 아라비아오릭스", stage={ art="CardArt/event_chart_mediterranean", motion="gallop", scene="아라비아오릭스" }, row="melee", power=5, weapon="axe", ability="morale" }
@@ -270,6 +273,9 @@ B.Specials.me_28 = { id="me_28", name="루브알할리 사막", category="지형
 B.Units.me_29 = { id="me_29", name="바빌론 유적", category="지형·원더", lore="중동의 지형·원더 유산 · 바빌론 유적", stage={ art="CardArt/event_chart_mediterranean", motion="clear", scene="바빌론 유적" }, row="melee", power=5, weapon="spear" }
 B.Specials.me_30 = { id="me_30", name="샤말 바람", category="지형·원더", lore="페르시아만에 부는 강한 북서풍", stage={ art="CardArt/event_storm", motion="wind", scene="샤말 바람" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.me_31 = { id="me_31", name="사막 약탈", category="유물", lore="대상을 덮쳐 귀한 물건을 빼앗는 약탈", stage={ art="CardArt/event_chart_world", motion="storm", scene="사막 약탈" }, special="refute", refuteKind="유물", text="상대 카드 중 유물에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.me_32 = { id="me_32", name="콘스탄티노폴리스 함락", category="사건", lore="오스만이 거대한 성벽 도시를 무너뜨린 1453년의 포위전", stage={ art="CardArt/event_chart_mediterranean", motion="fire", scene="콘스탄티노폴리스 함락" }, row="cannon", power=4, weapon="cannon", cause="me_34" }
+B.Units.me_33 = { id="me_33", name="메흐메트 2세", category="인물", lore="콘스탄티노폴리스를 함락한 오스만의 젊은 술탄", stage={ art="CardArt/event_chart_mediterranean", motion="board", scene="메흐메트 2세" }, row="melee", power=6, weapon="sword", cause="me_32" }
+B.Units.me_34 = { id="me_34", name="거대 대포", category="기술", lore="성벽을 부수려고 만든 거대한 청동 대포", stage={ art="CardArt/event_chart_mediterranean", motion="fire", scene="거대 대포" }, row="cannon", power=4, weapon="cannon" }
 B.Units.nw_01 = { id="nw_01", name="카리브 전투 카누", category="선박", lore="카리브해의 해상 기동용 노젓는 카누", stage={ art="CardArt/event_chart_south_america", motion="board", scene="카리브 전투 카누" }, row="melee", power=4, weapon="sword", ability="spy" }
 B.Units.nw_02 = { id="nw_02", name="카리브 대형 카누", category="선박", lore="신대륙의 선박 유산 · 카리브 대형 카누", stage={ art="CardArt/event_chart_south_america", motion="wind", scene="카리브 대형 카누" }, row="ranged", power=5, weapon="gun", ability="spy", cause="nw_01" }
 B.Units.nw_03 = { id="nw_03", name="마야 교역 카누", category="선박", lore="중앙아메리카 연안과 하천을 오가던 교역 카누", stage={ art="CardArt/event_chart_south_america", motion="wind", scene="마야 교역 카누" }, row="ranged", power=6, weapon="gun", ability="bond" }
@@ -282,7 +288,7 @@ B.Units.nw_09 = { id="nw_09", name="이누이트 카약", category="선박", lor
 B.Units.nw_10 = { id="nw_10", name="북서해안 삼나무 카누", category="선박", lore="신대륙의 선박 유산 · 북서해안 삼나무 카누", stage={ art="CardArt/event_chart_south_america", motion="board", scene="북서해안 삼나무 카누" }, row="melee", power=9, hero=true }
 B.Units.nw_11 = { id="nw_11", name="아즈텍 태양석", category="유물", lore="신대륙의 유물 유산 · 아즈텍 태양석", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="아즈텍 태양석" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Units.nw_12 = { id="nw_12", name="마야 비취 가면", category="유물", lore="신대륙의 유물 유산 · 마야 비취 가면", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="마야 비취 가면" }, row="melee", power=4, weapon="axe", ability="morale" }
-B.Units.nw_13 = { id="nw_13", name="잉카 키푸", category="유물", lore="신대륙의 유물 유산 · 잉카 키푸", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="잉카 키푸" }, row="ranged", power=4, weapon="gun", ability="morale", cause="nw_24" }
+B.Units.nw_13 = { id="nw_13", name="잉카 키푸", category="유물", lore="신대륙의 유물 유산 · 잉카 키푸", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="잉카 키푸" }, row="ranged", power=4, weapon="gun", ability="morale" }
 B.Units.nw_14 = { id="nw_14", name="모체 금가면", category="유물", lore="신대륙의 유물 유산 · 모체 금가면", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="모체 금가면" }, row="melee", power=4, weapon="sword", ability="armor" }
 B.Units.nw_15 = { id="nw_15", name="올메카 거대 석두", category="유물", lore="신대륙의 유물 유산 · 올메카 거대 석두", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="올메카 거대 석두" }, row="cannon", power=5, weapon="cannon", ability="bond" }
 B.Units.nw_16 = { id="nw_16", name="나스카 직물", category="유물", lore="신대륙의 유물 유산 · 나스카 직물", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="나스카 직물" }, row="ranged", power=3, weapon="gun", ability="spy" }
@@ -301,6 +307,9 @@ B.Units.nw_28 = { id="nw_28", name="이과수 폭포", category="지형·원더"
 B.Units.nw_29 = { id="nw_29", name="안데스산맥", category="지형·원더", lore="신대륙의 지형·원더 유산 · 안데스산맥", stage={ art="CardArt/event_chart_south_america", motion="clear", scene="안데스산맥" }, row="melee", power=5, weapon="spear" }
 B.Specials.nw_30 = { id="nw_30", name="카리브 허리케인", category="지형·원더", lore="열대 해역의 항해와 포격을 방해하는 폭풍", stage={ art="CardArt/event_hurricane", motion="storm", scene="카리브 허리케인" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="cannon" }
 B.Specials.nw_31 = { id="nw_31", name="산사태", category="지형·원더", lore="산비탈이 무너져 길과 유적을 덮친 재해", stage={ art="CardArt/event_chart_world", motion="storm", scene="산사태" }, special="refute", refuteKind="지형·원더", text="상대 카드 중 지형·원더에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.nw_32 = { id="nw_32", name="잉카 도로망", category="기술", lore="안데스 산맥을 가로질러 제국을 이은 길", stage={ art="CardArt/event_chart_south_america", motion="scout", scene="잉카 도로망" }, row="melee", power=4, weapon="spear" }
+B.Units.nw_33 = { id="nw_33", name="잉카 제국의 확장", category="사건", lore="길과 역참으로 안데스 전역을 하나로 묶은 시기", stage={ art="CardArt/event_chart_south_america", motion="wind", scene="잉카 제국의 확장" }, row="ranged", power=3, weapon="gun", cause="nw_32" }
+B.Units.nw_34 = { id="nw_34", name="아타우알파", category="인물", lore="잉카 제국의 마지막 황제", stage={ art="CardArt/event_chart_south_america", motion="board", scene="아타우알파" }, row="melee", power=6, weapon="axe", cause="nw_33" }
 B.Units.af_01 = { id="af_01", name="스와힐리 므테페", category="선박", lore="동아프리카 해안의 전통적인 돛배", stage={ art="CardArt/event_chart_west_africa", motion="board", scene="스와힐리 므테페" }, row="melee", power=4, weapon="sword", ability="spy" }
 B.Units.af_02 = { id="af_02", name="잔지바르 다우선", category="선박", lore="스와힐리 연안과 인도양을 잇는 무역선", stage={ art="CardArt/event_zanzibar", motion="wind", scene="잔지바르 다우선" }, row="ranged", power=5, weapon="gun", ability="spy" }
 B.Units.af_03 = { id="af_03", name="나일 펠루카", category="선박", lore="이집트 나일강의 작은 삼각돛배", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="나일 펠루카" }, row="ranged", power=6, weapon="gun", ability="bond", cause="af_04" }
@@ -316,11 +325,11 @@ B.Units.af_12 = { id="af_12", name="아샨티 금추", category="유물", lore="
 B.Units.af_13 = { id="af_13", name="에티오피아 석십자가", category="유물", lore="아프리카의 유물 유산 · 에티오피아 석십자가", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="에티오피아 석십자가" }, row="ranged", power=4, weapon="gun", ability="morale" }
 B.Units.af_14 = { id="af_14", name="이집트 파피루스 두루마리", category="유물", lore="아프리카의 유물 유산 · 이집트 파피루스 두루마리", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="이집트 파피루스 두루마리" }, row="melee", power=4, weapon="sword", ability="armor" }
 B.Units.af_15 = { id="af_15", name="요루바 구슬 왕관", category="유물", lore="아프리카의 유물 유산 · 요루바 구슬 왕관", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="요루바 구슬 왕관" }, row="cannon", power=5, weapon="cannon", ability="bond" }
-B.Units.af_16 = { id="af_16", name="누비아 금장식", category="유물", lore="아프리카의 유물 유산 · 누비아 금장식", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="누비아 금장식" }, row="ranged", power=3, weapon="gun", ability="spy", cause="af_05" }
+B.Units.af_16 = { id="af_16", name="누비아 금장식", category="유물", lore="아프리카의 유물 유산 · 누비아 금장식", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="누비아 금장식" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Specials.af_17 = { id="af_17", name="아샨티 의장 북", category="유물", lore="아프리카의 유물 유산 · 아샨티 의장 북", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="아샨티 의장 북" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
 B.Units.af_18 = { id="af_18", name="아프리카 코끼리", category="동물", lore="아프리카의 동물 유산 · 아프리카 코끼리", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="아프리카 코끼리", prop={"Animals","elephant"} }, row="melee", power=7, weapon="sword" }
 B.Units.af_19 = { id="af_19", name="아프리카사자", category="동물", lore="아프리카의 동물 유산 · 아프리카사자", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="아프리카사자" }, row="melee", power=5, weapon="axe", ability="morale" }
-B.Units.af_20 = { id="af_20", name="기린", category="동물", lore="아프리카의 동물 유산 · 기린", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="기린" }, row="ranged", power=4, weapon="gun", ability="spy", cause="af_28" }
+B.Units.af_20 = { id="af_20", name="기린", category="동물", lore="아프리카의 동물 유산 · 기린", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="기린" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.af_21 = { id="af_21", name="하마", category="동물", lore="아프리카의 동물 유산 · 하마", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="하마" }, row="melee", power=6, weapon="sword", cause="af_26" }
 B.Units.af_22 = { id="af_22", name="검은코뿔소", category="동물", lore="아프리카의 동물 유산 · 검은코뿔소", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="검은코뿔소" }, row="melee", power=5, weapon="axe", ability="armor" }
 B.Units.af_23 = { id="af_23", name="얼룩말", category="동물", lore="아프리카의 동물 유산 · 얼룩말", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="얼룩말" }, row="ranged", power=4, weapon="gun", ability="bond" }
@@ -332,6 +341,9 @@ B.Units.af_28 = { id="af_28", name="킬리만자로", category="지형·원더",
 B.Specials.af_29 = { id="af_29", name="벵겔라 해류", category="지형·원더", lore="아프리카 남서 해안을 따라 흐르는 찬 해류", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="벵겔라 해류" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.af_30 = { id="af_30", name="하르마탄 바람", category="지형·원더", lore="서아프리카에 먼지와 건조한 공기를 보내는 바람", stage={ art="CardArt/event_drought", motion="storm", scene="하르마탄 바람" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
 B.Specials.af_31 = { id="af_31", name="도굴", category="유물", lore="무덤과 유적에서 보물을 훔치는 범죄", stage={ art="CardArt/event_chart_world", motion="storm", scene="도굴" }, special="refute", refuteKind="유물", text="상대 카드 중 유물에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.af_32 = { id="af_32", name="사하라 대상", category="기술", lore="낙타를 줄지어 사막을 건너 금과 소금을 나르던 교역대", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="사하라 대상" }, row="melee", power=4, weapon="spear" }
+B.Units.af_33 = { id="af_33", name="말리 제국의 번영", category="사건", lore="금과 소금 교역으로 서아프리카가 부유해진 시기", stage={ art="CardArt/event_chart_west_africa", motion="wind", scene="말리 제국의 번영" }, row="ranged", power=3, weapon="gun", cause="af_32" }
+B.Units.af_34 = { id="af_34", name="아흐메드 바바", category="인물", lore="팀북투에서 이름을 떨친 서아프리카의 학자", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="아흐메드 바바" }, row="melee", power=5, weapon="sword", cause="af_33" }
 B.Units.sa_01 = { id="sa_01", name="말레이 프라우", category="선박", lore="말레이 해역을 누비던 날렵한 쌍돛배", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="말레이 프라우" }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.sa_02 = { id="sa_02", name="촐라 전함", category="선박", lore="인도양을 건너 동남아까지 닿은 남인도 해군의 큰 배", stage={ art="CardArt/event_chart_southeast_asia", motion="fire", scene="촐라 전함" }, row="cannon", power=6, weapon="cannon", ability="armor" }
 B.Units.sa_03 = { id="sa_03", name="아랍 다우", category="선박", lore="계절풍을 타고 인도양을 오간 삼각돛 무역선", stage={ art="CardArt/event_chart_southeast_asia", motion="wind", scene="아랍 다우" }, row="ranged", power=5, weapon="gun", ability="bond" }
@@ -472,6 +484,9 @@ B.CardEnglish = {
 	ea_29 = { name = "Mount Tai", lore = "A sacred mountain of northeastern China." },
 	ea_30 = { name = "East China Sea Monsoon", lore = "Seasonal winds that shift the direction of East Asian sea routes." },
 	ea_31 = { name = "Maritime Ban", lore = "An edict that closes the sea lanes and halts ship movement." },
+	ea_32 = { name = "Zheng He's Voyages", lore = "Seven great Ming fleet voyages that reached the Indian Ocean." },
+	ea_33 = { name = "Zheng He", lore = "The Ming admiral who led the great treasure voyages." },
+	ea_34 = { name = "Gunpowder Weapons", lore = "Weapons that began in China and changed warfare in East Asia." },
 	me_01 = { name = "Arabian Dhow", lore = "A traditional lateen-rigged wooden ship of the Arabian Sea." },
 	me_02 = { name = "Baghlah", lore = "A large trading vessel of the Persian Gulf and Indian Ocean." },
 	me_03 = { name = "Boom Dhow", lore = "A deep-sea cargo sailing ship of the Persian Gulf." },
@@ -503,6 +518,9 @@ B.CardEnglish = {
 	me_29 = { name = "Ruins of Babylon", lore = "Remains of an ancient Mesopotamian city." },
 	me_30 = { name = "Shamal Wind", lore = "A strong northwesterly wind sweeping across the Persian Gulf." },
 	me_31 = { name = "Desert Raid", lore = "A raid on a caravan that seizes precious goods." },
+	me_32 = { name = "Fall of Constantinople", lore = "The 1453 siege in which the Ottomans broke a great walled city." },
+	me_33 = { name = "Mehmed II", lore = "The young Ottoman sultan who conquered Constantinople." },
+	me_34 = { name = "Great Bombard", lore = "A huge bronze cannon built to batter city walls." },
 	nw_01 = { name = "Caribbean War Canoe", lore = "A swift paddled fighting canoe used in the Caribbean." },
 	nw_02 = { name = "Large Caribbean Canoe", lore = "A broad dugout vessel for coastal voyages and carrying cargo." },
 	nw_03 = { name = "Maya Trading Canoe", lore = "A trading canoe used along Central American coasts and rivers." },
@@ -534,6 +552,9 @@ B.CardEnglish = {
 	nw_29 = { name = "Andes Mountains", lore = "The great mountain chain running along western South America." },
 	nw_30 = { name = "Caribbean Hurricane", lore = "A fierce tropical cyclone that disrupts sailing and cannon fire." },
 	nw_31 = { name = "Landslide", lore = "A disaster where a mountainside collapses over trails and ruins." },
+	nw_32 = { name = "Inca Road System", lore = "Roads that tied the empire together across the Andes." },
+	nw_33 = { name = "Inca Expansion", lore = "An era when roads and way stations united the Andes." },
+	nw_34 = { name = "Atahualpa", lore = "The last emperor of the Inca Empire." },
 	af_01 = { name = "Swahili Mtepe", lore = "A traditional sewn-plank sailing vessel of East Africa." },
 	af_02 = { name = "Zanzibar Dhow", lore = "A trade vessel crossing between the Swahili coast and Indian Ocean ports." },
 	af_03 = { name = "Nile Felucca", lore = "A small lateen-sailed boat used on the Nile River." },
@@ -565,6 +586,9 @@ B.CardEnglish = {
 	af_29 = { name = "Benguela Current", lore = "A cold ocean current flowing along southwestern Africa." },
 	af_30 = { name = "Harmattan Wind", lore = "A dry dusty wind blowing across West Africa." },
 	af_31 = { name = "Tomb Robbing", lore = "The crime of stealing treasure from tombs and ruins." },
+	af_32 = { name = "Sahara Caravan", lore = "Camel trains that crossed the desert carrying gold and salt." },
+	af_33 = { name = "Rise of Mali", lore = "An era when gold and salt trade made West Africa wealthy." },
+	af_34 = { name = "Ahmed Baba", lore = "A scholar of Timbuktu famed across West Africa." },
 	sa_01 = { name = "Malay Prau", lore = "A swift outrigger sailing boat of the Malay seas." },
 	sa_02 = { name = "Chola Warship", lore = "A large South Indian naval vessel that reached Southeast Asia." },
 	sa_03 = { name = "Arab Dhow", lore = "A lateen-sail trade ship that rode the monsoon across the ocean." },
@@ -635,17 +659,17 @@ B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
-		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31"} },
+		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
-		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31"} },
+		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
-		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31"} },
+		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
-		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31" } },
+		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
 B.NationFaction = {

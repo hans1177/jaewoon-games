@@ -3426,7 +3426,7 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 elseif factionId == "lost" or factionId == "southeast_asia" then 30 else 31) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 elseif factionId == "lost" or factionId == "southeast_asia" then 30 else 34) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
@@ -3696,7 +3696,7 @@ do
 	local total, broken = 0, 0
 	for _, prefix in { "eu", "ea", "me", "nw", "af", "sa", "lo" } do
 		local count = 0
-		local per = if prefix == "eu" then 45 elseif prefix == "ea" or prefix == "me" or prefix == "nw" or prefix == "af" then 31 else 30
+		local per = if prefix == "eu" then 45 elseif prefix == "ea" or prefix == "me" or prefix == "nw" or prefix == "af" then 34 else 30
 		for index = 1, per do
 			local id = string.format("%s_%02d", prefix, index)
 			local card = BC.Units[id] or BC.Specials[id]
@@ -3715,7 +3715,7 @@ do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("229장 영어판·한국어판 카드 연결 보존", total == 229 and englishCount == 229 and broken == 0,
+	check("241장 영어판·한국어판 카드 연결 보존", total == 241 and englishCount == 241 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
