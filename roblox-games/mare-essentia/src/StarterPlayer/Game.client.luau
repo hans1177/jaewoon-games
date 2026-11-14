@@ -1219,13 +1219,18 @@ do
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
-		if not port or not playerView or (role ~= "merchant" and role ~= "tavern") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
+		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
 			return nil
 		end
 		local region = if mediterraneanPorts[portId] then "mediterranean" else regionByCountry[port.country]
 		local atlas = region and AssetIds["Portraits/npc_" .. region]
 		if not atlas then
 			return nil
+		end
+		-- 항만 관리관은 장부를 쓰는 사람(2번 칸), 조선 장인은 짐·목재를 나르는 일꾼(3번 칸): 그 지역 시트에서 고정
+		if role == "harbor" or role == "yard" then
+			local c = if role == "harbor" then 2 else 3
+			return atlas, Vector2.new(c % 5 * 200, math.floor(c / 5) * 200), Vector2.new(200, 200)
 		end
 		local seed = 0
 		for index = 1, #portId do
@@ -1240,6 +1245,9 @@ do
 			return fresh, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
 		end
 		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
+		if role == "merchant" and (cell == 2 or cell == 3) then -- 2·3번 칸은 항만 관리관·조선 장인 몫
+			cell += 2
+		end
 		-- 술잔을 든 칸(북해 주점 19번)은 술 그림 금지 규칙에 따라 건너뛴다.
 		if region == "north_sea" and cell == 19 then
 			cell = 18
@@ -4884,7 +4892,8 @@ function openYardHall()
 		left.Visible = showPortrait
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		local yardImageId = FACILITY_ATLAS or PORTRAIT_ATLAS
+		local yardRegionalId, yardRegionalOffset, yardRegionalSize = H.facilityPortraitAsset(p.portId, "yard")
+		local yardImageId = yardRegionalId or FACILITY_ATLAS or PORTRAIT_ATLAS
 		if yardImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "ShipwrightPortrait"
@@ -4893,8 +4902,8 @@ function openYardHall()
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
 			photo.Image = "rbxassetid://" .. tostring(yardImageId)
-			photo.ImageRectOffset = if FACILITY_ATLAS then FACILITY_TILE.yard else PORTRAIT_TILE.yard
-			photo.ImageRectSize = PORTRAIT_SIZE
+			photo.ImageRectOffset = yardRegionalOffset or (if FACILITY_ATLAS then FACILITY_TILE.yard else PORTRAIT_TILE.yard)
+			photo.ImageRectSize = yardRegionalSize or PORTRAIT_SIZE
 			photo.Parent = left
 		else
 			local vf = Instance.new("ViewportFrame")
