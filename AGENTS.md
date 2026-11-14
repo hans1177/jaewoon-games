@@ -20,6 +20,10 @@
 - **실행 규칙:** 게임 생성기·공용 모듈 선택기·디자인 프롬프트·실제 Luau 책임 코드·게시 워크플로 모두 이 규칙을 우선한다. 최신 사용자가 명확하게 예외를 허용한 **특정 요소** 외에는 금지 상태를 유지한다.
 - **공유 범위:** 이 지침은 GitHub 공용 main에서 읽는 에이전트에게 전달되는 작업 규칙이다. 별도 채팅의 GPT가 저장소를 읽지 않았다면 자동으로 숙지했다고 주장하지 않는다.
 
+## 지식카드 그림 제작 (mare-essentia)
+
+카드 그림(이미지)을 만들기 전에 `roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md`를 읽고 화풍·프롬프트·올리는 방법을 따른다. 읽지 못했으면 만들지 말고 알린다. (3D 모델 금지 규칙과 별개로, 2D 카드 그림은 이 문서의 절차를 따른다.)
+
 ## 한방패치
 
 중앙정책 fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch를 따른다.
