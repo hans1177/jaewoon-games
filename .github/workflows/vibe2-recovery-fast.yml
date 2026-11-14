@@ -79,7 +79,7 @@ jobs:
             control=/tmp/vibe2-recovery-control
             git -C "$control" config extensions.worktreeConfig true
             # [복구 큐 전용] 대형 학습·경험 원장을 제외하고 기존 제어 큐 3개와 저장 조각만 읽는다.
-            printf '%s\\n' '/.vibe2/queue.json' '/.vibe2/system-ai-queue.json' '/.vibe2/recovery-queue.json' '/.vibe2/queue/' | git -C "$control" sparse-checkout set --no-cone --stdin
+            printf '%s\n' '/.vibe2/queue.json' '/.vibe2/system-ai-queue.json' '/.vibe2/recovery-queue.json' '/.vibe2/queue/' | git -C "$control" sparse-checkout set --no-cone --stdin
             git -C "$control" checkout HEAD >/dev/null
             echo 'VIBE2_RECOVERY_FAST_SPARSE=CONTROL_QUEUES_ONLY'
             node tools/vibe2-queue-control.mjs storage-unpack --queue="$control/.vibe2/queue.json"
