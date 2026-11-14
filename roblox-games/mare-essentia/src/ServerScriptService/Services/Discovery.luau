@@ -21,6 +21,7 @@ return function(D, S)
 		state.fame += card.reward.fame
 		table.insert(msgs, string.format("도감 등록: %s [%s] (+%d코인, 명성 +%d)", card.name, card.rarity, coins, card.reward.fame))
 		S.State.gainXp(state, "adventure", RARITY_XP[card.rarity] or 15, msgs)
+		S.Perk.autoAssign(state, msgs) -- 직업이 없으면 카드 성과로 자동 배정
 		S.Perk.gainSpec(state, card.field, RARITY_XP[card.rarity] or 15, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
 		local DROP = { Common = 0.15, Uncommon = 0.25, Rare = 0.4, Epic = 0.6, Legendary = 1 }

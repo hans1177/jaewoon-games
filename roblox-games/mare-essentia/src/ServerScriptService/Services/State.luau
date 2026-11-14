@@ -70,6 +70,8 @@ return function(D)
 			intro = { name = false, companion = false, portrait = false }, -- 시작 안내 진행
 			bosses = {},
 			specialty = nil,
+			specAuto = false, -- 직업이 카드 성과로 자동 배정된 상태 (처음 한 번은 무료로 바꿀 수 있다)
+			subSpecialty = nil, -- 부직업 (주직업이 거장(Lv.5)이면 가진다)
 			specLevels = {},
 			companions = {},
 			stations = {}, -- 배의 자리 (자리 id → 동료 id)
@@ -347,6 +349,10 @@ return function(D)
 		end
 		if type(saved.specialty) == "string" and D.Specialties.SpecialtyById[saved.specialty] then
 			s.specialty = saved.specialty
+		end
+		s.specAuto = saved.specAuto == true and s.specialty ~= nil
+		if type(saved.subSpecialty) == "string" and D.Specialties.SpecialtyById[saved.subSpecialty] and saved.subSpecialty ~= s.specialty then
+			s.subSpecialty = saved.subSpecialty
 		end
 		if type(saved.specLevels) == "table" then
 			for id, rec in saved.specLevels do
@@ -875,6 +881,8 @@ return function(D)
 			intro = state.intro,
 			bosses = state.bosses,
 			specialty = state.specialty,
+			specAuto = state.specAuto,
+			subSpecialty = state.subSpecialty,
 			specLevels = state.specLevels,
 			companions = state.companions,
 			stations = state.stations,

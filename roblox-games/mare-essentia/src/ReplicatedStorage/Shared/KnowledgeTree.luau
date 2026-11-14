@@ -296,6 +296,130 @@ for _, d in K.Disciplines do
 	K.DisciplineById[d.id] = d
 end
 
+-- ───────── 인류 학문 분류 (7대 분류 · 끝없이 늘릴 수 있는 스킬 트리) ─────────
+-- 분류(Domain) 아래에 학문이 뿌리-가지로 이어진다. 이미 게임에서 연구할 수 있는 학문(위 Disciplines)은 "active",
+-- 아직 구현 전인 학문은 "연구 예정(planned)" 줄로 미리 자리를 잡아 둔다. 새 학문은 아래 표에 한 줄만 더하면 된다:
+--   p("id", "이름", "분류id", "부모학문id 또는 nil", "한 줄 설명")
+-- 부모는 active 학문이거나 다른 planned 학문이어도 되고, 다른 분류에 있어도 된다(학문 간 파생).
+K.Domains = {
+	{ id = "formal", name = "형식학문", summary = "수·논리·정보처럼 세계를 기호와 증명으로 다루는 학문" },
+	{ id = "natural", name = "자연과학", summary = "물질·생명·우주의 법칙을 관찰과 실험으로 밝히는 학문" },
+	{ id = "applied", name = "응용·공학·의약", summary = "지식을 배·건물·약·기계 같은 쓸모로 바꾸는 학문" },
+	{ id = "humanities", name = "인문학", summary = "말과 글, 역사와 신화, 생각과 믿음을 다루는 학문" },
+	{ id = "social", name = "사회과학", summary = "사람 사이의 거래·법·제도·마음을 다루는 학문" },
+	{ id = "arts", name = "예술", summary = "그림·음악·글·공연으로 아름다움을 만드는 일" },
+	{ id = "practical", name = "실용·생활", summary = "먹고 입고 짓고 기르는 삶의 기술" },
+}
+K.DomainById = {}
+for _, dm in K.Domains do
+	K.DomainById[dm.id] = dm
+end
+
+-- 이미 연구할 수 있는 학문이 속한 분류
+K.DomainOf = {
+	philosophy = "humanities", linguistics = "humanities", archaeology = "humanities", mythology = "humanities", history = "humanities",
+	physics = "natural", astronomy = "natural", chemistry = "natural", geography = "natural", meteorology = "natural",
+	botany = "natural", zoology = "natural", mineralogy = "natural",
+	medicine = "applied", architecture = "applied", shipbuilding = "applied", navigation = "applied",
+	commerce = "social", art = "arts",
+}
+
+-- 연구 예정 학문 (아직 지식 노드·효과가 없는 자리표시)
+K.Planned = {}
+local function p(id: string, name: string, domain: string, parent: string?, summary: string)
+	table.insert(K.Planned, { id = id, name = name, domain = domain, parent = parent, summary = summary, planned = true })
+end
+-- 형식학문
+p("mathematics", "수학", "formal", nil, "수와 도형, 증명. 모든 계산 학문의 뿌리.")
+p("logic", "논리학", "formal", "philosophy", "옳은 추론의 규칙.")
+p("algebra", "대수학", "formal", "mathematics", "미지수와 방정식.")
+p("geometry", "기하학", "formal", "mathematics", "도형과 공간. 측량과 건축의 바탕.")
+p("trigonometry", "삼각법", "formal", "geometry", "각과 거리. 천문 항법의 바탕.")
+p("probability", "확률론", "formal", "mathematics", "우연을 셈하는 학문. 보험과 도박의 바탕.")
+p("statistics", "통계학", "formal", "probability", "자료를 모아 읽는 학문.")
+p("calculus", "해석학", "formal", "algebra", "변화를 셈하는 미적분.")
+p("computer_science", "정보·컴퓨터과학", "formal", "logic", "계산과 정보의 학문.")
+p("cryptography", "암호학", "formal", "mathematics", "비밀을 지키고 푸는 학문.")
+-- 자연과학
+p("biology", "생물학", "natural", "zoology", "생명 전반의 원리.")
+p("ecology", "생태학", "natural", "biology", "생물과 환경의 관계.")
+p("genetics", "유전학", "natural", "biology", "대물림의 원리.")
+p("microbiology", "미생물학", "natural", "biology", "보이지 않는 작은 생명.")
+p("geology", "지질학", "natural", "mineralogy", "땅의 역사와 지층.")
+p("oceanography", "해양학", "natural", "geography", "바다의 흐름·깊이·생물.")
+p("optics", "광학", "natural", "physics", "빛과 렌즈.")
+p("mechanics", "역학", "natural", "physics", "힘과 운동.")
+p("thermodynamics", "열역학", "natural", "physics", "열과 증기의 법칙.")
+p("electromagnetism", "전자기학", "natural", "physics", "전기와 자기.")
+p("organic_chemistry", "유기화학", "natural", "chemistry", "생명 물질의 화학.")
+p("cosmology", "우주론", "natural", "astronomy", "우주의 구조와 기원.")
+p("climatology", "기후학", "natural", "meteorology", "오랜 날씨의 흐름.")
+-- 응용·공학·의약
+p("civil_engineering", "토목공학", "applied", "architecture", "다리·운하·항구를 짓는 기술.")
+p("mechanical_engineering", "기계공학", "applied", "mechanics", "기계와 증기 기관.")
+p("metallurgy", "야금학", "applied", "mineralogy", "광석에서 금속을 뽑는 기술.")
+p("pharmacology", "약학", "applied", "medicine", "약재와 처방.")
+p("surgery", "외과학", "applied", "medicine", "수술과 부상 치료.")
+p("public_health", "보건학", "applied", "medicine", "검역과 위생.")
+p("agronomy", "농학", "applied", "botany", "작물과 농사법.")
+p("veterinary", "수의학", "applied", "zoology", "가축과 동물의 치료.")
+p("cartography", "지도학", "applied", "geography", "지도와 해도 제작.")
+p("military_science", "군사학", "applied", "mechanics", "전술과 화포.")
+-- 인문학
+p("literature", "문학", "humanities", "linguistics", "이야기와 시.")
+p("historiography", "역사학", "humanities", "history", "기록을 비판하고 해석하는 학문.")
+p("ethics", "윤리학", "humanities", "philosophy", "옳고 그름을 묻는 학문.")
+p("aesthetics", "미학", "humanities", "philosophy", "아름다움을 묻는 학문.")
+p("theology", "신학", "humanities", "philosophy", "신과 믿음에 대한 학문.")
+p("religious_studies", "종교학", "humanities", "mythology", "여러 종교를 견주어 보는 학문.")
+p("philology", "문헌학", "humanities", "linguistics", "옛 글을 읽고 바로잡는 학문.")
+-- 사회과학
+p("economics", "경제학", "social", "commerce", "돈과 시장의 법칙.")
+p("law", "법학", "social", "ethics", "법과 계약.")
+p("political_science", "정치학", "social", "law", "권력과 나라의 운영.")
+p("sociology", "사회학", "social", "philosophy", "사회의 구조와 변화.")
+p("anthropology", "인류학", "social", "archaeology", "여러 민족의 삶과 문화.")
+p("psychology", "심리학", "social", "philosophy", "마음과 행동.")
+p("education", "교육학", "social", "psychology", "가르치고 배우는 일.")
+p("human_geography", "인문지리학", "social", "geography", "사람과 땅의 관계.")
+-- 예술
+p("music", "음악", "arts", "art", "소리의 예술.")
+p("painting", "회화", "arts", "art", "그림.")
+p("sculpture", "조각", "arts", "art", "돌과 청동으로 빚는 형상.")
+p("theater", "연극", "arts", "literature", "무대 위의 이야기.")
+p("printmaking", "판화", "arts", "painting", "찍어 내는 그림.")
+-- 실용·생활
+p("cooking", "요리", "practical", "agronomy", "먹거리를 다루는 기술.")
+p("brewing", "양조", "practical", "chemistry", "술과 식초를 빚는 기술.")
+p("textiles", "직물·복식", "practical", "botany", "실을 잣고 옷감을 짜는 기술.")
+p("crafts", "공예", "practical", "art", "도자기·유리·금속 세공.")
+p("sailing_craft", "선원 기술", "practical", "navigation", "매듭·돛 조작·밧줄 다루기.")
+p("trade_craft", "장사 기술", "practical", "commerce", "흥정과 장부.")
+
+-- 전체 분류표: active + planned 를 한 표로 (id → { id, name, domain, parent, planned })
+K.Taxonomy = {}
+K.TaxonomyById = {}
+for _, d in K.Disciplines do
+	local row = { id = d.id, name = d.name, domain = K.DomainOf[d.id], parent = d.parent, summary = d.summary, planned = false }
+	table.insert(K.Taxonomy, row)
+	K.TaxonomyById[d.id] = row
+end
+for _, row in K.Planned do
+	table.insert(K.Taxonomy, row)
+	K.TaxonomyById[row.id] = row
+end
+
+-- 이 학문에서 갈라져 나온 학문들(분류표 기준)
+function K.taxonomyChildren(parentId: string?): { any }
+	local out = {}
+	for _, row in K.Taxonomy do
+		if row.parent == parentId then
+			table.insert(out, row)
+		end
+	end
+	return out
+end
+
 -- 학문이 발달한 항구에서 값이 싸지는(공급이 늘어나는) 관련 교역품
 K.DisciplineGoods = {
 	astronomy = {},

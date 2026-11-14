@@ -542,7 +542,13 @@ return function(D, S)
 			})
 		end
 
-		view.specialties = { current = state.specialty, changeFee = D.Specialties.CHANGE_FEE, list = {} }
+		local rec0 = S.Perk.recommendSpec(state, 1, nil)
+		view.specialties = {
+			current = state.specialty, changeFee = if state.specAuto then 0 else D.Specialties.CHANGE_FEE, list = {},
+			auto = state.specAuto == true, sub = state.subSpecialty, recommend = rec0 and rec0.id or nil,
+			unlockCards = D.Specialties.UNLOCK_CARDS,
+			subOpen = state.specialty ~= nil and S.Perk.specLevel(state, state.specialty) >= D.Specialties.SUB_LEVEL,
+		}
 		for _, sp in D.Specialties.Specialties do
 			local rec = state.specLevels[sp.id]
 			table.insert(view.specialties.list, {
@@ -550,6 +556,10 @@ return function(D, S)
 				name = sp.name,
 				summary = sp.summary,
 				level = if rec then rec.level else 1,
+				rank = D.Specialties.rankName(if rec then rec.level else 1),
+				cards = S.Perk.cardsIn(state, sp),
+				unlocked = S.Perk.specUnlocked(state, sp),
+				domain = sp.domain and D.KnowledgeTree.DomainById[sp.domain] and D.KnowledgeTree.DomainById[sp.domain].name or nil,
 				xp = if rec then rec.xp else 0,
 				nextXp = if rec and rec.level >= D.Specialties.MAX_LEVEL then 0 else D.Specialties.xpForNext(if rec then rec.level else 1),
 			})
