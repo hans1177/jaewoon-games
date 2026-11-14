@@ -78,7 +78,6 @@ local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
 local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
-local CardGallery = require(Shared:WaitForChild("CardGallery"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -1795,243 +1794,141 @@ do
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.fromScale(0.96, 0.94)
+		win.Size = UDim2.fromScale(0.98, 0.96)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer
 		corner(win, 14)
 		hudStroke(win, 2)
 		local cons = Instance.new("UISizeConstraint")
-		cons.MaxSize = Vector2.new(760, 820)
+		cons.MaxSize = Vector2.new(1100, 720)
 		cons.Parent = win
 		local deck = view and view.deck
 		local cards = (deck and deck.cards) or {}
-		local title = mkLabel(win, string.format("🃏 내 카드 (%d장) — 접현 카드전에서 쓰여요", #cards), 18, Color3.fromRGB(246, 208, 130), true)
-		title.Position = UDim2.fromOffset(14, 10)
-		title.Size = UDim2.new(1, -28, 0, 26)
-		title.AutomaticSize = Enum.AutomaticSize.None
-		title.TextScaled = true -- 좁은 화면에서 제목이 잘리지 않게 글자를 줄인다
-		title.TextWrapped = false
-		local titleLimit = Instance.new("UITextSizeConstraint")
-		titleLimit.MaxTextSize = 18
-		titleLimit.MinTextSize = 11
-		titleLimit.Parent = title
-		local list = Instance.new("ScrollingFrame")
-		list.Position = UDim2.fromOffset(10, 44)
-		list.Size = UDim2.new(1, -20, 1, -54)
-		list.BackgroundTransparency = 1
-		list.BorderSizePixel = 0
-		list.ScrollBarThickness = 5
-		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		list.CanvasSize = UDim2.new()
-		list.Parent = win
-		local lay = Instance.new("UIListLayout")
-		lay.Padding = UDim.new(0, 5)
-		lay.SortOrder = Enum.SortOrder.LayoutOrder
-		lay.Parent = list
-		-- ── 퀸트식 덱 구성: 보유 카드를 골라 덱을 짜고, 같은 카드를 모아 동→은→금으로 강화한다 ──
-		do
-			local CBk = require(Shared:WaitForChild("CardBook"))
-			local builder = Instance.new("Frame")
-			builder.BackgroundTransparency = 1
-			builder.Size = UDim2.new(1, -6, 0, 0)
-			builder.AutomaticSize = Enum.AutomaticSize.Y
-			builder.LayoutOrder = 0
-			builder.Parent = list
-			local bl = Instance.new("UIListLayout")
-			bl.Padding = UDim.new(0, 5)
-			bl.SortOrder = Enum.SortOrder.LayoutOrder
-			bl.Parent = builder
-			local want = nil
-			local function bookOf() return (view and view.cardbook) or { owned = {}, tier = {}, ids = {} } end
-			local function resetWant()
-				want = {}
-				for _, id in bookOf().ids do want[id] = (want[id] or 0) + 1 end
-			end
-			local function wantList()
-				local ids = {}
-				for id, n in want do for _ = 1, n do table.insert(ids, id) end end
-				table.sort(ids)
-				return ids
-			end
-			local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
-			local fill
-			local function refreshAfter(action, payload)
-				call(action, payload)
-				if open then resetWant() fill() end
-			end
-			fill = function()
-				for _, ch in builder:GetChildren() do
-					if not ch:IsA("UIListLayout") then ch:Destroy() end
-				end
-				local book = bookOf()
-				local ids = wantList()
-				local okDeck, why = CBk.validateDeck(book, ids)
-				local heroes, specials = 0, 0
-				for _, id in ids do
-					if CBk.isHero(id) then heroes += 1 end
-					if CBk.isSpecial(id) then specials += 1 end
-				end
-				local head = mkHeader(builder, "덱 구성 (퀘스트·발견·탐험·주점에서 새 카드를 모아요)")
-				head.LayoutOrder = 1
-				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 보급 %d/%d · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, CBk.deckCost(ids), CBk.provisionLimit(book.faction, book.leader), heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
-					if okDeck then "이 덱으로 싸울 수 있어요" else "덱을 고쳐 주세요: " .. tostring(why), {
-					{ text = "덱 저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSetDeck", { ids = ids }) end },
-					{ text = "자동 덱", color = COLORS.blue, onClick = function() refreshAfter("CardAutoDeck") end },
-					{ text = "용병 180", color = COLORS.gold, onClick = function() refreshAfter("CardTavern") end },
-				}, 74)
-				summary.LayoutOrder = 2
-				do
-					local fac = BC.Factions[book.faction or ""]
-					if fac and fac.leaders then
-						local cur = book.leader or fac.leader
-						local btns = {}
-						for _, lid in fac.leaders do
-							local ld = BC.Leaders[lid]
-							table.insert(btns, { text = (if lid == cur then "● " else "") .. ld.name, color = if lid == cur then COLORS.gold else COLORS.blue, onClick = function() refreshAfter("CardSetLeader", { id = lid }) end })
-						end
-						local cd = BC.Leaders[cur]
-						local lrow = mkRow(builder, "지도자 (한 판에 한 번 쓰는 능력, 필드 밖에서 도와요)",
-							string.format("%s — %s · 보급 +%d", cd.name, cd.text, cd.provision or 0), btns, 74)
-						lrow.LayoutOrder = 3
-					end
-				end
-				local bk = bookOf()
-				local function playCardOnly(title, build, action, payload, cardCfg)
-					if inField then return end
-					inField = true
-					if open then
-						open:Destroy()
-						open = nil
-					end
-					main.Visible = false
-					NavalBattle.play({
-						shipId = view and view.ship and view.ship.id,
-						enemyName = title,
-						cardOnly = true,
-						card = cardCfg or { prebuilt = build, title = title },
-						deck = view and view.deck,
-						onCards = function(acts)
-							payload.actions = acts
-							local r = call(action, payload)
-							return if r and r.ok then "a" else "b"
-						end,
-						onDone = function()
-							inField = false
-							main.Visible = true
-							render()
-						end,
-					})
-				end
-				if bk.pick then
-					local pr = mkRow(builder, "승리 보상: 카드 1장을 고르세요", "고르지 않으면 이 창을 열 때마다 다시 물어봐요", (function()
-						local bts = {}
-						for i, id in bk.pick do
-							local cd = CBk.def and CBk.def(id)
-							table.insert(bts, { text = (cd and cd.name or id), color = COLORS.gold, onClick = function() refreshAfter("CardPick", { index = i }) end })
-						end
-						return bts
-					end)(), 64)
-					pr.LayoutOrder = 0
-				end
-				H.devCards = {
-					duel = function()
-						local r = call("CardDuelStart")
-						local seed = view and view.cardbook and view.cardbook.duelSeed
-						if r and r.ok and seed then
-							playCardOnly("카드 대결", nil, "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
-						end
-					end,
-					practice = function() playCardOnly("연습전", nil, "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = view.cardbook.practiceIds, tier = {}, bonus = {} } }) end,
-				}
-				local duel = mkRow(builder, string.format("카드 대결 · 내 덱 vs 상대 덱 (오늘 카드 보상 %d회 남음)", (view.cardbook and view.cardbook.duelLeft) or 0), "지금 짠 덱으로 겨뤄요. 이기면 지식 카드를 얻어요. 덱을 먼저 저장하세요", {
-					{ text = "대결", color = COLORS.red, enabled = okDeck, onClick = function()
-						local r = call("CardDuelStart")
-						local seed = view and view.cardbook and view.cardbook.duelSeed
-						if r and r.ok and seed then
-							playCardOnly("카드 대결", nil, "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
-						end
-					end },
-				}, 74)
-				duel.LayoutOrder = 3
-				local train = mkRow(builder, if bk.practiceDone then "연습전 (보상 받음)" else "연습전 · 기본 덱으로 규칙 배우기", "누구나 같은 기본 카드로 겨뤄요. 처음 이기면 지식 카드를 얻어요", {
-					{ text = "연습전", color = COLORS.green, onClick = function()
-						H.devCards.practice()
-					end },
-				}, 64)
-				train.LayoutOrder = 3
-				local rec = mkRow(builder, "추천 덱 (보유 카드로 자동 구성)", "돌격: 근접+군기 · 포격: 사격·포+저격 · 운영: 첩자·치료·회군", {
-					{ text = "돌격", color = COLORS.red, onClick = function() refreshAfter("CardRecommend", { style = "rush" }) end },
-					{ text = "포격", color = COLORS.blue, onClick = function() refreshAfter("CardRecommend", { style = "gun" }) end },
-					{ text = "운영", color = COLORS.green, onClick = function() refreshAfter("CardRecommend", { style = "balance" }) end },
-				}, 64)
-				rec.LayoutOrder = 3
-				local slotBox = (view and view.cardbook and view.cardbook.slots) or {}
-				for slot = 1, CBk.SLOTS do
-					local sl = slotBox[slot]
-					local row = mkRow(builder, string.format("저장 칸 %d: %s", slot, if sl then sl.name .. " (" .. #sl.ids .. "장)" else "비어 있음"), "지금 편집 중인 덱을 저장하거나, 저장한 덱을 불러와요", {
-						{ text = "저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSlotSave", { slot = slot, ids = ids, name = string.format("덱 %d", slot) }) end },
-						{ text = "불러옴", color = COLORS.blue, enabled = sl ~= nil, onClick = function() refreshAfter("CardSlotUse", { slot = slot }) end },
-					}, 52)
-					row.LayoutOrder = 3 + slot
-				end
-				-- 퀸트식 카드 갤러리: 타일 격자·필터·큰 카드 보기·획득처 (보유하지 않은 카드는 어둡게 보여 줘요)
-				local catalog = {}
-				for id in BC.Units do table.insert(catalog, id) end
-				for id in BC.Specials do table.insert(catalog, id) end
-				table.sort(catalog, function(x, y)
-					local dx, dy = CBk.def(x), CBk.def(y)
-					local ox, oy = (book.owned[x] or 0) > 0, (book.owned[y] or 0) > 0
-					if ox ~= oy then return ox end
-					local kx = (dx.hero and 0 or dx.special and 3 or 1)
-					local ky = (dy.hero and 0 or dy.special and 3 or 1)
-					if kx ~= ky then return kx < ky end
-					if (dx.power or 0) ~= (dy.power or 0) then return (dx.power or 0) > (dy.power or 0) end
-					return x < y
-				end)
-				local gal = CardGallery.build(builder, {
-					CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey, overlay = win,
-					getBook = bookOf, getWant = function() return want end,
-					onWant = function(id, delta)
-						want[id] = (want[id] or 0) + delta
-						if want[id] <= 0 then want[id] = nil end
-						fill()
-					end,
-					onUpgrade = function(id) refreshAfter("CardUpgrade", { id = id }) end,
-				}, catalog)
-				gal.LayoutOrder = 10
-				local sep = mkHeader(builder, "동료·발견 카드 (자동으로 합류해요)")
-				sep.LayoutOrder = 9000
-			end
-			resetWant()
-			fill()
+		local CBk = require(Shared:WaitForChild("CardBook"))
+		local DeckBuilder = require(Shared:WaitForChild("DeckBuilder"))
+		local want = {}
+		local ui
+		local function bookOf() return (view and view.cardbook) or { owned = {}, tier = {}, ids = {} } end
+		local function resetWant()
+			want = {}
+			for _, id in bookOf().ids do want[id] = (want[id] or 0) + 1 end
 		end
-		for _, c in cards do
-			local info = BC.SkillInfo[c.skill]
-			local unitId = BC.SkillCard[c.skill]
-			local unit = unitId and (BC.Units[unitId] or BC.Specials[unitId])
-			local unitText = ""
-			if unit then
-				unitText = if unit.special then "특수 카드" else string.format("%s 줄 · 전투력 %d%s", BC.ROW_NAME[unit.row], unit.power, if unit.hero then " · 영웅" else "")
-			end
-			local row = mkLabel(list, string.format("%s  %s\n스킬: %s — %s\n%s", KIND[c.kind] or "🃏", c.name, info and info.name or c.skill, info and info.text or "", unitText), 13, COLORS.text, false)
-			row.AutomaticSize = Enum.AutomaticSize.Y
-			row.Size = UDim2.new(1, -8, 0, 0)
-			row.TextWrapped = true
-			row.TextXAlignment = Enum.TextXAlignment.Left
-			row.BackgroundTransparency = 0.2
-			row.BackgroundColor3 = NAVY2
-			corner(row, 8)
-			if unit then
-				mkButton(list, "전투 카드 펼치기", COLORS.blue, UDim2.new(1, -8, 0, 36), function()
-					H.showCombatCard(unit, c.name, info)
-				end)
+		local function act(action, payload)
+			call(action, payload)
+			if open then
+				resetWant()
+				if ui then ui.refresh(false) end
 			end
 		end
-		local note = mkLabel(list, "줄은 전열(근접)과 후열(사격·포) 둘이에요. 한 판에 카드를 5장까지 낼 수 있어요. 새 지식·유물·동물·항해자를 만날수록 카드가 늘어요.", 12, COLORS.muted, false)
-		note.TextWrapped = true
-		note.Size = UDim2.new(1, -8, 0, 0)
-		note.AutomaticSize = Enum.AutomaticSize.Y
+		local function onWant(id, delta)
+			want[id] = (want[id] or 0) + delta
+			if want[id] <= 0 then want[id] = nil end
+			if ui then ui.refresh(true) end
+		end
+		local function playCardOnly(title, action, payload, cardCfg)
+			if inField then return end
+			inField = true
+			if open then
+				open:Destroy()
+				open = nil
+			end
+			main.Visible = false
+			NavalBattle.play({
+				shipId = view and view.ship and view.ship.id,
+				enemyName = title,
+				cardOnly = true,
+				card = cardCfg or { prebuilt = nil, title = title },
+				deck = view and view.deck,
+				onCards = function(acts)
+					payload.actions = acts
+					local r = call(action, payload)
+					return if r and r.ok then "a" else "b"
+				end,
+				onDone = function()
+					inField = false
+					main.Visible = true
+					render()
+				end,
+			})
+		end
+		local function startPractice()
+			local bk = bookOf()
+			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {} } })
+		end
+		local function startDuel()
+			local r = call("CardDuelStart")
+			local seed = view and view.cardbook and view.cardbook.duelSeed
+			if r and r.ok and seed then
+				playCardOnly("카드 대결", "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+			end
+		end
+		H.devCards = { duel = startDuel, practice = startPractice }
+		-- 전체 카드 목록: 보유한 것을 앞에, 영웅 → 일반 → 특수, 점수 순
+		local catalog = {}
+		for id in BC.Units do table.insert(catalog, id) end
+		for id in BC.Specials do table.insert(catalog, id) end
+		local ownedAtOpen = bookOf().owned
+		table.sort(catalog, function(x, y)
+			local dx, dy = CBk.def(x), CBk.def(y)
+			local ox, oy = (ownedAtOpen[x] or 0) > 0, (ownedAtOpen[y] or 0) > 0
+			if ox ~= oy then return ox end
+			local kx = (dx.hero and 0 or dx.special and 3 or 1)
+			local ky = (dy.hero and 0 or dy.special and 3 or 1)
+			if kx ~= ky then return kx < ky end
+			if (dx.power or 0) ~= (dy.power or 0) then return (dx.power or 0) > (dy.power or 0) end
+			return x < y
+		end)
+		-- 동료·발견 카드 칸(필터 '동료')
+		local function buildCrew(frame)
+			local lay2 = Instance.new("UIListLayout")
+			lay2.Padding = UDim.new(0, 6)
+			lay2.Parent = frame
+			local head = mkLabel(frame, "동료·발견 카드 (자동으로 합류해요)", 16, Color3.fromRGB(246, 208, 130), true)
+			head.Size = UDim2.new(1, -8, 0, 24)
+			for _, c in deck and deck.cards or {} do
+				local info = BC.SkillInfo[c.skill]
+				local unitId = BC.SkillCard[c.skill]
+				local unit = unitId and (BC.Units[unitId] or BC.Specials[unitId])
+				local unitText = ""
+				if unit then
+					unitText = if unit.special then "특수 카드" else string.format("%s 줄 · 전투력 %d%s", BC.ROW_NAME[unit.row], unit.power, if unit.hero then " · 영웅" else "")
+				end
+				local row = mkLabel(frame, string.format("%s  %s\n스킬: %s — %s\n%s", KIND[c.kind] or "🃏", c.name, info and info.name or c.skill, info and info.text or "", unitText), 14, COLORS.text, false)
+				row.AutomaticSize = Enum.AutomaticSize.Y
+				row.Size = UDim2.new(1, -8, 0, 0)
+				row.TextWrapped = true
+				row.TextXAlignment = Enum.TextXAlignment.Left
+				row.BackgroundTransparency = 0.2
+				row.BackgroundColor3 = NAVY2
+				corner(row, 8)
+				if unit then
+					mkButton(frame, "전투 카드 펼치기", COLORS.blue, UDim2.new(1, -8, 0, 38), function()
+						H.showCombatCard(unit, c.name, info)
+					end)
+				end
+			end
+		end
+		local galleryCtx = {
+			CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey, overlay = win,
+			getBook = bookOf, getWant = function() return want end,
+			onWant = function(id, delta) onWant(id, delta) end,
+			onUpgrade = function(id) act("CardUpgrade", { id = id }) end,
+		}
+		resetWant()
+		ui = DeckBuilder.build(win, {
+			CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey,
+			catalog = catalog, galleryCtx = galleryCtx,
+			getBook = bookOf, getView = bookOf, getWant = function() return want end,
+			onWant = onWant, act = act, startPractice = startPractice, startDuel = startDuel,
+			buildExtra = buildCrew,
+			onClose = function()
+				if open then
+					open:Destroy()
+					open = nil
+				end
+			end,
+		})
 	end
 	deckBtn.Activated:Connect(function()
 		Sfx.play("sfx_click")
