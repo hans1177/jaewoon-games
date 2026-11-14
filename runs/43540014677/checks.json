@@ -1,13 +1,13 @@
 {
-  "runId": "43535579220",
+  "runId": "43540014677",
   "kind": "studio",
-  "sourceRevision": "d7d5124d6b5e7eb59e5e3f8cc24762e9f77cf13d",
+  "sourceRevision": "327d4d09648d98b5e2923d8227327b52c3e9345b",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 7,
-    "completedSteps": 7,
+    "plannedSteps": 6,
+    "completedSteps": 6,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
@@ -39,58 +39,51 @@
     },
     {
       "step": 2,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 3,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 4,
+      "step": 3,
       "type": "capture",
-      "name": "holes_lisbon_port",
+      "name": "b1_start",
       "status": "PASS",
       "screenshots": [
-        "holes_lisbon_port-0.jpg"
+        "b1_start-0.jpg"
       ]
     },
     {
-      "step": 5,
-      "type": "luau",
+      "step": 4,
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 6,
+      "step": 5,
       "type": "capture",
-      "name": "holes_ground_scan",
+      "name": "b2_mid",
       "status": "PASS",
       "screenshots": [
-        "holes_ground_scan-0.jpg"
+        "b2_mid-0.jpg"
       ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "holes_ground_scan-0.jpg",
-      "sha256": "a358cf68c01426876fd994ba9a787f197e6841f235162bc058d5fc361b561145",
+      "name": "b1_start-0.jpg",
+      "sha256": "af1505b4b43af6e9a4c6db523a831b078811126c9339c386bd44283312f4612d",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43535579220/holes_ground_scan-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43540014677/b1_start-0.jpg"
     },
     {
-      "name": "holes_lisbon_port-0.jpg",
-      "sha256": "83b59685730c4bf13e8b93cdd3d69a088ff57829f9766f2728b9df490f258520",
+      "name": "b2_mid-0.jpg",
+      "sha256": "3eb870e9aca77ddf7f4b48c9ac6ffcd669821992b31e12d3ee1ecb696f58c13b",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43535579220/holes_lisbon_port-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43540014677/b2_mid-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43532581485"
+  "previousRunId": "43539937497"
 }
