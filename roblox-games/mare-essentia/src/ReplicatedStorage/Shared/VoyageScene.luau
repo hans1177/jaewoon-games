@@ -1781,7 +1781,7 @@ function VoyageScene.play(info)
 			ringPopup(if firstVisitFlag then "첫 항구! 직접 항해!" else "GO!", Color3.fromRGB(255, 240, 160))
 			Sfx.play("sfx_horn", 0.5)
 		end
-		if k > 0.9 and manual and not resultShown and tally.total > 0 and not skipped then
+		if k > 0.94 and manual and not resultShown and tally.total > 0 and not skipped then
 			resultShown = true
 			local sc = Rings.score(tally)
 			local st = Rings.stars(sc)
@@ -1819,6 +1819,13 @@ function VoyageScene.play(info)
 		end
 	end
 
+	-- 결과 패널을 잠깐 읽게 둔다
+	if resultShown and not skipped and gui.Parent then
+		local waited = 0
+		while waited < 2.4 and not skipped and gui.Parent do
+			waited += RunService.Heartbeat:Wait()
+		end
+	end
 	-- 정리
 	workspace:SetAttribute("VoyageActive", nil)
 	camera.CameraType = saved.camType
