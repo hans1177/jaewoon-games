@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1rudxb4",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-studio-evolution-roblox-usability-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+        "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+        "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "7e8c9718f4c76afcc26acf1f38533e3aeac3956f",
+      "runId": "43542567785",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-14T01:55:38.839Z",
+      "expiresAt": "2026-11-14T02:40:38.839Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
