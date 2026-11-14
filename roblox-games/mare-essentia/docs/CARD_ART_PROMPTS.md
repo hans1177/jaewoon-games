@@ -14,6 +14,13 @@
 - 전체 목록: `docs/card_art_prompts.csv` (card_id, name, field, prompt). 카드가 늘면 `python3 tools/gen_card_prompts.py > docs/card_art_prompts.csv` 로 다시 만든다.
 - 목록의 `prompt` 칸을 그대로 쓴다. 임의로 소재를 바꾸지 않는다.
 
+## 대륙 카드(유럽·동아시아·중동·신대륙·아프리카·동남아·미지의 땅) · 지도자
+- 대륙 카드 244장: `docs/continent_card_art_prompts.csv` (card_id, name, category, 현재 그림, 게임 안 움직임, prompt). 현재 그림이 "없음"인 카드부터 만든다.
+- 지도자 21명: `docs/leader_art_prompts.csv` (세로 3:4 전신, 역동적인 자세).
+- 다시 만들기: `python3 tools/gen_continent_card_prompts.py`
+- 그림은 가만히 있는 한 장(4:3)이면 된다. 움직임(안개·빛 지나감·천천히 흐르는 이동·3D 소품)은 게임이 자동으로 입힌다.
+- 인물 카드는 얼굴을 또렷하게 그리지 않는다(뒷모습·실루엣·투구). 지도자 카드는 사용자와 합의한 방식(전신 판화풍)을 따른다.
+
 ## 올리는 방법
 1. 파일 이름은 `카드id.png` (예: `myth_siren.png`)
 2. 위치: `roblox-games/mare-essentia/assets/inbox/CardArt/`
