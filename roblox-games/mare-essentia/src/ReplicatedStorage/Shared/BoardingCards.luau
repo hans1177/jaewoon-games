@@ -1253,6 +1253,15 @@ function B.gainOf(m: any, side, c)
 		else
 			gain = -5
 		end
+	elseif c.special == "refute" then
+		m.refuted = m.refuted or { me = {}, foe = {} }
+		local kind = c.refuteKind or ""
+		local before = B.total(m, side) - B.total(m, foe)
+		local prev = m.refuted[foe][kind]
+		m.refuted[foe][kind] = true
+		local after = B.total(m, side) - B.total(m, foe)
+		m.refuted[foe][kind] = prev
+		gain = if after > before then after - before else -3
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		gain = if pick and pick.score >= 100 then 3 else -4

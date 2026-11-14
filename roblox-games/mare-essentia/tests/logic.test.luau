@@ -3727,6 +3727,10 @@ do
 		local m = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "europe", "europe")
 		m.turn = "me"
 		m.hand = { me = {}, foe = {} }
+		for _ = 1, 4 do -- 손패가 비면 자동으로 멈추므로 여분 카드를 둔다
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.foe, table.clone(BC.Units.swordsman))
+		end
 		return m
 	end
 	local function give(m, side, id)
