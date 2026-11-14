@@ -1,13 +1,13 @@
 {
-  "runId": "43545890247",
+  "runId": "43550002309",
   "kind": "studio",
-  "sourceRevision": "5d03db73aea2e2f9184a42a0d7d0b63ad06db170",
+  "sourceRevision": "b7eb777aad796d7201ab1b42014c0db60f05eba6",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCREENSHOTS_INCOMPLETE",
   "summary": {
-    "plannedSteps": 4,
-    "completedSteps": 4,
+    "plannedSteps": 9,
+    "completedSteps": 9,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
@@ -39,7 +39,7 @@
     },
     {
       "step": 2,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -50,9 +50,44 @@
       "name": "",
       "status": "PASS",
       "screenshots": []
+    },
+    {
+      "step": 4,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 5,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 6,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 7,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 8,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     }
   ],
   "screenshotComparison": [],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43545601437"
+  "previousRunId": "43549700424"
 }
