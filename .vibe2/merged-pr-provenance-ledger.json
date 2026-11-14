@@ -247207,11 +247207,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d9465b68a25aa95eae16bb33",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13291",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2636cf37396b6e934f1bdbe9e8c42a3f2ffb41a6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13291,
+        "baseBranch": "main",
+        "headBranch": "fix/audio-derived",
+        "baseSha": "2636cf37396b6e934f1bdbe9e8c42a3f2ffb41a6",
+        "headSha": "009fb9b60ef66b3d4a9a64a957ba7f02937c94d3",
+        "mergeCommitSha": "446f2693a161ff73cefb0705b2e569521778fa2b",
+        "mergedAt": "2026-11-14T20:12:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fd32ddf54a8796ecda4cd769c8c81b714c6911d007252d04ecc5bb5211959862",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/audio-derived",
+        "candidateSha": "009fb9b60ef66b3d4a9a64a957ba7f02937c94d3"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 51,
+        "changedFiles": [
+          "roblox-games/mare-essentia/audio/out/sfx_card_armor.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_blade.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_chain.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_coin.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_deal.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_fire.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_magic.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_page.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_place.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_ring.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_spell.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_swing.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_card_volley.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_naval_wood.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_skill_evade.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_skill_rapid.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_ui_confirm.ogg",
+          "roblox-games/mare-essentia/audio/out/sfx_ui_select.ogg"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13291",
+        "merge-commit:446f2693a161ff73cefb0705b2e569521778fa2b",
+        "base-main:2636cf37396b6e934f1bdbe9e8c42a3f2ffb41a6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1967
+    "total": 1968
   }
 }
