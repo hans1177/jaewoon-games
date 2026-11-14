@@ -1,0 +1,51 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('VoyageActive', true) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') and g.Name~='BattleGui' then g.Enabled=false end end local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local NB=require(RS.Shared.NavalBattle) local ok,err=pcall(function() NB.play({shipId='galleon',shipName='갈레온',fleet={'플루트선','호위함'},weatherName='맑음',wind=1.0,windAngle=60,enemyName='검은 수염의 배',log={'[1] 우리 배: 포격! 적 선체 -12','[1] 검은 수염의 배: 포격! 선체 -9','[2] 우리 배: 포격! 적 선체 -12','[2] 검은 수염의 배: 포격! 선체 -9','[3] 우리 배: 포격! 적 선체 -12','[3] 검은 수염의 배: 포격! 선체 -9','[4] 우리 배: 포격! 적 선체 -12','[4] 검은 수염의 배: 포격! 선체 -9','[5] 우리 배: 포격! 적 선체 -12','[5] 검은 수염의 배: 포격! 선체 -9','[6] 우리 배: 포격! 적 선체 -12','[6] 검은 수염의 배: 포격! 선체 -9','[7] 우리 배: 포격! 적 선체 -12','[7] 검은 수염의 배: 포격! 선체 -9','[8] 우리 배: 포격! 적 선체 -12','[8] 검은 수염의 배: 포격! 선체 -9','[9] 우리 배: 포격! 적 선체 -40'},winner='a',reason='sunk',isBoss=false,onDone=function() end}) end) return 'play ok='..tostring(ok)..' '..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "n1"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "capture",
+  "name": "n2"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "capture",
+  "name": "n3"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "capture",
+  "name": "n4"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "capture",
+  "name": "n5"
+ }
+]
