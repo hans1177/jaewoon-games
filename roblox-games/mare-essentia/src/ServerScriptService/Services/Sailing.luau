@@ -402,6 +402,7 @@ return function(D, S)
 			end
 		end
 		state.voyageBonusDays = days
+		state.voyageRoute = state.portId .. ">" .. toId
 		state.portId = toId
 		state.stats.visited[toId] = true
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
@@ -485,19 +486,46 @@ return function(D, S)
 	-- 직접 항해 점수(0~1)에 따라 보상: 모험 경험·사기·명성 (항해마다 한 번)
 	function handlers.VoyageBonus(state, p)
 		local days = state.voyageBonusDays
-		if not days or type(p.score) ~= "number" then
+		local auto = p.auto == true
+		if not days or (not auto and type(p.score) ~= "number") then
 			return false, "받을 보상이 없어요"
 		end
 		state.voyageBonusDays = nil
-		local score = math.clamp(p.score, 0, 1)
+		local stats = state.stats
+		stats.manualScores = stats.manualScores or {}
+		stats.routeStars = stats.routeStars or {}
+		local route = state.voyageRoute
+		local score
+		if auto then
+			-- 자동 항해 점수: 최근 수동 점수 평균의 75% (별 2개까지), 수동으로 별 3개를 깬 항로는 최소 65% 보장
+			local sum, n = 0, #stats.manualScores
+			for _, v in stats.manualScores do
+				sum += v
+			end
+			score = math.min(0.89, (if n > 0 then sum / n else 0.5) * 0.75)
+			if route and (stats.routeStars[route] or 0) >= 3 then
+				score = math.max(score, 0.65)
+			end
+		else
+			score = math.clamp(p.score, 0, 1)
+			table.insert(stats.manualScores, score)
+			if #stats.manualScores > 5 then
+				table.remove(stats.manualScores, 1)
+			end
+			if route then
+				local st = if score >= 0.9 then 3 elseif score >= 0.6 then 2 else 1
+				stats.routeStars[route] = math.max(stats.routeStars[route] or 0, st)
+			end
+		end
+		local cm = if auto then 0.5 else 1
 		local msgs = {}
-		table.insert(msgs, string.rep("★", score >= 0.9 and 3 or score >= 0.6 and 2 or 1) .. string.rep("☆", score >= 0.9 and 0 or score >= 0.6 and 1 or 2) .. string.format(" 바람 고리 %d%%", math.floor(score * 100)))
-		local coinBonus = math.min(300, math.floor(days * score * score * 12))
+		table.insert(msgs, (if auto then "[자동 항해] " else "") .. string.rep("★", score >= 0.9 and 3 or score >= 0.6 and 2 or 1) .. string.rep("☆", score >= 0.9 and 0 or score >= 0.6 and 1 or 2) .. string.format(" 바람 고리 %d%%", math.floor(score * 100)))
+		local coinBonus = math.min(300, math.floor(days * score * score * 12 * cm))
 		if coinBonus > 0 then
 			state.coins += coinBonus
 			table.insert(msgs, string.format("바람 고리 보상 코인 +%d", coinBonus))
 		end
-		local xp = math.floor(days * 3 * score)
+		local xp = math.floor(days * 3 * score * cm)
 		if xp > 0 then
 			S.State.gainXp(state, "adventure", xp, msgs)
 		end
@@ -513,7 +541,7 @@ return function(D, S)
 			table.insert(msgs, string.format("바람을 잘 못 탔다 (%d%%). 사기 -3", math.floor(score * 100)))
 		end
 		-- 수동으로 잘 탈수록 행운, 못 탈수록 불운이 따른다 (자동 항해에는 없음)
-		local luckRoll = math.random()
+		local luckRoll = if auto then 1 else math.random()
 		if score >= 0.9 and luckRoll < 0.4 then
 			local extra = math.min(400, 40 + days * 15)
 			state.coins += extra

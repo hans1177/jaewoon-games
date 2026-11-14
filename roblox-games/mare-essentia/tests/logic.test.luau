@@ -1854,6 +1854,21 @@ do
 		okv = act(c, "VoyageBonus", { score = 0.9 })
 		check("voyage bonus good score", okv and c.morale >= math.min(100, m0 + 8) and c.voyageBonusDays == nil)
 		check("voyage bonus only once", not act(c, "VoyageBonus", { score = 1 }))
+		-- 자동 항해 점수: 최근 수동 평균의 75%(별 2개 이하), 3별 항로는 최소 65%, 보상은 절반
+		check("manual score recorded", #c.stats.manualScores >= 1)
+		c.voyageBonusDays = 6
+		c.voyageRoute = "a>b"
+		c.stats.routeStars["a>b"] = 3
+		c.stats.manualScores = { 0.2, 0.2 }
+		local coins0 = c.coins
+		okv = act(c, "VoyageBonus", { auto = true })
+		check("auto voyage allowed with route floor", okv and c.coins >= coins0 and c.voyageBonusDays == nil)
+		c.voyageBonusDays = 6
+		c.voyageRoute = "x>y"
+		c.stats.manualScores = { 1, 1, 1 }
+		okv = act(c, "VoyageBonus", { auto = true })
+		check("auto score never reaches 3 stars", okv and (c.stats.manualScores[#c.stats.manualScores] == 1))
+		check("auto without pending rejected", not act(c, "VoyageBonus", { auto = true }))
 	end
 	check("perk speed with companion", S.Perk.speedMult(c) > 1)
 	ok = act(c, "Dismiss", { companionId = "c_halley" })

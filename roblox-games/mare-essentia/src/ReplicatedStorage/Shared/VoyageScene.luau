@@ -243,6 +243,7 @@ function VoyageScene.play(info)
 	local ringList, ringParts, nextRing = {}, {}, 1
 	local shakeAmp, fovBoost = 0, 0
 	local goShown, resultShown = false, false
+	local bankRoll, lastSteerDir, lastWhoosh, lastAmbLevel = 0, 0, 0, -1
 	local crewRm, crewHeal = 1, 0
 	local firstVisitFlag = info.firstVisit == true
 	local ringPopup = function(_text: string, _color: Color3) end
@@ -250,6 +251,7 @@ function VoyageScene.play(info)
 	local burstAt = function(_pos: Vector3, _color: Color3, _count: number) end
 	local ringPulse = {}
 	local s_speedLines = nil
+	local s_comboGlow = nil
 	local tally = Rings.newTally()
 	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
@@ -498,6 +500,20 @@ function VoyageScene.play(info)
 				table.insert(lines, { f = ln, ang = li / 14 * math.pi * 2 + (li % 3) * 0.13, ph = li * 0.37 })
 			end
 			s_speedLines = lines
+			-- 콤보 테두리 빛: 연속 통과할수록 화면 가장자리가 금빛으로 달아오른다
+			local glow = Instance.new("Frame")
+			glow.Size = UDim2.fromScale(1, 1)
+			glow.BackgroundTransparency = 1
+			glow.BorderSizePixel = 0
+			glow.ZIndex = 3
+			glow.Active = false
+			local gs = Instance.new("UIStroke")
+			gs.Color = Color3.fromRGB(255, 205, 90)
+			gs.Thickness = 22
+			gs.Transparency = 1
+			gs.Parent = glow
+			glow.Parent = gui
+			s_comboGlow = gs
 		end
 		-- 자동 항해 전환 (처음 가는 항구는 직접 항해만)
 		local autoSw = Instance.new("TextButton")
@@ -901,7 +917,7 @@ function VoyageScene.play(info)
 	end
 	local function shipPose(pos, yaw, t)
 		return CFrame.new(pos.X, baseY + math.sin(t * 1.3) * 0.45 + math.sin(t * 2.7) * 0.12, pos.Z) * CFrame.Angles(0, yaw, 0)
-			* CFrame.Angles(heel + math.sin(t * 1.1) * 0.035, 0, math.sin(t * 0.9) * 0.05 + math.sin(t * 1.9) * 0.015)
+			* CFrame.Angles(heel + math.sin(t * 1.1) * 0.035, 0, math.sin(t * 0.9) * 0.05 + math.sin(t * 1.9) * 0.015 + bankRoll)
 	end
 	local rot0 = CFrame.new(-shipBase.Position) * shipBase -- 모델의 원래 방향(회전만)
 	local function applyShip(pos, yaw, t)
@@ -1418,6 +1434,20 @@ function VoyageScene.play(info)
 			end
 			-- 조향: 목표 속도로 빠르게 따라붙고(반응 빠름) 손을 떼면 거의 바로 선다(관성 작음)
 			latV += (push * 2.4 - latV) * math.min(1, dt * 11)
+			-- 배가 조향 방향으로 기운다(배 몸통과 카메라가 같이 기울어 속도감이 난다)
+			bankRoll += (-latV / 2.4 * 0.32 - bankRoll) * math.min(1, dt * 6)
+			local steerDir = if push > 0 then 1 elseif push < 0 then -1 else 0
+			if steerDir ~= 0 and steerDir ~= lastSteerDir and t - lastWhoosh > 0.45 then
+				lastWhoosh = t
+				Sfx.play("sfx_sail_fabric", 0.3, 0.95 + math.random() * 0.15, "sfx_sail")
+			end
+			lastSteerDir = steerDir
+			-- 콤보가 쌓일수록 바람·파도 소리가 커진다
+			local ambLevel = if autoRing then 0 else math.min(tally.combo, 10)
+			if ambLevel ~= lastAmbLevel then
+				lastAmbLevel = ambLevel
+				Sfx.ambient({ "sfx_waves", "sfx_wind" }, 0.55 + ambLevel * 0.045)
+			end
 			lat = math.clamp(lat + latV * dt, -1, 1)
 			if math.abs(lat) >= 1 then
 				latV = 0
@@ -1463,8 +1493,8 @@ function VoyageScene.play(info)
 							shakeAmp = 2.2
 							burstAt(pos + Vector3.new(0, 4, 0), Color3.fromRGB(235, 245, 255), 40)
 							ringPopup("암초 충돌!", Color3.fromRGB(255, 110, 90))
-							Sfx.play("sfx_splash", 0.8)
-							Sfx.play("sfx_creak", 0.6)
+							Sfx.play("sfx_naval_hull_hit", 0.8, 1, "sfx_creak")
+							Sfx.play("sfx_naval_splash", 0.8, 1, "sfx_splash")
 						end
 					elseif ok then
 						local perfect = math.abs(lat - r.lat) <= Rings.radius(r) * 0.4
@@ -1475,13 +1505,19 @@ function VoyageScene.play(info)
 						end
 						ringPopup(label, if perfect then Color3.fromRGB(255, 226, 110) else Color3.fromRGB(190, 240, 255))
 						Sfx.play("sfx_coin", 0.45, math.min(1.5, 0.9 + tally.combo * 0.06))
-						if tally.combo == 5 or tally.combo == 10 then
+						Sfx.play("sfx_sail_fabric", 0.35, 1.1 + math.min(tally.combo, 10) * 0.03, "sfx_sail")
+						if perfect then
+							Sfx.play("sfx_event_discovery", 0.3, 1.2 + math.min(tally.combo, 10) * 0.02, "sfx_bell")
+						end
+						if tally.combo == 5 then
 							Sfx.play("sfx_horn", 0.5, 1.2)
+						elseif tally.combo == 10 then
+							Sfx.play("sfx_fanfare", 0.55, 1.1)
 						end
 					else
 						shakeAmp = math.max(shakeAmp, 0.6)
 						ringPopup(if prevCombo >= 3 then "콤보 끊김..." else "MISS", Color3.fromRGB(255, 150, 120))
-						Sfx.play("sfx_creak", 0.35)
+						Sfx.play("sfx_rope_release", 0.45, 0.9, "sfx_creak")
 					end
 					if part and part:IsA("Model") then
 						for _, bp in part:GetDescendants() do
@@ -1522,6 +1558,10 @@ function VoyageScene.play(info)
 			do
 				local want = if autoRing then 0 else math.min(tally.combo, 10) * 1.5
 				fovBoost += (want - fovBoost) * math.min(1, dt * 3)
+				if s_comboGlow then
+					local gl = if autoRing then 0 else math.clamp((tally.combo - 2) / 8, 0, 1)
+					s_comboGlow.Transparency = 1 - 0.55 * gl * (0.75 + 0.25 * math.sin(t * 6))
+				end
 				if s_speedLines then
 					local strength = if autoRing then 0 else math.clamp((tally.combo - 1) / 8, 0, 1)
 					for _, ln in s_speedLines do
@@ -1786,6 +1826,7 @@ function VoyageScene.play(info)
 		shakeAmp *= math.max(0, 1 - dt * 4)
 		local shakeOff = Vector3.new(math.sin(t * 53) * shakeAmp, math.sin(t * 67) * shakeAmp, 0)
 		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
+		camera.CFrame = camera.CFrame * CFrame.Angles(0, 0, bankRoll * 0.55)
 		ui(k, t)
 
 		if manual and not goShown and t > 0.3 then
