@@ -44,7 +44,7 @@ for kind in ("Units", "Specials"):
         lore = lore or ""
         prompt = f"{name}. {lore}. {CULTURE[cid[:2]]} 문화권 배경. {HINT.get(cat, '대상 하나')}. {STYLE}"
         rows.append([cid, name, cat, "주제 그림 연결됨(맞는지 확인 필요)" if has else "없음(대륙 지도 공용)", MOTION.get(mo.group(1), "은은히 움직이는") if mo else "", prompt])
-rows.sort()
+rows.sort(key=lambda r: (r[2], r[0]))  # 분류별로 묶고, 안에서는 대륙 순
 out = ROOT / "docs/continent_card_art_prompts.csv"
 with out.open("w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
@@ -63,3 +63,24 @@ with lo.open("w", newline="", encoding="utf-8") as f:
     for lid, name, text, fac, era in leaders:
         w.writerow([lid, name, FAC.get(fac, fac), era, f"{name}({FAC.get(fac, fac)} {era}). 지도자 카드 그림: 말이나 전차·배 위, 또는 군대 앞에 선 전신 구도. {LSTYLE}"])
 print(lo, len(leaders), "leaders")
+
+# 분류별 제작 안내 (docs/CARD_ART_BY_CATEGORY.md)
+from collections import defaultdict
+by = defaultdict(list)
+for r in rows:
+    by[r[2]].append(r)
+CONT = {"eu": "유럽", "ea": "동아시아", "me": "중동", "nw": "신대륙", "af": "아프리카", "sa": "동남아", "lo": "미지의 땅"}
+md = ["# 대륙 카드 그림 — 분류별 제작 목록", "", "자동 생성 (`python3 tools/gen_continent_card_prompts.py`). 프롬프트 전문은 `continent_card_art_prompts.csv`.",
+      "한 분류는 한 번에 몰아서 만든다 (같은 분류는 같은 느낌으로 통일). 그림은 가만히 있는 한 장이면 되고 움직임은 게임이 입힌다.", ""]
+for cat, lst in by.items():
+    need = [r for r in lst if r[3].startswith("없음")]
+    md.append(f"## {cat} — {len(lst)}장 (그림 필요 {len(need)}장)")
+    md.append(f"- 만드는 법: {HINT.get(cat, '대상 하나')}")
+    cont = defaultdict(list)
+    for r in lst:
+        cont[CONT[r[0][:2]]].append(f"{r[1]}{'' if r[3].startswith('없음') else '(연결됨)'}")
+    for c, names in cont.items():
+        md.append(f"- {c}: " + ", ".join(names))
+    md.append("")
+(ROOT / "docs/CARD_ART_BY_CATEGORY.md").write_text("\n".join(md), encoding="utf-8")
+print("CARD_ART_BY_CATEGORY.md written")
