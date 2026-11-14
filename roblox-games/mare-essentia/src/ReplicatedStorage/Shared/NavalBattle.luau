@@ -206,6 +206,8 @@ end
 -- opts: { shipId, enemyName, log, winner, reason, isBoss, onDone }
 -- 직접 조종하는 해전: 왼쪽·오른쪽으로 배를 돌리고 가속하면, 사정거리 안에서 대포가 자동으로 나간다.
 -- 맞는 순서와 피해량은 서버가 계산한 전투 기록을 따르므로 결과는 서버 판정과 같다.
+NavalBattle.cardArtworkKey = cardArtworkKey
+
 function NavalBattle.play(opts)
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("BattleScene")
@@ -1090,7 +1092,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 0.3 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 0.9 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -1122,7 +1124,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, 0.42)
+		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
 		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
@@ -1157,8 +1159,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		info.TextTruncate = Enum.TextTruncate.AtEnd
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, 0.14)
-		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, 0.56)
+		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
@@ -1289,8 +1291,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = UDim2.fromScale(0.015, 0.715)
-		handTray.Size = UDim2.fromScale(0.75, 0.275)
+		handTray.Position = UDim2.fromScale(0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = UDim2.fromScale(0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -1306,8 +1308,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = UDim2.fromScale(0.02, 0.72)
-		handFrame.Size = UDim2.fromScale(0.74, 0.26)
+		handFrame.Position = UDim2.fromScale(0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = UDim2.fromScale(0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -1427,6 +1429,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
+			if opts.cardOnly then
+				-- 줄 높이에 맞춰 커지는 세로 카드(퀜트 느낌)
+				local chipRatio = Instance.new("UIAspectRatioConstraint")
+				chipRatio.AspectRatio = 0.74
+				chipRatio.DominantAxis = Enum.DominantAxis.Height
+				chipRatio.Parent = f
+			end
 			f.Parent = parent
 			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
 			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
@@ -2010,10 +2019,35 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
 				local cards = Instance.new("Frame")
 				cards.Position = UDim2.fromOffset(104, 3)
-				cards.Size = UDim2.new(1, -108, 1, -6)
+				cards.Size = UDim2.new(1, if opts.cardOnly then -160 else -108, 1, -6)
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
 				rowTargets[side][row] = cards
+				if opts.cardOnly then
+					-- 줄 점수 원형 배지 (퀜트식)
+					local badge = Instance.new("TextLabel")
+					badge.Name = "RowScoreBadge"
+					badge.AnchorPoint = Vector2.new(1, 0.5)
+					badge.Position = UDim2.new(1, -6, 0.5, 0)
+					badge.Size = UDim2.fromOffset(44, 44)
+					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
+					badge.BorderSizePixel = 0
+					badge.Font = Enum.Font.GothamBlack
+					badge.TextScaled = true
+					badge.TextColor3 = Color3.fromRGB(255, 232, 170)
+					badge.Text = tostring(BC.rowTotal(m, side, row))
+					badge.Parent = rf
+					local bc = Instance.new("UICorner")
+					bc.CornerRadius = UDim.new(1, 0)
+					bc.Parent = badge
+					local bs = Instance.new("UIStroke")
+					bs.Color = Color3.fromRGB(203, 157, 86)
+					bs.Thickness = 2
+					bs.Parent = badge
+					local bt = Instance.new("UITextSizeConstraint")
+					bt.MaxTextSize = 24
+					bt.Parent = badge
+				end
 				local lay = Instance.new("UIListLayout")
 				lay.FillDirection = Enum.FillDirection.Horizontal
 				lay.Padding = UDim.new(0, 4)
@@ -2203,7 +2237,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local mid = (#cards + 1) / 2
 				for idx, ch in cards do
 					if ch ~= selected then
-						ch.Rotation = math.clamp((idx - mid) * 2.2, -9, 9)
+						ch.Rotation = if opts.cardOnly then 0 else math.clamp((idx - mid) * 2.2, -9, 9)
 					end
 				end
 			end
@@ -2224,15 +2258,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		task.spawn(function()
 			task.wait(1.0)
-			local guard = 0
-			while not m.over and not finished and guard < 600 do
-				guard += 1
+			local guard = 0 -- 실제로 낸 수만 센다 (생각하는 시간은 세지 않는다: 예전엔 60초가 지나면 판이 갑자기 끝났다)
+			-- 연습전은 시간제한 없음. 그 밖의 대결은 한 판 10분을 넘기면 "물러남"으로 끝낸다.
+			local deadline = if opts.enemyName == "연습전" then math.huge else os.clock() + 600
+			while not m.over and not finished and guard < 400 and os.clock() < deadline do
 				if playing then
 					task.wait(0.1)
 				elseif m.turn == "foe" then
 					task.wait(0.9)
 					if finished then break end
 					local ok, msg, res, _, playedCard = BC.ai(m, "foe")
+					guard += 1
 					if ok then
 						afterAction(ok, if english then "Pirates" else "해적: " .. (msg or ""), res, playedCard, "foe")
 					end
@@ -2240,6 +2276,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					task.wait(0.5)
 					if finished or playing or m.turn ~= "me" or m.over then continue end
 					local ok, msg, res, act, playedCard = BC.ai(m, "me")
+					guard += 1
 					if ok then
 						mine(ok, msg, res, act, playedCard)
 						afterAction(ok, msg, res, playedCard, "me")
@@ -3035,7 +3072,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						if finished then return end
 						startBoarding(opts.card, function(m, acts)
 							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
-							local res = opts.onCards and opts.onCards(acts)
+							local okCards, res = true, nil
+							if opts.onCards then
+								okCards, res = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
+								if not okCards then res = nil end
+							end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
 							opts.winner = if w == "a" or w == "b" then w else nil
 							loser = if w == "a" then "foe" elseif w == "b" then "me" else nil
