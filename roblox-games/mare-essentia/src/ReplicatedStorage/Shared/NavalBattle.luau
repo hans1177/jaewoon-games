@@ -395,7 +395,7 @@ function NavalBattle.play(opts)
 	local function cardRow(anchorX, posX, posY, color)
 		local row = Instance.new("Frame")
 		row.AnchorPoint = Vector2.new(anchorX, 0)
-		row.Position = UDim2.new(posX, 0, 0, posY)
+		row.Position = UDim2.new(posX, if anchorX == 1 then -16 else 16, 0, posY)
 		row.Size = UDim2.fromOffset(0, 46)
 		row.AutomaticSize = Enum.AutomaticSize.X
 		row.BackgroundTransparency = 1
@@ -518,8 +518,8 @@ function NavalBattle.play(opts)
 	subtitle.TextWrapped = true
 
 	local hint = label(gui, if opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
-	hint.AnchorPoint = Vector2.new(0.5, 0)
-	hint.Position = UDim2.new(0.5, 0, 0, 164)
+	hint.AnchorPoint = Vector2.new(0.5, 1)
+	hint.Position = UDim2.new(0.5, 0, 1, -124)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
 
@@ -536,7 +536,8 @@ function NavalBattle.play(opts)
 		local entries = opts.cardEffects or {}
 		if #entries > 0 and not opts.cardOnly then
 			local panel = Instance.new("Frame")
-			panel.Position = UDim2.new(0, 10, 0.3, 0)
+			panel.AnchorPoint = Vector2.new(1, 0)
+			panel.Position = UDim2.new(1, -16, 0, 122)
 			panel.Size = UDim2.fromOffset(190, 24 + #entries * 30)
 			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
 			panel.BackgroundTransparency = 0.35
@@ -3014,7 +3015,7 @@ function NavalBattle.play(opts)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (100 + dist * 0.45) + Vector3.new(0, 62 + dist * 0.3, 0)
+		local camPos = ORIGIN + me.pos - f * (82 + dist * 0.4) + Vector3.new(0, 52 + dist * 0.27, 0)
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
