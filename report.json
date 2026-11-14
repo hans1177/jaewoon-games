@@ -1,122 +1,41 @@
 {
- "sourceRevision": "b75cc927cdfe4f5ff6aa816d10211b65dbd05886",
+ "sourceRevision": "650985701f9886fc84d0198df9e5f0e1eaa5a552",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
+   "capture": "ap_game",
+   "files": 1
+  },
+  {
+   "step": 4,
    "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "closed 2\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
-  },
-  {
-   "step": 13,
-   "capture": "d01",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "capture": "d02",
-   "files": 1
-  },
-  {
-   "step": 17,
-   "capture": "d03",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "capture": "d04",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "capture": "d05",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "capture": "d06",
-   "files": 1
-  },
-  {
-   "step": 25,
-   "capture": "d07",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "capture": "d08",
-   "files": 1
-  },
-  {
-   "step": 29,
-   "capture": "d09",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "capture": "d10",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "capture": "d11",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "capture": "d12",
-   "files": 1
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "ERR Client count=3\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 37,
-  "completedSteps": 37,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 12,
-  "capturedFrames": 12,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
