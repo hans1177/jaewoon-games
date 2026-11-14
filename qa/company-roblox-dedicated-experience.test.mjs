@@ -854,7 +854,7 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   // [카드 식별 회귀] 손패뿐 아니라 확대·전투판에서도 지역/분류를 유지한다.
   assert.ok(source.includes('focusEdge.Color = if regionDeck then regionDeck.color else brass'));
   assert.ok(source.includes('focusRule.Text = category .. row .. strength'));
-  assert.ok(source.includes('frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)');
+  assert.ok(source.includes('frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)'));
   assert.match(source,/origin\\.Name = "CardDeckOrigin"/);
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
