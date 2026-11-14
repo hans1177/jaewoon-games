@@ -1,35 +1,35 @@
 {
- "sourceRevision": "5e9beea3560c389e0ba07b13cf0d16834d7a9603",
+ "sourceRevision": "c8f42b65849adb1c2707a141c9fa2816c6ebc23a",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "play ok=true nil\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 3,
-   "capture": "n1",
-   "files": 1
+   "step": 4,
+   "ctx": "Client",
+   "out": "open\ntext"
   },
   {
    "step": 5,
-   "capture": "n2",
+   "capture": "t1",
    "files": 1
   },
   {
-   "step": 7,
-   "capture": "n3",
+   "step": 6,
+   "ctx": "Client",
+   "out": "BUY false\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "t2",
    "files": 1
   },
   {
    "step": 9,
-   "capture": "n4",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "capture": "n5",
-   "files": 1
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -44,13 +44,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 12,
-  "completedSteps": 12,
+  "plannedSteps": 10,
+  "completedSteps": 10,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
