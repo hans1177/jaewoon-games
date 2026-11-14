@@ -3431,6 +3431,16 @@ function PortScene.build(info, onFacility)
 		x = math.clamp(x, 0, 1)
 		return x * x * (3 - 2 * x)
 	end
+	-- 모델 원본은 뱃머리가 +Z(긴 쪽이 Z)인 경우가 많다. 그대로 +X 로 밀면 옆으로 미끄러지므로 뱃머리를 진행 방향에 맞춘다.
+	local zLong = false
+	do
+		local _, ext = ship:GetBoundingBox()
+		zLong = ext.Z > ext.X
+	end
+	local basePos = shipBase.Position
+	local function yawAbout(angle)
+		return CFrame.new(basePos) * CFrame.Angles(0, angle, 0) * CFrame.new(-basePos)
+	end
 	local conn = RunService.Heartbeat:Connect(function()
 		local t = os.clock() - t0
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
@@ -3438,14 +3448,27 @@ function PortScene.build(info, onFacility)
 			local a = math.clamp((os.clock() - anim.start) / anim.dur, 0, 1)
 			if anim.kind == "depart" then
 				-- 천천히 출발해 점점 빨라진다 (바다 쪽 +X 로 진행)
-				local d = a * a * SEA_DIST
-				shipPose = shipPose * CFrame.new(d, 0, 0) * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02)
+				-- 처음 1/3 동안 뱃머리를 바다(+X)로 돌리고, 그다음 앞으로 가속한다. 돛이 바람을 받아 선체가 살짝 기운다.
+				local turn = smooth(a / 0.35)
+				local run = math.max(0, a - 0.12) / 0.88
+				local d = run * run * SEA_DIST
+				local heel = math.sin(math.min(a * 3, 1) * math.pi / 2) * 0.05
+				if zLong then
+					shipPose = CFrame.new(d, 0, 0) * yawAbout(turn * math.pi / 2) * shipPose * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02 + heel)
+				else
+					shipPose = shipPose * CFrame.new(d, 0, 0) * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02 + heel)
+				end
 			else
 				-- 먼 바다에서 들어와 감속하고, 끝에서 뱃머리를 바다 쪽으로 돌려 정박한다
 				local remain = 1 - smooth(a)
 				local turn = smooth((a - 0.7) / 0.3)
 				local lateral = (1 - turn) * 28
-				shipPose = shipPose * CFrame.new(remain * SEA_DIST, 0, lateral * remain) * CFrame.Angles(0, math.pi * (1 - turn), 0)
+				if zLong then
+					-- 뱃머리가 -X(항구 쪽)를 향해 들어오다가 정박 자리에서 원래 방향으로 돌아선다
+					shipPose = CFrame.new(remain * SEA_DIST, 0, lateral * remain) * yawAbout(-math.pi / 2 * (1 - turn)) * shipPose
+				else
+					shipPose = shipPose * CFrame.new(remain * SEA_DIST, 0, lateral * remain) * CFrame.Angles(0, math.pi * (1 - turn), 0)
+				end
 				if a >= 1 then
 					anim = nil
 				end
