@@ -225,6 +225,8 @@ function CB.sanitize(saved: any, factionId: string?): any
 	end
 	if type(saved.puzzleDay) == "number" then book.puzzleDay = math.floor(saved.puzzleDay) end
 	if saved.practiceDone == true then book.practiceDone = true end
+	if type(saved.duelDay) == "number" then book.duelDay = math.floor(saved.duelDay) end
+	if type(saved.duelWins) == "number" then book.duelWins = math.clamp(math.floor(saved.duelWins), 0, 999) end
 	if type(saved.deck) == "table" then
 		local ids = {}
 		for _, id in saved.deck do

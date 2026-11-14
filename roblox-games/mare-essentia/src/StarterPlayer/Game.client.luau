@@ -1858,7 +1858,7 @@ do
 				}, 74)
 				summary.LayoutOrder = 2
 				local bk = bookOf()
-				local function playCardOnly(title, build, action, payload)
+				local function playCardOnly(title, build, action, payload, cardCfg)
 					if inField then return end
 					inField = true
 					if open then
@@ -1870,7 +1870,7 @@ do
 						shipId = view and view.ship and view.ship.id,
 						enemyName = title,
 						cardOnly = true,
-						card = { prebuilt = build, title = title },
+						card = cardCfg or { prebuilt = build, title = title },
 						deck = view and view.deck,
 						onCards = function(acts)
 							payload.actions = acts
@@ -1896,22 +1896,28 @@ do
 					pr.LayoutOrder = 0
 				end
 				H.devCards = {
-					practice = function() playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {}) end,
-					puzzle = function()
-						local day = bk.day or math.floor(os.time() / 86400)
-						local _, limit = BC.puzzle(day)
-						playCardOnly(string.format("해전 퍼즐 (%d장 이내로 역전!)", limit or 0), function() return (BC.puzzle(day)) end, "CardPuzzle", { day = day })
+					duel = function()
+						local r = call("CardDuelStart")
+						local seed = view and view.cardbook and view.cardbook.duelSeed
+						if r and r.ok and seed then
+							playCardOnly("카드 대결", nil, "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+						end
 					end,
+					practice = function() playCardOnly("연습전", nil, "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = view.cardbook.practiceIds, tier = {}, bonus = {} } }) end,
 				}
-				local train = mkRow(builder, "연습전 · 오늘의 해전 퍼즐", "연습전: 정해진 패로 규칙을 배우는 첫 판 / 퍼즐: 하루 하나, 적은 장수로 역전", {
-					{ text = "연습전", color = COLORS.green, onClick = function()
-						playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {})
+				local duel = mkRow(builder, string.format("카드 대결 · 내 덱 vs 상대 덱 (오늘 카드 보상 %d회 남음)", (view.cardbook and view.cardbook.duelLeft) or 0), "지금 짠 덱으로 겨뤄요. 이기면 지식 카드를 얻어요. 덱을 먼저 저장하세요", {
+					{ text = "대결", color = COLORS.red, enabled = okDeck, onClick = function()
+						local r = call("CardDuelStart")
+						local seed = view and view.cardbook and view.cardbook.duelSeed
+						if r and r.ok and seed then
+							playCardOnly("카드 대결", nil, "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+						end
 					end },
-					{ text = if bk.puzzleDone then "퍼즐 완료" else "오늘 퍼즐", color = COLORS.blue, enabled = not bk.puzzleDone, onClick = function()
-						local day = bk.day or math.floor(os.time() / 86400)
-						local m, limit = BC.puzzle(day)
-						if not m then return end
-						playCardOnly(string.format("해전 퍼즐 (%d장 이내로 역전!)", limit), function() return (BC.puzzle(day)) end, "CardPuzzle", { day = day })
+				}, 74)
+				duel.LayoutOrder = 3
+				local train = mkRow(builder, if bk.practiceDone then "연습전 (보상 받음)" else "연습전 · 기본 덱으로 규칙 배우기", "누구나 같은 기본 카드로 겨뤄요. 처음 이기면 지식 카드를 얻어요", {
+					{ text = "연습전", color = COLORS.green, onClick = function()
+						H.devCards.practice()
 					end },
 				}, 64)
 				train.LayoutOrder = 3
@@ -6636,7 +6642,7 @@ function RENDERERS.gwent()
 		return mkRow(content, "학문 숙련 보너스", table.concat(parts, "\n") .. "\n(카드 15·40·80장마다 +1, 영웅·특수 카드 제외)", nil, 92)
 	end)
 	add(function()
-		return mkRow(content, "연습전", "정해진 패로 규칙을 배우는 첫 판이에요. 부담 없이 시작하세요.", {
+		return mkRow(content, "연습전", "누구나 같은 기본 카드로 규칙을 배우는 첫 판이에요. 처음 이기면 지식 카드를 얻어요.", {
 			{ text = "시작", color = COLORS.green, onClick = function()
 				if H.openDeck then H.openDeck() end
 				task.defer(function()
@@ -6647,11 +6653,11 @@ function RENDERERS.gwent()
 	end)
 	add(function()
 		local bk = view and view.cardbook
-		return mkRow(content, "오늘의 퍼즐", "하루 하나, 적은 장수로 역전하는 퍼즐이에요.", {
-			{ text = if bk and bk.puzzleDone then "완료" else "도전", color = COLORS.gold, enabled = not (bk and bk.puzzleDone), onClick = function()
+		return mkRow(content, string.format("카드 대결 (오늘 카드 보상 %d회 남음)", (bk and bk.duelLeft) or 0), "내 덱 vs 상대 덱. 이기면 지식 카드를 얻어요. 덱은 '덱 구성'에서 짜요.", {
+			{ text = "대결", color = COLORS.red, onClick = function()
 				if H.openDeck then H.openDeck() end
 				task.defer(function()
-					if H.devCards and H.devCards.puzzle then H.devCards.puzzle() end
+					if H.devCards and H.devCards.duel then H.devCards.duel() end
 				end)
 			end },
 		}, 64)

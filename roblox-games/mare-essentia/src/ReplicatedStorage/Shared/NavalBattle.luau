@@ -227,6 +227,13 @@ function NavalBattle.play(opts)
 	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
+	if opts.cardOnly then
+		-- 주점 카드 대결: 바다가 아니라 나무 탁자 위에서 한다 (배는 숨기고 그 자리에 탁자 판을 깐다)
+		sea.Material = Enum.Material.Wood
+		sea.Color = Color3.fromRGB(58, 40, 26)
+		sea.Transparency = 0
+		sea.Reflectance = 0
+	end
 
 	-- 배들: 위치, 방향(θ), 속도를 우리가 직접 움직인다
 	local function newShip(asset, length, pos, theta, tint)
@@ -243,7 +250,7 @@ function NavalBattle.play(opts)
 	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(45, 0, -30), math.pi)
 	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
 	local escorts = {}
-	local escortCount = if opts.isBoss then 0 else 2
+	local escortCount = if opts.isBoss or opts.cardOnly then 0 else 2
 	for i = 1, escortCount do
 		local e = newShip("ship-pirate-small", 28, Vector3.new(80 + i * 40, 0, -70 + i * 80), math.pi + (i - 1.5) * 0.4)
 		e.speed = 5
@@ -269,6 +276,70 @@ function NavalBattle.play(opts)
 				al.nextFire = os.clock() + 2 + i * 0.6
 				table.insert(allies, al)
 			end
+		end
+	end
+
+	-- 주점 카드 대결 무대: 등록된 실내 소품(책장·램프·통·의자)으로 술집 안을 꾸민다
+	if opts.cardOnly then
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local function prop(group, name, pos, height, yaw)
+			local g = lib and lib:FindFirstChild(group)
+			local tpl = g and g:FindFirstChild(name)
+			if not (tpl and tpl:IsA("Model")) then
+				return nil
+			end
+			local m = tpl:Clone()
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+					d.CanCollide = false
+					d.CanQuery = false
+				end
+			end
+			m.Parent = folder
+			pcall(function()
+				local _, ext = m:GetBoundingBox()
+				m:ScaleTo(height / math.max(ext.Y, 0.01))
+				m:PivotTo(CFrame.Angles(0, yaw, 0) * m:GetPivot())
+				local c, sz = m:GetBoundingBox()
+				m:PivotTo(CFrame.new(ORIGIN + pos - Vector3.new(c.Position.X - ORIGIN.X, c.Position.Y - sz.Y / 2 - ORIGIN.Y, c.Position.Z - ORIGIN.Z)) * m:GetPivot())
+			end)
+			return m
+		end
+		local mid = (me.pos + foe.pos) / 2
+		local dir = (foe.pos - me.pos).Unit
+		local back = Vector3.new(dir.Z, 0, -dir.X) -- 카메라 반대쪽(벽 쪽)
+		local yawWall = math.atan2(-back.X, -back.Z)
+		-- 뒷벽 쪽에 책장·통·램프를 늘어놓는다
+		for i = -4, 4 do
+			local at = mid + back * 82 + dir * (i * 26)
+			if i % 3 == 0 then
+				prop("Cargo", "barrel", at + Vector3.new(0, 0, 0), 12, yawWall)
+			else
+				prop("Interior", "bookcaseclosedwide", at, 26, yawWall)
+			end
+		end
+		for i = -3, 3, 2 do
+			local at = mid + back * 76 + dir * (i * 26) + Vector3.new(0, 20, 0)
+			prop("Interior", "lampwall", at, 7, yawWall)
+		end
+		-- 탁자 둘레: 러그, 의자, 통, 술잔
+		for _, sh in { me, foe } do
+			prop("Interior", "rugrectangle", sh.pos + Vector3.new(0, 0.05, 0), 0.4, yawWall)
+			prop("Interior", "stoolbar", sh.pos + back * 14 + dir * 14, 6, 0)
+			prop("Interior", "stoolbar", sh.pos + back * 14 - dir * 14, 6, 0)
+			prop("Cargo", "mug", sh.pos + dir * 6 + Vector3.new(0, 4.6, 0), 1.6, 0)
+		end
+		prop("Cargo", "chest", mid + back * 38, 6, yawWall)
+		-- 따뜻한 촛불·램프 빛
+		for i, pos in { mid + Vector3.new(0, 28, 0), me.pos + Vector3.new(0, 18, 0), foe.pos + Vector3.new(0, 18, 0) } do
+			local lp = part(folder, Vector3.new(0.5, 0.5, 0.5), CFrame.new(ORIGIN + pos), Color3.fromRGB(255, 190, 110), Enum.Material.Neon, Enum.PartType.Ball)
+			lp.Transparency = 1
+			local light = Instance.new("PointLight")
+			light.Color = Color3.fromRGB(255, 190, 110)
+			light.Brightness = if i == 1 then 2.4 else 1.6
+			light.Range = if i == 1 then 120 else 70
+			light.Parent = lp
 		end
 	end
 
@@ -746,7 +817,7 @@ function NavalBattle.play(opts)
 			m = cfg.prebuilt()
 		elseif cfg then
 			BC.useKind(cfg.kind)
-			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = opts.deck and opts.deck.cards, faction = opts.deck and opts.deck.faction, book = opts.deck and opts.deck.book }, { fighter = cfg.foe, boss = opts.isBoss == true })
+			m = BC.build(cfg.kind, cfg.seed, { fighter = cfg.my, deckCards = if cfg.book then nil else (opts.deck and opts.deck.cards), faction = opts.deck and opts.deck.faction, book = cfg.book or (opts.deck and opts.deck.book) }, { fighter = cfg.foe, boss = opts.isBoss == true })
 		else
 			BC.useKind("boarding")
 			local myDeck, myLeader = BC.playerDeck(opts.deck and opts.deck.cards, rng)
@@ -872,7 +943,7 @@ function NavalBattle.play(opts)
 		bg.Parent = g
 		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
 		if cfg then
-			bg.BackgroundTransparency = 0.42 -- 뒤로 3D 해상 무대(두 배와 선원)가 비쳐 보인다
+			bg.BackgroundTransparency = if opts.cardOnly then 0.82 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
 		end
 		-- 카드 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
 		local wood = Instance.new("UIGradient")
@@ -893,7 +964,7 @@ function NavalBattle.play(opts)
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 1 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -901,7 +972,7 @@ function NavalBattle.play(opts)
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if opts.cardOnly then 0.97 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -1051,7 +1122,7 @@ function NavalBattle.play(opts)
 			local sc = BC.scout(cfg and cfg.seed or 1, { boss = opts.isBoss == true })
 			task.delay(0.6, function()
 				if adviceTag.Parent then
-					sayAdvice(string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
+					sayAdvice(if opts.cardOnly then string.format("정찰: 상대는 %s · %s 덱. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.weakName, BC.ROW_NAME[sc.counterRow]) else string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
 				end
 			end)
 		end
@@ -1688,7 +1759,7 @@ function NavalBattle.play(opts)
 			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
 				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
 				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
-			mePlate.who.Text = (if english then "Your ship" else opts.shipName or "우리 배")
+			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
 			foePlate.total.Text = tostring(BC.total(m, "foe"))
@@ -2311,6 +2382,16 @@ function NavalBattle.play(opts)
 		local box, size = sh.model:GetBoundingBox()
 		local deckY = box.Position.Y - size.Y / 2 + size.Y * 0.3
 		local along = size.X >= size.Z
+		if opts.cardOnly and not sh.tabled then
+			sh.tabled = true
+			for _, d in sh.model:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Transparency = 1
+				end
+			end
+			local slab = part(folder, Vector3.new(size.X + 6, 1.4, size.Z + 6), CFrame.new(box.Position.X, deckY - 0.7, box.Position.Z), Color3.fromRGB(122, 84, 52), Enum.Material.WoodPlanks)
+			slab.Name = "TavernTable"
+		end
 		local pivot = sh.model:GetPivot()
 		for i = 1, 4 do
 			local seed = i * 17 + (if side == "me" then 1 else 99)
@@ -2542,6 +2623,16 @@ function NavalBattle.play(opts)
 				if opts.card and not cardStarted and (d < 95 or opts.cardOnly) then
 					cardStarted, cardBusy = true, true
 					hint.Text = ""
+					if opts.cardOnly then
+						-- 순수 카드 대결: 해전 표시(체력줄·바람·조타·함대칸)는 모두 숨긴다
+						for _, c in gui:GetChildren() do
+							pcall(function()
+								c.Visible = false
+							end)
+						end
+						rangeRing.Transparency = 1
+						rangeLabel.Visible = false
+					end
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"
 					shake = 1.6
 					Sfx.play("sfx_horn")
@@ -2711,7 +2802,7 @@ function NavalBattle.play(opts)
 			local dd = (foe.pos - me.pos).Magnitude
 			local inRange = dd < cannon.range
 			rangeRing.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
-			rangeRing.Transparency = if inRange then 0.93 else 0.82
+			rangeRing.Transparency = if opts.cardOnly then 1 elseif inRange then 0.93 else 0.82
 			rangeLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
@@ -2758,12 +2849,12 @@ function NavalBattle.play(opts)
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 74 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		cam.FieldOfView = 84 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (58 + dist * 0.3) + Vector3.new(0, 38 + dist * 0.2, 0)
+		local camPos = ORIGIN + me.pos - f * (74 + dist * 0.4) + Vector3.new(0, 46 + dist * 0.25, 0)
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2

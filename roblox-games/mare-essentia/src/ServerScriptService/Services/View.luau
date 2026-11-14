@@ -857,7 +857,7 @@ return function(D, S)
 				local ns = S.Cardbook.navalSupport(state)
 				view.navalSupport, view.navalEffects = ns.lines, ns.entries
 			end
-			view.cardbook = { bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, puzzleDone = S.Cardbook.get(state).puzzleDay == math.floor(os.time() / 86400), practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400) }
+			view.cardbook = { bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction

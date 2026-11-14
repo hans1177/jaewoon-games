@@ -159,5 +159,70 @@ do
 	end
 end
 
+
+-- 주점 카드 대결: 시드를 받고, 엉터리 기록은 거부된다
+do
+	local stD = S.State.new("england", 1700)
+	S.View.build(stD, ctx)
+	local okS = Registry.handlers.CardDuelStart(stD, {}, ctx)
+	check("카드 대결: 시작하면 시드가 생긴다", okS and S.Cardbook.get(stD).duelSeed ~= nil)
+	local okE = Registry.handlers.CardDuelEnd(stD, { actions = {} }, ctx)
+	check("카드 대결: 빈 기록은 거부", okE == false)
+	local okN = Registry.handlers.CardDuelEnd(stD, { actions = {} }, ctx)
+	check("카드 대결: 시드는 한 번만 쓴다", okN == false)
+	-- 진짜로 끝까지 두어 본다: 서버와 같은 규칙의 AI 로 내 쪽을 대신 두게 해 승패 기록을 만든다
+	Registry.handlers.CardDuelStart(stD, {}, ctx)
+	local seed = S.Cardbook.get(stD).duelSeed
+	local B = D.BoardingCards
+	local m = B.build("boarding", seed, { deckCards = S.Battle.deckCache[stD], faction = S.Battle.deckFaction[stD], book = S.Cardbook.deckSpec(stD) }, {})
+	local acts, guard = {}, 0
+	while not m.over and guard < 400 do
+		guard += 1
+		if m.turn == "foe" then
+			B.ai(m, "foe")
+		else
+			local best = select(2, B.hint(m, "me"))
+			if best then
+				table.insert(acts, { "p", best })
+				B.play(m, "me", best)
+			else
+				table.insert(acts, { "s" })
+				B.pass(m, "me")
+			end
+		end
+	end
+	local before = stD.coins
+	local okW, msgW = Registry.handlers.CardDuelEnd(stD, { actions = acts }, ctx)
+	check("카드 대결: 기록 검증 결과가 승패와 일치", okW == (m.winner == "me"))
+end
+
+
+-- 연습전: 기본 덱(새 지식 카드)만으로 이길 수 있다
+do
+	local stQ = S.State.new("england", 1700)
+	local pb = S.Cardbook.practiceBook(stQ)
+	local allKnowledge = #pb.ids >= 18
+	for _, id in pb.ids do
+		local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+		if not (d and d.knowledge) then allKnowledge = false end
+	end
+	check("연습전: 기본 덱은 모두 새 지식 카드", allKnowledge)
+	local B = D.BoardingCards
+	local m = B.build("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {})
+	local acts, guard = {}, 0
+	while not m.over and guard < 400 do
+		guard += 1
+		if m.turn == "foe" then B.ai(m, "foe")
+		else
+			local best = select(2, B.hint(m, "me"))
+			if best then table.insert(acts, { "p", best }) B.play(m, "me", best)
+			else table.insert(acts, { "s" }) B.pass(m, "me") end
+		end
+	end
+	local okP = Registry.handlers.CardPractice(stQ, { actions = acts }, ctx)
+	check("연습전: 서버 판정이 시뮬레이션과 일치", okP == (m.winner == "me"))
+	check("연습전: 기본 덱으로 이길 수 있다", m.winner == "me" and okP == true)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
