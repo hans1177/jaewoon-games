@@ -138,6 +138,7 @@ local UI_BRASS_DARK = Color3.fromRGB(111, 76, 39)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
+	{ id = "board", name = "의뢰판" },
 	{ id = "quest", name = "퀘스트" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
@@ -154,6 +155,7 @@ local TABS = {
 	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
 	{ id = "gwent", name = "카드 배틀" },
+	{ id = "war", name = "함대전" },
 }
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
@@ -161,7 +163,8 @@ local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "recruit", "explore", "battle", "gwent" } },
+	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit", "explore" } }, -- 주점은 의뢰만 다룬다 (의뢰판: 이 항구·이 시기의 의뢰)
+	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "war", "gwent" } }, -- 해전·대규모 해전 의뢰·카드 배틀
 	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
@@ -1033,7 +1036,7 @@ pendingStroke.Parent = captainPlaceholder
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
-	["주점"] = "Barbarian", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
 }
 -- 동료별 실제 등록된 인물 모델. 기존 3D 원본과 역할을 재사용하며 저장 데이터는 건드리지 않는다.
 -- 문화권·성별이 맞지 않는 공용 2D 얼굴을 다른 사람에게 강제로 할당하지 않는다.
@@ -1724,7 +1727,7 @@ dockLimit.Parent = dock
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
 H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
-	{ "quest", "주점", "quest" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
+	{ "board", "주점", "quest" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
@@ -2364,7 +2367,7 @@ local function call(action, payload)
 		end)
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
-	if result.ok and (action == "Hunt" or action == "ChallengeBoss") and view and view.lastBattle and not inField then
+	if result.ok and (action == "Hunt" or action == "ChallengeBoss" or action == "WarStart" or action == "WarNext" or action == "TavernJob") and view and view.lastBattle and not inField then
 		local lb = view.lastBattle
 		local resolved = false
 		inField = true
@@ -2442,6 +2445,11 @@ local function call(action, payload)
 				applyView()
 				main.Visible = true
 				render()
+				task.delay(1.6, function()
+					if view and view.war and view.war.next and not inField then
+						call("WarNext")
+					end
+				end)
 			end,
 		})
 	end
@@ -4203,7 +4211,7 @@ function RENDERERS.status()
 	add(function()
 		local lines = view.navalSupport or {}
 		local text = if #lines > 0 then table.concat(lines, "\n") else "덱에 근접·사격·포 카드를 넣으면 해전에서 자동으로 거들어요."
-		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 주점에서 해요.", {
+		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 전투 본부에서 해요.", {
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 		}, 110)
 	end)
@@ -6795,6 +6803,71 @@ function RENDERERS.gwent()
 	end)
 end
 
+-- 전투 본부의 대규모 해전 의뢰: 여러 파도로 이어지는 작전
+function RENDERERS.board()
+	H.walletBar("tavern")
+	add(function()
+		return mkRow(content, "이 항구의 의뢰판", "지금 이 항구, 이 시대에만 나오는 일이에요. 역사 속 사건이나 지역 소문에서 나온 일이라, 다른 곳이나 다른 해에는 없어요.", nil, 72)
+	end)
+	local jobs = view.tavern or {}
+	if #jobs == 0 then
+		add(function() return mkRow(content, "오늘은 의뢰가 없어요", "다른 항구를 찾거나 시간이 흐른 뒤 다시 와 보세요.", nil, 56) end)
+		return
+	end
+	local KIND = { hunt = "전투", deliver = "납품", event = "소문" }
+	for _, j in jobs do
+		add(function()
+			local head = string.format("[%s·%s] %s", j.tag, KIND[j.kind] or "", j.name)
+			if j.done then
+				return mkRow(content, head, "✔ 마친 의뢰", nil, 48)
+			end
+			local sub = j.text
+			if j.kind == "hunt" then
+				sub ..= string.format("\n상대: %s · 보상 %d코인 · 명성 +%d", j.enemy, j.coins, j.fame)
+			elseif j.kind == "deliver" then
+				sub ..= string.format("\n%s %d개 · 보상 %d코인 · 명성 +%d", j.good or "", j.amount or 0, j.coins, j.fame)
+			end
+			if j.blocked then
+				sub ..= "\n🔒 " .. j.blocked
+			end
+			local buttons
+			if j.kind == "event" then
+				buttons = {}
+				for i, c in j.choices do
+					table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
+				end
+			else
+				buttons = { { text = if j.kind == "hunt" then "출격" else "납품", color = COLORS.red, enabled = j.blocked == nil, onClick = function() call("TavernJob", { id = j.id }) end } }
+			end
+			return mkRow(content, head, sub, buttons, 96 + (if j.kind == "event" then 30 * #buttons else 0))
+		end)
+	end
+end
+
+function RENDERERS.war()
+	H.walletBar("tavern")
+	add(function()
+		return mkRow(content, "대규모 해전 의뢰", "한 번의 출격이 아니라 여러 척을 차례로 상대하는 작전이에요. 파도마다 실시간으로 싸우고, 모두 돌파하면 큰 보상! 한 번이라도 지면 작전 실패예요. 파도 사이에 선체는 회복되지 않으니 아껴 싸우세요.", nil, 92)
+	end)
+	local w = view.war
+	if w then
+		add(function()
+			return mkRow(content, string.format("진행 중: %s (%d/%d파도)", w.name, w.wave, w.total), if w.next then "다음 적이 기다려요" else "전투를 마무리하세요", {
+				{ text = "계속", color = COLORS.red, enabled = w.next == true, onClick = function() call("WarNext") end },
+			}, 64)
+		end)
+	end
+	add(function() return mkHeader(content, "작전 의뢰") end)
+	for _, c in view.wars do
+		add(function()
+			local sub = string.format("%s\n%d파도 · 보상 %d코인 · 명성 +%d · 전투 Lv.%d%s", c.summary, c.waves, c.coins, c.fame, c.minLevel, if c.blocked then "\n🔒 " .. c.blocked else "")
+			return mkRow(content, c.name, sub, {
+				{ text = "참전", color = COLORS.red, enabled = c.blocked == nil and w == nil, onClick = function() call("WarStart", { id = c.id }) end },
+			}, 100)
+		end)
+	end
+end
+
 function RENDERERS.battle()
 	H.walletBar("tavern")
 	local lo = view.loadout
@@ -7264,7 +7337,7 @@ H.TAB_ICON = {
 	cards = { "Relics", "journal-closed" }, status = { "Menu", "status" }, harbor = { "Menu", "harbor" },
 	crew = { "Relics", "shield-round" }, yard = { "Menu", "yard" }, codex = { "Menu", "codex" },
 	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
-	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" },
+	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" }, war = { "Naval", "ship-large" }, board = { "Menu", "quest" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do

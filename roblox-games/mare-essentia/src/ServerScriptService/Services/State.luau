@@ -69,6 +69,7 @@ return function(D)
 			captain = {}, -- 선장 { name, portrait }
 			intro = { name = false, companion = false, portrait = false }, -- 시작 안내 진행
 			bosses = {},
+			tavernJobs = {},
 			specialty = nil,
 			advDone = {}, -- 끝낸 안내·조언 (조언 id → true)
 			specAuto = false, -- 직업이 카드 성과로 자동 배정된 상태 (처음 한 번은 무료로 바꿀 수 있다)
@@ -618,6 +619,13 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.tavernJobs) == "table" then
+			for id, day in saved.tavernJobs do
+				if type(id) == "string" and #id < 40 then
+					s.tavernJobs[id] = math.floor(num(day, 0, 0, 1e7))
+				end
+			end
+		end
 		if type(saved.stats) == "table" then
 			s.stats.battlesWon = math.floor(num(saved.stats.battlesWon, 0, 0, 1e9))
 			s.stats.battlesLost = math.floor(num(saved.stats.battlesLost, 0, 0, 1e9))
@@ -902,6 +910,7 @@ return function(D)
 			origin = state.origin,
 			intro = state.intro,
 			bosses = state.bosses,
+			tavernJobs = state.tavernJobs,
 			specialty = state.specialty,
 			advDone = state.advDone,
 			specAuto = state.specAuto,
