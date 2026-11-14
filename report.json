@@ -1,25 +1,30 @@
 {
- "sourceRevision": "f1e09ef4ee98170d08b0be98c5bbd89fd97a9678",
+ "sourceRevision": "c53e9ccf90c44a3fbccfff252d91e224691548cd",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 2,
-   "ctx": "Client",
-   "out": "ANIMALS london L1 ok=true horse:4@(-231,23) dog:7@(-129,-2) cow:4@(-232,-20) sheep:12@(-227,0) \ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ANIMALS london L4 ok=true horse:1@(-127,11) dog:9@(-115,4) cow:8@(-220,20) sheep:12@(-227,-23) \ntext"
+   "out": "DEV Deck\ntext"
   },
   {
-   "step": 4,
+   "step": 5,
    "ctx": "Client",
-   "out": "ANIMALS istanbul L3 ok=true sheep:10@(-227,21) donkey:16@(-212,-11) \ntext"
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "cb1",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "cb2",
+   "files": 1
   }
  ],
  "errors": [],
@@ -34,13 +39,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 10,
+  "completedSteps": 10,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 0,
-  "capturedFrames": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
