@@ -973,7 +973,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			boss_serpent = "Sea Serpent's Fang", boss_siren = "Siren's Song",
 		}
 		local englishFactions = { europe = "Europe", east_asia = "East Asia", middle_east = "Middle East", new_world = "New World", africa = "Africa" }
-		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe" }
+		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I" }
 		local function cardName(c)
 			if not english then return c.name end
 			local en = BC.CardEnglish[c.id]

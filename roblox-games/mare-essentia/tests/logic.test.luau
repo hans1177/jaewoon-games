@@ -3800,6 +3800,62 @@ do
 	check("인과 카드의 원인·재료 id가 모두 실제 카드", bad == 0, bad)
 end
 
+
+-- [지도자] 유럽 정복자 지도자 5명
+do
+	local BC = D.BoardingCards
+	local CBk = D.CardBook
+	local fac = BC.Factions.europe
+	check("지도자: 유럽 지도자 5명이 모두 정의돼 있다", #fac.leaders == 5 and fac.leader == "napoleon")
+	for _, id in fac.leaders do
+		local ld = BC.Leaders[id]
+		check("지도자 정의: " .. id, ld ~= nil and #ld.name > 0 and #ld.text > 0 and (ld.provision or 0) > 0)
+	end
+	local function match(leader)
+		local m = BC.newMatch({}, leader, {}, "draw", function() return 0.9 end, "europe", "europe")
+		m.turn = "me"
+		for _ = 1, 4 do
+			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			table.insert(m.hand.foe, table.clone(BC.Units.swordsman))
+		end
+		table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
+		return m
+	end
+	local m = match("napoleon")
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
+	local before = BC.total(m, "me")
+	BC.useLeader(m, "me")
+	check("나폴레옹: 후열 점수가 두 배", BC.total(m, "me") == before * 2, BC.total(m, "me"))
+	m = match("caesar")
+	local h = #m.hand.me
+	BC.useLeader(m, "me")
+	check("카이사르: 카드 두 장", #m.hand.me == h + 2, #m.hand.me)
+	m = match("alexander")
+	table.insert(m.rows.me.melee, table.clone(BC.Units.swordsman))
+	before = BC.total(m, "me")
+	BC.useLeader(m, "me")
+	check("알렉산드로스: 전열 +1", BC.total(m, "me") == before + 1)
+	m = match("charlemagne")
+	m.refuted.me["사건"] = true
+	BC.useLeader(m, "me")
+	check("샤를마뉴: 끊긴 연쇄를 되살린다", next(m.refuted.me) == nil)
+	m = match("elizabeth")
+	m.weather.ranged = true
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
+	BC.useLeader(m, "me")
+	check("엘리자베스: 날씨를 걷고 후열 +1", m.weather.ranged == false and BC.total(m, "me") == BC.Units.gunner.power + 1)
+	local ok2 = BC.useLeader(m, "me")
+	check("지도자는 한 판에 한 번만", ok2 == false)
+	local book = CBk.new("europe")
+	local okSet = CBk.setLeader(book, "europe", "caesar")
+	local badSet = CBk.setLeader(book, "europe", "samurai")
+	check("지도자 고르기: 같은 대륙만 가능", okSet == true and badSet == false and book.leader == "caesar")
+	local _, ldr = BC.playerDeck({}, function() return 0.5 end, "europe", { ids = CBk.deckIds(book, "europe"), tier = {}, leader = "caesar" })
+	check("선택한 지도자가 전투에 쓰인다", ldr == "caesar", ldr)
+	check("지도자마다 보급 한도가 다르다", CBk.provisionLimit("europe", "elizabeth") == CBk.PROVISION_BASE + 15 and CBk.provisionLimit("europe", "charlemagne") == CBk.PROVISION_BASE + 8)
+	check("저장 정리에서 지도자가 유지된다", CBk.sanitize({ leader = "alexander" }, "europe").leader == "alexander" and CBk.sanitize({ leader = "samurai" }, "europe").leader == nil)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")

@@ -74,6 +74,12 @@ B.Leaders = {
 	draw = { id = "draw", name = "지휘", text = "카드 한 장을 더 뽑는다", provision = 10 },
 	clear = { id = "clear", name = "항로 개척", text = "날씨를 걷어 낸다", provision = 15 },
 	snipe = { id = "snipe", name = "저격", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5 },
+	-- 유럽 정복자 지도자: 필드 밖에 서서 한 판에 한 번 능력을 쓴다
+	napoleon = { id = "napoleon", name = "나폴레옹", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "europe", era = "정복자" },
+	caesar = { id = "caesar", name = "카이사르", text = "카드를 두 장 뽑는다", provision = 12, faction = "europe", era = "정복자" },
+	alexander = { id = "alexander", name = "알렉산드로스", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "europe", era = "정복자" },
+	charlemagne = { id = "charlemagne", name = "샤를마뉴", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "europe", era = "정복자" },
+	elizabeth = { id = "elizabeth", name = "엘리자베스 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "europe", era = "해양" },
 }
 
 -- 보급 비용: 덱의 카드 비용 합이 한도(CardBook.PROVISION_BASE + 지도자 보너스)를 넘지 못한다.
@@ -172,7 +178,7 @@ B.Units.eu_34 = { id="eu_34", name="화약", category="기술", lore="중국에�
 B.Units.eu_35 = { id="eu_35", name="나침반", category="기술", lore="먼바다에서 방향을 잡게 해 준 도구", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="나침반" }, row="ranged", power=3, weapon="gun" }
 B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백년전쟁에서 프랑스를 이끈 소녀 지도자", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="잔 다르크" }, row="melee", power=5, weapon="sword", cause="eu_31" }
 B.Units.eu_37 = { id="eu_37", name="콜럼버스", category="인물", lore="대서양을 건너 신대륙에 닿은 항해가", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="콜럼버스" }, row="ranged", power=5, weapon="gun", cause="eu_32" }
-B.Units.eu_38 = { id="eu_38", name="나폴레옹", category="인물", lore="대포 전술로 유럽을 뒤흔든 황제", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="나폴레옹" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
+B.Units.eu_38 = { id="eu_38", name="웰링턴 공작", category="인물", lore="워털루에서 나폴레옹을 꺾은 영국 장군", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="웰링턴 공작" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
 B.Units.eu_39 = { id="eu_39", name="넬슨 제독", category="인물", lore="갈레온을 이은 함대로 트라팔가르를 이긴 제독", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="넬슨 제독" }, row="cannon", power=6, weapon="cannon", cause="eu_03" }
 B.Units.eu_40 = { id="eu_40", name="창병 방진", category="병종", lore="창을 촘촘히 세워 기병을 막은 보병 진형", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="창병 방진" }, row="melee", power=4, weapon="spear" }
 B.Specials.eu_41 = { id="eu_41", name="휴전 협정", category="사건", lore="전쟁을 멈추게 한 협정", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="휴전 협정" }, special="refute", refuteKind="사건", text="상대 카드 중 사건에서 이어진 연쇄 보너스를 끊는다" }
@@ -371,7 +377,7 @@ B.CardEnglish = {
 	eu_35 = { name = "Compass", lore = "A tool that let sailors keep their bearing on the open sea." },
 	eu_36 = { name = "Joan of Arc", lore = "A young leader who rallied France during the Hundred Years' War." },
 	eu_37 = { name = "Columbus", lore = "A navigator who crossed the Atlantic and reached the New World." },
-	eu_38 = { name = "Napoleon", lore = "An emperor who shook Europe with his artillery tactics." },
+	eu_38 = { name = "Duke of Wellington", lore = "The British general who defeated Napoleon at Waterloo." },
 	eu_39 = { name = "Admiral Nelson", lore = "An admiral who won at Trafalgar with a galleon-descended fleet." },
 	eu_40 = { name = "Pike Square", lore = "A dense infantry formation of pikes that stopped cavalry." },
 	eu_41 = { name = "Armistice", lore = "An agreement that brought a war to a halt." },
@@ -536,7 +542,7 @@ B.Units.boss_kraken = { id = "boss_kraken", name = "크라켄의 촉수", row = 
 B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row = "melee", power = 8, weapon = "spear", hero = true }
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
-	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "draw",
+	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "snipe",
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
@@ -585,6 +591,9 @@ function B.playerDeck(deckCards, rng, factionId, book)
 		table.insert(out, card)
 	end
 	local leader = if fac then fac.leader else "draw"
+	if fac and fac.leaders and book and book.leader and table.find(fac.leaders, book.leader) then
+		leader = book.leader
+	end
 	for i, c in deckCards or {} do
 		local id = SKILL_CARD[c.skill]
 		if id then
@@ -684,6 +693,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		turn = "me",
 		played = { me = 0, foe = 0 },
 		refuted = { me = {}, foe = {} },
+		rowBonus = { me = {}, foe = {} },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -763,6 +773,9 @@ function B.cardPower(m: any, side, row, idx)
 		end
 		if c.cause and B.chainActive(m, side, c) then
 			p += 2
+		end
+		if m.rowBonus and m.rowBonus[side][row] then
+			p += m.rowBonus[side][row]
 		end
 		-- 근접끼리 무기 상성
 		if row == "melee" and c.weapon and B.WEAPON_BEATS[c.weapon] then
@@ -940,6 +953,7 @@ local function roundEnd(m: any)
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
 	m.refuted = { me = {}, foe = {} }
+	m.rowBonus = { me = {}, foe = {} }
 	applySea(m)
 	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
@@ -1194,6 +1208,22 @@ function B.useLeader(m: any, side)
 	elseif id == "clear" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "항로 개척: 날씨가 걷혔다"
+	elseif id == "napoleon" then
+		m.horn[side].ranged = true
+		msg = "나폴레옹: 후열 점수가 두 배!"
+	elseif id == "caesar" then
+		drawCards(m, side, 2)
+		msg = "카이사르: 카드를 두 장 뽑았다"
+	elseif id == "alexander" then
+		m.rowBonus[side].melee = (m.rowBonus[side].melee or 0) + 1
+		msg = "알렉산드로스: 전열이 모두 +1"
+	elseif id == "charlemagne" then
+		m.refuted[side] = {}
+		msg = "샤를마뉴: 끊긴 연쇄가 되살아났다"
+	elseif id == "elizabeth" then
+		m.weather = { melee = false, ranged = false, cannon = false }
+		m.rowBonus[side].ranged = (m.rowBonus[side].ranged or 0) + 1
+		msg = "엘리자베스 1세: 날씨가 걷히고 후열이 +1"
 	else
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
@@ -1539,6 +1569,7 @@ local function copyMatch(m)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
 	n.played = table.clone(m.played or { me = 0, foe = 0 })
+	n.rowBonus = { me = table.clone((m.rowBonus or {}).me or {}), foe = table.clone((m.rowBonus or {}).foe or {}) }
 	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
 	return n
