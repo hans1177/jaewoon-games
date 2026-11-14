@@ -868,6 +868,7 @@ return function(D, S)
 
 		view.lastBattle = state.lastBattle
 		view.voyageEvent = state.voyageEvent
+		view.visitedPorts = state.stats.visited
 		return view
 	end
 

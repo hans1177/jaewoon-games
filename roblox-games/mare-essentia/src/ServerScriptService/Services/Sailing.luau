@@ -481,6 +481,12 @@ return function(D, S)
 		state.voyageBonusDays = nil
 		local score = math.clamp(p.score, 0, 1)
 		local msgs = {}
+		table.insert(msgs, string.rep("★", score >= 0.9 and 3 or score >= 0.6 and 2 or 1) .. string.rep("☆", score >= 0.9 and 0 or score >= 0.6 and 1 or 2) .. string.format(" 바람 고리 %d%%", math.floor(score * 100)))
+		local coinBonus = math.min(300, math.floor(days * score * score * 12))
+		if coinBonus > 0 then
+			state.coins += coinBonus
+			table.insert(msgs, string.format("바람 고리 보상 코인 +%d", coinBonus))
+		end
 		local xp = math.floor(days * 3 * score)
 		if xp > 0 then
 			S.State.gainXp(state, "adventure", xp, msgs)
