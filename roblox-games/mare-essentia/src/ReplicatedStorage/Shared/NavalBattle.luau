@@ -1331,7 +1331,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local b = Instance.new("TextButton")
 			b.Text = ""
 			b.Position = UDim2.fromScale(0.78, y)
-			b.Size = UDim2.fromScale(0.2, 0.075)
+			b.Size = UDim2.fromScale(0.2, 0.058)
 			b.BackgroundColor3 = color
 			b.BorderSizePixel = 0
 			b.Parent = g
@@ -1386,18 +1386,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			render()
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.72, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
+		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.81, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
+		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
 		local mullBtn
-		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.63, Color3.fromRGB(70, 58, 38), "Menu/route", function()
+		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/route", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
 			local idx = selected and selected.Parent and selected:GetAttribute("HandIdx")
 			if not idx then
@@ -1414,7 +1414,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			info.Text = if english then "Swapped one card" else msg or ""
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.9, Color3.fromRGB(46, 72, 69), "Menu/route", function()
+		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/route", function()
 			auto = true
 		end)
 
