@@ -940,4 +940,4 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `cargo/` | vanilla.glb | Vibe 5.9 owner-directed original · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-12 (SHA256: cargo/vanilla.glb.license.json) |
 | `cargo/` | whale_oil.glb | Vibe 5.9 owner-directed original · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-12 (SHA256: cargo/whale_oil.glb.license.json) |
 | `cargo/` | wool.glb | Vibe 5.9 owner-directed original · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-12 (SHA256: cargo/wool.glb.license.json) |
-| `naval/` | frigate.glb | Vibe 5.9 AI-generated original frigate model · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-14 (SHA256: naval/frigate.glb.license.json) |
+| `naval/` | frigate.glb | Vibe 5.9 AI-generated detailed frigate model · PROJECT_ORIGINAL_ART | OWNER_DIRECTED_ORIGINAL_MODEL_2026-11-14 (SHA256: naval/frigate.glb.license.json) |
