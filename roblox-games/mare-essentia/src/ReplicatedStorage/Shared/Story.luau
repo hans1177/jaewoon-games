@@ -393,8 +393,8 @@ local Events: { Event } = {
 			"장인이 오크통을 두드려 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_hops", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_hops", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -415,8 +415,8 @@ local Events: { Event } = {
 			"조선공이 거대한 용골 앞에서 손을 털었다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_birch", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_birch", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_dry_dock", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_dry_dock", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -426,8 +426,8 @@ local Events: { Event } = {
 			"그가 낮은 목소리로 웃었다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_maelstrom", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_maelstrom", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_cutlass", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_cutlass", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -437,8 +437,8 @@ local Events: { Event } = {
 			"발굴꾼이 깨진 항아리 조각을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_pewter_plate", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_pewter_plate", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_carthage_coin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_carthage_coin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -448,8 +448,8 @@ local Events: { Event } = {
 			"수도사가 두꺼운 필사본을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_mosaic", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mosaic", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -459,8 +459,8 @@ local Events: { Event } = {
 			"기사가 투구를 벗고 인사한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_viking_helm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_viking_helm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_valletta_walls", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_valletta_walls", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -470,8 +470,8 @@ local Events: { Event } = {
 			"상인이 소금 가마를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_chalk", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_chalk", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_rock_salt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_rock_salt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -481,8 +481,8 @@ local Events: { Event } = {
 			"학자가 대리석 조각을 쓰다듬는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_ogham_stone", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_ogham_stone", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_parthenon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_parthenon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -492,8 +492,8 @@ local Events: { Event } = {
 			"상인이 향신료 자루를 열어 향을 맡게 한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_amber_room", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amber_room", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_bazaar_grand", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_bazaar_grand", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -503,8 +503,8 @@ local Events: { Event } = {
 			"현자가 별자리 그림을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_pharos", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_pharos", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -514,8 +514,8 @@ local Events: { Event } = {
 			"길잡이가 수평선을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_maelstrom", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_maelstrom", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -591,8 +591,8 @@ local Events: { Event } = {
 			"항해사가 서쪽 수평선을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_dogger_bank", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_dogger_bank", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_trade_winds", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_trade_winds", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -602,8 +602,8 @@ local Events: { Event } = {
 			"상인이 잔을 기울인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_hops", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_hops", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_dragon_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_dragon_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -613,8 +613,8 @@ local Events: { Event } = {
 			"고래잡이가 작살을 어깨에 멘다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_orca", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_orca", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_sperm_whale", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_sperm_whale", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -668,8 +668,8 @@ local Events: { Event } = {
 			"배우가 극장 무대 위에서 인사한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_mosaic", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mosaic", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_greek_vase", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_greek_vase", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -679,8 +679,8 @@ local Events: { Event } = {
 			"공증인이 잉크병을 정리한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "nav_portolan", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "nav_portolan", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -723,8 +723,8 @@ local Events: { Event } = {
 			"기사가 항구 입구를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_carthage_coin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_carthage_coin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_castle_ruin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_castle_ruin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -734,8 +734,8 @@ local Events: { Event } = {
 			"광부가 구릿빛 돌을 쥐어 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_tin_ore", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_tin_ore", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_copper_ore", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_copper_ore", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -822,8 +822,8 @@ local Events: { Event } = {
 			"서기가 장부를 넘긴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_customs_house", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_customs_house", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -855,8 +855,8 @@ local Events: { Event } = {
 			"장수가 향긋한 나무토막을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_pine_resin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pine_resin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_cedar_lebanon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cedar_lebanon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -866,8 +866,8 @@ local Events: { Event } = {
 			"농부가 진흙 묻은 손을 턴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_date_palm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_date_palm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_papyrus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_papyrus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -888,8 +888,8 @@ local Events: { Event } = {
 			"상인이 낙타 짐 보따리를 풀어 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_harmattan", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_harmattan", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_casablanca_mosque", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_casablanca_mosque", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -899,8 +899,8 @@ local Events: { Event } = {
 			"도공이 갓 구운 접시를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_mask", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mask", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1075,8 +1075,8 @@ local Events: { Event } = {
 			"총독이 항구를 내려다본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_fort_jesus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_fort_jesus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1141,8 +1141,8 @@ local Events: { Event } = {
 			"상인이 볶은 열매를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_prayer_beads", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_prayer_beads", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1429,6 +1429,17 @@ local Events: { Event } = {
 		choices = {
 			{ text = "이야기를 기록한다", effect = { cardId = "bot_ginseng_root", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_ginseng_root", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_busan_whaler", title = "부산의 고래잡이", portId = "busan", art = "harbor", npc = "고래잡이",
+		lines = {
+			"\"겨울이면 동해로 큰 고래가 지나갑니다. 배보다 더 큰 놈이지요.\"",
+			"고래잡이가 작살 자국이 남은 오래된 뼈를 보여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_whale", fame = 3 }, result = "수첩에 고래 이야기를 옮겨 적었다. 고래 카드를 얻었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_whale", affinity = 1 }, result = "고래잡이가 기뻐하며 바다 이야기를 더 들려주었다." },
 		},
 	},
 	{
@@ -1856,8 +1867,8 @@ local Events: { Event } = {
 			"상인이 가죽 더미를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_llama", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_llama", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_colonial_deed", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_colonial_deed", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1889,8 +1900,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_tasmanian_devil", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_tasmanian_devil", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_eucalyptus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_eucalyptus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1900,8 +1911,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_marine_iguana", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_marine_iguana", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_great_barrier", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_great_barrier", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1911,8 +1922,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_birdwing", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_birdwing", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_kiwi", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kiwi", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1922,8 +1933,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_breadfruit", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_breadfruit", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_bird_paradise", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_bird_paradise", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1944,8 +1955,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_kelp_forest", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kelp_forest", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_bounty_nail", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_bounty_nail", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1955,8 +1966,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_black_pearl", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_black_pearl", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_sandalwood_hawaii", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_sandalwood_hawaii", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1977,8 +1988,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_moai", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_moai", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_acapulco_fort", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_acapulco_fort", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1988,8 +1999,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_boomerang", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_boomerang", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_panama_viejo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_panama_viejo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -1999,8 +2010,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_conch_horn", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_conch_horn", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_cacao_pod", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cacao_pod", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -2010,8 +2021,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_fur_trade_pelt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_fur_trade_pelt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_inca_quipu", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_inca_quipu", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -2021,8 +2032,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_uluru", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_uluru", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_humboldt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_humboldt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -2032,8 +2043,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_panama_viejo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_panama_viejo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_golden_gate", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_golden_gate", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 	{
@@ -2054,8 +2065,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_tasman_sea", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_tasman_sea", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_inside_passage", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_inside_passage", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
 }
