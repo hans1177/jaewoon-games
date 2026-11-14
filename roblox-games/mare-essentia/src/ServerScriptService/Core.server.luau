@@ -14,6 +14,7 @@ local D = {
 	PortEras = require(Shared:WaitForChild("PortEras")),
 	SeaCards = require(Shared:WaitForChild("SeaCards")),
 	Ships = require(Shared:WaitForChild("Ships")),
+	CultureRegions = require(Shared:WaitForChild("CultureRegions")),
 	Tech = require(Shared:WaitForChild("Tech")),
 	Skills = require(Shared:WaitForChild("Skills")),
 	Cards = require(Shared:WaitForChild("KnowledgeCards")),

@@ -357,8 +357,10 @@ return function(D, S)
 			if s.techReq and not state.tech[s.techReq] then
 				locked = "연구 필요: " .. D.Tech.Tech[s.techReq].name
 			end
+			locked = locked or D.Ships.saleBlock(s, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
 			table.insert(view.shipyard.ships, {
 				id = s.id,
+				rowed = s.rowed, nation = s.nation, regions = s.regions,
 				name = s.name,
 				steam = s.steam,
 				price = s.price,

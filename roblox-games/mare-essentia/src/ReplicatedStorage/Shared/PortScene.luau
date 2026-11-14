@@ -64,6 +64,20 @@ local SHIP_LOOK = {
 	paddle_steamer = { scale = 1.3, masts = 1, hull = Color3.fromRGB(40, 40, 46), funnel = true, paddle = true },
 	ironclad_frigate = { scale = 1.5, masts = 2, hull = Color3.fromRGB(90, 96, 104), funnel = true, metal = true },
 }
+-- 지역·나라 전용 배: 기본 배의 모양에 그 지역의 선체 색을 입힌다
+do
+	local ShipsMod = require(script.Parent:WaitForChild("Ships"))
+	for id, def in ShipsMod.Ships do
+		if def.visual and SHIP_LOOK[def.visual] and not SHIP_LOOK[id] then
+			local look = table.clone(SHIP_LOOK[def.visual])
+			if def.tint then
+				look.hull = Color3.fromRGB(def.tint[1], def.tint[2], def.tint[3])
+			end
+			look.scale = look.scale * math.clamp(0.8 + def.hull / 700, 0.85, 1.12)
+			SHIP_LOOK[id] = look
+		end
+	end
+end
 
 -- 같은 항구는 늘 같은 마을이 되도록 항구 id로 난수를 만든다
 local function seeded(id)
@@ -279,6 +293,14 @@ local SHIP_MESH = {
 	frigate = "ship-pirate-medium", galleon = "ship-large",
 	paddle_steamer = "ship-pirate-small", ironclad_frigate = "ship-pirate-medium",
 }
+do
+	local ShipsMod = require(script.Parent:WaitForChild("Ships"))
+	for id, def in ShipsMod.Ships do
+		if def.visual and not SHIP_MESH[id] then
+			SHIP_MESH[id] = SHIP_MESH[def.visual]
+		end
+	end
+end
 
 -- 색이 입혀지지 않은 수입 모델(회색·옅은 파랑으로 보임)에 자연스러운 색을 입힌다.
 local ANIMAL_TINT = {

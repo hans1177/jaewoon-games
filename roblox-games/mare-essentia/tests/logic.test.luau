@@ -6,6 +6,7 @@ local D = {
 	PortEras = require("./Shared/PortEras"),
 	SeaCards = require("./Shared/SeaCards"),
 	Ships = require("./Shared/Ships"),
+	CultureRegions = require("./Shared/CultureRegions"),
 	Tech = require("./Shared/Tech"),
 	Skills = require("./Shared/Skills"),
 	Cards = require("./Shared/KnowledgeCards"),
@@ -1504,7 +1505,7 @@ do
 	check("view tech", #v.tech == 6)
 	check("view quests", #v.quests.available + v.quests.otherPortDeliver == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after then n += 1 end end return n end)())
 	check("view loadout", v.loadout.slots == 3)
-	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == 6)
+	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == #D.Ships.Order)
 	check("view scholars at london", #v.scholars >= 4)
 	check("view careers", #v.careers == 3)
 end
@@ -1641,6 +1642,46 @@ do
 		end)())
 	end
 
+	-- [배 종류] 지역·나라 전용 배
+	do
+		local Sh = D.Ships
+		local inOrder, bad = {}, 0
+		for _, id in Sh.Order do
+			inOrder[id] = true
+			if not Sh.Ships[id] then bad += 1; print("순서에 없는 배", id) end
+		end
+		for id, def in Sh.Ships do
+			if not inOrder[id] then bad += 1; print("진열 순서에 빠진 배", id) end
+			if def.visual and not Sh.Ships[def.visual] then bad += 1; print("나쁜 visual", id) end
+			for _, r in def.regions or {} do if not Sh.RegionNames[r] then bad += 1; print("나쁜 문화권", id, r) end end
+		end
+		check("배: 진열 순서·visual·문화권이 모두 올바름", bad == 0, tostring(bad))
+		local nRegional, nNation = 0, 0
+		for _, def in Sh.Ships do
+			if def.regions then nRegional += 1 end
+			if def.nation then nNation += 1 end
+		end
+		check("배: 지역 배 10종 이상, 나라 전용 배 9종", nRegional >= 10 and nNation == 9, nRegional .. "/" .. nNation)
+		local seen = {}
+		for _, def in Sh.Ships do if def.nation then seen[def.nation] = true end end
+		local missing = 0
+		for _, nid in { "england", "netherlands", "france", "portugal", "ottoman", "swahili", "malabar", "japan", "new_spain" } do if not seen[nid] then missing += 1 end end
+		check("배: 9개 나라 모두 전용 배가 있음", missing == 0)
+		-- 판매 제한
+		local galley, junk, privateer = Sh.Ships.galley, Sh.Ships.junk, Sh.Ships.privateer
+		check("배: 지중해 조선소에서 갤리선 판매", Sh.saleBlock(galley, "mediterranean", "england") == nil)
+		check("배: 북해 조선소에서는 갤리선 못 삼", Sh.saleBlock(galley, "north_sea", "england") ~= nil)
+		check("배: 동아시아에서 정크선 판매", Sh.saleBlock(junk, "east_asia", "france") == nil)
+		check("배: 영국 전용 사략선은 영국만", Sh.saleBlock(privateer, "north_sea", "england") == nil and Sh.saleBlock(privateer, "north_sea", "france") ~= nil)
+		-- 실제 구매 처리
+		local sy = newState("england")
+		sy.coins = 99999; sy.portId = "london"
+		check("배: 영국 주인공이 런던에서 사략선 구매", act(sy, "BuyShip", { shipId = "privateer" }) and sy.ship.id == "privateer")
+		local sy2 = newState("england")
+		sy2.coins = 99999; sy2.portId = "london"
+		check("배: 런던에서 갤리선 구매 거절", not act(sy2, "BuyShip", { shipId = "galley" }))
+		check("배: 다른 나라 전용 배 구매 거절", not act(sy2, "BuyShip", { shipId = "nau" }))
+	end
 	-- [학문 분류] 7대 분류와 스킬 트리 무결성
 	do
 		local K = D.KnowledgeTree
