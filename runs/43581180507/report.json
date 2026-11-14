@@ -1,0 +1,2135 @@
+{
+ "sourceRevision": "87f23ae85e56fa0206c5fa86a5cf8f893293718a",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "SCROLLED 새로운 항해\ntext"
+  },
+  {
+   "step": 5,
+   "click": "title01",
+   "at": "896,154",
+   "out": "896,154 CLICK=새로운 항해\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 896,
+      "y": 154
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 7,
+   "capture": "t01",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "SCROLLED 프랑스\ntext"
+  },
+  {
+   "step": 10,
+   "click": "title02",
+   "at": "1001,66",
+   "out": "1001,66 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1001,
+      "y": 66
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 12,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓  출항하기\ntext"
+  },
+  {
+   "step": 15,
+   "click": "title03",
+   "at": "792,262",
+   "out": "792,262 CLICK=⚓  출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 792,
+      "y": 262
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 17,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "intro_done",
+   "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999986643 | 상태 | 동료 | 초상화가 완성되었다 | ◆ 선박 | 갤리선 | 선체 118/118 · 선원 16/40 · 포 6 · 속도 8\n화물 0/ | ◆ 해전 카드 지원 (자동)\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 24,
+   "capture": "tab_harbor",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 | 교역소 | 999986643 | 교역 | 항구 | 💰 999,986,643 | 선원 16/40 · 보급 31/300 · 선체 100% | 채우기\n1268 | 선체 튼튼 | ◆ 이스탄불 · 작은 정박지 (1단계)\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "tab trade\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "tab_trade",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 | 교역소 | 999986643 | 교역 | 항구 | 오스만 제국 우호 | 4/100 | 되파는 비율 | +0.1% | 관세\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "tab route\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "tab_route",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 | 항만청 | 999986643 | 항해 | 일지 | 오늘 날씨: 역풍 (바람 x0.85) — 맞바람이에요. 시간이 더 걸려요 | 하루 기다리기 | 날씨가 나쁘면 하루 쉬었다 떠나요 (사기 +2) | 대기 | 보급품 31 · 석탄 0\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "tab map\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "tab_map",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 | 항만청 | 999986643 | 항해 | 일지 | ◆ 항해 일지 | 오스만 제국 · 1517년 0일째 · 이스탄불에 정박 중\n코인 99998 | ◆ 항해 지도 | 세계지도 | 해역 선택\ntext"
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "tab yard\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "tab_yard",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 조선 장인 | 조선소 | 999986643 | 조선소 | 💰 999,986,643 | 선원 16/40 · 보급 31/300 · 선체 100% | 채우기\n1268 | 선체 튼튼 | 대상 상인 카심 (베테랑 대상 상인) | \"선원이 <font color=\"#9a4f0a\"><b>16명</b></f\ntext"
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "tab quest\ntext"
+  },
+  {
+   "step": 44,
+   "capture": "tab_quest",
+   "files": 1
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 주인 | 주점 | 999986643 | 퀘스트 | 동료 | 탐험 | 전투 | 카드 배틀 | 💰 999,986,643 | 선원 16/40 · 보급 31/300 · 선체 100%\ntext"
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 48,
+   "capture": "tab_explore",
+   "files": 1
+  },
+  {
+   "step": 49,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 주인 | 주점 | 999986643 | 퀘스트 | 동료 | 탐험 | 전투 | 카드 배틀 | 💰 999,986,643 | 선원 16/40 · 보급 31/300 · 선체 100%\ntext"
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "tab battle\ntext"
+  },
+  {
+   "step": 52,
+   "capture": "tab_battle",
+   "files": 1
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 주인 | 주점 | 999986643 | 퀘스트 | 동료 | 탐험 | 전투 | 카드 배틀 | 💰 999,986,643 | 선원 16/40 · 보급 31/300 · 선체 100%\ntext"
+  },
+  {
+   "step": 54,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 56,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 57,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 | 학자의 서재 | 999986643 | 백과사전 | 연구 | 세계 백과 | 발견 0 / 847 | 접현 전투 카드 | 병종·영웅·특수 카드의 위력과 효과 | 열기\ntext"
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 60,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 | 학자의 서재 | 999986643 | 백과사전 | 연구 | 증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 | 증기 펌프 | 침수 피해 감소 (선체 피해 <font color=\"#9a4f0a\"><b | 증기 윈치 | 화물칸 <font color=\"#9a4f0a\"><b>+10%</b></f\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 64,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999986643 | 상태 | 동료 | ◆ 선박 | 갤리선 | 선체 118/118 · 선원 16/40 · 포 6 · 속도 8\n화물 0/ | ◆ 해전 카드 지원 (자동) | 내 덱이 해전을 돕는 효과\ntext"
+  },
+  {
+   "step": 66,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 68,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 69,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999986643 | 상태 | 동료 | ◆ 지상전 병종과 개인 장비 | 새 선장 | 검사 · Lv.1 · 숙련 0/25 | 장비·승급 | 대상 상인 카심\ntext"
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "TAC_NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 71,
+   "ctx": "Server",
+   "out": "TAC_START ok=true msg=들판 한가운데 산적들이 길을 막고 있다. 낮은 둔덕을 차지하고 맞서자.\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "TAC_VIEW tactics=true\ntext"
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "x\ntext"
+  },
+  {
+   "step": 76,
+   "capture": "t0_explore",
+   "files": 1
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "TAC_OPEN TACTICS_OPEN true nil\ntext"
+  },
+  {
+   "step": 79,
+   "capture": "t1_board",
+   "files": 1
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "TAC_UI gui=true tiles=115 units=8\ntext"
+  },
+  {
+   "step": 81,
+   "click": "luau",
+   "at": "462,36",
+   "out": "462,36\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 462,
+      "y": 36
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 83,
+   "capture": "t2_selected",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 85,
+   "click": "luau",
+   "at": "482,36",
+   "out": "482,36\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 482,
+      "y": 36
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 87,
+   "capture": "t3_move_chosen",
+   "files": 1
+  },
+  {
+   "step": 88,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 89,
+   "click": "luau",
+   "at": "1015,282",
+   "out": "1015,282\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1015,
+      "y": 282
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 91,
+   "capture": "t4_waited",
+   "files": 1
+  },
+  {
+   "step": 92,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 93,
+   "click": "luau",
+   "at": "1015,282",
+   "out": "1015,282\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1015,
+      "y": 282
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 95,
+   "capture": "t5_enemy_turn",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Server",
+   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+  },
+  {
+   "step": 97,
+   "ctx": "Client",
+   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   1/12턴 (내 턴) ERR n=1 first=MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=72480222342243|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "v1_start",
+   "files": 1
+  },
+  {
+   "step": 102,
+   "capture": "v2_event",
+   "files": 1
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568, 230.42050170898438, 57.0244140625 on=true parent=VoyageScene fog=2446.44384765625 brightness=2.0272152423858643 atmo=0.3700000047683716 camdist=57.56593704223633\ntext"
+  },
+  {
+   "step": 105,
+   "capture": "v3_event2",
+   "files": 1
+  },
+  {
+   "step": 107,
+   "capture": "v4_late",
+   "files": 1
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "nil\ntext"
+  },
+  {
+   "step": 109,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 111,
+   "capture": "b1_start",
+   "files": 1
+  },
+  {
+   "step": 113,
+   "capture": "b2_mid",
+   "files": 1
+  },
+  {
+   "step": 114,
+   "ctx": "Client",
+   "out": "LOGS(25): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassetid://123503489788218 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://110479078771259 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://132968377553777 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://92336858911089 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://107214835405952 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://129248731037406 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://100327551446853 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://87941118074642 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://84669474609590 failed due to: HTTP 503 // ContentId: rbxassetid://110479078771259 failed due to: HTTP 503 // ContentId: rbxassetid://100327551446853 failed due to: HTTP 503 // ContentId: rbxassetid://129248731037406 failed due to: HTTP 503 // ContentId: rbxassetid://116626914235130 failed due to: HTTP 503 // ContentId: rbxassetid://126090815663874 failed due to: HTTP 503 // ContentId: rbxassetid://72480222342243 failed due to: HTTP 503 // MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=72480222342243|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] bec // ContentId: rbxassetid://80041579885662 failed due to: HTTP 503 // ContentId: rbxassetid://71273197541767 failed due to: HTTP 503\ntext"
+  },
+  {
+   "step": 115,
+   "ctx": "Server",
+   "out": "LOGS(25): ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_systema_naturae rbxassetid://113392805067200 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_tea_plant rbxassetid://132277170419209 status=TIMEOUT_16S // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassetid://123503489788218 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://110479078771259 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://132968377553777 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://104261222212845 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://92336858911089 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://129248731037406 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true.\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 118,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
+  },
+  {
+   "step": 121,
+   "capture": "harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 123,
+   "capture": "harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "capture": "harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 127,
+   "capture": "harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 129,
+   "capture": "harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 131,
+   "capture": "harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 133,
+   "capture": "harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 135,
+   "capture": "harbor_npc_sparring_08",
+   "files": 1
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "R15_MOTION_IDLE\ntext"
+  },
+  {
+   "step": 138,
+   "capture": "harbor_motion_idle",
+   "files": 1
+  },
+  {
+   "step": 139,
+   "ctx": "Client",
+   "out": "R15_MOTION_WALK\ntext"
+  },
+  {
+   "step": 141,
+   "capture": "harbor_motion_walk",
+   "files": 1
+  },
+  {
+   "step": 142,
+   "ctx": "Client",
+   "out": "R15_MOTION_RUN\ntext"
+  },
+  {
+   "step": 144,
+   "capture": "harbor_motion_run",
+   "files": 1
+  },
+  {
+   "step": 145,
+   "ctx": "Client",
+   "out": "R15_MOTION_ATTACK\ntext"
+  },
+  {
+   "step": 147,
+   "capture": "harbor_motion_attack",
+   "files": 1
+  },
+  {
+   "step": 148,
+   "ctx": "Client",
+   "out": "R15_MOTION_SHOOT\ntext"
+  },
+  {
+   "step": 150,
+   "capture": "harbor_motion_shoot",
+   "files": 1
+  },
+  {
+   "step": 151,
+   "ctx": "Client",
+   "out": "R15_MOTION_RELOAD\ntext"
+  },
+  {
+   "step": 153,
+   "capture": "harbor_motion_reload",
+   "files": 1
+  },
+  {
+   "step": 154,
+   "ctx": "Client",
+   "out": "R15_MOTION_GUARD\ntext"
+  },
+  {
+   "step": 156,
+   "capture": "harbor_motion_guard",
+   "files": 1
+  },
+  {
+   "step": 157,
+   "ctx": "Client",
+   "out": "R15_MOTION_HURT\ntext"
+  },
+  {
+   "step": 159,
+   "capture": "harbor_motion_hurt",
+   "files": 1
+  },
+  {
+   "step": 160,
+   "ctx": "Client",
+   "out": "R15_MOTION_CHEER\ntext"
+  },
+  {
+   "step": 162,
+   "capture": "harbor_motion_cheer",
+   "files": 1
+  },
+  {
+   "step": 163,
+   "ctx": "Client",
+   "out": "R15_MOTION_TALK\ntext"
+  },
+  {
+   "step": 165,
+   "capture": "harbor_motion_talk",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 3,
+  "warningCount": 58,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=72480222342243|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=71273197541767|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=121193789785844|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   }
+  ]
+ },
+ "summary": {
+  "plannedSteps": 166,
+  "completedSteps": 166,
+  "plannedClicks": 7,
+  "successfulClicks": 7,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 47,
+  "capturedFrames": 47,
+  "abortedEarly": false
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 233080,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 260140,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "새로운 항해",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 259836,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 129001,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.016368865966797,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_done",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 191231,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0195324420928955,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 158669,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.021663188934326,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_trade",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 195183,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.023810625076294,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_route",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 206574,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 201758,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_yard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 193099,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_quest",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 196867,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 194930,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_battle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 199296,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 192079,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 205982,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 197924,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 193590,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t0_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 77115,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t1_board",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 77115,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "t2_selected",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 74643,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t3_move_chosen",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 74708,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t4_waited",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 72302,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "t5_enemy_turn",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 72302,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100864,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v2_event",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 92162,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v3_event2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97871,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v4_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 4289,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 132646,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b2_mid",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 189837,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120480,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_04",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_05",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_06",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_07",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_08",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_idle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_walk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_run",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120474,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_attack",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120466,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_shoot",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120483,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_reload",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120499,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_guard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120572,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_hurt",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120569,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_cheer",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 120557,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_talk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 122831,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  }
+ ],
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 591,
+   "errors": [],
+   "failed": 0,
+   "registered": 591
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 414,
+   "models": 591,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 1005,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://107877140385634",
+      "key": "AssetIds.CardArt/ast_aurora",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://127370718437030",
+      "key": "AssetIds.CardArt/ast_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://105991549101223",
+      "key": "AssetIds.CardArt/ast_halley_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114650000468629",
+      "key": "AssetIds.CardArt/ast_halley_prediction",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://125327803198600",
+      "key": "AssetIds.CardArt/ast_jupiter_moons",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://120956229711846",
+      "key": "AssetIds.CardArt/ast_saturn_rings",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114615121747571",
+      "key": "AssetIds.CardArt/ast_venus",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://76486492447366",
+      "key": "AssetIds.CardArt/bot_herbarium",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://135648768778892",
+      "key": "AssetIds.CardArt/bot_plant_anatomy",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://97023606015316",
+      "key": "AssetIds.CardArt/bot_potato",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://113392805067200",
+      "key": "AssetIds.CardArt/bot_systema_naturae",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://132277170419209",
+      "key": "AssetIds.CardArt/bot_tea_plant",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
+   },
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "PASS",
+   "coverage": {
+    "Visit": {
+     "invalid": 0,
+     "rejected": 46,
+     "accepted": 0,
+     "calls": 46
+    },
+    "BuyFleetShip": {
+     "invalid": 0,
+     "rejected": 25,
+     "accepted": 3,
+     "calls": 28
+    },
+    "VoyageBonus": {
+     "invalid": 0,
+     "rejected": 181,
+     "accepted": 0,
+     "calls": 181
+    },
+    "PlayStory": {
+     "invalid": 0,
+     "rejected": 224,
+     "accepted": 3,
+     "calls": 227
+    },
+    "Hunt": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Audience": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "BuyShip": {
+     "invalid": 0,
+     "rejected": 26,
+     "accepted": 2,
+     "calls": 28
+    },
+    "HireCrew": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyPlating": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyMap": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "NewGame": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "WaitDay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "SetSpecialty": {
+     "invalid": 0,
+     "rejected": 10,
+     "accepted": 5,
+     "calls": 15
+    },
+    "Talk": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 2,
+     "calls": 49
+    },
+    "Borrow": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "QAGrant": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Sell": {
+     "invalid": 0,
+     "rejected": 49,
+     "accepted": 21,
+     "calls": 70
+    },
+    "Buy": {
+     "invalid": 0,
+     "rejected": 49,
+     "accepted": 21,
+     "calls": 70
+    },
+    "Repair": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Sail": {
+     "invalid": 0,
+     "rejected": 163,
+     "accepted": 18,
+     "calls": 181
+    },
+    "Research": {
+     "invalid": 0,
+     "rejected": 6,
+     "accepted": 0,
+     "calls": 6
+    },
+    "Withdraw": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuySupplies": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "DismissEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ToggleGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "VoyageChoice": {
+     "invalid": 0,
+     "rejected": 178,
+     "accepted": 3,
+     "calls": 181
+    },
+    "ResolveBattle": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Repay": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Recruit": {
+     "invalid": 0,
+     "rejected": 48,
+     "accepted": 1,
+     "calls": 49
+    },
+    "Accept": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 5,
+     "calls": 8
+    },
+    "Feast": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "TalkChoice": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyInsurance": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "State": {
+     "invalid": 0,
+     "rejected": 2,
+     "accepted": 0,
+     "calls": 2
+    },
+    "Rumor": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ChallengeBoss": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 0,
+     "calls": 3
+    },
+    "Deposit": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyLicense": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Haggle": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 22,
+     "calls": 69
+    },
+    "Explore": {
+     "invalid": 0,
+     "rejected": 559,
+     "accepted": 0,
+     "calls": 559
+    },
+    "BuyCannon": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 2,
+     "calls": 5
+    }
+   },
+   "observed": {
+    "naval-resolved": 1,
+    "quest-accepted": 5,
+    "voyage-arrived": 18,
+    "naval-encounter": 1
+   },
+   "calls": 1811,
+   "issues": [],
+   "rejected": 1675,
+   "failed": 0,
+   "accepted": 133
+  }
+ },
+ "assetRegistryAudit": {
+  "registered": 923,
+  "activeIds": 923,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 332,
+  "soundExpected": 82,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 7,
+  "loaded": 332,
+  "soundLoaded": 82
+ },
+ "assetOwnership": {
+  "reportedFailedIds": [
+   "123503489788218",
+   "110479078771259",
+   "132968377553777",
+   "90150811322035",
+   "92336858911089",
+   "107214835405952",
+   "129248731037406",
+   "100327551446853",
+   "87941118074642",
+   "84669474609590",
+   "116626914235130",
+   "126090815663874",
+   "72480222342243",
+   "80041579885662",
+   "71273197541767",
+   "107877140385634"
+  ],
+  "contexts": {
+   "Server": {
+    "owners": {
+     "116626914235130": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.ship-large.MeshId"
+      ],
+      "registry": []
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "87941118074642": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Terrain.altar-stone.altar-stone_Node.altar-stone.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.candle.candle_Node.candle.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.candle-multiple.candle-multiple_Node.candle-multiple.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.crypt-large.crypt-large_Node.crypt-large.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.debris.debris_Node.debris.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.lantern-candle.lantern-candle_Node.lantern-candle.TextureID"
+      ],
+      "registry": []
+     },
+     "126090815663874": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.flag-b_Node.flag-b.MeshId"
+      ],
+      "registry": []
+     },
+     "123503489788218": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.ship-medium.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.sail-b_Node.sail-b.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.sail-a_Node.sail-a.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-c_Node.flag-c.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-b_Node.flag-b.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-a_Node.flag-a.TextureID"
+      ],
+      "registry": []
+     },
+     "100327551446853": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.detail-crate-small.detail-crate-small_Node.detail-crate-small.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate3.TextureID"
+      ],
+      "registry": []
+     },
+     "71273197541767": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Relics.map-rolled.map_rolled_Node.map_rolled.MeshId"
+      ],
+      "registry": []
+     },
+     "107214835405952": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Cargo.barrel-open.barrel-open_Node.barrel-open.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.box-open.box-open_Node.box-open.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.bucket.bucket_Node.bucket.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.chest.chest.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.chest.lid.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.fish-large.fish-large_Node.fish-large.TextureID"
+      ],
+      "registry": []
+     },
+     "92336858911089": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.cart-high.TextureID",
+       "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.Group_Node.Group.TextureID",
+       "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.Group2_Node.Group2.TextureID",
+       "ReplicatedStorage.MareAssets.Town.watermill.watermill_Node.watermill.TextureID",
+       "ReplicatedStorage.MareAssets.Town.wheel.wheel_Node.wheel.TextureID"
+      ],
+      "registry": []
+     },
+     "90150811322035": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Cargo.bag.bag_Node.bag.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.banana.banana_Node.banana.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.bag-flat.bag-flat_Node.bag-flat.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.barrel.barrel_Node.barrel.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.apple.apple_Node.apple.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.bottle-oil.bottle-oil_Node.bottle-oil.TextureID"
+      ],
+      "registry": []
+     },
+     "72480222342243": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.flag-c_Node.flag-c.MeshId"
+      ],
+      "registry": []
+     },
+     "84669474609590": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Cargo.copper-bar.Copper_Bar_Node.Copper_Bar.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-bars.Copper_Bars_Node.Copper_Bars.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-bars-stack-large.Copper_Bars_Stack_Large_Node.Copper_Bars_Stack_Large.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-nugget-large.Copper_Nugget_Large_Node.Copper_Nugget_Large.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-nuggets.Copper_Nuggets_Node.Copper_Nuggets.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID"
+      ],
+      "registry": []
+     },
+     "110479078771259": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.boat-fishing-small.boat-fishing-small_Node.boat-fishing-small.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.boat-sail-b.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.sail_Node.sail.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.buoy.buoy_Node.buoy.TextureID"
+      ],
+      "registry": []
+     },
+     "80041579885662": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.sail-a_Node.sail-a.MeshId"
+      ],
+      "registry": []
+     },
+     "132968377553777": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Castle.bridge-straight.bridge-straight_Node.bridge-straight.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.bridge-draw.bridge-draw_Node.bridge-draw.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.door.door_Node.door.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.flag-banner-long.flag-banner-long_Node.flag-banner-long.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.gate.gate_Node.gate.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.flag-banner-short.flag-banner-short_Node.flag-banner-short.TextureID"
+      ],
+      "registry": []
+     },
+     "129248731037406": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.ladder.ladder_Node.ladder.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.pulley.pulley_Node.pulley.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate.TextureID"
+      ],
+      "registry": []
+     }
+    },
+    "scanned": 9893,
+    "contentRefs": 1712,
+    "complete": true
+   },
+   "Client": {
+    "owners": {
+     "116626914235130": {
+      "instances": [
+       "Workspace.PortScene.Ship.ship-large_Node.ship-large.MeshId"
+      ],
+      "registry": []
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "87941118074642": {
+      "instances": [],
+      "registry": []
+     },
+     "126090815663874": {
+      "instances": [
+       "Workspace.PortScene.Ship.ship-large_Node.flag-b_Node.flag-b.MeshId"
+      ],
+      "registry": []
+     },
+     "123503489788218": {
+      "instances": [
+       "Workspace.PortScene.structure-platform-dock.structure-platform-dock_Node.structure-platform-dock.TextureID",
+       "Workspace.PortScene.Ship.ship-large_Node.ship-large.TextureID",
+       "Workspace.PortScene.Ship.ship-large_Node.flag-a_Node.flag-a.TextureID",
+       "Workspace.PortScene.Ship.ship-large_Node.sail-b_Node.sail-b.TextureID",
+       "Workspace.PortScene.Ship.ship-large_Node.sail-a_Node.sail-a.TextureID",
+       "Workspace.PortScene.Ship.ship-large_Node.flag-c_Node.flag-c.TextureID"
+      ],
+      "registry": []
+     },
+     "100327551446853": {
+      "instances": [
+       "Workspace.PortScene.pulley-crate.pulley-crate_Node.pulley-crate3.TextureID",
+       "Workspace.PortScene.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes.TextureID",
+       "Workspace.PortScene.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes.TextureID",
+       "Workspace.PortScene.pulley-crate.pulley-crate_Node.pulley-crate3.TextureID"
+      ],
+      "registry": []
+     },
+     "71273197541767": {
+      "instances": [
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.map-rolled.map_rolled_Node.map_rolled.MeshId"
+      ],
+      "registry": []
+     },
+     "107214835405952": {
+      "instances": [
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.chest.chest.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.chest.lid.TextureID",
+       "Workspace.PortScene.box-open.box-open_Node.box-open.TextureID",
+       "Workspace.PortScene.box-open.box-open_Node.box-open.TextureID",
+       "Workspace.PortScene.fish-large.fish-large_Node.fish-large.TextureID",
+       "Workspace.PortScene.fish-large.fish-large_Node.fish-large.TextureID"
+      ],
+      "registry": []
+     },
+     "92336858911089": {
+      "instances": [],
+      "registry": []
+     },
+     "90150811322035": {
+      "instances": [
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.barrel.barrel_Node.barrel.TextureID",
+       "Workspace.PortScene.barrel.barrel_Node.barrel.TextureID",
+       "Workspace.PortScene.barrel.barrel_Node.barrel.TextureID",
+       "Workspace.PortScene.shaker-salt.shaker-salt_Node.shaker-salt.TextureID",
+       "Workspace.PortScene.bag.bag_Node.bag.TextureID",
+       "Workspace.PortScene.pepper-mill.pepper-mill_Node.pepper-mill.TextureID"
+      ],
+      "registry": []
+     },
+     "72480222342243": {
+      "instances": [
+       "Workspace.PortScene.Ship.ship-large_Node.flag-c_Node.flag-c.MeshId"
+      ],
+      "registry": []
+     },
+     "84669474609590": {
+      "instances": [
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.gems-chest.Gems_Chest_Node.Gems_Chest.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-barrel-fish.Food_Barrel_Fish_Node.Food_Barrel_Fish.TextureID"
+      ],
+      "registry": []
+     },
+     "110479078771259": {
+      "instances": [
+       "Workspace.PortScene.cargo-pile-a.cargo-pile-a_Node.cargo-pile-a.TextureID",
+       "Workspace.PortScene.cargo-pile-b.cargo-pile-b_Node.cargo-pile-b.TextureID",
+       "Workspace.PortScene.buoy.buoy_Node.buoy.TextureID",
+       "Workspace.PortScene.buoy-flag.buoy-flag_Node.buoy-flag.TextureID",
+       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
+       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID"
+      ],
+      "registry": []
+     },
+     "80041579885662": {
+      "instances": [
+       "Workspace.PortScene.Ship.ship-large_Node.sail-a_Node.sail-a.MeshId"
+      ],
+      "registry": []
+     },
+     "132968377553777": {
+      "instances": [
+       "Workspace.PortScene.DistantHills.ground-hills_Node.ground-hills.TextureID",
+       "Workspace.PortScene.DistantHills.ground-hills_Node.ground-hills.TextureID",
+       "Workspace.PortScene.flag-banner-long.flag-banner-long_Node.flag-banner-long.TextureID",
+       "Workspace.PortScene.flag-banner-long.flag-banner-long_Node.flag-banner-long.TextureID"
+      ],
+      "registry": []
+     },
+     "129248731037406": {
+      "instances": [
+       "Workspace.PortScene.pulley-crate.pulley-crate_Node.pulley-crate.TextureID",
+       "Workspace.PortScene.pulley.pulley_Node.pulley.TextureID",
+       "Workspace.PortScene.pulley-crate.pulley-crate_Node.pulley-crate.TextureID"
+      ],
+      "registry": []
+     }
+    },
+    "scanned": 25001,
+    "contentRefs": 4838,
+    "complete": false
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 47,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
