@@ -1,0 +1,25 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local n={} local lib=RS:FindFirstChild(\"MareAssets\") if lib then for _,k in ipairs(lib:GetChildren()) do n[#n+1]=k.Name..\":\"..#k:GetChildren() end end return \"ready=\"..tostring(RS:GetAttribute(\"MareAssetsReady\"))..\" \"..table.concat(n,\",\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local RS=game:GetService(\"ReplicatedStorage\") local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId=\"lisbon\",portName=\"Lisbon\",shipId=\"galleon\",hasShipyard=true,facilities={\"bank\",\"guild\",\"harbormaster\",\"palace\"},storyCount=1,companions={{id=\"c_halley\",name=\"Halley\"},{id=\"c_merian\",name=\"Merian\"}}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end return \"build ok=\"..tostring(ok)..\" \"..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local HS=game:GetService(\"HttpService\")\nlocal folder=workspace:FindFirstChild(\"PortScene\")\nif not folder then return \"NO_PORTSCENE\" end\nlocal R={}\n-- 6) 성능 수치\nlocal parts,shadow,models,meshes=0,0,0,0\nfor _,d in ipairs(workspace:GetDescendants()) do\n if d:IsA(\"BasePart\") then parts+=1 if d.CastShadow then shadow+=1 end if d:IsA(\"MeshPart\") then meshes+=1 end\n elseif d:IsA(\"Model\") then models+=1 end\nend\nR.perf={parts=parts,shadowCasters=shadow,meshParts=meshes,models=models}\n-- 3) 땅 구멍 검사: 마을 땅 위에서 아래로 광선\nlocal rp=RaycastParams.new() rp.FilterType=Enum.RaycastFilterType.Include rp.FilterDescendantsInstances={folder}\nlocal holes,total={},0\nfor x=-280,10,10 do for z=-200,200,10 do total+=1\n local r=workspace:Raycast(Vector3.new(x,60,z),Vector3.new(0,-120,0),rp)\n if not r then holes[#holes+1]=x..\",\"..z end end end\nR.holes={checked=total,missing=#holes,sample=table.move(holes,1,math.min(#holes,12),1,{})}\n-- 4) 팔레트 규칙: 너무 하얗거나 청록이거나 너무 어두운 부품\nlocal pal={white=0,teal=0,dark=0,visible=0} local bad={}\nfor _,p in ipairs(folder:GetDescendants()) do\n if p:IsA(\"BasePart\") and p.Transparency<0.9 and p.Name~=\"Water\" then\n  pal.visible+=1\n  local h,s,v=p.Color:ToHSV()\n  local tag\n  if v>0.94 and s<0.08 then pal.white+=1 tag=\"white\" elseif h>0.44 and h<0.54 and s>0.35 and v>0.45 then pal.teal+=1 tag=\"teal\" elseif v<0.1 then pal.dark+=1 tag=\"dark\" end\n  if tag then local n=(p.Parent and p.Parent:IsA(\"Model\") and p.Parent.Name or p.Name) bad[tag..\" \"..n]=(bad[tag..\" \"..n] or 0)+1 end\n end\nend\nlocal arr={} for k,v in pairs(bad) do arr[#arr+1]={k,v} end table.sort(arr,function(a,b) return a[2]>b[2] end)\nR.palette=pal R.paletteTop=table.move(arr,1,math.min(#arr,15),1,{})\n-- 5) 겹침·크기: 모델이 공중에 뜨거나 땅에 박힌 경우\nlocal float,sunk={},{}\nfor _,m in ipairs(folder:GetChildren()) do\n if m:IsA(\"Model\") then\n  local ok,cf,sz=pcall(function() local c,s=m:GetBoundingBox() return c,s end)\n  if ok then\n   local bottom=cf.Position.Y-sz.Y/2 local top=cf.Position.Y+sz.Y/2\n   if bottom>3 and sz.Y<40 and cf.Position.X<20 and not m.Name:find("Detail") then float[#float+1]=m.Name..\":\"..math.floor(bottom) end\n   if top<0.4 and sz.X<60 then sunk[#sunk+1]=m.Name end\n  end\n end\nend\nR.floating=table.move(float,1,math.min(#float,15),1,{}) R.sunk=table.move(sunk,1,math.min(#sunk,15),1,{})\nreturn HS:JSONEncode(R)"
+ }
+]
