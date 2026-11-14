@@ -1,0 +1,56 @@
+{
+ "sourceRevision": "c9c884085ed2aa8b8fd19cb08ae9e07733294d1e",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "n1",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "capture": "n2",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "capture": "n3",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "n4",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "capture": "n5",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 12,
+  "completedSteps": 12,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
+  "abortedEarly": false
+ }
+}
