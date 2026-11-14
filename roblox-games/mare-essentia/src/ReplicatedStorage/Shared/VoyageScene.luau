@@ -1408,7 +1408,8 @@ function VoyageScene.play(info)
 			if dragTarget then
 				push = math.clamp((dragTarget - lat) * 3, -1, 1)
 			end
-			latV = (latV + push * dt * 2.6) * (1 - math.min(1, dt * 1.4))
+			-- 조향: 목표 속도로 빠르게 따라붙고(반응 빠름) 손을 떼면 거의 바로 선다(관성 작음)
+			latV += (push * 2.4 - latV) * math.min(1, dt * 11)
 			lat = math.clamp(lat + latV * dt, -1, 1)
 			if math.abs(lat) >= 1 then
 				latV = 0
