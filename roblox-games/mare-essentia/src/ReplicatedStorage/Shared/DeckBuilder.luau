@@ -116,10 +116,10 @@ function DeckBuilder.build(parent, ctx)
 	countPill.BackgroundTransparency = 0
 	countPill.BackgroundColor3 = Color3.fromRGB(150, 225, 150)
 	corner(countPill, 8)
-	local closeBtn = button(top, "✕", Color3.fromRGB(110, 54, 46), 20, function() ctx.onClose() end)
+	local closeBtn = button(top, "닫기", Color3.fromRGB(110, 54, 46), 16, function() ctx.onClose() end)
 	closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 	closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
-	closeBtn.Size = UDim2.fromOffset(40, 34)
+	closeBtn.Size = UDim2.fromOffset(64, 34)
 
 	-- ── 아래 행동 버튼 ──
 	local bottom = Instance.new("Frame")
@@ -218,10 +218,10 @@ function DeckBuilder.build(parent, ctx)
 	leaderText.Size = UDim2.new(1, -80, 0, 36)
 	leaderText.TextXAlignment = Enum.TextXAlignment.Left
 	leaderText.TextYAlignment = Enum.TextYAlignment.Top
-	local prevLeader = button(leaderBox, "◀", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(-1) end end)
+	local prevLeader = button(leaderBox, "<", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(-1) end end)
 	prevLeader.Position = UDim2.fromOffset(4, 14)
 	prevLeader.Size = UDim2.fromOffset(32, 34)
-	local nextLeader = button(leaderBox, "▶", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(1) end end)
+	local nextLeader = button(leaderBox, ">", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(1) end end)
 	nextLeader.AnchorPoint = Vector2.new(1, 0)
 	nextLeader.Position = UDim2.new(1, -4, 0, 14)
 	nextLeader.Size = UDim2.fromOffset(32, 34)
@@ -450,7 +450,7 @@ function DeckBuilder.build(parent, ctx)
 			own.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
 			corner(own, 6)
 			if (want[id] or 0) > 0 then -- 덱에 들어간 수만큼 초록 점
-				local pips = text(tile, string.rep("●", math.min(5, want[id])), 12, Color3.fromRGB(150, 230, 150), true)
+				local pips = text(tile, string.rep("•", math.min(5, want[id])), 12, Color3.fromRGB(150, 230, 150), true)
 				pips.AnchorPoint = Vector2.new(1, 1)
 				pips.Position = UDim2.new(1, -6, 0.72, -3)
 				pips.Size = UDim2.fromOffset(60, 18)
@@ -470,7 +470,7 @@ function DeckBuilder.build(parent, ctx)
 			end
 		end
 		-- ⓘ: 큰 카드 보기 / 타일 누르기: 덱에 넣기
-		local info = button(tile, "ⓘ", Color3.fromRGB(32, 24, 18), 15, function()
+		local info = button(tile, "i", Color3.fromRGB(32, 24, 18), 15, function()
 			Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 			Gallery.showDetail(ctx.galleryCtx, id)
 		end)
@@ -594,7 +594,7 @@ function DeckBuilder.build(parent, ctx)
 			cnt.AnchorPoint = Vector2.new(1, 0)
 			cnt.Position = UDim2.new(1, -44, 0, 0)
 			cnt.Size = UDim2.fromOffset(34, 34)
-			local minus = button(row, "−", Color3.fromRGB(130, 58, 52), 20, function()
+			local minus = button(row, "-", Color3.fromRGB(130, 58, 52), 20, function()
 				Sfx.play("sfx_click", 0.5, 0.9)
 				ctx.onWant(e.id, -1)
 				refresh(true)
@@ -684,8 +684,8 @@ function DeckBuilder.build(parent, ctx)
 		balLabels.melee.Text = "근접 " .. rowCount.melee
 		balLabels.ranged.Text = "사격 " .. rowCount.ranged
 		balLabels.cannon.Text = "포격 " .. rowCount.cannon
-		statusLine.Text = if okDeck then string.format("✔ 싸울 수 있어요 · 영웅 %d/%d · 특수 %d/%d", heroes, CB.MAX_HEROES, specials, CB.MAX_SPECIALS)
-			else "✖ " .. tostring(why)
+		statusLine.Text = if okDeck then string.format("싸울 수 있어요 · 영웅 %d/%d · 특수 %d/%d", heroes, CB.MAX_HEROES, specials, CB.MAX_SPECIALS)
+			else "덱을 고쳐 주세요: " .. tostring(why)
 		statusLine.TextColor3 = if okDeck then Color3.fromRGB(150, 225, 150) else Color3.fromRGB(245, 160, 130)
 
 		saveBtn.BackgroundTransparency = if okDeck then 0 else 0.6
@@ -699,11 +699,11 @@ function DeckBuilder.build(parent, ctx)
 		-- 지도자
 		local fac = BC.Factions[book.faction or ""]
 		if fac and fac.leaders then
-			local cur = book.leader or fac.leader
-			local cd = BC.Leaders[cur]
+			local curLeader = book.leader or fac.leader
+			local cd = BC.Leaders[curLeader]
 			leaderName.Text = "지도자 · " .. (cd and cd.name or "?")
 			leaderText.Text = string.format("%s · 보급 +%d", cd and cd.text or "", cd and cd.provision or 0)
-			local idx = table.find(fac.leaders, cur) or 1
+			local idx = table.find(fac.leaders, curLeader) or 1
 			cur.leaderStep = function(delta)
 				local nxt = fac.leaders[((idx - 1 + delta) % #fac.leaders) + 1]
 				Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
