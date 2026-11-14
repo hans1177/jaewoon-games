@@ -3327,12 +3327,32 @@ do
 		m.turn = "me"
 		return m
 	end
-	-- 병종 상성: 근접 > 포 > 사격 > 근접
+	-- 줄은 전열·후열 둘, 줄 상성은 없다 (점수는 상대 줄에 흔들리지 않는다)
 	local m = blank()
 	table.insert(m.rows.me.melee, { id = "a", name = "a", row = "melee", power = 10, weapon = "gun" })
-	table.insert(m.rows.foe.cannon, { id = "b", name = "b", row = "cannon", power = 10, weapon = "cannon" })
-	check("상성: 근접이 포를 이기면 ×1.3", BC.rowTotal(m, "me", "melee") == 13)
-	check("상성: 포는 근접에 밀려 ×0.85", BC.rowTotal(m, "foe", "cannon") == 9)
+	table.insert(m.rows.foe.ranged, { id = "b", name = "b", row = "cannon", power = 10, weapon = "cannon" })
+	check("줄: 전열·후열 둘뿐이다", #BC.ROWS == 2 and BC.lane({ row = "cannon" }) == "ranged" and BC.lane({ row = "melee" }) == "melee")
+	check("줄: 상대 줄에 무엇이 있어도 점수 그대로", BC.rowTotal(m, "me", "melee") == 10 and BC.rowTotal(m, "foe", "ranged") == 10)
+	-- 한 판 5장 제한과 판 사이 드로우
+	do
+		local ml = blank()
+		ml.hand.me = {}
+		for i = 1, 8 do table.insert(ml.hand.me, { id = "c" .. i, name = "c" .. i, row = "melee", power = 1 }) end
+		ml.hand.foe = { { id = "f", name = "f", row = "melee", power = 1 }, { id = "f2", name = "f2", row = "melee", power = 1 }, { id = "f3", name = "f3", row = "melee", power = 1 } }
+		ml.deck.me = {}
+		for i = 1, 6 do table.insert(ml.deck.me, { id = "d" .. i, name = "d" .. i, row = "melee", power = 1 }) end
+		ml.deck.foe = {}
+		BC.play(ml, "me", 1)
+		BC.play(ml, "foe", 1)
+		for _ = 1, 4 do
+			ml.turn = "me"
+			BC.play(ml, "me", 1)
+		end
+		check("한 판 5장: 다섯 장을 내면 자동으로 멈춘다", ml.passed.me == true and #ml.rows.me.melee == 5)
+		check("한 판 5장: 멈춘 뒤에는 낼 수 없다", select(1, BC.play(ml, "me", 1)) == false)
+		BC.pass(ml, "foe")
+		check("판 사이: 카드를 3장 뽑는다(손패 최대 10)", #ml.hand.me == 3 + 3)
+	end
 	-- 새 전략 카드: 군기(두 배), 철갑(날씨 면역), 저격수, 회군
 	do
 		local mh = blank()
@@ -3502,8 +3522,8 @@ do
 	-- 영웅은 상성에 흔들리지 않는다
 	m = blank()
 	table.insert(m.rows.me.melee, { id = "h", name = "h", row = "melee", power = 10, hero = true })
-	table.insert(m.rows.foe.cannon, { id = "b", name = "b", row = "cannon", power = 10 })
-	check("상성: 영웅은 그대로", BC.rowTotal(m, "me", "melee") == 10)
+	table.insert(m.rows.foe.ranged, { id = "b", name = "b", row = "cannon", power = 10 })
+	check("줄: 영웅 점수도 그대로", BC.rowTotal(m, "me", "melee") == 10)
 	-- 결속
 	m = blank()
 	for _ = 1, 2 do table.insert(m.rows.me.ranged, { id = "mus", name = "총병", row = "ranged", power = 5, ability = "bond" }) end
