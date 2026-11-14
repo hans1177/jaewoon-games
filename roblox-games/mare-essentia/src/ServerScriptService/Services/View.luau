@@ -476,7 +476,7 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {} }
+		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {} }
 		for _, c in D.Cards.Cards do
 			local found = state.discovered[c.id] == true
 			local art = D.CardArt.Art[c.id]
@@ -492,6 +492,8 @@ return function(D, S)
 				coins = c.reward.coins,
 				image = if found and art then art.image else nil,
 				credit = if found and art then art.credit else nil,
+				level = if found then (state.codexLevel[c.id] or 0) else nil,
+				upCost = if found and (state.codexLevel[c.id] or 0) < S.Codex.MAX_LEVEL then S.Codex.upgradeCost(c, state.codexLevel[c.id] or 0) else nil,
 			})
 		end
 		do

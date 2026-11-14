@@ -5257,10 +5257,10 @@ function H.showCardDetail(card)
 	lay.Parent = body
 
 	local rarity = RARITY_NAMES[card.rarity] or card.rarity
-	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 13, brown, true, 1)
-	mkLabel(body, card.name, 25, ink, true, 2)
+	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 13, brown, true, 0)
+	mkLabel(body, card.name, 25, ink, true, 1)
 	local art = Instance.new("Frame")
-	art.LayoutOrder = 3
+	art.LayoutOrder = 2
 	local camera = workspace.CurrentCamera
 	local viewportHeight = if camera then camera.ViewportSize.Y else 600
 	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
@@ -5272,7 +5272,55 @@ function H.showCardDetail(card)
 	art.Parent = body
 	paintCardArt(art, card, fieldDef, true)
 
-	mkLabel(body, card.description, 16, ink, false, 4)
+	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
+	local animLevel = (view and view.codex and view.codex.animLevel) or 2
+	local maxLevel = (view and view.codex and view.codex.maxLevel) or 3
+	local animated = card.found and not card.combat and (card.level or 0) >= animLevel
+	local artImg = art:FindFirstChildOfClass("ImageLabel")
+	if animated and artImg then
+		artImg.AnchorPoint = Vector2.new(0.5, 0.5)
+		artImg.Position = UDim2.fromScale(0.5, 0.5)
+		local loop = TweenInfo.new(9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+		tweens:Create(artImg, loop, { Size = UDim2.fromScale(1.18, 1.18), Position = UDim2.fromScale(0.46, 0.52) }):Play()
+		local glow = Instance.new("Frame")
+		glow.Size = UDim2.fromScale(0.35, 1.6)
+		glow.Position = UDim2.fromScale(-0.4, -0.3)
+		glow.Rotation = 20
+		glow.BackgroundColor3 = Color3.new(1, 1, 1)
+		glow.BackgroundTransparency = 0.88
+		glow.BorderSizePixel = 0
+		glow.ZIndex = artImg.ZIndex + 1
+		glow.Parent = art
+		tweens:Create(glow, TweenInfo.new(5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 2), { Position = UDim2.fromScale(1.1, -0.3) }):Play()
+	end
+
+	mkLabel(body, card.description, 16, ink, false, 3)
+	if card.found and not card.combat and card.level ~= nil then
+		local lv = card.level
+		local text = string.format("강화 %d / %d단계", lv, maxLevel)
+		if lv < animLevel then
+			text ..= string.format("  ·  %d단계에 움직이는 삽화 해금", animLevel)
+		elseif animated then
+			text ..= "  ·  움직이는 삽화 감상 중"
+		end
+		if not card.upCost then
+			mkLabel(body, text, 13, brown, true, 4)
+		else
+			local up = mkButton(body, string.format("카드 강화 (%d코인)  ·  %s", card.upCost, text), COLORS.blue, UDim2.new(1, -8, 0, 38), function()
+				local res = call("UpgradeCodexCard", { id = card.id })
+				if res and res.ok and view and view.codex then
+					for _, c in view.codex.cards do
+						if c.id == card.id then
+							overlay:Destroy()
+							H.showCardDetail(c)
+							break
+						end
+					end
+				end
+			end, true)
+			up.LayoutOrder = 4
+		end
+	end
 	if card.combat then
 		mkLabel(body, "전투에서 하는 일", 16, brown, true, 5)
 		mkLabel(body, card.combat.effect, 15, ink, false, 6)

@@ -42,6 +42,7 @@ return function(D)
 			cargo = {},
 			basis = {},
 			discovered = {},
+			codexLevel = {},
 			tech = {},
 			careers = D.Careers.new(),
 			loadout = table.clone(D.Skills.DefaultLoadout),
@@ -277,6 +278,13 @@ return function(D)
 			for id, v in saved.discovered do
 				if v == true and D.Cards.ById[id] then
 					s.discovered[id] = true
+				end
+			end
+		end
+		if type(saved.codexLevel) == "table" then
+			for id, v in saved.codexLevel do
+				if D.Cards.ById[id] and s.discovered[id] and type(v) == "number" then
+					s.codexLevel[id] = math.clamp(math.floor(v), 0, 3)
 				end
 			end
 		end
@@ -837,6 +845,7 @@ return function(D)
 			cargo = state.cargo,
 			basis = state.basis,
 			discovered = state.discovered,
+			codexLevel = state.codexLevel,
 			tech = state.tech,
 			careers = state.careers,
 			loadout = state.loadout,
