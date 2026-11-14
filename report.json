@@ -1,5 +1,5 @@
 {
- "sourceRevision": "621a091bb8ac68dfbd07956439894eed5dbd3750",
+ "sourceRevision": "dc70fee8a960134dc0c2d00d9d7ee1442318d232",
  "log": [
   {
    "step": 1,
@@ -472,7 +472,7 @@
   {
    "step": 103,
    "ctx": "Client",
-   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568, 230.91046142578125, 57.01953125 on=true parent=VoyageScene fog=1362.375 brightness=2.028193712234497 atmo=0.3700000047683716 camdist=57.574649810791016\ntext"
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568.0048828125, 230.32127380371094, 57.0244140625 on=true parent=VoyageScene fog=2600 brightness=2.028088331222534 atmo=0.3700000047683716 camdist=57.562957763671875\ntext"
   },
   {
    "step": 105,
@@ -507,12 +507,12 @@
   {
    "step": 114,
    "ctx": "Client",
-   "out": "LOGS(6): ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+   "out": "LOGS(6): ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
   },
   {
    "step": 115,
    "ctx": "Server",
-   "out": "LOGS(18): ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_systema_naturae rbxassetid://113392805067200 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_tea_plant rbxassetid://132277170419209 status=TIMEOUT_16S // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+   "out": "LOGS(18): [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_systema_naturae rbxassetid://113392805067200 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_tea_plant rbxassetid://132277170419209 status=TIMEOUT_16S // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
   },
   {
    "step": 116,
@@ -698,7 +698,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 233131,
+      "bytes": 233007,
       "width": 0,
       "height": 0,
       "pass": true
@@ -721,7 +721,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 260036,
+      "bytes": 260083,
       "width": 0,
       "height": 0,
       "pass": true
@@ -745,7 +745,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 259943,
+      "bytes": 259922,
       "width": 0,
       "height": 0,
       "pass": true
@@ -760,7 +760,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 131828,
+      "bytes": 133087,
       "width": 0,
       "height": 0,
       "pass": true
@@ -773,7 +773,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.016294240951538,
+    "brightness": 2.0163867473602295,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -784,7 +784,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 193083,
+      "bytes": 192236,
       "width": 0,
       "height": 0,
       "pass": true
@@ -797,7 +797,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019556760787964,
+    "brightness": 2.019488573074341,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -808,7 +808,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 160513,
+      "bytes": 158779,
       "width": 0,
       "height": 0,
       "pass": true
@@ -821,7 +821,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.021648406982422,
+    "brightness": 2.0216662883758545,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -832,7 +832,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 196199,
+      "bytes": 196666,
       "width": 0,
       "height": 0,
       "pass": true
@@ -845,7 +845,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.023805618286133,
+    "brightness": 2.023848533630371,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -856,7 +856,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 209396,
+      "bytes": 209134,
       "width": 0,
       "height": 0,
       "pass": true
@@ -871,7 +871,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 202770,
+      "bytes": 203155,
       "width": 0,
       "height": 0,
       "pass": true
@@ -886,7 +886,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195305,
+      "bytes": 194671,
       "width": 0,
       "height": 0,
       "pass": true
@@ -901,7 +901,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197360,
+      "bytes": 196256,
       "width": 0,
       "height": 0,
       "pass": true
@@ -916,7 +916,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194054,
+      "bytes": 195034,
       "width": 0,
       "height": 0,
       "pass": true
@@ -931,7 +931,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 192576,
+      "bytes": 193148,
       "width": 0,
       "height": 0,
       "pass": true
@@ -946,7 +946,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 196995,
+      "bytes": 197357,
       "width": 0,
       "height": 0,
       "pass": true
@@ -961,7 +961,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 211065,
+      "bytes": 209726,
       "width": 0,
       "height": 0,
       "pass": true
@@ -976,7 +976,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 199399,
+      "bytes": 198879,
       "width": 0,
       "height": 0,
       "pass": true
@@ -991,7 +991,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195336,
+      "bytes": 195262,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1092,7 +1092,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104210,
+      "bytes": 103814,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1106,7 +1106,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 99295,
+      "bytes": 98561,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1120,7 +1120,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 97084,
+      "bytes": 102495,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1148,7 +1148,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 145410,
+      "bytes": 145583,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1162,7 +1162,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 204945,
+      "bytes": 205710,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1176,7 +1176,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120632,
+      "bytes": 120743,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1190,7 +1190,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1204,7 +1204,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120724,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1218,7 +1218,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120731,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1232,7 +1232,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120719,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1246,7 +1246,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120727,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1260,7 +1260,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1274,7 +1274,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1288,7 +1288,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1302,7 +1302,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1316,7 +1316,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120635,
+      "bytes": 120720,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1330,7 +1330,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120651,
+      "bytes": 120734,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1344,7 +1344,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120645,
+      "bytes": 120723,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1358,7 +1358,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120647,
+      "bytes": 120758,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1372,7 +1372,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120630,
+      "bytes": 120820,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1386,7 +1386,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120650,
+      "bytes": 120788,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1400,7 +1400,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 123053,
+      "bytes": 123155,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1414,7 +1414,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 123201,
+      "bytes": 123322,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1640,8 +1640,8 @@
     },
     "Sail": {
      "invalid": 0,
-     "rejected": 176,
-     "accepted": 5,
+     "rejected": 181,
+     "accepted": 0,
      "calls": 181
     },
     "Research": {
@@ -1676,8 +1676,8 @@
     },
     "VoyageChoice": {
      "invalid": 0,
-     "rejected": 178,
-     "accepted": 3,
+     "rejected": 181,
+     "accepted": 0,
      "calls": 181
     },
     "ResolveBattle": {
@@ -1760,8 +1760,8 @@
     },
     "Haggle": {
      "invalid": 0,
-     "rejected": 44,
-     "accepted": 25,
+     "rejected": 49,
+     "accepted": 20,
      "calls": 69
     },
     "Explore": {
@@ -1780,14 +1780,13 @@
    "observed": {
     "naval-resolved": 1,
     "quest-accepted": 5,
-    "voyage-arrived": 5,
     "naval-encounter": 1
    },
    "calls": 1813,
    "issues": [],
-   "rejected": 1687,
+   "rejected": 1700,
    "failed": 0,
-   "accepted": 123
+   "accepted": 110
   }
  },
  "assetRegistryAudit": {
