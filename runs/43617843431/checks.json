@@ -1,13 +1,13 @@
 {
-  "runId": "43614592526",
+  "runId": "43617843431",
   "kind": "studio",
-  "sourceRevision": "55d6a60b2fde1bb65dbff237396e8f78b4725c73",
+  "sourceRevision": "576bd240475a4cfe63c4d16594b9c19f35ce057b",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 10,
-    "completedSteps": 10,
+    "plannedSteps": 9,
+    "completedSteps": 9,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
@@ -67,13 +67,6 @@
     },
     {
       "step": 6,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 7,
       "type": "capture",
       "name": "n01",
       "status": "PASS",
@@ -82,14 +75,14 @@
       ]
     },
     {
-      "step": 8,
+      "step": 7,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 9,
+      "step": 8,
       "type": "capture",
       "name": "n02",
       "status": "PASS",
@@ -101,17 +94,17 @@
   "screenshotComparison": [
     {
       "name": "n01-0.jpg",
-      "sha256": "5f987e114f863e93ba945fc0d93ebde49595c29f827b71995d627b608222e799",
+      "sha256": "1189b8b352c2187869d0e560dfdfd4edd7fd4df1a07dea16ee70b283a0ea4b84",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43614592526/n01-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43617843431/n01-0.jpg"
     },
     {
       "name": "n02-0.jpg",
-      "sha256": "6dda8823fbc1c4c96d300ad4a0f5b15f7a6f494478819240a531a4afb943f2f9",
+      "sha256": "6a12e922b76b993e8c8db1f7e08ff61b37ca4d2471fbbec8df3c15e3e16baf1b",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43614592526/n02-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43617843431/n02-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43614409866"
+  "previousRunId": "43617278960"
 }

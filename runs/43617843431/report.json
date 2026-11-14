@@ -1,5 +1,5 @@
 {
- "sourceRevision": "55d6a60b2fde1bb65dbff237396e8f78b4725c73",
+ "sourceRevision": "576bd240475a4cfe63c4d16594b9c19f35ce057b",
  "log": [
   {
    "step": 1,
@@ -14,20 +14,15 @@
   {
    "step": 4,
    "ctx": "Client",
-   "out": "npcs 5\ntext"
+   "out": "guis= npcs 5 cam=74.32279968261719, 19.32222557067871, 50.123722076416016 ys=14,14,14,14,14\ntext"
   },
   {
    "step": 6,
-   "ctx": "Client",
-   "out": "hid\ntext"
-  },
-  {
-   "step": 7,
    "capture": "n01",
    "files": 1
   },
   {
-   "step": 9,
+   "step": 8,
    "capture": "n02",
    "files": 1
   }
@@ -44,8 +39,8 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 10,
-  "completedSteps": 10,
+  "plannedSteps": 9,
+  "completedSteps": 9,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
