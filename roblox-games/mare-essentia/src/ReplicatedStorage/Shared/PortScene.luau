@@ -295,7 +295,7 @@ local SOLID_TREES = {
 local function solidTint(asset)
 	if string.find(asset, "rocks-sand", 1, true) then return Color3.fromRGB(196, 176, 140) end
 	if string.find(asset, "rock", 1, true) then return Color3.fromRGB(150, 144, 134) end
-	if asset == "windmill" then return Color3.fromRGB(226, 206, 170) end
+	if asset == "windmill" then return Color3.fromRGB(176, 142, 104) end
 	return nil
 end
 local ASSET_TINT = {
