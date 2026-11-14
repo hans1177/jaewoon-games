@@ -1,0 +1,74 @@
+{
+  "runId": "43541985681",
+  "kind": "autopilot",
+  "sourceRevision": "7d7f8049fd1cfae49f15c28f84c148b03dc8895f",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
+  "summary": {
+    "plannedSteps": 5,
+    "completedSteps": 5,
+    "plannedClicks": 0,
+    "successfulClicks": 0,
+    "skippedOptionalClicks": 0,
+    "plannedFrames": 1,
+    "capturedFrames": 1,
+    "abortedEarly": false
+  },
+  "errors": [],
+  "audits": {
+    "models": "NOT_RUN",
+    "registered": "NOT_RUN",
+    "features": "NOT_RUN",
+    "registry": "NOT_RUN"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 1,
+      "type": "luau",
+      "name": "autopilot-health",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 2,
+      "type": "capture",
+      "name": "ap_game",
+      "status": "PASS",
+      "screenshots": [
+        "ap_game-0.jpg"
+      ]
+    },
+    {
+      "step": 3,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 4,
+      "type": "luau",
+      "name": "autopilot-health-2",
+      "status": "PASS",
+      "screenshots": []
+    }
+  ],
+  "screenshotComparison": [
+    {
+      "name": "ap_game-0.jpg",
+      "sha256": "5b614bc4ddaa70ae7cbcaf53618d74be72284b7bb42e8e6561475dc1cf77ad84",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43541985681/ap_game-0.jpg"
+    }
+  ],
+  "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
+  "previousRunId": null
+}

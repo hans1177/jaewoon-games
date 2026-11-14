@@ -1,20 +1,20 @@
 {
- "sourceRevision": "343de8c0f53f8fb500eb00c20a45fec23b5c3f91",
+ "sourceRevision": "7d7f8049fd1cfae49f15c28f84c148b03dc8895f",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
    "step": 2,
-   "ctx": "Client",
-   "out": "build ok=true nil\ntext"
+   "capture": "ap_game",
+   "files": 1
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "{\"palette\":{\"visible\":3579,\"teal\":0,\"dark\":9,\"white\":41},\"sunk\":[\"rugrounded\"],\"paletteTop\":[[\"white Model\",18],[\"white sheep\",12],[\"dark Villager\",9],[\"white Part\",7],[\"white chicken\",4]],\"perf\":{\"shadowCasters\":3662,\"models\":3516,\"meshParts\":3169,\"parts\":3675},\"holes\":{\"missing\":0,\"checked\":1230,\"sample\":[]},\"floating\":[\"HarborRoofDetail:32\",\"HarborWindowDetail:16\",\"HarborRoofDetail:26\",\"HarborWindowDetail:13\",\"HarborWindowDetail:11\",\"HarborWindowDetail:11\",\"HarborRoofDetail:21\",\"HarborWindowDetail:10\",\"HarborRoofDetail:24\",\"HarborWindowDetail:12\",\"HarborRoofDetail:28\",\"Villager:116\",\"Villager:116\",\"HarborRoofDetail:8\",\"HarborRoofDetail:13\"]}\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -34,8 +34,8 @@
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 0,
-  "capturedFrames": 0,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
