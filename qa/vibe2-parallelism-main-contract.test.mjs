@@ -69,12 +69,14 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
   const control=path.join(root,'control');
   const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
   try{
-    fs.mkdirSync(path.join(repo,'.vibe2','queue'),{recursive:true});
+    fs.mkdirSync(path.join(repo,'.vibe2','queue','active'),{recursive:true});
+    fs.mkdirSync(path.join(repo,'.vibe2','queue','history'),{recursive:true});
     fs.mkdirSync(path.join(repo,'web-games','unrelated'),{recursive:true});
     fs.writeFileSync(path.join(repo,'.vibe2','queue.json'),'{"tasks":[]}\n');
     fs.writeFileSync(path.join(repo,'.vibe2','system-ai-queue.json'),'{"tasks":[]}\n');
     fs.writeFileSync(path.join(repo,'.vibe2','recovery-queue.json'),'{"tasks":[]}\n');
-    fs.writeFileSync(path.join(repo,'.vibe2','queue','part.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','queue','active','part.json'),'{"tasks":[]}\n');
+    fs.writeFileSync(path.join(repo,'.vibe2','queue','history','part.json'),'{"tasks":[]}\n');
     fs.writeFileSync(path.join(repo,'.vibe2','coding-trace-ledger.json'),'{"entries":[1]}\n');
     fs.writeFileSync(path.join(repo,'.vibe2','experience.json'),'{"entries":[1]}\n');
     fs.writeFileSync(path.join(repo,'web-games','unrelated','index.html'),'<main>unchanged</main>\n');
@@ -90,7 +92,8 @@ test('Recovery Fast sparse control worktree checks out only the canonical queue 
     execFileSync('git',['-C',control,'sparse-checkout','set','--no-cone','--stdin'],{input:queuePatterns.join('\n')+'\n',encoding:'utf8'});
     git(control,'checkout','HEAD');
     assert.ok(fs.existsSync(path.join(control,'.vibe2','queue.json')));
-    assert.ok(fs.existsSync(path.join(control,'.vibe2','queue','part.json')));
+    assert.ok(fs.existsSync(path.join(control,'.vibe2','queue','active','part.json')));
+    assert.ok(fs.existsSync(path.join(control,'.vibe2','queue','history','part.json')));
     assert.ok(fs.existsSync(path.join(control,'.vibe2','system-ai-queue.json')));
     assert.ok(fs.existsSync(path.join(control,'.vibe2','recovery-queue.json')));
     assert.equal(fs.existsSync(path.join(control,'.vibe2','coding-trace-ledger.json')),false);
