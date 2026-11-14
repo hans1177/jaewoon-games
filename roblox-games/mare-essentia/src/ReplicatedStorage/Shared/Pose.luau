@@ -264,6 +264,10 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	if not r15Template then
 		if r15Unavailable then return nil end
 		local description = Instance.new("HumanoidDescription")
+		-- 기본 R15(각진 마네킹)보다 사람다운 비율: 몸통·팔다리 곡선을 살리고(BodyType) 머리를 조금 줄인다
+		description.BodyTypeScale = 0.55
+		description.ProportionScale = 0.35
+		description.HeadScale = 0.95
 		local ok, result = pcall(function()
 			return Players:CreateHumanoidModelFromDescriptionAsync(description, Enum.HumanoidRigType.R15)
 		end)
