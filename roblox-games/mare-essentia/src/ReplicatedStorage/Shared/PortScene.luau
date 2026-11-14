@@ -2012,6 +2012,10 @@ local function densify(folder, info, style, rng, walkers, made)
 			if lay.farm then
 				-- 우리 서쪽으로 넓게 펼쳐진 밭
 				for rz = -21, 21, 6 do
+					-- 갈아엎은 어두운 흙 이랑: 작물 줄이 눈에 띄도록 줄마다 깔아 준다
+					local soil = part(folder, Vector3.new(104, 0.3, 4.2), CFrame.new(c.X - 78, 0.3, c.Z + rz), Color3.fromRGB(88, 62, 40), Enum.Material.Ground)
+					soil.CanCollide = false
+					soil.CanQuery = false
 					rowOf("Terrain", if rz % 12 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 6.5, c.X - 26, c.X - 130, 5, c.Z + rz)
 				end
 			end
