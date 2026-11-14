@@ -725,8 +725,9 @@ function FieldScene.start(opts)
 	attackBtn.Activated:Connect(useAttack)
 
 	local staminaBack = Instance.new("Frame")
-	staminaBack.Size = UDim2.fromOffset(160, 8)
-	staminaBack.Position = UDim2.new(0, 16, 0, 84)
+	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
+	staminaBack.Size = UDim2.fromOffset(240, 5)
+	staminaBack.Position = UDim2.new(0.5, 0, 0, 101)
 	staminaBack.BackgroundColor3 = Color3.fromRGB(30, 36, 48)
 	staminaBack.BorderSizePixel = 0
 	staminaBack.Parent = gui
