@@ -10,7 +10,25 @@ return function(D, S)
 		if not state.cardbook then
 			state.cardbook = CB.new(D.BoardingCards.factionOf(state.nationId))
 		end
-		return state.cardbook
+		local book = state.cardbook
+		-- 도감에서 발견한 지식 카드는 곧 전투 카드다. 도감 강화 단계(2·3단계)가 전투 단계가 된다.
+		for id in state.discovered or {} do
+			local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+			if d and d.knowledge then
+				book.owned[id] = math.max(1, book.owned[id] or 0)
+				local lv = state.codexLevel and state.codexLevel[id] or 0
+				book.tier[id] = if lv >= 3 then 3 elseif lv >= 2 then 2 else nil
+			end
+		end
+		return book
+	end
+
+	-- 보상으로 받은 지식 카드는 도감에도 발견으로 기록된다
+	local function markDiscovered(state, id)
+		local d = id and (D.BoardingCards.Units[id] or D.BoardingCards.Specials[id])
+		if d and d.knowledge and state.discovered then
+			state.discovered[id] = true
+		end
 	end
 
 	-- 지금 쓰는 덱 (클라이언트와 서버가 같은 규칙으로 덱을 만들도록 id 목록과 단계를 돌려준다)
@@ -21,11 +39,43 @@ return function(D, S)
 		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction, bonus = bonus }
 	end
 
+	-- 해전 카드 지원: 해전은 카드를 직접 내지 않는다. 내 덱 구성에 따라 효과가 자동으로 붙는다.
+	--   근접 카드 → 접현·백병전(meleeMult) / 포 카드 → 포격(cannonMult) / 사격 카드 → 둘 다 조금
+	--   항해·천문·기상 카드 → 속도 / 건축·조선 카드 → 침수 방어(펌프) / 의학 카드 → 전투 뒤 선원 회복
+	function C.navalSupport(state): any
+		local spec = C.deckSpec(state)
+		local sums = { melee = 0, ranged = 0, cannon = 0 }
+		local n = {}
+		for _, id in spec.ids do
+			local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+			if d and not d.special and d.row then
+				sums[d.row] += (d.power or 0) + ((spec.tier[id] or 1) - 1)
+			end
+			if d and d.field then n[d.field] = (n[d.field] or 0) + 1 end
+		end
+		local sup = {
+			meleeMult = math.min(0.12, sums.melee * 0.003 + sums.ranged * 0.0015),
+			cannonMult = math.min(0.12, sums.cannon * 0.003 + sums.ranged * 0.0015),
+			speed = math.min(2, math.floor(((n.Navigation or 0) + (n.Astronomy or 0) + (n.Weather or 0)) / 4)),
+			pump = math.min(0.15, 0.025 * math.floor(((n.Architecture or 0) + (n.Shipbuilding or 0)) / 2)),
+			medic = math.min(0.5, 0.05 * (n.Medicine or 0)),
+			lines = {},
+		}
+		local L = sup.lines
+		if sup.meleeMult > 0 then table.insert(L, string.format("접현 +%d%% (근접·사격 카드)", math.floor(sup.meleeMult * 100 + 0.5))) end
+		if sup.cannonMult > 0 then table.insert(L, string.format("포격 +%d%% (포·사격 카드)", math.floor(sup.cannonMult * 100 + 0.5))) end
+		if sup.speed > 0 then table.insert(L, string.format("속도 +%d (항해·천문·기상 카드)", sup.speed)) end
+		if sup.pump > 0 then table.insert(L, string.format("침수 방어 +%d%% (건축·조선 카드)", math.floor(sup.pump * 100 + 0.5))) end
+		if sup.medic > 0 then table.insert(L, string.format("전투 뒤 선원 회복 %d%% (의학 카드)", math.floor(sup.medic * 100 + 0.5))) end
+		return sup
+	end
+
 	-- 새 카드 보상. 안내 문구를 msgs 에 붙인다.
 	function C.reward(state, source, msgs, rng, field)
 		local book = C.get(state)
 		local r = rng or (state.rng) or math.random
-		local _, text = CB.drop(book, source, r, field)
+		local id, text = CB.drop(book, source, r, field)
+		markDiscovered(state, id)
 		if msgs then table.insert(msgs, text) end
 		return text
 	end
@@ -37,13 +87,16 @@ return function(D, S)
 			CB.choose(book, 1)
 		end
 		CB.offer(book, source, rng or math.random, field, extra)
-		if msgs then table.insert(msgs, "전투 카드 3장 중 1장을 고를 수 있다") end
+		if msgs then table.insert(msgs, "지식 카드 3장 중 1장을 고를 수 있다") end
 	end
 
 	function handlers.CardPick(state, p)
 		local i = type(p) == "table" and tonumber(p.index)
 		if not i then return false, "잘못된 요청" end
-		return CB.choose(C.get(state), math.floor(i))
+		local book = C.get(state)
+		local ok, msg = CB.choose(book, math.floor(i))
+		if ok then markDiscovered(state, book.lastGranted) end
+		return ok, msg
 	end
 
 	-- 연습전(정해진 패, 첫 승리 때만 보상) / 오늘의 해전 퍼즐(하루 한 번 보상)
@@ -135,7 +188,7 @@ return function(D, S)
 
 	function handlers.CardAutoDeck(state)
 		C.get(state).deck = nil
-		return true, "문화권 기본 덱으로 되돌렸다"
+		return true, "자동 덱으로 되돌렸다 (가진 카드로 균형 있게 짜요)"
 	end
 
 	return C

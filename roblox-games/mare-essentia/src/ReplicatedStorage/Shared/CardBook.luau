@@ -2,6 +2,7 @@
 -- 전투 카드 수집책: 시작 자동 덱 → 퀘스트·발견·탐험·보물상자에서 새 카드 → 동·은·금 강화 → 덱 구성.
 -- 순수 데이터와 규칙만 다룬다 (서버가 저장하고, 클라이언트는 같은 규칙으로 덱을 다시 짠다).
 local BC = (require(script.Parent.BoardingCards) :: any)
+local KB = (require(script.Parent.KnowledgeBattle) :: any)
 
 local CB = {}
 
@@ -11,11 +12,12 @@ CB.MAX_HEROES, CB.MAX_SPECIALS = 3, 6
 -- 강화: 같은 카드의 남는 장수와 코인이 든다. 단계마다 부대 점수 +1.
 CB.UPGRADE = { { copies = 2, coins = 120 }, { copies = 3, coins = 320 } } -- 동→은, 은→금
 
-CB.POOLS = {
-	common = { "swordsman", "axeman", "pikeman", "shieldman", "boatswain", "surgeon", "scout", "musketeer", "gunner", "swivel", "raider", "samurai", "firelance", "jaguar", "janissary", "camel" },
-	rare = { "sharpshooter", "sniper", "ironclad", "culverin", "beast", "horn", "decoy", "wind", "scorch" },
-	hero = { "hero_blade", "hero_marksman", "hero_cannon", "hero_spy", "hero_medic", "hero_captain" },
-}
+-- 카드는 모두 지식 카드(백과사전)다. 등급 풀: common = 흔함·보통, rare = 희귀·영웅급 아래, hero = 전설
+local pools = KB.pools()
+CB.BYFIELD = pools.byField
+pools.byField = nil
+CB.POOLS = pools
+CB.STARTER = KB.starter()
 -- 획득처마다 나오는 등급 가중치
 CB.SOURCES = {
 	discover = { common = 70, rare = 28, hero = 2 },
@@ -43,9 +45,8 @@ end
 -- 시작 수집: 문화권 기본 덱을 그대로 가진다
 function CB.new(factionId: string?): any
 	local book = { owned = {}, tier = {}, deck = nil }
-	local fac = BC.Factions[factionId or ""]
-	for _, id in (if fac then fac.roster else {}) do
-		book.owned[id] = (book.owned[id] or 0) + 1
+	for _, id in CB.STARTER do
+		book.owned[id] = 1
 	end
 	return book
 end
@@ -60,31 +61,41 @@ function CB.tierOf(book: any, id: string): number
 	return math.clamp(book.tier[id] or 1, 1, 3)
 end
 
--- 가중치에 따라 등급을 고른 뒤 그 등급에서 한 장
-function CB.roll(source: string, rng: () -> number): string
+-- 가중치에 따라 등급을 고른 뒤 그 등급에서 한 장 (이미 가진 카드는 되도록 피한다)
+function CB.roll(source: string, rng: () -> number, book: any?, field: string?): string
 	local w = CB.SOURCES[source] or CB.SOURCES.discover
 	local total = w.common + w.rare + w.hero
 	local r = rng() * total
 	local grade = if r < w.common then "common" elseif r < w.common + w.rare then "rare" else "hero"
 	local pool = CB.POOLS[grade]
-	return pool[math.min(#pool, math.floor(rng() * #pool) + 1)]
+	local pick = pool[math.min(#pool, math.floor(rng() * #pool) + 1)]
+	for _ = 1, 12 do
+		if not (book and (book.owned[pick] or 0) > 0) then break end
+		pick = pool[math.min(#pool, math.floor(rng() * #pool) + 1)]
+	end
+	return pick
 end
 
 -- 새 카드 받기. 반환: 카드 id, 안내 문구
--- 발견한 분야에 어울리는 카드가 절반쯤 나온다 (천문→저격수, 날씨→철갑병, 유적→소각 …)
-CB.FIELD_CARD = {
-	Astronomy = "sniper", Navigation = "wind", Geography = "scout", Weather = "ironclad", Physics = "ironclad",
-	Relic = "scorch", Site = "horn", Architecture = "shieldman", Myth = "hero_captain", Medicine = "surgeon", Botany = "surgeon",
-	Zoology = "beast", Chemistry = "culverin", Mineral = "axeman", Art = "decoy", Language = "scout", Philosophy = "decoy",
-	Shipbuilding = "ironclad", Goods = "swivel",
-}
+-- 발견한 분야의 지식 카드가 절반쯤 나온다 (천문을 발견하면 천문 카드)
+local function fieldPick(book: any, field: string?, rng: () -> number): string?
+	local list = field and CB.BYFIELD[field]
+	if not list then return nil end
+	local pick = list[math.min(#list, math.floor(rng() * #list) + 1)]
+	for _ = 1, 12 do
+		if (book.owned[pick] or 0) == 0 then return pick end
+		pick = list[math.min(#list, math.floor(rng() * #list) + 1)]
+	end
+	return nil
+end
 
 function CB.drop(book: any, source: string, rng: () -> number, field: string?): (string, string)
-	local flavored = field and CB.FIELD_CARD[field]
-	local id = if flavored and rng() < 0.5 then flavored else CB.roll(source, rng)
+	local flavored = if rng() < 0.5 then fieldPick(book, field, rng) else nil
+	local id = flavored or CB.roll(source, rng, book)
 	CB.grant(book, id, 1)
+	book.lastGranted = id
 	local d = def(id)
-	return id, string.format("%s에서 전투 카드 「%s」를 얻었다", CB.SOURCE_NAME[source] or "보상", d.name)
+	return id, string.format("%s에서 지식 카드 「%s」를 얻었다", CB.SOURCE_NAME[source] or "보상", d.name)
 end
 
 -- 이긴 뒤 보상: 서로 다른 카드 3장을 보여 주고 1장을 고른다
@@ -96,8 +107,8 @@ function CB.offer(book: any, source: string, rng: () -> number, field: string?, 
 	local tries = 0
 	while #ids < 3 and tries < 60 do
 		tries += 1
-		local flavored = field and CB.FIELD_CARD[field]
-		local id = if flavored and #ids <= 1 and rng() < 0.5 then flavored else CB.roll(source, rng)
+		local flavored = if #ids <= 1 and rng() < 0.5 then fieldPick(book, field, rng) else nil
+		local id = flavored or CB.roll(source, rng, book)
 		if not table.find(ids, id) then table.insert(ids, id) end
 	end
 	book.pick = { ids = ids, source = source }
@@ -111,13 +122,14 @@ function CB.choose(book: any, index: number): (boolean, string)
 	if not id then return false, "잘못된 선택이에요" end
 	book.pick = nil
 	CB.grant(book, id, 1)
-	return true, string.format("전투 카드 「%s」를 얻었다", def(id).name)
+	book.lastGranted = id
+	return true, string.format("지식 카드 「%s」를 얻었다", def(id).name)
 end
 
 function CB.upgradeInfo(book: any, id: string): any
 	local tier = CB.tierOf(book, id)
 	local step = CB.UPGRADE[tier]
-	if not step or CB.isHero(id) or CB.isSpecial(id) then
+	if not step or CB.isHero(id) or CB.isSpecial(id) or (def(id) and def(id).knowledge) then
 		return nil -- 영웅·특수 카드는 강화하지 않는다
 	end
 	return { fromTier = tier, copies = step.copies, coins = step.coins, have = book.owned[id] or 0 }
@@ -165,8 +177,14 @@ function CB.deckIds(book: any, factionId: string?): { string }
 		local ok = CB.validateDeck(book, book.deck)
 		if ok then return book.deck end
 	end
-	local fac = BC.Factions[factionId or ""]
-	return if fac then fac.roster else {}
+	return CB.autoDeck(book)
+end
+
+-- 자동 덱: 가진 카드로 균형 잡힌 덱을 짠다 (모자라면 시작 카드)
+function CB.autoDeck(book: any): { string }
+	local ids = CB.recommend(book, "balance")
+	if ids then return ids end
+	return table.clone(CB.STARTER)
 end
 
 -- 저장 데이터 정리 (불러올 때): 모르는 카드·이상한 값은 버린다
@@ -176,10 +194,14 @@ function CB.sanitize(saved: any, factionId: string?): any
 	if type(saved.owned) == "table" then
 		book.owned = {}
 		for id, n in saved.owned do
-			if type(id) == "string" and def(id) and type(n) == "number" and n >= 0 then
+			local d = type(id) == "string" and def(id)
+			if d and (d.knowledge or string.sub(id, 1, 5) == "boss_") and type(n) == "number" and n >= 0 then
 				book.owned[id] = math.min(9, math.floor(n))
 			end
 		end
+	end
+	for _, id in CB.STARTER do
+		book.owned[id] = math.max(1, book.owned[id] or 0)
 	end
 	if type(saved.tier) == "table" then
 		for id, t in saved.tier do
@@ -284,11 +306,12 @@ end
 
 -- ───── 학문 숙련 보너스: 지식 카드를 모을수록 같은 계열 병종 카드가 강해진다 ─────
 -- 근접 = 인문·사회(철학·언어·신화·예술·유물·유적·교역품), 사격 = 자연과학, 포 = 응용·공학(의학·건축·조선·항해술)
-CB.KNOWLEDGE_ROW = {
+CB.KNOWLEDGE_ROW_OLD = {
 	Philosophy = "melee", Language = "melee", Myth = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
 	Astronomy = "ranged", Physics = "ranged", Chemistry = "ranged", Geography = "ranged", Weather = "ranged", Botany = "ranged", Zoology = "ranged", Mineral = "ranged",
 	Medicine = "cannon", Architecture = "cannon", Shipbuilding = "cannon", Navigation = "cannon",
 }
+CB.KNOWLEDGE_ROW = KB.FIELD_ROW
 CB.KNOWLEDGE_ROW_NAME = { melee = "인문·사회", ranged = "자연과학", cannon = "응용·공학" }
 CB.KNOWLEDGE_STEPS = { 15, 40, 80 } -- 발견한 카드가 이만큼이면 줄 보너스 +1 / +2 / +3
 

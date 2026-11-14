@@ -3382,23 +3382,17 @@ do
 	do
 		local CBk = D.CardBook
 		local book = CBk.new("europe")
-		check("수집책: 시작하면 문화권 기본 덱을 가진다", #BC.Factions.europe.roster == 30
-			and (book.owned.eu_03 or 0) == 1 and (book.owned.pikeman or 0) == 0
-			and CBk.validateDeck(book, BC.Factions.europe.roster))
-		-- 현재 문화권 기본 덱의 30개 실물 카드 ID를 그대로 보유하며 저장 덱 검증에 적합한지 확인한다.
+		local starterId = CBk.STARTER[1]
+		check("수집책: 시작하면 지식 카드 18장을 가진다", #CBk.STARTER == 18 and (book.owned[starterId] or 0) == 1
+			and (book.owned.pikeman or 0) == 0 and CBk.validateDeck(book, CBk.STARTER) and BC.Units[starterId].knowledge == true)
+		-- 모든 문화권이 같은 지식 카드로 시작하고, 문화권 부대 덱은 적 덱으로만 남는다.
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			local ownedCount = 0
-			local matches = true
-			for _, id in faction.roster do
-				ownedCount += starter.owned[id] or 0
-				if (starter.owned[id] or 0) ~= 1 then matches = false end
-			end
-			check("수집책: 문화권 30장 기본 덱 소유·검사 " .. factionId,
-				#faction.roster == 30 and ownedCount == 30 and matches and CBk.validateDeck(starter, faction.roster))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == 30 and CBk.validateDeck(starter, CBk.STARTER))
 		end
-		check("수집책: 저장한 덱이 없으면 자동 덱", #CBk.deckIds(book, "europe") == #BC.Factions.europe.roster)
+		local autoIds = CBk.deckIds(book, "europe")
+		check("수집책: 저장한 덱이 없으면 자동 덱(15~30장·유효)", #autoIds >= 15 and #autoIds <= 30 and CBk.validateDeck(book, autoIds))
 		local id = CBk.drop(book, "quest", math.random)
 		check("수집책: 획득하면 보유가 늘어난다", (book.owned[id] or 0) >= 1)
 		CBk.grant(book, "swordsman", 3)
@@ -3420,8 +3414,9 @@ do
 		for _ = 1, 15 do table.insert(many, "swordsman") end
 		CBk.grant(book, "hero_blade", 4)
 		check("덱 규칙: 영웅 4장은 거절", not CBk.validateDeck(book, many))
-		local clean = CBk.sanitize({ owned = { fake = 3, pikeman = 2 }, tier = { pikeman = 9 }, deck = { "fake" } }, "europe")
-		check("저장 정리: 모르는 카드 제거·단계 범위 제한", clean.owned.fake == nil and clean.owned.pikeman == 2 and clean.tier.pikeman == 3 and clean.deck == nil)
+		local clean = CBk.sanitize({ owned = { fake = 3, pikeman = 2, [starterId] = 2 }, tier = { [starterId] = 9 }, deck = { "fake" } }, "europe")
+		check("저장 정리: 모르는 카드·옛 병종 제거·단계 범위 제한", clean.owned.fake == nil and clean.owned.pikeman == nil
+			and clean.owned[starterId] == 2 and clean.tier[starterId] == 3 and clean.deck == nil and (clean.owned[CBk.STARTER[2]] or 0) == 1)
 	end
 	-- 해전 도움말·해역 규칙·적 성격·추천 덱·저장 칸
 	do

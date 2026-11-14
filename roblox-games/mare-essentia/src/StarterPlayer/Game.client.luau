@@ -4017,6 +4017,14 @@ function RENDERERS.status()
 				ship.hull, ship.maxHull, ship.crew, ship.maxCrew, ship.cannons, ship.speed,
 				ship.cargoUsed, ship.cargoCapacity, ship.supplies, ship.coal), nil, 76)
 	end)
+	add(function() return mkHeader(content, "해전 카드 지원 (자동)") end)
+	add(function()
+		local lines = view.navalSupport or {}
+		local text = if #lines > 0 then table.concat(lines, "\n") else "덱에 근접·사격·포 카드를 넣으면 해전에서 자동으로 거들어요."
+		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 주점에서 해요.", {
+			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
+		}, 110)
+	end)
 	add(function() return mkHeader(content, "직업") end)
 	for _, c in view.careers do
 		add(function()
@@ -5400,7 +5408,7 @@ function H.codexCardTile(grid, card, field, badge, tint, onClick)
 end
 
 function H.showCardDetail(card)
-	local fieldDef = if card.combat then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
+	local fieldDef = if card.combat and not card.field then { name = "접현 전투 카드", color = { 70, 92, 96 } } else findField(card.field)
 	local article = if card.found then require(Shared:WaitForChild("KnowledgeCards")).Articles[card.id] else nil
 	local tweens = game:GetService("TweenService")
 	local paper, ink, brown = COLORS.paper, COLORS.ink, COLORS.brown
@@ -5469,9 +5477,9 @@ function H.showCardDetail(card)
 	paintCardArt(art, card, fieldDef, true)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
-	local animLevel = (view and view.codex and view.codex.animLevel) or 2
 	local maxLevel = (view and view.codex and view.codex.maxLevel) or 3
-	local animated = card.found and not card.combat and (card.level or 0) >= animLevel
+	-- 모든 발견한 카드(지식·전투 동일)의 삽화가 항상 움직인다. 강화 단계는 움직임 해금과 무관하다.
+	local animated = card.found == true or card.combat == true
 	local artImg = art:FindFirstChildOfClass("ImageLabel")
 	if animated and artImg then
 		artImg.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -5494,9 +5502,7 @@ function H.showCardDetail(card)
 	if card.found and not card.combat and card.level ~= nil then
 		local lv = card.level
 		local text = string.format("강화 %d / %d단계", lv, maxLevel)
-		if lv < animLevel then
-			text ..= string.format("  ·  %d단계에 움직이는 삽화 해금", animLevel)
-		elseif animated then
+		if animated then
 			text ..= "  ·  움직이는 삽화 감상 중"
 		end
 		if not card.upCost then
@@ -5602,14 +5608,23 @@ function H.showCombatCard(unit, origin, skill)
 	if skill then
 		effect ..= "\n" .. skill.name .. " · " .. skill.text
 	end
+	-- 지식 카드 = 전투 카드: 도감의 그림·설명·분야를 그대로 쓴다
+	local kc = nil
+	if unit.knowledge and view and view.codex then
+		for _, c in view.codex.cards do
+			if c.id == unit.id then kc = c break end
+		end
+	end
 	H.showCardDetail({
 		id = unit.id,
 		name = unit.name,
 		found = true,
-		rarity = if unit.special then "특수" elseif unit.hero then "영웅" else "병종",
-		description = if unit.special then "접현전에서 즉시 효과를 내는 카드예요."
+		field = if kc then kc.field else nil,
+		rarity = if kc then kc.rarity elseif unit.special then "특수" elseif unit.hero then "영웅" else "병종",
+		description = if kc then kc.description .. (if unit.special then "" else string.format("\n%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power))
+			elseif unit.special then "접현전에서 즉시 효과를 내는 카드예요."
 			else string.format("%s 줄  ·  기본 전투력 %d", BC.ROW_NAME[unit.row], unit.power),
-		image = H.combatCardImage(unit),
+		image = if kc and kc.image then kc.image else H.combatCardImage(unit),
 		combat = { effect = effect, origin = origin },
 	})
 end
