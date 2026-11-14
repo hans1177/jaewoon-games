@@ -13,7 +13,10 @@ CB.MAX_HEROES, CB.MAX_SPECIALS = 3, 6
 CB.UPGRADE = { { copies = 2, coins = 120 }, { copies = 3, coins = 320 } } -- 동→은, 은→금
 
 -- 카드는 모두 지식 카드(백과사전)다. 등급 풀: common = 흔함·보통, rare = 희귀·영웅급 아래, hero = 전설
-CB.POOLS = KB.pools()
+local pools = KB.pools()
+CB.BYFIELD = pools.byField
+pools.byField = nil
+CB.POOLS = pools
 CB.STARTER = KB.starter()
 -- 획득처마다 나오는 등급 가중치
 CB.SOURCES = {
@@ -76,7 +79,7 @@ end
 -- 새 카드 받기. 반환: 카드 id, 안내 문구
 -- 발견한 분야의 지식 카드가 절반쯤 나온다 (천문을 발견하면 천문 카드)
 local function fieldPick(book: any, field: string?, rng: () -> number): string?
-	local list = field and CB.POOLS.byField[field]
+	local list = field and CB.BYFIELD[field]
 	if not list then return nil end
 	local pick = list[math.min(#list, math.floor(rng() * #list) + 1)]
 	for _ = 1, 12 do

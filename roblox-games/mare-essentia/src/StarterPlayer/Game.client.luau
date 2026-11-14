@@ -4017,6 +4017,14 @@ function RENDERERS.status()
 				ship.hull, ship.maxHull, ship.crew, ship.maxCrew, ship.cannons, ship.speed,
 				ship.cargoUsed, ship.cargoCapacity, ship.supplies, ship.coal), nil, 76)
 	end)
+	add(function() return mkHeader(content, "해전 카드 지원 (자동)") end)
+	add(function()
+		local lines = view.navalSupport or {}
+		local text = if #lines > 0 then table.concat(lines, "\n") else "덱에 근접·사격·포 카드를 넣으면 해전에서 자동으로 거들어요."
+		return mkRow(content, "내 덱이 해전을 돕는 효과", text .. "\n해전에서는 카드를 직접 내지 않아요. 카드 배틀은 주점에서 해요.", {
+			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
+		}, 110)
+	end)
 	add(function() return mkHeader(content, "직업") end)
 	for _, c in view.careers do
 		add(function()

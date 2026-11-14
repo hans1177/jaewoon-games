@@ -39,6 +39,37 @@ return function(D, S)
 		return { ids = CB.deckIds(book, faction), tier = book.tier, faction = faction, bonus = bonus }
 	end
 
+	-- 해전 카드 지원: 해전은 카드를 직접 내지 않는다. 내 덱 구성에 따라 효과가 자동으로 붙는다.
+	--   근접 카드 → 접현·백병전(meleeMult) / 포 카드 → 포격(cannonMult) / 사격 카드 → 둘 다 조금
+	--   항해·천문·기상 카드 → 속도 / 건축·조선 카드 → 침수 방어(펌프) / 의학 카드 → 전투 뒤 선원 회복
+	function C.navalSupport(state): any
+		local spec = C.deckSpec(state)
+		local sums = { melee = 0, ranged = 0, cannon = 0 }
+		local n = {}
+		for _, id in spec.ids do
+			local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
+			if d and not d.special and d.row then
+				sums[d.row] += (d.power or 0) + ((spec.tier[id] or 1) - 1)
+			end
+			if d and d.field then n[d.field] = (n[d.field] or 0) + 1 end
+		end
+		local sup = {
+			meleeMult = math.min(0.12, sums.melee * 0.003 + sums.ranged * 0.0015),
+			cannonMult = math.min(0.12, sums.cannon * 0.003 + sums.ranged * 0.0015),
+			speed = math.min(2, math.floor(((n.Navigation or 0) + (n.Astronomy or 0) + (n.Weather or 0)) / 4)),
+			pump = math.min(0.15, 0.025 * math.floor(((n.Architecture or 0) + (n.Shipbuilding or 0)) / 2)),
+			medic = math.min(0.5, 0.05 * (n.Medicine or 0)),
+			lines = {},
+		}
+		local L = sup.lines
+		if sup.meleeMult > 0 then table.insert(L, string.format("접현 +%d%% (근접·사격 카드)", math.floor(sup.meleeMult * 100 + 0.5))) end
+		if sup.cannonMult > 0 then table.insert(L, string.format("포격 +%d%% (포·사격 카드)", math.floor(sup.cannonMult * 100 + 0.5))) end
+		if sup.speed > 0 then table.insert(L, string.format("속도 +%d (항해·천문·기상 카드)", sup.speed)) end
+		if sup.pump > 0 then table.insert(L, string.format("침수 방어 +%d%% (건축·조선 카드)", math.floor(sup.pump * 100 + 0.5))) end
+		if sup.medic > 0 then table.insert(L, string.format("전투 뒤 선원 회복 %d%% (의학 카드)", math.floor(sup.medic * 100 + 0.5))) end
+		return sup
+	end
+
 	-- 새 카드 보상. 안내 문구를 msgs 에 붙인다.
 	function C.reward(state, source, msgs, rng, field)
 		local book = C.get(state)

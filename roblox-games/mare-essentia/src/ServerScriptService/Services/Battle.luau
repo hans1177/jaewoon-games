@@ -23,7 +23,7 @@ return function(D, S)
 		return nil
 	end
 
-	local function playerFighter(state)
+	local function playerFighter(state): any
 		local def = S.State.shipDef(state)
 		local battleLv = state.careers.battle.level
 		local slots = D.Careers.loadoutSlots(battleLv)
@@ -35,6 +35,7 @@ return function(D, S)
 			end
 		end
 		local bonusHull = S.State.fleetHull(state)
+		local sup: any = S.Cardbook.navalSupport(state) -- 덱의 지식 카드가 자동으로 거드는 효과
 		return {
 			name = if #state.fleet > 0 then string.format("우리 선단(%d척)", #state.fleet + 1) else "우리 배",
 			hull = state.ship.hull + bonusHull,
@@ -42,12 +43,13 @@ return function(D, S)
 			crew = state.ship.crew,
 			maxCrew = def.crew,
 			cannons = def.cannons + S.State.fleetCannons(state),
-			speed = def.speed,
+			speed = def.speed + sup.speed,
 			steam = def.steam,
 			fuel = if def.steam then (state.cargo.coal or 0) else 0,
-			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + S.Shipyard.cannonMult(state) + 0.02 * (battleLv - 1),
-			meleeMult = 1 + 0.03 * (battleLv - 1),
-			pumpReduction = S.State.techSum(state, "pumpReduction"),
+			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + S.Shipyard.cannonMult(state) + 0.02 * (battleLv - 1) + sup.cannonMult,
+			meleeMult = 1 + 0.03 * (battleLv - 1) + sup.meleeMult,
+			pumpReduction = S.State.techSum(state, "pumpReduction") + sup.pump,
+			cardSupport = sup,
 			skills = skills,
 			level = battleLv,
 		}
@@ -131,7 +133,9 @@ return function(D, S)
 			foe = { cannons = enemy.cannons, cannonMult = enemy.cannonMult, crew = enemy.crew, level = enemyLv },
 		}
 		local pb = {
-			hull = result.a.hull, crew = result.a.crew, fuel = result.a.fuel, startFuel = me.fuel,
+			hull = result.a.hull, fuel = result.a.fuel, startFuel = me.fuel,
+			-- 의학 카드: 전투에서 잃은 선원의 일부를 되살린다
+			crew = result.a.crew + math.floor(math.max(0, me.crew - result.a.crew) * me.cardSupport.medic),
 			winner = result.winner, reason = result.reason, reward = D.Combat.pirateReward(enemyLv),
 			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
 			startHull = state.ship.hull, startCrew = state.ship.crew,
@@ -139,6 +143,9 @@ return function(D, S)
 		-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다 (카드 대결은 주점의 지식 카드 배틀에서만 한다)
 		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
 		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
+		if #me.cardSupport.lines > 0 then
+			table.insert(msgs, "카드 지원: " .. table.concat(me.cardSupport.lines, " · "))
+		end
 		for _, line in S.Perk.companionLines(state, "battle") do
 			table.insert(msgs, line)
 		end
