@@ -2727,6 +2727,7 @@ local function sail(portId)
 	Sfx.play("sfx_sail")
 	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
 	local result = call("Sail", { portId = portId })
+	workspace:SetAttribute("DevSailResult", tostring(result and result.ok) .. ":" .. tostring(result and result.message))
 	if result and result.ok then
 		local vk = view and view.voyageEvent and view.voyageEvent.kind
 		if vk == "dolphins" or vk == "whale" then
