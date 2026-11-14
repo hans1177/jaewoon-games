@@ -1,5 +1,5 @@
 {
- "sourceRevision": "87f23ae85e56fa0206c5fa86a5cf8f893293718a",
+ "sourceRevision": "fea4b3bfa1c7d8fe9a157ff5d772ee361e29fc49",
  "log": [
   {
    "step": 1,
@@ -447,12 +447,12 @@
   {
    "step": 96,
    "ctx": "Server",
-   "out": "TAC_DUMP turn=1 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
+   "out": "TAC_DUMP turn=2 phase=player status=active p1(1,3)- c1(1,4)- c2(1,5)- m1(1,6)- m2(1,7)-\ntext"
   },
   {
    "step": 97,
    "ctx": "Client",
-   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   1/12턴 (내 턴) ERR n=1 first=MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=113240619230066|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'\ntext"
+   "out": "TAC_END title=점검 맵 — 들판 길목   |   적을 모두 물리치기   |   2/12턴 (내 턴) ERR n=4 first=MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=126744284204735|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'\ntext"
   },
   {
    "step": 98,
@@ -472,7 +472,7 @@
   {
    "step": 103,
    "ctx": "Client",
-   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568, 230.27084350585938, 57.0244140625 on=true parent=VoyageScene fog=1479.2027587890625 brightness=2.0273828506469727 atmo=0.3700000047683716 camdist=57.562110900878906\ntext"
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568.0048828125, 230.32383728027344, 57.025390625 on=true parent=VoyageScene fog=2600 brightness=2.027975082397461 atmo=0.3700000047683716 camdist=57.56396484375\ntext"
   },
   {
    "step": 105,
@@ -507,12 +507,12 @@
   {
    "step": 114,
    "ctx": "Client",
-   "out": "LOGS(25): ContentId: rbxassetid://6858317867 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassetid://139092332846514 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://113240619230066 failed due to: HTTP 503 // MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=113240619230066|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] be // ContentId: rbxassetid://123503489788218 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://100327551446853 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://7547184629 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://132968377553777 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://129248731037406 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://99374975557495 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://110479078771259 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://104261222212845 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://73061586408177 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://84669474609590 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://92336858911089 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://107214835405952 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://87941118074642 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://99990363924302 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true.\ntext"
+   "out": "LOGS(25): ContentId: rbxassetid://6858317867 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassetid://139092332846514 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://113240619230066 failed due to: HTTP 503 // ContentId: rbxassetid://87941118074642 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://100327551446853 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://99374975557495 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://123503489788218 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://129248731037406 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://110479078771259 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://132968377553777 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://104261222212845 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://84669474609590 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://99990363924302 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://73061586408177 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://92336858911089 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://107214835405952 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://136101983262974 failed due to: HTTP 503 // ContentId: rbxassetid://78108424655041 failed due to: HTTP 503\ntext"
   },
   {
    "step": 115,
    "ctx": "Server",
-   "out": "LOGS(25): ContentId: rbxassetid://6858317867 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_systema_naturae rbxassetid://113392805067200 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_tea_plant rbxassetid://132277170419209 status=TIMEOUT_16S // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassetid://139092332846514 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://113240619230066 failed due to: HTTP 503 // MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=113240619230066|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] be // ContentId: rbxassetid://123503489788218 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://7547184629 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true.\ntext"
+   "out": "LOGS(25): ContentId: rbxassetid://6858317867 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_systema_naturae rbxassetid://113392805067200 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_tea_plant rbxassetid://132277170419209 status=TIMEOUT_16S // ContentId: rbxassetid://139092332846514 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://113240619230066 failed due to: HTTP 503 // ContentId: rbxassetid://87941118074642 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://99374975557495 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://90150811322035 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true. // ContentId: rbxassetid://129248731037406 failed due to: No asset content representation found while do_not_fallback_to_baseline is set to true.\ntext"
   },
   {
    "step": 116,
@@ -677,38 +677,33 @@
    "Client",
    "Server"
   ],
-  "errorCount": 6,
-  "warningCount": 102,
+  "errorCount": 5,
+  "warningCount": 95,
   "errors": [
    {
     "type": "studio-console-error",
     "actionId": null,
-    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=113240619230066|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
-   },
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=76422147730712|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
-   },
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=116626914235130|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
-   },
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=126090815663874|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
-   },
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=80041579885662|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=72480222342243|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
    },
    {
     "type": "studio-console-error",
     "actionId": null,
     "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=71273197541767|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=130273047413664|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=111783453872809|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "MeshContentProvider failed to process https://assetdelivery.roblox.com/v1/asset?id=74026756175130|[{\"format\":\"fmd\",\"majorVersion\":\"1.0.1\",\"fidelity\":\"ALL\"}] because 'could not fetch'"
    }
   ]
  },
@@ -729,7 +724,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 233098,
+      "bytes": 233106,
       "width": 0,
       "height": 0,
       "pass": true
@@ -752,7 +747,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 260014,
+      "bytes": 260112,
       "width": 0,
       "height": 0,
       "pass": true
@@ -776,7 +771,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 259962,
+      "bytes": 259939,
       "width": 0,
       "height": 0,
       "pass": true
@@ -791,7 +786,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 129941,
+      "bytes": 130421,
       "width": 0,
       "height": 0,
       "pass": true
@@ -804,7 +799,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.016460657119751,
+    "brightness": 2.016439199447632,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -815,7 +810,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 187817,
+      "bytes": 188099,
       "width": 0,
       "height": 0,
       "pass": true
@@ -828,7 +823,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019622802734375,
+    "brightness": 2.0195913314819336,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -839,7 +834,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155157,
+      "bytes": 154981,
       "width": 0,
       "height": 0,
       "pass": true
@@ -852,7 +847,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.021700382232666,
+    "brightness": 2.021711587905884,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -863,7 +858,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 191503,
+      "bytes": 191755,
       "width": 0,
       "height": 0,
       "pass": true
@@ -876,7 +871,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.023825168609619,
+    "brightness": 2.023881196975708,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -887,7 +882,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 204188,
+      "bytes": 204355,
       "width": 0,
       "height": 0,
       "pass": true
@@ -902,7 +897,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 198573,
+      "bytes": 198478,
       "width": 0,
       "height": 0,
       "pass": true
@@ -917,7 +912,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 191277,
+      "bytes": 190777,
       "width": 0,
       "height": 0,
       "pass": true
@@ -932,7 +927,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194360,
+      "bytes": 193990,
       "width": 0,
       "height": 0,
       "pass": true
@@ -947,7 +942,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 189739,
+      "bytes": 189489,
       "width": 0,
       "height": 0,
       "pass": true
@@ -962,7 +957,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194264,
+      "bytes": 193953,
       "width": 0,
       "height": 0,
       "pass": true
@@ -977,7 +972,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 190936,
+      "bytes": 190244,
       "width": 0,
       "height": 0,
       "pass": true
@@ -992,7 +987,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 202616,
+      "bytes": 202889,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1007,7 +1002,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 193423,
+      "bytes": 193570,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1022,7 +1017,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 190424,
+      "bytes": 190494,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1109,7 +1104,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 72302,
+      "bytes": 73015,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1123,7 +1118,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 99887,
+      "bytes": 102133,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1137,7 +1132,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 91589,
+      "bytes": 95183,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1151,7 +1146,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 97824,
+      "bytes": 101745,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1179,7 +1174,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132535,
+      "bytes": 140012,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1193,7 +1188,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 189198,
+      "bytes": 179166,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1207,7 +1202,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120681,
+      "bytes": 120200,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1221,7 +1216,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120171,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1235,7 +1230,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120237,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1249,7 +1244,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120223,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1263,7 +1258,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120249,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1277,7 +1272,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120240,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1291,7 +1286,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120232,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1305,7 +1300,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120221,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1319,7 +1314,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120168,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1333,7 +1328,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120168,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1347,7 +1342,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120228,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1361,7 +1356,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120678,
+      "bytes": 120264,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1375,7 +1370,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120664,
+      "bytes": 120290,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1389,7 +1384,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120706,
+      "bytes": 120274,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1403,7 +1398,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120731,
+      "bytes": 120291,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1417,7 +1412,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120739,
+      "bytes": 120237,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1431,7 +1426,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120741,
+      "bytes": 120212,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1445,7 +1440,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120778,
+      "bytes": 120168,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1707,8 +1702,8 @@
     },
     "VoyageChoice": {
      "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
+     "rejected": 180,
+     "accepted": 1,
      "calls": 181
     },
     "ResolveBattle": {
@@ -1791,8 +1786,8 @@
     },
     "Haggle": {
      "invalid": 0,
-     "rejected": 46,
-     "accepted": 23,
+     "rejected": 44,
+     "accepted": 25,
      "calls": 69
     },
     "Explore": {
@@ -1816,9 +1811,9 @@
    },
    "calls": 1811,
    "issues": [],
-   "rejected": 1684,
+   "rejected": 1681,
    "failed": 0,
-   "accepted": 124
+   "accepted": 127
   }
  },
  "assetRegistryAudit": {
@@ -1844,81 +1839,76 @@
    "6858317867",
    "139092332846514",
    "113240619230066",
-   "123503489788218",
+   "87941118074642",
    "100327551446853",
-   "7547184629",
-   "90150811322035",
-   "132968377553777",
-   "129248731037406",
    "99374975557495",
+   "90150811322035",
+   "123503489788218",
+   "129248731037406",
    "110479078771259",
+   "132968377553777",
    "104261222212845",
-   "73061586408177",
    "84669474609590",
-   "92336858911089",
-   "107214835405952"
+   "99990363924302",
+   "73061586408177",
+   "92336858911089"
   ],
   "contexts": {
    "Server": {
     "owners": {
-     "107214835405952": {
-      "instances": [
-       "ReplicatedStorage.MareAssets.Cargo.barrel-open.barrel-open_Node.barrel-open.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.box-open.box-open_Node.box-open.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.bucket.bucket_Node.bucket.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.chest.chest.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.chest.lid.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.fish-large.fish-large_Node.fish-large.TextureID"
-      ],
-      "registry": []
-     },
      "92336858911089": {
       "instances": [
        "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.cart-high.TextureID",
        "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.Group_Node.Group.TextureID",
        "ReplicatedStorage.MareAssets.Town.cart-high.cart-high_Node.Group2_Node.Group2.TextureID",
-       "ReplicatedStorage.MareAssets.Town.wheel.wheel_Node.wheel.TextureID",
-       "ReplicatedStorage.MareAssets.Town.watermill.watermill_Node.watermill.TextureID"
-      ],
-      "registry": []
-     },
-     "84669474609590": {
-      "instances": [
-       "ReplicatedStorage.MareAssets.Cargo.copper-bar.Copper_Bar_Node.Copper_Bar.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.copper-bars.Copper_Bars_Node.Copper_Bars.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.copper-bars-stack-large.Copper_Bars_Stack_Large_Node.Copper_Bars_Stack_Large.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.copper-nuggets.Copper_Nuggets_Node.Copper_Nuggets.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.copper-nugget-large.Copper_Nugget_Large_Node.Copper_Nugget_Large.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.food-basket-a-berries.Food_Basket_A_Berries_Node.Food_Basket_A_Berries.TextureID"
-      ],
-      "registry": []
-     },
-     "110479078771259": {
-      "instances": [
-       "ReplicatedStorage.MareAssets.Naval.boat-fishing-small.boat-fishing-small_Node.boat-fishing-small.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.buoy.buoy_Node.buoy.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.boat-sail-b.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.sail_Node.sail.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID"
+       "ReplicatedStorage.MareAssets.Town.watermill.watermill_Node.watermill.TextureID",
+       "ReplicatedStorage.MareAssets.Town.wheel.wheel_Node.wheel.TextureID"
       ],
       "registry": []
      },
      "123503489788218": {
       "instances": [
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.ship-medium.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.sail-b_Node.sail-b.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.sail-a_Node.sail-a.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-c_Node.flag-c.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-b_Node.flag-b.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.ship-medium.ship-medium_Node.flag-a_Node.flag-a.TextureID"
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.ship-large.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.flag-a_Node.flag-a.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.sail-b_Node.sail-b.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.sail-a_Node.sail-a.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.flag-c_Node.flag-c.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.ship-large.ship-large_Node.flag-b_Node.flag-b.TextureID"
+      ],
+      "registry": []
+     },
+     "87941118074642": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Terrain.altar-stone.altar-stone_Node.altar-stone.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.candle.candle_Node.candle.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.candle-multiple.candle-multiple_Node.candle-multiple.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.crypt-large.crypt-large_Node.crypt-large.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.debris.debris_Node.debris.TextureID",
+       "ReplicatedStorage.MareAssets.Terrain.lantern-candle.lantern-candle_Node.lantern-candle.TextureID"
+      ],
+      "registry": []
+     },
+     "99990363924302": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Relics.blueprint.blueprint_Node.blueprint.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.blueprint-stacked.blueprint_stacked_Node.blueprint_stacked.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.chisel.chisel_Node.chisel.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.hammer.hammer_Node.hammer.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.journal-open.journal_open_Node.journal_open.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.drafting-compass.drafting_compass_Node.drafting_compass.TextureID"
+      ],
+      "registry": []
+     },
+     "6858317867": {
+      "instances": [
+       "Workspace.Anyanguy1980.Pal Hair.Handle.TextureID"
       ],
       "registry": []
      },
      "100327551446853": {
       "instances": [
-       "ReplicatedStorage.MareAssets.Naval.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes.TextureID",
        "ReplicatedStorage.MareAssets.Naval.detail-crate-small.detail-crate-small_Node.detail-crate-small.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes.TextureID",
        "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate3.TextureID"
       ],
       "registry": []
@@ -1928,15 +1918,20 @@
        "ReplicatedStorage.MareAssets.Relics.coin.coin_Node.coin.TextureID",
        "ReplicatedStorage.MareAssets.Relics.key.key_Node.key.TextureID",
        "ReplicatedStorage.MareAssets.Relics.pot.pot_Node.pot.TextureID",
-       "ReplicatedStorage.MareAssets.Relics.potion.potion_Node.potion.TextureID",
-       "ReplicatedStorage.MareAssets.Relics.shield-round.shield-round_Node.shield-round.TextureID",
-       "ReplicatedStorage.MareAssets.Relics.weapon-spear.weapon-spear_Node.weapon-spear.TextureID"
+       "ReplicatedStorage.MareAssets.Relics.weapon-spear.weapon-spear_Node.weapon-spear.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.shield-rectangle.shield-rectangle_Node.shield-rectangle.TextureID",
+       "ReplicatedStorage.MareAssets.Relics.shield-round.shield-round_Node.shield-round.TextureID"
       ],
       "registry": []
      },
-     "6858317867": {
+     "84669474609590": {
       "instances": [
-       "Workspace.Anyanguy1980.Pal Hair.Handle.TextureID"
+       "ReplicatedStorage.MareAssets.Cargo.copper-bars.Copper_Bars_Node.Copper_Bars.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-bars-stack-large.Copper_Bars_Stack_Large_Node.Copper_Bars_Stack_Large.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-nugget-large.Copper_Nugget_Large_Node.Copper_Nugget_Large.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-bar.Copper_Bar_Node.Copper_Bar.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.copper-nuggets.Copper_Nuggets_Node.Copper_Nuggets.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.food-barrel-fish.Food_Barrel_Fish_Node.Food_Barrel_Fish.TextureID"
       ],
       "registry": []
      },
@@ -1949,21 +1944,21 @@
      "90150811322035": {
       "instances": [
        "ReplicatedStorage.MareAssets.Cargo.apple.apple_Node.apple.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.bag-flat.bag-flat_Node.bag-flat.TextureID",
        "ReplicatedStorage.MareAssets.Cargo.bag.bag_Node.bag.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.bag-flat.bag-flat_Node.bag-flat.TextureID",
        "ReplicatedStorage.MareAssets.Cargo.barrel.barrel_Node.barrel.TextureID",
-       "ReplicatedStorage.MareAssets.Cargo.beet.beet_Node.beet.TextureID",
+       "ReplicatedStorage.MareAssets.Cargo.banana.banana_Node.banana.TextureID",
        "ReplicatedStorage.MareAssets.Cargo.bottle-oil.bottle-oil_Node.bottle-oil.TextureID"
       ],
       "registry": []
      },
      "104261222212845": {
       "instances": [
-       "ReplicatedStorage.MareAssets.Town.balcony-wall-fence.balcony-wall-fence_Node.balcony-wall-fence.TextureID",
        "ReplicatedStorage.MareAssets.Town.balcony-wall.balcony-wall_Node.balcony-wall.TextureID",
-       "ReplicatedStorage.MareAssets.Town.chimney.chimney_Node.chimney.TextureID",
-       "ReplicatedStorage.MareAssets.Town.chimney-top.chimney-top_Node.chimney-top.TextureID",
+       "ReplicatedStorage.MareAssets.Town.balcony-wall-fence.balcony-wall-fence_Node.balcony-wall-fence.TextureID",
        "ReplicatedStorage.MareAssets.Town.chimney-base.chimney-base_Node.chimney-base.TextureID",
+       "ReplicatedStorage.MareAssets.Town.chimney-top.chimney-top_Node.chimney-top.TextureID",
+       "ReplicatedStorage.MareAssets.Town.chimney.chimney_Node.chimney.TextureID",
        "ReplicatedStorage.MareAssets.Town.cart.cart_Node.cart.TextureID"
       ],
       "registry": []
@@ -1971,8 +1966,8 @@
      "99374975557495": {
       "instances": [
        "ReplicatedStorage.MareAssets.Naval.detail-crate-ropes.detail-crate-ropes_Node.detail-crate-ropes2.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate2.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.pulley.pulley_Node.pulley2.TextureID"
+       "ReplicatedStorage.MareAssets.Naval.pulley.pulley_Node.pulley2.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate2.TextureID"
       ],
       "registry": []
      },
@@ -1982,17 +1977,24 @@
       ],
       "registry": []
      },
-     "7547184629": {
-      "instances": [],
+     "110479078771259": {
+      "instances": [
+       "ReplicatedStorage.MareAssets.Naval.boat-fishing-small.boat-fishing-small_Node.boat-fishing-small.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.buoy.buoy_Node.buoy.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.boat-sail-b.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.boat-sail-b.boat-sail-b_Node.sail_Node.sail.TextureID"
+      ],
       "registry": []
      },
      "132968377553777": {
       "instances": [
-       "ReplicatedStorage.MareAssets.Castle.bridge-draw.bridge-draw_Node.bridge-draw.TextureID",
        "ReplicatedStorage.MareAssets.Castle.bridge-straight.bridge-straight_Node.bridge-straight.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.flag-banner-long.flag-banner-long_Node.flag-banner-long.TextureID",
+       "ReplicatedStorage.MareAssets.Castle.bridge-draw.bridge-draw_Node.bridge-draw.TextureID",
        "ReplicatedStorage.MareAssets.Castle.door.door_Node.door.TextureID",
        "ReplicatedStorage.MareAssets.Castle.flag-banner-short.flag-banner-short_Node.flag-banner-short.TextureID",
-       "ReplicatedStorage.MareAssets.Castle.flag-banner-long.flag-banner-long_Node.flag-banner-long.TextureID",
        "ReplicatedStorage.MareAssets.Castle.gate.gate_Node.gate.TextureID"
       ],
       "registry": []
@@ -2000,8 +2002,8 @@
      "129248731037406": {
       "instances": [
        "ReplicatedStorage.MareAssets.Naval.ladder.ladder_Node.ladder.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate.TextureID",
-       "ReplicatedStorage.MareAssets.Naval.pulley.pulley_Node.pulley.TextureID"
+       "ReplicatedStorage.MareAssets.Naval.pulley.pulley_Node.pulley.TextureID",
+       "ReplicatedStorage.MareAssets.Naval.pulley-crate.pulley-crate_Node.pulley-crate.TextureID"
       ],
       "registry": []
      }
@@ -2012,41 +2014,8 @@
    },
    "Client": {
     "owners": {
-     "107214835405952": {
-      "instances": [
-       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.chest.chest.TextureID",
-       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.chest.lid.TextureID",
-       "Workspace.PortScene.box-open.box-open_Node.box-open.TextureID",
-       "Workspace.PortScene.box-open.box-open_Node.box-open.TextureID",
-       "Workspace.PortScene.fish-large.fish-large_Node.fish-large.TextureID",
-       "Workspace.PortScene.fish-large.fish-large_Node.fish-large.TextureID"
-      ],
-      "registry": []
-     },
      "92336858911089": {
       "instances": [],
-      "registry": []
-     },
-     "84669474609590": {
-      "instances": [
-       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.gems-chest.Gems_Chest_Node.Gems_Chest.TextureID",
-       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
-       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
-       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
-       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
-       "Workspace.PortScene.food-barrel-fish.Food_Barrel_Fish_Node.Food_Barrel_Fish.TextureID"
-      ],
-      "registry": []
-     },
-     "110479078771259": {
-      "instances": [
-       "Workspace.PortScene.cargo-pile-a.cargo-pile-a_Node.cargo-pile-a.TextureID",
-       "Workspace.PortScene.cargo-pile-b.cargo-pile-b_Node.cargo-pile-b.TextureID",
-       "Workspace.PortScene.buoy.buoy_Node.buoy.TextureID",
-       "Workspace.PortScene.buoy-flag.buoy-flag_Node.buoy-flag.TextureID",
-       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
-       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID"
-      ],
       "registry": []
      },
      "123503489788218": {
@@ -2057,6 +2026,27 @@
        "Workspace.PortScene.Ship.ship-large_Node.sail-b_Node.sail-b.TextureID",
        "Workspace.PortScene.Ship.ship-large_Node.sail-a_Node.sail-a.TextureID",
        "Workspace.PortScene.Ship.ship-large_Node.flag-c_Node.flag-c.TextureID"
+      ],
+      "registry": []
+     },
+     "87941118074642": {
+      "instances": [],
+      "registry": []
+     },
+     "99990363924302": {
+      "instances": [
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.compass-base.compass_base_Node.compass_base.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.compass-base.compass_base_Node.compass_lid_Node.compass_lid.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.compass-base.compass_base_Node.compass_needle_Node.compass_needle.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.rope-bundle-a.rope_bundle_A_Node.rope_bundle_A.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.map-rolled.map_rolled_Node.map_rolled.TextureID",
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.drafting-compass.drafting_compass_Node.drafting_compass.TextureID"
+      ],
+      "registry": []
+     },
+     "6858317867": {
+      "instances": [
+       "Workspace.Anyanguy1980.Pal Hair.Handle.TextureID"
       ],
       "registry": []
      },
@@ -2071,13 +2061,20 @@
      },
      "139092332846514": {
       "instances": [
-       "Players.Anyanguy1980.PlayerGui.MareEssentiaGui.Main.InnerSurface.Frame.TextButton.TabIcon.Display.shield-round.shield-round_Node.s.TextureID"
+       "Players.Anyanguy1980.PlayerGui.MareEssentiaGui.Main.InnerSurface.Frame.TextButton.TabIcon.Display.shield-round.shield-round_Node.s.TextureID",
+       "Players.Anyanguy1980.PlayerGui.MareEssentiaGui.Main.InnerSurface.ScrollingFrame.Frame.RowIcon.Display.potion.potion_Node.potion.TextureID",
+       "Players.Anyanguy1980.PlayerGui.MareEssentiaGui.Main.InnerSurface.ScrollingFrame.Frame.RowIcon.Display.potion.potion_Node.potion.TextureID"
       ],
       "registry": []
      },
-     "6858317867": {
+     "84669474609590": {
       "instances": [
-       "Workspace.Anyanguy1980.Pal Hair.Handle.TextureID"
+       "Workspace.PortScene.BillboardGui.ViewportFrame.WorldModel.gems-chest.Gems_Chest_Node.Gems_Chest.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-crate-large-apples.Food_Crate_Large_Apples_Node.Food_Crate_Large_Apples.TextureID",
+       "Workspace.PortScene.food-barrel-fish.Food_Barrel_Fish_Node.Food_Barrel_Fish.TextureID"
       ],
       "registry": []
      },
@@ -2125,8 +2122,15 @@
       "instances": [],
       "registry": []
      },
-     "7547184629": {
-      "instances": [],
+     "110479078771259": {
+      "instances": [
+       "Workspace.PortScene.cargo-pile-a.cargo-pile-a_Node.cargo-pile-a.TextureID",
+       "Workspace.PortScene.cargo-pile-b.cargo-pile-b_Node.cargo-pile-b.TextureID",
+       "Workspace.PortScene.buoy.buoy_Node.buoy.TextureID",
+       "Workspace.PortScene.buoy-flag.buoy-flag_Node.buoy-flag.TextureID",
+       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.boat-sail-a.TextureID",
+       "Workspace.PortScene.boat-sail-a.boat-sail-a_Node.sail_Node.sail.TextureID"
+      ],
       "registry": []
      },
      "132968377553777": {
@@ -2148,7 +2152,7 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4838,
+    "contentRefs": 4780,
     "complete": false
    }
   }
