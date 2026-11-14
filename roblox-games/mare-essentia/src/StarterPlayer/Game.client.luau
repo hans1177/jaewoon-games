@@ -436,15 +436,29 @@ function H.iconPaper(gui, px)
 	end
 end
 
+-- 한 변이 1024px 를 넘는 이미지는 로블록스가 1024 이하로 줄여 쓴다. 칸 좌표도 같은 비율로 줄여야 한다.
+-- companions_* 시트: 1280x1344(대부분)는 x0.762, 1280x672(faith_indian_ocean)는 x0.8.
+local function sheetK(atlasName: string?): number
+	if type(atlasName) ~= "string" or string.sub(atlasName, 1, 11) ~= "companions_" then
+		return 1
+	end
+	if atlasName == "companions_faith_indian_ocean" then
+		return 1024 / 1280
+	end
+	return 1024 / 1344
+end
+H.sheetK = sheetK
+
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
 	if kind == "Portraits" and AssetIds["Portraits/" .. asset] then
 		local portrait = Instance.new("ImageLabel")
 		portrait.Size = UDim2.fromOffset(px, px)
 		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
 		if portraitOffset then
-			portrait.ImageRectOffset = portraitOffset
+			local k = sheetK(asset)
+			portrait.ImageRectOffset = portraitOffset * k
 			-- 정사각 칸에 세로로 긴 초상(256x336)을 넣으면 위아래가 잘려 머리가 잘린다: 위쪽 정사각(머리~어깨)만 쓴다.
-			portrait.ImageRectSize = Vector2.new(256, 256)
+			portrait.ImageRectSize = Vector2.new(256, 256) * k
 		end
 		portrait.ScaleType = if portraitOffset then Enum.ScaleType.Crop else Enum.ScaleType.Fit
 		H.iconPaper(portrait, px)
@@ -1250,7 +1264,8 @@ do
 		local fresh = sheet and AssetIds["Portraits/companions_" .. sheet]
 		if fresh and (seed + rotation) % 2 == 1 then
 			local c = (seed * 7 + rotation * 3 + (if role == "tavern" then 11 else 0)) % 20
-			return fresh, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
+			local k = sheetK("companions_" .. sheet)
+			return fresh, Vector2.new(c % 5 * 256 * k, math.floor(c / 5) * 336 * k), Vector2.new(256 * k, 336 * k)
 		end
 		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
 		if role == "merchant" then -- 항만 관리관·조선 장인 칸은 건너뛴다
@@ -3193,8 +3208,9 @@ function playStory(ev)
 		ph.BackgroundTransparency = 1
 		ph.ScaleType = Enum.ScaleType.Crop
 		ph.Image = "rbxassetid://" .. tostring(cport.assetId or AssetIds["Portraits/" .. cport.atlas])
-		ph.ImageRectOffset = cport.offset
-		ph.ImageRectSize = cport.size or Vector2.new(256, 336)
+		local pk = if cport.atlas then sheetK(cport.atlas) else 1
+		ph.ImageRectOffset = cport.offset * pk
+		ph.ImageRectSize = (cport.size or Vector2.new(256, 336)) * pk
 		corner(ph, 10)
 		local pst = Instance.new("UIStroke")
 		pst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -8086,8 +8102,8 @@ end
 			if not atlas or not c then
 				return nil
 			end
-			-- 1280x1344 시트는 로블록스가 1024 높이로 줄여 쓰므로 칸 좌표도 같은 비율로 줄인다
-			local k = 1024 / 1344
+			-- 큰 시트는 로블록스가 1024 이하로 줄여 쓰므로 칸 좌표도 같은 비율로 줄인다
+			local k = sheetK("companions_" .. sheet)
 			return atlas, Vector2.new(c % 5 * 256 * k, math.floor(c / 5) * 336 * k), Vector2.new(256 * k, 336 * k)
 		end
 		local nation = string.match(value, "^hero:([%w_]+)$")
@@ -8226,8 +8242,9 @@ end
 		face.BackgroundColor3 = Color3.fromRGB(52, 77, 105)
 		face.BorderSizePixel = 0
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
-		face.ImageRectOffset = portraitOffset or Vector2.zero
-		face.ImageRectSize = if portraitOffset then PORTRAIT_SIZE else Vector2.zero
+		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
+		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
+		face.ImageRectSize = if portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		corner(face, 6)
