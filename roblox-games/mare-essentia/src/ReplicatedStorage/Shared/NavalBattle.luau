@@ -687,6 +687,7 @@ function NavalBattle.play(opts)
 		sk.y = -72 - math.floor(math.sin(ang) * 104)
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
+	local skillFx = function(_id, _dur) end -- FX 가 만들어진 뒤 연결된다
 	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
 	local skillBtn = {}
 	local function useSkill(sk)
@@ -697,6 +698,14 @@ function NavalBattle.play(opts)
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
 		skillPop(sk.text .. "!", sk.col)
+		skillFx(sk.id, sk.dur)
+		if sk.id == "rapid" then
+			Sfx.play("sfx_skill_rapid", 0.8, 1, "sfx_horn")
+			Sfx.play("sfx_naval_cannon", 0.5, 0.7, "sfx_cannon")
+		else
+			Sfx.play("sfx_skill_evade", 0.8, 1, "sfx_sail")
+			Sfx.play("sfx_naval_splash", 0.45, 1.2, "sfx_splash")
+		end
 	end
 	for _, sk in SKILLS do
 		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5))
@@ -921,6 +930,53 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local boardingOn = false
 	-- 능력의 본래 효과를 유지하면서 카드 인장·선택 설명에 동일하게 표시한다.
 	local ROW_ICON = { melee = "근접", ranged = "사격", cannon = "포격" }
+	-- 카드 종류별 효과음 (공용 CC0 음원 파생). 새 소리가 아직 등록 전이면 기존 소리로 대신한다.
+	local function cardSfx(c, side)
+		local q = if side == "foe" then 0.8 else 1
+		local function s(name, vol, speed, fb, wait)
+			if wait then
+				task.delay(wait, function() Sfx.play(name, vol * q, speed, fb) end)
+			else
+				Sfx.play(name, vol * q, speed, fb)
+			end
+		end
+		s("sfx_card_place", 0.6, 1, "sfx_boarding_draw")
+		local sp = c.special
+		if sp == "scorch" then
+			s("sfx_card_fire", 0.8, 1, "sfx_naval_cannon")
+			s("sfx_naval_hull_hit", 0.6, 0.9, "sfx_hit", 0.25)
+		elseif sp == "weather" then
+			s("sfx_card_magic", 0.7, 1, "sfx_wind")
+			s(if c.row == "cannon" then "sfx_ambience_storm" else "sfx_wind", 0.5, 1, nil, 0.2)
+		elseif sp == "clear" then
+			s("sfx_card_magic", 0.6, 1.2, "sfx_wind")
+			s("sfx_gull", 0.4, 1, nil, 0.3)
+		elseif sp == "wind" then
+			s("sfx_sail", 0.7, 1, "sfx_sail_fabric", 0.1)
+			s("sfx_card_deal", 0.6, 1, "sfx_book_turn", 0.35)
+		elseif sp == "horn" then
+			s("sfx_horn", 0.7, 1, nil, 0.1)
+		elseif sp == "decoy" then
+			s("sfx_rope_pull", 0.6, 1, nil, 0.1)
+		elseif sp then
+			s("sfx_book_turn", 0.6, 1, nil, 0.1)
+		else
+			if c.row == "ranged" then
+				s("sfx_card_volley", 0.7, 1, "sfx_rope_release", 0.08)
+			elseif c.row == "cannon" then
+				s("sfx_naval_cannon", 0.6, 1.1, "sfx_cannon", 0.08)
+			else
+				s("sfx_card_swing", 0.7, 1, "sfx_metal_clash", 0.08)
+			end
+			local ab = c.ability
+			if ab == "spy" then s("sfx_ship_cabin_door", 0.6, 1, nil, 0.3)
+			elseif ab == "medic" then s("sfx_card_ring", 0.6, 1, "sfx_bell", 0.3)
+			elseif ab == "bond" then s("sfx_card_armor", 0.6, 1, "sfx_rope_pull", 0.3)
+			elseif ab == "morale" then s("sfx_card_chain", 0.6, 1, "sfx_horn", 0.3)
+			elseif ab == "snipe" then s("sfx_naval_cannon", 0.7, 0.9, "sfx_cannon", 0.3) end
+			if c.hero then s("sfx_card_blade", 0.6, 1, "sfx_fanfare", 0.15) end
+		end
+	end
 	local function startBoarding(cfg, onEnd, onPlay)
 		boardingOn = true
 		local TweenService = game:GetService("TweenService")
@@ -1039,7 +1095,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local paper = Color3.fromRGB(224, 205, 163)
 		local ink = Color3.fromRGB(49, 37, 27)
 		local brass = Color3.fromRGB(158, 113, 59)
-		local rowIcons = { melee = "Menu/battle", ranged = "Menu/chart_compass", cannon = "Menu/chart_anchor" }
+		local rowIcons = { melee = "Menu/cc0_sword", ranged = "Menu/cc0_crossbow", cannon = "Menu/cc0_fireball" }
 
 		local function frameEdge(gui, color, radius)
 			local curve = Instance.new("UICorner")
@@ -1052,7 +1108,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return stroke
 		end
 
+		-- 공용 CC0 그림 아이콘(Menu/cc0_*)은 업로드 전이면 예전 단색 아이콘으로 대신한다.
+		local LEGACY_ICON = {
+			["Menu/cc0_sword"] = "Menu/battle", ["Menu/cc0_crossbow"] = "Menu/chart_compass",
+			["Menu/cc0_fireball"] = "Menu/chart_anchor", ["Menu/cc0_shield"] = "Menu/chart_anchor",
+			["Menu/cc0_helmet"] = "Menu/chart_compass", ["Menu/cc0_glove"] = "Menu/route",
+			["Menu/cc0_yes"] = "Menu/route", ["Menu/cc0_book"] = "Menu/tech",
+		}
 		local function emblem(parent, assetKey, position, size)
+			local colored = false
+			if LEGACY_ICON[assetKey] then
+				if AssetIds[assetKey] then colored = true else assetKey = LEGACY_ICON[assetKey] end
+			end
 			local icon = Instance.new("ImageLabel")
 			icon.AnchorPoint = Vector2.new(0, 0.5)
 			icon.Position = position
@@ -1061,7 +1128,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			icon.BorderSizePixel = 0
 			icon.ScaleType = Enum.ScaleType.Fit
 			icon.Image = "rbxassetid://" .. AssetIds[assetKey]
-			icon.ImageColor3 = Color3.fromRGB(114, 75, 43)
+			icon.ImageColor3 = if colored then Color3.new(1, 1, 1) else Color3.fromRGB(114, 75, 43)
 			icon.Parent = parent
 			frameEdge(icon, brass, 4)
 			return icon
@@ -1160,6 +1227,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		info.Size = UDim2.fromScale(0.96, 0.05)
 		info.TextXAlignment = Enum.TextXAlignment.Left
 		info.TextTruncate = Enum.TextTruncate.AtEnd
+		info.BackgroundTransparency = 0.45
+		info.BackgroundColor3 = Color3.fromRGB(46, 40, 34)
+		local infoCorner = Instance.new("UICorner")
+		infoCorner.CornerRadius = UDim.new(0, 8)
+		infoCorner.Parent = info
+		local infoPad = Instance.new("UIPadding")
+		infoPad.PaddingLeft = UDim.new(0, 10)
+		infoPad.Parent = info
 
 		local boardFrame = Instance.new("Frame")
 		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
@@ -1371,12 +1446,39 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			table.clear(cardMotions)
 		end)
 		local rowTargets = { me = {}, foe = {} }
+		-- 카드를 고르면 그 카드가 놓일 줄(특수 카드는 판 전체)이 금빛으로 깜빡여 어디에 놓이는지 바로 보이게 한다.
+		local dropGlow
+		local function clearDropHint()
+			if dropGlow then
+				pcall(function() dropGlow:Destroy() end)
+				dropGlow = nil
+			end
+		end
+		local function dropHint(c)
+			clearDropHint()
+			local side = if c.ability == "spy" then "foe" else "me"
+			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
+			if not target then return end
+			local st = Instance.new("UIStroke")
+			st.Name = "DropHint"
+			st.Color = Color3.fromRGB(255, 218, 120)
+			st.Thickness = 3
+			st.Parent = target
+			dropGlow = st
+			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
+		end
 		local function afterAction(ok, msg, res, card, side)
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
 				info.Text = if english then "Action unavailable" else msg or ""
+				Sfx.play("sfx_error", 0.5, 1)
 				return
+			end
+			if card then
+				cardSfx(card, side)
+			elseif side == "foe" then
+				Sfx.play("sfx_anchor_lower", 0.4, 1.1, "sfx_rope_pull")
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
 			if res then
@@ -1384,25 +1486,27 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
 					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
 						if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
-				Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_hit", 0.6, 1)
-				Sfx.play("sfx_metal_clash", 0.7, 1)
-			else
-				Sfx.play("sfx_boarding_draw", 0.7, 1) -- 카드를 내는 손짓(칼 뽑는 소리)
+				task.delay(0.5, function()
+					Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_naval_hull_hit", 0.6, 1, "sfx_hit")
+					Sfx.play("sfx_metal_clash", 0.5, 1)
+				end)
 			end
 			render()
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
+		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
+		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
 		local mullBtn
-		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/route", function()
+		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
 			local idx = selected and selected.Parent and selected:GetAttribute("HandIdx")
 			if not idx then
@@ -1417,9 +1521,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				return
 			end
 			info.Text = if english then "Swapped one card" else msg or ""
+			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/route", function()
+		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/cc0_yes", function()
+			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
 
@@ -1907,6 +2013,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			table.insert(cardMotions, focusMotion)
 		end
 		local function closeCardCodex()
+			clearDropHint()
 			if selected and selected.Parent then
 				selected.Rotation = 0
 				selected.UIStroke.Color = brass
@@ -1925,6 +2032,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
+			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
 			for _, moving in cardMotions do moving.stop() end
@@ -1989,6 +2097,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					adviceRound, adviceCount = m.round, adviceCount + 1
 					sayAdvice(if english then tip else string.format("%s: %s", opts.advisorName or "동료", tip), 7)
 				end
+			end
+			-- 차례 띠: 내 차례는 초록, 적 차례는 붉은색. 안내 문구가 비어 있으면 할 일을 알려 준다.
+			info.BackgroundColor3 = if m.over then Color3.fromRGB(54, 46, 38)
+				elseif m.turn == "me" then Color3.fromRGB(34, 84, 52) else Color3.fromRGB(96, 42, 36)
+			if info.Text == "" and not m.over then
+				info.Text = if m.turn == "me" then t("내 차례 — 카드를 눌러 고르세요 (한 번 더 누르면 냅니다)", "Your turn — tap a card, tap again to play")
+					else t("해적이 생각 중…", "Pirates are thinking…")
 			end
 			header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
 				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
@@ -2165,7 +2280,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
 				caption.Font = Enum.Font.Antique
-				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
+				local iconKey = if c.special then "Menu/cc0_book" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
@@ -2235,7 +2350,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							selected:SetAttribute("ArtFocused", false)
 						end
 						b:SetAttribute("ArtFocused", true)
+						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 						showCardCodex(c)
+						dropHint(c)
 						selected = b
 						selectedPlay = playChosenCard
 						edge.Color = Color3.fromRGB(255, 215, 126)
@@ -2312,6 +2429,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				return
 			end
 			local wonMatch = m.winner == "me"
+			if wonMatch then Sfx.play("sfx_quest_reward", 0.7, 1, "sfx_fanfare")
+			elseif m.winner == "foe" then Sfx.play("sfx_naval_sink", 0.6, 1, "sfx_hit") end
 			flair += m.wins.me * 40 + (if wonMatch then 110 else 0)
 			if cfg then
 				info.Text = if wonMatch then t("카드 대결에서 이겼다! 전투 승리!", "You won the card battle!")
@@ -2428,6 +2547,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- 물기둥과 퍼지는 물결
 	function FX.splash(pos)
+		FX.waterColumn(pos)
 		FX.spawn(Vector3.new(3, 2.4, 2.4), pos + Vector3.new(0, 1.5, 0), C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Cylinder, Vector3.new(0, 11, 0), 0.9, { grow = 0.8, t0 = 0.2, g = 14, upright = true })
 		FX.spawn(Vector3.new(0.3, 3, 3), pos + Vector3.new(0, 0.3, 0), C_WATER, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, 1.1, { grow = 7, t0 = 0.35, ring = true, upright = true })
 		for _ = 1, 6 do
@@ -2435,10 +2555,134 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Vector3.new((math.random() - 0.5) * 12, 8 + math.random() * 8, (math.random() - 0.5) * 12), 0.9, { g = 30, t0 = 0.2 })
 		end
 	end
-	-- 포구 화염과 연기
+	do -- 입자 연출용 지역 변수는 이 블록 안에만 둔다 (함수당 지역 변수 한도 때문)
+	local TweenService = game:GetService("TweenService")
+	-- [입자 연출] 엔진 입자(ParticleEmitter)를 한 번 터뜨리고 자동으로 치운다. 부품 수를 늘리지 않아 모바일에서도 가볍다.
+	local TEX = {
+		fire = "rbxasset://textures/particles/fire_main.dds",
+		smoke = "rbxasset://textures/particles/smoke_main.dds",
+		spark = "rbxasset://textures/particles/sparkles_main.dds",
+	}
+	local function emitterOn(parent, e)
+		local pe = Instance.new("ParticleEmitter")
+		pe.Texture = TEX[e.tex] or TEX.smoke
+		pe.Color = ColorSequence.new(e.c0, e.c1 or e.c0)
+		pe.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.s0), NumberSequenceKeypoint.new(1, e.s1 or e.s0) })
+		pe.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.a0 or 0.1), NumberSequenceKeypoint.new(0.7, e.a1 or 0.5), NumberSequenceKeypoint.new(1, 1) })
+		pe.Lifetime = NumberRange.new(e.life * 0.7, e.life)
+		pe.Speed = NumberRange.new(e.v0 or 0, e.v1 or e.v0 or 0)
+		pe.SpreadAngle = Vector2.new(e.spread or 180, e.spread or 180)
+		pe.Acceleration = e.acc or Vector3.zero
+		pe.Drag = e.drag or 0
+		pe.Rotation = NumberRange.new(0, 360)
+		pe.RotSpeed = NumberRange.new(-120, 120)
+		pe.LightEmission = e.glow or 0
+		pe.LockedToPart = false
+		pe.Rate = e.rate or 0
+		pe.Enabled = (e.rate or 0) > 0
+		pe.Parent = parent
+		return pe
+	end
+	local function lightFlash(parent, color, bright, range, dur)
+		local l = Instance.new("PointLight")
+		l.Color = color
+		l.Brightness = bright
+		l.Range = range
+		l.Parent = parent
+		TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 }):Play()
+	end
+	function FX.burst(pos, dir, list, light)
+		local anchor = Instance.new("Attachment") -- 보이는 부품 없이 지형에 붙여 입자만 터뜨린다
+		anchor.WorldCFrame = if dir then CFrame.lookAt(pos, pos + dir) else CFrame.new(pos)
+		anchor.Parent = workspace.Terrain
+		local longest = 1
+		for _, e in list do
+			local pe = emitterOn(anchor, e)
+			pe:Emit(e.n or 8)
+			longest = math.max(longest, e.life + 0.2)
+		end
+		if light then
+			lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3)
+		end
+		task.delay(longest, function() anchor:Destroy() end)
+	end
+	local ORANGE, YELLOW, RED = Color3.fromRGB(255, 150, 50), Color3.fromRGB(255, 226, 130), Color3.fromRGB(190, 52, 28)
+	local GREY, SOOT = Color3.fromRGB(150, 150, 155), Color3.fromRGB(48, 46, 46)
+	local FOAM, SEA = Color3.fromRGB(245, 252, 255), Color3.fromRGB(150, 205, 230)
+	-- 충격파 고리: 수면 위로 납작하게 퍼지는 링
+	function FX.shockRing(pos, color, size, life)
+		FX.spawn(Vector3.new(0.35, 2, 2), pos + Vector3.new(0, 0.6, 0), color, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, life or 0.7, { grow = size or 14, t0 = 0.25, ring = true, upright = true })
+	end
+	-- 포구 화염: 앞으로 뻗는 불꽃 + 화약 연기 + 번쩍임
 	function FX.muzzle(from, dir)
-		FX.spawn(Vector3.new(4.5, 4.5, 4.5), from, Color3.fromRGB(255, 205, 100), Enum.Material.Neon, Enum.PartType.Ball, dir * 8, 0.25, { grow = 1.2 })
-		FX.smoke(from + dir * 3, 3, 3.2, false)
+		FX.burst(from + dir * 2, dir, {
+			{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3, s1 = 7, life = 0.4, v0 = 18, v1 = 36, spread = 14, glow = 1, n = 9, a0 = 0 },
+			{ tex = "spark", c0 = YELLOW, s0 = 0.9, s1 = 0.2, life = 0.55, v0 = 30, v1 = 70, spread = 24, glow = 1, n = 14, acc = Vector3.new(0, -20, 0), a0 = 0 },
+			{ tex = "smoke", c0 = GREY, c1 = Color3.fromRGB(205, 205, 210), s0 = 3, s1 = 11, life = 1.6, v0 = 5, v1 = 14, spread = 30, n = 7, a0 = 0.35, drag = 2.5 },
+		}, { color = ORANGE, bright = 5, range = 28, dur = 0.22 })
+	end
+	-- 선체 명중: 불덩이 + 불똥 + 검은 연기 + 충격파
+	function FX.impact(pos, power)
+		power = power or 1
+		FX.burst(pos, nil, {
+			{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 4 + power, s1 = 10 + power * 2, life = 0.7, v0 = 4, v1 = 16, glow = 1, n = 10, a0 = 0 },
+			{ tex = "spark", c0 = YELLOW, s0 = 1.1, s1 = 0.2, life = 0.9, v0 = 22, v1 = 60, glow = 1, n = 22, acc = Vector3.new(0, -55, 0), a0 = 0 },
+			{ tex = "smoke", c0 = SOOT, c1 = GREY, s0 = 4, s1 = 15, life = 2.2, v0 = 3, v1 = 10, n = 8, a0 = 0.25, acc = Vector3.new(0, 7, 0), drag = 1.5 },
+		}, { color = ORANGE, bright = 9, range = 42, dur = 0.4 })
+		FX.shockRing(pos - Vector3.new(0, 4, 0), Color3.fromRGB(255, 205, 140), 16 + power * 2, 0.55)
+	end
+	-- 빗나간 포탄의 물기둥: 솟는 물안개 + 튀는 물방울 + 퍼지는 물결
+	function FX.waterColumn(pos)
+		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
+			{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 3, s1 = 13, life = 1.5, v0 = 14, v1 = 26, spread = 12, n = 10, a0 = 0.15, acc = Vector3.new(0, -14, 0), drag = 1 },
+			{ tex = "spark", c0 = SEA, s0 = 0.9, s1 = 0.3, life = 1.1, v0 = 18, v1 = 40, spread = 28, n = 26, acc = Vector3.new(0, -60, 0), a0 = 0.1, glow = 0.3 },
+		})
+		FX.shockRing(pos, FOAM, 12, 0.9)
+	end
+	-- 스킬 연출: 배에 붙은 입자를 지속시간 동안 켜 두고, 시작 순간 충격파를 낸다
+	function FX.skill(sh, id, dur)
+		local anchorPart = sh.model.PrimaryPart or sh.model:FindFirstChildWhichIsA("BasePart", true)
+		if not anchorPart then
+			return
+		end
+		local at = Instance.new("Attachment")
+		at.Parent = anchorPart
+		local list, light, ringColor
+		if id == "rapid" then
+			ringColor = ORANGE
+			list = {
+				{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3.5, s1 = 0.5, life = 0.8, v0 = 6, v1 = 14, spread = 60, glow = 1, rate = 38, a0 = 0 },
+				{ tex = "spark", c0 = YELLOW, s0 = 0.8, s1 = 0.2, life = 0.9, v0 = 14, v1 = 30, glow = 1, rate = 30, acc = Vector3.new(0, -20, 0), a0 = 0 },
+			}
+			light = { color = ORANGE, bright = 3, range = 30 }
+		else
+			ringColor = Color3.fromRGB(150, 220, 255)
+			list = {
+				{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 2.5, s1 = 6, life = 0.9, v0 = 22, v1 = 40, spread = 18, rate = 44, a0 = 0.35, drag = 3 },
+				{ tex = "spark", c0 = Color3.fromRGB(190, 235, 255), s0 = 0.9, s1 = 0.2, life = 0.7, v0 = 24, v1 = 50, spread = 25, glow = 1, rate = 36, a0 = 0 },
+			}
+			light = { color = Color3.fromRGB(150, 210, 255), bright = 2, range = 26 }
+		end
+		local ems = {}
+		for _, e in list do
+			table.insert(ems, emitterOn(at, e))
+		end
+		local lt = Instance.new("PointLight")
+		lt.Color, lt.Brightness, lt.Range = light.color, light.bright, light.range
+		lt.Parent = anchorPart
+		FX.shockRing(ORIGIN + sh.pos, ringColor, 26, 0.8)
+		FX.shockRing(ORIGIN + sh.pos, ringColor, 16, 0.55)
+		task.delay(dur, function()
+			for _, pe in ems do
+				pe.Enabled = false
+			end
+			TweenService:Create(lt, TweenInfo.new(0.5), { Brightness = 0 }):Play()
+			task.delay(2, function()
+				at:Destroy()
+				lt:Destroy()
+			end)
+		end)
+	end
 	end
 	-- 배 뒤로 길게 남는 항적
 	function FX.wake(sh, key, now)
@@ -2493,6 +2737,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	skillPop = popText
+	skillFx = function(id, dur)
+		if not finished then FX.skill(me, id, dur) end
+	end
 	-- 피해 숫자: 맞은 배 위로 빨간(내 배)·노란(적) 숫자가 떠올랐다 사라진다
 	dmgPop = function(toPlayer, amount)
 		local sh = if toPlayer then me else foe
@@ -2598,6 +2845,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
 				if hullHit then
 					Sfx.play("sfx_naval_hull_hit", 0.78, 0.88 + math.random() * 0.2, "sfx_hit")
+					Sfx.play("sfx_naval_wood", 0.55, 0.9 + math.random() * 0.25, "sfx_creak")
 					if math.random() < 0.4 then
 						Sfx.play("sfx_creak", 0.3, 0.85 + math.random() * 0.18)
 					end
@@ -2606,7 +2854,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				if hullHit then
 					FX.splinters(to, 9)
-					FX.smoke(to + Vector3.new(0, 2, 0), 3, 3.4, true)
+					FX.impact(to, nc.ball)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
 				else

@@ -4451,7 +4451,7 @@ local function closeTradeHall()
 end
 
 local function openTradeHall()
-	Sfx.play("sfx_bell")
+	Sfx.facilityCue("trade")
 	closeTradeHall()
 	-- 상인이 교역소 입장 시 현지어로 짧게 인사한다. 별도 인사 자막은 넣지 않는다.
 	if view and view.player then
@@ -5388,6 +5388,7 @@ end
 -- 조선소 별도 화면: 조선 장인과 마주 보고 정비·보급·배 구입·개조를 한다 (기존 조선소 목록을 큰 화면에 그대로 쓴다)
 function openYardHall()
 	Sfx.play("sfx_creak")
+	Sfx.facilityCue("yard")
 	closeTradeHall()
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
@@ -7407,6 +7408,7 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
 			currentTab = id
+			Sfx.facilityCue(id)
 			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
 			H.mapPage = nil
 			if id ~= "battle" then
@@ -9119,12 +9121,10 @@ openTab = function(tabId, mapPage)
 	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
 	-- 지도·서책·선장실은 등록된 CC0 효과음이 있을 때만 추가 연출한다.
-	if tabId == "map" and mapPage ~= "journal" then
-		Sfx.play("sfx_chart_unfold", 0.28)
-	elseif tabId == "codex" or tabId == "quest" or mapPage == "journal" then
+	if mapPage == "journal" then
 		Sfx.play("sfx_book_turn", 0.24)
-	elseif tabId == "crew" then
-		Sfx.play("sfx_ship_cabin_door", 0.25)
+	else
+		Sfx.facilityCue(tabId)
 	end
 	if tabId ~= "battle" then
 		equipped = nil

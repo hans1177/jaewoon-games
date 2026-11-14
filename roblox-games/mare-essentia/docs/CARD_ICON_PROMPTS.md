@@ -64,3 +64,23 @@
 1. 시트를 칸별로 잘라 `assets/inbox/icons/` 에 `icon_<id>.png` + `.license.json` 로 등록
 2. 업로드 승인 후 `Menu/` 키로 AssetIds 에 올라오면 `NavalBattle.luau` 의 `mkSide`·`rowIcons`, `CardGallery.luau` 의 필터 칩에 연결
 3. 연결 전에는 지금 아이콘을 그대로 둔다 (빈 칸을 만들지 않는다)
+
+## 공용 자산에서 찾은 아이콘 (신규 제작 전에 먼저 쓸 것)
+
+공용 팩(`assets/external/simple-rpg/icons-vfx-npc`, 전부 CC0) 조사 결과:
+- Kenney game-icons / ui-pack / runes / emotes: 방향키·별·트로피·체크 같은 **범용 UI 아이콘뿐**, 해전·카드 컨셉 없음.
+- Drummyfish fantasy-rpg-icons: 그림 스타일 32개. 그중 14개를 `assets/icons/cc0_*.png` 로 등록함 (업로드 전).
+
+| 쓸 곳 | 등록한 아이콘 | 비고 |
+|---|---|---|
+| 근접 줄 | cc0_sword | 현재 Menu/battle 대체 |
+| 원거리 줄 | cc0_crossbow | 현재 나침반(안 맞음) 대체 |
+| 방어/멈추기 | cc0_shield | 닻 대체 |
+| 화력 계열 | cc0_fireball | 대포 줄 임시 |
+| 서리 날씨 | cc0_frostball | |
+| 도끼·투구·장갑 | cc0_axe / helmet / glove | 병종 분류 탭 후보 |
+| 금화·상자·책 | cc0_goldcoins / chest / book | 비용·보상·지식 탭 |
+| 확인/취소 | cc0_yes / no | |
+
+**여전히 없는 것(새로 만들어야 함)**: 대포, 닻/항구, 첩보, 폭풍·안개, 대륙 탭 6개, 등급 별. → 위 4개 시트로 제작.
+연결하려면 먼저 에셋 업로드(owner-mare-essentia-assets)로 AssetIds 에 키가 생겨야 함.

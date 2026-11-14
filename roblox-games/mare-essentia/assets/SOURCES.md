@@ -1452,6 +1452,20 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `cardart/` | scene_market_ryukyu_japan.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
 | `cardart/` | scene_market_south_asia.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
 | `cardart/` | scene_market_southeast_asia.png | AI generated (도구 미상, 사용자 제공 16:9 장면) · PROJECT_ORIGINAL_ART |  |
+| `icons/` | cc0_axe.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_book.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_chest.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_crossbow.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_fireball.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_frostball.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_glove.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_goldcoins.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_helmet.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_no.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_shield.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_shield2.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_sword.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
+| `icons/` | cc0_yes.png | Drummyfish · CC0-1.0 | https://opengameart.org/content/fantasy-rpg-icons |
 
 ## 2026-11-15 탐험 전투 버튼 아이콘 2종 (마력숲 등록분과 같은 원본)
 

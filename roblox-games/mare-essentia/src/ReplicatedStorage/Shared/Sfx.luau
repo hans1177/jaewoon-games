@@ -92,6 +92,48 @@ function Sfx.play(name, volume, speed, fallback)
 end
 
 -- 배경 음악: 같은 곡이면 그대로, 다르면 서서히 바꾼다
+-- 방문 시설(탭)별 입장 소리: 교역소·조선소·항구·서고·선장실 등에서 장소 느낌이 나게 한다.
+-- 나중에 오는 소리는 task.delay 로 겹치지 않게 늘어놓는다. 등록 전인 소리는 play 가 알아서 건너뛴다.
+local FACILITY_CUES = {
+	trade = { { "sfx_bell", 0.5 }, { "sfx_coin_pouch", 0.55, 0.25 } },
+	yard = { { "sfx_workshop_chop", 0.45 }, { "sfx_rope_pull", 0.35, 0.3 } },
+	harbor = { { "sfx_rope_release", 0.35 }, { "sfx_gull", 0.3, 0.2 } },
+	scholar = { { "sfx_book_turn", 0.35 }, { "sfx_quest_book_close", 0.25, 0.4 } },
+	board = { { "sfx_chart_unfold", 0.3 }, { "sfx_contract_stamp", 0.3, 0.35 } },
+	quest = { { "sfx_book_turn", 0.3 } },
+	route = { { "sfx_sail_fabric", 0.3 }, { "sfx_waves", 0.2, 0.2 } },
+	cards = { { "sfx_card_deal", 0.45, 0, "sfx_book_turn" }, { "sfx_card_page", 0.35, 0.3, "sfx_book_turn" } },
+	gwent = { { "sfx_card_deal", 0.5, 0, "sfx_book_turn" } },
+	status = { { "sfx_equipment_wear", 0.3 } },
+	crew = { { "sfx_ship_cabin_door", 0.3 } },
+	recruit = { { "sfx_ship_cabin_door", 0.3 }, { "sfx_deck_step", 0.2, 0.3 } },
+	tech = { { "sfx_book_turn", 0.3 }, { "sfx_workshop_chop", 0.2, 0.4 } },
+	codex = { { "sfx_book_turn", 0.3 } },
+	map = { { "sfx_chart_unfold", 0.3 } },
+	explore = { { "sfx_chart_unfold", 0.25 }, { "sfx_gull", 0.2, 0.3 } },
+	battle = { { "sfx_metal_clash", 0.35 } },
+	war = { { "sfx_horn", 0.35 } },
+}
+local lastFacility, lastFacilityAt = nil, 0
+function Sfx.facilityCue(tabId)
+	local cues = FACILITY_CUES[tabId]
+	if not cues then
+		return
+	end
+	local now = os.clock()
+	if lastFacility == tabId and now - lastFacilityAt < 1.5 then
+		return -- 같은 시설 화면을 다시 그릴 때 소리가 반복되지 않게
+	end
+	lastFacility, lastFacilityAt = tabId, now
+	for _, c in cues do
+		if c[3] and c[3] > 0 then
+			task.delay(c[3], Sfx.play, c[1], c[2], nil, c[4])
+		else
+			Sfx.play(c[1], c[2], nil, c[4])
+		end
+	end
+end
+
 function Sfx.currentName()
 	return currentName
 end
