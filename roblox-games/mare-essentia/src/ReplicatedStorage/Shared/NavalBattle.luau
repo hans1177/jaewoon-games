@@ -677,9 +677,9 @@ function NavalBattle.play(opts)
 	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
 	for i, sk in SKILLS do
 		local n = #SKILLS
-		local ang = math.rad(if n == 1 then 135 else 100 + (i - 1) * (70 / (n - 1)))
-		sk.x = -72 + math.floor(math.cos(ang) * 124)
-		sk.y = -72 - math.floor(math.sin(ang) * 124)
+		local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1))) -- 위쪽 버튼이 적 함대 카드와 겹치지 않게 낮춘다
+		sk.x = -72 + math.floor(math.cos(ang) * 104)
+		sk.y = -72 - math.floor(math.sin(ang) * 104)
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
 	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
@@ -694,7 +694,7 @@ function NavalBattle.play(opts)
 		skillPop(sk.text .. "!", sk.col)
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(78, 78), Vector2.new(0.5, 0.5))
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5))
 		b.TextSize = 14
 		b.TextWrapped = true
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
