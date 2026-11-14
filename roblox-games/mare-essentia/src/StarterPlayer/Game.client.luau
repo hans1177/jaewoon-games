@@ -1216,6 +1216,13 @@ do
 	end
 
 	local RegionSheetOf = require(Shared:WaitForChild("Specialties")).RegionSheets
+	-- 해역 시트(5열×2행 교역소 칸 0~9)에서 항만 관리관(장부 쓰는 사람)·조선 장인(짐 나르는 일꾼)에 맞는 칸. 직접 보고 골랐다.
+	local REGION_ROLE_CELL = {
+		americas = { harbor = 2, yard = 4 }, atlantic_europe = { harbor = 2, yard = 6 }, east_africa = { harbor = 4, yard = 0 },
+		east_asia = { harbor = 2, yard = 3 }, mediterranean = { harbor = 2, yard = 1 }, north_sea = { harbor = 9, yard = 3 },
+		red_sea = { harbor = 2, yard = 8 }, south_asia = { harbor = 2, yard = 3 }, southeast_asia = { harbor = 2, yard = 3 },
+		west_africa = { harbor = 2, yard = 6 },
+	}
 	function H.facilityPortraitAsset(portId, role)
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
@@ -1228,8 +1235,9 @@ do
 			return nil
 		end
 		-- 항만 관리관은 장부를 쓰는 사람(2번 칸), 조선 장인은 짐·목재를 나르는 일꾼(3번 칸): 그 지역 시트에서 고정
+		local reserved = REGION_ROLE_CELL[region] or { harbor = 2, yard = 3 }
 		if role == "harbor" or role == "yard" then
-			local c = if role == "harbor" then 2 else 3
+			local c = reserved[role]
 			return atlas, Vector2.new(c % 5 * 200, math.floor(c / 5) * 200), Vector2.new(200, 200)
 		end
 		local seed = 0
@@ -1245,8 +1253,10 @@ do
 			return fresh, Vector2.new(c % 5 * 256, math.floor(c / 5) * 336), Vector2.new(256, 336)
 		end
 		local cell = (seed + rotation) % 10 + (if role == "tavern" then 10 else 0)
-		if role == "merchant" and (cell == 2 or cell == 3) then -- 2·3번 칸은 항만 관리관·조선 장인 몫
-			cell += 2
+		if role == "merchant" then -- 항만 관리관·조선 장인 칸은 건너뛴다
+			while cell == reserved.harbor or cell == reserved.yard do
+				cell = (cell + 1) % 10
+			end
 		end
 		-- 술잔을 든 칸(북해 주점 19번)은 술 그림 금지 규칙에 따라 건너뛴다.
 		if region == "north_sea" and cell == 19 then
