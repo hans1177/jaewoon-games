@@ -3915,6 +3915,29 @@ do
 	check("멀리건: 잘못된 기록은 거절", bad == nil)
 end
 
+
+-- [대륙 특징] 대표 분류 카드는 +1
+do
+	local BC = D.BoardingCards
+	local f = BC.Factions
+	check("대륙 특징: 6개 대륙에 정의돼 있다", f.europe.specialty == "선박" and f.east_asia.specialty == "유물" and f.middle_east.specialty ~= nil and f.new_world.specialty ~= nil and f.africa.specialty ~= nil and f.southeast_asia.specialty ~= nil)
+	local deck = BC.playerDeck({}, function() return 0.5 end, "europe", nil)
+	local shipOk, otherOk = false, false
+	for _, c in deck do
+		local base = BC.Units[c.id]
+		if base and not base.hero and base.power then
+			if base.category == "선박" then shipOk = shipOk or c.power == base.power + 1 else otherOk = otherOk or c.power == base.power end
+		end
+	end
+	check("대륙 특징: 유럽 선박 카드는 +1, 다른 분류는 그대로", shipOk and otherOk)
+	local foeShip = false
+	for _, c in BC.enemyDeck(false, function() return 0.5 end, "europe") do
+		local base = BC.Units[c.id]
+		if base and base.category == "선박" and not base.hero and c.power == base.power + 1 then foeShip = true end
+	end
+	check("대륙 특징: 상대 덱에도 같은 규칙", foeShip)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")
