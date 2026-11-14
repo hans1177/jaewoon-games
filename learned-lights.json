@@ -664,7 +664,7 @@
   "meanLastRun": 63.4
  },
  "ENVIRONMENT": {
-  "runs": 75,
+  "runs": 76,
   "top": [
    {
     "score": 84.8,
@@ -724,6 +724,38 @@
      ],
      "OutdoorAmbient": [
       37,
+      39,
+      44
+     ],
+     "ShadowSoftness": 0.44
+    }
+   },
+   {
+    "score": 84.1,
+    "params": {
+     "elevation": 9,
+     "azimuth": 3,
+     "kelvin": 5292.81,
+     "sun_strength": 5,
+     "softness": 5.25,
+     "ambient_kelvin": 8813.83,
+     "ambient_strength": 0.15
+    },
+    "roblox": {
+     "ClockTime": 6.6,
+     "Brightness": 4,
+     "ColorShift_Top": [
+      255,
+      234,
+      216
+     ],
+     "Ambient": [
+      32,
+      34,
+      38
+     ],
+     "OutdoorAmbient": [
+      36,
       39,
       44
      ],
@@ -793,40 +825,8 @@
      ],
      "ShadowSoftness": 0.67
     }
-   },
-   {
-    "score": 83.2,
-    "params": {
-     "elevation": 8,
-     "azimuth": 13,
-     "kelvin": 5750.87,
-     "sun_strength": 5,
-     "softness": 8.87,
-     "ambient_kelvin": 10092.3,
-     "ambient_strength": 0.16
-    },
-    "roblox": {
-     "ClockTime": 6.5,
-     "Brightness": 4,
-     "ColorShift_Top": [
-      255,
-      242,
-      230
-     ],
-     "Ambient": [
-      32,
-      35,
-      41
-     ],
-     "OutdoorAmbient": [
-      37,
-      40,
-      47
-     ],
-     "ShadowSoftness": 0.74
-    }
    }
   ],
-  "meanLastRun": 57.5
+  "meanLastRun": 68.8
  }
 }
