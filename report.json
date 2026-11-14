@@ -4,37 +4,127 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "bound\ntext"
   },
   {
-   "step": 3,
-   "capture": "v1_start",
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "lisbon_L3_top",
    "files": 1
   },
   {
    "step": 5,
-   "capture": "v2_event",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
-   "step": 6,
-   "ctx": "Client",
-   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=568.0048828125, 230.03724670410156, 57.0234375 on=true parent=VoyageScene fog=1979.58642578125 brightness=1 atmo=0.2974957823753357 camdist=57.55533218383789\ntext"
+   "step": 7,
+   "capture": "lisbon_L3_street",
+   "files": 1
   },
   {
    "step": 8,
-   "capture": "v3_event2",
-   "files": 1
+   "ctx": "Client",
+   "out": "truenil\ntext"
   },
   {
    "step": 10,
-   "capture": "v4_late",
+   "capture": "venice_L3_top",
    "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "nil\ntext"
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "venice_L3_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "rouen_L3_top",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "rouen_L3_street",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "london_L3_top",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "london_L3_street",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "hamburg_L3_top",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 31,
+   "capture": "hamburg_L3_street",
+   "files": 1
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "bergen_L3_top",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "bergen_L3_street",
+   "files": 1
   }
  ],
  "errors": [],
@@ -45,17 +135,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 12,
-  "completedSteps": 12,
+  "plannedSteps": 38,
+  "completedSteps": 38,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 12,
+  "capturedFrames": 12,
   "abortedEarly": false
  }
 }
