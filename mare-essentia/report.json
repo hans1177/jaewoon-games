@@ -1,19 +1,42 @@
 {
  "round": 0,
- "checked": 236,
- "total": 887,
- "average": 98.9,
+ "checked": 296,
+ "total": 908,
+ "average": 97.5,
  "byCategory": {
   "cardart": {
    "n": 217,
    "avg": 99.4
   },
   "goods": {
-   "n": 19,
-   "avg": 94.2
+   "n": 68,
+   "avg": 93.1
+  },
+  "icons": {
+   "n": 11,
+   "avg": 89.1
   }
  },
- "lowest": [],
- "candidates": 1,
- "updated": 1794684445
+ "lowest": [
+  {
+   "path": "goods/indigo.png",
+   "score": 52.0,
+   "issues": [
+    "작음 64x64 (<128)",
+    "그림이 가장자리에 닿아 잘림",
+    "다소 흐림 (선명도 73)"
+   ]
+  },
+  {
+   "path": "goods/rice.png",
+   "score": 52.0,
+   "issues": [
+    "작음 64x64 (<128)",
+    "그림이 가장자리에 닿아 잘림",
+    "다소 흐림 (선명도 67)"
+   ]
+  }
+ ],
+ "candidates": 3,
+ "updated": 1794698101
 }
