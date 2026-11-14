@@ -1,0 +1,41 @@
+{
+ "sourceRevision": "a4c62b7f26d0df2dfc9e3ca10648a2f7d597f047",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "rocks-a_Node parent=DistantCoast_1 n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrocks-b_Node parent=DistantCoast_2 n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrock-large parent=PortScene n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrock-large_Node parent=rock-large n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrock-small parent=PortScene n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrock-small_Node parent=rock-small n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nwindmill parent=PortScene n=8 MeshPart:0.933333, 0.862745, 0.729412 tex=N sa=- kids= mat=Enum.Material.Plastic | MeshPart:0.933333, 0.862745, 0.729412 tex=N sa=- kids= mat=Enum.Material.Plastic\nTowerWindmill_Blades_Cylinder.006 parent=windmill n=1 MeshPart:0.933333, 0.862745, 0.729412 tex=N sa=- kids= mat=Enum.Material.Plastic\nTowerWindmill_Cylinder.008 parent=windmill n=7 MeshPart:0.933333, 0.862745, 0.729412 tex=N sa=- kids= mat=Enum.Material.Plastic | MeshPart:0.933333, 0.862745, 0.729412 tex=N sa=- kids= mat=Enum.Material.Plastic\nrock-wide parent=PortScene n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\nrock-wide_Node parent=rock-wide n=1 MeshPart:0.580392, 0.556863, 0.52549 tex=Y sa=- kids= mat=Enum.Material.Plastic\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 5,
+  "completedSteps": 5,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
+  "abortedEarly": false
+ }
+}
