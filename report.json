@@ -4,88 +4,29 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
-  },
-  {
-   "step": 12,
-   "capture": "s1",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "capture": "s2",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "capture": "s3",
-   "files": 1
-  },
-  {
-   "step": 18,
-   "capture": "s4",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "capture": "s5",
-   "files": 1
-  },
-  {
-   "step": 22,
-   "capture": "s6",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.19\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.19\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
