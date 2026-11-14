@@ -512,6 +512,17 @@ return function(D, S)
 			state.morale = math.max(0, state.morale - 3)
 			table.insert(msgs, string.format("바람을 잘 못 탔다 (%d%%). 사기 -3", math.floor(score * 100)))
 		end
+		-- 수동으로 잘 탈수록 행운, 못 탈수록 불운이 따른다 (자동 항해에는 없음)
+		local luckRoll = math.random()
+		if score >= 0.9 and luckRoll < 0.4 then
+			local extra = math.min(400, 40 + days * 15)
+			state.coins += extra
+			table.insert(msgs, string.format("순풍 행운! 바람이 도와 뜻밖의 이득을 봤다. 코인 +%d", extra))
+		elseif score < 0.4 and luckRoll < 0.3 then
+			local loss = math.min(state.coins, days * 4)
+			state.coins -= loss
+			table.insert(msgs, string.format("역풍 불운.. 돛이 찢어져 수리비로 코인 -%d", loss))
+		end
 		return true, table.concat(msgs, "\n")
 	end
 

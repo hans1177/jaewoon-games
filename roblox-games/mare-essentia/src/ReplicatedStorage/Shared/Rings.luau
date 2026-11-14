@@ -2,7 +2,7 @@
 -- 파도타기 수동 항해: 항로를 따라 날아오는 바람 고리를 스틱으로 통과한다. 순수 계산이라 로직 테스트로 검증한다.
 local Rings = {}
 
-export type Ring = { at: number, lat: number, big: boolean, bonus: boolean, hazard: boolean? }
+export type Ring = { at: number, lat: number, big: boolean, bonus: boolean, hazard: boolean?, rm: number? }
 
 -- 사건이 나온 구간은 고리가 달라진다(암초=좁은 간격 좌우 지그재그, 폭풍=흔들림, 돌고래·고래=보너스 줄)
 local PATTERN_SPAN = 0.16
@@ -45,7 +45,7 @@ end
 
 -- 고리를 지났을 때 판정. 배의 옆 위치 shipLat(-1~1)이 고리 중심에서 반지름 안이면 통과.
 function Rings.radius(r: Ring): number
-	return if r.big then 0.30 else 0.22
+	return (if r.big then 0.30 else 0.22) * (r.rm or 1) -- rm: 동료·항해가 효과로 넓어진 판정
 end
 
 function Rings.hit(r: Ring, shipLat: number): boolean
