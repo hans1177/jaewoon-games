@@ -151,7 +151,7 @@ local TABS = {
 	{ id = "map", name = "일지" },
 	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
-	{ id = "gwent", name = "퀜트" },
+	{ id = "gwent", name = "카드 배틀" },
 }
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
@@ -6033,12 +6033,23 @@ function RENDERERS.quest()
 	end
 end
 
--- 주점의 퀜트 게임: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
+-- 주점의 지식 카드 배틀: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
 function RENDERERS.gwent()
 	add(function()
-		return mkRow(content, "퀜트 (카드 대결)", "주점 탁자에서 카드로 겨루는 게임이에요. 3줄·3판 2선승, 병종 상성(근접>포>사격>근접). 이기면 새 카드를 얻어요.", {
+		return mkRow(content, "지식 카드 배틀", "주점 탁자에서 병종 카드로 겨루는 게임이에요. 3줄·3판 2선승, 줄 상성(근접>포>사격>근접). 이기면 새 카드를 얻어요. 학문 카드를 많이 모을수록 같은 계열 줄이 강해져요.", {
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
-		}, 84)
+		}, 92)
+	end)
+	add(function()
+		local bk = view and view.cardbook
+		local names = { melee = "근접 = 인문·사회", ranged = "사격 = 자연과학", cannon = "포 = 응용·공학" }
+		local parts = {}
+		for _, row in { "melee", "ranged", "cannon" } do
+			local n = bk and bk.knowledgeCount and bk.knowledgeCount[row] or 0
+			local b = bk and bk.bonus and bk.bonus[row] or 0
+			table.insert(parts, string.format("%s: 카드 %d장 → 부대 점수 +%d", names[row], n, b))
+		end
+		return mkRow(content, "학문 숙련 보너스", table.concat(parts, "\n") .. "\n(카드 15·40·80장마다 +1, 영웅·특수 카드 제외)", nil, 92)
 	end)
 	add(function()
 		return mkRow(content, "연습전", "정해진 패로 규칙을 배우는 첫 판이에요. 부담 없이 시작하세요.", {

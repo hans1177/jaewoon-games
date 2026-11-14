@@ -282,4 +282,40 @@ function CB.useSlot(book: any, slot: number): (boolean, string)
 	return true, string.format("「%s」 덱으로 바꿨다", sl.name)
 end
 
+-- ───── 학문 숙련 보너스: 지식 카드를 모을수록 같은 계열 병종 카드가 강해진다 ─────
+-- 근접 = 인문·사회(철학·언어·신화·예술·유물·유적·교역품), 사격 = 자연과학, 포 = 응용·공학(의학·건축·조선·항해술)
+CB.KNOWLEDGE_ROW = {
+	Philosophy = "melee", Language = "melee", Myth = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
+	Astronomy = "ranged", Physics = "ranged", Chemistry = "ranged", Geography = "ranged", Weather = "ranged", Botany = "ranged", Zoology = "ranged", Mineral = "ranged",
+	Medicine = "cannon", Architecture = "cannon", Shipbuilding = "cannon", Navigation = "cannon",
+}
+CB.KNOWLEDGE_ROW_NAME = { melee = "인문·사회", ranged = "자연과학", cannon = "응용·공학" }
+CB.KNOWLEDGE_STEPS = { 15, 40, 80 } -- 발견한 카드가 이만큼이면 줄 보너스 +1 / +2 / +3
+
+-- discovered: { [cardId] = true }, cardsById: KnowledgeCards.ById
+function CB.knowledgeCount(discovered, cardsById)
+	local n = { melee = 0, ranged = 0, cannon = 0 }
+	for id in discovered or {} do
+		local card = cardsById[id]
+		local row = card and CB.KNOWLEDGE_ROW[card.field]
+		if row then
+			n[row] += 1
+		end
+	end
+	return n
+end
+
+function CB.knowledgeBonus(discovered, cardsById)
+	local n = CB.knowledgeCount(discovered, cardsById)
+	local bonus = {}
+	for row, count in n do
+		local b = 0
+		for _, step in CB.KNOWLEDGE_STEPS do
+			if count >= step then b += 1 end
+		end
+		bonus[row] = b
+	end
+	return bonus, n
+end
+
 return CB

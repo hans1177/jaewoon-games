@@ -1642,6 +1642,30 @@ do
 		end)())
 	end
 
+	-- [카드 배틀] 학문 숙련 보너스
+	do
+		local CBk = D.CardBook
+		local d0 = {}
+		local b0 = CBk.knowledgeBonus(d0, D.Cards.ById)
+		check("카드 배틀: 카드가 없으면 보너스 0", b0.melee == 0 and b0.ranged == 0 and b0.cannon == 0)
+		local d1, nMel = {}, 0
+		for _, c in D.Cards.Cards do
+			if CBk.KNOWLEDGE_ROW[c.field] == "melee" and nMel < 40 then d1[c.id] = true; nMel += 1 end
+		end
+		local b1, n1 = CBk.knowledgeBonus(d1, D.Cards.ById)
+		check("카드 배틀: 인문 카드 40장이면 근접 +2", b1.melee == 2 and b1.ranged == 0 and n1.melee == 40, tostring(b1.melee))
+		local unmapped = 0
+		for _, f in D.Fields.Fields do if not CBk.KNOWLEDGE_ROW[f.id] then unmapped += 1 end end
+		check("카드 배틀: 모든 카드 분야가 줄에 배정됨", unmapped == 0, tostring(unmapped))
+		local stk = newState("england")
+		for id in d1 do stk.discovered[id] = true end
+		local spec = S.Cardbook.deckSpec(stk)
+		check("카드 배틀: 덱 정보에 보너스가 실림", spec.bonus and spec.bonus.melee == 2)
+		local m0 = D.BoardingCards.build("boarding", 77, { book = { ids = spec.ids, tier = spec.tier }, faction = spec.faction }, {})
+		local m1 = D.BoardingCards.build("boarding", 77, { book = spec, faction = spec.faction }, {})
+		local function sumPower(m) local s = 0 for _, c in m.deck.me do s += c.power or 0 end for _, c in m.hand.me do s += c.power or 0 end return s end
+		check("카드 배틀: 보너스가 있으면 내 덱 점수가 오름", sumPower(m1) > sumPower(m0), sumPower(m0) .. "→" .. sumPower(m1))
+	end
 	-- [배 종류] 지역·나라 전용 배
 	do
 		local Sh = D.Ships
