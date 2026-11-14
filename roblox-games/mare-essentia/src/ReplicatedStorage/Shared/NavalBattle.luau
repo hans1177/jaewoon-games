@@ -494,6 +494,37 @@ function NavalBattle.play(opts)
 		return 1 + c * 0.32 * windPower
 	end
 	local sailLabel = label(gui, "", 14, Color3.fromRGB(150, 220, 255))
+	-- 동료 조언 띠: 항해사·포수 등이 상황을 보고 한마디 (한 번에 하나, 같은 말은 두 번까지)
+	local adviceLine = label(gui, "", 14, Color3.fromRGB(255, 236, 190))
+	adviceLine.AnchorPoint = Vector2.new(0.5, 0)
+	adviceLine.Position = UDim2.new(0.5, 0, 0, 86)
+	adviceLine.Size = UDim2.fromOffset(420, 24)
+	adviceLine.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
+	adviceLine.BackgroundTransparency = 1
+	adviceLine.TextTransparency = 1
+	adviceLine.TextStrokeTransparency = 1
+	adviceLine.TextWrapped = true
+	local adviceCorner = Instance.new("UICorner")
+	adviceCorner.CornerRadius = UDim.new(0, 8)
+	adviceCorner.Parent = adviceLine
+	local adviceNext, adviceShown = 0, {}
+	local function navalSay(key, text, now)
+		if now < adviceNext or (adviceShown[key] or 0) >= 2 then return false end
+		adviceShown[key] = (adviceShown[key] or 0) + 1
+		adviceNext = now + 9
+		adviceLine.Text = string.format("%s: %s", opts.advisorName or "동료", text)
+		adviceLine.BackgroundTransparency = 0.35
+		adviceLine.TextTransparency = 0
+		adviceLine.TextStrokeTransparency = 0.45
+		local Tw = game:GetService("TweenService")
+		task.delay(5.5, function()
+			if adviceLine.Parent then
+				Tw:Create(adviceLine, TweenInfo.new(0.6), { BackgroundTransparency = 1, TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+			end
+		end)
+		Sfx.play("sfx_bell", 0.25, 1.4, "sfx_click")
+		return true
+	end
 	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
 	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
 	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
@@ -3132,6 +3163,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 			local wf = windFactor(me.theta)
+			if phase == "duel" and not opts.cardOnly and not finished then
+				local dist = (foe.pos - me.pos).Magnitude
+				if meHp < 0.35 then
+					navalSay("hull", "선체가 위험해요! 회피 기동으로 빠지거나 적선과 거리를 벌려요.", now)
+				elseif foeHp < 0.25 then
+					navalSay("finish", "적이 거의 무너졌어요. 포격을 이어가요!", now)
+				elseif dist > cannon.range * 1.15 then
+					navalSay("range", "적이 사거리 밖이에요. 가까이 붙어요 (스틱을 위로).", now)
+				elseif wf < 0.88 then
+					navalSay("wind", "맞바람이에요. 바람을 등지게 뱃머리를 돌리면 빨라져요.", now)
+				elseif dist < cannon.range and now >= skillReady.rapid then
+					navalSay("rapid", "사거리 안이에요. 지금 연속 사격(Q)을 쓰면 좋아요.", now)
+				elseif dist < 45 then
+					navalSay("close", "너무 가까워요. 옆면을 맞춰 일제 사격하거나 거리를 벌려요.", now)
+				end
+			end
 			me.speed = myTop * (stickThrottle or throttle) * wf * (if now < skillUntil.evade then 1.3 else 1)
 			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)

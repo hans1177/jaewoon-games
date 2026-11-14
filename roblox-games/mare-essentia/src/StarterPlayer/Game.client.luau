@@ -5610,7 +5610,18 @@ function RENDERERS.explore()
 	if not H.exploreScholarView then return end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
 	if #view.scholars == 0 then
-		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요.", 13, COLORS.muted, false) end)
+		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요. 지식 카드 보고는 학자가 있는 항구의 서재에서만 받아 줘요.", 13, COLORS.muted, false) end)
+		-- 어디로 가면 되는지 알려 준다: 올해 활동 중인 학자와 그 항구
+		local where = {}
+		for _, sc in require(Shared:WaitForChild("Scholars")).Scholars do
+			local port = PortData.Ports[sc.portId]
+			if port and view.player.year >= sc.fromYear and view.player.year <= sc.toYear and not (view.knowledge and view.knowledge.met and view.knowledge.met[sc.id]) then
+				table.insert(where, string.format("%s — %s", port.name, sc.name))
+			end
+		end
+		if #where > 0 then
+			add(function() return mkLabel(content, "조언: 지금(" .. view.player.year .. "년) 만날 수 있는 학자\n" .. table.concat(where, "\n", 1, math.min(#where, 8)), 12, COLORS.gold, true) end)
+		end
 	end
 	for _, sc in view.scholars do
 		add(function()
