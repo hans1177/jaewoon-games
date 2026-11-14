@@ -1063,6 +1063,8 @@ local PORTRAIT_TILE = {
 	scholar = Vector2.new(PORTRAIT_SIZE.X, PORTRAIT_SIZE.Y),
 	hero = Vector2.new(PORTRAIT_SIZE.X * 2, PORTRAIT_SIZE.Y),
 }
+-- 색 없는 스케치 초상(학자·상인 시트)은 쓰지 않는다. 색 있는 지역 초상과 3D 인물 모델만 쓴다.
+local SCHOLAR_SKETCH = false
 local FACILITY_ATLAS = AssetIds["Portraits/crew_facilities"]
 local FACILITY_TILE = {
 	merchant = Vector2.new(256, 336), harbor = Vector2.new(512, 336),
@@ -1306,7 +1308,7 @@ local function setPortrait(groupName)
 	local imageId = heroId or regionalId
 		or (if tile and FACILITY_ATLAS then FACILITY_ATLAS
 			elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
-			elseif tile == "merchant" then AssetIds["Portraits/merchant"] else nil)
+			else nil)
 	local offset = heroOffset or regionalOffset
 		or (if imageId and imageId == FACILITY_ATLAS and tile then FACILITY_TILE[tile]
 			elseif imageId and imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else nil)
@@ -3954,7 +3956,7 @@ function RENDERERS.recruit()
 			local portrait = COMPANION_PORTRAIT[c.id]
 			if portrait then
 				withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
-			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
 			elseif model then
 				withIcon(row, "People", model, nil, 56)
@@ -4093,7 +4095,7 @@ function RENDERERS.crew()
 			local portrait = COMPANION_PORTRAIT[talkId]
 			if portrait then
 				withIcon(row, "Portraits", portrait.atlas, nil, 68, portrait.offset)
-			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
 			elseif talkId and COMPANION_MODEL[talkId] then
 				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
@@ -4127,7 +4129,7 @@ function RENDERERS.crew()
 			local portrait = COMPANION_PORTRAIT[c.id]
 			if portrait then
 				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
-			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
 				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
 			elseif model then
 				withIcon(row, "People", model, nil, 52)
@@ -5106,7 +5108,7 @@ function H.companionFace(row, id, px)
 	local portrait = COMPANION_PORTRAIT[id]
 	if portrait then
 		return withIcon(row, "Portraits", portrait.atlas, nil, px, portrait.offset)
-	elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+	elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
 		return withIcon(row, "Portraits", "scholar_" .. scholarId, nil, px)
 	elseif COMPANION_MODEL[id] then
 		return withIcon(row, "People", COMPANION_MODEL[id], nil, px)
@@ -5521,7 +5523,7 @@ function RENDERERS.explore()
 					{ text = if (sc.reportable or 0) > 0 then string.format("보고 (%d)", sc.reportable) else "보고", color = COLORS.green, onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end, enabled = (sc.reportable or 0) > 0 },
 				}, 60)
 			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
-			if AssetIds["Portraits/scholar_" .. sc.id] then
+			if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. sc.id] then
 				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
 			end
 						return srow
@@ -6479,7 +6481,7 @@ if string.sub(codexField, 1, 2) == "p:" then
 					local talkLabel = if p.talked then "다시 듣기" else "대화 (+40)"
 					local row = mkRow(content, p.name .. "  (" .. p.years .. ")", sub, { { text = talkLabel, color = COLORS.blue or COLORS.gold, onClick = function() call("PeopleTalk", { id = p.id }) end } }, 104)
 					-- 등록된 초상이 있으면 초상, 없으면 분야 유물 그림 (학자: scholar_<id>, 그 밖의 인물: person_<id>)
-					local key = if AssetIds["Portraits/scholar_" .. p.id] then "scholar_" .. p.id elseif AssetIds["Portraits/person_" .. p.id] then "person_" .. p.id else nil
+					local key = if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. p.id] then "scholar_" .. p.id elseif AssetIds["Portraits/person_" .. p.id] then "person_" .. p.id else nil
 					if key then
 						withIcon(row, "Portraits", key, nil, 72)
 					else
