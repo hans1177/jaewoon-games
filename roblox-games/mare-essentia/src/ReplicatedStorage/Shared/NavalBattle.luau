@@ -514,13 +514,13 @@ function NavalBattle.play(opts)
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
-	subtitle.Position = UDim2.new(0.5, 0, 1, -76)
+	subtitle.Position = UDim2.new(0.5, 0, 1, -96)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
 	local hint = label(gui, if opts.sim ~= nil and not opts.card and not opts.cardOnly then "배의 옆면을 적선 쪽으로 돌리면 대포가 나가요! 붉은 원은 적 포탄 낙하 지점 — 벗어나서 피하세요. 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요." elseif opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 1)
-	hint.Position = UDim2.new(0.5, 0, 1, -124)
+	hint.Position = UDim2.new(0.5, 0, 1, -150)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
 
@@ -663,16 +663,24 @@ function NavalBattle.play(opts)
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(120, 70), Vector2.new(1, 1))
-	speedBtn.TextSize = 18
+	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1))
+	speedBtn.TextSize = 20
+	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
 	-- 스킬 버튼: 가속 버튼 옆에 둔다. 쿨타임이 돌면 남은 초를 보여 준다 (결과는 서버가 정하므로 전투 연출·기동만 돕는다)
 	local SKILLS = {
-		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62), x = -156 },
-		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170), x = -270 },
+		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62) },
+		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170) },
 	}
+	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
+	for i, sk in SKILLS do
+		local n = #SKILLS
+		local ang = math.rad(if n == 1 then 135 else 100 + (i - 1) * (70 / (n - 1)))
+		sk.x = -72 + math.floor(math.cos(ang) * 124)
+		sk.y = -72 - math.floor(math.sin(ang) * 124)
+	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
 	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
 	local skillBtn = {}
@@ -686,8 +694,10 @@ function NavalBattle.play(opts)
 		skillPop(sk.text .. "!", sk.col)
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, -24), UDim2.fromOffset(104, 70), Vector2.new(1, 1))
-		b.TextSize = 16
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(78, 78), Vector2.new(0.5, 0.5))
+		b.TextSize = 14
+		b.TextWrapped = true
+		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		b.BackgroundColor3 = sk.col
 		b.Visible = not opts.cardOnly
 		b.Activated:Connect(function()
@@ -697,9 +707,9 @@ function NavalBattle.play(opts)
 	end
 	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
 	local reloadBack = Instance.new("Frame")
-	reloadBack.AnchorPoint = Vector2.new(1, 1)
-	reloadBack.Position = UDim2.new(1, -24, 1, -102)
-	reloadBack.Size = UDim2.fromOffset(350, 16)
+	reloadBack.AnchorPoint = Vector2.new(0.5, 1)
+	reloadBack.Position = UDim2.new(0.5, 0, 1, -62)
+	reloadBack.Size = UDim2.fromOffset(300, 20)
 	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	reloadBack.BackgroundTransparency = 0.15
 	reloadBack.BorderSizePixel = 0
@@ -3196,12 +3206,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 84 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		cam.FieldOfView = 72 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (82 + dist * 0.4) + Vector3.new(0, 52 + dist * 0.27, 0)
+		local camPos = ORIGIN + me.pos - f * (128 + dist * 0.5) + Vector3.new(0, math.min(80, 64 + dist * 0.14), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
