@@ -655,6 +655,7 @@ return function(D, S)
 
 		view.wars, view.war = S.Battle.warView(state)
 		view.tavern = S.Tavern.view(state)
+		view.tavernQ = S.Tavern.questView(state)
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]

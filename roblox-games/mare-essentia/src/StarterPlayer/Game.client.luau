@@ -3793,17 +3793,6 @@ function RENDERERS.harbor()
 		fac[k] = true
 	end
 
-	if #view.story > 0 then
-		section("이야기")
-		for _, ev in view.story do
-			add(function()
-				return mkRow(content, ev.title, (if ev.chapter then ev.chapter .. " · " else "") .. ev.npc, {
-					{ text = "듣기", color = COLORS.gold, onClick = function() playStory(ev) end },
-				}, 52)
-			end)
-		end
-	end
-
 	if fac.bank then
 		local b = view.bank
 		section("은행")
@@ -6876,41 +6865,106 @@ end
 -- 전투 본부의 대규모 해전 의뢰: 여러 파도로 이어지는 작전
 function RENDERERS.board()
 	H.walletBar("tavern")
-	add(function()
-		return mkRow(content, "이 항구의 의뢰판", "지금 이 항구, 이 시대에만 나오는 일이에요. 역사 속 사건이나 지역 소문에서 나온 일이라, 다른 곳이나 다른 해에는 없어요.", nil, 72)
-	end)
-	local jobs = view.tavern or {}
-	if #jobs == 0 then
-		add(function() return mkRow(content, "오늘은 의뢰가 없어요", "다른 항구를 찾거나 시간이 흐른 뒤 다시 와 보세요.", nil, 56) end)
-		return
+	local q = view.tavernQ or {}
+	local KIND = { hunt = "전투", deliver = "납품", event = "선택" }
+	local function money(j)
+		if j.kind == "event" then return "" end
+		return string.format("\n보상 %d코인 · 명성 +%d%s", j.coins or 0, j.fame or 0, if j.shady then string.format("  (실패·포기 시 명성 -%d)", j.failFame or 0) else "")
 	end
-	local KIND = { hunt = "전투", deliver = "납품", event = "소문" }
-	for _, j in jobs do
+	local function detail(j)
+		local sub = j.text
+		if j.kind == "hunt" then sub ..= "\n상대: " .. tostring(j.enemy) end
+		if j.kind == "deliver" and j.good then sub ..= string.format("\n%s %d개 납품", j.good, j.amount or 0) end
+		return sub .. money(j)
+	end
+	if q.note then
+		add(function() return mkRow(content, "알림", q.note, nil, 64) end)
+	end
+	-- 1) 지금 맡은 의뢰
+	add(function() return mkHeader(content, "맡은 의뢰") end)
+	if q.active then
+		local j = q.active
 		add(function()
-			local head = string.format("[%s·%s] %s", j.tag, KIND[j.kind] or "", j.name)
-			if j.done then
-				return mkRow(content, head, "✔ 마친 의뢰", nil, 48)
-			end
-			local sub = j.text
-			if j.kind == "hunt" then
-				sub ..= string.format("\n상대: %s · 보상 %d코인 · 명성 +%d", j.enemy, j.coins, j.fame)
-			elseif j.kind == "deliver" then
-				sub ..= string.format("\n%s %d개 · 보상 %d코인 · 명성 +%d", j.good or "", j.amount or 0, j.coins, j.fame)
-			end
-			if j.blocked then
-				sub ..= "\n🔒 " .. j.blocked
-			end
-			local buttons
+			local tagText = if j.shady then "수상한 손님" elseif j.src == "grand" then "큰 사건" elseif j.src == "legend" then "전설" else "의뢰"
+			local sub = string.format("%s\n기한 %d일 남음", detail(j), j.left or 0)
+			if j.blocked then sub ..= "\n" .. j.blocked end
+			local buttons = {}
 			if j.kind == "event" then
-				buttons = {}
-				for i, c in j.choices do
+				for i, c in j.choices or {} do
 					table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
 				end
 			else
-				buttons = { { text = if j.kind == "hunt" then "출격" else "납품", color = COLORS.red, enabled = j.blocked == nil, onClick = function() call("TavernJob", { id = j.id }) end } }
+				table.insert(buttons, { text = if j.kind == "hunt" then "출격" else "납품", color = COLORS.red, enabled = j.blocked == nil, onClick = function() call("TavernJob", { id = j.id }) end })
 			end
-			return mkRow(content, head, sub, buttons, 96 + (if j.kind == "event" then 30 * #buttons else 0))
+			table.insert(buttons, { text = if j.shady then "포기 (명성 하락)" else "포기 (벌 없음)", color = COLORS.grey, onClick = function() call("TavernAbandon") end })
+			return mkRow(content, string.format("[%s·%s] %s", tagText, j.tag or KIND[j.kind] or "", j.name), sub, buttons, 130 + 32 * #buttons)
 		end)
+	else
+		add(function() return mkLabel(content, "맡은 의뢰가 없어요. 아래에서 소문을 듣거나 술을 사 주고 일감을 받아 보세요.", 15, COLORS.muted, true) end)
+	end
+	-- 2) 제안 중인 일감 (고르면 맡는다)
+	if #(q.offer or {}) > 0 then
+		local who = if q.offerKind == "shady" then "수상한 손님의 제안 (둘 중 하나)" elseif q.offerKind == "job" then "주인의 일감 (둘 중 하나)" else "새 일감"
+		add(function() return mkHeader(content, who) end)
+		for i, j in q.offer do
+			add(function()
+				local sub = detail(j) .. (if j.shady then "\n실패하거나 포기하면 명성이 떨어져요." else "\n실패해도, 도중에 접어도 명성은 그대로예요.")
+				return mkRow(content, string.format("[%s] %s", j.tag or KIND[j.kind] or "", j.name), sub, {
+					{ text = "맡는다", color = if j.shady then COLORS.red else COLORS.green, enabled = q.active == nil, onClick = function() call("TavernPick", { index = i }) end },
+				}, 150)
+			end)
+		end
+		add(function()
+			return mkRow(content, "거절하고 돌아선다", "고르지 않아도 괜찮아요.", { { text = "거절", color = COLORS.grey, onClick = function() call("TavernDecline") end } }, 64)
+		end)
+	end
+	-- 3) 주점에서 할 수 있는 일
+	add(function() return mkHeader(content, "주점에서") end)
+	add(function()
+		return mkRow(content, "주인에게 소문 듣기", "무료. 무작위 소식이 들려요. 가끔 일감이나 선택이 걸린 사건으로 이어져요.", {
+			{ text = "소문 듣기", color = COLORS.blue, onClick = function() call("TavernRumor") end },
+		}, 76)
+	end)
+	add(function()
+		return mkRow(content, string.format("술 사 주기 (%d코인)", q.drinkCost or 30), "주인이 평범한 일감 둘을 보여 줘요. 하나를 고르면 되고, 실패해도 명성은 안 떨어져요. 아주 가끔 전설 의뢰를 먼저 건네요.", {
+			{ text = "술 사기", color = COLORS.gold, enabled = q.active == nil, onClick = function() call("TavernDrink") end },
+		}, 92)
+	end)
+	add(function()
+		return mkRow(content, "동료와 대화", "함께하는 동료와 이야기하면 호감도가 오르고, 이야기 속에서 일감이 나오기도 해요.", {
+			{ text = "대화", color = COLORS.blue, onClick = function() call("TavernTalk") end },
+		}, 76)
+	end)
+	add(function()
+		if q.stranger then
+			return mkRow(content, "구석 자리의 수상한 손님", "후드를 눌러 쓴 손님이 이쪽을 보고 있다. 뒷골목 일이라 어렵지만 보상이 커요. 실패하거나 취소하면 명성이 떨어져요.", {
+				{ text = "말 걸기", color = COLORS.red, enabled = q.active == nil, onClick = function() call("TavernStranger") end },
+			}, 92)
+		end
+		return mkRow(content, "구석 자리", "오늘은 비어 있다. 수상한 손님은 아무 때나 나타났다 사라져요.", nil, 52)
+	end)
+	-- 4) 소문에서 나온 선택 사건
+	if q.rumorEvent then
+		local j = q.rumorEvent
+		add(function() return mkHeader(content, "소문의 사건") end)
+		add(function()
+			local buttons = {}
+			for i, c in j.choices or {} do
+				table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
+			end
+			return mkRow(content, string.format("[%s] %s", j.tag or "", j.name), j.text, buttons, 100 + 32 * #buttons)
+		end)
+	end
+	-- 5) 이 항구의 이야기 (수상한 손님이 광장에 서 있던 시절의 이야기도 이곳에서 들어요)
+	if view.story and #view.story > 0 then
+		add(function() return mkHeader(content, "이 항구의 이야기") end)
+		for _, ev in view.story do
+			add(function()
+				return mkRow(content, ev.title, (if ev.chapter then ev.chapter .. " · " else "") .. ev.npc, {
+					{ text = "듣기", color = COLORS.gold, onClick = function() playStory(ev) end },
+				}, 56)
+			end)
+		end
 	end
 end
 

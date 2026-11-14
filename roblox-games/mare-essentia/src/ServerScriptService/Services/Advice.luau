@@ -11,6 +11,11 @@ return function(D, S)
 	local DEFAULT_WHO = { id = nil, name = "늙은 항해사 베르나르", role = "항해사" }
 
 	local function speaker(state, topic)
+		-- 부선장이 함께하면 모든 조언을 그가 한다 (메뉴 바로가기 안내역)
+		if table.find(state.companions, "t_mate") then
+			local m = Sp.CompanionById.t_mate
+			return { id = m.id, name = m.name, role = m.role or "부선장" }
+		end
 		local seat = TOPIC_SEAT[topic] or "helm"
 		local id = state.stations[seat]
 		if not id then
@@ -35,7 +40,7 @@ return function(D, S)
 			text = "항구 근처 탐험 지점에서 도감 카드를 모을 수 있어요. 카드를 모으면 직업이 생기고 카드 배틀도 강해져요.",
 			done = function(state) return next(state.discovered) ~= nil end },
 		{ id = "g_quest", topic = "guide", tab = "quest", label = "주점으로",
-			text = "주점에서는 소문과 의뢰를 들을 수 있어요. 의뢰를 끝내면 보상과 명성이 쌓여요.",
+			text = "주점에서 소문을 듣거나 술을 사 주면 일감을 받아요. 실패해도 명성은 안 떨어져요. 구석의 수상한 손님은 어렵지만 보상이 커요.",
 			done = function(state) return next(state.quests.active) ~= nil or next(state.quests.done) ~= nil end },
 		{ id = "g_tech", topic = "knowledge", tab = "tech", label = "서재로",
 			text = "학자를 찾아 발견한 카드를 보고하면 그 지식을 이해하게 돼요. 이해한 지식은 항해 속도와 교역에 실제로 도움이 돼요.",

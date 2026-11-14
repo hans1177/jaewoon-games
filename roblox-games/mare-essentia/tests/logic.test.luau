@@ -3995,6 +3995,7 @@ end
 do -- 전투 보상 지역 카드: 6개 해역 모두 후보 카드가 있고 그 대륙 카드여야 한다
 	local CBk = D.CardBook
 	local book = CBk.new("europe")
+	book.owned = {} -- 시작 덱이 그 대륙 카드를 다 가졌어도 후보 계산은 성립해야 한다
 	local bad = {}
 	for region, cont in CBk.REGION_CONT do
 		local id = CBk.regionalPick(region, book, math.random)

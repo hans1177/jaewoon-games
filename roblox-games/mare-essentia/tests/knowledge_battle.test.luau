@@ -354,6 +354,58 @@ do
 	check("의뢰판: 마친 의뢰는 저장된다", round == nil or round.tavernJobs.armada_scout ~= nil)
 end
 
+-- 주점 개편: 술→일감 2개 선택 / 수상한 손님 / 소문 / 취소·실패 벌칙
+do
+	local st = S.State.new("england", 1700)
+	st.portId = "amsterdam"
+	st.coins = 5000
+	local v0 = S.View.build(st, ctx).tavernQ
+	check("주점: 처음엔 맡은 의뢰·제안이 없다", v0.active == nil and #v0.offer == 0)
+	local ok = Registry.handlers.TavernDrink(st, {}, ctx)
+	check("주점: 술을 사면 코인이 줄고 제안 또는 전설 의뢰가 생긴다", ok == true and st.coins == 4970 - 0 and (st.tavernQ.offer ~= nil or st.tavernQ.active ~= nil))
+	if st.tavernQ.offer then
+		check("주점: 일반 제안은 2개 이하", #st.tavernQ.offer.ids <= 2 and #st.tavernQ.offer.ids >= 1)
+		local picked = Registry.handlers.TavernPick(st, { index = 1 }, ctx)
+		check("주점: 하나를 고르면 맡은 의뢰가 된다", picked == true and st.tavernQ.active ~= nil and st.tavernQ.offer == nil)
+		local fame0 = st.fame
+		check("주점: 일반 의뢰 포기는 명성이 그대로", Registry.handlers.TavernAbandon(st, {}, ctx) == true and st.fame == fame0 and st.tavernQ.active == nil)
+	end
+	-- 수상한 손님: 수락 후 포기하면 명성이 떨어진다
+	local sh = S.State.new("england", 1700)
+	sh.portId = "amsterdam"
+	sh.fame = 100
+	local found = false
+	for d = 0, 60 do
+		sh.day = d
+		if S.View.build(sh, ctx).tavernQ.stranger then
+			found = true
+			break
+		end
+	end
+	check("주점: 며칠 사이에 수상한 손님이 나타난다", found)
+	local okS = Registry.handlers.TavernStranger(sh, {}, ctx)
+	check("주점: 수상한 손님은 의뢰 2개를 내민다", okS == true and sh.tavernQ.offer and sh.tavernQ.offer.kind == "shady" and #sh.tavernQ.offer.ids == 2)
+	Registry.handlers.TavernPick(sh, { index = 1 }, ctx)
+	check("주점: 수상한 의뢰를 맡았다", sh.tavernQ.active and sh.tavernQ.active.src == "shady")
+	Registry.handlers.TavernAbandon(sh, {}, ctx)
+	check("주점: 수상한 의뢰를 접으면 명성이 떨어진다", sh.fame < 100)
+	-- 소문은 무료
+	local c0 = st.coins
+	check("주점: 소문 듣기는 무료", Registry.handlers.TavernRumor(st, {}, ctx) == true and st.coins == c0)
+	-- 저장/복원
+	local st2 = S.State.new("england", 1700)
+	st2.portId = "amsterdam"
+	st2.coins = 5000
+	st2.tavernQ.active = { id = "shady_traitor", src = "shady", due = 90 }
+	local back = S.State.sanitize and S.State.sanitize(S.State.serialize(st2)) or nil
+	check("주점: 맡은 의뢰가 저장된다", back == nil or (back.tavernQ.active ~= nil and back.tavernQ.active.id == "shady_traitor"))
+	-- 큰 사건은 자동으로 맡는다
+	local gr = S.State.new("england", 1666)
+	gr.portId = "london"
+	local gv = S.View.build(gr, ctx).tavernQ
+	check("주점: 큰 사건은 자동 발동", gv.active ~= nil and gv.active.src == "grand")
+end
+
 do
 	-- 해상 사건: 다양한 종류가 나오고, 크라켄은 장거리에서만 나온다
 	local seen: any = {}

@@ -2857,13 +2857,7 @@ function PortScene.build(info, onFacility)
 		end
 	end
 
-	-- 광장의 이야기 NPC
-	if (info.storyCount or 0) > 0 then
-		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded", true)
-		local npcPart = n and (n:FindFirstChild("Head") or n:FindFirstChildWhichIsA("BasePart", true))
-		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4, true) end
-		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
-	end
+	-- (수상한 손님은 이제 주점에서 만난다)
 	-- 광장을 오가는 주민
 	local walkers = {}
 	for _ = 1, 4 do
