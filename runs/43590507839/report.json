@@ -1,0 +1,91 @@
+{
+ "sourceRevision": "2cddcc69d7ad1d28206a59872a03d6c8a55c3b1f",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "closed 2\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "SAIL smyrna\ntext"
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "LABELS: \ntext"
+  },
+  {
+   "step": 14,
+   "capture": "h01",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "LABELS: \ntext"
+  },
+  {
+   "step": 17,
+   "capture": "h02",
+   "files": 1
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "LABELS: \ntext"
+  },
+  {
+   "step": 20,
+   "capture": "h03",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 21,
+  "completedSteps": 21,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
+  "abortedEarly": false
+ }
+}
