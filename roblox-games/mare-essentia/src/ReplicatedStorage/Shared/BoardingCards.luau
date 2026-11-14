@@ -71,10 +71,23 @@ do
 end
 -- 지도자 능력 (한 판당 한 번)
 B.Leaders = {
-	draw = { id = "draw", name = "지휘", text = "카드 한 장을 더 뽑는다" },
-	clear = { id = "clear", name = "항로 개척", text = "날씨를 걷어 낸다" },
-	snipe = { id = "snipe", name = "저격", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다" },
+	draw = { id = "draw", name = "지휘", text = "카드 한 장을 더 뽑는다", provision = 10 },
+	clear = { id = "clear", name = "항로 개척", text = "날씨를 걷어 낸다", provision = 15 },
+	snipe = { id = "snipe", name = "저격", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5 },
 }
+
+-- 보급 비용: 덱의 카드 비용 합이 한도(CardBook.PROVISION_BASE + 지도자 보너스)를 넘지 못한다.
+-- 점수가 곧 기본 비용이고 능력·영웅·특수 카드는 값이 붙는다. 4 아래로 내려가지 않는다. 미지의 땅 카드는 변수가 커서 +1.
+function B.cost(card: any): number
+	if card.special then
+		return if card.special == "horn" then 5 elseif card.special == "scorch" then 6 else 4
+	end
+	local v = (card.power or 0) + (if card.ability then 1 else 0) + (if card.hero then 3 else 0)
+	if type(card.id) == "string" and string.sub(card.id, 1, 3) == "lo_" then
+		v += 1
+	end
+	return math.max(4, v)
+end
 
 local function copy(def)
 	local c = {}

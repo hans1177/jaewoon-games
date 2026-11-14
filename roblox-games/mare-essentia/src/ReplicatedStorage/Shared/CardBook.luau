@@ -7,8 +7,30 @@ local KB = (require(script.Parent.KnowledgeBattle) :: any)
 local CB = {}
 
 CB.TIER_NAME = { "동", "은", "금" }
-CB.MIN_DECK, CB.MAX_DECK = 15, 30
-CB.MAX_HEROES, CB.MAX_SPECIALS = 3, 6
+CB.MIN_DECK, CB.MAX_DECK = 25, 40
+CB.MAX_HEROES, CB.MAX_SPECIALS = 4, 6
+CB.MAX_COPIES = 3 -- 같은 카드는 덱에 세 장까지
+CB.LOST_MAX = 10 -- 미지의 땅 카드는 덱에 열 장까지 (내 대륙 카드가 중심이어야 한다)
+CB.PROVISION_BASE = 150 -- 보급 한도 (지도자가 조금 더해 준다)
+-- 카드 id 앞 두 글자 → 대륙. 접두사가 없는 카드(기본 병종·지식 카드)는 어느 덱에서나 쓴다.
+CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", lo = "lost" }
+function CB.continentOf(id: string): string?
+	local pre = string.match(id, "^(%a%a)_%d%d$")
+	return pre and CB.CONTINENT_PREFIX[pre] or nil
+end
+function CB.provisionLimit(factionId: string?): number
+	local fac = BC.Factions[factionId or ""]
+	local leader = fac and BC.Leaders[fac.leader]
+	return CB.PROVISION_BASE + (leader and leader.provision or 0)
+end
+function CB.deckCost(ids: { string }): number
+	local sum = 0
+	for _, id in ids do
+		local d = BC.Units[id] or BC.Specials[id]
+		if d then sum += BC.cost(d) end
+	end
+	return sum
+end
 -- 강화: 같은 카드의 남는 장수와 코인이 든다. 단계마다 부대 점수 +1.
 CB.UPGRADE = { { copies = 2, coins = 120 }, { copies = 3, coins = 320 } } -- 동→은, 은→금
 
@@ -44,12 +66,17 @@ end
 
 -- 시작 수집: 문화권 기본 덱을 그대로 가진다
 function CB.new(factionId: string?): any
-	local book = { owned = {}, tier = {}, deck = nil }
+	local book = { owned = {}, tier = {}, deck = nil, faction = factionId }
 	for _, id in CB.STARTER do
 		book.owned[id] = 1
 	end
 	for _, id in KB.regionStarter(factionId) do
 		book.owned[id] = 1
+	end
+	-- 내 대륙의 카드는 모두 가지고 시작한다
+	local fac = BC.Factions[factionId or ""]
+	for _, id in fac and fac.roster or {} do
+		book.owned[id] = math.min(3, (book.owned[id] or 0) + 1)
 	end
 	return book
 end
@@ -65,7 +92,28 @@ function CB.tierOf(book: any, id: string): number
 end
 
 -- 가중치에 따라 등급을 고른 뒤 그 등급에서 한 장 (이미 가진 카드는 되도록 피한다)
+-- 미지의 땅 카드는 탐험·퀘스트·상자·두목에서 가끔 나온다 (전설 생물·잃어버린 문명). 영웅급은 더 드물다.
+CB.LOST_CHANCE = { discover = 0.04, explore = 0.12, quest = 0.15, chest = 0.30, boss = 0.40 }
+local LOST_IDS = {}
+for i = 1, 30 do
+	table.insert(LOST_IDS, string.format("lo_%02d", i))
+end
+local function lostPick(book: any?, rng: () -> number): string?
+	for _ = 1, 20 do
+		local id = LOST_IDS[math.min(#LOST_IDS, math.floor(rng() * #LOST_IDS) + 1)]
+		local d = def(id)
+		if d and (not d.hero or rng() < 0.35) and not (book and (book.owned[id] or 0) >= 3) then
+			return id
+		end
+	end
+	return nil
+end
+
 function CB.roll(source: string, rng: () -> number, book: any?, field: string?): string
+	if rng() < (CB.LOST_CHANCE[source] or 0) then
+		local lost = lostPick(book, rng)
+		if lost then return lost end
+	end
 	local w = CB.SOURCES[source] or CB.SOURCES.discover
 	local total = w.common + w.rare + w.hero
 	local r = rng() * total
@@ -98,7 +146,7 @@ function CB.drop(book: any, source: string, rng: () -> number, field: string?): 
 	CB.grant(book, id, 1)
 	book.lastGranted = id
 	local d = def(id)
-	return id, string.format("%s에서 지식 카드 「%s」를 얻었다", CB.SOURCE_NAME[source] or "보상", d.name)
+	return id, string.format("%s에서 %s 「%s」를 얻었다", CB.SOURCE_NAME[source] or "보상", if CB.continentOf(id) == "lost" then "미지의 땅 카드" else "지식 카드", d.name)
 end
 
 -- 이긴 뒤 보상: 서로 다른 카드 3장을 보여 주고 1장을 고른다
@@ -155,16 +203,28 @@ end
 function CB.validateDeck(book: any, ids: { string }): (boolean, string)
 	if #ids < CB.MIN_DECK then return false, string.format("덱은 최소 %d장이에요", CB.MIN_DECK) end
 	if #ids > CB.MAX_DECK then return false, string.format("덱은 최대 %d장이에요", CB.MAX_DECK) end
-	local used, heroes, specials = {}, 0, 0
+	local own = CB.continentOf((BC.Factions[book.faction or ""] and BC.Factions[book.faction].roster[1]) or "")
+	local used, heroes, specials, lost = {}, 0, 0, 0
 	for _, id in ids do
 		if type(id) ~= "string" or not def(id) then return false, "알 수 없는 카드가 있어요" end
 		used[id] = (used[id] or 0) + 1
 		if used[id] > (book.owned[id] or 0) then return false, def(id).name .. "이(가) 모자라요" end
+		if used[id] > CB.MAX_COPIES then return false, string.format("같은 카드는 %d장까지예요", CB.MAX_COPIES) end
+		local cont = CB.continentOf(id)
+		if cont == "lost" then
+			lost += 1
+		elseif cont and own and cont ~= own then
+			return false, "다른 대륙의 카드는 쓸 수 없어요"
+		end
 		if CB.isHero(id) then heroes += 1 end
 		if CB.isSpecial(id) then specials += 1 end
 	end
 	if heroes > CB.MAX_HEROES then return false, string.format("영웅은 %d장까지예요", CB.MAX_HEROES) end
 	if specials > CB.MAX_SPECIALS then return false, string.format("특수 카드는 %d장까지예요", CB.MAX_SPECIALS) end
+	if lost > CB.LOST_MAX then return false, string.format("미지의 땅 카드는 %d장까지예요", CB.LOST_MAX) end
+	local limit = CB.provisionLimit(book.faction)
+	local cost = CB.deckCost(ids)
+	if cost > limit then return false, string.format("보급이 모자라요 (%d / %d)", cost, limit) end
 	return true, "ok"
 end
 
@@ -193,12 +253,15 @@ end
 -- 저장 데이터 정리 (불러올 때): 모르는 카드·이상한 값은 버린다
 function CB.sanitize(saved: any, factionId: string?): any
 	local book = CB.new(factionId)
+	local own = CB.continentOf((BC.Factions[factionId or ""] and BC.Factions[factionId].roster[1]) or "")
 	if type(saved) ~= "table" then return book end
 	if type(saved.owned) == "table" then
 		book.owned = {}
 		for id, n in saved.owned do
 			local d = type(id) == "string" and def(id)
-			if d and (d.knowledge or string.sub(id, 1, 5) == "boss_") and type(n) == "number" and n >= 0 then
+			local cont = type(id) == "string" and CB.continentOf(id) or nil
+			local continentOk = cont ~= nil and (cont == "lost" or cont == own)
+			if d and (d.knowledge or string.sub(id, 1, 5) == "boss_" or continentOk) and type(n) == "number" and n >= 0 then
 				book.owned[id] = math.min(9, math.floor(n))
 			end
 		end
@@ -207,6 +270,10 @@ function CB.sanitize(saved: any, factionId: string?): any
 		book.owned[id] = math.max(1, book.owned[id] or 0)
 	end
 	for _, id in KB.regionStarter(factionId) do
+		book.owned[id] = math.max(1, book.owned[id] or 0)
+	end
+	local ownFac = BC.Factions[factionId or ""]
+	for _, id in ownFac and ownFac.roster or {} do
 		book.owned[id] = math.max(1, book.owned[id] or 0)
 	end
 	if type(saved.tier) == "table" then
@@ -277,15 +344,28 @@ function CB.recommend(book: any, style: string): { string }?
 		if a.score ~= b.score then return a.score > b.score end
 		return a.id < b.id
 	end)
-	local ids, heroes, specials = {}, 0, 0
+	local ids, heroes, specials, spent = {}, 0, 0, 0
+	local limit = CB.provisionLimit(book.faction)
+	local own = CB.continentOf((BC.Factions[book.faction or ""] and BC.Factions[book.faction].roster[1]) or "")
+	local copies, lost = {}, 0
 	for _, c in pool do
-		if #ids >= 22 then break end
-		if CB.isHero(c.id) then
-			if heroes < CB.MAX_HEROES then heroes += 1 table.insert(ids, c.id) end
-		elseif CB.isSpecial(c.id) then
-			if specials < 4 then specials += 1 table.insert(ids, c.id) end
-		else
-			table.insert(ids, c.id)
+		if #ids >= CB.MIN_DECK then break end
+		local cont = CB.continentOf(c.id)
+		local d = def(c.id)
+		local cost = BC.cost(d)
+		local left = CB.MIN_DECK - #ids - 1
+		local okCont = cont == nil or cont == own or (cont == "lost" and lost < 3) -- 자동 덱은 미지의 땅 카드를 세 장까지만 섞는다
+		if okCont and (copies[c.id] or 0) < CB.MAX_COPIES and spent + cost + left * 4 <= limit then
+			if CB.isHero(c.id) then
+				if heroes < 2 then heroes += 1 table.insert(ids, c.id) spent += cost copies[c.id] = (copies[c.id] or 0) + 1 end
+			elseif CB.isSpecial(c.id) then
+				if specials < 4 then specials += 1 table.insert(ids, c.id) spent += cost copies[c.id] = (copies[c.id] or 0) + 1 end
+			else
+				table.insert(ids, c.id)
+				spent += cost
+				copies[c.id] = (copies[c.id] or 0) + 1
+				if cont == "lost" then lost += 1 end
+			end
 		end
 	end
 	if #ids < CB.MIN_DECK then return nil end

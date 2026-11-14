@@ -1873,7 +1873,7 @@ do
 				end
 				local head = mkHeader(builder, "덱 구성 (퀘스트·발견·탐험·주점에서 새 카드를 모아요)")
 				head.LayoutOrder = 1
-				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
+				local summary = mkRow(builder, string.format("덱 %d장 (%d~%d) · 보급 %d/%d · 영웅 %d/%d · 특수 %d/%d", #ids, CBk.MIN_DECK, CBk.MAX_DECK, CBk.deckCost(ids), CBk.provisionLimit(book.faction), heroes, CBk.MAX_HEROES, specials, CBk.MAX_SPECIALS),
 					if okDeck then "이 덱으로 싸울 수 있어요" else "덱을 고쳐 주세요: " .. tostring(why), {
 					{ text = "덱 저장", color = COLORS.green, enabled = okDeck, onClick = function() refreshAfter("CardSetDeck", { ids = ids }) end },
 					{ text = "자동 덱", color = COLORS.blue, onClick = function() refreshAfter("CardAutoDeck") end },

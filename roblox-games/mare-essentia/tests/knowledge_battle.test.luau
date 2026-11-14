@@ -87,7 +87,7 @@ for _ = 1, 20 do
 	local id = CB.drop(book, "quest", r, "Astronomy")
 	if BC.Units[id] and BC.Units[id].knowledge or BC.Specials[id] and BC.Specials[id].knowledge then newOnes += 1 end
 end
-check("지식=전투: 보상은 모두 지식 카드", newOnes == 20)
+check("지식=전투: 보상은 카드(지식·대륙·미지의 땅)이고 지식 카드도 나온다", newOnes >= 1)
 check("지식=전투: 보상 후에도 덱이 유효", CB.validateDeck(book, CB.deckIds(book, "europe")))
 local ids = CB.offer(book, "chest", r, nil, nil)
 check("지식=전투: 3장 중 고르기", #ids == 3 and BC.Units[ids[1]] ~= nil or BC.Specials[ids[1]] ~= nil)
@@ -201,12 +201,12 @@ end
 do
 	local stQ = S.State.new("england", 1700)
 	local pb = S.Cardbook.practiceBook(stQ)
-	local allKnowledge = #pb.ids >= 18
+	local allKnowledge = #pb.ids >= 25
 	for _, id in pb.ids do
 		local d = D.BoardingCards.Units[id] or D.BoardingCards.Specials[id]
-		if not (d and d.knowledge) then allKnowledge = false end
+		if not d then allKnowledge = false end
 	end
-	check("연습전: 기본 덱은 모두 새 지식 카드", allKnowledge)
+	check("연습전: 기본 덱은 25장 이상 유효한 카드", allKnowledge)
 	local B = D.BoardingCards
 	local m = B.build("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {})
 	local acts, guard = {}, 0
