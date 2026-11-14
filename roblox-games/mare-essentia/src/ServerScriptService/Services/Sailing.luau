@@ -22,7 +22,7 @@ return function(D, S)
 		end
 		local ids = {}
 		for id, port in D.Ports.Ports do
-			if id ~= state.portId and D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), D.Regions.tierOf(id, port.lat, port.lon)) then
+			if id ~= state.portId and D.PortEras.isOpen(id, S.State.year(state)) and D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), D.Regions.tierOf(id, port.lat, port.lon)) then
 				table.insert(ids, id)
 			end
 		end
@@ -55,6 +55,9 @@ return function(D, S)
 		end
 		if toId == state.portId then
 			return false, "이미 이 항구에 있어요"
+		end
+		if not D.PortEras.isOpen(to.id, S.State.year(state)) then
+			return false, string.format("%s은(는) %d년에야 생기는 항구예요 (지금 %d년)", to.name, D.PortEras.openYear(to.id), S.State.year(state))
 		end
 		state.voyageChoice = nil
 		state.voyageBonusDays = nil

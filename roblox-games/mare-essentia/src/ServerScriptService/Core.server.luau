@@ -11,6 +11,7 @@ local ServicesFolder = script.Parent:WaitForChild("Services")
 
 local D = {
 	Ports = require(Shared:WaitForChild("Ports")),
+	PortEras = require(Shared:WaitForChild("PortEras")),
 	Ships = require(Shared:WaitForChild("Ships")),
 	Tech = require(Shared:WaitForChild("Tech")),
 	Skills = require(Shared:WaitForChild("Skills")),
@@ -250,6 +251,12 @@ local function onInvoke(player, action, payload)
 		local year = payload.startYear
 		if type(nationId) ~= "string" or not D.Ports.Nations[nationId] or not START_YEARS[year] then
 			return { ok = false, message = "잘못된 선택이에요" }
+		end
+		do
+			local startPort = D.Ports.Nations[nationId].startPort
+			if not D.PortEras.isOpen(startPort, year) then
+				return { ok = false, message = string.format("%s은(는) %d년에는 아직 없는 항구예요. %d년 이후 시대를 골라 주세요", D.Ports.Ports[startPort].name, year, D.PortEras.openYear(startPort)) }
+			end
 		end
 		local originId = if type(payload.origin) == "string" and D.Specialties.OriginById[payload.origin] then payload.origin else "merchant"
 		local newState = S.State.new(nationId, year, originId)

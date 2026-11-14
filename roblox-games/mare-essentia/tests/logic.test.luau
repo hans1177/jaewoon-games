@@ -3,6 +3,7 @@
 
 local D = {
 	Ports = require("./Shared/Ports"),
+	PortEras = require("./Shared/PortEras"),
 	Ships = require("./Shared/Ships"),
 	Tech = require("./Shared/Tech"),
 	Skills = require("./Shared/Skills"),
@@ -1460,7 +1461,9 @@ do
 	local v = S.View.build(st, ctx)
 	check("view has player", v.player.portName == "런던" and v.player.year == 1700)
 	check("view goods only local specialties/demands/owned", #v.goods >= 4 and #v.goods < (function() local n = 0 for _ in D.Ports.Goods do n += 1 end return n end)() + 1 and v.goods[1].tag == "특산")
-	check("view routes", #v.routes == (function() local n = 0 for _ in D.Ports.Ports do n += 1 end return n - 1 end)())
+	check("view routes (시대에 맞는 항구만)", #v.routes == (function() local n = 0 for id in D.Ports.Ports do if D.PortEras.isOpen(id, 1700) then n += 1 end end return n - 1 end)())
+	check("1700년에는 시드니 항로가 보이지 않음", (function() for _, r in v.routes do if r.id == "sydney" then return false end end return true end)())
+	check("PortEras: 뉴욕은 1517년엔 닫히고 1650년엔 열림", not D.PortEras.isOpen("new_york", 1517) and D.PortEras.isOpen("new_york", 1650) and D.PortEras.isOpen("london", 1517))
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
