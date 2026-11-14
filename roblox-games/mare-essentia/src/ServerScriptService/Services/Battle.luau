@@ -6,6 +6,22 @@ return function(D, S)
 	local deckFaction = setmetatable({}, { __mode = "k" }) -- 그 카드 패의 문화권 덱 (나라에서 정해진다)
 	local deckCache = setmetatable({}, { __mode = "k" }) -- View 가 마지막으로 만든 카드 패 (서버가 카드 대결을 검증할 때 쓴다)
 
+	-- 대규모 해전 의뢰(전투 본부): 여러 파도로 이어지는 작전. 파도마다 실시간 해전을 하고, 모두 이기면 큰 보상.
+	-- 한 파도를 지면 작전 실패. 이긴 뒤 선체가 너무 상하면 후퇴한다.
+	local WARS = {
+		{ id = "blockade", name = "항구 봉쇄 돌파", summary = "봉쇄선을 지키는 적 함선 3척을 차례로 돌파하라", minLevel = 3, coins = 900, fame = 12, xp = 300, cooldown = 6,
+			waves = { { lvOffset = -1, name = "봉쇄 초계선" }, { lvOffset = 0, name = "봉쇄 호위함" }, { lvOffset = 2, name = "봉쇄 기함" } } },
+		{ id = "convoy_raid", name = "적국 호송선단 습격", summary = "호위가 붙은 보급 선단을 덮쳐라 (4연전)", minLevel = 6, coins = 2200, fame = 25, xp = 700, cooldown = 8,
+			waves = { { lvOffset = -1, name = "선단 선두 호위함" }, { lvOffset = 0, name = "선단 후미 호위함" }, { lvOffset = 1, name = "무장 보급선" }, { lvOffset = 3, name = "선단 기함" } } },
+		{ id = "fleet_decisive", name = "함대 결전", summary = "적 주력 함대와의 결전. 5연전, 선체가 버텨야 해요", minLevel = 10, coins = 5200, fame = 60, xp = 1600, cooldown = 12,
+			waves = { { lvOffset = 0, name = "전위 함대" }, { lvOffset = 1, name = "좌익 함대" }, { lvOffset = 1, name = "우익 함대" }, { lvOffset = 2, name = "근위 전열함" }, { lvOffset = 4, name = "적 총사령선" } } },
+	}
+	local WAR_BY_ID = {}
+	for _, w in WARS do
+		WAR_BY_ID[w.id] = w
+	end
+	local warCooldown = setmetatable({}, { __mode = "k" }) -- 서버가 켜진 동안만 기억하는 의뢰 재도전 대기
+
 	-- 스킬을 쓸 수 없는 이유 (쓸 수 있으면 nil)
 	local function skillBlock(state, s)
 		if s.techReq and not state.tech[s.techReq] then
@@ -121,9 +137,12 @@ return function(D, S)
 	end
 
 	-- 사략선과의 해전. deferred면 결과를 바로 적용하지 않고 보류한다 (도망 가능).
-	local function encounter(state, ctx, msgs, deferred)
-		local enemyLv = enemyLevel(state, ctx.rng)
+	local function encounter(state, ctx, msgs, deferred, wave)
+		local enemyLv = math.max(1, enemyLevel(state, ctx.rng) + (if wave then wave.lvOffset or 0 else 0))
 		local enemy = D.Combat.pirate(enemyLv, ctx.rng)
+		if wave and wave.name then
+			enemy.name = wave.name
+		end
 		local me = playerFighter(state)
 		local result = D.Combat.run(me, enemy, ctx.rng)
 		-- 카드 대결: 시드와 두 배의 능력을 클라이언트에 알려 주고, 승패는 카드 대결 기록을 서버가 다시 돌려 정한다.
@@ -139,6 +158,7 @@ return function(D, S)
 			winner = result.winner, reason = result.reason, reward = D.Combat.pirateReward(enemyLv),
 			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
 			startHull = state.ship.hull, startCrew = state.ship.crew, medic = me.cardSupport.medic,
+			job = if wave then wave.job else nil,
 		}
 		-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다 (카드 대결은 주점의 지식 카드 배틀에서만 한다)
 		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
@@ -150,7 +170,7 @@ return function(D, S)
 			pb.sim = { me = keep(me), foe = keep(enemy), done = false }
 			state.lastBattle.sim = { me = pb.sim.me, foe = pb.sim.foe }
 		end
-		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
+		table.insert(msgs, if wave then string.format("적 '%s'(Lv.%d)와 교전!", enemy.name, enemyLv) else string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
 		if #me.cardSupport.lines > 0 then
 			table.insert(msgs, "카드 지원: " .. table.concat(me.cardSupport.lines, " · "))
 		end
@@ -176,6 +196,7 @@ return function(D, S)
 			if ctx.rng() < pb.fleeChance then
 				state.lastBattle.fled = true
 				state.lastBattle.pending = false
+				state.war = nil
 				state.ship.hull = math.max(1, math.floor(state.ship.hull * 0.9))
 				table.insert(msgs, "도망 성공! 추격을 따돌렸다 (선체 약간 손상)")
 				return true, table.concat(msgs, "\n")
@@ -188,6 +209,32 @@ return function(D, S)
 			S.Boss.settlePending(state, pb, msgs)
 		else
 			settle(state, msgs, pb)
+			if pb.job and pb.winner == "a" then
+				S.Tavern.settleHunt(state, pb.job, msgs)
+			end
+			-- 대규모 해전 의뢰 중이면 다음 파도로 잇거나 작전을 끝낸다
+			local war = state.war
+			local def = war and WAR_BY_ID[war.id]
+			if def then
+				if pb.winner == "a" then
+					if war.wave < #def.waves then
+						war.wave += 1
+						war.next = true
+						table.insert(msgs, string.format("작전 %d/%d파도 돌파! 다음 적이 나타난다", war.wave - 1, #def.waves))
+					else
+						state.coins += def.coins
+						state.fame += def.fame
+						S.State.gainXp(state, "battle", def.xp, msgs)
+						warCooldown[state] = warCooldown[state] or {}
+						warCooldown[state][def.id] = state.day
+						state.war = nil
+						table.insert(msgs, string.format("작전 성공! '%s' 완수 — 보상 %d코인, 명성 +%d", def.name, def.coins, def.fame))
+					end
+				else
+					state.war = nil
+					table.insert(msgs, string.format("작전 실패. '%s'는 다음 기회에", def.name))
+				end
+			end
 		end
 		return true, table.concat(msgs, "\n")
 	end
@@ -196,6 +243,7 @@ return function(D, S)
 		if state.pendingBattle then
 			resolve(state, ctx, false)
 		end
+		state.war = nil -- 따로 출격하면 대규모 해전 작전은 접는다
 		local def = S.State.shipDef(state)
 		if state.ship.hull < def.hull * 0.3 then
 			return false, "선체가 너무 손상됐어요. 수리가 필요해요"
@@ -261,6 +309,69 @@ return function(D, S)
 			lb.winner, lb.reason, lb.cardRounds = pb.winner, pb.reason, { me = took, foe = lost }
 		end
 		return true, ""
+	end
+
+	local function warBlock(state, def)
+		if state.careers.battle.level < def.minLevel then
+			return string.format("전투 Lv.%d 필요", def.minLevel)
+		end
+		local last = warCooldown[state] and warCooldown[state][def.id]
+		if last and state.day - last < def.cooldown then
+			return string.format("%d일 뒤에 다시 받을 수 있어요", def.cooldown - (state.day - last))
+		end
+		if state.ship.hull < S.State.shipDef(state).hull * 0.6 then
+			return "선체를 수리한 뒤 나서세요 (60% 이상 필요)"
+		end
+		return nil
+	end
+
+	function handlers.WarStart(state, p, ctx)
+		local def = type(p) == "table" and type(p.id) == "string" and WAR_BY_ID[p.id]
+		if not def then
+			return false, "알 수 없는 의뢰예요"
+		end
+		if state.pendingBattle then
+			resolve(state, ctx, false)
+		end
+		if state.war then
+			return false, "이미 작전 중이에요"
+		end
+		local block = warBlock(state, def)
+		if block then
+			return false, block
+		end
+		state.war = { id = def.id, wave = 1 }
+		local msgs = { string.format("대규모 해전 의뢰 '%s' 출전! (1/%d파도)", def.name, #def.waves) }
+		S.State.advanceDays(state, 1)
+		encounter(state, ctx, msgs, true, def.waves[1])
+		return true, table.concat(msgs, "\n")
+	end
+
+	function handlers.WarNext(state, _p, ctx)
+		local war = state.war
+		local def = war and WAR_BY_ID[war.id]
+		if not def or not war.next or state.pendingBattle then
+			return false, "이어갈 작전이 없어요"
+		end
+		if state.ship.hull < S.State.shipDef(state).hull * 0.25 then
+			state.war = nil
+			return false, "선체가 너무 상해 작전에서 후퇴했어요. 수리 후 다시 도전하세요"
+		end
+		war.next = false
+		local msgs = { string.format("작전 계속! (%d/%d파도)", war.wave, #def.waves) }
+		encounter(state, ctx, msgs, true, def.waves[war.wave])
+		return true, table.concat(msgs, "\n")
+	end
+
+	-- 화면에 보여 줄 의뢰 목록과 진행 상황
+	local function warView(state)
+		local list = {}
+		for _, w in WARS do
+			table.insert(list, { id = w.id, name = w.name, summary = w.summary, waves = #w.waves, coins = w.coins, fame = w.fame, minLevel = w.minLevel, blocked = warBlock(state, w) })
+		end
+		local war = state.war
+		local def = war and WAR_BY_ID[war.id]
+		return list, if def then { id = def.id, name = def.name, wave = war.wave, total = #def.waves, next = war.next == true } else nil
 	end
 
 	-- 실시간 해전 결과: 클라이언트가 직접 싸운 결과를 보내오면 서버는 그 시간에 낼 수 있는 피해인지만 확인한다.
@@ -385,5 +496,5 @@ return function(D, S)
 		return true, "자동스킬 우선순위를 저장했어요"
 	end
 
-	return { handlers = handlers, deckCache = deckCache, deckFaction = deckFaction, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
+	return { warView = warView, handlers = handlers, deckCache = deckCache, deckFaction = deckFaction, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
 end
