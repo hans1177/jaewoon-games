@@ -1,80 +1,20 @@
 {
- "sourceRevision": "5d9d348e4cc40f00654626fe973fcc9de0b8e902",
+ "sourceRevision": "81ae83041713def81956a10fd2a80c5e7f504905",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "tab\ntext"
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "closed 2\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
-  },
-  {
-   "step": 13,
-   "ctx": "Client",
-   "out": "HELM true scene=false \ntext"
-  },
-  {
-   "step": 14,
-   "capture": "h01",
+   "step": 2,
+   "capture": "ap_game",
    "files": 1
   },
   {
-   "step": 16,
+   "step": 4,
    "ctx": "Client",
-   "out": "HELM true scene=false \ntext"
-  },
-  {
-   "step": 17,
-   "capture": "h02",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "HELM true scene=false \ntext"
-  },
-  {
-   "step": 20,
-   "capture": "h03",
-   "files": 1
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "HELM true scene=false \ntext"
-  },
-  {
-   "step": 23,
-   "capture": "h04",
-   "files": 1
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -89,13 +29,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
