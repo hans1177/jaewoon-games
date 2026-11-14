@@ -4,33 +4,24 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:71,People:27,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "{\"palette\":{\"visible\":3579,\"teal\":0,\"dark\":9,\"white\":41},\"sunk\":[\"rugrounded\",\"chicken\"],\"paletteTop\":[[\"white Model\",18],[\"white sheep\",12],[\"dark Villager\",9],[\"white Part\",7],[\"white chicken\",4]],\"perf\":{\"shadowCasters\":2516,\"models\":3516,\"meshParts\":3169,\"parts\":3675},\"holes\":{\"missing\":0,\"checked\":1230,\"sample\":[]},\"floating\":[\"Villager:y116@-3,0\",\"Villager:y116@2,-1\"]}\ntext"
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.19\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.19\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
