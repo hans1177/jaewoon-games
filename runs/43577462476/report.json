@@ -1,5 +1,5 @@
 {
- "sourceRevision": "83e6f291f94f9cb91ce32590d184f4fe25da75ad",
+ "sourceRevision": "43c2ee49336fdd2d82c4fcd1d127ecf36043e4cd",
  "log": [
   {
    "step": 1,
@@ -29,42 +29,12 @@
   {
    "step": 10,
    "ctx": "Client",
-   "out": "SAIL smyrna\ntext"
+   "out": "SHIP Workspace.PortScene.Ship ext=13.574028015136719, 28.175373077392578, 24.885713577270508 bboxpos=50.27981948852539, 13.052627563476562, 16.05532455444336 pivlook=-0.9998028874397278, 0.0198544729501009, 4.370277295606684e-08 bbxlook=-0.9998028874397278, 0.0198544729501009, 4.370277295606684e-08\ntext"
   },
   {
    "step": 12,
-   "capture": "s1",
+   "capture": "top",
    "files": 1
-  },
-  {
-   "step": 14,
-   "capture": "s2",
-   "files": 1
-  },
-  {
-   "step": 16,
-   "capture": "s3",
-   "files": 1
-  },
-  {
-   "step": 18,
-   "capture": "s4",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "capture": "s5",
-   "files": 1
-  },
-  {
-   "step": 22,
-   "capture": "s6",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -79,13 +49,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 13,
+  "completedSteps": 13,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
