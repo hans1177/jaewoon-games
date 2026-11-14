@@ -264,5 +264,22 @@ do
 	check("실시간 해전: 같은 해전을 두 번 보고할 수 없다", again2 == false)
 end
 
+-- 보스전도 실시간: 도전하면 정산이 보류되고, 보고가 확인되면 그 결과로 정산한다
+do
+	local stB = S.State.new("england", 1700)
+	stB.careers.battle.level = 10
+	stB.ship.id = "galleon"
+	local defB = S.State.shipDef(stB)
+	stB.ship.hull, stB.ship.crew = defB.hull, defB.crew
+	local coins0 = stB.coins
+	local okB = Registry.handlers.ChallengeBoss(stB, { bossId = "sea_serpent" }, ctx)
+	check("보스 실시간: 도전하면 정산이 보류된다", okB == true and stB.pendingBattle ~= nil and stB.pendingBattle.bossId == "sea_serpent" and stB.pendingBattle.sim ~= nil and stB.coins == coins0)
+	local simB = stB.pendingBattle.sim
+	local reportOk = Registry.handlers.NavalResult(stB, { winner = "b", reason = "sunk", elapsed = 120, meHull = 0, foeHull = simB.foe.hull, meCrew = simB.me.crew, foeCrew = simB.foe.crew })
+	check("보스 실시간: 패배 보고가 받아들여진다", reportOk == true and stB.pendingBattle.winner == "b")
+	local resolved = Registry.handlers.ResolveBattle(stB, {}, ctx)
+	check("보스 실시간: 정산이 끝나면 보류가 풀린다", resolved == true and stB.pendingBattle == nil and stB.stats.battlesLost >= 1)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
