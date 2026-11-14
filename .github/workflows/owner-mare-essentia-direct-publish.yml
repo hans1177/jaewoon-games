@@ -13,6 +13,11 @@ on:
       - 'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'
       - 'roblox-games/mare-essentia/src/**'
       - 'roblox-games/mare-essentia/assets-registered.json'
+  # 자산 등록은 GitHub Actions의 GITHUB_TOKEN 커밋으로 push 이벤트를 재발생시키지 않으므로,
+  # 등록 워크플로 성공 완료 뒤 현재 main의 최신 AssetIds로 게시를 이어간다.
+  workflow_run:
+    workflows: ["Owner Mare Essentia Register Assets"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       universe_id:
@@ -44,6 +49,7 @@ env:
 
 jobs:
   publish:
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'schedule') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
