@@ -964,7 +964,7 @@ function NavalBattle.play(opts)
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 0.45 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 0.3 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -972,7 +972,7 @@ function NavalBattle.play(opts)
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if opts.cardOnly then 0.6 elseif cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if opts.cardOnly then 0.8 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -996,8 +996,8 @@ function NavalBattle.play(opts)
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = UDim2.fromScale(0.2, 0.42)
-		battleLine.Size = UDim2.fromScale(0.78, 0.004)
+		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, 0.42)
+		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -1031,13 +1031,13 @@ function NavalBattle.play(opts)
 		info.TextTruncate = Enum.TextTruncate.AtEnd
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(0.2, 0.14)
-		boardFrame.Size = UDim2.fromScale(0.78, 0.56)
+		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, 0.14)
+		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
-		panel.Position = UDim2.fromScale(0.02, 0.14)
+		panel.Position = UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
 		panel.Size = UDim2.fromScale(0.17, 0.56)
 		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
@@ -1132,7 +1132,7 @@ function NavalBattle.play(opts)
 		handTray.Position = UDim2.fromScale(0.015, 0.715)
 		handTray.Size = UDim2.fromScale(0.75, 0.275)
 		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
-		handTray.BackgroundTransparency = 0.27
+		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
 		handTray.Parent = g
 		local trayStroke = frameEdge(handTray, Color3.fromRGB(203, 157, 86), 8)
@@ -1795,7 +1795,7 @@ function NavalBattle.play(opts)
 				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
 				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
 				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
-				rf.BackgroundTransparency = if opts.cardOnly then 0.08 elseif cfg then 0.53 else 0.32
+				rf.BackgroundTransparency = if opts.cardOnly then 0.82 elseif cfg then 0.53 else 0.32
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
 				local laneGradient = Instance.new("UIGradient")
@@ -1811,7 +1811,7 @@ function NavalBattle.play(opts)
 				laneGradient.Rotation = 0
 				laneGradient.Parent = rf
 				local laneStroke = frameEdge(rf, Color3.fromRGB(188, 142, 79), 4)
-				laneStroke.Transparency = 0.14
+				laneStroke.Transparency = if opts.cardOnly then 0.6 else 0.14
 				laneStroke.Thickness = 1
 				local laneAccent = Instance.new("Frame")
 				laneAccent.Name = "SideLaneAccent"
