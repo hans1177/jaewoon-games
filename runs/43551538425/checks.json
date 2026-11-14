@@ -1,13 +1,13 @@
 {
-  "runId": "43546520280",
+  "runId": "43551538425",
   "kind": "studio",
-  "sourceRevision": "9cba7a598a0ab58ada7c66bd7be88ac1b36bd727",
+  "sourceRevision": "701d80c6194367806404708b2906e791d5ff0a97",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 6,
-    "completedSteps": 6,
+    "plannedSteps": 4,
+    "completedSteps": 4,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
@@ -39,43 +39,29 @@
     },
     {
       "step": 2,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 3,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 4,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 5,
+      "step": 3,
       "type": "capture",
-      "name": "metrics_end",
+      "name": "imgsize",
       "status": "PASS",
       "screenshots": [
-        "metrics_end-0.jpg"
+        "imgsize-0.jpg"
       ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "metrics_end-0.jpg",
-      "sha256": "55fe176f20f1dec8bf5c055ee141623015b88d159b4cb7e169d7b87f31f6fc58",
+      "name": "imgsize-0.jpg",
+      "sha256": "53064dd6decf39bea6925b6a5a776e3ef0e419fa6e678824de9b61c2f0c974b1",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43546520280/metrics_end-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43551538425/imgsize-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43545890247"
+  "previousRunId": "43550002309"
 }
