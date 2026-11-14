@@ -3360,7 +3360,7 @@ do
 	end
 	-- 문화권 덱: 다섯 문화권의 덱과 고유 능력
 	do
-		check("문화권: 다섯 덱이 모두 있다", #BC.FactionOrder == 5)
+		check("문화권: 여섯 덱(다섯 대륙 + 미지의 땅)이 모두 있다", #BC.FactionOrder == 6)
 		for _, f in BC.FactionOrder do
 			local deck = BC.playerDeck({}, math.random, f)
 			check("문화권 덱 크기: " .. f, #deck >= 17)
@@ -3377,6 +3377,23 @@ do
 		check("신대륙: 점수가 같으면 판을 이긴다", mt.wins.me == 1 and mt.wins.foe == 0)
 		local me = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "east_asia", "europe")
 		check("동아시아: 첫 판 선공", me.turn == "me")
+		-- 미지의 땅: 잃어버린 문명 + 전설 생물 30장, 판을 지면 두 장 더 뽑는다
+		check("미지의 땅: 카드 30장이 모두 정의돼 있다", (function()
+			for _, id in BC.Factions.lost.roster do
+				if not (BC.Units[id] or BC.Specials[id]) then return false end
+			end
+			return #BC.Factions.lost.roster == 30
+		end)())
+		check("미지의 땅: 아틀란티스·크라켄·용·불사조는 영웅이다", BC.Units.lo_01.hero and BC.Units.lo_14.hero and BC.Units.lo_15.hero and BC.Units.lo_16.hero)
+		local ml = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "lost", "europe")
+		ml.turn = "me"
+		table.insert(ml.rows.foe.melee, { id = "b", name = "b", row = "melee", power = 5 })
+		ml.hand.me, ml.hand.foe = { { id = "z", name = "z", row = "melee", power = 1 } }, { { id = "y", name = "y", row = "melee", power = 1 } }
+		ml.deck.me = { { id = "d1", name = "d1", row = "melee", power = 1 }, { id = "d2", name = "d2", row = "melee", power = 1 }, { id = "d3", name = "d3", row = "melee", power = 1 } }
+		ml.deck.foe = { { id = "e1", name = "e1", row = "melee", power = 1 }, { id = "e2", name = "e2", row = "melee", power = 1 } }
+		BC.pass(ml, "me")
+		BC.pass(ml, "foe")
+		check("미지의 땅: 판을 지면 카드를 1+2장 뽑는다", #ml.hand.me == 1 + 3 and #ml.hand.foe >= 1 + 2)
 	end
 	-- 카드 수집책: 시작 덱·획득·강화(동은금)·덱 규칙·저장 정리
 	do
@@ -3599,11 +3616,11 @@ do
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end
 
--- [다국어 지역 카드] 원문/영어판은 같은 150개 ID를 쓰며 5덱 30장 구성이 유지된다.
+-- [다국어 지역 카드] 원문/영어판은 같은 180개 ID를 쓰며 6덱 30장 구성이 유지된다.
 do
 	local BC = D.BoardingCards
 	local total, broken = 0, 0
-	for _, prefix in { "eu", "ea", "me", "nw", "af" } do
+	for _, prefix in { "eu", "ea", "me", "nw", "af", "lo" } do
 		local count = 0
 		for index = 1, 30 do
 			local id = string.format("%s_%02d", prefix, index)
@@ -3623,7 +3640,7 @@ do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("150장 영어판·한국어판 카드 연결 보존", total == 150 and englishCount == 150 and broken == 0,
+	check("180장 영어판·한국어판 카드 연결 보존", total == 180 and englishCount == 180 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
