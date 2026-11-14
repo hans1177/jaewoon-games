@@ -3518,6 +3518,15 @@ function PortScene.build(info, onFacility)
 			if found then break end
 		end
 	end)
+	-- 성능: 작은 장식 부품(가장 긴 변 4칸 미만)은 그림자를 만들지 않는다. 큰 건물·나무 그림자는 그대로 둔다.
+	for _, d in folder:GetDescendants() do
+		if d:IsA("BasePart") and d.CastShadow then
+			local sz = d.Size
+			if math.max(sz.X, sz.Y, sz.Z) < 4 then
+				d.CastShadow = false
+			end
+		end
+	end
 	return { folder = folder, spawn = CFrame.new(spawnPos) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
