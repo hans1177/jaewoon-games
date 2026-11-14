@@ -1,80 +1,170 @@
 {
- "sourceRevision": "b964ed60d013b59cb7273c4413dc98619a569433",
+ "sourceRevision": "5c3deba2f096a500c31d3b6e6829135630efd91e",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "INTRO name=true comp=true\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 7,
+   "step": 6,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "DEV Tab trade\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "f_trade",
+   "files": 1
   },
   {
    "step": 9,
    "ctx": "Client",
-   "out": "killed 1\ntext"
+   "out": "CHK deck view=1136x380 texts=95 issues=0\ntext"
   },
   {
    "step": 10,
    "ctx": "Client",
-   "out": "closed 2\ntext"
+   "out": "DEVRESULT Tab:trade true nil\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "killed=true\ntext"
   },
   {
    "step": 12,
    "ctx": "Client",
-   "out": "SAIL\ntext"
+   "out": "DEV Tab route\ntext"
   },
   {
    "step": 14,
-   "ctx": "Client",
-   "out": "RING res=false:너무 빨라요 scene=false \ntext"
+   "capture": "f_route",
+   "files": 1
   },
   {
    "step": 15,
-   "capture": "r01",
-   "files": 1
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=580 issues=0\ntext"
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:route true nil\ntext"
   },
   {
    "step": 17,
    "ctx": "Client",
-   "out": "RING res=false:너무 빨라요 scene=false \ntext"
+   "out": "killed=false\ntext"
   },
   {
    "step": 18,
-   "capture": "r02",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEV Tab yard\ntext"
   },
   {
    "step": 20,
-   "ctx": "Client",
-   "out": "RING res=false:너무 빨라요 scene=false \ntext"
+   "capture": "f_yard",
+   "files": 1
   },
   {
    "step": 21,
-   "capture": "r03",
-   "files": 1
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=297 issues=0\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:yard true nil\ntext"
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "RING res=false:너무 빨라요 scene=false \ntext"
+   "out": "killed=false\ntext"
   },
   {
    "step": 24,
-   "capture": "r04",
+   "ctx": "Client",
+   "out": "DEV Tab quest\ntext"
+  },
+  {
+   "step": 26,
+   "capture": "f_quest",
    "files": 1
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=225 issues=0\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:quest true nil\ntext"
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "DEV Tab codex\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "f_codex",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=552 issues=0\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:codex true nil\ntext"
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "DEV Tab status\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "f_status",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=158 issues=0\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:status true nil\ntext"
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -89,13 +179,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 25,
-  "completedSteps": 25,
+  "plannedSteps": 42,
+  "completedSteps": 42,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
