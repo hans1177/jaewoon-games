@@ -1090,7 +1090,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 0.3 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 0.9 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -1427,6 +1427,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			f.Size = UDim2.new(0, w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
+			if opts.cardOnly then
+				-- 줄 높이에 맞춰 커지는 세로 카드(퀜트 느낌)
+				local chipRatio = Instance.new("UIAspectRatioConstraint")
+				chipRatio.AspectRatio = 0.74
+				chipRatio.DominantAxis = Enum.DominantAxis.Height
+				chipRatio.Parent = f
+			end
 			f.Parent = parent
 			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
 			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
@@ -2010,10 +2017,35 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
 				local cards = Instance.new("Frame")
 				cards.Position = UDim2.fromOffset(104, 3)
-				cards.Size = UDim2.new(1, -108, 1, -6)
+				cards.Size = UDim2.new(1, if opts.cardOnly then -160 else -108, 1, -6)
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
 				rowTargets[side][row] = cards
+				if opts.cardOnly then
+					-- 줄 점수 원형 배지 (퀜트식)
+					local badge = Instance.new("TextLabel")
+					badge.Name = "RowScoreBadge"
+					badge.AnchorPoint = Vector2.new(1, 0.5)
+					badge.Position = UDim2.new(1, -6, 0.5, 0)
+					badge.Size = UDim2.fromOffset(44, 44)
+					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
+					badge.BorderSizePixel = 0
+					badge.Font = Enum.Font.GothamBlack
+					badge.TextScaled = true
+					badge.TextColor3 = Color3.fromRGB(255, 232, 170)
+					badge.Text = tostring(BC.rowTotal(m, side, row))
+					badge.Parent = rf
+					local bc = Instance.new("UICorner")
+					bc.CornerRadius = UDim.new(1, 0)
+					bc.Parent = badge
+					local bs = Instance.new("UIStroke")
+					bs.Color = Color3.fromRGB(203, 157, 86)
+					bs.Thickness = 2
+					bs.Parent = badge
+					local bt = Instance.new("UITextSizeConstraint")
+					bt.MaxTextSize = 24
+					bt.Parent = badge
+				end
 				local lay = Instance.new("UIListLayout")
 				lay.FillDirection = Enum.FillDirection.Horizontal
 				lay.Padding = UDim.new(0, 4)
@@ -2203,7 +2235,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local mid = (#cards + 1) / 2
 				for idx, ch in cards do
 					if ch ~= selected then
-						ch.Rotation = math.clamp((idx - mid) * 2.2, -9, 9)
+						ch.Rotation = if opts.cardOnly then 0 else math.clamp((idx - mid) * 2.2, -9, 9)
 					end
 				end
 			end
