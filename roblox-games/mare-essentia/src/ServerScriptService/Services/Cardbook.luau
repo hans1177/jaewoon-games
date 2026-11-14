@@ -147,6 +147,41 @@ return function(D, S)
 		return true, "퍼즐 해결! " .. msgs[1]
 	end
 
+	-- 주점 카드 대결: 내 덱 vs 상대 덱. 시드는 서버가 정하고, 승패는 행동 기록을 서버가 다시 돌려 확인한다.
+	-- 하루 3승까지 카드 보상, 그 뒤엔 코인 조금.
+	local DUEL_CARD_WINS = 3
+	function handlers.CardDuelStart(state, _p, ctx)
+		local book = C.get(state)
+		book.duelSeed = math.floor(((ctx and ctx.rng) or math.random)() * 1000000) + 1
+		return true, ""
+	end
+
+	function handlers.CardDuelEnd(state, p)
+		local book = C.get(state)
+		local seed = book.duelSeed
+		local actions = type(p) == "table" and p.actions
+		if not seed or type(actions) ~= "table" or #actions > 200 then return false, "진행 중인 카드 대결이 없어요" end
+		book.duelSeed = nil
+		local B = D.BoardingCards
+		local r = B.replay("boarding", seed, { deckCards = S.Battle.deckCache[state], faction = S.Battle.deckFaction[state], book = C.deckSpec(state) }, {}, actions)
+		if not r then return false, "카드 기록이 규칙에 맞지 않아요" end
+		if r.winner ~= "me" then
+			return false, if r.winner == "foe" then "졌어요. 덱을 고쳐서 다시 도전!" else "비겼어요"
+		end
+		local day = math.floor(os.time() / 86400)
+		if book.duelDay ~= day then
+			book.duelDay, book.duelWins = day, 0
+		end
+		book.duelWins += 1
+		local msgs = {}
+		if book.duelWins <= DUEL_CARD_WINS then
+			C.reward(state, "explore", msgs)
+			return true, string.format("카드 대결 승리! (오늘 %d/%d) %s", book.duelWins, DUEL_CARD_WINS, msgs[1])
+		end
+		state.coins += 30
+		return true, "카드 대결 승리! 오늘 카드 보상은 끝났어요 (+30코인)"
+	end
+
 	-- 보물상자: 코인 대신 카드 3장 중 1장
 	function C.chest(state, msgs)
 		C.offer(state, "chest", msgs)

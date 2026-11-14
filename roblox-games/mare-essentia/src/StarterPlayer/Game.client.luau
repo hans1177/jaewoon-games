@@ -1858,7 +1858,7 @@ do
 				}, 74)
 				summary.LayoutOrder = 2
 				local bk = bookOf()
-				local function playCardOnly(title, build, action, payload)
+				local function playCardOnly(title, build, action, payload, cardCfg)
 					if inField then return end
 					inField = true
 					if open then
@@ -1870,7 +1870,7 @@ do
 						shipId = view and view.ship and view.ship.id,
 						enemyName = title,
 						cardOnly = true,
-						card = { prebuilt = build, title = title },
+						card = cardCfg or { prebuilt = build, title = title },
 						deck = view and view.deck,
 						onCards = function(acts)
 							payload.actions = acts
@@ -1903,6 +1903,16 @@ do
 						playCardOnly(string.format("해전 퍼즐 (%d장 이내로 역전!)", limit or 0), function() return (BC.puzzle(day)) end, "CardPuzzle", { day = day })
 					end,
 				}
+				local duel = mkRow(builder, string.format("카드 대결 · 내 덱 vs 상대 덱 (오늘 카드 보상 %d회 남음)", (view.cardbook and view.cardbook.duelLeft) or 0), "지금 짠 덱으로 겨뤄요. 이기면 지식 카드를 얻어요. 덱을 먼저 저장하세요", {
+					{ text = "대결", color = COLORS.red, enabled = okDeck, onClick = function()
+						local r = call("CardDuelStart")
+						local seed = view and view.cardbook and view.cardbook.duelSeed
+						if r and r.ok and seed then
+							playCardOnly("카드 대결", nil, "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+						end
+					end },
+				}, 74)
+				duel.LayoutOrder = 3
 				local train = mkRow(builder, "연습전 · 오늘의 해전 퍼즐", "연습전: 정해진 패로 규칙을 배우는 첫 판 / 퍼즐: 하루 하나, 적은 장수로 역전", {
 					{ text = "연습전", color = COLORS.green, onClick = function()
 						playCardOnly("연습전", function() return (BC.puzzle(0)) end, "CardPractice", {})

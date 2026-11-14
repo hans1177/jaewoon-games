@@ -227,6 +227,13 @@ function NavalBattle.play(opts)
 	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
+	if opts.cardOnly then
+		-- 주점 카드 대결: 바다가 아니라 나무 탁자 위에서 한다 (배는 숨기고 그 자리에 탁자 판을 깐다)
+		sea.Material = Enum.Material.Wood
+		sea.Color = Color3.fromRGB(58, 40, 26)
+		sea.Transparency = 0
+		sea.Reflectance = 0
+	end
 
 	-- 배들: 위치, 방향(θ), 속도를 우리가 직접 움직인다
 	local function newShip(asset, length, pos, theta, tint)
@@ -2311,6 +2318,16 @@ function NavalBattle.play(opts)
 		local box, size = sh.model:GetBoundingBox()
 		local deckY = box.Position.Y - size.Y / 2 + size.Y * 0.3
 		local along = size.X >= size.Z
+		if opts.cardOnly and not sh.tabled then
+			sh.tabled = true
+			for _, d in sh.model:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Transparency = 1
+				end
+			end
+			local slab = part(folder, Vector3.new(size.X + 6, 1.4, size.Z + 6), CFrame.new(box.Position.X, deckY - 0.7, box.Position.Z), Color3.fromRGB(122, 84, 52), Enum.Material.WoodPlanks)
+			slab.Name = "TavernTable"
+		end
 		local pivot = sh.model:GetPivot()
 		for i = 1, 4 do
 			local seed = i * 17 + (if side == "me" then 1 else 99)
@@ -2542,6 +2559,16 @@ function NavalBattle.play(opts)
 				if opts.card and not cardStarted and (d < 95 or opts.cardOnly) then
 					cardStarted, cardBusy = true, true
 					hint.Text = ""
+					if opts.cardOnly then
+						-- 순수 카드 대결: 해전 표시(체력줄·바람·조타·함대칸)는 모두 숨긴다
+						for _, c in gui:GetChildren() do
+							pcall(function()
+								c.Visible = false
+							end)
+						end
+						rangeRing.Transparency = 1
+						rangeLabel.Visible = false
+					end
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"
 					shake = 1.6
 					Sfx.play("sfx_horn")
@@ -2711,7 +2738,7 @@ function NavalBattle.play(opts)
 			local dd = (foe.pos - me.pos).Magnitude
 			local inRange = dd < cannon.range
 			rangeRing.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
-			rangeRing.Transparency = if inRange then 0.93 else 0.82
+			rangeRing.Transparency = if opts.cardOnly then 1 elseif inRange then 0.93 else 0.82
 			rangeLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
@@ -2758,12 +2785,12 @@ function NavalBattle.play(opts)
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 74 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		cam.FieldOfView = 84 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (58 + dist * 0.3) + Vector3.new(0, 38 + dist * 0.2, 0)
+		local camPos = ORIGIN + me.pos - f * (74 + dist * 0.4) + Vector3.new(0, 46 + dist * 0.25, 0)
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
