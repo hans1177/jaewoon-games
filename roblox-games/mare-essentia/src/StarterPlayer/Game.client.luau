@@ -145,6 +145,7 @@ local TABS = {
 	{ id = "status", name = "상태" },
 	{ id = "harbor", name = "항구" },
 	{ id = "crew", name = "동료" },
+	{ id = "recruit", name = "동료" },
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
@@ -159,7 +160,7 @@ local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "explore", "battle", "gwent" } },
+	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "recruit", "explore", "battle", "gwent" } },
 	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
@@ -1051,7 +1052,8 @@ local COMPANION_MODEL = {
 -- 나이와 직업이 다른 인물을 사용한다. 나라·역할이 맞지 않으면 기존 인물 모델을 보존한다.
 -- 새 시설 NPC 초상화는 등록·권한 승인된 ID가 있을 때만 사용한다.
 -- 등록 전에는 기존 초상화 시트를 그대로 표시하므로 화면이 비지 않는다.
-local PORTRAIT_ATLAS = AssetIds["Portraits/npcs_new"] or AssetIds["Portraits/characters"]
+-- 흑백 스케치 시트(npcs_new·characters)는 더 이상 쓰지 않는다. 색 있는 시설 초상(FACILITY_ATLAS)과 3D 인물 모델만 쓴다.
+local PORTRAIT_ATLAS: number? = nil
 local PORTRAIT_SIZE = Vector2.new(256, 336)
 local PORTRAIT_TILE = {
 	merchant = Vector2.new(0, 0),
@@ -1167,7 +1169,7 @@ local HERO_SIZE = Vector2.new(256, 336)
 -- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
 -- 외형이 안 맞는 국가 주인공은 기존에 등록된 고유 초상화를 보존한다.
 local HERO_PERIOD_ATLAS = AssetIds["Portraits/heroes_period"]
-local HERO_NEW_ATLAS = HERO_PERIOD_ATLAS or AssetIds["Portraits/heroes_new"]
+local HERO_NEW_ATLAS = HERO_PERIOD_ATLAS -- 흑백 스케치 시트(heroes_new)는 쓰지 않는다
 local HERO_NEW_SIZE = Vector2.new(256, 336)
 local HERO_NEW_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너: 해류 관측 학자
@@ -1200,7 +1202,8 @@ function H.heroPortraitAsset(nationId)
 	if oldTile then
 		return HERO_NEW_ATLAS, oldTile, HERO_NEW_SIZE
 	end
-	return HERO_ATLAS, tile, HERO_SIZE
+	-- 색 있는 시트에 없는 나라는 흑백 시트(heroes)로 대신하지 않고 비워 둔다(호출하는 쪽이 모델·다른 초상을 쓴다).
+	return nil, nil, nil
 end
 end
 
@@ -1595,7 +1598,7 @@ local HUD_MENU_TINT = {
 }
 local HUD_MENU_ART = {
 	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
-	view = "view", trade = "trade", crew = "harbor", route = "route",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", route = "route",
 	journal = "codex", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
@@ -2666,7 +2669,6 @@ end
 
 local playStory
 local renderTitle
-local sailManual = false
 local epilogueMessage = nil
 
 local function sail(portId)
@@ -2862,11 +2864,13 @@ local function confirmSail(r)
 	info.Parent = card
 	local modeBtn
 	local function paintMode()
-		modeBtn.Text = if sailManual then "항해 방식: 직접 항해 (바람 띠 따라가기)" else "항해 방식: 자동 항해"
-		modeBtn.BackgroundColor3 = if sailManual then COLORS.gold else COLORS.blue
+		-- 항해 장면은 ManualHelm 속성을 읽는다. 이 버튼도 같은 속성을 바꿔야 실제로 수동 항해가 된다.
+		local manualOn = player:GetAttribute("ManualHelm") == true
+		modeBtn.Text = if manualOn then "항해 방식: 직접 조종 (스틱·WASD)" else "항해 방식: 자동 항해"
+		modeBtn.BackgroundColor3 = if manualOn then COLORS.gold else COLORS.blue
 	end
 	modeBtn = mkButton(card, "", COLORS.blue, UDim2.new(1, -28, 0, 34), function()
-		sailManual = not sailManual
+		player:SetAttribute("ManualHelm", not (player:GetAttribute("ManualHelm") == true))
 		paintMode()
 	end, true)
 	modeBtn.Position = UDim2.fromOffset(14, 182)
@@ -3294,8 +3298,8 @@ function playStory(ev)
 		tile = nil
 		tpl = nil
 	end
-	local storyImageId = if PORTRAIT_ATLAS and tile then PORTRAIT_ATLAS
-		elseif tile == "merchant" then AssetIds["Portraits/merchant"] else nil
+	-- 흑백 스케치 시트(npcs_new·characters·merchant)는 쓰지 않는다. 색이 있는 시설 초상만 쓰고, 없으면 아래 3D 인물 모델로 대신한다.
+	local storyImageId = if tile and FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS else nil
 	if storyImageId then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "NpcPortrait"
@@ -3306,8 +3310,8 @@ function playStory(ev)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
 		photo.Image = "rbxassetid://" .. tostring(storyImageId)
-		photo.ImageRectOffset = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_TILE[tile] else Vector2.zero
-		photo.ImageRectSize = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
+		photo.ImageRectOffset = FACILITY_TILE[tile]
+		photo.ImageRectSize = PORTRAIT_SIZE
 		photo.Parent = picture
 	elseif cport then
 		-- 그린 초상을 이미 올렸다
@@ -3882,33 +3886,56 @@ function RENDERERS.harbor()
 		withIcon(mrow, "Relics", "map-rolled", nil, 52)
 		return mrow
 	end)
-	add(function() return mkHeader(content, "주점 동료 (직능)") end)
+end
+
+-- 주점 '동료' 탭: 영입할 수 있는 동료를 위에 모아 표시한다
+function RENDERERS.recruit()
+	local list = {}
+	local open = 0
 	for _, c in view.companions.list do
 		if c.role then
-			add(function()
-				local sub = string.format("%s\n영입 %d코인 · 호감도 %d%s", c.summary, c.fee, c.affinity, if c.blocked and not c.joined then " · " .. c.blocked else "")
-				local btn = if c.joined
-					then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
-					else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-				local btns = { btn }
-				if c.joined then
-					table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
-				end
-				local row = mkRow(content, string.format("[%s] %s%s", c.role, c.name, if c.joined then "  ✔" else ""), sub, btns, 84)
-				local model = COMPANION_MODEL[c.id]
-				local scholarId = string.match(c.id, "^c_(.+)$")
-				-- 실존 학자는 검증되어 등록된 당대 초상화가 있으면 모델보다 우선한다.
-				local portrait = COMPANION_PORTRAIT[c.id]
-				if portrait then
-					withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
-				elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
-					withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
-				elseif model then
-					withIcon(row, "People", model, nil, 56)
-				end
-				return row
-			end)
+			table.insert(list, c)
+			if not c.joined and c.blocked == nil then open += 1 end
 		end
+	end
+	-- 영입 가능 → 영입 불가 → 이미 합류 순서
+	local function rank(c)
+		if c.joined then return 3 end
+		if c.blocked == nil then return 1 end
+		return 2
+	end
+	table.sort(list, function(a, b)
+		if rank(a) ~= rank(b) then return rank(a) < rank(b) end
+		return a.fee < b.fee
+	end)
+	add(function() return mkHeader(content, string.format("주점 동료 · 영입 가능 %d명 (자리 %d칸)", open, view.companions.max or 0)) end)
+	if #list == 0 then
+		add(function() return mkLabel(content, "이 항구의 주점에는 영입할 동료가 없어요.", 14, COLORS.muted, true) end)
+	end
+	for _, c in list do
+		add(function()
+			local tag = if c.joined then "  ✔ 합류 중" elseif c.blocked == nil then "  ★ 영입 가능" else ""
+			local sub = string.format("%s\n영입 %d코인 · 호감도 %d%s", c.summary, c.fee, c.affinity, if c.blocked and not c.joined then " · " .. c.blocked else "")
+			local btn = if c.joined
+				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
+			local btns = { btn }
+			if c.joined then
+				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
+			end
+			local row = mkRow(content, string.format("[%s] %s%s", c.role, c.name, tag), sub, btns, 84)
+			local model = COMPANION_MODEL[c.id]
+			local scholarId = string.match(c.id, "^c_(.+)$")
+			local portrait = COMPANION_PORTRAIT[c.id]
+			if portrait then
+				withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
+			elseif scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
+			elseif model then
+				withIcon(row, "People", model, nil, 56)
+			end
+			return row
+		end)
 	end
 end
 
@@ -4395,7 +4422,7 @@ local function openTradeHall()
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
 		local regionalId, regionalOffset, regionalSize = H.facilityPortraitAsset(p.portId, "merchant")
-		local merchantImageId = regionalId or FACILITY_ATLAS or PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
+		local merchantImageId = regionalId or FACILITY_ATLAS or PORTRAIT_ATLAS
 		if merchantImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "MerchantPortrait"
@@ -9145,12 +9172,16 @@ end
 			elseif string.find(spec.speaker, "상인", 1, true) then "merchant"
 			elseif string.find(spec.speaker, "주점", 1, true) then "tavern"
 			else "hero"
+		local heroId, heroOffset
+		if not portraitSpec and tile == "hero" then
+			heroId, heroOffset = H.heroPortraitAsset(chosenNation)
+		end
 		local portraitId = if portraitSpec then AssetIds["Portraits/" .. portraitSpec.atlas]
 			elseif FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_ATLAS
-			else PORTRAIT_ATLAS
+			else heroId
 		local portraitOffset = if portraitSpec then portraitSpec.offset
 			elseif portraitId == FACILITY_ATLAS and FACILITY_TILE[tile] then FACILITY_TILE[tile]
-			else PORTRAIT_TILE[tile]
+			else heroOffset
 		local face = Instance.new("ImageLabel")
 		face.Name = "SpeakerFace"
 		face.Position = UDim2.fromOffset(6, 5)
