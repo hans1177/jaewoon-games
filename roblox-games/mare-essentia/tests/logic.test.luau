@@ -3426,7 +3426,7 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == 30 and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 else 30) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
@@ -3696,7 +3696,8 @@ do
 	local total, broken = 0, 0
 	for _, prefix in { "eu", "ea", "me", "nw", "af", "lo" } do
 		local count = 0
-		for index = 1, 30 do
+		local per = if prefix == "eu" then 45 else 30
+		for index = 1, per do
 			local id = string.format("%s_%02d", prefix, index)
 			local card = BC.Units[id] or BC.Specials[id]
 			local translation = BC.CardEnglish[id]
@@ -3707,15 +3708,92 @@ do
 				broken += 1
 			end
 		end
-		check("지역 카드 영어 이름·설명 30장: " .. prefix, count == 30)
+		check("지역 카드 영어 이름·설명: " .. prefix, count == per)
 	end
 	local englishCount = 0
 	for key in BC.CardEnglish do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("180장 영어판·한국어판 카드 연결 보존", total == 180 and englishCount == 180 and broken == 0,
+	check("195장 영어판·한국어판 카드 연결 보존", total == 195 and englishCount == 195 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
+end
+
+
+-- [인과 카드] 연쇄·반증·합치기
+do
+	local BC = D.BoardingCards
+	local function fresh()
+		local m = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "europe", "europe")
+		m.turn = "me"
+		m.hand = { me = {}, foe = {} }
+		return m
+	end
+	local function give(m, side, id)
+		local def = BC.Units[id] or BC.Specials[id]
+		local c = table.clone(def)
+		table.insert(m.hand[side], c)
+		return #m.hand[side]
+	end
+	-- 연쇄: 백년전쟁 → 잔 다르크
+	local m = fresh()
+	local base = BC.Units.eu_36.power
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	local alone = BC.cardPower(m, "me", "melee", 1)
+	check("연쇄: 원인이 없으면 보너스 없음", alone == base, alone)
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	local chained
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("연쇄: 원인이 있으면 +2", chained == base + 2, chained)
+	-- 반증: 사건을 끊으면 연쇄가 꺼진다
+	m.turn = "foe"
+	BC.play(m, "foe", give(m, "foe", "eu_41"))
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("반증: 사건 연쇄가 끊긴다", chained == base, chained)
+	-- 반증은 다른 분류 연쇄에는 안 통한다 (암살은 인물만)
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_36"))
+	m.turn = "foe"
+	BC.play(m, "foe", give(m, "foe", "eu_42"))
+	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	check("반증: 분류가 다르면 연쇄가 그대로", chained == base + 2, chained)
+	-- 합치기: 화약 + 창병 방진 → 머스킷 부대
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_34")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_40")); m.turn = "me"
+	local playedBefore = m.played.me
+	BC.play(m, "me", give(m, "me", "eu_44"))
+	local n, fusedPower = 0, 0
+	for _, row in { "melee", "ranged" } do
+		for _, c in m.rows.me[row] do
+			n += 1
+			if c.id == "eu_44" then fusedPower = c.power end
+		end
+	end
+	check("합치기: 재료 둘이 사라지고 하나가 남는다", n == 1 and fusedPower == BC.Units.eu_34.power + BC.Units.eu_40.power + 3, n .. "/" .. fusedPower)
+	check("합치기: 낸 카드 수에 세지 않는다", m.played.me == playedBefore, m.played.me)
+	-- 합치기 재료가 없으면 평범한 카드
+	m = fresh()
+	BC.play(m, "me", give(m, "me", "eu_44"))
+	check("합치기: 재료가 없으면 기본 점수로 나온다", BC.cardPower(m, "me", "ranged", 1) == BC.Units.eu_44.power)
+	-- 분류 값은 모두 정해져 있다
+	local kinds = { ["인물"] = 0, ["사건"] = 0, ["기술"] = 0 }
+	for i = 31, 45 do
+		local d = BC.Units["eu_" .. i] or BC.Specials["eu_" .. i]
+		if kinds[d.category] then kinds[d.category] += 1 end
+	end
+	check("인과 분류: 인물·사건·기술 카드가 모두 있다", kinds["인물"] >= 3 and kinds["사건"] >= 3 and kinds["기술"] >= 2)
+	local bad = 0
+	for _, tbl in { BC.Units, BC.Specials } do
+		for _, c in tbl do
+			if c.cause and not (BC.Units[c.cause] or BC.Specials[c.cause]) then bad += 1 end
+			if c.fuse and not (BC.Units[c.fuse[1]] and BC.Units[c.fuse[2]]) then bad += 1 end
+		end
+	end
+	check("인과 카드의 원인·재료 id가 모두 실제 카드", bad == 0, bad)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

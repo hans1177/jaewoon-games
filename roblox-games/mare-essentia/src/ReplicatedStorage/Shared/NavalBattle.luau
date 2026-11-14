@@ -949,7 +949,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		}
 
 		local englishRows = { melee = "Front", ranged = "Back", cannon = "Back" }
-		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark" }
+		local englishCategories = { ["선박"] = "Ship", ["유물"] = "Artifact", ["동물"] = "Animal", ["지형·원더"] = "Landmark", ["인물"] = "Person", ["사건"] = "Event", ["기술"] = "Technology", ["병종"] = "Troop", ["전설 생물"] = "Legendary Creature", ["미스터리"] = "Mystery" }
 		local englishAbilities = { bond = "Bond", morale = "Morale", spy = "Spy", medic = "Medic", armor = "Armor", snipe = "Snipe" }
 		local englishDetails = {
 			bond = "Matching units bond together for up to triple strength",
@@ -987,6 +987,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
 		local function cardDescription(c)
+			if c.cause or c.fuse then
+				local function nm(id)
+					local d = BC.Units[id] or BC.Specials[id]
+					local en = BC.CardEnglish[id]
+					return if english and en then en.name else (d and d.name or id)
+				end
+				if c.cause then
+					return if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+				end
+				return if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+			end
+			if c.refuteKind then
+				return if english then "Refute: cut the enemy's " .. c.refuteKind .. " chains" else c.text or "반증"
+			end
 			if not english then
 				if c.special then return c.text or "전술 카드" end
 				if c.ability then return ABIL_DETAIL[c.ability] or "" end

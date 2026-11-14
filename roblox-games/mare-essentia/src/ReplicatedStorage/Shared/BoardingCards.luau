@@ -82,7 +82,7 @@ function B.cost(card: any): number
 	if card.special then
 		return if card.special == "horn" then 5 elseif card.special == "scorch" then 6 else 4
 	end
-	local v = (card.power or 0) + (if card.ability then 1 else 0) + (if card.hero then 3 else 0)
+	local v = (card.power or 0) + (if card.ability then 1 else 0) + (if card.hero then 3 else 0) + (if card.cause then 1 else 0) + (if card.fuse then 2 else 0)
 	if type(card.id) == "string" and string.sub(card.id, 1, 3) == "lo_" then
 		v += 1
 	end
@@ -135,9 +135,9 @@ B.Units.janissary = { id = "janissary", name = "예니체리", row = "ranged", p
 B.Units.camel = { id = "camel", name = "낙타 기병", row = "melee", power = 5, weapon = "spear" }
 B.Units.raider = { id = "raider", name = "해상 습격대", row = "melee", power = 4, weapon = "sword", ability = "bond" }
 -- [지역 해전 오브젝트] 5개 지역 × 30장. 기존 전투 판정·세이브 ID·기존 카드 유지.
-B.Units.eu_01 = { id="eu_01", name="카라벨", category="선박", lore="포르투갈 원양 탐사의 기동성 높은 소형 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="카라벨", prop={"Naval","ship-small"} }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.eu_01 = { id="eu_01", name="카라벨", category="선박", lore="포르투갈 원양 탐사의 기동성 높은 소형 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="카라벨", prop={"Naval","ship-small"} }, row="ranged", power=4, weapon="gun", ability="spy", cause="eu_35" }
 B.Units.eu_02 = { id="eu_02", name="카라크", category="선박", lore="먼바다 무역과 장거리 항해에 쓰인 대형 범선", stage={ art="CardArt/event_title_ship", motion="fire", scene="카라크" }, row="cannon", power=5, weapon="cannon", ability="bond" }
-B.Units.eu_03 = { id="eu_03", name="갈레온", category="선박", lore="함포 배치를 강화한 대서양 대형 군선", stage={ art="CardArt/event_title_ship", motion="fire", scene="갈레온", prop={"Naval","ship-pirate-large"} }, row="cannon", power=6, weapon="cannon", ability="armor" }
+B.Units.eu_03 = { id="eu_03", name="갈레온", category="선박", lore="함포 배치를 강화한 대서양 대형 군선", stage={ art="CardArt/event_title_ship", motion="fire", scene="갈레온", prop={"Naval","ship-pirate-large"} }, row="cannon", power=6, weapon="cannon", ability="armor", cause="eu_34" }
 B.Units.eu_04 = { id="eu_04", name="코그", category="선박", lore="중세 북유럽과 발트해의 상선", stage={ art="CardArt/event_title_ship", motion="board", scene="코그" }, row="melee", power=5, weapon="sword", ability="bond" }
 B.Units.eu_05 = { id="eu_05", name="플루이트", category="선박", lore="네덜란드의 화물 적재 중심 범선", stage={ art="CardArt/event_title_ship", motion="wind", scene="플루이트", prop={"Naval","ship-medium"} }, row="ranged", power=4, weapon="gun", ability="spy" }
 B.Units.eu_06 = { id="eu_06", name="프리깃", category="선박", lore="정찰과 기동전에 뛰어난 유럽 군함", stage={ art="CardArt/event_title_ship", motion="fire", scene="프리깃", prop={"Naval","ship-large"} }, row="cannon", power=7, weapon="cannon", ability="bond" }
@@ -165,6 +165,21 @@ B.Specials.eu_27 = { id="eu_27", name="지브롤터 해협", category="지형·�
 B.Units.eu_28 = { id="eu_28", name="베네치아 운하", category="지형·원더", lore="유럽의 지형·원더 유산 · 베네치아 운하", stage={ art="CardArt/event_canal_opened", motion="clear", scene="베네치아 운하" }, row="ranged", power=4, weapon="gun" }
 B.Units.eu_29 = { id="eu_29", name="노르웨이 피오르", category="지형·원더", lore="유럽의 지형·원더 유산 · 노르웨이 피오르", stage={ art="CardArt/event_chart_west_europe", motion="clear", scene="노르웨이 피오르" }, row="melee", power=5, weapon="spear" }
 B.Specials.eu_30 = { id="eu_30", name="북해 안개", category="지형·원더", lore="북해 항로의 시야를 가리는 안개", stage={ art="CardArt/event_calm_seas", motion="storm", scene="북해 안개" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged" }
+B.Units.eu_31 = { id="eu_31", name="백년전쟁", category="사건", lore="잉글랜드와 프랑스가 1세기 가까이 싸운 전쟁", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="백년전쟁" }, row="melee", power=4, weapon="axe" }
+B.Units.eu_32 = { id="eu_32", name="대항해 시대", category="사건", lore="유럽이 바다 너머로 뻗어 나간 탐험의 시대", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="대항해 시대" }, row="ranged", power=3, weapon="gun", cause="eu_35" }
+B.Units.eu_33 = { id="eu_33", name="산업혁명", category="사건", lore="증기와 기계가 세상을 바꾼 대변화", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="산업혁명" }, row="cannon", power=4, weapon="cannon" }
+B.Units.eu_34 = { id="eu_34", name="화약", category="기술", lore="중국에서 건너와 전쟁을 바꾼 폭발 가루", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="화약" }, row="cannon", power=3, weapon="cannon" }
+B.Units.eu_35 = { id="eu_35", name="나침반", category="기술", lore="먼바다에서 방향을 잡게 해 준 도구", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="나침반" }, row="ranged", power=3, weapon="gun" }
+B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백년전쟁에서 프랑스를 이끈 소녀 지도자", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="잔 다르크" }, row="melee", power=5, weapon="sword", cause="eu_31" }
+B.Units.eu_37 = { id="eu_37", name="콜럼버스", category="인물", lore="대서양을 건너 신대륙에 닿은 항해가", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="콜럼버스" }, row="ranged", power=5, weapon="gun", cause="eu_32" }
+B.Units.eu_38 = { id="eu_38", name="나폴레옹", category="인물", lore="대포 전술로 유럽을 뒤흔든 황제", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="나폴레옹" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
+B.Units.eu_39 = { id="eu_39", name="넬슨 제독", category="인물", lore="갈레온을 이은 함대로 트라팔가르를 이긴 제독", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="넬슨 제독" }, row="cannon", power=6, weapon="cannon", cause="eu_03" }
+B.Units.eu_40 = { id="eu_40", name="창병 방진", category="병종", lore="창을 촘촘히 세워 기병을 막은 보병 진형", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="창병 방진" }, row="melee", power=4, weapon="spear" }
+B.Specials.eu_41 = { id="eu_41", name="휴전 협정", category="사건", lore="전쟁을 멈추게 한 협정", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="휴전 협정" }, special="refute", refuteKind="사건", text="상대 카드 중 사건에서 이어진 연쇄 보너스를 끊는다" }
+B.Specials.eu_42 = { id="eu_42", name="암살", category="인물", lore="핵심 인물을 노린 은밀한 공격", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="암살" }, special="refute", refuteKind="인물", text="상대 카드 중 인물에서 이어진 연쇄 보너스를 끊는다" }
+B.Specials.eu_43 = { id="eu_43", name="봉쇄", category="기술", lore="기술과 물자가 들어오는 길을 막는 작전", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="봉쇄" }, special="refute", refuteKind="기술", text="상대 카드 중 기술에서 이어진 연쇄 보너스를 끊는다" }
+B.Units.eu_44 = { id="eu_44", name="머스킷 부대", category="병종", lore="화약 무기로 무장한 보병 부대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="머스킷 부대" }, row="ranged", power=3, weapon="gun", fuse={"eu_34","eu_40"} }
+B.Units.eu_45 = { id="eu_45", name="철갑 함대", category="선박", lore="산업혁명이 낳은 강철 군함 함대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="철갑 함대" }, row="cannon", power=3, weapon="cannon", fuse={"eu_33","eu_06"} }
 B.Units.ea_01 = { id="ea_01", name="판옥선", category="선박", lore="넓은 갑판과 함포를 갖춘 조선 수군 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="판옥선" }, row="cannon", power=4, weapon="cannon", ability="spy" }
 B.Units.ea_02 = { id="ea_02", name="거북선", category="선박", lore="덮개형 상갑판이 특징인 조선 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="거북선" }, row="cannon", power=5, weapon="cannon", ability="bond" }
 B.Units.ea_03 = { id="ea_03", name="조선 세견선", category="선박", lore="동아시아의 선박 유산 · 조선 세견선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 세견선" }, row="ranged", power=6, weapon="gun", ability="armor" }
@@ -349,6 +364,21 @@ B.CardEnglish = {
 	eu_28 = { name = "Venetian Canals", lore = "Waterways linking the islands and trading quarters of Venice." },
 	eu_29 = { name = "Norwegian Fjords", lore = "Deep glacial inlets cut into Norway's rugged coast." },
 	eu_30 = { name = "North Sea Fog", lore = "A blanket of sea fog that obscures the northern trade routes." },
+	eu_31 = { name = "Hundred Years' War", lore = "A long war between England and France lasting over a century." },
+	eu_32 = { name = "Age of Discovery", lore = "An era when Europe sailed far across the oceans to explore." },
+	eu_33 = { name = "Industrial Revolution", lore = "A great change as steam and machines reshaped the world." },
+	eu_34 = { name = "Gunpowder", lore = "An explosive powder that changed warfare across the world." },
+	eu_35 = { name = "Compass", lore = "A tool that let sailors keep their bearing on the open sea." },
+	eu_36 = { name = "Joan of Arc", lore = "A young leader who rallied France during the Hundred Years' War." },
+	eu_37 = { name = "Columbus", lore = "A navigator who crossed the Atlantic and reached the New World." },
+	eu_38 = { name = "Napoleon", lore = "An emperor who shook Europe with his artillery tactics." },
+	eu_39 = { name = "Admiral Nelson", lore = "An admiral who won at Trafalgar with a galleon-descended fleet." },
+	eu_40 = { name = "Pike Square", lore = "A dense infantry formation of pikes that stopped cavalry." },
+	eu_41 = { name = "Armistice", lore = "An agreement that brought a war to a halt." },
+	eu_42 = { name = "Assassination", lore = "A covert strike aimed at a key figure." },
+	eu_43 = { name = "Blockade", lore = "An operation that cuts off the routes of tech and supplies." },
+	eu_44 = { name = "Musket Regiment", lore = "An infantry regiment armed with gunpowder weapons." },
+	eu_45 = { name = "Ironclad Fleet", lore = "A fleet of steel warships born of the Industrial Revolution." },
 	ea_01 = { name = "Panokseon", lore = "A Korean naval warship with a wide upper deck and mounted cannon." },
 	ea_02 = { name = "Turtle Ship", lore = "A Joseon fighting vessel known for its covered upper deck." },
 	ea_03 = { name = "Joseon Segyeonseon", lore = "A Korean diplomatic vessel used for maritime journeys." },
@@ -507,7 +537,7 @@ B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row 
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "draw",
-		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30"} },
+		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "snipe",
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "clear",
@@ -653,6 +683,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 		leaderUsed = { me = false, foe = false },
 		turn = "me",
 		played = { me = 0, foe = 0 },
+		refuted = { me = {}, foe = {} },
 		round = 1,
 		over = false,
 		winner = nil,
@@ -681,6 +712,29 @@ local function logLine(m: any, text)
 	table.insert(m.log, text)
 end
 
+-- 연쇄: 원인 카드가 내 필드에 있고, 그 분류가 반증으로 끊기지 않았을 때만 켜진다
+local function defOf(id)
+	return B.Units[id] or B.Specials[id]
+end
+
+function B.chainActive(m: any, side, c: any): boolean
+	if not c.cause then
+		return false
+	end
+	local def = defOf(c.cause)
+	if not def or (m.refuted and m.refuted[side] and m.refuted[side][def.category or ""]) then
+		return false
+	end
+	for _, row in B.ROWS do
+		for _, o in m.rows[side][row] do
+			if o ~= c and o.id == c.cause then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -- 줄 합계: 날씨 → 결속 → 사기 → 무기 상성 → 병종 상성 순으로 계산한다
 function B.cardPower(m: any, side, row, idx)
 	local list = m.rows[side][row]
@@ -706,6 +760,9 @@ function B.cardPower(m: any, side, row, idx)
 			if j ~= idx and o.ability == "morale" and not o.hero then
 				p += (if m.faction and m.faction[side] == "east_asia" then 2 else 1)
 			end
+		end
+		if c.cause and B.chainActive(m, side, c) then
+			p += 2
 		end
 		-- 근접끼리 무기 상성
 		if row == "melee" and c.weapon and B.WEAPON_BEATS[c.weapon] then
@@ -882,6 +939,7 @@ local function roundEnd(m: any)
 		m.passed[side] = false
 	end
 	m.weather = { melee = false, ranged = false, cannon = false }
+	m.refuted = { me = {}, foe = {} }
 	applySea(m)
 	m.horn = { me = {}, foe = {} }
 	local result = { round = m.round, me = a, foe = b, winner = winner }
@@ -1017,6 +1075,11 @@ function B.play(m: any, side, handIdx)
 			msg = "군기 — 높일 줄이 없었다"
 		end
 		table.insert(m.grave[side], c)
+	elseif c.special == "refute" then
+		m.refuted = m.refuted or { me = {}, foe = {} }
+		m.refuted[other(side)][c.refuteKind or ""] = true
+		msg = string.format("반증! 상대의 %s 연쇄가 끊겼다", c.refuteKind or "")
+		table.insert(m.grave[side], c)
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		if pick then
@@ -1032,8 +1095,37 @@ function B.play(m: any, side, handIdx)
 		if c.ability == "spy" then
 			target = other(side)
 		end
+		local fused = false
+		if c.fuse then
+			local parts = {}
+			for _, id in c.fuse do
+				for _, row in B.ROWS do
+					for _, o in m.rows[side][row] do
+						if o.id == id and not o.hero and not parts[id] then
+							parts[id] = { card = o, row = row }
+						end
+					end
+				end
+			end
+			if parts[c.fuse[1]] and parts[c.fuse[2]] then
+				local sum = 0
+				for _, part in parts do
+					sum += part.card.power
+					table.remove(m.rows[side][part.row], table.find(m.rows[side][part.row], part.card))
+					table.insert(m.grave[side], part.card)
+				end
+				c.power = sum + 3
+				c.fused = true
+				fused = true
+			end
+		end
 		table.insert(m.rows[target][lane(c)], c)
 		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[lane(c)])
+		if fused then
+			msg ..= " (합치기! 재료 둘이 하나가 됐다. 낸 카드 수에 세지 않는다)"
+		elseif c.cause and B.chainActive(m, side, c) then
+			msg ..= " (연쇄! 점수 +2)"
+		end
 		if c.ability == "spy" then
 			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
 			drawCards(m, side, n)
@@ -1063,7 +1155,7 @@ function B.play(m: any, side, handIdx)
 	nextTurn(m, side)
 	local act = { "p", handIdx }
 	local result = nil
-	m.played[side] = (m.played[side] or 0) + 1
+	m.played[side] = (m.played[side] or 0) + (if c.fused then 0 else 1)
 	if (#m.hand[side] == 0 or m.played[side] >= B.ROUND_CARDS) and not m.passed[side] then
 		-- 손패가 없거나 한 판 카드 수를 다 쓰면 자동으로 멈춘다
 		m.passed[side] = true
@@ -1438,6 +1530,7 @@ local function copyMatch(m)
 	n.horn = { me = table.clone(m.horn.me), foe = table.clone(m.horn.foe) }
 	n.wins, n.passed, n.leaderUsed = table.clone(m.wins), table.clone(m.passed), table.clone(m.leaderUsed)
 	n.played = table.clone(m.played or { me = 0, foe = 0 })
+	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
 	return n
 end
