@@ -242,6 +242,7 @@ function VoyageScene.play(info)
 	local LATSCALE = 22
 	local ringList, ringParts, nextRing = {}, {}, 1
 	local itemList: { any }, itemParts, nextItem = {}, {}, 1
+	local currentList: { any }, currentStrips, curState = {}, {}, nil
 	local shakeAmp, fovBoost = 0, 0
 	local goShown, resultShown = false, false
 	local bankRoll, lastSteerDir, lastWhoosh, lastAmbLevel = 0, 0, 0, -1
@@ -432,6 +433,35 @@ function VoyageScene.play(info)
 				grp.Parent = folder
 				table.insert(ringParts, grp)
 				table.insert(ringPulse, { grp = grp, glow = glow, base = glow.Size, at = r.at })
+			end
+		end
+		-- 해류: 항로 위의 빛 띠(효과 표시). 순류는 청록, 역류는 붉은 보라.
+		do
+			local rs3 = 777
+			for i = 1, #(info.fromName .. info.toName) do
+				rs3 = (rs3 * 31 + string.byte(info.fromName .. info.toName, i)) % 2147483647
+			end
+			local function rng3(): number
+				rs3 = (rs3 * 1103515245 + 12345) % 2147483648
+				return rs3 / 2147483648
+			end
+			currentList = Rings.currents(rng3, info.days)
+			for _, cu in currentList do
+				local col = if cu.fast then Color3.fromRGB(80, 235, 220) else Color3.fromRGB(210, 80, 150)
+				for k = 0, 5 do
+					local f0 = cu.at + cu.len * (k + 0.5) / 6
+					local p, d = positionAt(pts, cum, f0 * total)
+					local c = p + Vector3.new(-d.Z, 0, d.X) * cu.lat * LATSCALE
+					local strip = Instance.new("Part")
+					strip.Anchored, strip.CanCollide, strip.CanQuery, strip.CanTouch = true, false, false, false
+					strip.Material = Enum.Material.Neon
+					strip.Color = col
+					strip.Transparency = 0.6
+					strip.Size = Vector3.new(cu.w * 2 * LATSCALE, 0.15, cu.len * total / 6 * 0.9)
+					strip.CFrame = CFrame.lookAt(Vector3.new(c.X, 0.4, c.Z), Vector3.new(c.X, 0.4, c.Z) + Vector3.new(d.X, 0, d.Z))
+					strip.Parent = folder
+					table.insert(currentStrips, { part = strip, fast = cu.fast, k = k })
+				end
 			end
 		end
 		-- 줍는 물건: 코인·보석·보물상자·유리병(순풍)·부표(충격 해제). 에셋 모델만 쓴다.
@@ -1495,7 +1525,7 @@ function VoyageScene.play(info)
 			mapShip.Rotation = -math.deg(helmYaw)
 			windArrow.Rotation = -math.deg(windFrom + math.pi)
 		else
-			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) * (if tally.stun > 0 then 0.6 else 1) * (if tally.boost > 0 then 1.35 else 1) else 1))
+			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)) * (if manual and not autoRing then Rings.speedMult(tally.combo) * (if tally.stun > 0 then 0.6 else 1) * (if tally.boost > 0 then 1.35 else 1) * (Rings.currentAt(currentList, dist / total, lat)) else 1))
 			pos, dir = positionAt(pts, cum, dist)
 		end
 		if manual then
@@ -1567,6 +1597,17 @@ function VoyageScene.play(info)
 			else
 				tally.stun = math.max(0, tally.stun - dt)
 				tally.boost = math.max(0, tally.boost - dt)
+				do
+					local _, cur = Rings.currentAt(currentList, dist / total, lat)
+					if cur ~= curState then
+						curState = cur
+						if cur then
+							ringPopup(if cur.fast then "순류! 가속 ×1.5" else "역류... 감속", if cur.fast then Color3.fromRGB(110, 245, 230) else Color3.fromRGB(235, 110, 170))
+							Sfx.play(if cur.fast then "sfx_horn" else "sfx_creak", 0.4, if cur.fast then 1.4 else 0.8)
+							fovBoost += if cur.fast then 6 else -3
+						end
+					end
+				end
 				while itemList[nextItem] and dist / total >= itemList[nextItem].at do
 					local it = itemList[nextItem]
 					local m = itemParts[nextItem]
@@ -1668,9 +1709,14 @@ function VoyageScene.play(info)
 					bandFrame.Position = UDim2.fromScale(0.5 + nr.lat * 0.45, 0.5)
 					bandFrame.BackgroundColor3 = if Rings.hit(nr, lat) then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(230, 190, 80)
 				end
-				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 충돌!" elseif tally.boost > 0 then " · 순풍!" else "")
+				scoreLabel.Text = string.format("콤보 %d · 통과 %d/%d · 속도 ×%.2f%s", tally.combo, tally.hits, tally.total, Rings.speedMult(tally.combo), if tally.stun > 0 then " · 충돌!" elseif tally.boost > 0 then " · 순풍!" elseif curState then (if curState.fast then " · 순류!" else " · 역류") else "")
 			end
 			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
+			-- 해류 띠는 흐르듯 깜빡인다(순류는 앞으로, 역류는 뒤로 밝기가 흐른다)
+			for _, cs in currentStrips do
+				local ph = (if cs.fast then -1 else 1) * t * 4 + cs.k * 1.1
+				cs.part.Transparency = 0.55 + 0.25 * math.sin(ph)
+			end
 			-- 물건은 둥실 떠서 돈다
 			for ii = nextItem, math.min(#itemList, nextItem + 8) do
 				local m, it = itemParts[ii], itemList[ii]

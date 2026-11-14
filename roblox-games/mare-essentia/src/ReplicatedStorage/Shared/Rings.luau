@@ -135,6 +135,29 @@ function Rings.pickup(t: Tally, it: Item)
 	end
 end
 
+-- 해류: 항로 곳곳의 띠 모양 구역. 밟으면 순류는 가속(×1.5), 역류는 감속(×0.6). 스피드런 요소.
+export type Current = { at: number, len: number, lat: number, w: number, fast: boolean }
+
+function Rings.currents(rng: () -> number, days: number): { Current }
+	local n = math.clamp(math.floor(3 + days * 0.4), 4, 9)
+	local out: { Current } = {}
+	for i = 1, n do
+		local at = 0.08 + 0.8 * (i - 0.5) / n
+		table.insert(out, { at = at, len = 0.05 + rng() * 0.03, lat = (rng() * 2 - 1) * 0.6, w = 0.26, fast = (i % 3 ~= 0) })
+	end
+	return out
+end
+
+-- 지금 위치(진행도 progress 0~1, 옆 위치 shipLat)에서의 해류 속도 배율과 해류(없으면 nil)
+function Rings.currentAt(list: { Current }, progress: number, shipLat: number): (number, Current?)
+	for _, c in list do
+		if progress >= c.at and progress <= c.at + c.len and math.abs(shipLat - c.lat) <= c.w then
+			return (if c.fast then 1.5 else 0.6), c
+		end
+	end
+	return 1, nil
+end
+
 -- 최종 점수 0~1
 function Rings.score(t: Tally): number
 	if t.total == 0 then
