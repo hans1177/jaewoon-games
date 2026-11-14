@@ -1086,7 +1086,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local paper = Color3.fromRGB(224, 205, 163)
 		local ink = Color3.fromRGB(49, 37, 27)
 		local brass = Color3.fromRGB(158, 113, 59)
-		local rowIcons = { melee = "Menu/battle", ranged = "Menu/chart_compass", cannon = "Menu/chart_anchor" }
+		local rowIcons = { melee = "Menu/cc0_sword", ranged = "Menu/cc0_crossbow", cannon = "Menu/cc0_fireball" }
 
 		local function frameEdge(gui, color, radius)
 			local curve = Instance.new("UICorner")
@@ -1099,7 +1099,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return stroke
 		end
 
+		-- 공용 CC0 그림 아이콘(Menu/cc0_*)은 업로드 전이면 예전 단색 아이콘으로 대신한다.
+		local LEGACY_ICON = {
+			["Menu/cc0_sword"] = "Menu/battle", ["Menu/cc0_crossbow"] = "Menu/chart_compass",
+			["Menu/cc0_fireball"] = "Menu/chart_anchor", ["Menu/cc0_shield"] = "Menu/chart_anchor",
+			["Menu/cc0_helmet"] = "Menu/chart_compass", ["Menu/cc0_glove"] = "Menu/route",
+			["Menu/cc0_yes"] = "Menu/route", ["Menu/cc0_book"] = "Menu/tech",
+		}
 		local function emblem(parent, assetKey, position, size)
+			local colored = false
+			if LEGACY_ICON[assetKey] then
+				if AssetIds[assetKey] then colored = true else assetKey = LEGACY_ICON[assetKey] end
+			end
 			local icon = Instance.new("ImageLabel")
 			icon.AnchorPoint = Vector2.new(0, 0.5)
 			icon.Position = position
@@ -1108,7 +1119,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			icon.BorderSizePixel = 0
 			icon.ScaleType = Enum.ScaleType.Fit
 			icon.Image = "rbxassetid://" .. AssetIds[assetKey]
-			icon.ImageColor3 = Color3.fromRGB(114, 75, 43)
+			icon.ImageColor3 = if colored then Color3.new(1, 1, 1) else Color3.fromRGB(114, 75, 43)
 			icon.Parent = parent
 			frameEdge(icon, brass, 4)
 			return icon
@@ -1444,20 +1455,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			render()
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/chart_anchor", function()
+		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/chart_compass", function()
+		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
 		local mullBtn
-		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/route", function()
+		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
 			local idx = selected and selected.Parent and selected:GetAttribute("HandIdx")
 			if not idx then
@@ -1475,7 +1486,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/route", function()
+		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/cc0_yes", function()
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
@@ -2222,7 +2233,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
 				caption.Font = Enum.Font.Antique
-				local iconKey = if c.special then "Menu/tech" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
+				local iconKey = if c.special then "Menu/cc0_book" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
