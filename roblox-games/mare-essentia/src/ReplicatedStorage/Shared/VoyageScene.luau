@@ -12,6 +12,7 @@ local UserInputService = game:GetService("UserInputService")
 local VoyageScene = {}
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local HelmPhys = require(script.Parent:WaitForChild("Helm"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
@@ -1146,50 +1147,24 @@ function VoyageScene.play(info)
 			if t > duration * 3.5 then
 				autoOn = true -- 너무 오래 걸리면 자동 항해로 마무리한다
 			end
+			local hs = { x = helmPos.X, z = helmPos.Z, yaw = helmYaw, trim = helmTrim, speed = helmSpeed }
 			if autoOn then
-				-- 자동 항해: 목적지로 가되 맞바람이면 지그재그(태킹)로 간다
-				local want = yawOf(toDest.Unit)
-				local rel = wrapAngle(want - windFrom)
-				if math.abs(rel) < math.rad(50) then
-					want = windFrom + tackSide * math.rad(52)
-					if math.abs(wrapAngle(want - helmYaw)) < 0.05 then
-						tackSide = -tackSide
-					end
-				end
-				steer = -math.clamp(wrapAngle(want - helmYaw) * 2.5, -1, 1)
-				trimIn = (0.95 - helmTrim) * 2
+				steer, trimIn, tackSide = HelmPhys.autopilot(hs, helmDest.X, helmDest.Z, windFrom, tackSide)
 			end
-			helmTrim = math.clamp(helmTrim + trimIn * dt * 0.6, 0.1, 1)
-			local gust = 1 + 0.12 * math.sin(t * 0.3) + 0.05 * math.sin(t * 0.9 + 1)
-			local eff
-			if info.steam then
-				eff = 0.95
-			else
-				eff = polar(wrapAngle(helmYaw - windFrom)) * gust
-			end
-			local baseSpeed = speedNow * 1.2
-			local targetSpeed = baseSpeed * helmTrim * eff
-			local seaNote = ""
+			local shoalList, currentList = {}, {}
 			for _, c in helmShoals do
-				if (Vector3.new(helmPos.X - c.X, 0, helmPos.Z - c.Z)).Magnitude < 42 then
-					targetSpeed *= 0.45
-					seaNote = "암초 지대! 속도가 크게 줄어요"
-				end
+				table.insert(shoalList, { x = c.X, z = c.Z })
 			end
 			for _, cu in helmCurrents do
-				if (Vector3.new(helmPos.X - cu.pos.X, 0, helmPos.Z - cu.pos.Z)).Magnitude < 70 then
-					local hd = Vector3.new(math.cos(helmYaw), 0, -math.sin(helmYaw))
-					if hd:Dot(cu.dir) > 0 then
-						targetSpeed *= 1.3
-						seaNote = "해류를 탔어요! 가속"
-					end
-				end
+				table.insert(currentList, { x = cu.pos.X, z = cu.pos.Z, dx = cu.dir.X, dz = cu.dir.Z })
 			end
-			helmSpeed += (targetSpeed - helmSpeed) * math.min(1, dt * 0.9)
-			local turnRate = 0.95 * (0.35 + 0.65 * math.min(1, helmSpeed / math.max(baseSpeed * 0.5, 1)))
-			helmYaw -= math.clamp(steer, -1, 1) * turnRate * dt -- 오른쪽(+)으로 틀면 yaw 가 줄어든다
+			local seaNote = HelmPhys.step(hs, steer, trimIn, dt, {
+				windFrom = windFrom, baseSpeed = speedNow * 1.2, steam = info.steam, t = t,
+				shoals = shoalList, currents = currentList,
+			})
+			helmYaw, helmTrim, helmSpeed = hs.yaw, hs.trim, hs.speed
+			helmPos = Vector3.new(hs.x, helmPos.Y, hs.z)
 			local fwd0 = Vector3.new(math.cos(helmYaw), 0, -math.sin(helmYaw))
-			helmPos += fwd0 * helmSpeed * dt
 			pos, dir = helmPos, fwd0
 			toDest = helmDest - helmPos
 			remaining = Vector3.new(toDest.X, 0, toDest.Z).Magnitude

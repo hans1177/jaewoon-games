@@ -375,5 +375,63 @@ do
 	check("해상 사건: 크라켄은 짧은 항해에 안 나온다", not krakenShort and seen.kraken == true)
 end
 
+do
+	-- 수동 항해 물리
+	local H = require("./Shared/Helm")
+	local function run(auto: boolean, steerFn: any): (number, number)
+		local s: any = { x = 0, z = 0, yaw = 0, trim = 0.8, speed = 0 }
+		local wind = math.rad(120) -- 목적지(동쪽)가 맞바람에 가깝지 않은 경우
+		local tack = 1
+		local env: any = { windFrom = wind, baseSpeed = 30, t = 0 }
+		local steps = 0
+		while steps < 60 * 400 do
+			env.t = steps / 60
+			local st, tr = 0, 0
+			if auto then
+				st, tr, tack = H.autopilot(s, 2000, 0, wind, tack)
+			else
+				st, tr = steerFn(s)
+			end
+			H.step(s, st, tr, 1 / 60, env)
+			steps += 1
+			if (2000 - s.x) ^ 2 + s.z ^ 2 < 55 ^ 2 then break end
+		end
+		return steps / 60, s.x
+	end
+	local tAuto = run(true, nil)
+	check("수동 항해: 자동 항해가 목적지에 도착한다", tAuto < 400)
+	-- 맞바람(바람이 목적지 쪽에서 온다)에서 그냥 직진하면 아주 느리다
+	local s2: any = { x = 0, z = 0, yaw = 0, trim = 1, speed = 0 }
+	for i = 1, 600 do H.step(s2, 0, 0, 1 / 60, { windFrom = 0, baseSpeed = 30, t = i / 60 }) end
+	local s3: any = { x = 0, z = 0, yaw = math.rad(100), trim = 1, speed = 0 }
+	for i = 1, 600 do H.step(s3, 0, 0, 1 / 60, { windFrom = 0, baseSpeed = 30, t = i / 60 }) end
+	check("수동 항해: 맞바람은 옆바람보다 훨씬 느리다", s2.speed < s3.speed * 0.3)
+	-- 맞바람인 목적지도 자동 항해(태킹)로 닿는다
+	local s4: any = { x = 0, z = 0, yaw = 0, trim = 0.8, speed = 0 }
+	local tack4 = 1
+	local reached = false
+	for i = 1, 60 * 900 do
+		local st, tr
+		st, tr, tack4 = H.autopilot(s4, 1500, 0, 0, tack4)
+		H.step(s4, st, tr, 1 / 60, { windFrom = 0, baseSpeed = 30, t = i / 60 })
+		if (1500 - s4.x) ^ 2 + s4.z ^ 2 < 55 ^ 2 then
+			reached = true
+			break
+		end
+	end
+	check("수동 항해: 맞바람 목적지도 지그재그로 도착한다", reached)
+	-- 암초는 느리게, 해류는 빠르게
+	local base: any = { x = 0, z = 0, yaw = 0, trim = 1, speed = 0 }
+	local slow: any = { x = 0, z = 0, yaw = 0, trim = 1, speed = 0 }
+	local fast: any = { x = 0, z = 0, yaw = 0, trim = 1, speed = 0 }
+	for i = 1, 300 do
+		local e = { windFrom = math.rad(120), baseSpeed = 30, t = i / 60 }
+		H.step(base, 0, 0, 1 / 60, e)
+		H.step(slow, 0, 0, 1 / 60, { windFrom = e.windFrom, baseSpeed = 30, t = e.t, shoals = { { x = 0, z = 0 } } })
+		H.step(fast, 0, 0, 1 / 60, { windFrom = e.windFrom, baseSpeed = 30, t = e.t, currents = { { x = 0, z = 0, dx = 1, dz = 0 } } })
+	end
+	check("수동 항해: 암초 지대는 속도를 줄이고 해류는 올린다", slow.speed < base.speed and fast.speed > base.speed)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
