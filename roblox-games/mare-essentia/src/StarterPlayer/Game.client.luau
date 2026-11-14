@@ -6018,6 +6018,23 @@ function H.showCardGain(card, moreCount)
 	task.delay(4.5, close)
 end
 
+-- 개발 확인용: workspace 속성 DevSail 에 항구 id 를 넣으면 그 항구로 출항 연출을 보여 준다
+workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
+	local id = workspace:GetAttribute("DevSail")
+	if type(id) == "string" and id ~= "" and view then
+		task.spawn(function()
+			if H.titleMenuOpen then
+				H.titleMenuOpen = false
+				local tg = player:WaitForChild("PlayerGui"):FindFirstChild("TitleGui")
+				if tg then tg:Destroy() end
+				titleGui.Enabled = false
+				menuToggle.Visible = false
+			end
+			sail(id)
+		end)
+	end
+end)
+
 -- 개발 확인용: workspace 속성 DevTradeHall 를 켜면 교역소 화면을 연다
 workspace:GetAttributeChangedSignal("DevTradeHall"):Connect(function()
 	if workspace:GetAttribute("DevTradeHall") and view then
