@@ -44,11 +44,7 @@ for kind in ("Units", "Specials"):
         lore = lore or ""
         prompt = f"{name}. {lore}. {CULTURE[cid[:2]]} 문화권 배경. {HINT.get(cat, '대상 하나')}. {STYLE}"
         rows.append([cid, name, cat, "주제 그림 연결됨(맞는지 확인 필요)" if has else "없음(대륙 지도 공용)", MOTION.get(mo.group(1), "은은히 움직이는") if mo else "", prompt])
-<<<<<<< HEAD
 rows.sort(key=lambda r: (r[2], r[0]))  # 분류별로 묶고, 안에서는 대륙 순
-=======
-rows.sort()
->>>>>>> origin/main
 out = ROOT / "docs/continent_card_art_prompts.csv"
 with out.open("w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
@@ -67,7 +63,6 @@ with lo.open("w", newline="", encoding="utf-8") as f:
     for lid, name, text, fac, era in leaders:
         w.writerow([lid, name, FAC.get(fac, fac), era, f"{name}({FAC.get(fac, fac)} {era}). 지도자 카드 그림: 말이나 전차·배 위, 또는 군대 앞에 선 전신 구도. {LSTYLE}"])
 print(lo, len(leaders), "leaders")
-<<<<<<< HEAD
 
 # 분류별 제작 안내 (docs/CARD_ART_BY_CATEGORY.md)
 from collections import defaultdict
@@ -89,5 +84,3 @@ for cat, lst in by.items():
     md.append("")
 (ROOT / "docs/CARD_ART_BY_CATEGORY.md").write_text("\n".join(md), encoding="utf-8")
 print("CARD_ART_BY_CATEGORY.md written")
-=======
->>>>>>> origin/main
