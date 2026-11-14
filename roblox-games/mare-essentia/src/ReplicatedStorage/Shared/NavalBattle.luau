@@ -2129,6 +2129,7 @@ function NavalBattle.play(opts)
 	end
 
 	-- 대포 한 발
+	local kick = 0 -- 포격·피격 때 순간적으로 화각이 튀는 정도
 	local function shoot(fromPos, toPos, fx, nc)
 		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
@@ -2142,6 +2143,7 @@ function NavalBattle.play(opts)
 		Sfx.play("sfx_naval_cannon", 0.82, 0.92 + math.random() * 0.16, "sfx_cannon")
 		FX.muzzle(from, (to - from).Unit)
 		shake = math.max(shake, if hullHit then 0.7 else 0.35)
+		kick = math.max(kick, nc.ball * 1.6)
 		if hullHit then
 			task.delay(0.9, function()
 				if not finished then
@@ -2183,6 +2185,7 @@ function NavalBattle.play(opts)
 					FX.splinters(to, 9)
 					FX.smoke(to + Vector3.new(0, 2, 0), 3, 3.4, true)
 					shake = math.max(shake, 1.3)
+					kick = math.max(kick, 5 + nc.ball)
 				else
 					FX.splash(to)
 				end
@@ -2613,6 +2616,17 @@ function NavalBattle.play(opts)
 				end
 			end
 		end
+		-- 손상 연출: 체력이 줄수록 연기, 더 줄면 불길이 오른다
+		for _, side in { { me, meHp, loser == "me" }, { foe, foeHp, loser == "foe" } } do
+			local sh, hp = side[1] :: any, side[2] :: number
+			if not side[3] and hp < 0.55 and math.random() < (0.55 - hp) * 0.5 then
+				local at = ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * sh.length * 0.6, 8 + math.random() * 5, (math.random() - 0.5) * 6)
+				FX.smoke(at, 1, 2.2, true)
+				if hp < 0.3 and math.random() < 0.5 then
+					FX.flame(at, 2.5)
+				end
+			end
+		end
 		poseShip(me, now, meSink)
 		poseShip(foe, now, foeSink)
 		updateCrews(now)
@@ -2674,7 +2688,8 @@ function NavalBattle.play(opts)
 		-- 카메라: 두 배가 모두 보이도록 넓게 잡는다. 거리가 벌어질수록 뒤로·위로 물러나고, 부드럽게 따라간다.
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
-		cam.FieldOfView = 74 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		kick = kick * 0.86
+		cam.FieldOfView = 74 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
