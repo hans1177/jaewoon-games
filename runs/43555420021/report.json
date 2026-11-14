@@ -1,0 +1,51 @@
+{
+ "sourceRevision": "b6a6d5cf99404f5a53e6d51e940183ab3f18b5bd",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "true \ntext"
+  },
+  {
+   "step": 4,
+   "capture": "t0_main",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "hall\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "MerchantPortrait img=rbxassetid://81997694699949 loaded=true abs=240, 144 vis=true rect=780.190491, 768/195.047623, 117.028572 trans=0 parentVis=true\nMerchantPortrait img=rbxassetid://81997694699949 loaded=true abs=240, 144 vis=true rect=780.190491, 768/195.047623, 117.028572 trans=0 parentVis=true\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "hall2",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 12,
+  "completedSteps": 12,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
