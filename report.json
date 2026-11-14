@@ -1,130 +1,65 @@
 {
- "sourceRevision": "78ab921f7dc6b3b0769b2026dbe497de8c7d0511",
+ "sourceRevision": "c07edce5b09485301b6f2e73fd6d3d407cbdf258",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 4,
-   "capture": "lisbon_L3_top",
-   "files": 1
+   "out": "ok\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "tab\ntext"
   },
   {
    "step": 7,
-   "capture": "lisbon_L3_street",
-   "files": 1
+   "ctx": "Client",
+   "out": "tab\ntext"
   },
   {
-   "step": 8,
+   "step": 9,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "killed 1\ntext"
   },
   {
    "step": 10,
-   "capture": "venice_L3_top",
-   "files": 1
-  },
-  {
-   "step": 11,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "deck\ntext"
   },
   {
-   "step": 13,
-   "capture": "venice_L3_street",
-   "files": 1
+   "step": 12,
+   "ctx": "Client",
+   "out": "practice\ntext"
   },
   {
    "step": 14,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 16,
-   "capture": "rouen_L3_top",
+   "capture": "p1",
    "files": 1
   },
   {
-   "step": 17,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "step": 16,
+   "capture": "p2",
+   "files": 1
   },
   {
-   "step": 19,
-   "capture": "rouen_L3_street",
+   "step": 18,
+   "capture": "p3",
    "files": 1
   },
   {
    "step": 20,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 22,
-   "capture": "london_L3_top",
+   "capture": "p4",
    "files": 1
   },
   {
-   "step": 23,
+   "step": 21,
    "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "london_L3_street",
-   "files": 1
-  },
-  {
-   "step": 26,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 28,
-   "capture": "hamburg_L3_top",
-   "files": 1
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 31,
-   "capture": "hamburg_L3_street",
-   "files": 1
-  },
-  {
-   "step": 32,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 34,
-   "capture": "bergen_L3_top",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 37,
-   "capture": "bergen_L3_street",
-   "files": 1
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -135,17 +70,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 19,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 38,
-  "completedSteps": 38,
+  "plannedSteps": 22,
+  "completedSteps": 22,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 12,
-  "capturedFrames": 12,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
   "abortedEarly": false
  }
 }

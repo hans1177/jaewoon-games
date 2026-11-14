@@ -1,18 +1,18 @@
 {
-  "runId": "43572899152",
+  "runId": "43575660828",
   "kind": "studio",
-  "sourceRevision": "1bae0e995851db1f8181660a68737b0603ebee3f",
+  "sourceRevision": "c07edce5b09485301b6f2e73fd6d3d407cbdf258",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 23,
-    "completedSteps": 23,
+    "plannedSteps": 22,
+    "completedSteps": 22,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 6,
-    "capturedFrames": 6,
+    "plannedFrames": 4,
+    "capturedFrames": 4,
     "abortedEarly": false
   },
   "errors": [],
@@ -95,102 +95,91 @@
     },
     {
       "step": 10,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 11,
-      "type": "capture",
-      "name": "s1",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "s1-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 12,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 13,
-      "type": "capture",
-      "name": "s2",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "s2-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 14,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "p1",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "p1-0.jpg"
+      ]
     },
     {
       "step": 15,
-      "type": "capture",
-      "name": "s3",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "s3-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 16,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "p2",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "p2-0.jpg"
+      ]
     },
     {
       "step": 17,
-      "type": "capture",
-      "name": "s4",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "s4-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 18,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "p3",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "p3-0.jpg"
+      ]
     },
     {
       "step": 19,
-      "type": "capture",
-      "name": "s5",
-      "status": "PASS",
-      "screenshots": [
-        "s5-0.jpg"
-      ]
-    },
-    {
-      "step": 20,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 21,
+      "step": 20,
       "type": "capture",
-      "name": "s6",
+      "name": "p4",
       "status": "PASS",
       "screenshots": [
-        "s6-0.jpg"
+        "p4-0.jpg"
       ]
     },
     {
-      "step": 22,
+      "step": 21,
       "type": "luau",
       "name": "",
       "status": "PASS",
@@ -199,42 +188,30 @@
   ],
   "screenshotComparison": [
     {
-      "name": "s1-0.jpg",
-      "sha256": "01f86ea200eeaa94b1031934d4c26483b57c73e3cd4503f761981ba2d30c9d7d",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s1-0.jpg"
+      "name": "p1-0.jpg",
+      "sha256": "817f15a3e1b712ae1a0ef905c8145f2a89e43975fdb364720f2d48971e35733a",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43575660828/p1-0.jpg"
     },
     {
-      "name": "s2-0.jpg",
-      "sha256": "923783e9af642af3492e3f35065d2ad053af3e42e92facb588d4daa7081e0daf",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s2-0.jpg"
+      "name": "p2-0.jpg",
+      "sha256": "5c0187042992fae7252510dd642fd62e7ac17aeed9a1cb301a06bc7382f9531f",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43575660828/p2-0.jpg"
     },
     {
-      "name": "s3-0.jpg",
-      "sha256": "4064bd8c7e7f2796b743ec2bb11b6d667c8c48f3ed7d50908dec48c572770129",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s3-0.jpg"
+      "name": "p3-0.jpg",
+      "sha256": "63028e18e96177588b978f0ecb0134df47427416c99c6f20d516c81cc31fc4ab",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43575660828/p3-0.jpg"
     },
     {
-      "name": "s4-0.jpg",
-      "sha256": "932086d83bcb897242413e8aeeb7e880855c205beb3e2e8bd4b4f8a694a75487",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s4-0.jpg"
-    },
-    {
-      "name": "s5-0.jpg",
-      "sha256": "42ddc9eeb09cb8199876ef35a89fca05bb077bea21edfe1fcae746bea18b1e11",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s5-0.jpg"
-    },
-    {
-      "name": "s6-0.jpg",
-      "sha256": "cd17f139c0b5ea60523fa0667235bf9f49d59d2de8d6ca3a2e5acab4c26fe760",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43572899152/s6-0.jpg"
+      "name": "p4-0.jpg",
+      "sha256": "f931145732c9e72ca7c501a352cfb3fefc342573554ab7303fa8ff0f0df08916",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43575660828/p4-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43572220485"
+  "previousRunId": "43575269482"
 }
