@@ -3426,7 +3426,7 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 else 30) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 elseif factionId == "lost" or factionId == "southeast_asia" then 30 else 31) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
@@ -3696,7 +3696,7 @@ do
 	local total, broken = 0, 0
 	for _, prefix in { "eu", "ea", "me", "nw", "af", "sa", "lo" } do
 		local count = 0
-		local per = if prefix == "eu" then 45 else 30
+		local per = if prefix == "eu" then 45 elseif prefix == "ea" or prefix == "me" or prefix == "nw" or prefix == "af" then 31 else 30
 		for index = 1, per do
 			local id = string.format("%s_%02d", prefix, index)
 			local card = BC.Units[id] or BC.Specials[id]
@@ -3715,7 +3715,7 @@ do
 		englishCount += 1
 		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
 	end
-	check("225장 영어판·한국어판 카드 연결 보존", total == 225 and englishCount == 225 and broken == 0,
+	check("229장 영어판·한국어판 카드 연결 보존", total == 229 and englishCount == 229 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 
@@ -3936,6 +3936,28 @@ do
 		if base and base.category == "선박" and not base.hero and c.power == base.power + 1 then foeShip = true end
 	end
 	check("대륙 특징: 상대 덱에도 같은 규칙", foeShip)
+end
+
+
+-- [인과 카드] 모든 대륙에 연쇄 링크와 반증 카드가 있다
+do
+	local BC = D.BoardingCards
+	for _, fid in { "europe", "east_asia", "middle_east", "new_world", "africa", "southeast_asia" } do
+		local chains, refutes, badHero = 0, 0, 0
+		local inRoster = {}
+		for _, id in BC.Factions[fid].roster do inRoster[id] = true end
+		for _, id in BC.Factions[fid].roster do
+			local c = BC.Units[id] or BC.Specials[id]
+			if c.cause then
+				chains += 1
+				if c.hero or not inRoster[c.cause] then badHero += 1 end
+			end
+			if c.special == "refute" then refutes += 1 end
+		end
+		check("연쇄 카드 3장 이상: " .. fid, chains >= 3, chains)
+		check("반증 카드 1장 이상: " .. fid, refutes >= 1, refutes)
+		check("연쇄 원인은 같은 대륙 카드이고 영웅이 아니다: " .. fid, badHero == 0, badHero)
+	end
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
