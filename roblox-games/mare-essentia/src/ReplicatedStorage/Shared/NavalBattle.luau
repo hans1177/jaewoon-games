@@ -943,7 +943,7 @@ function NavalBattle.play(opts)
 		bg.Parent = g
 		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
 		if cfg then
-			bg.BackgroundTransparency = if opts.cardOnly then 0.82 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
+			bg.BackgroundTransparency = if opts.cardOnly then 0 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
 		end
 		-- 카드 대전판: 짙은 목재 탁자 위에 항해도 문양, 가운데 전선, 네 모서리 황동 장식
 		local wood = Instance.new("UIGradient")
@@ -964,7 +964,7 @@ function NavalBattle.play(opts)
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 1 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then 0.45 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -972,7 +972,7 @@ function NavalBattle.play(opts)
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if opts.cardOnly then 0.97 elseif cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if opts.cardOnly then 0.6 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -1795,7 +1795,7 @@ function NavalBattle.play(opts)
 				rf.Size = UDim2.fromScale(1, 1 / 6 - 0.012)
 				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
 				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
-				rf.BackgroundTransparency = if cfg then 0.53 else 0.32
+				rf.BackgroundTransparency = if opts.cardOnly then 0.08 elseif cfg then 0.53 else 0.32
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
 				local laneGradient = Instance.new("UIGradient")
