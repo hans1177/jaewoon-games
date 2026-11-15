@@ -510,8 +510,8 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		local kinds = { "grunt", "archer", "shield" }
-		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 3 + 1])
+		local kinds = { "grunt", "archer", "shield", "charger" }
+		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 4 + 1])
 		tag.Text = ac.def.name
 		table.insert(enemies, { ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
@@ -795,7 +795,7 @@ function FieldScene.start(opts)
 	end))
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
-	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?)
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG, mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
@@ -810,7 +810,7 @@ function FieldScene.start(opts)
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
 		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
 		local punchCam = workspace.CurrentCamera
-		if punchCam then
+		if punchCam and not quiet then
 			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
 			task.delay(0.1, function()
 				punchCam.FieldOfView = 70
@@ -1121,6 +1121,15 @@ function FieldScene.start(opts)
 				end
 			elseif event == "strike" then
 				e.swingAt = now
+				if e.ac.def.charge then
+					-- 돌진: 예고가 끝나면 주인공 앞까지 순식간에 달려든다(피하려면 예고 중에 옆으로 비켜야 한다)
+					local to = Vector3.new(hrp.Position.X - e.root.Position.X, 0, hrp.Position.Z - e.root.Position.Z)
+					if to.Magnitude > 4 then
+						local step = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
+						e.model:PivotTo(e.model:GetPivot() + to.Unit * step)
+						burst(e.root.Position + Vector3.new(0, 2, 0), 18, false)
+					end
+				end
 				if e.ac.def.keepAway then
 					arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 				end
@@ -1177,6 +1186,90 @@ function FieldScene.start(opts)
 			end
 		end
 	end))
+
+	-- 동료(최대 2명): 주인공 곁을 따라다니다 가까운 적에게 달려가 알아서 싸운다. 맞지는 않는 지원군.
+	do
+		local allyDefs = {}
+		local allyNames = opts.allies or {}
+		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
+			allyNames = { "동료 기사", "동료 도적" } -- 개발 캡처 전용
+		end
+		for i, nm in allyNames do
+			if i <= 2 then
+				table.insert(allyDefs, { name = tostring(nm), role = if i == 1 then "Knight" else "Rogue" })
+			end
+		end
+		local allies: { any } = {}
+		local spawned = false
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			if finished or #allyDefs == 0 then
+				return
+			end
+			local ch = player.Character
+			local root0 = ch and ch:FindFirstChild("HumanoidRootPart")
+			if not root0 then
+				return
+			end
+			local now = os.clock()
+			if not spawned then
+				spawned = true
+				for i, ad in allyDefs do
+					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
+					local m = Pose.createR15(folder, pos0, 0, nil, rng, ad.role, 5.6)
+					local r = m and m:FindFirstChild("HumanoidRootPart")
+					if m and r then
+						m.Name = "FieldAlly"
+						local bbA = Instance.new("BillboardGui")
+						bbA.Adornee = r
+						bbA.Size = UDim2.fromOffset(120, 20)
+						bbA.StudsOffset = Vector3.new(0, 4.5, 0)
+						bbA.AlwaysOnTop = true
+						bbA.MaxDistance = 80
+						bbA.Parent = r
+						local tg = label(bbA, ad.name, 14, Color3.fromRGB(130, 230, 150))
+						tg.Size = UDim2.new(1, 0, 1, 0)
+						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now })
+						table.insert(conns, { Disconnect = function()
+							m:Destroy()
+						end })
+					end
+				end
+			end
+			for _, a in allies do
+				-- 목표: 가장 가까운 적. 없으면 주인공 옆 자리
+				local tgt, td = nil, 40 * STUD
+				for _, e in enemies do
+					local d0 = (e.root.Position - a.root.Position).Magnitude
+					if d0 < td then
+						tgt, td = e, d0
+					end
+				end
+				local goal = if tgt then tgt.root.Position else root0.Position + Vector3.new(a.slot * 5 - 8, 0, -4)
+				local stop = if tgt then 5.5 else 3
+				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
+				local moving = to.Magnitude > stop
+				if moving then
+					local step = math.min(to.Magnitude - stop, (if tgt then 16 else 20) * dt)
+					a.model:PivotTo(a.model:GetPivot() + to.Unit * step)
+				end
+				if to.Magnitude > 0.5 then
+					local pv = a.model:GetPivot()
+					a.model:PivotTo(CFrame.lookAt(pv.Position, pv.Position + to.Unit))
+				end
+				if tgt and not moving and now >= a.nextAt then
+					a.nextAt = now + 1.3
+					a.swingAt = now
+					strikeEnemy(tgt, 0.6, a.root.Position, 1.0, false, true)
+				end
+				local ap = (now - a.swingAt) / 0.5
+				if ap >= 0 and ap < 1 then
+					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
+				else
+					Pose.makeR15Action(a.model, if moving then "run" else "idle", 0, now - a.t0)
+				end
+			end
+		end))
+	end
 
 	-- 캐릭터를 필드로 옮긴다
 	local char = player.Character or player.CharacterAdded:Wait()

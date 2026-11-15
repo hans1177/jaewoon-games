@@ -114,6 +114,7 @@ do
 	local missing = 0
 	for _, mv in A.Moves do if type(mv.src) ~= "string" or #mv.src < 5 then missing += 1 end end
 	check("동작 출처(마력숲 id)가 모두 있다", missing == 0)
+	check("돌진병: 멀리서 예고하고 사거리 안에서 맞는다", A.Enemies.charger and A.Enemies.charger.charge and A.Enemies.charger.range > A.Enemies.grunt.range)
 	check("적 4종이 정의돼 있다", A.Enemies.grunt and A.Enemies.archer and A.Enemies.shield and A.Enemies.boss and true)
 end
 print(string.format("액션 전투 테스트: 통과 %d, 실패 %d", passed, failed))
