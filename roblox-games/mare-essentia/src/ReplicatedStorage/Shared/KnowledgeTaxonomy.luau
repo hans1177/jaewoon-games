@@ -12,7 +12,7 @@ local T = {}
 -- 카드 id → 소분류(학문 id). 없으면 중분류 직속. 새 카드는 여기에 한 줄 추가.
 T.SubOf = {
 	bot_tulip = "agronomy",
-	zoo_horse = "veterinary",
+	zoo_reindeer = "veterinary",
 }
 
 -- Field → 중분류 학문 id (연구 노드가 있는 학문 + 아직 노드 없는 군사학)
