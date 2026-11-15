@@ -126,6 +126,29 @@ function FM.combo(key: string, ids: { string })
 	return c
 end
 
+-- 무기(CommonMotion 프로필 id)의 n번째 동작. 맨손(motion=nil)은 주먹·발차기 연타. 만들 수 없으면 nil.
+local UNARMED_CHAIN = { "U:JAB_LEFT", "U:CROSS_RIGHT", "U:FRONT_KICK_L" }
+function FM.weaponCombo(motion: string?, idx: number)
+	local key = "wpn:" .. tostring(motion) .. ":" .. idx
+	local c = comboCache[key]
+	if c == nil then
+		local ok, res = pcall(function()
+			if motion == nil then
+				return CM.CreateCombatCombo("UNARMED", { UNARMED_CHAIN[(idx - 1) % #UNARMED_CHAIN + 1] })
+			end
+			local prof = CM.DescribeWeaponProfiles()[motion]
+			local route = prof and prof.route
+			if not route then
+				return nil
+			end
+			return CM.CreateCombatCombo(motion, { route[(idx - 1) % #route + 1] })
+		end)
+		c = if ok and res then res else false
+		comboCache[key] = c
+	end
+	return c or nil
+end
+
 function FM.sample(combo, elapsed: number, out)
 	CM.SampleCombatCombo(combo, elapsed, out)
 end
