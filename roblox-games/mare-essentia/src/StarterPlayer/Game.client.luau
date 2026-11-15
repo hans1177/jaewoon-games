@@ -2059,7 +2059,7 @@ do
 		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
 		local left = if compact then 8 else 282
 		local right = if compact then 148 else 304
-		local bubbleWidth = math.clamp(width - left - right, 1, 430)
+		local bubbleWidth = math.clamp(width - left - right, 1, 560)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
@@ -2091,19 +2091,19 @@ local function bubbleLabel(order, textSize, color)
 	l.Parent = bubble
 	return l
 end
-H.bubbleWho = bubbleLabel(1, 14, COLORS.gold)
-H.bubbleLine = bubbleLabel(2, 13, COLORS.text)
-H.bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
-local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
+H.bubbleWho = bubbleLabel(1, 19, COLORS.gold)
+H.bubbleLine = bubbleLabel(2, 18, COLORS.text)
+H.bubbleAdvice = bubbleLabel(3, 17, Color3.fromRGB(190, 230, 200))
+local bubbleNext = bubbleLabel(4, 15, COLORS.muted)
 -- 동료 조언 말풍선의 행동 버튼: 누르면 그 화면(조선소·교역소 등)으로 바로 간다
 local function bubbleButton(order, color)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, 0, 0, 32)
+	b.Size = UDim2.new(1, 0, 0, 42)
 	b.LayoutOrder = order
 	b.BackgroundColor3 = color
 	b.TextColor3 = Color3.fromRGB(250, 246, 235)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 13
+	b.TextSize = 17
 	b.ZIndex = 22
 	b.AutoButtonColor = true
 	b.Visible = false
@@ -2117,7 +2117,7 @@ H.bubbleSkip = bubbleButton(6, Color3.fromRGB(96, 96, 104))
 do
 	local textSizes = {
 		[H.hudName] = 16, [H.hudCoin] = 16, [H.hudPort] = 15, [H.hudShip] = 14,
-		[H.bubbleWho] = 14, [H.bubbleLine] = 13, [H.bubbleAdvice] = 13, [bubbleNext] = 12,
+		[H.bubbleWho] = 19, [H.bubbleLine] = 18, [H.bubbleAdvice] = 17, [bubbleNext] = 15,
 	}
 	local function updateSize()
 		local extra = if player:GetAttribute("LargeHudText") then 3 else 0
@@ -2127,6 +2127,20 @@ do
 	end
 	player:GetAttributeChangedSignal("LargeHudText"):Connect(updateSize)
 	updateSize()
+end
+-- [글씨 하한] 화면 어디서 만든 글씨든 15보다 작으면 15로 올린다 (대화·이벤트·시작 화면 포함).
+do
+	local FLOOR = 15
+	local function lift(obj)
+		if (obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox")) and not obj.TextScaled and obj.TextSize < FLOOR then
+			obj.TextSize = FLOOR
+		end
+	end
+	local gui = player:WaitForChild("PlayerGui")
+	for _, d in gui:GetDescendants() do
+		lift(d)
+	end
+	gui.DescendantAdded:Connect(lift)
 end
 local bubbleKey, bubbleToken = nil, 0
 function H.hideBubble()
@@ -3467,9 +3481,9 @@ function playStory(ev)
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
 	chapter.Position = UDim2.fromOffset(0, 14)
-	chapter.Size = UDim2.new(1, 0, 0, 22)
+	chapter.Size = UDim2.new(1, 0, 0, 30)
 	chapter.Font = Enum.Font.GothamBold
-	chapter.TextSize = 15
+	chapter.TextSize = 21
 	chapter.TextXAlignment = Enum.TextXAlignment.Center
 	chapter.TextColor3 = Color3.new(1, 1, 1)
 	chapter.TextStrokeTransparency = 1
@@ -3478,23 +3492,23 @@ function playStory(ev)
 	chapter.Parent = overlay
 
 	-- 대화창
-	local box = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.fromRGB(24, 28, 38))
+	local box = mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(24, 28, 38))
 	local nameTag = Instance.new("TextLabel")
 	nameTag.BackgroundTransparency = 1
 	nameTag.Position = UDim2.fromOffset(14, 6)
-	nameTag.Size = UDim2.new(1, -28, 0, 20)
+	nameTag.Size = UDim2.new(1, -28, 0, 28)
 	nameTag.Font = Enum.Font.GothamBold
-	nameTag.TextSize = 14
+	nameTag.TextSize = 20
 	nameTag.TextXAlignment = Enum.TextXAlignment.Left
 	nameTag.TextColor3 = COLORS.gold
 	nameTag.Text = ev.npc
 	nameTag.Parent = box
 	local text = Instance.new("TextLabel")
 	text.BackgroundTransparency = 1
-	text.Position = UDim2.fromOffset(14, 30)
-	text.Size = UDim2.new(1, -28, 1, -40)
+	text.Position = UDim2.fromOffset(14, 38)
+	text.Size = UDim2.new(1, -28, 1, -56)
 	text.Font = Enum.Font.Gotham
-	text.TextSize = 15
+	text.TextSize = 21
 	text.TextWrapped = true
 	text.TextXAlignment = Enum.TextXAlignment.Left
 	text.TextYAlignment = Enum.TextYAlignment.Top
@@ -3508,10 +3522,10 @@ function playStory(ev)
 	next.Parent = box
 	local hint = Instance.new("TextLabel")
 	hint.BackgroundTransparency = 1
-	hint.Position = UDim2.new(0, 0, 1, -20)
-	hint.Size = UDim2.new(1, -12, 0, 16)
+	hint.Position = UDim2.new(0, 0, 1, -24)
+	hint.Size = UDim2.new(1, -12, 0, 20)
 	hint.Font = Enum.Font.Gotham
-	hint.TextSize = 11
+	hint.TextSize = 15
 	hint.TextXAlignment = Enum.TextXAlignment.Right
 	hint.TextColor3 = COLORS.muted
 	hint.Text = "화면을 누르면 다음"
@@ -3541,20 +3555,20 @@ function playStory(ev)
 	local function showChoices()
 		next:Destroy()
 		hint.Text = ""
-		text.Size = UDim2.new(1, -28, 0, 40)
+		text.Size = UDim2.new(1, -28, 0, 64)
 		text.Text = ev.lines[#ev.lines]
-		text.TextSize = 13
+		text.TextSize = 19
 		local list = Instance.new("Frame")
 		list.BackgroundTransparency = 1
-		list.Position = UDim2.fromOffset(14, 70)
-		list.Size = UDim2.new(1, -28, 1, -76)
+		list.Position = UDim2.fromOffset(14, 108)
+		list.Size = UDim2.new(1, -28, 1, -114)
 		list.Parent = box
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
 		lay.Parent = list
 		for _, ch in ev.choices do
 			local label = ch.text
-			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 36), function()
+			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 46), function()
 				local result = if ev.submit then ev.submit(ch.index) else call("PlayStory", { eventId = ev.id, choice = ch.index })
 				if not result then
 					hint.Text = "잠시 후 다시 눌러 주세요"
@@ -3562,7 +3576,7 @@ function playStory(ev)
 					-- 실패 이유를 대화창 안에 바로 보여 준다
 					hint.Text = tostring(result.message or "처리하지 못했어요")
 					hint.TextColor3 = COLORS.red
-					hint.TextSize = 14
+					hint.TextSize = 16
 				end
 				if result and result.ok then
 					for _, c in list:GetChildren() do
@@ -3571,20 +3585,20 @@ function playStory(ev)
 						end
 					end
 					nameTag.Text = ""
-					text.TextSize = 14
-					text.Size = UDim2.new(1, -28, 1, -80)
+					text.TextSize = 20
+					text.Size = UDim2.new(1, -28, 1, -90)
 					text.Text = result.message
 					text.MaxVisibleGraphemes = -1
 					if ev.art == "epilogue" then
 						epilogueMessage = result.message
 					end
-					local ok = mkButton(list, "닫기", COLORS.gold, UDim2.new(1, 0, 0, 36), close, true)
+					local ok = mkButton(list, "닫기", COLORS.gold, UDim2.new(1, 0, 0, 46), close, true)
 					ok.LayoutOrder = 9
-					list.Position = UDim2.new(0, 14, 1, -46)
-					list.Size = UDim2.new(1, -28, 0, 40)
+					list.Position = UDim2.new(0, 14, 1, -56)
+					list.Size = UDim2.new(1, -28, 0, 48)
 				end
 			end, true)
-			b.TextSize = 13
+			b.TextSize = 18
 		end
 	end
 	next.Activated:Connect(function()
@@ -6383,23 +6397,23 @@ local function renderCodexOverview()
 			return row
 		end)
 	end
-	add(function() return mkHeader(content, "지식 트리 (발견 → 보고 → 이해 → 효과)") end)
+	add(function() return mkHeader(content, "지식 트리") end)
 	add(function()
-		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
+		return mkLabel(content, "발견 → 학자에게 보고 → 이해 → 항해·포격·교역 효과", 14, COLORS.muted, false)
 	end)
 	if view.knowledge and view.knowledge.era then
 		local er = view.knowledge.era
 		add(function() return mkHeader(content, string.format("인류의 시대 — %s", er.name)) end)
 		add(function()
 			local nxt = if er.nextName then string.format(" 다음 시대(%s)까지 이해한 지식 %d/%d개.", er.nextName, er.count, er.nextNeed) else " 마지막 시대에 이르렀어요."
-			return mkLabel(content, er.story .. nxt .. " 시대가 오를수록 항해와 항구 연구가 조금씩 좋아져요.", 12, COLORS.muted, false)
+			return mkLabel(content, er.story .. nxt, 14, COLORS.muted, false)
 		end)
 	end
 	if view.pace then
 		local pc = view.pace
 		add(function() return mkHeader(content, "역사의 속도") end)
 		add(function()
-			return mkLabel(content, string.format("건물과 기술 사건은 시대순으로 열려요. 일찍 발견하고 보고하고, 학회·박람회·공동 발표를 하고, 어려운 퀘스트를 해내면 역사가 앞당겨져요. 지금 %.1f년 앞섬 (최대 %d년) · 이번 %d일 동안 앞당길 수 있는 양 %d/%d일. 앞서 갈수록, 짧은 기간에 몰아칠수록 덜 쌓여요.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 12, COLORS.muted, false)
+			return mkLabel(content, string.format("지금 역사가 %.1f년 앞서 있어요 (최대 %d년). 이번 %d일 앞당김 %d/%d일.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 14, COLORS.muted, false)
 		end)
 	end
 	if view.people then
@@ -6407,7 +6421,7 @@ local function renderCodexOverview()
 			art = "chisel", letters = "journal-closed", merchant = "coin", pirate = "weapon-sword", faith = "lantern" }
 		local pv = view.people
 		add(function() return mkHeader(content, string.format("인물 백과 (기록 %d / %d명)", pv.known, pv.total)) end)
-		add(function() return mkLabel(content, "항구를 찾아가거나 학자를 만나거나 역사 사건을 겪으면 그 시대의 인물이 백과에 기록돼요. 분야를 열어 보세요.", 12, COLORS.muted, false) end)
+		add(function() return mkLabel(content, "항구·학자·역사 사건에서 인물이 기록돼요.", 14, COLORS.muted, false) end)
 		for _, t in pv.tiers do
 			add(function()
 				local label = string.format("%d명 기록 보상: %d코인 · 명성 %d", t.need, t.coins, t.fame)
@@ -6454,7 +6468,7 @@ local function renderCodexOverview()
 		local hv = view.history
 		add(function() return mkHeader(content, string.format("역사의 분기점 (겪은 사건 %d / %d)", hv.seenCount or 0, hv.total or 0)) end)
 		if hv.pending then
-			add(function() return mkLabel(content, string.format("⚑ 지금 기다리는 사건: %d년 %s — 화면에 뜨는 선택 창에서 정하세요.", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+			add(function() return mkLabel(content, string.format("⚑ 지금 기다리는 사건: %d년 %s — 화면에 뜨는 선택 창에서 정하세요.", hv.pending.year, hv.pending.title), 15, COLORS.gold, true) end)
 		end
 		for _, r in hv.recent do
 			add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
@@ -7087,13 +7101,20 @@ function RENDERERS.map()
 	if H.mapPage ~= "chart" then
 		local p = view.player
 		add(function() return mkHeader(content, "항해 일지") end)
-		add(function()
-			return mkLabel(content, string.format("%s · %d년 %d일째 · %s에 정박 중\n코인 %d · 명성 %d · 동료 %d명", p.nation, p.year, p.day, p.portName, p.coins, p.fame or 0, #(view.companions and view.companions.list and (function() local n = {} for _, c in view.companions.list do if c.joined then table.insert(n, c) end end return n end)() or {})), 14, COLORS.text, true)
-		end)
+		local crewN = 0
+		for _, c in (view.companions and view.companions.list) or {} do
+			if c.joined then crewN += 1 end
+		end
+		add(function() return mkLabel(content, string.format("%s · %d년 %d일째 · %s 정박", p.nation, p.year, p.day, p.portName), 16, COLORS.text, true) end)
+		H.statStrip({
+			{ "코인", tostring(p.coins), tone = "good" },
+			{ "명성", tostring(p.fame or 0), tone = "key" },
+			{ "동료", tostring(crewN) .. "명", tone = "key" },
+		})
 		local hv = view.history
 		if hv then
 			if hv.pending then
-				add(function() return mkLabel(content, string.format("⚑ 기다리는 사건: %d년 %s", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+				add(function() return mkLabel(content, string.format("기다리는 사건: %d년 %s", hv.pending.year, hv.pending.title), 15, COLORS.gold, true) end)
 			end
 			for _, r in hv.recent or {} do
 				add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
@@ -8390,11 +8411,11 @@ renderTitle = function()
 		rule.Parent = titleScroll
 	end
 	if message ~= "" then
-		tLabel(titleScroll, message, 13, if messageOk then GOLD else COLORS.red, true, nxt())
+		tLabel(titleScroll, message, 17, if messageOk then GOLD else COLORS.red, true, nxt())
 	end
 
 	-- ① 나라
-	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 15, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 20, COLORS.muted, true, nxt())
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
 	grid.Size = UDim2.new(1, 0, 0, 0)
@@ -8403,7 +8424,7 @@ renderTitle = function()
 	grid.ZIndex = 12
 	grid.Parent = titleScroll
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.new(if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y > workspace.CurrentCamera.ViewportSize.X then 0.5 else 1 / 3, -6, 0, 60)
+	gl.CellSize = UDim2.new(if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y > workspace.CurrentCamera.ViewportSize.X then 0.5 else 1 / 3, -6, 0, 72)
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.Parent = grid
@@ -8431,14 +8452,14 @@ renderTitle = function()
 				d.ZIndex = 15
 			end
 		end
-		local nm = mkLabel(card, n.name, 15, INK, true)
+		local nm = mkLabel(card, n.name, 19, INK, true)
 		nm.Position = UDim2.fromOffset(48, 6)
-		nm.Size = UDim2.new(1, -52, 0, 20)
+		nm.Size = UDim2.new(1, -52, 0, 26)
 		nm.AutomaticSize = Enum.AutomaticSize.None
 		nm.ZIndex = 14
-		local sub = mkLabel(card, "⚓ " .. PortData.Ports[PortEras.startPortFor(n, 1517)].name, 11, INK_SOFT, false)
-		sub.Position = UDim2.fromOffset(48, 27)
-		sub.Size = UDim2.new(1, -52, 0, 16)
+		local sub = mkLabel(card, "⚓ " .. PortData.Ports[PortEras.startPortFor(n, 1517)].name, 15, INK_SOFT, false)
+		sub.Position = UDim2.fromOffset(48, 36)
+		sub.Size = UDim2.new(1, -52, 0, 20)
 		sub.AutomaticSize = Enum.AutomaticSize.None
 		sub.ZIndex = 14
 		card.Activated:Connect(function()
@@ -8489,12 +8510,12 @@ renderTitle = function()
 	end
 	local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
 	local pro = N.Prologues[cur.id]
-	tLabel(info, cur.name, 17, GOLD, true)
-	tLabel(info, "출발 항구  " .. PortData.Ports[PortEras.startPortFor(cur, 1517)].name, 12, COLORS.text, true)
-	tLabel(info, cur.summary, 12, COLORS.muted, false)
+	tLabel(info, cur.name, 22, GOLD, true)
+	tLabel(info, "출발 항구  " .. PortData.Ports[PortEras.startPortFor(cur, 1517)].name, 17, COLORS.text, true)
+	tLabel(info, cur.summary, 16, COLORS.muted, false)
 
 	-- ② 출신 성분
-	tLabel(titleScroll, "② 어떤 집안에서 자랐나요?", 15, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "② 어떤 집안에서 자랐나요?", 20, COLORS.muted, true, nxt())
 	do
 		local Sp = require(Shared:WaitForChild("Specialties"))
 		H.chosenOrigin = H.chosenOrigin or "merchant"
@@ -8505,7 +8526,7 @@ renderTitle = function()
 		og.LayoutOrder = nxt()
 		og.ZIndex = 12
 		local ogl = Instance.new("UIGridLayout")
-		ogl.CellSize = UDim2.new(0.5, -4, 0, 62)
+		ogl.CellSize = UDim2.new(0.5, -4, 0, 84)
 		ogl.CellPadding = UDim2.fromOffset(8, 8)
 		ogl.SortOrder = Enum.SortOrder.LayoutOrder
 		ogl.Parent = og
@@ -8524,14 +8545,14 @@ renderTitle = function()
 			bst.Thickness = if sel then 2.5 else 1
 			bst.Color = if sel then INK_EDGE else Color3.fromRGB(151, 114, 75)
 			bst.Parent = b
-			local n1 = mkLabel(b, o.name, 14, INK, true)
+			local n1 = mkLabel(b, o.name, 18, INK, true)
 			n1.Position = UDim2.fromOffset(8, 4)
-			n1.Size = UDim2.new(1, -12, 0, 18)
+			n1.Size = UDim2.new(1, -12, 0, 24)
 			n1.AutomaticSize = Enum.AutomaticSize.None
 			n1.ZIndex = 14
-			local n2 = mkLabel(b, o.perkText, 11, INK_SOFT, false)
-			n2.Position = UDim2.fromOffset(8, 23)
-			n2.Size = UDim2.new(1, -12, 0, 36)
+			local n2 = mkLabel(b, o.perkText, 15, INK_SOFT, false)
+			n2.Position = UDim2.fromOffset(8, 30)
+			n2.Size = UDim2.new(1, -12, 0, 40)
 			n2.AutomaticSize = Enum.AutomaticSize.None
 			n2.TextWrapped = true
 			n2.TextYAlignment = Enum.TextYAlignment.Top
@@ -8546,7 +8567,7 @@ renderTitle = function()
 		og.Parent = titleScroll
 		local cur2 = Sp.OriginById[H.chosenOrigin]
 		if cur2 then
-			tLabel(titleScroll, cur2.story, 12, COLORS.muted, false, nxt())
+			tLabel(titleScroll, cur2.story, 16, COLORS.muted, false, nxt())
 		end
 	end
 
@@ -8571,7 +8592,7 @@ renderTitle = function()
 	-- 출발
 	local actions = Instance.new("Frame")
 	actions.BackgroundTransparency = 1
-	actions.Size = UDim2.new(1, 0, 0, 60)
+	actions.Size = UDim2.new(1, 0, 0, 68)
 	actions.LayoutOrder = nxt()
 	actions.ZIndex = 12
 	actions.Parent = titleScroll
@@ -8585,11 +8606,11 @@ renderTitle = function()
 			render()
 		end, true)
 		cancel.ZIndex = 13
-		cancel.TextSize = 14
+		cancel.TextSize = 18
 	end
 	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), H.startNewGame, true)
 	go.ZIndex = 13
-	go.TextSize = 22
+	go.TextSize = 26
 	go.TextColor3 = INK
 	do
 		local gst = Instance.new("UIStroke")
@@ -8638,7 +8659,7 @@ function render()
 		H.pageDetails.Text = ""
 		H.layoutBook()
 		if message ~= "" then
-			add(function() return mkLabel(content, message, 13, if messageOk then COLORS.gold else COLORS.red, true) end)
+			add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 		end
 		renderTitle()
 		return
@@ -8658,7 +8679,7 @@ function render()
 	syncScene()
 
 	if message ~= "" then
-		add(function() return mkLabel(content, message, 13, if messageOk then COLORS.gold else COLORS.red, true) end)
+		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
 	RENDERERS[currentTab]()
 end
