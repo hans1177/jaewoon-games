@@ -57,7 +57,7 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
 fi
 
 echo "== 타입 검사 =="
-"$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/knowledge_battle.test.luau" "$TMP/action_combat.test.luau" "$TMP/economy.test.luau" "$TMP/jobskills.test.luau"
+"$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/knowledge_battle.test.luau" "$TMP/action_combat.test.luau" "$TMP/economy.test.luau" "$TMP/jobskills.test.luau" "$TMP/weapons.test.luau"
 echo "OK"
 
 echo "== 로직 테스트 =="
@@ -71,6 +71,8 @@ echo "== 액션 전투 테스트 =="
 
 echo "== 직업별 스킬 테스트 =="
 (cd "$TMP" && "$LUAU" jobskills.test.luau)
+echo "== 무기 테스트 =="
+(cd "$TMP" && "$LUAU" weapons.test.luau)
 
 echo "== 마을 경제 테스트 =="
 (cd "$TMP" && "$LUAU" economy.test.luau)
