@@ -1,5 +1,5 @@
 {
- "sourceRevision": "1b62cc4e7ce6061f28c041070467ad4e3b3b9199",
+ "sourceRevision": "fdc285c8d2995a58722e1734063c9bbeeb7f516e",
  "log": [
   {
    "step": 1,
@@ -24,25 +24,35 @@
   {
    "step": 7,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "killed 0\ntext"
   },
   {
-   "step": 9,
+   "step": 8,
    "ctx": "Client",
    "out": "dev\ntext"
   },
   {
+   "step": 10,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
    "step": 11,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 13,
    "capture": "board",
    "files": 1
   },
   {
-   "step": 12,
+   "step": 14,
    "ctx": "Client",
    "out": "dev\ntext"
   },
   {
-   "step": 14,
+   "step": 16,
    "capture": "quest",
    "files": 1
   }
@@ -59,8 +69,8 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 15,
-  "completedSteps": 15,
+  "plannedSteps": 17,
+  "completedSteps": 17,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
