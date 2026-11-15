@@ -1,18 +1,18 @@
 {
-  "runId": "43676766067",
+  "runId": "43677177211",
   "kind": "studio",
-  "sourceRevision": "271a7a8add1bea1b54e2d039151b3fe4b66c37f4",
+  "sourceRevision": "c4a55e8ae31fe12d62e3b0b0f991058260bbd61c",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 38,
-    "completedSteps": 38,
+    "plannedSteps": 24,
+    "completedSteps": 24,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 12,
-    "capturedFrames": 12,
+    "plannedFrames": 3,
+    "capturedFrames": 3,
     "abortedEarly": false
   },
   "errors": [],
@@ -39,72 +39,70 @@
     },
     {
       "step": 2,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 3,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 4,
-      "type": "capture",
-      "name": "lisbon_L3_top",
-      "status": "PASS",
-      "screenshots": [
-        "lisbon_L3_top-0.jpg"
-      ]
-    },
-    {
-      "step": 5,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
+      "step": 5,
+      "type": "capture",
+      "name": "k0_deck",
+      "status": "PASS",
+      "screenshots": [
+        "k0_deck-0.jpg"
+      ]
+    },
+    {
       "step": 6,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 7,
-      "type": "capture",
-      "name": "lisbon_L3_street",
-      "status": "PASS",
-      "screenshots": [
-        "lisbon_L3_street-0.jpg"
-      ]
-    },
-    {
-      "step": 8,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 9,
+      "step": 8,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 10,
+      "step": 9,
       "type": "capture",
-      "name": "venice_L3_top",
+      "name": "k1_practice",
       "status": "PASS",
       "screenshots": [
-        "venice_L3_top-0.jpg"
+        "k1_practice-0.jpg"
       ]
+    },
+    {
+      "step": 10,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 11,
@@ -115,19 +113,17 @@
     },
     {
       "step": 12,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 13,
-      "type": "capture",
-      "name": "venice_L3_street",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "venice_L3_street-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 14,
@@ -145,35 +141,33 @@
     },
     {
       "step": 16,
-      "type": "capture",
-      "name": "rouen_L3_top",
-      "status": "PASS",
-      "screenshots": [
-        "rouen_L3_top-0.jpg"
-      ]
-    },
-    {
-      "step": 17,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 18,
+      "step": 17,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 19,
+      "step": 18,
       "type": "capture",
-      "name": "rouen_L3_street",
+      "name": "k2_tactics_hand",
       "status": "PASS",
       "screenshots": [
-        "rouen_L3_street-0.jpg"
+        "k2_tactics_hand-0.jpg"
       ]
+    },
+    {
+      "step": 19,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 20,
@@ -191,12 +185,10 @@
     },
     {
       "step": 22,
-      "type": "capture",
-      "name": "london_L3_top",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "london_L3_top-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 23,
@@ -204,190 +196,28 @@
       "name": "",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 25,
-      "type": "capture",
-      "name": "london_L3_street",
-      "status": "PASS",
-      "screenshots": [
-        "london_L3_street-0.jpg"
-      ]
-    },
-    {
-      "step": 26,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 27,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 28,
-      "type": "capture",
-      "name": "hamburg_L3_top",
-      "status": "PASS",
-      "screenshots": [
-        "hamburg_L3_top-0.jpg"
-      ]
-    },
-    {
-      "step": 29,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 30,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 31,
-      "type": "capture",
-      "name": "hamburg_L3_street",
-      "status": "PASS",
-      "screenshots": [
-        "hamburg_L3_street-0.jpg"
-      ]
-    },
-    {
-      "step": 32,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 33,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 34,
-      "type": "capture",
-      "name": "bergen_L3_top",
-      "status": "PASS",
-      "screenshots": [
-        "bergen_L3_top-0.jpg"
-      ]
-    },
-    {
-      "step": 35,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 36,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 37,
-      "type": "capture",
-      "name": "bergen_L3_street",
-      "status": "PASS",
-      "screenshots": [
-        "bergen_L3_street-0.jpg"
-      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "bergen_L3_street-0.jpg",
-      "sha256": "d2d36e6d60c6bf522d67d3442ba6b3732c17e25c7d4a48b5b6796e6807d20912",
+      "name": "k0_deck-0.jpg",
+      "sha256": "1070837ec60f15c649a3e43af558785e5eb0bd21031fed052512e9fde4aa9a68",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/bergen_L3_street-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43677177211/k0_deck-0.jpg"
     },
     {
-      "name": "bergen_L3_top-0.jpg",
-      "sha256": "5319e5bd87c7854737956f602ab8dbdba2307d54206e98aa2d3c72efb54683be",
+      "name": "k1_practice-0.jpg",
+      "sha256": "96670b9a4e267a1646ad2c2071bad62733c222e443bb3d9f4a71a357114acfa0",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/bergen_L3_top-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43677177211/k1_practice-0.jpg"
     },
     {
-      "name": "hamburg_L3_street-0.jpg",
-      "sha256": "7a23689d02fae98bcbacb22abd24f389133e66c2d52a0ba659be40fdaee27734",
+      "name": "k2_tactics_hand-0.jpg",
+      "sha256": "c2091cc6530104f8630c07c773270477ae47dec97791690d27bbe945922e11ae",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/hamburg_L3_street-0.jpg"
-    },
-    {
-      "name": "hamburg_L3_top-0.jpg",
-      "sha256": "d8e533f75ffb32cc91d09cfe22e8a92c77a7f40d2bb808cfe303046c4d4e4787",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/hamburg_L3_top-0.jpg"
-    },
-    {
-      "name": "lisbon_L3_street-0.jpg",
-      "sha256": "96ca4d76f74820b2c6f30078789c1b3cf06d02194782ee8ca33aebccb87b227f",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/lisbon_L3_street-0.jpg"
-    },
-    {
-      "name": "lisbon_L3_top-0.jpg",
-      "sha256": "b911a1681315d69f6e0cea1e6181c62cec9dda5aa2b454163952ffbab776d198",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/lisbon_L3_top-0.jpg"
-    },
-    {
-      "name": "london_L3_street-0.jpg",
-      "sha256": "9645a48b500757b30f944581fe8594fad52e5df4decd9b41b89c21d356867cee",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/london_L3_street-0.jpg"
-    },
-    {
-      "name": "london_L3_top-0.jpg",
-      "sha256": "094a8fd9a4aceea7380ea4da85ab583285588a22363027330bd12eaa13bcd3ad",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/london_L3_top-0.jpg"
-    },
-    {
-      "name": "rouen_L3_street-0.jpg",
-      "sha256": "f109dae1bcb70a086b3c55fec10c67ca8791770e360a8a152cde32aa9db19616",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/rouen_L3_street-0.jpg"
-    },
-    {
-      "name": "rouen_L3_top-0.jpg",
-      "sha256": "c96d79de26e69406a0e6d73bcce84bdfe3047215da36798ae9b0212cceb3f0ca",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/rouen_L3_top-0.jpg"
-    },
-    {
-      "name": "venice_L3_street-0.jpg",
-      "sha256": "256904d98836d7810452cf18b5d157ad131949b213374b1dca392f62a50e079d",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/venice_L3_street-0.jpg"
-    },
-    {
-      "name": "venice_L3_top-0.jpg",
-      "sha256": "b596209939374f862879b815663b5b2a6d1c5b1df7e81e9fc2176f824e6f6d65",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43676766067/venice_L3_top-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43677177211/k2_tactics_hand-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43675582963"
+  "previousRunId": "43676766067"
 }
