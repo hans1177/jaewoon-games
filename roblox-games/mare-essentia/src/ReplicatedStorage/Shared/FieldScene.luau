@@ -866,6 +866,68 @@ function FieldScene.start(opts)
 		end)
 	end
 
+	-- ===== 화려한 타격 연출: 충격파 링·네온 파편·휘두르는 칼빛·화면 번쩍임 =====
+	local TweenService = game:GetService("TweenService")
+	local function fxPartMake(size: Vector3, cf: CFrame, color: Color3, shape: Enum.PartType?): Part
+		local p = Instance.new("Part")
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+		p.Material = Enum.Material.Neon
+		p.Color = color
+		p.Transparency = 0.15
+		if shape then p.Shape = shape end
+		p.Size = size
+		p.CFrame = cf
+		p.Parent = folder
+		return p
+	end
+	local function shockRing(center: Vector3, maxR: number, color: Color3, dur: number?)
+		local d = dur or 0.4
+		local ring = fxPartMake(Vector3.new(0.3, 2, 2), CFrame.new(center.X, center.Y + 0.4, center.Z) * CFrame.Angles(0, 0, math.pi / 2), color, Enum.PartType.Cylinder)
+		TweenService:Create(ring, TweenInfo.new(d, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(0.3, maxR * 2, maxR * 2), Transparency = 1 }):Play()
+		task.delay(d + 0.05, function() ring:Destroy() end)
+	end
+	local function shards(at: Vector3, n: number, color: Color3, dist: number)
+		for _ = 1, n do
+			local dir = Vector3.new(rng:NextNumber(-1, 1), rng:NextNumber(0.2, 1.1), rng:NextNumber(-1, 1)).Unit
+			local sh = fxPartMake(Vector3.new(0.22, 0.22, 1.1), CFrame.lookAt(at, at + dir), color)
+			local dst = at + dir * rng:NextNumber(dist * 0.5, dist)
+			TweenService:Create(sh, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = CFrame.lookAt(dst, dst + dir), Transparency = 1, Size = Vector3.new(0.05, 0.05, 0.3) }):Play()
+			task.delay(0.5, function() sh:Destroy() end)
+		end
+	end
+	-- 칼빛: 주인공 앞에서 바를 휘둘러 지나가게 한다. arc=휘두르는 각도, tilt=기울기
+	local function slashArc(hrp: BasePart, color: Color3, reach: number, arc: number, tilt: number)
+		local base = hrp.CFrame * CFrame.new(0, 0.6, 0)
+		local bar = fxPartMake(Vector3.new(0.35, 0.35, reach), base, color)
+		bar.Transparency = 0.05
+		local t0 = os.clock()
+		local dur = 0.22
+		task.spawn(function()
+			while bar.Parent and os.clock() - t0 < dur do
+				local k = (os.clock() - t0) / dur
+				local a = math.rad(-arc * 0.5 + arc * k)
+				bar.CFrame = hrp.CFrame * CFrame.new(0, 0.6, 0) * CFrame.Angles(math.rad(tilt), a, 0) * CFrame.new(0, 0, -reach * 0.5)
+				bar.Transparency = 0.05 + 0.95 * k
+				bar.Size = Vector3.new(0.35 * (1 - k * 0.6), 0.35 * (1 - k * 0.6), reach)
+				task.wait()
+			end
+			bar:Destroy()
+		end)
+	end
+	local flashFrame = Instance.new("Frame")
+	flashFrame.Size = UDim2.fromScale(1, 1)
+	flashFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+	flashFrame.BackgroundTransparency = 1
+	flashFrame.BorderSizePixel = 0
+	flashFrame.Active = false
+	flashFrame.ZIndex = 0
+	flashFrame.Parent = gui
+	local function screenFlash(color: Color3, alpha: number)
+		flashFrame.BackgroundColor3 = color
+		flashFrame.BackgroundTransparency = alpha
+		TweenService:Create(flashFrame, TweenInfo.new(0.25), { BackgroundTransparency = 1 }):Play()
+	end
+
 	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -936,6 +998,12 @@ function FieldScene.start(opts)
 		end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
+		do
+			local crit = mult >= 1.5
+			local c = if crit then Color3.fromRGB(255, 205, 80) else Color3.fromRGB(190, 230, 255)
+			shards(e.root.Position + Vector3.new(0, 1.5, 0), if crit then 14 else 7, c, if crit then 7 else 4)
+			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
+		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
 		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
 		local punchCam = workspace.CurrentCamera
@@ -977,6 +1045,17 @@ function FieldScene.start(opts)
 				end
 				dying:Destroy()
 			end)
+			do
+				local p0 = e.root.Position
+				local gold = Color3.fromRGB(255, 214, 90)
+				shockRing(p0 - Vector3.new(0, 2.5, 0), if e.boss then 30 else 14, gold, 0.55)
+				shards(p0, if e.boss then 40 else 18, gold, if e.boss then 16 else 9)
+				if e.boss then
+					shockRing(p0 - Vector3.new(0, 2.5, 0), 20, Color3.fromRGB(255, 120, 70), 0.8)
+					screenFlash(Color3.new(1, 0.95, 0.8), 0.35)
+					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
+				end
+			end
 			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
 			sfx(if e.boss then "sfx_fanfare" else "sfx_card_chain", 0.6, 1)
 			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
@@ -1163,8 +1242,21 @@ function FieldScene.start(opts)
 				end
 			end
 		end
+		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
 		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
+		do
+			local reachV = (mv.range or 5) * STUD
+			if kind == "spin" then
+				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
+				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
+			elseif kind == "heavy" then
+				slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
+				shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 8, Color3.fromRGB(255, 150, 60), 0.4)
+			else
+				slashArc(hrp, Color3.fromRGB(235, 245, 255), reachV, 110, if combo0 % 2 == 0 then 25 else -25)
+			end
+		end
 		local combo = pl.combo
 		task.delay(if kind == "slash" then 0.12 else 0.22, function()
 			if finished then
@@ -1201,6 +1293,8 @@ function FieldScene.start(opts)
 			elseif moveId == "rush" and combo >= 3 then
 				say("3연타 마무리!")
 				showCombo("3연타!")
+				screenFlash(Color3.fromRGB(255, 232, 160), 0.6)
+				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 16, Color3.fromRGB(255, 220, 120), 0.45)
 				shakeUntil, shakeAmp = os.clock() + 0.2, 0.8
 			elseif moveId == "rush" and hits > 0 then
 				showCombo(string.format("%d연타", combo))
