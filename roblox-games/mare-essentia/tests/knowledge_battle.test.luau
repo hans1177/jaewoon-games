@@ -46,6 +46,7 @@ local D = {
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
 	EconomyBuildings = require("./Shared/EconomyBuildings"),
+	DisciplineFacilities = require("./Shared/DisciplineFacilities"),
 	ProductionChains = require("./Shared/ProductionChains"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
@@ -780,6 +781,15 @@ do
 	local cathedralThere = false
 	for _, b in S.Village.buildings(stFull, 6, "london") do if b.name == "대성당·성당" then cathedralThere = true end end
 	check("문화권 건물: 이슬람권 항구에는 모스크, 런던에는 성당이 서고 서로 바뀌지 않는다", mosqueHere and not mosqueThere and cathedralThere)
+	local dfBad = {}
+	for _, d in D.KnowledgeTree.Disciplines do
+		local l = D.DisciplineFacilities.List[d.id]
+		if not l or #l ~= 4 then table.insert(dfBad, d.id) end
+	end
+	check("학문 시설: 모든 학문에 4단계 시설·직업이 있다", #dfBad == 0, table.concat(dfBad, ","))
+	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
+	local fac6, jobs6, by6 = S.Village.discFacilities(stFull, 6)
+	check("학문 시설: 학문이 발전하고 항구가 클수록 시설과 직업이 늘어난다", #fac0 == 0 and #fac6 > 0 and #fac6 == #jobs6 and #by6 >= 15)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end

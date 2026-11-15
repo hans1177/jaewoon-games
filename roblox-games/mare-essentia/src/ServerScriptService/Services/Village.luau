@@ -194,6 +194,30 @@ return function(D, S)
 		}
 	end
 
+	-- 학문 시설·직업: 학문 단계(1~4)가 오르고 항구 레벨이 (단계+1) 이상이면 그 학문의 시설과 직업이 선다.
+	function V.discFacilities(state, level)
+		local tiers = V.tiers(state)
+		local facilities, jobs, byDisc = {}, {}, {}
+		for _, d in K.Disciplines do
+			local list = D.DisciplineFacilities.List[d.id]
+			local t = tiers[d.id] or 0
+			local open = 0
+			if list then
+				for tier = 1, 4 do
+					if t >= tier and level >= tier + 1 then
+						open = tier
+						table.insert(facilities, list[tier][1])
+						table.insert(jobs, list[tier][2])
+					end
+				end
+			end
+			if open > 0 then
+				table.insert(byDisc, { id = d.id, name = d.name, tier = open, facility = list[open][1], job = list[open][2] })
+			end
+		end
+		return facilities, jobs, byDisc
+	end
+
 	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
 	V.Districts = {
 		{ id = "wharf", name = "부두 구역", minLevel = 1, weight = 3, sub = { "내항 부두", "외항 정박지", "조선 구획", "화물 하역장" }, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
@@ -268,6 +292,7 @@ return function(D, S)
 		for _, r in D.ProductionChains.craftable(produces, level) do
 			table.insert(crafts, r.output)
 		end
+		local dfFac, dfJobs, dfBy = V.discFacilities(state, level)
 		local jobs, newJobs = {}, {}
 		for _, j in V.Jobs do
 			if level >= j.minLevel then
@@ -277,6 +302,7 @@ return function(D, S)
 		end
 		return {
 			culture = V.CULTURE_NAME[V.cultureOf(portId) or ""] or "미정", cultureBuildings = cultureNames,
+			discFacilities = dfFac, discJobs = dfJobs, discBy = dfBy,
 			sim = sim, jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
 			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
