@@ -1,139 +1,134 @@
 {
- "sourceRevision": "f47fc0a058ea53c1d2d91c009d6f7c8a07391788",
+ "sourceRevision": "f532689ebd2eb8aa982cb75b92e7621f04c19e2e",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "allies on\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "cam\ntext"
   },
   {
    "step": 7,
-   "capture": "01_top",
-   "files": 1
+   "ctx": "Client",
+   "out": "faced 5.821109294891357\ntext"
   },
   {
    "step": 8,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "capture": "c1_approach",
+   "files": 1
   },
   {
-   "step": 10,
-   "capture": "02_plaza",
-   "files": 1
+   "step": 9,
+   "ctx": "Client",
+   "out": "attack\ntext"
   },
   {
    "step": 11,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "capture": "c2_attack",
+   "files": 1
   },
   {
    "step": 13,
-   "capture": "03_street",
-   "files": 1
+   "ctx": "Client",
+   "out": "faced 6.217024803161621\ntext"
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "heavy\ntext"
   },
   {
    "step": 16,
-   "capture": "04_dock",
+   "capture": "c3_heavy",
    "files": 1
   },
   {
-   "step": 17,
+   "step": 18,
    "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 19,
-   "capture": "05_aerial",
-   "files": 1
+   "out": "spin\ntext"
   },
   {
    "step": 20,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "capture": "c4_spin",
+   "files": 1
   },
   {
    "step": 22,
-   "capture": "06_backstreet",
-   "files": 1
+   "ctx": "Client",
+   "out": "dash\ntext"
   },
   {
-   "step": 23,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "step": 24,
+   "capture": "c5_dash",
+   "files": 1
   },
   {
    "step": 25,
-   "capture": "07_wall",
-   "files": 1
+   "ctx": "Client",
+   "out": "ready=true err=true table: 0x673f6d624cf60ca9 btns=공격|철수|0.3|6.1|3.0|방어|의학|화학|물리\ntext"
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "parts=3649 meshparts=3152 models=3536 houses=16\ntext"
+   "out": "MOVE anchored=false moved=14.4 ws=18 mobs=7\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=5\ntext"
+   "out": "guard\ntext"
   },
   {
    "step": 29,
-   "capture": "08_harbor_npc_sparring_01",
+   "capture": "c6_guard",
    "files": 1
   },
   {
+   "step": 30,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
+  },
+  {
    "step": 31,
-   "capture": "08_harbor_npc_sparring_02",
+   "ctx": "Client",
+   "out": "ALLIES 2\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "c7_allies",
    "files": 1
   },
   {
    "step": 33,
-   "capture": "08_harbor_npc_sparring_03",
-   "files": 1
+   "ctx": "Client",
+   "out": "volley\ntext"
   },
   {
    "step": 35,
-   "capture": "08_harbor_npc_sparring_04",
+   "capture": "c8_cardvolley",
    "files": 1
   },
   {
-   "step": 37,
-   "capture": "08_harbor_npc_sparring_05",
-   "files": 1
+   "step": 36,
+   "ctx": "Client",
+   "out": "ward\ntext"
   },
   {
-   "step": 39,
-   "capture": "08_harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 41,
-   "capture": "08_harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "08_harbor_npc_sparring_08",
+   "step": 38,
+   "capture": "c9_cardward",
    "files": 1
   }
  ],
@@ -145,17 +140,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 20,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 44,
-  "completedSteps": 44,
+  "plannedSteps": 39,
+  "completedSteps": 39,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 15,
-  "capturedFrames": 15,
+  "plannedFrames": 9,
+  "capturedFrames": 9,
   "abortedEarly": false
  }
 }
