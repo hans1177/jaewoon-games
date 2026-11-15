@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "tactics" | "tactics_biome" | "tactics_rank" | "tactics_goal" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
+	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -15,10 +15,8 @@ export type Quest = {
 	rewardCareer: string?, -- "trade" | "adventure" | "battle"
 	rewardXp: number,
 	fieldId: string?, -- kind "field": 이 분야의 도감 카드 수
-	objective: string?, -- kind "tactics_goal": 이 목표(rout/boss/survive/reach)로 깬 지점 수
 	disc: string?, -- kind "understand": 이 학문(astronomy/physics/chemistry/art)에서 이해한 지식 수 (없으면 전체)
 	cardId: string?, -- kind "understand_card": 이 지식을 이해해야 달성
-	biome: string?, -- kind "tactics_biome": 이 장소 종류(TacticsMaps 의 biome)의 지상 전술 탐험을 깬 지점 수
 	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
 	minAffinity: number?,
 	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
@@ -267,26 +265,6 @@ local Quests: { Quest } = {
 	{ id = "q_sao_tome_cloth", name = "상투메 옷감 납품", summary = "옷감 6개를 상투메에 납품", kind = "deliver", goodId = "cloth", portId = "sao_tome", amount = 6, rewardCoins = 220, rewardFame = 6, rewardCareer = "trade", rewardXp = 45 },
 	{ id = "q_sao_tome_iron", name = "상투메 철 납품", summary = "철 4개를 상투메에 납품", kind = "deliver", goodId = "iron", portId = "sao_tome", amount = 4, rewardCoins = 260, rewardFame = 7, rewardCareer = "trade", rewardXp = 50 },
 	-- 지상 전술 탐험 퀘스트 (자동 보고: 조건을 채우면 알아서 보상)
-	{ id = "q_tac_first", name = "첫 현장 지휘", summary = "지상 전술 탐험 1곳 성공", kind = "tactics", amount = 1, rewardCoins = 300, rewardFame = 10, rewardCareer = "battle", rewardXp = 60 },
-	{ id = "q_tac_five", name = "노련한 탐험대장", summary = "서로 다른 지상 전술 탐험 5곳 성공", kind = "tactics", amount = 5, rewardCoins = 1500, rewardFame = 40, rewardCareer = "adventure", rewardXp = 150 },
-	{ id = "q_tac_fifteen", name = "대륙을 누빈 지휘관", summary = "서로 다른 지상 전술 탐험 15곳 성공", kind = "tactics", amount = 15, rewardCoins = 8000, rewardFame = 150, rewardCareer = "battle", rewardXp = 400 },
-	{ id = "q_tac_rank_s", name = "빈틈없는 작전", summary = "지상 전술 탐험 3곳을 S 등급으로 성공", kind = "tactics_rank", amount = 3, rewardCoins = 2500, rewardFame = 60, rewardCareer = "battle", rewardXp = 200 },
-	{ id = "q_tac_forest", name = "숲의 사냥꾼들", summary = "숲 지점 지상 전술 탐험 2곳 성공", kind = "tactics_biome", biome = "forest", amount = 2, rewardCoins = 900, rewardFame = 25, rewardCareer = "adventure", rewardXp = 90, rewardCardId = "zoo_reindeer" },
-	{ id = "q_tac_coast", name = "해적 소탕", summary = "해안 지점 지상 전술 탐험 2곳 성공", kind = "tactics_biome", biome = "coast", amount = 2, rewardCoins = 900, rewardFame = 25, rewardCareer = "battle", rewardXp = 90 },
-	{ id = "q_tac_mine", name = "갱도의 불빛", summary = "광산 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "mine", amount = 1, rewardCoins = 1200, rewardFame = 30, rewardCareer = "adventure", rewardXp = 100, rewardCardId = "min_swedish_iron" },
-	{ id = "q_tac_stones", name = "열석의 수호자", summary = "고대 열석·선돌 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "stones", amount = 1, rewardCoins = 1200, rewardFame = 35, rewardCareer = "adventure", rewardXp = 110 },
-	{ id = "q_tac_ruins", name = "유물을 지켜라", summary = "발굴 유적 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "ruins", amount = 1, rewardCoins = 1400, rewardFame = 40, rewardCareer = "adventure", rewardXp = 120, rewardCardId = "relic_roman_coin" },
-	{ id = "q_tac_volcano", name = "불의 산을 넘어", summary = "화산 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "volcano", amount = 1, rewardCoins = 1500, rewardFame = 45, rewardCareer = "battle", rewardXp = 130 },
-	{ id = "q_tac_wall", name = "옛 방벽의 파수꾼", summary = "옛 방벽 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "wall", amount = 1, rewardCoins = 1500, rewardFame = 45, rewardCareer = "battle", rewardXp = 130 },
-	{ id = "q_tac_cliff", name = "벼랑길 돌파", summary = "절벽 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "cliff", amount = 1, rewardCoins = 1300, rewardFame = 35, rewardCareer = "adventure", rewardXp = 110 },
-	{ id = "q_tac_marsh", name = "안개 속의 밀수꾼", summary = "석호·간척지 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "marsh", amount = 1, rewardCoins = 1000, rewardFame = 28, rewardCareer = "battle", rewardXp = 100 },
-	{ id = "q_tac_garden", name = "수확철의 불청객", summary = "정원·과수원 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "garden", amount = 1, rewardCoins = 700, rewardFame = 18, rewardCareer = "adventure", rewardXp = 70 },
-	{ id = "q_tac_quarry", name = "하얀 돌 비탈", summary = "채석장 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "quarry", amount = 1, rewardCoins = 1200, rewardFame = 30, rewardCareer = "adventure", rewardXp = 100, rewardCardId = "min_marble" },
-	{ id = "q_tac_plain", name = "들판의 길목", summary = "들판 지점 지상 전술 탐험 1곳 성공", kind = "tactics_biome", biome = "plain", amount = 1, rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 60 },
-	{ id = "q_tac_reach", name = "적진 돌파", summary = "도착 지점에 닿는 지상 전술 탐험 2곳 성공", kind = "tactics_goal", objective = "reach", amount = 2, rewardCoins = 1600, rewardFame = 40, rewardCareer = "adventure", rewardXp = 140 },
-	{ id = "q_tac_survive", name = "끝까지 버텨라", summary = "버티기 지상 전술 탐험 2곳 성공", kind = "tactics_goal", objective = "survive", amount = 2, rewardCoins = 1800, rewardFame = 45, rewardCareer = "battle", rewardXp = 150 },
-	{ id = "q_tac_boss", name = "두목 사냥", summary = "두목을 쓰러뜨리는 지상 전술 탐험 4곳 성공", kind = "tactics_goal", objective = "boss", amount = 4, rewardCoins = 3000, rewardFame = 70, rewardCareer = "battle", rewardXp = 220 },
-	{ id = "q_tac_rout", name = "깨끗이 소탕", summary = "적을 모두 물리치는 지상 전술 탐험 4곳 성공", kind = "tactics_goal", objective = "rout", amount = 4, rewardCoins = 2600, rewardFame = 60, rewardCareer = "battle", rewardXp = 200 },
 	{ id = "q_kn_first", name = "첫 보고", summary = "발견한 지식 1개를 학자에게 보고해 이해하기", kind = "understand", amount = 1, rewardCoins = 200, rewardFame = 8, rewardCareer = "adventure", rewardXp = 50 },
 	{ id = "q_kn_astro", name = "별을 읽는 항해사", summary = "천문학 지식 5개 이해하기", kind = "understand", disc = "astronomy", amount = 5, rewardCoins = 1200, rewardFame = 40, rewardCareer = "adventure", rewardXp = 120 },
 	{ id = "q_kn_physics", name = "법칙을 찾는 사람", summary = "물리학 지식 6개 이해하기", kind = "understand", disc = "physics", amount = 6, rewardCoins = 1500, rewardFame = 45, rewardCareer = "adventure", rewardXp = 140 },
@@ -612,9 +590,6 @@ local STORY_KIND: { [string]: { { string } } } = {
 	understand = {
 		{ "책 속의 한 줄을 이해하는 데 한 세기가 걸리기도 한다. 당신은 그 줄 뒤에 숨은 사람의 고집을 따라가야 한다.", "이해가 닿는 순간 한 줄의 문장이 눈앞의 세계를 바꿔 놓았다." },
 	},
-	tactics = {
-		{ "지도에는 없는 길목마다 위험과 보물이 번갈아 기다린다. 살아 돌아온 자만이 그 길을 지도에 그린다.", "당신이 그린 길은 훗날 많은 이들의 안전한 지름길이 되었다." },
-	},
 	people = {
 		{ "항구마다 이름 없는 장인과 학자가 있다. 누군가 기억하지 않으면 그들은 사라진다. 당신이 그 기록자가 된다.", "당신의 장부에 이름이 적힌 사람들은 오래 기억될 것이다." },
 	},
@@ -625,7 +600,7 @@ local STORY_KIND: { [string]: { { string } } } = {
 		{ "작은 일처럼 보이지만 누군가의 하루가 여기에 걸려 있다.", "일이 끝나자 부두에 작은 박수가 일었다." },
 	},
 }
-local KIND_ALIAS = { field = "field", discover = "discover", tactics_biome = "tactics", tactics_rank = "tactics", tactics_goal = "tactics", understand_card = "understand", people_talk = "people" }
+local KIND_ALIAS = { field = "field", discover = "discover", understand_card = "understand", people_talk = "people" }
 
 -- 연속 퀘스트(after 로 이어진 줄)는 장(章)의 위치에 따라 이야기가 쌓인다: 도입 → 고비 → 결말
 local CHAIN: { [string]: { { string } } } = {

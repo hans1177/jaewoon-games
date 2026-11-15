@@ -4223,64 +4223,7 @@ function RENDERERS.recruit()
 	end
 end
 
-local trainingMember
-local choosingCaptainClass = false
 function RENDERERS.crew()
-	add(function() return mkHeader(content, "지상전 병종과 개인 장비") end)
-	for _, member in view.partyTraining or {} do
-		add(function()
-			local mastery = if member.maxLevel then "최대 숙련" else string.format("숙련 %d/%d", member.xp, member.xpNext)
-			local sub = string.format("%s · Lv.%d · %s", member.class, member.level, mastery)
-			return mkRow(content, member.name, sub, { {
-				text = if trainingMember == member.id then "닫기" else "장비·승급",
-				color = COLORS.blue, onClick = function()
-					trainingMember = if trainingMember == member.id then nil else member.id
-					render()
-				end,
-			} }, 66)
-		end)
-		if trainingMember == member.id then
-			if member.classes then
-				add(function()
-					return mkButton(content, if choosingCaptainClass then "병종 목록 닫기" else "주인공 병종 바꾸기", COLORS.blue,
-						UDim2.new(1, -6, 0, 44), function()
-							choosingCaptainClass = not choosingCaptainClass
-							render()
-						end, true)
-				end)
-				if choosingCaptainClass then
-					for _, class in member.classes do
-						add(function()
-							return mkRow(content, class.name, string.format("%s · 기본 이동 %d", class.weapon, class.move), { {
-								text = if class.selected then "선택됨" else "선택", color = COLORS.blue, enabled = not class.selected,
-								onClick = function() call("PartyTraining", { memberId = member.id, class = class.id }) end,
-							} }, 60)
-						end)
-					end
-				end
-			end
-			if member.canPromote then
-				add(function()
-					return mkRow(content, member.promotion, "승급 기술 · " .. member.promotionSkill, { {
-						text = "승급", color = COLORS.green,
-						onClick = function() call("PartyTraining", { memberId = member.id, promote = true }) end,
-					} }, 66)
-				end)
-			end
-			for _, slot in { "weapon", "armor" } do
-				for _, item in member.gear[slot] do
-					add(function()
-						local hint = string.format("%s · 병종 Lv.%d%s", item.stats, item.level, if item.price > 0 then " · " .. item.price .. "코인" else "")
-						return mkRow(content, item.name, hint, { {
-							text = if item.equipped then "장착 중" elseif item.price > 0 then "구매·장착" else "장착",
-							color = COLORS.blue, enabled = not item.equipped and member.level >= item.level,
-							onClick = function() call("PartyTraining", { memberId = member.id, slot = slot, tier = item.tier }) end,
-						} }, 66)
-					end)
-				end
-			end
-		end
-	end
 	add(function() return mkHeader(content, "동료와 대화") end)
 	add(function()
 		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
@@ -5760,42 +5703,8 @@ end
 
 function RENDERERS.explore()
 	H.walletBar("tavern")
-	-- 지상 전술 탐험: 격자 맵 턴제 전투. 서버가 전투를 만들어 주면 전술 화면을 연다.
-	local function openTactics()
-		if inField or not (view and view.tactics) then
-			return
-		end
-		inField = true
-		main.Visible = false
-		require(Shared:WaitForChild("TacticsView")).open({
-			battle = view.tactics,
-			invoke = function(action, payload)
-				return call(action, payload)
-			end,
-			onClose = function()
-				inField = false
-				applyView()
-				main.Visible = true
-				render()
-			end,
-		})
-	end
-
-	local function startTactics(s)
-		local result = call("TacticsStart", { siteId = s.id })
-		if result and result.ok and view and view.tactics then
-			openTactics()
-		end
-	end
 	if not H.exploreScholarView then -- 서재의 보고 탭에서는 탐험 지점을 보이지 않는다
 	add(function() return mkHeader(content, "탐험 지점") end)
-	if view.tactics and view.tactics.status == "active" then
-		add(function()
-			return mkRow(content, "진행 중인 전술 탐험", view.tactics.siteName .. " · " .. view.tactics.name, {
-				{ text = "이어하기", color = COLORS.gold, onClick = openTactics, enabled = true },
-			}, 54)
-		end)
-	end
 	if #view.sites == 0 then
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
@@ -5805,11 +5714,6 @@ function RENDERERS.explore()
 			table.insert(tiles, { icon = "explore", title = s.name,
 				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
 				btn = "탐험", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
-			if s.tactics then
-				table.insert(tiles, { icon = "cc0_sword", title = s.tactics.mapName,
-					sub = if s.tactics.rank ~= "" then "최고 " .. s.tactics.rank else "전술 탐험",
-					btn = "전술", color = COLORS.blue, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active"), onClick = function() startTactics(s) end })
-			end
 		end
 		return H.tileGrid(tiles, content, 176, 156)
 	end)
@@ -10397,23 +10301,6 @@ task.spawn(function()
 		elseif dc == "Options" then
 			workspace:SetAttribute("DevCall", nil)
 			openOptions()
-		elseif dc == "Tactics" then
-			-- 개발 캡처용: 서버에 열려 있는 지상 전술 전투 화면을 바로 연다(탐험 탭을 거치지 않는다)
-			workspace:SetAttribute("DevCall", nil)
-			if view and view.tactics then
-				local okOpen, errOpen = pcall(function()
-					require(Shared:WaitForChild("TacticsView")).open({
-						battle = view.tactics,
-						invoke = function(a, p)
-							return call(a, p)
-						end,
-						onClose = function() end,
-					})
-				end)
-				workspace:SetAttribute("DevResult", "TACTICS_OPEN " .. tostring(okOpen) .. " " .. tostring(errOpen))
-			else
-				workspace:SetAttribute("DevResult", "TACTICS_OPEN no battle in view")
-			end
 		elseif type(dc) == "string" and string.sub(dc, 1, 7) == "CodexK_" then
 			-- 개발 캡처용: 백과사전의 지식 트리 화면(개요 또는 학문 상세)을 바로 연다
 			workspace:SetAttribute("DevCall", nil)

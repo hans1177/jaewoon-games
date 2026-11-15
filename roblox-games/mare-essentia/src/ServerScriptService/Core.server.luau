@@ -41,9 +41,6 @@ local D = {
 	Harbor = require(Shared:WaitForChild("Harbor")),
 	SeaRoutes = require(Shared:WaitForChild("SeaRoutes")),
 	Regions = require(Shared:WaitForChild("Regions")),
-	TacticsData = require(Shared:WaitForChild("TacticsData")),
-	Tactics = require(Shared:WaitForChild("Tactics")),
-	TacticsMaps = require(Shared:WaitForChild("TacticsMaps")),
 	KnowledgeTree = require(Shared:WaitForChild("KnowledgeTree")),
 	HistoryEvents = require(Shared:WaitForChild("HistoryEvents")),
 	WorldChronicle = require(Shared:WaitForChild("WorldChronicle")),
@@ -64,7 +61,7 @@ local D = {
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
 local S = Registry.S
-local QUEST_WATCH = { Explore = true, TacticsAct = true, TacticsCard = true, TacticsEnd = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, HistoryChoose = true, StockBuy = true, BuildStage = true, StockSell = true, Present = true, Expo = true, JointPresent = true, BuildLandmark = true, Launch = true, PeopleTalk = true, PeopleClaim = true, OrderPatrol = true }
+local QUEST_WATCH = { Explore = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, HistoryChoose = true, StockBuy = true, BuildStage = true, StockSell = true, Present = true, Expo = true, JointPresent = true, BuildLandmark = true, Launch = true, PeopleTalk = true, PeopleClaim = true, OrderPatrol = true }
 local handlers = Registry.handlers
 
 -- [중요] DataStore 이름은 게임 이름이 바뀌어도, 유니버스가 바뀌어도 임의로 바꾸지 않는다. 바꾸면 플레이어 저장이 빈 저장소로 읽혀 전부 초기화된다.
@@ -349,26 +346,6 @@ if game:GetService("RunService"):IsStudio() then
 		local session = sessions[player]
 		if session then
 			session.lastAction = -100 -- 점검은 요청 간격 제한을 받지 않는다
-			if action == "QATactics" and session.state then
-				-- 지상 전술 화면 점검용: 항구·레벨과 상관없이 지정한 맵으로 전투를 연다(저장·보상 없음)
-				local map = D.TacticsMaps.ById[type(payload) == "table" and payload.mapId or "plain_road"] or D.TacticsMaps.ById.plain_road
-				local b = D.Tactics.newBattle(map, S.Tactics.buildParty(session.state), { enemyLevel = 1, pool = { "qa_card" } })
-				b.siteId, b.siteName, b.biome = "qa_" .. map.id, "점검 맵", map.biome
-				local spec = S.Cardbook.deckSpec(session.state)
-				D.Tactics.initCards(b, spec.ids, spec.tier, 4242, spec.bonus)
-				session.state.tbattle = b
-				return reply(session.state, true, map.intro)
-			end
-			if action == "QATacticsDump" and session.state and session.state.tbattle then
-				local b = session.state.tbattle
-				local parts = { string.format("turn=%d phase=%s status=%s", b.turn, b.phase, b.status) }
-				for _, u in b.units do
-					if u.team == "player" then
-						table.insert(parts, string.format("%s(%d,%d)%s", u.id, u.x, u.y, u.acted and "A" or "-"))
-					end
-				end
-				return { ok = true, message = table.concat(parts, " ") }
-			end
 			if action == "QAKnowledge" and session.state then
 				-- 개발 캡처용: 지식 트리·학술 행사 화면을 채워서 보여 주기 위한 상태 (Studio 전용)
 				local st = session.state
