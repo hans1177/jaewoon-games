@@ -456,7 +456,7 @@ function VoyageScene.play(info)
 					strip.Anchored, strip.CanCollide, strip.CanQuery, strip.CanTouch = true, false, false, false
 					strip.Material = Enum.Material.Neon
 					strip.Color = col
-					strip.Transparency = 0.6
+					strip.Transparency = 0.8
 					strip.Size = Vector3.new(cu.w * 2 * LATSCALE, 0.15, cu.len * total / 6 * 0.9)
 					strip.CFrame = CFrame.lookAt(Vector3.new(c.X, 0.4, c.Z), Vector3.new(c.X, 0.4, c.Z) + Vector3.new(d.X, 0, d.Z))
 					strip.Parent = folder
@@ -1729,7 +1729,7 @@ function VoyageScene.play(info)
 			-- 해류 띠는 흐르듯 깜빡인다(순류는 앞으로, 역류는 뒤로 밝기가 흐른다)
 			for _, cs in currentStrips do
 				local ph = (if cs.fast then -1 else 1) * t * 4 + cs.k * 1.1
-				cs.part.Transparency = 0.55 + 0.25 * math.sin(ph)
+				cs.part.Transparency = 0.78 + 0.14 * math.sin(ph)
 			end
 			-- 물건은 둥실 떠서 돈다
 			for ii = nextItem, math.min(#itemList, nextItem + 8) do

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {planCentralDocumentFormatting,validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {planCentralDocumentFormatting,validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates,formatCentralDocuments,archiveCentralCompanionCurrentUse} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -307,19 +307,26 @@ test('central document budget blocks hard overflow and oversized single-change g
   assert.equal(normal.headroomUtf8Bytes,28000);
 });
 
-test('current central four documents stay inside absolute anti-bloat budgets',()=>{
+test('restored central four documents stay inside their role-specific byte budgets',()=>{
   const report=inspectCentralDocumentBudgets();
   assert.deepEqual(report.errors,[]);
   assert.equal(Object.keys(report.documents).length,4);
-  assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
-  assert.equal(report.documents.policy.hardMaxUtf8Bytes,80000);
-  for (const [key,row] of Object.entries(report.documents)) {
-    if(key!=='policy'){
-      assert.ok(row.utf8Bytes<1000,key+' compact summary exceeded owner hard limit');
-      assert.equal(row.hardMaxUtf8Bytes,999,key);
-    }
+  const limits={policy:80000,architecture:310000,logMap:120000,security:75000};
+  for(const [key,row] of Object.entries(report.documents)){
+    assert.ok(row.utf8Bytes<=row.hardMaxUtf8Bytes,key+' exceeded owner hard limit');
+    assert.equal(row.hardMaxUtf8Bytes,limits[key],key);
     assert.equal(row.maxGrowthUtf8Bytes,0,key);
   }
+});
+test('restored detailed companions are preserved and never auto-formatted or archived',()=>{
+  const before=['company-learning/company-architecture-map.json','company-learning/company-log-map.json']
+    .map(file=>fs.readFileSync(path.join(root,file),'utf8'));
+  assert.deepEqual(formatCentralDocuments(),[]);
+  const archive=archiveCentralCompanionCurrentUse();
+  assert.equal(archive.changed,false);
+  assert.equal(archive.reason,'OWNER_RETAINED_COMPANION_DOCUMENTS_LOCKED');
+  assert.deepEqual(['company-learning/company-architecture-map.json','company-learning/company-log-map.json']
+    .map(file=>fs.readFileSync(path.join(root,file),'utf8')),before);
 });
 
 test('central document growth report reads an exact git baseline',()=>{
