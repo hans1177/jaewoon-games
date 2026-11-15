@@ -5782,6 +5782,7 @@ function H.startField(s)
 	if not startOk then
 		-- 탐험지를 못 열면 항구 화면이 멈춘 채 남지 않게 되돌린다
 		warn("[Game] 탐험지 열기 실패", startErr)
+		workspace:SetAttribute("DevFieldStartErr", tostring(startErr)) -- 개발 캡처가 원인을 읽는다
 		inField = false
 		main.Visible = true
 		message = "탐험지를 여는 데 실패했어요. 다시 시도해 주세요"
@@ -10375,6 +10376,19 @@ task.spawn(function()
 				openTab(dc:sub(5))
 			end)
 			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
+		elseif type(dc) == "string" and dc:sub(1, 6) == "Field:" then
+			-- 개발 캡처용: 탐험 지점 id 로 탐험을 바로 시작한다(주점 탐험 탭의 [탐험] 버튼과 같은 길)
+			workspace:SetAttribute("DevCall", nil)
+			local want = dc:sub(7)
+			local found = "none"
+			for _, site in view.sites or {} do
+				if site.id == want then
+					found = "site unlocked=" .. tostring(site.unlocked) .. " left=" .. tostring(site.left)
+					local okF, errF = pcall(H.startField, site)
+					found ..= " start=" .. tostring(okF) .. " " .. tostring(errF)
+				end
+			end
+			workspace:SetAttribute("DevResult", dc .. " " .. found)
 		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
 			openYardHall()
