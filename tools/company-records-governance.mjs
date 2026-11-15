@@ -158,22 +158,20 @@ const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
     sourcePath:CENTRAL_ARCHITECTURE_REL,
     aliases:Object.freeze(['architecture','architectureMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','status',
-      'branches','constitutionalEnforcement','release','notes'])
+    preserveWholeDocument:true,\n    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','branches','constitutionalEnforcement'])
   }),
   logMap:Object.freeze({
     sourcePath:CENTRAL_LOG_MAP_REL,
     aliases:Object.freeze(['logMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','status',
-      'requiredForAllWorkers','retained','notes'])
+    preserveWholeDocument:true,\n    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','requiredForAllWorkers'])
   })
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
   policy:Object.freeze({sourcePath:CENTRAL_DIRECTIVE_REL,hardMaxUtf8Bytes:80000,maxGrowthUtf8Bytes:0}),
-  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
-  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
-  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0})
+  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:310000,maxGrowthUtf8Bytes:0}),
+  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:120000,maxGrowthUtf8Bytes:0}),
+  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:75000,maxGrowthUtf8Bytes:0})
 });
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
@@ -202,8 +200,26 @@ export function formatCentralDocuments(){
       && parsed.authority==='MACHINE_EXECUTION_CONTRACT'
       && parsed.policyDocument==='company-learning/platform-release-roadmap.json'
       && parsed.documentationSynchronization?.centralPolicyPath===parsed.policyDocument;
+    const fullDetailed=(
+      budget.sourcePath===CENTRAL_ARCHITECTURE_REL &&
+      parsed.authority==='MACHINE_EXECUTION_ARCHITECTURE_MAP' &&
+      parsed.centralPolicy==='company-learning/platform-release-roadmap.json' &&
+      parsed.branches?.main?.directGameWorkerWrite===false &&
+      parsed.constitutionalEnforcement?.subordinateOverrideForbidden===true
+    )||(
+      budget.sourcePath===CENTRAL_LOG_MAP_REL &&
+      parsed.authority==='MACHINE_EXECUTION_LOG_MAP' &&
+      parsed.centralPolicy==='company-learning/platform-release-roadmap.json' &&
+      parsed.requiredForAllWorkers===true
+    )||(
+      budget.sourcePath===CENTRAL_SECURITY_REL &&
+      parsed.policyFile===CENTRAL_SECURITY_REL &&
+      parsed.defaultTrust==='DENY_OR_QUARANTINE_UNTIL_VERIFIED' &&
+      parsed.centralRoadmapBinding?.centralPolicy==='company-learning/platform-release-roadmap.json'
+    );
+    const minimalSummary=String(parsed.status||'').startsWith('MINIMAL_') && [...contents].length<1000;
     if(!Number.isInteger(parsed.version) ||
-      (!fullDirective && (!String(parsed.status||'').startsWith('MINIMAL_') || [...contents].length>=1000)) ||
+      (!fullDirective&&!fullDetailed&&!minimalSummary) ||
       utf8Bytes(contents)>budget.hardMaxUtf8Bytes) {
       throw new Error('RETAINED_DOCUMENT_LOCK_VIOLATION:'+budget.sourcePath);
     }
@@ -764,12 +780,23 @@ function companionArchiveRecord({plans,sourceRevision,createdAt,recordId}){
 export function archiveCentralCompanionCurrentUse(){
   for(const config of Object.values(CENTRAL_COMPANION_DOCUMENTS)){
     const doc=readJsonRel(config.sourcePath);
-    if(!String(doc.status||'').startsWith('MINIMAL_')) {
+    const fullDetailed=(
+      config.sourcePath===CENTRAL_ARCHITECTURE_REL &&
+      doc.authority==='MACHINE_EXECUTION_ARCHITECTURE_MAP' &&
+      doc.centralPolicy==='company-learning/platform-release-roadmap.json' &&
+      doc.branches?.main?.directGameWorkerWrite===false
+    )||(
+      config.sourcePath===CENTRAL_LOG_MAP_REL &&
+      doc.authority==='MACHINE_EXECUTION_LOG_MAP' &&
+      doc.centralPolicy==='company-learning/platform-release-roadmap.json' &&
+      doc.requiredForAllWorkers===true
+    );
+    if(!fullDetailed&&!String(doc.status||'').startsWith('MINIMAL_')) {
       throw new Error('RETAINED_COMPANION_DOCUMENT_CONTRACT_INVALID:'+config.sourcePath);
     }
   }
   return Object.freeze({changed:false,plans:{},archiveRecord:null,archivePath:null,
-    reason:'RETAINED_MINIMAL_DOCUMENTS_LOCKED'});
+    reason:'OWNER_RETAINED_COMPANION_DOCUMENTS_LOCKED'});
 }
 
 function currentGitRevision(){
