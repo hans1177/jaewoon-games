@@ -35,6 +35,7 @@ local D = {
 	TacticsMaps = require("./Shared/TacticsMaps"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
+	WorldChronicle = require("./Shared/WorldChronicle"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),

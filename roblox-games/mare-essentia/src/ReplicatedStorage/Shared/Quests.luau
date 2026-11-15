@@ -72,6 +72,8 @@ local Quests: { Quest } = {
 	{ id = "q_field_site", name = "유적 순례", summary = "유적 카드 5장 발견", kind = "field", fieldId = "Site", amount = 5, rewardCoins = 1400, rewardFame = 45, rewardCareer = "adventure", rewardXp = 200 },
 	{ id = "q_field_geo", name = "바다의 지도", summary = "지리 카드 5장 발견", kind = "field", fieldId = "Geography", amount = 5, rewardCoins = 1000, rewardFame = 32, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "q_field_myth", name = "전설을 쫓아서", summary = "신화 카드 4장 발견", kind = "field", fieldId = "Myth", amount = 4, rewardCoins = 1200, rewardFame = 40, rewardCareer = "adventure", rewardXp = 180 },
+	{ id = "q_field_mystery", name = "풀리지 않는 이야기", summary = "미스터리 카드 5장 발견", kind = "field", fieldId = "Mystery", amount = 5, rewardCoins = 1500, rewardFame = 45, rewardCareer = "adventure", rewardXp = 200, strand = "person", story = "기록은 남았는데 답이 없는 이야기가 있다. 사실과 소문을 가려 한 줄씩 적어 보자." },
+	{ id = "q_field_lost", name = "지도의 빈 곳을 찾아서", summary = "잃어버린 대륙 카드 6장 발견", kind = "field", fieldId = "Lost", amount = 6, rewardCoins = 2500, rewardFame = 70, rewardCareer = "adventure", rewardXp = 260, strand = "person", story = "옛 지도의 가장자리에는 아직 아무도 가 보지 못한 땅이 그려져 있다. 그 땅들의 이야기를 하나씩 모아 보자." },
 	{ id = "q_collector_2", name = "대수집가", summary = "도감 카드 40장 발견", kind = "discover", amount = 40, rewardCoins = 6000, rewardFame = 150, rewardCareer = "adventure", rewardXp = 700 },
 	{ id = "q_collector_3", name = "백과의 주인", summary = "도감 카드 80장 발견", kind = "discover", amount = 80, rewardCoins = 15000, rewardFame = 300, rewardCareer = "adventure", rewardXp = 1500 },
 	{ id = "q_sea_wolf_2", name = "북해의 지배자", summary = "해전에서 20번 승리", kind = "win", amount = 20, rewardCoins = 4500, rewardFame = 100, rewardCareer = "battle", rewardXp = 500, rewardCardId = "nav_portolan" },

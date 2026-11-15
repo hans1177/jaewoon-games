@@ -55,6 +55,28 @@ B.Chains = {
 			{ name = "해군 기지", cost = 16000, harbor = 4, since = 1700, node = "ship_dry_dock", cannon = 0.006,
 				lore = "함대가 정박하고 보급과 수리를 받는 항구. 바다를 지키는 힘이 한곳에 모인다." },
 		} },
+	{ id = "health", name = "의료 계통", summary = "약초원에서 선원 병원·검역소·의학원으로 커 가는 돌봄의 길. 건강한 선원은 배를 빠르게 몬다.",
+		stages = {
+			{ name = "약초원", cost = 750, harbor = 1, since = 1600, node = "med_herb_garden", speed = 0.001,
+				lore = "수도원 뜰의 약초밭에서 시작했다. 선원들은 출항 전에 약초 꾸러미를 챙겼다." },
+			{ name = "선원 병원", cost = 2400, harbor = 2, since = 1600, node = "med_ship_surgeon", speed = 0.002,
+				lore = "다친 선원과 병든 선원을 받는 항구 병원. 배 의사가 이곳에서 길러졌다." },
+			{ name = "검역소", cost = 6200, harbor = 3, since = 1600, node = "med_surgery", speed = 0.003,
+				lore = "역병이 도는 배를 먼저 격리하는 곳. 항구 도시가 병에서 스스로를 지키는 첫 제도였다." },
+			{ name = "의학원", cost = 13500, harbor = 4, since = 1660, node = "med_circulation", era = 4, speed = 0.004,
+				lore = "해부와 실험으로 몸의 원리를 가르치는 학교. 병을 이름 붙이고 치료법을 견주어 본다." },
+		} },
+	{ id = "science", name = "관측·실험 계통", summary = "관측소에서 천문대·실험실로 커 가는 과학의 길. 연구 성과가 늘어난다.",
+		stages = {
+			{ name = "관측소", cost = 780, harbor = 1, since = 1600, node = "ast_polaris", research = 0.008,
+				lore = "지붕 위에 관측대를 얹은 작은 방. 북극성의 높이를 재어 위도를 기록했다." },
+			{ name = "천문대", cost = 2500, harbor = 2, since = 1600, node = "ast_solar_eclipse", research = 0.012,
+				lore = "돔 지붕과 큰 망원경을 갖춘 천문대. 일식과 월식을 예측해 달력을 바로잡았다." },
+			{ name = "화학 실험실", cost = 6300, harbor = 3, since = 1600, node = "chem_distillation", research = 0.016,
+				lore = "증류기와 화로를 갖춘 실험실. 염료와 약, 화약의 질을 높이는 곳이다." },
+			{ name = "왕립 관측·실험소", cost = 14000, harbor = 4, since = 1675, node = "chem_oxygen", era = 4, research = 0.025,
+				lore = "정밀 시계와 실험 기구를 갖춘 국가 연구소. 경도를 재는 방법도 이곳에서 다듬어졌다." },
+		} },
 }
 
 -- 발전도(항구 레벨)에 따라 마을에 저절로 들어서는 시설. 분야별로 나뉘며, 레벨이 오르면 공사 기간을 거쳐 완공된다.

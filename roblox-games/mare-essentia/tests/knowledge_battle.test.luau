@@ -43,6 +43,8 @@ local D = {
 	TacticsMaps = require("./Shared/TacticsMaps"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
+	WorldChronicle = require("./Shared/WorldChronicle"),
+	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -660,6 +662,59 @@ do
 	end
 	if #tbad > 0 then print(table.concat(tbad, "\n")) end
 	check("주점 점검: 데이터 연결이 맞다 (" .. #tbad .. "건)", #tbad == 0)
+end
+
+-- 지식카드 분류: 모든 카드가 대분류·중분류에 연결
+do
+	local bad = D.KnowledgeTaxonomy.audit()
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("카드 분류: 모든 카드가 학문·대분류에 연결된다 (" .. #bad .. "건)", #bad == 0)
+end
+
+-- 세계 연대기: 데이터 연결·도착 시 목격·논문 단계
+do
+	local WC = D.WorldChronicle
+	local bad = {}
+	for _, r in WC.Rows do
+		for _, pid in r.ports do
+			if not D.Ports.Ports[pid] then table.insert(bad, r.id .. " 항구 " .. pid) end
+		end
+		if not WC.Voice[r.voice] then table.insert(bad, r.id .. " 문화 " .. tostring(r.voice)) end
+		if not WC.KindGain[r.kind] then table.insert(bad, r.id .. " 종류 " .. tostring(r.kind)) end
+		if #WC.lines(r, "x") < 4 then table.insert(bad, r.id .. " 대사") end
+	end
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("연대기: 데이터 연결이 맞다 (" .. #bad .. "건)", #bad == 0 and #WC.Rows >= 20)
+	local gen = WC.fromPeople(D.People.Curated, D.Ports.Ports)
+	check("연대기: 인물 백과에서 현장 장면이 만들어진다 (" .. #gen .. "건)", #gen >= 100)
+	local genBad = 0
+	for _, r in gen do
+		if #WC.lines({ year = r.year, month = 1, voice = r.voice, fact = r.fact, scholar = r.scholar }, "x") < 4 or r.untilYear < r.year then genBad += 1 end
+	end
+	check("연대기: 인물 장면 대사·연도가 맞다", genBad == 0)
+	local stC = S.State.new("england", 1700)
+	stC.portId = "lisbon"
+	stC.day = (1756 - 1700) * 365 + 10
+	local msgs = {}
+	local row = S.Chronicle.arrive(stC, msgs)
+	check("연대기: 사건 해에 그 항구에 도착하면 목격한다", row ~= nil and row.id == "c_lisbon_quake" and stC.chron.notes >= 1 and stC._scenes ~= nil and #stC._scenes == 1)
+	local again = S.Chronicle.arrive(stC, {})
+	check("연대기: 같은 사건은 한 번만", again == nil or again.id ~= "c_lisbon_quake")
+	local okD0 = Registry.handlers.WriteDraft(stC, {}, ctx)
+	check("연대기: 노트가 모자라면 초안을 못 쓴다", okD0 == false)
+	for _, node in D.KnowledgeTree.Nodes do if node.disc == "architecture" then stC.reported = { [node.id] = true } break end end
+	stC.chron.notes = 3
+	stC.chron.notesBy.architecture = 3
+	stC.coins = 500
+	local okD = Registry.handlers.WriteDraft(stC, {}, ctx)
+	check("연대기: 노트 3개로 초안을 쓴다", okD == true and stC.chron.drafts == 1 and stC.chron.notes == 0)
+	local okP0 = Registry.handlers.PublishPaper(stC, {}, ctx)
+	check("연대기: 학회 발표 전에는 출판할 수 없다", okP0 == false)
+	stC.academy = { presented = 1, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }
+	local okP = Registry.handlers.PublishPaper(stC, {}, ctx)
+	check("연대기: 발표 뒤 출판한다", okP == true and #stC.chron.papers == 1 and stC.chron.drafts == 0)
+	local v = S.Chronicle.view(stC)
+	check("연대기: 화면 요약", v.papers == 1 and #v.seen >= 1 and v.stage == 1)
 end
 
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))

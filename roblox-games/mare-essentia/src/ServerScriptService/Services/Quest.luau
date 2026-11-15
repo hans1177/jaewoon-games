@@ -294,6 +294,9 @@ return function(D, S)
 		if (h + state.day * 7) % 10 < 7 then
 			offer(state, msgs, "주점에서 소문을 들었다")
 		end
+		if S.Chronicle then
+			S.Chronicle.arrive(state, msgs)
+		end
 		if S.Story and S.Story.autoTrigger then
 			S.Story.autoTrigger(state, msgs)
 		end
