@@ -129,6 +129,9 @@ return function(D, S)
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end
+		if quest.nation and quest.nation ~= state.nationId then
+			return false -- 서막은 시작 국가의 이야기만 보인다
+		end
 		if quest.companionId then
 			return (state.affinity[quest.companionId] or 0) >= (quest.minAffinity or 0)
 		end

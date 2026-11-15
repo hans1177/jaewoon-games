@@ -299,7 +299,7 @@ local function extraTests()
 	local shownD = 0
 	for _, a in vq.available do
 		local q = D.Quests.ById[a.id]
-		if q.kind == "deliver" then shownD += 1 end
+		if q.kind == "deliver" and q.strand ~= "main" then shownD += 1 end
 	end
 	check("납품 의뢰: 게시판에는 많아야 4개만 보임", shownD <= 4 and vq.otherPortDeliver > 0)
 	local stC = newState("england")
@@ -1516,7 +1516,7 @@ do
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
-	check("view quests", #v.quests.available + v.quests.otherPortDeliver == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after then n += 1 end end return n end)())
+	check("view quests", (function() local c = 0 for _, a in v.quests.available do if D.Quests.ById[a.id].strand ~= "main" then c += 1 end end return c end)() + v.quests.otherPortDeliver == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after and not q.nation then n += 1 end end return n end)())
 	check("view loadout", v.loadout.slots == 3)
 	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == #D.Ships.Order)
 	check("view scholars at london", #v.scholars >= 4)
