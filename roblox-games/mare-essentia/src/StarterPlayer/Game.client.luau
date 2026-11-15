@@ -6141,6 +6141,10 @@ function H.showCardDetail(card)
 			mkLabel(body, article.details, 15, ink, false, 6)
 			encHeading("쓰임과 배경", 7)
 			mkLabel(body, article.context, 15, ink, false, 8)
+			if article.history then
+				encHeading("역사 속 이야기", 9)
+				mkLabel(body, article.history, 15, ink, false, 10)
+			end
 		end
 		if article then
 			local topic = article.topic:gsub("_", " "):gsub("%%27", "'")
