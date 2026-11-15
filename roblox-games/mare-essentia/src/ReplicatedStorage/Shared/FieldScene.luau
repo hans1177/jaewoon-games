@@ -928,6 +928,50 @@ function FieldScene.start(opts)
 		TweenService:Create(flashFrame, TweenInfo.new(0.25), { BackgroundTransparency = 1 }):Play()
 	end
 
+	-- ===== 마력숲식 스킬 연출: 팔다리·칼 궤적(AttachShortTrail), 몸에 오라(Highlight), 공용 파동(CommonVFX.Create) =====
+	local TRAIL_LIMBS = { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg", "LeftLowerLeg" }
+	local function trailsOn(ch: Model?, names: { string }, color: Color3, life: number, dur: number)
+		if not ch or not CommonVFX or not CommonVFX.AttachShortTrail then return end
+		local function attach(part: Instance?, len: number?)
+			if part and part:IsA("BasePart") then
+				local ok, trail, ctl = pcall(CommonVFX.AttachShortTrail, part, {
+					lifetime = life, width = 1, axis = Vector3.new(0, 1, 0), length = math.max(0.8, len or part.Size.Y * 1.5), color = color,
+				})
+				if ok and trail and ctl then
+					task.delay(dur, function() pcall(ctl.Destroy) end)
+				end
+			end
+		end
+		for _, nm in names do attach(ch:FindFirstChild(nm)) end
+		local sword = ch:FindFirstChild("FieldSword", true)
+		if sword then
+			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
+			attach(blade, 4)
+		end
+	end
+	local function auraOn(ch: Model?, fill: Color3, outline: Color3, dur: number)
+		if not ch then return end
+		local h = Instance.new("Highlight")
+		h.Adornee = ch
+		h.DepthMode = Enum.HighlightDepthMode.Occluded
+		h.FillColor, h.OutlineColor = fill, outline
+		h.FillTransparency, h.OutlineTransparency = 0.72, 0.08
+		h.Parent = ch
+		task.delay(dur * 0.55, function()
+			if h.Parent then
+				TweenService:Create(h, TweenInfo.new(dur * 0.45), { FillTransparency = 1, OutlineTransparency = 1 }):Play()
+			end
+		end)
+		task.delay(dur, function() h:Destroy() end)
+	end
+	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number)
+		if not CommonVFX or not CommonVFX.Create then return end
+		pcall(CommonVFX.Create, atom, {
+			parent = workspace, cframe = cf, duration = 0.42, color = color, accent = accent,
+			startDiameter = 1.4, endDiameter = endDia, startSize = 0.46, endSize = 2.6, count = count,
+		})
+	end
+
 	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1211,6 +1255,8 @@ function FieldScene.start(opts)
 		if not ok then
 			if mv and pl.stamina < mv.stamina then
 				say("기력이 부족해요")
+			elseif mv and (pl.cd[moveId] or -100) > now then
+				say(string.format("%s 재사용까지 %.1f초", mv.label or "스킬", pl.cd[moveId] - now))
 			end
 			return
 		end
@@ -1220,6 +1266,16 @@ function FieldScene.start(opts)
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
 			burst(hrp.Position, 24, false, "dodge")
+			do
+				local ch0 = player.Character
+				trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
+				auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
+				for i, dl in { 0.02, 0.2 } do
+					task.delay(dl, function()
+						pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0), if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127), Color3.fromRGB(239, 249, 255), 7, 10)
+					end)
+				end
+			end
 			startSwing("dash", 0.4)
 			say("회피! 잠깐 무적")
 			return
@@ -1247,6 +1303,20 @@ function FieldScene.start(opts)
 		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
 		do
 			local reachV = (mv.range or 5) * STUD
+			do
+				local ch0 = player.Character
+				if kind == "spin" then
+					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
+					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
+					pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -2.2, 0), Color3.fromRGB(130, 225, 255), Color3.fromRGB(240, 250, 255), reachV * 2.4, 16)
+				elseif kind == "heavy" then
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, Color3.fromRGB(255, 160, 70), 0.45, 0.9)
+					auraOn(ch0, Color3.fromRGB(255, 140, 60), Color3.fromRGB(255, 226, 150), 0.8)
+					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6), Color3.fromRGB(255, 180, 90), Color3.fromRGB(255, 240, 200), reachV * 1.8, 14)
+				else
+					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
+				end
+			end
 			if kind == "spin" then
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
@@ -1312,10 +1382,18 @@ function FieldScene.start(opts)
 		local now = os.clock()
 		local ok = AC.tryMove(pl, "parry", now)
 		if not ok then
+			if (pl.cd.parry or -100) > now then
+				say(string.format("방어 재사용까지 %.1f초", pl.cd.parry - now))
+			end
 			return
 		end
 		pl.parryAt = now
 		pl.guarding = true
+		do
+			local ch0, hrpG = char3()
+			auraOn(ch0, Color3.fromRGB(150, 120, 220), Color3.fromRGB(235, 225, 255), 1.2)
+			if hrpG then pulseAt("BLOCK_IMPACT", hrpG.CFrame * CFrame.new(0, 0.5, -2), Color3.fromRGB(190, 160, 255), Color3.fromRGB(255, 255, 255), 6, 10) end
+		end
 		startSwing("guard", 1.2)
 		say("방어 자세!")
 		task.delay(1.2, function()
@@ -1386,10 +1464,14 @@ function FieldScene.start(opts)
 		end
 		local function useCard(key, card)
 			local now = os.clock()
-			if finished or (pl.cd[key] or 0) > now then
+			if finished then
 				return
 			end
-			pl.cd[key] = now + 14
+			if (pl.cd[key] or 0) > now then
+				say(string.format("%s 재사용까지 %.1f초", card.name, pl.cd[key] - now))
+				return
+			end
+			pl.cd[key] = now + 8
 			local ch = player.Character
 			local hp0 = ch and ch:FindFirstChild("HumanoidRootPart")
 			if not hp0 then
@@ -1403,12 +1485,16 @@ function FieldScene.start(opts)
 				say(card.name .. ": 체력 회복")
 				sfx("sfx_card_magic", 0.7, 1)
 				burst(pos, 20, false)
+				auraOn(ch, Color3.fromRGB(110, 230, 140), Color3.fromRGB(230, 255, 230), 1.1)
+				pulseAt("HEAL_PULSE", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(120, 235, 150), Color3.fromRGB(235, 255, 240), 9, 14)
 				refresh()
 			elseif sk == "ward" or sk == "armor" then
 				pl.ward = true
 				say(card.name .. ": 보호막 (다음 공격 1회 무효)")
 				sfx("sfx_card_armor", 0.7, 1.1)
 				burst(pos, 26, true)
+				auraOn(ch, Color3.fromRGB(100, 170, 255), Color3.fromRGB(235, 245, 255), 1.4)
+				pulseAt("BLOCK_IMPACT", hp0.CFrame * CFrame.new(0, 0.5, 0), Color3.fromRGB(120, 190, 255), Color3.fromRGB(255, 255, 255), 8, 12)
 			elseif sk == "volley" or sk == "snipe" then
 				local list = table.clone(enemies)
 				table.sort(list, function(a, b)
@@ -1424,6 +1510,8 @@ function FieldScene.start(opts)
 					arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
 					strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe")
 				end
+				trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, Color3.fromRGB(255, 220, 130), 0.4, 0.9)
+				pulseAt("SHAPE_BURST", hp0.CFrame * CFrame.new(0, -1.5, 0), Color3.fromRGB(255, 210, 120), Color3.fromRGB(255, 245, 210), 9, 12)
 				say(card.name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
 				sfx("sfx_card_volley", 0.7, 1)
 			elseif sk == "rally" then
@@ -1431,12 +1519,15 @@ function FieldScene.start(opts)
 				say(card.name .. ": 8초간 공격력 +30%")
 				sfx("sfx_horn", 0.5, 1.3)
 				burst(pos, 26, true)
+				auraOn(ch, Color3.fromRGB(255, 190, 80), Color3.fromRGB(255, 240, 180), 1.6)
+				pulseAt("BUFF_PULSE", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(255, 200, 90), Color3.fromRGB(255, 245, 210), 10, 14)
 			elseif sk == "luck" then
 				pl.stamina = AC.STAMINA_MAX
 				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.1)
 				say(card.name .. ": 행운! 기력 가득")
 				sfx("sfx_coin", 0.7, 1.2)
 				burst(pos, 24, true)
+				pulseAt("UPGRADE_BURST", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(255, 225, 120), Color3.fromRGB(255, 255, 220), 10, 14)
 				refresh()
 			else
 				local n = 0
@@ -1476,9 +1567,9 @@ function FieldScene.start(opts)
 			end
 		end))
 	end
-	table.insert(conns, RunService.Heartbeat:Connect(function()
+	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
-		AC.regen(pl, 1 / 60)
+		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
 		for key, sb in skillBtns do
 			local left = (pl.cd[key] or 0) - now

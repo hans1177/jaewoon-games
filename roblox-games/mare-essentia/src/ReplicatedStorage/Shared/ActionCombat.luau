@@ -14,14 +14,14 @@ A.Moves = {
 	rush = { id = "rush", label = "연속권", src = "meadow-unarmed-rush", motion = "LIGHT_ATTACK_1", vfx = "SHAPE_BURST", cooldown = 0, stamina = 0, mult = 1, range = 5, arc = 120 },
 	uppercut = { id = "uppercut", label = "어퍼컷", src = "meadow-unarmed-uppercut", motion = "HEAVY_ATTACK_1", vfx = "CRITICAL_BURST", cooldown = 0, stamina = 20, mult = 2.2, range = 5, arc = 90, stagger = true },
 	kick = { id = "kick", label = "회전 발차기", src = "meadow-unarmed-kick", motion = "LIGHT_ATTACK_1", vfx = "SHAPE_BURST", cooldown = 0, stamina = 14, mult = 1.4, range = 6, arc = 360 },
-	heavy = { id = "heavy", label = "강타", src = "skill-meadow-heavy", motion = "HEAVY_ATTACK_1", vfx = "CRITICAL_BURST", cooldown = 5, stamina = 0, mult = 2.5, range = 5, arc = 90, stagger = true },
-	sweep = { id = "sweep", label = "회전 베기", src = "skill-meadow-sweep", motion = "LIGHT_ATTACK_1", vfx = "SHAPE_BURST", cooldown = 9, stamina = 0, mult = 1.6, range = 7, arc = 360 },
-	bolt = { id = "bolt", label = "마력 탄환", src = "skill-meadow-bolt", motion = "CAST_BURST", vfx = "IMPACT_FLASH", cooldown = 7, stamina = 0, mult = 1.8, range = 30, arc = 20 },
-	guard = { id = "guard", label = "방어 자세", src = "skill-meadow-guard", motion = "BLOCK_HOLD", vfx = "BLOCK_IMPACT", cooldown = 9, stamina = 0, mult = 0, range = 0, arc = 0 },
-	parry = { id = "parry", label = "완벽 방어", src = "skill-meadow-parry", motion = "PARRY_PERFECT", vfx = "PARRY_PERFECT_FLASH", cooldown = 7, stamina = 0, mult = 0, range = 0, arc = 0 },
-	dodge = { id = "dodge", label = "회피", src = "skill-meadow-dodge-left", motion = "DODGE_LEFT", vfx = "DODGE_EVASION_PULSE", cooldown = 4, stamina = 10, mult = 0, range = 0, arc = 0, invuln = 0.35 },
-	sprint = { id = "sprint", label = "질주", src = "skill-meadow-sprint", motion = "SPRINT", vfx = "BUFF_PULSE", cooldown = 8, stamina = 0, mult = 0, range = 0, arc = 0 },
-	heal = { id = "heal", label = "회복", src = "skill-meadow-heal", motion = "CAST_BURST", vfx = "HEAL_PULSE", cooldown = 16, stamina = 0, mult = 0, range = 0, arc = 0 },
+	heavy = { id = "heavy", label = "강타", src = "skill-meadow-heavy", motion = "HEAVY_ATTACK_1", vfx = "CRITICAL_BURST", cooldown = 3, stamina = 0, mult = 2.5, range = 5, arc = 90, stagger = true },
+	sweep = { id = "sweep", label = "회전 베기", src = "skill-meadow-sweep", motion = "LIGHT_ATTACK_1", vfx = "SHAPE_BURST", cooldown = 5, stamina = 0, mult = 1.6, range = 7, arc = 360 },
+	bolt = { id = "bolt", label = "마력 탄환", src = "skill-meadow-bolt", motion = "CAST_BURST", vfx = "IMPACT_FLASH", cooldown = 4, stamina = 0, mult = 1.8, range = 30, arc = 20 },
+	guard = { id = "guard", label = "방어 자세", src = "skill-meadow-guard", motion = "BLOCK_HOLD", vfx = "BLOCK_IMPACT", cooldown = 5, stamina = 0, mult = 0, range = 0, arc = 0 },
+	parry = { id = "parry", label = "완벽 방어", src = "skill-meadow-parry", motion = "PARRY_PERFECT", vfx = "PARRY_PERFECT_FLASH", cooldown = 4, stamina = 0, mult = 0, range = 0, arc = 0 },
+	dodge = { id = "dodge", label = "회피", src = "skill-meadow-dodge-left", motion = "DODGE_LEFT", vfx = "DODGE_EVASION_PULSE", cooldown = 2, stamina = 10, mult = 0, range = 0, arc = 0, invuln = 0.35 },
+	sprint = { id = "sprint", label = "질주", src = "skill-meadow-sprint", motion = "SPRINT", vfx = "BUFF_PULSE", cooldown = 5, stamina = 0, mult = 0, range = 0, arc = 0 },
+	heal = { id = "heal", label = "회복", src = "skill-meadow-heal", motion = "CAST_BURST", vfx = "HEAL_PULSE", cooldown = 10, stamina = 0, mult = 0, range = 0, arc = 0 },
 }
 
 -- 적 (모두 R15). pattern 이름은 마력숲과 같다. 시간은 초.
