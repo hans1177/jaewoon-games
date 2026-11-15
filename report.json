@@ -1,160 +1,170 @@
 {
- "sourceRevision": "6cebe2894b1164314eb164fcb456f602ddee798b",
+ "sourceRevision": "03ddb9406ad860ad367e349a66ee4b78ccf11b73",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "INTRO name=true comp=true\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 7,
+   "step": 6,
    "ctx": "Client",
-   "out": "faced 5.831256866455078\ntext"
+   "out": "DEV Tab trade\ntext"
   },
   {
    "step": 8,
-   "capture": "c1_approach",
+   "capture": "f_trade",
    "files": 1
   },
   {
    "step": 9,
    "ctx": "Client",
-   "out": "attack\ntext"
+   "out": "CHK deck view=1136x380 texts=94 issues=0\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:trade true nil\ntext"
   },
   {
    "step": 11,
-   "capture": "c2_attack",
-   "files": 1
+   "ctx": "Client",
+   "out": "killed=true\ntext"
   },
   {
-   "step": 13,
+   "step": 12,
    "ctx": "Client",
-   "out": "faced 6.274295806884766\ntext"
+   "out": "DEV Tab route\ntext"
   },
   {
    "step": 14,
+   "capture": "f_route",
+   "files": 1
+  },
+  {
+   "step": 15,
    "ctx": "Client",
-   "out": "heavy\ntext"
+   "out": "CHK deck view=1136x380 texts=580 issues=0\ntext"
   },
   {
    "step": 16,
-   "capture": "c3_heavy",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:route true nil\ntext"
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
   },
   {
    "step": 18,
    "ctx": "Client",
-   "out": "spin\ntext"
+   "out": "DEV Tab yard\ntext"
   },
   {
    "step": 20,
-   "capture": "c4_spin",
+   "capture": "f_yard",
    "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "CHK deck view=1136x380 texts=285 issues=0\ntext"
   },
   {
    "step": 22,
    "ctx": "Client",
-   "out": "dash\ntext"
+   "out": "DEVRESULT Tab:yard true nil\ntext"
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
   },
   {
    "step": 24,
-   "capture": "c5_dash",
-   "files": 1
-  },
-  {
-   "step": 25,
    "ctx": "Client",
-   "out": "ready=true err=true table: 0x25d18357209e8e82 btns=공격|철수|0.1|6.0|3.0|방어|의학|화학|물리\ntext"
+   "out": "DEV Tab quest\ntext"
   },
   {
    "step": 26,
-   "ctx": "Client",
-   "out": "MOVE anchored=false moved=9.2 ws=18 mobs=7\ntext"
+   "capture": "f_quest",
+   "files": 1
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "guard\ntext"
+   "out": "CHK deck view=1136x380 texts=219 issues=0\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:quest true nil\ntext"
   },
   {
    "step": 29,
-   "capture": "c6_guard",
-   "files": 1
+   "ctx": "Client",
+   "out": "killed=false\ntext"
   },
   {
    "step": 30,
    "ctx": "Client",
-   "out": "SWORD equipped=true template=true relics=24\ntext"
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "ALLIES 2\ntext"
+   "out": "DEV Tab codex\ntext"
   },
   {
    "step": 32,
-   "capture": "c7_allies",
+   "capture": "f_codex",
    "files": 1
   },
   {
    "step": 33,
    "ctx": "Client",
-   "out": "volley\ntext"
+   "out": "CHK deck view=1136x380 texts=548 issues=0\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:codex true nil\ntext"
   },
   {
    "step": 35,
-   "capture": "c8_cardvolley",
-   "files": 1
+   "ctx": "Client",
+   "out": "killed=false\ntext"
   },
   {
    "step": 36,
    "ctx": "Client",
-   "out": "ward\ntext"
+   "out": "DEV Tab status\ntext"
   },
   {
    "step": 38,
-   "capture": "c9_cardward",
+   "capture": "f_status",
    "files": 1
   },
   {
    "step": 39,
    "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.178 | ENEMY motors=15 sum=0.012\nME motors=15 sum=4.167 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.120 | ENEMY motors=15 sum=0.009\nME motors=15 sum=4.068 | ENEMY motors=15 sum=0.001\nME motors=15 sum=4.032 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.986 | ENEMY motors=15 sum=0.014\ntext"
+   "out": "CHK deck view=1136x380 texts=163 issues=0\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:status true nil\ntext"
   },
   {
    "step": 41,
-   "capture": "c10_mobs",
-   "files": 1
-  },
-  {
-   "step": 42,
    "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.881 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.868 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.872 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.006\nME motors=15 sum=3.947 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.062 | ENEMY motors=15 sum=0.011\ntext"
-  },
-  {
-   "step": 44,
-   "ctx": "Client",
-   "out": "ENEMY d=133 motors=15 sum=0.006\nENEMY d=132 motors=15 sum=0.006\nENEMY d=119 motors=15 sum=0.006\nENEMY d=66 motors=15 sum=0.632\ntext"
-  },
-  {
-   "step": 45,
-   "capture": "c11_mobs2",
-   "files": 1
+   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -165,17 +175,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 20,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 46,
+  "plannedSteps": 42,
+  "completedSteps": 42,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 11,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
