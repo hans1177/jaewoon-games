@@ -4444,9 +4444,16 @@ function RENDERERS.status()
 				add(function()
 					local nextTxt = if pd.nextAt then string.format("다음 %d점", pd.nextAt) else "최고 단계"
 					return mkRow(content, string.format("%s  Lv.%d %s  (%d점)", pd.name, pd.level, pd.levelName, pd.score),
-						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s\n도시 규모 %s · %d구획 · 소구역 %d곳\n구역 %d개: %s%s\n직업 %d종 (새 직업: %s)\n원자재: %s\n가공 가능: %s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt,
-							pd.sizeName, pd.blocks, #pd.subDistricts, #pd.districts, table.concat(pd.districts, ", "), if pd.nextDistrict then "  → 다음: " .. pd.nextDistrict else "", #pd.jobs, table.concat(pd.newJobs, ", "),
-							if #pd.raw > 0 then table.concat(pd.raw, " · ") else "없음", if #pd.crafts > 0 then table.concat(pd.crafts, ", ") else "아직 없음"), nil, 176)
+						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s\n도시 규모 %s · %d구획 · 소구역 %d곳\n구역 %d개: %s%s\n의식주: %s · 인구 %d명 · %s\n직업 %d종 (새 직업: %s)\n원자재: %s\n가공 가능: %s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt,
+							pd.sizeName, pd.blocks, #pd.subDistricts, #pd.districts, table.concat(pd.districts, ", "), if pd.nextDistrict then "  → 다음: " .. pd.nextDistrict else "",
+							(function()
+								local t = {}
+								for _, a in pd.sim.axes do
+									table.insert(t, string.format("%s %d%%(%s)%s", a.name, math.floor(math.min(a.pct, 1.5) * 100 + 0.5), a.status, if a.tip then " ▶" .. a.tip else ""))
+								end
+								return table.concat(t, "  ")
+							end)(), pd.sim.pop, "분위기 " .. pd.sim.mood, #pd.jobs, table.concat(pd.newJobs, ", "),
+							if #pd.raw > 0 then table.concat(pd.raw, " · ") else "없음", if #pd.crafts > 0 then table.concat(pd.crafts, ", ") else "아직 없음"), nil, 210)
 				end)
 			end
 		end

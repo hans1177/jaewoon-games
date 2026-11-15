@@ -53,9 +53,9 @@ return function(D, S)
 	end
 
 	-- 지금 마을에 들어선 경제 건물 목록
-	function V.buildings(state)
+	function V.buildings(state, levelOverride)
 		local tiers, score = V.tiers(state)
-		local level = V.levelOf(score)
+		local level = levelOverride or V.levelOf(score)
 		local out = {}
 		for _, b in EB.List do
 			if level >= b.minLevel then
@@ -118,6 +118,67 @@ return function(D, S)
 		{ name = "해운 회사 사장", minLevel = 6, disc = "commerce" },
 	}
 
+	-- 의식주 시뮬레이션: 인구가 먹고(식) 입고(의) 살고(주) 씻는(위생) 데 필요한 양과, 마을이 대는 양을 견준다.
+	-- 공급 = 들어선 건물(분류별) + 항구가 나는 원자재 / 수요 = 인구 × 항목별 계수. 만족도가 낮으면 안정도·인구가 준다.
+	V.POP_AT = { 300, 900, 2500, 6000, 12000, 25000 }
+	V.NEED = { food = 1.0, cloth = 0.5, home = 1.0, hygiene = 0.7 }
+	V.WEIGHT = { food = 0.4, cloth = 0.15, home = 0.25, hygiene = 0.2 }
+	V.AXIS_NAME = { food = "식", cloth = "의", home = "주", hygiene = "위생" }
+	-- 건물 분류 → 의식주 항목 (산업·교역 건물은 자재·장비로 주와 의를 돕는다)
+	local AXIS_OF_CAT = { food = "food", cloth = "cloth", home = "home", public = "hygiene" }
+	-- 항구가 내는 원자재 종류 → 항목 (농·목축·해산→식, 섬유·목축→의, 임·광산→주)
+	local AXIS_OF_RAW = { farm = { "food" }, animal = { "food", "cloth" }, fiber = { "cloth" }, forest = { "home" }, mineral = { "home" }, gem = {} }
+
+	function V.sim(state, portId, levelOverride)
+		local port = D.Ports.Ports[portId]
+		if not port then return nil end
+		local dev = levelOverride and { level = levelOverride } or V.portDev(state, portId)
+		local level = dev.level
+		local pop = V.POP_AT[level]
+		local supply = { food = 0, cloth = 0, home = 0, hygiene = 0 }
+		local builtBy = {}
+		for _, b in V.buildings(state, level) do
+			local axis = AXIS_OF_CAT[b.category]
+			local cap = 60 + 30 * b.minLevel
+			if axis then
+				supply[axis] += cap
+				builtBy[axis] = (builtBy[axis] or 0) + 1
+			elseif b.category == "industry" then
+				supply.home += cap * 0.3
+				supply.cloth += cap * 0.3
+			end
+		end
+		local rawBy = D.ProductionChains.rawByClass(port.produces or {})
+		for cls, n in rawBy do
+			for _, axis in (AXIS_OF_RAW[cls] or {}) do
+				supply[axis] += n * 90
+			end
+		end
+		local axes, stability = {}, 0
+		for _, key in { "food", "cloth", "home", "hygiene" } do
+			local need = math.max(1, math.floor(pop * V.NEED[key]))
+			local pct = math.min(1.5, supply[key] / need)
+			local st = if pct >= 0.9 then "풍족" elseif pct >= 0.7 then "안정" elseif pct >= 0.5 then "부족" else "위기"
+			stability += math.min(1, pct) * V.WEIGHT[key]
+			-- 모자랄 때 먼저 지을 건물 추천
+			local tip = nil
+			if pct < 0.9 then
+				for _, b in EB.List do
+					local ax = AXIS_OF_CAT[b.category]
+					if ax == key and b.minLevel <= level then
+						tip = b.name
+						break
+					end
+				end
+			end
+			table.insert(axes, { id = key, name = V.AXIS_NAME[key], supply = math.floor(supply[key]), need = need, pct = pct, status = st, tip = tip, buildings = builtBy[key] or 0 })
+		end
+		local mood = if stability >= 0.85 then "번영" elseif stability >= 0.65 then "안정" elseif stability >= 0.45 then "불안" else "위기"
+		return {
+			level = level, pop = math.floor(pop * (0.6 + 0.4 * stability)), popCap = pop, stability = stability, mood = mood, axes = axes,
+		}
+	end
+
 	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
 	V.Districts = {
 		{ id = "wharf", name = "부두 구역", minLevel = 1, weight = 3, sub = { "내항 부두", "외항 정박지", "조선 구획", "화물 하역장" }, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
@@ -177,6 +238,7 @@ return function(D, S)
 				nextD = d
 			end
 		end
+		local sim = V.sim(state, portId, level)
 		local produces = port.produces or {}
 		local rawBy = D.ProductionChains.rawByClass(produces)
 		local rawParts = {}
@@ -195,7 +257,7 @@ return function(D, S)
 			end
 		end
 		return {
-			jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
+			sim = sim, jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
 			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],

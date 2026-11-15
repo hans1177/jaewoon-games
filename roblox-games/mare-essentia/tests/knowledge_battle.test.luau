@@ -753,6 +753,20 @@ do
 	local dsum = 0
 	for _, d in S.Village.Districts do dsum += #d.sub end
 	check("도시 면적: 레벨이 오를수록 구획이 크게 늘고 소구역이 생긴다", S.Village.BLOCKS_AT[6] >= S.Village.BLOCKS_AT[1] * 30 and dsum >= 30 and d0.blocks == S.Village.BLOCKS_AT[1] and #d0.subDistricts >= 2 and d1.blocks >= d0.blocks)
+	local simLow = S.Village.sim(stPD, "london", 1)
+	local simHigh = S.Village.sim(stPD, "london", 6)
+	local simOk = simLow ~= nil and #simLow.axes == 4 and simHigh.popCap > simLow.popCap and simLow.stability >= 0 and simLow.stability <= 1 and simHigh.stability <= 1
+	local allAxis = true
+	for _, a in simHigh.axes do
+		if a.need <= 0 or a.supply < 0 or a.pct < 0 then allAxis = false end
+	end
+	check("의식주 시뮬: 레벨이 오르면 인구가 늘고 항목 4개의 수요·공급·만족도가 계산된다", simOk and allAxis)
+	local stFull = S.State.new("england", 1700)
+	stFull.reported = {}
+	for _, node in D.KnowledgeTree.Nodes do stFull.reported[node.id] = true end
+	local simFull = S.Village.sim(stFull, "london", 3)
+	local simNone = S.Village.sim(S.State.new("england", 1700), "london", 3)
+	check("의식주 시뮬: 학문이 발전해 건물이 들어서면 만족도가 오른다", simFull.stability >= simNone.stability and simFull.stability > simNone.stability - 1e-9)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
