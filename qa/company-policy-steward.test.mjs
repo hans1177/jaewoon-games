@@ -106,9 +106,9 @@ test('new owner hold overrides earlier permissive values in actual Vibe queue',(
 }));
 test('all four documents retain security, log and architecture fail-closed contracts',()=>fixture(tmp=>{
   for(const [index,mutate,expected] of [
-    [1,doc=>{doc.retained.unknownOrMissingPolicy='ALLOW';},/LOG_CONTRACT_INVALID/],
+    [1,doc=>{doc.requiredForAllWorkers=false;},/LOG_CONTRACT_INVALID/],
     [2,doc=>{doc.constitutionalEnforcement.mode='ALLOW';},/ARCHITECTURE_CONTRACT_INVALID/],
-    [3,doc=>{doc.enforcement.unverified='ALLOW';},/SECURITY_CONTRACT_INVALID/]
+    [3,doc=>{doc.defaultTrust='ALLOW';},/SECURITY_CONTRACT_INVALID/]
   ]){
     const file=path.join(tmp,paths[index]);
     const original=fs.readFileSync(file,'utf8');

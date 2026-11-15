@@ -1,6 +1,6 @@
 import{test}from'node:test';import{strict as a}from'node:assert';import{readFileSync}from'node:fs';import{createHash}from'node:crypto';
-const files=[["company-directive.json","0d17f6f1879348ce4d229c926ef64fa9b1374e54"],["company-learning/company-log-map.json","ce2fef934e6d8ae68ae52d1ab4a3ea5e1ea216e7"],["company-learning/company-architecture-map.json","3886c851a9f946c3d3d6544f993ea09e41a1a142"],["company-learning/security-immune-system.json","e5923872a432d544c433e17d9910b61b6138b153"]];
-test('four documents retain their exact contents; only three compact summaries have a 1000-character cap',()=>{
+const files=[["company-directive.json","0d17f6f1879348ce4d229c926ef64fa9b1374e54"],["company-learning/company-log-map.json","e16dc62d01410f411cdb7100135c93fa160bcd12"],["company-learning/company-architecture-map.json","3e2dcd528dea7a21d5c709e250d7f8ba2b48df2f"],["company-learning/security-immune-system.json","63e6c91b5f93b98f492a7a75a395753b2f3db742"]];
+test('four canonical companion documents retain exact restored blob fingerprints',()=>{
 for(const[p,id]of files){
 const b=readFileSync(p),s=b.toString('utf8'),h=createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');
 a.equal(h,id,p+' changed without approving new pinned blob');
@@ -9,6 +9,19 @@ if(p==='company-directive.json'){
 a.equal(data.authority,'MACHINE_EXECUTION_CONTRACT');
 a.equal(data.policyDocument,'company-learning/platform-release-roadmap.json');
 a.ok(s.includes('"robloxStudioRequired": true'),'owner-approved Studio release evidence must remain mandatory');
-}else a.ok([...s].length<1000,p+' compact summary over 1000 characters');
+ }else if(p.includes('company-log-map')){
+a.equal(data.authority,'MACHINE_EXECUTION_LOG_MAP');
+a.equal(data.centralPolicy,'company-learning/platform-release-roadmap.json');
+a.equal(data.requiredForAllWorkers,true);
+}else if(p.includes('company-architecture-map')){
+a.equal(data.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+a.equal(data.centralPolicy,'company-learning/platform-release-roadmap.json');
+a.equal(data.branches.main.directGameWorkerWrite,false);
+a.equal(data.constitutionalEnforcement.subordinateOverrideForbidden,true);
+}else{
+a.equal(data.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+a.equal(data.centralRoadmapBinding.centralPolicy,'company-learning/platform-release-roadmap.json');
+a.equal(data.containment.unverifiedExternalPayloadMayNotEnterCanonicalLearning,true);
+}
 }
 });
