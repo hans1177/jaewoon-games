@@ -1,206 +1,32 @@
 {
- "sourceRevision": "4855ac258dfce052e9360426d9c12b086c78635a",
+ "sourceRevision": "df140cd893b66974c5e8b70c6a74085d6c4c01b3",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "built true nil\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "models: Villagerx86, chickenx5, catx4, horsex7, cowx6\ntext"
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "chicken moved 3/5 | cat moved 4/4 | horse moved 0/7 | cow moved 0/6 | Villager moved 28/86\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "none dog\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "zoo_dog_0",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "capture": "zoo_dog_1",
-   "files": 1
-  },
-  {
-   "step": 13,
-   "capture": "zoo_dog_2",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "cam cat\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "zoo_cat_0",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "capture": "zoo_cat_1",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "capture": "zoo_cat_2",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "cam cow\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "zoo_cow_0",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "capture": "zoo_cow_1",
-   "files": 1
-  },
-  {
-   "step": 29,
-   "capture": "zoo_cow_2",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "none sheep\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "zoo_sheep_0",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "capture": "zoo_sheep_1",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "capture": "zoo_sheep_2",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "none pig\ntext"
-  },
-  {
-   "step": 41,
-   "capture": "zoo_pig_0",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "zoo_pig_1",
-   "files": 1
-  },
-  {
-   "step": 45,
-   "capture": "zoo_pig_2",
-   "files": 1
-  },
-  {
-   "step": 47,
-   "ctx": "Client",
-   "out": "cam chicken\ntext"
-  },
-  {
-   "step": 49,
-   "capture": "zoo_chicken_0",
-   "files": 1
-  },
-  {
-   "step": 51,
-   "capture": "zoo_chicken_1",
-   "files": 1
-  },
-  {
-   "step": 53,
-   "capture": "zoo_chicken_2",
-   "files": 1
-  },
-  {
-   "step": 55,
-   "ctx": "Client",
-   "out": "cam Villager\ntext"
-  },
-  {
-   "step": 57,
-   "capture": "zoo_villager_0",
-   "files": 1
-  },
-  {
-   "step": 59,
-   "capture": "zoo_villager_1",
-   "files": 1
-  },
-  {
-   "step": 61,
-   "capture": "zoo_villager_2",
-   "files": 1
-  },
-  {
-   "step": 63,
-   "ctx": "Client",
-   "out": "cam horse\ntext"
-  },
-  {
-   "step": 65,
-   "capture": "zoo_horse_0",
-   "files": 1
-  },
-  {
-   "step": 67,
-   "capture": "zoo_horse_1",
-   "files": 1
-  },
-  {
-   "step": 69,
-   "capture": "zoo_horse_2",
-   "files": 1
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.19\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.19\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 71,
-  "completedSteps": 71,
+  "plannedSteps": 4,
+  "completedSteps": 4,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 24,
-  "capturedFrames": 24,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
