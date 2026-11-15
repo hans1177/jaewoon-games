@@ -1,0 +1,61 @@
+{
+ "sourceRevision": "412d121f67823af2a73d91c1174452755262ab4d",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true sites=5 istanbul_bazaar:false,istanbul_bosphorus:false,istanbul_hagia:false,survey_09:false,istanbul_arsenal:false\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO true true\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "london_tavern_explore",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "Field:london_fields none | err=nil\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "london_field_open",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "FieldScene=false enemies=0 err=nil\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 12,
+  "completedSteps": 12,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
