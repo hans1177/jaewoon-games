@@ -1676,7 +1676,14 @@ function FieldScene.start(opts)
 					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dt, flat.Magnitude - 2.5)
 					e.model:PivotTo(e.model:GetPivot() + lunge)
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, if lean ~= 0 then CFrame.Angles(lean, 0, 0) else nil)
+				-- 숨쉬기·체중 이동(대기), 달릴 때 위아래 출렁임과 앞으로 숙임으로 가만히 있어도 살아 보이게 한다
+				local bob, roll = 0, 0
+				if st == "IDLE" then
+					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
+				elseif st == "RUN" then
+					bob, roll, lean = math.abs(math.sin(now * 9)) * 0.2, math.sin(now * 9) * 0.08, -0.2
+				end
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then

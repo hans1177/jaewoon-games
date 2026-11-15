@@ -567,6 +567,20 @@ function Pose.work(model, kind, t)
 	end
 end
 
+-- 숨쉬기·체중 이동: 모든 제자리 일에 몸통 출렁임과 고개 흔들림을 더해 가만히 있어도 움직이게 한다 (절대값으로 덮어써 누적되지 않는다)
+local workBase = Pose.work
+function Pose.work(model, kind, t)
+	workBase(model, kind, t)
+	local m = rigMotors[model]
+	if not m then return end
+	if m.root and kind ~= "sit" and kind ~= "fish" then
+		m.root.Transform = CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
+	end
+	if m.neck and kind ~= "look" and kind ~= "stoop" and kind ~= "carry" then
+		m.neck.Transform = CFrame.Angles(math.sin(t * 0.6) * 0.06, math.sin(t * 0.45) * 0.22, 0)
+	end
+end
+
 -- 전투용 모션: 걷기(무릎·팔꿈치·몸 흔들림), 숨쉬기, 공격 휘두르기, 맞아서 휘청임
 -- st = { phase, moving, t, attack = 0..1 (휘두르는 진행도, 0이면 안 함), hurt = 0..1 }
 function Pose.animateR15(model, st)
