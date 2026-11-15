@@ -1,18 +1,18 @@
 {
-  "runId": "43678300518",
+  "runId": "43678316970",
   "kind": "studio",
-  "sourceRevision": "dabcefbe397a2b692ef94f2d5f19e815c1fc0bcc",
+  "sourceRevision": "b6460a36a1a66ecbf41fcbb4026f690851f93137",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 45,
-    "completedSteps": 45,
+    "plannedSteps": 41,
+    "completedSteps": 41,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 11,
-    "capturedFrames": 11,
+    "plannedFrames": 9,
+    "capturedFrames": 9,
     "abortedEarly": false
   },
   "errors": [],
@@ -39,48 +39,55 @@
     },
     {
       "step": 2,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 3,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 4,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 5,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 6,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 7,
+      "step": 6,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
+      "step": 7,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
       "step": 8,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 9,
       "type": "capture",
       "name": "c1_approach",
       "status": "PASS",
@@ -89,21 +96,21 @@
       ]
     },
     {
-      "step": 9,
+      "step": 10,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 10,
+      "step": 11,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 11,
+      "step": 12,
       "type": "capture",
       "name": "c2_attack",
       "status": "PASS",
@@ -112,15 +119,8 @@
       ]
     },
     {
-      "step": 12,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
       "step": 13,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -134,13 +134,20 @@
     },
     {
       "step": 15,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 16,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 17,
       "type": "capture",
       "name": "c3_heavy",
       "status": "PASS",
@@ -149,28 +156,28 @@
       ]
     },
     {
-      "step": 17,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
       "step": 18,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 19,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 20,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 21,
       "type": "capture",
       "name": "c4_spin",
       "status": "PASS",
@@ -179,41 +186,34 @@
       ]
     },
     {
-      "step": 21,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
       "step": 22,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 23,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 24,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 25,
       "type": "capture",
       "name": "c5_dash",
       "status": "PASS",
       "screenshots": [
         "c5_dash-0.jpg"
       ]
-    },
-    {
-      "step": 25,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
     },
     {
       "step": 26,
@@ -231,26 +231,26 @@
     },
     {
       "step": 28,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 29,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 30,
       "type": "capture",
       "name": "c6_guard",
       "status": "PASS",
       "screenshots": [
         "c6_guard-0.jpg"
       ]
-    },
-    {
-      "step": 30,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
     },
     {
       "step": 31,
@@ -261,6 +261,13 @@
     },
     {
       "step": 32,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 33,
       "type": "capture",
       "name": "c7_allies",
       "status": "PASS",
@@ -269,21 +276,21 @@
       ]
     },
     {
-      "step": 33,
+      "step": 34,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 34,
+      "step": 35,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 35,
+      "step": 36,
       "type": "capture",
       "name": "c8_cardvolley",
       "status": "PASS",
@@ -292,21 +299,21 @@
       ]
     },
     {
-      "step": 36,
+      "step": 37,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 37,
+      "step": 38,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 38,
+      "step": 39,
       "type": "capture",
       "name": "c9_cardward",
       "status": "PASS",
@@ -315,120 +322,69 @@
       ]
     },
     {
-      "step": 39,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
       "step": 40,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 41,
-      "type": "capture",
-      "name": "c10_mobs",
-      "status": "PASS",
-      "screenshots": [
-        "c10_mobs-0.jpg"
-      ]
-    },
-    {
-      "step": 42,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 43,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 44,
-      "type": "capture",
-      "name": "c11_mobs2",
-      "status": "PASS",
-      "screenshots": [
-        "c11_mobs2-0.jpg"
-      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "c10_mobs-0.jpg",
-      "sha256": "0ef0965f033f435bc98b1ec132a0f5fcaa28a2c883f33a2689c1e64aa513b338",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c10_mobs-0.jpg"
-    },
-    {
-      "name": "c11_mobs2-0.jpg",
-      "sha256": "8d307c621002f760ea4e5b9f0fc01b1e9c5e05be4a6181ac6b3b2e816607d819",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c11_mobs2-0.jpg"
-    },
-    {
       "name": "c1_approach-0.jpg",
-      "sha256": "549090e521a59bc016ae44cdf2409a99cd9aa9545a8c030c311b1a71cec2ea33",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c1_approach-0.jpg"
+      "sha256": "635d7d1c206c7208477a768060941018e679eaecfeba49076d8497ce6bd3ecf4",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c1_approach-0.jpg"
     },
     {
       "name": "c2_attack-0.jpg",
-      "sha256": "0588ab10c2fe26a7b96621830ff30c83627e907fea44ea4decff088edd7aa72f",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c2_attack-0.jpg"
+      "sha256": "0e46814b02509ea95c6f0e36c0bfac8bd938e8b8c4f650168cfaaf8e1d16b8f4",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c2_attack-0.jpg"
     },
     {
       "name": "c3_heavy-0.jpg",
-      "sha256": "3fe167c2172d2ec1360caf62e136bd9db4cd6d1d6d4d62650ded86efb39aecb7",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c3_heavy-0.jpg"
+      "sha256": "e5dd429528e09f2e3e82e052f537ff75d1b265382e6e29ce34e0eef2523e11f5",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c3_heavy-0.jpg"
     },
     {
       "name": "c4_spin-0.jpg",
-      "sha256": "bce5475b33e8e2e1c9904913a46fa3fbc2e28cd68772c6d27657a857a2aa8a6a",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c4_spin-0.jpg"
+      "sha256": "df01772c366e163b0d68df4350ad75b540f889bab970845db73d7e036d712eff",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c4_spin-0.jpg"
     },
     {
       "name": "c5_dash-0.jpg",
-      "sha256": "5d98c656a6773c7e37a6ee03413becfac9070a2dadf747a766723f23046cff37",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c5_dash-0.jpg"
+      "sha256": "a062c15e5c8ee56ad8d41ddcf88bced2d55dd90f12d067ab1463ab25b183d320",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c5_dash-0.jpg"
     },
     {
       "name": "c6_guard-0.jpg",
-      "sha256": "fdf9fefa60d1c35ec133fc8a3c2a2908eefc1983d9c56693314c649336b19df3",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c6_guard-0.jpg"
+      "sha256": "cee63187ff011b3edc7f721277109c8aedde5071a2fd8579152580ebfb6ad5f0",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c6_guard-0.jpg"
     },
     {
       "name": "c7_allies-0.jpg",
-      "sha256": "4e00b53f63aebb86321c8aee3f07c62881997bc82d5d291628d74a50c00187b9",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c7_allies-0.jpg"
+      "sha256": "521b65261de38661ce22ffa85327d6ba8850a17a69fc56c271a3211b4f9283f8",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c7_allies-0.jpg"
     },
     {
       "name": "c8_cardvolley-0.jpg",
-      "sha256": "dfcb56bf8a37f9f712321b5bf67b718504570e9cec4d07c9be61e76e0acbed65",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c8_cardvolley-0.jpg"
+      "sha256": "9ee5c9d37378f6fe080c730e4e3e568c063d3396325ad3ba61b3024eb22d639e",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c8_cardvolley-0.jpg"
     },
     {
       "name": "c9_cardward-0.jpg",
-      "sha256": "61c23a87a63ff261ce2c119cf75dc4c74c98bac5ef71be445e25b169918de40d",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678300518/c9_cardward-0.jpg"
+      "sha256": "a0392ffac9f0e482698e54a2bb0ec234e9943ca836d6175af1dd0c60d52f0e4d",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43678316970/c9_cardward-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43678220565"
+  "previousRunId": "43678300518"
 }
