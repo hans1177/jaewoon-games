@@ -121,7 +121,7 @@ return function(D, S)
 
 	local function cannonBonus(state)
 		local _, vc = vacancy(state)
-		return vc + sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0)
+		return vc + sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0) + (if S.Village then S.Village.battleBonus(state) else 0)
 	end
 
 	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"

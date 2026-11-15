@@ -791,6 +791,16 @@ do
 	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
 	local fac6, jobs6, by6 = S.Village.discFacilities(stFull, 6)
 	check("학문 시설: 학문이 발전하고 항구가 클수록 시설과 직업이 늘어난다", #fac0 == 0 and #fac6 > 0 and #fac6 == #jobs6 and #by6 >= 15)
+	local stBB = S.State.new("england", 1700)
+	stBB.portId = "london"
+	local bb0 = S.Village.battleBonus(stBB)
+	stBB.reported = stFull.reported
+	stBB.harbor.london = 99999
+	stBB.portStages = { london = { trade = 5, ship = 5, learn = 4, guard = 4 } }
+	stBB.landmarks = { london = { observatory = true, academy = true, ironworks = true } }
+	local bb1 = S.Village.battleBonus(stBB)
+	check("전투 연결: 시설이 없으면 보너스 0, 발전하면 늘고 상한이 있다", bb0 == 0 and bb1 >= bb0 and bb1 <= S.Village.BATTLE_CAP, tostring(bb1))
+	check("전투 연결: 포 위력 보너스에 반영된다", S.Perk.cannonBonus(stBB) >= bb1)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
