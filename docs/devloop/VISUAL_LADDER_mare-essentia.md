@@ -16,13 +16,9 @@
 - 마을 경제 분위기 3단계(승인된 건물 메시 변형(발전 단계별)): approved-building-meshes · 등록 후보 8개: Naval/tower-complete-large, roblox-games/mare-essentia/assets/naval/tower-complete-large.glb, Naval/tower-complete-small, roblox-games/mare-essentia/assets/naval/tower-complete-small.glb, Naval/tower-roof, roblox-games/mare-essentia/assets/naval/tower-roof.glb, Naval/tower-watch, roblox-games/mare-essentia/assets/naval/tower-watch.glb (오너가 승인하면 바로 풀림)
 - 교역품 정보 3단계(승인된 교역품 아이콘 이미지): approved-goods-icons · 등록 후보 8개: roblox-games/mare-essentia/assets/icons/battle.png, roblox-games/mare-essentia/assets/icons/codex.png, roblox-games/mare-essentia/assets/icons/explore.png, roblox-games/mare-essentia/assets/icons/harbor.png, roblox-games/mare-essentia/assets/icons/map.png, roblox-games/mare-essentia/assets/icons/quest.png, roblox-games/mare-essentia/assets/icons/route.png, roblox-games/mare-essentia/assets/icons/status.png (오너가 승인하면 바로 풀림)
 
-## 최근 화면 검사
-
-- 프레임 24장 중 깨진 화면 0장
-
 ## 룩 자동 적용
 
-- 현재: 적용 안 함(게임 원래 연출) · 이번 회차: NOT_ENOUGH_FRAMES
+- 현재: 적용 안 함(게임 원래 연출)
 
 ## 최근 승급 기록
 
