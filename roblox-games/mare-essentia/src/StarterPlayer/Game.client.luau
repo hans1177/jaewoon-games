@@ -965,7 +965,7 @@ main.Parent = gui
 mainInner.BackgroundColor3 = COLORS.coverRaised
 mainInner.BackgroundTransparency = 0.08
 local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(1020, 900)
+sizeLimit.MaxSize = Vector2.new(4000, 3000)
 sizeLimit.Parent = main
 
 -- 항해 기록의 표제지: 시설 이름, 현재 항구와 선박 정보를 분리한다.
@@ -2005,8 +2005,11 @@ do
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
 	deckBtn.Position = UDim2.new(1, -164, 0, SYS_Y)
 	local open = nil
-	function H.openDeck()
+	function H.openDeck(onlyOpen: boolean?)
 		if open then
+			if onlyOpen then
+				return
+			end
 			open:Destroy()
 			open = nil
 			return
@@ -2034,7 +2037,7 @@ do
 		corner(win, 14)
 		hudStroke(win, 2)
 		local cons = Instance.new("UISizeConstraint")
-		cons.MaxSize = Vector2.new(1100, 720)
+		cons.MaxSize = Vector2.new(4000, 3000)
 		cons.Parent = win
 		local deck = view and view.deck
 		local cards = (deck and deck.cards) or {}
@@ -2589,10 +2592,19 @@ local function call(action, payload)
 		H.cabinRefresh()
 	end
 	-- 이긴 뒤 카드 고르기 보상이 생기면 덱 창을 열어 준다
-	if result.ok and action ~= "CardPick" and view and view.cardbook and view.cardbook.pick and H.openDeck and not inField then
-		task.delay(1.5, function()
-			if view and view.cardbook and view.cardbook.pick and not inField then H.openDeck() end
-		end)
+	-- (같은 보상은 한 번만 연다: 안 고르고 다른 행동을 해도 창이 계속 뜨지 않게)
+	local pickIds = view and view.cardbook and view.cardbook.pick
+	if pickIds == nil then
+		H.deckPickShown = nil
+	end
+	if result.ok and action ~= "CardPick" and pickIds and H.openDeck and not inField then
+		local pickKey = table.concat(pickIds, ",")
+		if H.deckPickShown ~= pickKey then
+			H.deckPickShown = pickKey
+			task.delay(1.5, function()
+				if view and view.cardbook and view.cardbook.pick and not inField then H.openDeck(true) end
+			end)
+		end
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
 	if result.ok and (action == "Hunt" or action == "ChallengeBoss" or action == "WarStart" or action == "WarNext" or action == "TavernJob") and view and view.lastBattle and not inField then
@@ -9727,9 +9739,10 @@ end
 			Sfx.play(spec.sting, 0.55)
 		end
 		local win = Instance.new("Frame")
-		win.AnchorPoint = Vector2.new(0.5, 1)
-		win.Position = UDim2.new(0.5, 0, 1, -24)
-		win.Size = UDim2.new(0, 540, 0, 0)
+		local narration = spec.speaker == "이야기"
+		win.AnchorPoint = if narration then Vector2.new(0.5, 0.5) else Vector2.new(0.5, 1)
+		win.Position = if narration then UDim2.fromScale(0.5, 0.5) else UDim2.new(0.5, 0, 1, -24)
+		win.Size = UDim2.new(0, if narration then 700 else 540, 0, 0)
 		win.AutomaticSize = Enum.AutomaticSize.Y
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
@@ -9741,7 +9754,7 @@ end
 		wst.Thickness = 2.5
 		wst.Parent = win
 		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(580, 700)
+		lim.MaxSize = Vector2.new(if narration then 760 else 580, 700)
 		lim.MinSize = Vector2.new(280, 120)
 		lim.Parent = win
 		local pad = Instance.new("UIPadding")
@@ -9759,6 +9772,10 @@ end
 		speakerBar.BorderSizePixel = 0
 		speakerBar.LayoutOrder = 1
 		speakerBar.Parent = win
+		if narration then
+			speakerBar.Size = UDim2.new(1, 0, 0, 60)
+			speakerBar.BackgroundTransparency = 1
+		end
 		corner(speakerBar, 8)
 		local portraitSpec = nil
 		if string.find(spec.speaker, "페드루", 1, true) then
@@ -9803,6 +9820,7 @@ end
 		face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
+		face.Visible = not narration
 		corner(face, 6)
 		local faceBorder = Instance.new("UIStroke")
 		faceBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -9810,14 +9828,22 @@ end
 		faceBorder.Thickness = 1.5
 		faceBorder.Parent = face
 		local speakerName = mkLabel(speakerBar, spec.speaker, 19, Color3.fromRGB(249, 223, 169), true)
-		speakerName.Position = UDim2.fromOffset(82, 9)
-		speakerName.Size = UDim2.new(1, -92, 0, 32)
+		speakerName.Position = UDim2.fromOffset(if narration then 0 else 82, 9)
+		speakerName.Size = UDim2.new(1, if narration then 0 else -92, 0, 32)
+		if narration then
+			speakerName.TextSize = 26
+			speakerName.TextXAlignment = Enum.TextXAlignment.Center
+		end
 		speakerName.AutomaticSize = Enum.AutomaticSize.None
 		local speakerRole = mkLabel(speakerBar, spec.role or "항해 기록", 14, Color3.fromRGB(225, 198, 165), false)
-		speakerRole.Position = UDim2.fromOffset(82, 44)
-		speakerRole.Size = UDim2.new(1, -92, 0, 25)
+		speakerRole.Position = UDim2.fromOffset(if narration then 0 else 82, 44)
+		speakerRole.Size = UDim2.new(1, if narration then 0 else -92, 0, 25)
+		if narration then
+			speakerRole.TextSize = 18
+			speakerRole.TextXAlignment = Enum.TextXAlignment.Center
+		end
 		speakerRole.AutomaticSize = Enum.AutomaticSize.None
-		local bodyLabel = mkLabel(win, spec.text, 15, COLORS.text, false, 2)
+		local bodyLabel = mkLabel(win, spec.text, if narration then 24 else 15, COLORS.text, false, 2)
 		-- 글자가 한 자씩 나타나고, 몇 글자마다 작은 소리가 난다. 글을 누르면 한꺼번에 보인다.
 		do
 			local total = utf8.len(spec.text) or #spec.text
@@ -10138,13 +10164,33 @@ end
 		task.wait(2.2)
 		if closed then return end
 		-- 종이 초상이 작아져 선장실 초상 자리로 이동한다
-		cap.Text = "선장실 벽에 초상이 걸렸다"
+		cap.Text = "초상이 선장 칸에 올랐다"
 		Sfx.play("sfx_ship_cabin_door", 0.6)
+		-- 화면 왼쪽 위 선장 초상 칸(HUD)으로 줄어들며 사라진다
+		local target = UDim2.new(0, 70, 0.36, 60)
+		local tsize = UDim2.fromOffset(56, 82)
+		pcall(function()
+			local ap, asz = chip.AbsolutePosition, chip.AbsoluteSize
+			local base = layer.AbsolutePosition
+			target = UDim2.fromOffset(ap.X - base.X + asz.X / 2, ap.Y - base.Y + asz.Y / 2)
+			tsize = UDim2.fromOffset(asz.X, asz.Y)
+		end)
 		TweenService:Create(frame, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
-			Size = UDim2.fromOffset(90, 110), Position = UDim2.new(0, 70, 0.36, 60),
+			Size = tsize, Position = target,
 		}):Play()
 		TweenService:Create(shade, TweenInfo.new(0.9), { BackgroundTransparency = 1 }):Play()
-		task.wait(1.1)
+		TweenService:Create(cap, TweenInfo.new(0.6), { TextTransparency = 1 }):Play()
+		task.wait(0.8)
+		-- 도착하면 종이가 투명해지며 HUD 초상이 그 자리에 남는다
+		for _, d in frame:GetDescendants() do
+			if d:IsA("ImageLabel") then
+				TweenService:Create(d, TweenInfo.new(0.3), { ImageTransparency = 1 }):Play()
+			elseif d:IsA("Frame") then
+				TweenService:Create(d, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
+			end
+		end
+		TweenService:Create(frame, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
+		task.wait(0.35)
 		closeReveal()
 	end
 
