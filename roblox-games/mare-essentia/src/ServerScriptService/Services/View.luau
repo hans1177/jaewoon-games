@@ -92,6 +92,7 @@ return function(D, S)
 			end
 		end
 		view.goods = {}
+		view.orderCap = S.Econ.orderCap(state)
 		local lv0 = D.Harbor.effLevel(D.Harbor.level(state.harbor[port.id] or 0), S.Knowledge.techSum(state, port.id))
 		local rid0 = D.Regions.of(port).id
 		local yr0 = state.startYear + math.floor(state.day / 365)
@@ -116,6 +117,8 @@ return function(D, S)
 				upgraded = S.Knowledge.goodsMult(state, goodId) > 1.001 or nil,
 				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
 				scarcity = S.Econ.scarcity(state, port.id, goodId),
+				supply = (S.Econ.limits(state, port.id, goodId) or {}).supply,
+				absorb = (S.Econ.limits(state, port.id, goodId) or {}).absorb,
 				owned = state.cargo[goodId] or 0,
 			})
 		end

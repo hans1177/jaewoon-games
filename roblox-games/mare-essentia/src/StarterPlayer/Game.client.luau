@@ -4888,7 +4888,7 @@ local function openTradeHall()
 			nm.Size = UDim2.new(1, if g.tag ~= "" then -126 else -80, 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", (function()
+			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", if g.supply then " · 재고 " .. g.supply else "", (function()
 				local best = view.compare and view.compare[g.id] and view.compare[g.id][1]
 				return if best and best.name then (if best.memory then string.format(" · 기억: %s %d", best.name, best.sell) else " · 추천: " .. best.name) else ""
 			end)()), 13, INK_SOFT, false)
@@ -4898,7 +4898,9 @@ local function openTradeHall()
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			-- 바로 사고팔기: 수량 고르는 화면 없이 한 번에
 			local ub = unitBuyOf(g)
-			local canBuy = math.min(free0, math.floor(p.coins / ub))
+			local oc = view.orderCap or 20
+			local canBuy = math.min(free0, math.floor(p.coins / ub), oc, g.supply or oc)
+			local canSell = math.min(g.owned, oc, g.absorb or oc)
 			local bar = Instance.new("Frame")
 			bar.BackgroundTransparency = 1
 			bar.Position = UDim2.fromOffset(70, 62)
@@ -4914,8 +4916,8 @@ local function openTradeHall()
 			end
 			quick("구매 1", COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = 1 }) end)
 			quick("구매 5", COLORS.gold, canBuy >= 5, function() call("Buy", { goodId = g.id, amount = 5 }) end)
-			quick(string.format("일괄 구매 %d", math.min(canBuy, 20)), COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = math.min(canBuy, 20) }) end)
-			quick(string.format("판매 %d", math.min(g.owned, 20)), COLORS.green, g.owned > 0, function() call("Sell", { goodId = g.id, amount = math.min(g.owned, 20) }) end)
+			quick(string.format("일괄 구매 %d", canBuy), COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = canBuy }) end)
+			quick(string.format("판매 %d", canSell), COLORS.green, canSell >= 1, function() call("Sell", { goodId = g.id, amount = canSell }) end)
 			if g.tag ~= "" then
 				local badge = Instance.new("TextLabel")
 				badge.Text = g.tag

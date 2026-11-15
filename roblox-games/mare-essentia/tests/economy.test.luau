@@ -129,6 +129,23 @@ do
 		check("모르는 학문은 무시", Econ.teach(st, "london", "nope", 5) == nil and w2 ~= nil)
 	end
 	check("서비스: 해역 집계", Econ.macro(st, "region", "europe").pop > 0)
+	do
+		local Ports = require("./Shared/Ports")
+		check("교역 주문 상한: 레벨 1은 20, 30은 크게", Eco.orderCap(1) == 20 and Eco.orderCap(10) > Eco.orderCap(5) and Eco.orderCap(30) > 150 and Eco.orderCap(30) < 600, Eco.orderCap(30))
+		local port = Ports.Ports["london"]
+		local gid = port.produces[1]
+		local lim = Econ.limits(st, "london", gid)
+		check("교역 한도: 특산품은 재고가 있고 사줄 양은 적다", lim and lim.supply > 0 and lim.absorb < lim.supply, lim and (lim.supply .. "/" .. lim.absorb))
+		local dgid = port.demands[1]
+		local dl = Econ.limits(st, "london", dgid)
+		check("교역 한도: 수요품은 사줄 양이 재고보다 많다", dl and dl.absorb > dl.supply, dl and (dl.supply .. "/" .. dl.absorb))
+		Econ.take(st, "london", gid, lim.supply)
+		local after = Econ.limits(st, "london", gid)
+		check("산 만큼 마을 재고가 줄어 한도가 줄어든다 (무한 아님)", after.supply < lim.supply and after.supply <= lim.supply * 0.8, lim.supply .. "->" .. after.supply)
+		Econ.give(st, "london", dgid, dl.absorb)
+		check("판 만큼 마을 재고가 늘어 사줄 양이 줄어든다", Econ.limits(st, "london", dgid).absorb < dl.absorb)
+		check("취급 안 하는 물건은 한도 없음(nil)", Econ.limits(st, "london", "__none__") == nil)
+	end
 	check("서비스: 시뮬 없으면 nil", require("./Services/Econ")({}, {}).town(st, "london") == nil)
 end
 print(string.format("economy: %d passed, %d failed", passed, failed))

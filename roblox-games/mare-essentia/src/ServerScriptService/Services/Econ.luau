@@ -66,6 +66,28 @@ return function(D, S)
 		return nil
 	end
 
+	-- 교역 한도: 이 항구에서 지금 살 수 있는/팔 수 있는 수량과 내 한 번 주문 상한. 시뮬이 없으면 nil(제한 없음).
+	function X.limits(state, portId, goodId)
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		if not t or not t.stock[goodId] then return nil end
+		return { supply = E.tradeSupply(t, goodId), absorb = E.tradeAbsorb(t, goodId) }
+	end
+	function X.orderCap(state)
+		if not E then return 20 end
+		return E.orderCap(state.careers and state.careers.trade and state.careers.trade.level or 1)
+	end
+	function X.take(state, portId, goodId, n)
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		if t then E.tradeTake(t, goodId, n) end
+	end
+	function X.give(state, portId, goodId, n)
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		if t then E.tradeGive(t, goodId, n) end
+	end
+
 	-- 해역·나라·세계 집계 (신문·거시 화면용)
 	function X.macro(state, kind, id)
 		local w = ensure(state)

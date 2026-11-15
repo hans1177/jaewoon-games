@@ -675,4 +675,28 @@ function E.aggregate(w, kind, id)
 	return a
 end
 
+-- ===== 교역 한도: 플레이어 거래는 마을 시뮬의 재고·수요 안에서만 된다 (무한 거래 없음) =====
+-- 한 번에 낼 수 있는 주문 크기: 교역 경험(레벨)이 오를수록 소량 → 대량.
+function E.orderCap(level)
+	local l = math.max(1, level or 1)
+	return math.floor(20 + 6 * (l - 1) ^ 1.1)
+end
+-- 마을이 내놓을 수 있는 수량: 마을 자기 소비 비축(수요 5일치)은 남기고, 남는 재고의 일부(25%)만 한 번에.
+function E.tradeSupply(t, g)
+	local st = t.stock[g]
+	if not st then return nil end
+	local dem = t.dem[g] or 0
+	return math.max(0, math.floor((st - dem * 5) * 0.25))
+end
+-- 마을이 사줄 수 있는 수량: 재고가 수요 20일치(TARGET_DAYS)에 찰 때까지. 특산품 마을에 같은 물건은 거의 못 판다.
+function E.tradeAbsorb(t, g)
+	local st = t.stock[g]
+	if not st then return nil end
+	local dem = t.dem[g] or 0
+	return math.max(0, math.floor((dem * E.TARGET_DAYS - st) * 0.5 + dem * 2))
+end
+-- 실제 거래: 산 만큼 마을 재고가 줄고, 판 만큼 늘어난다 (가격은 다음 시뮬 날에 반응).
+function E.tradeTake(t, g, n) if t.stock[g] then t.stock[g] = math.max(0, t.stock[g] - n) end end
+function E.tradeGive(t, g, n) if t.stock[g] then t.stock[g] += n end end
+
 return E
