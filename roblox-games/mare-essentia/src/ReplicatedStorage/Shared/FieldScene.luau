@@ -1265,10 +1265,21 @@ function FieldScene.start(opts)
 				FM.destroy(e.fm)
 				e.fm = nil
 			end
+			-- 마지막 일격: 맞은 반대 방향으로 밀려나며(점점 느려짐) 쓰러진다
+			local flyDir = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+			flyDir = if flyDir.Magnitude > 0.1 then flyDir.Unit else Vector3.zero
+			local flyDist = (if mult >= 1.5 then 9 else 5) * (if e.boss then 0.3 else 1)
 			task.spawn(function()
 				local t0 = os.clock()
+				local lastP = 0
 				while dying.Parent and os.clock() - t0 < 0.7 do
-					Pose.dieR15(dying, (os.clock() - t0) / 0.7)
+					local p = (os.clock() - t0) / 0.7
+					Pose.dieR15(dying, p)
+					local ease = 1 - (1 - p) * (1 - p)
+					pcall(function()
+						dying:PivotTo(dying:GetPivot() + flyDir * flyDist * (ease - lastP))
+					end)
+					lastP = ease
 					task.wait()
 				end
 				dying:Destroy()
