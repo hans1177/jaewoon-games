@@ -2142,9 +2142,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
 					TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
 					if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
-			header.Text ..= if english then string.format("\nWins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
+			header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
 				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
-				else string.format("\n승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+				else string.format("   ·   승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
 					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
 			-- 줄: 위 2줄은 상대(후열·전열), 아래 2줄은 우리(전열·후열)
 			local order = { { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" } }
