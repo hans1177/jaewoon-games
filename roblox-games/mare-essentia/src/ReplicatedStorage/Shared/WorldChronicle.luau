@@ -121,6 +121,7 @@ end
 
 -- 인물 백과(People)의 실존 인물에서 현장 장면을 만든다. 태어난 지 25년 뒤부터 세상을 떠날 때까지 그 항구에서 만날 수 있다.
 local CAT_KIND = { ruler = "politics", explorer = "sci", military = "war", science = "sci", inventor = "sci", thought = "sci", art = "faith", letters = "faith", merchant = "trade", pirate = "war", faith = "faith" }
+local CAT_DISC = { ruler = "history", explorer = "navigation", military = "history", science = "physics", inventor = "physics", thought = "philosophy", art = "art", letters = "linguistics", merchant = "commerce", pirate = "navigation", faith = "mythology" }
 local VOICE_BY_PORT = {
 	istanbul = "islam", smyrna = "islam", algiers = "islam", tunis = "islam", alexandria = "islam", damietta = "islam", jeddah = "islam", mocha = "islam", basra = "islam", muscat = "islam", aden = "islam", bandar_abbas = "islam", tripoli = "islam",
 	canton = "china", macau = "china", shanghai = "china", amoy = "china", ningbo = "china", tianjin = "china", tainan = "china", busan = "china", incheon = "china",
@@ -144,7 +145,6 @@ function C.fromPeople(people, ports)
 	return out
 end
 
-local CAT_DISC = { ruler = "history", explorer = "navigation", military = "history", science = "physics", inventor = "physics", thought = "philosophy", art = "art", letters = "linguistics", merchant = "commerce", pirate = "navigation", faith = "mythology" }
 C.CatDisc = CAT_DISC
 
 C.GeneratedGain = { fame = 2, coins = 30, note = 1 }
