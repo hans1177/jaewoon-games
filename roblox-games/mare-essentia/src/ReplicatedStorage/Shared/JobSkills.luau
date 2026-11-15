@@ -12,20 +12,22 @@ JobSkills.START_PLAYER_SKILLS = 2 -- 처음에는 2칸
 
 -- 전투 칭호: 중렙에 얻는다(수습이 아니다). unlocksSlot 칭호를 하나라도 얻으면 3번째 스킬 칸이 열린다.
 -- 조건은 전투 직업 레벨(최대 30)과 해전 승수(state.stats.battlesWon)다.
-JobSkills.BattleTitles = {
+export type Title = { id: string, name: string, need: { battleLevel: number?, battlesWon: number? }, unlocksSlot: boolean }
+JobSkills.BattleTitles = ({
 	{ id = "veteran", name = "숙련 무인", need = { battleLevel = 10 }, unlocksSlot = true },
 	{ id = "pirate_hunter", name = "해적 사냥꾼", need = { battlesWon = 15 }, unlocksSlot = true },
 	{ id = "hero", name = "역전의 용사", need = { battleLevel = 18, battlesWon = 30 }, unlocksSlot = false },
-}
+} :: { Title })
 
 -- 지금 얻은 전투 칭호들. stats 는 { battlesWon = number }.
-function JobSkills.earnedTitles(battleLevel: number?, stats: { battlesWon: number? }?): { any }
+function JobSkills.earnedTitles(battleLevel: number?, stats: { battlesWon: number? }?): { Title }
 	local lv, won = battleLevel or 1, (stats and stats.battlesWon) or 0
 	local out = {}
 	for _, t in JobSkills.BattleTitles do
 		local ok = true
-		if t.need.battleLevel and lv < t.need.battleLevel then ok = false end
-		if (t.need :: any).battlesWon and won < (t.need :: any).battlesWon then ok = false end
+		local needLv, needWon = t.need.battleLevel, t.need.battlesWon
+		if needLv and lv < needLv then ok = false end
+		if needWon and won < needWon then ok = false end
 		if ok then table.insert(out, t) end
 	end
 	return out
@@ -46,7 +48,8 @@ function JobSkills.unlockHint(): string
 	local parts = {}
 	for _, t in JobSkills.BattleTitles do
 		if t.unlocksSlot then
-			local cond = if t.need.battleLevel then string.format("전투 Lv.%d", t.need.battleLevel) else string.format("해전 %d승", (t.need :: any).battlesWon)
+			local needLv, needWon = t.need.battleLevel, t.need.battlesWon
+			local cond = if needLv then string.format("전투 Lv.%d", needLv) else string.format("해전 %d승", needWon or 0)
 			table.insert(parts, string.format("%s('%s')", cond, t.name))
 		end
 	end
