@@ -26,21 +26,32 @@ function read(root,file){
   return value;
 }
 function assertCompanionDocuments(log,architecture,security){
-  if(log.authority!=='MACHINE_EXECUTION_LOG_MAP'||
-    log.retained?.unknownOrMissingPolicy!=='FAIL_CLOSED'||
-    log.requiredForAllWorkers!==false)
-    throw new Error('POLICY_STEWARD_LOG_CONTRACT_INVALID');
-  if(architecture.authority!=='MACHINE_EXECUTION_ARCHITECTURE_MAP'||
-    architecture.centralPolicy!==null||
-    architecture.constitutionalEnforcement?.mode!=='FAIL_CLOSED'||
-    architecture.branches?.main?.directGameWorkerWrite!==false||
-    architecture.release!=='UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS')
-    throw new Error('POLICY_STEWARD_ARCHITECTURE_CONTRACT_INVALID');
-  if(security.policyFile!==DOCUMENT_PATHS[3]||
-    security.defaultTrust!=='DENY_OR_QUARANTINE_UNTIL_VERIFIED'||
-    security.enforcement?.unverified!=='BLOCK'||
-    security.enforcement?.proofRequired!==true)
-    throw new Error('POLICY_STEWARD_SECURITY_CONTRACT_INVALID');
+  const fullLog=log.authority==='MACHINE_EXECUTION_LOG_MAP' &&
+    log.sourceOfTruth===DOCUMENT_PATHS[1] &&
+    log.centralPolicy===CANONICAL && log.requiredForAllWorkers===true;
+  const minimalLog=log.status==='MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE' &&
+    log.retained?.unknownOrMissingPolicy==='FAIL_CLOSED' && log.requiredForAllWorkers===false;
+  if(!fullLog&&!minimalLog)throw new Error('POLICY_STEWARD_LOG_CONTRACT_INVALID');
+
+  const fullArchitecture=architecture.authority==='MACHINE_EXECUTION_ARCHITECTURE_MAP' &&
+    architecture.sourceOfTruth===DOCUMENT_PATHS[2] && architecture.centralPolicy===CANONICAL &&
+    architecture.branches?.main?.directGameWorkerWrite===false &&
+    architecture.constitutionalEnforcement?.enforcer==='tools/company-constitution-enforcer.mjs' &&
+    architecture.constitutionalEnforcement?.subordinateOverrideForbidden===true;
+  const minimalArchitecture=architecture.status==='MINIMAL_SUMMARY_NOT_EXECUTION_POLICY' &&
+    architecture.centralPolicy===null && architecture.constitutionalEnforcement?.mode==='FAIL_CLOSED' &&
+    architecture.branches?.main?.directGameWorkerWrite===false &&
+    architecture.release==='UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS';
+  if(!fullArchitecture&&!minimalArchitecture)throw new Error('POLICY_STEWARD_ARCHITECTURE_CONTRACT_INVALID');
+
+  const fullSecurity=security.policyFile===DOCUMENT_PATHS[3] &&
+    security.defaultTrust==='DENY_OR_QUARANTINE_UNTIL_VERIFIED' &&
+    security.centralRoadmapBinding?.centralPolicy===CANONICAL &&
+    security.containment?.unverifiedExternalPayloadMayNotEnterCanonicalLearning===true;
+  const minimalSecurity=security.policyFile===DOCUMENT_PATHS[3] &&
+    security.defaultTrust==='DENY_OR_QUARANTINE_UNTIL_VERIFIED' &&
+    security.enforcement?.unverified==='BLOCK' && security.enforcement?.proofRequired===true;
+  if(!fullSecurity&&!minimalSecurity)throw new Error('POLICY_STEWARD_SECURITY_CONTRACT_INVALID');
 }
 
 // 순수 해석기. 작업 큐는 이미 읽은 roadmap 객체만 전달하므로 파일 I/O나 추가 게이트가 없다.
