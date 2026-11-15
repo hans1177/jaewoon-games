@@ -4389,6 +4389,7 @@ end
 
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
+	H.counselRows(1)
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
 		{ ship.name .. (if ship.steam then " (증기)" else ""), string.format("선체 %d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
@@ -5131,6 +5132,7 @@ local function openTradeHall()
 end
 
 function RENDERERS.trade()
+	H.counselRows(1)
 	if view.rep then
 		local r = view.rep
 		H.statStrip({
@@ -7043,6 +7045,7 @@ local f = findField(codexField)
 end
 
 function RENDERERS.codex()
+	if not codexField then H.counselRows(1) end
 	if codexField then
 		H.renderCodexField()
 	else
@@ -7162,6 +7165,7 @@ end
 -- 전투 본부의 대규모 해전 의뢰: 여러 파도로 이어지는 작전
 function RENDERERS.board()
 	H.walletBar("tavern")
+	H.counselRows(1) -- 맨 위 "지금 할 일": 동료가 지금 가장 급한 조언을 큰 카드로
 	local q = view.tavernQ or {}
 	local KIND = { hunt = "전투", deliver = "납품", event = "선택" }
 	local function money(j)
