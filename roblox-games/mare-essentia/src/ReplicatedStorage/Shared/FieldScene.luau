@@ -1130,17 +1130,17 @@ function FieldScene.start(opts)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
 	end
 	local function mkSkill(key, label, color, theta)
-		local b = btn(gui, label, color, UDim2.fromOffset(64, 64), arcPos(120, theta), Vector2.new(0.5, 0.5))
-		b.TextSize = 15
+		local b = btn(gui, label, color, UDim2.fromOffset(56, 56), arcPos(124, theta), Vector2.new(0.5, 0.5))
+		b.TextSize = 13
 		b.Activated:Connect(function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
-	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), 12)
-	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), 42)
-	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), 72)
-	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), 102)
+	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), 8)
+	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), 38)
+	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), 68)
+	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), 98)
 	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
 	-- 카드 스킬: 덱의 학문·우군 카드가 둘째 줄 버튼이 된다(최대 3장, 재사용 14초). 효과는 카드의 skill 종류가 정한다.
 	do
@@ -1219,7 +1219,7 @@ function FieldScene.start(opts)
 				break
 			end
 			local key = "card" .. i
-			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(60, 60), arcPos(196, 22 + (i - 1) * 28), Vector2.new(0.5, 0.5))
+			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), arcPos(190, 18 + (i - 1) * 24), Vector2.new(0.5, 0.5))
 			b.TextSize = 14
 			b.Activated:Connect(function()
 				useCard(key, card)
