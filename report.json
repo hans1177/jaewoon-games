@@ -1,134 +1,109 @@
 {
- "sourceRevision": "d7283a3b8a29927887536f352dd1e039423171a1",
+ "sourceRevision": "70088f8a78d6b6d9b325cfb3c22e2ddc3e090601",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "bound\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "built true nil\ntext"
+   "out": "truenil\ntext"
   },
   {
    "step": 4,
-   "ctx": "Client",
-   "out": "villagers=82 pick=-240, 2.9859185218811035, -3\ntext"
+   "capture": "amsterdam_L4_top",
+   "files": 1
   },
   {
-   "step": 6,
-   "capture": "vil_1_0",
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "amsterdam_L4_street",
    "files": 1
   },
   {
    "step": 8,
-   "capture": "vil_1_1",
-   "files": 1
+   "ctx": "Client",
+   "out": "truenil\ntext"
   },
   {
    "step": 10,
-   "capture": "vil_1_2",
+   "capture": "bergen_L3_top",
    "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "villagers=82 pick=-171.08685302734375, 3.2525835037231445, -3.200000047683716\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 13,
-   "capture": "vil_2_0",
+   "capture": "bergen_L3_street",
    "files": 1
   },
   {
-   "step": 15,
-   "capture": "vil_2_1",
+   "step": 14,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "zanzibar_L2_top",
    "files": 1
   },
   {
    "step": 17,
-   "capture": "vil_2_2",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
-   "step": 18,
-   "ctx": "Client",
-   "out": "villagers=82 pick=-117, 2.9859185218811035, -17\ntext"
+   "step": 19,
+   "capture": "zanzibar_L2_street",
+   "files": 1
   },
   {
    "step": 20,
-   "capture": "vil_3_0",
-   "files": 1
+   "ctx": "Client",
+   "out": "truenil\ntext"
   },
   {
    "step": 22,
-   "capture": "vil_3_1",
+   "capture": "istanbul_L5_top",
    "files": 1
   },
   {
-   "step": 24,
-   "capture": "vil_3_2",
-   "files": 1
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
    "step": 25,
-   "ctx": "Client",
-   "out": "villagers=82 pick=-77.00211334228516, 2.9859185218811035, 56.23882293701172\ntext"
+   "capture": "istanbul_L5_street",
+   "files": 1
   },
   {
-   "step": 27,
-   "capture": "vil_4_0",
+   "step": 26,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "lisbon_L1_top",
    "files": 1
   },
   {
    "step": 29,
-   "capture": "vil_4_1",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
    "step": 31,
-   "capture": "vil_4_2",
-   "files": 1
-  },
-  {
-   "step": 32,
-   "ctx": "Client",
-   "out": "villagers=82 pick=-53, 3.1450862884521484, 75.6087417602539\ntext"
-  },
-  {
-   "step": 34,
-   "capture": "vil_5_0",
-   "files": 1
-  },
-  {
-   "step": 36,
-   "capture": "vil_5_1",
-   "files": 1
-  },
-  {
-   "step": 38,
-   "capture": "vil_5_2",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "villagers=82 pick=-32, 3.136622667312622, 11\ntext"
-  },
-  {
-   "step": 41,
-   "capture": "vil_6_0",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "vil_6_1",
-   "files": 1
-  },
-  {
-   "step": 45,
-   "capture": "vil_6_2",
+   "capture": "lisbon_L1_street",
    "files": 1
   }
  ],
@@ -144,13 +119,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 46,
+  "plannedSteps": 32,
+  "completedSteps": 32,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 18,
-  "capturedFrames": 18,
+  "plannedFrames": 10,
+  "capturedFrames": 10,
   "abortedEarly": false
  }
 }
