@@ -178,6 +178,20 @@ return function(D, S)
 	end
 
 	-- 화면에 보낼 요약: 단계별 진행과 다음에 할 일
+	-- 퀘스트 진행도: 목격한 사건 수(학문 지정 가능) / 쓴 논문 초안 수 / 출판한 논문 수
+	function A.count(state, what, disc)
+		local c = state.chron
+		if not c then return 0 end
+		if what == "draft" then return (c.drafts or 0) + #(c.papers or {}) end
+		if what == "paper" then return #(c.papers or {}) end
+		local n = 0
+		for id in (c.seen or {}) do
+			local row = rowOf(id)
+			if row and (disc == nil or (row.disc or "history") == disc) then n += 1 end
+		end
+		return n
+	end
+
 	function A.view(state)
 		local c = chron(state)
 		local presented = (state.academy and state.academy.presented) or 0

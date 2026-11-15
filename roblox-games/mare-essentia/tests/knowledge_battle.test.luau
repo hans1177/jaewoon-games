@@ -715,6 +715,13 @@ do
 	check("연대기: 발표 뒤 출판한다", okP == true and #stC.chron.papers == 1 and stC.chron.drafts == 0)
 	local v = S.Chronicle.view(stC)
 	check("연대기: 화면 요약", v.papers == 1 and #v.seen >= 1 and v.stage == 1)
+	local function chq(id) return S.Quest.progressAny(stC, D.Quests.ById[id]) end
+	check("연대기 퀘스트: 목격·초안·출판 진행도", chq("q_chr_any") >= 1 and chq("q_chr_architecture") >= 1 and chq("q_chr_astronomy") == 0 and chq("q_chr_draft") == 1 and chq("q_chr_paper") == 1)
+	local qbad = {}
+	for _, q in D.Quests.Quests do
+		if q.kind == "chronicle" and q.disc and not D.KnowledgeTree.DisciplineById[q.disc] then table.insert(qbad, q.id) end
+	end
+	check("연대기 퀘스트: 학문 연결이 맞다", #qbad == 0)
 end
 
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
