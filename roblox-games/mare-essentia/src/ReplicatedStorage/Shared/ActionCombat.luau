@@ -90,7 +90,7 @@ end
 
 -- 적 한 틱. dist = 주인공과 거리. 돌려주는 값: 이벤트 문자열 ("telegraph" | "strike") 또는 nil,
 -- 그리고 "strike" 일 때 이번 공격이 닿았는지(hit). 닿는지는 공격이 시작되는 순간의 거리로 정한다.
-function A.stepEnemy(e: any, dt: number, dist: number): (string?, boolean?)
+function A.stepEnemy(e: any, dt: number, dist: number, canAttack: boolean?): (string?, boolean?)
 	if e.dead then return nil, nil end
 	local def = e.def
 	if e.stagger > 0 then
@@ -105,7 +105,7 @@ function A.stepEnemy(e: any, dt: number, dist: number): (string?, boolean?)
 	elseif e.state == "chase" then
 		if dist > def.aggro * 1.5 then
 			e.state = "idle"
-		elseif dist <= def.range then
+		elseif dist <= def.range and canAttack ~= false then
 			e.state = "windup"; e.t = 0; e.struck = false
 			return "telegraph", nil
 		end
@@ -129,6 +129,16 @@ function A.moveWish(e: any, dist: number): number
 	if def.keepAway and dist < def.keepAway then return -1 end
 	if dist > def.range * 0.9 then return 1 end
 	return 0
+end
+
+-- 동시에 공격 동작(준비·타격)에 들어간 적을 센다. 근접 공격은 MELEE_TOKENS 명까지만 허용(나머지는 주위를 돈다).
+A.MELEE_TOKENS = 2
+function A.attackersCount(list: {any}): number
+	local n = 0
+	for _, e in list do
+		if not e.dead and (e.state == "windup" or e.state == "active") then n += 1 end
+	end
+	return n
 end
 
 -- 주인공이 적을 친다. fromFront 가 true 이고 방패병이면 피해가 줄어든다. 돌려주는 값: 들어간 피해, 쓰러졌는지.

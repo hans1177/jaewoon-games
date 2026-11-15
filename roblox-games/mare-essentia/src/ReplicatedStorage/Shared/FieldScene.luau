@@ -11,6 +11,7 @@ local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
+local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
 	return require(script.Parent:WaitForChild("CommonVFX", 5))
@@ -47,19 +48,18 @@ end
 local FieldScene = {}
 
 local ORIGIN = Vector3.new(3000, 0, 0) -- 항구 장면과 멀리 떨어진 곳
-local SIZE = 200
 
 local BIOMES = {
 	{ words = { "해안", "갯벌", "바위", "절벽", "만", "섬", "부두", "어장", "군도" }, ground = Color3.fromRGB(196, 178, 128), mat = Enum.Material.Sand, trees = 4, rocks = 26,
-		mobs = { { "해적", "Rogue_Hooded", 3, 8, 8.5 }, { "밀수꾼", "Rogue", 3, 7, 9.5 }, { "해적 두목", "Barbarian", 6, 12, 7.5, true } } },
+		size = 300, fog = Color3.fromRGB(190, 215, 235), fogEnd = 700, clock = 15.5, kind = "coast", mobs = { { "해적", "Rogue_Hooded", 3, 8, 8.5 }, { "밀수꾼", "Rogue", 3, 7, 9.5 }, { "해적 두목", "Barbarian", 6, 12, 7.5, true } } },
 	{ words = { "고지", "봉분", "평원", "열석", "들판", "돌" }, ground = Color3.fromRGB(110, 134, 82), mat = Enum.Material.Grass, trees = 8, rocks = 22,
-		mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "탈영병", "Knight", 4, 9, 7.5 }, { "산적 두목", "Barbarian", 7, 12, 7.5, true } } },
+		size = 380, fog = Color3.fromRGB(200, 220, 200), fogEnd = 850, clock = 14, kind = "plains", mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "탈영병", "Knight", 4, 9, 7.5 }, { "산적 두목", "Barbarian", 7, 12, 7.5, true } } },
 	{ words = { "광산", "탄광", "채석" }, ground = Color3.fromRGB(110, 108, 104), mat = Enum.Material.Slate, trees = 2, rocks = 40,
-		mobs = { { "광산 도적", "Rogue", 3, 8, 9.5 }, { "갱 감독", "Knight", 5, 10, 7 }, { "도적 두목", "Barbarian", 7, 12, 7.5, true } } },
+		size = 240, fog = Color3.fromRGB(70, 66, 62), fogEnd = 280, clock = 18.5, kind = "mine", mobs = { { "광산 도적", "Rogue", 3, 8, 9.5 }, { "갱 감독", "Knight", 5, 10, 7 }, { "도적 두목", "Barbarian", 7, 12, 7.5, true } } },
 	{ words = { "숲", "과수원", "호수", "농장", "아마", "정원" }, ground = Color3.fromRGB(70, 118, 66), mat = Enum.Material.Grass, trees = 34, rocks = 8,
-		mobs = { { "밀렵꾼", "Rogue_Hooded", 3, 8, 9 }, { "산적", "Barbarian", 3, 8, 8.5 }, { "숲의 사냥꾼", "Rogue", 4, 9, 10 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } },
+		size = 320, fog = Color3.fromRGB(120, 150, 120), fogEnd = 420, clock = 11, kind = "forest", mobs = { { "밀렵꾼", "Rogue_Hooded", 3, 8, 9 }, { "산적", "Barbarian", 3, 8, 8.5 }, { "숲의 사냥꾼", "Rogue", 4, 9, 10 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } },
 }
-local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14,
+local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14, kind = "plain", size = 300, fog = Color3.fromRGB(190, 205, 190), fogEnd = 700, clock = 14,
 	mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "도적", "Rogue", 3, 8, 9.5 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } }
 
 local function biomeFor(name)
@@ -71,6 +71,66 @@ local function biomeFor(name)
 		end
 	end
 	return DEFAULT_BIOME
+end
+
+-- 문화권(지역)별 탐험지 분위기: 땅·나무·안개·시간대·크기·적 이름·소품. 지점 이름으로 정한 지형 위에 덧입힌다.
+local RC = Color3.fromRGB
+local REGION_LOOK: {[string]: any} = {
+	iberia = { ground = RC(176, 150, 96), mat = Enum.Material.Ground, fog = RC(232, 214, 176), fogEnd = 900, clock = 15, treeMul = 0.6, rockMul = 1.2, sizeMul = 1.1, trees = { "tree-oak", "tree-default-fall" }, mobs = { "투우사 도적", "탈영 병사", "카스티야 산적 두목" }, props = { { "Terrain", "column", 14, 5 } } },
+	italy = { ground = RC(150, 142, 98), mat = Enum.Material.Grass, fog = RC(226, 220, 196), fogEnd = 900, clock = 15.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.05, trees = { "tree-oak", "tree-pinedefaulta" }, mobs = { "콘도티에리", "도적", "산적 두목" }, props = { { "Terrain", "column", 12, 5 }, { "Terrain", "statue-column", 4, 6 } } },
+	france = { ground = RC(112, 140, 84), mat = Enum.Material.Grass, fog = RC(214, 224, 216), fogEnd = 800, clock = 13, treeMul = 1, rockMul = 0.8, sizeMul = 1.05, trees = { "tree-oak", "tree" }, mobs = { "노상강도", "탈영병", "산적 두목" }, props = {} },
+	britain = { ground = RC(88, 124, 76), mat = Enum.Material.Grass, fog = RC(190, 200, 204), fogEnd = 520, clock = 12, treeMul = 0.9, rockMul = 1.1, sizeMul = 1, trees = { "tree-oak", "tree-crooked" }, mobs = { "노상강도", "탈영병", "도적 두목" }, props = {} },
+	hanse = { ground = RC(104, 126, 88), mat = Enum.Material.Grass, fog = RC(188, 200, 208), fogEnd = 560, clock = 12.5, treeMul = 1.2, rockMul = 0.8, sizeMul = 1, trees = { "tree-pinedefaulta", "tree-oak" }, mobs = { "해적 용병", "밀수꾼", "해적 두목" }, props = {} },
+	nordic = { ground = RC(196, 204, 206), mat = Enum.Material.Snow, fog = RC(206, 220, 232), fogEnd = 420, clock = 10.5, treeMul = 1.4, rockMul = 1.4, sizeMul = 1.15, trees = { "tree-pinedefaulta", "tree-high" }, mobs = { "바이킹 약탈자", "사냥꾼", "전사 두목" }, props = { { "Terrain", "campfire-logs", 3, 2.4 } } },
+	brick = { ground = RC(112, 150, 90), mat = Enum.Material.Grass, fog = RC(200, 214, 224), fogEnd = 700, clock = 13, treeMul = 0.5, rockMul = 0.3, sizeMul = 0.95, trees = { "tree-oak", "tree_tiny" }, mobs = { "밀수꾼", "해적", "해적 두목" }, props = { { "Town", "windmill", 3, 16 } } },
+	stone = { ground = RC(110, 122, 100), mat = Enum.Material.Grass, fog = RC(186, 198, 206), fogEnd = 480, clock = 11.5, treeMul = 1.3, rockMul = 1.5, sizeMul = 1.1, trees = { "tree-pinedefaulta", "tree-oak" }, mobs = { "밀렵꾼", "탈영병", "산적 두목" }, props = {} },
+	med = { ground = RC(168, 150, 104), mat = Enum.Material.Ground, fog = RC(230, 216, 184), fogEnd = 900, clock = 15, treeMul = 0.5, rockMul = 1.4, sizeMul = 1.1, trees = { "tree-oak", "tree-default-fall" }, mobs = { "바르바리 해적", "도적", "해적 두목" }, props = { { "Terrain", "column", 8, 5 } } },
+	ottoman = { ground = RC(198, 170, 116), mat = Enum.Material.Sand, fog = RC(238, 214, 170), fogEnd = 760, clock = 15.5, treeMul = 0.3, rockMul = 1.3, sizeMul = 1.2, trees = { "tree-default-fall" }, mobs = { "사막 도적", "예니체리 탈영병", "도적 두목" }, props = { { "Terrain", "tent-detailedopen", 6, 8 }, { "Terrain", "column", 8, 5 } } },
+	desert = { ground = RC(214, 184, 120), mat = Enum.Material.Sand, fog = RC(240, 220, 176), fogEnd = 640, clock = 14.5, treeMul = 0.1, rockMul = 1.6, sizeMul = 1.3, trees = { "tree-default-fall" }, mobs = { "사막 노략꾼", "낙타 상인 도적", "베두인 두목" }, props = { { "Terrain", "tent-detailedopen", 8, 8 }, { "Terrain", "cliff-rock", 6, 14 } } },
+	swahili = { ground = RC(188, 156, 96), mat = Enum.Material.Ground, fog = RC(236, 218, 176), fogEnd = 800, clock = 14, treeMul = 0.7, rockMul = 0.9, sizeMul = 1.2, trees = { "tree-default-fall", "tree_large" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 4, 8 } } },
+	malabar = { ground = RC(84, 132, 64), mat = Enum.Material.Grass, fog = RC(204, 224, 200), fogEnd = 460, clock = 10, treeMul = 1.8, rockMul = 0.7, sizeMul = 1.1, trees = { "tree_large", "tree-high" }, mobs = { "해적(말라바르)", "향신료 도적", "해적 두목" }, props = { { "Terrain", "canoe", 3, 8 } } },
+	japan = { ground = RC(96, 136, 80), mat = Enum.Material.Grass, fog = RC(206, 222, 220), fogEnd = 440, clock = 10.5, treeMul = 1.6, rockMul = 1, sizeMul = 0.95, trees = { "tree-pinedefaulta", "tree-oak" }, mobs = { "낭인", "왜구", "산적 두목" }, props = { { "Terrain", "pillar-obelisk", 3, 6 }, { "Terrain", "bridge-wood", 2, 10 } } },
+	china = { ground = RC(120, 144, 84), mat = Enum.Material.Grass, fog = RC(212, 220, 212), fogEnd = 480, clock = 10.5, treeMul = 1.2, rockMul = 1.3, sizeMul = 1.1, trees = { "tree-oak", "tree-high" }, mobs = { "왜구", "비적", "해적 두목" }, props = { { "Terrain", "cliff-rock", 6, 14 }, { "Terrain", "bridge-stone", 2, 10 } } },
+	seasia = { ground = RC(70, 124, 60), mat = Enum.Material.Grass, fog = RC(190, 220, 196), fogEnd = 380, clock = 9.5, treeMul = 2, rockMul = 0.6, sizeMul = 1.05, trees = { "tree_large", "tree-high", "plant-bush" }, mobs = { "해적", "정글 도적", "해적 두목" }, props = { { "Terrain", "canoe", 3, 8 } } },
+	tropic = { ground = RC(82, 134, 66), mat = Enum.Material.Grass, fog = RC(196, 224, 214), fogEnd = 560, clock = 11, treeMul = 1.4, rockMul = 0.8, sizeMul = 1.05, trees = { "tree_large", "plant-bush" }, mobs = { "카리브 해적", "밀수꾼", "해적 두목" }, props = { { "Terrain", "canoe", 3, 8 } } },
+	colonial = { ground = RC(120, 138, 82), mat = Enum.Material.Grass, fog = RC(206, 218, 204), fogEnd = 600, clock = 12.5, treeMul = 1.1, rockMul = 0.9, sizeMul = 1.15, trees = { "tree_large", "tree-oak" }, mobs = { "정글 도적", "탈영병", "산적 두목" }, props = { { "Terrain", "crops-cornstagec", 8, 3.8 } } },
+	creole = { ground = RC(76, 130, 62), mat = Enum.Material.Grass, fog = RC(196, 224, 208), fogEnd = 520, clock = 11, treeMul = 1.5, rockMul = 0.6, sizeMul = 1.05, trees = { "tree_large", "plant-bush" }, mobs = { "카리브 해적", "농장 도망자", "해적 두목" }, props = { { "Terrain", "crop-melon", 8, 3.2 } } },
+	pacific = { ground = RC(214, 196, 140), mat = Enum.Material.Sand, fog = RC(204, 228, 238), fogEnd = 700, clock = 12, treeMul = 0.6, rockMul = 0.9, sizeMul = 1.25, trees = { "tree_large", "plant-bush" }, mobs = { "섬 약탈자", "난파 도적", "해적 두목" }, props = { { "Terrain", "canoe", 5, 8 } } },
+	wafrica = { ground = RC(168, 140, 84), mat = Enum.Material.Ground, fog = RC(232, 214, 170), fogEnd = 700, clock = 13.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.2, trees = { "tree_large", "tree-default-fall" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 3, 8 } } },
+}
+
+-- 지점 이름(지형) + 항구의 문화권(분위기)을 합쳐 탐험지 모습을 정한다.
+local function lookFor(name: string, portId: string?)
+	local b = biomeFor(name)
+	local reg = portId and Cultures.REGION[portId]
+	local r = reg and REGION_LOOK[reg]
+	if not r then
+		return b
+	end
+	local t = table.clone(b)
+	if b.kind == "mine" then
+		t.ground = b.ground:Lerp(r.ground, 0.25)
+		t.fog = b.fog:Lerp(r.fog, 0.2)
+	elseif b.kind == "coast" then
+		t.ground = b.ground:Lerp(r.ground, 0.3)
+		t.fog = r.fog
+		t.fogEnd, t.clock = r.fogEnd, r.clock
+	else
+		t.ground, t.mat, t.fog, t.fogEnd, t.clock = r.ground, r.mat, r.fog, r.fogEnd, r.clock
+	end
+	t.trees = math.floor(b.trees * r.treeMul + 0.5)
+	t.rocks = math.floor(b.rocks * r.rockMul + 0.5)
+	t.size = math.floor(b.size * r.sizeMul)
+	t.treeNames = if b.kind == "mine" then nil else r.trees
+	t.props = r.props
+	local mobs = {}
+	for i, m in b.mobs do
+		local copy = table.clone(m)
+		copy[1] = if i == #b.mobs then r.mobs[3] else r.mobs[(i - 1) % 2 + 1]
+		mobs[i] = copy
+	end
+	t.mobs = mobs
+	return t
 end
 
 local function part(parent, size, cf, color, material, shape)
@@ -90,6 +150,12 @@ local function part(parent, size, cf, color, material, shape)
 end
 
 -- 등록된 CC0 모델을 놓는다. 없으면 nil.
+-- 수입 나무·덤불은 질감이 청록색이라, 항구 장면과 같은 색을 곱해 자연스러운 초록·가을색으로 만든다
+local FIELD_TINT = {
+	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	tree = Color3.fromRGB(255, 238, 120), ["tree-high"] = Color3.fromRGB(255, 238, 120), ["tree-crooked"] = Color3.fromRGB(255, 238, 120),
+	tree_large = Color3.fromRGB(78, 132, 66), tree_tiny = Color3.fromRGB(84, 138, 70), ["plant-bush"] = Color3.fromRGB(78, 128, 58),
+}
 local function placeModel(parent, kind, asset, bottom, desired, solid)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
@@ -105,6 +171,16 @@ local function placeModel(parent, kind, asset, bottom, desired, solid)
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			local tint = FIELD_TINT[asset]
+			if tint then
+				d.Color = tint
+				pcall(function() (d :: any).UsePartColor = true end)
+				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
+				if sa then sa.Color = tint end
+				for _, ch in d:GetChildren() do
+					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+				end
+			end
 		end
 	end
 	if not has then
@@ -179,7 +255,19 @@ function FieldScene.start(opts)
 	folder.Name = "FieldScene"
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
-	local biome = biomeFor(opts.name or "")
+	local biome = lookFor(opts.name or "", opts.portId)
+	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
+	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
+	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
+	-- 지역마다 하늘·안개 분위기가 다르다(끝나면 되돌린다)
+	local lightSave = {}
+	do
+		local L = game:GetService("Lighting")
+		lightSave = { FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime }
+		pcall(function()
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
+		end)
+	end
 
 	-- 땅과 보이지 않는 벽
 	local ground = part(folder, Vector3.new(SIZE, 4, SIZE), CFrame.new(ORIGIN + Vector3.new(0, -2, 0)), biome.ground, biome.mat)
@@ -233,8 +321,8 @@ function FieldScene.start(opts)
 	end
 
 	-- 나무와 바위
-	local treeNames = { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, biome.trees * 2 do
+	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
+	for _ = 1, math.floor(biome.trees * 2 * AREA) do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		if not placeModel(folder, "Town", treeNames[rng:NextInteger(1, #treeNames)], pos, h, false) then
@@ -243,10 +331,17 @@ function FieldScene.start(opts)
 		end
 	end
 	local rockNames = { "rock-large", "rock-small", "rock-wide" }
-	for _ = 1, math.floor(biome.rocks * 1.6) do
+	for _ = 1, math.floor(biome.rocks * 1.6 * AREA) do
 		local pos = ORIGIN + scatter(10)
 		if not placeModel(folder, "Town", rockNames[rng:NextInteger(1, #rockNames)], pos, rng:NextNumber(2.5, 6), true) then
 			part(folder, Vector3.new(rng:NextNumber(2, 4), rng:NextNumber(1.5, 3), rng:NextNumber(2, 4)), CFrame.new(pos + Vector3.new(0, 1, 0)) * CFrame.Angles(0, rng:NextNumber(0, 3), 0), Color3.fromRGB(128, 126, 122), Enum.Material.Slate)
+		end
+	end
+
+	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
+	for _, pr in (biome.props or {}) do
+		for _ = 1, math.max(1, math.floor(pr[3] * AREA)) do
+			placeModel(folder, pr[1], pr[2], ORIGIN + scatter(18), pr[4], pr[1] == "Terrain" and pr[2] == "cliff-rock")
 		end
 	end
 
@@ -439,6 +534,10 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		pcall(function()
+			local L = game:GetService("Lighting")
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
+		end)
 		for _, c in conns do
 			c:Disconnect()
 		end
@@ -486,23 +585,35 @@ function FieldScene.start(opts)
 	end
 
 	-- 적: 가까이 오면 쫓아와 때린다
-	local enemyCount = math.clamp(3 + math.floor((opts.danger or 1) / 2), 3, 8)
-	for i = 1, enemyCount + 1 do
-		-- 마지막 한 마리는 두목(위험이 높은 곳에서만 나온다)
-		local isBoss = i == enemyCount + 1
-		if isBoss and (opts.danger or 1) < 3 then
-			break
-		end
+	-- 적: 최소 20명, 위험할수록 늘어 최대 100명(두목 포함). 무리를 지어 맵 곳곳에 흩어져 있다.
+	local danger0 = opts.danger or 1
+	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
+	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
+	local packCenters = {}
+	for _ = 1, math.max(4, math.floor(enemyCount / 5)) do
+		table.insert(packCenters, scatter(48))
+	end
+	for i = 1, enemyCount + bossCount do
+		local isBoss = i > enemyCount
 		local def
 		if isBoss then
 			def = biome.mobs[#biome.mobs]
 		else
 			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
 		end
-		-- 시작 지점 앞쪽 부채꼴(30~46 스터드)에 세운다: 맵 끝까지 걸어가지 않아도 바로 싸움이 붙는다
-		local fanA = rng:NextNumber(-0.95, 0.95)
-		local fanR = if isBoss then 52 else rng:NextNumber(30, 46)
-		local pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
+		local pos
+		if isBoss then
+			-- 두목은 시작점 반대편 깊숙한 곳을 지킨다
+			pos = ORIGIN + Vector3.new(rng:NextNumber(-half * 0.6, half * 0.6), 0, -half * rng:NextNumber(0.35, 0.8))
+		elseif i <= 3 then
+			-- 처음 몇 마리는 시작점 앞 부채꼴(30~46 스터드): 바로 싸움이 붙는다
+			local fanA = rng:NextNumber(-0.95, 0.95)
+			local fanR = rng:NextNumber(30, 46)
+			pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
+		else
+			local c = packCenters[(i % #packCenters) + 1]
+			pos = ORIGIN + c + Vector3.new(rng:NextNumber(-9, 9), 0, rng:NextNumber(-9, 9))
+		end
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
@@ -536,6 +647,96 @@ function FieldScene.start(opts)
 		tag.Text = ac.def.name
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
+	end
+
+	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
+	do
+		local MM, RADIUS = 120, 130
+		local map = Instance.new("Frame")
+		map.AnchorPoint = Vector2.new(0, 0)
+		map.Position = UDim2.fromOffset(118, 50)
+		map.Size = UDim2.fromOffset(MM, MM)
+		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
+		map.BackgroundTransparency = 0.35
+		map.BorderSizePixel = 0
+		map.ClipsDescendants = true
+		map.Parent = gui
+		local mc = Instance.new("UICorner")
+		mc.CornerRadius = UDim.new(1, 0)
+		mc.Parent = map
+		local ms = Instance.new("UIStroke")
+		ms.Color = Color3.fromRGB(232, 190, 96)
+		ms.Thickness = 2
+		ms.Parent = map
+		local dots = {}
+		local function dot(i: number, color: Color3, size: number)
+			local d = dots[i]
+			if not d then
+				d = Instance.new("Frame")
+				d.AnchorPoint = Vector2.new(0.5, 0.5)
+				d.BorderSizePixel = 0
+				local c = Instance.new("UICorner")
+				c.CornerRadius = UDim.new(1, 0)
+				c.Parent = d
+				d.Parent = map
+				dots[i] = d
+			end
+			d.BackgroundColor3 = color
+			d.Size = UDim2.fromOffset(size, size)
+			return d
+		end
+		local me = Instance.new("Frame")
+		me.AnchorPoint = Vector2.new(0.5, 0.5)
+		me.Position = UDim2.fromScale(0.5, 0.5)
+		me.Size = UDim2.fromOffset(7, 7)
+		me.BackgroundColor3 = Color3.new(1, 1, 1)
+		me.BorderSizePixel = 0
+		me.ZIndex = 5
+		local mec = Instance.new("UICorner")
+		mec.CornerRadius = UDim.new(1, 0)
+		mec.Parent = me
+		me.Parent = map
+		local acc = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			acc += dt
+			if acc < 0.1 or finished then
+				return
+			end
+			acc = 0
+			local hrp0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if not hrp0 then
+				return
+			end
+			local p0 = hrp0.Position
+			local used = 0
+			local function place(worldPos: Vector3, color: Color3, size: number, clampEdge: boolean): boolean
+				local off = Vector2.new(worldPos.X - p0.X, worldPos.Z - p0.Z) / RADIUS
+				if off.Magnitude > 1 then
+					if not clampEdge then
+						return false
+					end
+					off = off.Unit
+				end
+				used += 1
+				local d = dot(used, color, size)
+				d.Position = UDim2.fromOffset(MM / 2 + off.X * (MM / 2 - 4), MM / 2 + off.Y * (MM / 2 - 4))
+				d.Visible = true
+				return true
+			end
+			for _, ch in folder:GetChildren() do
+				if string.sub(ch.Name, 1, 9) == "Discovery" and ch:IsA("BasePart") then
+					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
+				end
+			end
+			for _, e in enemies do
+				if e.root and e.root.Parent then
+					place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+				end
+			end
+			for i = used + 1, #dots do
+				dots[i].Visible = false
+			end
+		end))
 	end
 
 	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
@@ -1154,10 +1355,21 @@ function FieldScene.start(opts)
 				FM.destroy(e.fm)
 				e.fm = nil
 			end
+			-- 마지막 일격: 맞은 반대 방향으로 밀려나며(점점 느려짐) 쓰러진다
+			local flyDir = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+			flyDir = if flyDir.Magnitude > 0.1 then flyDir.Unit else Vector3.zero
+			local flyDist = (if mult >= 1.5 then 9 else 5) * (if e.boss then 0.3 else 1)
 			task.spawn(function()
 				local t0 = os.clock()
+				local lastP = 0
 				while dying.Parent and os.clock() - t0 < 0.7 do
-					Pose.dieR15(dying, (os.clock() - t0) / 0.7)
+					local p = (os.clock() - t0) / 0.7
+					Pose.dieR15(dying, p)
+					local ease = 1 - (1 - p) * (1 - p)
+					pcall(function()
+						dying:PivotTo(dying:GetPivot() + flyDir * flyDist * (ease - lastP))
+					end)
+					lastP = ease
 					task.wait()
 				end
 				dying:Destroy()
@@ -1763,10 +1975,17 @@ function FieldScene.start(opts)
 		end
 		local now = os.clock()
 		local dtc = math.min(dt, 0.1)
+		local acList = {}
+		for _, o in enemies do table.insert(acList, o.ac) end
+		local attackers = AC.attackersCount(acList)
 		for _, e in table.clone(enemies) do
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			-- 멀리서 자고 있는 적은 계산을 쉰다(적이 100명이어도 가볍게)
+			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
+				continue
+			end
 			local frozen = now < (e.holdUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
@@ -1774,9 +1993,12 @@ function FieldScene.start(opts)
 			end
 			local event, hit = nil, nil
 			if not frozen then
-				event, hit = AC.stepEnemy(e.ac, dtc, dist)
+				local others = attackers - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
+				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
+				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
+				attackers += 1
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
@@ -1893,7 +2115,13 @@ function FieldScene.start(opts)
 			end
 			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
-			if wish ~= 0 and flat.Magnitude > 0.1 then
+			if e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
+				-- 차례를 기다리는 적: 주인공 둘레를 천천히 돈다(한꺼번에 몰려 때리지 않는다)
+				local sd = flat.Unit:Cross(Vector3.yAxis) * (e.circleDir or 1)
+				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
+				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + sd * e.ac.def.speed * 0.45 * dt) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+				wish = 0.5
+			elseif wish ~= 0 and flat.Magnitude > 0.1 then
 				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
 				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + step) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
 			elseif flat.Magnitude > 0.1 and e.ac.state ~= "idle" and e.ac.state ~= "stagger" then
@@ -1929,6 +2157,9 @@ function FieldScene.start(opts)
 					lean = if def0.keepAway then 0.1 else -0.55
 				elseif st == "RECOVERY" then
 					lean = -0.3 * (1 - ph)
+				elseif st == "HIT" then
+					-- 맞는 순간 확 젖혀졌다가 되돌아온다(맞은 쪽으로 몸이 꺾이는 느낌)
+					lean = 0.6 * (1 - ph) * (1 - ph)
 				end
 				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
@@ -1941,6 +2172,31 @@ function FieldScene.start(opts)
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
 				elseif st == "RUN" then
 					bob, roll, lean = math.abs(math.sin(now * 9)) * 0.2, math.sin(now * 9) * 0.08, -0.2
+				elseif st == "HIT" then
+					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
+				end
+				-- 종류별 고유 몸짓: 방패병은 웅크려 방패를 앞세우고, 돌진병은 발을 구르며 벼르고, 사수는 뒷걸음질하며 흔들리고, 두목은 몸을 솟구쳤다 내려찍는다
+				local kindId = e.ac.kind
+				if kindId == "shield" then
+					if st == "IDLE" or st == "RUN" then
+						lean, bob = -0.28, bob * 0.4 - 0.12
+					elseif st == "ANTICIPATION" then
+						lean = 0.15 * ph - 0.28 * (1 - ph)
+					end
+				elseif kindId == "charger" then
+					if st == "ANTICIPATION" then
+						bob, lean, roll = math.abs(math.sin(now * 16)) * 0.3, -0.35 * ph, math.sin(now * 16) * 0.1
+					end
+				elseif kindId == "archer" then
+					if wish < 0 then
+						lean, roll = 0.22, math.sin(now * 10) * 0.1
+					end
+				elseif e.boss then
+					if st == "ANTICIPATION" then
+						bob, lean = 1.1 * ph, 0.5 * ph
+					elseif st == "ATTACK" then
+						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
+					end
 				end
 				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then

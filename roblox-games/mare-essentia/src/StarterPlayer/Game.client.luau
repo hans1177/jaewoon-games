@@ -5762,6 +5762,7 @@ function H.startField(s)
 		cardSkills = cardSkills,
 		allies = allyNames,
 		name = s.name,
+		portId = s.portId,
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
