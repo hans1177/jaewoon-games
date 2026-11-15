@@ -4,6 +4,7 @@ import csv, glob, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOICES = {"europe", "islam", "china", "japan", "india", "americas", "sea"}
+DISCS = {"philosophy", "physics", "astronomy", "chemistry", "geography", "medicine", "botany", "zoology", "architecture", "shipbuilding", "mineralogy", "meteorology", "linguistics", "archaeology", "mythology", "navigation", "commerce", "history", "art"}
 KINDS = {"sci", "nature", "war", "politics", "trade", "faith"}
 ports = set(re.findall(r'^\t(\w+) = \{', open(f"{ROOT}/src/ReplicatedStorage/Shared/Ports.luau", encoding="utf-8").read(), re.M))
 ports |= set(re.findall(r'id = "(\w+)"', open(f"{ROOT}/src/ReplicatedStorage/Shared/Ports.luau", encoding="utf-8").read()))
@@ -27,6 +28,8 @@ for path in sorted(glob.glob(f"{ROOT}/assets/data/chronicle/*.csv")):
                 errors.append(f"{where} 항구 오류: {bad or '없음'}")
             if r.get("voice") not in VOICES:
                 errors.append(f"{where} voice 오류: {r.get('voice')}")
+            if (r.get("disc") or "") and r["disc"] not in DISCS:
+                errors.append(f"{where} disc 오류: {r.get('disc')}")
             if r.get("kind") not in KINDS:
                 errors.append(f"{where} kind 오류: {r.get('kind')}")
             try:
@@ -46,7 +49,7 @@ if errors:
 out = ["--!nonstrict", "-- 자동 생성: tools/chronicle_import.py (assets/data/chronicle/*.csv). 직접 고치지 말 것.", "return {"]
 for rid, year, month, plist, r in rows:
     parts = [f"id = {q(rid)}", f"year = {year}", f"month = {month}", "ports = { " + ", ".join(q(p) for p in plist) + " }",
-             f"voice = {q(r['voice'])}", f"kind = {q(r['kind'])}", f"title = {q(r['title'].strip())}",
+             f"voice = {q(r['voice'])}", f"disc = {q((r.get('disc') or 'history').strip())}", f"kind = {q(r['kind'])}", f"title = {q(r['title'].strip())}",
              f"scholar = {q((r.get('scholar') or '학자').strip())}", f"fact = {q(r['fact'].strip())}"]
     if (r.get("lore") or "").strip():
         parts += [f"lore = {q(r['lore'].strip())}", f"loreTag = {q((r.get('loreTag') or '소문').strip())}"]

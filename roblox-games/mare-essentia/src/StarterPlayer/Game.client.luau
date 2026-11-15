@@ -1970,6 +1970,10 @@ do
 			logged += 1
 			goal(string.format("%d년  %s", r.year, r.title), "선택: " .. tostring(r.choice), nil)
 		end
+		for _, sn in (view.chron and view.chron.seen) or {} do
+			logged += 1
+			goal(string.format("%d년  %s  [%s]", sn.year, sn.title, sn.disc or ""), sn.fact .. (if sn.lore then string.format("\n(%s) %s", sn.loreTag or "소문", sn.lore) else ""), nil)
+		end
 		for i = #view.quests.done, 1, -1 do
 			local d = view.quests.done[i]
 			logged += 1
@@ -5759,13 +5763,13 @@ function RENDERERS.explore()
 		add(function() return mkHeader(content, "연구 논문 · " .. ch.next) end)
 		add(function()
 			return H.tileGrid({
-				{ icon = "cc0_book", title = "관찰 노트", sub = string.format("%d / %d", ch.notes, ch.need), enabled = false },
+				{ icon = "cc0_book", title = "관찰 노트", sub = if ch.topDisc then string.format("%s %d/%d", ch.topDisc, ch.topN, ch.need) else string.format("0 / %d", ch.need), enabled = false },
 				{ icon = "codex", title = "논문 초안", sub = string.format("보유 %d · %d코인", ch.drafts, ch.cost), btn = "쓰기", color = COLORS.blue, enabled = ch.canWrite, onClick = function() call("WriteDraft") end },
 				{ icon = "tech", title = "학회 발표", sub = string.format("발표 %d회", ch.presented), enabled = false },
 				{ icon = "cc0_chest", title = "출판", sub = string.format("출판 %d편", ch.papers), btn = "출판", color = COLORS.gold, enabled = ch.canPublish, onClick = function() call("PublishPaper") end },
 			}, content, 176, 156)
 		end)
-		add(function() return mkLabel(content, "역사의 현장을 목격하면 노트가 쌓여요. 노트 3개로 초안을 쓰고, 아래 학회에서 발표한 뒤 출판해요.", 14, COLORS.muted, false) end)
+		add(function() return mkLabel(content, "역사의 현장은 학문과 이어져요. 같은 학문의 노트 3개와 그 학문 지식으로 초안을 쓰고, 아래 학회에서 발표한 뒤 출판해요.", 14, COLORS.muted, false) end)
 	end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
 	if #view.scholars == 0 then

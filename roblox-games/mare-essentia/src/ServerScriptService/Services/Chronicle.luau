@@ -22,12 +22,14 @@ return function(D, S)
 	local ART = { sci = "observatory", nature = "storm", war = "harbor", politics = "palace", trade = "market", faith = "library" }
 
 	local function chron(state)
-		state.chron = state.chron or { seen = {}, notes = 0, drafts = 0, papers = {} }
+		state.chron = state.chron or { seen = {}, notes = 0, drafts = 0, papers = {}, notesBy = {}, draftDiscs = {} }
 		local c = state.chron
 		c.seen = c.seen or {}
 		c.notes = c.notes or 0
 		c.drafts = c.drafts or 0
 		c.papers = c.papers or {}
+		c.notesBy = c.notesBy or {}
+		c.draftDiscs = c.draftDiscs or {}
 		return c
 	end
 
@@ -74,11 +76,14 @@ return function(D, S)
 		c.seen[row.id] = state.day
 		local g = if row.generated then C.GeneratedGain else (C.KindGain[row.kind] or C.KindGain.politics)
 		c.notes += g.note
+		local disc = row.disc or "history"
+		c.notesBy[disc] = (c.notesBy[disc] or 0) + g.note
 		state.fame += g.fame
 		state.coins += g.coins
 		S.State.gainXp(state, "adventure", 30, msgs)
 		local port = D.Ports.Ports[state.portId]
-		local summary = string.format("관찰 노트 +%d · 명성 +%d · %d코인", g.note, g.fame, g.coins)
+		local dname = D.KnowledgeTree.DisciplineById[disc] and D.KnowledgeTree.DisciplineById[disc].name or disc
+		local summary = string.format("%s 관찰 노트 +%d · 명성 +%d · %d코인", dname, g.note, g.fame, g.coins)
 		table.insert(msgs, string.format("역사의 현장 「%s」 — %s", row.title, summary))
 		state._scenes = state._scenes or {}
 		table.insert(state._scenes, {
@@ -89,21 +94,48 @@ return function(D, S)
 		return row
 	end
 
+	local function understoodIn(state, disc)
+		local n = 0
+		for _, node in D.KnowledgeTree.Nodes do
+			if node.disc == disc and D.KnowledgeTree.understood(state, node.id) then
+				n += 1
+			end
+		end
+		return n
+	end
+
+	-- 초안을 쓸 수 있는 학문: 그 학문의 관찰 노트가 충분하고, 그 학문의 지식을 하나 이상 이해했을 때. 노트가 가장 많은 학문부터.
+	local function writable(state)
+		local c = chron(state)
+		local best, bestN
+		for disc, n in c.notesBy do
+			if n >= NOTES_PER_DRAFT and understoodIn(state, disc) >= 1 and (not bestN or n > bestN) then
+				best, bestN = disc, n
+			end
+		end
+		return best
+	end
+
+	local function discName(disc)
+		local d = D.KnowledgeTree.DisciplineById[disc]
+		return d and d.name or tostring(disc)
+	end
+
 	function A.handlers.WriteDraft(state)
 		local c = chron(state)
-		if c.notes < NOTES_PER_DRAFT then
-			return false, string.format("관찰 노트가 %d개 필요해요 (지금 %d)", NOTES_PER_DRAFT, c.notes)
-		end
-		if D.KnowledgeTree.understoodCount(state) < 1 then
-			return false, "이해한 지식이 1개 이상 있어야 논문을 쓸 수 있어요"
+		local disc = writable(state)
+		if not disc then
+			return false, string.format("같은 학문의 관찰 노트 %d개와, 그 학문의 이해한 지식 1개가 필요해요", NOTES_PER_DRAFT)
 		end
 		if state.coins < DRAFT_COST then
 			return false, string.format("종이와 필사 비용 %d코인이 필요해요", DRAFT_COST)
 		end
 		state.coins -= DRAFT_COST
-		c.notes -= NOTES_PER_DRAFT
+		c.notesBy[disc] -= NOTES_PER_DRAFT
+		c.notes = math.max(0, c.notes - NOTES_PER_DRAFT)
 		c.drafts += 1
-		local msgs = { "관찰 노트를 엮어 논문 초안을 썼다. 이제 학회에서 발표해 보자." }
+		table.insert(c.draftDiscs, disc)
+		local msgs = { string.format("%s 관찰 노트를 엮어 논문 초안을 썼다. 이제 학회에서 발표해 보자.", discName(disc)) }
 		S.State.gainXp(state, "adventure", 40, msgs)
 		return true, table.concat(msgs, "\n")
 	end
@@ -129,7 +161,8 @@ return function(D, S)
 			return false, "먼저 학회에서 연구를 발표해야 출판할 수 있어요 (서재의 학회 발표)"
 		end
 		c.drafts -= 1
-		local title = string.format("「%s」에 대한 현장 보고", lastSeenTitle(c))
+		local pdisc = table.remove(c.draftDiscs, 1)
+		local title = string.format("[%s] 「%s」에 대한 현장 보고", discName(pdisc or "history"), lastSeenTitle(c))
 		table.insert(c.papers, title)
 		while #c.papers > 30 do
 			table.remove(c.papers, 1)
@@ -149,20 +182,27 @@ return function(D, S)
 		local c = chron(state)
 		local presented = (state.academy and state.academy.presented) or 0
 		local stage, nextText
+		local topN, topDisc = 0, nil
+		for disc, n in c.notesBy do
+			if n > topN then
+				topN, topDisc = n, disc
+			end
+		end
+		topN = math.min(topN, NOTES_PER_DRAFT)
 		if c.drafts > 0 and presented > #c.papers then
 			stage, nextText = 4, "출판할 수 있어요"
 		elseif c.drafts > 0 then
 			stage, nextText = 3, "학회에서 연구를 발표하세요"
-		elseif c.notes >= NOTES_PER_DRAFT then
-			stage, nextText = 2, "논문 초안을 쓸 수 있어요"
+		elseif writable(state) then
+			stage, nextText = 2, discName(writable(state)) .. " 논문 초안을 쓸 수 있어요"
 		else
-			stage, nextText = 1, string.format("관찰 노트를 모으세요 (%d/%d)", c.notes, NOTES_PER_DRAFT)
+			stage, nextText = 1, string.format("같은 학문의 관찰 노트를 모으세요 (%d/%d)", topN, NOTES_PER_DRAFT)
 		end
 		local seenList = {}
 		for id, day in c.seen do
 			local row = rowOf(id)
 			if row then
-				table.insert(seenList, { year = row.year, title = row.title, kind = C.KindName[row.kind] or "", fact = row.fact, lore = row.lore, loreTag = row.loreTag, day = day })
+				table.insert(seenList, { disc = discName(row.disc or 'history'), year = row.year, title = row.title, kind = C.KindName[row.kind] or "", fact = row.fact, lore = row.lore, loreTag = row.loreTag, day = day })
 			end
 		end
 		table.sort(seenList, function(a, b) return a.day > b.day end)
@@ -170,7 +210,7 @@ return function(D, S)
 		return {
 			notes = c.notes, drafts = c.drafts, papers = #c.papers, paperTitles = c.papers, need = NOTES_PER_DRAFT, cost = DRAFT_COST,
 			presented = presented, stage = stage, next = nextText, seen = seenList, total = if C then #C.Rows + #generated else 0,
-			canWrite = c.notes >= NOTES_PER_DRAFT, canPublish = c.drafts > 0 and presented > #c.papers,
+			canWrite = writable(state) ~= nil, topDisc = topDisc and discName(topDisc) or nil, topN = topN, canPublish = c.drafts > 0 and presented > #c.papers,
 		}
 	end
 

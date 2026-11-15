@@ -58,7 +58,7 @@ return function(D)
 			world = nil, -- 세계 이벤트(재해·행운): rng·다음 굴림 날·진행 중인 사건·기록 (World 서비스가 처음 쓸 때 만든다)
 			portStages = {}, -- 항구 건물 계통 단계 (항구 id → 계통 id → 단계)
 			stocks = { held = {}, cost = {}, next = 90, divTotal = 0, trades = 0 }, -- 증권거래소: 보유 주식·평균 단가 계산용 비용·다음 배당일
-			chron = { seen = {}, notes = 0, drafts = 0, papers = {} }, -- 세계 연대기: 목격한 사건·관찰 노트·논문 초안·출판 목록
+			chron = { seen = {}, notes = 0, drafts = 0, papers = {}, notesBy = {}, draftDiscs = {} }, -- 세계 연대기: 목격한 사건·관찰 노트·논문 초안·출판 목록
 			history = { seen = {}, fx = {} }, -- 역사 사건: seen[id]=고른 선택지, pending=지금 기다리는 사건 id, fx=지역 시세 효과
 			landmarks = {}, -- 항구별 특수 건축물 (항구 id → 건축물 id → true)
 			portTech = {}, -- 공동 발표로 쌓인 항구별 학문 기술 점수 (항구 id → 학문 id → 점수)
@@ -780,6 +780,20 @@ return function(D)
 					if type(id) == "string" and #id <= 40 and type(v) == "number" and n < 300 then
 						s.chron.seen[id] = math.floor(math.clamp(v, 0, 1e7))
 						n += 1
+					end
+				end
+			end
+			if type(ch.notesBy) == "table" then
+				for id, v in ch.notesBy do
+					if type(id) == "string" and #id <= 30 and type(v) == "number" then
+						s.chron.notesBy[id] = math.floor(math.clamp(v, 0, 999))
+					end
+				end
+			end
+			if type(ch.draftDiscs) == "table" then
+				for _, id in ch.draftDiscs do
+					if type(id) == "string" and #id <= 30 and #s.chron.draftDiscs < 99 then
+						table.insert(s.chron.draftDiscs, id)
 					end
 				end
 			end
