@@ -521,7 +521,7 @@ function FieldScene.start(opts)
 		if isBoss then
 			-- 두목은 시작점 반대편 깊숙한 곳을 지킨다
 			pos = ORIGIN + Vector3.new(rng:NextNumber(-half * 0.6, half * 0.6), 0, -half * rng:NextNumber(0.35, 0.8))
-		elseif i <= 6 then
+		elseif i <= 3 then
 			-- 처음 몇 마리는 시작점 앞 부채꼴(30~46 스터드): 바로 싸움이 붙는다
 			local fanA = rng:NextNumber(-0.95, 0.95)
 			local fanR = rng:NextNumber(30, 46)
