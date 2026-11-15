@@ -7813,7 +7813,7 @@ syncScene = function()
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(eco.sim and (eco.sim.stage .. "_" .. math.floor(eco.sim.residents / 4)) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
@@ -7825,6 +7825,7 @@ syncScene = function()
 		construction = construction,
 		econ = econKind,
 		econIndex = eco.index,
+		sim = eco.sim,
 		unemployment = eco.unemployment,
 		vacancy = eco.vacancy,
 		migration = eco.migration,

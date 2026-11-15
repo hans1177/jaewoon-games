@@ -679,6 +679,7 @@ return function(D, S)
 				regime = { id = rg.id, name = rg.name, kind = rg.kind, note = rg.note, price = rg.price },
 				portType = D.Harbor.portType(port.produces),
 				economy = S.Harbor.economyOf(state, port.id),
+				sim = S.Econ.town(state, port.id),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
