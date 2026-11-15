@@ -1393,10 +1393,96 @@ function FieldScene.start(opts)
 		cam.CameraSubject = hum
 	end
 
+	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
+	do
+		local UIS = game:GetService("UserInputService")
+		if UIS.TouchEnabled and not UIS.KeyboardEnabled then
+			local ctrl
+			pcall(function()
+				ctrl = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()
+				ctrl:Disable()
+			end)
+			local pad = Instance.new("Frame")
+			pad.AnchorPoint = Vector2.new(0, 1)
+			pad.Position = UDim2.new(0, 28, 1, -28)
+			pad.Size = UDim2.fromOffset(150, 150)
+			pad.BackgroundColor3 = Color3.fromRGB(20, 28, 40)
+			pad.BackgroundTransparency = 0.55
+			pad.BorderSizePixel = 0
+			pad.Active = true
+			pad.Parent = gui
+			local padCorner = Instance.new("UICorner")
+			padCorner.CornerRadius = UDim.new(1, 0)
+			padCorner.Parent = pad
+			local knob = Instance.new("Frame")
+			knob.AnchorPoint = Vector2.new(0.5, 0.5)
+			knob.Position = UDim2.fromScale(0.5, 0.5)
+			knob.Size = UDim2.fromOffset(60, 60)
+			knob.BackgroundColor3 = Color3.fromRGB(235, 220, 170)
+			knob.BackgroundTransparency = 0.2
+			knob.BorderSizePixel = 0
+			knob.Parent = pad
+			local knobCorner = Instance.new("UICorner")
+			knobCorner.CornerRadius = UDim.new(1, 0)
+			knobCorner.Parent = knob
+			local active, vec = nil, Vector2.zero
+			local function setFrom(pos: Vector3)
+				local c = pad.AbsolutePosition + pad.AbsoluteSize / 2
+				local d = (Vector2.new(pos.X, pos.Y) - c) / 60
+				vec = if d.Magnitude > 1 then d.Unit else d
+				knob.Position = UDim2.new(0.5, vec.X * 45, 0.5, vec.Y * 45)
+			end
+			table.insert(conns, pad.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+					active = input
+					setFrom(input.Position)
+				end
+			end))
+			table.insert(conns, UIS.InputChanged:Connect(function(input)
+				if active and (input == active or input.UserInputType == Enum.UserInputType.MouseMovement) then
+					setFrom(input.Position)
+				end
+			end))
+			table.insert(conns, UIS.InputEnded:Connect(function(input)
+				if input == active then
+					active, vec = nil, Vector2.zero
+					knob.Position = UDim2.fromScale(0.5, 0.5)
+				end
+			end))
+			table.insert(conns, RunService.Heartbeat:Connect(function()
+				if finished then
+					return
+				end
+				local h3 = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+				local cam3 = workspace.CurrentCamera
+				if h3 and cam3 then
+					if vec.Magnitude > 0.15 then
+						local dir = cam3.CFrame:VectorToWorldSpace(Vector3.new(vec.X, 0, vec.Y))
+						dir = Vector3.new(dir.X, 0, dir.Z)
+						h3:Move(if dir.Magnitude > 0 then dir.Unit * math.min(vec.Magnitude, 1) else Vector3.zero, false)
+					elseif active == nil then
+						h3:Move(Vector3.zero, false)
+					end
+				end
+			end))
+			table.insert(conns, { Disconnect = function()
+				workspace:SetAttribute("FieldTouchPad", nil)
+				pcall(function()
+					if ctrl then
+						ctrl:Enable()
+					end
+				end)
+			end })
+			workspace:SetAttribute("FieldTouchPad", true)
+		end
+	end
+
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
 	pcall(function()
 		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()
-		controls:Enable()
+		if not workspace:GetAttribute("FieldTouchPad") then
+			controls:Enable()
+		end
 	end)
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		if finished then
@@ -1425,7 +1511,7 @@ function FieldScene.start(opts)
 			end
 		end
 		local tg = player:FindFirstChild("PlayerGui") and player.PlayerGui:FindFirstChild("TouchGui")
-		if tg and tg:IsA("ScreenGui") and not tg.Enabled then
+		if tg and tg:IsA("ScreenGui") and not tg.Enabled and not workspace:GetAttribute("FieldTouchPad") then
 			tg.Enabled = true
 		end
 	end))
