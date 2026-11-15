@@ -8,6 +8,13 @@ local JobSkills = {}
 
 JobSkills.MAX_PLAYER_SKILLS = 3
 JobSkills.MAX_ALLY_SKILLS = 2
+JobSkills.START_PLAYER_SKILLS = 2 -- 처음에는 2칸
+JobSkills.UNLOCK_THIRD_LEVEL = 5 -- 전투 직업 레벨 5가 되면 3번째 칸이 열린다
+
+-- 전투 직업 레벨에 따라 열린 스킬 칸 수 (2 → 3)
+function JobSkills.playerSlots(battleLevel: number?): number
+	return if (battleLevel or 1) >= JobSkills.UNLOCK_THIRD_LEVEL then JobSkills.MAX_PLAYER_SKILLS else JobSkills.START_PLAYER_SKILLS
+end
 
 -- 스킬 정의: kind 는 FieldScene 의 효과 이름과 같다 (heal·armor·volley·snipe·rally·luck·read·bash).
 JobSkills.Skills = {
@@ -69,14 +76,15 @@ end
 
 -- 주인공 장착 스킬: want 는 장착하고 싶은 순서, available 은 지금 쓸 수 있는 것. 중복·없는 것은 빼고 최대 3개.
 -- want 가 비어 있으면 available 의 앞에서부터 채운다.
-function JobSkills.playerLoadout(want: { string }?, available: { string }): { string }
+function JobSkills.playerLoadout(want: { string }?, available: { string }, slots: number?): { string }
+	local cap = math.clamp(slots or JobSkills.MAX_PLAYER_SKILLS, 0, JobSkills.MAX_PLAYER_SKILLS)
 	local have: { [string]: boolean } = {}
 	for _, id in available do
 		have[id] = true
 	end
 	local out, seen = {}, {}
 	local function add(id: string)
-		if #out < JobSkills.MAX_PLAYER_SKILLS and have[id] and not seen[id] then
+		if #out < cap and have[id] and not seen[id] then
 			seen[id] = true
 			table.insert(out, id)
 		end

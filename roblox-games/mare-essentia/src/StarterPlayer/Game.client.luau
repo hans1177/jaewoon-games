@@ -5736,7 +5736,12 @@ function H.startField(s)
 			table.insert(cardSkills, { name = c.name, skill = c.skill })
 		end
 	end
+	local battleLevel = 1
+	for _, c in (view and view.careers) or {} do
+		if c.id == "battle" then battleLevel = c.level end
+	end
 	FieldScene.start({
+		battleLevel = battleLevel,
 		cardSkills = cardSkills,
 		allies = allyNames,
 		name = s.name,
