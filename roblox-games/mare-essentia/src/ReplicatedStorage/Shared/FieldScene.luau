@@ -47,19 +47,18 @@ end
 local FieldScene = {}
 
 local ORIGIN = Vector3.new(3000, 0, 0) -- 항구 장면과 멀리 떨어진 곳
-local SIZE = 200
 
 local BIOMES = {
 	{ words = { "해안", "갯벌", "바위", "절벽", "만", "섬", "부두", "어장", "군도" }, ground = Color3.fromRGB(196, 178, 128), mat = Enum.Material.Sand, trees = 4, rocks = 26,
-		mobs = { { "해적", "Rogue_Hooded", 3, 8, 8.5 }, { "밀수꾼", "Rogue", 3, 7, 9.5 }, { "해적 두목", "Barbarian", 6, 12, 7.5, true } } },
+		size = 300, fog = Color3.fromRGB(190, 215, 235), fogEnd = 700, clock = 15.5, mobs = { { "해적", "Rogue_Hooded", 3, 8, 8.5 }, { "밀수꾼", "Rogue", 3, 7, 9.5 }, { "해적 두목", "Barbarian", 6, 12, 7.5, true } } },
 	{ words = { "고지", "봉분", "평원", "열석", "들판", "돌" }, ground = Color3.fromRGB(110, 134, 82), mat = Enum.Material.Grass, trees = 8, rocks = 22,
-		mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "탈영병", "Knight", 4, 9, 7.5 }, { "산적 두목", "Barbarian", 7, 12, 7.5, true } } },
+		size = 380, fog = Color3.fromRGB(200, 220, 200), fogEnd = 850, clock = 14, mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "탈영병", "Knight", 4, 9, 7.5 }, { "산적 두목", "Barbarian", 7, 12, 7.5, true } } },
 	{ words = { "광산", "탄광", "채석" }, ground = Color3.fromRGB(110, 108, 104), mat = Enum.Material.Slate, trees = 2, rocks = 40,
-		mobs = { { "광산 도적", "Rogue", 3, 8, 9.5 }, { "갱 감독", "Knight", 5, 10, 7 }, { "도적 두목", "Barbarian", 7, 12, 7.5, true } } },
+		size = 240, fog = Color3.fromRGB(70, 66, 62), fogEnd = 280, clock = 18.5, mobs = { { "광산 도적", "Rogue", 3, 8, 9.5 }, { "갱 감독", "Knight", 5, 10, 7 }, { "도적 두목", "Barbarian", 7, 12, 7.5, true } } },
 	{ words = { "숲", "과수원", "호수", "농장", "아마", "정원" }, ground = Color3.fromRGB(70, 118, 66), mat = Enum.Material.Grass, trees = 34, rocks = 8,
-		mobs = { { "밀렵꾼", "Rogue_Hooded", 3, 8, 9 }, { "산적", "Barbarian", 3, 8, 8.5 }, { "숲의 사냥꾼", "Rogue", 4, 9, 10 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } },
+		size = 320, fog = Color3.fromRGB(120, 150, 120), fogEnd = 420, clock = 11, mobs = { { "밀렵꾼", "Rogue_Hooded", 3, 8, 9 }, { "산적", "Barbarian", 3, 8, 8.5 }, { "숲의 사냥꾼", "Rogue", 4, 9, 10 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } },
 }
-local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14,
+local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14, size = 300, fog = Color3.fromRGB(190, 205, 190), fogEnd = 700, clock = 14,
 	mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "도적", "Rogue", 3, 8, 9.5 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } }
 
 local function biomeFor(name)
@@ -180,6 +179,18 @@ function FieldScene.start(opts)
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
 	local biome = biomeFor(opts.name or "")
+	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
+	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
+	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
+	-- 지역마다 하늘·안개 분위기가 다르다(끝나면 되돌린다)
+	local lightSave = {}
+	do
+		local L = game:GetService("Lighting")
+		lightSave = { FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime }
+		pcall(function()
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
+		end)
+	end
 
 	-- 땅과 보이지 않는 벽
 	local ground = part(folder, Vector3.new(SIZE, 4, SIZE), CFrame.new(ORIGIN + Vector3.new(0, -2, 0)), biome.ground, biome.mat)
@@ -234,7 +245,7 @@ function FieldScene.start(opts)
 
 	-- 나무와 바위
 	local treeNames = { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, biome.trees * 2 do
+	for _ = 1, math.floor(biome.trees * 2 * AREA) do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		if not placeModel(folder, "Town", treeNames[rng:NextInteger(1, #treeNames)], pos, h, false) then
@@ -243,7 +254,7 @@ function FieldScene.start(opts)
 		end
 	end
 	local rockNames = { "rock-large", "rock-small", "rock-wide" }
-	for _ = 1, math.floor(biome.rocks * 1.6) do
+	for _ = 1, math.floor(biome.rocks * 1.6 * AREA) do
 		local pos = ORIGIN + scatter(10)
 		if not placeModel(folder, "Town", rockNames[rng:NextInteger(1, #rockNames)], pos, rng:NextNumber(2.5, 6), true) then
 			part(folder, Vector3.new(rng:NextNumber(2, 4), rng:NextNumber(1.5, 3), rng:NextNumber(2, 4)), CFrame.new(pos + Vector3.new(0, 1, 0)) * CFrame.Angles(0, rng:NextNumber(0, 3), 0), Color3.fromRGB(128, 126, 122), Enum.Material.Slate)
@@ -439,6 +450,10 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		pcall(function()
+			local L = game:GetService("Lighting")
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
+		end)
 		for _, c in conns do
 			c:Disconnect()
 		end
@@ -486,23 +501,35 @@ function FieldScene.start(opts)
 	end
 
 	-- 적: 가까이 오면 쫓아와 때린다
-	local enemyCount = math.clamp(3 + math.floor((opts.danger or 1) / 2), 3, 8)
-	for i = 1, enemyCount + 1 do
-		-- 마지막 한 마리는 두목(위험이 높은 곳에서만 나온다)
-		local isBoss = i == enemyCount + 1
-		if isBoss and (opts.danger or 1) < 3 then
-			break
-		end
+	-- 적: 최소 20명, 위험할수록 늘어 최대 100명(두목 포함). 무리를 지어 맵 곳곳에 흩어져 있다.
+	local danger0 = opts.danger or 1
+	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
+	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
+	local packCenters = {}
+	for _ = 1, math.max(4, math.floor(enemyCount / 5)) do
+		table.insert(packCenters, scatter(48))
+	end
+	for i = 1, enemyCount + bossCount do
+		local isBoss = i > enemyCount
 		local def
 		if isBoss then
 			def = biome.mobs[#biome.mobs]
 		else
 			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
 		end
-		-- 시작 지점 앞쪽 부채꼴(30~46 스터드)에 세운다: 맵 끝까지 걸어가지 않아도 바로 싸움이 붙는다
-		local fanA = rng:NextNumber(-0.95, 0.95)
-		local fanR = if isBoss then 52 else rng:NextNumber(30, 46)
-		local pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
+		local pos
+		if isBoss then
+			-- 두목은 시작점 반대편 깊숙한 곳을 지킨다
+			pos = ORIGIN + Vector3.new(rng:NextNumber(-half * 0.6, half * 0.6), 0, -half * rng:NextNumber(0.35, 0.8))
+		elseif i <= 6 then
+			-- 처음 몇 마리는 시작점 앞 부채꼴(30~46 스터드): 바로 싸움이 붙는다
+			local fanA = rng:NextNumber(-0.95, 0.95)
+			local fanR = rng:NextNumber(30, 46)
+			pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
+		else
+			local c = packCenters[(i % #packCenters) + 1]
+			pos = ORIGIN + c + Vector3.new(rng:NextNumber(-9, 9), 0, rng:NextNumber(-9, 9))
+		end
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
@@ -1763,10 +1790,17 @@ function FieldScene.start(opts)
 		end
 		local now = os.clock()
 		local dtc = math.min(dt, 0.1)
+		local acList = {}
+		for _, o in enemies do table.insert(acList, o.ac) end
+		local attackers = AC.attackersCount(acList)
 		for _, e in table.clone(enemies) do
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			-- 멀리서 자고 있는 적은 계산을 쉰다(적이 100명이어도 가볍게)
+			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
+				continue
+			end
 			local frozen = now < (e.holdUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
@@ -1774,13 +1808,12 @@ function FieldScene.start(opts)
 			end
 			local event, hit = nil, nil
 			if not frozen then
-				local acList = {}
-				for _, o in enemies do table.insert(acList, o.ac) end
-				local others = AC.attackersCount(acList) - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
+				local others = attackers - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
 				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
 				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
+				attackers += 1
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
@@ -1939,6 +1972,9 @@ function FieldScene.start(opts)
 					lean = if def0.keepAway then 0.1 else -0.55
 				elseif st == "RECOVERY" then
 					lean = -0.3 * (1 - ph)
+				elseif st == "HIT" then
+					-- 맞는 순간 확 젖혀졌다가 되돌아온다(맞은 쪽으로 몸이 꺾이는 느낌)
+					lean = 0.6 * (1 - ph) * (1 - ph)
 				end
 				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
@@ -1951,6 +1987,8 @@ function FieldScene.start(opts)
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
 				elseif st == "RUN" then
 					bob, roll, lean = math.abs(math.sin(now * 9)) * 0.2, math.sin(now * 9) * 0.08, -0.2
+				elseif st == "HIT" then
+					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end
 				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
