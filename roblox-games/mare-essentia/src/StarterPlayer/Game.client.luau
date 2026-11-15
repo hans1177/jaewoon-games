@@ -6383,23 +6383,23 @@ local function renderCodexOverview()
 			return row
 		end)
 	end
-	add(function() return mkHeader(content, "지식 트리 (발견 → 보고 → 이해 → 효과)") end)
+	add(function() return mkHeader(content, "지식 트리") end)
 	add(function()
-		return mkLabel(content, "발견한 카드를 이 항구의 학자에게 보고하면 이해한 지식이 돼요. 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해 속도·포격·교역품 값에 효과를 줘요.", 12, COLORS.muted, false)
+		return mkLabel(content, "발견 → 학자에게 보고 → 이해 → 항해·포격·교역 효과", 14, COLORS.muted, false)
 	end)
 	if view.knowledge and view.knowledge.era then
 		local er = view.knowledge.era
 		add(function() return mkHeader(content, string.format("인류의 시대 — %s", er.name)) end)
 		add(function()
 			local nxt = if er.nextName then string.format(" 다음 시대(%s)까지 이해한 지식 %d/%d개.", er.nextName, er.count, er.nextNeed) else " 마지막 시대에 이르렀어요."
-			return mkLabel(content, er.story .. nxt .. " 시대가 오를수록 항해와 항구 연구가 조금씩 좋아져요.", 12, COLORS.muted, false)
+			return mkLabel(content, er.story .. nxt, 14, COLORS.muted, false)
 		end)
 	end
 	if view.pace then
 		local pc = view.pace
 		add(function() return mkHeader(content, "역사의 속도") end)
 		add(function()
-			return mkLabel(content, string.format("건물과 기술 사건은 시대순으로 열려요. 일찍 발견하고 보고하고, 학회·박람회·공동 발표를 하고, 어려운 퀘스트를 해내면 역사가 앞당겨져요. 지금 %.1f년 앞섬 (최대 %d년) · 이번 %d일 동안 앞당길 수 있는 양 %d/%d일. 앞서 갈수록, 짧은 기간에 몰아칠수록 덜 쌓여요.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 12, COLORS.muted, false)
+			return mkLabel(content, string.format("지금 역사가 %.1f년 앞서 있어요 (최대 %d년). 이번 %d일 앞당김 %d/%d일.", pc.years, math.floor(pc.capDays / 365), pc.windowDays, pc.windowLeft, pc.windowCap), 14, COLORS.muted, false)
 		end)
 	end
 	if view.people then
@@ -6407,7 +6407,7 @@ local function renderCodexOverview()
 			art = "chisel", letters = "journal-closed", merchant = "coin", pirate = "weapon-sword", faith = "lantern" }
 		local pv = view.people
 		add(function() return mkHeader(content, string.format("인물 백과 (기록 %d / %d명)", pv.known, pv.total)) end)
-		add(function() return mkLabel(content, "항구를 찾아가거나 학자를 만나거나 역사 사건을 겪으면 그 시대의 인물이 백과에 기록돼요. 분야를 열어 보세요.", 12, COLORS.muted, false) end)
+		add(function() return mkLabel(content, "항구·학자·역사 사건에서 인물이 기록돼요.", 14, COLORS.muted, false) end)
 		for _, t in pv.tiers do
 			add(function()
 				local label = string.format("%d명 기록 보상: %d코인 · 명성 %d", t.need, t.coins, t.fame)
@@ -6454,7 +6454,7 @@ local function renderCodexOverview()
 		local hv = view.history
 		add(function() return mkHeader(content, string.format("역사의 분기점 (겪은 사건 %d / %d)", hv.seenCount or 0, hv.total or 0)) end)
 		if hv.pending then
-			add(function() return mkLabel(content, string.format("⚑ 지금 기다리는 사건: %d년 %s — 화면에 뜨는 선택 창에서 정하세요.", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+			add(function() return mkLabel(content, string.format("⚑ 지금 기다리는 사건: %d년 %s — 화면에 뜨는 선택 창에서 정하세요.", hv.pending.year, hv.pending.title), 15, COLORS.gold, true) end)
 		end
 		for _, r in hv.recent do
 			add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
@@ -7087,13 +7087,20 @@ function RENDERERS.map()
 	if H.mapPage ~= "chart" then
 		local p = view.player
 		add(function() return mkHeader(content, "항해 일지") end)
-		add(function()
-			return mkLabel(content, string.format("%s · %d년 %d일째 · %s에 정박 중\n코인 %d · 명성 %d · 동료 %d명", p.nation, p.year, p.day, p.portName, p.coins, p.fame or 0, #(view.companions and view.companions.list and (function() local n = {} for _, c in view.companions.list do if c.joined then table.insert(n, c) end end return n end)() or {})), 14, COLORS.text, true)
-		end)
+		local crewN = 0
+		for _, c in (view.companions and view.companions.list) or {} do
+			if c.joined then crewN += 1 end
+		end
+		add(function() return mkLabel(content, string.format("%s · %d년 %d일째 · %s 정박", p.nation, p.year, p.day, p.portName), 16, COLORS.text, true) end)
+		H.statStrip({
+			{ "코인", tostring(p.coins), tone = "good" },
+			{ "명성", tostring(p.fame or 0), tone = "key" },
+			{ "동료", tostring(crewN) .. "명", tone = "key" },
+		})
 		local hv = view.history
 		if hv then
 			if hv.pending then
-				add(function() return mkLabel(content, string.format("⚑ 기다리는 사건: %d년 %s", hv.pending.year, hv.pending.title), 13, COLORS.gold, true) end)
+				add(function() return mkLabel(content, string.format("기다리는 사건: %d년 %s", hv.pending.year, hv.pending.title), 15, COLORS.gold, true) end)
 			end
 			for _, r in hv.recent or {} do
 				add(function() return mkLabel(content, string.format("%d년 %s — %s", r.year, r.title, r.choice), 12, COLORS.muted, false) end)
