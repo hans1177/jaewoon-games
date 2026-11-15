@@ -1,35 +1,29 @@
 {
- "sourceRevision": "282c9c164766968bc599507b65369bf426176736",
+ "sourceRevision": "315011f9907bed765e1e70f2aefc581f164f461d",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "true \ntext"
+   "out": "allies on\ntext"
   },
   {
-   "step": 4,
-   "capture": "t0_main",
-   "files": 1
+   "step": 3,
+   "ctx": "Client",
+   "out": "started\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "hall\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "t2_hall",
-   "files": 1
-  },
-  {
-   "step": 10,
-   "click": "흥정하기",
-   "at": "NOT_FOUND",
-   "out": "NONE\ntext"
+   "out": "cam\ntext"
   }
  ],
  "errors": [
-  "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
+  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: FieldScene is not a valid member of Workspace \"Workspac"
  ],
  "consoleCapture": {
   "captured": true,
@@ -42,13 +36,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 14,
-  "completedSteps": 11,
-  "plannedClicks": 1,
+  "plannedSteps": 46,
+  "completedSteps": 8,
+  "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 2,
+  "plannedFrames": 11,
+  "capturedFrames": 0,
   "abortedEarly": true
  }
 }
