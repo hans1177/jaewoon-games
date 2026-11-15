@@ -240,6 +240,7 @@ function H.rich(text: string): string
 end
 H.richParent = nil -- 시설 창 본문(content)이 만들어지면 지정된다
 
+local UI_MIN_TEXT = 14
 local function mkLabel(parent, text, size, color, bold, order)
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
@@ -249,7 +250,7 @@ local function mkLabel(parent, text, size, color, bold, order)
 	l.TextWrapped = true
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	l.TextYAlignment = Enum.TextYAlignment.Top
-	l.TextSize = size or 14
+	l.TextSize = math.max(size or 14, UI_MIN_TEXT) -- 메뉴 전체에서 이보다 작은 글씨는 쓰지 않는다 (통일·가독성)
 	l.TextColor3 = color or COLORS.text
 	l.Font = if bold then Enum.Font.Antique else Enum.Font.Gotham
 	if order then
@@ -661,7 +662,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		elseif danger then Color3.fromRGB(224, 166, 138) elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
 	b.TextColor3 = if active then inkTint else Color3.fromRGB(108, 92, 69)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 13
+	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 32) * 0.42), 13, 16)
 	b.TextWrapped = true
 	b.AutoButtonColor = active
 	b.BorderSizePixel = 0
@@ -812,7 +813,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 68 + 8
+	local btnWidth = btnCount * 84 + 8
 
 	local textBox = Instance.new("Frame")
 	textBox.Name = "RowText"
@@ -822,9 +823,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	textBox.Parent = row
 	local layout = Instance.new("UIListLayout")
 	layout.Parent = textBox
-	mkLabel(textBox, title, 14, INK, true)
+	mkLabel(textBox, title, 16, INK, true)
 	if subtitle and subtitle ~= "" then
-		mkLabel(textBox, subtitle, 12, INK_SOFT, false)
+		mkLabel(textBox, subtitle, 14, INK_SOFT, false)
 	end
 	-- 버튼이 많아 글자 칸이 좁아지면 부제가 줄바꿈되어 행 밖으로 잘린다. 글이 길면 행 높이를 늘려 맞춘다.
 	local baseHeight = height or 60
@@ -839,9 +840,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 
 	if buttons then
 		for i, spec in buttons do
-			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(62, 36), spec.onClick, spec.enabled)
+			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(78, 40), spec.onClick, spec.enabled)
 			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (btnCount - i) * 68, 0.5, 0)
+			b.Position = UDim2.new(1, -6 - (btnCount - i) * 84, 0.5, 0)
 		end
 	end
 	-- 좁은 화면에서는 글자가 여러 줄로 접혀 고정 높이를 넘으므로(CUT), 글자 높이에 맞춰 행을 늘린다.
@@ -864,8 +865,8 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, "◆ " .. text, 15, INK, true)
-	l.Size = UDim2.new(1, -8, 0, 26)
+	local l = mkLabel(parent, "◆ " .. text, 17, INK, true)
+	l.Size = UDim2.new(1, -8, 0, 30)
 	l.AutomaticSize = Enum.AutomaticSize.Y -- 좁은 화면에서 긴 소제목이 두 줄이 되어도 잘리지 않게 (26은 최소 높이)
 	l.TextYAlignment = Enum.TextYAlignment.Center
 	l.BackgroundTransparency = 0
@@ -949,6 +950,7 @@ local function pageRule(parent, position, size)
 end
 pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -4), UDim2.new(1, -72, 0, 1))
 H.pageDetails = mkLabel(H.pageMasthead, "", 11, COLORS.brown, true)
+H.pageDetails.TextSize = 12
 H.pageDetails.AutomaticSize = Enum.AutomaticSize.None
 H.pageDetails.Position = UDim2.fromOffset(65, 33)
 H.pageDetails.Size = UDim2.new(1, -230, 0, 18)
@@ -6789,16 +6791,20 @@ function RENDERERS.board()
 			local sub = string.format("%s\n기한 %d일 남음", detail(j), j.left or 0)
 			if j.blocked then sub ..= "\n" .. j.blocked end
 			local buttons = {}
-			if j.kind == "event" then
-				for i, c in j.choices or {} do
-					table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
-				end
-			else
+			if j.kind ~= "event" then
 				table.insert(buttons, { text = if j.kind == "hunt" then "출격" else "납품", color = COLORS.red, enabled = j.blocked == nil, onClick = function() call("TavernJob", { id = j.id }) end })
 			end
-			table.insert(buttons, { text = if j.shady then "포기 (명성 하락)" else "포기 (벌 없음)", color = COLORS.grey, onClick = function() call("TavernAbandon") end })
-			return mkRow(content, string.format("[%s·%s] %s", tagText, j.tag or KIND[j.kind] or "", j.name), sub, buttons, 130 + 32 * #buttons)
+			table.insert(buttons, { text = "포기", color = COLORS.grey, onClick = function() call("TavernAbandon") end })
+			local note = if j.shady then "\n포기하면 명성이 떨어져요." else "\n포기해도 벌은 없어요."
+			return mkRow(content, string.format("[%s·%s] %s", tagText, j.tag or KIND[j.kind] or "", j.name), sub .. note, buttons, 140)
 		end)
+		if j.kind == "event" then
+			for i, c in j.choices or {} do
+				add(function()
+					return mkRow(content, c.label, c.hint, { { text = "선택", color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end } }, 56)
+				end)
+			end
+		end
 	else
 		add(function() return mkLabel(content, "맡은 의뢰가 없어요. 아래에서 소문을 듣거나 술을 사 주고 일감을 받아 보세요.", 15, COLORS.muted, true) end)
 	end
@@ -6848,12 +6854,13 @@ function RENDERERS.board()
 		local j = q.rumorEvent
 		add(function() return mkHeader(content, "소문의 사건") end)
 		add(function()
-			local buttons = {}
-			for i, c in j.choices or {} do
-				table.insert(buttons, { text = c.label .. "  " .. (c.hint or ""), color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end })
-			end
-			return mkRow(content, string.format("[%s] %s", j.tag or "", j.name), j.text, buttons, 100 + 32 * #buttons)
+			return mkRow(content, string.format("[%s] %s", j.tag or "", j.name), j.text, nil, 90)
 		end)
+		for i, c in j.choices or {} do
+			add(function()
+				return mkRow(content, c.label, c.hint, { { text = "선택", color = COLORS.red, enabled = not c.locked, onClick = function() call("TavernJob", { id = j.id, choice = i }) end } }, 56)
+			end)
+		end
 	end
 	-- 5) 이 항구의 이야기 (수상한 손님이 광장에 서 있던 시절의 이야기도 이곳에서 들어요)
 	if view.story and #view.story > 0 then
