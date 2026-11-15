@@ -4210,12 +4210,16 @@ end
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	add(function() return mkHeader(content, "선박") end)
-	add(function()
-		return mkRow(content, string.format("%s%s", ship.name, if ship.steam then " (증기)" else ""),
-			string.format("선체 %d/%d · 선원 %d/%d · 포 %d · 속도 %d\n화물 %d/%d · 보급품 %d · 석탄 %d",
-				ship.hull, ship.maxHull, ship.crew, ship.maxCrew, ship.cannons, ship.speed,
-				ship.cargoUsed, ship.cargoCapacity, ship.supplies, ship.coal), nil, 76)
-	end)
+	H.statStrip({
+		{ ship.name .. (if ship.steam then " (증기)" else ""), string.format("선체 %d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
+		{ "선원", string.format("%d/%d", ship.crew, ship.maxCrew), tone = "key" },
+		{ "포 · 속도", string.format("%d · %d", ship.cannons, ship.speed), tone = "key" },
+	})
+	H.statStrip({
+		{ "화물", string.format("%d/%d", ship.cargoUsed, ship.cargoCapacity), tone = "key" },
+		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 8 then "bad" else "key" },
+		{ "석탄", tostring(ship.coal), tone = "key" },
+	})
 	add(function() return mkHeader(content, "해전 카드 지원 (자동)") end)
 	add(function()
 		local lines = view.navalSupport or {}
@@ -4230,34 +4234,18 @@ function RENDERERS.status()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
-	add(function() return mkHeader(content, "항해 방식") end)
+	add(function() return mkHeader(content, "설정") end)
 	add(function()
 		local manualOn = player:GetAttribute("ManualHelm") ~= false
-		return mkRow(content, "수동 항해", if manualOn then "켜짐(기본): 스틱으로 바람 고리를 통과해요. 가는 도중 자동으로 바꿀 수 있어요 (처음 가는 항구는 직접 항해만)" else "꺼짐: 자동 항해", {
-			{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue, onClick = function()
-				player:SetAttribute("ManualHelm", not manualOn)
-				render()
-			end },
-		}, 60)
-	end)
-	add(function() return mkHeader(content, "소리") end)
-	add(function()
 		local musicOn, sfxOn = Sfx.state()
-		return mkRow(content, "음악", if musicOn then "켜짐" else "꺼짐", {
-			{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.blue, onClick = function()
-				Sfx.setMusicEnabled(not musicOn)
-				render()
-			end },
-		}, 52)
-	end)
-	add(function()
-		local musicOn, sfxOn = Sfx.state()
-		return mkRow(content, "효과음", if sfxOn then "켜짐" else "꺼짐", {
-			{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.blue, onClick = function()
-				Sfx.setSfxEnabled(not sfxOn)
-				render()
-			end },
-		}, 52)
+		return H.tileGrid({
+			{ icon = "route", title = "수동 항해", sub = if manualOn then "켜짐 · 직접 조종" else "꺼짐 · 자동", btn = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue,
+				onClick = function() player:SetAttribute("ManualHelm", not manualOn) render() end },
+			{ icon = "codex", title = "음악", sub = if musicOn then "켜짐" else "꺼짐", btn = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.blue,
+				onClick = function() Sfx.setMusicEnabled(not musicOn) render() end },
+			{ icon = "battle", title = "효과음", sub = if sfxOn then "켜짐" else "꺼짐", btn = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.blue,
+				onClick = function() Sfx.setSfxEnabled(not sfxOn) render() end },
+		}, content, 176, 150)
 	end)
 	add(function()
 		local ml, sl = Sfx.levels()
