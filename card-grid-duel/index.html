@@ -121,6 +121,14 @@ h1{font-size:22px;margin:0}
 #walletBar{margin:0 0 8px;display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:13px;font-weight:850;color:#c7d3e9}
 #resetDiamonds{margin-left:auto;min-height:44px;border:1px solid #805963;border-radius:9px;padding:0 12px;background:#482932;color:#ffe1e8;font-size:12px;font-weight:900;cursor:pointer}
 #walletDiamonds{color:#78d7ff;font-size:16px;font-weight:1000}
+/* 9스테이지 엔딩 화면 */
+#endingScreen{position:fixed;inset:0;z-index:10000;overflow-y:auto;background:#000;color:#f1f1f1;padding:clamp(24px,6vh,64px) 18px calc(28px + env(safe-area-inset-bottom))}
+#endingScreen main{width:min(680px,100%);margin:0 auto}
+#endingScreen h2{margin:0 0 26px;text-align:center;font-size:clamp(21px,5vw,30px);letter-spacing:.12em;color:#d9d9d9}
+#endingScreen .story{font-size:clamp(15px,3.8vw,18px);line-height:2.05;white-space:pre-line;word-break:keep-all;color:#e8e8e8}
+#endingScreen .story p{margin:0 0 17px}
+#endingScreen .lastLine{margin-top:34px!important;text-align:center;font-weight:900;color:#fff}
+#endingRestart{display:block;margin:34px auto 0;min-height:48px;padding:0 22px;border:1px solid #777;border-radius:10px;background:#171717;color:#fff;font-weight:900}
 @media(max-width:520px){
   .wrap{padding-left:7px;padding-right:7px}.board{gap:3px;padding:4px}.unit{inset:2px}.portrait{width:38px;height:38px}.unit b{font-size:9px}.unit small{font-size:8px}
   .hand{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:136px}
@@ -192,6 +200,33 @@ h1{font-size:22px;margin:0}
   <button id="cancel">선택 취소</button>
   <button id="healTarget" class="hidden" type="button">성직자 회복</button>
   <button id="endTurn">턴 종료</button>
+</div>
+
+<div id="endingScreen" class="hidden" role="dialog" aria-modal="true" aria-label="실페리아의 진실">
+  <main>
+    <h2>실페리아의 진실</h2>
+    <div class="story">
+      <p>실페리아는 숲의수호신"이었습니다</p>
+      <p>어느날 마을 위에서 큰 바위가 떨어졌습니다</p>
+      <p>실페리아는 온 힘을 다해서 막았습니다</p>
+      <p>그러나</p>
+      <p>실페리아는 대부분의 힘을 잃었습니다</p>
+      <p>하지만 마을에는 실페리아를 죽이면 행운이 온다는 소문이 있었습니다</p>
+      <p>마을 주민과 마을의 왕 모두 힘을 잃어서 바닥에 쓰러진 실페리아를 무참히 살해했습니다</p>
+      <p>실페리아는 분노하였습니다</p>
+      <p>매우 큰 분노.</p>
+      <p>결국 실페리아는 마을의 모든사람을 처형했습니다</p>
+      <p>그 즉시, 사람들은 모두 죽었습니다 그러나,</p>
+      <p>실페리아는..</p>
+      <p>그자리에서 기절하였습니다</p>
+      <p>그 이후, 실페리아는 인간에게 공격적인 수호신이 되었습니다</p>
+      <p>그리고 지금도 완전히 회복 하지 못하였습니다</p>
+      <p>아직도,거대한 부상이 남아있고 원래힘의 대부분 아니,거의 전체를 잃었습니다.</p>
+      <p>그 수호신은</p>
+      <p class="lastLine">바로 전, 당신과 병사들에게 죽었습니다</p>
+    </div>
+    <button id="endingRestart" type="button">처음부터 다시 시작</button>
+  </main>
 </div>
 
 <script type="module">
@@ -466,6 +501,18 @@ function loadProgress(){
       saved.stageSevenRewarded=true;
       localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
     }
+    // 기존 8스테이지 클리어 저장에도 열쇠 2개를 한 번만 소급 지급한다.
+    if(saved.stage===8&&saved.phase==='REST'&&!saved.stageEightRewarded){
+      saved.keys+=2;
+      saved.stageEightRewarded=true;
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
+    // 이전 버전에서 9스테이지를 클리어한 저장도 엔딩 화면으로 이어준다.
+    if(saved.stage===9&&saved.phase==='REST'&&!saved.winner){
+      saved.phase='BATTLE';
+      saved.winner='BLUE';
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
     saved.diamonds=diamondWallet();
     if(resizedStageSix)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
     return saved
@@ -632,6 +679,14 @@ function clearStageSeven(){
   }
   enterRest('7스테이지 클리어 · 열쇠 3개 획득! 강화 뽑기 개방 · 기마병/성직자 · 8스테이지 준비')
 }
+function clearStageEight(){
+  // 8스테이지 클리어 열쇠 2개는 저장 플래그로 중복 지급을 막는다.
+  if(!state.stageEightRewarded){
+    state.keys+=2;
+    state.stageEightRewarded=true
+  }
+  enterRest('8스테이지 클리어 · 열쇠 2개 획득! · 9스테이지 준비')
+}
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
   if(exhausted('BLUE')){state.winner='RED';return}
@@ -643,8 +698,14 @@ function checkWin(){
     if(state.stage===5){clearStageFive();return}
     if(state.stage===6){enterRest('6스테이지 클리어 · 7스테이지 준비');return}
     if(state.stage===7){clearStageSeven();return}
-    if(state.stage===8){enterRest('8스테이지 클리어 · 9스테이지 준비');return}
-    if(state.stage===9){enterRest('9스테이지 클리어 · 실페리아 격파!');return}
+    if(state.stage===8){clearStageEight();return}
+    if(state.stage===9){
+      // 9스테이지는 휴식 화면 대신 검은 엔딩 화면으로 전환한다.
+      state.winner='BLUE';
+      state.phase='BATTLE';
+      saveProgress();
+      return
+    }
     state.winner='BLUE'
   }
 }
@@ -1100,6 +1161,9 @@ function applyTile(u){
   }else if(t.type==='CRACK')state.specialTiles=state.specialTiles.filter(x=>x!==t)
 }
 function render(){
+  const ending=state?.stage===9&&state.winner==='BLUE';
+  $('#endingScreen').classList.toggle('hidden',!ending);
+  document.body.classList.toggle('ending',!!ending);
   // 최종 스테이지 확장 전 승리 저장은 다음 스테이지 진입 휴식 화면으로 이전한다.
   if(state?.phase==='BATTLE'&&state.winner==='BLUE'){
     if(state.stage===5){state.winner='';clearStageFive()}
@@ -1409,6 +1473,7 @@ $('#bossMusicToggle').onclick=()=>{
   frame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'playVideo',args:[]}),
     'https://www.youtube-nocookie.com')
 };
+$('#endingRestart').onclick=()=>$('#restartBtn').click();
 $('#resetDiamonds').onclick=resetDiamonds;
 // 진행 중에도 1스테이지 재시작 가능. 다이아 지갑은 기존 저장 키를 유지한다.
 $('#restartBtn').onclick=()=>{
