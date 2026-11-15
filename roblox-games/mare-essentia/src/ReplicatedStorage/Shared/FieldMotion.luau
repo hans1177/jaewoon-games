@@ -33,7 +33,9 @@ function FM.new(model: Model, followAnimator: boolean)
 		end
 	end
 	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 18 })
-	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints }
+	local nj = 0
+	for _ in joints do nj += 1 end
+	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints, nj = nj, t0 = os.clock() }
 end
 
 -- R6(구형 아바타)는 팔다리가 한 덩어리라 어깨·엉덩이·목·허리만 쓴다. 관절 축이 돌아가 있어 C0 회전으로 맞춰 준다.

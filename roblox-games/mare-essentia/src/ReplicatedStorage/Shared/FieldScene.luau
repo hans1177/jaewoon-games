@@ -650,6 +650,10 @@ function FieldScene.start(opts)
 			if not ch then
 				return
 			end
+			-- 관절이 아직 안 만들어졌을 때 한 번 묶고 끝나지 않도록, 관절이 모자라면 1초마다 다시 묶는다
+			if pfm and pfm.nj < 6 and os.clock() - pfm.t0 > 1 then
+				pfmChar = nil
+			end
 			if pfmChar ~= ch then
 				if pfm then
 					FM.destroy(pfm)
@@ -1137,6 +1141,24 @@ function FieldScene.start(opts)
 			say("회피! 잠깐 무적")
 			return
 		end
+		-- 조준 보조: 가까운 적(40스터드 안)을 바라보고, 닿지 않으면 몸을 날려 붙는다 (폰에서 헛손질 방지)
+		do
+			local near, nd = nil, 40
+			for _, e in enemies do
+				if e.root and e.root.Parent then
+					local d = ((e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)).Magnitude
+					if d < nd then near, nd = e, d end
+				end
+			end
+			if near then
+				local flat = (near.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
+				if flat.Magnitude > 0.1 then
+					local reach = (AC.Moves[moveId] and AC.Moves[moveId].range or 5) * STUD
+					local lunge = if nd > reach - 2 then math.min(nd - (reach - 3), 10) else 0
+					hrp.CFrame = CFrame.lookAt(hrp.Position + flat.Unit * math.max(0, lunge), hrp.Position + flat.Unit * math.max(0, lunge) + flat.Unit)
+				end
+			end
+		end
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
 		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
 		local combo = pl.combo
@@ -1206,7 +1228,25 @@ function FieldScene.start(opts)
 	local function useHeavy() useMove("heavy") end
 	local function useSpin() useMove("sweep") end
 	local function useDash() useMove("dodge") end
-	attackBtn.Activated:Connect(useAttack)
+	-- 버튼은 터치 '닿는 순간' 바로 반응한다(폰에서 손가락이 살짝 밀려도 Activated 가 안 뜨는 경우 대비). 같은 누름의 중복은 막는다.
+	local function bindPress(b: GuiButton, fn: () -> ())
+		local last = 0
+		local function go()
+			local t = os.clock()
+			if t - last < 0.08 then
+				return
+			end
+			last = t
+			fn()
+		end
+		b.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				go()
+			end
+		end)
+		b.Activated:Connect(go)
+	end
+	bindPress(attackBtn, useAttack)
 
 	local staminaBack = Instance.new("Frame")
 	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -1230,7 +1270,7 @@ function FieldScene.start(opts)
 	local function mkSkill(key, label, color, theta)
 		local b = btn(gui, label, color, UDim2.fromOffset(56, 56), arcPos(124, theta), Vector2.new(0.5, 0.5))
 		b.TextSize = 16
-		b.Activated:Connect(function()
+		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
@@ -1320,7 +1360,7 @@ function FieldScene.start(opts)
 			local key = "card" .. i
 			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), arcPos(190, 18 + (i - 1) * 24), Vector2.new(0.5, 0.5))
 			b.TextSize = 17
-			b.Activated:Connect(function()
+			bindPress(b, function()
 				useCard(key, card)
 			end)
 			skillBtns[key] = { btn = b, label = card.name }
