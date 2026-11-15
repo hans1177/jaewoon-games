@@ -41,6 +41,26 @@ function B.tacticBonus(list: any, idx: number): number
 	return if mates >= 3 then 2 elseif mates >= 1 then 1 else 0
 end
 
+-- 한 줄에서 발동 중인 전술 이름 (동료가 가장 많은 지역 하나, 없으면 nil)
+function B.activeTactic(list: any): string?
+	local best, bestN = nil, 0
+	for idx in list do
+		local c = list[idx]
+		if B.tacticBonus(list, idx) > 0 then
+			local n = 0
+			for _, o in list do
+				if not o.hero and o.region == c.region then
+					n += 1
+				end
+			end
+			if n > bestN then
+				best, bestN = c.region, n
+			end
+		end
+	end
+	return if best then B.TACTICS[best].name else nil
+end
+
 B.WEAPON_BEATS = { sword = "axe", axe = "spear", spear = "sword" }
 B.ADV, B.DIS = 1.3, 0.85
 B.HAND = 10

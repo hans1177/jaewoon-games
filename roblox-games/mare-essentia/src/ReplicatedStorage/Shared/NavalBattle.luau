@@ -2234,7 +2234,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				laneAccent.Parent = rf
 				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
-				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else ""), 13, Color3.fromRGB(246, 208, 130))
+				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
 				tag.Position = UDim2.fromOffset(29, 0)
 				tag.Size = UDim2.new(0, 68, 1, 0)
 				tag.TextXAlignment = Enum.TextXAlignment.Left

@@ -704,6 +704,7 @@ do
 	check("지역 전술: 같은 지역 동료가 있으면 +1", B.cardPower(pair, "me", "melee", 1) == 4)
 	check("지역 전술: 동료 3장 이상이면 +2", B.cardPower(four, "me", "melee", 1) == 5)
 	check("지역 전술: 다른 지역끼리는 보너스 없음", B.cardPower(mixed, "me", "melee", 1) == 3 and B.cardPower(mixed, "me", "melee", 2) == 3)
+	check("지역 전술: 발동 중인 전술 이름", B.activeTactic(four.rows.me.melee) == "방진" and B.activeTactic(solo.rows.me.melee) == nil and B.activeTactic(mixed.rows.me.melee) == nil)
 	local anyRegion = match({ unit("a", "any", 3), unit("b", "any", 3) })
 	check("지역 전술: 지역 없음(any) 카드는 제외", B.cardPower(anyRegion, "me", "melee", 1) == 3)
 end
