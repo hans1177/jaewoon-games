@@ -1,20 +1,50 @@
 {
- "sourceRevision": "51a21a163cf835952e7546b7b01eee74df71fe23",
+ "sourceRevision": "1b62cc4e7ce6061f28c041070467ad4e3b3b9199",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
-   "step": 2,
-   "capture": "ap_game",
+   "step": 3,
+   "capture": "s0",
    "files": 1
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "dev\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "deck",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "board",
+   "files": 1
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "quest",
+   "files": 1
   }
  ],
  "errors": [],
@@ -29,13 +59,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 15,
+  "completedSteps": 15,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
   "abortedEarly": false
  }
 }

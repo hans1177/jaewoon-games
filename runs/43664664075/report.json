@@ -1,0 +1,71 @@
+{
+ "sourceRevision": "1b62cc4e7ce6061f28c041070467ad4e3b3b9199",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "s0",
+   "files": 1
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "deck",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "board",
+   "files": 1
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "quest",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 15,
+  "completedSteps": 15,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
+  "abortedEarly": false
+ }
+}
