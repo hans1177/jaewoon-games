@@ -750,6 +750,9 @@ do
 	check("생산 자원: 공정·분류가 건물·학문·품목에 연결됨 (" .. #PC.Recipes .. "공정)", #pcBad == 0 and #PC.Recipes >= 25)
 	check("생산 자원: 항구가 만드는 원자재는 대부분 종류가 있다 (분류 없음 " .. unclassed .. ")", unclassed <= 120)
 	check("생산 자원: 레벨이 오르면 가공 가능한 공정이 늘어난다", #PC.craftable({ "wool", "iron", "gems" }, 1) < #PC.craftable({ "wool", "iron", "gems" }, 4))
+	local dsum = 0
+	for _, d in S.Village.Districts do dsum += #d.sub end
+	check("도시 면적: 레벨이 오를수록 구획이 크게 늘고 소구역이 생긴다", S.Village.BLOCKS_AT[6] >= S.Village.BLOCKS_AT[1] * 30 and dsum >= 30 and d0.blocks == S.Village.BLOCKS_AT[1] and #d0.subDistricts >= 2 and d1.blocks >= d0.blocks)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end

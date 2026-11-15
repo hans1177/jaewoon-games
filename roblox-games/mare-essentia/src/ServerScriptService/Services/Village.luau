@@ -120,15 +120,20 @@ return function(D, S)
 
 	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
 	V.Districts = {
-		{ id = "wharf", name = "부두 구역", minLevel = 1, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
-		{ id = "market", name = "시장 구역", minLevel = 1, cats = { "food", "industry" }, summary = "장터와 여관이 있는 마을 한가운데." },
-		{ id = "homes", name = "주거 구역", minLevel = 2, cats = { "home", "cloth" }, summary = "집과 직조·염색 공방이 늘어선 골목." },
-		{ id = "workshops", name = "공방 구역", minLevel = 3, cats = { "industry" }, summary = "대장간, 가마, 조선소가 자리 잡은 곳." },
-		{ id = "faith", name = "신앙 구역", minLevel = 3, cats = { "public" }, summary = "성당·사원·모스크와 묘지가 있는 구역." },
-		{ id = "civic", name = "행정 구역", minLevel = 4, cats = { "public" }, summary = "시청, 재판소, 세관이 모인 중심가." },
-		{ id = "academy", name = "학술 구역", minLevel = 5, cats = { "public" }, summary = "학교, 도서관, 인쇄소, 천문대가 있는 구역." },
-		{ id = "suburb", name = "교외 신도시", minLevel = 6, cats = { "home", "food" }, summary = "성벽 밖으로 넓어진 새 주택가와 농장." },
+		{ id = "wharf", name = "부두 구역", minLevel = 1, weight = 3, sub = { "내항 부두", "외항 정박지", "조선 구획", "화물 하역장" }, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
+		{ id = "market", name = "시장 구역", minLevel = 1, weight = 3, sub = { "어시장", "곡물 시장", "사치품 시장", "환전 거리" }, cats = { "food", "industry" }, summary = "장터와 여관이 있는 마을 한가운데." },
+		{ id = "homes", name = "주거 구역", minLevel = 2, weight = 4, sub = { "서민 골목", "상인 거리", "외국인 거류지", "귀족 저택가" }, cats = { "home", "cloth" }, summary = "집과 직조·염색 공방이 늘어선 골목." },
+		{ id = "workshops", name = "공방 구역", minLevel = 3, weight = 3, sub = { "금속 공방가", "직물 공방가", "도자·유리 공방가", "화약 공방" }, cats = { "industry" }, summary = "대장간, 가마, 조선소가 자리 잡은 곳." },
+		{ id = "faith", name = "신앙 구역", minLevel = 3, weight = 2, sub = { "대성당 광장", "수도원·사원", "묘지", "순례자 숙소" }, cats = { "public" }, summary = "성당·사원·모스크와 묘지가 있는 구역." },
+		{ id = "civic", name = "행정 구역", minLevel = 4, weight = 3, sub = { "시청 광장", "재판소 거리", "세관 지구", "병영" }, cats = { "public" }, summary = "시청, 재판소, 세관이 모인 중심가." },
+		{ id = "academy", name = "학술 구역", minLevel = 5, weight = 3, sub = { "대학 지구", "도서관 거리", "인쇄 골목", "천문대 언덕" }, cats = { "public" }, summary = "학교, 도서관, 인쇄소, 천문대가 있는 구역." },
+		{ id = "suburb", name = "교외 신도시", minLevel = 6, weight = 4, sub = { "신시가지", "농장 지대", "별장 지구", "외곽 시장" }, cats = { "home", "food" }, summary = "성벽 밖으로 넓어진 새 주택가와 농장." },
 	}
+
+	-- 도시 면적(구획 수): 항구가 클수록 구역이 크게 넓어진다. 구역 면적 = 구획 × 가중치 × 레벨 배율, 소구역은 열린 뒤 2레벨마다 하나씩 늘어난다.
+	V.BLOCKS_AT = { 4, 10, 24, 48, 90, 160 }
+	V.SIZE_NAME = { "촌락", "읍", "소도시", "항구 도시", "대도시", "거대 도시" }
+	V.SUB_EVERY = 2
 
 	-- 항구별 발전도: 항구 투자 레벨 5점 + 지은 건물 단계 3점 + 항구 학문 기술 단계 2점 + 특수 건축물 4점
 	local PORT_LEVEL_AT = { 0, 8, 20, 40, 70, 110 }
@@ -156,10 +161,18 @@ return function(D, S)
 		for i, need in PORT_LEVEL_AT do
 			if score >= need then level = i end
 		end
-		local opened, nextD = {}, nil
+		local opened, nextD, subs = {}, nil, {}
+		local wsum = 0
+		for _, d in V.Districts do
+			if level >= d.minLevel then wsum += d.weight end
+		end
+		local blocks = V.BLOCKS_AT[level]
 		for _, d in V.Districts do
 			if level >= d.minLevel then
-				table.insert(opened, d.name)
+				local share = math.max(1, math.floor(blocks * d.weight / wsum + 0.5))
+				local nsub = math.min(#d.sub, 1 + math.floor((level - d.minLevel) / V.SUB_EVERY))
+				for i = 1, nsub do table.insert(subs, d.sub[i]) end
+				table.insert(opened, string.format("%s %d구획", d.name, share))
 			elseif not nextD then
 				nextD = d
 			end
@@ -183,6 +196,7 @@ return function(D, S)
 		end
 		return {
 			jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
+			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
 			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
