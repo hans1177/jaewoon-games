@@ -2,27 +2,47 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "43702135272",
-    "kind": "deep",
-    "at": "2026-11-15T10:08:09.297Z",
-    "sourceRevision": "810790f8585e7661f4ffe58b5b0f928b482c70f8",
+    "runId": "43702442762",
+    "kind": "studio",
+    "at": "2026-11-15T10:11:02.943Z",
+    "sourceRevision": "5430f87d82775701e3947302e1e230c7d90c12db",
     "result": "PASS",
-    "frames": 47,
-    "changedFrames": 41,
+    "frames": 11,
+    "changedFrames": 11,
     "summary": {
-      "plannedSteps": 166,
-      "completedSteps": 166,
-      "plannedClicks": 7,
-      "successfulClicks": 7,
+      "plannedSteps": 47,
+      "completedSteps": 47,
+      "plannedClicks": 0,
+      "successfulClicks": 0,
       "skippedOptionalClicks": 0,
-      "plannedFrames": 47,
-      "capturedFrames": 47,
+      "plannedFrames": 11,
+      "capturedFrames": 11,
       "abortedEarly": false
     },
-    "path": "runs/43702135272"
+    "path": "runs/43702442762"
   },
   "lastDeepAt": "2026-11-15T10:08:09.297Z",
   "runs": [
+    {
+      "runId": "43702442762",
+      "kind": "studio",
+      "at": "2026-11-15T10:11:02.943Z",
+      "sourceRevision": "5430f87d82775701e3947302e1e230c7d90c12db",
+      "result": "PASS",
+      "frames": 11,
+      "changedFrames": 11,
+      "summary": {
+        "plannedSteps": 47,
+        "completedSteps": 47,
+        "plannedClicks": 0,
+        "successfulClicks": 0,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 11,
+        "capturedFrames": 11,
+        "abortedEarly": false
+      },
+      "path": "runs/43702442762"
+    },
     {
       "runId": "43702135272",
       "kind": "deep",
@@ -202,26 +222,6 @@
         "abortedEarly": false
       },
       "path": "runs/43690916325"
-    },
-    {
-      "runId": "43690885643",
-      "kind": "studio",
-      "at": "2026-11-15T07:41:56.066Z",
-      "sourceRevision": "01a67e00e7baf206502447db8184153ddab504f8",
-      "result": "PASS",
-      "frames": 3,
-      "changedFrames": 0,
-      "summary": {
-        "plannedSteps": 24,
-        "completedSteps": 24,
-        "plannedClicks": 0,
-        "successfulClicks": 0,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 3,
-        "capturedFrames": 3,
-        "abortedEarly": false
-      },
-      "path": "runs/43690885643"
     }
   ]
 }
