@@ -408,6 +408,7 @@ function FieldScene.start(opts)
 	note.Size = UDim2.fromOffset(320, 22)
 
 	local function refresh()
+		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
 		title.Text = string.format("%s  발견 %d/%d  적 %d", opts.name or "탐험", found, nodeCount, #enemies)
 		hpFill.Size = UDim2.fromScale(math.clamp(pl.hp / pl.maxHp, 0, 1), 1)
 		hpFill.BackgroundColor3 = if pl.hp / pl.maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
