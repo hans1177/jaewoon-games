@@ -455,6 +455,11 @@ function loadProgress(){
       saved.winner='';saved.phase='REST';saved.current='BLUE';
       localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
     }
+    // 9스테이지 추가 후 과거 8스테이지 클리어 저장을 다음 스테이지 휴식으로 이전한다.
+    if(saved.stage===8&&saved.winner==='BLUE'&&saved.phase==='BATTLE'){
+      saved.winner='';saved.phase='REST';saved.current='BLUE';
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
     // 과거 7스테이지 클리어 기록에도 신규 열쇠 보상을 한 번만 지급한다.
     if((saved.stage>7||(saved.stage===7&&saved.phase==='REST'))&&!saved.stageSevenRewarded){
       saved.keys+=3;
@@ -638,6 +643,7 @@ function checkWin(){
     if(state.stage===5){clearStageFive();return}
     if(state.stage===6){enterRest('6스테이지 클리어 · 7스테이지 준비');return}
     if(state.stage===7){clearStageSeven();return}
+    if(state.stage===8){enterRest('8스테이지 클리어 · 9스테이지 준비');return}
     if(state.stage===9){enterRest('9스테이지 클리어 · 실페리아 격파!');return}
     state.winner='BLUE'
   }
@@ -1099,6 +1105,7 @@ function render(){
     if(state.stage===5){state.winner='';clearStageFive()}
     else if(state.stage===6){state.winner='';enterRest('6스테이지 클리어 · 7스테이지 준비')}
     else if(state.stage===7){state.winner='';clearStageSeven()}
+    else if(state.stage===8){state.winner='';enterRest('8스테이지 클리어 · 9스테이지 준비')}
   }
   renderWallet();
   // 휴식 화면으로 전환되어도 보스 음악 종료가 반드시 실행되게 한다.
