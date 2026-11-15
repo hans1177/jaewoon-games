@@ -5756,7 +5756,7 @@ function H.startField(s)
 	for _, c in (view and view.careers) or {} do
 		if c.id == "battle" then battleLevel = c.level end
 	end
-	FieldScene.start({
+	local startOk, startErr = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
 		battleStats = view and view.battleStats,
 		cardSkills = cardSkills,
@@ -5779,6 +5779,15 @@ function H.startField(s)
 			end
 		end,
 	})
+	if not startOk then
+		-- 탐험지를 못 열면 항구 화면이 멈춘 채 남지 않게 되돌린다
+		warn("[Game] 탐험지 열기 실패", startErr)
+		inField = false
+		main.Visible = true
+		message = "탐험지를 여는 데 실패했어요. 다시 시도해 주세요"
+		messageOk = false
+		render()
+	end
 end
 
 function RENDERERS.explore()

@@ -614,6 +614,10 @@ function FieldScene.start(opts)
 			local c = packCenters[(i % #packCenters) + 1]
 			pos = ORIGIN + c + Vector3.new(rng:NextNumber(-9, 9), 0, rng:NextNumber(-9, 9))
 		end
+		-- 적이 많아 한 번에 만들면 폰에서 멈춘 것처럼 보이므로, 몇 마리씩 나눠 만든다
+		if i > 6 and i % 4 == 0 then
+			task.wait()
+		end
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
@@ -879,12 +883,29 @@ function FieldScene.start(opts)
 		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
 		local function rootFor(kind: string, p: number): CFrame?
 			if kind == "slash" then
-				return CFrame.new(0, -0.15 * bell(p), 0) * CFrame.Angles(-0.32 * bell((p - 0.15) / 0.6), 0, 0)
+				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
+				local side = if slashIdx % 2 == 0 then 1 else -1
+				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
 			elseif kind == "heavy" then
-				local air = if p < 0.62 then 2.0 * bell(p / 0.62) else 0
-				local slam = if p >= 0.62 then -0.7 * bell((p - 0.62) / 0.38) else 0
-				local lean = if p < 0.62 then 0.25 * bell(p / 0.62) else -0.5 * bell((p - 0.62) / 0.38)
-				return CFrame.new(0, air + slam, 0) * CFrame.Angles(lean, 0, 0)
+				-- 점프 강타: 웅크림(0~0.18) → 도약(~0.55) → 내려찍기(~0.62) → 착지 충격(~0.8) → 일어남
+				local y, lean = 0, 0
+				if p < 0.18 then
+					local k = p / 0.18
+					y, lean = -0.6 * k, 0.3 * k
+				elseif p < 0.55 then
+					local k = (p - 0.18) / 0.37
+					y, lean = -0.6 + 4.4 * math.sin(k * math.pi * 0.5), 0.3 - 0.55 * k
+				elseif p < 0.62 then
+					local k = (p - 0.55) / 0.07
+					y, lean = 3.8 - 4.1 * k * k, -0.25 - 0.65 * k
+				elseif p < 0.8 then
+					local k = (p - 0.62) / 0.18
+					y, lean = -0.3 * (1 - k), -0.9 * (1 - k * 0.6)
+				else
+					local k = (p - 0.8) / 0.2
+					y, lean = 0, -0.36 * (1 - k)
+				end
+				return CFrame.new(0, y, 0) * CFrame.Angles(lean, 0, 0)
 			elseif kind == "spin" then
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
@@ -1625,7 +1646,7 @@ function FieldScene.start(opts)
 		end
 		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
-		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
+		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4)
 		do
 			local reachV = (mv.range or 5) * STUD
 			do
@@ -1648,14 +1669,20 @@ function FieldScene.start(opts)
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
 			elseif kind == "heavy" then
-				slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
-				shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 8, Color3.fromRGB(255, 150, 60), 0.4)
+				-- 착지(내려찍는 순간)에 맞춰 충격파·호를 낸다
+				task.delay(0.42, function()
+					if finished or not hrp.Parent then return end
+					slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
+					shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 150, 60), 0.5)
+					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7, Color3.fromRGB(255, 226, 150), 0.35)
+					shakeUntil, shakeAmp = os.clock() + 0.25, 1.1
+				end)
 			else
 				slashArc(hrp, Color3.fromRGB(235, 245, 255), reachV, 110, if combo0 % 2 == 0 then 25 else -25)
 			end
 		end
 		local combo = pl.combo
-		task.delay(if kind == "slash" then 0.12 else 0.22, function()
+		task.delay(if kind == "slash" then 0.14 elseif kind == "heavy" then 0.42 else 0.2, function()
 			if finished then
 				return
 			end
