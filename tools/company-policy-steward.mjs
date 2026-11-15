@@ -37,6 +37,7 @@ function assertCompanionDocuments(log,architecture,security){
     architecture.sourceOfTruth===DOCUMENT_PATHS[2] && architecture.centralPolicy===CANONICAL &&
     architecture.branches?.main?.directGameWorkerWrite===false &&
     architecture.constitutionalEnforcement?.enforcer==='tools/company-constitution-enforcer.mjs' &&
+    String(architecture.constitutionalEnforcement?.mode||'').startsWith('EXECUTABLE_FAIL_CLOSED') &&
     architecture.constitutionalEnforcement?.subordinateOverrideForbidden===true;
   const minimalArchitecture=architecture.status==='MINIMAL_SUMMARY_NOT_EXECUTION_POLICY' &&
     architecture.centralPolicy===null && architecture.constitutionalEnforcement?.mode==='FAIL_CLOSED' &&
