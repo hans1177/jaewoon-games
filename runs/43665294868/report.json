@@ -1,0 +1,86 @@
+{
+ "sourceRevision": "52046cb38b448127d86b412817d11ee506f5aa33",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "s0",
+   "files": 1
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "deck",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "closed 2\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 15,
+   "capture": "board",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 18,
+   "capture": "quest",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 18,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 19,
+  "completedSteps": 19,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 4,
+  "capturedFrames": 4,
+  "abortedEarly": false
+ }
+}
