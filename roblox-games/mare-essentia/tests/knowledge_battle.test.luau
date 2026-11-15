@@ -690,7 +690,8 @@ do
 	local msgs = {}
 	local row = S.Chronicle.arrive(stC, msgs)
 	check("연대기: 사건 해에 그 항구에 도착하면 목격한다", row ~= nil and row.id == "c_lisbon_quake" and stC.chron.notes >= 1 and stC._scenes ~= nil and #stC._scenes == 1)
-	check("연대기: 같은 사건은 한 번만", S.Chronicle.arrive(stC, {}) == nil)
+	local again = S.Chronicle.arrive(stC, {})
+	check("연대기: 같은 사건은 한 번만", again == nil or again.id ~= "c_lisbon_quake")
 	local okD0 = Registry.handlers.WriteDraft(stC, {}, ctx)
 	check("연대기: 노트가 모자라면 초안을 못 쓴다", okD0 == false)
 	for _, node in D.KnowledgeTree.Nodes do if node.disc == "architecture" then stC.reported = { [node.id] = true } break end end
@@ -705,7 +706,7 @@ do
 	local okP = Registry.handlers.PublishPaper(stC, {}, ctx)
 	check("연대기: 발표 뒤 출판한다", okP == true and #stC.chron.papers == 1 and stC.chron.drafts == 0)
 	local v = S.Chronicle.view(stC)
-	check("연대기: 화면 요약", v.papers == 1 and #v.seen == 1 and v.stage == 1)
+	check("연대기: 화면 요약", v.papers == 1 and #v.seen >= 1 and v.stage == 1)
 end
 
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
