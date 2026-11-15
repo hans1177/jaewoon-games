@@ -569,6 +569,15 @@ do
 	local m1, c1 = R.currentAt(cur, cur[1].at + 0.01, cur[1].lat)
 	local m2 = R.currentAt(cur, cur[1].at + 0.01, cur[1].lat + 0.9)
 	check("해류: 띠 안에서만 배율이 바뀌고 순류 1.5·역류 0.6", #cur >= 4 and c1 ~= nil and m1 == (if cur[1].fast then 1.5 else 0.6) and m2 == 1)
+	local tc = R.newTally()
+	local c1b = R.pickup(tc, { at = 0.1, lat = 0, kind = "coin" })
+	local c2b = R.pickup(tc, { at = 0.2, lat = 0, kind = "coin" })
+	local c3b = R.pickup(tc, { at = 0.3, lat = 0, kind = "coin" })
+	check("수집 연쇄: 3개 연속이면 순풍이 붙고 놓치면 끊긴다", not c1b and not c2b and c3b and tc.boost >= 2 and (function() R.missItem(tc) return tc.chain == 0 end)())
+	local hz1 = { at = 0.5, lat = 0, big = false, bonus = false, hazard = true, kind = "reef" }
+	local rr = R.radius(hz1)
+	local tn = R.newTally()
+	check("아슬아슬: 가장자리를 스치면 보너스, 한가운데로 가면 아님", R.nearMiss(hz1, rr + 0.05) and not R.nearMiss(hz1, rr + 0.5) and not R.nearMiss(hz1, 0) and (function() R.recordNearMiss(tn) return tn.boost >= 0.8 end)())
 	check("별: 점수 구간별로 1~3개", R.stars(0.95) == 3 and R.stars(0.7) == 2 and R.stars(0.1) == 1)
 end
 

@@ -1612,7 +1612,13 @@ function VoyageScene.play(info)
 					local it = itemList[nextItem]
 					local m = itemParts[nextItem]
 					if Rings.hitItem(it, lat) then
-						Rings.pickup(tally, it)
+						local chained = Rings.pickup(tally, it)
+						if chained then
+							task.delay(0.35, function()
+								ringPopup(string.format("수집 연쇄 ×%d! 순풍", tally.chain), Color3.fromRGB(255, 240, 150))
+								Sfx.play("sfx_horn", 0.5, 1.4)
+							end)
+						end
 						local label, col = "코인!", Color3.fromRGB(255, 215, 90)
 						if it.kind == "gem" then
 							label, col = "보석 획득!", Color3.fromRGB(150, 230, 255)
@@ -1630,6 +1636,8 @@ function VoyageScene.play(info)
 							m:Destroy()
 							itemParts[nextItem] = false
 						end
+					else
+						Rings.missItem(tally)
 					end
 					nextItem += 1
 				end
@@ -1648,6 +1656,12 @@ function VoyageScene.play(info)
 					local p3, d3 = positionAt(pts, cum, r.at * total)
 					local hitPos = p3 + Vector3.new(-d3.Z, 0, d3.X) * r.lat * LATSCALE + Vector3.new(0, 8, 0)
 					if r.hazard then
+						if ok and Rings.nearMiss(r, lat) then
+							Rings.recordNearMiss(tally)
+							ringPopup("아슬아슬! 순풍", Color3.fromRGB(255, 235, 140))
+							Sfx.play("sfx_skill_evade", 0.5, 1.2)
+							fovBoost += 4
+						end
 						if not ok then
 							redFlash()
 							shakeAmp = 2.2

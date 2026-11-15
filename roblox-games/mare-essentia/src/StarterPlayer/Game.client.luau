@@ -5462,7 +5462,14 @@ function H.startField(s)
 			table.insert(allyNames, c.name)
 		end
 	end
+	local cardSkills = {}
+	for _, c in (view and view.deck and view.deck.cards) or {} do
+		if c.skill and c.kind ~= "ship" and #cardSkills < 3 then
+			table.insert(cardSkills, { name = c.name, skill = c.skill })
+		end
+	end
 	FieldScene.start({
+		cardSkills = cardSkills,
 		allies = allyNames,
 		name = s.name,
 		nodes = math.clamp(s.days, 1, 3),
@@ -7472,8 +7479,8 @@ end)
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
-	if sceneHold then
-		return
+	if sceneHold or inField then
+		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
 	-- 서버가 CC0 모델을 불러오는 동안(최대 약 25초) 기다렸다가 장면을 만든다
 	local RS = game:GetService("ReplicatedStorage")
@@ -7595,6 +7602,9 @@ end
 do
 	local camBase = CFrame.lookAt(Vector3.new(72, 20, 54), Vector3.new(-28, 9, -4))
 	applyView = function()
+		if inField then
+			return -- 지상 탐험 중에는 항구 전경이 캐릭터를 고정하거나 카메라를 빼앗지 못한다
+		end
 		local camera = workspace.CurrentCamera
 		local char = player.Character
 		local root = char and char:FindFirstChild("HumanoidRootPart")
