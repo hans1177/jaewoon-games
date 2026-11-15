@@ -5089,9 +5089,10 @@ function RENDERERS.route()
 			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f) — %s%s", view.weather.name, view.weather.wind, view.weather.hint, fc), 16, COLORS.gold, true)
 		end)
 		add(function()
-			return mkRow(content, "하루 기다리기", "날씨가 나쁘면 하루 쉬었다 떠나요 (사기 +2)", {
-				{ text = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
-			}, 56)
+			return H.tileGrid({
+				{ icon = "route", title = "하루 기다리기", sub = "날씨가 나쁠 때 · 사기 +2", btn = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
+				{ icon = "map", title = "해도 보기", sub = "항구 위치 한눈에", btn = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
+			}, content, 176, 150)
 		end)
 	end
 	add(function()
@@ -5206,26 +5207,14 @@ local function renderYard()
 		local maxH = math.max(1, yard.maxHull or sh.maxHull)
 		local cur = maxH - (yard.fullMissing or yard.missing or 0)
 		local pct = math.floor(cur / maxH * 100 + 0.5)
-		local filled = math.floor(pct / 10 + 0.5)
-		local bar = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
-		local sub
-		if (yard.missing or 0) > 0 then
-			sub = string.format("%s  %d%%  (선체 %d/%d)\n%s %d코인 (선체 1당 %d코인)", bar, pct, cur, maxH,
-				if yard.field then "응급 수리(선체 60%까지, 비용 2배) →" else "전부 수리 →", yard.repairTotal, yard.repairCost * (if yard.field then 2 else 1))
-		elseif yard.field and (yard.fullMissing or 0) > 0 then
-			sub = string.format("%s  %d%%\n응급 수리는 여기까지예요. 조선소가 있는 항구에서 마저 고치세요", bar, pct)
-		else
-			sub = string.format("%s  100%%\n수리할 곳이 없어요. 튼튼한 배예요!", bar)
-		end
-		return mkRow(content, if yard.field then "응급 수리" else "선박 수리", sub, {
-			{ text = if (yard.missing or 0) > 0 then string.format("%s %d", if yard.field then "응급 수리" else "전부 수리", yard.repairTotal) else "수리 불필요", color = COLORS.green,
-				onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
-		}, 92)
-	end)
-	add(function()
-		return mkRow(content, "조선소 입장", "조선 장인과 배·대포·보강을 크게 보며 고르고 사요", {
-			{ text = "입장", color = COLORS.gold, onClick = function() openYardHall() end, enabled = yard.available },
-		}, 56)
+		local need = (yard.missing or 0) > 0
+		return H.tileGrid({
+			{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
+				btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
+			{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
+			{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
+			{ icon = "harbor", title = "조선소 입장", sub = "배·대포·보강 고르기", btn = "입장", color = COLORS.gold, enabled = yard.available, onClick = function() openYardHall() end },
+		}, content)
 	end)
 	add(function()
 		local sh = view.ship
@@ -5235,13 +5224,6 @@ local function renderYard()
 			withIcon(row, si[1], si[2], si[3], 120)
 		end
 		return row
-	end)
-	add(function()
-		return mkRow(content, "정비와 보급", string.format("수리 %d코인/1 · 선원 %d코인/명 · 보급품 %d코인/개", yard.repairCost, yard.hireCost, yard.supplyCost), {
-			{ text = if yard.available then "수리" else "응급수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
-			{ text = "선원+5", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
-			{ text = "보급+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-		}, 64)
 	end)
 	if not yard.available then
 		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
