@@ -1,80 +1,95 @@
 {
- "sourceRevision": "2e1ffb9701a6fb2aa9a1c13cd06e4b4380533a1e",
+ "sourceRevision": "48ec2262a40392f2a82a9bd2a84b7818ce1e3da8",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "cam\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "faced 113.76620483398438\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "c1_approach",
+   "files": 1
   },
   {
    "step": 7,
    "ctx": "Client",
-   "out": "tab\ntext"
+   "out": "attack\ntext"
   },
   {
    "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
+   "capture": "c2_attack",
+   "files": 1
   },
   {
-   "step": 10,
+   "step": 11,
    "ctx": "Client",
-   "out": "closed 2\ntext"
+   "out": "faced 9.477584838867188\ntext"
   },
   {
    "step": 12,
    "ctx": "Client",
-   "out": "SAIL\ntext"
+   "out": "heavy\ntext"
   },
   {
    "step": 14,
-   "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n선단 유지비 -375 scene=true 콤보 0 · 통과 0/0 · 속도 ×1.00 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
-  },
-  {
-   "step": 15,
-   "capture": "r01",
+   "capture": "c3_heavy",
    "files": 1
   },
   {
-   "step": 17,
+   "step": 16,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n선단 유지비 -375 scene=true 콤보 3 · 통과 3/3 · 속도 ×1.12 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "spin\ntext"
   },
   {
    "step": 18,
-   "capture": "r02",
+   "capture": "c4_spin",
    "files": 1
   },
   {
    "step": 20,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n선단 유지비 -375 scene=true 콤보 6 · 통과 6/6 · 속도 ×1.24 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "dash\ntext"
   },
   {
-   "step": 21,
-   "capture": "r03",
+   "step": 22,
+   "capture": "c5_dash",
    "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "RING res=true:보급품이 부족했다! 선원 2명을 잃었다\n이스탄불을(를) 출발해 5일 만에 이즈미르에 도착했다 (534 km)\n선단 유지비 -375 scene=true 콤보 11 · 통과 11/11 · 속도 ×1.40 | BTN:처음 가는 항구: 직접 항해 | 🌊 직접 항해 (바람 고리)\ntext"
+   "out": "ready=true err=true table: 0xf6dcdc5fc5eedc7f btns=공격|철수|0.3|6.1|3.0|방어\ntext"
   },
   {
    "step": 24,
-   "capture": "r04",
+   "ctx": "Client",
+   "out": "MOVE anchored=false moved=15.4 ws=18 mobs=4\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 27,
+   "capture": "c6_guard",
    "files": 1
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
   }
  ],
  "errors": [],
@@ -85,17 +100,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 25,
-  "completedSteps": 25,
+  "plannedSteps": 29,
+  "completedSteps": 29,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 4,
-  "capturedFrames": 4,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
