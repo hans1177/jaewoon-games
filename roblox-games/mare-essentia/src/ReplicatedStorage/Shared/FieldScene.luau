@@ -1774,7 +1774,11 @@ function FieldScene.start(opts)
 			end
 			local event, hit = nil, nil
 			if not frozen then
-				event, hit = AC.stepEnemy(e.ac, dtc, dist)
+				local acList = {}
+				for _, o in enemies do table.insert(acList, o.ac) end
+				local others = AC.attackersCount(acList) - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
+				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
+				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
 				e.warnUntil = now + e.ac.def.windup
@@ -1893,7 +1897,13 @@ function FieldScene.start(opts)
 			end
 			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
-			if wish ~= 0 and flat.Magnitude > 0.1 then
+			if e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
+				-- 차례를 기다리는 적: 주인공 둘레를 천천히 돈다(한꺼번에 몰려 때리지 않는다)
+				local sd = flat.Unit:Cross(Vector3.yAxis) * (e.circleDir or 1)
+				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
+				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + sd * e.ac.def.speed * 0.45 * dt) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+				wish = 0.5
+			elseif wish ~= 0 and flat.Magnitude > 0.1 then
 				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
 				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + step) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
 			elseif flat.Magnitude > 0.1 and e.ac.state ~= "idle" and e.ac.state ~= "stagger" then

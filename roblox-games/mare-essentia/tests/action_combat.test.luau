@@ -117,5 +117,21 @@ do
 	check("돌진병: 멀리서 예고하고 사거리 안에서 맞는다", A.Enemies.charger and A.Enemies.charger.charge and A.Enemies.charger.range > A.Enemies.grunt.range)
 	check("적 4종이 정의돼 있다", A.Enemies.grunt and A.Enemies.archer and A.Enemies.shield and A.Enemies.boss and true)
 end
+-- 동시 공격 제한(공격권)
+do
+	local list = {}
+	for i = 1, 4 do
+		local e = A.newEnemy("grunt")
+		e.state = "chase"
+		table.insert(list, e)
+	end
+	list[1].state = "windup"
+	list[2].state = "active"
+	check("공격권: 준비·타격 중인 적을 센다", A.attackersCount(list) == 2)
+	local ev = A.stepEnemy(list[3], 0.1, 1, false)
+	check("공격권: 차례 아닌 적은 사거리 안이어도 공격을 시작하지 않는다", ev == nil and list[3].state == "chase")
+	local ev2 = A.stepEnemy(list[4], 0.1, 1, true)
+	check("공격권: 차례가 오면 예고를 시작한다", ev2 == "telegraph")
+end
 print(string.format("액션 전투 테스트: 통과 %d, 실패 %d", passed, failed))
 if failed > 0 then error("액션 전투 테스트 실패") end
