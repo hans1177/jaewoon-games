@@ -2,27 +2,47 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "43686206114",
-    "kind": "autopilot",
-    "at": "2026-11-15T06:39:00.831Z",
-    "sourceRevision": "5dadc05033084e61e7e58bcde8805ab5e9add1a3",
+    "runId": "43686721972",
+    "kind": "studio",
+    "at": "2026-11-15T06:46:02.796Z",
+    "sourceRevision": "6cebe2894b1164314eb164fcb456f602ddee798b",
     "result": "PASS",
-    "frames": 1,
+    "frames": 11,
     "changedFrames": 0,
     "summary": {
-      "plannedSteps": 5,
-      "completedSteps": 5,
+      "plannedSteps": 46,
+      "completedSteps": 46,
       "plannedClicks": 0,
       "successfulClicks": 0,
       "skippedOptionalClicks": 0,
-      "plannedFrames": 1,
-      "capturedFrames": 1,
+      "plannedFrames": 11,
+      "capturedFrames": 11,
       "abortedEarly": false
     },
-    "path": "runs/43686206114"
+    "path": "runs/43686721972"
   },
   "lastDeepAt": "2026-11-15T04:27:01.038Z",
   "runs": [
+    {
+      "runId": "43686721972",
+      "kind": "studio",
+      "at": "2026-11-15T06:46:02.796Z",
+      "sourceRevision": "6cebe2894b1164314eb164fcb456f602ddee798b",
+      "result": "PASS",
+      "frames": 11,
+      "changedFrames": 0,
+      "summary": {
+        "plannedSteps": 46,
+        "completedSteps": 46,
+        "plannedClicks": 0,
+        "successfulClicks": 0,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 11,
+        "capturedFrames": 11,
+        "abortedEarly": false
+      },
+      "path": "runs/43686721972"
+    },
     {
       "runId": "43686206114",
       "kind": "autopilot",
@@ -122,26 +142,6 @@
         "abortedEarly": false
       },
       "path": "runs/43678316970"
-    },
-    {
-      "runId": "43678300518",
-      "kind": "studio",
-      "at": "2026-11-15T04:52:18.601Z",
-      "sourceRevision": "dabcefbe397a2b692ef94f2d5f19e815c1fc0bcc",
-      "result": "PASS",
-      "frames": 11,
-      "changedFrames": 0,
-      "summary": {
-        "plannedSteps": 45,
-        "completedSteps": 45,
-        "plannedClicks": 0,
-        "successfulClicks": 0,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 11,
-        "capturedFrames": 11,
-        "abortedEarly": false
-      },
-      "path": "runs/43678300518"
     },
     {
       "runId": "43675923445",

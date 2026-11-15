@@ -1,20 +1,160 @@
 {
- "sourceRevision": "5dadc05033084e61e7e58bcde8805ab5e9add1a3",
+ "sourceRevision": "6cebe2894b1164314eb164fcb456f602ddee798b",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "allies on\ntext"
   },
   {
-   "step": 2,
-   "capture": "ap_game",
+   "step": 3,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "cam\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "faced 5.831256866455078\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "c1_approach",
    "files": 1
   },
   {
-   "step": 4,
+   "step": 9,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "attack\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "c2_attack",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "faced 6.274295806884766\ntext"
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "heavy\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "c3_heavy",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "spin\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "c4_spin",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "dash\ntext"
+  },
+  {
+   "step": 24,
+   "capture": "c5_dash",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "ready=true err=true table: 0x25d18357209e8e82 btns=공격|철수|0.1|6.0|3.0|방어|의학|화학|물리\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "MOVE anchored=false moved=9.2 ws=18 mobs=7\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "c6_guard",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "ALLIES 2\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "c7_allies",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "volley\ntext"
+  },
+  {
+   "step": 35,
+   "capture": "c8_cardvolley",
+   "files": 1
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "ward\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "c9_cardward",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.178 | ENEMY motors=15 sum=0.012\nME motors=15 sum=4.167 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.120 | ENEMY motors=15 sum=0.009\nME motors=15 sum=4.068 | ENEMY motors=15 sum=0.001\nME motors=15 sum=4.032 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.986 | ENEMY motors=15 sum=0.014\ntext"
+  },
+  {
+   "step": 41,
+   "capture": "c10_mobs",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.881 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.868 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.872 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.006\nME motors=15 sum=3.947 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.062 | ENEMY motors=15 sum=0.011\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "ENEMY d=133 motors=15 sum=0.006\nENEMY d=132 motors=15 sum=0.006\nENEMY d=119 motors=15 sum=0.006\nENEMY d=66 motors=15 sum=0.632\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "c11_mobs2",
+   "files": 1
   }
  ],
  "errors": [],
@@ -25,17 +165,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 20,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 46,
+  "completedSteps": 46,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 11,
+  "capturedFrames": 11,
   "abortedEarly": false
  }
 }

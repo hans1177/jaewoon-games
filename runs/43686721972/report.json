@@ -1,5 +1,5 @@
 {
- "sourceRevision": "dabcefbe397a2b692ef94f2d5f19e815c1fc0bcc",
+ "sourceRevision": "6cebe2894b1164314eb164fcb456f602ddee798b",
  "log": [
   {
    "step": 0,
@@ -24,7 +24,7 @@
   {
    "step": 7,
    "ctx": "Client",
-   "out": "faced 5.828455448150635\ntext"
+   "out": "faced 5.831256866455078\ntext"
   },
   {
    "step": 8,
@@ -44,7 +44,7 @@
   {
    "step": 13,
    "ctx": "Client",
-   "out": "faced 6.2691545486450195\ntext"
+   "out": "faced 6.274295806884766\ntext"
   },
   {
    "step": 14,
@@ -79,12 +79,12 @@
   {
    "step": 25,
    "ctx": "Client",
-   "out": "ready=true err=true table: 0x5e7b4ebe73bd5e50 btns=공격|철수|0.6|6.3|3.2|방어|의학|화학|물리\ntext"
+   "out": "ready=true err=true table: 0x25d18357209e8e82 btns=공격|철수|0.1|6.0|3.0|방어|의학|화학|물리\ntext"
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "MOVE anchored=false moved=12.2 ws=18 mobs=7\ntext"
+   "out": "MOVE anchored=false moved=9.2 ws=18 mobs=7\ntext"
   },
   {
    "step": 27,
@@ -134,7 +134,7 @@
   {
    "step": 39,
    "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.051 | ENEMY motors=15 sum=0.005\nME motors=15 sum=4.144 | ENEMY motors=15 sum=0.011\nME motors=15 sum=4.181 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.157 | ENEMY motors=15 sum=0.010\nME motors=15 sum=4.090 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.054 | ENEMY motors=15 sum=0.008\ntext"
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.178 | ENEMY motors=15 sum=0.012\nME motors=15 sum=4.167 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.120 | ENEMY motors=15 sum=0.009\nME motors=15 sum=4.068 | ENEMY motors=15 sum=0.001\nME motors=15 sum=4.032 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.986 | ENEMY motors=15 sum=0.014\ntext"
   },
   {
    "step": 41,
@@ -144,10 +144,15 @@
   {
    "step": 42,
    "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.942 | ENEMY motors=15 sum=0.004\nME motors=15 sum=3.902 | ENEMY motors=15 sum=0.004\nME motors=15 sum=3.877 | ENEMY motors=15 sum=0.012\nME motors=15 sum=3.867 | ENEMY motors=15 sum=0.014\nME motors=15 sum=3.876 | ENEMY motors=15 sum=0.009\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.000\ntext"
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.881 | ENEMY motors=15 sum=0.008\nME motors=15 sum=3.868 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.872 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.006\nME motors=15 sum=3.947 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.062 | ENEMY motors=15 sum=0.011\ntext"
   },
   {
    "step": 44,
+   "ctx": "Client",
+   "out": "ENEMY d=133 motors=15 sum=0.006\nENEMY d=132 motors=15 sum=0.006\nENEMY d=119 motors=15 sum=0.006\nENEMY d=66 motors=15 sum=0.632\ntext"
+  },
+  {
+   "step": 45,
    "capture": "c11_mobs2",
    "files": 1
   }
@@ -164,8 +169,8 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 45,
-  "completedSteps": 45,
+  "plannedSteps": 46,
+  "completedSteps": 46,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
