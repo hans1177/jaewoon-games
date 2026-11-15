@@ -115,6 +115,7 @@ return function(D, S)
 				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev),
 				upgraded = S.Knowledge.goodsMult(state, goodId) > 1.001 or nil,
 				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
+				scarcity = S.Econ.scarcity(state, port.id, goodId),
 				owned = state.cargo[goodId] or 0,
 			})
 		end

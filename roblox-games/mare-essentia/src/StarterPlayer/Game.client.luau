@@ -4599,6 +4599,18 @@ local function closeTradeHall()
 	main.Visible = true
 end
 
+-- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
+local ladderFeatures = nil
+local function ladderHas(cat, name)
+	if ladderFeatures == nil then
+		ladderFeatures = {}
+		local ok, data = pcall(function() return require(ReplicatedStorage.Shared:WaitForChild("VisualLadderState", 5)) end)
+		if ok and typeof(data) == "table" and data.Features then ladderFeatures = data.Features end
+	end
+	local list = ladderFeatures[cat]
+	return list ~= nil and table.find(list, name) ~= nil
+end
+
 local function openTradeHall()
 	Sfx.facilityCue("trade")
 	closeTradeHall()
@@ -4871,7 +4883,7 @@ local function openTradeHall()
 			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 17, INK, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, if g.tag ~= "" then -126 else -80, 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
@@ -7818,6 +7830,7 @@ syncScene = function()
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
+	workspace:SetAttribute("PortMood", eco.sim and eco.sim.mood or "steady")
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,

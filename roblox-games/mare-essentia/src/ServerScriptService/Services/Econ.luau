@@ -55,6 +55,17 @@ return function(D, S)
 		}
 	end
 
+	-- 교역품 수급 표시: 시뮬 가격이 기준보다 크게 높으면 품귀, 낮으면 풍부 (표시 전용)
+	function X.scarcity(state, portId, goodId)
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		local pr = t and t.price[goodId]
+		if not pr then return nil end
+		local r = pr / D.Ports.Goods[goodId].basePrice
+		if r > 1.35 then return "품귀" elseif r < 0.7 then return "풍부" end
+		return nil
+	end
+
 	-- 해역·나라·세계 집계 (신문·거시 화면용)
 	function X.macro(state, kind, id)
 		local w = ensure(state)
