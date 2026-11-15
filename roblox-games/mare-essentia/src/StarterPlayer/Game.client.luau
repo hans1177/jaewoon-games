@@ -4936,6 +4936,31 @@ local function openTradeHall()
 			pr.Position = UDim2.fromOffset(70, 34)
 			pr.Size = UDim2.new(1, -80, 0, 20)
 			pr.AutomaticSize = Enum.AutomaticSize.None
+			-- 시세 막대 (Port Royale식 수요·공급 막대): 왼쪽(초록)=싸다 → 사기 좋음, 오른쪽(금색)=비싸다 → 팔기 좋음. 가운데 눈금이 평소 값.
+			local baseGood = PortData.Goods[g.id]
+			if baseGood and baseGood.basePrice > 0 then
+				local pm = g.buy / baseGood.basePrice -- 세계 평균가(기본값) 대비 이 항구의 지금 값
+				local gauge = Instance.new("Frame")
+				gauge.BackgroundColor3 = Color3.fromRGB(200, 184, 150)
+				gauge.BorderSizePixel = 0
+				gauge.Position = UDim2.new(0, 70, 0, 56)
+				gauge.Size = UDim2.new(1, -80, 0, 5)
+				corner(gauge, 3)
+				gauge.Parent = row
+				local ratio = math.clamp((pm - 0.6) / 1.0, 0, 1) -- 0.6배~1.6배
+				local fill = Instance.new("Frame")
+				fill.BorderSizePixel = 0
+				fill.Size = UDim2.fromScale(ratio, 1)
+				fill.BackgroundColor3 = if pm < 0.93 then COLORS.green elseif pm > 1.1 then COLORS.gold else Color3.fromRGB(150, 140, 120)
+				corner(fill, 3)
+				fill.Parent = gauge
+				local tick = Instance.new("Frame")
+				tick.BorderSizePixel = 0
+				tick.BackgroundColor3 = INK
+				tick.Position = UDim2.fromScale(0.4, -0.4)
+				tick.Size = UDim2.new(0, 2, 1.8, 0)
+				tick.Parent = gauge
+			end
 			-- 바로 사고팔기: 수량 고르는 화면 없이 한 번에
 			local ub = unitBuyOf(g)
 			local oc = view.orderCap or 20
