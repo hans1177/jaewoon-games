@@ -2175,6 +2175,29 @@ function FieldScene.start(opts)
 				elseif st == "HIT" then
 					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end
+				-- 종류별 고유 몸짓: 방패병은 웅크려 방패를 앞세우고, 돌진병은 발을 구르며 벼르고, 사수는 뒷걸음질하며 흔들리고, 두목은 몸을 솟구쳤다 내려찍는다
+				local kindId = e.ac.kind
+				if kindId == "shield" then
+					if st == "IDLE" or st == "RUN" then
+						lean, bob = -0.28, bob * 0.4 - 0.12
+					elseif st == "ANTICIPATION" then
+						lean = 0.15 * ph - 0.28 * (1 - ph)
+					end
+				elseif kindId == "charger" then
+					if st == "ANTICIPATION" then
+						bob, lean, roll = math.abs(math.sin(now * 16)) * 0.3, -0.35 * ph, math.sin(now * 16) * 0.1
+					end
+				elseif kindId == "archer" then
+					if wish < 0 then
+						lean, roll = 0.22, math.sin(now * 10) * 0.1
+					end
+				elseif e.boss then
+					if st == "ANTICIPATION" then
+						bob, lean = 1.1 * ph, 0.5 * ph
+					elseif st == "ATTACK" then
+						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
+					end
+				end
 				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
