@@ -37,6 +37,7 @@ local D = {
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	EconomyBuildings = require("./Shared/EconomyBuildings"),
+	ProductionChains = require("./Shared/ProductionChains"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),

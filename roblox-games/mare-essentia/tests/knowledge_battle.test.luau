@@ -46,6 +46,7 @@ local D = {
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
 	EconomyBuildings = require("./Shared/EconomyBuildings"),
+	ProductionChains = require("./Shared/ProductionChains"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -725,6 +726,30 @@ do
 		if j.disc and not D.KnowledgeTree.TaxonomyById[j.disc] then table.insert(jbad, j.name) end
 	end
 	check("마을 직업: 학문 연결이 맞고 레벨이 오를수록 직업이 늘어난다", #jbad == 0 and #d1.jobs >= #d0.jobs and #d0.jobs == 7 and #d0.newJobs == 7, table.concat(jbad, ","))
+	local PC = D.ProductionChains
+	local pcBad = {}
+	local ebNames = {}
+	for _, b in D.EconomyBuildings.List do ebNames[b.name] = true end
+	for _, r in PC.Recipes do
+		if not ebNames[r.building] then table.insert(pcBad, r.id .. " 건물 " .. r.building) end
+		if not D.KnowledgeTree.TaxonomyById[r.disc] then table.insert(pcBad, r.id .. " 학문 " .. r.disc) end
+		for _, g in r.inputs do
+			if not D.Ports.Goods[g] then table.insert(pcBad, r.id .. " 품목 " .. g) end
+		end
+	end
+	for g, c in PC.ClassOf do
+		if not D.Ports.Goods[g] then table.insert(pcBad, "분류 품목 " .. g) end
+	end
+	local unclassed = 0
+	for _, port in D.Ports.Ports do
+		for _, g in (port.produces or {}) do
+			if not PC.ClassOf[g] then unclassed += 1 end
+		end
+	end
+	if #pcBad > 0 then print(table.concat(pcBad, "\n")) end
+	check("생산 자원: 공정·분류가 건물·학문·품목에 연결됨 (" .. #PC.Recipes .. "공정)", #pcBad == 0 and #PC.Recipes >= 25)
+	check("생산 자원: 항구가 만드는 원자재는 대부분 종류가 있다 (분류 없음 " .. unclassed .. ")", unclassed <= 120)
+	check("생산 자원: 레벨이 오르면 가공 가능한 공정이 늘어난다", #PC.craftable({ "wool", "iron", "gems" }, 1) < #PC.craftable({ "wool", "iron", "gems" }, 4))
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end

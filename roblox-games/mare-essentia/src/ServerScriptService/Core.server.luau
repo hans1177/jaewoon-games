@@ -48,6 +48,7 @@ local D = {
 	HistoryEvents = require(Shared:WaitForChild("HistoryEvents")),
 	WorldChronicle = require(Shared:WaitForChild("WorldChronicle")),
 	EconomyBuildings = require(Shared:WaitForChild("EconomyBuildings")),
+	ProductionChains = require(Shared:WaitForChild("ProductionChains")),
 	Stocks = require(Shared:WaitForChild("Stocks")),
 	People = require(Shared:WaitForChild("People")),
 	PeopleTalk = require(Shared:WaitForChild("PeopleTalk")),

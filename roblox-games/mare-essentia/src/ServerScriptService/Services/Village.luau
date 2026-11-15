@@ -164,6 +164,16 @@ return function(D, S)
 				nextD = d
 			end
 		end
+		local produces = port.produces or {}
+		local rawBy = D.ProductionChains.rawByClass(produces)
+		local rawParts = {}
+		for _, c in D.ProductionChains.Classes do
+			if rawBy[c.id] then table.insert(rawParts, c.name .. " " .. rawBy[c.id]) end
+		end
+		local crafts = {}
+		for _, r in D.ProductionChains.craftable(produces, level) do
+			table.insert(crafts, r.output)
+		end
 		local jobs, newJobs = {}, {}
 		for _, j in V.Jobs do
 			if level >= j.minLevel then
@@ -172,7 +182,7 @@ return function(D, S)
 			end
 		end
 		return {
-			jobs = jobs, newJobs = newJobs,
+			jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
 			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
