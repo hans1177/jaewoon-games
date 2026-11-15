@@ -166,7 +166,7 @@
    "updated": "2026-11-15"
   },
   "mare-essentia": {
-   "floor": 189,
+   "floor": 190,
    "categories": [
     {
      "id": "npc",
@@ -216,14 +216,16 @@
     {
      "id": "goods",
      "label": "교역품 정보",
-     "tier": 1,
+     "tier": 2,
      "max": 3,
-     "name": "기본 시세 표시",
+     "name": "품귀·풍부 표시(경제 시뮬 연동)",
      "next": {
-      "tier": 2,
-      "name": "품귀·풍부 표시(경제 시뮬 연동)",
-      "blocked": false,
-      "missing": []
+      "tier": 3,
+      "name": "승인된 교역품 아이콘 이미지",
+      "blocked": true,
+      "missing": [
+       "approved-goods-icons"
+      ]
      }
     }
    ],
@@ -275,6 +277,22 @@
       "Naval/tower-watch",
       "roblox-games/mare-essentia/assets/naval/tower-watch.glb"
      ]
+    },
+    {
+     "category": "goods",
+     "tier": 3,
+     "tierName": "승인된 교역품 아이콘 이미지",
+     "key": "approved-goods-icons",
+     "candidates": [
+      "roblox-games/mare-essentia/assets/icons/battle.png",
+      "roblox-games/mare-essentia/assets/icons/codex.png",
+      "roblox-games/mare-essentia/assets/icons/explore.png",
+      "roblox-games/mare-essentia/assets/icons/harbor.png",
+      "roblox-games/mare-essentia/assets/icons/map.png",
+      "roblox-games/mare-essentia/assets/icons/quest.png",
+      "roblox-games/mare-essentia/assets/icons/route.png",
+      "roblox-games/mare-essentia/assets/icons/status.png"
+     ]
     }
    ],
    "perf": null,
@@ -285,15 +303,6 @@
    "aesthetic": null,
    "thumbs": [
     {
-     "floor": "floor-003-world-t3",
-     "files": [
-      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c00_start-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c06-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c12-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c18-0.jpg"
-     ]
-    },
-    {
      "floor": "floor-189-town-t2",
      "files": [
       "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_cat_0-0.jpg",
@@ -301,9 +310,26 @@
       "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_horse_0-0.jpg",
       "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_sheep_0-0.jpg"
      ]
+    },
+    {
+     "floor": "floor-190-goods-t2",
+     "files": [
+      "docs/devloop/ladder/mare-essentia/floor-190-goods-t2/zoo_cat_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-190-goods-t2/zoo_cow_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-190-goods-t2/zoo_horse_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-190-goods-t2/zoo_sheep_0-0.jpg"
+     ]
     }
    ],
    "history": [
+    {
+     "floor": 190,
+     "category": "goods",
+     "tier": 2,
+     "name": "품귀·풍부 표시(경제 시뮬 연동)",
+     "why": "Studio 캡처 오류 없음, 화면 24장 정상",
+     "at": "2026-11-15"
+    },
     {
      "floor": 189,
      "category": "town",
