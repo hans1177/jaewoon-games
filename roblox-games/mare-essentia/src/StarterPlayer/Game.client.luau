@@ -5713,7 +5713,7 @@ function H.startField(s)
 	local allyNames = {}
 	for _, c in (view and view.companions and view.companions.list) or {} do
 		if c.joined and #allyNames < 2 then
-			table.insert(allyNames, c.name)
+			table.insert(allyNames, { name = c.name, role = c.role })
 		end
 	end
 	local cardSkills = {}

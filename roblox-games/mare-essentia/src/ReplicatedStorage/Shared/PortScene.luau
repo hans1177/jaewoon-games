@@ -1297,6 +1297,76 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	if lvl >= 3 then
 		path(Vector3.new(-20, 0, 12.5), Vector3.new(-70, 0, 12.5), "stoop", 0.8, { role = "Mage", age = "elder" })
 	end
+	-- 직업별 일터: 마을 경제 시뮬의 직업 비율대로 주민이 자기 일터에서 직업마다 다른 동작을 한다.
+	-- 일터는 건물 종류와 맞춘다(시장=장터 동작, 부두=짐 나르기, 교회=기도·종, 관청=문서, 공방=망치질 …).
+	do
+		local JOB_YARD = {
+			farmer = { name = "농부", kinds = { "hoe", "stoop" }, spec = { role = "Barbarian", hat = "cap" } },
+			fisher = { name = "어부", kinds = { "fish" }, spec = { role = "Barbarian", hat = "cap" } },
+			craftsman = { name = "장인", kinds = { "hammer", "stir", "sweep" }, spec = { role = "Barbarian", hat = "cap" } },
+			merchant = { name = "상인", kinds = { "stall", "talk", "wave" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 } },
+			sailor = { name = "선원", kinds = { "lift", "carry" }, spec = { role = "Barbarian" } },
+			guard = { name = "경비병", kinds = { "lean", "look", "point" }, spec = { role = "Knight" } },
+			official = { name = "관리", kinds = { "write", "point", "talk" }, spec = { role = "Mage" } },
+			clergy = { name = "성직자", kinds = { "pray", "bell", "sweep" }, spec = { role = "Mage" } },
+			laborer = { name = "일꾼", kinds = { "carry", "lift", "sweep" }, spec = { role = "Rogue" } },
+		}
+		local ORDER = { "farmer", "fisher", "craftsman", "merchant", "sailor", "guard", "official", "clergy", "laborer" }
+		local jobs = info.sim and info.sim.jobs
+		if not jobs then
+			jobs = { farmer = 3, fisher = 1, craftsman = 3, merchant = 2, sailor = 2, guard = 1, official = lvl >= 3 and 1 or 0, clergy = 1, laborer = 1 }
+		end
+		local total = 0
+		for _, j in ipairs(ORDER) do total += jobs[j] or 0 end
+		local N = math.clamp(({ 6, 8, 10, 12, 14 })[lvl] + (if info.sim then math.floor(info.sim.residents / 10) else 0), 6, 20)
+		local quota, used = {}, 0
+		for _, j in ipairs(ORDER) do
+			local share = (jobs[j] or 0) / math.max(total, 1)
+			if j == "farmer" or j == "laborer" then share = math.min(share, 0.2) end
+			quota[j] = math.floor(N * share + 0.5)
+			if (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
+			used += quota[j]
+		end
+		local lanes = { 38, -38, 57, -57, 73, -73, 87, -87 }
+		local slot = 0
+		for _, j in ipairs(ORDER) do
+			local yard = JOB_YARD[j]
+			for k = 1, quota[j] do
+				slot += 1
+				if slot > 24 then break end
+				local lane = lanes[(slot - 1) % #lanes + 1]
+				local x = -46 - math.floor((slot - 1) / #lanes) * 22 - ((slot - 1) % 3) * 7
+				local side = if lane > 0 then 1 else -1
+				local pos = Vector3.new(x, 0, lane + side * 2.4)
+				local target = Vector3.new(x, 0, lane + side * 5)
+				if yard.prop then
+					importedModel(folder, yard.prop[1], yard.prop[2], target, yard.prop[3], false)
+				end
+				local fig = stay(pos, target, yard.kinds[(k - 1) % #yard.kinds + 1], yard.spec)
+				if fig then
+					fig:SetAttribute("Job", j)
+					local head = fig:FindFirstChild("Head")
+					if head then
+						local bb = Instance.new("BillboardGui")
+						bb.Size = UDim2.fromOffset(70, 18)
+						bb.StudsOffset = Vector3.new(0, 1.9, 0)
+						bb.MaxDistance = 55
+						bb.Adornee = head
+						bb.Parent = head
+						local tl = Instance.new("TextLabel")
+						tl.Size = UDim2.fromScale(1, 1)
+						tl.BackgroundTransparency = 1
+						tl.Text = yard.name
+						tl.TextSize = 13
+						tl.Font = Enum.Font.GothamBold
+						tl.TextColor3 = Color3.fromRGB(255, 240, 200)
+						tl.TextStrokeTransparency = 0.4
+						tl.Parent = bb
+					end
+				end
+			end
+		end
+	end
 end
 
 -- 발전도 랜드마크 자리(양쪽 큰길 뒤). 집은 이 자리를 피해 짓는다.
@@ -2910,7 +2980,22 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
-					Pose.work(w.model, w.kind, now + w.phase)
+					-- 손님(카메라)이 가까이 오면 하던 일을 잠깐 멈추고 몸을 돌려 손을 흔든다 (사람마다 시간이 달라 한꺼번에 하지 않는다)
+					local kind, target = w.kind, 0
+					local cam = workspace.CurrentCamera
+					local p0 = w.base.Position
+					local flat = if cam then Vector3.new(cam.CFrame.Position.X - p0.X, 0, cam.CFrame.Position.Z - p0.Z) else Vector3.zero
+					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
+						kind, target = "wave", 0.85
+					end
+					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * 0.1
+					if w.ga > 0.01 then
+						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + flat.Unit), w.ga))
+					elseif w.ga ~= 0 then
+						w.ga = 0
+						w.model:PivotTo(w.base)
+					end
+					Pose.work(w.model, kind, now + w.phase)
 				end
 			elseif w.mode == "animal" then
 				if w.model.Parent then

@@ -32,8 +32,10 @@ function FM.new(model: Model, followAnimator: boolean)
 			end
 		end
 	end
-	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 18 })
-	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints }
+	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 13 })
+	local nj = 0
+	for _ in joints do nj += 1 end
+	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints, nj = nj, t0 = os.clock() }
 end
 
 -- R6(구형 아바타)는 팔다리가 한 덩어리라 어깨·엉덩이·목·허리만 쓴다. 관절 축이 돌아가 있어 C0 회전으로 맞춰 준다.
@@ -79,7 +81,7 @@ function FM.step(h, dt: number, rootRot: CFrame?)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?)
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
@@ -87,7 +89,18 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?)
 		availableJoints = AVAILABLE,
 		secondary = 0.65,
 	}, h.canon)
-	FM.step(h, dt)
+	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
+	if gain and gain ~= 1 then
+		for k, cf in h.canon do
+			if typeof(cf) == "CFrame" then
+				local axis, ang = cf:ToAxisAngle()
+				if ang > 1e-4 and ang == ang then
+					h.canon[k] = CFrame.fromAxisAngle(axis, math.clamp(ang * gain, -2.4, 2.4))
+				end
+			end
+		end
+	end
+	FM.step(h, dt, rootRot)
 end
 
 local comboCache = {}

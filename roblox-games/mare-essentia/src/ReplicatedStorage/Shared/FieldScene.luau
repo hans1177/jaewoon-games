@@ -408,6 +408,7 @@ function FieldScene.start(opts)
 	note.Size = UDim2.fromOffset(320, 22)
 
 	local function refresh()
+		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
 		title.Text = string.format("%s  발견 %d/%d  적 %d", opts.name or "탐험", found, nodeCount, #enemies)
 		hpFill.Size = UDim2.fromScale(math.clamp(pl.hp / pl.maxHp, 0, 1), 1)
 		hpFill.BackgroundColor3 = if pl.hp / pl.maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
@@ -497,7 +498,10 @@ function FieldScene.start(opts)
 		else
 			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
 		end
-		local pos = ORIGIN + scatter(36)
+		-- 시작 지점 앞쪽 부채꼴(30~46 스터드)에 세운다: 맵 끝까지 걸어가지 않아도 바로 싸움이 붙는다
+		local fanA = rng:NextNumber(-0.95, 0.95)
+		local fanR = if isBoss then 52 else rng:NextNumber(30, 46)
+		local pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
@@ -538,7 +542,7 @@ function FieldScene.start(opts)
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -100, 1, -100), Vector2.new(0.5, 0.5))
 	attackBtn.TextSize = 22
 	addIcon(attackBtn, "Menu/action_fist")
-	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(1, -12, 0, 56), Vector2.new(1, 0))
+	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(0, 12, 0, 56), Vector2.new(0, 0))
 	retreat.Activated:Connect(function()
 		finish("retreat")
 	end)
@@ -649,6 +653,10 @@ function FieldScene.start(opts)
 			local ch = player.Character
 			if not ch then
 				return
+			end
+			-- 관절이 아직 안 만들어졌을 때 한 번 묶고 끝나지 않도록, 관절이 모자라면 1초마다 다시 묶는다
+			if pfm and pfm.nj < 6 and os.clock() - pfm.t0 > 1 then
+				pfmChar = nil
 			end
 			if pfmChar ~= ch then
 				if pfm then
@@ -858,6 +866,68 @@ function FieldScene.start(opts)
 		end)
 	end
 
+	-- ===== 화려한 타격 연출: 충격파 링·네온 파편·휘두르는 칼빛·화면 번쩍임 =====
+	local TweenService = game:GetService("TweenService")
+	local function fxPartMake(size: Vector3, cf: CFrame, color: Color3, shape: Enum.PartType?): Part
+		local p = Instance.new("Part")
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+		p.Material = Enum.Material.Neon
+		p.Color = color
+		p.Transparency = 0.15
+		if shape then p.Shape = shape end
+		p.Size = size
+		p.CFrame = cf
+		p.Parent = folder
+		return p
+	end
+	local function shockRing(center: Vector3, maxR: number, color: Color3, dur: number?)
+		local d = dur or 0.4
+		local ring = fxPartMake(Vector3.new(0.3, 2, 2), CFrame.new(center.X, center.Y + 0.4, center.Z) * CFrame.Angles(0, 0, math.pi / 2), color, Enum.PartType.Cylinder)
+		TweenService:Create(ring, TweenInfo.new(d, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(0.3, maxR * 2, maxR * 2), Transparency = 1 }):Play()
+		task.delay(d + 0.05, function() ring:Destroy() end)
+	end
+	local function shards(at: Vector3, n: number, color: Color3, dist: number)
+		for _ = 1, n do
+			local dir = Vector3.new(rng:NextNumber(-1, 1), rng:NextNumber(0.2, 1.1), rng:NextNumber(-1, 1)).Unit
+			local sh = fxPartMake(Vector3.new(0.22, 0.22, 1.1), CFrame.lookAt(at, at + dir), color)
+			local dst = at + dir * rng:NextNumber(dist * 0.5, dist)
+			TweenService:Create(sh, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = CFrame.lookAt(dst, dst + dir), Transparency = 1, Size = Vector3.new(0.05, 0.05, 0.3) }):Play()
+			task.delay(0.5, function() sh:Destroy() end)
+		end
+	end
+	-- 칼빛: 주인공 앞에서 바를 휘둘러 지나가게 한다. arc=휘두르는 각도, tilt=기울기
+	local function slashArc(hrp: BasePart, color: Color3, reach: number, arc: number, tilt: number)
+		local base = hrp.CFrame * CFrame.new(0, 0.6, 0)
+		local bar = fxPartMake(Vector3.new(0.35, 0.35, reach), base, color)
+		bar.Transparency = 0.05
+		local t0 = os.clock()
+		local dur = 0.22
+		task.spawn(function()
+			while bar.Parent and os.clock() - t0 < dur do
+				local k = (os.clock() - t0) / dur
+				local a = math.rad(-arc * 0.5 + arc * k)
+				bar.CFrame = hrp.CFrame * CFrame.new(0, 0.6, 0) * CFrame.Angles(math.rad(tilt), a, 0) * CFrame.new(0, 0, -reach * 0.5)
+				bar.Transparency = 0.05 + 0.95 * k
+				bar.Size = Vector3.new(0.35 * (1 - k * 0.6), 0.35 * (1 - k * 0.6), reach)
+				task.wait()
+			end
+			bar:Destroy()
+		end)
+	end
+	local flashFrame = Instance.new("Frame")
+	flashFrame.Size = UDim2.fromScale(1, 1)
+	flashFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+	flashFrame.BackgroundTransparency = 1
+	flashFrame.BorderSizePixel = 0
+	flashFrame.Active = false
+	flashFrame.ZIndex = 0
+	flashFrame.Parent = gui
+	local function screenFlash(color: Color3, alpha: number)
+		flashFrame.BackgroundColor3 = color
+		flashFrame.BackgroundTransparency = alpha
+		TweenService:Create(flashFrame, TweenInfo.new(0.25), { BackgroundTransparency = 1 }):Play()
+	end
+
 	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -928,6 +998,12 @@ function FieldScene.start(opts)
 		end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
+		do
+			local crit = mult >= 1.5
+			local c = if crit then Color3.fromRGB(255, 205, 80) else Color3.fromRGB(190, 230, 255)
+			shards(e.root.Position + Vector3.new(0, 1.5, 0), if crit then 14 else 7, c, if crit then 7 else 4)
+			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
+		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
 		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
 		local punchCam = workspace.CurrentCamera
@@ -969,6 +1045,17 @@ function FieldScene.start(opts)
 				end
 				dying:Destroy()
 			end)
+			do
+				local p0 = e.root.Position
+				local gold = Color3.fromRGB(255, 214, 90)
+				shockRing(p0 - Vector3.new(0, 2.5, 0), if e.boss then 30 else 14, gold, 0.55)
+				shards(p0, if e.boss then 40 else 18, gold, if e.boss then 16 else 9)
+				if e.boss then
+					shockRing(p0 - Vector3.new(0, 2.5, 0), 20, Color3.fromRGB(255, 120, 70), 0.8)
+					screenFlash(Color3.new(1, 0.95, 0.8), 0.35)
+					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
+				end
+			end
 			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
 			sfx(if e.boss then "sfx_fanfare" else "sfx_card_chain", 0.6, 1)
 			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
@@ -1137,8 +1224,39 @@ function FieldScene.start(opts)
 			say("회피! 잠깐 무적")
 			return
 		end
+		-- 조준 보조: 가까운 적(40스터드 안)을 바라보고, 닿지 않으면 몸을 날려 붙는다 (폰에서 헛손질 방지)
+		do
+			local near, nd = nil, 40
+			for _, e in enemies do
+				if e.root and e.root.Parent then
+					local d = ((e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)).Magnitude
+					if d < nd then near, nd = e, d end
+				end
+			end
+			if near then
+				local flat = (near.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
+				if flat.Magnitude > 0.1 then
+					local reach = (AC.Moves[moveId] and AC.Moves[moveId].range or 5) * STUD
+					local lunge = if nd > reach - 2 then math.min(nd - (reach - 3), 10) else 0
+					hrp.CFrame = CFrame.lookAt(hrp.Position + flat.Unit * math.max(0, lunge), hrp.Position + flat.Unit * math.max(0, lunge) + flat.Unit)
+				end
+			end
+		end
+		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
 		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
+		do
+			local reachV = (mv.range or 5) * STUD
+			if kind == "spin" then
+				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
+				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
+			elseif kind == "heavy" then
+				slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
+				shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 8, Color3.fromRGB(255, 150, 60), 0.4)
+			else
+				slashArc(hrp, Color3.fromRGB(235, 245, 255), reachV, 110, if combo0 % 2 == 0 then 25 else -25)
+			end
+		end
 		local combo = pl.combo
 		task.delay(if kind == "slash" then 0.12 else 0.22, function()
 			if finished then
@@ -1175,6 +1293,8 @@ function FieldScene.start(opts)
 			elseif moveId == "rush" and combo >= 3 then
 				say("3연타 마무리!")
 				showCombo("3연타!")
+				screenFlash(Color3.fromRGB(255, 232, 160), 0.6)
+				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 16, Color3.fromRGB(255, 220, 120), 0.45)
 				shakeUntil, shakeAmp = os.clock() + 0.2, 0.8
 			elseif moveId == "rush" and hits > 0 then
 				showCombo(string.format("%d연타", combo))
@@ -1206,7 +1326,25 @@ function FieldScene.start(opts)
 	local function useHeavy() useMove("heavy") end
 	local function useSpin() useMove("sweep") end
 	local function useDash() useMove("dodge") end
-	attackBtn.Activated:Connect(useAttack)
+	-- 버튼은 터치 '닿는 순간' 바로 반응한다(폰에서 손가락이 살짝 밀려도 Activated 가 안 뜨는 경우 대비). 같은 누름의 중복은 막는다.
+	local function bindPress(b: GuiButton, fn: () -> ())
+		local last = 0
+		local function go()
+			local t = os.clock()
+			if t - last < 0.08 then
+				return
+			end
+			last = t
+			fn()
+		end
+		b.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				go()
+			end
+		end)
+		b.Activated:Connect(go)
+	end
+	bindPress(attackBtn, useAttack)
 
 	local staminaBack = Instance.new("Frame")
 	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -1230,7 +1368,7 @@ function FieldScene.start(opts)
 	local function mkSkill(key, label, color, theta)
 		local b = btn(gui, label, color, UDim2.fromOffset(56, 56), arcPos(124, theta), Vector2.new(0.5, 0.5))
 		b.TextSize = 16
-		b.Activated:Connect(function()
+		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
@@ -1320,7 +1458,7 @@ function FieldScene.start(opts)
 			local key = "card" .. i
 			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), arcPos(190, 18 + (i - 1) * 24), Vector2.new(0.5, 0.5))
 			b.TextSize = 17
-			b.Activated:Connect(function()
+			bindPress(b, function()
 				useCard(key, card)
 			end)
 			skillBtns[key] = { btn = b, label = card.name }
@@ -1420,6 +1558,21 @@ function FieldScene.start(opts)
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
 				e.parryAt = nil
+				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
+				if e.ac.def.charge or e.ac.def.keepAway then
+					local from, gp = e.root.Position, hrp.Position
+					local dv = Vector3.new(gp.X - from.X, 0, gp.Z - from.Z)
+					if dv.Magnitude > 1 then
+						local isCharge = e.ac.def.charge
+						local len = if isCharge then math.min(dv.Magnitude, e.ac.def.range * STUD) else dv.Magnitude
+						local mid = from + dv.Unit * (len * 0.5)
+						local y = if isCharge then from.Y - e.root.Size.Y * 0.5 - 2.4 else from.Y + 0.5
+						local lane = fxPartMake(Vector3.new(if isCharge then 4.5 else 0.3, if isCharge then 0.12 else 0.3, len), CFrame.lookAt(Vector3.new(mid.X, y, mid.Z), Vector3.new(mid.X, y, mid.Z) + dv.Unit), Color3.fromRGB(255, 50, 40))
+						lane.Transparency = 0.75
+						TweenService:Create(lane, TweenInfo.new(e.ac.def.windup, Enum.EasingStyle.Linear), { Transparency = 0.2 }):Play()
+						task.delay(e.ac.def.windup + 0.05, function() lane:Destroy() end)
+					end
+				end
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
 				if not e.warn then
 					local h = Instance.new("Highlight")
@@ -1453,6 +1606,24 @@ function FieldScene.start(opts)
 						local step = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
 						e.model:PivotTo(e.model:GetPivot() + to.Unit * step)
 						burst(e.root.Position + Vector3.new(0, 2, 0), 18, false)
+					end
+				end
+				do
+					local ep, ered = e.root.Position, Color3.fromRGB(255, 90, 70)
+					local gy = ep - Vector3.new(0, e.root.Size.Y * 0.5 + 2.2, 0)
+					if e.ac.def.aoe then
+						shockRing(gy, e.ac.def.range * STUD, ered, 0.5)
+						shockRing(gy, e.ac.def.range * STUD * 0.6, Color3.fromRGB(255, 190, 90), 0.4)
+						shards(ep, 26, ered, 13)
+						shakeUntil, shakeAmp = os.clock() + 0.35, 1.8
+					elseif e.ac.def.charge then
+						shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.2, 0), 8, ered, 0.35)
+						shards(e.root.Position, 10, Color3.fromRGB(255, 200, 140), 5)
+					elseif e.ac.def.keepAway then
+						shards(ep + Vector3.new(0, 1.5, 0), 5, Color3.fromRGB(255, 225, 160), 3)
+					else
+						shockRing(gy, 5, ered, 0.28)
+						shards(ep + Vector3.new(0, 1.5, 0), 6, ered, 4)
 					end
 				end
 				if e.ac.def.keepAway then
@@ -1523,7 +1694,29 @@ function FieldScene.start(opts)
 				elseif wish ~= 0 then
 					st, ph = "RUN", (now * 1.6) % 1
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss)
+				-- 몸통 기울기: 근접형은 준비 때 뒤로 젖혔다가 타격 때 앞으로 숙이고, 사수는 활을 당기며 뒤로 젖힌다
+				local lean = 0
+				local def0 = e.ac.def
+				if st == "ANTICIPATION" then
+					lean = (if def0.keepAway then 0.28 else 0.38) * ph
+				elseif st == "ATTACK" then
+					lean = if def0.keepAway then 0.1 else -0.55
+				elseif st == "RECOVERY" then
+					lean = -0.3 * (1 - ph)
+				end
+				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
+				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
+					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dt, flat.Magnitude - 2.5)
+					e.model:PivotTo(e.model:GetPivot() + lunge)
+				end
+				-- 숨쉬기·체중 이동(대기), 달릴 때 위아래 출렁임과 앞으로 숙임으로 가만히 있어도 살아 보이게 한다
+				local bob, roll = 0, 0
+				if st == "IDLE" then
+					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
+				elseif st == "RUN" then
+					bob, roll, lean = math.abs(math.sin(now * 9)) * 0.2, math.sin(now * 9) * 0.08, -0.2
+				end
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -1541,9 +1734,22 @@ function FieldScene.start(opts)
 		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
 			allyNames = { "동료 기사", "동료 도적" } -- 개발 캡처 전용
 		end
+		-- 동료마다 이름·직업에 맞는 겉모습(직업 → 옷 계열, 이름 → 옷 색)으로 만든다 (같은 얼굴 두 명이 나오지 않게)
+		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
+		local function hashName(str: string): number
+			local h = 7
+			for _, cp in utf8.codepoint(str, 1, -1) do h = (h * 31 + cp) % 100003 end
+			return h
+		end
+		local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
 		for i, nm in allyNames do
 			if i <= 2 then
-				table.insert(allyDefs, { name = tostring(nm), role = if i == 1 then "Knight" else "Rogue" })
+				local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
+				local job = if type(nm) == "table" then nm.role else nil
+				local h = hashName(name)
+				local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + i) % #ROLES + 1]
+				local coat = Color3.fromHSV((h % 360) / 360, 0.45, 0.62)
+				table.insert(allyDefs, { name = name, role = role, coat = coat })
 			end
 		end
 		local allies: { any } = {}
@@ -1562,7 +1768,7 @@ function FieldScene.start(opts)
 				spawned = true
 				for i, ad in allyDefs do
 					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
-					local m = Pose.createR15(folder, pos0, 0, nil, rng, ad.role, 5.6)
+					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.6)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
@@ -1611,11 +1817,11 @@ function FieldScene.start(opts)
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
 					if ap >= 0 and ap < 1 then
-						FM.actor(a.fm, "ATTACK", ap * 0.9, dt)
+						FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.6)
 					elseif moving then
-						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt)
+						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.6)
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt)
+						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.3)
 					end
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
