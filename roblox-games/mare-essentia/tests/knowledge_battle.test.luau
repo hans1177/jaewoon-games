@@ -44,6 +44,7 @@ local D = {
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
+	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -661,6 +662,13 @@ do
 	end
 	if #tbad > 0 then print(table.concat(tbad, "\n")) end
 	check("주점 점검: 데이터 연결이 맞다 (" .. #tbad .. "건)", #tbad == 0)
+end
+
+-- 지식카드 분류: 모든 카드가 대분류·중분류에 연결
+do
+	local bad = D.KnowledgeTaxonomy.audit()
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("카드 분류: 모든 카드가 학문·대분류에 연결된다 (" .. #bad .. "건)", #bad == 0)
 end
 
 -- 세계 연대기: 데이터 연결·도착 시 목격·논문 단계
