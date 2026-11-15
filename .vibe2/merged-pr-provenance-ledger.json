@@ -248870,11 +248870,152 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_26ba84c0b724a85e87ff86fc",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13312",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "39358d4cc3702c45b3892013ad114f32f3b711bc",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13312,
+        "baseBranch": "main",
+        "headBranch": "feat/ui-unify",
+        "baseSha": "39358d4cc3702c45b3892013ad114f32f3b711bc",
+        "headSha": "a51826308c603adf5f3bfb1e40029511d42f35f3",
+        "mergeCommitSha": "d037f805ca547bff1fb0140211cf2bc11200216c",
+        "mergedAt": "2026-11-15T01:07:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "81e13682d4711855971ff40085a3be0fde963caef2cad8a736d113e598d60ef5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/ui-unify",
+        "candidateSha": "a51826308c603adf5f3bfb1e40029511d42f35f3"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 428,
+        "deletedLineCount": 55,
+        "changedFiles": [
+          "assets/roblox/common-look-v1/RobloxCommonLookKit.luau",
+          "assets/roblox/common-look-v1/look-presets.json",
+          "docs/devloop/VISUAL_LADDER_mare-essentia.md",
+          "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Rings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/knowledge_battle.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-fieldcombat.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "codingRelevantFiles": [
+          "assets/roblox/common-look-v1/RobloxCommonLookKit.luau",
+          "assets/roblox/common-look-v1/look-presets.json",
+          "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Rings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/knowledge_battle.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-fieldcombat.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13312",
+        "merge-commit:d037f805ca547bff1fb0140211cf2bc11200216c",
+        "base-main:39358d4cc3702c45b3892013ad114f32f3b711bc"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1979
+    "total": 1980
   }
 }
