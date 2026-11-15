@@ -1558,6 +1558,21 @@ function FieldScene.start(opts)
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
 				e.parryAt = nil
+				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
+				if e.ac.def.charge or e.ac.def.keepAway then
+					local from, gp = e.root.Position, hrp.Position
+					local dv = Vector3.new(gp.X - from.X, 0, gp.Z - from.Z)
+					if dv.Magnitude > 1 then
+						local isCharge = e.ac.def.charge
+						local len = if isCharge then math.min(dv.Magnitude, e.ac.def.range * STUD) else dv.Magnitude
+						local mid = from + dv.Unit * (len * 0.5)
+						local y = if isCharge then from.Y - e.root.Size.Y * 0.5 - 2.4 else from.Y + 0.5
+						local lane = fxPartMake(Vector3.new(if isCharge then 4.5 else 0.3, if isCharge then 0.12 else 0.3, len), CFrame.lookAt(Vector3.new(mid.X, y, mid.Z), Vector3.new(mid.X, y, mid.Z) + dv.Unit), Color3.fromRGB(255, 50, 40))
+						lane.Transparency = 0.75
+						TweenService:Create(lane, TweenInfo.new(e.ac.def.windup, Enum.EasingStyle.Linear), { Transparency = 0.2 }):Play()
+						task.delay(e.ac.def.windup + 0.05, function() lane:Destroy() end)
+					end
+				end
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
 				if not e.warn then
 					local h = Instance.new("Highlight")
@@ -1591,6 +1606,24 @@ function FieldScene.start(opts)
 						local step = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
 						e.model:PivotTo(e.model:GetPivot() + to.Unit * step)
 						burst(e.root.Position + Vector3.new(0, 2, 0), 18, false)
+					end
+				end
+				do
+					local ep, ered = e.root.Position, Color3.fromRGB(255, 90, 70)
+					local gy = ep - Vector3.new(0, e.root.Size.Y * 0.5 + 2.2, 0)
+					if e.ac.def.aoe then
+						shockRing(gy, e.ac.def.range * STUD, ered, 0.5)
+						shockRing(gy, e.ac.def.range * STUD * 0.6, Color3.fromRGB(255, 190, 90), 0.4)
+						shards(ep, 26, ered, 13)
+						shakeUntil, shakeAmp = os.clock() + 0.35, 1.8
+					elseif e.ac.def.charge then
+						shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.2, 0), 8, ered, 0.35)
+						shards(e.root.Position, 10, Color3.fromRGB(255, 200, 140), 5)
+					elseif e.ac.def.keepAway then
+						shards(ep + Vector3.new(0, 1.5, 0), 5, Color3.fromRGB(255, 225, 160), 3)
+					else
+						shockRing(gy, 5, ered, 0.28)
+						shards(ep + Vector3.new(0, 1.5, 0), 6, ered, 4)
 					end
 				end
 				if e.ac.def.keepAway then
