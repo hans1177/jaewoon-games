@@ -32,7 +32,7 @@ function FM.new(model: Model, followAnimator: boolean)
 			end
 		end
 	end
-	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 13 })
+	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 11 })
 	local nj = 0
 	for _ in joints do nj += 1 end
 	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints, nj = nj, t0 = os.clock() }
@@ -78,6 +78,18 @@ function FM.step(h, dt: number, rootRot: CFrame?)
 		end
 	end
 	h.ctl.Step(h.r15, dt)
+end
+
+-- 관절 회전량을 키운다(폰 화면에서도 큼직하게 읽히도록). gain 1 = 원본.
+function FM.scale(canon, gain: number)
+	for k, cf in canon do
+		if typeof(cf) == "CFrame" then
+			local axis, ang = cf:ToAxisAngle()
+			if ang > 1e-4 and ang == ang then
+				canon[k] = CFrame.fromAxisAngle(axis, math.clamp(ang * gain, -2.4, 2.4))
+			end
+		end
+	end
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.

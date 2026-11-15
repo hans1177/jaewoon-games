@@ -959,6 +959,7 @@ function FieldScene.start(opts)
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end
+			FM.scale(canon, 1.45) -- 주인공 공격·스킬 동작도 큼직하게
 			FM.step(pfm, dt, rootRot)
 		end))
 		table.insert(conns, { Disconnect = function()
@@ -2198,7 +2199,7 @@ function FieldScene.start(opts)
 						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.7 else 2.1, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -2324,11 +2325,11 @@ function FieldScene.start(opts)
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
 					if ap >= 0 and ap < 1 then
-						FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.6)
+						FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 2.0)
 					elseif moving then
-						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.6)
+						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.9)
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.3)
+						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.6)
 					end
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
