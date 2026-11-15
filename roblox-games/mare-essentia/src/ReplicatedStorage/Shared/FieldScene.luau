@@ -510,8 +510,8 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		local kinds = { "grunt", "archer", "shield" }
-		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 3 + 1])
+		local kinds = { "grunt", "archer", "shield", "charger" }
+		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 4 + 1])
 		tag.Text = ac.def.name
 		table.insert(enemies, { ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
@@ -1121,6 +1121,15 @@ function FieldScene.start(opts)
 				end
 			elseif event == "strike" then
 				e.swingAt = now
+				if e.ac.def.charge then
+					-- 돌진: 예고가 끝나면 주인공 앞까지 순식간에 달려든다(피하려면 예고 중에 옆으로 비켜야 한다)
+					local to = Vector3.new(hrp.Position.X - e.root.Position.X, 0, hrp.Position.Z - e.root.Position.Z)
+					if to.Magnitude > 4 then
+						local step = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
+						e.model:PivotTo(e.model:GetPivot() + to.Unit * step)
+						burst(e.root.Position + Vector3.new(0, 2, 0), 18, false)
+					end
+				end
 				if e.ac.def.keepAway then
 					arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 				end

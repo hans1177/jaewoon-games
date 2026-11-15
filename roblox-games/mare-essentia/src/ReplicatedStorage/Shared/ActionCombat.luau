@@ -29,6 +29,7 @@ A.Enemies = {
 	grunt = { id = "grunt", name = "해적 졸개", hp = 40, speed = 12, dmg = 6, pattern = "BANDIT_SLASH", windup = 0.7, active = 0.2, recover = 0.8, range = 4, aggro = 45 },
 	archer = { id = "archer", name = "사수", hp = 28, speed = 10, dmg = 7, pattern = "ARROW_SHOT", windup = 0.9, active = 0.15, recover = 1.2, range = 28, aggro = 55, keepAway = 14 },
 	shield = { id = "shield", name = "방패병", hp = 70, speed = 9, dmg = 8, pattern = "SHIELD_BASH", windup = 0.8, active = 0.25, recover = 1.0, range = 4, aggro = 40, frontGuard = 0.7 },
+	charger = { id = "charger", name = "돌진병", hp = 50, speed = 13, dmg = 12, pattern = "BANDIT_SLASH", windup = 1.0, active = 0.25, recover = 1.3, range = 12, aggro = 50, charge = true },
 	boss = { id = "boss", name = "거인 두목", hp = 300, speed = 8, dmg = 20, pattern = "GOLEM_SLAM", windup = 1.1, active = 0.3, recover = 1.4, range = 10, aggro = 80, aoe = true, boss = true },
 }
 
