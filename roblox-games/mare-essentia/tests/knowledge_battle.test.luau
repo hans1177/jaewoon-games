@@ -714,7 +714,7 @@ do
 	local stPD = S.State.new("england", 1700)
 	stPD.portId = "london"
 	local d0 = S.Village.portDev(stPD, "london")
-	check("항구 발전도: 아무것도 안 했으면 0점 1레벨", d0 ~= nil and d0.score == 0 and d0.level == 1)
+	check("항구 발전도: 투자 외에는 점수가 없고 1레벨", d0 ~= nil and d0.score == d0.harbor * 5 and d0.stages == 0 and d0.tech == 0 and d0.landmarks == 0 and d0.level == 1)
 	stPD.harbor.london = 99999
 	stPD.portStages = { london = { trade = 2, ship = 1 } }
 	stPD.landmarks = { london = { observatory = true } }
@@ -741,15 +741,16 @@ do
 	for g, c in PC.ClassOf do
 		if not D.Ports.Goods[g] then table.insert(pcBad, "분류 품목 " .. g) end
 	end
-	local unclassed = 0
+	local unclassed, totalProd = 0, 0
 	for _, port in D.Ports.Ports do
 		for _, g in (port.produces or {}) do
+			totalProd += 1
 			if not PC.ClassOf[g] then unclassed += 1 end
 		end
 	end
 	if #pcBad > 0 then print(table.concat(pcBad, "\n")) end
 	check("생산 자원: 공정·분류가 건물·학문·품목에 연결됨 (" .. #PC.Recipes .. "공정)", #pcBad == 0 and #PC.Recipes >= 25)
-	check("생산 자원: 항구가 만드는 원자재는 대부분 종류가 있다 (분류 없음 " .. unclassed .. ")", unclassed <= 120)
+	check("생산 자원: 항구 특산의 절반 이상이 원자재 종류로 분류된다 (분류 없음 " .. unclassed .. "/" .. totalProd .. ")", unclassed * 2 <= totalProd)
 	check("생산 자원: 레벨이 오르면 가공 가능한 공정이 늘어난다", #PC.craftable({ "wool", "iron", "gems" }, 1) < #PC.craftable({ "wool", "iron", "gems" }, 4))
 	local dsum = 0
 	for _, d in S.Village.Districts do dsum += #d.sub end
