@@ -151,6 +151,43 @@ local function signModel(text)
 	return "Relics", "compass-base"
 end
 
+-- 방문시설 간판 움직임: 3D 아이콘이 천천히 돌고(카메라가 모델 둘레를 돈다), 위아래로 떠다니고, 가까이 가면 커진다.
+-- 연결은 하나만 둔다. 간판이 사라지면(항구를 떠나면) 목록에서 빠지고, 카메라와 멀리 있는 간판은 건드리지 않는다.
+local signAnims = {}
+local signLoop = nil
+local SIGN_NEAR, SIGN_ACTIVE = 26, 140
+local function animateSign(rec)
+	table.insert(signAnims, rec)
+	if signLoop then return end
+	signLoop = RunService.Heartbeat:Connect(function()
+		local camera = workspace.CurrentCamera
+		if not camera then return end
+		local t = os.clock()
+		local eye = camera.CFrame.Position
+		for i = #signAnims, 1, -1 do
+			local a = signAnims[i]
+			if not a.bb.Parent then
+				table.remove(signAnims, i)
+			else
+				local d = (a.base - eye).Magnitude
+				if d < SIGN_ACTIVE then
+					local ang = t * 0.9 + a.phase
+					local dir = Vector3.new(math.sin(ang) * 0.95, 0.6, math.cos(ang) * 1.1).Unit
+					a.cam.CFrame = CFrame.lookAt(a.center + dir * a.reach, a.center)
+					a.bb.StudsOffset = Vector3.new(0, a.height + math.sin(t * 1.8 + a.phase) * 0.35, 0)
+					local want = if d < SIGN_NEAR then 1.18 else 1
+					a.scale += (want - a.scale) * 0.12
+					a.bb.Size = UDim2.fromScale(a.w * a.scale, a.h * a.scale)
+				end
+			end
+		end
+		if #signAnims == 0 then
+			signLoop:Disconnect()
+			signLoop = nil
+		end
+	end)
+end
+
 -- 방문시설 간판: 큰 3D 아이콘 + 아래 작은 이름표 (멀리서도 무슨 건물인지 보이게)
 local function sign(parent, adornee, text, color, height, compact, iconModel)
 	if compact then
@@ -227,6 +264,9 @@ local function sign(parent, adornee, text, color, height, compact, iconModel)
 		local reach = math.max(size.Magnitude * 0.5, 0.1) / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.05
 		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
 		em:Destroy()
+		local at = if adornee:IsA("BasePart") then adornee.Position else adornee:GetPivot().Position
+		animateSign({ bb = bb, cam = cam, center = cf.Position, reach = reach, phase = (at.X * 0.37 + at.Z * 0.23) % 6.28,
+			base = at + Vector3.new(0, (height or 4) + 5, 0), height = (height or 4) + 5, w = 9, h = 9.5, scale = 1 })
 		return true
 	end
 	if not tryShow() then
