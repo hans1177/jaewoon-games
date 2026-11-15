@@ -29,6 +29,8 @@ K.Disciplines = {
 	{ id = "linguistics", name = "언어학", field = "Language", era = "고대~", parent = "philosophy", openAt = 2, summary = "문자와 말, 인쇄. 공용어가 퍼지면 교역이 쉬워지고 먼 나라의 기록을 읽을 수 있다." },
 	{ id = "archaeology", name = "고고학", field = "Relic", era = "근세", parent = "linguistics", openAt = 2, summary = "옛 유물과 기록을 모아 읽는다. 오래된 해도와 관측기에서 항해 지식을 되살린다." },
 	{ id = "mythology", name = "신화·민속학", field = "Myth", era = "고대~", parent = "archaeology", openAt = 2, summary = "바다 괴물과 전설을 모으고 견주어 본다. 이야기가 보물 수요와 항해 용기가 된다." },
+	{ id = "mystery", name = "미스터리학", field = "Mystery", era = "근세", parent = "mythology", openAt = 2, summary = "사라진 배와 풀리지 않는 기록을 사실과 소문으로 나눠 따져 본다. 소문을 가려내면 먼 바다에서 흔들리지 않는다." },
+	{ id = "lostland", name = "잃어버린 대륙학", field = "Lost", era = "대항해", parent = "mystery", openAt = 2, summary = "지도 끝의 전설을 모아 견준다. 이 학문의 끝에는 이 세계의 일곱 번째 대륙(가상)이 있다." },
 	{ id = "navigation", name = "항해술", field = "Navigation", era = "대항해", parent = "astronomy", openAt = 3, summary = "나침반과 관측기, 해도와 시계. 위도·경도를 알면 먼 바다에서도 길을 잃지 않아 항해 속도가 오른다." },
 	{ id = "commerce", name = "상업·경제학", field = "Goods", era = "근세", parent = "philosophy", openAt = 3, summary = "교역품의 산지와 값을 따지고 거래를 체계화한다. 후추·설탕·비단 같은 교역품이 개량된다." },
 	{ id = "history", name = "역사·유적학", field = "Site", era = "고대~", parent = "archaeology", openAt = 2, summary = "성곽과 신전, 거석 유적을 답사하고 기록한다. 옛 도시의 역사에서 교훈을 얻는다." },
@@ -286,6 +288,38 @@ n("myth_sea_serpent", "mythology", { "myth_siren" }, nil)
 n("myth_kraken", "mythology", { "myth_sea_serpent" }, nil)
 n("myth_leviathan", "mythology", { "myth_kraken" }, nil)
 n("myth_dutchman", "mythology", { "myth_st_elmo" }, nil)
+	-- 미스터리학
+n("mys_sargasso", "mystery", {}, nil)
+n("mys_green_children", "mystery", {}, nil)
+n("mys_stone_circle", "mystery", {}, nil)
+n("mys_roanoke", "mystery", { "mys_sargasso" }, nil)
+n("mys_voynich", "mystery", { "mys_stone_circle" }, nil)
+n("mys_oak_island", "mystery", { "mys_green_children" }, nil)
+n("mys_piri_reis", "mystery", { "mys_voynich" }, { speed = 0.01, label = "옛 지도의 해안선을 견주어 항로를 가늠한다" })
+n("mys_gevaudan", "mystery", { "mys_green_children" }, nil)
+n("mys_greenland_norse", "mystery", { "mys_roanoke" }, nil)
+n("mys_rongorongo", "mystery", { "mys_voynich" }, nil)
+n("mys_flannan", "mystery", { "mys_sargasso" }, nil)
+n("mys_bermuda", "mystery", { "mys_sargasso", "mys_flannan" }, nil)
+n("mys_mary_celeste", "mystery", { "mys_bermuda" }, { speed = 0.01, label = "소문과 기록을 가려 불안한 항해를 줄인다" })
+n("mys_franklin", "mystery", { "mys_greenland_norse" }, nil)
+n("mys_antikythera", "mystery", { "mys_piri_reis" }, { speed = 0.01, label = "옛 기계의 원리를 배워 천체 계산을 개선한다" })
+	-- 잃어버린 대륙학
+n("lost_terra_incognita", "lostland", {}, nil)
+n("lost_edge_dragons", "lostland", { "lost_terra_incognita" }, nil)
+n("lost_thule", "lostland", {}, nil)
+n("lost_antillia", "lostland", { "lost_terra_incognita" }, nil)
+n("lost_hy_brasil", "lostland", { "lost_antillia" }, nil)
+n("lost_blessed_isles", "lostland", { "lost_thule" }, nil)
+n("lost_terra_australis", "lostland", { "lost_terra_incognita" }, { speed = 0.01, label = "남쪽 바다의 가설을 따져 항로를 넓힌다" })
+n("lost_lemuria", "lostland", { "lost_terra_australis" }, nil)
+n("lost_prester_john", "lostland", { "lost_blessed_isles" }, nil)
+n("lost_el_dorado", "lostland", { "lost_hy_brasil" }, { goods = { "pearls", "coral" }, goodsMult = 0.02, label = "황금 전설의 소문이 보석 교역에 영향을 준다" })
+n("lost_cibola", "lostland", { "lost_antillia", "lost_el_dorado" }, nil)
+n("lost_hyperborea", "lostland", { "lost_thule", "lost_edge_dragons" }, nil)
+n("lost_astheria_shore", "lostland", { "lost_terra_australis", "lost_cibola" }, nil)
+n("lost_astheria_ruins", "lostland", { "lost_astheria_shore", "lost_hyperborea" }, nil)
+n("lost_astheria_heart", "lostland", { "lost_astheria_ruins", "lost_prester_john", "lost_lemuria" }, { speed = 0.02, label = "일곱 번째 대륙의 해도로 먼 바다의 길이 열린다 (가상)" })
 
 K.ById = {}
 for _, node in K.Nodes do
@@ -317,7 +351,7 @@ end
 
 -- 이미 연구할 수 있는 학문이 속한 분류
 K.DomainOf = {
-	philosophy = "humanities", linguistics = "humanities", archaeology = "humanities", mythology = "humanities", history = "humanities",
+	philosophy = "humanities", linguistics = "humanities", archaeology = "humanities", mythology = "humanities", history = "humanities", mystery = "humanities", lostland = "humanities",
 	physics = "natural", astronomy = "natural", chemistry = "natural", geography = "natural", meteorology = "natural",
 	botany = "natural", zoology = "natural", mineralogy = "natural",
 	medicine = "applied", architecture = "applied", shipbuilding = "applied", navigation = "applied",
@@ -441,6 +475,7 @@ K.DisciplineGoods = {
 	shipbuilding = { "timber", "copper", "coal", "iron" },
 	mineralogy = { "copper", "tin", "iron", "cloth" },
 	mythology = { "pearls", "coral" },
+	mystery = {}, lostland = { "pearls", "coral" },
 	botany = { "tea", "cloves", "nutmeg", "vanilla", "ginseng", "sandalwood" },
 	zoology = { "whale_oil", "pearls", "pearl_shell", "ivory", "feathers" },
 	medicine = { "camphor", "ginseng" },
