@@ -677,6 +677,13 @@ do
 	end
 	if #bad > 0 then print(table.concat(bad, "\n")) end
 	check("연대기: 데이터 연결이 맞다 (" .. #bad .. "건)", #bad == 0 and #WC.Rows >= 20)
+	local gen = WC.fromPeople(D.People.Curated, D.Ports.Ports)
+	check("연대기: 인물 백과에서 현장 장면이 만들어진다 (" .. #gen .. "건)", #gen >= 100)
+	local genBad = 0
+	for _, r in gen do
+		if #WC.lines({ year = r.year, month = 1, voice = r.voice, fact = r.fact, scholar = r.scholar }, "x") < 4 or r.untilYear < r.year then genBad += 1 end
+	end
+	check("연대기: 인물 장면 대사·연도가 맞다", genBad == 0)
 	local stC = S.State.new("england", 1700)
 	stC.portId = "lisbon"
 	stC.day = (1756 - 1700) * 365 + 10

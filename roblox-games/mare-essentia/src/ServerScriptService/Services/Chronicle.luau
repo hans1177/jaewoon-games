@@ -10,6 +10,15 @@ return function(D, S)
 	local WINDOW_YEARS = 8 -- 사건이 일어난 해부터 이만큼 지나도 그 항구에서 목격담을 들을 수 있다
 	local NOTES_PER_DRAFT, DRAFT_COST = 3, 100
 
+	local generated = if C and D.People and D.People.Curated then C.fromPeople(D.People.Curated, D.Ports.Ports) else {}
+	local genById = {}
+	for _, r in generated do
+		genById[r.id] = r
+	end
+	local function rowOf(id)
+		return (C and C.ById[id]) or genById[id]
+	end
+
 	local ART = { sci = "observatory", nature = "storm", war = "harbor", politics = "palace", trade = "market", faith = "library" }
 
 	local function chron(state)
@@ -37,7 +46,22 @@ return function(D, S)
 				end
 			end
 		end
-		return best
+		if best then
+			return best
+		end
+		-- 직접 쓴 사건이 없으면, 실존 인물의 현장 장면 (항구·날짜로 정해지는 결정적 확률 50%)
+		local h = 0
+		for i = 1, #state.portId do
+			h += string.byte(state.portId, i) * i
+		end
+		if (h + state.day * 3) % 2 == 0 then
+			for _, row in generated do
+				if not c.seen[row.id] and year >= row.year and year <= row.untilYear and table.find(row.ports, state.portId) then
+					return row
+				end
+			end
+		end
+		return nil
 	end
 
 	-- 항구에 도착했을 때: 사건이 있으면 장면을 예약하고 보상을 준다 (한 번에 하나)
@@ -48,7 +72,7 @@ return function(D, S)
 		end
 		local c = chron(state)
 		c.seen[row.id] = state.day
-		local g = C.KindGain[row.kind] or C.KindGain.politics
+		local g = if row.generated then C.GeneratedGain else (C.KindGain[row.kind] or C.KindGain.politics)
 		c.notes += g.note
 		state.fame += g.fame
 		state.coins += g.coins
@@ -59,7 +83,8 @@ return function(D, S)
 		state._scenes = state._scenes or {}
 		table.insert(state._scenes, {
 			kind = "chronicle", name = row.title, npc = row.scholar, art = ART[row.kind] or "library",
-			lines = C.lines(row, port and port.name), summary = summary, year = row.year,
+			lines = C.lines(if row.generated then { year = S.State.year(state), month = 1, voice = row.voice, fact = row.fact, scholar = row.scholar } else row, port and port.name),
+			summary = summary, year = if row.generated then S.State.year(state) else row.year,
 		})
 		return row
 	end
@@ -86,7 +111,7 @@ return function(D, S)
 	local function lastSeenTitle(c)
 		local bestRow, bestDay
 		for id, day in c.seen do
-			local row = C and C.ById[id]
+			local row = rowOf(id)
 			if row and (not bestDay or day > bestDay) then
 				bestRow, bestDay = row, day
 			end
@@ -135,7 +160,7 @@ return function(D, S)
 		end
 		local seenList = {}
 		for id, day in c.seen do
-			local row = C and C.ById[id]
+			local row = rowOf(id)
 			if row then
 				table.insert(seenList, { year = row.year, title = row.title, kind = C.KindName[row.kind] or "", fact = row.fact, lore = row.lore, loreTag = row.loreTag, day = day })
 			end
@@ -144,7 +169,7 @@ return function(D, S)
 		local here = pick(state)
 		return {
 			notes = c.notes, drafts = c.drafts, papers = #c.papers, paperTitles = c.papers, need = NOTES_PER_DRAFT, cost = DRAFT_COST,
-			presented = presented, stage = stage, next = nextText, seen = seenList, total = if C then #C.Rows else 0,
+			presented = presented, stage = stage, next = nextText, seen = seenList, total = if C then #C.Rows + #generated else 0,
 			canWrite = c.notes >= NOTES_PER_DRAFT, canPublish = c.drafts > 0 and presented > #c.papers,
 		}
 	end

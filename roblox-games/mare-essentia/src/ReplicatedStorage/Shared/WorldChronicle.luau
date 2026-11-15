@@ -104,21 +104,61 @@ C.KindGain = { sci = { fame = 6, coins = 80, note = 2 }, nature = { fame = 4, co
 
 C.KindName = { sci = "관측·발견", nature = "재난", war = "전쟁", politics = "정치", trade = "교역", faith = "신앙·문화" }
 
+-- 대량 추가분: tools/chronicle_import.py 가 assets/data/chronicle/*.csv 를 읽어 WorldChronicleBulk.luau 를 만든다.
+do
+	local ok, bulk = pcall(function() return require(script.Parent.WorldChronicleBulk) end)
+	if ok and type(bulk) == "table" then
+		for _, r in bulk do
+			table.insert(C.Rows, r)
+		end
+	end
+end
+
 C.ById = {}
 for _, r in C.Rows do
 	C.ById[r.id] = r
 end
 
+-- 인물 백과(People)의 실존 인물에서 현장 장면을 만든다. 태어난 지 25년 뒤부터 세상을 떠날 때까지 그 항구에서 만날 수 있다.
+local CAT_KIND = { ruler = "politics", explorer = "sci", military = "war", science = "sci", inventor = "sci", thought = "sci", art = "faith", letters = "faith", merchant = "trade", pirate = "war", faith = "faith" }
+local VOICE_BY_PORT = {
+	istanbul = "islam", smyrna = "islam", algiers = "islam", tunis = "islam", alexandria = "islam", damietta = "islam", jeddah = "islam", mocha = "islam", basra = "islam", muscat = "islam", aden = "islam", bandar_abbas = "islam", tripoli = "islam",
+	canton = "china", macau = "china", shanghai = "china", amoy = "china", ningbo = "china", tianjin = "china", tainan = "china", busan = "china", incheon = "china",
+	edo = "japan", nagasaki = "japan", osaka = "japan", hakodate = "japan",
+	calcutta = "india", surat = "india", goa = "india", cochin = "india", madras = "india", calicut = "india", colombo = "india", diu = "india",
+	havana = "americas", boston = "americas", new_york = "americas", philadelphia = "americas", charleston = "americas", quebec = "americas", new_orleans = "americas", veracruz = "americas", cartagena_indias = "americas", salvador = "americas", rio = "americas",
+}
+
+function C.fromPeople(people, ports)
+	local out = {}
+	for _, p in people do
+		local port = p.via and p.via.port
+		if port and p.born and p.died and ports[port] then
+			table.insert(out, {
+				id = "p_" .. p.id, year = p.born + 25, untilYear = p.died, person = p, ports = { port }, voice = VOICE_BY_PORT[port] or "europe",
+				kind = CAT_KIND[p.cat] or "politics", title = p.name .. "을(를) 만나다", scholar = p.name,
+				fact = p.bio .. (if p.legacy then " " .. p.legacy else ""), generated = true,
+			})
+		end
+	end
+	return out
+end
+
+C.GeneratedGain = { fame = 2, coins = 30, note = 1 }
+
 -- 장면 대사 만들기: 배경 → 사실 → 소문(출처 표시) → 학자의 부탁 → 기록
 function C.lines(row, portName: string?): { string }
 	local v = C.Voice[row.voice] or C.Voice.sea
-	return {
-		string.format("%d년 %d월, %s. %s 한쪽에 %s이(가) 서 있다.", row.year, row.month, portName or "항구", v.open, row.scholar),
+	local out = {
+		string.format("%d년 %d월, %s. %s 한쪽에 %s이(가) 서 있다.", row.year, row.month or 1, portName or "항구", v.open, row.scholar),
 		row.fact,
-		string.format("(%s) %s", row.loreTag, row.lore),
-		string.format("%s이(가) 당신을 불러 세운다. %s", row.scholar, v.ask),
-		"당신은 그 자리에서 본 것을 관찰 노트에 한 줄씩 옮겨 적었다.",
 	}
+	if row.lore then
+		table.insert(out, string.format("(%s) %s", row.loreTag or "소문", row.lore))
+	end
+	table.insert(out, string.format("%s이(가) 당신을 불러 세운다. %s", row.scholar, v.ask))
+	table.insert(out, "당신은 그 자리에서 본 것을 관찰 노트에 한 줄씩 옮겨 적었다.")
+	return out
 end
 
 return C
