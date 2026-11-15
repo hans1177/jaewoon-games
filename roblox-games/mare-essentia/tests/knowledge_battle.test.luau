@@ -552,6 +552,23 @@ do
 		if r.hazard then R.record(t2, r, false) else R.record(t2, r, R.hit(r, r.lat)) end
 	end
 	check("암초: 부딪히면 점수가 깎이고 콤보가 끊긴다", t2.crashes == hz and R.score(t2) < 1 and t2.stun > 0)
+	local kinds = {}
+	for _, r in list do if r.hazard and r.kind then kinds[r.kind] = true end end
+	check("장애물: 암초 외 표류 통·해적선도 나온다", kinds.reef and kinds.barrel)
+	local items = R.items(rng, list)
+	local tI = R.newTally()
+	local kindsI = {}
+	for _, it in items do kindsI[it.kind] = true; R.pickup(tI, it) end
+	check("물건: 고리 사이에 놓이고 줍는 개수만큼 기록된다", #items >= 5 and tI.items == #items and tI.points > 0)
+	local tb = R.newTally()
+	tb.stun = 1
+	R.pickup(tb, { at = 0.5, lat = 0, kind = "buoy" })
+	R.pickup(tb, { at = 0.5, lat = 0, kind = "bottle" })
+	check("물건: 부표는 충격을 풀고 유리병은 순풍을 준다", tb.stun == 0 and tb.boost == 3)
+	local cur = R.currents(rng, 10)
+	local m1, c1 = R.currentAt(cur, cur[1].at + 0.01, cur[1].lat)
+	local m2 = R.currentAt(cur, cur[1].at + 0.01, cur[1].lat + 0.9)
+	check("해류: 띠 안에서만 배율이 바뀌고 순류 1.5·역류 0.6", #cur >= 4 and c1 ~= nil and m1 == (if cur[1].fast then 1.5 else 0.6) and m2 == 1)
 	check("별: 점수 구간별로 1~3개", R.stars(0.95) == 3 and R.stars(0.7) == 2 and R.stars(0.1) == 1)
 end
 
