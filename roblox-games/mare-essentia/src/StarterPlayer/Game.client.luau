@@ -864,6 +864,57 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	return row
 end
 
+-- [시각 타일] 글 목록 대신 큰 아이콘 + 짧은 이름 + 큰 버튼. items = {{icon=, kind=, title=, sub=, btn=, color=, enabled=, onClick=}}
+function H.tileGrid(items, parent, cellW, cellH)
+	cellW, cellH = cellW or 176, cellH or 156
+	local grid = Instance.new("Frame")
+	grid.BackgroundTransparency = 1
+	grid.Size = UDim2.new(1, -6, 0, 0)
+	grid.AutomaticSize = Enum.AutomaticSize.Y
+	local gl = Instance.new("UIGridLayout")
+	gl.CellSize = UDim2.fromOffset(cellW, cellH)
+	gl.CellPadding = UDim2.fromOffset(8, 8)
+	gl.SortOrder = Enum.SortOrder.LayoutOrder
+	gl.Parent = grid
+	for i, it in items do
+		local on = it.enabled ~= false
+		local tile = Instance.new("Frame")
+		tile.LayoutOrder = i
+		tile.BackgroundColor3 = if on then Color3.fromRGB(246, 232, 200) else Color3.fromRGB(200, 184, 150)
+		tile.BorderSizePixel = 0
+		corner(tile, 10)
+		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		st.Color = INK_EDGE
+		st.Thickness = 1.5
+		st.Parent = tile
+		tile.Parent = grid
+		local ic = modelIcon(tile, it.kind or "Menu", it.icon, nil, 56, it.title)
+		ic.AnchorPoint = Vector2.new(0.5, 0)
+		ic.Position = UDim2.new(0.5, 0, 0, 8)
+		local nm = mkLabel(tile, it.title, 16, INK, true)
+		nm.AutomaticSize = Enum.AutomaticSize.None
+		nm.Position = UDim2.fromOffset(4, 66)
+		nm.Size = UDim2.new(1, -8, 0, 22)
+		nm.TextXAlignment = Enum.TextXAlignment.Center
+		nm.TextTruncate = Enum.TextTruncate.AtEnd
+		if it.sub then
+			local sb = mkLabel(tile, it.sub, 14, COLORS.muted, false)
+			sb.AutomaticSize = Enum.AutomaticSize.None
+			sb.Position = UDim2.fromOffset(4, 88)
+			sb.Size = UDim2.new(1, -8, 0, 18)
+			sb.TextXAlignment = Enum.TextXAlignment.Center
+			sb.TextTruncate = Enum.TextTruncate.AtEnd
+		end
+		if it.btn then
+			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 38), it.onClick, on)
+			b.Position = UDim2.new(0, 8, 1, -46)
+		end
+	end
+	grid.Parent = parent
+	return grid
+end
+
 local function mkHeader(parent, text)
 	local l = mkLabel(parent, "◆ " .. text, 17, INK, true)
 	l.Size = UDim2.new(1, -8, 0, 30)
@@ -4838,12 +4889,11 @@ function RENDERERS.trade()
 		})
 	end
 	add(function()
-		return mkRow(content, "교역소 입장", "상인과 마주 보고 사고팔며 흥정해요", {
-			{ text = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
-		}, 56)
-	end)
-	add(function()
-		return mkLabel(content, "요령: 특산품은 싸게 사고, 수요가 높은 항구에서 팔아요. 암시장 판매는 관세가 없고 +10%지만 들키면 압수돼요.", 12, COLORS.muted, false)
+		return H.tileGrid({
+			{ icon = "trade", title = "교역소 입장", sub = "상인과 흥정해요", btn = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
+			{ icon = "cc0_chest", title = "특산품", sub = "싸게 사서 비싼 곳에 팔기", enabled = false },
+			{ icon = "cc0_goldcoins", title = "암시장", sub = "관세 없음 +10% · 압수 위험", enabled = false },
+		}, content)
 	end)
 	H.addStoryPanel()
 	if view.news and #view.news > 0 then
@@ -6875,27 +6925,14 @@ function RENDERERS.board()
 	-- 3) 주점에서 할 수 있는 일
 	add(function() return mkHeader(content, "주점에서") end)
 	add(function()
-		return mkRow(content, "주인에게 소문 듣기", "무료. 무작위 소식이 들려요. 가끔 일감이나 선택이 걸린 사건으로 이어져요.", {
-			{ text = "소문 듣기", color = COLORS.blue, onClick = function() call("TavernRumor") end },
-		}, 76)
-	end)
-	add(function()
-		return mkRow(content, string.format("술 사 주기 (%d코인)", q.drinkCost or 30), "주인이 평범한 일감 둘을 보여 줘요. 하나를 고르면 되고, 실패해도 명성은 안 떨어져요. 아주 가끔 전설 의뢰를 먼저 건네요.", {
-			{ text = "술 사기", color = COLORS.gold, enabled = q.active == nil, onClick = function() call("TavernDrink") end },
-		}, 92)
-	end)
-	add(function()
-		return mkRow(content, "동료와 대화", "함께하는 동료와 이야기하면 호감도가 오르고, 이야기 속에서 일감이 나오기도 해요.", {
-			{ text = "대화", color = COLORS.blue, onClick = function() call("TavernTalk") end },
-		}, 76)
-	end)
-	add(function()
-		if q.stranger then
-			return mkRow(content, "구석 자리의 수상한 손님", "후드를 눌러 쓴 손님이 이쪽을 보고 있다. 뒷골목 일이라 어렵지만 보상이 커요. 실패하거나 취소하면 명성이 떨어져요.", {
-				{ text = "말 걸기", color = COLORS.red, enabled = q.active == nil, onClick = function() call("TavernStranger") end },
-			}, 92)
-		end
-		return mkRow(content, "구석 자리", "오늘은 비어 있다. 수상한 손님은 아무 때나 나타났다 사라져요.", nil, 52)
+		return H.tileGrid({
+			{ icon = "quest", title = "소문 듣기", sub = "무료 · 무작위 소식", btn = "듣기", color = COLORS.blue, onClick = function() call("TavernRumor") end },
+			{ icon = "cc0_goldcoins", title = "술 사 주기", sub = string.format("%d코인 · 일감 2택", q.drinkCost or 30), btn = "술 사기", color = COLORS.gold, enabled = q.active == nil, onClick = function() call("TavernDrink") end },
+			{ icon = "cc0_helmet", title = "동료와 대화", sub = "호감도 · 이야기", btn = "대화", color = COLORS.blue, onClick = function() call("TavernTalk") end },
+			if q.stranger
+				then { icon = "status", title = "수상한 손님", sub = "어렵지만 보상 큼", btn = "말 걸기", color = COLORS.red, enabled = q.active == nil, onClick = function() call("TavernStranger") end }
+				else { icon = "status", title = "구석 자리", sub = "오늘은 비어 있어요", enabled = false },
+		}, content)
 	end)
 	-- 4) 소문에서 나온 선택 사건
 	if q.rumorEvent then
@@ -7418,6 +7455,7 @@ H.TAB_ICON = {
 	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
 	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" }, war = { "Naval", "ship-large" }, board = { "Menu", "quest" },
 }
+H.TAB_ICON_FLAT = { crew = "menu_crew", gwent = "menu_gwent", cards = "menu_cards", war = "menu_war" }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
@@ -7443,6 +7481,11 @@ function H.renderTabs()
 		end
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
+		-- 3D 소품 대신 다른 탭과 같은 금빛 그림 아이콘이 등록돼 있으면 그것을 쓴다 (미등록이면 기존 표시 유지)
+		local flat = H.TAB_ICON_FLAT[id]
+		if flat and AssetIds["Menu/" .. flat] then
+			ti = { "Menu", flat }
+		end
 		if ti then
 			local icon = modelIcon(b, ti[1], ti[2], nil, 30, TAB_NAME[id])
 			icon.Name = "TabIcon"
