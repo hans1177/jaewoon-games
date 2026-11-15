@@ -709,6 +709,18 @@ do
 	local sum = 0
 	for _, c in v1.cats do sum += c.built end
 	check("마을 발전: 분류별 건물 수 합계가 맞다", sum == v1.built)
+	local stPD = S.State.new("england", 1700)
+	stPD.portId = "london"
+	local d0 = S.Village.portDev(stPD, "london")
+	check("항구 발전도: 아무것도 안 했으면 0점 1레벨", d0 ~= nil and d0.score == 0 and d0.level == 1)
+	stPD.harbor.london = 99999
+	stPD.portStages = { london = { trade = 2, ship = 1 } }
+	stPD.landmarks = { london = { observatory = true } }
+	stPD.portTech = { london = { astronomy = 20 } }
+	local d1 = S.Village.portDev(stPD, "london")
+	check("항구 발전도: 투자·건물·기술·특수 건축물이 점수에 합산된다", d1.score == d1.harbor * 5 + 3 * 3 + 2 * 2 + 4 and d1.stages == 3 and d1.tech == 2 and d1.landmarks == 1, tostring(d1.score))
+	local pl = S.Village.portList(stPD)
+	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
 
 -- 세계 연대기: 데이터 연결·도착 시 목격·논문 단계

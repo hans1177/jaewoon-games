@@ -4438,6 +4438,16 @@ function RENDERERS.status()
 			end
 			return H.tileGrid(items, content, 150, 110)
 		end)
+		if view.village.ports and #view.village.ports > 0 then
+			add(function() return mkHeader(content, "항구별 발전도 (점수 = 투자 5 + 건물 단계 3 + 기술 2 + 특수 건축물 4)") end)
+			for _, pd in view.village.ports do
+				add(function()
+					local nextTxt = if pd.nextAt then string.format("다음 %d점", pd.nextAt) else "최고 단계"
+					return mkRow(content, string.format("%s  Lv.%d %s  (%d점)", pd.name, pd.level, pd.levelName, pd.score),
+						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt), nil, 56)
+				end)
+			end
+		end
 		if #view.village.discs > 0 then
 			add(function()
 				local parts = {}

@@ -71,6 +71,60 @@ return function(D, S)
 		return out, level
 	end
 
+	-- 항구별 발전도: 항구 투자 레벨 5점 + 지은 건물 단계 3점 + 항구 학문 기술 단계 2점 + 특수 건축물 4점
+	local PORT_LEVEL_AT = { 0, 8, 20, 40, 70, 110 }
+	local TECH_STEPS = { 6, 16, 32, 60 }
+	function V.portDev(state, portId)
+		local port = D.Ports.Ports[portId]
+		if not port then return nil end
+		local harborLv = S.Harbor.level(state, portId) or 0
+		local stages = 0
+		for _, chain in D.PortBuildings.Chains do
+			stages += S.Build.stageOf(state, portId, chain.id) or 0
+		end
+		local tech = 0
+		for _, pts in ((state.portTech or {})[portId] or {}) do
+			for _, need in TECH_STEPS do
+				if pts >= need then tech += 1 end
+			end
+		end
+		local marks = 0
+		for _ in ((state.landmarks or {})[portId] or {}) do
+			marks += 1
+		end
+		local score = harborLv * 5 + stages * 3 + tech * 2 + marks * 4
+		local level = 1
+		for i, need in PORT_LEVEL_AT do
+			if score >= need then level = i end
+		end
+		return {
+			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
+			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
+			nextAt = PORT_LEVEL_AT[level + 1],
+		}
+	end
+
+	-- 발전도가 0보다 큰 항구 + 현재 항구, 점수 높은 순
+	function V.portList(state)
+		local out, seen = {}, {}
+		local function add(id)
+			if seen[id] then return end
+			seen[id] = true
+			local d = V.portDev(state, id)
+			if d and (d.score > 0 or id == state.portId) then table.insert(out, d) end
+		end
+		add(state.portId)
+		for id in (state.harbor or {}) do add(id) end
+		for id in (state.portStages or {}) do add(id) end
+		for id in (state.portTech or {}) do add(id) end
+		for id in (state.landmarks or {}) do add(id) end
+		table.sort(out, function(a, b)
+			if a.score ~= b.score then return a.score > b.score end
+			return a.id < b.id
+		end)
+		return out
+	end
+
 	function V.view(state)
 		local tiers, score, counts = V.tiers(state)
 		local built, level = V.buildings(state)
@@ -94,6 +148,7 @@ return function(D, S)
 		return {
 			level = level, name = LEVEL_NAME[level], score = score, nextAt = nextAt, nextName = LEVEL_NAME[level + 1],
 			built = #built, total = #EB.List, cats = cats, discs = discs,
+			ports = V.portList(state), here = V.portDev(state, state.portId),
 		}
 	end
 
