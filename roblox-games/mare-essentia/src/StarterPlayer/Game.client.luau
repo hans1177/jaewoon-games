@@ -15,6 +15,7 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "MareEssentiaGui"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- [시작 화면] 서버 상태를 받는 동안 공중 캐릭터와 빈 하늘이 노출되지 않도록 UI를 즉시 덮는다.
