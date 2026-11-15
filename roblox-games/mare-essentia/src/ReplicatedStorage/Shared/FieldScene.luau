@@ -1734,9 +1734,22 @@ function FieldScene.start(opts)
 		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
 			allyNames = { "동료 기사", "동료 도적" } -- 개발 캡처 전용
 		end
+		-- 동료마다 이름·직업에 맞는 겉모습(직업 → 옷 계열, 이름 → 옷 색)으로 만든다 (같은 얼굴 두 명이 나오지 않게)
+		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
+		local function hashName(str: string): number
+			local h = 7
+			for _, cp in utf8.codepoint(str, 1, -1) do h = (h * 31 + cp) % 100003 end
+			return h
+		end
+		local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
 		for i, nm in allyNames do
 			if i <= 2 then
-				table.insert(allyDefs, { name = tostring(nm), role = if i == 1 then "Knight" else "Rogue" })
+				local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
+				local job = if type(nm) == "table" then nm.role else nil
+				local h = hashName(name)
+				local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + i) % #ROLES + 1]
+				local coat = Color3.fromHSV((h % 360) / 360, 0.45, 0.62)
+				table.insert(allyDefs, { name = name, role = role, coat = coat })
 			end
 		end
 		local allies: { any } = {}
@@ -1755,7 +1768,7 @@ function FieldScene.start(opts)
 				spawned = true
 				for i, ad in allyDefs do
 					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
-					local m = Pose.createR15(folder, pos0, 0, nil, rng, ad.role, 5.6)
+					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.6)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
