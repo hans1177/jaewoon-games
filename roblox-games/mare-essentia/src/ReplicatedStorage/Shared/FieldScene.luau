@@ -1567,7 +1567,22 @@ function FieldScene.start(opts)
 				elseif wish ~= 0 then
 					st, ph = "RUN", (now * 1.6) % 1
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9)
+				-- 몸통 기울기: 근접형은 준비 때 뒤로 젖혔다가 타격 때 앞으로 숙이고, 사수는 활을 당기며 뒤로 젖힌다
+				local lean = 0
+				local def0 = e.ac.def
+				if st == "ANTICIPATION" then
+					lean = (if def0.keepAway then 0.28 else 0.38) * ph
+				elseif st == "ATTACK" then
+					lean = if def0.keepAway then 0.1 else -0.55
+				elseif st == "RECOVERY" then
+					lean = -0.3 * (1 - ph)
+				end
+				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
+				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
+					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dt, flat.Magnitude - 2.5)
+					e.model:PivotTo(e.model:GetPivot() + lunge)
+				end
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, if lean ~= 0 then CFrame.Angles(lean, 0, 0) else nil)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then

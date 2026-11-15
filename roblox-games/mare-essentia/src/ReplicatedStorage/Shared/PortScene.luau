@@ -2980,7 +2980,22 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
-					Pose.work(w.model, w.kind, now + w.phase)
+					-- 손님(카메라)이 가까이 오면 하던 일을 잠깐 멈추고 몸을 돌려 손을 흔든다 (사람마다 시간이 달라 한꺼번에 하지 않는다)
+					local kind, target = w.kind, 0
+					local cam = workspace.CurrentCamera
+					local p0 = w.base.Position
+					local flat = if cam then Vector3.new(cam.CFrame.Position.X - p0.X, 0, cam.CFrame.Position.Z - p0.Z) else Vector3.zero
+					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
+						kind, target = "wave", 0.85
+					end
+					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * 0.1
+					if w.ga > 0.01 then
+						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + flat.Unit), w.ga))
+					elseif w.ga ~= 0 then
+						w.ga = 0
+						w.model:PivotTo(w.base)
+					end
+					Pose.work(w.model, kind, now + w.phase)
 				end
 			elseif w.mode == "animal" then
 				if w.model.Parent then

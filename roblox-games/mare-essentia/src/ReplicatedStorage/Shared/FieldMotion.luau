@@ -81,7 +81,7 @@ function FM.step(h, dt: number, rootRot: CFrame?)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?)
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
@@ -100,7 +100,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			end
 		end
 	end
-	FM.step(h, dt)
+	FM.step(h, dt, rootRot)
 end
 
 local comboCache = {}
