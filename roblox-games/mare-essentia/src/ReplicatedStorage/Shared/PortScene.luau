@@ -215,7 +215,7 @@ local function sign(parent, adornee, text, color, height, compact, iconModel)
 		sk.Thickness = 1.5
 		sk.Parent = pl
 		pl.Parent = nb
-		nb.Parent = parent
+		nb.Parent = if adornee:IsA("BasePart") then adornee else parent
 		return nb
 	end
 	local bb = Instance.new("BillboardGui")
@@ -306,7 +306,8 @@ local function sign(parent, adornee, text, color, height, compact, iconModel)
 	lim.Parent = l
 	l.Parent = plate
 	plate.Parent = bb
-	bb.Parent = parent
+	-- 간판은 건물(Adornee) 자신의 자식으로 둔다: 폴더 아래에 두면 화면에 안 뜰 수 있고, 건물이 지워질 때 함께 사라진다
+	bb.Parent = if adornee:IsA("BasePart") then adornee else parent
 	return bb
 end
 
