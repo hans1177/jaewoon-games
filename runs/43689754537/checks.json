@@ -1,7 +1,7 @@
 {
-  "runId": "43687101902",
+  "runId": "43689754537",
   "kind": "studio",
-  "sourceRevision": "8bfe6b5451ca1d50c1b2c680f5f7599ae7c332aa",
+  "sourceRevision": "315011f9907bed765e1e70f2aefc581f164f461d",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
@@ -16,7 +16,7 @@
     "abortedEarly": true
   },
   "errors": [
-    "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: HumanoidRootPart is not a valid member of Model \"Worksp"
+    "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: FieldScene is not a valid member of Workspace \"Workspac"
   ],
   "audits": {
     "models": "NOT_RUN",
@@ -350,5 +350,5 @@
   ],
   "screenshotComparison": [],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43686994838"
+  "previousRunId": "43689626898"
 }
