@@ -1502,6 +1502,19 @@ function FieldScene.start(opts)
 		b.Activated:Connect(go)
 	end
 	bindPress(attackBtn, useAttack)
+	-- 공격 버튼 주변(약 2배 크기)을 눌러도 공격이 나간다: 손가락이 버튼 바깥으로 살짝 빗나가도 된다
+	do
+		local hit = Instance.new("TextButton")
+		hit.AnchorPoint = attackBtn.AnchorPoint
+		hit.Position = attackBtn.Position
+		hit.Size = UDim2.fromOffset(190, 190)
+		hit.BackgroundTransparency = 1
+		hit.Text = ""
+		hit.AutoButtonColor = false
+		hit.ZIndex = math.max(attackBtn.ZIndex - 1, 0)
+		hit.Parent = gui
+		bindPress(hit, useAttack)
+	end
 
 	local staminaBack = Instance.new("Frame")
 	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -2136,10 +2149,29 @@ function FieldScene.start(opts)
 				vec = if d.Magnitude > 1 then d.Unit else d
 				knob.Position = UDim2.new(0.5, vec.X * 45, 0.5, vec.Y * 45)
 			end
+			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
+			local homePos = pad.Position
+			local function startAt(input: InputObject)
+				active = input
+				local guiAbs = gui.AbsolutePosition
+				local half = pad.AbsoluteSize.X / 2
+				local vs = workspace.CurrentCamera.ViewportSize
+				local cx = math.clamp(input.Position.X, half + 8, vs.X * 0.5)
+				local cy = math.clamp(input.Position.Y, half + 8, vs.Y - half - 8)
+				pad.Position = UDim2.fromOffset(cx - half - guiAbs.X, cy + half - guiAbs.Y)
+				setFrom(input.Position)
+			end
 			table.insert(conns, pad.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-					active = input
-					setFrom(input.Position)
+				if not active and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
+					startAt(input)
+				end
+			end))
+			table.insert(conns, UIS.InputBegan:Connect(function(input, processed)
+				if active or processed or input.UserInputType ~= Enum.UserInputType.Touch then
+					return
+				end
+				if input.Position.X < workspace.CurrentCamera.ViewportSize.X * 0.5 then
+					startAt(input)
 				end
 			end))
 			table.insert(conns, UIS.InputChanged:Connect(function(input)
@@ -2151,6 +2183,7 @@ function FieldScene.start(opts)
 				if input == active then
 					active, vec = nil, Vector2.zero
 					knob.Position = UDim2.fromScale(0.5, 0.5)
+					pad.Position = homePos
 				end
 			end))
 			table.insert(conns, RunService.Heartbeat:Connect(function()
