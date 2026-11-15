@@ -569,6 +569,7 @@ end
 
 -- 숨쉬기·체중 이동: 모든 제자리 일에 몸통 출렁임과 고개 흔들림을 더해 가만히 있어도 움직이게 한다 (절대값으로 덮어써 누적되지 않는다)
 local workBase = Pose.work
+local workSmooth = setmetatable({}, { __mode = "k" }) -- 모델별 직전 관절 자세(모델이 사라지면 같이 지워진다)
 function Pose.work(model, kind, t)
 	workBase(model, kind, t)
 	local m = rigMotors[model]
@@ -578,6 +579,56 @@ function Pose.work(model, kind, t)
 	end
 	if m.neck and kind ~= "look" and kind ~= "stoop" and kind ~= "carry" then
 		m.neck.Transform = CFrame.Angles(math.sin(t * 0.6) * 0.06, math.sin(t * 0.45) * 0.22, 0)
+	end
+	-- 온몸 거들기: 팔만 움직이지 않고 무릎·허리·체중도 일에 맞춰 같이 움직인다(더해서 곱한다)
+	local function add(motor, cf)
+		if motor then motor.Transform = motor.Transform * cf end
+	end
+	local A = CFrame.Angles
+	local standing = kind ~= "sit" and kind ~= "fish" and kind ~= "carry" and kind ~= "look" and kind ~= "stoop"
+	if kind == "hammer" then
+		local s = math.max(0, math.sin(t * 5))
+		add(m.root, CFrame.new(0, -0.14 * s, 0)); add(m.leftKnee, A(-0.3 * s, 0, 0)); add(m.rightKnee, A(-0.3 * s, 0, 0))
+		add(m.waist, A(0, math.sin(t * 2.5) * 0.1, 0)); add(m.leftLeg, A(0.15 * s, 0, 0)); add(m.rightLeg, A(0.15 * s, 0, 0))
+	elseif kind == "hoe" then
+		local s = (math.sin(t * 2.2) + 1) / 2
+		add(m.root, CFrame.new(0, -0.1 * s, -0.12 * s)); add(m.leftKnee, A(-0.3 * s, 0, 0)); add(m.rightKnee, A(-0.3 * s, 0, 0))
+		add(m.waist, A(0, math.sin(t * 1.1) * 0.12, 0)); add(m.leftLeg, A(0.2 * s, 0, 0)); add(m.rightLeg, A(-0.1 * s, 0, 0))
+	elseif kind == "sweep" then
+		local s = math.sin(t * 3)
+		add(m.waist, A(0, 0.22 * s, 0)); add(m.root, CFrame.new(0.07 * s, 0, 0)); add(m.leftLeg, A(0.1 * s, 0, 0)); add(m.rightLeg, A(-0.1 * s, 0, 0))
+	elseif kind == "stir" then
+		add(m.waist, A(0, math.sin(t * 3) * 0.14, math.cos(t * 3) * 0.04))
+	elseif kind == "lift" or kind == "bell" then
+		add(m.waist, A(0, math.sin(t * 0.9) * 0.06, 0))
+	end
+	if standing then
+		-- 체중을 이쪽저쪽 발로 옮기며 선다
+		local w = math.sin(t * 0.8 + 1.3)
+		add(m.leftLeg, A(w * 0.05, 0, -w * 0.03)); add(m.rightLeg, A(-w * 0.05, 0, -w * 0.03))
+		add(m.root, CFrame.new(w * 0.05, 0, 0))
+		add(m.waist, A(0, 0, -w * 0.025))
+	end
+	-- 모든 관절을 이전 프레임에서 현재 목표로 부드럽게 잇는다(일이 바뀌거나 사인파가 끊기는 곳의 툭툭 끊김 방지)
+	local now = os.clock()
+	local st = workSmooth[model]
+	if not st then
+		st = { at = now, prev = {} }
+		workSmooth[model] = st
+	end
+	local dt = now - st.at
+	st.at = now
+	local alpha = if dt > 0.25 then 1 else 1 - math.exp(-14 * dt)
+	for _, joint in m do
+		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+			local prev = st.prev[joint]
+			local target = joint.Transform
+			if prev then
+				target = prev:Lerp(target, alpha)
+				joint.Transform = target
+			end
+			st.prev[joint] = target
+		end
 	end
 end
 
