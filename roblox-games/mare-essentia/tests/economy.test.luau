@@ -135,10 +135,10 @@ do
 		local port = Ports.Ports["london"]
 		local gid = port.produces[1]
 		local lim = Econ.limits(st, "london", gid)
-		check("교역 한도: 특산품은 재고가 있고 사줄 양은 적다", lim and lim.supply > 0 and lim.absorb < lim.supply, lim and (lim.supply .. "/" .. lim.absorb))
+		check("교역 한도: 특산품은 재고가 있고 사줄 양은 적다", lim and lim.supply > 50 and lim.absorb < lim.supply, lim and (lim.supply .. "/" .. lim.absorb))
 		local dgid = port.demands[1]
 		local dl = Econ.limits(st, "london", dgid)
-		check("교역 한도: 수요품은 사줄 양이 재고보다 많다", dl and dl.absorb > dl.supply, dl and (dl.supply .. "/" .. dl.absorb))
+		check("교역 한도: 수요품은 사줄 양이 재고보다 많다", dl and dl.absorb >= Eco.MIN_ABSORB and dl.absorb > dl.supply, dl and (dl.supply .. "/" .. dl.absorb))
 		Econ.take(st, "london", gid, lim.supply)
 		local after = Econ.limits(st, "london", gid)
 		check("산 만큼 마을 재고가 줄어 한도가 줄어든다 (무한 아님)", after.supply < lim.supply and after.supply <= lim.supply * 0.8, lim.supply .. "->" .. after.supply)

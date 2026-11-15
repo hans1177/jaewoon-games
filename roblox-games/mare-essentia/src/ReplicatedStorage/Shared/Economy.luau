@@ -681,19 +681,23 @@ function E.orderCap(level)
 	local l = math.max(1, level or 1)
 	return math.floor(20 + 6 * (l - 1) ^ 1.1)
 end
+-- 시뮬 단위(마을 하루 생산·소비량)를 플레이어 거래 단위로 바꾸는 배율. 특산품 한 번 재고가 수십~수백 개가 되게 맞춘다.
+E.TRADE_SCALE = 12
+-- 처음 레벨의 주문 한 번(20개)만큼은 어느 항구에서나 되팔 수 있다.
+E.MIN_ABSORB = 20
 -- 마을이 내놓을 수 있는 수량: 마을 자기 소비 비축(수요 5일치)은 남기고, 남는 재고의 일부(25%)만 한 번에.
 function E.tradeSupply(t, g)
 	local st = t.stock[g]
 	if not st then return nil end
 	local dem = t.dem[g] or 0
-	return math.max(0, math.floor((st - dem * 5) * 0.25))
+	return math.max(0, math.floor((st - dem * 5) * 0.25 * E.TRADE_SCALE))
 end
--- 마을이 사줄 수 있는 수량: 재고가 수요 20일치(TARGET_DAYS)에 찰 때까지. 특산품 마을에 같은 물건은 거의 못 판다.
+-- 마을이 사줄 수 있는 수량: 재고가 수요 20일치(TARGET_DAYS)에 찰 때까지 + 하루치 소비. 특산품 마을에 같은 물건은 많이 못 판다.
 function E.tradeAbsorb(t, g)
 	local st = t.stock[g]
 	if not st then return nil end
 	local dem = t.dem[g] or 0
-	return math.max(0, math.floor((dem * E.TARGET_DAYS - st) * 0.5 + dem * 2))
+	return math.floor((math.max(0, dem * E.TARGET_DAYS - st) * 0.5 + dem) * E.TRADE_SCALE) + E.MIN_ABSORB
 end
 -- 실제 거래: 산 만큼 마을 재고가 줄고, 판 만큼 늘어난다 (가격은 다음 시뮬 날에 반응).
 function E.tradeTake(t, g, n) if t.stock[g] then t.stock[g] = math.max(0, t.stock[g] - n) end end
