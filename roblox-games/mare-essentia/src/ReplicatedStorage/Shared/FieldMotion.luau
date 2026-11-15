@@ -20,10 +20,16 @@ function FM.new(model: Model, followAnimator: boolean)
 	local joints = {}
 	local hum = model:FindFirstChildOfClass("Humanoid")
 	local r6 = hum ~= nil and hum.RigType == Enum.HumanoidRigType.R6
-	for _, n in (if r6 then R6_NAMES else R15_NAMES) do
-		local j = model:FindFirstChild(n, true)
-		if j and j:IsA("Motor6D") then
-			joints[n] = j
+	-- 마력숲과 같은 방식: 새 R15 아바타(Avatar Joint Upgrade)는 AnimationConstraint 를 쓰므로 Motor6D 보다 우선한다.
+	local want = {}
+	for _, n in (if r6 then R6_NAMES else R15_NAMES) do want[n] = true end
+	for _, d in model:GetDescendants() do
+		if want[d.Name] then
+			local connected = (d:IsA("AnimationConstraint") and d.Attachment0 ~= nil and d.Attachment1 ~= nil)
+				or (d:IsA("Motor6D") and d.Part0 ~= nil and d.Part1 ~= nil)
+			if connected and (not joints[d.Name] or d:IsA("AnimationConstraint")) then
+				joints[d.Name] = d
+			end
 		end
 	end
 	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 18 })

@@ -604,7 +604,7 @@ function FieldScene.start(opts)
 		local function joint(partName, jointName)
 			local part = char:FindFirstChild(partName)
 			local j2 = part and part:FindFirstChild(jointName)
-			return if j2 and j2:IsA("Motor6D") then j2 else nil
+			return if j2 and (j2:IsA("Motor6D") or j2:IsA("AnimationConstraint")) then j2 else nil
 		end
 		local sh, el, waist = joint("RightUpperArm", "RightShoulder"), joint("RightLowerArm", "RightElbow"), joint("UpperTorso", "Waist")
 		local wind = math.min(p / 0.3, 1) -- 뒤로 젖힘
