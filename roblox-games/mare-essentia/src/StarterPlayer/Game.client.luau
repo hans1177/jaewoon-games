@@ -5420,7 +5420,14 @@ function H.startField(s)
 	end
 	inField = true
 	main.Visible = false
+	local allyNames = {}
+	for _, c in (view and view.companions and view.companions.list) or {} do
+		if c.joined and #allyNames < 2 then
+			table.insert(allyNames, c.name)
+		end
+	end
 	FieldScene.start({
+		allies = allyNames,
 		name = s.name,
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
