@@ -77,6 +77,19 @@ B.Chains = {
 			{ name = "왕립 관측·실험소", cost = 14000, harbor = 4, since = 1675, node = "chem_oxygen", era = 4, research = 0.025,
 				lore = "정밀 시계와 실험 기구를 갖춘 국가 연구소. 경도를 재는 방법도 이곳에서 다듬어졌다." },
 		} },
+	{ id = "print", name = "인쇄·신문 계통", summary = "인쇄 공방에서 신문사와 학술지로 커 가는 소식의 길. 소식이 빠를수록 시세를 잘 읽고 연구가 널리 퍼진다.",
+		stages = {
+			{ name = "인쇄 공방", cost = 760, harbor = 1, since = 1600, node = "lang_printing_press", research = 0.006, sell = 0.004,
+				lore = "활자를 짜 맞춰 책과 전단을 찍는 공방. 한 번 짠 활자로 같은 글을 수백 장 찍어 낸다." },
+			{ name = "서적상과 전단 가게", cost = 2300, harbor = 2, since = 1600, node = "lang_dictionary", research = 0.008, sell = 0.006,
+				lore = "항구마다 해도와 항해서, 사건을 알리는 전단이 팔렸다. 글을 읽는 사람이 늘수록 소식도 빨라졌다." },
+			{ name = "주간 신문사", cost = 5800, harbor = 3, since = 1605, node = "lang_translation", sell = 0.012,
+				lore = "1605년 스트라스부르에서 정기 신문이 나온 뒤 유럽의 도시마다 주간 소식지가 생겼다. 시세와 배 소식이 실렸다." },
+			{ name = "학술지 출판사", cost = 12500, harbor = 4, since = 1665, node = "phi_scientific_method", research = 0.02,
+				lore = "1665년 런던과 파리에서 학술지가 창간되어 관찰과 실험이 정기적으로 실렸다. 논문이 나라 밖 학자에게 닿는다." },
+			{ name = "일간 신문사", cost = 22000, harbor = 5, since = 1702, era = 4, sell = 0.018,
+				lore = "1702년 런던에서 일간 신문이 나왔다. 매일 바뀌는 시세와 소식이 상인의 판단을 돕는다." },
+		} },
 }
 
 -- 발전도(항구 레벨)에 따라 마을에 저절로 들어서는 시설. 분야별로 나뉘며, 레벨이 오르면 공사 기간을 거쳐 완공된다.
