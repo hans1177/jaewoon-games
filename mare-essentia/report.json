@@ -1,8 +1,8 @@
 {
  "round": 0,
- "checked": 296,
+ "checked": 356,
  "total": 908,
- "average": 97.5,
+ "average": 97.2,
  "byCategory": {
   "cardart": {
    "n": 217,
@@ -13,8 +13,16 @@
    "avg": 93.1
   },
   "icons": {
+   "n": 47,
+   "avg": 91.4
+  },
+  "inbox-hold": {
    "n": 11,
-   "avg": 89.1
+   "avg": 100.0
+  },
+  "portraits": {
+   "n": 13,
+   "avg": 100.0
   }
  },
  "lowest": [
@@ -35,8 +43,32 @@
     "그림이 가장자리에 닿아 잘림",
     "다소 흐림 (선명도 67)"
    ]
+  },
+  {
+   "path": "icons/vfx_light.png",
+   "score": 65.0,
+   "issues": [
+    "투명 배경 없음",
+    "흐림 (선명도 5)"
+   ]
+  },
+  {
+   "path": "icons/vfx_slash.png",
+   "score": 65.0,
+   "issues": [
+    "투명 배경 없음",
+    "흐림 (선명도 7)"
+   ]
+  },
+  {
+   "path": "icons/vfx_spark.png",
+   "score": 65.0,
+   "issues": [
+    "투명 배경 없음",
+    "흐림 (선명도 2)"
+   ]
   }
  ],
- "candidates": 3,
- "updated": 1794698101
+ "candidates": 7,
+ "updated": 1794710620
 }
