@@ -885,7 +885,19 @@ function FieldScene.start(opts)
 					end)
 				end
 				sword.Parent = char0
-				sword:PivotTo(hand.CFrame * CFrame.new(0, -0.5, -0.2) * CFrame.Angles(math.rad(-90), 0, 0))
+				-- 모델의 가장 긴 축(칼날 방향)을 손의 앞쪽으로 맞춘다: 모델마다 축이 달라도 칼이 앞을 향한다
+				do
+					local bbCf, ext2 = sword:GetBoundingBox()
+					local ax = if ext2.X >= ext2.Y and ext2.X >= ext2.Z then bbCf.RightVector elseif ext2.Y >= ext2.Z then bbCf.UpVector else bbCf.LookVector
+					local fwd = hand.CFrame.LookVector
+					local cross = ax:Cross(fwd)
+					local rot = if cross.Magnitude < 1e-4
+						then (if ax:Dot(fwd) > 0 then CFrame.new() else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
+						else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
+					local len2 = math.max(ext2.X, ext2.Y, ext2.Z)
+					local newBB = CFrame.new(hand.Position + fwd * (len2 * 0.35) - hand.CFrame.UpVector * 0.3) * (rot * bbCf.Rotation)
+					sword:PivotTo(newBB * bbCf:ToObjectSpace(sword:GetPivot()))
+				end
 				for _, bp in sword:GetDescendants() do
 					if bp:IsA("BasePart") then
 						local w = Instance.new("WeldConstraint")
