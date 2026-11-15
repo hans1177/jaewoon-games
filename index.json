@@ -2,13 +2,13 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "43701447825",
+    "runId": "43702135272",
     "kind": "deep",
-    "at": "2026-11-15T09:59:25.255Z",
+    "at": "2026-11-15T10:08:09.297Z",
     "sourceRevision": "810790f8585e7661f4ffe58b5b0f928b482c70f8",
     "result": "PASS",
     "frames": 47,
-    "changedFrames": 43,
+    "changedFrames": 41,
     "summary": {
       "plannedSteps": 166,
       "completedSteps": 166,
@@ -19,10 +19,30 @@
       "capturedFrames": 47,
       "abortedEarly": false
     },
-    "path": "runs/43701447825"
+    "path": "runs/43702135272"
   },
-  "lastDeepAt": "2026-11-15T09:59:25.255Z",
+  "lastDeepAt": "2026-11-15T10:08:09.297Z",
   "runs": [
+    {
+      "runId": "43702135272",
+      "kind": "deep",
+      "at": "2026-11-15T10:08:09.297Z",
+      "sourceRevision": "810790f8585e7661f4ffe58b5b0f928b482c70f8",
+      "result": "PASS",
+      "frames": 47,
+      "changedFrames": 41,
+      "summary": {
+        "plannedSteps": 166,
+        "completedSteps": 166,
+        "plannedClicks": 7,
+        "successfulClicks": 7,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 47,
+        "capturedFrames": 47,
+        "abortedEarly": false
+      },
+      "path": "runs/43702135272"
+    },
     {
       "runId": "43701447825",
       "kind": "deep",
@@ -82,26 +102,6 @@
         "abortedEarly": false
       },
       "path": "runs/43698183335"
-    },
-    {
-      "runId": "43697795732",
-      "kind": "deep",
-      "at": "2026-11-15T09:14:08.494Z",
-      "sourceRevision": "2943629956d59f1bd2b2b81b1368c0ddc22d1593",
-      "result": "PASS",
-      "frames": 47,
-      "changedFrames": 41,
-      "summary": {
-        "plannedSteps": 166,
-        "completedSteps": 166,
-        "plannedClicks": 7,
-        "successfulClicks": 7,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 47,
-        "capturedFrames": 47,
-        "abortedEarly": false
-      },
-      "path": "runs/43697795732"
     },
     {
       "runId": "43697537682",
