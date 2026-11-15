@@ -31,11 +31,14 @@ return function(D, S)
 	-- 초반 안내 단계: done(state) 가 참이면 자동으로 끝난 것으로 본다. 사용자가 "알겠어요"를 눌러도 끝난다.
 	local GUIDE = {
 		{ id = "g_trade", topic = "trade", tab = "trade", label = "교역소로",
-			text = "항구에 도착했어요. 교역소에서 이 항구의 특산품을 싸게 사서 다른 항구에 비싸게 팔면 이익이 남아요. 먼저 시세를 살펴볼까요?",
-			done = function(state) return S.State.countVisited(state) >= 2 end },
+			text = "먼저 장사부터 배워요. 교역소에서 이 항구 특산품(싼 물건)을 사서 배에 실으세요. 그걸 다른 항구에 비싸게 팔면 이익이 남아요.",
+			done = function(state) return S.State.cargoUsed(state) > 0 or S.State.countVisited(state) >= 2 end },
 		{ id = "g_route", topic = "route", tab = "route", label = "항만청으로",
-			text = "항만청에서 항로를 고르면 다른 항구로 출항해요. 바람과 날씨, 보급품을 확인하고 떠나요.",
+			text = "물건을 실었어요! 이제 항만청에서 다른 항구를 골라 출항하세요. 가까운 항구부터 가면 안전해요.",
 			done = function(state) return S.State.countVisited(state) >= 2 end },
+		{ id = "g_sell", topic = "trade", tab = "trade", label = "교역소로",
+			text = "새 항구에 도착했어요. 교역소에서 시세가 높은 물건을 팔아 보세요. 산 값보다 비싸면 이익이에요.",
+			done = function(state) return S.State.countVisited(state) >= 2 and S.State.cargoUsed(state) == 0 end },
 		{ id = "g_explore", topic = "knowledge", tab = "explore", label = "탐험하러",
 			text = "항구 근처 탐험 지점에서 도감 카드를 모을 수 있어요. 카드를 모으면 직업이 생기고 카드 배틀도 강해져요.",
 			done = function(state) return next(state.discovered) ~= nil end },
@@ -163,7 +166,7 @@ return function(D, S)
 		if state.day < 200 then
 			for i, g in GUIDE do
 				if not state.advDone[g.id] and not g.done(state) then
-					add(g.id, 100 - i, g.topic, g.text, g.tab, g.label, true)
+					add(g.id, 118 - i, g.topic, string.format("[길잡이 %d/%d] %s", i, #GUIDE, g.text), g.tab, g.label, true)
 					break
 				end
 			end
