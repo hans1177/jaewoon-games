@@ -3098,12 +3098,14 @@ function PortScene.build(info, onFacility)
 				local t = (now + w.phase) % total
 				local d, yaw, moving = 0, 0, true
 				local function ease(x) x = math.clamp(x, 0, 1) return x * x * (3 - 2 * x) end
+				-- 출발·멈춤 때 속도가 갑자기 튀지 않게 천천히 가속·감속한다(속도는 가운데에서 가장 빠름)
+				local function sm(x) x = math.clamp(x, 0, 1) return x * x * x * (x * (x * 6 - 15) + 10) end
 				if t < cycle then
-					d = t / cycle * w.len
+					d = sm(t / cycle) * w.len
 				elseif t < cycle + dwell then
 					d, yaw, moving = w.len, math.pi * ease((t - cycle) / (dwell * 0.6)), false
 				elseif t < 2 * cycle + dwell then
-					d, yaw = (1 - (t - cycle - dwell) / cycle) * w.len, math.pi
+					d, yaw = (1 - sm((t - cycle - dwell) / cycle)) * w.len, math.pi
 				else
 					d, yaw, moving = 0, math.pi + math.pi * ease((t - 2 * cycle - dwell) / (dwell * 0.6)), false
 				end
