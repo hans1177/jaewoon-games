@@ -662,7 +662,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		elseif danger then Color3.fromRGB(224, 166, 138) elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
 	b.TextColor3 = if active then inkTint else Color3.fromRGB(108, 92, 69)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 32) * 0.42), 13, 16)
+	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 32) * 0.42), 13, 19)
 	b.TextWrapped = true
 	b.AutoButtonColor = active
 	b.BorderSizePixel = 0
@@ -813,7 +813,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 84 + 8
+	local btnWidth = btnCount * 100 + 8 -- 버튼 칸을 넓혀 크게 (단추 92 + 간격 8)
 
 	local textBox = Instance.new("Frame")
 	textBox.Name = "RowText"
@@ -823,9 +823,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	textBox.Parent = row
 	local layout = Instance.new("UIListLayout")
 	layout.Parent = textBox
-	mkLabel(textBox, title, 16, INK, true)
+	mkLabel(textBox, title, 19, INK, true) -- 메뉴 글씨·그림을 시원하게 키운다
 	if subtitle and subtitle ~= "" then
-		mkLabel(textBox, subtitle, 14, INK_SOFT, false)
+		mkLabel(textBox, subtitle, 16, INK_SOFT, false)
 	end
 	-- 버튼이 많아 글자 칸이 좁아지면 부제가 줄바꿈되어 행 밖으로 잘린다. 글이 길면 행 높이를 늘려 맞춘다.
 	local baseHeight = height or 60
@@ -840,13 +840,13 @@ local function mkRow(parent, title, subtitle, buttons, height)
 
 	if buttons then
 		for i, spec in buttons do
-			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(78, 40), spec.onClick, spec.enabled)
+			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(92, 48), spec.onClick, spec.enabled)
 			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (btnCount - i) * 84, 0.5, 0)
+			b.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
 		end
 	end
 	-- 좁은 화면에서는 글자가 여러 줄로 접혀 고정 높이를 넘으므로(CUT), 글자 높이에 맞춰 행을 늘린다.
-	local minH = height or 60
+	local minH = math.max(height or 60, 78) -- 그림이 커진 만큼 행도 높게
 	local function fitRow()
 		local need = layout.AbsoluteContentSize.Y + 12
 		if need > minH then
@@ -858,15 +858,16 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRow)
 	fitRow()
 	local ic = H.iconFor(title, subtitle)
-	if ic and (height or 60) >= 50 then
-		withIcon(row, ic[2], ic[3], nil, math.min(46, (height or 60) - 10))
+	if ic and minH >= 50 then
+		withIcon(row, ic[2], ic[3], nil, math.min(66, minH - 12))
 	end
 	return row
 end
 
 -- [시각 타일] 글 목록 대신 큰 아이콘 + 짧은 이름 + 큰 버튼. items = {{icon=, kind=, title=, sub=, btn=, color=, enabled=, onClick=}}
 function H.tileGrid(items, parent, cellW, cellH)
-	cellW, cellH = cellW or 176, cellH or 156
+	-- 칸은 1.3배로 키워 그림·글씨를 크게 보인다 (기본 176x156 → 229x203)
+	cellW, cellH = math.floor((cellW or 176) * 1.3), math.floor((cellH or 156) * 1.3)
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
 	grid.Size = UDim2.new(1, -6, 0, 0)
@@ -889,26 +890,26 @@ function H.tileGrid(items, parent, cellW, cellH)
 		st.Thickness = 1.5
 		st.Parent = tile
 		tile.Parent = grid
-		local ic = modelIcon(tile, it.kind or "Menu", it.icon, nil, 56, it.title)
+		local ic = modelIcon(tile, it.kind or "Menu", it.icon, nil, 78, it.title)
 		ic.AnchorPoint = Vector2.new(0.5, 0)
 		ic.Position = UDim2.new(0.5, 0, 0, 8)
-		local nm = mkLabel(tile, it.title, 16, INK, true)
+		local nm = mkLabel(tile, it.title, 19, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
-		nm.Position = UDim2.fromOffset(4, 66)
-		nm.Size = UDim2.new(1, -8, 0, 22)
+		nm.Position = UDim2.fromOffset(4, 92)
+		nm.Size = UDim2.new(1, -8, 0, 26)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
-			local sb = mkLabel(tile, it.sub, 14, COLORS.muted, false)
+			local sb = mkLabel(tile, it.sub, 15, COLORS.muted, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
-			sb.Position = UDim2.fromOffset(4, 88)
-			sb.Size = UDim2.new(1, -8, 0, 18)
+			sb.Position = UDim2.fromOffset(4, 120)
+			sb.Size = UDim2.new(1, -8, 0, 20)
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.btn then
-			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 38), it.onClick, on)
-			b.Position = UDim2.new(0, 8, 1, -46)
+			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 44), it.onClick, on)
+			b.Position = UDim2.new(0, 8, 1, -52)
 		end
 	end
 	grid.Parent = parent
