@@ -111,7 +111,7 @@ local function newTown(p, w)
 	for _, g in ipairs(p.demands) do if Data.Goods[g] then set[g] = true end end
 	for g in pairs(set) do table.insert(t.goods, g) end
 	table.sort(t.goods)
-	t.produces, t.demands = {}, {}
+	t.produces, t.demands, t.nDem = {}, {}, #p.demands
 	for _, g in ipairs(p.produces) do t.produces[g] = true end
 	for _, g in ipairs(p.demands) do t.demands[g] = true end
 	return t
@@ -132,9 +132,9 @@ end
 local function demandOf(t, g, price)
 	local per
 	if g == E.GRAIN then per = 1.0
-	elseif t.demands[g] then per = 0.0030
-	elseif t.produces[g] then per = 0.0008
-	else per = 0.0004 end
+	elseif t.demands[g] then per = 0.0035 / math.max(1, t.nDem)
+	elseif t.produces[g] then per = 0.0003
+	else per = 0.0001 end
 	local wealth = 0.7 + 0.3 * math.clamp(t.prosperity, 0.4, 1.8)
 	local el = (basePrice(g) / math.max(price, 1)) ^ 0.6
 	if g == E.GRAIN then return t.pop * per * math.clamp(el, 0.85, 1.05) * t.fx.demand end
@@ -149,7 +149,7 @@ local function productionOf(t, g, price, w)
 	if g == E.GRAIN then
 		local farmers = t.pop * sh.farmer
 		local used = math.min(farmers, t.land) + 0.25 * math.max(0, farmers - t.land)
-		local yield = 2.1 * (1 + 0.12 * (t.stage - 1)) * (t.tech.agri ^ 0.6) * E.infraFactor(t)
+		local yield = 1.5 * (1 + 0.12 * (t.stage - 1)) * (t.tech.agri ^ 0.6) * E.infraFactor(t)
 		local fish = t.pop * sh.fisher * 1.5
 		return (used * yield + fish) * t.fx.food * (1 + 0.05 * lvl)
 	end
@@ -203,7 +203,9 @@ function E.newWorld(opts)
 		t.grain = t.stock[E.GRAIN]
 		local gdp = 0
 		for _, g in ipairs(t.goods) do gdp += productionOf(t, g, t.price[g], w) * t.price[g] end
-		t.refGdp = math.max(1, gdp / t.pop)
+		local real0 = 0
+		for _, g in ipairs(t.goods) do real0 += productionOf(t, g, basePrice(g), w) * basePrice(g) end
+		t.refGdp = math.max(1, real0 / t.pop)
 		t.wageRef = t.refGdp / (E.GRAIN_PRICE)
 		t.treasury = gdp * 20
 	end
@@ -321,7 +323,7 @@ function E.step(w)
 	-- 생산·소비·가격
 	for _, id in ipairs(w.order) do
 		local t = w.towns[id]
-		local gdp = 0
+		local gdp, real = 0, 0
 		local grainProd, grainCons = 0, 0
 		for _, g in ipairs(t.goods) do
 			local p = t.price[g]
@@ -335,6 +337,7 @@ function E.step(w)
 			t.stock[g] = stock
 			t.out[g], t.dem[g] = prod, dem
 			gdp += prod * p
+			real += prod * basePrice(g)
 			if g == E.GRAIN then grainProd, grainCons = prod, dem end
 			-- 초과수요 가격조정: 재고 일수 대비
 			local cover = stock / math.max(dem * E.TARGET_DAYS, 0.05)
@@ -345,7 +348,7 @@ function E.step(w)
 		t.grain = t.stock[E.GRAIN]
 		-- 인구: 로지스틱(식량 균형) + 기아 + 역병
 		local bal = (grainProd + 0.02 * t.grain) / math.max(grainCons, 1)
-		local r = 0.012 * math.clamp((bal - 1) / 0.3, -1, 1) / 365
+		local r = 0.006 * math.clamp((bal - 1) / 0.3, -1, 1) / 365
 		if bal >= 1 then r = r * (0.7 + 0.3 * math.clamp(t.prosperity, 0.4, 1.5)) end
 		local starve = 0
 		if t.grain < grainCons * 2 and grainProd < grainCons then
@@ -356,7 +359,7 @@ function E.step(w)
 		if d >= 0 then t.births += d else t.deaths += -d end
 		-- 번영도: 1인당 GDP 이동평균 (기준 대비)
 		t.gdp = gdp
-		local rel = (gdp / math.max(t.pop, 1)) / t.refGdp
+		local rel = (real / math.max(t.pop, 1)) / t.refGdp
 		t.prosperity = t.prosperity + (rel - t.prosperity) * 0.01
 		E.stepCivilization(w, t, gdp, grainProd, grainCons)
 		-- 발전 단계 (오를 땐 번영도 0.9 이상, 내릴 땐 85% 인구 아래)
@@ -418,8 +421,8 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	local ds = 0
 	if grainProd < grainCons and t.grain < grainCons * 5 then ds -= 0.004 end
 	if t.fx.trade < 0.9 then ds -= 0.001 end
-	if t.prosperity > 1.0 then ds += 0.0005 elseif t.prosperity < 0.8 then ds -= 0.0008 end
-	ds += (0.7 - t.stability) * 0.0008
+	local target = math.clamp(0.7 + 0.3 * (t.prosperity - 1), 0.1, 0.95)
+	ds += (target - t.stability) * 0.003
 	t.stability = math.clamp(t.stability + ds, 0, 1)
 	t.unrestCd = math.max(0, t.unrestCd - 1)
 	if t.stability < 0.25 and t.unrestCd == 0 then
@@ -431,7 +434,7 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	t.wage = (gdp / math.max(t.pop, 1)) / t.price[E.GRAIN] / t.wageRef
 	-- 기술: 아이디어 생산 ~ sqrt(인구) / 기술^0.6 (케이머), 안정도·교육(통치)에 비례
 	local open = 1 + math.min(1, (t.tradeIn + t.tradeOut) / math.max(gdp, 1))
-	local base = 0.00012 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability)
+	local base = 0.000002 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability)
 	for _, f in ipairs(E.TECH_FIELDS) do
 		local focus = 1
 		if f == "agri" then focus = grainCons > grainProd and 1.6 or 1
@@ -457,7 +460,7 @@ function E.stepMigration(w)
 			-- 기술 확산: 교역량이 클수록 빠르다
 			local flow = math.min(1, (a.tradeIn + b.tradeOut) / math.max(a.gdp, 1))
 			for _, f in ipairs(E.TECH_FIELDS) do
-				if b.tech[f] > a.tech[f] then a.tech[f] += (b.tech[f] - a.tech[f]) * 0.002 * (0.3 + flow) end
+				if b.tech[f] > a.tech[f] then a.tech[f] += (b.tech[f] - a.tech[f]) * 0.0007 * (0.3 + flow) end
 			end
 			-- 이주: 더 살기 좋은 가까운 이웃으로
 			local attB = b.wage * (0.5 + b.stability)
