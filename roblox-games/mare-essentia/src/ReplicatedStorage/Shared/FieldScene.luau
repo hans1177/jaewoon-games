@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
 	return require(script.Parent:WaitForChild("CommonVFX", 5))
@@ -548,6 +549,8 @@ function FieldScene.start(opts)
 	end)
 
 	local swingKind, swingT0, swingDur = nil, 0, 0
+	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
+	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	local function char3()
@@ -565,7 +568,7 @@ function FieldScene.start(opts)
 			sfx("sfx_skill_evade", 0.6, 1.1)
 		elseif kind == "guard" then
 			sfx("sfx_equipment_wear", 0.5, 1.2)
-		elseif kind == "cast" then
+		elseif string.sub(kind, 1, 4) == "cast" then
 			-- 카드 스킬은 자기 효과음을 낸다
 		else
 			sfx("sfx_card_swing", 0.55, 0.95 + math.random() * 0.2)
@@ -641,11 +644,63 @@ function FieldScene.start(opts)
 			ForearmL = CFrame.Angles(-0.5, 0, 0), ForearmR = CFrame.Angles(-0.5, 0, 0),
 			Head = CFrame.Angles(-0.35, 0, 0), Chest = CFrame.Angles(-0.2, 0, 0),
 		}
+		-- 카드 스킬마다 다른 자세: 회복=두 팔을 벌려 올리고 무릎 굽힘, 보호막=팔을 엇갈려 막기, 원거리=활 당기기, 사기=주먹 치켜들기, 행운=양팔 번쩍, 그 밖(탐색)=손가락으로 가리키기
+		local A = CFrame.Angles
+		local castPoses = {
+			cast_heal = {
+				UpperArmL = A(-1.0, 0, -0.9), UpperArmR = A(-1.0, 0, 0.9), ForearmL = A(-0.5, 0, 0), ForearmR = A(-0.5, 0, 0),
+				Head = A(-0.4, 0, 0), Chest = A(-0.25, 0, 0), ThighL = A(-0.35, 0, 0), ThighR = A(-0.35, 0, 0), ShinL = A(0.7, 0, 0), ShinR = A(0.7, 0, 0),
+			},
+			cast_armor = {
+				UpperArmL = A(-1.5, 0, 0.9), UpperArmR = A(-1.5, 0, -0.9), ForearmL = A(-1.9, 0, 0), ForearmR = A(-1.9, 0, 0), Chest = A(0.15, 0, 0), Head = A(0.1, 0, 0),
+			},
+			cast_volley = {
+				UpperArmL = A(-1.55, 0, 0.1), UpperArmR = A(-1.5, 0.5, -0.4), ForearmR = A(-2.1, 0, 0), Chest = A(0, 0.5, 0), Head = A(0, -0.3, 0),
+				ThighL = A(-0.3, 0, 0), ThighR = A(0.25, 0, 0),
+			},
+			cast_rally = {
+				UpperArmR = A(-3.0, 0, -0.2), ForearmR = A(-0.2, 0, 0), UpperArmL = A(0.3, 0, 0.3), Head = A(-0.5, 0, 0), Chest = A(-0.3, 0, 0),
+			},
+			cast_luck = {
+				UpperArmL = A(-2.6, 0, -0.8), UpperArmR = A(-2.6, 0, 0.8), Head = A(-0.4, 0, 0), Chest = A(-0.2, 0, 0),
+			},
+			cast_read = {
+				UpperArmR = A(-1.55, -0.2, 0), ForearmR = A(-0.1, 0, 0), UpperArmL = A(0.2, 0, 0.25), Head = A(0, -0.3, 0), Chest = A(0.1, -0.2, 0),
+			},
+		}
+		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
 		local dashPose = {
 			Spine = CFrame.Angles(0.5, 0, 0), Chest = CFrame.Angles(0.25, 0, 0), Head = CFrame.Angles(-0.4, 0, 0),
 			ThighL = CFrame.Angles(-1.0, 0, 0), ThighR = CFrame.Angles(0.6, 0, 0), ShinL = CFrame.Angles(1.2, 0, 0),
 			UpperArmL = CFrame.Angles(0.9, 0, -0.1), UpperArmR = CFrame.Angles(0.9, 0, 0.1),
 		}
+		-- 몸 전체 움직임(마력숲처럼): 베기는 앞으로 숙이며 파고들고, 강타는 뛰어올라 내리찍고, 회전베기는 낮게 두 바퀴, 회피는 앞구르기
+		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
+		local function rootFor(kind: string, p: number): CFrame?
+			if kind == "slash" then
+				return CFrame.new(0, -0.15 * bell(p), 0) * CFrame.Angles(-0.32 * bell((p - 0.15) / 0.6), 0, 0)
+			elseif kind == "heavy" then
+				local air = if p < 0.62 then 2.0 * bell(p / 0.62) else 0
+				local slam = if p >= 0.62 then -0.7 * bell((p - 0.62) / 0.38) else 0
+				local lean = if p < 0.62 then 0.25 * bell(p / 0.62) else -0.5 * bell((p - 0.62) / 0.38)
+				return CFrame.new(0, air + slam, 0) * CFrame.Angles(lean, 0, 0)
+			elseif kind == "spin" then
+				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
+			elseif kind == "dash" then
+				return CFrame.new(0, 0.9 * bell(p) - 0.2, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
+			elseif kind == "cast_heal" then
+				return CFrame.new(0, -0.35 * bell(p), 0)
+			elseif kind == "cast_luck" then
+				return CFrame.new(0, 0.9 * bell(p), 0)
+			elseif kind == "cast_rally" then
+				return CFrame.new(0, 0.3 * bell(p), 0) * CFrame.Angles(-0.15 * bell(p), 0, 0)
+			elseif kind == "cast_volley" or kind == "cast_snipe" then
+				return CFrame.Angles(0, -0.35 * bell(p), 0)
+			elseif string.sub(kind, 1, 4) == "cast" then
+				return CFrame.new(0, 0.15 * bell(p), 0)
+			end
+			return nil
+		end
 		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished then
 				return
@@ -667,15 +722,19 @@ function FieldScene.start(opts)
 			local canon = pfm.canon
 			table.clear(canon)
 			local rootRot = nil
+			do
+				local nowc = os.clock()
+				if nowc < hitStopUntil then
+					swingT0 += nowc - hitStopLast -- 멈춘 시간만큼 휘두르기 시작을 늦춘다
+				end
+				hitStopLast = nowc
+			end
 			if swingKind then
 				local p = (os.clock() - swingT0) / swingDur
 				if p >= 1 then
 					swingKind = nil
 				elseif swingCombo then
 					FM.sample(swingCombo, p * swingCombo.duration, canon)
-					if swingKind == "spin" then
-						rootRot = CFrame.Angles(0, p * math.pi * 2, 0)
-					end
 				else
 					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15)) else math.sin(math.min(p, 1) * math.pi)
 					local src
@@ -684,12 +743,20 @@ function FieldScene.start(opts)
 					elseif swingKind == "dash" then
 						src = dashPose
 					else
-						src = castPose
+						src = castPoses[swingKind] or (if string.sub(swingKind, 1, 4) == "cast" then castPoses.cast_read else castPose)
+					end
+					-- 원거리는 당기다가 놓는 느낌으로: 끝 25%에서 활시위 팔이 튕겨 풀린다
+					local wl = w
+					if swingKind == "cast_volley" or swingKind == "cast_snipe" then
+						wl = if p > 0.7 then math.max(0.15, 1 - (p - 0.7) / 0.1) * w else w
 					end
 					for name, cf in src do
-						canon[name] = CFrame.identity:Lerp(cf, w)
+						canon[name] = CFrame.identity:Lerp(cf, wl)
 					end
 				end
+			end
+			if swingKind then
+				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end
 			FM.step(pfm, dt, rootRot)
 		end))
@@ -928,6 +995,50 @@ function FieldScene.start(opts)
 		TweenService:Create(flashFrame, TweenInfo.new(0.25), { BackgroundTransparency = 1 }):Play()
 	end
 
+	-- ===== 마력숲식 스킬 연출: 팔다리·칼 궤적(AttachShortTrail), 몸에 오라(Highlight), 공용 파동(CommonVFX.Create) =====
+	local TRAIL_LIMBS = { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg", "LeftLowerLeg" }
+	local function trailsOn(ch: Model?, names: { string }, color: Color3, life: number, dur: number)
+		if not ch or not CommonVFX or not CommonVFX.AttachShortTrail then return end
+		local function attach(part: Instance?, len: number?)
+			if part and part:IsA("BasePart") then
+				local ok, trail, ctl = pcall(CommonVFX.AttachShortTrail, part, {
+					lifetime = life, width = 1, axis = Vector3.new(0, 1, 0), length = math.max(0.8, len or part.Size.Y * 1.5), color = color,
+				})
+				if ok and trail and ctl then
+					task.delay(dur, function() pcall(ctl.Destroy) end)
+				end
+			end
+		end
+		for _, nm in names do attach(ch:FindFirstChild(nm)) end
+		local sword = ch:FindFirstChild("FieldSword", true)
+		if sword then
+			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
+			attach(blade, 4)
+		end
+	end
+	local function auraOn(ch: Model?, fill: Color3, outline: Color3, dur: number)
+		if not ch then return end
+		local h = Instance.new("Highlight")
+		h.Adornee = ch
+		h.DepthMode = Enum.HighlightDepthMode.Occluded
+		h.FillColor, h.OutlineColor = fill, outline
+		h.FillTransparency, h.OutlineTransparency = 0.72, 0.08
+		h.Parent = ch
+		task.delay(dur * 0.55, function()
+			if h.Parent then
+				TweenService:Create(h, TweenInfo.new(dur * 0.45), { FillTransparency = 1, OutlineTransparency = 1 }):Play()
+			end
+		end)
+		task.delay(dur, function() h:Destroy() end)
+	end
+	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number)
+		if not CommonVFX or not CommonVFX.Create then return end
+		pcall(CommonVFX.Create, atom, {
+			parent = workspace, cframe = cf, duration = 0.42, color = color, accent = accent,
+			startDiameter = 1.4, endDiameter = endDia, startSize = 0.46, endSize = 2.6, count = count,
+		})
+	end
+
 	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -985,7 +1096,13 @@ function FieldScene.start(opts)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 		if away.Magnitude > 0.1 and not e.ac.def.boss then
-			e.model:PivotTo(e.model:GetPivot() + away.Unit * knock)
+			-- 순간이동 대신 짧게 미끄러지듯 밀려난다(0.18초 감속)
+			e.kbVel = away.Unit * (knock / 0.09)
+			e.kbUntil = os.clock() + 0.18
+			e.kbT0 = os.clock()
+		end
+		if not quiet then
+			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -1198,8 +1315,14 @@ function FieldScene.start(opts)
 
 	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
 	local STUD = 2 -- 규칙의 거리 1 = 2 스터드
+	-- 장착한 스킬만 쓴다(주인공 스킬은 최대 3개). 공격·회피는 기본 행동이라 늘 쓸 수 있다.
+	local equipped = { heavy = true, sweep = true }
 	local function useMove(moveId: string)
 		if finished then
+			return
+		end
+		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] then
+			say("장착한 스킬이 아니에요")
 			return
 		end
 		local _, hrp = char3()
@@ -1211,6 +1334,8 @@ function FieldScene.start(opts)
 		if not ok then
 			if mv and pl.stamina < mv.stamina then
 				say("기력이 부족해요")
+			elseif mv and (pl.cd[moveId] or -100) > now then
+				say(string.format("%s 재사용까지 %.1f초", mv.label or "스킬", pl.cd[moveId] - now))
 			end
 			return
 		end
@@ -1220,6 +1345,16 @@ function FieldScene.start(opts)
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
 			burst(hrp.Position, 24, false, "dodge")
+			do
+				local ch0 = player.Character
+				trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
+				auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
+				for i, dl in { 0.02, 0.2 } do
+					task.delay(dl, function()
+						pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0), if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127), Color3.fromRGB(239, 249, 255), 7, 10)
+					end)
+				end
+			end
 			startSwing("dash", 0.4)
 			say("회피! 잠깐 무적")
 			return
@@ -1247,6 +1382,20 @@ function FieldScene.start(opts)
 		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
 		do
 			local reachV = (mv.range or 5) * STUD
+			do
+				local ch0 = player.Character
+				if kind == "spin" then
+					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
+					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
+					pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -2.2, 0), Color3.fromRGB(130, 225, 255), Color3.fromRGB(240, 250, 255), reachV * 2.4, 16)
+				elseif kind == "heavy" then
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, Color3.fromRGB(255, 160, 70), 0.45, 0.9)
+					auraOn(ch0, Color3.fromRGB(255, 140, 60), Color3.fromRGB(255, 226, 150), 0.8)
+					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6), Color3.fromRGB(255, 180, 90), Color3.fromRGB(255, 240, 200), reachV * 1.8, 14)
+				else
+					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
+				end
+			end
 			if kind == "spin" then
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
@@ -1312,10 +1461,18 @@ function FieldScene.start(opts)
 		local now = os.clock()
 		local ok = AC.tryMove(pl, "parry", now)
 		if not ok then
+			if (pl.cd.parry or -100) > now then
+				say(string.format("방어 재사용까지 %.1f초", pl.cd.parry - now))
+			end
 			return
 		end
 		pl.parryAt = now
 		pl.guarding = true
+		do
+			local ch0, hrpG = char3()
+			auraOn(ch0, Color3.fromRGB(150, 120, 220), Color3.fromRGB(235, 225, 255), 1.2)
+			if hrpG then pulseAt("BLOCK_IMPACT", hrpG.CFrame * CFrame.new(0, 0.5, -2), Color3.fromRGB(190, 160, 255), Color3.fromRGB(255, 255, 255), 6, 10) end
+		end
 		startSwing("guard", 1.2)
 		say("방어 자세!")
 		task.delay(1.2, function()
@@ -1345,6 +1502,19 @@ function FieldScene.start(opts)
 		b.Activated:Connect(go)
 	end
 	bindPress(attackBtn, useAttack)
+	-- 공격 버튼 주변(약 2배 크기)을 눌러도 공격이 나간다: 손가락이 버튼 바깥으로 살짝 빗나가도 된다
+	do
+		local hit = Instance.new("TextButton")
+		hit.AnchorPoint = attackBtn.AnchorPoint
+		hit.Position = attackBtn.Position
+		hit.Size = UDim2.fromOffset(190, 190)
+		hit.BackgroundTransparency = 1
+		hit.Text = ""
+		hit.AutoButtonColor = false
+		hit.ZIndex = math.max(attackBtn.ZIndex - 1, 0)
+		hit.Parent = gui
+		bindPress(hit, useAttack)
+	end
 
 	local staminaBack = Instance.new("Frame")
 	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -1365,98 +1535,150 @@ function FieldScene.start(opts)
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
 	end
-	local function mkSkill(key, label, color, theta)
-		local b = btn(gui, label, color, UDim2.fromOffset(56, 56), arcPos(124, theta), Vector2.new(0.5, 0.5))
+	local function mkSkill(key, label, color, pos, size)
+		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.TextSize = 16
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
-	mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), 8)
-	mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), 38)
-	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), 68)
-	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), 98)
+	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
+	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), arcPos(124, 25))
+	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), arcPos(124, 70))
 	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
+	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
+	local function castEffect(sk, name, ch, hp0)
+		local pos = hp0.Position + Vector3.new(0, 2, 0)
+		if sk == "heal" then
+			pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
+			say(name .. ": 체력 회복")
+			sfx("sfx_card_magic", 0.7, 1)
+			burst(pos, 20, false)
+			auraOn(ch, Color3.fromRGB(110, 230, 140), Color3.fromRGB(230, 255, 230), 1.1)
+			pulseAt("HEAL_PULSE", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(120, 235, 150), Color3.fromRGB(235, 255, 240), 9, 14)
+			refresh()
+		elseif sk == "ward" or sk == "armor" then
+			pl.ward = true
+			say(name .. ": 보호막 (다음 공격 1회 무효)")
+			sfx("sfx_card_armor", 0.7, 1.1)
+			burst(pos, 26, true)
+			auraOn(ch, Color3.fromRGB(100, 170, 255), Color3.fromRGB(235, 245, 255), 1.4)
+			pulseAt("BLOCK_IMPACT", hp0.CFrame * CFrame.new(0, 0.5, 0), Color3.fromRGB(120, 190, 255), Color3.fromRGB(255, 255, 255), 8, 12)
+		elseif sk == "volley" or sk == "snipe" then
+			local list = table.clone(enemies)
+			table.sort(list, function(a, b)
+				return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
+			end)
+			local n = if sk == "snipe" then 1 else 3
+			local hitN = 0
+			for _, e in list do
+				if hitN >= n or (e.root.Position - hp0.Position).Magnitude > 30 * STUD then
+					break
+				end
+				hitN += 1
+				arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
+				strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe")
+			end
+			trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, Color3.fromRGB(255, 220, 130), 0.4, 0.9)
+			pulseAt("SHAPE_BURST", hp0.CFrame * CFrame.new(0, -1.5, 0), Color3.fromRGB(255, 210, 120), Color3.fromRGB(255, 245, 210), 9, 12)
+			say(name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
+			sfx("sfx_card_volley", 0.7, 1)
+		elseif sk == "rally" then
+			pl.buffUntil = now + 8
+			say(name .. ": 8초간 공격력 +30%")
+			sfx("sfx_horn", 0.5, 1.3)
+			burst(pos, 26, true)
+			auraOn(ch, Color3.fromRGB(255, 190, 80), Color3.fromRGB(255, 240, 180), 1.6)
+			pulseAt("BUFF_PULSE", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(255, 200, 90), Color3.fromRGB(255, 245, 210), 10, 14)
+		elseif sk == "luck" then
+			pl.stamina = AC.STAMINA_MAX
+			pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.1)
+			say(name .. ": 행운! 기력 가득")
+			sfx("sfx_coin", 0.7, 1.2)
+			burst(pos, 24, true)
+			pulseAt("UPGRADE_BURST", hp0.CFrame * CFrame.new(0, -2.3, 0), Color3.fromRGB(255, 225, 120), Color3.fromRGB(255, 255, 220), 10, 14)
+			refresh()
+		elseif sk == "bash" then
+			local near, nd = nil, 12 * STUD
+			for _, e in enemies do
+				local d = (e.root.Position - hp0.Position).Magnitude
+				if d < nd then near, nd = e, d end
+			end
+			if near then strikeEnemy(near, 1.8, hp0.Position, 5, true) end
+			say(name .. (if near then ": 강타!" else ": 맞힐 적이 없다"))
+			sfx("sfx_card_blade", 0.7, 0.9)
+			burst(pos, 22, true)
+		else
+			local n = 0
+			for _, e in enemies do
+				if (e.root.Position - hp0.Position).Magnitude <= 14 * STUD and not e.ac.def.boss then
+					e.ac.stagger = 1.5
+					n += 1
+				end
+			end
+			say(name .. (if n > 0 then ": 적의 움직임을 읽었다!" else ": 주변에 적이 없다"))
+			sfx("sfx_card_spell", 0.7, 1)
+			burst(pos, 22, false)
+		end
+	end
 	-- 카드 스킬: 덱의 학문·우군 카드가 둘째 줄 버튼이 된다(최대 3장, 재사용 14초). 효과는 카드의 skill 종류가 정한다.
 	do
 		local cs = opts.cardSkills or {}
 		if #cs == 0 and workspace:GetAttribute("DevCards") then
 			cs = { { name = "의학", skill = "heal" }, { name = "화학", skill = "volley" }, { name = "물리", skill = "armor" } } -- 개발 캡처 전용
 		end
+		-- 장착 스킬 최대 3개: 강타·회전베기·카드 스킬 중에서 고른다(opts.loadout 순서대로, 없으면 강타·회전베기·첫 카드)
+		local available = { "heavy", "sweep" }
+		for i2 = 1, math.min(#cs, 3) do
+			table.insert(available, "card" .. i2)
+		end
+		local slotCount = JobSkills.playerSlots(opts.battleLevel, opts.battleStats) -- 처음 2칸, 중렙 전투 칭호를 얻으면 3칸
+		local loadout = JobSkills.playerLoadout(opts.loadout, available, slotCount)
+		local slotOf = {}
+		for i2, id in loadout do
+			slotOf[id] = i2
+		end
+		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
+		local function slotPos(id): UDim2
+			return arcPos(190, 14 + ((slotOf[id] or 1) - 1) * 30)
+		end
+		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
+		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
+			local lb = btn(gui, "🔒\n칭호", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(52, 52), arcPos(190, 14 + (slotI - 1) * 30), Vector2.new(0.5, 0.5))
+			lb.TextSize = 14
+			lb.BackgroundTransparency = 0.35
+			bindPress(lb, function()
+				say(JobSkills.unlockHint())
+			end)
+		end
+		if slotOf.heavy then mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), slotPos("heavy"), 56) end
+		if slotOf.sweep then mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), slotPos("sweep"), 56) end
 		local function useCard(key, card)
 			local now = os.clock()
-			if finished or (pl.cd[key] or 0) > now then
+			if finished then
 				return
 			end
-			pl.cd[key] = now + 14
+			if (pl.cd[key] or 0) > now then
+				say(string.format("%s 재사용까지 %.1f초", card.name, pl.cd[key] - now))
+				return
+			end
+			pl.cd[key] = now + 8
 			local ch = player.Character
 			local hp0 = ch and ch:FindFirstChild("HumanoidRootPart")
 			if not hp0 then
 				return
 			end
 			local sk = card.skill
-			local pos = hp0.Position + Vector3.new(0, 2, 0)
-			startSwing("cast", 0.7)
-			if sk == "heal" then
-				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
-				say(card.name .. ": 체력 회복")
-				sfx("sfx_card_magic", 0.7, 1)
-				burst(pos, 20, false)
-				refresh()
-			elseif sk == "ward" or sk == "armor" then
-				pl.ward = true
-				say(card.name .. ": 보호막 (다음 공격 1회 무효)")
-				sfx("sfx_card_armor", 0.7, 1.1)
-				burst(pos, 26, true)
-			elseif sk == "volley" or sk == "snipe" then
-				local list = table.clone(enemies)
-				table.sort(list, function(a, b)
-					return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
-				end)
-				local n = if sk == "snipe" then 1 else 3
-				local hitN = 0
-				for _, e in list do
-					if hitN >= n or (e.root.Position - hp0.Position).Magnitude > 30 * STUD then
-						break
-					end
-					hitN += 1
-					arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
-					strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe")
-				end
-				say(card.name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
-				sfx("sfx_card_volley", 0.7, 1)
-			elseif sk == "rally" then
-				pl.buffUntil = now + 8
-				say(card.name .. ": 8초간 공격력 +30%")
-				sfx("sfx_horn", 0.5, 1.3)
-				burst(pos, 26, true)
-			elseif sk == "luck" then
-				pl.stamina = AC.STAMINA_MAX
-				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.1)
-				say(card.name .. ": 행운! 기력 가득")
-				sfx("sfx_coin", 0.7, 1.2)
-				burst(pos, 24, true)
-				refresh()
-			else
-				local n = 0
-				for _, e in enemies do
-					if (e.root.Position - hp0.Position).Magnitude <= 14 * STUD and not e.ac.def.boss then
-						e.ac.stagger = 1.5
-						n += 1
-					end
-				end
-				say(card.name .. (if n > 0 then ": 적의 움직임을 읽었다!" else ": 주변에 적이 없다"))
-				sfx("sfx_card_spell", 0.7, 1)
-				burst(pos, 22, false)
-			end
+			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
+			castEffect(sk, card.name, ch, hp0)
 		end
 		for i, card in cs do
-			if i > 3 then
-				break
-			end
 			local key = "card" .. i
-			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), arcPos(190, 18 + (i - 1) * 24), Vector2.new(0.5, 0.5))
+			if i > 3 or not slotOf[key] then
+				continue
+			end
+			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), slotPos(key), Vector2.new(0.5, 0.5))
 			b.TextSize = 17
 			bindPress(b, function()
 				useCard(key, card)
@@ -1476,9 +1698,9 @@ function FieldScene.start(opts)
 			end
 		end))
 	end
-	table.insert(conns, RunService.Heartbeat:Connect(function()
+	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
-		AC.regen(pl, 1 / 60)
+		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
 		for key, sb in skillBtns do
 			local left = (pl.cd[key] or 0) - now
@@ -1546,6 +1768,10 @@ function FieldScene.start(opts)
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
 			local frozen = now < (e.holdUntil or 0)
+			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
+				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
+				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * dtc * 2)
+			end
 			local event, hit = nil, nil
 			if not frozen then
 				event, hit = AC.stepEnemy(e.ac, dtc, dist)
@@ -1732,7 +1958,7 @@ function FieldScene.start(opts)
 		local allyDefs = {}
 		local allyNames = opts.allies or {}
 		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
-			allyNames = { "동료 기사", "동료 도적" } -- 개발 캡처 전용
+			allyNames = { { name = "동료 기사", role = "soldier" }, { name = "동료 사제", role = "성직자" } } -- 개발 캡처 전용
 		end
 		-- 동료마다 이름·직업에 맞는 겉모습(직업 → 옷 계열, 이름 → 옷 색)으로 만든다 (같은 얼굴 두 명이 나오지 않게)
 		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
@@ -1749,7 +1975,7 @@ function FieldScene.start(opts)
 				local h = hashName(name)
 				local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + i) % #ROLES + 1]
 				local coat = Color3.fromHSV((h % 360) / 360, 0.45, 0.62)
-				table.insert(allyDefs, { name = name, role = role, coat = coat })
+				table.insert(allyDefs, { name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job) }) -- 직업 분류에 따라 최대 2개
 			end
 		end
 		local allies: { any } = {}
@@ -1781,7 +2007,7 @@ function FieldScene.start(opts)
 						bbA.Parent = r
 						local tg = label(bbA, ad.name, 14, Color3.fromRGB(130, 230, 150))
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil })
+						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, skillCd = {}, nextSkill = now + 4 + i * 2 })
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -1813,6 +2039,31 @@ function FieldScene.start(opts)
 					a.nextAt = now + 1.3
 					a.swingAt = now
 					strikeEnemy(tgt, 0.6, a.root.Position, 1.0, false, true)
+				end
+				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
+				if now >= a.nextSkill and #enemies > 0 then
+					for _, sid in a.skills do
+						local def = JobSkills.Skills[sid]
+						if def and (a.skillCd[sid] or 0) <= now then
+							local nearE = 0
+							for _, e in enemies do
+								if (e.root.Position - a.root.Position).Magnitude <= 30 * STUD then nearE += 1 end
+							end
+							local ok = false
+							if sid == "heal" then ok = pl.hp < pl.maxHp * 0.65
+							elseif sid == "armor" then ok = not pl.ward and nearE > 0
+							elseif sid == "rally" then ok = nearE >= 2 and now > (pl.buffUntil or 0)
+							elseif sid == "luck" then ok = pl.stamina < 40
+							else ok = nearE > 0 end
+							if ok then
+								a.skillCd[sid] = now + def.cooldown
+								a.nextSkill = now + 3
+								a.swingAt = now
+								castEffect(sid, a.name .. " · " .. def.name, a.model, a.root)
+								break
+							end
+						end
+					end
 				end
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
@@ -1898,10 +2149,29 @@ function FieldScene.start(opts)
 				vec = if d.Magnitude > 1 then d.Unit else d
 				knob.Position = UDim2.new(0.5, vec.X * 45, 0.5, vec.Y * 45)
 			end
+			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
+			local homePos = pad.Position
+			local function startAt(input: InputObject)
+				active = input
+				local guiAbs = gui.AbsolutePosition
+				local half = pad.AbsoluteSize.X / 2
+				local vs = workspace.CurrentCamera.ViewportSize
+				local cx = math.clamp(input.Position.X, half + 8, vs.X * 0.5)
+				local cy = math.clamp(input.Position.Y, half + 8, vs.Y - half - 8)
+				pad.Position = UDim2.fromOffset(cx - half - guiAbs.X, cy + half - guiAbs.Y)
+				setFrom(input.Position)
+			end
 			table.insert(conns, pad.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-					active = input
-					setFrom(input.Position)
+				if not active and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
+					startAt(input)
+				end
+			end))
+			table.insert(conns, UIS.InputBegan:Connect(function(input, processed)
+				if active or processed or input.UserInputType ~= Enum.UserInputType.Touch then
+					return
+				end
+				if input.Position.X < workspace.CurrentCamera.ViewportSize.X * 0.5 then
+					startAt(input)
 				end
 			end))
 			table.insert(conns, UIS.InputChanged:Connect(function(input)
@@ -1913,6 +2183,7 @@ function FieldScene.start(opts)
 				if input == active then
 					active, vec = nil, Vector2.zero
 					knob.Position = UDim2.fromScale(0.5, 0.5)
+					pad.Position = homePos
 				end
 			end))
 			table.insert(conns, RunService.Heartbeat:Connect(function()

@@ -1193,7 +1193,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				return
 			end
 			m:PivotTo(CFrame.new(m:GetPivot().Position) * CFrame.Angles(0, rng:NextNumber(0, math.pi * 2), 0) * (m:GetPivot() - m:GetPivot().Position))
-			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10) })
+			local gaitOf = { dog = 15, cat = 11, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
+			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0 })
 		end
 		local lay = zoneLayout(info.portId, lvl)
 		local has = {}
@@ -1225,7 +1226,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					animal(sp, c)
 				else
 					for k = 1, 5 + (lvl % 3) do
+						local n0 = #walkers
 						animal(sp, c + Vector3.new(rng:NextNumber(-16, 16), 0, rng:NextNumber(-11, 11)))
+						local w = walkers[#walkers]
+						if #walkers > n0 and w then
+							w.span = rng:NextNumber(2, 4.5) -- 우리 안을 천천히 오간다
+							w.rate = rng:NextNumber(0.12, 0.25)
+						end
 					end
 				end
 			end
@@ -3061,9 +3068,15 @@ function PortScene.build(info, onFacility)
 					end
 					if w.span then
 						local u = t * w.rate
-						local turn = if math.cos(u) < 0 then math.pi else 0
-						bob = math.abs(math.sin(u * 6)) * 0.06
-						w.model:PivotTo(w.base * CFrame.new(0, bob, -math.sin(u) * w.span) * CFrame.Angles(0, turn, 0))
+						local go = math.abs(math.cos(u)) -- 걷는 정도(양 끝에서 0: 멈춰서 풀을 뜯거나 둘러본다)
+						local want = if math.cos(u) < 0 then math.pi else 0
+						-- 돌아설 때 휙 뒤집지 않고 부드럽게 몸을 돌린다
+						w.hd = (w.hd or 0) + (want - (w.hd or 0)) * 0.08
+						local ph = u * (w.gait or 7) * 2
+						bob = math.abs(math.sin(ph)) * 0.07 * go
+						local roll = math.sin(ph) * 0.07 * go
+						local rock = math.sin(ph * 2) * 0.035 * go + math.max(0, math.sin(t * 1.9)) * 0.28 * (1 - go) * (if w.akind == "still" then 0.3 else 1)
+						w.model:PivotTo(w.base * CFrame.new(0, bob, -math.sin(u) * w.span) * CFrame.Angles(0, w.hd, 0) * CFrame.Angles(rock, 0, roll))
 					else
 						w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
 					end
