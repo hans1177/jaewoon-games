@@ -565,7 +565,7 @@ function FieldScene.start(opts)
 			sfx("sfx_skill_evade", 0.6, 1.1)
 		elseif kind == "guard" then
 			sfx("sfx_equipment_wear", 0.5, 1.2)
-		elseif kind == "cast" then
+		elseif string.sub(kind, 1, 4) == "cast" then
 			-- 카드 스킬은 자기 효과음을 낸다
 		else
 			sfx("sfx_card_swing", 0.55, 0.95 + math.random() * 0.2)
@@ -641,11 +641,63 @@ function FieldScene.start(opts)
 			ForearmL = CFrame.Angles(-0.5, 0, 0), ForearmR = CFrame.Angles(-0.5, 0, 0),
 			Head = CFrame.Angles(-0.35, 0, 0), Chest = CFrame.Angles(-0.2, 0, 0),
 		}
+		-- 카드 스킬마다 다른 자세: 회복=두 팔을 벌려 올리고 무릎 굽힘, 보호막=팔을 엇갈려 막기, 원거리=활 당기기, 사기=주먹 치켜들기, 행운=양팔 번쩍, 그 밖(탐색)=손가락으로 가리키기
+		local A = CFrame.Angles
+		local castPoses = {
+			cast_heal = {
+				UpperArmL = A(-1.0, 0, -0.9), UpperArmR = A(-1.0, 0, 0.9), ForearmL = A(-0.5, 0, 0), ForearmR = A(-0.5, 0, 0),
+				Head = A(-0.4, 0, 0), Chest = A(-0.25, 0, 0), ThighL = A(-0.35, 0, 0), ThighR = A(-0.35, 0, 0), ShinL = A(0.7, 0, 0), ShinR = A(0.7, 0, 0),
+			},
+			cast_armor = {
+				UpperArmL = A(-1.5, 0, 0.9), UpperArmR = A(-1.5, 0, -0.9), ForearmL = A(-1.9, 0, 0), ForearmR = A(-1.9, 0, 0), Chest = A(0.15, 0, 0), Head = A(0.1, 0, 0),
+			},
+			cast_volley = {
+				UpperArmL = A(-1.55, 0, 0.1), UpperArmR = A(-1.5, 0.5, -0.4), ForearmR = A(-2.1, 0, 0), Chest = A(0, 0.5, 0), Head = A(0, -0.3, 0),
+				ThighL = A(-0.3, 0, 0), ThighR = A(0.25, 0, 0),
+			},
+			cast_rally = {
+				UpperArmR = A(-3.0, 0, -0.2), ForearmR = A(-0.2, 0, 0), UpperArmL = A(0.3, 0, 0.3), Head = A(-0.5, 0, 0), Chest = A(-0.3, 0, 0),
+			},
+			cast_luck = {
+				UpperArmL = A(-2.6, 0, -0.8), UpperArmR = A(-2.6, 0, 0.8), Head = A(-0.4, 0, 0), Chest = A(-0.2, 0, 0),
+			},
+			cast_read = {
+				UpperArmR = A(-1.55, -0.2, 0), ForearmR = A(-0.1, 0, 0), UpperArmL = A(0.2, 0, 0.25), Head = A(0, -0.3, 0), Chest = A(0.1, -0.2, 0),
+			},
+		}
+		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
 		local dashPose = {
 			Spine = CFrame.Angles(0.5, 0, 0), Chest = CFrame.Angles(0.25, 0, 0), Head = CFrame.Angles(-0.4, 0, 0),
 			ThighL = CFrame.Angles(-1.0, 0, 0), ThighR = CFrame.Angles(0.6, 0, 0), ShinL = CFrame.Angles(1.2, 0, 0),
 			UpperArmL = CFrame.Angles(0.9, 0, -0.1), UpperArmR = CFrame.Angles(0.9, 0, 0.1),
 		}
+		-- 몸 전체 움직임(마력숲처럼): 베기는 앞으로 숙이며 파고들고, 강타는 뛰어올라 내리찍고, 회전베기는 낮게 두 바퀴, 회피는 앞구르기
+		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
+		local function rootFor(kind: string, p: number): CFrame?
+			if kind == "slash" then
+				return CFrame.new(0, -0.15 * bell(p), 0) * CFrame.Angles(-0.32 * bell((p - 0.15) / 0.6), 0, 0)
+			elseif kind == "heavy" then
+				local air = if p < 0.62 then 2.0 * bell(p / 0.62) else 0
+				local slam = if p >= 0.62 then -0.7 * bell((p - 0.62) / 0.38) else 0
+				local lean = if p < 0.62 then 0.25 * bell(p / 0.62) else -0.5 * bell((p - 0.62) / 0.38)
+				return CFrame.new(0, air + slam, 0) * CFrame.Angles(lean, 0, 0)
+			elseif kind == "spin" then
+				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
+			elseif kind == "dash" then
+				return CFrame.new(0, 0.9 * bell(p) - 0.2, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
+			elseif kind == "cast_heal" then
+				return CFrame.new(0, -0.35 * bell(p), 0)
+			elseif kind == "cast_luck" then
+				return CFrame.new(0, 0.9 * bell(p), 0)
+			elseif kind == "cast_rally" then
+				return CFrame.new(0, 0.3 * bell(p), 0) * CFrame.Angles(-0.15 * bell(p), 0, 0)
+			elseif kind == "cast_volley" or kind == "cast_snipe" then
+				return CFrame.Angles(0, -0.35 * bell(p), 0)
+			elseif string.sub(kind, 1, 4) == "cast" then
+				return CFrame.new(0, 0.15 * bell(p), 0)
+			end
+			return nil
+		end
 		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished then
 				return
@@ -673,9 +725,6 @@ function FieldScene.start(opts)
 					swingKind = nil
 				elseif swingCombo then
 					FM.sample(swingCombo, p * swingCombo.duration, canon)
-					if swingKind == "spin" then
-						rootRot = CFrame.Angles(0, p * math.pi * 2, 0)
-					end
 				else
 					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15)) else math.sin(math.min(p, 1) * math.pi)
 					local src
@@ -684,12 +733,20 @@ function FieldScene.start(opts)
 					elseif swingKind == "dash" then
 						src = dashPose
 					else
-						src = castPose
+						src = castPoses[swingKind] or (if string.sub(swingKind, 1, 4) == "cast" then castPoses.cast_read else castPose)
+					end
+					-- 원거리는 당기다가 놓는 느낌으로: 끝 25%에서 활시위 팔이 튕겨 풀린다
+					local wl = w
+					if swingKind == "cast_volley" or swingKind == "cast_snipe" then
+						wl = if p > 0.7 then math.max(0.15, 1 - (p - 0.7) / 0.1) * w else w
 					end
 					for name, cf in src do
-						canon[name] = CFrame.identity:Lerp(cf, w)
+						canon[name] = CFrame.identity:Lerp(cf, wl)
 					end
 				end
+			end
+			if swingKind then
+				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end
 			FM.step(pfm, dt, rootRot)
 		end))
@@ -1479,7 +1536,7 @@ function FieldScene.start(opts)
 			end
 			local sk = card.skill
 			local pos = hp0.Position + Vector3.new(0, 2, 0)
-			startSwing("cast", 0.7)
+			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
 			if sk == "heal" then
 				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
 				say(card.name .. ": 체력 회복")
