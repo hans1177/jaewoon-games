@@ -259,13 +259,6 @@ task.spawn(function()
 			elseif action == "Explore" then
 				observe("exploration-advanced", previousView and previousView.player and view.player
 					and (view.player.year ~= previousView.player.year or view.player.day ~= previousView.player.day))
-			elseif action == "TacticsStart" then
-				observe("land-battle-started", view.tactics and view.tactics.siteId == payload.siteId and view.tactics.status == "active")
-			elseif action == "TacticsEnd" then
-				local before = previousView and previousView.tactics
-				observe("land-battle-turn", before and view.tactics and (view.tactics.turn > before.turn or view.tactics.status ~= before.status))
-			elseif action == "TacticsLeave" then
-				observe("land-battle-left", view.tactics == nil)
 			end
 		end
 		if view then previousView = view end
@@ -306,26 +299,6 @@ task.spawn(function()
 		grade(name, res, false)
 		return res
 	end
-	local landAttempted, checkedSites = false, {}
-	local function checkLandBattle(view)
-		if landAttempted or not view or view.tactics then return end
-		for _, site in view.sites or {} do
-			if site.unlocked and site.tactics and site.left > 0 and not checkedSites[site.id] then
-				checkedSites[site.id] = true
-				local battle = call("TacticsStart", { siteId = site.id })
-				if battle then grade("TacticsStart " .. site.id, battle, true) end
-				if battle and battle.ok then
-					landAttempted = true
-					local turn = call("TacticsEnd")
-					if turn then grade("TacticsEnd", turn, true) end
-					local leave = call("TacticsLeave")
-					if leave then grade("TacticsLeave", leave, true) end
-				end
-				return
-			end
-		end
-	end
-	checkLandBattle(r.view)
 	-- 퀘스트: 보이는 모든 퀘스트를 수락해 본다 (수락 조건 때문에 거절되는 것은 정상)
 	for i, q in Quests.Quests do
 		if i > 8 then
