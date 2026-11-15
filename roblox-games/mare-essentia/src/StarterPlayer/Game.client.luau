@@ -6729,22 +6729,16 @@ end
 
 function RENDERERS.tech()
 	add(function()
-		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 13, COLORS.muted, false)
+		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 14, COLORS.muted, false)
 	end)
-	for _, t in view.tech do
-		add(function()
-			local sub = t.summary
-			if t.owned then
-				sub ..= "\n연구 완료"
-			elseif t.blocked then
-				sub ..= "\n" .. t.blocked
-			end
-			return mkRow(content, t.name, sub, {
-				{ text = if t.owned then "완료" else tostring(t.cost), color = COLORS.steam, onClick = function() call("Research", { techId = t.id }) end,
-					enabled = not t.owned and t.blocked == nil },
-			}, 76)
-		end)
-	end
+	add(function()
+		local tiles = {}
+		for _, t in view.tech do
+			table.insert(tiles, { icon = if t.owned then "cc0_yes" else "tech", title = t.name, sub = if t.owned then "연구 완료" elseif t.blocked then t.blocked else t.summary,
+				btn = if t.owned then "완료" else tostring(t.cost) .. " 코인", color = COLORS.steam, enabled = not t.owned and t.blocked == nil, onClick = function() call("Research", { techId = t.id }) end })
+		end
+		return H.tileGrid(tiles, content, 176, 160)
+	end)
 end
 
 function RENDERERS.quest()
