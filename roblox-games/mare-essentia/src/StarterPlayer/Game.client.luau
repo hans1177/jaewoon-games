@@ -2332,6 +2332,43 @@ bubble.InputBegan:Connect(function(input)
 		H.hideBubble()
 	end
 end)
+-- 길잡이 가리킴: 지금 눌러야 할 메뉴 버튼이 금빛으로 맥동하며 살짝 흔들린다 (참고: 흔들리는 버튼·움직이는 화살표로 시선을 이끄는 튜토리얼 관례).
+-- 오래 쓰면 거슬리므로 초반 길잡이(g_...)에서만 켜고, 다른 조언으로 넘어가거나 닫으면 끈다.
+local GUIDE_BTN = { trade = "Menu_trade", route = "Menu_route", yard = "Menu_yard", board = "Menu_board", quest = "Menu_board", explore = "Menu_board",
+	battle = "Menu_battle", tech = "Menu_codex", codex = "Menu_codex", crew = "Menu_status", status = "Menu_status", gwent = "DeckButton" }
+local guidePulseToken = 0
+function H.setGuidePulse(tab)
+	guidePulseToken += 1
+	local token = guidePulseToken
+	for _, holder in { dock, hudTop } do
+		for _, n in GUIDE_BTN do
+			local b = holder:FindFirstChild(n)
+			local old = b and b:FindFirstChild("GuidePulse")
+			if old then old:Destroy() end
+			if b then b.Rotation = 0 end
+		end
+	end
+	local name = tab and GUIDE_BTN[tab]
+	if not name then return end
+	local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
+	if not b then return end
+	local stroke = Instance.new("UIStroke")
+	stroke.Name = "GuidePulse"
+	stroke.Color = Color3.fromRGB(255, 214, 96)
+	stroke.Thickness = 3
+	stroke.Parent = b
+	task.spawn(function()
+		local t0 = os.clock()
+		while guidePulseToken == token and b.Parent do
+			local t = os.clock() - t0
+			stroke.Thickness = 3 + math.abs(math.sin(t * 4)) * 3
+			b.Rotation = math.sin(t * 9) * 4 * math.max(0, math.sin(t * 1.5)) -- 숨 쉬듯 이따금 흔들림
+			task.wait(0.03)
+		end
+		if stroke.Parent then stroke:Destroy() end
+		if b.Parent then b.Rotation = 0 end
+	end)
+end
 local function refreshBubble()
 	local adv = view and view.advice
 	if not adv or not hud.Visible then
@@ -2345,6 +2382,7 @@ local function refreshBubble()
 	local first = bubbleKey == nil
 	bubbleKey = key
 	H.bubbleCounsel = counsel
+	H.setGuidePulse(if counsel and string.sub(counsel.id, 1, 2) == "g_" then counsel.tab else nil)
 	if counsel then
 		-- 상황 조언이 있으면 그 동료가 직접 말한다: 수리·보급·초반 안내 등
 		H.bubbleWho.Text = string.format("💬 %s (%s)", counsel.who.name, counsel.who.role or "동료")
