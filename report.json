@@ -1,164 +1,129 @@
 {
- "sourceRevision": "4ee9aaccf999e9a45570440e043124ff53cf0b42",
+ "sourceRevision": "d801c3199605f12715df41ddb2d0c4efcb296104",
  "log": [
   {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
-  {
    "step": 1,
-   "ctx": "Client",
-   "out": "allies on\ntext"
-  },
-  {
-   "step": 3,
-   "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 5,
    "ctx": "Client",
    "out": "cam\ntext"
   },
   {
-   "step": 6,
+   "step": 2,
    "ctx": "Client",
-   "out": "scene=true models=174 done=nil err=false ReplicatedStorage.Shared.FieldScene:2015: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2015 function start\nAssistantCommand:1\nAssistantCommand:1\n\ntext"
+   "out": "솔즈베리 평원/london size=436 enemies=46 fog=520 clock=12 err=true table: 0x390fb19b803ada4a\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "region_00_london",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "베르겐 해안 절벽/bergen size=396 enemies=46 fog=420 clock=10.5 err=true table: 0x914b26458ca985fd\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "region_01_bergen",
+   "files": 1
   },
   {
    "step": 8,
    "ctx": "Client",
-   "out": "faced 2839.75732421875\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "c1_approach",
-   "files": 1
+   "out": "폼페이 발굴지/naples size=362 enemies=46 fog=900 clock=15.5 err=true table: 0x8adc320965de3580\ntext"
   },
   {
    "step": 10,
-   "ctx": "Client",
-   "out": "attack\ntext"
+   "capture": "region_02_naples",
+   "files": 1
   },
   {
-   "step": 12,
-   "capture": "c2_attack",
+   "step": 11,
+   "ctx": "Client",
+   "out": "아덴 사막 유적/aden size=413 enemies=46 fog=800 clock=14 err=true table: 0x8c2d6d113088134e\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "region_03_aden",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "faced 11.058472633361816\ntext"
+   "out": "말라카 숲/malacca size=404 enemies=46 fog=460 clock=10 err=true table: 0xedad054177132bce\ntext"
   },
   {
-   "step": 15,
-   "ctx": "Client",
-   "out": "heavy\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "c3_heavy",
+   "step": 16,
+   "capture": "region_04_malacca",
    "files": 1
   },
   {
-   "step": 19,
+   "step": 17,
    "ctx": "Client",
-   "out": "spin\ntext"
+   "out": "나가사키 숲/nagasaki size=349 enemies=46 fog=440 clock=10.5 err=true table: 0xc83e6250c847b270\ntext"
   },
   {
-   "step": 21,
-   "capture": "c4_spin",
+   "step": 19,
+   "capture": "region_05_nagasaki",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "카리브 해안/havana size=362 enemies=46 fog=520 clock=11 err=true table: 0x11c2a42f775cfc85\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "region_06_havana",
    "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "dash\ntext"
+   "out": "몸바사 평원/mombasa size=524 enemies=46 fog=800 clock=14 err=true table: 0xb77f6440ec96d78a\ntext"
   },
   {
    "step": 25,
-   "capture": "c5_dash",
+   "capture": "region_07_mombasa",
    "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "ready=true err=false ReplicatedStorage.Shared.FieldScene:2015: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2015 function start\nAssistantCommand:1\nAssistantCommand:1\n btns=공격|철수||1.3|방어|🔒\n칭호|강타|2.5\ntext"
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "MOVE anchored=true moved=0.0 ws=16 mobs=32\ntext"
+   "out": "광저우 고지/canton size=480 enemies=46 fog=480 clock=10.5 err=true table: 0x8784ac4db273369e\ntext"
   },
   {
    "step": 28,
-   "ctx": "Client",
-   "out": "guard\ntext"
-  },
-  {
-   "step": 30,
-   "capture": "c6_guard",
+   "capture": "region_08_canton",
    "files": 1
   },
   {
-   "step": 31,
+   "step": 29,
    "ctx": "Client",
-   "out": "SWORD equipped=true template=true relics=24\ntext"
+   "out": "팔룬 광산/stockholm size=317 enemies=46 fog=280 clock=18.5 err=true table: 0xeca69a9b7255d070\ntext"
+  },
+  {
+   "step": 31,
+   "capture": "region_09_stockholm",
+   "files": 1
   },
   {
    "step": 32,
    "ctx": "Client",
-   "out": "ALLIES 0\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "c7_allies",
-   "files": 1
+   "out": "시드니 해안/sydney size=431 enemies=46 fog=700 clock=12 err=true table: 0x79ef43c5955e5e7b\ntext"
   },
   {
    "step": 34,
-   "ctx": "Client",
-   "out": "volley\ntext"
+   "capture": "region_10_sydney",
+   "files": 1
   },
   {
-   "step": 36,
-   "capture": "c8_cardvolley",
-   "files": 1
+   "step": 35,
+   "ctx": "Client",
+   "out": "세비야 들판/seville size=480 enemies=46 fog=900 clock=15 err=true table: 0xccd7ddac4ade88a1\ntext"
   },
   {
    "step": 37,
-   "ctx": "Client",
-   "out": "ward\ntext"
-  },
-  {
-   "step": 39,
-   "capture": "c9_cardward",
-   "files": 1
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.385 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.365 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.995 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.098 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.377 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.985 | ENEMY motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 42,
-   "capture": "c10_mobs",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.288 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.217 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.969 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.306 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.209 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.967 | ENEMY motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 45,
-   "ctx": "Client",
-   "out": "ENEMY d=2985 motors=15 sum=0.000\nENEMY d=3014 motors=15 sum=0.000\nENEMY d=2977 motors=15 sum=0.000\nENEMY d=2868 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2840 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=3009 motors=15 sum=0.000\nENEMY d=2868 motors=15 sum=0.000\nENEMY d=2838 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2827 motors=15 sum=0.000\nENEMY d=2855 motors=15 sum=0.000\nENEMY d=2996 motors=15 sum=0.000\nENEMY d=2880 motors=15 sum=0.000\nENEMY d=2826 motors=15 sum=0.000\nENEMY d=2848 motors=15 sum=0.000\nENEMY d=2844 motors=15 sum=0.000\nENEMY d=2856 motors=15 sum=0.000\nENEMY d=3005 motors=15 sum=0.000\nENEMY d=2865 motors=15 sum=0.000\nENEMY d=2835 motors=15 sum=0.000\nENEMY d=2839 motors=15 sum=0.000\nENEMY d=2840 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=3013 motors=15 sum=0.000\nENEMY d=2881 motors=15 sum=0.000\nENEMY d=2829 motors=15 sum=0.000\nENEMY d=2849 motors=15 sum=0.000\nENEMY d=2840 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=2918 motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 46,
-   "capture": "c11_mobs2",
+   "capture": "region_11_seville",
    "files": 1
   }
  ],
@@ -174,13 +139,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 47,
-  "completedSteps": 47,
+  "plannedSteps": 38,
+  "completedSteps": 38,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 11,
+  "plannedFrames": 12,
+  "capturedFrames": 12,
   "abortedEarly": false
  }
 }
