@@ -387,6 +387,11 @@ return function(D, S)
 			return false, "진행 중인 실시간 해전이 없어요"
 		end
 		sim.done = true
+		-- 거부 사유를 상태에 남긴다 (정당한 승리가 거부되어 '이겨도 패배'가 되는지 추적)
+		local function reject(msg: string)
+			state.lastNavalReject = { msg = msg, winner = p and p.winner, elapsed = p and p.elapsed, meHull = p and p.meHull, foeHull = p and p.foeHull }
+			return false, msg
+		end
 		if type(p) ~= "table" then
 			return false, "잘못된 요청"
 		end
@@ -403,24 +408,26 @@ return function(D, S)
 		local meCrew = num(p.meCrew, 0, me.maxCrew)
 		local foeCrew = num(p.foeCrew, 0, foe.maxCrew)
 		if elapsed < 0 or meHull < 0 or foeHull < 0 or meCrew < 0 or foeCrew < 0 then
-			return false, "잘못된 보고"
+			return reject("잘못된 보고")
 		end
 		-- 그 시간 동안 낼 수 있는 피해보다 많이 줬다고 하면 거부
 		-- (내가 입은 피해는 이미 입은 선체 손상에서 시작하므로 전투 시작 때의 선체를 기준으로 본다)
-		local toFoe = D.Combat.maxHullDamage(me, elapsed) + 1
-		local toMe = D.Combat.maxHullDamage(foe, elapsed) + 1
+		-- 검증 여유 1.6배: 카드·동료 보너스와 프레임 오차 때문에 정당한 승리가 거부되지 않게 한다
+		local LEEWAY = 1.6
+		local toFoe = (D.Combat.maxHullDamage(me, elapsed) + 1) * LEEWAY
+		local toMe = (D.Combat.maxHullDamage(foe, elapsed) + 1) * LEEWAY
 		if (foe.hull - foeHull) > toFoe or (me.hull - meHull) > toMe then
-			return false, "보고가 규칙에 맞지 않아요"
+			return reject("보고가 규칙에 맞지 않아요")
 		end
 		-- 포격으로 줄어드는 선원은 선체 피해의 일부뿐이다
 		if (foe.crew - foeCrew) > toFoe * 0.25 + 1 or (me.crew - meCrew) > toMe * 0.25 + 1 then
 			if not (type(p.board) == "table") then
-				return false, "보고가 규칙에 맞지 않아요"
+				return reject("보고가 규칙에 맞지 않아요")
 			end
 		end
 		local winner, reason = p.winner, p.reason
 		if winner ~= "a" and winner ~= "b" and winner ~= "draw" then
-			return false, "잘못된 보고"
+			return reject("잘못된 보고")
 		end
 		if p.board and type(p.board) == "table" and type(p.board.seed) == "number" then
 			-- 접현: 서버가 같은 시드로 백병전을 다시 돌려 승패와 선원 수를 정한다
@@ -433,30 +440,30 @@ return function(D, S)
 				fc = foeCrew
 			end
 			if (foe.crew - fc) > toFoe * 0.25 + 1 or (me.crew - mc) > toMe * 0.25 + 1 then
-				return false, "보고가 규칙에 맞지 않아요"
+				return reject("보고가 규칙에 맞지 않아요")
 			end
 			local a2 = table.clone(me)
 			a2.hull, a2.crew = math.max(1, meHull), math.max(1, mc)
 			local b2 = table.clone(foe)
 			b2.hull, b2.crew = math.max(1, foeHull), math.max(1, fc)
-			local r = D.Combat.board(a2, b2, math.floor(p.board.seed))
+			local r = D.Combat.board(a2, b2, math.floor((p.board.seed :: any) :: number))
 			winner, reason = r.winner, r.reason
 			meCrew, foeCrew = r.a.crew, r.b.crew
 		elseif winner == "a" then
 			if foeHull > 0 then
-				return false, "승리 보고가 맞지 않아요"
+				return reject("승리 보고가 맞지 않아요")
 			end
 			reason = "sunk"
 		elseif winner == "b" then
 			if meHull > 0 then
-				return false, "패배 보고가 맞지 않아요"
+				return reject("패배 보고가 맞지 않아요")
 			end
 			reason = "sunk"
 		else
 			reason = "stalemate"
 		end
-		if winner == "a" and elapsed < 6 then
-			return false, "너무 빠른 승리예요"
+		if winner == "a" and elapsed < 3 then
+			return reject("너무 빠른 승리예요")
 		end
 		pb.hull = math.max(1, math.floor(meHull))
 		pb.crew = math.max(1, math.floor(meCrew + math.max(0, me.crew - meCrew) * (pb.medic or 0)))
