@@ -5742,6 +5742,7 @@ function H.startField(s)
 	end
 	FieldScene.start({
 		battleLevel = battleLevel,
+		battleStats = view and view.battleStats,
 		cardSkills = cardSkills,
 		allies = allyNames,
 		name = s.name,

@@ -9,11 +9,48 @@ local JobSkills = {}
 JobSkills.MAX_PLAYER_SKILLS = 3
 JobSkills.MAX_ALLY_SKILLS = 2
 JobSkills.START_PLAYER_SKILLS = 2 -- 처음에는 2칸
-JobSkills.UNLOCK_THIRD_LEVEL = 5 -- 전투 직업 레벨 5가 되면 3번째 칸이 열린다
 
--- 전투 직업 레벨에 따라 열린 스킬 칸 수 (2 → 3)
-function JobSkills.playerSlots(battleLevel: number?): number
-	return if (battleLevel or 1) >= JobSkills.UNLOCK_THIRD_LEVEL then JobSkills.MAX_PLAYER_SKILLS else JobSkills.START_PLAYER_SKILLS
+-- 전투 칭호: 중렙에 얻는다(수습이 아니다). unlocksSlot 칭호를 하나라도 얻으면 3번째 스킬 칸이 열린다.
+-- 조건은 전투 직업 레벨(최대 30)과 해전 승수(state.stats.battlesWon)다.
+JobSkills.BattleTitles = {
+	{ id = "veteran", name = "숙련 무인", need = { battleLevel = 10 }, unlocksSlot = true },
+	{ id = "pirate_hunter", name = "해적 사냥꾼", need = { battlesWon = 15 }, unlocksSlot = true },
+	{ id = "hero", name = "역전의 용사", need = { battleLevel = 18, battlesWon = 30 }, unlocksSlot = false },
+}
+
+-- 지금 얻은 전투 칭호들. stats 는 { battlesWon = number }.
+function JobSkills.earnedTitles(battleLevel: number?, stats: { battlesWon: number? }?): { any }
+	local lv, won = battleLevel or 1, (stats and stats.battlesWon) or 0
+	local out = {}
+	for _, t in JobSkills.BattleTitles do
+		local ok = true
+		if t.need.battleLevel and lv < t.need.battleLevel then ok = false end
+		if (t.need :: any).battlesWon and won < (t.need :: any).battlesWon then ok = false end
+		if ok then table.insert(out, t) end
+	end
+	return out
+end
+
+-- 열린 스킬 칸 수: 처음 2칸, 칸을 여는 전투 칭호가 하나라도 있으면 3칸
+function JobSkills.playerSlots(battleLevel: number?, stats: { battlesWon: number? }?): number
+	for _, t in JobSkills.earnedTitles(battleLevel, stats) do
+		if t.unlocksSlot then
+			return JobSkills.MAX_PLAYER_SKILLS
+		end
+	end
+	return JobSkills.START_PLAYER_SKILLS
+end
+
+-- 잠긴 칸을 눌렀을 때 보여 줄 해금 안내
+function JobSkills.unlockHint(): string
+	local parts = {}
+	for _, t in JobSkills.BattleTitles do
+		if t.unlocksSlot then
+			local cond = if t.need.battleLevel then string.format("전투 Lv.%d", t.need.battleLevel) else string.format("해전 %d승", (t.need :: any).battlesWon)
+			table.insert(parts, string.format("%s('%s')", cond, t.name))
+		end
+	end
+	return "전투 칭호를 얻으면 스킬 칸이 하나 더 열려요: " .. table.concat(parts, " 또는 ")
 end
 
 -- 스킬 정의: kind 는 FieldScene 의 효과 이름과 같다 (heal·armor·volley·snipe·rally·luck·read·bash).

@@ -1605,7 +1605,7 @@ function FieldScene.start(opts)
 		for i2 = 1, math.min(#cs, 3) do
 			table.insert(available, "card" .. i2)
 		end
-		local slotCount = JobSkills.playerSlots(opts.battleLevel) -- 처음 2칸, 전투 Lv.5에 3칸
+		local slotCount = JobSkills.playerSlots(opts.battleLevel, opts.battleStats) -- 처음 2칸, 중렙 전투 칭호를 얻으면 3칸
 		local loadout = JobSkills.playerLoadout(opts.loadout, available, slotCount)
 		local slotOf = {}
 		for i2, id in loadout do
@@ -1617,11 +1617,11 @@ function FieldScene.start(opts)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, string.format("🔒\nLv.%d", JobSkills.UNLOCK_THIRD_LEVEL), Color3.fromRGB(70, 76, 90), UDim2.fromOffset(52, 52), arcPos(190, 14 + (slotI - 1) * 30), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "🔒\n칭호", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(52, 52), arcPos(190, 14 + (slotI - 1) * 30), Vector2.new(0.5, 0.5))
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
 			bindPress(lb, function()
-				say(string.format("전투 직업 Lv.%d가 되면 스킬 칸이 하나 더 열려요", JobSkills.UNLOCK_THIRD_LEVEL))
+				say(JobSkills.unlockHint())
 			end)
 		end
 		if slotOf.heavy then mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), slotPos("heavy"), 56) end

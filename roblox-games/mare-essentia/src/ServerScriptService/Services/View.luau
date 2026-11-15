@@ -54,6 +54,7 @@ return function(D, S)
 		}
 
 		view.careers = {}
+		view.battleStats = { battlesWon = state.stats.battlesWon or 0 }
 		for _, id in D.Careers.IDS do
 			local c = state.careers[id]
 			table.insert(view.careers, {
