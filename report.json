@@ -1,140 +1,145 @@
 {
- "sourceRevision": "0eade9d2a02383533ffb29bea7676a18e1fcad11",
+ "sourceRevision": "36cc79460c8213066769442d4ba874db0ce329fd",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
+   "out": "allies on\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
+   "out": "x\ntext"
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "started\ntext"
   },
   {
-   "step": 5,
+   "step": 6,
    "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 7,
-   "capture": "01_top",
-   "files": 1
+   "out": "cam\ntext"
   },
   {
    "step": 8,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "faced 113.6590576171875\ntext"
   },
   {
-   "step": 10,
-   "capture": "02_plaza",
+   "step": 9,
+   "capture": "c1_approach",
    "files": 1
   },
   {
-   "step": 11,
+   "step": 10,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "attack\ntext"
   },
   {
-   "step": 13,
-   "capture": "03_street",
+   "step": 12,
+   "capture": "c2_attack",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "faced 9.64057731628418\ntext"
   },
   {
-   "step": 16,
-   "capture": "04_dock",
-   "files": 1
+   "step": 15,
+   "ctx": "Client",
+   "out": "heavy\ntext"
   },
   {
    "step": 17,
-   "ctx": "Client",
-   "out": "ok\ntext"
-  },
-  {
-   "step": 19,
-   "capture": "05_aerial",
+   "capture": "c3_heavy",
    "files": 1
   },
   {
-   "step": 20,
+   "step": 19,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "spin\ntext"
   },
   {
-   "step": 22,
-   "capture": "06_backstreet",
+   "step": 21,
+   "capture": "c4_spin",
    "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dash\ntext"
   },
   {
    "step": 25,
-   "capture": "07_wall",
+   "capture": "c5_dash",
    "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "parts=3649 meshparts=3152 models=3536 houses=16\ntext"
+   "out": "ready=true err=true table: 0x5348e337045aec03 btns=공격|철수|0.1|6.0|3.0|방어|의학|화학|물리\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=3.084141254425049\ntext"
+   "out": "MOVE anchored=false moved=15.9 ws=18 mobs=4\ntext"
   },
   {
-   "step": 29,
-   "capture": "08_harbor_npc_sparring_01",
+   "step": 28,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 30,
+   "capture": "c6_guard",
    "files": 1
   },
   {
    "step": 31,
-   "capture": "08_harbor_npc_sparring_02",
-   "files": 1
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "ALLIES 0\ntext"
   },
   {
    "step": 33,
-   "capture": "08_harbor_npc_sparring_03",
+   "capture": "c7_allies",
    "files": 1
   },
   {
-   "step": 35,
-   "capture": "08_harbor_npc_sparring_04",
+   "step": 34,
+   "ctx": "Client",
+   "out": "volley\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "c8_cardvolley",
    "files": 1
   },
   {
    "step": 37,
-   "capture": "08_harbor_npc_sparring_05",
-   "files": 1
+   "ctx": "Client",
+   "out": "ward\ntext"
   },
   {
    "step": 39,
-   "capture": "08_harbor_npc_sparring_06",
+   "capture": "c9_cardward",
    "files": 1
   },
   {
-   "step": 41,
-   "capture": "08_harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "08_harbor_npc_sparring_08",
-   "files": 1
+   "step": 40,
+   "ctx": "Client",
+   "out": "DIAG tracks=2\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\ntext"
   }
  ],
  "errors": [],
@@ -145,17 +150,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 44,
-  "completedSteps": 44,
+  "plannedSteps": 41,
+  "completedSteps": 41,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 15,
-  "capturedFrames": 15,
+  "plannedFrames": 9,
+  "capturedFrames": 9,
   "abortedEarly": false
  }
 }
