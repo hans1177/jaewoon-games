@@ -1,0 +1,44 @@
+{
+ "sourceRevision": "8bfe6b5451ca1d50c1b2c680f5f7599ae7c332aa",
+ "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "allies on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "cam\ntext"
+  }
+ ],
+ "errors": [
+  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: HumanoidRootPart is not a valid member of Model \"Worksp"
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 46,
+  "completedSteps": 8,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 11,
+  "capturedFrames": 0,
+  "abortedEarly": true
+ }
+}

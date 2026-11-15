@@ -1,191 +1,44 @@
 {
- "sourceRevision": "03ddb9406ad860ad367e349a66ee4b78ccf11b73",
+ "sourceRevision": "8bfe6b5451ca1d50c1b2c680f5f7599ae7c332aa",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "allies on\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
-  },
-  {
-   "step": 8,
-   "capture": "f_trade",
-   "files": 1
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=94 issues=0\ntext"
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "killed=true\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "DEV Tab route\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "f_route",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=580 issues=0\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=285 issues=0\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "f_quest",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=219 issues=0\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=548 issues=0\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1136x380 texts=163 issues=0\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
-  },
-  {
-   "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "out": "cam\ntext"
   }
  ],
- "errors": [],
+ "errors": [
+  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: HumanoidRootPart is not a valid member of Model \"Worksp"
+ ],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 46,
+  "completedSteps": 8,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
-  "abortedEarly": false
+  "plannedFrames": 11,
+  "capturedFrames": 0,
+  "abortedEarly": true
  }
 }
