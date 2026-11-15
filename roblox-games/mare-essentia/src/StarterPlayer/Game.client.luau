@@ -7674,12 +7674,12 @@ RENDERERS.yard = renderYard
 
 -- 탭 아이콘: 이미 등록된 3D 모델(Relics·Naval·People)을 한 가지 표현으로 통일해 쓴다.
 H.TAB_ICON = {
-	-- 탭 아이콘은 화면 오른쪽 위 메뉴와 같은 그림(Menu)을 써서 통일한다. 그림이 없는 동료는 3D 소품.
-	quest = { "Menu", "quest" }, route = { "Menu", "route" }, trade = { "Menu", "trade" },
-	cards = { "Relics", "journal-closed" }, status = { "Menu", "status" }, harbor = { "Menu", "harbor" },
-	crew = { "Relics", "shield-round" }, yard = { "Menu", "yard" }, codex = { "Menu", "codex" },
-	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
-	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" }, war = { "Naval", "ship-large" }, board = { "Menu", "quest" },
+	-- 탭 아이콘은 화면 오른쪽 위 메뉴와 같은 그림(Menu)을 써서 통일한다. 탭마다 뜻이 다른 그림을 쓴다.
+	board = { "Menu", "quest" }, quest = { "Menu", "cc0_book" }, recruit = { "Menu", "cc0_helmet" }, explore = { "Menu", "explore" },
+	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
+	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Menu", "cc0_fireball" }, gwent = { "Menu", "cc0_shield2" },
+	scholar = { "Menu", "cc0_chest" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
+	status = { "Menu", "status" }, crew = { "Menu", "cc0_shield" }, cards = { "Menu", "cc0_book" },
 }
 H.TAB_ICON_FLAT = { crew = "menu_crew", gwent = "menu_gwent", cards = "menu_cards", war = "menu_war" }
 function H.renderTabs()
