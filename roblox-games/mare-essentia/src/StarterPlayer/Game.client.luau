@@ -890,24 +890,42 @@ function H.tileGrid(items, parent, cellW, cellH)
 		st.Thickness = 1.5
 		st.Parent = tile
 		tile.Parent = grid
-		local ic = modelIcon(tile, it.kind or "Menu", it.icon, nil, 78, it.title)
+		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
+		local iconPx = if it.portrait then 104 else 78
+		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
 		ic.AnchorPoint = Vector2.new(0.5, 0)
 		ic.Position = UDim2.new(0.5, 0, 0, 8)
+		local textY = iconPx + 14
 		local nm = mkLabel(tile, it.title, 19, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
-		nm.Position = UDim2.fromOffset(4, 92)
+		nm.Position = UDim2.fromOffset(4, textY)
 		nm.Size = UDim2.new(1, -8, 0, 26)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
 			local sb = mkLabel(tile, it.sub, 15, COLORS.muted, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
-			sb.Position = UDim2.fromOffset(4, 120)
+			sb.Position = UDim2.fromOffset(4, textY + 28)
 			sb.Size = UDim2.new(1, -8, 0, 20)
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
-		if it.btn then
+		if it.desc then
+			local ds = mkLabel(tile, it.desc, 14, INK, false)
+			ds.AutomaticSize = Enum.AutomaticSize.None
+			ds.Position = UDim2.fromOffset(8, textY + 50)
+			ds.Size = UDim2.new(1, -16, 0, 40)
+			ds.TextWrapped = true
+			ds.TextYAlignment = Enum.TextYAlignment.Top
+			ds.TextXAlignment = Enum.TextXAlignment.Center
+			ds.TextTruncate = Enum.TextTruncate.AtEnd
+		end
+		if it.btn and it.btn2 then
+			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, 44), it.onClick, on)
+			b1.Position = UDim2.new(0, 8, 1, -52)
+			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, 44), it.btn2.onClick, it.btn2.enabled ~= false)
+			b2.Position = UDim2.new(0.5, 4, 1, -52)
+		elseif it.btn then
 			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 44), it.onClick, on)
 			b.Position = UDim2.new(0, 8, 1, -52)
 		end
@@ -4256,31 +4274,34 @@ function RENDERERS.recruit()
 	if #list == 0 then
 		add(function() return mkLabel(content, "이 항구의 주점에는 영입할 동료가 없어요.", 14, COLORS.muted, true) end)
 	end
-	for _, c in list do
-		add(function()
-			local tag = if c.joined then "  (합류 중)" elseif c.blocked == nil then "  (영입 가능)" else ""
-			local sub = string.format("%s\n영입 %d코인 · 호감도 %d%s", c.summary, c.fee, c.affinity, if c.blocked and not c.joined then " · " .. c.blocked else "")
-			local btn = if c.joined
-				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
-				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-			local btns = { btn }
-			if c.joined then
-				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
-			end
-			local row = mkRow(content, string.format("[%s] %s%s", c.role, c.name, tag), sub, btns, 84)
-			local model = COMPANION_MODEL[c.id]
+	add(function()
+		local tiles = {}
+		for _, c in list do
+			local sub = if c.joined then string.format("합류 중 · 호감도 %d", c.affinity)
+				else string.format("영입 %d코인 · 호감도 %d", c.fee, c.affinity)
+			local desc = if c.blocked and not c.joined then c.blocked else c.summary
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
+			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "recruit" }
 			if portrait then
-				withIcon(row, "Portraits", portrait.atlas, nil, 56, portrait.offset)
+				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
-				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
-			elseif model then
-				withIcon(row, "People", model, nil, 56)
+				tile.portrait = { atlas = "scholar_" .. scholarId }
+			elseif COMPANION_MODEL[c.id] then
+				tile.kind, tile.icon = "People", COMPANION_MODEL[c.id]
 			end
-			return row
-		end)
-	end
+			if c.joined then
+				tile.btn, tile.color = "대화", COLORS.blue
+				tile.onClick = function() call("Talk", { companionId = c.id }) end
+				tile.btn2 = { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+			else
+				tile.btn, tile.color, tile.enabled = "영입", COLORS.green, c.blocked == nil
+				tile.onClick = function() call("Recruit", { companionId = c.id }) end
+			end
+			table.insert(tiles, tile)
+		end
+		return H.tileGrid(tiles, content, 190, 210)
+	end)
 end
 
 function RENDERERS.crew()
