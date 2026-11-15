@@ -7445,8 +7445,8 @@ end)
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
-	if sceneHold then
-		return
+	if sceneHold or inField then
+		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
 	-- 서버가 CC0 모델을 불러오는 동안(최대 약 25초) 기다렸다가 장면을 만든다
 	local RS = game:GetService("ReplicatedStorage")
