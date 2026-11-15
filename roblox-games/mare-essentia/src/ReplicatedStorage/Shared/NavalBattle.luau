@@ -1225,8 +1225,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
-		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, 0.004)
+		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -1268,8 +1268,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		infoPad.Parent = info
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.75 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
@@ -1400,8 +1400,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = UDim2.fromScale(0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = UDim2.fromScale(0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -1417,8 +1417,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = UDim2.fromScale(0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = UDim2.fromScale(0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -1900,6 +1900,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusFrame.ClipsDescendants = true
 		focusFrame.Visible = false
 		focusFrame.ZIndex = 50
+		-- 카드 대전(cardOnly): 확대 카드는 화면을 덮지 않고 왼쪽 설명 칸에 고정해 보여 준다 (퀜트식).
+		local previewHint
+		if opts.cardOnly then
+			focusFrame.AnchorPoint = Vector2.new(0, 0)
+			focusFrame.Position = UDim2.fromScale(0.01, 0.135)
+			previewHint = Instance.new("TextLabel")
+			previewHint.Name = "CardPreviewHint"
+			previewHint.Position = UDim2.fromScale(0.01, 0.135)
+			previewHint.Size = UDim2.fromScale(0.19, 0.5)
+			previewHint.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
+			previewHint.BackgroundTransparency = 0.25
+			previewHint.BorderSizePixel = 0
+			previewHint.Font = Enum.Font.Gotham
+			previewHint.TextColor3 = Color3.fromRGB(226, 208, 170)
+			previewHint.TextSize = 15
+			previewHint.TextWrapped = true
+			previewHint.Text = t("카드를 누르면\n설명이 여기에 나와요.\n\n한 번 더 누르면\n카드를 내요.", "Tap a card to read it here.\n\nTap again to play it.")
+			previewHint.Parent = g
+			frameEdge(previewHint, brass, 6)
+		end
 		-- [확대 카드] 어두운 배경을 터치하면 선택을 취소하고 기존 카드 대전으로 돌아간다.
 		local focusShade = Instance.new("TextButton")
 		focusShade.Name = "CardFocusBackdrop"
@@ -2008,6 +2028,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusMotion = nil
 			end
 			if focusTween then focusTween:Cancel(); focusTween = nil end
+			if previewHint then previewHint.Visible = card == nil end
 			if not card then
 				focusArtwork:SetAttribute("ArtFocused", false)
 				focusFrame.Visible = false
@@ -2019,13 +2040,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
 			local screenSize = bg.AbsoluteSize
 			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
+			if opts.cardOnly then
+				height = math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
+			end
 			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
 			focusScale.Scale = 0.78
 			focusShade.BackgroundTransparency = 1
-			focusShade.Visible = true
+			focusShade.Visible = not opts.cardOnly -- 카드 대전에서는 화면을 어둡게 덮지 않는다
 			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
-			TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play()
+			if not opts.cardOnly then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
 			local artKey = cardArtworkKey(card)
