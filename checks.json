@@ -1,22 +1,22 @@
 {
-  "runId": "43689581352",
+  "runId": "43689600359",
   "kind": "studio",
-  "sourceRevision": "519802cd72b6c7ae77e6d949a1a5773cd828fe7c",
+  "sourceRevision": "282c9c164766968bc599507b65369bf426176736",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
   "summary": {
-    "plannedSteps": 46,
-    "completedSteps": 8,
-    "plannedClicks": 0,
+    "plannedSteps": 14,
+    "completedSteps": 11,
+    "plannedClicks": 1,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 11,
-    "capturedFrames": 0,
+    "plannedFrames": 3,
+    "capturedFrames": 2,
     "abortedEarly": true
   },
   "errors": [
-    "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: HumanoidRootPart is not a valid member of Model \"Worksp"
+    "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
   ],
   "audits": {
     "models": "NOT_RUN",
@@ -27,7 +27,7 @@
   "steps": [
     {
       "step": 0,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -48,17 +48,19 @@
     },
     {
       "step": 3,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 4,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "t0_main",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "t0_main-0.jpg"
+      ]
     },
     {
       "step": 5,
@@ -76,43 +78,45 @@
     },
     {
       "step": 7,
-      "type": "luau",
+      "type": "wait",
       "name": "",
-      "status": "FAIL",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 8,
-      "type": "capture",
-      "name": "c1_approach",
-      "status": "NOT_RUN",
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 9,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
+      "type": "capture",
+      "name": "t2_hall",
+      "status": "PASS",
+      "screenshots": [
+        "t2_hall-0.jpg"
+      ]
     },
     {
       "step": 10,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
+      "type": "click_text",
+      "name": "흥정하기",
+      "status": "FAIL",
       "screenshots": []
     },
     {
       "step": 11,
-      "type": "capture",
-      "name": "c2_attack",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 12,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "t3_haggle",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -122,233 +126,22 @@
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
-    },
-    {
-      "step": 14,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 15,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 16,
-      "type": "capture",
-      "name": "c3_heavy",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 17,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 18,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 19,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 20,
-      "type": "capture",
-      "name": "c4_spin",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 21,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 22,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 23,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "capture",
-      "name": "c5_dash",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 25,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 26,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 27,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 28,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 29,
-      "type": "capture",
-      "name": "c6_guard",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 30,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 31,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 32,
-      "type": "capture",
-      "name": "c7_allies",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 33,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 34,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 35,
-      "type": "capture",
-      "name": "c8_cardvolley",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 36,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 37,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 38,
-      "type": "capture",
-      "name": "c9_cardward",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 39,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 40,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 41,
-      "type": "capture",
-      "name": "c10_mobs",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 42,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 43,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 44,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 45,
-      "type": "capture",
-      "name": "c11_mobs2",
-      "status": "NOT_RUN",
-      "screenshots": []
     }
   ],
-  "screenshotComparison": [],
+  "screenshotComparison": [
+    {
+      "name": "t0_main-0.jpg",
+      "sha256": "ff378d3928fcf9eea6e9b1fa29ba7595b6dbf6be3ce8620c1971321de49b8146",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43689600359/t0_main-0.jpg"
+    },
+    {
+      "name": "t2_hall-0.jpg",
+      "sha256": "3e822e3b50cb29bcad3ed17733ef268f360b5dd57227ed6583a0cd3b9ba53089",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43689600359/t2_hall-0.jpg"
+    }
+  ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43689147117"
+  "previousRunId": "43689581352"
 }

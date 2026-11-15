@@ -1,44 +1,54 @@
 {
- "sourceRevision": "519802cd72b6c7ae77e6d949a1a5773cd828fe7c",
+ "sourceRevision": "282c9c164766968bc599507b65369bf426176736",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "true \ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "started\ntext"
+   "step": 4,
+   "capture": "t0_main",
+   "files": 1
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "hall\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "t2_hall",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "click": "흥정하기",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
   }
  ],
  "errors": [
-  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: HumanoidRootPart is not a valid member of Model \"Worksp"
+  "step10:STUDIO_UI_TARGET_NOT_FOUND:흥정하기"
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 8,
-  "plannedClicks": 0,
+  "plannedSteps": 14,
+  "completedSteps": 11,
+  "plannedClicks": 1,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 2,
   "abortedEarly": true
  }
 }
