@@ -1,206 +1,47 @@
 {
- "sourceRevision": "8484168f482153267e6f1b997bdd5562db5bd90e",
+ "sourceRevision": "fc13fc718d3e532041332f40f52d8197f5809a68",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "built true nil\ntext"
+   "out": "build ok=true nil\ntext"
   },
   {
    "step": 4,
+   "capture": "holes_lisbon_port",
+   "files": 1
+  },
+  {
+   "step": 5,
    "ctx": "Client",
-   "out": "models: pigx6, chickenx4, dog-pugx3, catx3, Villagerx86\ntext"
+   "out": "HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\n -70 ..............................HHHHHHH.T\n -66 .....................HHH.HHH.HHHHHHHH.T\n -62 .....................HHHHHHHHHHHHHHHH.T\n -58 .....................HHHHHHHHHHHHHHHH.T\n -54 ......................H....HHHHHHHHHHHT\n -50 ......HHHHHHH...HHHHHH.....HHHHHHHHHHHT\n -46 ......HHHHHHHH..HHHHHHH....HHHHHHHHHHHT\n -42 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHHHHHT\n -38 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -34 ......HHHHHHHHH.HHHHHHHH.HHHHHHHHHHHH.T\n -30 ......HHHHHHHHH.HHHHHHHH..HHHHHHHHH.HHT\n -26 ......HHHHHHHH..HHHHHHH....HHHHHHHH.HHT\n -22 ......HHHHHHH...HHHHHH.....HHHHHHHH...T\n -18 ..........................H.HHHHHH..H.T\n -14 ...H....HH....H....HHHH..HH.H.......HHT\n -10 ...H....HH...HH....HHHH.....H.......HHT\n  -6 ..............H......H...H....H.......T\n  -2 ......................H.......HH......H\n   2 ..............................HH......H\n   6 .......HH.....H......H...H...HHHH.....T\n  10 ...H...HH....HH....H.HH.....HHHHHH....T\n  14 ........H..........H.HH..H..HHHHHH..H.T\n  18 .....................HH....HHHHHHHHHHHT\n  22 .........HHHHHH....HHHHHH..HHHHHHHHHHHT\n  26 .........HHHHHH...HHHHHHH.HHHHHHHHHH..T\n  30 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHHH.T\n  34 .......HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  38 .......HHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHT\n  42 .......HHHHHHHH..HHHHHHHHHHHHHHHHHHH..T\n  46 .......HHHHHHHH...HHHHHHH.HHHHHHHHHHHHH\n  50 .......HHHHHHHH....HHHHHH..HHHHHHHHHHHT\n  54 ...........................HHHHHHHHHHHT\n  58 .................HH..HH..........HHHHHT\n  62 .....................HH.H....HHHHHHHHHT\n  66 .....................HH.H.......HHHHHHT\n  70 HH...............................HHHHHT\nBAD 33\nTRANSP 22,-70 Part\nTRANSP 22,-66 Part\nTRANSP 22,-62 Part\nTRANSP 22,-58 Part\nTRANSP 22,-54 Part\nTRANSP 22,-50 Part\nTRANSP 22,-46 Part\nTRANSP 22,-42 Part\nTRANSP 22,-38 Part\nTRANSP 22,-34 Part\nTRANSP 22,-30 Part\nTRANSP 22,-26 Part\nTRANSP 22,-22 Part\nTRANSP 22,-18 Part\nTRANSP 22,-14 Part\nTRANSP 22,-10 Part\nTRANSP 22,-6 Part\nTRANSP 22,6 Part\nTRANSP 22,10 Part\nTRANSP 22,14 Part\nTRANSP 22,18 Part\nTRANSP 22,22 Part\nTRANSP 22,26 Part\nTRANSP 22,30 Part\nTRANSP 22,34 Part\nTRANSP 22,38 Part\nTRANSP 22,42 Part\nTRANSP 22,50 Part\nTRANSP 22,54 Part\nTRANSP 22,58 Part\nTRANSP 22,62 Part\nTRANSP 22,66 Part\nTRANSP 22,70 Part\ntext"
   },
   {
    "step": 6,
-   "ctx": "Client",
-   "out": "chicken moved 2/4 | dog moved 3/3 | cat moved 3/3 | pig moved 6/6 | Villager moved 27/86\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "cam dog-pug\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "zoo_dog_0",
-   "files": 1
-  },
-  {
-   "step": 11,
-   "capture": "zoo_dog_1",
-   "files": 1
-  },
-  {
-   "step": 13,
-   "capture": "zoo_dog_2",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "cam cat\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "zoo_cat_0",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "capture": "zoo_cat_1",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "capture": "zoo_cat_2",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "none cow\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "zoo_cow_0",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "capture": "zoo_cow_1",
-   "files": 1
-  },
-  {
-   "step": 29,
-   "capture": "zoo_cow_2",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "none sheep\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "zoo_sheep_0",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "capture": "zoo_sheep_1",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "capture": "zoo_sheep_2",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "cam pig\ntext"
-  },
-  {
-   "step": 41,
-   "capture": "zoo_pig_0",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "zoo_pig_1",
-   "files": 1
-  },
-  {
-   "step": 45,
-   "capture": "zoo_pig_2",
-   "files": 1
-  },
-  {
-   "step": 47,
-   "ctx": "Client",
-   "out": "cam chicken\ntext"
-  },
-  {
-   "step": 49,
-   "capture": "zoo_chicken_0",
-   "files": 1
-  },
-  {
-   "step": 51,
-   "capture": "zoo_chicken_1",
-   "files": 1
-  },
-  {
-   "step": 53,
-   "capture": "zoo_chicken_2",
-   "files": 1
-  },
-  {
-   "step": 55,
-   "ctx": "Client",
-   "out": "cam Villager\ntext"
-  },
-  {
-   "step": 57,
-   "capture": "zoo_villager_0",
-   "files": 1
-  },
-  {
-   "step": 59,
-   "capture": "zoo_villager_1",
-   "files": 1
-  },
-  {
-   "step": 61,
-   "capture": "zoo_villager_2",
-   "files": 1
-  },
-  {
-   "step": 63,
-   "ctx": "Client",
-   "out": "none horse\ntext"
-  },
-  {
-   "step": 65,
-   "capture": "zoo_horse_0",
-   "files": 1
-  },
-  {
-   "step": 67,
-   "capture": "zoo_horse_1",
-   "files": 1
-  },
-  {
-   "step": 69,
-   "capture": "zoo_horse_2",
+   "capture": "holes_ground_scan",
    "files": 1
   }
  ],
  "errors": [],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 71,
-  "completedSteps": 71,
+  "plannedSteps": 7,
+  "completedSteps": 7,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 24,
-  "capturedFrames": 24,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
   "abortedEarly": false
  }
 }
