@@ -5834,8 +5834,18 @@ function H.showCardDetail(card)
 	lay.Parent = body
 
 	local rarity = RARITY_NAMES[card.rarity] or card.rarity
-	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 13, brown, true, 0)
-	mkLabel(body, card.name, 25, ink, true, 1)
+	local function encHeading(text, order)
+		local h = mkLabel(body, text, 18, ink, true, order)
+		local rule = Instance.new("Frame")
+		rule.Size = UDim2.new(1, 0, 0, 2)
+		rule.Position = UDim2.new(0, 0, 1, 0)
+		rule.BackgroundColor3 = brown
+		rule.BorderSizePixel = 0
+		rule.Parent = h
+		return h
+	end
+	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 14, brown, true, 0)
+	encHeading(card.name, 1).TextSize = 28
 	local art = Instance.new("Frame")
 	art.LayoutOrder = 2
 	local camera = workspace.CurrentCamera
@@ -5871,7 +5881,56 @@ function H.showCardDetail(card)
 		tweens:Create(glow, TweenInfo.new(5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, false, 2), { Position = UDim2.fromScale(1.1, -0.3) }):Play()
 	end
 
-	mkLabel(body, card.description, 16, ink, false, 3)
+	do
+		local cap = Instance.new("TextLabel")
+		cap.Size = UDim2.new(1, 0, 0, 24)
+		cap.Position = UDim2.new(0, 0, 1, -24)
+		cap.BackgroundColor3 = Color3.new(0, 0, 0)
+		cap.BackgroundTransparency = 0.45
+		cap.Text = "  그림  " .. card.name
+		cap.TextXAlignment = Enum.TextXAlignment.Left
+		cap.Font = Enum.Font.GothamBold
+		cap.TextSize = 14
+		cap.TextColor3 = Color3.new(1, 1, 1)
+		cap.ZIndex = 60
+		cap.Parent = art
+	end
+	if card.found and not card.combat then
+		-- 백과 정보 상자: 한눈에 보는 요약 칸 (분야·등급·발견·보상)
+		local box2 = Instance.new("Frame")
+		box2.LayoutOrder = 3
+		box2.Size = UDim2.new(1, -8, 0, 0)
+		box2.AutomaticSize = Enum.AutomaticSize.Y
+		box2.BackgroundColor3 = Color3.fromRGB(236, 220, 186)
+		box2.BorderSizePixel = 0
+		corner(box2, 6)
+		local bs = Instance.new("UIStroke")
+		bs.Color = brown
+		bs.Thickness = 1.5
+		bs.Parent = box2
+		local g2 = Instance.new("UIGridLayout")
+		g2.CellSize = UDim2.new(0.5, -6, 0, 46)
+		g2.CellPadding = UDim2.fromOffset(4, 4)
+		g2.Parent = box2
+		local pad2 = Instance.new("UIPadding")
+		pad2.PaddingTop, pad2.PaddingBottom, pad2.PaddingLeft, pad2.PaddingRight = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 8), UDim.new(0, 4)
+		pad2.Parent = box2
+		for _, kv in { { "분야", fieldDef.name }, { "등급", tostring(rarity) }, { "발견", tostring(card.source) }, { "등록 보상", string.format("%d코인 · 명성 +%d", card.coins, card.fame) } } do
+			local cell = Instance.new("Frame")
+			cell.BackgroundTransparency = 1
+			cell.Parent = box2
+			local k = mkLabel(cell, kv[1], 13, brown, false)
+			k.AutomaticSize = Enum.AutomaticSize.None
+			k.Size = UDim2.new(1, 0, 0, 16)
+			local v = mkLabel(cell, kv[2], 15, ink, true)
+			v.AutomaticSize = Enum.AutomaticSize.None
+			v.Position = UDim2.fromOffset(0, 18)
+			v.Size = UDim2.new(1, 0, 0, 24)
+			v.TextTruncate = Enum.TextTruncate.AtEnd
+		end
+		box2.Parent = body
+	end
+	mkLabel(body, card.description, 17, ink, false, 3)
 	if card.found and not card.combat and card.level ~= nil then
 		local lv = card.level
 		local text = string.format("강화 %d / %d단계", lv, maxLevel)
@@ -5897,20 +5956,18 @@ function H.showCardDetail(card)
 		end
 	end
 	if card.combat then
-		mkLabel(body, "전투에서 하는 일", 16, brown, true, 5)
+		encHeading("전투에서 하는 일", 5)
 		mkLabel(body, card.combat.effect, 15, ink, false, 6)
 		if card.combat.origin then
 			mkLabel(body, "연결된 카드  " .. card.combat.origin, 13, brown, false, 7)
 		end
 	elseif card.found then
 		if article then
-			mkLabel(body, "특징과 원리", 16, brown, true, 5)
+			encHeading("특징과 원리", 5)
 			mkLabel(body, article.details, 15, ink, false, 6)
-			mkLabel(body, "쓰임과 배경", 16, brown, true, 7)
+			encHeading("쓰임과 배경", 7)
 			mkLabel(body, article.context, 15, ink, false, 8)
 		end
-		mkLabel(body, "게임 속 발견 기록", 16, brown, true, 9)
-		mkLabel(body, string.format("발견 방법  %s\n등록 보상  %d코인 · 명성 +%d", card.source, card.coins, card.fame), 13, ink, false, 10)
 		if article then
 			local topic = article.topic:gsub("_", " "):gsub("%%27", "'")
 			mkLabel(body, "본문 참고  위키백과 · " .. topic, 12, brown, false, 11)
