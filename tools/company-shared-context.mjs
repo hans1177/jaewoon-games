@@ -19,21 +19,40 @@ function readRetained(root, key, relative, authority, status) {
     contents = fs.readFileSync(path.join(root,relative),'utf8');
     data = JSON.parse(contents);
   } catch { return error(key.toUpperCase()+'_DOCUMENT_MISSING_OR_INVALID'); }
+  const canonical='company-learning/platform-release-roadmap.json';
   const fullDirective=key==='directive' && data?.authority==='MACHINE_EXECUTION_CONTRACT'
-    && data?.policyDocument==='company-learning/platform-release-roadmap.json'
+    && data?.policyDocument===canonical
     && data?.documentationSynchronization?.centralPolicyPath===data.policyDocument;
-  if (!fullDirective && [...contents].length >= 1000) error(key.toUpperCase()+'_DOCUMENT_TOO_LARGE');
+  const fullDetailed=(
+    key==='log' && data?.authority==='MACHINE_EXECUTION_LOG_MAP'
+      && data?.sourceOfTruth===relative && data?.centralPolicy===canonical
+      && data?.requiredForAllWorkers===true
+  )||(
+    key==='architecture' && data?.authority==='MACHINE_EXECUTION_ARCHITECTURE_MAP'
+      && data?.sourceOfTruth===relative && data?.centralPolicy===canonical
+      && data?.branches?.main?.directGameWorkerWrite===false
+      && data?.constitutionalEnforcement?.enforcer==='tools/company-constitution-enforcer.mjs'
+      && data?.constitutionalEnforcement?.subordinateOverrideForbidden===true
+  )||(
+    key==='security' && data?.kind==='company-security-immune-system'
+      && data?.policyFile===relative
+      && data?.defaultTrust==='DENY_OR_QUARANTINE_UNTIL_VERIFIED'
+      && data?.centralRoadmapBinding?.centralPolicy===canonical
+      && data?.enforcement?.scanner==='tools/company-security-steward.mjs'
+      && data?.enforcement?.workflow==='.github/workflows/company-security-immune.yml'
+  );
+  const minimalSummary=!fullDirective&&!fullDetailed;
+  if (minimalSummary && [...contents].length >= 1000) error(key.toUpperCase()+'_DOCUMENT_TOO_LARGE');
   if (!Number.isInteger(data.version) || data.version < 1 ||
-      (!fullDirective && data.status !== status) ||
+      (minimalSummary && data.status !== status) ||
       (authority && data.authority !== authority) ||
       (data.sourceOfTruth != null && data.sourceOfTruth !== relative)) {
     error(key.toUpperCase()+'_DOCUMENT_CONTRACT_INVALID');
   }
-  return {data, sha256:hash(contents),format:fullDirective?'FULL_MACHINE_DIRECTIVE':'MINIMAL_SUMMARY'};
+  return {data,sha256:hash(contents),format:fullDirective?'FULL_MACHINE_DIRECTIVE':fullDetailed?'FULL_DETAILED_DOCUMENT':'MINIMAL_SUMMARY'};
 }
 export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiveSha256,expectedLogSha256,expectedArchitectureSha256,expectedSecuritySha256}={}) {
-  // This is a four-document integrity check only. The separate canonical
-  // roadmap is allowed to exist; neither its presence nor this check grants approval.
+  // Four-document integrity only. The canonical roadmap remains the sole machine policy authority.
   const roadmapPath=path.join(root,'company-learning/platform-release-roadmap.json');
   const roadmapPresent=fs.existsSync(roadmapPath);
   const docs={}, hashes={}, formats={};
@@ -53,16 +72,41 @@ export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiv
   if (formats.directive==='FULL_MACHINE_DIRECTIVE' && !roadmapPresent) {
     error('CANONICAL_ROADMAP_REFERENCED_BUT_MISSING');
   }
-  if (log.requiredForAllWorkers !== false ||
+  if (formats.log==='FULL_DETAILED_DOCUMENT') {
+    if(log.authority!=='MACHINE_EXECUTION_LOG_MAP' ||
+       log.centralPolicy!=='company-learning/platform-release-roadmap.json' ||
+       log.requiredForAllWorkers!==true) error('LOG_DOCUMENT_CONTRACT_INVALID');
+  } else if (log.requiredForAllWorkers !== false ||
       log.retained?.primaryLog !== 'GITHUB_ACTIONS_JOB_LOG' ||
-      log.retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') error('LOG_DOCUMENT_CONTRACT_INVALID');
-  if (architecture.centralPolicy !== null ||
+      log.retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') {
+    error('LOG_DOCUMENT_CONTRACT_INVALID');
+  }
+  if (formats.architecture==='FULL_DETAILED_DOCUMENT') {
+    if(architecture.centralPolicy!=='company-learning/platform-release-roadmap.json' ||
+       architecture.branches?.main?.directGameWorkerWrite!==false ||
+       architecture.constitutionalEnforcement?.enforcer!=='tools/company-constitution-enforcer.mjs' ||
+       architecture.constitutionalEnforcement?.subordinateOverrideForbidden!==true) {
+      error('ARCHITECTURE_DOCUMENT_CONTRACT_INVALID');
+    }
+  } else if (architecture.centralPolicy !== null ||
       architecture.branches?.main?.directGameWorkerWrite !== false ||
       architecture.constitutionalEnforcement?.mode !== 'FAIL_CLOSED' ||
-      architecture.release !== 'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS') error('ARCHITECTURE_DOCUMENT_CONTRACT_INVALID');
-  if (security.policyFile !== 'company-learning/security-immune-system.json' ||
+      architecture.release !== 'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS') {
+    error('ARCHITECTURE_DOCUMENT_CONTRACT_INVALID');
+  }
+  if (formats.security==='FULL_DETAILED_DOCUMENT') {
+    if(security.policyFile!=='company-learning/security-immune-system.json' ||
+       security.defaultTrust!=='DENY_OR_QUARANTINE_UNTIL_VERIFIED' ||
+       security.centralRoadmapBinding?.centralPolicy!=='company-learning/platform-release-roadmap.json' ||
+       security.enforcement?.scanner!=='tools/company-security-steward.mjs' ||
+       security.enforcement?.workflow!=='.github/workflows/company-security-immune.yml') {
+      error('SECURITY_DOCUMENT_CONTRACT_INVALID');
+    }
+  } else if (security.policyFile !== 'company-learning/security-immune-system.json' ||
       security.defaultTrust !== 'DENY_OR_QUARANTINE_UNTIL_VERIFIED' ||
-      security.enforcement?.unverified !== 'BLOCK') error('SECURITY_DOCUMENT_CONTRACT_INVALID');
+      security.enforcement?.unverified !== 'BLOCK') {
+    error('SECURITY_DOCUMENT_CONTRACT_INVALID');
+  }
   const expected = {
     directive:expectedDirectiveSha256,log:expectedLogSha256,
     architecture:expectedArchitectureSha256,security:expectedSecuritySha256
@@ -71,10 +115,10 @@ export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiv
     if(sha !== undefined && sha !== hashes[key+'Sha256']) error(key.toUpperCase()+'_SHA_MISMATCH');
   }
   return {
-    pass:true, scope:'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY',
-    policyAuthorityVerified:false, sourceWriteAuthorized:false,
-    releaseAuthorized:false, canonicalRoadmapPresent:roadmapPresent,
-    hashes, documentFormats:formats,
+    pass:true,scope:'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY',
+    policyAuthorityVerified:false,sourceWriteAuthorized:false,
+    releaseAuthorized:false,canonicalRoadmapPresent:roadmapPresent,
+    hashes,documentFormats:formats,
     documentVersions:Object.fromEntries(RETAINED_DOCUMENTS.map(([key])=>[key,docs[key].version]))
   };
 }
