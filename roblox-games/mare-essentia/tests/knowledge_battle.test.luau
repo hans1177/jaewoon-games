@@ -45,6 +45,7 @@ local D = {
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
+	EconomyBuildings = require("./Shared/EconomyBuildings"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -669,6 +670,23 @@ do
 	local bad = D.KnowledgeTaxonomy.audit()
 	if #bad > 0 then print(table.concat(bad, "\n")) end
 	check("카드 분류: 모든 카드가 학문·대분류에 연결된다 (" .. #bad .. "건)", #bad == 0)
+end
+
+-- 경제 건물 표: 학문·분류 연결
+do
+	local EB = D.EconomyBuildings
+	local bad = {}
+	local cats = {}
+	for _, c in EB.Categories do cats[c.id] = true end
+	for _, b in EB.List do
+		if not cats[b.category] then table.insert(bad, b.id .. " 분류") end
+		if b.minLevel < 1 or b.minLevel > 6 then table.insert(bad, b.id .. " 레벨") end
+		for _, d in b.disc do
+			if not D.KnowledgeTree.TaxonomyById[d] then table.insert(bad, b.id .. " 학문 " .. d) end
+		end
+	end
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("경제 건물: 학문·분류·레벨 연결이 맞다 (" .. #EB.List .. "종)", #bad == 0 and #EB.List >= 60)
 end
 
 -- 세계 연대기: 데이터 연결·도착 시 목격·논문 단계
