@@ -166,7 +166,7 @@
    "updated": "2026-11-15"
   },
   "mare-essentia": {
-   "floor": 188,
+   "floor": 189,
    "categories": [
     {
      "id": "npc",
@@ -201,14 +201,16 @@
     {
      "id": "town",
      "label": "마을 경제 분위기",
-     "tier": 1,
+     "tier": 2,
      "max": 3,
-     "name": "기본 마을",
+     "name": "호황·불황 색조(경제 시뮬 연동)",
      "next": {
-      "tier": 2,
-      "name": "호황·불황 색조(경제 시뮬 연동)",
-      "blocked": false,
-      "missing": []
+      "tier": 3,
+      "name": "승인된 건물 메시 변형(발전 단계별)",
+      "blocked": true,
+      "missing": [
+       "approved-building-meshes"
+      ]
      }
     },
     {
@@ -257,24 +259,31 @@
       "Naval/crate-bottles",
       "roblox-games/mare-essentia/assets/naval/crate-bottles.glb"
      ]
+    },
+    {
+     "category": "town",
+     "tier": 3,
+     "tierName": "승인된 건물 메시 변형(발전 단계별)",
+     "key": "approved-building-meshes",
+     "candidates": [
+      "Naval/tower-complete-large",
+      "roblox-games/mare-essentia/assets/naval/tower-complete-large.glb",
+      "Naval/tower-complete-small",
+      "roblox-games/mare-essentia/assets/naval/tower-complete-small.glb",
+      "Naval/tower-roof",
+      "roblox-games/mare-essentia/assets/naval/tower-roof.glb",
+      "Naval/tower-watch",
+      "roblox-games/mare-essentia/assets/naval/tower-watch.glb"
+     ]
     }
    ],
    "perf": null,
    "frames": {
-    "checked": 11,
+    "checked": 24,
     "bad": 0
    },
    "aesthetic": null,
    "thumbs": [
-    {
-     "floor": "floor-002-world-t2",
-     "files": [
-      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c00_start-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c04-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c08-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c12-0.jpg"
-     ]
-    },
     {
      "floor": "floor-003-world-t3",
      "files": [
@@ -283,9 +292,26 @@
       "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c12-0.jpg",
       "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c18-0.jpg"
      ]
+    },
+    {
+     "floor": "floor-189-town-t2",
+     "files": [
+      "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_cat_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_cow_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_horse_0-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-189-town-t2/zoo_sheep_0-0.jpg"
+     ]
     }
    ],
    "history": [
+    {
+     "floor": 189,
+     "category": "town",
+     "tier": 2,
+     "name": "호황·불황 색조(경제 시뮬 연동)",
+     "why": "Studio 캡처 오류 없음, 화면 24장 정상",
+     "at": "2026-11-15"
+    },
     {
      "floor": 3,
      "category": "world",
