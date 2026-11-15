@@ -23,14 +23,14 @@ function temporary(){
 function check(root,fn){
   try {return fn(root);}finally{fs.rmSync(root,{recursive:true,force:true});}
 }
-test('the four shrunk documents are syntactically valid, under 1000 chars and integrity only',()=>{
+test('the restored detailed documents pass integrity checks without granting policy authority',()=>{
   const r=validateSharedWorkerContext({root:repoRoot});
   assert.equal(r.pass,true);
   assert.equal(r.scope,'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY');
   assert.equal(r.policyAuthorityVerified,false);
   assert.equal(r.sourceWriteAuthorized,false);
   assert.equal(r.releaseAuthorized,false);
-  assert.equal(Object.keys(r.hashes).length,4);
+  assert.equal(Object.keys(r.hashes).length,4);\n  assert.equal(r.documentFormats.log,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.architecture,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.security,'FULL_DETAILED_DOCUMENT');
 });
 test('missing or malformed retained document is rejected',()=>{
   check(temporary(),root=>{
@@ -42,16 +42,25 @@ test('missing or malformed retained document is rejected',()=>{
     assert.throws(()=>validateSharedWorkerContext({root}),/DIRECTIVE_DOCUMENT_MISSING_OR_INVALID/);
   });
 });
-test('oversize and unexpected legacy schemas are rejected, never silently accepted',()=>{
+test('tampered detailed central bindings are rejected, never silently accepted',()=>{
   check(temporary(),root=>{
     const p=path.join(root,'company-learning/company-architecture-map.json');
-    fs.appendFileSync(p,' '.repeat(1100));
-    assert.throws(()=>validateSharedWorkerContext({root}),/ARCHITECTURE_DOCUMENT_TOO_LARGE/);
+    const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+    doc.centralPolicy=null;
+    fs.writeFileSync(p,JSON.stringify(doc));
+    assert.throws(()=>validateSharedWorkerContext({root}),/ARCHITECTURE_DOCUMENT_CONTRACT_INVALID/);
+  });
+  check(temporary(),root=>{
+    const p=path.join(root,'company-learning/security-immune-system.json');
+    const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+    doc.defaultTrust='ALLOW';
+    fs.writeFileSync(p,JSON.stringify(doc));
+    assert.throws(()=>validateSharedWorkerContext({root}),/SECURITY_DOCUMENT_CONTRACT_INVALID/);
   });
   check(temporary(),root=>{
     const p=path.join(root,'company-learning/company-log-map.json');
     const doc=JSON.parse(fs.readFileSync(p,'utf8'));
-    doc.status='LEGACY_EXECUTABLE_CONTRACT';
+    doc.centralPolicy=null;
     fs.writeFileSync(p,JSON.stringify(doc));
     assert.throws(()=>validateSharedWorkerContext({root}),/LOG_DOCUMENT_CONTRACT_INVALID/);
   });
