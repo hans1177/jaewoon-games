@@ -1264,6 +1264,18 @@ function VoyageScene.play(info)
 	banner2.TextColor3 = Color3.fromRGB(190, 225, 255)
 	banner2.Text = ""
 	banner2.Parent = gui
+	-- 수동 항해: 화면 한가운데(바람 고리·안내·콤보 팝업 자리)를 비우고, 이벤트 알림은 위쪽 띠로 옮긴다.
+	-- 날짜 줄 아래 가운데에 작은 알림 띠 두 줄(주 사건·추가 사건)만 쓰고, 좌우 HUD(지도·자동 전환·점수)는 피한다.
+	if manual then
+		banner.Position = UDim2.new(0.5, 0, 0, 100)
+		banner.AnchorPoint = Vector2.new(0.5, 0)
+		banner.Size = UDim2.new(0, 280, 0, 30)
+		banner.TextSize = 24
+		banner2.Position = UDim2.new(0.5, 0, 0, 132)
+		banner2.AnchorPoint = Vector2.new(0.5, 0)
+		banner2.Size = UDim2.new(0, 280, 0, 26)
+		banner2.TextSize = 19
+	end
 	if ev.kind == "dolphins" then
 		addSpray(18, 0.46, 16, 40, 3)
 		addSpray(-22, 0.5, 18, 40, 3)
