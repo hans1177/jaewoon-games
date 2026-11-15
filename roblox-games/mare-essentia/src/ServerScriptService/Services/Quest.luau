@@ -40,6 +40,12 @@ return function(D, S)
 				n += 1
 			end
 			return n
+		elseif quest.kind == "chronicle" then
+			return S.Chronicle.count(state, "seen", quest.disc)
+		elseif quest.kind == "chron_draft" then
+			return S.Chronicle.count(state, "draft")
+		elseif quest.kind == "chron_paper" then
+			return S.Chronicle.count(state, "paper")
 		elseif quest.kind == "order_patrol" then
 			return state.orderPatrols
 		elseif quest.kind == "people_talk" then
@@ -293,6 +299,9 @@ return function(D, S)
 		end
 		if (h + state.day * 7) % 10 < 7 then
 			offer(state, msgs, "주점에서 소문을 들었다")
+		end
+		if S.Chronicle then
+			S.Chronicle.arrive(state, msgs)
 		end
 		if S.Story and S.Story.autoTrigger then
 			S.Story.autoTrigger(state, msgs)

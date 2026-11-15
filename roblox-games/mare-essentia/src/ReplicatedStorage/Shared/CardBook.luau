@@ -416,7 +416,7 @@ end
 -- ───── 학문 숙련 보너스: 지식 카드를 모을수록 같은 계열 병종 카드가 강해진다 ─────
 -- 근접 = 인문·사회(철학·언어·신화·예술·유물·유적·교역품), 사격 = 자연과학, 포 = 응용·공학(의학·건축·조선·항해술)
 CB.KNOWLEDGE_ROW_OLD = {
-	Philosophy = "melee", Language = "melee", Myth = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
+	Philosophy = "melee", Language = "melee", Myth = "melee", Mystery = "melee", Lost = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
 	Astronomy = "ranged", Physics = "ranged", Chemistry = "ranged", Geography = "ranged", Weather = "ranged", Botany = "ranged", Zoology = "ranged", Mineral = "ranged",
 	Medicine = "cannon", Architecture = "cannon", Shipbuilding = "cannon", Navigation = "cannon",
 }

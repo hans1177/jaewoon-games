@@ -660,6 +660,8 @@ return function(D, S)
 		view.wars, view.war = S.Battle.warView(state)
 		view.tavern = S.Tavern.view(state)
 		view.tavernQ = S.Tavern.questView(state)
+		view.chron = S.Chronicle.view(state)
+		view.village = S.Village.view(state)
 		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
 		state._scenes = nil
 		view.bosses = {}
@@ -802,9 +804,9 @@ return function(D, S)
 			local FIELD_SKILL = {
 				Zoology = "beast", Botany = "heal", Medicine = "heal", Astronomy = "snipe", Navigation = "focus", Geography = "scout",
 				Weather = "ward", Physics = "armor", Chemistry = "volley", Mineral = "rally", Relic = "luck", Site = "luck", Art = "rally",
-				Architecture = "ward", Language = "analyze", Philosophy = "analyze", Myth = "luck", Shipbuilding = "ward", Goods = "rally",
+				Architecture = "ward", Language = "analyze", Philosophy = "analyze", Myth = "luck", Mystery = "luck", Lost = "scout", Shipbuilding = "ward", Goods = "rally",
 			}
-			local FIELD_KIND = { Zoology = "animal", Relic = "relic", Site = "relic", Art = "relic", Architecture = "relic", Mineral = "relic", Myth = "relic" }
+			local FIELD_KIND = { Zoology = "animal", Relic = "relic", Site = "relic", Art = "relic", Architecture = "relic", Mineral = "relic", Myth = "relic", Mystery = "relic", Lost = "relic" }
 			local ROLE_SKILL = { soldier = "volley", privateer = "rally", merchant = "ward", explorer = "scout", pirate = "luck", pilgrim = "heal" }
 			local SHIP_SKILL = { caravel = "focus", fluyt = "ward", frigate = "volley", galleon = "ward", paddle_steamer = "insight", ironclad_frigate = "ward" }
 			local cards = {}
