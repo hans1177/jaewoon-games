@@ -519,6 +519,11 @@ local Prologue = require(script.Parent.PrologueQuests)
 for _, pq in Prologue.Quests do
 	table.insert(Quests, pq :: Quest)
 end
+-- 시작 국가별 학자 이야기 (서막 4장 이후)
+local ScholarQ = require(script.Parent.ScholarQuests)
+for _, sq in ScholarQ.Quests do
+	table.insert(Quests, sq :: Quest)
+end
 
 local ById: { [string]: Quest } = {}
 for _, q in Quests do
@@ -550,6 +555,9 @@ local HAND: { [string]: { string } } = {
 	cq_h_portugal = { "", "끊겼던 일지의 다음 쪽에 당신의 항해가 이어 적혔다. 아버지의 필체와 나란히." },
 }
 for hid, hand in Prologue.Hand do
+	HAND[hid] = hand
+end
+for hid, hand in ScholarQ.Hand do
 	HAND[hid] = hand
 end
 -- 퀘스트마다 따로 쓴 이야기 (납품·방문·전투·지식·지역 대장정)
