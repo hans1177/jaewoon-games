@@ -908,6 +908,37 @@ local Nations: { [string]: Nation } = {
 	},
 }
 
+-- 가공품: 원자재를 만드는 항구는 가공품도 특산 목록 끝에 갖는다 (뒤쪽이라 항구 발전 단계가 올라야 열린다).
+do
+	local PC = require(script.Parent.ProductionChains)
+	local MAX_PROCESSED_PER_PORT = 2
+	for _, g in PC.processedGoods(Goods) do
+		Goods[g.id] = { id = g.id, name = g.name, basePrice = g.basePrice }
+	end
+	local ids = {}
+	for id in Ports do
+		table.insert(ids, id)
+	end
+	table.sort(ids)
+	for _, portId in ids do
+		local port = Ports[portId]
+		local added = 0
+		for _, r in PC.Recipes do
+			if added >= MAX_PROCESSED_PER_PORT then break end
+			local gid = PC.goodId(r)
+			if Goods[gid] and not table.find(port.produces, gid) then
+				for _, inp in r.inputs do
+					if table.find(port.produces, inp) then
+						table.insert(port.produces, gid)
+						added += 1
+						break
+					end
+				end
+			end
+		end
+	end
+end
+
 return {
 	Goods = Goods,
 	Ports = Ports,

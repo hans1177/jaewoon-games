@@ -68,6 +68,29 @@ for _, r in P.Recipes do
 	P.ById[r.id] = r
 end
 
+-- 가공품은 실제 교역품이 된다: id = "p_" + 공정 이름, 기본 값 = 원료 평균값 × valueMult
+function P.goodId(r)
+	return "p_" .. string.sub(r.id, 3)
+end
+
+function P.processedGoods(goods)
+	local out = {}
+	for _, r in P.Recipes do
+		local sum, n = 0, 0
+		for _, inp in r.inputs do
+			local g = goods[inp]
+			if g then
+				sum += g.basePrice
+				n += 1
+			end
+		end
+		if n > 0 then
+			table.insert(out, { id = P.goodId(r), name = r.output, basePrice = math.floor(sum / n * r.valueMult + 0.5), recipe = r.id })
+		end
+	end
+	return out
+end
+
 -- 항구가 만드는 원자재를 종류별로 센다 (producesList = Ports.produces)
 function P.rawByClass(producesList)
 	local out = {}
