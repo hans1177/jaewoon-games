@@ -218,7 +218,7 @@ function VoyageScene.play(info)
 	local hint = title:Clone()
 	hint.Position = UDim2.new(0, 0, 1, -34)
 	hint.Size = UDim2.new(1, 0, 0, 18)
-	hint.TextSize = 12
+	hint.TextSize = 16
 	hint.Font = Enum.Font.Gotham
 	hint.Text = "화면을 누르면 건너뛰어요"
 	hint.Parent = gui

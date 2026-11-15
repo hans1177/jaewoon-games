@@ -1131,7 +1131,7 @@ function FieldScene.start(opts)
 	end
 	local function mkSkill(key, label, color, theta)
 		local b = btn(gui, label, color, UDim2.fromOffset(56, 56), arcPos(124, theta), Vector2.new(0.5, 0.5))
-		b.TextSize = 13
+		b.TextSize = 16
 		b.Activated:Connect(function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
@@ -1220,7 +1220,7 @@ function FieldScene.start(opts)
 			end
 			local key = "card" .. i
 			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), arcPos(190, 18 + (i - 1) * 24), Vector2.new(0.5, 0.5))
-			b.TextSize = 14
+			b.TextSize = 17
 			b.Activated:Connect(function()
 				useCard(key, card)
 			end)
