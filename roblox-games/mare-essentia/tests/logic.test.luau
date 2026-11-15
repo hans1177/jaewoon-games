@@ -302,6 +302,17 @@ local function extraTests()
 		if q.kind == "deliver" and q.strand ~= "main" then shownD += 1 end
 	end
 	check("납품 의뢰: 게시판에는 많아야 4개만 보임", shownD <= 4 and vq.otherPortDeliver > 0)
+	-- 퀘스트 이야기: 모든 퀘스트가 서로 다른 사연을 가진다 (틀에 물건·숫자만 바꾼 문장 금지)
+	do
+		local seenHook, dupHook = {}, 0
+		for _, q in D.Quests.Quests do
+			local hook = D.Quests.Story(q, "물건", "항구")
+			hook = string.gsub(hook, "^제%d+장%. ", "")
+			if seenHook[hook] then dupHook += 1 end
+			seenHook[hook] = true
+		end
+		check("퀘스트 이야기: 같은 사연이 두 번 나오지 않음", dupHook == 0)
+	end
 	local stC = newState("england")
 	stC.fame = 500; stC.coins = 5000; stC.scholarsMet.newton = true
 	check("학자 동료: 만난 학자는 영입할 수 있음", act(stC, "Recruit", { companionId = "c_newton" }) and table.find(stC.companions, "c_newton") ~= nil)

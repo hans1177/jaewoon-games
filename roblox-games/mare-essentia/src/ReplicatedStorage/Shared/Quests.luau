@@ -552,6 +552,10 @@ local HAND: { [string]: { string } } = {
 for hid, hand in Prologue.Hand do
 	HAND[hid] = hand
 end
+-- 퀘스트마다 따로 쓴 이야기 (납품·방문·전투·지식·지역 대장정)
+for hid, hand in require(script.Parent.QuestStories) do
+	HAND[hid] = hand
+end
 
 -- 퀘스트 이야기: 단순한 모으기가 아니라 "누가, 왜, 무엇이 걸렸나"가 있는 사연으로 보여 준다.
 -- 직접 쓴 story 가 있으면 그것을 쓰고, 없으면 종류별 사연 틀에서 퀘스트 id 로 정해 고른다 (같은 퀘스트는 늘 같은 사연).
