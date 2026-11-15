@@ -81,7 +81,7 @@ function FM.step(h, dt: number, rootRot: CFrame?)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?)
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
@@ -89,6 +89,17 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?)
 		availableJoints = AVAILABLE,
 		secondary = 0.65,
 	}, h.canon)
+	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
+	if gain and gain ~= 1 then
+		for k, cf in h.canon do
+			if typeof(cf) == "CFrame" then
+				local axis, ang = cf:ToAxisAngle()
+				if ang > 1e-4 and ang == ang then
+					h.canon[k] = CFrame.fromAxisAngle(axis, math.clamp(ang * gain, -2.4, 2.4))
+				end
+			end
+		end
+	end
 	FM.step(h, dt)
 end
 

@@ -1567,7 +1567,7 @@ function FieldScene.start(opts)
 				elseif wish ~= 0 then
 					st, ph = "RUN", (now * 1.6) % 1
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss)
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -1655,11 +1655,11 @@ function FieldScene.start(opts)
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
 					if ap >= 0 and ap < 1 then
-						FM.actor(a.fm, "ATTACK", ap * 0.9, dt)
+						FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.6)
 					elseif moving then
-						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt)
+						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.6)
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt)
+						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.3)
 					end
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
