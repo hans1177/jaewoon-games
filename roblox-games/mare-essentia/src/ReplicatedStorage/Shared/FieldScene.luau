@@ -649,6 +649,96 @@ function FieldScene.start(opts)
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
 
+	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
+	do
+		local MM, RADIUS = 120, 130
+		local map = Instance.new("Frame")
+		map.AnchorPoint = Vector2.new(0, 0)
+		map.Position = UDim2.fromOffset(118, 50)
+		map.Size = UDim2.fromOffset(MM, MM)
+		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
+		map.BackgroundTransparency = 0.35
+		map.BorderSizePixel = 0
+		map.ClipsDescendants = true
+		map.Parent = gui
+		local mc = Instance.new("UICorner")
+		mc.CornerRadius = UDim.new(1, 0)
+		mc.Parent = map
+		local ms = Instance.new("UIStroke")
+		ms.Color = Color3.fromRGB(232, 190, 96)
+		ms.Thickness = 2
+		ms.Parent = map
+		local dots = {}
+		local function dot(i: number, color: Color3, size: number)
+			local d = dots[i]
+			if not d then
+				d = Instance.new("Frame")
+				d.AnchorPoint = Vector2.new(0.5, 0.5)
+				d.BorderSizePixel = 0
+				local c = Instance.new("UICorner")
+				c.CornerRadius = UDim.new(1, 0)
+				c.Parent = d
+				d.Parent = map
+				dots[i] = d
+			end
+			d.BackgroundColor3 = color
+			d.Size = UDim2.fromOffset(size, size)
+			return d
+		end
+		local me = Instance.new("Frame")
+		me.AnchorPoint = Vector2.new(0.5, 0.5)
+		me.Position = UDim2.fromScale(0.5, 0.5)
+		me.Size = UDim2.fromOffset(7, 7)
+		me.BackgroundColor3 = Color3.new(1, 1, 1)
+		me.BorderSizePixel = 0
+		me.ZIndex = 5
+		local mec = Instance.new("UICorner")
+		mec.CornerRadius = UDim.new(1, 0)
+		mec.Parent = me
+		me.Parent = map
+		local acc = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			acc += dt
+			if acc < 0.1 or finished then
+				return
+			end
+			acc = 0
+			local hrp0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if not hrp0 then
+				return
+			end
+			local p0 = hrp0.Position
+			local used = 0
+			local function place(worldPos: Vector3, color: Color3, size: number, clampEdge: boolean): boolean
+				local off = Vector2.new(worldPos.X - p0.X, worldPos.Z - p0.Z) / RADIUS
+				if off.Magnitude > 1 then
+					if not clampEdge then
+						return false
+					end
+					off = off.Unit
+				end
+				used += 1
+				local d = dot(used, color, size)
+				d.Position = UDim2.fromOffset(MM / 2 + off.X * (MM / 2 - 4), MM / 2 + off.Y * (MM / 2 - 4))
+				d.Visible = true
+				return true
+			end
+			for _, ch in folder:GetChildren() do
+				if string.sub(ch.Name, 1, 9) == "Discovery" and ch:IsA("BasePart") then
+					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
+				end
+			end
+			for _, e in enemies do
+				if e.root and e.root.Parent then
+					place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+				end
+			end
+			for i = used + 1, #dots do
+				dots[i].Visible = false
+			end
+		end))
+	end
+
 	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
 	local UserInputService = game:GetService("UserInputService")
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -100, 1, -100), Vector2.new(0.5, 0.5))
