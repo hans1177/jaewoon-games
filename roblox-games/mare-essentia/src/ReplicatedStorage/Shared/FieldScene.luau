@@ -538,7 +538,7 @@ function FieldScene.start(opts)
 	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -100, 1, -100), Vector2.new(0.5, 0.5))
 	attackBtn.TextSize = 22
 	addIcon(attackBtn, "Menu/action_fist")
-	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(1, -12, 0, 56), Vector2.new(1, 0))
+	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(0, 12, 0, 56), Vector2.new(0, 0))
 	retreat.Activated:Connect(function()
 		finish("retreat")
 	end)
