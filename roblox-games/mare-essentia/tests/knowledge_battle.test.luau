@@ -693,6 +693,7 @@ do
 	check("연대기: 같은 사건은 한 번만", S.Chronicle.arrive(stC, {}) == nil)
 	local okD0 = Registry.handlers.WriteDraft(stC, {}, ctx)
 	check("연대기: 노트가 모자라면 초안을 못 쓴다", okD0 == false)
+	for id in D.KnowledgeTree.ById do stC.reported = { [id] = true } break end
 	stC.chron.notes = 3
 	stC.coins = 500
 	local okD = Registry.handlers.WriteDraft(stC, {}, ctx)
