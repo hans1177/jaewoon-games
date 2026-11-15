@@ -14,23 +14,60 @@ local AVAILABLE = {
 }
 
 -- 리그의 실제 Motor6D 를 묶는다. followAnimator: 캐릭터처럼 Animator 가 돌고 있으면 true, 적 같은 정적 리그는 false.
+local R6_NAMES = { "RootJoint", "Neck", "Left Shoulder", "Right Shoulder", "Left Hip", "Right Hip" }
+
 function FM.new(model: Model, followAnimator: boolean)
 	local joints = {}
-	for _, n in R15_NAMES do
+	local hum = model:FindFirstChildOfClass("Humanoid")
+	local r6 = hum ~= nil and hum.RigType == Enum.HumanoidRigType.R6
+	for _, n in (if r6 then R6_NAMES else R15_NAMES) do
 		local j = model:FindFirstChild(n, true)
 		if j and j:IsA("Motor6D") then
 			joints[n] = j
 		end
 	end
 	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 18 })
-	return { ctl = ctl, canon = {}, r15 = {}, model = model }
+	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints }
+end
+
+-- R6(구형 아바타)는 팔다리가 한 덩어리라 어깨·엉덩이·목·허리만 쓴다. 관절 축이 돌아가 있어 C0 회전으로 맞춰 준다.
+local function conj(joint: Motor6D, rot: CFrame): CFrame
+	local c = joint.C0.Rotation
+	return c:Inverse() * rot * c
+end
+
+local function mapR6(h, canon, rootRot)
+	local out = h.r15
+	table.clear(out)
+	local J = h.joints
+	local id = CFrame.identity
+	if J.RootJoint then
+		local r = (canon.Spine or id) * (canon.Chest or id)
+		if rootRot then
+			r = rootRot * r
+		end
+		out.RootJoint = conj(J.RootJoint, r)
+	end
+	if J.Neck and canon.Head then
+		out.Neck = conj(J.Neck, canon.Head)
+	end
+	local pairs6 = { ["Left Shoulder"] = "UpperArmL", ["Right Shoulder"] = "UpperArmR", ["Left Hip"] = "ThighL", ["Right Hip"] = "ThighR" }
+	for jn, cn in pairs6 do
+		if J[jn] and canon[cn] then
+			out[jn] = conj(J[jn], canon[cn])
+		end
+	end
 end
 
 -- canon(Spine·Chest·UpperArmR… 공통 이름 포즈)를 R15 관절 이름으로 옮겨 적용한다. rootRot: 몸 전체 회전(회전베기용).
 function FM.step(h, dt: number, rootRot: CFrame?)
-	CM.MapCombatPoseToR15(h.canon, h.r15)
-	if rootRot then
-		h.r15.Root = rootRot
+	if h.r6 then
+		mapR6(h, h.canon, rootRot)
+	else
+		CM.MapCombatPoseToR15(h.canon, h.r15)
+		if rootRot then
+			h.r15.Root = rootRot
+		end
 	end
 	h.ctl.Step(h.r15, dt)
 end
