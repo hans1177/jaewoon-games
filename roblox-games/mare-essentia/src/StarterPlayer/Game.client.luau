@@ -5753,6 +5753,20 @@ function RENDERERS.explore()
 	end
 	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
 	if not H.exploreScholarView then return end
+	-- 연구 논문: 관찰 노트 -> 초안 -> 학회 발표 -> 출판 (플레이어도 학자처럼 단계별로 올라간다)
+	if view.chron then
+		local ch = view.chron
+		add(function() return mkHeader(content, "연구 논문 · " .. ch.next) end)
+		add(function()
+			return H.tileGrid({
+				{ icon = "cc0_book", title = "관찰 노트", sub = string.format("%d / %d", ch.notes, ch.need), enabled = false },
+				{ icon = "codex", title = "논문 초안", sub = string.format("보유 %d · %d코인", ch.drafts, ch.cost), btn = "쓰기", color = COLORS.blue, enabled = ch.canWrite, onClick = function() call("WriteDraft") end },
+				{ icon = "tech", title = "학회 발표", sub = string.format("발표 %d회", ch.presented), enabled = false },
+				{ icon = "cc0_chest", title = "출판", sub = string.format("출판 %d편", ch.papers), btn = "출판", color = COLORS.gold, enabled = ch.canPublish, onClick = function() call("PublishPaper") end },
+			}, content, 176, 156)
+		end)
+		add(function() return mkLabel(content, "역사의 현장을 목격하면 노트가 쌓여요. 노트 3개로 초안을 쓰고, 아래 학회에서 발표한 뒤 출판해요.", 14, COLORS.muted, false) end)
+	end
 	add(function() return mkHeader(content, "이 항구의 학자") end)
 	if #view.scholars == 0 then
 		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요. 지식 카드 보고는 학자가 있는 항구의 서재에서만 받아 줘요.", 13, COLORS.muted, false) end)
@@ -6438,11 +6452,16 @@ do
 				while inField do task.wait(0.5) end
 				local sc = table.remove(pending, 1)
 				local isStart = sc.kind == "start"
+				local isChron = sc.kind == "chronicle"
 				local ok = pcall(playStory, {
-					id = "quest_" .. tostring(sc.name), title = tostring(sc.name), chapter = if isStart then "새 이야기" else "이야기의 끝",
-					npc = if isStart then "의뢰인" else "일지", art = "tavern", lines = sentences(tostring(sc.text or "")),
-					choices = { { text = if isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
-					submit = function() return { ok = true, message = if isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" } end,
+					id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
+					chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
+					npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
+					lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
+					choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
+					submit = function()
+						return { ok = true, message = if isChron then (tostring(sc.summary or "") .. "\n(서재에서 관찰 노트로 논문을 쓸 수 있어요)") elseif isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" }
+					end,
 				})
 				if ok then
 					task.wait(0.6)

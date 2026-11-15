@@ -46,6 +46,7 @@ local D = {
 	TacticsMaps = require(Shared:WaitForChild("TacticsMaps")),
 	KnowledgeTree = require(Shared:WaitForChild("KnowledgeTree")),
 	HistoryEvents = require(Shared:WaitForChild("HistoryEvents")),
+	WorldChronicle = require(Shared:WaitForChild("WorldChronicle")),
 	Stocks = require(Shared:WaitForChild("Stocks")),
 	People = require(Shared:WaitForChild("People")),
 	PeopleTalk = require(Shared:WaitForChild("PeopleTalk")),
