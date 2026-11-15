@@ -1,23 +1,21 @@
 {
-  "runId": "43716180396",
+  "runId": "43716205046",
   "kind": "studio",
-  "sourceRevision": "3410156bfb2d948291d7b6845bc415dd534e4e43",
-  "result": "FAIL",
-  "failureStage": "STUDIO_EXECUTION",
-  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+  "sourceRevision": "ea9199d64866aa76dfe0252552419ae39a30b3d0",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
   "summary": {
-    "plannedSteps": 39,
-    "completedSteps": 4,
+    "plannedSteps": 6,
+    "completedSteps": 6,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 16,
-    "capturedFrames": 0,
-    "abortedEarly": true
+    "plannedFrames": 2,
+    "capturedFrames": 2,
+    "abortedEarly": false
   },
-  "errors": [
-    "step3:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: attempt to index nil with 'Text' | "
-  ],
+  "errors": [],
   "audits": {
     "models": "NOT_RUN",
     "registered": "NOT_RUN",
@@ -41,265 +39,51 @@
     },
     {
       "step": 2,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 3,
-      "type": "luau",
-      "name": "",
-      "status": "FAIL",
-      "screenshots": []
+      "type": "capture",
+      "name": "b1_start",
+      "status": "PASS",
+      "screenshots": [
+        "b1_start-0.jpg"
+      ]
     },
     {
       "step": 4,
       "type": "wait",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 5,
       "type": "capture",
-      "name": "mob_shield_0",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 6,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 7,
-      "type": "capture",
-      "name": "mob_shield_1",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 8,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 9,
-      "type": "capture",
-      "name": "mob_shield_2",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 10,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 11,
-      "type": "capture",
-      "name": "mob_shield_3",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 12,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 13,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 14,
-      "type": "capture",
-      "name": "mob_charger_0",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 15,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 16,
-      "type": "capture",
-      "name": "mob_charger_1",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 17,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 18,
-      "type": "capture",
-      "name": "mob_charger_2",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 19,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 20,
-      "type": "capture",
-      "name": "mob_charger_3",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 21,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 22,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 23,
-      "type": "capture",
-      "name": "mob_archer_0",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 25,
-      "type": "capture",
-      "name": "mob_archer_1",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 26,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 27,
-      "type": "capture",
-      "name": "mob_archer_2",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 28,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 29,
-      "type": "capture",
-      "name": "mob_archer_3",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 30,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 31,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 32,
-      "type": "capture",
-      "name": "mob_boss_0",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 33,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 34,
-      "type": "capture",
-      "name": "mob_boss_1",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 35,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 36,
-      "type": "capture",
-      "name": "mob_boss_2",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 37,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 38,
-      "type": "capture",
-      "name": "mob_boss_3",
-      "status": "NOT_RUN",
-      "screenshots": []
+      "name": "b2_mid",
+      "status": "PASS",
+      "screenshots": [
+        "b2_mid-0.jpg"
+      ]
     }
   ],
-  "screenshotComparison": [],
+  "screenshotComparison": [
+    {
+      "name": "b1_start-0.jpg",
+      "sha256": "35ae588c8b08624ab29588db71a35bd29addc026c7439ee93f751e4fecb816a1",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43716205046/b1_start-0.jpg"
+    },
+    {
+      "name": "b2_mid-0.jpg",
+      "sha256": "36d517c7cad8f4bb01c73ade53d16932976ab04e732e07f3eb9e6587ac1fd751",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43716205046/b2_mid-0.jpg"
+    }
+  ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43715781034"
+  "previousRunId": "43716180396"
 }
