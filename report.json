@@ -1,34 +1,159 @@
 {
- "sourceRevision": "1d71230ad0cfe67277610dc49626ef5e44082189",
+ "sourceRevision": "fc9941509afc1bdd20f63653a5bc4e419d336df0",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 2,
-   "ctx": "Client",
-   "out": "mobs=5 FieldEnemy@3084.533935546875, 3.195251941680908, -9.039889335632324;FieldEnemy@2942.984130859375, 3.1954774856567383, -13.161352157592773;FieldEnemy@2996.04638671875, 3.1963963508605957, -59.864707946777344;FieldEnemy@3038.15283203125, 3.1953110694885254, -31.70919418334961;FieldEnemy@3044.730712890625, 3.2545533180236816, -80.21135711669922\ntext"
+   "out": "allies on\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "started\ntext"
   },
   {
    "step": 5,
-   "capture": "f1_start",
-   "files": 1
+   "ctx": "Client",
+   "out": "cam\ntext"
   },
   {
-   "step": 6,
+   "step": 7,
    "ctx": "Client",
-   "out": "err=true table: 0x3f722db818e8384d done=nil humanoids=5 models=126 parts=151 cam=3091.533935546875, 7.695251941680908, -22.03989028930664 hrp=2999.686767578125, 2.99802565574646, 85.27763366699219\ntext"
+   "out": "faced 5.831216812133789\ntext"
   },
   {
    "step": 8,
-   "capture": "f2_later",
+   "capture": "c1_approach",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "attack\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "c2_attack",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "faced 6.290646553039551\ntext"
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "heavy\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "c3_heavy",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "spin\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "c4_spin",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "dash\ntext"
+  },
+  {
+   "step": 24,
+   "capture": "c5_dash",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "ready=true err=true table: 0xdce474af59e2cbf1 btns=공격|철수|0.4|6.2|3.1|방어|의학|화학|물리\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "MOVE anchored=false moved=16.8 ws=18 mobs=7\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "c6_guard",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "ALLIES 2\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "c7_allies",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "volley\ntext"
+  },
+  {
+   "step": 35,
+   "capture": "c8_cardvolley",
+   "files": 1
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "ward\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "c9_cardward",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.013 | ENEMY motors=15 sum=0.007\nME motors=15 sum=4.120 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.176 | ENEMY motors=15 sum=0.010\nME motors=15 sum=4.170 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.116 | ENEMY motors=15 sum=0.011\nME motors=15 sum=4.067 | ENEMY motors=15 sum=0.004\ntext"
+  },
+  {
+   "step": 41,
+   "capture": "c10_mobs",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.940 | ENEMY motors=15 sum=0.011\nME motors=15 sum=3.902 | ENEMY motors=15 sum=0.003\nME motors=15 sum=3.876 | ENEMY motors=15 sum=0.006\nME motors=15 sum=3.867 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.875 | ENEMY motors=15 sum=0.014\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.007\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "ENEMY d=135 motors=15 sum=0.013\nENEMY d=145 motors=15 sum=0.013\nENEMY d=127 motors=15 sum=0.013\nENEMY d=80 motors=15 sum=0.693\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "c11_mobs2",
    "files": 1
   }
  ],
@@ -44,13 +169,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 9,
-  "completedSteps": 9,
+  "plannedSteps": 46,
+  "completedSteps": 46,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 2,
-  "capturedFrames": 2,
+  "plannedFrames": 11,
+  "capturedFrames": 11,
   "abortedEarly": false
  }
 }
