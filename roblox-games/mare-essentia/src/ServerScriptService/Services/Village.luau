@@ -194,6 +194,20 @@ return function(D, S)
 		}
 	end
 
+	-- 군사학 단계: 모은 군사학 카드 수로 센다
+	function V.militaryTier(state)
+		local n = 0
+		for cardId in (state.discovered or {}) do
+			local c = D.Cards.ById[cardId]
+			if c and c.field == "Military" then n += 1 end
+		end
+		local tier = 0
+		for i, need in D.DisciplineFacilities.MilitaryTierAt do
+			if n >= need then tier = i end
+		end
+		return tier, n
+	end
+
 	-- 학문 시설·직업: 학문 단계(1~4)가 오르고 항구 레벨이 (단계+1) 이상이면 그 학문의 시설과 직업이 선다.
 	function V.discFacilities(state, level)
 		local tiers = V.tiers(state)
@@ -215,6 +229,18 @@ return function(D, S)
 				table.insert(byDisc, { id = d.id, name = d.name, tier = open, facility = list[open][1], job = list[open][2] })
 			end
 		end
+		local mt = V.militaryTier(state)
+		local mOpen = 0
+		for tier = 1, 4 do
+			if mt >= tier and level >= tier + 1 then
+				mOpen = tier
+				table.insert(facilities, D.DisciplineFacilities.Military[tier][1])
+				table.insert(jobs, D.DisciplineFacilities.Military[tier][2])
+			end
+		end
+		if mOpen > 0 then
+			table.insert(byDisc, { id = "military_science", name = "군사학", tier = mOpen, facility = D.DisciplineFacilities.Military[mOpen][1], job = D.DisciplineFacilities.Military[mOpen][2] })
+		end
 		return facilities, jobs, byDisc
 	end
 
@@ -227,6 +253,7 @@ return function(D, S)
 		local n = 0
 		for _, d in dev.discBy do
 			if V.BATTLE_DISCS[d.id] then n += d.tier end
+			if d.id == "military_science" then n += d.tier * 2 end -- 군사 시설은 단계마다 두 배
 		end
 		return math.min(V.BATTLE_CAP, n * V.BATTLE_PER_FACILITY)
 	end
