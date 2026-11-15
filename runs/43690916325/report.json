@@ -1,0 +1,186 @@
+{
+ "sourceRevision": "21995fe8c1db01783f1b782d04715321bc76d51c",
+ "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "allies on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "cam\ntext"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "scene=true models=66 done=nil err=true table: 0x9aeb5b4130879bb0\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "faced 2.0044028759002686\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "c1_approach",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "attack\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "c2_attack",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "faced 5.798771381378174\ntext"
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "heavy\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "c3_heavy",
+   "files": 1
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "spin\ntext"
+  },
+  {
+   "step": 21,
+   "capture": "c4_spin",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "dash\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "c5_dash",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "ready=true err=true table: 0x9aeb5b4130879bb0 btns=공격|철수|0.3|6.3|3.2|방어|의학|화학|물리\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "MOVE anchored=false moved=16.9 ws=18 mobs=5\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "guard\ntext"
+  },
+  {
+   "step": 30,
+   "capture": "c6_guard",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "SWORD equipped=true template=true relics=24\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "ALLIES 2\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "c7_allies",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "volley\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "c8_cardvolley",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "ward\ntext"
+  },
+  {
+   "step": 39,
+   "capture": "c9_cardward",
+   "files": 1
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=5.889 | ENEMY motors=15 sum=0.569\nME motors=15 sum=7.068 | ENEMY motors=15 sum=0.397\nME motors=15 sum=7.291 | ENEMY motors=15 sum=0.180\nME motors=15 sum=7.384 | ENEMY motors=15 sum=0.032\nME motors=15 sum=7.193 | ENEMY motors=15 sum=0.120\nME motors=15 sum=6.887 | ENEMY motors=15 sum=0.759\ntext"
+  },
+  {
+   "step": 42,
+   "capture": "c10_mobs",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "ctx": "Client",
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.065 | ENEMY motors=15 sum=0.236\nME motors=15 sum=4.031 | ENEMY motors=15 sum=0.909\nME motors=15 sum=3.983 | ENEMY motors=15 sum=1.669\nME motors=15 sum=3.937 | ENEMY motors=15 sum=1.365\nME motors=15 sum=3.900 | ENEMY motors=15 sum=0.622\nME motors=15 sum=3.876 | ENEMY motors=15 sum=0.465\ntext"
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "ENEMY d=53 motors=15 sum=0.590\nENEMY d=19 motors=15 sum=0.206\ntext"
+  },
+  {
+   "step": 46,
+   "capture": "c11_mobs2",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 20,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 47,
+  "completedSteps": 47,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 11,
+  "capturedFrames": 11,
+  "abortedEarly": false
+ }
+}
