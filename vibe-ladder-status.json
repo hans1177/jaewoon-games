@@ -197,6 +197,32 @@
        "approved-port-prop-meshes"
       ]
      }
+    },
+    {
+     "id": "town",
+     "label": "마을 경제 분위기",
+     "tier": 1,
+     "max": 3,
+     "name": "기본 마을",
+     "next": {
+      "tier": 2,
+      "name": "호황·불황 색조(경제 시뮬 연동)",
+      "blocked": false,
+      "missing": []
+     }
+    },
+    {
+     "id": "goods",
+     "label": "교역품 정보",
+     "tier": 1,
+     "max": 3,
+     "name": "기본 시세 표시",
+     "next": {
+      "tier": 2,
+      "name": "품귀·풍부 표시(경제 시뮬 연동)",
+      "blocked": false,
+      "missing": []
+     }
     }
    ],
    "gaps": [

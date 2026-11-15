@@ -7,9 +7,13 @@ return {
   Tier={
   npc=2,
   world=3,
+  town=1,
+  goods=1,
   },
   Features={
     npc={"bodyvariance"},
     world={"motes","exposure"},
+    town={},
+    goods={},
   },
 }
