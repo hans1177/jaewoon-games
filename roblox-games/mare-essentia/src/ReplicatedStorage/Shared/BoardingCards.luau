@@ -18,6 +18,29 @@ local function lane(c: any): string
 end
 B.lane = lane
 B.ROW_NAME = { melee = "전열", ranged = "후열", cannon = "후열" }
+-- 지역 전술: 같은 문화권 군사학 카드가 한 줄에 모이면 그 지역의 전술이 살아난다 (영웅·'any' 지역 제외)
+-- 같은 지역 동료 1장 이상 +1, 3장 이상 +2
+B.TACTICS = {
+	europe = { name = "방진", text = "유럽 병종이 어깨를 맞대 대열을 이룬다" },
+	east_asia = { name = "일제 사격", text = "동아시아 병종이 신호에 맞춰 함께 쏜다" },
+	new_world = { name = "기습", text = "신대륙 병종이 숲과 계곡에서 한꺼번에 덮친다" },
+	middle_east = { name = "기병 돌격", text = "중동 병종이 속도로 전열을 흔든다" },
+	africa = { name = "매복", text = "아프리카 병종이 지형을 이용해 허를 찌른다" },
+}
+function B.tacticBonus(list: any, idx: number): number
+	local c = list[idx]
+	if not c or c.hero or not c.region or not B.TACTICS[c.region] then
+		return 0
+	end
+	local mates = 0
+	for j, o in list do
+		if j ~= idx and not o.hero and o.region == c.region then
+			mates += 1
+		end
+	end
+	return if mates >= 3 then 2 elseif mates >= 1 then 1 else 0
+end
+
 B.WEAPON_BEATS = { sword = "axe", axe = "spear", spear = "sword" }
 B.ADV, B.DIS = 1.3, 0.85
 B.HAND = 10
@@ -902,6 +925,7 @@ function B.cardPower(m: any, side, row, idx)
 		if c.cause and B.chainActive(m, side, c) then
 			p += 2
 		end
+		p += B.tacticBonus(list, idx)
 		if m.rowBonus and m.rowBonus[side][row] then
 			p += m.rowBonus[side][row]
 		end
