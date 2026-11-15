@@ -11,6 +11,7 @@ local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
+local Weapons = require(script.Parent:WaitForChild("Weapons"))
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
@@ -614,6 +615,10 @@ function FieldScene.start(opts)
 			local c = packCenters[(i % #packCenters) + 1]
 			pos = ORIGIN + c + Vector3.new(rng:NextNumber(-9, 9), 0, rng:NextNumber(-9, 9))
 		end
+		-- 적이 많아 한 번에 만들면 폰에서 멈춘 것처럼 보이므로, 몇 마리씩 나눠 만든다
+		if i > 6 and i % 4 == 0 then
+			task.wait()
+		end
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
@@ -754,6 +759,8 @@ function FieldScene.start(opts)
 	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
+	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
+	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
 	local function char3()
 		local char = player.Character
 		return char, char and char:FindFirstChild("HumanoidRootPart")
@@ -776,14 +783,16 @@ function FieldScene.start(opts)
 		end
 		swingCombo = nil
 		if FM then
+			local isSword = wpn.id == "sword"
 			if kind == "heavy" then
-				swingCombo = FM.combo("heavy", { "W:BLADE_OVERHEAD" })
+				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, 3)) or FM.combo("heavy", { "W:BLADE_OVERHEAD" })
 			elseif kind == "spin" then
-				swingCombo = FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
+				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, 2)) or FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
 			elseif kind == "slash" then
 				slashIdx = slashIdx % 3 + 1
-				swingCombo = FM.combo("slash" .. slashIdx, { SLASH_IDS[slashIdx] })
+				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, slashIdx)) or FM.combo("slash" .. slashIdx, { SLASH_IDS[slashIdx] })
 			end
+			dur = Weapons.swingDuration(wpn, dur)
 			if swingCombo and kind ~= "spin" then
 				dur = math.max(dur, swingCombo.duration)
 			end
@@ -879,12 +888,29 @@ function FieldScene.start(opts)
 		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
 		local function rootFor(kind: string, p: number): CFrame?
 			if kind == "slash" then
-				return CFrame.new(0, -0.15 * bell(p), 0) * CFrame.Angles(-0.32 * bell((p - 0.15) / 0.6), 0, 0)
+				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
+				local side = if slashIdx % 2 == 0 then 1 else -1
+				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
 			elseif kind == "heavy" then
-				local air = if p < 0.62 then 2.0 * bell(p / 0.62) else 0
-				local slam = if p >= 0.62 then -0.7 * bell((p - 0.62) / 0.38) else 0
-				local lean = if p < 0.62 then 0.25 * bell(p / 0.62) else -0.5 * bell((p - 0.62) / 0.38)
-				return CFrame.new(0, air + slam, 0) * CFrame.Angles(lean, 0, 0)
+				-- 점프 강타: 웅크림(0~0.18) → 도약(~0.55) → 내려찍기(~0.62) → 착지 충격(~0.8) → 일어남
+				local y, lean = 0, 0
+				if p < 0.18 then
+					local k = p / 0.18
+					y, lean = -0.6 * k, 0.3 * k
+				elseif p < 0.55 then
+					local k = (p - 0.18) / 0.37
+					y, lean = -0.6 + 4.4 * math.sin(k * math.pi * 0.5), 0.3 - 0.55 * k
+				elseif p < 0.62 then
+					local k = (p - 0.55) / 0.07
+					y, lean = 3.8 - 4.1 * k * k, -0.25 - 0.65 * k
+				elseif p < 0.8 then
+					local k = (p - 0.62) / 0.18
+					y, lean = -0.3 * (1 - k), -0.9 * (1 - k * 0.6)
+				else
+					local k = (p - 0.8) / 0.2
+					y, lean = 0, -0.36 * (1 - k)
+				end
+				return CFrame.new(0, y, 0) * CFrame.Angles(lean, 0, 0)
 			elseif kind == "spin" then
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
@@ -959,6 +985,7 @@ function FieldScene.start(opts)
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end
+			FM.scale(canon, 1.45) -- 주인공 공격·스킬 동작도 큼직하게
 			FM.step(pfm, dt, rootRot)
 		end))
 		table.insert(conns, { Disconnect = function()
@@ -1232,6 +1259,38 @@ function FieldScene.start(opts)
 		end)
 		task.delay(dur, function() h:Destroy() end)
 	end
+	-- 잔상: 지금 몸 모양 그대로 반투명 빛 분신을 남기고 서서히 사라진다(대시·회전베기·강타용)
+	local GHOST_PARTS = { "Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot" }
+	local function afterimage(ch: Model?, color: Color3, count: number, interval: number)
+		if not ch then return end
+		local TweenService = game:GetService("TweenService")
+		for i = 1, count do
+			task.delay((i - 1) * interval, function()
+				if finished or not ch.Parent then return end
+				local ghosts = {}
+				for _, nm in GHOST_PARTS do
+					local src = ch:FindFirstChild(nm)
+					if src and src:IsA("BasePart") then
+						local g = src:Clone()
+						g:ClearAllChildren()
+						g.Anchored = true
+						g.CanCollide, g.CanTouch, g.CanQuery = false, false, false
+						g.Material = Enum.Material.Neon
+						g.Color = color
+						g.Transparency = 0.45
+						g.CFrame = src.CFrame
+						pcall(function() (g :: any).TextureID = "" end)
+						g.Parent = folder
+						table.insert(ghosts, g)
+						TweenService:Create(g, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Transparency = 1, Size = g.Size * 0.85 }):Play()
+					end
+				end
+				task.delay(0.5, function()
+					for _, g in ghosts do g:Destroy() end
+				end)
+			end)
+		end
+	end
 	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number)
 		if not CommonVFX or not CommonVFX.Create then return end
 		pcall(CommonVFX.Create, atom, {
@@ -1291,7 +1350,7 @@ function FieldScene.start(opts)
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
@@ -1561,6 +1620,7 @@ function FieldScene.start(opts)
 				local ch0 = player.Character
 				trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
 				auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
+				afterimage(ch0, Color3.fromRGB(110, 205, 255), 4, 0.05)
 				for i, dl in { 0.02, 0.2 } do
 					task.delay(dl, function()
 						pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0), if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127), Color3.fromRGB(239, 249, 255), 7, 10)
@@ -1583,15 +1643,15 @@ function FieldScene.start(opts)
 			if near then
 				local flat = (near.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
 				if flat.Magnitude > 0.1 then
-					local reach = (AC.Moves[moveId] and AC.Moves[moveId].range or 5) * STUD
-					local lunge = if nd > reach - 2 then math.min(nd - (reach - 3), 10) else 0
+					local reach = (if moveId == "rush" then wpn.range else (AC.Moves[moveId] and AC.Moves[moveId].range or 5)) * STUD
+					local lunge = if nd > reach - 2 and not (wpn.ranged and moveId == "rush") then math.min(nd - (reach - 3), 10) else 0
 					hrp.CFrame = CFrame.lookAt(hrp.Position + flat.Unit * math.max(0, lunge), hrp.Position + flat.Unit * math.max(0, lunge) + flat.Unit)
 				end
 			end
 		end
 		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
-		startSwing(kind, if kind == "spin" then 0.55 elseif kind == "heavy" then 0.5 else 0.35)
+		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4)
 		do
 			local reachV = (mv.range or 5) * STUD
 			do
@@ -1599,10 +1659,12 @@ function FieldScene.start(opts)
 				if kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
+					afterimage(ch0, Color3.fromRGB(130, 225, 255), 5, 0.06)
 					pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -2.2, 0), Color3.fromRGB(130, 225, 255), Color3.fromRGB(240, 250, 255), reachV * 2.4, 16)
 				elseif kind == "heavy" then
 					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, Color3.fromRGB(255, 160, 70), 0.45, 0.9)
 					auraOn(ch0, Color3.fromRGB(255, 140, 60), Color3.fromRGB(255, 226, 150), 0.8)
+					afterimage(ch0, Color3.fromRGB(255, 170, 80), 3, 0.08)
 					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6), Color3.fromRGB(255, 180, 90), Color3.fromRGB(255, 240, 200), reachV * 1.8, 14)
 				else
 					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
@@ -1612,19 +1674,38 @@ function FieldScene.start(opts)
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
 			elseif kind == "heavy" then
-				slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
-				shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 8, Color3.fromRGB(255, 150, 60), 0.4)
+				-- 착지(내려찍는 순간)에 맞춰 충격파·호를 낸다
+				task.delay(0.42, function()
+					if finished or not hrp.Parent then return end
+					slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
+					shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 150, 60), 0.5)
+					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7, Color3.fromRGB(255, 226, 150), 0.35)
+					shakeUntil, shakeAmp = os.clock() + 0.25, 1.1
+				end)
 			else
 				slashArc(hrp, Color3.fromRGB(235, 245, 255), reachV, 110, if combo0 % 2 == 0 then 25 else -25)
 			end
 		end
 		local combo = pl.combo
-		task.delay(if kind == "slash" then 0.12 else 0.22, function()
+		task.delay(if kind == "slash" then 0.14 elseif kind == "heavy" then 0.42 else 0.2, function()
 			if finished then
 				return
 			end
 			local hits = 0
-			for _, e in table.clone(enemies) do
+			-- 무기에 따라 기본 공격의 사거리·각도가 다르다. 석궁·총은 가장 가까운 한 명을 쏜다(총알 궤적 표시).
+			local rangeR = if moveId == "rush" then wpn.range else mv.range
+			local arcR = if moveId == "rush" and wpn.ranged then 36 else mv.arc
+			local rangedShot = moveId == "rush" and wpn.ranged
+			local list = table.clone(enemies)
+			if rangedShot then
+				table.sort(list, function(x, y)
+					return (x.root.Position - hrp.Position).Magnitude < (y.root.Position - hrp.Position).Magnitude
+				end)
+			end
+			for _, e in list do
+				if rangedShot and hits >= 1 then
+					break
+				end
 				local to = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
 				local dist = to.Magnitude
 				local ang = 0
@@ -1632,9 +1713,21 @@ function FieldScene.start(opts)
 					local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
 				end
-				if AC.inReach(mv.range * STUD + 3, mv.arc, dist, ang) then
-					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3))
+				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
+					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt")
 					hits += 1
+					if rangedShot then
+						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
+						local a0 = hrp.Position + Vector3.new(0, 0.5, 0)
+						local b0 = e.root.Position
+						local len = (b0 - a0).Magnitude
+						local tr = part(folder, Vector3.new(0.25, 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if wpn.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						tr.CanCollide, tr.CanQuery = false, false
+						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
+						task.delay(0.2, function() tr:Destroy() end)
+						burst(b0 + Vector3.new(0, 1.5, 0), 6, false)
+						sfx(if wpn.id == "gun" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.id == "gun" then 1.6 else 1.2)
+					end
 				end
 			end
 			for _, b in table.clone(barrels) do
@@ -1644,7 +1737,7 @@ function FieldScene.start(opts)
 					local lk = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
-				if AC.inReach(mv.range * STUD + 3, mv.arc, tb.Magnitude, ab) then
+				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
 					explodeBarrel(b, hrp)
 					hits += 1
 				end
@@ -1726,6 +1819,31 @@ function FieldScene.start(opts)
 		hit.ZIndex = math.max(attackBtn.ZIndex - 1, 0)
 		hit.Parent = gui
 		bindPress(hit, useAttack)
+	end
+	-- 무기 교체 버튼: 누를 때마다 다음 무기로(맨손→검→단검→도끼→창→철퇴→석궁→총). 동료는 직업별 고정 무기라 바뀌지 않는다.
+	do
+		local wbtn = btn(gui, wpn.name, Color3.fromRGB(70, 82, 104), UDim2.fromOffset(84, 44), UDim2.new(1, -100, 1, -196), Vector2.new(0.5, 0.5))
+		wbtn.TextSize = 15
+		local function swordVisual()
+			local ch = player.Character
+			local sw = ch and ch:FindFirstChild("FieldSword")
+			if sw then
+				-- 검 모델이 있는 무기(검)만 손에 보이고, 아직 모델이 없는 무기는 맨손 쥠으로 보인다
+				for _, d in sw:GetDescendants() do
+					if d:IsA("BasePart") then
+						d.LocalTransparencyModifier = if wpn.model == "weapon-sword" then 0 else 1
+					end
+				end
+			end
+		end
+		bindPress(wbtn, function()
+			wpn = Weapons.cycle(wpn.id, 1)
+			wbtn.Text = wpn.name
+			swordVisual()
+			slashIdx = 0
+			say(string.format("%s — %s", wpn.name, wpn.note))
+		end)
+		task.delay(1, swordVisual)
 	end
 
 	local staminaBack = Instance.new("Frame")
@@ -2198,7 +2316,7 @@ function FieldScene.start(opts)
 						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.5 else 1.9, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.7 else 2.1, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -2214,7 +2332,7 @@ function FieldScene.start(opts)
 		local allyDefs = {}
 		local allyNames = opts.allies or {}
 		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
-			allyNames = { { name = "동료 기사", role = "soldier" }, { name = "동료 사제", role = "성직자" } } -- 개발 캡처 전용
+			allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 개발 캡처 전용(총·도끼)
 		end
 		-- 동료마다 이름·직업에 맞는 겉모습(직업 → 옷 계열, 이름 → 옷 색)으로 만든다 (같은 얼굴 두 명이 나오지 않게)
 		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
@@ -2231,7 +2349,7 @@ function FieldScene.start(opts)
 				local h = hashName(name)
 				local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + i) % #ROLES + 1]
 				local coat = Color3.fromHSV((h % 360) / 360, 0.45, 0.62)
-				table.insert(allyDefs, { name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job) }) -- 직업 분류에 따라 최대 2개
+				table.insert(allyDefs, { name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job), weapon = Weapons.allyWeapon(JobSkills.categoryOf(job)) }) -- 직업 분류에 따라 최대 2개
 			end
 		end
 		local allies: { any } = {}
@@ -2263,7 +2381,7 @@ function FieldScene.start(opts)
 						bbA.Parent = r
 						local tg = label(bbA, ad.name, 14, Color3.fromRGB(130, 230, 150))
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, skillCd = {}, nextSkill = now + 4 + i * 2 })
+						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2 })
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -2280,7 +2398,8 @@ function FieldScene.start(opts)
 					end
 				end
 				local goal = if tgt then tgt.root.Position else root0.Position + Vector3.new(a.slot * 5 - 8, 0, -4)
-				local stop = if tgt then 5.5 else 3
+				local aw = a.weapon
+				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
 				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
 				local moving = to.Magnitude > stop
 				if moving then
@@ -2292,9 +2411,19 @@ function FieldScene.start(opts)
 					a.model:PivotTo(CFrame.lookAt(pv.Position, pv.Position + to.Unit))
 				end
 				if tgt and not moving and now >= a.nextAt then
-					a.nextAt = now + 1.3
+					a.nextAt = now + 1.3 / aw.speed
 					a.swingAt = now
-					strikeEnemy(tgt, 0.6, a.root.Position, 1.0, false, true)
+					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0, aw.family == "axe", true)
+					if aw.ranged then
+						-- 동료 사격: 총알·화살 궤적
+						local a0 = a.root.Position + Vector3.new(0, 0.5, 0)
+						local b0 = tgt.root.Position
+						local len = (b0 - a0).Magnitude
+						local tr = part(folder, Vector3.new(0.2, 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if aw.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						tr.CanCollide, tr.CanQuery = false, false
+						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
+						task.delay(0.2, function() tr:Destroy() end)
+					end
 				end
 				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
 				if now >= a.nextSkill and #enemies > 0 then
@@ -2324,11 +2453,20 @@ function FieldScene.start(opts)
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
 					if ap >= 0 and ap < 1 then
-						FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.6)
+						-- 동료는 직업에 정해진 무기 동작(검·도끼·석궁·총)으로 공격한다
+						local ac = FM.weaponCombo(a.weapon.motion, 1)
+						if ac then
+							table.clear(a.fm.canon)
+							FM.sample(ac, math.min(ap * 1.6, 1) * ac.duration, a.fm.canon)
+							FM.scale(a.fm.canon, 1.5)
+							FM.step(a.fm, dt)
+						else
+							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 2.0)
+						end
 					elseif moving then
-						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.6)
+						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.9)
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.3)
+						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.6)
 					end
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
