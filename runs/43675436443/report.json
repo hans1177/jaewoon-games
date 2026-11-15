@@ -1,5 +1,5 @@
 {
- "sourceRevision": "55f469145f96a0f6c04d432680300df00da72461",
+ "sourceRevision": "3f620e8a17bb1eab39cdcb470a935dcc2457c679",
  "log": [
   {
    "step": 0,
@@ -29,7 +29,7 @@
   {
    "step": 8,
    "ctx": "Client",
-   "out": "faced 113.75533294677734\ntext"
+   "out": "faced 113.69881439208984\ntext"
   },
   {
    "step": 9,
@@ -49,7 +49,7 @@
   {
    "step": 14,
    "ctx": "Client",
-   "out": "faced 9.63979434967041\ntext"
+   "out": "faced 9.627008438110352\ntext"
   },
   {
    "step": 15,
@@ -84,12 +84,12 @@
   {
    "step": 26,
    "ctx": "Client",
-   "out": "ready=true err=true table: 0x843ff83a728d4949 btns=공격|철수|0.4|6.2|3.1|방어|의학|화학|물리\ntext"
+   "out": "ready=true err=true table: 0xd493efb71b3ef375 btns=공격|철수|0.0|6.0|3.2|방어|의학|화학|물리\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "MOVE anchored=false moved=16.2 ws=18 mobs=4\ntext"
+   "out": "MOVE anchored=false moved=16.5 ws=18 mobs=4\ntext"
   },
   {
    "step": 28,
@@ -139,7 +139,7 @@
   {
    "step": 40,
    "ctx": "Client",
-   "out": "DIAG tracks=2\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\nENEMY Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil | ME Waist=nil,RightShoulder=nil,LeftHip=nil,RightElbow=nil\ntext"
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.971 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.090 | ENEMY motors=15 sum=0.011\nME motors=15 sum=4.169 | ENEMY motors=15 sum=0.004\nME motors=15 sum=4.178 | ENEMY motors=15 sum=0.005\nME motors=15 sum=4.135 | ENEMY motors=15 sum=0.012\nME motors=15 sum=4.071 | ENEMY motors=15 sum=0.014\ntext"
   }
  ],
  "errors": [],
@@ -150,7 +150,7 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 20,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {

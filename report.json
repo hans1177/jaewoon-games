@@ -1,355 +1,145 @@
 {
- "sourceRevision": "7a77d4cb335a1d74d5f430793ffd43fd2854a012",
+ "sourceRevision": "3f620e8a17bb1eab39cdcb470a935dcc2457c679",
  "log": [
+  {
+   "step": 0,
+   "ctx": "Client",
+   "out": "cards on\ntext"
+  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "allies on\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "killed 0\ntext"
+   "out": "x\ntext"
   },
   {
-   "step": 5,
+   "step": 4,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "started\ntext"
   },
   {
-   "step": 7,
+   "step": 6,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "cam\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "faced 113.69881439208984\ntext"
   },
   {
    "step": 9,
-   "ctx": "Client",
-   "out": "killed 1\ntext"
-  },
-  {
-   "step": 11,
-   "capture": "m_trade",
+   "capture": "c1_approach",
    "files": 1
   },
   {
-   "step": 12,
+   "step": 10,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "attack\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "c2_attack",
+   "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "faced 9.627008438110352\ntext"
   },
   {
-   "step": 16,
+   "step": 15,
    "ctx": "Client",
-   "out": "killed 0\ntext"
+   "out": "heavy\ntext"
   },
   {
-   "step": 18,
-   "capture": "m_harbor",
+   "step": 17,
+   "capture": "c3_heavy",
    "files": 1
   },
   {
    "step": 19,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "spin\ntext"
   },
   {
    "step": 21,
-   "ctx": "Client",
-   "out": "dev\ntext"
+   "capture": "c4_spin",
+   "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "killed 0\ntext"
+   "out": "dash\ntext"
   },
   {
    "step": 25,
-   "capture": "m_route",
+   "capture": "c5_dash",
    "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "ready=true err=true table: 0xd493efb71b3ef375 btns=공격|철수|0.0|6.0|3.2|방어|의학|화학|물리\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "MOVE anchored=false moved=16.5 ws=18 mobs=4\ntext"
   },
   {
    "step": 28,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "guard\ntext"
   },
   {
    "step": 30,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "m_map",
+   "capture": "c6_guard",
    "files": 1
   },
   {
-   "step": 33,
+   "step": 31,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "SWORD equipped=true template=true relics=24\ntext"
   },
   {
-   "step": 35,
+   "step": 32,
    "ctx": "Client",
-   "out": "dev\ntext"
+   "out": "ALLIES 0\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "c7_allies",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "volley\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "c8_cardvolley",
+   "files": 1
   },
   {
    "step": 37,
    "ctx": "Client",
-   "out": "killed 0\ntext"
+   "out": "ward\ntext"
   },
   {
    "step": 39,
-   "capture": "m_yard",
+   "capture": "c9_cardward",
    "files": 1
   },
   {
    "step": 40,
    "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 42,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 44,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 46,
-   "capture": "m_board",
-   "files": 1
-  },
-  {
-   "step": 47,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 49,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 51,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 53,
-   "capture": "m_quest",
-   "files": 1
-  },
-  {
-   "step": 54,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 56,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 58,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 60,
-   "capture": "m_recruit",
-   "files": 1
-  },
-  {
-   "step": 61,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 63,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 65,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 67,
-   "capture": "m_explore",
-   "files": 1
-  },
-  {
-   "step": 68,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 70,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 72,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 74,
-   "capture": "m_battle",
-   "files": 1
-  },
-  {
-   "step": 75,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 77,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 79,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 81,
-   "capture": "m_war",
-   "files": 1
-  },
-  {
-   "step": 82,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 84,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 86,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 88,
-   "capture": "m_gwent",
-   "files": 1
-  },
-  {
-   "step": 89,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 91,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 93,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 95,
-   "capture": "m_scholar",
-   "files": 1
-  },
-  {
-   "step": 96,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 98,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 100,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 102,
-   "capture": "m_codex",
-   "files": 1
-  },
-  {
-   "step": 103,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 105,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 107,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 109,
-   "capture": "m_tech",
-   "files": 1
-  },
-  {
-   "step": 110,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 112,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 114,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 116,
-   "capture": "m_status",
-   "files": 1
-  },
-  {
-   "step": 117,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 119,
-   "ctx": "Client",
-   "out": "dev\ntext"
-  },
-  {
-   "step": 121,
-   "ctx": "Client",
-   "out": "killed 0\ntext"
-  },
-  {
-   "step": 123,
-   "capture": "m_crew",
-   "files": 1
+   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.971 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.090 | ENEMY motors=15 sum=0.011\nME motors=15 sum=4.169 | ENEMY motors=15 sum=0.004\nME motors=15 sum=4.178 | ENEMY motors=15 sum=0.005\nME motors=15 sum=4.135 | ENEMY motors=15 sum=0.012\nME motors=15 sum=4.071 | ENEMY motors=15 sum=0.014\ntext"
   }
  ],
  "errors": [],
@@ -360,17 +150,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 18,
+  "warningCount": 19,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 124,
-  "completedSteps": 124,
+  "plannedSteps": 41,
+  "completedSteps": 41,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 17,
-  "capturedFrames": 17,
+  "plannedFrames": 9,
+  "capturedFrames": 9,
   "abortedEarly": false
  }
 }
