@@ -6776,7 +6776,7 @@ function RENDERERS.quest()
 	local function strandText(q)
 		return (if q.strand then "[" .. STRAND[q.strand] .. "] " else "") .. q.summary .. (if q.story then "\n" .. q.story else "")
 	end
-	add(function() return mkHeader(content, string.format("📖 일지 · 진행 중 %d", #view.quests.active)) end)
+	add(function() return mkHeader(content, string.format("일지 · 진행 중 %d", #view.quests.active)) end)
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
 	end
@@ -6820,67 +6820,38 @@ end
 -- 주점의 지식 카드 배틀: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
 function RENDERERS.gwent()
 	H.walletBar("tavern")
-	add(function()
-		return mkRow(content, "지식 카드 배틀", "주점 탁자에서 병종 카드로 겨루는 게임이에요. 전열·후열 2줄, 한 판 5장, 3판 2선승. 이기면 새 카드를 얻어요. 학문 카드를 많이 모을수록 같은 계열 줄이 강해져요.", {
-			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
-		}, 92)
-	end)
-	add(function()
-		-- 지금 대결에 쓰는 내 덱 (카드 보유·단계·나라 문화권으로 정해진다)
-		local BC = require(Shared:WaitForChild("BoardingCards"))
-		local bk = view and view.cardbook
-		local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
-		local cnt = { melee = 0, ranged = 0, cannon = 0, special = 0 }
-		local power = 0
-		for _, id in (bk and bk.ids) or {} do
-			local d = BC.Units[id] or BC.Specials[id]
-			if d then
-				if d.special then
-					cnt.special += 1
-				else
-					cnt[d.row] += 1
-					power += (d.power or 0) + (((bk.tier or {})[id] or 1) - 1)
-				end
-			end
+	local BC = require(Shared:WaitForChild("BoardingCards"))
+	local bk = view and view.cardbook
+	local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
+	local cnt = { melee = 0, ranged = 0, cannon = 0, special = 0 }
+	for _, id in (bk and bk.ids) or {} do
+		local d = BC.Units[id] or BC.Specials[id]
+		if d then
+			if d.special then cnt.special += 1 else cnt[d.row] += 1 end
 		end
-		local leader = fac and BC.Leaders[fac.leader]
-		local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
-		return mkRow(content, string.format("내 덱: %s · %d장", fac and fac.name or "기본", total),
-			string.format("근접 %d · 사격 %d · 포 %d · 특수 %d  (부대 점수 합 %d)\n지도자: %s — %s\n대결에서 덱을 섞어 손패 10장을 뽑고, 남은 카드는 덱 더미에 쌓여요.",
-				cnt.melee, cnt.ranged, cnt.cannon, cnt.special, power, leader and leader.name or "지휘", leader and leader.text or ""),
-			{ { text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end } }, 100)
-	end)
+	end
+	local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
+	H.statStrip({
+		{ "내 덱", string.format("%s · %d장", fac and fac.name or "기본", total), tone = "key" },
+		{ "근접 · 사격", string.format("%d · %d", cnt.melee, cnt.ranged), tone = "key" },
+		{ "포 · 특수", string.format("%d · %d", cnt.cannon, cnt.special), tone = "key" },
+		{ "오늘 보상", string.format("%d회", (bk and bk.duelLeft) or 0), tone = "good" },
+	})
 	add(function()
-		local bk = view and view.cardbook
-		local names = { melee = "근접 = 인문·사회", ranged = "사격 = 자연과학", cannon = "포 = 응용·공학" }
-		local parts = {}
-		for _, row in { "melee", "ranged", "cannon" } do
-			local n = bk and bk.knowledgeCount and bk.knowledgeCount[row] or 0
-			local b = bk and bk.bonus and bk.bonus[row] or 0
-			table.insert(parts, string.format("%s: 카드 %d장 → 부대 점수 +%d", names[row], n, b))
-		end
-		return mkRow(content, "학문 숙련 보너스", table.concat(parts, "\n") .. "\n(카드 15·40·80장마다 +1, 영웅·특수 카드 제외)", nil, 92)
-	end)
-	add(function()
-		return mkRow(content, "연습전", "누구나 같은 기본 카드로 규칙을 배우는 첫 판이에요. 처음 이기면 지식 카드를 얻어요.", {
-			{ text = "시작", color = COLORS.green, onClick = function()
+		return H.tileGrid({
+			{ icon = "codex", title = "덱 짜기", sub = "카드를 골라 덱 구성", btn = "열기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
+			{ icon = "cc0_shield", title = "연습전", sub = "기본 카드로 규칙 배우기", btn = "시작", color = COLORS.green, onClick = function()
 				if H.openDeck then H.openDeck() end
-				task.defer(function()
-					if H.devCards and H.devCards.practice then H.devCards.practice() end
-				end)
+				task.defer(function() if H.devCards and H.devCards.practice then H.devCards.practice() end end)
 			end },
-		}, 64)
+			{ icon = "cc0_sword", title = "카드 대결", sub = "이기면 새 지식 카드", btn = "대결", color = COLORS.red, onClick = function()
+				if H.openDeck then H.openDeck() end
+				task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel() end end)
+			end },
+		}, content, 176, 150)
 	end)
 	add(function()
-		local bk = view and view.cardbook
-		return mkRow(content, string.format("카드 대결 (오늘 카드 보상 %d회 남음)", (bk and bk.duelLeft) or 0), "내 덱 vs 상대 덱. 이기면 지식 카드를 얻어요. 덱은 '덱 구성'에서 짜요.", {
-			{ text = "대결", color = COLORS.red, onClick = function()
-				if H.openDeck then H.openDeck() end
-				task.defer(function()
-					if H.devCards and H.devCards.duel then H.devCards.duel() end
-				end)
-			end },
-		}, 64)
+		return mkLabel(content, "한 판 5장 · 3판 2선승 · 학문 카드를 모을수록 같은 계열 줄이 강해져요.", 14, COLORS.muted, false)
 	end)
 end
 
