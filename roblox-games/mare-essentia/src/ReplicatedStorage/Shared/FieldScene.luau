@@ -1233,6 +1233,38 @@ function FieldScene.start(opts)
 		end)
 		task.delay(dur, function() h:Destroy() end)
 	end
+	-- 잔상: 지금 몸 모양 그대로 반투명 빛 분신을 남기고 서서히 사라진다(대시·회전베기·강타용)
+	local GHOST_PARTS = { "Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot" }
+	local function afterimage(ch: Model?, color: Color3, count: number, interval: number)
+		if not ch then return end
+		local TweenService = game:GetService("TweenService")
+		for i = 1, count do
+			task.delay((i - 1) * interval, function()
+				if finished or not ch.Parent then return end
+				local ghosts = {}
+				for _, nm in GHOST_PARTS do
+					local src = ch:FindFirstChild(nm)
+					if src and src:IsA("BasePart") then
+						local g = src:Clone()
+						g:ClearAllChildren()
+						g.Anchored = true
+						g.CanCollide, g.CanTouch, g.CanQuery = false, false, false
+						g.Material = Enum.Material.Neon
+						g.Color = color
+						g.Transparency = 0.45
+						g.CFrame = src.CFrame
+						pcall(function() (g :: any).TextureID = "" end)
+						g.Parent = folder
+						table.insert(ghosts, g)
+						TweenService:Create(g, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Transparency = 1, Size = g.Size * 0.85 }):Play()
+					end
+				end
+				task.delay(0.5, function()
+					for _, g in ghosts do g:Destroy() end
+				end)
+			end)
+		end
+	end
 	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number)
 		if not CommonVFX or not CommonVFX.Create then return end
 		pcall(CommonVFX.Create, atom, {
@@ -1562,6 +1594,7 @@ function FieldScene.start(opts)
 				local ch0 = player.Character
 				trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
 				auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
+				afterimage(ch0, Color3.fromRGB(110, 205, 255), 4, 0.05)
 				for i, dl in { 0.02, 0.2 } do
 					task.delay(dl, function()
 						pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0), if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127), Color3.fromRGB(239, 249, 255), 7, 10)
@@ -1600,10 +1633,12 @@ function FieldScene.start(opts)
 				if kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
+					afterimage(ch0, Color3.fromRGB(130, 225, 255), 5, 0.06)
 					pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -2.2, 0), Color3.fromRGB(130, 225, 255), Color3.fromRGB(240, 250, 255), reachV * 2.4, 16)
 				elseif kind == "heavy" then
 					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, Color3.fromRGB(255, 160, 70), 0.45, 0.9)
 					auraOn(ch0, Color3.fromRGB(255, 140, 60), Color3.fromRGB(255, 226, 150), 0.8)
+					afterimage(ch0, Color3.fromRGB(255, 170, 80), 3, 0.08)
 					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6), Color3.fromRGB(255, 180, 90), Color3.fromRGB(255, 240, 200), reachV * 1.8, 14)
 				else
 					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
