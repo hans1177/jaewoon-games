@@ -4282,7 +4282,7 @@ function RENDERERS.recruit()
 			local desc = if c.blocked and not c.joined then c.blocked else c.summary
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
-			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "recruit" }
+			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "status" }
 			if portrait then
 				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
@@ -5873,20 +5873,26 @@ function RENDERERS.explore()
 			add(function() return mkLabel(content, "조언: 지금(" .. view.player.year .. "년) 만날 수 있는 학자\n" .. table.concat(where, "\n", 1, math.min(#where, 8)), 12, COLORS.gold, true) end)
 		end
 	end
-	for _, sc in view.scholars do
+	if #view.scholars > 0 then
 		add(function()
-			local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
-			local srow = mkRow(content, sc.name, sub, {
-				{ text = "방문", color = COLORS.gold, onClick = function() call("Visit", { scholarId = sc.id }) end, enabled = sc.status == "ready" },
-					{ text = if (sc.reportable or 0) > 0 then string.format("보고 (%d)", sc.reportable) else "보고", color = COLORS.green, onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end, enabled = (sc.reportable or 0) > 0 },
-				}, 60)
-			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
-			if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. sc.id] then
-				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
-			end
-						return srow
-					end)
+			local tiles = {}
+			for _, sc in view.scholars do
+				local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
+				local tile: any = { title = sc.name, sub = sub, icon = "codex" }
+				-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
+				if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. sc.id] then
+					tile.portrait = { atlas = "scholar_" .. sc.id }
 				end
+				tile.btn, tile.color, tile.enabled = "방문", COLORS.gold, sc.status == "ready"
+				tile.onClick = function() call("Visit", { scholarId = sc.id }) end
+				local rep = sc.reportable or 0
+				tile.btn2 = { text = if rep > 0 then string.format("보고 (%d)", rep) else "보고", color = COLORS.green, enabled = rep > 0,
+					onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end }
+				table.insert(tiles, tile)
+			end
+			return H.tileGrid(tiles, content, 190, 150)
+		end)
+	end
 				local ac = view.knowledge and view.knowledge.academy
 				if ac and #ac.disciplines > 0 then
 					add(function() return mkHeader(content, string.format("학술 행사 · 이 항구의 연구 성과 %d%%", ac.research)) end)
