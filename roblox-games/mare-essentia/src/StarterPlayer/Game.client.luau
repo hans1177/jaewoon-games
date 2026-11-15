@@ -1902,7 +1902,7 @@ do
 		local function goal(name, detail, ratio, color)
 			local card = Instance.new("Frame")
 			card.LayoutOrder = nxt()
-			card.Size = UDim2.new(1, -6, 0, 0)
+			card.Size = UDim2.new(1, -8, 0, 0) -- 소제목(mkHeader)과 같은 너비로 좌우 끝을 맞춘다
 			card.AutomaticSize = Enum.AutomaticSize.Y
 			card.BackgroundColor3 = Color3.fromRGB(240, 224, 190)
 			card.BorderSizePixel = 0
@@ -1914,8 +1914,13 @@ do
 			l.Padding = UDim.new(0, 4)
 			l.SortOrder = Enum.SortOrder.LayoutOrder
 			l.Parent = card
+			-- 카드 안쪽은 패딩만큼 이미 줄었으므로 줄 너비는 꽉 채운다(1,0): 제목·설명·진행 막대·버튼의 오른쪽 끝이 한 줄로 맞는다
 			local n = mkLabel(card, name, 18, COLORS.ink, true, 1)
-			if detail then mkLabel(card, detail, 15, COLORS.muted, false, 2) end
+			n.Size = UDim2.new(1, 0, 0, 0)
+			if detail then
+				local d = mkLabel(card, detail, 15, COLORS.muted, false, 2)
+				d.Size = UDim2.new(1, 0, 0, 0)
+			end
 			if ratio then bar(card, ratio, color or COLORS.green).LayoutOrder = 3 end
 			card.Parent = body
 			return card
