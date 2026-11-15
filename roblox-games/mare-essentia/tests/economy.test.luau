@@ -82,6 +82,34 @@ do
 	local s = Eco.shockFromEvent({ id = "famine", tag = "기근", title = "흉작", days = 70 }, "europe")
 	check("기근 이벤트 → 식량 충격", s.food < 1 and s.days == 70)
 end
+-- 건축물: 주거·생산·서비스가 인구를 따라간다
+do
+	local t = w.towns.amsterdam
+	local ratio = Eco.housingCap(t) / t.pop
+	check("주거 수용력이 인구와 비슷", ratio > 0.7 and ratio < 1.5, ratio)
+	check("일자리 수가 양수", Eco.jobsCap(t) > 0 and t.unemp >= 0 and t.unemp <= 0.6, t.unemp)
+	local x = Eco.newWorld({ seed = 9, year = 1650 })
+	local tx = x.towns.london
+	tx.treasury = 0; tx.pop = tx.pop * 1.5 -- 갑자기 늘어난 인구: 집이 모자란다
+	local h0 = tx.bld.house
+	Eco.run(x, 120)
+	check("인구가 늘면 집을 더 짓는다", tx.bld.house > h0, tx.bld.house .. "/" .. h0)
+	check("건설 기록", tx.buildSpend >= 0)
+end
+-- 100만 도시: 숫자로만 돈다. 보이는 주민은 표본 60명 이하
+do
+	local x = Eco.newWorld({ seed = 4, year = 1650 })
+	local t = x.towns.london
+	t.pop = 1000000; Eco.initBuildings(t); t.stage = Eco.stageOfPop(t.pop)
+	Eco.run(x, 30)
+	local v = Eco.visual(t)
+	check("100만 → 메가시티", t.stage == 6 and v.name == "메가시티", t.stage)
+	check("표본 주민 ≤ 60, 한 명이 수만 명 대표", v.residents <= 60 and v.perNpc > 10000, v.residents .. "/" .. v.perNpc)
+	local sum = 0
+	for _, d in ipairs(v.districts) do sum += d.pop end
+	check("구역 인구 합 ≈ 인구", math.abs(sum - t.pop) / t.pop < 0.02 and #v.districts == 6, sum)
+	check("집 10만 채 규모를 숫자로", t.bld.house > 50000, t.bld.house)
+end
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})
@@ -91,6 +119,15 @@ do
 	Econ.advance(st); Econ.advance(st)
 	local town = Econ.town(st, "london")
 	check("서비스: 항구 요약", town and town.pop > 0 and town.stage >= 1 and town.residents >= 6 and town.jobs.farmer > 0, town and town.pop)
+	check("서비스: 건축물·주거·일자리", town.buildings.house > 0 and town.housing.cap > 0 and town.work.jobs > 0 and town.service.market ~= nil)
+	do
+		local w2 = Econ.macro(st, "world")
+		local before = Econ.town(st, "london").tech
+		Econ.teach(st, "london", "navigation", 10)
+		local after = Econ.town(st, "london").tech
+		check("지식카드 보고 → 마을 기술 상승", after > before, before .. "->" .. after)
+		check("모르는 학문은 무시", Econ.teach(st, "london", "nope", 5) == nil and w2 ~= nil)
+	end
 	check("서비스: 해역 집계", Econ.macro(st, "region", "europe").pop > 0)
 	check("서비스: 시뮬 없으면 nil", require("./Services/Econ")({}, {}).town(st, "london") == nil)
 end

@@ -35,15 +35,23 @@ return function(D, S)
 		if not t then return nil end
 		local v = E.visual(t)
 		local jobs = E.jobs(t)
+		local bld, svc = {}, {}
+		for _, b in ipairs(E.BUILDINGS) do
+			bld[b.id] = math.floor(t.bld[b.id] + 0.5)
+			if b.serves then svc[b.id] = math.floor((t.cov[b.id] or 1) * 100 + 0.5) end
+		end
 		return {
 			pop = math.floor(t.pop), stage = t.stage, stageName = v.name, residents = v.residents, buildingScale = v.buildingScale,
-			houses = v.houses, mood = v.mood, jobs = jobs, facilities = E.facilities(t),
+			houses = v.houses, perNpc = v.perNpc, districts = v.districts, mood = v.mood, jobs = jobs, facilities = E.facilities(t),
 			prosperity = math.floor(t.prosperity * 100 + 0.5), stability = math.floor(t.stability * 100 + 0.5),
 			wage = math.floor(t.wage * 100 + 0.5), grainPrice = math.floor(t.price.grain * 10 + 0.5) / 10,
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
 			day = w.day,
+			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
+			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
+			service = svc,
 		}
 	end
 
@@ -60,6 +68,34 @@ return function(D, S)
 		local w = ensure(state)
 		if not w then return end
 		E.addShock(w, E.shockFromEvent(ev, regionId))
+	end
+
+	-- 지식카드(학문) → 마을 경제 기술 분야. 한 학문이 여러 분야에 가중치로 퍼진다.
+	local DISC_TECH = {
+		botany = { agri = 1 }, zoology = { agri = 0.6 }, chemistry = { agri = 0.4, craft = 0.6 },
+		architecture = { craft = 1 }, mineralogy = { craft = 0.8 }, physics = { craft = 0.7 }, art = { craft = 0.4, gov = 0.3 },
+		commerce = { commerce = 1 }, linguistics = { commerce = 0.5, gov = 0.5 }, philosophy = { gov = 0.5, commerce = 0.2 },
+		geography = { sea = 0.7 }, navigation = { sea = 1 }, astronomy = { sea = 0.5 }, meteorology = { sea = 0.6, agri = 0.3 }, shipbuilding = { sea = 0.8, craft = 0.3 },
+		medicine = { medicine = 1 },
+		history = { gov = 0.8 }, archaeology = { gov = 0.4 }, mythology = { gov = 0.2 },
+	}
+	X.DISC_TECH = DISC_TECH
+	local TEACH_STEP = 0.02 -- 카드 1점당 기술 상승 (희귀도가 점수)
+	-- 항구에서 지식카드를 보고하면 그 마을 기술이 오르고, 같은 나라(25%)와 같은 해역(10%) 마을로 번진다.
+	function X.teach(state, portId, discId, points)
+		local w = ensure(state)
+		local map = DISC_TECH[discId]
+		local town = w and w.towns[portId]
+		if not map or not town then return nil end
+		for _, t in pairs(w.towns) do
+			local share = if t == town then 1 elseif t.country == town.country then 0.25 elseif t.region == town.region then 0.1 else 0
+			if share > 0 then
+				for f, wt in pairs(map) do
+					t.tech[f] += TEACH_STEP * (points or 1) * wt * share / (t.tech[f] ^ 0.3)
+				end
+			end
+		end
+		return town
 	end
 
 	function X.reset() world = nil end

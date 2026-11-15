@@ -26,8 +26,8 @@ E.GRAIN_PRICE = 10
 E.TARGET_DAYS = 20 -- 재고가 이 일수치 수요일 때 가격이 안정
 E.PRICE_K = 0.08
 E.NEIGHBORS = 6
-E.STAGE_POP = { 0, 1500, 5000, 15000, 40000 } -- 단계 진입 인구
-E.STAGE_NAMES = { "촌락", "마을", "읍", "도시", "대도시" }
+E.STAGE_POP = { 0, 1500, 5000, 15000, 40000, 250000 } -- 단계 진입 인구
+E.STAGE_NAMES = { "촌락", "마을", "읍", "도시", "대도시", "메가시티" }
 
 -- ───────── 난수 (결정적) ─────────
 local function rnd(w)
@@ -114,6 +114,7 @@ local function newTown(p, w)
 	t.produces, t.demands, t.nDem = {}, {}, #p.demands
 	for _, g in ipairs(p.produces) do t.produces[g] = true end
 	for _, g in ipairs(p.demands) do t.demands[g] = true end
+	E.initBuildings(t)
 	return t
 end
 
@@ -121,6 +122,84 @@ end
 function E.infraFactor(t)
 	local idx = t.infra / math.max(t.pop * t.infraRef, 1)
 	return 0.9 + 0.3 * math.clamp((idx - 0.5) / 1.5, 0, 1)
+end
+
+-- ───────── 건축물 (심시티식): 주거·생산·소비(서비스) 시설이 인구에 맞춰 짓고 허물어진다 ─────────
+-- jobs: 시설 하나가 쓰는 일꾼 수 / serves: 시설 하나가 감당하는 인구(서비스) / cost: 건설비(코인) / minStage: 열리는 단계
+E.BUILDINGS = {
+	{ id = "house", name = "주택", cost = 30 },
+	{ id = "farm", name = "농장", jobs = 16, cost = 40 },
+	{ id = "workshop", name = "공방", jobs = 10, cost = 60 },
+	{ id = "dock", name = "부두", jobs = 14, cost = 120 },
+	{ id = "market", name = "시장", jobs = 8, serves = 600, cost = 80, minStage = 2 },
+	{ id = "warehouse", name = "창고", jobs = 6, serves = 900, cost = 70, minStage = 2 },
+	{ id = "tavern", name = "선술집", jobs = 5, serves = 400, cost = 50 },
+	{ id = "church", name = "교회", jobs = 4, serves = 800, cost = 90 },
+	{ id = "guard", name = "경비소", jobs = 6, cost = 60 },
+	{ id = "school", name = "학교", jobs = 3, serves = 1500, cost = 100, minStage = 3 },
+	{ id = "hall", name = "관청", jobs = 6, serves = 3000, cost = 200, minStage = 3 },
+}
+E.BUILD_BY_ID = {}
+for _, b in ipairs(E.BUILDINGS) do E.BUILD_BY_ID[b.id] = b end
+
+-- 집 하나가 받는 주민 수: 발전할수록 큰 집
+function E.perHouse(stage) return 4 + 1.2 * stage end
+
+-- 지금 인구가 필요로 하는 시설 수
+function E.buildingTargets(t)
+	local sh = jobShares(t.stage, t)
+	local n = 0
+	for _ in pairs(t.produces) do n += 1 end
+	local pop = t.pop
+	local tg = {
+		house = pop / E.perHouse(t.stage) * 1.05,
+		farm = pop * sh.farmer / 16,
+		workshop = pop * (sh.craftsman + sh.laborer * 0.5) / 10,
+		dock = t.coastal and (pop * (sh.sailor + sh.fisher) / 14) or 0,
+		guard = pop * sh.guard / 6,
+	}
+	for _, b in ipairs(E.BUILDINGS) do
+		if b.serves then
+			tg[b.id] = (t.stage >= (b.minStage or 1)) and (pop / b.serves) or 0
+		end
+	end
+	return tg
+end
+
+function E.initBuildings(t)
+	t.bld = {}
+	for id, v in pairs(E.buildingTargets(t)) do t.bld[id] = v end
+	t.cov = {}
+	t.housingRatio, t.unemp, t.buildSpend = 1, 0.1, 0
+end
+
+-- 수용 가능 인구(주거), 일자리 수
+function E.housingCap(t) return t.bld.house * E.perHouse(t.stage) end
+function E.jobsCap(t)
+	local j = 0
+	for _, b in ipairs(E.BUILDINGS) do
+		if b.jobs then j += t.bld[b.id] * b.jobs end
+	end
+	return j
+end
+
+-- 하루 건설: 예산 안에서 모자란 시설부터(주거→생산→서비스) 짓고, 남아도는 시설은 서서히 방치된다.
+function E.stepBuildings(t, budget)
+	local tg = E.buildingTargets(t)
+	local spent = 0
+	for _, b in ipairs(E.BUILDINGS) do
+		local have, want = t.bld[b.id], tg[b.id] or 0
+		if have < want then
+			local n = math.min(want - have, math.max(0, budget - spent) / b.cost, math.max(0.05, want * 0.01))
+			if n > 0 then t.bld[b.id] = have + n; spent += n * b.cost end
+		elseif have > want * 1.25 + 0.5 then
+			t.bld[b.id] = have - have * 0.002
+		end
+		-- 서비스 보급률 (시설/필요): 1 이상이면 충분
+		t.cov[b.id] = if want > 0 then math.min(1.5, t.bld[b.id] / want) else 1
+	end
+	t.buildSpend = spent
+	return spent
 end
 
 local function basePrice(g)
@@ -147,7 +226,7 @@ local function productionOf(t, g, price, w)
 	local lvl = w.cycle.lvl[t.region] or 0
 	local mult = t.fx.prod * (1 + 0.1 * lvl)
 	if g == E.GRAIN then
-		local farmers = t.pop * sh.farmer
+		local farmers = math.min(t.pop * sh.farmer, t.bld.farm * 16)
 		local used = math.min(farmers, t.land) + 0.25 * math.max(0, farmers - t.land)
 		local yield = 1.5 * (1 + 0.12 * (t.stage - 1)) * (t.tech.agri ^ 0.6) * E.infraFactor(t)
 		local fish = t.pop * sh.fisher * 1.5
@@ -156,7 +235,7 @@ local function productionOf(t, g, price, w)
 	if not t.produces[g] then return 0 end
 	local n = 0
 	for _ in pairs(t.produces) do n += 1 end
-	local workers = t.pop * (sh.craftsman + sh.laborer * 0.5) / math.max(1, n)
+	local workers = math.min(t.pop * (sh.craftsman + sh.laborer * 0.5), t.bld.workshop * 10) / math.max(1, n)
 	local el = math.clamp((price / basePrice(g)) ^ 0.5, 0.5, 1.6)
 	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5))
 end
@@ -349,12 +428,13 @@ function E.step(w)
 		-- 인구: 로지스틱(식량 균형) + 기아 + 역병
 		local bal = (grainProd + 0.02 * t.grain) / math.max(grainCons, 1)
 		local r = 0.006 * math.clamp((bal - 1) / 0.3, -1, 1) / 365
+		if r > 0 then r = r * math.clamp(t.housingRatio, 0, 1) end
 		if bal >= 1 then r = r * (0.7 + 0.3 * math.clamp(t.prosperity, 0.4, 1.5)) end
 		local starve = 0
 		if t.grain < grainCons * 2 and grainProd < grainCons then
 			starve = 0.002 * (1 - grainProd / math.max(grainCons, 1))
 		end
-		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / (t.tech.medicine ^ 0.5) - (t.stability < 0.3 and 0.0002 or 0))
+		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / (t.tech.medicine ^ 0.5) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0))
 		t.pop = math.max(50, t.pop + d)
 		if d >= 0 then t.births += d else t.deaths += -d end
 		-- 번영도: 1인당 GDP 이동평균 (기준 대비)
@@ -375,7 +455,7 @@ function E.step(w)
 			local b = w.towns[nb.id]
 			local tradeFx = math.min(a.fx.trade, b.fx.trade)
 			local cost = (0.04 + nb.d / 20000 * 0.5) / math.max(tradeFx, 0.3) / (a.tech.sea ^ 0.3)
-			local cap = 0.015 * math.sqrt(a.pop * b.pop) / ((1 + nb.d / 1500) ^ 1.2) * tradeFx * (a.tech.commerce ^ 0.5)
+			local cap = 0.015 * math.sqrt(a.pop * b.pop) / ((1 + nb.d / 1500) ^ 1.2) * tradeFx * (a.tech.commerce ^ 0.5) * (0.7 + 0.3 * math.min(1, a.cov.market or 1))
 			for _, g in ipairs(a.goods) do
 				local pb = b.price[g]
 				if pb then
@@ -408,8 +488,14 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	t.sector.service = gdp * 0.06 * t.stage
 	-- 세금 → 국고 → 투자 (사회기반시설·곡물 비축·치안)
 	local taxRate = 0.08 + 0.02 * (t.tech.gov - 1)
+	taxRate = taxRate * (0.8 + 0.2 * math.min(1, t.cov.hall or 1))
 	local tax = math.clamp(taxRate, 0.05, 0.2) * (gdp + t.sector.trade)
 	t.treasury += tax
+	-- 건설: 세수의 절반을 건축에 쓴다 (국고가 비면 못 짓는다)
+	local bspend = E.stepBuildings(t, math.min(t.treasury, tax * 0.5))
+	t.treasury -= bspend
+	t.housingRatio = E.housingCap(t) / math.max(t.pop, 1)
+	t.unemp = math.clamp(1 - E.jobsCap(t) / math.max(t.pop * 0.6, 1), 0, 0.6)
 	local spend = math.min(t.treasury, tax * 0.9)
 	t.treasury -= spend
 	t.infra = t.infra * 0.9997 + spend * 0.6 / 40 -- 시설 1단위 = 40코인
@@ -423,6 +509,8 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	if t.fx.trade < 0.9 then ds -= 0.001 end
 	local target = math.clamp(0.7 + 0.3 * (t.prosperity - 1), 0.1, 0.95)
 	ds += (target - t.stability) * 0.003
+	ds -= 0.0025 * math.max(0, t.unemp - 0.15) + 0.002 * math.max(0, 0.9 - t.housingRatio)
+	ds += 0.0006 * (math.min(1, t.cov.church or 1) + math.min(1, t.cov.guard or 1) + math.min(1, t.cov.tavern or 1) - 2.4)
 	t.stability = math.clamp(t.stability + ds, 0, 1)
 	t.unrestCd = math.max(0, t.unrestCd - 1)
 	if t.stability < 0.25 and t.unrestCd == 0 then
@@ -434,7 +522,7 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	t.wage = (gdp / math.max(t.pop, 1)) / t.price[E.GRAIN] / t.wageRef
 	-- 기술: 아이디어 생산 ~ sqrt(인구) / 기술^0.6 (케이머), 안정도·교육(통치)에 비례
 	local open = 1 + math.min(1, (t.tradeIn + t.tradeOut) / math.max(gdp, 1))
-	local base = 0.000002 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability)
+	local base = (0.7 + 0.3 * math.min(1, t.cov.school or 1)) * 0.000002 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability)
 	for _, f in ipairs(E.TECH_FIELDS) do
 		local focus = 1
 		if f == "agri" then focus = grainCons > grainProd and 1.6 or 1
@@ -529,11 +617,36 @@ function E.facilities(t)
 end
 
 -- 마을 외형: 보이는 주민 수와 건물 크기
+-- 구역: 큰 도시일수록 기능별로 나뉜다. 인구·집 수가 구역별로 배분된다(통계만, 인스턴스 아님).
+local DISTRICTS = {
+	{ id = "home", name = "주거구", share = 0.55, minStage = 1 },
+	{ id = "market", name = "시장구", share = 0.12, minStage = 2 },
+	{ id = "harbor", name = "항만구", share = 0.12, minStage = 2 },
+	{ id = "craft", name = "공방구", share = 0.13, minStage = 3 },
+	{ id = "civic", name = "관청구", share = 0.05, minStage = 4 },
+	{ id = "slum", name = "빈민가", share = 0.03, minStage = 4 },
+}
+function E.districts(t)
+	local list, total = {}, 0
+	for _, d in ipairs(DISTRICTS) do
+		if t.stage >= d.minStage then table.insert(list, d); total += d.share end
+	end
+	local out = {}
+	local slump = math.clamp((1 - t.prosperity) * 0.5, 0, 0.15) -- 불황이면 빈민가가 커진다
+	for _, d in ipairs(list) do
+		local sh = d.share / total
+		if d.id == "slum" then sh += slump elseif d.id == "home" then sh -= slump end
+		table.insert(out, { id = d.id, name = d.name, pop = math.floor(t.pop * sh), houses = math.floor(t.bld.house * sh + 0.5) })
+	end
+	return out
+end
+
 function E.visual(t)
-	local residents = math.clamp(math.floor(t.pop / 220), 6, 60)
+	-- 보이는 주민은 대표(표본)만: 인구가 커질수록 로그로 늘어 최대 60명. 한 명이 perNpc 명을 대표한다.
+	local residents = math.clamp(math.floor(6 + 14 * math.log(math.max(t.pop, 300) / 300, 10) * 1.6), 6, 60)
 	local scale = 0.8 + 0.08 * t.stage + 0.1 * math.clamp(t.prosperity - 1, -0.5, 0.5)
-	return { stage = t.stage, name = E.STAGE_NAMES[t.stage], residents = residents, buildingScale = scale,
-		houses = math.clamp(math.floor(t.pop / 90), 8, 120), mood = t.prosperity >= 1.1 and "boom" or (t.prosperity < 0.8 and "slump" or "steady") }
+	return { stage = t.stage, name = E.STAGE_NAMES[t.stage], residents = residents, perNpc = math.floor(t.pop / residents), districts = E.districts(t), buildingScale = scale,
+		houses = math.floor(t.bld.house + 0.5), mood = t.prosperity >= 1.1 and "boom" or (t.prosperity < 0.8 and "slump" or "steady") }
 end
 
 -- 집계: kind = "world" | "region" | "country" | "town"
