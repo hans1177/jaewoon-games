@@ -497,7 +497,10 @@ function FieldScene.start(opts)
 		else
 			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
 		end
-		local pos = ORIGIN + scatter(36)
+		-- 시작 지점 앞쪽 부채꼴(30~46 스터드)에 세운다: 맵 끝까지 걸어가지 않아도 바로 싸움이 붙는다
+		local fanA = rng:NextNumber(-0.95, 0.95)
+		local fanR = if isBoss then 52 else rng:NextNumber(30, 46)
+		local pos = ORIGIN + Vector3.new(math.sin(fanA) * fanR, 0, (half - 14) - math.cos(fanA) * fanR)
 		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
