@@ -94,6 +94,9 @@ return function(D, S)
 				if table.find(discs, node.disc) and K.status(state, node) == "ready" then
 					state.reported[node.id] = true
 					progressed = true
+					if S.Econ and S.Econ.teach then
+						S.Econ.teach(state, state.portId, node.disc, S.Pace.RARITY_DAYS[D.Cards.ById[node.id] and D.Cards.ById[node.id].rarity or "Common"] or 1)
+					end
 					paceDays += S.Pace.RARITY_DAYS[D.Cards.ById[node.id] and D.Cards.ById[node.id].rarity or "Common"] or 1
 					local card = D.Cards.ById[node.id]
 					local fame = FAME[card and card.rarity or "Common"] or 3

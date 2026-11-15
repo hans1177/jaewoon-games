@@ -59,6 +59,7 @@ local D = {
 	WonderScenes = require(Shared:WaitForChild("WonderScenes")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
+	Economy = require(Shared:WaitForChild("Economy")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
@@ -208,6 +209,7 @@ local function reply(state, ok, message)
 	if state then
 		S.History.tick(state)
 		S.Stock.tick(state)
+		S.Econ.advance(state)
 		local news = S.World.tick(state)
 		for _, m in S.Diplomacy.tick(state) do
 			table.insert(news, m)

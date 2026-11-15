@@ -6,15 +6,24 @@ return function(D, S)
 	local handlers = {}
 	local MAX_AMOUNT = 20
 
-	local function parseAmount(value)
+	-- 한 번 주문 상한: 교역 경험이 오를수록 커진다 (시뮬이 없으면 20)
+	local function orderCap(state)
+		return if S.Econ and S.Econ.orderCap then S.Econ.orderCap(state) else MAX_AMOUNT
+	end
+
+	local function parseAmount(value, state)
 		if type(value) ~= "number" or value ~= value then
 			return nil
 		end
 		local n = math.floor(value)
-		if n < 1 or n > MAX_AMOUNT then
+		if n < 1 or n > orderCap(state) then
 			return nil
 		end
 		return n
+	end
+
+	local function limits(state, goodId)
+		return S.Econ and S.Econ.limits and S.Econ.limits(state, state.portId, goodId)
 	end
 
 	-- 국가 우호도: 그 나라 항구에서 거래할수록 오른다. 우호도 100이면 관세 우대로 되파는 비율 +3%.
@@ -47,9 +56,13 @@ return function(D, S)
 	end
 
 	function handlers.Buy(state, p, ctx)
-		local goodId, amount = p.goodId, parseAmount(p.amount)
+		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
 			return false, "잘못된 요청"
+		end
+		local lim = limits(state, goodId)
+		if lim and amount > lim.supply then
+			return false, if lim.supply <= 0 then "이 항구에 팔 물건이 없어요. 생산될 때까지 기다려 보세요" else string.format("이 항구 재고는 %d개뿐이에요", lim.supply)
 		end
 		if amount > S.State.cargoCapacity(state) - S.State.cargoUsed(state) then
 			return false, "화물칸이 부족해요"
@@ -76,6 +89,7 @@ return function(D, S)
 		state.basis[goodId] = (basis * owned + total) / (owned + amount)
 		state.cargo[goodId] = owned + amount
 		ctx.market:set(state.portId, goodId, mult)
+		if lim then S.Econ.take(state, state.portId, goodId, amount) end
 		state.harborTrade = state.harborTrade or {}
 		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + amount
 		noteBook(state, ctx, goodId)
@@ -110,13 +124,17 @@ return function(D, S)
 	end
 
 	function handlers.Sell(state, p, ctx)
-		local goodId, amount = p.goodId, parseAmount(p.amount)
+		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
 			return false, "잘못된 요청"
 		end
 		local owned = state.cargo[goodId] or 0
 		if owned < amount then
 			return false, "가진 수량이 부족해요"
+		end
+		local lim = limits(state, goodId)
+		if lim and amount > lim.absorb then
+			return false, if lim.absorb <= 0 then "이 항구는 이 물건이 넘쳐서 더 사지 않아요. 다른 항구에 팔아 보세요" else string.format("이 항구는 지금 %d개까지만 사줘요", lim.absorb)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
@@ -132,6 +150,7 @@ return function(D, S)
 		state.coins += revenue
 		S.State.removeCargo(state, goodId, amount)
 		ctx.market:set(state.portId, goodId, mult)
+		if lim then S.Econ.give(state, state.portId, goodId, amount) end
 
 		local msgs = { string.format("%s %d개 판매 (+%d)%s", D.Ports.Goods[goodId].name, amount, revenue, if tariff > 0 then string.format(" · 관세 -%d", tariff) else "") }
 		do
@@ -157,7 +176,7 @@ return function(D, S)
 
 	-- 암시장: 관세 없이 10% 더 받지만 들키면 압수·벌금. 우호도가 높을수록 덜 들킨다.
 	function handlers.Smuggle(state, p, ctx)
-		local goodId, amount = p.goodId, parseAmount(p.amount)
+		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
 			return false, "잘못된 요청"
 		end

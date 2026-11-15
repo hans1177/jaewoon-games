@@ -6,7 +6,11 @@
   "mood": "bright",
   "lookPolicy": {
     "enabled": true,
-    "allow": ["storybook", "cozy", "bright-adventure"],
+    "allow": [
+      "storybook",
+      "cozy",
+      "bright-adventure"
+    ],
     "allowAuto": true,
     "brightOnly": true
   },
@@ -76,6 +80,56 @@
           ]
         }
       ]
+    },
+    "town": {
+      "label": "마을 경제 분위기",
+      "tiers": [
+        {
+          "tier": 1,
+          "name": "기본 마을",
+          "requires": []
+        },
+        {
+          "tier": 2,
+          "name": "호황·불황 색조(경제 시뮬 연동)",
+          "requires": [],
+          "features": [
+            "mood"
+          ]
+        },
+        {
+          "tier": 3,
+          "name": "승인된 건물 메시 변형(발전 단계별)",
+          "requires": [
+            "approved-building-meshes"
+          ]
+        }
+      ]
+    },
+    "goods": {
+      "label": "교역품 정보",
+      "tiers": [
+        {
+          "tier": 1,
+          "name": "기본 시세 표시",
+          "requires": []
+        },
+        {
+          "tier": 2,
+          "name": "품귀·풍부 표시(경제 시뮬 연동)",
+          "requires": [],
+          "features": [
+            "scarcity"
+          ]
+        },
+        {
+          "tier": 3,
+          "name": "승인된 교역품 아이콘 이미지",
+          "requires": [
+            "approved-goods-icons"
+          ]
+        }
+      ]
     }
   },
   "registries": [
@@ -84,6 +138,8 @@
   "approvalMatch": {
     "approved-npc-outfit-items": "shirt|pants|tunic|cloth|outfit|robe|armor|coat",
     "approved-npc-hair-hat-meshes": "hair|hat|helm|cap|crown|hood|tricorn",
-    "approved-port-prop-meshes": "crate|barrel|rope|dock|pier|lantern|cargo|anchor|sack|cart"
+    "approved-port-prop-meshes": "crate|barrel|rope|dock|pier|lantern|cargo|anchor|sack|cart",
+    "approved-building-meshes": "house|building|cottage|tower|warehouse|shop|market|church",
+    "approved-goods-icons": "icon|goods|cargo-icon|trade-icon"
   }
 }

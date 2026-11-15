@@ -4648,6 +4648,18 @@ local function closeTradeHall()
 	main.Visible = true
 end
 
+-- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
+local ladderFeatures = nil
+local function ladderHas(cat, name)
+	if ladderFeatures == nil then
+		ladderFeatures = {}
+		local ok, data = pcall(function() return require(ReplicatedStorage.Shared:WaitForChild("VisualLadderState", 5)) end)
+		if ok and typeof(data) == "table" and data.Features then ladderFeatures = data.Features end
+	end
+	local list = ladderFeatures[cat]
+	return list ~= nil and table.find(list, name) ~= nil
+end
+
 local function openTradeHall()
 	Sfx.facilityCue("trade")
 	closeTradeHall()
@@ -4920,12 +4932,12 @@ local function openTradeHall()
 			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 17, INK, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
 			nm.Position = UDim2.fromOffset(70, 8)
 			nm.Size = UDim2.new(1, if g.tag ~= "" then -126 else -80, 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", (function()
+			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", if g.supply then " · 재고 " .. g.supply else "", (function()
 				local best = view.compare and view.compare[g.id] and view.compare[g.id][1]
 				return if best and best.name then (if best.memory then string.format(" · 기억: %s %d", best.name, best.sell) else " · 추천: " .. best.name) else ""
 			end)()), 13, INK_SOFT, false)
@@ -4935,7 +4947,9 @@ local function openTradeHall()
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			-- 바로 사고팔기: 수량 고르는 화면 없이 한 번에
 			local ub = unitBuyOf(g)
-			local canBuy = math.min(free0, math.floor(p.coins / ub))
+			local oc = view.orderCap or 20
+			local canBuy = math.min(free0, math.floor(p.coins / ub), oc, g.supply or oc)
+			local canSell = math.min(g.owned, oc, g.absorb or oc)
 			local bar = Instance.new("Frame")
 			bar.BackgroundTransparency = 1
 			bar.Position = UDim2.fromOffset(70, 62)
@@ -4951,8 +4965,8 @@ local function openTradeHall()
 			end
 			quick("구매 1", COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = 1 }) end)
 			quick("구매 5", COLORS.gold, canBuy >= 5, function() call("Buy", { goodId = g.id, amount = 5 }) end)
-			quick(string.format("일괄 구매 %d", math.min(canBuy, 20)), COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = math.min(canBuy, 20) }) end)
-			quick(string.format("판매 %d", math.min(g.owned, 20)), COLORS.green, g.owned > 0, function() call("Sell", { goodId = g.id, amount = math.min(g.owned, 20) }) end)
+			quick(string.format("일괄 구매 %d", canBuy), COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = canBuy }) end)
+			quick(string.format("판매 %d", canSell), COLORS.green, canSell >= 1, function() call("Sell", { goodId = g.id, amount = canSell }) end)
 			if g.tag ~= "" then
 				local badge = Instance.new("TextLabel")
 				badge.Text = g.tag
@@ -7885,11 +7899,12 @@ syncScene = function()
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(eco.sim and (eco.sim.stage .. "_" .. math.floor(eco.sim.residents / 4)) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
+	workspace:SetAttribute("PortMood", eco.sim and eco.sim.mood or "steady")
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
@@ -7897,6 +7912,7 @@ syncScene = function()
 		construction = construction,
 		econ = econKind,
 		econIndex = eco.index,
+		sim = eco.sim,
 		unemployment = eco.unemployment,
 		vacancy = eco.vacancy,
 		migration = eco.migration,

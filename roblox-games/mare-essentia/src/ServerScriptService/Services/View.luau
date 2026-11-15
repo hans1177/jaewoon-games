@@ -92,6 +92,7 @@ return function(D, S)
 			end
 		end
 		view.goods = {}
+		view.orderCap = S.Econ.orderCap(state)
 		local lv0 = D.Harbor.effLevel(D.Harbor.level(state.harbor[port.id] or 0), S.Knowledge.techSum(state, port.id))
 		local rid0 = D.Regions.of(port).id
 		local yr0 = state.startYear + math.floor(state.day / 365)
@@ -115,6 +116,9 @@ return function(D, S)
 				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev),
 				upgraded = S.Knowledge.goodsMult(state, goodId) > 1.001 or nil,
 				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
+				scarcity = S.Econ.scarcity(state, port.id, goodId),
+				supply = (S.Econ.limits(state, port.id, goodId) or {}).supply,
+				absorb = (S.Econ.limits(state, port.id, goodId) or {}).absorb,
 				owned = state.cargo[goodId] or 0,
 			})
 		end
@@ -681,6 +685,7 @@ return function(D, S)
 				regime = { id = rg.id, name = rg.name, kind = rg.kind, note = rg.note, price = rg.price },
 				portType = D.Harbor.portType(port.produces),
 				economy = S.Harbor.economyOf(state, port.id),
+				sim = S.Econ.town(state, port.id),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,

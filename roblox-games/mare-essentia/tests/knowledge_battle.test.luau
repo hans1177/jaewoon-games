@@ -56,6 +56,7 @@ local D = {
 	RoomClock = require("./Shared/RoomClock"),
 	WonderScenes = require("./Shared/WonderScenes"),
 	PortBuildings = require("./Shared/PortBuildings"),
+	Economy = require("./Shared/Economy"),
 }
 local Registry = require("./Services/Registry")(D)
 local S = Registry.S

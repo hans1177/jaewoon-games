@@ -2282,6 +2282,9 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 5) 움직임: 일하는 주민(직업별 모션)과 골목을 오가는 주민
 	spawnJobs(folder, info, rng, lvl, walkers, key)
 	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
+	if info.sim and type(info.sim.residents) == "number" then
+		wanderers = math.clamp(math.floor(info.sim.residents / 5), 4, 14) -- 보이는 주민 수 = 인구 규모
+	end
 	for i = 1, wanderers do
 		local sideZ = ({ 38, -38, 57, -57, 73, -73, 87, -87 })[(i - 1) % 8 + 1]
 		local v = villager(folder, Vector3.new(rng:NextNumber(-140, -30), 0, sideZ + rng:NextNumber(-0.8, 0.8)), 0, Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(50, 150)), rng)
@@ -2618,6 +2621,10 @@ function PortScene.build(info, onFacility)
 	local style = if culture and STYLE[culture] then STYLE[culture] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
+	-- 실물경제 시뮬의 발전 단계가 있으면 투자 단계와 평균해 마을 외형을 정한다 (인구·번영이 외형을 키운다)
+	if info.sim and type(info.sim.stage) == "number" then
+		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
+	end
 	houseTier = sceneLevel
 	currentKey = styleKeyOf(style)
 	currentYear = year
