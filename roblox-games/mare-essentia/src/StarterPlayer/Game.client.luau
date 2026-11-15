@@ -2213,7 +2213,7 @@ do
 	local function layoutBubble()
 		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
 		local compact = width < 610
-		-- 오른쪽 위: 시설 6개 한 줄, 그 아래 시스템 4개를 같은 칸(오른쪽 4칸)에 맞춰 둔다.
+		-- 오른쪽 위: 시설 6개 한 줄, 그 아래 시스템 5개를 같은 칸(오른쪽 4칸)에 맞춰 둔다.
 		local CW, CH, GAP = 44, 58, 4
 		local cols = if compact then 3 else 6
 		dockGrid.FillDirectionMaxCells = cols
@@ -2223,7 +2223,7 @@ do
 		local dockH = rows * CH + (rows - 1) * GAP
 		dock.Position = UDim2.new(1, -8, 0, 6)
 		dock.Size = UDim2.fromOffset(cols * CW + (cols - 1) * GAP, dockH)
-		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "ViewToggle" }
+		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "JournalButton", "ViewToggle" } -- 저널도 같은 칸에 맞춘다 (빠지면 혼자 제자리에 남아 줄이 어긋난다)
 		for i, n in sysOrder do
 			local b = hudTop:FindFirstChild(n)
 			if b then
@@ -2238,7 +2238,7 @@ do
 		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
 		local left = if compact then 8 else 282
 		local right = if compact then 148 else 304
-		local bubbleWidth = math.clamp(width - left - right, 1, 560)
+		local bubbleWidth = math.clamp(width - left - right, 1, 760)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
@@ -2277,12 +2277,12 @@ local bubbleNext = bubbleLabel(4, 15, COLORS.muted)
 -- 동료 조언 말풍선의 행동 버튼: 누르면 그 화면(조선소·교역소 등)으로 바로 간다
 local function bubbleButton(order, color)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, 0, 0, 42)
+	b.Size = UDim2.new(1, 0, 0, 56)
 	b.LayoutOrder = order
 	b.BackgroundColor3 = color
 	b.TextColor3 = Color3.fromRGB(250, 246, 235)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 17
+	b.TextSize = 22
 	b.ZIndex = 22
 	b.AutoButtonColor = true
 	b.Visible = false
@@ -2296,7 +2296,7 @@ H.bubbleSkip = bubbleButton(6, Color3.fromRGB(96, 96, 104))
 do
 	local textSizes = {
 		[H.hudName] = 16, [H.hudCoin] = 16, [H.hudPort] = 15, [H.hudShip] = 14,
-		[H.bubbleWho] = 19, [H.bubbleLine] = 18, [H.bubbleAdvice] = 17, [bubbleNext] = 15,
+		[H.bubbleWho] = 26, [H.bubbleLine] = 24, [H.bubbleAdvice] = 22, [bubbleNext] = 19, -- 시작 직후 길잡이가 한눈에 읽히도록 크게
 	}
 	local function updateSize()
 		local extra = if player:GetAttribute("LargeHudText") then 3 else 0
@@ -2367,6 +2367,10 @@ local function refreshBubble()
 	bubbleToken += 1
 	local token = bubbleToken
 	bubble.Visible = true
+	-- 초반 길잡이(g_...)는 사라지지 않는다: 가기·알겠어요를 누르거나 말풍선을 눌러야 닫힌다
+	if counsel and string.sub(counsel.id, 1, 2) == "g_" then
+		return
+	end
 	task.delay(if counsel then 40 elseif first then 16 else 10, function()
 		if bubbleToken == token then
 			bubble.Visible = false
