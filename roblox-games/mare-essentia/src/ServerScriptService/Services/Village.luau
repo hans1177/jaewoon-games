@@ -71,6 +71,18 @@ return function(D, S)
 		return out, level
 	end
 
+	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
+	V.Districts = {
+		{ id = "wharf", name = "부두 구역", minLevel = 1, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
+		{ id = "market", name = "시장 구역", minLevel = 1, cats = { "food", "industry" }, summary = "장터와 여관이 있는 마을 한가운데." },
+		{ id = "homes", name = "주거 구역", minLevel = 2, cats = { "home", "cloth" }, summary = "집과 직조·염색 공방이 늘어선 골목." },
+		{ id = "workshops", name = "공방 구역", minLevel = 3, cats = { "industry" }, summary = "대장간, 가마, 조선소가 자리 잡은 곳." },
+		{ id = "faith", name = "신앙 구역", minLevel = 3, cats = { "public" }, summary = "성당·사원·모스크와 묘지가 있는 구역." },
+		{ id = "civic", name = "행정 구역", minLevel = 4, cats = { "public" }, summary = "시청, 재판소, 세관이 모인 중심가." },
+		{ id = "academy", name = "학술 구역", minLevel = 5, cats = { "public" }, summary = "학교, 도서관, 인쇄소, 천문대가 있는 구역." },
+		{ id = "suburb", name = "교외 신도시", minLevel = 6, cats = { "home", "food" }, summary = "성벽 밖으로 넓어진 새 주택가와 농장." },
+	}
+
 	-- 항구별 발전도: 항구 투자 레벨 5점 + 지은 건물 단계 3점 + 항구 학문 기술 단계 2점 + 특수 건축물 4점
 	local PORT_LEVEL_AT = { 0, 8, 20, 40, 70, 110 }
 	local TECH_STEPS = { 6, 16, 32, 60 }
@@ -97,7 +109,16 @@ return function(D, S)
 		for i, need in PORT_LEVEL_AT do
 			if score >= need then level = i end
 		end
+		local opened, nextD = {}, nil
+		for _, d in V.Districts do
+			if level >= d.minLevel then
+				table.insert(opened, d.name)
+			elseif not nextD then
+				nextD = d
+			end
+		end
 		return {
+			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
 			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
 			nextAt = PORT_LEVEL_AT[level + 1],

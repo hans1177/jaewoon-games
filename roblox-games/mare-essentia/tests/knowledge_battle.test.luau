@@ -719,6 +719,7 @@ do
 	stPD.portTech = { london = { astronomy = 20 } }
 	local d1 = S.Village.portDev(stPD, "london")
 	check("항구 발전도: 투자·건물·기술·특수 건축물이 점수에 합산된다", d1.score == d1.harbor * 5 + 3 * 3 + 2 * 2 + 4 and d1.stages == 3 and d1.tech == 2 and d1.landmarks == 1, tostring(d1.score))
+	check("마을 구역: 레벨에 따라 구역이 열린다", #d0.districts == 2 and #d1.districts >= 2 and S.Village.Districts[#S.Village.Districts].minLevel == 6)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
