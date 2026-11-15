@@ -2041,12 +2041,14 @@ function VoyageScene.play(info)
 		if camera.CameraType ~= Enum.CameraType.Scriptable then
 			camera.CameraType = Enum.CameraType.Scriptable
 		end
-		camera.FieldOfView = 66 + fovBoost
-		local sway = math.sin(t * 0.25) * 0.9
-		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-54, 19, 0)
+		camera.FieldOfView = 70 + fovBoost
+		-- 수동 항해: 카메라는 배 정중앙 바로 뒤에 고정하고(좌우 회전 없음), 바로 앞을 본다.
+		-- 고리가 화면 가운데에서 정면으로 다가오고, 배를 좌우로 움직여 구멍에 맞춘다.
+		local sway = 0
+		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-36, 13, 0)
 		shakeAmp *= math.max(0, 1 - dt * 4)
 		local shakeOff = Vector3.new(math.sin(t * 53) * shakeAmp, math.sin(t * 67) * shakeAmp, 0)
-		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
+		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), (CFrame.new(pos) * CFrame.Angles(0, yaw, 0) * CFrame.new(46, 6 + math.sin(t * 1.3 + 0.6) * 0.3, 0)).Position)
 		camera.CFrame = camera.CFrame * CFrame.Angles(0, 0, bankRoll * 0.55)
 		ui(k, t)
 
