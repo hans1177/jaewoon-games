@@ -4423,6 +4423,31 @@ function RENDERERS.status()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
+	if view.village then
+		add(function() return mkHeader(content, "마을 발전 (학문을 이해할수록 자라요)") end)
+		H.statStrip({
+			{ "마을", string.format("Lv.%d %s", view.village.level, view.village.name), tone = "key" },
+			{ "들어선 건물", string.format("%d/%d", view.village.built, view.village.total), tone = "key" },
+			{ "다음 단계", if view.village.nextAt then string.format("학문 점수 %d/%d", view.village.score, view.village.nextAt) else "최고 단계", tone = "key" },
+		})
+		add(function()
+			local ICON = { food = "harbor", cloth = "trade", home = "yard", industry = "tech", public = "board" }
+			local items = {}
+			for _, c in view.village.cats do
+				table.insert(items, { icon = ICON[c.id] or "map", title = c.name, sub = string.format("%d / %d", c.built, c.total) })
+			end
+			return H.tileGrid(items, content, 150, 110)
+		end)
+		if #view.village.discs > 0 then
+			add(function()
+				local parts = {}
+				for _, d in view.village.discs do
+					table.insert(parts, string.format("%s %d단계(%s)", d.name, d.tier, d.tierName))
+				end
+				return mkLabel(content, "발전한 학문  " .. table.concat(parts, " · "), 15, COLORS.muted, false)
+			end)
+		end
+	end
 	add(function() return mkHeader(content, "설정") end)
 	add(function()
 		local manualOn = player:GetAttribute("ManualHelm") ~= false

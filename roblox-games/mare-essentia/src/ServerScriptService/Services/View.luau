@@ -657,6 +657,7 @@ return function(D, S)
 		view.tavern = S.Tavern.view(state)
 		view.tavernQ = S.Tavern.questView(state)
 		view.chron = S.Chronicle.view(state)
+		view.village = S.Village.view(state)
 		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
 		state._scenes = nil
 		view.bosses = {}
