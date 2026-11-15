@@ -3583,7 +3583,8 @@ function H.walletBar(mode)
 					n += 1
 				end
 			end
-			right = mkButton(f, if n > 0 then string.format("의뢰 납품\n%d건", n) else "납품할\n의뢰 없음", COLORS.green, UDim2.fromOffset(86, 54), function()
+			-- 납품할 퀘스트가 없을 땐 버튼 자체를 숨겨 화면을 비운다
+			right = if n == 0 then nil else mkButton(f, string.format("의뢰 납품\n%d건", n), COLORS.green, UDim2.fromOffset(86, 54), function()
 				task.spawn(function()
 					for _, q in view.quests.active do
 						if q.kind == "deliver" and q.progress >= q.amount then
@@ -3595,8 +3596,10 @@ function H.walletBar(mode)
 		else
 			right = mkButton(f, if (sy.missing or 0) > 0 then string.format("%s\n%d", if sy.field then "응급 수리" else "수리", sy.repairTotal) else "선체 튼튼", COLORS.green, UDim2.fromOffset(86, 54), function() call("Repair") end, (sy.missing or 0) > 0)
 		end
-		right.AnchorPoint = Vector2.new(1, 0)
-		right.Position = UDim2.new(1, -8, 0, 8)
+		if right then
+			right.AnchorPoint = Vector2.new(1, 0)
+			right.Position = UDim2.new(1, -8, 0, 8)
+		end
 		return f
 	end)
 end
