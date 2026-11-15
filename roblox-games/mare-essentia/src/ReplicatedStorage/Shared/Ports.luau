@@ -937,6 +937,51 @@ do
 			end
 		end
 	end
+	-- 모든 가공품은 어딘가에서 만들어지고(원료를 내는 항구) 어딘가에서 팔려야 한다(수요)
+	local producedBy, demandedBy = {}, {}
+	for _, portId in ids do
+		for _, g in Ports[portId].produces do producedBy[g] = (producedBy[g] or 0) + 1 end
+		for _, g in Ports[portId].demands do demandedBy[g] = (demandedBy[g] or 0) + 1 end
+	end
+	for _, r in PC.Recipes do
+		local gid = PC.goodId(r)
+		if Goods[gid] then
+			if not producedBy[gid] then
+				for _, portId in ids do
+					local port = Ports[portId]
+					for _, inp in r.inputs do
+						if table.find(port.produces, inp) and not producedBy[gid] then
+							table.insert(port.produces, gid)
+							producedBy[gid] = 1
+						end
+					end
+				end
+			end
+			-- 수요: 원료를 사들이는 항구 가운데 그 가공품을 만들지 않는 곳 (최대 6곳), 없으면 앞쪽 3곳
+			local want = 0
+			for _, portId in ids do
+				local port = Ports[portId]
+				if want < 6 and not table.find(port.produces, gid) and not table.find(port.demands, gid) then
+					for _, inp in r.inputs do
+						if table.find(port.demands, inp) then
+							table.insert(port.demands, gid)
+							want += 1
+							break
+						end
+					end
+				end
+			end
+			if want == 0 then
+				for _, portId in ids do
+					local port = Ports[portId]
+					if want < 3 and not table.find(port.produces, gid) and not table.find(port.demands, gid) then
+						table.insert(port.demands, gid)
+						want += 1
+					end
+				end
+			end
+		end
+	end
 end
 
 return {
