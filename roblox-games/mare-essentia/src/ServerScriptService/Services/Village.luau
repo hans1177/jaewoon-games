@@ -71,6 +71,53 @@ return function(D, S)
 		return out, level
 	end
 
+	-- 직업군: 항구 발전 레벨이 오를수록 마을에 새 직업이 생긴다 (disc = 연결 학문)
+	V.Jobs = {
+		{ name = "어부", minLevel = 1, disc = "zoology" },
+		{ name = "농부", minLevel = 1, disc = "agronomy" },
+		{ name = "뱃사공", minLevel = 1 },
+		{ name = "짐꾼", minLevel = 1 },
+		{ name = "행상", minLevel = 1 },
+		{ name = "대장장이", minLevel = 1, disc = "metallurgy" },
+		{ name = "주점 주인", minLevel = 1 },
+		{ name = "직조공", minLevel = 2, disc = "textiles" },
+		{ name = "제빵사", minLevel = 2, disc = "cooking" },
+		{ name = "석공", minLevel = 2, disc = "mineralogy" },
+		{ name = "목수", minLevel = 2, disc = "architecture" },
+		{ name = "무두장이", minLevel = 2, disc = "chemistry" },
+		{ name = "약초상", minLevel = 2, disc = "botany" },
+		{ name = "사제", minLevel = 2, disc = "religious_studies" },
+		{ name = "조선공", minLevel = 3, disc = "shipbuilding" },
+		{ name = "도선사", minLevel = 3, disc = "navigation" },
+		{ name = "세관원", minLevel = 3, disc = "law" },
+		{ name = "병사·포수", minLevel = 3, disc = "military_science" },
+		{ name = "양조사", minLevel = 3, disc = "brewing" },
+		{ name = "도공", minLevel = 3, disc = "crafts" },
+		{ name = "서기", minLevel = 3, disc = "linguistics" },
+		{ name = "의사", minLevel = 3, disc = "medicine" },
+		{ name = "은행가", minLevel = 4, disc = "economics" },
+		{ name = "거래소 중개인", minLevel = 4, disc = "commerce" },
+		{ name = "인쇄공", minLevel = 4, disc = "linguistics" },
+		{ name = "신문 기자", minLevel = 4, disc = "linguistics" },
+		{ name = "교사", minLevel = 4, disc = "education" },
+		{ name = "판사", minLevel = 4, disc = "law" },
+		{ name = "소방관", minLevel = 4, disc = "civil_engineering" },
+		{ name = "지도 제작자", minLevel = 4, disc = "cartography" },
+		{ name = "천문학자", minLevel = 5, disc = "astronomy" },
+		{ name = "화학자", minLevel = 5, disc = "chemistry" },
+		{ name = "식물학자", minLevel = 5, disc = "botany" },
+		{ name = "건축가", minLevel = 5, disc = "architecture" },
+		{ name = "출판업자", minLevel = 5, disc = "linguistics" },
+		{ name = "외과의", minLevel = 5, disc = "surgery" },
+		{ name = "학회 서기", minLevel = 5, disc = "philosophy" },
+		{ name = "증기 기관사", minLevel = 6, disc = "mechanical_engineering" },
+		{ name = "은행 총재", minLevel = 6, disc = "economics" },
+		{ name = "박물관 큐레이터", minLevel = 6, disc = "archaeology" },
+		{ name = "신문 편집장", minLevel = 6, disc = "linguistics" },
+		{ name = "대학 교수", minLevel = 6, disc = "education" },
+		{ name = "해운 회사 사장", minLevel = 6, disc = "commerce" },
+	}
+
 	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
 	V.Districts = {
 		{ id = "wharf", name = "부두 구역", minLevel = 1, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
@@ -117,7 +164,15 @@ return function(D, S)
 				nextD = d
 			end
 		end
+		local jobs, newJobs = {}, {}
+		for _, j in V.Jobs do
+			if level >= j.minLevel then
+				table.insert(jobs, j.name)
+				if j.minLevel == level then table.insert(newJobs, j.name) end
+			end
+		end
 		return {
+			jobs = jobs, newJobs = newJobs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
 			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
