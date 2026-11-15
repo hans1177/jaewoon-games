@@ -5428,7 +5428,14 @@ function H.startField(s)
 			table.insert(allyNames, c.name)
 		end
 	end
+	local cardSkills = {}
+	for _, c in (view and view.deck and view.deck.cards) or {} do
+		if c.skill and c.kind ~= "ship" and #cardSkills < 3 then
+			table.insert(cardSkills, { name = c.name, skill = c.skill })
+		end
+	end
 	FieldScene.start({
+		cardSkills = cardSkills,
 		allies = allyNames,
 		name = s.name,
 		nodes = math.clamp(s.days, 1, 3),

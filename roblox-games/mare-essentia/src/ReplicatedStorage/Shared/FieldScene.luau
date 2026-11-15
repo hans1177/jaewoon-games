@@ -796,7 +796,7 @@ function FieldScene.start(opts)
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG, mult, e.ac.state ~= "stagger", stagger)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
@@ -1025,6 +1025,97 @@ function FieldScene.start(opts)
 	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), -74)
 	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), -300)
 	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
+	-- 카드 스킬: 덱의 학문·우군 카드가 둘째 줄 버튼이 된다(최대 3장, 재사용 14초). 효과는 카드의 skill 종류가 정한다.
+	do
+		local cs = opts.cardSkills or {}
+		if #cs == 0 and workspace:GetAttribute("DevCards") then
+			cs = { { name = "의학", skill = "heal" }, { name = "화학", skill = "volley" }, { name = "물리", skill = "armor" } } -- 개발 캡처 전용
+		end
+		local function useCard(key, card)
+			local now = os.clock()
+			if finished or (pl.cd[key] or 0) > now then
+				return
+			end
+			pl.cd[key] = now + 14
+			local ch = player.Character
+			local hp0 = ch and ch:FindFirstChild("HumanoidRootPart")
+			if not hp0 then
+				return
+			end
+			local sk = card.skill
+			local pos = hp0.Position + Vector3.new(0, 2, 0)
+			if sk == "heal" then
+				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
+				say(card.name .. ": 체력 회복")
+				burst(pos, 20, false)
+				refresh()
+			elseif sk == "ward" or sk == "armor" then
+				pl.ward = true
+				say(card.name .. ": 보호막 (다음 공격 1회 무효)")
+				burst(pos, 26, true)
+			elseif sk == "volley" or sk == "snipe" then
+				local list = table.clone(enemies)
+				table.sort(list, function(a, b)
+					return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
+				end)
+				local n = if sk == "snipe" then 1 else 3
+				local hitN = 0
+				for _, e in list do
+					if hitN >= n or (e.root.Position - hp0.Position).Magnitude > 30 * STUD then
+						break
+					end
+					hitN += 1
+					arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
+					strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe")
+				end
+				say(card.name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
+			elseif sk == "rally" then
+				pl.buffUntil = now + 8
+				say(card.name .. ": 8초간 공격력 +30%")
+				burst(pos, 26, true)
+			elseif sk == "luck" then
+				pl.stamina = AC.STAMINA_MAX
+				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.1)
+				say(card.name .. ": 행운! 기력 가득")
+				burst(pos, 24, true)
+				refresh()
+			else
+				local n = 0
+				for _, e in enemies do
+					if (e.root.Position - hp0.Position).Magnitude <= 14 * STUD and not e.ac.def.boss then
+						e.ac.stagger = 1.5
+						n += 1
+					end
+				end
+				say(card.name .. (if n > 0 then ": 적의 움직임을 읽었다!" else ": 주변에 적이 없다"))
+				burst(pos, 22, false)
+			end
+		end
+		for i, card in cs do
+			if i > 3 then
+				break
+			end
+			local key = "card" .. i
+			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(70, 70), UDim2.new(1, -74 - (i - 1) * 76, 0.5, 156), Vector2.new(0.5, 0.5))
+			b.TextSize = 14
+			b.Activated:Connect(function()
+				useCard(key, card)
+			end)
+			skillBtns[key] = { btn = b, label = card.name }
+			table.insert(conns, UserInputService.InputBegan:Connect(function(input, processed)
+				if not processed and not finished and input.KeyCode == (if i == 1 then Enum.KeyCode.One elseif i == 2 then Enum.KeyCode.Two else Enum.KeyCode.Three) then
+					useCard(key, card)
+				end
+			end))
+		end
+		table.insert(conns, RunService.Heartbeat:Connect(function()
+			local dev = workspace:GetAttribute("DevCardSkill")
+			if dev and cs[dev] then
+				workspace:SetAttribute("DevCardSkill", nil)
+				useCard("card" .. dev, cs[dev])
+			end
+		end))
+	end
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		AC.regen(pl, 1 / 60)
@@ -1136,7 +1227,11 @@ function FieldScene.start(opts)
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
-				if hit then
+				if hit and pl.ward then
+					pl.ward = false
+					say("보호막이 공격을 막았다!")
+					burst(hrp.Position + Vector3.new(0, 2, 0), 24, true)
+				elseif hit then
 					local dealt, parried = AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)
 					if parried then
 						say("완벽 방어! 반격 기회")
