@@ -1802,9 +1802,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elapsed += math.min(dt, 0.1)
 				local focused = art.Parent and art.Parent:GetAttribute("ArtFocused") == true
 				if focused then ensureScene() elseif view then releaseScene() end
-				-- [모션] 확대 도판은 실제 렌더 프레임마다, 나머지 카드는 최대 30fps로 갱신한다.
+				-- [모션] 확대 도판은 실제 렌더 프레임마다, 나머지 카드는 최대 18fps로 갱신한다.
 				-- 실제 갱신율은 기기 성능과 Roblox 렌더링에 따른다.
-				if not focused and elapsed - sampled < 1 / 30 - 0.002 then return end
+				-- 손패 10장이 모두 같이 움직이면 속성 쓰기가 많아 모바일이 느려진다. 확대하지 않은 카드는 18fps면 충분하다.
+				if not focused and elapsed - sampled < 1 / 18 - 0.002 then return end
 				sampled = elapsed
 				local motion = spec.motion or "wind"
 				local wave = math.sin(elapsed * (if motion == "storm" then 3.5 elseif motion == "gallop" then 5.5 else 2.1))
