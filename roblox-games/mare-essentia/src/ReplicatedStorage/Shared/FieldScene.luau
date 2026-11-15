@@ -549,6 +549,8 @@ function FieldScene.start(opts)
 	end)
 
 	local swingKind, swingT0, swingDur = nil, 0, 0
+	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
+	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	local function char3()
@@ -720,6 +722,13 @@ function FieldScene.start(opts)
 			local canon = pfm.canon
 			table.clear(canon)
 			local rootRot = nil
+			do
+				local nowc = os.clock()
+				if nowc < hitStopUntil then
+					swingT0 += nowc - hitStopLast -- 멈춘 시간만큼 휘두르기 시작을 늦춘다
+				end
+				hitStopLast = nowc
+			end
 			if swingKind then
 				local p = (os.clock() - swingT0) / swingDur
 				if p >= 1 then
@@ -1087,7 +1096,13 @@ function FieldScene.start(opts)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 		if away.Magnitude > 0.1 and not e.ac.def.boss then
-			e.model:PivotTo(e.model:GetPivot() + away.Unit * knock)
+			-- 순간이동 대신 짧게 미끄러지듯 밀려난다(0.18초 감속)
+			e.kbVel = away.Unit * (knock / 0.09)
+			e.kbUntil = os.clock() + 0.18
+			e.kbT0 = os.clock()
+		end
+		if not quiet then
+			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -1487,6 +1502,19 @@ function FieldScene.start(opts)
 		b.Activated:Connect(go)
 	end
 	bindPress(attackBtn, useAttack)
+	-- 공격 버튼 주변(약 2배 크기)을 눌러도 공격이 나간다: 손가락이 버튼 바깥으로 살짝 빗나가도 된다
+	do
+		local hit = Instance.new("TextButton")
+		hit.AnchorPoint = attackBtn.AnchorPoint
+		hit.Position = attackBtn.Position
+		hit.Size = UDim2.fromOffset(190, 190)
+		hit.BackgroundTransparency = 1
+		hit.Text = ""
+		hit.AutoButtonColor = false
+		hit.ZIndex = math.max(attackBtn.ZIndex - 1, 0)
+		hit.Parent = gui
+		bindPress(hit, useAttack)
+	end
 
 	local staminaBack = Instance.new("Frame")
 	staminaBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -1740,6 +1768,10 @@ function FieldScene.start(opts)
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
 			local frozen = now < (e.holdUntil or 0)
+			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
+				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
+				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * dtc * 2)
+			end
 			local event, hit = nil, nil
 			if not frozen then
 				event, hit = AC.stepEnemy(e.ac, dtc, dist)
@@ -2117,10 +2149,29 @@ function FieldScene.start(opts)
 				vec = if d.Magnitude > 1 then d.Unit else d
 				knob.Position = UDim2.new(0.5, vec.X * 45, 0.5, vec.Y * 45)
 			end
+			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
+			local homePos = pad.Position
+			local function startAt(input: InputObject)
+				active = input
+				local guiAbs = gui.AbsolutePosition
+				local half = pad.AbsoluteSize.X / 2
+				local vs = workspace.CurrentCamera.ViewportSize
+				local cx = math.clamp(input.Position.X, half + 8, vs.X * 0.5)
+				local cy = math.clamp(input.Position.Y, half + 8, vs.Y - half - 8)
+				pad.Position = UDim2.fromOffset(cx - half - guiAbs.X, cy + half - guiAbs.Y)
+				setFrom(input.Position)
+			end
 			table.insert(conns, pad.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-					active = input
-					setFrom(input.Position)
+				if not active and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
+					startAt(input)
+				end
+			end))
+			table.insert(conns, UIS.InputBegan:Connect(function(input, processed)
+				if active or processed or input.UserInputType ~= Enum.UserInputType.Touch then
+					return
+				end
+				if input.Position.X < workspace.CurrentCamera.ViewportSize.X * 0.5 then
+					startAt(input)
 				end
 			end))
 			table.insert(conns, UIS.InputChanged:Connect(function(input)
@@ -2132,6 +2183,7 @@ function FieldScene.start(opts)
 				if input == active then
 					active, vec = nil, Vector2.zero
 					knob.Position = UDim2.fromScale(0.5, 0.5)
+					pad.Position = homePos
 				end
 			end))
 			table.insert(conns, RunService.Heartbeat:Connect(function()
