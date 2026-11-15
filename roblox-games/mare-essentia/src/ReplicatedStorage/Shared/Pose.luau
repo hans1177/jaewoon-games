@@ -374,7 +374,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		pcall(function()
 			local head = model:FindFirstChild("Head")
 			local neck = model:FindFirstChild("Neck", true)
-			if head and head:IsA("BasePart") and neck and neck:IsA("Motor6D") then
+			if head and head:IsA("BasePart") and neck and (neck:IsA("Motor6D") or neck:IsA("AnimationConstraint")) then
 				local delta = head.Size.Y * 0.3
 				head.Size = head.Size * 1.3
 				neck.C1 = neck.C1 * CFrame.new(0, -delta / 2, 0)
@@ -650,7 +650,7 @@ function Pose.makeR15Action(model, state, progress, t)
 	local A = CFrame.Angles
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
-		if joint and joint:IsA("Motor6D") then
+		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			joint.Transform = cf
 		end
 	end
@@ -718,7 +718,7 @@ function Pose.makeR15Action(model, state, progress, t)
 	local elapsed = if blend.from then math.clamp((blendTime - blend.changedAt) / duration, 0, 1) else 1
 	local eased = elapsed * elapsed * (3 - 2 * elapsed)
 	for _, joint in m do
-		if joint and joint:IsA("Motor6D") then
+		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			if blend.from then
 				joint.Transform = (blend.from[joint] or CFrame.identity):Lerp(joint.Transform, eased)
 			end

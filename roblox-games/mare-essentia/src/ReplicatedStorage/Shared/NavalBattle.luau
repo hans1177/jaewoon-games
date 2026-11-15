@@ -1849,7 +1849,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					actor:PivotTo(actorPivot * CFrame.new(0, jump, -advance + recoil)
 						* CFrame.Angles(if gunshot then 0.16 * impact else 0,
 							turn, if motion == "slash" then -0.13 * impact else 0.022 * wave))
-					if shoulder and shoulder:IsA("Motor6D") then
+					if shoulder and (shoulder:IsA("Motor6D") or shoulder:IsA("AnimationConstraint")) then
 						shoulder.Transform = CFrame.Angles(
 							if attack then -1.08 * impact + 0.28 * prepare
 							elseif motion == "command" then -0.75 * prepare

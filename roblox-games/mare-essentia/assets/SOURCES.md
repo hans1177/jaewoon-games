@@ -1487,3 +1487,6 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `icons/vfx_slash.png` | `slash.png` | `09d9e92bafef8d20d08f58b181bc3daebbe0396afd90cee3e5c7b1a4dff23e49` |
 | `icons/vfx_smoke.png` | `smoke.png` | `288b7a29b659030fe7da333159c641e2325e41e704c05b8c6db1531b59c09897` |
 | `icons/vfx_light.png` | `light.png` | `c9e0e947892b87cb71e110e60d85798810142b11aed154542c50b17dc93033b0` |
+
+## CommonMotion.luau
+- 출처: assets/roblox/common-motion-v1/RobloxCommonMotion.luau (회사 공용 R15 관절 모션, 마력숲과 같은 원본). 수정 없이 복사. 지상 탐험 전투(FieldScene → FieldMotion)에서 사용.
