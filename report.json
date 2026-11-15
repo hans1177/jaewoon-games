@@ -1,159 +1,139 @@
 {
- "sourceRevision": "fc9941509afc1bdd20f63653a5bc4e419d336df0",
+ "sourceRevision": "1d7581e9918ecdc4c154d3d08977c837606ed43a",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 7,
-   "ctx": "Client",
-   "out": "faced 5.831216812133789\ntext"
+   "capture": "01_top",
+   "files": 1
   },
   {
    "step": 8,
-   "capture": "c1_approach",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
-   "step": 9,
-   "ctx": "Client",
-   "out": "attack\ntext"
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
   },
   {
    "step": 11,
-   "capture": "c2_attack",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
    "step": 13,
-   "ctx": "Client",
-   "out": "faced 6.290646553039551\ntext"
+   "capture": "03_street",
+   "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "heavy\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 16,
-   "capture": "c3_heavy",
+   "capture": "04_dock",
    "files": 1
   },
   {
-   "step": 18,
+   "step": 17,
    "ctx": "Client",
-   "out": "spin\ntext"
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
   },
   {
    "step": 20,
-   "capture": "c4_spin",
-   "files": 1
+   "ctx": "Client",
+   "out": "ok\ntext"
   },
   {
    "step": 22,
-   "ctx": "Client",
-   "out": "dash\ntext"
-  },
-  {
-   "step": 24,
-   "capture": "c5_dash",
+   "capture": "06_backstreet",
    "files": 1
   },
   {
-   "step": 25,
+   "step": 23,
    "ctx": "Client",
-   "out": "ready=true err=true table: 0xdce474af59e2cbf1 btns=공격|철수|0.4|6.2|3.1|방어|의학|화학|물리\ntext"
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "MOVE anchored=false moved=16.8 ws=18 mobs=7\ntext"
+   "out": "parts=3649 meshparts=3152 models=3536 houses=16\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "guard\ntext"
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=5\ntext"
   },
   {
    "step": 29,
-   "capture": "c6_guard",
+   "capture": "08_harbor_npc_sparring_01",
    "files": 1
   },
   {
-   "step": 30,
-   "ctx": "Client",
-   "out": "SWORD equipped=true template=true relics=24\ntext"
-  },
-  {
    "step": 31,
-   "ctx": "Client",
-   "out": "ALLIES 2\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "c7_allies",
+   "capture": "08_harbor_npc_sparring_02",
    "files": 1
   },
   {
    "step": 33,
-   "ctx": "Client",
-   "out": "volley\ntext"
-  },
-  {
-   "step": 35,
-   "capture": "c8_cardvolley",
+   "capture": "08_harbor_npc_sparring_03",
    "files": 1
   },
   {
-   "step": 36,
-   "ctx": "Client",
-   "out": "ward\ntext"
+   "step": 35,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
   },
   {
-   "step": 38,
-   "capture": "c9_cardward",
+   "step": 37,
+   "capture": "08_harbor_npc_sparring_05",
    "files": 1
   },
   {
    "step": 39,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=4.013 | ENEMY motors=15 sum=0.007\nME motors=15 sum=4.120 | ENEMY motors=15 sum=0.002\nME motors=15 sum=4.176 | ENEMY motors=15 sum=0.010\nME motors=15 sum=4.170 | ENEMY motors=15 sum=0.014\nME motors=15 sum=4.116 | ENEMY motors=15 sum=0.011\nME motors=15 sum=4.067 | ENEMY motors=15 sum=0.004\ntext"
-  },
-  {
-   "step": 41,
-   "capture": "c10_mobs",
+   "capture": "08_harbor_npc_sparring_06",
    "files": 1
   },
   {
-   "step": 42,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=3.940 | ENEMY motors=15 sum=0.011\nME motors=15 sum=3.902 | ENEMY motors=15 sum=0.003\nME motors=15 sum=3.876 | ENEMY motors=15 sum=0.006\nME motors=15 sum=3.867 | ENEMY motors=15 sum=0.013\nME motors=15 sum=3.875 | ENEMY motors=15 sum=0.014\nME motors=15 sum=3.887 | ENEMY motors=15 sum=0.007\ntext"
+   "step": 41,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
   },
   {
-   "step": 44,
-   "ctx": "Client",
-   "out": "ENEMY d=135 motors=15 sum=0.013\nENEMY d=145 motors=15 sum=0.013\nENEMY d=127 motors=15 sum=0.013\nENEMY d=80 motors=15 sum=0.693\ntext"
-  },
-  {
-   "step": 45,
-   "capture": "c11_mobs2",
+   "step": 43,
+   "capture": "08_harbor_npc_sparring_08",
    "files": 1
   }
  ],
@@ -165,17 +145,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 20,
+  "warningCount": 18,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 46,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 11,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
