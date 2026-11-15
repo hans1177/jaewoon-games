@@ -7079,7 +7079,7 @@ end
 function RENDERERS.quest()
 	H.walletBar("tavern")
 	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
-	local STRAND = { companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
+	local STRAND = { main = "서막", companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
 	local function strandText(q)
 		return (if q.strand then "[" .. STRAND[q.strand] .. "] " else "") .. q.summary .. (if q.story then "\n" .. q.story else "")
 	end

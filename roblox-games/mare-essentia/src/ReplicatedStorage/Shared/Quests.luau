@@ -18,10 +18,11 @@ export type Quest = {
 	disc: string?, -- kind "understand": 이 학문(astronomy/physics/chemistry/art)에서 이해한 지식 수 (없으면 전체)
 	cardId: string?, -- kind "understand_card": 이 지식을 이해해야 달성
 	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
+	nation: string?, -- 이 시작 국가로 시작한 플레이어에게만 보인다 (서막 메인 퀘스트)
 	minAffinity: number?,
 	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
-	strand: string?, -- 스토리 갈래: companion(동료) | history(역사) | person(인물)
+	strand: string?, -- 스토리 갈래: main(서막) | companion(동료) | history(역사) | person(인물)
 	story: string?, -- 왜 이 일을 하는가 (이야기)
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
@@ -513,6 +514,12 @@ do
 	end
 end
 
+-- 서막 메인 퀘스트: 시작 국가별 4장 (PrologueQuests.luau)
+local Prologue = require(script.Parent.PrologueQuests)
+for _, pq in Prologue.Quests do
+	table.insert(Quests, pq :: Quest)
+end
+
 local ById: { [string]: Quest } = {}
 for _, q in Quests do
 	ById[q.id] = q
@@ -542,6 +549,9 @@ local HAND: { [string]: { string } } = {
 	cq_h_new_spain = { "", "은이 마을로 돌아가던 날, 광산 사람들이 길가에 서서 말없이 손을 흔들었다." },
 	cq_h_portugal = { "", "끊겼던 일지의 다음 쪽에 당신의 항해가 이어 적혔다. 아버지의 필체와 나란히." },
 }
+for hid, hand in Prologue.Hand do
+	HAND[hid] = hand
+end
 
 -- 퀘스트 이야기: 단순한 모으기가 아니라 "누가, 왜, 무엇이 걸렸나"가 있는 사연으로 보여 준다.
 -- 직접 쓴 story 가 있으면 그것을 쓰고, 없으면 종류별 사연 틀에서 퀘스트 id 로 정해 고른다 (같은 퀘스트는 늘 같은 사연).

@@ -515,7 +515,7 @@ return function(D, S)
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
 				})
-			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
+			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
 				view.quests.otherPortDeliver += 1
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) then
