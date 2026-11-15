@@ -549,6 +549,8 @@ function FieldScene.start(opts)
 	end)
 
 	local swingKind, swingT0, swingDur = nil, 0, 0
+	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
+	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	local function char3()
@@ -720,6 +722,13 @@ function FieldScene.start(opts)
 			local canon = pfm.canon
 			table.clear(canon)
 			local rootRot = nil
+			do
+				local nowc = os.clock()
+				if nowc < hitStopUntil then
+					swingT0 += nowc - hitStopLast -- 멈춘 시간만큼 휘두르기 시작을 늦춘다
+				end
+				hitStopLast = nowc
+			end
 			if swingKind then
 				local p = (os.clock() - swingT0) / swingDur
 				if p >= 1 then
@@ -1087,7 +1096,13 @@ function FieldScene.start(opts)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 		if away.Magnitude > 0.1 and not e.ac.def.boss then
-			e.model:PivotTo(e.model:GetPivot() + away.Unit * knock)
+			-- 순간이동 대신 짧게 미끄러지듯 밀려난다(0.18초 감속)
+			e.kbVel = away.Unit * (knock / 0.09)
+			e.kbUntil = os.clock() + 0.18
+			e.kbT0 = os.clock()
+		end
+		if not quiet then
+			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -1740,6 +1755,10 @@ function FieldScene.start(opts)
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
 			local frozen = now < (e.holdUntil or 0)
+			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
+				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
+				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * dtc * 2)
+			end
 			local event, hit = nil, nil
 			if not frozen then
 				event, hit = AC.stepEnemy(e.ac, dtc, dist)
