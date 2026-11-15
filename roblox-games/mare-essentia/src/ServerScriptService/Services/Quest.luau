@@ -194,6 +194,8 @@ return function(D, S)
 		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
 		local _, ending = storyOf(quest)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
+		state._scenes = state._scenes or {}
+		table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
@@ -268,6 +270,8 @@ return function(D, S)
 		end
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
 		local hook = storyOf(pick)
+		state._scenes = state._scenes or {}
+		table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
 		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end

@@ -656,6 +656,8 @@ return function(D, S)
 		view.wars, view.war = S.Battle.warView(state)
 		view.tavern = S.Tavern.view(state)
 		view.tavernQ = S.Tavern.questView(state)
+		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
+		state._scenes = nil
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]

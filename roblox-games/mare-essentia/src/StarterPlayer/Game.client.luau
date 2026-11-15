@@ -2524,6 +2524,7 @@ local function call(action, payload)
 		end
 		refreshBubble()
 		if H.checkNewCards then H.checkNewCards() end
+		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
 	end
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
@@ -6403,6 +6404,55 @@ workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
 		end)
 	end
 end)
+
+-- 퀘스트 이야기: 새 의뢰가 일지에 적히거나 끝났을 때, 그 이야기를 대화창 이벤트 씬으로 들려준다 (여러 개면 차례로).
+do
+	local playing = false
+	local pending = {}
+	local function sentences(text)
+		local lines, cur = {}, ""
+		for part in string.gmatch(text, "[^\n]+") do
+			for sent in string.gmatch(part, "[^%.!?]+[%.!?]?%s*") do
+				cur ..= sent
+				if utf8.len(cur) and utf8.len(cur) > 46 then
+					table.insert(lines, (cur:gsub("%s+$", "")))
+					cur = ""
+				end
+			end
+			if cur ~= "" then
+				table.insert(lines, (cur:gsub("%s+$", "")))
+				cur = ""
+			end
+		end
+		if #lines == 0 then lines = { text } end
+		return lines
+	end
+	function H.playQuestScenes(list)
+		for _, sc in list do
+			table.insert(pending, sc)
+		end
+		if playing then return end
+		playing = true
+		task.spawn(function()
+			while #pending > 0 do
+				while inField do task.wait(0.5) end
+				local sc = table.remove(pending, 1)
+				local isStart = sc.kind == "start"
+				local ok = pcall(playStory, {
+					id = "quest_" .. tostring(sc.name), title = tostring(sc.name), chapter = if isStart then "새 이야기" else "이야기의 끝",
+					npc = if isStart then "의뢰인" else "일지", art = "tavern", lines = sentences(tostring(sc.text or "")),
+					choices = { { text = if isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
+					submit = function() return { ok = true, message = if isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" } end,
+				})
+				if ok then
+					task.wait(0.6)
+					while player:WaitForChild("PlayerGui"):FindFirstChild("StoryScene", true) do task.wait(0.4) end
+				end
+			end
+			playing = false
+		end)
+	end
+end
 
 -- 개발 확인용: workspace 속성 DevStory 에 이벤트 id 를 넣으면 그 이야기 장면을 바로 보여 준다(선택해도 저장되지 않는 미리보기)
 workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
