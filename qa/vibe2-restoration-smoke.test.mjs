@@ -34,7 +34,7 @@ test('real Vibe policy compiles owner rules and worker topology, not an always-f
   assert.equal(request.constitution.rules.length,canonical.rules.length);
   assert.equal(request.architectureProjection.fingerprint,topology.fingerprint);
 });
-test('current directive, compact companions, and policy QA can be read together',()=>{
+test('current directive, restored detailed companions, and policy QA can be read together',()=>{
   const ctx=validateSharedWorkerContext({root:ROOT});
   assert.equal(ctx.pass,true);
   assert.equal(ctx.canonicalRoadmapPresent,true);
