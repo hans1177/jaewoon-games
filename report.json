@@ -1,20 +1,20 @@
 {
- "sourceRevision": "70088f8a78d6b6d9b325cfb3c22e2ddc3e090601",
+ "sourceRevision": "1ca20b464a7c1d6669525210ceb5383669ed2dff",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "build ok=true nil\ntext"
   },
   {
    "step": 4,
-   "capture": "amsterdam_L4_top",
-   "files": 1
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 5,
@@ -23,17 +23,17 @@
   },
   {
    "step": 7,
-   "capture": "amsterdam_L4_street",
+   "capture": "01_top",
    "files": 1
   },
   {
    "step": 8,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 10,
-   "capture": "bergen_L3_top",
+   "capture": "02_plaza",
    "files": 1
   },
   {
@@ -43,17 +43,17 @@
   },
   {
    "step": 13,
-   "capture": "bergen_L3_street",
+   "capture": "03_street",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 16,
-   "capture": "zanzibar_L2_top",
+   "capture": "04_dock",
    "files": 1
   },
   {
@@ -63,17 +63,17 @@
   },
   {
    "step": 19,
-   "capture": "zanzibar_L2_street",
+   "capture": "05_aerial",
    "files": 1
   },
   {
    "step": 20,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 22,
-   "capture": "istanbul_L5_top",
+   "capture": "06_backstreet",
    "files": 1
   },
   {
@@ -83,27 +83,57 @@
   },
   {
    "step": 25,
-   "capture": "istanbul_L5_street",
+   "capture": "07_wall",
    "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "parts=3806 meshparts=3273 models=3554 houses=16\ntext"
   },
   {
-   "step": 28,
-   "capture": "lisbon_L1_top",
-   "files": 1
+   "step": 27,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=2.1869404315948486\ntext"
   },
   {
    "step": 29,
-   "ctx": "Client",
-   "out": "ok\ntext"
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
   },
   {
    "step": 31,
-   "capture": "lisbon_L1_street",
+   "capture": "08_harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "capture": "08_harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "capture": "08_harbor_npc_sparring_08",
    "files": 1
   }
  ],
@@ -119,13 +149,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 32,
-  "completedSteps": 32,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 10,
-  "capturedFrames": 10,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
