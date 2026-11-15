@@ -7418,6 +7418,7 @@ H.TAB_ICON = {
 	tech = { "Menu", "tech" }, map = { "Menu", "map" }, explore = { "Menu", "explore" },
 	battle = { "Menu", "battle" }, gwent = { "Relics", "journal-closed" }, war = { "Naval", "ship-large" }, board = { "Menu", "quest" },
 }
+H.TAB_ICON_FLAT = { crew = "menu_crew", gwent = "menu_gwent", cards = "menu_cards", war = "menu_war" }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
@@ -7443,6 +7444,11 @@ function H.renderTabs()
 		end
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
+		-- 3D 소품 대신 다른 탭과 같은 금빛 그림 아이콘이 등록돼 있으면 그것을 쓴다 (미등록이면 기존 표시 유지)
+		local flat = H.TAB_ICON_FLAT[id]
+		if flat and AssetIds["Menu/" .. flat] then
+			ti = { "Menu", flat }
+		end
 		if ti then
 			local icon = modelIcon(b, ti[1], ti[2], nil, 30, TAB_NAME[id])
 			icon.Name = "TabIcon"
