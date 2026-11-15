@@ -691,6 +691,23 @@ do
 	check("경제 건물: 학문·분류·레벨 연결이 맞다 (" .. #EB.List .. "종)", #bad == 0 and #EB.List >= 60)
 end
 
+-- 지역 전술: 같은 문화권 군사학 카드가 한 줄에 모이면 위력이 오른다
+do
+	local B = D.BoardingCards
+	local function unit(id, region, power) return { id = id, name = id, row = "melee", power = power, region = region, knowledge = true } end
+	local function match(list) return { rows = { me = { melee = list, ranged = {} }, foe = { melee = {}, ranged = {} } }, weather = {} } end
+	local solo = match({ unit("a", "europe", 3) })
+	local pair = match({ unit("a", "europe", 3), unit("b", "europe", 3) })
+	local four = match({ unit("a", "europe", 3), unit("b", "europe", 3), unit("c", "europe", 3), unit("d", "europe", 3) })
+	local mixed = match({ unit("a", "europe", 3), unit("b", "east_asia", 3) })
+	check("지역 전술: 혼자면 보너스 없음", B.cardPower(solo, "me", "melee", 1) == 3)
+	check("지역 전술: 같은 지역 동료가 있으면 +1", B.cardPower(pair, "me", "melee", 1) == 4)
+	check("지역 전술: 동료 3장 이상이면 +2", B.cardPower(four, "me", "melee", 1) == 5)
+	check("지역 전술: 다른 지역끼리는 보너스 없음", B.cardPower(mixed, "me", "melee", 1) == 3 and B.cardPower(mixed, "me", "melee", 2) == 3)
+	local anyRegion = match({ unit("a", "any", 3), unit("b", "any", 3) })
+	check("지역 전술: 지역 없음(any) 카드는 제외", B.cardPower(anyRegion, "me", "melee", 1) == 3)
+end
+
 -- 마을 발전: 학문을 이해할수록 마을 레벨과 건물이 늘어난다
 do
 	local stV = S.State.new("england", 1700)
