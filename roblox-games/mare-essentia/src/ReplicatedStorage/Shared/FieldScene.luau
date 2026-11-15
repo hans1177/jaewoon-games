@@ -150,6 +150,12 @@ local function part(parent, size, cf, color, material, shape)
 end
 
 -- 등록된 CC0 모델을 놓는다. 없으면 nil.
+-- 수입 나무·덤불은 질감이 청록색이라, 항구 장면과 같은 색을 곱해 자연스러운 초록·가을색으로 만든다
+local FIELD_TINT = {
+	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
+	tree = Color3.fromRGB(255, 238, 120), ["tree-high"] = Color3.fromRGB(255, 238, 120), ["tree-crooked"] = Color3.fromRGB(255, 238, 120),
+	tree_large = Color3.fromRGB(78, 132, 66), tree_tiny = Color3.fromRGB(84, 138, 70), ["plant-bush"] = Color3.fromRGB(78, 128, 58),
+}
 local function placeModel(parent, kind, asset, bottom, desired, solid)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
@@ -165,6 +171,16 @@ local function placeModel(parent, kind, asset, bottom, desired, solid)
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			local tint = FIELD_TINT[asset]
+			if tint then
+				d.Color = tint
+				pcall(function() (d :: any).UsePartColor = true end)
+				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
+				if sa then sa.Color = tint end
+				for _, ch in d:GetChildren() do
+					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+				end
+			end
 		end
 	end
 	if not has then
