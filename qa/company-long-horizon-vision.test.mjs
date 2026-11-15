@@ -39,9 +39,9 @@ test('consciousness transfer is not claimed as proven or autonomous authority',(
 
 test('all long-term workers remain under verified central security and execution authority',()=>{
   assert.equal(architecture.branches.main.role,'CANONICAL_CODE_AND_MACHINE_POLICY');
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
-  assert.equal(security.enforcement.unverified,'BLOCK');
+  assert.equal(security.containment.unverifiedExternalPayloadMayNotEnterCanonicalLearning,true);
   assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
   assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.neuralExecutionAuthority,false);
   assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.lockPolicyMutationAuthority,false);
