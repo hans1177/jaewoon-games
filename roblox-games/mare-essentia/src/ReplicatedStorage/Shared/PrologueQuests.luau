@@ -1,7 +1,7 @@
 --!strict
 -- 서막 메인 퀘스트: 시작 국가별 4장 (사연 → 길 → 목표 → 학자). 자동 생성: tools/gen_prologue.py 로 만든 뒤 다듬는다.
 -- 시작 국가의 첫 동료와 함께 가는 이야기. nation 이 다르면 보이지 않는다.
-local Q = {}
+local Q: { any } = {}
 local HAND: { [string]: { string } } = {}
 
 table.insert(Q, { id = "pr_england_1", name = "논문에 오르지 못한 이름", summary = "서막 · 이름 없는 숫자들 — 양모 6개를 플리머스에 납품", kind = "deliver", goodId = "wool", portId = "plymouth", amount = 6, nation = "england", strand = "main",

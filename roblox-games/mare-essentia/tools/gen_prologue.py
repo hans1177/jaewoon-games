@@ -65,7 +65,7 @@ GN={'wool': '양모', 'coal': '석탄', 'spice': '향신료', 'cheese': '치즈'
 PN={'london': '런던', 'antwerp': '안트베르펀', 'seville': '세비야', 'venice': '베네치아 공화국', 'lisbon': '리스본', 'rotterdam': '로테르담', 'plymouth': '플리머스', 'la_rochelle': '라로셸', 'porto': '포르투', 'cadiz': '카디스', 'smyrna': '이즈미르', 'mombasa': '몸바사', 'calicut': '캘리컷', 'cochin': '코친', 'canton': '광저우', 'amoy': '샤먼', 'nagasaki': '나가사키', 'osaka': '오사카', 'incheon': '인천', 'campeche': '캄페체'}
 REW = [(300,8,40),(500,12,70),(900,20,120),(1500,35,200)]
 def q(s): return '"'+s.replace('\\','\\\\').replace('"','\\"')+'"'
-out=["--!strict","-- 서막 메인 퀘스트: 시작 국가별 4장 (사연 → 길 → 목표 → 학자). 자동 생성: tools/gen_prologue.py 로 만든 뒤 다듬는다.","-- 시작 국가의 첫 동료와 함께 가는 이야기. nation 이 다르면 보이지 않는다.","local Q = {}","local HAND: { [string]: { string } } = {}",""]
+out=["--!strict","-- 서막 메인 퀘스트: 시작 국가별 4장 (사연 → 길 → 목표 → 학자). 자동 생성: tools/gen_prologue.py 로 만든 뒤 다듬는다.","-- 시작 국가의 첫 동료와 함께 가는 이야기. nation 이 다르면 보이지 않는다.","local Q: { any } = {}","local HAND: { [string]: { string } } = {}",""]
 for d in N:
     prev=None
     for i in range(4):
