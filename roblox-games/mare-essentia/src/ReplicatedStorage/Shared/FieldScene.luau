@@ -943,6 +943,75 @@ function FieldScene.start(opts)
 		end
 	end
 
+	-- 폭발통: 들판 곳곳의 통(Naval/barrel). 공격이 닿으면 터져 주변 적에게 큰 피해를 준다(가까이 있으면 나도 다친다).
+	local barrels: { any } = {}
+	do
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local grp = lib and lib:FindFirstChild("Naval")
+		local tpl = grp and grp:FindFirstChild("barrel")
+		if tpl and tpl:IsA("Model") then
+			for i = 1, 3 do
+				local m = tpl:Clone()
+				m.Name = "FieldBarrel"
+				for _, bp in m:GetDescendants() do
+					if bp:IsA("BasePart") then
+						bp.Anchored = true
+						bp.CanCollide = false
+						bp.CanQuery = false
+						bp.CanTouch = false
+					end
+				end
+				local _, ext = m:GetBoundingBox()
+				local longest = math.max(ext.X, ext.Y, ext.Z)
+				if longest > 0.05 then
+					pcall(function()
+						m:ScaleTo(4 / longest)
+					end)
+				end
+				local p0 = ORIGIN + scatter(20)
+				m.Parent = folder
+				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 2, 0)))
+				local hl = Instance.new("Highlight")
+				hl.FillColor = Color3.fromRGB(255, 90, 40)
+				hl.FillTransparency = 0.75
+				hl.OutlineColor = Color3.fromRGB(255, 160, 60)
+				hl.Parent = m
+				table.insert(barrels, { model = m, pos = p0 + Vector3.new(0, 2, 0) })
+			end
+		end
+	end
+	local function explodeBarrel(b, hrp: BasePart)
+		local idx = table.find(barrels, b)
+		if not idx then
+			return
+		end
+		table.remove(barrels, idx)
+		b.model:Destroy()
+		burst(b.pos, 60, true)
+		sfx("sfx_naval_cannon", 0.9, 1.1)
+		shakeUntil, shakeAmp = os.clock() + 0.4, 1.6
+		local n = 0
+		for _, e in table.clone(enemies) do
+			if (e.root.Position - b.pos).Magnitude <= 14 then
+				strikeEnemy(e, 3, b.pos, 6, true)
+				n += 1
+			end
+		end
+		if (hrp.Position - b.pos).Magnitude <= 8 then
+			local dealt = AC.takeHit(pl, 8, os.clock(), nil)
+			if dealt > 0 then
+				hurtReact(1.5)
+				refresh()
+				if pl.hp <= 0 then
+					task.defer(function()
+						finish("defeat")
+					end)
+				end
+			end
+		end
+		say(if n > 0 then string.format("폭발! %d명 휘말렸다", n) else "폭발! 아무도 없었다")
+	end
+
 	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
 	local STUD = 2 -- 규칙의 거리 1 = 2 스터드
 	local function useMove(moveId: string)
@@ -988,6 +1057,18 @@ function FieldScene.start(opts)
 				end
 				if AC.inReach(mv.range * STUD + 3, mv.arc, dist, ang) then
 					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3))
+					hits += 1
+				end
+			end
+			for _, b in table.clone(barrels) do
+				local tb = (b.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				local ab = 0
+				if tb.Magnitude > 0.1 then
+					local lk = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
+				end
+				if AC.inReach(mv.range * STUD + 3, mv.arc, tb.Magnitude, ab) then
+					explodeBarrel(b, hrp)
 					hits += 1
 				end
 			end

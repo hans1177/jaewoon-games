@@ -63,10 +63,10 @@ function Rings.speedMult(combo: number): number
 	return 1 + math.min(combo, 10) * 0.04
 end
 
-export type Tally = { hits: number, total: number, combo: number, best: number, points: number, crashes: number, stun: number, boost: number, items: number }
+export type Tally = { hits: number, total: number, combo: number, best: number, points: number, crashes: number, stun: number, boost: number, items: number, chain: number }
 
 function Rings.newTally(): Tally
-	return { hits = 0, total = 0, combo = 0, best = 0, points = 0, crashes = 0, stun = 0, boost = 0, items = 0 }
+	return { hits = 0, total = 0, combo = 0, best = 0, points = 0, crashes = 0, stun = 0, boost = 0, items = 0, chain = 0 }
 end
 
 -- 암초(hazard)는 ok = 피했는가. 부딪히면 콤보가 끊기고 잠깐 느려진다(stun 초).
@@ -120,8 +120,9 @@ function Rings.hitItem(it: Item, shipLat: number): boolean
 end
 
 -- 물건을 주웠을 때. 점수(콤보 영향 없음)와 효과를 돌려준다: bottle=순풍 3초, buoy=충격 해제, chest=큰 점수
-function Rings.pickup(t: Tally, it: Item)
+function Rings.pickup(t: Tally, it: Item): boolean
 	t.items += 1
+	t.chain += 1
 	if it.kind == "coin" then
 		t.points += 0.5
 	elseif it.kind == "gem" then
@@ -133,6 +134,28 @@ function Rings.pickup(t: Tally, it: Item)
 	elseif it.kind == "buoy" then
 		t.stun = 0
 	end
+	-- 3개 연속으로 주우면 수집 연쇄: 순풍 2초
+	if t.chain % 3 == 0 then
+		t.boost = math.max(t.boost, 2)
+		return true
+	end
+	return false
+end
+
+-- 놓친 물건: 수집 연쇄가 끊긴다
+function Rings.missItem(t: Tally)
+	t.chain = 0
+end
+
+-- 아슬아슬: 장애물을 피했지만 가장자리를 스쳐 지나갔다(판정 밖 0.1 이내). 작은 보너스 점수와 짧은 순풍.
+function Rings.nearMiss(r: Ring, shipLat: number): boolean
+	local d = math.abs(shipLat - r.lat)
+	return r.hazard == true and d > Rings.radius(r) and d <= Rings.radius(r) + 0.1
+end
+
+function Rings.recordNearMiss(t: Tally)
+	t.points += 0.5
+	t.boost = math.max(t.boost, 0.8)
 end
 
 -- 해류: 항로 곳곳의 띠 모양 구역. 밟으면 순류는 가속(×1.5), 역류는 감속(×0.6). 스피드런 요소.
