@@ -1,30 +1,143 @@
 {
- "sourceRevision": "315011f9907bed765e1e70f2aefc581f164f461d",
+ "sourceRevision": "01a67e00e7baf206502447db8184153ddab504f8",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "parts=3649 meshparts=3152 models=3536 houses=16\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=5\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "capture": "08_harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "capture": "08_harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "capture": "08_harbor_npc_sparring_08",
+   "files": 1
   }
  ],
- "errors": [
-  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: FieldScene is not a valid member of Workspace \"Workspac"
- ],
+ "errors": [],
  "consoleCapture": {
   "captured": true,
   "contexts": [
@@ -36,13 +149,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 8,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 0,
-  "abortedEarly": true
+  "plannedFrames": 15,
+  "capturedFrames": 15,
+  "abortedEarly": false
  }
 }
