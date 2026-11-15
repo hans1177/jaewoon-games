@@ -218,6 +218,19 @@ return function(D, S)
 		return facilities, jobs, byDisc
 	end
 
+	-- 전투 연결: 현재 항구에 선 군수·기술 계열 학문 시설(조선·건축·화학·광물·물리·항해)이 포 위력을 올린다 (시설 하나당 +0.5%, 최대 +8%)
+	V.BATTLE_DISCS = { shipbuilding = true, architecture = true, chemistry = true, mineralogy = true, physics = true, navigation = true }
+	V.BATTLE_PER_FACILITY, V.BATTLE_CAP = 0.005, 0.08
+	function V.battleBonus(state)
+		local dev = V.portDev(state, state.portId)
+		if not dev then return 0 end
+		local n = 0
+		for _, d in dev.discBy do
+			if V.BATTLE_DISCS[d.id] then n += d.tier end
+		end
+		return math.min(V.BATTLE_CAP, n * V.BATTLE_PER_FACILITY)
+	end
+
 	-- 마을 구역: 항구 발전 레벨이 오르면 새 구역이 열리고 마을이 바깥으로 넓어진다
 	V.Districts = {
 		{ id = "wharf", name = "부두 구역", minLevel = 1, weight = 3, sub = { "내항 부두", "외항 정박지", "조선 구획", "화물 하역장" }, cats = { "industry" }, summary = "선착장과 어시장, 창고가 모인 바닷가." },
