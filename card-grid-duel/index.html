@@ -426,11 +426,11 @@ function loadProgress(){
       ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
         ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
         ||u.r<1||u.r>(saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===4?7:BASE_ROWS)
-        ||u.c<1||u.c>(saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===5?BASE_COLS*2:BASE_COLS))
+        ||u.c<1||u.c>(saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS))
       ||saved.unlocked.some(id=>!CARDS.BLUE[id])
       ||(saved.chests!==undefined&&(!Array.isArray(saved.chests)
         ||saved.chests.some(x=>!x||!Number.isInteger(x.r)||!Number.isInteger(x.c)
-          ||x.r<1||x.r>BASE_ROWS||x.c<1||x.c>(saved.stage===5?BASE_COLS*2:BASE_COLS))))
+          ||x.r<1||x.r>BASE_ROWS||x.c<1||x.c>(saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS))))
       ||(saved.specialTiles!==undefined&&!Array.isArray(saved.specialTiles)))return null;
     // 예전 5스테이지 최종 승리 저장을 새 6스테이지 입장 전 휴식 화면으로 이전한다.
     if(saved.stage===5&&saved.winner==='BLUE'&&saved.phase==='BATTLE'){
@@ -728,7 +728,9 @@ function spawnScriptedWave(){
   // 이전 스테이지의 지정 턴 출현 규칙은 변경하지 않는다.
   const waveRound=state.stage===8
     ?[2,5,7,10].find(n=>n<=round&&n>(state.lastWaveRound||0))
-    :round;
+    :state.stage===9
+      ?[3,7,10,15].find(n=>n<=round&&n>(state.lastWaveRound||0))
+      :round;
   const enemies=waves[waveRound];
   if(!enemies)return;
   const free=[];
