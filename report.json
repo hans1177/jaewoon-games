@@ -1,164 +1,139 @@
 {
- "sourceRevision": "a77b43686d8deb4d4e427ab47663ceb2536b8d39",
+ "sourceRevision": "00ab3dbec1f5d930fdd1afe8570209090e2aab56",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Naval:72,People:55,Relics:24,Ships:0,Terrain:76,Town:167\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 6,
-   "ctx": "Client",
-   "out": "scene=true models=174 done=nil err=false ReplicatedStorage.Shared.FieldScene:2223: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2223 function start\nAssistantCommand:1\nAssistantCommand:1\n\ntext"
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
   },
   {
    "step": 8,
    "ctx": "Client",
-   "out": "faced 2839.75732421875\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "c1_approach",
-   "files": 1
+   "out": "ok\ntext"
   },
   {
    "step": 10,
-   "ctx": "Client",
-   "out": "attack\ntext"
+   "capture": "02_plaza",
+   "files": 1
   },
   {
-   "step": 12,
-   "capture": "c2_attack",
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "faced 10.33403491973877\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 15,
-   "ctx": "Client",
-   "out": "heavy\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "c3_heavy",
+   "step": 16,
+   "capture": "04_dock",
    "files": 1
   },
   {
-   "step": 19,
+   "step": 17,
    "ctx": "Client",
-   "out": "spin\ntext"
+   "out": "ok\ntext"
   },
   {
-   "step": 21,
-   "capture": "c4_spin",
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
    "files": 1
   },
   {
    "step": 23,
    "ctx": "Client",
-   "out": "dash\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 25,
-   "capture": "c5_dash",
+   "capture": "07_wall",
    "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "ready=true err=false ReplicatedStorage.Shared.FieldScene:2223: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2223 function start\nAssistantCommand:1\nAssistantCommand:1\n btns=공격|철수||1.3|방어|🔒\n칭호|강타|2.6\ntext"
+   "out": "parts=3806 meshparts=3273 models=3554 houses=16\ntext"
   },
   {
    "step": 27,
    "ctx": "Client",
-   "out": "MOVE anchored=true moved=0.0 ws=16 mobs=32\ntext"
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=2.9106082916259766\ntext"
   },
   {
-   "step": 28,
-   "ctx": "Client",
-   "out": "guard\ntext"
-  },
-  {
-   "step": 30,
-   "capture": "c6_guard",
+   "step": 29,
+   "capture": "08_harbor_npc_sparring_01",
    "files": 1
   },
   {
    "step": 31,
-   "ctx": "Client",
-   "out": "SWORD equipped=true template=true relics=24\ntext"
-  },
-  {
-   "step": 32,
-   "ctx": "Client",
-   "out": "ALLIES 0\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "c7_allies",
+   "capture": "08_harbor_npc_sparring_02",
    "files": 1
   },
   {
-   "step": 34,
-   "ctx": "Client",
-   "out": "volley\ntext"
+   "step": 33,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
   },
   {
-   "step": 36,
-   "capture": "c8_cardvolley",
+   "step": 35,
+   "capture": "08_harbor_npc_sparring_04",
    "files": 1
   },
   {
    "step": 37,
-   "ctx": "Client",
-   "out": "ward\ntext"
-  },
-  {
-   "step": 39,
-   "capture": "c9_cardward",
+   "capture": "08_harbor_npc_sparring_05",
    "files": 1
   },
   {
-   "step": 40,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.662 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.070 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.081 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.395 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.012 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.040 | ENEMY motors=15 sum=0.000\ntext"
+   "step": 39,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
   },
   {
-   "step": 42,
-   "capture": "c10_mobs",
+   "step": 41,
+   "capture": "08_harbor_npc_sparring_07",
    "files": 1
   },
   {
    "step": 43,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.264 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.964 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.241 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.275 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.957 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.283 | ENEMY motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 45,
-   "ctx": "Client",
-   "out": "ENEMY d=2987 motors=15 sum=0.000\nENEMY d=3016 motors=15 sum=0.000\nENEMY d=2978 motors=15 sum=0.000\nENEMY d=2870 motors=15 sum=0.000\nENEMY d=2843 motors=15 sum=0.000\nENEMY d=2842 motors=15 sum=0.000\nENEMY d=2861 motors=15 sum=0.000\nENEMY d=3011 motors=15 sum=0.000\nENEMY d=2870 motors=15 sum=0.000\nENEMY d=2840 motors=15 sum=0.000\nENEMY d=2843 motors=15 sum=0.000\nENEMY d=2829 motors=15 sum=0.000\nENEMY d=2857 motors=15 sum=0.000\nENEMY d=2998 motors=15 sum=0.000\nENEMY d=2882 motors=15 sum=0.000\nENEMY d=2828 motors=15 sum=0.000\nENEMY d=2850 motors=15 sum=0.000\nENEMY d=2846 motors=15 sum=0.000\nENEMY d=2858 motors=15 sum=0.000\nENEMY d=3007 motors=15 sum=0.000\nENEMY d=2867 motors=15 sum=0.000\nENEMY d=2837 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2842 motors=15 sum=0.000\nENEMY d=2860 motors=15 sum=0.000\nENEMY d=3014 motors=15 sum=0.000\nENEMY d=2883 motors=15 sum=0.000\nENEMY d=2831 motors=15 sum=0.000\nENEMY d=2851 motors=15 sum=0.000\nENEMY d=2842 motors=15 sum=0.000\nENEMY d=2860 motors=15 sum=0.000\nENEMY d=2920 motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 46,
-   "capture": "c11_mobs2",
+   "capture": "08_harbor_npc_sparring_08",
    "files": 1
   }
  ],
@@ -174,13 +149,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 47,
-  "completedSteps": 47,
+  "plannedSteps": 44,
+  "completedSteps": 44,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 11,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
