@@ -251259,11 +251259,173 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_220cb30737a4e7fda3be3e03",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13344",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "03ddb9406ad860ad367e349a66ee4b78ccf11b73",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13344,
+        "baseBranch": "main",
+        "headBranch": "feat/chronicle",
+        "baseSha": "03ddb9406ad860ad367e349a66ee4b78ccf11b73",
+        "headSha": "22d5d65b0056360c4b1f8b4eb034cfabea68ac98",
+        "mergeCommitSha": "31ad551bd433bffe590c356b5a54c3ce9ace6f7d",
+        "mergedAt": "2026-11-15T06:50:19Z",
+        "authorLogin": "hans1177",
+        "titleHash": "29581b04fc286d896f3f0e5c1ad9eb2ca77d40432b9772b303ed471635e21861",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/chronicle",
+        "candidateSha": "22d5d65b0056360c4b1f8b4eb034cfabea68ac98"
+      },
+      "changeStats": {
+        "changedFileCount": 26,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 898,
+        "deletedLineCount": 13,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/data/chronicle/README.md",
+          "roblox-games/mare-essentia/assets/data/chronicle/sample.csv",
+          "roblox-games/mare-essentia/docs/KNOWLEDGE_TAXONOMY.md",
+          "roblox-games/mare-essentia/docs/VILLAGE_SIM_DESIGN.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/CardBook.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Fields.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTaxonomy.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/WorldChronicle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/WorldChronicleBulk.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Chronicle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/balance.luau",
+          "roblox-games/mare-essentia/tests/knowledge_battle.test.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/chronicle_import.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/CardBook.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Fields.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTaxonomy.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/WorldChronicle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/WorldChronicleBulk.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Chronicle.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Registry.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/balance.luau",
+          "roblox-games/mare-essentia/tests/knowledge_battle.test.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/chronicle_import.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13344",
+        "merge-commit:31ad551bd433bffe590c356b5a54c3ce9ace6f7d",
+        "base-main:03ddb9406ad860ad367e349a66ee4b78ccf11b73"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1998
+    "total": 1999
   }
 }
