@@ -1,18 +1,18 @@
 {
-  "runId": "43664199220",
-  "kind": "studio",
-  "sourceRevision": "d78cdd2f885641c2e93681b75c607ee9d29e6d35",
+  "runId": "43664442990",
+  "kind": "autopilot",
+  "sourceRevision": "51a21a163cf835952e7546b7b01eee74df71fe23",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 13,
-    "completedSteps": 13,
+    "plannedSteps": 5,
+    "completedSteps": 5,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 3,
-    "capturedFrames": 3,
+    "plannedFrames": 1,
+    "capturedFrames": 1,
     "abortedEarly": false
   },
   "errors": [],
@@ -32,17 +32,19 @@
     },
     {
       "step": 1,
-      "type": "wait",
-      "name": "",
+      "type": "luau",
+      "name": "autopilot-health",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 2,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "ap_game",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "ap_game-0.jpg"
+      ]
     },
     {
       "step": 3,
@@ -54,93 +56,19 @@
     {
       "step": 4,
       "type": "luau",
-      "name": "",
+      "name": "autopilot-health-2",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 5,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 6,
-      "type": "capture",
-      "name": "board",
-      "status": "PASS",
-      "screenshots": [
-        "board-0.jpg"
-      ]
-    },
-    {
-      "step": 7,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 8,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 9,
-      "type": "capture",
-      "name": "quest",
-      "status": "PASS",
-      "screenshots": [
-        "quest-0.jpg"
-      ]
-    },
-    {
-      "step": 10,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 11,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 12,
-      "type": "capture",
-      "name": "gwent",
-      "status": "PASS",
-      "screenshots": [
-        "gwent-0.jpg"
-      ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "board-0.jpg",
-      "sha256": "a7fa0558921acbeaf4b5c133708846b1c37302397fb2774b0d13f02226e10870",
+      "name": "ap_game-0.jpg",
+      "sha256": "d56c66728160d33b4b364721a6dd8964bda777910efc1b99f8abd2e283bede14",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43664199220/board-0.jpg"
-    },
-    {
-      "name": "gwent-0.jpg",
-      "sha256": "face5ad9e7565974ec70a3f8a58dc898f4d2a6714ecefd18035dea55d176f21f",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43664199220/gwent-0.jpg"
-    },
-    {
-      "name": "quest-0.jpg",
-      "sha256": "0b8d0df6492df2c1bcdb8dee137034a28d82db3cfb67b95d7cd8bee8d333fd5c",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43664199220/quest-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43664442990/ap_game-0.jpg"
     }
   ],
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43664187123"
+  "previousRunId": null
 }
