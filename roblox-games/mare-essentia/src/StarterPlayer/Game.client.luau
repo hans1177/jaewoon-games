@@ -1817,6 +1817,176 @@ gear.Activated:Connect(function()
 	openOptions()
 end)
 
+-- 개인 저널 창: 지금 할 일(동료 조언)과 진행 목표(의뢰·직업·도감)를 한 화면에 모아 보여 준다 (오른쪽 위 버튼)
+do
+	local jBtn = H.hudShortcut(hudTop, "JournalButton", "journal", "저널", true)
+	jBtn.AnchorPoint = Vector2.new(1, 0)
+	jBtn.Position = UDim2.new(1, -320, 0, SYS_Y)
+	local open = nil
+	local function bar(parent, ratio, color)
+		local back = Instance.new("Frame")
+		back.Size = UDim2.new(1, 0, 0, 10)
+		back.BackgroundColor3 = Color3.fromRGB(190, 168, 128)
+		back.BorderSizePixel = 0
+		corner(back, 5)
+		back.Parent = parent
+		local fill = Instance.new("Frame")
+		fill.Size = UDim2.fromScale(math.clamp(ratio, 0, 1), 1)
+		fill.BackgroundColor3 = color
+		fill.BorderSizePixel = 0
+		corner(fill, 5)
+		fill.Parent = back
+		return back
+	end
+	function H.openJournal()
+		if open then
+			open:Destroy()
+			open = nil
+			return
+		end
+		if not view then return end
+		local layer = overlayGui("JournalWindow", 57)
+		open = layer
+		local function close()
+			if open then open:Destroy() open = nil end
+		end
+		local dim = Instance.new("TextButton")
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.5
+		dim.Text = ""
+		dim.AutoButtonColor = false
+		dim.Activated:Connect(close)
+		dim.Parent = layer
+		local win = Instance.new("Frame")
+		win.AnchorPoint = Vector2.new(0.5, 0.5)
+		win.Position = UDim2.fromScale(0.5, 0.5)
+		win.Size = UDim2.fromScale(0.9, 0.94)
+		win.BackgroundColor3 = COLORS.paper
+		win.BorderSizePixel = 0
+		corner(win, 12)
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(760, 640)
+		lim.Parent = win
+		win.Parent = layer
+		local ws = Instance.new("UIStroke")
+		ws.Color = COLORS.brown
+		ws.Thickness = 3
+		ws.Parent = win
+		local title = mkLabel(win, "저널", 26, COLORS.ink, true)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		title.Position = UDim2.fromOffset(16, 8)
+		title.Size = UDim2.new(1, -120, 0, 36)
+		local x = mkButton(win, "닫기", COLORS.gold, UDim2.fromOffset(84, 40), close, true)
+		x.AnchorPoint = Vector2.new(1, 0)
+		x.Position = UDim2.new(1, -12, 0, 8)
+		local body = Instance.new("ScrollingFrame")
+		body.Position = UDim2.fromOffset(12, 54)
+		body.Size = UDim2.new(1, -24, 1, -64)
+		body.BackgroundTransparency = 1
+		body.BorderSizePixel = 0
+		body.CanvasSize = UDim2.new()
+		body.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		body.ScrollBarThickness = 5
+		body.Parent = win
+		local lay = Instance.new("UIListLayout")
+		lay.Padding = UDim.new(0, 8)
+		lay.SortOrder = Enum.SortOrder.LayoutOrder
+		lay.Parent = body
+		local order = 0
+		local function nxt() order += 1 return order end
+		local function head(text)
+			local h = mkHeader(body, text)
+			h.LayoutOrder = nxt()
+		end
+		local function goal(name, detail, ratio, color)
+			local card = Instance.new("Frame")
+			card.LayoutOrder = nxt()
+			card.Size = UDim2.new(1, -6, 0, 0)
+			card.AutomaticSize = Enum.AutomaticSize.Y
+			card.BackgroundColor3 = Color3.fromRGB(240, 224, 190)
+			card.BorderSizePixel = 0
+			corner(card, 8)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
+			pad.Parent = card
+			local l = Instance.new("UIListLayout")
+			l.Padding = UDim.new(0, 4)
+			l.SortOrder = Enum.SortOrder.LayoutOrder
+			l.Parent = card
+			local n = mkLabel(card, name, 18, COLORS.ink, true, 1)
+			if detail then mkLabel(card, detail, 15, COLORS.muted, false, 2) end
+			if ratio then bar(card, ratio, color or COLORS.green).LayoutOrder = 3 end
+			card.Parent = body
+			return card
+		end
+		-- 1) 지금 할 일
+		head("지금 할 일")
+		local todo = 0
+		for _, c in view.counsel or {} do
+			if todo >= 3 then break end
+			todo += 1
+			local card = goal(string.format("%s의 조언", c.who and c.who.name or "동료"), c.text, nil)
+			if c.tab then
+				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 40), function()
+					close()
+					H.goAdvice(c.tab)
+				end, true)
+				go.LayoutOrder = 4
+			end
+		end
+		if todo == 0 then
+			goal("할 일이 없어요", "항구를 둘러보고 새 의뢰를 찾아보세요.", nil)
+		end
+		-- 2) 진행 목표
+		head("진행 목표")
+		local q = view.tavernQ and view.tavernQ.active
+		if q then
+			goal("[주점 의뢰] " .. tostring(q.name), string.format("기한 %d일 남음", q.left or 0), nil)
+		end
+		for _, a in view.quests.active do
+			goal(a.name, string.format("%d / %d · 보상 %d코인", math.min(a.progress, a.amount), a.amount, a.rewardCoins), a.progress / math.max(1, a.amount), COLORS.blue)
+		end
+		local shown = 0
+		for _, a in view.quests.available do
+			if a.auto and shown < 4 then
+				shown += 1
+				goal(a.name, string.format("%d / %d", math.min(a.progress or 0, a.amount or 0), a.amount or 0), (a.progress or 0) / math.max(1, a.amount or 1), COLORS.blue)
+			end
+		end
+		for _, c in view.careers or {} do
+			goal(string.format("직업 %s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), c.xp / math.max(1, c.nextXp), COLORS.gold)
+		end
+		local cx = view.codex
+		if cx then
+			goal("백과 도감", string.format("발견 %d / %d", cx.found, cx.total), cx.found / math.max(1, cx.total), COLORS.green)
+		end
+		-- 3) 이야기 기록: 겪은 일을 일기처럼 자세히 남긴다 (최근 것이 위)
+		head("이야기 기록")
+		local logged = 0
+		local hv = view.history
+		for i = #(hv and hv.recent or {}), 1, -1 do
+			local r = hv.recent[i]
+			logged += 1
+			goal(string.format("%d년  %s", r.year, r.title), "선택: " .. tostring(r.choice), nil)
+		end
+		for i = #view.quests.done, 1, -1 do
+			local d = view.quests.done[i]
+			logged += 1
+			local text = tostring(d.summary or "")
+			if d.ending then text ..= "\n" .. d.ending end
+			goal(d.name, text, nil)
+		end
+		if logged == 0 then
+			goal("아직 기록이 없어요", "사람을 만나고 의뢰를 끝내면 이야기가 이곳에 남아요.", nil)
+		end
+	end
+	jBtn.Activated:Connect(function()
+		Sfx.play("sfx_click")
+		H.openJournal()
+	end)
+end
+
 -- 개인 카드 창: 내가 가진 카드(주인공·동료·지식·유물·동물·우군·배)와 지도자 능력을 보여 준다 (오른쪽 위 버튼)
 do
 	local BC = require(Shared:WaitForChild("BoardingCards"))
