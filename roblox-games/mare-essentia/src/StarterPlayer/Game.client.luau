@@ -2225,6 +2225,37 @@ local function call(action, payload)
 			snd = "sfx_fanfare" -- 새 동료
 		elseif action == "IntroName" then
 			snd = "sfx_buy" -- 장부에 도장 찍는 소리
+		elseif action == "TavernDrink" then
+			snd = "sfx_coin_pouch" -- 술값을 치르는 소리
+			task.delay(0.25, Sfx.play, "sfx_ship_cabin_door", 0.25) -- 잔이 놓이는 소리 대용
+		elseif action == "TavernPick" then
+			snd = "sfx_quest_accept"
+		elseif action == "TavernAbandon" or action == "TavernDecline" then
+			snd = "sfx_quest_book_close"
+		elseif action == "TavernRumor" or action == "Rumor" then
+			snd = "sfx_book_turn"
+		elseif action == "TavernStranger" then
+			snd = "sfx_ship_cabin_door"
+		elseif action == "TavernTalk" or action == "Talk" or action == "TalkChoice" or action == "PeopleTalk" then
+			snd = "sfx_ui_select"
+		elseif action == "TavernJob" then
+			snd = "sfx_quest_reward"
+			task.delay(0.9, Sfx.play, "sfx_quest_book_close", 0.7)
+		elseif action == "Resupply" or action == "HireCrew" or action == "BuySupplies" then
+			snd = "sfx_cargo_drop"
+		elseif action == "BuyCannon" or action == "BuyPlating" then
+			snd = "sfx_workshop_chop"
+		elseif action == "Research" or action == "ReportKnowledge" or action == "BuyMap" then
+			snd = "sfx_book_turn"
+			if action == "ReportKnowledge" then
+				task.delay(0.35, Sfx.play, "sfx_quest_book_close", 0.5)
+			end
+		elseif action == "Explore" or action == "Visit" then
+			snd = "sfx_deck_step"
+		elseif action == "CardSetDeck" or action == "CardSlotSave" or action == "CardSlotUse" or action == "CardAutoDeck" or action == "CardRecommend" or action == "CardSetLeader" then
+			snd = "sfx_card_place"
+		elseif action == "CardUpgrade" or action == "UpgradeCodexCard" or action == "CardPick" or action == "ClaimCollection" then
+			snd = "sfx_card_magic"
 		end
 		local msg = result.message or ""
 		if not snd and string.find(msg, "퀘스트 조건 달성", 1, true) then

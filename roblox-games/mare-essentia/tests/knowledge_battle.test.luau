@@ -614,5 +614,44 @@ do
 	check("동료 효과: 고리 판정 확대", Rg.radius(wide) > Rg.radius(base) and Rg.hit(wide, 0.28) and not Rg.hit(base, 0.28))
 end
 
+-- 퀘스트 막힘 점검: 모든 연결(선행·상품·항구·카드·동료·기술)이 실제로 존재해야 막히지 않는다
+do
+	local ids, bad = {}, {}
+	for _, q in D.Quests.Quests do
+		ids[q.id] = true
+	end
+	local Sc = require("./Shared/Scholars")
+	for _, q in D.Quests.Quests do
+		if q.after and not ids[q.after] then table.insert(bad, q.id .. " 선행 없음 " .. q.after) end
+		if q.goodId and not D.Ports.Goods[q.goodId] then table.insert(bad, q.id .. " 상품 없음 " .. q.goodId) end
+		if q.portId and not D.Ports.Ports[q.portId] then table.insert(bad, q.id .. " 항구 없음 " .. q.portId) end
+		if q.rewardCardId and not (D.Cards.ById[q.rewardCardId] or CB.def(q.rewardCardId)) then table.insert(bad, q.id .. " 보상 카드 없음 " .. q.rewardCardId) end
+		if q.cardId and not D.Cards.ById[q.cardId] then table.insert(bad, q.id .. " 지식 카드 없음 " .. q.cardId) end
+		-- 선행 고리(순환)
+		local seen, cur = {}, q
+		while cur and cur.after do
+			if seen[cur.id] then table.insert(bad, q.id .. " 선행 순환") break end
+			seen[cur.id] = true
+			cur = D.Quests.ById[cur.after]
+		end
+	end
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("퀘스트 점검: 끊어진 연결이 없다 (" .. #bad .. "건)", #bad == 0)
+	-- 주점 의뢰: 상품·항구·선택지·기한 점검
+	local tbad = {}
+	for _, j in S.Tavern.jobs do
+		if j.good and not D.Ports.Goods[j.good] then table.insert(tbad, j.id .. " 상품 " .. j.good) end
+		for _, pid in j.ports or {} do
+			if not D.Ports.Ports[pid] then table.insert(tbad, j.id .. " 항구 " .. pid) end
+		end
+		if j.kind == "event" and (not j.choices or #j.choices < 2) then table.insert(tbad, j.id .. " 선택지 부족") end
+		if j.kind == "deliver" and not (j.good and j.amount) then table.insert(tbad, j.id .. " 납품 정보") end
+		if j.kind == "hunt" and not j.enemy then table.insert(tbad, j.id .. " 적 정보") end
+		if not j.any and not j.ports and not j.region then table.insert(tbad, j.id .. " 장소 없음") end
+	end
+	if #tbad > 0 then print(table.concat(tbad, "\n")) end
+	check("주점 점검: 데이터 연결이 맞다 (" .. #tbad .. "건)", #tbad == 0)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
