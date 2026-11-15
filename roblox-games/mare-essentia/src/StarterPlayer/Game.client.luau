@@ -5551,19 +5551,20 @@ function RENDERERS.explore()
 	if #view.sites == 0 then
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
-	for _, s in view.sites do
-		add(function()
-			local sub = if s.left == 0 then "모두 조사했어요" else string.format("발견 가능 %d · %d일 · 모험 Lv.%d 이상", s.left, s.days, s.minLevel)
-			local actions = {
-				{ text = "탐험", color = COLORS.green, onClick = function() H.startField(s) end, enabled = s.unlocked and s.left > 0 },
-			}
+	add(function()
+		local tiles = {}
+		for _, s in view.sites do
+			table.insert(tiles, { icon = "explore", title = s.name,
+				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
+				btn = "탐험", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 			if s.tactics then
-				sub = sub .. string.format(" · 전술 맵 ‘%s’%s", s.tactics.mapName, if s.tactics.rank ~= "" then " (최고 " .. s.tactics.rank .. ")" else "")
-				table.insert(actions, { text = "전술", color = COLORS.blue, onClick = function() startTactics(s) end, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active") })
+				table.insert(tiles, { icon = "cc0_sword", title = s.tactics.mapName,
+					sub = if s.tactics.rank ~= "" then "최고 " .. s.tactics.rank else "전술 탐험",
+					btn = "전술", color = COLORS.blue, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active"), onClick = function() startTactics(s) end })
 			end
-			return mkRow(content, s.name, sub, actions, 54)
-		end)
-	end
+		end
+		return H.tileGrid(tiles, content, 176, 156)
+	end)
 	end
 	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
 	if not H.exploreScholarView then return end
