@@ -39,6 +39,9 @@ local D = {
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
+	EconomyBuildings = require("./Shared/EconomyBuildings"),
+	DisciplineFacilities = require("./Shared/DisciplineFacilities"),
+	ProductionChains = require("./Shared/ProductionChains"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -184,7 +187,18 @@ local function extraTests()
 	local goodCover = {}
 	for _, l in PE.Links do for _, g in l.goods or {} do goodCover[g] = true end end
 	local uncovered = 0
-	for gid in D.Ports.Goods do if not goodCover[gid] then uncovered += 1; print("연결 안 된 교역품", gid) end end
+	-- 가공품(p_*)은 원료 품목의 인물 연결을 따른다
+	for gid in D.Ports.Goods do
+		local covered = goodCover[gid]
+		if not covered and string.sub(gid, 1, 2) == "p_" then
+			for _, r in D.ProductionChains.Recipes do
+				if D.ProductionChains.goodId(r) == gid then
+					for _, inp in r.inputs do if goodCover[inp] then covered = true end end
+				end
+			end
+		end
+		if not covered then uncovered += 1; print("연결 안 된 교역품", gid) end
+	end
 	check("백과: 모든 교역품이 어떤 인물과 이어짐", uncovered == 0, tostring(uncovered))
 	local linkBad = 0
 	for id, l in PE.Links do

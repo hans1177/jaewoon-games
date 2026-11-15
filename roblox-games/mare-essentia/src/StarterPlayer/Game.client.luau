@@ -4423,6 +4423,51 @@ function RENDERERS.status()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
+	if view.village then
+		add(function() return mkHeader(content, "마을 발전 (학문을 이해할수록 자라요)") end)
+		H.statStrip({
+			{ "마을", string.format("Lv.%d %s", view.village.level, view.village.name), tone = "key" },
+			{ "들어선 건물", string.format("%d/%d", view.village.built, view.village.total), tone = "key" },
+			{ "다음 단계", if view.village.nextAt then string.format("학문 점수 %d/%d", view.village.score, view.village.nextAt) else "최고 단계", tone = "key" },
+		})
+		add(function()
+			local ICON = { food = "harbor", cloth = "trade", home = "yard", industry = "tech", public = "board" }
+			local items = {}
+			for _, c in view.village.cats do
+				table.insert(items, { icon = ICON[c.id] or "map", title = c.name, sub = string.format("%d / %d", c.built, c.total) })
+			end
+			return H.tileGrid(items, content, 150, 110)
+		end)
+		if view.village.ports and #view.village.ports > 0 then
+			add(function() return mkHeader(content, "항구별 발전도 (점수 = 투자 5 + 건물 단계 3 + 기술 2 + 특수 건축물 4)") end)
+			for _, pd in view.village.ports do
+				add(function()
+					local nextTxt = if pd.nextAt then string.format("다음 %d점", pd.nextAt) else "최고 단계"
+					return mkRow(content, string.format("%s  Lv.%d %s  (%d점)", pd.name, pd.level, pd.levelName, pd.score),
+						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s\n도시 규모 %s · %d구획 · 소구역 %d곳\n구역 %d개: %s%s\n의식주: %s · 인구 %d명 · %s\n문화권 %s: %s\n학문 시설 %d곳 · 학문 직업 %d종: %s\n직업 %d종 (새 직업: %s)\n원자재: %s\n가공 가능: %s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt,
+							pd.sizeName, pd.blocks, #pd.subDistricts, #pd.districts, table.concat(pd.districts, ", "), if pd.nextDistrict then "  → 다음: " .. pd.nextDistrict else "",
+							(function()
+								local t = {}
+								for _, a in pd.sim.axes do
+									table.insert(t, string.format("%s %d%%(%s)%s", a.name, math.floor(math.min(a.pct, 1.5) * 100 + 0.5), a.status, if a.tip then " ▶" .. a.tip else ""))
+								end
+								return table.concat(t, "  ")
+							end)(), pd.sim.pop, "분위기 " .. pd.sim.mood, pd.culture, if #pd.cultureBuildings > 0 then table.concat(pd.cultureBuildings, ", ") else "아직 없음",
+							#pd.discFacilities, #pd.discJobs, if #pd.discJobs > 0 then table.concat(pd.discJobs, ", ", 1, math.min(#pd.discJobs, 8)) else "아직 없음", #pd.jobs, table.concat(pd.newJobs, ", "),
+							if #pd.raw > 0 then table.concat(pd.raw, " · ") else "없음", if #pd.crafts > 0 then table.concat(pd.crafts, ", ") else "아직 없음"), nil, 280)
+				end)
+			end
+		end
+		if #view.village.discs > 0 then
+			add(function()
+				local parts = {}
+				for _, d in view.village.discs do
+					table.insert(parts, string.format("%s %d단계(%s)", d.name, d.tier, d.tierName))
+				end
+				return mkLabel(content, "발전한 학문  " .. table.concat(parts, " · "), 15, COLORS.muted, false)
+			end)
+		end
+	end
 	add(function() return mkHeader(content, "설정") end)
 	add(function()
 		local manualOn = player:GetAttribute("ManualHelm") ~= false

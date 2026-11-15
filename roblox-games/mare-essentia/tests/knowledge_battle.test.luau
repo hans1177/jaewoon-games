@@ -45,6 +45,9 @@ local D = {
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
+	EconomyBuildings = require("./Shared/EconomyBuildings"),
+	DisciplineFacilities = require("./Shared/DisciplineFacilities"),
+	ProductionChains = require("./Shared/ProductionChains"),
 	Stocks = require("./Shared/Stocks"),
 	WorldEvents = require("./Shared/WorldEvents"),
 	People = require("./Shared/People"),
@@ -669,6 +672,127 @@ do
 	local bad = D.KnowledgeTaxonomy.audit()
 	if #bad > 0 then print(table.concat(bad, "\n")) end
 	check("카드 분류: 모든 카드가 학문·대분류에 연결된다 (" .. #bad .. "건)", #bad == 0)
+end
+
+-- 경제 건물 표: 학문·분류 연결
+do
+	local EB = D.EconomyBuildings
+	local bad = {}
+	local cats = {}
+	for _, c in EB.Categories do cats[c.id] = true end
+	for _, b in EB.List do
+		if not cats[b.category] then table.insert(bad, b.id .. " 분류") end
+		if b.minLevel < 1 or b.minLevel > 6 then table.insert(bad, b.id .. " 레벨") end
+		for _, d in b.disc do
+			if not D.KnowledgeTree.TaxonomyById[d] then table.insert(bad, b.id .. " 학문 " .. d) end
+		end
+	end
+	if #bad > 0 then print(table.concat(bad, "\n")) end
+	check("경제 건물: 학문·분류·레벨 연결이 맞다 (" .. #EB.List .. "종)", #bad == 0 and #EB.List >= 60)
+end
+
+-- 마을 발전: 학문을 이해할수록 마을 레벨과 건물이 늘어난다
+do
+	local stV = S.State.new("england", 1700)
+	local v0 = S.Village.view(stV)
+	check("마을 발전: 아무것도 모르면 1레벨, 학문 단계 없음", v0.level == 1 and #v0.discs == 0)
+	local b0 = S.Village.buildings(stV)
+	local lv1 = 0
+	for _, b in b0 do if b.minLevel > 1 then lv1 += 1 end end
+	check("마을 발전: 1레벨에는 1레벨 건물만 선다", lv1 == 0)
+	local n = 0
+	stV.reported = {}
+	for _, node in D.KnowledgeTree.Nodes do
+		stV.reported[node.id] = true
+		n += 1
+	end
+	local v1 = S.Village.view(stV)
+	check("마을 발전: 모든 지식을 이해하면 최고 레벨·건물 대부분", v1.level == 6 and v1.built > v0.built and #v1.discs >= 10, v1.level .. "/" .. v1.built)
+	local sum = 0
+	for _, c in v1.cats do sum += c.built end
+	check("마을 발전: 분류별 건물 수 합계가 맞다", sum == v1.built)
+	local stPD = S.State.new("england", 1700)
+	stPD.portId = "london"
+	local d0 = S.Village.portDev(stPD, "london")
+	check("항구 발전도: 투자 외에는 점수가 없고 1레벨", d0 ~= nil and d0.score == d0.harbor * 5 and d0.stages == 0 and d0.tech == 0 and d0.landmarks == 0 and d0.level == 1)
+	stPD.harbor.london = 99999
+	stPD.portStages = { london = { trade = 2, ship = 1 } }
+	stPD.landmarks = { london = { observatory = true } }
+	stPD.portTech = { london = { astronomy = 20 } }
+	local d1 = S.Village.portDev(stPD, "london")
+	check("항구 발전도: 투자·건물·기술·특수 건축물이 점수에 합산된다", d1.score == d1.harbor * 5 + 3 * 3 + 2 * 2 + 4 and d1.stages == 3 and d1.tech == 2 and d1.landmarks == 1, tostring(d1.score))
+	check("마을 구역: 레벨에 따라 구역이 열린다", #d0.districts == 2 and #d1.districts >= 2 and S.Village.Districts[#S.Village.Districts].minLevel == 6)
+	local jbad = {}
+	for _, j in S.Village.Jobs do
+		if j.disc and not D.KnowledgeTree.TaxonomyById[j.disc] then table.insert(jbad, j.name) end
+	end
+	check("마을 직업: 학문 연결이 맞고 레벨이 오를수록 직업이 늘어난다", #jbad == 0 and #d1.jobs >= #d0.jobs and #d0.jobs == 7 and #d0.newJobs == 7, table.concat(jbad, ","))
+	local PC = D.ProductionChains
+	local pcBad = {}
+	local ebNames = {}
+	for _, b in D.EconomyBuildings.List do ebNames[b.name] = true end
+	for _, r in PC.Recipes do
+		if not ebNames[r.building] then table.insert(pcBad, r.id .. " 건물 " .. r.building) end
+		if not D.KnowledgeTree.TaxonomyById[r.disc] then table.insert(pcBad, r.id .. " 학문 " .. r.disc) end
+		for _, g in r.inputs do
+			if not D.Ports.Goods[g] then table.insert(pcBad, r.id .. " 품목 " .. g) end
+		end
+	end
+	for g, c in PC.ClassOf do
+		if not D.Ports.Goods[g] then table.insert(pcBad, "분류 품목 " .. g) end
+	end
+	local unclassed, totalProd = 0, 0
+	for _, port in D.Ports.Ports do
+		for _, g in (port.produces or {}) do
+			totalProd += 1
+			if not PC.ClassOf[g] then unclassed += 1 end
+		end
+	end
+	if #pcBad > 0 then print(table.concat(pcBad, "\n")) end
+	check("생산 자원: 공정·분류가 건물·학문·품목에 연결됨 (" .. #PC.Recipes .. "공정)", #pcBad == 0 and #PC.Recipes >= 25)
+	check("생산 자원: 항구 특산의 절반 이상이 원자재 종류로 분류된다 (분류 없음 " .. unclassed .. "/" .. totalProd .. ")", unclassed * 2 <= totalProd)
+	check("생산 자원: 레벨이 오르면 가공 가능한 공정이 늘어난다", #PC.craftable({ "wool", "iron", "gems" }, 1) < #PC.craftable({ "wool", "iron", "gems" }, 4))
+	local dsum = 0
+	for _, d in S.Village.Districts do dsum += #d.sub end
+	check("도시 면적: 레벨이 오를수록 구획이 크게 늘고 소구역이 생긴다", S.Village.BLOCKS_AT[6] >= S.Village.BLOCKS_AT[1] * 30 and dsum >= 30 and d0.blocks == S.Village.BLOCKS_AT[1] and #d0.subDistricts >= 2 and d1.blocks >= d0.blocks)
+	local simLow = S.Village.sim(stPD, "london", 1)
+	local simHigh = S.Village.sim(stPD, "london", 6)
+	local simOk = simLow ~= nil and #simLow.axes == 4 and simHigh.popCap > simLow.popCap and simLow.stability >= 0 and simLow.stability <= 1 and simHigh.stability <= 1
+	local allAxis = true
+	for _, a in simHigh.axes do
+		if a.need <= 0 or a.supply < 0 or a.pct < 0 then allAxis = false end
+	end
+	check("의식주 시뮬: 레벨이 오르면 인구가 늘고 항목 4개의 수요·공급·만족도가 계산된다", simOk and allAxis)
+	local stFull = S.State.new("england", 1700)
+	stFull.reported = {}
+	for _, node in D.KnowledgeTree.Nodes do stFull.reported[node.id] = true end
+	local simFull = S.Village.sim(stFull, "london", 3)
+	local simNone = S.Village.sim(S.State.new("england", 1700), "london", 3)
+	check("의식주 시뮬: 학문이 발전해 건물이 들어서면 만족도가 오른다", simFull.stability >= simNone.stability and simFull.stability > simNone.stability - 1e-9)
+	local cultOk, cultBad = true, {}
+	for _, b in D.EconomyBuildings.List do
+		for _, c in (b.cultures or {}) do
+			if not S.Village.CULTURE_NAME[c] then cultOk = false table.insert(cultBad, b.id .. ":" .. c) end
+		end
+	end
+	check("문화권 건물: 문화권 id 가 모두 올바르다", cultOk, table.concat(cultBad, ","))
+	local mosqueHere, mosqueThere = false, false
+	for _, b in S.Village.buildings(stFull, 6, "alexandria") do if b.name == "모스크" then mosqueHere = true end end
+	for _, b in S.Village.buildings(stFull, 6, "london") do if b.name == "모스크" then mosqueThere = true end end
+	local cathedralThere = false
+	for _, b in S.Village.buildings(stFull, 6, "london") do if b.name == "대성당·성당" then cathedralThere = true end end
+	check("문화권 건물: 이슬람권 항구에는 모스크, 런던에는 성당이 서고 서로 바뀌지 않는다", mosqueHere and not mosqueThere and cathedralThere)
+	local dfBad = {}
+	for _, d in D.KnowledgeTree.Disciplines do
+		local l = D.DisciplineFacilities.List[d.id]
+		if not l or #l ~= 4 then table.insert(dfBad, d.id) end
+	end
+	check("학문 시설: 모든 학문에 4단계 시설·직업이 있다", #dfBad == 0, table.concat(dfBad, ","))
+	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
+	local fac6, jobs6, by6 = S.Village.discFacilities(stFull, 6)
+	check("학문 시설: 학문이 발전하고 항구가 클수록 시설과 직업이 늘어난다", #fac0 == 0 and #fac6 > 0 and #fac6 == #jobs6 and #by6 >= 15)
+	local pl = S.Village.portList(stPD)
+	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
 
 -- 세계 연대기: 데이터 연결·도착 시 목격·논문 단계
