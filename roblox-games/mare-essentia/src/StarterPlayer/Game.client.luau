@@ -4210,12 +4210,16 @@ end
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	add(function() return mkHeader(content, "선박") end)
-	add(function()
-		return mkRow(content, string.format("%s%s", ship.name, if ship.steam then " (증기)" else ""),
-			string.format("선체 %d/%d · 선원 %d/%d · 포 %d · 속도 %d\n화물 %d/%d · 보급품 %d · 석탄 %d",
-				ship.hull, ship.maxHull, ship.crew, ship.maxCrew, ship.cannons, ship.speed,
-				ship.cargoUsed, ship.cargoCapacity, ship.supplies, ship.coal), nil, 76)
-	end)
+	H.statStrip({
+		{ ship.name .. (if ship.steam then " (증기)" else ""), string.format("선체 %d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
+		{ "선원", string.format("%d/%d", ship.crew, ship.maxCrew), tone = "key" },
+		{ "포 · 속도", string.format("%d · %d", ship.cannons, ship.speed), tone = "key" },
+	})
+	H.statStrip({
+		{ "화물", string.format("%d/%d", ship.cargoUsed, ship.cargoCapacity), tone = "key" },
+		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 8 then "bad" else "key" },
+		{ "석탄", tostring(ship.coal), tone = "key" },
+	})
 	add(function() return mkHeader(content, "해전 카드 지원 (자동)") end)
 	add(function()
 		local lines = view.navalSupport or {}
@@ -4230,34 +4234,18 @@ function RENDERERS.status()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
-	add(function() return mkHeader(content, "항해 방식") end)
+	add(function() return mkHeader(content, "설정") end)
 	add(function()
 		local manualOn = player:GetAttribute("ManualHelm") ~= false
-		return mkRow(content, "수동 항해", if manualOn then "켜짐(기본): 스틱으로 바람 고리를 통과해요. 가는 도중 자동으로 바꿀 수 있어요 (처음 가는 항구는 직접 항해만)" else "꺼짐: 자동 항해", {
-			{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue, onClick = function()
-				player:SetAttribute("ManualHelm", not manualOn)
-				render()
-			end },
-		}, 60)
-	end)
-	add(function() return mkHeader(content, "소리") end)
-	add(function()
 		local musicOn, sfxOn = Sfx.state()
-		return mkRow(content, "음악", if musicOn then "켜짐" else "꺼짐", {
-			{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.blue, onClick = function()
-				Sfx.setMusicEnabled(not musicOn)
-				render()
-			end },
-		}, 52)
-	end)
-	add(function()
-		local musicOn, sfxOn = Sfx.state()
-		return mkRow(content, "효과음", if sfxOn then "켜짐" else "꺼짐", {
-			{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.blue, onClick = function()
-				Sfx.setSfxEnabled(not sfxOn)
-				render()
-			end },
-		}, 52)
+		return H.tileGrid({
+			{ icon = "route", title = "수동 항해", sub = if manualOn then "켜짐 · 직접 조종" else "꺼짐 · 자동", btn = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue,
+				onClick = function() player:SetAttribute("ManualHelm", not manualOn) render() end },
+			{ icon = "codex", title = "음악", sub = if musicOn then "켜짐" else "꺼짐", btn = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.blue,
+				onClick = function() Sfx.setMusicEnabled(not musicOn) render() end },
+			{ icon = "battle", title = "효과음", sub = if sfxOn then "켜짐" else "꺼짐", btn = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.blue,
+				onClick = function() Sfx.setSfxEnabled(not sfxOn) render() end },
+		}, content, 176, 150)
 	end)
 	add(function()
 		local ml, sl = Sfx.levels()
@@ -5089,9 +5077,10 @@ function RENDERERS.route()
 			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f) — %s%s", view.weather.name, view.weather.wind, view.weather.hint, fc), 16, COLORS.gold, true)
 		end)
 		add(function()
-			return mkRow(content, "하루 기다리기", "날씨가 나쁘면 하루 쉬었다 떠나요 (사기 +2)", {
-				{ text = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
-			}, 56)
+			return H.tileGrid({
+				{ icon = "route", title = "하루 기다리기", sub = "날씨가 나쁠 때 · 사기 +2", btn = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
+				{ icon = "map", title = "해도 보기", sub = "항구 위치 한눈에", btn = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
+			}, content, 176, 150)
 		end)
 	end
 	add(function()
@@ -5206,26 +5195,14 @@ local function renderYard()
 		local maxH = math.max(1, yard.maxHull or sh.maxHull)
 		local cur = maxH - (yard.fullMissing or yard.missing or 0)
 		local pct = math.floor(cur / maxH * 100 + 0.5)
-		local filled = math.floor(pct / 10 + 0.5)
-		local bar = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
-		local sub
-		if (yard.missing or 0) > 0 then
-			sub = string.format("%s  %d%%  (선체 %d/%d)\n%s %d코인 (선체 1당 %d코인)", bar, pct, cur, maxH,
-				if yard.field then "응급 수리(선체 60%까지, 비용 2배) →" else "전부 수리 →", yard.repairTotal, yard.repairCost * (if yard.field then 2 else 1))
-		elseif yard.field and (yard.fullMissing or 0) > 0 then
-			sub = string.format("%s  %d%%\n응급 수리는 여기까지예요. 조선소가 있는 항구에서 마저 고치세요", bar, pct)
-		else
-			sub = string.format("%s  100%%\n수리할 곳이 없어요. 튼튼한 배예요!", bar)
-		end
-		return mkRow(content, if yard.field then "응급 수리" else "선박 수리", sub, {
-			{ text = if (yard.missing or 0) > 0 then string.format("%s %d", if yard.field then "응급 수리" else "전부 수리", yard.repairTotal) else "수리 불필요", color = COLORS.green,
-				onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
-		}, 92)
-	end)
-	add(function()
-		return mkRow(content, "조선소 입장", "조선 장인과 배·대포·보강을 크게 보며 고르고 사요", {
-			{ text = "입장", color = COLORS.gold, onClick = function() openYardHall() end, enabled = yard.available },
-		}, 56)
+		local need = (yard.missing or 0) > 0
+		return H.tileGrid({
+			{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
+				btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
+			{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
+			{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
+			{ icon = "harbor", title = "조선소 입장", sub = "배·대포·보강 고르기", btn = "입장", color = COLORS.gold, enabled = yard.available, onClick = function() openYardHall() end },
+		}, content)
 	end)
 	add(function()
 		local sh = view.ship
@@ -5235,13 +5212,6 @@ local function renderYard()
 			withIcon(row, si[1], si[2], si[3], 120)
 		end
 		return row
-	end)
-	add(function()
-		return mkRow(content, "정비와 보급", string.format("수리 %d코인/1 · 선원 %d코인/명 · 보급품 %d코인/개", yard.repairCost, yard.hireCost, yard.supplyCost), {
-			{ text = if yard.available then "수리" else "응급수리", color = COLORS.green, onClick = function() call("Repair") end, enabled = (yard.missing or 0) > 0 },
-			{ text = "선원+5", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
-			{ text = "보급+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-		}, 64)
 	end)
 	if not yard.available then
 		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
@@ -5581,19 +5551,20 @@ function RENDERERS.explore()
 	if #view.sites == 0 then
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
-	for _, s in view.sites do
-		add(function()
-			local sub = if s.left == 0 then "모두 조사했어요" else string.format("발견 가능 %d · %d일 · 모험 Lv.%d 이상", s.left, s.days, s.minLevel)
-			local actions = {
-				{ text = "탐험", color = COLORS.green, onClick = function() H.startField(s) end, enabled = s.unlocked and s.left > 0 },
-			}
+	add(function()
+		local tiles = {}
+		for _, s in view.sites do
+			table.insert(tiles, { icon = "explore", title = s.name,
+				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
+				btn = "탐험", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 			if s.tactics then
-				sub = sub .. string.format(" · 전술 맵 ‘%s’%s", s.tactics.mapName, if s.tactics.rank ~= "" then " (최고 " .. s.tactics.rank .. ")" else "")
-				table.insert(actions, { text = "전술", color = COLORS.blue, onClick = function() startTactics(s) end, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active") })
+				table.insert(tiles, { icon = "cc0_sword", title = s.tactics.mapName,
+					sub = if s.tactics.rank ~= "" then "최고 " .. s.tactics.rank else "전술 탐험",
+					btn = "전술", color = COLORS.blue, enabled = s.unlocked and s.left > 0 and not (view.tactics and view.tactics.status == "active"), onClick = function() startTactics(s) end })
 			end
-			return mkRow(content, s.name, sub, actions, 54)
-		end)
-	end
+		end
+		return H.tileGrid(tiles, content, 176, 156)
+	end)
 	end
 	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
 	if not H.exploreScholarView then return end
