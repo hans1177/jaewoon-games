@@ -922,7 +922,7 @@ do
 	table.sort(ids)
 	for _, portId in ids do
 		local port = Ports[portId]
-		local added = 0
+		local added: number = 0
 		for _, r in PC.Recipes do
 			if added >= MAX_PROCESSED_PER_PORT then break end
 			local gid = PC.goodId(r)
@@ -938,7 +938,8 @@ do
 		end
 	end
 	-- 모든 가공품은 어딘가에서 만들어지고(원료를 내는 항구) 어딘가에서 팔려야 한다(수요)
-	local producedBy, demandedBy = {}, {}
+	local producedBy: { [string]: number } = {}
+	local demandedBy: { [string]: number } = {}
 	for _, portId in ids do
 		for _, g in Ports[portId].produces do producedBy[g] = (producedBy[g] or 0) + 1 end
 		for _, g in Ports[portId].demands do demandedBy[g] = (demandedBy[g] or 0) + 1 end
@@ -958,7 +959,7 @@ do
 				end
 			end
 			-- 수요: 원료를 사들이는 항구 가운데 그 가공품을 만들지 않는 곳 (최대 6곳), 없으면 앞쪽 3곳
-			local want = 0
+			local want: number = 0
 			for _, portId in ids do
 				local port = Ports[portId]
 				if want < 6 and not table.find(port.produces, gid) and not table.find(port.demands, gid) then
