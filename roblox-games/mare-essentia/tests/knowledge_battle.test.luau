@@ -801,6 +801,18 @@ do
 	local bb1 = S.Village.battleBonus(stBB)
 	check("전투 연결: 시설이 없으면 보너스 0, 발전하면 늘고 상한이 있다", bb0 == 0 and bb1 >= bb0 and bb1 <= S.Village.BATTLE_CAP, tostring(bb1))
 	check("전투 연결: 포 위력 보너스에 반영된다", S.Perk.cannonBonus(stBB) >= bb1)
+	local stMil = S.State.new("england", 1700)
+	stMil.discovered = {}
+	local mt0 = S.Village.militaryTier(stMil)
+	local milCount = 0
+	for _, c in D.Cards.Cards do
+		if c.field == "Military" and milCount < 14 then stMil.discovered[c.id] = true milCount += 1 end
+	end
+	local mt1, mn = S.Village.militaryTier(stMil)
+	local _, _, byMil = S.Village.discFacilities(stMil, 6)
+	local hasMil = false
+	for _, d in byMil do if d.id == "military_science" and d.tier == 4 then hasMil = true end end
+	check("군사학 시설: 카드를 모으면 병영→군사 학교로 단계가 오르고 시설·직업이 선다", mt0 == 0 and mt1 == 4 and mn == 14 and hasMil, mt1 .. "/" .. mn)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end
