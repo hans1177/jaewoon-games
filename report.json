@@ -1,165 +1,20 @@
 {
- "sourceRevision": "98bc6e753d9e61b717c04c467c5a48303a29377d",
+ "sourceRevision": "00ab3dbec1f5d930fdd1afe8570209090e2aab56",
  "log": [
-  {
-   "step": 0,
-   "ctx": "Client",
-   "out": "cards on\ntext"
-  },
   {
    "step": 1,
    "ctx": "Client",
-   "out": "allies on\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 5,
-   "ctx": "Client",
-   "out": "cam\ntext"
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "scene=true models=174 done=nil err=false ReplicatedStorage.Shared.FieldScene:2110: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2110 function start\nAssistantCommand:1\nAssistantCommand:1\n\ntext"
-  },
-  {
-   "step": 8,
-   "ctx": "Client",
-   "out": "faced 2839.75732421875\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "c1_approach",
+   "step": 2,
+   "capture": "ap_game",
    "files": 1
   },
   {
-   "step": 10,
+   "step": 4,
    "ctx": "Client",
-   "out": "attack\ntext"
-  },
-  {
-   "step": 12,
-   "capture": "c2_attack",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "faced 10.040863990783691\ntext"
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "heavy\ntext"
-  },
-  {
-   "step": 17,
-   "capture": "c3_heavy",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "spin\ntext"
-  },
-  {
-   "step": 21,
-   "capture": "c4_spin",
-   "files": 1
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "dash\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "c5_dash",
-   "files": 1
-  },
-  {
-   "step": 26,
-   "ctx": "Client",
-   "out": "ready=true err=false ReplicatedStorage.Shared.FieldScene:2110: attempt to iterate over a number value\nAssistantCommand:1\nReplicatedStorage.Shared.FieldScene:2110 function start\nAssistantCommand:1\nAssistantCommand:1\n btns=공격|철수||1.4|방어|🔒\n칭호|강타|2.6\ntext"
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "MOVE anchored=true moved=0.0 ws=16 mobs=32\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "guard\ntext"
-  },
-  {
-   "step": 30,
-   "capture": "c6_guard",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "SWORD equipped=true template=true relics=24\ntext"
-  },
-  {
-   "step": 32,
-   "ctx": "Client",
-   "out": "ALLIES 0\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "c7_allies",
-   "files": 1
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "volley\ntext"
-  },
-  {
-   "step": 36,
-   "capture": "c8_cardvolley",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "ctx": "Client",
-   "out": "ward\ntext"
-  },
-  {
-   "step": 39,
-   "capture": "c9_cardward",
-   "files": 1
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.471 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.003 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.289 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.209 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.964 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.284 | ENEMY motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 42,
-   "capture": "c10_mobs",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "ctx": "Client",
-   "out": "RIG=Enum.HumanoidRigType.R15 enemyFound=true enemyRig=Enum.HumanoidRigType.R15\nME motors=15 sum=11.235 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.962 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.277 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.249 | ENEMY motors=15 sum=0.000\nME motors=15 sum=10.957 | ENEMY motors=15 sum=0.000\nME motors=15 sum=11.279 | ENEMY motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 45,
-   "ctx": "Client",
-   "out": "ENEMY d=2985 motors=15 sum=0.000\nENEMY d=3014 motors=15 sum=0.000\nENEMY d=2977 motors=15 sum=0.000\nENEMY d=2868 motors=15 sum=0.000\nENEMY d=2842 motors=15 sum=0.000\nENEMY d=2840 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=3009 motors=15 sum=0.000\nENEMY d=2868 motors=15 sum=0.000\nENEMY d=2839 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2827 motors=15 sum=0.000\nENEMY d=2856 motors=15 sum=0.000\nENEMY d=2996 motors=15 sum=0.000\nENEMY d=2881 motors=15 sum=0.000\nENEMY d=2826 motors=15 sum=0.000\nENEMY d=2848 motors=15 sum=0.000\nENEMY d=2844 motors=15 sum=0.000\nENEMY d=2856 motors=15 sum=0.000\nENEMY d=3005 motors=15 sum=0.000\nENEMY d=2866 motors=15 sum=0.000\nENEMY d=2836 motors=15 sum=0.000\nENEMY d=2839 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=3013 motors=15 sum=0.000\nENEMY d=2881 motors=15 sum=0.000\nENEMY d=2830 motors=15 sum=0.000\nENEMY d=2849 motors=15 sum=0.000\nENEMY d=2841 motors=15 sum=0.000\nENEMY d=2859 motors=15 sum=0.000\nENEMY d=2919 motors=15 sum=0.000\ntext"
-  },
-  {
-   "step": 46,
-   "capture": "c11_mobs2",
-   "files": 1
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=15 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -174,13 +29,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 47,
-  "completedSteps": 47,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 11,
-  "capturedFrames": 11,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
