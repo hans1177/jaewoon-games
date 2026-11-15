@@ -1393,6 +1393,43 @@ function FieldScene.start(opts)
 		cam.CameraSubject = hum
 	end
 
+	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
+	pcall(function()
+		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()
+		controls:Enable()
+	end)
+	table.insert(conns, RunService.Heartbeat:Connect(function()
+		if finished then
+			return
+		end
+		local c2 = player.Character
+		local r2 = c2 and c2:FindFirstChild("HumanoidRootPart")
+		local h2 = c2 and c2:FindFirstChildOfClass("Humanoid")
+		if r2 and r2:IsA("BasePart") and r2.Anchored then
+			r2.Anchored = false
+		end
+		if h2 then
+			if h2.WalkSpeed < 16 then
+				h2.WalkSpeed = 18
+			end
+			if h2.PlatformStand or h2.Sit then
+				h2.PlatformStand = false
+				h2.Sit = false
+			end
+		end
+		local cam2 = workspace.CurrentCamera
+		if cam2 and cam2.CameraType ~= Enum.CameraType.Custom and not workspace:GetAttribute("ShotCF") then
+			cam2.CameraType = Enum.CameraType.Custom
+			if h2 then
+				cam2.CameraSubject = h2
+			end
+		end
+		local tg = player:FindFirstChild("PlayerGui") and player.PlayerGui:FindFirstChild("TouchGui")
+		if tg and tg:IsA("ScreenGui") and not tg.Enabled then
+			tg.Enabled = true
+		end
+	end))
+
 	refresh()
 	say("공격 F(3연타) · 강타 Q · 회전베기 E · 회피 R. 적이 붉게 변하면 공격 예고!")
 	return { finish = finish }

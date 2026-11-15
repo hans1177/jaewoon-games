@@ -7568,6 +7568,9 @@ end
 do
 	local camBase = CFrame.lookAt(Vector3.new(72, 20, 54), Vector3.new(-28, 9, -4))
 	applyView = function()
+		if inField then
+			return -- 지상 탐험 중에는 항구 전경이 캐릭터를 고정하거나 카메라를 빼앗지 못한다
+		end
 		local camera = workspace.CurrentCamera
 		local char = player.Character
 		local root = char and char:FindFirstChild("HumanoidRootPart")
