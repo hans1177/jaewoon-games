@@ -2915,7 +2915,7 @@ local function confirmSail(r)
 	local enough = view.ship.supplies >= (r.supplies or 0)
 	local lines = {
 		string.format("해역: %s · 거리 약 %d km · 예상 %d일", r.region or "", r.distanceKm or 0, r.days or 1),
-		string.format("보급품: %d / 필요 약 %d%s", view.ship.supplies, r.supplies or 0, if enough then "" else "  ⚠ 부족해요"),
+		string.format("보급품: %d / 필요 약 %d%s", view.ship.supplies, r.supplies or 0, if enough then "" else "  부족해요"),
 		string.format("선원: %d / %d · 선체: %d / %d", view.ship.crew, view.ship.maxCrew, view.ship.hull, view.ship.maxHull),
 		string.format("날씨: %s · 사기: %s", view.weather and view.weather.name or "맑음", tostring(view.morale or "-")),
 		"닻을 올리면 항해가 시작돼요. 바다에서 무슨 일이 생길지 아무도 몰라요.",
@@ -3913,12 +3913,12 @@ function RENDERERS.harbor()
 		local sh = view.ship
 		local sy = view.shipyard
 		local m = view.morale or 80
-		local mText = if m >= 70 then "높음" elseif m >= 40 then "보통" elseif m >= 25 then "낮음 ⚠" else "바닥 ⚠ 탈영 위험"
+		local mText = if m >= 70 then "높음" elseif m >= 40 then "보통" elseif m >= 25 then "낮음" else "바닥 탈영 위험"
 		local needCrew = math.max(0, sh.maxCrew - sh.crew)
 		local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
 		local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
 		local full = needCrew == 0 and needSup == 0
-		local row = mkRow(content, if full then "✔ 출항 준비 완료" else "⚠ 채울 게 있어요",
+		local row = mkRow(content, if full then "출항 준비 완료" else "채울 게 있어요",
 			string.format("선원 %d/%d · 보급품 %d/%d · 사기 %s", sh.crew, sh.maxCrew, sh.supplies, view.supplyMax or 100, mText), {
 			{ text = if full then "가득 참" else string.format("모두 채우기\n%d코인", cost), color = COLORS.gold,
 				onClick = function() call("Resupply", { what = "both" }) end },
@@ -4009,7 +4009,7 @@ function RENDERERS.recruit()
 	end
 	for _, c in list do
 		add(function()
-			local tag = if c.joined then "  ✔ 합류 중" elseif c.blocked == nil then "  ★ 영입 가능" else ""
+			local tag = if c.joined then "  (합류 중)" elseif c.blocked == nil then "  (영입 가능)" else ""
 			local sub = string.format("%s\n영입 %d코인 · 호감도 %d%s", c.summary, c.fee, c.affinity, if c.blocked and not c.joined then " · " .. c.blocked else "")
 			local btn = if c.joined
 				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
@@ -4112,7 +4112,7 @@ function RENDERERS.crew()
 		local vac = view.companions.vacancy
 		local warn = ""
 		if vac and (vac.speed < 0 or vac.cannon < 0) then
-			warn = "\n⚠ 조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
+			warn = "\n조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
 		end
 		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
 	end)
@@ -4127,14 +4127,14 @@ function RENDERERS.crew()
 			H.stationPick = H.stationPick or {}
 			local idx = (H.stationPick[st.id] or 0) % math.max(1, #joined) + 1
 			local nxt = joined[idx]
-			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음" else "  (다른 직책)")) else "비어 있음"
+			local seatText = if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음)" else "  (다른 직책)")) else "비어 있음"
 			local btns = {}
 			local fit = nil
 			for _, c in joined do
 				if c.bestSeat == st.name then fit = c; break end
 			end
 			if fit and fit ~= nxt then
-				table.insert(btns, { text = "★ " .. fit.name, color = COLORS.green or COLORS.blue, onClick = function()
+				table.insert(btns, { text = "추천 " .. fit.name, color = COLORS.green or COLORS.blue, onClick = function()
 					call("Station", { companionId = fit.id, station = st.id })
 				end })
 			end
@@ -4191,7 +4191,7 @@ function RENDERERS.crew()
 			if c.joined then
 				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
 			end
-			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
+			local row = mkRow(content, c.name .. (if c.joined then "  (합류)" else ""), sub, btns, 76)
 			local model = COMPANION_MODEL[c.id]
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
@@ -4296,7 +4296,7 @@ function RENDERERS.status()
 			elseif sv.current and not mine and sv.changeFee > 0 then
 				sub ..= string.format(" · 변경 %d코인", sv.changeFee)
 			end
-			local title = sp.name .. (if mine then "  ✔ 주직업" elseif isSub then "  ✔ 부직업" else "") .. (if sv.recommend == sp.id and not mine then "  ★추천" else "")
+			local title = sp.name .. (if mine then "  (주직업)" elseif isSub then "  (부직업)" else "") .. (if sv.recommend == sp.id and not mine then "  (추천)" else "")
 			local buttons = {
 				{ text = if mine then "선택됨" else if sp.unlocked then "선택" else "잠김", color = if mine then COLORS.gold else if sp.unlocked then COLORS.blue else COLORS.grey,
 					enabled = (not mine) and sp.unlocked, onClick = function() call("SetSpecialty", { specialtyId = sp.id }) end },
@@ -4324,7 +4324,7 @@ function RENDERERS.status()
 					call("BuyGear", { gearId = g.id })
 				end }
 			end
-			local grow = mkRow(content, g.name .. (if g.equipped then "  ✔" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 60)
+			local grow = mkRow(content, g.name .. (if g.equipped then "  (장착)" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 60)
 			local gi = ({
 				sextant = { "Relics", "compass-base" }, brass_telescope = { "Relics", "magnifying-glass" }, ledger = { "Relics", "journal-closed" },
 				medicine_chest = { "Cargo", "mortar" }, lucky_charm = { "Cargo", "gem-medium" }, naval_chart = { "Relics", "map-rolled" },
@@ -5131,9 +5131,9 @@ function RENDERERS.route()
 		add(function()
 			local warn = ""
 			if r.supplies > ship.supplies then
-				warn = " ⚠ 보급품 부족"
+				warn = " 보급품 부족"
 			elseif ship.steam and r.coal == 0 then
-				warn = " ⚠ 석탄 없음"
+				warn = " 석탄 없음"
 			end
 			if r.locked then
 				return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
@@ -6322,7 +6322,7 @@ local function renderCodexOverview()
 					claimable += 1
 				end
 			end
-			local row = mkRow(content, string.format("%s  %d / %d%s", f.name, f.found, f.total, if claimable > 0 then "  ★보상" else ""), f.summary, {
+			local row = mkRow(content, string.format("%s  %d / %d%s", f.name, f.found, f.total, if claimable > 0 then "  (보상 있음)" else ""), f.summary, {
 				{ text = "열기", color = fieldColor(f), onClick = function() codexField = f.id; render() end },
 			}, 64)
 			row.AccentBar.BackgroundColor3 = fieldColor(f)
@@ -6415,7 +6415,7 @@ local function renderCodexOverview()
 				if a.kind == "disaster" then
 					table.insert(btn, { text = if a.aided then "구호함" else string.format("구호 %d코인", wv.aidCost), color = COLORS.green, onClick = function() call("WorldAid", { index = a.index }) end, enabled = a.canAid })
 				end
-				return mkRow(content, (if a.kind == "disaster" then "⚠ " else "★ ") .. a.title .. (if a.here then "  [여기]" else ""), sub, btn, 100)
+				return mkRow(content, (if a.kind == "disaster" then "[재난] " else "[기회] ") .. a.title .. (if a.here then "  [여기]" else ""), sub, btn, 100)
 			end)
 		end
 		for _, l in wv.log do
@@ -6447,19 +6447,19 @@ local function renderCodexOverview()
 		add(function()
 			local parts = {}
 			for _, nd in g.need do
-				table.insert(parts, (if nd.done then "✔ " else "✖ ") .. nd.name)
+				table.insert(parts, (if nd.done then "완료 " else "미완 ") .. nd.name)
 			end
 			return mkLabel(content, g.region .. (if g.open then " (열림)" else "") .. " — " .. table.concat(parts, "  "), 13, if g.open then COLORS.green else COLORS.text, false)
 		end)
 	end
-	add(function() return mkHeader(content, "인류 학문 7대 분류 (연구 중 ✔ / 연구 예정 ·)") end)
+	add(function() return mkHeader(content, "인류 학문 7대 분류 (연구 중인 분야 표시)") end)
 	for _, dm in (view.knowledge and view.knowledge.domains or {}) do
 		add(function()
 			return mkLabel(content, string.format("■ %s — 연구 중 %d / 전체 %d  · %s", dm.name, dm.active, dm.count, dm.summary), 13, COLORS.gold, false)
 		end)
 		for _, r in dm.rows do
 			add(function()
-				local mark = if r.planned then "·" else "✔"
+				local mark = if r.planned then "·" else "완료"
 				local tail = if r.planned then "  (연구 예정)" else string.format("  이해 %d/%d%s", r.done or 0, r.total or 0, if r.open then "" else " · 잠김")
 				return mkLabel(content, string.rep("    ", r.depth + 1) .. mark .. " " .. r.name .. tail, 12, if r.planned then COLORS.muted else COLORS.text, false)
 			end)
@@ -6640,11 +6640,11 @@ if string.sub(codexField, 1, 2) == "k:" then
 		add(function()
 			local mark, col
 			if nd.status == "done" then
-				mark, col = "✔ 이해함", COLORS.green
+				mark, col = "이해함", COLORS.green
 			elseif nd.status == "ready" then
 				mark, col = "● 보고 가능", COLORS.gold
 			elseif nd.status == "blocked" then
-				mark, col = "✖ 선행 필요", COLORS.red
+				mark, col = "선행 필요", COLORS.red
 			elseif nd.status == "closed" then
 				mark, col = "🔒 학문이 아직 열리지 않음", COLORS.muted
 			else
@@ -6729,22 +6729,16 @@ end
 
 function RENDERERS.tech()
 	add(function()
-		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 13, COLORS.muted, false)
+		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 14, COLORS.muted, false)
 	end)
-	for _, t in view.tech do
-		add(function()
-			local sub = t.summary
-			if t.owned then
-				sub ..= "\n연구 완료"
-			elseif t.blocked then
-				sub ..= "\n" .. t.blocked
-			end
-			return mkRow(content, t.name, sub, {
-				{ text = if t.owned then "완료" else tostring(t.cost), color = COLORS.steam, onClick = function() call("Research", { techId = t.id }) end,
-					enabled = not t.owned and t.blocked == nil },
-			}, 76)
-		end)
-	end
+	add(function()
+		local tiles = {}
+		for _, t in view.tech do
+			table.insert(tiles, { icon = if t.owned then "cc0_yes" else "tech", title = t.name, sub = if t.owned then "연구 완료" elseif t.blocked then t.blocked else t.summary,
+				btn = if t.owned then "완료" else tostring(t.cost) .. " 코인", color = COLORS.steam, enabled = not t.owned and t.blocked == nil, onClick = function() call("Research", { techId = t.id }) end })
+		end
+		return H.tileGrid(tiles, content, 176, 160)
+	end)
 end
 
 function RENDERERS.quest()
@@ -6789,7 +6783,7 @@ function RENDERERS.quest()
 		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
 		for _, q in view.quests.done do
 			add(function()
-				return mkLabel(content, "✔ " .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
+				return mkLabel(content, "(완료) " .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
 			end)
 		end
 	end
@@ -6974,14 +6968,13 @@ function RENDERERS.war()
 		end)
 	end
 	add(function() return mkHeader(content, "작전 의뢰") end)
-	for _, c in view.wars do
-		add(function()
-			local sub = string.format("%s\n%d파도 · 보상 %d코인 · 명성 +%d · 전투 Lv.%d%s", c.summary, c.waves, c.coins, c.fame, c.minLevel, if c.blocked then "\n🔒 " .. c.blocked else "")
-			return mkRow(content, c.name, sub, {
-				{ text = "참전", color = COLORS.red, enabled = c.blocked == nil and w == nil, onClick = function() call("WarStart", { id = c.id }) end },
-			}, 100)
-		end)
-	end
+	add(function()
+		local tiles = {}
+		for _, c in view.wars do
+			table.insert(tiles, { icon = "cc0_shield", title = c.name, sub = if c.blocked then c.blocked else string.format("%d파도 · %d코인 · Lv.%d", c.waves, c.coins, c.minLevel), btn = "참전", color = COLORS.red, enabled = c.blocked == nil and w == nil, onClick = function() call("WarStart", { id = c.id }) end })
+		end
+		return H.tileGrid(tiles, content)
+	end)
 end
 
 function RENDERERS.battle()
@@ -6991,19 +6984,12 @@ function RENDERERS.battle()
 		equipped = table.clone(lo.equipped)
 	end
 	add(function()
-		return mkRow(content, "사략선 사냥", "바다에서 해적을 찾아 해전을 벌여요. 대포와 백병전으로 승부! (1일 소요)", {
-			{ text = "출격", color = COLORS.red, onClick = function() call("Hunt") end },
-		}, 56)
+		local tiles = { { icon = "cc0_sword", title = "사략선 사냥", sub = "해적과 해전 · 1일", btn = "출격", color = COLORS.red, onClick = function() call("Hunt") end } }
+		for _, b in view.bosses do
+			table.insert(tiles, { icon = "battle", title = b.name, sub = if b.blocked then b.blocked else string.format("격파 %d회", b.defeated), btn = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end })
+		end
+		return H.tileGrid(tiles, content)
 	end)
-	add(function() return mkHeader(content, "신화 괴물") end)
-	for _, b in view.bosses do
-		add(function()
-			local sub = string.format("%s\n격파 %d회%s", b.summary, b.defeated, if b.blocked then " · " .. b.blocked else "")
-			return mkRow(content, b.name, sub, {
-				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end },
-			}, 76)
-		end)
-	end
 	add(function()
 		return mkLabel(content, string.format("자동스킬 슬롯 %d개 · 위에 있을수록 먼저 발동해요 (현재 %d개 선택)", lo.slots, #equipped), 13, COLORS.muted, false)
 	end)
@@ -9018,7 +9004,7 @@ function H.openCabin()
 		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
 		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
-		local autoBtn = mkButton(top, "★ 자동 배치(추천)", COLORS.green, UDim2.fromOffset(160, 40), function() selected = nil; call("AutoStations") end, #v.stations > 0)
+		local autoBtn = mkButton(top, "자동 배치 (추천)", COLORS.green, UDim2.fromOffset(160, 40), function() selected = nil; call("AutoStations") end, #v.stations > 0)
 		autoBtn.AnchorPoint = Vector2.new(1, 0.5)
 		autoBtn.Position = UDim2.new(1, -86, 0.5, 0)
 
@@ -9041,7 +9027,7 @@ function H.openCabin()
 		info.TextXAlignment = Enum.TextXAlignment.Center
 		local vac = v.vacancy
 		if vac and (vac.speed < 0 or vac.cannon < 0) then
-			local w = mkLabel(shipBox, "⚠ 조타수/포술장 자리가 비어 있어요 (" .. (if vac.speed < 0 then "속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "") .. ")", 12, COLORS.gold, true)
+			local w = mkLabel(shipBox, "조타수/포술장 자리가 비어 있어요 (" .. (if vac.speed < 0 then "속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "") .. ")", 12, COLORS.gold, true)
 			w.Position = UDim2.new(0, 10, 1, -44)
 			w.Size = UDim2.new(1, -20, 0, 36)
 			w.AutomaticSize = Enum.AutomaticSize.None
@@ -9086,7 +9072,7 @@ function H.openCabin()
 			nm.Position = UDim2.fromOffset(78, 6)
 			nm.Size = UDim2.new(1, -84, 0, 20)
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  ✔ 딱 맞음 x1.2" else "  (다른 직책 x0.6)")) else "비어 있음 — 동료를 놓으세요", 12, COLORS.text, false)
+			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) else "비어 있음 — 동료를 놓으세요", 12, COLORS.text, false)
 			desc.Position = UDim2.fromOffset(78, 28)
 			desc.Size = UDim2.new(1, -84, 0, 54)
 			desc.AutomaticSize = Enum.AutomaticSize.None
