@@ -18,6 +18,14 @@ if not okVfx then
 	CommonVFX = nil
 end
 
+-- 몸 움직임: 마력숲과 같은 공용 R15 모션(CommonMotion)을 관절에 얹는다. 못 읽으면 예전 방식(Pose)으로 돌아간다.
+local okFM, FM = pcall(function()
+	return require(script.Parent:WaitForChild("FieldMotion", 5))
+end)
+if not okFM then
+	FM = nil
+end
+
 -- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
@@ -521,7 +529,8 @@ function FieldScene.start(opts)
 		local kinds = { "grunt", "archer", "shield", "charger" }
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 4 + 1])
 		tag.Text = ac.def.name
-		table.insert(enemies, { ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
+		local fm = if FM then FM.new(model, false) else nil
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
 
 	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
@@ -535,6 +544,8 @@ function FieldScene.start(opts)
 	end)
 
 	local swingKind, swingT0, swingDur = nil, 0, 0
+	local swingCombo, slashIdx = nil, 0
+	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	local function char3()
 		local char = player.Character
 		return char, char and char:FindFirstChild("HumanoidRootPart")
@@ -550,8 +561,24 @@ function FieldScene.start(opts)
 			sfx("sfx_skill_evade", 0.6, 1.1)
 		elseif kind == "guard" then
 			sfx("sfx_equipment_wear", 0.5, 1.2)
+		elseif kind == "cast" then
+			-- 카드 스킬은 자기 효과음을 낸다
 		else
 			sfx("sfx_card_swing", 0.55, 0.95 + math.random() * 0.2)
+		end
+		swingCombo = nil
+		if FM then
+			if kind == "heavy" then
+				swingCombo = FM.combo("heavy", { "W:BLADE_OVERHEAD" })
+			elseif kind == "spin" then
+				swingCombo = FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
+			elseif kind == "slash" then
+				slashIdx = slashIdx % 3 + 1
+				swingCombo = FM.combo("slash" .. slashIdx, { SLASH_IDS[slashIdx] })
+			end
+			if swingCombo and kind ~= "spin" then
+				dur = math.max(dur, swingCombo.duration)
+			end
 		end
 		swingKind, swingT0, swingDur = kind, os.clock(), dur
 	end
@@ -559,6 +586,9 @@ function FieldScene.start(opts)
 		RunService:UnbindFromRenderStep("FieldSwing")
 	end)
 	RunService:BindToRenderStep("FieldSwing", Enum.RenderPriority.Character.Value + 5, function()
+		if FM then
+			return -- 공용 모션(아래 PreSimulation)이 처리한다
+		end
 		if not swingKind then
 			return
 		end
@@ -598,6 +628,69 @@ function FieldScene.start(opts)
 			RunService:UnbindFromRenderStep("FieldSwing")
 		end)
 	end })
+
+	-- 주인공 모션(마력숲 공용 모션): Animator 가 걷기 포즈를 쓴 직후 그 위에 공격·방어·회피·시전 포즈를 섞는다.
+	if FM then
+		local pfm, pfmChar = nil, nil
+		local castPose = {
+			UpperArmL = CFrame.Angles(-2.3, 0, -0.35), UpperArmR = CFrame.Angles(-2.3, 0, 0.35),
+			ForearmL = CFrame.Angles(-0.5, 0, 0), ForearmR = CFrame.Angles(-0.5, 0, 0),
+			Head = CFrame.Angles(-0.35, 0, 0), Chest = CFrame.Angles(-0.2, 0, 0),
+		}
+		local dashPose = {
+			Spine = CFrame.Angles(0.5, 0, 0), Chest = CFrame.Angles(0.25, 0, 0), Head = CFrame.Angles(-0.4, 0, 0),
+			ThighL = CFrame.Angles(-1.0, 0, 0), ThighR = CFrame.Angles(0.6, 0, 0), ShinL = CFrame.Angles(1.2, 0, 0),
+			UpperArmL = CFrame.Angles(0.9, 0, -0.1), UpperArmR = CFrame.Angles(0.9, 0, 0.1),
+		}
+		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
+			if finished then
+				return
+			end
+			local ch = player.Character
+			if not ch then
+				return
+			end
+			if pfmChar ~= ch then
+				if pfm then
+					FM.destroy(pfm)
+				end
+				pfm, pfmChar = FM.new(ch, true), ch
+			end
+			local canon = pfm.canon
+			table.clear(canon)
+			local rootRot = nil
+			if swingKind then
+				local p = (os.clock() - swingT0) / swingDur
+				if p >= 1 then
+					swingKind = nil
+				elseif swingCombo then
+					FM.sample(swingCombo, p * swingCombo.duration, canon)
+					if swingKind == "spin" then
+						rootRot = CFrame.Angles(0, p * math.pi * 2, 0)
+					end
+				else
+					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15)) else math.sin(math.min(p, 1) * math.pi)
+					local src
+					if swingKind == "guard" then
+						src = FM.combo("slash1", { "W:BLADE_SLASH_R" }).guard
+					elseif swingKind == "dash" then
+						src = dashPose
+					else
+						src = castPose
+					end
+					for name, cf in src do
+						canon[name] = CFrame.identity:Lerp(cf, w)
+					end
+				end
+			end
+			FM.step(pfm, dt, rootRot)
+		end))
+		table.insert(conns, { Disconnect = function()
+			if pfm then
+				FM.destroy(pfm)
+			end
+		end })
+	end
 
 	-- 효과: 베기 궤적·타격 불꽃(입자)과 맞은 적 붉게 번쩍임, 떠오르는 피해 숫자
 	local fxPart = Instance.new("Part")
@@ -864,6 +957,10 @@ function FieldScene.start(opts)
 			end
 			if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 			local dying = e.model
+			if e.fm then
+				FM.destroy(e.fm)
+				e.fm = nil
+			end
 			task.spawn(function()
 				local t0 = os.clock()
 				while dying.Parent and os.clock() - t0 < 0.7 do
@@ -1036,6 +1133,7 @@ function FieldScene.start(opts)
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
 			burst(hrp.Position, 24, false, "dodge")
+			startSwing("dash", 0.4)
 			say("회피! 잠깐 무적")
 			return
 		end
@@ -1161,6 +1259,7 @@ function FieldScene.start(opts)
 			end
 			local sk = card.skill
 			local pos = hp0.Position + Vector3.new(0, 2, 0)
+			startSwing("cast", 0.7)
 			if sk == "heal" then
 				pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
 				say(card.name .. ": 체력 회복")
@@ -1410,7 +1509,22 @@ function FieldScene.start(opts)
 			end
 			local hurtProgress = (now - e.hurtAt) / 0.3
 			local attackProgress = (now - e.swingAt) / 0.5
-			if hurtProgress >= 0 and hurtProgress < 1 then
+			if e.fm then
+				local st, ph = "IDLE", (now / 2.4) % 1
+				local acs = e.ac.state
+				if hurtProgress >= 0 and hurtProgress < 1 then
+					st, ph = "HIT", hurtProgress
+				elseif acs == "windup" then
+					st, ph = "ANTICIPATION", math.clamp(e.ac.t / math.max(e.ac.def.windup, 0.05), 0, 1)
+				elseif acs == "active" then
+					st, ph = "ATTACK", 0.25 + math.clamp(e.ac.t / math.max(e.ac.def.active, 0.05), 0, 1) * 0.35
+				elseif acs == "recover" then
+					st, ph = "RECOVERY", math.clamp(e.ac.t / math.max(e.ac.def.recover, 0.05), 0, 1)
+				elseif wish ~= 0 then
+					st, ph = "RUN", (now * 1.6) % 1
+				end
+				FM.actor(e.fm, st, ph, dt, e.boss)
+			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
 				Pose.makeR15Action(e.model, "attack", attackProgress, now - e.spawnT)
@@ -1461,7 +1575,7 @@ function FieldScene.start(opts)
 						bbA.Parent = r
 						local tg = label(bbA, ad.name, 14, Color3.fromRGB(130, 230, 150))
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now })
+						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil })
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -1495,7 +1609,15 @@ function FieldScene.start(opts)
 					strikeEnemy(tgt, 0.6, a.root.Position, 1.0, false, true)
 				end
 				local ap = (now - a.swingAt) / 0.5
-				if ap >= 0 and ap < 1 then
+				if a.fm then
+					if ap >= 0 and ap < 1 then
+						FM.actor(a.fm, "ATTACK", ap * 0.9, dt)
+					elseif moving then
+						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt)
+					else
+						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt)
+					end
+				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
 					Pose.makeR15Action(a.model, if moving then "run" else "idle", 0, now - a.t0)
