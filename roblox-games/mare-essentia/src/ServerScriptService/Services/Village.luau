@@ -53,12 +53,23 @@ return function(D, S)
 	end
 
 	-- 지금 마을에 들어선 경제 건물 목록
-	function V.buildings(state, levelOverride)
+	V.CULTURE_NAME = {
+		atlantic_europe = "대서양 유럽", mediterranean = "지중해", red_sea = "홍해·이슬람권", west_africa = "서아프리카", americas = "아메리카",
+		north_sea = "북해·북유럽", east_africa = "동아프리카", east_asia = "동아시아", south_asia = "남아시아", southeast_asia = "동남아시아",
+	}
+
+	function V.cultureOf(portId)
+		return D.CultureRegions.ofPort(D.Ports.Ports, portId)
+	end
+
+	function V.buildings(state, levelOverride, portId)
 		local tiers, score = V.tiers(state)
 		local level = levelOverride or V.levelOf(score)
+		local culture = portId and V.cultureOf(portId)
 		local out = {}
 		for _, b in EB.List do
-			if level >= b.minLevel then
+			local cultureOk = b.cultures == nil or (portId == nil) or (culture ~= nil and table.find(b.cultures, culture) ~= nil)
+			if level >= b.minLevel and cultureOk then
 				local ok = true
 				for _, d in b.disc do
 					if tiers[d] ~= nil and tiers[d] < NEED_TIER[b.minLevel] then
@@ -137,10 +148,12 @@ return function(D, S)
 		local pop = V.POP_AT[level]
 		local supply = { food = 0, cloth = 0, home = 0, hygiene = 0 }
 		local builtBy = {}
-		for _, b in V.buildings(state, level) do
+		for _, b in V.buildings(state, level, portId) do
 			local axis = AXIS_OF_CAT[b.category]
 			local cap = 60 + 30 * b.minLevel
-			if axis then
+			if b.category == "faith" then
+				builtBy.faith = (builtBy.faith or 0) + 1
+			elseif axis then
 				supply[axis] += cap
 				builtBy[axis] = (builtBy[axis] or 0) + 1
 			elseif b.category == "industry" then
@@ -173,6 +186,8 @@ return function(D, S)
 			end
 			table.insert(axes, { id = key, name = V.AXIS_NAME[key], supply = math.floor(supply[key]), need = need, pct = pct, status = st, tip = tip, buildings = builtBy[key] or 0 })
 		end
+		-- 종교 건물은 마음의 안정(최대 +0.1)
+		stability = math.min(1, stability + math.min(0.1, (builtBy.faith or 0) * 0.025))
 		local mood = if stability >= 0.85 then "번영" elseif stability >= 0.65 then "안정" elseif stability >= 0.45 then "불안" else "위기"
 		return {
 			level = level, pop = math.floor(pop * (0.6 + 0.4 * stability)), popCap = pop, stability = stability, mood = mood, axes = axes,
@@ -239,6 +254,10 @@ return function(D, S)
 			end
 		end
 		local sim = V.sim(state, portId, level)
+		local cultureNames = {}
+		for _, b in V.buildings(state, level, portId) do
+			if b.cultures then table.insert(cultureNames, b.name) end
+		end
 		local produces = port.produces or {}
 		local rawBy = D.ProductionChains.rawByClass(produces)
 		local rawParts = {}
@@ -257,6 +276,7 @@ return function(D, S)
 			end
 		end
 		return {
+			culture = V.CULTURE_NAME[V.cultureOf(portId) or ""] or "미정", cultureBuildings = cultureNames,
 			sim = sim, jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
 			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,

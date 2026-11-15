@@ -767,6 +767,19 @@ do
 	local simFull = S.Village.sim(stFull, "london", 3)
 	local simNone = S.Village.sim(S.State.new("england", 1700), "london", 3)
 	check("의식주 시뮬: 학문이 발전해 건물이 들어서면 만족도가 오른다", simFull.stability >= simNone.stability and simFull.stability > simNone.stability - 1e-9)
+	local cultOk, cultBad = true, {}
+	for _, b in D.EconomyBuildings.List do
+		for _, c in (b.cultures or {}) do
+			if not S.Village.CULTURE_NAME[c] then cultOk = false table.insert(cultBad, b.id .. ":" .. c) end
+		end
+	end
+	check("문화권 건물: 문화권 id 가 모두 올바르다", cultOk, table.concat(cultBad, ","))
+	local mosqueHere, mosqueThere = false, false
+	for _, b in S.Village.buildings(stFull, 6, "alexandria") do if b.name == "모스크" then mosqueHere = true end end
+	for _, b in S.Village.buildings(stFull, 6, "london") do if b.name == "모스크" then mosqueThere = true end end
+	local cathedralThere = false
+	for _, b in S.Village.buildings(stFull, 6, "london") do if b.name == "대성당·성당" then cathedralThere = true end end
+	check("문화권 건물: 이슬람권 항구에는 모스크, 런던에는 성당이 서고 서로 바뀌지 않는다", mosqueHere and not mosqueThere and cathedralThere)
 	local pl = S.Village.portList(stPD)
 	check("항구 발전도: 목록은 점수 순이고 현재 항구를 포함", #pl >= 1 and pl[1].id == "london")
 end

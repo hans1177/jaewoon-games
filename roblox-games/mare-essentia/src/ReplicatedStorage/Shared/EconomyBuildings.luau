@@ -1,6 +1,7 @@
 --!nonstrict
 -- 지역 경제 건물 표 (docs/BUILDINGS_CATALOG.md 에서 옮김). 마을 안정도(식·의·주·위생·치안)와 교역 보너스의 기준 자료.
--- category: food(식) | cloth(의) | home(주) | industry(산업·교역) | public(공공시설)
+-- category: food(식) | cloth(의) | home(주) | industry(산업·교역) | public(공공시설) | faith(종교)
+-- cultures: 이 건물이 서는 문화권(CultureRegions 의 id). 없으면 어디서나 선다.
 -- disc: 연결 학문 id (KnowledgeTree.Disciplines 또는 Planned). where: 건물이 있는 지역 설명(국가별은 docs/BUILDINGS_BY_REGION.md).
 
 local B = {}
@@ -11,6 +12,7 @@ B.Categories = {
 	{ id = "home", name = "주" },
 	{ id = "industry", name = "산업·교역" },
 	{ id = "public", name = "공공시설" },
+	{ id = "faith", name = "종교" },
 }
 
 B.List = {
@@ -75,6 +77,41 @@ B.List = {
 	{ id = "b_public_59", name = "등대·부표", category = "public", where = "항구", minLevel = 2, disc = { "navigation" }, effect = "항해 안전" },
 	{ id = "b_public_60", name = "시장 광장", category = "public", where = "전 지역", minLevel = 1, disc = { "commerce" }, effect = "거래 편의" },
 	{ id = "b_public_61", name = "묘지·성지", category = "public", where = "전 지역", minLevel = 1, disc = { "religious_studies" }, effect = "안정도" },
+	{ id = "b_c_01", name = "함맘(공중 목욕탕)", category = "public", where = "문화권별", minLevel = 2, disc = { "public_health" }, effect = "위생↑, 역병 완화", cultures = { "red_sea", "mediterranean" } },
+	{ id = "b_c_02", name = "센토(공중 목욕탕)", category = "public", where = "문화권별", minLevel = 2, disc = { "public_health" }, effect = "위생↑, 안정도", cultures = { "east_asia" } },
+	{ id = "b_c_03", name = "분수 광장·급수 우물", category = "public", where = "문화권별", minLevel = 1, disc = { "civil_engineering" }, effect = "위생↑", cultures = { "atlantic_europe", "north_sea", "mediterranean" } },
+	{ id = "b_c_04", name = "계단식 우물·저수지", category = "public", where = "문화권별", minLevel = 2, disc = { "civil_engineering" }, effect = "물 공급↑", cultures = { "south_asia" } },
+	{ id = "b_c_05", name = "수상 시장·수로", category = "public", where = "문화권별", minLevel = 2, disc = { "commerce" }, effect = "식량·교역", cultures = { "southeast_asia" } },
+	{ id = "b_c_06", name = "시청·길드 회관", category = "public", where = "문화권별", minLevel = 2, disc = { "political_science" }, effect = "세금 효율", cultures = { "atlantic_europe", "north_sea", "mediterranean" } },
+	{ id = "b_c_07", name = "관아·관청", category = "public", where = "문화권별", minLevel = 2, disc = { "political_science" }, effect = "세금 효율, 치안", cultures = { "east_asia" } },
+	{ id = "b_c_08", name = "디완(관청)·카디 법정", category = "public", where = "문화권별", minLevel = 2, disc = { "law" }, effect = "치안↑", cultures = { "red_sea", "east_africa" } },
+	{ id = "b_c_09", name = "대학·학원", category = "public", where = "문화권별", minLevel = 4, disc = { "education" }, effect = "학문 효과", cultures = { "atlantic_europe", "north_sea", "mediterranean" } },
+	{ id = "b_c_10", name = "서원·향교", category = "public", where = "문화권별", minLevel = 3, disc = { "education" }, effect = "학문 효과", cultures = { "east_asia" } },
+	{ id = "b_c_11", name = "마드라사·도서관", category = "public", where = "문화권별", minLevel = 3, disc = { "education" }, effect = "학문 효과", cultures = { "red_sea", "east_africa", "west_africa" } },
+	{ id = "b_c_12", name = "힌두·불교 학당", category = "public", where = "문화권별", minLevel = 3, disc = { "education" }, effect = "학문 효과", cultures = { "south_asia", "southeast_asia" } },
+	{ id = "b_c_13", name = "병원(수도원·시립)", category = "public", where = "문화권별", minLevel = 3, disc = { "medicine" }, effect = "역병 완화", cultures = { "atlantic_europe", "north_sea", "mediterranean" } },
+	{ id = "b_c_14", name = "비마리스탄(병원)", category = "public", where = "문화권별", minLevel = 3, disc = { "medicine" }, effect = "역병 완화, 의학", cultures = { "red_sea" } },
+	{ id = "b_c_15", name = "약방·한의원", category = "public", where = "문화권별", minLevel = 2, disc = { "pharmacology" }, effect = "위생·회복", cultures = { "east_asia" } },
+	{ id = "b_c_16", name = "대성당·성당", category = "faith", where = "문화권별", minLevel = 2, disc = { "theology" }, effect = "안정도↑, 축제", cultures = { "atlantic_europe", "north_sea", "mediterranean", "americas" } },
+	{ id = "b_c_17", name = "모스크", category = "faith", where = "문화권별", minLevel = 2, disc = { "religious_studies" }, effect = "안정도↑, 축제", cultures = { "red_sea", "east_africa", "west_africa" } },
+	{ id = "b_c_18", name = "힌두·불교 사원", category = "faith", where = "문화권별", minLevel = 2, disc = { "religious_studies" }, effect = "안정도↑, 축제", cultures = { "south_asia", "southeast_asia" } },
+	{ id = "b_c_19", name = "신사·사원", category = "faith", where = "문화권별", minLevel = 2, disc = { "religious_studies" }, effect = "안정도↑, 축제", cultures = { "east_asia" } },
+	{ id = "b_c_20", name = "원주민 신전 광장", category = "faith", where = "문화권별", minLevel = 3, disc = { "anthropology" }, effect = "안정도↑, 의례", cultures = { "americas" } },
+	{ id = "b_c_21", name = "산호석 모스크", category = "faith", where = "문화권별", minLevel = 3, disc = { "religious_studies" }, effect = "안정도↑", cultures = { "east_africa" } },
+	{ id = "b_c_22", name = "바자르(지붕 시장)", category = "industry", where = "문화권별", minLevel = 3, disc = { "commerce" }, effect = "중계 교역↑", cultures = { "red_sea" } },
+	{ id = "b_c_23", name = "흙벽돌 시장·소금 교역소", category = "industry", where = "문화권별", minLevel = 2, disc = { "commerce" }, effect = "금·소금 교환", cultures = { "west_africa" } },
+	{ id = "b_c_24", name = "다우선 선착장", category = "industry", where = "문화권별", minLevel = 2, disc = { "navigation" }, effect = "인도양 항해", cultures = { "east_africa", "south_asia", "red_sea" } },
+	{ id = "b_c_25", name = "향신료 창고·상관", category = "industry", where = "문화권별", minLevel = 3, disc = { "botany" }, effect = "향신료 교역", cultures = { "south_asia", "southeast_asia" } },
+	{ id = "b_c_26", name = "도자기·비단 공방가", category = "industry", where = "문화권별", minLevel = 3, disc = { "crafts" }, effect = "수출 상품", cultures = { "east_asia" } },
+	{ id = "b_c_27", name = "한자 상관·창고", category = "industry", where = "문화권별", minLevel = 2, disc = { "commerce" }, effect = "북해 교역", cultures = { "north_sea" } },
+	{ id = "b_c_28", name = "유리·직조 공방가", category = "industry", where = "문화권별", minLevel = 3, disc = { "chemistry" }, effect = "사치품", cultures = { "mediterranean" } },
+	{ id = "b_c_29", name = "풍차·간척 배수 시설", category = "food", where = "문화권별", minLevel = 3, disc = { "civil_engineering" }, effect = "농지·식량", cultures = { "north_sea" } },
+	{ id = "b_c_30", name = "올리브·포도 압착소", category = "food", where = "문화권별", minLevel = 2, disc = { "agronomy" }, effect = "식량·술", cultures = { "mediterranean", "atlantic_europe" } },
+	{ id = "b_c_31", name = "논·쌀 창고", category = "food", where = "문화권별", minLevel = 2, disc = { "agronomy" }, effect = "식량↑", cultures = { "east_asia", "southeast_asia", "south_asia" } },
+	{ id = "b_c_32", name = "옥수수·감자 저장고", category = "food", where = "문화권별", minLevel = 2, disc = { "agronomy" }, effect = "식량↑", cultures = { "americas" } },
+	{ id = "b_c_33", name = "기장·야자 저장고", category = "food", where = "문화권별", minLevel = 2, disc = { "agronomy" }, effect = "식량↑", cultures = { "west_africa", "east_africa" } },
+	{ id = "b_c_34", name = "은광·정제소", category = "industry", where = "문화권별", minLevel = 3, disc = { "metallurgy" }, effect = "은 생산", cultures = { "americas" } },
+	{ id = "b_c_35", name = "설탕 농장·정제소", category = "food", where = "문화권별", minLevel = 3, disc = { "chemistry" }, effect = "설탕 교역", cultures = { "americas" } },
 }
 
 B.ById = {}
