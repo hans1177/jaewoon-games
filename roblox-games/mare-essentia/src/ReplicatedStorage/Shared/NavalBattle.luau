@@ -1919,6 +1919,34 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			previewHint.Text = t("카드를 누르면\n설명이 여기에 나와요.\n\n한 번 더 누르면\n카드를 내요.", "Tap a card to read it here.\n\nTap again to play it.")
 			previewHint.Parent = g
 			frameEdge(previewHint, brass, 6)
+			-- 왼쪽 아래: 최근 전황 기록 (안내 띠의 문장이 지나가 버려도 다시 읽을 수 있다)
+			local logBox = Instance.new("TextLabel")
+			logBox.Name = "BattleLog"
+			logBox.Position = UDim2.fromScale(0.01, 0.66)
+			logBox.Size = UDim2.fromScale(0.19, 0.325)
+			logBox.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
+			logBox.BackgroundTransparency = 0.25
+			logBox.BorderSizePixel = 0
+			logBox.Font = Enum.Font.Gotham
+			logBox.TextColor3 = Color3.fromRGB(226, 208, 170)
+			logBox.TextSize = 14
+			logBox.TextWrapped = true
+			logBox.TextXAlignment = Enum.TextXAlignment.Left
+			logBox.TextYAlignment = Enum.TextYAlignment.Bottom
+			logBox.Text = ""
+			logBox.Parent = g
+			local logPad = Instance.new("UIPadding")
+			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
+			logPad.Parent = logBox
+			frameEdge(logBox, brass, 6)
+			local lines = {}
+			info:GetPropertyChangedSignal("Text"):Connect(function()
+				local txt = info.Text
+				if txt == "" or txt == lines[#lines] or string.find(txt, "카드를 눌러", 1, true) or string.find(txt, "Your turn", 1, true) then return end
+				table.insert(lines, txt)
+				while #lines > 5 do table.remove(lines, 1) end
+				logBox.Text = table.concat(lines, "\n\n")
+			end)
 		end
 		-- [확대 카드] 어두운 배경을 터치하면 선택을 취소하고 기존 카드 대전으로 돌아간다.
 		local focusShade = Instance.new("TextButton")
