@@ -6062,7 +6062,11 @@ function openYardHall()
 end
 
 function H.startField(s)
+	-- [입장 추적] 입력 전달 여부와 실제 지상맵 생성 단계를 별도로 검증한다(저장/보상과 무관).
+	workspace:SetAttribute("FieldEntryAttempt", tostring(s.id))
+	workspace:SetAttribute("FieldEntryStage", "BUTTON")
 	if inField then
+		workspace:SetAttribute("FieldEntryFailure", "ACTIVE_SCENE_BUSY")
 		return
 	end
 	-- [입장 규칙] 지역·모험 레벨·잔여 발견물은 기존 서버 기준을 그대로 따른다.
@@ -6105,6 +6109,7 @@ function H.startField(s)
 	for _, c in (view and view.careers) or {} do
 		if c.id == "battle" then battleLevel = c.level end
 	end
+	workspace:SetAttribute("FieldEntryStage", "BUILDING")
 	local startOk, startResult = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
 		battleStats = view and view.battleStats,
@@ -6160,11 +6165,13 @@ function H.startField(s)
 			startOk = false
 			startErr = string.format("FIELD_ENTRY_NOT_READY ground=%s gui=%s root=%s combat=%s", tostring(ground ~= nil), tostring(fieldGui ~= nil), tostring(root and root.Position.X), tostring(workspace:GetAttribute("FieldCombatReady")))
 		else
+			workspace:SetAttribute("FieldEntryStage", "ACTIVE")
 			main.Visible = false
 			message = ""
 		end
 	end
 	if not startOk then
+		workspace:SetAttribute("FieldEntryStage", "FAILED")
 		workspace:SetAttribute("FieldEntryFailure", tostring(startErr):sub(1, 200))
 		workspace:SetAttribute("FieldCombatReady", nil)
 		-- 필드 생성 중 멈추면 지도·전투 조작 화면까지 정리하고 캐릭터·시점을 복구한다.
@@ -6246,7 +6253,9 @@ function RENDERERS.explore()
 				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else "지상맵 입장",
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
-		return H.tileGrid(tiles, content, 176, 156)
+		-- [모바일 클릭 영역] 아이콘(86)·이름(26)·설명(20)·버튼(44)을 겹치지 않는 높이에 배치한다.
+		-- 기존 156px에서는 설명과 입장 버튼이 최대 36px 겹쳐 실제 터치 대상이 불명확했다.
+		return H.tileGrid(tiles, content, 176, 210)
 	end)
 	end
 	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 전투 본부의 탐험 탭은 여기서 끝난다.
