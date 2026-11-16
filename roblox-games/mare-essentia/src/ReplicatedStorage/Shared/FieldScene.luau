@@ -358,6 +358,7 @@ end
 -- opts: { name, nodes, danger, seed, onFinish(result) }  result: "clear" | "retreat" | "defeat"
 function FieldScene.start(opts)
 	workspace:SetAttribute("FieldCombatReady", nil) -- 이전 탐험의 준비 상태를 새 입장의 성공으로 오인하지 않는다.
+	workspace:SetAttribute("FieldExitReason", nil)
 	if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", 0) end
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("FieldScene")
@@ -758,6 +759,8 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		workspace:SetAttribute("FieldExitReason", result)
+		if RunService:IsStudio() then warn("[MareEssentia] 탐험 종료 이유", result) end
 		-- [복구] 항구 복귀 시 이전 카메라·줌 제한을 남기지 않는다.
 		player.CameraMode = savedCameraMode
 		player.CameraMaxZoomDistance = math.max(savedZoomMax, savedZoomMin)
@@ -786,6 +789,16 @@ function FieldScene.start(opts)
 		end
 	end
 
+	-- [전투 중 강제 귀환 방지] 발견물을 전부 조사해도 자동으로 항구로 나가지 않는다.
+	-- 실제 탐험 완료 버튼을 선택했을 때만 기존 Explore 보상 서버 액션이 실행된다.
+	local completeBtn = btn(gui, "탐험 완료", Color3.fromRGB(132, 112, 58), UDim2.fromOffset(112, 52),
+		UDim2.fromOffset(12, 112), Vector2.new(0, 0))
+	completeBtn.Name = "FieldComplete"
+	completeBtn.Visible = false
+	completeBtn.TextSize = 16
+	completeBtn.Activated:Connect(function()
+		if not finished and found >= nodeCount then finish("clear") end
+	end)
 	-- 발견물: 반짝이는 상자. 가까이 가서 조사한다.
 	for i = 1, nodeCount do
 		local pos = ORIGIN + scatter(30)
@@ -801,6 +814,8 @@ function FieldScene.start(opts)
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
 		pp.ActionText = "조사"
+		-- [스킬 키 충돌] 기존 회전베기 E와 Roblox 기본 조사 E를 분리한다.
+		pp.KeyboardKeyCode = Enum.KeyCode.T
 		pp.ObjectText = "발견물"
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
@@ -815,9 +830,8 @@ function FieldScene.start(opts)
 			say(string.format("발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
-				task.delay(0.8, function()
-					finish("clear")
-				end)
+				completeBtn.Visible = true
+				say("조사 완료! 전투를 마치고 '탐험 완료'를 눌러 귀환해.")
 			end
 		end)
 	end
@@ -2490,13 +2504,16 @@ function FieldScene.start(opts)
 	staminaFill.BorderSizePixel = 0
 	staminaFill.Parent = staminaBack
 	local skillBtns = {}
-	-- [전투 HUD] 공격은 오른쪽 엄지 아래, 회피·방어와 장착 3칸은 위쪽 반원 두 줄에 배치한다.
-	-- 기존 공격 판정·단축키·슬롯 해금 수는 바꾸지 않고 터치 간격만 넓힌다.
-	local screenWidth = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X or 390
-	if screenWidth < 100 then screenWidth = 390 end
-	local outerSkillRadius = math.clamp(math.floor((screenWidth - 40) * 0.42), 110, 147)
-	local innerSkillRadius = math.max(58, outerSkillRadius - 56)
-	local ATK_C = Vector2.new(-math.clamp(screenWidth * 0.48, 154, 192), -157)
+	-- [모바일 전투 HUD] 화면 높이와 엄지 도달 범위에 맞춰 큰 반원형으로 배치한다.
+	-- 오른쪽 화면 밖 잘림을 막고 공격 버튼/철수 버튼/조이스틱과 겹치지 않게 둔다.
+	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
+	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
+	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
+	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.4, screenHeight - 220), 104, 150)
+	local innerSkillRadius = 70
+	local skillSize = if visualMobile then 76 else 68
+	local basicSize = if visualMobile then 68 else 64
+	local ATK_C = Vector2.new(-math.clamp(screenWidth * 0.49, 170, 215), -157)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
@@ -2504,19 +2521,21 @@ function FieldScene.start(opts)
 	local function mkSkill(key, label, color, pos, size)
 		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.Name = "FieldSkill_" .. key
-		b.TextSize = 13
+		b.TextSize = 15
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 48))
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 132))
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 46), basicSize)
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 134), basicSize)
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
+		-- [전투 스킬 안정성] 시전자의 이름/대상과 관계없이 시간 효과의 시각을 함수 안에서 계산한다.
+		local now = os.clock()
 		local pos = hp0.Position + Vector3.new(0, 2, 0)
 		if sk == "heal" then
 			pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
@@ -2613,7 +2632,7 @@ function FieldScene.start(opts)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(outerSkillRadius, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
@@ -2622,11 +2641,11 @@ function FieldScene.start(opts)
 			end)
 		end
 		if slotOf.heavy then
-			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), 56)
+			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), skillSize)
 			addIcon(skillBtns.heavy.btn, "Menu/cc0_axe")
 		end
 		if slotOf.sweep then
-			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), 56)
+			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), skillSize)
 			addIcon(skillBtns.sweep.btn, "Menu/cc0_sword")
 		end
 		local function useCard(key, card)
@@ -2653,9 +2672,10 @@ function FieldScene.start(opts)
 			if i > 3 or not slotOf[key] then
 				continue
 			end
-			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(56, 56), slotPos(key), Vector2.new(0.5, 0.5))
+			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
 			b.Name = "FieldSkill_" .. key
-			b.TextSize = 12
+			b.TextSize = 14
+			b.TextWrapped = true
 			-- [도감 원화 연동] 실제 카드 ID의 등록 원화가 있으면 그림 전체를 고급 스킬 메달로 재사용한다.
 			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
 			addIcon(b, paintedKey or (if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
