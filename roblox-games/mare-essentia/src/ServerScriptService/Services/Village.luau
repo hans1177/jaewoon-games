@@ -44,7 +44,9 @@ return function(D, S)
 	function V.tiers(state)
 		local counts = understoodByDisc(state)
 		local tiers, score = {}, 0
+		-- [마을 균형] 세부 학문은 중복 연구 분류다. 원래 21학문의 건물/레벨/인구 보상을 두 번 계산하지 않는다.
 		for _, d in K.Disciplines do
+			if d.derived then continue end
 			local t = tierOf(counts[d.id] or 0)
 			tiers[d.id] = t
 			score += t
@@ -213,6 +215,7 @@ return function(D, S)
 		local tiers = V.tiers(state)
 		local facilities, jobs, byDisc = {}, {}, {}
 		for _, d in K.Disciplines do
+			if d.derived then continue end
 			local list = D.DisciplineFacilities.List[d.id]
 			local t = tiers[d.id] or 0
 			local open = 0
