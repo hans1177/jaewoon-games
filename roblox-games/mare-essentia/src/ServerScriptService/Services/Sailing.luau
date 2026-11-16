@@ -405,6 +405,9 @@ return function(D, S)
 		state.voyageRoute = state.portId .. ">" .. toId
 		state.portId = toId
 		state.stats.visited[toId] = true
+		-- [단순 발견] 도착한 항구의 지형·옛 건축물은 추가 탐험 없이 첫 방문만으로 도감에 기록된다.
+		-- 기존 탐험 지점·원더·유물은 이 경로에 포함하지 않는다.
+		S.Discovery.grantVisitCards(state, toId, msgs)
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
 		S.Perk.gainSpec(state, "voyage", days * 3, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
