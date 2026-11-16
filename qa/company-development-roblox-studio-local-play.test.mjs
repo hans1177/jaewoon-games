@@ -3773,6 +3773,10 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   );
   assert.match(script,/fastFailOnProviderTimeout:true/);
   assert.match(script,/timeoutMs:45000/);
+  // 긴 안내창 검증만 늘리고, 다른 단계의 기본 RPC 제한을 복구한다.
+  assert.match(script,/const requestedTimeoutMs=Number\\(st\\.timeoutMs\\)/);
+  assert.match(script,/client\\.timeoutMs=Math\\.min\\(90000,Math\\.floor\\(requestedTimeoutMs\\)\\)/);
+  assert.match(script,/finally\\{client\\.timeoutMs=originalTimeoutMs;\\}/);
   assert.match(script,/studioStateAfterFirstClick:detail/);
   assert.match(script,/STUDIO_SCRIPT_POST_CLICK_STATE=/);
   assert.match(script,/for\(const ctx of \['Server','Client'\]\)/);
@@ -3811,6 +3815,10 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
   assert.equal(steps.length,236);
+  const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
+  assert.equal(slowIntro.length,1);
+  assert.equal(slowIntro[0].timeoutMs,90000);
+  assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
   assert.equal(steps.filter(step=>step.type==='click_from_luau').length,9);
   assert.equal(steps.filter(step=>step.type==='capture').length,62);
   for(const [from,to] of [['trade','harbor'],['route','map'],['codex','tech'],['status','crew']]){
