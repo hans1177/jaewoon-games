@@ -16,6 +16,11 @@ return function(D, S)
 		mineral = { "mineralogy", "chemistry", "geography" },
 		relic = { "archaeology", "history", "physics" },
 		archive = { "linguistics", "history", "philosophy" },
+		language = { "linguistics", "philology", "history" },
+		religion = { "religious_studies", "anthropology", "history" },
+		politics = { "political_science", "history", "law" },
+		law = { "law", "political_science", "ethics" },
+		custom = { "anthropology", "linguistics", "religious_studies" },
 		map = { "navigation", "geography", "astronomy" },
 		science = { "physics", "chemistry", "philosophy" },
 		medicine = { "medicine", "botany", "chemistry" },
@@ -629,6 +634,7 @@ return function(D, S)
 				if parent then include(parent.disc) end
 			end
 			for _, discId in D.KnowledgeTree.CardRelatedDisciplines[c.id] or {} do include(discId) end
+			for _, discId in (c.meta and c.meta.relatedDisciplines or {}) do include(discId) end
 			for _, discId in RELATED_BY_KIND[kind] or {} do include(discId) end
 			return names
 		end
@@ -662,6 +668,10 @@ return function(D, S)
 				subkind = D.Cards.subkindOf(c),
 				discipline = disc and disc.name or "학문 외 자료",
 				relatedDisciplines = relatedNames(c, kind, disc and disc.id),
+				-- 존재 형태·시대·지역·선행 지식은 카드 종류와 독립적으로 도감에 전달한다.
+				era = c.meta and c.meta.era or nil,
+				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
+				prerequisites = cardNode and cardNode.needs or {},
 				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
 				rarityGuide = S.Discovery.rarityGuide(c),
 				found = found,
