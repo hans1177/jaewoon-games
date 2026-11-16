@@ -2946,6 +2946,8 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
+	-- [왕궁/광장/작업장] 모든 NPC가 같은 기존 애니메이션 목록을 사용하도록 먼저 초기화한다.
+	local walkers = {}
 	-- [지역별 건축] 기존 항구 문화권을 따르되, 로도스·파마구스타는 점령 연도 이후 오스만 양식으로 전환한다.
 	-- 건축·복식에만 적용하며 교역·경제·저장 데이터는 그대로 유지한다.
 	local year = if type(info.year) == "number" then info.year else 1700
@@ -3471,7 +3473,7 @@ function PortScene.build(info, onFacility)
 
 	-- (수상한 손님은 이제 주점에서 만난다)
 	-- 광장 인구는 세계경제 거주자 표본을 그대로 사용한다.
-	local walkers = {}
+	local plazaStartIndex = #walkers
 	local plazaResidents = if info.sim then math.clamp(math.floor((info.sim.residents or 6) / 12), 1, 4) else 4
 	for _ = 1, plazaResidents do
 		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
@@ -3481,7 +3483,8 @@ function PortScene.build(info, onFacility)
 	end
 	-- [Studio 전용] 기존 광장 주민 2명을 활용한 R15 모션 대련 테스트.
 	-- 실제 전투 판정·체력·저장·경제에는 영향을 주지 않으며 라이브에서는 실행하지 않는다.
-	local sparring = if RunService:IsStudio() and #walkers >= 2 then { walkers[1], walkers[2] } else nil
+	local sparring = if RunService:IsStudio() and #walkers - plazaStartIndex >= 2
+		then { walkers[plazaStartIndex + 1], walkers[plazaStartIndex + 2] } else nil
 	if sparring then
 		folder:SetAttribute("R15SparringTest", true)
 		-- 스튜디오 전용 독립 모션 무대: 항구 장애물과 분리하고 기존 주민 모델만 재사용한다.
