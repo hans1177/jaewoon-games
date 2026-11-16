@@ -940,7 +940,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
       robloxSafety:true, commercialRights:true};
     const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
     const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
-    const execute = () => runInNewContext('(async()=>{' + intake + '\\n})()', {
+    const execute = () => runInNewContext('(async()=>{' + intake + '\n})()', {
       ROOT:root,fs:fs.promises,path,crypto:{createHash},Buffer,
       studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
     });

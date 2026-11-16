@@ -94,7 +94,7 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
     'noPartsOrSprites','robloxSafety','commercialRights'];
   if (review?.sourceType !== 'IMAGE_GENERATION_MODEL' || review.sourceFile !== relativeSource
     || review.reviewer !== 'VIBE_AGENT_VISUAL_REVIEW' || review.license !== 'PROJECT_ORIGINAL_ART'
-    || !/^\\d{4}-\\d{2}-\\d{2}$/.test(review.reviewedAt || '')
+    || !/^\d{4}-\d{2}-\d{2}$/.test(review.reviewedAt || '')
     || !reviewChecks.every(key => review[key] === true))
     throw new Error('MODEL_ORIGINAL_QA_REQUIRED:' + id);
   const bytes = await fs.readFile(sourcePath);
