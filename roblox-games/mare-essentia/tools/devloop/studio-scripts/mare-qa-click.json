@@ -358,12 +358,12 @@
   },
   {
     "type": "wait",
-    "seconds": 3
+    "ms": 3000
   },
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'TRADE_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'TRADE_HALL_DISABLED') assert(not hud.Visible,'TRADE_HUD_ICON_LEFTOVER') assert(not top.Enabled,'TRADE_TOP_ICON_LEFTOVER') return 'TRADE_HALL_NO_LEFTOVER_ICONS_PASS'"
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'TRADE_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'TRADE_HALL_DISABLED') local labelFound=false for _,v in ipairs(g:GetDescendants()) do if v:IsA('TextLabel') and string.find(v.Text,'교역 장부',1,true) then labelFound=true break end end assert(labelFound,'TRADE_SCREEN_TITLE_MISSING') assert(not hud.Visible,'TRADE_HUD_ICON_LEFTOVER') assert(not top.Enabled,'TRADE_TOP_ICON_LEFTOVER') return 'TRADE_HALL_NO_LEFTOVER_ICONS_PASS'"
   },
   {
     "type": "capture",
@@ -376,12 +376,12 @@
   },
   {
     "type": "wait",
-    "seconds": 3
+    "ms": 3000
   },
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'YARD_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'YARD_HALL_DISABLED') assert(not hud.Visible,'YARD_HUD_ICON_LEFTOVER') assert(not top.Enabled,'YARD_TOP_ICON_LEFTOVER') return 'YARD_HALL_NO_LEFTOVER_ICONS_PASS'"
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'YARD_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'YARD_HALL_DISABLED') local title=g:FindFirstChild('TradeHallGui',true) local labelFound=false for _,v in ipairs(g:GetDescendants()) do if v:IsA('TextLabel') and string.find(v.Text,'조선 도감',1,true) then labelFound=true break end end assert(labelFound,'YARD_SCREEN_TITLE_MISSING') assert(not hud.Visible,'YARD_HUD_ICON_LEFTOVER') assert(not top.Enabled,'YARD_TOP_ICON_LEFTOVER') return 'YARD_HALL_NO_LEFTOVER_ICONS_PASS'"
   },
   {
     "type": "capture",
@@ -395,7 +395,7 @@
   },
   {
     "type": "wait",
-    "seconds": 2
+    "ms": 2000
   },
   {
     "type": "luau",
