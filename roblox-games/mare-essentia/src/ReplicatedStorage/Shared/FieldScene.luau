@@ -865,8 +865,7 @@ function FieldScene.start(opts)
 		end)
 	end
 
-	-- [5단 마무리] 실제 게임 속도·피해 판정은 그대로 두고 R15 모션과 카메라만 일시 연출한다.
-	local slowMotionUntil = 0
+	-- [2~3연타 마무리] 숙련도는 5단계까지 유지하되 연타는 최대 3타, 시각 연출만 적용한다.
 	local killcamToken = 0
 	local killcamCamera = nil
 	local killcamFov = 70
@@ -876,7 +875,6 @@ function FieldScene.start(opts)
 		end
 		finished = true
 		killcamToken += 1
-		slowMotionUntil = 0
 		pcall(function() RunService:UnbindFromRenderStep("FieldMasteryKillcam") end)
 		if killcamCamera and killcamCamera.Parent then killcamCamera.FieldOfView = killcamFov end
 		workspace:SetAttribute("FieldExitReason", result)
@@ -1608,9 +1606,7 @@ function FieldScene.start(opts)
 				local nowc = os.clock()
 				local elapsed = math.max(0, nowc - hitStopLast)
 				if nowc < hitStopUntil then
-					swingT0 += elapsed -- 기존 타격 정지 유지
-				elseif nowc < slowMotionUntil then
-					swingT0 += elapsed * 0.58 -- [5단] 캐릭터 모션만 약 0.42배속, 적 AI와 타격 시계는 그대로
+					swingT0 += elapsed -- 기존 타격 정지는 유지한다. 긴 숙련 슬로모션은 사용하지 않는다.
 				end
 				hitStopLast = nowc
 			end
@@ -2000,43 +1996,82 @@ function FieldScene.start(opts)
 			afterimage(player.Character, Color3.fromRGB(255, 214, 120), 3, 0.05)
 		end
 	end
-	-- [3~5단 숙련 시네마] 3단 충격파/시점 펀치, 4단 잔상/감속, 5단 마무리 킬캠.
-	-- 카메라와 주인공 모션만 처리한다. 실제 적 AI·대미지·드롭·쿨타임 시계는 그대로 둔다.
+	-- [무기별 2~3연타 막타] 2타는 짧게, 3타는 각 무기에 맞춘 순간 마무리로 차별화한다.
+	-- 기존 카메라·사운드·공용 VFX만 사용한다. 추가 발사체 판정·피해·보상·쿨타임은 없다.
 	local function masteryCinema(hrp: BasePart, stage: number, defeatedAt: Vector3?)
-		if finished or not hrp.Parent or stage < 3 then return end
+		if finished or not hrp.Parent or stage < 2 or stage > 3 then return end
+		local strong = stage == 3
+		local family = wpn.family
+		local front = hrp.Position + hrp.CFrame.LookVector * (if wpn.ranged then 10 else 4)
+		local target = if typeof(defeatedAt) == "Vector3" and (defeatedAt - hrp.Position).Magnitude <= 40 then defeatedAt else front
+		local reach = math.max(7, wpn.range * STUD)
+		local color = if family == "fist" then Color3.fromRGB(255, 209, 132)
+			elseif family == "dagger" then Color3.fromRGB(120, 243, 205)
+			elseif family == "axe" then Color3.fromRGB(255, 144, 90)
+			elseif family == "spear" then Color3.fromRGB(126, 224, 245)
+			elseif family == "blunt" then Color3.fromRGB(238, 189, 124)
+			elseif family == "bow" then Color3.fromRGB(165, 231, 165)
+			elseif wpn.id == "crossbow" then Color3.fromRGB(231, 201, 140)
+			elseif family == "firearm" then Color3.fromRGB(255, 210, 119)
+			else Color3.fromRGB(165, 218, 255)
+		local finishName = if family == "fist" then "훅"
+			elseif family == "dagger" then "급습"
+			elseif family == "axe" then "분쇄"
+			elseif family == "spear" then "관통"
+			elseif family == "blunt" then "충격"
+			elseif family == "bow" then "속사"
+			elseif wpn.id == "crossbow" then "관통 사격"
+			elseif family == "firearm" then "반동 사격"
+			else "교차 베기"
+		showCombo(string.format("%s %d연타 · %s!", wpn.name, stage, finishName))
+		screenFlash(color, if visualMobile then (if strong then 0.91 else 0.95) else (if strong then 0.81 else 0.91))
+		local now = os.clock()
+		shakeUntil = math.max(shakeUntil, now + (if strong then 0.14 else 0.07))
+		shakeAmp = (if visualMobile then (if strong then 0.14 else 0.06) else (if strong then 0.30 else 0.12))
+			* (if family == "axe" or family == "blunt" then 1.25 else 1)
+		sfx(if family == "axe" or family == "blunt" then "sfx_metal_clash"
+			elseif family == "firearm" then "sfx_hit" else "sfx_card_swing",
+			if visualMobile then 0.38 else 0.5, if strong then 0.92 else 1.13)
+		if family == "fist" then
+			trailsOn(player.Character, { "RightHand", "LeftHand" }, color, 0.11, 0.22)
+			shockRing(front - Vector3.new(0, 1.6, 0), if strong then 9 else 5, color, 0.22)
+		elseif family == "blade" then
+			slashArc(hrp, color, reach, 110, 30)
+			if strong then slashArc(hrp, color:Lerp(Color3.new(1, 1, 1), 0.3), reach * 0.85, 100, -35) end
+		elseif family == "dagger" then
+			slashArc(hrp, color, reach * 0.7, 68, -30)
+			if strong and not visualMobile then afterimage(player.Character, color, 2, 0.035) end
+		elseif family == "axe" then
+			slashArc(hrp, color, reach, 120, -45)
+			shockRing(front - Vector3.new(0, 1.6, 0), if strong then 11 else 6, color, 0.26)
+		elseif family == "spear" then
+			slashArc(hrp, color, reach, 50, 6)
+			pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.new(1, 1, 1), if strong then 8 else 4, if strong then 7 else 3)
+		elseif family == "blunt" then
+			shockRing(front - Vector3.new(0, 1.8, 0), if strong then 12 else 7, color, 0.28)
+			if strong and not visualMobile then shards(front, 8, color, 4) end
+		elseif family == "bow" then
+			if strong then arrowTrail(hrp.Position + Vector3.new(0, 1.1, 0), target) end
+			pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.new(1, 1, 1), if strong then 8 else 4, if strong then 7 else 3)
+		elseif wpn.id == "crossbow" then
+			if strong then arrowTrail(hrp.Position + Vector3.new(0, 1.1, 0), target) end
+			pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.fromRGB(255, 234, 172), if strong then 9 else 5, if strong then 7 else 3)
+		elseif family == "firearm" then
+			pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1, -3), color, Color3.fromRGB(255, 245, 209), if strong then 9 else 5, if strong then 7 else 3)
+			if strong then pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.new(1, 1, 1), 6, 4) end
+		end
+		-- 3타에서만 짧은 시점 펀치. 4·5타 킬캠과 긴 시간 감속은 제거한다.
+		if not strong then return end
 		killcamToken += 1
 		local token = killcamToken
-		local now = os.clock()
-		if stage >= 4 then slowMotionUntil = now + (if stage == 5 then 0.56 else 0.24) end
-		hitStopUntil = math.max(hitStopUntil, now + (if stage == 5 then 0.11 else 0.06))
-		local finishingBlow = stage == 5 and typeof(defeatedAt) == "Vector3"
-			and (defeatedAt - hrp.Position).Magnitude <= 40
-		if stage == 5 then
-			showCombo(if finishingBlow then "5단 연타 · 처치!" else "5단 연타 · 마무리!")
-		elseif stage == 4 then
-			showCombo("4단 연타 · 섬광!")
-		else
-			showCombo("3단 연타 · 충격!")
-		end
-		screenFlash(Color3.fromRGB(255, 237, 184),
-			if visualMobile then (if stage == 5 then 0.32 else 0.14) else (if stage == 5 then 0.45 else 0.24))
-		shakeUntil, shakeAmp = now + (if stage == 5 then 0.25 else 0.12),
-			(if visualMobile then 0.22 else 0.43) * (if stage == 5 then 1.6 else 1)
-		shockRing(hrp.Position - Vector3.new(0, 2.5, 0),
-			if stage == 5 then 15 else 8 + stage, Color3.fromRGB(255, 205, 117), 0.34)
-		if stage >= 4 and not visualMobile then
-			afterimage(player.Character, Color3.fromRGB(255, 219, 166), if stage == 5 then 3 else 2, 0.09)
-		end
 		local camera = workspace.CurrentCamera
 		if not camera then return end
 		pcall(function() RunService:UnbindFromRenderStep("FieldMasteryKillcam") end)
-		if killcamCamera and killcamCamera.Parent then
-			killcamCamera.FieldOfView = killcamFov -- 연속 3→4→5단 확대가 누적되지 않도록 원래 화각부터 시작
-		end
+		if killcamCamera and killcamCamera.Parent then killcamCamera.FieldOfView = killcamFov end
 		killcamCamera = camera
 		killcamFov = camera.FieldOfView
-		local duration = if stage == 3 then 0.18 elseif stage == 4 then 0.21 elseif visualMobile then 0.46 else 0.62
-		local zoom = (if visualMobile then 3 else 5) + (if stage == 5 then (if visualMobile then 4 else 7) elseif stage == 4 then 2 else 0)
+		local duration = if visualMobile then 0.14 else 0.19
+		local zoom = if visualMobile then 2.2 else 3.8
 		RunService:BindToRenderStep("FieldMasteryKillcam", Enum.RenderPriority.Camera.Value + 2, function()
 			if finished or token ~= killcamToken or workspace.CurrentCamera ~= camera then
 				RunService:UnbindFromRenderStep("FieldMasteryKillcam")
@@ -2050,12 +2085,11 @@ function FieldScene.start(opts)
 			end
 			local pulse = math.sin(progress * math.pi)
 			camera.FieldOfView = killcamFov - zoom * pulse
-			if finishingBlow then
+			if typeof(defeatedAt) == "Vector3" and (defeatedAt - hrp.Position).Magnitude <= 40 then
 				local cameraPosition = camera.CFrame.Position
-				local focus = defeatedAt + Vector3.new(0, 2, 0)
-				if (focus - cameraPosition).Magnitude > 1 then
-					local aimed = CFrame.lookAt(cameraPosition, focus)
-					camera.CFrame = camera.CFrame:Lerp(aimed, pulse * (if visualMobile then 0.12 else 0.2))
+				if (target - cameraPosition).Magnitude > 1 then
+					camera.CFrame = camera.CFrame:Lerp(CFrame.lookAt(cameraPosition, target + Vector3.new(0, 2, 0)),
+						pulse * (if visualMobile then 0.07 else 0.11))
 				end
 			end
 		end)
@@ -2614,52 +2648,54 @@ function FieldScene.start(opts)
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
-				-- [절제된 무기 숙련 연타] 최초 1단은 확률 0%. 2~5단은 7/10/13/16% 기본 확률.
-				-- 전투 레벨 가산은 최대 2%까지만 허용하고 발동 후 7초 동안 다른 무기도 연타하지 않는다.
-				-- 2단 위주 랜덤 가중치로 3·4단은 드물게, 5단 킬캠은 최고 숙련에서도 극히 드물게 나온다.
-				-- 추가 공격 판정·피해·보상·드롭·재사용시간에는 영향이 없다.
+				-- [숙련 연타 2~3타] 5단계 숙련 데이터는 유지한다. 전투 레벨 가산 최대 2%, 전 무기 공용 7초 제한.
+				-- 민첩 무기는 발동·3타가 약간 유리하고, 도끼·철퇴·화기는 2타 위주로 묵직하게 표현한다.
+				-- 1단에서는 절대 발동하지 않으며 추가 타격 판정·피해·보상·드롭·재사용시간을 만들지 않는다.
 				local baseChance = if rank == 2 then 0.07 elseif rank == 3 then 0.10
 					elseif rank == 4 then 0.13 elseif rank == 5 then 0.16 else 0
+				local weaponChance = if wpn.family == "dagger" then 0.02 elseif wpn.family == "fist" then 0.015
+					elseif wpn.family == "axe" then -0.015 elseif wpn.family == "blunt" then -0.01
+					elseif wpn.id == "crossbow" then -0.025 elseif wpn.family == "firearm" then -0.02
+					elseif wpn.family == "spear" or wpn.family == "bow" then -0.005 else 0
 				local battleBonus = math.min(0.02, math.max(0, (opts.battleLevel or 1) - 1) * 0.0007)
 				local chain = 1
 				local comboNow = os.clock()
 				if rank > 1 and comboNow - lastMasteryComboAt >= 7
-					and comboRng:NextNumber() < baseChance + battleBonus then
+					and comboRng:NextNumber() < baseChance + weaponChance + battleBonus then
 					lastMasteryComboAt = comboNow
-					local roll = comboRng:NextNumber()
+					local threeHitBase = if rank == 2 then 0 elseif rank == 3 then 0.16 elseif rank == 4 then 0.26 else 0.34
+					local threeHitBias = if wpn.family == "fist" or wpn.family == "dagger" then 0.12
+						elseif wpn.family == "spear" then 0.04 elseif wpn.family == "bow" then 0.02
+						elseif wpn.family == "axe" then -0.14 elseif wpn.family == "blunt" then -0.10
+						elseif wpn.id == "crossbow" then -0.12 elseif wpn.family == "firearm" then -0.08 else 0
 					chain = if rank == 2 then 2
-						elseif rank == 3 then (if roll < 0.73 then 2 else 3)
-						elseif rank == 4 then (if roll < 0.63 then 2 elseif roll < 0.90 then 3 else 4)
-						else (if roll < 0.60 then 2 elseif roll < 0.84 then 3 elseif roll < 0.95 then 4 else 5)
+						elseif comboRng:NextNumber() < math.clamp(threeHitBase + threeHitBias, 0, 0.5) then 3 else 2
 				end
 				if promoted then
 					showCombo(string.format("%s 숙련 %d단!", wpn.name, rank))
 					sfx("sfx_coin", 0.55, 1.3)
 				end
 				if chain > 1 then
-					showCombo(string.format("%s %d단!", Weapons.actionDesign(wpn).basic, chain))
 					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
-					sfx("sfx_card_swing", 0.6, 1.1 + chain * 0.06)
 					for stage = 2, chain do
-						task.delay((stage - 1) * 0.22, function()
+						task.delay((stage - 1) * 0.20, function()
 							if finished or not hrp.Parent or wpn.id ~= activeWeapon or chainMotionSerial ~= activeSerial then return end
-							-- 실전 연타는 1회 명중 이후 R15 무기 프로필의 다른 자세를 순차 재생한다.
-							-- 추가 공격 판정·대미지·드롭·쿨타임은 발생시키지 않는다.
-							startSwing("slash", if stage == 5 then 0.66 else 0.32, stage)
-							if stage >= 3 then masteryCinema(hrp, stage, defeatedAt) end
-							if wpn.ranged then
-								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 214, 144), Color3.fromRGB(255, 247, 211), 4 + stage, 6)
+							-- 추가 공격은 R15 무기 자세와 이펙트뿐이다. 실제 피해·드롭·보상은 최초 명중 1회 그대로.
+							local finishKind = if stage == chain and stage == 3 and wpn.family == "fist" then "elbow"
+								elseif stage == chain and stage == 3 and (wpn.family == "axe" or wpn.family == "blunt") then "heavy"
+								else "slash"
+							startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)
+							if stage == chain then
+								masteryCinema(hrp, stage, defeatedAt)
+							elseif wpn.ranged then
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 214, 144), Color3.fromRGB(255, 247, 211), 4, 3)
 							else
 								local reach = math.max(7, wpn.range * STUD)
 								local color = if wpn.family == "fist" then Color3.fromRGB(250, 209, 132)
 									elseif wpn.family == "axe" then Color3.fromRGB(255, 153, 109)
 									elseif wpn.family == "spear" then Color3.fromRGB(144, 231, 234)
-									elseif stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131)
-								slashArc(hrp, color, reach, if wpn.family == "spear" then 80 else 95 + stage * 8, if stage % 2 == 0 then 30 else -30)
-							end
-							if stage == chain then
-								shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7 + chain * 2, Color3.fromRGB(255, 219, 145), 0.34)
-								afterimage(player.Character, Color3.fromRGB(173, 220, 255), math.min(chain, 4), 0.05)
+									else Color3.fromRGB(146, 223, 255)
+								slashArc(hrp, color, reach, if wpn.family == "spear" then 65 else 88, 25)
 							end
 						end)
 					end

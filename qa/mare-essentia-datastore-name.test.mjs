@@ -17,7 +17,7 @@ test('플레이어 저장 키는 UserId 기반 P_ 접두를 유지한다', () =>
 });
 
 
-// [탐험 숙련 회귀] 기존 DataStore 확장·서버 정산·3~5단 순수 시각 연출을 점검한다.
+// [탐험 숙련 회귀] 기존 DataStore 확장·서버 정산·2~3타 무기별 순수 시각 연출을 점검한다.
 const read=(p)=>fs.readFileSync('roblox-games/mare-essentia/src/'+p,'utf8');
 const state=read('ServerScriptService/Services/State.luau');
 const discovery=read('ServerScriptService/Services/Discovery.luau');
@@ -44,24 +44,34 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
-test('3·4·5단은 차등 시각 연출이며 추가 타격 판정과 보상이 없다',()=>{
-  assert.match(field,/if stage >= 3 then masteryCinema\(hrp, stage, defeatedAt\) end/);
-  assert.match(field,/if stage == 3 then 0\.18 elseif stage == 4 then 0\.21/);
-  assert.match(field,/if stage >= 4 then slowMotionUntil/);
-  assert.match(field,/if stage >= 4 and not visualMobile then/);
-  assert.match(field,/-- 추가 공격 판정·대미지·드롭·쿨타임은 발생시키지 않는다/);
+test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격은 추가하지 않는다',()=>{
+  assert.match(field,/stage < 2 or stage > 3/);
+  assert.match(field,/if stage == chain then\s*masteryCinema\(hrp, stage, defeatedAt\)/);
+  assert.match(field,/if visualMobile then 0\.14 else 0\.19/);
+  assert.doesNotMatch(field,/slowMotionUntil/);
+  assert.match(field,/local finishName = if family == "fist" then "훅"/);
+  for (const feature of ['"급습"','"분쇄"','"관통"','"충격"','"속사"','"관통 사격"','"반동 사격"','"교차 베기"']) {
+    assert.ok(field.includes(feature), '무기별 마무리 누락: '+feature);
+  }
+  assert.match(field,/elseif wpn\.id == "crossbow" then\s*if strong then arrowTrail/);
+  assert.match(field,/elseif family == "bow" then\s*if strong then arrowTrail/);
+  assert.match(field,/-- 추가 공격은 R15 무기 자세와 이펙트뿐이다/);
   assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId \}\)/);
   assert.doesNotMatch(discovery,/state\.coins\s*\+=\s*earned/);
 });
 
 
-test('연타 1단 봉인·낮은 무작위 확률·7초 재발동 제한을 유지한다',()=>{
+test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3타를 유지한다',()=>{
   assert.match(field,/local comboRng = Random\.new\(\)/);
   assert.match(field,/local lastMasteryComboAt = -100/);
   assert.match(field,/local baseChance = if rank == 2 then 0\.07 elseif rank == 3 then 0\.10/);
   assert.match(field,/rank == 4 then 0\.13 elseif rank == 5 then 0\.16 else 0/);
+  assert.match(field,/local weaponChance = if wpn\.family == "dagger" then 0\.02/);
+  assert.match(field,/elseif wpn\.id == "crossbow" then -0\.025/);
   assert.match(field,/local battleBonus = math\.min\(0\.02,/);
   assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
-  assert.match(field,/roll < 0\.60 then 2 elseif roll < 0\.84 then 3 elseif roll < 0\.95 then 4 else 5/);
-  assert.match(field,/if stage >= 3 then masteryCinema\(hrp, stage, defeatedAt\) end/);
+  assert.match(field,/local threeHitBase = if rank == 2 then 0 elseif rank == 3 then 0\.16/);
+  assert.match(field,/chain = if rank == 2 then 2[\s\S]*?then 3 else 2/);
+  assert.match(field,/for stage = 2, chain do/);
+  assert.doesNotMatch(field,/chain = if rank == 2 then 2[\s\S]*?else 5\)/);
 });
