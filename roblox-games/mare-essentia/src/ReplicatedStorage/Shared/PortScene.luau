@@ -1726,6 +1726,11 @@ local function densify(folder, info, style, rng, walkers, made)
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
 	local lvl = sceneLevel
+	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
+	local districtSeed = seeded(info.portId .. ":city-plan")
+	local districtOffset = districtSeed:NextNumber(-7, 7)
+	local lotVariance = districtSeed:NextNumber(0.94, 1.06)
+	local laneOffset = districtSeed:NextNumber(-9, 9)
 	local streetsX = P.streets
 	local function nearStreet(x, w)
 		for _, sx in streetsX do
@@ -1739,7 +1744,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
 	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl]
 	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl]
-	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth
+	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth * lotVariance
 	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
 	local laneWidth = math.max(9, P.alley * 1.8)
 	local laneL = 2 * S + laneWidth + 12
@@ -1752,7 +1757,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local smokers = 0
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
-	local X_END = -math.min(550, 210 + math.floor(130 * math.sqrt(areaGrowth)))
+	local X_END = -math.min(570, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
 	local streetsOuter = {}
 	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
@@ -1760,7 +1765,12 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
-	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
+	local slots = {
+		Vector3.new(-134 + districtOffset, 0, 86 + laneOffset * 0.4),
+		Vector3.new(-134 + districtOffset, 0, -86 + laneOffset * 0.4),
+		Vector3.new(-178 - districtOffset, 0, 86 - laneOffset * 0.4),
+		Vector3.new(-178 - districtOffset, 0, -86 - laneOffset * 0.4),
+	}
 	for i = #slots, 2, -1 do
 		local j = dz:NextInteger(1, i)
 		slots[i], slots[j] = slots[j], slots[i]
@@ -1817,7 +1827,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
 		for p = 0, pairsN do
-			local laneZ = 152 + p * laneL
+			local laneZ = 152 + laneOffset + p * laneL
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
 				local canal = part(folder, Vector3.new(360, 0.3, laneWidth + 1), CFrame.new(-365, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
