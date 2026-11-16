@@ -7916,17 +7916,17 @@ if string.sub(codexField, 1, 2) == "r:" then
 end
 if codexField == "boarding" then
 	local BC = require(Shared:WaitForChild("BoardingCards"))
-	BC.useKind("boarding") -- 해전 대결 뒤에 줄 이름이 바뀌어 있을 수 있으니 도감은 기본 이름으로 되돌려 보여 준다
+	BC.useKind("boarding") -- 주점 카드 대결에서 사용하는 기본 줄 이름을 복원한다
 	local ROW_SEA = { melee = "충각", ranged = "소포", cannon = "주포" }
 	add(function()
-		return mkRow(content, "해전 카드 도감", "해적과 싸우면 카드 대결로 승패가 갈려요. 카드에서 이기면 전체 승리예요.", {
+		return mkRow(content, "주점 카드 대결 도감", "주점에서는 지식 카드로 대결해요. 해적과의 해전 승패는 함선 조종·포격·접현 전투로 결정돼요.", {
 			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
 		}, 58)
 	end)
 	-- 규칙 요약
 	add(function() return mkHeader(content, "대결 규칙") end)
 	for _, rule in {
-		{ "3줄 × 3판 2선승", "줄은 근접·사격·포 세 줄이에요. 해전에서는 충각·소포·주포로 불러요. 세 줄 합계가 큰 쪽이 그 판을 이겨요." },
+		{ "3줄 × 3판 2선승", "주점 카드 대결은 근접·사격·포 세 줄을 사용해요. 세 줄 합계가 큰 쪽이 그 판을 이겨요." },
 		{ "내 차례에 할 수 있는 일", "카드 한 장 내기 · 이번 판 멈추기 · 지도자 능력(한 판에 한 번). 둘 다 멈추면 그 판이 끝나요." },
 		{ "줄과 판", "전열(근접)과 후열(사격·포) 두 줄이에요. 한 판에 카드를 5장까지 내고, 판이 끝나면 카드를 3장 더 뽑아요(손패 최대 10장)." },
 		{ "무기 상성", "근접 줄끼리는 검 > 도끼 > 창 > 검. 유리하면 위력 +1, 불리하면 -1이에요." },
