@@ -1036,6 +1036,10 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
   assert.match(tavern,/card = cardCfg or/);
   assert.match(tavern,/onCards = function/);
   assert.match(server,/-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다/);
+  // [잘못된 안내 회귀] 도감이 해전 승패를 카드 대결로 설명하지 않는다.
+  assert.match(client,/주점 카드 대결 도감/);
+  assert.match(client,/해적과의 해전 승패는 함선 조종·포격·접현 전투로 결정돼요/);
+  assert.doesNotMatch(client,/해적과 싸우면 카드 대결로 승패가 갈려요|카드에서 이기면 전체 승리예요/);
 });
 
 test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
