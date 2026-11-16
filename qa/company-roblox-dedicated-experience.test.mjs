@@ -886,26 +886,28 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/completeBtn\.Name = "FieldComplete"/);
   assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
   // 조사 전에는 귀환 버튼을 숨기고, 완료 팝업이 뜰 때만 활성화한다.
-  assert.match(field,/completeBtn\\.Visible = false/);
-  assert.match(field,/completeBtn\\.Visible, completeReopen\\.Visible = true, true/);
-  assert.match(field,/if not finished and found >= nodeCount then completePopup\\.Visible = true end/);
+  assert.match(field,/completeBtn\.Visible = false/);
+  assert.match(field,/completeBtn\.Visible, completeReopen\.Visible = true, true/);
+  assert.match(field,/if not finished and found >= nodeCount then completePopup\.Visible = true end/);
+  assert.match(field,/completeBtn\.Activated:Connect\(function\(\)\s*if not finished and found >= nodeCount then finish\("clear"\) end/);
   assert.match(field,/FieldExitReason/);
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
   assert.match(field,/local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68/);
   assert.match(field,/local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64/);
-  assert.match(field,/arcPos\(innerSkillRadius, 40\), basicSize/);
-  assert.match(field,/arcPos\(innerSkillRadius, 120\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 42\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 114\), basicSize/);
   // [조작 영역] 세 스킬과 기본 회피·방어는 동일한 실제 공격 버튼을 중심으로 반원형 배치.
   assert.match(field,/Vector2\.new\(attackBtn\.Position\.X\.Offset, attackBtn\.Position\.Y\.Offset\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 40\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 40\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 42\.5\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 42\.5\)/);
   const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
   for(const [width,height] of [[390,640],[832,384],[320,360]]){
-    const outer=Math.max(132,Math.min(150,width*.48,height-130));
+    const outer=Math.max(162,Math.min(200,width*.56,height*.45));
+    const inner=Math.max(94,Math.min(114,outer*.56));
     const skill=width<360?64:76,basic=width<360?60:68;
-    const coords=[[arc(outer,20),skill],[arc(outer,60),skill],[arc(outer,100),skill],
-                  [arc(84,40),basic],[arc(84,120),basic]];
+    const coords=[[arc(outer,20),skill],[arc(outer,62.5),skill],[arc(outer,105),skill],
+                  [arc(inner,42),basic],[arc(inner,114),basic]];
     for(const [pos,size] of coords){
       assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
       assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
@@ -920,7 +922,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
   assert.match(field,/local observedCardId = nil/);
   assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
-  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId\)/);
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice\)/);
   assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
   assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
   assert.match(field,/if special and rareTrace then/);
@@ -1371,4 +1373,74 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.ok(!port.includes(ship+'-custom'),ship+' unverified harbor art must not activate');
     assert.ok(!battle.includes(ship+'-custom'),ship+' unverified battle art must not activate');
   }
+});
+
+// [외부 CC0 실물 선체] 포르투갈 나우는 다운로드된 원본 갈레온의 메시/바이너리를 보존한 개조본만 등록한다.
+test('Mare external CC0 nau original hull and Roblox registration integrity',()=>{
+  const root='roblox-games/mare-essentia';
+  const src=root+'/assets/naval/nau-source.glb';
+  const file=root+'/assets/naval/nau-custom.glb';
+  const proof=file+'.license.json';
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.ok(uploader.includes('https://grab3d.com/dl/galleon/galleon-light.glb'));
+  assert.ok(uploader.includes('MARE_NAU_EXTERNAL_CC0_HULL_DERIVED'));
+  assert.ok(uploader.includes("if (kind === 'Naval' && f === 'nau-source.glb') continue;"));
+  assert.ok(workflow.includes('assets/naval/nau-source.glb'));
+  assert.ok(workflow.includes('assets/naval/nau-custom.glb'));
+  if(!fs.existsSync(src)){
+    assert.equal(fs.existsSync(file),false,'derived model without saved external original');
+    assert.equal(fs.existsSync(proof),false,'derived evidence without saved external original');
+    return; // GitHub PR 단계에서는 다운로드하지 않는다. 등록 직후 같은 검사를 다시 실행한다.
+  }
+  const original=fs.readFileSync(src),custom=fs.readFileSync(file);
+  const meta=JSON.parse(fs.readFileSync(proof,'utf8'));
+  const parse=(b)=>{
+    assert.equal(b.toString('ascii',0,4),'glTF');
+    assert.equal(b.readUInt32LE(4),2);
+    assert.equal(b.readUInt32LE(8),b.length);
+    const len=b.readUInt32LE(12),at=20+len;
+    assert.equal(b.readUInt32LE(16),0x4e4f534a);
+    assert.equal(b.readUInt32LE(at+4),0x004e4942);
+    assert.equal(at+8+b.readUInt32LE(at),b.length);
+    return {gltf:JSON.parse(b.subarray(20,at).toString('utf8')),bin:b.subarray(at+8)};
+  };
+  const source=parse(original),derived=parse(custom);
+  const sha=b=>createHash('sha256').update(b).digest('hex');
+  assert.equal(original.length,1196260,'external original must match official light model size');
+  assert.equal(meta.license,'CC0-1.0');
+  assert.equal(meta.author,'Grab3D');
+  assert.equal(meta.source,'https://grab3d.com/dl/galleon/galleon-light.glb');
+  assert.equal(meta.sourcePage,'https://grab3d.com/models/vehicles/galleon/');
+  assert.equal(meta.sourceAsset,src);
+  assert.equal(meta.originalSha256,sha(original));
+  assert.equal(meta.sourceSha256,sha(custom));
+  assert.equal(meta.originalMeshCount,source.gltf.meshes.length);
+  assert.equal(meta.authenticOriginalBinaryVerified,true);
+  assert.equal(meta.originalMeshesPreserved,true);
+  assert.equal(meta.structuralGlbVerified,true);
+  assert.equal(meta.actualRobloxRuntimeVerified,false);
+  assert.equal(meta.visualQualityApproved,false);
+  assert.ok(meta.derivedTriangleCount>=550);
+  assert.deepEqual(meta.modelGeometryGroups,['wood','linen','rope']);
+  assert.deepEqual(derived.gltf.meshes.slice(0,source.gltf.meshes.length),source.gltf.meshes,
+    'external source hull must remain unchanged');
+  assert.deepEqual(derived.bin.subarray(0,source.bin.length),source.bin,
+    'external source geometry bytes must remain unchanged');
+  assert.equal(derived.gltf.meshes.length,source.gltf.meshes.length+3);
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen lateen cloth'));
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen oak mast and lateen yard'));
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen ropes and rigging'));
+  const ledger=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
+  const reg=ledger.assets['Naval/nau-custom'];
+  assert.ok(reg?.assetId,'nau Roblox ID must be issued by the actual existing uploader');
+  assert.equal(reg.assetType,'Model');
+  assert.equal(reg.usePermissionGranted,true,'universe use permission must be confirmed');
+  assert.equal(reg.sourceSha256,sha(custom));
+  const lua=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  assert.ok(lua.includes('["Naval/nau-custom"] = '+reg.assetId));
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.ok(!port.includes('nau-custom')&&!battle.includes('nau-custom'),
+    'runtime-unverified ship art must not activate in player gameplay');
 });
