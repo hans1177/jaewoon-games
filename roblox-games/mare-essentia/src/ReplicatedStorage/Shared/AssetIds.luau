@@ -549,6 +549,7 @@ return {
 	["Naval/flag-pirate"] = 129764738585457,
 	["Naval/flag-pirate-high"] = 136628320458845,
 	["Naval/frigate"] = 85264478623571,
+	["Naval/galleon-heritage"] = 90601277107985,
 	["Naval/grass-plant"] = 117912960539207,
 	["Naval/ladder"] = 76835192206007,
 	["Naval/mast"] = 72491282905887,
