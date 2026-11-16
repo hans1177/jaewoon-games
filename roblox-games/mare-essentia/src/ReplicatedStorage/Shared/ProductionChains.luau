@@ -61,6 +61,12 @@ P.Recipes = {
 	{ id = "r_fine_wood", inputs = { "ebony", "mahogany", "sandalwood_hi" }, output = "고급 가구", building = "목조 주택·기와 가마", disc = "crafts", minLevel = 3, valueMult = 1.9 },
 	{ id = "r_fertilizer", inputs = { "guano", "nitrate" }, output = "비료", building = "곡물 창고", disc = "agronomy", minLevel = 3, valueMult = 1.5 },
 	{ id = "r_resin", inputs = { "gum_arabic" }, output = "아교·잉크", building = "인쇄소·신문사", disc = "chemistry", minLevel = 4, valueMult = 1.6 },
+	-- [지역 브랜드 선행 가공] 기존 원료와 기존 산업 시설을 사용한다.
+	{ id = "r_aged_cheese", inputs = { "cheese" }, output = "숙성 치즈", building = "치즈 공방", disc = "chemistry", minLevel = 2, newIndustry = true, valueMult = 1.35 },
+	{ id = "r_fine_glass", inputs = { "glass" }, output = "세공 유리", building = "유리 공방", disc = "chemistry", minLevel = 3, newIndustry = true, valueMult = 1.5 },
+	{ id = "r_vintage_wine", inputs = { "wine" }, output = "숙성 와인", building = "포도주 저장고·양조장", disc = "brewing", minLevel = 2, newIndustry = true, valueMult = 1.5 },
+	{ id = "r_ginseng_medicine", inputs = { "ginseng" }, output = "정제 인삼 약재", building = "약방·한의원", disc = "pharmacology", minLevel = 3, newIndustry = true, valueMult = 1.6 },
+	{ id = "r_aged_beer", inputs = { "beer" }, output = "숙성 맥주", building = "맥주 양조장", disc = "brewing", minLevel = 2, newIndustry = true, valueMult = 1.35 },
 }
 
 P.ById = {}
@@ -89,6 +95,38 @@ function P.processedGoods(goods)
 		end
 	end
 	return out
+end
+
+-- [지역 명품] 원료 → 기존 레시피 가공품 → 원산지 브랜드 → 국제 시장.
+-- 고유 교역 ID는 항구와 레시피로 고정해 저장 호환성과 도감/시장 가격 ID를 보존한다.
+P.ByGood = {}
+for _, recipe in ipairs(P.Recipes) do P.ByGood[P.goodId(recipe)] = recipe end
+P.Brands = {
+	{ port = "london", recipe = "r_cloth_wool", source = "wool", name = "런던 왕립 모직", destinations = { "amsterdam", "lisbon", "venice", "goa" } },
+	{ port = "amsterdam", recipe = "r_aged_cheese", source = "cheese", name = "암스테르담 숙성 치즈", destinations = { "london", "lisbon", "venice", "batavia" } },
+	{ port = "venice", recipe = "r_fine_glass", source = "glass", name = "베네치아 장인 유리", destinations = { "london", "amsterdam", "lisbon", "nagasaki" } },
+	{ port = "bordeaux", recipe = "r_vintage_wine", source = "wine", name = "보르도 명산 와인", destinations = { "london", "amsterdam", "lisbon", "havana" } },
+	{ port = "calicut", recipe = "r_cloth_cotton", source = "cotton", name = "캘리컷 해양 면직물", destinations = { "london", "amsterdam", "lisbon", "batavia" } },
+	{ port = "goa", recipe = "r_spice_blend", source = "pepper", name = "고아 왕실 혼합 향신료", destinations = { "lisbon", "london", "amsterdam", "venice" } },
+	{ port = "busan", recipe = "r_ginseng_medicine", source = "ginseng", name = "부산 조선 인삼 약재", destinations = { "osaka", "nagasaki", "batavia", "lisbon" } },
+	{ port = "osaka", recipe = "r_sake", source = "rice", name = "오사카 명문 청주", destinations = { "busan", "nagasaki", "batavia", "goa" } },
+	{ port = "havana", recipe = "r_sugar_rum", source = "sugar", name = "아바나 사탕수수 럼", destinations = { "london", "amsterdam", "lisbon", "bordeaux" } },
+	{ port = "bridgetown", recipe = "r_sugar_rum", source = "sugar", name = "브리지타운 섬 럼", destinations = { "london", "amsterdam", "lisbon", "seville" } },
+	{ port = "batavia", recipe = "r_tea_cure", source = "coffee", name = "바타비아 선별 커피", destinations = { "amsterdam", "london", "lisbon", "venice" } },
+	{ port = "nagasaki", recipe = "r_smelt_copper", source = "copper", name = "나가사키 청동 세공", destinations = { "busan", "osaka", "batavia", "amsterdam" } },
+	{ port = "lisbon", recipe = "r_sugar_rum", source = "sugar", name = "리스본 대서양 럼", destinations = { "london", "amsterdam", "bordeaux", "goa" } },
+	{ port = "seville", recipe = "r_leather", source = "leather", name = "세비야 가죽 명품", destinations = { "london", "amsterdam", "havana", "goa" } },
+	{ port = "hamburg", recipe = "r_aged_beer", source = "beer", name = "함부르크 장기 숙성 맥주", destinations = { "london", "amsterdam", "venice", "lisbon" } },
+}
+function P.brandId(brand)
+	return "b_" .. brand.port .. "_" .. string.sub(brand.recipe, 3)
+end
+P.BrandById, P.BrandsByPort, P.AddedForBrands = {}, {}, {}
+for _, brand in ipairs(P.Brands) do
+	brand.id = P.brandId(brand)
+	P.BrandById[brand.id] = brand
+	P.BrandsByPort[brand.port] = P.BrandsByPort[brand.port] or {}
+	table.insert(P.BrandsByPort[brand.port], brand)
 end
 
 -- 항구가 만드는 원자재를 종류별로 센다 (producesList = Ports.produces)
