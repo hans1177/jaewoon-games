@@ -100,6 +100,20 @@ B.CityPlots = { plotScale = { 1.5, 1.65, 1.8, 2.0, 2.2 }, areaScale = { 1.5, 2, 
 -- 왕궁 보유 도시 전용 상위 구획 배율: 일반 도시 필지에서 추가 확장, 왕궁 판정이 없는 항구에는 영향 없음.
 -- 왕실 건축은 화면용이고 경제·항구 투자·건설 저장 구조는 수정하지 않는다.
 B.RoyalCityPlots = { plotScale = { 1.2, 1.25, 1.3, 1.35, 1.4 }, districtScale = { 1.0, 1.08, 1.14, 1.22, 1.3 } }
+-- [왕궁 실제 주민 표본] 기존 세계경제 거주자 수와 번영도로만 화면에 표시할 궁정 인원 결정.
+-- 단계별 목표는 최대치일 뿐 실제 세계 인구를 추가하지 않는다. 서버 화면과 클라이언트 장면이 동일 계산 사용.
+B.RoyalCourtTargets = { 2, 4, 6, 9, 12 }
+function B.royalPopulation(residents, prosperity, tier)
+	local target = B.RoyalCourtTargets[math.clamp(math.floor(tonumber(tier) or 1), 1, 5)]
+	if type(residents) ~= "number" then return target end
+	local available = math.max(0, math.floor(residents))
+	if available == 0 then return 0 end
+	local workers = math.min(target, math.max(1, math.floor(available / 5)))
+	if available >= 2 then workers = math.max(2, workers) end
+	if (prosperity or 100) < 75 then workers = math.max(1, math.floor(workers * 0.6)) end
+	return math.min(available, workers)
+end
+
 -- [특산품 건축] ProductionChains 원료 분류가 사용하는 기존 건물과 승인된 실내 장비.
 -- 경제 효과나 건설 조건은 이 표가 정하지 않고, PortScene은 실제 항구 생산·건물 수만 읽는다.
 B.SpecialtyFacilities = {

@@ -84,6 +84,18 @@ local function check(name, cond, detail)
 	end
 end
 
+-- 왕궁 종사자 수는 기존 경제 거주자 표본 이내에서만 변한다(실제 시민/저장 구조 불변).
+check("왕궁 인구 없는 항구는 종사자 0명", D.PortBuildings.royalPopulation(0, 100, 5) == 0)
+check("왕궁 거주자 1명은 초과 고용하지 않음", D.PortBuildings.royalPopulation(1, 100, 5) == 1)
+check("왕궁 1단계 인원 목표 2명", D.PortBuildings.royalPopulation(60, 100, 1) == 2)
+check("왕궁 2단계 인원 목표 4명", D.PortBuildings.royalPopulation(60, 100, 2) == 4)
+check("왕궁 3단계 인원 목표 6명", D.PortBuildings.royalPopulation(60, 100, 3) == 6)
+check("왕궁 4단계 인원 목표 9명", D.PortBuildings.royalPopulation(60, 100, 4) == 9)
+check("왕궁 5단계 인원 목표 12명", D.PortBuildings.royalPopulation(60, 100, 5) == 12)
+check("왕궁 불황 주민 표본 축소", D.PortBuildings.royalPopulation(60, 70, 5) == 7)
+check("왕궁 실제 거주자 연동", D.PortBuildings.royalPopulation(25, 100, 5) == 5)
+check("왕궁 sim 없는 빌드 목표 유지", D.PortBuildings.royalPopulation(nil, nil, 5) == 12)
+
 local function act(state, action, payload)
 	local ok, msg = handlers[action](state, payload or {}, ctx)
 	return ok, msg

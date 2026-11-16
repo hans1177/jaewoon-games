@@ -30,7 +30,7 @@ local GOOD_MESH = {
 	gems = { "Cargo", "gems-sack" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
 	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) },
 	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) },
-	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
+	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "sugar" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
 -- 통은 사케·럼만 쓴다: 와인은 병(wine-red), 맥주는 잔(mug)으로 모양 자체를 달리해 통 네 가지가 똑같아 보이던 문제를 줄인다 (모두 등록된 CC0 원본).
@@ -3647,19 +3647,38 @@ function PortScene.build(info, onFacility)
 		local scale = 1.34 + (sceneLevel - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
 		local wide, deep = 134 * scale, 138 * scale
 		local tall = 30 + sceneLevel * 4
-		local east = key == "japan" or key == "china" or key == "seasia" or key == "malabar"
-		local islamic = key == "ottoman" or key == "desert" or key == "swahili" or key == "wafrica"
+		-- [지역 관저 판별] 지역 문화 키만으로 통치 체계가 달라지는 항구를 같은 왕궁으로 묶지 않는다.
+		-- 조선은 기존 포트 문화 테이블에서 stone으로 분류돼 있으므로 국가 데이터를 먼저 본다.
+		local homePort = PortData.Ports[info.portId]
+		local nation = homePort and homePort.country or ""
+		local korean = nation == "korea"
+		local east = korean or key == "china" or key == "japan"
+		local indian = key == "malabar"
+		local southeast = key == "seasia"
+		local islamic = key == "ottoman" or key == "desert" or key == "swahili"
+		local westAfrican = key == "wafrica"
 		local tropical = key == "tropic" or key == "pacific" or key == "creole" or key == "colonial"
 		local renaissance = key == "italy" or key == "med" or key == "iberia"
-		local courtStyle = if east then "아시아 궁궐" elseif islamic then "중정 궁전"
-			elseif tropical then "열대 총독궁" elseif renaissance then "르네상스 궁전" else "북유럽 왕궁"
+		local courtStyle = if korean then "조선 관아" elseif key == "china" then "중국 관아"
+			elseif key == "japan" then "일본 관저·성곽" elseif indian then "말라바르 관저"
+			elseif southeast then "동남아 궁정" elseif key == "ottoman" then "오스만 궁정"
+			elseif key == "swahili" then "스와힐리 궁정" elseif westAfrican then "서아프리카 관저"
+			elseif islamic then "연안 중정 관저" elseif key == "france" then "프랑스 왕실 관저"
+			elseif key == "britain" then "영국 왕실 관저" elseif key == "hanse" then "한자 도시 관청"
+			elseif key == "italy" then "이탈리아 궁정" elseif key == "iberia" then "이베리아 관저"
+			elseif tropical then "열대 관저·총독부" elseif renaissance then "지중해 궁정" else "지역 관저"
 		local prosperity = if info.sim then math.clamp((info.sim.prosperity or 100) / 100, 0.25, 1.4) else 1
 		local palaceTier = math.max(1, math.min(sceneLevel, math.floor(sceneLevel * (0.72 + prosperity * 0.28) + 0.5)))
-		local baseColor = if east then C(158, 129, 91) elseif islamic then C(231, 209, 172)
+		local baseColor = if korean then C(212, 202, 174) elseif key == "china" then C(176, 129, 88)
+			elseif east then C(176, 154, 126) elseif indian or southeast then C(186, 151, 108)
+			elseif islamic then C(231, 209, 172) elseif westAfrican then C(173, 129, 86)
 			elseif tropical then C(229, 203, 161) elseif renaissance then C(228, 219, 197) else C(199, 198, 197)
-		local roofColor = if east then C(60, 82, 71) elseif islamic then C(65, 135, 141)
+		local roofColor = if korean then C(57, 65, 59) elseif key == "china" then C(171, 125, 56)
+			elseif east then C(74, 87, 79) elseif indian or southeast then C(114, 79, 56)
+			elseif islamic then C(65, 135, 141) elseif westAfrican then C(120, 79, 55)
 			elseif tropical then C(146, 83, 60) elseif renaissance then C(159, 77, 65) else C(80, 93, 115)
-		local surface = if tropical or east then Enum.Material.WoodPlanks elseif islamic then Enum.Material.Sandstone else Enum.Material.Marble
+		local surface = if east or indian or southeast or tropical then Enum.Material.WoodPlanks
+			elseif islamic or westAfrican then Enum.Material.Sandstone else Enum.Material.Marble
 		local palaceTitle = info.palaceName or "왕궁"
 		local facadeX = px + wide * 0.5
 		local frontX = facadeX + 18
@@ -3667,6 +3686,8 @@ function PortScene.build(info, onFacility)
 		local main = part(folder, Vector3.new(wide, tall, deep * 0.74), CFrame.new(px, tall / 2, 0), baseColor, surface)
 		main.Name = "RoyalPalace"
 		main:SetAttribute("RoyalStyle", courtStyle)
+		main:SetAttribute("RoyalNation", nation)
+		main:SetAttribute("RoyalCulture", key)
 		main:SetAttribute("PortId", info.portId)
 		main:SetAttribute("FootprintRatio", 10)
 		main:SetAttribute("RoyalTier", palaceTier)
@@ -3704,10 +3725,23 @@ function PortScene.build(info, onFacility)
 				end
 			end
 		end
-		-- 문화별 왕궁 지붕·돔·누각. 등록된 기존 모델을 우선하며 재질은 지역별로 유지한다.
+		-- [검증된 지역 외관 부재] 등록된 문화권 전용 지붕/기둥/아치만 사용한다.
+		-- 기존 상자형 본체를 새 파츠로 덮지 않는다. 완성형 전용 궁전 메시가 없는 지역은 추후 실물 자산 등록 필요.
 		if east then
 			for _, z in { -deep * 0.26, 0, deep * 0.26 } do
 				importedModel(folder, "Town", "eastasia-roof", Vector3.new(px, tall + 3, z), 34, false, roofColor)
+			end
+			-- 조선/중국/일본의 정면 행각은 승인된 동아시아 기둥과 처마 모델을 사용한다.
+			if palaceTier >= 2 then
+				for _, z in { -36, -18, 18, 36 } do
+					importedModel(folder, "Town", "eastasia-column-base", Vector3.new(facadeX + 12, 0, z), 7, false)
+				end
+				importedModel(folder, "Town", "eastasia-roof", Vector3.new(facadeX + 10, tall * 0.8, 0), 23, false, roofColor)
+			end
+		elseif indian or southeast then
+			-- 말라바르 해안과 동남아는 중국식 기와 궁전을 재사용하지 않고 목조 경사 지붕을 사용한다.
+			for _, z in { -deep * 0.23, deep * 0.23 } do
+				importedModel(folder, "Town", "roof-gable", Vector3.new(px, tall + 3, z), 31, false, roofColor)
 			end
 		elseif islamic then
 			for _, z in { -deep * 0.3, 0, deep * 0.3 } do
@@ -3724,6 +3758,20 @@ function PortScene.build(info, onFacility)
 			end
 			for _, z in { -deep * 0.24, deep * 0.24 } do
 				importedModel(folder, "Castle", "tower-square-roof", Vector3.new(px, tall + 3, z), 18, false)
+			end
+		end
+		-- 유럽 관저 역시 문화권별로 등록된 외관 장식을 달리한다. 왕궁 필지 외부로 확장하지 않는다.
+		if palaceTier >= 3 and (key == "france" or key == "italy" or key == "iberia") then
+			for _, z in { -40, 40 } do
+				importedModel(folder, "Terrain", "column", Vector3.new(facadeX + 15, 0, z), 10, false)
+			end
+		elseif palaceTier >= 3 and key == "britain" then
+			for _, z in { -58, 58 } do
+				importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(facadeX + 13, 0, z), 13, false)
+			end
+		elseif palaceTier >= 3 and westAfrican then
+			for _, z in { -36, 36 } do
+				importedModel(folder, "Town", "kenney_wood_door_round_01", Vector3.new(facadeX + 12, 0, z), 8, false)
 			end
 		end
 		-- 왕실 출입구·광장·문장·분수·군수 마차·궁정 서고/마구간.
@@ -3767,39 +3815,76 @@ function PortScene.build(info, onFacility)
 		end
 		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61), 23)
 		prompt(folder, Vector3.new(frontX + 9, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
-		local courtStaff = math.clamp(math.floor((info.sim and info.sim.residents or 12) / 8), 1, 12)
-		if info.sim and (info.sim.prosperity or 100) < 75 then courtStaff = math.max(1, math.floor(courtStaff * 0.6)) end
+		-- [궁정 인력] 실제 거주자·번영도·궁정 등급만 읽는다. 경제 직군/거주자/저장 키를 추가하지 않는다.
+		local courtStaff = PortBuildings.royalPopulation(info.sim and info.sim.residents, info.sim and info.sim.prosperity, palaceTier)
 		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = courtStaff }
-		-- 왕궁 보유 도시의 실제 경제 인구 비율에 따라 근위병·행정 서기·시종·학자 활동을 배치한다.
-		-- 별도의 왕궁 NPC 엔진을 만들지 않고 기존 R15 주민/근무 모션을 재사용한다.
-		local royalWorkers = math.min(courtStaff, math.max(2, palaceTier * 2))
-		local royalClothes = OUTFIT[currentKey] or OUTFIT.north
-		local staffKinds = {
-			{ name = "근위병", job = "royal_guard", role = "Knight", kind = "salute", work = { "salute", "look", "inspect" }, rest = { "lean", "look" }, tint = C(66, 76, 124) },
-			{ name = "궁정 시종", job = "royal_servant", role = "Rogue", kind = "polish", work = { "polish", "carry", "inspect" }, rest = { "talk", "stretch" }, tint = C(124, 96, 82) },
-			{ name = "왕실 서기", job = "royal_scribe", role = "Mage", kind = "write", work = { "write", "count", "read" }, rest = { "listen", "drink" }, tint = C(108, 74, 130) },
-			{ name = "궁정 학자", job = "royal_scholar", role = "Mage", kind = "read", work = { "read", "write", "inspect" }, rest = { "talk", "listen" }, tint = C(102, 119, 109) },
+		local royalClothes = if korean then OUTFIT.korea else (OUTFIT[currentKey] or OUTFIT.brick)
+		local royalPosts = {
+			gate = Vector3.new(frontX + 11, 0, 0),
+			entrance = Vector3.new(frontX + 14, 0, 21),
+			barracks = Vector3.new(px - wide * 0.38 + 18, 0, -(deep * 0.62 + 30)),
+			stable = Vector3.new(px - wide * 0.38 + 18, 0, deep * 0.62 + 30),
+			garden = Vector3.new(frontX + 28, 0, 42),
+			library = Vector3.new(px - wide * 0.28 + 18, 0, deep * 0.62 + 65),
+			office = Vector3.new(px - wide * 0.28 + 18, 0, -(deep * 0.62 + 65)),
 		}
-		for i = 1, royalWorkers do
-			local staffTypes = math.min(#staffKinds, palaceTier)
-			local spec = staffKinds[((i - 1) % staffTypes) + 1]
-			local side = if i % 2 == 0 then 1 else -1
-			local pos = Vector3.new(frontX + 11 + math.floor((i - 1) / 4) * 11, 0, side * (16 + (i % 4) * 5))
-			local facing = faceTo(pos, Vector3.new(facadeX, 0, 0))
-			local coat = (royalClothes.coats and royalClothes.coats[(i - 1) % #royalClothes.coats + 1] or C(200, 196, 186)):Lerp(spec.tint, 0.6)
-			local figure = villager(folder, pos, facing, coat, rng, spec.role, true, {
-				year = info.year or currentYear, profession = spec.job, hat = royalClothes.hat,
-			})
-			if figure then
-				figure.Name = "RoyalStaff_" .. spec.job .. "_" .. i
-				figure:SetAttribute("Job", spec.job)
-				figure:SetAttribute("Activity", spec.kind)
-				table.insert(walkers, {
-					model = figure, base = figure:GetPivot(), mode = "stay", kind = spec.kind, phase = rng:NextNumber(0, 10),
-					job = spec.job, workKinds = spec.work, leisureKinds = spec.rest,
+		-- 기존 왕궁의 실제 건립된 부속 시설에만 배정한다. 새 시설·기본 도형을 만들지 않는다.
+		local royalRoles = {
+			{ name = "근위병", job = "royal_guard", tier = 1, post = "gate", dz = -15, role = "Knight", work = { "salute", "inspect", "look" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(63, 77, 124) },
+			{ name = "궁정 시종", job = "royal_servant", tier = 1, post = "entrance", dz = 0, role = "Rogue", work = { "polish", "carry", "inspect" }, rest = { "talk", "stretch" }, tint = C(133, 104, 82) },
+			{ name = "성문 경비", job = "royal_gate_guard", tier = 2, post = "barracks", dz = -9, role = "Knight", work = { "salute", "look", "inspect" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(64, 87, 133) },
+			{ name = "마구간 관리", job = "royal_stablehand", tier = 2, post = "stable", dz = 6, role = "Barbarian", work = { "sweep", "carry", "inspect" }, rest = { "stretch", "look" }, tint = C(131, 105, 81) },
+			{ name = "궁정 정원사", job = "royal_gardener", tier = 3, post = "garden", dz = 6, role = "Rogue", work = { "hoe", "stoop", "inspect" }, rest = { "stretch", "talk" }, tint = C(76, 112, 84) },
+			{ name = "궁정 학자", job = "royal_scholar", tier = 3, post = "library", dz = 6, role = "Mage", work = { "read", "write", "inspect" }, rest = { "listen", "talk" }, tint = C(104, 124, 113) },
+			{ name = "왕실 서기", job = "royal_scribe", tier = 4, post = "office", dz = 5, role = "Mage", work = { "write", "count", "read" }, rest = { "listen", "stretch" }, tint = C(109, 84, 138) },
+			{ name = "궁정 전령", job = "royal_messenger", tier = 4, post = "office", dz = -7, role = "Rogue", work = { "carry", "point", "salute" }, rest = { "talk", "listen" }, tint = C(115, 102, 76) },
+			{ name = "행정 관리", job = "royal_administrator", tier = 4, post = "office", dz = 16, role = "Mage", work = { "write", "read", "inspect" }, rest = { "listen", "talk" }, tint = C(106, 85, 124) },
+			{ name = "의전 근위병", job = "royal_ceremonial_guard", tier = 5, post = "gate", dz = 21, role = "Knight", work = { "salute", "look", "inspect" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(139, 99, 66) },
+			{ name = "왕실 기록관", job = "royal_archivist", tier = 5, post = "library", dz = -9, role = "Mage", work = { "read", "write", "count" }, rest = { "talk", "listen" }, tint = C(87, 108, 111) },
+			{ name = "궁정 의전관", job = "royal_court_officer", tier = 5, post = "entrance", dz = -17, role = "Rogue", work = { "point", "salute", "inspect" }, rest = { "talk", "look" }, tint = C(138, 111, 90) },
+		}
+		local courtVisible = 0
+		local visibleCap = if game:GetService("UserInputService").TouchEnabled then 6 else 12
+		for _, spec in ipairs(royalRoles) do
+			if courtVisible >= math.min(courtStaff, visibleCap) then break end
+			if palaceTier >= spec.tier then
+				local pos = royalPosts[spec.post] + Vector3.new(0, 0, spec.dz)
+				local coat = (royalClothes.coats and royalClothes.coats[(courtVisible % #royalClothes.coats) + 1] or C(200, 196, 186)):Lerp(spec.tint, 0.6)
+				local figure = villager(folder, pos, faceTo(pos, Vector3.new(facadeX, 0, 0)), coat, rng, spec.role, true, {
+					year = info.year or currentYear, profession = spec.job, hat = royalClothes.hat,
 				})
+				if figure then
+					courtVisible += 1
+					figure.Name = "RoyalStaff_" .. spec.job
+					figure:SetAttribute("Job", spec.job)
+					figure:SetAttribute("Workplace", spec.name)
+					figure:SetAttribute("Activity", spec.work[1])
+					figure:SetAttribute("RoyalTier", palaceTier)
+					local head = figure:FindFirstChild("Head")
+					if head then
+						local label = Instance.new("BillboardGui")
+						label.Size = UDim2.fromOffset(92, 20)
+						label.StudsOffset = Vector3.new(0, 1.9, 0)
+						label.MaxDistance = 52
+						label.Adornee = head
+						label.Parent = head
+						local title = Instance.new("TextLabel")
+						title.Size = UDim2.fromScale(1, 1)
+						title.BackgroundTransparency = 1
+						title.Text = spec.name
+						title.TextSize = 13
+						title.Font = Enum.Font.GothamBold
+						title.TextColor3 = C(255, 236, 200)
+						title.TextStrokeTransparency = 0.4
+						title.Parent = label
+					end
+					table.insert(walkers, { model = figure, base = figure:GetPivot(), mode = "stay", kind = spec.work[1],
+						phase = rng:NextNumber(0, 10), job = spec.job, workKinds = spec.work,
+						tradeKinds = spec.work, leisureKinds = spec.rest, royalDuty = true, nightKinds = spec.night })
+				end
 			end
 		end
+		folder:SetAttribute("RoyalCourtVisible", courtVisible)
 		folder:SetAttribute("RoyalDistrictStyle", courtStyle)
 		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 		folder:SetAttribute("RoyalDistrictTier", palaceTier)
@@ -3991,10 +4076,14 @@ function PortScene.build(info, onFacility)
 						local morning = hour >= 6 and hour < 11
 						local trading = hour >= 11 and hour < 18
 						local period = math.floor((now + w.phase * 2.1) / 16)
-						local roster = if morning then w.workKinds elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
+						local watching = w.royalDuty and w.nightKinds and (hour >= 19 or hour < 6)
+						local royalDay = w.royalDuty and hour >= 6 and hour < 19
+						local roster = if watching then w.nightKinds elseif royalDay or morning then w.workKinds
+							elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
 						kind = roster[(period % #roster) + 1]
-						if morning and (now + w.phase) % 73 > 61 then kind = "stretch" end
-						local routine = if morning then "work" elseif trading then "trade" else "leisure"
+						if morning and not w.royalDuty and (now + w.phase) % 73 > 61 then kind = "stretch" end
+						local routine = if watching then "night_watch" elseif royalDay or morning then "work"
+							elseif trading then "trade" else "leisure"
 						if w.lastRoutine ~= routine then
 							w.lastRoutine = routine
 							w.model:SetAttribute("DailyRoutine", routine)
@@ -4012,7 +4101,10 @@ function PortScene.build(info, onFacility)
 						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
 						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
 					end
-					Pose.work(w.model, kind, now + w.phase)
+					-- 궁정·공방은 멀리 있을 때 인구·직업 속성은 유지하되 관절 업데이트만 생략.
+					if not (w.industryDuty or w.royalDuty) or not cam or (cam.CFrame.Position - p0).Magnitude < 170 then
+						Pose.work(w.model, kind, now + w.phase)
+					end
 				end
 			elseif w.mode == "animal" then
 				if w.model.Parent then
@@ -4584,16 +4676,37 @@ function PortScene.build(info, onFacility)
 			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
 			local at = Vector3.new(-175 + col * 35, 0, -280 - row * 40)
 			local materialClass = Chains.ClassOf[industry.source]
+			local brand = Chains.BrandById[industry.id]
+			local recipe = brand and Chains.ById[brand.recipe]
+			-- 실제 원료 유형과 기존 공정에 대응하는 등록된 작업 장비만 사용한다.
 			local equipment = if materialClass == "mineral" then { "Town", "workbench-anvil" }
 				elseif materialClass == "forest" then { "Town", "workbench-grind" }
 				elseif materialClass == "farm" then { "Cargo", "mortar-pestle" }
 				elseif materialClass == "fiber" or materialClass == "animal" then { "Cargo", "textiles-stack-small" }
 				else { "Interior", "tablecross" }
+			local sourceMesh = industry.source and GOOD_MESH[industry.source]
+			-- 실제 가공품의 외관과 일치하는 등록된 메시만 완제품으로 표시한다.
+			local finishedByRecipe = {
+				r_cloth_wool = { "Cargo", "textiles-stack-small" },
+				r_cloth_cotton = { "Cargo", "textiles-stack-small" },
+				r_leather = { "Cargo", "leather" },
+				r_aged_cheese = { "Cargo", "cheese" },
+				r_fine_glass = { "Cargo", "glass" },
+				r_vintage_wine = { "Cargo", "wine-red" },
+				r_ginseng_medicine = { "Cargo", "ginseng" },
+			}
+			local finishedMesh = recipe and finishedByRecipe[recipe.id]
 			local frame = importedModel(folder, "Town", "floor_base", at, 23, false)
 			if frame then
 				frame.Name = "LocalIndustry_" .. industry.id
 				frame:SetAttribute("SourceGood", industry.source or "")
 				frame:SetAttribute("IndustryStage", industry.stage)
+				frame:SetAttribute("RawStock", industry.rawStock or 0)
+				frame:SetAttribute("ProcessedStock", industry.processedStock or 0)
+				frame:SetAttribute("Exported", industry.exported or 0)
+				frame:SetAttribute("Produced", industry.produced or 0)
+				frame:SetAttribute("ProcessRecipe", recipe and recipe.id or "")
+				frame:SetAttribute("ProductionFlow", "raw-workshop-market-port")
 				local wall = importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, -9), 20, true)
 				for _, dx in { -10, 10 } do
 					local wp = at + Vector3.new(dx, 0, 0)
@@ -4605,14 +4718,51 @@ function PortScene.build(info, onFacility)
 				end
 				importedModel(folder, equipment[1], equipment[2], at + Vector3.new(5, 0, 0), 4.2, false)
 				importedModel(folder, "Interior", "tablecross", at + Vector3.new(-4, 0, 0), 4.3, false)
-				if industry.source and AssetIds["Cargo/" .. industry.source] then
-					local goods = importedModel(folder, "Cargo", industry.source, at + Vector3.new(0, 0, 3), 3.1, false)
+				-- 입고 중인 진짜 원료 재고가 있을 때만 원료 진열을 만든다.
+				if (industry.rawStock or 0) > 0 and sourceMesh and sourceMesh[2] ~= "box-open"
+					-- 음료 잔·찻잔은 재배/입고 원료 모습이 아니므로 실제 원료로 표시하지 않는다.
+					and industry.source ~= "coffee" and industry.source ~= "tea" and industry.source ~= "cocoa"
+					and industry.source ~= "pepper" and industry.source ~= "beer"
+					and AssetIds[sourceMesh[1] .. "/" .. sourceMesh[2]] then
+					local goods = importedModel(folder, sourceMesh[1], sourceMesh[2],
+						at + Vector3.new(-5, 0, 4), goodSize(industry.source, 3), false, sourceMesh[3])
 					if goods then goods.Name = "IndustryRawMaterial_" .. industry.source end
+				end
+				-- 실제 가공품이 창고에 존재할 때만 그 가공품과 맞는 등록된 모델을 보여 준다.
+				if industry.stage >= 3 and (industry.processedStock or 0) > 0 and finishedMesh
+					and AssetIds[finishedMesh[1] .. "/" .. finishedMesh[2]] then
+					local finished = importedModel(folder, finishedMesh[1], finishedMesh[2], at + Vector3.new(8, 0, 5), 2.8, false)
+					if finished then
+						finished.Name = "IndustryProcessed_" .. recipe.id
+						finished:SetAttribute("ProcessedName", industry.processed or "")
+					end
 				end
 				local anchor = wall and wall:FindFirstChildWhichIsA("BasePart", true)
 					or frame:FindFirstChildWhichIsA("BasePart", true)
 				if anchor then sign(folder, anchor, if industry.stage >= 3 then industry.name else industry.processed, nil, 12, true) end
 				prompt(folder, at + Vector3.new(0, 3, 8), industry.name or "지역 산업", "공방 살펴보기", "trade", onFacility)
+				-- 승인된 공방 장비 앞에서 실제 생산품에 해당하는 직업 모션으로 일한다.
+				-- 산업마다 한 명만 생성하고 카메라 밖에서는 관절 애니메이션을 생략한다.
+				local workKind = if materialClass == "mineral" then "forge" elseif materialClass == "fiber" then "sew"
+					elseif materialClass == "forest" then "hammer" elseif recipe and recipe.disc == "brewing" then "stir"
+					elseif materialClass == "farm" then "knead" else "inspect"
+				local workPos = at + Vector3.new(5, 0, 5)
+				local clothes = if PortData.Ports[info.portId] and PortData.Ports[info.portId].country == "korea" then OUTFIT.korea else (OUTFIT[currentKey] or OUTFIT.brick)
+				local coat = (clothes.coats and clothes.coats[1]) or C(133, 106, 82)
+				local worker = villager(folder, workPos, faceTo(workPos, at + Vector3.new(5, 0, 0)),
+					coat, rng, if workKind == "forge" or workKind == "hammer" then "Barbarian" else "Rogue", true,
+					{ year = info.year or currentYear, profession = "industry_artisan", hat = clothes.hat })
+				if worker then
+					worker.Name = "IndustryWorker_" .. industry.id
+					worker:SetAttribute("Job", "industry_artisan")
+					worker:SetAttribute("Workplace", industry.name or "지역 산업")
+					worker:SetAttribute("SourceGood", industry.source or "")
+					worker:SetAttribute("Activity", workKind)
+					table.insert(walkers, { model = worker, base = worker:GetPivot(), mode = "stay", kind = workKind,
+						phase = rng:NextNumber(0, 10), job = "industry_artisan", industryDuty = true,
+						workKinds = { workKind, "inspect", "count" },
+						tradeKinds = { "offer", "receive", "count" }, leisureKinds = { "stretch", "talk" } })
+				end
 				if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-14, 0, 0), 6.5, false) end
 				if industry.stage >= 4 then
 					importedModel(folder, "Town", "cart", at + Vector3.new(15, 0, 0), 6.5, false)

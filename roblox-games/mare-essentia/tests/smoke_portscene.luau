@@ -71,7 +71,8 @@ for _, scenario in visualScenarios do
 		technology = { rows = {} },
 		-- [실제 원료 연결] 승인된 유리 원료의 3단계 브랜드 공방 외형을 함께 검사한다.
 		industries = if scenario.id == "venice" then {
-			{ id = "venice_glass", name = "베네치아 유리공방", source = "glass", processed = "유리 제품", stage = 3 },
+			{ id = "venice_glass", name = "베네치아 유리공방", source = "glass", processed = "유리 제품", stage = 3,
+				rawStock = 15, processedStock = 8, produced = 1.4, exported = 0.5 },
 		} else {},
 		specialties = {},
 		buildings = { house = 300, farm = scenario.farm, workshop = scenario.workshop, dock = 10,
