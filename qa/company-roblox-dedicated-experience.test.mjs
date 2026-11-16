@@ -800,8 +800,8 @@ test('Mare R15 faces use their native head front and stationary villagers greet 
   assert.match(pose,/gui\.Face = if decal then decal\.Face else Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
   assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng\)/);
-  assert.match(port,/local guestRoot = character and character:FindFirstChild\\("HumanoidRootPart"\\)/);
-  assert.match(port,/elseif guestRoot then guestRoot\\.Position elseif cam then cam\\.CFrame\\.Position else nil/);
+  assert.match(port,/local guestRoot = character and character:FindFirstChild\("HumanoidRootPart"\)/);
+  assert.match(port,/elseif guestRoot then guestRoot\.Position elseif cam then cam\.CFrame\.Position else nil/);
   assert.match(port,/local nearGuest = flat\.Magnitude > 1 and flat\.Magnitude < 26/);
   assert.match(port,/local canFaceGuest = w\.kind == "talk" or w\.kind == "stall" or w\.kind == "look" or w\.kind == nil/);
   assert.match(port,/if nearGuest and canFaceGuest and \(not partner or flat\.Magnitude < 12\) then/);
