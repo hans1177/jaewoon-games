@@ -2088,6 +2088,12 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 먼저 필지를 확보한 뒤 주택을 채워 시설과 집이 겹치지 않도록 한다.
 	do
 		local stock = info.sim and info.sim.buildings
+		-- 외부 CC0 발전형 모델은 Roblox 자산 등록/사용 권한이 확인된 뒤에만 선택한다.
+		-- 지역에 맞지 않는 서양식 건물을 일본·중국·오스만·스와힐리 도시에 강제 배치하지 않는다.
+		local european = countryPlan ~= nil or key == "colonial" or key == "creole"
+		local production = {}
+		for _, good in made do production[good] = true end
+		local visualTier = if lvl < 3 then 1 elseif lvl < 5 then 3 else 5
 		local civic = {
 			{ "workshop", "공방 거리", 2, "Town", "workbench-anvil", C(148, 108, 77) },
 			{ "warehouse", "창고 구역", 2, "Cargo", "box-open", C(129, 112, 87) },
@@ -2095,6 +2101,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			{ "school", "학교 구역", 3, "Interior", "bookcaseclosed", C(111, 120, 147) },
 			{ "hall", "행정 구역", 3, "Town", "bell-tower", C(165, 156, 139) },
 			{ "tavern", "여가 거리", 3, "Cargo", "mug", C(125, 93, 78) },
+			{ "guard", "경비소 거리", 2, "Castle", "flag-banner-short", C(112, 119, 133) },
 		}
 		local placed = 0
 		local maxSites = if game:GetService("UserInputService").TouchEnabled then 7 else 10
@@ -2111,7 +2118,32 @@ local function densify(folder, info, style, rng, walkers, made)
 					if onStreet(x, 14) then x += math.max(25, S * 0.6) end
 					if not reserved(x, z, 18) then
 						local at = Vector3.new(x, 0, z)
-						local building = house(folder, at, 19, 15, math.clamp(1 + math.floor((lvl - c[3]) / 2), 1, 3), style, rng, c[6])
+						-- 시장·경비소는 실제 발전 단계와 같은 외부 모델(1/3/5)을 사용한다.
+						-- 공방은 생산품에 따라 대장간/제재소를, 주점은 여관을 쓴다.
+						-- AssetIds에 없는 원본은 미승인 상태이므로 기존 문화권 주택으로 정상 복귀한다.
+						local prefab
+						if european then
+							if c[1] == "market" then prefab = "market-" .. visualTier
+							elseif c[1] == "guard" then prefab = "guard-" .. visualTier
+							elseif c[1] == "workshop" and lvl >= 3 then
+								prefab = if production.iron or production.copper or production.tin then "blacksmith"
+									elseif production.timber or production.mahogany or production.kauri then "sawmill" else nil
+							elseif c[1] == "tavern" and lvl >= 3 then prefab = "inn"
+							end
+						end
+						local building
+						if prefab and AssetIds["Town/" .. prefab] then
+							local model = importedModel(folder, "Town", prefab, at, if lvl >= 5 then 25 else 21, true)
+							if model then
+								model.Name = "EconomySite_" .. c[1]
+								model:SetAttribute("ArchitectureStage", visualTier)
+								model:SetAttribute("EconomyBuilding", c[1])
+								building = model:FindFirstChildWhichIsA("BasePart", true)
+							end
+						end
+						if not building then
+							building = house(folder, at, 19, 15, math.clamp(1 + math.floor((lvl - c[3]) / 2), 1, 3), style, rng, c[6])
+						end
 						if building then
 							building.Name = "EconomySite_" .. c[1]
 							placed += 1
@@ -2240,7 +2272,12 @@ local function densify(folder, info, style, rng, walkers, made)
 				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
 				local crops
 				if key == "japan" or key == "china" or key == "seasia" then
-					crops = { { "Terrain", "crops-wheatstageb", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
+					-- 벼는 실제 쌀 생산 항구만. 성장 단계별 CC0 메시가 업로드되지 않았다면 기존 작물을 사용한다.
+					local riceTier = if lvl <= 2 then 1 elseif lvl <= 4 then 3 else 4
+					local riceModel = "rice-" .. riceTier
+					local rice = table.find(made, "rice") ~= nil and AssetIds["Terrain/" .. riceModel] ~= nil
+					crops = { { "Terrain", if rice then riceModel else "crops-wheatstageb", 5 },
+						{ "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
 				elseif hotKey then
 					crops = { { "Cargo", "corn", 3.2 }, { "Cargo", "pumpkin", 2.8 }, { "Terrain", "crop-melon", 5 } }
 				else
@@ -2250,7 +2287,13 @@ local function densify(folder, info, style, rng, walkers, made)
 				for row = -3, 3 do
 					local cr = crops[(row + 3) % #crops + 1]
 					for k = -8, 8 do
-						put(cr[1], cr[2], cr[3], cx + k * 6, cz + row * 8, false)
+						local chosen = cr
+						-- 벼 고급 메시 복제는 줄당 절반으로 제한하여 모바일 부하를 억제한다.
+						if string.sub(cr[2], 1, 5) == "rice-" and k % 2 ~= 0 then chosen = crops[2] end
+						local crop = put(chosen[1], chosen[2], chosen[3], cx + k * 6, cz + row * 8, false)
+						if not crop and string.sub(chosen[2], 1, 5) == "rice-" then
+							put("Terrain", "crops-wheatstageb", 5, cx + k * 6, cz + row * 8, false)
+						end
 					end
 				end
 				for k = -9, 9 do
@@ -3014,6 +3057,11 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 					put(kind, pk, if pk == "plant-bush" then 4 else 9, x - 11 + (k % 3) * 11, z - 11 + (k // 3) * 11, false)
 				end
 				put("Town", "fountain-round", 7, x, z, true)
+				-- 고급 식물원은 역사 유럽 양식의 실제 정자 모델로 승급한다(등록/문화권 확인 후).
+				if lvl >= 4 and (key == "britain" or key == "france" or key == "italy" or key == "iberia"
+					or key == "hanse" or key == "north") and AssetIds["Town/gazebo"] then
+					put("Town", "gazebo", 11, x - 19, z + 17, false)
+				end
 				body = put("Terrain", "crop-pumpkin", 3, x + 4, z + 4, false)
 			elseif lm.id == "observatory" then
 				for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-mid", "tower-hexagon-top" } do
