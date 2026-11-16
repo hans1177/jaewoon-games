@@ -2827,7 +2827,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		-- 정확한 조선 통신선/정크선/다우선/곤돌라 원본이 없으므로 역사적 실선으로 오표시하지 않는다.
 		local nation = port and port.country or ""
 		local regionalHarbor = if nation == "korea" then "korean_tidal"
-			elseif key == "japan" or key == "china" then "eastasia"
+			elseif key == "japan" then "japanese_quay"
+			elseif key == "china" then "chinese_quay"
 			elseif key == "hanse" or key == "brick" then "hanseatic"
 			elseif key == "nordic" then "cold_fishing"
 			elseif key == "italy" then "lagoon_stone"
@@ -2843,7 +2844,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				one("Cargo", "fish-large", 2, x, 3, lay.fishZ)
 			end
 			local localBoat = if regionalHarbor == "indian_ocean" then "boat-sail-a"
-				elseif regionalHarbor == "tropical_inlet" then "boat-row-large"
+				elseif regionalHarbor == "tropical_inlet" or regionalHarbor == "chinese_quay" then "boat-row-large"
 				elseif regionalHarbor == "cold_fishing" or regionalHarbor == "hanseatic" then "boat-fishing-small"
 				else "boat-row-small"
 			local boatSize = if localBoat == "boat-sail-a" then 11 elseif localBoat == "boat-fishing-small" then 9 else 7
@@ -2853,7 +2854,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 			if regionalHarbor == "tropical_inlet" and AssetIds["Terrain/canoe"] then
 				one("Terrain", "canoe", 7, 39, 0.3, lay.fishZ + 33)
-			elseif regionalHarbor == "korean_tidal" or regionalHarbor == "eastasia" then
+			elseif regionalHarbor == "korean_tidal" or regionalHarbor == "japanese_quay" or regionalHarbor == "chinese_quay" then
 				one("Town", "fence_rails", 5, -17, 0, lay.fishZ + 14)
 			end
 		end
@@ -2936,7 +2937,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				one("Castle", "flag-banner-long", 9, 2, 0, lay.fortZ)
 			end
 			if lvl >= 5 then
-				one("Naval", "tower-watch", 12, 6, 0, lay.fortZ + (if lay.fortZ > 0 then 22 else -22), true)
+				one("Naval", "tower-watch", 12, 6, 0,
+					lay.fortZ + (if lay.fortZ > 0 then 1 else -1) * (PortBuildings.HarborPlotBounds.defense.halfZ - 7), true)
 			end
 		end
 	end
