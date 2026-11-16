@@ -824,6 +824,24 @@ do
 		if not l or #l ~= 4 then table.insert(dfBad, d.id) end
 	end
 	check("학문 시설: 모든 학문에 4단계 시설·직업이 있다", #dfBad == 0, table.concat(dfBad, ","))
+	-- [승격 학문 시설] 기존 군사 시설은 동일한 정의를 사용하고, 신규 수학 학문 시설은 보고된 카드에서 실제 열린다.
+	check("학문 시설: 군사학 4단계는 기존 병영·훈련장·공창·학교와 동일",
+		D.DisciplineFacilities.List.military_science == D.DisciplineFacilities.Military
+		and #D.DisciplineFacilities.List.military_science == 4)
+	local mathTown = S.State.new("england", 1700)
+	mathTown.reported.math_place_value = true
+	local mathTownFac, mathTownJobs, mathTownDisc = S.Village.discFacilities(mathTown, 6)
+	local mathTownReady = false
+	for _, info in mathTownDisc do
+		if info.id == "mathematics" and info.facility == D.DisciplineFacilities.List.mathematics[1][1]
+			and info.job == D.DisciplineFacilities.List.mathematics[1][2] then
+			mathTownReady = true
+		end
+	end
+	check("학문 시설: 수학 지식 보고 후 산술 교실·산술 교사가 실제 나타난다",
+		mathTownReady and table.find(mathTownFac, "산술 교실") ~= nil
+		and table.find(mathTownJobs, "산술 교사") ~= nil)
+
 	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
 	local fac6, jobs6, by6 = S.Village.discFacilities(stFull, 6)
 	check("학문 시설: 학문이 발전하고 항구가 클수록 시설과 직업이 늘어난다", #fac0 == 0 and #fac6 > 0 and #fac6 == #jobs6 and #by6 >= 15)
