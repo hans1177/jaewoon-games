@@ -3046,25 +3046,102 @@ function PortScene.build(info, onFacility)
 		end
 	end
 
-	-- 왕궁: 큰길 끝
+	-- 왕궁·궁정 구역: 시장·공업·외곽 주거 구역과 분리한 서쪽 중앙 축에만 짓는다.
+	-- 최소 가로/세로 140스터드급: 일반 주택 약 12~16스터드보다 10배 이상 크다.
+	local palaceCourt = nil
 	if fac.palace then
-		local px = -150
-		local body = part(folder, Vector3.new(30, 18, 50), CFrame.new(px, 9, 0), Color3.fromRGB(236, 228, 210), Enum.Material.Marble)
-		part(folder, Vector3.new(32, 1.5, 52), CFrame.new(px, 18.7, 0), Color3.fromRGB(200, 170, 110), Enum.Material.Marble)
-		for z = -20, 20, 8 do
-			part(folder, Vector3.new(16, 2, 2), CFrame.new(px + 16, 8, z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(246, 242, 232), Enum.Material.Marble, Enum.PartType.Cylinder)
-		end
-		part(folder, Vector3.new(14, 14, 14), CFrame.new(px, 22, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 140, 170), Enum.Material.Metal, Enum.PartType.Ball)
-		part(folder, Vector3.new(0.4, 6, 4), CFrame.new(px, 33, 2), Color3.fromRGB(180, 30, 40), Enum.Material.Fabric)
-		-- 발전도 4단계부터 기둥·깃발이 늘고, 5단계 왕궁 없는 항구에는 같은 자리에 총독 관저가 선다
-		if sceneLevel >= 4 then
-			for _, z in { -12, 12 } do
-				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(px + 18, 0, z), 10, false)
+		local px = -425
+		local key = currentKey
+		local royalSeed = seeded(info.portId .. ":royal-court")
+		local scale = 1.07 + sceneLevel * 0.075 + royalSeed:NextNumber(0, 0.06)
+		local wide, deep = 134 * scale, 138 * scale
+		local tall = 30 + sceneLevel * 4
+		local east = key == "japan" or key == "china" or key == "seasia" or key == "malabar"
+		local islamic = key == "ottoman" or key == "desert" or key == "swahili" or key == "wafrica"
+		local tropical = key == "tropic" or key == "pacific" or key == "creole" or key == "colonial"
+		local renaissance = key == "italy" or key == "med" or key == "iberia"
+		local courtStyle = if east then "아시아 궁궐" elseif islamic then "중정 궁전"
+			elseif tropical then "열대 총독궁" elseif renaissance then "르네상스 궁전" else "북유럽 왕궁"
+		local baseColor = if east then C(158, 129, 91) elseif islamic then C(231, 209, 172)
+			elseif tropical then C(229, 203, 161) elseif renaissance then C(228, 219, 197) else C(199, 198, 197)
+		local roofColor = if east then C(60, 82, 71) elseif islamic then C(65, 135, 141)
+			elseif tropical then C(146, 83, 60) elseif renaissance then C(159, 77, 65) else C(80, 93, 115)
+		local surface = if tropical or east then Enum.Material.WoodPlanks elseif islamic then Enum.Material.Sandstone else Enum.Material.Marble
+		local palaceTitle = info.palaceName or "왕궁"
+		local facadeX = px + wide * 0.5
+		local frontX = facadeX + 18
+		-- 왕궁 본체와 양쪽 측랑: 축척을 한 번에 확장하며 장식만 비충돌로 둔다.
+		local main = part(folder, Vector3.new(wide, tall, deep * 0.74), CFrame.new(px, tall / 2, 0), baseColor, surface)
+		main.Name = "RoyalPalace"
+		main:SetAttribute("RoyalStyle", courtStyle)
+		main:SetAttribute("PortId", info.portId)
+		main:SetAttribute("FootprintRatio", 10)
+		part(folder, Vector3.new(wide + 6, 3.2, deep * 0.77 + 6), CFrame.new(px, tall + 1.6, 0), roofColor, if east or tropical then Enum.Material.WoodPlanks else Enum.Material.Slate)
+		for _, side in { -1, 1 } do
+			local z = side * (deep * 0.41 + 20)
+			part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
+			part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
+			-- 지역 양식에 따라 관문 탑·첨탑·누각으로 실루엣을 다르게 한다.
+			local tower = if east then "tower-square-roof" elseif islamic then "tower-hexagon-roof" else "tower-square-top-roof"
+			local zTower = side * (deep * 0.47 + 23)
+			local tx = px - wide * 0.34
+			local tbase = part(folder, Vector3.new(16, tall * 0.72, 16), CFrame.new(tx, tall * 0.36, zTower), baseColor, surface)
+			tbase.Name = "RoyalTower"
+			importedModel(folder, "Castle", tower, Vector3.new(tx, tall * 0.72, zTower), 20, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(facadeX + 5, 0, side * (deep * 0.4 + 7)), 12, false)
+			-- 궁정 담장·정원은 본체와 겹치지 않으며 거주구역보다 낮은 밀도로 배치한다.
+			for k = 1, 4 do
+				local x = facadeX + 15 + (k - 1) * 12
+				importedModel(folder, "Town", "fence_straight", Vector3.new(x, 0, side * (deep * 0.45 + 28)), 7, false)
+			end
+			for k = 1, 3 do
+				local at = Vector3.new(facadeX + 16 + k * 12, 0, side * (deep * 0.32 + 24))
+				if tropical or islamic then
+					importedModel(folder, "Naval", "palm-detailed-straight", at, 12, false)
+				else
+					importedModel(folder, "Terrain", "tree-oak", at, 11, false)
+				end
 			end
 		end
-		local palaceTitle = info.palaceName or "왕궁"
-		sign(folder, body, palaceTitle, Color3.fromRGB(150, 110, 40), 16)
-		prompt(folder, Vector3.new(px + 20, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
+		-- 문화별 왕궁 지붕·돔·누각. 등록된 기존 모델을 우선하며 재질은 지역별로 유지한다.
+		if east then
+			for _, z in { -deep * 0.26, 0, deep * 0.26 } do
+				importedModel(folder, "Town", "eastasia-roof", Vector3.new(px, tall + 3, z), 34, false, roofColor)
+			end
+		elseif islamic then
+			for _, z in { -deep * 0.3, 0, deep * 0.3 } do
+				part(folder, Vector3.new(28, 18, 28), CFrame.new(px, tall + 8, z), roofColor, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+			end
+		elseif tropical then
+			for k = -4, 4 do
+				part(folder, Vector3.new(2.4, 16, 2.4), CFrame.new(facadeX + 7, 8, k * 13), C(227, 214, 186), Enum.Material.Wood)
+			end
+		else
+			for k = -4, 4 do
+				local z = k * 13
+				part(folder, Vector3.new(3.2, tall * 0.72, 3.2), CFrame.new(facadeX + 4, tall * 0.36, z), C(230, 224, 207), Enum.Material.Marble)
+			end
+			for _, z in { -deep * 0.24, deep * 0.24 } do
+				importedModel(folder, "Castle", "tower-square-roof", Vector3.new(px, tall + 3, z), 18, false)
+			end
+		end
+		-- 왕실 출입구·광장·문장·분수·군수 마차·궁정 서고/마구간.
+		local entry = part(folder, Vector3.new(4, 13, 12), CFrame.new(facadeX + 3, 6.5, 0), C(89, 59, 44), Enum.Material.Wood)
+		entry.Name = "RoyalEntrance"
+		part(folder, Vector3.new(75, 0.4, 26), CFrame.new(frontX + 25, 0.24, 0), C(166, 158, 148), Enum.Material.Cobblestone)
+		for _, z in { -38, 38 } do
+			importedModel(folder, "Town", "fountain-round", Vector3.new(frontX + 29, 0, z), 10, false)
+			importedModel(folder, "Town", "bench_A", Vector3.new(frontX + 38, 0, z + (if z > 0 then 14 else -14)), 5, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(frontX + 8, 0, z), 13, false)
+		end
+		importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.42, 0, deep * 0.45 + 33), 7, false)
+		importedModel(folder, "Cargo", "barrel", Vector3.new(px - wide * 0.42 - 8, 0, deep * 0.45 + 30), 3, false)
+		importedModel(folder, "Town", "workbench-anvil", Vector3.new(px - wide * 0.42, 0, -(deep * 0.45 + 33)), 3.5, false)
+		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61), 23)
+		prompt(folder, Vector3.new(frontX + 9, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
+		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = math.max(2, math.floor((info.sim and info.sim.residents or 12) / 15)) }
+		folder:SetAttribute("RoyalDistrictStyle", courtStyle)
+		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 	end
 
 	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
@@ -3790,7 +3867,7 @@ function PortScene.build(info, onFacility)
 		if industry.stage >= 2 then
 			industryLot += 1
 			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
-			local at = Vector3.new(-330 - row * 35, 0, -105 + col * 70)
+			local at = Vector3.new(-175 + col * 35, 0, -280 - row * 40) -- 왕궁 중앙축·외곽 주거·문명 산업과 다른 남부 상업 구획
 			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
 			if booth then
 				booth.Name = "LocalIndustry_" .. industry.id
