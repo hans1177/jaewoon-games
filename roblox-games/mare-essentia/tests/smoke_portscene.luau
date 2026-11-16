@@ -68,7 +68,12 @@ for _, scenario in visualScenarios do
 	local sim = {
 		stage = scenario.level, year = 1700, pop = 9500, residents = 44, prosperity = 116, mood = "steady",
 		jobs = { farmer = 2300, fisher = 300, craftsman = 2600, merchant = 800, sailor = 800, guard = 500, official = 700, clergy = 100, laborer = 600 },
-		technology = { rows = {} }, industries = {}, specialties = {},
+		technology = { rows = {} },
+		-- [실제 원료 연결] 승인된 유리 원료의 3단계 브랜드 공방 외형을 함께 검사한다.
+		industries = if scenario.id == "venice" then {
+			{ id = "venice_glass", name = "베네치아 유리공방", source = "glass", processed = "유리 제품", stage = 3 },
+		} else {},
+		specialties = {},
 		buildings = { house = 300, farm = scenario.farm, workshop = scenario.workshop, dock = 10,
 			market = 5, warehouse = 7, school = scenario.school, hall = 2 },
 		construction = { active = scenario.level >= 3, spending = 30, workshop = 4, house = 12 },
@@ -94,7 +99,12 @@ for k in State.missing do table.insert(miss, k) end
 table.sort(miss)
 for _, k in miss do fails += 1 print("등록되지 않은 에셋 요청: " .. k) end
 -- 회귀: 숲의 참나무·소나무·야자가 실제로 요청돼야 한다 (find 패턴 버그로 한때 조용히 빠졌다)
-for _, must in { "Terrain/tree-oak", "Terrain/tree-pinedefaulta", "Naval/palm-detailed-straight", "Town/house" } do
+for _, must in {
+	"Terrain/tree-oak", "Terrain/tree-pinedefaulta", "Naval/palm-detailed-straight", "Town/house",
+	-- [마을 시각회귀] 유일한 경제/시설 책임 장면이 실제 CC0 실내·브랜드 원료를 배치해야 한다.
+	"Town/floor_base", "Town/kenney_wood_wall_01", "Town/kenney_roof_straight_green_01",
+	"Interior/tablecross", "Interior/bookcaseopenlow", "Cargo/glass",
+} do
 	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
 end
 -- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
