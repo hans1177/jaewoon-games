@@ -443,7 +443,8 @@ test('central contract requires official Studio MCP for F9 and release, without 
   const canonical=central.roblox?.deploymentControl?.verifiedCyclePublication||{};
   assert.equal(canonical.studioRequiredForCanonicalPublish,true);
   assert.equal(canonical.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
 });
@@ -1196,7 +1197,8 @@ test('official Studio MCP planner runs automatically for push and exact candidat
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
   assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
