@@ -1263,6 +1263,10 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     ['baghlah','naval/boat-sail-b.glb','pirate-kit',2,true],
     ['sekibune','naval/boat-row-small.glb','pirate-kit',2,true],
     ['geobukseon','naval/boat-row-large.glb','pirate-kit',2,false],
+    ['pattamar','naval/boat-sail-a.glb','pirate-kit',2,true],
+    ['kadirga','naval/boat-row-large.glb','pirate-kit',2,true],
+    ['corvette','naval/ship-pirate-small.glb','pirate-kit',4,true],
+    ['east_indiaman','naval/ship-pirate-large.glb','pirate-kit',6,true],
   ];
   const importer=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(importer,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/,'modified GLB must be registered as new Roblox asset');
@@ -1311,6 +1315,19 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     const extra=after.gltf.meshes.slice(originalMeshCount);
     const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
+    if(['pattamar','kadirga','corvette','east_indiaman'].includes(ship)){
+      assert.equal(meta.originalMeshCount,originalMeshCount,ship+' source hull baseline');
+      assert.ok(addedTriangles>=700,ship+' dedicated vessel reconstruction too simple');
+      const expectedGroups={
+        pattamar:['wood','linen','red','rope'],
+        kadirga:['wood','red','linen','dark'],
+        corvette:['wood','metal','dark','linen'],
+        east_indiaman:['wood','gold','dark','linen'],
+      };
+      for(const name of expectedGroups[ship]){
+        assert.ok(meta.modelGeometryGroups.includes(name),ship+' missing rebuilt '+name+' geometry');
+      }
+    }
     if(['carrack','baghlah','sekibune','geobukseon'].includes(ship)){
       assert.equal(meta.originalMeshCount,originalMeshCount,ship+' original mesh baseline');
       assert.ok(meta.derivedTriangleCount>=650,ship+' rebuilt ship visual geometry too small');
