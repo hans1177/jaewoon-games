@@ -49,7 +49,7 @@ return function(D, S)
 	-- 시세 수첩: 직접 거래한 물건은 그 항구의 팔값을 적어 둔다 (동료 없이도 나중에 비교할 수 있다)
 	local function noteBook(state, ctx, goodId)
 		local m = ctx.market:get(state.portId, goodId)
-		local e = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
+		local e = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
 		state.priceBook = state.priceBook or {}
 		state.priceBook[goodId] = state.priceBook[goodId] or {}
 		state.priceBook[goodId][state.portId] = { sell = T.sellPrice(state.portId, goodId, m, sellRateFor(state), e), day = state.day }
@@ -68,7 +68,7 @@ return function(D, S)
 			return false, "화물칸이 부족해요"
 		end
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
 		local total = 0
 		for _ = 1, amount do
 			total += T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
@@ -138,7 +138,7 @@ return function(D, S)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
 		local revenue = 0
 		for _ = 1, amount do
 			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
@@ -194,7 +194,7 @@ return function(D, S)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
-		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId))
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
 		local revenue = 0
 		for _ = 1, amount do
 			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
