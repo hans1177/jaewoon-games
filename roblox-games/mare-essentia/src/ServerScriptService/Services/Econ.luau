@@ -90,7 +90,7 @@ return function(D, S)
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
-			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = E.specialtyView(t),
+			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = E.specialtyView(t), industries = E.industryView(t),
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
