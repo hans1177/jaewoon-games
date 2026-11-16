@@ -37,6 +37,9 @@ local Rows: { { any } } = {
 	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp" },
 	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice" },
 	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london" },
+	-- 기존 선박 실물은 관찰 카드로, 선체 설계도·부품은 별도 연구 카드로 남긴다. 보유 선박/선박 구매 규칙은 변경하지 않는다.
+	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon" },
+	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville" },
 	-- [버드나무 연구] 일반 표본 → 비교 관찰 → 희귀 의학 기록. 주인공의 직업은 상관없다.
 	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500 },
 	{ "bot_willow_notes", "버드나무 표본 비교 기록", "Botany", "Uncommon", "채집한 버드나무 잎과 껍질을 수도원 약초원에서 말리고 기록한 비교 관찰장.", "수도원 약초원 기록", 15, 40, 1500, { found = { "bot_willow" } } },
@@ -919,6 +922,20 @@ local function kindOf(c: Card): string
 	end
 	return FieldKind[c.field] or "archive"
 end
+-- [선박 세부 종류] 실물 선박과 설계·부품·조선소 시설을 혼동하지 않는다.
+local function subkindOf(c: Card): string?
+	if c.field == "Shipbuilding" then
+		if c.id == "ship_caravel" or c.id == "ship_galleon" or c.id == "ship_longship" then return "선박 실물" end
+		if string.find(c.id, "design", 1, true) or string.find(c.name, "설계", 1, true) then return "선박 설계" end
+		if c.id == "ship_dry_dock" then return "조선 시설" end
+		return "선박 장비·공법"
+	elseif c.field == "Site" then
+		local kind = kindOf(c)
+		if kind == "building" then return "실존 건축물" elseif kind == "terrain" then return "자연 지형" end
+		return "유적·원더"
+	end
+	return nil
+end
 local RarityNames = { Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" }
 
 local ById: { [string]: Card } = {}
@@ -982,5 +999,6 @@ return {
 	Kinds = Kinds,
 	KindById = KindById,
 	kindOf = kindOf,
+	subkindOf = subkindOf,
 	RarityNames = RarityNames,
 }
