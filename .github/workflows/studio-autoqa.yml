@@ -108,6 +108,13 @@ jobs:
             echo "studio already queued/running for $game on $head, skip duplicate"
             exit 0
           fi
+          # [정기 탐험 전수] 하루 2회 전체 게임 QA와 지역별 24곳 실제 플레이 검사를 같은 공식 Studio PC에 직렬 등록한다.
           script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
-          gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
-          echo "dispatched $game $script"
+          scripts=("$script")
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json")
+          fi
+          for script in "${scripts[@]}"; do
+            gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
+            echo "dispatched $game $script"
+          done
