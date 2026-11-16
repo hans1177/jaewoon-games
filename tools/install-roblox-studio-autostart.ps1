@@ -57,18 +57,54 @@ $installed = Join-Path $stateDir 'roblox-studio-autostart-supervisor.ps1'
 Copy-Item -LiteralPath $supervisor -Destination $installed -Force
 
 $configPath = Join-Path $stateDir 'config.json'
-# 기본은 러너만 살려 둔다. devloop-studio 작업이 Studio 를 직접 열고 닫으므로, 감독 스크립트가 Studio 를 열면 서로 방해한다.
-# Studio 를 항상 열어 두고 싶을 때만 -KeepStudioOpen 을 쓴다(작업 중에는 그래도 열지 않는다).
+# [기존 시작 프로그램] 공식 GitHub 자동복구가 설치한 같은 러너용 VBS 감시기는 그대로 재사용한다.
+# 두 감시기가 run.cmd 를 동시에 실행하면 GitHub 세션 충돌이 생기므로 감독 스크립트는 Studio 만 관리한다.
+$startup = [Environment]::GetFolderPath('Startup')
+$existingRunnerStartup = $false
+if ($startup) {
+  $watchdogPath = Join-Path $startup 'Jaewoon-Roblox-Runner.vbs'
+  if (Test-Path -LiteralPath $watchdogPath -PathType Leaf) {
+    $watchdog = Get-Content -LiteralPath $watchdogPath -Raw
+    $listener = Join-Path $runner 'bin\Runner.Listener.exe'
+    if ($watchdog.IndexOf(('target = "' + $listener + '"'), [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+        $watchdog.Contains('shell.Run "cmd.exe /d /c run.cmd"') -and
+        $watchdog.Contains('WScript.Sleep 15000')) {
+      $existingRunnerStartup = $true
+      Write-Host 'STUDIO_AUTOSTART_EXISTING_RUNNER_WATCHDOG=REUSED'
+    } else {
+      throw 'STUDIO_AUTOSTART_EXISTING_RUNNER_WATCHDOG_UNVERIFIED'
+    }
+  }
+}
+# 기존 E: 러너 이전 도구의 시작 바로가기도 같은 러너를 실행한다.
+if (-not $existingRunnerStartup -and $startup) {
+  $shortcutPath = Join-Path $startup 'JaewoonStudioAuto.lnk'
+  $launcherPath = Join-Path $env:LOCALAPPDATA 'JaewoonStudioAuto\start.ps1'
+  if ((Test-Path -LiteralPath $shortcutPath -PathType Leaf) -and
+      (Test-Path -LiteralPath $launcherPath -PathType Leaf)) {
+    $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcutPath)
+    $launcher = Get-Content -LiteralPath $launcherPath -Raw
+    if ([string]$shortcut.Arguments -like ('*' + $launcherPath + '*') -and
+        $launcher.Contains(('\'' + $runner.Replace("'", "''") + '\''')) -and
+        $launcher.Contains('run.cmd')) {
+      $existingRunnerStartup = $true
+      Write-Host 'STUDIO_AUTOSTART_EXISTING_RUNNER_SHORTCUT=REUSED'
+    }
+  }
+}
 $startStudio = [bool]$KeepStudioOpen
-# 설정은 매번 새로 쓴다(예전 설치가 남긴 startStudio=true 도 덮어쓴다).
-[pscustomobject]@{ placeId = $PlaceId; universeId = $UniverseId; startStudio = $startStudio; startRunner = $true } |
-  ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
-Write-Host ('STUDIO_AUTOSTART_CONFIG=' + $configPath)
-
+$startRunner = -not $existingRunnerStartup
+Write-Host ('STUDIO_AUTOSTART_STUDIO_ON_LOGIN=' + $startStudio)
+Write-Host ('STUDIO_AUTOSTART_RUNNER_OWNED_BY_SUPERVISOR=' + $startRunner)
 if ($CheckOnly) {
-  Write-Host 'STUDIO_AUTOSTART_PREFLIGHT=PASS_NOT_INSTALLED'
+  $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+  Write-Host ('STUDIO_AUTOSTART_PREFLIGHT=' + $(if ($task) { 'ALREADY_INSTALLED' } else { 'READY_TO_INSTALL' }))
   return
 }
+# [설치] 기존 시작 프로그램과 충돌하지 않는 설정만 저장한다.
+[pscustomobject]@{ placeId = $PlaceId; universeId = $UniverseId; startStudio = $startStudio; startRunner = $startRunner } |
+  ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
+Write-Host ('STUDIO_AUTOSTART_CONFIG=' + $configPath)
 
 $user = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $arg = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $installed + '" -RunnerRoot "' + $runner + '" -ConfigPath "' + $configPath + '"'
