@@ -73,6 +73,7 @@ local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local PortScene = require(Shared:WaitForChild("PortScene"))
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
+local Weapons = require(Shared:WaitForChild("Weapons"))
 local Pose = require(Shared:WaitForChild("Pose"))
 local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
@@ -6328,6 +6329,9 @@ function H.startField(s)
 		battleStats = view and view.battleStats,
 		cardSkills = cardSkills,
 		allies = allyNames,
+		-- [선택 집안] 기존 저장된 선장 출신을 공식 Weapons 정의로 변환. 기존 저장 키와 전투 수치는 그대로 사용한다.
+		weapon = Weapons.originWeapon(view and view.captain and view.captain.origin and view.captain.origin.id,
+			view and view.player and view.player.year).id,
 		year = view and view.player and view.player.year, -- 실제 역사 시대로 활·총기 발화방식 결정
 		name = s.name,
 		portId = s.portId,
@@ -9856,7 +9860,7 @@ renderTitle = function()
 		cur = list[1]
 	end
 
-	local head = tLabel(titleScroll, "항해자의 연대기", 24, INK, true, nxt())
+	local head = tLabel(titleScroll, "항해자의 연대기", 28, INK, true, nxt())
 	head.TextXAlignment = Enum.TextXAlignment.Center
 	do
 		local rule = Instance.new("Frame")
@@ -9873,7 +9877,7 @@ renderTitle = function()
 	end
 
 	-- ① 나라
-	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 20, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "① 출발할 나라를 선택해", 22, COLORS.muted, true, nxt())
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
 	grid.Size = UDim2.new(1, 0, 0, 0)
@@ -9973,7 +9977,7 @@ renderTitle = function()
 	tLabel(info, cur.summary, 16, COLORS.muted, false)
 
 	-- ② 출신 성분
-	tLabel(titleScroll, "② 어떤 집안에서 자랐나요?", 20, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "② 집안 선택 · 탐험 기본 무기", 22, COLORS.muted, true, nxt())
 	do
 		local Sp = require(Shared:WaitForChild("Specialties"))
 		H.chosenOrigin = H.chosenOrigin or "merchant"
@@ -9984,7 +9988,7 @@ renderTitle = function()
 		og.LayoutOrder = nxt()
 		og.ZIndex = 12
 		local ogl = Instance.new("UIGridLayout")
-		ogl.CellSize = UDim2.new(0.5, -4, 0, 84)
+		ogl.CellSize = UDim2.new(0.5, -4, 0, 120)
 		ogl.CellPadding = UDim2.fromOffset(8, 8)
 		ogl.SortOrder = Enum.SortOrder.LayoutOrder
 		ogl.Parent = og
@@ -10003,18 +10007,27 @@ renderTitle = function()
 			bst.Thickness = if sel then 2.5 else 1
 			bst.Color = if sel then INK_EDGE else Color3.fromRGB(151, 114, 75)
 			bst.Parent = b
-			local n1 = mkLabel(b, o.name, 18, INK, true)
+			local n1 = mkLabel(b, o.name, 19, INK, true)
 			n1.Position = UDim2.fromOffset(8, 4)
 			n1.Size = UDim2.new(1, -12, 0, 24)
 			n1.AutomaticSize = Enum.AutomaticSize.None
 			n1.ZIndex = 14
-			local n2 = mkLabel(b, o.perkText, 15, INK_SOFT, false)
+			local n2 = mkLabel(b, o.perkText, 16, INK_SOFT, false)
 			n2.Position = UDim2.fromOffset(8, 30)
-			n2.Size = UDim2.new(1, -12, 0, 40)
+			n2.Size = UDim2.new(1, -12, 0, 50)
 			n2.AutomaticSize = Enum.AutomaticSize.None
 			n2.TextWrapped = true
 			n2.TextYAlignment = Enum.TextYAlignment.Top
 			n2.ZIndex = 14
+			local originWeapon = Weapons.originWeapon(o.id, chosenYear)
+			local n3 = mkLabel(b, "⚔ " .. originWeapon.name .. " · " .. originWeapon.note, 16, INK, true)
+			n3.Name = "OriginStartingWeapon"
+			n3.Position = UDim2.fromOffset(8, 83)
+			n3.Size = UDim2.new(1, -12, 0, 33)
+			n3.TextWrapped = true
+			n3.TextYAlignment = Enum.TextYAlignment.Top
+			n3.AutomaticSize = Enum.AutomaticSize.None
+			n3.ZIndex = 14
 			b.Activated:Connect(function()
 				Sfx.play("sfx_click")
 				H.chosenOrigin = o.id
@@ -10025,7 +10038,9 @@ renderTitle = function()
 		og.Parent = titleScroll
 		local cur2 = Sp.OriginById[H.chosenOrigin]
 		if cur2 then
-			tLabel(titleScroll, cur2.story, 16, COLORS.muted, false, nxt())
+			tLabel(titleScroll, "선택: " .. cur2.name .. " · " .. cur2.story, 18, COLORS.muted, false, nxt())
+			local initialWeapon = Weapons.originWeapon(H.chosenOrigin, chosenYear)
+			tLabel(titleScroll, "첫 탐험 기본 무기: " .. initialWeapon.name .. " (" .. initialWeapon.note .. ")", 19, INK, true, nxt())
 		end
 	end
 
@@ -10196,7 +10211,8 @@ function H.showTitle()
 		if grain then grain.ImageTransparency = 0.22 end
 	end
 	local bounds = Instance.new("UISizeConstraint")
-	bounds.MaxSize = Vector2.new(420, if view then 286 else 200)
+	-- [첫 화면 가독성] 모바일/가로 화면에서 이어하기·새 항해·설정 세 동작을 한눈에 보여 준다.
+	bounds.MaxSize = Vector2.new(500, if view then 440 else 350)
 	bounds.Parent = box
 
 	local pages = Instance.new("ScrollingFrame")
@@ -10222,15 +10238,15 @@ function H.showTitle()
 	local function placeMenu()
 		local portrait = root.AbsoluteSize.Y > root.AbsoluteSize.X
 		box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
-		box.Position = if portrait then UDim2.new(0.5, 0, 1, -22) else UDim2.new(1, -30, 0.56, 0)
-		box.Size = if portrait then UDim2.fromScale(0.92, 0.47) else UDim2.new(0.41, 0, 0.84, 0)
+		box.Position = if portrait then UDim2.new(0.5, 0, 1, -16) else UDim2.new(1, -22, 0.5, 0)
+		box.Size = if portrait then UDim2.fromScale(0.94, 0.68) else UDim2.new(0.46, 0, 0.88, 0)
 	end
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(placeMenu)
 	placeMenu()
 
 	local head = Instance.new("Frame")
 	head.LayoutOrder = 1
-	head.Size = UDim2.new(1, 0, 0, 52)
+	head.Size = UDim2.new(1, 0, 0, 62)
 	head.BackgroundTransparency = 1
 	head.BorderSizePixel = 0
 	head.Parent = pages
@@ -10243,7 +10259,7 @@ function H.showTitle()
 	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
 	seal.ImageColor3 = COLORS.brown
 	seal.Parent = head
-	local title = mkLabel(head, "선장의 항해 일지", 22, COLORS.ink, true)
+	local title = mkLabel(head, "선장의 항해 일지", 27, COLORS.ink, true)
 	title.Position = UDim2.fromOffset(53, 0)
 	title.Size = UDim2.new(1, -60, 1, 0)
 	title.AutomaticSize = Enum.AutomaticSize.None
@@ -10257,14 +10273,19 @@ function H.showTitle()
 		b.Size = size
 		b.Text = text
 		b.Font = if primary then Enum.Font.GothamBold else Enum.Font.GothamMedium
-		b.TextSize = if primary then 19 else 15
+		b.TextSize = if primary then 23 else 19
 		b.TextColor3 = if primary then Color3.fromRGB(250, 232, 193) else INK
-		b.BackgroundColor3 = Color3.fromRGB(35, 54, 59)
-		b.BackgroundTransparency = if primary then 0 else 1
+		b.BackgroundColor3 = if primary then Color3.fromRGB(35, 54, 59) else Color3.fromRGB(225, 204, 166)
+		b.BackgroundTransparency = if primary then 0 else 0.06
 		b.BorderSizePixel = 0
 		b.TextWrapped = true
 		b.Parent = parent
-		corner(b, 4)
+		corner(b, 9)
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = if primary then Color3.fromRGB(235, 195, 118) else INK_EDGE
+		stroke.Thickness = if primary then 2.2 else 1.5
+		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		stroke.Parent = b
 		b.Activated:Connect(function()
 			Sfx.play("sfx_click")
 			callback()
@@ -10272,9 +10293,9 @@ function H.showTitle()
 		return b
 	end
 	if view then
-		local log = mkLabel(pages, string.format("%s · %d년\n소지금 %d코인", view.player.portName, view.player.year, view.player.coins), 15, INK_SOFT, false, 2)
+		local log = mkLabel(pages, string.format("진행 중인 항해 · %s · %d년\n소지금 %d코인", view.player.portName, view.player.year, view.player.coins), 18, INK_SOFT, false, 2)
 		log.Size = UDim2.new(1, 0, 0, 0)
-		local resume = action(pages, "이어하기", UDim2.new(1, 0, 0, 49), true, function()
+		local resume = action(pages, "▶ 이어하기 · 기존 항해", UDim2.new(1, 0, 0, 60), true, function()
 			leave()
 			titleGui.Enabled = false
 			main.Visible = wasMain
@@ -10282,9 +10303,14 @@ function H.showTitle()
 		end)
 		resume.LayoutOrder = 3
 	end
+	if not view then
+		local guide = mkLabel(pages, "나라와 집안을 고르고, 출발 무기를 확인한 뒤 항해해.", 18, INK_SOFT, false, 2)
+		guide.TextWrapped = true
+		guide.Size = UDim2.new(1, 0, 0, 50)
+	end
 	local confirmed = false
 	local newBtn
-	newBtn = action(pages, "새로운 항해", UDim2.new(1, 0, 0, 44), not view, function()
+	newBtn = action(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2.new(1, 0, 0, 60), not view, function()
 		if view and not confirmed then
 			confirmed = true
 			newBtn.Text = "저장을 지우고 새로 시작"
@@ -10301,20 +10327,20 @@ function H.showTitle()
 
 	local controls = Instance.new("Frame")
 	controls.BackgroundTransparency = 1
-	controls.Size = UDim2.new(1, 0, 0, 46)
+	controls.Size = UDim2.new(1, 0, 0, 60)
 	controls.LayoutOrder = 5
 	controls.Parent = pages
 	pageRule(controls, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1))
-	action(controls, "설정", UDim2.new(0.5, 0, 1, 0), false, openOptions)
+	action(controls, "⚙ 설정", UDim2.new(0.48, 0, 1, 0), false, openOptions)
 	local function musicLabel()
 		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
 	end
 	local musicBtn
-	musicBtn = action(controls, musicLabel(), UDim2.new(0.5, 0, 1, 0), false, function()
+	musicBtn = action(controls, musicLabel(), UDim2.new(0.48, 0, 1, 0), false, function()
 		Sfx.setMusicEnabled(not Sfx.state())
 		musicBtn.Text = musicLabel()
 	end)
-	musicBtn.Position = UDim2.fromScale(0.5, 0)
+	musicBtn.Position = UDim2.fromScale(0.52, 0)
 	Sfx.music("music_harbor")
 end
 
