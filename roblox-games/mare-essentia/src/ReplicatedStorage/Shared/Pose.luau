@@ -467,6 +467,8 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		rightLeg = model:FindFirstChild("RightHip", true),
 		leftKnee = model:FindFirstChild("LeftKnee", true),
 		rightKnee = model:FindFirstChild("RightKnee", true),
+		leftAnkle = model:FindFirstChild("LeftAnkle", true),
+		rightAnkle = model:FindFirstChild("RightAnkle", true),
 		leftElbow = model:FindFirstChild("LeftElbow", true),
 		rightElbow = model:FindFirstChild("RightElbow", true),
 		waist = model:FindFirstChild("Waist", true),
@@ -509,7 +511,11 @@ function Pose.work(model, kind, t, moving)
 			set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08))
 			set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 		end
-		set(m.neck, A(0, math.sin(t * 0.9) * 0.9, 0))
+		-- [주민 시선] 주기적으로 둘러보다가 시선을 안정적으로 고정한다.
+		local glance = (t * 0.65 + (model:GetAttribute("MotionPersonality") or 1) * 2.1) % 12
+		local angle = if glance < 3 then math.sin(glance / 3 * math.pi) * 0.34
+			elseif glance < 6.5 then -math.sin((glance - 3) / 3.5 * math.pi) * 0.27 else 0
+		set(m.neck, A(-0.025, angle, 0))
 	elseif kind == "stoop" then
 		set(m.waist, A(0.28, 0, 0))
 		set(m.neck, A(-0.25, 0, 0))
@@ -520,6 +526,7 @@ function Pose.work(model, kind, t, moving)
 	if not moving then
 		set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
 		set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
+		set(m.leftAnkle, CFrame.identity); set(m.rightAnkle, CFrame.identity)
 		set(m.root, CFrame.identity)
 	end
 	set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08)) -- 작업 교대 시 이전 팔 동작을 남기지 않는다.
@@ -527,7 +534,9 @@ function Pose.work(model, kind, t, moving)
 	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 	local elder = model:GetAttribute("Age") == "elder"
 	if kind == "hammer" then
-		local s = math.max(0, math.sin(t * 5))
+		local beat = (t * 0.94) % 1
+		local s = if beat < 0.55 then math.sin(beat / 0.55 * math.pi * 0.5)
+			elseif beat < 0.72 then math.max(0, 1 - (beat - 0.55) / 0.17) else 0
 		set(m.rightArm, A(-1.5 - s * 1.0, 0, -0.1)); set(m.rightElbow, A(-0.6 - s * 0.5, 0, 0))
 		set(m.leftArm, A(-0.9, 0, 0.2)); set(m.waist, A(0.12 + s * 0.15, 0, 0))
 	elseif kind == "hoe" then
@@ -550,8 +559,10 @@ function Pose.work(model, kind, t, moving)
 			set(m.leftArm, A(-1.0, 0, 0.15)); set(m.neck, A(0.2, 0, 0))
 		end
 	elseif kind == "talk" then
-		local g = math.sin(t * 3)
-		set(m.rightArm, A(-0.9 + g * 0.5, 0, -0.35)); set(m.rightElbow, A(-0.9, 0, 0))
+		-- [대화] 손짓 사이의 자연스러운 멈춤.
+		local gesture = (t * 0.82 + (model:GetAttribute("MotionPersonality") or 1) * 0.4) % 7
+		local g = if gesture < 2.8 then math.sin(gesture / 2.8 * math.pi) else 0
+		set(m.rightArm, A(-0.68 - g * 0.5, 0, -0.24)); set(m.rightElbow, A(-0.9, 0, 0))
 		set(m.leftArm, A(-0.4 - g * 0.2, 0, 0.3)); set(m.neck, A(math.sin(t * 1.7) * 0.12, math.sin(t * 0.8) * 0.25, 0))
 	elseif kind == "sweep" then
 		local s = math.sin(t * 3)
@@ -671,7 +682,9 @@ function Pose.work(model, kind, t, moving)
 	local A = CFrame.Angles
 	local standing = not moving and kind ~= "sit" and kind ~= "fish" and kind ~= "carry" and kind ~= "look" and kind ~= "stoop"
 	if kind == "hammer" then
-		local s = math.max(0, math.sin(t * 5))
+		local beat = (t * 0.94) % 1
+		local s = if beat < 0.55 then math.sin(beat / 0.55 * math.pi * 0.5)
+			elseif beat < 0.72 then math.max(0, 1 - (beat - 0.55) / 0.17) else 0
 		add(m.root, CFrame.new(0, -0.14 * s, 0)); add(m.leftKnee, A(-0.3 * s, 0, 0)); add(m.rightKnee, A(-0.3 * s, 0, 0))
 		add(m.waist, A(0, math.sin(t * 2.5) * 0.1, 0)); add(m.leftLeg, A(0.15 * s, 0, 0)); add(m.rightLeg, A(0.15 * s, 0, 0))
 	elseif kind == "hoe" then
@@ -709,7 +722,8 @@ function Pose.work(model, kind, t, moving)
 			local target = joint.Transform
 			-- [보행 보존] 작업 상체 보간이 이전 제자리 자세를 하체 보행에 덮어쓰지 않도록 한다.
 			local gaitJoint = moving and (joint == m.leftLeg or joint == m.rightLeg
-				or joint == m.leftKnee or joint == m.rightKnee)
+				or joint == m.leftKnee or joint == m.rightKnee
+				or joint == m.leftAnkle or joint == m.rightAnkle)
 			if prev and not gaitJoint then
 				target = prev:Lerp(target, alpha)
 				joint.Transform = target
@@ -805,7 +819,10 @@ function Pose.makeR15Action(model, state, progress, t)
 	local facing = model:GetPivot().LookVector
 	local previous = blend.lastFacing
 	local rawTurn = if previous then math.atan2(previous:Cross(facing).Y, previous:Dot(facing)) else 0
-	blend.turn = (blend.turn or 0) * 0.72 + math.clamp(rawTurn * 3, -0.42, 0.42) * 0.28
+	local turnDt = math.clamp(blendTime - (blend.lastPoseTime or blendTime), 0, 0.1)
+	local turnAlpha = 1 - math.exp(-14 * turnDt)
+	blend.turn = (blend.turn or 0) + (math.clamp(rawTurn * 3, -0.42, 0.42) - (blend.turn or 0)) * turnAlpha
+	blend.lastPoseTime = blendTime
 	blend.lastFacing = facing
 	local A = CFrame.Angles
 	local wave = math.sin(p * math.pi)
@@ -839,6 +856,9 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
 		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
 		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
+		-- [착지 발목] 디딤 발은 지면에 남기고 들린 발끝은 착지를 준비한다.
+		set(m.leftAnkle, A(-s * 0.15 - math.max(0, c) * 0.14, 0, 0))
+		set(m.rightAnkle, A(s * 0.15 - math.max(0, -c) * 0.14, 0, 0))
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		local armForward = (if run then 0.78 else 0.56) * stride
