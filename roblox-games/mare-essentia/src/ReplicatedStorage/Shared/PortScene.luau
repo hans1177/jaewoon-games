@@ -1908,8 +1908,8 @@ local function densify(folder, info, style, rng, walkers, made)
 				table.insert(walkers, w)
 			end
 			if d.kind == "religious" then
-				local doorZ = cz + (if cz > 0 then -19 else 19)
-				npc(-4, doorZ - (if cz > 0 then 1 else -1) * 0, face, "bell", "stay", { role = "Knight" })
+				local doorZ = if cz > 0 then -19 else 19
+				npc(-4, doorZ, face, "bell", "stay", { role = "Knight" })
 				npc(5, doorZ, face + math.pi, "talk", "stay", { role = "Rogue" })
 				npc(-22, doorZ, -math.pi / 2, nil, "path", { role = "Rogue", len = 22, idle = "look" })
 			elseif d.kind == "market" then
@@ -3757,6 +3757,47 @@ function PortScene.build(info, onFacility)
 			end
 		end
 	end
+
+	-- [동선 사전 검증] 걷기 시작 전에 건물·창고·울타리와 이동 직선이 교차하면 인접한 안전한 길로 옮긴다.
+	-- 경로 1개마다 최대 7회만 공간 질의하고, 매 프레임 충돌 검사는 하지 않는다.
+	pcall(function()
+		local params = OverlapParams.new()
+		params.FilterType = Enum.RaycastFilterType.Include
+		params.FilterDescendantsInstances = { folder }
+		local function blocked(cf, length)
+			local half = math.max(0, length) / 2
+			local box = cf * CFrame.new(0, 3.1, -half)
+			for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(4.4, 5, length + 4), params) do
+				if hit.CanCollide and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
+					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= 2
+					and not hit:FindFirstAncestor("Villager") then
+					return true
+				end
+			end
+			return false
+		end
+		for _, walker in walkers do
+			if walker.model.Parent and walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil) then
+				local original = walker.base
+				local safe = nil
+				for _, offset in {
+					Vector3.new(0, 0, 0), Vector3.new(7, 0, 0), Vector3.new(-7, 0, 0),
+					Vector3.new(14, 0, 0), Vector3.new(-14, 0, 0),
+					Vector3.new(0, 0, 7), Vector3.new(0, 0, -7),
+				} do
+					local candidate = original * CFrame.new(offset)
+					if not blocked(candidate, walker.len) then safe = candidate break end
+				end
+				if safe then
+					walker.base = safe
+					walker.model:PivotTo(safe)
+				else
+					-- 막힌 길을 매 프레임 통과시키지 않고 가장자리에서 제자리 생활동작으로 전환한다.
+					walker.mode, walker.kind = "stay", "look"
+				end
+			end
+		end
+	end)
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
