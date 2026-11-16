@@ -2837,7 +2837,7 @@ function FieldScene.start(opts)
 				if st == "IDLE" then
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
 				elseif st == "RUN" then
-					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.12, math.sin((e.gait or 0) * math.pi * 2) * 0.045, -0.12
+					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.10
 				elseif st == "HIT" then
 					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end
@@ -2851,17 +2851,17 @@ function FieldScene.start(opts)
 					end
 				elseif kindId == "charger" then
 					if st == "ANTICIPATION" then
-						bob, lean, roll = math.abs(math.sin(now * 16)) * 0.3, -0.35 * ph, math.sin(now * 16) * 0.1
+						bob, lean, roll = -0.17 * math.sin(ph * math.pi), -0.40 * ph, math.sin(now * 7.5) * 0.045 * ph
 					end
 				elseif kindId == "archer" then
 					if wish < 0 then
-						lean, roll = 0.22, math.sin(now * 10) * 0.1
+						lean, roll = 0.12, math.sin(now * 3.2) * 0.04
 					end
 				elseif e.boss then
 					if st == "ANTICIPATION" then
-						bob, lean = 1.1 * ph, 0.5 * ph
+						bob, lean = -0.28 * math.sin(ph * math.pi), 0.40 * ph
 					elseif st == "ATTACK" then
-						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
+						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
 				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0)
@@ -3055,6 +3055,12 @@ function FieldScene.start(opts)
 						else
 							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.35)
 						end
+					elseif ap >= 1 and ap < 1.7 then
+						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).
+						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25)
+					elseif tgt and not moving and a.nextAt > now and a.nextAt - now < 0.22 then
+						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
+						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18)
 					elseif moving then
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3)
 					else
