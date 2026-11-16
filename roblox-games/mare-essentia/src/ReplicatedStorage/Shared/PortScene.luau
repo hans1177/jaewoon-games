@@ -435,9 +435,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				error("동물 수입본 목표 크기 불일치")
 			end
 		end
-		if kind ~= "People" then
+		if kind ~= "People" and kind ~= "Animals" then
 			local _, size = m:GetBoundingBox()
-			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
+			-- 월드 원점을 기준으로 모델을 회전하면 수입된 가축이 엉뚱한 곳으로 이동한다.
+			-- 장식용 메시만 제자리 중심을 기준으로 방향을 맞춘다.
+			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
 		end
 		local center, size = m:GetBoundingBox()
 		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
@@ -964,12 +966,14 @@ local function zoneLayout(portId, lvl)
 		trader = port ~= nil and #port.produces >= 4,
 		side = zr:NextInteger(0, 1) * 2 - 1, -- 포대가 서는 쪽 (반대쪽은 어항·하역장)
 	}
-	lay.pens = math.clamp(5 - lvl + (if lay.farm then 1 else 0) - (if lay.fish then 1 else 0), 1, 4)
+	-- 별도 축사 없이 발전 단계에 따라 열린 목장 구역이 늘어난다(기존 세계경제 저장값 불변).
+	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
 	return lay
 end
--- 가축 울타리 중심 (마을 서쪽 끝, 40x30의 큰 우리)
+-- 목장/방목지 중심: 도시·왕궁·밭/주택보다 서쪽, 각 농장 100x90 부지.
+-- 동일 좌표를 쓰는 목장 모양과 가축 배치는 항상 같이 이동한다.
 local function penAt(i, n)
-	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 44)
+	return Vector3.new(-745, 0, (i - (n + 1) / 2) * 155)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
@@ -1204,7 +1208,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	-- 동물: 지역마다 키우는 가축과 마을 동물 (풀을 뜯고, 모이를 쪼고, 꼬리를 흔든다). 모델이 없으면 건너뛴다.
 	do
 		local SPECIES = {
-			iberia = { "sheep", "donkey", "pig", "chicken", "dog" }, italy = { "donkey", "chicken", "cat", "dog" },
+			iberia = { "sheep", "donkey", "pig", "chicken", "dog", "duck" }, italy = { "donkey", "chicken", "cat", "dog" },
 			france = { "cow", "sheep", "chicken", "dog" }, britain = { "sheep", "cow", "horse", "dog" },
 			brick = { "cow", "horse", "cat", "chicken" }, hanse = { "horse", "pig", "dog", "chicken" },
 			nordic = { "sheep", "horse", "cow", "dog" }, tropic = { "pig", "chicken", "dog", "cat" },
@@ -1218,19 +1222,47 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		}
 		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
 		local KIND = {
+			duck = { 1.35, "peck" },
 			cow = { 3.4, "graze" }, horse = { 3.8, "graze" }, sheep = { 2.3, "graze" }, pig = { 2.2, "peck" }, llama = { 3.2, "graze" },
 			donkey = { 3.2, "graze" }, elephant = { 6.5, "still" }, chicken = { 1, "peck" }, dog = { 1.5, "tail" }, cat = { 1.1, "still" },
 		}
 		local list = SPECIES[key] or SPECIES.britain
 		local function animal(species, pos)
 			local k = KIND[species]
-			local m = k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
-			if not m then
-				return
+			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
+			if species == "duck" then
+				-- 오리: 승인된 외부 메시가 아직 없으므로 기존 파트로 가벼운 입체 모델을 직접 제작한다.
+				m = Instance.new("Model")
+				m.Name = "Duck"
+				m.Parent = folder
+				local feathers = if rng:NextNumber() < 0.55 then C(232, 224, 190) else C(138, 113, 83)
+				local function piece(size, offset, color, shape)
+					local p = part(m, size, CFrame.new(pos + offset), color, Enum.Material.SmoothPlastic, shape)
+					p.CanCollide = false
+					p.CanTouch = false
+					p.CanQuery = false
+					return p
+				end
+				piece(Vector3.new(1.45, 0.7, 0.85), Vector3.new(0, 0.62, 0), feathers, Enum.PartType.Ball)
+				piece(Vector3.new(0.63, 0.58, 0.6), Vector3.new(0, 1.1, -0.38), feathers, Enum.PartType.Ball)
+				piece(Vector3.new(0.55, 0.16, 0.32), Vector3.new(0, 1.01, -0.81), C(227, 150, 55))
+				for _, side in { -1, 1 } do
+					piece(Vector3.new(0.7, 0.22, 0.15), Vector3.new(0, 0.78, side * 0.43), feathers:Lerp(C(90, 90, 73), 0.18), Enum.PartType.Ball)
+					piece(Vector3.new(0.11, 0.11, 0.11), Vector3.new(side * 0.2, 1.2, -0.61), C(35, 34, 31), Enum.PartType.Ball)
+					piece(Vector3.new(0.18, 0.12, 0.32), Vector3.new(side * 0.28, 0.16, 0.05), C(213, 148, 57))
+				end
 			end
-			m:PivotTo(CFrame.new(m:GetPivot().Position) * CFrame.Angles(0, rng:NextNumber(0, math.pi * 2), 0) * (m:GetPivot() - m:GetPivot().Position))
-			local gaitOf = { dog = 15, cat = 11, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
-			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0 })
+			if not m then return end
+			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
+			local origin = m:GetPivot()
+			local forward = origin.LookVector
+			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
+				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
+				else CFrame.new(origin.Position)
+			local yaw = rng:NextNumber(-math.pi, math.pi)
+			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
+			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
+			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
 		end
 		local lay = zoneLayout(info.portId, lvl)
 		local has = {}
@@ -1253,46 +1285,56 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				table.insert(stock, sp)
 			end
 		end
-		-- 1) 농원구역: 울타리 안의 가축 (울타리가 많은 작은 마을일수록 가축이 많다)
+		-- 1) 대형 목장: 소/양/말은 열린 방목지, 돼지는 따로 분리된 낮은 사육 울타리.
+		-- 모든 기존 지붕 축사/마굿간은 제거. 각 목장은 성장 단계·실제 농장 재고에 따라 개체 수가 달라진다.
+		local farmCount = info.sim and info.sim.buildings and info.sim.buildings.farm
+		local grazeCount = if farmCount then math.clamp(2 + math.floor(math.sqrt(math.max(0, farmCount)) / 5), 2, 7) else math.clamp(2 + lvl, 3, 7)
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
+			local sp = if #stock > 0 then stock[(i - 1) % #stock + 1] else nil
+			-- 넓은 목장(100x90), 짧은 울타리만. 더 이상 지붕·기둥 축사를 만들지 않는다.
+			local halfX = if sp == "pig" then 39 else 54
+			local halfZ = if sp == "pig" then 32 else 44
+			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.09, c.Z),
+				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
+			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
+			grass.CanCollide = false
+			grass.CanQuery = false
+			for x = -halfX, halfX, 13 do
+				for _, dz in { -halfZ, halfZ } do
+					importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(x, 0, dz), 12.6, false)
+				end
+			end
+			for z = -halfZ + 8, halfZ - 8, 13 do
+				for _, dx in { -halfX, halfX } do
+					local rail = importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(dx, 0, z), 12.6, false)
+					rotateAround(rail, c + Vector3.new(dx, 0, z), math.pi / 2)
+				end
+			end
+			if sp then
 				if sp == "elephant" then
 					animal(sp, c)
 				else
-					for k = 1, 5 + (lvl % 3) do
+					for k = 1, grazeCount do
+						local at = c + Vector3.new(rng:NextNumber(-halfX * 0.65, halfX * 0.65), 0, rng:NextNumber(-halfZ * 0.58, halfZ * 0.58))
 						local n0 = #walkers
-						animal(sp, c + Vector3.new(rng:NextNumber(-16, 16), 0, rng:NextNumber(-11, 11)))
+						animal(sp, at)
 						local w = walkers[#walkers]
 						if #walkers > n0 and w then
-							w.span = rng:NextNumber(2, 4.5) -- 우리 안을 천천히 오간다
-							w.rate = rng:NextNumber(0.12, 0.25)
+							w.span = rng:NextNumber(2, if sp == "pig" then 7 else 11)
+							w.rate = rng:NextNumber(0.12, 0.28)
 						end
 					end
 				end
 			end
-			-- 지붕 있는 축사: 말·당나귀·라마는 마굿간, 소·양·돼지·코끼리는 축사. 이름표 위에 3D 아이콘이 뜬다.
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
-				local isStable = sp == "horse" or sp == "donkey" or sp == "llama"
-				-- 우리의 서쪽 절반(20x30)에 높은 지붕을 얹는다. 동쪽 절반은 열린 방목장.
-				local roofAt = Vector3.new(c.X - 10, 9, c.Z)
-				for _, cx in { -19, -1 } do
-					for _, cz in { -14, 0, 14 } do
-						local post = part(folder, Vector3.new(1, 9, 1), CFrame.new(c.X + cx, 4.5, c.Z + cz), Color3.fromRGB(104, 72, 44), Enum.Material.Wood)
-						post.CanCollide = false
-					end
-				end
-				gableRoof(folder, roofAt, 21, 31, 5, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
-				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X - 10, 9, c.Z), Color3.new(1, 1, 1))
-				anchor.Transparency = 1
-				anchor.CanCollide, anchor.CanQuery = false, false
-				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 6)
-			end
-			if has.chicken and i == 1 then
-				for _ = 1, 2 do
-					animal("chicken", c + Vector3.new(rng:NextNumber(-12, -10), 0, rng:NextNumber(-4, 4)))
+			if i == 1 and (lay.farm or lay.fish or has.chicken) then
+				-- 오리 연못은 양/소 초지의 외곽에 놓고 울타리와 겹치지 않는다.
+				local pond = c + Vector3.new(-halfX - 25, 0, 0)
+				local water = part(folder, Vector3.new(29, 0.15, 18), CFrame.new(pond + Vector3.new(0, 0.14, 0)), C(67, 130, 147), Enum.Material.Glass)
+				water.Name = "DuckPond"
+				water.CanCollide, water.CanQuery = false, false
+				for k = 1, math.min(lvl + 1, 4) do
+					roam("duck", pond + Vector3.new(rng:NextNumber(-7, 7), 0.16, rng:NextNumber(-5, 5)), 2)
 				end
 			end
 		end
@@ -1459,6 +1501,61 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 						tl.TextColor3 = Color3.fromRGB(255, 240, 200)
 						tl.TextStrokeTransparency = 0.4
 						tl.Parent = bb
+					end
+				end
+			end
+		end
+		-- 세계경제는 기존 9개 고용 직군을 그대로 계산한다. 그 아래 세부 직업은 실제 작업장,
+		-- 생산품·경제 시설·발전도를 만족할 때만 생기며 경제 수치/저장에는 관여하지 않는다.
+		local stock = (info.sim and info.sim.buildings) or {}
+		local function built(id, stage)
+			return lvl >= stage and (if info.sim then (stock[id] or 0) >= 1 else true)
+		end
+		local available = {
+			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "inspect", "hammer" }, rest = { "stretch", "drink" }, color = C(129, 72, 53) },
+			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "inspect", "count" }, rest = { "talk", "drink" }, color = C(117, 86, 148) },
+			{ name = "제빵사", job = "baker", group = "craftsman", need = built("workshop", 2) and (made.grain or made.maize or made.beer), at = Vector3.new(-214, 0, -114), prop = { "Cargo", "food-flour", 3 }, work = { "knead", "stir", "inspect" }, rest = { "drink", "talk" }, color = C(180, 130, 85) },
+			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "hammer", "inspect", "lift" }, rest = { "stretch", "drink" }, color = C(136, 101, 67) },
+			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "hammer", "inspect", "carry" }, rest = { "talk", "stretch" }, color = C(79, 103, 134) },
+			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "hoe", "inspect" }, rest = { "drink", "lean" }, color = C(130, 121, 83) },
+			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = Vector3.new(-86, 0, 21), prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "read", "write", "point" }, rest = { "talk", "listen" }, color = C(80, 115, 108) },
+			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "write", "count", "read" }, rest = { "talk", "listen" }, color = C(91, 89, 131) },
+			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "write", "offer" }, rest = { "talk", "read" }, color = C(105, 75, 119) },
+		}
+		local specialistLimit = if info.sim then math.clamp(math.floor((info.sim.residents or 0) / 10), 0, 7) else lvl + 1
+		local specialistCount = 0
+		for _, job in ipairs(available) do
+			if specialistCount >= specialistLimit then break end
+			if job.need and (jobs[job.group] or 0) > 0 then
+				specialistCount += 1
+				local spec = { role = if job.group == "official" then "Mage" else "Barbarian", profession = job.job,
+					workKinds = job.work, leisureKinds = job.rest, hat = if job.group == "farmer" then "straw" else "cap" }
+				local palette = o.coats or { C(160, 130, 100) }
+				spec.coat = palette[(specialistCount - 1) % #palette + 1]:Lerp(job.color, 0.52)
+				importedModel(folder, job.prop[1], job.prop[2], job.at + Vector3.new(0, 0, -3), job.prop[3], false)
+				local fig = stay(job.at + Vector3.new(0, 0, 4.5), job.at, job.work[1], spec)
+				if fig then
+					fig:SetAttribute("Job", job.job)
+					fig:SetAttribute("Workplace", job.name)
+					fig:SetAttribute("Activity", job.work[1])
+					local head = fig:FindFirstChild("Head")
+					if head then
+						local bb = Instance.new("BillboardGui")
+						bb.Name = "JobTitle"
+						bb.Size = UDim2.fromOffset(76, 18)
+						bb.StudsOffset = Vector3.new(0, 1.9, 0)
+						bb.MaxDistance = 55
+						bb.Adornee = head
+						bb.Parent = head
+						local label = Instance.new("TextLabel")
+						label.Size = UDim2.fromScale(1, 1)
+						label.BackgroundTransparency = 1
+						label.Text = job.name
+						label.TextSize = 13
+						label.Font = Enum.Font.GothamBold
+						label.TextColor3 = C(237, 229, 205)
+						label.TextStrokeTransparency = 0.4
+						label.Parent = bb
 					end
 				end
 			end
@@ -1767,13 +1864,20 @@ local function densify(folder, info, style, rng, walkers, made)
 	local laneWidth = math.max(if isRoyalCity then 13 else 9, P.alley * (if isRoyalCity then 2.1 else 1.8))
 	local laneL = 2 * S + laneWidth + 12
 	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
-	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
+	local localBlocks = info.development and info.development.blocks
+	local economicDensity = if localBlocks then math.clamp(0.8 + math.sqrt(math.max(0, localBlocks)) / 60, 0.76, 1.18) else 1
+	local moodDensity = if info.sim and info.sim.mood == "slump" then 0.88 else 1
+	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1)
+		* economicDensity * moodDensity, 0.3, 0.97)
 	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
 	if info.sim and info.sim.buildings then
 		local target = ({ 40, 130, 430, 1600, 4000 })[lvl]
 		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
 	end
 	local smokers = 0
+	local wildernessQuota = ({ 36, 29, 23, 17, 12 })[lvl]
+	-- 빈 필지는 건축을 가장하지 않고 원생 숲·수풀·돌밭으로 남겨 둔다. 모바일 자산 수를 단계별로 제한한다.
+	local wildernessRng = seeded(info.portId .. ":open-land")
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
 	local X_END = -math.min(565, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
@@ -1816,6 +1920,46 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 		return false
 	end
+	-- [경제 실물 시설] 세계경제에 실제 건설된 시설만 개별 구획에 시각 건축한다.
+	-- 먼저 필지를 확보한 뒤 주택을 채워 시설과 집이 겹치지 않도록 한다.
+	do
+		local stock = info.sim and info.sim.buildings
+		local civic = {
+			{ "workshop", "공방 거리", 2, "Town", "workbench-anvil", C(148, 108, 77) },
+			{ "warehouse", "창고 구역", 2, "Cargo", "box-open", C(129, 112, 87) },
+			{ "market", "시장 거리", 2, "Town", "stall-green", C(178, 134, 78) },
+			{ "school", "학교 구역", 3, "Interior", "bookcaseclosed", C(111, 120, 147) },
+			{ "hall", "행정 구역", 3, "Town", "bell-tower", C(165, 156, 139) },
+			{ "tavern", "여가 거리", 3, "Cargo", "mug", C(125, 93, 78) },
+		}
+		local placed = 0
+		local maxSites = if game:GetService("UserInputService").TouchEnabled then 7 else 10
+		for index, c in ipairs(civic) do
+			local count = if stock then stock[c[1]] or 0 else math.max(0, lvl - c[3] + 1)
+			if lvl >= c[3] and count > 0 then
+				local quota = math.min(3, math.max(1, math.floor(math.sqrt(count) / 2.8 + 0.5)))
+				for n = 1, quota do
+					if placed >= maxSites then break end
+					local row = math.floor((index - 1) / 3)
+					local side = if row == 0 then 1 else -1
+					local z = side * (if isRoyalCity then 330 else 246) + side * (n - 1) * 27
+					local x = -286 - ((index - 1) % 3) * 63
+					if onStreet(x, 14) then x += math.max(25, S * 0.6) end
+					if not reserved(x, z, 18) then
+						local at = Vector3.new(x, 0, z)
+						local building = house(folder, at, 19, 15, math.clamp(1 + math.floor((lvl - c[3]) / 2), 1, 3), style, rng, c[6])
+						if building then
+							building.Name = "EconomySite_" .. c[1]
+							placed += 1
+							table.insert(placedLots, { X = x, Z = z, H = 18 })
+							sign(folder, building, c[2], C(151, 110, 51), 12)
+							importedModel(folder, c[4], c[5], at + Vector3.new(0, 0, 12), 4.4, false)
+						end
+					end
+				end
+			end
+		end
+	end
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	local function fillRow(z, t, xStart)
 		local x = xStart
@@ -1837,6 +1981,32 @@ local function densify(folder, info, style, rng, walkers, made)
 						smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
 					end
 				end
+				end
+			else
+				-- 빈 구획: 아직 경제 시뮬에서 주택이 건설되지 않은 부분에 자연물을 남긴다.
+				-- 미래 건축 구획·왕궁·도로·랜드마크를 비워 놓고 한 구획당 소품 1개 이하.
+				if wildernessQuota > 0 and wildernessRng:NextNumber() < 0.42 then
+					local z0 = z + wildernessRng:NextNumber(-S * 0.16, S * 0.16)
+					local half = math.min(9, S * 0.27)
+					if not onStreet(x, half) and not reserved(x, z0, half) then
+						local at = Vector3.new(x, 0, z0)
+						local roll = wildernessRng:NextInteger(1, 7)
+						local biome = if key == "desert" or key == "ottoman" then "arid"
+							elseif palm then "coastal" elseif cold then "woodland" else "lowland"
+						local group, asset, size = "Terrain", "tree-oak", 10
+						if roll == 1 then group, asset, size = "Town", "rock-wide", 8
+						elseif roll == 2 then group, asset, size = "Terrain", "plant-bush", 5
+						elseif biome == "arid" then group, asset, size = "Naval", "rocks-sand-a", 8
+						elseif biome == "coastal" then group, asset, size = "Naval", "palm-detailed-straight", 10
+						elseif biome == "woodland" then group, asset, size = "Terrain", "tree-pinedefaulta", 11
+						end
+						local model = importedModel(folder, group, asset, at, size, false)
+						if model then
+							model.Name = "Undeveloped_" .. asset
+							wildernessQuota -= 1
+							table.insert(placedLots, { X = x, Z = z0, H = half })
+						end
+					end
 				end
 			end
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
@@ -2242,27 +2412,24 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
 		local lay = zoneLayout(info.portId, lvl)
 		local sd = lay.side
-		-- 농원구역(마을 서쪽 끝): 가축 울타리와 밭. 작은 마을일수록 울타리가 많고 큰 항구는 장터로 바뀐다.
-		for i = 1, lay.pens do
-			local c = penAt(i, lay.pens)
-			for dx = -18, 18, 4 do
-				for _, dz in { -15, 15 } do
-					one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
-				end
-			end
-			for dz = -12, 12, 4 do
-				for _, dx in { -20, 20 } do
-					rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
-				end
-			end
-			if lay.farm then
-				-- 우리 서쪽으로 넓게 펼쳐진 밭
-				for rz = -21, 21, 6 do
-					-- 갈아엎은 어두운 흙 이랑: 작물 줄이 눈에 띄도록 줄마다 깔아 준다
-					local soil = part(folder, Vector3.new(104, 0.3, 4.2), CFrame.new(c.X - 78, 0.3, c.Z + rz), Color3.fromRGB(88, 62, 40), Enum.Material.Ground)
+		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
+		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
+		if lay.farm then
+			local farmland = if info.sim and info.sim.buildings then info.sim.buildings.farm or 0 else lvl * 4
+			local rows = math.clamp(math.floor(2 + math.sqrt(math.max(0, farmland))), 2, 10)
+			for i = 1, lay.pens do
+				local c = penAt(i, lay.pens)
+				for rz = 1, rows do
+					local z = c.Z + (rz - (rows + 1) / 2) * 6
+					local at = Vector3.new(c.X - 139, 0, z)
+					local soil = part(folder, Vector3.new(86, 0.18, 4.2), CFrame.new(at + Vector3.new(0, 0.16, 0)), C(88, 62, 40), Enum.Material.Ground)
+					soil.Name = "FarmFurrow"
 					soil.CanCollide = false
 					soil.CanQuery = false
-					rowOf("Terrain", if rz % 12 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 6.5, c.X - 26, c.X - 130, 5, c.Z + rz)
+					for k = 1, 9 do
+						local crop = if (k + rz) % 3 == 0 then "crops-wheatstageb" else "crops-wheatstagea"
+						one("Terrain", crop, 5.5, c.X - 97 - k * 8, 0, z)
+					end
 				end
 			end
 		end
@@ -2563,58 +2730,64 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 	end
 
-	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
-	local WZ, WX = 150, -204
+	-- 7) 외곽: 도시의 실제 발전 구획 바깥으로 성벽과 숲을 이동한다.
+	-- 예전 -204, ±150 고정 성벽이 확장 도로·주택을 가로막던 문제를 직접 수정한다.
+	local wallStep = if lvl >= 4 then 20 else 16
+	local WZ = math.ceil((152 + pairsN * laneL + 55) / wallStep) * wallStep
+	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
+	local wallSize = wallStep + 0.4
 	for _, side in { 1, -1 } do
-		local x = -22
-		while walled and x > WX do
-			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), 12.5, true)
-			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), 12.5, true) end
-			x -= 12
+		if walled then
+			local x = -22
+			while x > WX do
+				local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), wallSize, true)
+				if not m then importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), wallSize, true) end
+				x -= wallStep
+			end
 		end
 		if lvl >= 2 then
-			for _, tx in { -22, -80, -140, WX } do
+			for _, tx in { -22, -140, WX } do
 				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
 			end
 		end
 	end
-	local z = -WZ
-	while walled and z <= WZ do
-		local m = importedModel(folder, "Castle", if z == -18 or z == 18 then "wall-narrow-gate" else "wall", Vector3.new(WX, 0, z), 12.5, true)
-		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
-		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
-		z += 12
-	end
 	if walled then
+		for z = -WZ, WZ, wallStep do
+			local at = Vector3.new(WX, 0, z)
+			-- 목장으로 나가는 출입문은 동쪽 마을에서 오갈 수 있도록 가운데에 배치.
+			local asset = if math.abs(z) <= wallStep / 2 then "wall-narrow-gate" else "wall"
+			local m = importedModel(folder, "Castle", asset, at, wallSize, true)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true) end
+			rotateAround(m, at, math.pi / 2)
+		end
 		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	end
-	-- 성벽 밖 언덕과 숲
-	-- 평평한 절벽 판자(cliff-rock 은 두께 0.2 패널) 대신 입체 바위 군집
-	local rocks = { "rock-large", "rock-wide", "rock-small" }
-	for i = 1, 40 do
+	-- 도시 안에 바위와 나무를 세우지 않는다. 자연 배경은 외곽 숲과 돌산만 남긴다.
+	-- 식생/암석 수는 발전된 항구일수록 줄여 모바일 프레임을 보호한다.
+	local rimRocks = if lvl >= 4 then 16 else 25
+	for i = 1, rimRocks do
 		local side = if i % 2 == 0 then 1 else -1
-		local c = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
-		importedModel(folder, "Town", "rock-large", c, rng:NextNumber(16, 26), true)
-		for j = 1, 2 do
-			importedModel(folder, "Town", rocks[rng:NextInteger(1, 3)], c + Vector3.new(rng:NextNumber(-12, 12), 0, rng:NextNumber(-12, 12)), rng:NextNumber(7, 13), false)
+		local at = Vector3.new(rng:NextNumber(-420, -45), 0, side * rng:NextNumber(WZ + 26, WZ + 100))
+		importedModel(folder, "Town", "rock-large", at, rng:NextNumber(12, 20), false)
+		if i % 3 == 0 then
+			importedModel(folder, "Town", "rock-small", at + Vector3.new(9, 0, 8), 7, false)
 		end
 	end
-	for i = 1, 12 do
-		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
-	end
-	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
-	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" } elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" } elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
-	for i = 1, 150 do
+	local forestCount = if lvl >= 4 then 60 else 94
+	local trees = if key == "japan" or cold then { "tree-high", "tree", "tree-crooked" }
+		elseif palm then { "palm-detailed-straight", "tree-crooked", "tree-high" }
+		else { "tree-high", "tree-crooked", "tree" }
+	for i = 1, forestCount do
 		local side = if i % 2 == 0 then 1 else -1
-		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
+		local at = Vector3.new(rng:NextNumber(-440, -40), 0, side * rng:NextNumber(WZ + 26, WZ + 120))
 		local pick = trees[rng:NextInteger(1, #trees)]
-		local kind = if pick:find("palm", 1, true) or pick:find("tree-pine", 1, true) or pick:find("tree-oak", 1, true) then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
-		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
+		local kind = if pick:find("palm", 1, true) then "Naval" else "Town"
+		importedModel(folder, kind, pick, at, rng:NextNumber(8, 14), false)
 	end
-	for i = 1, 30 do
-		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
-		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town", trees[1], pos, rng:NextNumber(8, 13), false)
+	for i = 1, (if lvl >= 4 then 9 else 14) do
+		local at = Vector3.new(-1005 + rng:NextNumber(-16, 16), 0, rng:NextNumber(-WZ, WZ))
+		importedModel(folder, "Town", "tree-high", at, rng:NextNumber(8, 12), false)
 	end
 end
 
@@ -2738,6 +2911,19 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
+			-- 보유·실물경제에 따라 랜드마크의 업종과 활기를 시각적으로 변화시킨다.
+			local stock = (info.sim and info.sim.buildings) or {}
+			if lm.id == "ironworks" and (stock.workshop or 0) >= 5 then
+				put("Cargo", "iron-bars-stack-large", 4, x + 14, z - front * 10, false)
+			elseif lm.id == "exchange" and (stock.market or 0) >= 2 then
+				put("Town", "stall-green", 6, x - 17, z - front * 14, false)
+			elseif lm.id == "academy" and (stock.school or 0) >= 2 then
+				put("Town", "bell-tower", 14, x - 20, z + front * 4, false)
+			end
+			local owned = info.builtLandmarks or {}
+			if owned[lm.id] == true or (lm.id == "academy" and owned.hall == true) then
+				put("Castle", "flag-banner-long", 10, x + 17, z + front * 17, false)
+			end
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
@@ -2760,7 +2946,7 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
-	-- [주민/모션] 왕궁·광장·마을 공용 보행 목록을 모든 배치보다 먼저 초기화한다.
+	-- [왕궁/광장/작업장] 모든 NPC가 같은 기존 애니메이션 목록을 사용하도록 먼저 초기화한다.
 	local walkers = {}
 	-- [지역별 건축] 기존 항구 문화권을 따르되, 로도스·파마구스타는 점령 연도 이후 오스만 양식으로 전환한다.
 	-- 건축·복식에만 적용하며 교역·경제·저장 데이터는 그대로 유지한다.
@@ -2778,6 +2964,10 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	if not info.construction and info.sim and info.sim.construction and info.sim.construction.active then
+		-- 실제 건설비가 지출되는 항구만 기존 건설 현장/목수 모션으로 표시한다.
+		info.construction = { to = math.min(5, sceneLevel + 1) }
+	end
 	-- 발전 단계별 신도시 외곽 도로·왕궁 별관을 포함하는 안전 경계. 파트 수 증가 없이 바닥만 확장한다.
 	local CITY_LIMIT_Z = 360 + sceneLevel * 80
 	currentKey = styleKeyOf(style)
@@ -2809,7 +2999,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(650, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-290, 0.02, 0),
+		local floor = part(folder, Vector3.new(1080, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-520, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2821,6 +3011,41 @@ function PortScene.build(info, onFacility)
 	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
+	-- [도시 지형] 항구마다 고정된 만·운하·삼각주·섬·해협·언덕 실루엣을 동쪽 바다에 배치한다.
+	-- 도시 구조나 보행 판정은 건드리지 않고, 입체 배경 최대 8개로 모바일 부담을 제한한다.
+	do
+		local coastSeed = seeded(info.portId .. ":coast-form")
+		local shapes = {
+			venice = "lagoon", amsterdam = "canal", lisbon = "hill", porto = "hill",
+			istanbul = "strait", busan = "hill", nagasaki = "hill", rio = "bay",
+			havana = "bay", hong_kong = "hill", alexandria = "delta", cairo = "delta",
+			rotterdam = "delta", antwerp = "river", genoa = "hill", naples = "bay",
+			marseille = "bay", osaka = "river", calcutta = "delta",
+		}
+		local choices = if currentKey == "japan" or currentKey == "nordic" then { "hill", "bay", "river" }
+			elseif currentKey == "pacific" or currentKey == "seasia" then { "lagoon", "bay", "delta" }
+			elseif currentKey == "desert" or currentKey == "ottoman" then { "bay", "hill", "plain" }
+			else { "plain", "river", "bay", "hill", "delta" }
+		local form = shapes[info.portId] or choices[coastSeed:NextInteger(1, #choices)]
+		folder:SetAttribute("CoastForm", form)
+		for _, side in { -1, 1 } do
+			for i = 1, 3 do
+				local x = 130 + 19 * i
+				local z = side * (140 + 54 * i + coastSeed:NextInteger(-8, 8))
+				if form == "lagoon" or form == "delta" or form == "canal" or form == "river" then
+					local island = part(folder, Vector3.new(24 + i * 7, 0.4, 15 + i * 8), CFrame.new(x, 0.89, z),
+						if form == "lagoon" then style.ground else C(185, 170, 132), Enum.Material.Sand)
+					island.Name = "CoastIsland"
+					island.CanCollide, island.CanQuery = false, false
+					if i == 2 then importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(x, 1.15, z), 9, false) end
+				elseif form == "hill" or form == "strait" then
+					importedModel(folder, "Town", "rock-wide", Vector3.new(x, 0.9, z), 24 + i * 3, false)
+				elseif form == "bay" and i ~= 2 then
+					importedModel(folder, "Naval", "rocks-a", Vector3.new(x, 0.9, z), 17 + i * 2, false)
+				end
+			end
+		end
+	end
 	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 멀리 최대 6개를 배치한다.
 	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
 	local warmShore = palmOk(info.portId, style)
@@ -2872,7 +3097,7 @@ function PortScene.build(info, onFacility)
 		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
 		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
 		do
-			local floor = part(folder, Vector3.new(622, 2, 2 * CITY_LIMIT_Z), CFrame.new(-289, -1, 0), Color3.new(1, 1, 1))
+			local floor = part(folder, Vector3.new(1120, 2, 2 * CITY_LIMIT_Z), CFrame.new(-520, -1, 0), Color3.new(1, 1, 1))
 			floor.Name = "SafetyFloor"
 			floor.Transparency = 1
 			floor.CanQuery = false
@@ -2882,9 +3107,9 @@ function PortScene.build(info, onFacility)
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, 5.6))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, -5.6))
 		wall(Vector3.new(1, 40, 12), CFrame.new(89.5, 18, 0))
-		wall(Vector3.new(1, 40, 2 * CITY_LIMIT_Z), CFrame.new(-600, 18, 0))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, CITY_LIMIT_Z))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -CITY_LIMIT_Z))
+		wall(Vector3.new(1, 40, 2 * CITY_LIMIT_Z), CFrame.new(-1060, 18, 0))
+		wall(Vector3.new(1600, 40, 1), CFrame.new(-260, 18, CITY_LIMIT_Z))
+		wall(Vector3.new(1600, 40, 1), CFrame.new(-260, 18, -CITY_LIMIT_Z))
 	end
 	-- 부두 화물: 등록된 실제 상품 모델을 쓰며 생산품·가격·보행 판정에는 영향을 주지 않는다.
 	local cargoModels = {
@@ -3392,30 +3617,22 @@ function PortScene.build(info, onFacility)
 			elseif w.mode == "animal" then
 				if w.model.Parent then
 					local t = now + w.phase
-					local pitch, bob = 0, 0
-					if w.akind == "graze" then
-						pitch = math.max(0, math.sin(t * 0.7)) * 0.22
-					elseif w.akind == "peck" then
-						pitch = math.max(0, math.sin(t * 3.1)) * 0.3
-					elseif w.akind == "tail" then
-						pitch = math.sin(t * 5) * 0.04
-						bob = math.abs(math.sin(t * 2.2)) * 0.05
-					else
-						bob = math.sin(t * 1.3) * 0.03
-					end
+					-- 가축 전신을 앞뒤로 숙이면 FBX별 기준축 차이 때문에 뒤집히므로 Y축 회전만 사용한다.
+					local bob = math.abs(math.sin(t * (w.gait or 7))) * 0.055
+					if w.akind == "graze" then bob *= 0.35 end
 					if w.span then
 						local u = t * w.rate
-						local go = math.abs(math.cos(u)) -- 걷는 정도(양 끝에서 0: 멈춰서 풀을 뜯거나 둘러본다)
-						local want = if math.cos(u) < 0 then math.pi else 0
-						-- 돌아설 때 휙 뒤집지 않고 부드럽게 몸을 돌린다
-						w.hd = (w.hd or 0) + (want - (w.hd or 0)) * 0.08
-						local ph = u * (w.gait or 7) * 2
-						bob = math.abs(math.sin(ph)) * 0.07 * go
-						local roll = math.sin(ph) * 0.07 * go
-						local rock = math.sin(ph * 2) * 0.035 * go + math.max(0, math.sin(t * 1.9)) * 0.28 * (1 - go) * (if w.akind == "still" then 0.3 else 1)
-						w.model:PivotTo(w.base * CFrame.new(0, bob, -math.sin(u) * w.span) * CFrame.Angles(0, w.hd, 0) * CFrame.Angles(rock, 0, roll))
+						local v = math.cos(u)
+						local go = math.abs(v)
+						local want = if v < 0 then math.pi else 0
+						-- 최단 회전 호를 사용하여 뒤돌 때 360도 회전/역주행이 생기지 않는다.
+						local hd = w.hd or 0
+						local angle = math.atan2(math.sin(want - hd), math.cos(want - hd))
+						hd += angle * math.clamp(dt * 6, 0, 1)
+						w.hd = hd
+						w.model:PivotTo(w.base * CFrame.new(0, bob * go, -math.sin(u) * w.span) * CFrame.Angles(0, hd, 0))
 					else
-						w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
+						w.model:PivotTo(w.base * CFrame.new(0, bob * 0.5, 0))
 					end
 				end
 			elseif w.mode == "circle" then

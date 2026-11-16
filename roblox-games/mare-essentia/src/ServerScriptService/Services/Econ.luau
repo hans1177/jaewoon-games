@@ -93,6 +93,15 @@ return function(D, S)
 			bld[b.id] = math.floor(t.bld[b.id] + 0.5)
 			if b.serves then svc[b.id] = math.floor((t.cov[b.id] or 1) * 100 + 0.5) end
 		end
+		-- 기존 경제 목표·실제 건축비 지출을 변경 없이 시각 건설현장에 전달.
+		local targets = E.buildingTargets(t)
+		local construction = { spending = math.floor((t.buildSpend or 0) * 100 + 0.5) / 100 }
+		local needed = 0
+		for _, id in { "house", "farm", "workshop", "market", "warehouse", "school", "hall" } do
+			construction[id] = math.max(0, math.floor(((targets[id] or 0) - (t.bld[id] or 0)) * 100 + 0.5) / 100)
+			needed += construction[id]
+		end
+		construction.active = construction.spending > 0.01 and needed > 0.01
 		return {
 			pop = math.floor(t.pop), stage = t.stage, stageName = v.name, residents = v.residents, buildingScale = v.buildingScale,
 			houses = v.houses, perNpc = v.perNpc, districts = v.districts, mood = v.mood, jobs = jobs, facilities = E.facilities(t),
@@ -104,7 +113,7 @@ return function(D, S)
 			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = specialties, industries = industries,
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
-			service = svc,
+			service = svc, construction = construction,
 		}
 	end
 
