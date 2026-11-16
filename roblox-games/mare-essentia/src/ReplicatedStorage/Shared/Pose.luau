@@ -587,6 +587,24 @@ function Pose.work(model, kind, t, moving)
 		set(m.leftArm, A(-0.35 - s * 1.65, 0, 0.25))
 		set(m.rightArm, A(-0.35 - s * 1.65, 0, -0.25))
 		set(m.waist, A(-s * 0.14, 0, 0))
+	elseif kind == "offer" then
+		-- 상인이 물건을 내미는 몸짓. 실제 소유권·교역 판정과 무관한 연출이다.
+		local s = (math.sin(t * 2.0) + 1) * 0.5
+		set(m.rightArm, A(-0.75 - s * 0.72, 0, -0.25))
+		set(m.rightElbow, A(-0.65 + s * 0.32, 0, 0))
+		set(m.leftArm, A(-0.48, 0, 0.18))
+		set(m.neck, A(0.12, math.sin(t * 0.5) * 0.1, 0))
+	elseif kind == "receive" then
+		-- 상대가 내민 물건을 두 손으로 받아 확인하는 몸짓.
+		local s = (math.sin(t * 2.0) + 1) * 0.5
+		set(m.leftArm, A(-0.6 - s * 0.52, 0, 0.2))
+		set(m.rightArm, A(-0.65 - s * 0.5, 0, -0.2))
+		set(m.leftElbow, A(-0.78, 0, 0)); set(m.rightElbow, A(-0.78, 0, 0))
+		set(m.neck, A(0.16, 0, 0))
+	elseif kind == "nod" then
+		-- 상대가 말하는 동안 고개를 끄덕이며 듣는다.
+		set(m.neck, A(0.07 + math.sin(t * 3.1) * 0.12, math.sin(t * 0.6) * 0.1, 0))
+		set(m.leftArm, A(-0.22, 0, 0.12)); set(m.rightArm, A(-0.22, 0, -0.12))
 	elseif kind == "drink" then
 		-- 선술집 손님: 천천히 잔을 입에 가져가는 몸짓.
 		local s = (math.sin(t * 1.5) + 1) * 0.5
