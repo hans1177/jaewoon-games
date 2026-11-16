@@ -79,7 +79,7 @@ async function prepareLicensedOriginals() {
         throw new Error('MARE_LICENSED_SOURCE_TOO_LARGE:' + name);
       bytes = Buffer.from(await response.arrayBuffer());
       if (item.pinnedBlobSha) {
-        const blobSha = crypto.createHash('sha1').update(Buffer.from('blob ' + bytes.length + '\\0')).update(bytes).digest('hex');
+        const blobSha = crypto.createHash('sha1').update(Buffer.from('blob ' + bytes.length + '\0')).update(bytes).digest('hex');
         if (blobSha !== item.pinnedBlobSha) throw new Error('MARE_LICENSED_SOURCE_BLOB_MISMATCH:' + name);
       }
       originalSha256 = crypto.createHash('sha256').update(bytes).digest('hex');
@@ -147,7 +147,7 @@ async function prepareLicensedOriginals() {
         attribution:item.attribution || null,
         modification:item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source',
         triangles:tris, originalModel:name,
-        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\\n');
+        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\n');
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
