@@ -13,6 +13,7 @@ local Voyage = require(script.Parent:WaitForChild("Voyage"))
 local PortData = require(script.Parent:WaitForChild("Ports"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
+local Chains = require(script.Parent:WaitForChild("ProductionChains"))
 
 local PortScene = {}
 
@@ -1119,7 +1120,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [NPC 직업 소품] 기존 승인된 모델을 손 관절에 연결한다. 가상 손동작이 아니라 실제 도구를 사용한다.
 		-- 짐·잔·망치·삽은 생성 시 단 한 번만 붙여 모바일 프레임당 소품 생성 비용이 없다.
-		local spec = if t.kind == "carry" then { group = "Cargo", asset = "box-open", mount = "UpperTorso", size = 1.05, offset = CFrame.new(0, -0.35, -1.0) }
+		local spec = if t.kind == "carry" then { group = "Cargo", asset = if t.goodId and AssetIds["Cargo/" .. t.goodId] then t.goodId else "box-open", mount = "UpperTorso", size = 1.05, offset = CFrame.new(0, -0.35, -1.0) }
 			elseif t.kind == "drink" then { group = "Cargo", asset = "mug", mount = "RightHand", size = 0.45, offset = CFrame.new(0, -0.2, -0.25) }
 			elseif t.kind == "hammer" then { group = "Relics", asset = "hammer", mount = "RightHand", size = 1.05, offset = CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
 			elseif t.kind == "hoe" then { group = "Naval", asset = "tool-shovel", mount = "RightHand", size = 1.6, offset = CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
@@ -1171,10 +1172,27 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local p = fig:GetPivot().Position
 			fig:PivotTo(CFrame.lookAt(p, p + (b - a).Unit * Vector3.new(1, 0, 1)))
 		end
-		addTask(fig, { kind = kind, mode = "path", len = len, speed = speed, over = over })
+		addTask(fig, { kind = kind, mode = "path", len = len, speed = speed, over = over, goodId = spec and spec.goodId })
 		return fig
 	end
 	local function pick(list) return list[rng:NextInteger(1, #list)] end
+
+	-- [지역 물류] 현재 항구에서 실제 생산하는 품목만 작업장→시장→부두 보행으로 운송한다.
+	-- 운송 자체는 순수 연출이며 가격·재고·체결·저장 데이터는 수정하지 않는다.
+	if lvl >= 2 then
+		local made = (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}
+		local n = if game:GetService("UserInputService").TouchEnabled then 1 else math.min(2, #made)
+		for i = 1, n do
+			local good = made[i]
+			if good and AssetIds["Cargo/" .. good] then
+				local z = if i == 1 then 10 else -10
+				-- 서쪽 생산 구역에서 중앙 시장까지, 시장에서 부두까지 기존 도로를 따른다.
+				local a = if i == 1 then Vector3.new(-240, 0, z) else Vector3.new(-104, 0, z)
+				local b = if i == 1 then Vector3.new(-62, 0, z) else Vector3.new(6, 0, z)
+				path(a, b, "carry", 1.6, { role = "Barbarian", hat = "cap", profession = "merchant", goodId = good })
+			end
+		end
+	end
 
 	-- 요리: 광장 한쪽 모닥불 솥을 젓는 아낙 (1단계부터), 단계가 오르면 한 명 더
 	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-26, 0, -14), 3.6, false)
@@ -2087,40 +2105,104 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 		return false
 	end
-	-- [경제 실물 시설] 세계경제에 실제 건설된 시설만 개별 구획에 시각 건축한다.
-	-- 먼저 필지를 확보한 뒤 주택을 채워 시설과 집이 겹치지 않도록 한다.
+	-- [실물경제 마을] 기존 생산·시설 저장값으로 실제 공개형 작업장/실내를 만든다.
+	-- 신규 도형이나 독립 경제를 만들지 않고 승인된 Kenney 건축 메시와 가구만 배치한다.
 	do
 		local stock = info.sim and info.sim.buildings
 		local civic = {
-			{ "workshop", "공방 거리", 2, "Town", "workbench-anvil", C(148, 108, 77) },
-			{ "warehouse", "창고 구역", 2, "Cargo", "box-open", C(129, 112, 87) },
-			{ "market", "시장 거리", 2, "Town", "stall-green", C(178, 134, 78) },
-			{ "school", "학교 구역", 3, "Interior", "bookcaseclosed", C(111, 120, 147) },
-			{ "hall", "행정 구역", 3, "Town", "bell-tower", C(165, 156, 139) },
-			{ "tavern", "여가 거리", 3, "Cargo", "mug", C(125, 93, 78) },
+			{ "workshop", "공방 거리", 2, "Town", "workbench-anvil", C(148, 108, 77), nil, "harbor" },
+			{ "warehouse", "창고 구역", 2, "Cargo", "resource-planks", C(129, 112, 87), nil, "trade" },
+			{ "market", "시장 거리", 2, "Town", "stall-green", C(178, 134, 78), nil, "trade" },
+			{ "school", "학교 구역", 3, "Interior", "bookcaseclosed", C(111, 120, 147), nil, "tech" },
+			{ "hall", "행정 구역", 3, "Interior", "bookcaseopenlow", C(165, 156, 139), nil, "harbor" },
+			{ "tavern", "여가 거리", 3, "Interior", "tablecloth", C(125, 93, 78), nil, "quest" },
 		}
+		-- 항구별 원료 분류는 기존 ProductionChains.ClassOf만 사용한다.
+		-- 모바일도 특산품 시설 2곳을 우선 노출하고 전체 건물 수는 기존 7/10개 상한으로 제한한다.
+		local made = (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}
+		local goodsByClass = {
+			mineral = { "workshop", "광물 제련소", "Town", "workbench-anvil", C(145, 133, 122) },
+			gem = { "market", "보석·해산물 상점", "Cargo", "gems-chest", C(137, 142, 166) },
+			animal = { "farm", "목축·어물 공방", "Cargo", "food-barrel-fish", C(164, 139, 109) },
+			farm = { "farm", "농산·향신료 작업장", "Cargo", "mortar-pestle", C(180, 146, 96) },
+			forest = { "workshop", "벌목·목재 공방", "Cargo", "wood-planks-stack-small", C(128, 113, 84) },
+			fiber = { "workshop", "염색·직조 공방", "Cargo", "textiles-stack-small", C(146, 117, 151) },
+		}
+		local specialties = 0
+		for _, good in made do
+			if specialties >= 2 then break end
+			local kind = Chains.ClassOf[good]
+			local detail = goodsByClass[kind]
+			if detail and AssetIds["Cargo/" .. good] then
+				-- 원료 이름과 실제 등록 메시가 있는 항구만 해당 전문 시설이 나타난다.
+				specialties += 1
+				table.insert(civic, specialties, {
+					detail[1], PortData.Goods[good].name .. " " .. detail[2], 2,
+					detail[3], detail[4], detail[5], good, "trade",
+				})
+			end
+		end
 		local placed = 0
 		local maxSites = if game:GetService("UserInputService").TouchEnabled then 7 else 10
 		for index, c in ipairs(civic) do
 			local count = if stock then stock[c[1]] or 0 else math.max(0, lvl - c[3] + 1)
 			if lvl >= c[3] and count > 0 then
-				local quota = math.min(3, math.max(1, math.floor(math.sqrt(count) / 2.8 + 0.5)))
+				local quota = if c[7] then 1 else math.min(3, math.max(1, math.floor(math.sqrt(count) / 2.8 + 0.5)))
 				for n = 1, quota do
 					if placed >= maxSites then break end
 					local row = math.floor((index - 1) / 3)
 					local side = if row == 0 then 1 else -1
 					local z = side * (if isRoyalCity then 330 else 246) + side * (n - 1) * 27
 					local x = -286 - ((index - 1) % 3) * 63
+					if c[7] then
+						-- 특산품 두 채는 기존 외곽 건축 구획에서 도로·궁전·일반 주거 필지를 피한다.
+						z = (if index % 2 == 0 then 1 else -1) * (if isRoyalCity then 365 else 310)
+						x = -278 - (index - 1) * 56
+					end
 					if onStreet(x, 14) then x += math.max(25, S * 0.6) end
 					if not reserved(x, z, 18) then
 						local at = Vector3.new(x, 0, z)
-						local building = house(folder, at, 19, 15, math.clamp(1 + math.floor((lvl - c[3]) / 2), 1, 3), style, rng, c[6])
-						if building then
-							building.Name = "EconomySite_" .. c[1]
+						local face = if z > 0 then -1 else 1
+						local wallName = if key == "japan" or key == "china" or key == "seasia" or key == "malabar"
+							or key == "pacific" or key == "swahili" or key == "wafrica" then "kenney_wood_wall_01" else "kenney_grey_wall_01"
+						local ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])
+						if ground then
+							ground.Name = "EconomySite_" .. c[1]
+							ground:SetAttribute("IndustryGood", c[7] or "")
+							ground:SetAttribute("PortId", info.portId)
+							ground:SetAttribute("DevelopmentTier", lvl)
 							placed += 1
 							table.insert(placedLots, { X = x, Z = z, H = 18 })
-							sign(folder, building, c[2], C(151, 110, 51), 12)
-							importedModel(folder, c[4], c[5], at + Vector3.new(0, 0, 12), 4.4, false)
+							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
+							local back = importedModel(folder, "Town", wallName, at + Vector3.new(0, 0, -face * 8), 19, true, c[6])
+							for _, dx in { -9, 9 } do
+								local sideAt = at + Vector3.new(dx, 0, 0)
+								local sideWall = importedModel(folder, "Town", wallName, sideAt, 17, true, c[6])
+								if sideWall then rotateAround(sideWall, sideAt, math.pi * 0.5) end
+							end
+							if lvl >= 3 then
+								importedModel(folder, "Town", if wallName == "kenney_wood_wall_01" then "kenney_roof_straight_green_01" else "kenney_roof_straight_red_01",
+									at + Vector3.new(0, 9, 0), 21, false)
+							end
+							local anchor = back and back:FindFirstChildWhichIsA("BasePart", true)
+								or ground:FindFirstChildWhichIsA("BasePart", true)
+							if anchor then sign(folder, anchor, c[2], C(151, 110, 51), 10) end
+							-- [내부 설비] 업종에 맞는 실제 실내가구·장비·원료를 기존 개방형 실내에 놓는다.
+							local fixture = importedModel(folder, c[4], c[5], at + Vector3.new(-4, 0, -face * 2), 4.5, false)
+							if fixture then fixture.Name = "FacilityEquipment_" .. c[1] end
+							importedModel(folder, "Interior", if c[1] == "warehouse" or c[1] == "hall" or c[1] == "school"
+								then "bookcaseopenlow" elseif c[1] == "tavern" then "tablecloth" else "tablecross",
+								at + Vector3.new(3, 0, -face * 2), 4, false)
+							if c[1] == "tavern" or c[1] == "school" or c[1] == "hall" then
+								importedModel(folder, "Interior", "stoolbar", at + Vector3.new(5, 0, face * 3), 2.5, false)
+							elseif c[1] == "workshop" or c[1] == "warehouse" then
+								importedModel(folder, "Cargo", "resource-planks", at + Vector3.new(5, 0, face * 3), 3.4, false)
+							end
+							if c[7] then
+								local item = importedModel(folder, "Cargo", c[7], at + Vector3.new(0, 0, face * 2), 3.2, false)
+								if item then item.Name = "SpecialtyProduct_" .. c[7] end
+							end
+							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
 						end
 					end
 				end
