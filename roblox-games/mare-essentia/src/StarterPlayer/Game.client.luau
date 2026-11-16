@@ -2795,11 +2795,8 @@ local function call(action, payload)
 			snd = "sfx_coin"
 		elseif action == "Repair" then
 			snd = "sfx_workshop_chop" -- 조선소 망치질
-		elseif action == "Sail" or action == "HistoryChoose" then
-			snd = "sfx_horn"
-			if action == "Sail" then
-				task.delay(0.2, Sfx.play, "sfx_rope_pull", 0.8) -- 닻줄·돛줄 당기는 소리
-			end
+		elseif action == "HistoryChoose" then
+			snd = "sfx_horn" -- 수동 출항 효과음은 이벤트가 끝난 후 sail()에서 재생
 		elseif action == "Accept" then
 			snd = "sfx_quest_accept"
 		elseif action == "PlayStory" then
@@ -3322,6 +3319,8 @@ local function sail(portId)
 			Sfx.music("music_sea")
 		end
 		Sfx.ambient({ "sfx_waves", "sfx_wind" })
+		Sfx.play("sfx_horn")
+		task.delay(0.2, Sfx.play, "sfx_rope_pull", 0.8)
 		Sfx.play("sfx_sail")
 		Sfx.play("sfx_sail_fabric", 0.25)
 		local vk = view and view.voyageEvent and view.voyageEvent.kind
