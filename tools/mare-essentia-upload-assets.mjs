@@ -284,8 +284,18 @@ async function prepareLicensedOriginals() {
 
         // [기존 유효 선체 재사용] 기존 메시 자체는 수정하지 않고 원본 장면을 커진 상선 선체로 변환한다.
         // 돛·갑판·선미·외판·삭구는 각 함종마다 새 메시로 직접 모델링한다.
+        // glTF 원본은 Y-up/Z-longitudinal. 원본 행렬만 회전/확대해 Z-up 작업 좌표로 가져온다.
+        // 항해선에 부적절한 현대식 노·노걸이만 장면에서 제외한다(메시와 바이너리는 남긴다).
+        const unusedOars=new Set(model.nodes.flatMap((node,i)=>
+          /(?:^|[_ .-])(?:oars?|rowlocks?|oarlocks?|paddles?)(?:$|[_ .-])/i.test(node.name||'')?[i]:[]));
+        for(const node of model.nodes){
+          if(node.children)node.children=node.children.filter(i=>!unusedOars.has(i));
+        }
+        const hullOriginalNodes=scene.nodes.filter(i=>!unusedOars.has(i));
+        if(hullOriginalNodes.length===0)throw Error('MARE_COASTAL_CC0_HULL_SCENE_EMPTY:'+ship);
         const hullRoot=model.nodes.push({name:ship+' original CC0 clinker hull enlarged',
-          scale:[1.16,1.78,1.26],children:scene.nodes.slice()})-1;
+          matrix:[1.24,0,0,0,0,0,1.18,0,0,1.78,0,0,0,0,-0.25,1],
+          children:hullOriginalNodes})-1;
         scene.nodes=[hullRoot];
         const extensions=[];
         let addedLength=0, extraTriangles=0;
@@ -357,9 +367,20 @@ async function prepareLicensedOriginals() {
         const rise=ship==='mtepe'?1.04:ship==='kotia'?0.43:0.68;
         const shell=[],faces=[],segments=26,bands=6;
         const side=(sign,t,v)=>{
-          const y=-3.9+7.45*t,arc=Math.pow(Math.sin(Math.PI*t),0.58);
+          // 므테페는 길게 솟은 선수(앞 -Y)와 잘린 선미 판벽, 자하지는 높고 곧은 선수,
+          // 코티아는 활처럼 굽는 뱃전·폭 넓은 화물창. 기본 선체 복제처럼 보이지 않게 곡률을 달리한다.
+          const y=-3.9+7.45*t;
+          const sinArc=Math.pow(Math.max(0,Math.sin(Math.PI*t)),0.58);
+          const sternSquare=ship==='mtepe'&&t>0.72?
+            0.72+0.28*Math.max(0,Math.min(1,(1-t)/0.045)):0;
+          const arc=Math.max(sinArc,sternSquare);
+          const forwardLift=ship==='mtepe'?0.90*Math.pow(1-t,5):
+            ship==='jahazi'?0.52*Math.pow(1-t,4):0.60*Math.pow(1-t,4);
+          const aftLift=ship==='kotia'?0.68*Math.pow(t,4):
+            ship==='jahazi'?0.34*Math.pow(t,4):0.18*Math.pow(t,4);
           const x=sign*(0.16+beam*arc*(0.46+0.54*v));
-          const z=-0.56+v*1.48+rise*Math.pow(Math.abs(2*t-1),3);
+          const z=-0.56+v*(ship==='kotia'?1.66:ship==='mtepe'?1.36:1.48)
+            +rise*Math.pow(Math.abs(2*t-1),3)+forwardLift+aftLift;
           return [x,y,z];
         };
         for(const sign of [-1,1]){
@@ -428,24 +449,25 @@ async function prepareLicensedOriginals() {
           return [a,b,c];
         };
         if(ship==='jahazi'){
-          masts.push([[0,-1.25,0.60],[0,-1.25,8.75],0.14],
-            [[0,1.75,0.58],[0,1.75,5.60],0.105]);
-          const A=[0,-3.65,7.75],B=[0,2.55,8.28],C=[0,1.16,1.30];
-          addLateen('foremast billowed Indian Ocean lateen cloth',A,B,C,27);
-          const a=[0,0.30,5.25],b=[0,3.26,4.45],c=[0,2.26,1.25];
-          addLateen('mizzen trade sail cloth',a,b,c,20);
-          masts.push([A,B,0.078],[a,b,0.062]);
-          decoration.push([[0,-3.92,0.75],[0,-4.45,1.44],0.09],
-            [[0,3.45,0.83],[0,3.88,1.37],0.11]);
+          // 스와힐리 장거리 교역선: 높은 선수, 단일 장대각돛, 화물 차양.
+          masts.push([[0,-0.58,0.60],[0,-0.12,9.35],0.17]);
+          const A=[0,-3.55,8.20],B=[0,3.17,9.00],C=[0,1.62,1.34];
+          addLateen('large Swahili jahazi billowed lateen sail cloth',A,B,C,31);
+          masts.push([A,B,0.12]);
+          decoration.push([[0,-3.92,1.15],[0,-4.56,2.05],0.12],
+            [[0,3.45,1.12],[0,3.82,1.58],0.10]);
         }else if(ship==='kotia'){
-          masts.push([[0,0.18,0.62],[0,0.18,9.15],0.17]);
-          const A=[0,-3.55,8.30],B=[0,3.15,8.72],C=[0,1.65,1.13];
-          addLateen('Malabar pepper dhow giant lateen cloth',A,B,C,29);
-          masts.push([A,B,0.11]);
-          const a=[0,-3.98,4.0],b=[0,-1.25,5.65],c=[0,-2.28,1.15];
-          addLateen('Malabar small forward staysail cloth',a,b,c,19);
-          decoration.push([[0,3.60,0.89],[0,4.25,1.67],0.13],
-            [[0,-3.84,0.94],[0,-4.14,1.17],0.09]);
+          // 쿠치/말라바르 코티아: 장거리 후추 교역용 앞/뒤 두 대각범과 높은 선미.
+          masts.push([[0,-1.04,0.68],[0,-0.66,9.60],0.18],
+            [[0,2.22,0.75],[0,2.37,6.35],0.115]);
+          const A=[0,-3.65,8.95],B=[0,2.16,9.35],C=[0,0.88,1.65];
+          addLateen('Malabar kotia high main lateen cloth',A,B,C,31);
+          masts.push([A,B,0.12]);
+          const a=[0,0.18,6.00],b=[0,3.48,6.38],c=[0,2.62,1.57];
+          addLateen('Malabar kotia aft trade lateen cloth',a,b,c,23);
+          masts.push([a,b,0.08]);
+          decoration.push([[0,3.55,1.15],[0,4.12,2.02],0.14],
+            [[0,-3.85,1.12],[0,-4.33,1.72],0.15]);
         }else{
           // [므테페] 낚싯배/유럽식 다우가 아니라 상단이 넓고 양 끝이 올라가는
           // 스와힐리 방형 직조 돛과 봉합 외판, 매듭을 재현한다.
@@ -472,8 +494,8 @@ async function prepareLicensedOriginals() {
           decoration.push([[0,-3.68,0.75],[0,-4.22,2.05],0.12],
             [[0,3.42,0.70],[0,4.10,2.10],0.13]);
         }
-        const mastTops=ship==='jahazi'?[[0,-1.25,8.75],[0,1.75,5.60]]:ship==='kotia'?
-          [[0,0.18,9.15]]:[[0,-0.18,8.60]];
+        const mastTops=ship==='jahazi'?[[0,-0.12,9.35]]:ship==='kotia'?
+          [[0,-0.66,9.60],[0,2.37,6.35]]:[[0,-0.18,8.60]];
         for(const top of mastTops){
           for(const sign of [-1,1]){
             ropes.push([top,[sign*beam*0.87,-2.44,0.88],0.022],
@@ -503,6 +525,157 @@ async function prepareLicensedOriginals() {
             ship==='kotia'?0.70:0.47);
         }
         addMesh('handworked open cargo deck and timber boxes',deckP,deckI,wood);
+
+        // [세부 제작] 카메라 근접 시 판재·상갑판·화물·조타장치·선수 장식이 실제 메시로 보이게 만든다.
+        const detailWood=[],detailRope=[],carvedDetails=[],eyeRims=[];
+        const crossBeams=[];
+        // 배에 각기 다른 줄무늬 외판과 하부 버팀목(원본 메시·바이너리 그대로).
+        for(const sign of [-1,1]){
+          for(let i=1;i<=4;i++){
+            const v=(i+0.25)/6;
+            for(let j=0;j<32;j++){
+              const t1=(j+0.5)/34,t2=(j+1.5)/34;
+              detailWood.push([side(sign,t1,v),side(sign,t2,v),0.029]);
+            }
+          }
+          for(let j=4;j<=28;j+=4){
+            const t=j/34;
+            const outer=side(sign,t,1.00);
+            crossBeams.push([[0,outer[1],outer[2]-0.03],
+              [outer[0]*0.91,outer[1],outer[2]-0.03],0.075]);
+          }
+        }
+        addRods('individual teak strakes and outer wooden wales',detailWood,edge);
+        addRods('transverse deck thwarts and reinforcing knees',crossBeams,wood);
+
+        // [로프 결속] 삼각돛선은 고리-매듭으로 뱃전에 고정하고 화물함은 가로 세로 묶는다.
+        for(const sign of [-1,1]){
+          for(let j=3;j<=27;j+=3){
+            const t=j/30;
+            const x=side(sign,t,1.02);
+            detailRope.push([x,[x[0]-sign*0.13,x[1],x[2]-0.18],0.025]);
+          }
+        }
+        for(let i=0;i<cargoCount;i++){
+          const row=Math.floor(i/3),col=i%3;
+          const cx=(col-1)*0.48,cy=-0.54+row*0.75;
+          const h=ship==='kotia'?0.70:0.47,z=0.81+h+0.018;
+          detailRope.push([[cx-0.22,cy,z],[cx+0.22,cy,z],0.027],
+            [[cx,cy-0.28,z],[cx,cy+0.28,z],0.027]);
+        }
+        addRods('coir cargo lashings and gunwale knots',detailRope,rope);
+
+        // 조타 장치: 마스트처럼 서 있는 쓸모없는 원통이 아니라 방향타와 가로손잡이.
+        const rudderA=[0,3.38,-0.22],rudderB=[0,3.95,0.95];
+        addRods('aft steer oar and horizontal tiller',[
+          [rudderA,rudderB,0.13],
+          [[0,3.77,0.84],[-0.57,3.43,0.91],0.075],
+          [[0,3.77,0.84],[0.57,3.43,0.91],0.075],
+        ],wood);
+
+        if(ship==='jahazi'){
+          // [자하지] 마쿠티 야자 잎 지붕과 화물 보호 난간: 전통 스와힐리 장거리선 특유 실루엣.
+          const canopyP=[],canopyI=[],rowCount=24,colCount=10;
+          for(let i=0;i<=rowCount;i++)for(let j=0;j<=colCount;j++){
+            const u=i/rowCount,v=j/colCount;
+            const x=(v-0.5)*2.00,y=1.30+u*2.05;
+            const z=1.64+0.48*Math.sin(Math.PI*v)+0.08*Math.sin(Math.PI*u*3);
+            canopyP.push(x,y,z);
+          }
+          for(let i=0;i<rowCount;i++)for(let j=0;j<colCount;j++){
+            const k=i*(colCount+1)+j,n=k+colCount+1;
+            canopyI.push(k,n,k+1,n,n+1,k+1);
+          }
+          const palm=mat('jahazi woven makuti palm thatch',[0.71,0.62,0.35]);
+          addMesh('Swahili jahazi makuti palm leaf roof',canopyP,canopyI,palm);
+          const supports=[],hanging=[];
+          for(const sign of [-1,1]){
+            for(const y of [1.32,2.32,3.32])
+              supports.push([[sign*0.98,y,0.98],[sign*0.98,y,1.76],0.047]);
+            for(let i=0;i<17;i++){
+              const y=1.34+i*0.126;
+              hanging.push([[sign*1.04,y,1.39],[sign*1.04,y,0.92],0.021]);
+            }
+          }
+          addRods('jahazi palm roof stakes and high trade rail',supports,edge);
+          addRods('jahazi woven cargo curtain ties',hanging,rope);
+        }
+        if(ship==='kotia'){
+          // [코티아] 위로 휘어진 선미 난간, 후추창 2개, 새머리 선수상.
+          const transom=[],rails=[];
+          for(const sign of [-1,1]){
+            const pts=[[sign*0.92,2.65,1.28],[sign*1.02,3.08,1.65],
+              [sign*1.04,3.52,2.05],[sign*0.64,3.84,2.23]];
+            for(let i=0;i<pts.length-1;i++)rails.push([pts[i],pts[i+1],0.077]);
+            rails.push([[sign*1.03,3.44,1.09],[sign*1.03,3.44,2.04],0.078]);
+          }
+          rails.push([[0,-4.23,1.70],[0,-4.48,2.02],0.075],
+            [[0,-4.48,2.02],[0,-4.72,1.86],0.09],
+            [[0,-4.48,2.02],[-0.24,-4.63,1.96],0.044],
+            [[0,-4.48,2.02],[0.24,-4.63,1.96],0.044]);
+          addRods('kotia arched stern and carved parrot head stem',rails,bright);
+          for(const y of [-1.56,0.62]){
+            const hatchP=[],hatchI=[];
+            const a=hatchP.length/3;
+            for(const [x,yy,z] of [[-0.46,y-0.48,1.26],[0.46,y-0.48,1.26],
+              [0.46,y+0.48,1.26],[-0.46,y+0.48,1.26]])
+              hatchP.push(x,yy,z);
+            hatchI.push(a,a+1,a+2,a,a+2,a+3);
+            addMesh('kotia rectangular pepper hold hatch '+y,hatchP,hatchI,edge);
+            for(const x of [-0.47,0,0.47])
+              carvedDetails.push([[x,y-0.49,1.30],[x,y+0.49,1.30],0.034]);
+          }
+        }
+        if(ship==='mtepe'){
+          // [므테페] 학술 모형 기준: 후방 직각 선미판, 솟은 가느다란 선수,
+          // 선수 양측 눈 무늬와 대형 돛대에 달린 3개 작은 깃발.
+          const backP=[],backI=[];
+          const aft=side(1,1,1),aftB=side(-1,1,1);
+          backP.push(aft[0],aft[1],-0.38, aftB[0],aftB[1],-0.38,
+            aftB[0],aftB[1],aftB[2], aft[0],aft[1],aft[2]);
+          backI.push(0,1,2,0,2,3);
+          addMesh('mtepe flat broad square wooden stern transom',backP,backI,wood);
+          carvedDetails.push(
+            [[0,-3.68,1.13],[0,-4.28,2.31],0.17],
+            [[0,-4.28,2.31],[0,-4.70,2.66],0.13],
+            [[0,-4.70,2.66],[0,-5.00,2.62],0.072],
+            [[0,3.56,0.89],[0,3.62,1.67],0.095]);
+          // 양쪽 선수 눈: 플랫 이미지 대신 실제 금빛 둥근 고리.
+          for(const sign of [-1,1]){
+            const center=[sign*0.45,-3.10,1.17];
+            for(let j=0;j<24;j++){
+              const ang=2*Math.PI*j/24,bng=2*Math.PI*(j+1)/24;
+              const a=[center[0]+sign*0.013,center[1]+0.23*Math.cos(ang),
+                center[2]+0.14*Math.sin(ang)];
+              const b=[center[0]+sign*0.013,center[1]+0.23*Math.cos(bng),
+                center[2]+0.14*Math.sin(bng)];
+              eyeRims.push([a,b,0.035]);
+            }
+          }
+          addRods('mtepe carved paired prow eyes',eyeRims,bright);
+          // 고전 므테페는 선수에 작은 깃발봉 세 개를 단다.
+          const flagP=[],flagI=[],flagM=mat('Swahili crimson pennants',[0.66,0.19,0.13]);
+          const pennants=[],flagPositions=[-0.22,0,0.22];
+          for(let k=0;k<3;k++){
+            const x=flagPositions[k],y=-4.13-0.25*k,z=2.15+0.16*k;
+            pennants.push([[x,y,z],[x,y,z+0.85],0.025]);
+            const base=flagP.length/3;
+            flagP.push(x,y,z+0.85,x,y+0.54,z+0.72,x,y,z+0.48);
+            flagI.push(base,base+1,base+2);
+          }
+          addRods('mtepe three fore pennant spars',pennants,edge);
+          addMesh('mtepe three handwoven red pennants',flagP,flagI,flagM);
+          const lashes=[];
+          for(let j=0;j<16;j++){
+            const t=0.07+j*0.051;
+            for(const sign of [-1,1]){
+              const a=side(sign,t,0.76),b=side(sign,t+0.023,0.76);
+              lashes.push([a,b,0.022]);
+            }
+          }
+          addRods('mtepe strong sewn sheer strake bindings',lashes,rope);
+        }
+        if(carvedDetails.length)addRods('regional engraved rail details',carvedDetails,bright);
         // [glTF 좌표 정렬] 원본의 Z 위/-Y 선수 좌표계를 프로젝트 +Y 위/+X 선수로 일괄 변환.
         const assembled=model.nodes.push({name:ship+' oriented +X bow +Y up',
           matrix:[0,0,-1,0,-1,0,0,0,0,1,0,0,0,0,0,1],
@@ -528,10 +701,10 @@ async function prepareLicensedOriginals() {
         item.sourceAsset=ROOT+'/assets/naval/rowboat-source.glb';
         item.originalModel='Grab3D CC0 high-detail clinker-built timber rowboat hull';
         item.modification=ship==='mtepe'?
-          'Swahili sewn-plank mtepe: raised bow/stern, curved planks, coir stitches, woven square mat sail, bamboo spars, cargo':
+          'Swahili sewn-plank mtepe: long overhanging carved bow, square transom stern, paired eyes, coir-sewn planks, woven mat square sail, three pennants':
           ship==='jahazi'?
-          'Swahili jahazi trader: curved cargo hull, dual raked lateen masts, sewn plank ribs, coir ropes, cargo deck':
-          'Malabar kotia spice trader: wide deep plank hull, tall main lateen and small staysail, high aft rudder, pepper cargo';
+          'Swahili jahazi: long cargo hull, single monumental lateen sail, makuti palm canopy, textile cargo curtains, carvel ribs and coir lashings':
+          'Indian Kotia spice trader: wider teak hull, two working lateen masts, arched stern rail, parrot-head stem, dual cargo hatches, pepper hold';
         item.originalMeshCount=originalMeshCount;
         item.derivedTriangleCount=extraTriangles;
         console.log('MARE_COASTAL_EXTERNAL_CC0_HULL_DERIVED',ship,originalSha256,extraTriangles);
