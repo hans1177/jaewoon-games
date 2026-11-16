@@ -836,6 +836,10 @@ local function buildShip(parent, shipId, at)
 	if not shipMesh and shipId == "galleon" and SHIP_MESH.galleon == "galleon-heritage" then
 		meshAsset = "ship-large"
 		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
+	elseif not shipMesh and shipId == "frigate" and SHIP_MESH.frigate == "frigate" then
+		-- [기존 항구 보존] 프리깃 완성 모델을 못 읽으면 종전 공용 범선으로 복구한다.
+		meshAsset = "ship-pirate-medium"
+		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
 	end
 	if shipMesh then
 		shipMesh.Name = "Ship"
