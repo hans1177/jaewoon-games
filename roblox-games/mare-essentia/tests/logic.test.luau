@@ -595,7 +595,7 @@ local function extraTests()
 		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
 		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
 
-		check("지식 분류: 기존 21개 + 세부 학문 30개 활성", #tree.Disciplines == 51)
+		check("지식 분류: 기존 21개 + 세부 학문 31개 활성", #tree.Disciplines == 52)
 		local promotedCount, promotedLinked, duplicateAcademy = 0, 0, nil
 		local namesSeen = {}
 		for _, d in tree.Disciplines do
@@ -610,7 +610,7 @@ local function extraTests()
 			promotedLinked += 1
 			check("세부 학문: 기존 카드 참조 유효 " .. id, collection.ById[id] ~= nil and tree.ById[id] ~= nil and #discIds >= 1)
 		end
-		check("학문 확장: 중복·유실 없이 30개 활성, 기존 카드 71장 연결", promotedCount == 30 and promotedLinked == 71 and duplicateAcademy == nil)
+		check("학문 확장: 중복·유실 없이 31개 활성, 기존 카드 73장 연결", promotedCount == 31 and promotedLinked == 73 and duplicateAcademy == nil)
 		local nextState = newState("england")
 		nextState.reported.bot_oak = true
 		check("학문 숙련: 기존 식물학 원본 주학문은 그대로", tree.ById.bot_oak.disc == "botany")
@@ -632,7 +632,7 @@ local function extraTests()
 		check("습득 경로: 캐러벨은 발견·버드나무 연구는 연구", S.Discovery.methodOf(vessel) == "discover" and S.Discovery.methodOf(collection.ById.med_willow_bark) == "research")
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
-		check("도감: 세 방식과 51개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 51 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 세 방식과 52개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 52 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
 		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
 
 		local cardById = {}
@@ -652,7 +652,7 @@ local function extraTests()
 			end
 			if not hasCard then missing = d.id break end
 		end
-		check("도감: 활성 51개 학문에 각각 연구 카드가 존재", missing == nil, missing)
+		check("도감: 활성 52개 학문에 각각 연구 카드가 존재", missing == nil, missing)
 		local riverView = cardById.geo_scheldt_estuary
 		check("백과 개체: 탐험 장소/항구에 정확히 연결", riverView.kind == "terrain" and riverView.entityType == "실존 장소")
 		local sample = collection.ById.ship_galleon
