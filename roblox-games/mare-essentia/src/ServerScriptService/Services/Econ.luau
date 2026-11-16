@@ -205,12 +205,12 @@ return function(D, S)
 
 	-- [서버 간 공유] 일정 주기로만 UpdateAsync를 써서 요청량을 제한한다.
 	-- 더 새 기록이 들어온 충돌에서는 뒤처진 세계로 덮지 않고, 미반영 교역·연구 사건만 최신 세계에 재적용한다.
-	function X.sync(state)
+	function X.sync(state, force)
 		if not worldStore then return false end
 		local w = ensure(state)
 		if not w then return false end
 		local now = os.time()
-		if worldDirty and now - lastWrite >= WRITE_SECONDS then
+		if worldDirty and (force == true or now - lastWrite >= WRITE_SECONDS) then
 			local candidate = E.snapshot(w)
 			candidate.revision = worldRevision + 1
 			candidate.writer = worldOwner
