@@ -62,6 +62,15 @@ async function prepareLicensedOriginals() {
       page:'https://grab3d.com/models/vehicles/galleon/',
       minBytes:1000000, maxBytes:2500000, minTriangles:19000, maxTriangles:50000,
       rebuildNau:true},
+    // [인도양 전통 선박] CC0 클링커 판재 원본 선체를 보존하고 함종별 판재·범장·삭구를 개조한다.
+    // 전시용 복제/단순 함명 변경 금지: 각 함종은 독립 메시·형상·선수/선미를 갖는다.
+    ...['jahazi','kotia','mtepe'].map(ship=>({
+      name:ship+'-custom', assetPath:'assets/naval/'+ship+'-custom.glb', author:'Grab3D',
+      source:'https://grab3d.com/dl/rowboat/rowboat.glb',
+      page:'https://grab3d.com/models/vehicles/rowboat/',
+      minBytes:500000, maxBytes:3000000, minTriangles:18000, maxTriangles:45000,
+      rebuildCoastalShip:ship,
+    })),
   ];
   for (const item of sources) {
     const name = item.name, source = item.source, sourcePage = item.page;
@@ -85,6 +94,17 @@ async function prepareLicensedOriginals() {
         || original.length !== 1196260 || evidence.authenticOriginalBinaryVerified !== true
         || evidence.originalMeshesPreserved !== true)
         throw new Error('MARE_NAU_EXTERNAL_CC0_ORIGINAL_CHANGED');
+    }
+    if (item.rebuildCoastalShip && evidence) {
+      const sourcePath=path.join(ROOT,'assets/naval/rowboat-source.glb');
+      const original=await fs.readFile(sourcePath);
+      const origHash=crypto.createHash('sha256').update(original).digest('hex');
+      if(evidence.originalSha256!==origHash || evidence.sourceAsset!==ROOT+'/assets/naval/rowboat-source.glb'
+        || evidence.authenticOriginalBinaryVerified!==true
+        || evidence.originalMeshesPreserved!==true
+        || evidence.structuralGlbVerified!==true
+        || original.toString('ascii',0,4)!=='glTF')
+        throw new Error('MARE_COASTAL_SHIP_EXTERNAL_CC0_SOURCE_CHANGED:'+item.rebuildCoastalShip);
     }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
@@ -232,6 +252,289 @@ async function prepareLicensedOriginals() {
         item.derivedTriangleCount=extraTriangles;
         console.log('MARE_NAU_EXTERNAL_CC0_HULL_DERIVED',originalSha256,extraTriangles);
       }
+
+      if (item.rebuildCoastalShip) {
+        // [원본 선체 실물] 정식 공개 CC0 원본 GLB를 별도 저장하고 변경 전 메시/바이너리를 보존한다.
+        const ship=item.rebuildCoastalShip, sourceBytes=bytes;
+        const file=path.join(ROOT,'assets/naval/rowboat-source.glb');
+        if (sourceBytes.length<500000 || sourceBytes.length>3000000
+          || sourceBytes.toString('ascii',0,4)!=='glTF'
+          || sourceBytes.readUInt32LE(4)!==2 || sourceBytes.readUInt32LE(8)!==sourceBytes.length
+          || sourceBytes.readUInt32LE(16)!==0x4e4f534a)
+          throw new Error('MARE_COASTAL_ROWBOAT_SOURCE_INVALID:'+ship);
+        const size=sourceBytes.readUInt32LE(12), binOffset=20+size;
+        if(sourceBytes.readUInt32LE(binOffset+4)!==0x004e4942
+          || binOffset+8+sourceBytes.readUInt32LE(binOffset)!==sourceBytes.length)
+          throw new Error('MARE_COASTAL_ROWBOAT_BINARY_INVALID:'+ship);
+        const model=JSON.parse(sourceBytes.subarray(20,binOffset).toString('utf8'));
+        if(!Array.isArray(model.meshes)||model.meshes.length<2
+          || !Array.isArray(model.nodes)||!Array.isArray(model.scenes)
+          || !Array.isArray(model.buffers)||model.buffers.length!==1
+          || !Array.isArray(model.bufferViews)||!Array.isArray(model.accessors))
+          throw new Error('MARE_COASTAL_ROWBOAT_MESH_UNSUPPORTED:'+ship);
+        const originalMeshCount=model.meshes.length, originalBin=sourceBytes.subarray(binOffset+8);
+        const scene=model.scenes[model.scene??0];
+        if(!scene||!Array.isArray(scene.nodes))throw new Error('MARE_COASTAL_ROWBOAT_SCENE_INVALID:'+ship);
+        let savedSource;
+        try{savedSource=await fs.readFile(file);}catch(e){if(e.code!=='ENOENT')throw e;}
+        if(savedSource&&!savedSource.equals(sourceBytes))
+          throw new Error('MARE_COASTAL_ROWBOAT_SOURCE_DRIFT:'+ship);
+
+        // [기존 유효 선체 재사용] 기존 메시 자체는 수정하지 않고 원본 장면을 커진 상선 선체로 변환한다.
+        // 돛·갑판·선미·외판·삭구는 각 함종마다 새 메시로 직접 모델링한다.
+        const hullRoot=model.nodes.push({name:ship+' original CC0 clinker hull enlarged',
+          scale:[1.16,1.78,1.26],children:scene.nodes.slice()})-1;
+        scene.nodes=[hullRoot];
+        const extensions=[];
+        let addedLength=0, extraTriangles=0;
+        const addBuffer=(buf,target)=>{
+          const pad=(4-addedLength%4)%4;
+          if(pad){extensions.push(Buffer.alloc(pad));addedLength+=pad;}
+          const index=model.bufferViews.length;
+          model.bufferViews.push({buffer:0,byteOffset:originalBin.length+addedLength,byteLength:buf.length,target});
+          extensions.push(buf);addedLength+=buf.length;
+          return index;
+        };
+        const mat=(label,rgba)=>{
+          if(!model.materials)model.materials=[];
+          return model.materials.push({name:ship+' '+label,pbrMetallicRoughness:{
+            baseColorFactor:[...rgba,1],metallicFactor:0,roughnessFactor:0.96},doubleSided:true})-1;
+        };
+        const wood=mat('teak joined plank',[0.49,0.31,0.14]);
+        const edge=mat('gunwale oak',[0.33,0.19,0.08]);
+        const linen=mat('woven linen',[0.92,0.83,0.63]);
+        const rope=mat('coir cord',[0.20,0.14,0.08]);
+        const bright=mat('carved trim',[0.64,0.49,0.22]);
+        const addMesh=(label,p,idx,material)=>{
+          if(p.length<9||idx.length<3||idx.length%3||p.length/3>65535)
+            throw Error('MARE_COASTAL_GEOMETRY_INVALID:'+ship+':'+label);
+          const vb=Buffer.alloc(p.length*4),ib=Buffer.alloc(idx.length*2);
+          const low=[Infinity,Infinity,Infinity],high=[-Infinity,-Infinity,-Infinity];
+          for(let i=0;i<p.length;i++){if(!Number.isFinite(p[i]))throw Error('MARE_COASTAL_NAN');
+            vb.writeFloatLE(p[i],i*4);
+            const ax=i%3;low[ax]=Math.min(low[ax],p[i]);high[ax]=Math.max(high[ax],p[i]);}
+          for(let i=0;i<idx.length;i++){if(idx[i]>=p.length/3)throw Error('MARE_COASTAL_INDEX');
+            ib.writeUInt16LE(idx[i],i*2);}
+          const pa=model.accessors.push({bufferView:addBuffer(vb,34962),componentType:5126,
+            count:p.length/3,type:'VEC3',min:low,max:high})-1;
+          const ia=model.accessors.push({bufferView:addBuffer(ib,34963),componentType:5123,
+            count:idx.length,type:'SCALAR'})-1;
+          const mi=model.meshes.push({name:ship+' '+label,primitives:[
+            {attributes:{POSITION:pa},indices:ia,material}]})-1;
+          scene.nodes.push(model.nodes.push({name:ship+' '+label,mesh:mi})-1);
+          extraTriangles+=idx.length/3;
+        };
+        const rod=(a,b,r,seg=9)=>{
+          const dir=b.map((v,i)=>v-a[i]),ll=Math.hypot(...dir);
+          if(ll<0.02||!Number.isFinite(ll))throw Error('MARE_COASTAL_ROD_AXIS');
+          const d=dir.map(v=>v/ll),ref=Math.abs(d[2])<0.8?[0,0,1]:[1,0,0];
+          const v0=[d[1]*ref[2]-d[2]*ref[1],d[2]*ref[0]-d[0]*ref[2],d[0]*ref[1]-d[1]*ref[0]];
+          const vl=Math.hypot(...v0),u=v0.map(v=>v/vl);
+          const v=[d[1]*u[2]-d[2]*u[1],d[2]*u[0]-d[0]*u[2],d[0]*u[1]-d[1]*u[0]];
+          const p=[],idx=[];
+          for(const point of [a,b])for(let k=0;k<seg;k++){
+            const theta=2*Math.PI*k/seg;
+            for(let ax=0;ax<3;ax++)p.push(point[ax]+r*(u[ax]*Math.cos(theta)+v[ax]*Math.sin(theta)));
+          }
+          for(let k=0;k<seg;k++){
+            const next=(k+1)%seg;idx.push(k,next,k+seg,next,next+seg,k+seg);
+          }
+          return {p,idx};
+        };
+        const addRods=(label,sticks,material)=>{
+          const p=[],idx=[];
+          for(const [a,b,r] of sticks){
+            const g=rod(a,b,r),off=p.length/3;
+            p.push(...g.p);idx.push(...g.idx.map(i=>i+off));
+          }
+          addMesh(label,p,idx,material);
+        };
+        // [형상 교체] 원본 열린 목조 선체와 연결되는 구부러진 외판/판재 측면.
+        // 양끝 곡률과 선미 상향, 폭 및 갑판 높이는 함종마다 다르다.
+        const beam=ship==='mtepe'?1.04:ship==='kotia'?1.38:1.22;
+        const rise=ship==='mtepe'?1.04:ship==='kotia'?0.43:0.68;
+        const shell=[],faces=[],segments=26,bands=6;
+        const side=(sign,t,v)=>{
+          const y=-3.9+7.45*t,arc=Math.pow(Math.sin(Math.PI*t),0.58);
+          const x=sign*(0.16+beam*arc*(0.46+0.54*v));
+          const z=-0.56+v*1.48+rise*Math.pow(Math.abs(2*t-1),3);
+          return [x,y,z];
+        };
+        for(const sign of [-1,1]){
+          const base=shell.length/3;
+          for(let i=0;i<=segments;i++)for(let j=0;j<=bands;j++)
+            shell.push(...side(sign,i/segments,j/bands));
+          for(let i=0;i<segments;i++)for(let j=0;j<bands;j++){
+            const a=base+i*(bands+1)+j,b=a+bands+1;
+            faces.push(a,b,a+1,b,b+1,a+1);
+          }
+        }
+        addMesh('joined curved outer hull planks',shell,faces,wood);
+        const decking=[],grips=[],lines=[],stitches=[];
+        for(const sign of [-1,1]){
+          let previous;
+          for(let i=0;i<=28;i++){
+            const t=i/28;const now=side(sign,t,1);
+            if(previous)decking.push([previous,now,0.085]);
+            previous=now;
+          }
+          // [외판 이음] 목재 판재의 가로 리브, 튼튼한 이중 뱃전.
+          for(let i=3;i<=25;i+=2){
+            const t=i/28;
+            decking.push([side(sign,t,0.22),side(sign,t,1.06),0.052]);
+          }
+          for(let band=1;band<bands;band++){
+            let prev;
+            for(let i=0;i<=28;i++){
+              const t=i/28,next=side(sign,t,band/bands);
+              if(prev)lines.push([prev,next,0.018]);
+              prev=next;
+            }
+          }
+          if(ship==='mtepe'){
+            // [스와힐리 봉합선] 못이 아닌 코코넛 끈으로 판재를 잇는 대각 반복 봉합.
+            for(let i=2;i<=26;i++)for(let j=1;j<bands;j++){
+              const t=i/28,z=j/bands,dx=0.022;
+              stitches.push([side(sign,Math.max(0,t-dx),z-0.06),
+                side(sign,Math.min(1,t+dx),z+0.06),0.018]);
+            }
+          }
+        }
+        addRods('timber gunwale and ribs',decking,edge);
+        addRods('visible hull plank joints',lines,bright);
+        if(stitches.length)addRods('stitched Swahili sewn plank seams',stitches,rope);
+
+        // [돛 천] 2면 소재, 곡면 부풀음, 각 함종의 독립 범장.
+        const sailEdge=[],masts=[],ropes=[],decoration=[];
+        const addLateen=(label,a,b,c,n)=>{
+          const p=[],idx=[],rows=[];
+          for(let i=0;i<=n;i++){
+            rows[i]=[];
+            for(let j=0;j<=n-i;j++){
+              const u=i/n,v=j/n,w=1-u-v;
+              rows[i][j]=p.length/3;
+              p.push(a[0]*w+b[0]*u+c[0]*v+0.46*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),
+                a[1]*w+b[1]*u+c[1]*v,a[2]*w+b[2]*u+c[2]*v);
+            }
+          }
+          for(let i=0;i<n;i++)for(let j=0;j<n-i;j++){
+            idx.push(rows[i][j],rows[i+1][j],rows[i][j+1]);
+            if(j<n-i-1)idx.push(rows[i+1][j],rows[i+1][j+1],rows[i][j+1]);
+          }
+          addMesh(label,p,idx,linen);
+          sailEdge.push([a,b,0.045],[a,c,0.025],[b,c,0.036]);
+          return [a,b,c];
+        };
+        if(ship==='jahazi'){
+          masts.push([[0,-1.25,0.60],[0,-1.25,8.75],0.14],
+            [[0,1.75,0.58],[0,1.75,5.60],0.105]);
+          const A=[0,-3.65,7.75],B=[0,2.55,8.28],C=[0,1.16,1.30];
+          addLateen('foremast billowed Indian Ocean lateen cloth',A,B,C,27);
+          const a=[0,0.30,5.25],b=[0,3.26,4.45],c=[0,2.26,1.25];
+          addLateen('mizzen trade sail cloth',a,b,c,20);
+          masts.push([A,B,0.078],[a,b,0.062]);
+          decoration.push([[0,-3.92,0.75],[0,-4.45,1.44],0.09],
+            [[0,3.45,0.83],[0,3.88,1.37],0.11]);
+        }else if(ship==='kotia'){
+          masts.push([[0,0.18,0.62],[0,0.18,9.15],0.17]);
+          const A=[0,-3.55,8.30],B=[0,3.15,8.72],C=[0,1.65,1.13];
+          addLateen('Malabar pepper dhow giant lateen cloth',A,B,C,29);
+          masts.push([A,B,0.11]);
+          const a=[0,-3.98,4.0],b=[0,-1.25,5.65],c=[0,-2.28,1.15];
+          addLateen('Malabar small forward staysail cloth',a,b,c,19);
+          decoration.push([[0,3.60,0.89],[0,4.25,1.67],0.13],
+            [[0,-3.84,0.94],[0,-4.14,1.17],0.09]);
+        }else{
+          // [므테페] 낚싯배/유럽식 다우가 아니라 상단이 넓고 양 끝이 올라가는
+          // 스와힐리 방형 직조 돛과 봉합 외판, 매듭을 재현한다.
+          masts.push([[0,-0.18,0.55],[0,-0.18,8.60],0.14]);
+          const a=[0,-2.70,1.52],b=[0,-2.15,7.95],c=[0,2.10,8.25],d=[0,2.63,1.56];
+          const p=[],idx=[],cols=26,rows=23,at=(u,v)=>{
+            const w0=(1-u)*(1-v),w1=(1-u)*v,w2=u*v,w3=u*(1-v);
+            return [a[0]*w0+b[0]*w1+c[0]*w2+d[0]*w3
+              +0.36*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),
+              a[1]*w0+b[1]*w1+c[1]*w2+d[1]*w3,
+              a[2]*w0+b[2]*w1+c[2]*w2+d[2]*w3];
+          };
+          for(let i=0;i<=cols;i++)for(let j=0;j<=rows;j++)
+            p.push(...at(i/cols,j/rows));
+          for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+            const k=i*(rows+1)+j,h=k+rows+1;
+            idx.push(k,h,k+1,h,h+1,k+1);
+          }
+          addMesh('woven rectangular Swahili mtepe mat sail',p,idx,linen);
+          sailEdge.push([a,b,0.048],[b,c,0.067],[c,d,0.048],[d,a,0.046]);
+          masts.push([b,c,0.095]);
+          for(let i=1;i<rows;i++)decoration.push([at(0,i/rows),at(1,i/rows),0.018]);
+          for(let i=1;i<cols;i+=2)decoration.push([at(i/cols,0),at(i/cols,1),0.013]);
+          decoration.push([[0,-3.68,0.75],[0,-4.22,2.05],0.12],
+            [[0,3.42,0.70],[0,4.10,2.10],0.13]);
+        }
+        const mastTops=ship==='jahazi'?[[0,-1.25,8.75],[0,1.75,5.60]]:ship==='kotia'?
+          [[0,0.18,9.15]]:[[0,-0.18,8.60]];
+        for(const top of mastTops){
+          for(const sign of [-1,1]){
+            ropes.push([top,[sign*beam*0.87,-2.44,0.88],0.022],
+              [top,[sign*beam*0.87,2.55,0.88],0.022]);
+          }
+        }
+        addRods('teak masts sloped yards',masts,edge);
+        addRods('billowed sail hems and standing rigging',sailEdge.concat(ropes),rope);
+        if(decoration.length)addRods('woven details and high prow carvings',decoration,bright);
+        // [갑판 복원] 각 함종 화물/선미 구조를 독립된 목조 모양으로 조립.
+        const deckP=[],deckI=[];
+        const addCrate=(cx,cy,cz,w,l,h)=>{
+          const at=deckP.length/3;
+          const arr=[[cx-w/2,cy-l/2,cz],[cx+w/2,cy-l/2,cz],
+            [cx+w/2,cy+l/2,cz],[cx-w/2,cy+l/2,cz],
+            [cx-w/2,cy-l/2,cz+h],[cx+w/2,cy-l/2,cz+h],
+            [cx+w/2,cy+l/2,cz+h],[cx-w/2,cy+l/2,cz+h]];
+          for(const v of arr)deckP.push(...v);
+          for(const [a,b,c,d] of [[0,1,2,3],[4,7,6,5],[0,4,5,1],
+            [1,5,6,2],[2,6,7,3],[3,7,4,0]])
+            deckI.push(at+a,at+b,at+c,at+a,at+c,at+d);
+        };
+        const cargoCount=ship==='kotia'?9:ship==='jahazi'?6:4;
+        for(let i=0;i<cargoCount;i++){
+          const row=Math.floor(i/3),col=i%3;
+          addCrate((col-1)*0.48,-0.54+row*0.75,0.81,0.40,0.49,
+            ship==='kotia'?0.70:0.47);
+        }
+        addMesh('handworked open cargo deck and timber boxes',deckP,deckI,wood);
+        // [glTF 좌표 정렬] 원본의 Z 위/-Y 선수 좌표계를 프로젝트 +Y 위/+X 선수로 일괄 변환.
+        const assembled=model.nodes.push({name:ship+' oriented +X bow +Y up',
+          matrix:[0,0,-1,0,-1,0,0,0,0,1,0,0,0,0,0,1],
+          children:scene.nodes.slice()})-1;
+        scene.nodes=[assembled];
+        const tail=Buffer.concat([originalBin,...extensions,Buffer.alloc((4-addedLength%4)%4)]);
+        model.buffers[0].byteLength=originalBin.length+addedLength;
+        const encoded=Buffer.from(JSON.stringify(model),'utf8');
+        const jsonPadded=Buffer.concat([encoded,Buffer.alloc((4-encoded.length%4)%4,0x20)]);
+        const rebuilt=Buffer.alloc(12+8+jsonPadded.length+8+tail.length);
+        rebuilt.write('glTF',0);rebuilt.writeUInt32LE(2,4);rebuilt.writeUInt32LE(rebuilt.length,8);
+        rebuilt.writeUInt32LE(jsonPadded.length,12);rebuilt.writeUInt32LE(0x4e4f534a,16);
+        jsonPadded.copy(rebuilt,20);
+        const at=20+jsonPadded.length;
+        rebuilt.writeUInt32LE(tail.length,at);rebuilt.writeUInt32LE(0x004e4942,at+4);
+        tail.copy(rebuilt,at+8);
+        if(extraTriangles<1400 || rebuilt.readUInt32LE(8)!==rebuilt.length
+          || !tail.subarray(0,originalBin.length).equals(originalBin)
+          || model.meshes.length<=originalMeshCount+6)
+          throw new Error('MARE_COASTAL_HULL_DERIVATION_INVALID:'+ship);
+        bytes=rebuilt;
+        await fs.writeFile(file,sourceBytes);
+        item.sourceAsset=ROOT+'/assets/naval/rowboat-source.glb';
+        item.originalModel='Grab3D CC0 high-detail clinker-built timber rowboat hull';
+        item.modification=ship==='mtepe'?
+          'Swahili sewn-plank mtepe: raised bow/stern, curved planks, coir stitches, woven square mat sail, bamboo spars, cargo':
+          ship==='jahazi'?
+          'Swahili jahazi trader: curved cargo hull, dual raked lateen masts, sewn plank ribs, coir ropes, cargo deck':
+          'Malabar kotia spice trader: wide deep plank hull, tall main lateen and small staysail, high aft rudder, pepper cargo';
+        item.originalMeshCount=originalMeshCount;
+        item.derivedTriangleCount=extraTriangles;
+        console.log('MARE_COASTAL_EXTERNAL_CC0_HULL_DERIVED',ship,originalSha256,extraTriangles);
+      }
+
       if (item.removePodium) {
         // [원본 모델 디테일] 작가의 선체·돛·삭구 메시와 재질은 그대로 보존한다.
         // 전시용 원형 받침대를 glTF 장면 노드에서만 제거한다. 도형/절차형 새 모델은 만들지 않는다.
@@ -296,10 +599,11 @@ async function prepareLicensedOriginals() {
         attribution:item.attribution || null,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
-        authenticOriginalBinaryVerified:item.rebuildNau?true:undefined,
-        originalMeshesPreserved:item.rebuildNau?true:undefined,
-        structuralGlbVerified:item.rebuildNau?true:undefined,
-        modelGeometryGroups:item.rebuildNau?['wood','linen','rope']:undefined,
+        authenticOriginalBinaryVerified:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
+        originalMeshesPreserved:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
+        structuralGlbVerified:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
+        modelGeometryGroups:item.rebuildNau?['wood','linen','rope']:
+          item.rebuildCoastalShip?['wood','edge','linen','rope','carved']:undefined,
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
@@ -414,6 +718,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (kind === 'People' && (f === 'rig_f.glb' || f === 'rig_m.glb')) continue;
     // [CC0 원본 보존] nau-source는 선체 개조 출처 검증용 바이너리로 Roblox 등록 대상이 아니다.
     if (kind === 'Naval' && f === 'nau-source.glb') continue;
+    if (kind === 'Naval' && f === 'rowboat-source.glb') continue;
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
     // [5대륙 카드] 기존 CardArt 승인 경로에서만 150장 PNG를 등록한다. SVG 원본은 Roblox 이미지로 직접 올리지 않는다.
