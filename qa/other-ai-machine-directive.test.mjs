@@ -31,9 +31,9 @@ const canonicalReads=[
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
-assert.equal(architecture.centralPolicy,null);
+assert.equal(architecture.policySource,'company-learning/platform-release-roadmap.json');
 assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
-assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
 // The compact architecture summary does not duplicate the ordered non-authoritative reads.
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');

@@ -14,8 +14,8 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
   assert.equal(motor.version,19);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);

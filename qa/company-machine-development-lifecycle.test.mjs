@@ -23,9 +23,9 @@ test('owner-locked 2026-10-17 selected targets are Roblox and regular Web only',
 });
 
 test('retained central maps are descriptive only and cannot authorize historical Unity auto development',()=>{
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(logs.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.ok(security.status);
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(logs.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(security.authority,'OWNER_DIRECTIVE_2026-09-19');
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.unityWebDevelopmentAllowed,false);
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.unityAndroidDevelopmentAllowed,false);
 });

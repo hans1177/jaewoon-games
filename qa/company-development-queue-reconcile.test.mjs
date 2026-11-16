@@ -327,13 +327,14 @@ test('reconcile trigger bursts serialize and status feedback is change-driven',(
   assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
   // 최소 보존 문서는 과거 실행 매핑을 제공하지 않는다. 실제 직렬화와 이벤트 인계는 위의 workflow에서 검증한다.
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
   const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.equal(logMap.retained.primaryLog,'GITHUB_ACTIONS_JOB_LOG');
-  assert.ok(logMap.retained.keys.includes('FAILURE_SIGNATURE'));
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.logChannels.githubActions.location,'GITHUB_ACTIONS_JOB_LOG');
+  assert.ok(logMap.canonicalCorrelationKeys.includes('FAILURE_SIGNATURE'));
 });
 
 
@@ -798,9 +799,9 @@ test('queue reconcile uses fixed 24.04 control capacity without changing seriali
   assert.equal(policy.serializeStateWrites,true);
   assert.equal(policy.stateMutationLogicChanged,false);
   // 보조 문서의 세부 이전 기록은 폐기됐다. 런너 버전은 실제 워크플로에서 검증하고 요약 문서는 비실행임을 확인한다.
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.centralPolicyExecutionEvidence.machinePolicyHashesRequired,true);
 });
 
 
