@@ -1,5 +1,5 @@
 {
- "sourceRevision": "3c935fec254041b719ee479c05ab442aba61bf8f",
+ "sourceRevision": "d90741ee295d036bd833ab08bdd6f5e7bc8a3970",
  "log": [
   {
    "step": 1,
@@ -667,36 +667,356 @@
    "step": 148,
    "capture": "cb2",
    "files": 1
+  },
+  {
+   "step": 149,
+   "click": "card_practice_exit",
+   "at": "76,292",
+   "out": "76,292 CARD_PRACTICE_EXIT_REAL_CLICK\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 76,
+      "y": 292
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 150,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 152,
+   "capture": "v1_start",
+   "files": 1
+  },
+  {
+   "step": 154,
+   "capture": "v2_event",
+   "files": 1
+  },
+  {
+   "step": 155,
+   "ctx": "Client",
+   "out": "stream=false parts=2/2 ex=Object_0:0:20.087310791015625, 39.37026596069336, 50.866512298583984:MeshPart;Object_1:0:10.62215805053711, 31.896690368652344, 47.17023468017578:MeshPart vp=524.4930419921875, 261.2374267578125, 36.9296875 on=true parent=VoyageScene fog=2600 brightness=1.995355486869812 atmo=0.3700000047683716 camdist=38.18107223510742\ntext"
+  },
+  {
+   "step": 157,
+   "capture": "v3_event2",
+   "files": 1
+  },
+  {
+   "step": 159,
+   "capture": "v4_late",
+   "files": 1
+  },
+  {
+   "step": 160,
+   "ctx": "Client",
+   "out": "nil\ntext"
+  },
+  {
+   "step": 161,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 163,
+   "capture": "b1_start",
+   "files": 1
+  },
+  {
+   "step": 164,
+   "ctx": "Client",
+   "out": "NAVAL_BATTLE_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 166,
+   "capture": "b2_mid",
+   "files": 1
+  },
+  {
+   "step": 167,
+   "ctx": "Client",
+   "out": "LOGS(11): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+  },
+  {
+   "step": 168,
+   "ctx": "Server",
+   "out": "LOGS(23): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+  },
+  {
+   "step": 169,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 171,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 172,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
+  },
+  {
+   "step": 174,
+   "capture": "harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 176,
+   "capture": "harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 178,
+   "capture": "harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 180,
+   "capture": "harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 182,
+   "capture": "harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 184,
+   "capture": "harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 186,
+   "capture": "harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 188,
+   "capture": "harbor_npc_sparring_08",
+   "files": 1
+  },
+  {
+   "step": 189,
+   "ctx": "Client",
+   "out": "R15_MOTION_IDLE\ntext"
+  },
+  {
+   "step": 191,
+   "capture": "harbor_motion_idle",
+   "files": 1
+  },
+  {
+   "step": 192,
+   "ctx": "Client",
+   "out": "R15_MOTION_WALK\ntext"
+  },
+  {
+   "step": 194,
+   "capture": "harbor_motion_walk",
+   "files": 1
+  },
+  {
+   "step": 195,
+   "ctx": "Client",
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=7 CARRY_FORWARD=true\ntext"
+  },
+  {
+   "step": 196,
+   "ctx": "Client",
+   "out": "R15_MOTION_RUN\ntext"
+  },
+  {
+   "step": 198,
+   "capture": "harbor_motion_run",
+   "files": 1
+  },
+  {
+   "step": 199,
+   "ctx": "Client",
+   "out": "MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2\ntext"
+  },
+  {
+   "step": 200,
+   "ctx": "Client",
+   "out": "R15_MOTION_ATTACK\ntext"
+  },
+  {
+   "step": 202,
+   "capture": "harbor_motion_attack",
+   "files": 1
+  },
+  {
+   "step": 203,
+   "ctx": "Client",
+   "out": "R15_MOTION_SHOOT\ntext"
+  },
+  {
+   "step": 205,
+   "capture": "harbor_motion_shoot",
+   "files": 1
+  },
+  {
+   "step": 206,
+   "ctx": "Client",
+   "out": "R15_MOTION_RELOAD\ntext"
+  },
+  {
+   "step": 208,
+   "capture": "harbor_motion_reload",
+   "files": 1
+  },
+  {
+   "step": 209,
+   "ctx": "Client",
+   "out": "R15_MOTION_GUARD\ntext"
+  },
+  {
+   "step": 211,
+   "capture": "harbor_motion_guard",
+   "files": 1
+  },
+  {
+   "step": 212,
+   "ctx": "Client",
+   "out": "R15_MOTION_HURT\ntext"
+  },
+  {
+   "step": 214,
+   "capture": "harbor_motion_hurt",
+   "files": 1
+  },
+  {
+   "step": 215,
+   "ctx": "Client",
+   "out": "R15_MOTION_CHEER\ntext"
+  },
+  {
+   "step": 217,
+   "capture": "harbor_motion_cheer",
+   "files": 1
+  },
+  {
+   "step": 218,
+   "ctx": "Client",
+   "out": "R15_MOTION_TALK\ntext"
+  },
+  {
+   "step": 220,
+   "capture": "harbor_motion_talk",
+   "files": 1
+  },
+  {
+   "step": 221,
+   "ctx": "Client",
+   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
+  },
+  {
+   "step": 222,
+   "ctx": "Client",
+   "out": "NPC_FACE_FRONT_PASS R15=48 BACKWARDS=0\ntext"
+  },
+  {
+   "step": 223,
+   "capture": "harbor_npc_face_front",
+   "files": 1
+  },
+  {
+   "step": 224,
+   "ctx": "Client",
+   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
+  },
+  {
+   "step": 226,
+   "ctx": "Client",
+   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
+  },
+  {
+   "step": 227,
+   "click": "field_entry",
+   "at": "298,191",
+   "out": "298,191 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 298,
+      "y": 191
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 229,
+   "capture": "field_entry",
+   "files": 1
+  },
+  {
+   "step": 230,
+   "ctx": "Client",
+   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=3000 screen=FieldGui\ntext"
+  },
+  {
+   "step": 231,
+   "capture": "field_npc_ally_mob",
+   "files": 1
+  },
+  {
+   "step": 232,
+   "ctx": "Client",
+   "out": "FIELD_MOTION_STABLE actors=21 maxStep=0.96 twoWeapons=PASS skillArt=PASS\ntext"
+  },
+  {
+   "step": 233,
+   "capture": "field_motion_smooth_icons",
+   "files": 1
+  },
+  {
+   "step": 235,
+   "ctx": "Client",
+   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=4 ALLIES=1 ENEMY_JOINTS=6 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=4 DISTINCT_SUPPORT_POSES=4\ntext"
+  },
+  {
+   "step": 236,
+   "capture": "field_actor_after_motion",
+   "files": 1
   }
  ],
- "errors": [
-  "step149:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING |"
- ],
+ "errors": [],
  "consoleCapture": {
   "captured": true,
   "contexts": [
    "Client",
    "Server"
   ],
-  "errorCount": 1,
-  "warningCount": 23,
-  "errors": [
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING"
-   }
-  ]
+  "errorCount": 0,
+  "warningCount": 24,
+  "errors": []
  },
  "summary": {
   "plannedSteps": 237,
-  "completedSteps": 150,
+  "completedSteps": 237,
   "plannedClicks": 10,
-  "successfulClicks": 8,
+  "successfulClicks": 10,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 33,
-  "abortedEarly": true
+  "capturedFrames": 62,
+  "abortedEarly": false
  },
  "visualSamples": [
   {
@@ -705,7 +1025,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224001,
+      "bytes": 224115,
       "width": 0,
       "height": 0,
       "pass": true
@@ -728,7 +1048,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247892,
+      "bytes": 247506,
       "width": 0,
       "height": 0,
       "pass": true
@@ -743,7 +1063,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247807,
+      "bytes": 247957,
       "width": 0,
       "height": 0,
       "pass": true
@@ -758,7 +1078,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132508,
+      "bytes": 132925,
       "width": 0,
       "height": 0,
       "pass": true
@@ -782,7 +1102,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 160072,
+      "bytes": 131248,
       "width": 0,
       "height": 0,
       "pass": true
@@ -795,7 +1115,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0164742469787598,
+    "brightness": 2.01482892036438,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -806,7 +1126,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170329,
+      "bytes": 170647,
       "width": 0,
       "height": 0,
       "pass": true
@@ -819,7 +1139,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.01928448677063,
+    "brightness": 2.01729679107666,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -830,7 +1150,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 117460,
+      "bytes": 119962,
       "width": 0,
       "height": 0,
       "pass": true
@@ -843,7 +1163,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022728204727173,
+    "brightness": 2.020477056503296,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -854,7 +1174,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166082,
+      "bytes": 165972,
       "width": 0,
       "height": 0,
       "pass": true
@@ -867,7 +1187,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0268986225128174,
+    "brightness": 2.024754524230957,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -878,7 +1198,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147979,
+      "bytes": 148603,
       "width": 0,
       "height": 0,
       "pass": true
@@ -893,7 +1213,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170862,
+      "bytes": 170169,
       "width": 0,
       "height": 0,
       "pass": true
@@ -908,7 +1228,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147929,
+      "bytes": 147692,
       "width": 0,
       "height": 0,
       "pass": true
@@ -923,7 +1243,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 134336,
+      "bytes": 134088,
       "width": 0,
       "height": 0,
       "pass": true
@@ -938,7 +1258,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153547,
+      "bytes": 153377,
       "width": 0,
       "height": 0,
       "pass": true
@@ -953,7 +1273,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153373,
+      "bytes": 153748,
       "width": 0,
       "height": 0,
       "pass": true
@@ -968,7 +1288,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147715,
+      "bytes": 147632,
       "width": 0,
       "height": 0,
       "pass": true
@@ -983,7 +1303,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168312,
+      "bytes": 168335,
       "width": 0,
       "height": 0,
       "pass": true
@@ -998,7 +1318,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 154013,
+      "bytes": 154021,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1013,7 +1333,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140069,
+      "bytes": 140177,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1028,7 +1348,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140093,
+      "bytes": 141343,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1043,7 +1363,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 226797,
+      "bytes": 224644,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1058,7 +1378,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164836,
+      "bytes": 161437,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1073,7 +1393,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 181667,
+      "bytes": 180862,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1088,7 +1408,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140931,
+      "bytes": 141147,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1103,7 +1423,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141179,
+      "bytes": 141249,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1118,7 +1438,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162482,
+      "bytes": 162543,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1133,7 +1453,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169783,
+      "bytes": 170204,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1148,7 +1468,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170384,
+      "bytes": 170254,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1163,7 +1483,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194349,
+      "bytes": 194231,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1178,7 +1498,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170911,
+      "bytes": 170954,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1193,7 +1513,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169952,
+      "bytes": 169661,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1208,7 +1528,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203605,
+      "bytes": 203444,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1223,7 +1543,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 216741,
+      "bytes": 215622,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1238,7 +1558,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 212222,
+      "bytes": 210599,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1246,10 +1566,981 @@
     ]
    },
    "interaction": "나가기"
+  },
+  {
+   "name": "v1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97583,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v2_event",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98829,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v3_event2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101190,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v4_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 94509,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 144325,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b2_mid",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 152430,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 95953,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98174,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97276,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_04",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 95896,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_05",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97873,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_06",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97361,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_07",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 96743,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_08",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98499,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_idle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 93567,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_walk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100625,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_run",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100022,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_attack",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98761,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_shoot",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97827,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_reload",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 96345,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_guard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 97252,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_hurt",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 93299,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_cheer",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98203,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_talk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 94744,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_face_front",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 98466,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "field_entry",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 167946,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_npc_ally_mob",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 212314,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_motion_smooth_icons",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 215710,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_actor_after_motion",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 214949,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 680,
+   "errors": [],
+   "failed": 0,
+   "registered": 680
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 466,
+   "models": 680,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 1146,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://72489040757878",
+      "key": "AssetIds.CardArt/af_03",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://77023165428158",
+      "key": "AssetIds.CardArt/af_15",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://107877140385634",
+      "key": "AssetIds.CardArt/ast_aurora",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://127370718437030",
+      "key": "AssetIds.CardArt/ast_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://105991549101223",
+      "key": "AssetIds.CardArt/ast_halley_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114650000468629",
+      "key": "AssetIds.CardArt/ast_halley_prediction",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://125327803198600",
+      "key": "AssetIds.CardArt/ast_jupiter_moons",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://120956229711846",
+      "key": "AssetIds.CardArt/ast_saturn_rings",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114615121747571",
+      "key": "AssetIds.CardArt/ast_venus",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://76486492447366",
+      "key": "AssetIds.CardArt/bot_herbarium",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://135648768778892",
+      "key": "AssetIds.CardArt/bot_plant_anatomy",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://97023606015316",
+      "key": "AssetIds.CardArt/bot_potato",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
+   },
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "PASS",
+   "coverage": {
+    "Visit": {
+     "invalid": 0,
+     "rejected": 54,
+     "accepted": 0,
+     "calls": 54
+    },
+    "BuyFleetShip": {
+     "invalid": 0,
+     "rejected": 25,
+     "accepted": 3,
+     "calls": 28
+    },
+    "VoyageBonus": {
+     "invalid": 0,
+     "rejected": 181,
+     "accepted": 0,
+     "calls": 181
+    },
+    "PlayStory": {
+     "invalid": 0,
+     "rejected": 224,
+     "accepted": 4,
+     "calls": 228
+    },
+    "Hunt": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Audience": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "BuyShip": {
+     "invalid": 0,
+     "rejected": 26,
+     "accepted": 2,
+     "calls": 28
+    },
+    "HireCrew": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyPlating": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyMap": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "NewGame": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "WaitDay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "SetSpecialty": {
+     "invalid": 0,
+     "rejected": 10,
+     "accepted": 5,
+     "calls": 15
+    },
+    "Talk": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 2,
+     "calls": 49
+    },
+    "Borrow": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "QAGrant": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Sell": {
+     "invalid": 0,
+     "rejected": 97,
+     "accepted": 21,
+     "calls": 118
+    },
+    "Buy": {
+     "invalid": 0,
+     "rejected": 97,
+     "accepted": 21,
+     "calls": 118
+    },
+    "Repair": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Sail": {
+     "invalid": 0,
+     "rejected": 160,
+     "accepted": 21,
+     "calls": 181
+    },
+    "Research": {
+     "invalid": 0,
+     "rejected": 6,
+     "accepted": 0,
+     "calls": 6
+    },
+    "Withdraw": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuySupplies": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "DismissEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ToggleGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "VoyageChoice": {
+     "invalid": 0,
+     "rejected": 177,
+     "accepted": 4,
+     "calls": 181
+    },
+    "ResolveBattle": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Repay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Recruit": {
+     "invalid": 0,
+     "rejected": 48,
+     "accepted": 1,
+     "calls": 49
+    },
+    "Accept": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 5,
+     "calls": 8
+    },
+    "Feast": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "TalkChoice": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyInsurance": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "State": {
+     "invalid": 0,
+     "rejected": 2,
+     "accepted": 0,
+     "calls": 2
+    },
+    "Rumor": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ChallengeBoss": {
+     "invalid": 0,
+     "rejected": 4,
+     "accepted": 0,
+     "calls": 4
+    },
+    "Deposit": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyLicense": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Haggle": {
+     "invalid": 0,
+     "rejected": 75,
+     "accepted": 42,
+     "calls": 117
+    },
+    "Explore": {
+     "invalid": 0,
+     "rejected": 592,
+     "accepted": 0,
+     "calls": 592
+    },
+    "BuyCannon": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 2,
+     "calls": 5
+    }
+   },
+   "observed": {
+    "naval-resolved": 1,
+    "quest-accepted": 5,
+    "voyage-arrived": 21,
+    "naval-encounter": 1
+   },
+   "calls": 1998,
+   "issues": [],
+   "rejected": 1833,
+   "failed": 0,
+   "accepted": 162
+  }
+ },
+ "assetRegistryAudit": {
+  "registered": 1046,
+  "activeIds": 1046,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 366,
+  "soundExpected": 100,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 8,
+  "loaded": 366,
+  "soundLoaded": 100
+ },
+ "assetOwnership": {
+  "reportedFailedIds": [
+   "72489040757878",
+   "77023165428158",
+   "107877140385634",
+   "127370718437030",
+   "105991549101223",
+   "114650000468629",
+   "125327803198600",
+   "120956229711846",
+   "114615121747571",
+   "76486492447366",
+   "135648768778892",
+   "97023606015316"
+  ],
+  "contexts": {
+   "Server": {
+    "owners": {
+     "127370718437030": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_comet"
+      ]
+     },
+     "125327803198600": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_jupiter_moons"
+      ]
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "114650000468629": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_prediction"
+      ]
+     },
+     "97023606015316": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_potato"
+      ]
+     },
+     "114615121747571": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_venus"
+      ]
+     },
+     "135648768778892": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_plant_anatomy"
+      ]
+     },
+     "120956229711846": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_saturn_rings"
+      ]
+     },
+     "77023165428158": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_15"
+      ]
+     },
+     "76486492447366": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_herbarium"
+      ]
+     },
+     "105991549101223": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_comet"
+      ]
+     },
+     "72489040757878": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_03"
+      ]
+     }
+    },
+    "scanned": 17761,
+    "contentRefs": 2177,
+    "complete": true
+   },
+   "Client": {
+    "owners": {
+     "127370718437030": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_comet"
+      ]
+     },
+     "125327803198600": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_jupiter_moons"
+      ]
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "114650000468629": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_prediction"
+      ]
+     },
+     "97023606015316": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_potato"
+      ]
+     },
+     "114615121747571": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_venus"
+      ]
+     },
+     "135648768778892": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_plant_anatomy"
+      ]
+     },
+     "120956229711846": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_saturn_rings"
+      ]
+     },
+     "77023165428158": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_15"
+      ]
+     },
+     "76486492447366": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_herbarium"
+      ]
+     },
+     "105991549101223": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_comet"
+      ]
+     },
+     "72489040757878": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_03"
+      ]
+     }
+    },
+    "scanned": 25001,
+    "contentRefs": 4297,
+    "complete": false
+   }
+  }
+ },
  "visualEvidence": {
-  "framesChecked": 33,
+  "framesChecked": 62,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
