@@ -410,7 +410,7 @@ function E.stepIndustries(t)
 		if t.produces[id] and t.stage >= recipe.minLevel and t.tech.craft >= 1.12 then
 			for _, source in ipairs(recipe.inputs) do
 				local have = t.stock[source] or 0
-				local reserve = math.max(1, (t.dem[source] or 0) * 4)
+				local reserve = math.max(1, (t.dem[source] or 0) * E.TARGET_DAYS) -- 기존 교역·주민 수요 20일치를 먼저 비축하고 잉여만 가공
 				local available = math.max(0, have - reserve)
 				local q = math.min(available * 0.12, capacity / math.max(1, recipes))
 				if q > 0 then
