@@ -190,6 +190,8 @@ local assetWaitStarted = false
 local sceneKey = nil
 local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
 local sceneHold = false -- 항해 중에는 장면을 바꾸지 않는다
+local sailingNow = false -- 출항 중 중복 클릭 방지
+local departureEventPhase = false -- 출항 직전 지역·역사 이벤트만 재생 허용
 local arriveNext = false -- 다음 장면은 입항 연출로 시작
 local amountIndex = 1
 local message = ""
@@ -2793,11 +2795,8 @@ local function call(action, payload)
 			snd = "sfx_coin"
 		elseif action == "Repair" then
 			snd = "sfx_workshop_chop" -- 조선소 망치질
-		elseif action == "Sail" or action == "HistoryChoose" then
-			snd = "sfx_horn"
-			if action == "Sail" then
-				task.delay(0.2, Sfx.play, "sfx_rope_pull", 0.8) -- 닻줄·돛줄 당기는 소리
-			end
+		elseif action == "HistoryChoose" then
+			snd = "sfx_horn" -- 수동 출항 효과음은 이벤트가 끝난 후 sail()에서 재생
 		elseif action == "Accept" then
 			snd = "sfx_quest_accept"
 		elseif action == "PlayStory" then
@@ -2854,8 +2853,17 @@ local function call(action, payload)
 			task.delay(0.4, Sfx.play, "sfx_treasure_chest", 0.8)
 		end
 	end
-	if result.scene then
-		task.defer(H.playWonderScene, result.scene)
+	if result.scene and action ~= "Sail" then
+		-- 발견 연출 역시 이야기·항해가 모두 끝난 뒤에 띄운다.
+		local sceneId = result.scene
+		task.spawn(function()
+			local pg = player:WaitForChild("PlayerGui")
+			while player.Parent and (sceneHold or inField or H.questScenesPlaying or H.sceneBusy
+				or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)) do
+				task.wait(0.2)
+			end
+			if player.Parent then H.playWonderScene(sceneId) end
+		end)
 	end
 	if result.ranking then
 		ranking = result.ranking
@@ -3236,6 +3244,37 @@ local renderTitle
 local epilogueMessage = nil
 
 local function sail(portId)
+	if sailingNow or sceneHold or inField or not (view and view.player and view.ship) then return end
+	sailingNow = true
+	-- [출항 순서] 현재 지역·역사·중요 인물 이벤트를 끝내야 항해를 시작할 수 있다.
+	-- 기존 이벤트 큐를 그대로 사용하며 선택/보상/서버 저장 흐름은 바꾸지 않는다.
+	local function finishRegionEvents()
+		if H.playQuestScenes then H.playQuestScenes({}, true) end
+		local playerGui = player:WaitForChild("PlayerGui")
+		while player.Parent and (playerGui:FindFirstChild("StoryScene", true) or playerGui:FindFirstChild("WonderScene", true) or H.sceneBusy) do
+			task.wait(0.15)
+		end
+		local pendingId = view and view.autoStory
+		if pendingId and pendingId ~= H.autoStoryShown then
+			for _, ev in view.story or {} do
+				if ev.id == pendingId then
+					H.autoStoryShown = ev.id
+					local ok, err = pcall(playStory, ev)
+					if not ok then warn("[Game] 출항 전 지역 이벤트 오류:", err) end
+					break
+				end
+			end
+		end
+		if H.playQuestScenes then H.playQuestScenes({}, true) end
+		while player.Parent and (playerGui:FindFirstChild("StoryScene", true) or playerGui:FindFirstChild("WonderScene", true) or H.sceneBusy) do
+			task.wait(0.15)
+		end
+	end
+	finishRegionEvents()
+	if not player.Parent then
+		sailingNow = false
+		return
+	end
 	local from = view.player.portName
 	local fromId = view.player.portId
 	local departureDay = view.player.day
@@ -3247,19 +3286,8 @@ local function sail(portId)
 	end
 	-- 처음 가는 항구는 자동 항해를 쓸 수 없다 (Sail 호출 전에 확인: 도착하면 방문 기록이 생긴다)
 	local firstVisit = not (view.visitedPorts and view.visitedPorts[portId])
-	sceneHold = true
-	audioLock = true
-	-- 항해 중에도 목적지 해역의 승인된 지역 테마곡을 들려준다.
-	-- 별도 해역곡을 받을 수 없을 때만 기존 항해곡을 유지한다.
-	local destination = PortData.Ports[portId]
-	if destination then
-		Sfx.portMusic(destination, false)
-	else
-		Sfx.music("music_sea")
-	end
-	Sfx.ambient({ "sfx_waves", "sfx_wind" })
-	Sfx.play("sfx_sail")
-	Sfx.play("sfx_sail_fabric", 0.25) -- CC0 돛천 효과음, 미등록 상태에서는 기존 출항음만 재생
+	sceneHold = true -- 서버 갱신 중에도 출발 항구 장면을 유지한다.
+	departureEventPhase = true -- Sail 응답이 만든 지역 이벤트는 바다 장면 전에 보여 준다.
 	local result = call("Sail", { portId = portId })
 	-- 서버 속도 제한("너무 빨라요")에 걸리면 출항이 조용히 사라지던 문제: 잠깐 뒤 몇 번 다시 시도한다
 	for _ = 1, 5 do
@@ -3272,6 +3300,29 @@ local function sail(portId)
 	end
 	workspace:SetAttribute("DevSailResult", tostring(result and result.ok) .. ":" .. tostring(result and result.message))
 	if result and result.ok then
+		-- 서버가 새 항구·시대 사건을 큐에 넣어도 먼저 모두 끝내고 출항한다.
+		finishRegionEvents()
+		if result.scene then
+			H.playWonderScene(result.scene)
+			local playerGui = player:WaitForChild("PlayerGui")
+			while player.Parent and (H.sceneBusy or playerGui:FindFirstChild("WonderScene", true)) do
+				task.wait(0.15)
+			end
+		end
+		departureEventPhase = false
+		audioLock = true
+		-- 지역 이벤트를 닫은 뒤에만 출항 음악·닻줄 연출을 시작한다.
+		local destination = PortData.Ports[portId]
+		if destination then
+			Sfx.portMusic(destination, false)
+		else
+			Sfx.music("music_sea")
+		end
+		Sfx.ambient({ "sfx_waves", "sfx_wind" })
+		Sfx.play("sfx_horn")
+		task.delay(0.2, Sfx.play, "sfx_rope_pull", 0.8)
+		Sfx.play("sfx_sail")
+		Sfx.play("sfx_sail_fabric", 0.25)
 		local vk = view and view.voyageEvent and view.voyageEvent.kind
 		if vk == "dolphins" or vk == "whale" then
 			task.delay(4, function()
@@ -3407,9 +3458,7 @@ local function sail(portId)
 	end
 	main.Visible = true
 	menuToggle.Visible = false
-	sceneHold = false
-	sceneKey = nil
-	audioLock = false
+	-- 선택 이벤트·해전 처리가 끝날 때까지 다른 지역 장면은 대기한다.
 	-- 바다에서 크라켄·유령선을 만났다면 도착 뒤 해상전투로 싸운다
 	if view and view.seaBoss then
 		call("ChallengeBoss", { bossId = view.seaBoss, sea = true })
@@ -3420,6 +3469,11 @@ local function sail(portId)
 		vc.submit = function(i) return call("VoyageChoice", { index = i }) end
 		playStory(vc)
 	end
+	departureEventPhase = false
+	sceneHold = false
+	sceneKey = nil
+	audioLock = false
+	sailingNow = false
 	Sfx.play("sfx_bell")
 	-- 정박: 종소리 뒤에 닻이 내려가고 닻줄이 풀린다
 	task.delay(0.7, Sfx.play, "sfx_anchor_lower", 0.85)
@@ -7046,35 +7100,49 @@ do
 		if #lines == 0 then lines = { text } end
 		return lines
 	end
-	function H.playQuestScenes(list)
-		for _, sc in list do
+	function H.playQuestScenes(list, awaitFinished)
+		for _, sc in list or {} do
 			table.insert(pending, sc)
 		end
-		if playing then return end
-		playing = true
-		task.spawn(function()
-			while #pending > 0 do
-				while inField do task.wait(0.5) end
-				local sc = table.remove(pending, 1)
-				local isStart = sc.kind == "start"
-				local isChron = sc.kind == "chronicle"
-				local ok = pcall(playStory, {
-					id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
-					chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
-					npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
-					lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
-					choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
-					submit = function()
-						return { ok = true, message = if isChron then (tostring(sc.summary or "") .. "\n(서재에서 관찰 노트로 논문을 쓸 수 있어요)") elseif isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" }
-					end,
-				})
-				if ok then
-					task.wait(0.6)
-					while player:WaitForChild("PlayerGui"):FindFirstChild("StoryScene", true) do task.wait(0.4) end
+		if not playing and #pending > 0 then
+			playing = true
+			H.questScenesPlaying = true
+			task.spawn(function()
+				while #pending > 0 do
+					-- 출항 전 사건은 완료하고, 바다·전투 중 사건은 뒤로 미룬다.
+					while inField or (sceneHold and not departureEventPhase) or workspace:GetAttribute("VoyageActive")
+						or H.sceneBusy or player.PlayerGui:FindFirstChild("StoryScene", true)
+						or player.PlayerGui:FindFirstChild("WonderScene", true) do
+						task.wait(0.2)
+					end
+					local sc = table.remove(pending, 1)
+					local isStart = sc.kind == "start"
+					local isChron = sc.kind == "chronicle"
+					local ok, err = pcall(playStory, {
+						id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
+						chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
+						npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
+						lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
+						choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
+						submit = function()
+							return { ok = true, message = if isChron then (tostring(sc.summary or "") .. "\n(서재에서 관찰 노트로 논문을 쓸 수 있어요)") elseif isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" }
+						end,
+					})
+					if not ok then warn("[Game] 이야기 재생 오류:", err) end
+					if ok then
+						task.wait(0.6)
+						while player:WaitForChild("PlayerGui"):FindFirstChild("StoryScene", true) do
+							task.wait(0.4)
+						end
+					end
 				end
-			end
-			playing = false
-		end)
+				playing = false
+				H.questScenesPlaying = false
+			end)
+		end
+		if awaitFinished then
+			while playing do task.wait(0.1) end
+		end
 	end
 end
 
@@ -11175,7 +11243,7 @@ end
 			pcall(refreshChip)
 			pcall(refreshGoal)
 			-- 중요 인물이 항구에서 찾아오면 일러스트 연출 장면이 저절로 열린다
-			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
+			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sailingNow and not H.questScenesPlaying and not H.sceneBusy and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
 				for _, ev in view.story or {} do
 					if ev.id == view.autoStory then
 						H.autoStoryShown = ev.id
