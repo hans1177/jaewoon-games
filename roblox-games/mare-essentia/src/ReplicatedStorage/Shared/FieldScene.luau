@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local KnowledgeCards = require(script.Parent:WaitForChild("KnowledgeCards"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
 local Weapons = require(script.Parent:WaitForChild("Weapons"))
 local Specialties = require(script.Parent:WaitForChild("Specialties"))
@@ -784,7 +785,7 @@ function FieldScene.start(opts)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onFinish then
-			local ok, err = pcall(opts.onFinish, result)
+			local ok, err = pcall(opts.onFinish, result, observedCardId)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
 		end
 	end
@@ -799,35 +800,158 @@ function FieldScene.start(opts)
 	completeBtn.Activated:Connect(function()
 		if not finished and found >= nodeCount then finish("clear") end
 	end)
-	-- 발견물: 반짝이는 상자. 가까이 가서 조사한다.
+	-- [지역 도감] 서버가 미발견·시대·연구 선행 조건을 검사한 기존 탐험지 카드만 현장에 출현한다.
+	-- 카드 희귀도·획득 확률은 서버의 원래 Explore 처리에서 결정하고, 현장 연출은 저장하지 않는다.
+	local availableCards = {}
+	for _, id in (opts.observableCards or {}) do
+		if type(id) == "string" and KnowledgeCards.ById[id] then
+			table.insert(availableCards, id)
+		end
+	end
+	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
+	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
+	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
+	local observedCardId = nil
+	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
+	folder:SetAttribute("FieldRareTraceTotal", if rareTrace then 2 else 0)
+	folder:SetAttribute("FieldRareTraceFound", 0)
+
+	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
+	questHint.Name = "FieldQuestHint"
+	questHint.Position = UDim2.fromOffset(12, 173)
+	questHint.Size = UDim2.fromOffset(230, 42)
+	questHint.TextWrapped = true
+	questHint.TextXAlignment = Enum.TextXAlignment.Left
+	if targetCard then
+		questHint.Text = if rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
+			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
+	end
+
+	-- 기존 발견물 수/발견 완료 기준은 그대로 둔다. 첫 발견 지점만 지역 도감 실물/기록으로 연출한다.
 	for i = 1, nodeCount do
 		local pos = ORIGIN + scatter(30)
+		local special = i == 1 and targetCard ~= nil
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon)
-		anchor.Transparency = 0.35
+		anchor.Transparency = if special then 1 else 0.35
 		anchor.CanCollide = false
+		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
-		placeModel(folder, "Naval", "chest", pos, 3.2, false)
+		if special then
+			anchor:SetAttribute("ObservationCardId", targetCard.id)
+			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
+			-- 없는 종을 다른 동물 메시로 위장하지 않고 종 이름과 승인된 도감 원화를 보여 준다.
+			local animalModels = {
+				zoo_elephant = { "elephant", 11 }, zoo_indian_elephant = { "elephant", 11 },
+				am_llama = { "llama", 6 },
+			}
+			local animal = if isWildlife then animalModels[targetCard.id] else nil
+			if animal and AssetIds["Animals/" .. animal[1]] then
+				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+				if placed then
+					placed.Name = "FieldWildlife"
+					placed:SetAttribute("ObservedSpecies", targetCard.id)
+				else
+					-- [지연 로드] 기존 AssetLoader로 로드가 끝난 동일 종의 승인 모델만 배치한다.
+					local assets = ReplicatedStorage:FindFirstChild("MareAssets")
+					local group = assets and assets:FindFirstChild("Animals")
+					if group then
+						table.insert(conns, group.ChildAdded:Connect(function(asset)
+							if asset.Name ~= animal[1] or finished or not anchor.Parent then return end
+							task.defer(function()
+								if finished or not anchor.Parent then return end
+								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+								if readyModel then
+									readyModel.Name = "FieldWildlife"
+									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
+								end
+							end)
+						end))
+					end
+				end
+			end
+			-- [원본 도감] 등록된 카드 원화만 노출한다. 없는 카드에는 확인 불가능한 동물 이미지를 만들지 않는다.
+			local board = Instance.new("BillboardGui")
+			board.Name = "FieldObservation"
+			board.Adornee = anchor
+			board.Size = UDim2.fromOffset(154, 150)
+			board.StudsOffset = Vector3.new(0, 3.5, 0)
+			board.AlwaysOnTop = false
+			board.MaxDistance = 58
+			board.Parent = anchor
+			local artId = AssetIds["CardArt/" .. targetCard.id]
+			if artId then
+				local art = Instance.new("ImageLabel")
+				art.Name = "FieldSpeciesArt"
+				art.Size = UDim2.new(1, 0, 0, 118)
+				art.BackgroundTransparency = 1
+				art.Image = "rbxassetid://" .. tostring(artId)
+				art.ScaleType = Enum.ScaleType.Fit
+				art.Parent = board
+			end
+			local tag = label(board, targetCard.name, 16, Color3.fromRGB(255, 229, 164))
+			tag.Name = "FieldSpeciesName"
+			tag.Position = UDim2.fromOffset(0, if artId then 117 else 45)
+			tag.Size = UDim2.fromOffset(154, 28)
+			tag.TextWrapped = true
+		else
+			placeModel(folder, "Naval", "chest", pos, 3.2, false)
+		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
 		light.Range = 18
 		light.Brightness = 2
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
-		pp.ActionText = "조사"
-		-- [스킬 키 충돌] 기존 회전베기 E와 Roblox 기본 조사 E를 분리한다.
-		pp.KeyboardKeyCode = Enum.KeyCode.T
-		pp.ObjectText = "발견물"
+		pp.ActionText = if special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
+		pp.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 구분
+		pp.ObjectText = if special then targetCard.name else "발견물"
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
+		pp.Enabled = not (special and rareTrace)
 		pp.Parent = anchor
+		if special and rareTrace then
+			-- [희귀 조사 퀘스트] 같은 탐험 안에서 단서 2개를 찾아야 본 관찰이 열린다.
+			-- 이 단계는 기존 발견물 수·소모 일수·보상 확률·저장 키를 바꾸지 않는다.
+			local clues = 0
+			for clueIndex = 1, 2 do
+				local cluePos = ORIGIN + scatter(36)
+				local clue = part(folder, Vector3.new(2.2, 0.35, 2.2), CFrame.new(cluePos + Vector3.new(0, 0.25, 0)),
+					Color3.fromRGB(164, 138, 79), Enum.Material.Slate)
+				clue.Name = "FieldEvidence" .. clueIndex
+				clue.CanCollide = false
+				local cluePrompt = Instance.new("ProximityPrompt")
+				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
+				cluePrompt.ObjectText = targetCard.name
+				cluePrompt.KeyboardKeyCode = Enum.KeyCode.T
+				cluePrompt.HoldDuration = 0.5
+				cluePrompt.MaxActivationDistance = 12
+				cluePrompt.RequiresLineOfSight = false
+				cluePrompt.Parent = clue
+				cluePrompt.Triggered:Connect(function()
+					if finished or not clue.Parent then return end
+					clues += 1
+					folder:SetAttribute("FieldRareTraceFound", clues)
+					clue:Destroy()
+					questHint.Text = string.format("희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
+					if clues >= 2 then
+						pp.Enabled = true
+						say("희귀 단서 확보! 지도에 표시된 " .. targetCard.name .. "을(를) 관찰해.")
+					else
+						say("흔적을 찾았어. 한 곳 더 확인해.")
+					end
+				end)
+			end
+		end
 		pp.Triggered:Connect(function()
-			if finished then
-				return
+			if finished or not anchor.Parent then return end
+			if special then
+				observedCardId = targetCard.id
+				questHint.Text = "현장 기록 완료: " .. targetCard.name
 			end
 			found += 1
 			anchor:Destroy()
-			say(string.format("발견물을 조사했다 (%d/%d)", found, nodeCount))
+			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
 				completeBtn.Visible = true
