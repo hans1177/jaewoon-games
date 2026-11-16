@@ -3810,7 +3810,14 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.ok(steps.length>=180);
+  assert.equal(steps.length,220);
+  const tabs=['harbor','trade','route','map','yard','quest','explore','battle','codex','tech','status','crew'];
+  for(const tab of tabs){
+    assert.ok(steps.some(step=>step.code?.includes('FACILITY_TAB_RUNTIME_PASS:'+tab)));
+  }
+  for(const marker of ['INTRO_RUNTIME_STATE_PASS','CARD_BOOK_RUNTIME_PASS','CARD_BOARD_RUNTIME_PASS','NAVAL_BATTLE_RUNTIME_PASS']){
+    assert.ok(steps.some(step=>step.code?.includes(marker)));
+  }
   assert.ok(steps.some(step=>step.code?.includes('CARD_DECK_RUNTIME_PASS')));
   assert.ok(steps.some(step=>step.code?.includes('CARD_PRACTICE_RUNTIME_PASS')));
   assert.ok(steps.some(step=>step.code?.includes('VoyageScene')));

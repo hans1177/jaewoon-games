@@ -131,6 +131,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [시작 진행] 화면 전환만으로 성공 처리하지 않고 게임 상태를 확인한다.\nlocal r=game:GetService('ReplicatedStorage'):WaitForChild('GameAction')\nlocal state=r:InvokeServer('State',{})\nassert(state and state.ok and state.view and state.view.player and state.view.player.portId,'INTRO_STATE_PORT_MISSING')\nassert(state.view.captain and state.view.captain.step=='done','INTRO_STATE_NOT_COMPLETE')\nreturn 'INTRO_RUNTIME_STATE_PASS'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
@@ -141,6 +146,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:harbor')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:harbor')\nlocal button=assert(gui:FindFirstChild('FacilityTab_harbor',true),'FACILITY_TAB_MISSING:harbor')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:harbor')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:harbor')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:harbor')\nreturn 'FACILITY_TAB_RUNTIME_PASS:harbor'"
  },
  {
   "type": "capture",
@@ -161,6 +171,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:trade')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:trade')\nlocal button=assert(gui:FindFirstChild('FacilityTab_trade',true),'FACILITY_TAB_MISSING:trade')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:trade')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:trade')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:trade')\nreturn 'FACILITY_TAB_RUNTIME_PASS:trade'"
+ },
+ {
   "type": "capture",
   "name": "tab_trade"
  },
@@ -177,6 +192,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:route')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:route')\nlocal button=assert(gui:FindFirstChild('FacilityTab_route',true),'FACILITY_TAB_MISSING:route')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:route')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:route')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:route')\nreturn 'FACILITY_TAB_RUNTIME_PASS:route'"
  },
  {
   "type": "capture",
@@ -197,6 +217,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:map')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:map')\nlocal button=assert(gui:FindFirstChild('FacilityTab_map',true),'FACILITY_TAB_MISSING:map')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:map')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:map')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:map')\nreturn 'FACILITY_TAB_RUNTIME_PASS:map'"
+ },
+ {
   "type": "capture",
   "name": "tab_map"
  },
@@ -213,6 +238,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:yard')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:yard')\nlocal button=assert(gui:FindFirstChild('FacilityTab_yard',true),'FACILITY_TAB_MISSING:yard')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:yard')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:yard')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:yard')\nreturn 'FACILITY_TAB_RUNTIME_PASS:yard'"
  },
  {
   "type": "capture",
@@ -233,6 +263,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:quest')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:quest')\nlocal button=assert(gui:FindFirstChild('FacilityTab_quest',true),'FACILITY_TAB_MISSING:quest')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:quest')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:quest')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:quest')\nreturn 'FACILITY_TAB_RUNTIME_PASS:quest'"
+ },
+ {
   "type": "capture",
   "name": "tab_quest"
  },
@@ -251,6 +286,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:explore')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:explore')\nlocal button=assert(gui:FindFirstChild('FacilityTab_explore',true),'FACILITY_TAB_MISSING:explore')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:explore')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:explore')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:explore')\nreturn 'FACILITY_TAB_RUNTIME_PASS:explore'"
+ },
+ {
   "type": "capture",
   "name": "tab_explore"
  },
@@ -267,6 +307,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:battle')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:battle')\nlocal button=assert(gui:FindFirstChild('FacilityTab_battle',true),'FACILITY_TAB_MISSING:battle')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:battle')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:battle')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:battle')\nreturn 'FACILITY_TAB_RUNTIME_PASS:battle'"
  },
  {
   "type": "capture",
@@ -341,6 +386,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:codex')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:codex')\nlocal button=assert(gui:FindFirstChild('FacilityTab_codex',true),'FACILITY_TAB_MISSING:codex')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:codex')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:codex')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:codex')\nreturn 'FACILITY_TAB_RUNTIME_PASS:codex'"
+ },
+ {
   "type": "capture",
   "name": "tab_codex"
  },
@@ -357,6 +407,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:tech')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:tech')\nlocal button=assert(gui:FindFirstChild('FacilityTab_tech',true),'FACILITY_TAB_MISSING:tech')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:tech')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:tech')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:tech')\nreturn 'FACILITY_TAB_RUNTIME_PASS:tech'"
  },
  {
   "type": "capture",
@@ -377,6 +432,11 @@
   "ms": 2500
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:status')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:status')\nlocal button=assert(gui:FindFirstChild('FacilityTab_status',true),'FACILITY_TAB_MISSING:status')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:status')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:status')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:status')\nreturn 'FACILITY_TAB_RUNTIME_PASS:status'"
+ },
+ {
   "type": "capture",
   "name": "tab_status"
  },
@@ -393,6 +453,11 @@
  {
   "type": "wait",
   "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [게임 탭] 화면 캡처 전에 선택한 시설 탭의 실제 표시·선택 상태를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'FACILITY_GUI_MISSING:crew')\nassert(gui.Enabled,'FACILITY_GUI_DISABLED:crew')\nlocal button=assert(gui:FindFirstChild('FacilityTab_crew',true),'FACILITY_TAB_MISSING:crew')\nassert(button:IsA('TextButton') and button.Visible,'FACILITY_TAB_NOT_VISIBLE:crew')\nassert(button:GetAttribute('SelectedTab')==true,'FACILITY_TAB_NOT_SELECTED:crew')\nassert(button:FindFirstChild('ActiveTabRule')~=nil,'FACILITY_TAB_HIGHLIGHT_MISSING:crew')\nreturn 'FACILITY_TAB_RUNTIME_PASS:crew'"
  },
  {
   "type": "capture",
@@ -507,6 +572,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [카드 보유] 카드 창뿐 아니라 덱·카드북의 실제 상태를 확인한다.\nlocal r=game:GetService('ReplicatedStorage'):WaitForChild('GameAction')\nlocal state=r:InvokeServer('State',{})\nlocal view=assert(state and state.ok and state.view,'CARD_BOOK_STATE_RESPONSE_MISSING')\nassert(type(view.deck)=='table' and type(view.deck.cards)=='table','CARD_BOOK_DECK_MISSING')\nassert(type(view.cardbook)=='table','CARD_BOOK_OWNERSHIP_MISSING')\nreturn 'CARD_BOOK_RUNTIME_PASS'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Practice') return 'DEV Practice'"
  },
  {
@@ -521,6 +591,11 @@
  {
   "type": "capture",
   "name": "cb1"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [카드 실전] 카드가 표시된 접현 대전의 실제 보드·손패를 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal board=assert(pg:FindFirstChild('BoardingGui'),'CARD_BOARDING_SCREEN_MISSING')\nassert(board.Enabled,'CARD_BOARDING_SCREEN_DISABLED')\nassert(board:FindFirstChild('NavalCardBattleBoard',true),'CARD_BOARD_ART_MISSING')\nassert(board:FindFirstChild('NavalCardHandTray',true),'CARD_HAND_TRAY_MISSING')\nreturn 'CARD_BOARD_RUNTIME_PASS'"
  },
  {
   "type": "wait",
@@ -589,6 +664,11 @@
  {
   "type": "capture",
   "name": "b1_start"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [함대전 실증] 사진만 찍는 대신 전투 장면·조작 UI가 실제 생성됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal battleGui=assert(pg:FindFirstChild('BattleGui'),'NAVAL_BATTLE_GUI_MISSING')\nassert(battleGui.Enabled,'NAVAL_BATTLE_GUI_DISABLED')\nlocal scene=assert(workspace:FindFirstChild('BattleScene'),'NAVAL_BATTLE_SCENE_MISSING')\nassert(#scene:GetDescendants()>0,'NAVAL_BATTLE_SCENE_EMPTY')\nreturn 'NAVAL_BATTLE_RUNTIME_PASS'"
  },
  {
   "type": "wait",
