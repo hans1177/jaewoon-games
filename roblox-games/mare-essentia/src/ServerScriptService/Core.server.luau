@@ -19,6 +19,7 @@ local D = {
 	Skills = require(Shared:WaitForChild("Skills")),
 	Cards = require(Shared:WaitForChild("KnowledgeCards")),
 	Sites = require(Shared:WaitForChild("Sites")),
+	Weapons = require(Shared:WaitForChild("Weapons")),
 	Scholars = require(Shared:WaitForChild("Scholars")),
 	Quests = require(Shared:WaitForChild("Quests")),
 	TradeMath = require(Shared:WaitForChild("TradeMath")),
@@ -423,7 +424,10 @@ local function onInvoke(player, action, payload)
 		return reply(state, false, "오류가 발생했어요")
 	end
 	if success then
-		session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
+		-- [숙련 입장] 임시 입장 확인은 영구 상태를 바꾸지 않아 저장하지 않는다.
+		if action ~= "FieldPracticeBegin" then
+			session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
+		end
 		if action == "IntroPortrait" then task.defer(applyCaptainAppearance, player, player.Character) end
 		-- 탐험·전투·연구 등으로 퀘스트 조건을 채우면 바로 알려 준다
 		local extra = {}

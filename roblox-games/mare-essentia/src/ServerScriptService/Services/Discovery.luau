@@ -4,6 +4,8 @@
 
 return function(D, S)
 	local handlers = {}
+	-- [탐험 숙련] 각 게임 상태별로 진행 중인 한 번의 탐험만 임시로 추적한다.
+	local fieldRuns = setmetatable({}, { __mode = "k" })
 
 	local RARITY_XP = { Common = 15, Uncommon = 25, Rare = 45, Epic = 80, Legendary = 150 }
 
@@ -153,6 +155,42 @@ return function(D, S)
 			end
 		end
 		return nil
+	end
+
+	-- [탐험 시작] 기존 서버 검증 조건과 동일한 탐험지만 숙련 기록을 시작한다.
+	function handlers.FieldPracticeBegin(state, p)
+		local site = type(p.siteId) == "string" and findSite(p.siteId)
+		if not site or site.portId ~= state.portId then return false, "잘못된 탐험지예요" end
+		local blocked = siteBlockReason(state, site)
+		if blocked then return false, blocked end
+		fieldRuns[state] = { siteId = site.id, started = os.clock() }
+		return true, ""
+	end
+
+	-- [귀환 숙련] 탐험 타격은 클라이언트 전용이므로 서버에서 명중을 직접 입증할 수 없다.
+	-- 유효 무기·정수·탐험 경과시간·중복 정산 상한을 강제하고 기존 피해/보상 판정엔 연결하지 않는다.
+	function handlers.FieldPracticeCommit(state, p)
+		local run = fieldRuns[state]
+		fieldRuns[state] = nil -- 중복 정산·재전송 차단
+		if not run or type(p.siteId) ~= "string" or p.siteId ~= run.siteId
+			or type(p.hits) ~= "table" then return false, "숙련 정산 요청이 올바르지 않아요" end
+		local limit = math.min(120, math.floor(math.max(0, os.clock() - run.started) / 0.2) + 1)
+		local total, count = 0, 0
+		for id, earned in p.hits do
+			count += 1
+			if count > #D.Weapons.List + #D.Weapons.Regional
+				or type(id) ~= "string" or #id > 40 or D.Weapons.get(id).id ~= id
+				or type(earned) ~= "number" or earned ~= earned or earned < 1
+				or earned > limit or earned ~= math.floor(earned) then
+				return false, "무기 숙련 경험치가 유효하지 않아요"
+			end
+			total += earned
+			if total > limit then return false, "탐험 숙련 상한을 초과했어요" end
+		end
+		for id, earned in p.hits do
+			state.weaponPractice[id] = math.min(10000, (state.weaponPractice[id] or 0) + earned)
+		end
+		return true, ""
 	end
 
 	function handlers.Explore(state, p, ctx)

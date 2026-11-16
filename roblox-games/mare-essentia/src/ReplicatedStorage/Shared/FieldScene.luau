@@ -394,6 +394,19 @@ function FieldScene.start(opts)
 	folder.Name = "FieldScene"
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
+	-- [무기별 영구 숙련] 서버 저장본에서 단계를 복원하고 이번 탐험에서 획득한 경험치만 별도 정산한다.
+	local weaponPractice, earnedPractice = {}, {}
+	local function practiceRank(xp)
+		return if xp >= 100 then 5 elseif xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1
+	end
+	if type(opts.weaponPractice) == "table" then
+		for id, xp in opts.weaponPractice do
+			if type(id) == "string" and Weapons.get(id).id == id and type(xp) == "number" and xp == xp then
+				local safeXp = math.floor(math.clamp(xp, 0, 10000))
+				weaponPractice[id] = { xp = safeXp, rank = practiceRank(safeXp) }
+			end
+		end
+	end
 	local biome = lookFor(opts.name or "", opts.portId)
 	local visualMobile = game:GetService("UserInputService").TouchEnabled
 	folder:SetAttribute("FieldRegion", biome.region or "generic")
@@ -851,11 +864,20 @@ function FieldScene.start(opts)
 		end)
 	end
 
+	-- [5단 마무리] 실제 게임 속도·피해 판정은 그대로 두고 R15 모션과 카메라만 일시 연출한다.
+	local slowMotionUntil = 0
+	local killcamToken = 0
+	local killcamCamera = nil
+	local killcamFov = 70
 	local function finish(result)
 		if finished then
 			return
 		end
 		finished = true
+		killcamToken += 1
+		slowMotionUntil = 0
+		pcall(function() RunService:UnbindFromRenderStep("FieldMasteryKillcam") end)
+		if killcamCamera and killcamCamera.Parent then killcamCamera.FieldOfView = killcamFov end
 		workspace:SetAttribute("FieldExitReason", result)
 		if RunService:IsStudio() then warn("[MareEssentia] 탐험 종료 이유", result) end
 		-- [복구] 항구 복귀 시 이전 카메라·줌 제한을 남기지 않는다.
@@ -881,7 +903,7 @@ function FieldScene.start(opts)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onFinish then
-			local ok, err = pcall(opts.onFinish, result, observedCardId)
+			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
 		end
 	end
@@ -1358,9 +1380,7 @@ function FieldScene.start(opts)
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
 
-	-- [무기 숙련] 탐험 중 실전 명중으로만 해당 무기의 숙련 경험치가 오른다.
-	-- 기존 저장·대미지·드롭 표는 변경하지 않고 무기별 연타 모션만 확률적으로 해금한다.
-	local weaponPractice = {}
+	-- [무기 숙련] 명중 경험치는 전투 밸런스가 아니라 시각 연타 단계에만 적용한다.
 	local chainMotionSerial = 0 -- 다음 공격/무기 교체 때 남은 연출을 취소한다.
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
 	local weaponRankLabel = label(gui, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
@@ -1371,9 +1391,10 @@ function FieldScene.start(opts)
 	weaponRankLabel.Font = Enum.Font.GothamBlack
 	weaponRankLabel.TextStrokeTransparency = 0.16
 	weaponRankLabel.ZIndex = attackBtn.ZIndex + 3
-	weaponRankLabel.Text = "무기 숙련 1단"
-	attackBtn:SetAttribute("WeaponMasteryRank", 1)
-	attackBtn:SetAttribute("WeaponMasteryExperience", 0)
+	local initialPractice = weaponPractice[wpn.id]
+	weaponRankLabel.Text = string.format("무기 숙련 %d단", initialPractice and initialPractice.rank or 1)
+	attackBtn:SetAttribute("WeaponMasteryRank", initialPractice and initialPractice.rank or 1)
+	attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
 	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
 	local reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
 	if attackIcon then
@@ -1583,8 +1604,11 @@ function FieldScene.start(opts)
 			local rootRot = nil
 			do
 				local nowc = os.clock()
+				local elapsed = math.max(0, nowc - hitStopLast)
 				if nowc < hitStopUntil then
-					swingT0 += nowc - hitStopLast -- 멈춘 시간만큼 휘두르기 시작을 늦춘다
+					swingT0 += elapsed -- 기존 타격 정지 유지
+				elseif nowc < slowMotionUntil then
+					swingT0 += elapsed * 0.58 -- [5단] 캐릭터 모션만 약 0.42배속, 적 AI와 타격 시계는 그대로
 				end
 				hitStopLast = nowc
 			end
@@ -1974,6 +1998,67 @@ function FieldScene.start(opts)
 			afterimage(player.Character, Color3.fromRGB(255, 214, 120), 3, 0.05)
 		end
 	end
+	-- [3~5단 숙련 시네마] 3단 충격파/시점 펀치, 4단 잔상/감속, 5단 마무리 킬캠.
+	-- 카메라와 주인공 모션만 처리한다. 실제 적 AI·대미지·드롭·쿨타임 시계는 그대로 둔다.
+	local function masteryCinema(hrp: BasePart, stage: number, defeatedAt: Vector3?)
+		if finished or not hrp.Parent or stage < 3 then return end
+		killcamToken += 1
+		local token = killcamToken
+		local now = os.clock()
+		if stage >= 4 then slowMotionUntil = now + (if stage == 5 then 0.56 else 0.24) end
+		hitStopUntil = math.max(hitStopUntil, now + (if stage == 5 then 0.11 else 0.06))
+		local finishingBlow = stage == 5 and typeof(defeatedAt) == "Vector3"
+			and (defeatedAt - hrp.Position).Magnitude <= 40
+		if stage == 5 then
+			showCombo(if finishingBlow then "5단 연타 · 처치!" else "5단 연타 · 마무리!")
+		elseif stage == 4 then
+			showCombo("4단 연타 · 섬광!")
+		else
+			showCombo("3단 연타 · 충격!")
+		end
+		screenFlash(Color3.fromRGB(255, 237, 184),
+			if visualMobile then (if stage == 5 then 0.32 else 0.14) else (if stage == 5 then 0.45 else 0.24))
+		shakeUntil, shakeAmp = now + (if stage == 5 then 0.25 else 0.12),
+			(if visualMobile then 0.22 else 0.43) * (if stage == 5 then 1.6 else 1)
+		shockRing(hrp.Position - Vector3.new(0, 2.5, 0),
+			if stage == 5 then 15 else 8 + stage, Color3.fromRGB(255, 205, 117), 0.34)
+		if stage >= 4 and not visualMobile then
+			afterimage(player.Character, Color3.fromRGB(255, 219, 166), if stage == 5 then 3 else 2, 0.09)
+		end
+		local camera = workspace.CurrentCamera
+		if not camera then return end
+		pcall(function() RunService:UnbindFromRenderStep("FieldMasteryKillcam") end)
+		if killcamCamera and killcamCamera.Parent then
+			killcamCamera.FieldOfView = killcamFov -- 연속 3→4→5단 확대가 누적되지 않도록 원래 화각부터 시작
+		end
+		killcamCamera = camera
+		killcamFov = camera.FieldOfView
+		local duration = if stage == 3 then 0.18 elseif stage == 4 then 0.21 elseif visualMobile then 0.46 else 0.62
+		local zoom = (if visualMobile then 3 else 5) + (if stage == 5 then (if visualMobile then 4 else 7) elseif stage == 4 then 2 else 0)
+		RunService:BindToRenderStep("FieldMasteryKillcam", Enum.RenderPriority.Camera.Value + 2, function()
+			if finished or token ~= killcamToken or workspace.CurrentCamera ~= camera then
+				RunService:UnbindFromRenderStep("FieldMasteryKillcam")
+				return
+			end
+			local progress = math.clamp((os.clock() - now) / duration, 0, 1)
+			if progress >= 1 then
+				camera.FieldOfView = killcamFov
+				RunService:UnbindFromRenderStep("FieldMasteryKillcam")
+				return
+			end
+			local pulse = math.sin(progress * math.pi)
+			camera.FieldOfView = killcamFov - zoom * pulse
+			if finishingBlow then
+				local cameraPosition = camera.CFrame.Position
+				local focus = defeatedAt + Vector3.new(0, 2, 0)
+				if (focus - cameraPosition).Magnitude > 1 then
+					local aimed = CFrame.lookAt(cameraPosition, focus)
+					camera.CFrame = camera.CFrame:Lerp(aimed, pulse * (if visualMobile then 0.12 else 0.2))
+				end
+			end
+		end)
+	end
+
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
@@ -2448,6 +2533,7 @@ function FieldScene.start(opts)
 				return
 			end
 			local hits = 0
+			local defeatedAt = nil -- [킬캠] 기존 타격으로 쓰러진 적 위치만 읽는다.
 			-- 무기에 따라 기본 공격의 사거리·각도가 다르다. 석궁·총은 가장 가까운 한 명을 쏜다(총알 궤적 표시).
 			local rangeR = if moveId == "rush" then wpn.range else mv.range
 			local arcR = if moveId == "rush" and wpn.ranged then 36 else mv.arc
@@ -2471,6 +2557,7 @@ function FieldScene.start(opts)
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
 					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt")
+					if e.ac.dead then defeatedAt = e.root.Position end
 					hits += 1
 					if rangedShot then
 						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
@@ -2517,9 +2604,9 @@ function FieldScene.start(opts)
 					weaponPractice[wpn.id] = practice
 				end
 				-- [무기별 경험치] 명중한 공격당 1 경험치. 적 수로 중복 계상하지 않는다.
-				practice.xp += 1
-				local rank = if practice.xp >= 100 then 5 elseif practice.xp >= 55 then 4
-					elseif practice.xp >= 26 then 3 elseif practice.xp >= 8 then 2 else 1
+				practice.xp = math.min(10000, practice.xp + 1)
+				earnedPractice[wpn.id] = (earnedPractice[wpn.id] or 0) + 1
+				local rank = practiceRank(practice.xp)
 				local promoted = rank > practice.rank
 				practice.rank = rank
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
@@ -2542,7 +2629,8 @@ function FieldScene.start(opts)
 							if finished or not hrp.Parent or wpn.id ~= activeWeapon or chainMotionSerial ~= activeSerial then return end
 							-- 실전 연타는 1회 명중 이후 R15 무기 프로필의 다른 자세를 순차 재생한다.
 							-- 추가 공격 판정·대미지·드롭·쿨타임은 발생시키지 않는다.
-							startSwing("slash", 0.32, stage)
+							startSwing("slash", if stage == 5 then 0.66 else 0.32, stage)
+							if stage >= 3 then masteryCinema(hrp, stage, defeatedAt) end
 							if wpn.ranged then
 								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 214, 144), Color3.fromRGB(255, 247, 211), 4 + stage, 6)
 							else

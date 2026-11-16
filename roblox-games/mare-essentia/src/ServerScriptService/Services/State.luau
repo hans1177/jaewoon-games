@@ -37,6 +37,7 @@ return function(D)
 			fleet = {},
 			rep = {},
 			gear = { owned = {}, equipped = {} },
+			weaponPractice = {}, -- [무기 숙련] 기존 저장소에 무기 ID별 누적 경험치만 기록
 			storySeen = {},
 			talked = {},
 			cargo = {},
@@ -872,6 +873,15 @@ return function(D)
 				s.captain.portrait = pt
 			end
 		end
+		-- [무기 숙련 복원] 구버전 저장에는 이 항목이 없으므로 빈 표를 그대로 사용한다.
+		if type(saved.weaponPractice) == "table" then
+			for id, xp in saved.weaponPractice do
+				if type(id) == "string" and #id <= 40 and D.Weapons.get(id).id == id
+					and type(xp) == "number" and xp == xp and xp >= 0 and xp < math.huge then
+					s.weaponPractice[id] = math.floor(math.clamp(xp, 0, 10000))
+				end
+			end
+		end
 		-- 예전 저장은 시작 안내를 이미 마친 것으로 본다
 		if type(saved.intro) == "table" then
 			s.intro = { name = saved.intro.name == true, companion = saved.intro.companion == true, portrait = saved.intro.portrait == true }
@@ -951,6 +961,7 @@ return function(D)
 			fleet = state.fleet,
 			rep = state.rep,
 			gear = state.gear,
+			weaponPractice = state.weaponPractice, -- 기존 MareEssentia_v2 저장 항목 확장
 			storySeen = state.storySeen,
 			story = state.story,
 			collected = state.collected,
