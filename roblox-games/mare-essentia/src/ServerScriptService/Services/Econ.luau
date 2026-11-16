@@ -260,6 +260,11 @@ return function(D, S)
 			if ok and conflict then
 				local latest = E.restoreWorld(conflict)
 				if latest then
+					-- [서버 간 경제] 다른 서버의 새 판본이 먼저 저장되어도
+					-- 이 서버에서 이미 경과한 경제 일수를 버리지 않고 최신 판본에서 재계산한다.
+					-- 최대 45일만 반영해 기존 CPU·저장 예산 상한을 보존한다.
+					local daysToRebase = math.clamp(w.day - latest.day, 0, MAX_CATCHUP)
+					for _ = 1, daysToRebase do E.step(latest) end
 					world, worldRevision = latest, conflict.revision
 					local replay = pendingOps
 					pendingOps = {}
@@ -273,8 +278,9 @@ return function(D, S)
 					lastRead = now
 				end
 			end
-			-- 통신 실패·경합 시 더 자주 재시도하지 않아 Roblox 저장 요청 예산을 보호한다.
-			lastWrite = now
+			-- 저장 요청 제한은 유지한다. 경합 때는 2분 후 다시 시도해
+			-- 활동 중인 여러 서버가 5분씩 계속 기회를 놓치는 일을 줄인다.
+			lastWrite = if conflict then now - WRITE_SECONDS + PULL_SECONDS else now
 			return false
 		end
 		if not worldDirty and now - lastRead >= PULL_SECONDS then
