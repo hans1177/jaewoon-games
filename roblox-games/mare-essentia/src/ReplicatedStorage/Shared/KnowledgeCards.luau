@@ -12,13 +12,16 @@ export type Card = {
 	description: string,
 	source: string, -- 발견 방법 (표시용)
 	fromYear: number?, -- 실제 등장 시기 이전 연구/발견 방지(명시된 카드만)
-	research: { found: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
+	research: { found: { string }?, reported: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
 	visitPort: string?, -- 단순 방문으로 등록되는 카드만 명시. 기존 지점의 드롭률은 바꾸지 않는다.
 	meta: {
 		kind: string?, -- 오인 분류 방지: 신규/애매한 개체는 명시 종류가 기존 이름 유추보다 우선한다.
 		subkind: string?, -- 소재 세부 종류. 없는 기존 카드는 정규 분류에서 추론.
 		discipline: string?, -- 신규 카드의 주학문(51개 활성 중 하나). 없으면 기존 분야 자동 분류.
-		entityType: string?, -- 일반 개념(class) / 실존 장소(place) / 학문 과정(process) / 미확인 전승(legend)
+		entityType: string?, -- 실물·문헌·무형 지식(관습·제도 포함)의 존재 형태
+		era: string?, -- 카드가 나타내는 역사 시대. 발견 가능 연도(fromYear)와 분리.
+		region: string?, -- 대표 항구 id(원본 Ports). 여러 지역 연결은 relations로 확장.
+		relatedDisciplines: { string }?, -- 실제 활성 학문의 교차 연결(주학문 보상 중복 없음).
 		tags: { string }?, -- 여러 관점에서 찾는 태그(단일 분류와 독립).
 		aliases: { string }?, -- 중복 카드 대신 다른 표기 이름으로 검색.
 		wikidata: string?, -- 검증된 외부 개체 식별자만 기록(CC0 사실 데이터).
@@ -44,6 +47,23 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 end
 
 local Rows: { { any } } = {
+	-- [무형 지식 5계열] 항구 현장 발견 → 학자 보고 → 문헌 조사 → 재보고 → 비교 연구.
+	-- 기존 발견 보상·확률·저장키에 손대지 않고 기존 방문/연구 루프에서 단계별 획득한다.
+	{ "lang_port_interview", "항구 상인의 현지어", "Language", "Common", "안트베르펜 상인의 인사말과 거래 용어를 듣고 언어가 물품과 사람에 따라 달라짐을 기록한다.", "현지인과 항구 교류", 5, 12, nil, nil, "antwerp", { kind = "language", discipline = "linguistics", entityType = "intangible", era = "16~18세기", region = "antwerp", relatedDisciplines = { "commerce", "philology" }, relations = { { type = "relatedTo", target = "lang_hanse_trade" }, { type = "locatedAt", target = "port:antwerp" } }, tags = { "언어", "항구", "대화" } } },
+	{ "lang_manuscript_reading", "항구 문헌 해독", "Language", "Uncommon", "상인들의 거래 기록과 라틴어 문서를 대조해 단어 뜻과 문장 구조를 해독한다.", "도서관 문헌 해독", 15, 45, nil, { found = { "lang_port_interview" }, reported = { "lang_port_interview" } }, "antwerp", { kind = "language", discipline = "philology", entityType = "work", era = "16~18세기", region = "antwerp", relatedDisciplines = { "linguistics", "history" }, relations = { { type = "studies", target = "lang_latin" }, { type = "studies", target = "lang_port_interview" } }, tags = { "문자", "문헌", "해독" } } },
+	{ "lang_translation_method", "다국어 번역 연구", "Language", "Rare", "현지 상업어와 기록 언어를 나란히 비교하여 뜻이 바뀌는 표현과 번역 원칙을 정리한다.", "번역 비교 연구", 40, 120, nil, { found = { "lang_manuscript_reading" }, reported = { "lang_manuscript_reading" } }, "antwerp", { kind = "language", discipline = "philology", entityType = "process", era = "16~18세기", region = "antwerp", relatedDisciplines = { "linguistics", "commerce" }, relations = { { type = "studies", target = "lang_manuscript_reading" }, { type = "relatedTo", target = "lang_translation" } }, tags = { "번역", "언어비교", "문헌학" } } },
+	{ "faith_rite_observation", "성당 의례 관찰", "Religion", "Common", "베네치아의 성당에서 행해지는 예식과 공동체의 역할을 관찰하고 기록한다.", "종교 건물·의례 관찰", 5, 12, nil, nil, "venice", { kind = "religion", discipline = "religious_studies", entityType = "practice", era = "16~18세기", region = "venice", relatedDisciplines = { "architecture", "history" }, relations = { { type = "associatedWith", target = "arch_cathedral" }, { type = "locatedAt", target = "port:venice" } }, tags = { "의례", "종교", "예배" } } },
+	{ "faith_scripture_study", "의례 문헌 조사", "Religion", "Uncommon", "의례 관찰 내용을 전례 문헌의 기록과 대조하여 구전과 문서의 차이를 살핀다.", "경전·전례 문헌 조사", 15, 45, nil, { found = { "faith_rite_observation" }, reported = { "faith_rite_observation" } }, "venice", { kind = "religion", discipline = "religious_studies", entityType = "work", era = "16~18세기", region = "venice", relatedDisciplines = { "philology", "history" }, relations = { { type = "studies", target = "faith_rite_observation" }, { type = "relatedTo", target = "relic_prayer_beads" } }, tags = { "경전", "문헌", "종교학" } } },
+	{ "faith_comparative_study", "신앙 비교 연구", "Religion", "Rare", "지역마다 다른 신앙의 의례·기록·공동체 기능을 비교하고 차이를 존중하며 해석한다.", "종교학 비교 연구", 40, 120, nil, { found = { "faith_scripture_study" }, reported = { "faith_scripture_study" } }, "venice", { kind = "religion", discipline = "religious_studies", entityType = "process", era = "16~18세기", region = "venice", relatedDisciplines = { "anthropology", "mythology", "history" }, relations = { { type = "studies", target = "faith_scripture_study" }, { type = "associatedWith", target = "arch_cathedral" } }, tags = { "비교종교", "신앙", "문화" } } },
+	{ "pol_assembly_observation", "의회와 정치 사건", "Politics", "Common", "런던에서 국가 의사결정과 의회·왕실 사이의 정치 사건을 관찰해 이해한다.", "역사 사건·의회 관찰", 5, 12, nil, nil, "london", { kind = "politics", discipline = "political_science", entityType = "institution", era = "16~18세기", region = "london", relatedDisciplines = { "history", "law" }, relations = { { type = "associatedWith", target = "arch_town_hall" }, { type = "locatedAt", target = "port:london" } }, tags = { "정치", "의회", "왕권" } } },
+	{ "pol_institution_records", "국가 제도 조사", "Politics", "Uncommon", "회의 기록과 왕실 문서를 비교하여 관직·의회·행정 권한의 차이를 정리한다.", "국가·의회 제도 조사", 15, 45, nil, { found = { "pol_assembly_observation" }, reported = { "pol_assembly_observation" } }, "london", { kind = "politics", discipline = "political_science", entityType = "work", era = "16~18세기", region = "london", relatedDisciplines = { "law", "historiography" }, relations = { { type = "studies", target = "pol_assembly_observation" }, { type = "associatedWith", target = "relic_royal_charter" } }, tags = { "제도", "행정", "의회" } } },
+	{ "pol_political_thought", "정치사상 비교 연구", "Politics", "Rare", "권력의 정당성, 대표와 통치 원칙을 국가 제도 및 역사 사례에 비추어 비교 연구한다.", "정치사상 연구", 40, 120, nil, { found = { "pol_institution_records" }, reported = { "pol_institution_records" } }, "london", { kind = "politics", discipline = "political_science", entityType = "process", era = "16~18세기", region = "london", relatedDisciplines = { "philosophy", "ethics", "law" }, relations = { { type = "studies", target = "pol_institution_records" }, { type = "relatedTo", target = "phi_ethics" } }, tags = { "정치철학", "제도 비교", "역사" } } },
+	{ "law_treaty_discovery", "토르데시야스 조약 기록", "Law", "Common", "1494년 체결된 토르데시야스 조약의 경계선 합의를 기록을 통해 알아본다.", "외교 조약 문헌 발견", 5, 12, nil, nil, "lisbon", { kind = "law", discipline = "law", entityType = "work", era = "16~18세기", region = "lisbon", relatedDisciplines = { "history", "geography" }, relations = { { type = "associatedWith", target = "relic_royal_charter" }, { type = "locatedAt", target = "port:lisbon" } }, tags = { "조약", "국제법", "항해" } } },
+	{ "law_code_interpretation", "해상법전 해독", "Law", "Uncommon", "항구 거래·선박 사고에 관한 옛 법전 조항을 읽고 조약 기록과 법적 성격을 구별한다.", "법전 문장 해독", 15, 45, nil, { found = { "law_treaty_discovery" }, reported = { "law_treaty_discovery" } }, "lisbon", { kind = "law", discipline = "law", entityType = "work", era = "16~18세기", region = "lisbon", relatedDisciplines = { "linguistics", "commerce" }, relations = { { type = "studies", target = "law_treaty_discovery" }, { type = "relatedTo", target = "lang_ledger" } }, tags = { "해상법", "법전", "계약" } } },
+	{ "law_comparative_jurisprudence", "국제 해상법 비교 연구", "Law", "Rare", "조약과 법전이 적용되는 범위 및 항구 관습이 충돌하는 사례를 비교하여 법 해석을 연구한다.", "법학·관습법 비교 연구", 40, 120, nil, { found = { "law_code_interpretation" }, reported = { "law_code_interpretation" } }, "lisbon", { kind = "law", discipline = "law", entityType = "process", era = "16~18세기", region = "lisbon", relatedDisciplines = { "political_science", "ethics", "commerce" }, relations = { { type = "studies", target = "law_code_interpretation" }, { type = "studies", target = "law_treaty_discovery" } }, tags = { "법학", "국제법", "관습법" } } },
+	{ "culture_festival_observation", "지역 축제와 관습", "Culture", "Common", "세비야의 공개 축제와 생활 의례를 관찰하고 공동체의 관습을 기록한다.", "지역 축제·관습 관찰", 5, 12, nil, nil, "seville", { kind = "custom", discipline = "anthropology", entityType = "practice", era = "16~18세기", region = "seville", relatedDisciplines = { "history", "art" }, relations = { { type = "locatedAt", target = "port:seville" }, { type = "relatedTo", target = "relic_mask" } }, tags = { "민속", "축제", "생활문화" } } },
+	{ "culture_oral_history", "지역 구술 전통 기록", "Culture", "Uncommon", "축제에서 들은 이야기와 주민 전승을 문자 기록과 비교하여 전해지는 방식을 살핀다.", "구술 자료 조사", 15, 45, nil, { found = { "culture_festival_observation" }, reported = { "culture_festival_observation" } }, "seville", { kind = "custom", discipline = "anthropology", entityType = "work", era = "16~18세기", region = "seville", relatedDisciplines = { "linguistics", "mythology" }, relations = { { type = "studies", target = "culture_festival_observation" }, { type = "relatedTo", target = "lang_latin" } }, tags = { "구술", "민속", "기억" } } },
+	{ "culture_comparative_customs", "지역 문화 비교 연구", "Culture", "Rare", "언어·의례·생활 관습이 서로 영향을 주는 방식을 다른 항구의 문헌과 대조한다.", "인류학·문화 비교 연구", 40, 120, nil, { found = { "culture_oral_history" }, reported = { "culture_oral_history" } }, "seville", { kind = "custom", discipline = "anthropology", entityType = "process", era = "16~18세기", region = "seville", relatedDisciplines = { "religious_studies", "linguistics", "history" }, relations = { { type = "studies", target = "culture_oral_history" }, { type = "relatedTo", target = "faith_rite_observation" } }, tags = { "인류학", "문화 비교", "지역" } } },
 	-- [단순 발견] 입항하면 역사·지형을 알아본다. 탐험 확률·퀘스트·연구 조건은 없으며 보상은 최초 1회만.
 	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp", { entityType = "place", kind = "terrain", tags = { "하구", "강", "해안", "교역" }, relations = { { type = "locatedAt", target = "port:antwerp" } } } },
 	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice", { entityType = "place", tags = { "석호", "해안", "도시", "항로" }, relations = { { type = "locatedAt", target = "port:venice" } } } },
@@ -899,7 +919,7 @@ for _, r in Rows do
 end
 
 -- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
--- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 17개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
+-- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 22개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
 -- 학문 7대 영역과 혼동하지 않는다. 시대와 무관한 오브젝트 상위 분류다.
 local WorldGroups = {
 	{ id = "planet", name = "지구·환경" },
@@ -914,6 +934,12 @@ local WorldGroupById = {}
 for _, group in WorldGroups do WorldGroupById[group.id] = group end
 
 local Kinds = {
+	-- [인류 무형 지식] 기존 17개 소재 유지 + 의미가 다른 개념/제도 5종 분리.
+	{ id = "language", name = "언어·문자", group = "culture" },
+	{ id = "religion", name = "종교·신앙", group = "culture" },
+	{ id = "politics", name = "국가·정치", group = "culture" },
+	{ id = "law", name = "법·조약", group = "culture" },
+	{ id = "custom", name = "관습·생활문화", group = "culture" },
 	{ id = "terrain", name = "지형·해역", group = "planet" }, { id = "building", name = "건축물", group = "built" }, { id = "wonder", name = "원더·유적", group = "built" },
 	{ id = "animal", name = "동물", group = "life" }, { id = "plant", name = "식물", group = "life" }, { id = "mineral", name = "광물·화석", group = "materials" },
 	{ id = "relic", name = "유물", group = "culture" }, { id = "archive", name = "문헌·기록", group = "culture" }, { id = "map", name = "지도·항로", group = "planet" },
@@ -929,7 +955,7 @@ local FieldKind = {
 	Site = "wonder", Architecture = "building", Astronomy = "weather", Weather = "weather",
 	Medicine = "medicine", Shipbuilding = "ship", Navigation = "map", Geography = "terrain",
 	Physics = "science", Chemistry = "science", Philosophy = "science", Goods = "goods",
-	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
+	Art = "art", Language = "language", Religion = "religion", Politics = "politics", Law = "law", Culture = "custom", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
 }
 local function kindOf(c: Card): string
 	if c.meta and c.meta.kind and KindById[c.meta.kind] then return c.meta.kind end
@@ -985,11 +1011,12 @@ local RelationNames = {
 	requires = "선행 지식", design = "설계도", usesMaterial = "재료", studiedAs = "연구 기록",
 	usedIn = "활용 연구", studies = "연구 대상", describes = "설계 대상", tradedAs = "교역 자원",
 	locatedAt = "위치", foundAt = "탐험 장소", scholarlySource = "학자 보고",
+	associatedWith = "관련 장소·제도", relatedTo = "연관 지식",
 }
 local EntityTypes = {
 	class = "종류·개념", place = "실존 장소", process = "연구·과정", taxon = "생물 분류군",
 	design = "설계·도면", substance = "물질·재료", phenomenon = "자연 현상",
-	work = "문헌·작품", legend = "전설·가설",
+	work = "문헌·작품", legend = "전설·가설", intangible = "무형 지식", practice = "의례·관습", institution = "사회 제도",
 }
 local function entityTypeOf(c: Card): string
 	if c.meta and c.meta.entityType and EntityTypes[c.meta.entityType] then return c.meta.entityType end
