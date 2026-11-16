@@ -2743,14 +2743,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if plot.active then
 				plotCount += 1
 				folder:SetAttribute("HarborPlot_" .. plot.id, ("%d,%d,%d,%d"):format(plot.x, plot.z, plot.halfX, plot.halfZ))
-				local corners = if touch then 2 else 4
+				local corners = if touch or plot.id == "shipyard" or plot.id == "quay" then 2 else 4
 				for i = 1, corners do
 					-- 조선소 경계는 물속이 아닌 육지 쪽 모서리만, 접안구역은 항로 부표만 쓴다.
 					local cx = if plot.id == "quay" then plot.x + plot.halfX
 						elseif plot.id == "shipyard" then plot.x - plot.halfX
 						else plot.x + (if i % 2 == 0 then plot.halfX else -plot.halfX)
 					local cz = plot.z + (if i <= 2 then -plot.halfZ else plot.halfZ)
-					if touch then cz = plot.z + (if i == 1 then -plot.halfZ else plot.halfZ) end
+					if corners == 2 then cz = plot.z + (if i == 1 then -plot.halfZ else plot.halfZ) end
 					local marker = importedModel(folder,
 						if plot.id == "quay" then "Naval" else "Town",
 						if plot.id == "quay" then "buoy" else "fence_post",
