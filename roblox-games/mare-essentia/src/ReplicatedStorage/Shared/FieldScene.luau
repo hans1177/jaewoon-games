@@ -2637,7 +2637,7 @@ function FieldScene.start(opts)
 	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
 	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
-	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.4, screenHeight - 180), 132, 150)
+	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.48, screenHeight - 130), 132, 150)
 	local innerSkillRadius = 84
 	local compactTouch = visualMobile and screenWidth < 360
 	local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68
