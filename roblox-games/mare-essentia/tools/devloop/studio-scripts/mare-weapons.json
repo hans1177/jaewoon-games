@@ -1,1 +1,628 @@
-[{"type": "wait", "ms": 35000}, {"type": "luau", "ctx": "Client", "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end workspace:SetAttribute('DevGod',true) workspace:SetAttribute('DevAllies',true) return 'ok'"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','fist') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_fist_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_fist_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','axe') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_axe_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_axe_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','spear') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_spear_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_spear_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','mace') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_mace_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_mace_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','dagger') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_dagger_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_dagger_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','crossbow') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_crossbow_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_crossbow_b"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) workspace:SetAttribute('VoyageActive',true) workspace:SetAttribute('DevWeapon','gun') task.spawn(function() pcall(function() FS.start({name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,onFinish=function() end}) end) end) task.wait(3) local ch=game.Players.LocalPlayer.Character ch:PivotTo(CFrame.new(3000,4,100)) local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('WpCam') end) RS:BindToRenderStep('WpCam',Enum.RenderPriority.Last.Value+1,function() local ch=game.Players.LocalPlayer.Character local h=ch and ch:FindFirstChild('HumanoidRootPart') if not h then return end local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=60 local f=workspace:FindFirstChild('FieldScene') local tgt=nil local bd=1e9 if f then for _,m in f:GetChildren() do local r=m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') if r then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tgt=r end end end end local look=if tgt then (tgt.Position-h.Position)*Vector3.new(1,0,1) else h.CFrame.LookVector if look.Magnitude<0.1 then look=Vector3.new(0,0,-1) end look=look.Unit local side=Vector3.new(-look.Z,0,look.X) c.CFrame=CFrame.lookAt(h.Position-look*11+side*6+Vector3.new(0,5,0),h.Position+look*4+Vector3.new(0,2,0)) end) return 'cam'"}, {"type": "wait", "ms": 3500}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'atk'"}, {"type": "wait", "ms": 160}, {"type": "capture", "name": "wp_gun_a"}, {"type": "wait", "ms": 200}, {"type": "capture", "name": "wp_gun_b"}]
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [본래 Studio 전투 점검] 최초 게임 화면을 숨기고 원본 FieldScene·공용 모션만 사용한다.\nlocal pl=game:GetService('Players').LocalPlayer\nlocal pg=assert(pl:FindFirstChild('PlayerGui'),'WEAPON_QA_NO_PLAYER_GUI')\nfor _,g in pg:GetChildren() do if g:IsA('ScreenGui') then g.Enabled=false end end\nworkspace:SetAttribute('DevGod',true)\nworkspace:SetAttribute('DevAllies',true)\nworkspace:SetAttribute('VoyageActive',true)\nreturn 'WEAPON_QA_INITIALIZED'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: fist] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:fist')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:fist')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:fist')\nworkspace:SetAttribute('WeaponQAState','RUNNING:fist')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='fist',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:fist:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:fist')\nend)\nreturn 'WEAPON_QA_LAUNCHED:fist'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 fist] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:fist' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:fist','WEAPON_FIELD_BUILD_FAILED:fist:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:fist')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:fist')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:fist')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:fist')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:fist')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:fist')\nassert(ch:GetAttribute('EquippedWeaponId')=='fist','WEAPON_ID_MISMATCH:fist:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:fist')\nlocal family='fist'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('fist')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:fist')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:fist:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:fist:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:fist:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:fist:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:fist:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:fist:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:fist'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:fist')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='fist:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:fist:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:fist')\nreturn 'WEAPON_SLASH_R15_PASS:fist'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_fist_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:fist'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:fist')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='fist:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:fist:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:fist')\nreturn 'WEAPON_HEAVY_R15_PASS:fist'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_fist_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:fist'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:fist')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='fist:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:fist:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:fist')\nreturn 'WEAPON_SPIN_R15_PASS:fist'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_fist_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: sword] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:sword')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:sword')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:sword')\nworkspace:SetAttribute('WeaponQAState','RUNNING:sword')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='sword',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:sword:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:sword')\nend)\nreturn 'WEAPON_QA_LAUNCHED:sword'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 sword] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:sword' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:sword','WEAPON_FIELD_BUILD_FAILED:sword:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:sword')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:sword')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:sword')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:sword')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:sword')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:sword')\nassert(ch:GetAttribute('EquippedWeaponId')=='sword','WEAPON_ID_MISMATCH:sword:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:sword')\nlocal family='blade'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('sword')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:sword')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:sword:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:sword:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:sword:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:sword:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:sword:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:sword:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:sword'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:sword')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blade:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:sword:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:sword')\nreturn 'WEAPON_SLASH_R15_PASS:sword'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_sword_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:sword'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:sword')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blade:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:sword:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:sword')\nreturn 'WEAPON_HEAVY_R15_PASS:sword'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_sword_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:sword'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:sword')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blade:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:sword:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:sword')\nreturn 'WEAPON_SPIN_R15_PASS:sword'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_sword_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: dagger] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:dagger')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:dagger')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:dagger')\nworkspace:SetAttribute('WeaponQAState','RUNNING:dagger')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='dagger',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:dagger:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:dagger')\nend)\nreturn 'WEAPON_QA_LAUNCHED:dagger'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 dagger] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:dagger' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:dagger','WEAPON_FIELD_BUILD_FAILED:dagger:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:dagger')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:dagger')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:dagger')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:dagger')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:dagger')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:dagger')\nassert(ch:GetAttribute('EquippedWeaponId')=='dagger','WEAPON_ID_MISMATCH:dagger:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:dagger')\nlocal family='dagger'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('dagger')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:dagger')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:dagger:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:dagger:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:dagger:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:dagger:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:dagger:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:dagger:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:dagger'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:dagger')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='dagger:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:dagger:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:dagger')\nreturn 'WEAPON_SLASH_R15_PASS:dagger'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_dagger_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:dagger'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:dagger')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='dagger:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:dagger:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:dagger')\nreturn 'WEAPON_HEAVY_R15_PASS:dagger'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_dagger_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:dagger'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:dagger')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='dagger:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:dagger:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:dagger')\nreturn 'WEAPON_SPIN_R15_PASS:dagger'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_dagger_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: axe] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:axe')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:axe')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:axe')\nworkspace:SetAttribute('WeaponQAState','RUNNING:axe')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='axe',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:axe:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:axe')\nend)\nreturn 'WEAPON_QA_LAUNCHED:axe'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 axe] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:axe' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:axe','WEAPON_FIELD_BUILD_FAILED:axe:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:axe')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:axe')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:axe')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:axe')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:axe')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:axe')\nassert(ch:GetAttribute('EquippedWeaponId')=='axe','WEAPON_ID_MISMATCH:axe:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:axe')\nlocal family='axe'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('axe')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:axe')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:axe:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:axe:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:axe:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:axe:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:axe:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:axe:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:axe'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:axe')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='axe:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:axe:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:axe')\nreturn 'WEAPON_SLASH_R15_PASS:axe'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_axe_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:axe'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:axe')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='axe:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:axe:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:axe')\nreturn 'WEAPON_HEAVY_R15_PASS:axe'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_axe_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:axe'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:axe')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='axe:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:axe:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:axe')\nreturn 'WEAPON_SPIN_R15_PASS:axe'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_axe_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: spear] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:spear')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:spear')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:spear')\nworkspace:SetAttribute('WeaponQAState','RUNNING:spear')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='spear',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:spear:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:spear')\nend)\nreturn 'WEAPON_QA_LAUNCHED:spear'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 spear] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:spear' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:spear','WEAPON_FIELD_BUILD_FAILED:spear:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:spear')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:spear')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:spear')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:spear')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:spear')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:spear')\nassert(ch:GetAttribute('EquippedWeaponId')=='spear','WEAPON_ID_MISMATCH:spear:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:spear')\nlocal family='spear'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('spear')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:spear')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:spear:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:spear:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:spear:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:spear:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:spear:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:spear:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:spear'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:spear')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='spear:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:spear:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:spear')\nreturn 'WEAPON_SLASH_R15_PASS:spear'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_spear_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:spear'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:spear')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='spear:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:spear:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:spear')\nreturn 'WEAPON_HEAVY_R15_PASS:spear'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_spear_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:spear'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:spear')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='spear:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:spear:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:spear')\nreturn 'WEAPON_SPIN_R15_PASS:spear'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_spear_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: mace] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:mace')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:mace')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:mace')\nworkspace:SetAttribute('WeaponQAState','RUNNING:mace')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='mace',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:mace:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:mace')\nend)\nreturn 'WEAPON_QA_LAUNCHED:mace'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 mace] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:mace' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:mace','WEAPON_FIELD_BUILD_FAILED:mace:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:mace')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:mace')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:mace')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:mace')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:mace')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:mace')\nassert(ch:GetAttribute('EquippedWeaponId')=='mace','WEAPON_ID_MISMATCH:mace:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:mace')\nlocal family='blunt'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('mace')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:mace')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:mace:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:mace:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:mace:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:mace:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:mace:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:mace:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:mace'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:mace')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blunt:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:mace:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:mace')\nreturn 'WEAPON_SLASH_R15_PASS:mace'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_mace_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:mace'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:mace')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blunt:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:mace:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:mace')\nreturn 'WEAPON_HEAVY_R15_PASS:mace'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_mace_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:mace'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:mace')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='blunt:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:mace:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:mace')\nreturn 'WEAPON_SPIN_R15_PASS:mace'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_mace_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: bow] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:bow')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:bow')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:bow')\nworkspace:SetAttribute('WeaponQAState','RUNNING:bow')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='bow',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:bow:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:bow')\nend)\nreturn 'WEAPON_QA_LAUNCHED:bow'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 bow] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:bow' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:bow','WEAPON_FIELD_BUILD_FAILED:bow:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:bow')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:bow')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:bow')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:bow')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:bow')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:bow')\nassert(ch:GetAttribute('EquippedWeaponId')=='bow','WEAPON_ID_MISMATCH:bow:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:bow')\nlocal family='bow'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('bow')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:bow')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:bow:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:bow:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:bow:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:bow:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:bow:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:bow:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:bow'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:bow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='bow:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:bow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:bow')\nreturn 'WEAPON_SLASH_R15_PASS:bow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_bow_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:bow'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:bow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='bow:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:bow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:bow')\nreturn 'WEAPON_HEAVY_R15_PASS:bow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_bow_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:bow'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:bow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='bow:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:bow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:bow')\nreturn 'WEAPON_SPIN_R15_PASS:bow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_bow_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: crossbow] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:crossbow')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:crossbow')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:crossbow')\nworkspace:SetAttribute('WeaponQAState','RUNNING:crossbow')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='crossbow',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:crossbow:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:crossbow')\nend)\nreturn 'WEAPON_QA_LAUNCHED:crossbow'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 crossbow] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:crossbow' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:crossbow','WEAPON_FIELD_BUILD_FAILED:crossbow:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:crossbow')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:crossbow')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:crossbow')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:crossbow')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:crossbow')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:crossbow')\nassert(ch:GetAttribute('EquippedWeaponId')=='crossbow','WEAPON_ID_MISMATCH:crossbow:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:crossbow')\nlocal family='firearm'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('crossbow')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:crossbow')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:crossbow:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:crossbow:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:crossbow:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:crossbow:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:crossbow:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:crossbow:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:crossbow'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:crossbow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:crossbow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:crossbow')\nreturn 'WEAPON_SLASH_R15_PASS:crossbow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_crossbow_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:crossbow'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:crossbow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:crossbow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:crossbow')\nreturn 'WEAPON_HEAVY_R15_PASS:crossbow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_crossbow_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:crossbow'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:crossbow')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:crossbow:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:crossbow')\nreturn 'WEAPON_SPIN_R15_PASS:crossbow'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_crossbow_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작: gun] 마지막 탐험은 정식 철수로 복귀시키고 신규 현장의 오류를 숨기지 않는다.\nlocal gate=workspace:FindFirstChild('MareWeaponQAExit')\nif gate then\n assert(gate:IsA('BindableFunction'),'WEAPON_EXIT_INVALID')\n gate:Invoke()\n gate:Destroy()\n assert(not workspace:FindFirstChild('FieldScene'),'WEAPON_PREVIOUS_SCENE_LEAK:gun')\n assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_PREVIOUS_HUD_LEAK:gun')\nend\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_UNOWNED_SCENE:gun')\nworkspace:SetAttribute('WeaponQAState','RUNNING:gun')\nworkspace:SetAttribute('VoyageActive',true)\nlocal FS=require(game:GetService('ReplicatedStorage').Shared.FieldScene)\ntask.spawn(function()\n local ok,result=xpcall(function() return FS.start({ name='카리브 해적 소굴',portId='havana',nodes=2,danger=3,seed=5,weapon='gun',battleLevel=1,onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end)\n if not ok or type(result)~='table' or type(result.finish)~='function' then\n  workspace:SetAttribute('WeaponQAState','FAIL:gun:'..tostring(result):sub(1,360))\n  return\n end\n local exit=Instance.new('BindableFunction')\n exit.Name='MareWeaponQAExit'\n exit.OnInvoke=function() result.finish('retreat') end\n exit.Parent=workspace\n workspace:SetAttribute('WeaponQAState','PASS:gun')\nend)\nreturn 'WEAPON_QA_LAUNCHED:gun'"
+ },
+ {
+  "type": "wait",
+  "ms": 4500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 gun] 실제 장착 상태·스킬 버튼·1~5단 승인 모션을 생성·샘플링해 검증한다.\nlocal state\nfor i=1,65 do\n state=workspace:GetAttribute('WeaponQAState')\n if state=='PASS:gun' or (type(state)=='string' and string.sub(state,1,5)=='FAIL:') then break end\n task.wait(.2)\nend\nassert(state=='PASS:gun','WEAPON_FIELD_BUILD_FAILED:gun:'..tostring(state))\nlocal pl=game.Players.LocalPlayer\nlocal ch=assert(pl.Character,'WEAPON_HERO_MISSING:gun')\nlocal root=assert(ch:FindFirstChild('HumanoidRootPart'),'WEAPON_ROOT_MISSING:gun')\nassert(workspace:FindFirstChild('FieldScene'),'WEAPON_SCENE_MISSING:gun')\nassert(workspace:GetAttribute('FieldCombatReady')==true,'WEAPON_COMBAT_NOT_READY:gun')\nlocal gui=assert(pl.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_MISSING:gun')\nassert(gui.Enabled,'WEAPON_HUD_DISABLED:gun')\nassert(ch:GetAttribute('EquippedWeaponId')=='gun','WEAPON_ID_MISMATCH:gun:'..tostring(ch:GetAttribute('EquippedWeaponId')))\nassert(gui:FindFirstChild('FieldHeroStatus'),'WEAPON_HERO_STATUS_MISSING:gun')\nlocal family='firearm'\nlocal W=require(game.ReplicatedStorage.Shared.Weapons)\nlocal FM=require(game.ReplicatedStorage.Shared.FieldMotion)\nlocal weapon=W.get('gun')\nlocal design=W.actionDesign(weapon)\nassert(weapon.family==family and design.heavyBeat>=1 and design.sweepBeat>=1,'WEAPON_SKILL_MOTION_MAPPING_INVALID:gun')\nfor _,skill in {'heavy','sweep'} do\n local button=assert(gui:FindFirstChild('FieldSkill_'..skill,true),'WEAPON_SKILL_BUTTON_MISSING:gun:'..skill)\n local caption=assert(button:FindFirstChild('FieldSkillCaption'),'WEAPON_SKILL_TEXT_MISSING:gun:'..skill)\n local expected=if skill=='heavy' then design.heavy else design.sweep\n assert(caption.Text==expected,'WEAPON_SKILL_TEXT_WRONG:gun:'..skill..':'..tostring(caption.Text))\nend\nfor stage=1,5 do\n local combo=FM.weaponCombo(if family=='fist' then 'UNARMED_RUSH' else weapon.motion,stage)\n assert(combo and combo.duration>0,'WEAPON_MOTION_ATOM_MISSING:gun:'..stage)\n local pose={}\n FM.sample(combo,combo.duration*.45,pose)\n assert(next(pose)~=nil,'WEAPON_R15_POSE_MISSING:gun:'..stage)\nend\nif family=='fist' then\n for _,style in {'UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'} do\n  assert(FM.weaponCombo(style,1),'WEAPON_FANTASY_UNARMED_SKILL_MISSING:'..style)\n end\nend\nch:PivotTo(CFrame.new(3000,4,100))\nroot.Anchored=false\nworkspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(3000,20,128),Vector3.new(3000,4,101)))\nworkspace:SetAttribute('ShotFov',63)\nreturn 'WEAPON_QA_READY:gun:STAGES_1_TO_5'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','attack') return 'WEAPON_ATTACK_REQUESTED:gun'"
+ },
+ {
+  "type": "wait",
+  "ms": 155
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:gun')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:slash:1','WEAPON_SLASH_R15_ACTION_FAILED:gun:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:gun')\nreturn 'WEAPON_SLASH_R15_PASS:gun'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_gun_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','heavy') return 'WEAPON_HEAVY_REQUESTED:gun'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:gun')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:heavy:1','WEAPON_HEAVY_R15_ACTION_FAILED:gun:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:gun')\nreturn 'WEAPON_HEAVY_R15_PASS:gun'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_gun_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevFieldSkill','spin') return 'WEAPON_SWEEP_REQUESTED:gun'"
+ },
+ {
+  "type": "wait",
+  "ms": 180
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=assert(game.Players.LocalPlayer.Character,'WEAPON_HERO_MISSING:gun')\nlocal state=tostring(ch:GetAttribute('FieldWeaponMotion') or '')\nassert(state=='firearm:spin:1','WEAPON_SPIN_R15_ACTION_FAILED:gun:'..state)\nassert(game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_HUD_LOST:gun')\nreturn 'WEAPON_SPIN_R15_PASS:gun'"
+ },
+ {
+  "type": "capture",
+  "name": "wp_gun_sweep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [정상 복귀] 모든 장면·UI·전투 입력 연결을 삭제하고 현장 누수를 확인한다.\nlocal gate=assert(workspace:FindFirstChild('MareWeaponQAExit'),'WEAPON_LAST_EXIT_MISSING')\ngate:Invoke()\ngate:Destroy()\nassert(not workspace:FindFirstChild('FieldScene'),'WEAPON_FINAL_SCENE_LEAK')\nassert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild('FieldGui'),'WEAPON_FINAL_GUI_LEAK')\nassert(workspace:GetAttribute('FieldCombatReady')~=true,'WEAPON_FINAL_READY_LEAK')\nworkspace:SetAttribute('ShotCF',nil)\nworkspace:SetAttribute('ShotFov',nil)\nworkspace:SetAttribute('VoyageActive',nil)\nworkspace:SetAttribute('DevGod',nil)\nworkspace:SetAttribute('DevAllies',nil)\nreturn 'WEAPON_QA_FINAL_CLEAN_EXIT_PASS'"
+ }
+]
