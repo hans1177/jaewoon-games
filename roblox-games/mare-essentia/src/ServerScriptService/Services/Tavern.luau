@@ -519,6 +519,13 @@ return function(D, S)
 				return true, "소문을 듣다 보니 도움이 필요한 사람 이야기가 나왔다. 일감으로 이어질 것 같다."
 			end
 		end
+		-- [구전망] 실제 발생한 경제·정치·항해 사건을 정보가 도착한 순서대로 전한다.
+		local report = S.Econ and S.Econ.bulletins and S.Econ.bulletins(state, "tavern")
+		if report and #report.rows > 0 then
+			local picked = report.rows[math.floor(ctx.rng() * #report.rows) + 1]
+			return true, string.format("주인이 말한다. '[%s·%s] %s'\n%s · 전해진 소식 %d일 전",
+				picked.categoryName, picked.confidence, picked.title, picked.detail, picked.daysOld)
+		end
 		local port = D.Ports.Ports[state.portId]
 		local rid = port and D.Regions.of(port).id
 		local lines = Data.RUMORS[rid] or Data.RUMORS.europe
@@ -542,6 +549,12 @@ return function(D, S)
 				setOffer(state, "talk", picks)
 				msg ..= "\n(대화 중 동료가 이 항구의 일감 이야기를 꺼냈다)"
 			end
+		end
+		-- [동료 정보망] 정해진 소식을 마구 공개하지 않고 전문 분야에 맞는 소식만 덧붙인다.
+		local report = S.Econ and S.Econ.bulletins and S.Econ.bulletins(state, "companion")
+		if report and #report.rows > 0 then
+			local picked = report.rows[math.floor(ctx.rng() * #report.rows) + 1]
+			msg ..= string.format("\n동료가 전하는 [%s·%s] %s\n%s", picked.categoryName, picked.confidence, picked.title, picked.detail)
 		end
 		return true, msg
 	end
