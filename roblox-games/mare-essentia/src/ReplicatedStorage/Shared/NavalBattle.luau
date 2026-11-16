@@ -120,15 +120,19 @@ do
 end
 -- [함종별 고유 선체] 새 모델은 등록번호가 발급된 경우에만 적용한다.
 -- 불러오기 전에는 기존 해전 선체를 유지하며 전투 계산·저장에는 영향을 주지 않는다.
-local NEW_SHIP_ORIGINALS = {
+local CUSTOM_SHIP_FALLBACK = {
 	privateer = "ship-pirate-medium",
 	manila_galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium",
 	ironclad_frigate = "ship-large",
 }
-for shipId in NEW_SHIP_ORIGINALS do
-	if AssetIds["Naval/" .. shipId .. "-custom"] then
-		PLAYER_SHIP[shipId] = shipId .. "-custom"
+local ShipDefs = require(script.Parent:WaitForChild("Ships"))
+for shipId in ShipDefs.Ships do
+	local meshName = shipId .. "-custom"
+	if AssetIds["Naval/" .. meshName] then
+		-- [등록된 함종 전체] 종전 해전 메시를 안전하게 남기고 해당 함종 전용 모델을 우선한다.
+		CUSTOM_SHIP_FALLBACK[shipId] = CUSTOM_SHIP_FALLBACK[shipId] or PLAYER_SHIP[shipId] or "ship-medium"
+		PLAYER_SHIP[shipId] = meshName
 	end
 end
 
@@ -163,8 +167,8 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 	elseif not (tpl and tpl:IsA("Model")) then
 		-- [신규 4종 원본 복구] 로딩 중이어도 새 게임과 기존 해전 장면을 계속 표시한다.
 		local shipId = string.match(asset, "^(.-)%-custom$")
-		if shipId and NEW_SHIP_ORIGINALS[shipId] then
-			tpl = group and group:FindFirstChild(NEW_SHIP_ORIGINALS[shipId])
+		if shipId and CUSTOM_SHIP_FALLBACK[shipId] then
+			tpl = group and group:FindFirstChild(CUSTOM_SHIP_FALLBACK[shipId])
 		end
 	end
 	if tpl and tpl:IsA("Model") then

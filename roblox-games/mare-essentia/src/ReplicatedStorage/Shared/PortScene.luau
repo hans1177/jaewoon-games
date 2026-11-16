@@ -351,16 +351,19 @@ if AssetIds["Naval/galleon-heritage"] then
 end
 -- [함종별 고유 선체] 신규 개조 모델은 등록번호가 확인될 때만 기존 선박과 교체한다.
 -- 사략선·마닐라 갈레온·외륜 증기선·장갑 프리깃은 다른 함종의 visual 별칭을 상속하지 않는다.
-local NEW_SHIP_ORIGINALS = {
+local CUSTOM_SHIP_FALLBACK = {
 	privateer = "ship-pirate-medium",
 	manila_galleon = "ship-pirate-large",
 	paddle_steamer = "ship-medium",
 	ironclad_frigate = "ship-pirate-large",
 }
-for shipId in NEW_SHIP_ORIGINALS do
-	local key = "Naval/" .. shipId .. "-custom"
-	if AssetIds[key] then
-		SHIP_MESH[shipId] = shipId .. "-custom"
+local ShipDefs = require(script.Parent:WaitForChild("Ships"))
+for shipId in ShipDefs.Ships do
+	local meshName = shipId .. "-custom"
+	if AssetIds["Naval/" .. meshName] then
+		-- [등록된 함종 전체] 기존 기본 선체를 보존한 뒤 고유 개조 메시를 우선 연결한다.
+		CUSTOM_SHIP_FALLBACK[shipId] = CUSTOM_SHIP_FALLBACK[shipId] or SHIP_MESH[shipId] or "ship-small"
+		SHIP_MESH[shipId] = meshName
 	end
 end
 
@@ -854,9 +857,9 @@ local function buildShip(parent, shipId, at)
 		-- [기존 항구 보존] 프리깃 완성 모델을 못 읽으면 종전 공용 범선으로 복구한다.
 		meshAsset = "ship-pirate-medium"
 		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
-	elseif not shipMesh and NEW_SHIP_ORIGINALS[shipId] then
-		-- [로딩 지연 복구] 전용 함선이 미수입·권한 거부라면 원래 공용 선체를 사용한다.
-		meshAsset = NEW_SHIP_ORIGINALS[shipId]
+	elseif not shipMesh and CUSTOM_SHIP_FALLBACK[shipId] then
+		-- [로딩 지연 복구] 모든 함종에서 고유 메시가 미수입·권한 거부면 이전 공용 선체를 사용한다.
+		meshAsset = CUSTOM_SHIP_FALLBACK[shipId]
 		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
 	end
 	if shipMesh then
