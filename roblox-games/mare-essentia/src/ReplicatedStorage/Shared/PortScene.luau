@@ -3057,6 +3057,10 @@ function PortScene.build(info, onFacility)
 					elseif kind == "look" then
 						kind = if (now + w.phase * 4) % 23 < 2.8 then "salute" else "look"
 					end
+					if kind == "stoop" then
+						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
+						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+					end
 					Pose.work(w.model, kind, now + w.phase)
 				end
 			elseif w.mode == "animal" then
