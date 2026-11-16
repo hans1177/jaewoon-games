@@ -313,6 +313,25 @@ jobs:
           missing="${#missing_ids[@]}"
           echo "ROBLOX_SOURCE_SYNC_MISSING_QUEUE_COUNT=$missing"
           if [[ "$missing" -gt 0 ]]; then
+            # [중앙 승격 복구] 실제 승인된 기존 워크플로만 재활성화한다.
+            # 비활성 상태를 무시해 PASS로 처리하거나 별도 경로로 승격하지 않는다.
+            workflow_state="$(gh workflow view company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
+            if [[ "$workflow_state" != "active" ]]; then
+              case "$workflow_state" in
+                disabled_manually|disabled_inactivity)
+                  gh workflow enable company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY"
+                  echo "ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_REACTIVATED_FROM=$workflow_state"
+                  ;;
+                *)
+                  echo "::error::ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_UNKNOWN_STATE=$workflow_state" >&2
+                  exit 1
+                  ;;
+              esac
+            fi
+            if [[ "$(gh workflow view company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --json state --jq '.state')" != "active" ]]; then
+              echo "::error::ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_STILL_DISABLED" >&2
+              exit 1
+            fi
             gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo "ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_RECOVERY=DISPATCHED:$(IFS=,; echo "${missing_ids[*]}")"
           else
