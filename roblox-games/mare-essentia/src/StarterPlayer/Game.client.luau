@@ -5886,7 +5886,11 @@ function H.startField(s)
 	local oldFieldGui = player:FindFirstChildOfClass("PlayerGui") and player.PlayerGui:FindFirstChild("FieldGui")
 	if oldFieldGui then oldFieldGui:Destroy() end
 	inField = true
-	main.Visible = false
+	-- 모바일에서 큰 지상맵을 구성하는 동안 빈 화면으로 보이지 않게 현재 탐험 화면에 안내를 유지한다.
+	message = "지상맵을 여는 중..."
+	messageOk = true
+	render()
+	task.wait() -- 안내를 실제로 한 프레임 그린 뒤 필드 장면을 만든다.
 	local allyNames = {}
 	for _, c in (view and view.companions and view.companions.list) or {} do
 		if c.joined and #allyNames < 2 then
@@ -5926,6 +5930,20 @@ function H.startField(s)
 			end
 		end,
 	})
+	-- pcall이 성공해도 실제 필드와 조작 UI가 없으면 입장 성공으로 취급하지 않는다.
+	if startOk then
+		local field = workspace:FindFirstChild("FieldScene")
+		local ground = field and field:FindFirstChild("FieldGround")
+		local gui = player.PlayerGui:FindFirstChild("FieldGui")
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if not (ground and gui and root and root.Position.X > 2500 and workspace:GetAttribute("FieldCombatReady") == true) then
+			startOk = false
+			startErr = string.format("FIELD_ENTRY_NOT_READY ground=%s gui=%s root=%s combat=%s", tostring(ground ~= nil), tostring(gui ~= nil), tostring(root and root.Position.X), tostring(workspace:GetAttribute("FieldCombatReady")))
+		else
+			main.Visible = false
+			message = ""
+		end
+	end
 	if not startOk then
 		-- 필드 생성 중 멈추면 지도·전투 조작 화면까지 정리하고 캐릭터·시점을 복구한다.
 		warn("[Game] 탐험지 열기 실패", startErr)
