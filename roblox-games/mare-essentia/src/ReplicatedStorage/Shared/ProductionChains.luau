@@ -92,7 +92,7 @@ function P.goodId(r)
 	return "p_" .. string.sub(r.id, 3)
 end
 
-function P.processedGoods(goods)
+function P.processedGoods(goods: any)
 	local out = {}
 	for _, r in P.Recipes do
 		local sum, n = 0, 0
