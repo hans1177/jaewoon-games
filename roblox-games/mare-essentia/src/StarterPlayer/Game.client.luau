@@ -5884,6 +5884,18 @@ function RENDERERS.explore()
 	if #view.sites == 0 then
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
+	-- [탐험 안내] 미개방 탐험지만 남았다면 이동 불가 이유를 지점 위에 안내한다.
+	local openCount, nextLevel = 0, nil
+	for _, site in view.sites do
+		if site.unlocked and site.left > 0 then
+			openCount += 1
+		elseif not site.unlocked and site.left > 0 then
+			nextLevel = math.min(nextLevel or site.minLevel, site.minLevel)
+		end
+	end
+	if #view.sites > 0 and openCount == 0 and nextLevel then
+		add(function() return mkLabel(content, string.format("이 항구의 지상 탐험은 모험 Lv.%d부터 열려요. 레벨이 오르면 아래 지점의 지상맵 입장 버튼을 눌러 이동해요.", nextLevel), 14, COLORS.muted, false) end)
+	end
 	add(function()
 		local tiles = {}
 		for _, s in view.sites do
