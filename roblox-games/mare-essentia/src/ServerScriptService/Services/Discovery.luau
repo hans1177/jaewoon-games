@@ -38,7 +38,7 @@ return function(D, S)
 	local METHODS = { discover = "발견", research = "연구", explore = "탐험" }
 	local function pathOf(card)
 		local method = methodOf(card)
-		local step = if card.research then card.source elseif card.visitPort then card.source else card.source
+		local step = card.source
 		return (METHODS[method] or "발견") .. " · " .. step
 	end
 	local function rarityGuide(card)
@@ -56,7 +56,7 @@ return function(D, S)
 		if not research then return nil end
 		for _, needId in research.found or {} do
 			if not state.discovered[needId] then
-				return "먼저 지식 발견: " .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
+				return (card.meta and card.meta.kind and (card.meta.kind == "language" or card.meta.kind == "religion" or card.meta.kind == "politics" or card.meta.kind == "law" or card.meta.kind == "custom") and "먼저 지식 발견: " or "먼저 표본 조사: ") .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
 			end
 		end
 		-- 문헌 해독·종교 비교·법학/정치사상 등은 앞 단계의 발견만으로 해금되지 않는다.
