@@ -1,5 +1,5 @@
 --!nonstrict
--- Discovery.luau · 탐험/발견 원본 서비스, 희귀도 단계와 시대별 연구 검증
+-- Discovery.luau · 원본 발견 서비스: 방문/연구/탐험 경로와 등급·시대 검증
 -- 탐험과 학자 방문: 도감 카드를 발견하면 코인, 명성, 모험 경험치를 받는다.
 
 return function(D, S)
@@ -16,7 +16,31 @@ return function(D, S)
 		Epic = "학술 연구·연속 의뢰",
 		Legendary = "특수 탐험·지역 대장정",
 	}
+	-- [실제 획득 경로] 카드 희귀도와는 독립. 기존 탐험 풀/학자/퀘스트 데이터를 색인해 경로가 실제와 일치한다.
+	local siteCards, scholarCards, questCards = {}, {}, {}
+	for _, site in D.Sites.Sites do
+		for _, id in site.pool do siteCards[id] = true end
+	end
+	for _, scholar in D.Scholars.Scholars do scholarCards[scholar.cardId] = true end
+	for _, quest in D.Quests.Quests do
+		if quest.rewardCardId then questCards[quest.rewardCardId] = true end
+	end
+	local function methodOf(card)
+		if card.visitPort then return "discover" end
+		if card.research then return "research" end
+		if siteCards[card.id] then return "explore" end
+		if scholarCards[card.id] then return "research" end
+		if questCards[card.id] then return "research" end
+		if card.field == "Physics" or card.field == "Chemistry" or card.field == "Medicine" or card.field == "Philosophy" or card.field == "Shipbuilding" then return "research" end
+		return "discover"
+	end
+	local METHODS = { discover = "발견", research = "연구", explore = "탐험" }
 	local function pathOf(card)
+		local method = methodOf(card)
+		local step = if card.visitPort then "항구 첫 방문" elseif card.research then "선행 지식·연속 연구" else card.source
+		return (METHODS[method] or "발견") .. " · " .. step
+	end
+	local function rarityGuide(card)
 		return RARITY_PATH[card.rarity] or "현장 조사"
 	end
 
@@ -92,6 +116,24 @@ return function(D, S)
 			S.Cardbook.reward(state, "discover", msgs, math.random, card.field)
 		end
 		return true
+	end
+
+	-- [발견] 항구 도착만으로 관찰할 수 있는 신규 지형·건축물. 기존 카드 발견 경로는 건드리지 않는다.
+	local visitCards = {}
+	for _, card in D.Cards.Cards do
+		if card.visitPort then
+			visitCards[card.visitPort] = visitCards[card.visitPort] or {}
+			table.insert(visitCards[card.visitPort], card.id)
+		end
+	end
+	local function grantVisitCards(state, portId, msgs)
+		local gained = 0
+		for _, id in visitCards[portId] or {} do
+			if not state.discovered[id] and not cardBlockReason(state, D.Cards.ById[id]) then
+				if grantCard(state, id, msgs) then gained += 1 end
+			end
+		end
+		return gained
 	end
 
 	local function findSite(siteId)
@@ -175,5 +217,5 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, grantCard = grantCard, pathOf = pathOf, cardBlockReason = cardBlockReason, siteBlockReason = siteBlockReason }
+	return { handlers = handlers, grantCard = grantCard, grantVisitCards = grantVisitCards, methodOf = methodOf, pathOf = pathOf, rarityGuide = rarityGuide, cardBlockReason = cardBlockReason, siteBlockReason = siteBlockReason }
 end
