@@ -108,7 +108,7 @@ function B.royalPopulation(residents, prosperity, tier)
 	if type(residents) ~= "number" then return target end
 	local available = math.max(0, math.floor(residents))
 	if available == 0 then return 0 end
-	local workers = math.min(target, math.max(1, math.floor(available / 8)))
+	local workers = math.min(target, math.max(1, math.floor(available / 5)))
 	if available >= 2 then workers = math.max(2, workers) end
 	if (prosperity or 100) < 75 then workers = math.max(1, math.floor(workers * 0.6)) end
 	return math.min(available, workers)
