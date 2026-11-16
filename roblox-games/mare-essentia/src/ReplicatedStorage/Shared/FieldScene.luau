@@ -2637,10 +2637,11 @@ function FieldScene.start(opts)
 	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
 	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
-	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.4, screenHeight - 220), 104, 150)
-	local innerSkillRadius = 70
-	local skillSize = if visualMobile then 76 else 68
-	local basicSize = if visualMobile then 68 else 64
+	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.4, screenHeight - 180), 132, 150)
+	local innerSkillRadius = 84
+	local compactTouch = visualMobile and screenWidth < 360
+	local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68
+	local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64
 	-- [반원 중심] 기존 공격 버튼의 위치를 그대로 사용해 모든 해상도에서 엄지 중심이 일치한다.
 	local ATK_C = Vector2.new(attackBtn.Position.X.Offset, attackBtn.Position.Y.Offset)
 	local function arcPos(r: number, theta: number): UDim2
@@ -2658,7 +2659,7 @@ function FieldScene.start(opts)
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
 	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 40), basicSize)
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 112), basicSize)
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 120), basicSize)
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
