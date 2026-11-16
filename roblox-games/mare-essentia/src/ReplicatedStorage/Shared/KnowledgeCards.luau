@@ -17,6 +17,7 @@ export type Card = {
 	meta: {
 		kind: string?, -- 오인 분류 방지: 신규/애매한 개체는 명시 종류가 기존 이름 유추보다 우선한다.
 		subkind: string?, -- 소재 세부 종류. 없는 기존 카드는 정규 분류에서 추론.
+		discipline: string?, -- 신규 카드의 주학문(51개 활성 중 하나). 없으면 기존 분야 자동 분류.
 		entityType: string?, -- 일반 개념(class) / 실존 장소(place) / 학문 과정(process) / 미확인 전승(legend)
 		tags: { string }?, -- 여러 관점에서 찾는 태그(단일 분류와 독립).
 		aliases: { string }?, -- 중복 카드 대신 다른 표기 이름으로 검색.
