@@ -6343,10 +6343,38 @@ function H.startField(s)
 	for _, c in (view and view.careers) or {} do
 		if c.id == "battle" then battleLevel = c.level end
 	end
+	-- [탐험 HUD/원본 초상] 선장실·동료 화면에서 쓰는 같은 초상 시트와 좌표를 그대로 전달한다.
+	-- 저장 상태를 읽기만 하며 별도의 초상 DB나 인물 복제본을 만들지 않는다.
+	local heroPortrait = nil
+	if H.capPortraitAsset and view and view.captain then
+		local id, offset, size = H.capPortraitAsset(view.captain.portrait)
+		if id then heroPortrait = { id = id, offset = offset, size = size } end
+	end
+	local allyPortraits = {}
+	for _, ally in allyNames do
+		local image = COMPANION_PORTRAIT[ally.id]
+		local id = image and AssetIds["Portraits/" .. image.atlas]
+		if id then
+			local scale = sheetK(image.atlas)
+			allyPortraits[ally.id] = { id = id, offset = image.offset * scale,
+				size = (image.size or Vector2.new(256, 336)) * scale }
+		end
+	end
+	local usesMana = false
+	for _, card in cardSkills do
+		if card.skill == "heal" or card.skill == "ward" or card.skill == "armor" or card.skill == "read" then
+			usesMana = true
+			break
+		end
+	end
 	workspace:SetAttribute("FieldEntryStage", "BUILDING")
 	local startOk, startResult = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
 		battleStats = view and view.battleStats,
+		heroName = view and view.captain and view.captain.name or player.DisplayName,
+		heroPortrait = heroPortrait,
+		allyPortraits = allyPortraits,
+		heroUsesMana = usesMana,
 		cardSkills = cardSkills,
 		allies = allyNames,
 		-- [선택 집안] 기존 저장된 선장 출신을 공식 Weapons 정의로 변환. 기존 저장 키와 전투 수치는 그대로 사용한다.
