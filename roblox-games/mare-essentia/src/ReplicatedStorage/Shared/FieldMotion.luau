@@ -101,6 +101,63 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		availableJoints = AVAILABLE,
 		secondary = 0.65,
 	}, h.canon)
+	-- 전투 AI와 공격 타이밍은 건드리지 않고 직업/괴물 체형에 맞는 관절 표정만 합성한다.
+	local role = h.model:GetAttribute("MotionRole")
+	local A = CFrame.Angles
+	local id = CFrame.identity
+	local function bend(joint, x, y, z)
+		h.canon[joint] = (h.canon[joint] or id) * A(x, y, z)
+	end
+	local attack = state == "ANTICIPATION" or state == "ATTACK"
+	local pulse = math.sin(math.clamp(phase, 0, 1) * math.pi)
+	if role == "shield" then
+		-- 방패병: 왼팔을 몸 앞에 세우고 오른팔은 반격 준비.
+		if state == "IDLE" or state == "RUN" or attack then
+			bend("UpperArmL", -0.58, 0, -0.26)
+			bend("ForearmL", -0.70, 0, 0)
+			bend("UpperArmR", -0.22, 0, 0.08)
+			bend("Chest", 0.09, 0, 0)
+		end
+	elseif role == "archer" then
+		-- 사수: 예고 단계에 두 손으로 조준하고 타격 후 팔을 낮춘다.
+		if attack then
+			bend("UpperArmL", -0.72 - pulse * 0.24, 0, -0.14)
+			bend("UpperArmR", -0.92 - pulse * 0.16, 0, 0.17)
+			bend("ForearmL", -0.38, 0, 0)
+			bend("ForearmR", -0.55, 0, 0)
+			bend("Head", -0.09, 0, 0)
+		end
+	elseif role == "charger" then
+		-- 돌진병: 어깨를 말고 주먹을 낮춰 무게감 있는 공격 예고.
+		if attack then
+			bend("Chest", 0.28 * pulse, 0, 0)
+			bend("UpperArmL", 0.28, 0, 0.22)
+			bend("UpperArmR", 0.28, 0, -0.22)
+			bend("ForearmL", -0.42, 0, 0)
+			bend("ForearmR", -0.42, 0, 0)
+		end
+	elseif role == "boss" then
+		-- 두목: 큰 준비 자세와 비대칭 내려치기, 피격 뒤 고개 숙이기.
+		if attack then
+			bend("UpperArmR", -0.44 - pulse * 0.28, 0, -0.12)
+			bend("UpperArmL", -0.12, 0, 0.25)
+			bend("Chest", 0.14 * pulse, -0.12 * pulse, 0)
+		elseif state == "HIT" or state == "RECOVERY" then
+			bend("Head", 0.18 * (1 - math.clamp(phase, 0, 1)), 0, 0)
+		end
+	elseif role == "ally-ranged" then
+		-- 원거리 동료: 걷는 중에도 사격 준비 팔을 낮게 유지한다.
+		if state == "IDLE" or attack then
+			bend("UpperArmL", -0.32, 0, -0.10)
+			bend("UpperArmR", -0.52, 0, 0.10)
+			bend("ForearmR", -0.32, 0, 0)
+		end
+	elseif role == "ally-melee" then
+		if state == "IDLE" or attack then
+			bend("UpperArmL", -0.28, 0, -0.14)
+			bend("UpperArmR", -0.35, 0, 0.12)
+		end
+	end
 	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
 	if gain and gain ~= 1 then
 		for k, cf in h.canon do
