@@ -85,30 +85,34 @@ return function(D, S)
 		end
 		local effect = ""
 		local appliedDeal = false
+		local autoAttempt = false
 		if h and h.portId == state.portId and h.deal and h.deal.goodId == goodId then
 			total = math.max(1, math.floor(total * h.deal.mult))
 			appliedDeal = true
-		elseif skilled then
-			if not h or h.portId ~= state.portId then
-				h = { portId = state.portId, tried = {} }
-				state.haggle = h
-			end
-			if not h.tried[goodId] then
-				h.tried[goodId] = true
-				local port = D.Ports.Ports[state.portId]
+		elseif skilled and not (h and h.portId == state.portId and h.tried and h.tried[goodId]) then
+			-- [구매 확정 전] 잔액 부족으로 거래가 취소되면 흥정 기회를 소비하지 않는다.
+			autoAttempt = true
+			local port = D.Ports.Ports[state.portId]
 				local chance = math.clamp(0.35 + 0.1 * intel + (state.rep[port.country] or 0) / 100 * 0.2, 0.2, 0.9)
 				if ctx.rng() < chance then
 					local discount = 0.04 + ctx.rng() * 0.04
 					local before = total
 					total = math.max(1, math.floor(total * (1 - discount)))
 					effect = string.format(" · 자동 흥정 성공! %d코인 절약", before - total)
-				else
-					effect = " · 자동 흥정 실패 (정가)"
-				end
+			else
+				effect = " · 자동 흥정 실패 (정가)"
 			end
 		end
 		if total > state.coins then
 			return false, "코인이 부족해요" .. effect
+		end
+		if autoAttempt then
+			if not h or h.portId ~= state.portId then
+				h = { portId = state.portId, tried = {} }
+				state.haggle = h
+			end
+			h.tried = h.tried or {}
+			h.tried[goodId] = true
 		end
 		if appliedDeal then h.deal = nil end
 		state.coins -= total

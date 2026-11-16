@@ -1986,6 +1986,14 @@ do
 		check("상인 전문 구매 즉시 자동 흥정", okAuto and merchant.haggle and merchant.haggle.tried.wool and string.find(msgAuto, "자동 흥정 성공", 1, true) ~= nil, msgAuto)
 		local okAgain, msgAgain = S.Trade.handlers.Buy(merchant, { goodId = "wool", amount = 1 }, win)
 		check("같은 항구·품목 자동 흥정은 한 번", okAgain and string.find(msgAgain, "자동 흥정 성공", 1, true) == nil, msgAgain)
+		local noFunds = newState("england")
+		noFunds.specialty = "merchant"
+		noFunds.coins = 0
+		local refused = S.Trade.handlers.Buy(noFunds, { goodId = "wool", amount = 1 }, lose)
+		check("거래 취소는 자동 흥정 기회 보존", not refused and not (noFunds.haggle and noFunds.haggle.tried and noFunds.haggle.tried.wool))
+		noFunds.coins = 100000
+		local retried, retryMsg = S.Trade.handlers.Buy(noFunds, { goodId = "wool", amount = 1 }, win)
+		check("결제 불가 이후 구매 성공시 흥정 정상 발동", retried and string.find(retryMsg, "자동 흥정 성공", 1, true) ~= nil, retryMsg)
 		local normal = newState("england")
 		normal.coins = 100000
 		local okPlain, msgPlain = S.Trade.handlers.Buy(normal, { goodId = "wool", amount = 1 }, win)

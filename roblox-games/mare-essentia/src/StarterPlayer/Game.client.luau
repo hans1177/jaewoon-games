@@ -4823,6 +4823,16 @@ function RENDERERS.status()
 		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 8 then "bad" else "key" },
 		{ "석탄", tostring(ship.coal), tone = "key" },
 	})
+	-- [선장 현황] 현재 배의 역할·갑판 대포·개조 효과를 숫자와 설명으로 연결한다.
+	add(function()
+		local kind = if ship.steam then "증기선 · 석탄 " .. tostring(ship.fuelPerDay) .. "개/일"
+			elseif ship.rowed then "노젓기 병행 · 무풍 항해" else "바람을 이용하는 범선"
+		return mkRow(content, ship.name .. " · " .. ship.className,
+			ship.summary .. "\n" .. kind .. " · " .. ship.cannonName
+				.. string.format("\n대포 개조 포격 +%d%% · 선체 보강 %d단계", math.floor(ship.cannonBonus * 100 + 0.5), ship.plating), {
+				{ text = "조선소 비교", color = COLORS.blue, onClick = function() openTab("yard") end },
+			}, 110)
+	end)
 	add(function() return mkHeader(content, "해전 카드 지원 (자동)") end)
 	add(function()
 		local lines = view.navalSupport or {}
@@ -5371,8 +5381,12 @@ local function openTradeHall()
 				local cost = if g.buyTotals and g.buyTotals[n] then g.buyTotals[n] else unitBuyOf(g) * n
 				if cost <= p.coins then budgetQty = n end
 			end
-			local pr = mkLabel(row, string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 지금 구매 가능 %d개",
-				H.commas(g.buy), H.commas(g.sell), pct, g.owned, if g.supply == nil then "-" else tostring(g.supply), budgetQty), 15, INK, false)
+			-- [작은 화면] 실제 두 줄에 맞춰 가격과 구입 가능 수량을 우선 노출한다.
+			local priceText = if narrow
+				then string.format("구매 %s · 판매 %s\n시세 %+.0f%% · 가능 %d · 보유 %d", H.commas(g.buy), H.commas(g.sell), pct, budgetQty, g.owned)
+				else string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 지금 구매 가능 %d개",
+					H.commas(g.buy), H.commas(g.sell), pct, g.owned, if g.supply == nil then "-" else tostring(g.supply), budgetQty)
+			local pr = mkLabel(row, priceText, 15, INK, false)
 			pr.TextWrapped = true
 			pr.Position = UDim2.fromOffset(94, 34)
 			pr.Size = UDim2.new(1, -102, 0, 46)
@@ -5465,16 +5479,16 @@ local function openTradeHall()
 		detail.Name = "TradeSpecimen"
 		detail.Position = if narrow then UDim2.fromOffset(8, menuY) else UDim2.new(1, -326, 0, menuY)
 		detail.Size = if narrow then UDim2.new(1, -16, 1, -menuY - 8) else UDim2.new(0, 318, 1, -menuY - 8)
-		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, 132) end
+		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, 162) end
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
-		detail.CanvasSize = UDim2.fromOffset(0, 600)
+		detail.CanvasSize = UDim2.fromOffset(0, 760)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
 		detail.Parent = root
 		corner(detail, 7)
-		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, 600), COLORS.paper)
+		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, 760), COLORS.paper)
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
@@ -5508,23 +5522,23 @@ local function openTradeHall()
 				H.commas(sel.basePrice or 0), diff, basis, sel.owned, H.commas(p.coins),
 				maxBuy, free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
 			info.Position = UDim2.fromOffset(14, 124)
-			info.Size = UDim2.new(1, -28, 0, 112)
+			info.Size = UDim2.new(1, -28, 0, 184)
 			info.AutomaticSize = Enum.AutomaticSize.None
 			-- 상세 페이지를 스크롤해도 수량과 거래 버튼은 화면 아래에 남긴다.
-			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, -132),
-				UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, 124), COLORS.leather)
+			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, -156),
+				UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, 148), COLORS.leather)
 			corner(desk, 7)
 			bookMaterial(desk, "leather", 144)
 			local receipt = mkLabel(desk, "", 12, COLORS.text, false)
 			receipt.Position = UDim2.fromOffset(8, 5)
-			receipt.Size = UDim2.new(1, -16, 0, 19)
+			receipt.Size = UDim2.new(1, -16, 0, 38)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
 			local function refreshReceipt()
 				local pay = if sel.buyTotals and sel.buyTotals[qty] then sel.buyTotals[qty] else unitBuy * qty
 				local sellQty = math.min(qty, maxSell)
 				local get = if sellQty < 1 then 0 elseif sel.sellTotals and sel.sellTotals[sellQty] then sel.sellTotals[sellQty] else sel.sell * sellQty
-				receipt.Text = string.format("%d개 · 구매 %s · 판매(관세후) %s · 구매후 %s", qty, H.commas(pay), H.commas(get), H.commas(p.coins - pay))
+				receipt.Text = string.format("%d개 · 구매 %s · 남는 돈 %s\n판매(관세 후) %s", qty, H.commas(pay), H.commas(p.coins - pay), H.commas(get))
 				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
 			end
 			local function setQuantity(value)
@@ -5535,7 +5549,7 @@ local function openTradeHall()
 			end
 			local function quantityButton(index, label, action, enabled)
 				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, 44), action, enabled)
-				b.Position = UDim2.new((index - 1) / 4, 4, 0, 26)
+				b.Position = UDim2.new((index - 1) / 4, 4, 0, 46)
 			end
 			quantityButton(1, "−", function() setQuantity(qty - 1) end)
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
@@ -5543,9 +5557,9 @@ local function openTradeHall()
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
 			refreshReceipt()
 			local buy = mkButton(desk, if maxBuy >= qty then "구매" else "구매 불가", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
-			buy.Position = UDim2.fromOffset(4, 75)
+			buy.Position = UDim2.fromOffset(4, 98)
 			local sell = mkButton(desk, if maxSell >= qty then "판매" else "판매 가능 " .. tostring(maxSell), COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(0.5, 4, 0, 75)
+			sell.Position = UDim2.new(0.5, 4, 0, 98)
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
 			local tried = bargain.tried and bargain.tried[sel.id]
@@ -5553,13 +5567,13 @@ local function openTradeHall()
 				elseif tried then "자동 흥정: 이번 항구·품목 협상 시도 완료"
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
 			local alert = mkLabel(right, status, 14, if bargain.auto then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
-			alert.Position = UDim2.fromOffset(14, 248)
-			alert.Size = UDim2.new(1, -28, 0, 54)
+			alert.Position = UDim2.fromOffset(14, 326)
+			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sm.Position = UDim2.fromOffset(12, 310)
+			sm.Position = UDim2.fromOffset(12, 394)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
-			allB.Position = UDim2.fromOffset(12, 360)
+			allB.Position = UDim2.fromOffset(12, 446)
 			allB.TextSize = 15
 			do
 				local top = view.compare and view.compare[sel.id]
@@ -5574,13 +5588,13 @@ local function openTradeHall()
 					elseif #lines == 0 then "다른 항구 시세 정보 없음"
 					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
 				local cl = mkLabel(right, cmpText, 15, INK, false)
-				cl.Position = UDim2.fromOffset(14, 414)
-				cl.Size = UDim2.new(1, -28, 0, 108)
+				cl.Position = UDim2.fromOffset(14, 510)
+				cl.Size = UDim2.new(1, -28, 0, 128)
 				cl.AutomaticSize = Enum.AutomaticSize.None
 			end
 			local hint = mkLabel(right, string.format("장사 정보 %s · 거래 도중 시세 변동 · 판매 때 관세 차감", intelName(view.intel or 0)), 13, INK_SOFT, false)
-			hint.Position = UDim2.fromOffset(14, 534)
-			hint.Size = UDim2.new(1, -28, 0, 44)
+			hint.Position = UDim2.fromOffset(14, 658)
+			hint.Size = UDim2.new(1, -28, 0, 58)
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end
 		detail.CanvasPosition = Vector2.new(0, detailScroll)
