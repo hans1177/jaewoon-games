@@ -231,6 +231,69 @@ do
 	check("종료 강제 저장은 충돌을 복구한 연구를 보존", d.sync(stB, true) and memory.value.revision == latest + 1)
 end
 
+-- [지역 산업망] 백과 가공법·원산지 브랜드·해외 항구·원료 보존 검증.
+do
+	local Ports = require("./Shared/Ports")
+	local Chains = require("./Shared/ProductionChains")
+	local found = 0
+	for _, brand in ipairs(Chains.Brands) do
+		local port = Ports.Ports[brand.port]
+		local recipe = Chains.ById[brand.recipe]
+		local id = Chains.brandId(brand)
+		local valid = port ~= nil and recipe ~= nil and Ports.Goods[id] ~= nil
+			and table.find(port.produces, brand.source) ~= nil
+			and table.find(port.produces, Chains.goodId(recipe)) ~= nil
+			and table.find(port.produces, id) ~= nil
+		check("지역 브랜드 원료·가공·명품 완성 " .. id, valid == true)
+		if valid then
+			found += 1
+			for _, dest in ipairs(brand.destinations) do
+				check("국제 수출 수요 등록 " .. brand.port .. "→" .. dest,
+					Ports.Ports[dest] ~= nil and table.find(Ports.Ports[dest].demands, id) ~= nil)
+			end
+		end
+	end
+	check("기존 지역 생산 기반 브랜드 15종", found == 15, found)
+
+	local x = Eco.newWorld({ seed = 117, year = 1700 })
+	local t = x.towns.london
+	local brand = Chains.BrandsByPort.london[1]
+	local finished = Chains.goodId(Chains.ById[brand.recipe])
+	check("브랜드 미개발 시 공짜 가공품·브랜드 재고 없음",
+		t.stock[finished] == 0 and t.stock[brand.id] == 0)
+	t.stage, t.prosperity = 3, 1.2
+	t.tech.craft, t.tech.commerce, t.tech.sea = 2, 2, 2
+	t.civBonus.trade = 1.06
+	t.stock[brand.source] = 80
+	t.stock[finished] = 0
+	local raw = t.stock[brand.source]
+	local output = Eco.stepIndustries(t)
+	check("원료 재고 소비 후 실제 직조·가공",
+		t.stock[brand.source] < raw and (output[finished] or 0) > 0)
+	check("원료 부족 시 가공품 무단 생성 차단", (function()
+		t.stock[brand.source], t.stock[finished] = 0, 0
+		local noRaw = Eco.stepIndustries(t)
+		return (noRaw[finished] or 0) == 0 and (noRaw[brand.id] or 0) == 0
+	end)())
+	t.stock[brand.source], t.stock[finished] = 80, 30
+	local branded = Eco.stepIndustries(t)
+	check("지역 브랜드는 이미 만든 가공품을 소비",
+		Eco.industryStage(t, brand) == 3 and (branded[brand.id] or 0) > 0 and t.stock[finished] < 30)
+	check("브랜드 단계별 항구 산업 화면", Eco.industryView(t)[1].stage == 3)
+
+	t.stage, t.pop = 4, 55000
+	t.tech.commerce, t.tech.sea = 2.2, 2
+	t.stock[brand.id] = 200
+	Eco.initBuildings(t)
+	check("수출 기술 조건 충족 시 산업 4단계", Eco.industryStage(t, brand) == 4)
+	Eco.run(x, 1)
+	check("국제 항구에 실제 상품 수출 발생", (t.exports[brand.id] or 0) > 0, t.exports[brand.id])
+	local copy = Eco.restoreWorld(Eco.snapshot(x))
+	check("세계 저장·복원 시 누적 수출량 보존",
+		copy ~= nil and copy.towns.london.exports[brand.id] == t.exports[brand.id])
+	check("기존 카드·교역품 가격 ID와 브랜드 지식 연결", Ports.Goods[brand.id].knowledgeId == Ports.Goods[brand.source].knowledgeId)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})
@@ -252,6 +315,7 @@ do
 		end
 		check("활성 학문 전체 경제 매핑", mapped == #K.Disciplines and #K.Disciplines == 57, mapped)
 		check("백과 기술 상태를 항구 조회에서 노출", Econ.town(st, "london").technology.total == #Eco.CIVIL_TECH)
+		check("항구 브랜드 산업 단계를 기존 경제 화면으로 전달", #Econ.town(st, "london").industries > 0)
 		local before = Econ.town(st, "london").tech
 		Econ.teach(st, "london", "navigation", 10)
 		local after = Econ.town(st, "london").tech
