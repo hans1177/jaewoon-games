@@ -903,7 +903,7 @@ local function palmOk(portId, style)
 end
 
 -- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
-local IDLE_POOL = { "talk", "lean", "point", "wave", "talk", "write" } -- 멈춰 선 주민이 저마다 다른 동작을 한다
+local IDLE_POOL = { "talk", "lean", "point", "wave", "write", "inspect", "count", "stretch", "drink", "listen", "salute" } -- 멈춰 선 주민이 상황과 시간에 따라 다른 동작을 한다
 local stallSpots = {}
 local SKIN_HAIR = { Color3.fromRGB(48, 36, 30), Color3.fromRGB(86, 60, 40), Color3.fromRGB(150, 110, 60), Color3.fromRGB(30, 28, 30) }
 local GRAY_HAIR = Color3.fromRGB(206, 204, 200)
@@ -3050,6 +3050,13 @@ function PortScene.build(info, onFacility)
 						w.ga = 0
 						w.model:PivotTo(w.base)
 					end
+					-- 대화 중에도 듣기/물건 살피기를 교대해 동일한 제스처 반복을 줄인다.
+					if kind == "talk" then
+						local social = (now + w.phase * 2.3) % 19
+						kind = if social < 5 then "talk" elseif social < 9 then "listen" elseif social < 12 then "point" elseif social < 15 then "inspect" else "talk"
+					elseif kind == "look" then
+						kind = if (now + w.phase * 4) % 23 < 2.8 then "salute" else "look"
+					end
 					Pose.work(w.model, kind, now + w.phase)
 				end
 			elseif w.mode == "animal" then
@@ -3123,7 +3130,7 @@ function PortScene.build(info, onFacility)
 					Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
 				end
 				if not moving then
-					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor(w.phase * 7) % #IDLE_POOL) + 1], now + w.phase)
+					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
 				elseif w.kind then
 					Pose.work(w.model, w.kind, now + w.phase)
 				elseif w.elder then
@@ -3449,13 +3456,13 @@ function PortScene.build(info, onFacility)
 	local followers = {}
 	do
 		local looks = {
-			c_merian = { "Rogue", Color3.fromRGB(176, 96, 120) }, c_halley = { "Knight", Color3.fromRGB(60, 80, 140) },
-			c_leeuwenhoek = { "Mage", Color3.fromRGB(110, 90, 70) }, c_linnaeus = { "Rogue_Hooded", Color3.fromRGB(70, 120, 84) },
-			c_boyle = { "Mage", Color3.fromRGB(130, 70, 70) }, c_papin = { "Barbarian", Color3.fromRGB(96, 100, 110) },
-			t_navigator = { "Knight", Color3.fromRGB(40, 90, 120) }, t_gunner = { "Barbarian", Color3.fromRGB(120, 60, 50) },
-			t_purser = { "Rogue", Color3.fromRGB(90, 80, 50) }, t_surgeon = { "Mage", Color3.fromRGB(230, 230, 235) },
-			t_helmsman = { "Knight", Color3.fromRGB(50, 70, 110) }, t_mate = { "Rogue", Color3.fromRGB(120, 60, 80) },
-			t_boatswain = { "Barbarian", Color3.fromRGB(90, 70, 50) }, t_master_gunner = { "Barbarian", Color3.fromRGB(140, 50, 50) },
+			c_merian = { "Rogue", Color3.fromRGB(176, 96, 120), "inspect" }, c_halley = { "Knight", Color3.fromRGB(60, 80, 140), "point" },
+			c_leeuwenhoek = { "Mage", Color3.fromRGB(110, 90, 70), "write" }, c_linnaeus = { "Rogue_Hooded", Color3.fromRGB(70, 120, 84), "inspect" },
+			c_boyle = { "Mage", Color3.fromRGB(130, 70, 70), "count" }, c_papin = { "Barbarian", Color3.fromRGB(96, 100, 110), "stretch" },
+			t_navigator = { "Knight", Color3.fromRGB(40, 90, 120), "salute" }, t_gunner = { "Barbarian", Color3.fromRGB(120, 60, 50), "salute" },
+			t_purser = { "Rogue", Color3.fromRGB(90, 80, 50), "count" }, t_surgeon = { "Mage", Color3.fromRGB(230, 230, 235), "inspect" },
+			t_helmsman = { "Knight", Color3.fromRGB(50, 70, 110), "look" }, t_mate = { "Rogue", Color3.fromRGB(120, 60, 80), "point" },
+			t_boatswain = { "Barbarian", Color3.fromRGB(90, 70, 50), "stretch" }, t_master_gunner = { "Barbarian", Color3.fromRGB(140, 50, 50), "salute" },
 		}
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
@@ -3465,7 +3472,7 @@ function PortScene.build(info, onFacility)
 				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
 				if tag then sign(folder, tag, c.name, Color3.fromRGB(40, 90, 150), 4, true) end
 				local at = v:GetPivot().Position
-				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7 })
+				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look" })
 			end
 		end
 	end
@@ -3518,6 +3525,10 @@ function PortScene.build(info, onFacility)
 					local at = f.pos + Vector3.new(0, f.baseY + bob, 0)
 					f.model:PivotTo(CFrame.lookAt(at, at + faceDir))
 					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, now + f.phase)
+					if not moving then
+						local idleKind = if (now + f.phase * 3) % 24 < 3 then "look" else f.idleKind
+						Pose.work(f.model, idleKind, now + f.phase)
+					end
 				end
 			end
 		end)
