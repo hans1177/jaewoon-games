@@ -5,6 +5,28 @@
 return function(D, S)
 	local View = {}
 	local DELIVER_SHOWN_MAX = 4 -- 주점 게시판에 한 번에 보여 주는 납품 의뢰 수
+	-- [기존 21학문 연결] 소재 종류마다 연관 학문. 주학문은 실제 학문 트리의 노드/분야로 판정한다.
+	-- 연관 표시는 추가 경험치를 만들지 않으며 기존 보고·숙련도·저장 시스템을 그대로 사용한다.
+	local RELATED_BY_KIND = {
+		terrain = { "geography", "navigation", "meteorology" },
+		building = { "architecture", "history", "physics" },
+		wonder = { "history", "archaeology", "mythology" },
+		animal = { "zoology", "botany" },
+		plant = { "botany", "medicine" },
+		mineral = { "mineralogy", "chemistry", "geography" },
+		relic = { "archaeology", "history", "physics" },
+		archive = { "linguistics", "history", "philosophy" },
+		map = { "navigation", "geography", "astronomy" },
+		science = { "physics", "chemistry", "philosophy" },
+		medicine = { "medicine", "botany", "chemistry" },
+		ship = { "shipbuilding", "navigation", "physics", "history" },
+		weather = { "meteorology", "astronomy", "geography" },
+		art = { "art", "history", "philosophy" },
+		goods = { "commerce", "botany", "chemistry" },
+		legend = { "mythology", "mystery", "lostland" },
+		military = { "history", "physics", "navigation" },
+	}
+
 
 	local function sortedKeys(t)
 		local keys = {}
@@ -533,14 +555,58 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {} }
+		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {} }
+		local fieldDiscipline = {}
+		for _, disc in D.KnowledgeTree.Disciplines do
+			fieldDiscipline[disc.field] = disc
+		end
+		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
+		local function relatedNames(c, kind, primaryId)
+			local names, seen = {}, {}
+			local function include(discId)
+				if not discId or discId == primaryId or seen[discId] then return end
+				local d = D.KnowledgeTree.DisciplineById[discId]
+				if d then
+					seen[discId] = true
+					table.insert(names, d.name)
+				end
+			end
+			-- 카드별 원본 선행 지식을 먼저 읽어, 실제 식물학→의학 연구 등 교차 학문을 우선 표시.
+			local node = D.KnowledgeTree.ById[c.id]
+			for _, needId in (node and node.needs or {}) do
+				local parent = D.KnowledgeTree.ById[needId]
+				if parent then include(parent.disc) end
+			end
+			for _, discId in RELATED_BY_KIND[kind] or {} do include(discId) end
+			return names
+		end
 		for _, c in D.Cards.Cards do
+			local method = S.Discovery.methodOf(c)
+			local kind = D.Cards.kindOf(c)
+			local cardNode = D.KnowledgeTree.ById[c.id]
+			local disc = (cardNode and D.KnowledgeTree.DisciplineById[cardNode.disc]) or fieldDiscipline[c.field]
+			local domain = disc and D.KnowledgeTree.TaxonomyById[disc.id] and D.KnowledgeTree.TaxonomyById[disc.id].domain
+			local defKind = D.Cards.KindById[kind]
+			local worldId = defKind and defKind.group or "culture"
+			view.codex.worldCounts[worldId] = (view.codex.worldCounts[worldId] or 0) + 1
+			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
+				pair[1][pair[2]] = (pair[1][pair[2]] or 0) + 1
+			end
 			local found = state.discovered[c.id] == true
 			local art = D.CardArt.Art[c.id]
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
 				rarity = c.rarity,
+				method = method,
+				kind = kind,
+				kindName = defKind and defKind.name or "기타",
+				worldGroup = D.Cards.WorldGroupById[worldId] and D.Cards.WorldGroupById[worldId].name or "인류·역사·문화",
+				subkind = D.Cards.subkindOf(c),
+				discipline = disc and disc.name or "학문 외 자료",
+				relatedDisciplines = relatedNames(c, kind, disc and disc.id),
+				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
+				rarityGuide = S.Discovery.rarityGuide(c),
 				found = found,
 				name = if found then c.name else "???",
 				description = if found then c.description else "발견 방법: " .. c.source,
@@ -570,6 +636,36 @@ return function(D, S)
 				})
 			end
 			view.codex.overall = overall
+			view.codex.kindList = D.Cards.Kinds
+			view.codex.worldGroups = D.Cards.WorldGroups
+			view.codex.resourceKinds = D.Ports.ResourceKinds
+			local resourceKindNames = {}
+			for _, group in D.Ports.ResourceKinds do
+				resourceKindNames[group.id] = group
+			end
+			-- [세계 자원 연결] 실제 69개 교역 자원 + 기존 제작법 가공품을 모두 원본 상품 데이터에서 조회한다.
+			-- 관련 지식카드는 원본 도감 카드 참조일 뿐 새 아이템/보상을 생성하지 않는다.
+			for id, good in D.Ports.Goods do
+				local kindId = good.resourceKind or "manufactured"
+				local group = resourceKindNames[kindId] or resourceKindNames.manufactured
+				local card = D.Cards.ById[good.knowledgeId]
+				local subjectId = good.discipline or (group and group.discipline)
+				local taxonomy = subjectId and D.KnowledgeTree.TaxonomyById[subjectId]
+				while taxonomy and taxonomy.planned do
+					taxonomy = taxonomy.parent and D.KnowledgeTree.TaxonomyById[taxonomy.parent]
+				end
+				local subject = taxonomy and D.KnowledgeTree.DisciplineById[taxonomy.id]
+				table.insert(view.codex.resources, {
+					id = id, name = good.name, category = kindId,
+					categoryName = group and group.name or "가공품",
+					discipline = subject and subject.name or "기타",
+					appliedDiscipline = if good.discipline and D.KnowledgeTree.TaxonomyById[good.discipline] then D.KnowledgeTree.TaxonomyById[good.discipline].name else nil,
+					cardId = card and card.id or nil,
+					cardName = card and card.name or "연관 지식 미등록",
+				})
+				view.codex.resourceCounts[kindId] = (view.codex.resourceCounts[kindId] or 0) + 1
+			end
+			table.sort(view.codex.resources, function(a, b) return a.name < b.name end)
 			view.codex.rank = S.Codex.rankTitle(state)
 		end
 

@@ -6621,6 +6621,16 @@ function H.showCardDetail(card)
 		box2.Parent = body
 	end
 	mkLabel(body, card.description, 17, ink, false, 3)
+	if card.kindName then
+		mkLabel(body, "상위 분야: " .. (card.worldGroup or "세계 지식") .. " · 카드 종류: " .. card.kindName .. (if card.subkind then " / " .. card.subkind else "") .. " · 주학문: " .. (card.discipline or "기타") .. " · " .. (card.domain or "기타"), 13, brown, false, 4)
+		if card.relatedDisciplines and #card.relatedDisciplines > 0 then
+			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
+		end
+	end
+	if card.method then
+		local text = if card.method == "discover" then "발견" elseif card.method == "research" then "연구" else "탐험"
+		mkLabel(body, "습득 경로: " .. text .. " · 등급별 조사: " .. (card.rarityGuide or "일반 조사"), 13, brown, false, 4)
+	end
 	if card.path then
 		mkLabel(body, "획득 과정: " .. card.path .. " · " .. tostring(card.source) .. (if card.studyLocked then "\n현재 조건: " .. card.studyLocked else ""), 13, brown, false, 4)
 	end
@@ -7116,6 +7126,38 @@ local function renderCodexOverview()
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
 	end)
+	-- [지구·인류 오브젝트] 7개 큰 종류부터 접근하고, 17개 소재·상품 16개 하위 종류로 내려간다.
+	add(function() return mkHeader(content, "지구·인류 전체 오브젝트") end)
+	for _, group in cx.worldGroups or {} do
+		add(function()
+			return mkRow(content, group.name .. " · " .. tostring(cx.worldCounts[group.id] or 0) .. "장", "지형·생명·원자재·건축·기술·학문·인류의 기록", {
+				{ text = "보기", color = COLORS.blue, onClick = function() codexField = "w:" .. group.id; render() end },
+			}, 52)
+		end)
+	end
+	add(function()
+		return mkRow(content, "세계 교역·자원 목록 · " .. tostring(#(cx.resources or {})) .. "종", "광석·금속·목재·식량·섬유·연료·가공품까지 기존 상품 원본 연결", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "r:all"; render() end },
+		}, 58)
+	end)
+	-- [새 분류] 습득 방식은 카드 종류·희귀도·학문과 독립된다. 기존 학문 화면도 그대로 유지한다.
+	add(function() return mkHeader(content, "습득 방식 · 3가지") end)
+	for _, row in { { id = "discover", name = "발견", hint = "항구 방문·항해 중 관찰·단순 사건" },
+		{ id = "research", name = "연구", hint = "선행 지식·학자·동료·연속 퀘스트" },
+		{ id = "explore", name = "탐험", hint = "현장 조사·지형·동물·유적·유물" } } do
+		add(function()
+			return mkRow(content, row.name .. " · " .. tostring(cx.methods[row.id] or 0) .. "장", row.hint, {
+				{ text = "보기", color = COLORS.blue, onClick = function() codexField = "a:" .. row.id; render() end },
+			}, 56)
+		end)
+	end
+	add(function() return mkHeader(content, "카드 소재") end)
+	add(function()
+		return mkRow(content, string.format("세부 종류 · %d가지", #cx.kindList), "지형·선박·광물·화석·건축물·동물·문화·원자재 등", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
+		}, 54)
+	end)
+	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
@@ -7301,6 +7343,95 @@ local function renderCodexOverview()
 	end
 
 function H.renderCodexField()
+-- [분류 별 목록] 도감의 발견·연구·탐험 또는 카드 소재로 걸러서 본다. 저장 상태/발견 조건은 변경하지 않는다.
+if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" or string.sub(codexField, 1, 2) == "w:" then
+	local mode, key = string.sub(codexField, 1, 2), string.sub(codexField, 3)
+	local label = if mode == "a:" then (if key == "discover" then "발견" elseif key == "research" then "연구" else "탐험")
+		elseif mode == "w:" then ((function()
+			for _, g in view.codex.worldGroups or {} do if g.id == key then return g.name end end
+			return "지구·인류 오브젝트"
+		end)())
+		else ((view.codex.kindList and (function()
+			for _, k in view.codex.kindList do if k.id == key then return k.name end end
+			return nil
+		end)()) or "카드 종류")
+	add(function()
+		return mkRow(content, "← 분류 목록", label, { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 50)
+	end)
+	if mode == "t:" and key == "all" then
+		for _, kind in view.codex.kindList or {} do
+			add(function()
+				return mkRow(content, kind.name .. " · " .. tostring(view.codex.kinds[kind.id] or 0) .. "장", "카드 종류별 목록", {
+					{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:" .. kind.id; render() end },
+				}, 52)
+			end)
+		end
+		return
+	end
+	add(function()
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, -6, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		local g = Instance.new("UIGridLayout")
+		g.CellSize = UDim2.new(1 / 3, -6, 0, 118)
+		g.CellPadding = UDim2.fromOffset(6, 6)
+		g.SortOrder = Enum.SortOrder.LayoutOrder
+		g.Parent = grid
+		local n = 0
+		for _, c in view.codex.cards do
+			if (mode == "a:" and c.method == key) or (mode == "t:" and c.kind == key) or (mode == "w:" and (function() for _, k in view.codex.kindList or {} do if k.id == c.kind then return k.group == key end end return false end)()) then
+				n += 1
+				local tint = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
+				local badge = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
+				local tile = H.codexCardTile(grid, c, findField(c.field), badge, tint, function() H.showCardDetail(c) end)
+				tile.LayoutOrder = n
+			end
+		end
+		return grid
+	end)
+	return
+end
+-- [자원 백과] 물건/가공품은 기존 시장 상품을 인용한다. 연관 지식의 카드가 있으면 도감 상세로 연결한다.
+if string.sub(codexField, 1, 2) == "r:" then
+	local selected = string.sub(codexField, 3)
+	add(function() return mkRow(content, "← 세계 백과", "실제 시장 교역품과 연관 지식", {
+		{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
+	}, 52) end)
+	if selected == "all" then
+		add(function() return mkHeader(content, "자원·원자재·상품 하위 분류") end)
+		for _, group in view.codex.resourceKinds or {} do
+			add(function()
+				return mkRow(content, group.name .. " · " .. tostring(view.codex.resourceCounts[group.id] or 0) .. "종", "교역품·원료·관련 학문", {
+					{ text = "보기", color = COLORS.blue, onClick = function() codexField = "r:" .. group.id; render() end },
+				}, 52)
+			end)
+		end
+	else
+		local groupName = "자원·원자재"
+		for _, group in view.codex.resourceKinds or {} do
+			if group.id == selected then groupName = group.name break end
+		end
+		add(function() return mkHeader(content, groupName) end)
+		add(function() return mkRow(content, "← 자원 분류", "다른 자원 보기", {
+			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = "r:all"; render() end },
+		}, 52) end)
+		local cardById = {}
+		for _, card in view.codex.cards do cardById[card.id] = card end
+		for _, item in view.codex.resources or {} do
+			if item.category == selected then
+				add(function()
+					local card = item.cardId and cardById[item.cardId]
+					return mkRow(content, item.name, "연결 학문: " .. item.discipline .. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "") .. " · 연관 지식: " .. item.cardName, {
+						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
+							onClick = function() if card then H.showCardDetail(card) end end },
+					}, 62)
+				end)
+			end
+		end
+	end
+	return
+end
 if codexField == "boarding" then
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	BC.useKind("boarding") -- 해전 대결 뒤에 줄 이름이 바뀌어 있을 수 있으니 도감은 기본 이름으로 되돌려 보여 준다

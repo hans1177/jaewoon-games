@@ -570,6 +570,68 @@ local function extraTests()
 	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
+	-- [지식 도감 분류] 3획득 방식·16소재·기존 21학문, 기존 배/설계 구별과 첫 항구 발견
+	do
+		local collection = D.Cards
+		local tree = D.KnowledgeTree
+		check("지식 분류: 17종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 17)
+		check("지식 분류: 지구·인류 큰 영역 7가지", #collection.WorldGroups == 7)
+		check("지식 분류: 소재 17개 모두 상위 영역과 연결", (function()
+			for _, kind in collection.Kinds do
+				if not collection.WorldGroupById[kind.group] then return false end
+			end
+			return true
+		end)())
+		check("자원 분류: 기본 상품과 가공품 총 16종 하위 영역", #D.Ports.ResourceKinds == 16)
+		local groups = {}
+		for _, group in D.Ports.ResourceKinds do groups[group.id] = true end
+		local rawCount, processedCount, brokenGood = 0, 0, nil
+		for id, good in D.Ports.Goods do
+			if not groups[good.resourceKind] or not D.Cards.ById[good.knowledgeId] then
+				brokenGood = id
+			end
+			if string.sub(id, 1, 2) == "p_" then processedCount += 1 else rawCount += 1 end
+		end
+		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
+		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
+
+		check("지식 분류: 기존 학문 21개 유지", #tree.Disciplines == 21)
+		local vessel = collection.ById.ship_caravel
+		local galleon = collection.ById.ship_galleon
+		local design = collection.ById.ship_galleon_design
+		check("선박 지식: 캐러벨과 갤리온 실물·설계가 각각 존재", vessel ~= nil and galleon ~= nil and design ~= nil)
+		check("선박 지식: 실물과 설계는 다른 세부 분류", collection.kindOf(galleon) == "ship" and collection.subkindOf(galleon) == "선박 실물" and collection.subkindOf(design) == "선박 설계")
+		check("선박 지식: 기존 조선학 지식트리 보고 노드에 연결", tree.ById.ship_caravel ~= nil and tree.ById.ship_galleon ~= nil and tree.ById.ship_galleon.disc == "shipbuilding")
+		local st = newState("england")
+		local messages = {}
+		local before = st.coins
+		check("단순 발견: 리스본 도착 지식은 별도 탐험 없이 한 번만 등록", S.Discovery.grantVisitCards(st, "lisbon", messages) == 1 and st.discovered.ship_caravel and st.coins > before)
+		check("단순 발견: 재방문 보상 중복 지급 없음", S.Discovery.grantVisitCards(st, "lisbon", messages) == 0)
+		check("습득 경로: 캐러벨은 발견·버드나무 연구는 연구", S.Discovery.methodOf(vessel) == "discover" and S.Discovery.methodOf(collection.ById.med_willow_bark) == "research")
+		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
+		local v = S.View.build(st, ctx)
+		check("도감: 세 방식과 16종 분류가 화면 데이터에 담김", v.codex.disciplineCount == 21 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
+
+		local cardById = {}
+		local namedSubjects = {}
+		for _, c in v.codex.cards do
+			cardById[c.id] = c
+			namedSubjects[c.discipline] = true
+		end
+		local missing = nil
+		for _, d in tree.Disciplines do
+			if not namedSubjects[d.name] then missing = d.id break end
+		end
+		check("도감: 기존 21학문을 실제 카드 주학문에 연결", missing == nil, missing)
+		local vesselView = cardById.ship_galleon
+		check("도감: 갤리온 주학문은 기존 조선학", vesselView.discipline == "조선학")
+		check("도감: 갤리온은 기존 항해술·물리학·역사학과 연결", table.find(vesselView.relatedDisciplines, "항해술") ~= nil and table.find(vesselView.relatedDisciplines, "물리학") ~= nil and table.find(vesselView.relatedDisciplines, "역사·유적학") ~= nil)
+		local willow = cardById.med_willow_bark
+		check("도감: 버드나무 의학 연구는 기존 식물학과 교차 연결", willow.discipline == "의학" and table.find(willow.relatedDisciplines, "식물학") ~= nil)
+		local restored = S.State.sanitize(S.State.serialize(st))
+		check("도감: 방문 발견은 기존 저장키로 정상 복원", restored.discovered.ship_caravel == true)
+	end
 	check("세계: 화면에 담김", S.View.build(stWd, ctx).world ~= nil)
 	-- [추가 연구 회귀] 기존 분리된 테스트 함수에서 동일 조건을 실행해 전체 타입 추론 부담을 낮춘다.
 	-- [지식카드 획득] 희귀도 5단계·16세기 버드나무 연구·후대 연구기관 연도 회귀

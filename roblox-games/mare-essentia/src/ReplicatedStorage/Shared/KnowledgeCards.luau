@@ -1,5 +1,5 @@
 --!strict
--- KnowledgeCards.luau · 지식카드 원본 데이터와 시대·연구 과정(선택적 조건)
+-- KnowledgeCards.luau · 지식카드 원본 데이터 / 별도 종류·획득경로·학문·희귀도 분류
 -- 지식 카드(세계 백과). 새 항목은 이 테이블에 추가만 하면 도감이 늘어난다.
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
@@ -13,10 +13,11 @@ export type Card = {
 	source: string, -- 발견 방법 (표시용)
 	fromYear: number?, -- 실제 등장 시기 이전 연구/발견 방지(명시된 카드만)
 	research: { found: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
+	visitPort: string?, -- 단순 방문으로 등록되는 카드만 명시. 기존 지점의 드롭률은 바꾸지 않는다.
 	reward: { fame: number, coins: number },
 }
 
-local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?): Card
+local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?, visitPort: string?): Card
 	return {
 		id = id,
 		name = name,
@@ -26,11 +27,19 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 		source = source,
 		fromYear = fromYear,
 		research = research,
+		visitPort = visitPort,
 		reward = { fame = fame, coins = coins },
 	}
 end
 
 local Rows: { { any } } = {
+	-- [단순 발견] 입항하면 역사·지형을 알아본다. 탐험 확률·퀘스트·연구 조건은 없으며 보상은 최초 1회만.
+	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp" },
+	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice" },
+	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london" },
+	-- 기존 선박 실물은 관찰 카드로, 선체 설계도·부품은 별도 연구 카드로 남긴다. 보유 선박/선박 구매 규칙은 변경하지 않는다.
+	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon" },
+	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville" },
 	-- [버드나무 연구] 일반 표본 → 비교 관찰 → 희귀 의학 기록. 주인공의 직업은 상관없다.
 	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500 },
 	{ "bot_willow_notes", "버드나무 표본 비교 기록", "Botany", "Uncommon", "채집한 버드나무 잎과 껍질을 수도원 약초원에서 말리고 기록한 비교 관찰장.", "수도원 약초원 기록", 15, 40, 1500, { found = { "bot_willow" } } },
@@ -875,8 +884,90 @@ end
 
 local Cards: { Card } = {}
 for _, r in Rows do
-	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]))
+	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11]))
 end
+
+-- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
+-- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 17개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
+-- 학문 7대 영역과 혼동하지 않는다. 시대와 무관한 오브젝트 상위 분류다.
+local WorldGroups = {
+	{ id = "planet", name = "지구·환경" },
+	{ id = "life", name = "생명·생태" },
+	{ id = "materials", name = "자원·원자재" },
+	{ id = "built", name = "지형 위의 인공 구조물" },
+	{ id = "technology", name = "기술·이동·전투" },
+	{ id = "knowledge", name = "학문·의료·발명" },
+	{ id = "culture", name = "인류·역사·문화" },
+}
+local WorldGroupById = {}
+for _, group in WorldGroups do WorldGroupById[group.id] = group end
+
+local Kinds = {
+	{ id = "terrain", name = "지형·해역", group = "planet" }, { id = "building", name = "건축물", group = "built" }, { id = "wonder", name = "원더·유적", group = "built" },
+	{ id = "animal", name = "동물", group = "life" }, { id = "plant", name = "식물", group = "life" }, { id = "mineral", name = "광물·화석", group = "materials" },
+	{ id = "relic", name = "유물", group = "culture" }, { id = "archive", name = "문헌·기록", group = "culture" }, { id = "map", name = "지도·항로", group = "planet" },
+	{ id = "science", name = "이론·발명", group = "knowledge" }, { id = "medicine", name = "의학·약학", group = "knowledge" }, { id = "ship", name = "선박·조선", group = "technology" },
+	{ id = "weather", name = "기상·천문", group = "planet" }, { id = "art", name = "예술·문화", group = "culture" },
+	{ id = "goods", name = "교역·산물", group = "materials" }, { id = "legend", name = "신화·미스터리", group = "culture" },
+	{ id = "military", name = "병종·전술", group = "technology" },
+}
+local KindById = {}
+for _, kind in Kinds do KindById[kind.id] = kind end
+local FieldKind = {
+	Botany = "plant", Zoology = "animal", Mineral = "mineral", Relic = "relic",
+	Site = "wonder", Architecture = "building", Astronomy = "weather", Weather = "weather",
+	Medicine = "medicine", Shipbuilding = "ship", Navigation = "map", Geography = "terrain",
+	Physics = "science", Chemistry = "science", Philosophy = "science", Goods = "goods",
+	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
+}
+local function kindOf(c: Card): string
+	if c.field == "Site" then
+		if string.find(c.name, "산", 1, true) or string.find(c.name, "폭포", 1, true) or string.find(c.name, "협곡", 1, true) or string.find(c.name, "해협", 1, true) then
+			return "terrain"
+		end
+		for _, word in { "성당", "모스크", "교회", "궁전", "다리", "부두", "운하", "크레인", "요새", "성벽", "브리지", "박물관", "대성채", "등대" } do
+			if string.find(c.name, word, 1, true) then return "building" end
+		end
+	elseif c.field == "Geography" then
+		for _, word in { "해도", "지도", "항로", "항해 기록", "해류도" } do
+			if string.find(c.name, word, 1, true) then return "map" end
+		end
+	elseif c.field == "Botany" and (string.find(c.name, "기록", 1, true) or string.find(c.name, "분류법", 1, true)) then
+		return "archive"
+	end
+	return FieldKind[c.field] or "archive"
+end
+-- [선박 세부 종류] 실물 선박과 설계·부품·조선소 시설을 혼동하지 않는다.
+local function subkindOf(c: Card): string?
+	if c.field == "Mineral" then
+		if string.find(c.name, "화석", 1, true) or string.find(c.name, "호박", 1, true) or string.find(c.name, "암모나이트", 1, true) then return "화석·고생물 흔적" end
+		for _, word in { "광석", "철", "구리", "금", "은", "주석", "초석", "유황", "석탄" } do
+			if string.find(c.name, word, 1, true) then return "광석·금속·광물 자원" end
+		end
+		for _, word in { "보석", "루비", "사파이어", "진주", "옥", "수정", "다이아" } do
+			if string.find(c.name, word, 1, true) then return "보석·결정" end
+		end
+		return "암석·석재·지질"
+	elseif c.field == "Botany" then
+		if string.find(c.name, "나무", 1, true) or string.find(c.name, "수목", 1, true) then return "삼림·목재 원료" end
+		if string.find(c.name, "약초", 1, true) or string.find(c.name, "인삼", 1, true) then return "약용 식물" end
+		return "식물·작물·표본"
+	elseif c.field == "Zoology" then
+		if string.find(c.name, "고래", 1, true) or string.find(c.name, "상어", 1, true) or string.find(c.name, "물고기", 1, true) then return "해양 생물" end
+		return "육상·조류·해양 생물"
+	elseif c.field == "Shipbuilding" then
+		if c.id == "ship_caravel" or c.id == "ship_galleon" or c.id == "ship_longship" then return "선박 실물" end
+		if string.find(c.id, "design", 1, true) or string.find(c.name, "설계", 1, true) then return "선박 설계" end
+		if c.id == "ship_dry_dock" then return "조선 시설" end
+		return "선박 장비·공법"
+	elseif c.field == "Site" then
+		local kind = kindOf(c)
+		if kind == "building" then return "실존 건축물" elseif kind == "terrain" then return "자연 지형" end
+		return "유적·원더"
+	end
+	return nil
+end
+local RarityNames = { Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" }
 
 local ById: { [string]: Card } = {}
 for _, c in Cards do
@@ -936,4 +1027,11 @@ return {
 	Articles = Articles,
 	Cards = Cards,
 	ById = ById,
+	WorldGroups = WorldGroups,
+	WorldGroupById = WorldGroupById,
+	Kinds = Kinds,
+	KindById = KindById,
+	kindOf = kindOf,
+	subkindOf = subkindOf,
+	RarityNames = RarityNames,
 }
