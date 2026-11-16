@@ -170,13 +170,15 @@ function E.specialtyView(t)
 	local out = {}
 	for _, goodId in ipairs(t.goods) do
 		if t.produces[goodId] and Data.Goods[goodId] then
-			local level = E.specialtyLevel(t, goodId)
+			local brand = Chains.BrandById[goodId]
+			local level = if brand then E.industryStage(t, brand) else E.specialtyLevel(t, goodId)
 			table.insert(out, {
 				id = goodId, name = Data.Goods[goodId].name, level = level,
 				produced = math.floor((t.out[goodId] or 0) * 100 + 0.5) / 100,
 				stock = math.floor(t.stock[goodId] or 0),
 				price = math.floor((t.price[goodId] or Data.Goods[goodId].basePrice) * 10 + 0.5) / 10,
-				industry = if level == 4 then "국제 교역 거점" elseif level == 3 then "가공 산업 도시" elseif level == 2 then "특산 생산 마을" else "원산지",
+				industry = if brand then (({ "원료 단계", "가공 단계", "지역 브랜드", "국제 수출 산업" })[level] or "원료 확보 중")
+					elseif level == 4 then "국제 교역 거점" elseif level == 3 then "가공 산업 도시" elseif level == 2 then "특산 생산 마을" else "원산지",
 			})
 		end
 	end
