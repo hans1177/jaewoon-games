@@ -39,11 +39,12 @@ K.Disciplines = {
 }
 
 -- 이 학자는 어느 학문의 보고를 받는가
+-- [백과↔학문 보고 경로] 독립 뿌리 학문인 수학은 기존 실존 수학자 두 명이 직접 보고받는다.
 K.ScholarDisciplines = {
 	huygens = { "astronomy", "physics" }, halley = { "astronomy", "geography", "navigation" }, romer = { "astronomy", "physics" },
-	newton = { "philosophy", "physics", "astronomy" }, boyle = { "chemistry", "physics", "medicine" }, leeuwenhoek = { "physics" },
+	newton = { "philosophy", "physics", "astronomy", "mathematics" }, boyle = { "chemistry", "physics", "medicine" }, leeuwenhoek = { "physics" },
 	papin = { "physics" }, savery = { "physics" }, newcomen = { "physics" }, celsius = { "physics" },
-	leibniz = { "philosophy", "physics", "chemistry" }, descartes = { "philosophy", "physics", "astronomy" },
+	leibniz = { "philosophy", "physics", "chemistry", "mathematics" }, descartes = { "philosophy", "physics", "astronomy" },
 	-- 예술가 (그림·음악·판화)
 	-- 철학·박물학·의학·지리
 	galileo = { "astronomy", "physics" }, harvey = { "medicine" }, torricelli = { "physics", "meteorology" }, hooke = { "physics", "medicine" },

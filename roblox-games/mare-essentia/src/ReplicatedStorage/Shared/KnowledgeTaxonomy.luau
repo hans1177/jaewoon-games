@@ -7,6 +7,7 @@
 local K = require(script.Parent.KnowledgeTree)
 local Cards = require(script.Parent.KnowledgeCards)
 local Ports = require(script.Parent.Ports)
+local Sites = require(script.Parent.Sites)
 
 local T = {}
 
@@ -31,12 +32,23 @@ function T.path(cardId: string)
 	local node = c and K.ById[cardId]
 	local meta = c and c.meta
 	local needs = node and node.needs or (c and c.research and c.research.reported) or {}
+	-- [복합 학문 연결] 기존 전문 학문 색인과 카드 메타 학문을 합쳐 보여주되,
+	-- 카드 보상·학문 숙련·기존 주학문은 변경하지 않는다.
+	local related, seen = {}, {}
+	local function include(discId: string)
+		if discId ~= disc and not seen[discId] and (K.DisciplineById :: any)[discId] then
+			seen[discId] = true
+			table.insert(related, discId)
+		end
+	end
+	for _, linked in K.CardRelatedDisciplines[cardId] or {} do include(linked) end
+	for _, linked in (meta and meta.relatedDisciplines or {}) do include(linked) end
 	return {
 		domain = row and row.domain or nil, discipline = disc, sub = T.SubOf[cardId],
 		entityType = c and Cards.entityTypeOf(c) or nil,
 		era = meta and meta.era or nil,
 		region = meta and (meta.region or c.visitPort) or (c and c.visitPort) or nil,
-		relatedDisciplines = meta and meta.relatedDisciplines or K.CardRelatedDisciplines[cardId] or {},
+		relatedDisciplines = related,
 		prerequisites = needs,
 		topic = c and Cards.topicOf(c) or nil,
 		evidence = c and Cards.evidenceOf(c) or nil,
@@ -46,6 +58,9 @@ end
 -- 점검: 모든 카드가 학문·대분류에 연결되고, 소분류가 분류표에 있는지 확인. 문제 목록 반환.
 function T.audit(): { string }
 	local bad = {}
+	-- [정합성 감사] 참조 대상은 원본 카드/상품/항구/탐험지로만 허용한다.
+	local siteIds = {}
+	for _, site in Sites.Sites do siteIds[site.id] = true end
 	for _, c in Cards.Cards do
 		local p = T.path(c.id)
 		if not p.discipline then
@@ -58,6 +73,27 @@ function T.audit(): { string }
 	for _, c in Cards.Cards do
 		local meta = c.meta
 		if meta then
+			if meta.kind and not (Cards.KindById :: any)[meta.kind] then
+				table.insert(bad, c.id .. ": 등록되지 않은 개체 종류 " .. meta.kind)
+			end
+			if meta.entityType and not (Cards.EntityTypes :: any)[meta.entityType] then
+				table.insert(bad, c.id .. ": 등록되지 않은 존재 형태 " .. meta.entityType)
+			end
+			for _, relation in meta.relations or {} do
+				local target = relation.target
+				if not (Cards.RelationNames :: any)[relation.type] then
+					table.insert(bad, c.id .. ": 등록되지 않은 관계 종류 " .. relation.type)
+				end
+				if string.sub(target, 1, 5) == "port:" then
+					if not Ports.Ports[string.sub(target, 6)] then table.insert(bad, c.id .. ": 없는 항구 연결 " .. target) end
+				elseif string.sub(target, 1, 5) == "good:" then
+					if not Ports.Goods[string.sub(target, 6)] then table.insert(bad, c.id .. ": 없는 교역품 연결 " .. target) end
+				elseif string.sub(target, 1, 5) == "site:" then
+					if not siteIds[string.sub(target, 6)] then table.insert(bad, c.id .. ": 없는 탐험지 연결 " .. target) end
+				elseif not Cards.ById[target] then
+					table.insert(bad, c.id .. ": 없는 카드 연결 " .. target)
+				end
+			end
 			if meta.topic and not Cards.TopicById[meta.topic] then
 				table.insert(bad, c.id .. ": 백과 주제 없음 " .. meta.topic)
 			end
@@ -73,6 +109,9 @@ function T.audit(): { string }
 			for _, related in meta.relatedDisciplines or {} do
 				if not (K.DisciplineById :: any)[related] then table.insert(bad, c.id .. ": 연관 학문 없음 " .. related) end
 			end
+		end
+		for _, needId in (c.research and c.research.found or {}) do
+			if not Cards.ById[needId] then table.insert(bad, c.id .. ": 발견 선행 지식 없음 " .. needId) end
 		end
 		for _, needId in (c.research and c.research.reported or {}) do
 			if not Cards.ById[needId] then table.insert(bad, c.id .. ": 선행 지식 없음 " .. needId) end
