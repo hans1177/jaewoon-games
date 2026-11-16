@@ -8901,6 +8901,15 @@ syncScene = function()
 	local eco = view.harbor and view.harbor.economy or {}
 	-- [실물경제·시대] 기존 항구 정적 경기가 아니라 공통 세계의 최신 기술·인구를 3D 장면에 연결한다.
 	local sim = view.harbor and view.harbor.sim
+	local cityDev = view.village and view.village.here
+	-- [실물 도시 외형] 건축 재고/주거 수용률/공사 유무가 달라졌을 때만 항구를 다시 그린다.
+	local buildingCount = 0
+	for _, count in pairs((sim and sim.buildings) or {}) do
+		if type(count) == "number" then buildingCount += count end
+	end
+	local cityStamp = tostring(cityDev and cityDev.level or 1) .. "_" .. tostring(cityDev and cityDev.blocks or 4)
+		.. "_" .. tostring(math.floor(buildingCount / 6)) .. "_" .. tostring(math.floor(((sim and sim.housing and sim.housing.ratio) or 100) / 5))
+		.. "_" .. tostring(sim and sim.construction and sim.construction.active or false)
 	local techStamp = sim and sim.technology and sim.technology.adopted or 0
 	local industryStamp = 0
 	for _, row in ipairs((sim and sim.industries) or {}) do industryStamp += row.stage end
@@ -8909,7 +8918,7 @@ syncScene = function()
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp) or "-") .. "|C" .. cityStamp .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
@@ -8923,6 +8932,7 @@ syncScene = function()
 		econ = econKind,
 		econIndex = eco.index,
 		sim = sim,
+		development = cityDev,
 		unemployment = eco.unemployment,
 		vacancy = eco.vacancy,
 		migration = eco.migration,
