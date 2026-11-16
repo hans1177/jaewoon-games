@@ -3656,51 +3656,56 @@ function FieldScene.start(opts)
 
 	-- 동료(최대 2명): 주인공 곁을 따라다니다 가까운 적에게 달려가 알아서 싸운다. 맞지는 않는 지원군.
 	do
-		local allyDefs = {}
-		local allyNames = opts.allies or {}
-		if #allyNames == 0 and RunService:IsStudio() and workspace:GetAttribute("DevAllies") then
-			allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
-		end
-		-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
-		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
 		local function hashName(str: string): number
 			local h = 7
 			for _, cp in utf8.codes(str) do h = (h * 31 + cp) % 100003 end
 			return h
 		end
-		local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
-		local seenAllies = {}
-		for _, nm in allyNames do
-			if #allyDefs < 2 then
-				local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
-				local job = if type(nm) == "table" then nm.role else nil
-				local id = if type(nm) == "table" and nm.id then tostring(nm.id) else name .. "|" .. tostring(job)
-				if not seenAllies[id] then
-					seenAllies[id] = true
-					local slot = #allyDefs + 1
-					local h = hashName(name)
-					-- [동료 무기] 기존 영입 ID로 출신·경력을 조회한다. 저장값/영입 순서는 변경하지 않는다.
-					local history = Specialties.CompanionById[id]
-					local birthplace = history and history.homePort and Ports.Ports[history.homePort]
-					local nation = (history and history.nation) or (birthplace and birthplace.country)
-					local vocation = job or (history and history.scholarId ~= "" and "학자") or "무인"
-					local category = JobSkills.categoryOf(vocation)
-					local life = history and history.summary or vocation
-					local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
-					local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
-					-- [동료 외형] 출신 지역을 확인할 수 있는 동료에게는 기존 복식 팔레트를 우선한다.
-					local regionalCoats = {
-						france = Color3.fromRGB(64, 95, 136), england = Color3.fromRGB(86, 110, 104),
-						portugal = Color3.fromRGB(118, 91, 120), spain = Color3.fromRGB(153, 90, 69),
-						ottoman = Color3.fromRGB(80, 111, 107), japan = Color3.fromRGB(112, 88, 127),
-						netherlands = Color3.fromRGB(130, 94, 65), swahili = Color3.fromRGB(137, 108, 73),
-						malabar = Color3.fromRGB(79, 119, 88),
-					}
-					local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
-					table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
+		-- [동료 명세 준비] 기존 영입·직업·국적 판정은 그대로 두고 루아우 200개 지역변수 한도를 피하도록 이 책임만 분리.
+		local function prepareAllyDefs()
+			local allyDefs = {}
+			local allyNames = opts.allies or {}
+			if #allyNames == 0 and RunService:IsStudio() and workspace:GetAttribute("DevAllies") then
+				allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
+			end
+			-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
+			local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
+			local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
+			local seenAllies = {}
+			for _, nm in allyNames do
+				if #allyDefs < 2 then
+					local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
+					local job = if type(nm) == "table" then nm.role else nil
+					local id = if type(nm) == "table" and nm.id then tostring(nm.id) else name .. "|" .. tostring(job)
+					if not seenAllies[id] then
+						seenAllies[id] = true
+						local slot = #allyDefs + 1
+						local h = hashName(name)
+						-- [동료 무기] 기존 영입 ID로 출신·경력을 조회한다. 저장값/영입 순서는 변경하지 않는다.
+						local history = Specialties.CompanionById[id]
+						local birthplace = history and history.homePort and Ports.Ports[history.homePort]
+						local nation = (history and history.nation) or (birthplace and birthplace.country)
+						local vocation = job or (history and history.scholarId ~= "" and "학자") or "무인"
+						local category = JobSkills.categoryOf(vocation)
+						local life = history and history.summary or vocation
+						local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
+						local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
+						-- [동료 외형] 출신 지역을 확인할 수 있는 동료에게는 기존 복식 팔레트를 우선한다.
+						local regionalCoats = {
+							france = Color3.fromRGB(64, 95, 136), england = Color3.fromRGB(86, 110, 104),
+							portugal = Color3.fromRGB(118, 91, 120), spain = Color3.fromRGB(153, 90, 69),
+							ottoman = Color3.fromRGB(80, 111, 107), japan = Color3.fromRGB(112, 88, 127),
+							netherlands = Color3.fromRGB(130, 94, 65), swahili = Color3.fromRGB(137, 108, 73),
+							malabar = Color3.fromRGB(79, 119, 88),
+						}
+						local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
+						table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
+					end
 				end
 			end
+			return allyDefs
 		end
+		local allyDefs = prepareAllyDefs()
 		local allies: { any } = {}
 		local spawned = false
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
@@ -4167,7 +4172,7 @@ function FieldScene.start(opts)
 	end))
 
 	refresh()
-	say("공격 F(기본 단타) · 무기 숙련 시 2~5단 확률 발동 · 기술 Q/E · 회피 R")
+	say("공격 F(기본 단타) · 무기 숙련 시 2~3연타 확률 발동 · 기술 Q/E · 회피 R")
 	-- [필드 입장] 큰 탐험 맵의 생성 중 서버/항구 시점이 캐릭터를 되돌렸다면 기존 출발 좌표로 한 번 복구한다.
 	local readyCharacter = player.Character
 	local readyRoot = readyCharacter and readyCharacter:FindFirstChild("HumanoidRootPart")

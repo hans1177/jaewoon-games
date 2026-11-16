@@ -92,3 +92,13 @@ test('필드 전투 스킬 버튼은 글자 없이 등록 아이콘을 중앙에
   assert.match(field,/useCard\(key, card\)/);
   assert.match(field,/pl\.cd\[key\] = now \+ 8/);
 });
+
+test('동료 명세 계산은 별도 책임 범위에서 실행되어 필드 컴파일 지역변수 한도를 넘기지 않는다',()=>{
+  assert.match(field,/local function prepareAllyDefs\(\)/);
+  assert.match(field,/local allyDefs = prepareAllyDefs\(\)/);
+  assert.match(field,/local function hashName\(str: string\): number/);
+  assert.match(field,/weapon = Weapons\.allyWeapon\(category,/);
+  assert.match(field,/local allies: \{ any \} = \{\}/);
+  assert.match(field,/무기 숙련 시 2~3연타 확률 발동/);
+  assert.doesNotMatch(field,/무기 숙련 시 2~5단 확률 발동/);
+});
