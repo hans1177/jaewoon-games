@@ -1,5 +1,13 @@
 {
-  "note": "오너가 승인한 에셋 묶음 키만 true로 올린다. 에이전트가 임의로 true로 바꾸지 않는다.",
+  "note": "오너 직접 지시(2026-11-16): 마레 에센시아에 필요한 등록된 실제 고품질 모델은 별도의 반복 확인 없이 증거 검증 후 자동 승인한다. 단순 등록·CC0 표기·정적 검사만으로 고품질/런타임 검증 PASS를 간주하지 않으며, 무관한 시대·역할의 자산이나 유료/권한 미검증 모델은 승인하지 않는다. 세 묶음의 true 표시는 각 묶음의 실제 모델 품질·사용권한·게임 내 적용 근거가 확인된 뒤에만 변경한다.",
+  "owner-authorized-quality-auto-approval": true,
+  "auto-approval-checks": [
+    "원본 출처와 무료 상업 이용 라이선스(CC0 등), 원본/변환 해시 확인",
+    "해당 게임 Roblox Universe 개별 assetId와 실제 사용 권한 검증",
+    "실제 메시 형상·표면·실루엣과 시대/문화권/역할의 적합성 및 기존 아트 품질 확인",
+    "관절·애니메이션·부착 크기·충돌·모바일 성능·기존 자산 호환성 확인",
+    "실제 게임 적용 후 렌더/동작 증거를 확인하며 미검증 및 실패는 승인 보류"
+  ],
   "approved-npc-outfit-items": false,
   "approved-npc-hair-hat-meshes": false,
   "approved-port-prop-meshes": false
