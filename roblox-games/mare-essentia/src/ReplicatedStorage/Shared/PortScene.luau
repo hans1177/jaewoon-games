@@ -1162,7 +1162,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local function stay(pos, target, kind, spec)
 		spec = spec or {}
 		local fig = person(pos, faceTo(pos, target), spec, kind)
-		addTask(fig, { kind = kind, mode = "stay", job = spec.profession, workKinds = spec.workKinds, leisureKinds = spec.leisureKinds })
+		addTask(fig, { kind = kind, mode = "stay", job = spec.profession, workKinds = spec.workKinds, tradeKinds = spec.tradeKinds, leisureKinds = spec.leisureKinds })
 		return fig
 	end
 	local function path(a, b, kind, speed, spec, over)
@@ -1176,6 +1176,22 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		return fig
 	end
 	local function pick(list) return list[rng:NextInteger(1, #list)] end
+
+	-- [주민 일상 동선] 기존 직업 주민 중 소수만 작업장→시장→주점/광장으로 이동한다.
+	-- 모바일은 2명 상한이며 카메라에서 멀면 관절 연출만 생략한다. 경제 및 저장 상태에는 관여하지 않는다.
+	local livingCount = if game:GetService("UserInputService").TouchEnabled then 2 else math.min(4, 1 + lvl)
+	if info.sim and (info.sim.residents or 0) < 4 then livingCount = 0 end
+	for i = 1, livingCount do
+		local side = if i % 2 == 0 then 1 else -1
+		local work = Vector3.new(-55 - i * 5, 0, side * 22)
+		local market = Vector3.new(-43 - i * 4, 0, side * 12)
+		local evening = if side > 0 then Vector3.new(-26 - i * 3, 0, 12)
+			else Vector3.new(-18 - i * 2, 0, -24)
+		local fig = person(work, faceTo(work, market), { role = if i % 2 == 0 then "Rogue" else "Barbarian", profession = "merchant", hat = "cap" }, "merchant")
+		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening,
+			phase = rng:NextNumber(0, 10), socialKind = if side > 0 then "talk" else "drink" })
+		if fig then fig:SetAttribute("DailyRoutine", "work") end
+	end
 
 	-- [지역 물류] 현재 항구에서 실제 생산하는 품목만 작업장→시장→부두 보행으로 운송한다.
 	-- 운송 자체는 순수 연출이며 가격·재고·체결·저장 데이터는 수정하지 않는다.
@@ -1622,6 +1638,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				local spec = table.clone(yard.spec)
 				spec.profession = j
 				spec.workKinds, spec.leisureKinds = yard.kinds, yard.rest
+				-- 시장 거래 시간에는 생산·선원·상인 직업의 물건 확인/협상 모션을 사용한다.
+				spec.tradeKinds = if j == "merchant" or j == "craftsman" or j == "fisher"
+					or j == "sailor" or j == "laborer" or j == "farmer"
+					then { "offer", "receive", "count", "talk" } else yard.kinds
 				if o.coats and #o.coats > 0 then
 					spec.coat = o.coats[(slot - 1) % #o.coats + 1]:Lerp(yard.tint, 0.42)
 				end
@@ -2136,18 +2156,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		-- 항구별 원료 분류는 기존 ProductionChains.ClassOf만 사용한다.
 		-- 모바일도 특산품 시설 2곳을 우선 노출하고 전체 건물 수는 기존 7/10개 상한으로 제한한다.
 		local made = (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}
-		local goodsByClass = {
-			mineral = { "workshop", "광물 제련소", "Town", "workbench-anvil", C(145, 133, 122) },
-			gem = { "market", "보석·해산물 상점", "Cargo", "gems-chest", C(137, 142, 166) },
-			animal = { "farm", "목축·어물 공방", "Cargo", "food-barrel-fish", C(164, 139, 109) },
-			farm = { "farm", "농산·향신료 작업장", "Cargo", "mortar-pestle", C(180, 146, 96) },
-			forest = { "workshop", "벌목·목재 공방", "Cargo", "wood-planks-stack-small", C(128, 113, 84) },
-			fiber = { "workshop", "염색·직조 공방", "Cargo", "textiles-stack-small", C(146, 117, 151) },
-			crafted = { "workshop", "유리·도자기 공예 공방", "Town", "workbench-grind", C(157, 155, 160) },
-			drink = { "workshop", "양조·숙성 공방", "Cargo", "barrel", C(138, 99, 70) },
-			fishery = { "market", "어시장·생선 건조장", "Cargo", "food-barrel-fish", C(127, 150, 162) },
-			dairy = { "farm", "치즈 숙성 공방", "Cargo", "cheese", C(189, 166, 119) },
-		}
+		local goodsByClass = PortBuildings.SpecialtyFacilities
 		-- [가공품 특산물] 원료는 ProductionChains.ClassOf를 따르고,
 		-- 기존 Ports.Goods.resourceKind의 가공품도 해당 도시의 고유 건물로 표시한다.
 		local prepared = {
@@ -2157,18 +2166,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			timber = "forest", chemical = "crafted", crafted = "crafted", drink = "drink",
 		}
 		local specialties = 0
-		for _, good in made do
+		for _, good in Chains.showcaseGoods(info.portId, made, 8) do
 			if specialties >= 2 then break end
 			local definition = PortData.Goods[good]
 			local kind = Chains.ClassOf[good] or (definition and prepared[definition.resourceKind])
 			kind = if good == "fish" then "fishery" elseif good == "cheese" then "dairy" else kind
 			local detail = goodsByClass[kind]
-			if definition and detail and AssetIds["Cargo/" .. good] then
-				-- 원료 이름과 실제 등록 메시가 있는 항구만 해당 전문 시설이 나타난다.
+			local mesh = GOOD_MESH[good]
+			if definition and detail and mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+				-- 생산 원료와 등록된 메시가 모두 있을 때만 기존 건물 저장량으로 전문 시설을 표시한다.
 				specialties += 1
 				table.insert(civic, specialties, {
-					detail[1], PortData.Goods[good].name .. " " .. detail[2], 2,
-					detail[3], detail[4], detail[5], good, "trade",
+					detail.building, definition.name .. " " .. detail.name, 2,
+					detail.kind, detail.asset, C(detail.tint[1], detail.tint[2], detail.tint[3]), good, "trade",
 				})
 			end
 		end
@@ -2229,7 +2239,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 								importedModel(folder, "Cargo", "resource-planks", at + Vector3.new(5, 0, face * 3), 3.4, false)
 							end
 							if c[7] then
-								local item = importedModel(folder, "Cargo", c[7], at + Vector3.new(0, 0, face * 2), 3.2, false)
+								local mesh = GOOD_MESH[c[7]]
+								local item = importedModel(folder, mesh[1], mesh[2], at + Vector3.new(0, 0, face * 2), goodSize(c[7], 3.2), false, mesh[3])
 								if item then item.Name = "SpecialtyProduct_" .. c[7] end
 							end
 							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
@@ -2418,8 +2429,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			gems = "보석 세공소", sugar_cane = "제당소", fruit = "과수원", grapes = "포도원", lemon = "레몬 농원", maize = "옥수수 농장",
 			coconut = "코코넛 농원", meat = "햄 공방", pepper = "후추 농원",
 		}
-		local goods = made
-		local n = math.min(#goods, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
+		local goods = Chains.showcaseGoods(info.portId, made, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
+		local n = #goods
 		local origin = Vector3.new(-178, 0, -86)
 		local face = math.pi
 		for k = 1, n do
@@ -3501,7 +3512,7 @@ function PortScene.build(info, onFacility)
 		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
 	-- 광장 분수도 CC0 수입 메쉬 우선
-	if true then
+	if PortBuildings.StreetGrowth[sceneLevel].fountain then
 		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
 		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
 	end
@@ -3523,9 +3534,10 @@ function PortScene.build(info, onFacility)
 		if sceneLevel >= 3 then disc(13, 0.23, plazaCol[sceneLevel]:Lerp(Color3.new(1, 1, 1), 0.2), plazaMat[sceneLevel]) end
 		if sceneLevel >= 4 then disc(10.5, 0.26, Color3.fromRGB(214, 170, 82), Enum.Material.Metal) end
 		if sceneLevel >= 4 then disc(10, 0.29, plazaCol[sceneLevel], plazaMat[sceneLevel]) end
-		if sceneLevel >= 2 then
-			for i = 0, 7 do
-				local a = i / 8 * math.pi * 2
+		local plazaLamps = PortBuildings.StreetGrowth[sceneLevel].plazaLamps
+		if plazaLamps > 0 then
+			for i = 0, plazaLamps - 1 do
+				local a = i / plazaLamps * math.pi * 2
 				lantern(folder, Vector3.new(-6 + math.cos(a) * 22, 0, math.sin(a) * 22), 3)
 			end
 		end
@@ -3869,6 +3881,44 @@ function PortScene.build(info, onFacility)
 					w.motionWarned = true
 					warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
 				end
+			elseif w.mode == "schedule" then
+				if w.model.Parent then
+					local hour = game:GetService("Lighting").ClockTime
+					local where, routine
+					if hour < 10 then
+						where, routine = w.morning, if hour >= 6 then "work" else "rest"
+					elseif hour < 12 then
+						where, routine = w.morning:Lerp(w.market, (hour - 10) / 2), "trade"
+					elseif hour < 17 then
+						where, routine = w.market, "trade"
+					elseif hour < 19 then
+						where, routine = w.market:Lerp(w.evening, (hour - 17) / 2), "leisure"
+					elseif hour < 22 then
+						where, routine = w.evening, "leisure"
+					elseif hour < 23 then
+						where, routine = w.evening:Lerp(w.morning, hour - 22), "rest"
+					else
+						where, routine = w.morning, "rest"
+					end
+					local delta = where - (w.lastPos or where)
+					local moving = delta.Magnitude > 0.025
+					local forward = if moving then delta.Unit else Vector3.new(0, 0, 1)
+					w.model:PivotTo(CFrame.lookAt(where, where + forward))
+					w.lastPos = where
+					if w.lastRoutine ~= routine then
+						w.lastRoutine = routine
+						w.model:SetAttribute("DailyRoutine", routine)
+					end
+					local camera = workspace.CurrentCamera
+					if not camera or (camera.CFrame.Position - where).Magnitude < 180 then
+						if moving then
+							Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * 3)
+						else
+							Pose.work(w.model, if routine == "work" then "count" elseif routine == "trade" then "offer"
+								elseif routine == "leisure" then w.socialKind else "stretch", now + w.phase)
+						end
+					end
+				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
 					-- [주민 시선] 실제 플레이어가 다가오면 얼굴을 돌린다. 스튜디오 사진 구도에서는 카메라를 향한다.
@@ -3938,11 +3988,17 @@ function PortScene.build(info, onFacility)
 					-- 현재 항구의 게임 시각을 사용하고 매 프레임 자산/소품을 다시 생성하지 않는다.
 					if w.job and w.workKinds and w.leisureKinds then
 						local hour = game:GetService("Lighting").ClockTime
-						local workday = hour >= 6 and hour < 18
+						local morning = hour >= 6 and hour < 11
+						local trading = hour >= 11 and hour < 18
 						local period = math.floor((now + w.phase * 2.1) / 16)
-						local roster = if workday then w.workKinds else w.leisureKinds
+						local roster = if morning then w.workKinds elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
 						kind = roster[(period % #roster) + 1]
-						if workday and (now + w.phase) % 73 > 61 then kind = "stretch" end
+						if morning and (now + w.phase) % 73 > 61 then kind = "stretch" end
+						local routine = if morning then "work" elseif trading then "trade" else "leisure"
+						if w.lastRoutine ~= routine then
+							w.lastRoutine = routine
+							w.model:SetAttribute("DailyRoutine", routine)
+						end
 						if w.lastActivity ~= kind then
 							w.lastActivity = kind
 							w.model:SetAttribute("Activity", kind)
@@ -4050,8 +4106,10 @@ function PortScene.build(info, onFacility)
 	folder.Destroying:Connect(function()
 		walkConn:Disconnect()
 	end)
-	-- 가로등
-	for x = -40, 10, 25 do
+	-- 발전도에 맞춰 큰길 가로등 간격을 좁힌다. 1단계는 등불 없이 유지한다.
+	local streetLampStep = PortBuildings.StreetGrowth[sceneLevel].lampStep
+	if streetLampStep > 0 then
+	for x = -40, 10, streetLampStep do
 		for side = -1, 1, 2 do
 			part(folder, Vector3.new(0.5, 7, 0.5), CFrame.new(x, 3.5, side * 7), Color3.fromRGB(40, 40, 44), Enum.Material.Metal)
 			local bulb = part(folder, Vector3.new(1, 1, 1), CFrame.new(x, 7.2, side * 7), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
@@ -4061,6 +4119,7 @@ function PortScene.build(info, onFacility)
 			glow.Brightness = 0.5
 			glow.Parent = bulb
 		end
+	end
 	end
 
 	-- 항구 다듬기 -------------------------------------------------------------
@@ -4317,11 +4376,15 @@ function PortScene.build(info, onFacility)
 			importedModel(folder, mesh[1], mesh[2], stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), goodSize(good, 1.8), false, mesh[3])
 		end
 		-- 큰길 가로등과 울타리, 광장 분수
-		for _, x in { -30, -75, -120 } do
-			lantern(folder, Vector3.new(x, 0, 7), 3)
-			lantern(folder, Vector3.new(x, 0, -7), 3)
+		if sceneLevel >= 3 then
+			for _, x in { -30, -75, -120 } do
+				lantern(folder, Vector3.new(x, 0, 7), 3)
+				lantern(folder, Vector3.new(x, 0, -7), 3)
+			end
 		end
-		importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
+		if PortBuildings.StreetGrowth[sceneLevel].fountain then
+			importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
+		end
 		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
 		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
 		-- 조선소가 있는 큰 항구는 항구 어귀에 감시탑을 세운다
