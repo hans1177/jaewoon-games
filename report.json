@@ -1,5 +1,5 @@
 {
- "sourceRevision": "b36192c3a11dccfb6316558f03dc0773c315ed0d",
+ "sourceRevision": "ef8848bffc0822bcab664945a6629a45c76e0a99",
  "log": [
   {
    "step": 1,
@@ -616,7 +616,7 @@
   {
    "step": 139,
    "ctx": "Client",
-   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=524.4931030273438, 269.5257568359375, 37.0107421875 on=true parent=VoyageScene fog=691.3594360351562 brightness=2.0030925273895264 atmo=0.3700000047683716 camdist=38.567623138427734\ntext"
+   "out": "stream=false parts=24/24 ex=ship-large:0:8.160000801086426, 16.937984466552734, 22.270000457763672:MeshPart;flag-a:0:0.5965317487716675, 1.635442852973938, 2.3023788928985596:MeshPart;sail-b:0:7.4800004959106445, 6.162500858306885, 1.6362502574920654:MeshPart;sail-a:0:7.4800004959106445, 8.032499313354492, 1.9975001811981201:MeshPart vp=524.5068969726562, 269.9146728515625, 37.01171875 on=true parent=VoyageScene fog=2599.252685546875 brightness=2.0015225410461426 atmo=0.3700000047683716 camdist=38.58238220214844\ntext"
   },
   {
    "step": 141,
@@ -651,7 +651,7 @@
   {
    "step": 150,
    "ctx": "Client",
-   "out": "LOGS(6): ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+   "out": "LOGS(6): ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
   },
   {
    "step": 151,
@@ -736,7 +736,7 @@
   {
    "step": 178,
    "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=10 CARRY_FORWARD=true\ntext"
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=7 CARRY_FORWARD=true\ntext"
   },
   {
    "step": 179,
@@ -895,7 +895,7 @@
   {
    "step": 218,
    "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=4 ALLIES=1 ENEMY_JOINTS=4 ALLY_JOINTS=4 DISTINCT_ROLE_POSES=4 DISTINCT_SUPPORT_POSES=4\ntext"
+   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=4 ALLIES=1 ENEMY_JOINTS=5 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=4 DISTINCT_SUPPORT_POSES=4\ntext"
   },
   {
    "step": 219,
@@ -931,7 +931,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 219752,
+      "bytes": 219898,
       "width": 0,
       "height": 0,
       "pass": true
@@ -954,7 +954,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 249478,
+      "bytes": 249832,
       "width": 0,
       "height": 0,
       "pass": true
@@ -978,7 +978,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 249993,
+      "bytes": 249741,
       "width": 0,
       "height": 0,
       "pass": true
@@ -993,7 +993,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 138082,
+      "bytes": 132508,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1005,8 +1005,8 @@
     "camera": true,
     "sky": false,
     "departing": false,
-    "atmosphere": true,
-    "brightness": 2.013462781906128,
+    "atmosphere": false,
+    "brightness": 1,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1017,7 +1017,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140466,
+      "bytes": 134764,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1030,7 +1030,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0166425704956055,
+    "brightness": 2.016515016555786,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1041,7 +1041,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105027,
+      "bytes": 172744,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1054,7 +1054,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019042730331421,
+    "brightness": 2.0190060138702393,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1065,7 +1065,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132426,
+      "bytes": 118454,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1078,7 +1078,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022512674331665,
+    "brightness": 2.02186918258667,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1089,7 +1089,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169637,
+      "bytes": 169516,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1104,7 +1104,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150113,
+      "bytes": 149694,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1119,7 +1119,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173543,
+      "bytes": 171316,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1134,7 +1134,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137835,
+      "bytes": 137122,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1149,7 +1149,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 156217,
+      "bytes": 157846,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1164,7 +1164,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 148883,
+      "bytes": 150079,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1179,7 +1179,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172111,
+      "bytes": 169666,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1194,7 +1194,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158338,
+      "bytes": 156718,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1209,7 +1209,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143837,
+      "bytes": 143326,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1224,7 +1224,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143910,
+      "bytes": 143346,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1239,7 +1239,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 229218,
+      "bytes": 222095,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1254,7 +1254,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 176438,
+      "bytes": 171284,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1269,7 +1269,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 184350,
+      "bytes": 183766,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1284,7 +1284,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144794,
+      "bytes": 145147,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1299,7 +1299,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166302,
+      "bytes": 166389,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1314,7 +1314,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172711,
+      "bytes": 172700,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1329,7 +1329,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194280,
+      "bytes": 194398,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1344,7 +1344,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169392,
+      "bytes": 169435,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1359,7 +1359,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173525,
+      "bytes": 173679,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1374,7 +1374,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171083,
+      "bytes": 170192,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1389,7 +1389,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170743,
+      "bytes": 170489,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1404,7 +1404,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169352,
+      "bytes": 167702,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1418,7 +1418,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170351,
+      "bytes": 168967,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1432,7 +1432,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171057,
+      "bytes": 170314,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1446,7 +1446,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170291,
+      "bytes": 170570,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1460,7 +1460,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 93354,
+      "bytes": 92812,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1474,7 +1474,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 90008,
+      "bytes": 92231,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1488,7 +1488,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 98631,
+      "bytes": 102757,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1502,7 +1502,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 89773,
+      "bytes": 89179,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1516,7 +1516,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144475,
+      "bytes": 144174,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1530,7 +1530,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 188010,
+      "bytes": 171853,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1544,7 +1544,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120280,
+      "bytes": 97043,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1558,7 +1558,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120295,
+      "bytes": 96551,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1572,7 +1572,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 117877,
+      "bytes": 98055,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1586,7 +1586,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120395,
+      "bytes": 97075,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1600,7 +1600,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120290,
+      "bytes": 97242,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1614,7 +1614,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 118036,
+      "bytes": 97284,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1628,7 +1628,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120588,
+      "bytes": 97088,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1642,7 +1642,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120350,
+      "bytes": 97632,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1656,7 +1656,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 115936,
+      "bytes": 94921,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1670,7 +1670,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 119486,
+      "bytes": 96609,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1684,7 +1684,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120634,
+      "bytes": 99701,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1698,7 +1698,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 118453,
+      "bytes": 97620,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1712,7 +1712,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 118694,
+      "bytes": 97371,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1726,7 +1726,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 119302,
+      "bytes": 96180,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1740,7 +1740,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120278,
+      "bytes": 97093,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1754,7 +1754,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 119602,
+      "bytes": 93529,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1768,7 +1768,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 119110,
+      "bytes": 96985,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1782,7 +1782,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116729,
+      "bytes": 94397,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1796,7 +1796,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116956,
+      "bytes": 100233,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1810,7 +1810,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 201018,
+      "bytes": 200437,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1825,7 +1825,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197238,
+      "bytes": 196121,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1840,7 +1840,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203315,
+      "bytes": 200883,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1855,7 +1855,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 200374,
+      "bytes": 201509,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2082,8 +2082,8 @@
     },
     "Sail": {
      "invalid": 0,
-     "rejected": 177,
-     "accepted": 4,
+     "rejected": 176,
+     "accepted": 5,
      "calls": 181
     },
     "Research": {
@@ -2222,14 +2222,14 @@
    "observed": {
     "naval-resolved": 1,
     "quest-accepted": 5,
-    "voyage-arrived": 4,
+    "voyage-arrived": 5,
     "naval-encounter": 1
    },
    "calls": 1998,
    "issues": [],
-   "rejected": 1857,
+   "rejected": 1856,
    "failed": 0,
-   "accepted": 138
+   "accepted": 139
   }
  },
  "assetRegistryAudit": {
@@ -2421,7 +2421,7 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4760,
+    "contentRefs": 4451,
     "complete": false
    }
   }
