@@ -2823,23 +2823,75 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		-- 항만구역: 어항은 건조대와 쪽배, 광산·벌목 항구는 하역장, 그 반대쪽 해안엔 포대(군사구역)
 		-- [항구 필지] 북쪽 어항·바깥 자재 적치장·반대편 해안 경비구역을 명확히 나눈다.
 		-- 기존 조선소(-48 남쪽)의 진입로와 겹치지 않도록 조선소 운영 시 필지 방향을 고정한다.
+		-- [지역별 어항] 기존 등록된 선박 중 지역 해안 환경에 맞는 범용 소형 선체만 선택한다.
+		-- 정확한 조선 통신선/정크선/다우선/곤돌라 원본이 없으므로 역사적 실선으로 오표시하지 않는다.
+		local nation = port and port.country or ""
+		local regionalHarbor = if nation == "korea" then "korean_tidal"
+			elseif key == "japan" or key == "china" then "eastasia"
+			elseif key == "hanse" or key == "brick" then "hanseatic"
+			elseif key == "nordic" then "cold_fishing"
+			elseif key == "italy" then "lagoon_stone"
+			elseif key == "ottoman" or key == "desert" then "mediterranean_bazaar"
+			elseif key == "swahili" or key == "malabar" then "indian_ocean"
+			elseif key == "seasia" or key == "pacific" then "tropical_inlet"
+			elseif key == "wafrica" or key == "creole" or key == "colonial" then "atlantic_tropical"
+			else "commercial_coast"
+		folder:SetAttribute("HarborRegionLayout", regionalHarbor)
 		if lay.fish then
 			for x = 12, -12, -8 do
 				one("Town", "fence_straight", 5, x, 0, lay.fishZ)
 				one("Cargo", "fish-large", 2, x, 3, lay.fishZ)
 			end
+			local localBoat = if regionalHarbor == "indian_ocean" then "boat-sail-a"
+				elseif regionalHarbor == "tropical_inlet" then "boat-row-large"
+				elseif regionalHarbor == "cold_fishing" or regionalHarbor == "hanseatic" then "boat-fishing-small"
+				else "boat-row-small"
+			local boatSize = if localBoat == "boat-sail-a" then 11 elseif localBoat == "boat-fishing-small" then 9 else 7
 			for _, offset in { -9, 9 } do
-				one("Naval", "boat-row-small", 6, 34, 0.3, lay.fishZ + offset)
+				local craft = one("Naval", localBoat, boatSize, 34, 0.3, lay.fishZ + offset)
+				if craft then craft.Name = "HarborFishery_" .. regionalHarbor end
+			end
+			if regionalHarbor == "tropical_inlet" and AssetIds["Terrain/canoe"] then
+				one("Terrain", "canoe", 7, 39, 0.3, lay.fishZ + 33)
+			elseif regionalHarbor == "korean_tidal" or regionalHarbor == "eastasia" then
+				one("Town", "fence_rails", 5, -17, 0, lay.fishZ + 14)
 			end
 		end
-		if lay.timber then
+		if lay.freight and lay.timber then
 			one("Terrain", "log-stack", 4, 8, 0, lay.freightZ - 8)
 			one("Terrain", "log-stack", 4, 0, 0, lay.freightZ - 8)
 			one("Cargo", "resource-planks", 3, 8, 0, lay.freightZ - 2)
 		end
-		if lay.mine then
+		if lay.freight and lay.mine then
 			one("Cargo", "iron-bars-stack-large", 3, 10, 0, lay.freightZ + 9)
 			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
+		end
+		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
+		-- 주류·담배·약물 시각 자산은 새로 사용하지 않는다.
+		if lay.freight then
+			local shown = 0
+			for _, good in (port and port.produces) or {} do
+				if shown >= (if touch then 1 else 3) then break end
+				if good ~= "beer" and good ~= "wine" and good ~= "rum" and good ~= "sake"
+					and good ~= "tobacco" and good ~= "opium" and AssetIds["Cargo/" .. good] then
+					shown += 1
+					local cargo = one("Cargo", good, 3.5, -12 + (shown - 1) * 9, 0, lay.freightZ + 4)
+					if cargo then
+						cargo.Name = "HarborRegionalCargo_" .. good
+						cargo:SetAttribute("LocalProduct", good)
+						cargo:SetAttribute("HarborPlot", "freight")
+					end
+				end
+			end
+			if regionalHarbor == "hanseatic" and lvl >= 3 then
+				one("Naval", "pulley-crate", 4, 10, 0, lay.freightZ - 8)
+			elseif regionalHarbor == "indian_ocean" or regionalHarbor == "tropical_inlet" then
+				one("Naval", "palm-detailed-straight", 9, -15, 0, lay.freightZ - 18)
+			elseif regionalHarbor == "lagoon_stone" and lvl >= 3 then
+				one("Naval", "anchor", 4, 11, 0, lay.freightZ - 9)
+			elseif regionalHarbor == "mediterranean_bazaar" then
+				one("Naval", "detail-crate-ropes", 3, 11, 0, lay.freightZ - 9)
+			end
 		end
 		if lay.fort then
 			one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
