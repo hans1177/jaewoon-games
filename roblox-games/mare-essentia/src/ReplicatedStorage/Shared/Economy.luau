@@ -197,19 +197,40 @@ function E.industryStage(t, brand)
 	return 4
 end
 
-function E.industryView(t)
+function E.industryView(t, w)
 	local out = {}
 	for _, brand in ipairs(Chains.BrandsByPort[t.id] or {}) do
 		local id = brand.id
 		local recipe = Chains.ById[brand.recipe]
+		local processedId = Chains.goodId(recipe)
 		local stage = E.industryStage(t, brand)
+		local reserve = math.max(1, (t.dem[brand.source] or 0) * E.TARGET_DAYS)
+		local stock = t.stock[brand.source] or 0
+		local supplier, supplierDistance = nil, math.huge
+		-- [산업망 안내] 실제 세계에서 같은 원료를 생산하는 가장 가까운 항구를 안내한다.
+		if w then
+			for _, portId in ipairs(w.order) do
+				local other = w.towns[portId]
+				if other ~= t and other.produces[brand.source] then
+					local km = distKm(t, other)
+					if km < supplierDistance then supplier, supplierDistance = other, km end
+				end
+			end
+		end
+		local unlock = if stage < 2 then "공방 규모·공예 기술을 발전시켜"
+			elseif stage < 3 then "상업 연구·도시 번영도를 높여"
+			elseif stage < 4 then "상업·항해 연구와 무역 제도를 발전시켜"
+			else "해외 항구에 국제 수출 중"
 		table.insert(out, {
 			id = id, name = brand.name, stage = stage, source = brand.source,
-			raw = Data.Goods[brand.source].name,
-			processed = Data.Goods[Chains.goodId(recipe)].name,
+			raw = Data.Goods[brand.source].name, rawStock = math.floor(stock),
+			processed = Data.Goods[processedId].name, processedStock = math.floor(t.stock[processedId] or 0),
 			status = ({ "원료 확보", "가공 공방", "지역 브랜드", "국제 수출 산업" })[stage] or "자원 부족",
 			stock = math.floor(t.stock[id] or 0),
 			produced = math.floor((t.out[id] or 0) * 100 + 0.5) / 100,
+			imported = math.floor(((t.imports and t.imports[brand.source]) or 0) * 100 + 0.5) / 100,
+			supplier = supplier and supplier.name or nil, shortage = stock <= reserve,
+			research = recipe.disc, nextStep = unlock,
 			exported = math.floor((t.exports[id] or 0) * 100 + 0.5) / 100,
 			price = math.floor((t.price[id] or Data.Goods[id].basePrice) * 10 + 0.5) / 10,
 			destinations = brand.destinations,
@@ -237,7 +258,7 @@ local function newTown(p, w)
 		coastal = true, fert = fert,
 		pop = pop0, land = pop0 * 0.62 * fert * 1.25, -- 농지가 먹여 살리는 농민 수
 		stage = E.stageOfPop(pop0), prosperity = 1, refGdp = 0,
-		grain = 0, stock = {}, price = {}, out = {}, dem = {}, exports = {},
+		grain = 0, stock = {}, price = {}, out = {}, dem = {}, exports = {}, imports = {},
 		gdp = 0, tradeIn = 0, tradeOut = 0, deaths = 0, births = 0,
 		fx = { food = 1, prod = 1, trade = 1, demand = 1, mort = 0 },
 		neighbors = {}, goods = {},
@@ -262,7 +283,7 @@ local function newTown(p, w)
 	for _, g in ipairs(p.produces) do t.produces[g] = true end
 	for _, g in ipairs(p.demands) do t.demands[g] = true end
 	for _, brand in ipairs(Chains.BrandsByPort[p.id] or {}) do
-		if t.produces[brand.id] then t.exports[brand.id] = 0 end
+		if t.produces[brand.id] then t.exports[brand.id], t.imports[brand.source] = 0, 0 end
 	end
 	-- [항구별 생산목록] 고정된 기존 제작법을 마을마다 한 번만 정리한다.
 	-- 저장하지 않는 런타임 값이라 세계 세이브 형식·기존 원료 수량에 영향이 없다.
@@ -584,6 +605,52 @@ end
 
 function E.year(w) return w.startYear + w.day / 365 end
 
+-- [항구간 산업 조달] 생산원료의 부족량·공급도시의 비축·해운비를 동시에 확인한다.
+-- 무료 외부 API 없이 고정 원산지·거리·가격으로 결정론적으로 계산한다.
+-- 직접 거래를 늘리지 않으며 원료 보존·수입 손실·해외 자산 가격 규칙은 기존 무역과 같다.
+function E.stepSupplyChains(w)
+	for _, brand in ipairs(Chains.Brands) do
+		local buyer = w.towns[brand.port]
+		local raw = brand.source
+		if buyer and E.industryStage(buyer, brand) >= 2 and buyer.stock[raw] and buyer.price[raw]
+			and (buyer.tech.commerce or 0) >= 1.12 and (buyer.tech.sea or 0) >= 1.1 then
+			local reserve = math.max(1, (buyer.dem[raw] or 0) * E.TARGET_DAYS)
+			local target = reserve + math.max(1, math.min(5, buyer.bld.workshop * 0.04))
+			local need = math.max(0, target - buyer.stock[raw])
+			if need > 0.001 then
+				local supplier, cost, available, score = nil, 0, 0, math.huge
+				for _, id in ipairs(w.order) do
+					local town = w.towns[id]
+					if town ~= buyer and town.produces[raw] and town.stock[raw] and town.price[raw] then
+						local surplus = math.max(0, town.stock[raw] - math.max(1, (town.dem[raw] or 0) * E.TARGET_DAYS))
+						if surplus > 0.01 then
+							local freight = (0.04 + distKm(town, buyer) / 25000)
+								/ math.max(0.5, buyer.tech.sea ^ 0.3)
+							local landed = town.price[raw] * (1 + freight)
+							if landed <= buyer.price[raw] * 1.55 and landed < score then
+								supplier, cost, available, score = town, freight, surplus, landed
+							end
+						end
+					end
+				end
+				if supplier then
+					local capacity = math.max(0.5, math.min(5, buyer.pop * 0.0004))
+						* math.min(buyer.fx.trade, supplier.fx.trade) * buyer.civBonus.trade
+					local amount = math.min(need / 0.97, available * 0.06, capacity)
+					if amount > 0.001 then
+						supplier.stock[raw] -= amount
+						buyer.stock[raw] += amount * 0.97
+						local value = amount * supplier.price[raw]
+						supplier.tradeOut += value
+						buyer.tradeIn += value * (1 + cost)
+						buyer.imports[raw] = (buyer.imports[raw] or 0) + amount * 0.97
+					end
+				end
+			end
+		end
+	end
+end
+
 function E.step(w)
 	w.day += 1
 	-- 연도 사건
@@ -686,6 +753,9 @@ function E.step(w)
 			end
 		end
 	end
+	-- [원료 국제 조달] OECD 산업연관표의 중간 투입재 흐름과 중력무역 모형을 단순화.
+	-- 부족한 지역 브랜드의 원료만 기존 생산 항구의 실물 잉여에서 수입한다.
+	E.stepSupplyChains(w)
 	-- [국제 수출망] 중력 이웃 외에도 브랜드 지정 해외 항구로 직접 수출한다.
 	-- 수출량은 현실적인 운송비·가격차·산업단계·현지 재고에 의해 제한된다.
 	for _, brand in ipairs(Chains.Brands) do
@@ -826,7 +896,7 @@ local WORLD_SCALARS = {
 	"births", "deaths", "infra", "infraRef", "treasury", "stability", "wage", "wageRef",
 	"migIn", "migOut", "unrestCd", "civ", "housingRatio", "unemp", "buildSpend",
 }
-local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector", "exports" }
+local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector", "exports", "imports" }
 local function worldNumber(value)
 	return type(value) == "number" and value == value and value > -1e14 and value < 1e14
 end
