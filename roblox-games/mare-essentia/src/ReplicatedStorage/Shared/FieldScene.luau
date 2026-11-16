@@ -1271,7 +1271,7 @@ function FieldScene.start(opts)
 			end
 		end
 		for _, nm in names do attach(ch:FindFirstChild(nm)) end
-		local sword = ch:FindFirstChild("FieldWeapon", true)
+		local sword = ch:FindFirstChild("FieldWeapon", true) or ch:FindFirstChild("FieldSword", true)
 		if sword then
 			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
 			attach(blade, 4)
@@ -1515,7 +1515,7 @@ function FieldScene.start(opts)
 	-- 기존 무기·동료 데이터와 무관한 클라이언트 연출만 교체한다. 전투 수치·저장키는 수정하지 않는다.
 	local function equipFieldWeapon(character, weapon)
 		if not character then return end
-		local prev = character:FindFirstChild("FieldWeapon")
+		local prev = character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword")
 		if prev then prev:Destroy() end
 		character:SetAttribute("EquippedWeaponId", weapon.id)
 		character:SetAttribute("EquippedWeaponName", weapon.name)
@@ -1528,7 +1528,7 @@ function FieldScene.start(opts)
 		local tpl = weapon.model and group and group:FindFirstChild(weapon.model)
 		if tpl and tpl:IsA("Model") then
 			local held = tpl:Clone()
-			held.Name = "FieldWeapon"
+			held.Name = if weapon.id == "sword" then "FieldSword" else "FieldWeapon"
 			local count = 0
 			for _, bp in held:GetDescendants() do
 				if bp:IsA("BasePart") then
@@ -1583,7 +1583,7 @@ function FieldScene.start(opts)
 			p.Material = material or Enum.Material.SmoothPlastic
 			p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery = false, false, false, false
 			p.Massless = true
-			p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+			pcall(function() p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth end)
 			p.Parent = held
 			local weld = Instance.new("WeldConstraint")
 			weld.Part0, weld.Part1, weld.Parent = hand, p, p
@@ -1650,7 +1650,7 @@ function FieldScene.start(opts)
 	equipFieldWeapon(player.Character, wpn)
 	table.insert(conns, { Disconnect = function()
 		local character = player.Character
-		local held = character and character:FindFirstChild("FieldWeapon")
+		local held = character and (character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword"))
 		if held then held:Destroy() end
 	end })
 
