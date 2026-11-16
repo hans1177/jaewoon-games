@@ -20,6 +20,27 @@ for _, id in ports do
 		if ok then built += 1 else fails += 1 print(("실패: %s L%d — %s"):format(id, lvl, tostring(err))) end
 	end
 end
+-- [항구 확장 스모크] 역사 지형·경제 성장·실제 건설 수요·6단계 도시 구획을 장면 빌드로 검사한다.
+for _, scenario in {
+	{ id = "venice", level = 3, dev = 3, blocks = 24, population = 1600, construction = true },
+	{ id = "lisbon", level = 5, dev = 6, blocks = 160, population = 11000, construction = true },
+	{ id = "amsterdam", level = 4, dev = 4, blocks = 48, population = 4200, construction = false },
+} do
+	local sim = {
+		stage = scenario.level, pop = scenario.population, residents = 24, housing = { ratio = 96 },
+		prosperity = 120, mood = "boom", technology = { rows = {} }, industries = {}, specialties = {},
+		buildings = { house = 180, farm = 40, workshop = 20, market = 4, hall = 2, school = 2 },
+		construction = { active = scenario.construction, spending = if scenario.construction then 30 else 0,
+			house = 12, farm = 0, workshop = 3, market = 0, hall = 0, school = 0 },
+	}
+	local ok, err = pcall(function()
+		PortScene.build({ portId = scenario.id, portName = scenario.id, level = scenario.level,
+			development = { level = scenario.dev, blocks = scenario.blocks }, sim = sim,
+			shipId = "galleon", hasShipyard = true, facilities = { "bank", "guild", "harbormaster" },
+			storyCount = 0, companions = {}, day = 1000, year = 1650 }, function() end)
+	end)
+	if ok then built += 1 else fails += 1 print(("도시 성장 스모크 실패: %s — %s"):format(scenario.id, tostring(err))) end
+end
 -- 점령 연도 경계 전후도 실제 장면 생성 경로로 확인한다. 스모크는 형태의 렌더링 품질을 보장하지 않는다.
 local eraBuilt = 0
 for _, entry in {
