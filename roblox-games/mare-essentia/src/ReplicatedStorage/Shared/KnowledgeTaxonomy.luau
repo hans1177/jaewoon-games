@@ -55,11 +55,11 @@ function T.audit(): { string }
 	for _, c in Cards.Cards do
 		local meta = c.meta
 		if meta then
-			if meta.discipline and not K.DisciplineById[meta.discipline] then
+			if meta.discipline and not (K.DisciplineById :: any)[meta.discipline] then
 				table.insert(bad, c.id .. ": 활성 학문 없음 " .. meta.discipline)
 			end
 			for _, related in meta.relatedDisciplines or {} do
-				if not K.DisciplineById[related] then table.insert(bad, c.id .. ": 연관 학문 없음 " .. related) end
+				if not (K.DisciplineById :: any)[related] then table.insert(bad, c.id .. ": 연관 학문 없음 " .. related) end
 			end
 		end
 		for _, needId in (c.research and c.research.reported or {}) do
