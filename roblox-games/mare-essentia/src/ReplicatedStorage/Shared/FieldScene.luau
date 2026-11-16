@@ -1153,8 +1153,11 @@ function FieldScene.start(opts)
 				return true
 			end
 			for _, ch in folder:GetChildren() do
-				if string.sub(ch.Name, 1, 9) == "Discovery" and ch:IsA("BasePart") then
+				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" then
 					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
+				elseif ch:IsA("BasePart") and string.sub(ch.Name, 1, 13) == "FieldEvidence" then
+					-- [희귀 동물/지식 퀘스트] 추적해야 할 흔적은 미니맵에 청록색으로 표시한다.
+					place(ch.Position, Color3.fromRGB(98, 232, 203), 7, true)
 				end
 			end
 			for _, e in enemies do
