@@ -485,6 +485,7 @@ function Pose.work(model, kind, t)
 	end
 	-- 제자리 일: 먼저 걷기 흔적을 지운다
 	set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
+	set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08)) -- 작업 교대 시 이전 팔 동작을 남기지 않는다.
 	set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
 	set(m.root, CFrame.identity); set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
 	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
@@ -557,6 +558,42 @@ function Pose.work(model, kind, t)
 		set(m.waist, A(0.18, 0, 0)); set(m.neck, A(0.35, 0, 0))
 		set(m.leftArm, A(-1.0, 0, -0.15)); set(m.rightArm, A(-1.0, 0, 0.15))
 		set(m.leftElbow, A(-1.5, 0, 0)); set(m.rightElbow, A(-1.5, 0, 0))
+	elseif kind == "inspect" then
+		-- 상인·학자: 물건을 들여다보고 손끝으로 살핀다.
+		local s = math.sin(t * 1.8)
+		set(m.waist, A(0.16 + s * 0.045, 0, 0)); set(m.neck, A(0.22, s * 0.14, 0))
+		set(m.leftArm, A(-0.85, 0, 0.24)); set(m.rightArm, A(-1.1 + s * 0.18, 0, -0.22))
+		set(m.leftElbow, A(-0.8, 0, 0)); set(m.rightElbow, A(-0.95, 0, 0))
+	elseif kind == "count" then
+		-- 장부·재고 확인: 한 손으로 세고 다른 손으로 받친다.
+		local s = math.sin(t * 3.1)
+		set(m.leftArm, A(-0.9, 0, 0.18)); set(m.rightArm, A(-0.8 + s * 0.24, 0, -0.16))
+		set(m.leftElbow, A(-1.05, 0, 0)); set(m.rightElbow, A(-0.85, 0, 0))
+		set(m.neck, A(0.14, math.sin(t * 0.55) * 0.15, 0))
+	elseif kind == "salute" then
+		-- 경비병·항해사: 짧게 경례하고 주변을 확인한다.
+		local s = math.max(0, math.sin(t * 1.3))
+		set(m.rightArm, A(-1.5 - s * 0.75, 0, -0.4))
+		set(m.rightElbow, A(-0.95 - s * 0.35, 0, 0))
+		set(m.neck, A(0, math.sin(t * 0.4) * 0.18, 0))
+	elseif kind == "stretch" then
+		-- 일하다 쉬는 주민: 어깨와 등을 느리게 펴고 내린다.
+		local s = (math.sin(t * 1.1) + 1) * 0.5
+		set(m.leftArm, A(-0.35 - s * 1.65, 0, 0.25))
+		set(m.rightArm, A(-0.35 - s * 1.65, 0, -0.25))
+		set(m.waist, A(-s * 0.14, 0, 0))
+	elseif kind == "drink" then
+		-- 선술집 손님: 천천히 잔을 입에 가져가는 몸짓.
+		local s = (math.sin(t * 1.5) + 1) * 0.5
+		set(m.rightArm, A(-0.65 - s * 1.15, 0, -0.16))
+		set(m.rightElbow, A(-0.8 - s * 0.65, 0, 0))
+		set(m.leftArm, A(-0.35, 0, 0.16)); set(m.neck, A(-s * 0.10, 0, 0))
+	elseif kind == "listen" then
+		-- 대화 듣기: 고개를 기울이고 자세를 낮춘다.
+		local s = math.sin(t * 0.75)
+		set(m.neck, A(0.05, s * 0.30, s * 0.07))
+		set(m.waist, A(0, s * 0.08, 0))
+		set(m.leftArm, A(-0.25, 0, 0.2)); set(m.rightArm, A(-0.25, 0, -0.2))
 	elseif kind == "bell" then
 		local s = math.max(0, math.sin(t * 1.2))
 		set(m.rightArm, A(-2.2 + s * 0.6, 0, -0.1)); set(m.leftArm, A(-2.2 + s * 0.6, 0, 0.1))
@@ -575,10 +612,10 @@ function Pose.work(model, kind, t)
 	local m = rigMotors[model]
 	if not m then return end
 	if m.root and kind ~= "sit" and kind ~= "fish" then
-		m.root.Transform = CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
+		m.root.Transform = m.root.Transform * CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
 	end
 	if m.neck and kind ~= "look" and kind ~= "stoop" and kind ~= "carry" then
-		m.neck.Transform = CFrame.Angles(math.sin(t * 0.6) * 0.06, math.sin(t * 0.45) * 0.22, 0)
+		m.neck.Transform = m.neck.Transform * CFrame.Angles(math.sin(t * 0.6) * 0.06, math.sin(t * 0.45) * 0.22, 0)
 	end
 	-- 온몸 거들기: 팔만 움직이지 않고 무릎·허리·체중도 일에 맞춰 같이 움직인다(더해서 곱한다)
 	local function add(motor, cf)
@@ -741,7 +778,7 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
 		-- 팔은 반대쪽 다리와 함께 흔든다 (앞으로 = 음수)
 		local armAmp = amp * (if run then 1.0 else 0.95)
-		set(m.leftArm, A(s * armAmp, 0, 0.06)); set(m.rightArm, A(-s * armAmp, 0, -0.06))
+		set(m.leftArm, A(-s * armAmp, 0, 0.06)); set(m.rightArm, A(s * armAmp, 0, -0.06))
 		local elbowBase = if run then 0.9 else 0.22
 		set(m.leftElbow, A(-(elbowBase + math.max(0, -s) * (if run then 0.5 else 0.35)), 0, 0))
 		set(m.rightElbow, A(-(elbowBase + math.max(0, s) * (if run then 0.5 else 0.35)), 0, 0))
