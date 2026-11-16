@@ -574,7 +574,7 @@ local function extraTests()
 	do
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
-		check("지식 분류: 16종 기존 도감 분류와 별개", #collection.Kinds == 16)
+		check("지식 분류: 17종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 17)
 		check("지식 분류: 기존 학문 21개 유지", #tree.Disciplines == 21)
 		local vessel = collection.ById.ship_caravel
 		local galleon = collection.ById.ship_galleon
