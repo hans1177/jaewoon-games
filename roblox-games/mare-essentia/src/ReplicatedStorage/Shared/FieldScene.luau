@@ -3586,7 +3586,78 @@ function FieldScene.start(opts)
 						local tg = label(bbA, ad.name, 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
 						tg.TextTruncate = Enum.TextTruncate.AtEnd
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2, gait = (i - 1) * 0.45 })
+						-- [기존 영입 동료 초상과 지원 상태] 무적 지원군은 생명력이 소모되지 않으므로
+						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
+						local status = Instance.new("Frame")
+						status.Name = "FieldAllyStatus" .. i
+						status.Position = UDim2.fromOffset(12, 162 + (i - 1) * 56)
+						status.Size = UDim2.fromOffset(202, 52)
+						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
+						status.BackgroundTransparency = 0.12
+						status.BorderSizePixel = 0
+						status.Parent = gui
+						local round = Instance.new("UICorner")
+						round.CornerRadius = UDim.new(0, 9)
+						round.Parent = status
+						local frame = Instance.new("UIStroke")
+						frame.Color = if i == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
+						frame.Thickness = 1.1
+						frame.Parent = status
+						local face = Instance.new("ImageLabel")
+						face.Name = "FieldAllyPortrait"
+						face.Size = UDim2.fromOffset(39, 43)
+						face.Position = UDim2.fromOffset(6, 5)
+						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
+						face.BorderSizePixel = 0
+						face.ScaleType = Enum.ScaleType.Crop
+						local portrait = opts.allyPortraits and opts.allyPortraits[ad.id]
+						if portrait and portrait.id then
+							face.Image = "rbxassetid://" .. tostring(portrait.id)
+							face.ImageRectOffset = portrait.offset or Vector2.zero
+							face.ImageRectSize = portrait.size or Vector2.zero
+						end
+						face.Parent = status
+						local faceRound = Instance.new("UICorner")
+						faceRound.CornerRadius = UDim.new(0, 7)
+						faceRound.Parent = face
+						local nameText = label(status, ad.name, 13)
+						nameText.Name = "FieldAllyName"
+						nameText.Position = UDim2.fromOffset(51, 3)
+						nameText.Size = UDim2.fromOffset(143, 18)
+						nameText.TextXAlignment = Enum.TextXAlignment.Left
+						nameText.TextTruncate = Enum.TextTruncate.AtEnd
+						local hpLine = Instance.new("Frame")
+						hpLine.Name = "FieldAllyHealth"
+						hpLine.Size = UDim2.fromOffset(140, 6)
+						hpLine.Position = UDim2.fromOffset(51, 24)
+						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
+						hpLine.BorderSizePixel = 0
+						hpLine.Parent = status
+						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
+						local energyLine = Instance.new("Frame")
+						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
+						energyLine.Size = UDim2.fromOffset(140, 7)
+						energyLine.Position = UDim2.fromOffset(51, 36)
+						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
+						energyLine.BorderSizePixel = 0
+						energyLine.Parent = status
+						local energyFill = Instance.new("Frame")
+						energyFill.Name = "FieldAllyEnergyFill"
+						energyFill.Size = UDim2.fromScale(1, 1)
+						energyFill.BackgroundColor3 = if manaAlly then Color3.fromRGB(110, 151, 247) else Color3.fromRGB(232, 191, 89)
+						energyFill.BorderSizePixel = 0
+						energyFill.Parent = energyLine
+						local energyCaption = label(status, if manaAlly then "마력" else "기력", 10, Color3.fromRGB(239, 233, 215))
+						energyCaption.Name = "FieldAllyEnergyCaption"
+						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
+						energyCaption.Position = UDim2.fromOffset(153, 34)
+						energyCaption.Size = UDim2.fromOffset(38, 12)
+						energyCaption.ZIndex = 6
+						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
+							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
+							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
+							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill }
+						table.insert(allies, ally)
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -3633,6 +3704,7 @@ function FieldScene.start(opts)
 				if tgt and not moving and now >= a.nextAt then
 					a.nextAt = now + 1.3 / aw.speed
 					a.swingAt = now
+					a.energy = math.max(0, a.energy - 10)
 					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0, aw.family == "axe", true)
 					if aw.ranged then
 						-- 동료 사격: 총알·화살 궤적
@@ -3669,6 +3741,7 @@ function FieldScene.start(opts)
 								a.skillCd[sid] = now + def.cooldown
 								a.nextSkill = now + 3
 								a.swingAt = now
+								a.energy = math.max(0, a.energy - 20)
 								-- 지원기 발동 시 공격 대신 지원 자세를 보여 준다. 효과와 쿨타임은 기존 로직 유지.
 								if sid == "heal" or sid == "armor" or sid == "rally" or sid == "luck" then
 									a.castAt, a.castSkill = now, sid
@@ -3678,6 +3751,11 @@ function FieldScene.start(opts)
 							end
 						end
 					end
+				end
+				-- [동료 자원 HUD] 전투 판정과 별개로 화면에 최근 행동량을 표시한다.
+				a.energy = math.min(100, a.energy + math.min(dt, 0.1) * 13)
+				if a.energyFill and a.energyFill.Parent then
+					a.energyFill.Size = UDim2.fromScale(a.energy / 100, 1)
 				end
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
