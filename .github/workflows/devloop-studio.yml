@@ -216,6 +216,11 @@ jobs:
             $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
           }
           if (@($report.errors).Count -gt 0) {
+            # [상세 복구] 중복·폭증을 막고 실제 실패한 단계만 최대 5건 기록한다.
+            foreach ($failure in @($report.errors | Select-Object -First 5)) {
+              $detail = ([string]$failure -replace '[\r\n]',' ')
+              Write-Host ('STUDIO_QA_STEP_FAILURE=' + $detail.Substring(0,[Math]::Min(230,$detail.Length)))
+            }
             $qaStage = 'STUDIO_EXECUTION'
             $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
             # [복구 분류] Studio MCP 통신 타임아웃을 게임 소스 오류로 위장하지 않는다.
@@ -223,7 +228,7 @@ jobs:
               $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
             }
           }
-          # [실증 분류] 185단계 버튼 PASS와 모델·이미지/음악·게임 기능 전수 PASS를 분리한다.
+          # [실증 분류] 버튼·실제 자산·게임 기능을 독립 판정하고 실패를 기존 복구 엔진에 전달한다.
           if (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_ASSET_AUDIT_FAILED' }).Count -gt 0) {
             $qaStage = 'STUDIO_GAME_RUNTIME'
             $qaSignature = 'STUDIO_ASSET_AUDIT_FAILED'
@@ -525,6 +530,11 @@ jobs:
             if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
               $qaStage = 'STUDIO_EXECUTION'
               $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
+            # [완료 확정] 실제 저장한 검사 증거가 PASS가 아니면 Actions 성공으로 덮지 않는다.
+            if ([string]$storedChecks.result -ne 'PASS' -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
             }
             git add -A
             git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"

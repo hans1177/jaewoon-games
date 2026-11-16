@@ -255,8 +255,11 @@ if (studioRegrantPath) {
   const report = JSON.parse(await fs.readFile(studioRegrantPath, 'utf8'));
   const media = report.assetAudit?.registered;
   const failuresInStudio = media?.failedMedia;
-  if (report.summary?.plannedSteps !== 185 || report.summary?.completedSteps !== 185
-    || report.summary?.abortedEarly !== false || report.summary?.capturedFrames !== 31
+  if (!Number.isSafeInteger(report.summary?.plannedSteps) || report.summary.plannedSteps < 180
+    || report.summary?.completedSteps !== report.summary.plannedSteps
+    || report.summary?.abortedEarly !== false
+    || !Number.isSafeInteger(report.summary?.plannedFrames) || report.summary.plannedFrames < 31
+    || report.summary?.capturedFrames !== report.summary.plannedFrames
     || !Array.isArray(report.errors) || !report.errors.includes('STUDIO_ASSET_AUDIT_FAILED')
     || report.assetRegistryAudit?.status !== 'PASS'
     || report.assetRegistryAudit?.registered !== Object.keys(registry.assets).length

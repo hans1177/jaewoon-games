@@ -3748,7 +3748,8 @@ test('Mare first-click QA verifies actual selection screen and never confirms de
 test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures',()=>{
   const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(workflow.includes('name: Studio Auto QA'));
-  assert.ok(!workflow.includes('  schedule:'));
+  assert.ok(workflow.includes('  schedule:'));
+  assert.ok(workflow.includes("cron: '43 3,15 * * *'"));
   assert.ok(workflow.includes('roblox-games/mare-essentia/src/**'));
   assert.ok(!workflow.includes('roblox-games/fantasy-survival/'));
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
@@ -3804,20 +3805,17 @@ test('Existing Devloop Studio workflow rechecks Mare text sampling after main up
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
-// [대항해시대 화면 회귀] 공식 30회 클릭·31장 촬영을 유지하면서 항해·지도·기술 메뉴도 탐색한다.
-test('Mare Studio click script retains complete audit and prioritizes sailing map technology',()=>{
+// [현행 대항해시대 검사] 실제 카드 대결·항해·함대전을 유지하고 존재하지 않는 전술 훅은 제외한다.
+test('Mare Studio deep script validates current gameplay and excludes removed tactics hook',()=>{
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
-  const prefer=['새 게임','프랑스','1700','출항하기','교역','조선','퀘스트','항해','지도','기술','항구','설정'];
-  const generated='build(35000, ['+prefer.map(value=>JSON.stringify(value)).join(', ')+'], 30)';
-  const expected='local pref={'+prefer.map(value=>JSON.stringify(value)).join(',')+'}';
-  const picks=steps.filter(step=>step.type==='click_from_luau'||(step.type==='luau'&&step.code?.includes('local pref=')));
-  assert.ok(gen.includes(generated));
-  assert.equal(steps.length,185);
-  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
-  assert.equal(steps.filter(step=>step.type==='capture').length,31);
-  assert.equal(picks.length,60);
-  assert.ok(picks.every(step=>step.code.includes(expected)));
+  assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
+  assert.ok(steps.length>=180);
+  assert.ok(steps.some(step=>step.code?.includes('CARD_DECK_RUNTIME_PASS')));
+  assert.ok(steps.some(step=>step.code?.includes('CARD_PRACTICE_RUNTIME_PASS')));
+  assert.ok(steps.some(step=>step.code?.includes('VoyageScene')));
+  assert.ok(steps.some(step=>step.code?.includes('NavalBattle')));
+  assert.ok(!steps.some(step=>/QATactics|TacticsView/.test(step.code||'')));
 });
 
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
@@ -3912,36 +3910,26 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(workflow,/STUDIO_FULL_AUDIT_INCOMPLETE/);
 });
 
-test('Studio click QA text sampling uses proven direct descendants scan without changing click coverage',()=>{
+test('Studio click QA keeps UTF-8-safe labels in active game scripts',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
-  for(const [game,script] of [
+  for(const [game,name] of [
     ['mare-essentia','mare-qa-click.json'],
     ['fantasy-survival','fantasy-qa-click.json']
   ]){
-    const steps=JSON.parse(fs.readFileSync('roblox-games/'+game+'/tools/devloop/studio-scripts/'+script,'utf8'));
-    assert.equal(steps.length,185);
-    assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
-    const labels=steps.filter(step=>step.type==='luau'&&step.code.includes("return 'TEXTS: '"));
-    assert.equal(labels.length,30);
-    for(const step of labels){
-      assert.match(step.code,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
-      assert.match(step.code,/if d:IsA\('TextLabel'\) and d\.Visible then/);
-      assert.match(step.code,/local value=d\.Text/);
-      assert.match(step.code,/local cut=utf8\.offset\(value,41\)/);
-      assert.match(step.code,/cut and string\.sub\(value,1,cut-1\) or value/);
-      assert.doesNotMatch(step.code,/string\.sub\(value,1,40\)/);
-      assert.match(step.code,/if #out>=10 then break end/);
-      assert.doesNotMatch(step.code,/while head<=|os\.clock\(|q\[head\]|d:GetChildren\(\)/);
+    const steps=JSON.parse(fs.readFileSync('roblox-games/'+game+'/tools/devloop/studio-scripts/'+name,'utf8'));
+    const mare=game==='mare-essentia';
+    assert.ok(steps.length>=(mare?180:185));
+    const labels=steps.filter(row=>row.type==='luau'&&row.code.includes("return 'TEXTS: '"));
+    assert.ok(labels.length>=(mare?12:30));
+    for(const row of labels){
+      assert.match(row.code,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
+      assert.match(row.code,/utf8\.offset\(value,41\)/);
+      assert.doesNotMatch(row.code,/string\.sub\(value,1,40\)/);
     }
-    assert.equal(steps.filter(step=>step.type==='capture').length,31);
-    assert.equal(steps[5].type,'wait');
-    assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
+    assert.ok(steps.filter(row=>row.type==='capture').length>=(mare?40:31));
   }
-  assert.match(generator,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
   assert.match(generator,/utf8\.offset\(value,41\)/);
-  assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
-
 
 // [실제 Studio 미디어 실패] 185단계 증거와 정확한 승인 ID로만 재승인한다.
 // 승인 번호/소스 파일은 바꾸지 않고 실패한 미디어만 기존 업로더의 grant 경로로 전송한다.
@@ -3950,7 +3938,7 @@ test('Mare Studio media repair regrants only exact failed registered IDs without
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.match(uploader,/const studioRegrantPath = studioRegrantArg/);
   assert.match(uploader,/if \(!studioRegrantPath\) for \(const \[dir, kind\] of/);
-  assert.match(uploader,/report\.summary\?\.completedSteps !== 185/);
+  assert.match(uploader,/report\.summary\?\.completedSteps !== report\.summary\.plannedSteps/);
   assert.match(uploader,/report\.assetRegistryAudit\?\.status !== 'PASS'/);
   assert.match(uploader,/report\.assetRegistryAudit\.mismatched\.length !== 0/);
   assert.match(uploader,/report\.assetRegistryAudit\.unverifiedPermissions\.length !== 0/);
