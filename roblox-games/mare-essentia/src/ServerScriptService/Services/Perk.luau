@@ -1,4 +1,5 @@
 --!nonstrict
+-- Perk.luau · 전문 분야·동료·선박 직책의 실제 효과 집계
 -- 전문 분야와 동료 효과를 한 곳에서 합산한다. 다른 서비스는 여기서만 보너스를 읽는다.
 
 return function(D, S)
@@ -122,6 +123,25 @@ return function(D, S)
 	local function cannonBonus(state)
 		local _, vc = vacancy(state)
 		return vc + sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0) + (if S.Village then S.Village.battleBonus(state) else 0)
+	end
+
+	-- [학문 공동 연구] 성장 계열·전문 분야·동료 직업은 서로 다른 축이다.
+	-- 선택한 전문 분야는 작은 기여만 하고, 동료는 실제 탑승·적합 직책 배치 시에만 도움을 준다.
+	-- 연구할 학문을 직업으로 잠그지 않고 기존 지식/퀘스트/보상 규칙도 유지한다.
+	local function researchAssist(state, discId)
+		local focus = state.specialty and Sp.SpecialtyById[state.specialty]
+		local focusPoint = if focus and table.find(focus.disciplines or {}, discId) then 1 else 0
+		local crewPoint, names = 0, {}
+		for _, id in state.companions do
+			local c = Sp.CompanionById[id]
+			local seat = Sp.CompanionStation[id]
+			if c and seat and state.stations[seat] == id and table.find(c.disciplines or {}, discId) then
+				-- 여러 명이 같은 학문을 돕더라도 중복 가산 폭증을 막는다.
+				crewPoint = math.max(crewPoint, if affinityOf(state, id) >= 70 then 2 else 1)
+				table.insert(names, c.name)
+			end
+		end
+		return focusPoint + crewPoint, names
 	end
 
 	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"
@@ -542,6 +562,7 @@ return function(D, S)
 		handlers = handlers,
 		companionLines = companionLines,
 		gainSpec = gainSpec,
+		researchAssist = researchAssist,
 		autoAssign = autoAssign,
 		cardsIn = cardsIn,
 		specUnlocked = unlocked,
