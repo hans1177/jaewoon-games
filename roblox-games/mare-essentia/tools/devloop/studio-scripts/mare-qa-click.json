@@ -767,6 +767,11 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "local RS=game:GetService(\"ReplicatedStorage\")\nlocal Pose=require(RS:WaitForChild(\"Shared\"):WaitForChild(\"Pose\"))\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"MOTION_SCENE_MISSING\")\nlocal stage=assert(scene:GetAttribute(\"R15SparringStage\"),\"MOTION_STAGE_MISSING\")\nlocal model\nfor _,v in scene:GetDescendants() do\n if v:IsA(\"Model\") and v.Name==\"Villager\" and v:FindFirstChild(\"HumanoidRootPart\") and (v:GetPivot().Position-stage).Magnitude<12 then model=v break end\nend\nassert(model,\"MOTION_R15_ACTOR_MISSING\")\nlocal joints={}\nfor _,name in {\"LeftShoulder\",\"RightShoulder\",\"LeftHip\",\"RightHip\",\"LeftElbow\",\"RightElbow\"} do\n local j=model:FindFirstChild(name,true)\n assert(j and (j:IsA(\"Motor6D\") or j:IsA(\"AnimationConstraint\")),\"MOTION_JOINT_MISSING:\"..name)\n joints[name]=j\nend\nlocal function sample(time)\n assert(Pose.makeR15Action(model,\"walk\",0,time),\"MOTION_POSE_NOT_APPLIED\")\n local la=select(1,joints.LeftShoulder.Transform:ToOrientation())\n local ra=select(1,joints.RightShoulder.Transform:ToOrientation())\n local ll=select(1,joints.LeftHip.Transform:ToOrientation())\n local rl=select(1,joints.RightHip.Transform:ToOrientation())\n assert(la*ll < -0.15 and ra*rl < -0.15,\"MOTION_SAME_SIDE_ARM_LEG_REVERSED:\"..string.format(\"%.3f,%.3f,%.3f,%.3f\",la,ra,ll,rl))\n assert(la*ra < -0.15 and ll*rl < -0.15,\"MOTION_LEFT_RIGHT_NOT_ALTERNATING\")\n return la,ra,ll,rl\nend\nlocal la1,ra1,ll1,rl1=sample(math.pi/2)\nlocal la2,ra2,ll2,rl2=sample(math.pi*1.5)\nassert(la1*la2 < -0.15 and ra1*ra2 < -0.15,\"MOTION_ARMS_NOT_SWINGING_THROUGH_GAIT\")\nassert(ll1*ll2 < -0.15 and rl1*rl2 < -0.15,\"MOTION_LEGS_NOT_SWINGING_THROUGH_GAIT\")\nreturn \"MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"run\") return \"R15_MOTION_RUN\""
   },
   {
@@ -776,6 +781,11 @@
   {
     "type": "capture",
     "name": "harbor_motion_run"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService(\"ReplicatedStorage\")\nlocal Pose=require(RS:WaitForChild(\"Shared\"):WaitForChild(\"Pose\"))\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"MOTION_SCENE_MISSING\")\nlocal stage=assert(scene:GetAttribute(\"R15SparringStage\"),\"MOTION_STAGE_MISSING\")\nlocal model\nfor _,v in scene:GetDescendants() do\n if v:IsA(\"Model\") and v.Name==\"Villager\" and v:FindFirstChild(\"HumanoidRootPart\") and (v:GetPivot().Position-stage).Magnitude<12 then model=v break end\nend\nassert(model,\"MOTION_R15_ACTOR_MISSING\")\nlocal joints={}\nfor _,name in {\"LeftShoulder\",\"RightShoulder\",\"LeftHip\",\"RightHip\",\"LeftElbow\",\"RightElbow\"} do\n local j=model:FindFirstChild(name,true)\n assert(j and (j:IsA(\"Motor6D\") or j:IsA(\"AnimationConstraint\")),\"MOTION_JOINT_MISSING:\"..name)\n joints[name]=j\nend\nlocal function sample(time)\n assert(Pose.makeR15Action(model,\"run\",0,time),\"MOTION_POSE_NOT_APPLIED\")\n local la=select(1,joints.LeftShoulder.Transform:ToOrientation())\n local ra=select(1,joints.RightShoulder.Transform:ToOrientation())\n local ll=select(1,joints.LeftHip.Transform:ToOrientation())\n local rl=select(1,joints.RightHip.Transform:ToOrientation())\n assert(la*ll < -0.15 and ra*rl < -0.15,\"MOTION_SAME_SIDE_ARM_LEG_REVERSED:\"..string.format(\"%.3f,%.3f,%.3f,%.3f\",la,ra,ll,rl))\n assert(la*ra < -0.15 and ll*rl < -0.15,\"MOTION_LEFT_RIGHT_NOT_ALTERNATING\")\n return la,ra,ll,rl\nend\nlocal la1,ra1,ll1,rl1=sample(math.pi/18)\nlocal la2,ra2,ll2,rl2=sample(math.pi/6)\nassert(la1*la2 < -0.15 and ra1*ra2 < -0.15,\"MOTION_ARMS_NOT_SWINGING_THROUGH_GAIT\")\nassert(ll1*ll2 < -0.15 and rl1*rl2 < -0.15,\"MOTION_LEGS_NOT_SWINGING_THROUGH_GAIT\")\nreturn \"MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2\""
   },
   {
     "type": "luau",
@@ -871,7 +881,12 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "workspace:SetAttribute('DevCall','Tab_explore') return 'FIELD_QA_OPEN_EXPLORE_TAB'"
+    "code": "local RS=game:GetService(\"ReplicatedStorage\")\nlocal Pose=require(RS:WaitForChild(\"Shared\"):WaitForChild(\"Pose\"))\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"MOTION_SCENE_MISSING\")\nlocal stage=assert(scene:GetAttribute(\"R15SparringStage\"))\nlocal model\nfor _,v in scene:GetDescendants() do\n if v:IsA(\"Model\") and v.Name==\"Villager\" and v:FindFirstChild(\"HumanoidRootPart\") and (v:GetPivot().Position-stage).Magnitude<12 then model=v break end\nend\nassert(model,\"MOTION_WORK_ACTOR_MISSING\")\nlocal arm=assert(model:FindFirstChild(\"RightShoulder\",true))\nlocal elbow=assert(model:FindFirstChild(\"RightElbow\",true))\nlocal neck=assert(model:FindFirstChild(\"Neck\",true))\nlocal signatures={}\nfor i,kind in {\"inspect\",\"count\",\"salute\",\"stretch\",\"drink\",\"listen\"} do\n task.wait(0.30)\n Pose.work(model,kind,os.clock()+i)\n local x,y,z=arm.Transform:ToOrientation()\n local ex=select(1,elbow.Transform:ToOrientation())\n local nx=select(1,neck.Transform:ToOrientation())\n local _,angle=arm.Transform:ToAxisAngle()\n assert(angle>0.08 or math.abs(nx)>0.08,\"MOTION_GESTURE_STATIC:\"..kind)\n signatures[string.format(\"%.1f:%.1f:%.1f:%.1f\",x,z,ex,nx)]=true\nend\nlocal distinct=0 for _ in signatures do distinct+=1 end\nassert(distinct>=5,\"MOTION_GESTURES_NOT_DISTINCT:\"..distinct)\nreturn \"MOTION_VILLAGER_GESTURES_PASS KINDS=6 DISTINCT=\"..distinct"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('DevAllies',true) workspace:SetAttribute('DevCall','Tab_explore') return 'FIELD_QA_OPEN_EXPLORE_TAB'"
   },
   {
     "type": "wait",
@@ -901,5 +916,14 @@
     "type": "luau",
     "ctx": "Client",
     "code": "local p=game:GetService('Players').LocalPlayer local folder=workspace:FindFirstChild('FieldScene') local ground=folder and folder:FindFirstChild('FieldGround') local gui=p.PlayerGui:FindFirstChild('FieldGui') local hrp=p.Character and p.Character:FindFirstChild('HumanoidRootPart') if not ground or not gui or not hrp or hrp.Position.X<2500 then error('FIELD_QA_ENTRY_FAIL: ground='..tostring(ground~=nil)..' gui='..tostring(gui~=nil)..' x='..tostring(hrp and hrp.Position.X)) end assert(workspace:GetAttribute('FieldCombatReady')==true,'FIELD_COMBAT_NOT_READY') assert(not hrp.Anchored,'FIELD_CHARACTER_ANCHORED') local h=p.Character:FindFirstChildOfClass('Humanoid') assert(h and h.WalkSpeed>0,'FIELD_CHARACTER_CANNOT_MOVE') local cam=workspace.CurrentCamera assert(cam and cam.CameraType==Enum.CameraType.Custom,'FIELD_CAMERA_NOT_CUSTOM') local UIS=game:GetService('UserInputService') if UIS.TouchEnabled and not UIS.KeyboardEnabled then local pad=assert(gui:FindFirstChild('FieldMovePad',true),'FIELD_MOVE_PAD_MISSING') assert(pad.AbsoluteSize.X>=120 and pad.AbsoluteSize.Y>=120,'FIELD_MOVE_PAD_TOO_SMALL') assert(workspace:GetAttribute('FieldTouchPad')==true,'FIELD_TOUCH_INPUT_DISABLED') end return 'FIELD_QA_ENTRY_PASS MOVEMENT_READY: x='..math.floor(hrp.Position.X)..' screen=FieldGui'"
+  },
+  {
+    "type": "wait",
+    "ms": 800
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local field=assert(workspace:FindFirstChild(\"FieldScene\"),\"MOTION_FIELD_MISSING\")\nlocal pl=game.Players.LocalPlayer\nlocal root=assert(pl.Character:FindFirstChild(\"HumanoidRootPart\"))\nlocal roles, enemies, allies={}, {}, {}\nfor _,m in field:GetDescendants() do\n if m:IsA(\"Model\") and m.Name==\"FieldEnemy\" then\n  local role=m:GetAttribute(\"MotionRole\")\n  assert(type(role)==\"string\",\"MOTION_ENEMY_ROLE_MISSING\")\n  roles[role]=true\n  table.insert(enemies,m)\n elseif m:IsA(\"Model\") and m.Name==\"FieldAlly\" then\n  local role=m:GetAttribute(\"MotionRole\")\n  assert(role==\"ally-ranged\" or role==\"ally-melee\",\"MOTION_ALLY_ROLE_MISSING\")\n  table.insert(allies,m)\n end\nend\nlocal variety=0 for _ in roles do variety+=1 end\nassert(variety>=4,\"MOTION_ENEMY_ROLE_VARIETY_FAIL:\"..variety)\nassert(#allies>=1,\"MOTION_FIELD_ALLY_NOT_SPAWNED\")\nlocal near,closest=nil,math.huge\nfor _,m in enemies do\n local hrp=m:FindFirstChild(\"HumanoidRootPart\")\n if hrp and (hrp.Position-root.Position).Magnitude<closest then\n  near=m closest=(hrp.Position-root.Position).Magnitude\n end\nend\nassert(near and closest<120,\"MOTION_NEAR_ENEMY_MISSING\")\nlocal function jointsActive(model)\n local n=0\n for _,v in model:GetDescendants() do\n  if (v:IsA(\"Motor6D\") or v:IsA(\"AnimationConstraint\")) and (v.Name==\"LeftShoulder\" or v.Name==\"RightShoulder\" or v.Name==\"LeftHip\" or v.Name==\"RightHip\" or v.Name==\"Waist\" or v.Name==\"Neck\") then\n   local _,a=v.Transform:ToAxisAngle()\n   if a>0.045 then n+=1 end\n  end\n end\n return n\nend\nlocal n1a,n2a=jointsActive(near),jointsActive(allies[1])\ntask.wait(0.30)\nlocal n1b,n2b=jointsActive(near),jointsActive(allies[1])\nassert(math.max(n1a,n1b)>=3,\"MOTION_MONSTER_JOINTS_STATIC:\"..math.max(n1a,n1b))\nassert(math.max(n2a,n2b)>=3,\"MOTION_ALLY_JOINTS_STATIC:\"..math.max(n2a,n2b))\nreturn \"MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=\"..variety..\" ALLIES=\"..#allies..\" ENEMY_JOINTS=\"..math.max(n1a,n1b)..\" ALLY_JOINTS=\"..math.max(n2a,n2b)"
   }
 ]
