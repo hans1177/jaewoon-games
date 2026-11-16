@@ -500,6 +500,16 @@ function Pose.work(model, kind, t, moving)
 		if motor then motor.Transform = cf end
 	end
 	local A = CFrame.Angles
+	-- [주민 동작 전환] 정지 자세만 초기화한다. 이동 중에는 보행의 반대 팔·접지 관절을 유지한다.
+	if not moving then
+		set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
+		set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
+		set(m.leftAnkle, CFrame.identity); set(m.rightAnkle, CFrame.identity)
+		set(m.root, CFrame.identity)
+		set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08))
+		set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
+		set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
+	end
 	if kind == "carry" then
 		-- 짐을 든 채 앞으로 걷는 주민: 양팔을 가슴 앞쪽으로 뻗는다.
 		-- 뒤로 -1.25rad 젖혀 두던 어깨를 전방으로 교정하고 보행 다리는 유지한다.
@@ -520,18 +530,8 @@ function Pose.work(model, kind, t, moving)
 		set(m.waist, A(0.28, 0, 0))
 		set(m.neck, A(-0.25, 0, 0))
 	end
-	-- [주민 R15] 이동 중에는 다리 보행 주기를 지우지 않고 상체 직업 동작만 겹친다.
+	-- [주민 R15] 이동 작업은 실제 걷기 포즈 위에 필요한 관절만 겹쳐 반대 팔 교차를 보존한다.
 	if kind ~= "carry" and kind ~= "look" and kind ~= "stoop" then
-	-- 제자리 일: 먼저 걷기 흔적을 지운다
-	if not moving then
-		set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
-		set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
-		set(m.leftAnkle, CFrame.identity); set(m.rightAnkle, CFrame.identity)
-		set(m.root, CFrame.identity)
-	end
-	set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08)) -- 작업 교대 시 이전 팔 동작을 남기지 않는다.
-	set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
-	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 	local elder = model:GetAttribute("Age") == "elder"
 	if kind == "hammer" then
 		local beat = (t * 0.94) % 1
@@ -669,7 +669,8 @@ function Pose.work(model, kind, t, moving)
 	end
 	end -- [직업 동작] 걷는 동안은 기존 보행 관절을 보존한다.
 	-- [전신 보간] 몸통의 호흡·하체 체중 이동·직업 동작을 실제 관절의 현재 자세로 연결한다.
-	if m.root and kind ~= "sit" and kind ~= "fish" then
+	-- [이동-발걸음 동기화] 이동 중에는 초 단위 흔들림을 더하지 않고 거리 기반 체중 이동만 사용한다.
+	if not moving and m.root and kind ~= "sit" and kind ~= "fish" then
 		m.root.Transform = m.root.Transform * CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
 	end
 	if m.neck and kind ~= "look" and kind ~= "stoop" and kind ~= "carry" then
@@ -884,9 +885,14 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.waist, m.waist.Transform * A(0, 0, -s * 0.024))
 		set(m.neck, m.neck.Transform * A(0, 0, s * 0.014))
 	elseif state == "attack" then
+		-- [전투 전신 반작용] 기존 공격 진행률을 유지하고 반대 팔·허리·무릎으로 타격 하중을 전달한다.
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
 		set(m.rightElbow, A(-0.4 - wave * 0.5, 0, 0))
-		set(m.waist, A(wave * 0.2, -wave * 0.4, 0))
+		set(m.leftArm, A(-0.3 - wave * 0.35, 0, 0.22))
+		set(m.leftElbow, A(-0.28 - wave * 0.15, 0, 0))
+		set(m.waist, A(wave * 0.2, -wave * 0.4, wave * 0.07))
+		set(m.leftKnee, A(-wave * 0.16, 0, 0)); set(m.rightKnee, A(-wave * 0.22, 0, 0))
+		set(m.neck, A(-wave * 0.07, wave * 0.12, 0))
 	elseif state == "shoot" then
 		set(m.rightArm, A(-1.5 - wave * 0.2, 0, -0.15))
 		set(m.rightElbow, A(-0.2, 0, 0))
@@ -897,12 +903,18 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.leftElbow, A(-0.7 - wave * 0.3, 0, 0))
 		set(m.rightElbow, A(-0.8 + wave * 0.3, 0, 0))
 	elseif state == "guard" then
+		-- [방어 자세] 두 팔만 고정하지 않고 하체를 낮춰 받치는 자세로 연결한다.
 		set(m.leftArm, A(-1.1, 0, 0.45)); set(m.rightArm, A(-1.2, 0, -0.4))
 		set(m.leftElbow, A(-0.8, 0, 0)); set(m.rightElbow, A(-0.8, 0, 0))
+		set(m.leftKnee, A(-0.16, 0, 0)); set(m.rightKnee, A(-0.19, 0, 0))
+		set(m.waist, A(0.08, 0, -0.035))
 	elseif state == "hurt" then
+		-- [피격 흡수] 판정과 무관한 시각 반응으로 상체 충격에 무릎 굽힘을 동기화한다.
 		set(m.waist, A(-wave * 0.35, 0, wave * 0.18))
 		set(m.leftArm, A(-wave * 0.65, 0, 0.2))
 		set(m.rightArm, A(-wave * 0.65, 0, -0.2))
+		set(m.leftKnee, A(-wave * 0.25, 0, 0)); set(m.rightKnee, A(-wave * 0.18, 0, 0))
+		set(m.neck, A(wave * 0.14, -wave * 0.1, 0))
 	elseif state == "cheer" then
 		set(m.leftArm, A(-2.3 + wave * 0.2, 0, 0.25))
 		set(m.rightArm, A(-2.3 + wave * 0.2, 0, -0.25))
