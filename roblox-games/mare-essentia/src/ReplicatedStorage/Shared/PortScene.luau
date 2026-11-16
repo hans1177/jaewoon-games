@@ -1888,21 +1888,77 @@ local function placeSignature(folder, info)
 	local nation = port and port.country or ""
 	local european = COUNTRY_PLAN[nation] ~= nil and currentKey ~= "ottoman"
 	if not list and not european then return end
-	-- 발전도 1은 작은 항구촌. 2는 소형 마을 표지, 3은 본래 도시 랜드마크,
-	-- 4~5는 국별 상징과 부두 장식이 단계적으로 늘어난다.
-	if european and sceneLevel < 3 then
+	-- 모든 대륙: 1단계는 항구촌, 2단계는 표지/소형 탑, 3단계는 온전한 지역 랜드마크.
+	-- 유럽만 작은 도시로 시작하던 기존 불균형을 없애되 시설 소유/경제 잠금에는 영향이 없다.
+	if sceneLevel < 3 then
 		if sceneLevel == 2 then
-			local asset = if nation == "netherlands" then "windmill"
-				elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
-				elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
-				else "church"
-			importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+			if list and #list > 0 then
+				local marker = list[1]
+				local m = importedModel(folder, marker.kind, marker.asset, SIG_ANCHOR + Vector3.new(marker.dx * 0.5, 0, marker.dz * 0.5), math.min(16, marker.size * 0.58), false, marker.tint)
+				if m then m.Name = "EarlyRegionalLandmark" end
+			elseif european then
+				local asset = if nation == "netherlands" then "windmill"
+					elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
+					elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
+					else "church"
+				importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+			end
 		end
 		return
 	end
 	if list then
 		for _, e in list do
 			importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
+		end
+	end
+	-- [항구 대표경관] 각 대륙의 상징 건물 주위에 3~5단계의 같은 문화권 부속 경관을 추가한다.
+	-- 멀리서는 지붕·탑 실루엣, 가까이에서는 현관·정원·시장의 순서로 디테일이 드러난다.
+	local landmarkFloor = part(folder, Vector3.new(43, 0.18, 28), CFrame.new(SIG_ANCHOR + Vector3.new(-12, 0.09, 0)),
+		if currentKey == "desert" or currentKey == "wafrica" then C(190, 169, 123) else C(166, 152, 139),
+		if currentKey == "desert" or currentKey == "wafrica" then Enum.Material.Sandstone else Enum.Material.Cobblestone)
+	landmarkFloor.Name = "RegionalLandmarkCourt"
+	landmarkFloor.CanCollide, landmarkFloor.CanQuery = false, false
+	landmarkFloor:SetAttribute("Culture", currentKey)
+	landmarkFloor:SetAttribute("Tier", sceneLevel)
+	if sceneLevel >= 4 then
+		local east = currentKey == "japan" or currentKey == "china"
+		local humid = currentKey == "seasia" or currentKey == "pacific" or currentKey == "tropic" or currentKey == "malabar"
+		local islamic = currentKey == "ottoman" or currentKey == "desert" or currentKey == "swahili" or currentKey == "wafrica"
+		local mediterranean = currentKey == "iberia" or currentKey == "italy" or currentKey == "med" or currentKey == "creole"
+		local x, z = SIG_ANCHOR.X, SIG_ANCHOR.Z
+		if east then
+			for _, dx in { -26, 26 } do
+				importedModel(folder, "Town", "eastasia-column-base", Vector3.new(x + dx, 0, z - 17), 7, false)
+			end
+			importedModel(folder, "Terrain", "gate-overhang", Vector3.new(x - 3, 0, z - 20), 12, false)
+		elseif humid then
+			for _, dx in { -26, 26 } do
+				importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(x + dx, 0, z - 18), 9, false)
+			end
+			importedModel(folder, "Town", "bench_A", Vector3.new(x - 12, 0, z - 20), 4, false)
+		elseif islamic then
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Terrain", "egypt-column", Vector3.new(x + dx, 0, z - 20), 8, false)
+			end
+			importedModel(folder, "Town", "fountain-square", Vector3.new(x - 12, 0, z - 20), 8, false)
+		elseif mediterranean then
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Terrain", "column", Vector3.new(x + dx, 0, z - 20), 8, false)
+			end
+			importedModel(folder, "Town", "fountain-round", Vector3.new(x - 10, 0, z - 20), 7, false)
+		else
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Town", "tree-high", Vector3.new(x + dx, 0, z - 19), 9, false)
+			end
+			importedModel(folder, "Town", "bench_B", Vector3.new(x - 12, 0, z - 19), 4, false)
+		end
+	end
+	if sceneLevel >= 5 and info.sim then
+		local bld = info.sim.buildings or {}
+		if (bld.hall or 0) > 0 or (bld.market or 0) >= 3 then
+			for _, dx in { -16, 16 } do
+				importedModel(folder, "Castle", "flag-banner-long", SIG_ANCHOR + Vector3.new(dx, 0, -23), 9, false)
+			end
 		end
 	end
 	if european and sceneLevel >= 4 then
