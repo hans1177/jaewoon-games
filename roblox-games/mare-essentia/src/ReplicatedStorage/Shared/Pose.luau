@@ -799,12 +799,18 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
 		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
 		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
-		-- 팔은 반대쪽 다리와 함께 흔든다 (앞으로 = 음수)
-		local armAmp = amp * (if run then 1.0 else 0.95)
-		set(m.leftArm, A(-s * armAmp, 0, 0.06)); set(m.rightArm, A(s * armAmp, 0, -0.06))
-		local elbowBase = if run then 0.9 else 0.22
-		set(m.leftElbow, A(-(elbowBase + math.max(0, -s) * (if run then 0.5 else 0.35)), 0, 0))
-		set(m.rightElbow, A(-(elbowBase + math.max(0, s) * (if run then 0.5 else 0.35)), 0, 0))
+		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
+		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
+		local armForward = if run then 0.96 else 0.72
+		local armBack = if run then 0.38 else 0.28
+		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
+		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
+		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
+		set(m.rightArm, A(rightForward * armForward - rightBack * armBack, 0, -0.06))
+		-- 팔꿈치는 앞에 나오는 팔만 확실히 접고 뒤팔은 가볍게 구부린다.
+		local elbowFront, elbowBack = if run then 0.95 else 0.36, if run then 0.38 else 0.15
+		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
+		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
 		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.34 else 0.16)
 		set(m.root, CFrame.new(0, bob, 0) * A(if run then -0.24 else -0.06, s * (if run then 0.14 else 0.09), s * 0.05))
 		set(m.waist, A(if run then -0.07 else 0, -s * (if run then 0.22 else 0.15), 0))
