@@ -7414,7 +7414,7 @@ if string.sub(codexField, 1, 2) == "r:" then
 			if item.category == selected then
 				add(function()
 					local card = item.cardId and cardById[item.cardId]
-					return mkRow(content, item.name, "학문: " .. item.discipline .. " · 연관 지식: " .. item.cardName, {
+					return mkRow(content, item.name, "연결 학문: " .. item.discipline .. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "") .. " · 연관 지식: " .. item.cardName, {
 						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
 							onClick = function() if card then H.showCardDetail(card) end end },
 					}, 62)
