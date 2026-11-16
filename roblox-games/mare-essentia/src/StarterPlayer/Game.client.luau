@@ -486,6 +486,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 	if kind == "Glyph" then
 		local icon = Instance.new("Frame")
 		icon.Name = "MenuGlyph_" .. tostring(asset)
+		icon:SetAttribute("MenuGlyph", tostring(asset)) -- UI 자동검사가 실제 메뉴 의미를 추적한다.
 		icon.Size = UDim2.fromOffset(px, px)
 		icon.BackgroundTransparency = 1
 		icon.BorderSizePixel = 0
