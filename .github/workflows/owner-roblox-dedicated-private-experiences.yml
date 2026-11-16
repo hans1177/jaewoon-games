@@ -48,6 +48,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # [원본 다운로드] PR 계약 검사에서 기존 Quaternius 동물 7종 LFS 원본만 복원한다.
+      # checkout 기본값(lfs:false)은 원본 대신 포인터만 남겨 SHA 검증이 실패한다.
+      # 다른 게임의 LFS 전체를 다운로드하지 않는다. 확인된 해시는 기존 QA에서 강제한다.
+      - name: Download original Mare CC0 animal sources
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs pull --include='roblox-games/mare-essentia/assets/animals/*.fbx' --exclude='*'
       - if: github.event_name == 'pull_request'
         run: node --test qa/company-roblox-dedicated-experience.test.mjs
       - name: Select exact owner publication targets
