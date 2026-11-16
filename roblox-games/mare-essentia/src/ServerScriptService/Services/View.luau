@@ -533,14 +533,32 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {} }
+		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {} }
+		local fieldDiscipline = {}
+		for _, disc in D.KnowledgeTree.Disciplines do
+			fieldDiscipline[disc.field] = disc
+		end
 		for _, c in D.Cards.Cards do
+			local method = S.Discovery.methodOf(c)
+			local kind = D.Cards.kindOf(c)
+			local disc = fieldDiscipline[c.field]
+			local domain = disc and D.KnowledgeTree.TaxonomyById[disc.id] and D.KnowledgeTree.TaxonomyById[disc.id].domain
+			local defKind = D.Cards.KindById[kind]
+			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
+				pair[1][pair[2]] = (pair[1][pair[2]] or 0) + 1
+			end
 			local found = state.discovered[c.id] == true
 			local art = D.CardArt.Art[c.id]
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
 				rarity = c.rarity,
+				method = method,
+				kind = kind,
+				kindName = defKind and defKind.name or "기타",
+				discipline = disc and disc.name or "기타",
+				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
+				rarityGuide = S.Discovery.rarityGuide(c),
 				found = found,
 				name = if found then c.name else "???",
 				description = if found then c.description else "발견 방법: " .. c.source,
@@ -570,6 +588,7 @@ return function(D, S)
 				})
 			end
 			view.codex.overall = overall
+			view.codex.kindList = D.Cards.Kinds
 			view.codex.rank = S.Codex.rankTitle(state)
 		end
 
