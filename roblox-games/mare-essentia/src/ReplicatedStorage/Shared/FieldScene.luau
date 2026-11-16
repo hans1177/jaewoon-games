@@ -12,6 +12,7 @@ local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local KnowledgeCards = require(script.Parent:WaitForChild("KnowledgeCards"))
+local Sfx = require(script.Parent:WaitForChild("Sfx"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
 local Weapons = require(script.Parent:WaitForChild("Weapons"))
 local Specialties = require(script.Parent:WaitForChild("Specialties"))
@@ -648,6 +649,7 @@ function FieldScene.start(opts)
 	local BASE_DMG = 10
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
+	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
 	local finished = false
 	local enemies = {}
 	local conns = {}
@@ -811,7 +813,6 @@ function FieldScene.start(opts)
 	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
 	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
 	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
-	local observedCardId = nil
 	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
 	folder:SetAttribute("FieldRareTraceTotal", if rareTrace then 2 else 0)
 	folder:SetAttribute("FieldRareTraceFound", 0)
