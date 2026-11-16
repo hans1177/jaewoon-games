@@ -2443,7 +2443,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			for j = -1, 1 do
 				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), goodSize(good, 2.8), false, mesh[3])
 			end
-			importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
+			-- 곁들이 소품: 상품 자체가 통(사케·럼)이면 같은 통이 또 놓여 중복돼 보이므로 병 상자로 바꿔 모양을 달리한다
+			if mesh[2] == "barrel" then
+				importedModel(folder, "Naval", "crate-bottles", at + Vector3.new(7.6, 0, 7.4), 2.4, false)
+			else
+				importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
+			end
 			importedModel(folder, "Cargo", "box-open", at + Vector3.new(-7.6, 0, 7.4), 2.4, false)
 			if body then
 				sign(folder, body, SPECIAL_NAME[good] or "특산품 공방", Color3.fromRGB(150, 110, 40), (if lvl >= 4 then 2 else 1) * 3 + 6, false, { mesh[1], mesh[2] })
