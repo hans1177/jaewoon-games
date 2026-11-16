@@ -52,6 +52,15 @@ jobs:
         with:
           ref: main
           lfs: false
+          # [대용량 저장소] 게임 원본과 등록 코드만 가져와 빌드 시간을 단축한다.
+          # 기존 등록기·QA·메인 자산 승격 절차 및 권한 검사는 그대로 사용한다.
+          filter: blob:none
+          sparse-checkout: |
+            .github/workflows
+            company-learning
+            tools
+            qa
+            roblox-games/mare-essentia
 
       - uses: actions/setup-node@v4
         with:
