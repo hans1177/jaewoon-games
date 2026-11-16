@@ -1853,7 +1853,7 @@ hudTop.BackgroundTransparency = 1
 hudTop.Size = UDim2.fromScale(1, 1)
 hudTop.Parent = hudTopGui
 hud:GetPropertyChangedSignal("Visible"):Connect(function()
-	hudTopGui.Enabled = hud.Visible
+	hudTopGui.Enabled = hud.Visible and player.PlayerGui:FindFirstChild("TradeHallGui") == nil
 end)
 
 local dock = Instance.new("ScrollingFrame")
@@ -4764,6 +4764,9 @@ local function closeTradeHall()
 	end
 	tradeHallRefresh = nil
 	main.Visible = true
+	-- [교역·조선소 복귀] 원래 메뉴 표시 상태만 복원한다. 보관·저장·거래 상태는 건드리지 않는다.
+	hud.Visible = menuToggle.Visible
+	hudTopGui.Enabled = hud.Visible
 end
 
 -- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
@@ -4787,6 +4790,9 @@ local function openTradeHall()
 	end
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
+	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
+	hud.Visible = false
+	hudTopGui.Enabled = false
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundColor3 = Color3.fromRGB(34, 26, 20)
@@ -5729,6 +5735,9 @@ function openYardHall()
 	closeTradeHall()
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
+	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
+	hud.Visible = false
+	hudTopGui.Enabled = false
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundColor3 = COLORS.cover
