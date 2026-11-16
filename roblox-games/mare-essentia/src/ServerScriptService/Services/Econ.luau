@@ -243,7 +243,7 @@ return function(D, S)
 			or (region == "indian" and year >= 1780)
 			or (region ~= "europe" and region ~= "new_world" and region ~= "indian" and year >= 1820)
 		local gazette = region == "far_east" and year >= 1500 and literacy
-		local newspaper = culturalPrint and literacy and (town.stage >= 4 or year >= 1750)
+		local newspaper = culturalPrint and literacy and (town.stage >= 4 or (region == "europe" and year >= 1665) or year >= 1750)
 		local press = newspaper or gazette
 		return { available = press, medium = if newspaper then "항구 신문" elseif gazette then "관보·회보" else "구전·상인 통신문",
 			year = math.floor(year), printing = literacy and (year >= 1500 or region == "far_east") }
@@ -333,7 +333,7 @@ return function(D, S)
 					local category, name = newsClass(rec.kind, rec.id)
 					local importance = category == "military" or category == "diplomacy" or (category == "politics" and (string.find(tostring(rec.kind), "혁명", 1, true) or string.find(tostring(rec.id), "independence", 1, true)))
 					local scope, delay, home = newsRoute(t, rec)
-					local network = (home and state.stats and state.stats.visited and state.stats.visited[home.id]) ~= nil
+					local network = home ~= nil and state.stats ~= nil and state.stats.visited ~= nil and state.stats.visited[home.id] ~= nil and state.stats.visited[home.id] ~= false
 					local expertise, companionName = newsExpertise(state, category)
 					if paper then delay = math.max(0, math.floor(delay * 0.75)) end
 					if source == "tavern" then delay += 2 end
@@ -369,8 +369,10 @@ return function(D, S)
 		if not a or not b then return false end
 		if a.id == b.id then return true end
 		if a.country == b.country or D.Regions.of(a).id == D.Regions.of(b).id then
-			return (state.careers and state.careers.trade and state.careers.trade.level or 1) >= 3
-				or (S.Harbor and S.Harbor.intel and S.Harbor.intel(state) or 0) >= 1
+			-- 기존 시세 이벤트에 발생시각이 없으므로 실제 방문한 정보망에서만 전달한다.
+			local visited = state.stats and state.stats.visited and state.stats.visited[portId]
+			return visited ~= nil and visited ~= false and ((state.careers and state.careers.trade and state.careers.trade.level or 1) >= 3
+				or (S.Harbor and S.Harbor.intel and S.Harbor.intel(state) or 0) >= 1)
 		end
 		return false
 	end
