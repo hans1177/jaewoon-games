@@ -900,7 +900,7 @@ function FieldScene.start(opts)
 			model = nil
 		end
 		if finished or not folder.Parent then
-			if model then model:Destroy() end
+			if created and model and typeof(model) == "Instance" then model:Destroy() end
 			return { finish = finish, cancelled = true }
 		end
 		if not model then
@@ -3117,7 +3117,7 @@ function FieldScene.start(opts)
 						m = nil
 					end
 					if finished or not folder.Parent then
-						if m then m:Destroy() end
+						if created and m and typeof(m) == "Instance" then m:Destroy() end
 						return
 					end
 					local r = m and m:FindFirstChild("HumanoidRootPart")
