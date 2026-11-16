@@ -3195,7 +3195,8 @@ function PortScene.build(info, onFacility)
 			{ name = "궁정 학자", job = "royal_scholar", role = "Mage", kind = "read", work = { "read", "write", "inspect" }, rest = { "talk", "listen" }, tint = C(102, 119, 109) },
 		}
 		for i = 1, royalWorkers do
-			local spec = staffKinds[(i - 1) % (if palaceTier <= 1 then 1 elseif palaceTier == 2 then 2 elseif palaceTier == 3 then 3 else 4) + 1]
+			local staffTypes = math.min(#staffKinds, palaceTier)
+			local spec = staffKinds[((i - 1) % staffTypes) + 1]
 			local side = if i % 2 == 0 then 1 else -1
 			local pos = Vector3.new(frontX + 11 + math.floor((i - 1) / 4) * 11, 0, side * (16 + (i % 4) * 5))
 			local facing = faceTo(pos, Vector3.new(facadeX, 0, 0))
