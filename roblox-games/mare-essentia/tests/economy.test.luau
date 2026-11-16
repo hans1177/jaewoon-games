@@ -454,6 +454,13 @@ do
 	local town = Econ.town(st, "london")
 	check("서비스: 항구 요약", town and town.pop > 0 and town.stage >= 1 and town.residents >= 6 and town.jobs.farmer > 0, town and town.pop)
 	check("서비스: 건축물·주거·일자리", town.buildings.house > 0 and town.housing.cap > 0 and town.work.jobs > 0 and town.service.market ~= nil)
+	-- [도시 외형 연결] 실제 시뮬 목표 수량과 지출을 보존한 채, 시각 공사 정보만 읽는다.
+	local build = town.construction
+	check("서비스: 건축 수요/지출을 장면에 전달", build ~= nil and type(build.active) == "boolean"
+		and build.spending >= 0 and build.house >= 0 and build.workshop >= 0 and build.school >= 0)
+	local again = Econ.town(st, "london").construction
+	check("서비스: 도시 조회는 건축 상태를 변경하지 않음", again.spending == build.spending
+		and again.house == build.house and again.workshop == build.workshop)
 	do
 		local w2 = Econ.macro(st, "world")
 		local K = require("./Shared/KnowledgeTree")
