@@ -2,7 +2,7 @@
 -- Econ.luau · 서버 경제시계·학문 연구 확산
 -- 살아 있는 세계 경제: Economy(순수 시뮬)를 서버에서 하루씩 돌려 항구마다 인구·발전 단계·직업·번영도를 낸다.
 -- 세계는 서버에 하나다. 플레이어의 날짜(state.day)를 따라 한 번에 MAX_CATCHUP 일까지만 따라잡는다(끊김 방지).
--- 저장에는 넣지 않는다: 같은 시드로 다시 시작하면 같은 역사가 다시 흐른다. 시뮬이 없으면(D.Economy == nil) 아무것도 하지 않는다.
+-- [세계 공유] 플레이어 저장과 별도인 세계 스냅샷을 선택적으로 연결한다. 통신 실패 시 저장 성공을 가장하지 않는다.
 
 return function(D, S)
 	local E = D.Economy
@@ -13,11 +13,34 @@ return function(D, S)
 	local WORLD_EPOCH_UTC = 1794787200 -- 2026-11-16 00:00 UTC
 	local WORLD_DAY_SECONDS = 1800
 	local world = nil
+	local worldStore, worldOwner = nil, "server"
+	local worldRevision, worldDirty = 0, false
+	local lastRead, lastWrite = 0, 0
+	local WORLD_KEY, PULL_SECONDS, WRITE_SECONDS = "world", 120, 300
+	local pendingOps = {}
+
+	-- [영구 세계] Store 인스턴스는 서버 진입점에서 전달하며, 플레이어 DataStore와 절대 섞지 않는다.
+	function X.bindStore(store, owner)
+		worldStore, worldOwner = store, owner or "server"
+	end
 
 	local function ensure(state)
 		if not E then return nil end
 		if not world then
-			world = E.newWorld({ seed = 20260 + (state.startYear or 1650), year = state.startYear or 1650 })
+			if worldStore then
+				-- 첫 조회에서 최신 공통 스냅샷을 읽는다. 실패 시 임의 세계를 저장하지 않는다.
+				local ok, snapshot = pcall(function() return worldStore:GetAsync(WORLD_KEY) end)
+				if not ok then return nil end
+				if snapshot ~= nil then
+					world = E.restoreWorld(snapshot)
+					if not world then return nil end
+					worldRevision = snapshot.revision or 0
+				end
+				lastRead = os.time()
+			end
+			if not world then
+				world = E.newWorld({ seed = 20260 + (state.startYear or 1650), year = state.startYear or 1650 })
+			end
 		end
 		return world
 	end
@@ -30,6 +53,7 @@ return function(D, S)
 		local target = math.max(state.day or 0, realDays)
 		local n = math.clamp(target - w.day, 0, MAX_CATCHUP)
 		for _ = 1, n do E.step(w) end
+		if n > 0 then worldDirty = true end
 		return n
 	end
 
@@ -62,7 +86,7 @@ return function(D, S)
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
-			day = w.day, year = math.floor(E.year(w)), technology = technology,
+			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = E.specialtyView(t),
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
@@ -94,12 +118,20 @@ return function(D, S)
 	function X.take(state, portId, goodId, n)
 		local w = ensure(state)
 		local t = w and w.towns[portId]
-		if t then E.tradeTake(t, goodId, n) end
+		if t then
+			E.tradeTake(t, goodId, n)
+			worldDirty = true
+			table.insert(pendingOps, { kind = "take", portId = portId, goodId = goodId, count = n })
+		end
 	end
 	function X.give(state, portId, goodId, n)
 		local w = ensure(state)
 		local t = w and w.towns[portId]
-		if t then E.tradeGive(t, goodId, n) end
+		if t then
+			E.tradeGive(t, goodId, n)
+			worldDirty = true
+			table.insert(pendingOps, { kind = "give", portId = portId, goodId = goodId, count = n })
+		end
 	end
 
 	-- 해역·나라·세계 집계 (신문·거시 화면용)
@@ -115,6 +147,8 @@ return function(D, S)
 		local w = ensure(state)
 		if not w then return end
 		E.addShock(w, E.shockFromEvent(ev, regionId))
+		worldDirty = true
+		table.insert(pendingOps, { kind = "shock", event = ev, regionId = regionId })
 	end
 
 	-- 지식카드(학문) → 마을 경제 기술 분야. 한 학문이 여러 분야에 가중치로 퍼진다.
@@ -164,9 +198,82 @@ return function(D, S)
 				E.adoptTechnologies(t, E.year(w))
 			end
 		end
+		worldDirty = true
+		table.insert(pendingOps, { kind = "teach", portId = portId, discipline = discId, points = points })
 		return town
 	end
 
-	function X.reset() world = nil end
+	-- [서버 간 공유] 일정 주기로만 UpdateAsync를 써서 요청량을 제한한다.
+	-- 더 새 기록이 들어온 충돌에서는 뒤처진 세계로 덮지 않고, 미반영 교역·연구 사건만 최신 세계에 재적용한다.
+	function X.sync(state)
+		if not worldStore then return false end
+		local w = ensure(state)
+		if not w then return false end
+		local now = os.time()
+		if worldDirty and now - lastWrite >= WRITE_SECONDS then
+			local candidate = E.snapshot(w)
+			candidate.revision = worldRevision + 1
+			candidate.writer = worldOwner
+			local conflict = nil
+			local ok, saved = pcall(function()
+				return worldStore:UpdateAsync(WORLD_KEY, function(current)
+					if current ~= nil and (type(current) ~= "table" or current.schema ~= E.WORLD_SCHEMA) then
+						return nil
+					end
+					local oldRevision = current and current.revision or 0
+					if type(oldRevision) ~= "number" or oldRevision > worldRevision then
+						conflict = current
+						return nil
+					end
+					candidate.revision = oldRevision + 1
+					return candidate
+				end)
+			end)
+			if ok and type(saved) == "table" and saved.writer == worldOwner
+				and saved.revision == candidate.revision then
+				worldRevision = candidate.revision
+				worldDirty = false
+				pendingOps = {}
+				lastWrite, lastRead = now, now
+				return true
+			end
+			if ok and conflict then
+				local latest = E.restoreWorld(conflict)
+				if latest then
+					world, worldRevision = latest, conflict.revision
+					local replay = pendingOps
+					pendingOps = {}
+					worldDirty = true
+					for _, op in ipairs(replay) do
+						if op.kind == "take" then X.take(state, op.portId, op.goodId, op.count)
+						elseif op.kind == "give" then X.give(state, op.portId, op.goodId, op.count)
+						elseif op.kind == "teach" then X.teach(state, op.portId, op.discipline, op.points)
+						elseif op.kind == "shock" then X.shock(state, op.event, op.regionId) end
+					end
+					lastRead = now
+				end
+			end
+			-- 통신 실패·경합 시 더 자주 재시도하지 않아 Roblox 저장 요청 예산을 보호한다.
+			lastWrite = now
+			return false
+		end
+		if not worldDirty and now - lastRead >= PULL_SECONDS then
+			local ok, snapshot = pcall(function() return worldStore:GetAsync(WORLD_KEY) end)
+			lastRead = now
+			if not ok then return false end
+			if type(snapshot) == "table" and type(snapshot.revision) == "number"
+				and snapshot.revision > worldRevision then
+				local latest = E.restoreWorld(snapshot)
+				if not latest then return false end
+				world, worldRevision = latest, snapshot.revision
+			end
+		end
+		return true
+	end
+
+	function X.reset()
+		world, worldRevision, worldDirty = nil, 0, false
+		lastRead, lastWrite, pendingOps = 0, 0, {}
+	end
 	return X
 end
