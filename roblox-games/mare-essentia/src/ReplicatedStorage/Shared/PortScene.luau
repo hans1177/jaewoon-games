@@ -1505,6 +1505,61 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				end
 			end
 		end
+		-- 세계경제는 기존 9개 고용 직군을 그대로 계산한다. 그 아래 세부 직업은 실제 작업장,
+		-- 생산품·경제 시설·발전도를 만족할 때만 생기며 경제 수치/저장에는 관여하지 않는다.
+		local stock = (info.sim and info.sim.buildings) or {}
+		local function built(id, stage)
+			return lvl >= stage and (if info.sim then (stock[id] or 0) >= 1 else true)
+		end
+		local available = {
+			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "inspect", "hammer" }, rest = { "stretch", "drink" }, color = C(129, 72, 53) },
+			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "inspect", "count" }, rest = { "talk", "drink" }, color = C(117, 86, 148) },
+			{ name = "제빵사", job = "baker", group = "craftsman", need = built("workshop", 2) and (made.grain or made.maize or made.beer), at = Vector3.new(-214, 0, -114), prop = { "Cargo", "food-flour", 3 }, work = { "knead", "stir", "inspect" }, rest = { "drink", "talk" }, color = C(180, 130, 85) },
+			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "hammer", "inspect", "lift" }, rest = { "stretch", "drink" }, color = C(136, 101, 67) },
+			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "hammer", "inspect", "carry" }, rest = { "talk", "stretch" }, color = C(79, 103, 134) },
+			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "hoe", "inspect" }, rest = { "drink", "lean" }, color = C(130, 121, 83) },
+			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = Vector3.new(-86, 0, 21), prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "read", "write", "point" }, rest = { "talk", "listen" }, color = C(80, 115, 108) },
+			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "write", "count", "read" }, rest = { "talk", "listen" }, color = C(91, 89, 131) },
+			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "write", "offer" }, rest = { "talk", "read" }, color = C(105, 75, 119) },
+		}
+		local specialistLimit = if info.sim then math.clamp(math.floor((info.sim.residents or 0) / 10), 0, 7) else lvl + 1
+		local specialistCount = 0
+		for _, job in ipairs(available) do
+			if specialistCount >= specialistLimit then break end
+			if job.need and (jobs[job.group] or 0) > 0 then
+				specialistCount += 1
+				local spec = { role = if job.group == "official" then "Mage" else "Barbarian", profession = job.job,
+					workKinds = job.work, leisureKinds = job.rest, hat = if job.group == "farmer" then "straw" else "cap" }
+				local palette = o.coats or { C(160, 130, 100) }
+				spec.coat = palette[(specialistCount - 1) % #palette + 1]:Lerp(job.color, 0.52)
+				importedModel(folder, job.prop[1], job.prop[2], job.at + Vector3.new(0, 0, -3), job.prop[3], false)
+				local fig = stay(job.at + Vector3.new(0, 0, 4.5), job.at, job.work[1], spec)
+				if fig then
+					fig:SetAttribute("Job", job.job)
+					fig:SetAttribute("Workplace", job.name)
+					fig:SetAttribute("Activity", job.work[1])
+					local head = fig:FindFirstChild("Head")
+					if head then
+						local bb = Instance.new("BillboardGui")
+						bb.Name = "JobTitle"
+						bb.Size = UDim2.fromOffset(76, 18)
+						bb.StudsOffset = Vector3.new(0, 1.9, 0)
+						bb.MaxDistance = 55
+						bb.Adornee = head
+						bb.Parent = head
+						local label = Instance.new("TextLabel")
+						label.Size = UDim2.fromScale(1, 1)
+						label.BackgroundTransparency = 1
+						label.Text = job.name
+						label.TextSize = 13
+						label.Font = Enum.Font.GothamBold
+						label.TextColor3 = C(237, 229, 205)
+						label.TextStrokeTransparency = 0.4
+						label.Parent = bb
+					end
+				end
+			end
+		end
 	end
 end
 
