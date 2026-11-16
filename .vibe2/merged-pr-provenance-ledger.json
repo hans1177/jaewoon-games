@@ -265892,11 +265892,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_eeb4b42db0dc7962c63fa037",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13546",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "dc2742697422b2ab6839e18da07803f9b7f7b1d9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13546,
+        "baseBranch": "main",
+        "headBranch": "mare-explore-stability-20261117",
+        "baseSha": "dc2742697422b2ab6839e18da07803f9b7f7b1d9",
+        "headSha": "bf3cdc2e8671fb5422e6c692a2ebf029bc03567d",
+        "mergeCommitSha": "ca9eca716d5037d416915682123442a1f1eeae4a",
+        "mergedAt": "2026-11-16T16:43:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b996df0a9bf9a17fa16050310441e640d8d0233980ea93f66c166a9c90630f6a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-explore-stability-20261117",
+        "candidateSha": "bf3cdc2e8671fb5422e6c692a2ebf029bc03567d"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 16,
+        "addedLineCount": 1519,
+        "deletedLineCount": 258,
+        "changedFiles": [
+          ".github/workflows/game-development-sync.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/docs/BUILDINGS_BY_REGION.md",
+          "roblox-games/mare-essentia/docs/RULES.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortCultures.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ProductionChains.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/smoke_portscene.luau",
+          "roblox-games/mare-essentia/tests/weapons.test.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/game-development-sync.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortCultures.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ProductionChains.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/smoke_portscene.luau",
+          "roblox-games/mare-essentia/tests/weapons.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13546",
+        "merge-commit:ca9eca716d5037d416915682123442a1f1eeae4a",
+        "base-main:dc2742697422b2ab6839e18da07803f9b7f7b1d9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2117
+    "total": 2118
   }
 }
