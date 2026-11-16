@@ -171,9 +171,21 @@ function E.specialtyView(t)
 	for _, goodId in ipairs(t.goods) do
 		if t.produces[goodId] and Data.Goods[goodId] then
 			local brand = Chains.BrandById[goodId]
+			local recipe = Chains.ByGood[goodId] or (brand and Chains.ById[brand.recipe])
+			local nextRecipe = nil
+			if not recipe then
+				for _, candidate in ipairs(t.industryRecipes or {}) do
+					if table.find(candidate.inputs, goodId) then nextRecipe = candidate break end
+				end
+			end
+			local source = if brand then brand.source else recipe and recipe.inputs[1] or nil
 			local level = if brand then E.industryStage(t, brand) else E.specialtyLevel(t, goodId)
 			table.insert(out, {
 				id = goodId, name = Data.Goods[goodId].name, level = level,
+				input = source and Data.Goods[source] and Data.Goods[source].name or nil,
+				nextProduct = nextRecipe and Data.Goods[Chains.goodId(nextRecipe)]
+					and Data.Goods[Chains.goodId(nextRecipe)].name or nil,
+				research = (recipe or nextRecipe) and (recipe or nextRecipe).disc or nil,
 				produced = math.floor((t.out[goodId] or 0) * 100 + 0.5) / 100,
 				stock = math.floor(t.stock[goodId] or 0),
 				price = math.floor((t.price[goodId] or Data.Goods[goodId].basePrice) * 10 + 0.5) / 10,
