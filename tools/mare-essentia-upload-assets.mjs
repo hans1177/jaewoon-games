@@ -27,16 +27,27 @@ if (studioRegrantArg && !studioRegrantPath) throw new Error('STUDIO_REGRANT_REPO
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
 // [무료 실물 무기] 외부 CC0 원본 GLB를 형상·해시 검사 후 기존 자산 등록 통로에 인입한다.
 async function prepareLicensedWeaponOriginals() {
-  for (const name of ['mace', 'crossbow']) {
-    const source = 'https://grab3d.com/dl/' + name + '/' + name + '.glb';
-    const sourcePage = 'https://grab3d.com/models/weapons/' + name + '/';
+  const sources = [
+    {name:'mace', author:'Grab3D', source:'https://grab3d.com/dl/mace/mace.glb',
+      page:'https://grab3d.com/models/weapons/mace/', minBytes:20000, minTriangles:3000},
+    {name:'crossbow', author:'Grab3D', source:'https://grab3d.com/dl/crossbow/crossbow.glb',
+      page:'https://grab3d.com/models/weapons/crossbow/', minBytes:20000, minTriangles:3000},
+    {name:'flintlock-pistol', author:'Pixor',
+      source:'https://pixor.art/library/files/pistol-flintlock/pixor-library-pistol-flintlock.glb',
+      page:'https://pixor.art/library/weapons/pistol-flintlock/', minBytes:6000, minTriangles:200},
+    {name:'flintlock-musket', author:'Pixor',
+      source:'https://pixor.art/library/files/musket/pixor-library-musket.glb',
+      page:'https://pixor.art/library/weapons/musket/', minBytes:6000, minTriangles:200},
+  ];
+  for (const item of sources) {
+    const name = item.name, source = item.source, sourcePage = item.page;
     const target = path.join(ROOT, 'assets/relics/weapon-' + name + '.glb');
     const proof = target + '.license.json';
     let bytes, evidence;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
-    if (evidence && (!bytes || evidence.license !== 'CC0-1.0' || evidence.author !== 'Grab3D'
+    if (evidence && (!bytes || evidence.license !== 'CC0-1.0' || evidence.author !== item.author
       || evidence.source !== source || evidence.sourcePage !== sourcePage
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
       throw new Error('MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' + name);
@@ -48,7 +59,7 @@ async function prepareLicensedWeaponOriginals() {
         throw new Error('MARE_CC0_ORIGINAL_TOO_LARGE:' + name);
       bytes = Buffer.from(await response.arrayBuffer());
     }
-    if (bytes.length < 20000 || bytes.length > 5000000 || bytes.toString('ascii', 0, 4) !== 'glTF'
+    if (bytes.length < item.minBytes || bytes.length > 5000000 || bytes.toString('ascii', 0, 4) !== 'glTF'
       || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
       || bytes.readUInt32LE(16) !== 0x4e4f534a)
       throw new Error('MARE_CC0_ORIGINAL_GLB_INVALID:' + name);
@@ -61,13 +72,13 @@ async function prepareLicensedWeaponOriginals() {
       if (!a || !Number.isInteger(a.count)) throw new Error('MARE_CC0_INVALID_ACCESSOR:' + name);
       return sum + Math.floor(a.count / 3);
     }, 0);
-    if (tris < 3000 || tris > 30000) throw new Error('MARE_CC0_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
+    if (tris < item.minTriangles || tris > 30000) throw new Error('MARE_CC0_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
       await fs.writeFile(target, bytes);
-      await fs.writeFile(proof, JSON.stringify({license:'CC0-1.0', author:'Grab3D', source,
+      await fs.writeFile(proof, JSON.stringify({license:'CC0-1.0', author:item.author, source,
         sourcePage, sourceSha256:hash, triangles:tris, originalModel:name,
-        actualRobloxRuntimeVerified:false}, null, 2) + '\n');
+        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\n');
       console.log('MARE_CC0_WEAPON_SOURCE_PREPARED', name, hash, tris);
     } else console.log('MARE_CC0_WEAPON_SOURCE_VERIFIED', name, tris);
   }
