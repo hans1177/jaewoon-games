@@ -95,6 +95,12 @@ end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
 function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?)
+	-- [상태 전이] 이전 프레임의 실제 관절 자세를 보존해 급작스러운 팔·다리 교체를 방지한다.
+	if h.lastActorState and h.lastActorState ~= state then
+		h.transitionPose = table.clone(h.canon)
+		h.transitionElapsed = 0
+	end
+	h.lastActorState = state
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
@@ -114,10 +120,26 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- [공통 R15 모션] 체형·성격에 따라 관절의 무게중심과 보행·시선을 조절한다.
 	local style = h.model:GetAttribute("MotionStyle") or "civilian"
 	local persona = h.model:GetAttribute("MotionPersonality") or 1
+	-- [몸 방향] 회전이 먼저 끝나도 고개→상체→발의 미세 반작용이 남아 급회전 느낌을 줄인다.
+	local facing = h.model:GetPivot().LookVector
+	local previous = h.lastFacing
+	local turn = if previous then math.atan2(previous:Cross(facing).Y, previous:Dot(facing)) else 0
+	h.lastFacing = facing
+	local smooth = 1 - math.exp(-7 * math.clamp(dt, 0, 0.12))
+	h.turnLag = (h.turnLag or 0) + (math.clamp(turn * 2.2, -0.4, 0.4) - (h.turnLag or 0)) * smooth
 	if state == "IDLE" then
 		local lean = if style == "heavy" then -0.07 elseif style == "scholar" then 0.07 else 0
 		bend("Chest", lean + 0.025 * math.sin(phase * math.pi * 2 + persona), 0, 0)
 		bend("Head", 0, 0.07 * math.sin(phase * math.pi * 2 + persona), 0)
+		-- [생체 대기] 매 프레임 같은 팔 흔들기가 아니라 성격별 짧은 시선·손목·체중 이동.
+		local t = os.clock() - h.t0 + persona * 3.4
+		local breathe = math.sin(t * (if style == "heavy" then 1.1 else 1.65))
+		local shift = math.sin(t * 0.43 + persona)
+		bend("Chest", breathe * 0.018, shift * 0.045, shift * 0.022)
+		bend("ThighL", -shift * 0.035, 0, -0.025 * shift)
+		bend("ThighR", shift * 0.035, 0, -0.025 * shift)
+		bend("UpperArmL", -0.04 * breathe, 0, 0)
+		bend("UpperArmR", 0.04 * breathe, 0, 0)
 	elseif state == "RUN" then
 		local stride = if style == "heavy" then 0.76 elseif style == "nimble" then 1.12 elseif style == "scholar" then 0.84 else 1
 		local plant = math.sin(phase * math.pi * 2)
@@ -126,6 +148,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ThighR", -plant * 0.12 * stride, 0, 0)
 		bend("ShinL", -math.max(0, plant) * 0.2 * stride, 0, 0)
 		bend("ShinR", -math.max(0, -plant) * 0.2 * stride, 0, 0)
+		-- [발 디딤] 착지한 쪽 발목은 눌러주고 반대쪽은 들어 주어 미끄러짐을 줄인다.
+		bend("FootL", -math.max(0, plant) * 0.13 * stride, 0, 0)
+		bend("FootR", -math.max(0, -plant) * 0.13 * stride, 0, 0)
+		bend("Spine", -0.04 * stride, -plant * 0.035, 0)
 	elseif state == "HIT" then
 		bend("Head", 0.1 * pulse, 0.1 * pulse * (if persona == 1 then -1 else 1), 0)
 	end
@@ -144,6 +170,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ForearmL", -0.70, 0, 0)
 			bend("UpperArmR", -0.22, 0, 0.08)
 			bend("Chest", 0.09, 0, 0)
+			bend("ThighL", 0.13, 0, -0.08)
+			bend("ThighR", 0.13, 0, 0.08)
+			bend("ShinL", -0.20, 0, 0)
+			bend("ShinR", -0.20, 0, 0)
 		elseif state == "HIT" then
 			bend("UpperArmL", -0.55 * pulse, 0, -0.23 * pulse)
 			bend("Chest", -0.19 * pulse, 0, 0)
@@ -156,6 +186,8 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ForearmL", -0.38, 0, 0)
 			bend("ForearmR", -0.55, 0, 0)
 			bend("Head", -0.09, 0, 0)
+			bend("Spine", -0.06 * pulse, 0.14 * pulse, 0)
+			bend("ForearmR", -0.15 * pulse, 0, 0)
 		elseif state == "RUN" and retreat then
 			-- 사수 뒷걸음: 이동 규칙은 유지하고 어깨로 상체를 방어한다.
 			bend("Chest", -0.18, 0, 0)
@@ -172,6 +204,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("UpperArmR", 0.28, 0, -0.22)
 			bend("ForearmL", -0.42, 0, 0)
 			bend("ForearmR", -0.42, 0, 0)
+			bend("ThighL", 0.22 * pulse, 0, -0.07)
+			bend("ThighR", 0.20 * pulse, 0, 0.07)
+			bend("ShinL", -0.31 * pulse, 0, 0)
+			bend("ShinR", -0.31 * pulse, 0, 0)
 		elseif state == "RECOVERY" then
 			bend("Chest", -0.20 * (1 - phase), 0, 0)
 			bend("Head", 0.18 * (1 - phase), 0, 0)
@@ -182,6 +218,9 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("UpperArmR", -0.44 - pulse * 0.28, 0, -0.12)
 			bend("UpperArmL", -0.12, 0, 0.25)
 			bend("Chest", 0.14 * pulse, -0.12 * pulse, 0)
+			bend("ThighL", 0.12 * pulse, 0, 0)
+			bend("ThighR", 0.10 * pulse, 0, 0)
+			bend("Spine", -0.10 * pulse, 0, 0)
 		elseif state == "HIT" or state == "RECOVERY" then
 			bend("Head", 0.18 * (1 - math.clamp(phase, 0, 1)), 0, 0)
 		end
@@ -205,6 +244,13 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 				bend("UpperArmL", -0.9 * lift, 0, -0.18)
 				bend("UpperArmR", -0.5 * lift, 0, 0.2)
 			end
+		elseif state == "RECOVERY" then
+			-- [동료 반동] 전투 수치와 무관한 무기 회수·호흡·시선 복귀.
+			local settle = (1 - math.clamp(phase, 0, 1)) ^ 2
+			bend("UpperArmR", -0.32 * settle, 0, 0.12 * settle)
+			bend("ForearmR", -0.42 * settle, 0, 0)
+			bend("Chest", 0.10 * settle, -0.10 * settle, 0)
+			bend("Head", 0, 0.06 * settle, 0)
 		elseif role == "ally-ranged" then
 			-- 원거리 동료: 걷는 중에도 사격 준비 팔을 낮게 유지한다.
 			if state == "IDLE" or attack then
@@ -247,6 +293,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.16 * (1 - phase), 0, 0)
 		end
 	end
+	-- [지연 회전] 공격 중에는 정확한 방향을 방해하지 않으며 이동/대기만 목·허리가 따라간다.
+	if state == "IDLE" or state == "RUN" then
+		local lag = h.turnLag or 0
+		bend("Head", 0, -lag * 0.64, 0)
+		bend("Chest", 0, -lag * 0.28, lag * 0.10)
+		bend("FootL", 0, lag * 0.14, 0)
+		bend("FootR", 0, lag * 0.14, 0)
+	end
 	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
 	if gain and gain ~= 1 then
 		for k, cf in h.canon do
@@ -257,6 +311,29 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 				end
 			end
 		end
+	end
+	-- [시작·정지·피격·예고 연결] 현재 AI의 공격 타이밍은 그대로 두고 관절만 짧게 보간한다.
+	if h.transitionPose then
+		h.transitionElapsed = (h.transitionElapsed or 0) + math.clamp(dt, 0, 0.15)
+		local duration = if state == "ATTACK" or state == "HIT" then 0.065
+			elseif state == "ANTICIPATION" or state == "INTERACT" then 0.12
+			elseif state == "RECOVERY" then 0.16 else 0.23
+		local q = math.clamp(h.transitionElapsed / duration, 0, 1)
+		local eased = q * q * (3 - 2 * q)
+		for joint, target in h.canon do
+			local old = h.transitionPose[joint]
+			if old and typeof(old) == "CFrame" then
+				h.canon[joint] = old:Lerp(target, eased)
+			elseif typeof(target) == "CFrame" then
+				h.canon[joint] = CFrame.identity:Lerp(target, eased)
+			end
+		end
+		for joint, old in h.transitionPose do
+			if h.canon[joint] == nil and typeof(old) == "CFrame" then
+				h.canon[joint] = old:Lerp(CFrame.identity, eased)
+			end
+		end
+		if q >= 1 then h.transitionPose = nil end
 	end
 	FM.step(h, dt, rootRot)
 end
