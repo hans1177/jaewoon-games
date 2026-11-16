@@ -43,6 +43,39 @@ for _, entry in {
 		end
 	end
 end
+-- [경제-도시-목장] 초안 PR의 실제 공사·지형, 신규 대형 목장·오리, 왕궁 도시를 함께 빌드한다.
+local visualScenarios = {
+	{ id = "venice", level = 3, farm = 18, workshop = 8, school = 2 },
+	{ id = "lisbon", level = 5, farm = 40, workshop = 22, school = 7, palace = true },
+	{ id = "amsterdam", level = 4, farm = 27, workshop = 12, school = 4 },
+	{ id = "nagasaki", level = 2, farm = 7, workshop = 3, school = 0 },
+}
+local visualsBuilt = 0
+for _, scenario in visualScenarios do
+	local sim = {
+		stage = scenario.level, year = 1700, pop = 9500, residents = 44, prosperity = 116, mood = "steady",
+		jobs = { farmer = 2300, fisher = 300, craftsman = 2600, merchant = 800, sailor = 800, guard = 500, official = 700, clergy = 100, laborer = 600 },
+		technology = { rows = {} }, industries = {}, specialties = {},
+		buildings = { house = 300, farm = scenario.farm, workshop = scenario.workshop, dock = 10,
+			market = 5, warehouse = 7, school = scenario.school, hall = 2 },
+		construction = { active = scenario.level >= 3, spending = 30, workshop = 4, house = 12 },
+	}
+	local ok, err = pcall(function()
+		PortScene.build({
+			portId = scenario.id, portName = scenario.id, level = scenario.level,
+			shipId = "galleon", hasShipyard = true,
+			facilities = if scenario.palace then { "bank", "guild", "palace", "harbormaster" } else { "bank", "guild", "harbormaster" },
+			storyCount = 0, companions = {}, year = 1700, day = 1000,
+			development = { level = scenario.level, blocks = 110 },
+			builtLandmarks = { academy = true }, sim = sim,
+		}, function() end)
+	end)
+	if ok then visualsBuilt += 1 else
+		fails += 1
+		print(("경제·목장 도시 장면 실패: %s — %s"):format(scenario.id, tostring(err)))
+	end
+end
+print(("경제·목장 시각 연동 스모크: %d/%d"):format(visualsBuilt, #visualScenarios))
 local miss = {}
 for k in State.missing do table.insert(miss, k) end
 table.sort(miss)
