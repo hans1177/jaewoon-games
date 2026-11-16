@@ -573,16 +573,16 @@ E.History = {
 E.SOCIETY_HISTORY_FX = {
 	reformation_95 = { years = 6, regions = { "europe" }, civic = 0.15, faith = 0.45, culture = 0.12 },
 	nantes_edict = { years = 7, countries = { "france" }, civic = 0.20, faith = 0.32, culture = 0.20, migration = -0.10 },
-	westphalia = { years = 6, regions = { "europe" }, civic = 0.24, military = -0.25, migration = -0.12, trade = 1.05 },
+	westphalia = { qid = "Q150995", years = 6, regions = { "europe" }, civic = 0.24, military = -0.25, migration = -0.12, trade = 1.05 },
 	cape_colony = { years = 12, ports = { "cape_town" }, colony = 0.60, migration = 0.24, inequality = 0.20, trade = 1.04 },
-	glorious_revolution = { years = 8, countries = { "england" }, civic = 0.45, finance = 0.24, knowledge = 0.10 },
-	fontainebleau = { years = 12, countries = { "france" }, faith = -0.50, culture = -0.20, migration = 0.45, inequality = 0.20, trade = 0.96 },
-	bank_of_england = { years = 12, countries = { "england" }, finance = 0.65, knowledge = 0.10, trade = 1.06 },
+	glorious_revolution = { qid = "Q189508", years = 8, countries = { "england" }, civic = 0.45, finance = 0.24, knowledge = 0.10 },
+	fontainebleau = { qid = "Q512443", years = 12, countries = { "france" }, faith = -0.50, culture = -0.20, migration = 0.45, inequality = 0.20, trade = 0.96 },
+	bank_of_england = { qid = "Q183231", years = 12, countries = { "england" }, finance = 0.65, knowledge = 0.10, trade = 1.06 },
 	utrecht = { years = 5, regions = { "europe" }, civic = 0.12, military = -0.25, trade = 1.04 },
-	industrial_start = { years = 30, countries = { "england" }, knowledge = 0.48, finance = 0.22, inequality = 0.18, ecology = -0.22, prod = 1.04 },
+	industrial_start = { qid = "Q2269", years = 30, countries = { "england" }, knowledge = 0.48, finance = 0.22, inequality = 0.18, ecology = -0.22, prod = 1.04 },
 	treaty_paris = { years = 6, regions = { "europe", "new_world", "indian" }, civic = 0.12, military = -0.26, trade = 1.05 },
 	independence = { years = 10, regions = { "new_world" }, civic = 0.55, migration = 0.20, military = 0.18, trade = 0.98 },
-	french_revolution = { years = 10, countries = { "france" }, civic = 0.58, inequality = -0.16, migration = 0.38, military = 0.45, trade = 0.91 },
+	french_revolution = { qid = "Q6534", years = 10, countries = { "france" }, civic = 0.58, inequality = -0.16, migration = 0.38, military = 0.45, trade = 0.91 },
 	plassey = { years = 14, regions = { "indian" }, colony = 0.50, inequality = 0.32, migration = 0.12, military = 0.20, trade = 0.95 },
 	boston_tea = { years = 4, regions = { "new_world" }, civic = 0.26, military = 0.16, trade = 0.95 },
 	first_fleet = { years = 12, ports = { "sydney" }, colony = 0.50, migration = 0.28, inequality = 0.18 },
@@ -609,7 +609,7 @@ function E.shockFromHistory(h, days)
 		civic = h.civic or 0, knowledge = h.knowledge or 0, culture = h.culture or 0, faith = h.faith or 0,
 		inequality = h.inequality or 0, migration = h.migration or 0, colony = h.colony or 0,
 		military = h.military or 0, ecology = h.ecology or 0, finance = h.finance or 0,
-		kind = h.kind, people = h.people, sourceEvent = h.sourceEvent, days = days or h.years * 365 }
+		kind = h.kind, people = h.people, sourceEvent = h.sourceEvent, qid = h.qid, days = days or h.years * 365 }
 end
 
 -- WorldEvents/HistoryEvents 의 tag 를 경제 충격으로 바꾼다. regionId 는 일어난 해역.
@@ -789,7 +789,8 @@ function E.step(w)
 		if t.grain < grainCons * 2 and grainProd < grainCons then
 			starve = 0.002 * (1 - grainProd / math.max(grainCons, 1))
 		end
-		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / ((t.tech.medicine ^ 0.5) * t.civBonus.health) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0))
+		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / ((t.tech.medicine ^ 0.5) * t.civBonus.health) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0)
+			- math.max(0, -t.society.ecology) * 0.000001)
 		t.pop = math.max(50, t.pop + d)
 		if d >= 0 then t.births += d else t.deaths += -d end
 		-- 번영도: 1인당 GDP 이동평균 (기준 대비)
@@ -877,6 +878,7 @@ function E.stepSociety(t)
 	t.tech.gov += math.max(0, society.civic) * 0.000002
 	t.tech.commerce += math.max(0, society.finance) * 0.000002
 	t.tech.craft += math.max(0, society.knowledge) * 0.000002
+	t.tech.commerce += math.max(0, society.culture) * 0.000001
 end
 
 -- [역사 인과관계] 관할 항구에 실제 영향을 준 사건과 백과 인물 ID.
@@ -888,7 +890,7 @@ function E.activeHistory(w, portId)
 		local ev = w.shocks[i]
 		if applies(ev, town) and #out < 8 then
 			table.insert(out, { id = ev.id, title = ev.title, kind = ev.kind, people = ev.people or {},
-				sourceEvent = ev.sourceEvent, daysLeft = math.max(0, math.floor(ev.until_ - w.day)) })
+				sourceEvent = ev.sourceEvent, qid = ev.qid, daysLeft = math.max(0, math.floor(ev.until_ - w.day)) })
 		end
 	end
 	return out
