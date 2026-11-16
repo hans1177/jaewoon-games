@@ -219,23 +219,6 @@ return function(D, S)
 		return best, bestN
 	end
 
-	-- 직업이 없을 때 한 계열 카드가 모이면 자동 배정 (카드 습득 성과)
-	local function autoAssign(state, msgs)
-		if state.specialty then
-			return false
-		end
-		local sp, n = recommend(state, Sp.AUTO_CARDS, nil)
-		if not sp then
-			return false
-		end
-		state.specialty = sp.id
-		state.specAuto = true
-		if msgs then
-			table.insert(msgs, string.format("직업 배정: %s (%s 카드 %d장을 모은 성과) — 마음에 안 들면 한 번은 무료로 바꿀 수 있어요", sp.name, sp.name, n))
-		end
-		return true
-	end
-
 	function handlers.SetSpecialty(state, p)
 		local sp = type(p.specialtyId) == "string" and Sp.SpecialtyById[p.specialtyId]
 		if not sp then
@@ -563,7 +546,6 @@ return function(D, S)
 		companionLines = companionLines,
 		gainSpec = gainSpec,
 		researchAssist = researchAssist,
-		autoAssign = autoAssign,
 		cardsIn = cardsIn,
 		specUnlocked = unlocked,
 		recommendSpec = recommend,
