@@ -3818,7 +3818,7 @@ function PortScene.build(info, onFacility)
 		-- [궁정 인력] 실제 거주자·번영도·궁정 등급만 읽는다. 경제 직군/거주자/저장 키를 추가하지 않는다.
 		local courtStaff = PortBuildings.royalPopulation(info.sim and info.sim.residents, info.sim and info.sim.prosperity, palaceTier)
 		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = courtStaff }
-		local royalClothes = OUTFIT[currentKey] or OUTFIT.north
+		local royalClothes = if korean then OUTFIT.korea else (OUTFIT[currentKey] or OUTFIT.brick)
 		local royalPosts = {
 			gate = Vector3.new(frontX + 11, 0, 0),
 			entrance = Vector3.new(frontX + 14, 0, 21),
@@ -4747,7 +4747,7 @@ function PortScene.build(info, onFacility)
 					elseif materialClass == "forest" then "hammer" elseif recipe and recipe.disc == "brewing" then "stir"
 					elseif materialClass == "farm" then "knead" else "inspect"
 				local workPos = at + Vector3.new(5, 0, 5)
-				local clothes = OUTFIT[currentKey] or OUTFIT.north
+				local clothes = if PortData.Ports[info.portId] and PortData.Ports[info.portId].country == "korea" then OUTFIT.korea else (OUTFIT[currentKey] or OUTFIT.brick)
 				local coat = (clothes.coats and clothes.coats[1]) or C(133, 106, 82)
 				local worker = villager(folder, workPos, faceTo(workPos, at + Vector3.new(5, 0, 0)),
 					coat, rng, if workKind == "forge" or workKind == "hammer" then "Barbarian" else "Rogue", true,
