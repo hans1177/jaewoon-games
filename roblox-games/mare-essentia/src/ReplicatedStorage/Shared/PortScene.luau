@@ -1736,11 +1736,13 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
-	local S = P.S * (countryPlan and countryPlan.lot or 1) -- 국가별 필지 너비. 저장 레벨·시설 판정은 그대로 둔다
-	local fw = S / (HOUSE_SCALE * 1.08)
-	local laneL = 2 * S + P.alley + 5 -- 집과 골목 사이 보행 여유
-	local pairsMax = math.max(2, math.floor((196 + lvl * 15 - 38) / laneL))
-	local pairsN = math.min(pairsMax, 1 + math.floor((lvl - 1) * 0.8))
+	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
+	local lotGrowth = ({ 1.5, 1.65, 1.8, 2.0, 2.2 })[lvl]
+	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth
+	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
+	local laneWidth = math.max(9, P.alley * 1.8)
+	local laneL = 2 * S + laneWidth + 12
+	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
 	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
 	if info.sim and info.sim.buildings then
@@ -1748,8 +1750,13 @@ local function densify(folder, info, style, rng, walkers, made)
 		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
 	end
 	local smokers = 0
-	local X_END = -170 - lvl * 11
+	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
+	local X_END = -math.min(550, 260 + lvl * 55)
 	local placedLots = {}
+	local streetsOuter = {}
+	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
+		table.insert(streetsOuter, x)
+	end
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
 	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
@@ -1774,8 +1781,8 @@ local function densify(folder, info, style, rng, walkers, made)
 		return false
 	end
 	local function onStreet(x, half)
-		for _, sx in streetsX do
-			if math.abs(x - sx) < half + P.alley / 2 + 2 then return true end
+		for _, sx in streetsOuter do
+			if math.abs(x - sx) < half + laneWidth / 2 + 3 then return true end
 		end
 		return false
 	end
@@ -1807,28 +1814,31 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
-		fillRow(side * (14 + S / 2 + 1), 0, -92)
-		fillRow(side * (14 + S + 2 + S / 2 + 1), 0.15, -92)
+		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
+		fillRow(side * (152 + laneWidth / 2 + 6 + S / 2), 0, -260)
+		fillRow(side * (152 + laneWidth / 2 + 10 + S + 6 + S / 2), 0.15, -260)
 		for p = 0, pairsN do
-			local laneZ = 38 + p * laneL
+			local laneZ = 152 + p * laneL
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
-				local canal = part(folder, Vector3.new(140, 0.3, P.alley + 1), CFrame.new(-100, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
+				local canal = part(folder, Vector3.new(360, 0.3, laneWidth + 1), CFrame.new(-365, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
 				canal.CanCollide = false
 				canal.CanQuery = false
 			else
-				strip(folder, style, -100, side * laneZ, 140, P.alley)
+				strip(folder, style, (X_END - 235) / 2, side * laneZ, 235 - X_END, laneWidth)
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
-				fillRow(side * (laneZ + P.alley / 2 + 0.8 + S / 2), t, -26)
-				fillRow(side * (laneZ + laneL - P.alley / 2 - 0.8 - S / 2), t, -26)
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260)
+				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260)
 			end
 		end
 	end
-	for _, sx in streetsX do
-		strip(folder, style, sx, 0, P.alley, 2 * (38 + pairsN * laneL) + 6)
+	for _, sx in streetsOuter do
+		strip(folder, style, sx, 0, laneWidth, 2 * (152 + pairsN * laneL) + 6)
 	end
+	-- 기존 항구 중심 도로는 유지하고 서쪽 외곽도로로 진입로를 연결한다.
+	strip(folder, style, -212, 0, 9, 320)
 	-- 구역 내용 (등록된 실제 3D 모델만 사용)
 	do
 		local function put(kind, asset, size, x, z, solid, yaw)
@@ -2583,6 +2593,7 @@ end
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
 local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	local lvl = sceneLevel
+	local key = styleKeyOf(style)
 	local year = (info.sim and info.sim.year) or info.year or 1700
 	local adopted = {}
 	for _, node in ipairs((info.sim and info.sim.technology and info.sim.technology.rows) or {}) do
@@ -2766,7 +2777,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(480 + sceneLevel * 15, 0.3, 400 + sceneLevel * 48), CFrame.new(-176, 0.02, 0),
+		local floor = part(folder, Vector3.new(650, 0.3, 410 + sceneLevel * 94), CFrame.new(-290, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
