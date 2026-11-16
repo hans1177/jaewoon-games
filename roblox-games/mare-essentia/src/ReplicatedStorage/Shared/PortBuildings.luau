@@ -148,10 +148,10 @@ function B.harborVisual(level, buildings)
 	local tier = math.min(cityTier, builtTier)
 	local plan = B.HarborGrowth[tier]
 	local sidePier = plan.pierLength > 0
-	local boats = math.min(plan.boats, if dock ~= nil then 1 + math.floor(math.sqrt(dock)) else plan.boats)
+	local boats = math.min(plan.boats, if dock ~= nil then 1 + math.floor(math.sqrt(dock) * 1.8) else plan.boats)
 	local cargo = math.min(plan.cargo, if warehouse ~= nil then 2 + math.floor(math.sqrt(warehouse) * 2) else plan.cargo)
 	local hoists = if not sidePier then 0 else math.min(plan.hoists,
-		if dock ~= nil then math.floor(dock / 4) else plan.hoists)
+		if dock ~= nil then math.floor((dock + 2) / 3) else plan.hoists)
 	local signals = if not sidePier then 0 else math.min(plan.signals, math.max(1, boats))
 	return {
 		tier = tier, cityTier = cityTier, name = plan.name, sidePier = sidePier,
