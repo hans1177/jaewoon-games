@@ -1027,9 +1027,10 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
-  assert.match(source,/handFrame.Position = UDim2.fromScale\(0\.02, 0\.72\)/);
-  assert.match(source,/boardFrame.Position = UDim2.fromScale\(0\.2, 0\.14\)/);
-  assert.match(source,/boardFrame.Size = UDim2.fromScale\(0\.78, 0\.56\)/);
+    // 카드 전용 화면·일반 해전의 좌표를 둘 다 유지하는지 검사한다.
+  assert.match(source,/handFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
+  assert.match(source,/boardFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
+  assert.match(source,/boardFrame.Size = UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
   assert.match(source,/local order = \{ \{ "foe", "cannon" \}, \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \}, \{ "me", "cannon" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
