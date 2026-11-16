@@ -473,7 +473,7 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(contract.designIntegrityChecks.required,true);
   // Compact four-document contract: the old nested mirrors were intentionally retired.
   // Policy semantics remain authoritative only in the canonical roadmap.
-  assert.equal(architecture.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
   assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
   assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);

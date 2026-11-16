@@ -252,7 +252,7 @@ test('canonical narrative contract requires causal faction relationship state an
   // The canonical roadmap owns narrative policy; architecture and log maps retain
   // their real execution topology and evidence schema without overriding that policy.
   assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
-  assert.equal(architecture.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
   assert.equal(architecture.constitutionalEnforcement.enforcer,'tools/company-constitution-enforcer.mjs');
   assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
