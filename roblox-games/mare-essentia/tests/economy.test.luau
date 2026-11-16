@@ -181,6 +181,15 @@ do
 	check("다른 항구 생산품은 특산품으로 오인하지 않음", Eco.specialtyLevel(t, "__missing__") == 0)
 end
 
+-- 저장소 권한이 없어도 기존 지역 경제 조회는 중단되지 않는다.
+do
+	local offline = { GetAsync = function() error("DataStore disabled") end }
+	local server = require("./Services/Econ")({ Economy = Eco }, {})
+	server.bindStore(offline, "offline")
+	check("저장소 불가 시 기존 경제 조회 유지", server.town({ startYear = 1650, day = 0 }, "london") ~= nil)
+	check("저장 불가 환경에서 공동 세계 저장 중단", server.sync({ startYear = 1650, day = 0 }) == false)
+end
+
 -- [서버 간 저장] 동일 데이터 저장소를 쓰는 두 서버가 같은 세계를 읽고 최신 판본을 덮지 않는다.
 do
 	local memory = { value = nil }
