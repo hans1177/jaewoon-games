@@ -801,6 +801,12 @@ function Pose.makeR15Action(model, state, progress, t)
 		blend.changedAt = blendTime
 		blend.state = state
 	end
+	-- [R15 회전 고도화] 이동 방향을 바꾸면 시선·가슴·발이 몸보다 조금 늦게 따라온다.
+	local facing = model:GetPivot().LookVector
+	local previous = blend.lastFacing
+	local rawTurn = if previous then math.atan2(previous:Cross(facing).Y, previous:Dot(facing)) else 0
+	blend.turn = (blend.turn or 0) * 0.72 + math.clamp(rawTurn * 3, -0.42, 0.42) * 0.28
+	blend.lastFacing = facing
 	local A = CFrame.Angles
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
@@ -879,6 +885,14 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.rightArm, A(-0.7 + math.sin(time * 3) * 0.3, 0, -0.2))
 		set(m.rightElbow, A(-0.6, 0, 0))
 		set(m.neck, A(0, math.sin(time) * 0.16, 0))
+	end
+	-- [선행 시선·후행 상체] 역할과 관계없이 기존 이동·대기 자세 위에 작은 회전 반작용만 합성한다.
+	if state == "idle" or state == "walk" or state == "run" then
+		local turn = blend.turn or 0
+		if m.neck then set(m.neck, m.neck.Transform * A(0, -turn * 0.85, 0)) end
+		if m.waist then set(m.waist, m.waist.Transform * A(0, -turn * 0.42, 0)) end
+		if m.leftLeg then set(m.leftLeg, m.leftLeg.Transform * A(0, turn * 0.14, 0)) end
+		if m.rightLeg then set(m.rightLeg, m.rightLeg.Transform * A(0, turn * 0.14, 0)) end
 	end
 	-- 히트/공격은 반응성을 유지하고, 일반 자세만 조금 더 길게 연결한다.
 	local duration = if state == "attack" or state == "hurt" then 0.10 else 0.26
