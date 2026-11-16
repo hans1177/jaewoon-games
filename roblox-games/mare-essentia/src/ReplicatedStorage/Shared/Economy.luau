@@ -150,6 +150,38 @@ E.JOB_ORDER = { "farmer", "fisher", "craftsman", "merchant", "sailor", "guard", 
 E.JOB_NAMES = { farmer = "농부", fisher = "어부", craftsman = "장인", merchant = "상인", sailor = "선원", guard = "경비병", official = "관리", clergy = "성직자", laborer = "일꾼" }
 
 -- ───────── 생성 ─────────
+-- [항구별 특산 산업] 기존 Ports 원본의 생산품만 강화하며 상품 가격·거래 저장키는 유지한다.
+-- 인구·학문·기술·번영 수준이 높을 때 같은 특산품의 생산량·공급이 자연스럽게 커진다.
+function E.specialtyLevel(t, goodId)
+	if not (t.produces and t.produces[goodId]) then return 0 end
+	local good = Data.Goods[goodId]
+	if not good then return 0 end
+	local kind = good.resourceKind or ""
+	local field = if kind == "food" or kind == "crops" or kind == "spice" or kind == "animal" or kind == "timber" then "agri" else "craft"
+	local tech = t.tech[field] or 1
+	if t.stage >= 5 and tech >= 1.75 and (t.civBonus and t.civBonus.trade or 1) > 1.01 and t.prosperity >= 1 then return 4 end
+	if t.stage >= 4 and tech >= 1.5 and t.prosperity >= 0.9 then return 3 end
+	if t.stage >= 3 and tech >= 1.2 then return 2 end
+	return 1
+end
+
+function E.specialtyView(t)
+	local out = {}
+	for _, goodId in ipairs(t.goods) do
+		if t.produces[goodId] and Data.Goods[goodId] then
+			local level = E.specialtyLevel(t, goodId)
+			table.insert(out, {
+				id = goodId, name = Data.Goods[goodId].name, level = level,
+				produced = math.floor((t.out[goodId] or 0) * 100 + 0.5) / 100,
+				stock = math.floor(t.stock[goodId] or 0),
+				price = math.floor((t.price[goodId] or Data.Goods[goodId].basePrice) * 10 + 0.5) / 10,
+				industry = if level == 4 then "국제 교역 거점" elseif level == 3 then "가공 산업 도시" elseif level == 2 then "특산 생산 마을" else "원산지",
+			})
+		end
+	end
+	return out
+end
+
 local function newTown(p, w)
 	local h = hash01(p.id)
 	local lat = math.abs(p.lat)
@@ -316,7 +348,7 @@ local function productionOf(t, g, price, w)
 	for _ in pairs(t.produces) do n += 1 end
 	local workers = math.min(t.pop * (sh.craftsman + sh.laborer * 0.5), t.bld.workshop * 10) / math.max(1, n)
 	local el = math.clamp((price / basePrice(g)) ^ 0.5, 0.5, 1.6)
-	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5)) * t.civBonus.craft
+	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5)) * t.civBonus.craft * (1 + 0.04 * (E.specialtyLevel(t, g) - 1))
 end
 
 function E.newWorld(opts)
@@ -656,6 +688,109 @@ function E.civScore(t)
 end
 
 function E.run(w, days) for _ = 1, days do E.step(w) end end
+
+-- [세계경제 영구 저장] 플레이어 DataStore와 별개의 단일 세계 스냅샷 계약.
+-- 모든 항구의 자원·기술·인구·가격·건설·경기순환을 이어받되 지형·이웃은 원본 Ports에서 재구성한다.
+E.WORLD_SCHEMA = 1
+local WORLD_SCALARS = {
+	"pop", "land", "stage", "prosperity", "refGdp", "grain", "gdp", "tradeIn", "tradeOut",
+	"births", "deaths", "infra", "infraRef", "treasury", "stability", "wage", "wageRef",
+	"migIn", "migOut", "unrestCd", "civ", "housingRatio", "unemp", "buildSpend",
+}
+local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector" }
+local function worldNumber(value)
+	return type(value) == "number" and value == value and value > -1e14 and value < 1e14
+end
+
+function E.snapshot(w)
+	local snap = {
+		schema = E.WORLD_SCHEMA, seed = w.seed, day = w.day, startYear = w.startYear,
+		cycle = w.cycle, shocks = w.shocks, fired = w.fired, towns = {},
+	}
+	for _, id in ipairs(w.order) do
+		local t = w.towns[id]
+		local row = {}
+		for _, field in ipairs(WORLD_SCALARS) do row[field] = t[field] end
+		for _, field in ipairs(WORLD_MAPS) do row[field] = t[field] end
+		row.civTech = t.civTech
+		snap.towns[id] = row
+	end
+	return snap
+end
+
+function E.restoreWorld(snap)
+	if type(snap) ~= "table" or snap.schema ~= E.WORLD_SCHEMA or not worldNumber(snap.day)
+		or not worldNumber(snap.seed) or not worldNumber(snap.startYear) or type(snap.towns) ~= "table" then
+		return nil
+	end
+	if snap.day < 0 or snap.day > 365000 or snap.startYear < 1000 or snap.startYear > 2300 then return nil end
+	local w = E.newWorld({ seed = snap.seed, year = snap.startYear })
+	w.day = math.floor(snap.day)
+	w.seed = math.floor(snap.seed)
+	if type(snap.cycle) == "table" then
+		for _, key in { "x", "v" } do
+			if worldNumber(snap.cycle[key]) then w.cycle[key] = snap.cycle[key] end
+		end
+		for id, data in pairs(w.cycle.reg) do
+			local other = type(snap.cycle.reg) == "table" and snap.cycle.reg[id]
+			if type(other) == "table" then
+				for _, key in { "x", "v" } do
+					if worldNumber(other[key]) then data[key] = other[key] end
+				end
+			end
+			local level = type(snap.cycle.lvl) == "table" and snap.cycle.lvl[id]
+			if worldNumber(level) then w.cycle.lvl[id] = level end
+		end
+	end
+	if type(snap.fired) == "table" then
+		for _, h in ipairs(E.History) do if snap.fired[h.id] == true then w.fired[h.id] = true end end
+	end
+	if type(snap.shocks) == "table" then
+		w.shocks = {}
+		for i, shock in ipairs(snap.shocks) do
+			if i > 128 then break end
+			if type(shock) == "table" and type(shock.id) == "string" and worldNumber(shock.until_) and shock.until_ > w.day then
+				table.insert(w.shocks, shock)
+			end
+		end
+	end
+	for _, id in ipairs(w.order) do
+		local t, row = w.towns[id], snap.towns[id]
+		if type(row) == "table" then
+			for _, field in ipairs(WORLD_SCALARS) do
+				if worldNumber(row[field]) then t[field] = row[field] end
+			end
+			for _, field in ipairs(WORLD_MAPS) do
+				local data = row[field]
+				if type(data) == "table" then
+					for key in pairs(t[field]) do
+						if worldNumber(data[key]) then t[field][key] = data[key] end
+					end
+				end
+			end
+			t.pop = math.max(50, t.pop)
+			t.stage = math.clamp(math.floor(t.stage), 1, #E.STAGE_NAMES)
+			t.stability = math.clamp(t.stability, 0, 1)
+			for _, field in ipairs(E.TECH_FIELDS) do t.tech[field] = math.max(0.1, t.tech[field]) end
+			for _, good in ipairs(t.goods) do
+				t.price[good] = math.clamp(t.price[good], basePrice(good) * 0.4, basePrice(good) * 3)
+				t.stock[good] = math.max(0, t.stock[good])
+			end
+			t.civTech = {}
+			t.civBonus = { food = 1, craft = 1, trade = 1, health = 1, research = 1 }
+			for _, node in ipairs(E.CIVIL_TECH) do
+				if type(row.civTech) == "table" and row.civTech[node.id] == true then
+					t.civTech[node.id] = true
+					for key, boost in pairs(node.effects) do
+						t.civBonus[key] = math.min(1.2, t.civBonus[key] + boost)
+					end
+				end
+			end
+		end
+	end
+	return w
+end
+
 
 -- ───────── 조회 ─────────
 -- 마을 NPC 직업 인원 (인구 → 직업별 명수)

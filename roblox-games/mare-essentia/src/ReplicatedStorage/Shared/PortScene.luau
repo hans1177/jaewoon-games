@@ -3615,6 +3615,54 @@ function PortScene.build(info, onFacility)
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	placeSignature(folder, info)
 
+	-- [학문별 자동 3D 발전] 백과 기술이 실제 도입된 항구에만 기존 승인 모델로 산업·학술 구역을 조성한다.
+	-- 지형·보행 도로·기존 시설 밖(-220 서쪽)의 고정 필지에 최대 8개만 설치해 모바일 부하를 제한한다.
+	-- 모델이 미등록이면 기존 지역 건축 house 함수를 재사용한다. 신규 자산·저장키는 만들지 않는다.
+	local techRows = info.sim and info.sim.technology and info.sim.technology.rows
+	if type(techRows) == "table" then
+		local models = {
+			crop_rotation = { "Town", "watermill", 20 },
+			guild_accounting = { "Town", "stall-red", 13 },
+			navigation_charts = { "Naval", "tower-watch", 24 },
+			public_schools = { "Town", "bell-tower", 23 },
+			glassmaking = { "Town", "house", 19 },
+			dry_dock = { "Naval", "structure-platform-dock", 23 },
+			quarantine = { "Town", "house", 19 },
+			merchant_banking = { "Town", "house", 21 },
+			steam_pumping = { "Town", "watermill", 25 },
+			scientific_farming = { "Town", "watermill", 20 },
+			civic_hospitals = { "Town", "house", 24 },
+			industrial_metallurgy = { "Town", "watermill", 28 },
+			international_banking = { "Town", "house", 24 },
+		}
+		local shown = 0
+		for idx = #techRows, 1, -1 do
+			local node = techRows[idx]
+			if node.status == "adopted" and models[node.id] and shown < 8 then
+				local model = models[node.id]
+				local col = shown % 4
+				local row = math.floor(shown / 4)
+				local at = Vector3.new(-232 - row * 31, 0, -111 + col * 74)
+				-- 건선거는 기존 부둣가 바깥에 놓고, 다른 기술은 서쪽 산업지구에서 발전시킨다.
+				if node.id == "dry_dock" then at = Vector3.new(72, 0, -137) end
+				local body = importedModel(folder, model[1], model[2], at, model[3], true)
+				if not body then
+					body = house(folder, at, 19, 15, if node.id == "international_banking" then 3 else 2, style, rng)
+				end
+				if body then
+					body.Name = "Civilization_" .. node.id
+					local anchor = if body:IsA("BasePart") then body else body:FindFirstChildWhichIsA("BasePart", true)
+					if anchor then sign(folder, anchor, node.name, nil, 13, true) end
+				end
+				if node.id == "steam_pumping" or node.id == "industrial_metallurgy" or node.id == "glassmaking" then
+					local pipe = importedModel(folder, "Town", "chimney", at + Vector3.new(8, 11, 0), 9, false)
+					if pipe then smokeOn(folder, at + Vector3.new(8, 19, 0)) end
+				end
+				shown += 1
+			end
+		end
+	end
+
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
 	for i = 1, 6 do

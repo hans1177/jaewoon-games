@@ -152,6 +152,75 @@ do
 	check("후기 산업 발명 선행 기술 연결", t.civTech.industrial_metallurgy and t.civBonus.craft > 1.06)
 end
 
+-- [공통 세계 지속성] 서버 재기동과 다른 서버에서도 같은 도시 발전·가격·발명을 이어받는다.
+do
+	local source = Eco.newWorld({ seed = 18, year = 1650 })
+	Eco.run(source, 15)
+	local london = source.towns.london
+	london.civTech.crop_rotation = true
+	london.civBonus.food = 1.02
+	local snapshot = Eco.snapshot(source)
+	check("세계 스냅샷 형식·항구 수", snapshot.schema == 1 and snapshot.day == 15 and snapshot.towns.london ~= nil)
+	local restored = Eco.restoreWorld(snapshot)
+	check("세이브 후 시각·인구·주가 아닌 실물가격 복구",
+		restored and restored.day == source.day and math.abs(restored.towns.london.pop - london.pop) < 1e-6
+		and restored.towns.london.price.grain == london.price.grain)
+	check("발명·효과 보존", restored and restored.towns.london.civTech.crop_rotation and restored.towns.london.civBonus.food == 1.02)
+	check("비정상 스냅샷 차단", Eco.restoreWorld({ schema = 99, day = 0, seed = 7, startYear = 1650, towns = {} }) == nil)
+	Eco.run(restored, 4)
+	check("복원 후 경제 연속 진행", restored.day == 19 and restored.towns.london.pop > 0)
+
+	local t = source.towns.amsterdam
+	local id = require("./Shared/Ports").Ports.amsterdam.produces[1]
+	t.stage, t.prosperity, t.tech.craft, t.tech.agri = 5, 1.2, 2.1, 2.1
+	t.civBonus.trade = 1.08
+	check("산업 발달에 따라 지역 특산품 단계 상승", Eco.specialtyLevel(t, id) == 4)
+	local goods = Eco.specialtyView(t)
+	check("특산 경제 화면에 실제 교역품·재고·시세 반영",
+		#goods > 0 and goods[1].stock >= 0 and goods[1].price > 0 and goods[1].industry ~= nil)
+	check("다른 항구 생산품은 특산품으로 오인하지 않음", Eco.specialtyLevel(t, "__missing__") == 0)
+end
+
+-- [서버 간 저장] 동일 데이터 저장소를 쓰는 두 서버가 같은 세계를 읽고 최신 판본을 덮지 않는다.
+do
+	local memory = { value = nil }
+	function memory:GetAsync(key)
+		check("공통 세계 저장 키 재사용", key == "world")
+		return self.value
+	end
+	function memory:UpdateAsync(key, transform)
+		self.value = transform(self.value)
+		return self.value
+	end
+	local Server = require("./Services/Econ")
+	local a = Server({ Economy = Eco }, {})
+	local b = Server({ Economy = Eco }, {})
+	a.bindStore(memory, "server-a")
+	b.bindStore(memory, "server-b")
+	local stA, stB = { startYear = 1650, day = 35 }, { startYear = 1700, day = 0 }
+	a.advance(stA)
+	check("최초 세계 저장", a.sync(stA) and memory.value and memory.value.revision == 1)
+	local shared = b.town(stB, "london")
+	check("서버 재접속 시 기존 세계 연도·날짜 공유", shared and shared.day == 35 and shared.year == 1650)
+	local before = shared.tech
+	b.teach(stB, "london", "navigation", 10)
+	check("연구가 공유 세계에 적용", b.sync(stB) and memory.value.revision == 2)
+	a.reset()
+	local pulled = a.town(stA, "london")
+	check("다른 서버의 학문 연구를 최신 세계에서 읽음", pulled and pulled.tech > before)
+	local c, d = Server({ Economy = Eco }, {}), Server({ Economy = Eco }, {})
+	c.bindStore(memory, "server-c")
+	d.bindStore(memory, "server-d")
+	c.town(stB, "london")
+	d.town(stB, "london")
+	c.teach(stB, "london", "physics", 6)
+	d.teach(stB, "london", "botany", 6)
+	check("선행 서버의 새 판본 저장", c.sync(stB) and memory.value.revision == 3)
+	local latest = memory.value.revision
+	check("동시 충돌은 과거 세계 덮기 금지", d.sync(stB) == false and memory.value.revision == latest)
+	check("충돌한 연구 사건을 최신 서버 세계에 다시 적용", d.town(stB, "london").tech > pulled.tech)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})

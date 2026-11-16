@@ -4343,6 +4343,17 @@ function RENDERERS.harbor()
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
+	-- [항구별 특산 산업] 실물경제 시뮬의 품목별 생산·재고·가격·기술 발전을 표시한다.
+	if h.sim and h.sim.specialties and #h.sim.specialties > 0 then
+		add(function() return mkHeader(content, "지역 특산품 · 산업 발전") end)
+		for _, sp in ipairs(h.sim.specialties) do
+			add(function()
+				local status = string.format("%s · %d단계 · 생산 %.2f · 재고 %d · 시세 %.1f",
+					sp.industry, sp.level, sp.produced, sp.stock, sp.price)
+				return mkRow(content, sp.name, status, {}, 64)
+			end)
+		end
+	end
 	if h.economy then
 		local e = h.economy
 		H.statStrip({
@@ -8818,17 +8829,20 @@ syncScene = function()
 	end
 	local econKind = view.harbor and view.harbor.regime and view.harbor.regime.kind or "normal"
 	local eco = view.harbor and view.harbor.economy or {}
+	-- [실물경제·시대] 기존 항구 정적 경기가 아니라 공통 세계의 최신 기술·인구를 3D 장면에 연결한다.
+	local sim = view.harbor and view.harbor.sim
+	local techStamp = sim and sim.technology and sim.technology.adopted or 0
 	local boostIds = {}
 	for _, b in eco.boosts or {} do
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(eco.sim and (eco.sim.stage .. "_" .. math.floor(eco.sim.residents / 4)) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
-	workspace:SetAttribute("PortMood", eco.sim and eco.sim.mood or "steady")
+	workspace:SetAttribute("PortMood", sim and sim.mood or "steady")
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
@@ -8836,7 +8850,7 @@ syncScene = function()
 		construction = construction,
 		econ = econKind,
 		econIndex = eco.index,
-		sim = eco.sim,
+		sim = sim,
 		unemployment = eco.unemployment,
 		vacancy = eco.vacancy,
 		migration = eco.migration,
