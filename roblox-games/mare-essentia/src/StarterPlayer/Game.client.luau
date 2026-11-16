@@ -4358,7 +4358,10 @@ function RENDERERS.harbor()
 			add(function()
 				local status = string.format("%s · %d단계 · 생산 %.2f · 재고 %d · 시세 %.1f",
 					sp.industry, sp.level, sp.produced, sp.stock, sp.price)
-				return mkRow(content, sp.name, status, {}, 64)
+				if sp.input then status ..= "\n투입 원료 " .. sp.input end
+				if sp.nextProduct then status ..= "\n다음 가공 " .. sp.nextProduct end
+				if sp.researchName then status ..= " · 관련 학문 " .. sp.researchName end
+				return mkRow(content, sp.name, status, {}, if sp.input or sp.nextProduct then 88 else 64)
 			end)
 		end
 	end
