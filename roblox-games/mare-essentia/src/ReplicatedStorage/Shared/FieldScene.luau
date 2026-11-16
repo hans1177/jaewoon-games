@@ -504,7 +504,8 @@ function FieldScene.start(opts)
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
-	for _ = 1, if visualMobile then math.min(treeCount, 44) else treeCount do
+	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
+	for _ = 1, visualTreeCount do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		-- 지역 나무는 기존 Town/Terrain의 실제 CC0 메시만 사용한다. 없는 종류는 도형 대체 없이 건너뛴다.
@@ -515,7 +516,8 @@ function FieldScene.start(opts)
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
-	for _ = 1, if visualMobile then math.min(rockCount, 36) else rockCount do
+	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
+	for _ = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
@@ -867,8 +869,13 @@ function FieldScene.start(opts)
 			elseif ac.kind == "charger" then "athletic" else "average"
 		local motionStyle = if ac.kind == "archer" then "nimble" elseif ac.kind == "shield" or isBoss then "heavy"
 			elseif ac.kind == "charger" then "disciplined" else "civilian"
-		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
+		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
+		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
 			{ bodyType = bodyType, motionStyle = motionStyle, persona = styleN, profession = ac.kind, year = opts.year })
+		if not created and not finished then
+			warn("[MareEssentia] 탐험 적 리그 생성 오류", model)
+			model = nil
+		end
 		if finished or not folder.Parent then
 			if model then model:Destroy() end
 			return { finish = finish, cancelled = true }
@@ -3081,7 +3088,11 @@ function FieldScene.start(opts)
 					local heroHeight = if heroHead and heroFoot
 						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
 						else 5.8
-					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
+					local created, m = pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
+					if not created and not finished then
+						warn("[MareEssentia] 동료 리그 생성 오류", m)
+						m = nil
+					end
 					if finished or not folder.Parent then
 						if m then m:Destroy() end
 						return
