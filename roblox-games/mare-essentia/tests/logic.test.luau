@@ -108,12 +108,18 @@ for tier = 1, 5 do
 	prevLength, prevCargo, prevBoats = v.pierLength, v.cargo, v.boats
 end
 local idlePort = D.PortBuildings.harborVisual(5, { dock = 0, warehouse = 0 })
-check("투자 없는 5단계 항만은 실제 잔교 생성 안 함", not idlePort.sidePier and idlePort.pierLength == 0)
+check("투자 없는 5단계 항만은 실제 잔교 생성 안 함", idlePort.tier == 1 and not idlePort.sidePier and idlePort.pierLength == 0)
 check("투자 없는 5단계 항만은 선박·화물 기본치", idlePort.boats == 1 and idlePort.cargo == 2)
 check("투자 없는 5단계 항만은 하역기·표식 없음", idlePort.hoists == 0 and idlePort.signals == 0)
 local lowPort = D.PortBuildings.harborVisual(4, { dock = 1, warehouse = 1 })
-check("실제 건설된 선착장 1곳이면 2번 잔교만 공개", lowPort.sidePier and lowPort.pierLength == 76)
+check("실제 건설된 선착장 1곳이면 연안항 잔교만 공개", lowPort.tier == 2 and lowPort.sidePier and lowPort.pierLength == 44)
 check("창고·부두 1곳의 진열·선박 상한", lowPort.boats == 2 and lowPort.cargo == 4 and lowPort.hoists == 0)
+local middlePort = D.PortBuildings.harborVisual(3, { dock = 2, warehouse = 4 })
+check("3단계 항만은 투자 2곳에서 상업항·도르래가 열림",
+	middlePort.tier == 3 and middlePort.hoists == 1 and middlePort.boats == 3)
+local militaryPort = D.PortBuildings.harborVisual(4, { dock = 4, warehouse = 8 })
+check("4단계 항만은 투자 4곳에서 대형항·도르래 2개로 성장",
+	militaryPort.tier == 4 and militaryPort.hoists == 2 and militaryPort.boats == 4)
 local developedPort = D.PortBuildings.harborVisual(5, { dock = 64, warehouse = 64 })
 check("실제 성장한 국제항은 다중 선박·하역기 공개",
 	developedPort.boats == 8 and developedPort.cargo == 10 and developedPort.hoists == 3)
