@@ -4399,6 +4399,7 @@ function RENDERERS.harbor()
 					local detail = (ev.kind or "역사·경제") .. " · " .. tostring(ev.daysLeft or 0) .. "일 남음"
 					if ev.peopleNames and #ev.peopleNames > 0 then detail ..= "\n관련 인물: " .. table.concat(ev.peopleNames, " · ") end
 					if ev.sourceEvent then detail ..= "\n백과 사건: " .. ev.sourceEvent end
+					if ev.qid then detail ..= " · 위키데이터 " .. ev.qid end
 					return mkRow(content, ev.title or "세계 사건", detail, {}, if ev.peopleNames and #ev.peopleNames > 0 then 94 else 72)
 				end)
 			end
