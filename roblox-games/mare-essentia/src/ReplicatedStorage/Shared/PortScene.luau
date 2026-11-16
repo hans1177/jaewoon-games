@@ -1540,13 +1540,18 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local z = if i % 2 == 0 then -3.2 else 3.2
 		path(Vector3.new(-24 - i * 10, 0, z), Vector3.new(-172, 0, z), "look", 1.7, { role = "Knight", hat = false })
 	end
-	-- 짐꾼: 부두에서 교역소까지 짐을 나른다 (1단계 1명, 3단계 2명)
+	-- [항구 주민 일자리] 기존 짐꾼 동선만 1~5단계에 맞춰 확대한다. 신규 경제 직군은 만들지 않는다.
 	do
-		local porters = if lvl >= 3 then 2 else 1
+		local porters = PortBuildings.harborVisual(lvl, info.sim and info.sim.buildings).porters
+		if info.sim and info.sim.jobs and (info.sim.jobs.laborer or 0) <= 0 then porters = 0 end
+		if game:GetService("UserInputService").TouchEnabled then porters = math.min(porters, 2) end
 		for i = 1, porters do
 			local pz = 24 + i * 3
-			local fig = path(Vector3.new(14, 0, pz), Vector3.new(-6, 0, pz - 6), "carry", 1.5, { role = "Barbarian", hat = false })
+			local fig = path(Vector3.new(14, 0, pz), Vector3.new(-6, 0, pz - 6), "carry", 1.5,
+				{ role = "Barbarian", hat = false, profession = "docker" })
 			if fig then
+				fig:SetAttribute("Job", "docker")
+				fig:SetAttribute("Workplace", "부두 하역장")
 				holdProp(fig, "Cargo", pick({ "box-open", "barrel", "bag" }), 2.2)
 			end
 		end
