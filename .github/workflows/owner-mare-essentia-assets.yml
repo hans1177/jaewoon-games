@@ -98,7 +98,7 @@ jobs:
       - name: Check trade goods practice and safe ingredient game bindings
         shell: bash
         run: |
-          node --test --test-name-pattern='Mare (trade|generated original)' qa/company-roblox-dedicated-experience.test.mjs
+          node --test --test-name-pattern='Mare (trade|generated original|licensed galleon|ship original)' qa/company-roblox-dedicated-experience.test.mjs
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
