@@ -3908,6 +3908,54 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
   assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
 });
 
+// [실제 무기별 평타·스킬] 데이터, 공용 원본 R15 클립, 기존 동료 자동스킬 및 공식 Studio 입력을 함께 확인한다.
+test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
+  const base='roblox-games/mare-essentia/';
+  const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');
+  const field=fs.readFileSync(base+'src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const motion=fs.readFileSync(base+'src/ReplicatedStorage/Shared/FieldMotion.luau','utf8');
+  const common=fs.readFileSync(base+'src/ReplicatedStorage/Shared/CommonMotion.luau','utf8');
+  const allies=fs.readFileSync(base+'src/ReplicatedStorage/Shared/JobSkills.luau','utf8');
+  const candidates=['fist','blade','dagger','axe','spear','blunt','bow','firearm'];
+  for(const family of candidates){
+    const line=source.split('\n').find(row=>row.includes(family+' = { basic = '));
+    assert.ok(line,'missing weapon action family: '+family);
+    assert.match(line,/heavyBeat = [1-5], sweepBeat = [1-5]/,'missing actual skill beat: '+family);
+  }
+  for(const style of ['UNARMED_RUSH','UNARMED_UPPERCUT','UNARMED_KICK','UNARMED_ELBOW'])
+    assert.ok(motion.includes(style+' = { '),'missing martial arts original: '+style);
+  for(const atom of [...motion.matchAll(/"(?:W|U):([A-Z0-9_]+)"/g)].map(m=>m[1])){
+    assert.ok(common.includes('id="'+atom+'"'),'unregistered CommonMotion action: '+atom);
+  }
+  assert.ok(motion.includes('WEAPON_HIGH_BEATS'));
+  assert.ok(field.includes('Weapons.actionDesign(wpn).heavyBeat'));
+  assert.ok(field.includes('Weapons.actionDesign(wpn).sweepBeat'));
+  assert.ok(field.includes('startSwing("slash", 0.32, stage)'),'bonus chains must play actual R15 steps');
+  assert.ok(field.includes('pl.combo = 0') && field.includes('mult = 1'),'first attack must be basic single hit');
+  const active=field.slice(field.indexOf('if chain > 1 then'),field.indexOf('elseif hits == 0 and moveId == "rush"'));
+  assert.ok(active.includes('startSwing("slash", 0.32, stage)')&&!active.includes('strikeEnemy('),
+    'bonus visual beats must not add damage or award duplicate experience');
+  assert.ok(field.includes('if now >= a.nextSkill and #enemies > 0 then')
+    && field.includes('a.skillCd[sid] = now + def.cooldown')
+    && field.includes('castEffect(sid, a.name'),'companion skills must remain automatic');
+  assert.ok(allies.includes('function JobSkills.allySkills'));
+  const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-weapons.json','utf8'));
+  const names=['fist','sword','dagger','axe','spear','mace','bow','crossbow','gun'];
+  assert.equal(steps.filter(row=>row.type==='capture').length,27);
+  for(const id of names){
+    assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_LAUNCHED:'+id)),'missing real scene: '+id);
+    assert.ok(steps.some(row=>row.code?.includes('WEAPON_R15_POSE_MISSING:'+id)),'missing five-stage sample: '+id);
+    for(const motion of ['SLASH','HEAVY','SPIN'])
+      assert.ok(steps.some(row=>row.code?.includes('WEAPON_'+motion+'_R15_PASS:'+id)),'missing real input: '+id+'/'+motion);
+    for(const suffix of ['a','b','sweep'])
+      assert.ok(steps.some(row=>row.type==='capture'&&row.name==='wp_'+id+'_'+suffix),'missing visual frame: '+id+'/'+suffix);
+  }
+  assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_FINAL_CLEAN_EXIT_PASS')));
+  const daily=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(daily.includes("cron: '43 3,15 * * *'"));
+  assert.ok(daily.includes('scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json")'));
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
