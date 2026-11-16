@@ -3071,11 +3071,16 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
-					-- 손님(카메라)이 가까이 오면 하던 일을 잠깐 멈추고 몸을 돌려 손을 흔든다 (사람마다 시간이 달라 한꺼번에 하지 않는다)
+					-- [주민 시선] 실제 플레이어가 다가오면 얼굴을 돌린다. 스튜디오 사진 구도에서는 카메라를 향한다.
+					-- 기존 대화·직업 행동은 유지하고, 화면 카메라가 멀리 있는 3인칭 시점에서도 주민이 등을 돌리지 않는다.
 					local kind, target = w.kind, 0
 					local cam = workspace.CurrentCamera
+					local character = Players.LocalPlayer and Players.LocalPlayer.Character
+					local guestRoot = character and character:FindFirstChild("HumanoidRootPart")
+					local focus = if workspace:GetAttribute("ShotCF") and cam then cam.CFrame.Position
+						elseif guestRoot then guestRoot.Position elseif cam then cam.CFrame.Position else nil
 					local p0 = w.base.Position
-					local flat = if cam then Vector3.new(cam.CFrame.Position.X - p0.X, 0, cam.CFrame.Position.Z - p0.Z) else Vector3.zero
+					local flat = if focus then Vector3.new(focus.X - p0.X, 0, focus.Z - p0.Z) else Vector3.zero
 					-- 마을 주민끼리 실제로 가까이 서 있는 쌍만 대화와 물건 주고받기 모션을 맞춘다.
 					-- 짝 탐색은 모델마다 최초 한 번만 한다(모바일에서 매 프레임 전체 탐색 금지).
 					if w.kind == "talk" and w.socialPartner == nil then
