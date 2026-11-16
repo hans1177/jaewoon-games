@@ -174,4 +174,26 @@ function P.craftable(producesList, level)
 	return out
 end
 
+-- [지역 특산품 선별] 기존 원산지 브랜드의 원료를 우선하고, 서로 다른 원료군을 함께 보여 준다.
+-- 실제 생산 가능한 품목 목록만 정렬하며 생산량·가격·저장 ID를 만들거나 수정하지 않는다.
+function P.showcaseGoods(portId, producesList, limit)
+	local goods = producesList or {}
+	local maxItems = math.max(0, limit or #goods)
+	local chosen, seen, usedClass = {}, {}, {}
+	local function add(g)
+		if #chosen >= maxItems or seen[g] then return end
+		seen[g] = true
+		usedClass[P.ClassOf[g] or g] = true
+		table.insert(chosen, g)
+	end
+	for _, brand in P.BrandsByPort[portId] or {} do
+		if table.find(goods, brand.source) then add(brand.source) end
+	end
+	for _, good in goods do
+		if not usedClass[P.ClassOf[good] or good] then add(good) end
+	end
+	for _, good in goods do add(good) end
+	return chosen
+end
+
 return P
