@@ -1002,6 +1002,41 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.elder = fig:GetAttribute("Age") == "elder"
 		t.base = fig:GetPivot()
 		t.phase = t.phase or rng:NextNumber(0, 10)
+		-- [NPC 직업 소품] 기존 등록된 CC0 Cargo만 사용. 이동하는 짐꾼의 상자/잔 든 손님에 실물을 붙인다.
+		-- 루프마다 생성하지 않고 주민 생성 시 한 번만, 상체/손 관절에 용접해서 행동을 함께 따라가게 한다.
+		local propAsset = if t.kind == "carry" then "box-open" elseif t.kind == "drink" then "mug" else nil
+		local mount = fig:FindFirstChild(if t.kind == "carry" then "UpperTorso" else "RightHand", true)
+		local assets = ReplicatedStorage:FindFirstChild("MareAssets")
+		local cargo = assets and assets:FindFirstChild("Cargo")
+		local template = propAsset and cargo and cargo:FindFirstChild(propAsset)
+		if template and template:IsA("Model") and mount and mount:IsA("BasePart") then
+			local held = template:Clone()
+			local ok = pcall(function()
+				local parts = {}
+				for _, mesh in held:GetDescendants() do
+					if mesh:IsA("BasePart") then table.insert(parts, mesh) end
+				end
+				if #parts == 0 or #parts > 12 then error("NPC_PROP_PART_LIMIT") end
+				local _, bounds = held:GetBoundingBox()
+				local axis = math.max(bounds.X, bounds.Y, bounds.Z)
+				if axis < 0.01 then error("NPC_PROP_EMPTY") end
+				held:ScaleTo(held:GetScale() * ((if t.kind == "carry" then 1.05 else 0.45) / axis))
+				held.Name = "NpcWorkProp"
+				held.Parent = fig
+				held:PivotTo(mount.CFrame * (if t.kind == "carry" then CFrame.new(0, -0.35, -1.0) else CFrame.new(0, -0.2, -0.25)))
+				for _, mesh in parts do
+					mesh.Anchored = false
+					mesh.CanCollide = false
+					mesh.CanTouch = false
+					mesh.CanQuery = false
+					mesh.Massless = true
+					local joint = Instance.new("WeldConstraint")
+					joint.Part0, joint.Part1 = mount, mesh
+					joint.Parent = mesh
+				end
+			end)
+			if not ok then held:Destroy() end
+		end
 		table.insert(walkers, t)
 	end
 	local function stay(pos, target, kind, spec)
