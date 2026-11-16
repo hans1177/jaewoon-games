@@ -2284,27 +2284,24 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
 		local lay = zoneLayout(info.portId, lvl)
 		local sd = lay.side
-		-- 농원구역(마을 서쪽 끝): 가축 울타리와 밭. 작은 마을일수록 울타리가 많고 큰 항구는 장터로 바뀐다.
-		for i = 1, lay.pens do
-			local c = penAt(i, lay.pens)
-			for dx = -18, 18, 4 do
-				for _, dz in { -15, 15 } do
-					one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz)
-				end
-			end
-			for dz = -12, 12, 4 do
-				for _, dx in { -20, 20 } do
-					rotateAround(one("Town", "fence_rails", 4, c.X + dx, 0, c.Z + dz), Vector3.new(c.X + dx, 0, c.Z + dz), math.pi / 2)
-				end
-			end
-			if lay.farm then
-				-- 우리 서쪽으로 넓게 펼쳐진 밭
-				for rz = -21, 21, 6 do
-					-- 갈아엎은 어두운 흙 이랑: 작물 줄이 눈에 띄도록 줄마다 깔아 준다
-					local soil = part(folder, Vector3.new(104, 0.3, 4.2), CFrame.new(c.X - 78, 0.3, c.Z + rz), Color3.fromRGB(88, 62, 40), Enum.Material.Ground)
+		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
+		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
+		if lay.farm then
+			local farmland = if info.sim and info.sim.buildings then info.sim.buildings.farm or 0 else lvl * 4
+			local rows = math.clamp(math.floor(2 + math.sqrt(math.max(0, farmland))), 2, 10)
+			for i = 1, lay.pens do
+				local c = penAt(i, lay.pens)
+				for rz = 1, rows do
+					local z = c.Z + (rz - (rows + 1) / 2) * 6
+					local at = Vector3.new(c.X - 139, 0, z)
+					local soil = part(folder, Vector3.new(86, 0.18, 4.2), CFrame.new(at + Vector3.new(0, 0.16, 0)), C(88, 62, 40), Enum.Material.Ground)
+					soil.Name = "FarmFurrow"
 					soil.CanCollide = false
 					soil.CanQuery = false
-					rowOf("Terrain", if rz % 12 == 0 then "crops-wheatstagea" else "crops-wheatstageb", 6.5, c.X - 26, c.X - 130, 5, c.Z + rz)
+					for k = 1, 9 do
+						local crop = if (k + rz) % 3 == 0 then "crops-wheatstageb" else "crops-wheatstagea"
+						one("Terrain", crop, 5.5, c.X - 97 - k * 8, 0, z)
+					end
 				end
 			end
 		end
@@ -2849,7 +2846,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(650, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-290, 0.02, 0),
+		local floor = part(folder, Vector3.new(1080, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-520, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2912,7 +2909,7 @@ function PortScene.build(info, onFacility)
 		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
 		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
 		do
-			local floor = part(folder, Vector3.new(622, 2, 2 * CITY_LIMIT_Z), CFrame.new(-289, -1, 0), Color3.new(1, 1, 1))
+			local floor = part(folder, Vector3.new(1120, 2, 2 * CITY_LIMIT_Z), CFrame.new(-520, -1, 0), Color3.new(1, 1, 1))
 			floor.Name = "SafetyFloor"
 			floor.Transparency = 1
 			floor.CanQuery = false
@@ -2922,9 +2919,9 @@ function PortScene.build(info, onFacility)
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, 5.6))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, -5.6))
 		wall(Vector3.new(1, 40, 12), CFrame.new(89.5, 18, 0))
-		wall(Vector3.new(1, 40, 2 * CITY_LIMIT_Z), CFrame.new(-600, 18, 0))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, CITY_LIMIT_Z))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -CITY_LIMIT_Z))
+		wall(Vector3.new(1, 40, 2 * CITY_LIMIT_Z), CFrame.new(-1060, 18, 0))
+		wall(Vector3.new(1600, 40, 1), CFrame.new(-260, 18, CITY_LIMIT_Z))
+		wall(Vector3.new(1600, 40, 1), CFrame.new(-260, 18, -CITY_LIMIT_Z))
 	end
 	-- 부두 화물: 등록된 실제 상품 모델을 쓰며 생산품·가격·보행 판정에는 영향을 주지 않는다.
 	local cargoModels = {
