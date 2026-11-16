@@ -362,9 +362,18 @@ function FieldScene.start(opts)
 	local lightSave = {}
 	do
 		local L = game:GetService("Lighting")
-		lightSave = { FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime }
+		-- [지역 조명] 항구의 밤 설정이 탐험의 주간 전장을 어둡게 만들지 않게 값 보관 후 전장에 맞춰 조절.
+		lightSave = {
+			FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime,
+			Brightness = L.Brightness, Ambient = L.Ambient, OutdoorAmbient = L.OutdoorAmbient,
+			ColorShiftTop = L.ColorShift_Top,
+		}
 		pcall(function()
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
+			L.Brightness = 2.1
+			L.Ambient = biome.fog:Lerp(Color3.fromRGB(132, 139, 153), 0.65)
+			L.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(153, 160, 168), 0.55)
+			L.ColorShift_Top = Color3.fromRGB(255, 246, 229)
 		end)
 	end
 
@@ -672,6 +681,8 @@ function FieldScene.start(opts)
 		pcall(function()
 			local L = game:GetService("Lighting")
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
+			L.Brightness, L.Ambient, L.OutdoorAmbient = lightSave.Brightness, lightSave.Ambient, lightSave.OutdoorAmbient
+			L.ColorShift_Top = lightSave.ColorShiftTop
 		end)
 		for _, c in conns do
 			c:Disconnect()

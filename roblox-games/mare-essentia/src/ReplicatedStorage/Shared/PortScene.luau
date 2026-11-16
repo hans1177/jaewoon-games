@@ -3444,7 +3444,8 @@ function PortScene.build(info, onFacility)
 		local now = os.clock()
 		if now < updateAt then return end
 		updateAt = now + 0.10
-		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
+		-- [조명 충돌 방지] 지상 탐험이 진행 중이면 항구의 주야 주기가 필드 조명을 덮어쓰지 않는다.
+		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
 			if snow then snow.Rate = 0 end
 			return
 		end
