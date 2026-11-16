@@ -4803,10 +4803,10 @@ function RENDERERS.status()
 			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
 		}, 52)
 	end)
-	add(function() return mkHeader(content, "전문 분야 · 21개 학문은 직업과 무관하게 연구 가능") end)
+	add(function() return mkHeader(content, string.format("전문 분야 · 학문 %d개는 직업과 무관하게 연구 가능", view.knowledge and #view.knowledge.disciplines or 21)) end)
 	add(function()
 		local sv = view.specialties
-		local msg = "전문 분야 15개는 선택 사항이에요. 직업을 고르지 않아도 21개 학문을 모두 연구하고 숙련도를 올릴 수 있어요. 전문 분야는 관련 연구만 지원해요. 선택하려면 관련 카드가 " .. sv.unlockCards .. "장 필요해요. 전문 숙련: 견습 → 숙련 → 명인 → 대가 → 거장"
+		local msg = "전문 분야 15개는 선택 사항이에요. 직업을 고르지 않아도 기존 학문과 확장 세부 학문 모두 연구하고 숙련도를 올릴 수 있어요. 전문 분야는 관련 연구만 지원해요. 선택하려면 관련 카드가 " .. sv.unlockCards .. "장 필요해요. 전문 숙련: 견습 → 숙련 → 명인 → 대가 → 거장"
 		if sv.auto then
 			msg ..= "  (예전 저장에서 자동 배정된 전문 분야: 최초 변경은 무료)"
 		end
@@ -7157,7 +7157,7 @@ local function renderCodexOverview()
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
 		}, 54)
 	end)
-	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
+	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 + 확장 %d개", cx.baseDisciplineCount or 21, (cx.disciplineCount or 21) - (cx.baseDisciplineCount or 21))) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
@@ -7322,7 +7322,13 @@ local function renderCodexOverview()
 			return mkLabel(content, string.rep("    ", t.depth) .. (if t.depth > 0 then "└ " else "") .. t.name .. "  · " .. sub, 13, if t.open then COLORS.text else COLORS.muted, false)
 		end)
 	end
+	add(function()
+		return mkRow(content, string.format("확장 학문 연구 · %d개", cx.disciplineCount - cx.baseDisciplineCount), "수학·생물학·지질학·해양학·농학·야금학·약학·군사학 등 기존 지식카드 연구에서 성장", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "k:expanded"; render() end },
+		}, 58)
+	end)
 	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		if d.derived then continue end
 		add(function()
 			local sub = d.summary
 			if not d.open then
@@ -7548,6 +7554,23 @@ if string.sub(codexField, 1, 2) == "p:" then
 				return row
 			end)
 		end
+	end
+	return
+end
+if codexField == "k:expanded" then
+	add(function()
+		return mkRow(content, "← 기본 학문", "실제 지식카드의 보고 기록으로 성장하는 21개 세부학문", {
+			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
+		}, 50)
+	end)
+	for _, d in (view.knowledge and view.knowledge.disciplines or {}) do
+		if not d.derived then continue end
+		add(function()
+			return mkRow(content, string.format("%s · 이해 %d/%d · Lv.%d", d.name, d.done, d.total, d.mastery and d.mastery.level or 1),
+				"기존 보고카드 기반 · " .. d.summary, {
+					{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
+				}, 58)
+		end)
 	end
 	return
 end
