@@ -570,7 +570,7 @@ local function extraTests()
 	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
-	-- [지구 백과/확장 학문] 3획득 방식·17소재·활성 학문 51개, 기존 배/설계와 연구 저장 보존
+	-- [지구 백과/확장 학문] 3획득 방식·17소재·활성 학문 52개, 기존 배/설계와 연구 저장 보존
 	do
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
@@ -658,10 +658,25 @@ local function extraTests()
 		local sample = collection.ById.ship_galleon
 		check("백과 개체: 실물 선박·설계도 구분 및 인류 오브젝트 다중 태그", collection.entityTypeOf(sample) == "class" and #collection.tagsOf(sample) >= 3)
 		check("백과 외부: 검증된 개체 식별자 등록", collection.ById.bot_willow.meta.wikidata == "Q36050" and collection.ById.site_stonehenge.meta.wikidata == "Q39671")
-		local badLink, linkCount = nil, 0
+		local badLink, linkCount, badMeta = nil, 0, nil
 		for _, card in collection.Cards do
+			local meta = card.meta
+			if meta then
+				if meta.kind and not collection.KindById[meta.kind] then badMeta = card.id .. ":종류" end
+				if meta.discipline and not tree.DisciplineById[meta.discipline] then badMeta = card.id .. ":학문" end
+				if meta.entityType and not collection.EntityTypes[meta.entityType] then badMeta = card.id .. ":개체" end
+				if meta.wikidata and not string.match(meta.wikidata, "^Q%d+$") then badMeta = card.id .. ":외부ID" end
+				for _, tag in meta.tags or {} do
+					if type(tag) ~= "string" or #tag == 0 then badMeta = card.id .. ":태그" end
+				end
+				for _, alias in meta.aliases or {} do
+					if type(alias) ~= "string" or #alias == 0 then badMeta = card.id .. ":별칭" end
+				end
+			end
+
 			for _, rel in (card.meta and card.meta.relations or {}) do
 				linkCount += 1
+				if not collection.RelationNames[rel.type] then badMeta = card.id .. ":관계 유형" end
 				local target = rel.target
 				local valid = collection.ById[target] ~= nil
 					or (string.sub(target, 1, 5) == "good:" and D.Ports.Goods[string.sub(target, 6)] ~= nil)
@@ -670,6 +685,7 @@ local function extraTests()
 			end
 		end
 		check("백과 지식 그래프: 실제 개체와 자원 관계가 유효", badLink == nil and linkCount >= 10, badLink)
+		check("백과 스키마: 분류·학문·위키데이터·태그·관계 유형 무결성", badMeta == nil, badMeta)
 		local vesselView = cardById.ship_galleon
 		check("도감: 갤리온 주학문은 기존 조선학", vesselView.discipline == "조선학")
 		check("도감: 갤리온은 기존 항해술·물리학·역사학과 연결", table.find(vesselView.relatedDisciplines, "항해술") ~= nil and table.find(vesselView.relatedDisciplines, "물리학") ~= nil and table.find(vesselView.relatedDisciplines, "역사·유적학") ~= nil)
