@@ -9926,10 +9926,15 @@ end
 			Sfx.play(spec.sting, 0.55)
 		end
 		local win = Instance.new("Frame")
+		win.Name = "IntroWindow"
 		local narration = spec.speaker == "이야기"
-		win.AnchorPoint = if narration then Vector2.new(0.5, 0.5) else Vector2.new(0.5, 1)
-		win.Position = if narration then UDim2.fromScale(0.5, 0.5) else UDim2.new(0.5, 0, 1, -24)
-		win.Size = UDim2.new(0, if narration then 700 else 540, 0, 0)
+		-- [시작 프롤로그] 이야기·길드·동료·화가 장면 모두 화면 중앙을 기준으로 배치한다.
+		local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1280, 720)
+		local introBodySize = if viewport.X < 520 then 20 else 24
+		local introTitleSize = if viewport.X < 520 then 22 else 26
+		win.AnchorPoint = Vector2.new(0.5, 0.5)
+		win.Position = UDim2.fromScale(0.5, 0.5)
+		win.Size = UDim2.new(0.9, 0, 0, 0)
 		win.AutomaticSize = Enum.AutomaticSize.Y
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
@@ -9941,7 +9946,7 @@ end
 		wst.Thickness = 2.5
 		wst.Parent = win
 		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(if narration then 760 else 580, 700)
+		lim.MaxSize = Vector2.new(700, 700)
 		lim.MinSize = Vector2.new(280, 120)
 		lim.Parent = win
 		local pad = Instance.new("UIPadding")
@@ -10014,23 +10019,24 @@ end
 		faceBorder.Color = BRASS
 		faceBorder.Thickness = 1.5
 		faceBorder.Parent = face
-		local speakerName = mkLabel(speakerBar, spec.speaker, 19, Color3.fromRGB(249, 223, 169), true)
+		local speakerName = mkLabel(speakerBar, spec.speaker, introTitleSize, Color3.fromRGB(249, 223, 169), true)
+		speakerName.Name = "IntroSpeakerName"
 		speakerName.Position = UDim2.fromOffset(if narration then 0 else 82, 9)
 		speakerName.Size = UDim2.new(1, if narration then 0 else -92, 0, 32)
 		if narration then
-			speakerName.TextSize = 26
 			speakerName.TextXAlignment = Enum.TextXAlignment.Center
 		end
 		speakerName.AutomaticSize = Enum.AutomaticSize.None
-		local speakerRole = mkLabel(speakerBar, spec.role or "항해 기록", 14, Color3.fromRGB(225, 198, 165), false)
+		local speakerRole = mkLabel(speakerBar, spec.role or "항해 기록", 18, Color3.fromRGB(225, 198, 165), false)
+		speakerRole.Name = "IntroSpeakerRole"
 		speakerRole.Position = UDim2.fromOffset(if narration then 0 else 82, 44)
 		speakerRole.Size = UDim2.new(1, if narration then 0 else -92, 0, 25)
 		if narration then
-			speakerRole.TextSize = 18
 			speakerRole.TextXAlignment = Enum.TextXAlignment.Center
 		end
 		speakerRole.AutomaticSize = Enum.AutomaticSize.None
-		local bodyLabel = mkLabel(win, spec.text, if narration then 24 else 15, COLORS.text, false, 2)
+		local bodyLabel = mkLabel(win, spec.text, introBodySize, COLORS.text, false, 2)
+		bodyLabel.Name = "IntroBody"
 		-- 글자가 한 자씩 나타나고, 몇 글자마다 작은 소리가 난다. 글을 누르면 한꺼번에 보인다.
 		do
 			local total = utf8.len(spec.text) or #spec.text
