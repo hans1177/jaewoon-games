@@ -1231,7 +1231,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  const verify=roadmap.roblox?.developmentVerification||{};
  const studio=roadmap.roblox?.studioExecution||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack||{};
- const architectureSummary=architecture.status;
+ // [중앙문서] 실행형 구조 지도는 중앙정책의 통제 아래 있어야 한다.
  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
  assert.equal(verify.studio,'REQUIRED_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
  assert.equal(verify.studioBlocksDevelopment,false);
@@ -1245,7 +1245,8 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,true);
- assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+ assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+ assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) \}\}/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
