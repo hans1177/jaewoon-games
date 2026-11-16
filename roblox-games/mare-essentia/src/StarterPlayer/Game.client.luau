@@ -6621,6 +6621,13 @@ function H.showCardDetail(card)
 		box2.Parent = body
 	end
 	mkLabel(body, card.description, 17, ink, false, 3)
+	if card.kindName then
+		mkLabel(body, "카드 종류: " .. card.kindName .. " · 학문: " .. (card.discipline or "기타") .. " · " .. (card.domain or "기타"), 13, brown, false, 4)
+	end
+	if card.method then
+		local text = if card.method == "discover" then "발견" elseif card.method == "research" then "연구" else "탐험"
+		mkLabel(body, "습득 경로: " .. text .. " · 등급별 조사: " .. (card.rarityGuide or "일반 조사"), 13, brown, false, 4)
+	end
 	if card.path then
 		mkLabel(body, "획득 과정: " .. card.path .. " · " .. tostring(card.source) .. (if card.studyLocked then "\n현재 조건: " .. card.studyLocked else ""), 13, brown, false, 4)
 	end
@@ -7116,6 +7123,26 @@ local function renderCodexOverview()
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
 	end)
+	-- [새 분류] 습득 방식은 카드 종류·희귀도·학문과 독립된다. 기존 학문 화면도 그대로 유지한다.
+	add(function() return mkHeader(content, "습득 방식 · 3가지") end)
+	for _, row in { { id = "discover", name = "발견", hint = "항구 방문·항해 중 관찰·단순 사건" },
+		{ id = "research", name = "연구", hint = "선행 지식·학자·동료·연속 퀘스트" },
+		{ id = "explore", name = "탐험", hint = "현장 조사·지형·동물·유적·유물" } } do
+		add(function()
+			return mkRow(content, row.name .. " · " .. tostring(cx.methods[row.id] or 0) .. "장", row.hint, {
+				{ text = "보기", color = COLORS.blue, onClick = function() codexField = "a:" .. row.id; render() end },
+			}, 56)
+		end)
+	end
+	add(function() return mkHeader(content, "카드 소재 · 16가지") end)
+	for _, kind in cx.kindList or {} do
+		add(function()
+			return mkRow(content, kind.name .. " · " .. tostring(cx.kinds[kind.id] or 0) .. "장", "종류별 목록 · 기존 희귀도와 학문 유지", {
+				{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:" .. kind.id; render() end },
+			}, 52)
+		end)
+	end
+	add(function() return mkHeader(content, "학문 · 기존 21분야") end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
@@ -7301,6 +7328,41 @@ local function renderCodexOverview()
 	end
 
 function H.renderCodexField()
+-- [분류 별 목록] 도감의 발견·연구·탐험 또는 카드 소재로 걸러서 본다. 저장 상태/발견 조건은 변경하지 않는다.
+if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" then
+	local mode, key = string.sub(codexField, 1, 2), string.sub(codexField, 3)
+	local label = if mode == "a:" then (if key == "discover" then "발견" elseif key == "research" then "연구" else "탐험")
+		else ((view.codex.kindList and (function()
+			for _, k in view.codex.kindList do if k.id == key then return k.name end end
+			return nil
+		end)()) or "카드 종류")
+	add(function()
+		return mkRow(content, "← 분류 목록", label, { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 50)
+	end)
+	add(function()
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, -6, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		local g = Instance.new("UIGridLayout")
+		g.CellSize = UDim2.new(1 / 3, -6, 0, 118)
+		g.CellPadding = UDim2.fromOffset(6, 6)
+		g.SortOrder = Enum.SortOrder.LayoutOrder
+		g.Parent = grid
+		local n = 0
+		for _, c in view.codex.cards do
+			if (mode == "a:" and c.method == key) or (mode == "t:" and c.kind == key) then
+				n += 1
+				local tint = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
+				local badge = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
+				local tile = H.codexCardTile(grid, c, findField(c.field), badge, tint, function() H.showCardDetail(c) end)
+				tile.LayoutOrder = n
+			end
+		end
+		return grid
+	end)
+	return
+end
 if codexField == "boarding" then
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	BC.useKind("boarding") -- 해전 대결 뒤에 줄 이름이 바뀌어 있을 수 있으니 도감은 기본 이름으로 되돌려 보여 준다
