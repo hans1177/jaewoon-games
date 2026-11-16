@@ -6629,6 +6629,26 @@ function H.showCardDetail(card)
 	end
 	if card.found and card.entityType then
 		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
+		-- [세계 백과 14영역] 소재·연구 학문과 독립된 주제 및 근거 분류.
+		if card.topic then mkLabel(body, "백과 주제: " .. card.topic, 13, brown, false, 4) end
+		if card.evidence then mkLabel(body, "지식 구분: " .. card.evidence .. " (사료의 개별 검증 여부와 별개)", 13, brown, false, 4) end
+		if card.era or card.region then
+			mkLabel(body, "시대·지역: " .. (card.era or "시대 미상") .. " · " .. (card.region or "지역 미상"), 13, brown, false, 4)
+		end
+		if card.prerequisites and #card.prerequisites > 0 then
+			local names = {}
+			for _, needId in card.prerequisites do
+				local name = "미발견 지식"
+				for _, known in view.codex.cards do
+					if known.id == needId then
+						if known.found then name = known.name end
+						break
+					end
+				end
+				table.insert(names, name)
+			end
+			mkLabel(body, "연구 선행 지식: " .. table.concat(names, " · "), 13, brown, false, 4)
+		end
 		if card.tags and #card.tags > 0 then
 			mkLabel(body, "분류 태그: " .. table.concat(card.tags, " · "), 13, brown, false, 4)
 		end
@@ -7157,11 +7177,22 @@ local function renderCodexOverview()
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
 	end)
-	-- [지구·인류 오브젝트] 7개 큰 종류부터 접근하고, 17개 소재·상품 16개 하위 종류로 내려간다.
+	-- [지구·인류 오브젝트] 기존 7개 세계 영역·42종 소재와 독립된 백과 14대 주제를 제공한다.
 	add(function() return mkHeader(content, "지구·인류 전체 오브젝트") end)
 	add(function()
 		return mkRow(content, "백과 통합 검색", "카드 이름·별칭·소재 태그·학문을 한곳에서 찾기", {
 			{ text = "검색", color = COLORS.blue, onClick = function() codexField = "search"; render() end },
+		}, 54)
+	end)
+	-- [모바일 백과] 한 번 탭해 14대 주제를 연다. 기존 7대 세계 분류·학문/소재 탐색은 유지.
+	add(function()
+		return mkRow(content, "세계 백과 · 14대 주제", "인물·국가·역사·경제부터 우주·수학까지", {
+			{ text = "주제별 보기", color = COLORS.blue, onClick = function() codexField = "o:all"; render() end },
+		}, 54)
+	end)
+	add(function()
+		return mkRow(content, "사실·가설·전설·창작", "발견한 지식의 근거 분류별 보기", {
+			{ text = "근거별 보기", color = COLORS.blue, onClick = function() codexField = "e:all"; render() end },
 		}, 54)
 	end)
 	for _, group in cx.worldGroups or {} do
@@ -7416,7 +7447,7 @@ if codexField == "search" then
 	if #query > 0 then
 		local matches = {}
 		for _, card in view.codex.cards do
-			local parts = { card.name, card.kindName, card.discipline, card.entityType, card.subkind }
+			local parts = { card.name, card.kindName, card.discipline, card.entityType, card.subkind, card.topic, card.evidence, card.era, card.region }
 			for _, tag in card.tags or {} do table.insert(parts, tag) end
 			for _, alias in card.aliases or {} do table.insert(parts, alias) end
 			local hit = false
@@ -7451,13 +7482,18 @@ if codexField == "search" then
 	return
 end
 -- [분류 별 목록] 도감의 발견·연구·탐험 또는 카드 소재로 걸러서 본다. 저장 상태/발견 조건은 변경하지 않는다.
-if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" or string.sub(codexField, 1, 2) == "w:" then
+if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" or string.sub(codexField, 1, 2) == "w:" or string.sub(codexField, 1, 2) == "o:" or string.sub(codexField, 1, 2) == "e:" then
 	local mode, key = string.sub(codexField, 1, 2), string.sub(codexField, 3)
 	local label = if mode == "a:" then (if key == "discover" then "발견" elseif key == "research" then "연구" else "탐험")
 		elseif mode == "w:" then ((function()
 			for _, g in view.codex.worldGroups or {} do if g.id == key then return g.name end end
 			return "지구·인류 오브젝트"
 		end)())
+		elseif mode == "o:" then ((function()
+			for _, row in view.codex.topicList or {} do if row.id == key then return row.name end end
+			return "세계 백과 14대 주제"
+		end)())
+		elseif mode == "e:" then ((view.codex.evidenceList or {})[key] or "지식 근거 분류")
 		else ((view.codex.kindList and (function()
 			for _, k in view.codex.kindList do if k.id == key then return k.name end end
 			return nil
@@ -7465,6 +7501,28 @@ if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" 
 	add(function()
 		return mkRow(content, "← 분류 목록", label, { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 50)
 	end)
+
+	-- 14개 주제와 근거 5종은 모바일에서 한 화면씩 목록으로 확인한다.
+	if mode == "o:" and key == "all" then
+		for _, topic in view.codex.topicList or {} do
+			add(function()
+				return mkRow(content, topic.name .. " · " .. tostring((view.codex.topicCounts or {})[topic.id] or 0) .. "장", "유형·무형 통합 지식카드", {
+					{ text = "보기", color = COLORS.blue, onClick = function() codexField = "o:" .. topic.id; render() end },
+				}, 52)
+			end)
+		end
+		return
+	end
+	if mode == "e:" and key == "all" then
+		for _, status in { "documented", "hypothesis", "legend", "fiction", "unreviewed" } do
+			add(function()
+				return mkRow(content, ((view.codex.evidenceList or {})[status] or status) .. " · " .. tostring((view.codex.evidenceCounts or {})[status] or 0) .. "장", "발견한 카드만 분류 · 출처 검증과 별개", {
+					{ text = "보기", color = COLORS.blue, onClick = function() codexField = "e:" .. status; render() end },
+				}, 52)
+			end)
+		end
+		return
+	end
 	if mode == "t:" and key == "all" then
 		for _, kind in view.codex.kindList or {} do
 			add(function()
@@ -7487,7 +7545,7 @@ if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" 
 		g.Parent = grid
 		local n = 0
 		for _, c in view.codex.cards do
-			if (mode == "a:" and c.method == key) or (mode == "t:" and c.kind == key) or (mode == "w:" and (function() for _, k in view.codex.kindList or {} do if k.id == c.kind then return k.group == key end end return false end)()) then
+			if (mode == "a:" and c.method == key) or (mode == "t:" and c.kind == key) or (mode == "o:" and c.topicId == key) or (mode == "e:" and c.evidenceId == key) or (mode == "w:" and (function() for _, k in view.codex.kindList or {} do if k.id == c.kind then return k.group == key end end return false end)()) then
 				n += 1
 				local tint = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
 				local badge = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
