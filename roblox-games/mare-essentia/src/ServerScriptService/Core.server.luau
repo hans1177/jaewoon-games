@@ -392,6 +392,15 @@ for _, player in Players:GetPlayers() do
 end
 
 Players.PlayerRemoving:Connect(function(player)
+	-- 마지막 이용자가 나가면 빈 서버가 종료되기 전에 세계경제 기록을 확정한다.
+	local lastPlayer = true
+	for other in sessions do
+		if other ~= player then lastPlayer = false; break end
+	end
+	local session = sessions[player]
+	if lastPlayer and session and session.state then
+		S.Econ.sync(session.state, true)
+	end
 	saveSession(player)
 	sessions[player] = nil
 end)
