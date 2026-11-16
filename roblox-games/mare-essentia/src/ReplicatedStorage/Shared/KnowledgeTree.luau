@@ -233,6 +233,8 @@ n("arch_garden_palace", "architecture", { "arch_baroque" }, nil)
 	-- 조선학
 n("ship_lateen", "shipbuilding", {}, nil)
 n("ship_figurehead", "shipbuilding", {}, nil)
+n("ship_caravel", "shipbuilding", {}, nil)
+n("ship_galleon", "shipbuilding", { "ship_caravel" }, nil)
 n("ship_longship", "shipbuilding", {}, nil)
 n("ship_galleon_design", "shipbuilding", { "ship_lateen" }, nil)
 n("ship_fluyt_design", "shipbuilding", { "ship_lateen" }, { speed = 0.02, label = "플루트선 설계로 적은 인원으로도 빠르게 간다" })
