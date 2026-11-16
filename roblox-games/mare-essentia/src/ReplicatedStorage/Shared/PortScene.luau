@@ -3341,6 +3341,15 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	-- [항만 단계] 장면과 항만 표지·투명 보행 경계가 같은 1~5단계 결과를 쓴다.
+	local dockGrowth = PortBuildings.harborVisual(sceneLevel, info.sim and info.sim.buildings)
+	folder:SetAttribute("HarborVisualTier", dockGrowth.tier)
+	folder:SetAttribute("HarborVisualName", dockGrowth.name)
+	folder:SetAttribute("HarborPierLength", dockGrowth.pierLength)
+	folder:SetAttribute("HarborVisualBoats", math.min(dockGrowth.boats,
+		if game:GetService("UserInputService").TouchEnabled then 5 else 8))
+	folder:SetAttribute("HarborVisualCargo", math.min(dockGrowth.cargo,
+		if game:GetService("UserInputService").TouchEnabled then 6 else 10))
 	if not info.construction and info.sim and info.sim.construction and info.sim.construction.active then
 		-- 실제 건설비가 지출되는 항구만 기존 건설 현장/목수 모션으로 표시한다.
 		info.construction = { to = math.min(5, sceneLevel + 1) }
@@ -3472,12 +3481,18 @@ function PortScene.build(info, onFacility)
 			w.CanQuery = false
 			w.CastShadow = false
 		end
-		-- 둘째 잔교(z=46) 입구(z 42.5~49.5)는 열어 두고 양옆·끝을 막는다
-		wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
-		wall(Vector3.new(1, 40, CITY_LIMIT_Z - 49.5), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 49.5) / 2))
-		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 42))
-		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 50))
-		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
+		-- [확장 잔교 안전망] 잔교를 실제 투자 조건에 따라 열고, 확장 길이에 맞춰 낙하 방지 벽도 연장한다.
+		if dockGrowth.sidePier then
+			local endX = 22 + dockGrowth.pierLength
+			wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
+			wall(Vector3.new(1, 40, CITY_LIMIT_Z - 49.5), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 49.5) / 2))
+			wall(Vector3.new(endX - 21, 40, 1), CFrame.new((22 + endX) * 0.5, 18, 42))
+			wall(Vector3.new(endX - 21, 40, 1), CFrame.new((22 + endX) * 0.5, 18, 50))
+			wall(Vector3.new(1, 40, 8), CFrame.new(endX + 1.5, 18, 46))
+		else
+			-- 1단계 또는 실제 부두 투자가 없는 곳은 둘째 잔교 입구를 열지 않는다.
+			wall(Vector3.new(1, 40, CITY_LIMIT_Z - 5.6), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 5.6) * 0.5))
+		end
 		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
 		do
 			local floor = part(folder, Vector3.new(1120, 2, 2 * CITY_LIMIT_Z), CFrame.new(-520, -1, 0), Color3.new(1, 1, 1))
@@ -3522,7 +3537,7 @@ function PortScene.build(info, onFacility)
 	local gate = part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, -6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, 6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1.2, 1.2, 13), CFrame.new(22, 10, 0), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
-	sign(folder, gate, info.portName, Color3.fromRGB(150, 110, 40), 7)
+	sign(folder, gate, info.portName .. " · " .. dockGrowth.name, Color3.fromRGB(150, 110, 40), 7)
 	prompt(folder, Vector3.new(60, 4, 0), "부두", "출항 준비 (지도)", "map", onFacility)
 
 	-- 내 배
