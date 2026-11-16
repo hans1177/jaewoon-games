@@ -966,12 +966,14 @@ local function zoneLayout(portId, lvl)
 		trader = port ~= nil and #port.produces >= 4,
 		side = zr:NextInteger(0, 1) * 2 - 1, -- 포대가 서는 쪽 (반대쪽은 어항·하역장)
 	}
-	lay.pens = math.clamp(5 - lvl + (if lay.farm then 1 else 0) - (if lay.fish then 1 else 0), 1, 4)
+	-- 별도 축사 없이 발전 단계에 따라 열린 목장 구역이 늘어난다(기존 세계경제 저장값 불변).
+	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
 	return lay
 end
--- 가축 울타리 중심 (마을 서쪽 끝, 40x30의 큰 우리)
+-- 목장/방목지 중심: 도시·왕궁·밭/주택보다 서쪽, 각 농장 100x90 부지.
+-- 동일 좌표를 쓰는 목장 모양과 가축 배치는 항상 같이 이동한다.
 local function penAt(i, n)
-	return Vector3.new(-214, 0, (i - (n + 1) / 2) * 44)
+	return Vector3.new(-745, 0, (i - (n + 1) / 2) * 155)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
@@ -1206,7 +1208,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	-- 동물: 지역마다 키우는 가축과 마을 동물 (풀을 뜯고, 모이를 쪼고, 꼬리를 흔든다). 모델이 없으면 건너뛴다.
 	do
 		local SPECIES = {
-			iberia = { "sheep", "donkey", "pig", "chicken", "dog" }, italy = { "donkey", "chicken", "cat", "dog" },
+			iberia = { "sheep", "donkey", "pig", "chicken", "dog", "duck" }, italy = { "donkey", "chicken", "cat", "dog" },
 			france = { "cow", "sheep", "chicken", "dog" }, britain = { "sheep", "cow", "horse", "dog" },
 			brick = { "cow", "horse", "cat", "chicken" }, hanse = { "horse", "pig", "dog", "chicken" },
 			nordic = { "sheep", "horse", "cow", "dog" }, tropic = { "pig", "chicken", "dog", "cat" },
@@ -1220,16 +1222,37 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		}
 		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
 		local KIND = {
+			duck = { 1.35, "peck" },
 			cow = { 3.4, "graze" }, horse = { 3.8, "graze" }, sheep = { 2.3, "graze" }, pig = { 2.2, "peck" }, llama = { 3.2, "graze" },
 			donkey = { 3.2, "graze" }, elephant = { 6.5, "still" }, chicken = { 1, "peck" }, dog = { 1.5, "tail" }, cat = { 1.1, "still" },
 		}
 		local list = SPECIES[key] or SPECIES.britain
 		local function animal(species, pos)
 			local k = KIND[species]
-			local m = k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
-			if not m then
-				return
+			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
+			if species == "duck" then
+				-- 오리: 승인된 외부 메시가 아직 없으므로 기존 파트로 가벼운 입체 모델을 직접 제작한다.
+				m = Instance.new("Model")
+				m.Name = "Duck"
+				m.Parent = folder
+				local feathers = if rng:NextNumber() < 0.55 then C(232, 224, 190) else C(138, 113, 83)
+				local function piece(size, offset, color, shape)
+					local p = part(m, size, CFrame.new(pos + offset), color, Enum.Material.SmoothPlastic, shape)
+					p.CanCollide = false
+					p.CanTouch = false
+					p.CanQuery = false
+					return p
+				end
+				piece(Vector3.new(1.45, 0.7, 0.85), Vector3.new(0, 0.62, 0), feathers, Enum.PartType.Ball)
+				piece(Vector3.new(0.63, 0.58, 0.6), Vector3.new(0, 1.1, -0.38), feathers, Enum.PartType.Ball)
+				piece(Vector3.new(0.55, 0.16, 0.32), Vector3.new(0, 1.01, -0.81), C(227, 150, 55))
+				for _, side in { -1, 1 } do
+					piece(Vector3.new(0.7, 0.22, 0.15), Vector3.new(0, 0.78, side * 0.43), feathers:Lerp(C(90, 90, 73), 0.18), Enum.PartType.Ball)
+					piece(Vector3.new(0.11, 0.11, 0.11), Vector3.new(side * 0.2, 1.2, -0.61), C(35, 34, 31), Enum.PartType.Ball)
+					piece(Vector3.new(0.18, 0.12, 0.32), Vector3.new(side * 0.28, 0.16, 0.05), C(213, 148, 57))
+				end
 			end
+			if not m then return end
 			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
 			local origin = m:GetPivot()
 			local forward = origin.LookVector
@@ -1262,46 +1285,56 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				table.insert(stock, sp)
 			end
 		end
-		-- 1) 농원구역: 울타리 안의 가축 (울타리가 많은 작은 마을일수록 가축이 많다)
+		-- 1) 대형 목장: 소/양/말은 열린 방목지, 돼지는 따로 분리된 낮은 사육 울타리.
+		-- 모든 기존 지붕 축사/마굿간은 제거. 각 목장은 성장 단계·실제 농장 재고에 따라 개체 수가 달라진다.
+		local farmCount = info.sim and info.sim.buildings and info.sim.buildings.farm
+		local grazeCount = if farmCount then math.clamp(2 + math.floor(math.sqrt(math.max(0, farmCount)) / 5), 2, 7) else math.clamp(2 + lvl, 3, 7)
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
+			local sp = if #stock > 0 then stock[(i - 1) % #stock + 1] else nil
+			-- 넓은 목장(100x90), 짧은 울타리만. 더 이상 지붕·기둥 축사를 만들지 않는다.
+			local halfX = if sp == "pig" then 39 else 54
+			local halfZ = if sp == "pig" then 32 else 44
+			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.09, c.Z),
+				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
+			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
+			grass.CanCollide = false
+			grass.CanQuery = false
+			for x = -halfX, halfX, 13 do
+				for _, dz in { -halfZ, halfZ } do
+					importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(x, 0, dz), 12.6, false)
+				end
+			end
+			for z = -halfZ + 8, halfZ - 8, 13 do
+				for _, dx in { -halfX, halfX } do
+					local rail = importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(dx, 0, z), 12.6, false)
+					rotateAround(rail, c + Vector3.new(dx, 0, z), math.pi / 2)
+				end
+			end
+			if sp then
 				if sp == "elephant" then
 					animal(sp, c)
 				else
-					for k = 1, 5 + (lvl % 3) do
+					for k = 1, grazeCount do
+						local at = c + Vector3.new(rng:NextNumber(-halfX * 0.65, halfX * 0.65), 0, rng:NextNumber(-halfZ * 0.58, halfZ * 0.58))
 						local n0 = #walkers
-						animal(sp, c + Vector3.new(rng:NextNumber(-16, 16), 0, rng:NextNumber(-11, 11)))
+						animal(sp, at)
 						local w = walkers[#walkers]
 						if #walkers > n0 and w then
-							w.span = rng:NextNumber(2, 4.5) -- 우리 안을 천천히 오간다
-							w.rate = rng:NextNumber(0.12, 0.25)
+							w.span = rng:NextNumber(2, if sp == "pig" then 7 else 11)
+							w.rate = rng:NextNumber(0.12, 0.28)
 						end
 					end
 				end
 			end
-			-- 지붕 있는 축사: 말·당나귀·라마는 마굿간, 소·양·돼지·코끼리는 축사. 이름표 위에 3D 아이콘이 뜬다.
-			if #stock > 0 then
-				local sp = stock[(i - 1) % #stock + 1]
-				local isStable = sp == "horse" or sp == "donkey" or sp == "llama"
-				-- 우리의 서쪽 절반(20x30)에 높은 지붕을 얹는다. 동쪽 절반은 열린 방목장.
-				local roofAt = Vector3.new(c.X - 10, 9, c.Z)
-				for _, cx in { -19, -1 } do
-					for _, cz in { -14, 0, 14 } do
-						local post = part(folder, Vector3.new(1, 9, 1), CFrame.new(c.X + cx, 4.5, c.Z + cz), Color3.fromRGB(104, 72, 44), Enum.Material.Wood)
-						post.CanCollide = false
-					end
-				end
-				gableRoof(folder, roofAt, 21, 31, 5, if isStable then Color3.fromRGB(150, 70, 52) else Color3.fromRGB(170, 140, 84))
-				local anchor = part(folder, Vector3.new(1, 1, 1), CFrame.new(c.X - 10, 9, c.Z), Color3.new(1, 1, 1))
-				anchor.Transparency = 1
-				anchor.CanCollide, anchor.CanQuery = false, false
-				sign(folder, anchor, if isStable then "마굿간" else "축사", Color3.fromRGB(110, 80, 30), 6)
-			end
-			if has.chicken and i == 1 then
-				for _ = 1, 2 do
-					animal("chicken", c + Vector3.new(rng:NextNumber(-12, -10), 0, rng:NextNumber(-4, 4)))
+			if i == 1 and (lay.farm or lay.fish or has.chicken) then
+				-- 오리 연못은 양/소 초지의 외곽에 놓고 울타리와 겹치지 않는다.
+				local pond = c + Vector3.new(-halfX - 25, 0, 0)
+				local water = part(folder, Vector3.new(29, 0.15, 18), CFrame.new(pond + Vector3.new(0, 0.14, 0)), C(67, 130, 147), Enum.Material.Glass)
+				water.Name = "DuckPond"
+				water.CanCollide, water.CanQuery = false, false
+				for k = 1, math.min(lvl + 1, 4) do
+					roam("duck", pond + Vector3.new(rng:NextNumber(-7, 7), 0.16, rng:NextNumber(-5, 5)), 2)
 				end
 			end
 		end
