@@ -244,9 +244,12 @@ return function(D, S)
 			or (region ~= "europe" and region ~= "new_world" and region ~= "indian" and year >= 1820)
 		local gazette = region == "far_east" and year >= 1500 and literacy
 		local newspaper = culturalPrint and literacy and (town.stage >= 4 or (region == "europe" and year >= 1665) or year >= 1750)
-		local press = newspaper or gazette
-		return { available = press, medium = if newspaper then "항구 신문" elseif gazette then "관보·회보" else "구전·상인 통신문",
-			year = math.floor(year), printing = literacy and (year >= 1500 or region == "far_east") }
+		local pamphlet = literacy and year >= 1500 and (region == "europe" or region == "far_east" or year >= 1700)
+		local press = newspaper or gazette or pamphlet
+		return { available = press, periodical = newspaper or gazette,
+			medium = if newspaper then "항구 신문" elseif gazette then "관보·회보"
+				elseif pamphlet then "전단·포고문·상업 통신문" else "구전·상인 통신문",
+			year = math.floor(year), printing = pamphlet }
 	end
 
 	local function newsExpertise(state, category)
@@ -341,6 +344,7 @@ return function(D, S)
 					local distant = scope == "foreign"
 					local reached = age >= delay
 					local allowed = not distant or importance or (paper and expertise >= 3 and network)
+					if paper and not press.periodical and distant then allowed = false end
 					if distant and source == "tavern" and not importance and not network then allowed = false end
 					if source == "companion" and distant and not importance and not network then allowed = false end
 					if reached and allowed then
@@ -349,6 +353,7 @@ return function(D, S)
 						local detail = if expertise >= 3 then "연결된 교역망과 시대·사건 기록 대조"
 							elseif expertise >= 1 then "직업·항해 경험으로 출처를 대조" else "전달자 확인 전"
 						if source == "companion" and companionName then detail = companionName .. "의 전문 분야 의견" end
+						if confidence == "미확인 소문" then detail ..= " · 사실 여부나 후속 전망은 확인되지 않음" end
 						table.insert(result.rows, { id = tostring(rec.id), title = rec.title or tostring(rec.id),
 							category = category, categoryName = name, daysOld = math.floor(age), source = result.medium,
 							confidence = confidence, detail = detail, region = scope, eventId = rec.sourceEvent or rec.id,
