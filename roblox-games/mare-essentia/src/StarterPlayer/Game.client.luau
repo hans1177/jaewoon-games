@@ -4371,7 +4371,7 @@ function RENDERERS.harbor()
 		add(function()
 			return mkRow(content, sim.stageName .. " · 도시 행정 보고",
 				string.format("인구 %d명 · 번영 %d%% · 안정 %d%% · 실업 %d%%\n식량 %d일분 · 주거 수용 %d%% · 노동 일자리 %d명",
-					sim.pop, sim.prosperity, sim.stability, math.floor(sim.work.unemployment * 100),
+					sim.pop, sim.prosperity, sim.stability, sim.work.unemployment,
 					city.foodDays, sim.housing.ratio, sim.work.jobs)
 				.. string.format("\n도시 국고 %d · 교역수지 %+d", city.treasury, city.tradeBalance), {}, 124)
 		end)
