@@ -161,6 +161,16 @@ function B.harborVisual(level, buildings)
 	}
 end
 
+-- [항만 필지] 모든 항구가 동일 좌표 체계를 사용한다. 중심/반폭은 장면 표시만 바꾸며 저장·토지 매입을 추가하지 않는다.
+-- 접안/조선은 기존 시설 원위치, 어항/원자재/경비 필지는 공용 해안도로 밖 독립된 구역이다.
+B.HarborPlotBounds = {
+	quay = { label = "접안·출항 구역", x = 49, z = 0, halfX = 36, halfZ = 16 },
+	shipyard = { label = "조선·수리 구역", x = 6, z = -79, halfX = 38, halfZ = 38 },
+	fishery = { label = "어업·건조 구역", x = -2, z = 128, halfX = 18, halfZ = 22 },
+	freight = { label = "원자재·창고 구역", x = -2, z = 209, halfX = 18, halfZ = 22 },
+	defense = { label = "해안 경비 구역", x = -2, z = 169, halfX = 18, halfZ = 20 },
+}
+
 -- 도로 표면은 PortScene의 기존 roadMat/roadColor가 유지하고 가로등·광장 장식만 단계별로 늘린다.
 B.StreetGrowth = {
 	{ lampStep = 0, plazaLamps = 0, fountain = false },

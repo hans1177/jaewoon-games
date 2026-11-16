@@ -1056,7 +1056,7 @@ end
 
 -- 항구 구역 계획: 항구가 만드는 물건(생산품)과 발전도로 구역의 크기·종류가 달라진다.
 -- 농원(가축 울타리) · 어항(건조대·쪽배) · 광산·벌목 하역장 · 해안 포대(군사)가 항구마다 다르게 선다.
-local function zoneLayout(portId, lvl)
+local function zoneLayout(portId, lvl, shipyardBuilt, buildings)
 	local port = PortData.Ports[portId]
 	local prod = {}
 	for _, g in (port and port.produces) or {} do
@@ -1074,9 +1074,33 @@ local function zoneLayout(portId, lvl)
 		farm = any({ "wool", "cheese", "wine", "olive_oil", "rice", "maize", "cotton", "beer", "leather", "dates", "sugar" }),
 		timber = any({ "timber", "mahogany", "kauri", "logwood", "brazilwood", "sandalwood" }),
 		mine = any({ "iron", "coal", "tin", "copper", "gold", "silver", "gems" }),
-		fort = (port and port.shipyard) or lvl >= 4,
+		fort = lvl >= 4 or (shipyardBuilt == true and lvl >= 3),
 		trader = port ~= nil and #port.produces >= 4,
-		side = zr:NextInteger(0, 1) * 2 - 1, -- 포대가 서는 쪽 (반대쪽은 어항·하역장)
+		side = zr:NextInteger(0, 1) * 2 - 1,
+	}
+	-- [항만 실제 필지] 어항·자재 적치·경비 구역을 조선소와 분리한다.
+	-- 기존 조선소는 남쪽 -48~-108, 세관·항만청은 중앙, 접안 잔교는 바다 x>=22.
+	-- 같은 항구·단계에 언제나 같은 위치. 선박 항로와 시장·주택 필지를 침범하지 않는다.
+	local shore = if shipyardBuilt then 1 else -lay.side
+	local bounds = PortBuildings.HarborPlotBounds
+	lay.fishZ = shore * bounds.fishery.z
+	lay.freightZ = shore * bounds.freight.z
+	lay.fortZ = if shipyardBuilt then -bounds.defense.z else lay.side * bounds.fishery.z
+	lay.shipyardBuilt = shipyardBuilt == true
+	lay.freight = lvl >= 2 and (lay.timber or lay.mine or buildings == nil or (buildings.warehouse or 0) > 0)
+	-- [구역 경계] 실제 접안/조선/어업/원자재/경비 필지의 부지 폭과 좌표를 기록한다.
+	-- 실제 도로/조선소와 접하는 구역만 활성화하며 다른 종류를 같은 부지에 세우지 않는다.
+	lay.plots = {
+		{ id = "quay", label = bounds.quay.label, x = bounds.quay.x, z = bounds.quay.z,
+			halfX = bounds.quay.halfX, halfZ = bounds.quay.halfZ, active = true },
+		{ id = "shipyard", label = bounds.shipyard.label, x = bounds.shipyard.x, z = bounds.shipyard.z,
+			halfX = bounds.shipyard.halfX, halfZ = bounds.shipyard.halfZ, active = lay.shipyardBuilt },
+		{ id = "fishery", label = bounds.fishery.label, x = bounds.fishery.x, z = lay.fishZ,
+			halfX = bounds.fishery.halfX, halfZ = bounds.fishery.halfZ, active = lay.fish },
+		{ id = "freight", label = bounds.freight.label, x = bounds.freight.x, z = lay.freightZ,
+			halfX = bounds.freight.halfX, halfZ = bounds.freight.halfZ, active = lay.freight },
+		{ id = "defense", label = bounds.defense.label, x = bounds.defense.x, z = lay.fortZ,
+			halfX = bounds.defense.halfX, halfZ = bounds.defense.halfZ, active = lay.fort },
 	}
 	-- 별도 축사 없이 발전 단계에 따라 열린 목장 구역이 늘어난다(기존 세계경제 저장값 불변).
 	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
@@ -1425,7 +1449,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
 			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
 		end
-		local lay = zoneLayout(info.portId, lvl)
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
 		local has = {}
 		for _, sp in list do
 			has[sp] = true
@@ -2710,8 +2734,46 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
-		local lay = zoneLayout(info.portId, lvl)
-		local sd = lay.side
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
+		-- [항만 필지 경계] 각 필지의 좌표·용도를 장면에 공개하고 승인된 실물 경계 기둥으로 구분한다.
+		-- 경계 자산은 비충돌 처리해 어항·조선소 보행/입출항 루트를 막지 않는다.
+		local plotCount = 0
+		local touch = game:GetService("UserInputService").TouchEnabled
+		for _, plot in lay.plots do
+			if plot.active then
+				plotCount += 1
+				folder:SetAttribute("HarborPlot_" .. plot.id, ("%d,%d,%d,%d"):format(plot.x, plot.z, plot.halfX, plot.halfZ))
+				local corners = if touch or plot.id == "shipyard" or plot.id == "quay" then 2 else 4
+				for i = 1, corners do
+					-- 조선소 경계는 물속이 아닌 육지 쪽 모서리만, 접안구역은 항로 부표만 쓴다.
+					local cx = if plot.id == "quay" then plot.x + plot.halfX
+						elseif plot.id == "shipyard" then plot.x - plot.halfX
+						else plot.x + (if i % 2 == 0 then plot.halfX else -plot.halfX)
+					local cz = plot.z + (if i <= 2 then -plot.halfZ else plot.halfZ)
+					if corners == 2 then cz = plot.z + (if i == 1 then -plot.halfZ else plot.halfZ) end
+					local marker = importedModel(folder,
+						if plot.id == "quay" then "Naval" else "Town",
+						if plot.id == "quay" then "buoy" else "fence_post",
+						Vector3.new(cx, if plot.id == "quay" then 0.8 else 0, cz),
+						if plot.id == "quay" then 2.8 else 3.1, false)
+					if marker then
+						marker.Name = "HarborPlot_" .. plot.id .. "_Boundary_" .. i
+						marker:SetAttribute("HarborPlot", plot.id)
+						marker:SetAttribute("PortId", info.portId)
+						marker:SetAttribute("PlotCenterX", plot.x)
+						marker:SetAttribute("PlotCenterZ", plot.z)
+						marker:SetAttribute("PlotHalfWidth", plot.halfX)
+						marker:SetAttribute("PlotHalfDepth", plot.halfZ)
+						if i == 1 then
+							local anchor = marker:FindFirstChildWhichIsA("BasePart", true)
+							if anchor then sign(folder, anchor, plot.label, C(237, 215, 157), 3, true) end
+						end
+					end
+				end
+			end
+		end
+		folder:SetAttribute("HarborPlotCount", plotCount)
+		folder:SetAttribute("HarborPlotOwnership", "VISUAL_ONLY")
 		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
 		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
 		if lay.farm then
@@ -2759,35 +2821,122 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		-- 항만구역: 어항은 건조대와 쪽배, 광산·벌목 항구는 하역장, 그 반대쪽 해안엔 포대(군사구역)
-		local hz = -sd
+		-- [항구 필지] 북쪽 어항·바깥 자재 적치장·반대편 해안 경비구역을 명확히 나눈다.
+		-- 기존 조선소(-48 남쪽)의 진입로와 겹치지 않도록 조선소 운영 시 필지 방향을 고정한다.
+		-- [지역별 어항] 기존 등록된 선박 중 지역 해안 환경에 맞는 범용 소형 선체만 선택한다.
+		-- 정확한 조선 통신선/정크선/다우선/곤돌라 원본이 없으므로 역사적 실선으로 오표시하지 않는다.
+		local nation = port and port.country or ""
+		local regionalHarbor = if nation == "korea" then "korean_tidal"
+			elseif key == "japan" or key == "china" then "eastasia"
+			elseif key == "hanse" or key == "brick" then "hanseatic"
+			elseif key == "nordic" then "cold_fishing"
+			elseif key == "italy" then "lagoon_stone"
+			elseif key == "ottoman" or key == "desert" then "mediterranean_bazaar"
+			elseif key == "swahili" or key == "malabar" then "indian_ocean"
+			elseif key == "seasia" or key == "pacific" then "tropical_inlet"
+			elseif key == "wafrica" or key == "creole" or key == "colonial" then "atlantic_tropical"
+			else "commercial_coast"
+		folder:SetAttribute("HarborRegionLayout", regionalHarbor)
 		if lay.fish then
 			for x = 12, -12, -8 do
-				one("Town", "fence_straight", 5, x, 0, hz * 62)
-				one("Cargo", "fish-large", 2, x, 3, hz * 62)
+				one("Town", "fence_straight", 5, x, 0, lay.fishZ)
+				one("Cargo", "fish-large", 2, x, 3, lay.fishZ)
 			end
-			for _, bz in { 56, 66 } do
-				one("Naval", "boat-row-small", 6, 16, 0.3, hz * bz)
+			local localBoat = if regionalHarbor == "indian_ocean" then "boat-sail-a"
+				elseif regionalHarbor == "tropical_inlet" then "boat-row-large"
+				elseif regionalHarbor == "cold_fishing" or regionalHarbor == "hanseatic" then "boat-fishing-small"
+				else "boat-row-small"
+			local boatSize = if localBoat == "boat-sail-a" then 11 elseif localBoat == "boat-fishing-small" then 9 else 7
+			for _, offset in { -9, 9 } do
+				local craft = one("Naval", localBoat, boatSize, 34, 0.3, lay.fishZ + offset)
+				if craft then craft.Name = "HarborFishery_" .. regionalHarbor end
+			end
+			if regionalHarbor == "tropical_inlet" and AssetIds["Terrain/canoe"] then
+				one("Terrain", "canoe", 7, 39, 0.3, lay.fishZ + 33)
+			elseif regionalHarbor == "korean_tidal" or regionalHarbor == "eastasia" then
+				one("Town", "fence_rails", 5, -17, 0, lay.fishZ + 14)
 			end
 		end
-		if lay.timber then
-			one("Terrain", "log-stack", 4, 8, 0, hz * 78)
-			one("Terrain", "log-stack", 4, 0, 0, hz * 78)
-			one("Cargo", "resource-planks", 3, 8, 0, hz * 84)
+		if lay.freight and lay.timber then
+			one("Terrain", "log-stack", 4, 8, 0, lay.freightZ - 8)
+			one("Terrain", "log-stack", 4, 0, 0, lay.freightZ - 8)
+			one("Cargo", "resource-planks", 3, 8, 0, lay.freightZ - 2)
 		end
-		if lay.mine then
-			one("Cargo", "iron-bars-stack-large", 3, 10, 0, hz * 70)
-			one("Town", "workbench-anvil", 3.4, 2, 0, hz * 70)
+		if lay.freight and lay.mine then
+			-- 광물 항구도 없는 철광석을 임의로 적치하지 않는다: 실제 지역 생산품을 골라 쓴다.
+			for _, mineral in { "iron", "coal", "tin", "copper", "gold", "silver", "gems" } do
+				if table.find((port and port.produces) or {}, mineral) and AssetIds["Cargo/" .. mineral] then
+					one("Cargo", mineral, 3.4, 10, 0, lay.freightZ + 9)
+					break
+				end
+			end
+			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
+		end
+		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
+		-- 주류·담배·약물 시각 자산은 새로 사용하지 않는다.
+		if lay.freight then
+			local shown = 0
+			for _, good in (port and port.produces) or {} do
+				if shown >= (if touch then 1 else 3) then break end
+				if good ~= "beer" and good ~= "wine" and good ~= "rum" and good ~= "sake"
+					and good ~= "tobacco" and good ~= "opium" and AssetIds["Cargo/" .. good] then
+					shown += 1
+					local cargo = one("Cargo", good, 3.5, -12 + (shown - 1) * 9, 0, lay.freightZ + 4)
+					if cargo then
+						cargo.Name = "HarborRegionalCargo_" .. good
+						cargo:SetAttribute("LocalProduct", good)
+						cargo:SetAttribute("HarborPlot", "freight")
+						cargo:SetAttribute("ShowcaseOnly", true) -- 항구 특산품 전시이며 실제 창고 재고 확정 아님
+					end
+				end
+			end
+			if regionalHarbor == "hanseatic" and lvl >= 3 then
+				one("Naval", "pulley-crate", 4, 10, 0, lay.freightZ - 8)
+			elseif regionalHarbor == "indian_ocean" or regionalHarbor == "tropical_inlet" then
+				one("Naval", "palm-detailed-straight", 9, -15, 0, lay.freightZ - 18)
+			elseif regionalHarbor == "lagoon_stone" and lvl >= 3 then
+				one("Naval", "anchor", 4, 11, 0, lay.freightZ - 9)
+			elseif regionalHarbor == "mediterranean_bazaar" then
+				one("Naval", "detail-crate-ropes", 3, 11, 0, lay.freightZ - 9)
+			end
+		end
+		-- [지역 필지 종사자] 실제 세계경제 직업 수가 양수일 때 기존 주민+작업 모션만 배치.
+		-- 신규 고용/저장값은 만들지 않고 모바일은 최대 1명, 그 밖은 최대 2명.
+		local simJobs = info.sim and info.sim.jobs
+		local residents = info.sim and info.sim.residents
+		local visibleWorkers = 0
+		local workerLimit = if touch then 1 else 2
+		for _, work in {
+			{ active = lay.fish, role = "fisher", job = "fisher", label = "어항", z = lay.fishZ, kind = "fish" },
+			{ active = lay.freight, role = "laborer", job = "docker", label = "원자재 하역장", z = lay.freightZ, kind = "carry" },
+		} do
+			if visibleWorkers >= workerLimit then break end
+			if work.active and simJobs and (simJobs[work.role] or 0) > 0
+				and type(residents) == "number" and residents >= 5 * (visibleWorkers + 1) then
+				local at = Vector3.new(-11, 0, work.z + (if work.z > 0 then -6 else 6))
+				local npc = villager(folder, at, 0, C(126, 118, 105), rng, "Rogue")
+				if npc then
+					visibleWorkers += 1
+					npc.Name = "HarborWorker_" .. work.job
+					npc:SetAttribute("Job", work.job)
+					npc:SetAttribute("Workplace", work.label)
+					npc:SetAttribute("HarborPlot", if work.job == "fisher" then "fishery" else "freight")
+					table.insert(walkers, { model = npc, base = npc:GetPivot(), mode = "stay", kind = work.kind,
+						phase = rng:NextNumber(0, 10), job = work.job,
+						workKinds = { work.kind, "inspect" }, leisureKinds = { "talk", "look" } })
+				end
+			end
 		end
 		if lay.fort then
-			one("Naval", "tower-watch", 12, 6, 0, sd * 72, true)
+			one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
 			if lvl >= 3 then
-				for _, dz in { 62, 66 } do
-					one("Naval", "cannon", 3.4, 14, 0, sd * dz)
+				for _, offset in { -9, 9 } do
+					one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
 				end
-				one("Castle", "flag-banner-long", 9, 2, 0, sd * 64)
+				one("Castle", "flag-banner-long", 9, 2, 0, lay.fortZ)
 			end
 			if lvl >= 5 then
-				one("Naval", "tower-watch", 12, 6, 0, sd * 92, true)
+				one("Naval", "tower-watch", 12, 6, 0, lay.fortZ + (if lay.fortZ > 0 then 22 else -22), true)
 			end
 		end
 	end

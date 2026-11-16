@@ -126,6 +126,37 @@ check("실제 성장한 국제항은 다중 선박·하역기 공개",
 check("항만 단계 입력이 범위를 벗어나면 안전하게 고정",
 	D.PortBuildings.harborVisual(-2, nil).tier == 1 and D.PortBuildings.harborVisual(99, nil).tier == 5)
 
+-- [항만 필지 회귀] 접안·조선·어항·창고·경비 5개 실제 부지는 두 축에서 겹치지 않아야 한다.
+local lots = D.PortBuildings.HarborPlotBounds
+check("필지 명칭 5개와 실제 반폭 정의",
+	lots.quay.label == "접안·출항 구역" and lots.shipyard.label == "조선·수리 구역"
+		and lots.fishery.halfX > 0 and lots.freight.halfZ > 0 and lots.defense.halfZ > 0)
+for _, case in {
+	{ name = "조선항", shipyard = true, shore = 1, defense = -1 },
+	{ name = "북쪽 어항", shipyard = false, shore = 1, defense = -1 },
+	{ name = "남쪽 어항", shipyard = false, shore = -1, defense = 1 },
+} do
+	local built = {
+		{ id = "quay", x = lots.quay.x, z = lots.quay.z, xh = lots.quay.halfX, zh = lots.quay.halfZ },
+		{ id = "fishery", x = lots.fishery.x, z = case.shore * lots.fishery.z, xh = lots.fishery.halfX, zh = lots.fishery.halfZ },
+		{ id = "freight", x = lots.freight.x, z = case.shore * lots.freight.z, xh = lots.freight.halfX, zh = lots.freight.halfZ },
+		{ id = "defense", x = lots.defense.x, z = case.defense * (if case.shipyard then lots.defense.z else lots.fishery.z),
+			xh = lots.defense.halfX, zh = lots.defense.halfZ },
+	}
+	if case.shipyard then
+		table.insert(built, { id = "shipyard", x = lots.shipyard.x, z = lots.shipyard.z,
+			xh = lots.shipyard.halfX, zh = lots.shipyard.halfZ })
+	end
+	for i = 1, #built - 1 do
+		for j = i + 1, #built do
+			local a, b = built[i], built[j]
+			local separated = math.abs(a.x - b.x) >= a.xh + b.xh + 2
+				or math.abs(a.z - b.z) >= a.zh + b.zh + 2
+			check(case.name .. " 필지 간격: " .. a.id .. "/" .. b.id, separated)
+		end
+	end
+end
+
 local function act(state, action, payload)
 	local ok, msg = handlers[action](state, payload or {}, ctx)
 	return ok, msg
