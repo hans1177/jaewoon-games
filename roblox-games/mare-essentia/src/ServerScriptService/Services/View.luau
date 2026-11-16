@@ -450,6 +450,7 @@ return function(D, S)
 				end
 				table.insert(view.sites, {
 					id = site.id,
+					portId = site.portId, -- 기존 지상맵의 지역 문화권·배경 선택에 필요
 					name = site.name,
 					minLevel = site.minLevel,
 					days = site.days,

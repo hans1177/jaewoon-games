@@ -5878,7 +5878,7 @@ function H.startField(s)
 end
 
 function RENDERERS.explore()
-	H.walletBar("tavern")
+	H.walletBar(if H.exploreScholarView then "tavern" else "battle")
 	if not H.exploreScholarView then -- 서재의 보고 탭에서는 탐험 지점을 보이지 않는다
 	add(function() return mkHeader(content, "탐험 지점") end)
 	if #view.sites == 0 then
@@ -7397,7 +7397,7 @@ function RENDERERS.war()
 end
 
 function RENDERERS.battle()
-	H.walletBar("tavern")
+	H.walletBar("battle")
 	local lo = view.loadout
 	if not equipped then
 		equipped = table.clone(lo.equipped)
