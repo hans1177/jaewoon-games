@@ -563,13 +563,31 @@ return function(D, S)
 		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
 		view.codex.plannedDisciplineCount = #D.KnowledgeTree.Planned
 		-- [개체 연결] 외부 식별자는 검증된 값만 표시. 내부 연결은 카드/상품/항구/탐험지의 원본 식별자를 참조한다.
-		local linkedSites = {}
-		for _, site in D.Sites.Sites do linkedSites[site.id] = site.name end
+		-- [자동 개체 그래프] 기존 정규 원천(탐험지 카드풀, 실물 상품→지식, 연구 선행 노드)에서 직접 연결한다.
+		-- 새 카드/유적/교역품을 기존 표에 추가하면 관계도 자동 늘어나며 중복 저장/외부 서버 요청이 없다.
+		local linkedSites, resourceLinks, explorationLinks = {}, {}, {}
+		for _, site in D.Sites.Sites do
+			linkedSites[site.id] = site.name
+			for _, cardId in site.pool do
+				explorationLinks[cardId] = explorationLinks[cardId] or {}
+				table.insert(explorationLinks[cardId], site.id)
+			end
+		end
+		for goodId, good in D.Ports.Goods do
+			if good.knowledgeId then
+				resourceLinks[good.knowledgeId] = resourceLinks[good.knowledgeId] or {}
+				table.insert(resourceLinks[good.knowledgeId], goodId)
+			end
+		end
 		local function relatedEntities(c, found)
-			local out = {}
-			if not found or not c.meta then return out end
-			for _, rel in c.meta.relations or {} do
-				local target, name, cardId = rel.target, nil, nil
+			local out, seen = {}, {}
+			if not found then return out end
+			local function add(kind, target)
+				if #out >= 8 then return end -- 모바일 카드 상세에서 무한 목록이 생기지 않도록 제한한다.
+				local key = kind .. ":" .. target
+				if seen[key] then return end
+				seen[key] = true
+				local name, cardId = nil, nil
 				if D.Cards.ById[target] then
 					cardId = target
 					name = if state.discovered[target] then D.Cards.ById[target].name else "미발견 지식"
@@ -583,10 +601,15 @@ return function(D, S)
 					name = linkedSites[string.sub(target, 6)]
 				end
 				if name then table.insert(out, {
-					name = name, relation = D.Cards.RelationNames[rel.type] or rel.type,
+					name = name, relation = D.Cards.RelationNames[kind] or kind,
 					cardId = cardId, found = cardId and state.discovered[cardId] == true or false,
 				}) end
 			end
+			for _, rel in (c.meta and c.meta.relations or {}) do add(rel.type, rel.target) end
+			local node = D.KnowledgeTree.ById[c.id]
+			for _, needId in (node and node.needs or {}) do add("requires", needId) end
+			for _, goodId in resourceLinks[c.id] or {} do add("tradedAs", "good:" .. goodId) end
+			for _, siteId in explorationLinks[c.id] or {} do add("foundAt", "site:" .. siteId) end
 			return out
 		end
 		local function relatedNames(c, kind, primaryId)
