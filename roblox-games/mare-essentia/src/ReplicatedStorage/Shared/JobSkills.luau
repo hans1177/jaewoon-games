@@ -1,8 +1,8 @@
 --!strict
--- 직업별 탐험 스킬 체계. 순수 데이터와 규칙(엔진 무관)이라 단위 시험이 된다.
+-- JobSkills.luau · 직업별 탐험 스킬 체계. 순수 데이터와 규칙(엔진 무관)이라 단위 시험이 된다.
 --  * 주인공: 한 번에 장착하는 스킬은 최대 3개 (MAX_PLAYER_SKILLS). 공격·회피·방어는 기본 행동이라 세지 않는다.
 --  * 동료: 직업 분류(카테고리)에 따라 쓸 수 있는 스킬이 정해지고, 동료 한 명당 최대 2개 (MAX_ALLY_SKILLS).
---  * 분류가 곧 역할이다: 무인=앞에서 때리고 사기, 포수=원거리, 성직·의술=회복·보호, 항해·탐험=순풍·탐색, 상인=행운·보호, 학자=탐색·저격.
+--  * 분류가 곧 역할이다: 무인=근접, 포수=원거리, 성직자=회복·보호, 의사=응급치료·분석, 항해=탐색, 상인=보급, 학자=분석.
 
 local JobSkills = {}
 
@@ -72,7 +72,8 @@ JobSkills.Skills = {
 JobSkills.Categories = {
 	warrior = { id = "warrior", name = "무인", skills = { "bash", "rally" } },
 	gunner = { id = "gunner", name = "포수", skills = { "volley", "snipe" } },
-	healer = { id = "healer", name = "성직·의술", skills = { "heal", "armor" } },
+	clergy = { id = "clergy", name = "성직자", skills = { "heal", "armor" } },
+	doctor = { id = "doctor", name = "의사", skills = { "heal", "read" } },
 	navigator = { id = "navigator", name = "항해·탐험", skills = { "rally", "read" } },
 	merchant = { id = "merchant", name = "상인·회계", skills = { "luck", "armor" } },
 	scholar = { id = "scholar", name = "학자", skills = { "read", "snipe" } },
@@ -80,7 +81,8 @@ JobSkills.Categories = {
 
 -- 직업 이름(한글·영문 role)에서 분류를 찾는 낱말. 위에서부터 먼저 맞는 분류가 이긴다.
 local KEYWORDS: { { string | { string } } } = {
-	{ "healer", { "성직", "수녀", "승려", "비구니", "순례", "pilgrim", "의사" } },
+	{ "doctor", { "의사", "군의관", "외과", "치료사", "doctor", "surgeon" } },
+	{ "clergy", { "성직", "신부", "수녀", "승려", "비구니", "순례", "수도", "pilgrim", "priest", "monk" } },
 	{ "gunner", { "포수", "포술", "포병" } },
 	{ "scholar", { "학자", "수석", "조수", "필사", "연구" } },
 	{ "navigator", { "항해", "조타", "도선", "선장", "선원", "explorer", "여행자", "관측" } },
