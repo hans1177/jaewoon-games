@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: FieldScene.luau
 -- 필드 탐험 장면 (클라이언트 전용). 탐험 지점에 도착하면 걸어 다니며 발견물을 조사하고,
 -- 길을 막는 적을 공격 버튼으로 물리친다. 이 장면은 연출과 위험 부담이고,
 -- 도감 카드 발견과 보상은 장면이 끝난 뒤 서버(Explore)가 판정한다.
@@ -41,9 +42,9 @@ local function addIcon(button: TextButton, key: string)
 	medallion.Name = "FieldIconMedallion"
 	medallion.AnchorPoint = Vector2.new(0.5, 0.5)
 	medallion.Position = UDim2.fromScale(0.5, 0.385)
-	medallion.Size = UDim2.fromScale(if painted then 0.78 else 0.69, if painted then 0.67 else 0.64)
+	medallion.Size = UDim2.fromScale(if painted then 0.83 else 0.82, if painted then 0.74 else 0.76)
 	medallion.BackgroundColor3 = if painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
-	medallion.BackgroundTransparency = if painted then 0 else 0.16
+	medallion.BackgroundTransparency = if painted then 0 else 0.33
 	medallion.BorderSizePixel = 0
 	medallion.ZIndex = button.ZIndex + 2
 	medallion.Parent = button
@@ -62,9 +63,10 @@ local function addIcon(button: TextButton, key: string)
 	img.Image = "rbxassetid://" .. tostring(id)
 	img.AnchorPoint = Vector2.new(0.5, 0.5)
 	img.Position = UDim2.fromScale(0.5, 0.385)
-	img.Size = UDim2.fromScale(if painted then 0.76 else 0.61, if painted then 0.65 else 0.57)
-	img.ScaleType = if painted then Enum.ScaleType.Crop else Enum.ScaleType.Fit
+	img.Size = UDim2.fromScale(if painted then 0.83 else 0.79, if painted then 0.72 else 0.72)
+	img.ScaleType = Enum.ScaleType.Fit -- 승인 원화 가장자리 잘림 없이 전부 표시
 	img.ImageTransparency = 0
+	img.ImageColor3 = if painted then Color3.new(1, 1, 1) else Color3.fromRGB(255, 246, 222)
 	img.ZIndex = button.ZIndex + 3
 	img.Parent = button
 	if painted then
@@ -919,6 +921,8 @@ function FieldScene.start(opts)
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
+	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
+	local reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
 	if attackIcon then
 		local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 			elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
@@ -2343,14 +2347,15 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- 무기 교체 버튼: 누를 때마다 다음 무기로(맨손→검→단검→도끼→창→철퇴→석궁→총). 동료는 직업별 고정 무기라 바뀌지 않는다.
+	-- [두 무기 빠른 교체] 현재 사용 중인 무기와 보조 무기만 번갈아 선택한다. 기존 다른 무기 정의·동료 장비는 유지.
 	do
-		local wbtn = btn(gui, wpn.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(88, 42), UDim2.new(1, -70, 1, -210), Vector2.new(0.5, 0.5))
+		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -210), Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
-		wbtn.TextSize = 14
+		wbtn.TextSize = 13
+		wbtn:SetAttribute("WeaponChoiceCount", 2)
 		bindPress(wbtn, function()
-			wpn = Weapons.cycle(wpn.id, 1)
-			wbtn.Text = wpn.name
+			wpn, reserveWeapon = reserveWeapon, wpn
+			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
 			if attackIcon then
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
@@ -2396,7 +2401,7 @@ function FieldScene.start(opts)
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
 	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(126, 22))
 	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(126, 66))
-	addIcon(skillBtns.dodge.btn, "Menu/chart_explore")
+	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
@@ -2703,11 +2708,12 @@ function FieldScene.start(opts)
 			elseif event == "strike" then
 				e.swingAt = now
 				if e.ac.def.charge then
-					-- 돌진: 예고가 끝나면 주인공 앞까지 순식간에 달려든다(피하려면 예고 중에 옆으로 비켜야 한다)
+					-- [돌진 모션] 공격 판정 시각·범위는 유지하되 시각 모델은 목표로 1프레임 순간이동하지 않는다.
+					-- 매 프레임 일정 거리만 전진해 PC·모바일 프레임 지연에도 돌진이 눈에 보인다.
 					local to = Vector3.new(hrp.Position.X - e.root.Position.X, 0, hrp.Position.Z - e.root.Position.Z)
 					if to.Magnitude > 4 then
-						local step = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
-						e.model:PivotTo(e.model:GetPivot() + to.Unit * step)
+						local reach = math.min(to.Magnitude - 3, e.ac.def.range * STUD)
+						e.chargeTarget = e.model:GetPivot().Position + to.Unit * reach
 						burst(e.root.Position + Vector3.new(0, 2, 0), 18, false)
 					end
 				end
@@ -2771,7 +2777,22 @@ function FieldScene.start(opts)
 			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			local beforeMove = e.root.Position
-			if e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
+			if frozen or e.ac.state == "stagger" then e.chargeTarget = nil end
+			if e.chargeTarget then
+				-- [적 이동] 돌진 중에는 일반 추적과 겹쳐 앞뒤로 튀지 않도록 기존 이동 분기에서만 갱신한다.
+				local pv = e.model:GetPivot()
+				local remaining = Vector3.new(e.chargeTarget.X - pv.Position.X, 0, e.chargeTarget.Z - pv.Position.Z)
+				if remaining.Magnitude <= 0.08 then
+					e.chargeTarget = nil
+				else
+					local step = math.min(remaining.Magnitude, 48 * dtc)
+					local dir = remaining.Unit
+					local front = CFrame.lookAt(Vector3.zero, dir)
+					e.model:PivotTo(CFrame.new(pv.Position + dir * step) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
+					if step >= remaining.Magnitude then e.chargeTarget = nil end
+					wish = 1
+				end
+			elseif e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
 				-- 차례를 기다리는 적: 주인공 둘레를 천천히 돈다(한꺼번에 몰려 때리지 않는다)
 				local sd = flat.Unit:Cross(Vector3.yAxis) * (e.circleDir or 1)
 				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
@@ -2780,7 +2801,7 @@ function FieldScene.start(opts)
 				e.model:PivotTo(CFrame.new(pv.Position + sd * e.ac.def.speed * 0.45 * dtc) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
 				wish = 0.5
 			elseif wish ~= 0 and flat.Magnitude > 0.1 then
-				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
+				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dtc, flat.Magnitude)
 				local pv = e.model:GetPivot()
 				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
 				e.model:PivotTo(CFrame.new(pv.Position + step) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
@@ -2829,7 +2850,7 @@ function FieldScene.start(opts)
 				end
 				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
-					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dt, flat.Magnitude - 2.5)
+					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dtc, flat.Magnitude - 2.5)
 					e.model:PivotTo(e.model:GetPivot() + lunge)
 				end
 				-- 숨쉬기·체중 이동(대기), 달릴 때 위아래 출렁임과 앞으로 숙임으로 가만히 있어도 살아 보이게 한다
@@ -2940,7 +2961,7 @@ function FieldScene.start(opts)
 						outfit.hair = if persona == 2 then "bun" else "short"
 						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
 					end
-					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.6, outfit)
+					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.8, outfit)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
@@ -2972,21 +2993,34 @@ function FieldScene.start(opts)
 				end
 			end
 			for _, a in allies do
-				-- 목표: 가장 가까운 적. 없으면 주인공 옆 자리
-				local tgt, td = nil, 40 * STUD
-				for _, e in enemies do
-					local d0 = (e.root.Position - a.root.Position).Magnitude
-					if d0 < td then
-						tgt, td = e, d0
+				-- [동료 안정 추적] 한 프레임마다 목표를 바꾸면 몹 사이를 지그재그로 뛰므로 기존 대상을 유지한다.
+				-- 주인공과 멀어지면 대형 복귀를 먼저 하고, 더 가까운 적이 확실할 때만 목표를 바꾼다.
+				local tgt, td = a.focus, 40 * STUD
+				if tgt then
+					local d = (tgt.root.Position - a.root.Position).Magnitude
+					if tgt.ac.dead or not tgt.root.Parent or d > 40 * STUD or (root0.Position - a.root.Position).Magnitude > 30 then
+						tgt = nil
+					else
+						td = d
 					end
 				end
-				local goal = if tgt then tgt.root.Position else root0.Position + Vector3.new(a.slot * 5 - 8, 0, -4)
+				if (root0.Position - a.root.Position).Magnitude <= 30 then
+					for _, e in enemies do
+						local d0 = (e.root.Position - a.root.Position).Magnitude
+						if d0 < td * (if tgt then 0.65 else 1) then
+							tgt, td = e, d0
+						end
+					end
+				end
+				a.focus = tgt
+				-- [동료 대형] 주인공을 따라 방향을 바꿔도 좌우 후방에 서도록 로컬 좌표를 사용한다.
+				local goal = if tgt then tgt.root.Position else (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
 				local aw = a.weapon
 				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
 				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
 				local moving = to.Magnitude > stop
 				if moving then
-					local step = math.min(to.Magnitude - stop, (if tgt then 16 else 20) * dt)
+					local step = math.min(to.Magnitude - stop, (if tgt then 16 else 20) * math.clamp(dt, 0, 0.1))
 					a.model:PivotTo(a.model:GetPivot() + to.Unit * step)
 					a.gait = (a.gait or 0) + step / 5.2
 				end

@@ -3071,11 +3071,16 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "stay" then
 				if w.model.Parent then
-					-- 손님(카메라)이 가까이 오면 하던 일을 잠깐 멈추고 몸을 돌려 손을 흔든다 (사람마다 시간이 달라 한꺼번에 하지 않는다)
+					-- [주민 시선] 실제 플레이어가 다가오면 얼굴을 돌린다. 스튜디오 사진 구도에서는 카메라를 향한다.
+					-- 기존 대화·직업 행동은 유지하고, 화면 카메라가 멀리 있는 3인칭 시점에서도 주민이 등을 돌리지 않는다.
 					local kind, target = w.kind, 0
 					local cam = workspace.CurrentCamera
+					local character = Players.LocalPlayer and Players.LocalPlayer.Character
+					local guestRoot = character and character:FindFirstChild("HumanoidRootPart")
+					local focus = if workspace:GetAttribute("ShotCF") and cam then cam.CFrame.Position
+						elseif guestRoot then guestRoot.Position elseif cam then cam.CFrame.Position else nil
 					local p0 = w.base.Position
-					local flat = if cam then Vector3.new(cam.CFrame.Position.X - p0.X, 0, cam.CFrame.Position.Z - p0.Z) else Vector3.zero
+					local flat = if focus then Vector3.new(focus.X - p0.X, 0, focus.Z - p0.Z) else Vector3.zero
 					-- 마을 주민끼리 실제로 가까이 서 있는 쌍만 대화와 물건 주고받기 모션을 맞춘다.
 					-- 짝 탐색은 모델마다 최초 한 번만 한다(모바일에서 매 프레임 전체 탐색 금지).
 					if w.kind == "talk" and w.socialPartner == nil then
@@ -3102,12 +3107,18 @@ function PortScene.build(info, onFacility)
 							elseif social < 16 then (if give then "listen" else "talk")
 							else "inspect"
 					end
-					-- 가까운 손님에게 먼저 인사한 뒤 대화 상대를 다시 바라본다.
-					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
+					-- [주민 정면] 대화·장터 주민은 가까운 플레이어를 향해 자연스럽게 돌아선다.
+					-- 이동·일손(농사·대장간·요리)의 본래 진행 방향은 보존하고, 대화 상대가 있으면 더 가까운 손님에게만 인사한다.
+					local nearGuest = flat.Magnitude > 1 and flat.Magnitude < 26
+					local canFaceGuest = w.kind == "talk" or w.kind == "stall" or w.kind == "look" or w.kind == nil
+					if nearGuest and canFaceGuest and (not partner or flat.Magnitude < 12) then
+						target, direction = 1, flat
+						if (now + w.phase * 1.7) % 13 < 2.6 then kind = "wave" end
+					elseif nearGuest and (now + w.phase * 1.7) % 13 < 2.6 then
 						kind, target, direction = "wave", 0.85, flat
 					end
 					-- [주민 시선·몸통 회전] 화면 초당 프레임과 무관한 감속 회전.
-						w.ga = (w.ga or 0) + (target - (w.ga or 0)) * (1 - math.exp(-6 * dt))
+					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * (1 - math.exp(-6 * dt))
 					if w.ga > 0.01 and direction.Magnitude > 0.01 then
 						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + direction.Unit), w.ga))
 					elseif w.ga ~= 0 and target == 0 then

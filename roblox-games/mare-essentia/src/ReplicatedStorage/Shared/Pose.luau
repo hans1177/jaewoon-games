@@ -73,17 +73,14 @@ local r15ActionBlends = setmetatable({}, { __mode = "k" })
 
 -- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
 -- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
-local function drawFace(head, root, role, skin, rng)
+local function drawFace(head, role, skin, rng)
 	local decal = head:FindFirstChildWhichIsA("Decal")
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "MareFace"
-	-- [얼굴 정면] R15 머리 로컬 축이 몸통과 달라도 정면 표면에 얼굴을 놓는다.
-	local forward = head.CFrame:VectorToObjectSpace(root.CFrame.LookVector)
-	if math.abs(forward.X) > math.abs(forward.Z) then
-		gui.Face = if forward.X > 0 then Enum.NormalId.Right else Enum.NormalId.Left
-	else
-		gui.Face = if forward.Z > 0 then Enum.NormalId.Back else Enum.NormalId.Front
-	end
+	-- [얼굴 정면] R15 머리의 기존 얼굴 데칼 면을 그대로 쓴다.
+	-- 몸통/루트 축으로 표면을 다시 고르면 머리와 몸의 상대 회전 때문에 얼굴이 뒤통수에 붙을 수 있다.
+	-- 원래 얼굴 데칼이 없는 표준 R15 머리의 정면은 -Z(Front)이다.
+	gui.Face = if decal then decal.Face else Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
 	gui.CanvasSize = Vector2.new(200, 200)
 	gui.LightInfluence = 0.6
@@ -413,7 +410,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	end
 	local headPart = model:FindFirstChild("Head")
 	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
-		pcall(drawFace, headPart, root, role, skin, rng)
+		pcall(drawFace, headPart, role, skin, rng)
 	end
 	humanoid.AutoRotate = false
 	humanoid.WalkSpeed = 0
