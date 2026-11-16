@@ -6,6 +6,7 @@
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
@@ -697,7 +698,7 @@ function FieldScene.start(opts)
 
 	local title = label(gui, "", 16)
 	title.AnchorPoint = Vector2.new(0.5, 0)
-	title.Position = UDim2.new(0.5, 0, 0, 58)
+	title.Position = UDim2.new(0.5, 0, 0, 18)
 	title.Size = UDim2.fromOffset(320, 24)
 
 	local hpBack = Instance.new("Frame")
@@ -727,9 +728,79 @@ function FieldScene.start(opts)
 		c.Parent = hpFill
 	end
 
+	-- [탐험 파티 HUD] 기존 선장실 초상 시트 좌표를 그대로 표시하고 체력·기력·마력을 한 카드에 모은다.
+	local heroPanel = Instance.new("Frame")
+	heroPanel.Name = "FieldHeroStatus"
+	heroPanel.Size = UDim2.fromOffset(202, 82)
+	heroPanel.Position = UDim2.fromOffset(12, 74)
+	heroPanel.BackgroundColor3 = Color3.fromRGB(23, 32, 47)
+	heroPanel.BackgroundTransparency = 0.12
+	heroPanel.BorderSizePixel = 0
+	heroPanel.Parent = gui
+	local heroCorner = Instance.new("UICorner")
+	heroCorner.CornerRadius = UDim.new(0, 10)
+	heroCorner.Parent = heroPanel
+	local heroStroke = Instance.new("UIStroke")
+	heroStroke.Color = Color3.fromRGB(210, 170, 99)
+	heroStroke.Thickness = 1.3
+	heroStroke.Parent = heroPanel
+	local heroFace = Instance.new("ImageLabel")
+	heroFace.Name = "FieldHeroPortrait"
+	heroFace.Size = UDim2.fromOffset(44, 56)
+	heroFace.Position = UDim2.fromOffset(7, 10)
+	heroFace.BackgroundColor3 = Color3.fromRGB(56, 66, 75)
+	heroFace.BorderSizePixel = 0
+	heroFace.ScaleType = Enum.ScaleType.Crop
+	if type(opts.heroPortrait) == "table" and opts.heroPortrait.id then
+		heroFace.Image = "rbxassetid://" .. tostring(opts.heroPortrait.id)
+		heroFace.ImageRectOffset = opts.heroPortrait.offset or Vector2.zero
+		heroFace.ImageRectSize = opts.heroPortrait.size or Vector2.zero
+	end
+	heroFace.Parent = heroPanel
+	local faceCorner = Instance.new("UICorner")
+	faceCorner.CornerRadius = UDim.new(0, 7)
+	faceCorner.Parent = heroFace
+	local heroName = label(heroPanel, tostring(opts.heroName or player.DisplayName), 14)
+	heroName.Name = "FieldHeroName"
+	heroName.Size = UDim2.fromOffset(136, 20)
+	heroName.Position = UDim2.fromOffset(58, 5)
+	heroName.TextXAlignment = Enum.TextXAlignment.Left
+	heroName.TextTruncate = Enum.TextTruncate.AtEnd
+	hpBack.Parent = heroPanel
+	hpBack.AnchorPoint = Vector2.zero
+	hpBack.Position = UDim2.fromOffset(58, 29)
+	hpBack.Size = UDim2.fromOffset(133, 11)
+	local healthNumber = label(heroPanel, "", 11, Color3.fromRGB(233, 255, 234))
+	healthNumber.Name = "FieldHeroHealthText"
+	healthNumber.Position = UDim2.fromOffset(58, 29)
+	healthNumber.Size = UDim2.fromOffset(133, 11)
+	healthNumber.ZIndex = 6
+	local magicUser = opts.heroUsesMana == true
+	local magicValue, magicFill, magicAmount = 100, nil, nil
+	if magicUser then
+		local magicBack = Instance.new("Frame")
+		magicBack.Name = "FieldHeroMana"
+		magicBack.Size = UDim2.fromOffset(133, 7)
+		magicBack.Position = UDim2.fromOffset(58, 66)
+		magicBack.BackgroundColor3 = Color3.fromRGB(34, 40, 65)
+		magicBack.BorderSizePixel = 0
+		magicBack.Parent = heroPanel
+		magicFill = Instance.new("Frame")
+		magicFill.Name = "FieldHeroManaFill"
+		magicFill.Size = UDim2.fromScale(1, 1)
+		magicFill.BackgroundColor3 = Color3.fromRGB(111, 154, 244)
+		magicFill.BorderSizePixel = 0
+		magicFill.Parent = magicBack
+		magicAmount = label(heroPanel, "마력 100", 10, Color3.fromRGB(194, 222, 255))
+		magicAmount.Size = UDim2.fromOffset(127, 12)
+		magicAmount.Position = UDim2.fromOffset(58, 68)
+		magicAmount.TextXAlignment = Enum.TextXAlignment.Right
+		magicAmount.ZIndex = 6
+	end
+
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.AnchorPoint = Vector2.new(0.5, 0)
-	note.Position = UDim2.new(0.5, 0, 0, 104)
+	note.Position = UDim2.new(0.5, 0, 0, 46)
 	note.Size = UDim2.fromOffset(320, 22)
 
 	local function refresh()
@@ -737,6 +808,7 @@ function FieldScene.start(opts)
 		title.Text = string.format("%s  발견 %d/%d  적 %d", opts.name or "탐험", found, nodeCount, #enemies)
 		hpFill.Size = UDim2.fromScale(math.clamp(pl.hp / pl.maxHp, 0, 1), 1)
 		hpFill.BackgroundColor3 = if pl.hp / pl.maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
+		healthNumber.Text = string.format("체력 %d / %d", math.ceil(pl.hp), pl.maxHp)
 	end
 	local function sfx(name: string, vol: number?, speed: number?)
 		pcall(function()
@@ -795,11 +867,81 @@ function FieldScene.start(opts)
 
 	-- [전투 중 강제 귀환 방지] 발견물을 전부 조사해도 자동으로 항구로 나가지 않는다.
 	-- 실제 탐험 완료 버튼을 선택했을 때만 기존 Explore 보상 서버 액션이 실행된다.
-	local completeBtn = btn(gui, "탐험 완료", Color3.fromRGB(132, 112, 58), UDim2.fromOffset(112, 52),
-		UDim2.fromOffset(12, 112), Vector2.new(0, 0))
+	-- [탐험 완료 연출] 발견물 조사 후에만 나타나는 확인 팝업. 클릭 전에는 기존 Explore 보상을 처리하지 않는다.
+	local completePopup = Instance.new("Frame")
+	completePopup.Name = "FieldCompletionPopup"
+	completePopup.AnchorPoint = Vector2.new(0.5, 0.5)
+	completePopup.Position = UDim2.fromScale(0.5, 0.43)
+	completePopup.Size = UDim2.fromOffset(286, 198)
+	completePopup.BackgroundColor3 = Color3.fromRGB(27, 39, 55)
+	completePopup.BackgroundTransparency = 0.05
+	completePopup.BorderSizePixel = 0
+	completePopup.ZIndex = 22
+	completePopup.Visible = false
+	completePopup.Parent = gui
+	local popupCorner = Instance.new("UICorner")
+	popupCorner.CornerRadius = UDim.new(0, 15)
+	popupCorner.Parent = completePopup
+	local popupStroke = Instance.new("UIStroke")
+	popupStroke.Color = Color3.fromRGB(239, 202, 115)
+	popupStroke.Thickness = 2.2
+	popupStroke.Parent = completePopup
+	local popupTitle = label(completePopup, "탐험 조사 완료!", 24, Color3.fromRGB(255, 231, 157))
+	popupTitle.Name = "FieldCompletionTitle"
+	popupTitle.Size = UDim2.new(1, -24, 0, 34)
+	popupTitle.Position = UDim2.fromOffset(12, 18)
+	popupTitle.ZIndex = 24
+	local popupSummary = label(completePopup, "현장 기록 수집 완료 · 보상은 귀환 후 확정", 13, Color3.fromRGB(222, 235, 246))
+	popupSummary.Size = UDim2.new(1, -20, 0, 43)
+	popupSummary.Position = UDim2.fromOffset(10, 60)
+	popupSummary.TextWrapped = true
+	popupSummary.ZIndex = 24
+	local completeBtn = btn(completePopup, "항구로 귀환", Color3.fromRGB(146, 115, 52), UDim2.fromOffset(172, 45),
+		UDim2.new(0.5, 0, 1, -10), Vector2.new(0.5, 1))
 	completeBtn.Name = "FieldComplete"
+	completeBtn.ZIndex = 25
 	completeBtn.Visible = false
-	completeBtn.TextSize = 16
+	completeBtn.TextSize = 17
+	local completeReopen = btn(gui, "조사 완료", Color3.fromRGB(137, 111, 59), UDim2.fromOffset(98, 38),
+		UDim2.new(1, -12, 0, 98), Vector2.new(1, 0))
+	completeReopen.Name = "FieldCompleteReopen"
+	completeReopen.Visible = false
+	completeReopen.TextSize = 14
+	completeReopen.Activated:Connect(function()
+		if not finished and found >= nodeCount then completePopup.Visible = true end
+	end)
+	local continueBtn = btn(completePopup, "더 둘러보기", Color3.fromRGB(63, 94, 110), UDim2.fromOffset(116, 32),
+		UDim2.new(0.5, 0, 0, 112), Vector2.new(0.5, 0))
+	continueBtn.Name = "FieldContinue"
+	continueBtn.ZIndex = 25
+	continueBtn.TextSize = 13
+	continueBtn.Activated:Connect(function() completePopup.Visible = false end)
+	local function showCompletion()
+		if completePopup.Visible then return end
+		completeBtn.Visible, completeReopen.Visible = true, true
+		completePopup.Visible = true
+		local scale = Instance.new("UIScale")
+		scale.Scale = 0.78
+		scale.Parent = completePopup
+		TweenService:Create(scale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		TweenService:Create(popupStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Thickness = 3.1 }):Play()
+		task.delay(0.65, function() if popupStroke.Parent then TweenService:Create(popupStroke, TweenInfo.new(0.4), { Thickness = 2.2 }):Play() end end)
+		sfx("sfx_coin", 0.7, 1.1)
+		for i = 1, 10 do
+			local glint = Instance.new("Frame")
+			glint.Name = "FieldCompletionSpark"
+			glint.Size = UDim2.fromOffset(5, 5)
+			glint.Position = UDim2.fromScale(0.1 + (i % 5) * 0.2, if i <= 5 then 0.11 else 0.92)
+			glint.BackgroundColor3 = Color3.fromRGB(255, 224, 142)
+			glint.BorderSizePixel = 0
+			glint.ZIndex = 26
+			glint.Parent = completePopup
+			TweenService:Create(glint, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				BackgroundTransparency = 1, Position = glint.Position + UDim2.fromOffset((i - 5) * 3, -12),
+			}):Play()
+			task.delay(0.65, function() if glint.Parent then glint:Destroy() end end)
+		end
+	end
 	completeBtn.Activated:Connect(function()
 		if not finished and found >= nodeCount then finish("clear") end
 	end)
@@ -956,8 +1098,8 @@ function FieldScene.start(opts)
 			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
-				completeBtn.Visible = true
-				say("조사 완료! 전투를 마치고 '탐험 완료'를 눌러 귀환해.")
+				showCompletion()
+				say("조사 완료! 항구로 귀환하거나 현장을 더 둘러볼 수 있어.")
 			end
 		end)
 	end
@@ -1180,7 +1322,7 @@ function FieldScene.start(opts)
 	attackBtn.TextSize = 19
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
-	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 50), UDim2.new(0, 12, 0, 50), Vector2.new(0, 0))
+	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 42), UDim2.new(0, 12, 0, 12), Vector2.new(0, 0))
 	retreat.Name = "FieldRetreat"
 	retreat.TextSize = 14
 	addIcon(retreat, "Menu/chart_departure")
@@ -2632,14 +2774,23 @@ function FieldScene.start(opts)
 	staminaFill.BackgroundColor3 = Color3.fromRGB(240, 200, 80)
 	staminaFill.BorderSizePixel = 0
 	staminaFill.Parent = staminaBack
+	staminaBack.Parent = heroPanel
+	staminaBack.AnchorPoint = Vector2.zero
+	staminaBack.Size = UDim2.fromOffset(133, 8)
+	staminaBack.Position = UDim2.fromOffset(58, 48)
+	local staminaNumber = label(heroPanel, "", 11, Color3.fromRGB(255, 237, 178))
+	staminaNumber.Name = "FieldHeroStaminaText"
+	staminaNumber.Position = UDim2.fromOffset(58, 47)
+	staminaNumber.Size = UDim2.fromOffset(133, 11)
+	staminaNumber.ZIndex = 6
 	local skillBtns = {}
 	-- [모바일 전투 HUD] 화면 높이와 엄지 도달 범위에 맞춰 큰 반원형으로 배치한다.
 	-- 오른쪽 화면 밖 잘림을 막고 공격 버튼/철수 버튼/조이스틱과 겹치지 않게 둔다.
 	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
 	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
-	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.48, screenHeight - 130), 132, 150)
-	local innerSkillRadius = 84
+	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.56, screenHeight * 0.45), 162, 200)
+	local innerSkillRadius = math.clamp(outerSkillRadius * 0.56, 94, 114)
 	local compactTouch = visualMobile and screenWidth < 360
 	local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68
 	local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64
@@ -2653,14 +2804,30 @@ function FieldScene.start(opts)
 		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.Name = "FieldSkill_" .. key
 		b.TextSize = 15
+		b.Text = ""
+		b.Font = Enum.Font.GothamBlack
+		local caption = Instance.new("TextLabel")
+		caption.Name = "FieldSkillCaption"
+		caption.BackgroundTransparency = 1
+		caption.Position = UDim2.new(0, 4, 1, -26)
+		caption.Size = UDim2.new(1, -8, 0, 22)
+		caption.Font = Enum.Font.GothamBlack
+		caption.TextSize = 14
+		caption.TextColor3 = Color3.fromRGB(255, 251, 232)
+		caption.TextStrokeColor3 = Color3.fromRGB(12, 17, 23)
+		caption.TextStrokeTransparency = 0.15
+		caption.TextTruncate = Enum.TextTruncate.AtEnd
+		caption.Text = label
+		caption.ZIndex = b.ZIndex + 3
+		caption.Parent = b
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 40), basicSize)
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 120), basicSize)
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 42), basicSize)
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 114), basicSize)
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
@@ -2759,11 +2926,11 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(outerSkillRadius, 20 + ((slotOf[id] or 1) - 1) * 40)
+			return arcPos(outerSkillRadius, 20 + ((slotOf[id] or 1) - 1) * 42.5)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 40), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 42.5), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
@@ -2803,10 +2970,26 @@ function FieldScene.start(opts)
 			if i > 3 or not slotOf[key] then
 				continue
 			end
-			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
+			local shortName = if card.skill == "heal" then "회복" elseif card.skill == "volley" then "일제" elseif card.skill == "ward" or card.skill == "armor" then "보호"
+				elseif card.skill == "snipe" then "저격" elseif card.skill == "read" then "간파" elseif card.skill == "rally" then "격려" else "기술"
+			local b = btn(gui, "", Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
 			b.Name = "FieldSkill_" .. key
 			b.TextSize = 14
-			b.TextWrapped = true
+			b:SetAttribute("SkillFullName", card.name)
+			local caption = Instance.new("TextLabel")
+			caption.Name = "FieldSkillCaption"
+			caption.BackgroundTransparency = 1
+			caption.Position = UDim2.new(0, 4, 1, -26)
+			caption.Size = UDim2.new(1, -8, 0, 22)
+			caption.Font = Enum.Font.GothamBlack
+			caption.TextSize = 14
+			caption.Text = shortName
+			caption.TextColor3 = Color3.fromRGB(255, 249, 220)
+			caption.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
+			caption.TextStrokeTransparency = 0.14
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = b.ZIndex + 3
+			caption.Parent = b
 			-- [도감 원화 연동] 실제 카드 ID의 등록 원화가 있으면 그림 전체를 고급 스킬 메달로 재사용한다.
 			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
 			addIcon(b, paintedKey or (if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
@@ -2814,7 +2997,7 @@ function FieldScene.start(opts)
 			bindPress(b, function()
 				useCard(key, card)
 			end)
-			skillBtns[key] = { btn = b, label = card.name }
+			skillBtns[key] = { btn = b, label = shortName }
 			table.insert(conns, UserInputService.InputBegan:Connect(function(input, processed)
 				if not processed and not finished and input.KeyCode == (if i == 1 then Enum.KeyCode.One elseif i == 2 then Enum.KeyCode.Two else Enum.KeyCode.Three) then
 					useCard(key, card)
@@ -2833,6 +3016,12 @@ function FieldScene.start(opts)
 		local now = os.clock()
 		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
+		staminaNumber.Text = string.format("기력 %d", math.floor(pl.stamina + 0.5))
+		if magicFill then
+			magicValue = math.min(100, magicValue + math.min(dt, 0.1) * 5)
+			magicFill.Size = UDim2.fromScale(magicValue / 100, 1)
+			magicAmount.Text = string.format("마력 %d", math.floor(magicValue + 0.5))
+		end
 		for key, sb in skillBtns do
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
@@ -2844,8 +3033,8 @@ function FieldScene.start(opts)
 				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
 				if left > 0 then timer.Text = if left >= 10 then tostring(math.ceil(left)) else string.format("%.1f", left) end
 			end
-			sb.btn.Text = sb.label
 			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
+			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
 		end
 	end))
 	-- 화면 아무 곳이나 톡 치면(버튼 제외) 공격: 폰은 탭, PC는 마우스 왼쪽 클릭
