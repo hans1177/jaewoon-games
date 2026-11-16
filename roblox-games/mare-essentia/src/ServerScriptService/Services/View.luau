@@ -533,7 +533,7 @@ return function(D, S)
 			if row.here or received[row.id] then table.insert(shownActive, row) end
 		end
 		for _, row in ipairs(view.world.log) do
-			if row.regionId == localRegion or received[row.id] then table.insert(shownLog, row) end
+			if row.regionId == localRegion or row.region == D.Regions.of(port).name or received[row.id] then table.insert(shownLog, row) end
 		end
 		view.world.active, view.world.log = shownActive, shownLog
 		view.diplo = S.Diplomacy.viewOf(state)
