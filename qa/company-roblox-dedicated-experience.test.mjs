@@ -896,18 +896,20 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/pl\.buffUntil = now \+ 8/);
   assert.match(field,/local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68/);
   assert.match(field,/local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64/);
-  assert.match(field,/arcPos\(innerSkillRadius, 40\), basicSize/);
-  assert.match(field,/arcPos\(innerSkillRadius, 120\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 42\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 114\), basicSize/);
   // [조작 영역] 세 스킬과 기본 회피·방어는 동일한 실제 공격 버튼을 중심으로 반원형 배치.
   assert.match(field,/Vector2\.new\(attackBtn\.Position\.X\.Offset, attackBtn\.Position\.Y\.Offset\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 40\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 40\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 42\.5\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 42\.5\)/);
   const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
   for(const [width,height] of [[390,640],[832,384],[320,360]]){
-    const outer=Math.max(132,Math.min(150,width*.48,height-130));
+    // [현행 모바일 스킬 간격] 실제 화면·공격 버튼 중심/반경/각도를 그대로 시뮬레이션한다.
+    const outer=Math.max(162,Math.min(200,width*.56,height*.45));
+    const inner=Math.max(94,Math.min(114,outer*.56));
     const skill=width<360?64:76,basic=width<360?60:68;
-    const coords=[[arc(outer,20),skill],[arc(outer,60),skill],[arc(outer,100),skill],
-                  [arc(84,40),basic],[arc(84,120),basic]];
+    const coords=[[arc(outer,20),skill],[arc(outer,62.5),skill],[arc(outer,105),skill],
+                   [arc(inner,42),basic],[arc(inner,114),basic]];
     for(const [pos,size] of coords){
       assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
       assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
@@ -922,7 +924,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
   assert.match(field,/local observedCardId = nil/);
   assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
-  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId\)/);
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice\)/);
   assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
   assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
   assert.match(field,/if special and rareTrace then/);
