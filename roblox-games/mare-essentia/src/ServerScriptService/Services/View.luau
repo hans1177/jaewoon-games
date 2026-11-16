@@ -711,6 +711,9 @@ return function(D, S)
 				path = S.Discovery.pathOf(c),
 				fromYear = c.fromYear,
 				studyLocked = if not found and (c.research or c.fromYear) then S.Discovery.cardBlockReason(state, c) else nil,
+				-- 서버 판정: 선행 보고를 끝낸 카드만 해당 항구에서 문헌 연구 버튼을 연다.
+				studyReady = not found and c.visitPort == state.portId and c.research ~= nil and c.research.reported ~= nil
+					and S.Discovery.cardBlockReason(state, c) == nil or false,
 				fame = c.reward.fame,
 				coins = c.reward.coins,
 				image = if found and art then art.image else nil,

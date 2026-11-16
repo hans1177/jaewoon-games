@@ -196,6 +196,29 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- [무형·학술 백과] 학자 보고 후 문헌 해독·비교 연구를 실제 선택으로 진행한다.
+	-- 기존 grantCard·저장 상태·보상 체계를 재사용하고, 항구/시대/선행 지식을 서버에서 다시 확인한다.
+	function handlers.StudyKnowledgeCard(state, p)
+		local cardId = type(p) == "table" and type(p.cardId) == "string" and p.cardId
+		local selected = cardId and D.Cards.ById[cardId]
+		if not selected or not selected.visitPort or not selected.research or not selected.research.reported then
+			return false, "연구할 수 없는 지식이에요"
+		end
+		if selected.visitPort ~= state.portId then
+			return false, "이 항구에서는 해당 문헌을 연구할 수 없어요"
+		end
+		if state.discovered[selected.id] then
+			return false, "이미 연구해 도감에 등록했어요"
+		end
+		local blocked = cardBlockReason(state, selected)
+		if blocked then return false, blocked end
+		local msgs = { selected.name .. " 연구를 완료했다." }
+		if not grantCard(state, selected.id, msgs) then
+			return false, "이미 등록된 지식이에요"
+		end
+		return true, table.concat(msgs, "\n")
+	end
+
 	function handlers.Visit(state, p)
 		local scholar
 		for _, s in D.Scholars.Scholars do
