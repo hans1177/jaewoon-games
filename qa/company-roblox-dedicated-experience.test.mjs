@@ -1516,16 +1516,30 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
     assert.ok(after.model.meshes.some(m=>m.name===ship+' joined curved outer hull planks'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' timber gunwale and ribs'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' handworked open cargo deck and timber boxes'));
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' individual teak strakes and outer wooden wales'));
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' coir cargo lashings and gunwale knots'));
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' aft steer oar and horizontal tiller'));
+    assert.ok(after.model.nodes.some(n=>n.name===ship+' original CC0 clinker hull enlarged'
+      && Array.isArray(n.matrix) && n.matrix.length===16),
+      ship+' original GLB Y-up coordinates not normalized');
     assert.ok(after.model.nodes.some(n=>n.name===ship+' oriented +X bow +Y up'));
     if(ship==='jahazi'){
-      assert.ok(after.model.meshes.some(m=>m.name==='jahazi mizzen trade sail cloth'));
-      assert.ok(after.model.meshes.some(m=>m.name==='jahazi foremast billowed Indian Ocean lateen cloth'));
+      assert.ok(after.model.meshes.some(m=>m.name==='jahazi Swahili jahazi makuti palm leaf roof'));
+      assert.ok(after.model.meshes.some(m=>m.name==='jahazi jahazi woven cargo curtain ties'));
+      assert.ok(after.model.meshes.some(m=>m.name==='jahazi large Swahili jahazi billowed lateen sail cloth'));
+      assert.ok(!after.model.meshes.some(m=>/jahazi mizzen trade sail/.test(m.name)),
+        'jahazi cargo dhow must have historically appropriate single main sail');
     }else if(ship==='kotia'){
-      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar pepper dhow giant lateen cloth'));
-      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar small forward staysail cloth'));
+      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar kotia high main lateen cloth'));
+      assert.ok(after.model.meshes.some(m=>m.name==='kotia kotia arched stern and carved parrot head stem'));
+      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar kotia aft trade lateen cloth'));
+      assert.equal(after.model.meshes.filter(m=>/kotia rectangular pepper hold hatch/.test(m.name)).length,2);
     }else{
       assert.ok(after.model.meshes.some(m=>m.name==='mtepe stitched Swahili sewn plank seams'));
       assert.ok(after.model.meshes.some(m=>m.name==='mtepe woven rectangular Swahili mtepe mat sail'));
+      assert.ok(after.model.meshes.some(m=>m.name==='mtepe mtepe flat broad square wooden stern transom'));
+      assert.ok(after.model.meshes.some(m=>m.name==='mtepe mtepe carved paired prow eyes'));
+      assert.ok(after.model.meshes.some(m=>m.name==='mtepe mtepe three handwoven red pennants'));
     }
     const added=after.model.meshes.slice(before.model.meshes.length)
       .flatMap(m=>m.primitives).reduce((sum,p)=>sum+after.model.accessors[p.indices].count/3,0);
