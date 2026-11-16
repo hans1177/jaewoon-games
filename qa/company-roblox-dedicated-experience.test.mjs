@@ -835,7 +835,10 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   }
   assert.ok(field.includes('addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")'));
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
-  assert.ok(field.includes('img.Size = UDim2.fromScale(if painted then 0.83 else 0.79'));
+  // [현행 아이콘 전용 버튼] 그림이 배지 중앙에 맞고 크기·비율을 유지하는지 검증한다.
+  assert.ok(field.includes('img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79)'));
+  assert.ok(field.includes('if iconOnly then 0.82 else 0.72)'));
+  assert.ok(field.includes('img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)'));
 });
 
 // [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
@@ -883,7 +886,11 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.doesNotMatch(field,/task\.delay\(0\.8,\s*function\(\)\s*finish\("clear"\)/);
   assert.match(field,/completeBtn\.Name = "FieldComplete"/);
   assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
-  assert.match(field,/completeBtn\.Visible = true/);
+  // [현행 귀환 팝업] 조사 전 숨김·조사 후 표시·명시적 클릭만 귀환을 허용한다.
+  assert.match(field,/completeBtn\.Visible = false/);
+  assert.match(field,/completeBtn\.Visible, completeReopen\.Visible = true, true/);
+  assert.match(field,/completePopup\.Visible = true/);
+  assert.match(field,/completeBtn\.Activated:Connect\(function\(\)\s*if not finished and found >= nodeCount then finish\("clear"\) end/);
   assert.match(field,/FieldExitReason/);
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
