@@ -1015,6 +1015,29 @@ test('Mare existing Quaternius outfit originals remain source-verifiable without
   assert.doesNotMatch(sources,/NATIVE_R15_ANIMATION_QA_VERIFIED=PASS/);
 });
 
+test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flow', () => {
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/Battle.luau','utf8');
+  const seaMarker=client.indexOf('-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다');
+  const seaStart=client.indexOf('NavalBattle.play({',seaMarker);
+  const seaEnd=client.indexOf('\n\t\t\tonDone = function(',seaStart);
+  assert.ok(seaMarker>=0 && seaStart>seaMarker && seaEnd>seaStart,'sea battle call is present');
+  const seaOptions=client.slice(seaStart,seaEnd);
+  assert.doesNotMatch(seaOptions,/\bcard\s*=|onCards\s*=|cardEffects\s*=|\bdeck\s*=/,'no duel UI or card chips in real naval battle');
+  assert.match(seaOptions,/sim = if lb\.pending then lb\.sim else nil/,'real-time naval simulation remains');
+  assert.match(seaOptions,/onResult = function/,'server naval result validation remains');
+  assert.match(naval,/if not opts\.cardOnly then opts\.card = nil end/,'naval scene rejects legacy duel metadata');
+  const tavernStart=client.indexOf('local function playCardOnly(');
+  const tavernEnd=client.indexOf('local function startPractice()',tavernStart);
+  assert.ok(tavernStart>=0 && tavernEnd>tavernStart,'separate card duel entry is present');
+  const tavern=client.slice(tavernStart,tavernEnd);
+  assert.match(tavern,/cardOnly = true/);
+  assert.match(tavern,/card = cardCfg or/);
+  assert.match(tavern,/onCards = function/);
+  assert.match(server,/-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다/);
+});
+
 test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
