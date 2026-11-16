@@ -340,6 +340,10 @@ do
 		end
 	end
 end
+-- [함종 고유 원본] 프리깃 등록 메시를 프리깃에만 연결한다. 다른 visual 별칭은 기존 공용 배를 유지한다.
+if AssetIds["Naval/frigate"] then
+	SHIP_MESH.frigate = "frigate"
+end
 -- [실제 갈레온 원형] CC BY 4.0 작가 완성 모델의 선체·삭구·돛·장식만 갈레온에 연결한다.
 -- 캐랙·마닐라 갈레온 등 visual 별칭 배는 종전 모델을 유지해 서로 다른 역사 함종을 오표기하지 않는다.
 if AssetIds["Naval/galleon-heritage"] then
@@ -826,16 +830,20 @@ local function buildShip(parent, shipId, at)
 	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
 	-- 선박 ID별 완제품 Mesh가 있으면 그것을 우선한다. 없으면 원본 선체와 실제 Mesh 소품을 조합한다.
 	local dedicated = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
-	local shipMesh = dedicated or importedModel(parent, "Naval", SHIP_MESH[shipId] or "ship-small", bottom, 26 * s, false, look.metal and look.hull or nil)
+	local meshAsset = SHIP_MESH[shipId] or "ship-small"
+	local shipMesh = dedicated or importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false, look.metal and look.hull or nil)
 	-- 신규 상세 갈레온이 아직 스트리밍되지 않았다면 운영 중인 기존 범선 모델을 보존한다.
 	if not shipMesh and shipId == "galleon" and SHIP_MESH.galleon == "galleon-heritage" then
-		shipMesh = importedModel(parent, "Naval", "ship-large", bottom, 26 * s, false)
+		meshAsset = "ship-large"
+		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
 	end
 	if shipMesh then
 		shipMesh.Name = "Ship"
 		if not dedicated then
 			-- 대포, 선루, 굴뚝, 장갑판 모두 실제 수입한 3D Mesh 모델을 조합한다.
-			if shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate" then
+			-- 완성 원형 메시에는 함포·선루 중복 모델을 추가하지 않는다.
+			if (shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate")
+				and meshAsset ~= "frigate" and meshAsset ~= "galleon-heritage" then
 				for side = -1, 1, 2 do
 					for i = -1, 1 do
 						importedModel(shipMesh, "Naval", "cannon", at + Vector3.new(i * 7 * s, 2 * s, side * 4.6 * s), 3.3 * s, false)
