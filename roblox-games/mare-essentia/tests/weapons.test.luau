@@ -31,7 +31,7 @@ check("직업별 무기 데이터 유효", allOk)
 check("성직자·의사는 다른 장비", W.allyWeapon("clergy").id ~= W.allyWeapon("doctor").id)
 check("주인공 자유 무기 선택 유지", W.playerChoices() == W.List and ids.bow)
 check("지역형 무기 20종 이상", #W.Regional >= 20)
-local allIds = {}
+local allIds: { [string]: boolean } = {}
 local variantOk = true
 for _, w in W.List do allIds[w.id] = true end
 for _, w in W.Regional do
