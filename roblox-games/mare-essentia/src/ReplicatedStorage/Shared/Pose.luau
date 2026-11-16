@@ -476,6 +476,9 @@ function Pose.work(model, kind, t)
 		set(m.leftElbow, A(-0.5, 0, 0)); set(m.rightElbow, A(-0.5, 0, 0))
 		return
 	elseif kind == "look" then
+		-- 손을 흔들다 둘러보기로 돌아왔을 때 팔이 허공에 남지 않도록 중립으로 복귀.
+		set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08))
+		set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 		set(m.neck, A(0, math.sin(t * 0.9) * 0.9, 0))
 		return
 	elseif kind == "stoop" then
