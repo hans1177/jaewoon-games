@@ -100,6 +100,20 @@ return function(D, S)
 			local disc = D.KnowledgeTree and D.KnowledgeTree.DisciplineById[industry.research]
 			industry.researchName = disc and disc.name or industry.research
 		end
+		-- [항구 행정관] 실제 세계 도시 수치와 자동 건설된 건물 현황을 재사용한다.
+		local foodDays = math.floor((t.stock.grain or 0) / math.max(t.dem.grain or 0.01, 0.01))
+		local issues = {}
+		if foodDays < 10 then table.insert(issues, "식량 비축 부족") end
+		if t.housingRatio < 0.88 then table.insert(issues, "주택 공급 부족") end
+		if t.unemp > 0.15 then table.insert(issues, "실업 증가") end
+		if t.stability < 0.45 then table.insert(issues, "사회 불안과 치안 문제") end
+		if t.society and t.society.military > 0.2 then table.insert(issues, "전쟁 여파로 군사 긴장") end
+		if #issues == 0 then table.insert(issues, "도시 운영 안정") end
+		local cityBuildings = {}
+		for _, b in ipairs(E.BUILDINGS) do
+			table.insert(cityBuildings, { id = b.id, name = b.name, count = math.floor(t.bld[b.id] + 0.5),
+				coverage = if b.serves then math.floor((t.cov[b.id] or 0) * 100 + 0.5) else nil })
+		end
 		local bld, svc = {}, {}
 		for _, b in ipairs(E.BUILDINGS) do
 			bld[b.id] = math.floor(t.bld[b.id] + 0.5)
@@ -117,6 +131,9 @@ return function(D, S)
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
+			city = { foodDays = foodDays, treasury = math.floor(t.treasury), tradeBalance = math.floor(t.tradeOut - t.tradeIn),
+				births = math.floor(t.births), deaths = math.floor(t.deaths), newcomers = math.floor(t.migIn), departures = math.floor(t.migOut),
+				issues = issues, buildings = cityBuildings },
 			-- [경제·사회·역사 인물] 한 항구의 수치와 실제 발생 사건을 기존 view에 전달한다.
 			society = table.clone(t.society), historyEffects = historyEffects,
 		}
