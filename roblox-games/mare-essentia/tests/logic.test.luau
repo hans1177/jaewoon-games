@@ -4116,6 +4116,15 @@ do
 			count += 1
 			check("고유 선체 설계 " .. bp.id, not unique[bp.id] and bp.hull ~= "" and bp.rig ~= "" and bp.deck ~= "" and bp.remodel ~= "")
 			unique[bp.id] = true
+			check("선박별 실제 항행 범위 " .. bp.id, type(bp.sailingZone) == "string" and #bp.sailingZone >= 3)
+			if bp.faction == "new_world" then
+				check("신대륙 4~5단계는 원양선 " .. bp.id, bp.stage < 4 or (bp.existingId ~= nil and string.find(bp.sailingZone, "원양") ~= nil or string.find(bp.sailingZone, "횡단") ~= nil))
+				if bp.stage >= 4 then check("카누·카약을 대형 원양선으로 오인하지 않음 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약")) end
+				if bp.stage == 3 then check("신대륙 돛뗏목 항행 고증", bp.id == "inca_balsa_raft" and bp.card == "nw_05") end
+			end
+			if bp.stage == 5 and (bp.faction == "africa" or bp.faction == "middle_east" or bp.faction == "southeast_asia") then
+				check("지역 최상위 선박은 실제 원양선 " .. bp.id, string.find(bp.sailingZone, "원양") ~= nil)
+			end
 			sums[bp.faction] = (sums[bp.faction] or 0) + 1
 			check("카드 선박 연결 " .. bp.id, not bp.card or D.BoardingCards.Units[bp.card] ~= nil or D.BoardingCards.Specials[bp.card] ~= nil)
 			check("실존 원본 게임 배 연결 " .. bp.id, not bp.existingId or D.Ships.Ships[bp.existingId] ~= nil)

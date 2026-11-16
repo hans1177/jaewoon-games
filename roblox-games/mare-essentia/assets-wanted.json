@@ -2,6 +2,32 @@
  "game": "mare-essentia",
  "wanted": [
   {
+   "id": "mare-seven-faction-ships",
+   "kind": "Ships",
+   "purpose": "7개 카드 진영 각 5종, 합계 35종의 시대별 실제 선체·돛·갑판 3D 실물 모델. 항행 범위는 역사적 선형과 일치해야 한다.",
+   "status": "exact-historical-3d-models-missing-or-unverified",
+   "plannedShipCount": 35,
+   "planSource": "src/ReplicatedStorage/Shared/Ships.luau#Blueprints",
+   "priorityShipIds": [
+    "inca_balsa_raft",
+    "atlantic_brigantine",
+    "manila_galleon",
+    "oman_boom",
+    "javanese_jong",
+    "zanzibar_jahazi"
+   ],
+   "retainedCardVessels": [
+    "titicaca_reed",
+    "inuit_kayak",
+    "cedar_canoe",
+    "kadirga",
+    "madagascar_outrigger"
+   ],
+   "replacementGate": "정확한 함종의 완성 실물 메시 + 개별 CC0/사용권 + 원본 URL·SHA256 + Roblox Universe 권한 + 런타임 시각검증",
+   "forbidden": "카누·카약을 원양 대형 범선으로 재분류하거나 무관한 모델/절차형 기본 도형을 대체 사용하지 않음",
+   "inboxPath": "assets/inbox/Ships/"
+  },
+  {
    "id": "hero-portraits-real",
    "kind": "Portraits",
    "purpose": "시작 주인공 9명 실존 인물 초상화",
