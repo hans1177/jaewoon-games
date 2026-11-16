@@ -4470,25 +4470,50 @@ function PortScene.build(info, onFacility)
 			importedModel(folder, "Naval", "grass-plant", Vector3.new(20, 0, z - 4), 2, false)
 		end
 	end
-	-- 부두: 짐과 대포
+	-- [중앙 선착장] 같은 화물·도르래·초소를 모든 단계에 얹지 않고 실제 항만 발전에 맞춰 표시한다.
 	do
-		for i, x in { 30, 36, 44, 52 } do
+		local cargoQuota = math.min(dockGrowth.cargo, if game:GetService("UserInputService").TouchEnabled then 6 else 10)
+		for i, x in ipairs({ 30, 36, 44, 52 }) do
+			if i > cargoQuota then break end
 			importedModel(folder, "Naval", "chest", Vector3.new(x, 2, if i % 2 == 0 then 3.4 else -3.4), 2.4, false)
 		end
-		importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
-		importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
-		-- 하역 도르래·화물·소형 선박은 실물 모델만 표시하고 기존 보행·교역 판정은 유지한다.
-		importedModel(folder, "Naval", "pulley-crate", Vector3.new(66, 2, 3.5), 4.2, false)
-		importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
-		importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
-		importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
-		-- 신규 CC0 원본 화물통: 미등록이면 없는 상태로 유지하며 임시 도형으로 대체하지 않는다.
-		importedModel(folder, "Cargo", "barrel", Vector3.new(82, 2, 3.3), 3.1, false)
-		importedModel(folder, "Cargo", "barrel", Vector3.new(87, 2, -3.3), 2.8, false)
-		importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
-		importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
-		importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
-		importedModel(folder, "Naval", "boat-fishing-small", Vector3.new(116, 0.8, -48), 10, false)
+		-- 3단계부터 상업 하역 설비가 늘어나며 4단계부터만 항만 경비포를 놓는다.
+		if dockGrowth.tier >= 4 and dockGrowth.sidePier then
+			importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
+			end
+		end
+		if dockGrowth.hoists >= 1 then
+			importedModel(folder, "Naval", "pulley-crate", Vector3.new(66, 2, 3.5), 4.2, false)
+		end
+		if dockGrowth.hoists >= 2 then
+			importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
+		end
+		if cargoQuota >= 4 then
+			importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
+		end
+		if cargoQuota >= 6 then
+			importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
+		end
+		if cargoQuota >= 8 then
+			importedModel(folder, "Cargo", "barrel", Vector3.new(82, 2, 3.3), 3.1, false)
+		end
+		if cargoQuota >= 10 then
+			importedModel(folder, "Cargo", "barrel", Vector3.new(87, 2, -3.3), 2.8, false)
+		end
+		if dockGrowth.tier >= 2 then
+			importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
+		end
+		if dockGrowth.tier >= 3 then
+			importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
+		end
+		if dockGrowth.boats >= 6 then
+			importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
+		end
+		if dockGrowth.boats >= 8 then
+			importedModel(folder, "Naval", "boat-fishing-small", Vector3.new(116, 0.8, -48), 10, false)
+		end
 	end
 	-- 광장: 시장 가판대, 우물, 수레, 벤치
 	do
@@ -4522,12 +4547,17 @@ function PortScene.build(info, onFacility)
 		end
 		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
 		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
-		-- 조선소가 있는 큰 항구는 항구 어귀에 감시탑을 세운다
-		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard then
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, -46), 12, true)
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, 46), 12, true)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 5, false)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 5, false)
+		-- 4~5단계 조선항 전용 경비탑: 둘째 잔교와 겹치지 않는 육지 쪽 위치에 배치.
+		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard
+			and dockGrowth.sidePier and dockGrowth.tier >= 4 then
+			importedModel(folder, "Naval", "tower-complete-small", Vector3.new(10, 0, -75), 12, true)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Naval", "tower-complete-large", Vector3.new(10, 0, 75), 15, true)
+			end
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, -61), 5, false)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, 61), 5, false)
+			end
 		end
 		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
 		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
