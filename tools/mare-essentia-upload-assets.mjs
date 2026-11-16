@@ -273,6 +273,24 @@ for (const item of plan) {
       console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
+  // [Studio 실제 로딩 복구] 기존 등록 Image라도 Client IsLoaded 실패가 검증됐으면
+  // 승인된 동일 원본·권한·등록 ID를 확인한 뒤 기존 Open Cloud 등록 경로에서 한 번만 재발급한다.
+  // 발급 또는 Universe 권한 부여 실패 시 previousTypeAssets 원자적 복구에서 옛 ID를 보존한다.
+  const studioImageRepair = registry.assets[id];
+  if (studioImageRepair?.studioLoadRepairRunId) {
+    if (!/^[1-9][0-9]{7,14}$/.test(String(studioImageRepair.studioLoadRepairRunId))
+      || studioImageRepair.assetType !== 'Image' || item.assetType !== 'Image'
+      || studioImageRepair.usePermissionGranted !== true
+      || studioImageRepair.source !== item.file
+      || !/^[1-9][0-9]*$/.test(String(studioImageRepair.assetId))
+      || approvedImages[id] !== sourceSha256) {
+      failures.push(id + ': STUDIO_IMAGE_REUPLOAD_SOURCE_OR_APPROVAL_UNVERIFIED');
+      continue;
+    }
+    previousTypeAssets.set(id, {...studioImageRepair});
+    delete registry.assets[id];
+    console.log('STUDIO_APPROVED_IMAGE_REUPLOAD', id, studioImageRepair.studioLoadRepairRunId);
+  }
   // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
   if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
@@ -405,7 +423,7 @@ for (const item of plan) {
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
     registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt || item.sourceLicense ? {sourceSha256} : {})};
+      ...((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'CardArt' && item.assetType === 'Image' || item.sourceLicense ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);
