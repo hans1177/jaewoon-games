@@ -135,11 +135,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		local t = os.clock() - h.t0 + persona * 3.4
 		local breathe = math.sin(t * (if style == "heavy" then 1.1 else 1.65))
 		local shift = math.sin(t * 0.43 + persona)
+		local stance = if style == "heavy" then 1.12 elseif style == "nimble" then 0.88 else 1
 		bend("Chest", breathe * 0.018, shift * 0.045, shift * 0.022)
-		bend("ThighL", -shift * 0.035, 0, -0.025 * shift)
-		bend("ThighR", shift * 0.035, 0, -0.025 * shift)
-		bend("UpperArmL", -0.04 * breathe, 0, 0)
-		bend("UpperArmR", 0.04 * breathe, 0, 0)
+		-- [지상 모션] 가만히 선 몬스터도 어깨·양다리 관절이 실제로 움직이도록
+		-- 기존 호흡·체중 이동에 낮은 전투 대기 자세를 더한다. 이동·공격·피해 판정은 불변.
+		bend("ThighL", (-0.075 - shift * 0.028) * stance, 0, -0.032 * shift)
+		bend("ThighR", (0.075 + shift * 0.028) * stance, 0, 0.032 * shift)
+		bend("UpperArmL", (-0.13 - 0.025 * breathe) * stance, 0, -0.035)
+		bend("UpperArmR", (-0.13 + 0.025 * breathe) * stance, 0, 0.035)
 	elseif state == "RUN" then
 		local stride = if style == "heavy" then 0.76 elseif style == "nimble" then 1.12 elseif style == "scholar" then 0.84 else 1
 		local plant = math.sin(phase * math.pi * 2)
