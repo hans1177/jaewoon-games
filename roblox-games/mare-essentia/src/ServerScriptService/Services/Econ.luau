@@ -84,6 +84,18 @@ return function(D, S)
 			specialty.researchName = disc and disc.name or specialty.research
 		end
 		local industries = E.industryView(t, w)
+		local historyEffects = E.activeHistory(w, portId)
+		-- [인물 백과] 기존 등장 인물 명칭을 연표 사건과 연결한다.
+		if S.People and S.People.all then
+			for _, event in ipairs(historyEffects) do
+				event.peopleNames = {}
+				for _, personId in ipairs(event.people) do
+					for _, person in ipairs(S.People.all) do
+						if person.id == personId then table.insert(event.peopleNames, person.name); break end
+					end
+				end
+			end
+		end
 		for _, industry in ipairs(industries) do
 			local disc = D.KnowledgeTree and D.KnowledgeTree.DisciplineById[industry.research]
 			industry.researchName = disc and disc.name or industry.research
@@ -106,7 +118,7 @@ return function(D, S)
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
 			-- [경제·사회·역사 인물] 한 항구의 수치와 실제 발생 사건을 기존 view에 전달한다.
-			society = table.clone(t.society), historyEffects = E.activeHistory(w, portId),
+			society = table.clone(t.society), historyEffects = historyEffects,
 		}
 	end
 
@@ -172,7 +184,7 @@ return function(D, S)
 		local w = ensure(state)
 		if not w then return nil end
 		local a = E.aggregate(w, kind, id)
-		return { pop = math.floor(a.pop), gdp = math.floor(a.gdp), gdpPerCap = math.floor(a.gdpPerCap * 10) / 10, priceIdx = math.floor(a.priceIdx * 100), trade = math.floor(a.tradeOut), tech = math.floor(a.techAvg * 100), stability = math.floor(a.stability * 100), towns = a.towns }
+		return { pop = math.floor(a.pop), gdp = math.floor(a.gdp), gdpPerCap = math.floor(a.gdpPerCap * 10) / 10, priceIdx = math.floor(a.priceIdx * 100), trade = math.floor(a.tradeOut), tech = math.floor(a.techAvg * 100), stability = math.floor(a.stability * 100), towns = a.towns, society = a.society }
 	end
 
 	-- 게임의 세계 이벤트가 일어나면 경제 충격으로 넣는다.
