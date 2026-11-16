@@ -3075,6 +3075,42 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
+			-- [랜드마크 지구] 기술·연도·발전도 해금 조건은 유지한 채, 건립된 시설 주위에
+			-- 고유 문화권의 보도/안뜰/수목·장식·부속 상점을 단계별로 배치한다.
+			-- 각 지구는 원래 예약된 58x58 필지에만 세워져 주거/도로 충돌을 줄인다.
+			if lvl >= 3 then
+				local sandstone = key == "ottoman" or key == "desert" or key == "wafrica" or key == "swahili"
+				local timber = key == "malabar" or key == "seasia" or key == "pacific" or key == "tropic"
+				local surface = if sandstone then Enum.Material.Sandstone elseif timber then Enum.Material.WoodPlanks else Enum.Material.Cobblestone
+				local tile = part(folder, Vector3.new(52, 0.16, 50), CFrame.new(x, 0.08, z),
+					if sandstone then C(198, 173, 133) elseif timber then C(148, 128, 97) else C(161, 156, 145), surface)
+				tile.Name = "LandmarkPrecinct_" .. lm.id
+				tile.CanCollide, tile.CanQuery = false, false
+				tile:SetAttribute("Culture", key)
+				tile:SetAttribute("Tier", lvl)
+				local economics = (info.sim and info.sim.buildings) or {}
+				local grown = (economics.market or 0) >= 2 or (economics.hall or 0) >= 1 or (economics.school or 0) >= 1
+				if lvl >= 4 then
+					local garden = if sandstone then { "Terrain", "plant-bush" }
+						elseif timber then { "Naval", "palm-detailed-straight" } else { "Town", "tree_tiny" }
+					for _, dx in { -22, 22 } do
+						put(garden[1], garden[2], 6.5, x + dx, z - front * 19, false)
+					end
+					if lm.id ~= "zoo" and lm.id ~= "botanic" then
+						put("Town", "bench_A", 4, x + 18, z + front * 19, false)
+					end
+				end
+				if lvl >= 5 and grown then
+					if lm.id == "academy" or lm.id == "museum" or lm.id == "observatory" then
+						put(if key == "china" or key == "japan" then "Town" else "Terrain",
+							if key == "china" or key == "japan" then "eastasia-column-base" else "statue-column", 8, x - 20, z + front * 20, false)
+					elseif lm.id == "exchange" or lm.id == "ironworks" then
+						put("Cargo", "barrel", 2.4, x + 21, z + front * 19, false)
+					else
+						put("Castle", "flag-banner-short", 8, x + 20, z + front * 18, false)
+					end
+				end
+			end
 			-- 보유·실물경제에 따라 랜드마크의 업종과 활기를 시각적으로 변화시킨다.
 			local stock = (info.sim and info.sim.buildings) or {}
 			if lm.id == "ironworks" and (stock.workshop or 0) >= 5 then
