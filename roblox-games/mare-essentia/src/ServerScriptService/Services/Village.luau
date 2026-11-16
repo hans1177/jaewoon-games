@@ -409,10 +409,25 @@ return function(D, S)
 			end
 		end
 		table.sort(discs, function(a, b) return a.tier > b.tier end)
+		-- [실물경제 동기화] 학문 기반 의식주 추정인구와 세계경제의 실제 인구는 다른 지표다.
+		-- 실제 주민·건설 장면과 비교할 수 있도록 현재 항구에는 동일한 세계경제 스냅샷을 첨부한다.
+		local here = V.portDev(state, state.portId)
+		local actual = S.Econ and S.Econ.town(state, state.portId)
+		if here and actual then
+			local visualLevel = math.clamp(math.floor(((S.Harbor.level(state, state.portId) or 1) + actual.stage) / 2 + 0.5), 1, 5)
+			local plot = D.PortBuildings.CityPlots
+			here.worldPopulation = actual.pop
+			here.worldResidents = actual.residents
+			here.worldMood = actual.mood
+			here.worldBuildings = actual.buildings
+			here.worldVisualLevel = visualLevel
+			here.worldPlotScale = plot.plotScale[visualLevel]
+			here.worldAreaScale = plot.areaScale[visualLevel]
+		end
 		return {
 			level = level, name = LEVEL_NAME[level], score = score, nextAt = nextAt, nextName = LEVEL_NAME[level + 1],
 			built = #built, total = #EB.List, cats = cats, discs = discs,
-			ports = V.portList(state), here = V.portDev(state, state.portId),
+			ports = V.portList(state), here = here,
 		}
 	end
 
