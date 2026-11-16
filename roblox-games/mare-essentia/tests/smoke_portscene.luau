@@ -14,7 +14,7 @@ end
 -- [문화권 외관 회귀] 상업/저장 수치는 그대로 유지한 채 건물 몸체가 지역마다 달라지는지 확인.
 local regionForms = {
 	ottoman = "courtyard", swahili = "carved", wafrica = "flat",
-	seasia = "stilt", pacific = "stilt", japan = "eastasia", china = "eastasia",
+	seasia = "stilt", pacific = "stilt", japan = "eastasia", china = "eastasia", korea = "eastasia",
 	hanse = "stepped", italy = "loggia", britain = "timber",
 	iberia = "arcade", france = "mansard", colonial = "veranda", malabar = "coastal",
 }
