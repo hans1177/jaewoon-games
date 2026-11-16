@@ -191,29 +191,25 @@ end
 -- 방문시설 간판: 큰 3D 아이콘 + 아래 작은 이름표 (멀리서도 무슨 건물인지 보이게)
 local function sign(parent, adornee, text, color, height, compact, iconModel)
 	if compact then
-		-- 사람 이름표: 작고 단순한 글씨 판
+		-- [모바일 NPC 표식] 화면을 가리던 7스터드 이름판 대신 근접 시에만 보이는 투명 소형 표식.
 		local nb = Instance.new("BillboardGui")
+		nb.Name = "NpcRoleTag"
 		nb.Adornee = adornee
-		nb.Size = UDim2.fromScale(7, 1.5)
-		nb.StudsOffset = Vector3.new(0, (height or 4) + 1.5, 0)
+		nb.Size = UDim2.fromOffset(68, 18)
+		nb.StudsOffset = Vector3.new(0, (height or 4) + 0.6, 0)
 		nb.AlwaysOnTop = false
 		nb.LightInfluence = 0
-		nb.MaxDistance = 60
+		nb.MaxDistance = 25
 		local pl = Instance.new("TextLabel")
 		pl.Size = UDim2.fromScale(1, 1)
-		pl.BackgroundColor3 = Color3.fromRGB(46, 30, 22)
-		pl.BackgroundTransparency = 0.15
-		pl.TextColor3 = Color3.fromRGB(255, 244, 214)
+		pl.BackgroundTransparency = 1
+		pl.TextColor3 = color or Color3.fromRGB(255, 244, 214)
 		pl.Font = Enum.Font.GothamBold
-		pl.TextScaled = true
+		pl.TextScaled = false
+		pl.TextSize = 12
+		pl.TextTruncate = Enum.TextTruncate.AtEnd
+		pl.TextStrokeTransparency = 0.5
 		pl.Text = text
-		local cc = Instance.new("UICorner")
-		cc.CornerRadius = UDim.new(0, 6)
-		cc.Parent = pl
-		local sk = Instance.new("UIStroke")
-		sk.Color = color or Color3.fromRGB(232, 190, 96)
-		sk.Thickness = 1.5
-		sk.Parent = pl
 		pl.Parent = nb
 		nb.Parent = if adornee:IsA("BasePart") then adornee else parent
 		return nb
@@ -3500,7 +3496,7 @@ function PortScene.build(info, onFacility)
 			if v then
 				v.Name = "Companion_" .. c.id
 				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
-				if tag then sign(folder, tag, c.name, Color3.fromRGB(40, 90, 150), 4, true) end
+				if tag then sign(folder, tag, tostring(i) .. " · " .. tostring(c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
 				local at = v:GetPivot().Position
 				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look" })
 			end
@@ -3530,6 +3526,8 @@ function PortScene.build(info, onFacility)
 			local now = os.clock()
 			local dt = math.min(now - last, 0.1)
 			last = now
+			-- [중복 소환 방지] 항구의 시각 동료는 탐험 중 추적을 멈춘다. 탐험용 FieldAlly만 전장에 존재한다.
+			if workspace:FindFirstChild("FieldScene") then return end
 			local char = Players.LocalPlayer and Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")
 			if not root then return end
