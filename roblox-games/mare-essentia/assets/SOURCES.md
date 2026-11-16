@@ -1608,3 +1608,19 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - 각 모델 파일 옆 `.glb.license.json`에 원본 Git blob SHA-1, 원본/개조 SHA-256, 개조 삼각형 수, 변경 설명을 함께 기록한다.
 - 원본과 개조본은 기존 자동 자산 등록기 `tools/mare-essentia-upload-assets.mjs`만 사용한다. 자산 등록번호·Universe 사용권한·실제 Studio 외형은 별도 결과를 확인해야 한다.
 - **실화면 적용 대기**: 실제 시각 품질·모바일 FPS 검증 없이 항구·해전에 원본 메시를 강제 연결하지 않는다. 게임 규칙·저장 데이터에는 변경 없다.
+
+
+## 2026-11-17 역사 함종 원본 선확보·개조 추가 4종
+
+Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **먼저 읽어 검증**하고, 원본 메시·바이너리를 유지한 채 시대별 고유 형상을 직접 개조했다. 공식 저작권 출처: https://kenney.nl/assets/pirate-kit (상업 이용·수정 허용).
+
+| 개조 GLB | 먼저 확보한 CC0 선체 | 눈에 띄는 개조 |
+|---|---|---|
+| `naval/carrack-custom.glb` | `naval/ship-large.glb` | 원양 캐랙: 높은 선수루·선미루, 3대 돛대, 사각돛, 돛대 삭구 |
+| `naval/baghlah-custom.glb` | `naval/boat-sail-b.glb` | 바글라: 두 삼각돛, 높게 올린 선미루, 항해용 밧줄, 화물 갑판 |
+| `naval/sekibune-custom.glb` | `naval/boat-row-small.glb` | 세키부네: 선박 현측 방패벽, 노 12개, 단일 돛대, 전투 갑판 |
+| `naval/geobukseon-custom.glb` | `naval/boat-row-large.glb` | 거북선: 둥근 장갑지붕·철제 못, 양쪽 포문, 용머리·노·깃발 |
+
+- 모델별 `.glb.license.json`은 원본 Git blob SHA-1, 원본 및 개조 SHA-256, 개조 삼각형 수와 라이선스를 기록한다. 케니 선체를 바탕으로 한 **게임용 저폴리 재구성**으로서 실제 유물 복원품이나 검증된 고증 모델이라고 주장하지 않는다.
+- 기존 등록기와 자동 회귀검사만 사용한다. `assets-registered.json`의 원본 해시, Roblox Universe 사용권한, Studio 실화면, 모바일 런타임, 게임 게시의 완료는 **각각 별도 확인**한다.
+- 실제 렌더링 승인 전에는 항구·해전의 기존 안정 모델을 유지한다. 저장 키·능력치·보상·파이프라인 변경 없음.
