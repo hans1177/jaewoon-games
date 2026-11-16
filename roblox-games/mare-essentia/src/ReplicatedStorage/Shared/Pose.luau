@@ -682,7 +682,10 @@ function Pose.work(model, kind, t, moving)
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			local prev = st.prev[joint]
 			local target = joint.Transform
-			if prev then
+			-- [보행 보존] 작업 상체 보간이 이전 제자리 자세를 하체 보행에 덮어쓰지 않도록 한다.
+			local gaitJoint = moving and (joint == m.leftLeg or joint == m.rightLeg
+				or joint == m.leftKnee or joint == m.rightKnee)
+			if prev and not gaitJoint then
 				target = prev:Lerp(target, alpha)
 				joint.Transform = target
 			end
