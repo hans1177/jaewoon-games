@@ -1,11 +1,14 @@
 # 지식카드 분류 · 세계 백과사전
 
 ## 분류 원칙
-- **오브젝트 소재:** 기존 지구·인류 7대 영역과 17개 소재를 유지하고, 무형 지식 5종(언어·종교·정치·법·관습)을 더한 총 22개.
+- **오브젝트 소재:** 기존 지구·인류 7대 영역과 17개 소재를 유지하고, 무형 지식 5종과 확장 개체 유형 20종을 더한 총 42개.
+- **백과 주제(14):** 인물·인류, 국가·사회, 역사·사건, 경제·금융, 법·정치, 생활·문화, 언어·정보, 종교·사상, 기술·산업, 의학·생명, 자연·환경, 우주·시간, 예술·활동, 수학·정보학. KnowledgeCards.Topics에 존재하며 학문 분류·세계 영역·소재 유형과 독립된 탐색 축이다.
 - **학문:** 기존 7대 학문 분야, 21개 뿌리 학문, 기존 활성 세부 학문 31개에 문헌학·윤리학·종교학·법학·정치학 5개를 더해 총 57개 활성 학문.
 - **카드 주학문:** `KnowledgeCards.Rows`의 `meta.discipline` 지정 시 해당 학문 우선, 없으면 `Field`에 연결된 학문. 다른 학문에는 `meta.relatedDisciplines`와 `KnowledgeTree.CardRelatedDisciplines`로 교차 연결. 보상·보고 회수는 카드당 최초 1회.
 - **세부 학문:** `KnowledgeTaxonomy.SubOf` 에 지정. 학문 자체의 `parent`는 연구 계통도를 뜻하며 카드 소재 분류와 별개.
-- **존재 형태:** `meta.entityType` (실물·장소·문헌·무형 개념·제도·의례 등). 시대 `meta.era`, 지역 `meta.region`, 별명·표지·연관 대상 `meta.relations`은 서로 독립. 등장·연구 가능 시기 제한은 기존 `fromYear`만 사용.
+- **존재 형태:** `meta.entityType` (실물·장소·문헌·무형 개념·제도·의례·인물·국가·조직·사건·인체 기관 등). 시대 `meta.era`, 지역 `meta.region`, 별명·표지·연관 대상 `meta.relations`은 서로 독립. 등장·연구 가능 시기 제한은 기존 `fromYear`만 사용.
+- **사실·가설·전설·창작:** `meta.evidence`에 `documented`(기록·관찰), `hypothesis`(가설), `legend`(전승), `fiction`(게임 창작), `unreviewed`(근거 미분류) 중 하나를 둔다. 신규 카드는 명시한다. 기존 미분류 카드는 일괄 사실 판정하지 않고 별도 분류로 남겨 둔다. 분류 자체가 외부 사료 검증을 대신하지 않는다.
+- **유형별 관계:** `meta.relations`에 `belongsTo`(소속), `partOf`(구성), `causes`(원인), `resultsIn`(결과), `evolvesInto`(발전), `influences`(영향), `usesTechnology`(사용 기술), 기존 `requires`(선행), `locatedAt`(위치), `relatedTo`(연관) 등을 기록한다. 대상은 기존 카드·상품·항구·탐험지 식별자와 연결하며, 화면에서 미발견 대상 이름은 가린다.
 - **선행 지식:** `research.found` 는 발견, `research.reported` 는 학자 보고 완료를 요구. `KnowledgeTree.autofill`이 보고 선행 관계를 지식트리에 연결. 기존 `state.discovered`·`state.reported`를 재사용하고 새 저장 키는 만들지 않는다.
 
 ## 무형 지식 획득 예시
@@ -24,6 +27,27 @@
 1. `src/ReplicatedStorage/Shared/KnowledgeCards.luau`의 `Rows`에 카드와 고유 id 추가. 물건·문헌·현상·관념을 한 카드로 섞지 않는다.
 2. `meta.kind`, `meta.discipline`, `meta.entityType`, `meta.era`, `meta.region`, `meta.relatedDisciplines`, `meta.relations`을 실제 근거에 따라 기록한다.
 3. 연구 카드면 `research.found` 및 `research.reported`로 선행 경로를 지정한다. 신규 학문이 필요하면 기존 `KnowledgeTree.Disciplines`/기존 예정 학문 승격, `Fields.luau`, `KnowledgeBattle.luau` 연결을 검토한다.
-4. `KnowledgeTaxonomy.path(id)`가 `{ domain, discipline, sub, entityType, era, region, relatedDisciplines, prerequisites }`를 반환한다. `KnowledgeTaxonomy.audit()`와 `tests/run.sh`로 검증한다. Luau CLI 경로는 `LUAU_DIR`로 지정할 수 있다.
+4. `KnowledgeTaxonomy.path(id)`가 `{ domain, discipline, sub, entityType, era, region, relatedDisciplines, prerequisites, topic, evidence }`를 반환한다. 도감은 14개 주제, 카드별 근거 분류, 개체 간 관계와 연관 학문을 표시한다. `KnowledgeTaxonomy.audit()`와 `tests/run.sh`로 검증한다. Luau CLI 경로는 `LUAU_DIR`로 지정할 수 있다.
 
 기존 저장 키, 항구·선박·전투 능력치, 배율, 교역품 값 및 카드별 보상은 별도 승인 없이 수정하지 않는다.
+
+## 14대 주제의 실제 대표 지식카드
+
+| 주제 | 예시 | 대상의 종류 |
+|---|---|---|
+| 인물·인류 | 에라스뮈스 | 인물 |
+| 국가·사회 | 베네치아 공화국, 한자동맹 | 국가·조직 |
+| 역사·사건 | 1453년 콘스탄티노폴리스 함락 | 사건 |
+| 경제·금융 | 환어음, 해상보험 | 금융 문헌·제도 |
+| 법·정치 | 베네치아 원로원, 기존 토르데시야스 조약 | 기관·법률 |
+| 생활·문화 | 발효빵, 모직 망토 | 음식·의복 |
+| 언어·정보 | 문자 치환 암호, 기존 언어 연구 | 정보·언어 |
+| 종교·사상 | 순례 관습, 기존 종교 연구 | 의례·사상 |
+| 기술·산업 | 활판 인쇄 공방, 수차 방앗간 | 제작·기계 |
+| 의학·생명 | 심장·페스트·혈액순환 연구 | 기관·질병·연구 |
+| 자연·환경 | 습지 생태계, 퇴적암 지층 | 생태계·지질 |
+| 우주·시간 | 달 표면 관찰, 율리우스력 | 천체 관찰·달력 |
+| 예술·활동 | 즉흥 연극, 검술 훈련 | 공연·활동 |
+| 수학·정보학 | 자리값 표기법, 유클리드 호제법 | 수학 개념·알고리즘 |
+
+새 카드 24장은 기존 KnowledgeCards.Rows·KnowledgeTree.autofill·항구 첫 방문·학자 보고 경로를 그대로 사용한다. 등장 시대 전 카드 발견은 fromYear로 막으며, 실제 연구의 선행 지식은 research.found와 research.reported로 판정한다. 기존 데이터의 일괄 개체명·근거 변경이나 임의 재분류는 하지 않는다.
