@@ -1271,7 +1271,7 @@ function FieldScene.start(opts)
 			end
 		end
 		for _, nm in names do attach(ch:FindFirstChild(nm)) end
-		local sword = ch:FindFirstChild("FieldSword", true)
+		local sword = ch:FindFirstChild("FieldWeapon", true)
 		if sword then
 			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
 			attach(blade, 4)
@@ -1912,12 +1912,13 @@ function FieldScene.start(opts)
 						local a0 = hrp.Position + Vector3.new(0, 0.5, 0)
 						local b0 = e.root.Position
 						local len = (b0 - a0).Magnitude
-						local tr = part(folder, Vector3.new(0.25, 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if wpn.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						local arrow = wpn.family == "bow" or wpn.id == "crossbow"
+						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.25, if arrow then 0.09 else 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
 						tr.CanCollide, tr.CanQuery = false, false
 						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
 						task.delay(0.2, function() tr:Destroy() end)
 						burst(b0 + Vector3.new(0, 1.5, 0), 6, false)
-						sfx(if wpn.id == "gun" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.id == "gun" then 1.6 else 1.2)
+						sfx(if wpn.family == "firearm" and wpn.id ~= "crossbow" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.family == "firearm" and wpn.id ~= "crossbow" then 1.6 else 1.2)
 					end
 				end
 			end
@@ -2821,7 +2822,8 @@ function FieldScene.start(opts)
 						local a0 = a.root.Position + Vector3.new(0, 0.5, 0)
 						local b0 = tgt.root.Position
 						local len = (b0 - a0).Magnitude
-						local tr = part(folder, Vector3.new(0.2, 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if aw.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						local arrow = aw.family == "bow" or aw.id == "crossbow"
+						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.2, if arrow then 0.09 else 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
 						tr.CanCollide, tr.CanQuery = false, false
 						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
 						task.delay(0.2, function() tr:Destroy() end)
