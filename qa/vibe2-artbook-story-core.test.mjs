@@ -249,16 +249,22 @@ test('canonical narrative contract requires causal faction relationship state an
   assert.ok(contract.runtimeLearning.failureCanTeach.includes('FACTION_RELATIONSHIP_INCONSISTENCY'));
   assert.ok(contract.runtimeLearning.learnableVerifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
 
-  // The retained architecture/log maps intentionally no longer carry executable story contracts.
-  // Enforce central story authority together with actual event and snapshot semantics above.
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  // The canonical roadmap owns narrative policy; architecture and log maps retain
+  // their real execution topology and evidence schema without overriding that policy.
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.enforcer,'tools/company-constitution-enforcer.mjs');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
+  assert.equal(logMap.logChannels.githubActions.location,'GITHUB_ACTIONS_JOB_LOG');
+  assert.equal(logMap.centralPolicyExecutionEvidence.machinePolicyHashesRequired,true);
   for(const key of ['GITHUB_RUN_ID','TASK_ID','GAME_ID','SOURCE_REVISION','FAILURE_STAGE','FAILURE_SIGNATURE']){
-    assert.ok(logMap.retained.keys.includes(key),key);
+    assert.ok(logMap.canonicalCorrelationKeys.includes(key),key);
   }
-  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(logMap.gameErrorRepairLogContract.structuredEvidenceRequiredForAcceptance,true);
+  assert.equal(logMap.gameErrorRepairLogContract.rawDuplicateFailureSpamForbidden,true);
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
 });
 
