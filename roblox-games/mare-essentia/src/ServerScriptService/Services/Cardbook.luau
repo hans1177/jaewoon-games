@@ -23,10 +23,13 @@ return function(D, S)
 		return book
 	end
 
-	-- 보상으로 받은 지식 카드는 도감에도 발견으로 기록된다
+	-- [지식카드 보상] 일반 지식 카드는 전투 카드 획득과 함께 도감 등록한다.
+	-- 선행 학자 보고가 필요한 문헌·비교 연구는 전투 카드 보상만 유지하고
+	-- 기존 StudyKnowledgeCard에서 직접 연구한 경우에만 도감에 등록한다.
 	local function markDiscovered(state, id)
 		local d = id and (D.BoardingCards.Units[id] or D.BoardingCards.Specials[id])
-		if d and d.knowledge and state.discovered then
+		local knowledge = id and D.Cards.ById[id]
+		if d and d.knowledge and state.discovered and not (knowledge and knowledge.research and knowledge.research.reported) then
 			state.discovered[id] = true
 		end
 	end
