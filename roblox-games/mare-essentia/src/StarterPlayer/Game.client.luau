@@ -490,8 +490,15 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		icon.Size = UDim2.fromOffset(px, px)
 		icon.BackgroundTransparency = 1
 		icon.BorderSizePixel = 0
-		local ink = if px <= 28 then COLORS.brown else Color3.fromRGB(224, 169, 80)
+		-- [아이콘 규격] 전체 사각 캔버스의 약 85%에 실제 문양이 보이게 정규화한다.
+		-- 인쇄된 탭 아이콘은 짙은 황동 잉크, HUD 아이콘은 밝은 무광 황동으로 통일.
+		local ink = if px <= 28 then Color3.fromRGB(119, 81, 46) else Color3.fromRGB(226, 174, 84)
+		local fit = 0.94
+		local function rect(x, y, w, h)
+			return 0.5 + (x - 0.5) * fit, 0.5 + (y - 0.5) * fit, w * fit, h * fit
+		end
 		local function shape(x, y, w, h, rotation, radius)
+			x, y, w, h = rect(x, y, w, h)
 			local piece = Instance.new("Frame")
 			piece.Name = "GlyphShape"
 			piece.BackgroundColor3 = ink
@@ -506,7 +513,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			end
 			if px > 28 then
 				local shade = Instance.new("UIGradient")
-				shade.Color = ColorSequence.new(Color3.fromRGB(255, 217, 146), Color3.fromRGB(195, 135, 48))
+				shade.Color = ColorSequence.new(Color3.fromRGB(249, 211, 139), Color3.fromRGB(193, 137, 57))
 				shade.Rotation = 90
 				shade.Parent = piece
 			end
@@ -514,6 +521,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			return piece
 		end
 		local function outline(x, y, w, h, radius)
+			x, y, w, h = rect(x, y, w, h)
 			local frame = Instance.new("Frame")
 			frame.Name = "GlyphOutline"
 			frame.Size = UDim2.fromScale(w, h)
@@ -525,7 +533,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			curve.Parent = frame
 			local edge = Instance.new("UIStroke")
 			edge.Color = ink
-			edge.Thickness = if px <= 28 then 2 else 2.6
+			edge.Thickness = if px <= 28 then 1.9 else 2.5
 			edge.Parent = frame
 			frame.Parent = icon
 		end
@@ -609,7 +617,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			-- 도움말: 다른 시설·시스템과 같은 황동 계열 물음표.
 			local question = Instance.new("TextLabel")
 			question.Name = "HelpMark"
-			question.Size = UDim2.fromScale(1, 1)
+			question.Size = UDim2.fromScale(0.82, 0.86)
+			question.Position = UDim2.fromScale(0.09, 0.05)
 			question.BackgroundTransparency = 1
 			question.Font = Enum.Font.GothamBlack
 			question.Text = "?"
@@ -649,7 +658,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		end
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
-			local inset = if kind == "Menu" then 0 else math.max(2, math.floor(px * 0.12))
+			-- [메뉴 아이콘 크기] 원화의 빈 여백 차이를 8% 안쪽 여백으로 정규화한다.
+			local inset = if kind == "Menu" then math.max(1, math.floor(px * 0.08 + 0.5)) else math.max(2, math.floor(px * 0.12))
 			local art = Instance.new("ImageLabel")
 			art.Name = "OriginalArt"
 			art.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
@@ -657,7 +667,11 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(assetId)
 			art.ScaleType = Enum.ScaleType.Fit
-			if kind == "Menu" then art.ImageColor3 = COLORS.brown end
+			if kind == "Menu" then
+				-- 이미 황동색으로 등록된 원화를 다시 짙은 갈색으로 곱해 검게 만들지 않는다.
+				-- 문서 탭(양피지)과 HUD(바다 배경)에서 도형 아이콘과 유사한 밝기로 보정.
+				art.ImageColor3 = if px <= 28 then Color3.fromRGB(139, 113, 102) else Color3.fromRGB(255, 240, 204)
+			end
 			art.Parent = card
 		else
 			-- 등록된 그림이 없는 경우 기존 상품 이름을 보존한다.
@@ -1903,7 +1917,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		elseif key == "journal" then "journal" elseif key == "gear" then "gear"
 		elseif key == "help" then "help" elseif key == "status" then "captain" else nil
 	local artId = if specialGlyph then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	local artSize = if dockItem then 35 else 31
+	-- [메뉴 공통 규격] 시설/시스템 도크는 36px, 개별 버튼은 31px.
+	local artSize = if dockItem then 36 else 31
 	local artTop = if dockItem then 3 else 4
 	if specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
@@ -8131,11 +8146,12 @@ function H.renderTabs()
 			-- 등록 원화와 황동 도형은 동일한 크기·위치·투명 바탕으로 그린다.
 			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			icon.Position = UDim2.new(0, -28, 0.5, -13)
+			-- [탭 내부 배치] 아이콘을 버튼 밖으로 빼지 않는다. 잔상/다른 메뉴에 떠 있는 문제도 방지.
+			icon.Position = UDim2.new(0, 7, 0.5, -13)
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
 			local pad = Instance.new("UIPadding")
-			pad.PaddingLeft = UDim.new(0, 32)
+			pad.PaddingLeft = UDim.new(0, 35)
 			pad.Parent = b
 		end
 	end
