@@ -39,11 +39,19 @@ local MOBILE = game:GetService("UserInputService").TouchEnabled
 local EFFECT_LIMIT = MOBILE and 18 or 30
 local EFFECT_POOL = {}
 -- 마레 에센시아용: 스프라이트는 우리 업로드 파이프라인에 등록된 CC0 이미지(Kenney Particle Pack)를 쓴다.
--- 아직 등록 전이면 빈 문자열이라 입자는 기본 모양으로 나온다.
+-- [마력숲 연출 재사용] 게임에 등록된 CC0 스프라이트가 우선이며, 미등록 시 Roblox 내장 입자 이미지만 사용한다.
+-- 새 파츠/임의 3D 모델을 만들지 않고 기존 공용 입자 풀의 화면 표현만 보강한다.
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local ENGINE_SPRITES = {
+	spark = "rbxasset://textures/particles/sparkles_main.dds",
+	ring = "rbxasset://textures/particles/flare_main.dds",
+	slash = "rbxasset://textures/particles/flare_main.dds",
+	smoke = "rbxasset://textures/particles/smoke_main.dds",
+	light = "rbxasset://textures/particles/flare_main.dds",
+}
 local function sprite(name: string): string
 	local id = (AssetIds :: any)["Menu/vfx_" .. name]
-	return if id then "rbxassetid://" .. tostring(id) else ""
+	return if id then "rbxassetid://" .. tostring(id) else ENGINE_SPRITES[name] or ""
 end
 local SPRITES = table.freeze({
   spark = sprite("spark"), ring = sprite("ring"), slash = sprite("slash"),
