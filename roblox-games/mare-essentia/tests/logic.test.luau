@@ -688,6 +688,31 @@ local function extraTests()
 			select(1, act(study14, "StudyKnowledgeCard", { cardId = "ship_caravel" })) == false)
 		check("백과 연구: 혈액순환 연구 잠금 해제",
 			study14.discovered.med_blood_circulation == true)
+		-- [독립 수학 학문] 기존 실존 학자에게 보고할 수 있어야 다음 문헌 연구가 진행된다.
+		local mathReport = newState("england")
+		mathReport.portId = "london"
+		mathReport.discovered.math_place_value = true
+		local mathSuccess, mathMessage = act(mathReport, "ReportKnowledge", { scholarId = "newton" })
+		check("백과→학문: 수학 카드가 독립된 주학문 보고 경로에 연결",
+			tree.ById.math_place_value and tree.ById.math_place_value.disc == "mathematics"
+			and mathSuccess == true and mathReport.reported.math_place_value == true,
+			mathMessage)
+		check("백과→학문: 학문 이해 점수는 기존 기록 키로 누적",
+			S.Knowledge.masteryOf(mathReport, "mathematics").points > 0
+			and tree.understoodCount(mathReport) >= 1)
+		-- [복합 학문 관계] 주학문과 연관 학문은 분류 경로에서 모두 읽히지만 보상 중복은 없다.
+		local bankPath = D.KnowledgeTaxonomy.path("finance_bill_exchange")
+		check("백과→학문: 금융 카드의 경제학·법학 교차 연결",
+			bankPath.discipline == "economics" and table.find(bankPath.relatedDisciplines, "law") ~= nil
+			and table.find(bankPath.relatedDisciplines, "commerce") ~= nil
+			and bankPath.topic == "economy")
+		-- [학술 연구] 지역·선행 지식이 맞지 않으면 새 카드 등록 없이 거부한다.
+		local wrongPort = newState("england")
+		wrongPort.discovered.math_place_value = true
+		wrongPort.reported.math_place_value = true
+		check("백과 연구: 방문지 불일치 카드 수령 차단",
+			select(1, act(wrongPort, "StudyKnowledgeCard", { cardId = "algorithm_euclidean" })) == false
+			and wrongPort.discovered.algorithm_euclidean ~= true)
 		local saved14 = S.State.sanitize(S.State.serialize(study14))
 		check("백과 연구: 기존 저장 형식에서 복구", saved14.discovered.algorithm_euclidean == true and saved14.reported.math_place_value == true)
 				-- 전용 UI 스포일러 검사: 플레이어가 아직 발견하지 않은 카드로 맞춘다.
@@ -813,20 +838,31 @@ local function extraTests()
 			local notes = {}
 			S.Discovery.grantVisitCards(study, chain.port, notes)
 			check("무형 백과: 현장 첫 발견 " .. chain.field,
-				study.discovered[ids[1]] == true and study.discovered[ids[2]] ~= true)
+				study.discovered[ids[1]] == true and study.discovered[ids[2]] ~= true,
+				"첫=" .. tostring(study.discovered[ids[1]]) .. " 문헌=" .. tostring(study.discovered[ids[2]])
+				.. " 차단=" .. tostring(S.Discovery.cardBlockReason(study, first)))
 			check("무형 백과: 보고 전 연구 차단 " .. chain.field,
 				S.Discovery.cardBlockReason(study, second) ~= nil)
 			study.reported[ids[1]] = true
 			check("무형 백과: 선행 지식 보고로 문헌 연구 허용 " .. chain.field,
 				S.Discovery.cardBlockReason(study, second) == nil)
-			S.Discovery.grantVisitCards(study, chain.port, notes)
+			check("무형 백과: 보고 후 항구 재방문으로 후속 문헌 자동 등록 불가 " .. chain.field,
+				S.Discovery.grantVisitCards(study, chain.port, notes) == 0
+				and study.discovered[ids[2]] ~= true)
+			local began, reason = act(study, "StudyKnowledgeCard", { cardId = ids[2] })
+			check("무형 백과: 학자 보고 후 문헌 직접 해독 " .. chain.field,
+				began == true, reason)
 			check("무형 백과: 문헌 해독 후 비교 연구는 잠금 " .. chain.field,
 				study.discovered[ids[2]] == true and study.discovered[ids[3]] ~= true
 				and S.Discovery.cardBlockReason(study, third) ~= nil)
 			study.reported[ids[2]] = true
-			S.Discovery.grantVisitCards(study, chain.port, notes)
+			check("무형 백과: 비교 연구 자동 수령 없음 " .. chain.field,
+				S.Discovery.grantVisitCards(study, chain.port, notes) == 0)
+			local completed, reason3 = act(study, "StudyKnowledgeCard", { cardId = ids[3] })
 			check("무형 백과: 세 단계 연계·추가 보상 중복 없음 " .. chain.field,
-				study.discovered[ids[3]] == true and S.Discovery.grantVisitCards(study, chain.port, notes) == 0)
+				completed == true and study.discovered[ids[3]] == true
+				and select(1, act(study, "StudyKnowledgeCard", { cardId = ids[3] })) == false
+				and S.Discovery.grantVisitCards(study, chain.port, notes) == 0, reason3)
 			check("무형 백과: 지식트리 선행 보고 요구 " .. chain.field,
 				tree.ById[ids[3]] ~= nil and table.find(tree.ById[ids[3]].needs, ids[2]) ~= nil)
 			local saved = S.State.sanitize(S.State.serialize(study))
