@@ -3432,6 +3432,10 @@ testKnowledgeAndHistory()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testBoardingRules()
+	-- 기존 카드 테스트는 대형 덱 자료를 다룬다. 같은 검증을 유지하고 런타임 데이터 타입만 제한한다.
+	local D: any = D
+	local S: any = S
+	local check: any = check
 -- 백병전 카드 패: 주인공 카드는 늘 있고, 발견한 유물·동물이 카드가 된다
 do
 	local ds = S.State.new("england", 1700, nil)
@@ -3466,7 +3470,7 @@ end
 
 -- 접현 카드 전투: 상성·능력·규칙
 do
-	local BC = require("./Shared/BoardingCards")
+	local BC: any = require("./Shared/BoardingCards")
 	local r = function() return math.random() end
 	local function blank()
 		local m = BC.newMatch({}, "draw", {}, "draw", r)
@@ -3563,7 +3567,7 @@ do
 	end
 	-- 카드 수집책: 시작 덱·획득·강화(동은금)·덱 규칙·저장 정리
 	do
-		local CBk = D.CardBook
+		local CBk: any = D.CardBook
 		local book = CBk.new("europe")
 		local starterId = CBk.STARTER[1]
 		check("수집책: 시작하면 지식 카드 18장을 가진다", #CBk.STARTER == 18 and (book.owned[starterId] or 0) == 1
@@ -3674,7 +3678,7 @@ do
 			if BC.advice(mm, "me") then adviceSeen += 1 end
 		end
 		check("동료 조언: 오류 없이 문구 또는 nil", adviceSeen >= 0)
-		local CBr = D.CardBook
+		local CBr: any = D.CardBook
 		local bk = CBr.new("europe")
 		for _, st in { "rush", "gun", "balance" } do
 			local ids = CBr.recommend(bk, st)
