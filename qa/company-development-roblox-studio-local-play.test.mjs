@@ -3818,6 +3818,13 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
   assert.equal(slowIntro[0].timeoutMs,90000);
+  // [실기동 복구] 서버의 실제 NewGame 뒤 기존 항구 탭을 열어 자동 안내의 UI 콜백을 실행한다.
+  assert.match(slowIntro[0].code,/SetAttribute\("DevCall","Tab_harbor"\)/);
+  assert.match(slowIntro[0].code,/FIELD_QA_MAIN_BOOK_NOT_VISIBLE/);
+  assert.match(slowIntro[0].code,/for attempt=1,50 do/);
+  assert.match(slowIntro[0].code,/stable>=3/);
+  assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
+  assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
   assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
   assert.equal(steps.filter(step=>step.type==='click_from_luau').length,9);
   assert.equal(steps.filter(step=>step.type==='capture').length,62);
