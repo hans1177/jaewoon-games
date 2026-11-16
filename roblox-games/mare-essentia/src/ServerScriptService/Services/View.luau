@@ -24,6 +24,7 @@ return function(D, S)
 		art = { "art", "history", "philosophy" },
 		goods = { "commerce", "botany", "chemistry" },
 		legend = { "mythology", "mystery", "lostland" },
+		military = { "history", "physics", "navigation" },
 	}
 
 
