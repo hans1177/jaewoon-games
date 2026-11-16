@@ -842,6 +842,11 @@ do
 		end
 	end
 	for _, c in D.Cards.Cards do
+		-- [획득 경로 QA] 탐험·연구 외에 실제 항구 첫 방문으로 주어지는 지식도 기존 Discovery.grantVisitCards 경로에서 검증한다.
+		if c.visitPort then
+			check("card visit port exists " .. c.id, D.Ports.Ports[c.visitPort] ~= nil)
+			obtainable[c.id] = D.Ports.Ports[c.visitPort] ~= nil
+		end
 		check("card has an acquisition path " .. c.id, obtainable[c.id] == true)
 	end
 end
