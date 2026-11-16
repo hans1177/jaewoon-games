@@ -249,16 +249,23 @@ test('canonical narrative contract requires causal faction relationship state an
   assert.ok(contract.runtimeLearning.failureCanTeach.includes('FACTION_RELATIONSHIP_INCONSISTENCY'));
   assert.ok(contract.runtimeLearning.learnableVerifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
 
-  // The retained architecture/log maps intentionally no longer carry executable story contracts.
-  // Enforce central story authority together with actual event and snapshot semantics above.
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  // Validate live central authority, fail-closed execution and structured audit evidence.
+  // Historical "minimal summary" assertions are obsolete; actual central policy must never be rewritten to fit a test.
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.policyQaRequired,true);
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
+  assert.equal(logMap.completionContract.structuredEvidenceBeforeCompletion,true);
+  assert.equal(logMap.completionContract.qaContractRepairRequiresIndependentVerification,true);
   for(const key of ['GITHUB_RUN_ID','TASK_ID','GAME_ID','SOURCE_REVISION','FAILURE_STAGE','FAILURE_SIGNATURE']){
-    assert.ok(logMap.retained.keys.includes(key),key);
+    assert.ok(logMap.canonicalCorrelationKeys.includes(key),key);
   }
-  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(logMap.failureContract.exactStageRequired,true);
+  assert.equal(logMap.failureContract.exactSignatureRequired,true);
+  assert.equal(logMap.failureContract.repeatedFailureDedupeRequired,true);
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
 });
 
