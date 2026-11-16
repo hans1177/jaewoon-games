@@ -3778,6 +3778,22 @@ function PortScene.build(info, onFacility)
 		end
 	end
 
+	-- 갈매기 (항구 위를 맴돈다)
+	local gulls = {}
+	for i = 1, 6 do
+		local g = Instance.new("Model")
+		local body = part(g, Vector3.new(1.4, 0.5, 0.5), CFrame.new(), Color3.new(1, 1, 1))
+		local l = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
+		local r = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
+		for _, p in { body, l, r } do
+			p.CanCollide = false
+		end
+		g.Parent = folder
+		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
+	end
+
+	folder.Parent = workspace
+
 	-- [동선 사전 검증] 걷기 시작 전에 건물·창고·울타리와 이동 직선이 교차하면 인접한 안전한 길로 옮긴다.
 	-- 경로 1개마다 최대 7회만 공간 질의하고, 매 프레임 충돌 검사는 하지 않는다.
 	pcall(function()
@@ -3832,21 +3848,6 @@ function PortScene.build(info, onFacility)
 		end
 	end)
 
-	-- 갈매기 (항구 위를 맴돈다)
-	local gulls = {}
-	for i = 1, 6 do
-		local g = Instance.new("Model")
-		local body = part(g, Vector3.new(1.4, 0.5, 0.5), CFrame.new(), Color3.new(1, 1, 1))
-		local l = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
-		local r = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
-		for _, p in { body, l, r } do
-			p.CanCollide = false
-		end
-		g.Parent = folder
-		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
-	end
-
-	folder.Parent = workspace
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()
