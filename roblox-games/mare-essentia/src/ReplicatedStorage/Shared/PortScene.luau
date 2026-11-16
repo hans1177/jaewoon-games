@@ -2158,8 +2158,10 @@ local function densify(folder, info, style, rng, walkers, made)
 						local biome = if key == "desert" or key == "ottoman" then "arid"
 							elseif palm then "coastal" elseif cold then "woodland" else "lowland"
 						local group, asset, size = "Terrain", "tree-oak", 10
-						if roll == 1 then group, asset, size = "Town", "rock-wide", 8
-						elseif roll == 2 then group, asset, size = "Terrain", "plant-bush", 5
+						-- [무료 실물 조경] 기존 빈 구획 한 자리만 사용해 파츠 수·건물 밀도를 늘리지 않는다.
+						if roll == 1 then group, asset, size = "Terrain", "Rock_2", 6
+						elseif roll == 2 and biome ~= "arid" then group, asset, size = "Terrain", "Bush_Small", 3.2
+						elseif roll == 3 and biome ~= "arid" then group, asset, size = "Terrain", "Grass_Small", 2.2
 						elseif biome == "arid" then group, asset, size = "Naval", "rocks-sand-a", 8
 						elseif biome == "coastal" then group, asset, size = "Naval", "palm-detailed-straight", 10
 						elseif biome == "woodland" then group, asset, size = "Terrain", "tree-pinedefaulta", 11
@@ -3007,11 +3009,15 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				put("Terrain", "statue-head", 8, x - 14, z + front * 12, true)
 			elseif lm.id == "botanic" then
 				ring(x, z, 15, 15, "fence")
-				local plants = { "tree_large", "tree-oak", "plant-bush", "tree-crooked" }
+				-- [식물원] 기존 식재 위치 9곳 안에서 승인된 메시 식생을 조합한다.
+				local plants = {
+					{ "Town", "tree_large", 9 }, { "Terrain", "tree-oak", 9 },
+					{ "Terrain", "Bush_Small", 3.6 }, { "Town", "tree-crooked", 9 },
+					{ "Terrain", "Grass_Small", 2.4 },
+				}
 				for k = 1, 9 do
-					local pk = plants[(k - 1) % #plants + 1]
-					local kind = if pk == "plant-bush" or pk == "tree-oak" then "Terrain" else "Town"
-					put(kind, pk, if pk == "plant-bush" then 4 else 9, x - 11 + (k % 3) * 11, z - 11 + (k // 3) * 11, false)
+					local plant = plants[(k - 1) % #plants + 1]
+					put(plant[1], plant[2], plant[3], x - 11 + (k % 3) * 11, z - 11 + (k // 3) * 11, false)
 				end
 				put("Town", "fountain-round", 7, x, z, true)
 				body = put("Terrain", "crop-pumpkin", 3, x + 4, z + 4, false)
