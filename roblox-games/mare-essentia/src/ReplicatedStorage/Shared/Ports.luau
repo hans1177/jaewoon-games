@@ -935,7 +935,10 @@ do
 	local PC = require(script.Parent.ProductionChains)
 	local MAX_PROCESSED_PER_PORT = 2
 	for _, g in PC.processedGoods(Goods) do
-		Goods[g.id] = { id = g.id, name = g.name, basePrice = g.basePrice, resourceKind = "manufactured", knowledgeId = "chem_glass" }
+		-- [가공품 지식] 원본 제작법의 첫 원자재 지식을 계승한다. 새 제작법 추가 시 분류가 자동 연결된다.
+		local recipe = PC.ById[g.recipe]
+		local source = recipe and Goods[recipe.inputs[1]]
+		Goods[g.id] = { id = g.id, name = g.name, basePrice = g.basePrice, resourceKind = "manufactured", knowledgeId = source and source.knowledgeId or nil }
 	end
 	local ids = {}
 	for id in Ports do
