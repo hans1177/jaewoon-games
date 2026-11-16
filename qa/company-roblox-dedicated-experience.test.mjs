@@ -793,6 +793,20 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
   assert.equal(animals.autoBindWithoutRuntimeProof,false);
 });
 
+// [주민 정면] 얼굴 표면은 머리의 원본 데칼 면을 따라야 한다. 몸통 축으로 반대쪽에 덧그리지 않는다.
+test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
+  const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  assert.match(pose,/gui\.Face = if decal then decal\.Face else Enum\.NormalId\.Front/);
+  assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
+  assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng\)/);
+  assert.match(port,/local nearGuest = flat\.Magnitude > 1 and flat\.Magnitude < 26/);
+  assert.match(port,/local canFaceGuest = w\.kind == "talk" or w\.kind == "stall" or w\.kind == "look" or w\.kind == nil/);
+  assert.match(port,/if nearGuest and canFaceGuest and \(not partner or flat\.Magnitude < 12\) then/);
+  assert.match(port,/target, direction = 1, flat/);
+  assert.match(port,/w\.model:PivotTo\(CFrame\.new\(pos \+ Vector3\.new\(0, bob, 0\)\) \* CFrame\.Angles\(0, yaw, 0\) \* rot\)/);
+});
+
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
   const base='roblox-games/mare-essentia/assets/inbox/People/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
