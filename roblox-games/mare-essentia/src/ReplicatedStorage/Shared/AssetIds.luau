@@ -749,6 +749,8 @@ return {
 	["Relics/weapon-bow"] = 112122395777633,
 	["Relics/weapon-crossbow"] = 91262394695157,
 	["Relics/weapon-dagger"] = 131409452631533,
+	["Relics/weapon-flintlock-musket"] = 135534350055137,
+	["Relics/weapon-flintlock-pistol"] = 101278683482636,
 	["Relics/weapon-hammer"] = 114910370681170,
 	["Relics/weapon-mace"] = 83690982555479,
 	["Relics/weapon-spear"] = 105667855022451,
