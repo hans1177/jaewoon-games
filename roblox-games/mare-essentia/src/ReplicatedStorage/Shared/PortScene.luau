@@ -2672,6 +2672,21 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
+			-- 경제 규모에 따라 랜드마크의 활동과 외관이 달라진다. 기존 개방 조건과 위치는 유지한다.
+			local economicBuildings = info.sim and info.sim.buildings or {}
+			if lm.id == "ironworks" and (economicBuildings.workshop or 0) >= 5 then
+				put("Cargo", "iron-bars-stack-large", 4, x + 14, z - front * 10, false)
+				put("Town", "workbench-anvil", 4, x - 14, z - front * 10, false)
+			elseif lm.id == "exchange" and (economicBuildings.market or 0) >= 2 then
+				put("Town", "stall-green", 6, x - 17, z - front * 14, false)
+			elseif lm.id == "academy" and (economicBuildings.school or 0) >= 2 then
+				put("Town", "bell-tower", 14, x - 20, z + front * 4, false)
+			end
+			-- 플레이어가 실제로 소유한 박물관·천문대·학술원은 깃발 표식으로 구분한다.
+			local owned = info.builtLandmarks or {}
+			if owned[lm.id] == true or (lm.id == "academy" and owned.hall == true) then
+				put("Castle", "flag-banner-long", 10, x + 17, z + front * 17, false)
+			end
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
@@ -2849,6 +2864,26 @@ local function expandCityDistricts(folder, info, style, rng, walkers)
 			local marker = part(folder, Vector3.new(0.3, 0.3, 0.3), CFrame.new(x, 1.2, z - 27), Color3.new(1, 1, 1))
 			marker.Transparency, marker.CanCollide, marker.CanQuery = 1, false, false
 			sign(folder, marker, d.name, nil, 8)
+		end
+	end
+	-- [실제 소유 연구시설] 월드 경제가 아닌 플레이어 항구 건축의 연구소·미술관도 독립 필지로 나타낸다.
+	-- 기존 기념물 자리/시설 인터랙션에는 간섭하지 않는다.
+	local owned = info.builtLandmarks or {}
+	if plan.level >= 3 then
+		for _, item in {
+			{ id = "laboratory", name = "연구소", x = -238, z = -187, tint = Color3.fromRGB(172, 162, 142) },
+			{ id = "gallery", name = "미술관", x = -238, z = 187, tint = Color3.fromRGB(216, 194, 162) },
+		} do
+			if owned[item.id] == true then
+				local at = Vector3.new(item.x, 0, item.z)
+				local building = house(folder, at, 19, 15, 2, style, rng, item.tint)
+				if item.id == "laboratory" then
+					importedModel(folder, "Town", "workbench-anvil", at + Vector3.new(12, 0, 3), 4, false)
+				else
+					importedModel(folder, "Terrain", "statue-column", at + Vector3.new(12, 0, 3), 11, false)
+				end
+				sign(folder, building, item.name, nil, 14)
+			end
 		end
 	end
 end
