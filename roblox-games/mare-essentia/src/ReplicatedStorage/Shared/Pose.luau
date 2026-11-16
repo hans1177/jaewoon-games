@@ -344,8 +344,8 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			if descendant == root then
 				descendant.Transparency = 1
 			elseif n == "Head" then
-				descendant.Color = if role == "Rogue_Hooded" then jacket else skin
-				descendant.Material = if role == "Rogue_Hooded" then Enum.Material.Fabric else Enum.Material.SmoothPlastic
+				descendant.Color = skin
+				descendant.Material = Enum.Material.SmoothPlastic
 			elseif string.find(n, "Hand") then
 				-- 손: 기사·도적은 가죽 장갑, 나머지는 맨손
 				local gloved = role == "Knight" or role == "Rogue" or role == "Rogue_Hooded"
@@ -419,18 +419,37 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	humanoid.WalkSpeed = 0
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	model.Name = "R15NPC"
+	-- [공통 R15 외형] 직업·나이에 따라 실루엣과 몸짓을 부여한다. 게임 수치·저장은 변경하지 않는다.
+	local physique = if outfit and type(outfit.bodyType) == "string" then outfit.bodyType
+		elseif outfit and outfit.age == "elder" then "elder"
+		elseif role == "Barbarian" then "heavy" elseif role == "Rogue" or role == "Rogue_Hooded" then "slim"
+		elseif role == "Knight" then "athletic" else "average"
+	local style = if outfit and type(outfit.motionStyle) == "string" then outfit.motionStyle
+		elseif outfit and outfit.age == "elder" then "elder"
+		elseif role == "Knight" then "disciplined" elseif role == "Barbarian" then "heavy"
+		elseif role == "Mage" then "scholar" elseif role == "Rogue" or role == "Rogue_Hooded" then "nimble" else "civilian"
+	local personality = if outfit and type(outfit.persona) == "number" then math.clamp(math.floor(outfit.persona), 1, 3) else rng:NextInteger(1, 3)
+	model:SetAttribute("AppearancePhysique", physique)
+	model:SetAttribute("MotionStyle", style)
+	model:SetAttribute("MotionPersonality", personality)
 	model.Parent = parent
-	-- [래더 NPC 2단계] 사람마다 체격·깊이·머리 크기를 조금씩 달리해 복제 인간처럼 보이지 않게 한다.
+	-- [비주얼 래더] 승인된 2단계 안에서 R15 체형만 바꿔 복제 인간 느낌을 줄인다.
 	if ladderNpcTier >= 2 and humanoid.AutomaticScalingEnabled ~= false then
 		local function vary(name, lo, hi)
 			local value = humanoid:FindFirstChild(name)
-			if value and value:IsA("NumberValue") then
-				value.Value = lo + rng:NextNumber() * (hi - lo)
-			end
+			if value and value:IsA("NumberValue") then value.Value = lo + rng:NextNumber() * (hi - lo) end
 		end
-		vary("BodyWidthScale", 0.92, 1.1)
-		vary("BodyDepthScale", 0.94, 1.08)
-		vary("HeadScale", 0.96, 1.08)
+		if physique == "heavy" then
+			vary("BodyWidthScale", 1.08, 1.17); vary("BodyDepthScale", 1.05, 1.13); vary("HeadScale", 0.96, 1.02)
+		elseif physique == "slim" then
+			vary("BodyWidthScale", 0.85, 0.94); vary("BodyDepthScale", 0.88, 0.98); vary("HeadScale", 0.98, 1.08)
+		elseif physique == "athletic" then
+			vary("BodyWidthScale", 1.01, 1.10); vary("BodyDepthScale", 0.98, 1.07); vary("HeadScale", 0.95, 1.04)
+		elseif physique == "elder" then
+			vary("BodyWidthScale", 0.91, 1.02); vary("BodyDepthScale", 0.93, 1.04); vary("HeadScale", 1.01, 1.1)
+		else
+			vary("BodyWidthScale", 0.94, 1.08); vary("BodyDepthScale", 0.94, 1.07); vary("HeadScale", 0.97, 1.07)
+		end
 	end
 	local currentHeight = model:GetExtentsSize().Y
 	if currentHeight < 0.01 then model:Destroy(); return nil end
@@ -768,6 +787,8 @@ function Pose.makeR15Action(model, state, progress, t)
 	end
 	local p = math.clamp(tonumber(progress) or 0, 0, 1)
 	local time = tonumber(t) or 0
+	local motionStyle = model:GetAttribute("MotionStyle") or "civilian"
+	local personality = model:GetAttribute("MotionPersonality") or 1
 	-- t는 걸음거리/동작 위상일 수도 있으므로 실제 경과시간으로 보간한다.
 	local blendTime = os.clock()
 	local blend = r15ActionBlends[model]
@@ -791,26 +812,31 @@ function Pose.makeR15Action(model, state, progress, t)
 	for _, joint in m do set(joint, CFrame.identity) end
 	if state == "idle" then
 		-- 숨쉬기 + 체중 이동 + 가끔 두리번: 가만히 서 있어도 살아 있게
-		set(m.waist, A(math.sin(time * 1.7) * 0.035, math.sin(time * 0.5) * 0.1, 0))
-		set(m.root, CFrame.new(math.sin(time * 0.45) * 0.09, math.sin(time * 1.7) * 0.025, 0) * A(0, 0, math.sin(time * 0.45) * 0.045))
-		set(m.neck, A(math.sin(time * 0.9) * 0.07, math.sin(time * 0.37) * 0.45, 0))
+		local weight = if motionStyle == "heavy" then 0.65 elseif motionStyle == "nimble" then 1.16 else 0.9
+		local lean = if motionStyle == "elder" then 0.13 elseif motionStyle == "scholar" then 0.06 else 0
+		local gaze = if motionStyle == "nimble" or motionStyle == "scholar" then 0.17 else 0.09
+		set(m.waist, A(lean + math.sin(time * 1.7) * 0.028, math.sin(time * 0.5 + personality) * gaze, 0))
+		set(m.root, CFrame.new(math.sin(time * 0.45) * 0.052 * weight, math.sin(time * 1.7) * 0.019, 0) * A(0, 0, math.sin(time * 0.45) * 0.025 * weight))
+		set(m.neck, A(math.sin(time * 0.9) * 0.045 - lean * 0.4, math.sin(time * 0.37 + personality) * gaze, 0))
 		set(m.leftArm, A(math.sin(time * 1.1) * 0.07, 0, 0.1)); set(m.rightArm, A(-math.sin(time * 1.1) * 0.07, 0, -0.1))
 		set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 	elseif state == "walk" or state == "run" then
 		-- 걸음 주기: 발 앞으로(무릎 굽힘) → 딛기 → 뒤로 밀기. 반대 팔이 같이 흔들리고 몸이 위아래·좌우로 자연스럽게 흔들린다.
 		local run = state == "run"
-		local w = if run then time * 9 else time -- 걷기는 "이동한 거리(라디안으로 환산)"가 들어와 발이 땅 위에서 미끄러지지 않는다
+		-- [발걸음] 걷기·달리기 모두 이동거리로 받은 위상을 사용한다.
+		local w = time
 		local s, c = math.sin(w), math.cos(w)
-		local amp = if run then 1.15 else 0.82
-		local kneeAmp = if run then 1.7 else 1.0
+		local stride = if motionStyle == "heavy" then 0.84 elseif motionStyle == "elder" then 0.7 elseif motionStyle == "nimble" then 1.1 else 1
+		local amp = (if run then 0.96 else 0.74) * stride
+		local kneeAmp = (if run then 1.22 else 0.91) * stride
 		set(m.leftLeg, A(s * amp, 0, 0)); set(m.rightLeg, A(-s * amp, 0, 0))
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
 		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
 		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
-		local armForward = if run then 0.96 else 0.72
-		local armBack = if run then 0.38 else 0.28
+		local armForward = (if run then 0.78 else 0.56) * stride
+		local armBack = (if run then 0.32 else 0.23) * stride
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
@@ -820,9 +846,10 @@ function Pose.makeR15Action(model, state, progress, t)
 		local elbowBack = if run then 0.38 else 0.15
 		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
-		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.34 else 0.16)
-		set(m.root, CFrame.new(0, bob, 0) * A(if run then -0.24 else -0.06, s * (if run then 0.14 else 0.09), s * 0.05))
-		set(m.waist, A(if run then -0.07 else 0, -s * (if run then 0.22 else 0.15), 0))
+		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.17 else 0.09) * stride
+		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
+		set(m.root, CFrame.new(0, bob, 0) * A((if run then -0.13 else -0.03) + lean, s * 0.08, s * 0.03))
+		set(m.waist, A((if run then -0.04 else 0) - lean * 0.4, -s * 0.13, 0))
 		set(m.neck, A(if run then 0.1 else 0, s * 0.04, 0))
 	elseif state == "attack" then
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
