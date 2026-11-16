@@ -20,10 +20,17 @@ on:
       - 'roblox-games/mare-essentia/src/**'
       # Rojo 자산 폴더·빌드 트리 변경도 공식 Studio로 검증한다.
       - 'roblox-games/mare-essentia/default.project.json'
-  # [정밀검사] 코드 변경이 없어도 매일 12:43(한국시간)에 기존 116단계 스크립트를 자동 요청한다.
+      # [자산 변경] 실제 자산·등록 ID·승인표 변경도 같은 Studio에서 검증한다.
+      - 'roblox-games/mare-essentia/assets/**'
+      - 'roblox-games/mare-essentia/audio/**'
+      - 'roblox-games/mare-essentia/approved-assets.json'
+      - 'roblox-games/mare-essentia/assets-registered.json'
+      - 'roblox-games/mare-essentia/assets-wanted.json'
+      - 'roblox-games/mare-essentia/assets-wanted.seed.json'
+  # [정밀검사] 한국시간 00:43·12:43에 하루 2회 공식 Studio 정밀검사를 요청한다.
   # GitHub 예약 누락 시 기존 push·게시 완료 이벤트와 수동 요청 경로가 유지된다.
   schedule:
-    - cron: '43 3 * * *'
+    - cron: '43 3,15 * * *'
   workflow_run:
     workflows: ["Owner Mare Essentia Direct Publish"]
     types: [completed]
@@ -46,7 +53,7 @@ jobs:
       github.repository == 'hans1177/jaewoon-games' &&
       (github.event_name != 'workflow_run' ||
        (github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml' &&
-        github.event.workflow_run.conclusion == 'success' &&
+        (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure') &&
         github.event.workflow_run.head_branch == 'main'))
     runs-on: ubuntu-latest
     steps:
@@ -91,16 +98,7 @@ jobs:
           # [예약] 새 소스 변경은 즉시 검사한다. 매일 정밀 검사는 최근 기록과 독립적으로 중복 여부를 판단한다.
           # 기존 일반 검사 하나가 대기 중이라고 하루 1번 정밀 검사를 통째로 누락시키지 않는다.
           if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            latest=$(gh api "repos/$GITHUB_REPOSITORY/contents/history.json?ref=mare-essentia-studio-frames" --jq .content 2>/dev/null \
-              | base64 -d 2>/dev/null | jq -r '[.runs[] | select(.kind == "full")][0].at // ""' 2>/dev/null || true)
-            if [ -n "$latest" ]; then
-              last_s=$(date -u -d "$latest" +%s 2>/dev/null || echo 0)
-              now_s=$(date -u +%s)
-              if [ "$last_s" -gt 0 ] && [ "$now_s" -ge "$last_s" ] && [ "$(( now_s-last_s ))" -lt 72000 ]; then
-                echo "STUDIO_DEEP_QA_SKIP=RECENT_FULL:$latest"
-                exit 0
-              fi
-            fi
+            # [정기검증] 최근 정밀검사 PASS와 관계없이 오전·오후 각각 요청한다.
             # 공유 Windows Studio 러너의 작업을 직렬 처리하되, 다른 단순 검사 하나로 예약을 잃지 않는다.
             if [ "$pending" -ge 2 ]; then
               echo "STUDIO_DEEP_QA_SKIP=RUNNER_QUEUE:$pending"
