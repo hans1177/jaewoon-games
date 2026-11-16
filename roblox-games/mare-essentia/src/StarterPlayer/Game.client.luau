@@ -6179,7 +6179,8 @@ function H.startField(s)
 	local cardSkills = {}
 	for _, c in (view and view.deck and view.deck.cards) or {} do
 		if c.skill and c.kind ~= "ship" and #cardSkills < 3 then
-			table.insert(cardSkills, { name = c.name, skill = c.skill })
+			-- [전투 원화] 이미 등록된 원본 카드 ID를 지상 스킬 슬롯에 전달한다. 판정·덱은 그대로.
+			table.insert(cardSkills, { id = c.id, name = c.name, skill = c.skill })
 		end
 	end
 	local battleLevel = 1
