@@ -10,13 +10,13 @@ local Cards = require(script.Parent.KnowledgeCards)
 local T = {}
 
 -- 카드 id → 소분류(학문 id). 없으면 중분류 직속. 새 카드는 여기에 한 줄 추가.
-T.SubOf = {
+T.SubOf = ({
 	bot_tulip = "agronomy",
 	zoo_reindeer = "veterinary",
-}
+} :: { [string]: string })
 
 -- Field → 중분류 학문 id (연구 노드가 있는 학문 + 아직 노드 없는 군사학)
-T.DisciplineOfField = { Military = "military_science" }
+T.DisciplineOfField = ({ Military = "military_science" } :: { [string]: string })
 for _, d in K.Disciplines do
 	T.DisciplineOfField[d.field] = d.id
 end
@@ -25,7 +25,7 @@ end
 function T.path(cardId: string)
 	local c = Cards.ById[cardId]
 	local disc = c and T.DisciplineOfField[c.field]
-	local row = disc and K.TaxonomyById[disc]
+	local row: any = disc and K.TaxonomyById[disc]
 	return { domain = row and row.domain or nil, discipline = disc, sub = T.SubOf[cardId] }
 end
 
