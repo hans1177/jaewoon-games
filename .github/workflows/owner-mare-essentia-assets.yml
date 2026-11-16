@@ -162,7 +162,7 @@ jobs:
           set -euo pipefail
           # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
           # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png; do
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png; do
             if [[ "$f" == roblox-games/mare-essentia/assets/relics/weapon-*.glb* && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_WEAPON_MODEL $f"
               continue
