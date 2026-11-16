@@ -25,7 +25,7 @@ end
 function T.path(cardId: string)
 	local c = Cards.ById[cardId]
 	local disc = c and T.DisciplineOfField[c.field]
-	local row: any = disc and K.TaxonomyById[disc]
+	local row: any = disc and (K.TaxonomyById :: any)[disc]
 	return { domain = row and row.domain or nil, discipline = disc, sub = T.SubOf[cardId] }
 end
 
@@ -43,7 +43,7 @@ function T.audit(): { string }
 	for id, sub in T.SubOf do
 		if not Cards.ById[id] then
 			table.insert(bad, id .. ": 없는 카드")
-		elseif not K.TaxonomyById[sub] then
+		elseif not (K.TaxonomyById :: any)[sub] then
 			table.insert(bad, id .. ": 소분류 '" .. sub .. "' 가 분류표에 없음")
 		end
 	end
