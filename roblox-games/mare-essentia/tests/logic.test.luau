@@ -499,8 +499,13 @@ local function extraTests()
 	stFx2.portId = "london"
 	stFx2.coins = 10000
 	stFx2.day = (1721 - 1700) * 365
-	S.World.tick(stFx2)
+	local remoteMessages = S.World.tick(stFx2)
 	check("세계: 다른 항구에 있으면 직접 피해는 없음", stFx2.coins == 10000)
+	local remoteImmediate = false
+	for _, line in remoteMessages do
+		if string.find(line, "마르세유", 1, true) then remoteImmediate = true end
+	end
+	check("먼 항구의 사건은 즉시 세계 소식으로 유출되지 않는다", not remoteImmediate)
 	-- 연쇄: 지진은 화재·해일을, 기근은 풍작(회복)을 예약한다
 	local evEq, evFamine = D.WorldEvents.ById.earthquake, D.WorldEvents.ById.famine
 	local eqFollows, famineHeals = {}, false
@@ -2707,6 +2712,10 @@ do
 	end
 	check("view marks trend up", wine and wine.trend == "up")
 	check("view news lists event", #v.news == 1)
+	check("항구 보고·전단/신문·구전·동료 소식은 기존 보기에서 제공", v.harbor and v.harbor.sim and v.harbor.sim.city
+		and type(v.harbor.sim.city.buildings) == "table" and type(v.harbor.administration) == "table"
+		and type(v.press) == "table" and type(v.tavernNews) == "table" and type(v.companionNews) == "table")
+	check("시장 정보를 전 세계 항구로 즉시 누출하지 않는다", S.Econ.marketNewsVisible(st, "calcutta") == false)
 	m2:tickEvents(function() return 0.99 end, portIds, goodIds)
 	m2:tickEvents(function() return 0.99 end, portIds, goodIds)
 	check("event expires", m2:eventMult("london", "wine") == 1)

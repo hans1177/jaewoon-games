@@ -4363,6 +4363,64 @@ function RENDERERS.harbor()
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
+
+	-- [항구 행정관] 자동으로 성장하는 도시와 플레이어가 투자한 건축 계통을 함께 열람한다.
+	if h.sim and h.sim.city then
+		local sim, city = h.sim, h.sim.city
+		add(function() return mkHeader(content, "항만 관리관 · 인구 · 건축 · 도시 현황") end)
+		add(function()
+			return mkRow(content, sim.stageName .. " · 도시 행정 보고",
+				string.format("인구 %d명 · 번영 %d%% · 안정 %d%% · 실업 %d%%\n식량 %d일분 · 주거 수용 %d%% · 노동 일자리 %d명",
+					sim.pop, sim.prosperity, sim.stability, sim.work.unemployment,
+					city.foodDays, sim.housing.ratio, sim.work.jobs)
+				.. string.format("\n도시 국고 %d · 교역수지 %+d", city.treasury, city.tradeBalance), {}, 124)
+		end)
+		add(function()
+			return mkRow(content, "주민 생활 · 인구 이동",
+				string.format("누적 출생 %d · 사망 %d · 유입 %d · 유출 %d\n현안: %s",
+					city.births, city.deaths, city.newcomers, city.departures, table.concat(city.issues, " · ")), {}, 86)
+		end)
+		add(function() return mkHeader(content, "도시 자동 건설 · 현존 건축물") end)
+		for _, b in ipairs(city.buildings or {}) do
+			if b.count > 0 then
+				add(function()
+					return mkRow(content, b.name, string.format("%d개%s", b.count,
+						if b.coverage then string.format(" · 서비스 충족 %d%%", b.coverage) else ""), {}, 52)
+				end)
+			end
+		end
+		add(function() return mkHeader(content, "선장 투자 · 항구 건축 발전도") end)
+		for _, b in ipairs(h.administration or {}) do
+			if b.stage > 0 or b.next then
+				add(function()
+					local detail = string.format("%d/%d단계 · %s", b.stage, b.total, if b.built ~= "" then b.built else "아직 미건설")
+					if b.next then detail ..= string.format("\n다음: %s · 비용 %d%s",
+						b.next.name, b.next.cost, if b.next.why then " · " .. b.next.why else "") end
+					return mkRow(content, b.name, detail, {}, if b.next then 92 else 66)
+				end)
+			end
+		end
+	end
+	-- [인쇄술/관보] 전 세계 소식이 아니라 교역·항해로 전달된 시기별 지역 보도만 표시한다.
+	if view.press then
+		local press = view.press
+		add(function() return mkHeader(content, press.available and (press.medium .. " · 도착한 소식") or "항구 신문 · 발행 전") end)
+		if press.available then
+			add(function()
+				return mkLabel(content, "분류: " .. (if #press.categories > 0 then table.concat(press.categories, " · ") else "새로 도착한 기사 없음")
+					.. "\n※ 원거리 사건은 선박과 교역망을 통해 늦게 전달돼.", 13, COLORS.muted, false)
+			end)
+			for _, news in ipairs(press.rows or {}) do
+				add(function()
+					return mkRow(content, "[" .. news.categoryName .. "] " .. news.title,
+						news.confidence .. " · " .. news.origin .. " · " .. news.daysOld .. "일 전 사건\n" .. news.detail, {}, 83)
+				end)
+			end
+		else
+			add(function() return mkLabel(content, "이 항구에는 정기 신문이 아직 없어. 소식은 주점·동료·상인의 통신문으로 전해져.", 13, COLORS.muted, false) end)
+		end
+	end
+
 	-- [항구별 특산 산업] 실물경제 시뮬의 품목별 생산·재고·가격·기술 발전을 표시한다.
 	if h.sim and h.sim.specialties and #h.sim.specialties > 0 then
 		add(function() return mkHeader(content, "지역 특산품 · 산업 발전") end)
@@ -4389,6 +4447,31 @@ function RENDERERS.harbor()
 					industry.supplier or "현지 자급", industry.nextStep or "-")
 				return mkRow(content, industry.name .. " · " .. industry.stage .. "/4", detail, {}, 132)
 			end)
+		end
+	end
+	-- [세계문명] 국가 경제·사회·문화·전쟁·혁명이 항구의 생활에 미친 영향.
+	if h.sim and h.sim.society then
+		local social = h.sim.society
+		add(function() return mkHeader(content, "세계사 · 정치 · 사회 · 문명 변화") end)
+		add(function()
+			return mkRow(content, "도시 문명 지표",
+				string.format("정치 %+d · 금융 %+d · 학문 %+d · 문화 %+d · 신앙 %+d",
+					math.floor(social.civic * 100), math.floor(social.finance * 100), math.floor(social.knowledge * 100),
+					math.floor(social.culture * 100), math.floor(social.faith * 100))
+				.. string.format("\n계층격차 %+d · 이주압력 %+d · 군사긴장 %+d · 식민압력 %+d · 환경 %+d",
+					math.floor(social.inequality * 100), math.floor(social.migration * 100), math.floor(social.military * 100),
+					math.floor(social.colony * 100), math.floor(social.ecology * 100)), {}, 104)
+		end)
+		if h.sim.historyEffects then
+			for _, ev in ipairs(h.sim.historyEffects) do
+				add(function()
+					local detail = (ev.kind or "역사·경제") .. " · " .. tostring(ev.daysLeft or 0) .. "일 남음"
+					if ev.peopleNames and #ev.peopleNames > 0 then detail ..= "\n관련 인물: " .. table.concat(ev.peopleNames, " · ") end
+					if ev.sourceEvent then detail ..= "\n백과 사건: " .. ev.sourceEvent end
+					if ev.qid then detail ..= " · 위키데이터 " .. ev.qid end
+					return mkRow(content, ev.title or "세계 사건", detail, {}, if ev.peopleNames and #ev.peopleNames > 0 then 94 else 72)
+				end)
+			end
 		end
 	end
 	if h.economy then
@@ -4738,6 +4821,17 @@ function RENDERERS.crew()
 			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
 		end)
 	end
+
+	-- [동료 전문 정보] 선장의 경험과 동료가 배운 학문에 따라 사건의 설명이 달라진다.
+	if view.companionNews and view.companionNews.available then
+		add(function() return mkHeader(content, "동료가 전해 준 최신 지역 소식") end)
+		for i, item in ipairs(view.companionNews.rows or {}) do
+			if i > 4 then break end
+			add(function() return mkRow(content, "[" .. item.categoryName .. "] " .. item.title,
+					item.detail .. " · " .. item.confidence .. " · " .. item.origin .. " · " .. item.daysOld .. "일 전", {}, 78) end)
+		end
+	end
+
 	add(function() return mkHeader(content, "동료") end)
 	if view.talk then
 		add(function()
@@ -8211,6 +8305,22 @@ function RENDERERS.board()
 			return mkRow(content, "거절하고 돌아선다", "고르지 않아도 괜찮아요.", { { text = "거절", color = COLORS.grey, onClick = function() call("TavernDecline") end } }, 64)
 		end)
 	end
+
+	-- [소식 게시] 주점 전언은 현지 방문·항해 경험에 따라 보이는 범위가 다르다.
+	if view.tavernNews then
+		add(function() return mkHeader(content, "선원·상인들의 구전 소식") end)
+		local news = view.tavernNews
+		if #news.rows == 0 then
+			add(function() return mkLabel(content, "새로운 지역 소식은 아직 도착하지 않았어. 직접 항해하거나 동료에게 물어봐.", 13, COLORS.muted, false) end)
+		else
+			for i, item in ipairs(news.rows) do
+				if i > 5 then break end
+				add(function() return mkRow(content, "[" .. item.categoryName .. "·" .. item.confidence .. "] " .. item.title,
+					item.origin .. " · " .. item.daysOld .. "일 전 사건\n" .. item.detail, {}, 75) end)
+			end
+		end
+	end
+
 	-- 3) 주점에서 할 수 있는 일
 	add(function() return mkHeader(content, "주점에서") end)
 	add(function()

@@ -84,9 +84,35 @@ return function(D, S)
 			specialty.researchName = disc and disc.name or specialty.research
 		end
 		local industries = E.industryView(t, w)
+		local historyEffects = E.activeHistory(w, portId)
+		-- [인물 백과] 기존 등장 인물 명칭을 연표 사건과 연결한다.
+		if S.People and S.People.all then
+			for _, event in ipairs(historyEffects) do
+				event.peopleNames = {}
+				for _, personId in ipairs(event.people) do
+					for _, person in ipairs(S.People.all) do
+						if person.id == personId then table.insert(event.peopleNames, person.name); break end
+					end
+				end
+			end
+		end
 		for _, industry in ipairs(industries) do
 			local disc = D.KnowledgeTree and D.KnowledgeTree.DisciplineById[industry.research]
 			industry.researchName = disc and disc.name or industry.research
+		end
+		-- [항구 행정관] 실제 세계 도시 수치와 자동 건설된 건물 현황을 재사용한다.
+		local foodDays = math.floor((t.stock.grain or 0) / math.max(t.dem.grain or 0.01, 0.01))
+		local issues = {}
+		if foodDays < 10 then table.insert(issues, "식량 비축 부족") end
+		if t.housingRatio < 0.88 then table.insert(issues, "주택 공급 부족") end
+		if t.unemp > 0.15 then table.insert(issues, "실업 증가") end
+		if t.stability < 0.45 then table.insert(issues, "사회 불안과 치안 문제") end
+		if t.society and t.society.military > 0.2 then table.insert(issues, "전쟁 여파로 군사 긴장") end
+		if #issues == 0 then table.insert(issues, "도시 운영 안정") end
+		local cityBuildings = {}
+		for _, b in ipairs(E.BUILDINGS) do
+			table.insert(cityBuildings, { id = b.id, name = b.name, count = math.floor(t.bld[b.id] + 0.5),
+				coverage = if b.serves then math.floor((t.cov[b.id] or 0) * 100 + 0.5) else nil })
 		end
 		local bld, svc = {}, {}
 		for _, b in ipairs(E.BUILDINGS) do
@@ -105,6 +131,11 @@ return function(D, S)
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
+			city = { foodDays = foodDays, treasury = math.floor(t.treasury), tradeBalance = math.floor(t.tradeOut - t.tradeIn),
+				births = math.floor(t.births), deaths = math.floor(t.deaths), newcomers = math.floor(t.migIn), departures = math.floor(t.migOut),
+				issues = issues, buildings = cityBuildings },
+			-- [경제·사회·역사 인물] 한 항구의 수치와 실제 발생 사건을 기존 view에 전달한다.
+			society = table.clone(t.society), historyEffects = historyEffects,
 		}
 	end
 
@@ -165,21 +196,237 @@ return function(D, S)
 		end
 	end
 
+
+	-- [항구 소식 전달] 단 하나의 기존 경제·역사 기록에서 구전/동료/관보/시장 소식을 판정한다.
+	-- 뉴스는 경제 원장과 플레이어 세계 기록을 읽기만 한다. 별도 저장·새 원격 호출은 없다.
+	local NEWS_CATEGORIES = {
+		{ id = "military", name = "군사", tokens = { "전쟁", "해전", "해적", "군사", "봉쇄", "war", "battle" } },
+		{ id = "diplomacy", name = "외교", tokens = { "외교", "조약", "동맹", "평화", "treaty" } },
+		{ id = "politics", name = "정치", tokens = { "정치", "혁명", "왕정", "왕위", "독립", "반란", "봉기", "revolution" } },
+		{ id = "disaster", name = "재난", tokens = { "재난", "전염병", "역병", "기근", "자연재해", "지진", "화재", "가뭄", "폭풍", "disaster", "plague", "famine" } },
+		{ id = "religion", name = "종교", tokens = { "종교", "신앙", "선교", "faith", "church" } },
+		{ id = "culture", name = "문화", tokens = { "문화", "예술", "극장", "축제", "culture" } },
+		{ id = "science", name = "과학", tokens = { "학문", "과학", "발명", "의학", "기술", "science" } },
+		{ id = "industry", name = "산업", tokens = { "산업", "공장", "건설", "식민", "광산", "industry" } },
+		{ id = "navigation", name = "항해", tokens = { "항해", "탐험", "난파", "항로", "navigation" } },
+		{ id = "society", name = "사회", tokens = { "사회", "이주", "민란", "구호", "빈곤", "society" } },
+		{ id = "economy", name = "경제", tokens = { "경제", "교역", "금융", "무역", "시장", "호황", "행운", "호재", "finance", "trade" } },
+	}
+	-- [미확인 전망] 사실 사건과 별개로 틀릴 수 있는 선원의 추측만 구전으로 등장한다.
+	local NEWS_FORECASTS = {
+		military = "다음 항구까지 전쟁이 확대될 가능성",
+		disaster = "피해가 주변 도시에도 번질 가능성",
+		economy = "다음 장에서 시세가 급등할 가능성",
+		politics = "곧 새로운 정치 협상이 시작될 가능성",
+		industry = "주변 공방까지 신기술이 퍼질 가능성",
+		navigation = "새로운 항로가 조만간 열릴 가능성",
+		culture = "다른 항구에서도 같은 문화가 유행할 가능성",
+	}
+	local NEWS_CAREERS = { politics = "adventure", diplomacy = "adventure", military = "battle",
+		economy = "trade", industry = "trade", science = "adventure", culture = "adventure",
+		religion = "adventure", disaster = "adventure", society = "adventure", navigation = "adventure" }
+	local NEWS_DISC = {
+		military = { "shipbuilding", "history", "physics" }, diplomacy = { "history", "political_science", "linguistics" },
+		politics = { "history", "political_science" }, religion = { "history", "philosophy", "religious_studies" },
+		culture = { "art", "linguistics", "history" }, science = { "physics", "medicine", "astronomy", "history" },
+		industry = { "crafts", "shipbuilding", "architecture", "mineralogy" }, navigation = { "navigation", "geography" },
+		disaster = { "medicine", "meteorology", "geography" }, society = { "medicine", "history" },
+		economy = { "commerce", "economics" },
+	}
+	local function newsClass(kind, id, title)
+		local label = tostring(kind or "") .. " " .. tostring(id or "") .. " " .. tostring(title or "")
+		for _, cat in ipairs(NEWS_CATEGORIES) do
+			for _, token in ipairs(cat.tokens) do
+				if string.find(label, token, 1, true) then return cat.id, cat.name end
+			end
+		end
+		return "city", "도시"
+	end
+
+	local function pressAt(state, w, town)
+		local year = E.year(w)
+		local region = town.region
+		local school = town.bld and (town.bld.school or 0) or 0
+		local literacy = school >= 1 and town.stage >= 3
+		local culturalPrint = (region == "europe" and year >= 1605)
+			or (region == "new_world" and year >= 1704)
+			or (region == "indian" and year >= 1780)
+			or (region ~= "europe" and region ~= "new_world" and region ~= "indian" and year >= 1820)
+		local gazette = region == "far_east" and year >= 1500 and literacy
+		local newspaper = culturalPrint and literacy and (town.stage >= 4 or (region == "europe" and year >= 1665) or year >= 1750)
+		local pamphlet = literacy and year >= 1500 and (region == "europe" or region == "far_east" or year >= 1700)
+		local press = newspaper or gazette or pamphlet
+		return { available = press, periodical = newspaper or gazette,
+			medium = if newspaper then "항구 신문" elseif gazette then "관보·회보"
+				elseif pamphlet then "전단·포고문·상업 통신문" else "구전·상인 통신문",
+			year = math.floor(year), printing = pamphlet }
+	end
+
+	local function newsExpertise(state, category)
+		local careerId = NEWS_CAREERS[category] or "adventure"
+		local career = state.careers and state.careers[careerId]
+		local level = career and career.level or 1
+		local intel = S.Harbor and S.Harbor.intel and S.Harbor.intel(state) or 0
+		local strength = math.clamp(math.floor((level - 1) / 6) + math.floor(intel / 2), 0, 3)
+		local bestName, bestFit = nil, 0
+		for _, id in ipairs(state.companions or {}) do
+			local who = D.Specialties and D.Specialties.CompanionById and D.Specialties.CompanionById[id]
+			if who then
+				local fit = 0
+				for _, d in ipairs(who.disciplines or {}) do
+					if table.find(NEWS_DISC[category] or {}, d) then fit += 1 end
+				end
+				if fit > bestFit then bestFit, bestName = fit, who.name end
+			end
+		end
+		return math.clamp(strength + math.min(bestFit, 2), 0, 4), bestName
+	end
+
+	-- 항해권별 거리와 교역로의 단순 전달 시간. 중대 사건 외에는 원거리 자동 열람을 차단한다.
+	local function newsRoute(town, row)
+		local p = D.Ports.Ports[town.id]
+		local regions, countries, ports = row.regions, row.countries, row.ports
+		local home = ports and ports[1] and D.Ports.Ports[ports[1]]
+		local localPort = ports and table.find(ports, town.id) ~= nil
+		local sameCountry = countries and table.find(countries, town.country) ~= nil
+		local sameRegion = regions and table.find(regions, town.region) ~= nil
+		if home then
+			sameCountry = sameCountry or home.country == town.country
+			sameRegion = sameRegion or D.Regions.of(home).id == town.region
+		end
+		local distance = 0
+		if home and p then
+			local a, b = math.rad(p.lat), math.rad(home.lat)
+			local diff = math.rad(p.lon - home.lon)
+			distance = 6371 * math.acos(math.clamp(math.sin(a) * math.sin(b) + math.cos(a) * math.cos(b) * math.cos(diff), -1, 1))
+		end
+		local scope = if localPort then "port" elseif sameCountry then "country"
+			elseif sameRegion then "region" else "foreign"
+		local delay = if scope == "port" then 0 elseif scope == "country" then 6 + distance / 280
+			elseif scope == "region" then 12 + distance / 240 else 52 + distance / 210
+		return scope, math.floor(delay), home
+	end
+
+	-- source: tavern(구전), companion(직업별 정보), gazette(신문·관보).
+	function X.bulletins(state, source)
+		local w = ensure(state)
+		local t = w and w.towns[state.portId]
+		if not t then return { available = false, medium = "소식 없음", rows = {}, categories = {} } end
+		local press = pressAt(state, w, t)
+		local paper = source == "gazette"
+		if paper and not press.available then
+			return { available = false, medium = press.medium, printing = press.printing, rows = {}, categories = {} }
+		end
+		if source == "companion" and #(state.companions or {}) == 0 then
+			return { available = false, medium = "동료 없음", rows = {}, categories = {} }
+		end
+		local result = { available = true, medium = if paper then press.medium
+			elseif source == "companion" then "동료 정보" else "주점·상인 소문",
+			printing = press.printing, rows = {}, categories = {} }
+		local present, seen = {}, {}
+		local channels = { { rows = w.log, day = w.day, region = nil }, { rows = state.world and state.world.log or {}, day = state.day, region = true } }
+		for _, channel in ipairs(channels) do
+			for i, row in ipairs(channel.rows) do
+				if i > 60 or #result.rows >= 10 then break end
+				local rec = row
+				if channel.region then
+					local regionId = row.regionId
+					if not regionId then
+						for _, region in ipairs(D.Regions.List) do
+							if row.region == region.name then regionId = region.id; break end
+						end
+					end
+					end
+					rec = { id = row.id or row.title, title = row.title, kind = row.tag or row.kind, day = row.day,
+						regions = regionId and { regionId } or nil, ports = row.port and { row.port } or nil }
+				end
+				local age = channel.day - (rec.day or channel.day)
+				local key = tostring(rec.id) .. ":" .. tostring((rec.ports and rec.ports[1]) or (rec.regions and rec.regions[1]) or "")
+				if age >= 0 and age <= 500 and not seen[key] then
+					local category, name = newsClass(rec.kind, rec.id, rec.title)
+					local importance = category == "military" or category == "diplomacy" or (category == "politics" and (string.find(tostring(rec.kind), "혁명", 1, true) or string.find(tostring(rec.id), "independence", 1, true)))
+					local scope, delay, home = newsRoute(t, rec)
+					local origin = home and home.name or (rec.regions and rec.regions[1]) or (rec.countries and rec.countries[1]) or "출처 미상"
+					if not home and rec.regions and rec.regions[1] then
+						for _, region in ipairs(D.Regions.List) do
+							if region.id == rec.regions[1] then origin = region.name; break end
+						end
+					end
+					end
+					local network = home ~= nil and state.stats ~= nil and state.stats.visited ~= nil and state.stats.visited[home.id] ~= nil and state.stats.visited[home.id] ~= false
+					local expertise, companionName = newsExpertise(state, category)
+					if paper then delay = math.max(0, math.floor(delay * 0.75)) end
+					if source == "tavern" then delay += 2 end
+					if (category == "military" or category == "disaster") and scope == "foreign" then delay += 12 end
+					local distant = scope == "foreign"
+					local reached = age >= delay
+					local allowed = not distant or importance or (paper and expertise >= 3 and network)
+					if paper and not press.periodical and distant then allowed = false end
+					if distant and source == "tavern" and not importance and not network then allowed = false end
+					if source == "companion" and distant and not importance and not network then allowed = false end
+					if reached and allowed then
+						local confidence = if paper then "공식 보도" elseif scope == "port" then "현지 목격"
+							elseif expertise >= 2 or network then "복수 전언" else "미확인 소문"
+						local detail = if expertise >= 3 then "연결된 교역망과 시대·사건 기록 대조"
+							elseif expertise >= 1 then "직업·항해 경험으로 출처를 대조" else "전달자 확인 전"
+						if source == "companion" and companionName then detail = companionName .. "의 전문 분야 의견" end
+						if confidence == "미확인 소문" then
+							detail ..= " · 전언은 아직 교차 확인되지 않음"
+							if source == "tavern" and ((#tostring(rec.id) + math.floor(age / 10)) % 4 == 0) then
+								detail ..= " · 선원들의 추측(사실 아님): "
+									.. (NEWS_FORECASTS[category] or "사건 여파가 더 번질 가능성")
+							end
+						end
+						table.insert(result.rows, { id = tostring(rec.id), title = rec.title or tostring(rec.id),
+							category = category, categoryName = name, daysOld = math.floor(age), source = result.medium,
+							confidence = confidence, detail = detail, region = scope, origin = origin, eventId = rec.sourceEvent or rec.id,
+							qid = if expertise >= 2 or paper then rec.qid else nil })
+						if not present[category] then present[category] = true; table.insert(result.categories, name) end
+						seen[key] = true
+					end
+				end
+			end
+		end
+		end
+		return result
+	end
+
+	-- [시장 정보] 사건 시각이 없는 기존 시세 이벤트는 지역 내부에서만 전파한다.
+	function X.marketNewsVisible(state, portId)
+		local a, b = D.Ports.Ports[state.portId], D.Ports.Ports[portId]
+		if not a or not b then return false end
+		if a.id == b.id then return true end
+		if a.country == b.country or D.Regions.of(a).id == D.Regions.of(b).id then
+			-- 기존 시세 이벤트에 발생시각이 없으므로 실제 방문한 정보망에서만 전달한다.
+			local visited = state.stats and state.stats.visited and state.stats.visited[portId]
+			return visited ~= nil and visited ~= false and ((state.careers and state.careers.trade and state.careers.trade.level or 1) >= 3
+				or (S.Harbor and S.Harbor.intel and S.Harbor.intel(state) or 0) >= 1)
+		end
+		return false
+	end
+
 	-- 해역·나라·세계 집계 (신문·거시 화면용)
 	function X.macro(state, kind, id)
 		local w = ensure(state)
 		if not w then return nil end
 		local a = E.aggregate(w, kind, id)
-		return { pop = math.floor(a.pop), gdp = math.floor(a.gdp), gdpPerCap = math.floor(a.gdpPerCap * 10) / 10, priceIdx = math.floor(a.priceIdx * 100), trade = math.floor(a.tradeOut), tech = math.floor(a.techAvg * 100), stability = math.floor(a.stability * 100), towns = a.towns }
+		return { pop = math.floor(a.pop), gdp = math.floor(a.gdp), gdpPerCap = math.floor(a.gdpPerCap * 10) / 10, priceIdx = math.floor(a.priceIdx * 100), trade = math.floor(a.tradeOut), tech = math.floor(a.techAvg * 100), stability = math.floor(a.stability * 100), towns = a.towns, society = a.society }
 	end
 
 	-- 게임의 세계 이벤트가 일어나면 경제 충격으로 넣는다.
 	function X.shock(state, ev, regionId)
 		local w = ensure(state)
-		if not w then return end
-		E.addShock(w, E.shockFromEvent(ev, regionId))
+		if not w then return false end
+		-- [공통 세계 시간] 개인 진행 연도가 다른 서버의 역사 재해를 잘못 전파하지 않는다.
+		if ev.year then
+			local at = ev.year + ((ev.month or 1) - 1) / 12
+			local current = E.year(w)
+			if at > current + 0.08 or at + 1 < current then return false end
+		end
+		if not E.addShock(w, E.shockFromEvent(ev, regionId)) then return false end
 		worldDirty = true
 		table.insert(pendingOps, { kind = "shock", event = ev, regionId = regionId })
+		return true
 	end
 
 	-- 지식카드(학문) → 마을 경제 기술 분야. 한 학문이 여러 분야에 가중치로 퍼진다.

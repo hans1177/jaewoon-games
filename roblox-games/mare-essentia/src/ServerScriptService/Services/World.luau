@@ -75,6 +75,8 @@ return function(D, S)
 		local wid = state.day * 100 + #w.log
 		table.insert(w.active, { id = ev.id, wid = wid, region = region, title = title, text = fmt(ev.text, rname), kind = ev.kind, startDay = state.day, endDay = state.day + ev.days })
 		w.cool[ev.id] = state.day
+		-- [사건-경제 연결] 공용 세계경제에도 전파하며 동일 사건 중복 반영은 Econ이 차단한다.
+		if S.Econ and S.Econ.shock then S.Econ.shock(state, ev, region) end
 		-- 시세 효과 (History 와 공용)
 		local h = state.history
 		local goods = validGoods(ev.goods)
@@ -117,10 +119,14 @@ return function(D, S)
 				table.insert(msgs, result)
 			end
 		end
-		table.insert(w.log, 1, { day = state.day, year = math.floor(state.startYear + state.day / 365), title = title, kind = ev.kind, region = rname, result = result })
+		table.insert(w.log, 1, { day = state.day, year = math.floor(state.startYear + state.day / 365), id = ev.id,
+		title = title, kind = ev.kind, tag = ev.tag, region = rname, regionId = region, port = ev.port, result = result })
 		while #w.log > LOG_MAX do
 			table.remove(w.log)
 		end
+		-- [사건 정보 지연] 먼 지역 사건은 실제 세계에 반영하되 발생 즉시 전 세계 알림을 보내지 않는다.
+		-- 뒤늦게 도착한 뉴스는 항구 신문·주점·동료 화면에서 확인한다.
+		if not exposed then return {} end
 		return msgs
 	end
 
@@ -282,7 +288,8 @@ return function(D, S)
 		for i, a in w.active do
 			local tpl = W.ById[a.id]
 			table.insert(out.active, {
-				index = i, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), left = a.endDay - state.day, here = a.region == here,
+				index = i, id = a.id, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), regionId = a.region,
+			left = a.endDay - state.day, here = a.region == here,
 				canAid = a.kind == "disaster" and a.region == here and not a.aided and not (tpl and tpl.aid == false), aided = a.aided == true,
 				cut = if a.kind == "disaster" and tpl then math.floor(mitigation(state, tpl.guard) * 100 + 0.5) else nil,
 			})

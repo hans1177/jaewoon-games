@@ -15,6 +15,7 @@
 local Data = require(script.Parent.Ports)
 local Chains = require(script.Parent.ProductionChains)
 local Regions = require(script.Parent.Regions)
+local HistoryEvents = require(script.Parent.HistoryEvents)
 
 local E = {}
 
@@ -276,6 +277,8 @@ local function newTown(p, w)
 		neighbors = {}, goods = {},
 		tech = {}, civTech = {}, civBonus = { food = 1, craft = 1, trade = 1, health = 1, research = 1 }, infra = 0, infraRef = 0, treasury = 0, stability = 0.7, wage = 1, wageRef = 1,
 		sector = { agri = 0, industry = 0, trade = 0, service = 0 }, migIn = 0, migOut = 0, unrestCd = 0, civ = 0,
+		-- [사회·문화·정치] 기존 저장 키와 물류 보존을 위한 경제 항구의 추가 관측값
+		society = { civic = 0, knowledge = 0, culture = 0, faith = 0, inequality = 0, migration = 0, colony = 0, military = 0, ecology = 0, finance = 0 },
 	}
 	local yf = 1 + (p.lat and (E.START_YEAR_HINT - 1500) / 400 or 0)
 	local rmod = E.REGION_TECH[t.region] or 0.9
@@ -531,7 +534,10 @@ function E.newWorld(opts)
 		t.treasury = gdp * 20
 	end
 	for _, h in ipairs(E.History) do
-		if h.year <= w.startYear and w.startYear < h.year + h.years then E.addShock(w, E.shockFromHistory(h, (h.year + h.years - w.startYear) * 365)); w.fired[h.id] = true end
+		if h.year <= w.startYear and w.startYear < h.year + h.years
+			and (not h.month or h.year < w.startYear or h.month <= 1) then
+			E.addShock(w, E.shockFromHistory(h, (h.year + h.years - w.startYear) * 365)); w.fired[h.id] = true
+		end
 	end
 	return w
 end
@@ -561,11 +567,49 @@ E.History = {
 	{ id = "tenmei_famine", year = 1783, years = 5, title = "덴메이 대기근", countries = { "japan" }, food = 0.6, mort = 0.0005 },
 }
 
+
+-- [역사 백과사전 → 공유 세계] 원본 연도·사건·인물을 직접 사용하며 영향계수는 게임용 모형이다.
+-- 종교·정치·식민·과학·문화·금융은 상품 가격뿐 아니라 해당 도시의 사회 상태도 변화시킨다.
+E.SOCIETY_HISTORY_FX = {
+	reformation_95 = { years = 6, regions = { "europe" }, civic = 0.15, faith = 0.45, culture = 0.12 },
+	nantes_edict = { years = 7, countries = { "france" }, civic = 0.20, faith = 0.32, culture = 0.20, migration = -0.10 },
+	westphalia = { qid = "Q150995", years = 6, regions = { "europe" }, civic = 0.24, military = -0.25, migration = -0.12, trade = 1.05 },
+	cape_colony = { years = 12, ports = { "cape_town" }, colony = 0.60, migration = 0.24, inequality = 0.20, trade = 1.04 },
+	glorious_revolution = { qid = "Q189508", years = 8, countries = { "england" }, civic = 0.45, finance = 0.24, knowledge = 0.10 },
+	fontainebleau = { qid = "Q512443", years = 12, countries = { "france" }, faith = -0.50, culture = -0.20, migration = 0.45, inequality = 0.20, trade = 0.96 },
+	bank_of_england = { qid = "Q183231", years = 12, countries = { "england" }, finance = 0.65, knowledge = 0.10, trade = 1.06 },
+	utrecht = { years = 5, regions = { "europe" }, civic = 0.12, military = -0.25, trade = 1.04 },
+	industrial_start = { qid = "Q2269", years = 30, countries = { "england" }, knowledge = 0.48, finance = 0.22, inequality = 0.18, ecology = -0.22, prod = 1.04 },
+	treaty_paris = { years = 6, regions = { "europe", "new_world", "indian" }, civic = 0.12, military = -0.26, trade = 1.05 },
+	independence = { years = 10, regions = { "new_world" }, civic = 0.55, migration = 0.20, military = 0.18, trade = 0.98 },
+	french_revolution = { qid = "Q6534", years = 10, countries = { "france" }, civic = 0.58, inequality = -0.16, migration = 0.38, military = 0.45, trade = 0.91 },
+	plassey = { years = 14, regions = { "indian" }, colony = 0.50, inequality = 0.32, migration = 0.12, military = 0.20, trade = 0.95 },
+	boston_tea = { years = 4, regions = { "new_world" }, civic = 0.26, military = 0.16, trade = 0.95 },
+	first_fleet = { years = 12, ports = { "sydney" }, colony = 0.50, migration = 0.28, inequality = 0.18 },
+	voc_founding = { years = 20, countries = { "netherlands" }, finance = 0.32, colony = 0.16, culture = 0.12, trade = 1.04 },
+	gregorian_calendar = { years = 8, regions = { "europe" }, knowledge = 0.28, culture = 0.20 },
+	globe_theatre = { years = 8, countries = { "england" }, culture = 0.45, knowledge = 0.08 },
+	principia = { years = 15, regions = { "europe" }, knowledge = 0.48, culture = 0.12 },
+	dutch_learning = { years = 12, countries = { "japan" }, knowledge = 0.38, culture = 0.34, faith = 0.08 },
+}
+for _, ev in ipairs(HistoryEvents.Events) do
+	local fx = E.SOCIETY_HISTORY_FX[ev.id]
+	if fx then
+		local row = { id = "civil_" .. ev.id, title = ev.title, year = ev.year, month = ev.month,
+			years = fx.years, kind = ev.tag, sourceEvent = ev.id, people = ev.people or {} }
+		for key, value in pairs(fx) do row[key] = value end
+		table.insert(E.History, row)
+	end
+end
+
 -- 이벤트 정의 → shock. days 만큼 지속.
 function E.shockFromHistory(h, days)
 	return { id = h.id, title = h.title, regions = h.regions, countries = h.countries, ports = h.ports,
 		food = h.food or 1, prod = h.prod or 1, trade = h.trade or 1, demand = h.demand or 1, mort = h.mort or 0,
-		days = days or h.years * 365 }
+		civic = h.civic or 0, knowledge = h.knowledge or 0, culture = h.culture or 0, faith = h.faith or 0,
+		inequality = h.inequality or 0, migration = h.migration or 0, colony = h.colony or 0,
+		military = h.military or 0, ecology = h.ecology or 0, finance = h.finance or 0,
+		kind = h.kind, people = h.people, sourceEvent = h.sourceEvent, qid = h.qid, days = days or h.years * 365 }
 end
 
 -- WorldEvents/HistoryEvents 의 tag 를 경제 충격으로 바꾼다. regionId 는 일어난 해역.
@@ -574,9 +618,14 @@ local TAG_FX = {
 	["전염병"] = { mort = 0.0015, trade = 0.8, demand = 0.9 },
 	["자연재해"] = { food = 0.8, trade = 0.85 },
 	["화재"] = { prod = 0.85 },
-	["전쟁"] = { trade = 0.6, prod = 0.9, food = 0.9 },
+	["전쟁"] = { trade = 0.6, prod = 0.9, food = 0.9, military = 0.6, migration = 0.4, inequality = 0.2 },
 	["해적"] = { trade = 0.75 },
-	["정치"] = { trade = 0.8 },
+	["정치"] = { trade = 0.8, civic = -0.16, military = 0.14 },
+	["교역"] = { trade = 1.08, finance = 0.12 },
+	["문화"] = { culture = 0.25, knowledge = 0.10 },
+	["종교"] = { faith = 0.25, culture = 0.10 },
+	["건설"] = { prod = 1.05, migration = -0.10 },
+	["발견"] = { knowledge = 0.20, trade = 1.04 },
 	["행운"] = { demand = 1.2, prod = 1.1 },
 	["호재"] = { demand = 1.2, prod = 1.1 },
 }
@@ -584,13 +633,26 @@ function E.shockFromEvent(ev, regionId, days)
 	local fx = TAG_FX[ev.tag or ""] or {}
 	return { id = ev.id, title = ev.title or ev.id, regions = { regionId }, ports = ev.port and { ev.port } or nil,
 		food = fx.food or 1, prod = fx.prod or 1, trade = fx.trade or 1, demand = fx.demand or 1, mort = fx.mort or 0,
-		days = days or (ev.days or 50) }
+		civic = fx.civic or 0, knowledge = fx.knowledge or 0, culture = fx.culture or 0, faith = fx.faith or 0,
+		inequality = fx.inequality or 0, migration = fx.migration or 0, colony = fx.colony or 0,
+		military = fx.military or 0, ecology = fx.ecology or 0, finance = fx.finance or 0,
+		kind = ev.tag, days = days or (ev.days or 50) }
 end
 
 function E.addShock(w, s)
-	s.until_ = w.day + (s.days or 60)
+	-- [멀티서버] 같은 사건·지역 중복 적용 방지. 일정 기간 후 재발은 허용한다.
+	local scope = (s.ports and s.ports[1]) or (s.countries and s.countries[1]) or (s.regions and s.regions[1]) or "world"
+	for _, active in ipairs(w.shocks) do
+		local other = (active.ports and active.ports[1]) or (active.countries and active.countries[1]) or (active.regions and active.regions[1]) or "world"
+		if active.id == s.id and other == scope and active.until_ > w.day then return false end
+	end
+	s.until_ = w.day + math.clamp(tonumber(s.days) or 60, 1, 365 * 40)
+	if #w.shocks >= 128 then table.remove(w.shocks, 1) end
 	table.insert(w.shocks, s)
-	table.insert(w.log, { day = w.day, id = s.id, title = s.title })
+	table.insert(w.log, 1, { day = w.day, id = s.id, title = s.title, kind = s.kind, people = s.people,
+		sourceEvent = s.sourceEvent, regions = s.regions, countries = s.countries, ports = s.ports, qid = s.qid })
+	while #w.log > 60 do table.remove(w.log) end
+	return true
 end
 
 local function applies(s, t)
@@ -599,6 +661,8 @@ local function applies(s, t)
 	if s.regions then return table.find(s.regions, t.region) ~= nil end
 	return true
 end
+
+E.SOCIETY_FIELDS = { "civic", "knowledge", "culture", "faith", "inequality", "migration", "colony", "military", "ecology", "finance" }
 
 -- ───────── 하루 진행 ─────────
 function E.stepCycle(w)
@@ -668,7 +732,8 @@ function E.step(w)
 	-- 연도 사건
 	local y = math.floor(E.year(w))
 	for _, h in ipairs(E.History) do
-		if not w.fired[h.id] and y >= h.year then
+		if not w.fired[h.id] and y >= h.year and (not h.month
+			or w.day >= (h.year - w.startYear) * 365 + (h.month - 1) * 30) then
 			w.fired[h.id] = true
 			if y < h.year + h.years then E.addShock(w, E.shockFromHistory(h)) end
 		end
@@ -678,10 +743,12 @@ function E.step(w)
 	-- 마을별 충격 효과
 	for _, id in ipairs(w.order) do
 		local t = w.towns[id]
-		local fx = { food = 1, prod = 1, trade = 1, demand = 1, mort = 0 }
+		local fx = { food = 1, prod = 1, trade = 1, demand = 1, mort = 0, civic = 0, knowledge = 0, culture = 0, faith = 0,
+			inequality = 0, migration = 0, colony = 0, military = 0, ecology = 0, finance = 0 }
 		for _, s in ipairs(w.shocks) do
 			if applies(s, t) then
 				fx.food *= s.food; fx.prod *= s.prod; fx.trade *= s.trade; fx.demand *= s.demand; fx.mort += s.mort
+				for _, field in ipairs(E.SOCIETY_FIELDS) do fx[field] += s[field] or 0 end
 			end
 		end
 		t.fx = fx
@@ -723,7 +790,8 @@ function E.step(w)
 		if t.grain < grainCons * 2 and grainProd < grainCons then
 			starve = 0.002 * (1 - grainProd / math.max(grainCons, 1))
 		end
-		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / ((t.tech.medicine ^ 0.5) * t.civBonus.health) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0))
+		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / ((t.tech.medicine ^ 0.5) * t.civBonus.health) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0)
+			- math.max(0, -t.society.ecology) * 0.000001)
 		t.pop = math.max(50, t.pop + d)
 		if d >= 0 then t.births += d else t.deaths += -d end
 		-- 번영도: 1인당 GDP 이동평균 (기준 대비)
@@ -800,6 +868,35 @@ function E.step(w)
 	end
 end
 
+
+-- [세계문명] 역사·전쟁·외교·종교·문화의 충격은 시간이 지나며 완만하게 복원된다.
+-- 기본값 0이므로 새 사건이 없는 경우 기존 산업·교역 가격 공식은 동일하다.
+function E.stepSociety(t)
+	local society, fx = t.society, t.fx
+	for _, field in ipairs(E.SOCIETY_FIELDS) do
+		society[field] = math.clamp((society[field] or 0) * 0.999 + math.clamp(fx[field] or 0, -2, 2) * 0.001, -1, 1)
+	end
+	t.tech.gov += math.max(0, society.civic) * 0.000002
+	t.tech.commerce += math.max(0, society.finance) * 0.000002
+	t.tech.craft += math.max(0, society.knowledge) * 0.000002
+	t.tech.commerce += math.max(0, society.culture) * 0.000001
+end
+
+-- [역사 인과관계] 관할 항구에 실제 영향을 준 사건과 백과 인물 ID.
+function E.activeHistory(w, portId)
+	local town = w.towns[portId]
+	if not town then return {} end
+	local out = {}
+	for i = #w.shocks, 1, -1 do
+		local ev = w.shocks[i]
+		if applies(ev, town) and #out < 8 then
+			table.insert(out, { id = ev.id, title = ev.title, kind = ev.kind, people = ev.people or {},
+				sourceEvent = ev.sourceEvent, qid = ev.qid, daysLeft = math.max(0, math.floor(ev.until_ - w.day)) })
+		end
+	end
+	return out
+end
+
 -- 마을 하루치 문명·제도: 세금·투자·안정도·기술·부문별 GDP·봉기
 function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	-- 부문별 GDP
@@ -833,6 +930,9 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	ds += (target - t.stability) * 0.003
 	ds -= 0.0025 * math.max(0, t.unemp - 0.15) + 0.002 * math.max(0, 0.9 - t.housingRatio)
 	ds += 0.0006 * (math.min(1, t.cov.church or 1) + math.min(1, t.cov.guard or 1) + math.min(1, t.cov.tavern or 1) - 2.4)
+	local social = t.society
+	ds += 0.0018 * (social.civic + social.faith * 0.35 - social.inequality * 0.50 - social.military * 0.40 - math.max(0, social.colony) * 0.10)
+	E.stepSociety(t)
 	t.stability = math.clamp(t.stability + ds, 0, 1)
 	t.unrestCd = math.max(0, t.unrestCd - 1)
 	if t.stability < 0.25 and t.unrestCd == 0 then
@@ -865,7 +965,7 @@ function E.stepMigration(w)
 	end
 	for _, id in ipairs(w.order) do
 		local a = w.towns[id]
-		local attA = a.wage * (0.5 + a.stability)
+		local attA = a.wage * (0.5 + a.stability) / (1 + math.max(0, a.society.migration) * 0.3)
 		for _, nb in ipairs(a.neighbors) do
 			local b = w.towns[nb.id]
 			-- 기술 확산: 교역량이 클수록 빠르다
@@ -876,8 +976,8 @@ function E.stepMigration(w)
 			-- 이주: 더 살기 좋은 가까운 이웃으로
 			local attB = b.wage * (0.5 + b.stability)
 			local diff = attB / math.max(attA, 0.05) - 1
-			if diff > 0.1 and nb.d < 1500 then
-				local m = math.min(0.004, 0.0008 * diff) * a.pop / (1 + nb.d / 400) * (1 + 0)
+			if (diff > 0.1 or a.society.migration > 0.05) and nb.d < 1500 then
+				local m = math.min(0.004, 0.0008 * math.max(0, diff) + 0.0001 * math.max(0, a.society.migration)) * a.pop / (1 + nb.d / 400)
 				table.insert(moves, { a, b, m })
 			end
 		end
@@ -908,7 +1008,7 @@ local WORLD_SCALARS = {
 	"births", "deaths", "infra", "infraRef", "treasury", "stability", "wage", "wageRef",
 	"migIn", "migOut", "unrestCd", "civ", "housingRatio", "unemp", "buildSpend",
 }
-local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector", "exports", "imports" }
+local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector", "exports", "imports", "society" }
 local function worldNumber(value)
 	return type(value) == "number" and value == value and value > -1e14 and value < 1e14
 end
@@ -916,7 +1016,7 @@ end
 function E.snapshot(w)
 	local snap = {
 		schema = E.WORLD_SCHEMA, seed = w.seed, day = w.day, startYear = w.startYear,
-		cycle = w.cycle, shocks = w.shocks, fired = w.fired, towns = {},
+		cycle = w.cycle, shocks = w.shocks, fired = w.fired, log = w.log, towns = {},
 	}
 	for _, id in ipairs(w.order) do
 		local t = w.towns[id]
@@ -955,6 +1055,13 @@ function E.restoreWorld(snap)
 	end
 	if type(snap.fired) == "table" then
 		for _, h in ipairs(E.History) do if snap.fired[h.id] == true then w.fired[h.id] = true end end
+	end
+	if type(snap.log) == "table" then
+		w.log = {}
+		for i, row in ipairs(snap.log) do
+			if i > 60 then break end
+			if type(row) == "table" and type(row.id) == "string" and worldNumber(row.day) then table.insert(w.log, row) end
+		end
 	end
 	if type(snap.shocks) == "table" then
 		w.shocks = {}
@@ -1079,13 +1186,15 @@ end
 
 -- 집계: kind = "world" | "region" | "country" | "town"
 function E.aggregate(w, kind, id)
-	local a = { pop = 0, gdp = 0, towns = 0, tradeIn = 0, tradeOut = 0, priceIdx = 0, _n = 0, techAvg = 0, stability = 0, treasury = 0, migration = 0, civ = 0, sector = { agri = 0, industry = 0, trade = 0, service = 0 } }
+	local a = { pop = 0, gdp = 0, towns = 0, tradeIn = 0, tradeOut = 0, priceIdx = 0, _n = 0, techAvg = 0, stability = 0, treasury = 0, migration = 0, civ = 0, sector = { agri = 0, industry = 0, trade = 0, service = 0 }, society = {} }
+	for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] = 0 end
 	for _, tid in ipairs(w.order) do
 		local t = w.towns[tid]
 		if kind == "world" or (kind == "region" and t.region == id) or (kind == "country" and t.country == id) or (kind == "town" and t.id == id) then
 			a.pop += t.pop; a.gdp += t.gdp; a.towns += 1
 			a.tradeIn += t.tradeIn; a.tradeOut += t.tradeOut
 			a.stability += t.stability * t.pop; a.treasury += t.treasury; a.migration += t.migIn; a.civ += t.civ * t.pop
+			for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] += (t.society[field] or 0) * t.pop end
 			local ta = 0
 			for _, f in ipairs(E.TECH_FIELDS) do ta += t.tech[f] end
 			a.techAvg += ta / #E.TECH_FIELDS * t.pop
@@ -1097,7 +1206,10 @@ function E.aggregate(w, kind, id)
 	end
 	a.priceIdx = a._n > 0 and a.priceIdx / a._n or 1
 	a.gdpPerCap = a.pop > 0 and a.gdp / a.pop or 0
-	if a.pop > 0 then a.stability /= a.pop; a.techAvg /= a.pop; a.civ /= a.pop end
+	if a.pop > 0 then
+		a.stability /= a.pop; a.techAvg /= a.pop; a.civ /= a.pop
+		for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] /= a.pop end
+	end
 	a._n = nil
 	a.cycle = kind == "region" and (w.cycle.lvl[id] or 0) or w.cycle.x
 	return a
