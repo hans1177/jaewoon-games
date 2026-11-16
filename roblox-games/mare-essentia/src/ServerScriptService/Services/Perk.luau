@@ -137,8 +137,11 @@ return function(D, S)
 			local seat = Sp.CompanionStation[id]
 			if c and seat and state.stations[seat] == id and table.find(c.disciplines or {}, discId) then
 				-- 여러 명이 같은 학문을 돕더라도 중복 가산 폭증을 막는다.
-				crewPoint = math.max(crewPoint, if affinityOf(state, id) >= 70 then 2 else 1)
-				table.insert(names, c.name)
+				local base = if affinityOf(state, id) >= 70 then 2 else 1
+				local signature = c.finalResearch
+				local finalDone = signature and signature.disc == discId and state.quests and state.quests.done and state.quests.done[signature.quest] == true
+				crewPoint = math.max(crewPoint, base + (if finalDone then 2 else 0))
+				table.insert(names, c.name .. (if finalDone then " · " .. signature.name else ""))
 			end
 		end
 		return focusPoint + crewPoint, names
