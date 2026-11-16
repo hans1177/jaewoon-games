@@ -22,10 +22,15 @@ test('owner-locked 2026-10-17 selected targets are Roblox and regular Web only',
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.saveAndBalancePreserved,true);
 });
 
-test('retained central maps are descriptive only and cannot authorize historical Unity auto development',()=>{
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(logs.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.ok(security.status);
+test('canonical detailed maps cannot override the owner-locked native development scope',()=>{
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  assert.equal(logs.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logs.requiredForAllWorkers,true);
+  assert.equal(security.kind,'company-security-immune-system');
+  assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.unityWebDevelopmentAllowed,false);
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.unityAndroidDevelopmentAllowed,false);
 });
