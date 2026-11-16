@@ -4354,6 +4354,18 @@ function RENDERERS.harbor()
 			end)
 		end
 	end
+	-- [항구 산업] 백과 가공법과 재고가 실제 지역 브랜드 및 해외 수출로 이어진다.
+	if h.sim and h.sim.industries and #h.sim.industries > 0 then
+		add(function() return mkHeader(content, "항구별 명품 산업 · 4단계 발전") end)
+		for _, industry in ipairs(h.sim.industries) do
+			add(function()
+				local detail = string.format("원료 %s → %s → %s\n현재 %s · 생산 %.2f · 재고 %d · 누적 수출 %.2f",
+					industry.raw, industry.processed, industry.name, industry.status,
+					industry.produced, industry.stock, industry.exported)
+				return mkRow(content, industry.name .. " · " .. industry.stage .. "/4", detail, {}, 100)
+			end)
+		end
+	end
 	if h.economy then
 		local e = h.economy
 		H.statStrip({
@@ -7358,6 +7370,20 @@ local function renderCodexOverview()
 			end
 		end
 	end
+	-- [백과사전] 기존 가공법·학문·원산지 브랜드와 국제 수출 달성도를 연결한다.
+	do
+		local sim = view.harbor and view.harbor.sim
+		if sim and sim.industries then
+			add(function() return mkHeader(content, "문명 산업 발전 · 원료에서 국제 수출까지") end)
+			for _, industry in ipairs(sim.industries) do
+				add(function()
+					return mkRow(content, industry.name .. " · " .. industry.status,
+						string.format("%s → %s → 원산지 명품\n국제 시장 %d곳 · 누적 수출 %.2f",
+							industry.raw, industry.processed, #industry.destinations, industry.exported), {}, 86)
+				end)
+			end
+		end
+	end
 	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 52, cx.plannedDisciplineCount or 0)) end)
 	local samples = {}
 	for _, card in cx.cards do
@@ -8833,12 +8859,14 @@ syncScene = function()
 	-- [실물경제·시대] 기존 항구 정적 경기가 아니라 공통 세계의 최신 기술·인구를 3D 장면에 연결한다.
 	local sim = view.harbor and view.harbor.sim
 	local techStamp = sim and sim.technology and sim.technology.adopted or 0
+	local industryStamp = 0
+	for _, row in ipairs((sim and sim.industries) or {}) do industryStamp += row.stage end
 	local boostIds = {}
 	for _, b in eco.boosts or {} do
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
