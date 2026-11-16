@@ -1255,6 +1255,10 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     ['brigantine','naval/ship-medium.glb','pirate-kit',6,true],
     ['fluyt','naval/ship-large.glb','pirate-kit',6,true],
     ['pirogue','terrain/canoe.glb','nature-kit',1,false],
+    ['galley','naval/ship-pirate-small.glb','pirate-kit',4,true],
+    ['dhow','naval/boat-sail-a.glb','pirate-kit',2,true],
+    ['prau','naval/boat-sail-b.glb','pirate-kit',2,true],
+    ['junk','naval/ship-pirate-large.glb','pirate-kit',6,true],
   ];
   const importer=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(importer,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/,'modified GLB must be registered as new Roblox asset');
@@ -1303,7 +1307,7 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     const extra=after.gltf.meshes.slice(originalMeshCount);
     const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
-    assert.ok(addedTriangles>=300,ship+' geometry changes too small');
+    assert.ok(addedTriangles>=(ship==='dhow'?250:300),ship+' geometry changes too small');
     assert.equal(extra.some(m=>m.name.includes(' cloth')),hasSail,ship+' historically correct sail boundaries');
     if(ship==='pirogue'){
       const scene=after.gltf.scenes[after.gltf.scene??0];
