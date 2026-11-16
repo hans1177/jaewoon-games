@@ -2641,7 +2641,8 @@ function FieldScene.start(opts)
 	local innerSkillRadius = 70
 	local skillSize = if visualMobile then 76 else 68
 	local basicSize = if visualMobile then 68 else 64
-	local ATK_C = Vector2.new(-math.clamp(screenWidth * 0.49, 170, 215), -157)
+	-- [반원 중심] 기존 공격 버튼의 위치를 그대로 사용해 모든 해상도에서 엄지 중심이 일치한다.
+	local ATK_C = Vector2.new(attackBtn.Position.X.Offset, attackBtn.Position.Y.Offset)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
@@ -2656,8 +2657,8 @@ function FieldScene.start(opts)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 46), basicSize)
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 134), basicSize)
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 40), basicSize)
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 112), basicSize)
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
@@ -2756,11 +2757,11 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(outerSkillRadius, 28 + ((slotOf[id] or 1) - 1) * 62)
+			return arcPos(outerSkillRadius, 20 + ((slotOf[id] or 1) - 1) * 40)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 40), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
