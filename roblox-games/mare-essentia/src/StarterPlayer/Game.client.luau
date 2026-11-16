@@ -5892,7 +5892,27 @@ end
 local function renderYard()
 	local yard = view.shipyard
 	H.walletBar("yard")
+	-- [조선소 첫 화면] 기함 특징과 실측 수치를 가장 먼저 보여준다. 갑판 대포와 승조원을 분리한다.
+	local sh = view.ship
+	local active = add(function() return mkHeader(content, "내 기함 · " .. sh.className) end)
+	active.Name = "YardSectionShip"
+	H.statStrip({
+		{ "선체", string.format("%d / %d", sh.hull, sh.maxHull), tone = if sh.hull < sh.maxHull * 0.5 then "bad" else "good" },
+		{ "화물칸", string.format("%d / %d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
+		{ "속도 · 포문", string.format("%.1f · %d", sh.speed, sh.cannons), tone = "key" },
+	})
+	add(function()
+		local kind = if sh.steam then "증기 추진 · 석탄 " .. tostring(sh.fuelPerDay) .. "개/일"
+			elseif sh.rowed then "노젓기 병행 · 무풍 항해 특성" else "바람으로 이동하는 범선"
+		local row = mkRow(content, sh.name .. " · 지금 타는 배", sh.summary .. "\n" ..
+			string.format("갑판 승조원 %d/%d · 포 %d문\n%s · %s · 포격 개조 +%d%% · 보강 %d단계",
+			sh.crew, sh.maxCrew, sh.cannons, sh.cannonName, kind, math.floor(sh.cannonBonus * 100 + 0.5), sh.plating), nil, 132)
+		local icon = SHIP_ICON[sh.id]
+		if icon then withIcon(row, icon[1], icon[2], icon[3], 102) end
+		return row
+	end)
 	H.counselRows(1)
+	add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
 	if not yard.available and view.nearestYard then
 		add(function()
 			local ny = view.nearestYard
@@ -5921,15 +5941,6 @@ local function renderYard()
 			{ icon = "harbor", title = "조선소 입장", sub = "배·대포·보강 고르기", btn = "입장", color = COLORS.gold, enabled = yard.available, onClick = function() openYardHall() end },
 		}, content)
 	end)
-	add(function()
-		local sh = view.ship
-		local row = mkRow(content, "내 배 · " .. sh.name, string.format("선체 %d/%d\n포 %d · 속도 %d\n화물 %d/%d\n선원 %d/%d", sh.hull, sh.maxHull, sh.cannons, sh.speed, sh.cargoUsed, sh.cargoCapacity, sh.crew, sh.maxCrew), nil, 128)
-		local si = SHIP_ICON[sh.id]
-		if si then
-			withIcon(row, si[1], si[2], si[3], 120)
-		end
-		return row
-	end)
 	if not yard.available then
 		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
 	end
@@ -5941,7 +5952,8 @@ local function renderYard()
 		}, 84)
 	end)
 	-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
-	add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
+	local fleetHeader = add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
+	fleetHeader.Name = "YardSectionFleet"
 	add(function()
 		return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
 	end)
@@ -5967,20 +5979,25 @@ local function renderYard()
 			end
 		end
 	end
-	add(function() return mkHeader(content, string.format("개조 (우리 배: 등급 %d · %s)", rf.class, rf.className)) end)
+	local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
+	upgradeHeader.Name = "YardSectionRefit"
 	add(function()
-		return mkLabel(content, "새 배를 사면 개조가 초기화돼요. 대포가 무거울수록 화물이 줄어요.", 12, COLORS.muted, false)
+		return mkLabel(content, "현재 장착: " .. rf.cannonName .. string.format(" (포격 +%d%%) · 보강 %d단계\n교체 전후 화물·내구·대포 성능과 실제 결제 금액을 확인해. 새 배를 사면 개조가 초기화돼.", math.floor(rf.cannonMult * 100 + 0.5), rf.plating), 14, COLORS.muted, false)
 	end)
 	for _, c in rf.cannons do
 		add(function()
-			local sub = string.format("%s\n위력 +%d%% · 무게 화물 -%d%%", c.summary, math.floor(c.mult * 100 + 0.5), math.floor(c.weight * 100 + 0.5))
-			if c.locked then
-				sub ..= "\n" .. c.locked
-			end
-			local crow = mkRow(content, c.name, sub, {
-				{ text = if c.owned then "장착중" else (if c.price == 0 then "기본" else tostring(c.price)), color = COLORS.steam, onClick = function() call("BuyCannon", { cannonId = c.id }) end,
-					enabled = yard.available and not c.owned and not c.locked },
-			}, 104)
+			local delta = math.floor((c.mult - rf.cannonMult) * 100 + 0.5)
+			local cargoDelta = c.capacityAfter - sh.cargoCapacity
+			local sub = string.format("%s\n포격 보너스 +%d%% (현재 대비 %+d%%)\n화물 %d → %d (%+d칸) · 실결제 %s / 소지금 %s",
+				c.summary, math.floor(c.mult * 100 + 0.5), delta, sh.cargoCapacity, c.capacityAfter, cargoDelta,
+				H.commas(c.netCost), H.commas(view.player.coins))
+			if not c.canCarry then sub ..= "\n화물 초과: 장착 전 짐을 내려야 해" end
+			if c.locked then sub ..= "\n" .. c.locked end
+			local crow = mkRow(content, c.name .. (if c.owned then " · 현재 장착" else ""), sub, {
+				{ text = if c.owned then "장착 중" else "장착\n" .. H.commas(c.netCost), color = COLORS.steam,
+					enabled = yard.available and not c.owned and not c.locked and c.canCarry and view.player.coins >= c.netCost,
+					onClick = function() call("BuyCannon", { cannonId = c.id }) end },
+			}, 144)
 			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
 			return crow
 		end)
@@ -5988,61 +6005,87 @@ local function renderYard()
 	if rf.nextPlating then
 		local np = rf.nextPlating
 		add(function()
-			local sub = string.format("선체 +%d%% · 무게 화물 -%d%% (현재 %d단계)", math.floor(np.hull * 100 + 0.5), math.floor(np.weight * 100 + 0.5), rf.plating)
-			if np.locked then
-				sub ..= "\n" .. np.locked
-			end
-			local prow = mkRow(content, "선체 보강: " .. np.name, sub, {
-				{ text = tostring(np.price), color = COLORS.green, onClick = function() call("BuyPlating", {}) end, enabled = yard.available and not np.locked },
-			}, 104)
-			withIcon(prow, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
-			return prow
+			local sub = string.format("최대 선체 %d → %d (%+d) · 속도 %.1f → %.1f\n화물칸 %d → %d (%+d칸)\n실결제 %s / 소지금 %s · 현재 보강 %d단계",
+				sh.maxHull, np.hullAfter, np.hullAfter - sh.maxHull, sh.speed, np.speedAfter,
+				sh.cargoCapacity, np.capacityAfter, np.capacityAfter - sh.cargoCapacity,
+				H.commas(np.price), H.commas(view.player.coins), rf.plating)
+			if not np.canCarry then sub ..= "\n화물이 무거워 보강 불가" end
+			if np.locked then sub ..= "\n" .. np.locked end
+			local row = mkRow(content, "다음 선체 보강 · " .. np.name, sub, {
+				{ text = "보강\n" .. H.commas(np.price), color = COLORS.green,
+					enabled = yard.available and not np.locked and np.canCarry and view.player.coins >= np.price,
+					onClick = function() call("BuyPlating", {}) end },
+			}, 135)
+			withIcon(row, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
+			return row
 		end)
+	else
+		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
 	end
-	add(function() return mkHeader(content, "배 목록") end)
+	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
+	shipHeader.Name = "YardSectionShips"
+	add(function() return mkLabel(content, "현재 기함의 매각 보상 50%를 뺀 금액이 실결제야. 선박을 바꾸면 기존 대포·보강은 기본으로 돌아가.", 14, COLORS.muted, false) end)
 	local maxCargo, maxSpeed, maxHull = 1, 1, 1
 	for _, s in yard.ships do
 		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
 	end
 	for _, s in yard.ships do
 		add(function()
-			local sub = string.format("%s\n포 %d · 선원 %d", s.summary, s.cannons, s.crew)
-			if s.locked then
-				sub ..= "\n" .. s.locked
-			end
-			local label = if s.owned then "보유중" else (if s.price == 0 then "기본" else tostring(s.price))
-			local row = mkRow(content, string.format("[등급%d] ", s.class) .. s.name .. (if s.steam then " (증기)" else ""), sub, {
-				{ text = label, color = if s.steam then COLORS.steam else COLORS.blue, onClick = function() call("BuyShip", { shipId = s.id }) end,
-					enabled = yard.available and not s.owned and not s.locked },
-			}, 128)
+			local pay = math.max(0, s.netCost)
+			local refund = if s.netCost < 0 then " · 차액 환급 " .. H.commas(-s.netCost) else ""
+			local diffCargo = s.capacityAfter - sh.cargoCapacity
+			local sub = string.format("%s\n정가 %s - 내 기함 보상 %s = 실결제 %s%s\n화물 %+d칸 · 속도 %+.1f · 선체 %+d · 포 %+d\n승조원 정원 %+d · 현재 화물 %d/%d · 내 돈 %s",
+				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
+				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
+				s.crew - sh.maxCrew, sh.cargoUsed, s.capacityAfter, H.commas(view.player.coins))
+			if s.rowed then sub ..= "\n노젓기 병행 · 무풍 항해 특성" end
+			if s.steam then sub ..= "\n석탄 소모 " .. tostring(s.fuelPerDay) .. "개/일" end
+			if not s.canCarry then sub ..= "\n화물 부족: 교체 전에 짐을 내려야 해" end
+			if s.locked then sub ..= "\n" .. s.locked end
+			if not s.owned and s.netCost > view.player.coins then sub ..= "\n자금 부족 " .. H.commas(s.netCost - view.player.coins) .. "코인" end
+			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
+				sub, { { text = if s.owned then "현재 배" elseif s.locked then "잠김" else "교체\n" .. H.commas(pay),
+					color = if s.steam then COLORS.steam else COLORS.blue,
+					enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
+					onClick = function() call("BuyShip", { shipId = s.id }) end } }, 210)
 			local si = SHIP_ICON[s.id]
-			if si then
-				withIcon(row, si[1], si[2], si[3], 100)
-			end
-			-- 성능 막대: 화물·속도·선체를 한눈에 비교
-			local stats = { { "화물", s.cargo, maxCargo, COLORS.gold }, { "속도", s.speed, maxSpeed, COLORS.blue }, { "선체", s.hull, maxHull, COLORS.green } }
+			if si then withIcon(row, si[1], si[2], si[3], 100) end
+			-- [기함 대조 막대] 채운 부분=선택 배, 선=지금 배. 위치는 행 아래에 고정해 모바일 줄바꿈과 겹침을 줄인다.
+			local stats = {
+				{ "화물", s.cargo, sh.cargoCapacity, maxCargo, COLORS.gold },
+				{ "속도", s.speed, sh.speed, maxSpeed, COLORS.blue },
+				{ "선체", s.hull, sh.maxHull, maxHull, COLORS.green },
+			}
 			for i, st in stats do
-				local y = 76 + (i - 1) * 16
-				local lb = mkLabel(row, string.format("%s %d", st[1], st[2]), 11, COLORS.muted, false)
-				lb.Position = UDim2.fromOffset(116, y - 2)
+				local y = -56 + (i - 1) * 16
+				local lb = mkLabel(row, string.format("%s %.0f", st[1], st[2]), 11, COLORS.muted, false)
+				lb.Position = UDim2.new(0, 116, 1, y - 2)
 				lb.Size = UDim2.fromOffset(70, 14)
 				lb.AutomaticSize = Enum.AutomaticSize.None
 				local back = Instance.new("Frame")
 				back.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
 				back.BorderSizePixel = 0
-				back.Position = UDim2.new(0, 190, 0, y)
+				back.Position = UDim2.new(0, 190, 1, y)
 				back.Size = UDim2.new(1, -278, 0, 8)
 				back.Parent = row
 				corner(back, 4)
 				local fill = Instance.new("Frame")
-				fill.BackgroundColor3 = st[4]
+				fill.BackgroundColor3 = st[5]
 				fill.BorderSizePixel = 0
-				fill.Size = UDim2.fromScale(math.clamp(st[2] / st[3], 0.03, 1), 1)
+				fill.Size = UDim2.fromScale(math.clamp(st[2] / st[4], 0, 1), 1)
 				fill.Parent = back
 				corner(fill, 4)
+				local mark = Instance.new("Frame")
+				mark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				mark.BorderSizePixel = 0
+				mark.Position = UDim2.new(math.clamp(st[3] / st[4], 0, 1), -1, -0.3, 0)
+				mark.Size = UDim2.new(0, 2, 1.6, 0)
+				mark.Parent = back
 			end
 			return row
 		end)
+	end
+end
 	end
 end
 
@@ -6097,8 +6140,8 @@ function openYardHall()
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
 		local showPortrait = width >= 760
 		local inset = if showPortrait then 258 else 10
-		scroll.Position = UDim2.fromOffset(inset, 78)
-		scroll.Size = UDim2.new(1, -inset - 8, 1, -86)
+		scroll.Position = UDim2.fromOffset(inset, 128)
+		scroll.Size = UDim2.new(1, -inset - 8, 1, -136)
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 62), COLORS.paper)
 		corner(top, 6)
 		bookMaterial(top, "parchment", 220)
@@ -6107,7 +6150,8 @@ function openYardHall()
 		title.Size = UDim2.new(1, -104, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		local hold = mkLabel(top, string.format("%d 코인 · %s 선체 %d/%d", p.coins, ship.name, ship.hull, ship.maxHull), 12, INK_SOFT, false)
+		local hold = mkLabel(top, string.format("소지금 %s · 기함 %s · 선체 %d/%d · 화물 %d/%d",
+			H.commas(p.coins), ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity), 14, INK_SOFT, false)
 		hold.Position = UDim2.fromOffset(12, 34)
 		hold.Size = UDim2.new(1, -100, 0, 20)
 		hold.AutomaticSize = Enum.AutomaticSize.None
@@ -6116,7 +6160,19 @@ function openYardHall()
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
 
-		local left = mkBox(root, UDim2.fromOffset(8, 78), UDim2.new(0, 240, 1, -86), COLORS.leather)
+		-- [조선소 항목 탐색] 기존 renderYard의 제목으로 바로 이동. 별도 메뉴/저장 구조를 만들지 않는다.
+		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, 44), COLORS.leather)
+		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "새 배 비교", "YardSectionShips" } } do
+			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(0.25, -6, 0, 40), function()
+				local target = scroll:FindFirstChild(entry[2])
+				if target then
+					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
+				end
+			end, true)
+			btn0.Position = UDim2.new((i - 1) / 4, 4, 0, 2)
+			btn0.TextSize = 14
+		end
+		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
 		left.Visible = showPortrait
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
