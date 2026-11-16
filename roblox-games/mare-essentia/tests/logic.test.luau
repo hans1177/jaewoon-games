@@ -35,6 +35,7 @@ local D = {
 	SeaRoutes = require("./Shared/SeaRoutes"),
 	Regions = require("./Shared/Regions"),
 	KnowledgeTree = require("./Shared/KnowledgeTree"),
+	KnowledgeTaxonomy = require("./Shared/KnowledgeTaxonomy"),
 	HistoryEvents = require("./Shared/HistoryEvents"),
 	WorldChronicle = require("./Shared/WorldChronicle"),
 	EconomyBuildings = require("./Shared/EconomyBuildings"),
