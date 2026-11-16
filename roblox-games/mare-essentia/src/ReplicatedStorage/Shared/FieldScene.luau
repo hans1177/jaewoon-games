@@ -2993,14 +2993,26 @@ function FieldScene.start(opts)
 				end
 			end
 			for _, a in allies do
-				-- 목표: 가장 가까운 적. 없으면 주인공 옆 자리
-				local tgt, td = nil, 40 * STUD
-				for _, e in enemies do
-					local d0 = (e.root.Position - a.root.Position).Magnitude
-					if d0 < td then
-						tgt, td = e, d0
+				-- [동료 안정 추적] 한 프레임마다 목표를 바꾸면 몹 사이를 지그재그로 뛰므로 기존 대상을 유지한다.
+				-- 주인공과 멀어지면 대형 복귀를 먼저 하고, 더 가까운 적이 확실할 때만 목표를 바꾼다.
+				local tgt, td = a.focus, 40 * STUD
+				if tgt then
+					local d = (tgt.root.Position - a.root.Position).Magnitude
+					if tgt.ac.dead or not tgt.root.Parent or d > 40 * STUD or (root0.Position - a.root.Position).Magnitude > 30 then
+						tgt = nil
+					else
+						td = d
 					end
 				end
+				if (root0.Position - a.root.Position).Magnitude <= 30 then
+					for _, e in enemies do
+						local d0 = (e.root.Position - a.root.Position).Magnitude
+						if d0 < td * (if tgt then 0.65 else 1) then
+							tgt, td = e, d0
+						end
+					end
+				end
+				a.focus = tgt
 				-- [동료 대형] 주인공을 따라 방향을 바꿔도 좌우 후방에 서도록 로컬 좌표를 사용한다.
 				local goal = if tgt then tgt.root.Position else (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
 				local aw = a.weapon
