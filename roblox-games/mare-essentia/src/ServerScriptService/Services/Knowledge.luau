@@ -1,4 +1,5 @@
 --!nonstrict
+-- Knowledge.luau · 발견·학회·공동 연구 및 시대 발전
 -- 지식 트리 서비스: 발견한 카드를 학자에게 보고해 "이해"로 바꾼다. 따로 수락할 필요는 없다.
 -- 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해·화력·교역품 값에 효과를 준다.
 
@@ -256,7 +257,7 @@ return function(D, S)
 		state.coins += coins
 		local msgs = { string.format("%s 학회에서 연구를 발표했다! (이해한 지식 %d개)", disc.name, n), string.format("청중의 호평: 명성 +%d, 후원금 +%d코인", fame, coins) }
 		S.Perk.addAffinity(state, 1, msgs)
-		S.Perk.gainSpec(state, "Physics", 10, msgs)
+		S.Perk.gainSpec(state, disc.field, 10, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 
@@ -323,6 +324,12 @@ return function(D, S)
 			pts += qdone * 3
 			table.insert(lines, string.format("· 완료한 지식 퀘스트 %d개 (+%d)", qdone, qdone * 3))
 		end
+		-- [동료·학문] 직업은 연구 참여 조건이 아니다. 현재 전문 분야와 직책에 맞게 배치한 동료만 소폭 지원한다.
+		local helpPoints, helpers = S.Perk.researchAssist(state, disc.id)
+		if helpPoints > 0 then
+			pts += helpPoints
+			table.insert(lines, string.format("· 전문 분야·승선 연구 조수 %s (+%d점)", if #helpers > 0 then table.concat(helpers, ", ") else "지원", helpPoints))
+		end
 		if K.hasLandmark(state, state.portId, "hall") then
 			pts = math.floor(pts * K.LandmarkById.hall.jointMult)
 			table.insert(lines, "· 학술원의 도움으로 기여가 1.5배")
@@ -348,6 +355,7 @@ return function(D, S)
 		end
 		table.insert(msgs, string.format("학계의 평가: 명성 +%d, 연구 지원금 +%d코인", fame, coins))
 		S.Perk.addAffinity(state, 2, msgs)
+		S.Perk.gainSpec(state, disc.field, 10, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 
