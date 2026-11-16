@@ -77,6 +77,52 @@ do
 	check("다중 접속 중복 경제충격 방지", first == true and second == false and #x.shocks == count + 1)
 	check("다른 지역의 같은 사건은 독립 반영", Eco.addShock(x, Eco.shockFromEvent(event, "indian")) == true)
 end
+
+-- [항구 소식·인쇄·동료] 실제 세계 사건은 발생해도 지역 간 정보 전달이 지연된다.
+do
+	local D = { Economy = Eco, Ports = require("./Shared/Ports"),
+		Regions = require("./Shared/Regions"), Specialties = require("./Shared/Specialties") }
+	local S = { Harbor = { intel = function() return 3 end } }
+	local service = require("./Services/Econ")(D, S)
+	local state = { portId = "london", startYear = 1650, day = 0, companions = {},
+		careers = { trade = { level = 1 }, adventure = { level = 1 }, battle = { level = 1 } },
+		stats = { visited = { london = true } } }
+	local town = service.town(state, "london")
+	check("항만 관리관: 자동 건축·고용·국고·식량 기록", town and town.city
+		and #town.city.buildings == #Eco.BUILDINGS and town.city.foodDays >= 0
+		and town.city.treasury == town.city.treasury and #town.city.issues > 0)
+	check("동료 없이 전문 소식은 열리지 않는다", service.bulletins(state, "companion").available == false)
+	local p = service.bulletins(state, "gazette")
+	check("신문 발행 전에는 무조건 모든 세계 소식을 보여주지 않는다", type(p.available) == "boolean" and type(p.rows) == "table")
+	local far = { id = "news_distant_war", title = "먼 대륙의 전쟁", tag = "전쟁", days = 300 }
+	local minor = { id = "news_distant_culture", title = "먼 지역 소규모 문화 축제", tag = "문화", days = 300 }
+	check("다른 지역 전쟁 사건 반영", service.shock(state, far, "indian") == true)
+	check("다른 지역 소규모 문화 사건 반영", service.shock(state, minor, "indian") == true)
+	local function has(report, id)
+		for _, row in ipairs(report.rows) do if row.id == id then return true, row end end
+		return false
+	end
+	check("해외 전쟁도 발생 즉시 주점에 나오지 않는다", not has(service.bulletins(state, "tavern"), far.id))
+	check("지역 미확인 소식이 전체 신문에 즉시 나오지 않는다", not has(service.bulletins(state, "gazette"), far.id))
+	state.day = 45; service.advance(state)
+	check("선박 전달 시차 전에는 해외 전쟁을 알 수 없다", not has(service.bulletins(state, "tavern"), far.id))
+	state.day = 140; service.advance(state); service.advance(state); service.advance(state)
+	local heard, item = has(service.bulletins(state, "tavern"), far.id)
+	check("시간이 흐르면 주요 해외 전쟁 소식 도착", heard and item.category == "military")
+	check("중대 사건이 아닌 원거리 문화 소문은 무차별 전파되지 않는다",
+		not has(service.bulletins(state, "tavern"), minor.id))
+	local localEvent = { id = "news_local_trade", title = "현지 시장 활황", tag = "행운", days = 300 }
+	service.shock(state, localEvent, "europe")
+	state.day = 175; service.advance(state)
+	local locallyKnown = has(service.bulletins(state, "tavern"), localEvent.id)
+	check("지역 교역 소식은 짧은 전달 시차 뒤 구전된다", locallyKnown)
+	state.companions = { "t_navigator" }
+	local companion = service.bulletins(state, "companion")
+	check("동료 합류 시 직업 정보망 활성화", companion.available and type(companion.rows) == "table")
+	check("시장: 방문하지 않은 해외 항구 시세 차단", service.marketNewsVisible(state, "calcutta") == false)
+	check("시장: 현지 시세는 유지", service.marketNewsVisible(state, "london") == true)
+end
+
 -- 호황/불황 진동
 do
 	local c = { seed = 11, cycle = { x = 0, v = 0, lvl = {}, reg = { europe = { x = 0, v = 0 } } } }
