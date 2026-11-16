@@ -89,7 +89,8 @@ local CARD_DECK = {
 local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
 
 local PLAYER_SHIP = {
-	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large",
+	caravel = "ship-small", fluyt = "ship-medium",
+	frigate = if AssetIds["Naval/frigate"] then "frigate" else "ship-large",
 	galleon = if AssetIds["Naval/galleon-heritage"] then "galleon-heritage" else "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
 }
@@ -101,12 +102,19 @@ local NC = {
 	mortar = { name = "구포", range = 130, dur = 1.0, arc = 42, ball = 2.2, cd = 2.0 },
 }
 local SHIP_CANNON = { caravel = "swivel", fluyt = "swivel", galley = "demi", xebec = "demi", frigate = "culverin", galleon = "mortar" }
--- 지역·나라 전용 배는 기본 배의 모델을 빌려 쓴다 (Ships.visual)
+-- [함종 원형 보호] 고유 갈레온·프리깃 원본은 본래 함종에만 적용한다.
+-- 지역·국가별 visual 별칭은 기존 공용 범선 메시를 사용하여 잘못된 원형 상속을 방지한다.
 do
 	local ShipsMod = require(script.Parent:WaitForChild("Ships"))
 	for id, def in ShipsMod.Ships do
 		if def.visual and not PLAYER_SHIP[id] then
-			PLAYER_SHIP[id] = PLAYER_SHIP[def.visual]
+			if def.visual == "galleon" then
+				PLAYER_SHIP[id] = "ship-large"
+			elseif def.visual == "frigate" then
+				PLAYER_SHIP[id] = "ship-pirate-medium"
+			else
+				PLAYER_SHIP[id] = PLAYER_SHIP[def.visual]
+			end
 		end
 	end
 end
