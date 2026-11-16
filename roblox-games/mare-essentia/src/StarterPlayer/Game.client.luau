@@ -6115,6 +6115,7 @@ function H.startField(s)
 		battleStats = view and view.battleStats,
 		cardSkills = cardSkills,
 		allies = allyNames,
+		year = view and view.player and view.player.year, -- 실제 역사 시대로 활·총기 발화방식 결정
 		name = s.name,
 		portId = s.portId,
 		nodes = math.clamp(s.days, 1, 3),
