@@ -668,7 +668,8 @@ local function extraTests()
 		check("백과 연구: 수학 개념 발견 후 보고 전에는 절차 잠금",
 			study14.discovered.math_place_value == true and study14.discovered.algorithm_euclidean ~= true)
 		study14.reported.math_place_value = true
-		S.Discovery.grantVisitCards(study14, "venice", studyMsgs)
+		check("백과 연구: 선행 보고 후 실제 도감 버튼 액션만 연구 완료",
+			select(1, act(study14, "StudyKnowledgeCard", { cardId = "algorithm_euclidean" })) == true)
 		check("백과 연구: 기존 학자 보고 키로 알고리즘 획득·중복 보상 방지",
 			study14.discovered.algorithm_euclidean == true and S.Discovery.grantVisitCards(study14, "venice", studyMsgs) == 0)
 		study14.portId = "london"
@@ -679,11 +680,18 @@ local function extraTests()
 		check("백과 연구: 심장 관찰 후 학자 보고가 있어야 혈액순환 해금",
 			study14.discovered.body_human_heart == true and study14.discovered.med_blood_circulation ~= true)
 		study14.reported.body_human_heart = true
-		S.Discovery.grantVisitCards(study14, "london", studyMsgs)
+		check("백과 연구: 동시대 연구 조건에 맞는 혈액순환 직접 연구",
+			select(1, act(study14, "StudyKnowledgeCard", { cardId = "med_blood_circulation" })) == true)
+		check("백과 연구: 이미 완료한 카드 중복 수령 차단",
+			select(1, act(study14, "StudyKnowledgeCard", { cardId = "med_blood_circulation" })) == false)
+		check("백과 연구: 방문 관찰 카드를 연구 액션으로 획득 불가",
+			select(1, act(study14, "StudyKnowledgeCard", { cardId = "ship_caravel" })) == false)
 		check("백과 연구: 혈액순환 연구 잠금 해제",
 			study14.discovered.med_blood_circulation == true)
 		local saved14 = S.State.sanitize(S.State.serialize(study14))
 		check("백과 연구: 기존 저장 형식에서 복구", saved14.discovered.algorithm_euclidean == true and saved14.reported.math_place_value == true)
+				-- 전용 UI 스포일러 검사: 플레이어가 아직 발견하지 않은 카드로 맞춘다.
+		study14.discovered.performance_commedia = nil
 		local v14 = S.View.build(study14, ctx)
 		check("백과 화면: 14개 주제 분류·근거 집계 표시",
 			#v14.codex.topicList == 14 and v14.codex.topicCounts.formal > 0
@@ -709,7 +717,12 @@ local function extraTests()
 		local galleon = collection.ById.ship_galleon
 		local design = collection.ById.ship_galleon_design
 		check("선박 지식: 캐러벨과 갤리온 실물·설계가 각각 존재", vessel ~= nil and galleon ~= nil and design ~= nil)
-		check("선박 지식: 실물과 설계는 다른 세부 분류", collection.kindOf(galleon) == "ship" and collection.subkindOf(galleon) == "선박 실물" and collection.subkindOf(design) == "선박 설계")
+		-- 기존 갤리온은 상세 소재 "범선·무장상선"을 명시하므로 이를 임의로 "선박 실물"로 덮지 않는다.
+		check("선박 지식: 실물과 설계는 다른 세부 분류",
+			collection.kindOf(galleon) == "ship"
+			and collection.entityTypeOf(galleon) == "class"
+			and collection.entityTypeOf(design) == "design"
+			and collection.subkindOf(galleon) ~= collection.subkindOf(design))
 		check("선박 지식: 기존 조선학 지식트리 보고 노드에 연결", tree.ById.ship_caravel ~= nil and tree.ById.ship_galleon ~= nil and tree.ById.ship_galleon.disc == "shipbuilding")
 		local st = newState("england")
 		local messages = {}
@@ -3091,7 +3104,9 @@ do
 				n += 1
 			end
 		end
-		check("field has enough cards " .. f.id, n >= 15, n)
+		-- [확장 분야] 기존 15장 기준은 유지하고 새 4개 연구 분야는 첫 연구 3단계부터 점검한다.
+		local required = if f.id == "Religion" or f.id == "Politics" or f.id == "Law" or f.id == "Culture" then 3 else 15
+		check("field has enough cards " .. f.id, n >= required, n)
 	end
 	local st = newState("england")
 	local v = S.View.build(st, ctx)
