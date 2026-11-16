@@ -388,6 +388,17 @@ local UNARMED_STYLES = {
 	UNARMED_KICK = { "U:LOW_KICK_R", "U:ROUND_KICK_R", "U:SIDE_KICK_L", "U:FRONT_KICK_R", "U:ROUND_KICK_L" },
 	UNARMED_ELBOW = { "U:ELBOW_RIGHT", "U:KNEE_LEFT", "U:ELBOW_LEFT", "U:KNEE_RIGHT", "U:DIAGONAL_KNEE_LEFT" },
 }
+-- [무기 숙련 4·5단] 각 무기 계열의 실제 공용 동작 원자를 사용한다.
+-- 첫 1~3단은 지역형 무기를 포함하여 해당 무기 프로필의 원본 순서를 유지한다.
+local WEAPON_HIGH_BEATS = {
+	BLADE = { "W:BLADE_RISING", "W:BLADE_RIPOSTE" },
+	AXE = { "W:AXE_CLEAVE", "W:AXE_DIAGONAL" },
+	SPEAR = { "W:SPEAR_SWEEP", "W:SPEAR_BUTT_STRIKE" },
+	BLUNT = { "W:BLUNT_GROUND_SLAM", "W:BLUNT_RISING" },
+	BOW = { "W:BOW_DRAW", "W:BOW_RELEASE" },
+	FIREARM = { "W:FIREARM_BURST", "W:FIREARM_RELOAD" },
+	DUAL = { "W:DUAL_CROSS", "W:DUAL_REVERSE" },
+}
 function FM.weaponCombo(motion: string?, idx: number)
 	local key = "wpn:" .. tostring(motion) .. ":" .. idx
 	local c = comboCache[key]
@@ -402,7 +413,10 @@ function FM.weaponCombo(motion: string?, idx: number)
 			if not route then
 				return nil
 			end
-			return CM.CreateCombatCombo(motion, { route[(idx - 1) % #route + 1] })
+			local stage = math.clamp(math.floor(idx), 1, 5)
+			local extras = WEAPON_HIGH_BEATS[prof.family]
+			local action = if stage > #route and extras then extras[((stage - #route - 1) % #extras) + 1] else route[(stage - 1) % #route + 1]
+			return CM.CreateCombatCombo(motion, { action })
 		end)
 		c = if ok and res then res else false
 		comboCache[key] = c
