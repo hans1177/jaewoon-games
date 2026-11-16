@@ -191,10 +191,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     // [원본 증빙] Cargo와 Naval 모델은 파일별 라이선스·해시 증빙을 등록 파이프라인에서 확인한다.
     let sourceLicense = null;
-    if (kind === 'Cargo' || kind === 'Naval') {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics') {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
-      if (sourceLicense && (sourceLicense.license !== 'PROJECT_ORIGINAL_ART'
+      if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
     }
@@ -202,7 +202,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval') && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics') && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
