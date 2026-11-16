@@ -212,6 +212,16 @@ return function(D, S)
 		{ id = "society", name = "사회", tokens = { "사회", "이주", "민란", "구호", "빈곤", "society" } },
 		{ id = "economy", name = "경제", tokens = { "경제", "교역", "금융", "무역", "시장", "호황", "행운", "호재", "finance", "trade" } },
 	}
+	-- [미확인 전망] 사실 사건과 별개로 틀릴 수 있는 선원의 추측만 구전으로 등장한다.
+	local NEWS_FORECASTS = {
+		military = "다음 항구까지 전쟁이 확대될 가능성",
+		disaster = "피해가 주변 도시에도 번질 가능성",
+		economy = "다음 장에서 시세가 급등할 가능성",
+		politics = "곧 새로운 정치 협상이 시작될 가능성",
+		industry = "주변 공방까지 신기술이 퍼질 가능성",
+		navigation = "새로운 항로가 조만간 열릴 가능성",
+		culture = "다른 항구에서도 같은 문화가 유행할 가능성",
+	}
 	local NEWS_CAREERS = { politics = "adventure", diplomacy = "adventure", military = "battle",
 		economy = "trade", industry = "trade", science = "adventure", culture = "adventure",
 		religion = "adventure", disaster = "adventure", society = "adventure", navigation = "adventure" }
@@ -353,7 +363,13 @@ return function(D, S)
 						local detail = if expertise >= 3 then "연결된 교역망과 시대·사건 기록 대조"
 							elseif expertise >= 1 then "직업·항해 경험으로 출처를 대조" else "전달자 확인 전"
 						if source == "companion" and companionName then detail = companionName .. "의 전문 분야 의견" end
-						if confidence == "미확인 소문" then detail ..= " · 사실 여부나 후속 전망은 확인되지 않음" end
+						if confidence == "미확인 소문" then
+							detail ..= " · 전언은 아직 교차 확인되지 않음"
+							if source == "tavern" and ((#tostring(rec.id) + math.floor(age / 10)) % 4 == 0) then
+								detail ..= " · 선원들의 추측(사실 아님): "
+									.. (NEWS_FORECASTS[category] or "사건 여파가 더 번질 가능성")
+							end
+						end
 						table.insert(result.rows, { id = tostring(rec.id), title = rec.title or tostring(rec.id),
 							category = category, categoryName = name, daysOld = math.floor(age), source = result.medium,
 							confidence = confidence, detail = detail, region = scope, eventId = rec.sourceEvent or rec.id,
