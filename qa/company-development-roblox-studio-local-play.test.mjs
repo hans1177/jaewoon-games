@@ -3870,6 +3870,44 @@ test('Mare exploration sites, regional backgrounds and discovery quest routes ma
   assert.ok(!naval.code.includes("pg:FindFirstChild('BattleGui')"));
 });
 
+// [탐험 원본 검사] 22개 지역의 지상 장면·적 R15·무기·철수 정리와 정기검사 연결을 회귀검증한다.
+test('Mare scheduled Studio expeditions cover all 22 cultural regions without silent crashes',()=>{
+  const root='roblox-games/mare-essentia/';
+  const steps=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-regions.json','utf8'));
+  const field=fs.readFileSync(root+'src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const sites=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  const regions=new Set([...field.matchAll(/^\s*(\w+)\s*=\s*\{ ground = RC\(/gm)].map(row=>row[1]));
+  const launches=steps.filter(row=>row.code?.includes("return 'REGION_QA_LAUNCHED:"));
+  const assertions=steps.filter(row=>row.code?.includes("return 'REGION_QA_PASS:"));
+  const images=steps.filter(row=>row.type==='capture');
+  assert.equal(regions.size,22);
+  assert.equal(launches.length,24);
+  assert.equal(assertions.length,24);
+  assert.equal(images.length,24);
+  assert.equal(new Set(images.map(row=>row.name)).size,24);
+  for(const region of regions)assert.ok(assertions.some(row=>row.code.includes('REGION_QA_PASS:'+region+':')),'regional Studio case missing: '+region);
+  for(let i=0;i<24;i++){
+    const launch=launches[i].code;
+    const test=assertions[i].code;
+    const [,region,siteId]=launch.match(/return 'REGION_QA_LAUNCHED:([^:]+):([^']+)'/)||[];
+    assert.ok(region&&siteId,'region/site identifier missing');
+    assert.ok(sites.includes('id = "'+siteId+'"'),'site not in canonical catalog: '+siteId);
+    assert.ok(test.includes('REGION_QA_PASS:'+region+':'+siteId),'launch/probe mismatch');
+    for(const marker of ['REGION_BUILD_OR_CRASH:', 'REGION_WRONG_BACKGROUND:', 'REGION_GROUND_MISSING:',
+      'REGION_COMBAT_NOT_READY:', 'REGION_PLAYER_TRAPPED:', 'REGION_WEAPON_MISSING:',
+      'REGION_MOBS_OR_MOTION_FAILED:', 'REGION_FALL_SAFETY_MISSING:'])
+      assert.ok(test.includes(marker),'real gameplay guard absent: '+marker);
+    assert.ok(launch.includes("old:Invoke()"),'previous site must exit cleanly');
+    assert.ok(launch.includes("FS.start("),'must reuse original FieldScene');
+  }
+  assert.ok(steps.some(row=>row.code?.includes('REGION_QA_CLEAN_EXIT_PASS')));
+  const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(auto.includes("cron: '43 3,15 * * *'"));
+  assert.ok(auto.includes('scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json")'));
+  assert.ok(auto.includes('for script in '));
+  assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
