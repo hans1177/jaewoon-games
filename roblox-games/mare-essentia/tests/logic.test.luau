@@ -575,6 +575,26 @@ local function extraTests()
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
 		check("지식 분류: 17종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 17)
+		check("지식 분류: 지구·인류 큰 영역 7가지", #collection.WorldGroups == 7)
+		check("지식 분류: 소재 17개 모두 상위 영역과 연결", (function()
+			for _, kind in collection.Kinds do
+				if not collection.WorldGroupById[kind.group] then return false end
+			end
+			return true
+		end)())
+		check("자원 분류: 기본 상품과 가공품 총 16종 하위 영역", #D.Ports.ResourceKinds == 16)
+		local groups = {}
+		for _, group in D.Ports.ResourceKinds do groups[group.id] = true end
+		local rawCount, processedCount, brokenGood = 0, 0, nil
+		for id, good in D.Ports.Goods do
+			if not groups[good.resourceKind] or not D.Cards.ById[good.knowledgeId] then
+				brokenGood = id
+			end
+			if string.sub(id, 1, 2) == "p_" then processedCount += 1 else rawCount += 1 end
+		end
+		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
+		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
+
 		check("지식 분류: 기존 학문 21개 유지", #tree.Disciplines == 21)
 		local vessel = collection.ById.ship_caravel
 		local galleon = collection.ById.ship_galleon
@@ -591,6 +611,8 @@ local function extraTests()
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
 		check("도감: 세 방식과 16종 분류가 화면 데이터에 담김", v.codex.disciplineCount == 21 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
+
 		local cardById = {}
 		local namedSubjects = {}
 		for _, c in v.codex.cards do
