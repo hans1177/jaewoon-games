@@ -1006,6 +1006,7 @@ return function(D, S)
 				portType = D.Harbor.portType(port.produces),
 				economy = S.Harbor.economyOf(state, port.id),
 				sim = S.Econ.town(state, port.id),
+				builtLandmarks = ((state.landmarks or {})[port.id] or {}),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
