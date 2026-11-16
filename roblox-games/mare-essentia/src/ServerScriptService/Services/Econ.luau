@@ -167,16 +167,6 @@ return function(D, S)
 		return town
 	end
 
-	-- [자동 경제시계] 플레이어가 아무 동작을 하지 않아도 살아 있는 항구 경제를 갱신한다.
-	-- 게임 서버의 기존 world 한 개만 사용한다. CLI 테스트 환경은 task 가 없어 그대로 실행된다.
-	if task and task.spawn and task.wait then
-		task.spawn(function()
-			while task.wait(120) do
-				if world then X.advance({ day = 0 }) end
-			end
-		end)
-	end
-
 	function X.reset() world = nil end
 	return X
 end
