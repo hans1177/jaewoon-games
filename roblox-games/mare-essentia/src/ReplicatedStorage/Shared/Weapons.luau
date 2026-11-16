@@ -1,5 +1,5 @@
 --!strict
--- 무기 체계. 주인공은 모든 무기를 쓸 수 있고(탐험 중 바꿔 듦), 동료는 직업에 따라 무기가 고정된다(석궁·총·검·도끼).
+-- Weapons.luau · 무기·출신 지역·경력별 기본 장비. 주인공 자유 교체, 동료는 실제 이력에 따라 선택.
 -- motion = CommonMotion 의 무기 프로필 id(마력숲과 같은 동작 원본). model = 승인·등록된 3D 모델 에셋(없으면 nil: 모델이 등록될 때까지 맨손 쥠으로 보인다).
 
 export type Weapon = {
@@ -13,6 +13,7 @@ export type Weapon = {
 	power: number, -- 피해 배율
 	model: string?, -- Relics 그룹의 모델 이름
 	note: string,
+	region: string?, -- 지역형 구분(저장키와 무관한 전투 연출 데이터)
 }
 
 local Weapons = {}
@@ -21,10 +22,11 @@ Weapons.List = {
 	{ id = "fist", name = "맨손 격투", motion = nil, family = "fist", ranged = false, range = 3, speed = 1.3, power = 0.8, model = nil, note = "빠른 연타·발차기, 막기 쉽다" },
 	{ id = "sword", name = "검", motion = "SWORD", family = "blade", ranged = false, range = 5, speed = 1.15, power = 1, model = "weapon-sword", note = "균형형: 베기·찌르기" },
 	{ id = "dagger", name = "단검", motion = "DAGGER", family = "dagger", ranged = false, range = 3.5, speed = 1.4, power = 0.7, model = nil, note = "가장 빠름, 뒤를 잘 찌름" },
-	{ id = "axe", name = "도끼", motion = "WAR_AXE", family = "axe", ranged = false, range = 5, speed = 0.9, power = 1.35, model = nil, note = "느리지만 묵직, 방패를 깬다" },
+	{ id = "axe", name = "도끼", motion = "WAR_AXE", family = "axe", ranged = false, range = 5, speed = 0.9, power = 1.35, model = nil, note = "느리지만 묵직한 일격" },
 	{ id = "spear", name = "창", motion = "SPEAR", family = "spear", ranged = false, range = 8, speed = 1, power = 1, model = "weapon-spear", note = "긴 사거리 찌르기" },
 	{ id = "mace", name = "철퇴", motion = "MACE", family = "blunt", ranged = false, range = 4.5, speed = 1.05, power = 1.2, model = nil, note = "기절(경직)을 잘 준다" },
 	{ id = "crossbow", name = "석궁", motion = "CROSSBOW", family = "firearm", ranged = true, range = 26, speed = 1.1, power = 1.25, model = nil, note = "강한 한 발, 장전이 필요" },
+	{ id = "bow", name = "활", motion = "BOW", family = "bow", ranged = true, range = 26, speed = 1.1, power = 1.25, model = nil, note = "지역별 활의 기본형" },
 	{ id = "gun", name = "총", motion = "PISTOL", family = "firearm", ranged = true, range = 22, speed = 1.25, power = 1.1, model = nil, note = "빠른 사격, 소음으로 적이 깬다" },
 } :: { Weapon }
 
@@ -37,18 +39,121 @@ function Weapons.get(id: string?): Weapon
 	return byId[id or "fist"] or byId.fist
 end
 
--- 동료 직업 분류(JobSkills.categoryOf 결과)마다 고정 무기: 무인=검, 포수=총, 항해=도끼, 학자·성직·상인=석궁
+-- [지역별 무기] 기존 기본 9종의 사거리·피해·속도를 그대로 물려받아 저장/전투 밸런스를 건드리지 않는다.
+-- 실제 3D 에셋이 없는 무기는 모델을 거짓으로 연결하지 않는다. 공용 모션 프로필은 실존하는 것만 사용.
+local regionalDefs = {
+	{ "rapier", "레이피어", "sword", "RAPIER", "europe", "유럽 도시의 검술 교육" },
+	{ "cutlass", "선상도", "sword", "SABRE", "sea", "선원·해상 상인의 짧은 외날검" },
+	{ "katana", "일본도", "sword", "KATANA", "japan", "일본 무가 출신" },
+	{ "hwando", "환도", "sword", "SABRE", "korea", "조선 수군·무인" },
+	{ "dao", "도", "sword", "SABRE", "china", "중국 상인·무인" },
+	{ "shamshir", "샴시르", "sword", "SCIMITAR", "west_asia", "서아시아의 곡도" },
+	{ "talwar", "탈와르", "sword", "SCIMITAR", "south_asia", "남아시아의 곡도" },
+	{ "english_longbow", "잉글랜드 장궁", "bow", "LONGBOW", "england", "잉글랜드식 장궁" },
+	{ "japanese_yumi", "일본 화궁", "bow", "LONGBOW", "japan", "일본 전통 장궁" },
+	{ "korean_gakgung", "조선 각궁", "bow", "BOW", "korea", "조선 복합궁" },
+	{ "chinese_recurve", "중국 각궁", "bow", "BOW", "china", "중국 복합궁" },
+	{ "ottoman_composite", "오스만 복합궁", "bow", "BOW", "west_asia", "오스만 궁술" },
+	{ "indian_composite", "인도 복합궁", "bow", "BOW", "south_asia", "남아시아의 복합궁" },
+	{ "african_hunting_bow", "아프리카 사냥활", "bow", "BOW", "africa", "지역 사냥 전통에 따른 활" },
+	{ "american_hunting_bow", "아메리카 사냥활", "bow", "BOW", "americas", "지역 사냥 전통에 따른 활" },
+	{ "matchlock_musket", "화승식 장총", "gun", "RIFLE", "early_firearm", "화승식 발화·재장전" },
+	{ "flintlock_musket", "수석식 장총", "gun", "RIFLE", "late_firearm", "수석식 발화·재장전" },
+	{ "tanegashima", "다네가시마 조총", "gun", "RIFLE", "japan", "일본 화승총" },
+	{ "wheellock_pistol", "륜발식 권총", "gun", "PISTOL", "early_firearm", "고가의 기계식 발화 권총" },
+	{ "flintlock_pistol", "수석식 권총", "gun", "PISTOL", "late_firearm", "수석식 발화 권총" },
+}
+Weapons.Regional = {} :: { Weapon }
+for _, v in regionalDefs do
+	local base = byId[v[3]]
+	if base then
+		local item: Weapon = {
+			id = v[1], name = v[2], motion = v[4], family = base.family,
+			ranged = base.ranged, range = base.range, speed = base.speed,
+			power = base.power, model = nil, region = v[5], note = v[6],
+		}
+		byId[item.id] = item
+		table.insert(Weapons.Regional, item)
+	end
+end
+
+-- [직업 기본] 역사적으로 모든 학자·성직자·의사가 무장한 것은 아니다.
+-- 같은 직업이라도 출신지·과거 경력·시대가 있으면 아래 함수가 별도 무기를 골라 준다.
 Weapons.AllyByCategory = {
 	warrior = "sword",
 	gunner = "gun",
 	navigator = "axe",
-	healer = "crossbow",
-	scholar = "crossbow",
-	merchant = "crossbow",
+	clergy = "fist",
+	doctor = "rapier",
+	healer = "rapier", -- 오래된 분류 호환
+	scholar = "rapier",
+	merchant = "cutlass",
 } :: { [string]: string }
 
-function Weapons.allyWeapon(category: string?): Weapon
-	return Weapons.get(Weapons.AllyByCategory[category or "warrior"] or "sword")
+export type AllyHistory = {
+	job: string?,
+	nation: string?,
+	background: string?,
+	year: number?,
+}
+
+function Weapons.allyWeapon(category: string?, history: AllyHistory?): Weapon
+	local cat = category or "warrior"
+	local base = Weapons.AllyByCategory[cat] or "sword"
+	if not history then return Weapons.get(base) end
+	local nation = history.nation or ""
+	local past = (history.background or "") .. " " .. (history.job or "")
+	local year = history.year or 1650
+	local function lived(word: string): boolean
+		return string.find(past, word, 1, true) ~= nil
+	end
+	local sword = if nation == "japan" then "katana"
+		elseif nation == "korea" then "hwando"
+		elseif nation == "china" then "dao"
+		elseif nation == "ottoman" or nation == "persia" then "shamshir"
+		elseif nation == "malabar" or nation == "india" then "talwar"
+		else "sword"
+	local bow = if nation == "japan" then "japanese_yumi"
+		elseif nation == "korea" then "korean_gakgung"
+		elseif nation == "china" then "chinese_recurve"
+		elseif nation == "ottoman" or nation == "persia" then "ottoman_composite"
+		elseif nation == "malabar" or nation == "india" then "indian_composite"
+		elseif nation == "swahili" or nation == "kongo" then "african_hunting_bow"
+		elseif nation == "new_spain" or nation == "inca" then "american_hunting_bow"
+		elseif nation == "england" then "english_longbow"
+		else "bow"
+	local firearm = if year >= 1680 then "flintlock_musket"
+		elseif nation == "japan" then "tanegashima"
+		else "matchlock_musket"
+	local pistol = if year >= 1680 then "flintlock_pistol" else "wheellock_pistol"
+	if cat == "warrior" then
+		if lived("격투") or lived("권투") then return Weapons.get("fist") end
+		return Weapons.get(sword)
+	elseif cat == "gunner" then
+		if lived("기병") or lived("권총") then return Weapons.get(pistol) end
+		return Weapons.get(firearm)
+	elseif cat == "navigator" then
+		if lived("탐험") or lived("사냥") then return Weapons.get(bow) end
+		if lived("해적") or lived("수군") then return Weapons.get(sword) end
+	elseif cat == "scholar" then
+		if lived("여행") or lived("탐험") or lived("박물") or lived("야외") or lived("사냥") then return Weapons.get(bow) end
+		if nation == "japan" or nation == "korea" or nation == "china" then return Weapons.get(bow) end
+		return Weapons.get("rapier")
+	elseif cat == "merchant" then
+		if lived("호위") or lived("용병") or lived("퇴역") then return Weapons.get(pistol) end
+		if nation == "ottoman" or nation == "persia" or nation == "malabar" or nation == "india" or nation == "japan" or nation == "korea" or nation == "china" then
+			return Weapons.get(sword)
+		end
+		return Weapons.get("cutlass")
+	elseif cat == "clergy" then
+		if lived("무장") or lived("기사단") or lived("전사") then return Weapons.get(if nation == "" then "mace" else sword) end
+		return Weapons.get("fist")
+	elseif cat == "doctor" or cat == "healer" then
+		if lived("군의관") or lived("해군") or lived("외과") or lived("선상") then return Weapons.get("cutlass") end
+		if nation == "japan" or nation == "korea" or nation == "china" then return Weapons.get(sword) end
+		return Weapons.get("rapier")
+	end
+	return Weapons.get(base)
 end
 
 -- 주인공은 전부 쓸 수 있다. 다만 모델이 없는 무기는 모델이 등록되기 전까지 맨손 쥠으로 보인다.
