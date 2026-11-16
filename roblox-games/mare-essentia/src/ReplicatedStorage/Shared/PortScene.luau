@@ -1737,7 +1737,8 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
 	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
-	local lotGrowth = ({ 1.5, 1.65, 1.8, 2.0, 2.2 })[lvl]
+	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl]
+	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl]
 	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth
 	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
 	local laneWidth = math.max(9, P.alley * 1.8)
@@ -1751,7 +1752,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local smokers = 0
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
-	local X_END = -math.min(550, 260 + lvl * 55)
+	local X_END = -math.min(550, 210 + math.floor(130 * math.sqrt(areaGrowth)))
 	local placedLots = {}
 	local streetsOuter = {}
 	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
@@ -3002,14 +3003,23 @@ function PortScene.build(info, onFacility)
 
 	-- 조선소: 남쪽 물가의 경사 선대와 짓고 있는 배의 뼈대
 	if info.hasShipyard then
-		part(folder, Vector3.new(30, 1, 14), CFrame.new(24, 0.6, -48) * CFrame.Angles(0, 0, math.rad(-6)), Color3.fromRGB(140, 104, 66), Enum.Material.WoodPlanks)
-		for i = 0, 6 do
+		local simDock = info.sim and info.sim.buildings and info.sim.buildings.dock or 0
+		local dockScale = math.clamp(1 + math.sqrt(math.max(0, simDock)) / 14, 1, 1.6)
+		local shipFrames = math.clamp(math.floor(4 + math.sqrt(math.max(0, simDock)) / 3), 4, 9)
+		part(folder, Vector3.new(30 * dockScale, 1, 14), CFrame.new(24 + (dockScale - 1) * 11, 0.6, -48) * CFrame.Angles(0, 0, math.rad(-6)), Color3.fromRGB(140, 104, 66), Enum.Material.WoodPlanks)
+		for i = 0, shipFrames do
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		local shed = house(folder, Vector3.new(-4, 0, -88), 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
 		prompt(folder, Vector3.new(8, 3, -79), "조선소", "들어가기", "yard", onFacility)
+		-- 수출·수리 수요가 증가하면 기존 자산으로 조선소 뒤편 목재와 작업 창고를 늘린다.
+		local storage = math.clamp(math.floor(1 + math.sqrt(math.max(0, simDock)) / 4), 1, 5)
+		for i = 1, storage do
+			importedModel(folder, "Terrain", "log-stack", Vector3.new(9 + i * 8, 0, -69), 4.5, false)
+			if i % 2 == 0 then importedModel(folder, "Cargo", "resource-planks", Vector3.new(9 + i * 8, 0, -76), 3.5, false) end
+		end
 	end
 
 	-- 왕궁: 큰길 끝
@@ -3792,8 +3802,21 @@ function PortScene.build(info, onFacility)
 					walker.base = safe
 					walker.model:PivotTo(safe)
 				else
-					-- 막힌 길을 매 프레임 통과시키지 않고 가장자리에서 제자리 생활동작으로 전환한다.
-					walker.mode, walker.kind = "stay", "look"
+					-- 막힌 길은 무리해서 관통하지 않는다. 대기할 빈자리도 없으면 주민만 숨긴다.
+					for _, offset in {
+						Vector3.new(0, 0, 0), Vector3.new(9, 0, 0), Vector3.new(-9, 0, 0),
+						Vector3.new(18, 0, 0), Vector3.new(-18, 0, 0),
+						Vector3.new(0, 0, 12), Vector3.new(0, 0, -12),
+					} do
+						local candidate = original * CFrame.new(offset)
+						if not blocked(candidate, 0) then
+							walker.base = candidate
+							walker.model:PivotTo(candidate)
+							walker.mode, walker.kind = "stay", "look"
+							break
+						end
+					end
+					if walker.mode ~= "stay" then walker.model:Destroy() end
 				end
 			end
 		end
