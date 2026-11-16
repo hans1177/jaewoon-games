@@ -118,6 +118,19 @@ do
 		end
 	end
 end
+-- [함종별 고유 선체] 새 모델은 등록번호가 발급된 경우에만 적용한다.
+-- 불러오기 전에는 기존 해전 선체를 유지하며 전투 계산·저장에는 영향을 주지 않는다.
+local NEW_SHIP_ORIGINALS = {
+	privateer = "ship-pirate-medium",
+	manila_galleon = "ship-pirate-large",
+	paddle_steamer = "ship-medium",
+	ironclad_frigate = "ship-large",
+}
+for shipId in NEW_SHIP_ORIGINALS do
+	if AssetIds["Naval/" .. shipId .. "-custom"] then
+		PLAYER_SHIP[shipId] = shipId .. "-custom"
+	end
+end
 
 local function part(parent, size, cf, color, material, shape)
 	local p = Instance.new("Part")
@@ -147,6 +160,12 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 	elseif asset == "frigate" and not (tpl and tpl:IsA("Model")) then
 		-- [기존 해전 보존] 전용 프리깃 모델 로드 지연 시 원래 대형 범선 외형을 사용한다.
 		tpl = group and group:FindFirstChild("ship-large")
+	elseif not (tpl and tpl:IsA("Model")) then
+		-- [신규 4종 원본 복구] 로딩 중이어도 새 게임과 기존 해전 장면을 계속 표시한다.
+		local shipId = string.match(asset, "^(.-)%-custom$")
+		if shipId and NEW_SHIP_ORIGINALS[shipId] then
+			tpl = group and group:FindFirstChild(NEW_SHIP_ORIGINALS[shipId])
+		end
 	end
 	if tpl and tpl:IsA("Model") then
 		local m = tpl:Clone()

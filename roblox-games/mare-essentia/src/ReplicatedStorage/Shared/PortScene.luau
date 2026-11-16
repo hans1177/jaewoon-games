@@ -349,6 +349,20 @@ end
 if AssetIds["Naval/galleon-heritage"] then
 	SHIP_MESH.galleon = "galleon-heritage"
 end
+-- [함종별 고유 선체] 신규 개조 모델은 등록번호가 확인될 때만 기존 선박과 교체한다.
+-- 사략선·마닐라 갈레온·외륜 증기선·장갑 프리깃은 다른 함종의 visual 별칭을 상속하지 않는다.
+local NEW_SHIP_ORIGINALS = {
+	privateer = "ship-pirate-medium",
+	manila_galleon = "ship-pirate-large",
+	paddle_steamer = "ship-medium",
+	ironclad_frigate = "ship-pirate-large",
+}
+for shipId in NEW_SHIP_ORIGINALS do
+	local key = "Naval/" .. shipId .. "-custom"
+	if AssetIds[key] then
+		SHIP_MESH[shipId] = shipId .. "-custom"
+	end
+end
 
 -- 색이 입혀지지 않은 수입 모델(회색·옅은 파랑으로 보임)에 자연스러운 색을 입힌다.
 local ANIMAL_TINT = {
@@ -840,10 +854,15 @@ local function buildShip(parent, shipId, at)
 		-- [기존 항구 보존] 프리깃 완성 모델을 못 읽으면 종전 공용 범선으로 복구한다.
 		meshAsset = "ship-pirate-medium"
 		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
+	elseif not shipMesh and NEW_SHIP_ORIGINALS[shipId] then
+		-- [로딩 지연 복구] 전용 함선이 미수입·권한 거부라면 원래 공용 선체를 사용한다.
+		meshAsset = NEW_SHIP_ORIGINALS[shipId]
+		shipMesh = importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false)
 	end
 	if shipMesh then
 		shipMesh.Name = "Ship"
-		if not dedicated then
+		if not dedicated and meshAsset ~= shipId .. "-custom" then
+			-- [외형 중복 방지] 완성 고유 메시에는 기존 대포·외륜·굴뚝·갑판 조합을 다시 추가하지 않는다.
 			-- 대포, 선루, 굴뚝, 장갑판 모두 실제 수입한 3D Mesh 모델을 조합한다.
 			-- 완성 원형 메시에는 함포·선루 중복 모델을 추가하지 않는다.
 			if (shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate")
