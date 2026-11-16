@@ -40,11 +40,12 @@ K.Disciplines = {
 
 -- 이 학자는 어느 학문의 보고를 받는가
 -- [백과↔학문 보고 경로] 독립 뿌리 학문인 수학은 기존 실존 수학자 두 명이 직접 보고받는다.
+-- [백과→학문 보고] 독립 기존 상업학 및 미스터리·잃어버린 대륙학도 실존 학자 보고 경로에 연결한다.
 K.ScholarDisciplines = {
 	huygens = { "astronomy", "physics" }, halley = { "astronomy", "geography", "navigation" }, romer = { "astronomy", "physics" },
 	newton = { "philosophy", "physics", "astronomy", "mathematics" }, boyle = { "chemistry", "physics", "medicine" }, leeuwenhoek = { "physics" },
 	papin = { "physics" }, savery = { "physics" }, newcomen = { "physics" }, celsius = { "physics" },
-	leibniz = { "philosophy", "physics", "chemistry", "mathematics" }, descartes = { "philosophy", "physics", "astronomy" },
+	leibniz = { "philosophy", "physics", "chemistry", "mathematics", "commerce" }, descartes = { "philosophy", "physics", "astronomy" },
 	-- 예술가 (그림·음악·판화)
 	-- 철학·박물학·의학·지리
 	galileo = { "astronomy", "physics" }, harvey = { "medicine" }, torricelli = { "physics", "meteorology" }, hooke = { "physics", "medicine" },
@@ -52,7 +53,7 @@ K.ScholarDisciplines = {
 	banks = { "botany", "geography" }, linnaeus = { "botany", "zoology" }, malpighi = { "botany", "medicine" }, redi = { "zoology" },
 	wren = { "architecture" }, vancampen = { "architecture" }, witsen = { "shipbuilding" }, chapman = { "shipbuilding" },
 	cronstedt = { "mineralogy" }, steno = { "mineralogy" }, franklin = { "meteorology", "physics" }, fahrenheit = { "meteorology" },
-	johnson = { "linguistics" }, worm = { "archaeology", "linguistics", "mythology" }, pontoppidan = { "mythology", "zoology" },
+	johnson = { "linguistics" }, worm = { "archaeology", "linguistics", "mythology" }, pontoppidan = { "mythology", "zoology", "mystery", "lostland" },
 	rembrandt = { "art" }, vermeer = { "art" }, rubens = { "art" }, velazquez = { "art" }, vandevelde = { "art" },
 	canaletto = { "art" }, hogarth = { "art" }, handel = { "art" }, buxtehude = { "art" }, merian = { "art", "zoology", "botany" },
 	-- [16세기 약초 연구] 도도엔스는 식물과 약용 기록을 이어 준다.
