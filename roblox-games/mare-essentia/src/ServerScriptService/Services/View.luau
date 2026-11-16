@@ -558,9 +558,10 @@ return function(D, S)
 		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {} }
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
-			fieldDiscipline[disc.field] = disc
+			if disc.field then fieldDiscipline[disc.field] = disc end
 		end
 		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
+		view.codex.baseDisciplineCount = D.KnowledgeTree.BaseDisciplineCount
 		local function relatedNames(c, kind, primaryId)
 			local names, seen = {}, {}
 			local function include(discId)
@@ -578,6 +579,7 @@ return function(D, S)
 				if parent then include(parent.disc) end
 			end
 			for _, discId in RELATED_BY_KIND[kind] or {} do include(discId) end
+			for discId in D.KnowledgeTree.BranchesByCard[c.id] or {} do include(discId) end
 			return names
 		end
 		for _, c in D.Cards.Cards do
