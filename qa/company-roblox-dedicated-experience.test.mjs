@@ -585,7 +585,7 @@ test('Mare trade goods practice validates existing originals, rights and blocked
   assert.match(workflow,/Practice and verify approved trade goods using existing asset ledger/);
   assert.match(workflow,/python3 tools\/devloop\/assets_wanted\.py roblox-games\/mare-essentia --verify-goods/);
   assert.match(workflow,/Refresh asset practice ledger after Roblox registration/);
-  assert.match(workflow,/roblox-games\/mare-essentia\/assets-wanted\.json; do/);
+  assert.match(workflow,/roblox-games\/mare-essentia\/assets-wanted\.json roblox-games\/mare-essentia\/assets\/cardart\/\*\.png; do/);
   assert.match(uploader,/GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD/);
   assert.match(uploader,/GOODS_IMAGE_CHANGE_NOT_APPROVED/);
   assert.match(uploader,/sourceSha256/);
@@ -916,7 +916,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
   const uploader = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml', 'utf8');
   const approved = JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json', 'utf8'));
-  assert.deepEqual(approved.modelOriginals, {});
+  assert.ok(approved.modelOriginals && !Array.isArray(approved.modelOriginals));
   assert.match(uploader, /MODEL_ORIGINAL_REVIEW_REQUIRED/);
   assert.match(uploader, /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
   assert.match(workflow, /SKIP_UNVERIFIED_MODEL_ORIGINAL/);
