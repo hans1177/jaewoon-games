@@ -3837,6 +3837,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(naval,/if opts\.cardOnly then\s+skip\.Parent = g/);
   assert.match(naval,/skip\.ZIndex = 30/);
+  assert.match(naval,/skip\.Visible = true/);
   for(const [from,to] of [['trade','harbor'],['route','map'],['codex','tech'],['status','crew']]){
     assert.ok(steps.some(step=>step.type==='click_from_luau'&&step.label==='qa_tab_'+from+'_to_'+to&&step.code.includes('QA_NAV_TARGET_NOT_CLICKABLE')));
     assert.ok(steps.some(step=>step.code?.includes('QA_REAL_TAB_CLICK_PASS:'+from+'_TO_'+to)));

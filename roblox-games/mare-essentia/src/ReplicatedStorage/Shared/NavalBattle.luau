@@ -1162,6 +1162,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
 			skip.Parent = g
+			-- 카드판 시작 시 원래 해전 GUI를 숨겼으므로 실제 종료 버튼은 이 화면에서 다시 표시해야 한다.
+			skip.Visible = true
 			skip.AnchorPoint = Vector2.zero
 			skip.Position = UDim2.fromScale(0.02, 0.84)
 			skip.Size = UDim2.fromOffset(112, 44)
