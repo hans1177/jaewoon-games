@@ -452,7 +452,11 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') assert(not pg:FindFirstChild('TradeHallGui'),'HALL_DID_NOT_CLOSE') local gui=assert(pg:FindFirstChild('MareEssentiaGui')) local main=assert(gui:FindFirstChild('Main',true)) local hud=assert(gui:FindFirstChild('Hud',true)) local toggle=assert(gui:FindFirstChild('MenuToggle',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(main.Visible,'HALL_RETURN_MAIN_HIDDEN') assert(hud.Visible==toggle.Visible,'HALL_HUD_NOT_RESTORED') assert(top.Enabled==hud.Visible,'HALL_TOP_NOT_RESTORED') return 'HALL_HUD_RESTORED_PASS'"
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') assert(not pg:FindFirstChild('TradeHallGui'),'HALL_DID_NOT_CLOSE') local gui=assert(pg:FindFirstChild('MareEssentiaGui')) local main=assert(gui:FindFirstChild('Main',true)) local hud=assert(gui:FindFirstChild('Hud',true)) local toggle=assert(gui:FindFirstChild('MenuToggle',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(main.Visible,'HALL_RETURN_MAIN_HIDDEN') assert(hud.Visible==toggle.Visible,'HALL_HUD_NOT_RESTORED') assert(top.Enabled==hud.Visible,'HALL_TOP_NOT_RESTORED') assert(not toggle.Visible and not hud.Visible and not top.Enabled,'HALL_BOOK_AND_HUD_OVERLAP') local guide=pg:FindFirstChild('TutorialGoal') local guideBar=guide and guide:FindFirstChildOfClass('TextButton') assert(not guideBar or not guideBar.Visible,'HALL_GOAL_OVER_BOOK') return 'HALL_BOOK_ONLY_RETURN_PASS'"
+  },
+  {
+    "type": "capture",
+    "name": "ui_hall_return_clean"
   },
   {
     "type": "luau",

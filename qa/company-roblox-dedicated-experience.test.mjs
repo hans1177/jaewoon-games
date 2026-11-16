@@ -541,7 +541,9 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/art\.Name = "OriginalArt"/);
   assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
   assert.match(client,/art\.ScaleType = Enum\.ScaleType\.Fit/);
-  assert.match(client,/if kind == "Menu" then art\.ImageColor3 = COLORS\.brown end/);
+  // [아이콘 가독성] 28px 이하 메뉴는 잉크빛, 큰 아이콘은 밝은 황동색을 써 명암을 유지한다.
+  assert.match(client,/art\.ImageColor3 = if px <= 28 then Color3\.fromRGB\(139, 113, 102\) else Color3\.fromRGB\(255, 240, 204\)/);
+  assert.match(client,/card\.BackgroundTransparency = 1/);
   // 모델 로딩 전에는 같은 교역품 원화, 원화가 없으면 해당 모델의 Roblox 섬네일만 쓴다.
   assert.match(client,/image\.Name = if originalId then "ApprovedGoodsArt" else "RegisteredModelThumbnail"/);
   assert.match(client,/image\.Image = if originalId then "rbxassetid:\/\/" \.\. tostring\(originalId\)/);
