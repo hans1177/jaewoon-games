@@ -1850,7 +1850,20 @@ do
 		local kv = S.Knowledge.viewOf(stv)
 		check("학문 분류: 화면에 7대 분류 표시", kv.domains ~= nil and #kv.domains == 7)
 	end
-	-- [직업] 학문 계열 직업: 잠금·자동 배정·거장 부직업
+	-- [학문 숙련] 직업이 없더라도 연구·보고한 학문별 점수는 서로 독립적으로 누적한다.
+	do
+		local study = newState("england")
+		study.reported.bot_birch = true
+		study.reported.med_pharmacy = true
+		local bot = S.Knowledge.masteryOf(study, "botany")
+		local med = S.Knowledge.masteryOf(study, "medicine")
+		local art = S.Knowledge.masteryOf(study, "art")
+		check("학문 숙련: 직업 선택 없이 식물 연구 기록이 증가", study.specialty == nil and bot.points == 1 and bot.studied == 1)
+		check("학문 숙련: 의학은 식물학과 독립 누적", med.points == 1 and med.studied == 1 and art.points == 0)
+		local save = S.State.sanitize(S.State.serialize(study))
+		check("학문 숙련: 기존 reported 저장 구조로 재계산", save ~= nil and S.Knowledge.masteryOf(save, "botany").points == 1)
+	end
+	-- [전문 분야] 자유 선택·기존 숙련 및 거장 부전문
 	do
 		local Sp = D.Specialties
 		local noXp = 0
@@ -1871,9 +1884,11 @@ do
 		for _, c in D.Cards.Cards do
 			if c.field == "Medicine" and got < Sp.AUTO_CARDS then S.Discovery.grantCard(s2, c.id, msgs); got += 1 end
 		end
-		check("직업: 카드 3장이면 계열 직업이 자동 배정됨", s2.specialty ~= nil and s2.specAuto == true, tostring(s2.specialty))
+		check("전문 분야: 카드 3장 발견해도 선택 강제하지 않음", s2.specialty == nil and s2.specAuto == false, tostring(s2.specialty))
+		s2.specialty = "botanist" -- 구버전 자동 배정 저장 자료의 무료 변경권은 유지
+		s2.specAuto = true
 		local c0 = s2.coins
-		check("직업: 자동 배정 뒤 첫 변경은 무료", act(s2, "SetSpecialty", { specialtyId = "merchant" }) and s2.coins == c0 and s2.specAuto == false)
+		check("전문 분야: 구버전 자동 배정 기록의 무료 변경권 유지", act(s2, "SetSpecialty", { specialtyId = "merchant" }) and s2.coins == c0 and s2.specAuto == false)
 		-- 부직업
 		local s3 = newState("england")
 		s3.specialty = "merchant"
