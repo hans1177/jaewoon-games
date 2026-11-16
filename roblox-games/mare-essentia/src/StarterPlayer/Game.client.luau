@@ -5128,7 +5128,7 @@ local function openTradeHall()
 		local showMerchant = width >= 1040
 		local inset = if showMerchant then 258 else 10
 		-- [모바일 메뉴] 지갑·화물·알림을 각각 다른 높이에 배치한다.
-		local headH = if narrow then 110 else 62
+		local headH = if narrow then 140 else 62
 		local menuY = headH + 16
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
@@ -5144,7 +5144,7 @@ local function openTradeHall()
 		local coinBox = mkBox(top, UDim2.new(0.5, 0, 0.5, 0), UDim2.fromOffset(if narrow then 150 else 210, 46), Color3.fromRGB(58, 42, 28))
 		coinBox.AnchorPoint = Vector2.new(0.5, 0.5)
 		if narrow then
-			coinBox.Position = UDim2.new(0.5, 0, 0, 65)
+			coinBox.Position = UDim2.new(0.5, 0, 0, 87)
 			coinBox.Size = UDim2.fromOffset(178, 38)
 		end
 		corner(coinBox, 10)
@@ -5154,12 +5154,12 @@ local function openTradeHall()
 		coinText.TextXAlignment = Enum.TextXAlignment.Center
 		local hold = mkLabel(top, string.format("화물 %d/%d", ship.cargoUsed, ship.cargoCapacity), 13, INK_SOFT, false)
 		local toastLbl = mkLabel(top, message or "", 13, Color3.fromRGB(60, 100, 50), true)
-		toastLbl.Position = if narrow then UDim2.fromOffset(12, 85) else UDim2.new(0.5, 112, 0, 8)
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, 114) else UDim2.new(0.5, 112, 0, 8)
 		toastLbl.Size = if narrow then UDim2.new(1, -24, 0, 20) else UDim2.new(0.5, -210, 0, 44)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
-		hold.Position = UDim2.fromOffset(12, if narrow then 36 else 34)
+		hold.Position = UDim2.fromOffset(12, if narrow then 40 else 34)
 		hold.Size = UDim2.new(if narrow then 0.3 else 0.32, 0, 0, 20)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		local backToList = narrow and detailOpen
@@ -5281,10 +5281,9 @@ local function openTradeHall()
 		searchPad.Parent = search
 		H.hallFilter = H.hallFilter or "all"
 		local free0 = ship.cargoCapacity - ship.cargoUsed
-		local dealNow = view.haggle and view.haggle.deal
+		-- [기존 시세 함수] 서버의 실제 1개 가격은 기존 흥정 이월 할인까지 포함한다.
 		local function unitBuyOf(g)
-			local pct = (dealNow and dealNow.goodId == g.id) and dealNow.pct or 0
-			return math.max(1, math.floor(g.buy * (1 - pct / 100)))
+			return if g.buyTotals and g.buyTotals[1] then g.buyTotals[1] else g.buy
 		end
 		do
 			-- 걸러 보기 칩 + 보유 전부 팔기 (일괄)
@@ -5367,8 +5366,12 @@ local function openTradeHall()
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local pct = if (g.basePrice or 0) > 0 then math.floor((g.buy / g.basePrice - 1) * 100 + 0.5) else 0
-			local budgetQty = math.floor(p.coins / math.max(1, unitBuyOf(g)))
-			local pr = mkLabel(row, string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 예산 %d개",
+			local budgetQty = 0
+			for n = 1, math.min(20, view.orderCap or 20, free0, g.supply or 20) do
+				local cost = if g.buyTotals and g.buyTotals[n] then g.buyTotals[n] else unitBuyOf(g) * n
+				if cost <= p.coins then budgetQty = n end
+			end
+			local pr = mkLabel(row, string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 지금 구매 가능 %d개",
 				H.commas(g.buy), H.commas(g.sell), pct, g.owned, if g.supply == nil then "-" else tostring(g.supply), budgetQty), 15, INK, false)
 			pr.TextWrapped = true
 			pr.Position = UDim2.fromOffset(94, 34)
@@ -5405,9 +5408,8 @@ local function openTradeHall()
 				tick.Parent = gauge
 			end
 			-- 바로 사고팔기: 수량 고르는 화면 없이 한 번에
-			local ub = unitBuyOf(g)
 			local oc = view.orderCap or 20
-			local canBuy = math.min(free0, math.floor(p.coins / ub), oc, g.supply or oc)
+			local canBuy = budgetQty
 			local canSell = math.min(g.owned, oc, g.absorb or oc)
 			local bar = Instance.new("Frame")
 			bar.BackgroundTransparency = 1
@@ -5491,13 +5493,20 @@ local function openTradeHall()
 			local free = ship.cargoCapacity - ship.cargoUsed
 			local deal = view.haggle and view.haggle.deal
 			local dealPct = (deal and deal.goodId == sel.id) and deal.pct or 0
-			local unitBuy = math.floor(sel.buy * (1 - dealPct / 100))
+			local unitBuy = unitBuyOf(sel)
+			-- [실제 수량 한도] 상품을 살수록 단가가 오르므로 단가×수량 추정으로 구매를 허용하지 않는다.
+			local maxBuy = 0
+			for n = 1, math.min(20, view.orderCap or 20, free, sel.supply or 20) do
+				local cost = if sel.buyTotals and sel.buyTotals[n] then sel.buyTotals[n] else unitBuy * n
+				if cost <= p.coins then maxBuy = n end
+			end
+			local maxSell = math.min(20, view.orderCap or 20, sel.owned, sel.absorb or 20)
 			local diff = if (sel.basePrice or 0) > 0 then math.floor((sel.buy / sel.basePrice - 1) * 100 + 0.5) else 0
 			local basis = if (sel.basis or 0) > 0 then H.commas(math.floor(sel.basis + 0.5)) else "미구매"
 			local info = mkLabel(right, string.format("구매 %s%s · 판매 %s\n세계 기준가 %s · 현지 시세 %+.0f%%\n내 평균 매입가 %s · 보유 %d개\n내 돈 %s · 예산상 구매 %d개\n빈 화물 %d · 구매한도 %s / 판매한도 %s",
 				H.commas(unitBuy), if dealPct > 0 then " (할인중)" else "", H.commas(sel.sell),
 				H.commas(sel.basePrice or 0), diff, basis, sel.owned, H.commas(p.coins),
-				math.floor(p.coins / math.max(1, unitBuy)), free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
+				maxBuy, free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
 			info.Position = UDim2.fromOffset(14, 124)
 			info.Size = UDim2.new(1, -28, 0, 112)
 			info.AutomaticSize = Enum.AutomaticSize.None
@@ -5511,15 +5520,18 @@ local function openTradeHall()
 			receipt.Size = UDim2.new(1, -16, 0, 19)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
-			local maxBuy = math.min(20, view.orderCap or 20, free, if unitBuy > 0 then math.floor(p.coins / unitBuy) else 20, sel.supply or 20)
-			local maxSell = math.min(20, view.orderCap or 20, sel.owned, sel.absorb or 20)
 			local function refreshReceipt()
-				receipt.Text = string.format("%d개 · 예상 구매 %s · 판매 %s · 남는 돈 약 %s", qty, H.commas(unitBuy * qty), H.commas(sel.sell * math.min(qty, maxSell)), H.commas(p.coins - unitBuy * qty))
+				local pay = if sel.buyTotals and sel.buyTotals[qty] then sel.buyTotals[qty] else unitBuy * qty
+				local sellQty = math.min(qty, maxSell)
+				local get = if sellQty < 1 then 0 elseif sel.sellTotals and sel.sellTotals[sellQty] then sel.sellTotals[sellQty] else sel.sell * sellQty
+				receipt.Text = string.format("%d개 · 구매 %s · 판매(관세후) %s · 구매후 %s", qty, H.commas(pay), H.commas(get), H.commas(p.coins - pay))
+				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
 			end
 			local function setQuantity(value)
 				qty = math.clamp(value, 1, 20)
 				hallQty = qty
-				refreshReceipt()
+				-- [버튼 상태] 수량 변경 즉시 실제 구매·판매 가능 여부까지 함께 다시 그린다.
+				build()
 			end
 			local function quantityButton(index, label, action, enabled)
 				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, 44), action, enabled)
@@ -5530,9 +5542,9 @@ local function openTradeHall()
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
 			refreshReceipt()
-			local buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
+			local buy = mkButton(desk, if maxBuy >= qty then "구매" else "구매 불가", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
 			buy.Position = UDim2.fromOffset(4, 75)
-			local sell = mkButton(desk, "판매", COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			local sell = mkButton(desk, if maxSell >= qty then "판매" else "판매 가능 " .. tostring(maxSell), COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sell.Position = UDim2.new(0.5, 4, 0, 75)
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
