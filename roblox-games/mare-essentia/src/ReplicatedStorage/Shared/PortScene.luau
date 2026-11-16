@@ -1056,7 +1056,7 @@ end
 
 -- 항구 구역 계획: 항구가 만드는 물건(생산품)과 발전도로 구역의 크기·종류가 달라진다.
 -- 농원(가축 울타리) · 어항(건조대·쪽배) · 광산·벌목 하역장 · 해안 포대(군사)가 항구마다 다르게 선다.
-local function zoneLayout(portId, lvl, shipyardBuilt)
+local function zoneLayout(portId, lvl, shipyardBuilt, buildings)
 	local port = PortData.Ports[portId]
 	local prod = {}
 	for _, g in (port and port.produces) or {} do
@@ -1082,10 +1082,26 @@ local function zoneLayout(portId, lvl, shipyardBuilt)
 	-- 기존 조선소는 남쪽 -48~-108, 세관·항만청은 중앙, 접안 잔교는 바다 x>=22.
 	-- 같은 항구·단계에 언제나 같은 위치. 선박 항로와 시장·주택 필지를 침범하지 않는다.
 	local shore = if shipyardBuilt then 1 else -lay.side
-	lay.fishZ = shore * 128
-	lay.freightZ = shore * 209
-	lay.fortZ = if shipyardBuilt then -169 else lay.side * 128
+	local bounds = PortBuildings.HarborPlotBounds
+	lay.fishZ = shore * bounds.fishery.z
+	lay.freightZ = shore * bounds.freight.z
+	lay.fortZ = if shipyardBuilt then -bounds.defense.z else lay.side * bounds.fishery.z
 	lay.shipyardBuilt = shipyardBuilt == true
+	lay.freight = lvl >= 2 and (lay.timber or lay.mine or buildings == nil or (buildings.warehouse or 0) > 0)
+	-- [구역 경계] 실제 접안/조선/어업/원자재/경비 필지의 부지 폭과 좌표를 기록한다.
+	-- 실제 도로/조선소와 접하는 구역만 활성화하며 다른 종류를 같은 부지에 세우지 않는다.
+	lay.plots = {
+		{ id = "quay", label = bounds.quay.label, x = bounds.quay.x, z = bounds.quay.z,
+			halfX = bounds.quay.halfX, halfZ = bounds.quay.halfZ, active = true },
+		{ id = "shipyard", label = bounds.shipyard.label, x = bounds.shipyard.x, z = bounds.shipyard.z,
+			halfX = bounds.shipyard.halfX, halfZ = bounds.shipyard.halfZ, active = lay.shipyardBuilt },
+		{ id = "fishery", label = bounds.fishery.label, x = bounds.fishery.x, z = lay.fishZ,
+			halfX = bounds.fishery.halfX, halfZ = bounds.fishery.halfZ, active = lay.fish },
+		{ id = "freight", label = bounds.freight.label, x = bounds.freight.x, z = lay.freightZ,
+			halfX = bounds.freight.halfX, halfZ = bounds.freight.halfZ, active = lay.freight },
+		{ id = "defense", label = bounds.defense.label, x = bounds.defense.x, z = lay.fortZ,
+			halfX = bounds.defense.halfX, halfZ = bounds.defense.halfZ, active = lay.fort },
+	}
 	-- 별도 축사 없이 발전 단계에 따라 열린 목장 구역이 늘어난다(기존 세계경제 저장값 불변).
 	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
 	return lay
@@ -1433,7 +1449,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
 			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
 		end
-		local lay = zoneLayout(info.portId, lvl, info.hasShipyard)
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
 		local has = {}
 		for _, sp in list do
 			has[sp] = true
@@ -2718,7 +2734,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
-		local lay = zoneLayout(info.portId, lvl, info.hasShipyard)
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
 		local sd = lay.side
 		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
 		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
