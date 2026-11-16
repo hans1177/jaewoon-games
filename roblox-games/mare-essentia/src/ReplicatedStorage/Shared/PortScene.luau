@@ -3544,7 +3544,7 @@ function PortScene.build(info, onFacility)
 				-- [동료 이름표] 번호·직업 대신 영입 동료 이름을 표시한다.
 				if tag then sign(folder, tag, tostring(c.name or c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
 				local at = v:GetPivot().Position
-				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look" })
+				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look", gait = i * 0.3, heading = v:GetPivot().Rotation })
 			end
 		end
 	end
@@ -3588,17 +3588,21 @@ function PortScene.build(info, onFacility)
 					target = Vector3.new(target.X, 0, target.Z)
 					local delta = target - f.pos
 					local dist = delta.Magnitude
+					local walked = 0
 					if dist > 60 then
 						f.pos = target
 					elseif dist > 0.8 then
-						f.pos += delta.Unit * math.min(dist, (6 + dist * 1.5) * dt)
+						walked = math.min(dist, (6 + dist * 1.5) * dt)
+						f.pos += delta.Unit * walked
 					end
-					local moving = dist > 1.2
+					local moving = walked > 0.02
 					local faceDir = if moving then delta.Unit else look
-					local bob = 0
-					local at = f.pos + Vector3.new(0, f.baseY + bob, 0)
-					f.model:PivotTo(CFrame.lookAt(at, at + faceDir))
-					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, now + f.phase)
+					local at = f.pos + Vector3.new(0, f.baseY, 0)
+					-- [동료 추적] 실제 이동 거리로 발걸음을 재생하고 몸 방향은 천천히 회전한다.
+					f.heading = f.heading:Lerp(CFrame.lookAt(Vector3.zero, faceDir).Rotation, math.clamp(dt * 8, 0, 1))
+					f.model:PivotTo(CFrame.new(at) * f.heading)
+					if moving then f.gait += walked * (2 * math.pi / 5.2) end
+					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, if moving then f.gait else now + f.phase)
 					if not moving then
 						local idleKind = if (now + f.phase * 3) % 24 < 3 then "look" else f.idleKind
 						Pose.work(f.model, idleKind, now + f.phase)
