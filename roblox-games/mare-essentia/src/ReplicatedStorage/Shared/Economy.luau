@@ -29,6 +29,73 @@ E.NEIGHBORS = 6
 E.STAGE_POP = { 0, 1500, 5000, 15000, 40000, 250000 } -- 단계 진입 인구
 E.STAGE_NAMES = { "촌락", "마을", "읍", "도시", "대도시", "메가시티" }
 
+-- [문명 기술 트리] 기존 6대 경제 기술과 57개 학문의 연구 성과를 도시별 발명에 연결한다.
+-- 채택 여부는 기존 세계경제 상태에만 저장하며 플레이어 카드·보상·저장 키는 변경하지 않는다.
+-- 기술은 역사적 등장 시기 이후에도 도시 규모·선행 기술·자원·연구·국고를 갖춰야 실용화된다.
+E.CIVIL_TECH = {
+	{ id = "crop_rotation", name = "윤작 농법", since = 1600, disc = "agronomy", field = "agri", level = 1.12, stage = 2, cost = 120, facility = "farm", buildingDemand = 0.025, effects = { food = 0.02 } },
+	{ id = "guild_accounting", name = "길드 장부", since = 1600, disc = "commerce", field = "commerce", level = 1.12, stage = 2, cost = 150, facility = "market", buildingDemand = 0.025, effects = { trade = 0.02 } },
+	{ id = "navigation_charts", name = "정밀 해도", since = 1600, disc = "cartography", field = "sea", level = 1.2, stage = 2, cost = 180, facility = "dock", buildingDemand = 0.025, effects = { trade = 0.02 } },
+	{ id = "public_schools", name = "공공 학당", since = 1620, disc = "linguistics", field = "gov", level = 1.25, stage = 3, cost = 260, facility = "school", buildingDemand = 0.04, effects = { research = 0.025 } },
+	{ id = "glassmaking", name = "개량 유리 공방", since = 1640, disc = "chemistry", field = "craft", level = 1.3, stage = 2, cost = 260, facility = "workshop", buildingDemand = 0.025, effects = { craft = 0.02 } },
+	{ id = "dry_dock", name = "근대 건선거", since = 1660, disc = "shipbuilding", field = "sea", level = 1.35, stage = 3, cost = 450, resource = "timber", requires = { "navigation_charts" }, facility = "dock", buildingDemand = 0.04, effects = { trade = 0.025, craft = 0.01 } },
+	{ id = "quarantine", name = "항구 검역", since = 1665, disc = "public_health", field = "medicine", level = 1.3, stage = 3, cost = 280, facility = "hall", buildingDemand = 0.025, effects = { health = 0.04 } },
+	{ id = "merchant_banking", name = "상업 금융", since = 1690, disc = "economics", field = "commerce", level = 1.43, stage = 3, cost = 350, requires = { "guild_accounting" }, facility = "warehouse", buildingDemand = 0.04, effects = { trade = 0.03 } },
+	{ id = "steam_pumping", name = "광산 배수 증기기관", since = 1712, disc = "mechanics", field = "craft", level = 1.5, stage = 3, cost = 700, requires = { "glassmaking" }, resource = "coal", facility = "workshop", buildingDemand = 0.04, effects = { craft = 0.04 } },
+	{ id = "scientific_farming", name = "개량 농업", since = 1720, disc = "botany", field = "agri", level = 1.5, stage = 3, cost = 430, requires = { "crop_rotation" }, facility = "farm", buildingDemand = 0.03, effects = { food = 0.045 } },
+	{ id = "civic_hospitals", name = "도시 병원", since = 1740, disc = "medicine", field = "medicine", level = 1.52, stage = 4, cost = 650, requires = { "quarantine" }, facility = "hall", buildingDemand = 0.035, effects = { health = 0.05 } },
+	{ id = "industrial_metallurgy", name = "산업 야금", since = 1760, disc = "metallurgy", field = "craft", level = 1.58, stage = 4, cost = 1100, requires = { "steam_pumping" }, resource = "iron", facility = "workshop", buildingDemand = 0.065, effects = { craft = 0.05 } },
+	{ id = "international_banking", name = "국제 금융", since = 1760, disc = "economics", field = "commerce", level = 1.58, stage = 4, cost = 850, requires = { "merchant_banking" }, facility = "market", buildingDemand = 0.06, effects = { trade = 0.045, research = 0.015 } },
+}
+E.CIVIL_TECH_BY_ID = {}
+for _, node in ipairs(E.CIVIL_TECH) do E.CIVIL_TECH_BY_ID[node.id] = node end
+
+-- [기술 상태] 시대와 연구는 연구 가능 여부만 정한다. 자원과 국고가 없으면 채택되지 않는다.
+function E.technologyStatus(t, node, year)
+	if t.civTech[node.id] then return "adopted" end
+	if year < node.since then return "future" end
+	if t.stage < node.stage then return "city" end
+	for _, prereq in ipairs(node.requires or {}) do
+		if not t.civTech[prereq] then return "prerequisite" end
+	end
+	if (t.tech[node.field] or 0) < node.level then return "research" end
+	if node.resource and not t.produces[node.resource] and (t.stock[node.resource] or 0) < 1 then return "resource" end
+	if t.treasury < node.cost then return "capital" end
+	return "ready"
+end
+
+-- [기술 확산·채택] 학문 보고와 교역으로 상승한 기존 t.tech 점수를 실제 시설 기술로 전환한다.
+function E.adoptTechnologies(t, year)
+	local adopted = 0
+	for _, node in ipairs(E.CIVIL_TECH) do
+		if E.technologyStatus(t, node, year) == "ready" then
+			t.treasury -= node.cost
+			t.civTech[node.id] = true
+			for key, boost in pairs(node.effects) do
+				t.civBonus[key] = math.min(1.2, (t.civBonus[key] or 1) + boost)
+			end
+			adopted += 1
+		end
+	end
+	return adopted
+end
+
+-- [백과사전 연결] 카드와 중복 보상 없이 해당 항구의 시대별 기술 트리를 조회한다.
+function E.technologyView(t, year)
+	local rows, count = {}, 0
+	for _, node in ipairs(E.CIVIL_TECH) do
+		local status = E.technologyStatus(t, node, year)
+		if status == "adopted" then count += 1 end
+		table.insert(rows, {
+			id = node.id, name = node.name, discipline = node.disc, since = node.since,
+			field = node.field, level = node.level, requires = node.requires or {},
+			resource = node.resource, facility = node.facility, status = status,
+		})
+	end
+	return { year = math.floor(year), adopted = count, total = #E.CIVIL_TECH, rows = rows }
+end
+
+
 -- ───────── 난수 (결정적) ─────────
 local function rnd(w)
 	w.seed = (w.seed * 1103515245 + 12345) % 2147483648
@@ -69,6 +136,11 @@ local function jobShares(stage, t)
 	local official = 0.01 + 0.012 * (stage - 1)
 	local clergy = 0.02 + 0.004 * stage
 	local used = farm + fish + craft + merchant + sailor + guard + official + clergy
+	local shift = (t.civTech and t.civTech.steam_pumping and 0.012 or 0) + (t.civTech and t.civTech.industrial_metallurgy and 0.022 or 0)
+	farm = math.max(0.2, farm - shift)
+	craft += shift * 0.75
+	merchant += shift * 0.25
+	used = farm + fish + craft + merchant + sailor + guard + official + clergy
 	local lab = math.max(0.04, 1 - used)
 	local tot = used + lab -- 합이 1이 되도록 정규화
 	return { farmer = farm / tot, fisher = fish / tot, craftsman = craft / tot, merchant = merchant / tot, sailor = sailor / tot, guard = guard / tot, official = official / tot, clergy = clergy / tot, laborer = lab / tot }
@@ -94,7 +166,7 @@ local function newTown(p, w)
 		gdp = 0, tradeIn = 0, tradeOut = 0, deaths = 0, births = 0,
 		fx = { food = 1, prod = 1, trade = 1, demand = 1, mort = 0 },
 		neighbors = {}, goods = {},
-		tech = {}, infra = 0, infraRef = 0, treasury = 0, stability = 0.7, wage = 1, wageRef = 1,
+		tech = {}, civTech = {}, civBonus = { food = 1, craft = 1, trade = 1, health = 1, research = 1 }, infra = 0, infraRef = 0, treasury = 0, stability = 0.7, wage = 1, wageRef = 1,
 		sector = { agri = 0, industry = 0, trade = 0, service = 0 }, migIn = 0, migOut = 0, unrestCd = 0, civ = 0,
 	}
 	local yf = 1 + (p.lat and (E.START_YEAR_HINT - 1500) / 400 or 0)
@@ -163,6 +235,12 @@ function E.buildingTargets(t)
 			tg[b.id] = (t.stage >= (b.minStage or 1)) and (pop / b.serves) or 0
 		end
 	end
+	-- 발명이 확산되면 기존 시설을 확장한다. 새 건물 종류나 저장 구조를 만들지 않는다.
+	for _, node in ipairs(E.CIVIL_TECH) do
+		if t.civTech[node.id] and node.facility and tg[node.facility] then
+			tg[node.facility] *= 1 + (node.buildingDemand or 0)
+		end
+	end
 	return tg
 end
 
@@ -228,7 +306,7 @@ local function productionOf(t, g, price, w)
 	if g == E.GRAIN then
 		local farmers = math.min(t.pop * sh.farmer, t.bld.farm * 16)
 		local used = math.min(farmers, t.land) + 0.25 * math.max(0, farmers - t.land)
-		local yield = 1.5 * (1 + 0.12 * (t.stage - 1)) * (t.tech.agri ^ 0.6) * E.infraFactor(t)
+		local yield = 1.5 * (1 + 0.12 * (t.stage - 1)) * (t.tech.agri ^ 0.6) * E.infraFactor(t) * t.civBonus.food
 		local fish = t.pop * sh.fisher * 1.5
 		return (used * yield + fish) * t.fx.food * (1 + 0.05 * lvl)
 	end
@@ -237,7 +315,7 @@ local function productionOf(t, g, price, w)
 	for _ in pairs(t.produces) do n += 1 end
 	local workers = math.min(t.pop * (sh.craftsman + sh.laborer * 0.5), t.bld.workshop * 10) / math.max(1, n)
 	local el = math.clamp((price / basePrice(g)) ^ 0.5, 0.5, 1.6)
-	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5))
+	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5)) * t.civBonus.craft
 end
 
 function E.newWorld(opts)
@@ -434,7 +512,7 @@ function E.step(w)
 		if t.grain < grainCons * 2 and grainProd < grainCons then
 			starve = 0.002 * (1 - grainProd / math.max(grainCons, 1))
 		end
-		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / (t.tech.medicine ^ 0.5) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0))
+		local d = t.pop * (r * (1 + 0.1 * (t.tech.medicine - 1)) - starve - t.fx.mort / ((t.tech.medicine ^ 0.5) * t.civBonus.health) - (t.stability < 0.3 and 0.0002 or 0) - (t.housingRatio < 0.85 and 0.00005 or 0))
 		t.pop = math.max(50, t.pop + d)
 		if d >= 0 then t.births += d else t.deaths += -d end
 		-- 번영도: 1인당 GDP 이동평균 (기준 대비)
@@ -455,7 +533,7 @@ function E.step(w)
 			local b = w.towns[nb.id]
 			local tradeFx = math.min(a.fx.trade, b.fx.trade)
 			local cost = (0.04 + nb.d / 20000 * 0.5) / math.max(tradeFx, 0.3) / (a.tech.sea ^ 0.3)
-			local cap = 0.015 * math.sqrt(a.pop * b.pop) / ((1 + nb.d / 1500) ^ 1.2) * tradeFx * (a.tech.commerce ^ 0.5) * (0.7 + 0.3 * math.min(1, a.cov.market or 1))
+			local cap = 0.015 * math.sqrt(a.pop * b.pop) / ((1 + nb.d / 1500) ^ 1.2) * tradeFx * (a.tech.commerce ^ 0.5) * (0.7 + 0.3 * math.min(1, a.cov.market or 1)) * a.civBonus.trade
 			for _, g in ipairs(a.goods) do
 				local pb = b.price[g]
 				if pb then
@@ -522,7 +600,7 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 	t.wage = (gdp / math.max(t.pop, 1)) / t.price[E.GRAIN] / t.wageRef
 	-- 기술: 아이디어 생산 ~ sqrt(인구) / 기술^0.6 (케이머), 안정도·교육(통치)에 비례
 	local open = 1 + math.min(1, (t.tradeIn + t.tradeOut) / math.max(gdp, 1))
-	local base = (0.7 + 0.3 * math.min(1, t.cov.school or 1)) * 0.000002 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability)
+	local base = (0.7 + 0.3 * math.min(1, t.cov.school or 1)) * 0.000002 * math.sqrt(t.pop / 1000) * open * (0.5 + t.stability) * t.civBonus.research
 	for _, f in ipairs(E.TECH_FIELDS) do
 		local focus = 1
 		if f == "agri" then focus = grainCons > grainProd and 1.6 or 1
@@ -530,6 +608,7 @@ function E.stepCivilization(w, t, gdp, grainProd, grainCons)
 		elseif f == "sea" then focus = t.shipyard and 1.5 or 1 end
 		t.tech[f] += base * focus / (t.tech[f] ^ 0.6)
 	end
+	E.adoptTechnologies(t, E.year(w))
 	t.civ = E.civScore(t)
 end
 
@@ -645,7 +724,9 @@ function E.visual(t)
 	-- 보이는 주민은 대표(표본)만: 인구가 커질수록 로그로 늘어 최대 60명. 한 명이 perNpc 명을 대표한다.
 	local residents = math.clamp(math.floor(6 + 14 * math.log(math.max(t.pop, 300) / 300, 10) * 1.6), 6, 60)
 	local scale = 0.8 + 0.08 * t.stage + 0.1 * math.clamp(t.prosperity - 1, -0.5, 0.5)
-	return { stage = t.stage, name = E.STAGE_NAMES[t.stage], residents = residents, perNpc = math.floor(t.pop / residents), districts = E.districts(t), buildingScale = scale,
+	local advances = 0
+	for _, adopted in pairs(t.civTech) do if adopted then advances += 1 end end
+	return { stage = t.stage, name = E.STAGE_NAMES[t.stage], residents = residents, perNpc = math.floor(t.pop / residents), districts = E.districts(t), buildingScale = scale, techCount = advances,
 		houses = math.floor(t.bld.house + 0.5), mood = t.prosperity >= 1.1 and "boom" or (t.prosperity < 0.8 and "slump" or "steady") }
 end
 
