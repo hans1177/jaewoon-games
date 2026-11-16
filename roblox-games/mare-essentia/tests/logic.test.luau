@@ -4118,10 +4118,14 @@ do
 			unique[bp.id] = true
 			check("선박별 실제 항행 범위 " .. bp.id, type(bp.sailingZone) == "string" and #bp.sailingZone >= 3)
 			if bp.faction == "new_world" then
-				check("신대륙 4~5단계는 원양선 " .. bp.id, bp.stage < 4 or (bp.existingId ~= nil and string.find(bp.sailingZone, "원양") ~= nil or string.find(bp.sailingZone, "횡단") ~= nil))
-				if bp.stage >= 4 then check("카누·카약을 대형 원양선으로 오인하지 않음 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약")) end
-				if bp.stage == 3 then check("신대륙 3단계 체서피크 실존 범선", bp.id == "chesapeake_schooner" and bp.card == nil and string.find(bp.rig, "돛대") ~= nil and string.find(bp.sailingZone, "외양") ~= nil) end
-				if bp.stage >= 3 then check("신대륙 3단계 이상 카누·뗏목 제외 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약") and not string.find(bp.name, "뗏목")) end
+				-- [주력 선박 고증] 신대륙의 토착 카누·뗏목 카드는 유지하지만 5단계 조선 설계에는 넣지 않는다.
+				check("신대륙 전 단계는 실제 범선 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약") and not string.find(bp.name, "뗏목") and string.find(bp.rig, "돛") ~= nil and bp.card == nil)
+				check("신대륙 전 단계 외양 항행 " .. bp.id, string.find(bp.sailingZone, "외양") ~= nil or string.find(bp.sailingZone, "원양") ~= nil or string.find(bp.sailingZone, "횡단") ~= nil)
+				if bp.stage == 1 then check("신대륙 1단계 버뮤다 슬루프", bp.id == "bermuda_sloop") end
+				if bp.stage == 2 then check("신대륙 2단계 뉴잉글랜드 케치", bp.id == "new_england_ketch") end
+				if bp.stage == 3 then check("신대륙 3단계 체서피크 스쿠너", bp.id == "chesapeake_schooner") end
+				if bp.stage == 4 then check("신대륙 4단계 브리간틴", bp.id == "atlantic_brigantine" and bp.existingId == "brigantine") end
+				if bp.stage == 5 then check("신대륙 5단계 태평양 횡단 갈레온", bp.id == "manila_galleon" and bp.existingId == "manila_galleon") end
 			end
 			if bp.stage == 5 and (bp.faction == "africa" or bp.faction == "middle_east" or bp.faction == "southeast_asia") then
 				check("지역 최상위 선박은 실제 원양선 " .. bp.id, string.find(bp.sailingZone, "원양") ~= nil)

@@ -1,32 +1,41 @@
 {
  "game": "mare-essentia",
  "wanted": [
-  {
-   "id": "mare-seven-faction-ships",
-   "kind": "Ships",
-   "purpose": "7개 카드 진영 각 5종, 합계 35종의 시대별 실제 선체·돛·갑판 3D 실물 모델. 항행 범위는 역사적 선형과 일치해야 한다.",
-   "status": "exact-historical-3d-models-missing-or-unverified",
-   "plannedShipCount": 35,
-   "planSource": "src/ReplicatedStorage/Shared/Ships.luau#Blueprints",
-   "priorityShipIds": [
-    "chesapeake_schooner",
-    "atlantic_brigantine",
-    "manila_galleon",
-    "oman_boom",
-    "javanese_jong",
-    "zanzibar_jahazi"
-   ],
-   "retainedCardVessels": [
-    "titicaca_reed",
-    "inuit_kayak",
-    "cedar_canoe",
-    "kadirga",
-    "madagascar_outrigger"
-   ],
-   "replacementGate": "정확한 함종의 완성 실물 메시 + 개별 CC0/사용권 + 원본 URL·SHA256 + Roblox Universe 권한 + 런타임 시각검증",
-   "forbidden": "카누·카약을 원양 대형 범선으로 재분류하거나 무관한 모델/절차형 기본 도형을 대체 사용하지 않음",
-   "inboxPath": "assets/inbox/Ships/"
-  },
+ {
+  "id": "mare-seven-faction-ships",
+  "kind": "Ships",
+  "purpose": "7개 카드 진영 각 5종, 합계 35종의 시대별 실제 선체·돛·갑판 3D 실물 모델. 신대륙 주력 1~5단계는 아메리카 해역에서 실제 운용된 범선이며 토착 카누·뗏목은 기존 고유 카드로 보존.",
+  "status": "exact-historical-3d-models-missing-or-unverified",
+  "plannedShipCount": 35,
+  "planSource": "src/ReplicatedStorage/Shared/Ships.luau#Blueprints",
+  "priorityShipIds": [
+   "bermuda_sloop",
+   "new_england_ketch",
+   "chesapeake_schooner",
+   "atlantic_brigantine",
+   "manila_galleon",
+   "oman_boom",
+   "javanese_jong",
+   "zanzibar_jahazi"
+  ],
+  "retainedCardVessels": [
+   "maya_canoe",
+   "carib_canoe",
+   "titicaca_reed",
+   "inuit_kayak",
+   "cedar_canoe",
+   "kadirga",
+   "madagascar_outrigger"
+  ],
+  "replacementGate": "정확한 함종의 완성 실물 메시 + 개별 CC0/사용권 + 원본 URL·SHA256 + Roblox Universe 권한 + 런타임 시각검증",
+  "forbidden": "토착 카누·카약·뗏목을 35종 주력 범선에 포함하거나 원양선으로 재분류 금지. 무관한 모델/절차형 기본 도형 대체 금지.",
+  "inboxPath": "assets/inbox/Ships/",
+  "historicalReferences": {
+   "bermuda_sloop": "https://nmb.bm/discover-learn/our-collection/",
+   "new_england_ketch": "https://www.colonialsociety.org/node/1977",
+   "manila_galleon": "https://www.metmuseum.org/essays/the-manila-galleon-trade-1565-1815"
+  }
+ },
   {
    "id": "hero-portraits-real",
    "kind": "Portraits",
