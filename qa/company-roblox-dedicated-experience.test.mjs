@@ -1444,3 +1444,102 @@ test('Mare external CC0 nau original hull and Roblox registration integrity',()=
   assert.ok(!port.includes('nau-custom')&&!battle.includes('nau-custom'),
     'runtime-unverified ship art must not activate in player gameplay');
 });
+
+
+// [인도양 실물 선체] 실제 공개 CC0 나무배 바이너리를 보존하고 3개 서로 다른 상선형으로 제작한 뒤 등록한다.
+test('Mare external CC0 coastal original hull and Roblox registration integrity',()=>{
+  const root='roblox-games/mare-essentia';
+  const src=root+'/assets/naval/rowboat-source.glb';
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.ok(uploader.includes('https://grab3d.com/dl/rowboat/rowboat.glb'));
+  assert.ok(uploader.includes('MARE_COASTAL_EXTERNAL_CC0_HULL_DERIVED'));
+  assert.ok(uploader.includes("if (kind === 'Naval' && f === 'rowboat-source.glb') continue;"));
+  assert.ok(workflow.includes('assets/naval/rowboat-source.glb'));
+  for(const ship of ['jahazi','kotia','mtepe']){
+    assert.ok(workflow.includes('assets/naval/'+ship+'-custom.glb'));
+    assert.ok(workflow.includes('assets/naval/'+ship+'-custom.glb.license.json'));
+  }
+  if(!fs.existsSync(src)){
+    for(const ship of ['jahazi','kotia','mtepe']){
+      assert.equal(fs.existsSync(root+'/assets/naval/'+ship+'-custom.glb'),false);
+      assert.equal(fs.existsSync(root+'/assets/naval/'+ship+'-custom.glb.license.json'),false);
+    }
+    return; // PR 단계에서 무허가 다운로드 없이 코드 검증; 본 작업은 기존 Open Cloud 등록 단계.
+  }
+  const sha=b=>createHash('sha256').update(b).digest('hex');
+  const parse=b=>{
+    assert.equal(b.toString('ascii',0,4),'glTF');
+    assert.equal(b.readUInt32LE(4),2);
+    assert.equal(b.readUInt32LE(8),b.length);
+    assert.equal(b.readUInt32LE(16),0x4e4f534a);
+    const size=b.readUInt32LE(12),at=20+size;
+    assert.equal(b.readUInt32LE(at+4),0x004e4942);
+    assert.equal(b.readUInt32LE(at)+at+8,b.length);
+    const model=JSON.parse(b.subarray(20,at).toString('utf8'));
+    const bin=b.subarray(at+8);
+    assert.ok(model.meshes?.length>=2);
+    for(const view of model.bufferViews)
+      assert.ok((view.byteOffset||0)+view.byteLength<=model.buffers[0].byteLength);
+    return {model,bin};
+  };
+  const original=fs.readFileSync(src),before=parse(original);
+  assert.ok(original.length>500000&&original.length<3000000,'real external high detail CC0 source required');
+  const ledger=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
+  const lua=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const hashes=new Set();
+  for(const ship of ['jahazi','kotia','mtepe']){
+    const file=root+'/assets/naval/'+ship+'-custom.glb';
+    const custom=fs.readFileSync(file),meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const after=parse(custom);
+    assert.equal(meta.license,'CC0-1.0');
+    assert.equal(meta.author,'Grab3D');
+    assert.equal(meta.source,'https://grab3d.com/dl/rowboat/rowboat.glb');
+    assert.equal(meta.sourcePage,'https://grab3d.com/models/vehicles/rowboat/');
+    assert.equal(meta.sourceAsset,src);
+    assert.equal(meta.originalSha256,sha(original));
+    assert.equal(meta.sourceSha256,sha(custom));
+    assert.equal(meta.originalMeshCount,before.model.meshes.length);
+    assert.equal(meta.authenticOriginalBinaryVerified,true);
+    assert.equal(meta.originalMeshesPreserved,true);
+    assert.equal(meta.structuralGlbVerified,true);
+    assert.equal(meta.actualRobloxRuntimeVerified,false);
+    assert.equal(meta.visualQualityApproved,false);
+    assert.equal(meta.robloxPublishedVerified,false);
+    assert.ok(meta.derivedTriangleCount>=1400,ship+' must have substantial reconstructed geometry');
+    for(const group of ['wood','edge','linen','rope','carved'])
+      assert.ok(meta.modelGeometryGroups.includes(group),ship+' missing material group '+group);
+    assert.deepEqual(after.model.meshes.slice(0,before.model.meshes.length),before.model.meshes);
+    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin);
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' joined curved outer hull planks'));
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' timber gunwale and ribs'));
+    assert.ok(after.model.meshes.some(m=>m.name===ship+' handworked open cargo deck and timber boxes'));
+    assert.ok(after.model.nodes.some(n=>n.name===ship+' oriented +X bow +Y up'));
+    if(ship==='jahazi'){
+      assert.ok(after.model.meshes.some(m=>m.name==='jahazi mizzen trade sail cloth'));
+      assert.ok(after.model.meshes.some(m=>m.name==='jahazi foremast billowed Indian Ocean lateen cloth'));
+    }else if(ship==='kotia'){
+      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar pepper dhow giant lateen cloth'));
+      assert.ok(after.model.meshes.some(m=>m.name==='kotia Malabar small forward staysail cloth'));
+    }else{
+      assert.ok(after.model.meshes.some(m=>m.name==='mtepe stitched Swahili sewn plank seams'));
+      assert.ok(after.model.meshes.some(m=>m.name==='mtepe woven rectangular Swahili mtepe mat sail'));
+    }
+    const added=after.model.meshes.slice(before.model.meshes.length)
+      .flatMap(m=>m.primitives).reduce((sum,p)=>sum+after.model.accessors[p.indices].count/3,0);
+    assert.equal(meta.derivedTriangleCount,added);
+    hashes.add(sha(custom));
+    const reg=ledger.assets['Naval/'+ship+'-custom'];
+    assert.ok(reg?.assetId,ship+' missing real Roblox Open Cloud asset ID');
+    assert.equal(reg.assetType,'Model');
+    assert.equal(reg.usePermissionGranted,true);
+    assert.equal(reg.sourceSha256,sha(custom));
+    assert.ok(lua.includes('["Naval/'+ship+'-custom"] = '+reg.assetId));
+  }
+  assert.equal(hashes.size,3,'3 ships must not share identical derivative model');
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  for(const ship of ['jahazi','kotia','mtepe'])
+    assert.ok(!port.includes(ship+'-custom')&&!battle.includes(ship+'-custom'),
+      'unverified mobile model may not be activated in gameplay: '+ship);
+});
