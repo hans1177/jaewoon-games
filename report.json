@@ -1,5 +1,5 @@
 {
- "sourceRevision": "6304daf73c2f695d6db3bcaf1659eede4e7b9789",
+ "sourceRevision": "c934401f600132cbc4aa38f328829b487ac8e696",
  "log": [
   {
    "step": 1,
@@ -667,289 +667,10 @@
    "step": 148,
    "capture": "cb2",
    "files": 1
-  },
-  {
-   "step": 149,
-   "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 151,
-   "capture": "v1_start",
-   "files": 1
-  },
-  {
-   "step": 153,
-   "capture": "v2_event",
-   "files": 1
-  },
-  {
-   "step": 154,
-   "ctx": "Client",
-   "out": "stream=false parts=2/2 ex=Object_0:0:20.087310791015625, 39.37026596069336, 50.866512298583984:MeshPart;Object_1:0:10.62215805053711, 31.896690368652344, 47.17023468017578:MeshPart vp=823.8475341796875, 106.64928436279297, -12346.0869140625 on=false parent=VoyageScene fog=2271.65283203125 brightness=1.9963157176971436 atmo=0.3700000047683716 camdist=20032.072265625\ntext"
-  },
-  {
-   "step": 156,
-   "capture": "v3_event2",
-   "files": 1
-  },
-  {
-   "step": 158,
-   "capture": "v4_late",
-   "files": 1
-  },
-  {
-   "step": 159,
-   "ctx": "Client",
-   "out": "nil\ntext"
-  },
-  {
-   "step": 160,
-   "ctx": "Client",
-   "out": "play ok=true nil\ntext"
-  },
-  {
-   "step": 162,
-   "capture": "b1_start",
-   "files": 1
-  },
-  {
-   "step": 163,
-   "ctx": "Client",
-   "out": "NAVAL_BATTLE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 165,
-   "capture": "b2_mid",
-   "files": 1
-  },
-  {
-   "step": 166,
-   "ctx": "Client",
-   "out": "LOGS(10): ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
-  },
-  {
-   "step": 167,
-   "ctx": "Server",
-   "out": "LOGS(23): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
-  },
-  {
-   "step": 168,
-   "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 170,
-   "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 171,
-   "ctx": "Client",
-   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
-  },
-  {
-   "step": 173,
-   "capture": "harbor_npc_sparring_01",
-   "files": 1
-  },
-  {
-   "step": 175,
-   "capture": "harbor_npc_sparring_02",
-   "files": 1
-  },
-  {
-   "step": 177,
-   "capture": "harbor_npc_sparring_03",
-   "files": 1
-  },
-  {
-   "step": 179,
-   "capture": "harbor_npc_sparring_04",
-   "files": 1
-  },
-  {
-   "step": 181,
-   "capture": "harbor_npc_sparring_05",
-   "files": 1
-  },
-  {
-   "step": 183,
-   "capture": "harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 185,
-   "capture": "harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 187,
-   "capture": "harbor_npc_sparring_08",
-   "files": 1
-  },
-  {
-   "step": 188,
-   "ctx": "Client",
-   "out": "R15_MOTION_IDLE\ntext"
-  },
-  {
-   "step": 190,
-   "capture": "harbor_motion_idle",
-   "files": 1
-  },
-  {
-   "step": 191,
-   "ctx": "Client",
-   "out": "R15_MOTION_WALK\ntext"
-  },
-  {
-   "step": 193,
-   "capture": "harbor_motion_walk",
-   "files": 1
-  },
-  {
-   "step": 194,
-   "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=8 CARRY_FORWARD=true\ntext"
-  },
-  {
-   "step": 195,
-   "ctx": "Client",
-   "out": "R15_MOTION_RUN\ntext"
-  },
-  {
-   "step": 197,
-   "capture": "harbor_motion_run",
-   "files": 1
-  },
-  {
-   "step": 198,
-   "ctx": "Client",
-   "out": "MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2\ntext"
-  },
-  {
-   "step": 199,
-   "ctx": "Client",
-   "out": "R15_MOTION_ATTACK\ntext"
-  },
-  {
-   "step": 201,
-   "capture": "harbor_motion_attack",
-   "files": 1
-  },
-  {
-   "step": 202,
-   "ctx": "Client",
-   "out": "R15_MOTION_SHOOT\ntext"
-  },
-  {
-   "step": 204,
-   "capture": "harbor_motion_shoot",
-   "files": 1
-  },
-  {
-   "step": 205,
-   "ctx": "Client",
-   "out": "R15_MOTION_RELOAD\ntext"
-  },
-  {
-   "step": 207,
-   "capture": "harbor_motion_reload",
-   "files": 1
-  },
-  {
-   "step": 208,
-   "ctx": "Client",
-   "out": "R15_MOTION_GUARD\ntext"
-  },
-  {
-   "step": 210,
-   "capture": "harbor_motion_guard",
-   "files": 1
-  },
-  {
-   "step": 211,
-   "ctx": "Client",
-   "out": "R15_MOTION_HURT\ntext"
-  },
-  {
-   "step": 213,
-   "capture": "harbor_motion_hurt",
-   "files": 1
-  },
-  {
-   "step": 214,
-   "ctx": "Client",
-   "out": "R15_MOTION_CHEER\ntext"
-  },
-  {
-   "step": 216,
-   "capture": "harbor_motion_cheer",
-   "files": 1
-  },
-  {
-   "step": 217,
-   "ctx": "Client",
-   "out": "R15_MOTION_TALK\ntext"
-  },
-  {
-   "step": 219,
-   "capture": "harbor_motion_talk",
-   "files": 1
-  },
-  {
-   "step": 220,
-   "ctx": "Client",
-   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
-  },
-  {
-   "step": 221,
-   "ctx": "Client",
-   "out": "NPC_FACE_FRONT_PASS R15=48 BACKWARDS=0\ntext"
-  },
-  {
-   "step": 222,
-   "capture": "harbor_npc_face_front",
-   "files": 1
-  },
-  {
-   "step": 223,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 225,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 226,
-   "click": "field_entry",
-   "at": "298,191",
-   "out": "298,191 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 298,
-      "y": 191
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 228,
-   "capture": "field_entry",
-   "files": 1
   }
  ],
  "errors": [
-  "step229:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: FIELD_QA_ENTRY_FAIL: pointer=activa"
+  "step149:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING |"
  ],
  "consoleCapture": {
   "captured": true,
@@ -963,18 +684,18 @@
    {
     "type": "studio-console-error",
     "actionId": null,
-    "signature": "AssistantCommand:1: FIELD_QA_ENTRY_FAIL: pointer=activated stage=BUTTON attempt=london_fields reason=ACTIVE_SCENE_BUSY ground=false gui=false x=-6"
+    "signature": "AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING"
    }
   ]
  },
  "summary": {
-  "plannedSteps": 236,
-  "completedSteps": 230,
-  "plannedClicks": 9,
-  "successfulClicks": 9,
+  "plannedSteps": 237,
+  "completedSteps": 150,
+  "plannedClicks": 10,
+  "successfulClicks": 8,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 59,
+  "capturedFrames": 33,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -984,7 +705,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224162,
+      "bytes": 224071,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1007,7 +728,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247578,
+      "bytes": 247477,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1022,7 +743,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247960,
+      "bytes": 247941,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1037,7 +758,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132508,
+      "bytes": 137517,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1061,7 +782,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159935,
+      "bytes": 132709,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1074,7 +795,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0165789127349854,
+    "brightness": 2.016814947128296,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1085,7 +806,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170710,
+      "bytes": 165181,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +819,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.018913984298706,
+    "brightness": 2.019301414489746,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1109,7 +830,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 119878,
+      "bytes": 122231,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1122,7 +843,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022230863571167,
+    "brightness": 2.022296190261841,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1133,7 +854,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165965,
+      "bytes": 165990,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1146,7 +867,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0265700817108154,
+    "brightness": 2.0264344215393066,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1157,7 +878,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 148459,
+      "bytes": 148364,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1172,7 +893,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170242,
+      "bytes": 170326,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1187,7 +908,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147764,
+      "bytes": 147649,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1202,7 +923,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 133963,
+      "bytes": 133919,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1217,7 +938,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153516,
+      "bytes": 153688,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1232,7 +953,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153535,
+      "bytes": 153379,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1247,7 +968,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147789,
+      "bytes": 148514,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1262,7 +983,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168313,
+      "bytes": 168238,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1277,7 +998,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153860,
+      "bytes": 154074,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1292,7 +1013,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140255,
+      "bytes": 140218,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1307,7 +1028,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140278,
+      "bytes": 140130,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1322,7 +1043,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 220679,
+      "bytes": 226192,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1337,7 +1058,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162352,
+      "bytes": 165034,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1352,7 +1073,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 182152,
+      "bytes": 181746,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1367,7 +1088,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141060,
+      "bytes": 141031,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1382,7 +1103,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141198,
+      "bytes": 141175,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1397,7 +1118,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162803,
+      "bytes": 162615,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1412,7 +1133,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169843,
+      "bytes": 170212,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1427,7 +1148,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169464,
+      "bytes": 169814,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1442,7 +1163,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194030,
+      "bytes": 194306,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1457,7 +1178,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170795,
+      "bytes": 170717,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1472,7 +1193,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169610,
+      "bytes": 169568,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1487,7 +1208,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203571,
+      "bytes": 203645,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1502,7 +1223,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 216954,
+      "bytes": 217213,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1517,7 +1238,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 211960,
+      "bytes": 212054,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1525,576 +1246,10 @@
     ]
    },
    "interaction": "나가기"
-  },
-  {
-   "name": "v1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 73323,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "v2_event",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 69731,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "v3_event2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 84529,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "v4_late",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 79479,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "b1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 145109,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "b2_mid",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 63228,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_03",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_04",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_05",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_06",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_07",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_sparring_08",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_idle",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_walk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_run",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_attack",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_shoot",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_reload",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_guard",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_hurt",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_cheer",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_motion_talk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "harbor_npc_face_front",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 53362,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 135460,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "assetOwnership": {
-  "reportedFailedIds": [
-   "72489040757878",
-   "77023165428158",
-   "107877140385634",
-   "127370718437030",
-   "105991549101223",
-   "114650000468629",
-   "125327803198600",
-   "120956229711846",
-   "114615121747571",
-   "76486492447366",
-   "135648768778892",
-   "97023606015316"
-  ],
-  "contexts": {
-   "Server": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "97023606015316": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_potato"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "135648768778892": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_plant_anatomy"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "76486492447366": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_herbarium"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 17676,
-    "contentRefs": 2100,
-    "complete": true
-   },
-   "Client": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "97023606015316": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_potato"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "135648768778892": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_plant_anatomy"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "76486492447366": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_herbarium"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 25001,
-    "contentRefs": 3576,
-    "complete": false
-   }
-  }
- },
  "visualEvidence": {
-  "framesChecked": 59,
+  "framesChecked": 33,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
