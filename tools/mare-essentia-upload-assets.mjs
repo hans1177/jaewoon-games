@@ -103,6 +103,7 @@ async function prepareLicensedOriginals() {
         || evidence.authenticOriginalBinaryVerified!==true
         || evidence.originalMeshesPreserved!==true
         || evidence.structuralGlbVerified!==true
+        || original.length!==1160296
         || original.toString('ascii',0,4)!=='glTF')
         throw new Error('MARE_COASTAL_SHIP_EXTERNAL_CC0_SOURCE_CHANGED:'+item.rebuildCoastalShip);
     }
@@ -257,7 +258,8 @@ async function prepareLicensedOriginals() {
         // [원본 선체 실물] 정식 공개 CC0 원본 GLB를 별도 저장하고 변경 전 메시/바이너리를 보존한다.
         const ship=item.rebuildCoastalShip, sourceBytes=bytes;
         const file=path.join(ROOT,'assets/naval/rowboat-source.glb');
-        if (sourceBytes.length<500000 || sourceBytes.length>3000000
+        // [CC0 원본 잠금] Grab3D 공개 manifest의 정확한 GLB 바이트 수를 검증한다.
+        if (sourceBytes.length!==1160296
           || sourceBytes.toString('ascii',0,4)!=='glTF'
           || sourceBytes.readUInt32LE(4)!==2 || sourceBytes.readUInt32LE(8)!==sourceBytes.length
           || sourceBytes.readUInt32LE(16)!==0x4e4f534a)
