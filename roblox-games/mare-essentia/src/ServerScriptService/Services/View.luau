@@ -564,9 +564,14 @@ return function(D, S)
 			if site.portId == port.id then
 				local blocked = S.Discovery.siteBlockReason(state, site)
 				local left = 0
+				-- [탐험 도감] 보상 규칙을 바꾸지 않고 서버가 이미 검증한 미발견 카드만 현장 연출에 전달한다.
+				local observableCards = {}
 				for _, cardId in site.pool do
 					if not state.discovered[cardId] then
 						left += 1
+						if not S.Discovery.cardBlockReason(state, D.Cards.ById[cardId]) then
+							table.insert(observableCards, cardId)
+						end
 					end
 				end
 				table.insert(view.sites, {
@@ -576,6 +581,7 @@ return function(D, S)
 					minLevel = site.minLevel,
 					days = site.days,
 					left = left,
+					observableCards = observableCards, -- 저장 상태가 아닌 탐험 화면용 임시 후보
 					fromYear = site.fromYear,
 					locked = blocked,
 					unlocked = blocked == nil,
