@@ -223,6 +223,26 @@ return function(D, S)
 		return n
 	end
 
+	-- [학문 숙련] 특정 전문 분야를 선택하지 않아도 보고·이해한 카드마다 해당 학문만 성장한다.
+	-- 저장된 reported 원본에서 계산하므로 기존 저장 키·진행 기록을 변경하지 않는다.
+	local STUDY_WEIGHT = { Common = 1, Uncommon = 2, Rare = 3, Epic = 5, Legendary = 8 }
+	local STUDY_LEVEL_AT = { 4, 10, 20, 35 }
+	local function masteryOf(state, discId)
+		local points, studied = 0, 0
+		for _, node in K.Nodes do
+			if node.disc == discId and K.understood(state, node.id) then
+				local card = D.Cards.ById[node.id]
+				points += STUDY_WEIGHT[card and card.rarity or "Common"] or 1
+				studied += 1
+			end
+		end
+		local level = 1
+		for _, required in STUDY_LEVEL_AT do
+			if points >= required then level += 1 end
+		end
+		return { points = points, studied = studied, level = level, next = STUDY_LEVEL_AT[level] or 0 }
+	end
+
 	local function ensureAcademy(state)
 		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }
 		return state.academy
@@ -632,11 +652,13 @@ return function(D, S)
 					})
 				end
 			end
+			local mastery = masteryOf(state, d.id)
 			local isOpen, parentDone = K.disciplineOpen(state, d.id)
 			local parent = d.parent and K.DisciplineById[d.parent]
 			table.insert(out.disciplines, {
 				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes, hidden = hidden,
 				era = d.era, parentName = parent and parent.name or nil, open = isOpen, openAt = d.openAt, parentDone = parentDone or 0,
+				mastery = mastery,
 			})
 		end
 		-- 먼 바다 해금 조건 (문명식)
@@ -784,6 +806,7 @@ return function(D, S)
 	return {
 		handlers = handlers, goodsMult = goodsMult, speedBonus = K.speedBonus, viewOf = viewOf,
 		reportableCount = reportableCount, scholarDisciplines = scholarDisciplines,
+		masteryOf = masteryOf,
 		supplyMult = supplyMult, researchOf = researchOf, understoodIn = understoodIn,
 		techLevel = function(state, portId, disc)
 			return techLevelOf(state, portId, disc)
