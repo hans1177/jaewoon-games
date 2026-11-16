@@ -258962,11 +258962,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_48c6e74d877008375d8e0f84",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13461",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ab12dffa92a31d6d76ce66b9b65a47ac0b7011f2",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13461,
+        "baseBranch": "main",
+        "headBranch": "knowledge-link-audit-20261116",
+        "baseSha": "ab12dffa92a31d6d76ce66b9b65a47ac0b7011f2",
+        "headSha": "ddbe27446a112dfc0b8e3b47c4a1abf60c09af7e",
+        "mergeCommitSha": "e41632b03129aafb2844ea8c90fadd613f0ce97b",
+        "mergedAt": "2026-11-16T08:18:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7b3bf31ff975c7f35b8de68341ba4cff93be6718e204f5023df8bcd62afa27b7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "knowledge-link-audit-20261116",
+        "candidateSha": "ddbe27446a112dfc0b8e3b47c4a1abf60c09af7e"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 273,
+        "deletedLineCount": 32,
+        "changedFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/JobSkills.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTaxonomy.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/jobskills.test.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/weapons.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/JobSkills.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTaxonomy.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/jobskills.test.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/weapons.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13461",
+        "merge-commit:e41632b03129aafb2844ea8c90fadd613f0ce97b",
+        "base-main:ab12dffa92a31d6d76ce66b9b65a47ac0b7011f2"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2059
+    "total": 2060
   }
 }
