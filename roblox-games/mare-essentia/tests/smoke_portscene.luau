@@ -106,6 +106,14 @@ for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 		print("회귀 실패: 등록된 해안 배경 요청되지 않음 " .. id)
 	end
 end
+-- [발전형 CC0 3D] 실제 업로더가 AssetIds에 등록한 모델만 스모크에서 출현을 요구한다.
+-- 소스 파일만 보유한 상태에서 미등록 자산을 PASS로 가장하지 않는다.
+for _, mesh in { "market-1", "market-3", "market-5", "guard-1", "guard-3", "guard-5", "inn" } do
+	if Registered["Town/" .. mesh] and not State.used["Town/" .. mesh] then
+		fails += 1
+		print("발전형 지역 자산 누락: Town/" .. mesh)
+	end
+end
 local used = 0 for _ in State.used do used += 1 end
 print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 시대 전환 %d/4건, 에셋 %d종 요청, 실패 %d"):format(#ports, built, eraBuilt, used, fails))
 if fails > 0 then error("스모크 빌드 실패") end
