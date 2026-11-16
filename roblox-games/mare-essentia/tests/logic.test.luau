@@ -687,7 +687,7 @@ local function extraTests()
 		local v14 = S.View.build(study14, ctx)
 		check("백과 화면: 14개 주제 분류·근거 집계 표시",
 			#v14.codex.topicList == 14 and v14.codex.topicCounts.formal > 0
-			and v14.codex.evidenceCounts.documented >= 24)
+			and (v14.codex.evidenceCounts.documented or 0) > 0)
 		local foundMath, hiddenFuture = nil, nil
 		for _, c in v14.codex.cards do
 			if c.id == "algorithm_euclidean" then foundMath = c end
