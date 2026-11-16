@@ -96,6 +96,30 @@ check("왕궁 불황 주민 표본 축소", D.PortBuildings.royalPopulation(60, 
 check("왕궁 실제 거주자 연동", D.PortBuildings.royalPopulation(25, 100, 5) == 5)
 check("왕궁 sim 없는 빌드 목표 유지", D.PortBuildings.royalPopulation(nil, nil, 5) == 12)
 
+-- [항만 1~5단계 회귀] 실제 투자/창고 수에 맞는 시각 용량만 커지며 교역·저장값은 그대로다.
+local dockNames = { "소형 어촌 선착장", "연안 교역항", "지역 상업항", "대형 무역항", "국제 무역항" }
+local prevLength, prevCargo, prevBoats = 0, 0, 0
+for tier = 1, 5 do
+	local v = D.PortBuildings.harborVisual(tier, nil)
+	check("항만 단계 이름 " .. tier, v.tier == tier and v.name == dockNames[tier])
+	check("항만 잔교 성장 " .. tier, v.pierLength >= prevLength and (tier == 1) == (not v.sidePier))
+	check("항만 선박 성장 " .. tier, v.boats >= prevBoats)
+	check("항만 화물 성장 " .. tier, v.cargo >= prevCargo)
+	prevLength, prevCargo, prevBoats = v.pierLength, v.cargo, v.boats
+end
+local idlePort = D.PortBuildings.harborVisual(5, { dock = 0, warehouse = 0 })
+check("투자 없는 5단계 항만은 실제 잔교 생성 안 함", not idlePort.sidePier and idlePort.pierLength == 0)
+check("투자 없는 5단계 항만은 선박·화물 기본치", idlePort.boats == 1 and idlePort.cargo == 2)
+check("투자 없는 5단계 항만은 하역기·표식 없음", idlePort.hoists == 0 and idlePort.signals == 0)
+local lowPort = D.PortBuildings.harborVisual(4, { dock = 1, warehouse = 1 })
+check("실제 건설된 선착장 1곳이면 2번 잔교만 공개", lowPort.sidePier and lowPort.pierLength == 76)
+check("창고·부두 1곳의 진열·선박 상한", lowPort.boats == 2 and lowPort.cargo == 4 and lowPort.hoists == 0)
+local developedPort = D.PortBuildings.harborVisual(5, { dock = 64, warehouse = 64 })
+check("실제 성장한 국제항은 다중 선박·하역기 공개",
+	developedPort.boats == 8 and developedPort.cargo == 10 and developedPort.hoists == 3)
+check("항만 단계 입력이 범위를 벗어나면 안전하게 고정",
+	D.PortBuildings.harborVisual(-2, nil).tier == 1 and D.PortBuildings.harborVisual(99, nil).tier == 5)
+
 local function act(state, action, payload)
 	local ok, msg = handlers[action](state, payload or {}, ctx)
 	return ok, msg
