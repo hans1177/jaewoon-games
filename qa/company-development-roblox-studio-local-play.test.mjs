@@ -443,9 +443,10 @@ test('central contract requires official Studio MCP for F9 and release, without 
   const canonical=central.roblox?.deploymentControl?.verifiedCyclePublication||{};
   assert.equal(canonical.studioRequiredForCanonicalPublish,true);
   assert.equal(canonical.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.sourceOfTruthRole,'STATIC_MACHINE_TOPOLOGY_AND_COMPATIBILITY_REGISTRY_ONLY');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1191,12 +1192,13 @@ test('official Studio MCP planner runs automatically for push and exact candidat
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
-  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.sourceOfTruthRole,'STATIC_MACHINE_TOPOLOGY_AND_COMPATIBILITY_REGISTRY_ONLY');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
@@ -1584,7 +1586,8 @@ test('declared Studio scenario probes the primary action before generic movement
   const postActionAt=helper.indexOf("postActionClientProbe=await collectStudioActualPlayProbe");
   const keyboardAt=helper.indexOf("for(const key of ['W','A','D','Space'])");
   assert.ok(preActionAt>0&&primaryAt>preActionAt&&postActionAt>primaryAt&&keyboardAt>postActionAt);
-  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+  assert.match(helper,/consoleErrorCount:consoleErrors\.size/);
+  assert.match(helper,/for\(const row of consoleErrors\.values\(\)\)errors\.push\(row\)/);
   assert.doesNotMatch(helper,/if\(row\.pass!==true\)errors\.push\(\{type:'actual-play-quality-error'/);
   assert.match(helper,/acceptedRoles\.includes\(clean\(selectionPlayer\.role\)\)/);
 });
@@ -1617,8 +1620,9 @@ test('role preference intent survives later infection in scenario evaluation',()
 });
 
 test('deep Studio scenario separates console-runtime errors from gameplay-quality failures',()=>{
-  assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleClassification\.errors\.length===0\)/);
-  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+  assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleErrors\.size===0\)/);
+  assert.match(helper,/consoleErrorCount:consoleErrors\.size/);
+  assert.match(helper,/for\(const row of consoleErrors\.values\(\)\)errors\.push\(row\)/);
 });
 
 test('product-quality Studio failure short-circuits repeated Studio and release observation until source buildup changes',()=>{
@@ -3801,7 +3805,10 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
 
 test('Existing Devloop Studio workflow rechecks Mare text sampling after main updates',()=>{
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
-  assert.match(workflow,/  push:\n    branches: \[main\]\n    paths:/);
+  assert.match(workflow,/  workflow_dispatch:\n    inputs:/);
+  const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.match(auto,/  push:\n    branches: \[main\]/);
+  assert.match(auto,/gh workflow run devloop-studio\.yml/);
   assert.match(workflow,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json/);
   assert.match(workflow,/tools\/company-development-roblox-studio-local-play\.mjs/);
   assert.match(workflow,/github\.event_name == 'push' && 'mare-essentia' \|\| inputs\.game/);
@@ -3955,10 +3962,12 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(motion.includes('WEAPON_HIGH_BEATS'));
   assert.ok(field.includes('Weapons.actionDesign(wpn).heavyBeat'));
   assert.ok(field.includes('Weapons.actionDesign(wpn).sweepBeat'));
-  assert.ok(field.includes('startSwing("slash", 0.32, stage)'),'bonus chains must play actual R15 steps');
+  assert.ok(field.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)'),'bonus chains must play actual R15 steps');
   assert.ok(field.includes('pl.combo = 0') && field.includes('mult = 1'),'first attack must be basic single hit');
   const active=field.slice(field.indexOf('if chain > 1 then'),field.indexOf('elseif hits == 0 and moveId == "rush"'));
-  assert.ok(active.includes('startSwing("slash", 0.32, stage)')&&!active.includes('strikeEnemy('),
+  assert.ok(active.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)')
+    && active.includes('elseif stage == chain and stage == 3')
+    && !active.includes('strikeEnemy('),
     'bonus visual beats must not add damage or award duplicate experience');
   assert.ok(field.includes('if now >= a.nextSkill and #enemies > 0 then')
     && field.includes('a.skillCd[sid] = now + def.cooldown')
@@ -4023,7 +4032,8 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/MareQAFeatureTotals/);
   assert.match(qa,/FEATURE_UNIMPLEMENTED_OR_ERROR/);
   assert.match(qa,/elseif res\.ok == false then/);
-  assert.match(qa,/FEATURE_NO_RESPONSE/);
+  assert.match(qa,/FEATURE_RESPONSE_INVALID/);
+  assert.match(qa,/FEATURE_RESPONSE_UNKNOWN/);
   assert.match(qa,/FEATURE_NO_VIEW/);
   assert.match(qa,/FEATURE_NO_CASES/);
   assert.match(qa,/\[QA\] FEATURE_COVERED/);
@@ -4205,10 +4215,11 @@ test('Mare goods/menu asset replacement requires verified Image uploads with ato
   assert.match(uploader,/const previousTypeAssets = new Map\(\)/);
   assert.match(uploader,/previousTypeAssets\.set\(item\.kind \+ '\/' \+ item\.name, \{\.\.\.row\}\)/);
   assert.match(uploader,/const replacementUnverified = \[\.\.\.previousTypeAssets\]/);
-  assert.match(uploader,/registry\.assets\[id\]\?\.usePermissionGranted !== true/);
+  assert.match(uploader,/current\?\.usePermissionGranted !== true/);
+  assert.match(uploader,/expectedType === 'Model' && current\.sourceSha256 === previous\.sourceSha256/);
   assert.match(uploader,/if \(failures\.length && previousTypeAssets\.size\)/);
   assert.match(uploader,/for \(const \[id, previous\] of previousTypeAssets\) registry\.assets\[id\] = previous/);
-  assert.match(uploader,/MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/);
+  assert.match(uploader,/MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/);
   const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8'));
   const approved=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   // [등록 완료 후 회귀] 과거 45개 Decal이 현재 등록표에 남아 있어서는 안 된다.
