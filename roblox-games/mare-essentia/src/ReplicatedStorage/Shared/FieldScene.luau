@@ -12,6 +12,8 @@ local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
 local Weapons = require(script.Parent:WaitForChild("Weapons"))
+local Specialties = require(script.Parent:WaitForChild("Specialties"))
+local Ports = require(script.Parent:WaitForChild("Ports"))
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
@@ -2652,9 +2654,17 @@ function FieldScene.start(opts)
 					seenAllies[id] = true
 					local slot = #allyDefs + 1
 					local h = hashName(name)
+					-- [동료 무기] 기존 영입 ID로 출신·경력을 조회한다. 저장값/영입 순서는 변경하지 않는다.
+					local history = Specialties.CompanionById[id]
+					local birthplace = history and history.homePort and Ports.Ports[history.homePort]
+					local nation = (history and history.nation) or (birthplace and birthplace.country)
+					local vocation = job or (history and history.scholarId ~= "" and "학자") or "무인"
+					local category = JobSkills.categoryOf(vocation)
+					local life = history and history.summary or vocation
+					local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
 					local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
 					local coat = Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.55, 0.68)
-					table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job), weapon = Weapons.allyWeapon(JobSkills.categoryOf(job)) })
+					table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
 				end
 			end
 		end
@@ -2680,6 +2690,9 @@ function FieldScene.start(opts)
 						m.Name = "FieldAlly"
 						m:SetAttribute("CompanionId", ad.id)
 						m:SetAttribute("CompanionName", ad.name)
+						m:SetAttribute("EquippedWeaponId", ad.weapon.id)
+						m:SetAttribute("EquippedWeaponName", ad.weapon.name)
+						m:SetAttribute("CompanionOriginNation", ad.nation or "")
 						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
 						-- [탐험 HUD] 큰 이름판 제거. 번호·직업만 근처에서 작게 표시하며 색상으로 동료를 구분.
 						local bbA = Instance.new("BillboardGui")
@@ -2772,7 +2785,7 @@ function FieldScene.start(opts)
 					if a.castAt and now - a.castAt < 0.7 then
 						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.8, nil, false, a.castSkill)
 					elseif ap >= 0 and ap < 1 then
-						-- 동료는 직업에 정해진 무기 동작(검·도끼·석궁·총)으로 공격한다
+						-- 동료의 실제 경력·지역·시대에 맞춰 검·활·총의 기존 모션을 재사용한다
 						local ac = FM.weaponCombo(a.weapon.motion, 1)
 						if ac then
 							table.clear(a.fm.canon)
