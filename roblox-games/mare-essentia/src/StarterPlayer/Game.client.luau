@@ -2798,7 +2798,11 @@ local function call(action, payload)
 			snd = if result.message and result.message ~= "" and result.message ~= "너무 빨라요" then "sfx_error" else nil
 		elseif action == "Buy" or action == "MarketBuy" then
 			snd = "sfx_buy"
-			task.delay(0.18, Sfx.play, "sfx_cargo_drop", 0.7) -- 짐 싣는 소리
+			task.delay(0.18, Sfx.play, "sfx_cargo_drop", 0.7)
+			-- [발동 효과] 협상 성공 시 금화 효과음을 별도로 들려준다.
+			if action == "Buy" and string.find(result.message or "", "자동 흥정 성공", 1, true) then
+				task.delay(0.28, Sfx.play, "sfx_coin", 0.85)
+			end -- 짐 싣는 소리
 		elseif action == "Sell" or action == "Smuggle" or action == "MarketPost" then
 			snd = "sfx_sell"
 			task.delay(0.12, Sfx.play, "sfx_coin_pouch", 0.7) -- 동전 주머니
@@ -5123,19 +5127,26 @@ local function openTradeHall()
 		local narrow = width < 740
 		local showMerchant = width >= 1040
 		local inset = if showMerchant then 258 else 10
+		-- [모바일 메뉴] 지갑·화물·알림을 각각 다른 높이에 배치한다.
+		local headH = if narrow then 110 else 62
+		local menuY = headH + 16
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
-		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 62), COLORS.paper)
+		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, headH), COLORS.paper)
 		corner(top, 6)
 		bookMaterial(top, "parchment", 220)
 		local title = mkLabel(top, "교역 장부 · " .. p.portName, if narrow then 15 else 19, INK, true)
 		title.Position = UDim2.fromOffset(12, 7)
-		title.Size = UDim2.new(if narrow then 0.3 else 0.32, 0, 0, 25)
+		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- 화면 가운데에 내 코인을 크게: 사고팔 때마다 바로 보인다
 		local coinBox = mkBox(top, UDim2.new(0.5, 0, 0.5, 0), UDim2.fromOffset(if narrow then 150 else 210, 46), Color3.fromRGB(58, 42, 28))
 		coinBox.AnchorPoint = Vector2.new(0.5, 0.5)
+		if narrow then
+			coinBox.Position = UDim2.new(0.5, 0, 0, 65)
+			coinBox.Size = UDim2.fromOffset(178, 38)
+		end
 		corner(coinBox, 10)
 		local coinText = mkLabel(coinBox, string.format("💰 %s", H.commas and H.commas(p.coins) or tostring(p.coins)), if narrow then 20 else 26, Color3.fromRGB(255, 226, 120), true)
 		coinText.Size = UDim2.fromScale(1, 1)
@@ -5143,12 +5154,12 @@ local function openTradeHall()
 		coinText.TextXAlignment = Enum.TextXAlignment.Center
 		local hold = mkLabel(top, string.format("화물 %d/%d", ship.cargoUsed, ship.cargoCapacity), 13, INK_SOFT, false)
 		local toastLbl = mkLabel(top, message or "", 13, Color3.fromRGB(60, 100, 50), true)
-		toastLbl.Position = UDim2.new(0.5, if narrow then 80 else 112, 0, 8)
-		toastLbl.Size = UDim2.new(0.5, if narrow then -170 else -210, 0, 44)
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, 85) else UDim2.new(0.5, 112, 0, 8)
+		toastLbl.Size = if narrow then UDim2.new(1, -24, 0, 20) else UDim2.new(0.5, -210, 0, 44)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
-		hold.Position = UDim2.fromOffset(12, 34)
+		hold.Position = UDim2.fromOffset(12, if narrow then 36 else 34)
 		hold.Size = UDim2.new(if narrow then 0.3 else 0.32, 0, 0, 20)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		local backToList = narrow and detailOpen
@@ -5161,7 +5172,7 @@ local function openTradeHall()
 			end
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
-		leave.Position = UDim2.new(1, -9, 0.5, 0)
+		leave.Position = if narrow then UDim2.new(1, -9, 0, 32) else UDim2.new(1, -9, 0.5, 0)
 
 		-- 왼쪽: 상인 초상과 말풍선
 		local left = mkBox(root, UDim2.fromOffset(8, 78), UDim2.new(0, 240, 1, -86), Color3.fromRGB(46, 34, 26))
@@ -5234,8 +5245,8 @@ local function openTradeHall()
 		-- 가운데: 물품 목록
 		local list = Instance.new("ScrollingFrame")
 		list.Name = "TradeIndex"
-		list.Position = UDim2.fromOffset(inset, 170)
-		list.Size = UDim2.new(1, -inset - (if narrow then 8 else 336), 1, -178)
+		list.Position = UDim2.fromOffset(inset, menuY + 92)
+		list.Size = UDim2.new(1, -inset - (if narrow then 8 else 336), 1, -menuY - 100)
 		list.Visible = not narrow or not detailOpen
 		list.BackgroundTransparency = 1
 		list.BorderSizePixel = 0
@@ -5249,7 +5260,7 @@ local function openTradeHall()
 		ll.Parent = list
 		local search = Instance.new("TextBox")
 		search.Name = "TradeSearch"
-		search.Position = UDim2.fromOffset(inset, 78)
+		search.Position = UDim2.fromOffset(inset, menuY)
 		search.Size = UDim2.new(list.Size.X.Scale, list.Size.X.Offset - 8, 0, 42)
 		search.BackgroundColor3 = COLORS.paper
 		search.BorderSizePixel = 0
@@ -5259,7 +5270,7 @@ local function openTradeHall()
 		search.Font = Enum.Font.GothamMedium
 		search.TextSize = 14
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "품목 이름 검색"
+		search.PlaceholderText = "품목 · 종류 · 용도 검색"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5277,7 +5288,7 @@ local function openTradeHall()
 		end
 		do
 			-- 걸러 보기 칩 + 보유 전부 팔기 (일괄)
-			local chips = mkBox(root, UDim2.fromOffset(inset, 124), UDim2.new(1, -inset - (if narrow then 8 else 336), 0, 40), Color3.fromRGB(34, 26, 20))
+			local chips = mkBox(root, UDim2.fromOffset(inset, menuY + 46), UDim2.new(1, -inset - (if narrow then 8 else 336), 0, 40), Color3.fromRGB(34, 26, 20))
 			chips.BackgroundTransparency = 1
 			chips.Visible = list.Visible
 			local cl = Instance.new("UIListLayout")
@@ -5302,7 +5313,7 @@ local function openTradeHall()
 					ownedValue += g.sell * g.owned
 				end
 			end
-			local sellAll = mkButton(chips, string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, UDim2.new(0.32, -4, 1, 0), function()
+			local sellAll = mkButton(chips, if narrow then "일괄 판매" else string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, UDim2.new(0.32, -4, 1, 0), function()
 				task.spawn(function()
 					for _, g in goods do
 						local left = g.owned
@@ -5325,13 +5336,13 @@ local function openTradeHall()
 			local row = Instance.new("TextButton")
 			row.Text = ""
 			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -8, 0, 104)
+			row.Size = UDim2.new(1, -8, 0, 158)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
 			row.AutoButtonColor = true
 			corner(row, 10)
 			row.Parent = list
-			table.insert(indexed, { name = string.lower(g.name), row = row })
+			table.insert(indexed, { name = string.lower(g.name .. " " .. (g.category or "") .. " " .. (g.purpose or "")), row = row })
 			local rule = Instance.new("UIStroke")
 			rule.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			rule.Color = INK_EDGE
@@ -5348,21 +5359,26 @@ local function openTradeHall()
 			end)
 			local gi = GOOD_ICON[g.id]
 			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
-			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
+			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 78, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 78, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
 			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
-			nm.Position = UDim2.fromOffset(70, 8)
-			nm.Size = UDim2.new(1, if g.tag ~= "" then -126 else -80, 0, 26)
+			nm.Position = UDim2.fromOffset(94, 8)
+			nm.Size = UDim2.new(1, if g.tag ~= "" then -150 else -104, 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local pr = mkLabel(row, string.format("사기 %d · 팔기 %d%s%s%s", g.buy, g.sell, if g.owned > 0 then " · 보유 " .. g.owned else "", if g.supply then " · 재고 " .. g.supply else "", (function()
-				local best = view.compare and view.compare[g.id] and view.compare[g.id][1]
-				return if best and best.name then (if best.memory then string.format(" · 기억: %s %d", best.name, best.sell) else " · 추천: " .. best.name) else ""
-			end)()), 13, INK_SOFT, false)
-			pr.TextTruncate = Enum.TextTruncate.AtEnd
-			pr.Position = UDim2.fromOffset(70, 34)
-			pr.Size = UDim2.new(1, -80, 0, 20)
+			local pct = if (g.basePrice or 0) > 0 then math.floor((g.buy / g.basePrice - 1) * 100 + 0.5) else 0
+			local budgetQty = math.floor(p.coins / math.max(1, unitBuyOf(g)))
+			local pr = mkLabel(row, string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 예산 %d개",
+				H.commas(g.buy), H.commas(g.sell), pct, g.owned, if g.supply == nil then "-" else tostring(g.supply), budgetQty), 15, INK, false)
+			pr.TextWrapped = true
+			pr.Position = UDim2.fromOffset(94, 34)
+			pr.Size = UDim2.new(1, -102, 0, 46)
 			pr.AutomaticSize = Enum.AutomaticSize.None
+			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 13, INK_SOFT, false)
+			use.Position = UDim2.fromOffset(94, 82)
+			use.Size = UDim2.new(1, -102, 0, 22)
+			use.AutomaticSize = Enum.AutomaticSize.None
+			use.TextTruncate = Enum.TextTruncate.AtEnd
 			-- 시세 막대 (Port Royale식 수요·공급 막대): 왼쪽(초록)=싸다 → 사기 좋음, 오른쪽(금색)=비싸다 → 팔기 좋음. 가운데 눈금이 평소 값.
 			local baseGood = PortData.Goods[g.id]
 			if baseGood and baseGood.basePrice > 0 then
@@ -5370,8 +5386,8 @@ local function openTradeHall()
 				local gauge = Instance.new("Frame")
 				gauge.BackgroundColor3 = Color3.fromRGB(200, 184, 150)
 				gauge.BorderSizePixel = 0
-				gauge.Position = UDim2.new(0, 70, 0, 56)
-				gauge.Size = UDim2.new(1, -80, 0, 5)
+				gauge.Position = UDim2.new(0, 94, 0, 111)
+				gauge.Size = UDim2.new(1, -102, 0, 5)
 				corner(gauge, 3)
 				gauge.Parent = row
 				local ratio = math.clamp((pm - 0.6) / 1.0, 0, 1) -- 0.6배~1.6배
@@ -5395,8 +5411,8 @@ local function openTradeHall()
 			local canSell = math.min(g.owned, oc, g.absorb or oc)
 			local bar = Instance.new("Frame")
 			bar.BackgroundTransparency = 1
-			bar.Position = UDim2.fromOffset(70, 62)
-			bar.Size = UDim2.new(1, -78, 0, 34)
+			bar.Position = UDim2.fromOffset(94, 119)
+			bar.Size = UDim2.new(1, -100, 0, 34)
 			bar.Parent = row
 			local bl = Instance.new("UIListLayout")
 			bl.FillDirection = Enum.FillDirection.Horizontal
@@ -5445,18 +5461,18 @@ local function openTradeHall()
 		-- 오른쪽: 선택한 물품의 거래 상자
 		local detail = Instance.new("ScrollingFrame")
 		detail.Name = "TradeSpecimen"
-		detail.Position = if narrow then UDim2.fromOffset(8, 78) else UDim2.new(1, -326, 0, 78)
-		detail.Size = if narrow then UDim2.new(1, -16, 1, -86) else UDim2.new(0, 318, 1, -86)
+		detail.Position = if narrow then UDim2.fromOffset(8, menuY) else UDim2.new(1, -326, 0, menuY)
+		detail.Size = if narrow then UDim2.new(1, -16, 1, -menuY - 8) else UDim2.new(0, 318, 1, -menuY - 8)
 		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, 132) end
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
-		detail.CanvasSize = UDim2.fromOffset(0, 388)
+		detail.CanvasSize = UDim2.fromOffset(0, 600)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
 		detail.Parent = root
 		corner(detail, 7)
-		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, 388), COLORS.paper)
+		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, 600), COLORS.paper)
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
@@ -5466,21 +5482,24 @@ local function openTradeHall()
 			hn.Position = UDim2.fromOffset(120, 16)
 			hn.Size = UDim2.new(1, -130, 0, 30)
 			hn.AutomaticSize = Enum.AutomaticSize.None
-			local note = if sel.tag == "특산" then "산지라 값이 싸요. 수요 항구에 가져가면 이익이에요."
-				elseif sel.tag == "수요" then "이 항구에서 잘 팔려요. 비싸게 받을 수 있어요."
-				else "평범한 시세예요."
+			local note = (sel.category or "교역품") .. "\n" .. (sel.purpose or "다른 항구에 운송해 판매")
 			local hnote = mkLabel(right, note, 14, INK_SOFT, false)
 			hnote.Position = UDim2.fromOffset(120, 48)
-			hnote.Size = UDim2.new(1, -130, 0, 60)
+			hnote.Size = UDim2.new(1, -130, 0, 68)
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			local qty = math.clamp(hallQty, 1, 20)
 			local free = ship.cargoCapacity - ship.cargoUsed
 			local deal = view.haggle and view.haggle.deal
 			local dealPct = (deal and deal.goodId == sel.id) and deal.pct or 0
 			local unitBuy = math.floor(sel.buy * (1 - dealPct / 100))
-			local info = mkLabel(right, string.format("사기 %d%s   팔기 %d\n보유 %d   빈 화물칸 %d", unitBuy, if dealPct > 0 then string.format(" (흥정 -%d%%)", dealPct) else "", sel.sell, sel.owned, free), 18, INK, true)
-			info.Position = UDim2.fromOffset(14, 122)
-			info.Size = UDim2.new(1, -28, 0, 56)
+			local diff = if (sel.basePrice or 0) > 0 then math.floor((sel.buy / sel.basePrice - 1) * 100 + 0.5) else 0
+			local basis = if (sel.basis or 0) > 0 then H.commas(math.floor(sel.basis + 0.5)) else "미구매"
+			local info = mkLabel(right, string.format("구매 %s%s · 판매 %s\n세계 기준가 %s · 현지 시세 %+.0f%%\n내 평균 매입가 %s · 보유 %d개\n내 돈 %s · 예산상 구매 %d개\n빈 화물 %d · 구매한도 %s / 판매한도 %s",
+				H.commas(unitBuy), if dealPct > 0 then " (할인중)" else "", H.commas(sel.sell),
+				H.commas(sel.basePrice or 0), diff, basis, sel.owned, H.commas(p.coins),
+				math.floor(p.coins / math.max(1, unitBuy)), free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
+			info.Position = UDim2.fromOffset(14, 124)
+			info.Size = UDim2.new(1, -28, 0, 112)
 			info.AutomaticSize = Enum.AutomaticSize.None
 			-- 상세 페이지를 스크롤해도 수량과 거래 버튼은 화면 아래에 남긴다.
 			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, -132),
@@ -5492,9 +5511,10 @@ local function openTradeHall()
 			receipt.Size = UDim2.new(1, -16, 0, 19)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
-			local maxBuy = math.min(20, free, if unitBuy > 0 then math.floor(p.coins / unitBuy) else 20)
+			local maxBuy = math.min(20, view.orderCap or 20, free, if unitBuy > 0 then math.floor(p.coins / unitBuy) else 20, sel.supply or 20)
+			local maxSell = math.min(20, view.orderCap or 20, sel.owned, sel.absorb or 20)
 			local function refreshReceipt()
-				receipt.Text = string.format("수량 %d  ·  구매 %d코인  ·  판매 %d코인", qty, unitBuy * qty, sel.sell * math.min(qty, sel.owned))
+				receipt.Text = string.format("%d개 · 예상 구매 %s · 판매 %s · 남는 돈 약 %s", qty, H.commas(unitBuy * qty), H.commas(sel.sell * math.min(qty, maxSell)), H.commas(p.coins - unitBuy * qty))
 			end
 			local function setQuantity(value)
 				qty = math.clamp(value, 1, 20)
@@ -5510,19 +5530,24 @@ local function openTradeHall()
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
 			refreshReceipt()
-			local buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, true)
+			local buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
 			buy.Position = UDim2.fromOffset(4, 75)
-			local sell = mkButton(desk, "판매", COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, sel.owned) }) end, sel.owned > 0)
+			local sell = mkButton(desk, "판매", COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sell.Position = UDim2.new(0.5, 4, 0, 75)
-			local tried = view.haggle and view.haggle.tried and view.haggle.tried[sel.id]
-			local hg = mkButton(right, if tried then "흥정 끝" else "흥정하기", COLORS.gold, UDim2.new(0.5, -18, 0, 44), function() call("Haggle", { goodId = sel.id }) end, not tried)
-			hg.Position = UDim2.fromOffset(12, 184)
-			hg.TextSize = 18
-			local sm = mkButton(right, "암시장 판매", COLORS.red, UDim2.new(0.5, -18, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, sel.owned) }) end, sel.owned > 0)
-			sm.Position = UDim2.new(0.5, 6, 0, 184)
-			sm.TextSize = 16
-			local allB = mkButton(right, "보유분 판매 · 최대 20개", COLORS.grey, UDim2.new(1, -24, 0, 40), function() call("Sell", { goodId = sel.id, amount = math.min(20, sel.owned) }) end, sel.owned > 0)
-			allB.Position = UDim2.fromOffset(12, 232)
+			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
+			local bargain = view.haggle or {}
+			local tried = bargain.tried and bargain.tried[sel.id]
+			local status = if not bargain.auto then "자동 흥정: 관련 능력 없음 · 정가 거래"
+				elseif tried then "자동 흥정: 이번 항구·품목 협상 시도 완료"
+				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
+			local alert = mkLabel(right, status, 14, if bargain.auto then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
+			alert.Position = UDim2.fromOffset(14, 248)
+			alert.Size = UDim2.new(1, -28, 0, 54)
+			alert.AutomaticSize = Enum.AutomaticSize.None
+			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sm.Position = UDim2.fromOffset(12, 310)
+			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
+			allB.Position = UDim2.fromOffset(12, 360)
 			allB.TextSize = 15
 			do
 				local top = view.compare and view.compare[sel.id]
@@ -5537,13 +5562,13 @@ local function openTradeHall()
 					elseif #lines == 0 then "다른 항구 시세 정보 없음"
 					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
 				local cl = mkLabel(right, cmpText, 15, INK, false)
-				cl.Position = UDim2.fromOffset(14, 276)
-				cl.Size = UDim2.new(1, -28, 0, 78)
+				cl.Position = UDim2.fromOffset(14, 414)
+				cl.Size = UDim2.new(1, -28, 0, 108)
 				cl.AutomaticSize = Enum.AutomaticSize.None
 			end
-			local hint = mkLabel(right, string.format("동료 장사 감각 %s · 흥정은 물건마다 한 번, 성공하면 다음 구매가 싸져요.", intelName(view.intel or 0)), 12, INK_SOFT, false)
-			hint.Position = UDim2.fromOffset(14, 352)
-			hint.Size = UDim2.new(1, -28, 0, 34)
+			local hint = mkLabel(right, string.format("장사 정보 %s · 거래 도중 시세 변동 · 판매 때 관세 차감", intelName(view.intel or 0)), 13, INK_SOFT, false)
+			hint.Position = UDim2.fromOffset(14, 534)
+			hint.Size = UDim2.new(1, -28, 0, 44)
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end
 		detail.CanvasPosition = Vector2.new(0, detailScroll)
@@ -5570,7 +5595,7 @@ function RENDERERS.trade()
 	end
 	add(function()
 		return H.tileGrid({
-			{ icon = "trade", title = "교역소 입장", sub = "상인과 흥정해요", btn = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
+			{ icon = "trade", title = "교역 장부", sub = "용도 · 시세 · 예산 · 자동 흥정", btn = "열기", color = COLORS.gold, onClick = function() openTradeHall() end },
 			{ icon = "cc0_chest", title = "특산품", sub = "싸게 사서 비싼 곳에 팔기", enabled = false },
 			{ icon = "cc0_goldcoins", title = "암시장", sub = "관세 없음 +10% · 압수 위험", enabled = false },
 		}, content)
