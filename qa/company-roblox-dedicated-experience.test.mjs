@@ -961,8 +961,10 @@ test('Mare selected family shows and equips its original historical weapon with 
   assert.match(ui,/controls\.Size = UDim2\.new\(1, 0, 0, 60\)/);
 });
 
-test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
-  const base='roblox-games/mare-essentia/assets/inbox/People/';
+test('Mare existing Quaternius outfit originals remain source-verifiable without claiming native animation QA',()=> {
+  const root='roblox-games/mare-essentia/';
+  // [원본] inbox 대기 후보가 아니라 기존 등록 폴더 assets/people의 실제 GLB 30종이 정본이다.
+  const base=root+'assets/people/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
     'male_ranger_body','male_ranger_legs','female_ranger_body','female_ranger_legs',
     'male_peasant_arms','male_peasant_feet','female_peasant_arms','female_peasant_feet',
@@ -971,29 +973,46 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed','hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard',
     'head_f','head_m','rig_f','rig_m'];
   assert.equal(names.length,30);
-  const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
-  const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
-  // 현재 첫 선택 시대는 1517년이며, 기존 저장의 1700년 기본값은 별도로 보존한다.
+  const ui=fs.readFileSync(root+'src/StarterPlayer/Game.client.luau','utf8');
+  const server=fs.readFileSync(root+'src/ServerScriptService/Core.server.luau','utf8');
+  const state=fs.readFileSync(root+'src/ServerScriptService/Services/State.luau','utf8');
+  const sources=fs.readFileSync(root+'assets/SOURCES.md','utf8');
+  const registry=JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8')).assets;
   assert.match(ui,/local chosenYear = 1517/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
   assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
   assert.doesNotMatch(server,/\[1492\] = true/);
   assert.match(state,/num\(saved.startYear, 1700, 1500, 1800\)/);
+  const knownGitOriginals={
+    male_peasant_body:'a016a5c5299a72a40d8158020af3de2e3a64b756',
+    female_peasant_body:'664e12d423af7ed48fd9f13c8ddd7692ee4e7fc0',
+    male_ranger_body:'ba6b58700f7884ff51ddf440e1ac88e6cb482399',
+    rig_f:'76b719a25720db940354aa8bd6ac934bd05a6f63',
+    rig_m:'5fee12260a48d30532c26e01183fc5411cf83ae2',
+  };
   for(const name of names){
     const glb=fs.readFileSync(base+name+'.glb');
-    assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB');
+    assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB magic');
     assert.equal(glb.readUInt32LE(4),2,name+' glTF version');
     assert.equal(glb.readUInt32LE(8),glb.length,name+' glTF length');
-    const m=JSON.parse(fs.readFileSync(base+name+'.glb.license.json','utf8'));
-    assert.equal(m.license,'CC0-1.0');
-    assert.equal(m.publicationAllowed,false);
-    assert.equal(m.status,"STAGED_ONLY");
-    assert.match(m.source,/quaternius.com/);
-    assert.match(m.sourceGitBlobSha1,/^[0-9a-f]{40}$/);
-    const actualGitSha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
-    assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
+    assert.ok(sources.includes('| \x60people/\x60 | '+name+'.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/'),name+' original provenance');
+    const expected=knownGitOriginals[name];
+    if(expected){
+      const sha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
+      assert.equal(sha,expected,name+' original Git SHA');
+    }
+    const row=registry['People/'+name];
+    if(name.startsWith('rig_')){
+      assert.equal(row,undefined,name+' unverified base rig must not be registered');
+    }else{
+      assert.equal(row?.source,base+name+'.glb');
+      assert.equal(row?.license,'CC0-1.0');
+      assert.equal(row?.assetType,'Model');
+      assert.equal(row?.usePermissionGranted,true);
+    }
   }
+  // [별도 평가] 실물 파일·라이선스·등록 사실은 실제 R15 애니메이션 검증과 다른 증거다.
+  assert.doesNotMatch(sources,/NATIVE_R15_ANIMATION_QA_VERIFIED=PASS/);
 });
 
 test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
