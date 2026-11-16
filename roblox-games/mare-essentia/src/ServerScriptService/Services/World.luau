@@ -119,7 +119,8 @@ return function(D, S)
 				table.insert(msgs, result)
 			end
 		end
-		table.insert(w.log, 1, { day = state.day, year = math.floor(state.startYear + state.day / 365), title = title, kind = ev.kind, region = rname, result = result })
+		table.insert(w.log, 1, { day = state.day, year = math.floor(state.startYear + state.day / 365), id = ev.id,
+		title = title, kind = ev.kind, tag = ev.tag, region = rname, regionId = region, port = ev.port, result = result })
 		while #w.log > LOG_MAX do
 			table.remove(w.log)
 		end
