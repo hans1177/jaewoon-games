@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: PortBuildings.luau
 -- 항구 건물 계통: 초기 상인 교역에서 길드·거래소·은행으로 발전했듯, 항구 건물도 단계마다 다음 모습으로 발전한다.
 -- 단계 조건: 교역소 단계(harbor), 그 해(since, 실제 역사에서 그 건물이 나타난 때), 지식(node), 시대(era)
 -- 효과: sell(판매 비율 가산, 지은 항구에서), speed/cannon(지은 곳마다 합산), research(지은 항구의 연구 성과)
@@ -96,14 +97,14 @@ B.Chains = {
 -- (순서가 곧 배치 우선순위. 자리는 항구마다 무작위로 배정된다. 등록된 실제 3D 모델만 쓴다.)
 B.CategoryNames = { culture = "문화", commerce = "상업·금융", science = "과학", industry = "산업·기술", religion = "종교" }
 B.Landmarks = {
-	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2 },
-	{ id = "exchange", name = "증권거래소", category = "commerce", minLevel = 3, tab = "trade" },
-	{ id = "museum", name = "박물관", category = "culture", minLevel = 3, tab = "codex" },
-	{ id = "botanic", name = "식물원", category = "science", minLevel = 4 },
-	{ id = "observatory", name = "천문대", category = "science", minLevel = 4, tab = "tech" },
-	{ id = "academy", name = "학술원", category = "science", minLevel = 4, tab = "tech" },
-	{ id = "zoo", name = "왕립 동물원", category = "culture", minLevel = 5 },
-	{ id = "ironworks", name = "제철소·증기 공방", category = "industry", minLevel = 5 },
+	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2, since = 1600 },
+	{ id = "exchange", name = "증권거래소", category = "commerce", minLevel = 3, since = 1602, tech = "merchant_banking", tab = "trade" },
+	{ id = "museum", name = "박물관", category = "culture", minLevel = 3, since = 1683, tech = "public_schools", tab = "codex" },
+	{ id = "botanic", name = "식물원", category = "science", minLevel = 4, since = 1735, tech = "scientific_farming" },
+	{ id = "observatory", name = "천문대", category = "science", minLevel = 4, since = 1675, tech = "navigation_charts", tab = "tech" },
+	{ id = "academy", name = "학술원", category = "science", minLevel = 4, since = 1700, tech = "public_schools", tab = "tech" },
+	{ id = "zoo", name = "왕립 동물원", category = "culture", minLevel = 5, since = 1750, tech = "public_schools" },
+	{ id = "ironworks", name = "제철소·증기 공방", category = "industry", minLevel = 5, since = 1760, tech = "industrial_metallurgy" },
 }
 
 B.ById = {}
