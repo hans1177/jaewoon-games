@@ -97,6 +97,9 @@ B.Chains = {
 -- 도시 외형 공통 규격: 주택 필지와 개방 가능한 도시 구역은 서로 다른 값으로 확장한다.
 -- 실제 인구·거래·건축 저장값은 Economy/Village가 유지하고, 이 값은 시각 구획에만 사용한다.
 B.CityPlots = { plotScale = { 1.5, 1.65, 1.8, 2.0, 2.2 }, areaScale = { 1.5, 2, 3, 4.5, 6 } }
+-- 왕궁 보유 도시 전용 상위 구획 배율: 일반 도시 필지에서 추가 확장, 왕궁 판정이 없는 항구에는 영향 없음.
+-- 왕실 건축은 화면용이고 경제·항구 투자·건설 저장 구조는 수정하지 않는다.
+B.RoyalCityPlots = { plotScale = { 1.2, 1.25, 1.3, 1.35, 1.4 }, districtScale = { 1.0, 1.08, 1.14, 1.22, 1.3 } }
 B.CategoryNames = { culture = "문화", commerce = "상업·금융", science = "과학", industry = "산업·기술", religion = "종교" }
 B.Landmarks = {
 	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2, since = 1600 },
