@@ -230,7 +230,7 @@ local function newTown(p, w)
 	nGoods -= Chains.AddedForBrands[p.id] or 0
 	local pop0 = 900 + 650 * nGoods + (p.shipyard and 2200 or 0) + math.floor(1800 * h)
 	local t = {
-		id = p.id, name = p.name, country = p.country, region = Regions.of(p).id,
+		id = p.id, name = p.name, country = p.country, region = Regions.of(p).id, baseProduceCount = nGoods,
 		lat = p.lat, lon = p.lon, shipyard = p.shipyard,
 		coastal = true, fert = fert,
 		pop = pop0, land = pop0 * 0.62 * fert * 1.25, -- 농지가 먹여 살리는 농민 수
@@ -387,8 +387,7 @@ local function productionOf(t, g, price, w)
 		return (used * yield + fish) * t.fx.food * (1 + 0.05 * lvl)
 	end
 	if not t.produces[g] or Chains.ByGood[g] or Chains.BrandById[g] then return 0 end
-	local n = 0
-	for _ in pairs(t.produces) do n += 1 end
+	local n = t.baseProduceCount or 1 -- 신규 브랜드·가공품 등록이 기존 원료 생산 인력 배분을 바꾸지 않는다.
 	local workers = math.min(t.pop * (sh.craftsman + sh.laborer * 0.5), t.bld.workshop * 10) / math.max(1, n)
 	local el = math.clamp((price / basePrice(g)) ^ 0.5, 0.5, 1.6)
 	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5)) * t.civBonus.craft * (1 + 0.04 * (E.specialtyLevel(t, g) - 1))
