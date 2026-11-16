@@ -687,6 +687,28 @@ function VoyageScene.play(info)
 	end
 	local helmConns = {}
 	local stickX, stickY = 0, 0
+	-- 바람 고리 항해(폰): 화면 아무 데나 누르고 좌우로 밀면 배가 그쪽으로 간다(스틱 하나로 조종)
+	local floatPush = 0
+	if manual and UserInputService.TouchEnabled then
+		local origin: InputObject? = nil
+		local ox = 0
+		table.insert(helmConns, UserInputService.InputBegan:Connect(function(input, processed)
+			if origin or processed or input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			origin, ox = input, input.Position.X
+		end))
+		table.insert(helmConns, UserInputService.InputChanged:Connect(function(input)
+			if origin and input == origin then
+				floatPush = math.clamp((input.Position.X - ox) / 45, -1, 1)
+			end
+		end))
+		table.insert(helmConns, UserInputService.InputEnded:Connect(function(input)
+			if origin and input == origin then
+				origin, floatPush = nil, 0
+			end
+		end))
+	end
 	local autoOn = false
 	local helmTrim = 0.8
 	local helmSpeed = 0
@@ -816,10 +838,12 @@ function VoyageScene.play(info)
 			stickX, stickY = v.X, -v.Y
 			knob.Position = UDim2.new(0.5, v.X * 44, 0.5, v.Y * 44)
 		end
+		local homeUDim = base.Position
 		local function resetStick()
 			stickInput = nil
 			stickX, stickY = 0, 0
 			knob.Position = UDim2.fromScale(0.5, 0.5)
+			base.Position = homeUDim
 		end
 		base.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -827,6 +851,21 @@ function VoyageScene.play(info)
 				setStick(input.Position)
 			end
 		end)
+		-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(스틱 하나로 조종)
+		table.insert(helmConns, UserInputService.InputBegan:Connect(function(input, processed)
+			if stickInput or processed or input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			local vs = workspace.CurrentCamera.ViewportSize
+			if input.Position.X < vs.X * 0.55 then
+				stickInput = input
+				local half = base.AbsoluteSize.X / 2
+				local cx = math.clamp(input.Position.X, half + 8, vs.X * 0.55)
+				local cy = math.clamp(input.Position.Y, half + 8, vs.Y - half - 8)
+				base.Position = UDim2.fromOffset(cx - half - gui.AbsolutePosition.X, cy + half - gui.AbsolutePosition.Y)
+				setStick(input.Position)
+			end
+		end))
 		table.insert(helmConns, UserInputService.InputChanged:Connect(function(input)
 			if stickInput and (input == stickInput or input.UserInputType == Enum.UserInputType.MouseMovement) then
 				setStick(input.Position)
@@ -1473,8 +1512,12 @@ function VoyageScene.play(info)
 		local pos, dir
 		if helm then
 			-- 수동 항해: 키·스틱으로 방향과 돛을 정하고, 바람에 따라 속도가 정해진다
-			local steer = stickX
+			-- 스틱은 끝까지 안 밀어도 크게 돈다(곡선), 폰은 돛을 자동으로 맞춰 준다(스틱 아래로 당기면 감속)
+			local steer = math.sign(stickX) * math.min(1, math.abs(stickX) * 1.5)
 			local trimIn = stickY
+			if mobile and trimIn >= -0.2 then
+				trimIn = (1 - helmTrim) * 2
+			end
 			if UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
 				steer -= 1
 			end
@@ -1505,7 +1548,7 @@ function VoyageScene.play(info)
 			end
 			local seaNote = HelmPhys.step(hs, steer, trimIn, dt, {
 				windFrom = windFrom, baseSpeed = speedNow * 1.2, steam = info.steam, t = t,
-				shoals = shoalList, currents = currentList,
+				shoals = shoalList, currents = currentList, turnGain = if mobile then 1.5 else 1,
 			})
 			helmYaw, helmTrim, helmSpeed = hs.yaw, hs.trim, hs.speed
 			helmPos = Vector3.new(hs.x, helmPos.Y, hs.z)
@@ -1559,6 +1602,9 @@ function VoyageScene.play(info)
 			end
 			if dragTarget then
 				push = math.clamp((dragTarget - lat) * 3, -1, 1)
+			end
+			if floatPush ~= 0 then
+				push = math.clamp(push + floatPush, -1, 1)
 			end
 			-- 조향: 목표 속도로 빠르게 따라붙고(반응 빠름) 손을 떼면 거의 바로 선다(관성 작음)
 			latV += (push * 2.4 - latV) * math.min(1, dt * 11)

@@ -2539,9 +2539,9 @@ function FieldScene.start(opts)
 			local active, vec = nil, Vector2.zero
 			local function setFrom(pos: Vector3)
 				local c = pad.AbsolutePosition + pad.AbsoluteSize / 2
-				local d = (Vector2.new(pos.X, pos.Y) - c) / 60
+				local d = (Vector2.new(pos.X, pos.Y) - c) / 42
 				vec = if d.Magnitude > 1 then d.Unit else d
-				knob.Position = UDim2.new(0.5, vec.X * 45, 0.5, vec.Y * 45)
+				knob.Position = UDim2.new(0.5, vec.X * 48, 0.5, vec.Y * 48)
 			end
 			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
 			local homePos = pad.Position
@@ -2590,7 +2590,8 @@ function FieldScene.start(opts)
 					if vec.Magnitude > 0.15 then
 						local dir = cam3.CFrame:VectorToWorldSpace(Vector3.new(vec.X, 0, vec.Y))
 						dir = Vector3.new(dir.X, 0, dir.Z)
-						h3:Move(if dir.Magnitude > 0 then dir.Unit * math.min(vec.Magnitude, 1) else Vector3.zero, false)
+						-- 끝까지 안 밀어도 전속(곡선): 반응이 둔하지 않게
+						h3:Move(if dir.Magnitude > 0 then dir.Unit * math.min(1, vec.Magnitude * 1.4) else Vector3.zero, false)
 					elseif active == nil then
 						h3:Move(Vector3.zero, false)
 					end
@@ -2627,7 +2628,7 @@ function FieldScene.start(opts)
 		end
 		if h2 then
 			if h2.WalkSpeed < 16 then
-				h2.WalkSpeed = 18
+				h2.WalkSpeed = if workspace:GetAttribute("FieldTouchPad") then 22 else 18
 			end
 			if h2.PlatformStand or h2.Sit then
 				h2.PlatformStand = false

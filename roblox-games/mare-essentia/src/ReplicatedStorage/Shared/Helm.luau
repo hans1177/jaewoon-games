@@ -11,6 +11,7 @@ export type Env = {
 	t: number,
 	shoals: { { x: number, z: number } }?,
 	currents: { { x: number, z: number, dx: number, dz: number } }?,
+	turnGain: number?, -- 조향 반응 배율(폰 스틱은 1.5)
 }
 
 local function wrap(a: number): number
@@ -58,7 +59,7 @@ function Helm.step(s: State, steer: number, trimIn: number, dt: number, env: Env
 	s.speed += (target - s.speed) * math.min(1, dt * 0.9)
 	-- 속도가 있어야 키가 듣는다. 맞바람에 서 있으면(돛이 처지면) 방향을 틀기 어렵다.
 	local turn = 0.95 * (0.35 + 0.65 * math.min(1, s.speed / math.max(env.baseSpeed * 0.5, 1)))
-	s.yaw -= steer * turn * dt
+	s.yaw -= steer * turn * (env.turnGain or 1) * dt
 	s.x += math.cos(s.yaw) * s.speed * dt
 	s.z -= math.sin(s.yaw) * s.speed * dt
 	return note

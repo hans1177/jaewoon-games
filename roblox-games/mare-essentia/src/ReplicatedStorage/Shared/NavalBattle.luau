@@ -94,10 +94,10 @@ local PLAYER_SHIP = {
 }
 -- 대포 종류: 사거리·탄속(비행시간)·포물선 높이·탄 크기가 다르다
 local NC = {
-	swivel = { name = "선회포", range = 62, dur = 0.34, arc = 5, ball = 1.0, cd = 0.8 },
-	demi = { name = "중포", range = 95, dur = 0.5, arc = 14, ball = 1.5, cd = 1.15 },
-	culverin = { name = "장포", range = 135, dur = 0.8, arc = 24, ball = 1.7, cd = 1.5 },
-	mortar = { name = "구포", range = 85, dur = 1.0, arc = 42, ball = 2.2, cd = 2.0 },
+	swivel = { name = "선회포", range = 95, dur = 0.34, arc = 5, ball = 1.0, cd = 0.8 },
+	demi = { name = "중포", range = 140, dur = 0.5, arc = 14, ball = 1.5, cd = 1.15 },
+	culverin = { name = "장포", range = 200, dur = 0.8, arc = 24, ball = 1.7, cd = 1.5 },
+	mortar = { name = "구포", range = 130, dur = 1.0, arc = 42, ball = 2.2, cd = 2.0 },
 }
 local SHIP_CANNON = { caravel = "swivel", fluyt = "swivel", galley = "demi", xebec = "demi", frigate = "culverin", galleon = "mortar" }
 -- 지역·나라 전용 배는 기본 배의 모델을 빌려 쓴다 (Ships.visual)
@@ -3228,7 +3228,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					navalSay("wind", "맞바람이에요. 바람을 등지게 뱃머리를 돌리면 빨라져요.", now)
 				elseif dist < cannon.range and now >= skillReady.rapid then
 					navalSay("rapid", "사거리 안이에요. 지금 연속 사격(Q)을 쓰면 좋아요.", now)
-				elseif dist < 45 then
+				elseif dist < 60 then
 					navalSay("close", "너무 가까워요. 옆면을 맞춰 일제 사격하거나 거리를 벌려요.", now)
 				end
 			end
@@ -3251,9 +3251,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local toMe = me.pos - foe.pos
 			local dist = toMe.Magnitude
 			local bearing = math.atan2(toMe.Z, toMe.X)
-			local want = bearing + (if dist > 55 then 0.15 elseif dist < 32 then -1.9 else 1.45)
+			local want = bearing + (if dist > 88 then 0.15 elseif dist < 52 then -1.9 else 1.45)
 			steerToward(foe, want, dt, 1.1)
-			foe.speed = (if dist > 55 then 17 else 11) * windFactor(foe.theta)
+			foe.speed = (if dist > 88 then 17 else 11) * windFactor(foe.theta)
 			if cardBusy then foe.speed = 0 end
 			foe.pos += forward(foe.theta) * foe.speed * dt
 			if phase == "board" and not (rt and rt.sunk) then
@@ -3710,12 +3710,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 72 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (128 + dist * 0.5) + Vector3.new(0, math.min(80, 64 + dist * 0.14), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
+		local camPos = ORIGIN + me.pos - f * (170 + dist * 0.55) + Vector3.new(0, math.min(80, 70 + dist * 0.12), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
 		if cardBusy then
 			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
