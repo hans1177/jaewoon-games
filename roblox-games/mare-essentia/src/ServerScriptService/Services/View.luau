@@ -746,6 +746,15 @@ return function(D, S)
 				resourceKindNames[group.id] = group
 			end
 			-- [세계 자원 연결] 실제 69개 교역 자원 + 기존 제작법 가공품을 모두 원본 상품 데이터에서 조회한다.
+			-- 원산지 색인은 포트별 생산 목록을 한 번만 훑는다 (20명 동접 화면 조회 예산 보존).
+			local originIds = {}
+			for portId, port in D.Ports.Ports do
+				for _, goodId in ipairs(port.produces) do
+					if not originIds[goodId] or portId < originIds[goodId] then
+						originIds[goodId] = portId
+					end
+				end
+			end
 			-- 관련 지식카드는 원본 도감 카드 참조일 뿐 새 아이템/보상을 생성하지 않는다.
 			for id, good in D.Ports.Goods do
 				local kindId = good.resourceKind or "manufactured"
@@ -757,13 +766,45 @@ return function(D, S)
 					taxonomy = taxonomy.parent and D.KnowledgeTree.TaxonomyById[taxonomy.parent]
 				end
 				local subject = taxonomy and D.KnowledgeTree.DisciplineById[taxonomy.id]
+				-- [세계 산업 백과] 기존 상품 ID·지식카드·가공법으로 산업 경로를 조회한다.
+				-- 상품·보상은 새로 만들지 않고 지역 원산지와 기존 목표 수출 항구만 안내한다.
+				local originPortId = originIds[id]
+				local brand = D.ProductionChains.BrandById[id]
+				local recipe = if brand then D.ProductionChains.ById[brand.recipe] else D.ProductionChains.ByGood[id]
+				local chain = nil
+				if brand and recipe then
+					local origins = D.Ports.Ports[brand.port]
+					local markets = {}
+					for _, portId in ipairs(brand.destinations) do
+						local port = D.Ports.Ports[portId]
+						if port then table.insert(markets, port.name) end
+					end
+					local raw = D.Ports.Goods[brand.source]
+					local intermediate = D.Ports.Goods[D.ProductionChains.goodId(recipe)]
+					chain = {
+						raw = raw and raw.name or brand.source,
+						processed = intermediate and intermediate.name or recipe.output,
+						port = origins and origins.name or brand.port, markets = markets,
+						research = D.KnowledgeTree.TaxonomyById[recipe.disc] and D.KnowledgeTree.TaxonomyById[recipe.disc].name or recipe.disc,
+					}
+				elseif recipe then
+					local raw = D.Ports.Goods[recipe.inputs[1]]
+					chain = {
+						raw = raw and raw.name or recipe.inputs[1],
+						processed = good.name,
+						port = originPortId and D.Ports.Ports[originPortId].name or "지역 공방",
+						markets = {}, research = D.KnowledgeTree.TaxonomyById[recipe.disc]
+							and D.KnowledgeTree.TaxonomyById[recipe.disc].name or recipe.disc,
+					}
+				end
 				table.insert(view.codex.resources, {
 					id = id, name = good.name, category = kindId,
 					categoryName = group and group.name or "가공품",
 					discipline = subject and subject.name or "기타",
 					appliedDiscipline = if good.discipline and D.KnowledgeTree.TaxonomyById[good.discipline] then D.KnowledgeTree.TaxonomyById[good.discipline].name else nil,
 					cardId = card and card.id or nil,
-					cardName = card and card.name or "연관 지식 미등록",
+					cardName = card and card.name or "연관 지식 미등록", chain = chain,
+					origin = originPortId and D.Ports.Ports[originPortId].name or nil,
 				})
 				view.codex.resourceCounts[kindId] = (view.codex.resourceCounts[kindId] or 0) + 1
 			end

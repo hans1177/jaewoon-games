@@ -4358,7 +4358,10 @@ function RENDERERS.harbor()
 			add(function()
 				local status = string.format("%s · %d단계 · 생산 %.2f · 재고 %d · 시세 %.1f",
 					sp.industry, sp.level, sp.produced, sp.stock, sp.price)
-				return mkRow(content, sp.name, status, {}, 64)
+				if sp.input then status ..= "\n투입 원료 " .. sp.input end
+				if sp.nextProduct then status ..= "\n다음 가공 " .. sp.nextProduct end
+				if sp.researchName then status ..= " · 관련 학문 " .. sp.researchName end
+				return mkRow(content, sp.name, status, {}, if sp.input or sp.nextProduct then 88 else 64)
 			end)
 		end
 	end
@@ -4367,10 +4370,12 @@ function RENDERERS.harbor()
 		add(function() return mkHeader(content, "항구별 명품 산업 · 4단계 발전") end)
 		for _, industry in ipairs(h.sim.industries) do
 			add(function()
-				local detail = string.format("원료 %s → %s → %s\n현재 %s · 생산 %.2f · 재고 %d · 누적 수출 %.2f",
-					industry.raw, industry.processed, industry.name, industry.status,
-					industry.produced, industry.stock, industry.exported)
-				return mkRow(content, industry.name .. " · " .. industry.stage .. "/4", detail, {}, 100)
+				local detail = string.format("원료 %s %d → 가공 %s %d → 특산품 %s %d\n%s · 생산 %.2f · 수입 %.2f · 수출 %.2f\n학문 %s · 공급 항구 %s\n다음 목표: %s",
+					industry.raw, industry.rawStock or 0, industry.processed, industry.processedStock or 0,
+					industry.name, industry.stock, industry.status, industry.produced, industry.imported or 0,
+					industry.exported, industry.researchName or industry.research or "-",
+					industry.supplier or "현지 자급", industry.nextStep or "-")
+				return mkRow(content, industry.name .. " · " .. industry.stage .. "/4", detail, {}, 132)
 			end)
 		end
 	end
@@ -7755,10 +7760,26 @@ if string.sub(codexField, 1, 2) == "r:" then
 			if item.category == selected then
 				add(function()
 					local card = item.cardId and cardById[item.cardId]
-					return mkRow(content, item.name, "연결 학문: " .. item.discipline .. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "") .. " · 연관 지식: " .. item.cardName, {
+					local detail = "연결 학문: " .. item.discipline
+						.. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "")
+						.. " · 연관 지식: " .. item.cardName
+					if item.chain then
+						local destinations = item.chain.markets or {}
+						if #destinations > 0 then
+							detail ..= string.format("\n%s → %s → 지역 명품\n원산지 %s · 관련 학문 %s\n수출 목표 %s%s",
+								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research,
+								destinations[1], if #destinations > 1 then " 외 " .. tostring(#destinations - 1) .. "개 항구" else "")
+						else
+							detail ..= string.format("\n원료 %s → 가공품 %s\n생산 항구 %s · 관련 학문 %s",
+								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research)
+						end
+					elseif item.origin then
+						detail ..= "\n생산 항구: " .. item.origin
+					end
+					return mkRow(content, item.name, detail, {
 						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
 							onClick = function() if card then H.showCardDetail(card) end end },
-					}, 62)
+					}, if item.chain then 114 elseif item.origin then 82 else 62)
 				end)
 			end
 		end

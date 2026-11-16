@@ -812,6 +812,17 @@ local function extraTests()
 		local v = S.View.build(st, ctx)
 		check("도감: 세 방식과 57개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 57 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
 		check("도감: 원료·가공품·지역 브랜드가 실제 상품 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount + brandCount and #v.codex.worldGroups == 7)
+		local brandedResource = nil
+		for _, resource in ipairs(v.codex.resources) do
+			if resource.id == D.ProductionChains.Brands[1].id then brandedResource = resource break end
+		end
+		check("세계 경제 백과: 특산품 원산지·기초 원료·가공법·학문·수출지 연계",
+			brandedResource ~= nil and brandedResource.chain ~= nil
+				and brandedResource.chain.raw == D.Ports.Goods.wool.name
+				and brandedResource.chain.processed == D.Ports.Goods.p_cloth_wool.name
+				and brandedResource.chain.port == D.Ports.Ports.london.name
+				and #brandedResource.chain.markets == #D.ProductionChains.Brands[1].destinations
+				and brandedResource.chain.research ~= nil)
 
 		local cardById = {}
 		local namedSubjects = {}
