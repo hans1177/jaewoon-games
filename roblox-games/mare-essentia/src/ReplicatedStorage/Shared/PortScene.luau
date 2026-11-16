@@ -1798,6 +1798,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
 		if x > -108 - half and math.abs(z) > 17 - half and math.abs(z) < 59 + half then return true end
 		if x < -211 + half and math.abs(z) < 145 + half then return true end
+		if isRoyalCity and x < -235 + half and x > -570 - half and math.abs(z) < 265 + half then return true end
 		for _, d in districts do
 			if math.abs(x - d.at.X) < (if d.kind == "farm" then 69 else 28) + half and math.abs(z - d.at.Z) < (if d.kind == "farm" then 33 else 26) + half then return true end
 		end
@@ -2775,6 +2776,8 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	-- 발전 단계별 신도시 외곽 도로·왕궁 별관을 포함하는 안전 경계. 파트 수 증가 없이 바닥만 확장한다.
+	local CITY_LIMIT_Z = 360 + sceneLevel * 80
 	currentKey = styleKeyOf(style)
 	currentYear = year
 	local fac = {}
@@ -2804,7 +2807,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(650, 0.3, 410 + sceneLevel * 94), CFrame.new(-290, 0.02, 0),
+		local floor = part(folder, Vector3.new(650, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-290, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2835,7 +2838,7 @@ function PortScene.build(info, onFacility)
 			if patch then patch.Name = "SandyShore" end
 		end
 	elseif not warmShore and AssetIds["Castle/ground-hills"] then
-		for _, z in { -280, 280 } do
+		for _, z in { -(CITY_LIMIT_Z + 90), CITY_LIMIT_Z + 90 } do
 			local hills = importedModel(folder, "Castle", "ground-hills", Vector3.new(-330, 0, z), 76, false)
 			if hills then hills.Name = "DistantHills" end
 		end
@@ -2861,25 +2864,25 @@ function PortScene.build(info, onFacility)
 		end
 		-- 둘째 잔교(z=46) 입구(z 42.5~49.5)는 열어 두고 양옆·끝을 막는다
 		wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
-		wall(Vector3.new(1, 40, 395.5), CFrame.new(22.5, 18, 247.25))
+		wall(Vector3.new(1, 40, CITY_LIMIT_Z - 49.5), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 49.5) / 2))
 		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 42))
 		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 50))
 		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
 		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
 		do
-			local floor = part(folder, Vector3.new(622, 2, 880), CFrame.new(-289, -1, 0), Color3.new(1, 1, 1))
+			local floor = part(folder, Vector3.new(622, 2, 2 * CITY_LIMIT_Z), CFrame.new(-289, -1, 0), Color3.new(1, 1, 1))
 			floor.Name = "SafetyFloor"
 			floor.Transparency = 1
 			floor.CanQuery = false
 			floor.CastShadow = false
 		end
-		wall(Vector3.new(1, 40, 440), CFrame.new(22.5, 18, -225.5))
+		wall(Vector3.new(1, 40, CITY_LIMIT_Z - 5.6), CFrame.new(22.5, 18, -(CITY_LIMIT_Z + 5.6) / 2))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, 5.6))
 		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, -5.6))
 		wall(Vector3.new(1, 40, 12), CFrame.new(89.5, 18, 0))
-		wall(Vector3.new(1, 40, 900), CFrame.new(-600, 18, 0))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, 440))
-		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -440))
+		wall(Vector3.new(1, 40, 2 * CITY_LIMIT_Z), CFrame.new(-600, 18, 0))
+		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, CITY_LIMIT_Z))
+		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -CITY_LIMIT_Z))
 	end
 	-- 부두 화물: 등록된 실제 상품 모델을 쓰며 생산품·가격·보행 판정에는 영향을 주지 않는다.
 	local cargoModels = {
@@ -3146,12 +3149,12 @@ function PortScene.build(info, onFacility)
 		part(folder, Vector3.new(75, 0.4, 26), CFrame.new(frontX + 25, 0.24, 0), C(166, 158, 148), Enum.Material.Cobblestone)
 		if palaceTier >= 2 then
 			-- 별관 서비스 필지: 남쪽 마구간, 북쪽 근위병영.
-			local stable = part(folder, Vector3.new(30, 13, 18), CFrame.new(px - wide * 0.38, 6.5, deep * 0.55 + 24), C(142, 111, 80), Enum.Material.WoodPlanks)
+			local stable = part(folder, Vector3.new(30, 13, 18), CFrame.new(px - wide * 0.38, 6.5, deep * 0.62 + 30), C(142, 111, 80), Enum.Material.WoodPlanks)
 			stable.Name = "RoyalStable"
-			importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.38 - 18, 0, deep * 0.55 + 24), 7, false)
-			local guardroom = part(folder, Vector3.new(34, 16, 19), CFrame.new(px - wide * 0.38, 8, -(deep * 0.55 + 24)), baseColor, surface)
+			importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.38 - 18, 0, deep * 0.62 + 30), 7, false)
+			local guardroom = part(folder, Vector3.new(34, 16, 19), CFrame.new(px - wide * 0.38, 8, -(deep * 0.62 + 30)), baseColor, surface)
 			guardroom.Name = "RoyalGuardHouse"
-			part(folder, Vector3.new(36, 2, 21), CFrame.new(px - wide * 0.38, 17, -(deep * 0.55 + 24)), roofColor, Enum.Material.Slate)
+			part(folder, Vector3.new(36, 2, 21), CFrame.new(px - wide * 0.38, 17, -(deep * 0.62 + 30)), roofColor, Enum.Material.Slate)
 		end
 		if palaceTier >= 3 then
 			-- 정원 분수·정원 벤치와 왕실 학문 서고.
@@ -3159,15 +3162,15 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "fountain-round", Vector3.new(frontX + 29, 0, z), 10, false)
 				importedModel(folder, "Town", "bench_A", Vector3.new(frontX + 38, 0, z + (if z > 0 then 14 else -14)), 5, false)
 			end
-			local library = part(folder, Vector3.new(27, 15, 20), CFrame.new(px - wide * 0.28, 7.5, deep * 0.55 + 63), baseColor, surface)
+			local library = part(folder, Vector3.new(27, 15, 20), CFrame.new(px - wide * 0.28, 7.5, deep * 0.62 + 65), baseColor, surface)
 			library.Name = "RoyalLibrary"
-			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 16.2, deep * 0.55 + 63), roofColor, Enum.Material.Slate)
+			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 16.2, deep * 0.62 + 65), roofColor, Enum.Material.Slate)
 		end
 		if palaceTier >= 4 then
 			-- 행정청과 의전 깃발. 관문 폭은 최종 단계까지 보존한다.
-			local office = part(folder, Vector3.new(27, 16, 20), CFrame.new(px - wide * 0.28, 8, -(deep * 0.55 + 63)), baseColor, surface)
+			local office = part(folder, Vector3.new(27, 16, 20), CFrame.new(px - wide * 0.28, 8, -(deep * 0.62 + 65)), baseColor, surface)
 			office.Name = "RoyalAdministration"
-			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 17, -(deep * 0.55 + 63)), roofColor, Enum.Material.Slate)
+			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 17, -(deep * 0.62 + 65)), roofColor, Enum.Material.Slate)
 			for _, z in { -38, 38 } do
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(frontX + 8, 0, z), 13, false)
 			end
