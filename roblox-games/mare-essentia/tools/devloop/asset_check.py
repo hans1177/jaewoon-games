@@ -17,6 +17,16 @@ for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
         used.add(f"{k}/{n}")
         if f"{k}/{n}" not in reg:
             missing.append((os.path.basename(f), f"{k}/{n}"))
+# [모델 그룹 검사] 등록된 모델 종류마다 Rojo의 MareAssets 안에 실제 폴더가 있어야 한다.
+# 없으면 AssetLoader가 정상 모델도 INVALID_MODEL로 보고하므로 게시 전에 차단한다.
+project_path = os.path.join(root, "default.project.json")
+with open(project_path, encoding="utf-8") as project_file:
+    asset_groups = json.load(project_file)["tree"]["ReplicatedStorage"]["MareAssets"]
+required_groups = {key.split("/")[0] for key, record in reg.items() if record.get("assetType") == "Model"}
+missing_groups = sorted(required_groups - set(asset_groups))
+if missing_groups:
+    print("등록 모델의 MareAssets 폴더 없음: " + ", ".join(missing_groups))
+    sys.exit(1)
 unused = sorted(set(reg) - used)
 print(f"사용 {len(used)}종 / 등록 {len(reg)}종 / 미사용 {len(unused)}종")
 if missing:

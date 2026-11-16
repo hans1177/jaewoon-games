@@ -58,10 +58,10 @@ local regionalDefs = {
 	{ "african_hunting_bow", "아프리카 사냥활", "bow", "BOW", "africa", "지역 사냥 전통에 따른 활" },
 	{ "american_hunting_bow", "아메리카 사냥활", "bow", "BOW", "americas", "지역 사냥 전통에 따른 활" },
 	{ "matchlock_musket", "화승식 장총", "gun", "RIFLE", "early_firearm", "화승식 발화·재장전" },
-	{ "flintlock_musket", "수석식 장총", "gun", "RIFLE", "late_firearm", "수석식 발화·재장전" },
+	{ "flintlock_musket", "수석식 장총", "gun", "RIFLE", "late_firearm", "수석식 발화·재장전", "weapon-flintlock-musket" },
 	{ "tanegashima", "다네가시마 조총", "gun", "RIFLE", "japan", "일본 화승총" },
 	{ "wheellock_pistol", "륜발식 권총", "gun", "PISTOL", "early_firearm", "고가의 기계식 발화 권총" },
-	{ "flintlock_pistol", "수석식 권총", "gun", "PISTOL", "late_firearm", "수석식 발화 권총" },
+	{ "flintlock_pistol", "수석식 권총", "gun", "PISTOL", "late_firearm", "수석식 발화 권총", "weapon-flintlock-pistol" },
 	{ "ottoman_kubur", "오스만 쿠부르 권총", "gun", "PISTOL", "west_asia", "오스만 지역의 호신·기병용 권총" },
 	{ "ship_pistol", "선상 권총", "gun", "PISTOL", "sea", "배 위에서 사용하는 짧은 총신의 권총" },
 	{ "dueling_pistol", "결투용 권총", "gun", "PISTOL", "europe", "18세기 유럽 결투용 권총" },
@@ -73,7 +73,7 @@ for _, v in regionalDefs do
 		local item: Weapon = {
 			id = v[1], name = v[2], motion = v[4], family = base.family,
 			ranged = base.ranged, range = base.range, speed = base.speed,
-			power = base.power, model = nil, region = v[5], note = v[6],
+			power = base.power, model = v[7], region = v[5], note = v[6],
 		}
 		byId[item.id] = item
 		table.insert(Weapons.Regional, item)

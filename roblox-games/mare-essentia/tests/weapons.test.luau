@@ -24,6 +24,9 @@ check("없는 id 는 맨손", W.get("nope").id == "fist")
 -- [실물 모델] 이름 연결은 보존하되 Roblox 등록·권한 전에는 장착 로더에서 차단한다.
 check("철퇴·석궁 전용 실제 모델 이름", W.get("mace").model == "weapon-mace" and W.get("crossbow").model == "weapon-crossbow")
 check("총기 실물 미검증은 임시 모델을 쓰지 않음", W.get("gun").model == nil)
+-- [수석식 실물] 등록·권한 확인된 CC0 모델만 지역 무기에 연결한다. 나머지 총기의 임시 외형은 만들지 않는다.
+check("수석식 장총·권총 실제 모델 연결", W.get("flintlock_musket").model == "weapon-flintlock-musket" and W.get("flintlock_pistol").model == "weapon-flintlock-pistol")
+check("미등록 지역 총기는 모델 없음", W.get("matchlock_musket").model == nil and W.get("wheellock_pistol").model == nil)
 -- [기본 호환] 기존 직업 무기는 모두 존재하고, 등록되지 않은 모델은 임의 참조하지 않는다.
 local allOk = true
 for catId in J.Categories do
