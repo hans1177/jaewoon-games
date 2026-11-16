@@ -2863,7 +2863,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			one("Cargo", "resource-planks", 3, 8, 0, lay.freightZ - 2)
 		end
 		if lay.freight and lay.mine then
-			one("Cargo", "iron-bars-stack-large", 3, 10, 0, lay.freightZ + 9)
+			-- 광물 항구도 없는 철광석을 임의로 적치하지 않는다: 실제 지역 생산품을 골라 쓴다.
+			for _, mineral in { "iron", "coal", "tin", "copper", "gold", "silver", "gems" } do
+				if table.find((port and port.produces) or {}, mineral) and AssetIds["Cargo/" .. mineral] then
+					one("Cargo", mineral, 3.4, 10, 0, lay.freightZ + 9)
+					break
+				end
+			end
 			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
 		end
 		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
@@ -2880,6 +2886,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						cargo.Name = "HarborRegionalCargo_" .. good
 						cargo:SetAttribute("LocalProduct", good)
 						cargo:SetAttribute("HarborPlot", "freight")
+						cargo:SetAttribute("ShowcaseOnly", true) -- 항구 특산품 전시이며 실제 창고 재고 확정 아님
 					end
 				end
 			end
