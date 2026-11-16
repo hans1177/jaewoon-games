@@ -11,6 +11,19 @@ table.sort(ports)
 for _, id in ports do
 	if not Cultures.REGION[id] then error("문화권 미등록 항구: " .. id) end
 end
+-- [문화권 외관 회귀] 상업/저장 수치는 그대로 유지한 채 건물 몸체가 지역마다 달라지는지 확인.
+local regionForms = {
+	ottoman = "courtyard", swahili = "carved", wafrica = "flat",
+	seasia = "stilt", pacific = "stilt", japan = "eastasia", china = "eastasia",
+	hanse = "stepped", italy = "loggia", britain = "timber",
+	iberia = "arcade", france = "mansard", colonial = "veranda", malabar = "coastal",
+}
+for region, expected in regionForms do
+	local profile = Cultures.STYLE[region] and Cultures.STYLE[region].house
+	if not profile or profile.form ~= expected then
+		error(("문화권 건축형태 누락: %s → %s"):format(region, expected))
+	end
+end
 local fails, built = 0, 0
 for _, id in ports do
 	for lvl = 1, 5 do
