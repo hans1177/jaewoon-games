@@ -212,7 +212,9 @@ do
 	a.advance(stA)
 	check("최초 세계 저장", a.sync(stA) and memory.value and memory.value.revision == 1)
 	local shared = b.town(stB, "london")
-	check("서버 재접속 시 기존 세계 연도·날짜 공유", shared and shared.day == 35 and shared.year == 1650)
+	-- 현실 시계로 초기 진행일이 35일보다 클 수 있으므로 실제 저장한 날과 일치하는지 검사한다.
+	check("서버 재접속 시 기존 세계 연도·날짜 공유",
+		shared and shared.day == memory.value.day and shared.day >= stA.day and shared.year == 1650)
 	local before = shared.tech
 	b.teach(stB, "london", "navigation", 10)
 	check("연구가 공유 세계에 적용", b.sync(stB) and memory.value.revision == 2)
