@@ -20,6 +20,9 @@ end
 
 -- 메인 화면에서 쓰는 모델부터 로드하고, 나머지는 기존 폴더로 계속 채운다.
 local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castle = 6, Relics = 7, People = 8 }
+-- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
+-- 별도 작업 큐나 임시 모델을 만들지 않고, 기존 우선 선박 두 종 다음에 배치한다.
+local earlyScenery = { ["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true }
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
@@ -31,8 +34,8 @@ end
 -- 시작 프롤로그에서 사용하는 승인된 실물 범선을 먼저 로드한다.
 -- 항구 필수 모델을 제외하거나 기존 큐·동시성 구조를 변경하지 않는다.
 table.sort(queue, function(a, b)
-	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 else order[a.kind] or 99
-	local bp = if b.key == "Naval/ship-large" then -1 elseif b.key == "Naval/ship-medium" then 0 else order[b.kind] or 99
+	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 elseif earlyScenery[a.key] then 0.5 else order[a.kind] or 99
+	local bp = if b.key == "Naval/ship-large" then -1 elseif b.key == "Naval/ship-medium" then 0 elseif earlyScenery[b.key] then 0.5 else order[b.kind] or 99
 	if ap ~= bp then return ap < bp end
 	return a.key < b.key
 end)
@@ -48,7 +51,7 @@ if studioAudit then
 end
 local priorityPending = 0
 for _, asset in queue do
-	if (order[asset.kind] or 99) <= 3 then priorityPending += 1 end
+	if (order[asset.kind] or 99) <= 3 or earlyScenery[asset.key] then priorityPending += 1 end
 end
 
 if studioAudit and #queue == 0 then
@@ -113,7 +116,7 @@ for _ = 1, 12 do
 				warn("[MareEssentia] 모델 불러오기 실패", item.key, item.id, container)
 			end
 			pending -= 1
-			if (order[item.kind] or 99) <= 3 then priorityPending -= 1 end
+			if (order[item.kind] or 99) <= 3 or earlyScenery[item.key] then priorityPending -= 1 end
 			if studioAudit and pending == 0 then
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
