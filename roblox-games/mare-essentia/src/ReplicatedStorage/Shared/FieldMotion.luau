@@ -110,13 +110,24 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	end
 	local attack = state == "ANTICIPATION" or state == "ATTACK"
 	local pulse = math.sin(math.clamp(phase, 0, 1) * math.pi)
-	if role == "shield" then
+	if role == "grunt" then
+		-- 잡졸: 공격 직전 한쪽 어깨를 높이 들어 위협하고 피격 시 움츠린다.
+		if state == "ANTICIPATION" then
+			bend("UpperArmR", -0.45 - pulse * 0.65, 0, -0.20)
+			bend("Chest", -0.12 * pulse, 0.16 * pulse, 0)
+		elseif state == "HIT" then
+			bend("Head", 0.24 * pulse, 0, 0.10 * pulse)
+		end
+	elseif role == "shield" then
 		-- 방패병: 왼팔을 몸 앞에 세우고 오른팔은 반격 준비.
 		if state == "IDLE" or state == "RUN" or attack then
 			bend("UpperArmL", -0.58, 0, -0.26)
 			bend("ForearmL", -0.70, 0, 0)
 			bend("UpperArmR", -0.22, 0, 0.08)
 			bend("Chest", 0.09, 0, 0)
+		elseif state == "HIT" then
+			bend("UpperArmL", -0.55 * pulse, 0, -0.23 * pulse)
+			bend("Chest", -0.19 * pulse, 0, 0)
 		end
 	elseif role == "archer" then
 		-- 사수: 예고 단계에 두 손으로 조준하고 타격 후 팔을 낮춘다.
@@ -126,6 +137,13 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ForearmL", -0.38, 0, 0)
 			bend("ForearmR", -0.55, 0, 0)
 			bend("Head", -0.09, 0, 0)
+		elseif state == "RUN" and h.model:GetAttribute("MotionRetreat") then
+			-- 사수 뒷걸음: 이동 규칙은 유지하고 어깨로 상체를 방어한다.
+			bend("Chest", -0.18, 0, 0)
+			bend("UpperArmL", -0.58, 0, -0.18)
+			bend("UpperArmR", -0.30, 0, 0.15)
+		elseif state == "HIT" then
+			bend("Head", 0.18 * pulse, 0.17 * pulse, 0)
 		end
 	elseif role == "charger" then
 		-- 돌진병: 어깨를 말고 주먹을 낮춰 무게감 있는 공격 예고.
@@ -135,6 +153,9 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("UpperArmR", 0.28, 0, -0.22)
 			bend("ForearmL", -0.42, 0, 0)
 			bend("ForearmR", -0.42, 0, 0)
+		elseif state == "RECOVERY" then
+			bend("Chest", -0.20 * (1 - phase), 0, 0)
+			bend("Head", 0.18 * (1 - phase), 0, 0)
 		end
 	elseif role == "boss" then
 		-- 두목: 큰 준비 자세와 비대칭 내려치기, 피격 뒤 고개 숙이기.
@@ -145,15 +166,35 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		elseif state == "HIT" or state == "RECOVERY" then
 			bend("Head", 0.18 * (1 - math.clamp(phase, 0, 1)), 0, 0)
 		end
-	elseif role == "ally-ranged" then
-		-- 원거리 동료: 걷는 중에도 사격 준비 팔을 낮게 유지한다.
+	elseif role == "ally-ranged" or role == "ally-melee" then
+		-- 회복·보호막·격려는 무기 공격과 분리해 실제 지원 행동으로 보이게 한다.
+		local skill = h.model:GetAttribute("MotionSkill")
+		if state == "INTERACT" and (skill == "heal" or skill == "armor" or skill == "rally" or skill == "luck") then
+			local lift = math.sin(math.clamp(phase, 0, 1) * math.pi)
+			if skill == "heal" then
+				bend("UpperArmL", -1.25 * lift, 0, -0.28)
+				bend("UpperArmR", -1.25 * lift, 0, 0.28)
+				bend("Head", 0.16 * lift, 0, 0)
+			elseif skill == "armor" then
+				bend("UpperArmL", -1.1 * lift, 0, -0.52)
+				bend("UpperArmR", -1.1 * lift, 0, 0.52)
+				bend("ForearmL", -0.55 * lift, 0, 0)
+				bend("ForearmR", -0.55 * lift, 0, 0)
+			elseif skill == "rally" then
+				bend("UpperArmR", -2.0 * lift, 0, -0.18)
+				bend("Chest", -0.14 * lift, 0, 0)
+			else
+				bend("UpperArmL", -0.9 * lift, 0, -0.18)
+				bend("UpperArmR", -0.5 * lift, 0, 0.2)
+			end
+		elseif role == "ally-ranged" then
+			-- 원거리 동료: 걷는 중에도 사격 준비 팔을 낮게 유지한다.
 		if state == "IDLE" or attack then
 			bend("UpperArmL", -0.32, 0, -0.10)
 			bend("UpperArmR", -0.52, 0, 0.10)
 			bend("ForearmR", -0.32, 0, 0)
 		end
-	elseif role == "ally-melee" then
-		if state == "IDLE" or attack then
+		if role == "ally-melee" and (state == "IDLE" or attack) then
 			bend("UpperArmL", -0.28, 0, -0.14)
 			bend("UpperArmR", -0.35, 0, 0.12)
 		end
