@@ -22,6 +22,8 @@ export type Card = {
 		era: string?, -- 카드가 나타내는 역사 시대. 발견 가능 연도(fromYear)와 분리.
 		region: string?, -- 대표 항구 id(원본 Ports). 여러 지역 연결은 relations로 확장.
 		relatedDisciplines: { string }?, -- 실제 활성 학문의 교차 연결(주학문 보상 중복 없음).
+		topic: string?, -- 14개 백과 주제 분류(학문 대분류 및 실물 소재와 분리).
+		evidence: string?, -- documented / hypothesis / legend / fiction / unreviewed.
 		tags: { string }?, -- 여러 관점에서 찾는 태그(단일 분류와 독립).
 		aliases: { string }?, -- 중복 카드 대신 다른 표기 이름으로 검색.
 		wikidata: string?, -- 검증된 외부 개체 식별자만 기록(CC0 사실 데이터).
@@ -47,6 +49,31 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 end
 
 local Rows: { { any } } = {
+	-- [세계 백과 14영역] 기존 저장·보상·발견 경로 재사용. 대표 카드 24장을 유형/무형 혼합 등록한다.
+	{ "person_erasmus", "에라스뮈스", "Philosophy", "Common", "유럽 각지의 고전 문헌과 교육 문제를 연구한 르네상스 인문주의 학자. 1516년 그리스어 신약 성경의 인쇄본을 펴냈다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "antwerp", { kind = "person", topic = "people", discipline = "philosophy", entityType = "person", evidence = "documented", era = "16세기", region = "antwerp", relatedDisciplines = { "linguistics", "religious_studies" }, relations = { { type = "influences", target = "lang_translation" }, { type = "locatedAt", target = "port:antwerp" } }, tags = { "인물", "인문주의", "인쇄" } } },
+	{ "nation_venice", "베네치아 공화국", "Site", "Common", "베네치아를 중심으로 상업·해운을 발전시킨 해양 공화국. 도시의 정치 제도와 항로가 지중해 무역에 깊이 연결됐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "nation", topic = "society", discipline = "history", entityType = "polity", evidence = "documented", era = "중세~1797년", region = "venice", relatedDisciplines = { "political_science", "commerce" }, relations = { { type = "locatedAt", target = "port:venice" }, { type = "influences", target = "geo_venice_lagoon" }, { type = "associatedWith", target = "arch_arsenal" } }, tags = { "국가", "공화국", "해운" } } },
+	{ "org_hanseatic_league", "한자동맹", "Goods", "Common", "북해와 발트해 도시·상인들이 상업 특권과 항로 안전을 위해 형성한 교역 네트워크.", "항구 기록·현장 조사", 5, 12, 1517, nil, "antwerp", { kind = "organization", topic = "society", discipline = "commerce", entityType = "organization", evidence = "documented", era = "중세~근세", region = "antwerp", relatedDisciplines = { "economics", "history" }, relations = { { type = "associatedWith", target = "lang_hanse_trade" }, { type = "associatedWith", target = "relic_hansa_seal" }, { type = "locatedAt", target = "port:antwerp" } }, tags = { "길드", "도시 동맹", "무역" } } },
+	{ "institution_venetian_senate", "베네치아 원로원", "Politics", "Common", "베네치아 공화국의 행정·외교·재정에 중요한 역할을 한 의사결정 기관.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "institution", topic = "governance", discipline = "political_science", entityType = "institution", evidence = "documented", era = "중세~18세기", region = "venice", relatedDisciplines = { "law", "history" }, relations = { { type = "partOf", target = "nation_venice" }, { type = "associatedWith", target = "pol_assembly_observation" } }, tags = { "의회", "정치제도", "원로원" } } },
+	{ "event_constantinople_1453", "1453년 콘스탄티노폴리스 함락", "Site", "Common", "1453년 오스만 제국이 콘스탄티노폴리스를 점령하며 동로마 제국이 끝난 역사적 사건.", "역사 연대기 조사", 5, 12, 1517, nil, "venice", { kind = "event", topic = "history", discipline = "history", entityType = "event", evidence = "documented", era = "1453년", region = "venice", relatedDisciplines = { "political_science", "commerce" }, relations = { { type = "influences", target = "nation_venice" }, { type = "associatedWith", target = "geo_med_currents" } }, tags = { "역사 사건", "오스만", "무역로" } } },
+	{ "finance_bill_exchange", "환어음", "Goods", "Common", "서로 다른 도시의 상인이 현금을 먼 길로 운반하지 않고 결제를 약속할 때 사용한 상업 문서.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "finance", topic = "economy", discipline = "economics", entityType = "work", evidence = "documented", era = "중세~근세", region = "venice", relatedDisciplines = { "commerce", "law" }, relations = { { type = "relatedTo", target = "lang_ledger" }, { type = "usedIn", target = "org_hanseatic_league" } }, tags = { "금융", "결제", "상업" } } },
+	{ "finance_marine_insurance", "해상보험 계약", "Goods", "Common", "상선의 침몰·약탈 등 항해 위험을 여러 당사자가 나누도록 정한 역사적 보험 계약 방식.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "finance", topic = "economy", discipline = "economics", entityType = "work", evidence = "documented", era = "14세기~", region = "venice", relatedDisciplines = { "law", "shipbuilding" }, relations = { { type = "associatedWith", target = "ship_caravel" }, { type = "relatedTo", target = "finance_bill_exchange" } }, tags = { "보험", "해운", "계약" } } },
+	{ "food_sourdough", "전통 발효빵", "Goods", "Common", "곡물 가루를 물과 발효종으로 반죽해 구워 먹는 빵. 재료와 발효 방식은 지역에 따라 달랐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "antwerp", { kind = "food", topic = "lifestyle", discipline = "agronomy", entityType = "substance", evidence = "documented", era = "고대~근세", region = "antwerp", relatedDisciplines = { "botany", "brewing" }, relations = { { type = "usesMaterial", target = "bot_barley" }, { type = "relatedTo", target = "bot_rye" } }, tags = { "음식", "발효", "곡물" } } },
+	{ "clothing_wool_cloak", "모직 망토", "Goods", "Common", "양모를 실로 만들어 짠 천을 겉옷으로 입는 문화. 지역의 기후와 직물업에 따라 형태가 달랐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "london", { kind = "clothing", topic = "lifestyle", discipline = "textiles", entityType = "class", evidence = "documented", era = "중세~근세", region = "london", relatedDisciplines = { "commerce", "anthropology" }, relations = { { type = "relatedTo", target = "goods_linen" }, { type = "locatedAt", target = "port:london" } }, tags = { "의복", "직물", "생활" } } },
+	{ "information_cipher", "문자 치환 암호", "Language", "Common", "문자를 다른 기호나 문자로 바꾸어 내용을 숨기는 암호 방식. 외교 서한과 상업 통신에도 응용됐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "information", topic = "communication", discipline = "linguistics", entityType = "concept", evidence = "documented", era = "고대~근세", region = "venice", relatedDisciplines = { "mathematics", "political_science" }, relations = { { type = "relatedTo", target = "lang_cipher" }, { type = "associatedWith", target = "lang_latin" } }, tags = { "정보", "암호", "문자" } } },
+	{ "ritual_pilgrimage", "순례 관습", "Religion", "Common", "종교적 의미를 지닌 장소를 찾아 이동하는 의례와 관습. 지역·신앙마다 목적과 행위가 다르다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "religion", topic = "beliefs", discipline = "religious_studies", entityType = "practice", evidence = "documented", era = "고대~근세", region = "venice", relatedDisciplines = { "anthropology", "geography" }, relations = { { type = "relatedTo", target = "faith_rite_observation" }, { type = "associatedWith", target = "arch_cathedral" } }, tags = { "의례", "순례", "종교" } } },
+	{ "industry_print_workshop", "활판 인쇄 공방", "Language", "Common", "금속 활자와 인쇄기를 이용해 여러 장의 문서를 만들어 지식과 소식을 퍼뜨리던 작업장.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "industry", topic = "industry", discipline = "mechanics", entityType = "process", evidence = "documented", era = "15세기~", region = "venice", relatedDisciplines = { "linguistics", "commerce" }, relations = { { type = "usesTechnology", target = "lang_printing_press" }, { type = "influences", target = "lang_translation" } }, tags = { "인쇄", "제조", "산업" } } },
+	{ "industry_watermill", "수차 방앗간", "Physics", "Common", "흐르는 물의 힘을 회전 운동으로 바꾸어 곡식을 빻거나 물건을 가공하던 기계와 시설.", "항구 기록·현장 조사", 5, 12, 1517, nil, "antwerp", { kind = "industry", topic = "industry", discipline = "mechanics", entityType = "class", evidence = "documented", era = "중세~근세", region = "antwerp", relatedDisciplines = { "agronomy", "architecture" }, relations = { { type = "usesTechnology", target = "phy_lever" }, { type = "usedIn", target = "food_sourdough" } }, tags = { "동력", "수차", "가공" } } },
+	{ "body_human_heart", "사람의 심장", "Medicine", "Common", "혈액을 온몸으로 보내는 근육 기관. 16세기 해부 연구에서 심장의 구조와 판막을 관찰했다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "london", { kind = "body", topic = "health", discipline = "medicine", entityType = "body", evidence = "documented", era = "고대~근세", region = "london", relatedDisciplines = { "biology", "history" }, relations = { { type = "relatedTo", target = "phy_microscope" }, { type = "locatedAt", target = "port:london" } }, tags = { "인체", "심장", "해부" } } },
+	{ "disease_plague", "페스트", "Medicine", "Common", "중세와 근세 유럽에 큰 피해를 남긴 감염병. 당시의 격리 조치와 질병 원인에 관한 해석은 오늘날과 달랐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "disease", topic = "health", discipline = "public_health", entityType = "phenomenon", evidence = "documented", era = "중세~근세", region = "venice", relatedDisciplines = { "medicine", "history" }, relations = { { type = "influences", target = "nation_venice" }, { type = "associatedWith", target = "med_diet" } }, tags = { "질병", "역병", "검역" } } },
+	{ "med_blood_circulation", "혈액 순환 연구", "Medicine", "Uncommon", "윌리엄 하비가 1628년 책으로 설명한 심장과 혈액의 순환 체계. 기존 관념과 관찰 증거를 대조했다.", "해부 기록과 학자 보고", 15, 45, 1628, { found = { "body_human_heart" }, reported = { "body_human_heart" } }, "london", { kind = "body", topic = "health", discipline = "medicine", entityType = "process", evidence = "documented", era = "1628년", region = "london", relatedDisciplines = { "biology", "physics" }, relations = { { type = "studies", target = "body_human_heart" }, { type = "relatedTo", target = "phy_microscope" } }, tags = { "생리학", "해부", "혈액" } } },
+	{ "ecosystem_coastal_wetland", "해안 습지 생태계", "Geography", "Common", "조수에 따라 물이 드나드는 해안 습지에서 물·토양·식물·동물이 서로 영향을 주는 환경.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "ecosystem", topic = "earth", discipline = "ecology", entityType = "ecosystem", evidence = "documented", era = "고대~현재", region = "venice", relatedDisciplines = { "geography", "zoology" }, relations = { { type = "locatedAt", target = "port:venice" }, { type = "relatedTo", target = "geo_venice_lagoon" }, { type = "associatedWith", target = "zoo_oyster" } }, tags = { "습지", "생태계", "조수" } } },
+	{ "geology_rock_layers", "퇴적암 지층", "Mineral", "Common", "모래·진흙 등이 오랜 시간 쌓여 굳은 암석의 층. 바위의 단면은 과거 환경을 연구하는 단서가 된다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "london", { kind = "geology", topic = "earth", discipline = "geology", entityType = "phenomenon", evidence = "documented", era = "고대~현재", region = "london", relatedDisciplines = { "mineralogy", "geography" }, relations = { { type = "studies", target = "min_chalk" }, { type = "relatedTo", target = "min_granite" } }, tags = { "지층", "지질", "퇴적" } } },
+	{ "celestial_lunar_mountains", "달 표면의 산과 분화구 관측", "Astronomy", "Uncommon", "1610년 갈릴레오가 망원경 관측을 바탕으로 달 표면이 완전히 매끄러운 구가 아님을 기록했다.", "항구 기록·현장 조사", 15, 45, 1610, nil, "venice", { kind = "celestial", topic = "cosmos", discipline = "astronomy", entityType = "phenomenon", evidence = "documented", era = "1610년", region = "venice", relatedDisciplines = { "physics", "optics" }, relations = { { type = "requires", target = "phy_lens_grinding" }, { type = "relatedTo", target = "ast_moon_phases" } }, tags = { "달", "관측", "천문" } } },
+	{ "calendar_julian", "율리우스력", "Astronomy", "Common", "고대 로마에서 도입된 달력 체계로 4년마다 윤일을 두었다. 16세기 유럽의 날짜 계산에도 사용됐다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "london", { kind = "calendar", topic = "cosmos", discipline = "astronomy", entityType = "convention", evidence = "documented", era = "고대 로마~1582년 이후 일부 지역", region = "london", relatedDisciplines = { "history", "mathematics" }, relations = { { type = "relatedTo", target = "ast_moon_phases" }, { type = "usedIn", target = "relic_logbook" } }, tags = { "달력", "연대", "시간" } } },
+	{ "performance_commedia", "코메디아 델라르테", "Art", "Uncommon", "16세기 이탈리아에서 발달한 즉흥 연극 전통. 정해진 인물 유형과 가면, 상황극을 활용했다.", "항구 기록·현장 조사", 15, 45, 1570, nil, "venice", { kind = "performance", topic = "arts", discipline = "art", entityType = "practice", evidence = "documented", era = "16세기 후반~", region = "venice", relatedDisciplines = { "anthropology", "historiography" }, relations = { { type = "relatedTo", target = "art_theater" }, { type = "associatedWith", target = "relic_mask" } }, tags = { "공연", "연극", "가면" } } },
+	{ "sport_fencing", "르네상스 검술 훈련", "Art", "Common", "16세기 유럽에서 무기를 다루는 기술을 익히던 훈련·경기 관습. 근대 스포츠 규칙과는 구별된다.", "항구 기록·현장 조사", 5, 12, 1517, nil, "london", { kind = "sport", topic = "arts", discipline = "art", entityType = "practice", evidence = "documented", era = "16세기", region = "london", relatedDisciplines = { "military_science", "history" }, relations = { { type = "relatedTo", target = "relic_cutlass" }, { type = "associatedWith", target = "art_theater" } }, tags = { "놀이", "훈련", "검술" } } },
+	{ "math_place_value", "자리값 표기법", "Philosophy", "Common", "숫자의 자리마다 값을 다르게 읽고 0을 사용해 큰 수를 간단히 나타내는 십진수 표기 원리.", "항구 기록·현장 조사", 5, 12, 1517, nil, "venice", { kind = "mathematics", topic = "formal", discipline = "mathematics", entityType = "concept", evidence = "documented", era = "고대~근세", region = "venice", relatedDisciplines = { "linguistics", "commerce" }, relations = { { type = "usedIn", target = "lang_ledger" }, { type = "relatedTo", target = "relic_sundial" } }, tags = { "수학", "숫자", "표기" } } },
+	{ "algorithm_euclidean", "유클리드 호제법", "Philosophy", "Uncommon", "두 자연수의 최대공약수를 나머지를 반복해 구하는 고대 수학 절차. 명확한 단계가 있는 알고리즘의 예다.", "수학 문헌 해독과 학자 보고", 15, 45, 1517, { found = { "math_place_value" }, reported = { "math_place_value" } }, "venice", { kind = "algorithm", topic = "formal", discipline = "mathematics", entityType = "process", evidence = "documented", era = "고대 그리스~근세", region = "venice", relatedDisciplines = { "trigonometry", "commerce" }, relations = { { type = "requires", target = "math_place_value" }, { type = "relatedTo", target = "lang_ledger" } }, tags = { "수학", "계산 절차", "최대공약수" } } },
 	-- [무형 지식 5계열] 항구 현장 발견 → 학자 보고 → 문헌 조사 → 재보고 → 비교 연구.
 	-- 기존 발견 보상·확률·저장키에 손대지 않고 기존 방문/연구 루프에서 단계별 획득한다.
 	{ "lang_port_interview", "항구 상인의 현지어", "Language", "Common", "안트베르펜 상인의 인사말과 거래 용어를 듣고 언어가 물품과 사람에 따라 달라짐을 기록한다.", "현지인과 항구 교류", 5, 12, nil, nil, "antwerp", { kind = "language", discipline = "linguistics", entityType = "intangible", era = "16~18세기", region = "antwerp", relatedDisciplines = { "commerce", "philology" }, relations = { { type = "relatedTo", target = "lang_hanse_trade" }, { type = "locatedAt", target = "port:antwerp" } }, tags = { "언어", "항구", "대화" } } },
@@ -919,7 +946,7 @@ for _, r in Rows do
 end
 
 -- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
--- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 22개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
+-- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 42개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
 -- 학문 7대 영역과 혼동하지 않는다. 시대와 무관한 오브젝트 상위 분류다.
 local WorldGroups = {
 	{ id = "planet", name = "지구·환경" },
@@ -934,6 +961,27 @@ local WorldGroupById = {}
 for _, group in WorldGroups do WorldGroupById[group.id] = group end
 
 local Kinds = {
+	-- [확장 개체 분류] 기존 22종과 별개로 실제/추상 개체 유형 20종을 추가한다.
+	{ id = "person", name = "인물", group = "culture" },
+	{ id = "nation", name = "국가·문명", group = "culture" },
+	{ id = "organization", name = "조직·단체", group = "culture" },
+	{ id = "institution", name = "사회 제도·기관", group = "culture" },
+	{ id = "event", name = "역사 사건", group = "culture" },
+	{ id = "finance", name = "금융·계약", group = "knowledge" },
+	{ id = "food", name = "음식·요리", group = "materials" },
+	{ id = "clothing", name = "의복·복식", group = "culture" },
+	{ id = "information", name = "정보·기호", group = "knowledge" },
+	{ id = "industry", name = "산업·기계", group = "technology" },
+	{ id = "body", name = "인체 기관", group = "life" },
+	{ id = "disease", name = "질병·증상", group = "life" },
+	{ id = "ecosystem", name = "생태계", group = "planet" },
+	{ id = "geology", name = "지층·지질", group = "planet" },
+	{ id = "celestial", name = "천체·우주", group = "planet" },
+	{ id = "calendar", name = "달력·시간 체계", group = "knowledge" },
+	{ id = "performance", name = "공연·연희", group = "culture" },
+	{ id = "sport", name = "놀이·스포츠", group = "culture" },
+	{ id = "mathematics", name = "수학 개념", group = "knowledge" },
+	{ id = "algorithm", name = "알고리즘·절차", group = "knowledge" },
 	-- [인류 무형 지식] 기존 17개 소재 유지 + 의미가 다른 개념/제도 5종 분리.
 	{ id = "language", name = "언어·문자", group = "culture" },
 	{ id = "religion", name = "종교·신앙", group = "culture" },
@@ -950,6 +998,32 @@ local Kinds = {
 }
 local KindById = {}
 for _, kind in Kinds do KindById[kind.id] = kind end
+-- [14대 세계 백과 주제] 학문 7대 분류·지구 오브젝트 7대 영역과 독립된 탐색 축.
+local Topics = {
+	{ id = "people", name = "인물·인류", kinds = { "person" } },
+	{ id = "society", name = "국가·사회", kinds = { "nation", "organization" } },
+	{ id = "history", name = "역사·사건", kinds = { "event", "archive", "relic", "wonder" } },
+	{ id = "economy", name = "경제·금융", kinds = { "goods", "finance" } },
+	{ id = "governance", name = "법·정치", kinds = { "institution", "politics", "law" } },
+	{ id = "lifestyle", name = "생활·문화", kinds = { "food", "clothing", "custom" } },
+	{ id = "communication", name = "언어·정보", kinds = { "language", "information" } },
+	{ id = "beliefs", name = "종교·사상", kinds = { "religion", "legend" } },
+	{ id = "industry", name = "기술·산업", kinds = { "industry", "ship", "building", "military" } },
+	{ id = "health", name = "의학·생명", kinds = { "medicine", "disease", "body" } },
+	{ id = "earth", name = "자연·환경", kinds = { "ecosystem", "geology", "terrain", "mineral", "plant", "animal", "weather", "map" } },
+	{ id = "cosmos", name = "우주·시간", kinds = { "celestial", "calendar" } },
+	{ id = "arts", name = "예술·활동", kinds = { "art", "performance", "sport" } },
+	{ id = "formal", name = "수학·정보학", kinds = { "mathematics", "algorithm", "science" } },
+}
+local TopicById, TopicOfKind = {}, {}
+for _, row in Topics do
+	TopicById[row.id] = row
+	for _, kind in row.kinds do
+		assert(KindById[kind] ~= nil and TopicOfKind[kind] == nil, "중복·미등록 백과 유형: " .. kind)
+		TopicOfKind[kind] = row.id
+	end
+end
+for _, kind in Kinds do assert(TopicOfKind[kind.id] ~= nil, "백과 주제 누락: " .. kind.id) end
 local FieldKind = {
 	Botany = "plant", Zoology = "animal", Mineral = "mineral", Relic = "relic",
 	Site = "wonder", Architecture = "building", Astronomy = "weather", Weather = "weather",
@@ -1012,11 +1086,13 @@ local RelationNames = {
 	usedIn = "활용 연구", studies = "연구 대상", describes = "설계 대상", tradedAs = "교역 자원",
 	locatedAt = "위치", foundAt = "탐험 장소", scholarlySource = "학자 보고",
 	associatedWith = "관련 장소·제도", relatedTo = "연관 지식",
+	belongsTo = "소속", partOf = "구성 요소", causes = "원인", resultsIn = "결과", evolvesInto = "발전", influences = "영향", usesTechnology = "사용 기술",
 }
 local EntityTypes = {
 	class = "종류·개념", place = "실존 장소", process = "연구·과정", taxon = "생물 분류군",
 	design = "설계·도면", substance = "물질·재료", phenomenon = "자연 현상",
 	work = "문헌·작품", legend = "전설·가설", intangible = "무형 지식", practice = "의례·관습", institution = "사회 제도",
+	person = "역사 인물", polity = "국가·정체", organization = "조직", event = "역사 사건", body = "인체 기관", ecosystem = "생태계", convention = "시간·사회 약속", concept = "추상 개념",
 }
 local function entityTypeOf(c: Card): string
 	if c.meta and c.meta.entityType and EntityTypes[c.meta.entityType] then return c.meta.entityType end
@@ -1029,6 +1105,22 @@ local function entityTypeOf(c: Card): string
 	if kind == "legend" then return "legend" end
 	if kind == "archive" or kind == "art" then return "work" end
 	return "class"
+end
+-- [지식 신뢰도] 표시용 분류일 뿐 확정성 보장이나 전투 보너스로 취급하지 않는다.
+local EvidenceNames: { [string]: string } = {
+	documented = "기록·관찰 근거", hypothesis = "학설·가설", legend = "전설·전승",
+	fiction = "게임 속 가상", unreviewed = "근거 미분류",
+}
+local function evidenceOf(c: Card): string
+	if c.meta and c.meta.evidence and EvidenceNames[c.meta.evidence] then return c.meta.evidence end
+	if string.find(c.id, "lost_astheria", 1, true) == 1 then return "fiction" end
+	if c.id == "lost_lemuria" or c.id == "lost_terra_australis" then return "hypothesis" end
+	if c.field == "Myth" or c.field == "Lost" then return "legend" end
+	return "unreviewed"
+end
+local function topicOf(c: Card): string
+	if c.meta and c.meta.topic and TopicById[c.meta.topic] then return c.meta.topic end
+	return TopicOfKind[kindOf(c)]
 end
 local function tagsOf(c: Card): { string }
 	local tags, seen = {}, {}
@@ -1108,6 +1200,12 @@ return {
 	WorldGroupById = WorldGroupById,
 	Kinds = Kinds,
 	KindById = KindById,
+	Topics = Topics,
+	TopicById = TopicById,
+	TopicOfKind = TopicOfKind,
+	topicOf = topicOf,
+	EvidenceNames = EvidenceNames,
+	evidenceOf = evidenceOf,
 	kindOf = kindOf,
 	subkindOf = subkindOf,
 	tagsOf = tagsOf,

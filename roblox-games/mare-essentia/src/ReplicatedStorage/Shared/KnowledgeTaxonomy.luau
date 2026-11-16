@@ -6,6 +6,7 @@
 -- 새 카드 추가 순서는 docs/KNOWLEDGE_TAXONOMY.md 참고.
 local K = require(script.Parent.KnowledgeTree)
 local Cards = require(script.Parent.KnowledgeCards)
+local Ports = require(script.Parent.Ports)
 
 local T = {}
 
@@ -37,6 +38,8 @@ function T.path(cardId: string)
 		region = meta and (meta.region or c.visitPort) or (c and c.visitPort) or nil,
 		relatedDisciplines = meta and meta.relatedDisciplines or K.CardRelatedDisciplines[cardId] or {},
 		prerequisites = needs,
+		topic = c and Cards.topicOf(c) or nil,
+		evidence = c and Cards.evidenceOf(c) or nil,
 	}
 end
 
@@ -55,6 +58,15 @@ function T.audit(): { string }
 	for _, c in Cards.Cards do
 		local meta = c.meta
 		if meta then
+			if meta.topic and not Cards.TopicById[meta.topic] then
+				table.insert(bad, c.id .. ": 백과 주제 없음 " .. meta.topic)
+			end
+			if meta.evidence and not Cards.EvidenceNames[meta.evidence] then
+				table.insert(bad, c.id .. ": 근거 분류 없음 " .. meta.evidence)
+			end
+			if meta.region and not Ports.Ports[meta.region] then
+				table.insert(bad, c.id .. ": 지역 없음 " .. meta.region)
+			end
 			if meta.discipline and not (K.DisciplineById :: any)[meta.discipline] then
 				table.insert(bad, c.id .. ": 활성 학문 없음 " .. meta.discipline)
 			end
@@ -65,6 +77,10 @@ function T.audit(): { string }
 		for _, needId in (c.research and c.research.reported or {}) do
 			if not Cards.ById[needId] then table.insert(bad, c.id .. ": 선행 지식 없음 " .. needId) end
 		end
+	end
+	-- 14개 백과 주제는 기존 42개 소재와 중복 없이 정확히 연결되어야 한다.
+	for _, kind in Cards.Kinds do
+		if not Cards.TopicOfKind[kind.id] then table.insert(bad, "미분류 종류 " .. kind.id) end
 	end
 	for id, sub in T.SubOf do
 		if not Cards.ById[id] then

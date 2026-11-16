@@ -570,13 +570,13 @@ local function extraTests()
 	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
-	-- [지구 백과/확장 학문] 3획득 방식·22소재·활성 학문 57개, 기존 배/설계와 연구 저장 보존
+	-- [지구 백과/확장 학문] 3획득 방식·42소재·활성 학문 57개, 기존 배/설계와 연구 저장 보존
 	do
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
-		check("지식 분류: 22종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 22)
+		check("지식 분류: 42종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 42)
 		check("지식 분류: 지구·인류 큰 영역 7가지", #collection.WorldGroups == 7)
-		check("지식 분류: 소재 22개 모두 상위 영역과 연결", (function()
+		check("지식 분류: 소재 42개 모두 상위 영역과 연결", (function()
 			for _, kind in collection.Kinds do
 				if not collection.WorldGroupById[kind.group] then return false end
 			end
@@ -611,6 +611,93 @@ local function extraTests()
 			check("세부 학문: 기존 카드 참조 유효 " .. id, collection.ById[id] ~= nil and tree.ById[id] ~= nil and #discIds >= 1)
 		end
 		check("학문 확장: 기존 31개 유지 + 무형 학문 5개 활성, 기존 카드 73장 이상 연결", promotedCount == 36 and promotedLinked >= 73 and duplicateAcademy == nil)
+
+		-- [백과 14대 주제/42개 소재] 세계와 학문 분류는 그대로 유지하고 탐색 축만 확장.
+		check("백과 확장: 기존 지구 7개 분류·학문 7개 대분류 보존",
+			#collection.WorldGroups == 7 and #tree.Domains == 7)
+		check("백과 확장: 14대 주제 정상 색인", #collection.Topics == 14)
+		local kindToTopic, topicCoverage, duplicateKind = {}, {}, nil
+		for _, topic in collection.Topics do
+			for _, kindId in topic.kinds do
+				if kindToTopic[kindId] then duplicateKind = kindId end
+				kindToTopic[kindId] = topic.id
+			end
+		end
+		for _, kind in collection.Kinds do
+			if not kindToTopic[kind.id] then duplicateKind = kind.id end
+		end
+		for _, card in collection.Cards do
+			local topicId = collection.topicOf(card)
+			topicCoverage[topicId] = (topicCoverage[topicId] or 0) + 1
+		end
+		check("백과 확장: 소재 분류의 주제 중복·누락 없음", duplicateKind == nil, duplicateKind)
+		local unrepresented = nil
+		for _, topic in collection.Topics do
+			if not topicCoverage[topic.id] then unrepresented = topic.id break end
+		end
+		check("백과 확장: 14개 영역 모두 실제 카드 존재", unrepresented == nil, unrepresented)
+		for id, expected in {
+			person_erasmus = "people", nation_venice = "society", org_hanseatic_league = "society",
+			institution_venetian_senate = "governance", event_constantinople_1453 = "history",
+			finance_bill_exchange = "economy", finance_marine_insurance = "economy",
+			food_sourdough = "lifestyle", clothing_wool_cloak = "lifestyle",
+			information_cipher = "communication", ritual_pilgrimage = "beliefs",
+			industry_print_workshop = "industry", industry_watermill = "industry",
+			body_human_heart = "health", disease_plague = "health", med_blood_circulation = "health",
+			ecosystem_coastal_wetland = "earth", geology_rock_layers = "earth",
+			celestial_lunar_mountains = "cosmos", calendar_julian = "cosmos",
+			performance_commedia = "arts", sport_fencing = "arts",
+			math_place_value = "formal", algorithm_euclidean = "formal",
+		} do
+			local c = collection.ById[id]
+			check("백과 확장: 대표 카드 주제·근거·시대·지역 " .. id,
+				c ~= nil and collection.topicOf(c) == expected and collection.evidenceOf(c) == "documented"
+				and c.meta.region ~= nil and c.meta.era ~= nil and tree.ById[id] ~= nil)
+		end
+		check("백과 근거: 기존 전설·가설·가상과 미분류 구별",
+			collection.evidenceOf(collection.ById.lost_hy_brasil) == "legend"
+			and collection.evidenceOf(collection.ById.lost_lemuria) == "hypothesis"
+			and collection.evidenceOf(collection.ById.lost_astheria_heart) == "fiction"
+			and collection.evidenceOf(collection.ById.bot_oak) == "unreviewed")
+		local study14 = newState("england")
+		study14.portId = "venice"
+		local studyMsgs = {}
+		check("백과 연구: 계산 절차는 자리값 지식 보고 전 잠금",
+			S.Discovery.cardBlockReason(study14, collection.ById.algorithm_euclidean) ~= nil)
+		S.Discovery.grantVisitCards(study14, "venice", studyMsgs)
+		check("백과 연구: 수학 개념 발견 후 보고 전에는 절차 잠금",
+			study14.discovered.math_place_value == true and study14.discovered.algorithm_euclidean ~= true)
+		study14.reported.math_place_value = true
+		S.Discovery.grantVisitCards(study14, "venice", studyMsgs)
+		check("백과 연구: 기존 학자 보고 키로 알고리즘 획득·중복 보상 방지",
+			study14.discovered.algorithm_euclidean == true and S.Discovery.grantVisitCards(study14, "venice", studyMsgs) == 0)
+		study14.portId = "london"
+		check("백과 연구: 1628년 전 혈액순환 기록 잠금",
+			S.Discovery.cardBlockReason(study14, collection.ById.med_blood_circulation) ~= nil)
+		study14.startYear = 1628
+		S.Discovery.grantVisitCards(study14, "london", studyMsgs)
+		check("백과 연구: 심장 관찰 후 학자 보고가 있어야 혈액순환 해금",
+			study14.discovered.body_human_heart == true and study14.discovered.med_blood_circulation ~= true)
+		study14.reported.body_human_heart = true
+		S.Discovery.grantVisitCards(study14, "london", studyMsgs)
+		check("백과 연구: 혈액순환 연구 잠금 해제",
+			study14.discovered.med_blood_circulation == true)
+		local saved14 = S.State.sanitize(S.State.serialize(study14))
+		check("백과 연구: 기존 저장 형식에서 복구", saved14.discovered.algorithm_euclidean == true and saved14.reported.math_place_value == true)
+		local v14 = S.View.build(study14, ctx)
+		check("백과 화면: 14개 주제 분류·근거 집계 표시",
+			#v14.codex.topicList == 14 and v14.codex.topicCounts.formal > 0
+			and v14.codex.evidenceCounts.documented >= 24)
+		local foundMath, hiddenFuture = nil, nil
+		for _, c in v14.codex.cards do
+			if c.id == "algorithm_euclidean" then foundMath = c end
+			if c.id == "performance_commedia" then hiddenFuture = c end
+		end
+		check("백과 화면: 주제·근거·실재 형태·지역·연구 선행과 연결",
+			foundMath and foundMath.topicId == "formal" and foundMath.evidenceId == "documented"
+			and #foundMath.relations > 0 and #foundMath.prerequisites > 0)
+		check("백과 화면: 미발견 카드의 근거 세부사항 비노출",
+			hiddenFuture and not hiddenFuture.found and hiddenFuture.evidenceId == nil)
 		local nextState = newState("england")
 		nextState.reported.bot_oak = true
 		check("학문 숙련: 기존 식물학 원본 주학문은 그대로", tree.ById.bot_oak.disc == "botany")

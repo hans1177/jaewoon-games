@@ -16,6 +16,26 @@ return function(D, S)
 		mineral = { "mineralogy", "chemistry", "geography" },
 		relic = { "archaeology", "history", "physics" },
 		archive = { "linguistics", "history", "philosophy" },
+		person = { "history", "philosophy", "anthropology" },
+		nation = { "history", "political_science", "commerce" },
+		organization = { "commerce", "history", "political_science" },
+		institution = { "political_science", "law", "history" },
+		event = { "history", "political_science", "historiography" },
+		finance = { "economics", "commerce", "law" },
+		food = { "agronomy", "botany", "anthropology" },
+		clothing = { "textiles", "anthropology", "commerce" },
+		information = { "linguistics", "mathematics", "philology" },
+		industry = { "mechanics", "physics", "commerce" },
+		body = { "medicine", "biology", "history" },
+		disease = { "public_health", "medicine", "history" },
+		ecosystem = { "ecology", "geography", "zoology" },
+		geology = { "geology", "mineralogy", "geography" },
+		celestial = { "astronomy", "optics", "physics" },
+		calendar = { "astronomy", "history", "mathematics" },
+		performance = { "art", "anthropology", "history" },
+		sport = { "art", "military_science", "history" },
+		mathematics = { "mathematics", "linguistics", "commerce" },
+		algorithm = { "mathematics", "logic", "commerce" },
 		language = { "linguistics", "philology", "history" },
 		religion = { "religious_studies", "anthropology", "history" },
 		politics = { "political_science", "history", "law" },
@@ -560,7 +580,7 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {} }
+		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {}, topicCounts = {}, evidenceCounts = {} }
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc
@@ -645,7 +665,11 @@ return function(D, S)
 			local disc = (cardNode and D.KnowledgeTree.DisciplineById[cardNode.disc]) or fieldDiscipline[c.field]
 			local domain = disc and D.KnowledgeTree.TaxonomyById[disc.id] and D.KnowledgeTree.TaxonomyById[disc.id].domain
 			local defKind = D.Cards.KindById[kind]
+			local topicId = D.Cards.topicOf(c)
+			local evidenceId = D.Cards.evidenceOf(c)
 			local worldId = defKind and defKind.group or "culture"
+			view.codex.topicCounts[topicId] = (view.codex.topicCounts[topicId] or 0) + 1
+			view.codex.evidenceCounts[evidenceId] = (view.codex.evidenceCounts[evidenceId] or 0) + 1
 			view.codex.worldCounts[worldId] = (view.codex.worldCounts[worldId] or 0) + 1
 			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
 				pair[1][pair[2]] = (pair[1][pair[2]] or 0) + 1
@@ -659,6 +683,11 @@ return function(D, S)
 				method = method,
 				kind = kind,
 				kindName = defKind and defKind.name or "기타",
+				topicId = topicId,
+				topic = D.Cards.TopicById[topicId] and D.Cards.TopicById[topicId].name or "기타",
+				-- [검증 분리] 미발견 카드의 근거 세부 사항은 공개하지 않는다.
+				evidenceId = if found then evidenceId else nil,
+				evidence = if found then D.Cards.EvidenceNames[evidenceId] else nil,
 				entityType = D.Cards.EntityTypes[D.Cards.entityTypeOf(c)] or "개체",
 				tags = if found then D.Cards.tagsOf(c) else {},
 				aliases = if found and c.meta then c.meta.aliases or {} else {},
@@ -704,6 +733,8 @@ return function(D, S)
 			end
 			view.codex.overall = overall
 			view.codex.kindList = D.Cards.Kinds
+			view.codex.topicList = D.Cards.Topics
+			view.codex.evidenceList = D.Cards.EvidenceNames
 			view.codex.worldGroups = D.Cards.WorldGroups
 			view.codex.resourceKinds = D.Ports.ResourceKinds
 			local resourceKindNames = {}
