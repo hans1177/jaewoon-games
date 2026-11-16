@@ -2793,7 +2793,14 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
               console.log('STUDIO_SCRIPT_POST_CLICK_UI_PROBE_OK='+name+':'+out.replace(/\s+/g,' ').slice(0,120));
             }
           }
-          const out=await luau(st.ctx||'Client',st.code);
+          // [스튜디오 통신] 긴 대기 검증은 단계별 상한을 적용한다. 기본 45초 제한은 그대로 둔다.
+          const originalTimeoutMs=client.timeoutMs;
+          const requestedTimeoutMs=Number(st.timeoutMs);
+          if(Number.isFinite(requestedTimeoutMs)&&requestedTimeoutMs>originalTimeoutMs)
+            client.timeoutMs=Math.min(90000,Math.floor(requestedTimeoutMs));
+          let out;
+          try{out=await luau(st.ctx||'Client',st.code);}
+          finally{client.timeoutMs=originalTimeoutMs;}
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
         }else if(st.type==='click_text'||st.type==='click_from_luau'){
           const code=st.type==='click_text'
