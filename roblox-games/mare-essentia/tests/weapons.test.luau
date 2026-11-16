@@ -1,6 +1,7 @@
 --!strict
 local W = require("./Shared/Weapons")
 local J = require("./Shared/JobSkills")
+local Sp = require("./Shared/Specialties")
 local passed, failed = 0, 0
 local function check(name: string, ok: boolean)
 	if ok then
@@ -36,6 +37,21 @@ end
 check("직업별 무기 데이터 유효", allOk)
 check("성직자·의사는 다른 장비", W.allyWeapon("clergy").id ~= W.allyWeapon("doctor").id)
 check("주인공 자유 무기 선택 유지", W.playerChoices() == W.List and ids.bow)
+-- [집안별 탐험 무기] 기존 시작 집안 10종 모두 실제 승인 모델 무기만 사용하고, 전투 능력치와 저장은 건드리지 않는다.
+local originExpected = {
+	farmer = "axe", noble = "sword", merchant = "dagger", sailor = "sword",
+	soldier = "crossbow", scholar = "bow", cook = "dagger", doctor = "mace",
+	craftsman = "mace", clergy = "fist",
+}
+check("집안 기본 무기 10종 모두 정의", #Sp.Origins == 10)
+for _, origin in Sp.Origins do
+	local choice = W.originWeapon(origin.id, 1517)
+	check("집안별 시작 무기: " .. origin.name, choice.id == originExpected[origin.id]
+		and (choice.id == "fist" or choice.model ~= nil))
+end
+check("군인 집안 1517년은 실물 석궁", W.originWeapon("soldier", 1517).id == "crossbow")
+check("군인 집안 1680년 이후는 실물 수석총", W.originWeapon("soldier", 1680).id == "flintlock_musket")
+check("기존 저장 출신 누락은 기본 검", W.originWeapon(nil, 1700).id == "sword")
 check("지역형 무기 20종 이상", #W.Regional >= 20)
 local allIds: { [string]: boolean } = {}
 local variantOk = true
