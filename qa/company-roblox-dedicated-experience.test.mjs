@@ -1245,3 +1245,67 @@ test('Mare ship original source hash and dedicated ship class boundaries',()=>{
   assert.ok(!battle.includes('caravel-custom') && !battle.includes('cog-custom'), 'unverified originals may not enter battle');
   assert.ok(!port.includes('caravel-custom') && !port.includes('cog-custom'), 'unverified originals may not enter harbor');
 });
+
+
+// [함종 원본 검증] 각 함종에 맞는 CC0 원본 바이너리 선확보·개조·출처를 기존 검사에 포함한다.
+test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
+  const root='roblox-games/mare-essentia';
+  const cases=[
+    ['xebec','naval/ship-pirate-medium.glb','pirate-kit',6,true],
+    ['brigantine','naval/ship-medium.glb','pirate-kit',6,true],
+    ['fluyt','naval/ship-large.glb','pirate-kit',6,true],
+    ['pirogue','terrain/canoe.glb','nature-kit',1,false],
+  ];
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const parseGlb=(data,label)=>{
+    assert.equal(data.subarray(0,4).toString('utf8'),'glTF',label+' header');
+    assert.equal(data.readUInt32LE(4),2,label+' format');
+    assert.equal(data.readUInt32LE(8),data.length,label+' byte length');
+    const jsonLength=data.readUInt32LE(12);
+    assert.equal(data.readUInt32LE(16),0x4e4f534a,label+' JSON chunk');
+    const gltf=JSON.parse(data.subarray(20,20+jsonLength).toString('utf8'));
+    const binOffset=28+jsonLength;
+    assert.equal(data.readUInt32LE(24+jsonLength),0x004e4942,label+' BIN chunk');
+    const binLength=data.readUInt32LE(20+jsonLength);
+    assert.equal(binOffset+binLength,data.length,label+' BIN length');
+    assert.ok(gltf.buffers[0].byteLength<=binLength,label+' glTF buffer bounds');
+    for(const view of gltf.bufferViews){
+      assert.ok((view.byteOffset||0)+view.byteLength<=gltf.buffers[0].byteLength,label+' view outside buffer');
+    }
+    return {gltf,bin:data.subarray(binOffset,binOffset+binLength)};
+  };
+  for(const [ship,source,pack,originalMeshCount,hasSail] of cases){
+    const original=fs.readFileSync(root+'/assets/'+source);
+    const file=root+'/assets/naval/'+ship+'-custom.glb';
+    const data=fs.readFileSync(file);
+    const meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const before=parseGlb(original,ship+' source');
+    const after=parseGlb(data,ship+' custom');
+    const originalBlob=createHash('sha1').update('blob '+original.length+'\\0').update(original).digest('hex');
+    assert.equal(meta.license,'CC0-1.0',ship+' license');
+    assert.equal(meta.author,'Kenney',ship+' author');
+    assert.equal(meta.source,'https://kenney.nl/assets/'+pack,ship+' pack');
+    assert.equal(meta.sourceAsset,root+'/assets/'+source,ship+' original path');
+    assert.equal(meta.sourceGitBlobSha,originalBlob,ship+' original Git blob');
+    assert.equal(meta.originalSha256,createHash('sha256').update(original).digest('hex'),ship+' source SHA256');
+    assert.equal(meta.sourceSha256,createHash('sha256').update(data).digest('hex'),ship+' derived SHA256');
+    assert.equal(after.gltf.meshes.length>originalMeshCount,true,ship+' rebuilt geometry');
+    assert.equal(before.gltf.meshes.length,originalMeshCount,ship+' original mesh baseline');
+    assert.deepEqual(after.gltf.meshes.slice(0,originalMeshCount),before.gltf.meshes,ship+' source mesh must survive');
+    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin,ship+' original binary must survive');
+    const extra=after.gltf.meshes.slice(originalMeshCount);
+    const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
+    assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
+    assert.ok(addedTriangles>=300,ship+' geometry changes too small');
+    assert.equal(extra.some(m=>m.name.includes(' cloth')),hasSail,ship+' historically correct sail boundaries');
+    assert.equal(meta.authenticOriginalBinaryVerified,true);
+    assert.equal(meta.originalMeshesPreserved,true);
+    assert.equal(meta.structuralGlbVerified,true);
+    assert.equal(meta.actualRobloxRuntimeVerified,false);
+    assert.equal(meta.visualQualityApproved,false);
+    assert.equal(meta.robloxPublishedVerified,false);
+    assert.ok(!port.includes(ship+'-custom'),ship+' unverified harbor art must not activate');
+    assert.ok(!battle.includes(ship+'-custom'),ship+' unverified battle art must not activate');
+  }
+});
