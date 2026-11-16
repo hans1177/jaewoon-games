@@ -811,7 +811,7 @@ local function extraTests()
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
 		check("도감: 세 방식과 57개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 57 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
-		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
+		check("도감: 원료·가공품·지역 브랜드가 실제 상품 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount + brandCount and #v.codex.worldGroups == 7)
 
 		local cardById = {}
 		local namedSubjects = {}
