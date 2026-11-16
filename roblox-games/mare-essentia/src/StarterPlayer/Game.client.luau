@@ -7193,7 +7193,7 @@ local function renderCodexOverview()
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
 		}, 54)
 	end)
-	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 51, cx.plannedDisciplineCount or 0)) end)
+	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 52, cx.plannedDisciplineCount or 0)) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
