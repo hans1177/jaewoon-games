@@ -1225,7 +1225,7 @@ test('stale runtime sentinel keeps only exact current Open Cloud server boot and
 });
 
 
-test('central policy keeps runtime and Studio optional while code and static QA drive Roblox continuation',()=>{
+test('central policy requires Studio for release while code and static QA drive Roblox continuation',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
  const verify=roadmap.roblox?.developmentVerification||{};
@@ -1248,7 +1248,8 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+  // [실제 워크플로] Studio 계획은 취소되지 않은 현행 게임에 한정하며 기존 릴리스 증거를 유지한다.
+  assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
@@ -1274,14 +1275,15 @@ test('F9 consumes exact deferred engine evidence without requiring Studio actual
 });
 
 
-test('runtime QA validates Cloud independently while optional Studio is exact opt-in',()=>{
+test('runtime QA validates Cloud independently and preserves required Studio eligibility',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
  assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
-  assert.match(workflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(workflow,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
+  assert.match(workflow,/if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
