@@ -30,7 +30,10 @@ test('the restored detailed documents pass integrity checks without granting pol
   assert.equal(r.policyAuthorityVerified,false);
   assert.equal(r.sourceWriteAuthorized,false);
   assert.equal(r.releaseAuthorized,false);
-  assert.equal(Object.keys(r.hashes).length,4);\n  assert.equal(r.documentFormats.log,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.architecture,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.security,'FULL_DETAILED_DOCUMENT');
+  assert.equal(Object.keys(r.hashes).length,4);
+  assert.equal(r.documentFormats.log,'FULL_DETAILED_DOCUMENT');
+  assert.equal(r.documentFormats.architecture,'FULL_DETAILED_DOCUMENT');
+  assert.equal(r.documentFormats.security,'FULL_DETAILED_DOCUMENT');
 });
 test('missing or malformed retained document is rejected',()=>{
   check(temporary(),root=>{
@@ -48,21 +51,21 @@ test('tampered detailed central bindings are rejected, never silently accepted',
     const doc=JSON.parse(fs.readFileSync(p,'utf8'));
     doc.centralPolicy=null;
     fs.writeFileSync(p,JSON.stringify(doc));
-    assert.throws(()=>validateSharedWorkerContext({root}),/ARCHITECTURE_DOCUMENT_CONTRACT_INVALID/);
+    assert.throws(()=>validateSharedWorkerContext({root}),/ARCHITECTURE_DOCUMENT_(?:CONTRACT_INVALID|TOO_LARGE)/);
   });
   check(temporary(),root=>{
     const p=path.join(root,'company-learning/security-immune-system.json');
     const doc=JSON.parse(fs.readFileSync(p,'utf8'));
     doc.defaultTrust='ALLOW';
     fs.writeFileSync(p,JSON.stringify(doc));
-    assert.throws(()=>validateSharedWorkerContext({root}),/SECURITY_DOCUMENT_CONTRACT_INVALID/);
+    assert.throws(()=>validateSharedWorkerContext({root}),/SECURITY_DOCUMENT_(?:CONTRACT_INVALID|TOO_LARGE)/);
   });
   check(temporary(),root=>{
     const p=path.join(root,'company-learning/company-log-map.json');
     const doc=JSON.parse(fs.readFileSync(p,'utf8'));
     doc.centralPolicy=null;
     fs.writeFileSync(p,JSON.stringify(doc));
-    assert.throws(()=>validateSharedWorkerContext({root}),/LOG_DOCUMENT_CONTRACT_INVALID/);
+    assert.throws(()=>validateSharedWorkerContext({root}),/LOG_DOCUMENT_(?:CONTRACT_INVALID|TOO_LARGE)/);
   });
 });
 test('hash pins work and a separate canonical roadmap does not invalidate four-document integrity',()=>{

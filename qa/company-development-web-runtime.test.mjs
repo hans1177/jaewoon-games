@@ -321,12 +321,13 @@ test('long native builds never serialize unrelated Unity Web or development-conf
   assert.equal(roadmap.developmentSpeedExecution.globalOrchestrationSerializationForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.longRunningNativeBuildMayNotBlockUnityWebDevelopment,true);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.orchestrationConcurrency.globalSerializationForbidden,true);
-  // The architecture map is now a deliberately minimal, non-executable summary.
-  // Parallelism authority remains the canonical roadmap and real workflow.
-  assert.equal(arch.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  // [중앙문서] 병렬 실행 권한은 중앙정책과 실제 워크플로가 유지하며 구조 지도는 실행 계약과 일치해야 한다.
+  assert.equal(arch.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(arch.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.equal(arch.branches.main.directGameWorkerWrite,false);
-  assert.equal(arch.branches['company-runtime'].role,'DURABLE_STATE');
-  assert.equal(arch.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(arch.branches['company-runtime'].role,'COMPANY_RUNTIME_STATE');
+  assert.equal(arch.branches['company-runtime'].policyCreationForbidden,true);
+  assert.match(arch.constitutionalEnforcement.mode,/^EXECUTABLE_FAIL_CLOSED/);
   assert.equal(roadmap.finalDevelopmentLock.parallelismBoundary.stageWideRepositorySerializationForbidden,true);
   assert.equal(roadmap.finalDevelopmentLock.parallelismBoundary.distinctGamesMustRemainParallel,true);
 });

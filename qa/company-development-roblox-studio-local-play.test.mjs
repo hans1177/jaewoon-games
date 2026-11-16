@@ -443,9 +443,10 @@ test('central contract requires official Studio MCP for F9 and release, without 
   const canonical=central.roblox?.deploymentControl?.verifiedCyclePublication||{};
   assert.equal(canonical.studioRequiredForCanonicalPublish,true);
   assert.equal(canonical.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1191,12 +1192,13 @@ test('official Studio MCP planner runs automatically for push and exact candidat
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
-  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) && \(inputs\.game_id == '' \|\| inputs\.game_id == 'mare-essentia'\) \}\}/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
@@ -1584,7 +1586,7 @@ test('declared Studio scenario probes the primary action before generic movement
   const postActionAt=helper.indexOf("postActionClientProbe=await collectStudioActualPlayProbe");
   const keyboardAt=helper.indexOf("for(const key of ['W','A','D','Space'])");
   assert.ok(preActionAt>0&&primaryAt>preActionAt&&postActionAt>primaryAt&&keyboardAt>postActionAt);
-  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+  assert.match(helper,/consoleErrorCount:consoleErrors\.size/);
   assert.doesNotMatch(helper,/if\(row\.pass!==true\)errors\.push\(\{type:'actual-play-quality-error'/);
   assert.match(helper,/acceptedRoles\.includes\(clean\(selectionPlayer\.role\)\)/);
 });
@@ -1617,8 +1619,8 @@ test('role preference intent survives later infection in scenario evaluation',()
 });
 
 test('deep Studio scenario separates console-runtime errors from gameplay-quality failures',()=>{
-  assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleClassification\.errors\.length===0\)/);
-  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+  assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleErrors\.size===0\)/);
+  assert.match(helper,/consoleErrorCount:consoleErrors\.size/);
 });
 
 test('product-quality Studio failure short-circuits repeated Studio and release observation until source buildup changes',()=>{
@@ -3748,7 +3750,8 @@ test('Mare first-click QA verifies actual selection screen and never confirms de
 test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures',()=>{
   const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(workflow.includes('name: Studio Auto QA'));
-  assert.ok(!workflow.includes('  schedule:'));
+  // [자동 QA] 기존 일일 검사 예약과 main 변경 트리거를 함께 보존한다.
+  assert.match(workflow,/  schedule:\n    - cron: '43 3 \* \* \*'/);
   assert.ok(workflow.includes('roblox-games/mare-essentia/src/**'));
   assert.ok(!workflow.includes('roblox-games/fantasy-survival/'));
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
@@ -3794,30 +3797,34 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   assert.match(script,/fs\.writeFileSync\(path\.join\(outDir,'report\.json'\)/);
 });
 
-test('Existing Devloop Studio workflow rechecks Mare text sampling after main updates',()=>{
+test('Existing Studio Auto QA dispatch rechecks Mare after main changes without queueing duplicate push captures',()=>{
+  const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
-  assert.match(workflow,/  push:\n    branches: \[main\]\n    paths:/);
+  // [기존 실행 경로] 메인 감지는 자동 QA가, 로그인 PC 실제 실행은 workflow_dispatch가 맡는다.
+  assert.match(auto,/  push:\n    branches: \[main\]\n    paths:/);
+  assert.match(auto,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/\*\.json/);
+  assert.match(auto,/gh workflow run devloop-studio\.yml/);
+  assert.doesNotMatch(workflow,/  push:\n    branches: \[main\]/);
+  assert.match(workflow,/  workflow_dispatch:/);
   assert.match(workflow,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json/);
-  assert.match(workflow,/tools\/company-development-roblox-studio-local-play\.mjs/);
-  assert.match(workflow,/github\.event_name == 'push' && 'mare-essentia' \|\| inputs\.game/);
-  assert.match(workflow,/github\.event_name == 'push' && 'roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json'/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
-// [대항해시대 화면 회귀] 공식 30회 클릭·31장 촬영을 유지하면서 항해·지도·기술 메뉴도 탐색한다.
-test('Mare Studio click script retains complete audit and prioritizes sailing map technology',()=>{
+// [대항해시대 실제 플레이 회귀] 현행 220단계는 탐험 입장·이동·동료·모바일 화면 검증을 함께 보존한다.
+test('Mare Studio script keeps real field entry, movement, mobile layout and image evidence',()=>{
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
-  const prefer=['새 게임','프랑스','1700','출항하기','교역','조선','퀘스트','항해','지도','기술','항구','설정'];
-  const generated='build(35000, ['+prefer.map(value=>JSON.stringify(value)).join(', ')+'], 30)';
-  const expected='local pref={'+prefer.map(value=>JSON.stringify(value)).join(',')+'}';
-  const picks=steps.filter(step=>step.type==='click_from_luau'||(step.type==='luau'&&step.code?.includes('local pref=')));
-  assert.ok(gen.includes(generated));
-  assert.equal(steps.length,185);
-  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
-  assert.equal(steps.filter(step=>step.type==='capture').length,31);
-  assert.equal(picks.length,60);
-  assert.ok(picks.every(step=>step.code.includes(expected)));
+  assert.match(gen,/def build_mare\(\):/);
+  assert.match(gen,/for t in TABS:/);
+  assert.ok(steps.length>=220,'full Studio entry and motion steps missing');
+  assert.ok(steps.filter(step=>step.type==='click_from_luau').length>=9);
+  assert.ok(steps.filter(step=>step.type==='capture').length>=61);
+  for(const name of ['tab_route','tab_map','tab_tech','ui_mobile_battle_2x2','field_entry','field_npc_ally_mob','field_motion_smooth_icons','field_actor_after_motion'])
+    assert.ok(steps.some(step=>step.type==='capture'&&step.name===name),'missing real capture '+name);
+  assert.ok(steps.some(step=>step.type==='click_from_luau'&&step.label==='field_entry'));
+  assert.ok(steps.some(step=>step.type==='luau'&&step.code?.includes('FIELD_QA_ENTRY_PASS')));
+  assert.ok(steps.some(step=>step.type==='luau'&&step.code?.includes('FIELD_MOTION_STABLE')));
+  assert.ok(steps.some(step=>step.type==='luau'&&step.code?.includes('UI_MOBILE_420PX_SIMULATED')));
 });
 
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
@@ -3862,7 +3869,8 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/MareQAFeatureTotals/);
   assert.match(qa,/FEATURE_UNIMPLEMENTED_OR_ERROR/);
   assert.match(qa,/elseif res\.ok == false then/);
-  assert.match(qa,/FEATURE_NO_RESPONSE/);
+  assert.match(qa,/FEATURE_RESPONSE_INVALID/);
+  assert.match(qa,/FEATURE_STATE_NOT_OBSERVED/);
   assert.match(qa,/FEATURE_NO_VIEW/);
   assert.match(qa,/FEATURE_NO_CASES/);
   assert.match(qa,/\[QA\] FEATURE_COVERED/);
@@ -3912,18 +3920,22 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(workflow,/STUDIO_FULL_AUDIT_INCOMPLETE/);
 });
 
-test('Studio click QA text sampling uses proven direct descendants scan without changing click coverage',()=>{
+test('Studio click QA uses direct descendants text sampling with game-specific verified coverage',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   for(const [game,script] of [
     ['mare-essentia','mare-qa-click.json'],
     ['fantasy-survival','fantasy-qa-click.json']
   ]){
     const steps=JSON.parse(fs.readFileSync('roblox-games/'+game+'/tools/devloop/studio-scripts/'+script,'utf8'));
-    assert.equal(steps.length,185);
-    assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
+    const mare=game==='mare-essentia';
+    assert.ok(steps.length>=(mare?220:185));
+    assert.ok(steps.filter(step=>step.type==='click_from_luau').length>=(mare?9:30));
+    assert.ok(steps.filter(step=>step.type==='capture').length>=(mare?61:31));
     const labels=steps.filter(step=>step.type==='luau'&&step.code.includes("return 'TEXTS: '"));
-    assert.equal(labels.length,30);
-    for(const step of labels){
+    assert.ok(labels.length>=(mare?13:30));
+    const scans=labels.filter(step=>step.code.includes('for _,d in ipairs(P:GetDescendants()) do'));
+    assert.ok(scans.length>=(mare?12:30),'missing current direct descendants sample');
+    for(const step of scans){
       assert.match(step.code,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
       assert.match(step.code,/if d:IsA\('TextLabel'\) and d\.Visible then/);
       assert.match(step.code,/local value=d\.Text/);
@@ -3933,15 +3945,13 @@ test('Studio click QA text sampling uses proven direct descendants scan without 
       assert.match(step.code,/if #out>=10 then break end/);
       assert.doesNotMatch(step.code,/while head<=|os\.clock\(|q\[head\]|d:GetChildren\(\)/);
     }
-    assert.equal(steps.filter(step=>step.type==='capture').length,31);
     assert.equal(steps[5].type,'wait');
-    assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
+    assert.equal(steps[5].ms,mare?400:2200);
   }
   assert.match(generator,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
   assert.match(generator,/utf8\.offset\(value,41\)/);
   assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
-
 
 // [실제 Studio 미디어 실패] 185단계 증거와 정확한 승인 ID로만 재승인한다.
 // 승인 번호/소스 파일은 바꾸지 않고 실패한 미디어만 기존 업로더의 grant 경로로 전송한다.

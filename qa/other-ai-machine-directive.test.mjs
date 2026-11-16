@@ -31,10 +31,11 @@ const canonicalReads=[
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
-assert.equal(architecture.centralPolicy,null);
+assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
+assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+assert.equal(architecture.branches.main.directGameWorkerWrite,false);
 assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
-assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-// The compact architecture summary does not duplicate the ordered non-authoritative reads.
+// [실행형 아키텍처] 비권위 AI 지침은 중앙정책을 대신하거나 순서를 바꿀 수 없다.
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
 assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
@@ -49,7 +50,8 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+assert.equal(security.policyFile,'company-learning/security-immune-system.json');
+assert.equal(security.centralRoadmapBinding.centralPolicy,'company-learning/platform-release-roadmap.json');
 assert.equal(security.policyFile,'company-learning/security-immune-system.json');
 assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 
