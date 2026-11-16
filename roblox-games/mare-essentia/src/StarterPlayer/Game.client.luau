@@ -4413,7 +4413,7 @@ function RENDERERS.harbor()
 			for _, news in ipairs(press.rows or {}) do
 				add(function()
 					return mkRow(content, "[" .. news.categoryName .. "] " .. news.title,
-						news.confidence .. " · " .. news.daysOld .. "일 전 사건\n" .. news.detail, {}, 83)
+						news.confidence .. " · " .. news.origin .. " · " .. news.daysOld .. "일 전 사건\n" .. news.detail, {}, 83)
 				end)
 			end
 		else
@@ -4828,7 +4828,7 @@ function RENDERERS.crew()
 		for i, item in ipairs(view.companionNews.rows or {}) do
 			if i > 4 then break end
 			add(function() return mkRow(content, "[" .. item.categoryName .. "] " .. item.title,
-					item.detail .. " · " .. item.confidence .. " · " .. item.daysOld .. "일 전", {}, 78) end)
+					item.detail .. " · " .. item.confidence .. " · " .. item.origin .. " · " .. item.daysOld .. "일 전", {}, 78) end)
 		end
 	end
 
@@ -8316,7 +8316,7 @@ function RENDERERS.board()
 			for i, item in ipairs(news.rows) do
 				if i > 5 then break end
 				add(function() return mkRow(content, "[" .. item.categoryName .. "·" .. item.confidence .. "] " .. item.title,
-					item.detail .. " · " .. item.daysOld .. "일 전 사건", {}, 75) end)
+					item.origin .. " · " .. item.daysOld .. "일 전 사건\n" .. item.detail, {}, 75) end)
 			end
 		end
 	end
