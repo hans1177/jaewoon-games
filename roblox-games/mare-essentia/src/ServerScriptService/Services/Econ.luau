@@ -77,6 +77,12 @@ return function(D, S)
 				node.disciplineName = disc and disc.name or node.discipline
 			end
 		end
+		local specialties = E.specialtyView(t)
+		for _, specialty in ipairs(specialties) do
+			local disc = specialty.research and D.KnowledgeTree
+				and D.KnowledgeTree.DisciplineById[specialty.research]
+			specialty.researchName = disc and disc.name or specialty.research
+		end
 		local industries = E.industryView(t, w)
 		for _, industry in ipairs(industries) do
 			local disc = D.KnowledgeTree and D.KnowledgeTree.DisciplineById[industry.research]
@@ -95,7 +101,7 @@ return function(D, S)
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
-			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = E.specialtyView(t), industries = industries,
+			day = w.day, year = math.floor(E.year(w)), technology = technology, specialties = specialties, industries = industries,
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
