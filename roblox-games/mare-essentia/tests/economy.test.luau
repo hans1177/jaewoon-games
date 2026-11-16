@@ -47,6 +47,31 @@ do
 	for _, l in ipairs(z.log) do if l.id == "london_plague" then seen = true end end
 	check("1665년이 되면 런던 대역병 발생", seen)
 end
+-- [역사 백과사전 ↔ 공유 경제] 인물·정치·문화·종교를 실제 항구 사회 변화로 연결.
+do
+	local x = Eco.newWorld({ seed = 50, year = 1688 })
+	local seen = {}
+	for _, ev in ipairs(x.shocks) do seen[ev.id] = ev end
+	check("명예혁명 공유 경제 연동", seen.civil_glorious_revolution ~= nil)
+	check("연표 인물·원본 사건 연결", seen.civil_glorious_revolution
+		and seen.civil_glorious_revolution.sourceEvent == "glorious_revolution"
+		and type(seen.civil_glorious_revolution.people) == "table")
+	local london, paris = x.towns.london, x.towns.paris
+	Eco.run(x, 35)
+	check("혁명·금융 영향은 해당 국가에 집중", london.society.civic > 0.01 and paris.society.civic < 0.001)
+	check("도시마다 백과 연결 사건 조회", #Eco.activeHistory(x, "london") > 0)
+	check("해당되지 않는 도시의 사회금융 효과는 없음", paris.society.finance == 0)
+	local snap, y = Eco.snapshot(x), nil
+	y = Eco.restoreWorld(snap)
+	check("기존 스키마 유지·사회 상태 복구", snap.schema == 1 and y
+		and y.towns.london.society.civic == london.society.civic and #y.log == #x.log)
+	local count = #x.shocks
+	local event = { id = "custom_storm", title = "storm", tag = "자연재해", days = 50 }
+	local first = Eco.addShock(x, Eco.shockFromEvent(event, "europe"))
+	local second = Eco.addShock(x, Eco.shockFromEvent(event, "europe"))
+	check("다중 접속 중복 경제충격 방지", first == true and second == false and #x.shocks == count + 1)
+	check("다른 지역의 같은 사건은 독립 반영", Eco.addShock(x, Eco.shockFromEvent(event, "indian")) == true)
+end
 -- 호황/불황 진동
 do
 	local c = { seed = 11, cycle = { x = 0, v = 0, lvl = {}, reg = { europe = { x = 0, v = 0 } } } }
