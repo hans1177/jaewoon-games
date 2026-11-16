@@ -62,6 +62,11 @@ local visualScenarios = {
 	{ id = "lisbon", level = 5, farm = 40, workshop = 22, school = 7, palace = true },
 	{ id = "amsterdam", level = 4, farm = 27, workshop = 12, school = 4 },
 	{ id = "nagasaki", level = 2, farm = 7, workshop = 3, school = 0 },
+	-- [지역 항만 필지] 조선소 없는 해안, 인도양, 북유럽도 현지 생산품·경계 표식 빌드.
+	{ id = "busan", level = 3, farm = 10, workshop = 2, school = 1, shipyard = false },
+	{ id = "zanzibar", level = 4, farm = 14, workshop = 6, school = 2, shipyard = false },
+	{ id = "calicut", level = 3, farm = 12, workshop = 6, school = 1, shipyard = false },
+	{ id = "stockholm", level = 3, farm = 6, workshop = 4, school = 1, shipyard = false },
 }
 local visualsBuilt = 0
 for _, scenario in visualScenarios do
@@ -82,7 +87,7 @@ for _, scenario in visualScenarios do
 	local ok, err = pcall(function()
 		PortScene.build({
 			portId = scenario.id, portName = scenario.id, level = scenario.level,
-			shipId = "galleon", hasShipyard = true,
+			shipId = "galleon", hasShipyard = scenario.shipyard ~= false,
 			facilities = if scenario.palace then { "bank", "guild", "palace", "harbormaster" } else { "bank", "guild", "harbormaster" },
 			storyCount = 0, companions = {}, year = 1700, day = 1000,
 			development = { level = scenario.level, blocks = 110 },
@@ -108,6 +113,8 @@ for _, must in {
 	-- [항만 발전 스모크] 등록된 실제 잔교/선박/신호/하역기/경비탑이 단계별 건설 경로에서 쓰여야 한다.
 	"Naval/structure-platform-dock-small", "Naval/boat-sail-a", "Naval/pulley-crate",
 	"Naval/flag-high-pennant", "Naval/tower-complete-small",
+	-- [실제 필지/문화권 회귀] 출항 부표·경계 표지와 해당 지역 생산품 요청.
+	"Naval/buoy", "Town/fence_post", "Cargo/rice", "Cargo/ivory",
 } do
 	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
 end
