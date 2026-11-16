@@ -2390,15 +2390,49 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- [두 무기 빠른 교체] 현재 사용 중인 무기와 보조 무기만 번갈아 선택한다. 기존 다른 무기 정의·동료 장비는 유지.
+	-- [탐험 무기] 기존 두 무기 빠른 교체는 유지하고, 보조 슬롯에서 등록된 실물 무기를 선택한다.
+	-- 기존 무기 정의의 공격력/속도/사거리만 쓰며, 등록되지 않은 외형을 가짜로 장착하지 않는다.
 	do
+		local availableWeapons = {}
+		for _, candidate in Weapons.playerChoices() do
+			if candidate.family == "fist" or (candidate.model and AssetIds["Relics/" .. candidate.model]) then
+				table.insert(availableWeapons, candidate)
+			end
+		end
+		-- 수석식 총기 실물은 해당 역사 시기에서만 보조 슬롯에 제공한다.
+		if type(opts.year) == "number" and opts.year >= 1680 then
+			for _, candidate in Weapons.Regional do
+				if candidate.model and AssetIds["Relics/" .. candidate.model] then
+					table.insert(availableWeapons, candidate)
+				end
+			end
+		end
 		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -315), Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn.TextSize = 13
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
+		local chooseBtn = btn(gui, "보조: " .. reserveWeapon.name, Color3.fromRGB(69, 100, 89), UDim2.fromOffset(126, 40), UDim2.new(0, 80, 1, -218), Vector2.new(0.5, 0.5))
+		chooseBtn.Name = "FieldWeaponSelect"
+		chooseBtn.TextSize = 13
+		chooseBtn:SetAttribute("AvailableWeaponCount", #availableWeapons)
+		bindPress(chooseBtn, function()
+			if finished or #availableWeapons < 2 then return end
+			local currentIndex = table.find(availableWeapons, reserveWeapon) or 0
+			for offset = 1, #availableWeapons do
+				local candidate = availableWeapons[(currentIndex + offset - 1) % #availableWeapons + 1]
+				if candidate.id ~= wpn.id then
+					reserveWeapon = candidate
+					chooseBtn.Text = "보조: " .. reserveWeapon.name
+					wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
+					say("선택한 보조 무기: " .. reserveWeapon.name)
+					break
+				end
+			end
+		end)
 		bindPress(wbtn, function()
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
+			chooseBtn.Text = "보조: " .. reserveWeapon.name
 			if attackIcon then
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
