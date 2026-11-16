@@ -247,6 +247,7 @@ end
 
 -- opts: { name, nodes, danger, seed, onFinish(result) }  result: "clear" | "retreat" | "defeat"
 function FieldScene.start(opts)
+	workspace:SetAttribute("FieldCombatReady", nil) -- 이전 탐험의 준비 상태를 새 입장의 성공으로 오인하지 않는다.
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("FieldScene")
 	if old then
@@ -563,6 +564,7 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		workspace:SetAttribute("FieldCombatReady", nil)
 		pcall(function()
 			local L = game:GetService("Lighting")
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
