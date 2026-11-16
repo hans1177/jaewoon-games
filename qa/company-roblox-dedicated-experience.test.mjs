@@ -1196,13 +1196,13 @@ test('Mare licensed galleon is registered for its universe and is not assigned t
   assert.equal(row?.license,'CC-BY-4.0');
   assert.equal(meta.license,'CC-BY-4.0');
   assert.equal(meta.sourceSha256,row.sourceSha256);
-  assert.match(meta.sourcePage,/sketchfab\\.com\\/3d-models\\/nautical-galleon-/);
+  assert.match(meta.sourcePage,/sketchfab\.com\/3d-models\/nautical-galleon-/);
   assert.equal(meta.actualRobloxRuntimeVerified,false);
   assert.equal(meta.visualQualityApproved,false);
   assert.ok(bindings.includes('["Naval/galleon-heritage"] = '+row.assetId));
-  assert.match(port,/SHIP_MESH\\.galleon = "galleon-heritage"/);
-  assert.match(port,/SHIP_MESH\\[id\\] = SHIP_MESH\\[def\\.visual\\]/);
+  assert.match(port,/SHIP_MESH\.galleon = "galleon-heritage"/);
+  assert.match(port,/SHIP_MESH\[id\] = SHIP_MESH\[def\.visual\]/);
   assert.ok(port.indexOf('SHIP_MESH.galleon = "galleon-heritage"')>port.indexOf('SHIP_MESH[id] = SHIP_MESH[def.visual]'));
-  assert.match(battle,/galleon = if AssetIds\\["Naval\\/galleon-heritage"\\]/);
-  assert.match(yard,/Nautical Galleon · R-LAB \\(rakshaan\\), CC BY 4\\.0/);
+  assert.match(battle,/galleon = if AssetIds\["Naval\/galleon-heritage"\]/);
+  assert.match(yard,/Nautical Galleon · R-LAB \(rakshaan\), CC BY 4\.0/);
 });
