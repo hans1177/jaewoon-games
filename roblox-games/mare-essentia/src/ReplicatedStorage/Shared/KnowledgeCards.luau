@@ -895,6 +895,7 @@ local Kinds = {
 	{ id = "science", name = "이론·발명" }, { id = "medicine", name = "의학·약학" }, { id = "ship", name = "선박·조선" },
 	{ id = "weather", name = "기상·천문" }, { id = "art", name = "예술·문화" },
 	{ id = "goods", name = "교역·산물" }, { id = "legend", name = "신화·미스터리" },
+	{ id = "military", name = "병종·전술" },
 }
 local KindById = {}
 for _, kind in Kinds do KindById[kind.id] = kind end
@@ -903,7 +904,7 @@ local FieldKind = {
 	Site = "wonder", Architecture = "building", Astronomy = "weather", Weather = "weather",
 	Medicine = "medicine", Shipbuilding = "ship", Navigation = "map", Geography = "terrain",
 	Physics = "science", Chemistry = "science", Philosophy = "science", Goods = "goods",
-	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend",
+	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
 }
 local function kindOf(c: Card): string
 	if c.field == "Site" then
