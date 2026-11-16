@@ -114,11 +114,15 @@ return function(D, S)
 			})
 		end
 
-		-- 시장 소식 (모든 항구의 진행 중인 사건)
+		-- [정보망] 같은 역사 사건이라도 신문·상인·동료가 듣는 시점과 범위는 다르다.
+		view.press = S.Econ.bulletins(state, "gazette")
+		view.tavernNews = S.Econ.bulletins(state, "tavern")
+		view.companionNews = S.Econ.bulletins(state, "companion")
+		-- 시장 소식은 현지와 연결된 근거리 시장만 보인다. 원거리 시세는 상인 정보망으로 확보한다.
 		view.news = {}
 		for _, e in ctx.market:activeEvents() do
 			local pt, gd = D.Ports.Ports[e.portId], D.Ports.Goods[e.goodId]
-			if pt and gd then
+			if pt and gd and S.Econ.marketNewsVisible(state, e.portId) then
 				local line = pt.name .. ": " .. (tostring(e.text):gsub("%%s", gd.name))
 				local lv = S.Harbor.intel(state)
 				if lv >= 3 then
@@ -518,6 +522,20 @@ return function(D, S)
 		view.portBuildings = S.Build.viewOf(state)
 		view.pace = S.Pace.viewOf(state)
 		view.world = S.World.viewOf(state)
+		-- [제한된 소식] 사건 자체는 세계에서 진행돼도 멀리 있는 선장은 전달 전까지 알 수 없다.
+		local received = {}
+		for _, channel in ipairs({ view.press, view.tavernNews, view.companionNews }) do
+			for _, row in ipairs(channel.rows or {}) do received[row.id] = true end
+		end
+		local localRegion = D.Regions.of(port).id
+		local shownActive, shownLog = {}, {}
+		for _, row in ipairs(view.world.active) do
+			if row.here or received[row.id] then table.insert(shownActive, row) end
+		end
+		for _, row in ipairs(view.world.log) do
+			if row.regionId == localRegion or received[row.id] then table.insert(shownLog, row) end
+		end
+		view.world.active, view.world.log = shownActive, shownLog
 		view.diplo = S.Diplomacy.viewOf(state)
 		view.autoStory = state.autoStory
 	view.order = S.Order.viewOf(state)
@@ -934,6 +952,8 @@ return function(D, S)
 				portType = D.Harbor.portType(port.produces),
 				economy = S.Harbor.economyOf(state, port.id),
 				sim = S.Econ.town(state, port.id),
+				-- 행정관 보고와 항구 신문은 기존 세계경제와 건축 정보를 재사용한다.
+				administration = S.Build.viewOf(state),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
