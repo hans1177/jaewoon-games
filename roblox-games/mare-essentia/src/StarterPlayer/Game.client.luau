@@ -9020,13 +9020,25 @@ syncScene = function()
 		math.floor(math.sqrt(math.max(0, bld.market or 0))),
 		math.floor(math.sqrt(math.max(0, bld.warehouse or 0))),
 		math.floor(math.sqrt(math.max(0, bld.dock or 0))),
+		math.floor(math.sqrt(math.max(0, bld.farm or 0))),
+		math.floor(math.sqrt(math.max(0, bld.workshop or 0))),
+		math.floor(math.sqrt(math.max(0, bld.school or 0))),
+		math.floor(math.sqrt(math.max(0, bld.hall or 0))),
 	}, ":")
+	local developed = view.village and view.village.here
+	local owned = (view.harbor and view.harbor.builtLandmarks) or {}
+	local builtIds = {}
+	for id, has in pairs(owned) do if has == true then table.insert(builtIds, id) end end
+	table.sort(builtIds)
+	local siteStamp = tostring(developed and developed.blocks or 4) .. "|"
+		.. tostring(sim and sim.construction and sim.construction.active or false)
+		.. "|" .. table.concat(builtIds, ",")
 	local boostIds = {}
 	for _, b in eco.boosts or {} do
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. "|V" .. siteStamp .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
