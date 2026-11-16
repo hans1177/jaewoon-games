@@ -1527,12 +1527,13 @@ function H.layoutBook()
 		content.Size = UDim2.new(1, -150, 1, -76)
 	else
 		tabBar.Position = UDim2.fromOffset(8, 68)
-		tabBar.Size = UDim2.new(1, -16, 0, 40)
-		-- [모바일] 시설마다 탭 2~4개의 폭을 균등하게 배치한다.
+		-- [모바일] 좁은 세로 화면의 전투 본부 4개 탭은 2열×2행으로 읽기 쉽게 표시한다.
 		local tabCount = #groupOf(currentTab).tabs
-		tabLayout.CellSize = UDim2.new(1 / math.max(1, math.min(4, tabCount)), -5, 0, 40)
-		tabLayout.CellPadding = UDim2.fromOffset(5, 0)
-		local top = if tabs then 116 else 68
+		local compact = tabs and tabCount >= 4 and mainInner.AbsoluteSize.X < 480
+		tabBar.Size = UDim2.new(1, -16, 0, if compact then 85 else 40)
+		tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 40)
+		tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
+		local top = if tabs then (if compact then 161 else 116) else 68
 		content.Position = UDim2.fromOffset(8, top)
 		content.Size = UDim2.new(1, -16, 1, -top - 8)
 	end
