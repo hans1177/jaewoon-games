@@ -2686,58 +2686,64 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 	end
 
-	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
-	local WZ, WX = 150, -204
+	-- 7) 외곽: 도시의 실제 발전 구획 바깥으로 성벽과 숲을 이동한다.
+	-- 예전 -204, ±150 고정 성벽이 확장 도로·주택을 가로막던 문제를 직접 수정한다.
+	local wallStep = if lvl >= 4 then 20 else 16
+	local WZ = math.ceil((152 + pairsN * laneL + 55) / wallStep) * wallStep
+	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
+	local wallSize = wallStep + 0.4
 	for _, side in { 1, -1 } do
-		local x = -22
-		while walled and x > WX do
-			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), 12.5, true)
-			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), 12.5, true) end
-			x -= 12
+		if walled then
+			local x = -22
+			while x > WX do
+				local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), wallSize, true)
+				if not m then importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), wallSize, true) end
+				x -= wallStep
+			end
 		end
 		if lvl >= 2 then
-			for _, tx in { -22, -80, -140, WX } do
+			for _, tx in { -22, -140, WX } do
 				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
 			end
 		end
 	end
-	local z = -WZ
-	while walled and z <= WZ do
-		local m = importedModel(folder, "Castle", if z == -18 or z == 18 then "wall-narrow-gate" else "wall", Vector3.new(WX, 0, z), 12.5, true)
-		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
-		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
-		z += 12
-	end
 	if walled then
+		for z = -WZ, WZ, wallStep do
+			local at = Vector3.new(WX, 0, z)
+			-- 목장으로 나가는 출입문은 동쪽 마을에서 오갈 수 있도록 가운데에 배치.
+			local asset = if math.abs(z) <= wallStep / 2 then "wall-narrow-gate" else "wall"
+			local m = importedModel(folder, "Castle", asset, at, wallSize, true)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true) end
+			rotateAround(m, at, math.pi / 2)
+		end
 		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	end
-	-- 성벽 밖 언덕과 숲
-	-- 평평한 절벽 판자(cliff-rock 은 두께 0.2 패널) 대신 입체 바위 군집
-	local rocks = { "rock-large", "rock-wide", "rock-small" }
-	for i = 1, 40 do
+	-- 도시 안에 바위와 나무를 세우지 않는다. 자연 배경은 외곽 숲과 돌산만 남긴다.
+	-- 식생/암석 수는 발전된 항구일수록 줄여 모바일 프레임을 보호한다.
+	local rimRocks = if lvl >= 4 then 16 else 25
+	for i = 1, rimRocks do
 		local side = if i % 2 == 0 then 1 else -1
-		local c = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
-		importedModel(folder, "Town", "rock-large", c, rng:NextNumber(16, 26), true)
-		for j = 1, 2 do
-			importedModel(folder, "Town", rocks[rng:NextInteger(1, 3)], c + Vector3.new(rng:NextNumber(-12, 12), 0, rng:NextNumber(-12, 12)), rng:NextNumber(7, 13), false)
+		local at = Vector3.new(rng:NextNumber(-420, -45), 0, side * rng:NextNumber(WZ + 26, WZ + 100))
+		importedModel(folder, "Town", "rock-large", at, rng:NextNumber(12, 20), false)
+		if i % 3 == 0 then
+			importedModel(folder, "Town", "rock-small", at + Vector3.new(9, 0, 8), 7, false)
 		end
 	end
-	for i = 1, 12 do
-		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
-	end
-	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
-	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" } elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" } elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
-	for i = 1, 150 do
+	local forestCount = if lvl >= 4 then 60 else 94
+	local trees = if key == "japan" or cold then { "tree-high", "tree", "tree-crooked" }
+		elseif palm then { "palm-detailed-straight", "tree-crooked", "tree-high" }
+		else { "tree-high", "tree-crooked", "tree" }
+	for i = 1, forestCount do
 		local side = if i % 2 == 0 then 1 else -1
-		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
+		local at = Vector3.new(rng:NextNumber(-440, -40), 0, side * rng:NextNumber(WZ + 26, WZ + 120))
 		local pick = trees[rng:NextInteger(1, #trees)]
-		local kind = if pick:find("palm", 1, true) or pick:find("tree-pine", 1, true) or pick:find("tree-oak", 1, true) then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
-		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
+		local kind = if pick:find("palm", 1, true) then "Naval" else "Town"
+		importedModel(folder, kind, pick, at, rng:NextNumber(8, 14), false)
 	end
-	for i = 1, 30 do
-		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
-		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town", trees[1], pos, rng:NextNumber(8, 13), false)
+	for i = 1, (if lvl >= 4 then 9 else 14) do
+		local at = Vector3.new(-1005 + rng:NextNumber(-16, 16), 0, rng:NextNumber(-WZ, WZ))
+		importedModel(folder, "Town", "tree-high", at, rng:NextNumber(8, 12), false)
 	end
 end
 
