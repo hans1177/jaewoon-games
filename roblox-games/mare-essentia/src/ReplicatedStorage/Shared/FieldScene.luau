@@ -2638,7 +2638,7 @@ function FieldScene.start(opts)
 		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
 		local function hashName(str: string): number
 			local h = 7
-			for _, cp in utf8.codepoint(str, 1, -1) do h = (h * 31 + cp) % 100003 end
+			for _, cp in utf8.codes(str) do h = (h * 31 + cp) % 100003 end
 			return h
 		end
 		local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
