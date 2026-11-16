@@ -1556,3 +1556,10 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 | `assets/terrain/Grass_Small.glb` | `f1353d565c613843426dbe5335ff5faed5512d5d` | `4dd31e385b05d2a81954cb8c5b0d82972817cf08` | `35efb939b2789f7c8278128a95ffe08b742f8667` | 58 |
 | `assets/terrain/Rock_2.glb` | `dd00ae412f345afc50d40d3e9772ade57f81df9a` | `c934862cbcf43b7feacf554da577278e4711412b` | `926a113fe9448118a1e394a6a9f60715d7ede6b9` | 202 |
 | `assets/terrain/Bush_Small.glb` | `695c4c46b6a3a07bf889ea6c9044c742cb352ba6` | `ca84370c89b01b44bd4b137f9259166bc9726680` | `267073a1823037cbdf4358d49e013eee3d049965` | 190 |
+
+## 2026-11-17 항구 어업 원본 2종 외부 무료 확보 경로
+
+- `naval/fishing-net.glb`: Frakassets Pixor 제작 어망(612삼각형), https://pixor.art/library/tools/fishing-net/ , CC0-1.0. 원본 다운로드: https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb
+- `naval/net-floats.glb`: Frakassets Pixor 제작 부표 달린 어망(744삼각형), https://pixor.art/library/pirate/net-floats/ , CC0-1.0. 원본 다운로드: https://pixor.art/library/files/net-floats/pixor-library-net-floats.glb
+- 원본 획득은 기존 `tools/mare-essentia-upload-assets.mjs`와 `owner-mare-essentia-assets.yml`만 사용한다. 업로드 시 원본 SHA-256·파일 구조·삼각형 수·라이선스 영수증·Roblox Universe 사용 권한을 확인하고 같은 경로에 기록한다.
+- 기록 상태: **선별·획득 코드 연결 완료 / 원본 바이너리·Roblox 등록·Studio 표시·모바일 검증은 실행 결과 확인 전 미완료**. 전용 조선 통신선/정크선 등 역사적 선체로 오인하여 연결하지 않는다.
