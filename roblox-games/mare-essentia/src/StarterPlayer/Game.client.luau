@@ -2857,8 +2857,16 @@ local function call(action, payload)
 		end
 	end
 	if result.scene and action ~= "Sail" then
-		-- 출항 때 생성된 발견 장면은 sail()에서 지역 사건과 순서대로 재생한다.
-		task.defer(H.playWonderScene, result.scene)
+		-- 발견 연출 역시 이야기·항해가 모두 끝난 뒤에 띄운다.
+		local sceneId = result.scene
+		task.spawn(function()
+			local pg = player:WaitForChild("PlayerGui")
+			while player.Parent and (sceneHold or inField or H.questScenesPlaying or H.sceneBusy
+				or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)) do
+				task.wait(0.2)
+			end
+			if player.Parent then H.playWonderScene(sceneId) end
+		end)
 	end
 	if result.ranking then
 		ranking = result.ranking
@@ -3266,7 +3274,10 @@ local function sail(portId)
 		end
 	end
 	finishRegionEvents()
-	if not player.Parent then sailingNow = false return end
+	if not player.Parent then
+		sailingNow = false
+		return
+	end
 	local from = view.player.portName
 	local fromId = view.player.portId
 	local departureDay = view.player.day
@@ -7099,29 +7110,33 @@ do
 			H.questScenesPlaying = true
 			task.spawn(function()
 				while #pending > 0 do
-					-- 항해/해전 중에는 지역 사건을 띄우지 않는다. 출항 전 순서 처리만 예외.
+					-- 출항 전 사건은 완료하고, 바다·전투 중 사건은 뒤로 미룬다.
 					while inField or (sceneHold and not departureEventPhase) or workspace:GetAttribute("VoyageActive")
-						or H.sceneBusy or player.PlayerGui:FindFirstChild("StoryScene", true) do
+						or H.sceneBusy or player.PlayerGui:FindFirstChild("StoryScene", true)
+						or player.PlayerGui:FindFirstChild("WonderScene", true) do
 						task.wait(0.2)
 					end
 					local sc = table.remove(pending, 1)
-				local isStart = sc.kind == "start"
-				local isChron = sc.kind == "chronicle"
-				local ok = pcall(playStory, {
-					id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
-					chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
-					npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
-					lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
-					choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
-					submit = function()
-						return { ok = true, message = if isChron then (tostring(sc.summary or "") .. "\n(서재에서 관찰 노트로 논문을 쓸 수 있어요)") elseif isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" }
-					end,
-				})
-				if ok then
-					task.wait(0.6)
-					while player:WaitForChild("PlayerGui"):FindFirstChild("StoryScene", true) do task.wait(0.4) end
+					local isStart = sc.kind == "start"
+					local isChron = sc.kind == "chronicle"
+					local ok, err = pcall(playStory, {
+						id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
+						chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
+						npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
+						lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
+						choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
+						submit = function()
+							return { ok = true, message = if isChron then (tostring(sc.summary or "") .. "\n(서재에서 관찰 노트로 논문을 쓸 수 있어요)") elseif isStart then (tostring(sc.summary or "") .. "\n(저널에서 진행 상황을 볼 수 있어요)") else "이야기를 일지에 적었다. (저널에서 다시 읽을 수 있어요)" }
+						end,
+					})
+					if not ok then warn("[Game] 이야기 재생 오류:", err) end
+					if ok then
+						task.wait(0.6)
+						while player:WaitForChild("PlayerGui"):FindFirstChild("StoryScene", true) do
+							task.wait(0.4)
+						end
+					end
 				end
-			end
 				playing = false
 				H.questScenesPlaying = false
 			end)
@@ -11229,7 +11244,7 @@ end
 			pcall(refreshChip)
 			pcall(refreshGoal)
 			-- 중요 인물이 항구에서 찾아오면 일러스트 연출 장면이 저절로 열린다
-			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sailingNow and not H.questScenesPlaying and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
+			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sailingNow and not H.questScenesPlaying and not H.sceneBusy and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
 				for _, ev in view.story or {} do
 					if ev.id == view.autoStory then
 						H.autoStoryShown = ev.id
