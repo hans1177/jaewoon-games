@@ -1002,13 +1002,17 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.elder = fig:GetAttribute("Age") == "elder"
 		t.base = fig:GetPivot()
 		t.phase = t.phase or rng:NextNumber(0, 10)
-		-- [NPC 직업 소품] 기존 등록된 CC0 Cargo만 사용. 이동하는 짐꾼의 상자/잔 든 손님에 실물을 붙인다.
-		-- 루프마다 생성하지 않고 주민 생성 시 한 번만, 상체/손 관절에 용접해서 행동을 함께 따라가게 한다.
-		local propAsset = if t.kind == "carry" then "box-open" elseif t.kind == "drink" then "mug" else nil
-		local mount = fig:FindFirstChild(if t.kind == "carry" then "UpperTorso" else "RightHand", true)
+		-- [NPC 직업 소품] 기존 승인된 모델을 손 관절에 연결한다. 가상 손동작이 아니라 실제 도구를 사용한다.
+		-- 짐·잔·망치·삽은 생성 시 단 한 번만 붙여 모바일 프레임당 소품 생성 비용이 없다.
+		local spec = if t.kind == "carry" then { "Cargo", "box-open", "UpperTorso", 1.05, CFrame.new(0, -0.35, -1.0) }
+			elseif t.kind == "drink" then { "Cargo", "mug", "RightHand", 0.45, CFrame.new(0, -0.2, -0.25) }
+			elseif t.kind == "hammer" then { "Relics", "hammer", "RightHand", 1.05, CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
+			elseif t.kind == "hoe" then { "Naval", "tool-shovel", "RightHand", 1.6, CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
+			else nil
+		local mount = spec and fig:FindFirstChild(spec[3], true)
 		local assets = ReplicatedStorage:FindFirstChild("MareAssets")
-		local cargo = assets and assets:FindFirstChild("Cargo")
-		local template = propAsset and cargo and cargo:FindFirstChild(propAsset)
+		local group = spec and assets and assets:FindFirstChild(spec[1])
+		local template = spec and group and group:FindFirstChild(spec[2])
 		if template and template:IsA("Model") and mount and mount:IsA("BasePart") then
 			local held = template:Clone()
 			local ok = pcall(function()
@@ -1020,10 +1024,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				local _, bounds = held:GetBoundingBox()
 				local axis = math.max(bounds.X, bounds.Y, bounds.Z)
 				if axis < 0.01 then error("NPC_PROP_EMPTY") end
-				held:ScaleTo(held:GetScale() * ((if t.kind == "carry" then 1.05 else 0.45) / axis))
+				held:ScaleTo(held:GetScale() * (spec[4] / axis))
 				held.Name = "NpcWorkProp"
 				held.Parent = fig
-				held:PivotTo(mount.CFrame * (if t.kind == "carry" then CFrame.new(0, -0.35, -1.0) else CFrame.new(0, -0.2, -0.25)))
+				held:PivotTo(mount.CFrame * spec[5])
 				for _, mesh in parts do
 					mesh.Anchored = false
 					mesh.CanCollide = false
