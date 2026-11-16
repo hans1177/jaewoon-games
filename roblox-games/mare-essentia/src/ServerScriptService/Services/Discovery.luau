@@ -26,8 +26,9 @@ return function(D, S)
 		if quest.rewardCardId then questCards[quest.rewardCardId] = true end
 	end
 	local function methodOf(card)
-		if card.visitPort then return "discover" end
+		-- [무형 지식] 방문해 얻는 첫 관찰과, 방문 장소에서 진행하는 후속 연구를 구분한다.
 		if card.research then return "research" end
+		if card.visitPort then return "discover" end
 		if siteCards[card.id] then return "explore" end
 		if scholarCards[card.id] then return "research" end
 		if questCards[card.id] then return "research" end
@@ -37,7 +38,7 @@ return function(D, S)
 	local METHODS = { discover = "발견", research = "연구", explore = "탐험" }
 	local function pathOf(card)
 		local method = methodOf(card)
-		local step = if card.visitPort then "항구 첫 방문" elseif card.research then "선행 지식·연속 연구" else card.source
+		local step = card.source
 		return (METHODS[method] or "발견") .. " · " .. step
 	end
 	local function rarityGuide(card)
@@ -55,7 +56,14 @@ return function(D, S)
 		if not research then return nil end
 		for _, needId in research.found or {} do
 			if not state.discovered[needId] then
-				return "먼저 표본 조사: " .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
+				return (card.meta and card.meta.kind and (card.meta.kind == "language" or card.meta.kind == "religion" or card.meta.kind == "politics" or card.meta.kind == "law" or card.meta.kind == "custom") and "먼저 지식 발견: " or "먼저 표본 조사: ") .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
+			end
+		end
+		-- 문헌 해독·종교 비교·법학/정치사상 등은 앞 단계의 발견만으로 해금되지 않는다.
+		-- 이미 존재하는 학자 보고 상태를 확인하므로 저장키나 별도 연구 화폐를 추가하지 않는다.
+		for _, needId in research.reported or {} do
+			if not (state.reported and state.reported[needId]) then
+				return "먼저 학자에게 보고: " .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
 			end
 		end
 		if research.quest and not (state.quests and state.quests.done and state.quests.done[research.quest]) then
@@ -65,7 +73,7 @@ return function(D, S)
 		if research.assistDisc then
 			local help = S.Perk.researchAssist(state, research.assistDisc)
 			if help <= 0 and not (research.allowReported and state.reported and state.reported[research.allowReported]) then
-				return "의학 연구 조수 동행 또는 약초원 지식 보고가 필요해요"
+				return "연구 조수 동행 또는 선행 지식 보고가 필요해요"
 			end
 		end
 		return nil

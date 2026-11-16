@@ -463,6 +463,12 @@ p("forestry", "임학", "applied", "botany", "나무의 자람·숲·수지·목
 p("mining", "광업학", "applied", "mineralogy", "광맥·채굴·광석을 기록하는 학문.")
 p("paleontology", "고생물학", "natural", "geology", "화석으로 오래전 생물을 살피는 학문.")
 local PROMOTED = {
+	-- [무형 지식] 언어 문헌학·윤리학·종교학·법학·정치학을 실제 연구 학문으로 승격한다.
+	philology = true,
+	ethics = true,
+	religious_studies = true,
+	law = true,
+	political_science = true,
 	biology = true,
 	mathematics = true,
 	geometry = true,
@@ -495,12 +501,14 @@ local PROMOTED = {
 	gunnery = true,
 	naval_warfare = true,
 }
+-- [기존 분야 연결] 인류학은 문화, 사회 제도 학문은 독립 도감 분야로 표시한다.
+local PROMOTED_FIELD = { anthropology = "Culture", religious_studies = "Religion", law = "Law", political_science = "Politics" }
 local unpromoted = {}
 K.Promoted = {}
 for _, row in K.Planned do
 	if PROMOTED[row.id] then
 		local active = {
-			id = row.id, name = row.name, field = "Study_" .. row.id,
+			id = row.id, name = row.name, field = PROMOTED_FIELD[row.id] or "Study_" .. row.id,
 			era = "시대에 따라 정립", parent = row.parent, summary = row.summary,
 		}
 		table.insert(K.Disciplines, active)
@@ -516,6 +524,11 @@ K.Planned = unpromoted
 -- [학문 다중 소속] 기존 카드의 주학문·보상·선행 노드는 절대로 재배정하지 않는다.
 -- 이미 보고한 카드만 새 학문에서도 함께 숙련/진행도로 인정한다. 총 보고 수·시대 점수는 1번만 센다.
 K.SpecialismCards = {
+	philology = { "lang_runes", "lang_latin", "relic_runestone" },
+	ethics = { "phi_ethics" },
+	religious_studies = { "relic_prayer_beads", "arch_cathedral" },
+	law = { "relic_royal_charter", "lang_ledger" },
+	political_science = { "arch_town_hall", "relic_royal_charter" },
 	biology = { "zoo_reindeer", "bot_lotus" },
 	mathematics = { "relic_sundial", "relic_hourglass" },
 	geometry = { "site_pont_du_gard", "arch_stone_bridge" },
@@ -696,7 +709,10 @@ function K.autofill(cards: { any })
 		local disc = if chosen and K.DisciplineById[chosen] then chosen else byField[c.field]
 		if disc and not K.ById[c.id] then
 			local needs = {}
-			if (c.rarity == "Rare" or c.rarity == "Epic" or c.rarity == "Legendary") and roots[disc] then
+			if c.research and c.research.reported then
+				-- [무형 연구] 보고 완료를 새 지식의 실제 선행 이해 조건과 동일하게 적용한다.
+				for _, need in c.research.reported do table.insert(needs, need) end
+			elseif (c.rarity == "Rare" or c.rarity == "Epic" or c.rarity == "Legendary") and roots[disc] then
 				needs = { roots[disc] }
 			end
 			local node = { id = c.id, disc = disc, needs = needs, fx = nil, auto = true }

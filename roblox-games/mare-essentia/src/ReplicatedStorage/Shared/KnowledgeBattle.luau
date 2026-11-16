@@ -8,12 +8,12 @@ local KB = {}
 
 -- 분야 → 전투 줄: 인문·사회 = 근접, 자연과학 = 사격, 응용·공학 = 포
 KB.FIELD_ROW = {
-	Military = "melee", Philosophy = "melee", Language = "melee", Myth = "melee", Mystery = "melee", Lost = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
+	Military = "melee", Philosophy = "melee", Language = "melee", Religion = "melee", Politics = "melee", Law = "melee", Culture = "melee", Myth = "melee", Mystery = "melee", Lost = "melee", Art = "melee", Relic = "melee", Site = "melee", Goods = "melee",
 	Astronomy = "ranged", Physics = "ranged", Chemistry = "ranged", Geography = "ranged", Weather = "ranged", Botany = "ranged", Zoology = "ranged", Mineral = "ranged",
 	Medicine = "cannon", Architecture = "cannon", Shipbuilding = "cannon", Navigation = "cannon",
 }
 -- 분야 고유 능력 (위력이 낮은 보조형). 같은 이름끼리 쓰는 결속은 지식 카드가 모두 다른 이름이라 쓰지 않는다.
-KB.FIELD_ABILITY = { Medicine = "medic", Language = "spy", Geography = "spy", Philosophy = "morale", Architecture = "armor", Art = "morale", Mystery = "spy", Lost = "morale" }
+KB.FIELD_ABILITY = { Medicine = "medic", Language = "spy", Religion = "morale", Politics = "morale", Law = "spy", Culture = "morale", Geography = "spy", Philosophy = "morale", Architecture = "armor", Art = "morale", Mystery = "spy", Lost = "morale" }
 -- 희귀한(Rare 이상) 카드 일부는 즉시 효과 카드가 된다 (여섯 장까지 덱에 넣을 수 있다)
 KB.FIELD_SPECIAL = { Relic = "scorch", Site = "horn", Navigation = "wind", Weather = "clear", Philosophy = "decoy", Chemistry = "scorch", Astronomy = "wind", Myth = "horn", Mystery = "decoy", Lost = "horn" }
 KB.POWER = { Common = { 2, 3, 4 }, Uncommon = { 3, 4, 5 }, Rare = { 5, 6, 6 }, Epic = { 7, 8, 8 }, Legendary = { 9, 10, 10 } }

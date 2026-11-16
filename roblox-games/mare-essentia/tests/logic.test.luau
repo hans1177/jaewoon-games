@@ -570,13 +570,13 @@ local function extraTests()
 	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
-	-- [지구 백과/확장 학문] 3획득 방식·17소재·활성 학문 52개, 기존 배/설계와 연구 저장 보존
+	-- [지구 백과/확장 학문] 3획득 방식·22소재·활성 학문 57개, 기존 배/설계와 연구 저장 보존
 	do
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
-		check("지식 분류: 17종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 17)
+		check("지식 분류: 22종 카드 소재와 기존 도감·학문 분류는 별개", #collection.Kinds == 22)
 		check("지식 분류: 지구·인류 큰 영역 7가지", #collection.WorldGroups == 7)
-		check("지식 분류: 소재 17개 모두 상위 영역과 연결", (function()
+		check("지식 분류: 소재 22개 모두 상위 영역과 연결", (function()
 			for _, kind in collection.Kinds do
 				if not collection.WorldGroupById[kind.group] then return false end
 			end
@@ -595,7 +595,7 @@ local function extraTests()
 		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
 		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
 
-		check("지식 분류: 기존 21개 + 세부 학문 31개 활성", #tree.Disciplines == 52)
+		check("지식 분류: 기존 21개 + 세부 학문 36개 활성", #tree.Disciplines == 57)
 		local promotedCount, promotedLinked, duplicateAcademy = 0, 0, nil
 		local namesSeen = {}
 		for _, d in tree.Disciplines do
@@ -610,7 +610,7 @@ local function extraTests()
 			promotedLinked += 1
 			check("세부 학문: 기존 카드 참조 유효 " .. id, collection.ById[id] ~= nil and tree.ById[id] ~= nil and #discIds >= 1)
 		end
-		check("학문 확장: 중복·유실 없이 31개 활성, 기존 카드 73장 연결", promotedCount == 31 and promotedLinked == 73 and duplicateAcademy == nil)
+		check("학문 확장: 기존 31개 유지 + 무형 학문 5개 활성, 기존 카드 73장 이상 연결", promotedCount == 36 and promotedLinked >= 73 and duplicateAcademy == nil)
 		local nextState = newState("england")
 		nextState.reported.bot_oak = true
 		check("학문 숙련: 기존 식물학 원본 주학문은 그대로", tree.ById.bot_oak.disc == "botany")
@@ -627,12 +627,12 @@ local function extraTests()
 		local st = newState("england")
 		local messages = {}
 		local before = st.coins
-		check("단순 발견: 리스본 도착 지식은 별도 탐험 없이 한 번만 등록", S.Discovery.grantVisitCards(st, "lisbon", messages) == 1 and st.discovered.ship_caravel and st.coins > before)
+		check("단순 발견: 리스본 도착 지식은 별도 탐험 없이 한 번만 등록", S.Discovery.grantVisitCards(st, "lisbon", messages) >= 1 and st.discovered.ship_caravel and st.discovered.law_treaty_discovery and st.coins > before)
 		check("단순 발견: 재방문 보상 중복 지급 없음", S.Discovery.grantVisitCards(st, "lisbon", messages) == 0)
 		check("습득 경로: 캐러벨은 발견·버드나무 연구는 연구", S.Discovery.methodOf(vessel) == "discover" and S.Discovery.methodOf(collection.ById.med_willow_bark) == "research")
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
-		check("도감: 세 방식과 52개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 52 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 세 방식과 57개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 57 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
 		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
 
 		local cardById = {}
@@ -652,7 +652,7 @@ local function extraTests()
 			end
 			if not hasCard then missing = d.id break end
 		end
-		check("도감: 활성 52개 학문에 각각 연구 카드가 존재", missing == nil, missing)
+		check("도감: 활성 57개 학문에 각각 연구 카드가 존재", missing == nil, missing)
 		local riverView = cardById.geo_scheldt_estuary
 		check("백과 개체: 탐험 장소/항구에 정확히 연결", riverView.kind == "terrain" and riverView.entityType == "실존 장소")
 		local sample = collection.ById.ship_galleon
@@ -691,6 +691,55 @@ local function extraTests()
 		check("도감: 갤리온은 기존 항해술·물리학·역사학과 연결", table.find(vesselView.relatedDisciplines, "항해술") ~= nil and table.find(vesselView.relatedDisciplines, "물리학") ~= nil and table.find(vesselView.relatedDisciplines, "역사·유적학") ~= nil)
 		local willow = cardById.med_willow_bark
 		check("도감: 버드나무 의학 연구는 기존 식물학과 교차 연결", willow.discipline == "의학" and table.find(willow.relatedDisciplines, "식물학") ~= nil)
+
+		-- [무형 연구 5계열 회귀] 발견 → 선행 보고 → 문헌 연구 → 보고 → 비교 연구.
+		for _, chain in {
+			{ port = "antwerp", field = "Language", kind = "language", ids = { "lang_port_interview", "lang_manuscript_reading", "lang_translation_method" } },
+			{ port = "venice", field = "Religion", kind = "religion", ids = { "faith_rite_observation", "faith_scripture_study", "faith_comparative_study" } },
+			{ port = "london", field = "Politics", kind = "politics", ids = { "pol_assembly_observation", "pol_institution_records", "pol_political_thought" } },
+			{ port = "lisbon", field = "Law", kind = "law", ids = { "law_treaty_discovery", "law_code_interpretation", "law_comparative_jurisprudence" } },
+			{ port = "seville", field = "Culture", kind = "custom", ids = { "culture_festival_observation", "culture_oral_history", "culture_comparative_customs" } },
+		} do
+			local study = newState("england")
+			study.portId = chain.port
+			local ids = chain.ids
+			local first, second, third = collection.ById[ids[1]], collection.ById[ids[2]], collection.ById[ids[3]]
+			check("무형 백과: 3단계 종류·주학문 정합 " .. chain.field,
+				first ~= nil and second ~= nil and third ~= nil and collection.kindOf(first) == chain.kind
+				and first.field == chain.field and second.meta.discipline ~= nil
+				and tree.DisciplineById[second.meta.discipline] ~= nil)
+			check("무형 백과: 선행 카드 없을 때 조사 차단 " .. chain.field,
+				S.Discovery.cardBlockReason(study, second) ~= nil)
+			local notes = {}
+			S.Discovery.grantVisitCards(study, chain.port, notes)
+			check("무형 백과: 현장 첫 발견 " .. chain.field,
+				study.discovered[ids[1]] == true and study.discovered[ids[2]] ~= true)
+			check("무형 백과: 보고 전 연구 차단 " .. chain.field,
+				S.Discovery.cardBlockReason(study, second) ~= nil)
+			study.reported[ids[1]] = true
+			check("무형 백과: 선행 지식 보고로 문헌 연구 허용 " .. chain.field,
+				S.Discovery.cardBlockReason(study, second) == nil)
+			S.Discovery.grantVisitCards(study, chain.port, notes)
+			check("무형 백과: 문헌 해독 후 비교 연구는 잠금 " .. chain.field,
+				study.discovered[ids[2]] == true and study.discovered[ids[3]] ~= true
+				and S.Discovery.cardBlockReason(study, third) ~= nil)
+			study.reported[ids[2]] = true
+			S.Discovery.grantVisitCards(study, chain.port, notes)
+			check("무형 백과: 세 단계 연계·추가 보상 중복 없음 " .. chain.field,
+				study.discovered[ids[3]] == true and S.Discovery.grantVisitCards(study, chain.port, notes) == 0)
+			check("무형 백과: 지식트리 선행 보고 요구 " .. chain.field,
+				tree.ById[ids[3]] ~= nil and table.find(tree.ById[ids[3]].needs, ids[2]) ~= nil)
+			local saved = S.State.sanitize(S.State.serialize(study))
+			check("무형 백과: 기존 저장 구조 복원 " .. chain.field,
+				saved.discovered[ids[3]] == true and saved.reported[ids[2]] == true)
+			local cardView = S.View.build(study, ctx)
+			local matched = nil
+			for _, info in cardView.codex.cards do if info.id == ids[3] then matched = info break end end
+			check("무형 백과: 존재 형태·시대·지역·학문·선행 지식 표시 " .. chain.field,
+				matched ~= nil and matched.era == "16~18세기" and matched.region ~= nil
+				and matched.discipline ~= nil and matched.entityType ~= nil and #matched.prerequisites > 0
+				and #matched.relatedDisciplines > 0)
+		end
 		local restored = S.State.sanitize(S.State.serialize(st))
 		check("도감: 방문 발견은 기존 저장키로 정상 복원", restored.discovered.ship_caravel == true)
 	end
