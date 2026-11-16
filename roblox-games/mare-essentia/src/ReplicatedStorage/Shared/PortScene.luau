@@ -612,6 +612,66 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			return base:FindFirstChildWhichIsA("BasePart", true)
 		end
 	end
+	-- [대륙 실루엣] 평지붕 석조집/중정집/열대 고상식 주택은 기존 북유럽 박공지붕
+	-- 원본을 색만 바꿔 쓰지 않는다. 소수의 로컬 Part로 입면 자체를 다른 구조로 조립한다.
+	local form = architecture.form
+	if form == "flat" or form == "courtyard" or form == "carved" or form == "stilt" then
+		local ww = w * variation * HOUSE_SCALE * 0.94
+		local dd = d * variation * HOUSE_SCALE * 0.94
+		local hh = math.max(6, (floors or 1) * 5.6)
+		local lifted = form == "stilt"
+		local lift = if lifted then 3.2 else 0
+		local material = if lifted then Enum.Material.WoodPlanks else (style.mat or Enum.Material.Sandstone)
+		local building = part(parent, Vector3.new(ww, hh, dd), CFrame.new(pos + Vector3.new(0, lift + hh * 0.5, 0)), tintColor, material)
+		building.Name = "HarborHouse"
+		building:SetAttribute("Architecture", form)
+		local roofColor = style.roofs[(seed % #style.roofs) + 1]
+		if lifted then
+			-- 바닥을 올리고 네 기둥과 깊은 처마를 배치: 동남아·태평양 수변가옥/통풍형 주택.
+			local floor = part(parent, Vector3.new(ww + 1.3, 0.45, dd + 2.2), CFrame.new(pos + Vector3.new(0, lift - 0.3, 0)), C(112, 88, 59), Enum.Material.WoodPlanks)
+			floor.Name = "StiltDeck"
+			for _, dx in { -1, 1 } do
+				for _, dz in { -1, 1 } do
+					local pole = part(parent, Vector3.new(0.65, lift + 0.2, 0.65), CFrame.new(pos + Vector3.new(dx * ww * 0.42, lift * 0.5, dz * dd * 0.43)), C(93, 71, 48), Enum.Material.Wood)
+					pole.Name = "StiltSupport"
+				end
+			end
+			gableRoof(parent, pos + Vector3.new(0, lift + hh + 0.35, 0), ww + 3.6, dd + 4, dd * 0.34, roofColor)
+			local landing = part(parent, Vector3.new(ww * 0.42, 0.4, 2.9), CFrame.new(pos + Vector3.new(0, lift - 0.3, front * (dd * 0.5 + 1))), C(130, 101, 69), Enum.Material.WoodPlanks)
+			landing.CanCollide = false
+		else
+			-- 이슬람권·동서아프리카의 평지붕과 낮은 난간: 역사 지역별 재료만 다르게.
+			local roof = part(parent, Vector3.new(ww + 1.5, 0.6, dd + 1.5), CFrame.new(pos + Vector3.new(0, hh + 0.32, 0)), roofColor:Lerp(tintColor, 0.44), material)
+			roof.Name = "FlatRoof"
+			for _, dx in { -1, 1 } do
+				local parapet = part(parent, Vector3.new(0.7, 1.3, dd + 1.5), CFrame.new(pos + Vector3.new(dx * (ww * 0.5 + 0.5), hh + 1.05, 0)), tintColor, material)
+				parapet.CanCollide = false
+			end
+			if houseTier >= 2 then
+				local lip = part(parent, Vector3.new(ww + 1.5, 1.1, 0.7), CFrame.new(pos + Vector3.new(0, hh + 0.94, -front * (dd * 0.5 + 0.46))), tintColor, material)
+				lip.CanCollide = false
+			end
+			if form == "courtyard" and houseTier >= 3 and seed % 3 == 0 then
+				-- 주택 안쪽 중정을 직접 열 수 없는 경우 외벽 안쪽의 그늘막으로 표현한다.
+				local canopy = part(parent, Vector3.new(ww * 0.48, 0.4, dd * 0.24), CFrame.new(pos + Vector3.new(0, hh * 0.62, front * (dd * 0.5 + 0.55))), C(154, 118, 78), Enum.Material.WoodPlanks)
+				canopy.CanCollide = false
+			end
+		end
+		if not vacant and houseTier >= 2 then
+			local entry = if form == "carved" then "kenney_wood_door_round_01"
+				elseif lifted then "kenney_wood_door_square_01" else "kenney_grey_door_round_01"
+			local door = importedModel(parent, "Town", entry, pos + Vector3.new(0, lift, front * (dd * 0.5 + 0.2)), math.min(ww * 0.38, 5), false)
+			if door then door.Name = "HarborEntrance" end
+			if form == "carved" and houseTier >= 3 then
+				-- 스와힐리 석조집: 깊은 목조 문틀·양쪽 기둥으로 아프리카 동해안 입면을 구분한다.
+				for _, side in { -1, 1 } do
+					local trim = part(parent, Vector3.new(0.45, hh * 0.56, 0.55), CFrame.new(pos + Vector3.new(side * ww * 0.18, lift + hh * 0.29, front * (dd * 0.5 + 0.4))), C(93, 61, 38), Enum.Material.Wood)
+					trim.CanCollide = false
+				end
+			end
+		end
+		return building
+	end
 	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
@@ -676,6 +736,54 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if bal then
 				bal.Name = "HarborBalcony"
 				uniformMaterial(bal, style, "trim")
+			end
+		end
+		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
+		-- 상세 장식은 일부 주택에만 출력하여 모바일 장면의 파트 수를 제한한다.
+		if not vacant and houseTier >= 2 and seed % 4 == 1 then
+			local form = architecture.form
+			local decor = C(89, 65, 47)
+			if form == "stepped" then
+				-- 한자동맹: 계단형 정면 박공 실루엣.
+				for j = -2, 2 do
+					local h = (3 - math.abs(j)) * ext.Y * 0.095
+					local gable = part(parent, Vector3.new(ext.X * 0.19, h, 0.52), CFrame.new(pos + Vector3.new(j * ext.X * 0.18, ext.Y + h * 0.35, front * ext.Z * 0.48)), tintColor:Lerp(style.roofs[1], 0.44), Enum.Material.Brick)
+					gable.CanCollide = false
+				end
+			elseif form == "timber" then
+				-- 북유럽·영국: 기둥과 가로보가 드러나는 목골조.
+				for _, dx in { -0.35, 0.35 } do
+					local beam = part(parent, Vector3.new(0.38, ext.Y * 0.68, 0.38), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.43, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
+					beam.CanCollide = false
+				end
+				local brace = part(parent, Vector3.new(ext.X * 0.8, 0.38, 0.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.75, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
+				brace.CanCollide = false
+			elseif form == "arcade" or form == "loggia" then
+				-- 이베리아/이탈리아: 돌기둥 회랑과 발코니 돌출 처마.
+				for _, dx in { -0.32, 0.32 } do
+					importedModel(parent, "Terrain", "column", pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)), ext.Y * 0.58, false)
+				end
+				if houseTier >= 3 then
+					local veranda = part(parent, Vector3.new(ext.X * 0.85, 0.42, 2.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.52, front * (ext.Z * 0.5 + 0.9))), tintColor, Enum.Material.Limestone)
+					veranda.CanCollide = false
+				end
+			elseif form == "veranda" then
+				-- 크리올·식민 항구: 넓은 전면 베란다와 차양.
+				local awning = part(parent, Vector3.new(ext.X * 0.95, 0.35, 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.62, front * (ext.Z * 0.5 + 0.9))), style.roofs[1], Enum.Material.WoodPlanks)
+				awning.CanCollide = false
+				for _, dx in { -0.4, 0.4 } do
+					local post = part(parent, Vector3.new(0.4, ext.Y * 0.6, 0.4), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.3, front * (ext.Z * 0.5 + 1.9))), decor, Enum.Material.Wood)
+					post.CanCollide = false
+				end
+			elseif form == "mansard" then
+				-- 프랑스: 지붕창과 작은 처마가 비대칭으로 솟는 석조 시가지.
+				for _, dx in { -0.26, 0.26 } do
+					importedModel(parent, "Town", "roof-high-window", pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25), ext.X * 0.27, false)
+				end
+			elseif form == "coastal" then
+				-- 인도 서해안: 넓고 낮은 목조 처마.
+				local eave = part(parent, Vector3.new(ext.X + 3, 0.4, ext.Z + 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.78, 0)), style.roofs[1], Enum.Material.WoodPlanks)
+				eave.CanCollide = false
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
