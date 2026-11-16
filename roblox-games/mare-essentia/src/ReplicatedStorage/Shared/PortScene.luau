@@ -30,7 +30,7 @@ local GOOD_MESH = {
 	gems = { "Cargo", "gems-sack" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
 	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) },
 	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) },
-	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
+	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "sugar" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
 }
 -- 통은 사케·럼만 쓴다: 와인은 병(wine-red), 맥주는 잔(mug)으로 모양 자체를 달리해 통 네 가지가 똑같아 보이던 문제를 줄인다 (모두 등록된 CC0 원본).
@@ -4672,6 +4672,9 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Interior", "tablecross", at + Vector3.new(-4, 0, 0), 4.3, false)
 				-- 입고 중인 진짜 원료 재고가 있을 때만 원료 진열을 만든다.
 				if (industry.rawStock or 0) > 0 and sourceMesh and sourceMesh[2] ~= "box-open"
+					-- 음료 잔·찻잔은 재배/입고 원료 모습이 아니므로 실제 원료로 표시하지 않는다.
+					and industry.source ~= "coffee" and industry.source ~= "tea" and industry.source ~= "cocoa"
+					and industry.source ~= "pepper" and industry.source ~= "beer"
 					and AssetIds[sourceMesh[1] .. "/" .. sourceMesh[2]] then
 					local goods = importedModel(folder, sourceMesh[1], sourceMesh[2],
 						at + Vector3.new(-5, 0, 4), goodSize(industry.source, 3), false, sourceMesh[3])
