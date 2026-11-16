@@ -105,6 +105,8 @@ return function(D, S)
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
+			-- [경제·사회·역사 인물] 한 항구의 수치와 실제 발생 사건을 기존 view에 전달한다.
+			society = table.clone(t.society), historyEffects = E.activeHistory(w, portId),
 		}
 	end
 
@@ -177,9 +179,10 @@ return function(D, S)
 	function X.shock(state, ev, regionId)
 		local w = ensure(state)
 		if not w then return end
-		E.addShock(w, E.shockFromEvent(ev, regionId))
+		if not E.addShock(w, E.shockFromEvent(ev, regionId)) then return false end
 		worldDirty = true
 		table.insert(pendingOps, { kind = "shock", event = ev, regionId = regionId })
+		return true
 	end
 
 	-- 지식카드(학문) → 마을 경제 기술 분야. 한 학문이 여러 분야에 가중치로 퍼진다.
