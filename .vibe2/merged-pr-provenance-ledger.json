@@ -258085,11 +258085,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9cd6e576c31ecf294d8d2beb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13451",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "97e029635541af81004b6ad6a1cfb888dcc592d0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13451,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-encyclopedia-ontology-20261116",
+        "baseSha": "97e029635541af81004b6ad6a1cfb888dcc592d0",
+        "headSha": "c5e9bd75a876fc2f5d46c9d4dc8a3f917a9c7627",
+        "mergeCommitSha": "a46bd93461e3c80c1c9e9ff276a2125ef48ab8b4",
+        "mergedAt": "2026-11-16T07:24:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1445aab39b0dffc1142502ca78e7866911a695b1a33e79476a4cf66c5152a3c2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-encyclopedia-ontology-20261116",
+        "candidateSha": "c5e9bd75a876fc2f5d46c9d4dc8a3f917a9c7627"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 493,
+        "deletedLineCount": 76,
+        "changedFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Knowledge.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeTree.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Knowledge.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13451",
+        "merge-commit:a46bd93461e3c80c1c9e9ff276a2125ef48ab8b4",
+        "base-main:97e029635541af81004b6ad6a1cfb888dcc592d0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2052
+    "total": 2053
   }
 }
