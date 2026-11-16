@@ -1735,9 +1735,9 @@ local HUD_MENU_TINT = {
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
 }
 local HUD_MENU_ART = {
-	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
-	journal = "codex", chart = "map", yard = "yard", explore = "explore",
+	gear = "", deck = "cc0_book", auto = "harbor", help = "",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "chart_port",
+	journal = "quest", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
 function H.hudShortcut(parent, name, key, label, dockItem)
@@ -1760,10 +1760,22 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	local artId = if key == "tavern" then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
 	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
-	if artId then
+	if key == "tavern" then
+		-- [주점] 기존 CC0 머그잔 3D 모델을 투명한 아이콘으로 보여 준다. 새 이미지·등록 파이프라인은 만들지 않는다.
+		local mug = modelIcon(button, "Cargo", "mug", nil, artSize, "주점")
+		mug.Name = "MenuArt"
+		mug.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
+		mug.BackgroundTransparency = 1
+		mug.ZIndex = 2
+		for _, layer in mug:GetChildren() do
+			if layer:IsA("UIGradient") or layer:IsA("UIStroke") or layer.Name == "EngravedMargin" then
+				layer:Destroy()
+			end
+		end
+	elseif artId then
 		for i = 1, 2 do
 			local art = Instance.new("ImageLabel")
 			art.Name = if i == 1 then "MenuArtShadow" else "MenuArt"
@@ -1779,7 +1791,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Parent = button
 		end
 	else
-		button.Text = if key == "help" then "?" else string.sub(label, 1, 1)
+		button.Text = if key == "help" then "?" elseif key == "gear" then "⚙" else string.sub(label, 1, 1)
 		button.TextSize = 34
 		button.TextYAlignment = Enum.TextYAlignment.Top
 		button.Font = Enum.Font.GothamBlack
@@ -1804,7 +1816,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local function paintSelection()
 		local selected = button:GetAttribute("SelectedFacility") == true
 		local art = button:FindFirstChild("MenuArt")
-		if art then art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204)) end
+		if art and art:IsA("ImageLabel") then art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204)) end
 		local caption = button:FindFirstChild("MenuName")
 		if caption then caption.TextColor3 = if selected then COLORS.gold else Color3.fromRGB(255, 244, 214) end
 	end
@@ -1871,7 +1883,7 @@ dockLimit.Parent = dock
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
 H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
-	{ "board", "주점", "quest" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
+	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 H.dockButtons = {}
 for i, d in H.DOCK do
