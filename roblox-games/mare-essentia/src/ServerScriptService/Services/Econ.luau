@@ -25,7 +25,7 @@ return function(D, S)
 	function X.advance(state)
 		local w = ensure(state)
 		if not w then return 0 end
-				local realDays = math.max(0, math.floor((os.time() - WORLD_EPOCH_UTC) / WORLD_DAY_SECONDS))
+		local realDays = math.max(0, math.floor((os.time() - WORLD_EPOCH_UTC) / WORLD_DAY_SECONDS))
 		local target = math.max(state.day or 0, realDays)
 		local n = math.clamp(target - w.day, 0, MAX_CATCHUP)
 		for _ = 1, n do E.step(w) end
