@@ -210,11 +210,27 @@ return function(D, S)
 
 	-- 학문 시설·직업: 학문 단계(1~4)가 오르고 항구 레벨이 (단계+1) 이상이면 그 학문의 시설과 직업이 선다.
 	function V.discFacilities(state, level)
-		local tiers = V.tiers(state)
+		local tiers, _, mainCounts = V.tiers(state)
+		-- [승격 학문 시설] 기존 도시 점수/주학문 단계를 유지하고 연관 학문 보고만 시설 개방에 포함한다.
+		-- 동일 지식이 두 학문에 소속돼도 각 학문에서는 한 번만 세며, 군사학은 아래 전용 카드 수 단계만 쓴다.
+		local relatedCounts = {}
+		for id in state.reported or {} do
+			local node = K.ById[id]
+			if node then
+				for _, linked in K.CardRelatedDisciplines[id] or {} do
+					if K.Promoted[linked] and linked ~= "military_science" and linked ~= node.disc then
+						relatedCounts[linked] = (relatedCounts[linked] or 0) + 1
+					end
+				end
+			end
+		end
 		local facilities, jobs, byDisc = {}, {}, {}
 		for _, d in K.Disciplines do
 			local list = D.DisciplineFacilities.List[d.id]
 			local t = tiers[d.id] or 0
+			if K.Promoted[d.id] and d.id ~= "military_science" then
+				t = tierOf((mainCounts[d.id] or 0) + (relatedCounts[d.id] or 0))
+			end
 			local open = 0
 			if list then
 				for tier = 1, 4 do
