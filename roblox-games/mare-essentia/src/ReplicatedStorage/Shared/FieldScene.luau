@@ -134,6 +134,15 @@ local REGION_LOOK: {[string]: any} = {
 	wafrica = { ground = RC(168, 140, 84), mat = Enum.Material.Ground, fog = RC(232, 214, 170), fogEnd = 700, clock = 13.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.2, trees = { "tree_large", "tree-default-fall" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "tropical-palm-short", 3, 11 }, { "Terrain", "Bush_Small", 4, 3 } } },
 }
 
+-- [지역별 생태] 기존 21개 문화권의 지형·소품과 연결하는 적 무리 배치 구역. 전투 수치/적 수는 그대로 둔다.
+local REGION_ENCOUNTERS = {
+	iberia = "ruins", italy = "ruins", france = "forest", britain = "highland", hanse = "coast",
+	nordic = "highland", brick = "coast", stone = "highland", med = "ruins",
+	ottoman = "desert", desert = "desert", swahili = "coast", malabar = "forest",
+	japan = "forest", china = "highland", seasia = "forest", tropic = "coast",
+	colonial = "plains", creole = "forest", pacific = "coast", wafrica = "plains",
+}
+
 -- 지점 이름(지형) + 항구의 문화권(분위기)을 합쳐 탐험지 모습을 정한다.
 local function lookFor(name: string, portId: string?)
 	local b = biomeFor(name)
@@ -158,6 +167,8 @@ local function lookFor(name: string, portId: string?)
 	t.size = math.floor(b.size * r.sizeMul)
 	t.treeNames = if b.kind == "mine" then nil else r.trees
 	t.props = r.props
+	t.region = reg
+	t.encounter = REGION_ENCOUNTERS[reg] or b.kind
 	local mobs = {}
 	for i, m in b.mobs do
 		local copy = table.clone(m)
@@ -358,6 +369,9 @@ function FieldScene.start(opts)
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
 	local biome = lookFor(opts.name or "", opts.portId)
+	local visualMobile = game:GetService("UserInputService").TouchEnabled
+	folder:SetAttribute("FieldRegion", biome.region or "generic")
+	folder:SetAttribute("FieldEncounterPattern", biome.encounter or biome.kind)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
 	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
@@ -408,8 +422,10 @@ function FieldScene.start(opts)
 		end
 		local hills = {}
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
-		for i = 0, 27 do
-			local ang = i / 28 * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
+		-- [모바일 메모리] 보이지 않는 원거리 지형 갱신 횟수를 줄이고 동일한 둘레를 유지한다.
+		local hillCount = if visualMobile then 16 else 28
+		for i = 0, hillCount - 1 do
+			local ang = i / hillCount * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
 			local dist = half + hillRng:NextNumber(34, 54)
 			local r = hillRng:NextNumber(22, 38)
 			local c = ORIGIN + Vector3.new(math.cos(ang) * dist, -r * hillRng:NextNumber(0.35, 0.6), math.sin(ang) * dist)
@@ -486,7 +502,9 @@ function FieldScene.start(opts)
 
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, math.floor(biome.trees * 2 * AREA) do
+	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
+	local treeCount = math.floor(biome.trees * 2 * AREA)
+	for _ = 1, if visualMobile then math.min(treeCount, 44) else treeCount do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		-- 지역 나무는 기존 Town/Terrain의 실제 CC0 메시만 사용한다. 없는 종류는 도형 대체 없이 건너뛴다.
@@ -496,7 +514,8 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
-	for _ = 1, math.floor(biome.rocks * 1.6 * AREA) do
+	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
+	for _ = 1, if visualMobile then math.min(rockCount, 36) else rockCount do
 		local pos = ORIGIN + scatter(10)
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
@@ -505,8 +524,8 @@ function FieldScene.start(opts)
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
 	for _, pr in (biome.props or {}) do
-		-- [모바일] 식생·장식은 종류당 최대 8개만 배치한다. 전투 객체·보상은 바꾸지 않는다.
-		for _ = 1, math.min(8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
+		-- [모바일] 장식 메시만 종류당 4개로 제한한다. PC 배치와 전투·보상은 유지한다.
+		for _ = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
 			placeModel(folder, pr[1], pr[2], ORIGIN + scatter(18), pr[4], pr[1] == "Terrain" and pr[2] == "cliff-rock")
 		end
 	end
@@ -583,9 +602,12 @@ function FieldScene.start(opts)
 			if hit then
 				local c = ORIGIN + Vector3.new(0, 0, -10)
 				local first
-				for _, e in lm[2] do
-					local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
-					first = first or m
+				for index, e in lm[2] do
+					-- [모바일] 대표 랜드마크를 우선 유지하고 반복된 외곽 장식만 제한한다.
+					if not visualMobile or index <= 22 then
+						local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
+						first = first or m
+					end
 				end
 				local adorn = first and (first:IsA("BasePart") and first or first:FindFirstChildWhichIsA("BasePart", true))
 				if adorn then
@@ -726,13 +748,16 @@ function FieldScene.start(opts)
 			L.Brightness, L.Ambient, L.OutdoorAmbient = lightSave.Brightness, lightSave.Ambient, lightSave.OutdoorAmbient
 			L.ColorShift_Top = lightSave.ColorShiftTop
 		end)
+		-- [탐험 종료] 한 연결의 정리 실패가 항구 복귀를 막지 않도록 각각 해제한다.
 		for _, c in conns do
-			c:Disconnect()
+			local ok, err = pcall(function() c:Disconnect() end)
+			if not ok then warn("[MareEssentia] 필드 연결 정리 오류", err) end
 		end
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onFinish then
-			opts.onFinish(result)
+			local ok, err = pcall(opts.onFinish, result)
+			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
 		end
 	end
 
@@ -786,11 +811,30 @@ function FieldScene.start(opts)
 		boss = { { "전장 두목", "Knight", Color3.fromRGB(117, 77, 66) }, { "약탈 우두머리", "Barbarian", Color3.fromRGB(135, 63, 55) }, { "거인 대장", "Knight", Color3.fromRGB(83, 90, 109) } },
 	}
 	local kinds = { "grunt", "archer", "shield", "charger" }
+	-- [지역별 몬스터 배치] 숲길·유적·해안·산길·사막마다 무리 위치를 바꾼다.
+	-- 기존 적 수/역할/체력/공격력/드롭/보스 규칙은 변경하지 않는다.
 	local packCenters = {}
-	for _ = 1, math.max(4, math.floor(enemyCount / 5)) do
-		table.insert(packCenters, scatter(48))
+	local encounterZones = {
+		coast = { Vector2.new(-0.70, -0.42), Vector2.new(0.68, -0.48), Vector2.new(-0.65, 0.30), Vector2.new(0.62, 0.20) },
+		forest = { Vector2.new(-0.53, -0.62), Vector2.new(0.64, -0.55), Vector2.new(-0.70, 0.12), Vector2.new(0.68, 0.22) },
+		ruins = { Vector2.new(-0.75, -0.18), Vector2.new(0.75, -0.18), Vector2.new(-0.48, -0.73), Vector2.new(0.50, -0.73) },
+		highland = { Vector2.new(-0.68, -0.55), Vector2.new(0.52, -0.74), Vector2.new(-0.62, 0.20), Vector2.new(0.74, 0.06) },
+		desert = { Vector2.new(-0.74, -0.67), Vector2.new(0.73, -0.48), Vector2.new(-0.52, 0.04), Vector2.new(0.60, 0.15) },
+		plains = { Vector2.new(-0.70, -0.22), Vector2.new(0.70, -0.24), Vector2.new(-0.48, -0.72), Vector2.new(0.50, -0.65) },
+		mine = { Vector2.new(-0.73, -0.33), Vector2.new(0.74, -0.30), Vector2.new(-0.46, -0.70), Vector2.new(0.46, -0.70) },
+	}
+	local zones = encounterZones[biome.encounter or biome.kind] or encounterZones.plains
+	for i = 1, math.max(4, math.floor(enemyCount / 5)) do
+		local zone = zones[(i - 1) % #zones + 1]
+		local x = math.clamp(zone.X * half + rng:NextNumber(-15, 15), -half + 16, half - 16)
+		local z = math.clamp(zone.Y * half + rng:NextNumber(-15, 15), -half + 16, half - 35)
+		local pos = Vector3.new(x, 0, z)
+		if (pos - Vector3.new(0, 0, half - 14)).Magnitude < 54 then pos = scatter(54) end
+		table.insert(packCenters, pos)
 	end
 	for i = 1, enemyCount + bossCount do
+		-- [튕김 복구] 생성 도중 철수로 폴더가 삭제되면 낡은 장면에 인스턴스를 만들지 않는다.
+		if finished or not folder.Parent then return { finish = finish, cancelled = true } end
 		local isBoss = i > enemyCount
 		local def
 		if isBoss then
@@ -825,6 +869,10 @@ function FieldScene.start(opts)
 			elseif ac.kind == "charger" then "disciplined" else "civilian"
 		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
 			{ bodyType = bodyType, motionStyle = motionStyle, persona = styleN, profession = ac.kind, year = opts.year })
+		if finished or not folder.Parent then
+			if model then model:Destroy() end
+			return { finish = finish, cancelled = true }
+		end
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
 			continue
@@ -2979,7 +3027,10 @@ function FieldScene.start(opts)
 			if not spawned then
 				spawned = true
 				for i, ad in allyDefs do
-					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
+					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
+					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
+					local footX = root0.Position.X + i * 5 - 8
+					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.08, root0.Position.Z - 4)
 					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
 					local persona = hashName(ad.name) % 3 + 1
 					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
@@ -2997,6 +3048,10 @@ function FieldScene.start(opts)
 						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
 						else 5.8
 					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
+					if finished or not folder.Parent then
+						if m then m:Destroy() end
+						return
+					end
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
