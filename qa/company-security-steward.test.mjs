@@ -505,8 +505,10 @@ test('candidate workers cannot replace final verification with invented proof',(
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
   const reviewer=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   const learner=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
-  assert.equal(policy.enforcement.proofRequired,true);
-  assert.equal(policy.enforcement.unverified,'BLOCK');
+  // [중앙 보안 정본] 검증되지 않은 실행·학습은 기존 격리 및 증거 계약으로 차단한다.
+  assert.equal(policy.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+  assert.equal(policy.containment.unverifiedExternalPayloadMayNotEnterCanonicalLearning,true);
+  assert.ok(policy.securityLearning.positiveSecurityLessonRequires.includes('EXACT_SECURITY_CHECK_PASS'));
   assert.match(reviewer,/fullRegressionPass/);
   assert.match(reviewer,/specializedNativeRuntimeEvidence/);
   assert.match(reviewer,/nativeRuntimeRequired/);
