@@ -400,7 +400,7 @@ task.spawn(function()
 		local res = call("Sail", { portId = id })
 		if res then
 			grade("Sail " .. tostring(id), res, true)
-			if res.ok then checkLandBattle(res.view) end
+			-- Roblox 항해 결과는 위 grade에서 검증한다. 존재하지 않는 지상전 점검 함수를 호출하지 않는다.
 		end
 		local choice = call("VoyageChoice", { index = 1 })
 		if choice then grade("VoyageChoice", choice, true) end
