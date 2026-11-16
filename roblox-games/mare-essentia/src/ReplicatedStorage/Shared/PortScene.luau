@@ -1401,13 +1401,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 		local total = 0
 		for _, j in ipairs(ORDER) do total += jobs[j] or 0 end
-		local N = math.clamp(({ 6, 8, 10, 12, 14 })[lvl] + (if info.sim then math.floor(info.sim.residents / 10) else 0), 6, 20)
+		local N = if info.sim then math.clamp(math.floor((info.sim.residents or 6) * 0.3), 1, 18) else ({ 6, 8, 10, 12, 14 })[lvl]
 		local quota, used = {}, 0
 		for _, j in ipairs(ORDER) do
 			local share = (jobs[j] or 0) / math.max(total, 1)
 			if j == "farmer" or j == "laborer" then share = math.min(share, 0.2) end
 			quota[j] = math.floor(N * share + 0.5)
-			if (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
+			if not info.sim and (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
 			used += quota[j]
 		end
 		local lanes = { 38, -38, 57, -57, 73, -73, 87, -87 }
@@ -2323,6 +2323,9 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-6, 0, -14), Vector3.new(-6, 0, 14) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
+	if info.sim and info.sim.buildings then
+		stallMax = math.clamp(math.floor(1 + math.sqrt(math.max(0, info.sim.buildings.market or 0))), 1, #extraStalls)
+	end
 	table.clear(stallSpots)
 	for i, spot in extraStalls do
 		if i > stallMax then break end
@@ -2343,7 +2346,8 @@ local function densify(folder, info, style, rng, walkers, made)
 		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
 	end
 	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
-	for i = 0, 9 do
+	local cargoQuota = if info.sim and info.sim.buildings then math.clamp(2 + math.floor(math.sqrt(math.max(0, info.sim.buildings.warehouse or 0))), 2, 10) else 10
+	for i = 0, cargoQuota - 1 do
 		local c = dockCargo[i % #dockCargo + 1]
 		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
 	end
@@ -2356,10 +2360,13 @@ local function densify(folder, info, style, rng, walkers, made)
 	importedModel(folder, "Naval", "flag-pennant", Vector3.new(66, 14, 44), 3, false)
 	local boats = { { "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 }, { "boat-row-large", 8 }, { "boat-row-small", 6 }, { "boat-fishing-small", 10 }, { "boat-sail-b", 13 } }
 	local spots = { { 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 }, { 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 } }
+	local boatQuota = if info.sim and info.sim.buildings then math.clamp(1 + math.floor(math.sqrt(math.max(0, info.sim.buildings.dock or 0))), 1, #spots) else #spots
 	for i, spot in spots do
+		if i <= boatQuota then
 		local b = boats[i % #boats + 1]
 		local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
 		rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5))
+		end
 	end
 	if big then
 		importedModel(folder, "Naval", "ship-wreck", Vector3.new(150, 0.4, -120), 22, false)
@@ -2382,7 +2389,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	spawnJobs(folder, info, rng, lvl, walkers, key)
 	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
 	if info.sim and type(info.sim.residents) == "number" then
-		wanderers = math.clamp(math.floor(info.sim.residents / 5), 4, 14) -- 보이는 주민 수 = 인구 규모
+		wanderers = math.clamp(math.floor(info.sim.residents / 6), 0, 14) -- 역병·기근 후 빈 거리도 실제로 표시한다
 	end
 	for i = 1, wanderers do
 		local sideZ = ({ 38, -38, 57, -57, 73, -73, 87, -87 })[(i - 1) % 8 + 1]
@@ -2576,6 +2583,11 @@ end
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
 local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	local lvl = sceneLevel
+	local year = (info.sim and info.sim.year) or info.year or 1700
+	local adopted = {}
+	for _, node in ipairs((info.sim and info.sim.technology and info.sim.technology.rows) or {}) do
+		if node.status == "adopted" then adopted[node.id] = true end
+	end
 	local order = {}
 	for i = 1, #LM_SITES do order[i] = i end
 	local pr = seeded(info.portId .. "landmarks")
@@ -2600,7 +2612,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	end
 	for idx, lm in PortBuildings.Landmarks do
 		local at = LM_SITES[order[idx]]
-		if at and lvl >= lm.minLevel then
+		if at and lvl >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
 			local x, z = at.X, at.Z
 			local face = if z > 0 then 0 else math.pi
 			local front = if z > 0 then -1 else 1
@@ -3034,9 +3046,10 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- (수상한 손님은 이제 주점에서 만난다)
-	-- 광장을 오가는 주민
+	-- 광장 인구는 세계경제 거주자 표본을 그대로 사용한다.
 	local walkers = {}
-	for _ = 1, 4 do
+	local plazaResidents = if info.sim then math.clamp(math.floor((info.sim.residents or 6) / 12), 1, 4) else 4
+	for _ = 1, plazaResidents do
 		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
 		if v then
 			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(8, 18), speed = rng:NextNumber(1.6, 2.6), phase = rng:NextNumber(0, 10) })
@@ -3716,9 +3729,12 @@ function PortScene.build(info, onFacility)
 
 	-- [지역 브랜드 자동 3D] 원료 창고 → 공방 → 지역 브랜드 진열대 → 수출 마차로 외형이 발전한다.
 	-- 서쪽 경계의 산업 필지를 재사용해 기존 출항·보행·시장 길과 충돌하지 않게 한다.
+	local industryLot = 0
 	for _, industry in ipairs((info.sim and info.sim.industries) or {}) do
 		if industry.stage >= 2 then
-			local at = Vector3.new(-231, 0, 151)
+			industryLot += 1
+			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
+			local at = Vector3.new(-330 - row * 35, 0, -105 + col * 70)
 			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
 			if booth then
 				booth.Name = "LocalIndustry_" .. industry.id
