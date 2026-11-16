@@ -3184,6 +3184,35 @@ function PortScene.build(info, onFacility)
 		local courtStaff = math.clamp(math.floor((info.sim and info.sim.residents or 12) / 8), 1, 12)
 		if info.sim and (info.sim.prosperity or 100) < 75 then courtStaff = math.max(1, math.floor(courtStaff * 0.6)) end
 		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = courtStaff }
+		-- 왕궁 보유 도시의 실제 경제 인구 비율에 따라 근위병·행정 서기·시종·학자 활동을 배치한다.
+		-- 별도의 왕궁 NPC 엔진을 만들지 않고 기존 R15 주민/근무 모션을 재사용한다.
+		local royalWorkers = math.min(courtStaff, math.max(2, palaceTier * 2))
+		local royalClothes = OUTFIT[currentKey] or OUTFIT.north
+		local staffKinds = {
+			{ name = "근위병", job = "royal_guard", role = "Knight", kind = "salute", work = { "salute", "look", "inspect" }, rest = { "lean", "look" }, tint = C(66, 76, 124) },
+			{ name = "궁정 시종", job = "royal_servant", role = "Rogue", kind = "polish", work = { "polish", "carry", "inspect" }, rest = { "talk", "stretch" }, tint = C(124, 96, 82) },
+			{ name = "왕실 서기", job = "royal_scribe", role = "Mage", kind = "write", work = { "write", "count", "read" }, rest = { "listen", "drink" }, tint = C(108, 74, 130) },
+			{ name = "궁정 학자", job = "royal_scholar", role = "Mage", kind = "read", work = { "read", "write", "inspect" }, rest = { "talk", "listen" }, tint = C(102, 119, 109) },
+		}
+		for i = 1, royalWorkers do
+			local spec = staffKinds[(i - 1) % (if palaceTier <= 1 then 1 elseif palaceTier == 2 then 2 elseif palaceTier == 3 then 3 else 4) + 1]
+			local side = if i % 2 == 0 then 1 else -1
+			local pos = Vector3.new(frontX + 11 + math.floor((i - 1) / 4) * 11, 0, side * (16 + (i % 4) * 5))
+			local facing = faceTo(pos, Vector3.new(facadeX, 0, 0))
+			local coat = (royalClothes.coats and royalClothes.coats[(i - 1) % #royalClothes.coats + 1] or C(200, 196, 186)):Lerp(spec.tint, 0.6)
+			local figure = villager(folder, pos, facing, coat, rng, spec.role, true, {
+				year = info.year or currentYear, profession = spec.job, hat = royalClothes.hat,
+			})
+			if figure then
+				figure.Name = "RoyalStaff_" .. spec.job .. "_" .. i
+				figure:SetAttribute("Job", spec.job)
+				figure:SetAttribute("Activity", spec.kind)
+				table.insert(walkers, {
+					model = figure, base = figure:GetPivot(), mode = "stay", kind = spec.kind, phase = rng:NextNumber(0, 10),
+					job = spec.job, workKinds = spec.work, leisureKinds = spec.rest,
+				})
+			end
+		end
 		folder:SetAttribute("RoyalDistrictStyle", courtStyle)
 		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 		folder:SetAttribute("RoyalDistrictTier", palaceTier)
