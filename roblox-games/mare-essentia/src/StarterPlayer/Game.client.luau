@@ -6065,6 +6065,14 @@ function H.startField(s)
 	if inField then
 		return
 	end
+	-- [입장 규칙] 지역·모험 레벨·잔여 발견물은 기존 서버 기준을 그대로 따른다.
+	if not s.unlocked or (s.left or 0) <= 0 then
+		message = if (s.left or 0) <= 0 then "이미 조사를 마친 탐험지예요" else string.format("모험 Lv.%d부터 입장할 수 있어요", s.minLevel)
+		messageOk = false
+		render()
+		return
+	end
+	workspace:SetAttribute("FieldEntryFailure", nil)
 	-- 필드 생성 오류가 나더라도 항구 시점·조작·기존 캐릭터 상태를 되돌릴 수 있게 보관한다.
 	local returnCharacter = player.Character
 	local returnCFrame = returnCharacter and returnCharacter:GetPivot()
@@ -6097,7 +6105,7 @@ function H.startField(s)
 	for _, c in (view and view.careers) or {} do
 		if c.id == "battle" then battleLevel = c.level end
 	end
-	local startOk, startErr = pcall(FieldScene.start, {
+	local startOk, startResult = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
 		battleStats = view and view.battleStats,
 		cardSkills = cardSkills,
@@ -6120,21 +6128,45 @@ function H.startField(s)
 			end
 		end,
 	})
-	-- pcall이 성공해도 실제 필드와 조작 UI가 없으면 입장 성공으로 취급하지 않는다.
+	-- [실제 입장 판정] 필드 생성 직후의 캐릭터 위치 복제 지연을 입장 실패로 오판하지 않는다.
+	-- 기존 FieldScene의 실제 출발 좌표만 사용하고, 지형·전투 UI·조작 준비가 갖춰진 경우에만 재배치한다.
+	local startErr = if startOk then nil else startResult
 	if startOk then
-		local field = workspace:FindFirstChild("FieldScene")
-		local ground = field and field:FindFirstChild("FieldGround")
-		local gui = player.PlayerGui:FindFirstChild("FieldGui")
-		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-		if not (ground and gui and root and root.Position.X > 2500 and workspace:GetAttribute("FieldCombatReady") == true) then
+		local ready = false
+		for attempt = 1, 12 do
+			local field = workspace:FindFirstChild("FieldScene")
+			local ground = field and field:FindFirstChild("FieldGround")
+			local fieldGui = player.PlayerGui:FindFirstChild("FieldGui")
+			local char = player.Character
+			local root = char and char:FindFirstChild("HumanoidRootPart")
+			local combat = workspace:GetAttribute("FieldCombatReady") == true
+			if ground and fieldGui and root and combat then
+				if root.Position.X <= 2500 and attempt == 1 and type(startResult) == "table" and typeof(startResult.spawn) == "CFrame" then
+					char:PivotTo(startResult.spawn)
+					root.Anchored = false
+				end
+				if root.Position.X > 2500 and not root.Anchored then
+					ready = true
+					break
+				end
+			end
+			if attempt < 12 then task.wait(0.12) end
+		end
+		if not ready then
+			local field = workspace:FindFirstChild("FieldScene")
+			local ground = field and field:FindFirstChild("FieldGround")
+			local fieldGui = player.PlayerGui:FindFirstChild("FieldGui")
+			local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 			startOk = false
-			startErr = string.format("FIELD_ENTRY_NOT_READY ground=%s gui=%s root=%s combat=%s", tostring(ground ~= nil), tostring(gui ~= nil), tostring(root and root.Position.X), tostring(workspace:GetAttribute("FieldCombatReady")))
+			startErr = string.format("FIELD_ENTRY_NOT_READY ground=%s gui=%s root=%s combat=%s", tostring(ground ~= nil), tostring(fieldGui ~= nil), tostring(root and root.Position.X), tostring(workspace:GetAttribute("FieldCombatReady")))
 		else
 			main.Visible = false
 			message = ""
 		end
 	end
 	if not startOk then
+		workspace:SetAttribute("FieldEntryFailure", tostring(startErr):sub(1, 200))
+		workspace:SetAttribute("FieldCombatReady", nil)
 		-- 필드 생성 중 멈추면 지도·전투 조작 화면까지 정리하고 캐릭터·시점을 복구한다.
 		warn("[Game] 탐험지 열기 실패", startErr)
 		local partialField = workspace:FindFirstChild("FieldScene")
@@ -6181,7 +6213,29 @@ function RENDERERS.explore()
 		end
 	end
 	if #view.sites > 0 and openCount == 0 and nextLevel then
-		add(function() return mkLabel(content, string.format("이 항구의 지상 탐험은 모험 Lv.%d부터 열려요. 레벨이 오르면 아래 지점의 지상맵 입장 버튼을 눌러 이동해요.", nextLevel), 14, COLORS.muted, false) end)
+		add(function() return mkLabel(content, string.format("현재 항구의 탐험지는 모험 Lv.%d 이상이 필요해요. 잠긴 지점의 보상·드랍 조건은 그대로 유지돼요.", nextLevel), 14, COLORS.muted, false) end)
+	end
+	-- [탐험 길찾기] 현지에서 모두 잠긴 경우, 기존 항해 경로 중 지금 레벨로 조사 가능한 다른 항구를 안내한다.
+	-- 항구 이동은 반드시 원래 항해 화면에서 수행하며 레벨·발견·보상·저장 규칙을 바꾸지 않는다.
+	if openCount == 0 then
+		local adventureLevel = 1
+		for _, career in (view.careers or {}) do
+			if career.id == "adventure" then adventureLevel = career.level break end
+		end
+		local eligiblePorts = {}
+		for _, site in require(Shared:WaitForChild("Sites")).Sites do
+			if site.minLevel <= adventureLevel then eligiblePorts[site.portId] = true end
+		end
+		local nearest = nil
+		for _, route in (view.routes or {}) do
+			if not route.locked and eligiblePorts[route.id] and (not nearest or route.distanceKm < nearest.distanceKm) then
+				nearest = route
+			end
+		end
+		if nearest then
+			add(function() return mkLabel(content, string.format("현재 레벨로 탐험할 수 있는 가까운 항구: %s · 약 %d일 항해", nearest.name, nearest.days), 13, COLORS.blue, true) end)
+			add(function() return mkButton(content, "항해 지도에서 탐험 항구 찾기", COLORS.blue, UDim2.new(1, -6, 0, 44), function() openTab("map") end) end)
+		end
 	end
 	add(function()
 		local tiles = {}
