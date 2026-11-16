@@ -1164,6 +1164,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Parent = g
 			-- 카드판 시작 시 원래 해전 GUI를 숨겼으므로 실제 종료 버튼은 이 화면에서 다시 표시해야 한다.
 			skip.Visible = true
+			skip.Active = true
+			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
 			skip.Position = UDim2.fromScale(0.02, 0.84)
 			skip.Size = UDim2.fromOffset(112, 44)
