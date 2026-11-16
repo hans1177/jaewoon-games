@@ -613,6 +613,51 @@ local function extraTests()
 		end
 		check("학문 확장: 기존 31개 유지 + 무형 학문 5개 활성, 기존 카드 73장 이상 연결", promotedCount == 36 and promotedLinked >= 73 and duplicateAcademy == nil)
 
+		-- [학문 보고 경로] 활성 학문은 직접 담당 학자가 있거나 기존 승격 학문의 상위 학자를 통해 보고 가능해야 한다.
+		local scholarsForDiscipline = {}
+		for _, disciplines in tree.ScholarDisciplines do
+			for _, id in disciplines do scholarsForDiscipline[id] = true end
+		end
+		local unreportable = {}
+		for _, discipline in tree.Disciplines do
+			local reachable = scholarsForDiscipline[discipline.id] == true
+			if not reachable and tree.Promoted[discipline.id] then
+				local parent, steps = discipline.parent, 0
+				while parent and steps < 8 do
+					if scholarsForDiscipline[parent] then reachable = true; break end
+					local ancestor = tree.DisciplineById[parent]
+					parent = ancestor and ancestor.parent
+					steps += 1
+				end
+			end
+			if not reachable then table.insert(unreportable, discipline.id) end
+		end
+		check("백과→학문: 활성 57학문 모두 학자 보고 경로 존재",
+			#tree.Disciplines == 57 and #unreportable == 0, table.concat(unreportable, ", "))
+		-- [실제 보고] 미보고 금융·전승·잃어버린 대륙학도 기존 reported 키를 사용한다.
+		local tradingScholar = newState("england")
+		tradingScholar.portId = "hamburg"
+		tradingScholar.reported.phi_skepticism = true
+		tradingScholar.reported.phi_atomism = true
+		tradingScholar.reported.phi_utopia = true
+		tradingScholar.discovered.good_sugar = true
+		local tradeOk, tradeMessage = act(tradingScholar, "ReportKnowledge", { scholarId = "leibniz" })
+		check("백과→학문: 상업 지식을 라이프니츠에게 보고",
+			tradeOk == true and tradingScholar.reported.good_sugar == true, tradeMessage)
+		local legendScholar = newState("england")
+		legendScholar.startYear = 1750
+		legendScholar.portId = "bergen"
+		legendScholar.reported.myth_mermaid = true
+		legendScholar.reported.myth_selkie = true
+		legendScholar.reported.mys_sargasso = true
+		legendScholar.reported.mys_green_children = true
+		legendScholar.discovered.mys_stone_circle = true
+		legendScholar.discovered.lost_terra_incognita = true
+		local legendOk, legendMessage = act(legendScholar, "ReportKnowledge", { scholarId = "pontoppidan" })
+		check("백과→학문: 미스터리와 잃어버린 대륙을 기존 학자에게 보고",
+			legendOk == true and legendScholar.reported.mys_stone_circle == true
+			and legendScholar.reported.lost_terra_incognita == true, legendMessage)
+
 		-- [백과 14대 주제/42개 소재] 세계와 학문 분류는 그대로 유지하고 탐색 축만 확장.
 		check("백과 확장: 기존 지구 7개 분류·학문 7개 대분류 보존",
 			#collection.WorldGroups == 7 and #tree.Domains == 7)
