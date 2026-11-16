@@ -896,7 +896,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 40\)/);
   const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
   for(const [width,height] of [[390,640],[832,384],[320,360]]){
-    const outer=Math.max(132,Math.min(150,width*.4,height-180));
+    const outer=Math.max(132,Math.min(150,width*.48,height-130));
     const skill=width<360?64:76,basic=width<360?60:68;
     const coords=[[arc(outer,20),skill],[arc(outer,60),skill],[arc(outer,100),skill],
                   [arc(84,40),basic],[arc(84,120),basic]];
