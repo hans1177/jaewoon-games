@@ -1282,7 +1282,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
 	if info.construction then
 		local sites = { Vector3.new(-40, 0, 17), Vector3.new(-40, 0, -17), Vector3.new(-74, 0, 17), Vector3.new(-74, 0, -17), Vector3.new(-100, 0, 17), Vector3.new(-100, 0, -17) }
-		local n = math.min(#sites, 2 * math.max(1, (info.construction.to or lvl + 1) - lvl) + 2)
+		local n = math.min(#sites, 2 * math.max(1, (info.construction.to or lvl + 1) - lvl) + 2,
+			if game:GetService("UserInputService").TouchEnabled then 3 else 6)
 		for i = 1, n do
 			local at = sites[i]
 			local zs = if at.Z > 0 then 1 else -1
@@ -1292,7 +1293,22 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			importedModel(folder, "Cargo", "wood-planks-stack-small", at + Vector3.new(-3, 0, -zs * 5), 2.8, false)
 			importedModel(folder, "Town", "cart", at + Vector3.new(9, 0, -zs * 5), 4, false)
 			importedModel(folder, "Town", "workbench-anvil", at + Vector3.new(-9, 0, -zs * 3), 3, false)
+			-- [실제 공사 단계] 현재 경제의 건설 부족분 대비 이미 건축된 비율로 기초→벽→지붕을 표시한다.
+			-- 원본 저장값이나 공사 완료 판정은 수정하지 않으며, 승인된 3D 건축 메시만 사용한다.
+			local buildingType = ({ "house", "workshop", "farm", "warehouse", "market", "hall" })[i]
+			local liveStock = info.sim and info.sim.buildings
+			local buildNeed = info.sim and info.sim.construction
+			local builtCount = tonumber(liveStock and liveStock[buildingType]) or 0
+			local unfinished = tonumber(buildNeed and buildNeed[buildingType]) or 0
+			local progress = tonumber(info.construction.progress)
+			if progress == nil and unfinished > 0 then progress = builtCount / (builtCount + unfinished) end
+			local phase = math.clamp(math.floor(math.clamp(progress or 0, 0, 1) * 3 + 0.001), 0, 3)
+			if phase >= 1 then importedModel(folder, "Town", "floor_base", at, 13, false) end
+			if phase >= 2 then importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, zs * 4), 12, false) end
+			if phase >= 3 then importedModel(folder, "Town", "kenney_roof_straight_red_01", at + Vector3.new(0, 7, zs * 4), 13, false) end
 			local mark = part(folder, Vector3.new(1, 1, 1), CFrame.new(at + Vector3.new(0, 0, 0)), Color3.new(1, 1, 1))
+			mark:SetAttribute("ConstructionPhase", phase)
+			mark:SetAttribute("ConstructionWork", buildingType)
 			mark.Transparency = 1
 			mark.CanCollide = false
 			sign(folder, mark, "🚧 공사 중", Color3.fromRGB(200, 120, 30), 9)
@@ -3063,6 +3079,8 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 		if m and yaw then rotateAround(m, Vector3.new(x, 0, z), yaw) end
 		return m
 	end
+	local landmarkStaff = 0
+	local staffCap = if game:GetService("UserInputService").TouchEnabled then 3 else 6
 	local function ring(cx, cz, hx, hz, fence)
 		for k = -hx, hx, 5 do
 			put("Town", fence, 5, cx + k, cz + hz, false)
@@ -3219,6 +3237,21 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
 				sign(folder, adorn, lm.name, nil, 18)
+			end
+			-- [준공·랜드마크 운영] 실제 해금·건축 완료된 시설에서 주민들이 순찰·안내·점검한다.
+			if body and landmarkStaff < staffCap then
+				landmarkStaff += 1
+				local pos = Vector3.new(x + 12, 0, z + front * 16)
+				local fig = villager(folder, pos, faceTo(pos, Vector3.new(x, 0, z)),
+					Color3.fromRGB(137, 107, 76), rng, "Rogue")
+				if fig then
+					fig:SetAttribute("Job", "landmark")
+					fig:SetAttribute("Workplace", lm.name)
+					table.insert(walkers, { model = fig, base = fig:GetPivot(), mode = "stay", kind = "inspect",
+						phase = rng:NextNumber(0, 10), job = "landmark",
+						workKinds = { "inspect", "point", "wave", "salute" },
+						leisureKinds = { "talk", "look", "listen" } })
+				end
 			end
 			if lm.tab then
 				prompt(folder, Vector3.new(x, 3, z + front * 14), lm.name, "들어가기", lm.tab, onFacility)
@@ -3949,6 +3982,13 @@ function PortScene.build(info, onFacility)
 					end
 				end
 			elseif w.model.Parent then
+				-- [교역로 생활시간] 실제 화물 짐꾼은 낮에 일하고 야간에는 원래 위치에서 쉰다.
+				local hour = game:GetService("Lighting").ClockTime
+				if w.goodId and (hour < 6 or hour >= 20) then
+					w.model:PivotTo(w.base)
+					Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+					Pose.work(w.model, "stretch", now + w.phase)
+				else
 				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
 				local cycle = w.len / w.speed
 				local dwell = w.dwell or 2.2
@@ -3989,6 +4029,7 @@ function PortScene.build(info, onFacility)
 					-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
 					Pose.work(w.model, "stoop", now, true)
 				end
+				end -- 새벽·야간 휴식, 기존 보행 동작은 낮에만 실행
 			end
 		end
 	end)
@@ -4456,24 +4497,50 @@ function PortScene.build(info, onFacility)
 	end
 
 
-	-- [지역 브랜드 자동 3D] 원료 창고 → 공방 → 지역 브랜드 진열대 → 수출 마차로 외형이 발전한다.
-	-- 서쪽 경계의 산업 필지를 재사용해 기존 출항·보행·시장 길과 충돌하지 않게 한다.
+	-- [지역 브랜드 실제 건축] 기존 산업 2~4단계에 따라 실물 작업장 골조·실내·수출 하역이 성장한다.
+	-- 원료/산업/시세는 Economy에서 온 상태만 읽고, 기존 원가/저장/상품 ID에는 관여하지 않는다.
 	local industryLot = 0
+	local industryBudget = if game:GetService("UserInputService").TouchEnabled then 3 else 6
 	for _, industry in ipairs((info.sim and info.sim.industries) or {}) do
-		if industry.stage >= 2 then
+		if (tonumber(industry.stage) or 0) >= 2 and industryLot < industryBudget then
 			industryLot += 1
 			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
-			local at = Vector3.new(-175 + col * 35, 0, -280 - row * 40) -- 왕궁 중앙축·외곽 주거·문명 산업과 다른 남부 상업 구획
-			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
-			if booth then
-				booth.Name = "LocalIndustry_" .. industry.id
-				local anchor = if booth:IsA("BasePart") then booth else booth:FindFirstChildWhichIsA("BasePart", true)
+			local at = Vector3.new(-175 + col * 35, 0, -280 - row * 40)
+			local materialClass = Chains.ClassOf[industry.source]
+			local equipment = if materialClass == "mineral" then { "Town", "workbench-anvil" }
+				elseif materialClass == "forest" then { "Town", "workbench-grind" }
+				elseif materialClass == "farm" then { "Cargo", "mortar-pestle" }
+				elseif materialClass == "fiber" or materialClass == "animal" then { "Cargo", "textiles-stack-small" }
+				else { "Interior", "tablecross" }
+			local frame = importedModel(folder, "Town", "floor_base", at, 23, false)
+			if frame then
+				frame.Name = "LocalIndustry_" .. industry.id
+				frame:SetAttribute("SourceGood", industry.source or "")
+				frame:SetAttribute("IndustryStage", industry.stage)
+				local wall = importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, -9), 20, true)
+				for _, dx in { -10, 10 } do
+					local wp = at + Vector3.new(dx, 0, 0)
+					local side = importedModel(folder, "Town", "kenney_wood_wall_01", wp, 18, true)
+					if side then rotateAround(side, wp, math.pi * 0.5) end
+				end
+				if industry.stage >= 3 then
+					importedModel(folder, "Town", "kenney_roof_straight_green_01", at + Vector3.new(0, 9, 0), 22, false)
+				end
+				importedModel(folder, equipment[1], equipment[2], at + Vector3.new(5, 0, 0), 4.2, false)
+				importedModel(folder, "Interior", "tablecross", at + Vector3.new(-4, 0, 0), 4.3, false)
+				if industry.source and AssetIds["Cargo/" .. industry.source] then
+					local goods = importedModel(folder, "Cargo", industry.source, at + Vector3.new(0, 0, 3), 3.1, false)
+					if goods then goods.Name = "IndustryRawMaterial_" .. industry.source end
+				end
+				local anchor = wall and wall:FindFirstChildWhichIsA("BasePart", true)
+					or frame:FindFirstChildWhichIsA("BasePart", true)
 				if anchor then sign(folder, anchor, if industry.stage >= 3 then industry.name else industry.processed, nil, 12, true) end
-			end
-			if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-15, 0, 0), 7, false) end
-			if industry.stage >= 4 then
-				importedModel(folder, "Town", "cart", at + Vector3.new(16, 0, 0), 7, false)
-				importedModel(folder, "Castle", "flag-banner-long", at + Vector3.new(0, 0, 12), 10, false)
+				prompt(folder, at + Vector3.new(0, 3, 8), industry.name or "지역 산업", "공방 살펴보기", "trade", onFacility)
+				if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-14, 0, 0), 6.5, false) end
+				if industry.stage >= 4 then
+					importedModel(folder, "Town", "cart", at + Vector3.new(15, 0, 0), 6.5, false)
+					importedModel(folder, "Castle", "flag-banner-long", at + Vector3.new(0, 0, 11), 9, false)
+				end
 			end
 		end
 	end
