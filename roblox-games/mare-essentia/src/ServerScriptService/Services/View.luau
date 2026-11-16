@@ -555,7 +555,7 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {} }
+		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {} }
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc
@@ -587,6 +587,8 @@ return function(D, S)
 			local disc = (cardNode and D.KnowledgeTree.DisciplineById[cardNode.disc]) or fieldDiscipline[c.field]
 			local domain = disc and D.KnowledgeTree.TaxonomyById[disc.id] and D.KnowledgeTree.TaxonomyById[disc.id].domain
 			local defKind = D.Cards.KindById[kind]
+			local worldId = defKind and defKind.group or "culture"
+			view.codex.worldCounts[worldId] = (view.codex.worldCounts[worldId] or 0) + 1
 			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
 				pair[1][pair[2]] = (pair[1][pair[2]] or 0) + 1
 			end
@@ -599,6 +601,7 @@ return function(D, S)
 				method = method,
 				kind = kind,
 				kindName = defKind and defKind.name or "기타",
+				worldGroup = D.Cards.WorldGroupById[worldId] and D.Cards.WorldGroupById[worldId].name or "인류·역사·문화",
 				subkind = D.Cards.subkindOf(c),
 				discipline = disc and disc.name or "학문 외 자료",
 				relatedDisciplines = relatedNames(c, kind, disc and disc.id),
@@ -634,6 +637,29 @@ return function(D, S)
 			end
 			view.codex.overall = overall
 			view.codex.kindList = D.Cards.Kinds
+			view.codex.worldGroups = D.Cards.WorldGroups
+			view.codex.resourceKinds = D.Ports.ResourceKinds
+			local resourceKindNames = {}
+			for _, group in D.Ports.ResourceKinds do
+				resourceKindNames[group.id] = group
+			end
+			-- [세계 자원 연결] 실제 69개 교역 자원 + 기존 제작법 가공품을 모두 원본 상품 데이터에서 조회한다.
+			-- 관련 지식카드는 원본 도감 카드 참조일 뿐 새 아이템/보상을 생성하지 않는다.
+			for id, good in D.Ports.Goods do
+				local kindId = good.resourceKind or "manufactured"
+				local group = resourceKindNames[kindId] or resourceKindNames.manufactured
+				local card = D.Cards.ById[good.knowledgeId]
+				local subject = group and D.KnowledgeTree.DisciplineById[group.discipline]
+				table.insert(view.codex.resources, {
+					id = id, name = good.name, category = kindId,
+					categoryName = group and group.name or "가공품",
+					discipline = subject and subject.name or "기타",
+					cardId = card and card.id or nil,
+					cardName = card and card.name or "연관 지식 미등록",
+				})
+				view.codex.resourceCounts[kindId] = (view.codex.resourceCounts[kindId] or 0) + 1
+			end
+			table.sort(view.codex.resources, function(a, b) return a.name < b.name end)
 			view.codex.rank = S.Codex.rankTitle(state)
 		end
 
