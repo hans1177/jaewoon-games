@@ -502,9 +502,9 @@ test('Mare facility tabs provide unique nonempty labels for every rendered group
     .flatMap(m=>[...m[1].matchAll(/"([a-z_]+)"/g)].map(v=>v[1]));
   assert.ok(used.length>0,'facility tabs exist');
   for(const id of used)assert.ok(names.get(id),'facility tab has no Text label: '+id);
-  assert.equal(names.get('quest'),'퀘스트');
-  assert.equal(names.get('map'),'일지');
-  assert.equal(names.get('explore'),'탐험');
+  assert.equal(names.get('quest'),'진행 일지');
+  assert.equal(names.get('map'),'지도');
+  assert.equal(names.get('explore'),'지상 탐험');
 });
 
 // [비주얼] 교역품은 78/60px 목록과 상세 모두 실제 Cargo 메시로 표시한다. 일반 메뉴/그림만 2D로 유지한다.
@@ -735,7 +735,8 @@ test('Mare harbor animals preserve imported mesh scale and verify final bounds',
   assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
   assert.match(scene,/m:GetScale\(\) \* ratio/);
   assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
-  assert.match(scene,/local m = k and importedModel\(folder, "Animals"/);
+  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", if species == "dog" then "dog-pug" else species/);
+  assert.match(scene,/if isAnimal then m:GetScale\(\) \* ratio else ratio/);
 });
 
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
@@ -1002,7 +1003,8 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if cfg then 0\.64/);
+  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then 0\.9 elseif cfg then 0\.64/);
+  assert.match(source,/elseif boardArtKey == "CardArt\/battle_board" then 0\.07 else 0\.58/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
