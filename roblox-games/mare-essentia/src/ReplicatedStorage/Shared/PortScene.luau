@@ -4053,7 +4053,10 @@ function PortScene.build(info, onFacility)
 						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
 						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
 					end
-					Pose.work(w.model, kind, now + w.phase)
+					-- 궁정·공방은 멀리 있을 때 인구·직업 속성은 유지하되 관절 업데이트만 생략.
+					if not (w.industryDuty or w.royalDuty) or not cam or (cam.CFrame.Position - p0).Magnitude < 170 then
+						Pose.work(w.model, kind, now + w.phase)
+					end
 				end
 			elseif w.mode == "animal" then
 				if w.model.Parent then
@@ -4625,16 +4628,37 @@ function PortScene.build(info, onFacility)
 			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
 			local at = Vector3.new(-175 + col * 35, 0, -280 - row * 40)
 			local materialClass = Chains.ClassOf[industry.source]
+			local brand = Chains.BrandById[industry.id]
+			local recipe = brand and Chains.ById[brand.recipe]
+			-- 실제 원료 유형과 기존 공정에 대응하는 등록된 작업 장비만 사용한다.
 			local equipment = if materialClass == "mineral" then { "Town", "workbench-anvil" }
 				elseif materialClass == "forest" then { "Town", "workbench-grind" }
 				elseif materialClass == "farm" then { "Cargo", "mortar-pestle" }
 				elseif materialClass == "fiber" or materialClass == "animal" then { "Cargo", "textiles-stack-small" }
 				else { "Interior", "tablecross" }
+			local sourceMesh = industry.source and GOOD_MESH[industry.source]
+			-- 실제 가공품의 외관과 일치하는 등록된 메시만 완제품으로 표시한다.
+			local finishedByRecipe = {
+				r_cloth_wool = { "Cargo", "textiles-stack-small" },
+				r_cloth_cotton = { "Cargo", "textiles-stack-small" },
+				r_leather = { "Cargo", "leather" },
+				r_aged_cheese = { "Cargo", "cheese" },
+				r_fine_glass = { "Cargo", "glass" },
+				r_vintage_wine = { "Cargo", "wine-red" },
+				r_ginseng_medicine = { "Cargo", "ginseng" },
+			}
+			local finishedMesh = recipe and finishedByRecipe[recipe.id]
 			local frame = importedModel(folder, "Town", "floor_base", at, 23, false)
 			if frame then
 				frame.Name = "LocalIndustry_" .. industry.id
 				frame:SetAttribute("SourceGood", industry.source or "")
 				frame:SetAttribute("IndustryStage", industry.stage)
+				frame:SetAttribute("RawStock", industry.rawStock or 0)
+				frame:SetAttribute("ProcessedStock", industry.processedStock or 0)
+				frame:SetAttribute("Exported", industry.exported or 0)
+				frame:SetAttribute("Produced", industry.produced or 0)
+				frame:SetAttribute("ProcessRecipe", recipe and recipe.id or "")
+				frame:SetAttribute("ProductionFlow", "raw-workshop-market-port")
 				local wall = importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, -9), 20, true)
 				for _, dx in { -10, 10 } do
 					local wp = at + Vector3.new(dx, 0, 0)
@@ -4646,14 +4670,48 @@ function PortScene.build(info, onFacility)
 				end
 				importedModel(folder, equipment[1], equipment[2], at + Vector3.new(5, 0, 0), 4.2, false)
 				importedModel(folder, "Interior", "tablecross", at + Vector3.new(-4, 0, 0), 4.3, false)
-				if industry.source and AssetIds["Cargo/" .. industry.source] then
-					local goods = importedModel(folder, "Cargo", industry.source, at + Vector3.new(0, 0, 3), 3.1, false)
+				-- 입고 중인 진짜 원료 재고가 있을 때만 원료 진열을 만든다.
+				if (industry.rawStock or 0) > 0 and sourceMesh and sourceMesh[2] ~= "box-open"
+					and AssetIds[sourceMesh[1] .. "/" .. sourceMesh[2]] then
+					local goods = importedModel(folder, sourceMesh[1], sourceMesh[2],
+						at + Vector3.new(-5, 0, 4), goodSize(industry.source, 3), false, sourceMesh[3])
 					if goods then goods.Name = "IndustryRawMaterial_" .. industry.source end
+				end
+				-- 실제 가공품이 창고에 존재할 때만 그 가공품과 맞는 등록된 모델을 보여 준다.
+				if industry.stage >= 3 and (industry.processedStock or 0) > 0 and finishedMesh
+					and AssetIds[finishedMesh[1] .. "/" .. finishedMesh[2]] then
+					local finished = importedModel(folder, finishedMesh[1], finishedMesh[2], at + Vector3.new(8, 0, 5), 2.8, false)
+					if finished then
+						finished.Name = "IndustryProcessed_" .. recipe.id
+						finished:SetAttribute("ProcessedName", industry.processed or "")
+					end
 				end
 				local anchor = wall and wall:FindFirstChildWhichIsA("BasePart", true)
 					or frame:FindFirstChildWhichIsA("BasePart", true)
 				if anchor then sign(folder, anchor, if industry.stage >= 3 then industry.name else industry.processed, nil, 12, true) end
 				prompt(folder, at + Vector3.new(0, 3, 8), industry.name or "지역 산업", "공방 살펴보기", "trade", onFacility)
+				-- 승인된 공방 장비 앞에서 실제 생산품에 해당하는 직업 모션으로 일한다.
+				-- 산업마다 한 명만 생성하고 카메라 밖에서는 관절 애니메이션을 생략한다.
+				local workKind = if materialClass == "mineral" then "forge" elseif materialClass == "fiber" then "sew"
+					elseif materialClass == "forest" then "hammer" elseif recipe and recipe.disc == "brewing" then "stir"
+					elseif materialClass == "farm" then "knead" else "inspect"
+				local workPos = at + Vector3.new(5, 0, 5)
+				local clothes = OUTFIT[currentKey] or OUTFIT.north
+				local coat = (clothes.coats and clothes.coats[1]) or C(133, 106, 82)
+				local worker = villager(folder, workPos, faceTo(workPos, at + Vector3.new(5, 0, 0)),
+					coat, rng, if workKind == "forge" or workKind == "hammer" then "Barbarian" else "Rogue", true,
+					{ year = info.year or currentYear, profession = "industry_artisan", hat = clothes.hat })
+				if worker then
+					worker.Name = "IndustryWorker_" .. industry.id
+					worker:SetAttribute("Job", "industry_artisan")
+					worker:SetAttribute("Workplace", industry.name or "지역 산업")
+					worker:SetAttribute("SourceGood", industry.source or "")
+					worker:SetAttribute("Activity", workKind)
+					table.insert(walkers, { model = worker, base = worker:GetPivot(), mode = "stay", kind = workKind,
+						phase = rng:NextNumber(0, 10), job = "industry_artisan", industryDuty = true,
+						workKinds = { workKind, "inspect", "count" },
+						tradeKinds = { "offer", "receive", "count" }, leisureKinds = { "stretch", "talk" } })
+				end
 				if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-14, 0, 0), 6.5, false) end
 				if industry.stage >= 4 then
 					importedModel(folder, "Town", "cart", at + Vector3.new(15, 0, 0), 6.5, false)
