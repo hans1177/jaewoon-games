@@ -3027,7 +3027,7 @@ function FieldScene.start(opts)
 					local heroHead = ch:FindFirstChild("Head")
 					local heroFoot = ch:FindFirstChild("LeftFoot") or ch:FindFirstChild("RightFoot")
 					local heroHeight = if heroHead and heroFoot
-						then math.clamp(heroHead.Position.Y + heroHead.Size.Y * 0.5 - heroFoot.Position.Y + heroFoot.Size.Y * 0.5, 5.3, 7.2)
+						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
 						else 5.8
 					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
