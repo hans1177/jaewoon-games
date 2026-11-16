@@ -501,10 +501,16 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
 		card.Size = UDim2.fromOffset(px, px)
-		H.iconPaper(card, px)
+		-- [메뉴 아이콘] 장정·종이 받침 없이 원화의 투명 영역을 그대로 보여 준다. 상품 카드는 기존 양피지를 유지한다.
+		if kind == "Menu" then
+			card.BackgroundTransparency = 1
+			card.BorderSizePixel = 0
+		else
+			H.iconPaper(card, px)
+		end
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
-			local inset = math.max(2, math.floor(px * 0.12))
+			local inset = if kind == "Menu" then 0 else math.max(2, math.floor(px * 0.12))
 			local art = Instance.new("ImageLabel")
 			art.Name = "OriginalArt"
 			art.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
@@ -1729,35 +1735,47 @@ local HUD_MENU_TINT = {
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
 }
 local HUD_MENU_ART = {
-	gear = "chart_anchor", deck = "battle", auto = "harbor", help = "chart_wonder_pin",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
-	journal = "codex", chart = "map", yard = "yard", explore = "explore",
+	gear = "", deck = "cc0_book", auto = "harbor", help = "",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "chart_port",
+	journal = "quest", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	-- [시설 아이콘] 기존 등록 원화를 가죽 장정·황동 받침에 통일해 표시한다.
+	-- [시설 아이콘] 기존 등록 원화만 투명 배경 위에 표시한다. 클릭 영역·글자·선택 상태는 유지한다.
 	button.Size = UDim2.fromOffset(if dockItem then 52 else 44, if dockItem then 64 else 44)
 	button.BackgroundColor3 = COLORS.leather
-	button.BackgroundTransparency = 0.06
+	button.BackgroundTransparency = 1
 	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
 	corner(button, 8)
-	bookMaterial(button, "leather", 128)
 	local badgeStroke = Instance.new("UIStroke")
 	badgeStroke.Name = "DockBorder"
 	badgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	badgeStroke.Color = UI_BRASS_DARK
 	badgeStroke.Thickness = 1.5
+	badgeStroke.Transparency = 1 -- [투명 아이콘] 기존 검사·선택 상태용 객체는 유지하되 외곽 사각 테두리는 그리지 않는다.
 	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	local artId = if key == "tavern" then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
 	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
-	if artId then
+	if key == "tavern" then
+		-- [주점] 기존 CC0 머그잔 3D 모델을 투명한 아이콘으로 보여 준다. 새 이미지·등록 파이프라인은 만들지 않는다.
+		local mug = modelIcon(button, "Cargo", "mug", nil, artSize, "주점")
+		mug.Name = "MenuArt"
+		mug.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
+		mug.BackgroundTransparency = 1
+		mug.ZIndex = 2
+		for _, layer in mug:GetChildren() do
+			if layer:IsA("UIGradient") or layer:IsA("UIStroke") or layer.Name == "EngravedMargin" then
+				layer:Destroy()
+			end
+		end
+	elseif artId then
 		for i = 1, 2 do
 			local art = Instance.new("ImageLabel")
 			art.Name = if i == 1 then "MenuArtShadow" else "MenuArt"
@@ -1773,7 +1791,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Parent = button
 		end
 	else
-		button.Text = if key == "help" then "?" else string.sub(label, 1, 1)
+		button.Text = if key == "help" then "?" elseif key == "gear" then "⚙" else string.sub(label, 1, 1)
 		button.TextSize = 34
 		button.TextYAlignment = Enum.TextYAlignment.Top
 		button.Font = Enum.Font.GothamBlack
@@ -1794,12 +1812,13 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		caption.Parent = button
 		H.shadowOf(caption)
 	end
-	-- [시설 선택] 선택한 아이콘만 황동 테두리를 진하게 표시한다.
+	-- [시설 선택] 배경 박스 대신 아이콘·이름 색으로 현재 시설을 알린다.
 	local function paintSelection()
 		local selected = button:GetAttribute("SelectedFacility") == true
-		button.BackgroundColor3 = if selected then COLORS.coverRaised else COLORS.leather
-		badgeStroke.Color = if selected then UI_BRASS else UI_BRASS_DARK
-		badgeStroke.Thickness = if selected then 2.5 else 1.5
+		local art = button:FindFirstChild("MenuArt")
+		if art and art:IsA("ImageLabel") then art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204)) end
+		local caption = button:FindFirstChild("MenuName")
+		if caption then caption.TextColor3 = if selected then COLORS.gold else Color3.fromRGB(255, 244, 214) end
 	end
 	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
 	paintSelection()
@@ -1864,7 +1883,7 @@ dockLimit.Parent = dock
 -- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
 H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
-	{ "board", "주점", "quest" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
+	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 H.dockButtons = {}
 for i, d in H.DOCK do
