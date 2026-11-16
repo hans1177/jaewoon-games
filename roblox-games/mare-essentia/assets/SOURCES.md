@@ -1592,3 +1592,19 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - 각 개조본과 같은 이름의 `.glb.license.json`에 원본 Git SHA, 원본 SHA-256, 개조본 SHA-256, 변경 항목, 검증 여부를 보관한다.
 - **등록 번호 검증:** `assets-registered.json`의 자산별 `sourceSha256`과 현재 GLB 해시가 같고 Universe 사용권한이 확인된 경우에만 해당 버전의 모델 등록으로 인정한다. 바뀐 GLB는 기존 등록기에서 새 번호를 발급받고 실패하면 이전 번호를 복원한다.
 - **미완료:** 실제 항구·해전 외형 연결, Roblox Studio 실화면 품질, 모바일 성능, 체험 게시. 원본 확보·모델 개조·등록·실제 게임 화면을 혼동하지 않는다.
+
+
+## 2026-11-17 함종별 원본 선확보 추가 4종
+
+원본 각각의 **실제 Git 바이너리**를 선확보한 뒤 원본 메시·바이너리를 유지하고, 새 돛·밧줄·선체 부속을 더한 각기 다른 개조 모델이다. 출처는 모두 Kenney Pirate Kit (https://kenney.nl/assets/pirate-kit , CC0-1.0, 상업 이용·개조 가능).
+
+| 함종 개조본 | 선확보 원본 | 함종 특징 |
+|---|---|---|
+| `naval/galley-custom.glb` | `naval/ship-pirate-small.glb` | 지중해 갤리: 양쪽 노 16개, 경사 삼각돛 2개, 전투 갑판 |
+| `naval/dhow-custom.glb` | `naval/boat-sail-a.glb` | 인도양 다우: 기울어진 긴 돛대와 커다란 삼각돛, 높은 선미 |
+| `naval/prau-custom.glb` | `naval/boat-sail-b.glb` | 동남아 프라우: 한쪽 보조 선체, 교차 빔, 게발 돛 |
+| `naval/junk-custom.glb` | `naval/ship-pirate-large.glb` | 동아시아 정크: 가로 살대 돛 2개, 높은 선미 건물, 조타 장식 |
+
+- 각 모델 파일 옆 `.glb.license.json`에 원본 Git blob SHA-1, 원본/개조 SHA-256, 개조 삼각형 수, 변경 설명을 함께 기록한다.
+- 원본과 개조본은 기존 자동 자산 등록기 `tools/mare-essentia-upload-assets.mjs`만 사용한다. 자산 등록번호·Universe 사용권한·실제 Studio 외형은 별도 결과를 확인해야 한다.
+- **실화면 적용 대기**: 실제 시각 품질·모바일 FPS 검증 없이 항구·해전에 원본 메시를 강제 연결하지 않는다. 게임 규칙·저장 데이터에는 변경 없다.
