@@ -233,8 +233,8 @@ return function(D, S)
 		disaster = { "medicine", "meteorology", "geography" }, society = { "medicine", "history" },
 		economy = { "commerce", "economics" },
 	}
-	local function newsClass(kind, id)
-		local label = tostring(kind or "") .. " " .. tostring(id or "")
+	local function newsClass(kind, id, title)
+		local label = tostring(kind or "") .. " " .. tostring(id or "") .. " " .. tostring(title or "")
 		for _, cat in ipairs(NEWS_CATEGORIES) do
 			for _, token in ipairs(cat.tokens) do
 				if string.find(label, token, 1, true) then return cat.id, cat.name end
@@ -343,9 +343,16 @@ return function(D, S)
 				local age = channel.day - (rec.day or channel.day)
 				local key = tostring(rec.id) .. ":" .. tostring((rec.ports and rec.ports[1]) or (rec.regions and rec.regions[1]) or "")
 				if age >= 0 and age <= 500 and not seen[key] then
-					local category, name = newsClass(rec.kind, rec.id)
+					local category, name = newsClass(rec.kind, rec.id, rec.title)
 					local importance = category == "military" or category == "diplomacy" or (category == "politics" and (string.find(tostring(rec.kind), "혁명", 1, true) or string.find(tostring(rec.id), "independence", 1, true)))
 					local scope, delay, home = newsRoute(t, rec)
+					local origin = home and home.name or (rec.regions and rec.regions[1]) or (rec.countries and rec.countries[1]) or "출처 미상"
+					if not home and rec.regions and rec.regions[1] then
+						for _, region in ipairs(D.Regions.List) do
+							if region.id == rec.regions[1] then origin = region.name; break end
+						end
+					end
+					end
 					local network = home ~= nil and state.stats ~= nil and state.stats.visited ~= nil and state.stats.visited[home.id] ~= nil and state.stats.visited[home.id] ~= false
 					local expertise, companionName = newsExpertise(state, category)
 					if paper then delay = math.max(0, math.floor(delay * 0.75)) end
@@ -372,7 +379,7 @@ return function(D, S)
 						end
 						table.insert(result.rows, { id = tostring(rec.id), title = rec.title or tostring(rec.id),
 							category = category, categoryName = name, daysOld = math.floor(age), source = result.medium,
-							confidence = confidence, detail = detail, region = scope, eventId = rec.sourceEvent or rec.id,
+							confidence = confidence, detail = detail, region = scope, origin = origin, eventId = rec.sourceEvent or rec.id,
 							qid = if expertise >= 2 or paper then rec.qid else nil })
 						if not present[category] then present[category] = true; table.insert(result.categories, name) end
 						seen[key] = true
