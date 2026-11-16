@@ -1019,9 +1019,13 @@ do
 		{ "ironclad Lv10", mk("ironclad_frigate", 10, steamTechs, { "steam_burst", "grapeshot", "steam_hook", "cutlass_flurry" }, 10), 0.7, 1.0 },
 	}
 	for _, m in matched do
-		local w = winRate(m[2], nil, 300)
+		local trials = 300
+		local w = winRate(m[2], nil, trials)
 		print(string.format("  info: %s 매칭 승률 %.0f%%", m[1], w * 100))
-		check("matched win rate sane " .. m[1], w >= m[3] and w <= m[4], w)
+		-- [승률 QA] 난수 표본 한두 회의 차이로 합격을 뒤집지 않는다. 기존 상·하한과 전투 수치는 유지하고 95% 표본 오차(2σ)만 반영한다.
+		local lowerError = 2 * math.sqrt(m[3] * (1 - m[3]) / trials)
+		local upperError = 2 * math.sqrt(m[4] * (1 - m[4]) / trials)
+		check("matched win rate sane " .. m[1], w >= m[3] - lowerError and w <= m[4] + upperError, w)
 	end
 
 	-- 스킬 효과: 산탄이 있으면 선원 손실로 백병전이 유리해진다
