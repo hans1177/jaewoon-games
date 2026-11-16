@@ -248,5 +248,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
+          # [메인] 기존 개발 워크플로가 의도적으로 비활성화된 경우 이를 임의로 켜거나 우회하지 않는다.
+          # 활성 상태인 경우에만 기존 canonical dispatch를 실행한다.
+          workflow_state="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml" --jq '.state')"
+          if [[ "$workflow_state" == "active" ]]; then
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
+          elif [[ "$workflow_state" == "disabled_manually" || "$workflow_state" == "disabled_inactivity" ]]; then
+            echo "::notice::Canonical development runtime is disabled; owner setting preserved"
+            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=NO_WORKFLOW_DISABLED'
+          else
+            echo "::error::Canonical development runtime state not verified: $workflow_state"
+            exit 1
+          fi
