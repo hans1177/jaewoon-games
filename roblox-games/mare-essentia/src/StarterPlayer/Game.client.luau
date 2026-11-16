@@ -142,7 +142,6 @@ local TABS = {
 	{ id = "quest", name = "진행 일지" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
-	{ id = "cards", name = "카드 목록" },
 	{ id = "status", name = "현황" },
 	{ id = "harbor", name = "항구 정보" },
 	{ id = "crew", name = "동료 관리" },
@@ -8156,7 +8155,7 @@ H.TAB_ICON = {
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
 	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Glyph", "research" },
-	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" }, cards = { "Menu", "codex" },
+	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 }
 function H.renderTabs()
 	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
