@@ -69,7 +69,7 @@ async function prepareLicensedOriginals() {
       || evidence.source !== source || evidence.sourcePage !== sourcePage
       || (item.pinnedBlobSha && evidence.pinnedBlobSha !== item.pinnedBlobSha)
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
-      throw new Error('MARE_SHIP_SOURCE_EVIDENCE_MISMATCH:' + name);
+      throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' : 'MARE_LICENSED_ORIGINAL_EVIDENCE_MISMATCH:') + name);
     if (bytes && !evidence) throw new Error('MARE_SHIP_SOURCE_PROVENANCE_MISSING:' + name);
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
@@ -138,7 +138,7 @@ async function prepareLicensedOriginals() {
       return sum + Math.floor(a.count / 3);
     }, 0);
     if (tris < item.minTriangles || tris > (item.maxTriangles || 30000))
-      throw new Error('MARE_LICENSED_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
+      throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
       await fs.writeFile(target, bytes);
