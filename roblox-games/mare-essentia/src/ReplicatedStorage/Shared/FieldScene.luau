@@ -682,7 +682,13 @@ function FieldScene.start(opts)
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
 		local styleN = math.floor((i - 1) / 4) % 3 + 1
 		local style = looks[ac.kind][styleN]
-		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6)
+		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
+		local bodyType = if ac.kind == "archer" then "slim" elseif ac.kind == "shield" or isBoss then "heavy"
+			elseif ac.kind == "charger" then "athletic" else "average"
+		local motionStyle = if ac.kind == "archer" then "nimble" elseif ac.kind == "shield" or isBoss then "heavy"
+			elseif ac.kind == "charger" then "disciplined" else "civilian"
+		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
+			{ bodyType = bodyType, motionStyle = motionStyle, persona = styleN, profession = ac.kind, year = opts.year })
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
 			continue
@@ -2777,7 +2783,7 @@ function FieldScene.start(opts)
 			elseif attackProgress >= 0 and attackProgress < 1 then
 				Pose.makeR15Action(e.model, "attack", attackProgress, now - e.spawnT)
 			else
-				Pose.makeR15Action(e.model, if wish ~= 0 then "run" else "idle", 0, now - e.spawnT)
+				Pose.makeR15Action(e.model, if wish ~= 0 then "run" else "idle", 0, if wish ~= 0 then (e.gait or 0) * 2 * math.pi else now - e.spawnT)
 			end
 		end
 	end))
@@ -2837,7 +2843,17 @@ function FieldScene.start(opts)
 				spawned = true
 				for i, ad in allyDefs do
 					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
-					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.6)
+					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
+					local persona = hashName(ad.name) % 3 + 1
+					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
+					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
+					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year }
+					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
+					if type(opts.year) == "number" and opts.year >= 1500 then
+						outfit.hair = if persona == 2 then "bun" else "short"
+						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
+					end
+					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.6, outfit)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
@@ -2962,7 +2978,7 @@ function FieldScene.start(opts)
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
-					Pose.makeR15Action(a.model, if moving then "run" else "idle", 0, now - a.t0)
+					Pose.makeR15Action(a.model, if moving then "run" else "idle", 0, if moving then (a.gait or 0) * 2 * math.pi else now - a.t0)
 				end
 			end
 		end))
