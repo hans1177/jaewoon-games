@@ -219,6 +219,7 @@ do
 	local latest = memory.value.revision
 	check("동시 충돌은 과거 세계 덮기 금지", d.sync(stB) == false and memory.value.revision == latest)
 	check("충돌한 연구 사건을 최신 서버 세계에 다시 적용", d.town(stB, "london").tech > pulled.tech)
+	check("종료 강제 저장은 충돌을 복구한 연구를 보존", d.sync(stB, true) and memory.value.revision == latest + 1)
 end
 
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
