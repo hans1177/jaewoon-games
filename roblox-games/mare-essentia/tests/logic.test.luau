@@ -499,10 +499,10 @@ local function extraTests()
 	stFx2.portId = "london"
 	stFx2.coins = 10000
 	stFx2.day = (1721 - 1700) * 365
-	S.World.tick(stFx2)
+	local remoteMessages = S.World.tick(stFx2)
 	check("세계: 다른 항구에 있으면 직접 피해는 없음", stFx2.coins == 10000)
 	local remoteImmediate = false
-	for _, line in S.World.tick(stFx2) do
+	for _, line in remoteMessages do
 		if string.find(line, "마르세유", 1, true) then remoteImmediate = true end
 	end
 	check("먼 항구의 사건은 즉시 세계 소식으로 유출되지 않는다", not remoteImmediate)
