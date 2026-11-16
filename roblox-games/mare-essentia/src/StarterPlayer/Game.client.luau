@@ -2942,7 +2942,6 @@ local function call(action, payload)
 		NavalBattle.play({
 			shipId = view.ship and view.ship.id,
 			shipName = view.ship and view.ship.name,
-			cardEffects = view.navalEffects,
 			fleetIds = (function()
 				local ids = {}
 				for _, f in (view.fleet and view.fleet.ships) or {} do
@@ -2970,19 +2969,13 @@ local function call(action, payload)
 			wind = view.weather and view.weather.wind,
 			windAngle = ((view.weather and string.byte(view.weather.id or "x", 1) or 0) * 47) % 360,
 			enemyName = lb.enemy,
-			deck = view.deck,
 			log = lb.log,
 			winner = lb.winner,
 			reason = lb.reason,
 			isBoss = action == "ChallengeBoss",
-			card = lb.card,
-			sim = if lb.pending and not lb.card then lb.sim else nil, -- 실시간 해전: 두 배의 능력으로 직접 싸운다
+			sim = if lb.pending then lb.sim else nil, -- 실시간 해전: 서버 판정·저장 규칙을 유지한다
 			onResult = function(claim)
 				call("NavalResult", claim)
-				return view and view.lastBattle and view.lastBattle.winner
-			end,
-			onCards = function(actions)
-				call("CardBattle", { actions = actions })
 				return view and view.lastBattle and view.lastBattle.winner
 			end,
 			canFlee = lb.canFlee == true,
