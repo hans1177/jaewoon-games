@@ -1511,3 +1511,12 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 원저작자/라이선스: https://quaternius.com/packs/ultimatemonsters.html ; https://kenney.nl/assets/graveyard-kit ; https://kaylousberg.itch.io/kaykit-skeletons ; https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 . 원본 증빙: https://github.com/ilrein/warptracker/blob/main/ASSETS.md ; https://github.com/Hidencod/tge-assets . 유령은 실제 관절 스킨 1개·애니메이션 8개, 악마는 관절 스킨 1개·애니메이션 14개가 GLB 안에 확인되었다. 기존 해골 2종은 기존 `assets/roblox/actors/manifest.json` 검증 기록에 각각 관절 41개·애니메이션 76개로 기재되나, 이 목록은 Roblox 런타임 승인 증거가 아니다.
 
 기존 `owner-mare-essentia-assets.yml`과 `tools/mare-essentia-upload-assets.mjs`로만 자산 번호를 발급한다. 발급·Universe 사용권한·실제 Studio 시각·애니메이션 재생 확인 전에는 기존 전투 스폰/체력/공격력/드랍/저장과 지형을 바꾸지 않는다.
+
+## 2026-11-16 문화권 건축 자연물 원본 3종 (후보 소스)
+
+- 범위: 미개발 필지·목장 주변·랜드마크 조경용 풀 `Grass_Small.obj`, 바위 `Rock_2.obj`, 수풀 `Bush_Small.obj` 및 원본 `.mtl` 3개. 기존 `assets/terrain/`에 저장한다.
+- 제작자: Quaternius, *Ultimate Stylized Nature Pack* (2022), **CC0-1.0**. 무료·상업 이용 가능. 공식 라이선스: https://quaternius.com/packs/ultimatestylizednature.html
+- 재배포 원본: https://github.com/tilakpatell/tilakverse-assets/tree/main/quaternius/stylized-nature-pack/OBJ
+- 원본 Git blob SHA: `Grass_Small.obj=f1353d565c613843426dbe5335ff5faed5512d5d`, `Rock_2.obj=dd00ae412f345afc50d40d3e9772ade57f81df9a`, `Bush_Small.obj=695c4c46b6a3a07bf889ea6c9044c742cb352ba6`.
+- `mtllib` 원본 참조와 대소문자를 유지한 원본 `OBJ/MTL` 그대로 보관. 동일 파일과 일치하는 원본을 출처에서 받아 GitHub에 등록했다.
+- **상태: 모델 원본 확보 완료.** 로블록스 등록/AssetIds 부여/실제 렌더·모바일 QA/게시 검증 전이므로 게임에서 자동 사용한다고 주장하지 않는다. 기존 `assets/inbox` 등록기에는 `.glb` 또는 `.fbx` 변환, 파일별 `.license.json` 및 정규 업로더 절차가 필요하다.
