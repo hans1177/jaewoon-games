@@ -1756,11 +1756,15 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
 	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
-	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl]
-	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl]
+	local isRoyalCity = table.find(info.facilities or {}, "palace") ~= nil
+	local royalPlots = PortBuildings.RoyalCityPlots
+	local royalLot = if isRoyalCity then royalPlots.plotScale[lvl] else 1
+	local royalArea = if isRoyalCity then royalPlots.districtScale[lvl] else 1
+	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl] * royalLot
+	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl] * royalArea
 	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth * lotVariance
 	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
-	local laneWidth = math.max(9, P.alley * 1.8)
+	local laneWidth = math.max(if isRoyalCity then 13 else 9, P.alley * (if isRoyalCity then 2.1 else 1.8))
 	local laneL = 2 * S + laneWidth + 12
 	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
@@ -1771,7 +1775,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local smokers = 0
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
-	local X_END = -math.min(570, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
+	local X_END = -math.min(565, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
 	local streetsOuter = {}
 	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
@@ -3053,7 +3057,8 @@ function PortScene.build(info, onFacility)
 		local px = -425
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
-		local scale = 1.07 + sceneLevel * 0.075 + royalSeed:NextNumber(0, 0.06)
+		-- 왕도 발전에 따른 왕궁 폭·깊이 확장. 별관·근위대·정원까지 하나의 구획으로 확보한다.
+		local scale = 1.12 + (sceneLevel - 1) * 0.11 + royalSeed:NextNumber(0, 0.04)
 		local wide, deep = 134 * scale, 138 * scale
 		local tall = 30 + sceneLevel * 4
 		local east = key == "japan" or key == "china" or key == "seasia" or key == "malabar"
@@ -3076,6 +3081,8 @@ function PortScene.build(info, onFacility)
 		main:SetAttribute("RoyalStyle", courtStyle)
 		main:SetAttribute("PortId", info.portId)
 		main:SetAttribute("FootprintRatio", 10)
+		main:SetAttribute("RoyalTier", sceneLevel)
+		main:SetAttribute("RoyalPlotScale", PortBuildings.RoyalCityPlots.plotScale[sceneLevel])
 		part(folder, Vector3.new(wide + 6, 3.2, deep * 0.77 + 6), CFrame.new(px, tall + 1.6, 0), roofColor, if east or tropical then Enum.Material.WoodPlanks else Enum.Material.Slate)
 		for _, side in { -1, 1 } do
 			local z = side * (deep * 0.41 + 20)
@@ -3139,7 +3146,9 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "workbench-anvil", Vector3.new(px - wide * 0.42, 0, -(deep * 0.45 + 33)), 3.5, false)
 		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61), 23)
 		prompt(folder, Vector3.new(frontX + 9, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
-		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = math.max(2, math.floor((info.sim and info.sim.residents or 12) / 15)) }
+		local courtStaff = math.clamp(math.floor((info.sim and info.sim.residents or 12) / 8), 1, 12)
+		if info.sim and (info.sim.prosperity or 100) < 75 then courtStaff = math.max(1, math.floor(courtStaff * 0.6)) end
+		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = courtStaff }
 		folder:SetAttribute("RoyalDistrictStyle", courtStyle)
 		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 	end
