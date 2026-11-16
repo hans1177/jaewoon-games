@@ -501,7 +501,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			x, y, w, h = rect(x, y, w, h)
 			local piece = Instance.new("Frame")
 			piece.Name = "GlyphShape"
-			piece.BackgroundColor3 = ink
+			-- UIGradient가 곱해지므로 밝은 메뉴는 흰 바탕에 황동 그라데이션 1회만 적용.
+			piece.BackgroundColor3 = if px > 28 then Color3.new(1, 1, 1) else ink
 			piece.BorderSizePixel = 0
 			piece.Size = UDim2.fromScale(w, h)
 			piece.Position = UDim2.fromScale(x, y)
@@ -1967,7 +1968,28 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local function paintSelection()
 		local selected = button:GetAttribute("SelectedFacility") == true
 		local art = button:FindFirstChild("MenuArt")
-		if art and art:IsA("ImageLabel") then art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204)) end
+		if art and art:IsA("ImageLabel") then
+			art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204))
+		elseif art and art:IsA("Frame") and art:GetAttribute("MenuGlyph") then
+			-- [선택 색 동기화] 원화뿐 아니라 황동 도형도 같은 선택 강조를 받는다.
+			local highlight = if selected then Color3.fromRGB(248, 207, 126) else Color3.fromRGB(226, 174, 84)
+			for _, part in art:GetDescendants() do
+				if part.Name == "GlyphShape" and part:IsA("Frame") then
+					local shine = part:FindFirstChildOfClass("UIGradient")
+					if shine then
+						shine.Color = if selected then ColorSequence.new(Color3.fromRGB(255, 232, 175), Color3.fromRGB(218, 170, 89))
+								else ColorSequence.new(Color3.fromRGB(249, 211, 139), Color3.fromRGB(193, 137, 57))
+					else
+						part.BackgroundColor3 = highlight
+					end
+				elseif part.Name == "GlyphOutline" and part:IsA("Frame") then
+					local edge = part:FindFirstChildOfClass("UIStroke")
+					if edge then edge.Color = highlight end
+				elseif (part.Name == "CardSuit" or part.Name == "HelpMark") and part:IsA("TextLabel") then
+					part.TextColor3 = highlight
+				end
+			end
+		end
 		local caption = button:FindFirstChild("MenuName")
 		if caption then caption.TextColor3 = if selected then COLORS.gold else Color3.fromRGB(255, 244, 214) end
 	end
