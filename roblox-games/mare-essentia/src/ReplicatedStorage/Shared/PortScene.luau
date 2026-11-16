@@ -1815,8 +1815,6 @@ local function densify(folder, info, style, rng, walkers, made)
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
-		fillRow(side * (152 + laneWidth / 2 + 6 + S / 2), 0, -260)
-		fillRow(side * (152 + laneWidth / 2 + 10 + S + 6 + S / 2), 0.15, -260)
 		for p = 0, pairsN do
 			local laneZ = 152 + p * laneL
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
