@@ -189,14 +189,16 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			end
 		elseif role == "ally-ranged" then
 			-- 원거리 동료: 걷는 중에도 사격 준비 팔을 낮게 유지한다.
-		if state == "IDLE" or attack then
-			bend("UpperArmL", -0.32, 0, -0.10)
-			bend("UpperArmR", -0.52, 0, 0.10)
-			bend("ForearmR", -0.32, 0, 0)
-		end
-		if role == "ally-melee" and (state == "IDLE" or attack) then
-			bend("UpperArmL", -0.28, 0, -0.14)
-			bend("UpperArmR", -0.35, 0, 0.12)
+			if state == "IDLE" or attack then
+				bend("UpperArmL", -0.32, 0, -0.10)
+				bend("UpperArmR", -0.52, 0, 0.10)
+				bend("ForearmR", -0.32, 0, 0)
+			end
+		elseif role == "ally-melee" then
+			if state == "IDLE" or attack then
+				bend("UpperArmL", -0.28, 0, -0.14)
+				bend("UpperArmR", -0.35, 0, 0.12)
+			end
 		end
 	end
 	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
