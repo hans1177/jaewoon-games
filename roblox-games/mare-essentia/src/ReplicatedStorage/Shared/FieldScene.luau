@@ -308,6 +308,34 @@ function FieldScene.start(opts)
 	end
 
 	local spawn = ORIGIN + Vector3.new(0, 4, half - 14)
+	-- 필드 바닥 생성 직후 캐릭터와 카메라를 이동시켜, 나머지 적·조작 UI 생성과 분리한다.
+	-- 캐릭터를 필드로 옮긴다
+	local char = player.Character or player.CharacterAdded:Wait()
+	char:PivotTo(CFrame.new(spawn))
+	-- 항구 전경에서는 캐릭터가 고정(Anchored)되어 있다. 탐험에서는 걸어 다닐 수 있어야 하므로 풀어 준다.
+	local fieldRoot = char:FindFirstChild("HumanoidRootPart")
+	if fieldRoot and fieldRoot:IsA("BasePart") then
+		fieldRoot.Anchored = false
+	end
+	do
+		local fh = char:FindFirstChildOfClass("Humanoid")
+		if fh then
+			fh.PlatformStand = false
+			fh.Sit = false
+			fh.WalkSpeed = 18
+			fh.JumpPower = 50
+			fh.AutoRotate = true
+			fh:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end
+	end
+	local cam = workspace.CurrentCamera
+	cam.CameraType = Enum.CameraType.Custom
+	cam.FieldOfView = 70
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	if hum then
+		cam.CameraSubject = hum
+	end
+
 	-- 시작 지점 표지
 	part(folder, Vector3.new(10, 0.3, 10), CFrame.new(ORIGIN + Vector3.new(0, 0.15, half - 14)), Color3.fromRGB(214, 170, 82), Enum.Material.Cobblestone, Enum.PartType.Cylinder).CFrame = CFrame.new(ORIGIN + Vector3.new(0, 0.2, half - 14)) * CFrame.Angles(0, 0, math.pi / 2)
 
@@ -2746,32 +2774,6 @@ function FieldScene.start(opts)
 		end))
 	end
 
-	-- 캐릭터를 필드로 옮긴다
-	local char = player.Character or player.CharacterAdded:Wait()
-	char:PivotTo(CFrame.new(spawn))
-	-- 항구 전경에서는 캐릭터가 고정(Anchored)되어 있다. 탐험에서는 걸어 다닐 수 있어야 하므로 풀어 준다.
-	local fieldRoot = char:FindFirstChild("HumanoidRootPart")
-	if fieldRoot and fieldRoot:IsA("BasePart") then
-		fieldRoot.Anchored = false
-	end
-	do
-		local fh = char:FindFirstChildOfClass("Humanoid")
-		if fh then
-			fh.PlatformStand = false
-			fh.Sit = false
-			fh.WalkSpeed = 18
-			fh.JumpPower = 50
-			fh.AutoRotate = true
-			fh:ChangeState(Enum.HumanoidStateType.GettingUp)
-		end
-	end
-	local cam = workspace.CurrentCamera
-	cam.CameraType = Enum.CameraType.Custom
-	cam.FieldOfView = 70
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	if hum then
-		cam.CameraSubject = hum
-	end
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	do

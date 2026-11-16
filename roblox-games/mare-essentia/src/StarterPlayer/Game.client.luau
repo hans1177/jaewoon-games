@@ -163,8 +163,8 @@ local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit", "explore" } }, -- 주점은 의뢰만 다룬다 (의뢰판: 이 항구·이 시기의 의뢰)
-	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "war", "gwent" } }, -- 해전·대규모 해전 의뢰·카드 배틀
+	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
+	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
 	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
@@ -2371,7 +2371,7 @@ bubble.InputBegan:Connect(function(input)
 end)
 -- 길잡이 가리킴: 지금 눌러야 할 메뉴 버튼이 금빛으로 맥동하며 살짝 흔들린다 (참고: 흔들리는 버튼·움직이는 화살표로 시선을 이끄는 튜토리얼 관례).
 -- 오래 쓰면 거슬리므로 초반 길잡이(g_...)에서만 켜고, 다른 조언으로 넘어가거나 닫으면 끈다.
-local GUIDE_BTN = { trade = "Menu_trade", route = "Menu_route", yard = "Menu_yard", board = "Menu_board", quest = "Menu_board", explore = "Menu_board",
+local GUIDE_BTN = { trade = "Menu_trade", route = "Menu_route", yard = "Menu_yard", board = "Menu_board", quest = "Menu_board", explore = "Menu_battle",
 	battle = "Menu_battle", tech = "Menu_codex", codex = "Menu_codex", crew = "Menu_status", status = "Menu_status", gwent = "DeckButton" }
 local guidePulseToken = 0
 function H.setGuidePulse(tab)
@@ -5796,6 +5796,16 @@ function H.startField(s)
 	if inField then
 		return
 	end
+	-- 필드 생성 오류가 나더라도 항구 시점·조작·기존 캐릭터 상태를 되돌릴 수 있게 보관한다.
+	local returnCharacter = player.Character
+	local returnCFrame = returnCharacter and returnCharacter:GetPivot()
+	local returnHumanoid = returnCharacter and returnCharacter:FindFirstChildOfClass("Humanoid")
+	local returnSpeed = returnHumanoid and returnHumanoid.WalkSpeed
+	local returnJumpPower = returnHumanoid and returnHumanoid.JumpPower
+	local lighting = game:GetService("Lighting")
+	local returnLighting = { FogColor = lighting.FogColor, FogStart = lighting.FogStart, FogEnd = lighting.FogEnd, ClockTime = lighting.ClockTime }
+	local oldFieldGui = player:FindFirstChildOfClass("PlayerGui") and player.PlayerGui:FindFirstChild("FieldGui")
+	if oldFieldGui then oldFieldGui:Destroy() end
 	inField = true
 	main.Visible = false
 	local allyNames = {}
@@ -5838,11 +5848,30 @@ function H.startField(s)
 		end,
 	})
 	if not startOk then
-		-- 탐험지를 못 열면 항구 화면이 멈춘 채 남지 않게 되돌린다
+		-- 필드 생성 중 멈추면 지도·전투 조작 화면까지 정리하고 캐릭터·시점을 복구한다.
 		warn("[Game] 탐험지 열기 실패", startErr)
+		local partialField = workspace:FindFirstChild("FieldScene")
+		if partialField then partialField:Destroy() end
+		local partialGui = player:FindFirstChildOfClass("PlayerGui") and player.PlayerGui:FindFirstChild("FieldGui")
+		if partialGui then partialGui:Destroy() end
+		workspace:SetAttribute("FieldTouchPad", nil)
+		pcall(function()
+			local scripts = player:FindFirstChild("PlayerScripts")
+			local module = scripts and scripts:FindFirstChild("PlayerModule")
+			if module then require(module):GetControls():Enable() end
+		end)
+		lighting.FogColor, lighting.FogStart, lighting.FogEnd, lighting.ClockTime = returnLighting.FogColor, returnLighting.FogStart, returnLighting.FogEnd, returnLighting.ClockTime
+		if returnCharacter and returnCharacter.Parent and returnCFrame then
+			returnCharacter:PivotTo(returnCFrame)
+			if returnHumanoid then
+				returnHumanoid.WalkSpeed = returnSpeed
+				returnHumanoid.JumpPower = returnJumpPower
+			end
+		end
 		inField = false
+		applyView()
 		main.Visible = true
-		message = "탐험지를 여는 데 실패했어요. 다시 시도해 주세요"
+		message = "탐험지 이동 실패 · 항구로 복귀했어요. 다시 시도해 주세요"
 		messageOk = false
 		render()
 	end
@@ -5860,12 +5889,12 @@ function RENDERERS.explore()
 		for _, s in view.sites do
 			table.insert(tiles, { icon = "explore", title = s.name,
 				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
-				btn = "탐험", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
+				btn = "지상맵 입장", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
 		return H.tileGrid(tiles, content, 176, 156)
 	end)
 	end
-	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 주점의 탐험 탭은 여기서 끝난다.
+	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 전투 본부의 탐험 탭은 여기서 끝난다.
 	if not H.exploreScholarView then return end
 	-- 연구 논문: 관찰 노트 -> 초안 -> 학회 발표 -> 출판 (플레이어도 학자처럼 단계별로 올라간다)
 	if view.chron then
