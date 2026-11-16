@@ -118,11 +118,11 @@ export function extractVibeSourceImportRefs(source='',target=''){
   return Object.freeze([...refs].filter(Boolean).sort());
 }
 
-function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceCalls=new Set(),sourceNames=new Set(),responsibleFunctionsByPath=new Map(),target='',requiredModulePaths=[]}){
+function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceCalls=new Set(),sourceNames=new Set(),responsibleFunctionsByPath=new Map(),target='',requiredModulePaths=[],observedImports=new Map(),sourceLinkDepth=null}){
   let score=0;const text=typeof row.text==='string'?row.text:safeRead(row.full);
   if(responsible.has(row.relative))return{...row,score:10000,text,connections:[],
     functions:responsibleFunctionsByPath.get(row.relative)||[],
-    imports:target==='roblox'?extractVibeSourceImportRefs(text,target):null};
+    imports:target==='roblox'?observedImports.get(row.relative)||[]:null};
   const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
   if(responsibleDirs.has(dir))score+=35;
   for(const token of tokens)if(lower.includes(token))score+=5;
@@ -130,7 +130,13 @@ function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,respon
   if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;
   const callNames=fn=>new Set([...fn.code.matchAll(/\b([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*)\s*\(/g)].map(match=>match[1].split(/[.:]/).at(-1)));
   const functions=inspectSourceFunctions(text,{language:target}),connections=[];
-  const imports=target==='roblox'?extractVibeSourceImportRefs(text,target):null;
+  const imports=target==='roblox'?observedImports.get(row.relative)||[]:null;
+  // [모듈 근거] 이미 연결이 증명된 호출자·의존 모듈에 우선권을 준다.
+  // 외부 파일은 개발 문맥에만 추가되며 수정 책임 범위는 절대 확대하지 않는다.
+  if(Number.isInteger(sourceLinkDepth)&&sourceLinkDepth>=1&&sourceLinkDepth<=3){
+    score+=[0,720,440,240][sourceLinkDepth];
+    connections.push({path:row.relative,symbol:'observed-module-dependency',direction:'VERIFIED_IMPORT_PATH'});
+  }
   if(target==='roblox'){
     // A required module and its importers are higher-value coding context than lexical neighbors.
     // Dependency discovery remains read-only and cannot extend the reserved writable paths.
@@ -196,6 +202,7 @@ function reusableArtifact(cwd,order){
       cached.robloxCoding?.authority!=='roblox-luau-static-analysis'
       ||cached.robloxModuleGraph?.version!==1
       ||cached.codingRepoMap?.version!==1))
+    ||cached.sourceLinkEvidence?.version!==1
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -729,6 +736,10 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     .map(row=>({...row,text:safeRead(row.full)}));
   const scanLimitReached=rows.length>=MAX_SCAN_FILES;
   const scannedByPath=new Map(rows.map(row=>[row.relative,row]));
+  // [코딩 성능] 기존 파서로 require/import를 1회 추출해 탐색·코드맵·관계 분석에 재사용.
+  const observedImports=new Map(rows.map(row=>[
+    row.relative,extractVibeSourceImportRefs(row.text,target)
+  ]));
   const responsibilityRows=responsible.map(relative=>{
     const listed=scannedByPath.get(relative),full=path.join(root,relative);
     return{relative,full,text:listed?.text??safeRead(full),score:10000};
@@ -751,7 +762,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       if(current.depth>=3)continue;
       const source=scannedByPath.get(current.path)?.text
         ??responsibilityRows.find(row=>row.relative===current.path)?.text??'';
-      for(const ref of extractVibeSourceImportRefs(source,target)){
+      for(const ref of observedImports.get(current.path)||extractVibeSourceImportRefs(source,target)){
         if(!/^\.\.?\//.test(ref))continue;
         const normalized=path.posix.normalize(path.posix.join(path.posix.dirname(current.path),ref));
         if(!normalized||normalized==='.'||normalized==='..'||normalized.startsWith('../')
@@ -773,9 +784,51 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     }
   }
   const requiredModulePaths=moduleRows.map(row=>row.path);
+  // [연결 기반 코드맵 선별] 외부 Aider 방식에 착안해 기존 코드맵의 입력 파일을 먼저 정렬.
+  // 정확히 하나의 실제 파일로 해석되는 상대 import/require만 양방향 최대 3홉으로 추적.
+  // 연결 증거가 없는 유사 파일은 높은 우선순위를 받지 않으며 경로/권한은 확장되지 않는다.
+  const sourceLinks=new Map(rows.map(row=>[row.relative,new Set()]));
+  let observedLinkCount=0;
+  if(['roblox','web','system'].includes(target)){
+    for(const row of rows){
+      for(const ref of observedImports.get(row.relative)||[]){
+        if(!/^\.\.?\//.test(ref))continue;
+        const resolved=path.posix.normalize(path.posix.join(path.posix.dirname(row.relative),ref));
+        if(!resolved||resolved==='.'||resolved==='..'||resolved.startsWith('../')
+          ||path.posix.isAbsolute(resolved))continue;
+        const candidates=unique([resolved,...['.js','.mjs','.ts','.tsx','.luau','.lua','.cjs',
+          '/index.js','/index.mjs','/init.luau','/init.lua'].map(ext=>resolved+ext)]);
+        const matched=candidates.filter(file=>scannedByPath.has(file));
+        if(matched.length!==1||matched[0]===row.relative)continue;
+        const dest=matched[0];
+        sourceLinks.get(row.relative).add(dest);
+        sourceLinks.get(dest).add(row.relative);
+        observedLinkCount++;
+      }
+    }
+  }
+  const sourceDepth=new Map(responsible.filter(file=>scannedByPath.has(file)).map(file=>[file,0]));
+  const sourceQueue=[...sourceDepth.keys()];
+  for(let index=0;index<sourceQueue.length;index++){
+    const current=sourceQueue[index],depth=sourceDepth.get(current);
+    if(depth>=3)continue;
+    for(const neighbor of [...(sourceLinks.get(current)||[])].sort()){
+      if(sourceDepth.has(neighbor))continue;
+      sourceDepth.set(neighbor,depth+1);
+      sourceQueue.push(neighbor);
+    }
+  }
+  const sourceLinkEvidence={
+    version:1,method:'VERIFIED_3_HOP_DEPENDENCY_PRESELECTION',observedLinkCount,
+    paths:[...sourceDepth].filter(([file,depth])=>depth>0&&!responsibleSet.has(file))
+      .sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).slice(0,32)
+      .map(([file,depth])=>({path:file,depth})),
+    maxDepth:3,bounded:true,sourceWrite:false,runtimeVerified:false,authorityExpanded:false
+  };
   const scored=rows.map(row=>scoreRelated(row,{
     responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,
-    responsibleDirs,sourceCalls,sourceNames,responsibleFunctionsByPath,target,requiredModulePaths
+    responsibleDirs,sourceCalls,sourceNames,responsibleFunctionsByPath,target,
+    requiredModulePaths,observedImports,sourceLinkDepth:sourceDepth.get(row.relative)
   })).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   // [코드 생성 근거·성능] 직전 책임 함수 분석 결과를 그대로 사용한다.
   // 추가적인 inspectSourceFunctions 호출 없이, 실제 반환 테이블의 공개 함수만 기록한다.
@@ -950,6 +1003,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     codeFlow,
     robloxCoding,
     robloxModuleGraph,
+    sourceLinkEvidence,
     codingRepoMap,
     autonomy59,
     impactAnalysisSchemaVersion:6,
@@ -1009,6 +1063,10 @@ export function explorationGuidance(handoff={}){
         .map(row=>row.path+':writes='+row.stateWrites.slice(0,12).map(x=>x.symbol+'@'+x.line).join('/')+
           ',events='+row.events.slice(0,8).map(x=>x.event+'->'+x.handler+(x.handlerDeclared?'':'(미확인)')).join('/')).join(' | ')||'NONE'}`,
       'Vibe4 코드 흐름은 정적 추정이며 실제 런타임 통과나 허용 수정 범위 확대를 뜻하지 않는다.'
+    ]:[]),
+    ...(handoff.sourceLinkEvidence?.paths?.length?[
+      `Vibe5.9 검증된 의존 코드=${handoff.sourceLinkEvidence.paths.slice(0,12).map(row=>row.path+':'+row.depth).join(' | ')}`,
+      '실제 소스 연결 관계로 정렬한 읽기 전용 코드 문맥이다. 코드 변경 권한·런타임 통과를 의미하지 않는다.'
     ]:[]),
     ...(handoff.sourceImpact?[
       `Vibe3 읽기 전용 영향=${handoff.sourceImpact.impactedSources.map(row=>row.path).join(', ')||'NONE'}`,
