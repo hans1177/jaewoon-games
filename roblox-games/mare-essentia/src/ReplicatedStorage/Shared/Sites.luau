@@ -1,4 +1,5 @@
 --!strict
+-- Sites.luau · 탐험 지점의 기존 보상풀·모험 레벨 및 역사적 개장 연도
 -- 탐험 지점. 항구에서 탐험하면 pool 안의 카드를 발견할 수 있다 (이미 발견한 카드는 제외).
 
 export type Site = {
@@ -6,6 +7,7 @@ export type Site = {
 	name: string,
 	portId: string,
 	minLevel: number, -- 모험 레벨
+	fromYear: number?, -- 해당 역사적 연구기관·시설이 존재하기 시작한 시기
 	days: number, -- 탐험에 걸리는 날
 	pool: { string }, -- 카드 id
 }
@@ -13,13 +15,17 @@ export type Site = {
 local Sites: { Site } = {
 	{ id = "london_fields", name = "런던 근교 들판", portId = "london", minLevel = 1, days = 1, pool = { "bot_oak", "bot_foxglove", "min_chalk" } },
 	{ id = "salisbury_plain", name = "솔즈베리 평원", portId = "london", minLevel = 3, days = 3, pool = { "site_stonehenge" } },
-	{ id = "royal_archive", name = "왕립학회 기록 보관소", portId = "london", minLevel = 4, days = 2, pool = { "phy_papin_digester", "phy_savery_pump", "phy_newcomen_engine" } },
+	{ id = "royal_archive", name = "왕립학회 기록 보관소", portId = "london", minLevel = 4, days = 2, fromYear = 1660, pool = { "phy_papin_digester", "phy_savery_pump", "phy_newcomen_engine" } },
 	{ id = "amsterdam_gardens", name = "암스테르담 정원", portId = "amsterdam", minLevel = 1, days = 1, pool = { "bot_tulip", "bot_oak" } },
 	{ id = "antwerp_cabinet", name = "수집가의 진열실", portId = "antwerp", minLevel = 2, days = 1, pool = { "relic_aeolipile" } },
+	-- [16세기 의학 탐험] 현장·수도원·약방이 구분된 실제 단계형 연구 장소.
+	{ id = "antwerp_willow_river", name = "안트베르펜 강변 버드나무 숲", portId = "antwerp", minLevel = 1, days = 1, fromYear = 1517, pool = { "bot_willow" } },
+	{ id = "antwerp_monastery_herbs", name = "안트베르펜 수도원 약초원", portId = "antwerp", minLevel = 1, days = 1, fromYear = 1517, pool = { "med_herb_garden", "bot_willow_notes" } },
+	{ id = "antwerp_apothecary", name = "안트베르펜 약방 기록실", portId = "antwerp", minLevel = 2, days = 1, fromYear = 1554, pool = { "med_willow_bark" } },
 	{ id = "rouen_coast", name = "노르망디 해안", portId = "rouen", minLevel = 1, days = 1, pool = { "min_chalk", "bot_foxglove" } },
 	{ id = "brittany_stones", name = "브르타뉴 선돌 밭", portId = "bordeaux", minLevel = 3, days = 3, pool = { "site_carnac" } },
 	{ id = "copenhagen_shore", name = "외레순 해안", portId = "copenhagen", minLevel = 1, days = 1, pool = { "min_amber", "zoo_puffin" } },
-	{ id = "copenhagen_observatory", name = "코펜하겐 천문대", portId = "copenhagen", minLevel = 3, days = 1, pool = { "ast_comet", "ast_jupiter_moons" } },
+	{ id = "copenhagen_observatory", name = "코펜하겐 천문대", portId = "copenhagen", minLevel = 3, days = 1, fromYear = 1642, pool = { "ast_comet", "ast_jupiter_moons" } },
 	{ id = "gothenburg_forest", name = "서스웨덴 숲", portId = "gothenburg", minLevel = 1, days = 1, pool = { "zoo_reindeer", "bot_oak" } },
 	{ id = "runestone_field", name = "룬석 들판", portId = "gothenburg", minLevel = 2, days = 2, pool = { "relic_runestone" } },
 	{ id = "bergen_cliffs", name = "베르겐 해안 절벽", portId = "bergen", minLevel = 2, days = 1, pool = { "zoo_puffin", "zoo_reindeer" } },
@@ -55,8 +61,8 @@ local Sites: { Site } = {
 	{ id = "hadrian_hills", name = "북쪽 로마 방벽", portId = "edinburgh", minLevel = 4, days = 3, pool = { "site_hadrian_wall" } },
 	{ id = "edinburgh_hospital", name = "에든버러 병원", portId = "edinburgh", minLevel = 3, days = 1, pool = { "med_lime_scurvy", "phi_empiricism" } },
 	{ id = "london_hospital", name = "런던 병원", portId = "london", minLevel = 2, days = 1, pool = { "med_inoculation" } },
-	{ id = "london_lab", name = "왕립학회 실험실", portId = "london", minLevel = 3, days = 1, pool = { "phy_boyle_law", "ast_halley_comet" } },
-	{ id = "amsterdam_garden", name = "암스테르담 식물원", portId = "amsterdam", minLevel = 2, days = 1, pool = { "bot_tea_plant" } },
+	{ id = "london_lab", name = "왕립학회 실험실", portId = "london", minLevel = 3, days = 1, fromYear = 1660, pool = { "phy_boyle_law", "ast_halley_comet" } },
+	{ id = "amsterdam_garden", name = "암스테르담 식물원", portId = "amsterdam", minLevel = 2, days = 1, fromYear = 1638, pool = { "bot_tea_plant" } },
 	{ id = "amsterdam_polder", name = "네덜란드 간척지", portId = "amsterdam", minLevel = 1, days = 1, pool = { "geo_polder" } },
 	{ id = "amsterdam_telescope", name = "암스테르담 관측대", portId = "amsterdam", minLevel = 3, days = 1, pool = { "ast_saturn_rings" } },
 	{ id = "bergen_whale", name = "베르겐 앞바다", portId = "bergen", minLevel = 2, days = 2, pool = { "zoo_whale" } },
