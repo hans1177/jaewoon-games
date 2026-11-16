@@ -3042,8 +3042,9 @@ function PortScene.build(info, onFacility)
 	end
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	-- 공식 Motor6D.Transform 적용 시점: Animator 갱신 후, 물리 처리 직전.
-	local walkConn = RunService.PreSimulation:Connect(function()
+	local walkConn = RunService.PreSimulation:Connect(function(deltaTime)
 		local now = os.clock()
+		local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
 		for _, w in walkers do
 			if w.mode == "sparring" and w.model.Parent and sparring then
 				local side = if w == sparring[1] then -1 else 1
@@ -3105,7 +3106,8 @@ function PortScene.build(info, onFacility)
 					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
 						kind, target, direction = "wave", 0.85, flat
 					end
-					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * 0.1
+					-- [주민 시선·몸통 회전] 화면 초당 프레임과 무관한 감속 회전.
+						w.ga = (w.ga or 0) + (target - (w.ga or 0)) * (1 - math.exp(-6 * dt))
 					if w.ga > 0.01 and direction.Magnitude > 0.01 then
 						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + direction.Unit), w.ga))
 					elseif w.ga ~= 0 and target == 0 then
@@ -3116,7 +3118,10 @@ function PortScene.build(info, onFacility)
 						local social = (now + w.phase * 2.3) % 19
 						kind = if social < 5 then "talk" elseif social < 9 then "listen" elseif social < 12 then "point" elseif social < 15 then "inspect" else "talk"
 					elseif kind == "look" then
-						kind = if (now + w.phase * 4) % 23 < 2.8 then "salute" else "look"
+						local cycle = (now + w.phase * 4) % 23
+						kind = if cycle < 2.0 then "salute"
+							elseif cycle < 5.0 then "look"
+							elseif cycle < 7.2 then "listen" else "look"
 					end
 					-- [주민 직업 모션] 계속 허공을 치는 대신 일하기→물건 확인→스트레칭을 개인 위상으로 교대한다.
 					if w.kind == "hammer" or w.kind == "hoe" or w.kind == "stir" or w.kind == "sweep" or w.kind == "write" then
@@ -3167,6 +3172,13 @@ function PortScene.build(info, onFacility)
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
 					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
+					-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
+					local play = (now + w.phase * 1.9) % 21
+					if play < 1.8 then
+						Pose.work(w.model, "wave", now + w.phase, true)
+					elseif play < 3.8 then
+						Pose.work(w.model, "look", now + w.phase, true)
+					end
 				end
 			elseif w.model.Parent then
 				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
@@ -3191,13 +3203,14 @@ function PortScene.build(info, onFacility)
 				local pos = w.base.Position + w.base.LookVector * d
 				local bob = 0 -- 위아래 흔들림은 걸음 모션(Pose)이 발걸음과 맞춰 처리한다
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
+				-- [주민 출발·정지] 출발/도착 지점에서 실제로 멈췄으면 제자리 발질을 하지 않는다.
+				local walked = math.abs(d - (w.lastD or d))
+				w.lastD = d
+				moving = moving and walked > 0.006
 				if moving then
-					-- 발걸음은 실제로 걸은 거리에 맞춘다 (돌아올 때도 앞으로 걷는 모션)
-					w.trav = (w.trav or 0) + math.abs(d - (w.lastD or d))
-					w.lastD = d
+					w.trav = (w.trav or 0) + walked
 					Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
 				else
-					w.lastD = d
 					Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
 				end
 				if not moving then
@@ -3602,9 +3615,15 @@ function PortScene.build(info, onFacility)
 					f.heading = f.heading:Lerp(CFrame.lookAt(Vector3.zero, faceDir).Rotation, math.clamp(dt * 8, 0, 1))
 					f.model:PivotTo(CFrame.new(at) * f.heading)
 					if moving then f.gait += walked * (2 * math.pi / 5.2) end
-					Pose.makeR15Action(f.model, if moving then "run" else "idle", 0, if moving then f.gait else now + f.phase)
+					-- [동료 걷기/달리기] 먼 곳에서는 뛰고 대열에 합류할 때는 속도를 낮춰 걷는다.
+					local pace = if moving then walked / math.max(dt, 0.008) else 0
+					Pose.makeR15Action(f.model, if not moving then "idle" elseif pace > 9 then "run" else "walk",
+						0, if moving then f.gait else now + f.phase)
 					if not moving then
-						local idleKind = if (now + f.phase * 3) % 24 < 3 then "look" else f.idleKind
+						local cycle = (now + f.phase * 3) % 26
+						local idleKind = if cycle < 2.4 then "look"
+							elseif cycle < 4.0 and f.index % 2 == 0 then "salute"
+							elseif cycle > 22 and f.index % 2 == 1 then "stretch" else f.idleKind
 						Pose.work(f.model, idleKind, now + f.phase)
 					end
 				end
