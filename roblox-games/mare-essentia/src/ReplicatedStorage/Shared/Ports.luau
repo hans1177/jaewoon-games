@@ -4,6 +4,7 @@
 export type Good = {
 	resourceKind: string?, -- 원자재/자원/상품의 실제 세계 분류(가공품은 별도 지정)
 	knowledgeId: string?, -- 관련 지식카드(동일 물건이 아니어도 연계 학문 기록)
+	discipline: string?, -- 가공법의 기존 학문/예정 학문(21개 중 가장 가까운 부모 학문에 연결)
 	id: string,
 	name: string,
 	basePrice: number,
@@ -938,7 +939,7 @@ do
 		-- [가공품 지식] 원본 제작법의 첫 원자재 지식을 계승한다. 새 제작법 추가 시 분류가 자동 연결된다.
 		local recipe = PC.ById[g.recipe]
 		local source = recipe and Goods[recipe.inputs[1]]
-		Goods[g.id] = { id = g.id, name = g.name, basePrice = g.basePrice, resourceKind = "manufactured", knowledgeId = source and source.knowledgeId or nil }
+		Goods[g.id] = { id = g.id, name = g.name, basePrice = g.basePrice, resourceKind = "manufactured", knowledgeId = source and source.knowledgeId or nil, discipline = recipe and recipe.disc or nil }
 	end
 	local ids = {}
 	for id in Ports do
