@@ -472,9 +472,11 @@ function E.stepIndustries(t)
 			local available = math.max(0, incoming + stored - math.max(1, (t.dem[processed] or 0) * 3))
 			local q = math.min(available * 0.3, capacity * 0.28)
 			if q > 0 then
-				local fromBatch = math.min(incoming, q)
-				batches[processed] = incoming - fromBatch
-				t.stock[processed] = math.max(0, stored - (q - fromBatch))
+				-- [실물 브랜드] 기존 가공품을 먼저 소비하고, 부족분만 당일 가공 배치로 충당한다.
+				-- 원료 재고 비축·생산량·교역량·저장 키는 그대로 유지한다.
+				local fromStored = math.min(stored, q)
+				t.stock[processed] = stored - fromStored
+				batches[processed] = incoming - (q - fromStored)
 				batches[brand.id] = (batches[brand.id] or 0) + q
 			end
 		end

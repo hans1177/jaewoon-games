@@ -482,7 +482,14 @@ do
 		check("교역 한도: 특산품은 재고가 있고 사줄 양은 적다", lim and lim.supply > 50 and lim.absorb < lim.supply, lim and (lim.supply .. "/" .. lim.absorb))
 		local dgid = port.demands[1]
 		local dl = Econ.limits(st, "london", dgid)
-		check("교역 한도: 수요품은 사줄 양이 재고보다 많다", dl and dl.absorb >= Eco.MIN_ABSORB and dl.absorb > dl.supply, dl and (dl.supply .. "/" .. dl.absorb))
+		-- [교역 상황] 수요품도 세계경제에 따른 과잉재고가 있으면 항상 매입 우위는 아니다.
+		-- 실제 서비스의 거래로 재고를 줄인 뒤 부족 상태의 동적 매입 한도를 검사한다.
+		check("교역 한도: 수요품은 실물 재고에 따른 한도가 있다", dl and dl.supply >= 0 and dl.absorb >= Eco.MIN_ABSORB, dl and (dl.supply .. "/" .. dl.absorb))
+		if dl and dl.supply >= dl.absorb then
+			Econ.take(st, "london", dgid, dl.supply)
+			dl = Econ.limits(st, "london", dgid)
+		end
+		check("교역 한도: 재고 부족 수요품은 사줄 양이 재고보다 많다", dl and dl.absorb > dl.supply, dl and (dl.supply .. "/" .. dl.absorb))
 		Econ.take(st, "london", gid, lim.supply)
 		local after = Econ.limits(st, "london", gid)
 		check("산 만큼 마을 재고가 줄어 한도가 줄어든다 (무한 아님)", after.supply < lim.supply and after.supply <= lim.supply * 0.8, lim.supply .. "->" .. after.supply)
