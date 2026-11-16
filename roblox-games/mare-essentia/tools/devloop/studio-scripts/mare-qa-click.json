@@ -953,6 +953,15 @@
     "name": "field_npc_ally_mob"
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [탐험 HUD·실제 동작] 살아 있는 적/동료의 프레임별 거리와 두 슬롯·등록 스킬 아이콘을 검증한다.\nlocal players=game:GetService(\"Players\")\nlocal run=game:GetService(\"RunService\")\nlocal me=players.LocalPlayer\nlocal field=assert(workspace:FindFirstChild(\"FieldScene\"),\"FIELD_MOTION_SCENE_MISSING\")\nlocal gui=assert(me.PlayerGui:FindFirstChild(\"FieldGui\"),\"FIELD_MOTION_GUI_MISSING\")\nlocal weapon=assert(gui:FindFirstChild(\"FieldWeapon\",true),\"FIELD_WEAPON_QUICKSWAP_MISSING\")\nassert(weapon:GetAttribute(\"WeaponChoiceCount\")==2,\"FIELD_WEAPON_CHOICES_NOT_TWO\")\nfor _,v in {{name=\"dodge\",asset=\"87385114635856\"},{name=\"parry\",asset=\"122314628669339\"}} do\n local skill=assert(gui:FindFirstChild(\"FieldSkill_\"..v.name,true),\"FIELD_SKILL_MISSING:\"..v.name)\n local icon=assert(skill:FindFirstChild(\"FieldButtonIcon\"),\"FIELD_SKILL_ICON_MISSING:\"..v.name)\n assert(icon.Image==\"rbxassetid://\"..v.asset,\"FIELD_SKILL_UNAPPROVED_ICON:\"..v.name)\n assert(icon.ScaleType==Enum.ScaleType.Fit,\"FIELD_SKILL_ICON_CROPPED:\"..v.name)\nend\nlocal tracked={}\nfor _,m in field:GetDescendants() do\n if m:IsA(\"Model\") and (m.Name==\"FieldEnemy\" or m.Name==\"FieldAlly\") then\n  local root=m:FindFirstChild(\"HumanoidRootPart\")\n  if root then table.insert(tracked,{root=root,last=root.Position,name=m.Name}) end\n end\nend\nassert(#tracked>=3,\"FIELD_MOTION_ACTOR_SAMPLE_TOO_SMALL:\"..#tracked)\nlocal worst=0\nfor _=1,36 do\n local dt=run.Heartbeat:Wait()\n for _,a in tracked do\n  if a.root.Parent then\n   local pos=a.root.Position\n   local displacement=(pos-a.last).Magnitude\n   worst=math.max(worst,displacement)\n   assert(displacement<=math.max(7.5,dt*100),\"FIELD_ACTOR_BLINK:\"..a.name..\":\"..string.format(\"%.2f\",displacement))\n   a.last=pos\n  end\n end\nend\nreturn \"FIELD_MOTION_STABLE actors=\"..#tracked..\" maxStep=\"..string.format(\"%.2f\",worst)..\" twoWeapons=PASS skillArt=PASS\""
+  },
+  {
+    "type": "capture",
+    "name": "field_motion_smooth_icons"
+  },
+  {
     "type": "wait",
     "ms": 800
   },
