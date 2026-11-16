@@ -1920,6 +1920,46 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 		return false
 	end
+	-- [경제 실물 시설] 세계경제에 실제 건설된 시설만 개별 구획에 시각 건축한다.
+	-- 먼저 필지를 확보한 뒤 주택을 채워 시설과 집이 겹치지 않도록 한다.
+	do
+		local stock = info.sim and info.sim.buildings
+		local civic = {
+			{ "workshop", "공방 거리", 2, "Town", "workbench-anvil", C(148, 108, 77) },
+			{ "warehouse", "창고 구역", 2, "Cargo", "box-open", C(129, 112, 87) },
+			{ "market", "시장 거리", 2, "Town", "stall-green", C(178, 134, 78) },
+			{ "school", "학교 구역", 3, "Interior", "bookcaseclosed", C(111, 120, 147) },
+			{ "hall", "행정 구역", 3, "Town", "bell-tower", C(165, 156, 139) },
+			{ "tavern", "여가 거리", 3, "Cargo", "mug", C(125, 93, 78) },
+		}
+		local placed = 0
+		local maxSites = if game:GetService("UserInputService").TouchEnabled then 7 else 10
+		for index, c in ipairs(civic) do
+			local count = if stock then stock[c[1]] or 0 else math.max(0, lvl - c[3] + 1)
+			if lvl >= c[3] and count > 0 then
+				local quota = math.min(3, math.max(1, math.floor(math.sqrt(count) / 2.8 + 0.5)))
+				for n = 1, quota do
+					if placed >= maxSites then break end
+					local row = math.floor((index - 1) / 3)
+					local side = if row == 0 then 1 else -1
+					local z = side * (if isRoyalCity then 330 else 246) + side * (n - 1) * 27
+					local x = -286 - ((index - 1) % 3) * 63
+					if onStreet(x, 14) then x += math.max(25, S * 0.6) end
+					if not reserved(x, z, 18) then
+						local at = Vector3.new(x, 0, z)
+						local building = house(folder, at, 19, 15, math.clamp(1 + math.floor((lvl - c[3]) / 2), 1, 3), style, rng, c[6])
+						if building then
+							building.Name = "EconomySite_" .. c[1]
+							placed += 1
+							table.insert(placedLots, { X = x, Z = z, H = 18 })
+							sign(folder, building, c[2], C(151, 110, 51), 12)
+							importedModel(folder, c[4], c[5], at + Vector3.new(0, 0, 12), 4.4, false)
+						end
+					end
+				end
+			end
+		end
+	end
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	local function fillRow(z, t, xStart)
 		local x = xStart
