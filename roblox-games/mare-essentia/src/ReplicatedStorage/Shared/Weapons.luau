@@ -21,12 +21,12 @@ local Weapons = {}
 Weapons.List = {
 	{ id = "fist", name = "맨손 격투", motion = nil, family = "fist", ranged = false, range = 3, speed = 1.3, power = 0.8, model = nil, note = "빠른 연타·발차기, 막기 쉽다" },
 	{ id = "sword", name = "검", motion = "SWORD", family = "blade", ranged = false, range = 5, speed = 1.15, power = 1, model = "weapon-sword", note = "균형형: 베기·찌르기" },
-	{ id = "dagger", name = "단검", motion = "DAGGER", family = "dagger", ranged = false, range = 3.5, speed = 1.4, power = 0.7, model = nil, note = "가장 빠름, 뒤를 잘 찌름" },
-	{ id = "axe", name = "도끼", motion = "WAR_AXE", family = "axe", ranged = false, range = 5, speed = 0.9, power = 1.35, model = nil, note = "느리지만 묵직한 일격" },
+	{ id = "dagger", name = "단검", motion = "DAGGER", family = "dagger", ranged = false, range = 3.5, speed = 1.4, power = 0.7, model = "weapon-dagger", note = "가장 빠름, 뒤를 잘 찌름" },
+	{ id = "axe", name = "도끼", motion = "WAR_AXE", family = "axe", ranged = false, range = 5, speed = 0.9, power = 1.35, model = "weapon-axe", note = "느리지만 묵직한 일격" },
 	{ id = "spear", name = "창", motion = "SPEAR", family = "spear", ranged = false, range = 8, speed = 1, power = 1, model = "weapon-spear", note = "긴 사거리 찌르기" },
 	{ id = "mace", name = "철퇴", motion = "MACE", family = "blunt", ranged = false, range = 4.5, speed = 1.05, power = 1.2, model = nil, note = "기절(경직)을 잘 준다" },
 	{ id = "crossbow", name = "석궁", motion = "CROSSBOW", family = "firearm", ranged = true, range = 26, speed = 1.1, power = 1.25, model = nil, note = "강한 한 발, 장전이 필요" },
-	{ id = "bow", name = "활", motion = "BOW", family = "bow", ranged = true, range = 26, speed = 1.1, power = 1.25, model = nil, note = "지역별 활의 기본형" },
+	{ id = "bow", name = "활", motion = "BOW", family = "bow", ranged = true, range = 26, speed = 1.1, power = 1.25, model = "weapon-bow", note = "지역별 활의 기본형" },
 	{ id = "gun", name = "총", motion = "PISTOL", family = "firearm", ranged = true, range = 22, speed = 1.25, power = 1.1, model = nil, note = "빠른 사격, 소음으로 적이 깬다" },
 } :: { Weapon }
 

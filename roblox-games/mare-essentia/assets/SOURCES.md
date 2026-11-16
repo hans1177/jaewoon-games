@@ -1520,3 +1520,29 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - 원본 Git blob SHA: `Grass_Small.obj=f1353d565c613843426dbe5335ff5faed5512d5d`, `Rock_2.obj=dd00ae412f345afc50d40d3e9772ade57f81df9a`, `Bush_Small.obj=695c4c46b6a3a07bf889ea6c9044c742cb352ba6`.
 - `mtllib` 원본 참조와 대소문자를 유지한 원본 `OBJ/MTL` 그대로 보관. 동일 파일과 일치하는 원본을 출처에서 받아 GitHub에 등록했다.
 - **상태: 모델 원본 확보 완료.** 로블록스 등록/AssetIds 부여/실제 렌더·모바일 QA/게시 검증 전이므로 게임에서 자동 사용한다고 주장하지 않는다. 기존 `assets/inbox` 등록기에는 `.glb` 또는 `.fbx` 변환, 파일별 `.license.json` 및 정규 업로더 절차가 필요하다.
+
+
+## 2026-11-16 지역별 지상탐험 실물 모델 11종과 미등록 무기 모델 4종
+오너 요청에 따라 기존 등록 책임 흐름에 소스 원본을 추가했다. 정적 파일 원본 Git blob SHA-1은 원 저장소와 일치하며 실물 Roblox 등록·해당 Universe 사용 권한·렌더/동작 검증은 별개다. 아직 승인된 Roblox Asset ID 없는 파일을 등록된 것으로 꾸미지 않는다.
+
+| 추가한 모델 | CC0 원본 소스 | Git blob SHA-1 |
+|---|---|---|
+| `assets/terrain/arid-cactus-tall.glb` | `Hidencod/tge-assets/packs/nature-kit/cactus-tall.glb` | `7896d4ee7e478b1f8a138f891cdd0e704d33e95e` |
+| `assets/terrain/arid-cactus-short.glb` | `Hidencod/tge-assets/packs/nature-kit/cactus-short.glb` | `7567ced4534d27c84885f3a87c3a027db4813380` |
+| `assets/terrain/east-bamboo-grove.glb` | `Hidencod/tge-assets/packs/nature-kit/crops-bamboostageb.glb` | `ca556ec07500d1ee8aeaa318074c3d5de870456f` |
+| `assets/terrain/tropical-palm-tall.glb` | `Hidencod/tge-assets/packs/nature-kit/tree-palmdetailedtall.glb` | `c6d57b64a52b14f834635904b341c2747d00325d` |
+| `assets/terrain/tropical-palm-short.glb` | `Hidencod/tge-assets/packs/nature-kit/tree-palmdetailedshort.glb` | `6bcd1005a39bcde39b5758c1aa10c583023a211a` |
+| `assets/terrain/forest-bush-detailed.glb` | `Hidencod/tge-assets/packs/nature-kit/plant-bushdetailed.glb` | `e5279fa53adb3037ae93bbed23a0716322cae79a` |
+| `assets/terrain/forest-flower-yellow.glb` | `Hidencod/tge-assets/packs/nature-kit/flower-yellowb.glb` | `c455cb1e89e14299291602609ffd68ca62f2f049` |
+| `assets/terrain/forest-flower-purple.glb` | `Hidencod/tge-assets/packs/nature-kit/flower-purpleb.glb` | `3b54cb468724cb56453cb223d6edbf490fde992c` |
+| `assets/terrain/river-stone-bank.glb` | `Hidencod/tge-assets/packs/nature-kit/ground-riverrocks.glb` | `79414938bd35db23d41657dba528725131bf198a` |
+| `assets/terrain/coast-grass-patch.glb` | `Hidencod/tge-assets/packs/pirate-kit/grass-plant.glb` | `a095edfb5bf6ff4df197f44d3ab2f055f45ac223` |
+| `assets/terrain/north-pine-fall.glb` | `Hidencod/tge-assets/packs/graveyard-kit/pine-fall.glb` | `ba83c387d1c21366d416ed72b9699388a5dba31a` |
+| `assets/relics/weapon-dagger.glb` | `assets/external/simple-rpg/priority-v1/medieval-weapons/Dagger.glb` | `2d2f3ff09a4c97879384f81ce03bd83ac068ed7c` |
+| `assets/relics/weapon-axe.glb` | `assets/external/simple-rpg/priority-v1/medieval-weapons/Axe.glb` | `f3e800ffba303f8f57f0f2511e1aa4026c34558a` |
+| `assets/relics/weapon-bow.glb` | `assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Wooden.glb` | `ed8ba33364cdd631dc3b615c033867ccc144d5be` |
+| `assets/relics/weapon-hammer.glb` | `assets/external/simple-rpg/priority-v1/medieval-weapons/Hammer_Small.glb` | `9b6d6ebc4b9b98fc70c48c81c1478614d1e98c0a` |
+
+원저작자: Kenney (Nature Kit, Pirate Kit, Graveyard Kit) / Quaternius (Modular Weapons Pack). 원문 라이선스 CC0-1.0 및 상업 이용 허용: https://kenney.nl/assets/nature-kit , https://kenney.nl/assets/pirate-kit , https://kenney.nl/assets/graveyard-kit , https://quaternius.com/packs/medievalweapons.html . 무기 4종 원본·SHA-256은 기존 `assets/external/simple-rpg/priority-v1/medieval-weapons/manifest.json`에 기록돼 있다.
+
+지상탐험 기존 21개 문화권의 소품 목록에 모델 종류별 테마를 추가하고, 소품 종류당 배치 최대 8개로 제한한다. 등록되지 않은 실제 모델은 생략하고 도형 대체품을 만들지 않는다. 기존 전투·저장·획득·보상·출시 제어는 변경하지 않는다. 단검/도끼/활의 기존 무기 ID에 외형 리소스만 연결하며, 망치는 원본 보관만 하고 철퇴 무기로 억지 대응하지 않는다.

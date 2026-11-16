@@ -507,7 +507,7 @@ test('Mare facility tabs provide unique nonempty labels for every rendered group
   assert.equal(names.get('explore'),'탐험');
 });
 
-// [비주얼] 교역품은 52/60px 목록과 상세 모두 실제 Cargo 메시로 표시한다. 일반 메뉴/그림만 2D로 유지한다.
+// [비주얼] 교역품은 78/60px 목록과 상세 모두 실제 Cargo 메시로 표시한다. 일반 메뉴/그림만 2D로 유지한다.
 test('Mare trade cards use registered 3D Cargo viewports even at compact mobile sizes',()=>{
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
@@ -535,7 +535,7 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/local assetId = AssetIds\[kind \.\. "\/" \.\. asset\]/);
   assert.match(client,/local vf = Instance\.new\("ViewportFrame"\)/);
   assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 78, g\.name, gi\[4\]\)/);
   assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
   // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
