@@ -294,6 +294,55 @@ do
 	check("기존 카드·교역품 가격 ID와 브랜드 지식 연결", Ports.Goods[brand.id].knowledgeId == Ports.Goods[brand.source].knowledgeId)
 end
 
+-- [산업연관·중력물류] 가공 항구의 부족 원료는 다른 생산 항구의 실제 잉여 재고에서만 보충한다.
+do
+	local Chains = require("./Shared/ProductionChains")
+	local w = Eco.newWorld({ seed = 117, year = 1700 })
+	local buyer = w.towns.london
+	local brand = Chains.BrandsByPort.london[1]
+	local raw = brand.source
+	buyer.stage, buyer.prosperity = 3, 1.1
+	buyer.tech.craft, buyer.tech.commerce, buyer.tech.sea = 2, 2, 2
+	buyer.stock[raw], buyer.dem[raw] = 0, 1
+	local supplier = nil
+	for _, id in ipairs(w.order) do
+		local town = w.towns[id]
+		if town ~= buyer and town.produces[raw] then
+			town.stock[raw], town.dem[raw] = 0, 1
+			if not supplier then supplier = town end
+		end
+	end
+	check("다른 항구에 같은 원료 산지가 존재", supplier ~= nil)
+	supplier.stock[raw] = 1000
+	supplier.price[raw] = buyer.price[raw] * 0.75
+	local before = supplier.stock[raw]
+	local importsBefore = buyer.imports[raw] or 0
+	Eco.stepSupplyChains(w)
+	check("원료 부족 시 실제 공급 항구에서 재고를 빼고 들여옴",
+		supplier.stock[raw] < before and buyer.stock[raw] > 0)
+	check("원료 수입량은 운송 손실을 반영하고 출처 없는 물량은 금지",
+		math.abs(buyer.stock[raw] - (before - supplier.stock[raw]) * 0.97) < 0.00001
+		and buyer.imports[raw] > importsBefore)
+	check("원료 조달시 국제 교역 실적 발생", buyer.tradeIn > 0 and supplier.tradeOut > 0)
+	check("원료 수입·학문·가공 상태를 항구 산업 조회에 연결",
+		Eco.industryView(buyer, w)[1].imported > 0
+		and Eco.industryView(buyer, w)[1].supplier ~= nil
+		and Eco.industryView(buyer, w)[1].research == "textiles")
+	local restored = Eco.restoreWorld(Eco.snapshot(w))
+	check("기존 세계 저장 형식에서 누적 원료 수입 보존",
+		restored ~= nil and restored.towns.london.imports[raw] == buyer.imports[raw])
+	buyer.stock[raw] = 0
+	supplier.stock[raw] = 0
+	local imports = buyer.imports[raw]
+	Eco.stepSupplyChains(w)
+	check("해외 원료 공급 중단 시 재고·누적 수입 무단 증가 없음",
+		buyer.stock[raw] == 0 and buyer.imports[raw] == imports)
+	supplier.stock[raw] = 1000
+	supplier.price[raw] = buyer.price[raw] * 10
+	Eco.stepSupplyChains(w)
+	check("운송 원가가 과도한 공급 항구는 수입 중단", buyer.stock[raw] == 0)
+end
+
 -- [기존 교역 보존] 가공 공방은 항구가 소비·판매할 원료 20일치를 남겨야 한다.
 do
 	local x = Eco.newWorld({ seed = 117, year = 1700 })
