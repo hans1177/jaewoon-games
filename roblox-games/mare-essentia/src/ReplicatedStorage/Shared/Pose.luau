@@ -464,7 +464,7 @@ end
 -- 마을 주민의 일 모션. kind 에 따라 관절을 직접 놓는다 (t = 초, 제자리 일), 또는 걷기 위에 덧씌운다.
 -- 제자리: hammer(망치질) hoe(괭이질) stir(젓기) sit(앉아 쉼) fish(낚시) talk(대화) sweep(쓸기) stall(손님 부름) bell(종 치기)
 -- 걷기 위 덧씌움: carry(짐 들기) look(두리번) stoop(굽은 등)
-function Pose.work(model, kind, t)
+function Pose.work(model, kind, t, moving)
 	local m = rigMotors[model]
 	if not m then return end
 	local function set(motor, cf)
@@ -477,8 +477,10 @@ function Pose.work(model, kind, t)
 		return
 	elseif kind == "look" then
 		-- 손을 흔들다 둘러보기로 돌아왔을 때 팔이 허공에 남지 않도록 중립으로 복귀.
-		set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08))
-		set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
+		if not moving then
+			set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08))
+			set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
+		end
 		set(m.neck, A(0, math.sin(t * 0.9) * 0.9, 0))
 		return
 	elseif kind == "stoop" then
@@ -610,8 +612,8 @@ end
 -- 숨쉬기·체중 이동: 모든 제자리 일에 몸통 출렁임과 고개 흔들림을 더해 가만히 있어도 움직이게 한다 (절대값으로 덮어써 누적되지 않는다)
 local workBase = Pose.work
 local workSmooth = setmetatable({}, { __mode = "k" }) -- 모델별 직전 관절 자세(모델이 사라지면 같이 지워진다)
-function Pose.work(model, kind, t)
-	workBase(model, kind, t)
+function Pose.work(model, kind, t, moving)
+	workBase(model, kind, t, moving)
 	local m = rigMotors[model]
 	if not m then return end
 	if m.root and kind ~= "sit" and kind ~= "fish" then
