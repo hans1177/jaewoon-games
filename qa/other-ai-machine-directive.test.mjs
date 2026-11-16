@@ -49,7 +49,7 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+assert.equal(security.authority,'OWNER_DIRECTIVE_2026-09-19');
 assert.equal(security.policyFile,'company-learning/security-immune-system.json');
 assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 

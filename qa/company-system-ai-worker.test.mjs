@@ -214,7 +214,7 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   assert.match(workflow,/candidatePublicationAllowed:!infrastructureFailure&&security\.verdict==='PASS'/);
   assert.match(workflow,/learningCandidate:!infrastructureFailure/);
   assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
-  assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(security.authority,'OWNER_DIRECTIVE_2026-09-19');
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
   assert.equal(security.enforcement?.unverified,'BLOCK');
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
