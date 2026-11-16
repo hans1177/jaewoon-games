@@ -534,7 +534,10 @@ function E.newWorld(opts)
 		t.treasury = gdp * 20
 	end
 	for _, h in ipairs(E.History) do
-		if h.year <= w.startYear and w.startYear < h.year + h.years then E.addShock(w, E.shockFromHistory(h, (h.year + h.years - w.startYear) * 365)); w.fired[h.id] = true end
+		if h.year <= w.startYear and w.startYear < h.year + h.years
+			and (not h.month or h.year < w.startYear or h.month <= 1) then
+			E.addShock(w, E.shockFromHistory(h, (h.year + h.years - w.startYear) * 365)); w.fired[h.id] = true
+		end
 	end
 	return w
 end
@@ -728,7 +731,8 @@ function E.step(w)
 	-- 연도 사건
 	local y = math.floor(E.year(w))
 	for _, h in ipairs(E.History) do
-		if not w.fired[h.id] and y >= h.year then
+		if not w.fired[h.id] and y >= h.year and (not h.month
+			or w.day >= (h.year - w.startYear) * 365 + (h.month - 1) * 30) then
 			w.fired[h.id] = true
 			if y < h.year + h.years then E.addShock(w, E.shockFromHistory(h)) end
 		end
@@ -1179,13 +1183,15 @@ end
 
 -- 집계: kind = "world" | "region" | "country" | "town"
 function E.aggregate(w, kind, id)
-	local a = { pop = 0, gdp = 0, towns = 0, tradeIn = 0, tradeOut = 0, priceIdx = 0, _n = 0, techAvg = 0, stability = 0, treasury = 0, migration = 0, civ = 0, sector = { agri = 0, industry = 0, trade = 0, service = 0 } }
+	local a = { pop = 0, gdp = 0, towns = 0, tradeIn = 0, tradeOut = 0, priceIdx = 0, _n = 0, techAvg = 0, stability = 0, treasury = 0, migration = 0, civ = 0, sector = { agri = 0, industry = 0, trade = 0, service = 0 }, society = {} }
+	for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] = 0 end
 	for _, tid in ipairs(w.order) do
 		local t = w.towns[tid]
 		if kind == "world" or (kind == "region" and t.region == id) or (kind == "country" and t.country == id) or (kind == "town" and t.id == id) then
 			a.pop += t.pop; a.gdp += t.gdp; a.towns += 1
 			a.tradeIn += t.tradeIn; a.tradeOut += t.tradeOut
 			a.stability += t.stability * t.pop; a.treasury += t.treasury; a.migration += t.migIn; a.civ += t.civ * t.pop
+			for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] += (t.society[field] or 0) * t.pop end
 			local ta = 0
 			for _, f in ipairs(E.TECH_FIELDS) do ta += t.tech[f] end
 			a.techAvg += ta / #E.TECH_FIELDS * t.pop
@@ -1197,7 +1203,10 @@ function E.aggregate(w, kind, id)
 	end
 	a.priceIdx = a._n > 0 and a.priceIdx / a._n or 1
 	a.gdpPerCap = a.pop > 0 and a.gdp / a.pop or 0
-	if a.pop > 0 then a.stability /= a.pop; a.techAvg /= a.pop; a.civ /= a.pop end
+	if a.pop > 0 then
+		a.stability /= a.pop; a.techAvg /= a.pop; a.civ /= a.pop
+		for _, field in ipairs(E.SOCIETY_FIELDS) do a.society[field] /= a.pop end
+	end
 	a._n = nil
 	a.cycle = kind == "region" and (w.cycle.lvl[id] or 0) or w.cycle.x
 	return a
