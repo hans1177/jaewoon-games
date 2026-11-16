@@ -1282,7 +1282,7 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     const meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
     const before=parseGlb(original,ship+' source');
     const after=parseGlb(data,ship+' custom');
-    const originalBlob=createHash('sha1').update('blob '+original.length+'\\0').update(original).digest('hex');
+    const originalBlob=createHash('sha1').update('blob '+original.length+String.fromCharCode(0)).update(original).digest('hex');
     assert.equal(meta.license,'CC0-1.0',ship+' license');
     assert.equal(meta.author,'Kenney',ship+' author');
     assert.equal(meta.source,'https://kenney.nl/assets/'+pack,ship+' pack');
