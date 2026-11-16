@@ -4410,30 +4410,37 @@ function RENDERERS.crew()
 			end)
 		end
 	end
-	for _, c in view.companions.list do
-		add(function()
-			local sub = string.format("%s\n어울리는 자리 %s · 영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.bestSeat, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
-			local btn = if c.joined
-				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
-				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-			local btns = { btn }
-			if c.joined then
-				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
-			end
-			local row = mkRow(content, c.name .. (if c.joined then "  (합류)" else ""), sub, btns, 76)
-			local model = COMPANION_MODEL[c.id]
+	add(function()
+		local tiles = {}
+		for _, c in view.companions.list do
+			local tier = ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier]
+			local tile: any = {
+				title = c.name .. (if c.joined then " (합류)" else ""),
+				sub = string.format("호감도 %d · %s", c.affinity, tier),
+				desc = string.format("%s · 어울리는 자리 %s%s", c.summary, c.bestSeat, if c.blocked and not c.joined then " · " .. c.blocked else ""),
+				icon = "status",
+			}
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
 			if portrait then
-				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
+				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
-				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
-			elseif model then
-				withIcon(row, "People", model, nil, 52)
+				tile.portrait = { atlas = "scholar_" .. scholarId }
+			elseif COMPANION_MODEL[c.id] then
+				tile.kind, tile.icon = "People", COMPANION_MODEL[c.id]
 			end
-			return row
-		end)
-	end
+			if c.joined then
+				tile.btn, tile.color = "대화", COLORS.blue
+				tile.onClick = function() call("Talk", { companionId = c.id }) end
+				tile.btn2 = { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+			else
+				tile.btn, tile.color, tile.enabled = string.format("영입 %d코인", c.fee), COLORS.green, c.blocked == nil
+				tile.onClick = function() call("Recruit", { companionId = c.id }) end
+			end
+			table.insert(tiles, tile)
+		end
+		return H.tileGrid(tiles, content, 190, 210)
+	end)
 end
 
 function RENDERERS.status()
