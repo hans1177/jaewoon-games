@@ -571,6 +571,66 @@ local function extraTests()
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
 	check("세계: 화면에 담김", S.View.build(stWd, ctx).world ~= nil)
+	-- [추가 연구 회귀] 기존 분리된 테스트 함수에서 동일 조건을 실행해 전체 타입 추론 부담을 낮춘다.
+	-- [지식카드 획득] 희귀도 5단계·16세기 버드나무 연구·후대 연구기관 연도 회귀
+	do
+		local C = D.Cards
+		for _, id in { "bot_willow", "bot_willow_notes", "med_willow_bark" } do
+			check("버드나무: 새 지식카드 등록 " .. id, C.ById[id] ~= nil and D.KnowledgeTree.ById[id] ~= nil)
+		end
+		for rarity, sample in { Common = "bot_willow", Uncommon = "bot_willow_notes", Rare = "med_willow_bark", Epic = "phy_savery_pump", Legendary = "site_stonehenge" } do
+			local path = S.Discovery.pathOf(C.ById[sample])
+			check("희귀도 획득 과정: " .. rarity, type(path) == "string" and #path > 0)
+		end
+		local st = S.State.new("england", 1517)
+		st.portId = "antwerp"
+		st.careers.adventure.level = 5
+		local river, herbs, apothecary = nil, nil, nil
+		local archives, observatory, garden = nil, nil, nil
+		for _, site in D.Sites.Sites do
+			if site.id == "antwerp_willow_river" then river = site
+			elseif site.id == "antwerp_monastery_herbs" then herbs = site
+			elseif site.id == "antwerp_apothecary" then apothecary = site
+			elseif site.id == "royal_archive" then archives = site
+			elseif site.id == "copenhagen_observatory" then observatory = site
+			elseif site.id == "amsterdam_garden" then garden = site end
+		end
+		check("16세기 탐험: 강변·수도원·약방 3곳 연결", river ~= nil and herbs ~= nil and apothecary ~= nil)
+		check("16세기 탐험: 강변 표본은 즉시 조사 가능", S.Discovery.siteBlockReason(st, river) == nil)
+		check("16세기 탐험: 약방은 1554년 전 차단", S.Discovery.siteBlockReason(st, apothecary) ~= nil)
+		local supplyBefore = st.ship.supplies
+		check("시대: 잠긴 약방의 원본 탐험 입구 거부", not act(st, "Explore", { siteId = "antwerp_apothecary" }) and st.ship.supplies == supplyBefore)
+		check("16세기 탐험: 관찰 표본 없으면 비교 기록 잠김", S.Discovery.cardBlockReason(st, C.ById.bot_willow_notes) ~= nil)
+		local msgs = {}
+		S.Discovery.grantCard(st, "bot_willow", msgs)
+		S.Quest.autoReport(st, msgs)
+		check("버드나무 1장: 강변 현장 조사 퀘스트 자동 완수", st.quests.done.q_willow_field == true)
+		check("버드나무 2장: 강변 표본으로 비교 연구 해금", S.Discovery.cardBlockReason(st, C.ById.bot_willow_notes) == nil)
+		S.Discovery.grantCard(st, "bot_willow_notes", msgs)
+		S.Quest.autoReport(st, msgs)
+		check("버드나무 2장: 수도원 비교 기록 퀘스트 연결", st.quests.done.q_willow_notes == true)
+		S.Discovery.grantCard(st, "med_herb_garden", msgs)
+		st.startYear = 1554
+		check("버드나무 3장: 의학 조수나 선행 지식 없으면 연구 불가", S.Discovery.cardBlockReason(st, C.ById.med_willow_bark) ~= nil)
+		st.companions = { "t_nun" } -- 직업 선택·선박 직책 없이도 약초와 의학 연구를 돕는다
+		check("버드나무 3장: 의학 동료 동행만으로 검증 해금", st.specialty == nil and S.Discovery.cardBlockReason(st, C.ById.med_willow_bark) == nil)
+		check("버드나무 3장: 1554년 약방 탐험 해금", S.Discovery.siteBlockReason(st, apothecary) == nil)
+		S.Discovery.grantCard(st, "med_willow_bark", msgs)
+		S.Quest.autoReport(st, msgs)
+		check("버드나무 3장: 의학 기록 획득 퀘스트 완료", st.quests.done.q_willow_medicine == true)
+		local restored = S.State.sanitize(S.State.serialize(st))
+		check("버드나무: 기존 저장 형식에서 카드·퀘스트 보존", restored ~= nil and restored.discovered.med_willow_bark == true and restored.quests.done.q_willow_medicine == true)
+		local era = S.State.new("england", 1600)
+		era.careers.adventure.level = 5
+		check("시대: 1660년 이전 왕립학회 시설 차단", archives ~= nil and S.Discovery.siteBlockReason(era, archives) ~= nil)
+		check("시대: 1642년 이전 코펜하겐 천문대 차단", observatory ~= nil and S.Discovery.siteBlockReason(era, observatory) ~= nil)
+		check("시대: 1638년 이전 암스테르담 식물원 차단", garden ~= nil and S.Discovery.siteBlockReason(era, garden) ~= nil)
+		era.startYear = 1700
+		check("시대: 1700년에는 뉴커먼 기관(1712년) 연구 금지", S.Discovery.cardBlockReason(era, C.ById.phy_newcomen_engine) ~= nil)
+		era.startYear = 1712
+		check("시대: 1712년에 기존 연구 자료실 재개방", S.Discovery.siteBlockReason(era, archives) == nil)
+		check("시대: 1712년부터 뉴커먼 기관 연구 가능", S.Discovery.cardBlockReason(era, C.ById.phy_newcomen_engine) == nil)
+	end
 end
 
 
@@ -1686,66 +1746,6 @@ do
 			print(string.format("  info: %s 승률 %s %.0f%%", bossId, id, rate(id, bossId) * 100))
 		end
 	end
-end
-
--- [지식카드 획득] 희귀도 5단계·16세기 버드나무 연구·후대 연구기관 연도 회귀
-do
-	local C = D.Cards
-	for _, id in { "bot_willow", "bot_willow_notes", "med_willow_bark" } do
-		check("버드나무: 새 지식카드 등록 " .. id, C.ById[id] ~= nil and D.KnowledgeTree.ById[id] ~= nil)
-	end
-	for rarity, sample in { Common = "bot_willow", Uncommon = "bot_willow_notes", Rare = "med_willow_bark", Epic = "phy_savery_pump", Legendary = "site_stonehenge" } do
-		local path = S.Discovery.pathOf(C.ById[sample])
-		check("희귀도 획득 과정: " .. rarity, type(path) == "string" and #path > 0)
-	end
-	local st = S.State.new("england", 1517)
-	st.portId = "antwerp"
-	st.careers.adventure.level = 5
-	local river, herbs, apothecary = nil, nil, nil
-	local archives, observatory, garden = nil, nil, nil
-	for _, site in D.Sites.Sites do
-		if site.id == "antwerp_willow_river" then river = site
-		elseif site.id == "antwerp_monastery_herbs" then herbs = site
-		elseif site.id == "antwerp_apothecary" then apothecary = site
-		elseif site.id == "royal_archive" then archives = site
-		elseif site.id == "copenhagen_observatory" then observatory = site
-		elseif site.id == "amsterdam_garden" then garden = site end
-	end
-	check("16세기 탐험: 강변·수도원·약방 3곳 연결", river ~= nil and herbs ~= nil and apothecary ~= nil)
-	check("16세기 탐험: 강변 표본은 즉시 조사 가능", S.Discovery.siteBlockReason(st, river) == nil)
-	check("16세기 탐험: 약방은 1554년 전 차단", S.Discovery.siteBlockReason(st, apothecary) ~= nil)
-	local supplyBefore = st.ship.supplies
-	check("시대: 잠긴 약방의 원본 탐험 입구 거부", not act(st, "Explore", { siteId = "antwerp_apothecary" }) and st.ship.supplies == supplyBefore)
-	check("16세기 탐험: 관찰 표본 없으면 비교 기록 잠김", S.Discovery.cardBlockReason(st, C.ById.bot_willow_notes) ~= nil)
-	local msgs = {}
-	S.Discovery.grantCard(st, "bot_willow", msgs)
-	S.Quest.autoReport(st, msgs)
-	check("버드나무 1장: 강변 현장 조사 퀘스트 자동 완수", st.quests.done.q_willow_field == true)
-	check("버드나무 2장: 강변 표본으로 비교 연구 해금", S.Discovery.cardBlockReason(st, C.ById.bot_willow_notes) == nil)
-	S.Discovery.grantCard(st, "bot_willow_notes", msgs)
-	S.Quest.autoReport(st, msgs)
-	check("버드나무 2장: 수도원 비교 기록 퀘스트 연결", st.quests.done.q_willow_notes == true)
-	S.Discovery.grantCard(st, "med_herb_garden", msgs)
-	st.startYear = 1554
-	check("버드나무 3장: 의학 조수나 선행 지식 없으면 연구 불가", S.Discovery.cardBlockReason(st, C.ById.med_willow_bark) ~= nil)
-	st.companions = { "t_nun" } -- 직업 선택·선박 직책 없이도 약초와 의학 연구를 돕는다
-	check("버드나무 3장: 의학 동료 동행만으로 검증 해금", st.specialty == nil and S.Discovery.cardBlockReason(st, C.ById.med_willow_bark) == nil)
-	check("버드나무 3장: 1554년 약방 탐험 해금", S.Discovery.siteBlockReason(st, apothecary) == nil)
-	S.Discovery.grantCard(st, "med_willow_bark", msgs)
-	S.Quest.autoReport(st, msgs)
-	check("버드나무 3장: 의학 기록 획득 퀘스트 완료", st.quests.done.q_willow_medicine == true)
-	local restored = S.State.sanitize(S.State.serialize(st))
-	check("버드나무: 기존 저장 형식에서 카드·퀘스트 보존", restored ~= nil and restored.discovered.med_willow_bark == true and restored.quests.done.q_willow_medicine == true)
-	local era = S.State.new("england", 1600)
-	era.careers.adventure.level = 5
-	check("시대: 1660년 이전 왕립학회 시설 차단", archives ~= nil and S.Discovery.siteBlockReason(era, archives) ~= nil)
-	check("시대: 1642년 이전 코펜하겐 천문대 차단", observatory ~= nil and S.Discovery.siteBlockReason(era, observatory) ~= nil)
-	check("시대: 1638년 이전 암스테르담 식물원 차단", garden ~= nil and S.Discovery.siteBlockReason(era, garden) ~= nil)
-	era.startYear = 1700
-	check("시대: 1700년에는 뉴커먼 기관(1712년) 연구 금지", S.Discovery.cardBlockReason(era, C.ById.phy_newcomen_engine) ~= nil)
-	era.startYear = 1712
-	check("시대: 1712년에 기존 연구 자료실 재개방", S.Discovery.siteBlockReason(era, archives) == nil)
-	check("시대: 1712년부터 뉴커먼 기관 연구 가능", S.Discovery.cardBlockReason(era, C.ById.phy_newcomen_engine) == nil)
 end
 
 -- 전문 분야와 동료 ---------------------------------------------------
