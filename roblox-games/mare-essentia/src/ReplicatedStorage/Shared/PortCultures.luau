@@ -137,8 +137,8 @@ for key, list in {
 	korea = { "busan", "incheon" },
 	colonial = { "veracruz", "campeche", "santo_domingo", "cartagena_indias", "portobelo", "acapulco", "panama", "la_guaira", "callao", "guayaquil", "valparaiso", "montevideo", "buenos_aires", "rio", "salvador", "recife", "belem", "manila", "san_juan" },
 	creole = { "havana", "kingston", "nassau", "bridgetown", "port_of_spain", "paramaribo", "new_orleans", "charleston" },
-	china = { "macau", "canton", "amoy", "ningbo", "shanghai", "tianjin", "tainan", "hoi_an" },
-	seasia = { "bangkok", "rangoon", "singapore", "batavia", "makassar", "ternate", "ambon", "banda", "brunei" },
+	china = { "macau", "canton", "amoy", "ningbo", "shanghai", "tianjin", "tainan" },
+	seasia = { "hoi_an", "bangkok", "rangoon", "singapore", "batavia", "makassar", "ternate", "ambon", "banda", "brunei" },
 	pacific = { "sydney", "hobart", "perth", "darwin", "auckland", "port_moresby", "suva", "tahiti", "honolulu", "guam" },
 	wafrica = { "praia", "saint_louis", "dakar", "bissau", "freetown", "elmina", "ouidah", "lagos", "calabar", "sao_tome", "luanda", "benguela", "st_helena" },
 } do
