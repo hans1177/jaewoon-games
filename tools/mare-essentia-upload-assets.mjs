@@ -405,6 +405,16 @@ for (const item of plan) {
       console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
+  // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
+  // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
+  if (item.assetType === 'Model' && item.sourceLicense) {
+    const old = registry.assets[id];
+    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+      previousTypeAssets.set(id, {...old});
+      delete registry.assets[id];
+      console.log('ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD', id);
+    }
+  }
   // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
   if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
@@ -577,14 +587,18 @@ for (let offset = 0; !accountBlocked && offset < pendingPermissions.length; offs
     console.log('GRANT_BATCH_FAILED', offset, batch.length, String(error.message).slice(0, 180));
   }
 }
-// [등록 원자성] 45개 기존 Decal을 새 Image로 바꾸는 도중 하나라도 실패하면 기존 게임 자산 연결을 유지한다.
-// 새 ID는 실제 성공한 권한 확인 결과가 전부 준비됐을 때만 기존 Lua/등록표에 반영한다.
-const replacementUnverified = [...previousTypeAssets].filter(([id]) =>
-  registry.assets[id]?.assetType !== 'Image' || registry.assets[id]?.usePermissionGranted !== true);
-if (replacementUnverified.length) failures.push('MARE_IMAGE_REPLACEMENTS_NOT_VERIFIED:' + replacementUnverified.length);
+// [등록 원자성] Image/Model 교체는 새 자산 ID·형식·Universe 권한·원본 해시 확인 전까지 기존 ID를 보존한다.
+// 다른 등록 실패가 발생해도 이전 정상 번호를 복구하며 신규 원본이 배포됐다고 표시하지 않는다.
+const replacementUnverified = [...previousTypeAssets].filter(([id, previous]) => {
+  const expectedType = plan.find(item => item.kind + '/' + item.name === id)?.assetType || 'Image';
+  const current = registry.assets[id];
+  return current?.assetType !== expectedType || current?.usePermissionGranted !== true
+    || (expectedType === 'Model' && current.sourceSha256 === previous.sourceSha256);
+});
+if (replacementUnverified.length) failures.push('MARE_ASSET_REPLACEMENTS_NOT_VERIFIED:' + replacementUnverified.length);
 if (failures.length && previousTypeAssets.size) {
   for (const [id, previous] of previousTypeAssets) registry.assets[id] = previous;
-  console.log('MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED:' + previousTypeAssets.size);
+  console.log('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED:' + previousTypeAssets.size);
 }
 if (failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
