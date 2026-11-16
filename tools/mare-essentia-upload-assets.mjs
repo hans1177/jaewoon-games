@@ -55,6 +55,13 @@ async function prepareLicensedOriginals() {
       pinnedBlobSha:'25ef612109072f491c06ef88aa34ebc85d983451',
       minBytes:1000000, maxBytes:20000000, minTriangles:50000, maxTriangles:180000,
       removePodium:true},
+    // [포르투갈 나우] 유사한 높은 선미성/선수 갑판을 가진 별도 외부 CC0 선체 원본.
+    // Kenney 공용 선체에서 배 이름만 바꾸지 않는다. 실제 원본 다운·개조·해시 확인 뒤에만 업로드한다.
+    {name:'nau-custom', assetPath:'assets/naval/nau-custom.glb', author:'Grab3D',
+      source:'https://grab3d.com/dl/galleon/galleon-light.glb',
+      page:'https://grab3d.com/models/vehicles/galleon/',
+      minBytes:1000000, maxBytes:2500000, minTriangles:19000, maxTriangles:50000,
+      rebuildNau:true},
   ];
   for (const item of sources) {
     const name = item.name, source = item.source, sourcePage = item.page;
@@ -71,6 +78,14 @@ async function prepareLicensedOriginals() {
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' : 'MARE_LICENSED_ORIGINAL_EVIDENCE_MISMATCH:') + name);
     if (bytes && !evidence) throw new Error('MARE_SHIP_SOURCE_PROVENANCE_MISSING:' + name);
+    if (item.rebuildNau && evidence) {
+      const original = await fs.readFile(path.join(ROOT,'assets/naval/nau-source.glb'));
+      const sourceHash = crypto.createHash('sha256').update(original).digest('hex');
+      if (evidence.originalSha256 !== sourceHash || evidence.sourceAsset !== ROOT+'/assets/naval/nau-source.glb'
+        || original.length !== 1196260 || evidence.authenticOriginalBinaryVerified !== true
+        || evidence.originalMeshesPreserved !== true)
+        throw new Error('MARE_NAU_EXTERNAL_CC0_ORIGINAL_CHANGED');
+    }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
       const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
@@ -83,6 +98,140 @@ async function prepareLicensedOriginals() {
         if (blobSha !== item.pinnedBlobSha) throw new Error('MARE_LICENSED_SOURCE_BLOB_MISMATCH:' + name);
       }
       originalSha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+
+      if (item.rebuildNau) {
+        // [외부 선체 확보] 2026-10-25 Grab3D CC0 galleon-light의 실제 바이너리 크기를 원본 공개 manifest와 대조한다.
+        // 선체·선미성 원본의 모든 메시와 바이너리를 보존하고 포르투갈식 미즌 대각돛과 삭구를 직접 추가한다.
+        if (bytes.length !== 1196260 || bytes.toString('ascii',0,4)!=='glTF' ||
+          bytes.readUInt32LE(4)!==2 || bytes.readUInt32LE(8)!==bytes.length ||
+          bytes.readUInt32LE(16)!==0x4e4f534a)
+          throw new Error('MARE_NAU_ORIGINAL_SOURCE_NOT_GRAB3D_LIGHT_GLB');
+        const sourceBytes=bytes;
+        const jlen=sourceBytes.readUInt32LE(12), start=20+jlen;
+        if (start+8>sourceBytes.length || sourceBytes.readUInt32LE(start+4)!==0x004e4942 ||
+          start+8+sourceBytes.readUInt32LE(start)!==sourceBytes.length)
+          throw new Error('MARE_NAU_ORIGINAL_BINARY_CHUNKS_INVALID');
+        const model=JSON.parse(sourceBytes.subarray(20,start).toString('utf8'));
+        if (!Array.isArray(model.meshes) || model.meshes.length<2 ||
+          !Array.isArray(model.scenes) || !Array.isArray(model.nodes) ||
+          !Array.isArray(model.buffers) || model.buffers.length!==1 ||
+          !Array.isArray(model.bufferViews) || !Array.isArray(model.accessors))
+          throw new Error('MARE_NAU_ORIGINAL_GLTF_INCOMPATIBLE');
+        const originalMeshCount=model.meshes.length, originalBin=sourceBytes.subarray(start+8);
+        const scene=model.scenes[model.scene??0];
+        if (!scene || !Array.isArray(scene.nodes)) throw new Error('MARE_NAU_SCENE_MISSING');
+        const extBuffers=[];
+        let extraLen=0, extraTriangles=0;
+        const addBuffer=(data,target)=>{
+          const pad=(4-extraLen%4)%4;
+          if(pad){extBuffers.push(Buffer.alloc(pad));extraLen+=pad;}
+          const index=model.bufferViews.length;
+          model.bufferViews.push({buffer:0,byteOffset:originalBin.length+extraLen,byteLength:data.length,target});
+          extBuffers.push(data);extraLen+=data.length;
+          return index;
+        };
+        const addMat=(name,color)=>{
+          if(!model.materials)model.materials=[];
+          return model.materials.push({name,pbrMetallicRoughness:{
+            baseColorFactor:[...color,1],metallicFactor:0,roughnessFactor:0.92},
+            doubleSided:true})-1;
+        };
+        const linenMat=addMat('Portuguese nau lateen linen',[0.94,0.86,0.68]);
+        const woodMat=addMat('Portuguese nau oak spars',[0.48,0.28,0.12]);
+        const ropeMat=addMat('Portuguese nau tarred rigging',[0.15,0.11,0.07]);
+        const addGeometry=(label,positions,indices,material)=>{
+          const vb=Buffer.alloc(positions.length*4);
+          for(let i=0;i<positions.length;i++)vb.writeFloatLE(positions[i],i*4);
+          const ib=Buffer.alloc(indices.length*2);
+          for(let i=0;i<indices.length;i++)ib.writeUInt16LE(indices[i],i*2);
+          const pv=addBuffer(vb,34962), iv=addBuffer(ib,34963);
+          const pCount=positions.length/3;
+          const lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];
+          for(let i=0;i<positions.length;i+=3)for(let a=0;a<3;a++){
+            lo[a]=Math.min(lo[a],positions[i+a]);hi[a]=Math.max(hi[a],positions[i+a]);}
+          const pa=model.accessors.push({bufferView:pv,componentType:5126,count:pCount,type:'VEC3',min:lo,max:hi})-1;
+          const ia=model.accessors.push({bufferView:iv,componentType:5123,count:indices.length,type:'SCALAR'})-1;
+          const mi=model.meshes.push({name:label,primitives:[{attributes:{POSITION:pa},indices:ia,material}]})-1;
+          const ni=model.nodes.push({name:label,mesh:mi})-1;
+          scene.nodes.push(ni);
+          extraTriangles+=indices.length/3;
+        };
+        // Grab3D 공개 좌표: 선수 -Y, 선미 +Y, 위 +Z. 위쪽 배치는 원본이 아닌 도형 선체 대체가 아니다.
+        const cloth=[],faces=[],grid=[],N=24;
+        const A=[0.0,3.5,20],B=[0.0,13,14.5],C=[0.0,9,5.5];
+        for(let i=0;i<=N;i++){
+          grid[i]=[];
+          for(let j=0;j<=N-i;j++){
+            const u=i/N,v=j/N,w=1-u-v;
+            grid[i][j]=cloth.length/3;
+            cloth.push(A[0]*w+B[0]*u+C[0]*v+1.15*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),
+              A[1]*w+B[1]*u+C[1]*v,A[2]*w+B[2]*u+C[2]*v);
+          }
+        }
+        for(let i=0;i<N;i++)for(let j=0;j<N-i;j++){
+          faces.push(grid[i][j],grid[i+1][j],grid[i][j+1]);
+          if(j<N-i-1)faces.push(grid[i+1][j],grid[i+1][j+1],grid[i][j+1]);
+        }
+        addGeometry('nau mizzen lateen cloth',cloth,faces,linenMat);
+        const cylinder=(a,b,r,segments=10)=>{
+          const p=[],ind=[],axis=b.map((v,i)=>v-a[i]);
+          const al=Math.hypot(...axis),d=axis.map(v=>v/al);
+          if(!Number.isFinite(al)||al<0.1)throw Error('MARE_NAU_RIGGING_AXIS_INVALID');
+          const ref=Math.abs(d[2])<0.9?[0,0,1]:[1,0,0];
+          const ux=[d[1]*ref[2]-d[2]*ref[1],d[2]*ref[0]-d[0]*ref[2],d[0]*ref[1]-d[1]*ref[0]];
+          const ul=Math.hypot(...ux),u=ux.map(x=>x/ul);
+          const v=[d[1]*u[2]-d[2]*u[1],d[2]*u[0]-d[0]*u[2],d[0]*u[1]-d[1]*u[0]];
+          for(const pt of [a,b])for(let k=0;k<segments;k++){
+            const ang=2*Math.PI*k/segments;
+            for(let c=0;c<3;c++)p.push(pt[c]+r*(u[c]*Math.cos(ang)+v[c]*Math.sin(ang)));
+          }
+          for(let k=0;k<segments;k++){
+            const t=(k+1)%segments;
+            ind.push(k,t,segments+k,t,segments+t,segments+k);
+          }
+          return {p,ind};
+        };
+        const addRods=(name,rods,material)=>{
+          const p=[],ids=[];
+          for(const [a,b,r] of rods){const m=cylinder(a,b,r);const off=p.length/3;
+            p.push(...m.p);ids.push(...m.ind.map(i=>i+off));}
+          addGeometry(name,p,ids,material);
+        };
+        addRods('nau mizzen oak mast and lateen yard',[
+          [[0,9,2],[0,9,21],0.19],
+          [A,B,0.13],
+          [[-3.8,12.1,3.3],[3.8,12.1,3.3],0.12],
+        ],woodMat);
+        addRods('nau mizzen ropes and rigging',[
+          [[0,9,21],[-4.0,12.7,3.1],0.045],
+          [[0,9,21],[4.0,12.7,3.1],0.045],
+          [A,C,0.045],[B,C,0.045],
+          [[0,9,20],[-4.0,4.7,3.1],0.035],
+          [[0,9,20],[4.0,4.7,3.1],0.035],
+        ],ropeMat);
+        const extendedBin=Buffer.concat([originalBin,...extBuffers,Buffer.alloc((4-extraLen%4)%4)]);
+        model.buffers[0].byteLength=originalBin.length+extraLen;
+        const jsonBody=Buffer.from(JSON.stringify(model),'utf8'),padding=(4-jsonBody.length%4)%4;
+        const newJson=Buffer.concat([jsonBody,Buffer.alloc(padding,0x20)]);
+        const rebuilt=Buffer.alloc(12+8+newJson.length+8+extendedBin.length);
+        rebuilt.write('glTF',0);rebuilt.writeUInt32LE(2,4);rebuilt.writeUInt32LE(rebuilt.length,8);
+        rebuilt.writeUInt32LE(newJson.length,12);rebuilt.writeUInt32LE(0x4e4f534a,16);
+        newJson.copy(rebuilt,20);
+        const binAt=20+newJson.length;
+        rebuilt.writeUInt32LE(extendedBin.length,binAt);rebuilt.writeUInt32LE(0x004e4942,binAt+4);
+        extendedBin.copy(rebuilt,binAt+8);
+        if(extraTriangles<550 || !extendedBin.subarray(0,originalBin.length).equals(originalBin)
+          || model.meshes.length!==originalMeshCount+3 || rebuilt.readUInt32LE(8)!==rebuilt.length)
+          throw new Error('MARE_NAU_SOURCE_HULL_OR_REBUILT_GEOMETRY_INVALID');
+        bytes=rebuilt;
+        await fs.writeFile(path.join(ROOT,'assets/naval/nau-source.glb'),sourceBytes);
+        item.originalModel='Grab3D CC0 galleon-light source with preserved historical hull';
+        item.modification='Portuguese nau: external CC0 galleon hull, original stern castle and binary preserved; added 576-triangle mizzen lateen sail, raked yard, oak mast, dark ropes and rigging';
+        item.sourceAsset=ROOT+'/assets/naval/nau-source.glb';
+        item.originalMeshCount=originalMeshCount;
+        item.derivedTriangleCount=extraTriangles;
+        console.log('MARE_NAU_EXTERNAL_CC0_HULL_DERIVED',originalSha256,extraTriangles);
+      }
       if (item.removePodium) {
         // [원본 모델 디테일] 작가의 선체·돛·삭구 메시와 재질은 그대로 보존한다.
         // 전시용 원형 받침대를 glTF 장면 노드에서만 제거한다. 도형/절차형 새 모델은 만들지 않는다.
@@ -145,9 +294,15 @@ async function prepareLicensedOriginals() {
       await fs.writeFile(proof, JSON.stringify({license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         attribution:item.attribution || null,
-        modification:item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source',
-        triangles:tris, originalModel:name,
-        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\n');
+        sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
+        derivedTriangleCount:item.derivedTriangleCount||null,
+        authenticOriginalBinaryVerified:item.rebuildNau?true:undefined,
+        originalMeshesPreserved:item.rebuildNau?true:undefined,
+        structuralGlbVerified:item.rebuildNau?true:undefined,
+        modelGeometryGroups:item.rebuildNau?['wood','linen','rope']:undefined,
+        modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
+        triangles:tris, originalModel:item.originalModel || name,
+        actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
@@ -257,6 +412,8 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
     // 기존 리그 파일과 실제 NPC·장비 모델은 보존한다.
     if (kind === 'People' && (f === 'rig_f.glb' || f === 'rig_m.glb')) continue;
+    // [CC0 원본 보존] nau-source는 선체 개조 출처 검증용 바이너리로 Roblox 등록 대상이 아니다.
+    if (kind === 'Naval' && f === 'nau-source.glb') continue;
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
     // [5대륙 카드] 기존 CardArt 승인 경로에서만 150장 PNG를 등록한다. SVG 원본은 Roblox 이미지로 직접 올리지 않는다.
