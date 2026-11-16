@@ -212,6 +212,8 @@ end
 NavalBattle.cardArtworkKey = cardArtworkKey
 
 function NavalBattle.play(opts)
+	-- 일반 해전은 함선 조종·포격·백병전만 실행한다. 카드는 주점의 카드 전용 대결에서만 사용한다.
+	if not opts.cardOnly then opts.card = nil end
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("BattleScene")
 	if old then
