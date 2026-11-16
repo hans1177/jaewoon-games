@@ -6347,6 +6347,12 @@ function H.startField(s)
 			end
 		end,
 	})
+	-- [철수 중 입장 취소] 대형 필드 생성 도중 철수하면 onFinish가 이미 항구 복귀를 마쳤다.
+	-- 완료된 철수를 입장 실패로 다시 처리해 UI와 캐릭터를 이중 복구하지 않는다.
+	if startOk and type(startResult) == "table" and startResult.cancelled == true then
+		workspace:SetAttribute("FieldEntryStage", "CANCELLED")
+		return
+	end
 	-- [실제 입장 판정] 필드 생성 직후의 캐릭터 위치 복제 지연을 입장 실패로 오판하지 않는다.
 	-- 기존 FieldScene의 실제 출발 좌표만 사용하고, 지형·전투 UI·조작 준비가 갖춰진 경우에만 재배치한다.
 	local startErr = if startOk then nil else startResult
