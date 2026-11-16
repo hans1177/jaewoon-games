@@ -649,11 +649,17 @@ return function(D, S)
 				local kindId = good.resourceKind or "manufactured"
 				local group = resourceKindNames[kindId] or resourceKindNames.manufactured
 				local card = D.Cards.ById[good.knowledgeId]
-				local subject = group and D.KnowledgeTree.DisciplineById[group.discipline]
+				local subjectId = good.discipline or (group and group.discipline)
+				local taxonomy = subjectId and D.KnowledgeTree.TaxonomyById[subjectId]
+				while taxonomy and taxonomy.planned do
+					taxonomy = taxonomy.parent and D.KnowledgeTree.TaxonomyById[taxonomy.parent]
+				end
+				local subject = taxonomy and D.KnowledgeTree.DisciplineById[taxonomy.id]
 				table.insert(view.codex.resources, {
 					id = id, name = good.name, category = kindId,
 					categoryName = group and group.name or "가공품",
 					discipline = subject and subject.name or "기타",
+					appliedDiscipline = if good.discipline and D.KnowledgeTree.TaxonomyById[good.discipline] then D.KnowledgeTree.TaxonomyById[good.discipline].name else nil,
 					cardId = card and card.id or nil,
 					cardName = card and card.name or "연관 지식 미등록",
 				})
