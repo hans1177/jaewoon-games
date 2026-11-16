@@ -1256,6 +1256,11 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     ['fluyt','naval/ship-large.glb','pirate-kit',6,true],
     ['pirogue','terrain/canoe.glb','nature-kit',1,false],
   ];
+  const importer=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.match(importer,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/,'modified GLB must be registered as new Roblox asset');
+  assert.match(importer,/item\.sourceLicense && old\.sourceSha256 !== sourceSha256/,'source-evidence changes must force reimport');
+  assert.match(importer,/MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED/,'failed model reimport must restore old ID');
+  assert.match(importer,/current\?\.usePermissionGranted !== true/,'new model cannot pass without Universe permission');
   const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const parseGlb=(data,label)=>{
