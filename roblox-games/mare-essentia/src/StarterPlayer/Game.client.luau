@@ -7137,7 +7137,7 @@ local function renderCodexOverview()
 			}, 56)
 		end)
 	end
-	add(function() return mkHeader(content, "카드 소재 · 16가지") end)
+	add(function() return mkHeader(content, string.format("카드 소재 · %d가지", #cx.kindList)) end)
 	for _, kind in cx.kindList or {} do
 		add(function()
 			return mkRow(content, kind.name .. " · " .. tostring(cx.kinds[kind.id] or 0) .. "장", "종류별 목록 · 기존 희귀도와 학문 유지", {
