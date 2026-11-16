@@ -123,7 +123,7 @@ const VIBE_DRAWN_GOODS = ['feathers','cloves','nutmeg','cinnamon','lacquer','cam
 // [지식카드 51장] 이름 규칙 밖(ast_*, zoo_* 등)이라도 APPROVED_IMAGES에 해시 승인된 카드 jpg는 등록 대상에 포함한다.
 const approvedCardNames = new Set();
 for (const k of Object.keys(cardApprovalDocument.approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg');
-if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
+if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['monsters', 'Monsters'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
     // 기존 리그 파일과 실제 NPC·장비 모델은 보존한다.

@@ -1490,3 +1490,24 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 
 ## CommonMotion.luau
 - 출처: assets/roblox/common-motion-v1/RobloxCommonMotion.luau (회사 공용 R15 관절 모션, 마력숲과 같은 원본). 수정 없이 복사. 지상 탐험 전투(FieldScene → FieldMotion)에서 사용.
+
+
+## 2026-11-16 외부 몬스터·유적 원본
+
+오너 직접 요청: `Monsters/` 모델 + 기존 `Terrain/` 오브젝트를 **실제 원본 모델**로 추가했다. 원본 출처와 Git blob SHA-1은 정확히 일치한다. 원본 저작권은 CC0-1.0이고 모두 무료·상업 이용 가능하다. 저장소 등록은 Roblox 자산 번호 등록이나 실제 플레이/관절 애니메이션 검증을 의미하지 않는다.
+
+| 대상 파일 | 저작자·원본 | 정확히 같은 원본 Git Blob SHA |
+|---|---|---|
+| `monsters/ghost.glb` | Quaternius Ultimate Monsters · `ilrein/warptracker/public/models/ghost.glb` | `64a689730f9520be17e2628fa861ed9b1930054c` |
+| `monsters/demon.glb` | Quaternius Ultimate Monsters · `ilrein/warptracker/public/models/demon.glb` | `683dd91197bf5f4322a101b5853f2949bf3981a5` |
+| `monsters/skeleton-warrior.glb` | KayKit Skeletons · 기존 `assets/roblox/actors/native/skeleton-warrior.glb` | `873367097d78a310df17b90f2917296ef5553869` |
+| `monsters/skeleton-mage.glb` | KayKit Skeletons · 기존 `assets/roblox/actors/native/skeleton-mage.glb` | `babe93d65956bf3710f34c22fd04d2092ba124e0` |
+| `terrain/haunted-pine-crooked.glb` | Kenney Graveyard Kit · `Hidencod/tge-assets/packs/graveyard-kit/pine-crooked.glb` | `5b8fb2e7e789149130e559d748f7f023e01a1341` |
+| `terrain/haunted-gravestone-broken.glb` | Kenney Graveyard Kit · `Hidencod/tge-assets/packs/graveyard-kit/gravestone-broken.glb` | `60506cbb28e51c58f365ff892c983eae730f254c` |
+| `terrain/haunted-iron-gate.glb` | Kenney Graveyard Kit · `Hidencod/tge-assets/packs/graveyard-kit/fence-gate.glb` | `d47a02a269bbb4ee0253237a9df10ba9c46c4189` |
+| `terrain/ruins-pillar-decorated.glb` | KayKit Dungeon Remastered · `KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/pillar_decorated.gltf.glb` | `7eda56c427e1824bca02b03f1eca93696302a1aa` |
+| `terrain/ruins-wall-arched.glb` | KayKit Dungeon Remastered · `KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_arched.gltf.glb` | `d049ace889b606edb5d638b9996aeb580f095387` |
+
+원저작자/라이선스: https://quaternius.com/packs/ultimatemonsters.html ; https://kenney.nl/assets/graveyard-kit ; https://kaylousberg.itch.io/kaykit-skeletons ; https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 . 원본 증빙: https://github.com/ilrein/warptracker/blob/main/ASSETS.md ; https://github.com/Hidencod/tge-assets . 유령은 실제 관절 스킨 1개·애니메이션 8개, 악마는 관절 스킨 1개·애니메이션 14개가 GLB 안에 확인되었다. 기존 해골 2종은 기존 `assets/roblox/actors/manifest.json` 검증 기록에 각각 관절 41개·애니메이션 76개로 기재되나, 이 목록은 Roblox 런타임 승인 증거가 아니다.
+
+기존 `owner-mare-essentia-assets.yml`과 `tools/mare-essentia-upload-assets.mjs`로만 자산 번호를 발급한다. 발급·Universe 사용권한·실제 Studio 시각·애니메이션 재생 확인 전에는 기존 전투 스폰/체력/공격력/드랍/저장과 지형을 바꾸지 않는다.
