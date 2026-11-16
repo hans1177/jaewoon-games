@@ -93,7 +93,7 @@ function FM.scale(canon, gain: number)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?)
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
@@ -137,7 +137,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ForearmL", -0.38, 0, 0)
 			bend("ForearmR", -0.55, 0, 0)
 			bend("Head", -0.09, 0, 0)
-		elseif state == "RUN" and h.model:GetAttribute("MotionRetreat") then
+		elseif state == "RUN" and retreat then
 			-- 사수 뒷걸음: 이동 규칙은 유지하고 어깨로 상체를 방어한다.
 			bend("Chest", -0.18, 0, 0)
 			bend("UpperArmL", -0.58, 0, -0.18)
@@ -168,7 +168,6 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		end
 	elseif role == "ally-ranged" or role == "ally-melee" then
 		-- 회복·보호막·격려는 무기 공격과 분리해 실제 지원 행동으로 보이게 한다.
-		local skill = h.model:GetAttribute("MotionSkill")
 		if state == "INTERACT" and (skill == "heal" or skill == "armor" or skill == "rally" or skill == "luck") then
 			local lift = math.sin(math.clamp(phase, 0, 1) * math.pi)
 			if skill == "heal" then
