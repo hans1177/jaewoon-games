@@ -107,7 +107,7 @@ local Ships: { [string]: ShipDef } = {
 -- [항행 고증] 신대륙 주력 1~5단계는 아메리카에서 실제 운용된 대서양·태평양 항해 범선(식민지기 포함).
 -- 토착 카누·뗏목은 고유 문화 유산 카드로 존중해 유지하며 원양선으로 오분류하지 않는다. 카드 도감의 기존 토착 선박은 유지.
 -- 단계는 역할·규모 구분이며 모든 문화권의 역사적 개발 연대를 뜻하지 않는다.
--- 실존 1~5단계, 아스테리아 2~6단계. 단계와 미지의 땅 3~8% 우위는 현행 구매·성능·저장 수치에 영향 없음.
+-- [36척 함종 제작] 일반 6대륙 × 5척 + 신화 제7대륙 6척. 설계 수치는 게임의 구매·보상·저장에 영향 없음.
 local BlueprintFactions = {
 	{ id="europe", name="유럽" },
 	{ id="east_asia", name="동아시아" },
@@ -148,11 +148,12 @@ local Blueprints = {
 	{ id="mtepe", name="스와힐리 므테페", faction="africa", stage=3, era="중세~19세기", hull="봉합한 목조 판재 선체", rig="큰 삼각돛", deck="연안 화물갑판", remodel="봉합식 판재와 삼각범장 전용 고증", card="af_01", existingId="mtepe", sailingZone="동아프리카 연안", proposedEdge=nil },
 	{ id="zanzibar_dhow", name="잔지바르 다우선", faction="africa", stage=4, era="17~19세기", hull="동아프리카 중형 화물선", rig="장대형 삼각돛", deck="향신료 선창·후미 조타", remodel="동아프리카형 선미·삼각돛 개조", card="af_02", existingId=nil, sailingZone="인도양 교역", proposedEdge=nil },
 	{ id="zanzibar_jahazi", name="잔지바르 자하즈", faction="africa", stage=5, era="17~19세기", hull="동아프리카 장거리 교역용 깊은 목조 선체", rig="높은 경사 돛대·대형 인도양식 삼각범", deck="대량 화물창·후미 조타부", remodel="스와힐리식 자하즈 실물 선형·선미·범장 전용 고증", card=nil, existingId="jahazi", sailingZone="인도양 원양", proposedEdge=nil },
-	{ id="mist_seeker", name="안개 해도 탐사선", faction="lost", stage=2, era="가상 2단계", hull="가늘고 빠른 원양 탐사선", rig="낮은 혼합돛", deck="별도 관측실·해도갑판", remodel="안개 관측장치와 길잡이 문양 개조", card=nil, existingId=nil, sailingZone="가상 원양", proposedEdge=0.03 },
-	{ id="lemuria_scout", name="레무리아 풍향선", faction="lost", stage=3, era="가상 3단계", hull="폭풍 대응 세장형 선체", rig="경사 삼각돛 다수", deck="보조 조타대·풍향 관측부", remodel="바람 관측대와 가상 문양 개조", card="lo_04", existingId=nil, sailingZone="가상 원양", proposedEdge=0.04 },
-	{ id="atlantis_carrier", name="아틀란티스 탐사 기함", faction="lost", stage=4, era="가상 4단계", hull="넓은 유적 탐사 대형선", rig="복합 범장", deck="유물창·관측 갑판", remodel="청동 장식·고대 문양 선미 개조", card="lo_01", existingId=nil, sailingZone="가상 원양", proposedEdge=0.05 },
-	{ id="flying_dutchman", name="플라잉 더치맨", faction="lost", stage=5, era="가상 5단계", hull="낡은 무장 원양 범선", rig="손상된 다중 사각돛", deck="파손 포구·선미루", remodel="기존 등록 유령선 모델 기반 고증 개조", card="lo_21", existingId=nil, sailingZone="가상 원양", proposedEdge=0.06 },
-	{ id="astheria_flagship", name="아스테리아 해도함", faction="lost", stage=6, era="가상 6단계", hull="대형 장거리 미지 탐사선", rig="다중 혼합돛", deck="천문 관측대·최종 해도실", remodel="일곱 해역 문양·고유 돛대 구조 개조", card=nil, existingId=nil, sailingZone="가상 원양", proposedEdge=0.08 },
+	{ id="mu_voyager", name="무 대륙 항해선", faction="lost", stage=1, era="가상 1단계", hull="얕고 빠른 태평양 항해 선체", rig="청록 댓살돛·삼각 보조돛", deck="해류 관측갑판", remodel="무 대륙 파도무늬·관측나침반·고유 선체", card="lo_02", existingId=nil, targetLengthStuds=30, targetBeamStuds=9.5, targetMastHeightStuds=22, sailingZone="가상 원양", proposedEdge=nil },
+	{ id="mist_seeker", name="안개 해도 탐사선", faction="lost", stage=2, era="가상 2단계", hull="가늘고 빠른 원양 탐사선", rig="낮은 혼합돛", deck="별도 관측실·해도갑판", remodel="안개 관측장치와 길잡이 문양 개조", card="lo_24", existingId=nil, targetLengthStuds=38, targetBeamStuds=11.5, targetMastHeightStuds=27, sailingZone="가상 원양", proposedEdge=0.03 },
+	{ id="lemuria_scout", name="레무리아 풍향선", faction="lost", stage=3, era="가상 3단계", hull="폭풍 대응 세장형 선체", rig="경사 삼각돛 다수", deck="보조 조타대·풍향 관측부", remodel="바람 관측대와 가상 문양 개조", card="lo_04", existingId=nil, targetLengthStuds=42, targetBeamStuds=12.5, targetMastHeightStuds=35, sailingZone="가상 원양", proposedEdge=0.04 },
+	{ id="atlantis_carrier", name="아틀란티스 탐사 기함", faction="lost", stage=4, era="가상 4단계", hull="넓은 유적 탐사 대형선", rig="복합 범장", deck="유물창·관측 갑판", remodel="청동 장식·고대 문양 선미 개조", card="lo_01", existingId=nil, targetLengthStuds=50, targetBeamStuds=16, targetMastHeightStuds=38, sailingZone="가상 원양", proposedEdge=0.05 },
+	{ id="flying_dutchman", name="플라잉 더치맨", faction="lost", stage=5, era="가상 5단계", hull="낡은 무장 원양 범선", rig="손상된 다중 사각돛", deck="파손 포구·선미루", remodel="기존 등록 유령선 모델 기반 고증 개조", card="lo_21", existingId=nil, targetLengthStuds=46, targetBeamStuds=14, targetMastHeightStuds=38, sailingZone="가상 원양", proposedEdge=0.06 },
+	{ id="astheria_flagship", name="아스테리아 해도함", faction="lost", stage=6, era="가상 6단계", hull="대형 장거리 미지 탐사선", rig="다중 혼합돛", deck="천문 관측대·최종 해도실", remodel="일곱 해역 문양·고유 돛대 구조 개조", card="lo_25", existingId=nil, targetLengthStuds=56, targetBeamStuds=17, targetMastHeightStuds=45, sailingZone="가상 원양", proposedEdge=0.08 },
 }
 
 -- 항만청 면허: 등급 N+1 배를 사려면 면허 N단계가 필요하다.
