@@ -1044,8 +1044,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		table.insert(walkers, t)
 	end
 	local function stay(pos, target, kind, spec)
-		local fig = person(pos, faceTo(pos, target), spec or {}, kind)
-		addTask(fig, { kind = kind, mode = "stay" })
+		spec = spec or {}
+		local fig = person(pos, faceTo(pos, target), spec, kind)
+		addTask(fig, { kind = kind, mode = "stay", job = spec.profession, workKinds = spec.workKinds, leisureKinds = spec.leisureKinds })
 		return fig
 	end
 	local function path(a, b, kind, speed, spec, over)
@@ -1383,16 +1384,22 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	-- 직업별 일터: 마을 경제 시뮬의 직업 비율대로 주민이 자기 일터에서 직업마다 다른 동작을 한다.
 	-- 일터는 건물 종류와 맞춘다(시장=장터 동작, 부두=짐 나르기, 교회=기도·종, 관청=문서, 공방=망치질 …).
 	do
+		-- 직업별 실제 업무/휴식 순환. 지역 의상 팔레트 안에서 작업복·예복을 구분한다.
+		local made = {}
+		for _, good in (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {} do made[good] = true end
+		local craft = if made.iron or made.copper or made.tin then "forge"
+			elseif made.cloth or made.silk or made.wool then "sew"
+			elseif made.grain or made.beer or made.sugar then "knead" else "hammer"
 		local JOB_YARD = {
-			farmer = { name = "농부", kinds = { "hoe", "stoop" }, spec = { role = "Barbarian", hat = "cap" } },
-			fisher = { name = "어부", kinds = { "fish" }, spec = { role = "Barbarian", hat = "cap" } },
-			craftsman = { name = "장인", kinds = { "hammer", "stir", "sweep" }, spec = { role = "Barbarian", hat = "cap" } },
-			merchant = { name = "상인", kinds = { "stall", "talk", "wave" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 } },
-			sailor = { name = "선원", kinds = { "lift", "carry" }, spec = { role = "Barbarian" } },
-			guard = { name = "경비병", kinds = { "lean", "look", "point" }, spec = { role = "Knight" } },
-			official = { name = "관리", kinds = { "write", "point", "talk" }, spec = { role = "Mage" } },
-			clergy = { name = "성직자", kinds = { "pray", "bell", "sweep" }, spec = { role = "Mage" } },
-			laborer = { name = "일꾼", kinds = { "carry", "lift", "sweep" }, spec = { role = "Rogue" } },
+			farmer = { name = "농부", kinds = { "hoe", "stoop", "inspect" }, rest = { "stretch", "talk", "drink" }, spec = { role = "Barbarian", hat = "straw" }, tint = C(110, 125, 76) },
+			fisher = { name = "어부", kinds = { "fish", "lift", "inspect" }, rest = { "drink", "talk", "stretch" }, spec = { role = "Barbarian", hat = "knit" }, tint = C(70, 106, 146) },
+			craftsman = { name = "장인", kinds = { craft, "inspect", "count", "hammer" }, rest = { "stretch", "drink", "talk" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(146, 99, 57) },
+			merchant = { name = "상인", kinds = { "stall", "count", "offer", "receive" }, rest = { "talk", "drink", "listen" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 }, tint = C(121, 71, 132) },
+			sailor = { name = "선원", kinds = { "lift", "carry", "inspect", "salute" }, rest = { "drink", "talk", "stretch" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(59, 92, 138) },
+			guard = { name = "경비병", kinds = { "salute", "look", "point", "inspect" }, rest = { "lean", "look", "stretch" }, spec = { role = "Knight", hat = false }, tint = C(69, 78, 111) },
+			official = { name = "관리", kinds = { "write", "read", "count", "point" }, rest = { "talk", "listen", "drink" }, spec = { role = "Mage", hat = "wide" }, tint = C(108, 78, 134) },
+			clergy = { name = "성직자", kinds = { "pray", "read", "bell" }, rest = { "talk", "listen", "look" }, spec = { role = "Mage", hat = false }, tint = C(96, 87, 80) },
+			laborer = { name = "일꾼", kinds = { "carry", "lift", "sweep", "polish" }, rest = { "stretch", "drink", "talk" }, spec = { role = "Rogue", hat = "cap" }, tint = C(119, 104, 79) },
 		}
 		local ORDER = { "farmer", "fisher", "craftsman", "merchant", "sailor", "guard", "official", "clergy", "laborer" }
 		local jobs = info.sim and info.sim.jobs
@@ -1425,9 +1432,16 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				if yard.prop then
 					importedModel(folder, yard.prop[1], yard.prop[2], target, yard.prop[3], false)
 				end
-				local fig = stay(pos, target, yard.kinds[(k - 1) % #yard.kinds + 1], yard.spec)
+				local spec = table.clone(yard.spec)
+				spec.profession = j
+				spec.workKinds, spec.leisureKinds = yard.kinds, yard.rest
+				if o.coats and #o.coats > 0 then
+					spec.coat = o.coats[(slot - 1) % #o.coats + 1]:Lerp(yard.tint, 0.42)
+				end
+				local fig = stay(pos, target, yard.kinds[(k - 1) % #yard.kinds + 1], spec)
 				if fig then
 					fig:SetAttribute("Job", j)
+					fig:SetAttribute("Activity", yard.kinds[1])
 					local head = fig:FindFirstChild("Head")
 					if head then
 						local bb = Instance.new("BillboardGui")
@@ -3192,8 +3206,20 @@ function PortScene.build(info, onFacility)
 							elseif cycle < 5.0 then "look"
 							elseif cycle < 7.2 then "listen" else "look"
 					end
-					-- [주민 직업 모션] 계속 허공을 치는 대신 일하기→물건 확인→스트레칭을 개인 위상으로 교대한다.
-					if w.kind == "hammer" or w.kind == "hoe" or w.kind == "stir" or w.kind == "sweep" or w.kind == "write" then
+					-- [하루 일과] 같은 사람은 같은 직업을 유지하고 출근/작업/점검/휴식/여가 동작만 교대한다.
+					-- 현재 항구의 게임 시각을 사용하고 매 프레임 자산/소품을 다시 생성하지 않는다.
+					if w.job and w.workKinds and w.leisureKinds then
+						local hour = game:GetService("Lighting").ClockTime
+						local workday = hour >= 6 and hour < 18
+						local period = math.floor((now + w.phase * 2.1) / 16)
+						local roster = if workday then w.workKinds else w.leisureKinds
+						kind = roster[(period % #roster) + 1]
+						if workday and (now + w.phase) % 73 > 61 then kind = "stretch" end
+						if w.lastActivity ~= kind then
+							w.lastActivity = kind
+							w.model:SetAttribute("Activity", kind)
+						end
+					elseif w.kind == "hammer" or w.kind == "hoe" or w.kind == "stir" or w.kind == "sweep" or w.kind == "write" then
 						local workCycle = (now + w.phase * 1.7) % 17
 						if workCycle >= 14.5 then kind = "stretch"
 						elseif workCycle >= 12.5 then kind = "inspect" end
