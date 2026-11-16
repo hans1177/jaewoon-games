@@ -50,11 +50,14 @@ end
 -- [역사 백과사전 ↔ 공유 경제] 인물·정치·문화·종교를 실제 항구 사회 변화로 연결.
 do
 	local x = Eco.newWorld({ seed = 50, year = 1688 })
-	check("실제 연표 월 전에는 사건이 적용되지 않음", #Eco.activeHistory(x, "london") >= 0 and not x.fired.civil_glorious_revolution)
+	local initiallyActive = false
+	for _, item in ipairs(x.shocks) do if item.id == "civil_glorious_revolution" then initiallyActive = true end end
+	check("실제 연표 월 전에는 사건이 적용되지 않음", not initiallyActive and not x.fired.civil_glorious_revolution)
 	Eco.run(x, 320)
 	local seen = {}
 	for _, ev in ipairs(x.shocks) do seen[ev.id] = ev end
 	check("명예혁명 공유 경제 연동", seen.civil_glorious_revolution ~= nil)
+	check("검증된 공개 백과사전 항목 식별자", seen.civil_glorious_revolution and seen.civil_glorious_revolution.qid == "Q189508")
 	check("연표 인물·원본 사건 연결", seen.civil_glorious_revolution
 		and seen.civil_glorious_revolution.sourceEvent == "glorious_revolution"
 		and type(seen.civil_glorious_revolution.people) == "table")
