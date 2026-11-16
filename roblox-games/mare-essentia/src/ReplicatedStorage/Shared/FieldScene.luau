@@ -1687,7 +1687,9 @@ function FieldScene.start(opts)
 		if not (hand and hand:IsA("BasePart")) then return end
 		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 		local group = lib and lib:FindFirstChild("Relics")
-		local tpl = weapon.model and group and group:FindFirstChild(weapon.model)
+		-- [자산 권한] 등록표에 없는 임의 모델을 장착하지 않는다.
+		local registeredId = weapon.model and AssetIds["Relics/" .. weapon.model]
+		local tpl = registeredId and group and group:FindFirstChild(weapon.model)
 		if tpl and tpl:IsA("Model") then
 			local held = tpl:Clone()
 			held.Name = if weapon.id == "sword" then "FieldSword" else "FieldWeapon"
@@ -1702,7 +1704,14 @@ function FieldScene.start(opts)
 			if count > 0 then
 				local bb, ext = held:GetBoundingBox()
 				local longest = math.max(ext.X, ext.Y, ext.Z)
-				if longest > 0.05 then pcall(function() held:ScaleTo(4.6 / longest) end) end
+				-- [손 장착 크기] 원본 메시 비율을 유지하며 무기별 크기만 조정한다.
+				local targetLength = if weapon.family == "dagger" then 1.8
+					elseif weapon.family == "bow" then 3.5
+					elseif weapon.family == "spear" then 4.6
+					elseif weapon.family == "axe" or weapon.family == "blunt" then 3.1
+					elseif weapon.family == "firearm" then (if weapon.motion == "PISTOL" then 2.0 else 3.7)
+					else 3.3
+				if longest > 0.05 then pcall(function() held:ScaleTo(targetLength / longest) end) end
 				held.Parent = character
 				bb, ext = held:GetBoundingBox()
 				local ax = if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector
@@ -1726,91 +1735,9 @@ function FieldScene.start(opts)
 			held:Destroy()
 		end
 
-		-- 등록 전 외형: 활·장총·권총·석궁·도검이 같은 맨손처럼 보이지 않도록 형태를 구분한다.
-		-- 지역별 완성 메시가 들어오면 위의 등록 모델 경로가 이 부분보다 우선한다.
-		local held = Instance.new("Model")
-		held.Name = "FieldWeapon"
-		held.Parent = character
-		local darkMetal = Color3.fromRGB(70, 75, 79)
-		local steel = Color3.fromRGB(173, 180, 181)
-		local wood = Color3.fromRGB(113, 76, 43)
-		local darkWood = Color3.fromRGB(76, 47, 30)
-		local brass = Color3.fromRGB(173, 135, 73)
-		local function piece(name, size, offset, color, material, class)
-			local p = Instance.new(class or "Part")
-			p.Name = name
-			p.Size = size
-			p.CFrame = hand.CFrame * offset
-			p.Color = color
-			p.Material = material or Enum.Material.SmoothPlastic
-			p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery = false, false, false, false
-			p.Massless = true
-			pcall(function() p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth end)
-			p.Parent = held
-			local weld = Instance.new("WeldConstraint")
-			weld.Part0, weld.Part1, weld.Parent = hand, p, p
-			return p
-		end
-		local isLongGun = weapon.motion == "RIFLE"
-		local isPistol = weapon.motion == "PISTOL"
-		local isBow = weapon.family == "bow"
-		local isCrossbow = weapon.id == "crossbow"
-		if isBow then
-			local yumi = weapon.id == "japanese_yumi"
-			local long = weapon.motion == "LONGBOW"
-			local top = if yumi then 2.3 elseif long then 1.9 else 1.4
-			local bottom = if yumi then 1.2 elseif long then 1.9 else 1.4
-			local tint = if weapon.region == "west_asia" or weapon.region == "south_asia" then darkWood else wood
-			piece("활 중앙 손잡이", Vector3.new(0.2, 0.56, 0.22), CFrame.new(0, 0, -0.38), darkWood, Enum.Material.Wood)
-			for _, side in { 1, -1 } do
-				local height = if side > 0 then top else bottom
-				piece("활 안쪽", Vector3.new(0.13, height * 0.55, 0.16), CFrame.new(0.06 * side, height * side * 0.31, -0.38) * CFrame.Angles(0, 0, side * -0.17), tint, Enum.Material.Wood)
-				piece("활 끝", Vector3.new(0.11, height * 0.52, 0.14), CFrame.new(0.15 * side, height * side * 0.73, -0.22) * CFrame.Angles(0, 0, side * 0.22), tint, Enum.Material.Wood)
-			end
-			piece("시위", Vector3.new(0.035, top + bottom, 0.035), CFrame.new(0, (top - bottom) * 0.5, -0.06), Color3.fromRGB(211, 198, 164))
-		elseif isLongGun or isPistol then
-			local len = if isLongGun then 3.4 else 1.8
-			piece("목제 총몸", Vector3.new(0.24, 0.27, len * 0.74), CFrame.new(0, -0.12, -len * 0.27), wood, Enum.Material.Wood)
-			piece("총열", Vector3.new(0.12, 0.12, len * 0.83), CFrame.new(0, 0.1, -len * 0.54), darkMetal, Enum.Material.Metal)
-			piece("총구", Vector3.new(0.18, 0.18, 0.1), CFrame.new(0, 0.1, -len * 0.95), steel, Enum.Material.Metal)
-			piece("방아쇠 손잡이", Vector3.new(0.22, 0.75, 0.26), CFrame.new(0, -0.47, 0.08) * CFrame.Angles(math.rad(-19), 0, 0), darkWood, Enum.Material.Wood)
-			piece("점화 장치", Vector3.new(0.25, 0.22, 0.34), CFrame.new(0.13, 0.15, -0.5), brass, Enum.Material.Metal)
-			piece("격철", Vector3.new(0.08, 0.26, 0.14), CFrame.new(0.1, 0.36, -0.42), darkMetal, Enum.Material.Metal)
-			if isLongGun then
-				piece("개머리판", Vector3.new(0.32, 0.48, 1.05), CFrame.new(0, -0.2, 0.45), darkWood, Enum.Material.Wood)
-				piece("총열 고리", Vector3.new(0.22, 0.22, 0.14), CFrame.new(0, 0.06, -2.3), brass, Enum.Material.Metal)
-			end
-		elseif isCrossbow then
-			piece("석궁 몸통", Vector3.new(0.24, 0.28, 2.6), CFrame.new(0, -0.04, -0.9), wood, Enum.Material.Wood)
-			piece("발사 레일", Vector3.new(0.12, 0.08, 2.1), CFrame.new(0, 0.14, -1.1), steel, Enum.Material.Metal)
-			for _, side in { -1, 1 } do
-				piece("석궁 활대", Vector3.new(1.25, 0.12, 0.12), CFrame.new(side * 0.6, 0.06, -1.9) * CFrame.Angles(0, side * 0.17, 0), darkWood, Enum.Material.Wood)
-				piece("석궁 시위", Vector3.new(1.1, 0.03, 0.03), CFrame.new(side * 0.56, 0.06, -1.6), Color3.fromRGB(211, 198, 164))
-			end
-		elseif weapon.family == "spear" then
-			-- 창 모델 로딩이 늦어도 검 모양으로 잘못 보이지 않게 한다.
-			piece("창 자루", Vector3.new(0.18, 0.19, 4.1), CFrame.new(0, 0, -1.55), wood, Enum.Material.Wood)
-			piece("창 머리", Vector3.new(0.26, 0.16, 0.75), CFrame.new(0, 0, -3.95), steel, Enum.Material.Metal, "WedgePart")
-		elseif weapon.family == "axe" or weapon.family == "blunt" then
-			piece("무기 자루", Vector3.new(0.16, 0.18, 2.8), CFrame.new(0, 0, -1.15), wood, Enum.Material.Wood)
-			if weapon.family == "axe" then
-				piece("도끼 날", Vector3.new(1.1, 0.72, 0.22), CFrame.new(0.47, 0.02, -2.33) * CFrame.Angles(0, 0, math.rad(-8)), steel, Enum.Material.Metal, "WedgePart")
-			else
-				piece("철퇴 머리", Vector3.new(0.58, 0.58, 0.58), CFrame.new(0, 0, -2.48), darkMetal, Enum.Material.Metal)
-				end
-		else
-			-- 레이피어는 가늘고 길게, 선상도는 짧고 넓게, 일본도·곡도는 완만하게 휜 외날검으로 구분.
-			local rapier = weapon.id == "rapier"
-			local short = weapon.id == "dagger" or weapon.id == "cutlass"
-			local curved = weapon.id == "katana" or weapon.id == "hwando" or weapon.id == "dao" or weapon.id == "shamshir" or weapon.id == "talwar"
-			local len = if short then 1.55 elseif rapier then 3.05 else 2.45
-			piece("손잡이", Vector3.new(0.2, 0.22, if weapon.id == "katana" then 1.05 else 0.65), CFrame.new(0, 0, 0.2), darkWood, Enum.Material.Wood)
-			piece("검 손잡이 끝", Vector3.new(0.25, 0.27, 0.16), CFrame.new(0, 0, 0.52), brass, Enum.Material.Metal)
-			piece("검 손막이", Vector3.new(if rapier then 1.1 else 0.65, 0.18, 0.17), CFrame.new(0, 0, -0.28), brass, Enum.Material.Metal)
-			piece("칼날", Vector3.new(if rapier then 0.09 elseif short then 0.44 else 0.28, 0.12, len * 0.73), CFrame.new(0, 0, -len * 0.39 - 0.27) * CFrame.Angles(0, if curved then math.rad(5) else 0, 0), steel, Enum.Material.Metal)
-			piece("칼끝", Vector3.new(if rapier then 0.08 elseif short then 0.39 else 0.25, 0.1, len * 0.28), CFrame.new(if curved then 0.1 else 0, 0, -len * 0.87 - 0.14) * CFrame.Angles(0, if curved then math.rad(14) else 0, 0), steel, Enum.Material.Metal, "WedgePart")
-		end
-		character:SetAttribute("WeaponVisualSource", "procedural")
+		-- [미등록 자산] Roblox 등록·권한·실물 수입 전에는 도형 조립으로 대체하지 않는다.
+		-- 원본이 등록되고 MareAssets에 수입되면 위 경로로 바로 장착된다.
+		character:SetAttribute("WeaponVisualSource", "asset_pending")
 	end
 	-- 플레이어 무기는 현장 교체 시 즉시 실제 손의 장비까지 교체한다.
 	equipFieldWeapon(player.Character, wpn)
