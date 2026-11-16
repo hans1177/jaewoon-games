@@ -1014,7 +1014,7 @@ do
 	local matched = {
 		{ "caravel Lv1", mk("caravel", 1, {}), 0.5, 0.95 },
 		{ "frigate Lv5", mk("frigate", 5, {}), 0.5, 0.95 },
-		{ "galleon Lv8", mk("galleon", 8, {}), 0.5, 0.98 } -- 300회 표본에서는 경계 97%의 1~3승 변동을 허용한다,
+		{ "galleon Lv8", mk("galleon", 8, {}), 0.5, 0.97 },
 		{ "paddle Lv8", mk("paddle_steamer", 8, { "steam_pump", "steam_winch", "steam_paddle" }, { "steam_burst", "grapeshot", "cutlass_flurry", "pistol_volley" }, 10), 0.5, 0.95 },
 		{ "ironclad Lv10", mk("ironclad_frigate", 10, steamTechs, { "steam_burst", "grapeshot", "steam_hook", "cutlass_flurry" }, 10), 0.7, 1.0 },
 	}
