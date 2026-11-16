@@ -490,15 +490,19 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		icon.Size = UDim2.fromOffset(px, px)
 		icon.BackgroundTransparency = 1
 		icon.BorderSizePixel = 0
-		-- [아이콘 규격] 전체 사각 캔버스의 약 85%에 실제 문양이 보이게 정규화한다.
-		-- 인쇄된 탭 아이콘은 짙은 황동 잉크, HUD 아이콘은 밝은 무광 황동으로 통일.
-		local ink = if px <= 28 then Color3.fromRGB(119, 81, 46) else Color3.fromRGB(226, 174, 84)
-		local fit = 0.94
+		-- [아이콘 광학 규격] 26px 탭 문양은 원화의 2px 안쪽 여백에 맞춰 축소한다.
+		-- 탭은 같은 황동 잉크, HUD는 밝은 무광 황동으로 유지한다.
+		local ink = if px <= 28 then Color3.fromRGB(139, 113, 102) else Color3.fromRGB(226, 174, 84)
+		local fit = if px <= 28 then 0.86 else 0.94
 		local function rect(x, y, w, h)
 			return 0.5 + (x - 0.5) * fit, 0.5 + (y - 0.5) * fit, w * fit, h * fit
 		end
 		local function shape(x, y, w, h, rotation, radius)
 			x, y, w, h = rect(x, y, w, h)
+			-- [모바일 선 굵기] 깃펜·책등처럼 1px 미만으로 사라지는 획만 보강한다.
+			local minLine = (if px <= 28 then 1.6 else 2.2) / px
+			if w < minLine then x -= (minLine - w) * 0.5; w = minLine end
+			if h < minLine then y -= (minLine - h) * 0.5; h = minLine end
 			local piece = Instance.new("Frame")
 			piece.Name = "GlyphShape"
 			-- UIGradient가 곱해지므로 밝은 메뉴는 흰 바탕에 황동 그라데이션 1회만 적용.
@@ -534,7 +538,7 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			curve.Parent = frame
 			local edge = Instance.new("UIStroke")
 			edge.Color = ink
-			edge.Thickness = if px <= 28 then 1.9 else 2.5
+			edge.Thickness = if px <= 28 then 1.6 else 2.2
 			edge.Parent = frame
 			frame.Parent = icon
 		end
@@ -1936,7 +1940,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Size = UDim2.fromOffset(artSize, artSize)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(artId)
-			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204))
+			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else (HUD_MENU_TINT[key] or Color3.fromRGB(232, 199, 148))
 			art.ImageTransparency = if i == 1 then 0.45 else 0
 			art.ScaleType = Enum.ScaleType.Fit
 			art.ZIndex = i
@@ -1969,7 +1973,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local selected = button:GetAttribute("SelectedFacility") == true
 		local art = button:FindFirstChild("MenuArt")
 		if art and art:IsA("ImageLabel") then
-			art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204))
+			-- [선택 대비] 선택 원화는 밝아지고 기본 원화는 무광 황동으로 차분하게 표시한다.
+			art.ImageColor3 = if selected then Color3.fromRGB(255, 238, 192) else (HUD_MENU_TINT[key] or Color3.fromRGB(232, 199, 148))
 		elseif art and art:IsA("Frame") and art:GetAttribute("MenuGlyph") then
 			-- [선택 색 동기화] 원화뿐 아니라 황동 도형도 같은 선택 강조를 받는다.
 			local highlight = if selected then Color3.fromRGB(248, 207, 126) else Color3.fromRGB(226, 174, 84)
@@ -8168,13 +8173,31 @@ function H.renderTabs()
 			-- 등록 원화와 황동 도형은 동일한 크기·위치·투명 바탕으로 그린다.
 			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			-- [탭 내부 배치] 아이콘을 버튼 밖으로 빼지 않는다. 잔상/다른 메뉴에 떠 있는 문제도 방지.
+			-- [탭 내부 배치] 26px 캔버스와 획은 버튼 안에서만 보이게 제한한다.
 			icon.Position = UDim2.new(0, 7, 0.5, -13)
+			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft = UDim.new(0, 35)
 			pad.Parent = b
+			-- [인쇄 글자 겹침 수정] mkButton이 생성한 실제 인쇄 텍스트도 아이콘 옆으로 옮긴다.
+			-- TextButton의 클릭 영역·원래 텍스트·탭 선택 흐름은 유지한다.
+			local caption = b:FindFirstChild("PrintedCaption")
+			if caption and caption:IsA("TextLabel") then
+				caption.Position = UDim2.fromOffset(35, 1)
+				caption.Size = UDim2.new(1, -39, 1, -2)
+				caption.TextWrapped = false
+				caption.TextScaled = true
+				local textLimit = Instance.new("UITextSizeConstraint")
+				textLimit.MinTextSize = 10
+				textLimit.MaxTextSize = 14
+				textLimit.Parent = caption
+			else
+				-- 종이 원화 미등록 환경에서는 원래 TextButton을 오른쪽 정렬한다.
+				b.TextXAlignment = Enum.TextXAlignment.Right
+				b.TextSize = 14
+			end
 		end
 	end
 end
