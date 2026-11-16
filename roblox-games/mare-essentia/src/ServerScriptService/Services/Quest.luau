@@ -1,4 +1,5 @@
 --!nonstrict
+-- Quest.luau · 기존 퀘스트 진행 및 자동 보고, 카드 단일 발견 종류 확장
 -- 퀘스트: 수락, 납품, 보상 수령. 납품 외의 진행도는 플레이어 상태에서 계산한다.
 
 return function(D, S)
@@ -6,7 +7,7 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true }
+	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true }
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -21,6 +22,8 @@ return function(D, S)
 			return a.delivered
 		elseif quest.kind == "discover" then
 			return S.State.countDiscovered(state)
+		elseif quest.kind == "discover_card" then
+			return if quest.cardId and state.discovered[quest.cardId] then 1 else 0
 		elseif quest.kind == "win" then
 			return state.stats.battlesWon - a.baseWins
 		elseif quest.kind == "visit" then
