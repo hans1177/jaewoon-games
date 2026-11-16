@@ -14,9 +14,10 @@ end
 
 -- 직업 이름 → 분류 (실제 동료 role 값들)
 local cases = {
-	["성직자"] = "healer", ["수녀"] = "healer", ["의사"] = "healer", ["pilgrim"] = "healer",
+	["성직자"] = "clergy", ["수녀"] = "clergy", ["승려"] = "clergy", ["pilgrim"] = "clergy",
+	["의사"] = "doctor", ["군의관"] = "doctor", ["외과의사"] = "doctor", ["surgeon"] = "doctor",
 	["포수"] = "gunner", ["갤리온 포수"] = "gunner", ["포술장"] = "gunner",
-	["해류 학자"] = "scholar", ["관측 조수"] = "scholar", ["필사자"] = "scholar",
+	["해류 학자"] = "scholar", ["관측 조수"] = "scholar", ["필사자"] = "scholar", ["지식 여행자"] = "scholar",
 	["항해사"] = "navigator", ["조타수"] = "navigator", ["explorer"] = "navigator",
 	["merchant"] = "merchant", ["회계사"] = "merchant", ["향신료 상인"] = "merchant",
 	["soldier"] = "warrior", ["낭인 무사"] = "warrior", ["pirate"] = "warrior", ["privateer"] = "warrior",
@@ -33,6 +34,8 @@ for job in cases do
 	check("동료 스킬 ≤ 2: " .. job, #sk >= 1 and #sk <= 2, #sk)
 end
 check("성직자는 치료·보호", table.concat(J.allySkills("성직자"), ",") == "heal,armor")
+check("의사는 치료·약점 분석", table.concat(J.allySkills("의사"), ",") == "heal,read")
+check("성직자·의사가 분리", J.categoryOf("성직자") ~= J.categoryOf("의사"))
 check("포수는 사격·저격", table.concat(J.allySkills("포수"), ",") == "volley,snipe")
 
 -- 주인공 장착: 최대 3, 중복·없는 것 제외, 요청 순서 우선
