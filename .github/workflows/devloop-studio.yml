@@ -410,6 +410,38 @@ jobs:
           const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
             ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
           const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          // [스크린샷 실물 검증] JPG/PNG 실제 바이트에서 해상도를 읽는다. 파일명/해시만으로 화면 통과 처리 금지.
+          const imageDimensions = name => {
+            const bytes = fs.readFileSync(path.join(out, name));
+            let width = 0, height = 0;
+            if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+              width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
+            } else if (bytes.length >= 8 && bytes[0] === 255 && bytes[1] === 216) {
+              for (let pos = 2; pos + 7 < bytes.length;) {
+                if (bytes[pos] !== 255) { pos++; continue; }
+                while (pos < bytes.length && bytes[pos] === 255) pos++;
+                if (pos >= bytes.length) break;
+                const marker = bytes[pos++];
+                if (marker === 0xDA || marker === 0xD9) break;
+                if (marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
+                if (pos + 2 > bytes.length) break;
+                const len = bytes.readUInt16BE(pos);
+                if (len < 2 || pos + len > bytes.length) break;
+                if ((marker >= 0xC0 && marker <= 0xC3 || marker >= 0xC5 && marker <= 0xC7 ||
+                     marker >= 0xC9 && marker <= 0xCB || marker >= 0xCD && marker <= 0xCF) && len >= 7) {
+                  height = bytes.readUInt16BE(pos + 3);
+                  width = bytes.readUInt16BE(pos + 5);
+                  break;
+                }
+                pos += len;
+              }
+            }
+            return {name, bytes: bytes.length, width, height,
+              status: bytes.length >= 4096 && width >= 320 && height >= 180 ? 'PASS' : 'FAIL'};
+          };
+          const frameIntegrity = frames.map(imageDimensions);
+          const badFrames = frameIntegrity.filter(row => row.status !== 'PASS');
+
           const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
           const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
             ? path.join(dst, previous.path) : dst;
@@ -433,7 +465,7 @@ jobs:
           const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
             [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
           audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
-          const requiredDone = frames.length > 0 && frames.length >= Number(summary.plannedFrames)
+          const requiredDone = frameIntegrity.every(row => row.status === 'PASS') && frames.length > 0 && frames.length >= Number(summary.plannedFrames)
             && Number(summary.completedSteps) === Number(summary.plannedSteps)
             && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
             && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
@@ -446,6 +478,8 @@ jobs:
             failureStage: qaStage || null, failureSignature: qaSignature || null,
             summary, errors, audits, steps: rows,
             screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
+              images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
             comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
             previousRunId: previous?.runId || null};
           const folder = path.join(dst, 'runs', runId);
@@ -486,6 +520,12 @@ jobs:
           '@
             $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
+            if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
             git add -A
             git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
