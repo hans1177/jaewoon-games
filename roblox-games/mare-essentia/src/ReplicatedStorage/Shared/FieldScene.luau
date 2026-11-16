@@ -1349,6 +1349,19 @@ function FieldScene.start(opts)
 	end))
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
+	-- 연속 명중 연출: 5·10·15… 명중마다 화면 번쩍임·충격파·잠깐 멈춤(슬로모션 느낌)
+	local streakN, streakT = 0, 0
+	local function comboCinema(n: number)
+		local _, h0 = char3()
+		showCombo(string.format("%d 콤보!", n))
+		screenFlash(Color3.fromRGB(255, 236, 170), 0.55)
+		hitStopUntil = math.max(hitStopUntil, os.clock() + 0.22)
+		shakeUntil, shakeAmp = os.clock() + 0.3, 1.2
+		if h0 then
+			shockRing(h0.Position - Vector3.new(0, 2.5, 0), 18, Color3.fromRGB(255, 220, 120), 0.5)
+			afterimage(player.Character, Color3.fromRGB(255, 214, 120), 3, 0.05)
+		end
+	end
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
@@ -1363,6 +1376,14 @@ function FieldScene.start(opts)
 		end
 		if not quiet then
 			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
+			if os.clock() - streakT > 3 then
+				streakN = 0
+			end
+			streakN += 1
+			streakT = os.clock()
+			if streakN % 5 == 0 then
+				comboCinema(streakN)
+			end
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -1552,6 +1573,58 @@ function FieldScene.start(opts)
 			end
 		end
 	end
+	-- 부서지는 사물: 상자·양동이·자루. 공격이 닿으면 부서지며 회복·기력·공격력 상승 중 하나가 나온다.
+	local crates: { any } = {}
+	do
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local grp = lib and lib:FindFirstChild("Cargo")
+		for i = 1, 10 do
+			local tpl = grp and grp:FindFirstChild(({ "box-open", "bucket", "bag" })[(i - 1) % 3 + 1])
+			if tpl and tpl:IsA("Model") then
+				local m = tpl:Clone()
+				m.Name = "FieldCrate"
+				for _, bp in m:GetDescendants() do
+					if bp:IsA("BasePart") then
+						bp.Anchored, bp.CanCollide, bp.CanQuery, bp.CanTouch = true, false, false, false
+					end
+				end
+				local _, ext = m:GetBoundingBox()
+				local longest = math.max(ext.X, ext.Y, ext.Z)
+				if longest > 0.05 then
+					pcall(function()
+						m:ScaleTo(3 / longest)
+					end)
+				end
+				local p0 = ORIGIN + scatter(12)
+				m.Parent = folder
+				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 1.5, 0)) * CFrame.Angles(0, rng:NextNumber(0, 6.28), 0))
+				table.insert(crates, { model = m, pos = p0 + Vector3.new(0, 1.5, 0) })
+			end
+		end
+	end
+	local function breakCrate(c)
+		local idx = table.find(crates, c)
+		if not idx then
+			return
+		end
+		table.remove(crates, idx)
+		c.model:Destroy()
+		burst(c.pos, 18, false)
+		sfx("sfx_hit", 0.5, 1.3)
+		local r = math.random()
+		if r < 0.4 then
+			pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.12)
+			say("상자에서 약초! 체력 회복")
+		elseif r < 0.8 then
+			pl.stamina = math.min(AC.STAMINA_MAX, pl.stamina + 40)
+			say("기력이 차올라요")
+		else
+			pl.buffUntil = os.clock() + 8
+			say("공격력 상승! (8초)")
+		end
+		refresh()
+	end
+
 	local function explodeBarrel(b, hrp: BasePart)
 		local idx = table.find(barrels, b)
 		if not idx then
@@ -1742,6 +1815,17 @@ function FieldScene.start(opts)
 					hits += 1
 				end
 			end
+			for _, c in table.clone(crates) do
+				local tb = (c.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				local ab = 0
+				if tb.Magnitude > 0.1 then
+					local lk = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
+				end
+				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
+					breakCrate(c)
+				end
+			end
 			if hits == 0 and moveId == "rush" then
 				say("헛손질")
 			elseif moveId == "rush" and combo >= 3 then
@@ -1758,6 +1842,166 @@ function FieldScene.start(opts)
 			refresh()
 		end)
 	end
+	-- 돌진 베기: 공격 버튼을 0.5초 이상 눌렀다 떼면 앞으로 돌진하며 길 위의 적을 모두 벤다(기력 25, 3초 쿨).
+	local dashCd = 0
+	local function dashSlash()
+		if finished or os.clock() < dashCd then
+			return
+		end
+		local _, hrp = char3()
+		if not hrp then
+			return
+		end
+		if pl.stamina < 25 then
+			say("기력이 부족해요")
+			return
+		end
+		local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+		if look.Magnitude < 0.1 then
+			return
+		end
+		look = look.Unit
+		pl.stamina -= 25
+		dashCd = os.clock() + 3
+		pl.invulnUntil = math.max(pl.invulnUntil or -1, os.clock() + 0.35)
+		local from = hrp.Position
+		afterimage(player.Character, Color3.fromRGB(255, 214, 120), 6, 0.04)
+		trailsOn(player.Character, TRAIL_LIMBS, Color3.fromRGB(255, 214, 120), 0.4, 1)
+		startSwing("heavy", 0.5)
+		hrp.CFrame = hrp.CFrame + look * 22
+		local n = 0
+		for _, e in table.clone(enemies) do
+			local rel = (e.root.Position - from) * Vector3.new(1, 0, 1)
+			local along = rel:Dot(look)
+			local side = (rel - look * along).Magnitude
+			if along > -2 and along < 26 and side < 6 then
+				strikeEnemy(e, 2.2, from, 4, true)
+				n += 1
+			end
+		end
+		shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 220, 120), 0.4)
+		shakeUntil, shakeAmp = os.clock() + 0.25, 1
+		say(if n > 0 then string.format("돌진 베기! %d명", n) else "돌진 베기!")
+		refresh()
+	end
+
+	-- 지형 이벤트: 굴러오는 바위(경고선 후 돌진, 적도 휩쓴다)와 지뢰 함정(경고 원 후 폭발)
+	local function hurtPlayerBy(dmg: number)
+		local dealt = AC.takeHit(pl, dmg, os.clock(), nil)
+		if dealt > 0 then
+			hurtReact(1.4)
+			refresh()
+			if pl.hp <= 0 then
+				task.defer(function()
+					finish("defeat")
+				end)
+			end
+		end
+	end
+	local function boulderEvent()
+		local _, hrp = char3()
+		if not hrp then
+			return
+		end
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+		local grp = lib and lib:FindFirstChild("Town")
+		local tpl = grp and grp:FindFirstChild("rock-large")
+		if not (tpl and tpl:IsA("Model")) then
+			return
+		end
+		local alongX = math.random() < 0.5
+		local lane = if alongX then hrp.Position.Z else hrp.Position.X
+		local a = if alongX then Vector3.new(ORIGIN.X - half + 4, ORIGIN.Y, lane) else Vector3.new(lane, ORIGIN.Y, ORIGIN.Z - half + 4)
+		local dir = if alongX then Vector3.new(1, 0, 0) else Vector3.new(0, 0, 1)
+		local len = half * 2 - 8
+		local warn = part(folder, Vector3.new(len, 0.2, 9), CFrame.lookAt(a, a + dir) * CFrame.new(0, 0.3, -len / 2), Color3.fromRGB(255, 70, 50), Enum.Material.Neon)
+		warn.Transparency = 0.7
+		warn.CanCollide, warn.CanQuery = false, false
+		say("⚠ 바위가 굴러와요! 경고선에서 비켜요")
+		sfx("sfx_naval_cannon", 0.5, 0.6)
+		task.delay(2, function()
+			warn:Destroy()
+			if finished then
+				return
+			end
+			local m = tpl:Clone()
+			m.Name = "FieldBoulder"
+			for _, bp in m:GetDescendants() do
+				if bp:IsA("BasePart") then
+					bp.Anchored, bp.CanCollide, bp.CanQuery, bp.CanTouch = true, false, false, false
+				end
+			end
+			local _, ext = m:GetBoundingBox()
+			local longest = math.max(ext.X, ext.Y, ext.Z)
+			if longest > 0.05 then
+				pcall(function()
+					m:ScaleTo(8 / longest)
+				end)
+			end
+			m.Parent = folder
+			local d, spin, hitP, hitE = 0, 0, false, {}
+			while not finished and m.Parent and d < len do
+				local dt2 = RunService.Heartbeat:Wait()
+				d += 42 * dt2
+				spin += 6 * dt2
+				local p = a + dir * d + Vector3.new(0, 4, 0)
+				m:PivotTo(CFrame.new(p) * CFrame.Angles(if alongX then 0 else spin, 0, if alongX then -spin else 0))
+				local _, h3 = char3()
+				if h3 and not hitP and (h3.Position - p).Magnitude < 7 then
+					hitP = true
+					hurtPlayerBy(14)
+				end
+				for _, e in table.clone(enemies) do
+					if not hitE[e] and e.root.Parent and (e.root.Position - p).Magnitude < 7 then
+						hitE[e] = true
+						strikeEnemy(e, 3, p, 8, true, true)
+					end
+				end
+			end
+			m:Destroy()
+		end)
+	end
+	local function mineEvent()
+		local _, hrp = char3()
+		if not hrp then
+			return
+		end
+		local at = hrp.Position + Vector3.new(rng:NextNumber(-22, 22), 0, rng:NextNumber(-22, 22))
+		at = Vector3.new(math.clamp(at.X, ORIGIN.X - half + 8, ORIGIN.X + half - 8), ORIGIN.Y, math.clamp(at.Z, ORIGIN.Z - half + 8, ORIGIN.Z + half - 8))
+		groundRing(at, 9, 1.6)
+		task.delay(1.6, function()
+			if finished then
+				return
+			end
+			burst(at + Vector3.new(0, 1.5, 0), 50, true)
+			shockRing(at, 10, Color3.fromRGB(255, 120, 60), 0.5)
+			sfx("sfx_naval_cannon", 0.7, 1.2)
+			shakeUntil, shakeAmp = os.clock() + 0.3, 1.2
+			local _, h3 = char3()
+			if h3 and ((h3.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
+				hurtPlayerBy(10)
+			end
+			for _, e in table.clone(enemies) do
+				if e.root.Parent and ((e.root.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
+					strikeEnemy(e, 2.5, at, 6, true, true)
+				end
+			end
+		end)
+	end
+	task.spawn(function()
+		task.wait(14)
+		local k = 0
+		while not finished do
+			k += 1
+			if k % 2 == 1 then
+				boulderEvent()
+			else
+				mineEvent()
+			end
+			task.wait(rng:NextNumber(14, 24))
+		end
+	end)
+
 	-- 방어: 누른 직후 0.25초는 완벽 방어(반격), 이후 1.2초는 막기(피해 70% 감소)
 	local function useGuard()
 		if finished then
@@ -1807,6 +2051,30 @@ function FieldScene.start(opts)
 		b.Activated:Connect(go)
 	end
 	bindPress(attackBtn, useAttack)
+	local holdFrom = 0
+	local function bindHold(b: GuiButton)
+		b.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				holdFrom = os.clock()
+				local mine = holdFrom
+				task.delay(0.5, function()
+					if holdFrom == mine and not finished then
+						say("차징 완료! 손을 떼면 돌진 베기")
+					end
+				end)
+			end
+		end)
+		b.InputEnded:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and holdFrom > 0 then
+				local held = os.clock() - holdFrom
+				holdFrom = 0
+				if held >= 0.5 then
+					dashSlash()
+				end
+			end
+		end)
+	end
+	bindHold(attackBtn)
 	-- 공격 버튼 주변(약 2배 크기)을 눌러도 공격이 나간다: 손가락이 버튼 바깥으로 살짝 빗나가도 된다
 	do
 		local hit = Instance.new("TextButton")
@@ -1819,6 +2087,7 @@ function FieldScene.start(opts)
 		hit.ZIndex = math.max(attackBtn.ZIndex - 1, 0)
 		hit.Parent = gui
 		bindPress(hit, useAttack)
+		bindHold(hit)
 	end
 	-- 무기 교체 버튼: 누를 때마다 다음 무기로(맨손→검→단검→도끼→창→철퇴→석궁→총). 동료는 직업별 고정 무기라 바뀌지 않는다.
 	do
@@ -2537,10 +2806,36 @@ function FieldScene.start(opts)
 			knobCorner.CornerRadius = UDim.new(1, 0)
 			knobCorner.Parent = knob
 			local active, vec = nil, Vector2.zero
+			local lastLow, lastRoll = 0, 0
 			local function setFrom(pos: Vector3)
 				local c = pad.AbsolutePosition + pad.AbsoluteSize / 2
 				local d = (Vector2.new(pos.X, pos.Y) - c) / 42
 				vec = if d.Magnitude > 1 then d.Unit else d
+				-- 튕기기(플릭): 스틱을 0.12초 안에 끝까지 빠르게 밀면 그 방향으로 구른다(적이 가까울 때만)
+				local nowF = os.clock()
+				if vec.Magnitude < 0.35 then
+					lastLow = nowF
+				elseif vec.Magnitude > 0.95 and nowF - lastLow < 0.12 and nowF - lastRoll > 0.6 then
+					local _, hr = char3()
+					local cm = workspace.CurrentCamera
+					local near = false
+					if hr then
+						for _, e in enemies do
+							if e.root and e.root.Parent and (e.root.Position - hr.Position).Magnitude < 35 then
+								near = true
+								break
+							end
+						end
+					end
+					if near and hr and cm then
+						lastRoll = nowF
+						local wd = cm.CFrame:VectorToWorldSpace(Vector3.new(vec.X, 0, vec.Y)) * Vector3.new(1, 0, 1)
+						if wd.Magnitude > 0.1 then
+							hr.CFrame = CFrame.lookAt(hr.Position, hr.Position + wd.Unit)
+							useMove("dodge")
+						end
+					end
+				end
 				knob.Position = UDim2.new(0.5, vec.X * 48, 0.5, vec.Y * 48)
 			end
 			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
