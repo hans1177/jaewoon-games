@@ -441,13 +441,32 @@ function FieldScene.start(opts)
 			fh:ChangeState(Enum.HumanoidStateType.GettingUp)
 		end
 	end
-	local cam = workspace.CurrentCamera
-	cam.CameraType = Enum.CameraType.Custom
-	cam.FieldOfView = 70
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	if hum then
-		cam.CameraSubject = hum
+	-- [카메라] 마력숲의 자유 3D 확대 범위를 필드 전용으로 적용하고 탐험 종료 시 원래 설정을 복원한다.
+	local savedCameraMode = player.CameraMode
+	local savedZoomMin, savedZoomMax = player.CameraMinZoomDistance, player.CameraMaxZoomDistance
+	local cameraModes = {
+		{ name = "근접", min = 3, max = 15 },
+		{ name = "기본", min = 5, max = 36 },
+		{ name = "원거리", min = 18, max = 72 },
+	}
+	local cameraIndex = 2
+	local function applyFieldCamera(index: number)
+		cameraIndex = index
+		local profile = cameraModes[index]
+		player.CameraMode = Enum.CameraMode.Classic
+		player.CameraMaxZoomDistance = profile.max
+		player.CameraMinZoomDistance = profile.min
+		workspace:SetAttribute("FieldCameraMode", profile.name)
+		workspace:SetAttribute("FieldCameraZoomMax", profile.max)
+		local currentCamera = workspace.CurrentCamera
+		if currentCamera then
+			currentCamera.CameraType = Enum.CameraType.Custom
+			currentCamera.FieldOfView = 70
+			local currentHumanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+			if currentHumanoid then currentCamera.CameraSubject = currentHumanoid end
+		end
 	end
+	applyFieldCamera(cameraIndex)
 
 	-- 시작 지점 표지
 	part(folder, Vector3.new(10, 0.3, 10), CFrame.new(ORIGIN + Vector3.new(0, 0.15, half - 14)), Color3.fromRGB(214, 170, 82), Enum.Material.Cobblestone, Enum.PartType.Cylinder).CFrame = CFrame.new(ORIGIN + Vector3.new(0, 0.2, half - 14)) * CFrame.Angles(0, 0, math.pi / 2)
@@ -607,6 +626,17 @@ function FieldScene.start(opts)
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 20
 	gui.Parent = player:WaitForChild("PlayerGui")
+	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
+	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
+		UDim2.new(1, -12, 0, 140), Vector2.new(1, 0))
+	cameraBtn.Name = "FieldCameraMode"
+	cameraBtn.TextSize = 14
+	cameraBtn.Activated:Connect(function()
+		if finished then return end
+		local nextIndex = cameraIndex % #cameraModes + 1
+		applyFieldCamera(nextIndex)
+		cameraBtn.Text = "시야: " .. cameraModes[nextIndex].name
+	end)
 
 	local title = label(gui, "", 16)
 	title.AnchorPoint = Vector2.new(0.5, 0)
@@ -676,6 +706,13 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		-- [복구] 항구 복귀 시 이전 카메라·줌 제한을 남기지 않는다.
+		player.CameraMode = savedCameraMode
+		player.CameraMaxZoomDistance = math.max(savedZoomMax, savedZoomMin)
+		player.CameraMinZoomDistance = savedZoomMin
+		player.CameraMaxZoomDistance = savedZoomMax
+		workspace:SetAttribute("FieldCameraMode", nil)
+		workspace:SetAttribute("FieldCameraZoomMax", nil)
 		workspace:SetAttribute("FieldCombatReady", nil)
 		if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", nil) end
 		pcall(function()
@@ -1341,51 +1378,31 @@ function FieldScene.start(opts)
 
 	-- ===== 화려한 타격 연출: 충격파 링·네온 파편·휘두르는 칼빛·화면 번쩍임 =====
 	local TweenService = game:GetService("TweenService")
-	local function fxPartMake(size: Vector3, cf: CFrame, color: Color3, shape: Enum.PartType?): Part
-		local p = Instance.new("Part")
-		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
-		p.Material = Enum.Material.Neon
-		p.Color = color
-		p.Transparency = 0.15
-		if shape then p.Shape = shape end
-		p.Size = size
-		p.CFrame = cf
-		p.Parent = folder
-		return p
-	end
+	-- [공용 VFX] 마력숲의 등록형 입자·검빛 스프라이트를 재사용한다. 새 도형 파편·원통·막대는 만들지 않는다.
 	local function shockRing(center: Vector3, maxR: number, color: Color3, dur: number?)
-		local d = dur or 0.4
-		local ring = fxPartMake(Vector3.new(0.3, 2, 2), CFrame.new(center.X, center.Y + 0.4, center.Z) * CFrame.Angles(0, 0, math.pi / 2), color, Enum.PartType.Cylinder)
-		TweenService:Create(ring, TweenInfo.new(d, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(0.3, maxR * 2, maxR * 2), Transparency = 1 }):Play()
-		task.delay(d + 0.05, function() ring:Destroy() end)
+		if not CommonVFX then return end
+		pcall(CommonVFX.Create, "SHAPE_BURST", {
+			parent = workspace, cframe = CFrame.new(center), color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.4),
+			startDiameter = 1.8, endDiameter = math.min(maxR * 2, 90), duration = dur or 0.35,
+			count = 4, hideFlash = true,
+		})
 	end
 	local function shards(at: Vector3, n: number, color: Color3, dist: number)
-		for _ = 1, n do
-			local dir = Vector3.new(rng:NextNumber(-1, 1), rng:NextNumber(0.2, 1.1), rng:NextNumber(-1, 1)).Unit
-			local sh = fxPartMake(Vector3.new(0.22, 0.22, 1.1), CFrame.lookAt(at, at + dir), color)
-			local dst = at + dir * rng:NextNumber(dist * 0.5, dist)
-			TweenService:Create(sh, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = CFrame.lookAt(dst, dst + dir), Transparency = 1, Size = Vector3.new(0.05, 0.05, 0.3) }):Play()
-			task.delay(0.5, function() sh:Destroy() end)
-		end
+		if not CommonVFX then return end
+		pcall(CommonVFX.Create, "CRITICAL_BURST", {
+			parent = workspace, cframe = CFrame.new(at), color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.35),
+			count = math.min(n, 16), distance = dist, duration = 0.32, hideRing = true,
+		})
 	end
-	-- 칼빛: 주인공 앞에서 바를 휘둘러 지나가게 한다. arc=휘두르는 각도, tilt=기울기
+	-- [검술 궤적] 손·무기 Trail과 연동하는 반투명 붓질 스프라이트. 전투 판정과 별도다.
 	local function slashArc(hrp: BasePart, color: Color3, reach: number, arc: number, tilt: number)
-		local base = hrp.CFrame * CFrame.new(0, 0.6, 0)
-		local bar = fxPartMake(Vector3.new(0.35, 0.35, reach), base, color)
-		bar.Transparency = 0.05
-		local t0 = os.clock()
-		local dur = 0.22
-		task.spawn(function()
-			while bar.Parent and os.clock() - t0 < dur do
-				local k = (os.clock() - t0) / dur
-				local a = math.rad(-arc * 0.5 + arc * k)
-				bar.CFrame = hrp.CFrame * CFrame.new(0, 0.6, 0) * CFrame.Angles(math.rad(tilt), a, 0) * CFrame.new(0, 0, -reach * 0.5)
-				bar.Transparency = 0.05 + 0.95 * k
-				bar.Size = Vector3.new(0.35 * (1 - k * 0.6), 0.35 * (1 - k * 0.6), reach)
-				task.wait()
-			end
-			bar:Destroy()
-		end)
+		if not CommonVFX then return end
+		pcall(CommonVFX.Create, "SHAPE_BURST", {
+			parent = workspace, cframe = hrp.CFrame * CFrame.new(0, 0.6, -reach * 0.35),
+			color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.5), textureKey = "slash",
+			rotation = tilt + arc * 0.25, hideRing = true, count = 2,
+			startSize = math.max(1.5, reach * 0.35), endSize = reach * 1.3, duration = 0.2,
+		})
 	end
 	local flashFrame = Instance.new("Frame")
 	flashFrame.Size = UDim2.fromScale(1, 1)
@@ -2394,8 +2411,9 @@ function FieldScene.start(opts)
 	staminaFill.BorderSizePixel = 0
 	staminaFill.Parent = staminaBack
 	local skillBtns = {}
-	-- [전투 HUD] 전투 버튼과 장착 3칸을 서로 다른 거리의 부채꼴로 분리한다(중복 터치 방지).
-	local ATK_C = Vector2.new(-90, -88)
+	-- [전투 HUD] 공격은 오른쪽 엄지 아래, 회피·방어와 장착 3칸은 위쪽 반원 두 줄에 배치한다.
+	-- 기존 공격 판정·단축키·슬롯 해금 수는 바꾸지 않고 터치 간격만 넓힌다.
+	local ATK_C = Vector2.new(-192, -92)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
@@ -2410,8 +2428,8 @@ function FieldScene.start(opts)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(126, 22))
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(126, 66))
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(90, 48))
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(90, 132))
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
@@ -2508,11 +2526,11 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(198, 12 + ((slotOf[id] or 1) - 1) * 28)
+			return arcPos(147, 28 + ((slotOf[id] or 1) - 1) * 62)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(198, 12 + (slotI - 1) * 28), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(147, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
@@ -2941,7 +2959,15 @@ function FieldScene.start(opts)
 					local life = history and history.summary or vocation
 					local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
 					local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
-					local coat = Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.55, 0.68)
+					-- [동료 외형] 출신 지역을 확인할 수 있는 동료에게는 기존 복식 팔레트를 우선한다.
+					local regionalCoats = {
+						france = Color3.fromRGB(64, 95, 136), england = Color3.fromRGB(86, 110, 104),
+						portugal = Color3.fromRGB(118, 91, 120), spain = Color3.fromRGB(153, 90, 69),
+						ottoman = Color3.fromRGB(80, 111, 107), japan = Color3.fromRGB(112, 88, 127),
+						netherlands = Color3.fromRGB(130, 94, 65), swahili = Color3.fromRGB(137, 108, 73),
+						malabar = Color3.fromRGB(79, 119, 88),
+					}
+					local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
 					table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
 				end
 			end
@@ -2972,7 +2998,13 @@ function FieldScene.start(opts)
 						outfit.hair = if persona == 2 then "bun" else "short"
 						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
 					end
-					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.8, outfit)
+					-- [동료 체격] 주인공의 실제 R15 머리~발 높이에 맞춘다. 성별 추정으로 크기를 임의 변경하지 않는다.
+					local heroHead = ch:FindFirstChild("Head")
+					local heroFoot = ch:FindFirstChild("LeftFoot") or ch:FindFirstChild("RightFoot")
+					local heroHeight = if heroHead and heroFoot
+						then math.clamp(heroHead.Position.Y + heroHead.Size.Y * 0.5 - heroFoot.Position.Y + heroFoot.Size.Y * 0.5, 5.3, 7.2)
+						else 5.8
+					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
@@ -3050,10 +3082,14 @@ function FieldScene.start(opts)
 						local b0 = tgt.root.Position
 						local len = (b0 - a0).Magnitude
 						local arrow = aw.family == "bow" or aw.id == "crossbow"
-						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.2, if arrow then 0.09 else 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
-						tr.CanCollide, tr.CanQuery = false, false
-						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
-						task.delay(0.2, function() tr:Destroy() end)
+						-- [동료 사격] 거친 직육면체 탄환 대신 기존 화살·사격 빔과 적중 스프라이트를 사용한다.
+						arrowTrail(a0, b0)
+						if CommonVFX then
+							pcall(CommonVFX.Create, "IMPACT_FLASH", {
+								parent = workspace, cframe = CFrame.new(b0), color = if arrow then Color3.fromRGB(210, 187, 129) else Color3.fromRGB(255, 226, 162),
+								endSize = 2.2, count = 4, duration = 0.18, hideRing = true,
+							})
+						end
 					end
 				end
 				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
