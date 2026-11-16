@@ -8983,12 +8983,21 @@ syncScene = function()
 	local techStamp = sim and sim.technology and sim.technology.adopted or 0
 	local industryStamp = 0
 	for _, row in ipairs((sim and sim.industries) or {}) do industryStamp += row.stage end
+	-- 세계경제 건물 재고가 변할 때 장면이 정지한 상태로 남지 않도록 단계 버킷만 캐시에 반영한다.
+	-- 방문할 때마다 무조건 재생성하지 않고, 시장·창고·부두·주택의 의미 있는 변화에서만 갱신한다.
+	local bld = sim and sim.buildings or {}
+	local buildStamp = table.concat({
+		math.floor(math.sqrt(math.max(0, bld.house or 0)) / 2),
+		math.floor(math.sqrt(math.max(0, bld.market or 0))),
+		math.floor(math.sqrt(math.max(0, bld.warehouse or 0))),
+		math.floor(math.sqrt(math.max(0, bld.dock or 0))),
+	}, ":")
 	local boostIds = {}
 	for _, b in eco.boosts or {} do
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
