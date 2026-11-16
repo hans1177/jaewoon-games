@@ -561,6 +561,7 @@ return function(D, S)
 			fieldDiscipline[disc.field] = disc
 		end
 		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
+		view.codex.plannedDisciplineCount = #D.KnowledgeTree.Planned
 		-- [개체 연결] 외부 식별자는 검증된 값만 표시. 내부 연결은 카드/상품/항구/탐험지의 원본 식별자를 참조한다.
 		local linkedSites = {}
 		for _, site in D.Sites.Sites do linkedSites[site.id] = site.name end
