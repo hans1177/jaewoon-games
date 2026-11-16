@@ -3102,12 +3102,18 @@ function PortScene.build(info, onFacility)
 							elseif social < 16 then (if give then "listen" else "talk")
 							else "inspect"
 					end
-					-- 가까운 손님에게 먼저 인사한 뒤 대화 상대를 다시 바라본다.
-					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
+					-- [주민 정면] 대화·장터 주민은 가까운 플레이어를 향해 자연스럽게 돌아선다.
+					-- 이동·일손(농사·대장간·요리)의 본래 진행 방향은 보존하고, 대화 상대가 있으면 더 가까운 손님에게만 인사한다.
+					local nearGuest = flat.Magnitude > 1 and flat.Magnitude < 26
+					local canFaceGuest = w.kind == "talk" or w.kind == "stall" or w.kind == "look" or w.kind == nil
+					if nearGuest and canFaceGuest and (not partner or flat.Magnitude < 12) then
+						target, direction = 1, flat
+						if (now + w.phase * 1.7) % 13 < 2.6 then kind = "wave" end
+					elseif nearGuest and (now + w.phase * 1.7) % 13 < 2.6 then
 						kind, target, direction = "wave", 0.85, flat
 					end
 					-- [주민 시선·몸통 회전] 화면 초당 프레임과 무관한 감속 회전.
-						w.ga = (w.ga or 0) + (target - (w.ga or 0)) * (1 - math.exp(-6 * dt))
+					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * (1 - math.exp(-6 * dt))
 					if w.ga > 0.01 and direction.Magnitude > 0.01 then
 						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + direction.Unit), w.ga))
 					elseif w.ga ~= 0 and target == 0 then
