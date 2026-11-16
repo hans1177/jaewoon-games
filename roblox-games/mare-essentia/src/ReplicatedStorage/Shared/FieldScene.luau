@@ -2962,7 +2962,14 @@ function FieldScene.start(opts)
 
 	refresh()
 	say("공격 F(3연타) · 강타 Q · 회전베기 E · 회피 R. 적이 붉게 변하면 공격 예고!")
-	return { finish = finish }
+	-- [필드 입장] 큰 탐험 맵의 생성 중 서버/항구 시점이 캐릭터를 되돌렸다면 기존 출발 좌표로 한 번 복구한다.
+	local readyCharacter = player.Character
+	local readyRoot = readyCharacter and readyCharacter:FindFirstChild("HumanoidRootPart")
+	if readyRoot and readyRoot.Position.X < ORIGIN.X - 500 then
+		readyCharacter:PivotTo(CFrame.new(spawn))
+		readyRoot.Anchored = false
+	end
+	return { finish = finish, spawn = CFrame.new(spawn) }
 end
 
 return FieldScene
