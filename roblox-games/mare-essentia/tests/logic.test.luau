@@ -1512,6 +1512,32 @@ do
 	ok = act(st, "Explore", { siteId = "salisbury_plain" })
 	check("explore needs adventure level", ok == false)
 
+	-- [지역 동물·지식카드] 같은 탐험지·학문·희귀도에서만 관찰 대상으로 카드가 바뀐다.
+	-- 카드 뽑기/획득의 RNG 호출 횟수와 보급·탐험 규칙은 기존 Explore 그대로 유지한다.
+	local function observeSite(portId, siteId, observedId)
+		local state = newState()
+		state.portId = portId
+		state.ship.supplies = 9999
+		state.careers.adventure.level = 5
+		local count = 0
+		local draws = { 0.90, 0.01, 0.01 } -- 부가 카드 미획득, 첫 후보, 발견 성공
+		local fixed = { rng = function()
+			count += 1
+			return draws[count] or 0.01
+		end, market = ctx.market }
+		local allowed = select(1, handlers.Explore(state, { siteId = siteId, observedCardId = observedId }, fixed))
+		return state, allowed, count
+	end
+	local sameKind, observedOk, drawCount = observeSite("bergen", "bergen_cliffs", "zoo_reindeer")
+	check("탐험: 같은 지역·희귀도 동물 관찰은 서버가 검증해 도감 등록", observedOk and sameKind.discovered.zoo_reindeer == true and not sameKind.discovered.zoo_puffin)
+	check("탐험: 관찰 카드가 있어도 기존 RNG 호출 세 번 유지", drawCount == 3, drawCount)
+	local wrongRegion, wrongOk = observeSite("bergen", "bergen_cliffs", "zoo_elephant")
+	check("탐험: 다른 지역의 희귀 동물 카드를 조작해 획득 불가", wrongOk and wrongRegion.discovered.zoo_puffin and not wrongRegion.discovered.zoo_elephant)
+	local diffRarity, rarityOk = observeSite("london", "london_fields", "bot_foxglove")
+	check("탐험: 다른 희귀도로 무작위 보상 확률 변경 불가", rarityOk and diffRarity.discovered.bot_oak and not diffRarity.discovered.bot_foxglove)
+	local diffField, fieldOk = observeSite("london", "london_fields", "min_chalk")
+	check("탐험: 같은 희귀도라도 다른 학문 카드를 임의 지정 불가", fieldOk and diffField.discovered.bot_oak and not diffField.discovered.min_chalk)
+
 	-- 학자: 명성과 연도 조건
 	local sc = newState()
 	sc.startYear = 1700
