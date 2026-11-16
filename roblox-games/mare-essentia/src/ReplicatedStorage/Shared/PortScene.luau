@@ -3079,6 +3079,12 @@ function PortScene.build(info, onFacility)
 					elseif kind == "look" then
 						kind = if (now + w.phase * 4) % 23 < 2.8 then "salute" else "look"
 					end
+					-- [주민 직업 모션] 계속 허공을 치는 대신 일하기→물건 확인→스트레칭을 개인 위상으로 교대한다.
+					if w.kind == "hammer" or w.kind == "hoe" or w.kind == "stir" or w.kind == "sweep" or w.kind == "write" then
+						local workCycle = (now + w.phase * 1.7) % 17
+						if workCycle >= 14.5 then kind = "stretch"
+						elseif workCycle >= 12.5 then kind = "inspect" end
+					end
 					if kind == "stoop" then
 						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
 						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
