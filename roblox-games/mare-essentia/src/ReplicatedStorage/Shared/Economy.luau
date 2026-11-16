@@ -649,7 +649,8 @@ function E.addShock(w, s)
 	s.until_ = w.day + math.clamp(tonumber(s.days) or 60, 1, 365 * 40)
 	if #w.shocks >= 128 then table.remove(w.shocks, 1) end
 	table.insert(w.shocks, s)
-	table.insert(w.log, 1, { day = w.day, id = s.id, title = s.title, kind = s.kind, people = s.people, sourceEvent = s.sourceEvent })
+	table.insert(w.log, 1, { day = w.day, id = s.id, title = s.title, kind = s.kind, people = s.people,
+		sourceEvent = s.sourceEvent, regions = s.regions, countries = s.countries, ports = s.ports, qid = s.qid })
 	while #w.log > 60 do table.remove(w.log) end
 	return true
 end
