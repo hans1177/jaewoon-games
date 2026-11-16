@@ -464,6 +464,8 @@ end
 -- 마을 주민의 일 모션. kind 에 따라 관절을 직접 놓는다 (t = 초, 제자리 일), 또는 걷기 위에 덧씌운다.
 -- 제자리: hammer(망치질) hoe(괭이질) stir(젓기) sit(앉아 쉼) fish(낚시) talk(대화) sweep(쓸기) stall(손님 부름) bell(종 치기)
 -- 걷기 위 덧씌움: carry(짐 들기) look(두리번) stoop(굽은 등)
+-- [주민 R15 통합 모션] 기존 제자리 일·보행·관절 보간을 한 책임 함수에서 처리한다. 중복 함수/래퍼 없음.
+local workSmooth = setmetatable({}, { __mode = "k" }) -- NPC 모델이 사라지면 보간 상태도 정리한다.
 function Pose.work(model, kind, t, moving)
 	local m = rigMotors[model]
 	if not m then return end
@@ -476,7 +478,6 @@ function Pose.work(model, kind, t, moving)
 		-- 뒤로 -1.25rad 젖혀 두던 어깨를 전방으로 교정하고 보행 다리는 유지한다.
 		set(m.leftArm, A(0.95, 0, 0.12)); set(m.rightArm, A(0.95, 0, -0.12))
 		set(m.leftElbow, A(-0.38, 0, 0)); set(m.rightElbow, A(-0.38, 0, 0))
-		return
 	elseif kind == "look" then
 		-- 손을 흔들다 둘러보기로 돌아왔을 때 팔이 허공에 남지 않도록 중립으로 복귀.
 		if not moving then
@@ -484,17 +485,20 @@ function Pose.work(model, kind, t, moving)
 			set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 		end
 		set(m.neck, A(0, math.sin(t * 0.9) * 0.9, 0))
-		return
 	elseif kind == "stoop" then
 		set(m.waist, A(0.28, 0, 0))
 		set(m.neck, A(-0.25, 0, 0))
-		return
 	end
+	-- [주민 R15] 이동 중에는 다리 보행 주기를 지우지 않고 상체 직업 동작만 겹친다.
+	if kind ~= "carry" and kind ~= "look" and kind ~= "stoop" then
 	-- 제자리 일: 먼저 걷기 흔적을 지운다
-	set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
+	if not moving then
+		set(m.leftLeg, CFrame.identity); set(m.rightLeg, CFrame.identity)
+		set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
+		set(m.root, CFrame.identity)
+	end
 	set(m.leftArm, A(-0.12, 0, 0.08)); set(m.rightArm, A(-0.12, 0, -0.08)) -- 작업 교대 시 이전 팔 동작을 남기지 않는다.
-	set(m.leftKnee, CFrame.identity); set(m.rightKnee, CFrame.identity)
-	set(m.root, CFrame.identity); set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
+	set(m.waist, CFrame.identity); set(m.neck, CFrame.identity)
 	set(m.leftElbow, A(-0.15, 0, 0)); set(m.rightElbow, A(-0.15, 0, 0))
 	local elder = model:GetAttribute("Age") == "elder"
 	if kind == "hammer" then
@@ -627,15 +631,8 @@ function Pose.work(model, kind, t, moving)
 	if elder and m.waist and kind ~= "sit" then
 		m.waist.Transform = m.waist.Transform * A(0.2, 0, 0)
 	end
-end
-
--- 숨쉬기·체중 이동: 모든 제자리 일에 몸통 출렁임과 고개 흔들림을 더해 가만히 있어도 움직이게 한다 (절대값으로 덮어써 누적되지 않는다)
-local workBase = Pose.work
-local workSmooth = setmetatable({}, { __mode = "k" }) -- 모델별 직전 관절 자세(모델이 사라지면 같이 지워진다)
-function Pose.work(model, kind, t, moving)
-	workBase(model, kind, t, moving)
-	local m = rigMotors[model]
-	if not m then return end
+	end -- [직업 동작] 걷는 동안은 기존 보행 관절을 보존한다.
+	-- [전신 보간] 몸통의 호흡·하체 체중 이동·직업 동작을 실제 관절의 현재 자세로 연결한다.
 	if m.root and kind ~= "sit" and kind ~= "fish" then
 		m.root.Transform = m.root.Transform * CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
 	end
@@ -647,7 +644,7 @@ function Pose.work(model, kind, t, moving)
 		if motor then motor.Transform = motor.Transform * cf end
 	end
 	local A = CFrame.Angles
-	local standing = kind ~= "sit" and kind ~= "fish" and kind ~= "carry" and kind ~= "look" and kind ~= "stoop"
+	local standing = not moving and kind ~= "sit" and kind ~= "fish" and kind ~= "carry" and kind ~= "look" and kind ~= "stoop"
 	if kind == "hammer" then
 		local s = math.max(0, math.sin(t * 5))
 		add(m.root, CFrame.new(0, -0.14 * s, 0)); add(m.leftKnee, A(-0.3 * s, 0, 0)); add(m.rightKnee, A(-0.3 * s, 0, 0))
