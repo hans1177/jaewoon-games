@@ -1716,11 +1716,29 @@ do
 	check("학문 연결: 주인공과 적합 직책 동료가 공동 연구", S.Perk.researchAssist(helper, "physics") == 2)
 	check("학문 연결: 관련 없는 학문 보너스 없음", S.Perk.researchAssist(helper, "botany") == 0)
 	helper.stations.gunner = nil
-	check("학문 연결: 동료 미배치 시 연구 지원 제외", S.Perk.researchAssist(helper, "physics") == 1)
+	check("학문 연결: 육상 연구는 선박 직책 미배치와 무관", S.Perk.researchAssist(helper, "physics") == 2)
 	helper.specialty = nil
-	check("학문 연결: 직업 미선택에서도 동료가 연구 지원", S.Perk.researchAssist(helper, "physics") == 0)
+	check("학문 연결: 직업 미선택에서도 동료가 연구 지원", S.Perk.researchAssist(helper, "physics") == 1)
 	helper.stations.gunner = "c_newton"
 	check("학문 연결: 학문 연구는 주인공 전문 분야 선택 불필요", S.Perk.researchAssist(helper, "physics") == 1)
+	-- [특별 동료] 기존 연속 퀘스트 6개의 완료 기록만으로 고유 최종 연구 능력을 개방한다.
+	local rare = newState("england")
+	rare.companions = { "c_merian" }
+	check("특별 동료: 2단계 완료 전에는 일반 연구 지원", S.Perk.researchAssist(rare, "zoology") == 1)
+	rare.quests.done.cq2_merian = true
+	check("특별 동료: 마지막 이야기 뒤 고유 변태 연구법 개방", S.Perk.researchAssist(rare, "zoology") == 3)
+	rare.affinity.c_merian = 70
+	check("특별 동료: 높은 호감도와 전용 능력 합산", S.Perk.researchAssist(rare, "zoology") == 4)
+	check("특별 동료: 고유 능력은 지정 학문 외 영향 없음", S.Perk.researchAssist(rare, "botany") == 2)
+	local signatureCount = 0
+	for _, companion in D.Specialties.Companions do
+		if companion.finalResearch then
+			signatureCount += 1
+			local quest = D.Quests.ById[companion.finalResearch.quest]
+			check("특별 동료: 연속 퀘스트 연결 " .. companion.id, quest ~= nil and quest.after ~= nil and quest.companionId == companion.id and D.KnowledgeTree.DisciplineById[companion.finalResearch.disc] ~= nil)
+		end
+	end
+	check("특별 동료: 기존 여섯 명만 최종 연구 능력", signatureCount == 6)
 	for _, c in D.Specialties.Companions do
 		check("companion scholar exists " .. c.id, c.scholarId == "" and c.role ~= nil or (function()
 			for _, sc in D.Scholars.Scholars do
