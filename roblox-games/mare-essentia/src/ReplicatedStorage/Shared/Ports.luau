@@ -1011,6 +1011,41 @@ do
 	end
 end
 
+
+-- [브랜드 교역] 기존 상품·항구 원본을 그대로 쓰되, 원산지별 고유 상품 ID를 추가한다.
+-- 기술·자본 확보 전에는 Economy가 브랜드 재고 0을 유지한다. 시장 개방/가공 단계는 시뮬에서 판정한다.
+do
+	local PC = require(script.Parent.ProductionChains)
+	for _, brand in ipairs(PC.Brands) do
+		local port, recipe = Ports[brand.port], PC.ById[brand.recipe]
+		if port and recipe and table.find(port.produces, brand.source) then
+			local processedId = PC.goodId(recipe)
+			local processed = Goods[processedId]
+			if processed then
+				if not table.find(port.produces, processedId) then
+					table.insert(port.produces, processedId)
+					if not recipe.newIndustry then PC.AddedForBrands[brand.port] = (PC.AddedForBrands[brand.port] or 0) + 1 end
+				end
+				local id = PC.brandId(brand)
+				Goods[id] = {
+					id = id, name = brand.name, basePrice = math.floor(processed.basePrice * 1.55 + 0.5),
+					resourceKind = "manufactured", knowledgeId = Goods[brand.source].knowledgeId,
+					discipline = recipe.disc,
+				}
+				table.insert(port.produces, id)
+				-- 해외 항구의 수요를 기존 가격·재고·중력무역 계산에 연결한다.
+				for _, buyerId in ipairs(brand.destinations) do
+					local buyer = Ports[buyerId]
+					if buyer and buyerId ~= brand.port and not table.find(buyer.produces, id)
+						and not table.find(buyer.demands, id) then
+						table.insert(buyer.demands, id)
+					end
+				end
+			end
+		end
+	end
+end
+
 return {
 	Goods = Goods,
 	ResourceKinds = ResourceKinds,
