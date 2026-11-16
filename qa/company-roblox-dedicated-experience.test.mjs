@@ -1454,6 +1454,8 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.ok(uploader.includes('https://grab3d.com/dl/rowboat/rowboat.glb'));
   assert.ok(uploader.includes('MARE_COASTAL_EXTERNAL_CC0_HULL_DERIVED'));
+  assert.ok(uploader.includes('sourceBytes.length!==1160296'), 'published CC0 source size pin is mandatory');
+  assert.ok(uploader.includes('original.length!==1160296'), 'cached CC0 source size pin is mandatory');
   assert.ok(uploader.includes("if (kind === 'Naval' && f === 'rowboat-source.glb') continue;"));
   assert.ok(workflow.includes('assets/naval/rowboat-source.glb'));
   for(const ship of ['jahazi','kotia','mtepe']){
@@ -1484,7 +1486,7 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
     return {model,bin};
   };
   const original=fs.readFileSync(src),before=parse(original);
-  assert.ok(original.length>500000&&original.length<3000000,'real external high detail CC0 source required');
+  assert.equal(original.length,1160296,'real external CC0 GLB must match Grab3D public manifest');
   const ledger=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
   const lua=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const hashes=new Set();
