@@ -98,7 +98,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	table.clear(h.canon)
 	CM.SampleProceduralActorMotion(state, phase, {
 		bodyPlan = "BIPED",
-		actorClass = if isBoss then "BOSS" else "ENEMY",
+		actorClass = if isBoss then "BOSS" elseif h.model:GetAttribute("MotionRole") == "ally-ranged" or h.model:GetAttribute("MotionRole") == "ally-melee" then "NPC" else "ENEMY",
 		availableJoints = AVAILABLE,
 		secondary = 0.65,
 	}, h.canon)
@@ -111,6 +111,24 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	end
 	local attack = state == "ANTICIPATION" or state == "ATTACK"
 	local pulse = math.sin(math.clamp(phase, 0, 1) * math.pi)
+	-- [공통 R15 모션] 체형·성격에 따라 관절의 무게중심과 보행·시선을 조절한다.
+	local style = h.model:GetAttribute("MotionStyle") or "civilian"
+	local persona = h.model:GetAttribute("MotionPersonality") or 1
+	if state == "IDLE" then
+		local lean = if style == "heavy" then -0.07 elseif style == "scholar" then 0.07 else 0
+		bend("Chest", lean + 0.025 * math.sin(phase * math.pi * 2 + persona), 0, 0)
+		bend("Head", 0, 0.07 * math.sin(phase * math.pi * 2 + persona), 0)
+	elseif state == "RUN" then
+		local stride = if style == "heavy" then 0.76 elseif style == "nimble" then 1.12 elseif style == "scholar" then 0.84 else 1
+		local plant = math.sin(phase * math.pi * 2)
+		bend("Chest", -0.05 * stride, -plant * 0.06, plant * 0.025)
+		bend("ThighL", plant * 0.12 * stride, 0, 0)
+		bend("ThighR", -plant * 0.12 * stride, 0, 0)
+		bend("ShinL", -math.max(0, plant) * 0.2 * stride, 0, 0)
+		bend("ShinR", -math.max(0, -plant) * 0.2 * stride, 0, 0)
+	elseif state == "HIT" then
+		bend("Head", 0.1 * pulse, 0.1 * pulse * (if persona == 1 then -1 else 1), 0)
+	end
 	if role == "grunt" then
 		-- 잡졸: 공격 직전 한쪽 어깨를 높이 들어 위협하고 피격 시 움츠린다.
 		if state == "ANTICIPATION" then
