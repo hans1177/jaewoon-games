@@ -502,9 +502,9 @@ test('Mare facility tabs provide unique nonempty labels for every rendered group
     .flatMap(m=>[...m[1].matchAll(/"([a-z_]+)"/g)].map(v=>v[1]));
   assert.ok(used.length>0,'facility tabs exist');
   for(const id of used)assert.ok(names.get(id),'facility tab has no Text label: '+id);
-  assert.equal(names.get('quest'),'퀘스트');
-  assert.equal(names.get('map'),'일지');
-  assert.equal(names.get('explore'),'탐험');
+  assert.equal(names.get('quest'),'진행 일지');
+  assert.equal(names.get('map'),'지도');
+  assert.equal(names.get('explore'),'지상 탐험');
 });
 
 // [비주얼] 교역품은 78/60px 목록과 상세 모두 실제 Cargo 메시로 표시한다. 일반 메뉴/그림만 2D로 유지한다.
@@ -735,7 +735,8 @@ test('Mare harbor animals preserve imported mesh scale and verify final bounds',
   assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
   assert.match(scene,/m:GetScale\(\) \* ratio/);
   assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
-  assert.match(scene,/local m = k and importedModel\(folder, "Animals"/);
+  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", if species == "dog" then "dog-pug" else species/);
+  assert.match(scene,/if isAnimal then m:GetScale\(\) \* ratio else ratio/);
 });
 
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
@@ -822,7 +823,7 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('local step = math.min(remaining.Magnitude, 48 * dtc)'));
   assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
   assert.ok(field.includes('e.ac.def.speed * 0.8 * dtc'),'enemy speed respects frame lag');
-  assert.ok(field.includes('local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.8, outfit)'));
+  assert.ok(field.includes('pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)'));
   assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
   assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
   assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
@@ -837,8 +838,133 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('img.Size = UDim2.fromScale(if painted then 0.83 else 0.79'));
 });
 
-test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
-  const base='roblox-games/mare-essentia/assets/inbox/People/';
+// [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
+test('Mare exploration preserves combat rules while grounding allies and containing cancelled scene builds',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const reg=field.match(/local REGION_ENCOUNTERS = \{([\s\S]*?)\n\}/);
+  assert.ok(reg,'existing 21 cultures have encounter placements');
+  for(const region of ['iberia','italy','france','britain','hanse','nordic','brick','stone','med','ottoman','desert','swahili','malabar','japan','china','seasia','tropic','colonial','creole','pacific','wafrica']){
+    assert.match(reg[1],new RegExp('\\b'+region+'\\s*='),region+' region');
+  }
+  assert.match(field,/FieldEncounterPattern/);
+  for(const habitat of ['coast','forest','ruins','highland','desert','plains','mine']){
+    assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
+  }
+  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
+  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.08, root0\.Position\.Z - 4\)/);
+  assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
+  assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
+  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
+  assert.match(field,/chooseBtn\.Name = "FieldWeaponSelect"/);
+  assert.match(field,/chooseBtn:SetAttribute\("AvailableWeaponCount", #availableWeapons\)/);
+  assert.match(field,/for _, candidate in Weapons\.playerChoices\(\) do/);
+  assert.match(field,/for _, candidate in Weapons\.Regional do/);
+  assert.match(field,/equipFieldWeapon\(player\.Character, wpn\)/);
+  assert.match(field,/if finished or not folder\.Parent then return \{ finish = finish, cancelled = true \} end/);
+  assert.match(field,/local created, model = pcall\(Pose\.createR15, folder, pos,/);
+  assert.match(client,/startOk and type\(startResult\) == "table" and startResult\.cancelled == true/);
+  assert.match(client,/workspace:SetAttribute\("FieldEntryStage", "CANCELLED"\)/);
+});
+
+// [탐험 재진입] 스킬 E/조사 T, 명시적 귀환, 반원형 모바일 UI, 희귀 단서·보상 보안 회귀.
+test('Mare field skill cannot accidentally complete exploration and region cards use canonical discovery',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const game=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const view=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau','utf8');
+  const discovery=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau','utf8');
+  const assets=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  assert.match(field,/pp\.KeyboardKeyCode = Enum\.KeyCode\.T/);
+  assert.match(field,/cluePrompt\.KeyboardKeyCode = Enum\.KeyCode\.T/);
+  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.E then/);
+  assert.doesNotMatch(field,/task\.delay\(0\.8,\s*function\(\)\s*finish\("clear"\)/);
+  assert.match(field,/completeBtn\.Name = "FieldComplete"/);
+  assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
+  assert.match(field,/completeBtn\.Visible = true/);
+  assert.match(field,/FieldExitReason/);
+  assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/pl\.buffUntil = now \+ 8/);
+  assert.match(field,/local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68/);
+  assert.match(field,/local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64/);
+  assert.match(field,/arcPos\(innerSkillRadius, 40\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 120\), basicSize/);
+  // [조작 영역] 세 스킬과 기본 회피·방어는 동일한 실제 공격 버튼을 중심으로 반원형 배치.
+  assert.match(field,/Vector2\.new\(attackBtn\.Position\.X\.Offset, attackBtn\.Position\.Y\.Offset\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 40\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 40\)/);
+  const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
+  for(const [width,height] of [[390,640],[832,384],[320,360]]){
+    const outer=Math.max(132,Math.min(150,width*.48,height-130));
+    const skill=width<360?64:76,basic=width<360?60:68;
+    const coords=[[arc(outer,20),skill],[arc(outer,60),skill],[arc(outer,100),skill],
+                  [arc(84,40),basic],[arc(84,120),basic]];
+    for(const [pos,size] of coords){
+      assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
+      assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
+    }
+    for(let i=0;i<coords.length;i++)for(let j=i+1;j<coords.length;j++){
+      const [a,as]=coords[i], [b,bs]=coords[j];
+      assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>=(as+bs)*.5-1,'skill circle overlap '+width+':'+i+':'+j);
+    }
+  }
+  assert.match(field,/slotPos\("heavy"\), skillSize/);
+  assert.match(field,/slotPos\("sweep"\), skillSize/);
+  assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
+  assert.match(field,/local observedCardId = nil/);
+  assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId\)/);
+  assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
+  assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
+  assert.match(field,/if special and rareTrace then/);
+  assert.match(field,/for clueIndex = 1, 2 do/);
+  assert.match(field,/FieldRareTraceFound/);
+  assert.match(field,/FieldEvidence/);
+  assert.match(field,/animal and AssetIds\["Animals\/" \.\. animal\[1\]\]/);
+  assert.match(field,/AssetIds\["CardArt\/" \.\. targetCard\.id\]/);
+  assert.match(assets,/Animals\/elephant/);
+  assert.match(assets,/Animals\/llama/);
+  assert.match(view,/observableCards = observableCards/);
+  assert.match(view,/not S\.Discovery\.cardBlockReason\(state, D\.Cards\.ById\[cardId\]\)/);
+  assert.match(game,/observableCards = s\.observableCards/);
+  assert.match(game,/observedCardId = observedCardId/);
+  assert.match(discovery,/table\.find\(remaining, observedId\)/);
+  assert.match(discovery,/baseCard\.field == observedCard\.field and baseCard\.rarity == observedCard\.rarity/);
+  assert.match(discovery,/local chance = math\.min\(0\.95, 0\.55 \+ D\.Careers\.discoverBonus\(lv\) \+ S\.Perk\.discoverBonus\(state, field\)\)/);
+});
+
+// [집안·첫 화면] 기존 State.origin을 직접 연결하고, 시작 메뉴는 큰 글씨/큰 터치 영역을 유지한다.
+test('Mare selected family shows and equips its original historical weapon with readable title actions',()=>{
+  const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
+  const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
+  const view=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau','utf8');
+  assert.match(weapons,/function Weapons\.originWeapon\(originId: string\?, year: number\?\): Weapon/);
+  for(const origin of ['farmer','noble','merchant','sailor','soldier','scholar','cook','doctor','craftsman','clergy'])
+    assert.match(weapons,new RegExp('\\b'+origin+'\\s*=\\s*"'),origin);
+  assert.match(weapons,/originId == "soldier" and \(year or 1517\) >= 1680/);
+  assert.match(state,/origin = if originId and D\.Specialties\.OriginById\[originId\] then originId else nil/);
+  assert.match(view,/view\.captain\.origin = og and \{ id = og\.id/);
+  assert.match(ui,/weapon = Weapons\.originWeapon\(view and view\.captain and view\.captain\.origin and view\.captain\.origin\.id,/);
+  assert.match(field,/local wpn = Weapons\.get\(opts\.weapon or workspace:GetAttribute\("DevWeapon"\) or "sword"\)/);
+  assert.match(ui,/n3\.Name = "OriginStartingWeapon"/);
+  assert.match(ui,/local originWeapon = Weapons\.originWeapon\(o\.id, chosenYear\)/);
+  assert.match(ui,/ogl\.CellSize = UDim2\.new\(0\.5, -4, 0, 120\)/);
+  assert.match(ui,/first|intro|menu/i);
+  assert.match(ui,/bounds\.MaxSize = Vector2\.new\(500, if view then 440 else 350\)/);
+  assert.match(ui,/b\.TextSize = if primary then 23 else 19/);
+  assert.match(ui,/resume = action\(pages, "▶ 이어하기 · 기존 항해", UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/newBtn = action\(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/controls\.Size = UDim2\.new\(1, 0, 0, 60\)/);
+});
+
+test('Mare existing Quaternius outfit originals remain source-verifiable without claiming native animation QA',()=> {
+  const root='roblox-games/mare-essentia/';
+  // [원본] inbox 대기 후보가 아니라 기존 등록 폴더 assets/people의 실제 GLB 30종이 정본이다.
+  const base=root+'assets/people/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
     'male_ranger_body','male_ranger_legs','female_ranger_body','female_ranger_legs',
     'male_peasant_arms','male_peasant_feet','female_peasant_arms','female_peasant_feet',
@@ -847,46 +973,92 @@ test('Mare historical R15 mesh candidates remain unbound until visual and animat
     'male_ranger_head_hood','female_ranger_head_hood','hair_buns','hair_buzzed','hair_buzzedfemale','hair_long','hair_simpleparted','hair_beard',
     'head_f','head_m','rig_f','rig_m'];
   assert.equal(names.length,30);
-  const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
-  const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
-  // 현재 첫 선택 시대는 1517년이며, 기존 저장의 1700년 기본값은 별도로 보존한다.
+  const ui=fs.readFileSync(root+'src/StarterPlayer/Game.client.luau','utf8');
+  const server=fs.readFileSync(root+'src/ServerScriptService/Core.server.luau','utf8');
+  const state=fs.readFileSync(root+'src/ServerScriptService/Services/State.luau','utf8');
+  const sources=fs.readFileSync(root+'assets/SOURCES.md','utf8');
+  const registry=JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8')).assets;
   assert.match(ui,/local chosenYear = 1517/);
   assert.doesNotMatch(ui,/1492년 ★추천/);
   assert.match(server,/local START_YEARS = \{ \[1517\] = true/);
   assert.doesNotMatch(server,/\[1492\] = true/);
   assert.match(state,/num\(saved.startYear, 1700, 1500, 1800\)/);
+  const knownGitOriginals={
+    male_peasant_body:'a016a5c5299a72a40d8158020af3de2e3a64b756',
+    female_peasant_body:'664e12d423af7ed48fd9f13c8ddd7692ee4e7fc0',
+    male_ranger_body:'ba6b58700f7884ff51ddf440e1ac88e6cb482399',
+    rig_f:'76b719a25720db940354aa8bd6ac934bd05a6f63',
+    rig_m:'5fee12260a48d30532c26e01183fc5411cf83ae2',
+  };
   for(const name of names){
     const glb=fs.readFileSync(base+name+'.glb');
-    assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB');
+    assert.equal(glb.readUInt32LE(0),0x46546c67,name+' GLB magic');
     assert.equal(glb.readUInt32LE(4),2,name+' glTF version');
     assert.equal(glb.readUInt32LE(8),glb.length,name+' glTF length');
-    const m=JSON.parse(fs.readFileSync(base+name+'.glb.license.json','utf8'));
-    assert.equal(m.license,'CC0-1.0');
-    assert.equal(m.publicationAllowed,false);
-    assert.equal(m.status,"STAGED_ONLY");
-    assert.match(m.source,/quaternius.com/);
-    assert.match(m.sourceGitBlobSha1,/^[0-9a-f]{40}$/);
-    const actualGitSha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
-    assert.equal(actualGitSha,m.sourceGitBlobSha1,name+' provenance SHA');
+    assert.ok(sources.includes('| \x60people/\x60 | '+name+'.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/'),name+' original provenance');
+    const expected=knownGitOriginals[name];
+    if(expected){
+      const sha=createHash('sha1').update('blob '+glb.length).update(Buffer.from([0])).update(glb).digest('hex');
+      assert.equal(sha,expected,name+' original Git SHA');
+    }
+    const row=registry['People/'+name];
+    if(name.startsWith('rig_')){
+      assert.equal(row,undefined,name+' unverified base rig must not be registered');
+    }else{
+      assert.equal(row?.source,base+name+'.glb');
+      assert.equal(row?.license,'CC0-1.0');
+      assert.equal(row?.assetType,'Model');
+      assert.equal(row?.usePermissionGranted,true);
+    }
   }
+  // [별도 평가] 실물 파일·라이선스·등록 사실은 실제 R15 애니메이션 검증과 다른 증거다.
+  assert.doesNotMatch(sources,/NATIVE_R15_ANIMATION_QA_VERIFIED=PASS/);
 });
 
-test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
+test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flow', () => {
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const server=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/Battle.luau','utf8');
+  const seaMarker=client.indexOf('-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다');
+  const seaStart=client.indexOf('NavalBattle.play({',seaMarker);
+  const seaEnd=client.indexOf('\n\t\t\tonDone = function(',seaStart);
+  assert.ok(seaMarker>=0 && seaStart>seaMarker && seaEnd>seaStart,'sea battle call is present');
+  const seaOptions=client.slice(seaStart,seaEnd);
+  assert.doesNotMatch(seaOptions,/\bcard\s*=|onCards\s*=|cardEffects\s*=|\bdeck\s*=/,'no duel UI or card chips in real naval battle');
+  assert.match(seaOptions,/sim = if lb\.pending then lb\.sim else nil/,'real-time naval simulation remains');
+  assert.match(seaOptions,/onResult = function/,'server naval result validation remains');
+  assert.match(naval,/if not opts\.cardOnly then opts\.card = nil end/,'naval scene rejects legacy duel metadata');
+  const tavernStart=client.indexOf('local function playCardOnly(');
+  const tavernEnd=client.indexOf('local function startPractice()',tavernStart);
+  assert.ok(tavernStart>=0 && tavernEnd>tavernStart,'separate card duel entry is present');
+  const tavern=client.slice(tavernStart,tavernEnd);
+  assert.match(tavern,/cardOnly = true/);
+  assert.match(tavern,/card = cardCfg or/);
+  assert.match(tavern,/onCards = function/);
+  assert.match(server,/-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다/);
+  // [잘못된 안내 회귀] 도감이 해전 승패를 카드 대결로 설명하지 않는다.
+  assert.match(client,/주점 카드 대결 도감/);
+  assert.match(client,/해적과의 해전 승패는 함선 조종·포격·접현 전투로 결정돼요/);
+  assert.doesNotMatch(client,/해적과 싸우면 카드 대결로 승패가 갈려요|카드에서 이기면 전체 승리예요/);
+});
+
+test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
   assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if cfg then 0\.64/);
+  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then 0\.9 elseif cfg then 0\.64/);
+  assert.match(source,/elseif boardArtKey == "CardArt\/battle_board" then 0\.07 else 0\.58/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
-  assert.match(source,/handFrame.Position = UDim2.fromScale\(0\.02, 0\.72\)/);
-  assert.match(source,/boardFrame.Position = UDim2.fromScale\(0\.2, 0\.14\)/);
-  assert.match(source,/boardFrame.Size = UDim2.fromScale\(0\.78, 0\.56\)/);
-  assert.match(source,/local order = \{ \{ "foe", "cannon" \}, \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \}, \{ "me", "cannon" \} \}/);
+    // 카드 전용 화면·일반 해전의 좌표를 둘 다 유지하는지 검사한다.
+  assert.match(source,/handFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
+  assert.match(source,/boardFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
+  assert.match(source,/boardFrame.Size = UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
+  assert.match(source,/local order = \{ \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
@@ -901,7 +1073,7 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.ok(source.includes('focusEdge.Color = if regionDeck then regionDeck.color else brass'));
   assert.ok(source.includes('focusRule.Text = category .. row .. strength'));
   assert.ok(source.includes('frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)'));
-  assert.match(source,/origin\\.Name = "CardDeckOrigin"/);
+  assert.match(source,/origin\.Name = "CardDeckOrigin"/);
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
   // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.

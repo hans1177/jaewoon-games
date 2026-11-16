@@ -11,6 +11,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local AC = require(script.Parent:WaitForChild("ActionCombat"))
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local KnowledgeCards = require(script.Parent:WaitForChild("KnowledgeCards"))
+local Sfx = require(script.Parent:WaitForChild("Sfx"))
 local JobSkills = require(script.Parent:WaitForChild("JobSkills"))
 local Weapons = require(script.Parent:WaitForChild("Weapons"))
 local Specialties = require(script.Parent:WaitForChild("Specialties"))
@@ -134,6 +136,15 @@ local REGION_LOOK: {[string]: any} = {
 	wafrica = { ground = RC(168, 140, 84), mat = Enum.Material.Ground, fog = RC(232, 214, 170), fogEnd = 700, clock = 13.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.2, trees = { "tree_large", "tree-default-fall" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "tropical-palm-short", 3, 11 }, { "Terrain", "Bush_Small", 4, 3 } } },
 }
 
+-- [지역별 생태] 기존 21개 문화권의 지형·소품과 연결하는 적 무리 배치 구역. 전투 수치/적 수는 그대로 둔다.
+local REGION_ENCOUNTERS = {
+	iberia = "ruins", italy = "ruins", france = "forest", britain = "highland", hanse = "coast",
+	nordic = "highland", brick = "coast", stone = "highland", med = "ruins",
+	ottoman = "desert", desert = "desert", swahili = "coast", malabar = "forest",
+	japan = "forest", china = "highland", seasia = "forest", tropic = "coast",
+	colonial = "plains", creole = "forest", pacific = "coast", wafrica = "plains",
+}
+
 -- 지점 이름(지형) + 항구의 문화권(분위기)을 합쳐 탐험지 모습을 정한다.
 local function lookFor(name: string, portId: string?)
 	local b = biomeFor(name)
@@ -158,6 +169,8 @@ local function lookFor(name: string, portId: string?)
 	t.size = math.floor(b.size * r.sizeMul)
 	t.treeNames = if b.kind == "mine" then nil else r.trees
 	t.props = r.props
+	t.region = reg
+	t.encounter = REGION_ENCOUNTERS[reg] or b.kind
 	local mobs = {}
 	for i, m in b.mobs do
 		local copy = table.clone(m)
@@ -347,6 +360,7 @@ end
 -- opts: { name, nodes, danger, seed, onFinish(result) }  result: "clear" | "retreat" | "defeat"
 function FieldScene.start(opts)
 	workspace:SetAttribute("FieldCombatReady", nil) -- 이전 탐험의 준비 상태를 새 입장의 성공으로 오인하지 않는다.
+	workspace:SetAttribute("FieldExitReason", nil)
 	if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", 0) end
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("FieldScene")
@@ -358,6 +372,9 @@ function FieldScene.start(opts)
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
 	local biome = lookFor(opts.name or "", opts.portId)
+	local visualMobile = game:GetService("UserInputService").TouchEnabled
+	folder:SetAttribute("FieldRegion", biome.region or "generic")
+	folder:SetAttribute("FieldEncounterPattern", biome.encounter or biome.kind)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
 	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
@@ -408,8 +425,10 @@ function FieldScene.start(opts)
 		end
 		local hills = {}
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
-		for i = 0, 27 do
-			local ang = i / 28 * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
+		-- [모바일 메모리] 보이지 않는 원거리 지형 갱신 횟수를 줄이고 동일한 둘레를 유지한다.
+		local hillCount = if visualMobile then 16 else 28
+		for i = 0, hillCount - 1 do
+			local ang = i / hillCount * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
 			local dist = half + hillRng:NextNumber(34, 54)
 			local r = hillRng:NextNumber(22, 38)
 			local c = ORIGIN + Vector3.new(math.cos(ang) * dist, -r * hillRng:NextNumber(0.35, 0.6), math.sin(ang) * dist)
@@ -486,7 +505,10 @@ function FieldScene.start(opts)
 
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, math.floor(biome.trees * 2 * AREA) do
+	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
+	local treeCount = math.floor(biome.trees * 2 * AREA)
+	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
+	for _ = 1, visualTreeCount do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		-- 지역 나무는 기존 Town/Terrain의 실제 CC0 메시만 사용한다. 없는 종류는 도형 대체 없이 건너뛴다.
@@ -496,7 +518,9 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
-	for _ = 1, math.floor(biome.rocks * 1.6 * AREA) do
+	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
+	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
+	for _ = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
@@ -505,8 +529,8 @@ function FieldScene.start(opts)
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
 	for _, pr in (biome.props or {}) do
-		-- [모바일] 식생·장식은 종류당 최대 8개만 배치한다. 전투 객체·보상은 바꾸지 않는다.
-		for _ = 1, math.min(8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
+		-- [모바일] 장식 메시만 종류당 4개로 제한한다. PC 배치와 전투·보상은 유지한다.
+		for _ = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
 			placeModel(folder, pr[1], pr[2], ORIGIN + scatter(18), pr[4], pr[1] == "Terrain" and pr[2] == "cliff-rock")
 		end
 	end
@@ -583,9 +607,12 @@ function FieldScene.start(opts)
 			if hit then
 				local c = ORIGIN + Vector3.new(0, 0, -10)
 				local first
-				for _, e in lm[2] do
-					local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
-					first = first or m
+				for index, e in lm[2] do
+					-- [모바일] 대표 랜드마크를 우선 유지하고 반복된 외곽 장식만 제한한다.
+					if not visualMobile or index <= 22 then
+						local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
+						first = first or m
+					end
 				end
 				local adorn = first and (first:IsA("BasePart") and first or first:FindFirstChildWhichIsA("BasePart", true))
 				if adorn then
@@ -622,6 +649,7 @@ function FieldScene.start(opts)
 	local BASE_DMG = 10
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
+	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
 	local finished = false
 	local enemies = {}
 	local conns = {}
@@ -631,6 +659,29 @@ function FieldScene.start(opts)
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 20
 	gui.Parent = player:WaitForChild("PlayerGui")
+	-- [예외 종료 복구] 정상 finish가 아닌 중간 생성 오류로 폴더가 삭제돼도
+	-- Heartbeat/입력 연결·카메라·조명·필드 UI를 남기지 않는다.
+	folder.Destroying:Connect(function()
+		if finished then return end
+		finished = true
+		for _, c in conns do
+			local ok, err = pcall(function() c:Disconnect() end)
+			if not ok then warn("[MareEssentia] 비정상 탐험 정리 오류", err) end
+		end
+		workspace:SetAttribute("FieldCombatReady", nil)
+		workspace:SetAttribute("FieldTouchPad", nil)
+		workspace:SetAttribute("FieldCameraMode", nil)
+		workspace:SetAttribute("FieldCameraZoomMax", nil)
+		player.CameraMode = savedCameraMode
+		player.CameraMaxZoomDistance = math.max(savedZoomMin, savedZoomMax)
+		player.CameraMinZoomDistance = savedZoomMin
+		player.CameraMaxZoomDistance = savedZoomMax
+		local L = game:GetService("Lighting")
+		L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
+		L.Brightness, L.Ambient, L.OutdoorAmbient = lightSave.Brightness, lightSave.Ambient, lightSave.OutdoorAmbient
+		L.ColorShift_Top = lightSave.ColorShiftTop
+		if gui.Parent then gui:Destroy() end
+	end)
 	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
 	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
 		UDim2.new(1, -12, 0, 184), Vector2.new(1, 0))
@@ -711,6 +762,8 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		workspace:SetAttribute("FieldExitReason", result)
+		if RunService:IsStudio() then warn("[MareEssentia] 탐험 종료 이유", result) end
 		-- [복구] 항구 복귀 시 이전 카메라·줌 제한을 남기지 않는다.
 		player.CameraMode = savedCameraMode
 		player.CameraMaxZoomDistance = math.max(savedZoomMax, savedZoomMin)
@@ -726,48 +779,184 @@ function FieldScene.start(opts)
 			L.Brightness, L.Ambient, L.OutdoorAmbient = lightSave.Brightness, lightSave.Ambient, lightSave.OutdoorAmbient
 			L.ColorShift_Top = lightSave.ColorShiftTop
 		end)
+		-- [탐험 종료] 한 연결의 정리 실패가 항구 복귀를 막지 않도록 각각 해제한다.
 		for _, c in conns do
-			c:Disconnect()
+			local ok, err = pcall(function() c:Disconnect() end)
+			if not ok then warn("[MareEssentia] 필드 연결 정리 오류", err) end
 		end
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onFinish then
-			opts.onFinish(result)
+			local ok, err = pcall(opts.onFinish, result, observedCardId)
+			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
 		end
 	end
 
-	-- 발견물: 반짝이는 상자. 가까이 가서 조사한다.
+	-- [전투 중 강제 귀환 방지] 발견물을 전부 조사해도 자동으로 항구로 나가지 않는다.
+	-- 실제 탐험 완료 버튼을 선택했을 때만 기존 Explore 보상 서버 액션이 실행된다.
+	local completeBtn = btn(gui, "탐험 완료", Color3.fromRGB(132, 112, 58), UDim2.fromOffset(112, 52),
+		UDim2.fromOffset(12, 112), Vector2.new(0, 0))
+	completeBtn.Name = "FieldComplete"
+	completeBtn.Visible = false
+	completeBtn.TextSize = 16
+	completeBtn.Activated:Connect(function()
+		if not finished and found >= nodeCount then finish("clear") end
+	end)
+	-- [지역 도감] 서버가 미발견·시대·연구 선행 조건을 검사한 기존 탐험지 카드만 현장에 출현한다.
+	-- 카드 희귀도·획득 확률은 서버의 원래 Explore 처리에서 결정하고, 현장 연출은 저장하지 않는다.
+	local availableCards = {}
+	for _, id in (opts.observableCards or {}) do
+		if type(id) == "string" and KnowledgeCards.ById[id] then
+			table.insert(availableCards, id)
+		end
+	end
+	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
+	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
+	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
+	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
+	folder:SetAttribute("FieldRareTraceTotal", if rareTrace then 2 else 0)
+	folder:SetAttribute("FieldRareTraceFound", 0)
+
+	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
+	questHint.Name = "FieldQuestHint"
+	questHint.Position = UDim2.fromOffset(12, 173)
+	questHint.Size = UDim2.fromOffset(230, 42)
+	questHint.TextWrapped = true
+	questHint.TextXAlignment = Enum.TextXAlignment.Left
+	if targetCard then
+		questHint.Text = if rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
+			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
+	end
+
+	-- 기존 발견물 수/발견 완료 기준은 그대로 둔다. 첫 발견 지점만 지역 도감 실물/기록으로 연출한다.
 	for i = 1, nodeCount do
 		local pos = ORIGIN + scatter(30)
+		local special = i == 1 and targetCard ~= nil
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon)
-		anchor.Transparency = 0.35
+		anchor.Transparency = if special then 1 else 0.35
 		anchor.CanCollide = false
+		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
-		placeModel(folder, "Naval", "chest", pos, 3.2, false)
+		if special then
+			anchor:SetAttribute("ObservationCardId", targetCard.id)
+			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
+			-- 없는 종을 다른 동물 메시로 위장하지 않고 종 이름과 승인된 도감 원화를 보여 준다.
+			local animalModels = {
+				zoo_elephant = { "elephant", 11 }, zoo_indian_elephant = { "elephant", 11 },
+				am_llama = { "llama", 6 },
+			}
+			local animal = if isWildlife then animalModels[targetCard.id] else nil
+			if animal and AssetIds["Animals/" .. animal[1]] then
+				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+				if placed then
+					placed.Name = "FieldWildlife"
+					placed:SetAttribute("ObservedSpecies", targetCard.id)
+				else
+					-- [지연 로드] 기존 AssetLoader로 로드가 끝난 동일 종의 승인 모델만 배치한다.
+					local assets = ReplicatedStorage:FindFirstChild("MareAssets")
+					local group = assets and assets:FindFirstChild("Animals")
+					if group then
+						table.insert(conns, group.ChildAdded:Connect(function(asset)
+							if asset.Name ~= animal[1] or finished or not anchor.Parent then return end
+							task.defer(function()
+								if finished or not anchor.Parent then return end
+								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+								if readyModel then
+									readyModel.Name = "FieldWildlife"
+									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
+								end
+							end)
+						end))
+					end
+				end
+			end
+			-- [원본 도감] 등록된 카드 원화만 노출한다. 없는 카드에는 확인 불가능한 동물 이미지를 만들지 않는다.
+			local board = Instance.new("BillboardGui")
+			board.Name = "FieldObservation"
+			board.Adornee = anchor
+			board.Size = UDim2.fromOffset(154, 150)
+			board.StudsOffset = Vector3.new(0, 3.5, 0)
+			board.AlwaysOnTop = false
+			board.MaxDistance = 58
+			board.Parent = anchor
+			local artId = AssetIds["CardArt/" .. targetCard.id]
+			if artId then
+				local art = Instance.new("ImageLabel")
+				art.Name = "FieldSpeciesArt"
+				art.Size = UDim2.new(1, 0, 0, 118)
+				art.BackgroundTransparency = 1
+				art.Image = "rbxassetid://" .. tostring(artId)
+				art.ScaleType = Enum.ScaleType.Fit
+				art.Parent = board
+			end
+			local tag = label(board, targetCard.name, 16, Color3.fromRGB(255, 229, 164))
+			tag.Name = "FieldSpeciesName"
+			tag.Position = UDim2.fromOffset(0, if artId then 117 else 45)
+			tag.Size = UDim2.fromOffset(154, 28)
+			tag.TextWrapped = true
+		else
+			placeModel(folder, "Naval", "chest", pos, 3.2, false)
+		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
 		light.Range = 18
 		light.Brightness = 2
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
-		pp.ActionText = "조사"
-		pp.ObjectText = "발견물"
+		pp.ActionText = if special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
+		pp.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 구분
+		pp.ObjectText = if special then targetCard.name else "발견물"
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
+		pp.Enabled = not (special and rareTrace)
 		pp.Parent = anchor
+		if special and rareTrace then
+			-- [희귀 조사 퀘스트] 같은 탐험 안에서 단서 2개를 찾아야 본 관찰이 열린다.
+			-- 이 단계는 기존 발견물 수·소모 일수·보상 확률·저장 키를 바꾸지 않는다.
+			local clues = 0
+			for clueIndex = 1, 2 do
+				local cluePos = ORIGIN + scatter(36)
+				local clue = part(folder, Vector3.new(2.2, 0.35, 2.2), CFrame.new(cluePos + Vector3.new(0, 0.25, 0)),
+					Color3.fromRGB(164, 138, 79), Enum.Material.Slate)
+				clue.Name = "FieldEvidence" .. clueIndex
+				clue.CanCollide = false
+				local cluePrompt = Instance.new("ProximityPrompt")
+				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
+				cluePrompt.ObjectText = targetCard.name
+				cluePrompt.KeyboardKeyCode = Enum.KeyCode.T
+				cluePrompt.HoldDuration = 0.5
+				cluePrompt.MaxActivationDistance = 12
+				cluePrompt.RequiresLineOfSight = false
+				cluePrompt.Parent = clue
+				cluePrompt.Triggered:Connect(function()
+					if finished or not clue.Parent then return end
+					clues += 1
+					folder:SetAttribute("FieldRareTraceFound", clues)
+					clue:Destroy()
+					questHint.Text = string.format("희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
+					if clues >= 2 then
+						pp.Enabled = true
+						say("희귀 단서 확보! 지도에 표시된 " .. targetCard.name .. "을(를) 관찰해.")
+					else
+						say("흔적을 찾았어. 한 곳 더 확인해.")
+					end
+				end)
+			end
+		end
 		pp.Triggered:Connect(function()
-			if finished then
-				return
+			if finished or not anchor.Parent then return end
+			if special then
+				observedCardId = targetCard.id
+				questHint.Text = "현장 기록 완료: " .. targetCard.name
 			end
 			found += 1
 			anchor:Destroy()
-			say(string.format("발견물을 조사했다 (%d/%d)", found, nodeCount))
+			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
-				task.delay(0.8, function()
-					finish("clear")
-				end)
+				completeBtn.Visible = true
+				say("조사 완료! 전투를 마치고 '탐험 완료'를 눌러 귀환해.")
 			end
 		end)
 	end
@@ -786,11 +975,30 @@ function FieldScene.start(opts)
 		boss = { { "전장 두목", "Knight", Color3.fromRGB(117, 77, 66) }, { "약탈 우두머리", "Barbarian", Color3.fromRGB(135, 63, 55) }, { "거인 대장", "Knight", Color3.fromRGB(83, 90, 109) } },
 	}
 	local kinds = { "grunt", "archer", "shield", "charger" }
+	-- [지역별 몬스터 배치] 숲길·유적·해안·산길·사막마다 무리 위치를 바꾼다.
+	-- 기존 적 수/역할/체력/공격력/드롭/보스 규칙은 변경하지 않는다.
 	local packCenters = {}
-	for _ = 1, math.max(4, math.floor(enemyCount / 5)) do
-		table.insert(packCenters, scatter(48))
+	local encounterZones = {
+		coast = { Vector2.new(-0.70, -0.42), Vector2.new(0.68, -0.48), Vector2.new(-0.65, 0.30), Vector2.new(0.62, 0.20) },
+		forest = { Vector2.new(-0.53, -0.62), Vector2.new(0.64, -0.55), Vector2.new(-0.70, 0.12), Vector2.new(0.68, 0.22) },
+		ruins = { Vector2.new(-0.75, -0.18), Vector2.new(0.75, -0.18), Vector2.new(-0.48, -0.73), Vector2.new(0.50, -0.73) },
+		highland = { Vector2.new(-0.68, -0.55), Vector2.new(0.52, -0.74), Vector2.new(-0.62, 0.20), Vector2.new(0.74, 0.06) },
+		desert = { Vector2.new(-0.74, -0.67), Vector2.new(0.73, -0.48), Vector2.new(-0.52, 0.04), Vector2.new(0.60, 0.15) },
+		plains = { Vector2.new(-0.70, -0.22), Vector2.new(0.70, -0.24), Vector2.new(-0.48, -0.72), Vector2.new(0.50, -0.65) },
+		mine = { Vector2.new(-0.73, -0.33), Vector2.new(0.74, -0.30), Vector2.new(-0.46, -0.70), Vector2.new(0.46, -0.70) },
+	}
+	local zones = encounterZones[biome.encounter or biome.kind] or encounterZones.plains
+	for i = 1, math.max(4, math.floor(enemyCount / 5)) do
+		local zone = zones[(i - 1) % #zones + 1]
+		local x = math.clamp(zone.X * half + rng:NextNumber(-15, 15), -half + 16, half - 16)
+		local z = math.clamp(zone.Y * half + rng:NextNumber(-15, 15), -half + 16, half - 35)
+		local pos = Vector3.new(x, 0, z)
+		if (pos - Vector3.new(0, 0, half - 14)).Magnitude < 54 then pos = scatter(54) end
+		table.insert(packCenters, pos)
 	end
 	for i = 1, enemyCount + bossCount do
+		-- [튕김 복구] 생성 도중 철수로 폴더가 삭제되면 낡은 장면에 인스턴스를 만들지 않는다.
+		if finished or not folder.Parent then return { finish = finish, cancelled = true } end
 		local isBoss = i > enemyCount
 		local def
 		if isBoss then
@@ -823,8 +1031,17 @@ function FieldScene.start(opts)
 			elseif ac.kind == "charger" then "athletic" else "average"
 		local motionStyle = if ac.kind == "archer" then "nimble" elseif ac.kind == "shield" or isBoss then "heavy"
 			elseif ac.kind == "charger" then "disciplined" else "civilian"
-		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
+		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
+		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
 			{ bodyType = bodyType, motionStyle = motionStyle, persona = styleN, profession = ac.kind, year = opts.year })
+		if not created and not finished then
+			warn("[MareEssentia] 탐험 적 리그 생성 오류", model)
+			model = nil
+		end
+		if finished or not folder.Parent then
+			if created and model and typeof(model) == "Instance" then model:Destroy() end
+			return { finish = finish, cancelled = true }
+		end
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
 			continue
@@ -936,8 +1153,11 @@ function FieldScene.start(opts)
 				return true
 			end
 			for _, ch in folder:GetChildren() do
-				if string.sub(ch.Name, 1, 9) == "Discovery" and ch:IsA("BasePart") then
+				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" then
 					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
+				elseif ch:IsA("BasePart") and string.sub(ch.Name, 1, 13) == "FieldEvidence" then
+					-- [희귀 동물/지식 퀘스트] 추적해야 할 흔적은 미니맵에 청록색으로 표시한다.
+					place(ch.Position, Color3.fromRGB(98, 232, 203), 7, true)
 				end
 			end
 			for _, e in enemies do
@@ -2342,15 +2562,49 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- [두 무기 빠른 교체] 현재 사용 중인 무기와 보조 무기만 번갈아 선택한다. 기존 다른 무기 정의·동료 장비는 유지.
+	-- [탐험 무기] 기존 두 무기 빠른 교체는 유지하고, 보조 슬롯에서 등록된 실물 무기를 선택한다.
+	-- 기존 무기 정의의 공격력/속도/사거리만 쓰며, 등록되지 않은 외형을 가짜로 장착하지 않는다.
 	do
+		local availableWeapons = {}
+		for _, candidate in Weapons.playerChoices() do
+			if candidate.family == "fist" or (candidate.model and AssetIds["Relics/" .. candidate.model]) then
+				table.insert(availableWeapons, candidate)
+			end
+		end
+		-- 수석식 총기 실물은 해당 역사 시기에서만 보조 슬롯에 제공한다.
+		if type(opts.year) == "number" and opts.year >= 1680 then
+			for _, candidate in Weapons.Regional do
+				if candidate.model and AssetIds["Relics/" .. candidate.model] then
+					table.insert(availableWeapons, candidate)
+				end
+			end
+		end
 		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -315), Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn.TextSize = 13
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
+		local chooseBtn = btn(gui, "보조: " .. reserveWeapon.name, Color3.fromRGB(69, 100, 89), UDim2.fromOffset(126, 40), UDim2.new(0, 80, 1, -218), Vector2.new(0.5, 0.5))
+		chooseBtn.Name = "FieldWeaponSelect"
+		chooseBtn.TextSize = 13
+		chooseBtn:SetAttribute("AvailableWeaponCount", #availableWeapons)
+		bindPress(chooseBtn, function()
+			if finished or #availableWeapons < 2 then return end
+			local currentIndex = table.find(availableWeapons, reserveWeapon) or 0
+			for offset = 1, #availableWeapons do
+				local candidate = availableWeapons[(currentIndex + offset - 1) % #availableWeapons + 1]
+				if candidate.id ~= wpn.id then
+					reserveWeapon = candidate
+					chooseBtn.Text = "보조: " .. reserveWeapon.name
+					wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
+					say("선택한 보조 무기: " .. reserveWeapon.name)
+					break
+				end
+			end
+		end)
 		bindPress(wbtn, function()
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
+			chooseBtn.Text = "보조: " .. reserveWeapon.name
 			if attackIcon then
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
@@ -2378,13 +2632,18 @@ function FieldScene.start(opts)
 	staminaFill.BorderSizePixel = 0
 	staminaFill.Parent = staminaBack
 	local skillBtns = {}
-	-- [전투 HUD] 공격은 오른쪽 엄지 아래, 회피·방어와 장착 3칸은 위쪽 반원 두 줄에 배치한다.
-	-- 기존 공격 판정·단축키·슬롯 해금 수는 바꾸지 않고 터치 간격만 넓힌다.
-	local screenWidth = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X or 390
-	if screenWidth < 100 then screenWidth = 390 end
-	local outerSkillRadius = math.clamp(math.floor((screenWidth - 40) * 0.42), 110, 147)
-	local innerSkillRadius = math.max(58, outerSkillRadius - 56)
-	local ATK_C = Vector2.new(-math.clamp(screenWidth * 0.48, 154, 192), -157)
+	-- [모바일 전투 HUD] 화면 높이와 엄지 도달 범위에 맞춰 큰 반원형으로 배치한다.
+	-- 오른쪽 화면 밖 잘림을 막고 공격 버튼/철수 버튼/조이스틱과 겹치지 않게 둔다.
+	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
+	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
+	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
+	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.48, screenHeight - 130), 132, 150)
+	local innerSkillRadius = 84
+	local compactTouch = visualMobile and screenWidth < 360
+	local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68
+	local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64
+	-- [반원 중심] 기존 공격 버튼의 위치를 그대로 사용해 모든 해상도에서 엄지 중심이 일치한다.
+	local ATK_C = Vector2.new(attackBtn.Position.X.Offset, attackBtn.Position.Y.Offset)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
@@ -2392,19 +2651,21 @@ function FieldScene.start(opts)
 	local function mkSkill(key, label, color, pos, size)
 		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.Name = "FieldSkill_" .. key
-		b.TextSize = 13
+		b.TextSize = 15
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 48))
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 132))
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 40), basicSize)
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 120), basicSize)
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
+		-- [전투 스킬 안정성] 시전자의 이름/대상과 관계없이 시간 효과의 시각을 함수 안에서 계산한다.
+		local now = os.clock()
 		local pos = hp0.Position + Vector3.new(0, 2, 0)
 		if sk == "heal" then
 			pl.hp = math.min(pl.maxHp, pl.hp + pl.maxHp * 0.25)
@@ -2497,11 +2758,11 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(outerSkillRadius, 28 + ((slotOf[id] or 1) - 1) * 62)
+			return arcPos(outerSkillRadius, 20 + ((slotOf[id] or 1) - 1) * 40)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(outerSkillRadius, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 40), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
@@ -2510,11 +2771,11 @@ function FieldScene.start(opts)
 			end)
 		end
 		if slotOf.heavy then
-			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), 56)
+			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), skillSize)
 			addIcon(skillBtns.heavy.btn, "Menu/cc0_axe")
 		end
 		if slotOf.sweep then
-			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), 56)
+			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), skillSize)
 			addIcon(skillBtns.sweep.btn, "Menu/cc0_sword")
 		end
 		local function useCard(key, card)
@@ -2541,9 +2802,10 @@ function FieldScene.start(opts)
 			if i > 3 or not slotOf[key] then
 				continue
 			end
-			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(56, 56), slotPos(key), Vector2.new(0.5, 0.5))
+			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
 			b.Name = "FieldSkill_" .. key
-			b.TextSize = 12
+			b.TextSize = 14
+			b.TextWrapped = true
 			-- [도감 원화 연동] 실제 카드 ID의 등록 원화가 있으면 그림 전체를 고급 스킬 메달로 재사용한다.
 			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
 			addIcon(b, paintedKey or (if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
@@ -2979,7 +3241,10 @@ function FieldScene.start(opts)
 			if not spawned then
 				spawned = true
 				for i, ad in allyDefs do
-					local pos0 = root0.Position + Vector3.new(i * 5 - 8, 0, -4)
+					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
+					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
+					local footX = root0.Position.X + i * 5 - 8
+					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.08, root0.Position.Z - 4)
 					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
 					local persona = hashName(ad.name) % 3 + 1
 					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
@@ -2996,7 +3261,15 @@ function FieldScene.start(opts)
 					local heroHeight = if heroHead and heroFoot
 						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
 						else 5.8
-					local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
+					local created, m = pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
+					if not created and not finished then
+						warn("[MareEssentia] 동료 리그 생성 오류", m)
+						m = nil
+					end
+					if finished or not folder.Parent then
+						if created and m and typeof(m) == "Instance" then m:Destroy() end
+						return
+					end
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"

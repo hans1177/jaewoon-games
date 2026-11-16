@@ -162,6 +162,23 @@ function Weapons.allyWeapon(category: string?, history: AllyHistory?): Weapon
 	return Weapons.get(base)
 end
 
+-- [집안별 시작 무기] 새 상태 필드를 만들지 않고 기존 State.origin 값을 전투 연출의 기본 장비로 사용한다.
+-- 등록된 실물 무기만 고른다. 기존 능력치·출신 보너스·저장/이전 게임은 그대로 둔다.
+local ORIGIN_WEAPONS: { [string]: string } = {
+	farmer = "axe", noble = "sword", merchant = "dagger", sailor = "sword",
+	soldier = "crossbow", scholar = "bow", cook = "dagger", doctor = "mace",
+	craftsman = "mace", clergy = "fist",
+}
+
+function Weapons.originWeapon(originId: string?, year: number?): Weapon
+	local id = ORIGIN_WEAPONS[originId or ""] or "sword"
+	-- 수석식 총기는 실제 발화 시대와 등록된 모델이 모두 맞을 때에만 초기 장비로 선택한다.
+	if originId == "soldier" and (year or 1517) >= 1680 then
+		id = "flintlock_musket"
+	end
+	return Weapons.get(id)
+end
+
 -- 주인공은 전부 쓸 수 있다. 다만 모델이 없는 무기는 모델이 등록되기 전까지 맨손 쥠으로 보인다.
 function Weapons.playerChoices(): { Weapon }
 	return Weapons.List

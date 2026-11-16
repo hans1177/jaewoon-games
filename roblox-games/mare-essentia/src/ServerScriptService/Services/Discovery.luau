@@ -186,7 +186,17 @@ return function(D, S)
 		if ctx.rng() < 0.45 then
 			S.Cardbook.reward(state, "explore", msgs, ctx.rng)
 		end
+		-- [탐험 실측 연동] 후보는 기존 RNG 그대로 한 번 뽑는다(희귀도·학문별 드롭 비율 보존).
+		-- 현장 관찰 카드가 같은 학문/희귀도이고 현 탐험지의 합법적 미발견 보상일 때만 동일 등급 내 대체한다.
+		-- 클라이언트가 다른 항구/시대/미획득 권한 카드를 임의로 요구해도 보상할 수 없다.
 		local cardId = remaining[1 + math.floor(ctx.rng() * #remaining) % #remaining]
+		local observedId = if type(p.observedCardId) == "string" and #p.observedCardId <= 80 then p.observedCardId else nil
+		if observedId and table.find(remaining, observedId) then
+			local baseCard, observedCard = D.Cards.ById[cardId], D.Cards.ById[observedId]
+			if baseCard and observedCard and baseCard.field == observedCard.field and baseCard.rarity == observedCard.rarity then
+				cardId = observedId
+			end
+		end
 		local field = D.Cards.ById[cardId].field
 		local chance = math.min(0.95, 0.55 + D.Careers.discoverBonus(lv) + S.Perk.discoverBonus(state, field))
 		if ctx.rng() < chance then
