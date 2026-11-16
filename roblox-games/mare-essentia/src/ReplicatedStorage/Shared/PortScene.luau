@@ -612,6 +612,66 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			return base:FindFirstChildWhichIsA("BasePart", true)
 		end
 	end
+	-- [대륙 실루엣] 평지붕 석조집/중정집/열대 고상식 주택은 기존 북유럽 박공지붕
+	-- 원본을 색만 바꿔 쓰지 않는다. 소수의 로컬 Part로 입면 자체를 다른 구조로 조립한다.
+	local form = architecture.form
+	if form == "flat" or form == "courtyard" or form == "carved" or form == "stilt" then
+		local ww = w * variation * HOUSE_SCALE * 0.94
+		local dd = d * variation * HOUSE_SCALE * 0.94
+		local hh = math.max(6, (floors or 1) * 5.6)
+		local lifted = form == "stilt"
+		local lift = if lifted then 3.2 else 0
+		local material = if lifted then Enum.Material.WoodPlanks else (style.mat or Enum.Material.Sandstone)
+		local building = part(parent, Vector3.new(ww, hh, dd), CFrame.new(pos + Vector3.new(0, lift + hh * 0.5, 0)), tintColor, material)
+		building.Name = "HarborHouse"
+		building:SetAttribute("Architecture", form)
+		local roofColor = style.roofs[(seed % #style.roofs) + 1]
+		if lifted then
+			-- 바닥을 올리고 네 기둥과 깊은 처마를 배치: 동남아·태평양 수변가옥/통풍형 주택.
+			local floor = part(parent, Vector3.new(ww + 1.3, 0.45, dd + 2.2), CFrame.new(pos + Vector3.new(0, lift - 0.3, 0)), C(112, 88, 59), Enum.Material.WoodPlanks)
+			floor.Name = "StiltDeck"
+			for _, dx in { -1, 1 } do
+				for _, dz in { -1, 1 } do
+					local pole = part(parent, Vector3.new(0.65, lift + 0.2, 0.65), CFrame.new(pos + Vector3.new(dx * ww * 0.42, lift * 0.5, dz * dd * 0.43)), C(93, 71, 48), Enum.Material.Wood)
+					pole.Name = "StiltSupport"
+				end
+			end
+			gableRoof(parent, pos + Vector3.new(0, lift + hh + 0.35, 0), ww + 3.6, dd + 4, dd * 0.34, roofColor)
+			local landing = part(parent, Vector3.new(ww * 0.42, 0.4, 2.9), CFrame.new(pos + Vector3.new(0, lift - 0.3, front * (dd * 0.5 + 1))), C(130, 101, 69), Enum.Material.WoodPlanks)
+			landing.CanCollide = false
+		else
+			-- 이슬람권·동서아프리카의 평지붕과 낮은 난간: 역사 지역별 재료만 다르게.
+			local roof = part(parent, Vector3.new(ww + 1.5, 0.6, dd + 1.5), CFrame.new(pos + Vector3.new(0, hh + 0.32, 0)), roofColor:Lerp(tintColor, 0.44), material)
+			roof.Name = "FlatRoof"
+			for _, dx in { -1, 1 } do
+				local parapet = part(parent, Vector3.new(0.7, 1.3, dd + 1.5), CFrame.new(pos + Vector3.new(dx * (ww * 0.5 + 0.5), hh + 1.05, 0)), tintColor, material)
+				parapet.CanCollide = false
+			end
+			if houseTier >= 2 then
+				local lip = part(parent, Vector3.new(ww + 1.5, 1.1, 0.7), CFrame.new(pos + Vector3.new(0, hh + 0.94, -front * (dd * 0.5 + 0.46))), tintColor, material)
+				lip.CanCollide = false
+			end
+			if form == "courtyard" and houseTier >= 3 and seed % 3 == 0 then
+				-- 주택 안쪽 중정을 직접 열 수 없는 경우 외벽 안쪽의 그늘막으로 표현한다.
+				local canopy = part(parent, Vector3.new(ww * 0.48, 0.4, dd * 0.24), CFrame.new(pos + Vector3.new(0, hh * 0.62, front * (dd * 0.5 + 0.55))), C(154, 118, 78), Enum.Material.WoodPlanks)
+				canopy.CanCollide = false
+			end
+		end
+		if not vacant and houseTier >= 2 then
+			local entry = if form == "carved" then "kenney_wood_door_round_01"
+				elseif lifted then "kenney_wood_door_square_01" else "kenney_grey_door_round_01"
+			local door = importedModel(parent, "Town", entry, pos + Vector3.new(0, lift, front * (dd * 0.5 + 0.2)), math.min(ww * 0.38, 5), false)
+			if door then door.Name = "HarborEntrance" end
+			if form == "carved" and houseTier >= 3 then
+				-- 스와힐리 석조집: 깊은 목조 문틀·양쪽 기둥으로 아프리카 동해안 입면을 구분한다.
+				for _, side in { -1, 1 } do
+					local trim = part(parent, Vector3.new(0.45, hh * 0.56, 0.55), CFrame.new(pos + Vector3.new(side * ww * 0.18, lift + hh * 0.29, front * (dd * 0.5 + 0.4))), C(93, 61, 38), Enum.Material.Wood)
+					trim.CanCollide = false
+				end
+			end
+		end
+		return building
+	end
 	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
@@ -676,6 +736,54 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if bal then
 				bal.Name = "HarborBalcony"
 				uniformMaterial(bal, style, "trim")
+			end
+		end
+		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
+		-- 상세 장식은 일부 주택에만 출력하여 모바일 장면의 파트 수를 제한한다.
+		if not vacant and houseTier >= 2 and seed % 4 == 1 then
+			local form = architecture.form
+			local decor = C(89, 65, 47)
+			if form == "stepped" then
+				-- 한자동맹: 계단형 정면 박공 실루엣.
+				for j = -2, 2 do
+					local h = (3 - math.abs(j)) * ext.Y * 0.095
+					local gable = part(parent, Vector3.new(ext.X * 0.19, h, 0.52), CFrame.new(pos + Vector3.new(j * ext.X * 0.18, ext.Y + h * 0.35, front * ext.Z * 0.48)), tintColor:Lerp(style.roofs[1], 0.44), Enum.Material.Brick)
+					gable.CanCollide = false
+				end
+			elseif form == "timber" then
+				-- 북유럽·영국: 기둥과 가로보가 드러나는 목골조.
+				for _, dx in { -0.35, 0.35 } do
+					local beam = part(parent, Vector3.new(0.38, ext.Y * 0.68, 0.38), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.43, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
+					beam.CanCollide = false
+				end
+				local brace = part(parent, Vector3.new(ext.X * 0.8, 0.38, 0.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.75, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
+				brace.CanCollide = false
+			elseif form == "arcade" or form == "loggia" then
+				-- 이베리아/이탈리아: 돌기둥 회랑과 발코니 돌출 처마.
+				for _, dx in { -0.32, 0.32 } do
+					importedModel(parent, "Terrain", "column", pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)), ext.Y * 0.58, false)
+				end
+				if houseTier >= 3 then
+					local veranda = part(parent, Vector3.new(ext.X * 0.85, 0.42, 2.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.52, front * (ext.Z * 0.5 + 0.9))), tintColor, Enum.Material.Limestone)
+					veranda.CanCollide = false
+				end
+			elseif form == "veranda" then
+				-- 크리올·식민 항구: 넓은 전면 베란다와 차양.
+				local awning = part(parent, Vector3.new(ext.X * 0.95, 0.35, 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.62, front * (ext.Z * 0.5 + 0.9))), style.roofs[1], Enum.Material.WoodPlanks)
+				awning.CanCollide = false
+				for _, dx in { -0.4, 0.4 } do
+					local post = part(parent, Vector3.new(0.4, ext.Y * 0.6, 0.4), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.3, front * (ext.Z * 0.5 + 1.9))), decor, Enum.Material.Wood)
+					post.CanCollide = false
+				end
+			elseif form == "mansard" then
+				-- 프랑스: 지붕창과 작은 처마가 비대칭으로 솟는 석조 시가지.
+				for _, dx in { -0.26, 0.26 } do
+					importedModel(parent, "Town", "roof-high-window", pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25), ext.X * 0.27, false)
+				end
+			elseif form == "coastal" then
+				-- 인도 서해안: 넓고 낮은 목조 처마.
+				local eave = part(parent, Vector3.new(ext.X + 3, 0.4, ext.Z + 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.78, 0)), style.roofs[1], Enum.Material.WoodPlanks)
+				eave.CanCollide = false
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
@@ -1780,21 +1888,77 @@ local function placeSignature(folder, info)
 	local nation = port and port.country or ""
 	local european = COUNTRY_PLAN[nation] ~= nil and currentKey ~= "ottoman"
 	if not list and not european then return end
-	-- 발전도 1은 작은 항구촌. 2는 소형 마을 표지, 3은 본래 도시 랜드마크,
-	-- 4~5는 국별 상징과 부두 장식이 단계적으로 늘어난다.
-	if european and sceneLevel < 3 then
+	-- 모든 대륙: 1단계는 항구촌, 2단계는 표지/소형 탑, 3단계는 온전한 지역 랜드마크.
+	-- 유럽만 작은 도시로 시작하던 기존 불균형을 없애되 시설 소유/경제 잠금에는 영향이 없다.
+	if sceneLevel < 3 then
 		if sceneLevel == 2 then
-			local asset = if nation == "netherlands" then "windmill"
-				elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
-				elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
-				else "church"
-			importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+			if list and #list > 0 then
+				local marker = list[1]
+				local m = importedModel(folder, marker.kind, marker.asset, SIG_ANCHOR + Vector3.new(marker.dx * 0.5, 0, marker.dz * 0.5), math.min(16, marker.size * 0.58), false, marker.tint)
+				if m then m.Name = "EarlyRegionalLandmark" end
+			elseif european then
+				local asset = if nation == "netherlands" then "windmill"
+					elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
+					elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
+					else "church"
+				importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+			end
 		end
 		return
 	end
 	if list then
 		for _, e in list do
 			importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
+		end
+	end
+	-- [항구 대표경관] 각 대륙의 상징 건물 주위에 3~5단계의 같은 문화권 부속 경관을 추가한다.
+	-- 멀리서는 지붕·탑 실루엣, 가까이에서는 현관·정원·시장의 순서로 디테일이 드러난다.
+	local landmarkFloor = part(folder, Vector3.new(43, 0.18, 28), CFrame.new(SIG_ANCHOR + Vector3.new(-12, 0.09, 0)),
+		if currentKey == "desert" or currentKey == "wafrica" then C(190, 169, 123) else C(166, 152, 139),
+		if currentKey == "desert" or currentKey == "wafrica" then Enum.Material.Sandstone else Enum.Material.Cobblestone)
+	landmarkFloor.Name = "RegionalLandmarkCourt"
+	landmarkFloor.CanCollide, landmarkFloor.CanQuery = false, false
+	landmarkFloor:SetAttribute("Culture", currentKey)
+	landmarkFloor:SetAttribute("Tier", sceneLevel)
+	if sceneLevel >= 4 then
+		local east = currentKey == "japan" or currentKey == "china"
+		local humid = currentKey == "seasia" or currentKey == "pacific" or currentKey == "tropic" or currentKey == "malabar"
+		local islamic = currentKey == "ottoman" or currentKey == "desert" or currentKey == "swahili" or currentKey == "wafrica"
+		local mediterranean = currentKey == "iberia" or currentKey == "italy" or currentKey == "med" or currentKey == "creole"
+		local x, z = SIG_ANCHOR.X, SIG_ANCHOR.Z
+		if east then
+			for _, dx in { -26, 26 } do
+				importedModel(folder, "Town", "eastasia-column-base", Vector3.new(x + dx, 0, z - 17), 7, false)
+			end
+			importedModel(folder, "Terrain", "gate-overhang", Vector3.new(x - 3, 0, z - 20), 12, false)
+		elseif humid then
+			for _, dx in { -26, 26 } do
+				importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(x + dx, 0, z - 18), 9, false)
+			end
+			importedModel(folder, "Town", "bench_A", Vector3.new(x - 12, 0, z - 20), 4, false)
+		elseif islamic then
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Terrain", "egypt-column", Vector3.new(x + dx, 0, z - 20), 8, false)
+			end
+			importedModel(folder, "Town", "fountain-square", Vector3.new(x - 12, 0, z - 20), 8, false)
+		elseif mediterranean then
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Terrain", "column", Vector3.new(x + dx, 0, z - 20), 8, false)
+			end
+			importedModel(folder, "Town", "fountain-round", Vector3.new(x - 10, 0, z - 20), 7, false)
+		else
+			for _, dx in { -24, 24 } do
+				importedModel(folder, "Town", "tree-high", Vector3.new(x + dx, 0, z - 19), 9, false)
+			end
+			importedModel(folder, "Town", "bench_B", Vector3.new(x - 12, 0, z - 19), 4, false)
+		end
+	end
+	if sceneLevel >= 5 and info.sim then
+		local bld = info.sim.buildings or {}
+		if (bld.hall or 0) > 0 or (bld.market or 0) >= 3 then
+			for _, dx in { -16, 16 } do
+				importedModel(folder, "Castle", "flag-banner-long", SIG_ANCHOR + Vector3.new(dx, 0, -23), 9, false)
+			end
 		end
 	end
 	if european and sceneLevel >= 4 then
@@ -2910,6 +3074,42 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 			elseif lm.id == "botanic" then
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
+			end
+			-- [랜드마크 지구] 기술·연도·발전도 해금 조건은 유지한 채, 건립된 시설 주위에
+			-- 고유 문화권의 보도/안뜰/수목·장식·부속 상점을 단계별로 배치한다.
+			-- 각 지구는 원래 예약된 58x58 필지에만 세워져 주거/도로 충돌을 줄인다.
+			if lvl >= 3 then
+				local sandstone = key == "ottoman" or key == "desert" or key == "wafrica" or key == "swahili"
+				local timber = key == "malabar" or key == "seasia" or key == "pacific" or key == "tropic"
+				local surface = if sandstone then Enum.Material.Sandstone elseif timber then Enum.Material.WoodPlanks else Enum.Material.Cobblestone
+				local tile = part(folder, Vector3.new(52, 0.16, 50), CFrame.new(x, 0.08, z),
+					if sandstone then C(198, 173, 133) elseif timber then C(148, 128, 97) else C(161, 156, 145), surface)
+				tile.Name = "LandmarkPrecinct_" .. lm.id
+				tile.CanCollide, tile.CanQuery = false, false
+				tile:SetAttribute("Culture", key)
+				tile:SetAttribute("Tier", lvl)
+				local economics = (info.sim and info.sim.buildings) or {}
+				local grown = (economics.market or 0) >= 2 or (economics.hall or 0) >= 1 or (economics.school or 0) >= 1
+				if lvl >= 4 then
+					local garden = if sandstone then { "Terrain", "plant-bush" }
+						elseif timber then { "Naval", "palm-detailed-straight" } else { "Town", "tree_tiny" }
+					for _, dx in { -22, 22 } do
+						put(garden[1], garden[2], 6.5, x + dx, z - front * 19, false)
+					end
+					if lm.id ~= "zoo" and lm.id ~= "botanic" then
+						put("Town", "bench_A", 4, x + 18, z + front * 19, false)
+					end
+				end
+				if lvl >= 5 and grown then
+					if lm.id == "academy" or lm.id == "museum" or lm.id == "observatory" then
+						put(if key == "china" or key == "japan" then "Town" else "Terrain",
+							if key == "china" or key == "japan" then "eastasia-column-base" else "statue-column", 8, x - 20, z + front * 20, false)
+					elseif lm.id == "exchange" or lm.id == "ironworks" then
+						put("Cargo", "barrel", 2.4, x + 21, z + front * 19, false)
+					else
+						put("Castle", "flag-banner-short", 8, x + 20, z + front * 18, false)
+					end
+				end
 			end
 			-- 보유·실물경제에 따라 랜드마크의 업종과 활기를 시각적으로 변화시킨다.
 			local stock = (info.sim and info.sim.buildings) or {}

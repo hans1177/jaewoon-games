@@ -242,7 +242,19 @@ local HOUSE_ARCH = {
 	creole = { roof = "roof-high-window", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, entry = "kenney_wood_door_round_01", entryMat = Enum.Material.WoodPlanks },
 	colonial = { roof = "roof-gable-end", roofMat = Enum.Material.Brick, trim = "wall-window-shutters", trimMat = Enum.Material.WoodPlanks, balcony = true, annex = true, entry = "kenney_grey_door_round_01", entryMat = Enum.Material.Limestone },
 }
+-- 문화권별 실루엣: 기본 팔레트에 그치지 않고 처마·기단·현관·입면 구조도 바꾼다.
+-- 등록된 기존 모델과 작은 Part만 조합하며 새 저장/경제 키를 만들지 않는다.
+local HOUSE_FORM = {
+	north = "timber", brick = "stepped", nordic = "timber", stone = "timber",
+	med = "loggia", iberia = "arcade", italy = "loggia", france = "mansard",
+	britain = "timber", hanse = "stepped",
+	desert = "flat", ottoman = "courtyard", swahili = "carved", wafrica = "flat",
+	malabar = "coastal", tropic = "stilt", seasia = "stilt", pacific = "stilt",
+	creole = "veranda", colonial = "veranda",
+	china = "eastasia", japan = "eastasia",
+}
 for culture, architecture in HOUSE_ARCH do
+	architecture.form = HOUSE_FORM[culture] or "tiled"
 	STYLE[culture].house = architecture
 end
 
