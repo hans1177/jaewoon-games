@@ -532,7 +532,7 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 end
 
 -- 캐릭터(약 5스터드)에 비해 집이 장난감처럼 작아 보여서 전체적으로 키운다 (대신 간격도 같이 넓힌다)
-local HOUSE_SCALE = 1.45
+local HOUSE_SCALE = 1.28
 
 -- 건물 발전도는 낡음/증축으로 표현한다. 지역의 석조·벽돌·목조 재질을 다른 문화권의 목재로 덮지 않는다.
 local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다)
@@ -659,7 +659,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		local size = math.max(w, d) * variation
 		-- 별채·굴뚝·발코니는 해당 문화권의 건축형식과 건조 환경에 맞는 곳에만 배치한다.
 		if architecture.annex and seed % 4 == 1 then
-			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.95, 0, size * 0.25), size * 0.62 * HOUSE_SCALE, true, tintColor)
+			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.58, 0, size * 0.18), size * 0.32 * HOUSE_SCALE, false, tintColor)
 			if annex then
 				annex.Name = "HarborAnnex"
 				uniformMaterial(annex, style)
@@ -1401,13 +1401,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 		local total = 0
 		for _, j in ipairs(ORDER) do total += jobs[j] or 0 end
-		local N = math.clamp(({ 6, 8, 10, 12, 14 })[lvl] + (if info.sim then math.floor(info.sim.residents / 10) else 0), 6, 20)
+		local N = if info.sim then math.clamp(math.floor((info.sim.residents or 6) * 0.3), 1, 18) else ({ 6, 8, 10, 12, 14 })[lvl]
 		local quota, used = {}, 0
 		for _, j in ipairs(ORDER) do
 			local share = (jobs[j] or 0) / math.max(total, 1)
 			if j == "farmer" or j == "laborer" then share = math.min(share, 0.2) end
 			quota[j] = math.floor(N * share + 0.5)
-			if (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
+			if not info.sim and (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
 			used += quota[j]
 		end
 		local lanes = { 38, -38, 57, -57, 73, -73, 87, -87 }
@@ -1711,8 +1711,9 @@ local function placeSignature(folder, info)
 end
 
 local LM_SITES = {
-	Vector3.new(-112, 0, 34), Vector3.new(-112, 0, -34), Vector3.new(-150, 0, 46), Vector3.new(-150, 0, -46),
-	Vector3.new(-190, 0, 40), Vector3.new(-190, 0, -40), Vector3.new(-72, 0, 72), Vector3.new(-72, 0, -72),
+	-- 대로 시설·지역 산업과 별도 구획에 놓고 주택 건설에서 이곳을 예약한다.
+	Vector3.new(-112, 0, 166), Vector3.new(-112, 0, -166), Vector3.new(-160, 0, 166), Vector3.new(-160, 0, -166),
+	Vector3.new(-208, 0, 181), Vector3.new(-208, 0, -181), Vector3.new(-263, 0, 181), Vector3.new(-263, 0, -181),
 }
 
 local function densify(folder, info, style, rng, walkers, made)
@@ -1725,6 +1726,11 @@ local function densify(folder, info, style, rng, walkers, made)
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
 	local lvl = sceneLevel
+	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
+	local districtSeed = seeded(info.portId .. ":city-plan")
+	local districtOffset = districtSeed:NextNumber(-7, 7)
+	local lotVariance = districtSeed:NextNumber(0.94, 1.06)
+	local laneOffset = districtSeed:NextNumber(-9, 9)
 	local streetsX = P.streets
 	local function nearStreet(x, w)
 		for _, sx in streetsX do
@@ -1735,37 +1741,59 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
-	local S = P.S * (countryPlan and countryPlan.lot or 1) -- 국가별 필지 너비. 저장 레벨·시설 판정은 그대로 둔다
-	local fw = S / HOUSE_SCALE
-	local laneL = 2 * S + P.alley + 3
-	local pairsMax = math.max(1, math.floor((136 - 38) / laneL))
-	local pairsN = math.min(pairsMax, math.ceil(lvl * 0.8))
+	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
+	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl]
+	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl]
+	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth * lotVariance
+	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
+	local laneWidth = math.max(9, P.alley * 1.8)
+	local laneL = 2 * S + laneWidth + 12
+	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
+	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
+	if info.sim and info.sim.buildings then
+		local target = ({ 40, 130, 430, 1600, 4000 })[lvl]
+		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
+	end
 	local smokers = 0
-	local X_END = -190
+	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
+	local X_END = -math.min(570, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
+	local placedLots = {}
+	local streetsOuter = {}
+	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
+		table.insert(streetsOuter, x)
+	end
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
-	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
+	local slots = {
+		Vector3.new(-134 + districtOffset, 0, 86 + laneOffset * 0.4),
+		Vector3.new(-134 + districtOffset, 0, -86 + laneOffset * 0.4),
+		Vector3.new(-178 - districtOffset, 0, 86 - laneOffset * 0.4),
+		Vector3.new(-178 - districtOffset, 0, -86 - laneOffset * 0.4),
+	}
 	for i = #slots, 2, -1 do
 		local j = dz:NextInteger(1, i)
 		slots[i], slots[j] = slots[j], slots[i]
 	end
 	local districts = { { kind = "religious", at = slots[1] }, { kind = "market", at = slots[2] }, { kind = "farm", at = slots[3] } } -- slots[4] 는 주거지 그대로
-	local function reserved(x, z)
-		if x > -104 and math.abs(z) > 20 and math.abs(z) < 54 then return true end
+	local function reserved(x, z, half)
+		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
+		if x > -108 - half and math.abs(z) > 17 - half and math.abs(z) < 59 + half then return true end
+		if x < -211 + half and math.abs(z) < 145 + half then return true end
 		for _, d in districts do
-			if math.abs(x - d.at.X) < 24 and math.abs(z - d.at.Z) < 22 then return true end
+			if math.abs(x - d.at.X) < (if d.kind == "farm" then 69 else 28) + half and math.abs(z - d.at.Z) < (if d.kind == "farm" then 33 else 26) + half then return true end
 		end
 		for _, a in LM_SITES do
-			if math.abs(x - a.X) < 20 and math.abs(z - a.Z) < 20 then return true end
+			if math.abs(x - a.X) < 29 + half and math.abs(z - a.Z) < 29 + half then return true end
+		end
+		for _, lot in placedLots do
+			if math.abs(x - lot.X) < half + lot.H + 2 and math.abs(z - lot.Z) < half + lot.H + 2 then return true end
 		end
 		return false
 	end
-	local function onStreet(x)
-		for _, sx in streetsX do
-			if math.abs(x - sx) < S / 2 + P.alley / 2 + 1 then
-				return true
-			end
+	local function onStreet(x, half)
+		for _, sx in streetsOuter do
+			if math.abs(x - sx) < half + laneWidth / 2 + 3 then return true end
 		end
 		return false
 	end
@@ -1773,17 +1801,23 @@ local function densify(folder, info, style, rng, walkers, made)
 	local function fillRow(z, t, xStart)
 		local x = xStart
 		while x > X_END do
-			if not onStreet(x) and not reserved(x, z) and rng:NextNumber() < dens then
+			if rng:NextNumber() < dens then
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
+				local half = sz * 0.62
+				if not onStreet(pos.X, half) and not reserved(pos.X, pos.Z, half) then
 				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
 				if rng:NextNumber() < 0.15 then fl += (if rng:NextNumber() < 0.5 then -1 else 1) end
 				fl = math.clamp(fl, 1, P.flMax)
 				local ww = fw * (sz / S)
-				house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
-				if smokers < 28 and rng:NextNumber() < 0.22 then
-					smokers += 1
-					smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+				local body = house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
+				if body then
+					table.insert(placedLots, { X = pos.X, Z = pos.Z, H = half })
+					if smokers < 28 and rng:NextNumber() < 0.22 then
+						smokers += 1
+						smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+					end
+				end
 				end
 			end
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
@@ -1791,28 +1825,29 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
-		fillRow(side * (14 + S / 2 + 1), 0, -92)
-		fillRow(side * (14 + S + 2 + S / 2 + 1), 0.15, -92)
+		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
 		for p = 0, pairsN do
-			local laneZ = 38 + p * laneL
+			local laneZ = 152 + laneOffset + p * laneL
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
-				local canal = part(folder, Vector3.new(140, 0.3, P.alley + 1), CFrame.new(-100, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
+				local canal = part(folder, Vector3.new(360, 0.3, laneWidth + 1), CFrame.new(-365, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
 				canal.CanCollide = false
 				canal.CanQuery = false
 			else
-				strip(folder, style, -100, side * laneZ, 140, P.alley)
+				strip(folder, style, (X_END - 235) / 2, side * laneZ, 235 - X_END, laneWidth)
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
-				fillRow(side * (laneZ + P.alley / 2 + 0.8 + S / 2), t, -26)
-				fillRow(side * (laneZ + laneL - P.alley / 2 - 0.8 - S / 2), t, -26)
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260)
+				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260)
 			end
 		end
 	end
-	for _, sx in streetsX do
-		strip(folder, style, sx, 0, P.alley, 2 * (38 + pairsN * laneL) + 6)
+	for _, sx in streetsOuter do
+		strip(folder, style, sx, 0, laneWidth, 2 * (152 + pairsN * laneL) + 6)
 	end
+	-- 기존 항구 중심 도로는 유지하고 서쪽 외곽도로로 진입로를 연결한다.
+	strip(folder, style, -212, 0, 9, 320)
 	-- 구역 내용 (등록된 실제 3D 모델만 사용)
 	do
 		local function put(kind, asset, size, x, z, solid, yaw)
@@ -1884,8 +1919,8 @@ local function densify(folder, info, style, rng, walkers, made)
 				table.insert(walkers, w)
 			end
 			if d.kind == "religious" then
-				local doorZ = cz + (if cz > 0 then -19 else 19)
-				npc(-4, doorZ - (if cz > 0 then 1 else -1) * 0, face, "bell", "stay", { role = "Knight" })
+				local doorZ = if cz > 0 then -19 else 19
+				npc(-4, doorZ, face, "bell", "stay", { role = "Knight" })
 				npc(5, doorZ, face + math.pi, "talk", "stay", { role = "Rogue" })
 				npc(-22, doorZ, -math.pi / 2, nil, "path", { role = "Rogue", len = 22, idle = "look" })
 			elseif d.kind == "market" then
@@ -2307,6 +2342,9 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-6, 0, -14), Vector3.new(-6, 0, 14) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
+	if info.sim and info.sim.buildings then
+		stallMax = math.clamp(math.floor(1 + math.sqrt(math.max(0, info.sim.buildings.market or 0))), 1, #extraStalls)
+	end
 	table.clear(stallSpots)
 	for i, spot in extraStalls do
 		if i > stallMax then break end
@@ -2327,7 +2365,8 @@ local function densify(folder, info, style, rng, walkers, made)
 		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
 	end
 	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
-	for i = 0, 9 do
+	local cargoQuota = if info.sim and info.sim.buildings then math.clamp(2 + math.floor(math.sqrt(math.max(0, info.sim.buildings.warehouse or 0))), 2, 10) else 10
+	for i = 0, cargoQuota - 1 do
 		local c = dockCargo[i % #dockCargo + 1]
 		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
 	end
@@ -2340,10 +2379,13 @@ local function densify(folder, info, style, rng, walkers, made)
 	importedModel(folder, "Naval", "flag-pennant", Vector3.new(66, 14, 44), 3, false)
 	local boats = { { "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 }, { "boat-row-large", 8 }, { "boat-row-small", 6 }, { "boat-fishing-small", 10 }, { "boat-sail-b", 13 } }
 	local spots = { { 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 }, { 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 } }
+	local boatQuota = if info.sim and info.sim.buildings then math.clamp(1 + math.floor(math.sqrt(math.max(0, info.sim.buildings.dock or 0))), 1, #spots) else #spots
 	for i, spot in spots do
+		if i <= boatQuota then
 		local b = boats[i % #boats + 1]
 		local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
 		rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5))
+		end
 	end
 	if big then
 		importedModel(folder, "Naval", "ship-wreck", Vector3.new(150, 0.4, -120), 22, false)
@@ -2366,7 +2408,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	spawnJobs(folder, info, rng, lvl, walkers, key)
 	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
 	if info.sim and type(info.sim.residents) == "number" then
-		wanderers = math.clamp(math.floor(info.sim.residents / 5), 4, 14) -- 보이는 주민 수 = 인구 규모
+		wanderers = math.clamp(math.floor(info.sim.residents / 6), 0, 14) -- 역병·기근 후 빈 거리도 실제로 표시한다
 	end
 	for i = 1, wanderers do
 		local sideZ = ({ 38, -38, 57, -57, 73, -73, 87, -87 })[(i - 1) % 8 + 1]
@@ -2560,6 +2602,12 @@ end
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
 local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	local lvl = sceneLevel
+	local key = styleKeyOf(style)
+	local year = (info.sim and info.sim.year) or info.year or 1700
+	local adopted = {}
+	for _, node in ipairs((info.sim and info.sim.technology and info.sim.technology.rows) or {}) do
+		if node.status == "adopted" then adopted[node.id] = true end
+	end
 	local order = {}
 	for i = 1, #LM_SITES do order[i] = i end
 	local pr = seeded(info.portId .. "landmarks")
@@ -2584,7 +2632,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	end
 	for idx, lm in PortBuildings.Landmarks do
 		local at = LM_SITES[order[idx]]
-		if at and lvl >= lm.minLevel then
+		if at and lvl >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
 			local x, z = at.X, at.Z
 			local face = if z > 0 then 0 else math.pi
 			local front = if z > 0 then -1 else 1
@@ -2738,7 +2786,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(300, 0.3, 340), CFrame.new(-130, 0.02, 0),
+		local floor = part(folder, Vector3.new(650, 0.3, 410 + sceneLevel * 94), CFrame.new(-290, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2904,7 +2952,7 @@ function PortScene.build(info, onFacility)
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
-			local grow = 1.8 + 0.06 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민보다 훨씬 크게(교역소·조선소·주점이 한눈에 보이게): 1단계 1.8배 → 5단계 약 2.04배
+			local grow = 1.21 + 0.02 * (sceneLevel - 1) -- 시설 필지와 입구 보행 폭을 확보하며 단계별 증축을 유지
 			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
 			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
@@ -2965,14 +3013,23 @@ function PortScene.build(info, onFacility)
 
 	-- 조선소: 남쪽 물가의 경사 선대와 짓고 있는 배의 뼈대
 	if info.hasShipyard then
-		part(folder, Vector3.new(30, 1, 14), CFrame.new(24, 0.6, -48) * CFrame.Angles(0, 0, math.rad(-6)), Color3.fromRGB(140, 104, 66), Enum.Material.WoodPlanks)
-		for i = 0, 6 do
+		local simDock = info.sim and info.sim.buildings and info.sim.buildings.dock or 0
+		local dockScale = math.clamp(1 + math.sqrt(math.max(0, simDock)) / 14, 1, 1.6)
+		local shipFrames = math.clamp(math.floor(4 + math.sqrt(math.max(0, simDock)) / 3), 4, 9)
+		part(folder, Vector3.new(30 * dockScale, 1, 14), CFrame.new(24 + (dockScale - 1) * 11, 0.6, -48) * CFrame.Angles(0, 0, math.rad(-6)), Color3.fromRGB(140, 104, 66), Enum.Material.WoodPlanks)
+		for i = 0, shipFrames do
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
-		local shed = house(folder, Vector3.new(-4, 0, -52), 14 * 1.9, 12 * 1.9, 2, style, rng, Color3.fromRGB(150, 118, 84))
+		local shed = house(folder, Vector3.new(-4, 0, -88), 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
-		prompt(folder, Vector3.new(8, 3, -52), "조선소", "들어가기", "yard", onFacility)
+		prompt(folder, Vector3.new(8, 3, -79), "조선소", "들어가기", "yard", onFacility)
+		-- 수출·수리 수요가 증가하면 기존 자산으로 조선소 뒤편 목재와 작업 창고를 늘린다.
+		local storage = math.clamp(math.floor(1 + math.sqrt(math.max(0, simDock)) / 4), 1, 5)
+		for i = 1, storage do
+			importedModel(folder, "Terrain", "log-stack", Vector3.new(9 + i * 8, 0, -69), 4.5, false)
+			if i % 2 == 0 then importedModel(folder, "Cargo", "resource-planks", Vector3.new(9 + i * 8, 0, -76), 3.5, false) end
+		end
 	end
 
 	-- 왕궁: 큰길 끝
@@ -2998,7 +3055,7 @@ function PortScene.build(info, onFacility)
 
 	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
 	if CHURCH_KEYS[currentKey] and sceneLevel < 2 then
-		local cx, cz = -84, 40
+		local cx, cz = -215, 42
 		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz + 2) * CFrame.Angles(0, math.pi, 0), Color3.fromRGB(60, 80, 70))
@@ -3007,7 +3064,7 @@ function PortScene.build(info, onFacility)
 
 	-- 암스테르담·안트베르펀·함부르크에는 풍차
 	if info.portId == "amsterdam" or info.portId == "antwerp" or info.portId == "hamburg" then
-		local mx, mz = -100, -60
+		local mx, mz = -209, -87
 		part(folder, Vector3.new(14, 10, 10), CFrame.new(mx, 7, mz) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(110, 80, 60), Enum.Material.WoodPlanks, Enum.PartType.Cylinder)
 		local hub = part(folder, Vector3.new(1, 1, 1), CFrame.new(mx + 5.5, 12, mz), Color3.fromRGB(60, 40, 30))
 		hub.Name = "MillHub"
@@ -3018,9 +3075,10 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- (수상한 손님은 이제 주점에서 만난다)
-	-- 광장을 오가는 주민
+	-- 광장 인구는 세계경제 거주자 표본을 그대로 사용한다.
 	local walkers = {}
-	for _ = 1, 4 do
+	local plazaResidents = if info.sim then math.clamp(math.floor((info.sim.residents or 6) / 12), 1, 4) else 4
+	for _ = 1, plazaResidents do
 		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
 		if v then
 			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(8, 18), speed = rng:NextNumber(1.6, 2.6), phase = rng:NextNumber(0, 10) })
@@ -3700,9 +3758,12 @@ function PortScene.build(info, onFacility)
 
 	-- [지역 브랜드 자동 3D] 원료 창고 → 공방 → 지역 브랜드 진열대 → 수출 마차로 외형이 발전한다.
 	-- 서쪽 경계의 산업 필지를 재사용해 기존 출항·보행·시장 길과 충돌하지 않게 한다.
+	local industryLot = 0
 	for _, industry in ipairs((info.sim and info.sim.industries) or {}) do
 		if industry.stage >= 2 then
-			local at = Vector3.new(-231, 0, 151)
+			industryLot += 1
+			local row, col = math.floor((industryLot - 1) / 4), (industryLot - 1) % 4
+			local at = Vector3.new(-330 - row * 35, 0, -105 + col * 70)
 			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
 			if booth then
 				booth.Name = "LocalIndustry_" .. industry.id
@@ -3732,6 +3793,61 @@ function PortScene.build(info, onFacility)
 	end
 
 	folder.Parent = workspace
+
+	-- [동선 사전 검증] 걷기 시작 전에 건물·창고·울타리와 이동 직선이 교차하면 인접한 안전한 길로 옮긴다.
+	-- 경로 1개마다 최대 7회만 공간 질의하고, 매 프레임 충돌 검사는 하지 않는다.
+	pcall(function()
+		local params = OverlapParams.new()
+		params.FilterType = Enum.RaycastFilterType.Include
+		params.FilterDescendantsInstances = { folder }
+		local function blocked(cf, length)
+			local half = math.max(0, length) / 2
+			local box = cf * CFrame.new(0, 3.1, -half)
+			for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(4.4, 5, length + 4), params) do
+				if hit.CanCollide and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
+					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= 2
+					and not hit:FindFirstAncestor("Villager") then
+					return true
+				end
+			end
+			return false
+		end
+		for _, walker in walkers do
+			if walker.model.Parent and walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil) then
+				local original = walker.base
+				local safe = nil
+				for _, offset in {
+					Vector3.new(0, 0, 0), Vector3.new(7, 0, 0), Vector3.new(-7, 0, 0),
+					Vector3.new(14, 0, 0), Vector3.new(-14, 0, 0),
+					Vector3.new(0, 0, 7), Vector3.new(0, 0, -7),
+				} do
+					local candidate = original * CFrame.new(offset)
+					if not blocked(candidate, walker.len) then safe = candidate break end
+				end
+				if safe then
+					walker.base = safe
+					walker.model:PivotTo(safe)
+				else
+					-- 막힌 길은 무리해서 관통하지 않는다. 대기할 빈자리도 없으면 주민만 숨긴다.
+					for _, offset in {
+						Vector3.new(0, 0, 0), Vector3.new(9, 0, 0), Vector3.new(-9, 0, 0),
+						Vector3.new(18, 0, 0), Vector3.new(-18, 0, 0),
+						Vector3.new(0, 0, 12), Vector3.new(0, 0, -12),
+					} do
+						local candidate = original * CFrame.new(offset)
+						if not blocked(candidate, 0) then
+							walker.base = candidate
+							walker.model:PivotTo(candidate)
+							walker.mode, walker.kind = "stay", "look"
+							break
+						end
+					end
+					if walker.mode ~= "stay" then walker.model:Destroy() end
+				end
+			end
+		end
+	end)
+
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()

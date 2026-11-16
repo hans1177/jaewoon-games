@@ -94,16 +94,19 @@ B.Chains = {
 
 -- 발전도(항구 레벨)에 따라 마을에 저절로 들어서는 시설. 분야별로 나뉘며, 레벨이 오르면 공사 기간을 거쳐 완공된다.
 -- (순서가 곧 배치 우선순위. 자리는 항구마다 무작위로 배정된다. 등록된 실제 3D 모델만 쓴다.)
+-- 도시 외형 공통 규격: 주택 필지와 개방 가능한 도시 구역은 서로 다른 값으로 확장한다.
+-- 실제 인구·거래·건축 저장값은 Economy/Village가 유지하고, 이 값은 시각 구획에만 사용한다.
+B.CityPlots = { plotScale = { 1.5, 1.65, 1.8, 2.0, 2.2 }, areaScale = { 1.5, 2, 3, 4.5, 6 } }
 B.CategoryNames = { culture = "문화", commerce = "상업·금융", science = "과학", industry = "산업·기술", religion = "종교" }
 B.Landmarks = {
-	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2 },
-	{ id = "exchange", name = "증권거래소", category = "commerce", minLevel = 3, tab = "trade" },
-	{ id = "museum", name = "박물관", category = "culture", minLevel = 3, tab = "codex" },
-	{ id = "botanic", name = "식물원", category = "science", minLevel = 4 },
-	{ id = "observatory", name = "천문대", category = "science", minLevel = 4, tab = "tech" },
-	{ id = "academy", name = "학술원", category = "science", minLevel = 4, tab = "tech" },
-	{ id = "zoo", name = "왕립 동물원", category = "culture", minLevel = 5 },
-	{ id = "ironworks", name = "제철소·증기 공방", category = "industry", minLevel = 5 },
+	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2, since = 1600 },
+	{ id = "exchange", name = "증권거래소", category = "commerce", minLevel = 3, since = 1605, tech = "guild_accounting", tab = "trade" },
+	{ id = "museum", name = "박물관", category = "culture", minLevel = 3, since = 1683, tech = "public_schools", tab = "codex" },
+	{ id = "botanic", name = "식물원", category = "science", minLevel = 4, since = 1600, tech = "crop_rotation" },
+	{ id = "observatory", name = "천문대", category = "science", minLevel = 4, since = 1675, tech = "navigation_charts", tab = "tech" },
+	{ id = "academy", name = "학술원", category = "science", minLevel = 4, since = 1660, tech = "public_schools", tab = "tech" },
+	{ id = "zoo", name = "왕립 동물원", category = "culture", minLevel = 5, since = 1750, tech = "public_schools" },
+	{ id = "ironworks", name = "제철소·증기 공방", category = "industry", minLevel = 5, since = 1750, tech = "industrial_metallurgy" },
 }
 
 B.ById = {}

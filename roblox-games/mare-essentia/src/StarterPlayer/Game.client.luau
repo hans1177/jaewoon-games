@@ -4867,8 +4867,9 @@ function RENDERERS.status()
 			for _, pd in view.village.ports do
 				add(function()
 					local nextTxt = if pd.nextAt then string.format("다음 %d점", pd.nextAt) else "최고 단계"
+					local actual = if pd.worldPopulation then string.format("\n실물경제 %d명 · 대표 주민 %d명 · 화면 필지 %.2f배 · 도시 면적 %.1f배", pd.worldPopulation, pd.worldResidents, pd.worldPlotScale, pd.worldAreaScale) else ""
 					return mkRow(content, string.format("%s  Lv.%d %s  (%d점)", pd.name, pd.level, pd.levelName, pd.score),
-						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s\n도시 규모 %s · %d구획 · 소구역 %d곳\n구역 %d개: %s%s\n의식주: %s · 인구 %d명 · %s\n문화권 %s: %s\n학문 시설 %d곳 · 학문 직업 %d종: %s\n직업 %d종 (새 직업: %s)\n원자재: %s\n가공 가능: %s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt,
+						string.format("투자 %d단계 · 건물 %d단계 · 기술 %d단계 · 특수 건축물 %d  /  %s\n도시 규모 %s · %d구획 · 소구역 %d곳\n구역 %d개: %s%s\n의식주: %s · 의식주 추정 인구 %d명 · %s\n문화권 %s: %s\n학문 시설 %d곳 · 학문 직업 %d종: %s\n직업 %d종 (새 직업: %s)\n원자재: %s\n가공 가능: %s%s", pd.harbor, pd.stages, pd.tech, pd.landmarks, nextTxt,
 							pd.sizeName, pd.blocks, #pd.subDistricts, #pd.districts, table.concat(pd.districts, ", "), if pd.nextDistrict then "  → 다음: " .. pd.nextDistrict else "",
 							(function()
 								local t = {}
@@ -4878,7 +4879,7 @@ function RENDERERS.status()
 								return table.concat(t, "  ")
 							end)(), pd.sim.pop, "분위기 " .. pd.sim.mood, pd.culture, if #pd.cultureBuildings > 0 then table.concat(pd.cultureBuildings, ", ") else "아직 없음",
 							#pd.discFacilities, #pd.discJobs, if #pd.discJobs > 0 then table.concat(pd.discJobs, ", ", 1, math.min(#pd.discJobs, 8)) else "아직 없음", #pd.jobs, table.concat(pd.newJobs, ", "),
-							if #pd.raw > 0 then table.concat(pd.raw, " · ") else "없음", if #pd.crafts > 0 then table.concat(pd.crafts, ", ") else "아직 없음"), nil, 280)
+							if #pd.raw > 0 then table.concat(pd.raw, " · ") else "없음", if #pd.crafts > 0 then table.concat(pd.crafts, ", ") else "아직 없음", actual), nil, 280)
 				end)
 			end
 		end
@@ -9009,12 +9010,21 @@ syncScene = function()
 	local techStamp = sim and sim.technology and sim.technology.adopted or 0
 	local industryStamp = 0
 	for _, row in ipairs((sim and sim.industries) or {}) do industryStamp += row.stage end
+	-- 세계경제 건물 재고가 변할 때 장면이 정지한 상태로 남지 않도록 단계 버킷만 캐시에 반영한다.
+	-- 방문할 때마다 무조건 재생성하지 않고, 시장·창고·부두·주택의 의미 있는 변화에서만 갱신한다.
+	local bld = sim and sim.buildings or {}
+	local buildStamp = table.concat({
+		math.floor(math.sqrt(math.max(0, bld.house or 0)) / 2),
+		math.floor(math.sqrt(math.max(0, bld.market or 0))),
+		math.floor(math.sqrt(math.max(0, bld.warehouse or 0))),
+		math.floor(math.sqrt(math.max(0, bld.dock or 0))),
+	}, ":")
 	local boostIds = {}
 	for _, b in eco.boosts or {} do
 		table.insert(boostIds, b.id or b.name)
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
-	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
