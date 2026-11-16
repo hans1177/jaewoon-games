@@ -3832,6 +3832,44 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.ok(!steps.some(step=>/QATactics|TacticsView/.test(step.code||'')));
 });
 
+// [탐험·퀘스트 전수 검사] 기존 등록 항구·문화권·지점 1:1 연결을 원본 데이터로 검증한다.
+// 이 정적 회귀는 별도 Studio 실제 플레이 검사 통과를 의미하지 않는다.
+test('Mare exploration sites, regional backgrounds and discovery quest routes match',()=>{
+  const cultures=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortCultures.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const sites=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  const quests=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Quests.luau','utf8');
+  const regionBlock=cultures.match(/local REGION = \{([\s\S]*?)\n\}/)?.[1];
+  const overrides=cultures.match(/for key, list in \{([\s\S]*?)\n\} do/)?.[1];
+  assert.ok(regionBlock&&overrides,'port cultures missing');
+  const ports={};
+  for(const [,port,region] of regionBlock.matchAll(/([a-z_]+)\s*=\s*"([a-z_]+)"/g))ports[port]=region;
+  for(const [,region,group] of overrides.matchAll(/(\w+)\s*=\s*\{([^}]+)\}/g)){
+    for(const [,port] of group.matchAll(/"([a-z_]+)"/g))ports[port]=region;
+  }
+  const allRegions=new Set(Object.values(ports));
+  const visuals=new Set([...field.matchAll(/^\s*(\w+)\s*=\s*\{ ground = RC\(/gm)].map(row=>row[1]));
+  assert.equal(allRegions.size,22);
+  assert.deepEqual([...allRegions].filter(region=>!visuals.has(region)),[],'region missing from FieldScene');
+  const entries=[...sites.matchAll(/\{\s*id = "([^"]+)",\s*name = "([^"]+)",\s*portId = "([^"]+)"/g)];
+  assert.ok(entries.length>=500,'site catalog incomplete');
+  assert.equal(new Set(entries.map(row=>row[1])).size,entries.length,'duplicate site ID');
+  for(const [,id,name,port] of entries){
+    assert.ok(ports[port], 'unmapped site: '+id+'/'+name+'/'+port);
+    assert.ok(visuals.has(ports[port]), 'region backdrop missing: '+id+'/'+ports[port]);
+  }
+  const willow=[['q_willow_field','bot_willow','antwerp_willow_river'],['q_willow_notes','bot_willow_notes','antwerp_monastery_herbs'],['q_willow_medicine','med_willow_bark','antwerp_apothecary']];
+  for(const [qid,card,site] of willow){
+    assert.ok(quests.includes('id = "'+qid+'"')&&quests.includes('cardId = "'+card+'"'),'discovery quest missing: '+qid);
+    const row=sites.split('\n').find(line=>line.includes('id = "'+site+'"'));
+    assert.ok(row&&row.includes('"'+card+'"'),'discovery quest card not at site: '+qid);
+  }
+  const checks=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const naval=checks.find(row=>row.code?.includes('NAVAL_BATTLE_RUNTIME_PASS'));
+  assert.ok(naval?.code.includes('NAVAL_BATTLE_ACTIVE_GUI_COUNT:'));
+  assert.ok(!naval.code.includes("pg:FindFirstChild('BattleGui')"));
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');

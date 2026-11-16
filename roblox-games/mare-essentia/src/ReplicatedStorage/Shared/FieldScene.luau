@@ -126,6 +126,7 @@ local REGION_LOOK: {[string]: any} = {
 	desert = { ground = RC(214, 184, 120), mat = Enum.Material.Sand, fog = RC(240, 220, 176), fogEnd = 640, clock = 14.5, treeMul = 0.1, rockMul = 1.6, sizeMul = 1.3, trees = { "tree-default-fall" }, mobs = { "사막 노략꾼", "낙타 상인 도적", "베두인 두목" }, props = { { "Terrain", "tent-detailedopen", 8, 8 }, { "Terrain", "cliff-rock", 6, 14 }, { "Terrain", "tropical-palm-tall", 2, 13 }, { "Terrain", "egypt-column", 1, 9 } } },
 	swahili = { ground = RC(188, 156, 96), mat = Enum.Material.Ground, fog = RC(236, 218, 176), fogEnd = 800, clock = 14, treeMul = 0.7, rockMul = 0.9, sizeMul = 1.2, trees = { "tree-default-fall", "tree_large" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 4, 8 }, { "Terrain", "tropical-palm-tall", 3, 13 }, { "Terrain", "Grass_Small", 4, 2 } } },
 	malabar = { ground = RC(84, 132, 64), mat = Enum.Material.Grass, fog = RC(204, 224, 200), fogEnd = 460, clock = 10, treeMul = 1.8, rockMul = 0.7, sizeMul = 1.1, trees = { "tree_large", "tree-high" }, mobs = { "해적(말라바르)", "향신료 도적", "해적 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "tropical-palm-tall", 3, 13 }, { "Terrain", "east-bamboo-grove", 3, 8 } } },
+	korea = { ground = RC(110, 140, 94), mat = Enum.Material.Grass, fog = RC(200, 215, 224), fogEnd = 510, clock = 11, treeMul = 1.2, rockMul = 0.9, sizeMul = 1, trees = { "tree-pinedefaulta", "tree-oak" }, mobs = { "산적", "탈영병", "산적 두목" }, props = { { "Terrain", "east-bamboo-grove", 3, 8 }, { "Terrain", "river-stone-bank", 3, 5 }, { "Terrain", "coast-grass-patch", 3, 2 } } },
 	japan = { ground = RC(96, 136, 80), mat = Enum.Material.Grass, fog = RC(206, 222, 220), fogEnd = 440, clock = 10.5, treeMul = 1.6, rockMul = 1, sizeMul = 0.95, trees = { "tree-pinedefaulta", "tree-oak" }, mobs = { "낭인", "왜구", "산적 두목" }, props = { { "Terrain", "pillar-obelisk", 3, 6 }, { "Terrain", "bridge-wood", 2, 10 }, { "Terrain", "east-bamboo-grove", 5, 8 }, { "Terrain", "forest-flower-purple", 3, 1.7 } } },
 	china = { ground = RC(120, 144, 84), mat = Enum.Material.Grass, fog = RC(212, 220, 212), fogEnd = 480, clock = 10.5, treeMul = 1.2, rockMul = 1.3, sizeMul = 1.1, trees = { "tree-oak", "tree-high" }, mobs = { "왜구", "비적", "해적 두목" }, props = { { "Terrain", "cliff-rock", 6, 14 }, { "Terrain", "bridge-stone", 2, 10 }, { "Terrain", "east-bamboo-grove", 4, 9 }, { "Terrain", "river-stone-bank", 2, 5 } } },
 	seasia = { ground = RC(70, 124, 60), mat = Enum.Material.Grass, fog = RC(190, 220, 196), fogEnd = 380, clock = 9.5, treeMul = 2, rockMul = 0.6, sizeMul = 1.05, trees = { "tree_large", "tree-high", "plant-bush" }, mobs = { "해적", "정글 도적", "해적 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "east-bamboo-grove", 4, 9 }, { "Terrain", "tropical-palm-short", 3, 11 } } },
@@ -141,7 +142,7 @@ local REGION_ENCOUNTERS = {
 	iberia = "ruins", italy = "ruins", france = "forest", britain = "highland", hanse = "coast",
 	nordic = "highland", brick = "coast", stone = "highland", med = "ruins",
 	ottoman = "desert", desert = "desert", swahili = "coast", malabar = "forest",
-	japan = "forest", china = "highland", seasia = "forest", tropic = "coast",
+	japan = "forest", korea = "coast", china = "highland", seasia = "forest", tropic = "coast",
 	colonial = "plains", creole = "forest", pacific = "coast", wafrica = "plains",
 }
 

@@ -744,7 +744,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "-- [함대전 실증] 사진만 찍는 대신 전투 장면·조작 UI가 실제 생성됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal battleGui=assert(pg:FindFirstChild('BattleGui'),'NAVAL_BATTLE_GUI_MISSING')\nassert(battleGui.Enabled,'NAVAL_BATTLE_GUI_DISABLED')\nlocal scene=assert(workspace:FindFirstChild('BattleScene'),'NAVAL_BATTLE_SCENE_MISSING')\nassert(#scene:GetDescendants()>0,'NAVAL_BATTLE_SCENE_EMPTY')\nreturn 'NAVAL_BATTLE_RUNTIME_PASS'"
+  "code": "-- [함대전 실증] 사진만 찍는 대신 전투 장면·조작 UI가 실제 생성됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal battleGui,active=nil,0\nfor _,gui in pg:GetChildren() do\n if gui:IsA('ScreenGui') and gui.Name=='BattleGui' and gui.Enabled then battleGui=gui active+=1 end\nend\nassert(active==1 and battleGui~=nil,'NAVAL_BATTLE_ACTIVE_GUI_COUNT:'..active)\nlocal scene=assert(workspace:FindFirstChild('BattleScene'),'NAVAL_BATTLE_SCENE_MISSING')\nassert(#scene:GetDescendants()>0,'NAVAL_BATTLE_SCENE_EMPTY')\nreturn 'NAVAL_BATTLE_RUNTIME_PASS'"
  },
  {
   "type": "wait",
