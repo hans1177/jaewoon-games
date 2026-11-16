@@ -863,6 +863,24 @@ local function extraTests()
 		local willow = cardById.med_willow_bark
 		check("도감: 버드나무 의학 연구는 기존 식물학과 교차 연결", willow.discipline == "의학" and table.find(willow.relatedDisciplines, "식물학") ~= nil)
 
+		-- [카드북 보상 무결성] 전투 카드 소유권과 백과 연구 완료는 다른 상태다.
+		local prize = newState("england")
+		local prizeBook = S.Cardbook.get(prize)
+		prizeBook.pick = { ids = { "faith_scripture_study" }, source = "explore" }
+		local researchPrizeOk = select(1, act(prize, "CardPick", { index = 1 }))
+		check("백과 연구: 전투 연구카드 보상은 유지하고 미보고 문헌 자동 발견 차단",
+			researchPrizeOk == true and (prizeBook.owned.faith_scripture_study or 0) > 0
+			and prize.discovered.faith_scripture_study ~= true)
+		prizeBook.pick = { ids = { "faith_rite_observation" }, source = "explore" }
+		local observationPrizeOk = select(1, act(prize, "CardPick", { index = 1 }))
+		check("백과 보상: 일반 발견 카드는 기존 전투 카드·도감 동시 등록 유지",
+			observationPrizeOk == true and prize.discovered.faith_rite_observation == true)
+		prize.reported.faith_rite_observation = true
+		prizeBook.pick = { ids = { "faith_comparative_study" }, source = "explore" }
+		check("백과 연구: 연구 선행 지식을 얻어도 비교 연구는 직접 진행 필요",
+			select(1, act(prize, "CardPick", { index = 1 })) == true
+			and (prizeBook.owned.faith_comparative_study or 0) > 0
+			and prize.discovered.faith_comparative_study ~= true)
 		-- [무형 연구 5계열 회귀] 발견 → 선행 보고 → 문헌 연구 → 보고 → 비교 연구.
 		for _, chain in {
 			{ port = "antwerp", field = "Language", kind = "language", ids = { "lang_port_interview", "lang_manuscript_reading", "lang_translation_method" } },
