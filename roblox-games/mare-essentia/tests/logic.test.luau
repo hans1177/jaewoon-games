@@ -634,6 +634,8 @@ local function extraTests()
 end
 
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testCoreWorld()
 -- 1. 데이터 무결성 ---------------------------------------------------
 do
 	local produced, demanded = {}, {}
@@ -1295,7 +1297,11 @@ do
 	check("fake quests removed", next(evil.quests.active) == nil and next(evil.quests.done) == nil)
 	check("garbage rejected", S.State.sanitize("hello") == nil and S.State.sanitize({ nationId = "mars" }) == nil)
 end
+end
+testCoreWorld()
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testGrowthAndDiscovery()
 -- 13b. 보급 / 자동 충원 / 동료 대화 / 교역 힌트 ---------------------------
 do
 	local st = newState()
@@ -1747,7 +1753,11 @@ do
 		end
 	end
 end
+end
+testGrowthAndDiscovery()
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testSpecialties()
 -- 전문 분야와 동료 ---------------------------------------------------
 do
 	-- [학문 연결] 15개 전문 분야와 동료 49명이 기존 학문에 연결되며, 6개 선박 직책은 유지된다.
@@ -2235,7 +2245,11 @@ do
 	check("botanist finds more", botan > plain, string.format("%d vs %d", botan, plain))
 	print(string.format("  info: 정원 탐험 발견 횟수 일반 %d / 식물학자 %d (400회)", plain, botan))
 end
+end
+testSpecialties()
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testEconomyAndPorts()
 -- 시장 사건 ---------------------------------------------------------
 do
 	local portIds, goodIds = { "london", "amsterdam" }, { "wool", "wine", "spice" }
@@ -2753,7 +2767,11 @@ do
 	check("view refit", S.View.build(lose, ctx).refit.cannons[1].id == "basic" and S.View.build(lose, ctx).harbormaster.insured == true)
 	_ = enemy
 end
+end
+testEconomyAndPorts()
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testKnowledgeAndHistory()
 -- 도감 분류 설명과 완성 보상
 do
 	for _, c in D.Cards.Cards do
@@ -3409,7 +3427,11 @@ do
 	local view = S.View.build(st, ctx)
 	check("지식: 화면에 지식 트리가 담김", view.knowledge ~= nil and #view.knowledge.disciplines == #K.Disciplines, tostring(view.knowledge))
 end
+end
+testKnowledgeAndHistory()
 
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testBoardingRules()
 -- 백병전 카드 패: 주인공 카드는 늘 있고, 발견한 유물·동물이 카드가 된다
 do
 	local ds = S.State.new("england", 1700, nil)
@@ -3842,8 +3864,11 @@ do
 	check("244장 영어판·한국어판 카드 연결 보존", total == 244 and englishCount == 244 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
+end
+testBoardingRules()
 
-
+-- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
+local function testCardsAndArt()
 -- [인과 카드] 연쇄·반증·합치기
 do
 	local BC = D.BoardingCards
@@ -4130,6 +4155,8 @@ do -- 전투 보상 지역 카드: 6개 해역 모두 후보 카드가 있고 �
 	check("해역별 전투 보상 지역 카드 (6개 해역)", #bad == 0, table.concat(bad, ", "))
 	check("전투 보상 출처 정의 (naval/ground)", CBk.SOURCES.naval ~= nil and CBk.SOURCES.ground ~= nil)
 end
+end
+testCardsAndArt()
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
