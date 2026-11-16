@@ -1363,10 +1363,10 @@ function FieldScene.start(opts)
 	local weaponPractice = {}
 	local chainMotionSerial = 0 -- 다음 공격/무기 교체 때 남은 연출을 취소한다.
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
-	local weaponRankLabel = label(attackBtn, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
+	local weaponRankLabel = label(gui, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
 	weaponRankLabel.Name = "FieldWeaponMastery"
-	weaponRankLabel.AnchorPoint = Vector2.new(0.5, 1)
-	weaponRankLabel.Position = UDim2.new(0.5, 0, 0, -6)
+	weaponRankLabel.AnchorPoint = Vector2.new(0.5, 0)
+	weaponRankLabel.Position = UDim2.new(1, -90, 1, -34)
 	weaponRankLabel.Size = UDim2.fromOffset(114, 22)
 	weaponRankLabel.Font = Enum.Font.GothamBlack
 	weaponRankLabel.TextStrokeTransparency = 0.16
@@ -1413,9 +1413,9 @@ function FieldScene.start(opts)
 					elseif kind == "slash" then "UNARMED_RUSH" else nil
 				if style then swingCombo = FM.weaponCombo(style, beat) end
 			elseif kind == "heavy" then
-				swingCombo = FM.weaponCombo(wpn.motion, 3) or FM.combo("heavy", { "W:BLADE_OVERHEAD" })
+				swingCombo = FM.weaponCombo(wpn.motion, Weapons.actionDesign(wpn).heavyBeat) or FM.combo("heavy", { "W:BLADE_OVERHEAD" })
 			elseif kind == "spin" then
-				swingCombo = FM.weaponCombo(wpn.motion, 2) or FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
+				swingCombo = FM.weaponCombo(wpn.motion, Weapons.actionDesign(wpn).sweepBeat) or FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
 			elseif kind == "slash" then
 				swingCombo = FM.weaponCombo(wpn.motion, beat) or FM.combo("slash" .. beat, { SLASH_IDS[(beat - 1) % #SLASH_IDS + 1] })
 			end
@@ -2401,7 +2401,9 @@ function FieldScene.start(opts)
 			local reachV = (mv.range or 5) * STUD
 			do
 				local ch0 = player.Character
-				if kind == "spin" then
+				if wpn.ranged then
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand" }, Color3.fromRGB(246, 207, 142), 0.22, 0.5)
+				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
 					afterimage(ch0, Color3.fromRGB(130, 225, 255), 5, 0.06)
@@ -2415,7 +2417,10 @@ function FieldScene.start(opts)
 					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
 				end
 			end
-			if kind == "spin" then
+			if wpn.ranged then
+				-- 활·총/석궁은 검기 없이 정렬·격발 방향에만 별도 점멸을 준다.
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 223, 148), Color3.fromRGB(255, 251, 222), 4, 5)
+			elseif kind == "spin" then
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
 			elseif kind == "heavy" then
@@ -2427,9 +2432,6 @@ function FieldScene.start(opts)
 					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7, Color3.fromRGB(255, 226, 150), 0.35)
 					shakeUntil, shakeAmp = os.clock() + 0.25, 1.1
 				end)
-			elseif wpn.ranged then
-				-- 활·총은 검기 대신 조준·발포 방향의 짧은 섬광을 낸다.
-				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 223, 148), Color3.fromRGB(255, 251, 222), 4, 5)
 			else
 				local colour = if wpn.family == "fist" then Color3.fromRGB(255, 214, 156)
 					elseif wpn.family == "spear" then Color3.fromRGB(159, 215, 249)
@@ -2548,7 +2550,7 @@ function FieldScene.start(opts)
 								local color = if wpn.family == "fist" then Color3.fromRGB(250, 209, 132)
 									elseif wpn.family == "axe" then Color3.fromRGB(255, 153, 109)
 									elseif wpn.family == "spear" then Color3.fromRGB(144, 231, 234)
-									else if stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131)
+									elseif stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131)
 								slashArc(hrp, color, reach, if wpn.family == "spear" then 80 else 95 + stage * 8, if stage % 2 == 0 then 30 else -30)
 							end
 							if stage == chain then
