@@ -684,7 +684,7 @@ function FieldScene.start(opts)
 		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
 		tag.Text = ac.def.name
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
@@ -2615,17 +2615,28 @@ function FieldScene.start(opts)
 			end
 			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
+			local beforeMove = e.root.Position
 			if e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
 				-- 차례를 기다리는 적: 주인공 둘레를 천천히 돈다(한꺼번에 몰려 때리지 않는다)
 				local sd = flat.Unit:Cross(Vector3.yAxis) * (e.circleDir or 1)
 				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
-				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + sd * e.ac.def.speed * 0.45 * dt) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+				local pv = e.model:GetPivot()
+				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
+				e.model:PivotTo(CFrame.new(pv.Position + sd * e.ac.def.speed * 0.45 * dtc) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
 				wish = 0.5
 			elseif wish ~= 0 and flat.Magnitude > 0.1 then
 				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dt, flat.Magnitude)
-				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position + step) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+				local pv = e.model:GetPivot()
+				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
+				e.model:PivotTo(CFrame.new(pv.Position + step) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
 			elseif flat.Magnitude > 0.1 and e.ac.state ~= "idle" and e.ac.state ~= "stagger" then
-				e.model:PivotTo(CFrame.new(e.model:GetPivot().Position) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
+				local pv = e.model:GetPivot()
+				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
+				e.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
+			end
+			-- [발걸음] 실제 이동 거리로 보행 위상을 계산해 헛발질을 줄인다.
+			if wish ~= 0 then
+				e.gait = (e.gait or 0) + (e.root.Position - beforeMove).Magnitude / (if e.boss then 7 else 5.2)
 			end
 			if e.warn and now > (e.warnUntil or 0) + 0.3 then
 				e.warn:Destroy()
@@ -2635,7 +2646,7 @@ function FieldScene.start(opts)
 			local hurtProgress = (now - e.hurtAt) / 0.3
 			local attackProgress = (now - e.swingAt) / 0.5
 			if e.fm then
-				local st, ph = "IDLE", (now / 2.4) % 1
+				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
 				if hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
@@ -2646,7 +2657,7 @@ function FieldScene.start(opts)
 				elseif acs == "recover" then
 					st, ph = "RECOVERY", math.clamp(e.ac.t / math.max(e.ac.def.recover, 0.05), 0, 1)
 				elseif wish ~= 0 then
-					st, ph = "RUN", (now * 1.6) % 1
+					st, ph = "RUN", (e.gait or 0) % 1
 				end
 				-- 몸통 기울기: 근접형은 준비 때 뒤로 젖혔다가 타격 때 앞으로 숙이고, 사수는 활을 당기며 뒤로 젖힌다
 				local lean = 0
@@ -2671,7 +2682,7 @@ function FieldScene.start(opts)
 				if st == "IDLE" then
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
 				elseif st == "RUN" then
-					bob, roll, lean = math.abs(math.sin(now * 9)) * 0.2, math.sin(now * 9) * 0.08, -0.2
+					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.12, math.sin((e.gait or 0) * math.pi * 2) * 0.045, -0.12
 				elseif st == "HIT" then
 					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end
@@ -2698,7 +2709,7 @@ function FieldScene.start(opts)
 						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.7 else 2.1, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0)
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -2775,20 +2786,20 @@ function FieldScene.start(opts)
 						m:SetAttribute("CompanionOriginNation", ad.nation or "")
 						equipFieldWeapon(m, ad.weapon)
 						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
-						-- [탐험 HUD] 큰 이름판 제거. 번호·직업만 근처에서 작게 표시하며 색상으로 동료를 구분.
+						-- [탐험 HUD] 동료 이름을 근거리에서 작게 표시한다. 색상과 거리 제한은 유지한다.
 						local bbA = Instance.new("BillboardGui")
 						bbA.Name = "AllyRoleTag"
 						bbA.Adornee = r
-						bbA.Size = UDim2.fromOffset(64, 18)
+						bbA.Size = UDim2.fromOffset(120, 18)
 						bbA.StudsOffset = Vector3.new(0, 3.7, 0)
 						bbA.AlwaysOnTop = false
 						bbA.LightInfluence = 0
 						bbA.MaxDistance = 24
 						bbA.Parent = r
-						local tg = label(bbA, tostring(i) .. " · " .. tostring(ad.job or "동료"), 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
+						local tg = label(bbA, ad.name, 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
 						tg.TextTruncate = Enum.TextTruncate.AtEnd
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2 })
+						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2, gait = (i - 1) * 0.45 })
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -2812,10 +2823,12 @@ function FieldScene.start(opts)
 				if moving then
 					local step = math.min(to.Magnitude - stop, (if tgt then 16 else 20) * dt)
 					a.model:PivotTo(a.model:GetPivot() + to.Unit * step)
+					a.gait = (a.gait or 0) + step / 5.2
 				end
 				if to.Magnitude > 0.5 then
 					local pv = a.model:GetPivot()
-					a.model:PivotTo(CFrame.lookAt(pv.Position, pv.Position + to.Unit))
+					local front = CFrame.lookAt(pv.Position, pv.Position + to.Unit)
+					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation, math.clamp(dt * 10, 0, 1)))
 				end
 				if tgt and not moving and now >= a.nextAt then
 					a.nextAt = now + 1.3 / aw.speed
@@ -2865,22 +2878,22 @@ function FieldScene.start(opts)
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
 					if a.castAt and now - a.castAt < 0.7 then
-						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.8, nil, false, a.castSkill)
+						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.3, nil, false, a.castSkill)
 					elseif ap >= 0 and ap < 1 then
 						-- 동료의 실제 경력·지역·시대에 맞춰 검·활·총의 기존 모션을 재사용한다
 						local ac = FM.weaponCombo(a.weapon.motion, 1)
 						if ac then
 							table.clear(a.fm.canon)
 							FM.sample(ac, math.min(ap * 1.6, 1) * ac.duration, a.fm.canon)
-							FM.scale(a.fm.canon, 1.5)
+							FM.scale(a.fm.canon, 1.3)
 							FM.step(a.fm, dt)
 						else
-							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 2.0)
+							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.35)
 						end
 					elseif moving then
-						FM.actor(a.fm, "RUN", (now * 1.6) % 1, dt, nil, 1.9)
+						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3)
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.6)
+						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15)
 					end
 				elseif a.castAt and now - a.castAt < 0.7 then
 					Pose.makeR15Action(a.model, if a.castSkill == "rally" or a.castSkill == "heal" then "cheer" elseif a.castSkill == "armor" then "guard" else "talk", (now - a.castAt) / 0.7, now - a.t0)

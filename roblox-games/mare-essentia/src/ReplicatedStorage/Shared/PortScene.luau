@@ -3541,7 +3541,8 @@ function PortScene.build(info, onFacility)
 			if v then
 				v.Name = "Companion_" .. c.id
 				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
-				if tag then sign(folder, tag, tostring(i) .. " · " .. tostring(c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
+				-- [동료 이름표] 번호·직업 대신 영입 동료 이름을 표시한다.
+				if tag then sign(folder, tag, tostring(c.name or c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
 				local at = v:GetPivot().Position
 				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look" })
 			end
