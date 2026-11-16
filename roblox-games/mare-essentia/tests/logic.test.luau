@@ -4108,10 +4108,10 @@ do
 		BC.play(md, "me", 1)
 		check("회군: 치료병을 손으로 되돌린다", #md.rows.me.melee == 1 and md.hand.me[1] and md.hand.me[1].id == "surgeon")
 	end
-	-- [7대륙 설계 검증] 전용 실물 자산이 없는 35종은 구매 규칙과 분리한다.
+	-- [7대륙 설계 검증] 6대륙 × 5척 + 전설·신화 6척 = 36종. 기존 구매·성능과 분리한다.
 	do
 		local count, unique, sums = 0, {}, {}
-		check("7대륙 제작 설계서 35종", #D.Ships.Blueprints == 35 and #D.Ships.BlueprintFactions == 7)
+		check("7대륙 제작 설계서 36종", #D.Ships.Blueprints == 36 and #D.Ships.BlueprintFactions == 7)
 		for _, bp in D.Ships.Blueprints do
 			count += 1
 			check("고유 선체 설계 " .. bp.id, not unique[bp.id] and bp.hull ~= "" and bp.rig ~= "" and bp.deck ~= "" and bp.remodel ~= "")
@@ -4134,13 +4134,18 @@ do
 			check("카드 선박 연결 " .. bp.id, not bp.card or D.BoardingCards.Units[bp.card] ~= nil or D.BoardingCards.Specials[bp.card] ~= nil)
 			check("실존 원본 게임 배 연결 " .. bp.id, not bp.existingId or D.Ships.Ships[bp.existingId] ~= nil)
 			if bp.faction == "lost" then
-				check("미지의 땅 2~6단계 특화 설계 " .. bp.id, bp.stage >= 2 and bp.stage <= 6 and bp.proposedEdge >= 0.03 and bp.proposedEdge <= 0.08 and D.Ships.Ships[bp.id] == nil)
+				check("미지의 땅 1~6단계 특화 설계 " .. bp.id, bp.stage >= 1 and bp.stage <= 6
+					and ((bp.stage == 1 and bp.id == "mu_voyager" and bp.proposedEdge == nil)
+						or (bp.stage >= 2 and bp.proposedEdge >= 0.03 and bp.proposedEdge <= 0.08))
+					and D.Ships.Ships[bp.id] == nil)
 			else
 				check("실존 1~5단계 설계 " .. bp.id, bp.stage >= 1 and bp.stage <= 5 and bp.proposedEdge == nil)
 			end
 		end
 		for _, faction in D.Ships.BlueprintFactions do
-			check("대륙별 설계 5종 " .. faction.id, sums[faction.id] == 5 and D.BoardingCards.Factions[faction.id] ~= nil)
+			check("대륙별 설계 수량 " .. faction.id,
+				sums[faction.id] == (if faction.id == "lost" then 6 else 5)
+				and D.BoardingCards.Factions[faction.id] ~= nil)
 		end
 	end
 	-- 문화권 덱: 다섯 문화권의 덱과 고유 능력
