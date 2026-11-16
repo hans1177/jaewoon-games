@@ -75,6 +75,8 @@ return function(D, S)
 		local wid = state.day * 100 + #w.log
 		table.insert(w.active, { id = ev.id, wid = wid, region = region, title = title, text = fmt(ev.text, rname), kind = ev.kind, startDay = state.day, endDay = state.day + ev.days })
 		w.cool[ev.id] = state.day
+		-- [사건-경제 연결] 공용 세계경제에도 전파하며 동일 사건 중복 반영은 Econ이 차단한다.
+		if S.Econ and S.Econ.shock then S.Econ.shock(state, ev, region) end
 		-- 시세 효과 (History 와 공용)
 		local h = state.history
 		local goods = validGoods(ev.goods)
