@@ -1004,15 +1004,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [NPC 직업 소품] 기존 승인된 모델을 손 관절에 연결한다. 가상 손동작이 아니라 실제 도구를 사용한다.
 		-- 짐·잔·망치·삽은 생성 시 단 한 번만 붙여 모바일 프레임당 소품 생성 비용이 없다.
-		local spec = if t.kind == "carry" then { "Cargo", "box-open", "UpperTorso", 1.05, CFrame.new(0, -0.35, -1.0) }
-			elseif t.kind == "drink" then { "Cargo", "mug", "RightHand", 0.45, CFrame.new(0, -0.2, -0.25) }
-			elseif t.kind == "hammer" then { "Relics", "hammer", "RightHand", 1.05, CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
-			elseif t.kind == "hoe" then { "Naval", "tool-shovel", "RightHand", 1.6, CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
+		local spec = if t.kind == "carry" then { group = "Cargo", asset = "box-open", mount = "UpperTorso", size = 1.05, offset = CFrame.new(0, -0.35, -1.0) }
+			elseif t.kind == "drink" then { group = "Cargo", asset = "mug", mount = "RightHand", size = 0.45, offset = CFrame.new(0, -0.2, -0.25) }
+			elseif t.kind == "hammer" then { group = "Relics", asset = "hammer", mount = "RightHand", size = 1.05, offset = CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
+			elseif t.kind == "hoe" then { group = "Naval", asset = "tool-shovel", mount = "RightHand", size = 1.6, offset = CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
 			else nil
-		local mount = spec and fig:FindFirstChild(spec[3], true)
+		local mount = spec and fig:FindFirstChild(spec.mount, true)
 		local assets = ReplicatedStorage:FindFirstChild("MareAssets")
-		local group = spec and assets and assets:FindFirstChild(spec[1])
-		local template = spec and group and group:FindFirstChild(spec[2])
+		local group = spec and assets and assets:FindFirstChild(spec.group)
+		local template = spec and group and group:FindFirstChild(spec.asset)
 		if template and template:IsA("Model") and mount and mount:IsA("BasePart") then
 			local held = template:Clone()
 			local ok = pcall(function()
@@ -1024,10 +1024,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				local _, bounds = held:GetBoundingBox()
 				local axis = math.max(bounds.X, bounds.Y, bounds.Z)
 				if axis < 0.01 then error("NPC_PROP_EMPTY") end
-				held:ScaleTo(held:GetScale() * (spec[4] / axis))
+				held:ScaleTo(held:GetScale() * (spec.size / axis))
 				held.Name = "NpcWorkProp"
 				held.Parent = fig
-				held:PivotTo(mount.CFrame * spec[5])
+				held:PivotTo(mount.CFrame * spec.offset)
 				for _, mesh in parts do
 					mesh.Anchored = false
 					mesh.CanCollide = false
