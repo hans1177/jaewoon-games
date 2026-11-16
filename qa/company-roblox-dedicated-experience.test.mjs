@@ -915,6 +915,32 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(discovery,/local chance = math\.min\(0\.95, 0\.55 \+ D\.Careers\.discoverBonus\(lv\) \+ S\.Perk\.discoverBonus\(state, field\)\)/);
 });
 
+// [집안·첫 화면] 기존 State.origin을 직접 연결하고, 시작 메뉴는 큰 글씨/큰 터치 영역을 유지한다.
+test('Mare selected family shows and equips its original historical weapon with readable title actions',()=>{
+  const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
+  const ui=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const state=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau','utf8');
+  const view=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau','utf8');
+  assert.match(weapons,/function Weapons\.originWeapon\(originId: string\?, year: number\?\): Weapon/);
+  for(const origin of ['farmer','noble','merchant','sailor','soldier','scholar','cook','doctor','craftsman','clergy'])
+    assert.match(weapons,new RegExp('\\b'+origin+'\\s*=\\s*"'),origin);
+  assert.match(weapons,/originId == "soldier" and \(year or 1517\) >= 1680/);
+  assert.match(state,/origin = if originId and D\.Specialties\.OriginById\[originId\] then originId else nil/);
+  assert.match(view,/view\.captain\.origin = og and \{ id = og\.id/);
+  assert.match(ui,/weapon = Weapons\.originWeapon\(view and view\.captain and view\.captain\.origin and view\.captain\.origin\.id,/);
+  assert.match(field,/local wpn = Weapons\.get\(opts\.weapon or workspace:GetAttribute\("DevWeapon"\) or "sword"\)/);
+  assert.match(ui,/n3\.Name = "OriginStartingWeapon"/);
+  assert.match(ui,/local originWeapon = Weapons\.originWeapon\(o\.id, chosenYear\)/);
+  assert.match(ui,/ogl\.CellSize = UDim2\.new\(0\.5, -4, 0, 120\)/);
+  assert.match(ui,/first|intro|menu/i);
+  assert.match(ui,/bounds\.MaxSize = Vector2\.new\(500, if view then 440 else 350\)/);
+  assert.match(ui,/b\.TextSize = if primary then 23 else 19/);
+  assert.match(ui,/resume = action\(pages, "▶ 이어하기 · 기존 항해", UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/newBtn = action\(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/controls\.Size = UDim2\.new\(1, 0, 0, 60\)/);
+});
+
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
   const base='roblox-games/mare-essentia/assets/inbox/People/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
