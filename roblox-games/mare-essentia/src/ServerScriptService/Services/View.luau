@@ -669,12 +669,13 @@ return function(D, S)
 			local evidenceId = D.Cards.evidenceOf(c)
 			local worldId = defKind and defKind.group or "culture"
 			view.codex.topicCounts[topicId] = (view.codex.topicCounts[topicId] or 0) + 1
-			view.codex.evidenceCounts[evidenceId] = (view.codex.evidenceCounts[evidenceId] or 0) + 1
 			view.codex.worldCounts[worldId] = (view.codex.worldCounts[worldId] or 0) + 1
 			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
 				pair[1][pair[2]] = (pair[1][pair[2]] or 0) + 1
 			end
 			local found = state.discovered[c.id] == true
+			-- [근거 분류] 미발견 카드는 근거 유형을 공개하지 않고, 완료된 카드만 집계.
+			if found then view.codex.evidenceCounts[evidenceId] = (view.codex.evidenceCounts[evidenceId] or 0) + 1 end
 			local art = D.CardArt.Art[c.id]
 			table.insert(view.codex.cards, {
 				id = c.id,
