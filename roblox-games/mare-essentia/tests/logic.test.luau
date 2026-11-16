@@ -570,7 +570,7 @@ local function extraTests()
 	check("세계: 다른 지역에선 구호 못 함", select(1, act(stWf, "WorldAid", { index = 1 })) == false)
 	local backW = S.State.sanitize(S.State.serialize(stWd))
 	check("세계: 저장/불러오기", backW.world ~= nil and backW.world.rng == stWd.world.rng and #backW.world.log == #stWd.world.log and backW.world.nextDay == stWd.world.nextDay)
-	-- [지식 도감 분류] 3획득 방식·16소재·기존 21학문, 기존 배/설계 구별과 첫 항구 발견
+	-- [지구 백과/확장 학문] 3획득 방식·17소재·활성 학문 51개, 기존 배/설계와 연구 저장 보존
 	do
 		local collection = D.Cards
 		local tree = D.KnowledgeTree
@@ -595,7 +595,29 @@ local function extraTests()
 		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
 		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
 
-		check("지식 분류: 기존 학문 21개 유지", #tree.Disciplines == 21)
+		check("지식 분류: 기존 21개 + 세부 학문 30개 활성", #tree.Disciplines == 51)
+		local promotedCount, promotedLinked, duplicateAcademy = 0, 0, nil
+		local namesSeen = {}
+		for _, d in tree.Disciplines do
+			if namesSeen[d.id] then duplicateAcademy = d.id end
+			namesSeen[d.id] = true
+			if tree.Promoted[d.id] then
+				promotedCount += 1
+				check("세부 학문: 기존 학문을 부모로 연결 " .. d.id, d.parent == nil or tree.DisciplineById[d.parent] ~= nil)
+			end
+		end
+		for id, discIds in tree.CardRelatedDisciplines do
+			promotedLinked += 1
+			check("세부 학문: 기존 카드 참조 유효 " .. id, collection.ById[id] ~= nil and tree.ById[id] ~= nil and #discIds >= 1)
+		end
+		check("학문 확장: 중복·유실 없이 30개 활성, 기존 카드 71장 연결", promotedCount == 30 and promotedLinked == 71 and duplicateAcademy == nil)
+		local nextState = newState("england")
+		nextState.reported.bot_oak = true
+		check("학문 숙련: 기존 식물학 원본 주학문은 그대로", tree.ById.bot_oak.disc == "botany")
+		check("학문 숙련: 기존 저장만으로 식물학과 임학 모두 증가", S.Knowledge.masteryOf(nextState, "botany").points > 0 and S.Knowledge.masteryOf(nextState, "forestry").points > 0)
+		check("학문 숙련: 카드 보고는 한 장만 기록", tree.understoodCount(nextState) == 1)
+		local nextSaved = S.State.sanitize(S.State.serialize(nextState))
+		check("학문 숙련: 기존 저장 데이터 무변경 복원", nextSaved.reported.bot_oak == true and S.Knowledge.masteryOf(nextSaved, "forestry").points > 0)
 		local vessel = collection.ById.ship_caravel
 		local galleon = collection.ById.ship_galleon
 		local design = collection.ById.ship_galleon_design
@@ -610,7 +632,7 @@ local function extraTests()
 		check("습득 경로: 캐러벨은 발견·버드나무 연구는 연구", S.Discovery.methodOf(vessel) == "discover" and S.Discovery.methodOf(collection.ById.med_willow_bark) == "research")
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
-		check("도감: 세 방식과 16종 분류가 화면 데이터에 담김", v.codex.disciplineCount == 21 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 세 방식과 51개 학문이 화면 데이터에 담김", v.codex.disciplineCount == 51 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
 		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
 
 		local cardById = {}
@@ -621,9 +643,33 @@ local function extraTests()
 		end
 		local missing = nil
 		for _, d in tree.Disciplines do
-			if not namedSubjects[d.name] then missing = d.id break end
+			local hasCard = false
+			for _, c in v.codex.cards do
+				if tree.ById[c.id] and tree.belongsToDiscipline(tree.ById[c.id], d.id) then
+					hasCard = true
+					break
+				end
+			end
+			if not hasCard then missing = d.id break end
 		end
-		check("도감: 기존 21학문을 실제 카드 주학문에 연결", missing == nil, missing)
+		check("도감: 활성 51개 학문에 각각 연구 카드가 존재", missing == nil, missing)
+		local riverView = cardById.geo_scheldt_estuary
+		check("백과 개체: 탐험 장소/항구에 정확히 연결", riverView.kind == "terrain" and riverView.entityType == "실존 장소")
+		local sample = collection.ById.ship_galleon
+		check("백과 개체: 실물 선박·설계도 구분 및 인류 오브젝트 다중 태그", collection.entityTypeOf(sample) == "class" and #collection.tagsOf(sample) >= 3)
+		check("백과 외부: 검증된 개체 식별자 등록", collection.ById.bot_willow.meta.wikidata == "Q36050" and collection.ById.site_stonehenge.meta.wikidata == "Q39671")
+		local badLink, linkCount = nil, 0
+		for _, card in collection.Cards do
+			for _, rel in (card.meta and card.meta.relations or {}) do
+				linkCount += 1
+				local target = rel.target
+				local valid = collection.ById[target] ~= nil
+					or (string.sub(target, 1, 5) == "good:" and D.Ports.Goods[string.sub(target, 6)] ~= nil)
+					or (string.sub(target, 1, 5) == "port:" and D.Ports.Ports[string.sub(target, 6)] ~= nil)
+				if not valid then badLink = card.id .. " → " .. target end
+			end
+		end
+		check("백과 지식 그래프: 실제 개체와 자원 관계가 유효", badLink == nil and linkCount >= 10, badLink)
 		local vesselView = cardById.ship_galleon
 		check("도감: 갤리온 주학문은 기존 조선학", vesselView.discipline == "조선학")
 		check("도감: 갤리온은 기존 항해술·물리학·역사학과 연결", table.find(vesselView.relatedDisciplines, "항해술") ~= nil and table.find(vesselView.relatedDisciplines, "물리학") ~= nil and table.find(vesselView.relatedDisciplines, "역사·유적학") ~= nil)
