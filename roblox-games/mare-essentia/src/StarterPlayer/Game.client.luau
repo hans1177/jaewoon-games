@@ -316,8 +316,24 @@ for id, spec in {
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
 	palm_oil = { "Cargo", "barrel-open" },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
+	-- 가공품: 원료와 같은 계열의 승인된 기존 Cargo 모델을 쓴다 (새 모델·도형 없음)
+	p_smelt_iron = { "Cargo", "iron-bar" }, p_smelt_copper = { "Cargo", "copper-bar" }, p_leather = { "Cargo", "leather" },
+	p_spice_blend = { "Cargo", "spice" }, p_amber_craft = { "Cargo", "amber" }, p_tea_cure = { "Cargo", "cup-tea" },
+	p_fish_cure = { "Cargo", "food-barrel-fish" }, p_glass = { "Cargo", "glass" }, p_gunpowder = { "Cargo", "nitrate" },
+	p_fertilizer = { "Cargo", "guano" }, p_marble_carving = { "Cargo", "marble" }, p_resin = { "Cargo", "gum_arabic" },
+	p_fine_wood = { "Cargo", "mahogany" }, p_fur_goods = { "Cargo", "fur" }, p_perfume = { "Cargo", "ambergris" },
+	p_ivory_carving = { "Cargo", "ivory" }, p_timber_plank = { "Cargo", "wood-plank-a" }, p_cloth_cotton = { "Cargo", "cotton" },
+	p_cloth_wool = { "Cargo", "wool" }, p_whale_oil = { "Cargo", "whale_oil" }, p_dye = { "Cargo", "indigo" },
+	p_jewelry = { "Cargo", "gem-medium" }, p_olive = { "Cargo", "bottle-oil" }, p_silver_coin = { "Relics", "coin" },
 } do
 	GOOD_ICON[id] = spec
+end
+-- 술 가공품도 원료 술과 같은 중립 나무통 표현 (표현 제한 규칙 유지)
+for pid, base in { p_beer = "beer", p_wine = "wine", p_sake = "sake", p_sugar_rum = "rum" } do
+	local neutral = RESTRICTED_CARGO_ICON[base]
+	if neutral and AssetIds[neutral[1] .. "/" .. neutral[2]] then
+		GOOD_ICON[pid] = neutral
+	end
 end
 -- [3D 교역품] 승인된 원본 Cargo 메시가 실제 상품과 일치할 때만 상세 아이콘에 재사용한다.
 -- 교역품 목록과 상세 화면은 동일한 승인 3D 모델을 사용한다.
@@ -4282,7 +4298,7 @@ function RENDERERS.recruit()
 			local desc = if c.blocked and not c.joined then c.blocked else c.summary
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
-			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "recruit" }
+			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "status" }
 			if portrait then
 				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
@@ -4394,30 +4410,37 @@ function RENDERERS.crew()
 			end)
 		end
 	end
-	for _, c in view.companions.list do
-		add(function()
-			local sub = string.format("%s\n어울리는 자리 %s · 영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.bestSeat, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
-			local btn = if c.joined
-				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
-				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-			local btns = { btn }
-			if c.joined then
-				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
-			end
-			local row = mkRow(content, c.name .. (if c.joined then "  (합류)" else ""), sub, btns, 76)
-			local model = COMPANION_MODEL[c.id]
+	add(function()
+		local tiles = {}
+		for _, c in view.companions.list do
+			local tier = ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier]
+			local tile: any = {
+				title = c.name .. (if c.joined then " (합류)" else ""),
+				sub = string.format("호감도 %d · %s", c.affinity, tier),
+				desc = string.format("%s · 어울리는 자리 %s%s", c.summary, c.bestSeat, if c.blocked and not c.joined then " · " .. c.blocked else ""),
+				icon = "status",
+			}
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
 			if portrait then
-				withIcon(row, "Portraits", portrait.atlas, nil, 52, portrait.offset)
+				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
-				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
-			elseif model then
-				withIcon(row, "People", model, nil, 52)
+				tile.portrait = { atlas = "scholar_" .. scholarId }
+			elseif COMPANION_MODEL[c.id] then
+				tile.kind, tile.icon = "People", COMPANION_MODEL[c.id]
 			end
-			return row
-		end)
-	end
+			if c.joined then
+				tile.btn, tile.color = "대화", COLORS.blue
+				tile.onClick = function() call("Talk", { companionId = c.id }) end
+				tile.btn2 = { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+			else
+				tile.btn, tile.color, tile.enabled = string.format("영입 %d코인", c.fee), COLORS.green, c.blocked == nil
+				tile.onClick = function() call("Recruit", { companionId = c.id }) end
+			end
+			table.insert(tiles, tile)
+		end
+		return H.tileGrid(tiles, content, 190, 210)
+	end)
 end
 
 function RENDERERS.status()
@@ -5873,20 +5896,26 @@ function RENDERERS.explore()
 			add(function() return mkLabel(content, "조언: 지금(" .. view.player.year .. "년) 만날 수 있는 학자\n" .. table.concat(where, "\n", 1, math.min(#where, 8)), 12, COLORS.gold, true) end)
 		end
 	end
-	for _, sc in view.scholars do
+	if #view.scholars > 0 then
 		add(function()
-			local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
-			local srow = mkRow(content, sc.name, sub, {
-				{ text = "방문", color = COLORS.gold, onClick = function() call("Visit", { scholarId = sc.id }) end, enabled = sc.status == "ready" },
-					{ text = if (sc.reportable or 0) > 0 then string.format("보고 (%d)", sc.reportable) else "보고", color = COLORS.green, onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end, enabled = (sc.reportable or 0) > 0 },
-				}, 60)
-			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
-			if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. sc.id] then
-				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
-			end
-						return srow
-					end)
+			local tiles = {}
+			for _, sc in view.scholars do
+				local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
+				local tile: any = { title = sc.name, sub = sub, icon = "codex" }
+				-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
+				if SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. sc.id] then
+					tile.portrait = { atlas = "scholar_" .. sc.id }
 				end
+				tile.btn, tile.color, tile.enabled = "방문", COLORS.gold, sc.status == "ready"
+				tile.onClick = function() call("Visit", { scholarId = sc.id }) end
+				local rep = sc.reportable or 0
+				tile.btn2 = { text = if rep > 0 then string.format("보고 (%d)", rep) else "보고", color = COLORS.green, enabled = rep > 0,
+					onClick = function() call("ReportKnowledge", { scholarId = sc.id }) end }
+				table.insert(tiles, tile)
+			end
+			return H.tileGrid(tiles, content, 190, 150)
+		end)
+	end
 				local ac = view.knowledge and view.knowledge.academy
 				if ac and #ac.disciplines > 0 then
 					add(function() return mkHeader(content, string.format("학술 행사 · 이 항구의 연구 성과 %d%%", ac.research)) end)
