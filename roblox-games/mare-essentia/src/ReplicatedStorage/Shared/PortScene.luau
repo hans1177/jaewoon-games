@@ -3767,39 +3767,76 @@ function PortScene.build(info, onFacility)
 		end
 		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61), 23)
 		prompt(folder, Vector3.new(frontX + 9, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
-		local courtStaff = math.clamp(math.floor((info.sim and info.sim.residents or 12) / 8), 1, 12)
-		if info.sim and (info.sim.prosperity or 100) < 75 then courtStaff = math.max(1, math.floor(courtStaff * 0.6)) end
+		-- [궁정 인력] 실제 거주자·번영도·궁정 등급만 읽는다. 경제 직군/거주자/저장 키를 추가하지 않는다.
+		local courtStaff = PortBuildings.royalPopulation(info.sim and info.sim.residents, info.sim and info.sim.prosperity, palaceTier)
 		palaceCourt = { front = frontX, name = courtStyle, tint = roofColor, subjects = courtStaff }
-		-- 왕궁 보유 도시의 실제 경제 인구 비율에 따라 근위병·행정 서기·시종·학자 활동을 배치한다.
-		-- 별도의 왕궁 NPC 엔진을 만들지 않고 기존 R15 주민/근무 모션을 재사용한다.
-		local royalWorkers = math.min(courtStaff, math.max(2, palaceTier * 2))
 		local royalClothes = OUTFIT[currentKey] or OUTFIT.north
-		local staffKinds = {
-			{ name = "근위병", job = "royal_guard", role = "Knight", kind = "salute", work = { "salute", "look", "inspect" }, rest = { "lean", "look" }, tint = C(66, 76, 124) },
-			{ name = "궁정 시종", job = "royal_servant", role = "Rogue", kind = "polish", work = { "polish", "carry", "inspect" }, rest = { "talk", "stretch" }, tint = C(124, 96, 82) },
-			{ name = "왕실 서기", job = "royal_scribe", role = "Mage", kind = "write", work = { "write", "count", "read" }, rest = { "listen", "drink" }, tint = C(108, 74, 130) },
-			{ name = "궁정 학자", job = "royal_scholar", role = "Mage", kind = "read", work = { "read", "write", "inspect" }, rest = { "talk", "listen" }, tint = C(102, 119, 109) },
+		local royalPosts = {
+			gate = Vector3.new(frontX + 11, 0, 0),
+			entrance = Vector3.new(frontX + 14, 0, 21),
+			barracks = Vector3.new(px - wide * 0.38 + 18, 0, -(deep * 0.62 + 30)),
+			stable = Vector3.new(px - wide * 0.38 + 18, 0, deep * 0.62 + 30),
+			garden = Vector3.new(frontX + 28, 0, 42),
+			library = Vector3.new(px - wide * 0.28 + 18, 0, deep * 0.62 + 65),
+			office = Vector3.new(px - wide * 0.28 + 18, 0, -(deep * 0.62 + 65)),
 		}
-		for i = 1, royalWorkers do
-			local staffTypes = math.min(#staffKinds, palaceTier)
-			local spec = staffKinds[((i - 1) % staffTypes) + 1]
-			local side = if i % 2 == 0 then 1 else -1
-			local pos = Vector3.new(frontX + 11 + math.floor((i - 1) / 4) * 11, 0, side * (16 + (i % 4) * 5))
-			local facing = faceTo(pos, Vector3.new(facadeX, 0, 0))
-			local coat = (royalClothes.coats and royalClothes.coats[(i - 1) % #royalClothes.coats + 1] or C(200, 196, 186)):Lerp(spec.tint, 0.6)
-			local figure = villager(folder, pos, facing, coat, rng, spec.role, true, {
-				year = info.year or currentYear, profession = spec.job, hat = royalClothes.hat,
-			})
-			if figure then
-				figure.Name = "RoyalStaff_" .. spec.job .. "_" .. i
-				figure:SetAttribute("Job", spec.job)
-				figure:SetAttribute("Activity", spec.kind)
-				table.insert(walkers, {
-					model = figure, base = figure:GetPivot(), mode = "stay", kind = spec.kind, phase = rng:NextNumber(0, 10),
-					job = spec.job, workKinds = spec.work, leisureKinds = spec.rest,
+		-- 기존 왕궁의 실제 건립된 부속 시설에만 배정한다. 새 시설·기본 도형을 만들지 않는다.
+		local royalRoles = {
+			{ name = "근위병", job = "royal_guard", tier = 1, post = "gate", dz = -15, role = "Knight", work = { "salute", "inspect", "look" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(63, 77, 124) },
+			{ name = "궁정 시종", job = "royal_servant", tier = 1, post = "entrance", dz = 0, role = "Rogue", work = { "polish", "carry", "inspect" }, rest = { "talk", "stretch" }, tint = C(133, 104, 82) },
+			{ name = "성문 경비", job = "royal_gate_guard", tier = 2, post = "barracks", dz = -9, role = "Knight", work = { "salute", "look", "inspect" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(64, 87, 133) },
+			{ name = "마구간 관리", job = "royal_stablehand", tier = 2, post = "stable", dz = 6, role = "Barbarian", work = { "sweep", "carry", "inspect" }, rest = { "stretch", "look" }, tint = C(131, 105, 81) },
+			{ name = "궁정 정원사", job = "royal_gardener", tier = 3, post = "garden", dz = 6, role = "Rogue", work = { "hoe", "stoop", "inspect" }, rest = { "stretch", "talk" }, tint = C(76, 112, 84) },
+			{ name = "궁정 학자", job = "royal_scholar", tier = 3, post = "library", dz = 6, role = "Mage", work = { "read", "write", "inspect" }, rest = { "listen", "talk" }, tint = C(104, 124, 113) },
+			{ name = "왕실 서기", job = "royal_scribe", tier = 4, post = "office", dz = 5, role = "Mage", work = { "write", "count", "read" }, rest = { "listen", "stretch" }, tint = C(109, 84, 138) },
+			{ name = "궁정 전령", job = "royal_messenger", tier = 4, post = "office", dz = -7, role = "Rogue", work = { "carry", "point", "salute" }, rest = { "talk", "listen" }, tint = C(115, 102, 76) },
+			{ name = "행정 관리", job = "royal_administrator", tier = 4, post = "office", dz = 16, role = "Mage", work = { "write", "read", "inspect" }, rest = { "listen", "talk" }, tint = C(106, 85, 124) },
+			{ name = "의전 근위병", job = "royal_ceremonial_guard", tier = 5, post = "gate", dz = 21, role = "Knight", work = { "salute", "look", "inspect" }, rest = { "inspect", "look" }, night = { "look", "inspect" }, tint = C(139, 99, 66) },
+			{ name = "왕실 기록관", job = "royal_archivist", tier = 5, post = "library", dz = -9, role = "Mage", work = { "read", "write", "count" }, rest = { "talk", "listen" }, tint = C(87, 108, 111) },
+			{ name = "궁정 의전관", job = "royal_court_officer", tier = 5, post = "entrance", dz = -17, role = "Rogue", work = { "point", "salute", "inspect" }, rest = { "talk", "look" }, tint = C(138, 111, 90) },
+		}
+		local courtVisible = 0
+		local visibleCap = if game:GetService("UserInputService").TouchEnabled then 6 else 12
+		for _, spec in ipairs(royalRoles) do
+			if courtVisible >= math.min(courtStaff, visibleCap) then break end
+			if palaceTier >= spec.tier then
+				local pos = royalPosts[spec.post] + Vector3.new(0, 0, spec.dz)
+				local coat = (royalClothes.coats and royalClothes.coats[(courtVisible % #royalClothes.coats) + 1] or C(200, 196, 186)):Lerp(spec.tint, 0.6)
+				local figure = villager(folder, pos, faceTo(pos, Vector3.new(facadeX, 0, 0)), coat, rng, spec.role, true, {
+					year = info.year or currentYear, profession = spec.job, hat = royalClothes.hat,
 				})
+				if figure then
+					courtVisible += 1
+					figure.Name = "RoyalStaff_" .. spec.job
+					figure:SetAttribute("Job", spec.job)
+					figure:SetAttribute("Workplace", spec.name)
+					figure:SetAttribute("Activity", spec.work[1])
+					figure:SetAttribute("RoyalTier", palaceTier)
+					local head = figure:FindFirstChild("Head")
+					if head then
+						local label = Instance.new("BillboardGui")
+						label.Size = UDim2.fromOffset(92, 20)
+						label.StudsOffset = Vector3.new(0, 1.9, 0)
+						label.MaxDistance = 52
+						label.Adornee = head
+						label.Parent = head
+						local title = Instance.new("TextLabel")
+						title.Size = UDim2.fromScale(1, 1)
+						title.BackgroundTransparency = 1
+						title.Text = spec.name
+						title.TextSize = 13
+						title.Font = Enum.Font.GothamBold
+						title.TextColor3 = C(255, 236, 200)
+						title.TextStrokeTransparency = 0.4
+						title.Parent = label
+					end
+					table.insert(walkers, { model = figure, base = figure:GetPivot(), mode = "stay", kind = spec.work[1],
+						phase = rng:NextNumber(0, 10), job = spec.job, workKinds = spec.work,
+						tradeKinds = spec.work, leisureKinds = spec.rest, royalDuty = true, nightKinds = spec.night })
+				end
 			end
 		end
+		folder:SetAttribute("RoyalCourtVisible", courtVisible)
 		folder:SetAttribute("RoyalDistrictStyle", courtStyle)
 		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 		folder:SetAttribute("RoyalDistrictTier", palaceTier)
@@ -3991,10 +4028,14 @@ function PortScene.build(info, onFacility)
 						local morning = hour >= 6 and hour < 11
 						local trading = hour >= 11 and hour < 18
 						local period = math.floor((now + w.phase * 2.1) / 16)
-						local roster = if morning then w.workKinds elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
+						local watching = w.royalDuty and w.nightKinds and (hour >= 19 or hour < 6)
+						local royalDay = w.royalDuty and hour >= 6 and hour < 19
+						local roster = if watching then w.nightKinds elseif royalDay or morning then w.workKinds
+							elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
 						kind = roster[(period % #roster) + 1]
-						if morning and (now + w.phase) % 73 > 61 then kind = "stretch" end
-						local routine = if morning then "work" elseif trading then "trade" else "leisure"
+						if morning and not w.royalDuty and (now + w.phase) % 73 > 61 then kind = "stretch" end
+						local routine = if watching then "night_watch" elseif royalDay or morning then "work"
+							elseif trading then "trade" else "leisure"
 						if w.lastRoutine ~= routine then
 							w.lastRoutine = routine
 							w.model:SetAttribute("DailyRoutine", routine)
