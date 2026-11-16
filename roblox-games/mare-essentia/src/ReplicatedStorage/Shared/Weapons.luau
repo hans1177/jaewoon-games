@@ -62,6 +62,9 @@ local regionalDefs = {
 	{ "tanegashima", "다네가시마 조총", "gun", "RIFLE", "japan", "일본 화승총" },
 	{ "wheellock_pistol", "륜발식 권총", "gun", "PISTOL", "early_firearm", "고가의 기계식 발화 권총" },
 	{ "flintlock_pistol", "수석식 권총", "gun", "PISTOL", "late_firearm", "수석식 발화 권총" },
+	{ "ottoman_kubur", "오스만 쿠부르 권총", "gun", "PISTOL", "west_asia", "오스만 지역의 호신·기병용 권총" },
+	{ "ship_pistol", "선상 권총", "gun", "PISTOL", "sea", "배 위에서 사용하는 짧은 총신의 권총" },
+	{ "dueling_pistol", "결투용 권총", "gun", "PISTOL", "europe", "18세기 유럽 결투용 권총" },
 }
 Weapons.Regional = {} :: { Weapon }
 for _, v in regionalDefs do
@@ -125,7 +128,10 @@ function Weapons.allyWeapon(category: string?, history: AllyHistory?): Weapon
 	local firearm = if year >= 1680 then "flintlock_musket"
 		elseif nation == "japan" then "tanegashima"
 		else "matchlock_musket"
-	local pistol = if year >= 1680 then "flintlock_pistol" else "wheellock_pistol"
+	local pistol = if nation == "ottoman" and year >= 1650 then "ottoman_kubur"
+		elseif year >= 1700 and lived("결투") then "dueling_pistol"
+		elseif year >= 1680 and (lived("선상") or lived("해군") or lived("해적")) then "ship_pistol"
+		elseif year >= 1680 then "flintlock_pistol" else "wheellock_pistol"
 	if cat == "warrior" then
 		if lived("격투") or lived("권투") then return Weapons.get("fist") end
 		return Weapons.get(sword)
