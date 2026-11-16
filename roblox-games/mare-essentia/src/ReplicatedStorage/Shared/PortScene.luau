@@ -2028,7 +2028,7 @@ local LM_SITES = {
 	Vector3.new(-208, 0, 181), Vector3.new(-208, 0, -181), Vector3.new(-263, 0, 181), Vector3.new(-263, 0, -181),
 }
 
-local function densify(folder, info, style, rng, walkers, made)
+local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local key = styleKeyOf(style)
 	local palm = palmOk(info.portId, style)
 	local cold = not palm
@@ -2143,13 +2143,27 @@ local function densify(folder, info, style, rng, walkers, made)
 			farm = { "farm", "농산·향신료 작업장", "Cargo", "mortar-pestle", C(180, 146, 96) },
 			forest = { "workshop", "벌목·목재 공방", "Cargo", "wood-planks-stack-small", C(128, 113, 84) },
 			fiber = { "workshop", "염색·직조 공방", "Cargo", "textiles-stack-small", C(146, 117, 151) },
+			crafted = { "workshop", "유리·도자기 공예 공방", "Town", "workbench-grind", C(157, 155, 160) },
+			drink = { "workshop", "양조·숙성 공방", "Cargo", "barrel", C(138, 99, 70) },
+			fishery = { "market", "어시장·생선 건조장", "Cargo", "food-barrel-fish", C(127, 150, 162) },
+			dairy = { "farm", "치즈 숙성 공방", "Cargo", "cheese", C(189, 166, 119) },
+		}
+		-- [가공품 특산물] 원료는 ProductionChains.ClassOf를 따르고,
+		-- 기존 Ports.Goods.resourceKind의 가공품도 해당 도시의 고유 건물로 표시한다.
+		local prepared = {
+			textile = "fiber", energy = "mineral", ore = "mineral", stone = "mineral",
+			gem = "gem", marine = "gem", animal = "animal", food = "farm",
+			spice = "farm", crops = "farm", oil = "farm",
+			timber = "forest", chemical = "crafted", crafted = "crafted", drink = "drink",
 		}
 		local specialties = 0
 		for _, good in made do
 			if specialties >= 2 then break end
-			local kind = Chains.ClassOf[good]
+			local definition = PortData.Goods[good]
+			local kind = Chains.ClassOf[good] or (definition and prepared[definition.resourceKind])
+			kind = if good == "fish" then "fishery" elseif good == "cheese" then "dairy" else kind
 			local detail = goodsByClass[kind]
-			if detail and AssetIds["Cargo/" .. good] then
+			if definition and detail and AssetIds["Cargo/" .. good] then
 				-- 원료 이름과 실제 등록 메시가 있는 항구만 해당 전문 시설이 나타난다.
 				specialties += 1
 				table.insert(civic, specialties, {
@@ -4444,7 +4458,7 @@ function PortScene.build(info, onFacility)
 		end)
 	end
 
-	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
+	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}, onFacility)
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	placeSignature(folder, info)
 
