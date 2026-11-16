@@ -2835,39 +2835,67 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 3) 부두: 둘째 잔교, 배 여러 척, 하역장
-	local pier = part(folder, Vector3.new(44, 0.8, 7), CFrame.new(44, 1.6, 46), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	pier.CanCollide = true
-	pier.Transparency = 1
-	for x = 30, 62, 16 do
-		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
+	-- 3) 항구별 항만 단계: 실물 메시 잔교·정박선·하역시설을 발전도/실제 투자량에 맞춰 성장시킨다.
+	-- 신규 기본 도형 외형은 만들지 않고, 둘째 잔교의 투명 보행 충돌체만 기존대로 유지한다.
+	local growth = PortBuildings.harborVisual(lvl, info.sim and info.sim.buildings)
+	local touch = game:GetService("UserInputService").TouchEnabled
+	local visibleBoats = if touch then math.min(growth.boats, 5) else growth.boats
+	local visibleCargo = if touch then math.min(growth.cargo, 6) else growth.cargo
+	if growth.sidePier then
+		local pierEnd = 22 + growth.pierLength
+		local pier = part(folder, Vector3.new(growth.pierLength, 0.8, 7), CFrame.new(22 + growth.pierLength * 0.5, 1.6, 46),
+			Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+		pier.CanCollide = true
+		pier.Transparency = 1
+		for x = 30, pierEnd - 4, 16 do
+			importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
+		end
 	end
-	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
-	local cargoQuota = if info.sim and info.sim.buildings then math.clamp(2 + math.floor(math.sqrt(math.max(0, info.sim.buildings.warehouse or 0))), 2, 10) else 10
-	for i = 0, cargoQuota - 1 do
-		local c = dockCargo[i % #dockCargo + 1]
-		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+	-- 기존 Kenney 화물 메시만 사용한다. 내용이 불명확한 병 상자는 제외한다.
+	local dockCargo = {
+		{ "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" },
+		{ "Naval", "cargo-pile-b" }, { "Naval", "chest" },
+		{ "Naval", "detail-crate-small" }, { "Naval", "detail-crate-ropes" },
+	}
+	if growth.sidePier then
+		for i = 0, visibleCargo - 1 do
+			local c = dockCargo[i % #dockCargo + 1]
+			importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+		end
 	end
-	for i = 0, 5 do
+	local mainCargo = math.min(5, math.max(1, math.floor(visibleCargo / 2)))
+	for i = 0, mainCargo - 1 do
 		local c = dockCargo[(i + 2) % #dockCargo + 1]
 		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 12, 2, if i % 2 == 0 then 4.2 else -4.2), 2.6, false)
 	end
-	importedModel(folder, "Naval", "pulley-crate", Vector3.new(60, 2, 47), 4.6, false)
-	importedModel(folder, "Naval", "mast", Vector3.new(66, 2, 44), 12, false)
-	importedModel(folder, "Naval", "flag-pennant", Vector3.new(66, 14, 44), 3, false)
-	local boats = { { "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 }, { "boat-row-large", 8 }, { "boat-row-small", 6 }, { "boat-fishing-small", 10 }, { "boat-sail-b", 13 } }
-	local spots = { { 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 }, { 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 } }
-	local boatQuota = if info.sim and info.sim.buildings then math.clamp(1 + math.floor(math.sqrt(math.max(0, info.sim.buildings.dock or 0))), 1, #spots) else #spots
-	for i, spot in spots do
-		if i <= boatQuota then
-		local b = boats[i % #boats + 1]
-		local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
-		rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5))
+	-- 3단계부터 하역 도르래, 2단계부터 항로 신호. 모두 실제 승인된 완제품.
+	for i = 1, math.min(growth.hoists, if touch then 2 else 3) do
+		importedModel(folder, "Naval", "pulley-crate",
+			Vector3.new(52 + (i - 1) * 18, 2, 46 + (if i % 2 == 0 then -2 else 2)), 4.6, false)
+	end
+	if growth.signals > 0 then
+		local markerX = 22 + growth.pierLength - 5
+		importedModel(folder, "Naval", "mast", Vector3.new(markerX, 2, 44), 12, false)
+		importedModel(folder, "Naval", "flag-pennant", Vector3.new(markerX, 14, 44), 3, false)
+		for i = 2, growth.signals do
+			importedModel(folder, "Naval", "flag-high-pennant", Vector3.new(25 + i * 16, 0, 57), 8, false)
 		end
 	end
-	if big then
-		importedModel(folder, "Naval", "ship-wreck", Vector3.new(150, 0.4, -120), 22, false)
-		importedModel(folder, "Naval", "ship-pirate-small", Vector3.new(80, 0.8, 90), 20, false)
+	local boats = {
+		{ "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 },
+		{ "boat-row-large", 8 }, { "boat-row-small", 6 },
+		{ "boat-fishing-small", 10 }, { "boat-sail-b", 13 }, { "boat-sail-a", 14 },
+	}
+	local spots = {
+		{ 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 },
+		{ 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 },
+	}
+	for i, spot in ipairs(spots) do
+		if i <= visibleBoats then
+			local b = boats[i]
+			local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
+			if m then rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5)) end
+		end
 	end
 
 	-- 4) 생활감 소품: 담장, 수레, 통, 횃불
