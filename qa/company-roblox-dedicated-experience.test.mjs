@@ -886,10 +886,29 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/FieldExitReason/);
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
-  assert.match(field,/local skillSize = if visualMobile then 76 else 68/);
-  assert.match(field,/local basicSize = if visualMobile then 68 else 64/);
-  assert.match(field,/arcPos\(innerSkillRadius, 46\), basicSize/);
-  assert.match(field,/arcPos\(innerSkillRadius, 134\), basicSize/);
+  assert.match(field,/local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68/);
+  assert.match(field,/local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64/);
+  assert.match(field,/arcPos\(innerSkillRadius, 40\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 120\), basicSize/);
+  // [조작 영역] 세 스킬과 기본 회피·방어는 동일한 실제 공격 버튼을 중심으로 반원형 배치.
+  assert.match(field,/Vector2\.new\(attackBtn\.Position\.X\.Offset, attackBtn\.Position\.Y\.Offset\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 40\)/);
+  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 40\)/);
+  const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
+  for(const [width,height] of [[390,640],[832,384],[320,360]]){
+    const outer=Math.max(132,Math.min(150,width*.4,height-180));
+    const skill=width<360?64:76,basic=width<360?60:68;
+    const coords=[[arc(outer,20),skill],[arc(outer,60),skill],[arc(outer,100),skill],
+                  [arc(84,40),basic],[arc(84,120),basic]];
+    for(const [pos,size] of coords){
+      assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
+      assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
+    }
+    for(let i=0;i<coords.length;i++)for(let j=i+1;j<coords.length;j++){
+      const [a,as]=coords[i], [b,bs]=coords[j];
+      assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>=(as+bs)*.5-1,'skill circle overlap '+width+':'+i+':'+j);
+    }
+  }
   assert.match(field,/slotPos\("heavy"\), skillSize/);
   assert.match(field,/slotPos\("sweep"\), skillSize/);
   assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
