@@ -4806,9 +4806,9 @@ function RENDERERS.status()
 	add(function() return mkHeader(content, "전문 분야 · 21개 학문은 직업과 무관하게 연구 가능") end)
 	add(function()
 		local sv = view.specialties
-		local msg = "발견한 카드에 따라 전문 분야가 자동 지정될 수 있어요. 전문 분야는 연구를 제한하지 않고 관련 연구에 보탬이 돼요. 직접 고르려면 관련 카드가 " .. sv.unlockCards .. "장 필요해요. 전문 숙련: 견습 → 숙련 → 명인 → 대가 → 거장"
+		local msg = "전문 분야 15개는 선택 사항이에요. 직업을 고르지 않아도 21개 학문을 모두 연구하고 숙련도를 올릴 수 있어요. 전문 분야는 관련 연구만 지원해요. 선택하려면 관련 카드가 " .. sv.unlockCards .. "장 필요해요. 전문 숙련: 견습 → 숙련 → 명인 → 대가 → 거장"
 		if sv.auto then
-			msg ..= "  (자동 배정됨 — 한 번은 무료로 바꿀 수 있어요)"
+			msg ..= "  (예전 저장에서 자동 배정된 전문 분야: 최초 변경은 무료)"
 		end
 		return mkLabel(content, msg, 12, COLORS.muted, false)
 	end)
@@ -7213,7 +7213,7 @@ local function renderCodexOverview()
 			if not d.open then
 				sub = string.format("[잠김: %s 지식 %d/%d개] ", d.parentName or "", d.parentDone, d.openAt or 0) .. sub
 			end
-			return mkRow(content, string.format("%s  이해 %d / %d", d.name, d.done, d.total), sub, {
+			return mkRow(content, string.format("%s  이해 %d / %d · 학문 Lv.%d", d.name, d.done, d.total, d.mastery and d.mastery.level or 1), (d.mastery and string.format("숙련 점수 %d%s · ", d.mastery.points, if d.mastery.next > 0 then "/" .. d.mastery.next else " (최고)") else "") .. sub, {
 				{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
 			}, 64)
 		end)
@@ -7358,8 +7358,8 @@ if string.sub(codexField, 1, 2) == "k:" then
 	add(function()
 		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
 	end)
-	add(function() return mkLabel(content, string.format("%s  이해 %d / %d", disc.name, disc.done, disc.total), 17, COLORS.gold, true) end)
-	add(function() return mkLabel(content, disc.summary, 13, COLORS.text, false) end)
+	add(function() return mkLabel(content, string.format("%s  이해 %d / %d · 학문 Lv.%d", disc.name, disc.done, disc.total, disc.mastery and disc.mastery.level or 1), 17, COLORS.gold, true) end)
+	add(function() return mkLabel(content, disc.summary .. (disc.mastery and string.format(" · 학문 숙련 %d점%s", disc.mastery.points, if disc.mastery.next > 0 then "/" .. disc.mastery.next else " (최고)") else ""), 13, COLORS.text, false) end)
 	local pd = view.people and view.people.byDisc and view.people.byDisc[disc.id]
 	if pd then
 		add(function() return mkLabel(content, string.format("이 학문과 이어진 인물 %d / %d명 기록 — 인물을 기록할수록 이 학문의 연구가 조금씩 빨라져요.", pd.known, pd.total), 12, COLORS.green, false) end)
