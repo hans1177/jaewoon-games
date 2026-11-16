@@ -746,6 +746,15 @@ return function(D, S)
 				resourceKindNames[group.id] = group
 			end
 			-- [세계 자원 연결] 실제 69개 교역 자원 + 기존 제작법 가공품을 모두 원본 상품 데이터에서 조회한다.
+			-- 원산지 색인은 포트별 생산 목록을 한 번만 훑는다 (20명 동접 화면 조회 예산 보존).
+			local originIds = {}
+			for portId, port in D.Ports.Ports do
+				for _, goodId in ipairs(port.produces) do
+					if not originIds[goodId] or portId < originIds[goodId] then
+						originIds[goodId] = portId
+					end
+				end
+			end
 			-- 관련 지식카드는 원본 도감 카드 참조일 뿐 새 아이템/보상을 생성하지 않는다.
 			for id, good in D.Ports.Goods do
 				local kindId = good.resourceKind or "manufactured"
@@ -759,13 +768,7 @@ return function(D, S)
 				local subject = taxonomy and D.KnowledgeTree.DisciplineById[taxonomy.id]
 				-- [세계 산업 백과] 기존 상품 ID·지식카드·가공법으로 산업 경로를 조회한다.
 				-- 상품·보상은 새로 만들지 않고 지역 원산지와 기존 목표 수출 항구만 안내한다.
-				local originPortId = nil
-				for portId, port in D.Ports.Ports do
-					if table.find(port.produces, id)
-						and (not originPortId or portId < originPortId) then
-						originPortId = portId
-					end
-				end
+				local originPortId = originIds[id]
 				local brand = D.ProductionChains.BrandById[id]
 				local recipe = if brand then D.ProductionChains.ById[brand.recipe] else D.ProductionChains.ByGood[id]
 				local chain = nil
