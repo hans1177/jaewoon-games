@@ -3218,7 +3218,8 @@ function PortScene.build(info, onFacility)
 				elseif w.kind then
 					Pose.work(w.model, w.kind, now + w.phase, true)
 				elseif w.elder then
-					Pose.work(w.model, "stoop", now)
+					-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
+					Pose.work(w.model, "stoop", now, true)
 				end
 			end
 		end
@@ -3580,11 +3581,10 @@ function PortScene.build(info, onFacility)
 	local followConn
 	if #followers > 0 then
 		local Players = game:GetService("Players")
-		local last = os.clock()
-		followConn = RunService.Heartbeat:Connect(function()
+		-- [동료 R15] 주민/전투와 동일한 공식 관절 적용 시점에서 보행·대기 모션을 갱신한다.
+		followConn = RunService.PreSimulation:Connect(function(deltaTime)
 			local now = os.clock()
-			local dt = math.min(now - last, 0.1)
-			last = now
+			local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
 			-- [중복 소환 방지] 항구의 시각 동료는 탐험 중 추적을 멈춘다. 탐험용 FieldAlly만 전장에 존재한다.
 			if workspace:FindFirstChild("FieldScene") then return end
 			local char = Players.LocalPlayer and Players.LocalPlayer.Character
