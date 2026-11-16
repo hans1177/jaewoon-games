@@ -1544,6 +1544,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	do
 		local porters = PortBuildings.harborVisual(lvl, info.sim and info.sim.buildings).porters
 		if info.sim and info.sim.jobs and (info.sim.jobs.laborer or 0) <= 0 then porters = 0 end
+		if info.sim and type(info.sim.residents) == "number" then
+			porters = math.min(porters, math.max(0, math.floor(info.sim.residents / 5)))
+		end
 		if game:GetService("UserInputService").TouchEnabled then porters = math.min(porters, 2) end
 		for i = 1, porters do
 			local pz = 24 + i * 3
