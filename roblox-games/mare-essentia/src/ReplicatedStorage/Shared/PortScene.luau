@@ -2574,7 +2574,8 @@ local function densify(folder, info, style, rng, walkers, made)
 			then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
 		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
 	end
-	for i = 1, if plan and plan.level >= 4 then 10 else 20 do
+	local backTrees = if plan and plan.level >= 4 then 10 else 20
+	for i = 1, backTrees do
 		local pos = Vector3.new(edgeX - rng:NextNumber(0, 45), 0, rng:NextNumber(-WZ, WZ))
 		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town",
 			trees[1], pos, rng:NextNumber(8, 13), false)
