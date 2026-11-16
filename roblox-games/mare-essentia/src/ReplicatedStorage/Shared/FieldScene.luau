@@ -40,12 +40,16 @@ local function addIcon(button: TextButton, key: string)
 	local img = Instance.new("ImageLabel")
 	img.BackgroundTransparency = 1
 	img.Image = "rbxassetid://" .. tostring(id)
-	img.AnchorPoint = Vector2.new(0.5, 0.4)
-	img.Position = UDim2.fromScale(0.5, 0.4)
-	img.Size = UDim2.fromScale(0.62, 0.62)
-	img.ImageTransparency = 0.05
+	img.Name = "FieldButtonIcon"
+	img.AnchorPoint = Vector2.new(0.5, 0.5)
+	img.Position = UDim2.fromScale(0.5, 0.38)
+	img.Size = UDim2.fromScale(0.55, 0.55)
+	img.ScaleType = Enum.ScaleType.Fit
+	img.ImageTransparency = 0.02
+	img.ZIndex = button.ZIndex + 1
 	img.Parent = button
 	button.TextYAlignment = Enum.TextYAlignment.Bottom
+	return img
 end
 
 local FieldScene = {}
@@ -234,14 +238,21 @@ local function btn(parent, text, color, size, pos, anchor)
 	b.TextColor3 = Color3.fromRGB(255, 255, 255)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 16
+	b.TextStrokeTransparency = 0.65
 	b.AutoButtonColor = true
 	b.BorderSizePixel = 0
+	b.ZIndex = 3
+	b.ClipsDescendants = true
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 12)
+	c.CornerRadius = UDim.new(0, 15)
 	c.Parent = b
+	local grad = Instance.new("UIGradient")
+	grad.Color = ColorSequence.new(color:Lerp(Color3.new(1, 1, 1), 0.12), color:Lerp(Color3.new(0, 0, 0), 0.24))
+	grad.Rotation = 90
+	grad.Parent = b
 	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(214, 170, 82)
-	st.Thickness = 2
+	st.Color = Color3.fromRGB(220, 192, 141)
+	st.Thickness = 1.6
 	st.Parent = b
 	b.Parent = parent
 	return b
@@ -250,6 +261,7 @@ end
 -- opts: { name, nodes, danger, seed, onFinish(result) }  result: "clear" | "retreat" | "defeat"
 function FieldScene.start(opts)
 	workspace:SetAttribute("FieldCombatReady", nil) -- 이전 탐험의 준비 상태를 새 입장의 성공으로 오인하지 않는다.
+	if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", 0) end
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("FieldScene")
 	if old then
@@ -285,6 +297,12 @@ function FieldScene.start(opts)
 		p.Transparency = 1
 		p.CanQuery = false
 	end
+
+	-- [낙사 방지] 기존 바닥 아래에 충돌 안전판을 두고, 이동 감시에서 추락 시 마지막 안전 지점으로 복귀한다.
+	local safetyFloor = part(folder, Vector3.new(SIZE + 24, 2, SIZE + 24), CFrame.new(ORIGIN + Vector3.new(0, -14, 0)), Color3.fromRGB(44, 43, 40))
+	safetyFloor.Name = "FieldSafetyFloor"
+	safetyFloor.Transparency = 1
+	safetyFloor.CanQuery = false
 
 	-- 지평선 언덕: 사방 가장자리 바깥에 복셀 지형 언덕을 쌓아 평평한 느낌을 줄인다 (끝나면 지운다)
 	do
@@ -567,6 +585,7 @@ function FieldScene.start(opts)
 		end
 		finished = true
 		workspace:SetAttribute("FieldCombatReady", nil)
+		if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", nil) end
 		pcall(function()
 			local L = game:GetService("Lighting")
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
@@ -622,6 +641,15 @@ function FieldScene.start(opts)
 	local danger0 = opts.danger or 1
 	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
 	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
+	-- [몹 다양화] 규칙(HP/속도/피해/드롭)은 원본 그대로, 색상·복식·관절 액션만 직군별 3종으로 구분한다.
+	local looks = {
+		grunt = { { "검객", "Rogue", Color3.fromRGB(114, 86, 72) }, { "난투꾼", "Barbarian", Color3.fromRGB(140, 75, 59) }, { "기습병", "Rogue_Hooded", Color3.fromRGB(67, 79, 87) } },
+		archer = { { "궁수", "Rogue", Color3.fromRGB(98, 105, 70) }, { "명사수", "Knight", Color3.fromRGB(82, 101, 127) }, { "척후병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90) } },
+		shield = { { "호위병", "Knight", Color3.fromRGB(117, 119, 132) }, { "근위병", "Knight", Color3.fromRGB(126, 91, 76) }, { "경비대장", "Rogue", Color3.fromRGB(103, 94, 76) } },
+		charger = { { "돌격대", "Barbarian", Color3.fromRGB(132, 80, 58) }, { "광전사", "Barbarian", Color3.fromRGB(120, 54, 61) }, { "습격병", "Rogue", Color3.fromRGB(84, 91, 70) } },
+		boss = { { "전장 두목", "Knight", Color3.fromRGB(117, 77, 66) }, { "약탈 우두머리", "Barbarian", Color3.fromRGB(135, 63, 55) }, { "거인 대장", "Knight", Color3.fromRGB(83, 90, 109) } },
+	}
+	local kinds = { "grunt", "archer", "shield", "charger" }
 	local packCenters = {}
 	for _ = 1, math.max(4, math.floor(enemyCount / 5)) do
 		table.insert(packCenters, scatter(48))
@@ -651,7 +679,10 @@ function FieldScene.start(opts)
 		if i > 6 and i % 4 == 0 then
 			task.wait()
 		end
-		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
+		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
+		local styleN = math.floor((i - 1) / 4) % 3 + 1
+		local style = looks[ac.kind][styleN]
+		local model = Pose.createR15(folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6)
 		if not model then
 			warn("[MareEssentia] R15 적 모델 생성 불가", def[1])
 			continue
@@ -661,10 +692,10 @@ function FieldScene.start(opts)
 		if not root then model:Destroy(); continue end
 		local bb = Instance.new("BillboardGui")
 		bb.Adornee = root
-		bb.Size = UDim2.fromOffset(120, 34)
+		bb.Size = UDim2.fromOffset(158, 34)
 		bb.StudsOffset = Vector3.new(0, 4.5, 0)
 		bb.AlwaysOnTop = true
-		bb.MaxDistance = 80
+		bb.MaxDistance = if isBoss then 90 else 52
 		bb.Parent = root
 		local tag = label(bb, def[1], if isBoss then 16 else 14, if isBoss then Color3.fromRGB(255, 190, 90) else Color3.fromRGB(255, 120, 110))
 		tag.Size = UDim2.new(1, 0, 0, 16)
@@ -679,10 +710,11 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		local kinds = { "grunt", "archer", "shield", "charger" }
-		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 4 + 1])
 		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
-		tag.Text = ac.def.name
+		model:SetAttribute("MotionVariant", styleN) -- 복식·전투 몸짓 전용(저장/피해와 무관)
+		tag.Text = def[1] .. " · " .. style[1]
+		tag.TextSize = if isBoss then 14 else 12
+		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
@@ -779,10 +811,16 @@ function FieldScene.start(opts)
 
 	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
 	local UserInputService = game:GetService("UserInputService")
-	local attackBtn = btn(gui, "공격", Color3.fromRGB(176, 60, 56), UDim2.fromOffset(96, 96), UDim2.new(1, -100, 1, -100), Vector2.new(0.5, 0.5))
-	attackBtn.TextSize = 22
-	addIcon(attackBtn, "Menu/action_fist")
-	local retreat = btn(gui, "철수", Color3.fromRGB(70, 84, 104), UDim2.fromOffset(72, 36), UDim2.new(0, 12, 0, 56), Vector2.new(0, 0))
+	-- [모바일 전투 HUD] 엄지 버튼은 오른쪽 하단, 철수는 왼쪽 위로 분리해 오터치를 방지한다.
+	local attackBtn = btn(gui, "공격", Color3.fromRGB(169, 55, 50), UDim2.fromOffset(96, 96), UDim2.new(1, -90, 1, -88), Vector2.new(0.5, 0.5))
+	attackBtn.Name = "FieldAttack"
+	attackBtn.TextSize = 19
+	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
+	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
+	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 50), UDim2.new(0, 12, 0, 50), Vector2.new(0, 0))
+	retreat.Name = "FieldRetreat"
+	retreat.TextSize = 14
+	addIcon(retreat, "Menu/chart_port")
 	retreat.Activated:Connect(function()
 		finish("retreat")
 	end)
@@ -794,6 +832,11 @@ function FieldScene.start(opts)
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
+	if attackIcon then
+		local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
+			elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
+		attackIcon.Image = "rbxassetid://" .. tostring(AssetIds[iconKey])
+	end
 	local function char3()
 		local char = player.Character
 		return char, char and char:FindFirstChild("HumanoidRootPart")
@@ -2203,7 +2246,8 @@ function FieldScene.start(opts)
 		local hit = Instance.new("TextButton")
 		hit.AnchorPoint = attackBtn.AnchorPoint
 		hit.Position = attackBtn.Position
-		hit.Size = UDim2.fromOffset(190, 190)
+		hit.Name = "FieldAttackHit"
+		hit.Size = UDim2.fromOffset(166, 166)
 		hit.BackgroundTransparency = 1
 		hit.Text = ""
 		hit.AutoButtonColor = false
@@ -2214,11 +2258,17 @@ function FieldScene.start(opts)
 	end
 	-- 무기 교체 버튼: 누를 때마다 다음 무기로(맨손→검→단검→도끼→창→철퇴→석궁→총). 동료는 직업별 고정 무기라 바뀌지 않는다.
 	do
-		local wbtn = btn(gui, wpn.name, Color3.fromRGB(70, 82, 104), UDim2.fromOffset(84, 44), UDim2.new(1, -100, 1, -196), Vector2.new(0.5, 0.5))
-		wbtn.TextSize = 15
+		local wbtn = btn(gui, wpn.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(88, 42), UDim2.new(1, -70, 1, -210), Vector2.new(0.5, 0.5))
+		wbtn.Name = "FieldWeapon"
+		wbtn.TextSize = 14
 		bindPress(wbtn, function()
 			wpn = Weapons.cycle(wpn.id, 1)
 			wbtn.Text = wpn.name
+			if attackIcon then
+				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
+					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
+				attackIcon.Image = "rbxassetid://" .. tostring(AssetIds[iconKey])
+			end
 			equipFieldWeapon(player.Character, wpn)
 			slashIdx = 0
 			say(string.format("%s — %s", wpn.name, wpn.note))
@@ -2241,24 +2291,26 @@ function FieldScene.start(opts)
 	staminaFill.BorderSizePixel = 0
 	staminaFill.Parent = staminaBack
 	local skillBtns = {}
-	-- 버튼 배치: 공격 버튼(오른쪽 아래 모서리)을 중심으로 반원형으로 둘러싼다. 반지름 r, 왼쪽 수평선에서 위로 theta도.
-	local ATK_C = Vector2.new(-100, -100)
+	-- [전투 HUD] 전투 버튼과 장착 3칸을 서로 다른 거리의 부채꼴로 분리한다(중복 터치 방지).
+	local ATK_C = Vector2.new(-90, -88)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
 	end
 	local function mkSkill(key, label, color, pos, size)
 		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
-		b.TextSize = 16
+		b.Name = "FieldSkill_" .. key
+		b.TextSize = 13
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(70, 140, 104), arcPos(124, 25))
-	mkSkill("parry", "방어", Color3.fromRGB(120, 100, 150), arcPos(124, 70))
-	addIcon(skillBtns.dodge.btn, "Menu/action_dodge")
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(126, 22))
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(126, 66))
+	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
+	addIcon(skillBtns.parry.btn, "Menu/cc0_shield")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
 		local pos = hp0.Position + Vector3.new(0, 2, 0)
@@ -2353,19 +2405,26 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(190, 14 + ((slotOf[id] or 1) - 1) * 30)
+			return arcPos(198, 12 + ((slotOf[id] or 1) - 1) * 28)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "🔒\n칭호", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(52, 52), arcPos(190, 14 + (slotI - 1) * 30), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(198, 12 + (slotI - 1) * 28), Vector2.new(0.5, 0.5))
+			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
 			bindPress(lb, function()
 				say(JobSkills.unlockHint())
 			end)
 		end
-		if slotOf.heavy then mkSkill("heavy", "강타", Color3.fromRGB(196, 110, 52), slotPos("heavy"), 56) end
-		if slotOf.sweep then mkSkill("sweep", "회전\n베기", Color3.fromRGB(86, 120, 176), slotPos("sweep"), 56) end
+		if slotOf.heavy then
+			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), 56)
+			addIcon(skillBtns.heavy.btn, "Menu/cc0_axe")
+		end
+		if slotOf.sweep then
+			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), 56)
+			addIcon(skillBtns.sweep.btn, "Menu/cc0_sword")
+		end
 		local function useCard(key, card)
 			local now = os.clock()
 			if finished then
@@ -2390,8 +2449,11 @@ function FieldScene.start(opts)
 			if i > 3 or not slotOf[key] then
 				continue
 			end
-			local b = btn(gui, card.name, Color3.fromRGB(150, 110, 60), UDim2.fromOffset(52, 52), slotPos(key), Vector2.new(0.5, 0.5))
-			b.TextSize = 17
+			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(56, 56), slotPos(key), Vector2.new(0.5, 0.5))
+			b.Name = "FieldSkill_" .. key
+			b.TextSize = 12
+			addIcon(b, if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" then "Menu/cc0_shield"
+				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow" else "Menu/cc0_fireball")
 			bindPress(b, function()
 				useCard(key, card)
 			end)
@@ -3042,6 +3104,7 @@ function FieldScene.start(opts)
 	end
 
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
+	local lastSafe = CFrame.new(spawn)
 	pcall(function()
 		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()
 		if not workspace:GetAttribute("FieldTouchPad") then
@@ -3055,6 +3118,21 @@ function FieldScene.start(opts)
 		local c2 = player.Character
 		local r2 = c2 and c2:FindFirstChild("HumanoidRootPart")
 		local h2 = c2 and c2:FindFirstChildOfClass("Humanoid")
+		-- [낙사 복구] 장애물·전투 넉백으로 바닥 아래 또는 전투 구역 밖에 떨어져도 전투 상태/보상은 유지한다.
+		if r2 and r2:IsA("BasePart") then
+			local p = r2.Position
+			local off = p - ORIGIN
+			if off.Y < -6 or math.abs(off.X) > half + 2 or math.abs(off.Z) > half + 2 then
+				r2.CFrame = CFrame.new(lastSafe.Position) * r2.CFrame.Rotation
+				r2.AssemblyLinearVelocity = Vector3.zero
+				r2.AssemblyAngularVelocity = Vector3.zero
+				if h2 then h2:ChangeState(Enum.HumanoidStateType.GettingUp) end
+				if RunService:IsStudio() then workspace:SetAttribute("FieldFallRescues", (workspace:GetAttribute("FieldFallRescues") or 0) + 1) end
+			elseif off.Y >= 2 and off.Y < 14 and math.abs(off.X) < half - 8 and math.abs(off.Z) < half - 8
+				and h2 and h2.FloorMaterial ~= Enum.Material.Air then
+				lastSafe = r2.CFrame
+			end
+		end
 		if r2 and r2:IsA("BasePart") and r2.Anchored then
 			r2.Anchored = false
 		end

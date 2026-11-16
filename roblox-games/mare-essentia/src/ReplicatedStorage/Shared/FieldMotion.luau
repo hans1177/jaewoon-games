@@ -201,6 +201,34 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			end
 		end
 	end
+	-- [몹 액션 다양화] 직군별 기존 공격 타이밍을 보존하면서 준비/타격/회복의 몸짓을 3가지로 차별화한다.
+	local variant = h.model:GetAttribute("MotionVariant")
+	if variant and (role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss") then
+		if state == "ANTICIPATION" or state == "ATTACK" then
+			local sign = if state == "ANTICIPATION" then 1 else -1
+			if variant == 1 then
+				-- 검객/궁수 계열: 어깨를 틀고 목표를 조준한 뒤 날카롭게 뻗는다.
+				bend("Chest", sign * 0.09 * pulse, 0.24 * pulse * sign, 0)
+				bend("UpperArmR", -0.26 * pulse, 0.08, -0.14 * pulse)
+				bend("Head", 0, -0.12 * pulse * sign, 0)
+			elseif variant == 2 then
+				-- 난투/근위 계열: 양팔을 모아 가드를 세우고 체중을 실어 때린다.
+				bend("Chest", -0.18 * pulse * sign, 0, 0.08 * pulse)
+				bend("UpperArmL", -0.34 * pulse, 0, -0.20)
+				bend("UpperArmR", -0.40 * pulse, 0, 0.20)
+			else
+				-- 척후/습격 계열: 반대쪽 어깨를 내밀며 낮게 기습한다.
+				bend("Chest", 0.17 * pulse * sign, -0.22 * pulse, -0.09 * pulse)
+				bend("UpperArmL", -0.46 * pulse, 0, -0.13)
+				bend("Head", -0.13 * pulse, 0.14 * pulse, 0)
+			end
+		elseif state == "RUN" and variant == 3 then
+			bend("Chest", -0.10, -0.05, 0)
+			bend("UpperArmL", -0.18, 0, -0.08)
+		elseif state == "RECOVERY" and variant == 2 then
+			bend("Chest", -0.16 * (1 - phase), 0, 0)
+		end
+	end
 	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
 	if gain and gain ~= 1 then
 		for k, cf in h.canon do
