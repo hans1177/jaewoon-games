@@ -655,6 +655,29 @@ function FieldScene.start(opts)
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 20
 	gui.Parent = player:WaitForChild("PlayerGui")
+	-- [예외 종료 복구] 정상 finish가 아닌 중간 생성 오류로 폴더가 삭제돼도
+	-- Heartbeat/입력 연결·카메라·조명·필드 UI를 남기지 않는다.
+	folder.Destroying:Connect(function()
+		if finished then return end
+		finished = true
+		for _, c in conns do
+			local ok, err = pcall(function() c:Disconnect() end)
+			if not ok then warn("[MareEssentia] 비정상 탐험 정리 오류", err) end
+		end
+		workspace:SetAttribute("FieldCombatReady", nil)
+		workspace:SetAttribute("FieldTouchPad", nil)
+		workspace:SetAttribute("FieldCameraMode", nil)
+		workspace:SetAttribute("FieldCameraZoomMax", nil)
+		player.CameraMode = savedCameraMode
+		player.CameraMaxZoomDistance = math.max(savedZoomMin, savedZoomMax)
+		player.CameraMinZoomDistance = savedZoomMin
+		player.CameraMaxZoomDistance = savedZoomMax
+		local L = game:GetService("Lighting")
+		L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = lightSave.FogColor, lightSave.FogStart, lightSave.FogEnd, lightSave.ClockTime
+		L.Brightness, L.Ambient, L.OutdoorAmbient = lightSave.Brightness, lightSave.Ambient, lightSave.OutdoorAmbient
+		L.ColorShift_Top = lightSave.ColorShiftTop
+		if gui.Parent then gui:Destroy() end
+	end)
 	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
 	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
 		UDim2.new(1, -12, 0, 184), Vector2.new(1, 0))
