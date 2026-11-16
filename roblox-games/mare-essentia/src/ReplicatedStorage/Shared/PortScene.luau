@@ -435,9 +435,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				error("동물 수입본 목표 크기 불일치")
 			end
 		end
-		if kind ~= "People" then
+		if kind ~= "People" and kind ~= "Animals" then
 			local _, size = m:GetBoundingBox()
-			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
+			-- 월드 원점을 기준으로 모델을 회전하면 수입된 가축이 엉뚱한 곳으로 이동한다.
+			-- 장식용 메시만 제자리 중심을 기준으로 방향을 맞춘다.
+			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
 		end
 		local center, size = m:GetBoundingBox()
 		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
@@ -1228,9 +1230,16 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			if not m then
 				return
 			end
-			m:PivotTo(CFrame.new(m:GetPivot().Position) * CFrame.Angles(0, rng:NextNumber(0, math.pi * 2), 0) * (m:GetPivot() - m:GetPivot().Position))
-			local gaitOf = { dog = 15, cat = 11, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
-			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0 })
+			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
+			local origin = m:GetPivot()
+			local forward = origin.LookVector
+			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
+				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
+				else CFrame.new(origin.Position)
+			local yaw = rng:NextNumber(-math.pi, math.pi)
+			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
+			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
+			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
 		end
 		local lay = zoneLayout(info.portId, lvl)
 		local has = {}
@@ -3389,30 +3398,22 @@ function PortScene.build(info, onFacility)
 			elseif w.mode == "animal" then
 				if w.model.Parent then
 					local t = now + w.phase
-					local pitch, bob = 0, 0
-					if w.akind == "graze" then
-						pitch = math.max(0, math.sin(t * 0.7)) * 0.22
-					elseif w.akind == "peck" then
-						pitch = math.max(0, math.sin(t * 3.1)) * 0.3
-					elseif w.akind == "tail" then
-						pitch = math.sin(t * 5) * 0.04
-						bob = math.abs(math.sin(t * 2.2)) * 0.05
-					else
-						bob = math.sin(t * 1.3) * 0.03
-					end
+					-- 가축 전신을 앞뒤로 숙이면 FBX별 기준축 차이 때문에 뒤집히므로 Y축 회전만 사용한다.
+					local bob = math.abs(math.sin(t * (w.gait or 7))) * 0.055
+					if w.akind == "graze" then bob *= 0.35 end
 					if w.span then
 						local u = t * w.rate
-						local go = math.abs(math.cos(u)) -- 걷는 정도(양 끝에서 0: 멈춰서 풀을 뜯거나 둘러본다)
-						local want = if math.cos(u) < 0 then math.pi else 0
-						-- 돌아설 때 휙 뒤집지 않고 부드럽게 몸을 돌린다
-						w.hd = (w.hd or 0) + (want - (w.hd or 0)) * 0.08
-						local ph = u * (w.gait or 7) * 2
-						bob = math.abs(math.sin(ph)) * 0.07 * go
-						local roll = math.sin(ph) * 0.07 * go
-						local rock = math.sin(ph * 2) * 0.035 * go + math.max(0, math.sin(t * 1.9)) * 0.28 * (1 - go) * (if w.akind == "still" then 0.3 else 1)
-						w.model:PivotTo(w.base * CFrame.new(0, bob, -math.sin(u) * w.span) * CFrame.Angles(0, w.hd, 0) * CFrame.Angles(rock, 0, roll))
+						local v = math.cos(u)
+						local go = math.abs(v)
+						local want = if v < 0 then math.pi else 0
+						-- 최단 회전 호를 사용하여 뒤돌 때 360도 회전/역주행이 생기지 않는다.
+						local hd = w.hd or 0
+						local angle = math.atan2(math.sin(want - hd), math.cos(want - hd))
+						hd += angle * math.clamp(dt * 6, 0, 1)
+						w.hd = hd
+						w.model:PivotTo(w.base * CFrame.new(0, bob * go, -math.sin(u) * w.span) * CFrame.Angles(0, hd, 0))
 					else
-						w.model:PivotTo(w.base * CFrame.Angles(pitch, 0, 0) + Vector3.new(0, bob, 0))
+						w.model:PivotTo(w.base * CFrame.new(0, bob * 0.5, 0))
 					end
 				end
 			elseif w.mode == "circle" then
