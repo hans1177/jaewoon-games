@@ -1155,6 +1155,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
+		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
+		if opts.cardOnly then
+			skip.Parent = g
+			skip.AnchorPoint = Vector2.zero
+			skip.Position = UDim2.fromScale(0.02, 0.84)
+			skip.Size = UDim2.fromOffset(112, 44)
+			skip.ZIndex = 30
+		end
 		table.insert(conns, { Disconnect = function()
 			if g.Parent then
 				g:Destroy()

@@ -3814,7 +3814,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,236);
+  assert.equal(steps.length,237);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
   assert.equal(slowIntro[0].timeoutMs,90000);
@@ -3826,8 +3826,17 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
   assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
-  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,9);
+  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
   assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.
+  const cardExitIndex=steps.findIndex(step=>step.label==='card_practice_exit');
+  assert.ok(cardExitIndex>steps.findIndex(step=>step.type==='capture'&&step.name==='cb2'));
+  assert.equal(steps[cardExitIndex].type,'click_from_luau');
+  assert.match(steps[cardExitIndex].code,/CARD_PRACTICE_EXIT_REAL_CLICK/);
+  assert.match(steps[cardExitIndex+1].code,/CARD_PRACTICE_EXIT_INPUT_NOT_RECEIVED/);
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.match(naval,/if opts\.cardOnly then\s+skip\.Parent = g/);
+  assert.match(naval,/skip\.ZIndex = 30/);
   for(const [from,to] of [['trade','harbor'],['route','map'],['codex','tech'],['status','crew']]){
     assert.ok(steps.some(step=>step.type==='click_from_luau'&&step.label==='qa_tab_'+from+'_to_'+to&&step.code.includes('QA_NAV_TARGET_NOT_CLICKABLE')));
     assert.ok(steps.some(step=>step.code?.includes('QA_REAL_TAB_CLICK_PASS:'+from+'_TO_'+to)));
