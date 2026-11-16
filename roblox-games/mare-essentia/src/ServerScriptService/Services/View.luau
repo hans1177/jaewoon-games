@@ -759,6 +759,13 @@ return function(D, S)
 				local subject = taxonomy and D.KnowledgeTree.DisciplineById[taxonomy.id]
 				-- [세계 산업 백과] 기존 상품 ID·지식카드·가공법으로 산업 경로를 조회한다.
 				-- 상품·보상은 새로 만들지 않고 지역 원산지와 기존 목표 수출 항구만 안내한다.
+				local originPortId = nil
+				for portId, port in D.Ports.Ports do
+					if table.find(port.produces, id)
+						and (not originPortId or portId < originPortId) then
+						originPortId = portId
+					end
+				end
 				local brand = D.ProductionChains.BrandById[id]
 				local recipe = if brand then D.ProductionChains.ById[brand.recipe] else D.ProductionChains.ByGood[id]
 				local chain = nil
@@ -777,6 +784,15 @@ return function(D, S)
 						port = origins and origins.name or brand.port, markets = markets,
 						research = D.KnowledgeTree.TaxonomyById[recipe.disc] and D.KnowledgeTree.TaxonomyById[recipe.disc].name or recipe.disc,
 					}
+				elseif recipe then
+					local raw = D.Ports.Goods[recipe.inputs[1]]
+					chain = {
+						raw = raw and raw.name or recipe.inputs[1],
+						processed = good.name,
+						port = originPortId and D.Ports.Ports[originPortId].name or "지역 공방",
+						markets = {}, research = D.KnowledgeTree.TaxonomyById[recipe.disc]
+							and D.KnowledgeTree.TaxonomyById[recipe.disc].name or recipe.disc,
+					}
 				end
 				table.insert(view.codex.resources, {
 					id = id, name = good.name, category = kindId,
@@ -785,6 +801,7 @@ return function(D, S)
 					appliedDiscipline = if good.discipline and D.KnowledgeTree.TaxonomyById[good.discipline] then D.KnowledgeTree.TaxonomyById[good.discipline].name else nil,
 					cardId = card and card.id or nil,
 					cardName = card and card.name or "연관 지식 미등록", chain = chain,
+					origin = originPortId and D.Ports.Ports[originPortId].name or nil,
 				})
 				view.codex.resourceCounts[kindId] = (view.codex.resourceCounts[kindId] or 0) + 1
 			end
