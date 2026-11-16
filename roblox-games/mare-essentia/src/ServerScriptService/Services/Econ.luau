@@ -7,6 +7,10 @@ return function(D, S)
 	local E = D.Economy
 	local X = { handlers = {} }
 	local MAX_CATCHUP = 45
+	-- [실시간 문명시계] 현실 30분당 게임 경제 1일. 기존 플레이어 날짜는 변경하지 않는다.
+	-- 서버 재기동 시 같은 기준 시각·시드에서 재현하며, 원래의 일일 처리량 상한을 보존한다.
+	local WORLD_EPOCH_UTC = 1794787200 -- 2026-11-16 00:00 UTC
+	local WORLD_DAY_SECONDS = 1800
 	local world = nil
 
 	local function ensure(state)
@@ -21,7 +25,8 @@ return function(D, S)
 	function X.advance(state)
 		local w = ensure(state)
 		if not w then return 0 end
-		local target = state.day or 0
+				local realDays = math.max(0, math.floor((os.time() - WORLD_EPOCH_UTC) / WORLD_DAY_SECONDS))
+		local target = math.max(state.day or 0, realDays)
 		local n = math.clamp(target - w.day, 0, MAX_CATCHUP)
 		for _ = 1, n do E.step(w) end
 		return n
@@ -48,7 +53,7 @@ return function(D, S)
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
-			day = w.day,
+			day = w.day, year = math.floor(E.year(w)), technology = E.technologyView(t, E.year(w)),
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
@@ -111,6 +116,26 @@ return function(D, S)
 		geography = { sea = 0.7 }, navigation = { sea = 1 }, astronomy = { sea = 0.5 }, meteorology = { sea = 0.6, agri = 0.3 }, shipbuilding = { sea = 0.8, craft = 0.3 },
 		medicine = { medicine = 1 },
 		history = { gov = 0.8 }, archaeology = { gov = 0.4 }, mythology = { gov = 0.2 },
+		-- [승격 학문] 57개 학문 각각이 기존 6대 문명 기술에 직접 기여한다.
+		mystery = { gov = 0.15, sea = 0.15 }, lostland = { sea = 0.4 },
+		philology = { commerce = 0.25, gov = 0.35 }, ethics = { gov = 0.5 },
+		religious_studies = { gov = 0.45 }, law = { gov = 1, commerce = 0.2 },
+		political_science = { gov = 1 }, biology = { agri = 0.5, medicine = 0.3 },
+		mathematics = { craft = 0.45, sea = 0.3 }, geometry = { craft = 0.55 },
+		trigonometry = { sea = 0.8, craft = 0.25 }, geology = { craft = 0.6 },
+		oceanography = { sea = 0.9 }, ecology = { agri = 0.65 },
+		optics = { sea = 0.35, craft = 0.45 }, mechanics = { craft = 0.9 },
+		civil_engineering = { craft = 0.85, gov = 0.2 }, metallurgy = { craft = 1 },
+		pharmacology = { medicine = 0.95 }, public_health = { medicine = 1, gov = 0.2 },
+		agronomy = { agri = 1 }, cartography = { sea = 1 },
+		military_science = { gov = 0.65, sea = 0.2 }, historiography = { gov = 0.65 },
+		anthropology = { gov = 0.4, commerce = 0.25 }, economics = { commerce = 0.9, gov = 0.25 },
+		painting = { craft = 0.4, commerce = 0.1 }, sculpture = { craft = 0.55 },
+		brewing = { agri = 0.25, craft = 0.55 }, textiles = { craft = 0.75, commerce = 0.2 },
+		crafts = { craft = 0.9 }, sailing_craft = { sea = 0.9 },
+		trade_craft = { commerce = 0.9 }, forestry = { agri = 0.5, craft = 0.3 },
+		mining = { craft = 0.9 }, paleontology = { agri = 0.15, craft = 0.2 },
+		gunnery = { craft = 0.5, sea = 0.4 }, naval_warfare = { sea = 0.65, gov = 0.3 },
 	}
 	X.DISC_TECH = DISC_TECH
 	local TEACH_STEP = 0.02 -- 카드 1점당 기술 상승 (희귀도가 점수)
@@ -126,6 +151,8 @@ return function(D, S)
 				for f, wt in pairs(map) do
 					t.tech[f] += TEACH_STEP * (points or 1) * wt * share / (t.tech[f] ^ 0.3)
 				end
+				-- 학자의 연구가 마지막 채택 조건을 채웠다면 그 도시에서 곧바로 실용화한다.
+				E.adoptTechnologies(t, E.year(w))
 			end
 		end
 		return town
