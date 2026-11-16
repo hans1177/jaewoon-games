@@ -1,5 +1,5 @@
 --!nonstrict
--- KnowledgeTree.luau · 기존 학문/지식 선행 트리와 버드나무 식물→의학 연계
+-- KnowledgeTree.luau · 기존 21학문 + 30개 세부 학문 승격, 중복 보상 없는 다중 학문 교차 연결
 -- 지식 트리(인과 관계): 발견한 도감 카드를 학자에게 "보고"하면 그 지식을 이해한 것으로 인정된다.
 -- 선행 지식(needs)을 모두 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해·화력·교역품 값에 실제 효과를 준다.
 -- 새 학문·지식은 표에 줄만 더하면 된다. 카드 id 는 KnowledgeCards 에 있어야 한다 (테스트가 검사).
@@ -457,6 +457,107 @@ p("crafts", "공예", "practical", "art", "도자기·유리·금속 세공.")
 p("sailing_craft", "선원 기술", "practical", "navigation", "매듭·돛 조작·밧줄 다루기.")
 p("trade_craft", "장사 기술", "practical", "commerce", "흥정과 장부.")
 
+-- [학문 확장] 기존 21개 주학문·K.Nodes 소유권을 유지한 채, 이미 예정된 실용 세부 학문 중 30개를 활성화한다.
+-- 기존 연구 기록(reported)을 재해석해 관련 세부 학문 숙련도를 병행 계산한다. 새 저장키/보상/시대 기준 변경 없음.
+p("forestry", "임학", "applied", "botany", "나무의 자람·숲·수지·목재를 다루는 학문.")
+p("mining", "광업학", "applied", "mineralogy", "광맥·채굴·광석을 기록하는 학문.")
+p("paleontology", "고생물학", "natural", "geology", "화석으로 오래전 생물을 살피는 학문.")
+local PROMOTED = {
+	mathematics = true,
+	geometry = true,
+	trigonometry = true,
+	geology = true,
+	oceanography = true,
+	ecology = true,
+	optics = true,
+	mechanics = true,
+	civil_engineering = true,
+	metallurgy = true,
+	pharmacology = true,
+	public_health = true,
+	agronomy = true,
+	cartography = true,
+	military_science = true,
+	historiography = true,
+	anthropology = true,
+	economics = true,
+	painting = true,
+	sculpture = true,
+	brewing = true,
+	textiles = true,
+	crafts = true,
+	sailing_craft = true,
+	trade_craft = true,
+	forestry = true,
+	mining = true,
+	paleontology = true,
+	gunnery = true,
+	naval_warfare = true,
+}
+local unpromoted = {}
+K.Promoted = {}
+for _, row in K.Planned do
+	if PROMOTED[row.id] then
+		local active = {
+			id = row.id, name = row.name, field = "Study_" .. row.id,
+			era = "시대에 따라 정립", parent = row.parent, summary = row.summary,
+		}
+		table.insert(K.Disciplines, active)
+		K.DisciplineById[row.id] = active
+		K.DomainOf[row.id] = row.domain
+		K.Promoted[row.id] = true
+	else
+		table.insert(unpromoted, row)
+	end
+end
+K.Planned = unpromoted
+
+-- [학문 다중 소속] 기존 카드의 주학문·보상·선행 노드는 절대로 재배정하지 않는다.
+-- 이미 보고한 카드만 새 학문에서도 함께 숙련/진행도로 인정한다. 총 보고 수·시대 점수는 1번만 센다.
+K.SpecialismCards = {
+	mathematics = { "relic_sundial", "relic_hourglass" },
+	geometry = { "site_pont_du_gard", "arch_stone_bridge" },
+	trigonometry = { "relic_astrolabe_arab", "relic_compass_old" },
+	geology = { "min_vesuvius", "min_granite", "min_basalt" },
+	oceanography = { "geo_canary_current", "geo_med_currents", "geo_kuroshio" },
+	ecology = { "bot_mangrove", "zoo_oyster", "geo_tidal_flats" },
+	optics = { "relic_stained_glass", "min_quartz" },
+	mechanics = { "relic_aeolipile", "site_gdansk_crane" },
+	civil_engineering = { "site_amsterdam_canals", "site_bryggen" },
+	metallurgy = { "min_copper_ingot", "min_iron_ore", "min_tin_ore" },
+	pharmacology = { "med_opium", "bot_rosemary", "bot_foxglove" },
+	public_health = { "med_diet", "site_roman_baths" },
+	agronomy = { "bot_rice_paddy", "bot_barley", "bot_rye" },
+	cartography = { "geo_sound_survey", "geo_north_notes" },
+	military_science = { "relic_viking_helm", "relic_cutlass" },
+	historiography = { "relic_royal_charter", "relic_logbook" },
+	anthropology = { "relic_kente", "relic_mask", "relic_prayer_beads" },
+	economics = { "good_salt_trade", "good_fur" },
+	painting = { "relic_scroll_painting", "relic_mughal_miniature" },
+	sculpture = { "relic_ife_head", "relic_buddha_head" },
+	brewing = { "good_beer", "chem_alcohol" },
+	textiles = { "goods_linen", "pac_maori_cloak" },
+	crafts = { "good_porcelain", "relic_ming_vase", "relic_lacquer_box" },
+	sailing_craft = { "ship_square_sail", "ship_rudder", "ship_anchor" },
+	trade_craft = { "lang_ledger", "relic_hansa_seal" },
+	forestry = { "bot_oak", "bot_cork_oak", "bot_pine_resin" },
+	mining = { "min_coal_seam", "min_lead_ore", "min_copper_ore" },
+	paleontology = { "min_amber_insect", "min_amber_raw" },
+	gunnery = { "relic_flintlock", "relic_doubloon" },
+	naval_warfare = { "relic_figurehead", "relic_hanse_cog" },
+}
+K.CardRelatedDisciplines = {}
+for discId, ids in K.SpecialismCards do
+	for _, id in ids do
+		K.CardRelatedDisciplines[id] = K.CardRelatedDisciplines[id] or {}
+		table.insert(K.CardRelatedDisciplines[id], discId)
+	end
+end
+function K.belongsToDiscipline(node, discId)
+	if node.disc == discId then return true end
+	return K.CardRelatedDisciplines[node.id] and table.find(K.CardRelatedDisciplines[node.id], discId) ~= nil or false
+end
+
 -- 전체 분류표: active + planned 를 한 표로 (id → { id, name, domain, parent, planned })
 K.Taxonomy = {}
 K.TaxonomyById = {}
@@ -589,7 +690,8 @@ function K.autofill(cards: { any })
 		end
 	end
 	for _, c in cards do
-		local disc = byField[c.field]
+		local chosen = c.meta and c.meta.discipline
+		local disc = if chosen and K.DisciplineById[chosen] then chosen else byField[c.field]
 		if disc and not K.ById[c.id] then
 			local needs = {}
 			if (c.rarity == "Rare" or c.rarity == "Epic" or c.rarity == "Legendary") and roots[disc] then
