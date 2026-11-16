@@ -24,9 +24,20 @@ end
 -- 카드 하나의 분류 경로: { domain, discipline, sub }  (모두 id, 못 찾으면 nil)
 function T.path(cardId: string)
 	local c = Cards.ById[cardId]
-	local disc = c and T.DisciplineOfField[c.field]
+	local disc = c and ((c.meta and c.meta.discipline) or T.DisciplineOfField[c.field])
 	local row: any = disc and (K.TaxonomyById :: any)[disc]
-	return { domain = row and row.domain or nil, discipline = disc, sub = T.SubOf[cardId] }
+	-- [세계 백과] 기존 경로를 유지하면서 모든 카드에 존재 형태·시대·지역·교차 학문·선행 지식을 연결한다.
+	local node = c and K.ById[cardId]
+	local meta = c and c.meta
+	local needs = node and node.needs or (c and c.research and c.research.reported) or {}
+	return {
+		domain = row and row.domain or nil, discipline = disc, sub = T.SubOf[cardId],
+		entityType = c and Cards.entityTypeOf(c) or nil,
+		era = meta and meta.era or nil,
+		region = meta and (meta.region or c.visitPort) or (c and c.visitPort) or nil,
+		relatedDisciplines = meta and meta.relatedDisciplines or K.CardRelatedDisciplines[cardId] or {},
+		prerequisites = needs,
+	}
 end
 
 -- 점검: 모든 카드가 학문·대분류에 연결되고, 소분류가 분류표에 있는지 확인. 문제 목록 반환.
@@ -38,6 +49,21 @@ function T.audit(): { string }
 			table.insert(bad, c.id .. ": Field '" .. tostring(c.field) .. "' 에 학문 없음")
 		elseif not p.domain then
 			table.insert(bad, c.id .. ": 학문 '" .. p.discipline .. "' 에 대분류 없음")
+		end
+	end
+	-- 메타데이터가 지정하는 주학문·교차 학문·선행 지식은 실제 존재해야 한다.
+	for _, c in Cards.Cards do
+		local meta = c.meta
+		if meta then
+			if meta.discipline and not K.DisciplineById[meta.discipline] then
+				table.insert(bad, c.id .. ": 활성 학문 없음 " .. meta.discipline)
+			end
+			for _, related in meta.relatedDisciplines or {} do
+				if not K.DisciplineById[related] then table.insert(bad, c.id .. ": 연관 학문 없음 " .. related) end
+			end
+		end
+		for _, needId in (c.research and c.research.reported or {}) do
+			if not Cards.ById[needId] then table.insert(bad, c.id .. ": 선행 지식 없음 " .. needId) end
 		end
 	end
 	for id, sub in T.SubOf do
