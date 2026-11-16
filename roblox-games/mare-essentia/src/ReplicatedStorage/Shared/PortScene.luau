@@ -2843,6 +2843,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				one("Town", "fence_straight", 5, x, 0, lay.fishZ)
 				one("Cargo", "fish-large", 2, x, 3, lay.fishZ)
 			end
+			-- [어항 생활 자산] 등록·권한 확인된 전통 어망과 부표만 기존 어업 필지에 배치한다.
+			-- 승인 모델이 로드되지 않으면 배치만 생략하고 어업·경제·저장 흐름은 유지한다.
+			local fishingNet = one("Naval", "fishing-net", 8, -11, 0, lay.fishZ + 12)
+			if fishingNet then fishingNet.Name = "HarborFishingNet" end
+			local netFloats = one("Naval", "net-floats", 4, 4, 0, lay.fishZ + 15)
+			if netFloats then netFloats.Name = "HarborNetFloats" end
 			local localBoat = if regionalHarbor == "indian_ocean" then "boat-sail-a"
 				elseif regionalHarbor == "tropical_inlet" or regionalHarbor == "chinese_quay" then "boat-row-large"
 				elseif regionalHarbor == "cold_fishing" or regionalHarbor == "hanseatic" then "boat-fishing-small"
