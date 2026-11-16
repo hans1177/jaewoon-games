@@ -364,6 +364,35 @@ do
 		and memory.value.day >= lateDay and memory.value.revision == 2)
 end
 
+-- [20명 모바일 CPU] 시뮬 전체 레시피 대신 항구별 기존 가공 목록만 검사한다.
+-- 세계·저장 형식 변경 없이 기존 전수 순회와 생산 재고·가격이 동일해야 한다.
+do
+	local Chains = require("./Shared/ProductionChains")
+	local a = Eco.newWorld({ seed = 71, year = 1650 })
+	local b = Eco.newWorld({ seed = 71, year = 1650 })
+	local localCount = 0
+	for _, t in pairs(a.towns) do
+		for _, recipe in ipairs(t.industryRecipes) do
+			check("항구 생산 레시피만 사전 배치 " .. t.id .. ":" .. recipe.id,
+				t.produces[Chains.goodId(recipe)] == true)
+			localCount += 1
+		end
+	end
+	check("항구별 가공 목록으로 중복 검사 감소", localCount > 0 and localCount < #a.order * #Chains.Recipes)
+	for _, t in pairs(b.towns) do t.industryRecipes = nil end -- 변경 전 전체 제작법 순회 방식
+	Eco.run(a, 3)
+	Eco.run(b, 3)
+	for _, id in ipairs(a.order) do
+		local t, previous = a.towns[id], b.towns[id]
+		for _, g in ipairs(t.goods) do
+			check("최적화 후 기존 생산 재고·가격 일치 " .. id .. ":" .. g,
+				t.stock[g] == previous.stock[g] and t.price[g] == previous.price[g])
+		end
+	end
+	local copy = Eco.restoreWorld(Eco.snapshot(a))
+	check("세계 복원 시 항구별 가공 레시피 재구성", copy ~= nil and #copy.towns.london.industryRecipes > 0)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})

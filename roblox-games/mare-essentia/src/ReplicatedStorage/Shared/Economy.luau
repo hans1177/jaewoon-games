@@ -264,6 +264,14 @@ local function newTown(p, w)
 	for _, brand in ipairs(Chains.BrandsByPort[p.id] or {}) do
 		if t.produces[brand.id] then t.exports[brand.id] = 0 end
 	end
+	-- [항구별 생산목록] 고정된 기존 제작법을 마을마다 한 번만 정리한다.
+	-- 저장하지 않는 런타임 값이라 세계 세이브 형식·기존 원료 수량에 영향이 없다.
+	t.industryRecipes = {}
+	for _, recipe in ipairs(Chains.Recipes) do
+		if t.produces[Chains.goodId(recipe)] then
+			table.insert(t.industryRecipes, recipe)
+		end
+	end
 	E.initBuildings(t)
 	return t
 end
@@ -402,10 +410,11 @@ function E.stepIndustries(t)
 	local capacity = math.min(t.bld.workshop * 0.2, t.pop * 0.0008)
 		* (t.tech.craft ^ 0.4) * t.civBonus.craft * t.fx.prod
 	local recipes = 0
-	for _, recipe in ipairs(Chains.Recipes) do
+	local localRecipes = t.industryRecipes or Chains.Recipes
+	for _, recipe in ipairs(localRecipes) do
 		if t.produces[Chains.goodId(recipe)] and t.stage >= recipe.minLevel then recipes += 1 end
 	end
-	for _, recipe in ipairs(Chains.Recipes) do
+	for _, recipe in ipairs(localRecipes) do
 		local id = Chains.goodId(recipe)
 		if t.produces[id] and t.stage >= recipe.minLevel and t.tech.craft >= 1.12 then
 			for _, source in ipairs(recipe.inputs) do
