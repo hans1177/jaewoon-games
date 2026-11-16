@@ -108,6 +108,22 @@ local Scholars: { Scholar } = {
 		cardId = "phy_barometer", line = "우리는 공기의 바다 밑바닥에 살고 있지요. 그 무게가 수은 기둥을 떠받칩니다." },
 	{ id = "hooke", name = "로버트 훅", portId = "london", fromYear = 1665, toYear = 1703, minFame = 40,
 		cardId = "med_cell_observation", line = "코르크를 얇게 썰어 보니 작은 방들이 가득했소. 나는 그것을 세포라 불렀지." },
+
+	-- [지역 실존 학자] 역사적 활동 연도 안에서 항구에서 만나는 학자 NPC. 기존 지식카드를 전수한다.
+	{ id = "katip_celebi", name = "카티프 첼레비", portId = "istanbul", fromYear = 1635, toYear = 1657, minFame = 40,
+		cardId = "geo_bosphorus", line = "지도를 펼쳐 보게. 보스포루스는 두 대륙을 잇는 문이자 세계를 읽는 길목이라네." },
+	{ id = "jyesthadeva", name = "제스타데바", portId = "calicut", fromYear = 1530, toYear = 1575, minFame = 40,
+		cardId = "ast_solar_eclipse", line = "일식의 움직임도 계산으로 설명할 수 있소. 규칙을 증명하는 일이 곧 학문이지." },
+	{ id = "qu_dajun", name = "취다쥔", portId = "canton", fromYear = 1683, toYear = 1696, minFame = 40,
+		cardId = "geo_south_china_sea", line = "남쪽 바다와 땅의 풍속을 함께 기록해야 광둥의 모습을 이해할 수 있지." },
+	{ id = "shizuki_tadao", name = "시즈키 다다오", portId = "nagasaki", fromYear = 1777, toYear = 1806, minFame = 40,
+		cardId = "lang_translation", line = "먼 나라의 책을 우리말로 옮기면 별과 힘의 법칙도 새롭게 보이지요." },
+	{ id = "shin_yuhan", name = "신유한", portId = "busan", fromYear = 1719, toYear = 1720, minFame = 35,
+		cardId = "relic_logbook", line = "바다를 건너면서 본 글과 풍속을 적어 두었소. 돌아온 뒤에도 그 기록은 남겠지." },
+	{ id = "jose_mocino", name = "호세 마리아노 모시뇨", portId = "veracruz", fromYear = 1793, toYear = 1794, minFame = 50,
+		cardId = "bot_vanilla", line = "베라크루스의 식물은 한 장의 그림으로 끝나지 않소. 잎과 꽃을 기록해 비교해야 하지." },
+	{ id = "muyaka_bin_haji", name = "무야카 빈 하지", portId = "mombasa", fromYear = 1800, toYear = 1840, minFame = 30,
+		cardId = "lang_sea_slang", line = "항구에서 오가는 말에도 우리 삶이 들어 있소. 그 소리를 시로 남기겠소." },
 }
 
 return {

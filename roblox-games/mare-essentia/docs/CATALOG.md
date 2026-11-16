@@ -1018,6 +1018,17 @@
 | 프란체스코 레디 | 리보르노 | 1655~1697 | 50 | 레디의 구더기 실험 |
 | 마르첼로 말피기 | 제노바 | 1660~1694 | 60 | 식물 해부도 |
 | 카를 린네 | 예테보리 | 1735~1778 | 80 | 이명법 |
+| 카티프 첼레비 | 이스탄불 | 1635~1657 | 40 | 보스포루스 해협 |
+| 제스타데바 | 캘리컷(케랄라 지역) | 1530~1575 | 40 | 일식 |
+| 취다쥔 | 광저우 | 1683~1696 | 40 | 남중국해 |
+| 시즈키 다다오 | 나가사키 | 1777~1806 | 40 | 번역서 |
+| 신유한 | 부산 | 1719~1720 | 35 | 낡은 항해일지 |
+| 호세 마리아노 모시뇨 | 베라크루스 | 1793~1794 | 50 | 바닐라 |
+| 무야카 빈 하지 | 몸바사 | 1800~1840 | 30 | 뱃사람 은어 |
+
+지역 학자 7명은 실존 인물이고, 등장 항구·연도는 검증한 역사 활동에 맞춘 게임상 배치다. 캘리컷은 케랄라 학파의 **대표 항구**로 사용하며 실제 거주지를 단정하지 않는다. 추가 학자는 신규 동료가 아닌 기존 학자 방문·지식 보고 NPC다. 기존 카드·수치·저장 키·동료를 변경하지 않는다.
+
+참고: https://turkmaarifansiklopedisi.org.tr/katip-celebi · https://mathshistory.st-andrews.ac.uk/Biographies/Jyesthadeva/ · https://fanhan.org/chapter-4/guangdong-xinyu/ · https://www.ndl.go.jp/nichiran/e/s2/s2_2.html · https://mmk.or.kr/eng/?folder=collection&idx=980&page=view · https://www.biographi.ca/en/bio/2572 · https://www.poetryfoundation.org/poets/muyaka-bin-haji
 
 ## 퀘스트
 | 이름 | 내용 | 보상 |

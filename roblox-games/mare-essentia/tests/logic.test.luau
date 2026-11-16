@@ -612,6 +612,40 @@ do
 		check("scholar card exists " .. sc.id, D.Cards.ById[sc.cardId] ~= nil)
 		check("scholar years ordered " .. sc.id, sc.fromYear < sc.toYear)
 	end
+
+	-- [지역 실존 학자] 기존 카드·항구·시대·지식 보고 연결의 회귀 검사.
+	local regionalScholars = {
+		katip_celebi = { port = "istanbul", first = 1635, last = 1657, card = "geo_bosphorus" },
+		jyesthadeva = { port = "calicut", first = 1530, last = 1575, card = "ast_solar_eclipse" },
+		qu_dajun = { port = "canton", first = 1683, last = 1696, card = "geo_south_china_sea" },
+		shizuki_tadao = { port = "nagasaki", first = 1777, last = 1806, card = "lang_translation" },
+		shin_yuhan = { port = "busan", first = 1719, last = 1720, card = "relic_logbook" },
+		jose_mocino = { port = "veracruz", first = 1793, last = 1794, card = "bot_vanilla" },
+		muyaka_bin_haji = { port = "mombasa", first = 1800, last = 1840, card = "lang_sea_slang" },
+	}
+	for id, expected in regionalScholars do
+		local scholar = nil
+		for _, sc in D.Scholars.Scholars do
+			if sc.id == id then scholar = sc; break end
+		end
+		check("regional scholar exists " .. id, scholar ~= nil)
+		if scholar then
+			check("regional scholar location/year/card " .. id,
+				scholar.portId == expected.port and scholar.fromYear == expected.first
+				and scholar.toYear == expected.last and scholar.cardId == expected.card)
+			check("regional scholar discipline " .. id,
+				type(D.KnowledgeTree.ScholarDisciplines[id]) == "table")
+			local st = newState("england")
+			st.portId = scholar.portId
+			st.startYear = scholar.fromYear
+			st.fame = scholar.minFame
+			local okVisit = act(st, "Visit", { scholarId = id })
+			check("regional scholar first visit " .. id,
+				okVisit == true and st.scholarsMet[id] == true and st.discovered[scholar.cardId] == true)
+			local okTwice = act(st, "Visit", { scholarId = id })
+			check("regional scholar duplicate reward blocked " .. id, okTwice == false)
+		end
+	end
 	for id, t in D.Tech.Tech do
 		for _, cid in t.requiresCards do
 			check("tech card exists " .. id .. "/" .. cid, D.Cards.ById[cid] ~= nil)

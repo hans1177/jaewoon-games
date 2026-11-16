@@ -53,6 +53,14 @@ K.ScholarDisciplines = {
 	johnson = { "linguistics" }, worm = { "archaeology", "linguistics", "mythology" }, pontoppidan = { "mythology", "zoology" },
 	rembrandt = { "art" }, vermeer = { "art" }, rubens = { "art" }, velazquez = { "art" }, vandevelde = { "art" },
 	canaletto = { "art" }, hogarth = { "art" }, handel = { "art" }, buxtehude = { "art" }, merian = { "art", "zoology", "botany" },
+	-- [지역 실존 학자] 주인공과 동료의 학문 트리와 동일한 학문을 보고받는다.
+	katip_celebi = { "geography", "history" },
+	jyesthadeva = { "astronomy" },
+	qu_dajun = { "history", "geography" },
+	shizuki_tadao = { "physics", "astronomy", "linguistics" },
+	shin_yuhan = { "linguistics", "history" },
+	jose_mocino = { "botany", "medicine" },
+	muyaka_bin_haji = { "linguistics", "art" },
 }
 
 -- 노드: id(카드 id), disc, needs(선행 카드), 효과 { speed=, cannon=, goods={ids}, goodsMult=, label= }
