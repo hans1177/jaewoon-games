@@ -25,8 +25,8 @@ const studioRegrantArg = process.argv.find(arg => arg.startsWith('--studio-regra
 const studioRegrantPath = studioRegrantArg ? studioRegrantArg.slice('--studio-regrant='.length) : '';
 if (studioRegrantArg && !studioRegrantPath) throw new Error('STUDIO_REGRANT_REPORT_PATH_REQUIRED');
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
-// [무료 실물 무기] 외부 CC0 원본 GLB를 형상·해시 검사 후 기존 자산 등록 통로에 인입한다.
-async function prepareLicensedWeaponOriginals() {
+// [무료 실물 원본] 기존 무기 및 항구 어망 CC0 GLB만 출처·형상·해시를 확인해 기존 등록기로 가져온다.
+async function prepareLicensedOriginals() {
   const sources = [
     {name:'mace', author:'Grab3D', source:'https://grab3d.com/dl/mace/mace.glb',
       page:'https://grab3d.com/models/weapons/mace/', minBytes:20000, minTriangles:3000},
@@ -38,10 +38,17 @@ async function prepareLicensedWeaponOriginals() {
     {name:'flintlock-musket', author:'Pixor',
       source:'https://pixor.art/library/files/musket/pixor-library-musket.glb',
       page:'https://pixor.art/library/weapons/musket/', minBytes:6000, minTriangles:200},
+    // [어항 생활 소품] 실제 GLB/Blender 원본을 공개한 Pixor CC0 어망 2종. 현대 장비는 제외.
+    {name:'fishing-net', assetPath:'assets/naval/fishing-net.glb', author:'Pixor',
+      source:'https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb',
+      page:'https://pixor.art/library/tools/fishing-net/', minBytes:6000, minTriangles:400},
+    {name:'net-floats', assetPath:'assets/naval/net-floats.glb', author:'Pixor',
+      source:'https://pixor.art/library/files/net-floats/pixor-library-net-floats.glb',
+      page:'https://pixor.art/library/pirate/net-floats/', minBytes:6000, minTriangles:500},
   ];
   for (const item of sources) {
     const name = item.name, source = item.source, sourcePage = item.page;
-    const target = path.join(ROOT, 'assets/relics/weapon-' + name + '.glb');
+    const target = path.join(ROOT, item.assetPath || ('assets/relics/weapon-' + name + '.glb'));
     const proof = target + '.license.json';
     let bytes, evidence;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
@@ -83,7 +90,7 @@ async function prepareLicensedWeaponOriginals() {
     } else console.log('MARE_CC0_WEAPON_SOURCE_VERIFIED', name, tris);
   }
 }
-if (!studioRegrantPath) await prepareLicensedWeaponOriginals();
+if (!studioRegrantPath) await prepareLicensedOriginals();
 
 
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
