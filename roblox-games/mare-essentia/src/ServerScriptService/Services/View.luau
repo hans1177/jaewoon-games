@@ -965,6 +965,14 @@ return function(D, S)
 				produces = {},
 				demands = {},
 			}
+			-- 역사·정치 항목도 소식이 전해지기 전에는 제목과 인물 이름이 노출되지 않는다.
+			if view.harbor.sim and view.harbor.sim.historyEffects then
+				local shown = {}
+				for _, ev in ipairs(view.harbor.sim.historyEffects) do
+					if received[ev.id] then table.insert(shown, ev) end
+				end
+				view.harbor.sim.historyEffects = shown
+			end
 			local full = D.Harbor.producesOf(port.produces, rid0, yr0)
 			local lvE = lv0
 			for i, id in full do
