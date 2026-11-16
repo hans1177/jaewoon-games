@@ -124,6 +124,9 @@ return function(D, S)
 		while #w.log > LOG_MAX do
 			table.remove(w.log)
 		end
+		-- [사건 정보 지연] 먼 지역 사건은 실제 세계에 반영하되 발생 즉시 전 세계 알림을 보내지 않는다.
+		-- 뒤늦게 도착한 뉴스는 항구 신문·주점·동료 화면에서 확인한다.
+		if not exposed then return {} end
 		return msgs
 	end
 
@@ -285,7 +288,8 @@ return function(D, S)
 		for i, a in w.active do
 			local tpl = W.ById[a.id]
 			table.insert(out.active, {
-				index = i, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), left = a.endDay - state.day, here = a.region == here,
+				index = i, id = a.id, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), regionId = a.region,
+			left = a.endDay - state.day, here = a.region == here,
 				canAid = a.kind == "disaster" and a.region == here and not a.aided and not (tpl and tpl.aid == false), aided = a.aided == true,
 				cut = if a.kind == "disaster" and tpl then math.floor(mitigation(state, tpl.guard) * 100 + 0.5) else nil,
 			})
