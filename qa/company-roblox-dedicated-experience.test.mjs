@@ -1038,7 +1038,7 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
   assert.match(server,/-- 해상전은 카드 대결 없이 원래 전투 판정을 따른다/);
 });
 
-test('Mare naval card battle backdrop respects six existing lanes, zoom and approved image gating', () => {
+test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
@@ -1054,7 +1054,7 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.match(source,/handFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
   assert.match(source,/boardFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
   assert.match(source,/boardFrame.Size = UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
-  assert.match(source,/local order = \{ \{ "foe", "cannon" \}, \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \}, \{ "me", "cannon" \} \}/);
+  assert.match(source,/local order = \{ \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
@@ -1069,7 +1069,7 @@ test('Mare naval card battle backdrop respects six existing lanes, zoom and appr
   assert.ok(source.includes('focusEdge.Color = if regionDeck then regionDeck.color else brass'));
   assert.ok(source.includes('focusRule.Text = category .. row .. strength'));
   assert.ok(source.includes('frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)'));
-  assert.match(source,/origin\\.Name = "CardDeckOrigin"/);
+  assert.match(source,/origin\.Name = "CardDeckOrigin"/);
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
   // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.
