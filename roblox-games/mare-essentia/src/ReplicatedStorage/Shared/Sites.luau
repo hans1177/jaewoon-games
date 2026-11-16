@@ -606,7 +606,7 @@ local Sites: { Site } = {
 	{ id = "nagasaki_armory", name = "나가사키 무기고", portId = "nagasaki", minLevel = 2, days = 2, pool = { "mil_ashigaru", "mil_joseon_archer", "mil_choi_cannon", "mil_han_crossbow", "mil_fire_lance", "mil_ming_musket", "mil_samurai_bushi", "mil_mongol_archer", "mil_hwacha", "mil_kheshig", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
 	{ id = "veracruz_battlefield", name = "베라크루스 옛 전장", portId = "veracruz", minLevel = 2, days = 2, pool = { "mil_jaguar_warrior", "mil_inca_sling", "mil_battering_ram", "mil_atlatl", "mil_macuahuitl", "mil_iroquois", "mil_conquistador", "mil_eagle_warrior", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
 	{ id = "istanbul_arsenal", name = "이스탄불 병기창", portId = "istanbul", minLevel = 2, days = 2, pool = { "mil_saracen_archer", "mil_camel_rider", "mil_manjaniq", "mil_janissary", "mil_mamluk", "mil_greek_fire", "mil_great_bombard", "mil_saladin_guard", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
-	{ id = "mombasa_fort", name = "몸바사 요새 기록", portId = "mombasa", minLevel = 2, days = 2, pool = { "mil_nubian_archer", "mil_ethiopian_spear", "mil_stone_thrower", "mil_songhai_cavalry", "mil_ashanti_musket", "mil_berber_raider", "mil_mali_horse", "mil_hannibal_elephants", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
+	{ id = "mombasa_fort_records", name = "몸바사 요새 기록", portId = "mombasa", minLevel = 2, days = 2, pool = { "mil_nubian_archer", "mil_ethiopian_spear", "mil_stone_thrower", "mil_songhai_cavalry", "mil_ashanti_musket", "mil_berber_raider", "mil_mali_horse", "mil_hannibal_elephants", "mil_scout_party", "mil_marine", "mil_naval_gunner", "mil_army_surgeon" } },
 }
 
 return {
