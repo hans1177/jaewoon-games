@@ -841,6 +841,27 @@ do
 	check("학문 시설: 수학 지식 보고 후 산술 교실·산술 교사가 실제 나타난다",
 		mathTownReady and table.find(mathTownFac, "산술 교실") ~= nil
 		and table.find(mathTownJobs, "산술 교사") ~= nil)
+	-- [승격 학문 실기동] 원래 식물학 소유인 참나무 보고는 임학 시설도 열지만 도시 성장 점수는 중복 증가시키지 않는다.
+	local forestTown = S.State.new("england", 1700)
+	forestTown.reported.bot_oak = true
+	local _, forestScore = S.Village.tiers(forestTown)
+	local forestFac, forestJobs, forestDisc = S.Village.discFacilities(forestTown, 6)
+	local forestLinked = false
+	for _, row in forestDisc do
+		if row.id == "forestry" and row.facility == "벌목 기록소" and row.job == "벌목 기록관" then
+			forestLinked = true
+		end
+	end
+	check("학문 시설: 식물학 보고 카드의 임학 교차 시설이 실제 열린다",
+		D.KnowledgeTree.ById.bot_oak.disc == "botany"
+		and forestLinked and table.find(forestFac, "벌목 기록소") ~= nil
+		and table.find(forestJobs, "벌목 기록관") ~= nil)
+	check("학문 시설: 교차 학문은 기존 마을 성장 점수를 중복 증가시키지 않는다",
+		forestScore == 1)
+	local emptyFac = S.Village.discFacilities(S.State.new("england", 1700), 6)
+	check("학문 시설: 미보고 학문은 항구가 커도 시설을 만들지 않는다",
+		table.find(emptyFac, "벌목 기록소") == nil)
+
 
 	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
 	local fac6, jobs6, by6 = S.Village.discFacilities(stFull, 6)
