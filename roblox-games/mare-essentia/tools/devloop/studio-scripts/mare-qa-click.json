@@ -284,6 +284,24 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer.PlayerGui local main=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Main',true)) local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) workspace:SetAttribute('QAIconMainVisible',main.Visible) workspace:SetAttribute('QAIconHudVisible',hud.Visible) workspace:SetAttribute('QAIconTopEnabled',top.Enabled) main.Visible=false hud.Visible=true top.Enabled=true local dock=assert(top:FindFirstChild('Dock',true)) for _,key in ipairs({'Menu_trade','Menu_route','Menu_yard','Menu_board','Menu_battle','Menu_codex','Menu_status'}) do local b=assert(dock:FindFirstChild(key),'ICON_SCREEN_MISSING '..key) assert(b.BackgroundTransparency==1,'ICON_SCREEN_OPAQUE '..key) end return 'QA_MENU_ICONS_VISIBLE_FOR_CAPTURE'"
+  },
+  {
+    "type": "wait",
+    "ms": 600
+  },
+  {
+    "type": "capture",
+    "name": "ui_main_menu_icons"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer.PlayerGui local main=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Main',true)) local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) main.Visible=workspace:GetAttribute('QAIconMainVisible')==true hud.Visible=workspace:GetAttribute('QAIconHudVisible')==true top.Enabled=workspace:GetAttribute('QAIconTopEnabled')==true return 'QA_MENU_ICONS_CAPTURE_RESTORED'"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('MareEssentiaGui')) local main=assert(g:FindFirstChild('Main',true)) local s=main.Size main:SetAttribute('QAOldXScale',s.X.Scale) main:SetAttribute('QAOldXOffset',s.X.Offset) main:SetAttribute('QAOldYScale',s.Y.Scale) main:SetAttribute('QAOldYOffset',s.Y.Offset) main.Size=UDim2.fromOffset(420,580) return 'UI_MOBILE_420PX_SIMULATED'"
   },
   {
