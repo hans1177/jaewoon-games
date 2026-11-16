@@ -1206,3 +1206,42 @@ test('Mare licensed galleon is registered for its universe and is not assigned t
   assert.match(battle,/galleon = if AssetIds\["Naval\/galleon-heritage"\]/);
   assert.match(yard,/Nautical Galleon · R-LAB \(rakshaan\), CC BY 4\.0/);
 });
+
+// [원본 자산 검증] CC0 원본을 선다운한 뒤 함종별 개조한 바이너리만 기존 등록기로 보낸다.
+test('Mare ship original source hash and dedicated ship class boundaries',()=>{
+  const root='roblox-games/mare-essentia';
+  const source=root+'/assets/naval/ship-small.glb';
+  const original=fs.readFileSync(source);
+  const originalSha=createHash('sha256').update(original).digest('hex');
+  for(const ship of ['caravel','cog']){
+    const file=root+'/assets/naval/'+ship+'-custom.glb';
+    const data=fs.readFileSync(file);
+    const meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    assert.equal(data.subarray(0,4).toString(),'glTF','invalid GLB header: '+ship);
+    assert.equal(data.readUInt32LE(4),2,'unsupported GLB version: '+ship);
+    assert.equal(data.readUInt32LE(8),data.length,'GLB length mismatch: '+ship);
+    const jsonLength=data.readUInt32LE(12);
+    const gltf=JSON.parse(data.subarray(20,20+jsonLength).toString('utf8'));
+    assert.ok(gltf.meshes.length>=8,'model did not acquire distinct rebuilt geometry: '+ship);
+    assert.ok(gltf.meshes.some(m=>m.name===ship+' cloth'),'no rebuilt sails: '+ship);
+    assert.equal(meta.license,'CC0-1.0');
+    assert.equal(meta.author,'Kenney');
+    assert.equal(meta.source,'https://kenney.nl/assets/pirate-kit');
+    assert.equal(meta.sourceGitBlobSha,'1c12546ebf5ec2741aa9e9f44cb0f7ee1c36b44e');
+    assert.equal(meta.originalSha256,originalSha,'source changed without verification: '+ship);
+    assert.equal(meta.sourceSha256,createHash('sha256').update(data).digest('hex'),'derived file changed without verification: '+ship);
+    assert.equal(meta.actualRobloxRuntimeVerified,false);
+    assert.equal(meta.visualQualityApproved,false);
+  }
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.ok(port.indexOf('SHIP_MESH[id] = SHIP_MESH[def.visual]')<port.indexOf('SHIP_MESH.galleon = "galleon-heritage"'));
+  assert.ok(port.indexOf('SHIP_MESH[id] = SHIP_MESH[def.visual]')<port.indexOf('SHIP_MESH.frigate = "frigate"'));
+  assert.ok(port.includes('and meshAsset ~= "frigate" and meshAsset ~= "galleon-heritage"'));
+  assert.ok(battle.includes('PLAYER_SHIP[id] = "ship-large"'));
+  assert.ok(battle.includes('PLAYER_SHIP[id] = "ship-pirate-medium"'));
+  assert.ok(battle.includes('elseif asset == "frigate"'));
+  assert.ok(port.includes('elseif not shipMesh and shipId == "frigate"'));
+  assert.ok(!battle.includes('caravel-custom') && !battle.includes('cog-custom'), 'unverified originals may not enter battle');
+  assert.ok(!port.includes('caravel-custom') && !port.includes('cog-custom'), 'unverified originals may not enter harbor');
+});
