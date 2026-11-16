@@ -1271,7 +1271,7 @@ function FieldScene.start(opts)
 			end
 		end
 		for _, nm in names do attach(ch:FindFirstChild(nm)) end
-		local sword = ch:FindFirstChild("FieldSword", true)
+		local sword = ch:FindFirstChild("FieldWeapon", true) or ch:FindFirstChild("FieldSword", true)
 		if sword then
 			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
 			attach(blade, 4)
@@ -1511,63 +1511,152 @@ function FieldScene.start(opts)
 		end
 	end
 
-	-- 손에 든 칼: 등록된 유물 모델(Relics/weapon-sword)을 오른손에 붙인다. 모델이 아직 안 불러와졌으면 맨손으로 싸운다.
-	do
-		local char0 = player.Character
-		local hand = char0 and (char0:FindFirstChild("RightHand") or char0:FindFirstChild("Right Arm"))
-		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+	-- [무기 외형] 승인된 3D 모델을 먼저 쓰고, 미등록 유형은 손에 쥐는 소형 형상으로 구분한다.
+	-- 기존 무기·동료 데이터와 무관한 클라이언트 연출만 교체한다. 전투 수치·저장키는 수정하지 않는다.
+	local function equipFieldWeapon(character, weapon)
+		if not character then return end
+		local prev = character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword")
+		if prev then prev:Destroy() end
+		character:SetAttribute("EquippedWeaponId", weapon.id)
+		character:SetAttribute("EquippedWeaponName", weapon.name)
+		character:SetAttribute("WeaponVisualSource", "unarmed")
+		if weapon.family == "fist" then return end
+		local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+		if not (hand and hand:IsA("BasePart")) then return end
+		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 		local group = lib and lib:FindFirstChild("Relics")
-		local tpl = group and group:FindFirstChild("weapon-sword")
-		if hand and tpl and tpl:IsA("Model") then
-			local sword = tpl:Clone()
-			sword.Name = "FieldSword"
-			local rootPart
-			for _, bp in sword:GetDescendants() do
+		local tpl = weapon.model and group and group:FindFirstChild(weapon.model)
+		if tpl and tpl:IsA("Model") then
+			local held = tpl:Clone()
+			held.Name = if weapon.id == "sword" then "FieldSword" else "FieldWeapon"
+			local count = 0
+			for _, bp in held:GetDescendants() do
 				if bp:IsA("BasePart") then
-					bp.Anchored = false
-					bp.CanCollide = false
-					bp.CanTouch = false
-					bp.CanQuery = false
+					count += 1
+					bp.Anchored, bp.CanCollide, bp.CanTouch, bp.CanQuery = false, false, false, false
 					bp.Massless = true
-					rootPart = rootPart or bp
 				end
 			end
-			if rootPart then
-				local _, ext = sword:GetBoundingBox()
+			if count > 0 then
+				local bb, ext = held:GetBoundingBox()
 				local longest = math.max(ext.X, ext.Y, ext.Z)
-				if longest > 0.05 then
-					pcall(function()
-						sword:ScaleTo(4.6 / longest)
-					end)
-				end
-				sword.Parent = char0
-				-- 모델의 가장 긴 축(칼날 방향)을 손의 앞쪽으로 맞춘다: 모델마다 축이 달라도 칼이 앞을 향한다
-				do
-					local bbCf, ext2 = sword:GetBoundingBox()
-					local ax = if ext2.X >= ext2.Y and ext2.X >= ext2.Z then bbCf.RightVector elseif ext2.Y >= ext2.Z then bbCf.UpVector else bbCf.LookVector
-					local fwd = hand.CFrame.LookVector
-					local cross = ax:Cross(fwd)
-					local rot = if cross.Magnitude < 1e-4
-						then (if ax:Dot(fwd) > 0 then CFrame.new() else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
-						else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
-					local len2 = math.max(ext2.X, ext2.Y, ext2.Z)
-					local newBB = CFrame.new(hand.Position + fwd * (len2 * 0.35) - hand.CFrame.UpVector * 0.3) * (rot * bbCf.Rotation)
-					sword:PivotTo(newBB * bbCf:ToObjectSpace(sword:GetPivot()))
-				end
-				for _, bp in sword:GetDescendants() do
+				if longest > 0.05 then pcall(function() held:ScaleTo(4.6 / longest) end) end
+				held.Parent = character
+				bb, ext = held:GetBoundingBox()
+				local ax = if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector
+				local fwd = hand.CFrame.LookVector
+				local cross = ax:Cross(fwd)
+				local rotation = if cross.Magnitude < 1e-4
+					then (if ax:Dot(fwd) > 0 then CFrame.identity else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
+					else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
+				local len = math.max(ext.X, ext.Y, ext.Z)
+				local newBB = CFrame.new(hand.Position + fwd * (len * 0.35) - hand.CFrame.UpVector * 0.3) * (rotation * bb.Rotation)
+				held:PivotTo(newBB * bb:ToObjectSpace(held:GetPivot()))
+				for _, bp in held:GetDescendants() do
 					if bp:IsA("BasePart") then
-						local w = Instance.new("WeldConstraint")
-						w.Part0 = hand
-						w.Part1 = bp
-						w.Parent = bp
+						local weld = Instance.new("WeldConstraint")
+						weld.Part0, weld.Part1, weld.Parent = hand, bp, bp
 					end
 				end
-				table.insert(conns, { Disconnect = function()
-					sword:Destroy()
-				end })
+				character:SetAttribute("WeaponVisualSource", "registered")
+				return
 			end
+			held:Destroy()
 		end
+
+		-- 등록 전 외형: 활·장총·권총·석궁·도검이 같은 맨손처럼 보이지 않도록 형태를 구분한다.
+		-- 지역별 완성 메시가 들어오면 위의 등록 모델 경로가 이 부분보다 우선한다.
+		local held = Instance.new("Model")
+		held.Name = "FieldWeapon"
+		held.Parent = character
+		local darkMetal = Color3.fromRGB(70, 75, 79)
+		local steel = Color3.fromRGB(173, 180, 181)
+		local wood = Color3.fromRGB(113, 76, 43)
+		local darkWood = Color3.fromRGB(76, 47, 30)
+		local brass = Color3.fromRGB(173, 135, 73)
+		local function piece(name, size, offset, color, material, class)
+			local p = Instance.new(class or "Part")
+			p.Name = name
+			p.Size = size
+			p.CFrame = hand.CFrame * offset
+			p.Color = color
+			p.Material = material or Enum.Material.SmoothPlastic
+			p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery = false, false, false, false
+			p.Massless = true
+			pcall(function() p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth end)
+			p.Parent = held
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0, weld.Part1, weld.Parent = hand, p, p
+			return p
+		end
+		local isLongGun = weapon.motion == "RIFLE"
+		local isPistol = weapon.motion == "PISTOL"
+		local isBow = weapon.family == "bow"
+		local isCrossbow = weapon.id == "crossbow"
+		if isBow then
+			local yumi = weapon.id == "japanese_yumi"
+			local long = weapon.motion == "LONGBOW"
+			local top = if yumi then 2.3 elseif long then 1.9 else 1.4
+			local bottom = if yumi then 1.2 elseif long then 1.9 else 1.4
+			local tint = if weapon.region == "west_asia" or weapon.region == "south_asia" then darkWood else wood
+			piece("활 중앙 손잡이", Vector3.new(0.2, 0.56, 0.22), CFrame.new(0, 0, -0.38), darkWood, Enum.Material.Wood)
+			for _, side in { 1, -1 } do
+				local height = if side > 0 then top else bottom
+				piece("활 안쪽", Vector3.new(0.13, height * 0.55, 0.16), CFrame.new(0.06 * side, height * side * 0.31, -0.38) * CFrame.Angles(0, 0, side * -0.17), tint, Enum.Material.Wood)
+				piece("활 끝", Vector3.new(0.11, height * 0.52, 0.14), CFrame.new(0.15 * side, height * side * 0.73, -0.22) * CFrame.Angles(0, 0, side * 0.22), tint, Enum.Material.Wood)
+			end
+			piece("시위", Vector3.new(0.035, top + bottom, 0.035), CFrame.new(0, (top - bottom) * 0.5, -0.06), Color3.fromRGB(211, 198, 164))
+		elseif isLongGun or isPistol then
+			local len = if isLongGun then 3.4 else 1.8
+			piece("목제 총몸", Vector3.new(0.24, 0.27, len * 0.74), CFrame.new(0, -0.12, -len * 0.27), wood, Enum.Material.Wood)
+			piece("총열", Vector3.new(0.12, 0.12, len * 0.83), CFrame.new(0, 0.1, -len * 0.54), darkMetal, Enum.Material.Metal)
+			piece("총구", Vector3.new(0.18, 0.18, 0.1), CFrame.new(0, 0.1, -len * 0.95), steel, Enum.Material.Metal)
+			piece("방아쇠 손잡이", Vector3.new(0.22, 0.75, 0.26), CFrame.new(0, -0.47, 0.08) * CFrame.Angles(math.rad(-19), 0, 0), darkWood, Enum.Material.Wood)
+			piece("점화 장치", Vector3.new(0.25, 0.22, 0.34), CFrame.new(0.13, 0.15, -0.5), brass, Enum.Material.Metal)
+			piece("격철", Vector3.new(0.08, 0.26, 0.14), CFrame.new(0.1, 0.36, -0.42), darkMetal, Enum.Material.Metal)
+			if isLongGun then
+				piece("개머리판", Vector3.new(0.32, 0.48, 1.05), CFrame.new(0, -0.2, 0.45), darkWood, Enum.Material.Wood)
+				piece("총열 고리", Vector3.new(0.22, 0.22, 0.14), CFrame.new(0, 0.06, -2.3), brass, Enum.Material.Metal)
+			end
+		elseif isCrossbow then
+			piece("석궁 몸통", Vector3.new(0.24, 0.28, 2.6), CFrame.new(0, -0.04, -0.9), wood, Enum.Material.Wood)
+			piece("발사 레일", Vector3.new(0.12, 0.08, 2.1), CFrame.new(0, 0.14, -1.1), steel, Enum.Material.Metal)
+			for _, side in { -1, 1 } do
+				piece("석궁 활대", Vector3.new(1.25, 0.12, 0.12), CFrame.new(side * 0.6, 0.06, -1.9) * CFrame.Angles(0, side * 0.17, 0), darkWood, Enum.Material.Wood)
+				piece("석궁 시위", Vector3.new(1.1, 0.03, 0.03), CFrame.new(side * 0.56, 0.06, -1.6), Color3.fromRGB(211, 198, 164))
+			end
+		elseif weapon.family == "spear" then
+			-- 창 모델 로딩이 늦어도 검 모양으로 잘못 보이지 않게 한다.
+			piece("창 자루", Vector3.new(0.18, 0.19, 4.1), CFrame.new(0, 0, -1.55), wood, Enum.Material.Wood)
+			piece("창 머리", Vector3.new(0.26, 0.16, 0.75), CFrame.new(0, 0, -3.95), steel, Enum.Material.Metal, "WedgePart")
+		elseif weapon.family == "axe" or weapon.family == "blunt" then
+			piece("무기 자루", Vector3.new(0.16, 0.18, 2.8), CFrame.new(0, 0, -1.15), wood, Enum.Material.Wood)
+			if weapon.family == "axe" then
+				piece("도끼 날", Vector3.new(1.1, 0.72, 0.22), CFrame.new(0.47, 0.02, -2.33) * CFrame.Angles(0, 0, math.rad(-8)), steel, Enum.Material.Metal, "WedgePart")
+			else
+				piece("철퇴 머리", Vector3.new(0.58, 0.58, 0.58), CFrame.new(0, 0, -2.48), darkMetal, Enum.Material.Metal)
+				end
+		else
+			-- 레이피어는 가늘고 길게, 선상도는 짧고 넓게, 일본도·곡도는 완만하게 휜 외날검으로 구분.
+			local rapier = weapon.id == "rapier"
+			local short = weapon.id == "dagger" or weapon.id == "cutlass"
+			local curved = weapon.id == "katana" or weapon.id == "hwando" or weapon.id == "dao" or weapon.id == "shamshir" or weapon.id == "talwar"
+			local len = if short then 1.55 elseif rapier then 3.05 else 2.45
+			piece("손잡이", Vector3.new(0.2, 0.22, if weapon.id == "katana" then 1.05 else 0.65), CFrame.new(0, 0, 0.2), darkWood, Enum.Material.Wood)
+			piece("검 손잡이 끝", Vector3.new(0.25, 0.27, 0.16), CFrame.new(0, 0, 0.52), brass, Enum.Material.Metal)
+			piece("검 손막이", Vector3.new(if rapier then 1.1 else 0.65, 0.18, 0.17), CFrame.new(0, 0, -0.28), brass, Enum.Material.Metal)
+			piece("칼날", Vector3.new(if rapier then 0.09 elseif short then 0.44 else 0.28, 0.12, len * 0.73), CFrame.new(0, 0, -len * 0.39 - 0.27) * CFrame.Angles(0, if curved then math.rad(5) else 0, 0), steel, Enum.Material.Metal)
+			piece("칼끝", Vector3.new(if rapier then 0.08 elseif short then 0.39 else 0.25, 0.1, len * 0.28), CFrame.new(if curved then 0.1 else 0, 0, -len * 0.87 - 0.14) * CFrame.Angles(0, if curved then math.rad(14) else 0, 0), steel, Enum.Material.Metal, "WedgePart")
+		end
+		character:SetAttribute("WeaponVisualSource", "procedural")
 	end
+	-- 플레이어 무기는 현장 교체 시 즉시 실제 손의 장비까지 교체한다.
+	equipFieldWeapon(player.Character, wpn)
+	table.insert(conns, { Disconnect = function()
+		local character = player.Character
+		local held = character and (character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword"))
+		if held then held:Destroy() end
+	end })
 
 	-- 폭발통: 들판 곳곳의 통(Naval/barrel). 공격이 닿으면 터져 주변 적에게 큰 피해를 준다(가까이 있으면 나도 다친다).
 	local barrels: { any } = {}
@@ -1827,12 +1916,13 @@ function FieldScene.start(opts)
 						local a0 = hrp.Position + Vector3.new(0, 0.5, 0)
 						local b0 = e.root.Position
 						local len = (b0 - a0).Magnitude
-						local tr = part(folder, Vector3.new(0.25, 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if wpn.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						local arrow = wpn.family == "bow" or wpn.id == "crossbow"
+						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.25, if arrow then 0.09 else 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
 						tr.CanCollide, tr.CanQuery = false, false
 						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
 						task.delay(0.2, function() tr:Destroy() end)
 						burst(b0 + Vector3.new(0, 1.5, 0), 6, false)
-						sfx(if wpn.id == "gun" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.id == "gun" then 1.6 else 1.2)
+						sfx(if wpn.family == "firearm" and wpn.id ~= "crossbow" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.family == "firearm" and wpn.id ~= "crossbow" then 1.6 else 1.2)
 					end
 				end
 			end
@@ -2126,26 +2216,16 @@ function FieldScene.start(opts)
 	do
 		local wbtn = btn(gui, wpn.name, Color3.fromRGB(70, 82, 104), UDim2.fromOffset(84, 44), UDim2.new(1, -100, 1, -196), Vector2.new(0.5, 0.5))
 		wbtn.TextSize = 15
-		local function swordVisual()
-			local ch = player.Character
-			local sw = ch and ch:FindFirstChild("FieldSword")
-			if sw then
-				-- 검 모델이 있는 무기(검)만 손에 보이고, 아직 모델이 없는 무기는 맨손 쥠으로 보인다
-				for _, d in sw:GetDescendants() do
-					if d:IsA("BasePart") then
-						d.LocalTransparencyModifier = if wpn.model == "weapon-sword" then 0 else 1
-					end
-				end
-			end
-		end
 		bindPress(wbtn, function()
 			wpn = Weapons.cycle(wpn.id, 1)
 			wbtn.Text = wpn.name
-			swordVisual()
+			equipFieldWeapon(player.Character, wpn)
 			slashIdx = 0
 			say(string.format("%s — %s", wpn.name, wpn.note))
 		end)
-		task.delay(1, swordVisual)
+		task.delay(1, function()
+			if not finished then equipFieldWeapon(player.Character, wpn) end
+		end)
 	end
 
 	local staminaBack = Instance.new("Frame")
@@ -2693,6 +2773,7 @@ function FieldScene.start(opts)
 						m:SetAttribute("EquippedWeaponId", ad.weapon.id)
 						m:SetAttribute("EquippedWeaponName", ad.weapon.name)
 						m:SetAttribute("CompanionOriginNation", ad.nation or "")
+						equipFieldWeapon(m, ad.weapon)
 						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
 						-- [탐험 HUD] 큰 이름판 제거. 번호·직업만 근처에서 작게 표시하며 색상으로 동료를 구분.
 						local bbA = Instance.new("BillboardGui")
@@ -2745,7 +2826,8 @@ function FieldScene.start(opts)
 						local a0 = a.root.Position + Vector3.new(0, 0.5, 0)
 						local b0 = tgt.root.Position
 						local len = (b0 - a0).Magnitude
-						local tr = part(folder, Vector3.new(0.2, 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if aw.id == "gun" then Color3.fromRGB(255, 230, 150) else Color3.fromRGB(230, 240, 255), Enum.Material.Neon)
+						local arrow = aw.family == "bow" or aw.id == "crossbow"
+						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.2, if arrow then 0.09 else 0.2, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
 						tr.CanCollide, tr.CanQuery = false, false
 						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
 						task.delay(0.2, function() tr:Destroy() end)
