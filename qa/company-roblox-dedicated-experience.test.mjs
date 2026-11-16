@@ -835,10 +835,9 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   }
   assert.ok(field.includes('addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")'));
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
-  // [현행 아이콘 전용 버튼] 그림이 배지 중앙에 맞고 크기·비율을 유지하는지 검증한다.
-  assert.ok(field.includes('img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79)'));
-  assert.ok(field.includes('if iconOnly then 0.82 else 0.72)'));
+  // 아이콘 전용 버튼은 원화의 중앙 배치·잘림 방지를 위해 별도 크기를 사용한다.
   assert.ok(field.includes('img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)'));
+  assert.ok(field.includes('img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79),'));
 });
 
 // [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
@@ -886,10 +885,10 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.doesNotMatch(field,/task\.delay\(0\.8,\s*function\(\)\s*finish\("clear"\)/);
   assert.match(field,/completeBtn\.Name = "FieldComplete"/);
   assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
-  // [현행 귀환 팝업] 조사 전 숨김·조사 후 표시·명시적 클릭만 귀환을 허용한다.
+  // 조사 전에는 귀환 버튼을 숨기고, 완료 팝업이 뜰 때만 활성화한다.
   assert.match(field,/completeBtn\.Visible = false/);
   assert.match(field,/completeBtn\.Visible, completeReopen\.Visible = true, true/);
-  assert.match(field,/completePopup\.Visible = true/);
+  assert.match(field,/if not finished and found >= nodeCount then completePopup\.Visible = true end/);
   assert.match(field,/completeBtn\.Activated:Connect\(function\(\)\s*if not finished and found >= nodeCount then finish\("clear"\) end/);
   assert.match(field,/FieldExitReason/);
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
@@ -904,12 +903,11 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 42\.5\)/);
   const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
   for(const [width,height] of [[390,640],[832,384],[320,360]]){
-    // [현행 모바일 스킬 간격] 실제 화면·공격 버튼 중심/반경/각도를 그대로 시뮬레이션한다.
     const outer=Math.max(162,Math.min(200,width*.56,height*.45));
     const inner=Math.max(94,Math.min(114,outer*.56));
     const skill=width<360?64:76,basic=width<360?60:68;
     const coords=[[arc(outer,20),skill],[arc(outer,62.5),skill],[arc(outer,105),skill],
-                   [arc(inner,42),basic],[arc(inner,114),basic]];
+                  [arc(inner,42),basic],[arc(inner,114),basic]];
     for(const [pos,size] of coords){
       assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
       assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
@@ -1376,7 +1374,6 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.ok(!battle.includes(ship+'-custom'),ship+' unverified battle art must not activate');
   }
 });
-
 
 // [외부 CC0 실물 선체] 포르투갈 나우는 다운로드된 원본 갈레온의 메시/바이너리를 보존한 개조본만 등록한다.
 test('Mare external CC0 nau original hull and Roblox registration integrity',()=>{

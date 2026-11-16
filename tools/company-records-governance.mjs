@@ -158,12 +158,14 @@ const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
     sourcePath:CENTRAL_ARCHITECTURE_REL,
     aliases:Object.freeze(['architecture','architectureMap']),
-    preserveWholeDocument:true,\n    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','branches','constitutionalEnforcement'])
+    preserveWholeDocument:true,
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','branches','constitutionalEnforcement'])
   }),
   logMap:Object.freeze({
     sourcePath:CENTRAL_LOG_MAP_REL,
     aliases:Object.freeze(['logMap']),
-    preserveWholeDocument:true,\n    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','requiredForAllWorkers'])
+    preserveWholeDocument:true,
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','requiredForAllWorkers'])
   })
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
