@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: Village.luau
 -- 마을 발전: 학문을 이해할수록(지식 노드) 학문별 단계가 오르고, 단계가 모이면 마을 레벨이 오른다.
 -- 마을 레벨과 학문 단계가 충분하면 그 학문과 이어진 경제 건물(EconomyBuildings)이 마을에 들어선다.
 -- 학문 단계: 이해한 지식 수 1/3/6/10 → 1~4단계.  마을 레벨 1~6: 단계 합계 0/3/8/14/22/32 이상.
@@ -333,7 +334,22 @@ return function(D, S)
 				nextD = d
 			end
 		end
+
 		local sim = V.sim(state, portId, level)
+		-- [실물경제 → 도시 구획] 서버의 실제 인구·시설 건설 수치를 읽기만 한다.
+		-- 투자 점수·시설 해금·저장 구조는 기존 규칙 그대로 유지한다.
+		local live = S.Econ and S.Econ.town and S.Econ.town(state, portId)
+		local built = live and live.buildings or {}
+		local population = live and live.pop or sim.pop
+		local visualStage = live and live.stage or level
+		local visualBlocks = math.max(1, math.floor(blocks * math.clamp(visualStage / math.max(1, level), 0.6, 1.45) + 0.5))
+		local urban = {
+			population = population, stage = visualStage, stageName = live and live.stageName or LEVEL_NAME[level],
+			homes = built.house or 0, docks = built.dock or 0, warehouses = built.warehouse or 0,
+			markets = built.market or 0, workshops = built.workshop or 0,
+			stability = live and live.stability or math.floor(sim.stability * 100),
+			expansion = visualBlocks, construction = math.max(0, math.floor(((live and live.housing and live.housing.cap or population) - population) / 100)),
+		}
 		local cultureNames = {}
 		for _, b in V.buildings(state, level, portId) do
 			if b.cultures then table.insert(cultureNames, b.name) end
@@ -360,7 +376,7 @@ return function(D, S)
 			culture = V.CULTURE_NAME[V.cultureOf(portId) or ""] or "미정", cultureBuildings = cultureNames,
 			discFacilities = dfFac, discJobs = dfJobs, discBy = dfBy,
 			sim = sim, jobs = jobs, newJobs = newJobs, raw = rawParts, crafts = crafts,
-			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
+			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs, urban = urban,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
 			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
