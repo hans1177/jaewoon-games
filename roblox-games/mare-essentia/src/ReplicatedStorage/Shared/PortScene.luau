@@ -3136,7 +3136,7 @@ function PortScene.build(info, onFacility)
 				if not moving then
 					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
 				elseif w.kind then
-					Pose.work(w.model, w.kind, now + w.phase)
+					Pose.work(w.model, w.kind, now + w.phase, true)
 				elseif w.elder then
 					Pose.work(w.model, "stoop", now)
 				end
