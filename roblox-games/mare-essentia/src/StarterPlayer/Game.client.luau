@@ -7276,7 +7276,12 @@ local function renderCodexOverview()
 			if not d.open then
 				sub = string.format("[잠김: %s 지식 %d/%d개] ", d.parentName or "", d.parentDone, d.openAt or 0) .. sub
 			end
-			return mkRow(content, string.format("%s  이해 %d / %d · 학문 Lv.%d", d.name, d.done, d.total, d.mastery and d.mastery.level or 1), (d.mastery and string.format("숙련 점수 %d%s · ", d.mastery.points, if d.mastery.next > 0 then "/" .. d.mastery.next else " (최고)") else "") .. sub, {
+			-- [학문 숙련] 조건식은 숙련 문구만 계산하고, 기존 도감 항목·열기 버튼은 보존한다.
+			local masteryText = ""
+			if d.mastery then
+				masteryText = string.format("숙련 점수 %d%s · ", d.mastery.points, if d.mastery.next > 0 then "/" .. d.mastery.next else " (최고)")
+			end
+			return mkRow(content, string.format("%s  이해 %d / %d · 학문 Lv.%d", d.name, d.done, d.total, d.mastery and d.mastery.level or 1), masteryText .. sub, {
 				{ text = "열기", color = COLORS.blue, onClick = function() codexField = "k:" .. d.id; render() end },
 			}, 64)
 		end)
