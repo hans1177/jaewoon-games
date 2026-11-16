@@ -316,8 +316,24 @@ for id, spec in {
 	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
 	palm_oil = { "Cargo", "barrel-open" },
 	cocoa = { "Cargo", "chocolate" }, maize = { "Cargo", "corn" },
+	-- 가공품: 원료와 같은 계열의 승인된 기존 Cargo 모델을 쓴다 (새 모델·도형 없음)
+	p_smelt_iron = { "Cargo", "iron-bar" }, p_smelt_copper = { "Cargo", "copper-bar" }, p_leather = { "Cargo", "leather" },
+	p_spice_blend = { "Cargo", "spice" }, p_amber_craft = { "Cargo", "amber" }, p_tea_cure = { "Cargo", "cup-tea" },
+	p_fish_cure = { "Cargo", "food-barrel-fish" }, p_glass = { "Cargo", "glass" }, p_gunpowder = { "Cargo", "nitrate" },
+	p_fertilizer = { "Cargo", "guano" }, p_marble_carving = { "Cargo", "marble" }, p_resin = { "Cargo", "gum_arabic" },
+	p_fine_wood = { "Cargo", "mahogany" }, p_fur_goods = { "Cargo", "fur" }, p_perfume = { "Cargo", "ambergris" },
+	p_ivory_carving = { "Cargo", "ivory" }, p_timber_plank = { "Cargo", "wood-plank-a" }, p_cloth_cotton = { "Cargo", "cotton" },
+	p_cloth_wool = { "Cargo", "wool" }, p_whale_oil = { "Cargo", "whale_oil" }, p_dye = { "Cargo", "indigo" },
+	p_jewelry = { "Cargo", "gem-medium" }, p_olive = { "Cargo", "bottle-oil" }, p_silver_coin = { "Relics", "coin" },
 } do
 	GOOD_ICON[id] = spec
+end
+-- 술 가공품도 원료 술과 같은 중립 나무통 표현 (표현 제한 규칙 유지)
+for pid, base in { p_beer = "beer", p_wine = "wine", p_sake = "sake", p_sugar_rum = "rum" } do
+	local neutral = RESTRICTED_CARGO_ICON[base]
+	if neutral and AssetIds[neutral[1] .. "/" .. neutral[2]] then
+		GOOD_ICON[pid] = neutral
+	end
 end
 -- [3D 교역품] 승인된 원본 Cargo 메시가 실제 상품과 일치할 때만 상세 아이콘에 재사용한다.
 -- 교역품 목록과 상세 화면은 동일한 승인 3D 모델을 사용한다.
