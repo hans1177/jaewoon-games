@@ -862,8 +862,9 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
-		local armForward = (if run then 0.83 else 0.70) * stride
-		local armBack = (if run then 0.37 else 0.30) * stride
+		-- [실제 스튜디오 회귀] 노인·중갑병의 짧은 보폭에서도 팔·반대 다리 교차가 식별되도록 조절한다.
+		local armForward = (if run then 0.90 else 0.78) * stride
+		local armBack = (if run then 0.49 else 0.50) * stride
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
