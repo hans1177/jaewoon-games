@@ -6622,7 +6622,10 @@ function H.showCardDetail(card)
 	end
 	mkLabel(body, card.description, 17, ink, false, 3)
 	if card.kindName then
-		mkLabel(body, "카드 종류: " .. card.kindName .. " · 학문: " .. (card.discipline or "기타") .. " · " .. (card.domain or "기타"), 13, brown, false, 4)
+		mkLabel(body, "카드 종류: " .. card.kindName .. (if card.subkind then " / " .. card.subkind else "") .. " · 주학문: " .. (card.discipline or "기타") .. " · " .. (card.domain or "기타"), 13, brown, false, 4)
+		if card.relatedDisciplines and #card.relatedDisciplines > 0 then
+			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
+		end
 	end
 	if card.method then
 		local text = if card.method == "discover" then "발견" elseif card.method == "research" then "연구" else "탐험"
@@ -7142,7 +7145,7 @@ local function renderCodexOverview()
 			}, 52)
 		end)
 	end
-	add(function() return mkHeader(content, "학문 · 기존 21분야") end)
+	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
