@@ -298,7 +298,13 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.match(workflow,/sourceWriteAuthorized:false/);
   assert.match(workflow,/policyAuthorityVerified:false/);
   assert.doesNotMatch(workflow,/OWNER_REMOVED:company-learning\/platform-release-roadmap/);
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  // 최신 중앙 실행 로그 맵은 읽기 전용 축약본이 아니라 필수 실행 계약이다.
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
+  assert.equal(logMap.requiredForAllWorkers,true);
+  assert.equal(logMap.workerContextLogContract.newChatAndWorkerPreflightRequired,true);
+  assert.equal(logMap.workerContextLogContract.staleContextMutationForbidden,true);
+  assert.ok(logMap.requiredMarkers.includes('WORKER_CONTEXT_SYNC=PASS'));
 });
 
 test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{
