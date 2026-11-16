@@ -1,9 +1,15 @@
 # Mare Essentia 작업 규칙 (세션이 바뀌어도 같은 품질 유지)
 
 ## 에셋
-- 승인된 CC0 에셋만 쓴다(`assets-registered.json` / `AssetIds.luau`). AI 생성·웹 다운로드·실존 인물 이미지 금지.
+- 승인된 CC0 에셋만 쓴다(`assets-registered.json` / `AssetIds.luau`). AI 생성·실존 인물 이미지 금지. **2026-11-17 오너 지시로 기존 자산이 부족한 3D 원본에 한해 검증된 외부 다운로드를 허용**한다. 출처 불분명·NC·유료·인공지능 생성 모델은 사용하지 않는다.
 - 소스가 쓰는 모든 에셋은 `tools/devloop/asset_check.py` 가 검사한다. `tests/run.sh` 에 포함돼 있어 오타·미등록은 배포 전에 걸린다.
 - 임의 도형 조립(Part 로 건물·나무 만들기)으로 모델을 때우지 않는다. 없는 에셋은 부족 목록에 기록한다.
+
+### 외부 3D 부족 자산 보완 규칙 (오너 승인 2026-11-17)
+- 우선 기존 에셋에서 정확히 일치하는 실물 모델을 확인한다. 없으면 **무료 CC0 완성형 원본**을 제작자 공식 페이지에서 받는다. 색상만 바꾼 대용 건물/파트·절차형 대체물/허위 실물 등록은 금지한다.
+- 다운로드 전에 국가·시대·건물 실제 용도(조선 관아 ≠ 한양 왕궁, 일본 성 ≠ 사원, 군영 ≠ 궁정 본관)를 대조한다. 모델의 저작권자·원본 URL·무료 CC0 라이선스·생성 방식·Roblox 업로드 가능 여부를 확인한다. 인공지능 제작 여부가 미확인이면 후보 보류.
+- 원본을 `assets/inbox/<종류>/`에 두고 같은 이름의 `.license.json`에 원저자/원본 URL/CC0를 기록한다. SHA-256·금지 해시·중복을 점검한 후 기존 `tools/devloop/register_asset.py` → `owner-mare-essentia-assets.yml` → `AssetIds.luau` 경로만 사용한다.
+- Roblox Universe 권한·실제 메시·재질·모바일 화면 검증 전에는 `productionVerified`로 판단하거나 왕궁 외형을 교체하지 않는다. 로컬 다운로드 오류·원본 검증 실패는 **미적용**으로 표기한다. 에셋 업로드 실패가 자동 배포 우회 근거가 되지 않는다.
 
 ## 문화권(항구 양식)
 - 데이터는 `src/ReplicatedStorage/Shared/PortCultures.luau` 한 곳: `STYLE`(벽·지붕·재질) / `PROFILE`(골목·집 크기·간격) / `OUTFIT`(옷·모자) / `REGION`(항구→양식).
