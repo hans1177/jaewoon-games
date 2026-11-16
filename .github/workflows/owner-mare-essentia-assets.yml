@@ -101,6 +101,7 @@ jobs:
           node --test --test-name-pattern='Mare trade' qa/company-roblox-dedicated-experience.test.mjs
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
+        id: asset_registration
         # 정기 연습은 무료 정적 진단만 수행한다. 신규/변경 승인 자산 업로드는 기존 push·수동 경로.
         if: ${{ github.event_name != 'schedule' }}
         env:
@@ -159,7 +160,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json; do
+          # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
+          # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/cardart/*.png; do
+            if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+              echo "SKIP_UNVERIFIED_MODEL_ORIGINAL $f"
+              continue
+            fi
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"

@@ -910,3 +910,55 @@ test('Mare 150 regional card illustrations remain source complete and SHA-approv
   assert.ok(cardArt.includes('elseif originalRegional then "PROJECT_ORIGINAL_ART"'));
   assert.ok(cardArt.includes('if c then c.license'),'existing external credit must take priority');
 });
+
+
+test('Mare generated original art is promoted only after model-source visual QA and exact SHA approval', async () => {
+  const uploader = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml', 'utf8');
+  const approved = JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json', 'utf8'));
+  assert.deepEqual(approved.modelOriginals, {});
+  assert.match(uploader, /MODEL_ORIGINAL_REVIEW_REQUIRED/);
+  assert.match(uploader, /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+  assert.match(workflow, /SKIP_UNVERIFIED_MODEL_ORIGINAL/);
+  assert.match(workflow, /assets\/cardart\/\*\.png/);
+  const marker = '// [모델 원화 제작 분리·자동 인입]';
+  const start = uploader.indexOf(marker), end = uploader.indexOf('// 2026-11-11', start);
+  assert.ok(start > 0 && end > start);
+  const intake = uploader.slice(start, end);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mare-model-original-'));
+  try {
+    const id = 'CardArt/nw_03';
+    const source = path.join(root, 'assets/cardart/src/nw_03-original.png');
+    const dest = path.join(root, 'assets/cardart/nw_03.png');
+    fs.mkdirSync(path.dirname(source), {recursive:true});
+    fs.copyFileSync('roblox-games/mare-essentia/assets/cardart/nw_03.png', source);
+    const hash = createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+    const review = {sourceType:'IMAGE_GENERATION_MODEL', sourceFile:'assets/cardart/src/nw_03-original.png',
+      sourceSha256:hash, reviewer:'VIBE_AGENT_VISUAL_REVIEW', reviewedAt:'2026-11-16',
+      license:'PROJECT_ORIGINAL_ART', subjectMatch:true, historicalContext:true,
+      houseStyle:true, singleFinishedScene:true, noPartsOrSprites:true,
+      robloxSafety:true, commercialRights:true};
+    const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
+    const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
+    const execute = () => runInNewContext('(async()=>{' + intake + '\\n})()', {
+      ROOT:root,fs:fs.promises,path,crypto:{createHash},Buffer,
+      studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
+    });
+    review.subjectMatch=false;
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_QA_REQUIRED/);
+    assert.equal(fs.existsSync(dest),false);
+    review.subjectMatch=true;
+    record.approved[id]='0'.repeat(64);
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH/);
+    assert.equal(fs.existsSync(dest),false);
+    record.approved[id]=hash;
+    save();
+    await execute();
+    assert.equal(createHash('sha256').update(fs.readFileSync(dest)).digest('hex'),hash);
+    await execute(); // 반복 실행은 기존 파일과 ID를 그대로 보존한다.
+    fs.writeFileSync(dest,'unexpected overwrite attempt');
+    await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+  } finally {fs.rmSync(root,{recursive:true,force:true});}
+});

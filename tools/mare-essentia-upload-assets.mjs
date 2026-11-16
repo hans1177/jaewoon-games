@@ -78,11 +78,51 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
+// [모델 원화 제작 분리·자동 인입] 생성 모델의 단일 완성 PNG만 바이브의 실제 시각 검수 뒤 기존 승인 통로로 승격한다.
+// SVG·파츠·시트·미리보기로 등록하지 않으며 검수 증빙/원본 해시가 다르면 업로드 전에 중단한다.
+const cardApprovalDocument = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8'));
+const modelOriginals = cardApprovalDocument.modelOriginals || {};
+if (typeof modelOriginals !== 'object' || Array.isArray(modelOriginals)) throw new Error('MODEL_ORIGINAL_REVIEW_MAP_INVALID');
+if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals)) {
+  const match = /^CardArt\/((?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30))$/.exec(id);
+  if (!match) throw new Error('MODEL_ORIGINAL_CARD_ID_INVALID:' + id);
+  const name = match[1];
+  const relativeSource = 'assets/cardart/src/' + name + '-original.png';
+  const sourcePath = path.join(ROOT, relativeSource);
+  const targetPath = path.join(ROOT, 'assets/cardart', name + '.png');
+  const reviewChecks = ['subjectMatch','historicalContext','houseStyle','singleFinishedScene',
+    'noPartsOrSprites','robloxSafety','commercialRights'];
+  if (review?.sourceType !== 'IMAGE_GENERATION_MODEL' || review.sourceFile !== relativeSource
+    || review.reviewer !== 'VIBE_AGENT_VISUAL_REVIEW' || review.license !== 'PROJECT_ORIGINAL_ART'
+    || !/^\\d{4}-\\d{2}-\\d{2}$/.test(review.reviewedAt || '')
+    || !reviewChecks.every(key => review[key] === true))
+    throw new Error('MODEL_ORIGINAL_QA_REQUIRED:' + id);
+  const bytes = await fs.readFile(sourcePath);
+  if (bytes.length < 50000 || bytes.length > 20 * 1024 * 1024
+    || !bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+    || bytes.toString('ascii', 12, 16) !== 'IHDR'
+    || bytes.readUInt32BE(16) < 768 || bytes.readUInt32BE(20) < 768
+    || bytes.readUInt32BE(16) > 4096 || bytes.readUInt32BE(20) > 4096)
+    throw new Error('MODEL_ORIGINAL_FULL_RESOLUTION_PNG_REQUIRED:' + id);
+  const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+  if (review.sourceSha256 !== hash || cardApprovalDocument.approved?.[id] !== hash
+    || blockedHashes.has(hash) || blockedPaths.has(sourcePath) || blockedPaths.has(targetPath))
+    throw new Error('MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH:' + id);
+  let current = null;
+  try { current = await fs.readFile(targetPath); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  if (current && crypto.createHash('sha256').update(current).digest('hex') !== hash)
+    throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
+  if (!current) {
+    await fs.copyFile(sourcePath, targetPath);
+    console.log('MODEL_ORIGINAL_PROMOTED', id, hash);
+  } else console.log('MODEL_ORIGINAL_VERIFIED', id);
+}
+
 // 2026-11-11 오너 승인으로 바이브가 직접 그린 평면 벡터 교역품(소스: assets/goods/src/)
 const VIBE_DRAWN_GOODS = ['feathers','cloves','nutmeg','cinnamon','lacquer','camphor','ginseng','vanilla','cochineal','sealskin','guano','nitrate','ambergris','gum_arabic','beer_grain','sake_rice','brazilwood','cocoa','copper','ebony','gems','gold','jade','kauri','logwood','mahogany','maize','palm_oil','pearl_shell','sandalwood','sandalwood_hi','silver'].map(n => n + '.png');
 // [지식카드 51장] 이름 규칙 밖(ast_*, zoo_* 등)이라도 APPROVED_IMAGES에 해시 승인된 카드 jpg는 등록 대상에 포함한다.
 const approvedCardNames = new Set();
-try { for (const k of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg'); } catch {}
+for (const k of Object.keys(cardApprovalDocument.approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg');
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
@@ -128,8 +168,7 @@ try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
 for (const [name, row] of Object.entries(registry.assets)) {
   if (blockedPaths.has(row.source) || blockedIds.has(String(row.assetId))) delete registry.assets[name];
 }
-let approvedImages = {};
-try { approvedImages = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {}; } catch {}
+let approvedImages = {...(cardApprovalDocument.approved || {})};
 try { for (const sid of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/cardart/SEALED.json', 'utf8')).sealed || {})) delete approvedImages['CardArt/' + sid]; } catch {} // 봉인 카드: 승인돼 있어도 업로드 금지
 // [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
 const previousTypeAssets = new Map();
@@ -213,6 +252,15 @@ for (const item of plan) {
   // [카드 원화 해시] 카드 ID는 그대로 유지하며, 승인받은 지역 원화만 교체한다. 미승인 이미지는 기존 등록 ID를 보존한다.
   const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)$/.test(item.name);
   if (regionalCardArt) {
+    // [새 원화와 교체 원화] 생성 모델 원본 + 바이브 시각 품질·권리 검수 증빙이 없으면 등록을 거부한다.
+    // 이미 등록된 20장과 기존 저장 키는 바꾸지 않는다.
+    const previous = registry.assets[id];
+    if ((!previous?.assetId || !previous.sourceSha256 || previous.sourceSha256 !== sourceSha256)
+      && modelOriginals[id]?.sourceSha256 !== sourceSha256) {
+      failures.push(id + ': MODEL_ORIGINAL_REVIEW_REQUIRED');
+      console.log('MODEL_ORIGINAL_REVIEW_REQUIRED', id);
+      continue;
+    }
     if (approvedImages[id] !== sourceSha256) {
       console.log('REGIONAL_CARD_ART_NOT_APPROVED', id);
       if (registry.assets[id]?.assetId) failures.push(id + ': REGIONAL_CARD_ART_APPROVAL_HASH_MISMATCH');

@@ -25,3 +25,12 @@
 - 원본 합성 이미지 SHA-256: 선박 6장 `7cf40631f6731b7a1cd96aa558e7673aa0254432c7f531e8f5a6135f3a85dc22`, 유물 6장 `66a2f29c181141d6aa3a83e6068f0bb018cc3e795bd6e3ba23d0205bda049658`.
 - 각 카드 24프레임의 픽셀 중복 및 루프 연결 수치만 오프라인 검사했다. 피사체 리깅·퀜트급 실제 동작·Roblox Studio 시각 검증은 **미완료**다.
 - **승인 전 원화 후보(UNAPPROVED)**: 게임 등록부, 이미지 승인 해시, AssetIds, 실제 런타임에는 추가하지 않는다. 눈으로 검수한 뒤 기존 승인·업로드 경로로만 등록한다. 전투 규칙·저장값 변경 없음.
+
+## 원화 제작·검수·등록 분리 (2026-11-16)
+
+- **원화 제작:** 이미지 생성 모델이 카드별 단일 완성 PNG를 제작한다. SVG 파츠 조합·16/24프레임 시트·미리보기는 완성 원화로 인정하지 않는다.
+- **바이브 검수:** 주제 일치, 역사 고증, 대항해시대 화풍 일관성, 단일 완성 그림, 파츠·시트 아님, 로블록스 콘텐츠 안전, 상업 이용 권리를 실제 이미지로 확인한다. 불확실하면 등록하지 않는다.
+- **GitHub 인입:** 검수한 원본을 기존 `assets/cardart/src/<카드번호>-original.png`에 넣고, 같은 커밋에서 `assets/APPROVED_IMAGES.json`의 `approved` SHA-256 및 `modelOriginals` 증빙을 기록한다. **이미지 생성 모델에서 GitHub까지의 바이너리 전달은 제작 주체/ChatGPT가 수행한다**. GitHub Actions가 모델을 대신 호출하거나 유료 API를 사용하지 않는다.
+- **기존 자동 등록기:** 승인 해시와 품질 증빙을 검증해 `assets/cardart/<카드번호>.png`로 승격하고 기존 로블록스 자산 업로드, 권한 부여, `assets-registered.json`·`AssetIds.luau` 갱신을 수행한다. 작업 성공 시에만 승격 PNG를 기존 GitHub Contents API로 `main`에 반영한다.
+- **검수 증빙 예:** `modelOriginals["CardArt/eu_01"] = {"sourceType":"IMAGE_GENERATION_MODEL","sourceFile":"assets/cardart/src/eu_01-original.png","sourceSha256":"<실제 PNG SHA256>","reviewer":"VIBE_AGENT_VISUAL_REVIEW","reviewedAt":"2026-11-16","license":"PROJECT_ORIGINAL_ART","subjectMatch":true,"historicalContext":true,"houseStyle":true,"singleFinishedScene":true,"noPartsOrSprites":true,"robloxSafety":true,"commercialRights":true}`. 각 항목은 실제 검수한 뒤 참일 때만 기록한다.
+- **보호:** 기존 20장 및 카드 번호·게임 규칙·저장 구조를 바꾸지 않는다. 신규 또는 바뀐 카드 원화는 검수 증빙이 없거나 PNG 최소 768px·해시가 다르면 실패 처리한다. 실제 카드 게임 화면 품질과 최종 게시 결과는 별도 확인한다.
