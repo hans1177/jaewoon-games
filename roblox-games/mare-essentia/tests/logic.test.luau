@@ -197,6 +197,10 @@ local function extraTests()
 				end
 			end
 		end
+		if not covered and string.sub(gid, 1, 2) == "b_" then
+			local brand = D.ProductionChains.BrandById[gid]
+			covered = brand and goodCover[brand.source] or false
+		end
 		if not covered then uncovered += 1; print("연결 안 된 교역품", gid) end
 	end
 	check("백과: 모든 교역품이 어떤 인물과 이어짐", uncovered == 0, tostring(uncovered))
@@ -586,15 +590,18 @@ local function extraTests()
 		check("자원 분류: 기본 상품과 가공품 총 16종 하위 영역", #D.Ports.ResourceKinds == 16)
 		local groups = {}
 		for _, group in D.Ports.ResourceKinds do groups[group.id] = true end
-		local rawCount, processedCount, brokenGood = 0, 0, nil
+		local rawCount, processedCount, brandCount, brokenGood = 0, 0, 0, nil
 		for id, good in D.Ports.Goods do
 			if not groups[good.resourceKind] or not D.Cards.ById[good.knowledgeId] then
 				brokenGood = id
 			end
-			if string.sub(id, 1, 2) == "p_" then processedCount += 1 else rawCount += 1 end
+			if string.sub(id, 1, 2) == "p_" then processedCount += 1
+			elseif string.sub(id, 1, 2) == "b_" then brandCount += 1
+			else rawCount += 1 end
 		end
 		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
 		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
+		check("지역 브랜드 15종 백과·교역품 데이터 등록", brandCount == #D.ProductionChains.Brands and brandCount == 15)
 
 		check("지식 분류: 기존 21개 + 세부 학문 36개 활성", #tree.Disciplines == 57)
 		local promotedCount, promotedLinked, duplicateAcademy = 0, 0, nil
