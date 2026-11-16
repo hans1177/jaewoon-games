@@ -1,5 +1,5 @@
 --!nonstrict
--- KnowledgeTree.luau · 기존 21학문 + 30개 세부 학문 승격, 중복 보상 없는 다중 학문 교차 연결
+-- KnowledgeTree.luau · 기존 21학문 + 31개 세부 학문 승격, 중복 보상 없는 다중 학문 교차 연결
 -- 지식 트리(인과 관계): 발견한 도감 카드를 학자에게 "보고"하면 그 지식을 이해한 것으로 인정된다.
 -- 선행 지식(needs)을 모두 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해·화력·교역품 값에 실제 효과를 준다.
 -- 새 학문·지식은 표에 줄만 더하면 된다. 카드 id 는 KnowledgeCards 에 있어야 한다 (테스트가 검사).
@@ -457,12 +457,13 @@ p("crafts", "공예", "practical", "art", "도자기·유리·금속 세공.")
 p("sailing_craft", "선원 기술", "practical", "navigation", "매듭·돛 조작·밧줄 다루기.")
 p("trade_craft", "장사 기술", "practical", "commerce", "흥정과 장부.")
 
--- [학문 확장] 기존 21개 주학문·K.Nodes 소유권을 유지한 채, 이미 예정된 실용 세부 학문 중 30개를 활성화한다.
+-- [학문 확장] 기존 21개 주학문·K.Nodes 소유권을 유지한 채, 이미 예정된 실용 세부 학문 중 31개를 활성화한다.
 -- 기존 연구 기록(reported)을 재해석해 관련 세부 학문 숙련도를 병행 계산한다. 새 저장키/보상/시대 기준 변경 없음.
 p("forestry", "임학", "applied", "botany", "나무의 자람·숲·수지·목재를 다루는 학문.")
 p("mining", "광업학", "applied", "mineralogy", "광맥·채굴·광석을 기록하는 학문.")
 p("paleontology", "고생물학", "natural", "geology", "화석으로 오래전 생물을 살피는 학문.")
 local PROMOTED = {
+	biology = true,
 	mathematics = true,
 	geometry = true,
 	trigonometry = true,
@@ -515,6 +516,7 @@ K.Planned = unpromoted
 -- [학문 다중 소속] 기존 카드의 주학문·보상·선행 노드는 절대로 재배정하지 않는다.
 -- 이미 보고한 카드만 새 학문에서도 함께 숙련/진행도로 인정한다. 총 보고 수·시대 점수는 1번만 센다.
 K.SpecialismCards = {
+	biology = { "zoo_reindeer", "bot_lotus" },
 	mathematics = { "relic_sundial", "relic_hourglass" },
 	geometry = { "site_pont_du_gard", "arch_stone_bridge" },
 	trigonometry = { "relic_astrolabe_arab", "relic_compass_old" },
