@@ -4379,6 +4379,31 @@ function RENDERERS.harbor()
 			end)
 		end
 	end
+
+	-- [세계문명] 국가 경제·사회·문화·전쟁·혁명이 항구의 생활에 미친 영향.
+	if h.sim and h.sim.society then
+		local social = h.sim.society
+		add(function() return mkHeader(content, "세계사 · 정치 · 사회 · 문명 변화") end)
+		add(function()
+			return mkRow(content, "도시 문명 지표",
+				string.format("정치 %+d · 금융 %+d · 학문 %+d · 문화 %+d · 신앙 %+d",
+					math.floor(social.civic * 100), math.floor(social.finance * 100), math.floor(social.knowledge * 100),
+					math.floor(social.culture * 100), math.floor(social.faith * 100))
+				.. string.format("\n계층격차 %+d · 이주압력 %+d · 군사긴장 %+d · 식민압력 %+d · 환경 %+d",
+					math.floor(social.inequality * 100), math.floor(social.migration * 100), math.floor(social.military * 100),
+					math.floor(social.colony * 100), math.floor(social.ecology * 100)), {}, 104)
+		end)
+		if h.sim.historyEffects then
+			for _, ev in ipairs(h.sim.historyEffects) do
+				add(function()
+					local detail = (ev.kind or "역사·경제") .. " · " .. tostring(ev.daysLeft or 0) .. "일 남음"
+					if ev.peopleNames and #ev.peopleNames > 0 then detail ..= "\n관련 인물: " .. table.concat(ev.peopleNames, " · ") end
+					if ev.sourceEvent then detail ..= "\n백과 사건: " .. ev.sourceEvent end
+					return mkRow(content, ev.title or "세계 사건", detail, {}, if ev.peopleNames and #ev.peopleNames > 0 then 94 else 72)
+				end)
+			end
+		end
+	end
 	if h.economy then
 		local e = h.economy
 		H.statStrip({
