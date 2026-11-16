@@ -190,7 +190,13 @@ return function(D, S)
 	-- 게임의 세계 이벤트가 일어나면 경제 충격으로 넣는다.
 	function X.shock(state, ev, regionId)
 		local w = ensure(state)
-		if not w then return end
+		if not w then return false end
+		-- [공통 세계 시간] 개인 진행 연도가 다른 서버의 역사 재해를 잘못 전파하지 않는다.
+		if ev.year then
+			local at = ev.year + ((ev.month or 1) - 1) / 12
+			local current = E.year(w)
+			if at > current + 0.08 or at + 1 < current then return false end
+		end
 		if not E.addShock(w, E.shockFromEvent(ev, regionId)) then return false end
 		worldDirty = true
 		table.insert(pendingOps, { kind = "shock", event = ev, regionId = regionId })
