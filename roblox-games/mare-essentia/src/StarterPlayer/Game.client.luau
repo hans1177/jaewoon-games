@@ -7765,14 +7765,21 @@ if string.sub(codexField, 1, 2) == "r:" then
 						.. " · 연관 지식: " .. item.cardName
 					if item.chain then
 						local destinations = item.chain.markets or {}
-						detail ..= string.format("\n%s → %s → 원산지 명품\n산지 %s · 관련 학문 %s\n수출 목표 %s%s",
-							item.chain.raw, item.chain.processed, item.chain.port, item.chain.research,
-							destinations[1] or "미등록", if #destinations > 1 then " 외 " .. tostring(#destinations - 1) .. "개 항구" else "")
+						if #destinations > 0 then
+							detail ..= string.format("\n%s → %s → 지역 명품\n원산지 %s · 관련 학문 %s\n수출 목표 %s%s",
+								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research,
+								destinations[1], if #destinations > 1 then " 외 " .. tostring(#destinations - 1) .. "개 항구" else "")
+						else
+							detail ..= string.format("\n원료 %s → 가공품 %s\n생산 항구 %s · 관련 학문 %s",
+								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research)
+						end
+					elseif item.origin then
+						detail ..= "\n생산 항구: " .. item.origin
 					end
 					return mkRow(content, item.name, detail, {
 						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
 							onClick = function() if card then H.showCardDetail(card) end end },
-					}, if item.chain then 114 else 62)
+					}, if item.chain then 114 elseif item.origin then 82 else 62)
 				end)
 			end
 		end
