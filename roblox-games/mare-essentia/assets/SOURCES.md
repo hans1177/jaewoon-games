@@ -1573,3 +1573,22 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - 수정 내역: 쇼케이스 전시대 장면 노드 제거. 제작자의 선체·돛·삭구·재질 원형은 유지.
 - 원본 SHA256: `46ce904ac54b35d76a8d23bc93d5f79792bcb454a94bca0a64d62d9da89843c5`. 수정본 SHA256: `9875cc17792ad31e2b100e019784651e1910eb2ac31a1833783528e9ad453a22`.
 - 최종 게임 화면에서 실제 메시·색상·모바일 성능과 동일 로블록스 버전 시각 검증은 아직 **미확인**. 다른 국가의 다른 함종으로 임의 재사용하지 않는다.
+
+
+## 2026-11-17 함종별 CC0 원본 바이너리 선다운·개조 6종
+
+원작자 **Kenney**, 상업적 이용·수정 가능 **CC0-1.0**. 3D 원본은 기존 저장소에서 실제 Git 바이너리를 다시 읽고 SHA-256을 검증한 뒤 개조했다. 원본 GLB의 실제 삼각형·메시·바이너리를 보존하고 함종 고유의 덱·돛·삭구·노를 별도 삼각형 메시로 제작했다. 다른 함종이 같은 선박 모델을 잘못 상속하도록 임의 연결하지 않았다.
+
+| 개조본 | 먼저 확보한 원본 | 개조 특징 |
+|---|---|---|
+| `naval/caravel-custom.glb` | `naval/ship-small.glb` | 세 개의 삼각돛, 선수루, 삭구 |
+| `naval/cog-custom.glb` | `naval/ship-small.glb` | 넓은 선체, 사각돛, 높은 선수·선미루 |
+| `naval/xebec-custom.glb` | `naval/ship-pirate-medium.glb` | 지중해형 긴 선체, 삼각돛 세 장, 노, 밧줄 |
+| `naval/brigantine-custom.glb` | `naval/ship-medium.glb` | 앞 사각돛 두 장, 뒤 사선돛, 붐·현측 난간 |
+| `naval/fluyt-custom.glb` | `naval/ship-large.glb` | 폭 넓은 상선 몸통, 높아진 선미, 상선 돛과 선미 창 |
+| `naval/pirogue-custom.glb` | `terrain/canoe.glb` | 카누 선체를 길게 개조, 원본 활성 장면 배율 수정, 8개 노·가로대 |
+
+- 선박 원본 공식 출처: https://kenney.nl/assets/pirate-kit / https://kenney.nl/assets/nature-kit
+- 각 개조본과 같은 이름의 `.glb.license.json`에 원본 Git SHA, 원본 SHA-256, 개조본 SHA-256, 변경 항목, 검증 여부를 보관한다.
+- **등록 번호 검증:** `assets-registered.json`의 자산별 `sourceSha256`과 현재 GLB 해시가 같고 Universe 사용권한이 확인된 경우에만 해당 버전의 모델 등록으로 인정한다. 바뀐 GLB는 기존 등록기에서 새 번호를 발급받고 실패하면 이전 번호를 복원한다.
+- **미완료:** 실제 항구·해전 외형 연결, Roblox Studio 실화면 품질, 모바일 성능, 체험 게시. 원본 확보·모델 개조·등록·실제 게임 화면을 혼동하지 않는다.
