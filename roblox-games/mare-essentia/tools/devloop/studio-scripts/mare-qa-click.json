@@ -354,6 +354,57 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "workspace:SetAttribute('DevCall','Hall') return 'QA_TRADE_HALL_OPEN'"
+  },
+  {
+    "type": "wait",
+    "seconds": 3
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'TRADE_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'TRADE_HALL_DISABLED') assert(not hud.Visible,'TRADE_HUD_ICON_LEFTOVER') assert(not top.Enabled,'TRADE_TOP_ICON_LEFTOVER') return 'TRADE_HALL_NO_LEFTOVER_ICONS_PASS'"
+  },
+  {
+    "type": "capture",
+    "name": "ui_trade_hall_no_hud"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('DevCall','Yard') return 'QA_YARD_HALL_OPEN'"
+  },
+  {
+    "type": "wait",
+    "seconds": 3
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local g=assert(pg:FindFirstChild('TradeHallGui'),'YARD_HALL_MISSING') local hud=assert(pg:FindFirstChild('MareEssentiaGui'):FindFirstChild('Hud',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(g.Enabled,'YARD_HALL_DISABLED') assert(not hud.Visible,'YARD_HUD_ICON_LEFTOVER') assert(not top.Enabled,'YARD_TOP_ICON_LEFTOVER') return 'YARD_HALL_NO_LEFTOVER_ICONS_PASS'"
+  },
+  {
+    "type": "capture",
+    "name": "ui_yard_hall_no_hud"
+  },
+  {
+    "type": "click_from_luau",
+    "ctx": "Client",
+    "label": "yard_leave",
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local hall=assert(pg:FindFirstChild('TradeHallGui'),'YARD_CLOSE_HALL_MISSING') local leave for _,v in ipairs(hall:GetDescendants()) do if v:IsA('TextButton') and v.Text=='나가기' then leave=v break end end assert(leave and leave.Visible,'YARD_LEAVE_BUTTON_MISSING') return string.format('%d,%d CLICK=나가기',math.floor(leave.AbsolutePosition.X+leave.AbsoluteSize.X/2),math.floor(leave.AbsolutePosition.Y+leave.AbsoluteSize.Y/2))"
+  },
+  {
+    "type": "wait",
+    "seconds": 2
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') assert(not pg:FindFirstChild('TradeHallGui'),'HALL_DID_NOT_CLOSE') local gui=assert(pg:FindFirstChild('MareEssentiaGui')) local main=assert(gui:FindFirstChild('Main',true)) local hud=assert(gui:FindFirstChild('Hud',true)) local toggle=assert(gui:FindFirstChild('MenuToggle',true)) local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) assert(main.Visible,'HALL_RETURN_MAIN_HIDDEN') assert(hud.Visible==toggle.Visible,'HALL_HUD_NOT_RESTORED') assert(top.Enabled==hud.Visible,'HALL_TOP_NOT_RESTORED') return 'HALL_HUD_RESTORED_PASS'"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'TAC_NEWGAME ok='..tostring(a and a.ok)"
   },
   {
