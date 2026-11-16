@@ -800,8 +800,11 @@ do
 	check("문화권 건물: 이슬람권 항구에는 모스크, 런던에는 성당이 서고 서로 바뀌지 않는다", mosqueHere and not mosqueThere and cathedralThere)
 	local dfBad = {}
 	for _, d in D.KnowledgeTree.Disciplines do
-		local l = D.DisciplineFacilities.List[d.id]
-		if not l or #l ~= 4 then table.insert(dfBad, d.id) end
+		-- 확장 학문은 중복 보상 없는 연구 분과이므로 기존 21학문의 시설·직업을 공유한다.
+		if not d.derived then
+			local l = D.DisciplineFacilities.List[d.id]
+			if not l or #l ~= 4 then table.insert(dfBad, d.id) end
+		end
 	end
 	check("학문 시설: 모든 학문에 4단계 시설·직업이 있다", #dfBad == 0, table.concat(dfBad, ","))
 	local fac0, jobs0 = S.Village.discFacilities(stFull, 1)
