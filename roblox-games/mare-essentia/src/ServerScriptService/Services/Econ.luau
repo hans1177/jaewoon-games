@@ -1,4 +1,5 @@
 --!nonstrict
+-- Econ.luau · 서버 경제시계·학문 연구 확산
 -- 살아 있는 세계 경제: Economy(순수 시뮬)를 서버에서 하루씩 돌려 항구마다 인구·발전 단계·직업·번영도를 낸다.
 -- 세계는 서버에 하나다. 플레이어의 날짜(state.day)를 따라 한 번에 MAX_CATCHUP 일까지만 따라잡는다(끊김 방지).
 -- 저장에는 넣지 않는다: 같은 시드로 다시 시작하면 같은 역사가 다시 흐른다. 시뮬이 없으면(D.Economy == nil) 아무것도 하지 않는다.
@@ -156,6 +157,16 @@ return function(D, S)
 			end
 		end
 		return town
+	end
+
+	-- [자동 경제시계] 플레이어가 아무 동작을 하지 않아도 살아 있는 항구 경제를 갱신한다.
+	-- 게임 서버의 기존 world 한 개만 사용한다. CLI 테스트 환경은 task 가 없어 그대로 실행된다.
+	if task and task.spawn and task.wait then
+		task.spawn(function()
+			while task.wait(120) do
+				if world then X.advance({ day = 0 }) end
+			end
+		end)
 	end
 
 	function X.reset() world = nil end
