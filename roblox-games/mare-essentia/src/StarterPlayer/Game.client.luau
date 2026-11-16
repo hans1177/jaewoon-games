@@ -2829,7 +2829,7 @@ local function call(action, payload)
 			snd = "sfx_cargo_drop"
 		elseif action == "BuyCannon" or action == "BuyPlating" then
 			snd = "sfx_workshop_chop"
-		elseif action == "Research" or action == "ReportKnowledge" or action == "BuyMap" then
+		elseif action == "Research" or action == "StudyKnowledgeCard" or action == "ReportKnowledge" or action == "BuyMap" then
 			snd = "sfx_book_turn"
 			if action == "ReportKnowledge" then
 				task.delay(0.35, Sfx.play, "sfx_quest_book_close", 0.5)
@@ -6684,6 +6684,22 @@ function H.showCardDetail(card)
 	end
 	if card.path then
 		mkLabel(body, "획득 과정: " .. card.path .. " · " .. tostring(card.source) .. (if card.studyLocked then "\n현재 조건: " .. card.studyLocked else ""), 13, brown, false, 4)
+	end
+	-- [문헌 연구] 학자 보고가 끝난 장소별 연구 카드만 직접 학습할 수 있다.
+	if card.studyReady and not card.found then
+		local study = mkButton(body, "문헌 해독·비교 연구 시작", COLORS.blue, UDim2.new(1, -8, 0, 38), function()
+			local res = call("StudyKnowledgeCard", { cardId = card.id })
+			if res and res.ok and view and view.codex then
+				for _, updated in view.codex.cards do
+					if updated.id == card.id then
+						overlay:Destroy()
+						H.showCardDetail(updated)
+						break
+					end
+				end
+			end
+		end, true)
+		study.LayoutOrder = 4
 	end
 	if card.found and not card.combat and card.level ~= nil then
 		local lv = card.level
