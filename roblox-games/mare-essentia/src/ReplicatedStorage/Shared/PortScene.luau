@@ -2942,6 +2942,41 @@ function PortScene.build(info, onFacility)
 	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
+	-- [도시 지형] 항구마다 고정된 만·운하·삼각주·섬·해협·언덕 실루엣을 동쪽 바다에 배치한다.
+	-- 도시 구조나 보행 판정은 건드리지 않고, 입체 배경 최대 8개로 모바일 부담을 제한한다.
+	do
+		local coastSeed = seeded(info.portId .. ":coast-form")
+		local shapes = {
+			venice = "lagoon", amsterdam = "canal", lisbon = "hill", porto = "hill",
+			istanbul = "strait", busan = "hill", nagasaki = "hill", rio = "bay",
+			havana = "bay", hong_kong = "hill", alexandria = "delta", cairo = "delta",
+			rotterdam = "delta", antwerp = "river", genoa = "hill", naples = "bay",
+			marseille = "bay", osaka = "river", calcutta = "delta",
+		}
+		local choices = if currentKey == "japan" or currentKey == "nordic" then { "hill", "bay", "river" }
+			elseif currentKey == "pacific" or currentKey == "seasia" then { "lagoon", "bay", "delta" }
+			elseif currentKey == "desert" or currentKey == "ottoman" then { "bay", "hill", "plain" }
+			else { "plain", "river", "bay", "hill", "delta" }
+		local form = shapes[info.portId] or choices[coastSeed:NextInteger(1, #choices)]
+		folder:SetAttribute("CoastForm", form)
+		for _, side in { -1, 1 } do
+			for i = 1, 3 do
+				local x = 130 + 19 * i
+				local z = side * (140 + 54 * i + coastSeed:NextInteger(-8, 8))
+				if form == "lagoon" or form == "delta" or form == "canal" or form == "river" then
+					local island = part(folder, Vector3.new(24 + i * 7, 0.4, 15 + i * 8), CFrame.new(x, 0.89, z),
+						if form == "lagoon" then style.ground else C(185, 170, 132), Enum.Material.Sand)
+					island.Name = "CoastIsland"
+					island.CanCollide, island.CanQuery = false, false
+					if i == 2 then importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(x, 1.15, z), 9, false) end
+				elseif form == "hill" or form == "strait" then
+					importedModel(folder, "Town", "rock-wide", Vector3.new(x, 0.9, z), 24 + i * 3, false)
+				elseif form == "bay" and i ~= 2 then
+					importedModel(folder, "Naval", "rocks-a", Vector3.new(x, 0.9, z), 17 + i * 2, false)
+				end
+			end
+		end
+	end
 	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 멀리 최대 6개를 배치한다.
 	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
 	local warmShore = palmOk(info.portId, style)
