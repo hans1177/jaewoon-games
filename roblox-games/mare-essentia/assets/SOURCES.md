@@ -1531,3 +1531,19 @@ Quaternius 공개 CC0 팩의 원본 GLB를 `trebeljahr/quaternius-showcase`에�
 | `terrain/` | `rice-1.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `a59b8ddac2cb02de34036d712d264ebf3b75ea39` |
 | `terrain/` | `rice-3.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `4577814ccc655f44d3aca9ba87bd925a560904a5` |
 | `terrain/` | `rice-4.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `ef10b3ba10e831800a014f622ba578d7d3b48a7c` |
+
+## 2026-11-16: 대륙별 식생 성장 단계 자산 9개
+
+Quaternius Ultimate Crops Pack 공개 CC0 GLB 원본. 원본 Git blob SHA-1 동일성 확인. 로블록스 업로드·체험 사용 권한·게임 내 시각 품질 검증은 별도 진행.
+
+| 모델 | 원본 파일 | SHA-1 |
+|---|---|---|
+| `terrain/bamboo-1.glb` | `Bamboo_1.glb` | `eea8d8d8d93065b2454b9e1748c2bf9c2dbed412` |
+| `terrain/bamboo-3.glb` | `Bamboo_3.glb` | `9f1ff2049c3852874d24fb4c4946b95b89cf40ad` |
+| `terrain/bamboo-4.glb` | `Bamboo_4.glb` | `978f34ce41ae77e85151e5a28a1f8a6e60795fbb` |
+| `terrain/cactus-1.glb` | `Cactus_1.glb` | `64871c508800c38484610a568151a1b53a16a3ab` |
+| `terrain/cactus-3.glb` | `Cactus_3.glb` | `c6c3e3027204ecf427f6b46ac8beb17499b4220a` |
+| `terrain/cactus-4.glb` | `Cactus_4.glb` | `fb18ebbded80cc3c0990ab755d11f6ab340acd54` |
+| `terrain/palm-1.glb` | `PalmTree_1.glb` | `885d93932e6572df08e13c5361c2a7cfeaa434c7` |
+| `terrain/palm-3.glb` | `PalmTree_3.glb` | `c07e72cefaae342bff620c17d21d42b74275d2e8` |
+| `terrain/palm-4.glb` | `PalmTree_4.glb` | `983683ed01203f972560000d183d9fbca5dd9ae0` |
