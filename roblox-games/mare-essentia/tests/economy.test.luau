@@ -308,6 +308,62 @@ do
 	check("비축분만 있을 때 가공 원료 소비 없음", t.stock.wool == before, t.stock.wool)
 end
 
+-- [동접 20명] 하나의 서버에서 여러 사용자 조회·거래가 한 세계 시뮬 및 저장 요청을 공유한다.
+do
+	local memory = { value = nil, reads = 0, writes = 0 }
+	function memory:GetAsync(_key)
+		self.reads += 1
+		return self.value
+	end
+	function memory:UpdateAsync(_key, update)
+		self.writes += 1
+		self.value = update(self.value)
+		return self.value
+	end
+	local Econ = require("./Services/Econ")
+	local room = Econ({ Economy = Eco }, {})
+	room.bindStore(memory, "room-20")
+	for i = 1, 20 do
+		local state = { startYear = 1650, day = 0 }
+		check("20명: 동일 항구 경제 화면 조회 " .. i, room.town(state, "london") ~= nil)
+		room.give(state, "london", "wool", 1)
+	end
+	check("20명: 세계 저장소 최초 로드 1회", memory.reads == 1, memory.reads)
+	local saved = room.sync({ startYear = 1650, day = 0 }, true)
+	check("20명: 누적 거래 20건을 하나의 세계 스냅샷에 저장",
+		saved and memory.writes == 1 and memory.value.revision == 1 and memory.value.towns.london.stock.wool > 20)
+	local other = Econ({ Economy = Eco }, {})
+	other.bindStore(memory, "room-new")
+	check("서버 변경: 모든 이용자가 동일 저장 세계를 읽음",
+		other.town({ startYear = 1700, day = 0 }, "london").year == 1650 and memory.reads == 2)
+end
+
+-- [시계 경합] 서로 다른 서버가 다른 일수까지 시뮬한 경우 새 판본에서 뒤처진 일수를 복원한다.
+do
+	local memory = { value = nil }
+	function memory:GetAsync(_key) return self.value end
+	function memory:UpdateAsync(_key, update)
+		local nextValue = update(self.value)
+		if nextValue ~= nil then self.value = nextValue end
+		return nextValue
+	end
+	local Econ = require("./Services/Econ")
+	local first = Econ({ Economy = Eco }, {})
+	local second = Econ({ Economy = Eco }, {})
+	first.bindStore(memory, "short")
+	second.bindStore(memory, "long")
+	local early, late = { startYear = 1650, day = 0 }, { startYear = 1650, day = 45 }
+	first.advance(early)
+	second.advance(late)
+	local lateDay = second.town(late, "london").day
+	check("낮은 일수 세계 먼저 저장", first.sync(early, true) and memory.value.day <= lateDay)
+	second.give(late, "london", "wool", 1)
+	check("시계 충돌 시 오래된 판본 덮지 않음", second.sync(late, true) == false)
+	check("시계 충돌 시 더 진행한 경제 일수 보전", second.town(late, "london").day >= lateDay)
+	check("경합 복구 및 교역 사건 최종 저장", second.sync(late, true)
+		and memory.value.day >= lateDay and memory.value.revision == 2)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})
