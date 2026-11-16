@@ -75,3 +75,20 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/for stage = 2, chain do/);
   assert.doesNotMatch(field,/chain = if rank == 2 then 2[\s\S]*?else 5\)/);
 });
+
+test('필드 전투 스킬 버튼은 글자 없이 등록 아이콘을 중앙에 표시한다',()=>{
+  assert.match(field,/local iconOnly = string\.sub\(button\.Name, 1, 11\) == "FieldSkill_"/);
+  assert.match(field,/medallion\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
+  assert.match(field,/img\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
+  assert.match(field,/local function mkSkill\(key, label, color, pos, size\)[\s\S]*?btn\(gui, "", color/);
+  assert.match(field,/b:SetAttribute\("SkillFullName", label\)/);
+  assert.match(field,/lb\.Text = ""[\s\S]*?addIcon\(lb, "Menu\/cc0_no"\)/);
+  assert.match(field,/b:SetAttribute\("SkillShortName", shortName\)/);
+  assert.match(field,/local paintedKey = if type\(card\.id\) == "string" and AssetIds\["CardArt\/"/);
+  assert.doesNotMatch(field,/FieldSkillCaption/);
+  assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/sb\.btn:GetAttribute\("IconArtKey"\) ~= iconKey/);
+  assert.match(field,/if key == "parry" then useGuard\(\) else useMove\(key\) end/);
+  assert.match(field,/useCard\(key, card\)/);
+  assert.match(field,/pl\.cd\[key\] = now \+ 8/);
+});

@@ -35,17 +35,19 @@ if not okFM then
 	FM = nil
 end
 
--- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
--- [전투 원화] 등록된 무료 아이콘/도감 원화만 사용한다. 기호마다 황동 메달과 내부 그림 층을 분리한다.
+-- [아이콘 표시] 등록된 공용 아이콘·도감 원화만 사용한다. 스킬은 글자 없이 그림을 중앙 배치한다.
+-- 공격·철수 등 기존 글자 버튼의 아이콘 위치는 변경하지 않는다.
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
 	local painted = string.sub(key, 1, 8) == "CardArt/"
+	local iconOnly = string.sub(button.Name, 1, 11) == "FieldSkill_" or string.sub(button.Name, 1, 16) == "FieldLockedSkill"
 	local medallion = Instance.new("Frame")
 	medallion.Name = "FieldIconMedallion"
 	medallion.AnchorPoint = Vector2.new(0.5, 0.5)
-	medallion.Position = UDim2.fromScale(0.5, 0.385)
-	medallion.Size = UDim2.fromScale(if painted then 0.83 else 0.82, if painted then 0.74 else 0.76)
+	medallion.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)
+	medallion.Size = UDim2.fromScale(if iconOnly then 0.88 else (if painted then 0.83 else 0.82),
+		if iconOnly then 0.88 else (if painted then 0.74 else 0.76))
 	medallion.BackgroundColor3 = if painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
 	medallion.BackgroundTransparency = if painted then 0 else 0.33
 	medallion.BorderSizePixel = 0
@@ -65,8 +67,9 @@ local function addIcon(button: TextButton, key: string)
 	img.BackgroundTransparency = 1
 	img.Image = "rbxassetid://" .. tostring(id)
 	img.AnchorPoint = Vector2.new(0.5, 0.5)
-	img.Position = UDim2.fromScale(0.5, 0.385)
-	img.Size = UDim2.fromScale(if painted then 0.83 else 0.79, if painted then 0.72 else 0.72)
+	img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)
+	img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79),
+		if iconOnly then 0.82 else 0.72)
 	img.ScaleType = Enum.ScaleType.Fit -- 승인 원화 가장자리 잘림 없이 전부 표시
 	img.ImageTransparency = 0
 	img.ImageColor3 = if painted then Color3.new(1, 1, 1) else Color3.fromRGB(255, 246, 222)
@@ -3057,26 +3060,13 @@ function FieldScene.start(opts)
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
 	end
+	-- [모바일 아이콘 스킬] 스킬명은 속성에 보존하고 화면엔 기존 공용 아이콘만 표시한다.
 	local function mkSkill(key, label, color, pos, size)
-		local b = btn(gui, label, color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
+		local b = btn(gui, "", color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.Name = "FieldSkill_" .. key
-		b.TextSize = 15
 		b.Text = ""
-		b.Font = Enum.Font.GothamBlack
-		local caption = Instance.new("TextLabel")
-		caption.Name = "FieldSkillCaption"
-		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.new(0, 4, 1, -26)
-		caption.Size = UDim2.new(1, -8, 0, 22)
-		caption.Font = Enum.Font.GothamBlack
-		caption.TextSize = 14
-		caption.TextColor3 = Color3.fromRGB(255, 251, 232)
-		caption.TextStrokeColor3 = Color3.fromRGB(12, 17, 23)
-		caption.TextStrokeTransparency = 0.15
-		caption.TextTruncate = Enum.TextTruncate.AtEnd
-		caption.Text = label
-		caption.ZIndex = b.ZIndex + 3
-		caption.Parent = b
+		b:SetAttribute("SkillFullName", label)
+		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		bindPress(b, function()
 			if key == "parry" then useGuard() else useMove(key) end
 		end)
@@ -3187,10 +3177,13 @@ function FieldScene.start(opts)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 42.5), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 42.5), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
-			lb.TextSize = 14
+			lb.Text = ""
+			lb:SetAttribute("SkillFullName", "잠긴 스킬")
 			lb.BackgroundTransparency = 0.35
+			lb:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
+			addIcon(lb, "Menu/cc0_no") -- 기존 등록 아이콘으로 잠금 상태를 그림만 표시
 			bindPress(lb, function()
 				say(JobSkills.unlockHint())
 			end)
@@ -3238,26 +3231,19 @@ function FieldScene.start(opts)
 				elseif card.skill == "snipe" then "저격" elseif card.skill == "read" then "간파" elseif card.skill == "rally" then "격려" else "기술"
 			local b = btn(gui, "", Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
 			b.Name = "FieldSkill_" .. key
-			b.TextSize = 14
+			b.Text = ""
 			b:SetAttribute("SkillFullName", card.name)
-			local caption = Instance.new("TextLabel")
-			caption.Name = "FieldSkillCaption"
-			caption.BackgroundTransparency = 1
-			caption.Position = UDim2.new(0, 4, 1, -26)
-			caption.Size = UDim2.new(1, -8, 0, 22)
-			caption.Font = Enum.Font.GothamBlack
-			caption.TextSize = 14
-			caption.Text = shortName
-			caption.TextColor3 = Color3.fromRGB(255, 249, 220)
-			caption.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
-			caption.TextStrokeTransparency = 0.14
-			caption.TextTruncate = Enum.TextTruncate.AtEnd
-			caption.ZIndex = b.ZIndex + 3
-			caption.Parent = b
-			-- [도감 원화 연동] 실제 카드 ID의 등록 원화가 있으면 그림 전체를 고급 스킬 메달로 재사용한다.
+			b:SetAttribute("SkillShortName", shortName)
+			b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
+			-- [도감 원화 연동] 등록된 카드 원화를 우선하고 미등록 카드는 기존 CC0 용도별 아이콘을 쓴다.
 			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
-			addIcon(b, paintedKey or (if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
-				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow" else "Menu/cc0_fireball"))
+			addIcon(b, paintedKey or (if card.skill == "heal" or card.skill == "read" then "Menu/cc0_book"
+				elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
+				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow"
+				elseif card.skill == "rally" then "Menu/cc0_helmet"
+				elseif card.skill == "luck" then "Menu/cc0_goldcoins"
+				elseif card.skill == "bash" then "Menu/cc0_axe"
+				else "Menu/cc0_fireball"))
 			bindPress(b, function()
 				useCard(key, card)
 			end)
@@ -3289,12 +3275,22 @@ function FieldScene.start(opts)
 		for key, sb in skillBtns do
 			if key == "heavy" or key == "sweep" then
 				local style = Weapons.actionDesign(wpn)
-				local text = if key == "heavy" then style.heavy else style.sweep
 				local detailed = if key == "heavy" then style.heavyName else style.sweepName
-				local caption = sb.btn:FindFirstChild("FieldSkillCaption")
-				if caption and caption.Text ~= text then caption.Text = text end
-				sb.label = text
+				sb.label = if key == "heavy" then style.heavy else style.sweep
 				sb.btn:SetAttribute("SkillFullName", detailed)
+				-- 무기 교체 시 기존 아이콘 이미지도 바로 해당 무기 계열로 전환한다.
+				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove"
+					elseif wpn.ranged then "Menu/cc0_crossbow"
+					elseif key == "heavy" and (wpn.family == "axe" or wpn.family == "blunt") then "Menu/cc0_axe"
+					elseif key == "sweep" and wpn.family == "axe" then "Menu/cc0_axe"
+					else "Menu/cc0_sword"
+				if sb.btn:GetAttribute("IconArtKey") ~= iconKey and AssetIds[iconKey] then
+					local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+					if icon then
+						icon.Image = "rbxassetid://" .. tostring(AssetIds[iconKey])
+						sb.btn:SetAttribute("IconArtKey", iconKey)
+					end
+				end
 			end
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
@@ -3302,9 +3298,8 @@ function FieldScene.start(opts)
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
 			if shade and timer then
 				shade.Visible = left > 0
-				timer.Visible = left > 0
+				timer.Visible = false -- [아이콘 전용] 재사용 숫자 대신 기존 진행 막대만 표시한다.
 				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
-				if left > 0 then timer.Text = if left >= 10 then tostring(math.ceil(left)) else string.format("%.1f", left) end
 				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
 				local fill = track and track:FindFirstChild("FieldCooldownProgress")
 				if track and fill then
