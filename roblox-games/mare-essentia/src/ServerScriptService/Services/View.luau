@@ -934,6 +934,8 @@ return function(D, S)
 				portType = D.Harbor.portType(port.produces),
 				economy = S.Harbor.economyOf(state, port.id),
 				sim = S.Econ.town(state, port.id),
+				-- [도시 랜드마크] 이미 플레이어가 이 항구에 건립한 실물 시설만 읽기 전용 외형 자료로 전달.
+				builtLandmarks = ((state.landmarks or {})[port.id] or {}),
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,

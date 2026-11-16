@@ -1740,17 +1740,18 @@ local function densify(folder, info, style, rng, walkers, made)
 	local laneL = 2 * S + P.alley + 3
 	local pairsMax = math.max(1, math.floor((136 - 38) / laneL))
 	local pairsN = math.min(pairsMax, math.ceil(lvl * 0.8))
-	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
+	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1)
+		* (info.urban and info.urban.density or 1) * (if info.sim and info.sim.mood == "slump" then 0.88 else 1), 0.3, 0.97)
 	local smokers = 0
 	local X_END = -190
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
 	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
-	for i = #slots, 2, -1 do
-		local j = dz:NextInteger(1, i)
-		slots[i], slots[j] = slots[j], slots[i]
-	end
-	local districts = { { kind = "religious", at = slots[1] }, { kind = "market", at = slots[2] }, { kind = "farm", at = slots[3] } } -- slots[4] 는 주거지 그대로
+	-- 항구 가까운 필지=시장, 뒤쪽=종교·농장. 좌우 방향만 항구별로 달라져 동선과 기능이 뒤섞이지 않는다.
+	if dz:NextNumber() < 0.5 then slots[1], slots[2] = slots[2], slots[1] end
+	if dz:NextNumber() < 0.5 then slots[3], slots[4] = slots[4], slots[3] end
+	local districts = { { kind = "market", at = slots[1] }, { kind = "religious", at = slots[3] },
+		{ kind = "farm", at = slots[4] } } -- 슬롯 2는 주거지
 	local function reserved(x, z)
 		if x > -104 and math.abs(z) > 20 and math.abs(z) < 54 then return true end
 		for _, d in districts do
@@ -2502,15 +2503,20 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 	end
 
-	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
-	local WZ, WX = 150, -204
+	-- 7) [외곽 확장] 성벽·망루·숲의 경계도 도시 면적과 함께 이동한다.
+	-- 과거 고정 성벽(-204, ±150)이 확장된 주거·상업·산업 구획을 막지 않도록 밖으로 옮긴다.
+	local plan = info.urban
+	local WZ = if plan then math.max(150, math.floor(plan.depth * 0.5 + 25)) else 150
+	local WX = if plan then math.min(-204, math.floor(20 - plan.width - 20)) else -204
 	local walled = lvl >= 3
+	local wallStep = if plan and plan.level >= 4 then 18 else 12
+	local wallSize = if wallStep == 18 then 18.5 else 12.5
 	for _, side in { 1, -1 } do
 		local x = -22
 		while walled and x > WX do
-			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), 12.5, true)
-			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), 12.5, true) end
-			x -= 12
+			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), wallSize, true)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), wallSize, true) end
+			x -= wallStep
 		end
 		if lvl >= 2 then
 			for _, tx in { -22, -80, -140, WX } do
@@ -2520,40 +2526,59 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local z = -WZ
 	while walled and z <= WZ do
-		local m = importedModel(folder, "Castle", if z == -18 or z == 18 then "wall-narrow-gate" else "wall", Vector3.new(WX, 0, z), 12.5, true)
-		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
+		-- 동적 성벽에서도 중앙 출입문은 반드시 남긴다.
+		local gate = math.abs(z) <= wallStep * 0.55
+		local m = importedModel(folder, "Castle", if gate then "wall-narrow-gate" else "wall",
+			Vector3.new(WX, 0, z), wallSize, true)
+		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), wallSize, true) end
 		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
-		z += 12
+		z += wallStep
 	end
 	if walled then
 		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	end
-	-- 성벽 밖 언덕과 숲
-	-- 평평한 절벽 판자(cliff-rock 은 두께 0.2 패널) 대신 입체 바위 군집
+	-- [외곽 자연물] 도시가 확장된 면적에는 바위/나무가 침범하지 않고 성벽 바깥에만 군집한다.
+	-- 먼 자연물의 수량을 성장할수록 줄여 모바일 장면 구축 비용을 억제한다.
+	local edgeZ = WZ + 25
+	local edgeX = WX - 30
 	local rocks = { "rock-large", "rock-wide", "rock-small" }
-	for i = 1, 40 do
+	local rockGroups = if plan and plan.level >= 4 then 18 else 30
+	for i = 1, rockGroups do
 		local side = if i % 2 == 0 then 1 else -1
-		local c = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
+		local c = Vector3.new(rng:NextNumber(math.max(edgeX, -570), -20), 0,
+			side * rng:NextNumber(edgeZ, edgeZ + 70))
 		importedModel(folder, "Town", "rock-large", c, rng:NextNumber(16, 26), true)
 		for j = 1, 2 do
-			importedModel(folder, "Town", rocks[rng:NextInteger(1, 3)], c + Vector3.new(rng:NextNumber(-12, 12), 0, rng:NextNumber(-12, 12)), rng:NextNumber(7, 13), false)
+			importedModel(folder, "Town", rocks[rng:NextInteger(1, 3)],
+				c + Vector3.new(rng:NextNumber(-12, 12), 0, rng:NextNumber(-12, 12)),
+				rng:NextNumber(7, 13), false)
 		end
 	end
-	for i = 1, 12 do
-		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
+	for i = 1, 10 do
+		importedModel(folder, "Town", "rock-wide",
+			Vector3.new(edgeX - rng:NextNumber(0, 50), 0, rng:NextNumber(-WZ, WZ)),
+			rng:NextNumber(14, 24), true)
 	end
 	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
-	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" } elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" } elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
-	for i = 1, 150 do
+	local trees = if key == "japan" then { "tree-high", "tree-high", "tree" }
+		elseif hot then { "palm-detailed-straight", "palm-bend", "tree-crooked" }
+		elseif cold then { "tree-high", "tree", "tree-crooked", "tree-high" }
+		else { "palm-detailed-straight", "tree-crooked", "tree-high", "tree" }
+	local treeCount = if plan and plan.level >= 4 then 64 else 112
+	for i = 1, treeCount do
 		local side = if i % 2 == 0 then 1 else -1
-		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
+		local pos = Vector3.new(rng:NextNumber(math.max(edgeX, -570), -10), 0,
+			side * rng:NextNumber(WZ + 20, WZ + 105))
 		local pick = trees[rng:NextInteger(1, #trees)]
-		local kind = if pick:find("palm", 1, true) or pick:find("tree-pine", 1, true) or pick:find("tree-oak", 1, true) then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
+		local kind = if pick:find("palm", 1, true) or pick:find("tree-pine", 1, true) or pick:find("tree-oak", 1, true)
+			then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
 		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
 	end
-	for i = 1, 30 do
-		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
-		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town", trees[1], pos, rng:NextNumber(8, 13), false)
+	local backTrees = if plan and plan.level >= 4 then 10 else 20
+	for i = 1, backTrees do
+		local pos = Vector3.new(edgeX - rng:NextNumber(0, 45), 0, rng:NextNumber(-WZ, WZ))
+		importedModel(folder, if trees[1]:find("palm", 1, true) then "Naval" else "Town",
+			trees[1], pos, rng:NextNumber(8, 13), false)
 	end
 end
 
@@ -2671,6 +2696,21 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
+			-- 경제 규모에 따라 랜드마크의 활동과 외관이 달라진다. 기존 개방 조건과 위치는 유지한다.
+			local economicBuildings = info.sim and info.sim.buildings or {}
+			if lm.id == "ironworks" and (economicBuildings.workshop or 0) >= 5 then
+				put("Cargo", "iron-bars-stack-large", 4, x + 14, z - front * 10, false)
+				put("Town", "workbench-anvil", 4, x - 14, z - front * 10, false)
+			elseif lm.id == "exchange" and (economicBuildings.market or 0) >= 2 then
+				put("Town", "stall-green", 6, x - 17, z - front * 14, false)
+			elseif lm.id == "academy" and (economicBuildings.school or 0) >= 2 then
+				put("Town", "bell-tower", 14, x - 20, z + front * 4, false)
+			end
+			-- 플레이어가 실제로 소유한 박물관·천문대·학술원은 깃발 표식으로 구분한다.
+			local owned = info.builtLandmarks or {}
+			if owned[lm.id] == true or (lm.id == "academy" and owned.hall == true) then
+				put("Castle", "flag-banner-long", 10, x + 17, z + front * 17, false)
+			end
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
@@ -2678,6 +2718,195 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 			end
 			if lm.tab then
 				prompt(folder, Vector3.new(x, 3, z + front * 14), lm.name, "들어가기", lm.tab, onFacility)
+			end
+		end
+	end
+end
+
+
+-- [도시 지형·성장] 기존 항구 좌표·시설·저장키는 유지하고, 경제·투자·기술과 문화권에 따라 시각 구획을 확장한다.
+-- 해안 형태는 항구마다 고정되어 방문할 때마다 바뀌지 않는다. 보행·항해 판정은 기존 안전 지형을 쓴다.
+local COAST_FORMS = {
+	venice = "lagoon", amsterdam = "canal", lisbon = "hill", porto = "hill", istanbul = "strait",
+	busan = "hill", nagasaki = "hill", rio = "bay", havana = "bay", hong_kong = "hill",
+	alexandria = "delta", cairo = "delta", rotterdam = "delta", antwerp = "river",
+	genoa = "hill", naples = "bay", marseille = "bay", osaka = "river", calcutta = "delta",
+}
+local FORM_NAMES = { lagoon = "섬과 수로", canal = "운하 평지", hill = "언덕 항구", strait = "해협 도시",
+	bay = "만과 반도", delta = "삼각주", river = "강 하구", plain = "해안 평야" }
+
+local function urbanPlan(info)
+	local sim = info.sim or {}
+	local dev = info.development or {}
+	local region = currentKey or "north"
+	local port = PortData.Ports[info.portId]
+	local r = seeded(info.portId .. ":coast")
+	local kind = COAST_FORMS[info.portId]
+	if not kind then
+		local forms = if region == "seasia" or region == "pacific" then { "lagoon", "bay", "delta" }
+			elseif region == "desert" or region == "ottoman" then { "bay", "hill", "plain" }
+			elseif region == "nordic" or region == "britain" then { "hill", "bay", "river" }
+			elseif region == "italy" or region == "med" then { "bay", "hill", "plain" }
+			else { "plain", "river", "bay", "hill" }
+		kind = forms[r:NextInteger(1, #forms)]
+	end
+	-- 마을 6단계와 실물경제 5단계는 기존 값을 유지하고 외형 확장 레벨에만 함께 반영한다.
+	local level = math.clamp(math.floor((sceneLevel + math.clamp(dev.level or sceneLevel, 1, 6)) * 0.5 + 0.5), 1, 6)
+	local pop = math.max(0, sim.pop or 0)
+	local blocks = math.max(4, dev.blocks or 4)
+	local populationGrowth = math.min(38, math.floor(math.sqrt(pop) * 0.55))
+	local width = math.clamp(296 + (level - 1) * 49 + populationGrowth + r:NextInteger(-8, 8), 300, 555)
+	local depth = math.clamp(328 + (level - 1) * 68 + math.min(38, math.floor(math.sqrt(blocks) * 3))
+		+ r:NextInteger(-12, 12), 340, 735)
+	if kind == "lagoon" or kind == "canal" then depth = math.min(735, depth + 24) end
+	if kind == "hill" then width = math.min(555, width + 12) end
+	return { level = level, kind = kind, name = FORM_NAMES[kind], width = width, depth = depth,
+		density = math.clamp(0.75 + (sim.prosperity or 100) / 400, 0.72, 1.18),
+		pop = pop, port = port }
+end
+
+-- [항구별 해안 실루엣] 기존 바다·부두 밖에만 비충돌 해안/구릉을 더한다.
+-- 지형 유형마다 섬, 곶, 구릉, 하구를 다르게 배치하되 게임플레이용 지형이나 시설 위치는 바꾸지 않는다.
+local function placeCoastForm(folder, info, style, plan)
+	local rng = seeded(info.portId .. ":shore")
+	for _, side in { -1, 1 } do
+		for i = 1, 3 do
+			local z = side * (112 + i * 43 + rng:NextInteger(-10, 10))
+			local x = 33 + i * 13
+			if plan.kind == "lagoon" or plan.kind == "delta" or plan.kind == "canal" then
+				local sand = part(folder, Vector3.new(22 + i * 3, 0.25, 16 + i * 4),
+					CFrame.new(x, 0.92, z), if plan.kind == "lagoon" then style.ground else Color3.fromRGB(176, 165, 125),
+					if plan.kind == "canal" then Enum.Material.Ground else Enum.Material.Sand)
+				sand.Name = "CoastalIsland_" .. i .. "_" .. side
+				sand.CanCollide, sand.CanQuery = false, false
+				if i == 2 then importedModel(folder, "Town", "tree_large", Vector3.new(x, 1.05, z), 9, false) end
+			elseif plan.kind == "hill" or plan.kind == "strait" then
+				local rock = importedModel(folder, "Town", "rock-wide", Vector3.new(x, 0.85, z),
+					if plan.kind == "strait" then 34 else 28, false)
+				if rock then rock.Name = "CoastalHeadland_" .. i end
+			elseif plan.kind == "bay" then
+				if i ~= 2 then importedModel(folder, "Town", "rock-wide", Vector3.new(x, 0.85, z), 22, false) end
+			elseif plan.kind == "river" then
+				local bank = part(folder, Vector3.new(25, 0.22, 34), CFrame.new(x, 0.91, z),
+					Color3.fromRGB(180, 161, 112), Enum.Material.Sand)
+				bank.Name = "EstuaryBank"
+				bank.CanCollide, bank.CanQuery = false, false
+			end
+		end
+	end
+	if plan.kind == "hill" or plan.kind == "strait" then
+		for _, side in { -1, 1 } do
+			local hills = importedModel(folder, "Castle", "ground-hills", Vector3.new(-400, 0, side * 300), 58, false)
+			if hills then hills.Name = "Hillside_" .. side end
+		end
+	end
+end
+
+-- [경제 → 실제 건물 수량·용도] 세계경제 주택/공방/농장/시장/학교/관청 재고만으로 외곽 구획을 만든다.
+-- 원래 시설·랜드마크 자리는 유지하고 도시가 커질수록 서쪽·교외의 새 필지를 연다.
+local function expandCityDistricts(folder, info, style, rng, walkers)
+	local plan = info.urban
+	local sim = info.sim or {}
+	local stock = sim.buildings or {}
+	local built = sim.construction or {}
+	local port = PortData.Ports[info.portId]
+	local made = port and port.produces or {}
+	local districts = {
+		{ id = "homes", name = "주거 구역", min = 2, stock = "house", x = -294, z = 0 },
+		{ id = "farms", name = "농장 구역", min = 3, stock = "farm", x = -305, z = -169 },
+		{ id = "crafts", name = "공방 구역", min = 3, stock = "workshop", x = -305, z = 169 },
+		{ id = "markets", name = "상업 구역", min = 4, stock = "market", x = -392, z = 80 },
+		{ id = "civic", name = "행정 구역", min = 4, stock = "hall", x = -392, z = -80 },
+		{ id = "academy", name = "학술 구역", min = 5, stock = "school", x = -427, z = 213 },
+		{ id = "suburb", name = "교외 신도시", min = 6, stock = "house", x = -480, z = -195 },
+	}
+	local mobile = game:GetService("UserInputService").TouchEnabled
+	local budget = if mobile then 15 else 24
+	local used, sites = 0, 0
+	for _, d in districts do
+		local count = stock[d.stock] or 0
+		if plan.level >= d.min and (count > 0 or (not info.sim and plan.level >= d.min)) then
+			local x, z = d.x, d.z
+			-- 도시 대로와 각 구역의 중앙 골목을 연결한다. 상업은 항만 방향, 농장·공방은 외곽에 고정된다.
+			local road = part(folder, Vector3.new(math.abs(x + 190) + 6, 0.24, 7),
+				CFrame.new((x - 190) * 0.5, 0.2, z), roadColor(style), roadMat())
+			road.Name = "DistrictRoad_" .. d.id
+			local alley = part(folder, Vector3.new(6, 0.24, 54), CFrame.new(x, 0.21, z),
+				roadColor(style), roadMat())
+			alley.Name = "DistrictAlley_" .. d.id
+			-- 건물마다 독립 필지: 겹쳐 쌓기보다 주거·산업·행정 집합을 질서 있게 표현한다.
+			local n = math.min(budget - used, math.clamp(math.ceil(math.sqrt(math.max(1, count)) * 0.55), 1, 4))
+			for i = 1, n do
+				local dx = if i % 2 == 0 then 17 else -17
+				local dz = if i <= 2 then -15 else 15
+				local pos = Vector3.new(x + dx, 0, z + dz)
+				local floors = math.clamp(1 + math.floor((plan.level - 1) / 2) + (if d.id == "markets" or d.id == "civic" then 1 else 0), 1, 4)
+				if d.id == "farms" then
+					if i == 1 then importedModel(folder, "Town", "watermill", pos, 17, true)
+					else importedModel(folder, "Terrain", "crop-pumpkin", pos, 10, false) end
+				elseif d.id == "crafts" then
+					house(folder, pos, 15, 13, floors, style, rng)
+					if i <= 2 then
+						importedModel(folder, "Town", "workbench-anvil", pos + Vector3.new(9, 0, 0), 3, false)
+						if (sim.prosperity or 100) >= 95 then smokeOn(folder, pos + Vector3.new(4, 13, 0)) end
+					end
+				elseif d.id == "markets" then
+					house(folder, pos, 17, 14, floors, style, rng)
+					importedModel(folder, "Town", if i % 2 == 0 then "stall-red" else "stall-green",
+						pos + Vector3.new(0, 0, if dz < 0 then 11 else -11), 6, false)
+				elseif d.id == "academy" and i == 1 then
+					local a = if currentKey == "japan" or currentKey == "china" or currentKey == "seasia"
+						then "temple-tower" else "bell-tower"
+					importedModel(folder, "Town", a, pos, 23, true)
+				else
+					local tone = if sim.mood == "slump" then style.walls[1]:Lerp(Color3.fromRGB(90, 80, 72), 0.28) else nil
+					house(folder, pos, if d.id == "civic" then 19 else 15, 14, floors, style, rng, tone)
+				end
+				used += 1
+			end
+			-- 주민 공사: 돈이 실제로 지출되고 이 종류의 건물이 부족할 때만 비계·자재·목수가 나타난다.
+			if built.active and sites < 2 and (built[d.stock] or 0) > 0.01 then
+				sites += 1
+				local at = Vector3.new(x + 32, 0, z + 28)
+				importedModel(folder, "Terrain", "wood-structure", at, 11, false)
+				importedModel(folder, "Terrain", "wood-support", at + Vector3.new(5, 0, 0), 7, false)
+				importedModel(folder, "Cargo", "wood-planks-stack-small", at + Vector3.new(-6, 0, 2), 3, false)
+				local worker = villager(folder, at + Vector3.new(0, 0, -5), 0,
+					Color3.fromRGB(135, 100, 69), rng, "Barbarian", true, { profession = "laborer", hat = "cap" })
+				if worker then table.insert(walkers, { model = worker, base = worker:GetPivot(), mode = "stay",
+					kind = "hammer", phase = rng:NextNumber(0, 10) }) end
+			end
+			-- 산업 특산품은 실제 생산 항구의 상품만 배치한다. 원산지가 아닌 상품은 만들지 않는다.
+			if d.id == "crafts" or d.id == "markets" then
+				for i = 1, math.min(2, #made) do
+					local goods = GOOD_MESH[made[i]]
+					if goods then importedModel(folder, goods[1], goods[2],
+						Vector3.new(x - 13 + i * 7, 1.6, z + 3), goodSize(made[i], 2), false, goods[3]) end
+				end
+			end
+			-- 한 구역에 표지 하나만 설치하고 멀리서 읽는 빌보드를 남발하지 않는다.
+			local marker = part(folder, Vector3.new(0.3, 0.3, 0.3), CFrame.new(x, 1.2, z - 27), Color3.new(1, 1, 1))
+			marker.Transparency, marker.CanCollide, marker.CanQuery = 1, false, false
+			sign(folder, marker, d.name, nil, 8)
+		end
+	end
+	-- [실제 소유 연구시설] 월드 경제가 아닌 플레이어 항구 건축의 연구소·미술관도 독립 필지로 나타낸다.
+	-- 기존 기념물 자리/시설 인터랙션에는 간섭하지 않는다.
+	local owned = info.builtLandmarks or {}
+	if plan.level >= 3 then
+		for _, item in {
+			{ id = "laboratory", name = "연구소", x = -238, z = -187, tint = Color3.fromRGB(172, 162, 142) },
+			{ id = "gallery", name = "미술관", x = -238, z = 187, tint = Color3.fromRGB(216, 194, 162) },
+		} do
+			if owned[item.id] == true then
+				local at = Vector3.new(item.x, 0, item.z)
+				local building = house(folder, at, 19, 15, 2, style, rng, item.tint)
+				if item.id == "laboratory" then
+					importedModel(folder, "Town", "workbench-anvil", at + Vector3.new(12, 0, 3), 4, false)
+				else
+					importedModel(folder, "Terrain", "statue-column", at + Vector3.new(12, 0, 3), 11, false)
+				end
+				sign(folder, building, item.name, nil, 14)
 			end
 		end
 	end
@@ -2711,6 +2940,11 @@ function PortScene.build(info, onFacility)
 	houseTier = sceneLevel
 	currentKey = styleKeyOf(style)
 	currentYear = year
+	info.urban = urbanPlan(info)
+	-- 실제 세계경제에서 건축비를 지출하고 있는 항구는 기존 목수·운반 NPC 공사 연출도 사용한다.
+	if not info.construction and info.sim and info.sim.construction and info.sim.construction.active then
+		info.construction = { to = sceneLevel + 1 }
+	end
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
@@ -2738,7 +2972,8 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(300, 0.3, 340), CFrame.new(-130, 0.02, 0),
+		local floor = part(folder, Vector3.new(info.urban.width, 0.3, info.urban.depth),
+			CFrame.new(20 - info.urban.width * 0.5, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2750,6 +2985,7 @@ function PortScene.build(info, onFacility)
 	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
+	placeCoastForm(folder, info, style, info.urban)
 	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 멀리 최대 6개를 배치한다.
 	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
 	local warmShore = palmOk(info.portId, style)
@@ -3648,6 +3884,7 @@ function PortScene.build(info, onFacility)
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	placeSignature(folder, info)
+	expandCityDistricts(folder, info, style, rng, walkers)
 
 	-- [학문별 자동 3D 발전] 백과 기술이 실제 도입된 항구에만 기존 승인 모델로 산업·학술 구역을 조성한다.
 	-- 지형·보행 도로·기존 시설 밖(-220 서쪽)의 고정 필지에 최대 8개만 설치해 모바일 부하를 제한한다.
@@ -3698,21 +3935,27 @@ function PortScene.build(info, onFacility)
 	end
 
 
-	-- [지역 브랜드 자동 3D] 원료 창고 → 공방 → 지역 브랜드 진열대 → 수출 마차로 외형이 발전한다.
-	-- 서쪽 경계의 산업 필지를 재사용해 기존 출항·보행·시장 길과 충돌하지 않게 한다.
+	-- [지역 브랜드 자동 3D] 기존의 모든 브랜드가 (-231, 151) 한곳에 겹치던 문제를 해결한다.
+	-- 산업 구역 필지의 2×3 그리드에 실제 지역 산업만 배치하고, 나머지는 경제 수치/UI로 유지한다.
+	local industrySites = 0
+	local maxIndustrySites = if game:GetService("UserInputService").TouchEnabled then 4 else 6
 	for _, industry in ipairs((info.sim and info.sim.industries) or {}) do
-		if industry.stage >= 2 then
-			local at = Vector3.new(-231, 0, 151)
+		if industry.stage >= 2 and industrySites < maxIndustrySites then
+			industrySites += 1
+			local col = (industrySites - 1) % 3
+			local row = math.floor((industrySites - 1) / 3)
+			local x = if info.urban.level >= 4 then -365 else -255
+			local at = Vector3.new(x - 35 * row, 0, 112 + col * 40)
 			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
 			if booth then
 				booth.Name = "LocalIndustry_" .. industry.id
 				local anchor = if booth:IsA("BasePart") then booth else booth:FindFirstChildWhichIsA("BasePart", true)
 				if anchor then sign(folder, anchor, if industry.stage >= 3 then industry.name else industry.processed, nil, 12, true) end
 			end
-			if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-15, 0, 0), 7, false) end
+			if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-14, 0, 0), 6, false) end
 			if industry.stage >= 4 then
-				importedModel(folder, "Town", "cart", at + Vector3.new(16, 0, 0), 7, false)
-				importedModel(folder, "Castle", "flag-banner-long", at + Vector3.new(0, 0, 12), 10, false)
+				importedModel(folder, "Town", "cart", at + Vector3.new(14, 0, 0), 6, false)
+				importedModel(folder, "Castle", "flag-banner-long", at + Vector3.new(0, 0, 12), 9, false)
 			end
 		end
 	end
