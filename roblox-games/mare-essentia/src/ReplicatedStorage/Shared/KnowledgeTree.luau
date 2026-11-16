@@ -457,6 +457,59 @@ p("crafts", "공예", "practical", "art", "도자기·유리·금속 세공.")
 p("sailing_craft", "선원 기술", "practical", "navigation", "매듭·돛 조작·밧줄 다루기.")
 p("trade_craft", "장사 기술", "practical", "commerce", "흥정과 장부.")
 
+-- [학문 확장] 기존 21개 기본 학문의 카드/보고/효과는 그대로 두고, 21개 세부 학문을 실제 연구 가능한 계통으로 승격한다.
+-- 기존 Planned 목록과 같은 ID를 사용한다. 새 저장키 없이 원래 보고한 카드들에서 분화 학문 숙련도를 계산한다.
+-- 새 지식카드는 classification.related에 해당 학문 ID를 적으면 자동으로 연결된다.
+K.BaseDisciplineCount = #K.Disciplines
+local ACTIVE_BRANCHES = {
+	mathematics = true, biology = true, geology = true, oceanography = true, ecology = true,
+	metallurgy = true, agronomy = true, pharmacology = true, cartography = true, military_science = true,
+	civil_engineering = true, textiles = true, brewing = true, crafts = true, historiography = true,
+	anthropology = true, economics = true, mechanics = true, optics = true, music = true, painting = true,
+}
+-- 규칙은 게임 안에 있는 실제 지식 카드 ID를 기준으로 한다. 내용이 비슷하다고 다른 학문으로 원본 노드를 이동시키지 않는다.
+-- exact는 정확한 카드 ID, parts는 prefix 일치 카드의 ID 중 단어 포함. 신규 카드의 분류 메타는 항상 우선한다.
+K.BranchRules = {
+	mathematics = { exact = { "relic_quadrant", "nav_mercator", "nav_cross_staff", "nav_octant" } },
+	biology = { exact = { "zoo_metamorphosis", "bot_plant_anatomy", "phy_microscope", "bot_binomial" } },
+	geology = { prefix = { "min_", "geo_", "pac_" }, parts = { "granite", "basalt", "chalk", "volcan", "lava", "rock", "fossil" } },
+	oceanography = { prefix = { "geo_", "wx_", "pac_" }, parts = { "current", "tide", "reef", "swell", "wave", "ocean", "sea_breeze", "kelp" } },
+	ecology = { exact = { "pac_kelp_forest", "geo_coral_reef", "geo_great_barrier", "pac_great_barrier_fish", "zoo_sea_turtle" } },
+	metallurgy = { prefix = { "min_", "ship_", "relic_" }, parts = { "iron", "copper", "tin_ore", "silver_ore", "gold_nugget", "bronze", "smelt", "forge" } },
+	agronomy = { exact = { "bot_tea_plant", "bot_rice_paddy", "bot_cotton_plant", "bot_sugarcane", "bot_cocoa", "am_maize_plant", "bot_olive", "bot_grape" } },
+	pharmacology = { exact = { "bot_willow", "bot_willow_notes", "med_willow_bark", "med_cinchona", "med_herb_garden", "med_pharmacy", "am_cinchona", "bot_herbarium" } },
+	cartography = { prefix = { "nav_", "relic_", "geo_", "art_", "pac_" }, parts = { "map", "chart", "atlas", "portolan", "mercator", "piri_reis" } },
+	military_science = { fields = { "Military" }, exact = { "relic_cannon_old", "arch_star_fort", "chem_gunpowder_refine" } },
+	civil_engineering = { prefix = { "arch_", "site_", "geo_" }, parts = { "bridge", "aqueduct", "harbor_crane", "canal", "arch", "fortress", "fort_" } },
+	textiles = { exact = { "chem_dye", "good_silk", "goods_linen", "bot_cotton_plant", "relic_kente" } },
+	brewing = { exact = { "chem_alcohol", "good_wine", "good_beer" } },
+	crafts = { exact = { "good_porcelain", "relic_lacquer_box", "chem_glass", "am_pottery_native", "relic_stained_glass" } },
+	historiography = { exact = { "relic_runestone", "lang_runes", "relic_rune_stone", "relic_runestone_small", "relic_roman_coin" } },
+	anthropology = { prefix = { "pac_maori_", "pac_polynes_", "am_native_", "relic_kente" } },
+	economics = { fields = { "Goods" }, exact = { "site_spice_market", "good_salt_trade", "relic_roman_coin" } },
+	mechanics = { exact = { "phy_pendulum", "phy_savery_pump", "phy_newcomen_engine", "che_air_pump", "phy_lever", "ship_steam_engine" } },
+	optics = { exact = { "phy_microscope", "phy_lens_grinding", "phy_refraction", "ast_light_speed", "relic_telescope_brass" } },
+	music = { prefix = { "art_music_", "art_baroque_music", "art_sonata_" } },
+	painting = { prefix = { "art_" }, parts = { "painting", "portrait", "fresco" } },
+}
+K.BranchesByCard = {}
+for i = #K.Planned, 1, -1 do
+	local planned = K.Planned[i]
+	if ACTIVE_BRANCHES[planned.id] then
+		local d = { id = planned.id, name = planned.name, field = nil, era = "확장 학문",
+			parent = planned.parent, summary = planned.summary, derived = true }
+		table.insert(K.Disciplines, d)
+		K.DisciplineById[d.id] = d
+		K.DomainOf[d.id] = planned.domain
+		table.remove(K.Planned, i)
+	end
+end
+-- 분화 학문은 기존 보고된 카드에서 추가 숙련도만 계산한다. 원래 연구 노드는 이동하거나 중복 지급하지 않는다.
+function K.belongsToDiscipline(node, discId)
+	if node.disc == discId then return true end
+	return K.BranchesByCard[node.id] ~= nil and K.BranchesByCard[node.id][discId] == true
+end
+
 -- 전체 분류표: active + planned 를 한 표로 (id → { id, name, domain, parent, planned })
 K.Taxonomy = {}
 K.TaxonomyById = {}
@@ -580,7 +633,42 @@ function K.autofill(cards: { any })
 	K.filled = true
 	local byField = {}
 	for _, d in K.Disciplines do
-		byField[d.field] = d.id
+		if not d.derived then byField[d.field] = d.id end
+	end
+	-- 새 지식이 추가되어도 같은 상위 분야·세부 학문의 인덱스를 한 번에 다시 만든다.
+	for _, c in cards do
+		local links = {}
+		for discId, rule in K.BranchRules do
+			local match = false
+			for _, id in rule.exact or {} do
+				if c.id == id then match = true break end
+			end
+			if not match then
+				local fieldOK = false
+				for _, f in rule.fields or {} do
+					if c.field == f then fieldOK = true break end
+				end
+				match = fieldOK
+			end
+			if not match then
+					for _, prefix in rule.prefix or {} do
+						if string.sub(c.id, 1, #prefix) == prefix then
+							if not rule.parts then match = true else
+								for _, part in rule.parts do
+									if string.find(c.id, part, 1, true) then match = true break end
+								end
+							end
+						end
+						if match then break end
+						end
+					end
+				end
+			if match then links[discId] = true end
+		end
+		for _, discId in (c.classification and c.classification.related) or {} do
+			if K.DisciplineById[discId] then links[discId] = true end
+		end
+		K.BranchesByCard[c.id] = links
 	end
 	local roots = {}
 	for _, node in K.Nodes do
