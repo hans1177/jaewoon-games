@@ -457,6 +457,25 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "-- [수동항해 회귀 검사] 지역 사건이 열려 있으면 Sail 호출 전 3D 출항을 막는다.\nlocal pl=game:GetService(\"Players\").LocalPlayer\nlocal pg=pl:WaitForChild(\"PlayerGui\")\nlocal remote=game:GetService(\"ReplicatedStorage\"):WaitForChild(\"GameAction\")\nlocal state=remote:InvokeServer(\"State\", {})\nassert(state and state.view and state.view.player and state.view.player.portId,\"VOYAGE_QA_STATE_MISSING\")\nassert(not workspace:GetAttribute(\"VoyageActive\"),\"VOYAGE_QA_ALREADY_SAILING\")\nfor i=1,30 do\n if not pg:FindFirstChild(\"StoryScene\",true) then break end\n task.wait(0.1)\nend\nassert(not pg:FindFirstChild(\"StoryScene\",true),\"VOYAGE_QA_STORY_STILL_OPEN\")\nlocal layer=Instance.new(\"ScreenGui\")\nlayer.Name=\"VoyageEventQAGui\"\nlayer.ResetOnSpawn=false\nlayer.Parent=pg\nlocal event=Instance.new(\"Frame\")\nevent.Name=\"StoryScene\"\nevent.BackgroundTransparency=1\nevent.Size=UDim2.fromScale(1,1)\nevent.Parent=layer\nworkspace:SetAttribute(\"DevSailResult\",\"QA_EVENT_PENDING\")\nworkspace:SetAttribute(\"DevSail\",state.view.player.portId)\nreturn \"VOYAGE_QA_EVENT_OPEN\""
+  },
+  {
+    "type": "wait",
+    "ms": 950
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- 지역 사건을 닫기 전에는 항해 서버 호출·출항 카메라가 실행되면 안 된다.\nlocal pg=game.Players.LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal event=assert(pg:FindFirstChild(\"VoyageEventQAGui\"),\"VOYAGE_QA_EVENT_LAYER_MISSING\")\nlocal result=workspace:GetAttribute(\"DevSailResult\")\nlocal sailing=workspace:GetAttribute(\"VoyageActive\")\nevent:Destroy()\nassert(result==\"QA_EVENT_PENDING\",\"VOYAGE_STARTED_BEFORE_EVENT_CLOSED:\"..tostring(result))\nassert(not sailing and not workspace:FindFirstChild(\"VoyageScene\"),\"VOYAGE_SCENE_OVERLAPPED_STORY\")\nreturn \"VOYAGE_QA_EVENT_GATE_PASS\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- 사건 종료 뒤 기존 Sail 처리로 복귀한다. 테스트 대상은 현재 항구라 저장·자원 이동은 없다.\nlocal done\nfor i=1,55 do\n done=workspace:GetAttribute(\"DevSailResult\")\n if done~=\"QA_EVENT_PENDING\" then break end\n task.wait(0.2)\nend\nassert(type(done)==\"string\" and string.sub(done,1,6)==\"false:\",\"VOYAGE_QA_DID_NOT_RESUME:\"..tostring(done))\nassert(not workspace:GetAttribute(\"VoyageActive\"),\"VOYAGE_QA_FALSE_ROUTE_STARTED\")\nreturn \"VOYAGE_QA_RESUMED_AFTER_EVENT:\"..done"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'TAC_NEWGAME ok='..tostring(a and a.ok)"
   },
   {
