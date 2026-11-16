@@ -2614,7 +2614,7 @@ function FieldScene.start(opts)
 						bob, lean = 1.1 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.7
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.7 else 2.1, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll))
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.7 else 2.1, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -2743,6 +2743,10 @@ function FieldScene.start(opts)
 								a.skillCd[sid] = now + def.cooldown
 								a.nextSkill = now + 3
 								a.swingAt = now
+								-- 지원기 발동 시 공격 대신 지원 자세를 보여 준다. 효과와 쿨타임은 기존 로직 유지.
+								if sid == "heal" or sid == "armor" or sid == "rally" or sid == "luck" then
+									a.castAt, a.castSkill = now, sid
+								end
 								castEffect(sid, a.name .. " · " .. def.name, a.model, a.root)
 								break
 							end
@@ -2751,7 +2755,9 @@ function FieldScene.start(opts)
 				end
 				local ap = (now - a.swingAt) / 0.5
 				if a.fm then
-					if ap >= 0 and ap < 1 then
+					if a.castAt and now - a.castAt < 0.7 then
+						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.8, nil, false, a.castSkill)
+					elseif ap >= 0 and ap < 1 then
 						-- 동료는 직업에 정해진 무기 동작(검·도끼·석궁·총)으로 공격한다
 						local ac = FM.weaponCombo(a.weapon.motion, 1)
 						if ac then
@@ -2767,6 +2773,8 @@ function FieldScene.start(opts)
 					else
 						FM.actor(a.fm, "IDLE", (now / 2.4) % 1, dt, nil, 1.6)
 					end
+				elseif a.castAt and now - a.castAt < 0.7 then
+					Pose.makeR15Action(a.model, if a.castSkill == "rally" or a.castSkill == "heal" then "cheer" elseif a.castSkill == "armor" then "guard" else "talk", (now - a.castAt) / 0.7, now - a.t0)
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
