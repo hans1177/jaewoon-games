@@ -408,6 +408,47 @@ export function buildRobloxHolisticQualityPlan({
   const refs=assetRefs(texts,scope.repo);
   const broken=assets.filter(row=>row.integrity.startsWith('INVALID'));
   const missing=refs.filter(row=>!row.exists);
+  // [아이템 자산 자동 진단] 실제 선언된 교역품과 등록 이미지/실물 Cargo 모델 연결을 비교한다.
+  // 모델의 의미/권한을 증명하지 않은 임의 매칭과 규제 이미지 재업로드는 자동 실행 대상이 아니다.
+  // 이 소스 형태가 없는 다른 게임에서는 진단을 추측하지 않고 기존 범용 품질 점검을 그대로 사용한다.
+  let itemAssetCoverage={status:'NOT_APPLICABLE_UNRECOGNIZED_ITEM_SCHEMA',declared:0,covered:0,missing:[],needsVisualReview:true,runtimeVerified:false};
+  const itemRegistry=texts.find(row=>row.file===scope.relative+'/assets-registered.json');
+  const itemSource=texts.find(row=>/\blocal Goods\s*:[^\n]*=\s*\{/.test(row.text));
+  const itemUI=texts.find(row=>/\blocal GOOD_ICON\s*=\s*\{\}/.test(row.text));
+  if(itemRegistry&&itemSource&&itemUI){
+    let registry;
+    try{registry=JSON.parse(itemRegistry.text).assets;}catch{registry=null;}
+    const declaredBlock=/\blocal Goods\s*:[^\n]*=\s*\{([\s\S]*?)\n\}/.exec(itemSource.text);
+    if(registry&&typeof registry==='object'&&!Array.isArray(registry)&&declaredBlock){
+      const declared=[...declaredBlock[1].matchAll(/^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*id\s*=\s*"([a-z][a-z0-9_]*)"/gm)]
+        .filter(match=>match[1]===match[2]).map(match=>match[1]);
+      const overrides=new Map();
+      const mapBlock=/for id, spec in \{([\s\S]*?)\} do\s*GOOD_ICON\[id\] = spec/.exec(itemUI.text);
+      if(mapBlock)for(const row of mapBlock[1].matchAll(/\b([a-z][a-z0-9_]*)\s*=\s*\{\s*"Cargo",\s*"([a-z0-9-]+)"/g))
+        overrides.set(row[1],row[2]);
+      const dynamicMap=/for goodsId, cargoAsset in \{([\s\S]*?)\} do\s*if AssetIds/.exec(itemUI.text);
+      if(dynamicMap)for(const row of dynamicMap[1].matchAll(/\b([a-z][a-z0-9_]*)\s*=\s*"([a-z0-9-]+)"/g))
+        overrides.set(row[1],row[2]);
+      for(const row of itemUI.text.matchAll(/GOOD_ICON\.([a-z][a-z0-9_]*)\s*=\s*\{\s*"Cargo",\s*"([a-z0-9-]+)"/g))
+        overrides.set(row[1],row[2]);
+      if(declared.length&&new Set(declared).size===declared.length){
+        const gaps=[],covered=[];
+        for(const id of declared){
+          const picture=registry['Goods/'+id],mesh=registry['Cargo/'+overrides.get(id)];
+          const validPicture=picture?.assetType==='Image'&&picture.usePermissionGranted===true&&/^[1-9]\d*$/.test(String(picture.assetId));
+          const validMesh=mesh?.assetType==='Model'&&mesh.usePermissionGranted===true&&/^[1-9]\d*$/.test(String(mesh.assetId));
+          if(validPicture||validMesh)covered.push(id);
+          else gaps.push({itemId:id,status:'MISSING_VERIFIED_IMAGE_AND_EXACT_3D_BINDING',
+            sourceOwner:itemUI.file,registryOwner:itemRegistry.file,
+            requiresLicensedSemanticMatch:true,
+            contentSafety:'POLICY_REVIEW_REQUIRED_BEFORE_UPLOAD_OR_BIND',
+            runtimeVerified:false});
+        }
+        itemAssetCoverage={status:'STATIC_ITEM_TO_VISUAL_BINDING_CROSSCHECK',declared:declared.length,
+          covered:covered.length,missing:gaps,needsVisualReview:true,runtimeVerified:false};
+      }
+    }
+  }
   const sharedLibrary=libraryCoverage(scope.repo,gameId,refs);
   const detailedChecks=ROBLOX_DETAILED_QUALITY_CHECKS.map(def=>({
     ...def,gameId,sourceRevision:clean(sourceRevision)||null,
@@ -426,6 +467,8 @@ export function buildRobloxHolisticQualityPlan({
       ...ownRefs.filter(row=>!row.exists).map(row=>'MISSING_ASSET_REFERENCE:'+row.path)];
     const gapDomains=(QUALITY_DOMAIN_BY_FAMILY[def.id]||[]).filter(domain=>gaps.has(domain));
     if(gaps.has(def.id))gapDomains.push(def.id);
+    // [자동 누락 탐지] 이미 설계된 교역품의 시각 자산만 검증된 P1 개선 대상으로 승격한다.
+    if(def.id==='ITEMS_LOOT'&&itemAssetCoverage.missing.length)gapDomains.push('UNBOUND_DATA_DEFINED_ITEMS');
     const candidate=files.length>0||mentioned||ownAssets.length>0||ownRefs.length>0;
     return {id:def.id,kind:def.kind,priority:issues.length?'P0':gapDomains.length?'P1':candidate?'P2':'P3',
       sourceFiles:files,sourceSignalOnly:mentioned,assetCount:ownAssets.length,
@@ -461,11 +504,14 @@ export function buildRobloxHolisticQualityPlan({
     ?refs.find(row=>row.path===sourceDefect.path)?.owners||[]:[];
   const invalidAssetOwners=sourceDefect?.id==='ASSET_SIGNATURE_INVALID'
     ?texts.filter(row=>row.text.includes(sourceDefect.path)).map(row=>row.file):[];
+  const itemVisualOwner=itemAssetCoverage.missing.length
+    ?safeOwner(itemAssetCoverage.missing[0].sourceOwner):'';
   // 실제 실패 수리에는 현재 작업에서 이미 허용된 책임 파일만 우선 제시한다.
   // 추가 쓰기 권한을 생성하지 않으며 실제 실패 원인이라고 단정하지 않는다.
   const candidateOwners=repairRequested===true?authorizedOwners.slice(0,8)
     :sourceDefect?unique((sourceDefect.id==='ASSET_SIGNATURE_INVALID'?invalidAssetOwners:refOwner)
       .map(safeOwner).filter(Boolean)).slice(0,8)
+    :itemVisualOwner?[itemVisualOwner]
     :familyTarget?unique(familyTarget.sourceFiles.map(safeOwner).filter(Boolean)).slice(0,8):[];
   const workScope=Object.freeze({
     authorizedSourceFiles:Object.freeze(candidateOwners.filter(file=>authorizedOwners.includes(file))),
@@ -483,6 +529,16 @@ export function buildRobloxHolisticQualityPlan({
     sourceFiles:candidateOwners,sourceAsset:sourceDefect.path,ownerDiscoveryRequired:candidateOwners.length===0,
     evidence:'LOCAL_SOURCE_BYTES_OR_MISSING_REFERENCE',verifiedRuntime:false,
     workScope,action:'REPAIR_EXISTING_OWNER_OR_LICENSED_ASSET_AND_RERUN_EXACT_QUALITY_CHECK'
+  }):itemAssetCoverage.missing.length?Object.freeze({
+    id:'UNBOUND_DATA_DEFINED_ITEMS',priority:'P1',mode:'FILL_VERIFIED_SEMANTIC_ASSET_GAPS',
+    sourceFiles:candidateOwners,sourceAsset:null,
+    ownerDiscoveryRequired:candidateOwners.length===0,
+    missingItemIds:itemAssetCoverage.missing.map(row=>row.itemId),
+    declared:itemAssetCoverage.declared,covered:itemAssetCoverage.covered,
+    gapDomains:['UNBOUND_DATA_DEFINED_ITEMS'],
+    evidence:'STATIC_GAME_DATA_TO_APPROVED_IMAGE_OR_3D_BINDING_GAP',
+    verifiedRuntime:false,workScope,
+    action:'USE_EXISTING_LICENSED_COMPANY_ASSET_FIRST; REVIEW_EXACT_ITEM_MEANING_AND_SAFETY; REPAIR_GAME_UI_BINDING_IN_EXISTING_SOURCE; RERUN_INDEPENDENT_QA_AND_REAL_STUDIO; NEVER_INVENT_PLACEHOLDER_OR_UNAUTHORIZED_ASSET'
   }):familyTarget?Object.freeze({
     id:familyTarget.id,priority:familyTarget.priority,
     mode:familyTarget.priority==='P1'?'REVIEW_DESIGN_SOURCE_GAP_THEN_REPAIR':'INSPECT_SOURCE_CANDIDATE_THEN_REPAIR_IF_PROVEN',
@@ -505,7 +561,7 @@ export function buildRobloxHolisticQualityPlan({
     sourceOnly:true,qualityComplete:false,
     evidenceScope:{staticSource:true,cloudEngine:false,realStudioPlay:false,realScreen:false,realTouch:false,
       thumbnailIsNotRuntimeScreenshot:true,simulatedTouchIsNotHardwareTouch:true},
-    assets,assetReferences:refs,sharedLibrary,issues,
+    assets,assetReferences:refs,sharedLibrary,issues,itemAssetCoverage,
     motion:{states:motionChecks(combined),requiredRealAnimatorStateCheck:true,
       requireStateInputToStateToFeedbackTrace:true,
       enforceAttackAnticipationImpactRecovery:true,
@@ -542,7 +598,8 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10,compact=
     'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; source edits are NOT runtime PASS.',
     'MOTION_ACTION_BUILD_UP: real rig/Animator motion, anticipation-impact-recovery, hit/death, synced input/VFX/SFX, mobile LOD; only approved game-specific actor classes.',
     'QUALITY_PROOF_RULE: only exact source runtime and licensed asset evidence; Studio / real device execution remains unverified until actually observed.',
-    'AUTONOMOUS_QUALITY_WORK_UNIT: '+JSON.stringify(plan.autonomousWorkUnit||{})+'; existing BUILD_UP owner must inspect and directly repair only proven defects; no standalone pipeline.'
+    'AUTONOMOUS_QUALITY_WORK_UNIT: '+JSON.stringify(plan.autonomousWorkUnit||{})+'; existing BUILD_UP owner must inspect and directly repair only proven defects; no standalone pipeline.',
+    'ITEM_VISUAL_COVERAGE: '+(plan.itemAssetCoverage?.missing?.length||0)+'/'+(plan.itemAssetCoverage?.declared||0)+' semantic item visuals missing; review original licensed 3D/image assets, safety and verified runtime before claiming filled.'
   ];
   const top=(plan.priorityWork||[]).slice(0,Math.max(1,Math.min(16,Number(maxFamilies)||10)));
   const states=(plan.motion?.states||[]).filter(row=>row.sourceMentioned!==true).map(row=>row.id);
@@ -555,6 +612,7 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10,compact=
     'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceTree='+plan.sourceTreeFingerprint+' scanComplete='+plan.scan?.complete+' assets='+plan.scan?.assetCount+' sourceOnly=true',
     'SHARED_LIBRARY_QA: metadata='+plan.sharedLibrary?.status+' total='+plan.sharedLibrary?.coverage?.total+' gameRelevant='+plan.sharedLibrary?.coverage?.gameRelevant+' missingLocal='+plan.sharedLibrary?.coverage?.localFilesMissing+' ownershipGaps='+plan.sharedLibrary?.coverage?.ownershipOrLicenseMetadataGaps+' rightsProof=UNVERIFIED; evaluate all relevant library entries, keep originals, repair provenance before new use.',
     'AUTONOMOUS_QUALITY_WORK_UNIT: '+JSON.stringify(plan.autonomousWorkUnit||{})+'; automatically inspect this exact existing owner, edit responsible code/assets only for a verified defect or approved design gap, then rerun relevant existing QA. Never infer PASS from static clues.',
+    'ITEM_VISUAL_COVERAGE: '+JSON.stringify({declared:plan.itemAssetCoverage?.declared||0,covered:plan.itemAssetCoverage?.covered||0,missingItemIds:(plan.itemAssetCoverage?.missing||[]).map(row=>row.itemId)})+'; repair genuinely unbound items via existing verified semantic 3D models or allowed images, keep blocked/regulated art unbound, require QA and runtime evidence.',
     'QUALITY_FAMILY_REPAIR_TARGETS: '+top.map(row=>row.id+'['+row.priority+']:'+row.improvement+' @ '+(row.sourceFiles?.join('|')||'LOCATE_OWNING_SOURCE')).join(' ; '),
     'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; full definitions in robloxHolisticQualityPlan.detailedChecks; pick game-applicable checks, measure exact results before changing owning code or assets; count labels != tested gameplay.',
     'DETAILED_GAME_SOURCE_TARGETS: '+detailed.map(row=>row.id+'['+row.verificationMethod+'] '+row.acceptance+' => repair only observed failure or approved gap; sourceCandidate='+row.sourceCandidate).join(' ; ')+'. Exclude features absent from approved design; rerun same check after source/asset repair.',
