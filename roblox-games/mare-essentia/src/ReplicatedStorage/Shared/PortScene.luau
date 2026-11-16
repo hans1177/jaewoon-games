@@ -362,6 +362,9 @@ local ASSET_TINT = {
 	["tree-oak"] = Color3.fromRGB(88, 138, 62), ["tree-pinedefaulta"] = Color3.fromRGB(255, 238, 120), ["tree-default-fall"] = Color3.fromRGB(204, 118, 48),
 	windmill = Color3.fromRGB(238, 220, 186),
 	["plant-bush"] = Color3.fromRGB(78, 128, 58), -- 수입 나무의 잎 질감이 청록색이라, 노란 기운을 곱해 자연스러운 초록으로 만든다
+	-- [원본 재질] Quaternius OBJ 회색 기본 재질의 품목별 색만 기존 메시 착색 경로에서 지정한다.
+	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
+	["Rock_2"] = Color3.fromRGB(153, 148, 134),
 	tree_large = Color3.fromRGB(78, 132, 66), tree_tiny = Color3.fromRGB(84, 138, 70), tree = Color3.fromRGB(255, 238, 120),
 	["tree-high"] = Color3.fromRGB(255, 238, 120), ["tree-crooked"] = Color3.fromRGB(255, 238, 120),
 	["crops-wheatstagea"] = Color3.fromRGB(216, 184, 92), ["crops-wheatstageb"] = Color3.fromRGB(176, 190, 92), ["crops-cornstagec"] = Color3.fromRGB(150, 172, 72),
