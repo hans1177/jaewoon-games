@@ -809,6 +809,30 @@ test('Mare R15 faces use their native head front and stationary villagers greet 
   assert.match(port,/w\.model:PivotTo\(CFrame\.new\(pos \+ Vector3\.new\(0, bob, 0\)\) \* CFrame\.Angles\(0, yaw, 0\) \* rot\)/);
 });
 
+// [탐험 전투] 기존 판정·무기 목록은 보존하고, 화면 이동·두 무기·이미지 가독성을 검증한다.
+test('Mare field charge, follower formation, two-weapon quick swap and approved skill art stay coherent',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  assert.ok(field.includes('e.chargeTarget = e.model:GetPivot().Position + to.Unit * reach'));
+  assert.ok(field.includes('local step = math.min(remaining.Magnitude, 48 * dtc)'));
+  assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
+  assert.ok(field.includes('e.ac.def.speed * 0.8 * dtc'),'enemy speed respects frame lag');
+  assert.ok(field.includes('local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.8, outfit)'));
+  assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
+  assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
+  assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
+  assert.ok(field.includes('wpn, reserveWeapon = reserveWeapon, wpn'));
+  assert.ok(weapons.includes('function Weapons.cycle('),'all historical weapon definitions remain available');
+  for(const key of ['Menu/cc0_glove','Menu/cc0_shield2','Menu/cc0_axe','Menu/cc0_sword']){
+    assert.equal(assets[key]?.assetType,'Image',key);
+    assert.equal(assets[key]?.usePermissionGranted,true,key);
+  }
+  assert.ok(field.includes('addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")'));
+  assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
+  assert.ok(field.includes('img.Size = UDim2.fromScale(if painted then 0.83 else 0.79'));
+});
+
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
   const base='roblox-games/mare-essentia/assets/inbox/People/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
