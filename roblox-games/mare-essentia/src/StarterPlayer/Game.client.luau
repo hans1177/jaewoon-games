@@ -856,7 +856,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	b.Active = active
 	b.Interactable = active
 	b.Selectable = active
-	b.ZIndex = parent.ZIndex + 2
+	b.ZIndex = (if parent:IsA("GuiObject") then parent.ZIndex else 1) + 2
 	b.BorderSizePixel = 0
 	corner(b, 6)
 	b.Parent = parent
