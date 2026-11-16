@@ -628,7 +628,7 @@ function FieldScene.start(opts)
 	gui.Parent = player:WaitForChild("PlayerGui")
 	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
 	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
-		UDim2.new(1, -12, 0, 140), Vector2.new(1, 0))
+		UDim2.new(1, -12, 0, 184), Vector2.new(1, 0))
 	cameraBtn.Name = "FieldCameraMode"
 	cameraBtn.TextSize = 14
 	cameraBtn.Activated:Connect(function()
@@ -2366,7 +2366,7 @@ function FieldScene.start(opts)
 		hit.AnchorPoint = attackBtn.AnchorPoint
 		hit.Position = attackBtn.Position
 		hit.Name = "FieldAttackHit"
-		hit.Size = UDim2.fromOffset(166, 166)
+		hit.Size = UDim2.fromOffset(150, 150)
 		hit.BackgroundTransparency = 1
 		hit.Text = ""
 		hit.AutoButtonColor = false
@@ -2377,7 +2377,7 @@ function FieldScene.start(opts)
 	end
 	-- [두 무기 빠른 교체] 현재 사용 중인 무기와 보조 무기만 번갈아 선택한다. 기존 다른 무기 정의·동료 장비는 유지.
 	do
-		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -210), Vector2.new(0.5, 0.5))
+		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -315), Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn.TextSize = 13
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
@@ -2413,7 +2413,11 @@ function FieldScene.start(opts)
 	local skillBtns = {}
 	-- [전투 HUD] 공격은 오른쪽 엄지 아래, 회피·방어와 장착 3칸은 위쪽 반원 두 줄에 배치한다.
 	-- 기존 공격 판정·단축키·슬롯 해금 수는 바꾸지 않고 터치 간격만 넓힌다.
-	local ATK_C = Vector2.new(-192, -92)
+	local screenWidth = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X or 390
+	if screenWidth < 100 then screenWidth = 390 end
+	local outerSkillRadius = math.clamp(math.floor((screenWidth - 40) * 0.42), 110, 147)
+	local innerSkillRadius = math.max(58, outerSkillRadius - 56)
+	local ATK_C = Vector2.new(-math.clamp(screenWidth * 0.48, 154, 192), -157)
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
 		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
@@ -2428,8 +2432,8 @@ function FieldScene.start(opts)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(90, 48))
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(90, 132))
+	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 48))
+	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 132))
 	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
@@ -2526,11 +2530,11 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(147, 28 + ((slotOf[id] or 1) - 1) * 62)
+			return arcPos(outerSkillRadius, 28 + ((slotOf[id] or 1) - 1) * 62)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(147, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "잠금", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(56, 56), arcPos(outerSkillRadius, 28 + (slotI - 1) * 62), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.TextSize = 14
 			lb.BackgroundTransparency = 0.35
