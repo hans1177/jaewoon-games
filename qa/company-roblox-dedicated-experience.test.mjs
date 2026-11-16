@@ -1367,3 +1367,74 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.ok(!battle.includes(ship+'-custom'),ship+' unverified battle art must not activate');
   }
 });
+
+
+// [외부 CC0 실물 선체] 포르투갈 나우는 다운로드된 원본 갈레온의 메시/바이너리를 보존한 개조본만 등록한다.
+test('Mare external CC0 nau original hull and Roblox registration integrity',()=>{
+  const root='roblox-games/mare-essentia';
+  const src=root+'/assets/naval/nau-source.glb';
+  const file=root+'/assets/naval/nau-custom.glb';
+  const proof=file+'.license.json';
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.ok(uploader.includes('https://grab3d.com/dl/galleon/galleon-light.glb'));
+  assert.ok(uploader.includes('MARE_NAU_EXTERNAL_CC0_HULL_DERIVED'));
+  assert.ok(uploader.includes("if (kind === 'Naval' && f === 'nau-source.glb') continue;"));
+  assert.ok(workflow.includes('assets/naval/nau-source.glb'));
+  assert.ok(workflow.includes('assets/naval/nau-custom.glb'));
+  if(!fs.existsSync(src)){
+    assert.equal(fs.existsSync(file),false,'derived model without saved external original');
+    assert.equal(fs.existsSync(proof),false,'derived evidence without saved external original');
+    return; // GitHub PR 단계에서는 다운로드하지 않는다. 등록 직후 같은 검사를 다시 실행한다.
+  }
+  const original=fs.readFileSync(src),custom=fs.readFileSync(file);
+  const meta=JSON.parse(fs.readFileSync(proof,'utf8'));
+  const parse=(b)=>{
+    assert.equal(b.toString('ascii',0,4),'glTF');
+    assert.equal(b.readUInt32LE(4),2);
+    assert.equal(b.readUInt32LE(8),b.length);
+    const len=b.readUInt32LE(12),at=20+len;
+    assert.equal(b.readUInt32LE(16),0x4e4f534a);
+    assert.equal(b.readUInt32LE(at+4),0x004e4942);
+    assert.equal(at+8+b.readUInt32LE(at),b.length);
+    return {gltf:JSON.parse(b.subarray(20,at).toString('utf8')),bin:b.subarray(at+8)};
+  };
+  const source=parse(original),derived=parse(custom);
+  const sha=b=>createHash('sha256').update(b).digest('hex');
+  assert.equal(original.length,1196260,'external original must match official light model size');
+  assert.equal(meta.license,'CC0-1.0');
+  assert.equal(meta.author,'Grab3D');
+  assert.equal(meta.source,'https://grab3d.com/dl/galleon/galleon-light.glb');
+  assert.equal(meta.sourcePage,'https://grab3d.com/models/vehicles/galleon/');
+  assert.equal(meta.sourceAsset,src);
+  assert.equal(meta.originalSha256,sha(original));
+  assert.equal(meta.sourceSha256,sha(custom));
+  assert.equal(meta.originalMeshCount,source.gltf.meshes.length);
+  assert.equal(meta.authenticOriginalBinaryVerified,true);
+  assert.equal(meta.originalMeshesPreserved,true);
+  assert.equal(meta.structuralGlbVerified,true);
+  assert.equal(meta.actualRobloxRuntimeVerified,false);
+  assert.equal(meta.visualQualityApproved,false);
+  assert.ok(meta.derivedTriangleCount>=550);
+  assert.deepEqual(meta.modelGeometryGroups,['wood','linen','rope']);
+  assert.deepEqual(derived.gltf.meshes.slice(0,source.gltf.meshes.length),source.gltf.meshes,
+    'external source hull must remain unchanged');
+  assert.deepEqual(derived.bin.subarray(0,source.bin.length),source.bin,
+    'external source geometry bytes must remain unchanged');
+  assert.equal(derived.gltf.meshes.length,source.gltf.meshes.length+3);
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen lateen cloth'));
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen oak mast and lateen yard'));
+  assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen ropes and rigging'));
+  const ledger=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
+  const reg=ledger.assets['Naval/nau-custom'];
+  assert.ok(reg?.assetId,'nau Roblox ID must be issued by the actual existing uploader');
+  assert.equal(reg.assetType,'Model');
+  assert.equal(reg.usePermissionGranted,true,'universe use permission must be confirmed');
+  assert.equal(reg.sourceSha256,sha(custom));
+  const lua=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  assert.ok(lua.includes('["Naval/nau-custom"] = '+reg.assetId));
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.ok(!port.includes('nau-custom')&&!battle.includes('nau-custom'),
+    'runtime-unverified ship art must not activate in player gameplay');
+});
