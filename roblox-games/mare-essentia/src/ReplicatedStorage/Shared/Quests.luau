@@ -5,7 +5,7 @@ export type Quest = {
 	id: string,
 	name: string,
 	summary: string,
-	kind: string, -- "deliver" | "discover" | "win" | "visit" | "research" | "field" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
+	kind: string, -- "discover_card"(특정 카드 획득) | "deliver" | "discover" | "win" | "visit" | "research" | "field" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
 	goodId: string?,
 	portId: string?,
 	techId: string?,
@@ -28,6 +28,17 @@ export type Quest = {
 }
 
 local Quests: { Quest } = {
+	-- [버드나무 연속 연구] 16세기 현장 관찰 → 수도원 기록 비교 → 약방 검증 및 의학 보고.
+	-- 기존 연구·퀘스트의 저장 키와 보상 구조를 그대로 사용한다.
+	{ id = "q_willow_field", name = "강변의 버드나무", summary = "안트베르펜 강변에서 버드나무 표본을 채집", kind = "discover_card", cardId = "bot_willow",
+		amount = 1, strand = "person", story = "강변에서 잎과 껍질을 함께 채집하고 다른 나무와 구별해 본다. 직업과 무관하게 누구나 시작하는 식물 조사다.",
+		rewardCoins = 90, rewardFame = 4, rewardCareer = "adventure", rewardXp = 25 },
+	{ id = "q_willow_notes", name = "수도원 약초원 기록", summary = "버드나무 표본을 비교해 기록", kind = "discover_card", cardId = "bot_willow_notes", after = "q_willow_field",
+		amount = 1, strand = "person", story = "수도원 약초원에서 표본을 말리고 잎과 껍질을 비교한다. 약방에서 쓰기 전에 식물 기록을 먼저 완성하자.",
+		rewardCoins = 140, rewardFame = 7, rewardCareer = "adventure", rewardXp = 40 },
+	{ id = "q_willow_medicine", name = "약방의 의학 검증", summary = "버드나무 껍질 의학 연구 기록을 확보", kind = "discover_card", cardId = "med_willow_bark", after = "q_willow_notes",
+		amount = 1, strand = "person", story = "의학에 밝은 동료나 약초원 지식을 바탕으로 약방의 기록을 완성한다. 카드에 적힌 전통적 사용은 현대 의학적 효과와 구별하고, 추후 학자에게 보고해 지식을 발전시킨다.",
+		rewardCoins = 450, rewardFame = 20, rewardCareer = "adventure", rewardXp = 90 },
 	{ id = "q_first_trade", name = "첫 납품", summary = "양모 5개를 암스테르담에 납품", kind = "deliver",
 		goodId = "wool", portId = "amsterdam", amount = 5, rewardCoins = 150, rewardFame = 5, rewardCareer = "trade", rewardXp = 40 },
 	{ id = "q_spices", name = "향신료 주문", summary = "향신료 5개를 런던에 납품", kind = "deliver",

@@ -6211,16 +6211,23 @@ function RENDERERS.explore()
 		add(function() return mkLabel(content, "이 항구 근처에는 탐험 지점이 없어요.", 13, COLORS.muted, false) end)
 	end
 	-- [탐험 안내] 미개방 탐험지만 남았다면 이동 불가 이유를 지점 위에 안내한다.
-	local openCount, nextLevel = 0, nil
+	local openCount, nextLevel, nextYear = 0, nil, nil
 	for _, site in view.sites do
 		if site.unlocked and site.left > 0 then
 			openCount += 1
 		elseif not site.unlocked and site.left > 0 then
-			nextLevel = math.min(nextLevel or site.minLevel, site.minLevel)
+			if site.locked and string.find(site.locked, "모험 Lv.", 1, true) then
+				nextLevel = math.min(nextLevel or site.minLevel, site.minLevel)
+			elseif site.fromYear and view.player.year < site.fromYear then
+				nextYear = math.min(nextYear or site.fromYear, site.fromYear)
+			end
 		end
 	end
-	if #view.sites > 0 and openCount == 0 and nextLevel then
-		add(function() return mkLabel(content, string.format("현재 항구의 탐험지는 모험 Lv.%d 이상이 필요해요. 잠긴 지점의 보상·드랍 조건은 그대로 유지돼요.", nextLevel), 14, COLORS.muted, false) end)
+	if #view.sites > 0 and openCount == 0 then
+		local reason = if nextLevel then string.format("현재 항구의 탐험지는 모험 Lv.%d 이상이 필요해요.", nextLevel)
+			elseif nextYear then string.format("현재 항구의 연구기관은 %d년 이후에 열려요. 앞선 시대에는 강변·수도원·약방에서 조사할 수 있어요.", nextYear)
+			else "이 항구의 남은 지식에는 선행 연구·동료·퀘스트 조건이 있어요."
+		add(function() return mkLabel(content, reason, 14, COLORS.muted, false) end)
 	end
 	-- [탐험 길찾기] 현지에서 모두 잠긴 경우, 기존 항해 경로 중 지금 레벨로 조사 가능한 다른 항구를 안내한다.
 	-- 항구 이동은 반드시 원래 항해 화면에서 수행하며 레벨·발견·보상·저장 규칙을 바꾸지 않는다.
@@ -6231,7 +6238,7 @@ function RENDERERS.explore()
 		end
 		local eligiblePorts = {}
 		for _, site in require(Shared:WaitForChild("Sites")).Sites do
-			if site.minLevel <= adventureLevel then eligiblePorts[site.portId] = true end
+			if site.minLevel <= adventureLevel and (not site.fromYear or (view.player and view.player.year or 1700) >= site.fromYear) then eligiblePorts[site.portId] = true end
 		end
 		local nearest = nil
 		for _, route in (view.routes or {}) do
@@ -6248,9 +6255,9 @@ function RENDERERS.explore()
 		local tiles = {}
 		for _, s in view.sites do
 			table.insert(tiles, { icon = "explore", title = s.name,
-				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
+				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("발견 %d · %d일", s.left, s.days),
 				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
-				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else "지상맵 입장",
+				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
 		-- [모바일 클릭 영역] 아이콘(86)·이름(26)·설명(20)·버튼(44)을 겹치지 않는 높이에 배치한다.
@@ -6614,6 +6621,9 @@ function H.showCardDetail(card)
 		box2.Parent = body
 	end
 	mkLabel(body, card.description, 17, ink, false, 3)
+	if card.path then
+		mkLabel(body, "획득 과정: " .. card.path .. " · " .. tostring(card.source) .. (if card.studyLocked then "\n현재 조건: " .. card.studyLocked else ""), 13, brown, false, 4)
+	end
 	if card.found and not card.combat and card.level ~= nil then
 		local lv = card.level
 		local text = string.format("강화 %d / %d단계", lv, maxLevel)

@@ -1,5 +1,5 @@
 --!nonstrict
--- View.luau · 기존 화면 스냅샷, 전문 학문과 연구·퀘스트 표시
+-- View.luau · 기존 화면 스냅샷, 전문 학문·탐험 시대 및 카드 연구 과정 표시
 -- 클라이언트에 보낼 화면용 스냅샷. 모든 계산은 서버가 하고 클라이언트는 표시만 한다.
 
 return function(D, S)
@@ -443,6 +443,7 @@ return function(D, S)
 		view.sites = {}
 		for _, site in D.Sites.Sites do
 			if site.portId == port.id then
+				local blocked = S.Discovery.siteBlockReason(state, site)
 				local left = 0
 				for _, cardId in site.pool do
 					if not state.discovered[cardId] then
@@ -456,7 +457,9 @@ return function(D, S)
 					minLevel = site.minLevel,
 					days = site.days,
 					left = left,
-					unlocked = state.careers.adventure.level >= site.minLevel,
+					fromYear = site.fromYear,
+					locked = blocked,
+					unlocked = blocked == nil,
 				})
 			end
 		end
@@ -542,6 +545,9 @@ return function(D, S)
 				name = if found then c.name else "???",
 				description = if found then c.description else "발견 방법: " .. c.source,
 				source = c.source,
+				path = S.Discovery.pathOf(c),
+				fromYear = c.fromYear,
+				studyLocked = if not found and (c.research or c.fromYear) then S.Discovery.cardBlockReason(state, c) else nil,
 				fame = c.reward.fame,
 				coins = c.reward.coins,
 				image = if found and art then art.image else nil,

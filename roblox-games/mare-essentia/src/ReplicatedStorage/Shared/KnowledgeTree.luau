@@ -1,4 +1,5 @@
 --!nonstrict
+-- KnowledgeTree.luau · 기존 학문/지식 선행 트리와 버드나무 식물→의학 연계
 -- 지식 트리(인과 관계): 발견한 도감 카드를 학자에게 "보고"하면 그 지식을 이해한 것으로 인정된다.
 -- 선행 지식(needs)을 모두 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해·화력·교역품 값에 실제 효과를 준다.
 -- 새 학문·지식은 표에 줄만 더하면 된다. 카드 id 는 KnowledgeCards 에 있어야 한다 (테스트가 검사).
@@ -53,6 +54,8 @@ K.ScholarDisciplines = {
 	johnson = { "linguistics" }, worm = { "archaeology", "linguistics", "mythology" }, pontoppidan = { "mythology", "zoology" },
 	rembrandt = { "art" }, vermeer = { "art" }, rubens = { "art" }, velazquez = { "art" }, vandevelde = { "art" },
 	canaletto = { "art" }, hogarth = { "art" }, handel = { "art" }, buxtehude = { "art" }, merian = { "art", "zoology", "botany" },
+	-- [16세기 약초 연구] 도도엔스는 식물과 약용 기록을 이어 준다.
+	dodoens = { "botany", "medicine" },
 	-- [지역 실존 학자] 주인공과 동료의 학문 트리와 동일한 학문을 보고받는다.
 	katip_celebi = { "geography", "history" },
 	jyesthadeva = { "astronomy" },
@@ -143,6 +146,9 @@ n("phi_scientific_method", "philosophy", { "phi_empiricism", "phi_mechanical" },
 n("phi_enlightenment", "philosophy", { "phi_scientific_method", "phi_social_contract" }, nil)
 	-- 식물학
 n("bot_herbarium", "botany", {}, nil)
+-- 16세기 강변 표본과 수도원 비교 기록을 거쳐 의학 카드로 융합한다.
+n("bot_willow", "botany", {}, nil)
+n("bot_willow_notes", "botany", { "bot_willow" }, nil)
 n("bot_new_seeds", "botany", {}, nil)
 n("bot_tea_plant", "botany", { "bot_new_seeds" }, { goods = { "tea" }, goodsMult = 0.06, label = "차 재배법이 퍼져 찻값이 오른다" })
 n("bot_clove_tree", "botany", { "bot_new_seeds" }, { goods = { "cloves" }, goodsMult = 0.05, label = "정향 재배가 체계화된다" })
@@ -167,6 +173,7 @@ n("zoo_elephant", "zoology", {}, { goods = { "ivory" }, goodsMult = 0.05, label 
 n("zoo_bird_paradise", "zoology", {}, { goods = { "feathers" }, goodsMult = 0.05, label = "새 깃털 분류가 정리된다" })
 	-- 의학
 n("med_herb_garden", "medicine", {}, nil)
+n("med_willow_bark", "medicine", { "bot_willow_notes", "med_herb_garden" }, nil)
 n("med_anatomy", "medicine", {}, nil)
 n("med_bloodletting", "medicine", {}, nil)
 n("med_ship_surgeon", "medicine", { "med_anatomy" }, nil)

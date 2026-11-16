@@ -14,6 +14,9 @@ export type Scholar = {
 }
 
 local Scholars: { Scholar } = {
+	-- [16세기 약초서] 1554년 약초도감 저자, 안트베르펜에서 학문 보고를 받는다.
+	{ id = "dodoens", name = "렘베르트 도도엔스", portId = "antwerp", fromYear = 1554, toYear = 1570, minFame = 20,
+		cardId = "med_herb_garden", line = "강가에서 캔 잎과 껍질을 따로 말려 보게. 서로 닮은 약초도 기록으로 구별할 수 있다네." },
 	{ id = "descartes", name = "르네 데카르트", portId = "amsterdam", fromYear = 1629, toYear = 1649, minFame = 30,
 		cardId = "phi_cogito", line = "확실한 것을 찾으려면 먼저 모든 것을 의심해 보게." },
 	{ id = "huygens", name = "크리스티안 하위헌스", portId = "amsterdam", fromYear = 1655, toYear = 1695, minFame = 50,

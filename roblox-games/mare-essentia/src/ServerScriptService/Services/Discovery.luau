@@ -1,10 +1,72 @@
 --!nonstrict
+-- Discovery.luau · 탐험/발견 원본 서비스, 희귀도 단계와 시대별 연구 검증
 -- 탐험과 학자 방문: 도감 카드를 발견하면 코인, 명성, 모험 경험치를 받는다.
 
 return function(D, S)
 	local handlers = {}
 
 	local RARITY_XP = { Common = 15, Uncommon = 25, Rare = 45, Epic = 80, Legendary = 150 }
+
+	-- [1/3 희귀도] 기존 발견 확률·도감 보상은 바꾸지 않는다.
+	-- 등급마다 획득 경로를 보여 주되, 추가 선행 조건은 카드 데이터에 명시된 연구 체인에서만 적용한다.
+	local RARITY_PATH = {
+		Common = "현장 관찰·채집",
+		Uncommon = "표본 비교·기록 대조",
+		Rare = "연구 단서·의학적 검증",
+		Epic = "학술 연구·연속 의뢰",
+		Legendary = "특수 탐험·지역 대장정",
+	}
+	local function pathOf(card)
+		return RARITY_PATH[card.rarity] or "현장 조사"
+	end
+
+	-- [2/3 연계 연구] 기존 도감·연구·동료·퀘스트 저장만 읽는다.
+	local function cardBlockReason(state, card)
+		if not card then return "존재하지 않는 카드예요" end
+		local year = S.State.year(state)
+		if card.fromYear and year < card.fromYear then
+			return string.format("%d년 이후 연구할 수 있는 지식이에요", card.fromYear)
+		end
+		local research = card.research
+		if not research then return nil end
+		for _, needId in research.found or {} do
+			if not state.discovered[needId] then
+				return "먼저 표본 조사: " .. (D.Cards.ById[needId] and D.Cards.ById[needId].name or needId)
+			end
+		end
+		if research.quest and not (state.quests and state.quests.done and state.quests.done[research.quest]) then
+			local quest = D.Quests.ById[research.quest]
+			return "먼저 연구 일지 완료: " .. (quest and quest.name or research.quest)
+		end
+		if research.assistDisc then
+			local help = S.Perk.researchAssist(state, research.assistDisc)
+			if help <= 0 and not (research.allowReported and state.reported and state.reported[research.allowReported]) then
+				return "의학 연구 조수 동행 또는 약초원 지식 보고가 필요해요"
+			end
+		end
+		return nil
+	end
+
+	-- [3/3 시대] 시작 연도·모험 레벨·카드 선행 조건을 같은 실제 탐험 입구에서 검사한다.
+	local function siteBlockReason(state, site)
+		if site.fromYear and S.State.year(state) < site.fromYear then
+			return string.format("%d년부터 열리는 연구 장소예요", site.fromYear)
+		end
+		if state.careers.adventure.level < site.minLevel then
+			return string.format("모험 Lv.%d 이상이 필요해요", site.minLevel)
+		end
+		local pending, firstBlock = 0, nil
+		for _, cardId in site.pool do
+			if not state.discovered[cardId] then
+				pending += 1
+				local why = cardBlockReason(state, D.Cards.ById[cardId])
+				if not why then return nil end
+				firstBlock = firstBlock or why
+			end
+		end
+		return if pending == 0 then "이곳은 이미 모두 조사했어요" else firstBlock
+	end
+
 
 	-- 카드 발견 처리. 새로 발견했으면 true.
 	local function grantCard(state, cardId, msgs)
@@ -20,6 +82,7 @@ return function(D, S)
 		state.coins += coins
 		state.fame += card.reward.fame
 		table.insert(msgs, string.format("도감 등록: %s [%s] (+%d코인, 명성 +%d)", card.name, card.rarity, coins, card.reward.fame))
+		table.insert(msgs, "발견 과정: " .. pathOf(card))
 		S.State.gainXp(state, "adventure", RARITY_XP[card.rarity] or 15, msgs)
 		-- 전문 분야 선택은 자유 선택. 카드 발견은 교역·모험·전투 성장과 무관하게 누적된다.
 		S.Perk.gainSpec(state, card.field, RARITY_XP[card.rarity] or 15, msgs)
@@ -49,18 +112,14 @@ return function(D, S)
 			return false, "이 항구의 탐험 지점이 아니에요"
 		end
 		local lv = state.careers.adventure.level
-		if lv < site.minLevel then
-			return false, string.format("모험 레벨 %d 이상이 필요해요", site.minLevel)
-		end
+		local blocked = siteBlockReason(state, site)
+		if blocked then return false, blocked end
 
 		local remaining = {}
 		for _, cardId in site.pool do
-			if not state.discovered[cardId] then
+			if not state.discovered[cardId] and not cardBlockReason(state, D.Cards.ById[cardId]) then
 				table.insert(remaining, cardId)
 			end
-		end
-		if #remaining == 0 then
-			return false, "이곳은 이미 모두 조사했어요"
 		end
 
 		local need = D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * site.days
@@ -116,5 +175,5 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, grantCard = grantCard }
+	return { handlers = handlers, grantCard = grantCard, pathOf = pathOf, cardBlockReason = cardBlockReason, siteBlockReason = siteBlockReason }
 end
