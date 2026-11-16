@@ -93,6 +93,10 @@ STYLE.malabar = variant(STYLE.med,
 STYLE.japan = variant(STYLE.north,
 	{ C(96, 70, 52), C(120, 88, 62), C(84, 62, 46), C(206, 192, 164), C(70, 54, 42) },
 	{ C(74, 76, 84), C(60, 62, 70), C(88, 88, 92) }, C(92, 124, 76), C(140, 130, 112), 0.8)
+-- [조선 항구] 부산·인천은 유럽 석조가 아니라 기와·회벽·목구조의 동아시아 해안 마을로 구분한다.
+STYLE.korea = variant(STYLE.china,
+	{ C(225, 220, 204), C(206, 199, 178), C(183, 177, 161), C(146, 119, 96), C(239, 232, 214) },
+	{ C(65, 68, 75), C(82, 83, 86), C(53, 59, 65) }, C(104, 139, 85), C(151, 145, 130), 0.83)
 STYLE.colonial = variant(STYLE.med,
 	{ C(238, 196, 120), C(226, 150, 130), C(150, 200, 190), C(246, 232, 190), C(210, 130, 100) },
 	{ C(176, 84, 56), C(160, 74, 50), C(190, 100, 62) }, C(150, 156, 90), C(196, 178, 140), 0.45)
@@ -130,6 +134,7 @@ for key, list in {
 	swahili = { "zanzibar", "kilwa", "mombasa", "mogadishu", "mozambique", "aden", "mocha", "muscat" },
 	malabar = { "calicut", "cochin", "goa", "colombo", "madras", "calcutta", "diu", "surat", "malacca" },
 	japan = { "nagasaki", "osaka", "edo", "hakodate" },
+	korea = { "busan", "incheon" },
 	colonial = { "veracruz", "campeche", "santo_domingo", "cartagena_indias", "portobelo", "acapulco", "panama", "la_guaira", "callao", "guayaquil", "valparaiso", "montevideo", "buenos_aires", "rio", "salvador", "recife", "belem", "manila", "san_juan" },
 	creole = { "havana", "kingston", "nassau", "bridgetown", "port_of_spain", "paramaribo", "new_orleans", "charleston" },
 	china = { "macau", "canton", "amoy", "ningbo", "shanghai", "tianjin", "tainan", "hoi_an" },
@@ -202,6 +207,7 @@ local PROFILE = {
 	swahili = { S = 14, gapf = 0.06, fl0 = 1, flGrow = 0, streets = { -52, -80, -108, -136 }, alley = 3, gap = 0.82, wMul = 1, dAdd = 0, flAdd = 0, flMax = 2, dens = 1, jz = 0.8, jx = 0.8 },
 	malabar = { S = 14, gapf = 0.9, fl0 = 1, flGrow = 0, streets = { -64, -118 }, alley = 4.5, gap = 1.35, wMul = 0.9, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.8, jz = 2, jx = 1.6 },
 	japan = { S = 12, gapf = 0.05, fl0 = 1, flGrow = 1, streets = { -44, -62, -80, -98, -116, -134, -152 }, alley = 2.4, gap = 0.7, wMul = 0.85, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.3, jx = 0.3 },
+	korea = { S = 13, gapf = 0.12, fl0 = 1, flGrow = 1, streets = { -48, -72, -96, -120, -144 }, alley = 3.3, gap = 0.92, wMul = 0.95, dAdd = 1, flAdd = 0, flMax = 2, dens = 0.94, jz = 0.7, jx = 0.7 },
 	colonial = { S = 17, gapf = 0.2, fl0 = 1, flGrow = 1, streets = { -56, -96, -136 }, alley = 5, gap = 1, wMul = 1.05, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.95, jz = 0.5, jx = 0.5 },
 	china = { S = 13, gapf = 0.04, fl0 = 1, flGrow = 1, streets = { -46, -66, -86, -106, -126, -146 }, alley = 2.6, gap = 0.7, wMul = 0.9, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.3, jx = 0.3 },
 	seasia = { S = 14, gapf = 1.0, fl0 = 1, flGrow = 0, streets = { -60, -110 }, alley = 5, gap = 1.5, wMul = 0.85, dAdd = -1, flAdd = 0, flMax = 1, dens = 0.75, jz = 2.2, jx = 1.8, fence = true },
@@ -214,8 +220,8 @@ local PROFILE = {
 STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
 STYLE.iberia.mat, STYLE.italy.mat, STYLE.france.mat, STYLE.britain.mat, STYLE.hanse.mat = Enum.Material.Concrete, Enum.Material.Concrete, Enum.Material.Limestone, Enum.Material.Slate, Enum.Material.Brick
 STYLE.ottoman.mat, STYLE.swahili.mat, STYLE.malabar.mat, STYLE.japan.mat, STYLE.colonial.mat = Enum.Material.Limestone, Enum.Material.Concrete, Enum.Material.Wood, Enum.Material.WoodPlanks, Enum.Material.Concrete
-STYLE.china.kit, STYLE.japan.kit = "eastasia", "eastasia"
-STYLE.china.mat, STYLE.seasia.mat, STYLE.pacific.mat, STYLE.wafrica.mat, STYLE.creole.mat = Enum.Material.WoodPlanks, Enum.Material.Wood, Enum.Material.Wood, Enum.Material.Sand, Enum.Material.Concrete
+STYLE.china.kit, STYLE.japan.kit, STYLE.korea.kit = "eastasia", "eastasia", "eastasia"
+STYLE.china.mat, STYLE.seasia.mat, STYLE.pacific.mat, STYLE.wafrica.mat, STYLE.creole.mat, STYLE.korea.mat = Enum.Material.WoodPlanks, Enum.Material.Wood, Enum.Material.Wood, Enum.Material.Sand, Enum.Material.Concrete, Enum.Material.WoodPlanks
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 -- 문화권별 실제 주택 구성. 기존 승인된 Town 메시로만 외벽·지붕·창호를 표현한다.
@@ -238,6 +244,7 @@ local HOUSE_ARCH = {
 	swahili = { trim = "kenney_grey_window_round_01", trimMat = Enum.Material.Limestone, entry = "kenney_grey_door_round_01", entryMat = Enum.Material.Limestone },
 	malabar = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks, entry = "kenney_wood_door_square_01", entryMat = Enum.Material.WoodPlanks },
 	japan = { roofMat = Enum.Material.Slate, eastAsiaEntry = true },
+	korea = { roofMat = Enum.Material.Slate, eastAsiaEntry = true },
 	china = { roofMat = Enum.Material.Slate, eastAsiaEntry = true },
 	seasia = { roof = "roof-gable", roofMat = Enum.Material.WoodPlanks, trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks, entry = "kenney_wood_door_square_01", entryMat = Enum.Material.WoodPlanks },
 	pacific = { trim = "kenney_wood_window_square_01", trimMat = Enum.Material.WoodPlanks, entry = "kenney_wood_door_square_01", entryMat = Enum.Material.WoodPlanks },
@@ -254,7 +261,7 @@ local HOUSE_FORM = {
 	desert = "flat", ottoman = "courtyard", swahili = "carved", wafrica = "flat",
 	malabar = "coastal", tropic = "stilt", seasia = "stilt", pacific = "stilt",
 	creole = "veranda", colonial = "veranda",
-	china = "eastasia", japan = "eastasia",
+	china = "eastasia", japan = "eastasia", korea = "eastasia",
 }
 for culture, architecture in HOUSE_ARCH do
 	architecture.form = HOUSE_FORM[culture] or "tiled"
