@@ -880,10 +880,13 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	return row
 end
 
--- [시각 타일] 글 목록 대신 큰 아이콘 + 짧은 이름 + 큰 버튼. items = {{icon=, kind=, title=, sub=, btn=, color=, enabled=, onClick=}}
+-- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
 function H.tileGrid(items, parent, cellW, cellH)
-	-- 칸은 1.3배로 키워 그림·글씨를 크게 보인다 (기본 176x156 → 229x203)
-	cellW, cellH = math.floor((cellW or 176) * 1.3), math.floor((cellH or 156) * 1.3)
+	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(216, math.floor((cellH or 156) * 1.3))
+	for _, it in items do
+		if it.desc then cellH = math.max(cellH, 260)
+		elseif it.portrait then cellH = math.max(cellH, 240) end
+	end
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
 	grid.Size = UDim2.new(1, -6, 0, 0)
@@ -897,15 +900,28 @@ function H.tileGrid(items, parent, cellW, cellH)
 		local on = it.enabled ~= false
 		local tile = Instance.new("Frame")
 		tile.LayoutOrder = i
-		tile.BackgroundColor3 = if on then Color3.fromRGB(246, 232, 200) else Color3.fromRGB(200, 184, 150)
+		tile.Name = "BookTile"
+		tile.BackgroundColor3 = if on then COLORS.paper else Color3.fromRGB(193, 177, 149)
 		tile.BorderSizePixel = 0
-		corner(tile, 10)
+		corner(tile, 8)
+		local paperGradient = Instance.new("UIGradient")
+		paperGradient.Color = ColorSequence.new(PARCHMENT_TOP, PARCHMENT_BOTTOM)
+		paperGradient.Rotation = 90
+		paperGradient.Parent = tile
 		local st = Instance.new("UIStroke")
 		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		st.Color = INK_EDGE
+		st.Color = if on then INK_EDGE else COLORS.grey
 		st.Thickness = 1.5
 		st.Parent = tile
 		tile.Parent = grid
+		local seal = Instance.new("Frame")
+		seal.Name = "BrassRule"
+		seal.BackgroundColor3 = if on then UI_BRASS else COLORS.grey
+		seal.BackgroundTransparency = if on then 0.1 else 0.5
+		seal.BorderSizePixel = 0
+		seal.Position = UDim2.fromOffset(6, 5)
+		seal.Size = UDim2.new(1, -12, 0, 3)
+		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
 		local iconPx = if it.portrait then 104 else 78
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
@@ -919,7 +935,7 @@ function H.tileGrid(items, parent, cellW, cellH)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
-			local sb = mkLabel(tile, it.sub, 15, COLORS.muted, false)
+			local sb = mkLabel(tile, it.sub, 15, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
 			sb.Position = UDim2.fromOffset(4, textY + 28)
 			sb.Size = UDim2.new(1, -8, 0, 20)
@@ -947,6 +963,17 @@ function H.tileGrid(items, parent, cellW, cellH)
 		end
 	end
 	grid.Parent = parent
+	-- [모바일] 카드 수·실제 화면 너비에 따라 열 수와 카드 너비를 조정한다.
+	local function fitGrid()
+		local width = grid.AbsoluteSize.X
+		if width <= 0 then return end
+		local gap = 8
+		local columns = math.max(1, math.floor((width + gap) / (cellW + gap)))
+		columns = math.min(columns, math.max(1, #items))
+		gl.CellSize = UDim2.fromOffset(math.max(120, math.floor((width - gap * (columns - 1)) / columns)), cellH)
+	end
+	grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
+	task.defer(fitGrid)
 	return grid
 end
 
@@ -1036,7 +1063,7 @@ local function pageRule(parent, position, size)
 end
 pageRule(H.pageMasthead, UDim2.new(0, 64, 1, -4), UDim2.new(1, -72, 0, 1))
 H.pageDetails = mkLabel(H.pageMasthead, "", 11, COLORS.brown, true)
-H.pageDetails.TextSize = 12
+H.pageDetails.TextSize = 14
 H.pageDetails.AutomaticSize = Enum.AutomaticSize.None
 H.pageDetails.Position = UDim2.fromOffset(65, 33)
 H.pageDetails.Size = UDim2.new(1, -230, 0, 18)
@@ -1501,7 +1528,9 @@ function H.layoutBook()
 	else
 		tabBar.Position = UDim2.fromOffset(8, 68)
 		tabBar.Size = UDim2.new(1, -16, 0, 40)
-		tabLayout.CellSize = UDim2.new(0.25, -4, 0, 40)
+		-- [모바일] 시설마다 탭 2~4개의 폭을 균등하게 배치한다.
+		local tabCount = #groupOf(currentTab).tabs
+		tabLayout.CellSize = UDim2.new(1 / math.max(1, math.min(4, tabCount)), -5, 0, 40)
 		tabLayout.CellPadding = UDim2.fromOffset(5, 0)
 		local top = if tabs then 116 else 68
 		content.Position = UDim2.fromOffset(8, top)
@@ -1707,15 +1736,25 @@ local HUD_MENU_ART = {
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	button.Size = UDim2.fromOffset(if dockItem then 44 else 44, if dockItem then 58 else 44)
-	button.BackgroundTransparency = 1 -- 배경 없이 그림만
+	-- [시설 아이콘] 기존 등록 원화를 가죽 장정·황동 받침에 통일해 표시한다.
+	button.Size = UDim2.fromOffset(if dockItem then 52 else 44, if dockItem then 64 else 44)
+	button.BackgroundColor3 = COLORS.leather
+	button.BackgroundTransparency = 0.06
 	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
+	corner(button, 8)
+	bookMaterial(button, "leather", 128)
+	local badgeStroke = Instance.new("UIStroke")
+	badgeStroke.Name = "DockBorder"
+	badgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	badgeStroke.Color = UI_BRASS_DARK
+	badgeStroke.Thickness = 1.5
+	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
 	local artId = AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	local artSize = if dockItem then 32 else 34
+	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
 	if artId then
 		for i = 1, 2 do
@@ -1743,10 +1782,10 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(0, 38)
-		caption.Size = UDim2.new(1, 0, 0, 18)
+		caption.Position = UDim2.fromOffset(0, 42)
+		caption.Size = UDim2.new(1, 0, 0, 19)
 		caption.Font = Enum.Font.GothamBold
-		caption.TextSize = 12
+		caption.TextSize = 13
 		caption.TextWrapped = false
 		caption.ZIndex = 3
 		caption.TextColor3 = Color3.fromRGB(255, 244, 214)
@@ -1754,6 +1793,15 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		caption.Parent = button
 		H.shadowOf(caption)
 	end
+	-- [시설 선택] 선택한 아이콘만 황동 테두리를 진하게 표시한다.
+	local function paintSelection()
+		local selected = button:GetAttribute("SelectedFacility") == true
+		button.BackgroundColor3 = if selected then COLORS.coverRaised else COLORS.leather
+		badgeStroke.Color = if selected then UI_BRASS else UI_BRASS_DARK
+		badgeStroke.Thickness = if selected then 2.5 else 1.5
+	end
+	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
+	paintSelection()
 	local scale = Instance.new("UIScale")
 	scale.Parent = button
 	button.InputBegan:Connect(function(input)
@@ -1802,11 +1850,11 @@ dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
 local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(44, 58)
+dockGrid.CellSize = UDim2.fromOffset(52, 64)
 dockGrid.CellPadding = UDim2.fromOffset(4, 4)
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
-dockGrid.FillDirectionMaxCells = 6
+dockGrid.FillDirectionMaxCells = 4
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
 dockLimit.MaxSize = Vector2.new(300, 200)
@@ -1817,9 +1865,11 @@ H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
 	{ "board", "주점", "quest" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
+H.dockButtons = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
+	H.dockButtons[d[1]] = b
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
@@ -7886,11 +7936,10 @@ function H.renderTabs()
 			end
 			render()
 		end, true)
+		b.Name = "FacilityTab_" .. id
 		b.LayoutOrder = i
-		if id == "status" then b.TextSize = 18 end
-		if currentTab == id then
-			b.TextColor3 = Color3.fromRGB(32, 22, 8)
-		end
+		b:SetAttribute("SelectedTab", currentTab == id)
+		b.TextColor3 = INK
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
 		-- 3D 소품 대신 다른 탭과 같은 금빛 그림 아이콘이 등록돼 있으면 그것을 쓴다 (미등록이면 기존 표시 유지)
@@ -7899,12 +7948,12 @@ function H.renderTabs()
 			ti = { "Menu", flat }
 		end
 		if ti then
-			local icon = modelIcon(b, ti[1], ti[2], nil, 30, TAB_NAME[id])
+			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			icon.Position = UDim2.new(0, -31, 0.5, -15) -- 아래 UIPadding(36)이 자식 위치도 밀어서 그만큼 뺀다
+			icon.Position = UDim2.new(0, -28, 0.5, -13)
 			icon.ZIndex = b.ZIndex + 2
 			local pad = Instance.new("UIPadding")
-			pad.PaddingLeft = UDim.new(0, 36)
+			pad.PaddingLeft = UDim.new(0, 32)
 			pad.Parent = b
 		end
 	end
@@ -7916,7 +7965,7 @@ H.closeX.Name = "CloseX"
 H.closeX.AnchorPoint = Vector2.new(1, 0)
 H.closeX.Position = UDim2.new(1, -8, 0, 8)
 H.closeX.Size = UDim2.fromOffset(40, 40)
-H.closeX.BackgroundColor3 = COLORS.red
+H.closeX.BackgroundColor3 = COLORS.leather
 H.closeX.Text = "×"
 H.closeX.Font = Enum.Font.GothamBold
 H.closeX.TextSize = 30
@@ -9084,6 +9133,13 @@ function render()
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	H.renderTabs()
+	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.
+	for _, spec in H.DOCK do
+		local dockButton = H.dockButtons[spec[1]]
+		if dockButton then
+			dockButton:SetAttribute("SelectedFacility", groupOf(spec[1]).name == grp.name)
+		end
+	end
 	syncScene()
 
 	if message ~= "" then

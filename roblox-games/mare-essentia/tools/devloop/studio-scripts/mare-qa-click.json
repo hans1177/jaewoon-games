@@ -241,6 +241,15 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') local top=assert(pg:FindFirstChild('MareEssentiaHudTop')) local dock=assert(top:FindFirstChild('Dock',true)) local n=0 for _,v in ipairs(dock:GetChildren()) do if v:IsA('TextButton') then n+=1 assert(v:FindFirstChild('DockBorder'),'DOCK_BORDER_MISSING '..v.Name) assert(v:FindFirstChildOfClass('UICorner'),'DOCK_CORNER_MISSING '..v.Name) end end assert(n==7,'FACILITY_DOCK_COUNT='..n) local gui=assert(pg:FindFirstChild('MareEssentiaGui')) local tabs=0 for _,v in ipairs(gui:GetDescendants()) do if v:IsA('TextButton') and v.Name:sub(1,12)=='FacilityTab_' then tabs+=1 assert(v:GetAttribute('SelectedTab')~=nil,'TAB_STATE_MISSING '..v.Name) end end assert(tabs==4,'COMBAT_TAB_COUNT='..tabs) return 'UI_UNIFIED_PASS dock='..n..' tabs='..tabs"
+  },
+  {
+    "type": "capture",
+    "name": "ui_battle_unified"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
   },
   {
