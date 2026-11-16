@@ -5980,7 +5980,9 @@ function RENDERERS.explore()
 		for _, s in view.sites do
 			table.insert(tiles, { icon = "explore", title = s.name,
 				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else string.format("발견 %d · %d일", s.left, s.days),
-				btn = "지상맵 입장", color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
+				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
+				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then string.format("모험 Lv.%d 필요", s.minLevel) else "지상맵 입장",
+				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
 		return H.tileGrid(tiles, content, 176, 156)
 	end)

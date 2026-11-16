@@ -2785,6 +2785,7 @@ function FieldScene.start(opts)
 				ctrl:Disable()
 			end)
 			local pad = Instance.new("Frame")
+			pad.Name = "FieldMovePad" -- [모바일 입력] 실제 이동 조작을 검사할 수 있도록 기존 패드에 이름만 부여한다.
 			pad.AnchorPoint = Vector2.new(0, 1)
 			pad.Position = UDim2.new(0, 28, 1, -28)
 			pad.Size = UDim2.fromOffset(150, 150)
@@ -2797,6 +2798,7 @@ function FieldScene.start(opts)
 			padCorner.CornerRadius = UDim.new(1, 0)
 			padCorner.Parent = pad
 			local knob = Instance.new("Frame")
+			knob.Name = "FieldMoveKnob"
 			knob.AnchorPoint = Vector2.new(0.5, 0.5)
 			knob.Position = UDim2.fromScale(0.5, 0.5)
 			knob.Size = UDim2.fromOffset(60, 60)
@@ -2844,12 +2846,13 @@ function FieldScene.start(opts)
 			local homePos = pad.Position
 			local function startAt(input: InputObject)
 				active = input
-				local guiAbs = gui.AbsolutePosition
 				local half = pad.AbsoluteSize.X / 2
 				local vs = workspace.CurrentCamera.ViewportSize
 				local cx = math.clamp(input.Position.X, half + 8, vs.X * 0.5)
 				local cy = math.clamp(input.Position.Y, half + 8, vs.Y - half - 8)
-				pad.Position = UDim2.fromOffset(cx - half - guiAbs.X, cy + half - guiAbs.Y)
+				-- [모바일 이동] 스크린의 원점·안전 영역을 추측하지 않고 실제 패드 중심과 손가락 좌표의 차이만큼 이동한다.
+				local center = pad.AbsolutePosition + pad.AbsoluteSize / 2
+				pad.Position = pad.Position + UDim2.fromOffset(cx - center.X, cy - center.Y)
 				setFrom(input.Position)
 			end
 			table.insert(conns, pad.InputBegan:Connect(function(input)
