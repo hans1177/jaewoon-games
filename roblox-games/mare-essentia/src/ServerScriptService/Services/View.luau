@@ -953,7 +953,7 @@ return function(D, S)
 				economy = S.Harbor.economyOf(state, port.id),
 				sim = S.Econ.town(state, port.id),
 				-- 행정관 보고와 항구 신문은 기존 세계경제와 건축 정보를 재사용한다.
-				administration = S.Build.viewOf(state),
+				administration = view.portBuildings,
 				level = lv,
 				name = D.Harbor.NAMES[lv],
 				invested = inv,
