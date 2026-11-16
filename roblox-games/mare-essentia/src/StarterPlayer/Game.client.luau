@@ -138,23 +138,22 @@ local UI_BRASS_DARK = Color3.fromRGB(111, 76, 39)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
-	{ id = "board", name = "의뢰판" },
-	{ id = "quest", name = "퀘스트" },
+	{ id = "board", name = "의뢰 받기" },
+	{ id = "quest", name = "진행 일지" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
-	{ id = "cards", name = "백과" },
-	{ id = "status", name = "상태" },
-	{ id = "harbor", name = "항구" },
-	{ id = "crew", name = "동료" },
-	{ id = "recruit", name = "동료" },
-	{ id = "scholar", name = "보고" },
+	{ id = "status", name = "현황" },
+	{ id = "harbor", name = "항구 정보" },
+	{ id = "crew", name = "동료 관리" },
+	{ id = "recruit", name = "동료 영입" },
+	{ id = "scholar", name = "지식 보고" },
 	{ id = "yard", name = "조선소" },
-	{ id = "codex", name = "백과사전" },
+	{ id = "codex", name = "지식 백과" },
 	{ id = "tech", name = "연구" },
 	{ id = "map", name = "지도" },
-	{ id = "explore", name = "탐험" },
-	{ id = "battle", name = "전투" },
-	{ id = "gwent", name = "카드 배틀" },
+	{ id = "explore", name = "지상 탐험" },
+	{ id = "battle", name = "해적 사냥" },
+	{ id = "gwent", name = "카드 대결" },
 	{ id = "war", name = "함대전" },
 }
 
@@ -564,6 +563,12 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			shape(0.57, 0.12, 0.29, 0.29, 0, 1)
 			shape(0.05, 0.50, 0.44, 0.31, 0, 0.35)
 			shape(0.51, 0.50, 0.44, 0.31, 0, 0.35)
+		elseif asset == "recruit" then
+			-- [동료 영입] 후보 한 사람과 추가 표식: 선장실의 동료 관리(두 사람)와 시각적으로 구분한다.
+			shape(0.15, 0.12, 0.32, 0.32, 0, 1)
+			shape(0.10, 0.53, 0.48, 0.29, 0, 0.32)
+			shape(0.64, 0.40, 0.28, 0.09, 0, 0.12)
+			shape(0.73, 0.30, 0.09, 0.29, 0, 0.12)
 		elseif asset == "war" then
 			-- 함대전: 포신과 포차 두 바퀴. 조선소의 범선과 구별한다.
 			shape(0.24, 0.25, 0.61, 0.14, -23, 0.2)
@@ -2058,7 +2063,7 @@ local dockLimit = Instance.new("UISizeConstraint")
 dockLimit.MaxSize = Vector2.new(300, 200)
 dockLimit.Parent = dock
 
--- 오른쪽 메뉴: 시설 6곳. 각 시설 창 안의 탭으로 세부 메뉴를 고른다(같은 메뉴가 두 군데 있지 않게).
+-- [시설 목차] 시설 7곳은 기존 도크 그대로, 세부 기능은 각 시설의 탭 안에만 둔다.
 H.DOCK = {
 	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
 	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
@@ -2073,13 +2078,13 @@ for i, d in H.DOCK do
 	end)
 end
 
--- 시스템 4개(걷기 · 내 카드 · 설정 · 도움말): 시설 6개 바로 아래 한 줄. 자동항해는 항만청 탭에서 한다.
+-- [도구 목차] 시설 7곳과 별개인 일지·걷기·내 카드·설정·도움말 5개를 같은 56px 간격으로 정렬한다.
 local render
 local openOptions
 local SYS_Y = 170
 local gear = H.hudShortcut(hudTop, "OptionsButton", "gear", "설정", true)
 gear.AnchorPoint = Vector2.new(1, 0)
-gear.Position = UDim2.new(1, -86, 0, SYS_Y)
+gear.Position = UDim2.new(1, -64, 0, SYS_Y)
 do
 	local help = H.hudShortcut(hudTop, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
@@ -2087,7 +2092,7 @@ do
 	help.Activated:Connect(function() openOptions(true) end)
 	local walk = H.hudShortcut(hudTop, "ViewToggle", "view", "걷기", true)
 	walk.AnchorPoint = Vector2.new(1, 0)
-	walk.Position = UDim2.new(1, -242, 0, SYS_Y)
+	walk.Position = UDim2.new(1, -176, 0, SYS_Y)
 	walk.Activated:Connect(function()
 		overview = not overview
 		local cap = walk:FindFirstChild("MenuName")
@@ -2104,7 +2109,7 @@ end)
 do
 	local jBtn = H.hudShortcut(hudTop, "JournalButton", "journal", "저널", true)
 	jBtn.AnchorPoint = Vector2.new(1, 0)
-	jBtn.Position = UDim2.new(1, -320, 0, SYS_Y)
+	jBtn.Position = UDim2.new(1, -232, 0, SYS_Y)
 	local open = nil
 	local function bar(parent, ratio, color)
 		local back = Instance.new("Frame")
@@ -2285,7 +2290,7 @@ do
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hudTop, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
-	deckBtn.Position = UDim2.new(1, -164, 0, SYS_Y)
+	deckBtn.Position = UDim2.new(1, -120, 0, SYS_Y)
 	local open = nil
 	function H.openDeck(onlyOpen: boolean?)
 		if open then
@@ -2619,8 +2624,15 @@ bubble.InputBegan:Connect(function(input)
 end)
 -- 길잡이 가리킴: 지금 눌러야 할 메뉴 버튼이 금빛으로 맥동하며 살짝 흔들린다 (참고: 흔들리는 버튼·움직이는 화살표로 시선을 이끄는 튜토리얼 관례).
 -- 오래 쓰면 거슬리므로 초반 길잡이(g_...)에서만 켜고, 다른 조언으로 넘어가거나 닫으면 끈다.
-local GUIDE_BTN = { trade = "Menu_trade", route = "Menu_route", yard = "Menu_yard", board = "Menu_board", quest = "Menu_board", explore = "Menu_battle",
-	battle = "Menu_battle", tech = "Menu_codex", codex = "Menu_codex", crew = "Menu_status", status = "Menu_status", gwent = "DeckButton" }
+-- [메뉴 길찾기] 실제 기능이 속한 시설을 가리킨다. 카드를 여는 도구와 카드 대결 시설을 혼동하지 않는다.
+local GUIDE_BTN = {
+	trade = "Menu_trade", harbor = "Menu_trade",
+	route = "Menu_route", map = "Menu_route", yard = "Menu_yard",
+	board = "Menu_board", quest = "Menu_board", recruit = "Menu_board",
+	battle = "Menu_battle", explore = "Menu_battle", war = "Menu_battle", gwent = "Menu_battle",
+	tech = "Menu_codex", codex = "Menu_codex", scholar = "Menu_codex",
+	crew = "Menu_status", status = "Menu_status",
+}
 local guidePulseToken = 0
 function H.setGuidePulse(tab)
 	guidePulseToken += 1
@@ -8139,13 +8151,18 @@ RENDERERS.yard = renderYard
 H.TAB_ICON = {
 	-- [의미 통일] 등록된 투명 황동 원화 우선. 별도 원화가 없는 메뉴만 기존 렌더러의 황동 도형을 쓴다.
 	-- 주점: 의뢰판/퀘스트/동료, 전투: 전투/탐험/함대전/카드, 서재: 보고/백과/연구.
-	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "crew" }, explore = { "Menu", "explore" },
+	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "recruit" }, explore = { "Menu", "explore" },
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
 	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Glyph", "research" },
-	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" }, cards = { "Menu", "codex" },
+	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 }
 function H.renderTabs()
+	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
+	-- 탭 전환 시에만 다시 만들고, 화면 크기 변경은 기존 UIGridLayout이 맡는다.
+	if H.renderedTabId == currentTab and tabBar:FindFirstChild("FacilityTab_" .. currentTab) then
+		return
+	end
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
 			child:Destroy()
@@ -8153,7 +8170,8 @@ function H.renderTabs()
 	end
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
-		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
+		local selected = currentTab == id
+		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
 			currentTab = id
 			Sfx.facilityCue(id)
 			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
@@ -8165,15 +8183,14 @@ function H.renderTabs()
 		end, true)
 		b.Name = "FacilityTab_" .. id
 		b.LayoutOrder = i
-		b:SetAttribute("SelectedTab", currentTab == id)
-		b.TextColor3 = INK
+		b:SetAttribute("SelectedTab", selected)
+		b.TextColor3 = if selected then INK else INK_SOFT
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
 		if ti then
-			-- 등록 원화와 황동 도형은 동일한 크기·위치·투명 바탕으로 그린다.
+			-- [공통 규격] 도크는 36px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
 			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			-- [탭 내부 배치] 26px 캔버스와 획은 버튼 안에서만 보이게 제한한다.
 			icon.Position = UDim2.new(0, 7, 0.5, -13)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
@@ -8181,8 +8198,6 @@ function H.renderTabs()
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft = UDim.new(0, 35)
 			pad.Parent = b
-			-- [인쇄 글자 겹침 수정] mkButton이 생성한 실제 인쇄 텍스트도 아이콘 옆으로 옮긴다.
-			-- TextButton의 클릭 영역·원래 텍스트·탭 선택 흐름은 유지한다.
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
 				caption.Position = UDim2.fromOffset(35, 1)
@@ -8194,12 +8209,23 @@ function H.renderTabs()
 				textLimit.MaxTextSize = 14
 				textLimit.Parent = caption
 			else
-				-- 종이 원화 미등록 환경에서는 원래 TextButton을 오른쪽 정렬한다.
 				b.TextXAlignment = Enum.TextXAlignment.Right
 				b.TextSize = 14
 			end
 		end
+		if selected then
+			-- [선택 상태] 글자색 외에 황동 밑줄을 넣어 원화 색을 바꾸지 않고도 선택 탭이 드러나게 한다.
+			local rule = Instance.new("Frame")
+			rule.Name = "ActiveTabRule"
+			rule.BackgroundColor3 = UI_BRASS_DARK
+			rule.BorderSizePixel = 0
+			rule.Position = UDim2.new(0, 8, 1, -4)
+			rule.Size = UDim2.new(1, -16, 0, 3)
+			rule.ZIndex = b.ZIndex + 3
+			rule.Parent = b
+		end
 	end
+	H.renderedTabId = currentTab
 end
 
 -- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼
@@ -9372,7 +9398,10 @@ function render()
 	local grp = groupOf(currentTab)
 	setPortrait(grp.name)
 	headerLabel.Text = grp.name
-	H.pageDetails.Text = string.format("%s · %s", p.portName, grp.keeper)
+	-- [현재 위치] 모바일에는 항구·선택 탭만, 넓은 화면에는 담당자까지 표시한다.
+	H.pageDetails.Text = if mainInner.AbsoluteSize.X < 480
+		then string.format("%s · %s", p.portName, TAB_NAME[currentTab])
+		else string.format("%s · %s · %s", p.portName, grp.keeper, TAB_NAME[currentTab])
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	H.renderTabs()
