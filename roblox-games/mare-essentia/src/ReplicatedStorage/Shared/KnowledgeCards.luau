@@ -14,10 +14,11 @@ export type Card = {
 	fromYear: number?, -- 실제 등장 시기 이전 연구/발견 방지(명시된 카드만)
 	research: { found: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
 	visitPort: string?, -- 단순 방문으로 등록되는 카드만 명시. 기존 지점의 드롭률은 바꾸지 않는다.
+	classification: { kind: string?, subkind: string?, related: { string }? }?, -- 새 카드의 명시적 분류. 기존 카드는 자동 분류
 	reward: { fame: number, coins: number },
 }
 
-local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?, visitPort: string?): Card
+local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?, visitPort: string?, classification: any?): Card
 	return {
 		id = id,
 		name = name,
@@ -28,18 +29,19 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 		fromYear = fromYear,
 		research = research,
 		visitPort = visitPort,
+		classification = classification,
 		reward = { fame = fame, coins = coins },
 	}
 end
 
 local Rows: { { any } } = {
 	-- [단순 발견] 입항하면 역사·지형을 알아본다. 탐험 확률·퀘스트·연구 조건은 없으며 보상은 최초 1회만.
-	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp" },
-	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice" },
-	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london" },
+	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp", { kind = "terrain", subkind = "하구·수로", related = { "oceanography", "cartography" } } },
+	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice", { kind = "terrain", subkind = "석호·습지", related = { "oceanography", "ecology" } } },
+	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london", { kind = "building", subkind = "교량·토목", related = { "civil_engineering", "historiography" } } },
 	-- 기존 선박 실물은 관찰 카드로, 선체 설계도·부품은 별도 연구 카드로 남긴다. 보유 선박/선박 구매 규칙은 변경하지 않는다.
-	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon" },
-	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville" },
+	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon", { kind = "ship", subkind = "탐험 범선", related = { "cartography", "mechanics", "historiography" } } },
+	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville", { kind = "ship", subkind = "무장 범선", related = { "military_science", "mechanics", "historiography" } } },
 	-- [버드나무 연구] 일반 표본 → 비교 관찰 → 희귀 의학 기록. 주인공의 직업은 상관없다.
 	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500 },
 	{ "bot_willow_notes", "버드나무 표본 비교 기록", "Botany", "Uncommon", "채집한 버드나무 잎과 껍질을 수도원 약초원에서 말리고 기록한 비교 관찰장.", "수도원 약초원 기록", 15, 40, 1500, { found = { "bot_willow" } } },
@@ -884,7 +886,7 @@ end
 
 local Cards: { Card } = {}
 for _, r in Rows do
-	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11]))
+	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12]))
 end
 
 -- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
@@ -921,6 +923,7 @@ local FieldKind = {
 	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
 }
 local function kindOf(c: Card): string
+	if c.classification and c.classification.kind and KindById[c.classification.kind] then return c.classification.kind end
 	if c.field == "Site" then
 		if string.find(c.name, "산", 1, true) or string.find(c.name, "폭포", 1, true) or string.find(c.name, "협곡", 1, true) or string.find(c.name, "해협", 1, true) then
 			return "terrain"
@@ -939,6 +942,7 @@ local function kindOf(c: Card): string
 end
 -- [선박 세부 종류] 실물 선박과 설계·부품·조선소 시설을 혼동하지 않는다.
 local function subkindOf(c: Card): string?
+	if c.classification and c.classification.subkind then return c.classification.subkind end
 	if c.field == "Mineral" then
 		if string.find(c.name, "화석", 1, true) or string.find(c.name, "호박", 1, true) or string.find(c.name, "암모나이트", 1, true) then return "화석·고생물 흔적" end
 		for _, word in { "광석", "철", "구리", "금", "은", "주석", "초석", "유황", "석탄" } do
