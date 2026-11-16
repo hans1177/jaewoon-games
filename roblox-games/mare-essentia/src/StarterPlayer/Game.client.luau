@@ -7151,14 +7151,12 @@ local function renderCodexOverview()
 			}, 56)
 		end)
 	end
-	add(function() return mkHeader(content, string.format("카드 소재 · %d가지", #cx.kindList)) end)
-	for _, kind in cx.kindList or {} do
-		add(function()
-			return mkRow(content, kind.name .. " · " .. tostring(cx.kinds[kind.id] or 0) .. "장", "종류별 목록 · 기존 희귀도와 학문 유지", {
-				{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:" .. kind.id; render() end },
-			}, 52)
-		end)
-	end
+	add(function() return mkHeader(content, "카드 소재") end)
+	add(function()
+		return mkRow(content, string.format("세부 종류 · %d가지", #cx.kindList), "지형·선박·광물·화석·건축물·동물·문화·원자재 등", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
+		}, 54)
+	end)
 	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
 	local samples = {}
 	for _, card in cx.cards do
@@ -7360,6 +7358,16 @@ if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" 
 	add(function()
 		return mkRow(content, "← 분류 목록", label, { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 50)
 	end)
+	if mode == "t:" and key == "all" then
+		for _, kind in view.codex.kindList or {} do
+			add(function()
+				return mkRow(content, kind.name .. " · " .. tostring(view.codex.kinds[kind.id] or 0) .. "장", "카드 종류별 목록", {
+					{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:" .. kind.id; render() end },
+				}, 52)
+			end)
+		end
+		return
+	end
 	add(function()
 		local grid = Instance.new("Frame")
 		grid.BackgroundTransparency = 1
