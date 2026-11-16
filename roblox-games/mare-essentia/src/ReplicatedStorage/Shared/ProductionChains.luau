@@ -62,11 +62,11 @@ P.Recipes = {
 	{ id = "r_fertilizer", inputs = { "guano", "nitrate" }, output = "비료", building = "곡물 창고", disc = "agronomy", minLevel = 3, valueMult = 1.5 },
 	{ id = "r_resin", inputs = { "gum_arabic" }, output = "아교·잉크", building = "인쇄소·신문사", disc = "chemistry", minLevel = 4, valueMult = 1.6 },
 	-- [지역 브랜드 선행 가공] 기존 원료와 기존 산업 시설을 사용한다.
-	{ id = "r_aged_cheese", inputs = { "cheese" }, output = "숙성 치즈", building = "치즈 공방", disc = "chemistry", minLevel = 2, valueMult = 1.35 },
-	{ id = "r_fine_glass", inputs = { "glass" }, output = "세공 유리", building = "유리 공방", disc = "chemistry", minLevel = 3, valueMult = 1.5 },
-	{ id = "r_vintage_wine", inputs = { "wine" }, output = "숙성 와인", building = "포도주 저장고·양조장", disc = "brewing", minLevel = 2, valueMult = 1.5 },
-	{ id = "r_ginseng_medicine", inputs = { "ginseng" }, output = "정제 인삼 약재", building = "약방·한의원", disc = "pharmacology", minLevel = 3, valueMult = 1.6 },
-	{ id = "r_aged_beer", inputs = { "beer" }, output = "숙성 맥주", building = "맥주 양조장", disc = "brewing", minLevel = 2, valueMult = 1.35 },
+	{ id = "r_aged_cheese", inputs = { "cheese" }, output = "숙성 치즈", building = "치즈 공방", disc = "chemistry", minLevel = 2, newIndustry = true, valueMult = 1.35 },
+	{ id = "r_fine_glass", inputs = { "glass" }, output = "세공 유리", building = "유리 공방", disc = "chemistry", minLevel = 3, newIndustry = true, valueMult = 1.5 },
+	{ id = "r_vintage_wine", inputs = { "wine" }, output = "숙성 와인", building = "포도주 저장고·양조장", disc = "brewing", minLevel = 2, newIndustry = true, valueMult = 1.5 },
+	{ id = "r_ginseng_medicine", inputs = { "ginseng" }, output = "정제 인삼 약재", building = "약방·한의원", disc = "pharmacology", minLevel = 3, newIndustry = true, valueMult = 1.6 },
+	{ id = "r_aged_beer", inputs = { "beer" }, output = "숙성 맥주", building = "맥주 양조장", disc = "brewing", minLevel = 2, newIndustry = true, valueMult = 1.35 },
 }
 
 P.ById = {}
