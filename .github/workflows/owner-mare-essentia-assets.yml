@@ -126,6 +126,14 @@ jobs:
             node tools/mare-essentia-upload-assets.mjs
           fi
 
+      - name: Verify external CC0 nau source and Roblox granted asset
+        id: nau_check
+        if: ${{ steps.asset_registration.outcome == 'success' && github.event_name != 'schedule' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='Mare external CC0 nau original hull and Roblox registration integrity' qa/company-roblox-dedicated-experience.test.mjs
+
       - name: Refresh asset practice ledger after Roblox registration
         if: always()
         shell: bash
@@ -162,7 +170,15 @@ jobs:
           set -euo pipefail
           # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
           # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png; do
+          if [[ "${{ steps.nau_check.outcome }}" == "failure" ]]; then
+            echo "::error::MARE_NAU_EXTERNAL_ORIGINAL_OR_REGISTRATION_QA_FAILED"
+            exit 1
+          fi
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png; do
+            if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
+              echo "SKIP_UNVERIFIED_NAU_EXTERNAL_CC0 $f"
+              continue
+            fi
             if [[ ( "$f" == roblox-games/mare-essentia/assets/relics/weapon-*.glb* || "$f" == roblox-games/mare-essentia/assets/naval/fishing-net.glb* || "$f" == roblox-games/mare-essentia/assets/naval/net-floats.glb* || "$f" == roblox-games/mare-essentia/assets/naval/galleon-heritage.glb* ) && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_WEAPON_MODEL $f"
               continue
