@@ -6331,15 +6331,18 @@ function H.startField(s)
 		year = view and view.player and view.player.year, -- 실제 역사 시대로 활·총기 발화방식 결정
 		name = s.name,
 		portId = s.portId,
+		siteId = s.id, -- 기존 Sites의 지역·도감 후보를 탐험 시각 연출에 그대로 연결한다.
+		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
-		onFinish = function(result)
+		onFinish = function(result, observedCardId)
 			inField = false
 			applyView()
 			main.Visible = true
 			if result == "clear" then
-				call("Explore", { siteId = s.id })
+				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.
+				call("Explore", { siteId = s.id, observedCardId = observedCardId })
 			else
 				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "탐험을 중단하고 항구로 돌아왔어요"
 				messageOk = false
