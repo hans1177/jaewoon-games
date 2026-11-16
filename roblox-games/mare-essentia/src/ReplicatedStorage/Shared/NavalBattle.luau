@@ -144,6 +144,9 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 	-- [해전 3D] 상세 갈레온 로딩 지연 시 기존 해전 범선을 그대로 사용한다.
 	if asset == "galleon-heritage" and not (tpl and tpl:IsA("Model")) then
 		tpl = group and group:FindFirstChild("ship-pirate-large")
+	elseif asset == "frigate" and not (tpl and tpl:IsA("Model")) then
+		-- [기존 해전 보존] 전용 프리깃 모델 로드 지연 시 원래 대형 범선 외형을 사용한다.
+		tpl = group and group:FindFirstChild("ship-large")
 	end
 	if tpl and tpl:IsA("Model") then
 		local m = tpl:Clone()
