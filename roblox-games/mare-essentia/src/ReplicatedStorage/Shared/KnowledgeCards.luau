@@ -1,4 +1,5 @@
 --!strict
+-- KnowledgeCards.luau · 지식카드 원본 데이터와 시대·연구 과정(선택적 조건)
 -- 지식 카드(세계 백과). 새 항목은 이 테이블에 추가만 하면 도감이 늘어난다.
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
@@ -10,10 +11,12 @@ export type Card = {
 	rarity: Rarity,
 	description: string,
 	source: string, -- 발견 방법 (표시용)
+	fromYear: number?, -- 실제 등장 시기 이전 연구/발견 방지(명시된 카드만)
+	research: { found: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
 	reward: { fame: number, coins: number },
 }
 
-local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any): Card
+local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?): Card
 	return {
 		id = id,
 		name = name,
@@ -21,11 +24,17 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 		rarity = rarity :: Rarity,
 		description = description,
 		source = source,
+		fromYear = fromYear,
+		research = research,
 		reward = { fame = fame, coins = coins },
 	}
 end
 
 local Rows: { { any } } = {
+	-- [버드나무 연구] 일반 표본 → 비교 관찰 → 희귀 의학 기록. 주인공의 직업은 상관없다.
+	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500 },
+	{ "bot_willow_notes", "버드나무 표본 비교 기록", "Botany", "Uncommon", "채집한 버드나무 잎과 껍질을 수도원 약초원에서 말리고 기록한 비교 관찰장.", "수도원 약초원 기록", 15, 40, 1500, { found = { "bot_willow" } } },
+	{ "med_willow_bark", "버드나무 껍질 약용 기록", "Medicine", "Rare", "버드나무 껍질의 전통적 사용과 관찰을 약방에서 비교해 적은 기록. 16세기에는 살리신 분리나 현대 아스피린 제조법을 알지 못했다.", "약방 의학 검증", 40, 115, 1554, { found = { "bot_willow_notes", "med_herb_garden" }, quest = "q_willow_notes", assistDisc = "medicine", allowReported = "med_herb_garden" } },
 	{ "bot_oak", "유럽 참나무", "Botany", "Common", "서유럽 숲의 대표 활엽수. 목재는 조선과 건축에 쓰인다.", "숲 채집", 5, 10 },
 	{ "bot_foxglove", "폭스글러브", "Botany", "Uncommon", "약용으로 연구된 식물. 독성이 있어 사용에 주의가 필요하다.", "들판 채집", 15, 30 },
 	{ "bot_tulip", "튤립", "Botany", "Uncommon", "17세기 네덜란드에서 구근 값이 폭등할 만큼 유행한 꽃.", "정원 관찰", 15, 40 },
@@ -42,14 +51,14 @@ local Rows: { { any } } = {
 	{ "site_newgrange", "뉴그레인지", "Site", "Epic", "아일랜드의 신석기 시대 무덤. 동지 무렵 햇빛이 통로 안쪽까지 들어온다.", "유적 탐험", 90, 260 },
 	{ "ast_comet", "혜성", "Astronomy", "Rare", "긴 꼬리를 가진 천체. 핼리는 같은 혜성이 주기적으로 돌아온다고 예측했다.", "밤하늘 관측", 40, 100 },
 	{ "ast_jupiter_moons", "목성의 위성", "Astronomy", "Rare", "망원경으로 목성 곁에서 발견된 네 개의 큰 달.", "천문대 관측", 40, 100 },
-	{ "ast_saturn_rings", "토성의 고리", "Astronomy", "Rare", "토성을 둘러싼 얇은 고리. 하위헌스가 그 형태를 설명했다.", "학자 방문", 45, 120 },
+	{ "ast_saturn_rings", "토성의 고리", "Astronomy", "Rare", "토성을 둘러싼 얇은 고리. 하위헌스가 그 형태를 설명했다.", "학자 방문", 45, 120, 1655 },
 	{ "che_phosphorus", "인", "Chemistry", "Rare", "어둠에서 빛나는 물질. 연금술 실험 중 발견되었다.", "학자 방문", 40, 100 },
 	{ "phy_pendulum", "진자의 법칙", "Physics", "Uncommon", "진자의 흔들림 주기는 줄 길이로 정해진다. 시계 제작의 바탕이 되었다.", "진자 실험", 20, 40 },
 	{ "phy_gravity", "만유인력", "Physics", "Epic", "모든 물체가 서로 끌어당긴다는 원리. 뉴턴이 『프린키피아』에서 정리했다.", "학자 방문", 100, 300 },
 	{ "phy_microscope", "현미경 관찰", "Physics", "Rare", "렌즈로 작은 생물을 관찰해 미생물의 세계를 열었다.", "학자 방문", 45, 120 },
-	{ "phy_papin_digester", "파팽의 압력솥", "Physics", "Rare", "밀폐한 솥에서 증기 압력을 높이는 장치. 증기 기관 연구의 출발점 중 하나.", "학자 방문", 50, 140 },
-	{ "phy_savery_pump", "세이버리의 증기 펌프", "Physics", "Epic", "증기의 힘으로 물을 퍼 올리는 장치. 광산 배수에 쓰이도록 고안되었다.", "학자 방문", 80, 220 },
-	{ "phy_newcomen_engine", "뉴커먼 기관", "Physics", "Epic", "증기를 식혀 생기는 압력 차로 피스톤을 움직이는 대기압 기관.", "학자 방문", 100, 280 },
+	{ "phy_papin_digester", "파팽의 압력솥", "Physics", "Rare", "밀폐한 솥에서 증기 압력을 높이는 장치. 증기 기관 연구의 출발점 중 하나.", "학자 방문", 50, 140, 1679 },
+	{ "phy_savery_pump", "세이버리의 증기 펌프", "Physics", "Epic", "증기의 힘으로 물을 퍼 올리는 장치. 광산 배수에 쓰이도록 고안되었다.", "학자 방문", 80, 220, 1698 },
+	{ "phy_newcomen_engine", "뉴커먼 기관", "Physics", "Epic", "증기를 식혀 생기는 압력 차로 피스톤을 움직이는 대기압 기관.", "학자 방문", 100, 280, 1712 },
 	{ "phi_cogito", "방법적 회의", "Philosophy", "Rare", "모든 것을 의심하는 데서 출발해 확실한 지식을 찾으려는 데카르트의 방법.", "학자 방문", 40, 90 },
 	{ "phi_monad", "단자론", "Philosophy", "Epic", "세계가 더 나눌 수 없는 단위로 이루어져 있다고 보는 라이프니츠의 사상.", "학자 방문", 80, 200 },
 	{ "med_cinchona", "기나나무 껍질", "Medicine", "Rare", "열병 치료에 쓰인 남미 원산 나무껍질.", "항구 약재상", 35, 100 },
@@ -866,7 +875,7 @@ end
 
 local Cards: { Card } = {}
 for _, r in Rows do
-	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8]))
+	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]))
 end
 
 local ById: { [string]: Card } = {}
@@ -906,6 +915,9 @@ local Articles: { [string]: { topic: string, details: string, context: string, h
 	ast_saturn_rings = { topic = "Rings_of_Saturn", details = "토성의 고리는 얼음 알갱이와 암석 조각이 모여 이루어진 아주 얇은 띠다. 폭은 수만 킬로미터에 달하지만 두께는 대체로 수십 미터에 불과하다.", context = "초기 망원경으로는 토성 양옆에 '귀'가 달린 것처럼 보여 관측자들을 혼란스럽게 했다. 지구에서 보는 각도가 변하면 고리가 거의 사라진 듯 보이기도 한다.", history = "1655년 크리스티안 하위헌스가 고리가 토성 본체에서 떨어져 있는 평평한 원반이라고 설명했다. 이후 카시니가 고리 사이의 틈을 발견했다." },
 	phy_microscope = { topic = "Microscope", details = "현미경은 렌즈를 겹쳐 작은 대상을 크게 보는 도구다. 물체 가까이의 렌즈가 상을 만들고, 눈 쪽의 렌즈가 그 상을 다시 키워서 보여 준다.", context = "17세기 중반 이후 로버트 훅과 안톤 판 레이우엔훅이 현미경으로 세포와 미생물을 관찰했다. 맨눈으로는 보이지 않던 세계가 존재한다는 사실이 알려졌다.", history = "레이우엔훅은 직접 갈아 만든 작은 렌즈로 빗물 속 미생물과 정자 등을 관찰해 편지로 왕립학회에 알렸다. 이 관찰은 이후 생물학과 의학의 출발점 가운데 하나가 되었다." },
 	phy_papin_digester = { topic = "Steam_digester", details = "뚜껑을 단단히 조인 쇠솥 안에서 물이 끓으면 증기가 빠져나가지 못해 내부 압력이 올라간다. 압력이 높으면 물의 끓는점도 올라가 단단한 뼈까지 부드럽게 익힐 수 있다.", context = "너무 압력이 오르면 위험하므로 파팽은 일정 압력에서 증기가 빠지는 안전 밸브를 달았다. 이 밸브는 이후 증기 기관 보일러의 기본 안전장치가 되었다.", history = "프랑스 출신 물리학자 드니 파팽이 1679년경 선보였다. 그는 훗날 피스톤으로 증기를 이용하는 장치도 구상하여, 증기 기관의 발전에 영향을 주었다." },
+	bot_willow = { topic = "Salix", details = "버드나무는 강가와 습한 땅에 흔한 나무이며, 길고 좁은 잎과 유연한 가지가 특징이다.", context = "옛 사람들은 버드나무의 잎과 껍질을 채집해 용도를 살폈다. 당시의 약용 기록은 관찰과 경험의 모음이지 현대 임상시험 결과는 아니다.", history = "버드나무 껍질의 전통적 약용 이용은 오래되었지만, 살리신을 순수하게 분리한 것은 19세기다." },
+	bot_willow_notes = { topic = "Salix", details = "약초원에서는 잎과 껍질 표본을 말리고 채집 장소와 형태를 적어 비교했다.", context = "표본 대조는 비슷한 나무를 구분하고 약재를 잘못 쓰는 일을 줄이려는 당대의 연구 방식이다." },
+	med_willow_bark = { topic = "Willow", details = "버드나무 껍질의 전통적인 약용 관찰을 남긴 기록이다. 전통적 경험과 현대적으로 확인된 효과를 구별해야 한다.", context = "16세기 약방은 표본과 증언을 대조하고 제조 방법을 기록할 수 있었지만 살리신을 화학적으로 분리하지 못했다.", history = "살리신의 분리는 1828년경, 현대적 아스피린의 등장은 더 뒤의 일이다." },
 	med_cinchona = { topic = "Cinchona", details = "기나나무는 남아메리카 안데스 산지에서 자라는 상록수다. 껍질에는 퀴닌이라는 쓴 성분이 들어 있어 열을 내리고 말라리아 증상을 다스리는 데 쓰였다.", context = "껍질을 말려 가루를 내어 술이나 물에 타 마셨다. 말라리아가 흔한 지역에서는 이 껍질이 큰 상품이 되어 배로 유럽에 실려 갔다.", history = "17세기 예수회 선교사들이 유럽에 널리 소개해 '예수회의 가루'로 불렸다. 퀴닌은 19세기에 껍질에서 분리되어 오랫동안 말라리아 치료의 기본 약이 되었다." },
 	myth_sea_serpent = { topic = "Sea_serpent", details = "바다뱀은 길고 구불구불한 몸으로 수면 위를 헤엄친다고 전해지는 괴물이다. 목격담마다 길이와 모습이 달라 하나의 생물로 보기는 어렵다.", context = "먼 바다에서 본 해초 더미, 헤엄치는 큰 물고기나 바다표범의 줄, 대왕오징어 등을 잘못 본 것이라는 해석이 있다. 안개 낀 바다에서는 거리를 판단하기 어려운 것도 한몫했다.", history = "16세기 북유럽 지도에는 바다뱀이 그려졌고, 1700년대 노르웨이 선교사 한스 에게데도 바다뱀을 보았다고 기록했다. 이후에도 선원들의 목격담이 신문에 실리며 화제가 되었다." },
 	bot_herbarium = { topic = "Herbarium", details = "식물 표본집은 식물을 눌러 말려 종이에 붙이고 이름과 채집 장소, 날짜를 적어 보관한 수집이다. 같은 종이라도 지역과 시기에 따른 차이를 나중에 비교해 볼 수 있다.", context = "식물을 직접 가지고 다닐 수 없을 때 표본은 연구자 사이에서 교환되고 비교되었다. 새로운 식물을 이름 짓고 분류할 때 기준이 되는 증거로 쓰였다.", history = "한스 슬론은 자메이카를 포함한 여러 곳에서 모은 방대한 식물 표본과 수집품을 남겼다. 사후 이 수집품은 영국 박물관이 세워지는 바탕이 되었다." },
