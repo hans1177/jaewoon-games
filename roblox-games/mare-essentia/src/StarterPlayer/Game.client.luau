@@ -6096,7 +6096,7 @@ function H.startField(s)
 	local allyNames = {}
 	for _, c in (view and view.companions and view.companions.list) or {} do
 		if c.joined and #allyNames < 2 then
-			table.insert(allyNames, { name = c.name, role = c.role })
+			table.insert(allyNames, { id = c.id, name = c.name, role = c.role }) -- 기존 영입 ID로 실제 동료만 한 번 소환
 		end
 	end
 	local cardSkills = {}
