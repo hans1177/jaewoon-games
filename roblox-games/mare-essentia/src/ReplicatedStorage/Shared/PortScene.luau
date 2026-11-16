@@ -3647,19 +3647,38 @@ function PortScene.build(info, onFacility)
 		local scale = 1.34 + (sceneLevel - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
 		local wide, deep = 134 * scale, 138 * scale
 		local tall = 30 + sceneLevel * 4
-		local east = key == "japan" or key == "china" or key == "seasia" or key == "malabar"
-		local islamic = key == "ottoman" or key == "desert" or key == "swahili" or key == "wafrica"
+		-- [지역 관저 판별] 지역 문화 키만으로 통치 체계가 달라지는 항구를 같은 왕궁으로 묶지 않는다.
+		-- 조선은 기존 포트 문화 테이블에서 stone으로 분류돼 있으므로 국가 데이터를 먼저 본다.
+		local homePort = PortData.Ports[info.portId]
+		local nation = homePort and homePort.country or ""
+		local korean = nation == "korea"
+		local east = korean or key == "china" or key == "japan"
+		local indian = key == "malabar"
+		local southeast = key == "seasia"
+		local islamic = key == "ottoman" or key == "desert" or key == "swahili"
+		local westAfrican = key == "wafrica"
 		local tropical = key == "tropic" or key == "pacific" or key == "creole" or key == "colonial"
 		local renaissance = key == "italy" or key == "med" or key == "iberia"
-		local courtStyle = if east then "아시아 궁궐" elseif islamic then "중정 궁전"
-			elseif tropical then "열대 총독궁" elseif renaissance then "르네상스 궁전" else "북유럽 왕궁"
+		local courtStyle = if korean then "조선 관아" elseif key == "china" then "중국 관아"
+			elseif key == "japan" then "일본 관저·성곽" elseif indian then "말라바르 관저"
+			elseif southeast then "동남아 궁정" elseif key == "ottoman" then "오스만 궁정"
+			elseif key == "swahili" then "스와힐리 궁정" elseif westAfrican then "서아프리카 관저"
+			elseif islamic then "연안 중정 관저" elseif key == "france" then "프랑스 왕실 관저"
+			elseif key == "britain" then "영국 왕실 관저" elseif key == "hanse" then "한자 도시 관청"
+			elseif key == "italy" then "이탈리아 궁정" elseif key == "iberia" then "이베리아 관저"
+			elseif tropical then "열대 관저·총독부" elseif renaissance then "지중해 궁정" else "지역 관저"
 		local prosperity = if info.sim then math.clamp((info.sim.prosperity or 100) / 100, 0.25, 1.4) else 1
 		local palaceTier = math.max(1, math.min(sceneLevel, math.floor(sceneLevel * (0.72 + prosperity * 0.28) + 0.5)))
-		local baseColor = if east then C(158, 129, 91) elseif islamic then C(231, 209, 172)
+		local baseColor = if korean then C(212, 202, 174) elseif key == "china" then C(176, 129, 88)
+			elseif east then C(176, 154, 126) elseif indian or southeast then C(186, 151, 108)
+			elseif islamic then C(231, 209, 172) elseif westAfrican then C(173, 129, 86)
 			elseif tropical then C(229, 203, 161) elseif renaissance then C(228, 219, 197) else C(199, 198, 197)
-		local roofColor = if east then C(60, 82, 71) elseif islamic then C(65, 135, 141)
+		local roofColor = if korean then C(57, 65, 59) elseif key == "china" then C(171, 125, 56)
+			elseif east then C(74, 87, 79) elseif indian or southeast then C(114, 79, 56)
+			elseif islamic then C(65, 135, 141) elseif westAfrican then C(120, 79, 55)
 			elseif tropical then C(146, 83, 60) elseif renaissance then C(159, 77, 65) else C(80, 93, 115)
-		local surface = if tropical or east then Enum.Material.WoodPlanks elseif islamic then Enum.Material.Sandstone else Enum.Material.Marble
+		local surface = if east or indian or southeast or tropical then Enum.Material.WoodPlanks
+			elseif islamic or westAfrican then Enum.Material.Sandstone else Enum.Material.Marble
 		local palaceTitle = info.palaceName or "왕궁"
 		local facadeX = px + wide * 0.5
 		local frontX = facadeX + 18
@@ -3667,6 +3686,8 @@ function PortScene.build(info, onFacility)
 		local main = part(folder, Vector3.new(wide, tall, deep * 0.74), CFrame.new(px, tall / 2, 0), baseColor, surface)
 		main.Name = "RoyalPalace"
 		main:SetAttribute("RoyalStyle", courtStyle)
+		main:SetAttribute("RoyalNation", nation)
+		main:SetAttribute("RoyalCulture", key)
 		main:SetAttribute("PortId", info.portId)
 		main:SetAttribute("FootprintRatio", 10)
 		main:SetAttribute("RoyalTier", palaceTier)
@@ -3704,10 +3725,23 @@ function PortScene.build(info, onFacility)
 				end
 			end
 		end
-		-- 문화별 왕궁 지붕·돔·누각. 등록된 기존 모델을 우선하며 재질은 지역별로 유지한다.
+		-- [검증된 지역 외관 부재] 등록된 문화권 전용 지붕/기둥/아치만 사용한다.
+		-- 기존 상자형 본체를 새 파츠로 덮지 않는다. 완성형 전용 궁전 메시가 없는 지역은 추후 실물 자산 등록 필요.
 		if east then
 			for _, z in { -deep * 0.26, 0, deep * 0.26 } do
 				importedModel(folder, "Town", "eastasia-roof", Vector3.new(px, tall + 3, z), 34, false, roofColor)
+			end
+			-- 조선/중국/일본의 정면 행각은 승인된 동아시아 기둥과 처마 모델을 사용한다.
+			if palaceTier >= 2 then
+				for _, z in { -36, -18, 18, 36 } do
+					importedModel(folder, "Town", "eastasia-column-base", Vector3.new(facadeX + 12, 0, z), 7, false)
+				end
+				importedModel(folder, "Town", "eastasia-roof", Vector3.new(facadeX + 10, tall * 0.8, 0), 23, false, roofColor)
+			end
+		elseif indian or southeast then
+			-- 말라바르 해안과 동남아는 중국식 기와 궁전을 재사용하지 않고 목조 경사 지붕을 사용한다.
+			for _, z in { -deep * 0.23, deep * 0.23 } do
+				importedModel(folder, "Town", "roof-gable", Vector3.new(px, tall + 3, z), 31, false, roofColor)
 			end
 		elseif islamic then
 			for _, z in { -deep * 0.3, 0, deep * 0.3 } do
@@ -3724,6 +3758,20 @@ function PortScene.build(info, onFacility)
 			end
 			for _, z in { -deep * 0.24, deep * 0.24 } do
 				importedModel(folder, "Castle", "tower-square-roof", Vector3.new(px, tall + 3, z), 18, false)
+			end
+		end
+		-- 유럽 관저 역시 문화권별로 등록된 외관 장식을 달리한다. 왕궁 필지 외부로 확장하지 않는다.
+		if palaceTier >= 3 and (key == "france" or key == "italy" or key == "iberia") then
+			for _, z in { -40, 40 } do
+				importedModel(folder, "Terrain", "column", Vector3.new(facadeX + 15, 0, z), 10, false)
+			end
+		elseif palaceTier >= 3 and key == "britain" then
+			for _, z in { -58, 58 } do
+				importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(facadeX + 13, 0, z), 13, false)
+			end
+		elseif palaceTier >= 3 and westAfrican then
+			for _, z in { -36, 36 } do
+				importedModel(folder, "Town", "kenney_wood_door_round_01", Vector3.new(facadeX + 12, 0, z), 8, false)
 			end
 		end
 		-- 왕실 출입구·광장·문장·분수·군수 마차·궁정 서고/마구간.
