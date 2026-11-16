@@ -183,7 +183,9 @@ return function(D, S)
 				end
 			end
 			local mult = ctx.market:get(port.id, goodId)
-			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
+			-- [시장 화면] 실제 Trade.Buy/Sell과 동일하게 세계경제 가격 보정값을 적용한다.
+			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId)
+				* (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, port.id, goodId) else 1))
 			local tag = ""
 			local stockLimit = S.Econ.limits(state, port.id, goodId) or {}
 			local role = D.Harbor.role(port, rid0, yr0, lv0, goodId, S.Knowledge.disciplineOpens(state, port.id, goodId))
@@ -229,6 +231,30 @@ return function(D, S)
 				view.goods = shown
 			end
 		end
+		-- [수량별 거래 견적] 기존 서버의 단가 변화/관세·이월 흥정 할인 계산을 읽기 전용으로 반복한다.
+		-- 항구·원화·화폐 저장은 건드리지 않고 실제로 보여 주는 상품에 최대 20개 분량만 전송한다.
+		local tax = S.Trade.tariffRate(state)
+		for _, g in view.goods do
+			local bm = ctx.market:get(port.id, g.id)
+			local sm = bm
+			local ev = (ctx.market:eventMult(port.id, g.id) * S.History.mult(state, port.id, g.id)
+				* (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, port.id, g.id) else 1))
+			local supplyK = S.Knowledge.supplyMult(state, port.id, g.id)
+			local sellK = S.Knowledge.goodsMult(state, g.id)
+			local h = state.haggle
+			local deal = if h and h.portId == port.id and h.deal and h.deal.goodId == g.id then h.deal.mult else 1
+			local bought, sold = 0, 0
+			local buyTotals, sellTotals = {}, {}
+			for q = 1, math.min(20, view.orderCap) do
+				bought += D.TradeMath.getPrice(port.id, g.id, bm, ev * supplyK)
+				sold += D.TradeMath.sellPrice(port.id, g.id, sm, rate * sellK, ev)
+				buyTotals[q] = if deal < 1 then math.max(1, math.floor(bought * deal)) else bought
+				sellTotals[q] = sold - math.floor(sold * tax)
+				bm = D.TradeMath.nextStockMult(bm, 1, true)
+				sm = D.TradeMath.nextStockMult(sm, 1, false)
+			end
+			g.buyTotals, g.sellTotals = buyTotals, sellTotals
+		end
 		view.intel = S.Harbor.intel(state)
 		-- 다른 항구 시세 비교: 물건마다 팔값이 가장 높은 항구 3곳. 장사 감각(intel)이 높을수록 자세히 알려 준다.
 		--   0: 알 수 없음 / 1: 항구 이름만 / 2 이상: 이름과 값
@@ -239,8 +265,10 @@ return function(D, S)
 				for otherId, other in D.Ports.Ports do
 					if otherId ~= port.id then
 						local m = ctx.market:get(otherId, g.id)
-						local e = (ctx.market:eventMult(otherId, g.id) * S.History.mult(state, otherId, g.id))
-						table.insert(list, { name = other.name, sell = D.TradeMath.sellPrice(otherId, g.id, m, rate, e) })
+						-- [타 항구 비교] 실제 판매 비율 및 세계경제 영향을 같이 반영한다.
+						local e = (ctx.market:eventMult(otherId, g.id) * S.History.mult(state, otherId, g.id)
+							* (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, otherId, g.id) else 1))
+						table.insert(list, { name = other.name, sell = D.TradeMath.sellPrice(otherId, g.id, m, rate * S.Knowledge.goodsMult(state, g.id), e) })
 					end
 				end
 				table.sort(list, function(x, y)
