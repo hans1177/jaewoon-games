@@ -39,9 +39,11 @@ permissions:
   contents: write
   actions: write
 
+# [정체 복구] 평소에는 중단 없이 순차 등록한다. 저장소 체크아웃이 멈춘 경우만
+# 명시된 복구 커밋에서 기존 실행을 종료하고 최신 메인의 동일 정식 등록기로 재개한다.
 concurrency:
   group: owner-mare-essentia-assets
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-recover-stalled-run]') }}
 
 jobs:
   register:
