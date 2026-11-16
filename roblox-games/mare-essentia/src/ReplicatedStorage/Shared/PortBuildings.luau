@@ -100,6 +100,29 @@ B.CityPlots = { plotScale = { 1.5, 1.65, 1.8, 2.0, 2.2 }, areaScale = { 1.5, 2, 
 -- 왕궁 보유 도시 전용 상위 구획 배율: 일반 도시 필지에서 추가 확장, 왕궁 판정이 없는 항구에는 영향 없음.
 -- 왕실 건축은 화면용이고 경제·항구 투자·건설 저장 구조는 수정하지 않는다.
 B.RoyalCityPlots = { plotScale = { 1.2, 1.25, 1.3, 1.35, 1.4 }, districtScale = { 1.0, 1.08, 1.14, 1.22, 1.3 } }
+-- [특산품 건축] ProductionChains 원료 분류가 사용하는 기존 건물과 승인된 실내 장비.
+-- 경제 효과나 건설 조건은 이 표가 정하지 않고, PortScene은 실제 항구 생산·건물 수만 읽는다.
+B.SpecialtyFacilities = {
+	mineral = { building = "workshop", name = "광물 제련소", kind = "Town", asset = "workbench-anvil", tint = { 145, 133, 122 } },
+	gem = { building = "market", name = "보석·해산물 상점", kind = "Cargo", asset = "gems-chest", tint = { 137, 142, 166 } },
+	animal = { building = "farm", name = "목축·어물 공방", kind = "Cargo", asset = "food-barrel-fish", tint = { 164, 139, 109 } },
+	farm = { building = "farm", name = "농산·향신료 작업장", kind = "Cargo", asset = "mortar-pestle", tint = { 180, 146, 96 } },
+	forest = { building = "workshop", name = "벌목·목재 공방", kind = "Cargo", asset = "wood-planks-stack-small", tint = { 128, 113, 84 } },
+	fiber = { building = "workshop", name = "염색·직조 공방", kind = "Cargo", asset = "textiles-stack-small", tint = { 146, 117, 151 } },
+	crafted = { building = "workshop", name = "유리·도자기 공예 공방", kind = "Town", asset = "workbench-grind", tint = { 157, 155, 160 } },
+	drink = { building = "workshop", name = "양조·숙성 공방", kind = "Cargo", asset = "barrel", tint = { 138, 99, 70 } },
+	fishery = { building = "market", name = "어시장·생선 건조장", kind = "Cargo", asset = "food-barrel-fish", tint = { 127, 150, 162 } },
+	dairy = { building = "farm", name = "치즈 숙성 공방", kind = "Cargo", asset = "cheese", tint = { 189, 166, 119 } },
+}
+-- 도로 표면은 PortScene의 기존 roadMat/roadColor가 유지하고 가로등·광장 장식만 단계별로 늘린다.
+B.StreetGrowth = {
+	{ lampStep = 0, plazaLamps = 0, fountain = false },
+	{ lampStep = 50, plazaLamps = 4, fountain = true },
+	{ lampStep = 36, plazaLamps = 6, fountain = true },
+	{ lampStep = 25, plazaLamps = 8, fountain = true },
+	{ lampStep = 19, plazaLamps = 10, fountain = true },
+}
+
 B.CategoryNames = { culture = "문화", commerce = "상업·금융", science = "과학", industry = "산업·기술", religion = "종교" }
 B.Landmarks = {
 	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2, since = 1600 },
