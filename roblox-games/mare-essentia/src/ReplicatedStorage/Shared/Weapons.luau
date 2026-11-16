@@ -179,6 +179,23 @@ function Weapons.originWeapon(originId: string?, year: number?): Weapon
 	return Weapons.get(id)
 end
 
+-- [탐험 전투: 무기별 모션·스킬 명세]
+-- 기존 피해량, 사거리, 기력, 재사용 시간은 ActionCombat/Weapons 원본을 그대로 사용한다.
+-- 평타는 한 번의 입력에 한 번만 판정하고, 숙련 연타 2~5단은 승인된 R15 시각 동작으로만 재생한다.
+Weapons.ActionDesign = {
+	fist = { basic = "잽", heavy = "승룡", sweep = "회축", heavyName = "승룡 어퍼컷", sweepName = "회전 발차기", cadence = "잽·크로스·훅·팔꿈치·발차기" },
+	blade = { basic = "베기", heavy = "강참", sweep = "반월", heavyName = "내려 베기", sweepName = "반월 베기", cadence = "좌베기·우베기·찌르기·올려베기·되치기" },
+	dagger = { basic = "찌르기", heavy = "급습", sweep = "난무", heavyName = "급소 찌르기", sweepName = "역수 연격", cadence = "역수·찌르기·훑기·되치기·역수" },
+	axe = { basic = "찍기", heavy = "분쇄", sweep = "광풍", heavyName = "도끼 내려찍기", sweepName = "휩쓸기", cadence = "세로찍기·대각찍기·휘두르기·분쇄·회수" },
+	spear = { basic = "찌르기", heavy = "관통", sweep = "봉쇄", heavyName = "긴 창 찌르기", sweepName = "창 휩쓸기", cadence = "견제·깊은찌르기·창자루·휩쓸기·회수" },
+	blunt = { basic = "타격", heavy = "강격", sweep = "충격", heavyName = "철퇴 내려찍기", sweepName = "철퇴 휩쓸기", cadence = "옆치기·찍기·올려치기·지면강타·회수" },
+	bow = { basic = "궁술", heavy = "집중", sweep = "견제", heavyName = "정밀 사격 자세", sweepName = "견제 활쏘기", cadence = "시위당김·발사·화살채움·재조준·놓기" },
+	firearm = { basic = "사격", heavy = "정조준", sweep = "견제", heavyName = "정밀 조준 자세", sweepName = "견제 사격 자세", cadence = "조준·발포·반동·재장전·사격준비" },
+}
+function Weapons.actionDesign(w: Weapon)
+	return Weapons.ActionDesign[w.family] or Weapons.ActionDesign.blade
+end
+
 -- 주인공은 전부 쓸 수 있다. 다만 모델이 없는 무기는 모델이 등록되기 전까지 맨손 쥠으로 보인다.
 function Weapons.playerChoices(): { Weapon }
 	return Weapons.List
