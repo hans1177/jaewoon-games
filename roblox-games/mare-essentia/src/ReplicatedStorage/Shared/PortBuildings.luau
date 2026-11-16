@@ -138,18 +138,23 @@ B.HarborGrowth = {
 	{ name = "국제 무역항", pierLength = 92, cargo = 10, boats = 8, hoists = 3, signals = 4, porters = 3 },
 }
 function B.harborVisual(level, buildings)
-	local tier = math.clamp(math.floor(tonumber(level) or 1), 1, 5)
-	local plan = B.HarborGrowth[tier]
+	local cityTier = math.clamp(math.floor(tonumber(level) or 1), 1, 5)
 	local dock = if buildings then math.max(0, tonumber(buildings.dock) or 0) else nil
 	local warehouse = if buildings then math.max(0, tonumber(buildings.warehouse) or 0) else nil
-	local sidePier = plan.pierLength > 0 and (dock == nil or dock > 0)
+	-- 도시 발전이 5단계여도 실제 부두 투자가 0이면 소형 항구로 남는다.
+	-- 경제 저장값은 읽기만 하고, 항만 단계별 외형은 기존 건설 실적을 넘지 않는다.
+	local builtTier = if dock == nil then cityTier elseif dock >= 8 then 5 elseif dock >= 4 then 4
+		elseif dock >= 2 then 3 elseif dock >= 1 then 2 else 1
+	local tier = math.min(cityTier, builtTier)
+	local plan = B.HarborGrowth[tier]
+	local sidePier = plan.pierLength > 0
 	local boats = math.min(plan.boats, if dock ~= nil then 1 + math.floor(math.sqrt(dock)) else plan.boats)
 	local cargo = math.min(plan.cargo, if warehouse ~= nil then 2 + math.floor(math.sqrt(warehouse) * 2) else plan.cargo)
 	local hoists = if not sidePier then 0 else math.min(plan.hoists,
 		if dock ~= nil then math.floor(dock / 4) else plan.hoists)
 	local signals = if not sidePier then 0 else math.min(plan.signals, math.max(1, boats))
 	return {
-		tier = tier, name = plan.name, sidePier = sidePier,
+		tier = tier, cityTier = cityTier, name = plan.name, sidePier = sidePier,
 		pierLength = if sidePier then plan.pierLength else 0,
 		boats = math.max(1, boats), cargo = math.max(2, cargo), hoists = hoists,
 		signals = signals, porters = plan.porters,
