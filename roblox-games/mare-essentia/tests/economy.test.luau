@@ -294,6 +294,20 @@ do
 	check("기존 카드·교역품 가격 ID와 브랜드 지식 연결", Ports.Goods[brand.id].knowledgeId == Ports.Goods[brand.source].knowledgeId)
 end
 
+-- [기존 교역 보존] 가공 공방은 항구가 소비·판매할 원료 20일치를 남겨야 한다.
+do
+	local x = Eco.newWorld({ seed = 117, year = 1700 })
+	local t = x.towns.london
+	t.stage, t.tech.craft = 3, 2
+	t.dem.wool, t.stock.wool = 2, 45
+	Eco.stepIndustries(t)
+	check("가공업은 원료 20일치 이상 보존", t.stock.wool >= 40, t.stock.wool)
+	t.stock.wool = 40
+	local before = t.stock.wool
+	Eco.stepIndustries(t)
+	check("비축분만 있을 때 가공 원료 소비 없음", t.stock.wool == before, t.stock.wool)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})
