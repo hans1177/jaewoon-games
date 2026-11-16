@@ -6062,9 +6062,9 @@ local function renderYard()
 	for _, plan in ShipsData.Blueprints do
 		if plan.faction == H.shipBlueprintFaction then
 			add(function()
-				local info = string.format("%s · %s\\n선체: %s\\n추진: %s\\n갑판: %s\\n모델 수정: %s\\n카드: %s",
+				local info = string.format("%s · %s\n선체: %s\n추진: %s\n갑판: %s\n모델 수정: %s\n카드: %s",
 					plan.era, if plan.existingId then "기존 함종 관련·전용 메시 검수 전" else "신규 설계·원본 미확보", plan.hull, plan.rig, plan.deck, plan.remodel, plan.card or "별도 연결 대기")
-				if plan.proposedEdge then info ..= string.format("\\n가상 특수성능 +%d%% 설계안 · 미적용", math.floor(plan.proposedEdge * 100 + 0.5)) end
+				if plan.proposedEdge then info ..= string.format("\n가상 특수성능 +%d%% 설계안 · 미적용", math.floor(plan.proposedEdge * 100 + 0.5)) end
 				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 196)
 			end)
 		end
