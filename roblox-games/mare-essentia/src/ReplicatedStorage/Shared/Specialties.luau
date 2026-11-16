@@ -23,6 +23,7 @@ export type Companion = {
 	scholarId: string, -- 먼저 이 학자를 만나 지식을 전수받아야 한다 ("" = 주점에서 바로 영입)
 	role: string?, -- 항해사·포수·회계사·의사 (주점 동료)
 	disciplines: { string }?, -- 고유 직업과 별개인 연구 보조 학문(기존 학문 id 재사용)
+	finalResearch: { quest: string, disc: string, name: string }?, -- 전용 연속 퀘스트 마지막 장 보상: 한 학문에 고유 연구법
 	fee: number, -- 영입 비용
 	minFame: number,
 	requiresStory: string?, -- 이 지역 주점 이야기를 본 뒤에야 영입할 수 있다
@@ -69,27 +70,27 @@ local Specialties: { Specialty } = {
 }
 
 local Companions: { Companion } = {
-	{ id = "c_merian", name = "마리아 메리안", scholarId = "merian", fee = 300, minFame = 60, disciplines = { "botany", "zoology", "art" },
+	{ id = "c_merian", name = "마리아 메리안", scholarId = "merian", fee = 300, minFame = 60, disciplines = { "botany", "zoology", "art" }, finalResearch = { quest = "cq2_merian", disc = "zoology", name = "변태 관찰법" },
 		summary = "곤충·식물을 정밀하게 그리는 박물화가. 동물·식물 카드 발견 +15%",
 		perk = { discoverFields = { "Zoology", "Botany" }, discoverBonus = 0.15 },
 		battleLine = "적 배 갑판 위의 벌레까지 그리고 싶지만... 지금은 몸부터 지켜요!",
 		winLine = "무사해서 다행이에요. 이 장면도 스케치해 둘게요." },
-	{ id = "c_halley", name = "에드먼드 핼리", scholarId = "halley", fee = 500, minFame = 80, disciplines = { "astronomy", "geography", "navigation" },
+	{ id = "c_halley", name = "에드먼드 핼리", scholarId = "halley", fee = 500, minFame = 80, disciplines = { "astronomy", "geography", "navigation" }, finalResearch = { quest = "cq2_halley", disc = "astronomy", name = "별자리 역산" },
 		summary = "천문·항해에 밝은 학자. 항해 속도 +8%, 천문·지리 카드 발견 +15%",
 		perk = { speedMult = 0.08, discoverFields = { "Astronomy", "Geography" }, discoverBonus = 0.15 },
 		battleLine = "풍향과 별을 계산했네. 지금 쏘면 맞을 걸세!",
 		winLine = "계산대로군. 오늘 밤 하늘 관측도 기대되는걸." },
-	{ id = "c_leeuwenhoek", name = "안톤 판 레이우엔훅", scholarId = "leeuwenhoek", fee = 400, minFame = 70, disciplines = { "medicine", "physics" },
+	{ id = "c_leeuwenhoek", name = "안톤 판 레이우엔훅", scholarId = "leeuwenhoek", fee = 400, minFame = 70, disciplines = { "medicine", "physics" }, finalResearch = { quest = "cq2_leeuwenhoek", disc = "medicine", name = "현미경 검증" },
 		summary = "현미경 관찰의 대가. 물리·화학·의학 카드 발견 +15%",
 		perk = { discoverFields = { "Physics", "Chemistry", "Medicine" }, discoverBonus = 0.15 },
 		battleLine = "렌즈 상자는 안전한 곳에 두었다오. 어서 싸웁시다!",
 		winLine = "전투 중에 튄 물방울도 현미경으로 봐야겠소." },
-	{ id = "c_linnaeus", name = "카를 린네", scholarId = "linnaeus", fee = 600, minFame = 120, disciplines = { "botany", "zoology" },
+	{ id = "c_linnaeus", name = "카를 린네", scholarId = "linnaeus", fee = 600, minFame = 120, disciplines = { "botany", "zoology" }, finalResearch = { quest = "cq2_linnaeus", disc = "botany", name = "표본 분류법" },
 		summary = "식물 분류의 아버지. 식물·광물·동물 카드 발견 +20%",
 		perk = { discoverFields = { "Botany", "Mineral", "Zoology" }, discoverBonus = 0.2 },
 		battleLine = "전투 중에도 분류는 계속된다네. 저 배는 '해적속'이지.",
 		winLine = "해적속 하나를 정리했군. 다음엔 식물 차례일세." },
-	{ id = "c_boyle", name = "로버트 보일", scholarId = "boyle", fee = 450, minFame = 60, disciplines = { "chemistry", "physics" },
+	{ id = "c_boyle", name = "로버트 보일", scholarId = "boyle", fee = 450, minFame = 60, disciplines = { "chemistry", "physics" }, finalResearch = { quest = "cq2_boyle", disc = "chemistry", name = "공기 펌프 실험" },
 		summary = "실험 화학자. 화학 카드 발견 +20%, 유리·와인 교역 이문에 밝아 되파는 비율 +1%",
 		perk = { discoverFields = { "Chemistry" }, discoverBonus = 0.2, sellBonus = 0.01 },
 		battleLine = "화약의 연소를 직접 볼 기회군. 침착하게 합시다.",
@@ -134,7 +135,7 @@ local Companions: { Companion } = {
 		perk = { discoverFields = { "Astronomy", "Physics" }, discoverBonus = 0.2 },
 		battleLine = "망원경으로 보니 적 배의 약한 곳이 보이는군. 저쪽을 쏘게!",
 		winLine = "그래도 바다는 우리 편이었군. 하늘만큼 바다도 관측해 볼 만하네." },
-	{ id = "c_papin", name = "드니 파팽", scholarId = "papin", fee = 500, minFame = 60, disciplines = { "physics", "shipbuilding" },
+	{ id = "c_papin", name = "드니 파팽", scholarId = "papin", fee = 500, minFame = 60, disciplines = { "physics", "shipbuilding" }, finalResearch = { quest = "cq2_papin", disc = "shipbuilding", name = "압력 장치 설계" },
 		summary = "증기 장치 기술자. 포격 +5%",
 		perk = { cannonMult = 0.05 },
 		battleLine = "압력 게이지를 확인했소. 증기는 언제든 준비되어 있소!",
