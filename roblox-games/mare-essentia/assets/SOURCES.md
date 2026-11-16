@@ -1624,3 +1624,19 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - 모델별 `.glb.license.json`은 원본 Git blob SHA-1, 원본 및 개조 SHA-256, 개조 삼각형 수와 라이선스를 기록한다. 케니 선체를 바탕으로 한 **게임용 저폴리 재구성**으로서 실제 유물 복원품이나 검증된 고증 모델이라고 주장하지 않는다.
 - 기존 등록기와 자동 회귀검사만 사용한다. `assets-registered.json`의 원본 해시, Roblox Universe 사용권한, Studio 실화면, 모바일 런타임, 게임 게시의 완료는 **각각 별도 확인**한다.
 - 실제 렌더링 승인 전에는 항구·해전의 기존 안정 모델을 유지한다. 저장 키·능력치·보상·파이프라인 변경 없음.
+
+
+## 2026-11-17 함종별 CC0 원본 선확보 및 개조 추가 4종 (파타마르·카디르가·코르벳·동인도선)
+
+기존 저장소 `assets/naval/`에 등록된 **Kenney Pirate Kit** 원본 GLB를 GitHub에서 실제 바이너리로 다시 받아, 원본 메시·바이너리를 그대로 보존하면서 함종에 맞게 선체 비율, 돛, 갑판, 노, 대포 장식을 재구성했다. 상업 이용 및 수정 가능한 **CC0-1.0**. 공식 출처: https://kenney.nl/assets/pirate-kit
+
+| 개조 모델 | 선확보 원본 | 핵심 변경 | 추가 삼각형 |
+|---|---|---|---:|
+| `naval/pattamar-custom.glb` | `naval/boat-sail-a.glb` | 파타마르 특유의 긴 삼각돛 2개, 기울어진 돛대, 선수돛, 해안 상선 갑판 | 728 |
+| `naval/kadirga-custom.glb` | `naval/boat-row-large.glb` | 오스만 갤리선: 노 24개, 삼각돛 2개, 선수 돌격 장식, 전투 갑판 | 1,538 |
+| `naval/corvette-custom.glb` | `naval/ship-pirate-small.glb` | 코르벳: 좁아진 선체, 사각돛·후방돛, 포문, 긴 선수 장대 | 1,204 |
+| `naval/east_indiaman-custom.glb` | `naval/ship-pirate-large.glb` | 동인도선: 큰 화물창, 다중 사각돛, 높은 선미 선실, 측면 포문 2단 | 1,544 |
+
+- 모델 옆의 `.glb.license.json`에 원본 Git SHA-1, 원본·개조본 SHA-256, 추가 메시, 출처를 각각 기록했다. 실제 선박 유물의 복원 모델이 아니라 게임용 저폴리 표현이다.
+- 기존 자산 업로드 통로 `tools/mare-essentia-upload-assets.mjs`와 기존 회귀검사만 사용한다. 다른 임시 배포 경로 없음.
+- 원본 GLB 검증과 자산 등록번호 확인은 별개다. **Roblox Studio 실화면·모바일 성능·체험 게시** 결과가 확보되기 전에는 항구/해전의 기존 시각 연결을 바꾸지 않는다.
