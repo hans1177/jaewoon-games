@@ -869,6 +869,52 @@ test('Mare exploration preserves combat rules while grounding allies and contain
   assert.match(client,/workspace:SetAttribute\("FieldEntryStage", "CANCELLED"\)/);
 });
 
+// [탐험 재진입] 스킬 E/조사 T, 명시적 귀환, 반원형 모바일 UI, 희귀 단서·보상 보안 회귀.
+test('Mare field skill cannot accidentally complete exploration and region cards use canonical discovery',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const game=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const view=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau','utf8');
+  const discovery=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/Discovery.luau','utf8');
+  const assets=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  assert.match(field,/pp\.KeyboardKeyCode = Enum\.KeyCode\.T/);
+  assert.match(field,/cluePrompt\.KeyboardKeyCode = Enum\.KeyCode\.T/);
+  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.E then/);
+  assert.doesNotMatch(field,/task\.delay\(0\.8,\s*function\(\)\s*finish\("clear"\)/);
+  assert.match(field,/completeBtn\.Name = "FieldComplete"/);
+  assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
+  assert.match(field,/completeBtn\.Visible = true/);
+  assert.match(field,/FieldExitReason/);
+  assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/pl\.buffUntil = now \+ 8/);
+  assert.match(field,/local skillSize = if visualMobile then 76 else 68/);
+  assert.match(field,/local basicSize = if visualMobile then 68 else 64/);
+  assert.match(field,/arcPos\(innerSkillRadius, 46\), basicSize/);
+  assert.match(field,/arcPos\(innerSkillRadius, 134\), basicSize/);
+  assert.match(field,/slotPos\("heavy"\), skillSize/);
+  assert.match(field,/slotPos\("sweep"\), skillSize/);
+  assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
+  assert.match(field,/local observedCardId = nil/);
+  assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId\)/);
+  assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
+  assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
+  assert.match(field,/if special and rareTrace then/);
+  assert.match(field,/for clueIndex = 1, 2 do/);
+  assert.match(field,/FieldRareTraceFound/);
+  assert.match(field,/FieldEvidence/);
+  assert.match(field,/animal and AssetIds\["Animals\/" \.\. animal\[1\]\]/);
+  assert.match(field,/AssetIds\["CardArt\/" \.\. targetCard\.id\]/);
+  assert.match(assets,/Animals\/elephant/);
+  assert.match(assets,/Animals\/llama/);
+  assert.match(view,/observableCards = observableCards/);
+  assert.match(view,/not S\.Discovery\.cardBlockReason\(state, D\.Cards\.ById\[cardId\]\)/);
+  assert.match(game,/observableCards = s\.observableCards/);
+  assert.match(game,/observedCardId = observedCardId/);
+  assert.match(discovery,/table\.find\(remaining, observedId\)/);
+  assert.match(discovery,/baseCard\.field == observedCard\.field and baseCard\.rarity == observedCard\.rarity/);
+  assert.match(discovery,/local chance = math\.min\(0\.95, 0\.55 \+ D\.Careers\.discoverBonus\(lv\) \+ S\.Perk\.discoverBonus\(state, field\)\)/);
+});
+
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
   const base='roblox-games/mare-essentia/assets/inbox/People/';
   const names=['male_peasant_body','male_peasant_legs','female_peasant_body','female_peasant_legs',
