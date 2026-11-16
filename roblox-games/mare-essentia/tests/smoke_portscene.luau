@@ -100,7 +100,8 @@ end
 -- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
 local Registered = require("./AssetIds")
 for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
-	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills" } do
+	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills",
+	"Terrain/Grass_Small", "Terrain/Bush_Small", "Terrain/Rock_2" } do
 	if Registered[id] and not State.used[id] then
 		fails += 1
 		print("회귀 실패: 등록된 해안 배경 요청되지 않음 " .. id)

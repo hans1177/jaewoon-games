@@ -491,11 +491,13 @@ function FieldScene.start(opts)
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		placeModel(folder, kind, name, pos, h, false)
 	end
-	local rockNames = { "rock-large", "rock-small", "rock-wide" }
+	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
+	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
 	for _ = 1, math.floor(biome.rocks * 1.6 * AREA) do
 		local pos = ORIGIN + scatter(10)
+		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
-		placeModel(folder, "Town", rockNames[rng:NextInteger(1, #rockNames)], pos, rng:NextNumber(2.5, 6), true)
+		placeModel(folder, rock[1], rock[2], pos, rng:NextNumber(2.5, 6), true)
 	end
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
