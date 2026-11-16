@@ -4803,10 +4803,10 @@ function RENDERERS.status()
 			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
 		}, 52)
 	end)
-	add(function() return mkHeader(content, "직업 (학문 계열) — 카드를 모을수록 직업이 자라요") end)
+	add(function() return mkHeader(content, "전문 분야 · 21개 학문은 직업과 무관하게 연구 가능") end)
 	add(function()
 		local sv = view.specialties
-		local msg = "카드를 가장 많이 모은 계열이 직업으로 자동 배정돼요. 직접 고르려면 그 계열 카드가 " .. sv.unlockCards .. "장 필요해요. 직업 등급: 견습 → 숙련 → 명인 → 대가 → 거장"
+		local msg = "발견한 카드에 따라 전문 분야가 자동 지정될 수 있어요. 전문 분야는 연구를 제한하지 않고 관련 연구에 보탬이 돼요. 직접 고르려면 관련 카드가 " .. sv.unlockCards .. "장 필요해요. 전문 숙련: 견습 → 숙련 → 명인 → 대가 → 거장"
 		if sv.auto then
 			msg ..= "  (자동 배정됨 — 한 번은 무료로 바꿀 수 있어요)"
 		end
@@ -4826,7 +4826,7 @@ function RENDERERS.status()
 			elseif sv.current and not mine and sv.changeFee > 0 then
 				sub ..= string.format(" · 변경 %d코인", sv.changeFee)
 			end
-			local title = sp.name .. (if mine then "  (주직업)" elseif isSub then "  (부직업)" else "") .. (if sv.recommend == sp.id and not mine then "  (추천)" else "")
+			local title = sp.name .. (if mine then "  (주전문)" elseif isSub then "  (부전문)" else "") .. (if sv.recommend == sp.id and not mine then "  (추천)" else "")
 			local buttons = {
 				{ text = if mine then "선택됨" else if sp.unlocked then "선택" else "잠김", color = if mine then COLORS.gold else if sp.unlocked then COLORS.blue else COLORS.grey,
 					enabled = (not mine) and sp.unlocked, onClick = function() call("SetSpecialty", { specialtyId = sp.id }) end },
@@ -6261,7 +6261,7 @@ function RENDERERS.explore()
 						end)
 						if pr.jointScholar then
 							add(function()
-								local sub = string.format("%s 학자와 함께 · 기술 %d단계 (%d점%s) · 이해한 지식, 관련 교역품 기증, 퀘스트가 기여로 인정%s", pr.jointScholar, pr.techLevel, pr.techPoints, if pr.techNext then "/" .. pr.techNext else " 최고", if pr.jointWait > 0 then string.format(" · %d일 뒤 가능", pr.jointWait) else "")
+								local sub = string.format("%s 학자와 함께 · 기술 %d단계 (%d점%s) · 이해한 지식·교역품·퀘스트 기여 · 전문 분야·동료 연구 지원 +%d점%s", pr.jointScholar, pr.techLevel, pr.techPoints, if pr.techNext then "/" .. pr.techNext else " 최고", pr.researchHelp or 0, if pr.jointWait > 0 then string.format(" · %d일 뒤 가능", pr.jointWait) else "")
 								return mkRow(content, "공동 발표 — " .. pr.name, sub, {
 									{ text = "함께 발표", color = COLORS.gold, onClick = function() call("JointPresent", { disc = pr.disc }) end, enabled = pr.understood >= 1 and pr.jointWait == 0 },
 								}, 64)
@@ -7389,10 +7389,13 @@ if string.sub(codexField, 1, 2) == "k:" then
 			if #nd.needs > 0 then
 				sub ..= "  ·  선행: " .. table.concat(nd.needs, ", ")
 			end
+			if nd.linked and #nd.linked > 0 then
+				sub ..= "  ·  융합 학문: " .. table.concat(nd.linked, "·")
+			end
 			if nd.effect then
 				sub ..= "\n효과: " .. nd.effect
 			end
-			local row = mkRow(content, nd.name, sub, {}, if nd.effect then 64 else 52)
+			local row = mkRow(content, nd.name, sub, {}, if nd.effect or (nd.linked and #nd.linked > 0) then 64 else 52)
 			local stripe = Instance.new("Frame")
 			stripe.Size = UDim2.new(0, 4, 1, -12)
 			stripe.Position = UDim2.fromOffset(0, 6)
