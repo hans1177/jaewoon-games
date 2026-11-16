@@ -6627,6 +6627,37 @@ function H.showCardDetail(card)
 			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
 		end
 	end
+	if card.found and card.entityType then
+		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
+		if card.tags and #card.tags > 0 then
+			mkLabel(body, "분류 태그: " .. table.concat(card.tags, " · "), 13, brown, false, 4)
+		end
+		if card.aliases and #card.aliases > 0 then
+			mkLabel(body, "다른 이름: " .. table.concat(card.aliases, " · "), 13, brown, false, 4)
+		end
+		if card.wikidata then
+			mkLabel(body, "외부 개체 식별자: 위키데이터 " .. card.wikidata .. " (구조화 자료)", 12, brown, false, 4)
+		end
+		if card.relations and #card.relations > 0 then
+			mkLabel(body, "연결된 세계 지식", 15, ink, true, 4)
+			for _, rel in card.relations do
+				if rel.cardId and rel.found then
+					local link = mkButton(body, rel.relation .. " · " .. rel.name, COLORS.blue, UDim2.new(1, -8, 0, 36), function()
+						for _, target in view.codex.cards do
+							if target.id == rel.cardId then
+								overlay:Destroy()
+								H.showCardDetail(target)
+								break
+							end
+						end
+					end, true)
+					link.LayoutOrder = 4
+				else
+					mkLabel(body, "· " .. rel.relation .. ": " .. rel.name, 13, brown, false, 4)
+				end
+			end
+		end
+	end
 	if card.method then
 		local text = if card.method == "discover" then "발견" elseif card.method == "research" then "연구" else "탐험"
 		mkLabel(body, "습득 경로: " .. text .. " · 등급별 조사: " .. (card.rarityGuide or "일반 조사"), 13, brown, false, 4)
@@ -7128,6 +7159,11 @@ local function renderCodexOverview()
 	end)
 	-- [지구·인류 오브젝트] 7개 큰 종류부터 접근하고, 17개 소재·상품 16개 하위 종류로 내려간다.
 	add(function() return mkHeader(content, "지구·인류 전체 오브젝트") end)
+	add(function()
+		return mkRow(content, "백과 통합 검색", "카드 이름·별칭·소재 태그·학문을 한곳에서 찾기", {
+			{ text = "검색", color = COLORS.blue, onClick = function() codexField = "search"; render() end },
+		}, 54)
+	end)
 	for _, group in cx.worldGroups or {} do
 		add(function()
 			return mkRow(content, group.name .. " · " .. tostring(cx.worldCounts[group.id] or 0) .. "장", "지형·생명·원자재·건축·기술·학문·인류의 기록", {
@@ -7157,7 +7193,7 @@ local function renderCodexOverview()
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
 		}, 54)
 	end)
-	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
+	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 52, cx.plannedDisciplineCount or 0)) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
@@ -7343,6 +7379,77 @@ local function renderCodexOverview()
 	end
 
 function H.renderCodexField()
+-- [백과 검색] 기존 도감 화면 자체에서 검색. 외부 통신이나 별도 저장/인덱스 DB는 쓰지 않는다.
+if codexField == "search" then
+	add(function()
+		return mkRow(content, "← 세계 백과", "검색 결과에서 카드 상세를 열 수 있어요", {
+			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
+		}, 52)
+	end)
+	add(function()
+		local box = Instance.new("TextBox")
+		box.Name = "KnowledgeSearch"
+		box.Size = UDim2.new(1, -10, 0, 42)
+		box.BackgroundColor3 = COLORS.paper
+		box.TextColor3 = COLORS.ink
+		box.PlaceholderColor3 = COLORS.grey
+		box.PlaceholderText = "이름·별칭·태그·학문 검색"
+		box.Text = H.codexSearchTerm or ""
+		box.TextSize = 16
+		box.Font = Enum.Font.Gotham
+		box.ClearTextOnFocus = false
+		corner(box, 6)
+		box:GetPropertyChangedSignal("Text"):Connect(function()
+			H.codexSearchTerm = box.Text
+		end)
+		box.FocusLost:Connect(function(enterPressed)
+			if enterPressed then render() end
+		end)
+		return box
+	end)
+	add(function()
+		return mkRow(content, "지식 검색", "검색어를 입력한 뒤 버튼을 누르거나 엔터를 눌러 확인", {
+			{ text = "검색", color = COLORS.blue, onClick = function() render() end },
+		}, 50)
+	end)
+	local query = string.lower(H.codexSearchTerm or "")
+	if #query > 0 then
+		local matches = {}
+		for _, card in view.codex.cards do
+			local parts = { card.name, card.kindName, card.discipline, card.entityType, card.subkind }
+			for _, tag in card.tags or {} do table.insert(parts, tag) end
+			for _, alias in card.aliases or {} do table.insert(parts, alias) end
+			local hit = false
+			for _, part in parts do
+				if part and string.find(string.lower(part), query, 1, true) then hit = true; break end
+			end
+			if hit then table.insert(matches, card) end
+		end
+		add(function()
+			return mkLabel(content, string.format("검색 결과 %d건 · 최대 60장 표시", #matches), 14, COLORS.muted, false)
+		end)
+		add(function()
+			local grid = Instance.new("Frame")
+			grid.BackgroundTransparency = 1
+			grid.Size = UDim2.new(1, -6, 0, 0)
+			grid.AutomaticSize = Enum.AutomaticSize.Y
+			local layout = Instance.new("UIGridLayout")
+			layout.CellSize = UDim2.new(1 / 3, -6, 0, 118)
+			layout.CellPadding = UDim2.fromOffset(6, 6)
+			layout.SortOrder = Enum.SortOrder.LayoutOrder
+			layout.Parent = grid
+			for i = 1, math.min(#matches, 60) do
+				local card = matches[i]
+				local tint = if card.found then (RARITY_COLOR[card.rarity] or COLORS.muted) else COLORS.grey
+				local badge = if card.found then (RARITY_NAMES[card.rarity] or card.rarity) else "미발견"
+				local tile = H.codexCardTile(grid, card, findField(card.field), badge, tint, function() H.showCardDetail(card) end)
+				tile.LayoutOrder = i
+			end
+			return grid
+		end)
+	end
+	return
+end
 -- [분류 별 목록] 도감의 발견·연구·탐험 또는 카드 소재로 걸러서 본다. 저장 상태/발견 조건은 변경하지 않는다.
 if string.sub(codexField, 1, 2) == "a:" or string.sub(codexField, 1, 2) == "t:" or string.sub(codexField, 1, 2) == "w:" then
 	local mode, key = string.sub(codexField, 1, 2), string.sub(codexField, 3)

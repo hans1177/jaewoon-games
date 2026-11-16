@@ -33,7 +33,27 @@ return function(D, S)
 
 	-- 이 학자가 받아 줄 수 있는 학문 id 목록
 	local function scholarDisciplines(scholar)
-		return K.ScholarDisciplines[scholar.id] or {}
+		local main = K.ScholarDisciplines[scholar.id] or {}
+		-- 학자는 기존 주학문과 관련된 하위 세부 학문도 보고받는다.
+		-- 예전 학자의 주학문 지정과 기존 카드 보고 횟수는 그대로 보존한다.
+		local out, seen = {}, {}
+		for _, id in main do seen[id] = true; table.insert(out, id) end
+		for _, d in K.Disciplines do
+			if K.Promoted[d.id] and not seen[d.id] then
+				local parent, hops = d.parent, 0
+				while parent and hops < 8 do
+					if seen[parent] then
+						seen[d.id] = true
+						table.insert(out, d.id)
+						break
+					end
+					local ancestor = K.DisciplineById[parent]
+					parent = ancestor and ancestor.parent
+					hops += 1
+				end
+			end
+		end
+		return out
 	end
 
 	-- 지금 이 학자에게 보고할 수 있는 노드 수
@@ -230,7 +250,7 @@ return function(D, S)
 	local function masteryOf(state, discId)
 		local points, studied = 0, 0
 		for _, node in K.Nodes do
-			if node.disc == discId and K.understood(state, node.id) then
+			if K.belongsToDiscipline(node, discId) and K.understood(state, node.id) then
 				local card = D.Cards.ById[node.id]
 				points += STUDY_WEIGHT[card and card.rarity or "Common"] or 1
 				studied += 1
@@ -621,7 +641,7 @@ return function(D, S)
 		for _, d in K.Disciplines do
 			local nodes, done, total, hidden = {}, 0, 0, 0
 			for _, node in K.Nodes do
-				if node.disc == d.id then
+				if K.belongsToDiscipline(node, d.id) then
 					total += 1
 					local st, missing = K.status(state, node)
 					if st == "done" then
@@ -708,7 +728,7 @@ return function(D, S)
 							row.open = K.disciplineOpen(state, t.id)
 							local done, total = 0, 0
 							for _, node in K.Nodes do
-								if node.disc == t.id then
+								if K.belongsToDiscipline(node, t.id) then
 									total += 1
 									if K.understood(state, node.id) then
 										done += 1

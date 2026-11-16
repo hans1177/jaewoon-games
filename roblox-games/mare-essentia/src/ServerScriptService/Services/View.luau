@@ -1,5 +1,5 @@
 --!nonstrict
--- View.luau · 기존 화면 스냅샷, 전문 학문·탐험 시대 및 카드 연구 과정 표시
+-- View.luau · 지구 백과/확장 학문/관계 그래프 스냅샷, 기존 게임 저장·효과 보존
 -- 클라이언트에 보낼 화면용 스냅샷. 모든 계산은 서버가 하고 클라이언트는 표시만 한다.
 
 return function(D, S)
@@ -561,6 +561,57 @@ return function(D, S)
 			fieldDiscipline[disc.field] = disc
 		end
 		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
+		view.codex.plannedDisciplineCount = #D.KnowledgeTree.Planned
+		-- [개체 연결] 외부 식별자는 검증된 값만 표시. 내부 연결은 카드/상품/항구/탐험지의 원본 식별자를 참조한다.
+		-- [자동 개체 그래프] 기존 정규 원천(탐험지 카드풀, 실물 상품→지식, 연구 선행 노드)에서 직접 연결한다.
+		-- 새 카드/유적/교역품을 기존 표에 추가하면 관계도 자동 늘어나며 중복 저장/외부 서버 요청이 없다.
+		local linkedSites, resourceLinks, explorationLinks = {}, {}, {}
+		for _, site in D.Sites.Sites do
+			linkedSites[site.id] = site.name
+			for _, cardId in site.pool do
+				explorationLinks[cardId] = explorationLinks[cardId] or {}
+				table.insert(explorationLinks[cardId], site.id)
+			end
+		end
+		for goodId, good in D.Ports.Goods do
+			if good.knowledgeId then
+				resourceLinks[good.knowledgeId] = resourceLinks[good.knowledgeId] or {}
+				table.insert(resourceLinks[good.knowledgeId], goodId)
+			end
+		end
+		local function relatedEntities(c, found)
+			local out, seen = {}, {}
+			if not found then return out end
+			local function add(kind, target)
+				if #out >= 8 then return end -- 모바일 카드 상세에서 무한 목록이 생기지 않도록 제한한다.
+				local key = kind .. ":" .. target
+				if seen[key] then return end
+				seen[key] = true
+				local name, cardId = nil, nil
+				if D.Cards.ById[target] then
+					cardId = target
+					name = if state.discovered[target] then D.Cards.ById[target].name else "미발견 지식"
+				elseif string.sub(target, 1, 5) == "good:" then
+					local good = D.Ports.Goods[string.sub(target, 6)]
+					name = good and good.name
+				elseif string.sub(target, 1, 5) == "port:" then
+					local port = D.Ports.Ports[string.sub(target, 6)]
+					name = port and port.name
+				elseif string.sub(target, 1, 5) == "site:" then
+					name = linkedSites[string.sub(target, 6)]
+				end
+				if name then table.insert(out, {
+					name = name, relation = D.Cards.RelationNames[kind] or kind,
+					cardId = cardId, found = cardId and state.discovered[cardId] == true or false,
+				}) end
+			end
+			for _, rel in (c.meta and c.meta.relations or {}) do add(rel.type, rel.target) end
+			local node = D.KnowledgeTree.ById[c.id]
+			for _, needId in (node and node.needs or {}) do add("requires", needId) end
+			for _, goodId in resourceLinks[c.id] or {} do add("tradedAs", "good:" .. goodId) end
+			for _, siteId in explorationLinks[c.id] or {} do add("foundAt", "site:" .. siteId) end
+			return out
+		end
 		local function relatedNames(c, kind, primaryId)
 			local names, seen = {}, {}
 			local function include(discId)
@@ -577,6 +628,7 @@ return function(D, S)
 				local parent = D.KnowledgeTree.ById[needId]
 				if parent then include(parent.disc) end
 			end
+			for _, discId in D.KnowledgeTree.CardRelatedDisciplines[c.id] or {} do include(discId) end
 			for _, discId in RELATED_BY_KIND[kind] or {} do include(discId) end
 			return names
 		end
@@ -601,6 +653,11 @@ return function(D, S)
 				method = method,
 				kind = kind,
 				kindName = defKind and defKind.name or "기타",
+				entityType = D.Cards.EntityTypes[D.Cards.entityTypeOf(c)] or "개체",
+				tags = if found then D.Cards.tagsOf(c) else {},
+				aliases = if found and c.meta then c.meta.aliases or {} else {},
+				wikidata = if found and c.meta then c.meta.wikidata else nil,
+				relations = relatedEntities(c, found),
 				worldGroup = D.Cards.WorldGroupById[worldId] and D.Cards.WorldGroupById[worldId].name or "인류·역사·문화",
 				subkind = D.Cards.subkindOf(c),
 				discipline = disc and disc.name or "학문 외 자료",
