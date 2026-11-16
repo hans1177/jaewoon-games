@@ -822,7 +822,7 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('local step = math.min(remaining.Magnitude, 48 * dtc)'));
   assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
   assert.ok(field.includes('e.ac.def.speed * 0.8 * dtc'),'enemy speed respects frame lag');
-  assert.ok(field.includes('local m = Pose.createR15(folder, pos0, 0, ad.coat, rng, ad.role, 5.8, outfit)'));
+  assert.ok(field.includes('pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)'));
   assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
   assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
   assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
@@ -835,6 +835,38 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")'));
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
   assert.ok(field.includes('img.Size = UDim2.fromScale(if painted then 0.83 else 0.79'));
+});
+
+// [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
+test('Mare exploration preserves combat rules while grounding allies and containing cancelled scene builds',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const reg=field.match(/local REGION_ENCOUNTERS = \{([\s\S]*?)\n\}/);
+  assert.ok(reg,'existing 21 cultures have encounter placements');
+  for(const region of ['iberia','italy','france','britain','hanse','nordic','brick','stone','med','ottoman','desert','swahili','malabar','japan','china','seasia','tropic','colonial','creole','pacific','wafrica']){
+    assert.match(reg[1],new RegExp('\\b'+region+'\\s*='),region+' region');
+  }
+  assert.match(field,/FieldEncounterPattern/);
+  for(const habitat of ['coast','forest','ruins','highland','desert','plains','mine']){
+    assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
+  }
+  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
+  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.08, root0\.Position\.Z - 4\)/);
+  assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
+  assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
+  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
+  assert.match(field,/chooseBtn\.Name = "FieldWeaponSelect"/);
+  assert.match(field,/chooseBtn:SetAttribute\("AvailableWeaponCount", #availableWeapons\)/);
+  assert.match(field,/for _, candidate in Weapons\.playerChoices\(\) do/);
+  assert.match(field,/for _, candidate in Weapons\.Regional do/);
+  assert.match(field,/equipFieldWeapon\(player\.Character, wpn\)/);
+  assert.match(field,/if finished or not folder\.Parent then return \{ finish = finish, cancelled = true \} end/);
+  assert.match(field,/local created, model = pcall\(Pose\.createR15, folder, pos,/);
+  assert.match(client,/startOk and type\(startResult\) == "table" and startResult\.cancelled == true/);
+  assert.match(client,/workspace:SetAttribute\("FieldEntryStage", "CANCELLED"\)/);
 });
 
 test('Mare historical R15 mesh candidates remain unbound until visual and animation QA',()=> {
