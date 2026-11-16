@@ -96,6 +96,15 @@ do
 	end
 end
 
+-- [공통 문명 세계] 별도 DataStore에 경제 스냅샷만 저장한다.
+-- 플레이어 저장소 MareEssentia_v2와 기존 저장·보상 흐름은 그대로 둔다.
+local okWorld, worldStore = pcall(function()
+	return DataStoreService:GetDataStore("MareEssentia_EconomyWorld_v1")
+end)
+if okWorld and S.Econ.bindStore then
+	S.Econ.bindStore(worldStore, game.JobId)
+end
+
 -- 명성 랭킹 (서버 전체, OrderedDataStore)
 local rankStore = nil
 do
@@ -432,6 +441,7 @@ task.spawn(function()
 		for _, session in sessions do
 			if session.state then
 				S.Econ.advance(session.state)
+				S.Econ.sync(session.state)
 				break
 			end
 		end
