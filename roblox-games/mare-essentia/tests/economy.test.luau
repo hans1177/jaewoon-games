@@ -198,8 +198,10 @@ do
 		return self.value
 	end
 	function memory:UpdateAsync(key, transform)
-		self.value = transform(self.value)
-		return self.value
+		-- [DataStore 동작] 변환 함수가 nil을 반환하면 현재 저장값을 보존하고 쓰기만 취소한다.
+		local nextValue = transform(self.value)
+		if nextValue ~= nil then self.value = nextValue end
+		return nextValue
 	end
 	local Server = require("./Services/Econ")
 	local a = Server({ Economy = Eco }, {})
