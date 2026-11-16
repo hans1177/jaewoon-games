@@ -1864,7 +1864,11 @@ local function densify(folder, info, style, rng, walkers, made)
 	local laneWidth = math.max(if isRoyalCity then 13 else 9, P.alley * (if isRoyalCity then 2.1 else 1.8))
 	local laneL = 2 * S + laneWidth + 12
 	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
-	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
+	local localBlocks = info.development and info.development.blocks
+	local economicDensity = if localBlocks then math.clamp(0.8 + math.sqrt(math.max(0, localBlocks)) / 60, 0.76, 1.18) else 1
+	local moodDensity = if info.sim and info.sim.mood == "slump" then 0.88 else 1
+	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1)
+		* economicDensity * moodDensity, 0.3, 0.97)
 	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
 	if info.sim and info.sim.buildings then
 		local target = ({ 40, 130, 430, 1600, 4000 })[lvl]
@@ -2867,6 +2871,19 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				npc(-8, front * 8, face, "stoop", "stay", "Rogue")
 				npc(-18, front * 20, -math.pi / 2, nil, "path", "Rogue", 30, "look")
 			end
+			-- 보유·실물경제에 따라 랜드마크의 업종과 활기를 시각적으로 변화시킨다.
+			local stock = (info.sim and info.sim.buildings) or {}
+			if lm.id == "ironworks" and (stock.workshop or 0) >= 5 then
+				put("Cargo", "iron-bars-stack-large", 4, x + 14, z - front * 10, false)
+			elseif lm.id == "exchange" and (stock.market or 0) >= 2 then
+				put("Town", "stall-green", 6, x - 17, z - front * 14, false)
+			elseif lm.id == "academy" and (stock.school or 0) >= 2 then
+				put("Town", "bell-tower", 14, x - 20, z + front * 4, false)
+			end
+			local owned = info.builtLandmarks or {}
+			if owned[lm.id] == true or (lm.id == "academy" and owned.hall == true) then
+				put("Castle", "flag-banner-long", 10, x + 17, z + front * 17, false)
+			end
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
@@ -2905,6 +2922,10 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	if not info.construction and info.sim and info.sim.construction and info.sim.construction.active then
+		-- 실제 건설비가 지출되는 항구만 기존 건설 현장/목수 모션으로 표시한다.
+		info.construction = { to = math.min(5, sceneLevel + 1) }
+	end
 	-- 발전 단계별 신도시 외곽 도로·왕궁 별관을 포함하는 안전 경계. 파트 수 증가 없이 바닥만 확장한다.
 	local CITY_LIMIT_Z = 360 + sceneLevel * 80
 	currentKey = styleKeyOf(style)
