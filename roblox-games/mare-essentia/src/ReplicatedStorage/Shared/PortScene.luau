@@ -2911,8 +2911,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			{ active = lay.freight, role = "laborer", job = "docker", label = "원자재 하역장", z = lay.freightZ, kind = "carry" },
 		} do
 			if visibleWorkers >= workerLimit then break end
-			if work.active and (not simJobs or (simJobs[work.role] or 0) > 0)
-				and (type(residents) ~= "number" or residents >= 5 * (visibleWorkers + 1)) then
+			if work.active and simJobs and (simJobs[work.role] or 0) > 0
+				and type(residents) == "number" and residents >= 5 * (visibleWorkers + 1) then
 				local at = Vector3.new(-11, 0, work.z + (if work.z > 0 then -6 else 6))
 				local npc = villager(folder, at, 0, C(126, 118, 105), rng, "Rogue")
 				if npc then
