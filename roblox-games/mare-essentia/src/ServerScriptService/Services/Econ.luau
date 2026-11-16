@@ -30,7 +30,11 @@ return function(D, S)
 			if worldStore then
 				-- 첫 조회에서 최신 공통 스냅샷을 읽는다. 실패 시 임의 세계를 저장하지 않는다.
 				local ok, snapshot = pcall(function() return worldStore:GetAsync(WORLD_KEY) end)
-				if not ok then return nil end
+				if not ok then
+					-- Roblox DataStore가 비활성화된 스튜디오에서도 기존 경제/항구 화면을 유지한다.
+					-- 실패한 세계를 공통 저장소에 올리지 않도록 이 서버에서는 공유 저장만 중단한다.
+					worldStore, snapshot = nil, nil
+				end
 				if snapshot ~= nil then
 					world = E.restoreWorld(snapshot)
 					if not world then return nil end
@@ -205,12 +209,12 @@ return function(D, S)
 
 	-- [서버 간 공유] 일정 주기로만 UpdateAsync를 써서 요청량을 제한한다.
 	-- 더 새 기록이 들어온 충돌에서는 뒤처진 세계로 덮지 않고, 미반영 교역·연구 사건만 최신 세계에 재적용한다.
-	function X.sync(state)
+	function X.sync(state, force)
 		if not worldStore then return false end
 		local w = ensure(state)
 		if not w then return false end
 		local now = os.time()
-		if worldDirty and now - lastWrite >= WRITE_SECONDS then
+		if worldDirty and (force == true or now - lastWrite >= WRITE_SECONDS) then
 			local candidate = E.snapshot(w)
 			candidate.revision = worldRevision + 1
 			candidate.writer = worldOwner

@@ -392,12 +392,27 @@ for _, player in Players:GetPlayers() do
 end
 
 Players.PlayerRemoving:Connect(function(player)
+	-- 마지막 이용자가 나가면 빈 서버가 종료되기 전에 세계경제 기록을 확정한다.
+	local lastPlayer = true
+	for other in sessions do
+		if other ~= player then lastPlayer = false; break end
+	end
+	local session = sessions[player]
+	if lastPlayer and session and session.state then
+		S.Econ.sync(session.state, true)
+	end
 	saveSession(player)
 	sessions[player] = nil
 end)
 
 game:BindToClose(function()
-	for player in sessions do
+	-- [영구 세계] 마지막 연구·교역이 5분 주기 저장 전에 유실되지 않게 1회 확정한다.
+	local worldSaved = false
+	for player, session in sessions do
+		if not worldSaved and session.state then
+			S.Econ.sync(session.state, true)
+			worldSaved = true
+		end
 		saveSession(player)
 	end
 end)
