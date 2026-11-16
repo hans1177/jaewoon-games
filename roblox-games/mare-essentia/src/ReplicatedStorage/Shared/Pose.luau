@@ -861,8 +861,9 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.rightAnkle, A(s * 0.15 - math.max(0, -c) * 0.14, 0, 0))
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
-		local armForward = (if run then 0.78 else 0.56) * stride
-		local armBack = (if run then 0.32 else 0.23) * stride
+		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
+		local armForward = (if run then 0.83 else 0.70) * stride
+		local armBack = (if run then 0.37 else 0.30) * stride
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
@@ -872,11 +873,15 @@ function Pose.makeR15Action(model, state, progress, t)
 		local elbowBack = if run then 0.38 else 0.15
 		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
-		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.17 else 0.09) * stride
+		-- [지면 접지] 과도한 수직 바운스를 줄이고 하중 이동은 무릎·발목에 분산한다.
+		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.12 else 0.075) * stride
 		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
 		set(m.root, CFrame.new(0, bob, 0) * A((if run then -0.13 else -0.03) + lean, s * 0.08, s * 0.03))
 		set(m.waist, A((if run then -0.04 else 0) - lean * 0.4, -s * 0.13, 0))
-		set(m.neck, A(if run then 0.1 else 0, s * 0.04, 0))
+		set(m.neck, A(if run then 0.085 else 0, s * 0.035, 0))
+		-- [몸 좌우 기울기] 착지한 쪽에 허리 힘을 싣고 목으로 균형을 잡는다.
+		set(m.waist, m.waist.Transform * A(0, 0, -s * 0.024))
+		set(m.neck, m.neck.Transform * A(0, 0, s * 0.014))
 	elseif state == "attack" then
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
 		set(m.rightElbow, A(-0.4 - wave * 0.5, 0, 0))
