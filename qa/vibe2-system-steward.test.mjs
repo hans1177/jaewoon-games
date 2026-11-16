@@ -189,16 +189,17 @@ test('system steward stale lease recovery stays synchronized with central archit
   const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   const architecture=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
   const logMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
-  // The detailed architecture/log map fields were deliberately retired.
-  // The canonical roadmap and actual steward still enforce stale lease recovery.
+  // [최신 중앙문서] 실행형 구조·로그 지도가 정본 정책과 연결돼야 복구 근거가 유효하다.
   assert.equal(policy?.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticRecovery?.staleRunningReservation,'RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
-  assert.equal(architecture.branches['vibe2-unreal-core'].role,'QUEUE_STATE');
-  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
-  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  assert.match(architecture.constitutionalEnforcement.mode,/^EXECUTABLE_FAIL_CLOSED/);
+  assert.equal(architecture.branches['vibe2-unreal-core'].role,'VIBE_QUEUE_AND_CONTROL_STATE');
+  assert.equal(logMap.authority,'MACHINE_EXECUTION_LOG_MAP');
+  assert.equal(logMap.logChannels.githubActions.location,'GITHUB_ACTIONS_JOB_LOG');
   for(const key of ['GITHUB_RUN_ID','TASK_ID','GAME_ID','SOURCE_REVISION','FAILURE_STAGE','FAILURE_SIGNATURE']){
-    assert.ok(logMap.retained.keys.includes(key),key);
+    assert.ok(logMap.canonicalCorrelationKeys.includes(key),key);
   }
   const steward=fs.readFileSync(new URL('../tools/vibe2-system-steward.mjs',import.meta.url),'utf8');
   assert.match(steward,/function staleRunningIds\(queue,\{nowMs=Date\.now\(\),staleMs=45\*60\*1000\}/);
