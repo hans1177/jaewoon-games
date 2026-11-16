@@ -481,6 +481,104 @@ end
 H.sheetK = sheetK
 
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
+	-- [투명 황동 메뉴 아이콘] 미등록·배경이 있는 그림 대신 같은 팔레트의 작은 도형을
+	-- 기존 메뉴 렌더러 안에서 그린다. 클릭·저장·에셋 등록 흐름은 그대로 둔다.
+	if kind == "Glyph" then
+		local icon = Instance.new("Frame")
+		icon.Name = "MenuGlyph_" .. tostring(asset)
+		icon.Size = UDim2.fromOffset(px, px)
+		icon.BackgroundTransparency = 1
+		icon.BorderSizePixel = 0
+		local ink = if px <= 28 then COLORS.brown else Color3.fromRGB(224, 169, 80)
+		local function shape(x, y, w, h, rotation, radius)
+			local piece = Instance.new("Frame")
+			piece.Name = "GlyphShape"
+			piece.BackgroundColor3 = ink
+			piece.BorderSizePixel = 0
+			piece.Size = UDim2.fromScale(w, h)
+			piece.Position = UDim2.fromScale(x, y)
+			piece.Rotation = rotation or 0
+			if radius then
+				local curve = Instance.new("UICorner")
+				curve.CornerRadius = UDim.new(radius, 0)
+				curve.Parent = piece
+			end
+			if px > 28 then
+				local shade = Instance.new("UIGradient")
+				shade.Color = ColorSequence.new(Color3.fromRGB(255, 217, 146), Color3.fromRGB(195, 135, 48))
+				shade.Rotation = 90
+				shade.Parent = piece
+			end
+			piece.Parent = icon
+			return piece
+		end
+		local function outline(x, y, w, h, radius)
+			local frame = Instance.new("Frame")
+			frame.Name = "GlyphOutline"
+			frame.Size = UDim2.fromScale(w, h)
+			frame.Position = UDim2.fromScale(x, y)
+			frame.BackgroundTransparency = 1
+			frame.BorderSizePixel = 0
+			local curve = Instance.new("UICorner")
+			curve.CornerRadius = UDim.new(radius or 0.12, 0)
+			curve.Parent = frame
+			local edge = Instance.new("UIStroke")
+			edge.Color = ink
+			edge.Thickness = if px <= 28 then 2 else 2.6
+			edge.Parent = frame
+			frame.Parent = icon
+		end
+		if asset == "tavern" then
+			-- 주점: 잔과 손잡이·증기. 기록책·항해 지도와 혼동하지 않게 한다.
+			shape(0.18, 0.29, 0.46, 0.52, 0, 0.18)
+			shape(0.14, 0.27, 0.53, 0.09, 0, 0.15)
+			shape(0.62, 0.36, 0.20, 0.09, 0, 0.15)
+			shape(0.74, 0.40, 0.09, 0.30, 0, 0.25)
+			shape(0.62, 0.61, 0.20, 0.09, 0, 0.15)
+			shape(0.25, 0.13, 0.07, 0.11, -15, 0.30)
+			shape(0.46, 0.11, 0.07, 0.12, 14, 0.30)
+		elseif asset == "board" then
+			-- 의뢰판: 공고판+두 줄의 종이. 퀘스트 두루마리와 별개다.
+			outline(0.11, 0.18, 0.78, 0.64, 0.08)
+			shape(0.17, 0.21, 0.10, 0.58, 0, 0.08)
+			shape(0.23, 0.29, 0.54, 0.09, 0, 0.08)
+			shape(0.23, 0.46, 0.43, 0.08, 0, 0.08)
+			shape(0.23, 0.62, 0.48, 0.08, 0, 0.08)
+		elseif asset == "crew" then
+			-- 동료·고용: 두 사람의 머리와 어깨.
+			shape(0.14, 0.12, 0.29, 0.29, 0, 1)
+			shape(0.57, 0.12, 0.29, 0.29, 0, 1)
+			shape(0.05, 0.50, 0.44, 0.31, 0, 0.35)
+			shape(0.51, 0.50, 0.44, 0.31, 0, 0.35)
+		elseif asset == "war" then
+			-- 함대전: 포신과 포차 두 바퀴. 조선소의 범선과 구별한다.
+			shape(0.24, 0.25, 0.61, 0.14, -23, 0.2)
+			shape(0.14, 0.50, 0.66, 0.13, 0, 0.12)
+			shape(0.19, 0.58, 0.25, 0.25, 0, 1)
+			shape(0.60, 0.58, 0.25, 0.25, 0, 1)
+		elseif asset == "gwent" then
+			-- 카드 배틀·내 카드: 투명 카드 외곽과 한 가지 트럼프 문양.
+			outline(0.20, 0.08, 0.60, 0.85, 0.10)
+			local suit = Instance.new("TextLabel")
+			suit.Name = "CardSuit"
+			suit.Size = UDim2.fromScale(0.6, 0.61)
+			suit.Position = UDim2.fromScale(0.20, 0.20)
+			suit.BackgroundTransparency = 1
+			suit.Text = "♠"
+			suit.Font = Enum.Font.GothamBlack
+			suit.TextScaled = true
+			suit.TextColor3 = ink
+			suit.Parent = icon
+		elseif asset == "scholar" then
+			-- 지식 보고: 깃펜과 잉크병. 백과사전 책 모양과 분리한다.
+			shape(0.23, 0.57, 0.34, 0.30, 0, 0.18)
+			shape(0.28, 0.48, 0.23, 0.12, 0, 0.1)
+			shape(0.53, 0.14, 0.12, 0.57, 36, 0.35)
+			shape(0.64, 0.06, 0.20, 0.28, 36, 1)
+		end
+		icon.Parent = parent
+		return icon
+	end
 	if kind == "Portraits" and AssetIds["Portraits/" .. asset] then
 		local portrait = Instance.new("ImageLabel")
 		portrait.Size = UDim2.fromOffset(px, px)
@@ -1735,8 +1833,8 @@ local HUD_MENU_TINT = {
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
 }
 local HUD_MENU_ART = {
-	gear = "", deck = "codex", auto = "harbor", help = "",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
+	gear = "", deck = "", auto = "harbor", help = "",
+	view = "view", trade = "trade", crew = "", recruit = "", scholar = "tech", route = "route",
 	journal = "map", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
@@ -1760,21 +1858,15 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	local artId = if key == "tavern" then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	local artId = if key == "tavern" or key == "deck" then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
 	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
-	if key == "tavern" then
-		-- [주점] 기존 CC0 머그잔 3D 모델을 투명한 아이콘으로 보여 준다. 새 이미지·등록 파이프라인은 만들지 않는다.
-		local mug = modelIcon(button, "Cargo", "mug", nil, artSize, "주점")
-		mug.Name = "MenuArt"
-		mug.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
-		mug.BackgroundTransparency = 1
-		mug.ZIndex = 2
-		for _, layer in mug:GetChildren() do
-			if layer:IsA("UIGradient") or layer:IsA("UIStroke") or layer.Name == "EngravedMargin" then
-				layer:Destroy()
-			end
-		end
+	if key == "tavern" or key == "deck" then
+		-- [주점·내 카드] 시설 탭과 같은 투명 황동 아이콘을 재사용한다.
+		local symbol = modelIcon(button, "Glyph", if key == "tavern" then "tavern" else "gwent", nil, artSize, label)
+		symbol.Name = "MenuArt"
+		symbol.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
+		symbol.ZIndex = 2
 	elseif artId then
 		for i = 1, 2 do
 			local art = Instance.new("ImageLabel")
@@ -7959,13 +8051,13 @@ RENDERERS.yard = renderYard
 
 -- 탭 아이콘: 이미 등록된 3D 모델(Relics·Naval·People)을 한 가지 표현으로 통일해 쓴다.
 H.TAB_ICON = {
-	-- [메뉴 통일] 사각 배경이 인쇄된 3D 카드 원화 대신 투명한 황동 단색 원화만 사용한다.
-	-- 시설마다 의미가 통하는 별개 그림을 선택하고 기존 탭 동작은 변경하지 않는다.
-	board = { "Menu", "quest" }, quest = { "Menu", "map" }, recruit = { "Menu", "status" }, explore = { "Menu", "explore" },
+	-- [의미 통일] 등록된 투명 황동 원화 우선. 별도 원화가 없는 메뉴만 기존 렌더러의 황동 도형을 쓴다.
+	-- 주점: 의뢰판/퀘스트/동료, 전투: 전투/탐험/함대전/카드, 서재: 보고/백과/연구.
+	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "crew" }, explore = { "Menu", "explore" },
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
-	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Menu", "yard" }, gwent = { "Symbol", "♠" },
-	scholar = { "Menu", "quest" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
-	status = { "Menu", "status" }, crew = { "Menu", "harbor" }, cards = { "Menu", "codex" },
+	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
+	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
+	status = { "Menu", "status" }, crew = { "Glyph", "crew" }, cards = { "Menu", "codex" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
@@ -7992,22 +8084,8 @@ function H.renderTabs()
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
 		if ti then
-			-- [카드 배틀] 트럼프 무늬로 의미를 구분한다. 문자도 같은 잉크색·투명 바탕으로 인쇄한다.
-			local icon
-			if ti[1] == "Symbol" then
-				icon = Instance.new("TextLabel")
-				icon.Size = UDim2.fromOffset(26, 26)
-				icon.BackgroundTransparency = 1
-				icon.BorderSizePixel = 0
-				icon.Text = ti[2]
-				icon.TextSize = 26
-				icon.Font = Enum.Font.GothamBlack
-				icon.TextColor3 = COLORS.brown
-				icon.TextXAlignment = Enum.TextXAlignment.Center
-				icon.TextYAlignment = Enum.TextYAlignment.Center
-			else
-				icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
-			end
+			-- 등록 원화와 황동 도형은 동일한 크기·위치·투명 바탕으로 그린다.
+			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			icon.Position = UDim2.new(0, -28, 0.5, -13)
 			icon.ZIndex = b.ZIndex + 2
