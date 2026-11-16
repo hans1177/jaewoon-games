@@ -1299,6 +1299,13 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
     assert.ok(addedTriangles>=300,ship+' geometry changes too small');
     assert.equal(extra.some(m=>m.name.includes(' cloth')),hasSail,ship+' historically correct sail boundaries');
+    if(ship==='pirogue'){
+      const scene=after.gltf.scenes[after.gltf.scene??0];
+      const activeOriginal=scene.nodes.map(i=>after.gltf.nodes[i]).find(n=>n.name==='canoe');
+      assert.ok(activeOriginal,'dugout source mesh must appear in the active glTF scene');
+      assert.deepEqual(activeOriginal.scale,[2.15,1.54,4.45],'dugout source hull must align with new oars');
+      assert.equal(meta.activeSceneOriginalMeshScaleVerified,true);
+    }
     assert.equal(meta.authenticOriginalBinaryVerified,true);
     assert.equal(meta.originalMeshesPreserved,true);
     assert.equal(meta.structuralGlbVerified,true);
