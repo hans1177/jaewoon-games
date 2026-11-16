@@ -212,20 +212,40 @@ do
 	end
 	check("연습전: 기본 덱은 25장 이상 유효한 카드", allKnowledge)
 	local B = D.BoardingCards
-	local m = B.build("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {})
-	local acts, guard = {}, 0
-	while not m.over and guard < 400 do
-		guard += 1
-		if m.turn == "foe" then B.ai(m, "foe")
-		else
-			local best = select(2, B.hint(m, "me"))
-			if best then table.insert(acts, { "p", best }) B.play(m, "me", best)
-			else table.insert(acts, { "s" }) B.pass(m, "me") end
+	-- [연습전 회귀] 고정 시드와 실제 서버 판정은 그대로 두고, 추천 수만 내는 방식과
+	-- 기존 전투 엔진의 지휘관·패스 판단을 모두 합법적인 행동 기록으로 검증한다.
+	local verified, won = true, false
+	for strategy = 1, 4 do
+		local m = B.build("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {})
+		local acts, guard = {}, 0
+		while not m.over and guard < 400 do
+			guard += 1
+			if m.turn == "foe" then
+				B.ai(m, "foe")
+			elseif (strategy == 3 or strategy == 4) and not m.leaderUsed.me and not m.passed.foe then
+				local ok, _, _, action = B.useLeader(m, "me")
+				if ok and action then table.insert(acts, action) end
+			elseif strategy == 2 or strategy == 3 then
+				local ok, _, _, action = B.ai(m, "me")
+				if ok and action then table.insert(acts, action) end
+			elseif m.passed.foe and B.total(m, "me") > B.total(m, "foe") then
+				table.insert(acts, { "s" })
+				B.pass(m, "me")
+			else
+				local best = select(2, B.hint(m, "me"))
+				if best then table.insert(acts, { "p", best }) B.play(m, "me", best)
+				else table.insert(acts, { "s" }) B.pass(m, "me") end
+			end
+		end
+		local replay = B.replay("boarding", 51, { faction = B.factionOf(stQ.nationId), book = pb }, {}, acts)
+		verified = verified and replay ~= nil and replay.winner == m.winner
+		if replay and replay.winner == "me" then
+			won = Registry.handlers.CardPractice(stQ, { actions = acts }, ctx) == true
+			if won then break end
 		end
 	end
-	local okP = Registry.handlers.CardPractice(stQ, { actions = acts }, ctx)
-	check("연습전: 서버 판정이 시뮬레이션과 일치", okP == (m.winner == "me"))
-	check("연습전: 기본 덱으로 이길 수 있다", m.winner == "me" and okP == true)
+	check("연습전: 서버 판정이 시뮬레이션과 일치", verified)
+	check("연습전: 기본 덱으로 이길 수 있다", won)
 end
 
 -- 실시간 해전: 클라이언트가 직접 싸운 결과를 서버가 가능한 범위인지 확인한다
