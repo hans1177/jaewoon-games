@@ -2537,11 +2537,13 @@ do
 		end
 		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
 		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
-		local left = if compact then 8 else 282
-		local right = if compact then 148 else 304
+		-- [모바일 조언] 상단 메뉴 아이콘보다 아래에 한 줄로 펼쳐 작은 화면에서도 읽고 누를 수 있게 한다.
+		local left = if width < 1050 then 8 else 282
+		local right = if width < 1050 then 8 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
 		bubble.AnchorPoint = Vector2.new(0, 0)
-		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2), if width >= 610 then 8 elseif width < 405 then 139 else 96)
+		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
+			if width < 610 then 262 elseif width < 1050 then 142 else 8)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
 	end
 	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
@@ -2578,12 +2580,12 @@ local bubbleNext = bubbleLabel(4, 15, COLORS.muted)
 -- 동료 조언 말풍선의 행동 버튼: 누르면 그 화면(조선소·교역소 등)으로 바로 간다
 local function bubbleButton(order, color)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, 0, 0, 56)
+	b.Size = UDim2.new(1, 0, 0, 42)
 	b.LayoutOrder = order
 	b.BackgroundColor3 = color
 	b.TextColor3 = Color3.fromRGB(250, 246, 235)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 22
+	b.TextSize = 18
 	b.ZIndex = 22
 	b.AutoButtonColor = true
 	b.Visible = false
@@ -2597,7 +2599,7 @@ H.bubbleSkip = bubbleButton(6, Color3.fromRGB(96, 96, 104))
 do
 	local textSizes = {
 		[H.hudName] = 16, [H.hudCoin] = 16, [H.hudPort] = 15, [H.hudShip] = 14,
-		[H.bubbleWho] = 26, [H.bubbleLine] = 24, [H.bubbleAdvice] = 22, [bubbleNext] = 19, -- 시작 직후 길잡이가 한눈에 읽히도록 크게
+		[H.bubbleWho] = 19, [H.bubbleLine] = 18, [H.bubbleAdvice] = 17, [bubbleNext] = 16, -- 알림은 메뉴와 경쟁하지 않도록 간결하게
 	}
 	local function updateSize()
 		local extra = if player:GetAttribute("LargeHudText") then 3 else 0
@@ -2623,9 +2625,12 @@ do
 	gui.DescendantAdded:Connect(lift)
 end
 local bubbleKey, bubbleToken = nil, 0
+local adviceLastShownAt, adviceLastPort = -math.huge, nil
 function H.hideBubble()
 	bubbleToken += 1
 	bubble.Visible = false
+	-- [조언 닫기] 말풍선을 닫았으면 메뉴 아이콘의 가리킴 효과도 즉시 해제한다.
+	if H.setGuidePulse then H.setGuidePulse(nil) end
 end
 bubble.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -2678,49 +2683,53 @@ function H.setGuidePulse(tab)
 end
 local function refreshBubble()
 	local adv = view and view.advice
-	if not adv or not hud.Visible then
+	if not adv or not hud.Visible or main.Visible or newGameMode or inField then
+		H.hideBubble()
 		return
 	end
 	local counsel = view.counsel and view.counsel[1]
-	local key = tostring(adv.who) .. "|" .. tostring(view.player and view.player.portName) .. "|" .. tostring(counsel and counsel.id)
+	-- [안내 통합] 초반 길잡이는 첫걸음·저널에서만 본다. 상단에 같은 설명을 두 번 띄우지 않는다.
+	if not counsel or string.sub(tostring(counsel.id), 1, 2) == "g_" then
+		bubbleKey = nil
+		H.bubbleCounsel = nil
+		H.hideBubble()
+		return
+	end
+	local urgent = counsel.id == "hull_low" or counsel.id == "hull_low_far"
+		or counsel.id == "supplies_low" or counsel.id == "crew_low"
+	if H.tutorialGoalActive and not urgent then
+		H.hideBubble()
+		return
+	end
+	local portId = view.player and view.player.portId
+	local key = tostring(portId) .. "|" .. tostring(counsel.id)
 	if key == bubbleKey then
 		return
 	end
-	local first = bubbleKey == nil
+	-- [알림 절제] 평상시 조언은 항구별 한 번, 최소 150초 간격. 긴급 보급·선체 경고는 즉시 알린다.
+	if not urgent and (adviceLastPort == portId or os.clock() - adviceLastShownAt < 150) then
+		H.hideBubble()
+		return
+	end
 	bubbleKey = key
 	H.bubbleCounsel = counsel
-	H.setGuidePulse(if counsel and string.sub(counsel.id, 1, 2) == "g_" then counsel.tab else nil)
-	if counsel then
-		-- 상황 조언이 있으면 그 동료가 직접 말한다: 수리·보급·초반 안내 등
-		H.bubbleWho.Text = string.format("💬 %s (%s)", counsel.who.name, counsel.who.role or "동료")
-		H.bubbleLine.Text = "\"" .. counsel.text .. "\""
-		H.bubbleAdvice.Text = ""
-		bubbleNext.Text = ""
-		bubbleNext.Visible = false
-		H.bubbleGo.Text = "▶ " .. counsel.label
-		H.bubbleGo.Visible = true
-		H.bubbleSkip.Text = "알겠어요"
-		H.bubbleSkip.Visible = counsel.dismissable == true
-	else
-		H.bubbleWho.Text = "💬 " .. tostring(adv.who)
-		H.bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
-		H.bubbleAdvice.Text = "조언: " .. tostring(adv.text)
-		bubbleNext.Text = if adv.next then "▶ 다음 할 일: " .. adv.next else ""
-		bubbleNext.Visible = adv.next ~= nil
-		H.bubbleGo.Visible = false
-		H.bubbleSkip.Visible = false
-	end
+	H.setGuidePulse(nil)
+	H.bubbleWho.Text = string.format("💬 %s (%s)", counsel.who.name, counsel.who.role or "동료")
+	H.bubbleLine.Text = "\"" .. counsel.text .. "\""
+	H.bubbleAdvice.Text = ""
+	bubbleNext.Text = ""
+	bubbleNext.Visible = false
+	H.bubbleGo.Text = "▶ " .. (counsel.label or "자세히 보기")
+	H.bubbleGo.Visible = counsel.tab ~= nil
+	H.bubbleSkip.Text = if counsel.dismissable then "알겠어요" else "나중에"
+	H.bubbleSkip.Visible = true
+	adviceLastShownAt = os.clock()
+	if not urgent then adviceLastPort = portId end
 	bubbleToken += 1
 	local token = bubbleToken
 	bubble.Visible = true
-	-- 초반 길잡이(g_...)는 사라지지 않는다: 가기·알겠어요를 누르거나 말풍선을 눌러야 닫힌다
-	if counsel and string.sub(counsel.id, 1, 2) == "g_" then
-		return
-	end
-	task.delay(if counsel then 40 elseif first then 16 else 10, function()
-		if bubbleToken == token then
-			bubble.Visible = false
-		end
+	task.delay(if urgent then 18 else 12, function()
+		if bubbleToken == token then H.hideBubble() end
 	end)
 end
 
@@ -3017,7 +3026,10 @@ H.bubbleSkip.Activated:Connect(function()
 	local cs = H.bubbleCounsel
 	if cs then
 		H.hideBubble()
-		H.call("AdviceDone", { id = cs.id })
+		-- [나중에] 상황 경고는 서버의 영구 완료 목록에 넣지 않고 이번 표시만 닫는다.
+		if cs.dismissable then
+			H.call("AdviceDone", { id = cs.id })
+		end
 	end
 end)
 
@@ -5043,10 +5055,12 @@ local function closeTradeHall()
 		g:Destroy()
 	end
 	tradeHallRefresh = nil
+	-- [복귀 화면 단일화] 조언 바로가기 취소 후 책 메뉴와 도크 아이콘이 동시에 남지 않도록 한다.
+	-- 교역·조선소에서 돌아올 때는 시설 책만 연다. 거래·저장 데이터는 그대로 둔다.
+	menuToggle.Visible = false
+	hud.Visible = false
+	hudTopGui.Enabled = false
 	main.Visible = true
-	-- [교역·조선소 복귀] 원래 메뉴 표시 상태만 복원한다. 보관·저장·거래 상태는 건드리지 않는다.
-	hud.Visible = menuToggle.Visible
-	hudTopGui.Enabled = hud.Visible
 end
 
 -- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
@@ -10491,6 +10505,9 @@ end
 
 -- 조언을 눌렀을 때 그 화면으로 바로 간다 (조선소·교역소는 전용 큰 화면)
 function H.goAdvice(tab)
+	-- [동료 바로가기] 산책 HUD와 시설 책의 표시 상태를 먼저 정리한다.
+	H.hideBubble()
+	menuToggle.Visible = false
 	if tab == "yard" then
 		currentTab = "yard"
 		openYardHall()
@@ -11292,13 +11309,17 @@ end
 	local goalGui = overlayGui("TutorialGoal", 11)
 	local goalBar = Instance.new("TextButton")
 	goalBar.AnchorPoint = Vector2.new(0.5, 0)
-	goalBar.Position = UDim2.new(0.5, 0, 0, 6)
-	goalBar.Size = UDim2.fromOffset(430, 28)
+	goalBar.Position = UDim2.new(0.5, 0, 0, 8)
+	goalBar.Size = UDim2.new(1, -20, 0, 48)
+	local goalMax = Instance.new("UISizeConstraint")
+	goalMax.MaxSize = Vector2.new(430, 48)
+	goalMax.Parent = goalBar
 	goalBar.BackgroundColor3 = COLORS.cover
 	goalBar.BackgroundTransparency = 0.1
 	goalBar.AutoButtonColor = false
 	goalBar.Font = Enum.Font.GothamBold
-	goalBar.TextSize = 13
+	goalBar.TextSize = 15
+	goalBar.TextWrapped = true
 	goalBar.TextColor3 = Color3.fromRGB(246, 208, 130)
 	goalBar.TextStrokeTransparency = 1 -- 작은 글자에 테두리가 겹쳐 번져 보이던 문제
 	goalBar.TextTruncate = Enum.TextTruncate.AtEnd
@@ -11314,11 +11335,13 @@ end
 		gs.Parent = goalBar
 	end
 	goalBar.Activated:Connect(function()
-		H.tutorialHidden = true
+		-- [안내 통합] 첫걸음을 누르면 별도 팝업 대신 기존 저널의 상세 조언을 보여 준다.
+		H.openJournal()
 	end)
 	local function refreshGoal()
 		local c = view and view.captain
-		if not c or newGameMode or H.tutorialHidden or H.openingPending or dlg then -- 안내 창이 열려 있으면 같은 말을 띠로 또 보이지 않는다
+		if not c or newGameMode or H.tutorialHidden then
+			H.tutorialGoalActive = false
 			goalBar.Visible = false
 			return
 		end
@@ -11337,11 +11360,17 @@ end
 		end
 		if not next_ then
 			H.tutorialHidden = true
+			H.tutorialGoalActive = false
 			goalBar.Visible = false
 			return
 		end
-		goalBar.Visible = main.Visible
-		goalBar.Text = string.format("▶ 첫걸음 %d/%d · %s  (눌러서 닫기)", n, #goals, next_.text)
+		H.tutorialGoalActive = true
+		-- [첫걸음 전용 위치] 책 메뉴·대화 중에는 숨기고, 모바일에서는 도크 아이콘 아래에 둔다.
+		goalBar.Visible = not main.Visible and hud.Visible and not bubble.Visible
+			and not H.openingPending and not dlg and not inField and not sceneHold
+		local width = hud.AbsoluteSize.X
+		goalBar.Position = UDim2.new(0.5, 0, 0, if width < 610 then 260 elseif width < 1050 then 142 else 8)
+		goalBar.Text = string.format("첫걸음 %d/%d · %s\n눌러서 동료 조언·일지 보기", n, #goals, next_.text)
 	end
 
 	task.spawn(function()
