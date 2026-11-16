@@ -2767,35 +2767,36 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		-- 항만구역: 어항은 건조대와 쪽배, 광산·벌목 항구는 하역장, 그 반대쪽 해안엔 포대(군사구역)
-		local hz = -sd
+		-- [항구 필지] 북쪽 어항·바깥 자재 적치장·반대편 해안 경비구역을 명확히 나눈다.
+		-- 기존 조선소(-48 남쪽)의 진입로와 겹치지 않도록 조선소 운영 시 필지 방향을 고정한다.
 		if lay.fish then
 			for x = 12, -12, -8 do
-				one("Town", "fence_straight", 5, x, 0, hz * 62)
-				one("Cargo", "fish-large", 2, x, 3, hz * 62)
+				one("Town", "fence_straight", 5, x, 0, lay.fishZ)
+				one("Cargo", "fish-large", 2, x, 3, lay.fishZ)
 			end
-			for _, bz in { 56, 66 } do
-				one("Naval", "boat-row-small", 6, 16, 0.3, hz * bz)
+			for _, offset in { -9, 9 } do
+				one("Naval", "boat-row-small", 6, 34, 0.3, lay.fishZ + offset)
 			end
 		end
 		if lay.timber then
-			one("Terrain", "log-stack", 4, 8, 0, hz * 78)
-			one("Terrain", "log-stack", 4, 0, 0, hz * 78)
-			one("Cargo", "resource-planks", 3, 8, 0, hz * 84)
+			one("Terrain", "log-stack", 4, 8, 0, lay.freightZ - 8)
+			one("Terrain", "log-stack", 4, 0, 0, lay.freightZ - 8)
+			one("Cargo", "resource-planks", 3, 8, 0, lay.freightZ - 2)
 		end
 		if lay.mine then
-			one("Cargo", "iron-bars-stack-large", 3, 10, 0, hz * 70)
-			one("Town", "workbench-anvil", 3.4, 2, 0, hz * 70)
+			one("Cargo", "iron-bars-stack-large", 3, 10, 0, lay.freightZ + 9)
+			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
 		end
 		if lay.fort then
-			one("Naval", "tower-watch", 12, 6, 0, sd * 72, true)
+			one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
 			if lvl >= 3 then
-				for _, dz in { 62, 66 } do
-					one("Naval", "cannon", 3.4, 14, 0, sd * dz)
+				for _, offset in { -9, 9 } do
+					one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
 				end
-				one("Castle", "flag-banner-long", 9, 2, 0, sd * 64)
+				one("Castle", "flag-banner-long", 9, 2, 0, lay.fortZ)
 			end
 			if lvl >= 5 then
-				one("Naval", "tower-watch", 12, 6, 0, sd * 92, true)
+				one("Naval", "tower-watch", 12, 6, 0, lay.fortZ + (if lay.fortZ > 0 then 22 else -22), true)
 			end
 		end
 	end
