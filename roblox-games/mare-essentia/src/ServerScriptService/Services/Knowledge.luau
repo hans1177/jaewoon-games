@@ -230,7 +230,7 @@ return function(D, S)
 	local function masteryOf(state, discId)
 		local points, studied = 0, 0
 		for _, node in K.Nodes do
-			if node.disc == discId and K.understood(state, node.id) then
+			if K.belongsToDiscipline(node, discId) and K.understood(state, node.id) then
 				local card = D.Cards.ById[node.id]
 				points += STUDY_WEIGHT[card and card.rarity or "Common"] or 1
 				studied += 1
@@ -621,7 +621,7 @@ return function(D, S)
 		for _, d in K.Disciplines do
 			local nodes, done, total, hidden = {}, 0, 0, 0
 			for _, node in K.Nodes do
-				if node.disc == d.id then
+				if K.belongsToDiscipline(node, d.id) then
 					total += 1
 					local st, missing = K.status(state, node)
 					if st == "done" then
@@ -656,7 +656,7 @@ return function(D, S)
 			local isOpen, parentDone = K.disciplineOpen(state, d.id)
 			local parent = d.parent and K.DisciplineById[d.parent]
 			table.insert(out.disciplines, {
-				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes, hidden = hidden,
+				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes, hidden = hidden, derived = d.derived == true,
 				era = d.era, parentName = parent and parent.name or nil, open = isOpen, openAt = d.openAt, parentDone = parentDone or 0,
 				mastery = mastery,
 			})
@@ -708,7 +708,7 @@ return function(D, S)
 							row.open = K.disciplineOpen(state, t.id)
 							local done, total = 0, 0
 							for _, node in K.Nodes do
-								if node.disc == t.id then
+								if K.belongsToDiscipline(node, t.id) then
 									total += 1
 									if K.understood(state, node.id) then
 										done += 1
