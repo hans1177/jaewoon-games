@@ -394,6 +394,7 @@ function FieldScene.start(opts)
 	folder.Name = "FieldScene"
 	folder.Parent = workspace
 	local rng = Random.new(opts.seed or 7)
+	local comboRng = Random.new() -- [연타 난수] 지역 맵·보상 추첨 RNG와 별개로 실제 무작위 시각 발동
 	-- [무기별 영구 숙련] 서버 저장본에서 단계를 복원하고 이번 탐험에서 획득한 경험치만 별도 정산한다.
 	local weaponPractice, earnedPractice = {}, {}
 	local function practiceRank(xp)
@@ -1382,6 +1383,7 @@ function FieldScene.start(opts)
 
 	-- [무기 숙련] 명중 경험치는 전투 밸런스가 아니라 시각 연타 단계에만 적용한다.
 	local chainMotionSerial = 0 -- 다음 공격/무기 교체 때 남은 연출을 취소한다.
+	local lastMasteryComboAt = -100 -- [연타 절제] 무기 교체로 쿨다운을 우회하지 못하는 탐험 공용 재발동 간격
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
 	local weaponRankLabel = label(gui, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
 	weaponRankLabel.Name = "FieldWeaponMastery"
@@ -2612,10 +2614,24 @@ function FieldScene.start(opts)
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
-				-- [1~5단계 확률 연타] 1단에서는 항상 단타. 숙련·전투 경력에 따라
-				-- 보너스 모션 발동률만 증가하며 추가 피해·드롭은 만들지 않는다.
-				local chance = if rank == 1 then 0 else math.min(0.54, 0.08 + rank * 0.065 + math.min(opts.battleLevel or 1, 30) * 0.002)
-				local chain = if rank > 1 and rng:NextNumber() < chance then rng:NextInteger(2, rank) else 1
+				-- [절제된 무기 숙련 연타] 최초 1단은 확률 0%. 2~5단은 7/10/13/16% 기본 확률.
+				-- 전투 레벨 가산은 최대 2%까지만 허용하고 발동 후 7초 동안 다른 무기도 연타하지 않는다.
+				-- 2단 위주 랜덤 가중치로 3·4단은 드물게, 5단 킬캠은 최고 숙련에서도 극히 드물게 나온다.
+				-- 추가 공격 판정·피해·보상·드롭·재사용시간에는 영향이 없다.
+				local baseChance = if rank == 2 then 0.07 elseif rank == 3 then 0.10
+					elseif rank == 4 then 0.13 elseif rank == 5 then 0.16 else 0
+				local battleBonus = math.min(0.02, math.max(0, (opts.battleLevel or 1) - 1) * 0.0007)
+				local chain = 1
+				local comboNow = os.clock()
+				if rank > 1 and comboNow - lastMasteryComboAt >= 7
+					and comboRng:NextNumber() < baseChance + battleBonus then
+					lastMasteryComboAt = comboNow
+					local roll = comboRng:NextNumber()
+					chain = if rank == 2 then 2
+						elseif rank == 3 then (if roll < 0.73 then 2 else 3)
+						elseif rank == 4 then (if roll < 0.63 then 2 elseif roll < 0.90 then 3 else 4)
+						else (if roll < 0.60 then 2 elseif roll < 0.84 then 3 elseif roll < 0.95 then 4 else 5)
+				end
 				if promoted then
 					showCombo(string.format("%s 숙련 %d단!", wpn.name, rank))
 					sfx("sfx_coin", 0.55, 1.3)

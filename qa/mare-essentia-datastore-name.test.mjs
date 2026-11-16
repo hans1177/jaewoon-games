@@ -53,3 +53,15 @@ test('3·4·5단은 차등 시각 연출이며 추가 타격 판정과 보상이
   assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId \}\)/);
   assert.doesNotMatch(discovery,/state\.coins\s*\+=\s*earned/);
 });
+
+
+test('연타 1단 봉인·낮은 무작위 확률·7초 재발동 제한을 유지한다',()=>{
+  assert.match(field,/local comboRng = Random\.new\(\)/);
+  assert.match(field,/local lastMasteryComboAt = -100/);
+  assert.match(field,/local baseChance = if rank == 2 then 0\.07 elseif rank == 3 then 0\.10/);
+  assert.match(field,/rank == 4 then 0\.13 elseif rank == 5 then 0\.16 else 0/);
+  assert.match(field,/local battleBonus = math\.min\(0\.02,/);
+  assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
+  assert.match(field,/roll < 0\.60 then 2 elseif roll < 0\.84 then 3 elseif roll < 0\.95 then 4 else 5/);
+  assert.match(field,/if stage >= 3 then masteryCinema\(hrp, stage, defeatedAt\) end/);
+});
