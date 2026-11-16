@@ -1,6 +1,6 @@
 ﻿# 이 PC 에서 한 번만 실행한다. 로그온할 때마다(재부팅 뒤 포함) Studio + GitHub 러너를 자동으로 켜는 예약 작업을 등록한다.
 #   확인만:      powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\install-roblox-studio-autostart.ps1 -CheckOnly
-#   설치:        powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\install-roblox-studio-autostart.ps1 -PlaceId 108565970231899 -UniverseId 10773436325
+#   설치:        powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\install-roblox-studio-autostart.ps1 -PlaceId 73607605986189 -UniverseId 10775310508
 #   제거:        powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\install-roblox-studio-autostart.ps1 -Uninstall
 # 관리자 권한이 필요 없다(현재 사용자 로그온 작업). 비밀번호는 저장하지 않는다.
 [CmdletBinding()]
