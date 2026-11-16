@@ -1,4 +1,5 @@
 --!nonstrict
+-- logic.test.luau · 기존 전체 게임 회귀검사(전문 분야·연구 연결 보강)
 -- Roblox 없이 Luau CLI로 돌리는 로직 테스트. 실행: tests/run.sh
 
 local D = {
@@ -1689,6 +1690,55 @@ end
 
 -- 전문 분야와 동료 ---------------------------------------------------
 do
+	-- [학문 연결] 15개 전문 분야와 동료 49명이 기존 학문에 연결되며, 6개 선박 직책은 유지된다.
+	local Sp = D.Specialties
+	check("학문 연결: 전문 분야 15개", #Sp.Specialties == 15)
+	check("학문 연결: 기존 동료 49명", #Sp.Companions == 49)
+	check("학문 연결: 기존 선박 직책 6개", #Sp.Stations == 6)
+	for _, sp in Sp.Specialties do
+		local good = type(sp.disciplines) == "table" and #sp.disciplines > 0
+		for _, id in sp.disciplines or {} do
+			if not D.KnowledgeTree.DisciplineById[id] then good = false end
+		end
+		check("학문 연결: 전문 분야 " .. sp.id, good)
+	end
+	for _, c in Sp.Companions do
+		local good = type(c.disciplines) == "table" and #c.disciplines > 0
+		for _, id in c.disciplines or {} do
+			if not D.KnowledgeTree.DisciplineById[id] then good = false end
+		end
+		check("학문 연결: 동료 고유 연구 " .. c.id, good)
+	end
+	local helper = newState("england")
+	helper.specialty = "physicist"
+	helper.companions = { "c_newton" }
+	helper.stations.gunner = "c_newton"
+	check("학문 연결: 주인공과 적합 직책 동료가 공동 연구", S.Perk.researchAssist(helper, "physics") == 2)
+	check("학문 연결: 관련 없는 학문 보너스 없음", S.Perk.researchAssist(helper, "botany") == 0)
+	helper.stations.gunner = nil
+	check("학문 연결: 육상 연구는 선박 직책 미배치와 무관", S.Perk.researchAssist(helper, "physics") == 2)
+	helper.specialty = nil
+	check("학문 연결: 직업 미선택에서도 동료가 연구 지원", S.Perk.researchAssist(helper, "physics") == 1)
+	helper.stations.gunner = "c_newton"
+	check("학문 연결: 학문 연구는 주인공 전문 분야 선택 불필요", S.Perk.researchAssist(helper, "physics") == 1)
+	-- [특별 동료] 기존 연속 퀘스트 6개의 완료 기록만으로 고유 최종 연구 능력을 개방한다.
+	local rare = newState("england")
+	rare.companions = { "c_merian" }
+	check("특별 동료: 2단계 완료 전에는 일반 연구 지원", S.Perk.researchAssist(rare, "zoology") == 1)
+	rare.quests.done.cq2_merian = true
+	check("특별 동료: 마지막 이야기 뒤 고유 변태 연구법 개방", S.Perk.researchAssist(rare, "zoology") == 3)
+	rare.affinity.c_merian = 70
+	check("특별 동료: 높은 호감도와 전용 능력 합산", S.Perk.researchAssist(rare, "zoology") == 4)
+	check("특별 동료: 고유 능력은 지정 학문 외 영향 없음", S.Perk.researchAssist(rare, "botany") == 2)
+	local signatureCount = 0
+	for _, companion in D.Specialties.Companions do
+		if companion.finalResearch then
+			signatureCount += 1
+			local quest = D.Quests.ById[companion.finalResearch.quest]
+			check("특별 동료: 연속 퀘스트 연결 " .. companion.id, quest ~= nil and quest.after ~= nil and quest.companionId == companion.id and D.KnowledgeTree.DisciplineById[companion.finalResearch.disc] ~= nil)
+		end
+	end
+	check("특별 동료: 기존 여섯 명만 최종 연구 능력", signatureCount == 6)
 	for _, c in D.Specialties.Companions do
 		check("companion scholar exists " .. c.id, c.scholarId == "" and c.role ~= nil or (function()
 			for _, sc in D.Scholars.Scholars do
@@ -1818,7 +1868,20 @@ do
 		local kv = S.Knowledge.viewOf(stv)
 		check("학문 분류: 화면에 7대 분류 표시", kv.domains ~= nil and #kv.domains == 7)
 	end
-	-- [직업] 학문 계열 직업: 잠금·자동 배정·거장 부직업
+	-- [학문 숙련] 직업이 없더라도 연구·보고한 학문별 점수는 서로 독립적으로 누적한다.
+	do
+		local study = newState("england")
+		study.reported.bot_birch = true
+		study.reported.med_pharmacy = true
+		local bot = S.Knowledge.masteryOf(study, "botany")
+		local med = S.Knowledge.masteryOf(study, "medicine")
+		local art = S.Knowledge.masteryOf(study, "art")
+		check("학문 숙련: 직업 선택 없이 식물 연구 기록이 증가", study.specialty == nil and bot.points == 1 and bot.studied == 1)
+		check("학문 숙련: 의학은 식물학과 독립 누적", med.points == 1 and med.studied == 1 and art.points == 0)
+		local save = S.State.sanitize(S.State.serialize(study))
+		check("학문 숙련: 기존 reported 저장 구조로 재계산", save ~= nil and S.Knowledge.masteryOf(save, "botany").points == 1)
+	end
+	-- [전문 분야] 자유 선택·기존 숙련 및 거장 부전문
 	do
 		local Sp = D.Specialties
 		local noXp = 0
@@ -1839,9 +1902,11 @@ do
 		for _, c in D.Cards.Cards do
 			if c.field == "Medicine" and got < Sp.AUTO_CARDS then S.Discovery.grantCard(s2, c.id, msgs); got += 1 end
 		end
-		check("직업: 카드 3장이면 계열 직업이 자동 배정됨", s2.specialty ~= nil and s2.specAuto == true, tostring(s2.specialty))
+		check("전문 분야: 카드 3장 발견해도 선택 강제하지 않음", s2.specialty == nil and s2.specAuto == false, tostring(s2.specialty))
+		s2.specialty = "botanist" -- 구버전 자동 배정 저장 자료의 무료 변경권은 유지
+		s2.specAuto = true
 		local c0 = s2.coins
-		check("직업: 자동 배정 뒤 첫 변경은 무료", act(s2, "SetSpecialty", { specialtyId = "merchant" }) and s2.coins == c0 and s2.specAuto == false)
+		check("전문 분야: 구버전 자동 배정 기록의 무료 변경권 유지", act(s2, "SetSpecialty", { specialtyId = "merchant" }) and s2.coins == c0 and s2.specAuto == false)
 		-- 부직업
 		local s3 = newState("england")
 		s3.specialty = "merchant"
@@ -2869,7 +2934,9 @@ do
 		stP.reported[id] = true
 	end
 	local fameP = stP.fame
+	stP.specialty = "physicist"
 	local okP = act(stP, "Present", { disc = "physics" })
+	check("학회: 현재 발표 학문으로 전문 분야 숙련 증가", stP.specLevels.physicist ~= nil and stP.specLevels.physicist.xp > 0)
 	check("지식: 3개 이상 이해하면 학회 발표 성공(명성·코인)", okP == true and stP.fame > fameP and stP.academy.presented == 1)
 	check("지식: 발표는 쿨타임이 있음", select(1, act(stP, "Present", { disc = "physics" })) == false)
 	stP.day += 61
@@ -2878,6 +2945,15 @@ do
 	stP.portId = "seville"
 	check("지식: 학회 없는 항구에서는 발표 불가", select(1, act(stP, "Present", { disc = "physics" })) == false)
 	-- 공동 발표
+	local stAid = newState("england")
+	stAid.portId = "london"
+	stAid.specialty = "physicist"
+	stAid.companions = { "c_newton" }
+	stAid.stations.gunner = "c_newton"
+	stAid.reported.phy_buoyancy = true
+	local okAid = act(stAid, "JointPresent", { disc = "physics" })
+	check("공동발표: 전문 분야·동료 연구 지원 점수 실제 반영", okAid and stAid.portTech.london.physics == 4)
+	check("공동발표: 연구 실적이 전문 숙련을 키움", stAid.specLevels.physicist ~= nil and stAid.specLevels.physicist.xp > 0)
 	local stJ = newState("england")
 	stJ.portId = "london"
 	stJ.reported = {}
@@ -2936,6 +3012,15 @@ do
 	check("지식: 효과의 교역품이 실제로 있음", badGood == nil, badGood)
 	check("지식: 노드의 학문이 실제로 있음", badDisc == nil, badDisc)
 	check("지식: 노드가 충분히 많음(카드 전체)", #K.Nodes >= 400, tostring(#K.Nodes))
+	local linkedNames = nil
+	for _, disc in S.Knowledge.viewOf(newState("england")).disciplines do
+		if disc.id == "navigation" then
+			for _, node in disc.nodes do
+				if node.id == "nav_mercator" then linkedNames = node.linked end
+			end
+		end
+	end
+	check("지식: 타 학문 선행 조건이 융합 학문으로 표시됨", linkedNames ~= nil and #linkedNames >= 2)
 	-- 역사 사건
 	local HE = D.HistoryEvents
 	local heBad = nil

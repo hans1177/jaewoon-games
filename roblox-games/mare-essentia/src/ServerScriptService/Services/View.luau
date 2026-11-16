@@ -1,4 +1,5 @@
 --!nonstrict
+-- View.luau · 기존 화면 스냅샷, 전문 학문과 연구·퀘스트 표시
 -- 클라이언트에 보낼 화면용 스냅샷. 모든 계산은 서버가 하고 클라이언트는 표시만 한다.
 
 return function(D, S)
@@ -515,6 +516,7 @@ return function(D, S)
 					progress = S.Quest.progress(state, q),
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
+					rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil,
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
@@ -523,7 +525,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 
@@ -603,10 +605,16 @@ return function(D, S)
 		}
 		for _, sp in D.Specialties.Specialties do
 			local rec = state.specLevels[sp.id]
+			local researchNames = {}
+			for _, id in sp.disciplines or {} do
+				local d = D.KnowledgeTree.DisciplineById[id]
+				if d then table.insert(researchNames, d.name) end
+			end
 			table.insert(view.specialties.list, {
 				id = sp.id,
 				name = sp.name,
-				summary = sp.summary,
+				summary = sp.summary .. " · 관련 학문: " .. table.concat(researchNames, "·"),
+				disciplines = table.clone(sp.disciplines or {}),
 				level = if rec then rec.level else 1,
 				rank = D.Specialties.rankName(if rec then rec.level else 1),
 				cards = S.Perk.cardsIn(state, sp),
@@ -631,10 +639,16 @@ return function(D, S)
 		end
 		for _, c in D.Specialties.Companions do
 			if not c.nation or c.nation == state.nationId then
+				local researchNames = {}
+				for _, id in c.disciplines or {} do
+					local d = D.KnowledgeTree.DisciplineById[id]
+					if d then table.insert(researchNames, d.name) end
+				end
 			table.insert(view.companions.list, {
 				id = c.id,
 				name = c.name,
-				summary = c.summary,
+				summary = c.summary .. " · 연구 보조: " .. table.concat(researchNames, "·"),
+				disciplines = table.clone(c.disciplines or {}),
 				role = c.role,
 				bestSeat = D.Specialties.StationById[D.Specialties.CompanionStation[c.id] or "boatswain"].name,
 				fee = c.fee,

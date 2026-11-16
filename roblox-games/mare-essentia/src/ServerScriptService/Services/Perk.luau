@@ -1,4 +1,5 @@
 --!nonstrict
+-- Perk.luau · 전문 분야·동료·선박 직책의 실제 효과 집계
 -- 전문 분야와 동료 효과를 한 곳에서 합산한다. 다른 서비스는 여기서만 보너스를 읽는다.
 
 return function(D, S)
@@ -124,6 +125,27 @@ return function(D, S)
 		return vc + sum(state, "cannonMult") + (if S.Knowledge then D.KnowledgeTree.cannonBonus(state) else 0) + (if S.Build then S.Build.cannonBonus(state) else 0) + (if S.Village then S.Village.battleBonus(state) else 0)
 	end
 
+	-- [학문 공동 연구] 성장 계열·전문 분야·동료 직업은 서로 다른 축이다.
+	-- 선택 전문 분야는 연구 기여만 더한다. 배의 직책은 기존 선박 효과에만 쓰고 육상 연구는 모든 탑승 동료가 돕는다.
+	-- 연구할 학문을 직업으로 잠그지 않고 기존 지식/퀘스트/보상 규칙도 유지한다.
+	local function researchAssist(state, discId)
+		local focus = state.specialty and Sp.SpecialtyById[state.specialty]
+		local focusPoint = if focus and table.find(focus.disciplines or {}, discId) then 1 else 0
+		local crewPoint, names = 0, {}
+		for _, id in state.companions do
+			local c = Sp.CompanionById[id]
+			if c and table.find(c.disciplines or {}, discId) then
+				-- 여러 명이 같은 학문을 돕더라도 중복 가산 폭증을 막는다.
+				local base = if affinityOf(state, id) >= 70 then 2 else 1
+				local signature = c.finalResearch
+				local finalDone = signature and signature.disc == discId and state.quests and state.quests.done and state.quests.done[signature.quest] == true
+				crewPoint = math.max(crewPoint, base + (if finalDone then 2 else 0))
+				table.insert(names, c.name .. (if finalDone then " · " .. signature.name else ""))
+			end
+		end
+		return focusPoint + crewPoint, names
+	end
+
 	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"
 	local function gainSpec(state, kind, amount, msgs)
 		local sp = state.specialty and Sp.SpecialtyById[state.specialty]
@@ -197,23 +219,6 @@ return function(D, S)
 			end
 		end
 		return best, bestN
-	end
-
-	-- 직업이 없을 때 한 계열 카드가 모이면 자동 배정 (카드 습득 성과)
-	local function autoAssign(state, msgs)
-		if state.specialty then
-			return false
-		end
-		local sp, n = recommend(state, Sp.AUTO_CARDS, nil)
-		if not sp then
-			return false
-		end
-		state.specialty = sp.id
-		state.specAuto = true
-		if msgs then
-			table.insert(msgs, string.format("직업 배정: %s (%s 카드 %d장을 모은 성과) — 마음에 안 들면 한 번은 무료로 바꿀 수 있어요", sp.name, sp.name, n))
-		end
-		return true
 	end
 
 	function handlers.SetSpecialty(state, p)
@@ -542,7 +547,7 @@ return function(D, S)
 		handlers = handlers,
 		companionLines = companionLines,
 		gainSpec = gainSpec,
-		autoAssign = autoAssign,
+		researchAssist = researchAssist,
 		cardsIn = cardsIn,
 		specUnlocked = unlocked,
 		recommendSpec = recommend,

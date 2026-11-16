@@ -1,4 +1,5 @@
 --!nonstrict
+-- Knowledge.luau · 발견·학회·공동 연구 및 시대 발전
 -- 지식 트리 서비스: 발견한 카드를 학자에게 보고해 "이해"로 바꾼다. 따로 수락할 필요는 없다.
 -- 선행 지식을 이해해야 다음 지식을 보고할 수 있고, 이해한 지식은 항해·화력·교역품 값에 효과를 준다.
 
@@ -222,6 +223,26 @@ return function(D, S)
 		return n
 	end
 
+	-- [학문 숙련] 특정 전문 분야를 선택하지 않아도 보고·이해한 카드마다 해당 학문만 성장한다.
+	-- 저장된 reported 원본에서 계산하므로 기존 저장 키·진행 기록을 변경하지 않는다.
+	local STUDY_WEIGHT = { Common = 1, Uncommon = 2, Rare = 3, Epic = 5, Legendary = 8 }
+	local STUDY_LEVEL_AT = { 4, 10, 20, 35 }
+	local function masteryOf(state, discId)
+		local points, studied = 0, 0
+		for _, node in K.Nodes do
+			if node.disc == discId and K.understood(state, node.id) then
+				local card = D.Cards.ById[node.id]
+				points += STUDY_WEIGHT[card and card.rarity or "Common"] or 1
+				studied += 1
+			end
+		end
+		local level = 1
+		for _, required in STUDY_LEVEL_AT do
+			if points >= required then level += 1 end
+		end
+		return { points = points, studied = studied, level = level, next = STUDY_LEVEL_AT[level] or 0 }
+	end
+
 	local function ensureAcademy(state)
 		state.academy = state.academy or { presented = 0, expos = 0, medals = 0, joint = 0, launched = 0, era = 1, last = {}, shown = {} }
 		return state.academy
@@ -256,7 +277,7 @@ return function(D, S)
 		state.coins += coins
 		local msgs = { string.format("%s 학회에서 연구를 발표했다! (이해한 지식 %d개)", disc.name, n), string.format("청중의 호평: 명성 +%d, 후원금 +%d코인", fame, coins) }
 		S.Perk.addAffinity(state, 1, msgs)
-		S.Perk.gainSpec(state, "Physics", 10, msgs)
+		S.Perk.gainSpec(state, disc.field, 10, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 
@@ -323,6 +344,12 @@ return function(D, S)
 			pts += qdone * 3
 			table.insert(lines, string.format("· 완료한 지식 퀘스트 %d개 (+%d)", qdone, qdone * 3))
 		end
+		-- [동료·학문] 직업은 연구 참여 조건이 아니다. 현재 전문 분야와 직책에 맞게 배치한 동료만 소폭 지원한다.
+		local helpPoints, helpers = S.Perk.researchAssist(state, disc.id)
+		if helpPoints > 0 then
+			pts += helpPoints
+			table.insert(lines, string.format("· 전문 분야·승선 연구 조수 %s (+%d점)", if #helpers > 0 then table.concat(helpers, ", ") else "지원", helpPoints))
+		end
 		if K.hasLandmark(state, state.portId, "hall") then
 			pts = math.floor(pts * K.LandmarkById.hall.jointMult)
 			table.insert(lines, "· 학술원의 도움으로 기여가 1.5배")
@@ -348,6 +375,7 @@ return function(D, S)
 		end
 		table.insert(msgs, string.format("학계의 평가: 명성 +%d, 연구 지원금 +%d코인", fame, coins))
 		S.Perk.addAffinity(state, 2, msgs)
+		S.Perk.gainSpec(state, disc.field, 10, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 
@@ -607,21 +635,30 @@ return function(D, S)
 					for _, need in node.needs do
 						table.insert(needNames, cardName(need))
 					end
+					-- 기존 선행 노드 중 다른 학문에서 배워야 하는 지식을 학문 연결로 표시한다.
+					local linked = {}
+					for _, need in node.needs do
+						local other = K.ById[need]
+						local source = other and other.disc ~= node.disc and K.DisciplineById[other.disc]
+						if source and not table.find(linked, source.name) then table.insert(linked, source.name) end
+					end
 					local missNames = {}
 					for _, m in missing do
 						table.insert(missNames, cardName(m))
 					end
 					table.insert(nodes, {
-						id = node.id, name = cardName(node.id), status = st, needs = needNames, missing = missNames,
+						id = node.id, name = cardName(node.id), status = st, needs = needNames, missing = missNames, linked = linked,
 						effect = node.fx and node.fx.label or nil,
 					})
 				end
 			end
+			local mastery = masteryOf(state, d.id)
 			local isOpen, parentDone = K.disciplineOpen(state, d.id)
 			local parent = d.parent and K.DisciplineById[d.parent]
 			table.insert(out.disciplines, {
 				id = d.id, name = d.name, summary = d.summary, done = done, total = total, nodes = nodes, hidden = hidden,
 				era = d.era, parentName = parent and parent.name or nil, open = isOpen, openAt = d.openAt, parentDone = parentDone or 0,
+				mastery = mastery,
 			})
 		end
 		-- 먼 바다 해금 조건 (문명식)
@@ -705,7 +742,7 @@ return function(D, S)
 				table.insert(pres, {
 					disc = d, name = K.DisciplineById[d].name, understood = understoodIn(state, d), wait = if last then math.max(0, PRESENT_COOLDOWN - (state.day - last)) else 0,
 					jointScholar = js and js.name or nil, jointWait = if jl then math.max(0, jointCooldown(state) - (state.day - jl)) else 0,
-					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1],
+					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1], researchHelp = S.Perk.researchAssist(state, d),
 				})
 			end
 			local lastExpo = a.last["expo:" .. state.portId]
@@ -769,6 +806,7 @@ return function(D, S)
 	return {
 		handlers = handlers, goodsMult = goodsMult, speedBonus = K.speedBonus, viewOf = viewOf,
 		reportableCount = reportableCount, scholarDisciplines = scholarDisciplines,
+		masteryOf = masteryOf,
 		supplyMult = supplyMult, researchOf = researchOf, understoodIn = understoodIn,
 		techLevel = function(state, portId, disc)
 			return techLevelOf(state, portId, disc)
