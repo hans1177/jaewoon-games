@@ -58,7 +58,7 @@ return {
 	["CardArt/event_chart_mediterranean"] = 112821491289063,
 	["CardArt/event_chart_north_sea"] = 128360038358696,
 	["CardArt/event_chart_pacific"] = 107014134400818,
-	["CardArt/event_chart_south_america"] = 136447582584240,
+	["CardArt/event_chart_south_america"] = 80094413153474,
 	["CardArt/event_chart_southeast_asia"] = 93803699957678,
 	["CardArt/event_chart_west_africa"] = 113509992544711,
 	["CardArt/event_chart_west_europe"] = 139421970123643,
