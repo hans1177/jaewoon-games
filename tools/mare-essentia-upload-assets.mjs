@@ -85,6 +85,9 @@ const approvedCardNames = new Set();
 try { for (const k of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg'); } catch {}
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
+    // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
+    // 기존 리그 파일과 실제 NPC·장비 모델은 보존한다.
+    if (kind === 'People' && (f === 'rig_f.glb' || f === 'rig_m.glb')) continue;
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     // 새 발견물 원화만 기존 이미지 승인 해시 검사를 거쳐 등록한다.
     // [5대륙 카드] 기존 CardArt 승인 경로에서만 150장 PNG를 등록한다. SVG 원본은 Roblox 이미지로 직접 올리지 않는다.
