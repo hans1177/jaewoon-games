@@ -41,6 +41,14 @@ return function(D, S)
 		if not t then return nil end
 		local v = E.visual(t)
 		local jobs = E.jobs(t)
+		local technology = E.technologyView(t, E.year(w))
+		-- 학문명은 기존 백과사전의 활성 학문 이름을 그대로 사용한다.
+		if D.KnowledgeTree and D.KnowledgeTree.DisciplineById then
+			for _, node in ipairs(technology.rows) do
+				local disc = D.KnowledgeTree.DisciplineById[node.discipline]
+				node.disciplineName = disc and disc.name or node.discipline
+			end
+		end
 		local bld, svc = {}, {}
 		for _, b in ipairs(E.BUILDINGS) do
 			bld[b.id] = math.floor(t.bld[b.id] + 0.5)
@@ -54,7 +62,7 @@ return function(D, S)
 			tech = math.floor((t.tech.agri + t.tech.craft + t.tech.commerce + t.tech.sea + t.tech.medicine + t.tech.gov) / 6 * 100 + 0.5),
 			tradeOut = math.floor(t.tradeOut), tradeIn = math.floor(t.tradeIn),
 			cycle = math.floor((w.cycle.lvl[t.region] or 0) * 100 + 0.5),
-			day = w.day, year = math.floor(E.year(w)), technology = E.technologyView(t, E.year(w)),
+			day = w.day, year = math.floor(E.year(w)), technology = technology,
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc,
