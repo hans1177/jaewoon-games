@@ -1511,3 +1511,23 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 원저작자/라이선스: https://quaternius.com/packs/ultimatemonsters.html ; https://kenney.nl/assets/graveyard-kit ; https://kaylousberg.itch.io/kaykit-skeletons ; https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 . 원본 증빙: https://github.com/ilrein/warptracker/blob/main/ASSETS.md ; https://github.com/Hidencod/tge-assets . 유령은 실제 관절 스킨 1개·애니메이션 8개, 악마는 관절 스킨 1개·애니메이션 14개가 GLB 안에 확인되었다. 기존 해골 2종은 기존 `assets/roblox/actors/manifest.json` 검증 기록에 각각 관절 41개·애니메이션 76개로 기재되나, 이 목록은 Roblox 런타임 승인 증거가 아니다.
 
 기존 `owner-mare-essentia-assets.yml`과 `tools/mare-essentia-upload-assets.mjs`로만 자산 번호를 발급한다. 발급·Universe 사용권한·실제 Studio 시각·애니메이션 재생 확인 전에는 기존 전투 스폰/체력/공격력/드랍/저장과 지형을 바꾸지 않는다.
+
+## 2026-11-16: 지역별 건축 발전도용 CC0 원본 13개
+
+Quaternius 공개 CC0 팩의 원본 GLB를 `trebeljahr/quaternius-showcase`에서 SHA-1 일치로 확보했다. 모델은 기존 `tools/mare-essentia-upload-assets.mjs` 업로드 통로만 사용한다. 실제 Roblox 자산 업로드·사용 권한·Studio 화면 검증 전까지 본게임 적용/승인 완료로 취급하지 않는다.
+
+| 로블록스 폴더 | 모델 | 원본 팩 | Git blob SHA-1 |
+|---|---|---|---|
+| `town/` | `market-1.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `245c47306e93af70ab157090853041e303e02c31` |
+| `town/` | `market-3.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `5493213c69029ff0dd122e5d762b5835b67151a4` |
+| `town/` | `market-5.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `71922408ccb7061f4dc3053723a9c4ff6bede690` |
+| `town/` | `guard-1.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `6ef499aec1db763903f3c47bfb6dc73194320d48` |
+| `town/` | `guard-3.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `019777bde934e1ccbd88e0d4fb59d7ceee22c777` |
+| `town/` | `guard-5.glb` | [원본 팩](https://quaternius.com/packs/ultimatefantasyrts.html) · Quaternius CC0-1.0 | `2c79f1cb2003856502be27650caa2a1f247f7881` |
+| `town/` | `blacksmith.glb` | [원본 팩](https://quaternius.com/packs/medievalvillage.html) · Quaternius CC0-1.0 | `83917c55b132d8e51e6c2b969911e14c857956a8` |
+| `town/` | `sawmill.glb` | [원본 팩](https://quaternius.com/packs/medievalvillage.html) · Quaternius CC0-1.0 | `61bb00a510792562bcad524ab874f8dcd6542b86` |
+| `town/` | `inn.glb` | [원본 팩](https://quaternius.com/packs/medievalvillage.html) · Quaternius CC0-1.0 | `773f9184c4c80f20ec37de300b3f7e4106754e83` |
+| `town/` | `gazebo.glb` | [원본 팩](https://quaternius.com/packs/medievalvillage.html) · Quaternius CC0-1.0 | `7d96b269fe1ece33607361c9691ef2453ea56c13` |
+| `terrain/` | `rice-1.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `a59b8ddac2cb02de34036d712d264ebf3b75ea39` |
+| `terrain/` | `rice-3.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `4577814ccc655f44d3aca9ba87bd925a560904a5` |
+| `terrain/` | `rice-4.glb` | [원본 팩](https://quaternius.com/packs/ultimatecrops.html) · Quaternius CC0-1.0 | `ef10b3ba10e831800a014f622ba578d7d3b48a7c` |
