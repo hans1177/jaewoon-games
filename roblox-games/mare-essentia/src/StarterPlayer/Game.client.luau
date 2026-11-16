@@ -151,7 +151,7 @@ local TABS = {
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
-	{ id = "map", name = "일지" },
+	{ id = "map", name = "지도" },
 	{ id = "explore", name = "탐험" },
 	{ id = "battle", name = "전투" },
 	{ id = "gwent", name = "카드 배틀" },
@@ -576,6 +576,34 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			shape(0.28, 0.48, 0.23, 0.12, 0, 0.1)
 			shape(0.53, 0.14, 0.12, 0.57, 36, 0.35)
 			shape(0.64, 0.06, 0.20, 0.28, 36, 1)
+		elseif asset == "journal" then
+			-- 저널: 펼친 기록장. 항만청의 바다 지도와 구분한다.
+			outline(0.10, 0.16, 0.36, 0.69, 0.10)
+			outline(0.54, 0.16, 0.36, 0.69, 0.10)
+			shape(0.48, 0.16, 0.04, 0.68, 0, 0.12)
+			shape(0.18, 0.37, 0.18, 0.065, 0, 0.05)
+			shape(0.18, 0.55, 0.18, 0.065, 0, 0.05)
+			shape(0.64, 0.37, 0.18, 0.065, 0, 0.05)
+			shape(0.64, 0.55, 0.18, 0.065, 0, 0.05)
+		elseif asset == "gear" then
+			-- 설정: 단색 톱니바퀴. 기기별 색상이 다른 이모지 글리프를 쓰지 않는다.
+			outline(0.19, 0.19, 0.62, 0.62, 1)
+			outline(0.37, 0.37, 0.26, 0.26, 1)
+			for i = 0, 7 do
+				local angle = i * math.pi / 4
+				shape(0.45 + math.cos(angle) * 0.39, 0.45 + math.sin(angle) * 0.39, 0.13, 0.13, math.deg(angle), 0.15)
+			end
+		elseif asset == "help" then
+			-- 도움말: 다른 시설·시스템과 같은 황동 계열 물음표.
+			local question = Instance.new("TextLabel")
+			question.Name = "HelpMark"
+			question.Size = UDim2.fromScale(1, 1)
+			question.BackgroundTransparency = 1
+			question.Font = Enum.Font.GothamBlack
+			question.Text = "?"
+			question.TextScaled = true
+			question.TextColor3 = ink
+			question.Parent = icon
 		end
 		icon.Parent = parent
 		return icon
@@ -1859,12 +1887,14 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
-	local artId = if key == "tavern" or key == "deck" then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
+	local specialGlyph = if key == "tavern" then "tavern" elseif key == "deck" then "gwent"
+		elseif key == "journal" then "journal" elseif key == "gear" then "gear" elseif key == "help" then "help" else nil
+	local artId = if specialGlyph then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
 	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
-	if key == "tavern" or key == "deck" then
-		-- [주점·내 카드] 시설 탭과 같은 투명 황동 아이콘을 재사용한다.
-		local symbol = modelIcon(button, "Glyph", if key == "tavern" then "tavern" else "gwent", nil, artSize, label)
+	if specialGlyph then
+		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
+		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
 		symbol.Name = "MenuArt"
 		symbol.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
 		symbol.ZIndex = 2
