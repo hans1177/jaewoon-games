@@ -69,14 +69,6 @@ jobs:
           unzip -q /tmp/luau.zip -d /tmp/luau-bin
           chmod +x /tmp/luau-bin/luau /tmp/luau-bin/luau-analyze
 
-      - name: Gate - tests and port smoke build (warning only until proven stable)
-        if: steps.luau.outcome == 'success' && inputs.rollback_ref == ''
-        continue-on-error: true
-        run: |
-          LUAU_DIR=/tmp/luau-bin bash roblox-games/mare-essentia/tests/run.sh 2>&1 | tail -25
-          echo "TEST_GATE_RC=${PIPESTATUS[0]}"
-          test "${PIPESTATUS[0]}" -eq 0 || echo "::warning::tests/smoke gate failed - publishing continues (non-blocking mode)"
-
       - name: Gate - every referenced asset must be registered
         run: |
           set -euo pipefail
@@ -163,6 +155,15 @@ jobs:
           console.log('MARE_ESSENTIA_UNIVERSE_ID='+r.universeId);
           console.log('MARE_ESSENTIA_LINK=https://www.roblox.com/games/'+r.placeId);
           NODE
+
+      - name: Post-publish tests and port smoke (diagnostic only)
+        if: steps.luau.outcome == 'success' && inputs.rollback_ref == ''
+        continue-on-error: true
+        run: |
+          # [선배포 후 검증] 기존 게임 테스트는 게시 성공을 확인한 뒤 실행하며 배포 결과를 되돌리지 않는다.
+          LUAU_DIR=/tmp/luau-bin bash roblox-games/mare-essentia/tests/run.sh 2>&1 | tail -25
+          echo "TEST_GATE_RC=${PIPESTATUS[0]}"
+          test "${PIPESTATUS[0]}" -eq 0 || echo "::warning::post-publish tests/smoke failed - published version preserved"
 
       - uses: actions/upload-artifact@v4
         if: always()
