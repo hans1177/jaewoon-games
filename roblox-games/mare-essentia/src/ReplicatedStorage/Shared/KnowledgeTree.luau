@@ -545,8 +545,8 @@ K.SpecialismCards = {
 	forestry = { "bot_oak", "bot_cork_oak", "bot_pine_resin" },
 	mining = { "min_coal_seam", "min_lead_ore", "min_copper_ore" },
 	paleontology = { "min_amber_insect", "min_amber_raw" },
-	gunnery = { "relic_flintlock", "relic_doubloon" },
-	naval_warfare = { "relic_figurehead", "relic_hanse_cog" },
+	gunnery = { "relic_flintlock", "relic_cannon_old" },
+	naval_warfare = { "relic_hanse_cog", "site_fortress_morro" },
 }
 K.CardRelatedDisciplines = {}
 for discId, ids in K.SpecialismCards do
