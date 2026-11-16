@@ -185,6 +185,25 @@
   "code": "-- [시설 아이콘 QA] 실제 탭의 크기·색·투명도·버튼 내부 배치를 함께 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal ids=require(game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\"):WaitForChild(\"AssetIds\"))\nlocal expected={\n [\"harbor\"]={\"Menu\",\"harbor\"},\n [\"trade\"]={\"Menu\",\"trade\"},\n}\nfor id,choice in expected do\n local b=assert(gui:FindFirstChild(\"FacilityTab_\"..id,true),\"FACILITY_TAB_MISSING:\"..id)\n local icon=assert(b:FindFirstChild(\"TabIcon\"),\"FACILITY_ICON_MISSING:\"..id)\n assert(icon.Size.X.Offset==26 and icon.Size.Y.Offset==26,\"FACILITY_ICON_SCALE:\"..id)\n assert(icon.Position.X.Offset==7 and icon.BackgroundTransparency==1,\"FACILITY_ICON_NOT_INSIDE_TAB:\"..id)\n local art=assert(icon:FindFirstChild(\"OriginalArt\"),\"FACILITY_ART_MISSING:\"..id)\n assert(art.Image==\"rbxassetid://\"..tostring(ids[\"Menu/\"..choice[2]]),\"FACILITY_ART_WRONG:\"..id)\n assert(art.Position.X.Offset==2 and art.Size.X.Offset==-4 and art.ImageColor3==Color3.fromRGB(139,113,102),\"FACILITY_ART_MATERIAL:\"..id)\nend\nlocal P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "qa_tab_trade_to_harbor",
+  "code": "-- [실제 시설 클릭] 현재 게임의 등록 탭 버튼을 공식 스튜디오 마우스로 누른다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal source=assert(gui:FindFirstChild('FacilityTab_trade',true),'QA_NAV_SOURCE_MISSING')\nassert(source:GetAttribute('SelectedTab')==true,'QA_NAV_SOURCE_NOT_SELECTED')\nlocal target=assert(gui:FindFirstChild('FacilityTab_harbor',true),'QA_NAV_TARGET_MISSING')\nassert(target:IsA('TextButton') and target.Visible and target.Active,'QA_NAV_TARGET_NOT_CLICKABLE')\nlocal pos=target.AbsolutePosition local size=target.AbsoluteSize\nassert(size.X>=30 and size.Y>=20,'QA_NAV_TARGET_TOO_SMALL')\nlocal camera=assert(workspace.CurrentCamera,'QA_NAV_CAMERA_MISSING')\nlocal vp=camera.ViewportSize\nlocal x=math.floor(pos.X+size.X/2) local y=math.floor(pos.Y+size.Y/2)\nassert(x>=0 and y>=0 and x<vp.X and y<vp.Y,'QA_NAV_TARGET_OFFSCREEN')\nreturn string.format('%d,%d CLICK=FACILITY_TAB_trade_TO_harbor',x,y)"
+ },
+ {
+  "type": "wait",
+  "ms": 850
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [실제 전환] 입력 성공만으로 통과시키지 않고 다음 시설 탭이 화면에서 선택됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal btn=assert(gui:FindFirstChild('FacilityTab_harbor',true),'QA_NAV_AFTER_TARGET_MISSING')\nassert(btn.Visible and btn:GetAttribute('SelectedTab')==true,'QA_NAV_AFTER_TARGET_NOT_SELECTED')\nassert(btn:FindFirstChild('ActiveTabRule'),'QA_NAV_AFTER_HIGHLIGHT_MISSING')\nlocal original=gui:FindFirstChild('FacilityTab_trade',true)\nassert(not original or original:GetAttribute('SelectedTab')~=true,'QA_NAV_ORIGINAL_STILL_SELECTED')\nreturn 'QA_REAL_TAB_CLICK_PASS:trade_TO_harbor'"
+ },
+ {
+  "type": "capture",
+  "name": "qa_click_trade_to_harbor"
+ },
+ {
   "type": "luau",
   "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Tab_route') return 'tab route'"
@@ -206,6 +225,25 @@
   "type": "luau",
   "ctx": "Client",
   "code": "-- [시설 아이콘 QA] 실제 탭의 크기·색·투명도·버튼 내부 배치를 함께 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal ids=require(game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\"):WaitForChild(\"AssetIds\"))\nlocal expected={\n [\"route\"]={\"Menu\",\"route\"},\n [\"map\"]={\"Menu\",\"map\"},\n}\nfor id,choice in expected do\n local b=assert(gui:FindFirstChild(\"FacilityTab_\"..id,true),\"FACILITY_TAB_MISSING:\"..id)\n local icon=assert(b:FindFirstChild(\"TabIcon\"),\"FACILITY_ICON_MISSING:\"..id)\n assert(icon.Size.X.Offset==26 and icon.Size.Y.Offset==26,\"FACILITY_ICON_SCALE:\"..id)\n assert(icon.Position.X.Offset==7 and icon.BackgroundTransparency==1,\"FACILITY_ICON_NOT_INSIDE_TAB:\"..id)\n local art=assert(icon:FindFirstChild(\"OriginalArt\"),\"FACILITY_ART_MISSING:\"..id)\n assert(art.Image==\"rbxassetid://\"..tostring(ids[\"Menu/\"..choice[2]]),\"FACILITY_ART_WRONG:\"..id)\n assert(art.Position.X.Offset==2 and art.Size.X.Offset==-4 and art.ImageColor3==Color3.fromRGB(139,113,102),\"FACILITY_ART_MATERIAL:\"..id)\nend\nlocal P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "qa_tab_route_to_map",
+  "code": "-- [실제 시설 클릭] 현재 게임의 등록 탭 버튼을 공식 스튜디오 마우스로 누른다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal source=assert(gui:FindFirstChild('FacilityTab_route',true),'QA_NAV_SOURCE_MISSING')\nassert(source:GetAttribute('SelectedTab')==true,'QA_NAV_SOURCE_NOT_SELECTED')\nlocal target=assert(gui:FindFirstChild('FacilityTab_map',true),'QA_NAV_TARGET_MISSING')\nassert(target:IsA('TextButton') and target.Visible and target.Active,'QA_NAV_TARGET_NOT_CLICKABLE')\nlocal pos=target.AbsolutePosition local size=target.AbsoluteSize\nassert(size.X>=30 and size.Y>=20,'QA_NAV_TARGET_TOO_SMALL')\nlocal camera=assert(workspace.CurrentCamera,'QA_NAV_CAMERA_MISSING')\nlocal vp=camera.ViewportSize\nlocal x=math.floor(pos.X+size.X/2) local y=math.floor(pos.Y+size.Y/2)\nassert(x>=0 and y>=0 and x<vp.X and y<vp.Y,'QA_NAV_TARGET_OFFSCREEN')\nreturn string.format('%d,%d CLICK=FACILITY_TAB_route_TO_map',x,y)"
+ },
+ {
+  "type": "wait",
+  "ms": 850
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [실제 전환] 입력 성공만으로 통과시키지 않고 다음 시설 탭이 화면에서 선택됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal btn=assert(gui:FindFirstChild('FacilityTab_map',true),'QA_NAV_AFTER_TARGET_MISSING')\nassert(btn.Visible and btn:GetAttribute('SelectedTab')==true,'QA_NAV_AFTER_TARGET_NOT_SELECTED')\nassert(btn:FindFirstChild('ActiveTabRule'),'QA_NAV_AFTER_HIGHLIGHT_MISSING')\nlocal original=gui:FindFirstChild('FacilityTab_route',true)\nassert(not original or original:GetAttribute('SelectedTab')~=true,'QA_NAV_ORIGINAL_STILL_SELECTED')\nreturn 'QA_REAL_TAB_CLICK_PASS:route_TO_map'"
+ },
+ {
+  "type": "capture",
+  "name": "qa_click_route_to_map"
  },
  {
   "type": "luau",
@@ -400,6 +438,25 @@
   "code": "-- [아이콘 의미 QA] 학자의 서재: 모든 메뉴 탭이 같은 투명 황동 계열이고, 이름과 그림이 일치한다.\nlocal g=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"),\"MENU_MAIN_GUI_MISSING\")\nlocal assets=require(game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\"):WaitForChild(\"AssetIds\"))\nlocal expected={\n  scholar = {\"Glyph\", \"scholar\"},\n  codex = {\"Menu\", \"codex\"},\n  tech = {\"Glyph\", \"research\"},\n}\nfor id,choice in expected do\n local b=assert(g:FindFirstChild(\"FacilityTab_\"..id,true),\"MENU_TAB_MISSING:\"..id)\n local ico=assert(b:FindFirstChild(\"TabIcon\"),\"MENU_ICON_MISSING:\"..id)\n assert(ico.BackgroundTransparency==1,\"MENU_ICON_OPAQUE:\"..id)\n assert(ico.Size.X.Offset==26 and ico.Size.Y.Offset==26,\"MENU_ICON_SIZE_NOT_26:\"..id)\n assert(ico.Position.X.Offset==7 and ico.Position.Y.Scale==0.5,\"MENU_ICON_OUTSIDE_TAB:\"..id)\n if choice[1]==\"Glyph\" then\n  assert(ico:IsA(\"Frame\") and ico:GetAttribute(\"MenuGlyph\")==choice[2],\"MENU_ICON_WRONG_MEANING:\"..id)\n  assert(ico:FindFirstChild(\"GlyphShape\") or ico:FindFirstChild(\"GlyphOutline\"),\"MENU_ICON_NO_VISIBLE_SHAPE:\"..id)\n else\n  local art=assert(ico:FindFirstChild(\"OriginalArt\"),\"MENU_ORIGINAL_ART_MISSING:\"..id)\n  assert(art:IsA(\"ImageLabel\") and art.BackgroundTransparency==1 and art.Image==\"rbxassetid://\"..tostring(assets[\"Menu/\"..choice[2]]),\"MENU_ICON_ART_MISMATCH:\"..id)\n end\nend\nlocal P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "qa_tab_codex_to_tech",
+  "code": "-- [실제 시설 클릭] 현재 게임의 등록 탭 버튼을 공식 스튜디오 마우스로 누른다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal source=assert(gui:FindFirstChild('FacilityTab_codex',true),'QA_NAV_SOURCE_MISSING')\nassert(source:GetAttribute('SelectedTab')==true,'QA_NAV_SOURCE_NOT_SELECTED')\nlocal target=assert(gui:FindFirstChild('FacilityTab_tech',true),'QA_NAV_TARGET_MISSING')\nassert(target:IsA('TextButton') and target.Visible and target.Active,'QA_NAV_TARGET_NOT_CLICKABLE')\nlocal pos=target.AbsolutePosition local size=target.AbsoluteSize\nassert(size.X>=30 and size.Y>=20,'QA_NAV_TARGET_TOO_SMALL')\nlocal camera=assert(workspace.CurrentCamera,'QA_NAV_CAMERA_MISSING')\nlocal vp=camera.ViewportSize\nlocal x=math.floor(pos.X+size.X/2) local y=math.floor(pos.Y+size.Y/2)\nassert(x>=0 and y>=0 and x<vp.X and y<vp.Y,'QA_NAV_TARGET_OFFSCREEN')\nreturn string.format('%d,%d CLICK=FACILITY_TAB_codex_TO_tech',x,y)"
+ },
+ {
+  "type": "wait",
+  "ms": 850
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [실제 전환] 입력 성공만으로 통과시키지 않고 다음 시설 탭이 화면에서 선택됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal btn=assert(gui:FindFirstChild('FacilityTab_tech',true),'QA_NAV_AFTER_TARGET_MISSING')\nassert(btn.Visible and btn:GetAttribute('SelectedTab')==true,'QA_NAV_AFTER_TARGET_NOT_SELECTED')\nassert(btn:FindFirstChild('ActiveTabRule'),'QA_NAV_AFTER_HIGHLIGHT_MISSING')\nlocal original=gui:FindFirstChild('FacilityTab_codex',true)\nassert(not original or original:GetAttribute('SelectedTab')~=true,'QA_NAV_ORIGINAL_STILL_SELECTED')\nreturn 'QA_REAL_TAB_CLICK_PASS:codex_TO_tech'"
+ },
+ {
+  "type": "capture",
+  "name": "qa_click_codex_to_tech"
+ },
+ {
   "type": "luau",
   "ctx": "Client",
   "code": "workspace:SetAttribute('DevCall','Tab_tech') return 'tab tech'"
@@ -444,6 +501,25 @@
   "type": "luau",
   "ctx": "Client",
   "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "qa_tab_status_to_crew",
+  "code": "-- [실제 시설 클릭] 현재 게임의 등록 탭 버튼을 공식 스튜디오 마우스로 누른다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal source=assert(gui:FindFirstChild('FacilityTab_status',true),'QA_NAV_SOURCE_MISSING')\nassert(source:GetAttribute('SelectedTab')==true,'QA_NAV_SOURCE_NOT_SELECTED')\nlocal target=assert(gui:FindFirstChild('FacilityTab_crew',true),'QA_NAV_TARGET_MISSING')\nassert(target:IsA('TextButton') and target.Visible and target.Active,'QA_NAV_TARGET_NOT_CLICKABLE')\nlocal pos=target.AbsolutePosition local size=target.AbsoluteSize\nassert(size.X>=30 and size.Y>=20,'QA_NAV_TARGET_TOO_SMALL')\nlocal camera=assert(workspace.CurrentCamera,'QA_NAV_CAMERA_MISSING')\nlocal vp=camera.ViewportSize\nlocal x=math.floor(pos.X+size.X/2) local y=math.floor(pos.Y+size.Y/2)\nassert(x>=0 and y>=0 and x<vp.X and y<vp.Y,'QA_NAV_TARGET_OFFSCREEN')\nreturn string.format('%d,%d CLICK=FACILITY_TAB_status_TO_crew',x,y)"
+ },
+ {
+  "type": "wait",
+  "ms": 850
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [실제 전환] 입력 성공만으로 통과시키지 않고 다음 시설 탭이 화면에서 선택됐는지 확인한다.\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal gui=assert(pg:FindFirstChild('MareEssentiaGui'),'QA_NAV_GUI_MISSING')\nassert(gui.Enabled,'QA_NAV_GUI_DISABLED')\nlocal btn=assert(gui:FindFirstChild('FacilityTab_crew',true),'QA_NAV_AFTER_TARGET_MISSING')\nassert(btn.Visible and btn:GetAttribute('SelectedTab')==true,'QA_NAV_AFTER_TARGET_NOT_SELECTED')\nassert(btn:FindFirstChild('ActiveTabRule'),'QA_NAV_AFTER_HIGHLIGHT_MISSING')\nlocal original=gui:FindFirstChild('FacilityTab_status',true)\nassert(not original or original:GetAttribute('SelectedTab')~=true,'QA_NAV_ORIGINAL_STILL_SELECTED')\nreturn 'QA_REAL_TAB_CLICK_PASS:status_TO_crew'"
+ },
+ {
+  "type": "capture",
+  "name": "qa_click_status_to_crew"
  },
  {
   "type": "luau",

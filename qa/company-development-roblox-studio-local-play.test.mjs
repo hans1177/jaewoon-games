@@ -3810,7 +3810,14 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,220);
+  assert.equal(steps.length,236);
+  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,9);
+  assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  for(const [from,to] of [['trade','harbor'],['route','map'],['codex','tech'],['status','crew']]){
+    assert.ok(steps.some(step=>step.type==='click_from_luau'&&step.label==='qa_tab_'+from+'_to_'+to&&step.code.includes('QA_NAV_TARGET_NOT_CLICKABLE')));
+    assert.ok(steps.some(step=>step.code?.includes('QA_REAL_TAB_CLICK_PASS:'+from+'_TO_'+to)));
+    assert.ok(steps.some(step=>step.type==='capture'&&step.name==='qa_click_'+from+'_to_'+to));
+  }
   const tabs=['harbor','trade','route','map','yard','quest','explore','battle','codex','tech','status','crew'];
   for(const tab of tabs){
     assert.ok(steps.some(step=>step.code?.includes('FACILITY_TAB_RUNTIME_PASS:'+tab)));
