@@ -1675,7 +1675,7 @@ function FieldScene.start(opts)
 		end
 	end
 
-	-- [무기 외형] 승인된 3D 모델을 먼저 쓰고, 미등록 유형은 손에 쥐는 소형 형상으로 구분한다.
+	-- [무기 외형] 등록된 실제 3D 메시만 사용한다. 늦게 도착한 모델도 기존 장착 함수로 갱신한다.
 	-- 기존 무기·동료 데이터와 무관한 클라이언트 연출만 교체한다. 전투 수치·저장키는 수정하지 않는다.
 	local function equipFieldWeapon(character, weapon)
 		if not character then return end
@@ -1740,6 +1740,41 @@ function FieldScene.start(opts)
 		-- [미등록 자산] Roblox 등록·권한·실물 수입 전에는 도형 조립으로 대체하지 않는다.
 		-- 원본이 등록되고 MareAssets에 수입되면 위 경로로 바로 장착된다.
 		character:SetAttribute("WeaponVisualSource", "asset_pending")
+	end
+	-- [실물 무기 지연 로드] Relics는 항구 모델보다 늦게 로드되므로, 도착한 승인 모델만 재장착한다.
+	-- 플레이어/동료의 기존 무기 ID와 전투 수치, 저장 구조는 유지한다.
+	local assetLibrary = ReplicatedStorage:FindFirstChild("MareAssets")
+	local relicGroup = assetLibrary and assetLibrary:FindFirstChild("Relics")
+	if relicGroup then
+		table.insert(conns, relicGroup.ChildAdded:Connect(function(asset)
+			if not asset:IsA("Model") or not string.match(asset.Name, "^weapon%-") then return end
+			task.defer(function()
+				-- Roblox 모델/메시의 복제 순서가 달라도 빈 모델을 장착 완료로 간주하지 않는다.
+				local deadline = os.clock() + 5
+				while asset.Parent == relicGroup and not asset:FindFirstChildWhichIsA("BasePart", true)
+					and os.clock() < deadline and not finished do
+					task.wait(0.1)
+				end
+				if finished or not folder.Parent or not asset:FindFirstChildWhichIsA("BasePart", true) then return end
+				local character = player.Character
+				if character and character:GetAttribute("WeaponVisualSource") == "asset_pending" then
+					local id = character:GetAttribute("EquippedWeaponId")
+					if type(id) == "string" then
+						local weapon = Weapons.get(id)
+						if weapon.model == asset.Name then equipFieldWeapon(character, weapon) end
+					end
+				end
+				for _, characterModel in folder:GetDescendants() do
+					if characterModel:IsA("Model") and characterModel:GetAttribute("WeaponVisualSource") == "asset_pending" then
+						local id = characterModel:GetAttribute("EquippedWeaponId")
+						if type(id) == "string" then
+							local weapon = Weapons.get(id)
+							if weapon.model == asset.Name then equipFieldWeapon(characterModel, weapon) end
+						end
+					end
+				end
+			end)
+		end))
 	end
 	-- 플레이어 무기는 현장 교체 시 즉시 실제 손의 장비까지 교체한다.
 	equipFieldWeapon(player.Character, wpn)
