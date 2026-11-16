@@ -379,15 +379,23 @@ function FM.combo(key: string, ids: { string })
 	return c
 end
 
--- 무기(CommonMotion 프로필 id)의 n번째 동작. 맨손(motion=nil)은 주먹·발차기 연타. 만들 수 없으면 nil.
+-- [마력숲 원본 맨손 액션] 검증된 공용 R15 포즈만 사용한다.
+-- 첫 단타는 잽 1개만 재생하며, 실전 숙련 확률이 결정한 단계만 이후 재생한다.
 local UNARMED_CHAIN = { "U:JAB_LEFT", "U:CROSS_RIGHT", "U:FRONT_KICK_L" }
+local UNARMED_STYLES = {
+	UNARMED_RUSH = { "U:JAB_LEFT", "U:CROSS_RIGHT", "U:HOOK_LEFT", "U:HOOK_RIGHT", "U:BACKFIST_LEFT" },
+	UNARMED_UPPERCUT = { "U:UPPERCUT_RIGHT", "U:UPPERCUT_LEFT", "U:CROSS_RIGHT", "U:UPPERCUT_LEFT", "U:UPPERCUT_RIGHT" },
+	UNARMED_KICK = { "U:LOW_KICK_R", "U:ROUND_KICK_R", "U:SIDE_KICK_L", "U:FRONT_KICK_R", "U:ROUND_KICK_L" },
+	UNARMED_ELBOW = { "U:ELBOW_RIGHT", "U:KNEE_LEFT", "U:ELBOW_LEFT", "U:KNEE_RIGHT", "U:DIAGONAL_KNEE_LEFT" },
+}
 function FM.weaponCombo(motion: string?, idx: number)
 	local key = "wpn:" .. tostring(motion) .. ":" .. idx
 	local c = comboCache[key]
 	if c == nil then
 		local ok, res = pcall(function()
-			if motion == nil then
-				return CM.CreateCombatCombo("UNARMED", { UNARMED_CHAIN[(idx - 1) % #UNARMED_CHAIN + 1] })
+			if motion == nil or UNARMED_STYLES[motion] then
+				local actions = if motion == nil then UNARMED_CHAIN else UNARMED_STYLES[motion]
+				return CM.CreateCombatCombo("UNARMED", { actions[(idx - 1) % #actions + 1] })
 			end
 			local prof = CM.DescribeWeaponProfiles()[motion]
 			local route = prof and prof.route
