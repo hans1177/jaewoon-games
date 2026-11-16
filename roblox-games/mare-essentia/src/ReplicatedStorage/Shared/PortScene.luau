@@ -2900,6 +2900,33 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				one("Naval", "detail-crate-ropes", 3, 11, 0, lay.freightZ - 9)
 			end
 		end
+		-- [지역 필지 종사자] 실제 세계경제 직업 수가 양수일 때 기존 주민+작업 모션만 배치.
+		-- 신규 고용/저장값은 만들지 않고 모바일은 최대 1명, 그 밖은 최대 2명.
+		local simJobs = info.sim and info.sim.jobs
+		local residents = info.sim and info.sim.residents
+		local visibleWorkers = 0
+		local workerLimit = if touch then 1 else 2
+		for _, work in {
+			{ active = lay.fish, role = "fisher", job = "fisher", label = "어항", z = lay.fishZ, kind = "fish" },
+			{ active = lay.freight, role = "laborer", job = "docker", label = "원자재 하역장", z = lay.freightZ, kind = "carry" },
+		} do
+			if visibleWorkers >= workerLimit then break end
+			if work.active and (not simJobs or (simJobs[work.role] or 0) > 0)
+				and (type(residents) ~= "number" or residents >= 5 * (visibleWorkers + 1)) then
+				local at = Vector3.new(-11, 0, work.z + (if work.z > 0 then -6 else 6))
+				local npc = villager(folder, at, 0, C(126, 118, 105), rng, "Rogue")
+				if npc then
+					visibleWorkers += 1
+					npc.Name = "HarborWorker_" .. work.job
+					npc:SetAttribute("Job", work.job)
+					npc:SetAttribute("Workplace", work.label)
+					npc:SetAttribute("HarborPlot", if work.job == "fisher" then "fishery" else "freight")
+					table.insert(walkers, { model = npc, base = npc:GetPivot(), mode = "stay", kind = work.kind,
+						phase = rng:NextNumber(0, 10), job = work.job,
+						workKinds = { work.kind, "inspect" }, leisureKinds = { "talk", "look" } })
+				end
+			end
+		end
 		if lay.fort then
 			one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
 			if lvl >= 3 then
