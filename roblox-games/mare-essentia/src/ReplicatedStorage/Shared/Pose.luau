@@ -808,7 +808,8 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
 		set(m.rightArm, A(rightForward * armForward - rightBack * armBack, 0, -0.06))
 		-- 팔꿈치는 앞에 나오는 팔만 확실히 접고 뒤팔은 가볍게 구부린다.
-		local elbowFront, elbowBack = if run then 0.95 else 0.36, if run then 0.38 else 0.15
+		local elbowFront = if run then 0.95 else 0.36
+		local elbowBack = if run then 0.38 else 0.15
 		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
 		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.34 else 0.16)
