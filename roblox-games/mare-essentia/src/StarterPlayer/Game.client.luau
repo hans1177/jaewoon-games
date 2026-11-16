@@ -1735,9 +1735,9 @@ local HUD_MENU_TINT = {
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
 }
 local HUD_MENU_ART = {
-	gear = "", deck = "cc0_book", auto = "harbor", help = "",
-	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "chart_port",
-	journal = "quest", chart = "map", yard = "yard", explore = "explore",
+	gear = "", deck = "codex", auto = "harbor", help = "",
+	view = "view", trade = "trade", crew = "harbor", recruit = "harbor", scholar = "codex", route = "route",
+	journal = "map", chart = "map", yard = "yard", explore = "explore",
 	codex = "codex", tech = "tech", quest = "quest", battle = "battle", status = "status",
 }
 function H.hudShortcut(parent, name, key, label, dockItem)
@@ -7941,14 +7941,14 @@ RENDERERS.yard = renderYard
 
 -- 탭 아이콘: 이미 등록된 3D 모델(Relics·Naval·People)을 한 가지 표현으로 통일해 쓴다.
 H.TAB_ICON = {
-	-- 탭 아이콘은 화면 오른쪽 위 메뉴와 같은 그림(Menu)을 써서 통일한다. 탭마다 뜻이 다른 그림을 쓴다.
-	board = { "Menu", "quest" }, quest = { "Menu", "cc0_book" }, recruit = { "Menu", "cc0_helmet" }, explore = { "Menu", "explore" },
+	-- [메뉴 통일] 사각 배경이 인쇄된 3D 카드 원화 대신 투명한 황동 단색 원화만 사용한다.
+	-- 시설마다 의미가 통하는 별개 그림을 선택하고 기존 탭 동작은 변경하지 않는다.
+	board = { "Menu", "quest" }, quest = { "Menu", "map" }, recruit = { "Menu", "status" }, explore = { "Menu", "explore" },
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
-	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Menu", "cc0_fireball" }, gwent = { "Menu", "cc0_shield2" },
-	scholar = { "Menu", "cc0_chest" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
-	status = { "Menu", "status" }, crew = { "Menu", "cc0_shield" }, cards = { "Menu", "cc0_book" },
+	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Menu", "yard" }, gwent = { "Symbol", "♠" },
+	scholar = { "Menu", "quest" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
+	status = { "Menu", "status" }, crew = { "Menu", "harbor" }, cards = { "Menu", "codex" },
 }
-H.TAB_ICON_FLAT = { crew = "menu_crew", gwent = "menu_gwent", cards = "menu_cards", war = "menu_war" }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
 		if child:IsA("TextButton") then
@@ -7973,16 +7973,27 @@ function H.renderTabs()
 		b.TextColor3 = INK
 		b.TextSize = 16
 		local ti = H.TAB_ICON[id]
-		-- 3D 소품 대신 다른 탭과 같은 금빛 그림 아이콘이 등록돼 있으면 그것을 쓴다 (미등록이면 기존 표시 유지)
-		local flat = H.TAB_ICON_FLAT[id]
-		if flat and AssetIds["Menu/" .. flat] then
-			ti = { "Menu", flat }
-		end
 		if ti then
-			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
+			-- [카드 배틀] 트럼프 무늬로 의미를 구분한다. 문자도 같은 잉크색·투명 바탕으로 인쇄한다.
+			local icon
+			if ti[1] == "Symbol" then
+				icon = Instance.new("TextLabel")
+				icon.Size = UDim2.fromOffset(26, 26)
+				icon.BackgroundTransparency = 1
+				icon.BorderSizePixel = 0
+				icon.Text = ti[2]
+				icon.TextSize = 26
+				icon.Font = Enum.Font.GothamBlack
+				icon.TextColor3 = COLORS.brown
+				icon.TextXAlignment = Enum.TextXAlignment.Center
+				icon.TextYAlignment = Enum.TextYAlignment.Center
+			else
+				icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
+			end
 			icon.Name = "TabIcon"
 			icon.Position = UDim2.new(0, -28, 0.5, -13)
 			icon.ZIndex = b.ZIndex + 2
+			icon.Parent = b
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft = UDim.new(0, 32)
 			pad.Parent = b
