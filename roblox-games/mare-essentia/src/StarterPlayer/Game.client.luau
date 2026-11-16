@@ -851,7 +851,12 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 32) * 0.42), 13, 19)
 	b.TextWrapped = true
+	-- [모바일 실제 입력] 장식용 종이·황동 테두리가 클릭을 가리지 않도록 버튼이 카드보다 앞에서 입력을 받는다.
 	b.AutoButtonColor = active
+	b.Active = active
+	b.Interactable = active
+	b.Selectable = active
+	b.ZIndex = parent.ZIndex + 2
 	b.BorderSizePixel = 0
 	corner(b, 6)
 	b.Parent = parent
@@ -889,6 +894,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		bevel.Position = UDim2.fromOffset(3, 3)
 		bevel.Size = UDim2.new(1, -6, 1, -6)
 		bevel.ZIndex = b.ZIndex + 1
+		bevel.Active = false
 		bevel.Parent = b
 		corner(bevel, 4)
 		local inner = Instance.new("UIStroke")
@@ -905,6 +911,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		mark.Position = UDim2.fromOffset(5, 8)
 		mark.Size = UDim2.new(0, 4, 1, -16)
 		mark.ZIndex = b.ZIndex + 1
+		mark.Active = false
 		mark.Parent = b
 		mark.Visible = size.X.Scale > 0 or size.X.Offset >= 60
 		corner(mark, 2)
@@ -917,6 +924,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		rivet.BackgroundTransparency = 0.18
 		rivet.BorderSizePixel = 0
 		rivet.ZIndex = b.ZIndex + 1
+		rivet.Active = false
 		rivet.Parent = b
 		rivet.Visible = size.X.Scale > 0 or size.X.Offset >= 88
 		corner(rivet, 3)
