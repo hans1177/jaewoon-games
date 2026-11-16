@@ -2735,7 +2735,45 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
 		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
-		local sd = lay.side
+		-- [항만 필지 경계] 각 필지의 좌표·용도를 장면에 공개하고 승인된 실물 경계 기둥으로 구분한다.
+		-- 경계 자산은 비충돌 처리해 어항·조선소 보행/입출항 루트를 막지 않는다.
+		local plotCount = 0
+		local touch = game:GetService("UserInputService").TouchEnabled
+		for _, plot in lay.plots do
+			if plot.active then
+				plotCount += 1
+				folder:SetAttribute("HarborPlot_" .. plot.id, ("%d,%d,%d,%d"):format(plot.x, plot.z, plot.halfX, plot.halfZ))
+				local corners = if touch then 2 else 4
+				for i = 1, corners do
+					-- 조선소 경계는 물속이 아닌 육지 쪽 모서리만, 접안구역은 항로 부표만 쓴다.
+					local cx = if plot.id == "quay" then plot.x + plot.halfX
+						elseif plot.id == "shipyard" then plot.x - plot.halfX
+						else plot.x + (if i % 2 == 0 then plot.halfX else -plot.halfX)
+					local cz = plot.z + (if i <= 2 then -plot.halfZ else plot.halfZ)
+					if touch then cz = plot.z + (if i == 1 then -plot.halfZ else plot.halfZ) end
+					local marker = importedModel(folder,
+						if plot.id == "quay" then "Naval" else "Town",
+						if plot.id == "quay" then "buoy" else "fence_post",
+						Vector3.new(cx, if plot.id == "quay" then 0.8 else 0, cz),
+						if plot.id == "quay" then 2.8 else 3.1, false)
+					if marker then
+						marker.Name = "HarborPlot_" .. plot.id .. "_Boundary_" .. i
+						marker:SetAttribute("HarborPlot", plot.id)
+						marker:SetAttribute("PortId", info.portId)
+						marker:SetAttribute("PlotCenterX", plot.x)
+						marker:SetAttribute("PlotCenterZ", plot.z)
+						marker:SetAttribute("PlotHalfWidth", plot.halfX)
+						marker:SetAttribute("PlotHalfDepth", plot.halfZ)
+						if i == 1 then
+							local anchor = marker:FindFirstChildWhichIsA("BasePart", true)
+							if anchor then sign(folder, anchor, plot.label, C(237, 215, 157), 3, true) end
+						end
+					end
+				end
+			end
+		end
+		folder:SetAttribute("HarborPlotCount", plotCount)
+		folder:SetAttribute("HarborPlotOwnership", "VISUAL_ONLY")
 		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
 		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
 		if lay.farm then
