@@ -103,6 +103,55 @@ local Ships: { [string]: ShipDef } = {
 	},
 }
 
+-- [7대륙 선박 제작설계] 카드배틀 6대륙과 가상 미지의 땅. 실물 3D 원본 확보 전 설계 전용.
+-- 실존 1~5단계, 아스테리아 2~6단계. 단계와 미지의 땅 3~8% 우위는 현행 구매·성능·저장 수치에 영향 없음.
+local BlueprintFactions = {
+	{ id="europe", name="유럽" },
+	{ id="east_asia", name="동아시아" },
+	{ id="new_world", name="신대륙" },
+	{ id="middle_east", name="중동" },
+	{ id="southeast_asia", name="남·동남아" },
+	{ id="africa", name="아프리카" },
+	{ id="lost", name="미지의 땅" },
+}
+local Blueprints = {
+	{ id="cog", name="코그선", faction="europe", stage=1, era="12~15세기", hull="깊고 둥근 북해 화물선체", rig="중앙 사각돛 1개", deck="선수·선미 방어루", remodel="높은 선루와 둥근 화물창을 전용 메시로 개조", card="eu_04", existingId="cog", proposedEdge=nil },
+	{ id="caravel", name="캐러벨", faction="europe", stage=2, era="15~16세기", hull="얕은 흘수의 탐사 선체", rig="삼각돛·사각돛 혼합", deck="낮은 선수루", remodel="가벼운 선체와 경사 돛대를 고증 개조", card="eu_01", existingId="caravel", proposedEdge=nil },
+	{ id="carrack", name="캐랙", faction="europe", stage=3, era="15~17세기", hull="깊은 대형 원양 선체", rig="앞 사각돛·뒤 삼각돛", deck="높은 선수루·선미루", remodel="깊은 선창·선미루·혼합 범장 개조", card="eu_02", existingId="carrack", proposedEdge=nil },
+	{ id="galleon", name="갈레온", faction="europe", stage=4, era="16~18세기", hull="길고 높은 무장 원양 선체", rig="다중 사각돛", deck="양현 함포갑판·후미 지휘부", remodel="포문열·장식 선미·삭구 실물 개조", card="eu_03", existingId="galleon", proposedEdge=nil },
+	{ id="ship_of_line", name="전열함", faction="europe", stage=5, era="17~19세기", hull="폭넓은 복층 전투 선체", rig="세 돛대 사각범장", deck="다층 함포갑판", remodel="다층 포문열과 거대 범장을 전용 개조", card="eu_10", existingId=nil, proposedEdge=nil },
+	{ id="kobaya", name="고바야", faction="east_asia", stage=1, era="16~17세기", hull="가벼운 일본 연안 전투 선체", rig="노·작은 보조돛", deck="경량 방호판", remodel="좁은 노좌와 낮은 선측 개조", card="ea_10", existingId=nil, proposedEdge=nil },
+	{ id="sekibune", name="세키부네", faction="east_asia", stage=2, era="16~17세기", hull="길고 빠른 일본식 노선", rig="양측 노열·보조돛", deck="병사 갑판·높은 방패판", remodel="일본식 방호판과 노 위치 재구성", card="ea_09", existingId="sekibune", proposedEdge=nil },
+	{ id="panokseon", name="판옥선", faction="east_asia", stage=3, era="16~17세기", hull="넓은 평저형 목조 전선", rig="다수 노·보조돛", deck="노잡이 하갑판·화포 상갑판", remodel="평저·이층 갑판·화포자리 전용 고증", card="ea_01", existingId=nil, proposedEdge=nil },
+	{ id="geobukseon", name="거북선", faction="east_asia", stage=4, era="16세기 말", hull="폭넓고 견고한 평저 전선", rig="다수 노·보조돛", deck="덮개형 전투 갑판", remodel="덮개·용두·측면 포구 구조 전면 개조", card="ea_02", existingId="geobukseon", proposedEdge=nil },
+	{ id="treasure_ship", name="명나라 보선", faction="east_asia", stage=5, era="15세기", hull="격벽이 있는 대형 원양 수송선", rig="다중 돛대·댓살 돛", deck="대형 선창·후미 조타부", remodel="중국식 격벽·범장·조타 장치 전용 제작", card="ea_07", existingId=nil, proposedEdge=nil },
+	{ id="maya_canoe", name="마야 교역 카누", faction="new_world", stage=1, era="고대~16세기", hull="긴 단목 파낸 연안 선체", rig="노·삿대", deck="열린 화물갑판", remodel="단목 선형과 얕은 선측 원본 개조", card="nw_03", existingId=nil, proposedEdge=nil },
+	{ id="carib_canoe", name="카리브 전투 카누", faction="new_world", stage=2, era="15~17세기", hull="좁고 긴 단목 선체", rig="집단 노", deck="긴 다인승 갑판", remodel="가늘고 높은 선수·다중 노좌 개조", card="nw_01", existingId=nil, proposedEdge=nil },
+	{ id="titicaca_reed", name="티티카카 갈대배", faction="new_world", stage=3, era="전통~현대", hull="토토라 갈대 다발 선체", rig="노·작은 돛", deck="가벼운 적재부", remodel="갈대 묶음 선체의 정확한 실물 메시 필요", card="nw_06", existingId=nil, proposedEdge=nil },
+	{ id="inuit_kayak", name="이누이트 카약", faction="new_world", stage=4, era="전통~현대", hull="가죽으로 덮은 세장형 단인선", rig="양날 노", deck="방수 덮개·승선구", remodel="가죽 덮개·나무 골조·승선구 고증 개조", card="nw_09", existingId=nil, proposedEdge=nil },
+	{ id="cedar_canoe", name="북서해안 삼나무 카누", faction="new_world", stage=5, era="전통~19세기", hull="대형 삼나무 통목 선체", rig="집단 노", deck="긴 개방형 갑판", remodel="높은 조각 선수·선미의 실물 곡면 개조", card="nw_10", existingId=nil, proposedEdge=nil },
+	{ id="zaruk", name="자루크", faction="middle_east", stage=1, era="근세 인도양", hull="작고 얕은 어로 선체", rig="소형 삼각돛·노", deck="열린 연안 작업갑판", remodel="곡선 선수·삼각돛 비율 개조", card="me_09", existingId=nil, proposedEdge=nil },
+	{ id="sambuk", name="삼부크", faction="middle_east", stage=2, era="16~19세기", hull="곡선이 큰 중형 선체", rig="경사 돛대·삼각돛", deck="화물갑판", remodel="돛대 각도·굽은 뱃머리 고증", card="me_04", existingId=nil, proposedEdge=nil },
+	{ id="dhow", name="아라비아 다우선", faction="middle_east", stage=3, era="중세~19세기", hull="높은 선수·깊은 화물 선체", rig="대형 삼각돛", deck="향신료 선창·선미 조타", remodel="긴 삼각범장·곡선 선미 전용 개조", card="me_01", existingId="dhow", proposedEdge=nil },
+	{ id="baghlah", name="바글라", faction="middle_east", stage=4, era="18~19세기", hull="크고 넓은 다우 화물선", rig="대형 삼각돛 2매", deck="장식 선미·넓은 화물창", remodel="장식 선미·경사 돛대·적재부 고증", card="me_02", existingId="baghlah", proposedEdge=nil },
+	{ id="kadirga", name="오스만 갤리선", faction="middle_east", stage=5, era="15~18세기", hull="길고 낮은 지중해 전투선", rig="다수 노·삼각돛", deck="노좌열·선수 함포", remodel="노좌 수열·선수 포대 대폭 개조", card="me_07", existingId="kadirga", proposedEdge=nil },
+	{ id="prau", name="말레이 프라우", faction="southeast_asia", stage=1, era="전통~19세기", hull="낮고 빠른 열도형 선체", rig="비대칭돛·노", deck="측면 부력 부재", remodel="아웃리거와 비대칭돛 고증", card="sa_01", existingId="prau", proposedEdge=nil },
+	{ id="pattamar", name="말라바르 쾌속선", faction="southeast_asia", stage=2, era="17~19세기", hull="인도 서해안 세장형 선체", rig="경사 범장", deck="화물갑판·후미 조타", remodel="장대형 범장·인도식 선체 개조", card="sa_06", existingId="pattamar", proposedEdge=nil },
+	{ id="coracora", name="코라코라 전선", faction="southeast_asia", stage=3, era="16~19세기", hull="길고 넓은 다인승 전투선", rig="집단 노·보조돛", deck="양현 노좌·중앙 병력갑판", remodel="열도식 다인승 노열과 지지대 제작", card="sa_05", existingId=nil, proposedEdge=nil },
+	{ id="chola_warship", name="촐라 전함", faction="southeast_asia", stage=4, era="11~13세기", hull="남인도 원정용 목조 선체", rig="범장·노 병용", deck="병력·보급 공간", remodel="사료 선형 검수 후 선체·범장 개조", card="sa_02", existingId=nil, proposedEdge=nil },
+	{ id="spice_flagship", name="향신료 원정 기함", faction="southeast_asia", stage=5, era="15~18세기", hull="인도양 대형 화물선 선형", rig="혼합 범장", deck="큰 향신료 선창", remodel="대표 선단형 개조·단일 실존 함종이라고 주장 금지", card="sa_09", existingId=nil, proposedEdge=nil },
+	{ id="nile_papyrus", name="나일 파피루스배", faction="africa", stage=1, era="고대~근세", hull="묶은 파피루스 부력 선체", rig="노·소형 돛", deck="가벼운 탑승부", remodel="갈대 다발 실물 메시 확보 필수", card="af_04", existingId=nil, proposedEdge=nil },
+	{ id="pirogue", name="세네갈 피로그", faction="africa", stage=2, era="전통~19세기", hull="긴 단목 연안선", rig="집단 노·삿대", deck="열린 어업갑판", remodel="단목 선형·노좌 고증 개조", card="af_06", existingId="pirogue", proposedEdge=nil },
+	{ id="mtepe", name="스와힐리 므테페", faction="africa", stage=3, era="중세~19세기", hull="봉합한 목조 판재 선체", rig="큰 삼각돛", deck="연안 화물갑판", remodel="봉합식 판재와 삼각범장 전용 고증", card="af_01", existingId="mtepe", proposedEdge=nil },
+	{ id="zanzibar_dhow", name="잔지바르 다우선", faction="africa", stage=4, era="17~19세기", hull="동아프리카 중형 화물선", rig="장대형 삼각돛", deck="향신료 선창·후미 조타", remodel="동아프리카형 선미·삼각돛 개조", card="af_02", existingId=nil, proposedEdge=nil },
+	{ id="madagascar_outrigger", name="마다가스카르 아웃리거", faction="africa", stage=5, era="전통~19세기", hull="측면 부재가 있는 세장 선체", rig="노·보조돛", deck="중앙 탑승부·지지대", remodel="대나무 부재와 결속구 메시 개조", card="af_09", existingId=nil, proposedEdge=nil },
+	{ id="mist_seeker", name="안개 해도 탐사선", faction="lost", stage=2, era="가상 2단계", hull="가늘고 빠른 원양 탐사선", rig="낮은 혼합돛", deck="별도 관측실·해도갑판", remodel="안개 관측장치와 길잡이 문양 개조", card=nil, existingId=nil, proposedEdge=0.03 },
+	{ id="lemuria_scout", name="레무리아 풍향선", faction="lost", stage=3, era="가상 3단계", hull="폭풍 대응 세장형 선체", rig="경사 삼각돛 다수", deck="보조 조타대·풍향 관측부", remodel="바람 관측대와 가상 문양 개조", card="lo_04", existingId=nil, proposedEdge=0.04 },
+	{ id="atlantis_carrier", name="아틀란티스 탐사 기함", faction="lost", stage=4, era="가상 4단계", hull="넓은 유적 탐사 대형선", rig="복합 범장", deck="유물창·관측 갑판", remodel="청동 장식·고대 문양 선미 개조", card="lo_01", existingId=nil, proposedEdge=0.05 },
+	{ id="flying_dutchman", name="플라잉 더치맨", faction="lost", stage=5, era="가상 5단계", hull="낡은 무장 원양 범선", rig="손상된 다중 사각돛", deck="파손 포구·선미루", remodel="기존 등록 유령선 모델 기반 고증 개조", card="lo_21", existingId=nil, proposedEdge=0.06 },
+	{ id="astheria_flagship", name="아스테리아 해도함", faction="lost", stage=6, era="가상 6단계", hull="대형 장거리 미지 탐사선", rig="다중 혼합돛", deck="천문 관측대·최종 해도실", remodel="일곱 해역 문양·고유 돛대 구조 개조", card=nil, existingId=nil, proposedEdge=0.08 },
+}
+
 -- 항만청 면허: 등급 N+1 배를 사려면 면허 N단계가 필요하다.
 local Licenses = {
 	{ name = "연안 항해 면허", fame = 30, fee = 300 },
@@ -185,6 +234,8 @@ end
 return {
 	Ships = Ships,
 	Order = Order,
+	BlueprintFactions = BlueprintFactions,
+	Blueprints = Blueprints,
 	Licenses = Licenses,
 	ClassNames = ClassNames,
 	Cannons = Cannons,

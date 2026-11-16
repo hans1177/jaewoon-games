@@ -67,6 +67,7 @@ end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
+local ShipsData = require(Shared:WaitForChild("Ships"))
 local PortEras = require(Shared:WaitForChild("PortEras"))
 local Geo = require(Shared:WaitForChild("Geo"))
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
@@ -6045,6 +6046,29 @@ local function renderYard()
 	else
 		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
 	end
+	-- [7대륙 선박 설계도] 전용 실물 모델이 없는 함종은 설계로만 보여 준다.
+	local blueprintHead = add(function() return mkHeader(content, "7대륙 선박 35종 · 제작설계") end)
+	blueprintHead.Name = "YardSectionBlueprints"
+	H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
+	add(function() return mkLabel(content, "실존 6대륙 각 1~5단계, 미지의 땅 2~6단계. 모델 원본·사용권한·시각검증 전에는 게임 성능에 적용하지 않아.", 13, COLORS.muted, false) end)
+	for _, category in ShipsData.BlueprintFactions do
+		add(function()
+			return mkRow(content, category.name .. " · 선박 5종", if category.id == "lost" then "아스테리아 가상 선박 · 3~8% 우위 설계" else "시대·선체·돛·갑판 전용 제작", {
+				{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
+					onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
+			}, 70)
+		end)
+	end
+	for _, plan in ShipsData.Blueprints do
+		if plan.faction == H.shipBlueprintFaction then
+			add(function()
+				local info = string.format("%s · %s\\n선체: %s\\n추진: %s\\n갑판: %s\\n모델 수정: %s\\n카드: %s",
+					plan.era, if plan.existingId then "기존 함종 관련·전용 메시 검수 전" else "신규 설계·원본 미확보", plan.hull, plan.rig, plan.deck, plan.remodel, plan.card or "별도 연결 대기")
+				if plan.proposedEdge then info ..= string.format("\\n가상 특수성능 +%d%% 설계안 · 미적용", math.floor(plan.proposedEdge * 100 + 0.5)) end
+				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 196)
+			end)
+		end
+	end
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "현재 기함의 매각 보상 50%를 뺀 금액이 실결제야. 선박을 바꾸면 기존 대포·보강은 기본으로 돌아가.", 14, COLORS.muted, false) end)
@@ -6183,14 +6207,14 @@ function openYardHall()
 
 		-- [조선소 항목 탐색] 기존 renderYard의 제목으로 바로 이동. 별도 메뉴/저장 구조를 만들지 않는다.
 		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, 44), COLORS.leather)
-		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(0.25, -6, 0, 40), function()
+		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
+			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(0.2, -6, 0, 40), function()
 				local target = scroll:FindFirstChild(entry[2])
 				if target then
 					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
 				end
 			end, true)
-			btn0.Position = UDim2.new((i - 1) / 4, 4, 0, 2)
+			btn0.Position = UDim2.new((i - 1) / 5, 4, 0, 2)
 			btn0.TextSize = 14
 		end
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
