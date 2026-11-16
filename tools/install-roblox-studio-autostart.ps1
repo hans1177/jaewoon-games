@@ -52,10 +52,7 @@ $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powersh
 
 # 감독 스크립트를 저장소 폴더가 아닌 안정된 위치로 복사한다(저장소를 옮기거나 브랜치를 바꿔도 안 끊김).
 $stateDir = Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioAutostart'
-New-Item -ItemType Directory -Path $stateDir -Force | Out-Null
 $installed = Join-Path $stateDir 'roblox-studio-autostart-supervisor.ps1'
-Copy-Item -LiteralPath $supervisor -Destination $installed -Force
-
 $configPath = Join-Path $stateDir 'config.json'
 # [기존 시작 프로그램] 공식 GitHub 자동복구가 설치한 같은 러너용 VBS 감시기는 그대로 재사용한다.
 # 두 감시기가 run.cmd 를 동시에 실행하면 GitHub 세션 충돌이 생기므로 감독 스크립트는 Studio 만 관리한다.
@@ -84,8 +81,9 @@ if (-not $existingRunnerStartup -and $startup) {
       (Test-Path -LiteralPath $launcherPath -PathType Leaf)) {
     $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcutPath)
     $launcher = Get-Content -LiteralPath $launcherPath -Raw
+    $quotedRunner = "'" + $runner.Replace("'", "''") + "'"
     if ([string]$shortcut.Arguments -like ('*' + $launcherPath + '*') -and
-        $launcher.Contains(('\'' + $runner.Replace("'", "''") + '\''')) -and
+        $launcher.Contains($quotedRunner) -and
         $launcher.Contains('run.cmd')) {
       $existingRunnerStartup = $true
       Write-Host 'STUDIO_AUTOSTART_EXISTING_RUNNER_SHORTCUT=REUSED'
@@ -102,6 +100,8 @@ if ($CheckOnly) {
   return
 }
 # [설치] 기존 시작 프로그램과 충돌하지 않는 설정만 저장한다.
+New-Item -ItemType Directory -Path $stateDir -Force | Out-Null
+Copy-Item -LiteralPath $supervisor -Destination $installed -Force
 [pscustomobject]@{ placeId = $PlaceId; universeId = $UniverseId; startStudio = $startStudio; startRunner = $startRunner } |
   ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
 Write-Host ('STUDIO_AUTOSTART_CONFIG=' + $configPath)
