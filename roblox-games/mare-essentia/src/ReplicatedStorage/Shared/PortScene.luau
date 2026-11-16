@@ -3040,18 +3040,44 @@ function PortScene.build(info, onFacility)
 					local cam = workspace.CurrentCamera
 					local p0 = w.base.Position
 					local flat = if cam then Vector3.new(cam.CFrame.Position.X - p0.X, 0, cam.CFrame.Position.Z - p0.Z) else Vector3.zero
+					-- 마을 주민끼리 실제로 가까이 서 있는 쌍만 대화와 물건 주고받기 모션을 맞춘다.
+					-- 짝 탐색은 모델마다 최초 한 번만 한다(모바일에서 매 프레임 전체 탐색 금지).
+					if w.kind == "talk" and w.socialPartner == nil then
+						w.socialPartner = false
+						for _, other in walkers do
+							if other ~= w and other.mode == "stay" and other.kind == "talk" and other.model.Parent
+								and (other.base.Position - p0).Magnitude < 11 then
+								w.socialPartner = other
+								break
+							end
+						end
+					end
+					local direction = flat
+					local partner = w.socialPartner
+					if partner and partner.model.Parent then
+						local toward = partner.base.Position - p0
+						direction = Vector3.new(toward.X, 0, toward.Z)
+						target = 0.82
+						-- 같은 위상으로 두 주민이 주는 사람/받는 사람 역할을 나눠 움직인다.
+						local give = p0.X < partner.base.Position.X or (p0.X == partner.base.Position.X and p0.Z < partner.base.Position.Z)
+						local social = now % 20
+						kind = if social < 6 then (if give then "talk" else "nod")
+							elseif social < 10 then (if give then "offer" else "receive")
+							elseif social < 16 then (if give then "listen" else "talk")
+							else "inspect"
+					end
+					-- 가까운 손님에게 먼저 인사한 뒤 대화 상대를 다시 바라본다.
 					if flat.Magnitude > 1 and flat.Magnitude < 26 and (now + w.phase * 1.7) % 13 < 2.6 then
-						kind, target = "wave", 0.85
+						kind, target, direction = "wave", 0.85, flat
 					end
 					w.ga = (w.ga or 0) + (target - (w.ga or 0)) * 0.1
-					if w.ga > 0.01 then
-						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + flat.Unit), w.ga))
-					elseif w.ga ~= 0 then
+					if w.ga > 0.01 and direction.Magnitude > 0.01 then
+						w.model:PivotTo(w.base:Lerp(CFrame.lookAt(p0, p0 + direction.Unit), w.ga))
+					elseif w.ga ~= 0 and target == 0 then
 						w.ga = 0
 						w.model:PivotTo(w.base)
 					end
-					-- 대화 중에도 듣기/물건 살피기를 교대해 동일한 제스처 반복을 줄인다.
-					if kind == "talk" then
+					if kind == "talk" and not partner then
 						local social = (now + w.phase * 2.3) % 19
 						kind = if social < 5 then "talk" elseif social < 9 then "listen" elseif social < 12 then "point" elseif social < 15 then "inspect" else "talk"
 					elseif kind == "look" then
