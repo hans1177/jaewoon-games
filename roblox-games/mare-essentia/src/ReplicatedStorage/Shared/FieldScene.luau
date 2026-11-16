@@ -1625,6 +1625,10 @@ function FieldScene.start(opts)
 				piece("석궁 활대", Vector3.new(1.25, 0.12, 0.12), CFrame.new(side * 0.6, 0.06, -1.9) * CFrame.Angles(0, side * 0.17, 0), darkWood, Enum.Material.Wood)
 				piece("석궁 시위", Vector3.new(1.1, 0.03, 0.03), CFrame.new(side * 0.56, 0.06, -1.6), Color3.fromRGB(211, 198, 164))
 			end
+		elseif weapon.family == "spear" then
+			-- 창 모델 로딩이 늦어도 검 모양으로 잘못 보이지 않게 한다.
+			piece("창 자루", Vector3.new(0.18, 0.19, 4.1), CFrame.new(0, 0, -1.55), wood, Enum.Material.Wood)
+			piece("창 머리", Vector3.new(0.26, 0.16, 0.75), CFrame.new(0, 0, -3.95), steel, Enum.Material.Metal, "WedgePart")
 		elseif weapon.family == "axe" or weapon.family == "blunt" then
 			piece("무기 자루", Vector3.new(0.16, 0.18, 2.8), CFrame.new(0, 0, -1.15), wood, Enum.Material.Wood)
 			if weapon.family == "axe" then
