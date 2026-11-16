@@ -168,8 +168,13 @@ test('central gameplay evolution policy binds verified design resume to the cano
 test('verified design resumes the existing scheduler with fail-closed central map evidence',()=>{
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  // [중앙 구조 맵] 실제 현행 스키마를 검사한다. 실행 권한은 로드맵에 있고 위반 스코프만 차단한다.
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(architecture.constitutionalEnforcement.policyQaRequired,true);
+  assert.equal(architecture.constitutionalEnforcement.specificScopeFailureAction,'QUARANTINE_OR_REQUEUE_RECOVER_REPLAN');
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
   const resume=roadmap.continuousGameplaySystemEvolutionContract.designContext;
   assert.equal(resume.resumeSchedulerBinding,'.github/workflows/vibe2-24h-runner.yml');
