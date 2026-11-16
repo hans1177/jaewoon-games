@@ -777,16 +777,24 @@ do
 	for g, c in PC.ClassOf do
 		if not D.Ports.Goods[g] then table.insert(pcBad, "분류 품목 " .. g) end
 	end
-	local unclassed, totalProd = 0, 0
+	-- [기존 원료 분류] 가공품·지역 브랜드는 제조 상품이므로 원자재 분모에서 제외한다.
+	local unclassed, totalProd, manufactured, branded = 0, 0, 0, 0
 	for _, port in D.Ports.Ports do
 		for _, g in (port.produces or {}) do
-			totalProd += 1
-			if not PC.ClassOf[g] then unclassed += 1 end
+			if PC.BrandById[g] then
+				branded += 1
+			elseif PC.ByGood[g] then
+				manufactured += 1
+			else
+				totalProd += 1
+				if not PC.ClassOf[g] then unclassed += 1 end
+			end
 		end
 	end
 	if #pcBad > 0 then print(table.concat(pcBad, "\n")) end
 	check("생산 자원: 공정·분류가 건물·학문·품목에 연결됨 (" .. #PC.Recipes .. "공정)", #pcBad == 0 and #PC.Recipes >= 25)
-	check("생산 자원: 항구 특산의 절반 이상이 원자재 종류로 분류된다 (분류 없음 " .. unclassed .. "/" .. totalProd .. ")", unclassed * 2 <= totalProd)
+	check("생산 자원: 실제 원료 특산의 절반 이상이 원자재 종류로 분류된다 (분류 없음 " .. unclassed .. "/" .. totalProd .. ")", unclassed * 2 <= totalProd)
+	check("생산 자원: 기존 가공품과 지역 브랜드를 원료가 아닌 제조 상품으로 분리", manufactured > 0 and branded == #PC.Brands)
 	check("생산 자원: 레벨이 오르면 가공 가능한 공정이 늘어난다", #PC.craftable({ "wool", "iron", "gems" }, 1) < #PC.craftable({ "wool", "iron", "gems" }, 4))
 	local dsum = 0
 	for _, d in S.Village.Districts do dsum += #d.sub end
