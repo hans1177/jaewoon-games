@@ -1056,7 +1056,7 @@ end
 
 -- 항구 구역 계획: 항구가 만드는 물건(생산품)과 발전도로 구역의 크기·종류가 달라진다.
 -- 농원(가축 울타리) · 어항(건조대·쪽배) · 광산·벌목 하역장 · 해안 포대(군사)가 항구마다 다르게 선다.
-local function zoneLayout(portId, lvl)
+local function zoneLayout(portId, lvl, shipyardBuilt)
 	local port = PortData.Ports[portId]
 	local prod = {}
 	for _, g in (port and port.produces) or {} do
@@ -1074,10 +1074,18 @@ local function zoneLayout(portId, lvl)
 		farm = any({ "wool", "cheese", "wine", "olive_oil", "rice", "maize", "cotton", "beer", "leather", "dates", "sugar" }),
 		timber = any({ "timber", "mahogany", "kauri", "logwood", "brazilwood", "sandalwood" }),
 		mine = any({ "iron", "coal", "tin", "copper", "gold", "silver", "gems" }),
-		fort = (port and port.shipyard) or lvl >= 4,
+		fort = lvl >= 4 or (shipyardBuilt == true and lvl >= 3),
 		trader = port ~= nil and #port.produces >= 4,
-		side = zr:NextInteger(0, 1) * 2 - 1, -- 포대가 서는 쪽 (반대쪽은 어항·하역장)
+		side = zr:NextInteger(0, 1) * 2 - 1,
 	}
+	-- [항만 실제 필지] 어항·자재 적치·경비 구역을 조선소와 분리한다.
+	-- 기존 조선소는 남쪽 -48~-108, 세관·항만청은 중앙, 접안 잔교는 바다 x>=22.
+	-- 같은 항구·단계에 언제나 같은 위치. 선박 항로와 시장·주택 필지를 침범하지 않는다.
+	local shore = if shipyardBuilt then 1 else -lay.side
+	lay.fishZ = shore * 128
+	lay.freightZ = shore * 209
+	lay.fortZ = if shipyardBuilt then -169 else lay.side * 128
+	lay.shipyardBuilt = shipyardBuilt == true
 	-- 별도 축사 없이 발전 단계에 따라 열린 목장 구역이 늘어난다(기존 세계경제 저장값 불변).
 	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
 	return lay
@@ -1425,7 +1433,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
 			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
 		end
-		local lay = zoneLayout(info.portId, lvl)
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard)
 		local has = {}
 		for _, sp in list do
 			has[sp] = true
@@ -2710,7 +2718,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		-- ===== 구역 배치: 발전도와 생산품에 따라 항구마다 다르게 선다 =====
-		local lay = zoneLayout(info.portId, lvl)
+		local lay = zoneLayout(info.portId, lvl, info.hasShipyard)
 		local sd = lay.side
 		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
 		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
