@@ -1,5 +1,5 @@
 --!strict
--- KnowledgeCards.luau · 지식카드 원본 데이터 / 별도 종류·획득경로·학문·희귀도 분류
+-- KnowledgeCards.luau · 기존 지식카드 정규 데이터 / 개체·관계·근거·분류 메타데이터
 -- 지식 카드(세계 백과). 새 항목은 이 테이블에 추가만 하면 도감이 늘어난다.
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
@@ -14,10 +14,19 @@ export type Card = {
 	fromYear: number?, -- 실제 등장 시기 이전 연구/발견 방지(명시된 카드만)
 	research: { found: { string }?, quest: string?, assistDisc: string?, allowReported: string? }?, -- 단계형 연구 과정(신규 카드만)
 	visitPort: string?, -- 단순 방문으로 등록되는 카드만 명시. 기존 지점의 드롭률은 바꾸지 않는다.
+	meta: {
+		kind: string?, -- 오인 분류 방지: 신규/애매한 개체는 명시 종류가 기존 이름 유추보다 우선한다.
+		subkind: string?, -- 소재 세부 종류. 없는 기존 카드는 정규 분류에서 추론.
+		entityType: string?, -- 일반 개념(class) / 실존 장소(place) / 학문 과정(process) / 미확인 전승(legend)
+		tags: { string }?, -- 여러 관점에서 찾는 태그(단일 분류와 독립).
+		aliases: { string }?, -- 중복 카드 대신 다른 표기 이름으로 검색.
+		wikidata: string?, -- 검증된 외부 개체 식별자만 기록(CC0 사실 데이터).
+		relations: { { type: string, target: string } }?, -- cardId, good:id, port:id, site:id (유형 있는 연결).
+	}?,
 	reward: { fame: number, coins: number },
 }
 
-local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?, visitPort: string?): Card
+local function card(id: any, name: any, field: any, rarity: any, description: any, source: any, fame: any, coins: any, fromYear: number?, research: any?, visitPort: string?, meta: any?): Card
 	return {
 		id = id,
 		name = name,
@@ -28,22 +37,23 @@ local function card(id: any, name: any, field: any, rarity: any, description: an
 		fromYear = fromYear,
 		research = research,
 		visitPort = visitPort,
+		meta = meta,
 		reward = { fame = fame, coins = coins },
 	}
 end
 
 local Rows: { { any } } = {
 	-- [단순 발견] 입항하면 역사·지형을 알아본다. 탐험 확률·퀘스트·연구 조건은 없으며 보상은 최초 1회만.
-	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp" },
-	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice" },
-	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london" },
+	{ "geo_scheldt_estuary", "스헬더강 하구", "Geography", "Common", "스헬더강이 북해로 흘러드는 하구. 안트베르펜의 내륙 항로와 국제 무역을 이어 주는 지형이다.", "항구 첫 방문", 5, 10, 1517, nil, "antwerp", { entityType = "place", kind = "terrain", tags = { "하구", "강", "해안", "교역" }, relations = { { type = "locatedAt", target = "port:antwerp" } } } },
+	{ "geo_venice_lagoon", "베네치아 석호", "Geography", "Common", "얕은 바다와 작은 섬들이 만든 석호. 물길과 섬 위에 베네치아 도시가 발달했다.", "항구 첫 방문", 5, 10, 1517, nil, "venice", { entityType = "place", tags = { "석호", "해안", "도시", "항로" }, relations = { { type = "locatedAt", target = "port:venice" } } } },
+	{ "site_london_old_bridge", "옛 런던 브리지", "Site", "Uncommon", "중세에 세워진 템스강의 다리. 한때 다리 위에 상점과 집들이 이어져 있어 도시 건축을 관찰할 수 있었다.", "항구 첫 방문", 10, 25, 1517, nil, "london", { entityType = "place", kind = "building", subkind = "다리·교량", tags = { "교량", "도시", "역사 건축" }, relations = { { type = "locatedAt", target = "port:london" } } } },
 	-- 기존 선박 실물은 관찰 카드로, 선체 설계도·부품은 별도 연구 카드로 남긴다. 보유 선박/선박 구매 규칙은 변경하지 않는다.
-	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon" },
-	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville" },
+	{ "ship_caravel", "캐러벨", "Shipbuilding", "Common", "대항해 시대에 연안과 원양을 오가던 소형 범선. 삼각돛과 가로돛을 조합해 탐험에 활용되었다.", "항구의 선박 관찰", 5, 12, 1500, nil, "lisbon", { entityType = "class", subkind = "범선 종류", tags = { "범선", "탐험선", "돛" }, relations = { { type = "usesMaterial", target = "good:timber" } } } },
+	{ "ship_galleon", "갤리온", "Shipbuilding", "Uncommon", "선체가 높고 여러 갑판에 화물과 대포를 함께 실은 대형 범선. 선박 실물과 설계 지식은 서로 구분해 기록한다.", "항구의 선박 관찰", 15, 45, 1550, nil, "seville", { entityType = "class", subkind = "범선·무장상선", tags = { "범선", "상선", "전함", "대포", "돛" }, relations = { { type = "design", target = "ship_galleon_design" }, { type = "usesMaterial", target = "good:timber" } } } },
 	-- [버드나무 연구] 일반 표본 → 비교 관찰 → 희귀 의학 기록. 주인공의 직업은 상관없다.
-	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500 },
+	{ "bot_willow", "강변 버드나무", "Botany", "Common", "강가의 버드나무 잎과 껍질을 관찰하고 채집한 표본. 당시에는 약용 식물을 형태와 쓰임으로 기록했다.", "강변 현장 관찰", 5, 12, 1500, nil, nil, { entityType = "taxon", subkind = "나무·수목", wikidata = "Q36050", aliases = { "버드나무속", "살릭스" }, tags = { "나무", "강변", "약용 식물" }, relations = { { type = "studiedAs", target = "bot_willow_notes" }, { type = "usedIn", target = "med_willow_bark" } } } },
 	{ "bot_willow_notes", "버드나무 표본 비교 기록", "Botany", "Uncommon", "채집한 버드나무 잎과 껍질을 수도원 약초원에서 말리고 기록한 비교 관찰장.", "수도원 약초원 기록", 15, 40, 1500, { found = { "bot_willow" } } },
-	{ "med_willow_bark", "버드나무 껍질 약용 기록", "Medicine", "Rare", "버드나무 껍질의 전통적 사용과 관찰을 약방에서 비교해 적은 기록. 16세기에는 살리신 분리나 현대 아스피린 제조법을 알지 못했다.", "약방 의학 검증", 40, 115, 1554, { found = { "bot_willow_notes", "med_herb_garden" }, quest = "q_willow_notes", assistDisc = "medicine", allowReported = "med_herb_garden" } },
+	{ "med_willow_bark", "버드나무 껍질 약용 기록", "Medicine", "Rare", "버드나무 껍질의 전통적 사용과 관찰을 약방에서 비교해 적은 기록. 16세기에는 살리신 분리나 현대 아스피린 제조법을 알지 못했다.", "약방 의학 검증", 40, 115, 1554, { found = { "bot_willow_notes", "med_herb_garden" }, quest = "q_willow_notes", assistDisc = "medicine", allowReported = "med_herb_garden" }, nil, { entityType = "process", tags = { "약초", "약학", "전통 관찰", "연구" }, relations = { { type = "studies", target = "bot_willow" } } } },
 	{ "bot_oak", "유럽 참나무", "Botany", "Common", "서유럽 숲의 대표 활엽수. 목재는 조선과 건축에 쓰인다.", "숲 채집", 5, 10 },
 	{ "bot_foxglove", "폭스글러브", "Botany", "Uncommon", "약용으로 연구된 식물. 독성이 있어 사용에 주의가 필요하다.", "들판 채집", 15, 30 },
 	{ "bot_tulip", "튤립", "Botany", "Uncommon", "17세기 네덜란드에서 구근 값이 폭등할 만큼 유행한 꽃.", "정원 관찰", 15, 40 },
@@ -52,10 +62,10 @@ local Rows: { { any } } = {
 	{ "zoo_puffin", "퍼핀", "Zoology", "Uncommon", "북대서양 바닷새. 알록달록한 부리가 특징이다.", "해안 관찰", 15, 30 },
 	{ "zoo_metamorphosis", "곤충의 변태 기록", "Zoology", "Rare", "애벌레에서 성충까지의 변화를 정밀하게 그려 남긴 관찰 기록.", "학자 방문", 45, 120 },
 	{ "min_chalk", "백악 절벽", "Mineral", "Common", "영국 남부 해안의 하얀 석회질 절벽.", "해안 채집", 5, 15 },
-	{ "min_amber", "발트 호박", "Mineral", "Rare", "수지가 굳어 만들어진 화석. 장신구와 교역품으로 귀하게 여겨졌다.", "발트해 해안 채집", 30, 80 },
+	{ "min_amber", "발트 호박", "Mineral", "Rare", "수지가 굳어 만들어진 화석. 장신구와 교역품으로 귀하게 여겨졌다.", "발트해 해안 채집", 30, 80, nil, nil, nil, { entityType = "substance", subkind = "화석 수지", tags = { "화석", "수지", "장식 재료", "해안" }, relations = { { type = "tradedAs", target = "good:amber" } } } },
 	{ "relic_runestone", "룬석", "Relic", "Rare", "룬 문자를 새긴 북유럽의 기념 비석.", "북방 유적 탐사", 30, 90 },
 	{ "relic_aeolipile", "헤론의 증기구 (기록)", "Relic", "Rare", "고대 알렉산드리아의 헤론이 기록한 증기 회전 장치. 유럽 학자들이 번역본으로 연구했다.", "수집가의 진열실", 40, 120 },
-	{ "site_stonehenge", "스톤헨지", "Site", "Legendary", "잉글랜드 남부의 거석 유적. 용도는 지금도 연구 중인 수수께끼이다.", "지역 대장정 보상", 150, 450 },
+	{ "site_stonehenge", "스톤헨지", "Site", "Legendary", "잉글랜드 남부의 거석 유적. 용도는 지금도 연구 중인 수수께끼이다.", "지역 대장정 보상", 150, 450, nil, nil, nil, { entityType = "place", kind = "wonder", subkind = "거석 유적", wikidata = "Q39671", tags = { "거석", "신석기", "유적", "문화유산" } } },
 	{ "site_carnac", "카르나크 열석", "Site", "Epic", "프랑스 브르타뉴에 줄지어 선 수천 개의 선돌.", "유적 탐험", 90, 260 },
 	{ "site_newgrange", "뉴그레인지", "Site", "Epic", "아일랜드의 신석기 시대 무덤. 동지 무렵 햇빛이 통로 안쪽까지 들어온다.", "유적 탐험", 90, 260 },
 	{ "ast_comet", "혜성", "Astronomy", "Rare", "긴 꼬리를 가진 천체. 핼리는 같은 혜성이 주기적으로 돌아온다고 예측했다.", "밤하늘 관측", 40, 100 },
@@ -311,7 +321,7 @@ local Rows: { { any } } = {
 	{ "ship_caulking", "코킹", "Shipbuilding", "Common", "판 사이에 삼 부스러기와 송진을 박아 물이 새지 않게 하는 작업.", "조선소 견학", 5, 12 },
 	{ "ship_copper_sheathing", "구리 피복", "Shipbuilding", "Rare", "선체 바닥을 구리판으로 덮어 벌레와 해초를 막는 방법. 속도가 빨라졌다.", "조선소 견학", 40, 120 },
 	{ "ship_longship", "바이킹 롱십", "Shipbuilding", "Rare", "얕은 물에도 들어가는 가볍고 빠른 배. 노와 돛을 함께 썼다.", "조선소 견학", 40, 120 },
-	{ "ship_galleon_design", "갈레온의 설계", "Shipbuilding", "Uncommon", "높은 선미와 여러 갑판을 갖춘 큰 배. 짐과 대포를 함께 실었다.", "조선소 견학", 15, 45 },
+	{ "ship_galleon_design", "갈레온의 설계", "Shipbuilding", "Uncommon", "높은 선미와 여러 갑판을 갖춘 큰 배. 짐과 대포를 함께 실었다.", "조선소 견학", 15, 45, nil, nil, nil, { entityType = "design", subkind = "선박 설계", tags = { "설계", "조선", "범선" }, relations = { { type = "describes", target = "ship_galleon" } } } },
 	{ "ship_fluyt_design", "플루트선의 설계", "Shipbuilding", "Uncommon", "적은 선원으로 많은 화물을 싣도록 단순하게 만든 네덜란드 배.", "조선소 견학", 15, 45 },
 	{ "ship_dry_dock", "건선거", "Shipbuilding", "Rare", "배를 물 밖으로 끌어올려 바닥을 고치는 시설.", "조선소 견학", 40, 120 },
 	{ "ship_steam_engine", "선박용 증기기관", "Shipbuilding", "Epic", "바람 없이도 바퀴나 추진기를 돌리는 새로운 힘. 배의 시대를 바꾸었다.", "조선소 견학", 85, 260 },
@@ -884,7 +894,7 @@ end
 
 local Cards: { Card } = {}
 for _, r in Rows do
-	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11]))
+	table.insert(Cards, card(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12]))
 end
 
 -- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
@@ -921,6 +931,7 @@ local FieldKind = {
 	Art = "art", Language = "archive", Myth = "legend", Mystery = "legend", Lost = "legend", Military = "military",
 }
 local function kindOf(c: Card): string
+	if c.meta and c.meta.kind and KindById[c.meta.kind] then return c.meta.kind end
 	if c.field == "Site" then
 		if string.find(c.name, "산", 1, true) or string.find(c.name, "폭포", 1, true) or string.find(c.name, "협곡", 1, true) or string.find(c.name, "해협", 1, true) then
 			return "terrain"
@@ -939,6 +950,7 @@ local function kindOf(c: Card): string
 end
 -- [선박 세부 종류] 실물 선박과 설계·부품·조선소 시설을 혼동하지 않는다.
 local function subkindOf(c: Card): string?
+	if c.meta and c.meta.subkind then return c.meta.subkind end
 	if c.field == "Mineral" then
 		if string.find(c.name, "화석", 1, true) or string.find(c.name, "호박", 1, true) or string.find(c.name, "암모나이트", 1, true) then return "화석·고생물 흔적" end
 		for _, word in { "광석", "철", "구리", "금", "은", "주석", "초석", "유황", "석탄" } do
@@ -966,6 +978,43 @@ local function subkindOf(c: Card): string?
 		return "유적·원더"
 	end
 	return nil
+end
+-- [백과 사전식 관계] 위키데이터의 개체→분류/부분/연결 개념을 게임의 기존 id 체계로 번역한다.
+local RelationNames = {
+	requires = "선행 지식", design = "설계도", usesMaterial = "재료", studiedAs = "연구 기록",
+	usedIn = "활용 연구", studies = "연구 대상", describes = "설계 대상", tradedAs = "교역 자원",
+	locatedAt = "위치", foundAt = "탐험 장소", scholarlySource = "학자 보고",
+}
+local EntityTypes = {
+	class = "종류·개념", place = "실존 장소", process = "연구·과정", taxon = "생물 분류군",
+	design = "설계·도면", substance = "물질·재료", phenomenon = "자연 현상",
+	work = "문헌·작품", legend = "전설·가설",
+}
+local function entityTypeOf(c: Card): string
+	if c.meta and c.meta.entityType and EntityTypes[c.meta.entityType] then return c.meta.entityType end
+	local kind = kindOf(c)
+	if kind == "terrain" or kind == "building" or kind == "wonder" then return "place" end
+	if kind == "animal" or kind == "plant" then return "taxon" end
+	if kind == "mineral" or kind == "goods" then return "substance" end
+	if kind == "science" or kind == "medicine" then return "process" end
+	if kind == "weather" then return "phenomenon" end
+	if kind == "legend" then return "legend" end
+	if kind == "archive" or kind == "art" then return "work" end
+	return "class"
+end
+local function tagsOf(c: Card): { string }
+	local tags, seen = {}, {}
+	local function add(value)
+		if type(value) == "string" and #value > 0 and not seen[value] then
+			seen[value] = true
+			table.insert(tags, value)
+		end
+	end
+	local kind = KindById[kindOf(c)]
+	add(kind and kind.name)
+	local meta = c.meta
+	for _, tag in (meta and meta.tags or {}) do add(tag) end
+	return tags
 end
 local RarityNames = { Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" }
 
@@ -1033,5 +1082,9 @@ return {
 	KindById = KindById,
 	kindOf = kindOf,
 	subkindOf = subkindOf,
+	tagsOf = tagsOf,
+	entityTypeOf = entityTypeOf,
+	EntityTypes = EntityTypes,
+	RelationNames = RelationNames,
 	RarityNames = RarityNames,
 }
