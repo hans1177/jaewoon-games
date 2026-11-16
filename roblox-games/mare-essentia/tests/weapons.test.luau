@@ -37,6 +37,21 @@ end
 check("직업별 무기 데이터 유효", allOk)
 check("성직자·의사는 다른 장비", W.allyWeapon("clergy").id ~= W.allyWeapon("doctor").id)
 check("주인공 자유 무기 선택 유지", W.playerChoices() == W.List and ids.bow)
+-- [전투 모션 설계 회귀] 실제 등록된 무기별 평타·강타·범위 액션과 원본 R15 단계가 모두 연결되는지 확인.
+for _, id in { "fist", "sword", "dagger", "axe", "spear", "mace", "bow", "crossbow", "gun" } do
+	local w = W.get(id)
+	local style = W.actionDesign(w)
+	check("평타·스킬 이름과 기존 무기 동작: " .. id,
+		style ~= nil and type(style.basic) == "string" and type(style.heavyName) == "string"
+		and type(style.sweepName) == "string" and style.heavyBeat >= 1 and style.heavyBeat <= 5
+		and style.sweepBeat >= 1 and style.sweepBeat <= 5)
+end
+check("지역형 검·활·총의 원본 동작 분리",
+	W.get("katana").motion == "KATANA" and W.get("hwando").motion == "SABRE"
+	and W.get("japanese_yumi").motion == "LONGBOW" and W.get("matchlock_musket").motion == "RIFLE")
+check("맨손 승룡·발차기와 철퇴·창 기술이 검과 다름",
+	W.actionDesign(W.get("fist")).heavy ~= W.actionDesign(W.get("sword")).heavy
+	and W.actionDesign(W.get("spear")).sweep ~= W.actionDesign(W.get("mace")).sweep)
 -- [집안별 탐험 무기] 기존 시작 집안 10종 모두 실제 승인 모델 무기만 사용하고, 전투 능력치와 저장은 건드리지 않는다.
 local originExpected = {
 	farmer = "axe", noble = "sword", merchant = "dagger", sailor = "sword",
