@@ -6085,7 +6085,10 @@ local function renderYard()
 				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
 				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
 				s.crew - sh.maxCrew, sh.cargoUsed, s.capacityAfter, H.commas(view.player.coins))
-			if s.rowed then sub ..= "\n노젓기 병행 · 무풍 항해 특성" end
+			if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then
+			sub ..= "\n선박 원형: Nautical Galleon · R-LAB (rakshaan), CC BY 4.0 · 전시대 제거"
+		end
+		if s.rowed then sub ..= "\n노젓기 병행 · 무풍 항해 특성" end
 			if s.steam then sub ..= "\n석탄 소모 " .. tostring(s.fuelPerDay) .. "개/일" end
 			if not s.canCarry then sub ..= "\n화물 부족: 교체 전에 짐을 내려야 해" end
 			if s.locked then sub ..= "\n" .. s.locked end
@@ -6094,7 +6097,7 @@ local function renderYard()
 				sub, { { text = if s.owned then "현재 배" elseif s.locked then "잠김" else "교체\n" .. H.commas(pay),
 					color = if s.steam then COLORS.steam else COLORS.blue,
 					enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
-					onClick = function() call("BuyShip", { shipId = s.id }) end } }, 210)
+					onClick = function() call("BuyShip", { shipId = s.id }) end } }, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [기함 대조 막대] 채운 부분=선택 배, 선=지금 배. 위치는 행 아래에 고정해 모바일 줄바꿈과 겹침을 줄인다.

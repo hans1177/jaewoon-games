@@ -1563,3 +1563,13 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 - `naval/net-floats.glb`: Frakassets Pixor 제작 부표 달린 어망(744삼각형), https://pixor.art/library/pirate/net-floats/ , CC0-1.0. 원본 다운로드: https://pixor.art/library/files/net-floats/pixor-library-net-floats.glb
 - 원본 획득은 기존 `tools/mare-essentia-upload-assets.mjs`와 `owner-mare-essentia-assets.yml`만 사용한다. 업로드 시 원본 SHA-256·파일 구조·삼각형 수·라이선스 영수증·Roblox Universe 사용 권한을 확인하고 같은 경로에 기록한다.
 - 기록 상태: **선별·획득 코드 연결 완료 / 원본 바이너리·Roblox 등록·Studio 표시·모바일 검증은 실행 결과 확인 전 미완료**. 전용 조선 통신선/정크선 등 역사적 선체로 오인하여 연결하지 않는다.
+
+## 갈레온 원본 모델 저작권 · 실물 검증 대기
+
+- 등록 모델: `assets/naval/galleon-heritage.glb` / 로블록스 자산 `90601277107985` (기존 체험의 사용 권한 확인).
+- 원작: **Nautical Galleon** — R-LAB (rakshaan). 원본: https://sketchfab.com/3d-models/nautical-galleon-870b8df2456241269cbc030a101edc50
+- 이용 허가: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), 상업적 이용 및 수정 가능하며 저작자 표시 의무.
+- 공개 모델 전달 경로: https://github.com/urcraft/ship-in-a-bottle/blob/main/public/models/ATTRIBUTION.md
+- 수정 내역: 쇼케이스 전시대 장면 노드 제거. 제작자의 선체·돛·삭구·재질 원형은 유지.
+- 원본 SHA256: `46ce904ac54b35d76a8d23bc93d5f79792bcb454a94bca0a64d62d9da89843c5`. 수정본 SHA256: `9875cc17792ad31e2b100e019784651e1910eb2ac31a1833783528e9ad453a22`.
+- 최종 게임 화면에서 실제 메시·색상·모바일 성능과 동일 로블록스 버전 시각 검증은 아직 **미확인**. 다른 국가의 다른 함종으로 임의 재사용하지 않는다.

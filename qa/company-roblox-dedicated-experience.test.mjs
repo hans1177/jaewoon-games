@@ -1180,3 +1180,29 @@ test('Mare generated original art is promoted only after model-source visual QA 
     await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('Mare licensed galleon is registered for its universe and is not assigned to other historical ship classes',()=>{
+  const root='roblox-games/mare-essentia';
+  const registry=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
+  const row=registry.assets['Naval/galleon-heritage'];
+  const meta=JSON.parse(fs.readFileSync(root+'/assets/naval/galleon-heritage.glb.license.json','utf8'));
+  const bindings=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const port=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const yard=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
+  assert.equal(registry.universeId,'10775310508');
+  assert.equal(row?.assetType,'Model');
+  assert.equal(row?.usePermissionGranted,true);
+  assert.equal(row?.license,'CC-BY-4.0');
+  assert.equal(meta.license,'CC-BY-4.0');
+  assert.equal(meta.sourceSha256,row.sourceSha256);
+  assert.match(meta.sourcePage,/sketchfab\\.com\\/3d-models\\/nautical-galleon-/);
+  assert.equal(meta.actualRobloxRuntimeVerified,false);
+  assert.equal(meta.visualQualityApproved,false);
+  assert.ok(bindings.includes('["Naval/galleon-heritage"] = '+row.assetId));
+  assert.match(port,/SHIP_MESH\\.galleon = "galleon-heritage"/);
+  assert.match(port,/SHIP_MESH\\[id\\] = SHIP_MESH\\[def\\.visual\\]/);
+  assert.ok(port.indexOf('SHIP_MESH.galleon = "galleon-heritage"')>port.indexOf('SHIP_MESH[id] = SHIP_MESH[def.visual]'));
+  assert.match(battle,/galleon = if AssetIds\\["Naval\\/galleon-heritage"\\]/);
+  assert.match(yard,/Nautical Galleon · R-LAB \\(rakshaan\\), CC BY 4\\.0/);
+});

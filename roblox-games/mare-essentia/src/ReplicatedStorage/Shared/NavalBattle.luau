@@ -89,7 +89,8 @@ local CARD_DECK = {
 local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
 
 local PLAYER_SHIP = {
-	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large", galleon = "ship-pirate-large",
+	caravel = "ship-small", fluyt = "ship-medium", frigate = "ship-large",
+	galleon = if AssetIds["Naval/galleon-heritage"] then "galleon-heritage" else "ship-pirate-large",
 	paddle_steamer = "ship-medium", ironclad_frigate = "ship-large",
 }
 -- 대포 종류: 사거리·탄속(비행시간)·포물선 높이·탄 크기가 다르다
@@ -132,6 +133,10 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild("Naval")
 	local tpl = group and group:FindFirstChild(asset)
+	-- [해전 3D] 상세 갈레온 로딩 지연 시 기존 해전 범선을 그대로 사용한다.
+	if asset == "galleon-heritage" and not (tpl and tpl:IsA("Model")) then
+		tpl = group and group:FindFirstChild("ship-pirate-large")
+	end
 	if tpl and tpl:IsA("Model") then
 		local m = tpl:Clone()
 		for _, d in m:GetDescendants() do
