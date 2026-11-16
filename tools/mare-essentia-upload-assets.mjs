@@ -45,49 +45,111 @@ async function prepareLicensedOriginals() {
     {name:'net-floats', assetPath:'assets/naval/net-floats.glb', author:'Pixor',
       source:'https://pixor.art/library/files/net-floats/pixor-library-net-floats.glb',
       page:'https://pixor.art/library/pirate/net-floats/', minBytes:6000, minTriangles:500},
+    // [실존 항해선 실물 등록] 2017년 작가 제작 갈레온(무료 CC BY 4.0). 공개 모델을 특정 버전에 고정한다.
+    // 무관한 역사 함종이나 35종 전체로 자동 확대·재명명하지 않는다.
+    {name:'galleon-heritage', assetPath:'assets/naval/galleon-heritage.glb',
+      author:'R-LAB (rakshaan)', license:'CC-BY-4.0',
+      source:'https://raw.githubusercontent.com/urcraft/ship-in-a-bottle/main/public/models/galleon.glb',
+      page:'https://sketchfab.com/3d-models/nautical-galleon-870b8df2456241269cbc030a101edc50',
+      attribution:'Nautical Galleon by R-LAB (@rakshaan), CC BY 4.0; exhibition podium removed.',
+      pinnedBlobSha:'25ef612109072f491c06ef88aa34ebc85d983451',
+      minBytes:1000000, maxBytes:20000000, minTriangles:50000, maxTriangles:180000,
+      removePodium:true},
   ];
   for (const item of sources) {
     const name = item.name, source = item.source, sourcePage = item.page;
+    const license = item.license || 'CC0-1.0';
     const target = path.join(ROOT, item.assetPath || ('assets/relics/weapon-' + name + '.glb'));
     const proof = target + '.license.json';
     let bytes, evidence;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
-    if (evidence && (!bytes || evidence.license !== 'CC0-1.0' || evidence.author !== item.author
+    if (evidence && (!bytes || evidence.license !== license || evidence.author !== item.author
       || evidence.source !== source || evidence.sourcePage !== sourcePage
+      || (item.pinnedBlobSha && evidence.pinnedBlobSha !== item.pinnedBlobSha)
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
-      throw new Error('MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' + name);
-    if (bytes && !evidence) throw new Error('MARE_CC0_ORIGINAL_PROVENANCE_MISSING:' + name);
+      throw new Error('MARE_SHIP_SOURCE_EVIDENCE_MISMATCH:' + name);
+    if (bytes && !evidence) throw new Error('MARE_SHIP_SOURCE_PROVENANCE_MISSING:' + name);
+    let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
-      const response = await fetch(source, {signal: AbortSignal.timeout(60000)});
-      if (!response.ok) throw new Error('MARE_CC0_ORIGINAL_HTTP_' + response.status + ':' + name);
-      if (Number(response.headers.get('content-length') || 0) > 5000000)
-        throw new Error('MARE_CC0_ORIGINAL_TOO_LARGE:' + name);
+      const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
+      if (!response.ok) throw new Error('MARE_LICENSED_SOURCE_HTTP_' + response.status + ':' + name);
+      if (Number(response.headers.get('content-length') || 0) > (item.maxBytes || 5000000))
+        throw new Error('MARE_LICENSED_SOURCE_TOO_LARGE:' + name);
       bytes = Buffer.from(await response.arrayBuffer());
+      if (item.pinnedBlobSha) {
+        const blobSha = crypto.createHash('sha1').update(Buffer.from('blob ' + bytes.length + '\\0')).update(bytes).digest('hex');
+        if (blobSha !== item.pinnedBlobSha) throw new Error('MARE_LICENSED_SOURCE_BLOB_MISMATCH:' + name);
+      }
+      originalSha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+      if (item.removePodium) {
+        // [원본 모델 디테일] 작가의 선체·돛·삭구 메시와 재질은 그대로 보존한다.
+        // 전시용 원형 받침대를 glTF 장면 노드에서만 제거한다. 도형/절차형 새 모델은 만들지 않는다.
+        if (bytes.toString('ascii',0,4) !== 'glTF' || bytes.readUInt32LE(4) !== 2)
+          throw new Error('MARE_LICENSED_SHIP_NOT_GLB');
+        const jsonSize = bytes.readUInt32LE(12);
+        const binAt = 20 + jsonSize;
+        if (bytes.readUInt32LE(16) !== 0x4e4f534a || binAt + 8 > bytes.length
+          || bytes.readUInt32LE(binAt + 4) !== 0x004e4942)
+          throw new Error('MARE_LICENSED_SHIP_GLB_CHUNKS_INVALID');
+        const binSize = bytes.readUInt32LE(binAt);
+        if (binAt + 8 + binSize !== bytes.length)
+          throw new Error('MARE_LICENSED_SHIP_GLB_LENGTH_INVALID');
+        const gltf = JSON.parse(bytes.subarray(20, binAt).toString('utf8'));
+        const podiumIds = new Set((gltf.nodes || []).flatMap((node, i) =>
+          /podium/i.test(node.name || '') ? [i] : []));
+        if (podiumIds.size < 1 || podiumIds.size > 12)
+          throw new Error('MARE_LICENSED_SHIP_PODIUM_MISSING_OR_AMBIGUOUS:' + podiumIds.size);
+        for (const node of gltf.nodes || []) {
+          if (node.children) node.children = node.children.filter(index => !podiumIds.has(index));
+        }
+        for (const scene of gltf.scenes || []) {
+          if (scene.nodes) scene.nodes = scene.nodes.filter(index => !podiumIds.has(index));
+        }
+        const jsonBody = Buffer.from(JSON.stringify(gltf),'utf8');
+        const jsonPadding = (4 - jsonBody.length % 4) % 4;
+        const paddedJson = Buffer.concat([jsonBody, Buffer.alloc(jsonPadding, 0x20)]);
+        const modified = Buffer.alloc(12 + 8 + paddedJson.length + 8 + binSize);
+        modified.write('glTF',0); modified.writeUInt32LE(2,4);
+        modified.writeUInt32LE(modified.length,8);
+        modified.writeUInt32LE(paddedJson.length,12);
+        modified.writeUInt32LE(0x4e4f534a,16);
+        paddedJson.copy(modified,20);
+        modified.writeUInt32LE(binSize,20+paddedJson.length);
+        modified.writeUInt32LE(0x004e4942,24+paddedJson.length);
+        bytes.copy(modified,28+paddedJson.length,binAt+8,binAt+8+binSize);
+        bytes=modified;
+        console.log('MARE_LICENSED_SHIP_EXHIBITION_PODIUM_REMOVED', name, podiumIds.size);
+      }
     }
-    if (bytes.length < item.minBytes || bytes.length > 5000000 || bytes.toString('ascii', 0, 4) !== 'glTF'
+    if (bytes.length < item.minBytes || bytes.length > (item.maxBytes || 5000000)
+      || bytes.toString('ascii', 0, 4) !== 'glTF'
       || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
       || bytes.readUInt32LE(16) !== 0x4e4f534a)
-      throw new Error('MARE_CC0_ORIGINAL_GLB_INVALID:' + name);
+      throw new Error('MARE_LICENSED_GLB_INVALID:' + name);
     const jsonBytes = bytes.readUInt32LE(12);
-    if (jsonBytes < 100 || 20 + jsonBytes > bytes.length) throw new Error('MARE_CC0_GLB_JSON_INVALID:' + name);
+    if (jsonBytes < 100 || 20 + jsonBytes > bytes.length) throw new Error('MARE_LICENSED_GLB_JSON_INVALID:' + name);
     const model = JSON.parse(bytes.subarray(20, 20 + jsonBytes).toString('utf8'));
     const tris = (model.meshes || []).flatMap(row => row.primitives || []).reduce((sum, p) => {
-      if (p.mode != null && p.mode !== 4) throw new Error('MARE_CC0_NON_TRIANGLE_MESH:' + name);
+      if (p.mode != null && p.mode !== 4) throw new Error('MARE_LICENSED_NON_TRIANGLE_MESH:' + name);
       const a = model.accessors?.[p.indices ?? p.attributes?.POSITION];
-      if (!a || !Number.isInteger(a.count)) throw new Error('MARE_CC0_INVALID_ACCESSOR:' + name);
+      if (!a || !Number.isInteger(a.count)) throw new Error('MARE_LICENSED_INVALID_ACCESSOR:' + name);
       return sum + Math.floor(a.count / 3);
     }, 0);
-    if (tris < item.minTriangles || tris > 30000) throw new Error('MARE_CC0_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
+    if (tris < item.minTriangles || tris > (item.maxTriangles || 30000))
+      throw new Error('MARE_LICENSED_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
       await fs.writeFile(target, bytes);
-      await fs.writeFile(proof, JSON.stringify({license:'CC0-1.0', author:item.author, source,
-        sourcePage, sourceSha256:hash, triangles:tris, originalModel:name,
-        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\n');
-      console.log('MARE_CC0_WEAPON_SOURCE_PREPARED', name, hash, tris);
-    } else console.log('MARE_CC0_WEAPON_SOURCE_VERIFIED', name, tris);
+      await fs.writeFile(proof, JSON.stringify({license, author:item.author, source,
+        sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
+        attribution:item.attribution || null,
+        modification:item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source',
+        triangles:tris, originalModel:name,
+        actualRobloxRuntimeVerified:false, visualQualityApproved:false}, null, 2) + '\\n');
+      console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
+    } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
 }
 if (!studioRegrantPath) await prepareLicensedOriginals();
@@ -212,7 +274,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics') {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
-      if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0'].includes(sourceLicense.license)
+      if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
     }
