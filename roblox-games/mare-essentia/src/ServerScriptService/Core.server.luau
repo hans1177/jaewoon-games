@@ -397,7 +397,13 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 game:BindToClose(function()
-	for player in sessions do
+	-- [영구 세계] 마지막 연구·교역이 5분 주기 저장 전에 유실되지 않게 1회 확정한다.
+	local worldSaved = false
+	for player, session in sessions do
+		if not worldSaved and session.state then
+			S.Econ.sync(session.state, true)
+			worldSaved = true
+		end
 		saveSession(player)
 	end
 end)
