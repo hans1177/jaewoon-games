@@ -2631,10 +2631,10 @@ function FieldScene.start(opts)
 	do
 		local allyDefs = {}
 		local allyNames = opts.allies or {}
-		if #allyNames == 0 and workspace:GetAttribute("DevAllies") then
-			allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 개발 캡처 전용(총·도끼)
+		if #allyNames == 0 and RunService:IsStudio() and workspace:GetAttribute("DevAllies") then
+			allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
 		end
-		-- 동료마다 이름·직업에 맞는 겉모습(직업 → 옷 계열, 이름 → 옷 색)으로 만든다 (같은 얼굴 두 명이 나오지 않게)
+		-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
 		local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
 		local function hashName(str: string): number
 			local h = 7
@@ -2642,14 +2642,20 @@ function FieldScene.start(opts)
 			return h
 		end
 		local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
-		for i, nm in allyNames do
-			if i <= 2 then
+		local seenAllies = {}
+		for _, nm in allyNames do
+			if #allyDefs < 2 then
 				local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
 				local job = if type(nm) == "table" then nm.role else nil
-				local h = hashName(name)
-				local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + i) % #ROLES + 1]
-				local coat = Color3.fromHSV((h % 360) / 360, 0.45, 0.62)
-				table.insert(allyDefs, { name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job), weapon = Weapons.allyWeapon(JobSkills.categoryOf(job)) }) -- 직업 분류에 따라 최대 2개
+				local id = if type(nm) == "table" and nm.id then tostring(nm.id) else name .. "|" .. tostring(job)
+				if not seenAllies[id] then
+					seenAllies[id] = true
+					local slot = #allyDefs + 1
+					local h = hashName(name)
+					local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
+					local coat = Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.55, 0.68)
+					table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = job, skills = JobSkills.allySkills(job), weapon = Weapons.allyWeapon(JobSkills.categoryOf(job)) })
+				end
 			end
 		end
 		local allies: { any } = {}
@@ -2672,15 +2678,21 @@ function FieldScene.start(opts)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
-						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 무기 역할에 따른 관절 연출만 구분
+						m:SetAttribute("CompanionId", ad.id)
+						m:SetAttribute("CompanionName", ad.name)
+						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
+						-- [탐험 HUD] 큰 이름판 제거. 번호·직업만 근처에서 작게 표시하며 색상으로 동료를 구분.
 						local bbA = Instance.new("BillboardGui")
+						bbA.Name = "AllyRoleTag"
 						bbA.Adornee = r
-						bbA.Size = UDim2.fromOffset(120, 20)
-						bbA.StudsOffset = Vector3.new(0, 4.5, 0)
-						bbA.AlwaysOnTop = true
-						bbA.MaxDistance = 80
+						bbA.Size = UDim2.fromOffset(64, 18)
+						bbA.StudsOffset = Vector3.new(0, 3.7, 0)
+						bbA.AlwaysOnTop = false
+						bbA.LightInfluence = 0
+						bbA.MaxDistance = 24
 						bbA.Parent = r
-						local tg = label(bbA, ad.name, 14, Color3.fromRGB(130, 230, 150))
+						local tg = label(bbA, tostring(i) .. " · " .. tostring(ad.job or "동료"), 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
+						tg.TextTruncate = Enum.TextTruncate.AtEnd
 						tg.Size = UDim2.new(1, 0, 1, 0)
 						table.insert(allies, { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now, fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills, weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2 })
 						table.insert(conns, { Disconnect = function()
