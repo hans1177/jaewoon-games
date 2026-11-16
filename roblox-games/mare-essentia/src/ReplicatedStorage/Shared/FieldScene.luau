@@ -1361,6 +1361,7 @@ function FieldScene.start(opts)
 	-- [무기 숙련] 탐험 중 실전 명중으로만 해당 무기의 숙련 경험치가 오른다.
 	-- 기존 저장·대미지·드롭 표는 변경하지 않고 무기별 연타 모션만 확률적으로 해금한다.
 	local weaponPractice = {}
+	local chainMotionSerial = 0 -- 다음 공격/무기 교체 때 남은 연출을 취소한다.
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
 	local weaponRankLabel = label(attackBtn, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
 	weaponRankLabel.Name = "FieldWeaponMastery"
@@ -1386,37 +1387,49 @@ function FieldScene.start(opts)
 	end
 
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
-	local function startSwing(kind, dur)
+	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
+	local function startSwing(kind: string, dur: number, stage: number?)
 		if kind == "heavy" then
-			sfx("sfx_card_blade", 0.7, 0.85)
-		elseif kind == "spin" then
+			sfx(if wpn.family == "fist" then "sfx_card_swing" else "sfx_card_blade", 0.7, 0.85)
+		elseif kind == "spin" or kind == "elbow" then
 			sfx("sfx_card_swing", 0.7, 0.75)
 		elseif kind == "dash" then
 			sfx("sfx_skill_evade", 0.6, 1.1)
 		elseif kind == "guard" then
 			sfx("sfx_equipment_wear", 0.5, 1.2)
 		elseif string.sub(kind, 1, 4) == "cast" then
-			-- 카드 스킬은 자기 효과음을 낸다
+			-- 카드 전용 원본 이펙트가 자체 소리를 재생한다.
 		else
 			sfx("sfx_card_swing", 0.55, 0.95 + math.random() * 0.2)
 		end
 		swingCombo = nil
 		if FM then
-			local isSword = wpn.id == "sword"
-			if kind == "heavy" then
-				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, 3)) or FM.combo("heavy", { "W:BLADE_OVERHEAD" })
+			local beat = math.clamp(math.floor(stage or 1), 1, 5)
+			if wpn.family == "fist" then
+				-- [마력숲 원본 참조] 잽·크로스·훅 / 승룡 / 회전차기 / 팔꿈치·무릎
+				local style = if kind == "heavy" then "UNARMED_UPPERCUT"
+					elseif kind == "spin" then "UNARMED_KICK"
+					elseif kind == "elbow" then "UNARMED_ELBOW"
+					elseif kind == "slash" then "UNARMED_RUSH" else nil
+				if style then swingCombo = FM.weaponCombo(style, beat) end
+			elseif kind == "heavy" then
+				swingCombo = FM.weaponCombo(wpn.motion, 3) or FM.combo("heavy", { "W:BLADE_OVERHEAD" })
 			elseif kind == "spin" then
-				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, 2)) or FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
+				swingCombo = FM.weaponCombo(wpn.motion, 2) or FM.combo("spin", { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L" })
 			elseif kind == "slash" then
-				slashIdx = slashIdx % 3 + 1
-				swingCombo = (if isSword then nil else FM.weaponCombo(wpn.motion, slashIdx)) or FM.combo("slash" .. slashIdx, { SLASH_IDS[slashIdx] })
+				swingCombo = FM.weaponCombo(wpn.motion, beat) or FM.combo("slash" .. beat, { SLASH_IDS[(beat - 1) % #SLASH_IDS + 1] })
 			end
 			dur = Weapons.swingDuration(wpn, dur)
 			if swingCombo and kind ~= "spin" then
 				dur = math.max(dur, swingCombo.duration)
 			end
 		end
+		slashIdx = math.clamp(math.floor(stage or 1), 1, 5)
 		swingKind, swingT0, swingDur = kind, os.clock(), dur
+		local source = player.Character
+		if source then
+			source:SetAttribute("FieldWeaponMotion", wpn.family .. ":" .. kind .. ":" .. tostring(slashIdx))
+		end
 	end
 	pcall(function()
 		RunService:UnbindFromRenderStep("FieldSwing")
@@ -2375,6 +2388,7 @@ function FieldScene.start(opts)
 		-- [연타 무조건 발동 금지] ActionCombat의 공용 기본 3타 규칙은 유지하고
 		-- 이 탐험에서만 기본 공격을 항상 단타로 처리한다. 숙련 연타는 명중 뒤 별도로 추첨한다.
 		if moveId == "rush" then
+			chainMotionSerial += 1
 			pl.combo = 0
 			pl.lastHit = -100
 			mult = 1
@@ -2382,7 +2396,7 @@ function FieldScene.start(opts)
 		end
 		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" then "heavy" else "slash"
-		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4)
+		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, 1)
 		do
 			local reachV = (mv.range or 5) * STUD
 			do
@@ -2413,8 +2427,17 @@ function FieldScene.start(opts)
 					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7, Color3.fromRGB(255, 226, 150), 0.35)
 					shakeUntil, shakeAmp = os.clock() + 0.25, 1.1
 				end)
+			elseif wpn.ranged then
+				-- 활·총은 검기 대신 조준·발포 방향의 짧은 섬광을 낸다.
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 223, 148), Color3.fromRGB(255, 251, 222), 4, 5)
 			else
-				slashArc(hrp, Color3.fromRGB(235, 245, 255), reachV, 110, if combo0 % 2 == 0 then 25 else -25)
+				local colour = if wpn.family == "fist" then Color3.fromRGB(255, 214, 156)
+					elseif wpn.family == "spear" then Color3.fromRGB(159, 215, 249)
+					elseif wpn.family == "axe" then Color3.fromRGB(255, 176, 112)
+					elseif wpn.family == "blunt" then Color3.fromRGB(221, 194, 155)
+					elseif wpn.family == "dagger" then Color3.fromRGB(170, 229, 215)
+					else Color3.fromRGB(235, 245, 255)
+				slashArc(hrp, colour, reachV, if wpn.family == "spear" then 55 elseif wpn.family == "dagger" then 75 else 110, if combo0 % 2 == 0 then 25 else -25)
 			end
 		end
 		local combo = pl.combo
@@ -2509,13 +2532,25 @@ function FieldScene.start(opts)
 					sfx("sfx_coin", 0.55, 1.3)
 				end
 				if chain > 1 then
-					showCombo(string.format("%d단계 연타!", chain))
+					showCombo(string.format("%s %d단!", Weapons.actionDesign(wpn).basic, chain))
+					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
 					sfx("sfx_card_swing", 0.6, 1.1 + chain * 0.06)
 					for stage = 2, chain do
-						task.delay((stage - 1) * 0.11, function()
-							if finished or not hrp.Parent then return end
-							slashArc(hrp, if stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131),
-								math.max(7, wpn.range * STUD), 95 + stage * 8, if stage % 2 == 0 then 30 else -30)
+						task.delay((stage - 1) * 0.22, function()
+							if finished or not hrp.Parent or wpn.id ~= activeWeapon or chainMotionSerial ~= activeSerial then return end
+							-- 실전 연타는 1회 명중 이후 R15 무기 프로필의 다른 자세를 순차 재생한다.
+							-- 추가 공격 판정·대미지·드롭·쿨타임은 발생시키지 않는다.
+							startSwing("slash", 0.32, stage)
+							if wpn.ranged then
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 214, 144), Color3.fromRGB(255, 247, 211), 4 + stage, 6)
+							else
+								local reach = math.max(7, wpn.range * STUD)
+								local color = if wpn.family == "fist" then Color3.fromRGB(250, 209, 132)
+									elseif wpn.family == "axe" then Color3.fromRGB(255, 153, 109)
+									elseif wpn.family == "spear" then Color3.fromRGB(144, 231, 234)
+									else if stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131)
+								slashArc(hrp, color, reach, if wpn.family == "spear" then 80 else 95 + stage * 8, if stage % 2 == 0 then 30 else -30)
+							end
 							if stage == chain then
 								shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7 + chain * 2, Color3.fromRGB(255, 219, 145), 0.34)
 								afterimage(player.Character, Color3.fromRGB(173, 220, 255), math.min(chain, 4), 0.05)
@@ -2556,7 +2591,7 @@ function FieldScene.start(opts)
 		local from = hrp.Position
 		afterimage(player.Character, Color3.fromRGB(255, 214, 120), 6, 0.04)
 		trailsOn(player.Character, TRAIL_LIMBS, Color3.fromRGB(255, 214, 120), 0.4, 1)
-		startSwing("heavy", 0.5)
+		startSwing(if wpn.family == "fist" then "elbow" else "heavy", 0.5, 1)
 		hrp.CFrame = hrp.CFrame + look * 22
 		local n = 0
 		for _, e in table.clone(enemies) do
@@ -2819,6 +2854,7 @@ function FieldScene.start(opts)
 			end
 		end)
 		bindPress(wbtn, function()
+			chainMotionSerial += 1
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
 			chooseBtn.Text = "보조: " .. reserveWeapon.name
@@ -3018,11 +3054,11 @@ function FieldScene.start(opts)
 			end)
 		end
 		if slotOf.heavy then
-			mkSkill("heavy", "강타", Color3.fromRGB(169, 100, 54), slotPos("heavy"), skillSize)
+			mkSkill("heavy", Weapons.actionDesign(wpn).heavy, Color3.fromRGB(169, 100, 54), slotPos("heavy"), skillSize)
 			addIcon(skillBtns.heavy.btn, "Menu/cc0_axe")
 		end
 		if slotOf.sweep then
-			mkSkill("sweep", "회전", Color3.fromRGB(70, 108, 155), slotPos("sweep"), skillSize)
+			mkSkill("sweep", Weapons.actionDesign(wpn).sweep, Color3.fromRGB(70, 108, 155), slotPos("sweep"), skillSize)
 			addIcon(skillBtns.sweep.btn, "Menu/cc0_sword")
 		end
 		local function useCard(key, card)
@@ -3109,6 +3145,15 @@ function FieldScene.start(opts)
 			magicAmount.Text = string.format("마력 %d", math.floor(magicValue + 0.5))
 		end
 		for key, sb in skillBtns do
+			if key == "heavy" or key == "sweep" then
+				local style = Weapons.actionDesign(wpn)
+				local text = if key == "heavy" then style.heavy else style.sweep
+				local detailed = if key == "heavy" then style.heavyName else style.sweepName
+				local caption = sb.btn:FindFirstChild("FieldSkillCaption")
+				if caption and caption.Text ~= text then caption.Text = text end
+				sb.label = text
+				sb.btn:SetAttribute("SkillFullName", detailed)
+			end
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
 			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
