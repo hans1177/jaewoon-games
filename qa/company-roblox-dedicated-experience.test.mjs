@@ -1259,6 +1259,10 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     ['dhow','naval/boat-sail-a.glb','pirate-kit',2,true],
     ['prau','naval/boat-sail-b.glb','pirate-kit',2,true],
     ['junk','naval/ship-pirate-large.glb','pirate-kit',6,true],
+    ['carrack','naval/ship-large.glb','pirate-kit',6,true],
+    ['baghlah','naval/boat-sail-b.glb','pirate-kit',2,true],
+    ['sekibune','naval/boat-row-small.glb','pirate-kit',2,true],
+    ['geobukseon','naval/boat-row-large.glb','pirate-kit',2,false],
   ];
   const importer=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(importer,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/,'modified GLB must be registered as new Roblox asset');
@@ -1307,8 +1311,28 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     const extra=after.gltf.meshes.slice(originalMeshCount);
     const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
+    if(['carrack','baghlah','sekibune','geobukseon'].includes(ship)){
+      assert.equal(meta.originalMeshCount,originalMeshCount,ship+' original mesh baseline');
+      assert.ok(meta.derivedTriangleCount>=650,ship+' rebuilt ship visual geometry too small');
+      const expectedGroups={
+        carrack:['wood','light','red','rope'],
+        baghlah:['wood','light','red','rope'],
+        sekibune:['wood','light','dark','rope'],
+        geobukseon:['wood','metal','green','dark'],
+      };
+      for(const group of expectedGroups[ship]){
+        assert.ok(meta.modelGeometryGroups.includes(group),ship+' missing class-specific geometry: '+group);
+      }
+      if(ship==='geobukseon'){
+        assert.ok(!extra.some(m=>/ custom light$/.test(m.name)),ship+' turtle ship must not inherit a European sail');
+      }
+    }
     assert.ok(addedTriangles>=(ship==='dhow'?250:300),ship+' geometry changes too small');
-    assert.equal(extra.some(m=>m.name.includes(' cloth')),hasSail,ship+' historically correct sail boundaries');
+    // [함종별 돛] 이전 모델의 'cloth'와 신규 재구성 모델의 실제 천 소재 그룹을 검증한다.
+    const newSailClasses=new Set(['carrack','baghlah','sekibune']);
+    const hasAddedSails=extra.some(m=>m.name.includes(' cloth') ||
+      (newSailClasses.has(ship) && / custom (?:light|red)$/.test(m.name)));
+    assert.equal(hasAddedSails,hasSail,ship+' historically correct sail boundaries');
     if(ship==='pirogue'){
       const scene=after.gltf.scenes[after.gltf.scene??0];
       const activeOriginal=scene.nodes.map(i=>after.gltf.nodes[i]).find(n=>n.name==='canoe');
