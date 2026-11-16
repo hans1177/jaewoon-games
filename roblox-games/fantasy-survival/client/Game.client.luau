@@ -2048,6 +2048,7 @@ for index,info in ipairs(referenceMenuItems) do
   button.BorderSizePixel=0
   button.Text=""
   button.ZIndex=27
+  button.LayoutOrder=index -- [모바일 메뉴] 화면 크기가 바뀌어도 6개 버튼의 배치 순서 보존.
   button.Parent=meadowReferenceMenu
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceIcon"
@@ -2206,16 +2207,19 @@ local function layoutMeadowReferenceHud()
   -- [시안 기준 709x446] 상단 6개는 오른쪽 끝에서 34px 간격, 10칸 단축바는 화면 폭 49%로 정렬.
   local landscape=v.X>v.Y
   -- [모바일 터치] 엔진 품질검사(짧은 변 44 이상)를 모든 화면에서 만족하도록 메뉴 칸을 키운다.
-  local step=landscape and math.floor(math.clamp(v.X/17,44,55))
-    or math.floor(math.clamp((v.X-18)/6,44,52))
-  local menuWidth=step*6
-  meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+17)
-  -- [최상단] 기본 메뉴 여백 위, 화면 맨 위 오른쪽에 붙인다.
+  -- [작은 모바일 화면] 6개 상단 버튼을 3열·2행으로 접어 화면 밖 잘림을 막는다.
+  -- 터치 폭은 최소 44px, 기존 메뉴 순서·기능은 그대로 유지한다.
+  local menuColumns=v.X<330 and 3 or 6
+  local step=math.floor(math.clamp((v.X-12)/menuColumns,47,55))
+  local menuWidth=step*menuColumns
+  meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,math.ceil(6/menuColumns)*step+17)
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-6,0,2)
-  for index,button in ipairs(meadowReferenceMenu:GetChildren())do
+  for _,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
+      local index=button.LayoutOrder
       button.Size=UDim2.fromOffset(step-3,step-3)
-      button.Position=UDim2.fromOffset((index-1)*step+1,0)
+      button.Position=UDim2.fromOffset(((index-1)%menuColumns)*step+1,
+        math.floor((index-1)/menuColumns)*step)
       local caption=button:FindFirstChild("ReferenceCaption")
       if caption then caption.Size=UDim2.fromOffset(step+12,13) end
     end
@@ -2224,12 +2228,14 @@ local function layoutMeadowReferenceHud()
   local dockScale=math.clamp((v.Y-20)/370,.76,1.12)*1.3
   local dockReserve=landscape and math.floor(226*dockScale)+8 or 0
   local tenWide=(landscape and math.floor(math.clamp(v.X/17,44,52)) or 44)*10+18
-  local columns=5 -- [요청] 단축바는 1~5번 5칸만 표시
-  local slotSize=landscape and math.floor(math.clamp(v.X/17,44,52))
-    or math.floor(math.clamp((v.X-24)/columns-2,44,48))
+  -- [작은 모바일 화면] 기존 1~5번은 유지하고 폭이 부족할 때만 3열·2행.
+  local columns=v.X<270 and 3 or 5
+  local slotSize=landscape and math.floor(math.clamp(v.X/17,46,52))
+    or math.floor(math.clamp((v.X-24)/columns-2,46,48))
   local gap=2
   local barWidth=(slotSize+gap)*columns-gap
-  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
+  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,
+    (slotSize+gap)*math.ceil(5/columns)-gap)
   if landscape then
     -- 왼쪽 이동 조이스틱(약 150)과 오른쪽 전투 버튼 영역(약 150) 사이에 단축바를 둔다.
     local minCenter=150+barWidth/2
@@ -5546,7 +5552,14 @@ for index,skill in ipairs(meleeSkills)do
   local skillActionId=skill[1] -- [오른쪽 터치] 각 버튼의 서버 기술 ID를 자기 입력에 고정한다.
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
-    local submitted=activateMeadowAction(index==1 and (meadowActionButtons.quickSkillId or skillActionId) or skillActionId)
+    local requested=index==1 and (meadowActionButtons.quickSkillId or skillActionId) or skillActionId
+    -- [잠긴 실제 기술] 버튼을 눌러도 무반응인 상태 대신 기존 스킬트리로 안내한다.
+    -- 전투 쿨다운·기력·피해·잠금·서버 권한은 기존 activateMeadowAction에 그대로 둔다.
+    if meadowSkillLock(requested) then
+      meadowMenu.open(7)
+      return
+    end
+    local submitted=activateMeadowAction(requested)
     if index==2 and submitted then meadowDodgeAttemptAt=os.clock() end
   end)
 end
@@ -5717,6 +5730,10 @@ local function layoutMeadowCombatUi()
     -- [시안 오른쪽] 검·기술·회피·질주·점프 5개만 표시.
     -- 숨긴 막기와 회복은 8·5번 단축바에 그대로 연결한다.
     button.Visible=index==2 or index==3 or (index==1 and meadowActionButtons.quickSkillId~=nil)
+    -- [잠긴 기술 표시] 원본 아이콘은 보존하고 잠금 여부만 흐리게 구분한다.
+    local locked=button.Visible and meadowSkillLock(index==1 and (meadowActionButtons.quickSkillId or meleeSkills[index][1]) or meleeSkills[index][1])~=nil
+    local icon=button:FindFirstChild("OriginalRightActionIcon")
+    if icon then icon.ImageTransparency=locked and .35 or 0 end
     local plate=meadowSkillNameplates[index]
     plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
     plate.Size=UDim2.fromOffset(0,0)
