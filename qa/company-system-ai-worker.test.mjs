@@ -214,12 +214,15 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   assert.match(workflow,/candidatePublicationAllowed:!infrastructureFailure&&security\.verdict==='PASS'/);
   assert.match(workflow,/learningCandidate:!infrastructureFailure/);
   assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
-  assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  // 최신 중앙문서는 요약본이 아니라 상세 실행 바인딩이다. 차단·검증 권한을 직접 확인한다.
+  assert.equal(security.kind,'company-security-immune-system');
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
-  assert.equal(security.enforcement?.unverified,'BLOCK');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement?.mode,'FAIL_CLOSED');
-  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+  assert.equal(security.enforcement?.scanner,'tools/company-security-steward.mjs');
+  assert.equal(security.enforcement?.workflow,'.github/workflows/company-security-immune.yml');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.constitutionalEnforcement?.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement?.subordinateOverrideForbidden,true);
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
 });
 
 test('System AI consumes only verified Vibe learning context and records exact knowledge ids',()=>{
