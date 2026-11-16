@@ -3667,6 +3667,26 @@ function PortScene.build(info, onFacility)
 		end
 	end
 
+
+	-- [지역 브랜드 자동 3D] 원료 창고 → 공방 → 지역 브랜드 진열대 → 수출 마차로 외형이 발전한다.
+	-- 서쪽 경계의 산업 필지를 재사용해 기존 출항·보행·시장 길과 충돌하지 않게 한다.
+	for _, industry in ipairs((info.sim and info.sim.industries) or {}) do
+		if industry.stage >= 2 then
+			local at = Vector3.new(-231, 0, 151)
+			local booth = importedModel(folder, "Town", "stall-red", at, 12, false)
+			if booth then
+				booth.Name = "LocalIndustry_" .. industry.id
+				local anchor = if booth:IsA("BasePart") then booth else booth:FindFirstChildWhichIsA("BasePart", true)
+				if anchor then sign(folder, anchor, if industry.stage >= 3 then industry.name else industry.processed, nil, 12, true) end
+			end
+			if industry.stage >= 3 then importedModel(folder, "Town", "cart", at + Vector3.new(-15, 0, 0), 7, false) end
+			if industry.stage >= 4 then
+				importedModel(folder, "Town", "cart", at + Vector3.new(16, 0, 0), 7, false)
+				importedModel(folder, "Castle", "flag-banner-long", at + Vector3.new(0, 0, 12), 10, false)
+			end
+		end
+	end
+
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
 	for i = 1, 6 do
