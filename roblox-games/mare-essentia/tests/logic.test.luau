@@ -4120,7 +4120,8 @@ do
 			if bp.faction == "new_world" then
 				check("신대륙 4~5단계는 원양선 " .. bp.id, bp.stage < 4 or (bp.existingId ~= nil and string.find(bp.sailingZone, "원양") ~= nil or string.find(bp.sailingZone, "횡단") ~= nil))
 				if bp.stage >= 4 then check("카누·카약을 대형 원양선으로 오인하지 않음 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약")) end
-				if bp.stage == 3 then check("신대륙 돛뗏목 항행 고증", bp.id == "inca_balsa_raft" and bp.card == "nw_05") end
+				if bp.stage == 3 then check("신대륙 3단계 체서피크 실존 범선", bp.id == "chesapeake_schooner" and bp.card == nil and string.find(bp.rig, "돛대") ~= nil and string.find(bp.sailingZone, "외양") ~= nil) end
+				if bp.stage >= 3 then check("신대륙 3단계 이상 카누·뗏목 제외 " .. bp.id, not string.find(bp.name, "카누") and not string.find(bp.name, "카약") and not string.find(bp.name, "뗏목")) end
 			end
 			if bp.stage == 5 and (bp.faction == "africa" or bp.faction == "middle_east" or bp.faction == "southeast_asia") then
 				check("지역 최상위 선박은 실제 원양선 " .. bp.id, string.find(bp.sailingZone, "원양") ~= nil)

@@ -104,7 +104,7 @@ local Ships: { [string]: ShipDef } = {
 }
 
 -- [7대륙 선박 제작설계] 카드배틀 6대륙과 가상 미지의 땅. 실물 3D 원본 확보 전 설계 전용.
--- [항행 고증] 카누·갈대배는 강·연안용. 신대륙 3단계는 돛뗏목, 4~5단계는 식민기 실제 원양 항해선. 카드 도감의 기존 토착 선박은 유지.
+-- [항행 고증] 카누·갈대배는 강·연안용. 신대륙 3~5단계는 역사적 아메리카 교역 범선. 토착 카누·갈대배는 연안·하천용으로 구분. 카드 도감의 기존 토착 선박은 유지.
 -- 단계는 역할·규모 구분이며 모든 문화권의 역사적 개발 연대를 뜻하지 않는다.
 -- 실존 1~5단계, 아스테리아 2~6단계. 단계와 미지의 땅 3~8% 우위는 현행 구매·성능·저장 수치에 영향 없음.
 local BlueprintFactions = {
@@ -129,7 +129,7 @@ local Blueprints = {
 	{ id="treasure_ship", name="명나라 보선", faction="east_asia", stage=5, era="15세기", hull="격벽이 있는 대형 원양 수송선", rig="다중 돛대·댓살 돛", deck="대형 선창·후미 조타부", remodel="중국식 격벽·범장·조타 장치 전용 제작", card="ea_07", existingId=nil, sailingZone="인도양 원양", proposedEdge=nil },
 	{ id="maya_canoe", name="마야 교역 카누", faction="new_world", stage=1, era="고대~16세기", hull="긴 단목 파낸 연안 선체", rig="노·삿대", deck="열린 화물갑판", remodel="단목 선형과 얕은 선측 원본 개조", card="nw_03", existingId=nil, sailingZone="하천·연안", proposedEdge=nil },
 	{ id="carib_canoe", name="카리브 전투 카누", faction="new_world", stage=2, era="15~17세기", hull="좁고 긴 단목 선체", rig="집단 노", deck="긴 다인승 갑판", remodel="가늘고 높은 선수·다중 노좌 개조", card="nw_01", existingId=nil, sailingZone="카리브 섬 사이", proposedEdge=nil },
-	{ id="inca_balsa_raft", name="안데스 발사 돛뗏목", faction="new_world", stage=3, era="15~16세기", hull="발사나무 통목을 결속한 태평양 연안 교역선체", rig="한 돛대의 면직물 사각돛·과라 조종판", deck="묶은 통목 위 화물 적재대", remodel="원본 실물 발사 통목·결속·과라·돛 구조 검수 후 개조", card="nw_05", existingId=nil, sailingZone="태평양 연안·근해", proposedEdge=nil },
+	{ id="chesapeake_schooner", name="체서피크 스쿠너", faction="new_world", stage=3, era="18~19세기", hull="북아메리카 동부 해안용 날렵한 이중 돛대 목조 선체", rig="두 돛대의 종범장·선수 삼각돛", deck="교역 화물창·후미 조타석", remodel="체서피크 실존 스쿠너 자료 대조 후 선수 선형·돛대·갑판을 전용 실물 모델로 개조", card=nil, existingId=nil, sailingZone="대서양 연안·외양", proposedEdge=nil },
 	{ id="atlantic_brigantine", name="아메리카 브리간틴", faction="new_world", stage=4, era="17~19세기", hull="북미·카리브 항로용 세장형 목조 범선체", rig="앞돛대 사각돛·뒤돛대 종범장", deck="중앙 화물창·소형 함포갑판", remodel="브리간틴 전용 두 돛대·혼합 범장·선체 원본 개조", card=nil, existingId="brigantine", sailingZone="대서양 원양", proposedEdge=nil },
 	{ id="manila_galleon", name="마닐라 갈레온", faction="new_world", stage=5, era="16~19세기", hull="누에바 에스파냐–마닐라 장거리 대형 선체", rig="다중 사각돛·후방 삼각돛", deck="대형 은·비단 화물창·상갑판 포문", remodel="실제 원양 갈레온 원본으로 큰 선창·높은 선미루·범장 고증", card=nil, existingId="manila_galleon", sailingZone="태평양 대양 횡단", proposedEdge=nil },
 	{ id="zaruk", name="자루크", faction="middle_east", stage=1, era="근세 인도양", hull="작고 얕은 어로 선체", rig="소형 삼각돛·노", deck="열린 연안 작업갑판", remodel="곡선 선수·삼각돛 비율 개조", card="me_09", existingId=nil, sailingZone="연안 어로", proposedEdge=nil },
