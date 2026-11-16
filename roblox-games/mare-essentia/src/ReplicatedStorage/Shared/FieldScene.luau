@@ -331,6 +331,27 @@ local function btn(parent, text, color, size, pos, anchor)
 	shade.Active = false
 	shade.ZIndex = b.ZIndex + 4
 	shade.Parent = b
+	-- [스킬 재사용 시각화] 원형 메달 안에서는 마스킹과 초 단위 숫자,
+	-- 아래에서는 남은 시간 비율을 표시한다. 빠른 화면에서도 글자 크기는 고정한다.
+	local ring = Instance.new("UICorner")
+	ring.CornerRadius = UDim.new(1, 0)
+	ring.Parent = shade
+	local track = Instance.new("Frame")
+	track.Name = "FieldCooldownTrack"
+	track.Position = UDim2.new(0.13, 0, 1, -7)
+	track.Size = UDim2.new(0.74, 0, 0, 4)
+	track.BackgroundColor3 = Color3.fromRGB(32, 46, 63)
+	track.BorderSizePixel = 0
+	track.Visible = false
+	track.ZIndex = b.ZIndex + 5
+	track.Parent = b
+	local progress = Instance.new("Frame")
+	progress.Name = "FieldCooldownProgress"
+	progress.Size = UDim2.fromScale(1, 1)
+	progress.BackgroundColor3 = Color3.fromRGB(106, 206, 228)
+	progress.BorderSizePixel = 0
+	progress.ZIndex = track.ZIndex + 1
+	progress.Parent = track
 	local timer = Instance.new("TextLabel")
 	timer.Name = "FieldCooldownTime"
 	timer.Size = UDim2.fromScale(1, 1)
@@ -1336,7 +1357,22 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
+
+	-- [무기 숙련] 탐험 중 실전 명중으로만 해당 무기의 숙련 경험치가 오른다.
+	-- 기존 저장·대미지·드롭 표는 변경하지 않고 무기별 연타 모션만 확률적으로 해금한다.
+	local weaponPractice = {}
 	local wpn = Weapons.get(opts.weapon or workspace:GetAttribute("DevWeapon") or "sword")
+	local weaponRankLabel = label(attackBtn, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
+	weaponRankLabel.Name = "FieldWeaponMastery"
+	weaponRankLabel.AnchorPoint = Vector2.new(0.5, 1)
+	weaponRankLabel.Position = UDim2.new(0.5, 0, 0, -6)
+	weaponRankLabel.Size = UDim2.fromOffset(114, 22)
+	weaponRankLabel.Font = Enum.Font.GothamBlack
+	weaponRankLabel.TextStrokeTransparency = 0.16
+	weaponRankLabel.ZIndex = attackBtn.ZIndex + 3
+	weaponRankLabel.Text = "무기 숙련 1단"
+	attackBtn:SetAttribute("WeaponMasteryRank", 1)
+	attackBtn:SetAttribute("WeaponMasteryExperience", 0)
 	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
 	local reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
 	if attackIcon then
@@ -2336,8 +2372,16 @@ function FieldScene.start(opts)
 				end
 			end
 		end
+		-- [연타 무조건 발동 금지] ActionCombat의 공용 기본 3타 규칙은 유지하고
+		-- 이 탐험에서만 기본 공격을 항상 단타로 처리한다. 숙련 연타는 명중 뒤 별도로 추첨한다.
+		if moveId == "rush" then
+			pl.combo = 0
+			pl.lastHit = -100
+			mult = 1
+			slashIdx = 0
+		end
 		local combo0 = pl.combo
-		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" or (moveId == "rush" and pl.combo >= 3) then "heavy" else "slash"
+		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" then "heavy" else "slash"
 		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4)
 		do
 			local reachV = (mv.range or 5) * STUD
@@ -2441,16 +2485,46 @@ function FieldScene.start(opts)
 					breakCrate(c)
 				end
 			end
-			if hits == 0 and moveId == "rush" then
+			if moveId == "rush" and hits > 0 then
+				local practice = weaponPractice[wpn.id]
+				if not practice then
+					practice = { xp = 0, rank = 1 }
+					weaponPractice[wpn.id] = practice
+				end
+				-- [무기별 경험치] 명중한 공격당 1 경험치. 적 수로 중복 계상하지 않는다.
+				practice.xp += 1
+				local rank = if practice.xp >= 100 then 5 elseif practice.xp >= 55 then 4
+					elseif practice.xp >= 26 then 3 elseif practice.xp >= 8 then 2 else 1
+				local promoted = rank > practice.rank
+				practice.rank = rank
+				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
+				attackBtn:SetAttribute("WeaponMasteryRank", rank)
+				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
+				-- [1~5단계 확률 연타] 1단에서는 항상 단타. 숙련·전투 경력에 따라
+				-- 보너스 모션 발동률만 증가하며 추가 피해·드롭은 만들지 않는다.
+				local chance = if rank == 1 then 0 else math.min(0.54, 0.08 + rank * 0.065 + math.min(opts.battleLevel or 1, 30) * 0.002)
+				local chain = if rank > 1 and rng:NextNumber() < chance then rng:NextInteger(2, rank) else 1
+				if promoted then
+					showCombo(string.format("%s 숙련 %d단!", wpn.name, rank))
+					sfx("sfx_coin", 0.55, 1.3)
+				end
+				if chain > 1 then
+					showCombo(string.format("%d단계 연타!", chain))
+					sfx("sfx_card_swing", 0.6, 1.1 + chain * 0.06)
+					for stage = 2, chain do
+						task.delay((stage - 1) * 0.11, function()
+							if finished or not hrp.Parent then return end
+							slashArc(hrp, if stage % 2 == 0 then Color3.fromRGB(146, 223, 255) else Color3.fromRGB(255, 211, 131),
+								math.max(7, wpn.range * STUD), 95 + stage * 8, if stage % 2 == 0 then 30 else -30)
+							if stage == chain then
+								shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7 + chain * 2, Color3.fromRGB(255, 219, 145), 0.34)
+								afterimage(player.Character, Color3.fromRGB(173, 220, 255), math.min(chain, 4), 0.05)
+							end
+						end)
+					end
+				end
+			elseif hits == 0 and moveId == "rush" then
 				say("헛손질")
-			elseif moveId == "rush" and combo >= 3 then
-				say("3연타 마무리!")
-				showCombo("3연타!")
-				screenFlash(Color3.fromRGB(255, 232, 160), 0.6)
-				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 16, Color3.fromRGB(255, 220, 120), 0.45)
-				shakeUntil, shakeAmp = os.clock() + 0.2, 0.8
-			elseif moveId == "rush" and hits > 0 then
-				showCombo(string.format("%d연타", combo))
 			elseif hits > 0 and mv.label then
 				say(mv.label .. (if hits > 1 then string.format(" %d명 적중", hits) else ""))
 			end
@@ -2755,6 +2829,11 @@ function FieldScene.start(opts)
 			end
 			equipFieldWeapon(player.Character, wpn)
 			slashIdx = 0
+			local practice = weaponPractice[wpn.id]
+			local rank = practice and practice.rank or 1
+			weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
+			attackBtn:SetAttribute("WeaponMasteryRank", rank)
+			attackBtn:SetAttribute("WeaponMasteryExperience", practice and practice.xp or 0)
 			say(string.format("%s — %s", wpn.name, wpn.note))
 		end)
 		task.delay(1, function()
@@ -2955,13 +3034,20 @@ function FieldScene.start(opts)
 				say(string.format("%s 재사용까지 %.1f초", card.name, pl.cd[key] - now))
 				return
 			end
-			pl.cd[key] = now + 8
 			local ch = player.Character
 			local hp0 = ch and ch:FindFirstChild("HumanoidRootPart")
 			if not hp0 then
 				return
 			end
 			local sk = card.skill
+			-- [마력 직업] 치유·보호·지식 계열 카드에만 마력 20 소모.
+			-- 다른 직업/공격 카드는 기존 기력·쿨타임만 유지한다.
+			local spell = sk == "heal" or sk == "ward" or sk == "armor" or sk == "read"
+			if magicUser and spell then
+				if magicValue < 20 then say("마력이 부족해요") return end
+				magicValue -= 20
+			end
+			pl.cd[key] = now + 8
 			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
 			castEffect(sk, card.name, ch, hp0)
 		end
@@ -3032,6 +3118,23 @@ function FieldScene.start(opts)
 				timer.Visible = left > 0
 				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
 				if left > 0 then timer.Text = if left >= 10 then tostring(math.ceil(left)) else string.format("%.1f", left) end
+				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
+				local fill = track and track:FindFirstChild("FieldCooldownProgress")
+				if track and fill then
+					track.Visible = left > 0
+					fill.Size = UDim2.fromScale(1 - math.clamp(left / math.max(duration, 0.1), 0, 1), 1)
+				end
+				if left > 0 then
+					sb.wasCooling = true
+				elseif sb.wasCooling then
+					sb.wasCooling = false
+					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
+					if stroke then
+						stroke.Color = Color3.fromRGB(100, 248, 178)
+						stroke.Thickness = 3
+						TweenService:Create(stroke, TweenInfo.new(0.45), { Color = Color3.fromRGB(224, 184, 105), Thickness = 2 }):Play()
+					end
+				end
 			end
 			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
 			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
