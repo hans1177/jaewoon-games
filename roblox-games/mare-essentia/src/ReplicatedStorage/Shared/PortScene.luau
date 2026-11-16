@@ -3058,7 +3058,7 @@ function PortScene.build(info, onFacility)
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
 		-- 왕도 발전에 따른 왕궁 폭·깊이 확장. 별관·근위대·정원까지 하나의 구획으로 확보한다.
-		local scale = 1.12 + (sceneLevel - 1) * 0.11 + royalSeed:NextNumber(0, 0.04)
+		local scale = 1.34 + (sceneLevel - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
 		local wide, deep = 134 * scale, 138 * scale
 		local tall = 30 + sceneLevel * 4
 		local east = key == "japan" or key == "china" or key == "seasia" or key == "malabar"
