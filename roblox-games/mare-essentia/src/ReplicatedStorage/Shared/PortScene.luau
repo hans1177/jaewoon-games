@@ -3218,7 +3218,8 @@ function PortScene.build(info, onFacility)
 				elseif w.kind then
 					Pose.work(w.model, w.kind, now + w.phase, true)
 				elseif w.elder then
-					Pose.work(w.model, "stoop", now)
+					-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
+					Pose.work(w.model, "stoop", now, true)
 				end
 			end
 		end
