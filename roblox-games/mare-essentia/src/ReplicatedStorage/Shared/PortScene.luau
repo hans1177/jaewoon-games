@@ -532,7 +532,7 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 end
 
 -- 캐릭터(약 5스터드)에 비해 집이 장난감처럼 작아 보여서 전체적으로 키운다 (대신 간격도 같이 넓힌다)
-local HOUSE_SCALE = 1.45
+local HOUSE_SCALE = 1.28
 
 -- 건물 발전도는 낡음/증축으로 표현한다. 지역의 석조·벽돌·목조 재질을 다른 문화권의 목재로 덮지 않는다.
 local houseTier = 1 -- 발전 단계 (PortScene.build 가 정한다)
@@ -659,7 +659,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		local size = math.max(w, d) * variation
 		-- 별채·굴뚝·발코니는 해당 문화권의 건축형식과 건조 환경에 맞는 곳에만 배치한다.
 		if architecture.annex and seed % 4 == 1 then
-			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.95, 0, size * 0.25), size * 0.62 * HOUSE_SCALE, true, tintColor)
+			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.58, 0, size * 0.18), size * 0.32 * HOUSE_SCALE, false, tintColor)
 			if annex then
 				annex.Name = "HarborAnnex"
 				uniformMaterial(annex, style)
@@ -1711,8 +1711,9 @@ local function placeSignature(folder, info)
 end
 
 local LM_SITES = {
-	Vector3.new(-112, 0, 34), Vector3.new(-112, 0, -34), Vector3.new(-150, 0, 46), Vector3.new(-150, 0, -46),
-	Vector3.new(-190, 0, 40), Vector3.new(-190, 0, -40), Vector3.new(-72, 0, 72), Vector3.new(-72, 0, -72),
+	-- 대로 시설·지역 산업과 별도 구획에 놓고 주택 건설에서 이곳을 예약한다.
+	Vector3.new(-112, 0, 166), Vector3.new(-112, 0, -166), Vector3.new(-160, 0, 166), Vector3.new(-160, 0, -166),
+	Vector3.new(-208, 0, 181), Vector3.new(-208, 0, -181), Vector3.new(-263, 0, 181), Vector3.new(-263, 0, -181),
 }
 
 local function densify(folder, info, style, rng, walkers, made)
@@ -1736,13 +1737,19 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
 	local S = P.S * (countryPlan and countryPlan.lot or 1) -- 국가별 필지 너비. 저장 레벨·시설 판정은 그대로 둔다
-	local fw = S / HOUSE_SCALE
-	local laneL = 2 * S + P.alley + 3
-	local pairsMax = math.max(1, math.floor((136 - 38) / laneL))
-	local pairsN = math.min(pairsMax, math.ceil(lvl * 0.8))
+	local fw = S / (HOUSE_SCALE * 1.08)
+	local laneL = 2 * S + P.alley + 5 -- 집과 골목 사이 보행 여유
+	local pairsMax = math.max(2, math.floor((196 + lvl * 15 - 38) / laneL))
+	local pairsN = math.min(pairsMax, 1 + math.floor((lvl - 1) * 0.8))
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1), 0.3, 0.97)
+	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
+	if info.sim and info.sim.buildings then
+		local target = ({ 40, 130, 430, 1600, 4000 })[lvl]
+		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
+	end
 	local smokers = 0
-	local X_END = -190
+	local X_END = -170 - lvl * 11
+	local placedLots = {}
 	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
 	local dz = seeded(info.portId .. "district")
 	local slots = { Vector3.new(-134, 0, 86), Vector3.new(-134, 0, -86), Vector3.new(-178, 0, 86), Vector3.new(-178, 0, -86) }
@@ -1751,21 +1758,24 @@ local function densify(folder, info, style, rng, walkers, made)
 		slots[i], slots[j] = slots[j], slots[i]
 	end
 	local districts = { { kind = "religious", at = slots[1] }, { kind = "market", at = slots[2] }, { kind = "farm", at = slots[3] } } -- slots[4] 는 주거지 그대로
-	local function reserved(x, z)
-		if x > -104 and math.abs(z) > 20 and math.abs(z) < 54 then return true end
+	local function reserved(x, z, half)
+		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
+		if x > -108 - half and math.abs(z) > 17 - half and math.abs(z) < 59 + half then return true end
+		if x < -211 + half and math.abs(z) < 145 + half then return true end
 		for _, d in districts do
-			if math.abs(x - d.at.X) < 24 and math.abs(z - d.at.Z) < 22 then return true end
+			if math.abs(x - d.at.X) < (if d.kind == "farm" then 69 else 28) + half and math.abs(z - d.at.Z) < (if d.kind == "farm" then 33 else 26) + half then return true end
 		end
 		for _, a in LM_SITES do
-			if math.abs(x - a.X) < 20 and math.abs(z - a.Z) < 20 then return true end
+			if math.abs(x - a.X) < 29 + half and math.abs(z - a.Z) < 29 + half then return true end
+		end
+		for _, lot in placedLots do
+			if math.abs(x - lot.X) < half + lot.H + 2 and math.abs(z - lot.Z) < half + lot.H + 2 then return true end
 		end
 		return false
 	end
-	local function onStreet(x)
+	local function onStreet(x, half)
 		for _, sx in streetsX do
-			if math.abs(x - sx) < S / 2 + P.alley / 2 + 1 then
-				return true
-			end
+			if math.abs(x - sx) < half + P.alley / 2 + 2 then return true end
 		end
 		return false
 	end
@@ -1773,17 +1783,23 @@ local function densify(folder, info, style, rng, walkers, made)
 	local function fillRow(z, t, xStart)
 		local x = xStart
 		while x > X_END do
-			if not onStreet(x) and not reserved(x, z) and rng:NextNumber() < dens then
+			if rng:NextNumber() < dens then
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
+				local half = sz * 0.62
+				if not onStreet(pos.X, half) and not reserved(pos.X, pos.Z, half) then
 				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
 				if rng:NextNumber() < 0.15 then fl += (if rng:NextNumber() < 0.5 then -1 else 1) end
 				fl = math.clamp(fl, 1, P.flMax)
 				local ww = fw * (sz / S)
-				house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
-				if smokers < 28 and rng:NextNumber() < 0.22 then
-					smokers += 1
-					smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+				local body = house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
+				if body then
+					table.insert(placedLots, { X = pos.X, Z = pos.Z, H = half })
+					if smokers < 28 and rng:NextNumber() < 0.22 then
+						smokers += 1
+						smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+					end
+				end
 				end
 			end
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
@@ -2738,7 +2754,7 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(300, 0.3, 340), CFrame.new(-130, 0.02, 0),
+		local floor = part(folder, Vector3.new(480 + sceneLevel * 15, 0.3, 400 + sceneLevel * 48), CFrame.new(-176, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
@@ -2904,7 +2920,7 @@ function PortScene.build(info, onFacility)
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
-			local grow = 1.8 + 0.06 * (sceneLevel - 1) -- 방문 건물은 일반 집·주민보다 훨씬 크게(교역소·조선소·주점이 한눈에 보이게): 1단계 1.8배 → 5단계 약 2.04배
+			local grow = 1.21 + 0.02 * (sceneLevel - 1) -- 시설 필지와 입구 보행 폭을 확보하며 단계별 증축을 유지
 			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
 			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
@@ -2970,9 +2986,9 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
-		local shed = house(folder, Vector3.new(-4, 0, -52), 14 * 1.9, 12 * 1.9, 2, style, rng, Color3.fromRGB(150, 118, 84))
+		local shed = house(folder, Vector3.new(-4, 0, -88), 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
-		prompt(folder, Vector3.new(8, 3, -52), "조선소", "들어가기", "yard", onFacility)
+		prompt(folder, Vector3.new(8, 3, -79), "조선소", "들어가기", "yard", onFacility)
 	end
 
 	-- 왕궁: 큰길 끝
@@ -2998,7 +3014,7 @@ function PortScene.build(info, onFacility)
 
 	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
 	if CHURCH_KEYS[currentKey] and sceneLevel < 2 then
-		local cx, cz = -84, 40
+		local cx, cz = -215, 42
 		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz + 2) * CFrame.Angles(0, math.pi, 0), Color3.fromRGB(60, 80, 70))
@@ -3007,7 +3023,7 @@ function PortScene.build(info, onFacility)
 
 	-- 암스테르담·안트베르펀·함부르크에는 풍차
 	if info.portId == "amsterdam" or info.portId == "antwerp" or info.portId == "hamburg" then
-		local mx, mz = -100, -60
+		local mx, mz = -209, -87
 		part(folder, Vector3.new(14, 10, 10), CFrame.new(mx, 7, mz) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(110, 80, 60), Enum.Material.WoodPlanks, Enum.PartType.Cylinder)
 		local hub = part(folder, Vector3.new(1, 1, 1), CFrame.new(mx + 5.5, 12, mz), Color3.fromRGB(60, 40, 30))
 		hub.Name = "MillHub"
