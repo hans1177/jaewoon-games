@@ -7309,6 +7309,43 @@ local function renderCodexOverview()
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
 		}, 54)
 	end)
+	-- [백과사전 문명 기술 트리] 기존 항구 경제 정보를 모바일에서 접어 보는 방식으로 재사용한다.
+	-- 연구 가능과 실제 실용화를 구분하며, 발견·학자 보고·보상은 이 화면에서 변경하지 않는다.
+	do
+		local tech = view.harbor and view.harbor.sim and view.harbor.sim.technology
+		if tech and tech.rows then
+			add(function()
+				return mkRow(content, string.format("현지 문명 기술 · %d / %d", tech.adopted, tech.total),
+					string.format("%d년 · 학문·자원·교역·건축이 연결된 기술 계통", tech.year), {
+						{ text = if H.civilTechOpen then "접기" else "열기", color = COLORS.blue, onClick = function() H.civilTechOpen = not H.civilTechOpen; render() end },
+					}, 62)
+			end)
+			if H.civilTechOpen then
+				local techNames = {}
+				for _, node in ipairs(tech.rows) do techNames[node.id] = node.name end
+				add(function() return mkHeader(content, "기술 실용화 · 시대와 지역마다 다르게 발전") end)
+				for _, node in ipairs(tech.rows) do
+					add(function()
+						local status = ({
+							adopted = "실용화", future = "역사적 등장 전", city = "도시 규모 부족",
+							prerequisite = "선행 발명 필요", research = "학문 연구 진행",
+							resource = "지역 자원 부족", capital = "건설 자본 부족", ready = "도입 가능",
+						})[node.status] or "준비 중"
+						local prereq = {}
+						for _, id in ipairs(node.requires or {}) do
+							table.insert(prereq, techNames[id] or id)
+						end
+						local detail = string.format("%d년부터 · %s · %s", node.since, node.disciplineName or node.discipline, status)
+						if #prereq > 0 then detail ..= " · 선행 " .. table.concat(prereq, ", ") end
+						if node.resource then
+							detail ..= " · 자원 " .. (({ coal = "석탄", iron = "철", timber = "목재" })[node.resource] or node.resource)
+						end
+						return mkRow(content, node.name, detail, {}, 60)
+					end)
+				end
+			end
+		end
+	end
 	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 52, cx.plannedDisciplineCount or 0)) end)
 	local samples = {}
 	for _, card in cx.cards do

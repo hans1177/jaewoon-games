@@ -110,6 +110,48 @@ do
 	check("구역 인구 합 ≈ 인구", math.abs(sum - t.pop) / t.pop < 0.02 and #v.districts == 6, sum)
 	check("집 10만 채 규모를 숫자로", t.bld.house > 50000, t.bld.house)
 end
+-- 문명 기술 트리: 연도·선행 연구·지역 자원·도시 규모·국고가 실제 채택을 결정한다.
+do
+	local branchIds = {}
+	for _, node in ipairs(Eco.CIVIL_TECH) do
+		check("발명 고유 식별자 " .. node.id, not branchIds[node.id] and Eco.CIVIL_TECH_BY_ID[node.id] == node)
+		branchIds[node.id] = true
+		for _, dep in ipairs(node.requires or {}) do
+			check("선행 발명이 먼저 존재 " .. node.id, branchIds[dep] == true, dep)
+		end
+	end
+	local c = Eco.newWorld({ seed = 19, year = 1650 })
+	local t = c.towns.london
+	t.stage = 3
+	t.tech.agri, t.tech.commerce, t.tech.sea = 2, 2, 2
+	t.tech.craft, t.tech.medicine, t.tech.gov = 2, 2, 2
+	t.treasury = 20000
+	local count = Eco.adoptTechnologies(t, 1700)
+	check("마을 연구 성과 → 기술 자동 실용화", count > 0 and t.civTech.crop_rotation and t.civTech.guild_accounting and t.civTech.merchant_banking, count)
+	check("1712년 전 증기기관 도입 차단", not t.civTech.steam_pumping and Eco.technologyStatus(t, Eco.CIVIL_TECH_BY_ID.steam_pumping, 1700) == "future")
+	local treasury = t.treasury
+	local second = Eco.adoptTechnologies(t, 1700)
+	check("기술 재채택 비용·효과 중복 없음", second == 0 and t.treasury == treasury, second)
+	t.produces.coal, t.stock.coal = nil, nil
+	Eco.adoptTechnologies(t, 1712)
+	check("광산 증기기관은 자원 없으면 미실용화", Eco.technologyStatus(t, Eco.CIVIL_TECH_BY_ID.steam_pumping, 1712) == "resource")
+	t.stock.coal = 10
+	Eco.adoptTechnologies(t, 1712)
+	check("석탄 공급 후 증기기관 확산", t.civTech.steam_pumping and t.civBonus.craft > 1)
+	local view = Eco.technologyView(t, 1712)
+	check("도시 백과 기술 트리 조회", view.total == #Eco.CIVIL_TECH and view.adopted > 0 and #view.rows == view.total and view.year == 1712)
+	local other = c.towns.amsterdam
+	check("마을별 기술 채택은 독립", other.civTech.steam_pumping ~= true)
+	t.stage = 4
+	t.stock.iron = nil
+	t.produces.iron = nil
+	Eco.adoptTechnologies(t, 1770)
+	check("산업 야금은 철 공급을 확인", Eco.technologyStatus(t, Eco.CIVIL_TECH_BY_ID.industrial_metallurgy, 1770) == "resource")
+	t.stock.iron = 10
+	Eco.adoptTechnologies(t, 1770)
+	check("후기 산업 발명 선행 기술 연결", t.civTech.industrial_metallurgy and t.civBonus.craft > 1.06)
+end
+
 -- 서버 서비스: 날짜를 따라 진행하고 항구 요약을 낸다
 do
 	local Econ = require("./Services/Econ")({ Economy = Eco }, {})
@@ -122,6 +164,15 @@ do
 	check("서비스: 건축물·주거·일자리", town.buildings.house > 0 and town.housing.cap > 0 and town.work.jobs > 0 and town.service.market ~= nil)
 	do
 		local w2 = Econ.macro(st, "world")
+		local K = require("./Shared/KnowledgeTree")
+		local mapped = 0
+		for _, disc in ipairs(K.Disciplines) do
+			local m = Econ.DISC_TECH[disc.id]
+			check("57개 활성 학문 경제 연결 " .. disc.id, m ~= nil)
+			if m then mapped += 1 end
+		end
+		check("활성 학문 전체 경제 매핑", mapped == #K.Disciplines and #K.Disciplines == 57, mapped)
+		check("백과 기술 상태를 항구 조회에서 노출", Econ.town(st, "london").technology.total == #Eco.CIVIL_TECH)
 		local before = Econ.town(st, "london").tech
 		Econ.teach(st, "london", "navigation", 10)
 		local after = Econ.town(st, "london").tech
