@@ -32,7 +32,18 @@ P.ClassOf = {
 }
 
 -- 가공 공정: inputs 중 하나를 가공해 output(가공품 이름)을 만든다
-P.Recipes = {
+-- [제작법 타입] 기존 레시피와 후대 브랜드 레시피를 같은 선택 필드로 관리한다.
+type Recipe = {
+	id: string,
+	inputs: { string },
+	output: string,
+	building: string,
+	disc: string,
+	minLevel: number,
+	valueMult: number,
+	newIndustry: boolean?,
+}
+local recipes: { Recipe } = {
 	{ id = "r_cloth_wool", inputs = { "wool" }, output = "직물(모직)", building = "양모 시장·직조 공방", disc = "textiles", minLevel = 2, valueMult = 1.5 },
 	{ id = "r_cloth_cotton", inputs = { "cotton" }, output = "면직물", building = "면직 공방", disc = "textiles", minLevel = 2, valueMult = 1.5 },
 	{ id = "r_dye", inputs = { "indigo", "cochineal", "brazilwood", "logwood" }, output = "염색 직물", building = "염색소", disc = "chemistry", minLevel = 3, valueMult = 1.7 },
@@ -68,6 +79,8 @@ P.Recipes = {
 	{ id = "r_ginseng_medicine", inputs = { "ginseng" }, output = "정제 인삼 약재", building = "약방·한의원", disc = "pharmacology", minLevel = 3, newIndustry = true, valueMult = 1.6 },
 	{ id = "r_aged_beer", inputs = { "beer" }, output = "숙성 맥주", building = "맥주 양조장", disc = "brewing", minLevel = 2, newIndustry = true, valueMult = 1.35 },
 }
+
+P.Recipes = recipes
 
 P.ById = {}
 for _, r in P.Recipes do
@@ -121,7 +134,7 @@ P.Brands = {
 function P.brandId(brand)
 	return "b_" .. brand.port .. "_" .. string.sub(brand.recipe, 3)
 end
-P.BrandById, P.BrandsByPort, P.AddedForBrands = {}, {}, {}
+P.BrandById, P.BrandsByPort, P.AddedForBrands = {}, {}, ({} :: { [string]: number })
 for _, brand in ipairs(P.Brands) do
 	brand.id = P.brandId(brand)
 	P.BrandById[brand.id] = brand
