@@ -31,6 +31,8 @@ check(Cultures.REGION.rhodes == "med", "로도스 전환 이전 기본 양식")
 check(Cultures.REGION.famagusta == "italy", "파마구스타 전환 이전 기본 양식")
 -- [조선 항만 회귀] 부산·인천은 구석조 양식으로 되돌아가면 안 된다.
 check(Cultures.REGION.busan == "korea" and Cultures.REGION.incheon == "korea", "조선 항구 문화권")
+check(Cultures.REGION.hoi_an == "seasia" and Cultures.STYLE.seasia.house.form == "stilt",
+	"베트남 호이안의 동남아 수상·해안 건축 문화권")
 check(Cultures.STYLE.korea ~= nil and Cultures.STYLE.korea.house ~= nil
 	and Cultures.STYLE.korea.house.form == "eastasia" and Cultures.PROFILE.korea ~= nil,
 	"조선 기와·목조 건축 및 거리 배치")
