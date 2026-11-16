@@ -7427,7 +7427,14 @@ if string.sub(codexField, 1, 2) == "k:" then
 		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
 	end)
 	add(function() return mkLabel(content, string.format("%s  이해 %d / %d · 학문 Lv.%d", disc.name, disc.done, disc.total, disc.mastery and disc.mastery.level or 1), 17, COLORS.gold, true) end)
-	add(function() return mkLabel(content, disc.summary .. (disc.mastery and string.format(" · 학문 숙련 %d점%s", disc.mastery.points, if disc.mastery.next > 0 then "/" .. disc.mastery.next else " (최고)") else ""), 13, COLORS.text, false) end)
+	add(function()
+		-- [학문 상세] 숙련 정보는 기존 조건식 안에서 계산해 문법과 빈 숙련 상태를 모두 보존한다.
+		local masteryInfo = ""
+		if disc.mastery then
+			masteryInfo = string.format(" · 학문 숙련 %d점%s", disc.mastery.points, if disc.mastery.next > 0 then "/" .. disc.mastery.next else " (최고)")
+		end
+		return mkLabel(content, disc.summary .. masteryInfo, 13, COLORS.text, false)
+	end)
 	local pd = view.people and view.people.byDisc and view.people.byDisc[disc.id]
 	if pd then
 		add(function() return mkLabel(content, string.format("이 학문과 이어진 인물 %d / %d명 기록 — 인물을 기록할수록 이 학문의 연구가 조금씩 빨라져요.", pd.known, pd.total), 12, COLORS.green, false) end)
