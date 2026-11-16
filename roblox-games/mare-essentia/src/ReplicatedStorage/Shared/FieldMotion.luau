@@ -296,6 +296,33 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.16 * (1 - phase), 0, 0)
 		end
 	end
+	-- [전투 몹 모션] 몹이 공격 준비·공격·회복 중에도 실제 양다리와 허리로 무게를 싣도록 한다.
+	-- 기존 공용 R15 리그의 관절만 움직이고 공격 시각·사거리·피해량은 바꾸지 않는다.
+	-- 이전에는 일부 몹이 공격 상태에서 팔 두 관절만 움직여 정적 모델처럼 보였다.
+	if role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss" then
+		local p = math.clamp(phase, 0, 1)
+		if state == "ANTICIPATION" then
+			local set = math.sin(p * math.pi * 0.5)
+			bend("ThighL", 0.10 + 0.12 * set, 0, -0.035)
+			bend("ThighR", 0.09 + 0.08 * set, 0, 0.035)
+			bend("Chest", 0.06 + 0.10 * set, 0, 0)
+		elseif state == "ATTACK" then
+			local release = math.sin(p * math.pi)
+			bend("ThighL", -0.12 - 0.09 * release, 0, -0.04)
+			bend("ThighR", 0.10 + 0.06 * release, 0, 0.04)
+			bend("Chest", -0.10 - 0.10 * release, 0, 0)
+		elseif state == "RECOVERY" then
+			local settle = (1 - p) ^ 2
+			bend("ThighL", 0.08 + 0.08 * settle, 0, 0)
+			bend("ThighR", -0.08 - 0.07 * settle, 0, 0)
+			bend("Chest", 0.07 + 0.07 * settle, 0, 0)
+		elseif state == "HIT" then
+			local recoil = math.sin(p * math.pi)
+			bend("ThighL", 0.08 + recoil * 0.1, 0, 0)
+			bend("ThighR", 0.08 + recoil * 0.07, 0, 0)
+			bend("Chest", 0.08 + recoil * 0.13, 0, 0)
+		end
+	end
 	-- [지연 회전] 공격 중에는 정확한 방향을 방해하지 않으며 이동/대기만 목·허리가 따라간다.
 	if state == "IDLE" or state == "RUN" then
 		local lag = h.turnLag or 0
