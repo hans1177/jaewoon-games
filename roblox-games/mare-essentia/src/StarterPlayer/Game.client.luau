@@ -6052,7 +6052,7 @@ local function renderYard()
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [기함 대조 막대] 채운 부분=선택 배, 선=지금 배. 위치는 행 아래에 고정해 모바일 줄바꿈과 겹침을 줄인다.
 			local stats = {
-				{ "화물", s.cargo, sh.cargoCapacity, maxCargo, COLORS.gold },
+				{ "화물", s.cargo, sh.baseCargo or sh.cargoCapacity, maxCargo, COLORS.gold },
 				{ "속도", s.speed, sh.speed, maxSpeed, COLORS.blue },
 				{ "선체", s.hull, sh.maxHull, maxHull, COLORS.green },
 			}
@@ -6084,8 +6084,6 @@ local function renderYard()
 			end
 			return row
 		end)
-	end
-end
 	end
 end
 

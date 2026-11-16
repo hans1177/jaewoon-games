@@ -90,7 +90,7 @@ return function(D, S)
 			name = def.name,
 			steam = def.steam,
 			-- [기함 정보] 기존 ShipDef 실측값. 저장/선박 규칙은 변경하지 않는다.
-			price = def.price, summary = def.summary, class = def.class, className = D.Ships.ClassNames[def.class],
+			price = def.price, baseCargo = D.Ships.Ships[state.ship.id].cargo, summary = def.summary, class = def.class, className = D.Ships.ClassNames[def.class],
 			rowed = def.rowed, fuelPerDay = def.fuelPerDay,
 			cannonName = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).name,
 			cannonBonus = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).mult,
