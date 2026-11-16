@@ -501,10 +501,16 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		local card = Instance.new("Frame")
 		card.Name = kind .. "_" .. asset
 		card.Size = UDim2.fromOffset(px, px)
-		H.iconPaper(card, px)
+		-- [메뉴 아이콘] 장정·종이 받침 없이 원화의 투명 영역을 그대로 보여 준다. 상품 카드는 기존 양피지를 유지한다.
+		if kind == "Menu" then
+			card.BackgroundTransparency = 1
+			card.BorderSizePixel = 0
+		else
+			H.iconPaper(card, px)
+		end
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
-			local inset = math.max(2, math.floor(px * 0.12))
+			local inset = if kind == "Menu" then 0 else math.max(2, math.floor(px * 0.12))
 			local art = Instance.new("ImageLabel")
 			art.Name = "OriginalArt"
 			art.Size = UDim2.new(1, -2 * inset, 1, -2 * inset)
@@ -1737,20 +1743,20 @@ local HUD_MENU_ART = {
 function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
-	-- [시설 아이콘] 기존 등록 원화를 가죽 장정·황동 받침에 통일해 표시한다.
+	-- [시설 아이콘] 기존 등록 원화만 투명 배경 위에 표시한다. 클릭 영역·글자·선택 상태는 유지한다.
 	button.Size = UDim2.fromOffset(if dockItem then 52 else 44, if dockItem then 64 else 44)
 	button.BackgroundColor3 = COLORS.leather
-	button.BackgroundTransparency = 0.06
+	button.BackgroundTransparency = 1
 	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
 	corner(button, 8)
-	bookMaterial(button, "leather", 128)
 	local badgeStroke = Instance.new("UIStroke")
 	badgeStroke.Name = "DockBorder"
 	badgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	badgeStroke.Color = UI_BRASS_DARK
 	badgeStroke.Thickness = 1.5
+	badgeStroke.Transparency = 1 -- [투명 아이콘] 기존 검사·선택 상태용 객체는 유지하되 외곽 사각 테두리는 그리지 않는다.
 	badgeStroke.Parent = button
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
@@ -1794,12 +1800,13 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		caption.Parent = button
 		H.shadowOf(caption)
 	end
-	-- [시설 선택] 선택한 아이콘만 황동 테두리를 진하게 표시한다.
+	-- [시설 선택] 배경 박스 대신 아이콘·이름 색으로 현재 시설을 알린다.
 	local function paintSelection()
 		local selected = button:GetAttribute("SelectedFacility") == true
-		button.BackgroundColor3 = if selected then COLORS.coverRaised else COLORS.leather
-		badgeStroke.Color = if selected then UI_BRASS else UI_BRASS_DARK
-		badgeStroke.Thickness = if selected then 2.5 else 1.5
+		local art = button:FindFirstChild("MenuArt")
+		if art then art.ImageColor3 = if selected then UI_BRASS else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 240, 204)) end
+		local caption = button:FindFirstChild("MenuName")
+		if caption then caption.TextColor3 = if selected then COLORS.gold else Color3.fromRGB(255, 244, 214) end
 	end
 	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
 	paintSelection()
