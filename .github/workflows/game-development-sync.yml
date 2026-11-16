@@ -122,7 +122,11 @@ jobs:
           # [정규 게임 QA] Mare CC0 동물 원본이 필요한 경우에만 기존 LFS 객체 7종을 내려받는다.
           # 소스/라이선스 SHA는 qa/company-roblox-dedicated-experience.test.mjs의 원래 계약 검사를 그대로 사용한다.
           if [ "$GAME_ID" = "mare-essentia" ] || { [ -f /tmp/changed-game-files.txt ] && grep -q '^roblox-games/mare-essentia/' /tmp/changed-game-files.txt; }; then
-            git lfs pull --include='roblox-games/mare-essentia/assets/animals/*.fbx' --exclude='*'
+            git lfs pull --include='roblox-games/mare-essentia/assets/animals/*.fbx' --exclude=''
+          # [정본 확인] LFS 포인터가 아니라 실제 Quaternius 원본을 받은 경우에만 QA를 계속한다.
+          test "$(sha256sum roblox-games/mare-essentia/assets/animals/cow.fbx | cut -d' ' -f1)" = '0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d'
+          test "$(sha256sum roblox-games/mare-essentia/assets/animals/horse.fbx | cut -d' ' -f1)" = '6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90'
+          test "$(sha256sum roblox-games/mare-essentia/assets/animals/chicken.fbx | cut -d' ' -f1)" = 'e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794'
           fi
           if [ -n "$GAME_ID" ]; then
             node tools/game-development-qa-runner.mjs --game-id="$GAME_ID" --run --output=/tmp/game-scoped-qa-report.json
