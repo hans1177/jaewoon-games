@@ -1024,7 +1024,7 @@ do
 			if processed then
 				if not table.find(port.produces, processedId) then
 					table.insert(port.produces, processedId)
-					PC.AddedForBrands[brand.port] = (PC.AddedForBrands[brand.port] or 0) + 1
+					if not recipe.newIndustry then PC.AddedForBrands[brand.port] = (PC.AddedForBrands[brand.port] or 0) + 1 end
 				end
 				local id = PC.brandId(brand)
 				Goods[id] = {
