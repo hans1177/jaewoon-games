@@ -317,6 +317,11 @@ test('reconcile trigger bursts serialize and status feedback is change-driven',(
   assert.match(workflow,/steps\.queue_state\.outputs\.changed == '1'/);
   assert.match(workflow,/gh workflow run company-status-sync\.yml/);
   assert.match(workflow,/COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED/);
+  // 비활성 canonical 런타임은 강제로 켜지 않고, 활성 상태일 때만 기존 dispatch를 호출한다.
+  assert.match(workflow,/workflow_state=.*company-development-confirmed-runtime\\.yml/);
+  assert.match(workflow,/if \\[\\[ "\\$workflow_state" == "active" \\]\\]; then/);
+  assert.match(workflow,/DEVELOPMENT_RUNTIME_DISPATCHED=NO_WORKFLOW_DISABLED/);
+  assert.doesNotMatch(workflow,/gh workflow enable company-development-confirmed-runtime/);
   assert.match(workflow,/workflow_run:[\s\S]*- Company Status Sync/);
   const statusWorkflowRun=statusWorkflow.match(/workflow_run:\s*\n\s*workflows:\s*\n([\s\S]*?)\n\s*types:/)?.[1]||'';
   assert.doesNotMatch(statusWorkflowRun,/Company Development Queue Reconcile/);
