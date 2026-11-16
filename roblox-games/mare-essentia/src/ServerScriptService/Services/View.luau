@@ -1080,6 +1080,9 @@ return function(D, S)
 				cityTier = cityTier,
 				royalPlotScale = D.PortBuildings.RoyalCityPlots.plotScale[cityTier],
 				worldPopulation = royalSim and royalSim.pop or nil,
+				-- 장면과 동일한 기준으로 기존 거주자 중 왕궁 종사자 표본을 표시한다. 신규 경제 인구는 아니다.
+				royalWorkers = D.PortBuildings.royalPopulation(royalSim and royalSim.residents, royalSim and royalSim.prosperity, royalTier),
+				royalWorkersTarget = D.PortBuildings.RoyalCourtTargets[royalTier],
 				title = if state.title > 0 then D.Facilities.TITLES[state.title].name else nil,
 				nextTitle = if nextTitle then nextTitle.name else nil,
 				nextFame = if nextTitle then nextTitle.fame else nil,
