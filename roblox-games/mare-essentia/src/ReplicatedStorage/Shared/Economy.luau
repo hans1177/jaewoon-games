@@ -227,6 +227,7 @@ local function newTown(p, w)
 		local recipe = Chains.ByGood[g]
 		if Chains.BrandById[g] or (recipe and recipe.newIndustry) then nGoods -= 1 end
 	end
+	nGoods -= Chains.AddedForBrands[p.id] or 0
 	local pop0 = 900 + 650 * nGoods + (p.shipyard and 2200 or 0) + math.floor(1800 * h)
 	local t = {
 		id = p.id, name = p.name, country = p.country, region = Regions.of(p).id,
