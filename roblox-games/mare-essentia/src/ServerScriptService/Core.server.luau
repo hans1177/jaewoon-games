@@ -86,6 +86,96 @@ local Social = require(script.Parent:WaitForChild("Social"))(D, S)
 -- 플레이어별 세션. state가 nil이면 새 게임 선택 전이다.
 local sessions = {}
 
+-- [선장 초상화 연동 복식] 기존 캡틴 초상 ID로 R15에 시대·지역별 외투를 입힌다. 관절·물리·저장은 유지한다.
+local CAPTAIN_CLOTH = {
+	north_atlantic = { 47, 68, 94 }, atlantic = { 92, 63, 69 }, mediterranean = { 116, 71, 57 },
+	west_africa = { 119, 82, 52 }, africa = { 115, 80, 60 }, east_africa_red_sea = { 69, 104, 101 },
+	indian = { 101, 71, 125 }, pacific = { 58, 91, 104 }, oceania = { 69, 111, 90 }, americas = { 101, 75, 58 },
+	faith_buddhist = { 117, 83, 51 }, faith_christian = { 75, 73, 92 }, faith_indian_ocean = { 82, 96, 84 },
+}
+local CAPTAIN_REGION = {
+	england = "north_atlantic", netherlands = "north_atlantic", denmark = "north_atlantic", sweden = "north_atlantic",
+	france = "atlantic", spain = "mediterranean", portugal = "atlantic", venice = "mediterranean", ottoman = "mediterranean",
+	swahili = "east_africa_red_sea", malabar = "indian", china = "pacific", japan = "pacific", korea = "pacific",
+	new_spain = "americas",
+}
+local function applyCaptainAppearance(player, character)
+	local session = sessions[player]
+	local state = session and session.state
+	local portrait = state and state.captain and state.captain.portrait
+	if not character or character ~= player.Character or not character.Parent then return end
+	local old = character:FindFirstChild("CaptainOutfit")
+	if type(portrait) ~= "string" or portrait == "" then
+		if old then old:Destroy() end
+		character:SetAttribute("CaptainPortraitLook", nil)
+		return
+	end
+	if old and old:GetAttribute("PortraitId") == portrait then return end
+	local human = character:FindFirstChildOfClass("Humanoid")
+	local chest, waist, head = character:FindFirstChild("UpperTorso"), character:FindFirstChild("LowerTorso"), character:FindFirstChild("Head")
+	if not human or human.RigType ~= Enum.HumanoidRigType.R15 or not chest or not waist or not head then return end
+	if old then old:Destroy() end
+	-- 기존 초상화 세 가지 형식 cp:시트:칸 / hero:국가 / npc:항구:칸.
+	local sheet, index = portrait:match("^cp:([%w_]+):(%d+)$")
+	if not sheet then
+		local nation = portrait:match("^hero:([%w_]+)$")
+		if nation then
+			sheet = CAPTAIN_REGION[nation]
+		else
+			local port = portrait:match("^npc:([%w_]+):%d$")
+			local where = port and D.Ports.Ports[port]
+			sheet = where and CAPTAIN_REGION[where.country]
+		end
+	end
+	local rgb = CAPTAIN_CLOTH[sheet or ""] or CAPTAIN_CLOTH.atlantic
+	local coat = Color3.fromRGB(rgb[1], rgb[2], rgb[3])
+	local variant = (tonumber(index) or 0) % 4
+	if variant == 1 then coat = coat:Lerp(Color3.fromRGB(36, 45, 62), 0.28)
+	elseif variant == 2 then coat = coat:Lerp(Color3.fromRGB(165, 101, 71), 0.27)
+	elseif variant == 3 then coat = coat:Lerp(Color3.fromRGB(55, 97, 77), 0.26) end
+	local trim = Color3.fromRGB(217, 183, 113)
+	local ivory = Color3.fromRGB(231, 216, 182)
+	local costume = Instance.new("Model")
+	costume.Name = "CaptainOutfit"
+	costume:SetAttribute("PortraitId", portrait)
+	costume:SetAttribute("CultureSheet", sheet or "atlantic")
+	costume.Parent = character
+	local function piece(name, body, size, offset, color, material, shape)
+		local p = Instance.new("Part")
+		p.Name, p.Size, p.Shape = name, size, shape or Enum.PartType.Block
+		p.CFrame = body.CFrame * offset
+		p.Color, p.Material = color, material or Enum.Material.Fabric
+		p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery, p.Massless, p.CastShadow = false, false, false, false, true, false
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Parent = costume
+		local weld = Instance.new("WeldConstraint")
+		weld.Part0, weld.Part1 = body, p
+		weld.Parent = p
+	end
+	local w, h, d = chest.Size.X, chest.Size.Y, chest.Size.Z
+	piece("CaptainCoat", chest, Vector3.new(w * 0.90, h * 0.92, 0.10), CFrame.new(0, -h * 0.03, -d * 0.5 - 0.07), coat)
+	piece("CaptainVest", chest, Vector3.new(w * 0.36, h * 0.77, 0.11), CFrame.new(0, -h * 0.05, -d * 0.5 - 0.14), ivory)
+	for side = -1, 1, 2 do
+		piece("CaptainLapel" .. side, chest, Vector3.new(w * 0.14, h * 0.75, 0.075),
+			CFrame.new(side * w * 0.27, h * 0.06, -d * 0.5 - 0.14) * CFrame.Angles(0, 0, side * -0.14), trim)
+		piece("CaptainTail" .. side, waist, Vector3.new(waist.Size.X * 0.45, waist.Size.Y * 0.84, 0.09),
+			CFrame.new(side * waist.Size.X * 0.24, -waist.Size.Y * 0.06, -waist.Size.Z * 0.5 - 0.05), coat)
+	end
+	piece("CaptainBelt", waist, Vector3.new(waist.Size.X * 0.93, 0.17, 0.12),
+		CFrame.new(0, waist.Size.Y * 0.21, -waist.Size.Z * 0.5 - 0.09), Color3.fromRGB(68, 47, 36), Enum.Material.Leather)
+	for i = 0, 2 do
+		piece("CaptainButton" .. i, chest, Vector3.new(0.10, 0.10, 0.10),
+			CFrame.new(0, h * (0.18 - i * 0.25), -d * 0.5 - 0.23), trim, Enum.Material.Metal, Enum.PartType.Ball)
+	end
+	-- 1517년 시대 고증: 후대 삼각모 대신 지역별 천/선원모로 처리한다.
+	local eastern = sheet == "pacific" or sheet == "indian" or sheet == "faith_buddhist"
+	piece("CaptainHatBand", head, Vector3.new(0.09, head.Size.X * 1.16, head.Size.Z * 1.16),
+		CFrame.new(0, head.Size.Y * 0.48, 0) * CFrame.Angles(0, 0, math.pi / 2), trim, Enum.Material.Fabric, Enum.PartType.Cylinder)
+	piece("CaptainHat", head, Vector3.new(head.Size.X * 1.08, head.Size.Y * 0.52, head.Size.Z * 1.08),
+		CFrame.new(0, head.Size.Y * 0.68, 0), if eastern then ivory else coat, Enum.Material.Fabric, Enum.PartType.Ball)
+	character:SetAttribute("CaptainPortraitLook", portrait)
+end
+
 local store = nil
 do
 	local ok, result = pcall(function()
@@ -184,6 +274,7 @@ local function loadSession(player)
 	end
 	session.ready = true
 	sessions[player] = session
+	if player.Character then task.defer(applyCaptainAppearance, player, player.Character) end
 end
 
 local function saveSession(player)
@@ -282,6 +373,7 @@ local function onInvoke(player, action, payload)
 			S.Room.join(newState)
 		end
 		session.state = newState
+		task.defer(applyCaptainAppearance, player, player.Character)
 		session.dirty = true
 		return reply(session.state, true, string.format("%d년, %s에서 항해를 시작합니다!%s", S.State.year(newState), D.Ports.Ports[newState.portId].name, if newState.room then " (같이 하기: 시대가 현실 시간으로 흘러요)" else ""))
 	end
@@ -332,6 +424,7 @@ local function onInvoke(player, action, payload)
 	end
 	if success then
 		session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
+		if action == "IntroPortrait" then task.defer(applyCaptainAppearance, player, player.Character) end
 		-- 탐험·전투·연구 등으로 퀘스트 조건을 채우면 바로 알려 준다
 		local extra = {}
 		if QUEST_WATCH[action] then
@@ -385,9 +478,16 @@ if game:GetService("RunService"):IsStudio() then
 end
 
 Players.PlayerAdded:Connect(function(player)
+	-- 기본 로블록스 아바타 로딩 이후 기존 초상 ID 외형을 다시 적용한다.
+	player.CharacterAppearanceLoaded:Connect(function(character)
+		task.defer(applyCaptainAppearance, player, character)
+	end)
 	task.spawn(loadSession, player)
 end)
 for _, player in Players:GetPlayers() do
+	player.CharacterAppearanceLoaded:Connect(function(character)
+		task.defer(applyCaptainAppearance, player, character)
+	end)
 	task.spawn(loadSession, player)
 end
 
