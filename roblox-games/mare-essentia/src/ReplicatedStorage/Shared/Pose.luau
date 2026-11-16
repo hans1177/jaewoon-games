@@ -602,6 +602,50 @@ function Pose.work(model, kind, t, moving)
 		set(m.waist, A(0.18, 0, 0)); set(m.neck, A(0.35, 0, 0))
 		set(m.leftArm, A(-1.0, 0, -0.15)); set(m.rightArm, A(-1.0, 0, 0.15))
 		set(m.leftElbow, A(-1.5, 0, 0)); set(m.rightElbow, A(-1.5, 0, 0))
+	elseif kind == "knead" then
+		-- 제빵사: 양손으로 반죽을 밀고 접으며 허리 무게중심을 움직인다.
+		local beat = math.sin(t * 2.7)
+		set(m.waist, A(0.27 + beat * 0.12, 0, 0))
+		set(m.leftArm, A(-1.0 - beat * 0.28, 0, 0.18))
+		set(m.rightArm, A(-1.05 + beat * 0.28, 0, -0.18))
+		set(m.leftElbow, A(-0.9, 0, 0)); set(m.rightElbow, A(-0.9, 0, 0))
+		set(m.neck, A(0.2, 0, 0))
+	elseif kind == "sew" then
+		-- 재단사: 천을 잡고 바늘을 내미는 손과 고개가 함께 움직인다.
+		local beat = math.sin(t * 3.4)
+		set(m.leftArm, A(-0.95, 0, 0.25))
+		set(m.rightArm, A(-1.1 - beat * 0.2, 0, -0.23))
+		set(m.rightElbow, A(-1.15 + beat * 0.18, 0, 0))
+		set(m.neck, A(0.25, beat * 0.06, 0))
+	elseif kind == "forge" then
+		-- 대장장이: 일정한 간격으로 망치를 내리치고 작업물을 확인한다.
+		local beat = (t * 1.5) % 1
+		local strike = if beat < 0.4 then beat / 0.4 elseif beat < 0.7 then (0.7 - beat) / 0.3 else 0
+		set(m.rightArm, A(-2.3 + strike * 1.65, 0, -0.2))
+		set(m.rightElbow, A(-0.65 - strike * 0.35, 0, 0))
+		set(m.leftArm, A(-0.8, 0, 0.22))
+		set(m.waist, A(0.18 + strike * 0.22, 0, 0))
+	elseif kind == "read" then
+		-- 학자·서기: 책을 잡고 페이지를 넘기는 동작.
+		local page = math.max(0, math.sin(t * 1.15))
+		set(m.leftArm, A(-1.15, 0, 0.16))
+		set(m.leftElbow, A(-1.25, 0, 0))
+		set(m.rightArm, A(-1.0 - page * 0.24, 0, -0.18))
+		set(m.rightElbow, A(-1.15 + page * 0.28, 0, 0))
+		set(m.neck, A(0.21, math.sin(t * 0.45) * 0.09, 0))
+	elseif kind == "dance" then
+		-- 축제의 손짓과 체중 이동: 공격/보행 모션과 충돌하지 않는다.
+		local beat = math.sin(t * 2.5)
+		set(m.leftArm, A(-1.4 + beat * 0.35, 0, 0.45))
+		set(m.rightArm, A(-1.4 - beat * 0.35, 0, -0.45))
+		set(m.waist, A(0, beat * 0.18, beat * 0.09))
+		set(m.leftLeg, A(0.12 * beat, 0, 0)); set(m.rightLeg, A(-0.12 * beat, 0, 0))
+	elseif kind == "polish" then
+		-- 궁정 시종·관리인: 천으로 난간을 천천히 닦는다.
+		local beat = math.sin(t * 2.1)
+		set(m.rightArm, A(-1.0, beat * 0.27, -0.22))
+		set(m.leftArm, A(-0.45, 0, 0.18))
+		set(m.waist, A(0.27, beat * 0.13, 0))
 	elseif kind == "inspect" then
 		-- 상인·학자: 물건을 들여다보고 손끝으로 살핀다.
 		local s = math.sin(t * 1.8)

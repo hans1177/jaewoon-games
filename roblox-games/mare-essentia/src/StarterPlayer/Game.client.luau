@@ -4529,7 +4529,9 @@ function RENDERERS.harbor()
 		section(pl.name)
 		add(function()
 			local t = if pl.nextTitle then string.format("다음 작위 '%s': 명성 %d 필요 (보상 %d코인)", pl.nextTitle, pl.nextFame, pl.nextCoins) else "최고 작위를 받았어요"
-			return mkLabel(content, string.format("현재 작위: %s\n%s", pl.title or "없음", t), 13, COLORS.text, false)
+			local royal = if pl.royalTier then string.format("\n왕궁 구역 %d단계 / 도시 %d단계 · 일반 항구보다 필지 %.2f배", pl.royalTier, pl.cityTier, pl.royalPlotScale) else ""
+			local population = if pl.worldPopulation then string.format("\n세계경제 실제 인구: %d명 · 왕궁 주변 시설은 발전도·번영에 따라 변함", pl.worldPopulation) else ""
+			return mkLabel(content, string.format("현재 작위: %s\n%s%s%s", pl.title or "없음", t, royal, population), 13, COLORS.text, false)
 		end)
 		if pl.nextTitle then
 			add(function()

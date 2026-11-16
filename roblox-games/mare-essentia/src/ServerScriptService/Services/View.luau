@@ -1068,8 +1068,17 @@ return function(D, S)
 				}
 			end
 			local nextTitle = D.Facilities.TITLES[state.title + 1]
+			-- 왕궁 화면의 단계·인구 지표는 세계경제와 동일한 시뮬 스냅샷에서 가져온다.
+			local royalSim = view.harbor and view.harbor.sim
+			local cityTier = math.clamp(math.floor((S.Harbor.level(state) + (royalSim and royalSim.stage or S.Harbor.level(state))) / 2 + 0.5), 1, 5)
+			local prosperity = if royalSim then math.clamp((royalSim.prosperity or 100) / 100, 0.25, 1.4) else 1
+			local royalTier = math.max(1, math.min(cityTier, math.floor(cityTier * (0.72 + prosperity * 0.28) + 0.5)))
 			view.palace = {
 				name = D.Facilities.palaceName(port.id),
+				royalTier = royalTier,
+				cityTier = cityTier,
+				royalPlotScale = D.PortBuildings.RoyalCityPlots.plotScale[cityTier],
+				worldPopulation = royalSim and royalSim.pop or nil,
 				title = if state.title > 0 then D.Facilities.TITLES[state.title].name else nil,
 				nextTitle = if nextTitle then nextTitle.name else nil,
 				nextFame = if nextTitle then nextTitle.fame else nil,
