@@ -30,7 +30,11 @@ return function(D, S)
 			if worldStore then
 				-- 첫 조회에서 최신 공통 스냅샷을 읽는다. 실패 시 임의 세계를 저장하지 않는다.
 				local ok, snapshot = pcall(function() return worldStore:GetAsync(WORLD_KEY) end)
-				if not ok then return nil end
+				if not ok then
+					-- Roblox DataStore가 비활성화된 스튜디오에서도 기존 경제/항구 화면을 유지한다.
+					-- 실패한 세계를 공통 저장소에 올리지 않도록 이 서버에서는 공유 저장만 중단한다.
+					worldStore, snapshot = nil, nil
+				end
 				if snapshot ~= nil then
 					world = E.restoreWorld(snapshot)
 					if not world then return nil end
