@@ -128,6 +128,34 @@ B.SpecialtyFacilities = {
 	fishery = { building = "market", name = "어시장·생선 건조장", kind = "Cargo", asset = "food-barrel-fish", tint = { 127, 150, 162 } },
 	dairy = { building = "farm", name = "치즈 숙성 공방", kind = "Cargo", asset = "cheese", tint = { 189, 166, 119 } },
 }
+-- [항구 단계별 실물 시각화] 이미 승인된 항만 메시의 배치 상한만 정한다.
+-- 경제/저장/선박 스탯의 단계가 아니며 실제 건설된 dock/warehouse 수가 더 적으면 줄여 표시한다.
+B.HarborGrowth = {
+	{ name = "소형 어촌 선착장", pierLength = 0, cargo = 2, boats = 1, hoists = 0, signals = 0, porters = 1 },
+	{ name = "연안 교역항", pierLength = 44, cargo = 4, boats = 3, hoists = 0, signals = 1, porters = 1 },
+	{ name = "지역 상업항", pierLength = 60, cargo = 6, boats = 4, hoists = 1, signals = 2, porters = 2 },
+	{ name = "대형 무역항", pierLength = 76, cargo = 8, boats = 6, hoists = 2, signals = 3, porters = 3 },
+	{ name = "국제 무역항", pierLength = 92, cargo = 10, boats = 8, hoists = 3, signals = 4, porters = 3 },
+}
+function B.harborVisual(level, buildings)
+	local tier = math.clamp(math.floor(tonumber(level) or 1), 1, 5)
+	local plan = B.HarborGrowth[tier]
+	local dock = if buildings then math.max(0, tonumber(buildings.dock) or 0) else nil
+	local warehouse = if buildings then math.max(0, tonumber(buildings.warehouse) or 0) else nil
+	local sidePier = plan.pierLength > 0 and (dock == nil or dock > 0)
+	local boats = math.min(plan.boats, if dock ~= nil then 1 + math.floor(math.sqrt(dock)) else plan.boats)
+	local cargo = math.min(plan.cargo, if warehouse ~= nil then 2 + math.floor(math.sqrt(warehouse) * 2) else plan.cargo)
+	local hoists = if not sidePier then 0 else math.min(plan.hoists,
+		if dock ~= nil then math.floor(dock / 4) else plan.hoists)
+	local signals = if not sidePier then 0 else math.min(plan.signals, math.max(1, boats))
+	return {
+		tier = tier, name = plan.name, sidePier = sidePier,
+		pierLength = if sidePier then plan.pierLength else 0,
+		boats = math.max(1, boats), cargo = math.max(2, cargo), hoists = hoists,
+		signals = signals, porters = plan.porters,
+	}
+end
+
 -- 도로 표면은 PortScene의 기존 roadMat/roadColor가 유지하고 가로등·광장 장식만 단계별로 늘린다.
 B.StreetGrowth = {
 	{ lampStep = 0, plazaLamps = 0, fountain = false },
