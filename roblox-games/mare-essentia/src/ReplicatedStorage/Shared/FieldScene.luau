@@ -32,23 +32,49 @@ if not okFM then
 end
 
 -- 버튼 그림: 마력숲과 같은 원본 아이콘을 우리 업로드 파이프라인으로 등록한 것(등록 전에는 글자만 보인다)
+-- [전투 원화] 등록된 무료 아이콘/도감 원화만 사용한다. 기호마다 황동 메달과 내부 그림 층을 분리한다.
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
-	if not id then
-		return
-	end
+	if not id then return nil end
+	local painted = string.sub(key, 1, 8) == "CardArt/"
+	local medallion = Instance.new("Frame")
+	medallion.Name = "FieldIconMedallion"
+	medallion.AnchorPoint = Vector2.new(0.5, 0.5)
+	medallion.Position = UDim2.fromScale(0.5, 0.385)
+	medallion.Size = UDim2.fromScale(if painted then 0.78 else 0.69, if painted then 0.67 else 0.64)
+	medallion.BackgroundColor3 = if painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
+	medallion.BackgroundTransparency = if painted then 0 else 0.16
+	medallion.BorderSizePixel = 0
+	medallion.ZIndex = button.ZIndex + 2
+	medallion.Parent = button
+	local rounded = Instance.new("UICorner")
+	rounded.CornerRadius = UDim.new(if painted then 0.16 else 1, 0)
+	rounded.Parent = medallion
+	local rim = Instance.new("UIStroke")
+	rim.Name = "FieldIconRim"
+	rim.Color = Color3.fromRGB(245, 208, 128)
+	rim.Thickness = if painted then 1.2 else 1.6
+	rim.Transparency = 0.14
+	rim.Parent = medallion
 	local img = Instance.new("ImageLabel")
+	img.Name = "FieldButtonIcon"
 	img.BackgroundTransparency = 1
 	img.Image = "rbxassetid://" .. tostring(id)
-	img.Name = "FieldButtonIcon"
 	img.AnchorPoint = Vector2.new(0.5, 0.5)
-	img.Position = UDim2.fromScale(0.5, 0.38)
-	img.Size = UDim2.fromScale(0.55, 0.55)
-	img.ScaleType = Enum.ScaleType.Fit
-	img.ImageTransparency = 0.02
-	img.ZIndex = button.ZIndex + 1
+	img.Position = UDim2.fromScale(0.5, 0.385)
+	img.Size = UDim2.fromScale(if painted then 0.76 else 0.61, if painted then 0.65 else 0.57)
+	img.ScaleType = if painted then Enum.ScaleType.Crop else Enum.ScaleType.Fit
+	img.ImageTransparency = 0
+	img.ZIndex = button.ZIndex + 3
 	img.Parent = button
+	if painted then
+		local crop = Instance.new("UICorner")
+		crop.CornerRadius = UDim.new(0, 7)
+		crop.Parent = img
+	end
 	button.TextYAlignment = Enum.TextYAlignment.Bottom
+	button.TextTruncate = Enum.TextTruncate.AtEnd
+	button:SetAttribute("IconArtKey", key)
 	return img
 end
 
@@ -238,22 +264,77 @@ local function btn(parent, text, color, size, pos, anchor)
 	b.TextColor3 = Color3.fromRGB(255, 255, 255)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 16
-	b.TextStrokeTransparency = 0.65
+	b.TextStrokeTransparency = 0.48
 	b.AutoButtonColor = true
 	b.BorderSizePixel = 0
 	b.ZIndex = 3
 	b.ClipsDescendants = true
+	b.TextWrapped = false
+	b.TextYAlignment = Enum.TextYAlignment.Bottom
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, 15)
 	c.Parent = b
 	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(color:Lerp(Color3.new(1, 1, 1), 0.12), color:Lerp(Color3.new(0, 0, 0), 0.24))
+	grad.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, color:Lerp(Color3.new(1, 1, 1), 0.28)),
+		ColorSequenceKeypoint.new(0.45, color),
+		ColorSequenceKeypoint.new(1, color:Lerp(Color3.new(0, 0, 0), 0.36)),
+	})
 	grad.Rotation = 90
 	grad.Parent = b
 	local st = Instance.new("UIStroke")
-	st.Color = Color3.fromRGB(220, 192, 141)
-	st.Thickness = 1.6
+	st.Color = Color3.fromRGB(224, 184, 105)
+	st.Thickness = 2
 	st.Parent = b
+	local grainId = AssetIds["Menu/leather_grain"]
+	if grainId then
+		local grain = Instance.new("ImageLabel")
+		grain.Name = "FieldLeatherTexture"
+		grain.BackgroundTransparency = 1
+		grain.Size = UDim2.fromScale(1, 1)
+		grain.Image = "rbxassetid://" .. tostring(grainId)
+		grain.ScaleType = Enum.ScaleType.Crop
+		grain.ImageTransparency = 0.73
+		grain.ZIndex = b.ZIndex + 1
+		grain.Parent = b
+	end
+	-- 스킬만 사용: 원형/직사각 버튼 모두 실제 남은 재사용 시간을 그림 위에 보여 준다.
+	local shade = Instance.new("Frame")
+	shade.Name = "FieldCooldownShade"
+	shade.AnchorPoint = Vector2.new(0, 1)
+	shade.Position = UDim2.fromScale(0, 1)
+	shade.Size = UDim2.fromScale(1, 0)
+	shade.BackgroundColor3 = Color3.fromRGB(13, 22, 32)
+	shade.BackgroundTransparency = 0.24
+	shade.BorderSizePixel = 0
+	shade.Visible = false
+	shade.Active = false
+	shade.ZIndex = b.ZIndex + 4
+	shade.Parent = b
+	local timer = Instance.new("TextLabel")
+	timer.Name = "FieldCooldownTime"
+	timer.Size = UDim2.fromScale(1, 1)
+	timer.BackgroundTransparency = 1
+	timer.Font = Enum.Font.GothamBlack
+	timer.TextSize = 19
+	timer.TextColor3 = Color3.fromRGB(255, 245, 213)
+	timer.TextStrokeColor3 = Color3.fromRGB(11, 17, 25)
+	timer.TextStrokeTransparency = 0.24
+	timer.Visible = false
+	timer.ZIndex = b.ZIndex + 5
+	timer.Parent = b
+	local pressScale = Instance.new("UIScale")
+	pressScale.Parent = b
+	b.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			game:GetService("TweenService"):Create(pressScale, TweenInfo.new(0.09), { Scale = 0.94 }):Play()
+		end
+	end)
+	b.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			game:GetService("TweenService"):Create(pressScale, TweenInfo.new(0.13), { Scale = 1 }):Play()
+		end
+	end)
 	b.Parent = parent
 	return b
 end
@@ -826,7 +907,7 @@ function FieldScene.start(opts)
 	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 50), UDim2.new(0, 12, 0, 50), Vector2.new(0, 0))
 	retreat.Name = "FieldRetreat"
 	retreat.TextSize = 14
-	addIcon(retreat, "Menu/chart_port")
+	addIcon(retreat, "Menu/chart_departure")
 	retreat.Activated:Connect(function()
 		finish("retreat")
 	end)
@@ -2315,8 +2396,8 @@ function FieldScene.start(opts)
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
 	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(126, 22))
 	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(126, 66))
-	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
-	addIcon(skillBtns.parry.btn, "Menu/cc0_shield")
+	addIcon(skillBtns.dodge.btn, "Menu/chart_explore")
+	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
 		local pos = hp0.Position + Vector3.new(0, 2, 0)
@@ -2458,8 +2539,10 @@ function FieldScene.start(opts)
 			local b = btn(gui, card.name, Color3.fromRGB(135, 106, 61), UDim2.fromOffset(56, 56), slotPos(key), Vector2.new(0.5, 0.5))
 			b.Name = "FieldSkill_" .. key
 			b.TextSize = 12
-			addIcon(b, if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" then "Menu/cc0_shield"
-				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow" else "Menu/cc0_fireball")
+			-- [도감 원화 연동] 실제 카드 ID의 등록 원화가 있으면 그림 전체를 고급 스킬 메달로 재사용한다.
+			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
+			addIcon(b, paintedKey or (if card.skill == "heal" then "Menu/cc0_book" elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
+				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow" else "Menu/cc0_fireball"))
 			bindPress(b, function()
 				useCard(key, card)
 			end)
@@ -2484,13 +2567,17 @@ function FieldScene.start(opts)
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
 		for key, sb in skillBtns do
 			local left = (pl.cd[key] or 0) - now
-			if left > 0 then
-				sb.btn.Text = string.format("%.1f", left)
-				sb.btn.BackgroundTransparency = 0.5
-			else
-				sb.btn.Text = sb.label
-				sb.btn.BackgroundTransparency = 0
+			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
+			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
+			if shade and timer then
+				shade.Visible = left > 0
+				timer.Visible = left > 0
+				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
+				if left > 0 then timer.Text = if left >= 10 then tostring(math.ceil(left)) else string.format("%.1f", left) end
 			end
+			sb.btn.Text = sb.label
+			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
 		end
 	end))
 	-- 화면 아무 곳이나 톡 치면(버튼 제외) 공격: 폰은 탭, PC는 마우스 왼쪽 클릭
