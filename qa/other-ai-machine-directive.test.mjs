@@ -31,9 +31,9 @@ const canonicalReads=[
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
-assert.equal(architecture.centralPolicy,null);
+assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
 assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
-assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
 // The compact architecture summary does not duplicate the ordered non-authoritative reads.
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
@@ -49,7 +49,7 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+assert.equal(security.authority,'OWNER_DIRECTIVE_2026-09-19');
 assert.equal(security.policyFile,'company-learning/security-immune-system.json');
 assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 

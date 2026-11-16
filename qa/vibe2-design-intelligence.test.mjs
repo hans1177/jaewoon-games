@@ -473,13 +473,14 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(contract.designIntegrityChecks.required,true);
   // Compact four-document contract: the old nested mirrors were intentionally retired.
   // Policy semantics remain authoritative only in the canonical roadmap.
-  assert.equal(architecture.centralPolicy,null);
+  assert.equal(architecture.centralPolicy,'company-learning/platform-release-roadmap.json');
   assert.equal(architecture.branches.main.directGameWorkerWrite,false);
-  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
-  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
-  assert.equal(logMap.retained.primaryLog,'GITHUB_ACTIONS_JOB_LOG');
-  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
-  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(architecture.completionAuthority,'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES');
+  assert.equal(logMap.logChannels.githubActions.location,'GITHUB_ACTIONS_JOB_LOG');
+  assert.equal(logMap.gameErrorRepairLogContract.structuredEvidenceRequiredForAcceptance,true);
+  assert.equal(logMap.centralPolicyExecutionEvidence.machinePolicyHashesRequired,true);
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
   assert.ok(cycle.includes("const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();"));
   assert.ok(cycle.includes("throw new Error('DESIGN_CYCLE_VERIFIED_POLICY_PATH_REQUIRED')"));
