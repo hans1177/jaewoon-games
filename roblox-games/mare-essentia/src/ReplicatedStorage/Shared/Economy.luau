@@ -13,6 +13,7 @@
 -- 연도·수치는 게임용 가상값이며 실제 사료와 다르다 (docs/CATALOG.md 의 출처 확인 방침과 같다).
 
 local Data = require(script.Parent.Ports)
+local Chains = require(script.Parent.ProductionChains)
 local Regions = require(script.Parent.Regions)
 
 local E = {}
@@ -182,12 +183,50 @@ function E.specialtyView(t)
 	return out
 end
 
+
+-- [원료→가공→브랜드→수출] 지역에 맞는 원료, 연구 성과, 시장·항해 역량으로 산업 단계를 정한다.
+function E.industryStage(t, brand)
+	local recipe = Chains.ById[brand.recipe]
+	if not recipe or not t.produces[brand.source] then return 0 end
+	if t.stage < recipe.minLevel or (t.tech.craft or 0) < 1.12 then return 1 end
+	if t.stage < 3 or (t.tech.commerce or 0) < 1.28 or t.prosperity < 0.85 then return 2 end
+	if t.stage < 4 or (t.tech.commerce or 0) < 1.58 or (t.tech.sea or 0) < 1.35
+		or (t.civBonus.trade or 1) <= 1 then return 3 end
+	return 4
+end
+
+function E.industryView(t)
+	local out = {}
+	for _, brand in ipairs(Chains.BrandsByPort[t.id] or {}) do
+		local id = brand.id
+		local recipe = Chains.ById[brand.recipe]
+		local stage = E.industryStage(t, brand)
+		table.insert(out, {
+			id = id, name = brand.name, stage = stage, source = brand.source,
+			raw = Data.Goods[brand.source].name,
+			processed = Data.Goods[Chains.goodId(recipe)].name,
+			status = ({ "원료 확보", "가공 공방", "지역 브랜드", "국제 수출 산업" })[stage] or "자원 부족",
+			stock = math.floor(t.stock[id] or 0),
+			produced = math.floor((t.out[id] or 0) * 100 + 0.5) / 100,
+			exported = math.floor((t.exports[id] or 0) * 100 + 0.5) / 100,
+			price = math.floor((t.price[id] or Data.Goods[id].basePrice) * 10 + 0.5) / 10,
+			destinations = brand.destinations,
+		})
+	end
+	return out
+end
+
 local function newTown(p, w)
 	local h = hash01(p.id)
 	local lat = math.abs(p.lat)
 	local fert = (lat < 25 and 1.12) or (lat < 50 and 1.0) or (lat < 58 and 0.88) or 0.72
 	fert = fert * (0.92 + 0.16 * h)
 	local nGoods = #p.produces
+	-- 브랜드와 이번에 추가된 가공품은 기존 마을의 초기 인구 산정에서 제외한다.
+	for _, g in ipairs(p.produces) do
+		local recipe = Chains.ByGood[g]
+		if Chains.BrandById[g] or (recipe and recipe.newIndustry) then nGoods -= 1 end
+	end
 	local pop0 = 900 + 650 * nGoods + (p.shipyard and 2200 or 0) + math.floor(1800 * h)
 	local t = {
 		id = p.id, name = p.name, country = p.country, region = Regions.of(p).id,
@@ -195,7 +234,7 @@ local function newTown(p, w)
 		coastal = true, fert = fert,
 		pop = pop0, land = pop0 * 0.62 * fert * 1.25, -- 농지가 먹여 살리는 농민 수
 		stage = E.stageOfPop(pop0), prosperity = 1, refGdp = 0,
-		grain = 0, stock = {}, price = {}, out = {}, dem = {},
+		grain = 0, stock = {}, price = {}, out = {}, dem = {}, exports = {},
 		gdp = 0, tradeIn = 0, tradeOut = 0, deaths = 0, births = 0,
 		fx = { food = 1, prod = 1, trade = 1, demand = 1, mort = 0 },
 		neighbors = {}, goods = {},
@@ -219,6 +258,9 @@ local function newTown(p, w)
 	t.produces, t.demands, t.nDem = {}, {}, #p.demands
 	for _, g in ipairs(p.produces) do t.produces[g] = true end
 	for _, g in ipairs(p.demands) do t.demands[g] = true end
+	for _, brand in ipairs(Chains.BrandsByPort[p.id] or {}) do
+		if t.produces[brand.id] then t.exports[brand.id] = 0 end
+	end
 	E.initBuildings(t)
 	return t
 end
@@ -343,12 +385,57 @@ local function productionOf(t, g, price, w)
 		local fish = t.pop * sh.fisher * 1.5
 		return (used * yield + fish) * t.fx.food * (1 + 0.05 * lvl)
 	end
-	if not t.produces[g] then return 0 end
+	if not t.produces[g] or Chains.ByGood[g] or Chains.BrandById[g] then return 0 end
 	local n = 0
 	for _ in pairs(t.produces) do n += 1 end
 	local workers = math.min(t.pop * (sh.craftsman + sh.laborer * 0.5), t.bld.workshop * 10) / math.max(1, n)
 	local el = math.clamp((price / basePrice(g)) ^ 0.5, 0.5, 1.6)
 	return workers * 0.02 * el * mult * (1 + 0.1 * (t.stage - 1)) * (t.tech.craft ^ 0.6) * E.infraFactor(t) * (1 + 0.1 * (t.stability - 0.5)) * t.civBonus.craft * (1 + 0.04 * (E.specialtyLevel(t, g) - 1))
+end
+
+-- [실물 가공] 상품은 원료 재고를 소비해야만 생산된다. 동일 재고를 두 번 소비하지 않는다.
+-- 기존 포트 상품, 작업장 수, 재고·물가·경제 기술을 사용하고 신규 저장 구조는 최소화한다.
+function E.stepIndustries(t)
+	local batches = {}
+	local capacity = math.min(t.bld.workshop * 0.2, t.pop * 0.0008)
+		* (t.tech.craft ^ 0.4) * t.civBonus.craft * t.fx.prod
+	local recipes = 0
+	for _, recipe in ipairs(Chains.Recipes) do
+		if t.produces[Chains.goodId(recipe)] and t.stage >= recipe.minLevel then recipes += 1 end
+	end
+	for _, recipe in ipairs(Chains.Recipes) do
+		local id = Chains.goodId(recipe)
+		if t.produces[id] and t.stage >= recipe.minLevel and t.tech.craft >= 1.12 then
+			for _, source in ipairs(recipe.inputs) do
+				local have = t.stock[source] or 0
+				local reserve = math.max(1, (t.dem[source] or 0) * 4)
+				local available = math.max(0, have - reserve)
+				local q = math.min(available * 0.12, capacity / math.max(1, recipes))
+				if q > 0 then
+					t.stock[source] = have - q
+					batches[id] = (batches[id] or 0) + q
+					break
+				end
+			end
+		end
+	end
+	-- [브랜드 장인 공정] 가공품을 다시 소비해 고부가가치 상품을 만든다.
+	for _, brand in ipairs(Chains.BrandsByPort[t.id] or {}) do
+		if E.industryStage(t, brand) >= 3 and t.produces[brand.id] then
+			local processed = Chains.goodId(Chains.ById[brand.recipe])
+			local incoming = batches[processed] or 0
+			local stored = t.stock[processed] or 0
+			local available = math.max(0, incoming + stored - math.max(1, (t.dem[processed] or 0) * 3))
+			local q = math.min(available * 0.3, capacity * 0.28)
+			if q > 0 then
+				local fromBatch = math.min(incoming, q)
+				batches[processed] = incoming - fromBatch
+				t.stock[processed] = math.max(0, stored - (q - fromBatch))
+				batches[brand.id] = (batches[brand.id] or 0) + q
+			end
+		end
+	end
+	return batches
 end
 
 function E.newWorld(opts)
@@ -388,7 +475,7 @@ function E.newWorld(opts)
 			t.price[g] = basePrice(g) * m
 			local prod = productionOf(t, g, t.price[g], w)
 			local dem = demandOf(t, g, t.price[g])
-			t.stock[g] = math.max(dem, prod) * (t.produces[g] and 30 or 15)
+			t.stock[g] = if Chains.ByGood[g] or Chains.BrandById[g] then 0 else math.max(dem, prod) * (t.produces[g] and 30 or 15)
 		end
 		t.grain = t.stock[E.GRAIN]
 		local gdp = 0
@@ -515,9 +602,10 @@ function E.step(w)
 		local t = w.towns[id]
 		local gdp, real = 0, 0
 		local grainProd, grainCons = 0, 0
+		local manufactured = E.stepIndustries(t)
 		for _, g in ipairs(t.goods) do
 			local p = t.price[g]
-			local prod = productionOf(t, g, p, w)
+			local prod = manufactured[g] or productionOf(t, g, p, w)
 			local dem = demandOf(t, g, p)
 			local have = t.stock[g] + prod
 			local sold = math.min(have, dem)
@@ -581,6 +669,36 @@ function E.step(w)
 							local v = q * pa
 							a.tradeOut += v
 							b.tradeIn += v
+						end
+					end
+				end
+			end
+		end
+	end
+	-- [국제 수출망] 중력 이웃 외에도 브랜드 지정 해외 항구로 직접 수출한다.
+	-- 수출량은 현실적인 운송비·가격차·산업단계·현지 재고에 의해 제한된다.
+	for _, brand in ipairs(Chains.Brands) do
+		local a = w.towns[brand.port]
+		if a and E.industryStage(a, brand) == 4 then
+			local g = brand.id
+			local pa = a.price[g]
+			if pa and (a.stock[g] or 0) > 0 then
+				for _, buyerId in ipairs(brand.destinations) do
+					local b = w.towns[buyerId]
+					if b and b.region ~= a.region and b.price[g] and b.stock[g] then
+						local shipping = 0.06 + distKm(a, b) / 45000
+						local gap = b.price[g] / math.max(pa, 1) - 1 - shipping
+						local reserve = (a.dem[g] or 0) * 6
+						local q = math.min(
+							math.max(0, a.stock[g] - reserve),
+							math.max(0, gap) * 0.6 * a.civBonus.trade * math.min(a.fx.trade, b.fx.trade))
+						if q > 0.001 then
+							a.stock[g] -= q
+							b.stock[g] += q * 0.97
+							local value = q * pa
+							a.tradeOut += value
+							b.tradeIn += value
+							a.exports[g] = (a.exports[g] or 0) + q
 						end
 					end
 				end
@@ -697,7 +815,7 @@ local WORLD_SCALARS = {
 	"births", "deaths", "infra", "infraRef", "treasury", "stability", "wage", "wageRef",
 	"migIn", "migOut", "unrestCd", "civ", "housingRatio", "unemp", "buildSpend",
 }
-local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector" }
+local WORLD_MAPS = { "stock", "price", "out", "dem", "tech", "bld", "cov", "sector", "exports" }
 local function worldNumber(value)
 	return type(value) == "number" and value == value and value > -1e14 and value < 1e14
 end
