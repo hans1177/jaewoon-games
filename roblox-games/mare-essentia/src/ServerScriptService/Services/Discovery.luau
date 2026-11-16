@@ -129,7 +129,9 @@ return function(D, S)
 	-- [발견] 항구 도착만으로 관찰할 수 있는 신규 지형·건축물. 기존 카드 발견 경로는 건드리지 않는다.
 	local visitCards = {}
 	for _, card in D.Cards.Cards do
-		if card.visitPort then
+		-- [항구 방문/학술 연구 분리] 선행 보고가 필요한 문헌·비교 연구는
+		-- 방문 시 자동 획득하지 않고 기존 StudyKnowledgeCard 액션으로만 등록한다.
+		if card.visitPort and not (card.research and card.research.reported) then
 			visitCards[card.visitPort] = visitCards[card.visitPort] or {}
 			table.insert(visitCards[card.visitPort], card.id)
 		end
