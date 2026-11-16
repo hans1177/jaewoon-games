@@ -25,8 +25,9 @@ function FM.new(model: Model, followAnimator: boolean)
 	for _, n in (if r6 then R6_NAMES else R15_NAMES) do want[n] = true end
 	for _, d in model:GetDescendants() do
 		if want[d.Name] then
-			local connected = (d:IsA("AnimationConstraint") and d.Attachment0 ~= nil and d.Attachment1 ~= nil)
-				or (d:IsA("Motor6D") and d.Part0 ~= nil and d.Part1 ~= nil)
+			-- 기존 공용 모션과 동일하게 실제 Part0/Part1 연결을 검사한다. Avatar Joint Upgrade의 AnimationConstraint는 Attachment0/1 값만으로 판정하면 누락된다.
+			local connected = (d:IsA("AnimationConstraint") or d:IsA("Motor6D"))
+				and d.Part0 ~= nil and d.Part1 ~= nil
 			if connected and (not joints[d.Name] or d:IsA("AnimationConstraint")) then
 				joints[d.Name] = d
 			end
