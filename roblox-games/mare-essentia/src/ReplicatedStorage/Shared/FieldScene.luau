@@ -2704,10 +2704,31 @@ function FieldScene.start(opts)
 						local len = if isCharge then math.min(dv.Magnitude, e.ac.def.range * STUD) else dv.Magnitude
 						local mid = from + dv.Unit * (len * 0.5)
 						local y = if isCharge then from.Y - e.root.Size.Y * 0.5 - 2.4 else from.Y + 0.5
-						local lane = fxPartMake(Vector3.new(if isCharge then 4.5 else 0.3, if isCharge then 0.12 else 0.3, len), CFrame.lookAt(Vector3.new(mid.X, y, mid.Z), Vector3.new(mid.X, y, mid.Z) + dv.Unit), Color3.fromRGB(255, 50, 40))
-						lane.Transparency = 0.75
-						TweenService:Create(lane, TweenInfo.new(e.ac.def.windup, Enum.EasingStyle.Linear), { Transparency = 0.2 }):Play()
-						task.delay(e.ac.def.windup + 0.05, function() lane:Destroy() end)
+						-- [적 공격 예고] 막대 도형 대신 기존 R15 루트와 투명 목표점 사이의 붉은 빔으로 조준 경로를 보여 준다.
+						local target = Instance.new("Part")
+						target.Name = "FieldTelegraphTarget"
+						target.Size = Vector3.one * 0.1
+						target.Transparency = 1
+						target.Anchored, target.CanCollide, target.CanQuery, target.CanTouch = true, false, false, false
+						target.Position = Vector3.new(from.X + dv.Unit.X * len, y, from.Z + dv.Unit.Z * len)
+						target.Parent = folder
+						local startAt = Instance.new("Attachment")
+						startAt.Position = Vector3.new(0, y - from.Y, 0)
+						startAt.Parent = e.root
+						local endAt = Instance.new("Attachment")
+						endAt.Parent = target
+						local lane = Instance.new("Beam")
+						lane.Attachment0, lane.Attachment1 = startAt, endAt
+						lane.Width0, lane.Width1 = if isCharge then 2.7 else 0.16, if isCharge then 2.7 else 0.08
+						lane.Color = ColorSequence.new(Color3.fromRGB(255, 75, 59), Color3.fromRGB(255, 180, 123))
+						lane.Transparency = NumberSequence.new(0.28)
+						lane.LightEmission = 0.8
+						lane.FaceCamera = false
+						lane.Parent = target
+						task.delay(e.ac.def.windup + 0.05, function()
+							startAt:Destroy()
+							target:Destroy()
+						end)
 					end
 				end
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
