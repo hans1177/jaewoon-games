@@ -1,10 +1,10 @@
 {
-  "runId": "43888487222",
+  "runId": "43890252889",
   "kind": "deep",
-  "sourceRevision": "d4c27a9d3ffa42c078419a38437b2ca1e2654e09",
-  "result": "PASS",
-  "failureStage": null,
-  "failureSignature": null,
+  "sourceRevision": "b7859b650ac548a6beea546166107d940d2083ea",
+  "result": "FAIL",
+  "failureStage": "STUDIO_GAME_RUNTIME",
+  "failureSignature": "STUDIO_ASSET_AUDIT_FAILED",
   "summary": {
     "plannedSteps": 220,
     "completedSteps": 220,
@@ -15,9 +15,11 @@
     "capturedFrames": 61,
     "abortedEarly": false
   },
-  "errors": [],
+  "errors": [
+    "STUDIO_ASSET_AUDIT_FAILED"
+  ],
   "audits": {
-    "models": "PASS",
+    "models": "FAIL",
     "registered": "PASS",
     "features": "PASS",
     "registry": "PASS"
@@ -1689,369 +1691,369 @@
   "screenshotComparison": [
     {
       "name": "b1_start-0.jpg",
-      "sha256": "09db61ed66dc77739d108d612096e5b2531ef7f39884c9f23a8ffa29d3a99c09",
+      "sha256": "836dd8984717e3fa8f2f4774d88f2c1116913864f6f6ce9732d0130fdb9b9126",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/b1_start-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/b1_start-0.jpg"
     },
     {
       "name": "b2_mid-0.jpg",
-      "sha256": "cd74a5710bf1cf65fc5978c5ac84681811adf70d6a37fabb38eb17a31e12c2e1",
+      "sha256": "5912655e003414e064ed204d565e762e861700b048f2991ebe9e06c1e22de72f",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/b2_mid-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/b2_mid-0.jpg"
     },
     {
       "name": "c00_start-0.jpg",
-      "sha256": "812bf416d1f0162df6d0032e72e3cb1c4d3d4f2e6016133b1d2cbbbb4f460b83",
+      "sha256": "91a71887f9d5934f759b80bf0cf8bebb4bca97edc29c2579c167b6bdafbede4a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/c00_start-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/c00_start-0.jpg"
     },
     {
       "name": "field_actor_after_motion-0.jpg",
-      "sha256": "99e5ed8be2996b67a33a9bb49bc44a23c0a5a0b8d73cf922f67226ea07cf90ad",
+      "sha256": "dc2715cbd9cecb763049456381c87100229f7985bae568e45053edce16ae2b6d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/field_actor_after_motion-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/field_actor_after_motion-0.jpg"
     },
     {
       "name": "field_entry-0.jpg",
-      "sha256": "dcde2b043a6ca4fe9c508a5cdce7bb7bf4bf1d56665c400dac4a46628b3be721",
+      "sha256": "7f1feae349c50643a4297ca3b57b380f63cd97976256ca0a3a39fde1f0a11265",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/field_entry-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/field_entry-0.jpg"
     },
     {
       "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "3c2b66290ed34edab3245fa49f65060eb6fb38963ed7bf70929fbed0377b3f3d",
+      "sha256": "7d4eb8ff54ec6e5aba0279216b5c31276c46f664b3ed520a20e3f41833e4210f",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/field_motion_smooth_icons-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/field_motion_smooth_icons-0.jpg"
     },
     {
       "name": "field_npc_ally_mob-0.jpg",
-      "sha256": "c534c7164aaf76b445757838a4cb93a2fcf5e007039bff60278f2ad5585f5d90",
+      "sha256": "1f79ac654405f1d2c6077fb068db9384497e93e9a6148d550b3c35faa078bbc0",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/field_npc_ally_mob-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/field_npc_ally_mob-0.jpg"
     },
     {
       "name": "harbor_motion_attack-0.jpg",
-      "sha256": "c818bd2de850e140f86b96998eebf8dd23fd2a3fb174416e836b87b46f40d826",
+      "sha256": "06453b00932eea848a784a06005569eaef60ae4561878512b6e7d983719adc1c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_attack-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_attack-0.jpg"
     },
     {
       "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "b2af5b8eeaddd01e9445a71d2710749f49cbed00ec861b9bf857017784b0d7a9",
+      "sha256": "35e8869b199416e21e1c7b9b812681d8c04ae2cbdfff57461d2847928cee1589",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_cheer-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_cheer-0.jpg"
     },
     {
       "name": "harbor_motion_guard-0.jpg",
-      "sha256": "4f919f676ec210cbeae0098b4147f9cb1ecef4d3bdd1c0e6eae5337e4def921b",
+      "sha256": "cbb16a6f8457eaaf6c6d5872f4b050b90b4720a3946a494e9dd8115bc549b6d8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_guard-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_guard-0.jpg"
     },
     {
       "name": "harbor_motion_hurt-0.jpg",
-      "sha256": "1b4829ea8178f7ba9810d22d8c0e4fc6638484cbc24541d8249fb01da472ece0",
+      "sha256": "533bed42d54d9bf97351e29078d275a0fbae91946bcf5f46b2e6a57e0cea9699",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_hurt-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_hurt-0.jpg"
     },
     {
       "name": "harbor_motion_idle-0.jpg",
-      "sha256": "fed3e146f821775f52135cb1c121d03995b6ed62d8a5b1100742f7be2763b243",
+      "sha256": "a73bd231978fb756bebdbcb1d264bf805bb4a49674bd6754faa2f387e1431cc8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_idle-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_idle-0.jpg"
     },
     {
       "name": "harbor_motion_reload-0.jpg",
-      "sha256": "6e68095a6f1f66bbec438e7f5484c801f3a439ed818c8b9c1d25237c461e74b4",
+      "sha256": "44d86a2df3977be9de1e4d51f571251179e1dd8f80bf50073e3826ac9b88f1a7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_reload-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_reload-0.jpg"
     },
     {
       "name": "harbor_motion_run-0.jpg",
-      "sha256": "8cd2251c4a21e1125f02f61b0e53ea1d6592cb68812d1692b606f73b1edf0732",
+      "sha256": "aec852576dea0523b8f13a267a7df1c0eb104196bd27f245ff26bea486342b93",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_run-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_run-0.jpg"
     },
     {
       "name": "harbor_motion_shoot-0.jpg",
-      "sha256": "1e13c47924820bfec346a9e38434cc52f8f6b2ca9ff011bfb528278a50edeba2",
+      "sha256": "a46481969796b371081b6f034beb4dfe82912d329cdfaedfaef10d6ce3db786c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_shoot-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_shoot-0.jpg"
     },
     {
       "name": "harbor_motion_talk-0.jpg",
-      "sha256": "a0a88b6f37823411c7467a82fb09b75e49c7247f0a3725b8cd00420987bae1cc",
+      "sha256": "176bf700be3655527fa72b8a97913a097d434b26672a4ced9848f618ab70dd0d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_talk-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_talk-0.jpg"
     },
     {
       "name": "harbor_motion_walk-0.jpg",
-      "sha256": "41a98422be89e95da1458f5faeafdc21cf7258ee35f7fe239d2fad396d890b78",
+      "sha256": "e3fcc05941c4d628e6e4930fd7d8810e909fe87100f4c22019b6ea64bb8b597a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_motion_walk-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_motion_walk-0.jpg"
     },
     {
       "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "47315fd7da02bbfe89a98eb2de2c021dc2dcba0ea53e3781a36b3fd778f79e94",
+      "sha256": "19d3dd303eb73cdf3769b5da10adc7f3c9cf0591a0a476252522518a20886192",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_face_front-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_face_front-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_01-0.jpg",
-      "sha256": "d19e48b878baf55444c94263116499ecf02c56bf91b2ff89de28852aa66e63ca",
+      "sha256": "78d9fa651a68767e37f812057cb827ab1351194b8bd3aedc862139c438568fe4",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_01-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_01-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_02-0.jpg",
-      "sha256": "0f1c0d4515d9c53e4b3b15f4a98ce6124af07e3bfe6bfe270eda53cd90e78ffb",
+      "sha256": "df3fdcb31e4edd579fbae58ee2e8e28f4a971f85ca04b70d4237bffbf0a7c366",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_02-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_02-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_03-0.jpg",
-      "sha256": "4a489362c7ef41c2126ff4da3052a85b08fa4f4b24bb4b3957c9bc21cfe156fe",
+      "sha256": "2c740cd6c52461fcdbf12992b8e42fae02dc8360f6c66b0fba696ede5791d630",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_03-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_03-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_04-0.jpg",
-      "sha256": "d1a229cdbd43eecd433fcc3c9dd78b51544c02215237d62ac91bbe5b5bd9ccd7",
+      "sha256": "ca25565f6e2cb6e4693abe99d1ad09b03dbd9105e38088d1cde103ab0b7905b0",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_04-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_04-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_05-0.jpg",
-      "sha256": "2f2a9de4d6e6cada5c679633bf00702003da3dbbf29a4c5fd0cc8a8f8e460c39",
+      "sha256": "188e2371d41b4e835fda93df52da9320df6f9eb37dfd1913ffa1b65f05731e04",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_05-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_05-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_06-0.jpg",
-      "sha256": "ea0bc0946572fe1bee10bd1b380546a8ab68a692433f49e72a4396e03f8c21da",
+      "sha256": "da0fa07f7f9f3153232f5f906934058768559d9c548f08160fa0327d782ee798",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_06-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_06-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_07-0.jpg",
-      "sha256": "9052bcc49986bae49e78970414a08e2a083973c91a71b7d105fc8e1c99ab4ffe",
+      "sha256": "1b7fe391cc48757fe75c901dee2d8cfc99185a7bfc1d055711d17ec5e945badd",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_07-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_07-0.jpg"
     },
     {
       "name": "harbor_npc_sparring_08-0.jpg",
-      "sha256": "2775064f0b7eb50c9ff307e2c1af04edd5cf4fe803bacb81aebb1f59d9d1720b",
+      "sha256": "0b23948fc2abc7f269fa1786116d8c82380ca8d5bb498b6b58515b73d20c7e16",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/harbor_npc_sparring_08-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/harbor_npc_sparring_08-0.jpg"
     },
     {
       "name": "intro_center_early-0.jpg",
-      "sha256": "8d56a9a1125df1e10cb57da4c0149534d3cdf448757369a49532232fd7561dbf",
+      "sha256": "c6b8dad728de8a117cad9cf4358ef4e1f4eeaec12107385729930d31a6cfd184",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/intro_center_early-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/intro_center_early-0.jpg"
     },
     {
       "name": "intro_center_late-0.jpg",
-      "sha256": "32290d2b86a87d1fa069becd803c3595a529fd9275b5c417375c785f8a792a51",
+      "sha256": "b55877c6fd598ea3227e4ae11f7be45c056aa36425dfeb23a1de52b477e10080",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/intro_center_late-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/intro_center_late-0.jpg"
     },
     {
       "name": "intro_center_next-0.jpg",
-      "sha256": "8d4d1c6a6a11350b0df3d601721b4d020b95c97162539048c040fb3f513e5ca1",
+      "sha256": "1186e8c9643e5aa8ce88a0084a53e74eaece38adda67a7a8f992358c23e0d599",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/intro_center_next-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/intro_center_next-0.jpg"
     },
     {
       "name": "intro_done-0.jpg",
-      "sha256": "aabb2305e9e43498b19db64900304c3a48e35b95d1fe2883e849e1f890ebbbfe",
+      "sha256": "66dbd91d3161e03e4194e033acf8b252c5138fc237d0d26f004a4f6c0c6a35e6",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/intro_done-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/intro_done-0.jpg"
     },
     {
       "name": "t01-0.jpg",
-      "sha256": "439d92c751a0e4e1e08b1bc0883971fd558ff9c7d0d554752bb4c232e34148c2",
+      "sha256": "7fe462981118651f953b6e87fa9b32794fc0135e06d2a4fc2362e3bb0e9f7e8c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t01-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t01-0.jpg"
     },
     {
       "name": "t02-0.jpg",
-      "sha256": "f972ada0a85e1e42c3edc2679893d6aabcc625b1da7fb88163a7a0493227f9f2",
+      "sha256": "80d7b617a408fc9533a96106396324f97ad3fc8430c5bb80285d51d8cfe6b505",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t02-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t02-0.jpg"
     },
     {
       "name": "t03-0.jpg",
-      "sha256": "c8eecc0339a5bf5af17affeb94a2e1cb843ebf13b7b992290b909dcafa741ef3",
+      "sha256": "8f7a544dff0dfd73c68296ab60d83df7a3adcadfa80506658c0d192b8abb82fb",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t03-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t03-0.jpg"
     },
     {
       "name": "t0_explore-0.jpg",
-      "sha256": "0cc88bf81e806d1cbee6bd41e5dac95f3e20858c64c0f9c50ad71ba23cf72544",
+      "sha256": "349ae32b7d39c81f8f482ddc66c6b019b53a09fb856a762ed7c19d0827bed930",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t0_explore-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t0_explore-0.jpg"
     },
     {
       "name": "t1_board-0.jpg",
-      "sha256": "023ce326bf65799cba39a9588c14c37652834ad7cd38ba4c9303c7045a9f0e95",
+      "sha256": "ff6c6b8c851f22074938cceec932efdbe3441efcf6e419d7204c8db432d3cbed",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t1_board-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t1_board-0.jpg"
     },
     {
       "name": "t2_selected-0.jpg",
-      "sha256": "3bbcdd9ac66f8fbf050f9bd6426f01a6f4353075ef276af80271158354c0e48d",
+      "sha256": "54868caa36b87aa06a0569e97d016ca35345fe3ec66844e6d625a024fa19658a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t2_selected-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t2_selected-0.jpg"
     },
     {
       "name": "t3_move_chosen-0.jpg",
-      "sha256": "3d843aeee539cdc59613e36f249e37456c58fd1eeb06c065d36bcaf047996274",
+      "sha256": "fc44be2fe669739d8c13184d0d62518db60afc9ec69c1fca1a992b44263c63d4",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t3_move_chosen-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t3_move_chosen-0.jpg"
     },
     {
       "name": "t4_waited-0.jpg",
-      "sha256": "63a9937f99e94571d1e38d370176bf3a11760b7b7616d337d7b4ecd7fddbfce0",
+      "sha256": "3f8112307671be3237115e5f1dee48d6b42a20fbe4b59c42217a041807faddb9",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t4_waited-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t4_waited-0.jpg"
     },
     {
       "name": "t5_enemy_turn-0.jpg",
-      "sha256": "76a1db8deb88a83b7b8fba118e098a81ec581fbb74458e4c9716ca7bb8f8a673",
+      "sha256": "f8e59afcc934621e79dd9b2c6a8c2b277697bb663dd6321a38062422c20bd364",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/t5_enemy_turn-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/t5_enemy_turn-0.jpg"
     },
     {
       "name": "tab_battle-0.jpg",
-      "sha256": "cbadd194f3580b1e172dfaf66c42cb9f0ca7f6c4cda1c04ffe06ddc566cf25c8",
+      "sha256": "b7ab51a44a3fc171a5ca2b2047f0f1cfabe6c70df05f136625871e2573d7752b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_battle-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_battle-0.jpg"
     },
     {
       "name": "tab_codex-0.jpg",
-      "sha256": "22aafa0281f12433bf656fead6f771d353ba8b0d48541edd6a3cb5c561653617",
+      "sha256": "e6481ded6f34d39072e126d7f83dd1e577d94b5018315140bd5b862925e042f9",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_codex-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_codex-0.jpg"
     },
     {
       "name": "tab_crew-0.jpg",
-      "sha256": "c74f1e37dc846ee08002d60843f0a9e8d03064d4aed20f0549765bbc1cc90b5f",
+      "sha256": "0830031d104161b04f1dc5e210716b5f63e48037ad6e8132f3d170f5573986b8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_crew-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_crew-0.jpg"
     },
     {
       "name": "tab_explore-0.jpg",
-      "sha256": "2e3398994fe9781322785c1bf8bf31788548176e7decbe30d9c3933ef344f9db",
+      "sha256": "22ddef3131e5427d83b1ce04f02efcd25c77b2ca3f6c0ba462f94a4e7f281f98",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_explore-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_explore-0.jpg"
     },
     {
       "name": "tab_harbor-0.jpg",
-      "sha256": "e9ab19318c3d3be7b52f8c1d35555c343544f168825b91b4e1c5de934d66887c",
+      "sha256": "8cfb2c8c3b8b6c012d8314db4314b7ebbca48351cf97fca1dd4667cc07eb38c6",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_harbor-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_harbor-0.jpg"
     },
     {
       "name": "tab_map-0.jpg",
-      "sha256": "508f39b1d0cbf0411c87deb0f6e89814c9f0a4b511c28c94b3f6ea198d810b4c",
+      "sha256": "d63748046ae6e1e3885700bfff1d024732437ac2161fdd2d01944c0802976b2c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_map-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_map-0.jpg"
     },
     {
       "name": "tab_quest-0.jpg",
-      "sha256": "c153206bd3ad6bfc06b2a45a0c0e85fead7d24a9a018662ce10f0c1e03e0f9b8",
+      "sha256": "03905eb82608f596bdef31e4a90a2884628c11b402abb7fde0625aa239903182",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_quest-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_quest-0.jpg"
     },
     {
       "name": "tab_route-0.jpg",
-      "sha256": "57a8e7b66cf9715d2d41f0c917d47ca0cc9d8e6cd6c343dd3e2ba4fe1f767dc9",
+      "sha256": "38fc211fd54b29d83220eee0a3de6834a92e953a0d3e95192c58111604beb12a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_route-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_route-0.jpg"
     },
     {
       "name": "tab_status-0.jpg",
-      "sha256": "4f0b325f0bfb055686437b3effea3aedc3d0cb08837c30d6f6b0966bf237cd7a",
+      "sha256": "6d33831e7ce1c004ca0afc3737998a1b0c375a1cfbef3d6142156eb1191ce30b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_status-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_status-0.jpg"
     },
     {
       "name": "tab_tech-0.jpg",
-      "sha256": "f9f3bba0f23297e37175dde36adc4cc7715d99f4ba8458d5c3d993bfda8a9d02",
+      "sha256": "e326850a1acd79815d26fe08d69c013b6e2dbdb4aa504929d910dc09e6e49cc7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_tech-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_tech-0.jpg"
     },
     {
       "name": "tab_trade-0.jpg",
-      "sha256": "9ec4b2d2d0c78017a43ec79dd6eded1fbd4338586ee7906d9ead95072ff9ae24",
+      "sha256": "f00e2db980cc0f1dc43c669bc97e8b12391df38b03d5cc3a52430e91ca658a9b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_trade-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_trade-0.jpg"
     },
     {
       "name": "tab_yard-0.jpg",
-      "sha256": "b5eaa170d5ed8158cb7913ac93951bc257bfc1f12ff6bf4d14c3974b6c0ba787",
+      "sha256": "9aa1d2aabf6666a33ca12815f064eba93cbdfc9fa5a1129c3bbf2ab69db2d7ec",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/tab_yard-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/tab_yard-0.jpg"
     },
     {
       "name": "ui_battle_unified-0.jpg",
-      "sha256": "1303c4e4efc328aa5f8ecbfdb732c183d978b9e7e7f8603361ba3b8cefbbf781",
+      "sha256": "8fb793213550009596d364028460dca3d9b3943e315d681477fef95038a3ff6c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_battle_unified-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_battle_unified-0.jpg"
     },
     {
       "name": "ui_hall_return_clean-0.jpg",
-      "sha256": "d07047ad8b4f1c3ab6c38b265b14897191da48196731296a8454c412fdd4d750",
+      "sha256": "6654ac1146229ceb1d3a611c1d136fe183da2ffb3f77d2ddbdef87d66542a27d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_hall_return_clean-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_hall_return_clean-0.jpg"
     },
     {
       "name": "ui_main_menu_icons-0.jpg",
-      "sha256": "8b75c9edb85a7054447223993a76d6a0f4a4d2aa2e90278867800f7863a00267",
+      "sha256": "479adffae9d1502fca6e818f72e6445bb9f90417d84fca15c6ad9a120cf39c26",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_main_menu_icons-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_main_menu_icons-0.jpg"
     },
     {
       "name": "ui_mobile_battle_2x2-0.jpg",
-      "sha256": "e12a0157d19156878b762aacbfd3e7f630880be3865b5831a92574960125056d",
+      "sha256": "cab2f08c1bb92fac5177aa650d7165631508add74cae266f3e3ca0cacd261aea",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_mobile_battle_2x2-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_mobile_battle_2x2-0.jpg"
     },
     {
       "name": "ui_trade_hall_no_hud-0.jpg",
-      "sha256": "39802ffae4d8e2bec470c0b76d6550c764ad6760514e0fe0683b9c122f226af6",
+      "sha256": "f445e1c2a104581560652c2dff7cb15db926a59f0c221d5820809950ae633ab7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_trade_hall_no_hud-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_trade_hall_no_hud-0.jpg"
     },
     {
       "name": "ui_yard_hall_no_hud-0.jpg",
-      "sha256": "17f591354649b9bccd5d000156bead36d46a70e69feb5b90f5de26efd19a28e5",
+      "sha256": "122cdde55cfe77988a710e4ba4c58b7e9276f6aed641ac0a522d9bf4b4bc9738",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/ui_yard_hall_no_hud-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/ui_yard_hall_no_hud-0.jpg"
     },
     {
       "name": "v1_start-0.jpg",
-      "sha256": "94492bf338497ae3323ce2eb3866a797b8482bb0f17f7801b9fabaafe8f7f325",
+      "sha256": "5ae14f73d90a240d036dcc00e12101afe78ad287e495f859d8affd8ef05c8885",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/v1_start-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/v1_start-0.jpg"
     },
     {
       "name": "v2_event-0.jpg",
-      "sha256": "bc7a7345a1127eba1c67da263eaf1878e122401a3e39982d209beb97c20f8244",
+      "sha256": "5599f4cce5c27ff721c414b720bdb85d717de881f1e0bc6d763258f09e2fc599",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/v2_event-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/v2_event-0.jpg"
     },
     {
       "name": "v3_event2-0.jpg",
-      "sha256": "7e8a5c9620dbdc96c1de1957937f472e1452d90d20dd18b519a102e9cb02f94d",
+      "sha256": "443d2f0294bb582d10cd2fa4c8fe10bbb310d8f0afce4fe68371a1adb8d68919",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/v3_event2-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/v3_event2-0.jpg"
     },
     {
       "name": "v4_late-0.jpg",
-      "sha256": "fb7837b79d49135eb596f7d37562d50a9620a6bb243a889717816febea3bbf99",
+      "sha256": "0080fbfb25edea19d0cf7a7dc0ce8d3c91fd91fa7d63b735690c29136cc5b97e",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43888487222/v4_late-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/43890252889/v4_late-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -2060,427 +2062,427 @@
     "images": [
       {
         "name": "b1_start-0.jpg",
-        "bytes": 144089,
+        "bytes": 144762,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "b2_mid-0.jpg",
-        "bytes": 174374,
+        "bytes": 162736,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "c00_start-0.jpg",
-        "bytes": 219795,
+        "bytes": 219794,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_actor_after_motion-0.jpg",
-        "bytes": 203595,
+        "bytes": 206658,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_entry-0.jpg",
-        "bytes": 203281,
+        "bytes": 202571,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_motion_smooth_icons-0.jpg",
-        "bytes": 204521,
+        "bytes": 204251,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_npc_ally_mob-0.jpg",
-        "bytes": 199615,
+        "bytes": 197561,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_attack-0.jpg",
-        "bytes": 97641,
+        "bytes": 97854,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_cheer-0.jpg",
-        "bytes": 96817,
+        "bytes": 96839,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_guard-0.jpg",
-        "bytes": 97016,
+        "bytes": 97162,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_hurt-0.jpg",
-        "bytes": 94794,
+        "bytes": 93521,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_idle-0.jpg",
-        "bytes": 94420,
+        "bytes": 95269,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_reload-0.jpg",
-        "bytes": 96133,
+        "bytes": 96393,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_run-0.jpg",
-        "bytes": 99438,
+        "bytes": 100032,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_shoot-0.jpg",
-        "bytes": 96106,
+        "bytes": 96035,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_talk-0.jpg",
-        "bytes": 94641,
+        "bytes": 94609,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_walk-0.jpg",
-        "bytes": 96063,
+        "bytes": 96090,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_face_front-0.jpg",
-        "bytes": 101281,
+        "bytes": 96546,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_01-0.jpg",
-        "bytes": 94804,
+        "bytes": 97128,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_02-0.jpg",
-        "bytes": 96692,
+        "bytes": 94850,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_03-0.jpg",
-        "bytes": 97055,
+        "bytes": 96616,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_04-0.jpg",
-        "bytes": 96986,
+        "bytes": 98138,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_05-0.jpg",
-        "bytes": 96760,
+        "bytes": 97154,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_06-0.jpg",
-        "bytes": 97092,
+        "bytes": 97331,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_07-0.jpg",
-        "bytes": 96175,
+        "bytes": 97660,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_08-0.jpg",
-        "bytes": 96984,
+        "bytes": 97050,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_early-0.jpg",
-        "bytes": 132389,
+        "bytes": 138082,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_late-0.jpg",
-        "bytes": 174057,
+        "bytes": 172463,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_next-0.jpg",
-        "bytes": 131343,
+        "bytes": 139437,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_done-0.jpg",
-        "bytes": 169200,
+        "bytes": 168306,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t01-0.jpg",
-        "bytes": 249969,
+        "bytes": 249623,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t02-0.jpg",
-        "bytes": 249704,
+        "bytes": 250006,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t03-0.jpg",
-        "bytes": 120984,
+        "bytes": 116572,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t0_explore-0.jpg",
-        "bytes": 168718,
+        "bytes": 170139,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t1_board-0.jpg",
-        "bytes": 170453,
+        "bytes": 171134,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t2_selected-0.jpg",
-        "bytes": 170082,
+        "bytes": 168963,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t3_move_chosen-0.jpg",
-        "bytes": 169389,
+        "bytes": 170061,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t4_waited-0.jpg",
-        "bytes": 167856,
+        "bytes": 170777,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t5_enemy_turn-0.jpg",
-        "bytes": 169857,
+        "bytes": 169619,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_battle-0.jpg",
-        "bytes": 141777,
+        "bytes": 141322,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_codex-0.jpg",
-        "bytes": 184297,
+        "bytes": 183970,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_crew-0.jpg",
-        "bytes": 172897,
+        "bytes": 173736,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_explore-0.jpg",
-        "bytes": 156270,
+        "bytes": 156753,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_harbor-0.jpg",
-        "bytes": 151134,
+        "bytes": 151173,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_map-0.jpg",
-        "bytes": 156601,
+        "bytes": 155017,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_quest-0.jpg",
-        "bytes": 171866,
+        "bytes": 172072,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_route-0.jpg",
-        "bytes": 135293,
+        "bytes": 135855,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_status-0.jpg",
-        "bytes": 164741,
+        "bytes": 165542,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_tech-0.jpg",
-        "bytes": 143861,
+        "bytes": 143349,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_trade-0.jpg",
-        "bytes": 172631,
+        "bytes": 173433,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_yard-0.jpg",
-        "bytes": 151175,
+        "bytes": 150309,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_battle_unified-0.jpg",
-        "bytes": 142345,
+        "bytes": 141742,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_hall_return_clean-0.jpg",
-        "bytes": 171068,
+        "bytes": 173239,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_main_menu_icons-0.jpg",
-        "bytes": 223290,
+        "bytes": 221011,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_mobile_battle_2x2-0.jpg",
-        "bytes": 172009,
+        "bytes": 171900,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_trade_hall_no_hud-0.jpg",
-        "bytes": 194399,
+        "bytes": 193980,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_yard_hall_no_hud-0.jpg",
-        "bytes": 169347,
+        "bytes": 169536,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v1_start-0.jpg",
-        "bytes": 93221,
+        "bytes": 92685,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v2_event-0.jpg",
-        "bytes": 90359,
+        "bytes": 92498,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v3_event2-0.jpg",
-        "bytes": 101578,
+        "bytes": 96460,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v4_late-0.jpg",
-        "bytes": 90614,
+        "bytes": 90022,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -2489,5 +2491,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "43886514992"
+  "previousRunId": "43888487222"
 }
