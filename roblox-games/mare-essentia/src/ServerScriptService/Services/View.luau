@@ -89,6 +89,12 @@ return function(D, S)
 			id = def.id,
 			name = def.name,
 			steam = def.steam,
+			-- [기함 정보] 기존 ShipDef 실측값. 저장/선박 규칙은 변경하지 않는다.
+			price = def.price, summary = def.summary, class = def.class, className = D.Ships.ClassNames[def.class],
+			rowed = def.rowed, fuelPerDay = def.fuelPerDay,
+			cannonName = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).name,
+			cannonBonus = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).mult,
+			plating = state.ship.plating or 0,
 			hull = state.ship.hull,
 			maxHull = def.hull,
 			crew = state.ship.crew,
@@ -135,21 +141,51 @@ return function(D, S)
 		local rate = S.Trade.sellRateFor(state)
 		view.sellRate = rate
 		do
+			-- [자동 흥정] 상인 전문 분야나 동료 장사 감각 보유 여부. 거래와 확률은 서버에서 판정한다.
 			local h = state.haggle
-			if h and h.portId == port.id then
-				view.haggle = { tried = h.tried, deal = h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5) } or nil }
-			end
+			local intel = S.Harbor.intel(state)
+			local merchant = state.specialty == "merchant" or state.subSpecialty == "merchant"
+			view.haggle = {
+				auto = intel >= 1 or merchant,
+				source = if merchant then "상인 전문" elseif intel >= 1 then "승선 동료 장사 감각" else "관련 능력 없음",
+				tried = if h and h.portId == port.id then h.tried or {} else {},
+				deal = h and h.portId == port.id and h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5) } or nil,
+			}
 		end
 		view.goods = {}
+		-- [교역품 분류] 원본 자원 계열과 기존 가공 레시피를 사용한다.
+		local kindNames = {
+			food = "식량", drink = "음료", textile = "직물·섬유", animal = "피혁·동물", ore = "금속·광물",
+			stone = "석재", gem = "귀금속·보석", marine = "해산 자원", spice = "향신료", crops = "농산물",
+			timber = "목재", oil = "기름", energy = "연료", crafted = "가공품", chemical = "화학 원료",
+		}
 		view.orderCap = S.Econ.orderCap(state)
 		local lv0 = D.Harbor.effLevel(D.Harbor.level(state.harbor[port.id] or 0), S.Knowledge.techSum(state, port.id))
 		local rid0 = D.Regions.of(port).id
 		local yr0 = state.startYear + math.floor(state.day / 365)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
+			local purpose = "타 항구 운송 및 판매"
+			if goodId == "coal" then
+				purpose = "증기선 연료 · 가공 산업 자원"
+			elseif goodId == "timber" then
+				purpose = "조선·건축 및 목재 가공"
+			elseif D.ProductionChains.BrandById[goodId] then
+				purpose = "원산지 명품 · 국제 수출 브랜드"
+			elseif D.ProductionChains.ByGood[goodId] then
+				purpose = "가공된 상품 · 지역 브랜드 재료"
+			else
+				for _, recipe in ipairs(D.ProductionChains.Recipes) do
+					if table.find(recipe.inputs, goodId) then
+						purpose = "가공 재료 · " .. recipe.output .. " 제작"
+						break
+					end
+				end
+			end
 			local mult = ctx.market:get(port.id, goodId)
 			local ev = (ctx.market:eventMult(port.id, goodId) * S.History.mult(state, port.id, goodId))
 			local tag = ""
+			local stockLimit = S.Econ.limits(state, port.id, goodId) or {}
 			local role = D.Harbor.role(port, rid0, yr0, lv0, goodId, S.Knowledge.disciplineOpens(state, port.id, goodId))
 			if role == "produce" then
 				tag = "특산"
@@ -159,6 +195,8 @@ return function(D, S)
 			table.insert(view.goods, {
 				id = goodId,
 				name = good.name,
+				category = kindNames[good.resourceKind or ""] or "일반 교역품",
+				purpose = purpose, basePrice = good.basePrice, basis = state.basis[goodId] or 0,
 				tag = tag,
 				buy = D.TradeMath.getPrice(port.id, goodId, mult, ev * S.Knowledge.supplyMult(state, port.id, goodId)),
 				cheaper = S.Knowledge.supplyMult(state, port.id, goodId) < 0.999 or nil,
@@ -166,8 +204,8 @@ return function(D, S)
 				upgraded = S.Knowledge.goodsMult(state, goodId) > 1.001 or nil,
 				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
 				scarcity = S.Econ.scarcity(state, port.id, goodId),
-				supply = (S.Econ.limits(state, port.id, goodId) or {}).supply,
-				absorb = (S.Econ.limits(state, port.id, goodId) or {}).absorb,
+				supply = stockLimit.supply,
+				absorb = stockLimit.absorb,
 				owned = state.cargo[goodId] or 0,
 			})
 		end
@@ -478,6 +516,12 @@ return function(D, S)
 				hull = s.hull,
 				cannons = s.cannons,
 				crew = s.crew,
+				fuelPerDay = s.fuelPerDay, rowed = s.rowed,
+				-- [교체 예고] 기존 절반값 보상과 선단·기술을 포함한 실제 화물칸 예상치.
+				tradeIn = math.floor(def.price * 0.5),
+				netCost = s.price - math.floor(def.price * 0.5),
+				capacityAfter = S.State.cargoCapacityFor(state, s),
+				canCarry = S.State.cargoUsed(state) <= S.State.cargoCapacityFor(state, s),
 				summary = s.summary,
 				class = s.class,
 				className = D.Ships.ClassNames[s.class],
@@ -1025,16 +1069,31 @@ return function(D, S)
 
 		do
 			local base = D.Ships.Ships[state.ship.id]
-			view.refit = { class = base.class, className = D.Ships.ClassNames[base.class], cannons = {}, cannonId = state.ship.cannon, plating = state.ship.plating }
+			local currentCannon = D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic
+			view.refit = {
+				class = base.class, className = D.Ships.ClassNames[base.class], cannons = {},
+				cannonId = state.ship.cannon, cannonName = currentCannon.name, cannonMult = currentCannon.mult, plating = state.ship.plating,
+			}
 			for _, c in D.Ships.Cannons do
+				local after = D.Ships.refit(base, c.id, state.ship.plating)
 				table.insert(view.refit.cannons, {
 					id = c.id, name = c.name, price = c.price, mult = c.mult, weight = c.weight, summary = c.summary,
+					netCost = math.max(0, c.price - math.floor(currentCannon.price * 0.5)),
+					capacityAfter = S.State.cargoCapacityFor(state, after),
+					canCarry = S.State.cargoUsed(state) <= S.State.cargoCapacityFor(state, after),
 					owned = c.id == state.ship.cannon, locked = S.Shipyard.cannonBlock(state, c),
 				})
 			end
 			local nextPl = D.Ships.Plating[state.ship.plating + 1]
 			if nextPl then
-				view.refit.nextPlating = { name = nextPl.name, price = nextPl.price, hull = nextPl.hull, weight = nextPl.weight, locked = S.Shipyard.plateBlock(state, state.ship.plating + 1) }
+				local after = D.Ships.refit(base, state.ship.cannon, state.ship.plating + 1)
+				view.refit.nextPlating = {
+					name = nextPl.name, price = nextPl.price, hull = nextPl.hull, weight = nextPl.weight, speed = nextPl.speed,
+					hullAfter = after.hull, speedAfter = after.speed,
+					capacityAfter = S.State.cargoCapacityFor(state, after),
+					canCarry = S.State.cargoUsed(state) <= S.State.cargoCapacityFor(state, after),
+					locked = S.Shipyard.plateBlock(state, state.ship.plating + 1),
+				}
 			end
 			local lic = D.Ships.Licenses[state.license + 1]
 			view.harbormaster = {

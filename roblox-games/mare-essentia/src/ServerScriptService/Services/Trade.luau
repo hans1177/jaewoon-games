@@ -74,15 +74,43 @@ return function(D, S)
 			total += T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
 			mult = T.nextStockMult(mult, 1, true)
 		end
-		-- 흥정으로 받은 할인은 같은 항구·같은 물건의 다음 구매 한 번에만 적용된다
+		-- [자동 흥정] 기존 동료 장사 감각·상인 전문을 갖추면 구매 순간 자동 시도.
+		-- 항구/상품별 1회, 원래 성공확률과 할인율을 그대로 유지한다.
 		local h = state.haggle
-		if h and h.deal and h.deal.goodId == goodId and h.portId == state.portId then
-			total = math.max(1, math.floor(total * h.deal.mult))
-			h.deal = nil
-		end
-		if total > state.coins then
+		local intel = S.Harbor.intel(state)
+		local skilled = intel >= 1 or state.specialty == "merchant" or state.subSpecialty == "merchant"
+		if total > state.coins and (not skilled or math.floor(total * 0.92) > state.coins)
+			and not (h and h.portId == state.portId and h.deal and h.deal.goodId == goodId) then
 			return false, "코인이 부족해요"
 		end
+		local effect = ""
+		local appliedDeal = false
+		if h and h.portId == state.portId and h.deal and h.deal.goodId == goodId then
+			total = math.max(1, math.floor(total * h.deal.mult))
+			appliedDeal = true
+		elseif skilled then
+			if not h or h.portId ~= state.portId then
+				h = { portId = state.portId, tried = {} }
+				state.haggle = h
+			end
+			if not h.tried[goodId] then
+				h.tried[goodId] = true
+				local port = D.Ports.Ports[state.portId]
+				local chance = math.clamp(0.35 + 0.1 * intel + (state.rep[port.country] or 0) / 100 * 0.2, 0.2, 0.9)
+				if ctx.rng() < chance then
+					local discount = 0.04 + ctx.rng() * 0.04
+					local before = total
+					total = math.max(1, math.floor(total * (1 - discount)))
+					effect = string.format(" · 자동 흥정 성공! %d코인 절약", before - total)
+				else
+					effect = " · 자동 흥정 실패 (정가)"
+				end
+			end
+		end
+		if total > state.coins then
+			return false, "코인이 부족해요" .. effect
+		end
+		if appliedDeal then h.deal = nil end
 		state.coins -= total
 		local owned = state.cargo[goodId] or 0
 		local basis = state.basis[goodId] or 0
@@ -93,7 +121,7 @@ return function(D, S)
 		state.harborTrade = state.harborTrade or {}
 		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + amount
 		noteBook(state, ctx, goodId)
-		return true, string.format("%s %d개 구매 (-%d)", D.Ports.Goods[goodId].name, amount, total)
+		return true, string.format("%s %d개 구매 (-%d)%s", D.Ports.Goods[goodId].name, amount, total, effect)
 	end
 
 	-- 흥정: 물건마다 항구에서 한 번만 시도할 수 있다. 성공하면 다음 구매가 4~8% 싸진다.
