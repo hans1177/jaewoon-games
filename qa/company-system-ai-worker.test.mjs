@@ -216,10 +216,12 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
   assert.equal(security.authority,'OWNER_DIRECTIVE_2026-09-19');
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
-  assert.equal(security.enforcement?.unverified,'BLOCK');
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
-  assert.equal(architecture.constitutionalEnforcement?.mode,'FAIL_CLOSED');
-  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+  assert.equal(security.enforcement.reviewStatus,'REVIEW_REQUIRED');
+  assert.equal(security.enforcement.quarantineStatus,'QUARANTINED');
+  assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+  assert.equal(architecture.constitutionalEnforcement.mode,'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES');
+  assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
+  assert.equal(architecture.completionAuthority,'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES');
 });
 
 test('System AI consumes only verified Vibe learning context and records exact knowledge ids',()=>{
