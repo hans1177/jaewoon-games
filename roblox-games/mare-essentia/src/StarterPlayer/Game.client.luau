@@ -7302,26 +7302,18 @@ local function renderCodexOverview()
 			return mkLabel(content, g.region .. (if g.open then " (열림)" else "") .. " — " .. table.concat(parts, "  "), 13, if g.open then COLORS.green else COLORS.text, false)
 		end)
 	end
-	add(function() return mkHeader(content, "인류 학문 7대 분류 (연구 중인 분야 표시)") end)
-	for _, dm in (view.knowledge and view.knowledge.domains or {}) do
-		add(function()
-			return mkLabel(content, string.format("■ %s — 연구 중 %d / 전체 %d  · %s", dm.name, dm.active, dm.count, dm.summary), 13, COLORS.gold, false)
-		end)
-		for _, r in dm.rows do
-			add(function()
-				local mark = if r.planned then "·" else "완료"
-				local tail = if r.planned then "  (연구 예정)" else string.format("  이해 %d/%d%s", r.done or 0, r.total or 0, if r.open then "" else " · 잠김")
-				return mkLabel(content, string.rep("    ", r.depth + 1) .. mark .. " " .. r.name .. tail, 12, if r.planned then COLORS.muted else COLORS.text, false)
-			end)
-		end
-	end
-	add(function() return mkHeader(content, "학문 계통도 (뿌리에서 갈라져 나온 순서)") end)
-	for _, t in (view.knowledge and view.knowledge.tree or {}) do
-		add(function()
-			local sub = if t.open then "열림" else string.format("잠김 — %s 지식 %d/%d개 이해하면 열려요", t.parentName or "", t.parentDone, t.openAt or 0)
-			return mkLabel(content, string.rep("    ", t.depth) .. (if t.depth > 0 then "└ " else "") .. t.name .. "  · " .. sub, 13, if t.open then COLORS.text else COLORS.muted, false)
-		end)
-	end
+	-- [모바일 학문 메뉴] 7대 분류/전체 계통도는 독립 페이지에 펼쳐서 긴 스크롤을 줄인다.
+	add(function() return mkHeader(content, "학문 연구·분류") end)
+	add(function()
+		return mkRow(content, "학문 7대 분야", "기초·자연·공학·인문·사회·예술·실용 계통과 연구 진도", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "k:domains"; render() end },
+		}, 54)
+	end)
+	add(function()
+		return mkRow(content, "전체 학문 계통도", "기존 21학문과 새 세부 학문 21개, 상하위 연구 관계", {
+			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "k:tree"; render() end },
+		}, 54)
+	end)
 	add(function()
 		return mkRow(content, string.format("확장 학문 연구 · %d개", cx.disciplineCount - cx.baseDisciplineCount), "수학·생물학·지질학·해양학·농학·야금학·약학·군사학 등 기존 지식카드 연구에서 성장", {
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "k:expanded"; render() end },
@@ -7552,6 +7544,36 @@ if string.sub(codexField, 1, 2) == "p:" then
 				local row = mkRow(content, string.format("??? #%d", n), p.hint, {}, 60)
 				withIcon(row, "Relics", "key", nil, 44)
 				return row
+			end)
+		end
+	end
+	return
+end
+-- [학문 분류 페이지] 본편의 21개 학문·세부 21개 학문 관계를 별도 메뉴에서 탐색한다.
+if codexField == "k:domains" or codexField == "k:tree" then
+	add(function()
+		return mkRow(content, "← 학문 백과", "학문 7대 분야 · 기본 21 + 확장 21", {
+			{ text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end },
+		}, 50)
+	end)
+	if codexField == "k:domains" then
+		for _, dm in (view.knowledge and view.knowledge.domains or {}) do
+			add(function()
+				return mkLabel(content, string.format("■ %s — 연구 중 %d / 전체 %d · %s", dm.name, dm.active, dm.count, dm.summary), 13, COLORS.gold, false)
+			end)
+			for _, r in dm.rows do
+				add(function()
+					local mark = if r.planned then "·" else "완료"
+					local tail = if r.planned then " (연구 예정)" else string.format(" 이해 %d/%d%s", r.done or 0, r.total or 0, if r.open then "" else " · 잠김")
+					return mkLabel(content, string.rep("  ", r.depth + 1) .. mark .. " " .. r.name .. tail, 12, if r.planned then COLORS.muted else COLORS.text, false)
+				end)
+			end
+		end
+	else
+		for _, t in (view.knowledge and view.knowledge.tree or {}) do
+			add(function()
+				local sub = if t.open then "열림" else string.format("잠김 — %s 지식 %d/%d개", t.parentName or "", t.parentDone, t.openAt or 0)
+				return mkLabel(content, string.rep("  ", t.depth) .. (if t.depth > 0 then "└ " else "") .. t.name .. " · " .. sub, 13, if t.open then COLORS.text else COLORS.muted, false)
 			end)
 		end
 	end
