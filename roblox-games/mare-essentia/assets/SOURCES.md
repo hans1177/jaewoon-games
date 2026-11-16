@@ -1546,3 +1546,13 @@ Quaternius **Ultimate Animated Animal Pack** 정품 **Donkey.obj / Donkey.mtl**�
 원저작자: Kenney (Nature Kit, Pirate Kit, Graveyard Kit) / Quaternius (Modular Weapons Pack). 원문 라이선스 CC0-1.0 및 상업 이용 허용: https://kenney.nl/assets/nature-kit , https://kenney.nl/assets/pirate-kit , https://kenney.nl/assets/graveyard-kit , https://quaternius.com/packs/medievalweapons.html . 무기 4종 원본·SHA-256은 기존 `assets/external/simple-rpg/priority-v1/medieval-weapons/manifest.json`에 기록돼 있다.
 
 지상탐험 기존 21개 문화권의 소품 목록에 모델 종류별 테마를 추가하고, 소품 종류당 배치 최대 8개로 제한한다. 등록되지 않은 실제 모델은 생략하고 도형 대체품을 만들지 않는다. 기존 전투·저장·획득·보상·출시 제어는 변경하지 않는다. 단검/도끼/활의 기존 무기 ID에 외형 리소스만 연결하며, 망치는 원본 보관만 하고 철퇴 무기로 억지 대응하지 않는다.
+
+
+## 2026-11-16 Quaternius OBJ/MTL -> GLB 변환 내역
+기존 CC0 원본 3종 OBJ/MTL은 수정하지 않았다. Roblox 자산 등록기가 지원하는 표준 glTF 2.0 GLB로 정점·노멀·UV와 원본 좌표를 유지해 변환했다. 원본 다각형만 삼각분할하고, MTL Kd 한 가지 재질을 PBR 무금속·무광으로 반영했다. 새 형상·텍스처·게임 규칙은 만들거나 변경하지 않았다. 원본과 파생본 Git blob SHA로 변환 계보를 기록하며, 실제 Roblox Asset ID·Universe 권한·Studio 화면·모바일 검증은 별도로 통과해야 한다.
+
+| GLB 파일 | OBJ 원본 SHA | MTL 원본 SHA | 파생본 SHA | 삼각형 |
+|---|---|---|---|---|
+| `assets/terrain/Grass_Small.glb` | `f1353d565c613843426dbe5335ff5faed5512d5d` | `4dd31e385b05d2a81954cb8c5b0d82972817cf08` | `35efb939b2789f7c8278128a95ffe08b742f8667` | 58 |
+| `assets/terrain/Rock_2.glb` | `dd00ae412f345afc50d40d3e9772ade57f81df9a` | `c934862cbcf43b7feacf554da577278e4711412b` | `926a113fe9448118a1e394a6a9f60715d7ede6b9` | 202 |
+| `assets/terrain/Bush_Small.glb` | `695c4c46b6a3a07bf889ea6c9044c742cb352ba6` | `ca84370c89b01b44bd4b137f9259166bc9726680` | `267073a1823037cbdf4358d49e013eee3d049965` | 190 |
