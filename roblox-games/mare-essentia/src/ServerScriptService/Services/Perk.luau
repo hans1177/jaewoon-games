@@ -126,7 +126,7 @@ return function(D, S)
 	end
 
 	-- [학문 공동 연구] 성장 계열·전문 분야·동료 직업은 서로 다른 축이다.
-	-- 선택한 전문 분야는 작은 기여만 하고, 동료는 실제 탑승·적합 직책 배치 시에만 도움을 준다.
+	-- 선택 전문 분야는 연구 기여만 더한다. 배의 직책은 기존 선박 효과에만 쓰고 육상 연구는 모든 탑승 동료가 돕는다.
 	-- 연구할 학문을 직업으로 잠그지 않고 기존 지식/퀘스트/보상 규칙도 유지한다.
 	local function researchAssist(state, discId)
 		local focus = state.specialty and Sp.SpecialtyById[state.specialty]
@@ -134,8 +134,7 @@ return function(D, S)
 		local crewPoint, names = 0, {}
 		for _, id in state.companions do
 			local c = Sp.CompanionById[id]
-			local seat = Sp.CompanionStation[id]
-			if c and seat and state.stations[seat] == id and table.find(c.disciplines or {}, discId) then
+			if c and table.find(c.disciplines or {}, discId) then
 				-- 여러 명이 같은 학문을 돕더라도 중복 가산 폭증을 막는다.
 				local base = if affinityOf(state, id) >= 70 then 2 else 1
 				local signature = c.finalResearch
