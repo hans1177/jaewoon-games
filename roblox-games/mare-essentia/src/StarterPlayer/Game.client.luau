@@ -576,6 +576,18 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			shape(0.28, 0.48, 0.23, 0.12, 0, 0.1)
 			shape(0.53, 0.14, 0.12, 0.57, 36, 0.35)
 			shape(0.64, 0.06, 0.20, 0.28, 36, 1)
+		elseif asset == "captain" then
+			-- 선장실·상태: 선장 모자·얼굴·어깨. 해적 해골 깃발을 인물 상태에 쓰지 않는다.
+			shape(0.29, 0.21, 0.42, 0.29, 0, 0.35)
+			shape(0.12, 0.38, 0.76, 0.16, 0, 0.18)
+			shape(0.36, 0.51, 0.28, 0.24, 0, 1)
+			shape(0.19, 0.75, 0.62, 0.15, 0, 0.32)
+		elseif asset == "research" then
+			-- 학문 연구: 초기 근대의 약액병·기구. 후대형 현미경을 시대 구분 없이 쓰지 않는다.
+			shape(0.42, 0.13, 0.16, 0.34, 0, 0.14)
+			shape(0.34, 0.42, 0.32, 0.13, 0, 0.18)
+			shape(0.21, 0.51, 0.58, 0.32, 0, 0.35)
+			shape(0.27, 0.72, 0.45, 0.07, 0, 0.12)
 		elseif asset == "journal" then
 			-- 저널: 펼친 기록장. 항만청의 바다 지도와 구분한다.
 			outline(0.10, 0.16, 0.36, 0.69, 0.10)
@@ -1888,7 +1900,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
 	local specialGlyph = if key == "tavern" then "tavern" elseif key == "deck" then "gwent"
-		elseif key == "journal" then "journal" elseif key == "gear" then "gear" elseif key == "help" then "help" else nil
+		elseif key == "journal" then "journal" elseif key == "gear" then "gear"
+		elseif key == "help" then "help" elseif key == "status" then "captain" else nil
 	local artId = if specialGlyph then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
 	local artSize = if dockItem then 35 else 31
 	local artTop = if dockItem then 3 else 4
@@ -8087,8 +8100,8 @@ H.TAB_ICON = {
 	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "crew" }, explore = { "Menu", "explore" },
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
-	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Menu", "tech" },
-	status = { "Menu", "status" }, crew = { "Glyph", "crew" }, cards = { "Menu", "codex" },
+	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Glyph", "research" },
+	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" }, cards = { "Menu", "codex" },
 }
 function H.renderTabs()
 	for _, child in tabBar:GetChildren() do
