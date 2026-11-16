@@ -888,14 +888,28 @@ for _, r in Rows do
 end
 
 -- [종류 분류] 희귀도·획득 경로·학문과 독립된 카드 소재 분류.
+-- [지구·인류 오브젝트 상위 체계] 실제 소재 분류는 17개, 자원/원자재는 교역품의 16개 하위 분류로 별도 연결.
+-- 학문 7대 영역과 혼동하지 않는다. 시대와 무관한 오브젝트 상위 분류다.
+local WorldGroups = {
+	{ id = "planet", name = "지구·환경" },
+	{ id = "life", name = "생명·생태" },
+	{ id = "materials", name = "자원·원자재" },
+	{ id = "built", name = "지형 위의 인공 구조물" },
+	{ id = "technology", name = "기술·이동·전투" },
+	{ id = "knowledge", name = "학문·의료·발명" },
+	{ id = "culture", name = "인류·역사·문화" },
+}
+local WorldGroupById = {}
+for _, group in WorldGroups do WorldGroupById[group.id] = group end
+
 local Kinds = {
-	{ id = "terrain", name = "지형·해역" }, { id = "building", name = "건축물" }, { id = "wonder", name = "원더·유적" },
-	{ id = "animal", name = "동물" }, { id = "plant", name = "식물" }, { id = "mineral", name = "광물·화석" },
-	{ id = "relic", name = "유물" }, { id = "archive", name = "문헌·기록" }, { id = "map", name = "지도·항로" },
-	{ id = "science", name = "이론·발명" }, { id = "medicine", name = "의학·약학" }, { id = "ship", name = "선박·조선" },
-	{ id = "weather", name = "기상·천문" }, { id = "art", name = "예술·문화" },
-	{ id = "goods", name = "교역·산물" }, { id = "legend", name = "신화·미스터리" },
-	{ id = "military", name = "병종·전술" },
+	{ id = "terrain", name = "지형·해역", group = "planet" }, { id = "building", name = "건축물", group = "built" }, { id = "wonder", name = "원더·유적", group = "built" },
+	{ id = "animal", name = "동물", group = "life" }, { id = "plant", name = "식물", group = "life" }, { id = "mineral", name = "광물·화석", group = "materials" },
+	{ id = "relic", name = "유물", group = "culture" }, { id = "archive", name = "문헌·기록", group = "culture" }, { id = "map", name = "지도·항로", group = "planet" },
+	{ id = "science", name = "이론·발명", group = "knowledge" }, { id = "medicine", name = "의학·약학", group = "knowledge" }, { id = "ship", name = "선박·조선", group = "technology" },
+	{ id = "weather", name = "기상·천문", group = "planet" }, { id = "art", name = "예술·문화", group = "culture" },
+	{ id = "goods", name = "교역·산물", group = "materials" }, { id = "legend", name = "신화·미스터리", group = "culture" },
+	{ id = "military", name = "병종·전술", group = "technology" },
 }
 local KindById = {}
 for _, kind in Kinds do KindById[kind.id] = kind end
@@ -925,7 +939,23 @@ local function kindOf(c: Card): string
 end
 -- [선박 세부 종류] 실물 선박과 설계·부품·조선소 시설을 혼동하지 않는다.
 local function subkindOf(c: Card): string?
-	if c.field == "Shipbuilding" then
+	if c.field == "Mineral" then
+		if string.find(c.name, "화석", 1, true) or string.find(c.name, "호박", 1, true) or string.find(c.name, "암모나이트", 1, true) then return "화석·고생물 흔적" end
+		for _, word in { "광석", "철", "구리", "금", "은", "주석", "초석", "유황", "석탄" } do
+			if string.find(c.name, word, 1, true) then return "광석·금속·광물 자원" end
+		end
+		for _, word in { "보석", "루비", "사파이어", "진주", "옥", "수정", "다이아" } do
+			if string.find(c.name, word, 1, true) then return "보석·결정" end
+		end
+		return "암석·석재·지질"
+	elseif c.field == "Botany" then
+		if string.find(c.name, "나무", 1, true) or string.find(c.name, "수목", 1, true) then return "삼림·목재 원료" end
+		if string.find(c.name, "약초", 1, true) or string.find(c.name, "인삼", 1, true) then return "약용 식물" end
+		return "식물·작물·표본"
+	elseif c.field == "Zoology" then
+		if string.find(c.name, "고래", 1, true) or string.find(c.name, "상어", 1, true) or string.find(c.name, "물고기", 1, true) then return "해양 생물" end
+		return "육상·조류·해양 생물"
+	elseif c.field == "Shipbuilding" then
 		if c.id == "ship_caravel" or c.id == "ship_galleon" or c.id == "ship_longship" then return "선박 실물" end
 		if string.find(c.id, "design", 1, true) or string.find(c.name, "설계", 1, true) then return "선박 설계" end
 		if c.id == "ship_dry_dock" then return "조선 시설" end
@@ -997,6 +1027,8 @@ return {
 	Articles = Articles,
 	Cards = Cards,
 	ById = ById,
+	WorldGroups = WorldGroups,
+	WorldGroupById = WorldGroupById,
 	Kinds = Kinds,
 	KindById = KindById,
 	kindOf = kindOf,
