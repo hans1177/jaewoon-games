@@ -636,6 +636,13 @@ end
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testCoreWorld()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 1. 데이터 무결성 ---------------------------------------------------
 do
 	local produced, demanded = {}, {}
@@ -1302,6 +1309,13 @@ testCoreWorld()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testGrowthAndDiscovery()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 13b. 보급 / 자동 충원 / 동료 대화 / 교역 힌트 ---------------------------
 do
 	local st = newState()
@@ -1758,6 +1772,13 @@ testGrowthAndDiscovery()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testSpecialties()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 전문 분야와 동료 ---------------------------------------------------
 do
 	-- [학문 연결] 15개 전문 분야와 동료 49명이 기존 학문에 연결되며, 6개 선박 직책은 유지된다.
@@ -2250,6 +2271,13 @@ testSpecialties()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testEconomyAndPorts()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 시장 사건 ---------------------------------------------------------
 do
 	local portIds, goodIds = { "london", "amsterdam" }, { "wool", "wine", "spice" }
@@ -2772,6 +2800,13 @@ testEconomyAndPorts()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testKnowledgeAndHistory()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 도감 분류 설명과 완성 보상
 do
 	for _, c in D.Cards.Cards do
@@ -3432,6 +3467,13 @@ testKnowledgeAndHistory()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testBoardingRules()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- 백병전 카드 패: 주인공 카드는 늘 있고, 발견한 유물·동물이 카드가 된다
 do
 	local ds = S.State.new("england", 1700, nil)
@@ -3869,6 +3911,13 @@ testBoardingRules()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
 local function testCardsAndArt()
+	-- 대형 동적 상태를 검사할 때 모듈 타입의 재귀 추론이 폭증하지 않도록 기존 extraTests와 동일하게 범위를 한정한다.
+	local D: any = D
+	local S: any = S
+	local ctx: any = ctx
+	local check: any = check
+	local act: any = act
+	local newState: any = newState
 -- [인과 카드] 연쇄·반증·합치기
 do
 	local BC = D.BoardingCards
