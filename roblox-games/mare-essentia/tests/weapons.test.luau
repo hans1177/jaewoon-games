@@ -21,6 +21,9 @@ check("무기 id 중복 없음", not dup)
 check("맨손·검·도끼·석궁·활·총 모두 있다", ids.fist and ids.sword and ids.axe and ids.crossbow and ids.bow and ids.gun)
 check("원거리는 활·석궁·총", W.get("bow").ranged and W.get("crossbow").ranged and W.get("gun").ranged and not W.get("sword").ranged)
 check("없는 id 는 맨손", W.get("nope").id == "fist")
+-- [실물 모델] 이름 연결은 보존하되 Roblox 등록·권한 전에는 장착 로더에서 차단한다.
+check("철퇴·석궁 전용 실제 모델 이름", W.get("mace").model == "weapon-mace" and W.get("crossbow").model == "weapon-crossbow")
+check("총기 실물 미검증은 임시 모델을 쓰지 않음", W.get("gun").model == nil)
 -- [기본 호환] 기존 직업 무기는 모두 존재하고, 등록되지 않은 모델은 임의 참조하지 않는다.
 local allOk = true
 for catId in J.Categories do

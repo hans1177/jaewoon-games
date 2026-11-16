@@ -1,6 +1,6 @@
 --!strict
 -- Weapons.luau · 무기·출신 지역·경력별 기본 장비. 주인공 자유 교체, 동료는 실제 이력에 따라 선택.
--- motion = CommonMotion 의 무기 프로필 id(마력숲과 같은 동작 원본). model = 승인·등록된 3D 모델 에셋(없으면 nil: 모델이 등록될 때까지 맨손 쥠으로 보인다).
+-- motion = CommonMotion 무기 프로필 id. model = 전용 실물 메시 이름(미등록·권한 미확인 시 장착하지 않음).
 
 export type Weapon = {
 	id: string,
@@ -24,8 +24,8 @@ Weapons.List = {
 	{ id = "dagger", name = "단검", motion = "DAGGER", family = "dagger", ranged = false, range = 3.5, speed = 1.4, power = 0.7, model = "weapon-dagger", note = "가장 빠름, 뒤를 잘 찌름" },
 	{ id = "axe", name = "도끼", motion = "WAR_AXE", family = "axe", ranged = false, range = 5, speed = 0.9, power = 1.35, model = "weapon-axe", note = "느리지만 묵직한 일격" },
 	{ id = "spear", name = "창", motion = "SPEAR", family = "spear", ranged = false, range = 8, speed = 1, power = 1, model = "weapon-spear", note = "긴 사거리 찌르기" },
-	{ id = "mace", name = "철퇴", motion = "MACE", family = "blunt", ranged = false, range = 4.5, speed = 1.05, power = 1.2, model = nil, note = "기절(경직)을 잘 준다" },
-	{ id = "crossbow", name = "석궁", motion = "CROSSBOW", family = "firearm", ranged = true, range = 26, speed = 1.1, power = 1.25, model = nil, note = "강한 한 발, 장전이 필요" },
+	{ id = "mace", name = "철퇴", motion = "MACE", family = "blunt", ranged = false, range = 4.5, speed = 1.05, power = 1.2, model = "weapon-mace", note = "기절(경직)을 잘 준다" },
+	{ id = "crossbow", name = "석궁", motion = "CROSSBOW", family = "firearm", ranged = true, range = 26, speed = 1.1, power = 1.25, model = "weapon-crossbow", note = "강한 한 발, 장전이 필요" },
 	{ id = "bow", name = "활", motion = "BOW", family = "bow", ranged = true, range = 26, speed = 1.1, power = 1.25, model = "weapon-bow", note = "지역별 활의 기본형" },
 	{ id = "gun", name = "총", motion = "PISTOL", family = "firearm", ranged = true, range = 22, speed = 1.25, power = 1.1, model = nil, note = "빠른 사격, 소음으로 적이 깬다" },
 } :: { Weapon }
