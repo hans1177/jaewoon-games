@@ -1295,7 +1295,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			-- 넓은 목장(100x90), 짧은 울타리만. 더 이상 지붕·기둥 축사를 만들지 않는다.
 			local halfX = if sp == "pig" then 39 else 54
 			local halfZ = if sp == "pig" then 32 else 44
-			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.09, c.Z),
+			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.26, c.Z),
 				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
 			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
 			grass.CanCollide = false
@@ -2999,11 +2999,17 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
-		local floor = part(folder, Vector3.new(1080, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-520, 0.02, 0),
+		-- 도시는 돌길, 목장·밭은 자연 토지로 명확히 분리하여 농촌을 포장도로로 덮지 않는다.
+		local floor = part(folder, Vector3.new(650, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-290, 0.02, 0),
 			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
 		floor.CanQuery = true
+		local farmGround = part(folder, Vector3.new(440, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-835, 0.02, 0),
+			style.ground:Lerp(C(112, 143, 83), 0.55), Enum.Material.Grass)
+		farmGround.Name = "RuralGround"
+		farmGround.CanCollide = true
+		farmGround.CanQuery = true
 	end
 
 	-- 바다(동쪽, x > 20)와 부두
