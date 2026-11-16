@@ -5,6 +5,27 @@
 return function(D, S)
 	local View = {}
 	local DELIVER_SHOWN_MAX = 4 -- 주점 게시판에 한 번에 보여 주는 납품 의뢰 수
+	-- [기존 21학문 연결] 소재 종류마다 연관 학문. 주학문은 실제 학문 트리의 노드/분야로 판정한다.
+	-- 연관 표시는 추가 경험치를 만들지 않으며 기존 보고·숙련도·저장 시스템을 그대로 사용한다.
+	local RELATED_BY_KIND = {
+		terrain = { "geography", "navigation", "meteorology" },
+		building = { "architecture", "history", "physics" },
+		wonder = { "history", "archaeology", "mythology" },
+		animal = { "zoology", "botany" },
+		plant = { "botany", "medicine" },
+		mineral = { "mineralogy", "chemistry", "geography" },
+		relic = { "archaeology", "history", "physics" },
+		archive = { "linguistics", "history", "philosophy" },
+		map = { "navigation", "geography", "astronomy" },
+		science = { "physics", "chemistry", "philosophy" },
+		medicine = { "medicine", "botany", "chemistry" },
+		ship = { "shipbuilding", "navigation", "physics", "history" },
+		weather = { "meteorology", "astronomy", "geography" },
+		art = { "art", "history", "philosophy" },
+		goods = { "commerce", "botany", "chemistry" },
+		legend = { "mythology", "mystery", "lostland" },
+	}
+
 
 	local function sortedKeys(t)
 		local keys = {}
@@ -538,10 +559,31 @@ return function(D, S)
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc
 		end
+		view.codex.disciplineCount = #D.KnowledgeTree.Disciplines
+		local function relatedNames(c, kind, primaryId)
+			local names, seen = {}, {}
+			local function include(discId)
+				if not discId or discId == primaryId or seen[discId] then return end
+				local d = D.KnowledgeTree.DisciplineById[discId]
+				if d then
+					seen[discId] = true
+					table.insert(names, d.name)
+				end
+			end
+			-- 카드별 원본 선행 지식을 먼저 읽어, 실제 식물학→의학 연구 등 교차 학문을 우선 표시.
+			local node = D.KnowledgeTree.ById[c.id]
+			for _, needId in (node and node.needs or {}) do
+				local parent = D.KnowledgeTree.ById[needId]
+				if parent then include(parent.disc) end
+			end
+			for _, discId in RELATED_BY_KIND[kind] or {} do include(discId) end
+			return names
+		end
 		for _, c in D.Cards.Cards do
 			local method = S.Discovery.methodOf(c)
 			local kind = D.Cards.kindOf(c)
-			local disc = fieldDiscipline[c.field]
+			local cardNode = D.KnowledgeTree.ById[c.id]
+			local disc = (cardNode and D.KnowledgeTree.DisciplineById[cardNode.disc]) or fieldDiscipline[c.field]
 			local domain = disc and D.KnowledgeTree.TaxonomyById[disc.id] and D.KnowledgeTree.TaxonomyById[disc.id].domain
 			local defKind = D.Cards.KindById[kind]
 			for _, pair in { { view.codex.methods, method }, { view.codex.kinds, kind }, { view.codex.rarities, c.rarity } } do
@@ -556,7 +598,9 @@ return function(D, S)
 				method = method,
 				kind = kind,
 				kindName = defKind and defKind.name or "기타",
-				discipline = disc and disc.name or "기타",
+				subkind = D.Cards.subkindOf(c),
+				discipline = disc and disc.name or "학문 외 자료",
+				relatedDisciplines = relatedNames(c, kind, disc and disc.id),
 				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
 				rarityGuide = S.Discovery.rarityGuide(c),
 				found = found,
