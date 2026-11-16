@@ -6627,6 +6627,37 @@ function H.showCardDetail(card)
 			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
 		end
 	end
+	if card.found and card.entityType then
+		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
+		if card.tags and #card.tags > 0 then
+			mkLabel(body, "분류 태그: " .. table.concat(card.tags, " · "), 13, brown, false, 4)
+		end
+		if card.aliases and #card.aliases > 0 then
+			mkLabel(body, "다른 이름: " .. table.concat(card.aliases, " · "), 13, brown, false, 4)
+		end
+		if card.wikidata then
+			mkLabel(body, "외부 개체 식별자: 위키데이터 " .. card.wikidata .. " (구조화 자료)", 12, brown, false, 4)
+		end
+		if card.relations and #card.relations > 0 then
+			mkLabel(body, "연결된 세계 지식", 15, ink, true, 4)
+			for _, rel in card.relations do
+				if rel.cardId and rel.found then
+					local link = mkButton(body, rel.relation .. " · " .. rel.name, COLORS.blue, UDim2.new(1, -8, 0, 36), function()
+						for _, target in view.codex.cards do
+							if target.id == rel.cardId then
+								overlay:Destroy()
+								H.showCardDetail(target)
+								break
+							end
+						end
+					end, true)
+					link.LayoutOrder = 4
+				else
+					mkLabel(body, "· " .. rel.relation .. ": " .. rel.name, 13, brown, false, 4)
+				end
+			end
+		end
+	end
 	if card.method then
 		local text = if card.method == "discover" then "발견" elseif card.method == "research" then "연구" else "탐험"
 		mkLabel(body, "습득 경로: " .. text .. " · 등급별 조사: " .. (card.rarityGuide or "일반 조사"), 13, brown, false, 4)
