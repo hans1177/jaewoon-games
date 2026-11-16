@@ -105,6 +105,9 @@ for _, must in {
 	-- [마을 시각회귀] 유일한 경제/시설 책임 장면이 실제 CC0 실내·브랜드 원료를 배치해야 한다.
 	"Town/floor_base", "Town/kenney_wood_wall_01", "Town/kenney_roof_straight_green_01",
 	"Interior/tablecross", "Interior/bookcaseopenlow", "Cargo/glass",
+	-- [항만 발전 스모크] 등록된 실제 잔교/선박/신호/하역기/경비탑이 단계별 건설 경로에서 쓰여야 한다.
+	"Naval/structure-platform-dock-small", "Naval/boat-sail-a", "Naval/pulley-crate",
+	"Naval/flag-high-pennant", "Naval/tower-complete-small",
 } do
 	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
 end

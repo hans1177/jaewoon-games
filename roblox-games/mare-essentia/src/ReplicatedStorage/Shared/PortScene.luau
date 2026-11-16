@@ -1540,13 +1540,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local z = if i % 2 == 0 then -3.2 else 3.2
 		path(Vector3.new(-24 - i * 10, 0, z), Vector3.new(-172, 0, z), "look", 1.7, { role = "Knight", hat = false })
 	end
-	-- 짐꾼: 부두에서 교역소까지 짐을 나른다 (1단계 1명, 3단계 2명)
+	-- [항구 주민 일자리] 기존 짐꾼 동선만 1~5단계에 맞춰 확대한다. 신규 경제 직군은 만들지 않는다.
 	do
-		local porters = if lvl >= 3 then 2 else 1
+		local porters = PortBuildings.harborVisual(lvl, info.sim and info.sim.buildings).porters
+		if info.sim and info.sim.jobs and (info.sim.jobs.laborer or 0) <= 0 then porters = 0 end
+		if info.sim and type(info.sim.residents) == "number" then
+			porters = math.min(porters, math.max(0, math.floor(info.sim.residents / 5)))
+		end
+		if game:GetService("UserInputService").TouchEnabled then porters = math.min(porters, 2) end
 		for i = 1, porters do
 			local pz = 24 + i * 3
-			local fig = path(Vector3.new(14, 0, pz), Vector3.new(-6, 0, pz - 6), "carry", 1.5, { role = "Barbarian", hat = false })
+			local fig = path(Vector3.new(14, 0, pz), Vector3.new(-6, 0, pz - 6), "carry", 1.5,
+				{ role = "Barbarian", hat = false, profession = "docker" })
 			if fig then
+				fig:SetAttribute("Job", "docker")
+				fig:SetAttribute("Workplace", "부두 하역장")
 				holdProp(fig, "Cargo", pick({ "box-open", "barrel", "bag" }), 2.2)
 			end
 		end
@@ -2835,39 +2843,67 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 3) 부두: 둘째 잔교, 배 여러 척, 하역장
-	local pier = part(folder, Vector3.new(44, 0.8, 7), CFrame.new(44, 1.6, 46), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	pier.CanCollide = true
-	pier.Transparency = 1
-	for x = 30, 62, 16 do
-		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
+	-- 3) 항구별 항만 단계: 실물 메시 잔교·정박선·하역시설을 발전도/실제 투자량에 맞춰 성장시킨다.
+	-- 신규 기본 도형 외형은 만들지 않고, 둘째 잔교의 투명 보행 충돌체만 기존대로 유지한다.
+	local growth = PortBuildings.harborVisual(lvl, info.sim and info.sim.buildings)
+	local touch = game:GetService("UserInputService").TouchEnabled
+	local visibleBoats = if touch then math.min(growth.boats, 5) else growth.boats
+	local visibleCargo = if touch then math.min(growth.cargo, 6) else growth.cargo
+	if growth.sidePier then
+		local pierEnd = 22 + growth.pierLength
+		local pier = part(folder, Vector3.new(growth.pierLength, 0.8, 7), CFrame.new(22 + growth.pierLength * 0.5, 1.6, 46),
+			Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+		pier.CanCollide = true
+		pier.Transparency = 1
+		for x = 30, pierEnd - 4, 16 do
+			importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
+		end
 	end
-	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
-	local cargoQuota = if info.sim and info.sim.buildings then math.clamp(2 + math.floor(math.sqrt(math.max(0, info.sim.buildings.warehouse or 0))), 2, 10) else 10
-	for i = 0, cargoQuota - 1 do
-		local c = dockCargo[i % #dockCargo + 1]
-		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+	-- 기존 Kenney 화물 메시만 사용한다. 내용이 불명확한 병 상자는 제외한다.
+	local dockCargo = {
+		{ "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" },
+		{ "Naval", "cargo-pile-b" }, { "Naval", "chest" },
+		{ "Naval", "detail-crate-small" }, { "Naval", "detail-crate-ropes" },
+	}
+	if growth.sidePier then
+		for i = 0, visibleCargo - 1 do
+			local c = dockCargo[i % #dockCargo + 1]
+			importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+		end
 	end
-	for i = 0, 5 do
+	local mainCargo = math.min(5, math.max(1, math.floor(visibleCargo / 2)))
+	for i = 0, mainCargo - 1 do
 		local c = dockCargo[(i + 2) % #dockCargo + 1]
 		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 12, 2, if i % 2 == 0 then 4.2 else -4.2), 2.6, false)
 	end
-	importedModel(folder, "Naval", "pulley-crate", Vector3.new(60, 2, 47), 4.6, false)
-	importedModel(folder, "Naval", "mast", Vector3.new(66, 2, 44), 12, false)
-	importedModel(folder, "Naval", "flag-pennant", Vector3.new(66, 14, 44), 3, false)
-	local boats = { { "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 }, { "boat-row-large", 8 }, { "boat-row-small", 6 }, { "boat-fishing-small", 10 }, { "boat-sail-b", 13 } }
-	local spots = { { 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 }, { 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 } }
-	local boatQuota = if info.sim and info.sim.buildings then math.clamp(1 + math.floor(math.sqrt(math.max(0, info.sim.buildings.dock or 0))), 1, #spots) else #spots
-	for i, spot in spots do
-		if i <= boatQuota then
-		local b = boats[i % #boats + 1]
-		local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
-		rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5))
+	-- 3단계부터 하역 도르래, 2단계부터 항로 신호. 모두 실제 승인된 완제품.
+	for i = 1, math.min(growth.hoists, if touch then 2 else 3) do
+		importedModel(folder, "Naval", "pulley-crate",
+			Vector3.new(52 + (i - 1) * 18, 2, 46 + (if i % 2 == 0 then -2 else 2)), 4.6, false)
+	end
+	if growth.signals > 0 then
+		local markerX = 22 + growth.pierLength - 5
+		importedModel(folder, "Naval", "mast", Vector3.new(markerX, 2, 44), 12, false)
+		importedModel(folder, "Naval", "flag-pennant", Vector3.new(markerX, 14, 44), 3, false)
+		for i = 2, growth.signals do
+			importedModel(folder, "Naval", "flag-high-pennant", Vector3.new(25 + i * 16, 0, 57), 8, false)
 		end
 	end
-	if big then
-		importedModel(folder, "Naval", "ship-wreck", Vector3.new(150, 0.4, -120), 22, false)
-		importedModel(folder, "Naval", "ship-pirate-small", Vector3.new(80, 0.8, 90), 20, false)
+	local boats = {
+		{ "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 },
+		{ "boat-row-large", 8 }, { "boat-row-small", 6 },
+		{ "boat-fishing-small", 10 }, { "boat-sail-b", 13 }, { "boat-sail-a", 14 },
+	}
+	local spots = {
+		{ 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 },
+		{ 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 },
+	}
+	for i, spot in ipairs(spots) do
+		if i <= visibleBoats then
+			local b = boats[i]
+			local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
+			if m then rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5)) end
+		end
 	end
 
 	-- 4) 생활감 소품: 담장, 수레, 통, 횃불
@@ -3313,6 +3349,15 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	-- [항만 단계] 장면과 항만 표지·투명 보행 경계가 같은 1~5단계 결과를 쓴다.
+	local dockGrowth = PortBuildings.harborVisual(sceneLevel, info.sim and info.sim.buildings)
+	folder:SetAttribute("HarborVisualTier", dockGrowth.tier)
+	folder:SetAttribute("HarborVisualName", dockGrowth.name)
+	folder:SetAttribute("HarborPierLength", dockGrowth.pierLength)
+	folder:SetAttribute("HarborVisualBoats", math.min(dockGrowth.boats,
+		if game:GetService("UserInputService").TouchEnabled then 5 else 8))
+	folder:SetAttribute("HarborVisualCargo", math.min(dockGrowth.cargo,
+		if game:GetService("UserInputService").TouchEnabled then 6 else 10))
 	if not info.construction and info.sim and info.sim.construction and info.sim.construction.active then
 		-- 실제 건설비가 지출되는 항구만 기존 건설 현장/목수 모션으로 표시한다.
 		info.construction = { to = math.min(5, sceneLevel + 1) }
@@ -3444,12 +3489,18 @@ function PortScene.build(info, onFacility)
 			w.CanQuery = false
 			w.CastShadow = false
 		end
-		-- 둘째 잔교(z=46) 입구(z 42.5~49.5)는 열어 두고 양옆·끝을 막는다
-		wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
-		wall(Vector3.new(1, 40, CITY_LIMIT_Z - 49.5), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 49.5) / 2))
-		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 42))
-		wall(Vector3.new(46, 40, 1), CFrame.new(45, 18, 50))
-		wall(Vector3.new(1, 40, 8), CFrame.new(67.5, 18, 46))
+		-- [확장 잔교 안전망] 잔교를 실제 투자 조건에 따라 열고, 확장 길이에 맞춰 낙하 방지 벽도 연장한다.
+		if dockGrowth.sidePier then
+			local endX = 22 + dockGrowth.pierLength
+			wall(Vector3.new(1, 40, 36.9), CFrame.new(22.5, 18, 24.05))
+			wall(Vector3.new(1, 40, CITY_LIMIT_Z - 49.5), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 49.5) / 2))
+			wall(Vector3.new(endX - 21, 40, 1), CFrame.new((22 + endX) * 0.5, 18, 42))
+			wall(Vector3.new(endX - 21, 40, 1), CFrame.new((22 + endX) * 0.5, 18, 50))
+			wall(Vector3.new(1, 40, 8), CFrame.new(endX + 1.5, 18, 46))
+		else
+			-- 1단계 또는 실제 부두 투자가 없는 곳은 둘째 잔교 입구를 열지 않는다.
+			wall(Vector3.new(1, 40, CITY_LIMIT_Z - 5.6), CFrame.new(22.5, 18, (CITY_LIMIT_Z + 5.6) * 0.5))
+		end
 		-- 안전망: 어떤 이유로 땅에 틈이 생겨도 육지 구역은 보이지 않는 바닥이 받쳐 바다로 떨어지지 않는다
 		do
 			local floor = part(folder, Vector3.new(1120, 2, 2 * CITY_LIMIT_Z), CFrame.new(-520, -1, 0), Color3.new(1, 1, 1))
@@ -3494,7 +3545,7 @@ function PortScene.build(info, onFacility)
 	local gate = part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, -6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, 6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1.2, 1.2, 13), CFrame.new(22, 10, 0), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
-	sign(folder, gate, info.portName, Color3.fromRGB(150, 110, 40), 7)
+	sign(folder, gate, info.portName .. " · " .. dockGrowth.name, Color3.fromRGB(150, 110, 40), 7)
 	prompt(folder, Vector3.new(60, 4, 0), "부두", "출항 준비 (지도)", "map", onFacility)
 
 	-- 내 배
@@ -4427,25 +4478,50 @@ function PortScene.build(info, onFacility)
 			importedModel(folder, "Naval", "grass-plant", Vector3.new(20, 0, z - 4), 2, false)
 		end
 	end
-	-- 부두: 짐과 대포
+	-- [중앙 선착장] 같은 화물·도르래·초소를 모든 단계에 얹지 않고 실제 항만 발전에 맞춰 표시한다.
 	do
-		for i, x in { 30, 36, 44, 52 } do
+		local cargoQuota = math.min(dockGrowth.cargo, if game:GetService("UserInputService").TouchEnabled then 6 else 10)
+		for i, x in ipairs({ 30, 36, 44, 52 }) do
+			if i > cargoQuota then break end
 			importedModel(folder, "Naval", "chest", Vector3.new(x, 2, if i % 2 == 0 then 3.4 else -3.4), 2.4, false)
 		end
-		importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
-		importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
-		-- 하역 도르래·화물·소형 선박은 실물 모델만 표시하고 기존 보행·교역 판정은 유지한다.
-		importedModel(folder, "Naval", "pulley-crate", Vector3.new(66, 2, 3.5), 4.2, false)
-		importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
-		importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
-		importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
-		-- 신규 CC0 원본 화물통: 미등록이면 없는 상태로 유지하며 임시 도형으로 대체하지 않는다.
-		importedModel(folder, "Cargo", "barrel", Vector3.new(82, 2, 3.3), 3.1, false)
-		importedModel(folder, "Cargo", "barrel", Vector3.new(87, 2, -3.3), 2.8, false)
-		importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
-		importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
-		importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
-		importedModel(folder, "Naval", "boat-fishing-small", Vector3.new(116, 0.8, -48), 10, false)
+		-- 3단계부터 상업 하역 설비가 늘어나며 4단계부터만 항만 경비포를 놓는다.
+		if dockGrowth.tier >= 4 and dockGrowth.sidePier then
+			importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
+			end
+		end
+		if dockGrowth.hoists >= 1 then
+			importedModel(folder, "Naval", "pulley-crate", Vector3.new(66, 2, 3.5), 4.2, false)
+		end
+		if dockGrowth.hoists >= 2 then
+			importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
+		end
+		if cargoQuota >= 4 then
+			importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
+		end
+		if cargoQuota >= 6 then
+			importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
+		end
+		if cargoQuota >= 8 then
+			importedModel(folder, "Cargo", "barrel", Vector3.new(82, 2, 3.3), 3.1, false)
+		end
+		if cargoQuota >= 10 then
+			importedModel(folder, "Cargo", "barrel", Vector3.new(87, 2, -3.3), 2.8, false)
+		end
+		if dockGrowth.tier >= 2 then
+			importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
+		end
+		if dockGrowth.tier >= 3 then
+			importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
+		end
+		if dockGrowth.boats >= 6 then
+			importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
+		end
+		if dockGrowth.boats >= 8 then
+			importedModel(folder, "Naval", "boat-fishing-small", Vector3.new(116, 0.8, -48), 10, false)
+		end
 	end
 	-- 광장: 시장 가판대, 우물, 수레, 벤치
 	do
@@ -4479,12 +4555,17 @@ function PortScene.build(info, onFacility)
 		end
 		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
 		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
-		-- 조선소가 있는 큰 항구는 항구 어귀에 감시탑을 세운다
-		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard then
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, -46), 12, true)
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, 46), 12, true)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 5, false)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 5, false)
+		-- 4~5단계 조선항 전용 경비탑: 둘째 잔교와 겹치지 않는 육지 쪽 위치에 배치.
+		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard
+			and dockGrowth.sidePier and dockGrowth.tier >= 4 then
+			importedModel(folder, "Naval", "tower-complete-small", Vector3.new(10, 0, -75), 12, true)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Naval", "tower-complete-large", Vector3.new(10, 0, 75), 15, true)
+			end
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, -61), 5, false)
+			if dockGrowth.tier >= 5 then
+				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, 61), 5, false)
+			end
 		end
 		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
 		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
