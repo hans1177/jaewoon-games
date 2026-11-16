@@ -121,7 +121,7 @@ P.Brands = {
 function P.brandId(brand)
 	return "b_" .. brand.port .. "_" .. string.sub(brand.recipe, 3)
 end
-P.BrandById, P.BrandsByPort = {}, {}
+P.BrandById, P.BrandsByPort, P.AddedForBrands = {}, {}, {}
 for _, brand in ipairs(P.Brands) do
 	brand.id = P.brandId(brand)
 	P.BrandById[brand.id] = brand
