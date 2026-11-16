@@ -595,7 +595,7 @@ local function extraTests()
 		check("자원 분류: 기본 원자재·상품 69종 전부 연결", rawCount == 69 and brokenGood == nil, brokenGood)
 		check("자원 분류: 기존 제작 가공품 전체 분류 자동 연결", processedCount == #D.ProductionChains.Recipes)
 
-		check("지식 분류: 기존 학문 21개 유지", #tree.Disciplines == 21)
+		check("지식 분류: 기존 학문 21개를 기반으로 21개 새 학문 활성화", tree.BaseDisciplineCount == 21 and #tree.Disciplines == 42)
 		local vessel = collection.ById.ship_caravel
 		local galleon = collection.ById.ship_galleon
 		local design = collection.ById.ship_galleon_design
@@ -610,7 +610,7 @@ local function extraTests()
 		check("습득 경로: 캐러벨은 발견·버드나무 연구는 연구", S.Discovery.methodOf(vessel) == "discover" and S.Discovery.methodOf(collection.ById.med_willow_bark) == "research")
 		check("습득 경로: 기존 탐험 지도·유적은 탐험으로 분류", S.Discovery.methodOf(collection.ById.site_bryggen) == "explore")
 		local v = S.View.build(st, ctx)
-		check("도감: 세 방식과 16종 분류가 화면 데이터에 담김", v.codex.disciplineCount == 21 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
+		check("도감: 세 획득 방식과 확장 42개 학문 표시", v.codex.disciplineCount == 42 and v.codex.baseDisciplineCount == 21 and v.codex.methods.discover > 0 and v.codex.methods.research > 0 and v.codex.methods.explore > 0)
 		check("도감: 자원 상품은 실제 물건 데이터에서 자동 표시", #v.codex.resources == rawCount + processedCount and #v.codex.worldGroups == 7)
 
 		local cardById = {}
@@ -621,14 +621,34 @@ local function extraTests()
 		end
 		local missing = nil
 		for _, d in tree.Disciplines do
-			if not namedSubjects[d.name] then missing = d.id break end
+			if not d.derived and not namedSubjects[d.name] then missing = d.id break end
 		end
-		check("도감: 기존 21학문을 실제 카드 주학문에 연결", missing == nil, missing)
+		check("도감: 기존 21학문 주학문 유지 + 신규 세부학문 21개 연결", missing == nil, missing)
 		local vesselView = cardById.ship_galleon
 		check("도감: 갤리온 주학문은 기존 조선학", vesselView.discipline == "조선학")
 		check("도감: 갤리온은 기존 항해술·물리학·역사학과 연결", table.find(vesselView.relatedDisciplines, "항해술") ~= nil and table.find(vesselView.relatedDisciplines, "물리학") ~= nil and table.find(vesselView.relatedDisciplines, "역사·유적학") ~= nil)
 		local willow = cardById.med_willow_bark
 		check("도감: 버드나무 의학 연구는 기존 식물학과 교차 연결", willow.discipline == "의학" and table.find(willow.relatedDisciplines, "식물학") ~= nil)
+		check("학문 확장: 버드나무는 약학 가지에 연결", tree.BranchesByCard.med_willow_bark.pharmacology == true and table.find(willow.relatedDisciplines, "약학") ~= nil)
+		check("학문 확장: 갤리온은 역학·군사학과도 연결", tree.BranchesByCard.ship_galleon.mechanics == true and tree.BranchesByCard.ship_galleon.military_science == true)
+		local samplesByDisc = {}
+		for _, d in tree.Disciplines do if d.derived then samplesByDisc[d.id] = 0 end end
+		for _, links in tree.BranchesByCard do
+			for discId in links do
+				if samplesByDisc[discId] then samplesByDisc[discId] += 1 end
+			end
+		end
+		local noSamples = {}
+		for discId, count in samplesByDisc do if count == 0 then table.insert(noSamples, discId) end end
+		check("학문 확장: 새 세부학문 21개에 실제 지식카드 연결", #noSamples == 0, table.concat(noSamples, ","))
+		local study = newState("england")
+		study.reported.med_willow_bark = true
+		study.reported.bot_willow = true
+		local parentMastery = S.Knowledge.masteryOf(study, "medicine")
+		local branchMastery = S.Knowledge.masteryOf(study, "pharmacology")
+		check("학문 확장: 기존 의학 숙련·약학 숙련이 동시에 상승", parentMastery.studied >= 1 and branchMastery.studied >= 2)
+		check("학문 확장: 새 분과는 기존 보고카드·저장키로 계산", study.specAuto == nil or S.Knowledge.masteryOf(S.State.sanitize(S.State.serialize(study)), "pharmacology").studied == branchMastery.studied)
+
 		local restored = S.State.sanitize(S.State.serialize(st))
 		check("도감: 방문 발견은 기존 저장키로 정상 복원", restored.discovered.ship_caravel == true)
 	end
@@ -3174,7 +3194,7 @@ do
 	check("건축: 돈이 모자라면 불가", select(1, act(stL, "BuildLandmark", { id = "laboratory" })) == false)
 	-- 모든 카드가 트리에 들어가 있고, 효과 교역품이 실제로 있다
 	local fieldOf = {}
-	for _, d in K.Disciplines do fieldOf[d.field] = d.id end
+	for _, d in K.Disciplines do if d.field then fieldOf[d.field] = d.id end end
 	local missingCard, badGood, badDisc = nil, nil, nil
 	for _, c in D.Cards.Cards do
 		if fieldOf[c.field] and not K.ById[c.id] then missingCard = c.id end
