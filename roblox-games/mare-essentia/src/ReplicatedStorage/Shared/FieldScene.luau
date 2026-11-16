@@ -677,6 +677,7 @@ function FieldScene.start(opts)
 		bar.Parent = barBack
 		local kinds = { "grunt", "archer", "shield", "charger" }
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % 4 + 1])
+		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
 		tag.Text = ac.def.name
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
@@ -2669,6 +2670,7 @@ function FieldScene.start(opts)
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
 						m.Name = "FieldAlly"
+						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 무기 역할에 따른 관절 연출만 구분
 						local bbA = Instance.new("BillboardGui")
 						bbA.Adornee = r
 						bbA.Size = UDim2.fromOffset(120, 20)
