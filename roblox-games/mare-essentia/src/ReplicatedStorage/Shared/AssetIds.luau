@@ -567,6 +567,7 @@ return {
 	["Naval/ladder"] = 76835192206007,
 	["Naval/mast"] = 72491282905887,
 	["Naval/mast-ropes"] = 130935575961687,
+	["Naval/nau-custom"] = 88090973204222,
 	["Naval/net-floats"] = 90225359300376,
 	["Naval/palm-bend"] = 109978631913231,
 	["Naval/palm-detailed-straight"] = 125827777672925,
