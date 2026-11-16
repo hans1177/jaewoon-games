@@ -1,13 +1,36 @@
-# 지식카드 분류 (대분류 → 중분류 → 소분류)
+# 지구·인류 백과사전 — 지식카드 분류 기준
 
-- **대분류 (7)** `KnowledgeTree.Domains`: 형식학문 · 자연과학 · 응용·공학·의약 · 인문학 · 사회과학 · 예술 · 실용·생활
-- **중분류 (학문)** `KnowledgeTree.Disciplines`: 카드의 `Field` 와 1:1 연결 (`KnowledgeTaxonomy.DisciplineOfField`)
-- **소분류 (세부 학문)** `KnowledgeTree.Planned` 의 id. 카드마다 `KnowledgeTaxonomy.SubOf[카드id]` 에 선택으로 지정
+## 서로 독립인 6가지 분류
 
-`KnowledgeTaxonomy.path(카드id)` → `{ domain, discipline, sub }`. 점검은 `KnowledgeTaxonomy.audit()` (테스트에 포함).
+- **세계 상위 7종:** KnowledgeCards.WorldGroups — 지구·환경, 생명·생태, 자원·원자재, 인공 구조물, 기술·이동·전투, 학문·의료·발명, 인류·역사·문화.
+- **카드 소재 17종:** KnowledgeCards.Kinds — 지형·해역, 건축물, 원더·유적, 동물, 식물, 광물·화석, 유물, 문헌·기록, 지도·항로, 이론·발명, 의학·약학, 선박·조선, 기상·천문, 예술·문화, 교역·산물, 신화·미스터리, 병종·전술.
+- **자원 하위 16종:** Ports.Goods.resourceKind — 광석, 석재, 보석, 연료, 목재, 직물, 식량, 향신료, 동물·해양자원, 화학원료, 가공품 등. ProductionChains에서 생성하는 상품도 자동 연결.
+- **학문 7대 분야:** KnowledgeTree.Domains — 형식학문, 자연과학, 응용·공학·의약, 인문학, 사회과학, 예술, 실용·생활.
+- **학문 42개:** 기존 기본 학문 21개 + 실제 학문 숙련이 별도로 표시되는 확장 세부 학문 21개. KnowledgeTree.Disciplines/Taxonomy/BranchesByCard를 통해 다중 연결.
+- **습득 방식 3종과 희귀도 5단계:** 발견(항구·관찰), 연구(선행 지식·동료·퀘스트), 탐험(현장 조사)과 일반/고급/희귀/영웅/전설은 서로 독립.
 
-## 새 카드 추가 순서
-1. 카드의 학문(`Field`)을 정한다. 기존 학문이면 `KnowledgeCards.luau` Rows 에 한 줄 추가.
-2. (선택) 세부 분야가 있으면 `SubOf` 에 `카드id = "소분류id"` 추가. 소분류 id 는 `K.Planned` 에서 고른다.
-3. 새 학문이 필요하면: `Fields.luau` 에 Field → `KnowledgeTree.Disciplines` + 노드 → `K.DomainOf` 에 대분류 → `KnowledgeBattle`/`CardBook` 의 줄(row)·능력·특수 맵 → 필요시 `Quests.luau` 수집 퀘스트.
-4. 테스트 실행: `LUAU_DIR=/tmp/luau bash tests/run.sh` — 분류 점검이 빠진 연결을 알려 준다.
+## 확장 학문 21종
+
+수학·생물학·지질학·해양학·생태학·야금학·농학·약학·지도학·군사학·토목공학·직물·복식·양조·공예·역사학·인류학·경제학·역학·광학·음악·회화.
+
+기존 카드의 학자 보고·연구 효과·보상·저장 키는 기존 기본 학문에 남는다. 세부 학문은 같은 state.reported 지식 기록으로 숙련을 별도 계산한다. 마을 발전과 전투 보상은 원래 기본 21학문만 계산하므로 중복 적용되지 않는다. 확장 명칭은 현대 백과사전상의 분류명이며 당대의 학문 명칭과 동일하다는 뜻은 아니다.
+
+## 새 지식카드 추가 방법
+
+1. KnowledgeCards.luau의 기존 Rows에 카드를 추가하고 field와 rarity를 정한다.
+2. 행의 열두 번째 칸에 명시적 분류를 넣을 수 있다: { kind = "terrain", subkind = "석호·습지", related = { "oceanography", "ecology" } }. 연관 학문은 여러 개 선택 가능하다.
+3. 분류 메타가 없는 기존 카드는 kindOf와 KnowledgeTree.BranchRules에서 자동 연결한다. 추후 새로운 카드가 기존 분야에 들어오면 자동 반영된다.
+4. 새 세부 학문은 KnowledgeTree.Planned를 활성화하는 ACTIVE_BRANCHES와 BranchRules에 추가한다. 기본 학문 추가가 필요한 경우에만 Fields, 학자 보고, KnowledgeTree 노드, 전용 건물, 검증 로직까지 확장한다.
+5. 방문만으로 얻는 신규 카드만 visitPort를 사용한다. 연구 카드는 research 선행조건을 사용한다. 원더·지역 탐험·전투·드롭 확률·기존 저장 데이터를 임의 변경하지 않는다.
+6. KnowledgeTaxonomy.audit()와 tests/run.sh로 분류·선행 지식·학문 숙련·저장·기존 기능을 검증한다.
+
+## 예시
+
+갤리온은 상위 종류 기술 → 선박 → 무장 범선에 속한다. 주학문은 조선학, 연관 학문은 역학·군사학·역사학, 습득은 발견, 희귀도는 고급이다. 갤리온 설계도는 별도 연구 카드다. 실제 보유 선박 시스템은 지식카드와 독립이다.
+
+## 외부 분류 참고
+
+위키데이터의 개체 / 상위 종류 관계와 게티 AAT의 오브젝트 / 재료 / 활동 / 학문을 구분하는 다축 분류를 참고했다. 게임은 무료 정적 데이터 기반이며 실행 중 외부 API에 의존하지 않는다.
+
+- https://www.wikidata.org/wiki/Wikidata:Data_model
+- https://www.getty.edu/publications/vocabularies-editorial-guidelines/aat-guidelines/1_about_aat/1.1/
