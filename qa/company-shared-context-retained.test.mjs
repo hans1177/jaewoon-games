@@ -30,7 +30,10 @@ test('the restored detailed documents pass integrity checks without granting pol
   assert.equal(r.policyAuthorityVerified,false);
   assert.equal(r.sourceWriteAuthorized,false);
   assert.equal(r.releaseAuthorized,false);
-  assert.equal(Object.keys(r.hashes).length,4);\n  assert.equal(r.documentFormats.log,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.architecture,'FULL_DETAILED_DOCUMENT');\n  assert.equal(r.documentFormats.security,'FULL_DETAILED_DOCUMENT');
+  assert.equal(Object.keys(r.hashes).length,4);
+  assert.equal(r.documentFormats.log,'FULL_DETAILED_DOCUMENT');
+  assert.equal(r.documentFormats.architecture,'FULL_DETAILED_DOCUMENT');
+  assert.equal(r.documentFormats.security,'FULL_DETAILED_DOCUMENT');
 });
 test('missing or malformed retained document is rejected',()=>{
   check(temporary(),root=>{
