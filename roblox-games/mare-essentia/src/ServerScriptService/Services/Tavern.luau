@@ -524,7 +524,7 @@ return function(D, S)
 		if report and #report.rows > 0 then
 			local picked = report.rows[math.floor(ctx.rng() * #report.rows) + 1]
 			return true, string.format("주인이 말한다. '[%s·%s] %s'\n%s · 전해진 소식 %d일 전",
-				picked.categoryName, picked.confidence, picked.title, picked.detail, picked.daysOld)
+				picked.categoryName, picked.confidence, picked.title, picked.detail .. " · 출처 " .. picked.origin, picked.daysOld)
 		end
 		local port = D.Ports.Ports[state.portId]
 		local rid = port and D.Regions.of(port).id
