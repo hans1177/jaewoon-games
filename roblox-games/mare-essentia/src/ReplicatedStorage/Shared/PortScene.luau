@@ -1871,6 +1871,9 @@ local function densify(folder, info, style, rng, walkers, made)
 		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
 	end
 	local smokers = 0
+	local wildernessQuota = ({ 36, 29, 23, 17, 12 })[lvl]
+	-- 빈 필지는 건축을 가장하지 않고 원생 숲·수풀·돌밭으로 남겨 둔다. 모바일 자산 수를 단계별로 제한한다.
+	local wildernessRng = seeded(info.portId .. ":open-land")
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
 	local X_END = -math.min(565, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
@@ -1934,6 +1937,32 @@ local function densify(folder, info, style, rng, walkers, made)
 						smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
 					end
 				end
+				end
+			else
+				-- 빈 구획: 아직 경제 시뮬에서 주택이 건설되지 않은 부분에 자연물을 남긴다.
+				-- 미래 건축 구획·왕궁·도로·랜드마크를 비워 놓고 한 구획당 소품 1개 이하.
+				if wildernessQuota > 0 and wildernessRng:NextNumber() < 0.42 then
+					local z0 = z + wildernessRng:NextNumber(-S * 0.16, S * 0.16)
+					local half = math.min(9, S * 0.27)
+					if not onStreet(x, half) and not reserved(x, z0, half) then
+						local at = Vector3.new(x, 0, z0)
+						local roll = wildernessRng:NextInteger(1, 7)
+						local biome = if key == "desert" or key == "ottoman" then "arid"
+							elseif palm then "coastal" elseif cold then "woodland" else "lowland"
+						local group, asset, size = "Terrain", "tree-oak", 10
+						if roll == 1 then group, asset, size = "Town", "rock-wide", 8
+						elseif roll == 2 then group, asset, size = "Terrain", "plant-bush", 5
+						elseif biome == "arid" then group, asset, size = "Naval", "rocks-sand-a", 8
+						elseif biome == "coastal" then group, asset, size = "Naval", "palm-detailed-straight", 10
+						elseif biome == "woodland" then group, asset, size = "Terrain", "tree-pinedefaulta", 11
+						end
+						local model = importedModel(folder, group, asset, at, size, false)
+						if model then
+							model.Name = "Undeveloped_" .. asset
+							wildernessQuota -= 1
+							table.insert(placedLots, { X = x, Z = z0, H = half })
+						end
+					end
 				end
 			end
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
