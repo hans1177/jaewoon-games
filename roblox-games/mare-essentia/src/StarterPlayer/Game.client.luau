@@ -7193,7 +7193,7 @@ local function renderCodexOverview()
 			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "t:all"; render() end },
 		}, 54)
 	end)
-	add(function() return mkHeader(content, string.format("학문 · 기존 %d개 학문 그대로 연결", cx.disciplineCount or 21)) end)
+	add(function() return mkHeader(content, string.format("학문 · 연구 중 %d개 / 앞으로 확장 %d개", cx.disciplineCount or 51, cx.plannedDisciplineCount or 0)) end)
 	local samples = {}
 	for _, card in cx.cards do
 		if card.found and card.image and card.image ~= "" and not samples[card.field] then
@@ -7391,8 +7391,8 @@ if codexField == "search" then
 		box.Name = "KnowledgeSearch"
 		box.Size = UDim2.new(1, -10, 0, 42)
 		box.BackgroundColor3 = COLORS.paper
-		box.TextColor3 = COLORS.text
-		box.PlaceholderColor3 = COLORS.muted
+		box.TextColor3 = COLORS.ink
+		box.PlaceholderColor3 = COLORS.grey
 		box.PlaceholderText = "이름·별칭·태그·학문 검색"
 		box.Text = H.codexSearchTerm or ""
 		box.TextSize = 16
