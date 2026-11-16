@@ -156,9 +156,8 @@ return function(D, S)
 		end
 		table.insert(msgs, 1, string.format("%s에게 발견을 보고했다.", scholar.name))
 		table.insert(msgs, string.format("보고 보상: 명성 +%d, +%d코인", totalFame, totalCoins))
-		-- [기존 방문 획득 연계] 이미 방문한 항구에서 선행 지식을 보고하면 다음 단계 연구 카드를 해금한다.
-		-- 최초 발견·보고는 각각 1회이며, 장소/보상/저장 구조를 바꾸지 않는다.
-		S.Discovery.grantVisitCards(state, state.portId, msgs)
+		-- [연구 단계 분리] 보고는 이해만 기록한다. 다음 문헌·비교 연구는 도감에서 직접 시작한다.
+		-- 같은 학자에게 즉시 재보고해 후속 연구가 자동 수령되는 현상을 막는다.
 		S.Pace.addMsg(state, paceDays, msgs, "발견을 보고함")
 		eraCheck(state, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
