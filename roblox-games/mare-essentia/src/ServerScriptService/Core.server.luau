@@ -427,5 +427,13 @@ task.spawn(function()
 	while true do
 		task.wait(60)
 		market:tickEvents(ctx.rng, portIds, goodIds)
+		-- [문명 경제시계] 기존 1분 세계 틱에서 실시간 도시 발전을 갱신한다.
+		-- 플레이어 날짜·저장 키는 변경하지 않고 Econ.advance의 45일 상한을 재사용한다.
+		for _, session in sessions do
+			if session.state then
+				S.Econ.advance(session.state)
+				break
+			end
+		end
 	end
 end)
