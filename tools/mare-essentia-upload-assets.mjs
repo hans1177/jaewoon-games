@@ -25,6 +25,55 @@ const studioRegrantArg = process.argv.find(arg => arg.startsWith('--studio-regra
 const studioRegrantPath = studioRegrantArg ? studioRegrantArg.slice('--studio-regrant='.length) : '';
 if (studioRegrantArg && !studioRegrantPath) throw new Error('STUDIO_REGRANT_REPORT_PATH_REQUIRED');
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
+// [무료 실물 무기] 외부 CC0 원본 GLB를 형상·해시 검사 후 기존 자산 등록 통로에 인입한다.
+async function prepareLicensedWeaponOriginals() {
+  for (const name of ['mace', 'crossbow']) {
+    const source = 'https://grab3d.com/dl/' + name + '/' + name + '.glb';
+    const sourcePage = 'https://grab3d.com/models/weapons/' + name + '/';
+    const target = path.join(ROOT, 'assets/relics/weapon-' + name + '.glb');
+    const proof = target + '.license.json';
+    let bytes, evidence;
+    try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+    try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
+    catch (e) { if (e.code !== 'ENOENT') throw e; }
+    if (evidence && (!bytes || evidence.license !== 'CC0-1.0' || evidence.author !== 'Grab3D'
+      || evidence.source !== source || evidence.sourcePage !== sourcePage
+      || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
+      throw new Error('MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' + name);
+    if (bytes && !evidence) throw new Error('MARE_CC0_ORIGINAL_PROVENANCE_MISSING:' + name);
+    if (!bytes) {
+      const response = await fetch(source, {signal: AbortSignal.timeout(60000)});
+      if (!response.ok) throw new Error('MARE_CC0_ORIGINAL_HTTP_' + response.status + ':' + name);
+      if (Number(response.headers.get('content-length') || 0) > 5000000)
+        throw new Error('MARE_CC0_ORIGINAL_TOO_LARGE:' + name);
+      bytes = Buffer.from(await response.arrayBuffer());
+    }
+    if (bytes.length < 20000 || bytes.length > 5000000 || bytes.toString('ascii', 0, 4) !== 'glTF'
+      || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
+      || bytes.readUInt32LE(16) !== 0x4e4f534a)
+      throw new Error('MARE_CC0_ORIGINAL_GLB_INVALID:' + name);
+    const jsonBytes = bytes.readUInt32LE(12);
+    if (jsonBytes < 100 || 20 + jsonBytes > bytes.length) throw new Error('MARE_CC0_GLB_JSON_INVALID:' + name);
+    const model = JSON.parse(bytes.subarray(20, 20 + jsonBytes).toString('utf8'));
+    const tris = (model.meshes || []).flatMap(row => row.primitives || []).reduce((sum, p) => {
+      if (p.mode != null && p.mode !== 4) throw new Error('MARE_CC0_NON_TRIANGLE_MESH:' + name);
+      const a = model.accessors?.[p.indices ?? p.attributes?.POSITION];
+      if (!a || !Number.isInteger(a.count)) throw new Error('MARE_CC0_INVALID_ACCESSOR:' + name);
+      return sum + Math.floor(a.count / 3);
+    }, 0);
+    if (tris < 3000 || tris > 30000) throw new Error('MARE_CC0_WRONG_MODEL_GEOMETRY:' + name + ':' + tris);
+    if (!evidence) {
+      const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+      await fs.writeFile(target, bytes);
+      await fs.writeFile(proof, JSON.stringify({license:'CC0-1.0', author:'Grab3D', source,
+        sourcePage, sourceSha256:hash, triangles:tris, originalModel:name,
+        actualRobloxRuntimeVerified:false}, null, 2) + '\n');
+      console.log('MARE_CC0_WEAPON_SOURCE_PREPARED', name, hash, tris);
+    } else console.log('MARE_CC0_WEAPON_SOURCE_VERIFIED', name, tris);
+  }
+}
+if (!studioRegrantPath) await prepareLicensedWeaponOriginals();
+
 
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY=' + rawCookie + ';' : '');
