@@ -112,8 +112,24 @@ return function(D, S)
 	function X.limits(state, portId, goodId)
 		local w = ensure(state)
 		local t = w and w.towns[portId]
-		if not t or not t.stock[goodId] then return nil end
+		if not t or t.stock[goodId] == nil then
+			-- 아직 수출되지 않은 브랜드를 아무 항구에서 무제한 매입하는 일을 방지한다.
+			if D.ProductionChains and D.ProductionChains.BrandById[goodId] then
+				return { supply = 0, absorb = E.MIN_ABSORB }
+			end
+			return nil
+		end
 		return { supply = E.tradeSupply(t, goodId), absorb = E.tradeAbsorb(t, goodId) }
+	end
+	-- [국제 브랜드 시세] 기존 상품 가격은 그대로 둔다. 브랜드만 실물 재고로 움직이는 시세를 최대 10% 반영한다.
+	function X.marketFactor(state, portId, goodId)
+		if not (D.ProductionChains and D.ProductionChains.BrandById[goodId] and D.Ports) then return 1 end
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		local good = D.Ports.Goods[goodId]
+		if not t or not good or not t.price[goodId] then return 1 end
+		local starting = good.basePrice * (if t.produces[goodId] then 0.8 elseif t.demands[goodId] then 1.2 else 1)
+		return math.clamp(t.price[goodId] / starting, 0.9, 1.1)
 	end
 	function X.orderCap(state)
 		if not E then return 20 end
