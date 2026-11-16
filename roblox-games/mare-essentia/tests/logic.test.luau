@@ -1978,6 +1978,30 @@ do
 		check("haggle discount applies once", paid1 < paid2 and hs.haggle.deal == nil, paid1 .. "/" .. paid2)
 		check("haggle fail gives no deal", not S.Trade.handlers.Haggle(hs, { goodId = "silk" }, lose) and hs.haggle.deal == nil)
 		check("haggle bad good rejected", not S.Trade.handlers.Haggle(hs, { goodId = "zzz" }, win))
+		-- [자동 흥정 회귀] 기존 확률·항구별 1회 원칙은 유지하고 구매에서만 자동 적용한다.
+		local merchant = newState("england")
+		merchant.specialty = "merchant"
+		merchant.coins = 100000
+		local okAuto, msgAuto = S.Trade.handlers.Buy(merchant, { goodId = "wool", amount = 1 }, win)
+		check("상인 전문 구매 즉시 자동 흥정", okAuto and merchant.haggle and merchant.haggle.tried.wool and string.find(msgAuto, "자동 흥정 성공", 1, true) ~= nil, msgAuto)
+		local okAgain, msgAgain = S.Trade.handlers.Buy(merchant, { goodId = "wool", amount = 1 }, win)
+		check("같은 항구·품목 자동 흥정은 한 번", okAgain and string.find(msgAgain, "자동 흥정 성공", 1, true) == nil, msgAgain)
+		local normal = newState("england")
+		normal.coins = 100000
+		local okPlain, msgPlain = S.Trade.handlers.Buy(normal, { goodId = "wool", amount = 1 }, win)
+		check("상인·동료 능력이 없으면 자동 흥정하지 않음", okPlain and not (normal.haggle and normal.haggle.tried and normal.haggle.tried.wool), msgPlain)
+		-- [교역 장부] 수량별 견적은 실제 구매 금액(세계경제·일괄 단가 상승)과 정확히 일치한다.
+		local quoteState = newState("england")
+		quoteState.coins = 100000
+		local quoteView = S.View.build(quoteState, ctx)
+		local good
+		for _, g in quoteView.goods do if g.id == "wool" then good = g break end end
+		check("교역 장부 수량별 실제 견적 제공", good and good.buyTotals and good.buyTotals[2] and good.sellTotals[2])
+		if good and good.buyTotals and good.buyTotals[2] then
+			local beforeQuote = quoteState.coins
+			local okQuote = S.Trade.handlers.Buy(quoteState, { goodId = "wool", amount = 2 }, win)
+			check("세계경제 및 구매 수량 견적과 실결제 일치", okQuote and beforeQuote - quoteState.coins == good.buyTotals[2], if okQuote then tostring(beforeQuote - quoteState.coins) .. "/" .. tostring(good.buyTotals[2]) else "구매 거절")
+		end
 	end
 	local seenB = false
 	for _ = 1, 5000 do
@@ -3193,6 +3217,15 @@ do
 	lose.insured = true
 	local enemy = { hull = 1e9, crew = 1e9, cannons = 50, cannonMult = 50, meleeMult = 50, skills = {}, level = 1 }
 	check("view refit", S.View.build(lose, ctx).refit.cannons[1].id == "basic" and S.View.build(lose, ctx).harbormaster.insured == true)
+	-- [조선소 시각화] 교체 차액/개조 후 화물칸 견적은 실제 서버 규칙과 같아야 한다.
+	local yardView = S.View.build(lose, ctx)
+	local fluyt
+	for _, item in yardView.shipyard.ships do if item.id == "fluyt" then fluyt = item break end end
+	check("조선소 실결제 금액 = 정가 - 현재 배 50% 보상", fluyt and fluyt.netCost == D.Ships.Ships.fluyt.price - math.floor(D.Ships.Ships[lose.ship.id].price * 0.5))
+	check("조선소 예고 화물칸은 서버와 일치", fluyt and fluyt.capacityAfter == S.State.cargoCapacityFor(lose, D.Ships.Ships.fluyt))
+	local culverinView
+	for _, c in yardView.refit.cannons do if c.id == "culverin" then culverinView = c break end end
+	check("대포 장착 예고 화물칸은 서버와 일치", culverinView and culverinView.capacityAfter == S.State.cargoCapacityFor(lose, D.Ships.refit(D.Ships.Ships[lose.ship.id], "culverin", lose.ship.plating)))
 	_ = enemy
 end
 end
