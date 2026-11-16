@@ -615,12 +615,19 @@ return function(D, S)
 					for _, need in node.needs do
 						table.insert(needNames, cardName(need))
 					end
+					-- 기존 선행 노드 중 다른 학문에서 배워야 하는 지식을 학문 연결로 표시한다.
+					local linked = {}
+					for _, need in node.needs do
+						local other = K.ById[need]
+						local source = other and other.disc ~= node.disc and K.DisciplineById[other.disc]
+						if source and not table.find(linked, source.name) then table.insert(linked, source.name) end
+					end
 					local missNames = {}
 					for _, m in missing do
 						table.insert(missNames, cardName(m))
 					end
 					table.insert(nodes, {
-						id = node.id, name = cardName(node.id), status = st, needs = needNames, missing = missNames,
+						id = node.id, name = cardName(node.id), status = st, needs = needNames, missing = missNames, linked = linked,
 						effect = node.fx and node.fx.label or nil,
 					})
 				end
@@ -713,7 +720,7 @@ return function(D, S)
 				table.insert(pres, {
 					disc = d, name = K.DisciplineById[d].name, understood = understoodIn(state, d), wait = if last then math.max(0, PRESENT_COOLDOWN - (state.day - last)) else 0,
 					jointScholar = js and js.name or nil, jointWait = if jl then math.max(0, jointCooldown(state) - (state.day - jl)) else 0,
-					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1],
+					techPoints = pts, techLevel = lvT, techNext = TECH_STEPS[lvT + 1], researchHelp = S.Perk.researchAssist(state, d),
 				})
 			end
 			local lastExpo = a.last["expo:" .. state.portId]
