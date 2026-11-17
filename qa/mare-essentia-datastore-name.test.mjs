@@ -620,6 +620,21 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'bend("UpperArmL", -1.36', 'bend("UpperArmR", -1.44',
     'local hitStyle = h.model:GetAttribute("FieldHitVariant")'
   ]) assert.ok(motion.includes(marker),'R15 적 모션 누락: '+marker);
+  // [적 인형 움직임 회귀] 전투 AI와 피해 수치를 바꾸지 않고, 기존 R15 관절로 발놀림·무게중심을 완성한다.
+  for(const marker of [
+    '[적 경계 동작]', '[적 보행 접지]', '[적 검무 발놀림]',
+    '[쓰러짐 관성]', '[기상 3단]', '[피격 충격 전달]'
+  ]) assert.ok(motion.includes(marker),'적 R15 전신 연계 누락: '+marker);
+  for(const marker of ['state == "ANTICIPATION"', 'state == "ATTACK"', 'state == "RECOVERY"',
+                       'state == "BLOCK" or state == "PARRY"', 'bend("FootL"', 'bend("FootR"',
+                       'bend("ShinL"', 'bend("ShinR"', 'bend("Spine"', 'bend("Head"']) {
+    assert.ok(motion.includes(marker),'적 검무 관절 동작 누락: '+marker);
+  }
+  const enemyFootwork=motion.slice(motion.indexOf('-- [적 검무 발놀림]'),motion.indexOf('-- [실제 타격 발동작]'));
+  assert.ok(enemyFootwork.length > 1000,'적 전신 발놀림 블록 누락');
+  for(const disallowed of ['AC.damageEnemy(', 'AC.stepEnemy(', 'Instance.new(', ':PivotTo(']) {
+    assert.ok(!enemyFootwork.includes(disallowed),'R15 모션 전용 구간에서 실제 전투·위치 조작 금지: '+disallowed);
+  }
   assert.match(pose,/function Pose\.dieR15\(model, alpha, variant\)/);
   assert.match(pose,/local fade = math\.clamp\(\(a - 0\.78\) \/ 0\.22/);
   assert.match(field,/local duration = if visualMobile then 1\.35 else 1\.70/);
