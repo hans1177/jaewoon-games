@@ -87,30 +87,51 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/img\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
   assert.match(field,/attackBtn\.Name = "FieldAttack"/);
   assert.match(field,/b\.Name = "FieldDodge"/);
-  // [실제 터치 사각형] 모서리까지 입력을 받으므로 원형 그림의 빈 여백도 겹치면 안 된다.
-  assert.ok(field.includes('math.min(112, math.max(72, workspace.CurrentCamera.ViewportSize.X - 232))'));
-  assert.ok(field.includes('if compactTouch then 90 else 98'));
-  assert.ok(field.includes('if compactTouch then 78 elseif visualMobile then 88 else 82'));
+  // [세 원형 버튼·파티 HUD] 실제 터치 사각형은 가장자리까지 클릭되므로 12가지 화면 크기에서
+  // 버튼끼리, 파티창·미니맵·조이스틱·카메라와 겹치지 않아야 한다. 실제 명중/스킬 판정은 보존한다.
   assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
-  assert.ok(field.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -337)'));
-  assert.ok(field.includes('if compactTouch then -math.min(85, workspace.CurrentCamera.ViewportSize.X - 247)'));
-  assert.ok(field.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)'));
+  assert.ok(field.includes('map.Position = if compactTouch then UDim2.fromOffset(226, 90)'));
+  assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
+  assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
+  assert.ok(field.includes('local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202'));
+  assert.ok(field.includes('lastTouchEnded = os.clock()'));
+  assert.ok(field.includes('touchActive = true'));
+  assert.ok(field.includes('if touchActive or os.clock() - lastTouchEnded < 0.45 then return end'));
+  assert.doesNotMatch(field,/b\.Activated:Connect\(go\)/,'같은 터치가 교체를 두 번 실행하면 안 됨');
+  const rect=(cx,cy,d,extra=0)=>({left:cx-d/2-extra,top:cy-d/2-extra,
+    right:cx+d/2+extra,bottom:cy+d/2+extra});
+  const box=(x,y,w,h)=>({left:x,top:y,right:x+w,bottom:y+h});
   const overlaps=(a,b)=>a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-  for(const [width,height] of [[320,640],[360,780],[384,832],[428,926]]){
-    const rect=(left,top,w,h)=>({left,top,right:left+w,bottom:top+h});
-    const pad=rect(28,height-178,150,150);
-    const dodgeX=Math.max(226,width-120);
-    const dodge=rect(dodgeX-48,height-259,96,96);
-    const attackX=width-Math.min(85,width-247);
-    const attackHit=rect(attackX-69,height-154,138,138);
-    const hero=rect(12,74,202,82);
-    const weapon=rect(dodgeX-39,height-376,78,78);
-    const complete=rect(width-102,64,90,38);
-    const title=rect(109,12,Math.min(112,Math.max(72,width-232)),40);
-    const camera=rect(width-120,12,108,44);
-    for(const [left,right] of [[pad,dodge],[pad,attackHit],[pad,weapon],[dodge,attackHit],
-      [dodge,weapon],[attackHit,weapon],[hero,weapon],[hero,complete],[title,camera]]){
-      assert.equal(overlaps(left,right),false,'모바일 '+width+'×'+height+' 탐험 조작 겹침');
+  for(const [width,height] of [
+    [320,540],[320,640],[360,780],[384,832],[428,926],[600,280],
+    [640,320],[680,380],[720,320],[720,384],[832,384],[960,440],
+  ]){
+    const portrait=width<520 || width<=height,short=height<330;
+    const attack=rect(width-(portrait?76:short&&width<650?76:95),
+      height-(portrait?85:short?70:88),portrait||short?104:116,10);
+    const dodge=rect(width-(portrait?62:235),
+      height-(portrait?202:short?67:106),portrait?86:short?88:96);
+    const weapon=rect(width-(portrait?68:width<780?90:175),
+      height-(portrait?315:short?181:225),portrait?76:short?72:80);
+    const map=box(portrait?226:236,portrait?90:74,
+      portrait?92:short?82:106,portrait?92:short?82:106);
+    const narrowParty=width>=600 && width<720 && width>height;
+    const partyWidth=narrowParty?Math.max(100,Math.min(170,width-500)):202;
+    const allies=width>=600 && width>height?
+      [box(356,74,partyWidth,height<350?44:52),
+       box(356,height<350?120:130,partyWidth,height<350?44:52)]:
+      [box(12,282,202,52),box(12,338,202,52)];
+    const rest=[
+      ['이동패드',box(28,height-178,150,150)],
+      ['미니맵',map],['주인공',box(12,74,202,82)],
+      ['카메라',box(width-120,12,108,44)],
+      ['동료1',allies[0]],['동료2',allies[1]],
+    ];
+    const buttons=[['공격',attack],['회피',dodge],['교체',weapon]];
+    for(const [name,a] of buttons){
+      for(const [other,b] of [...rest,...buttons.filter(([n])=>n!==name)]){
+        assert.equal(overlaps(a,b),false, width+'×'+height+' '+name+'/'+other+' HUD 겹침');
+      }
     }
   }
   assert.match(field,/attackCaption\.Name = "FieldAttackCaption"/);
@@ -258,7 +279,7 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
     'local crossbowHold = weapon.motion == "CROSSBOW"',
     'local targetAxis = if bowHold then Vector3.yAxis else forward',
     'CFrame.fromRotationBetweenVectors(sourceAxis, targetAxis)',
-    '[활 진짜 조준]', '[석궁 수평 견착]',
+    '[전방 활시위]', '[기본 사격 팔 역전 보정]',
     'local shotLanded = true', 'local baseAccuracy = if wpn.motion == "CROSSBOW"',
     '- (if shooterMoving then 0.10 else 0)',
     '- (if targetMoving then 0.085 else 0)',
@@ -267,6 +288,9 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
     'if landed then hits += 1 end', 'shots += 1',
     'if not shotLanded then', 'if rangedShot and shots == 0 then'
   ]) assert.ok(scene.includes(snippet),'활·석궁/확률 판정 회귀: '+snippet);
+  assert.ok(scene.includes('canon.UpperArmR = (canon.UpperArmR or id):Lerp('),'활/석궁 어깨 절대 견착 보간 누락');
+  assert.doesNotMatch(scene,/\(canon\.UpperArmR or id\) \* CFrame\.Angles\(-0\.72 \* poseWeight/,'기존 석궁 어깨 중복 회전이 다시 나타남');
+  assert.doesNotMatch(scene,/\(canon\.UpperArmL or id\) \* CFrame\.Angles\(-1\.03 \* poseWeight/,'기존 활 어깨 중복 회전이 다시 나타남');
   assert.ok(motion.includes('[궁수 실제 활대]'));
   assert.ok(motion.includes('[석궁 사수 수평 지지]'));
   const chance=(range,moving,target,dodging,base=0.92)=>Math.max(.35,Math.min(.98,
