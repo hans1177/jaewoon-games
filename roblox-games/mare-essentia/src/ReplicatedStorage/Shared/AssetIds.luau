@@ -870,6 +870,7 @@ return {
 	["Relics/shield-rectangle"] = 77001307932981,
 	["Relics/shield-round"] = 115760992982766,
 	["Relics/weapon-axe"] = 98119058401242,
+	["Relics/weapon-bomb"] = 107536521206468,
 	["Relics/weapon-bow"] = 112122395777633,
 	["Relics/weapon-crossbow"] = 91262394695157,
 	["Relics/weapon-dagger"] = 131409452631533,
