@@ -2689,9 +2689,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Vector3.new((math.random() - 0.5) * 34, 6 + math.random() * 16, (math.random() - 0.5) * 34), 0.6 + math.random() * 0.3, { g = 30 })
 		end
 	end
+	-- [침몰 화재] 단순 주황색 구 대신 유기적으로 상승하는 불꽃·그을음 스프라이트.
 	function FX.flame(pos, scale)
-		FX.spawn(Vector3.new(scale, scale, scale), pos + Vector3.new((math.random() - 0.5) * 4, 0, (math.random() - 0.5) * 4), Color3.fromRGB(255, 130, 40), Enum.Material.Neon, Enum.PartType.Ball,
-			Vector3.new((math.random() - 0.5) * 2, 6 + math.random() * 3, (math.random() - 0.5) * 2), 0.8, { grow = -0.6 })
+		local glow = Color3.fromRGB(255, 188, 96)
+		FX.burst(pos + Vector3.new(0, scale * 0.2, 0), nil, {
+			{ tex = "fire", c0 = glow, c1 = Color3.fromRGB(185, 48, 28), s0 = scale * 1.2, s1 = scale * 0.35, life = 0.95, v0 = 4, v1 = 9, spread = 35, glow = 1, n = if MOBILE_VFX then 5 else 11, a0 = 0.04 },
+			{ tex = "smoke", c0 = Color3.fromRGB(64, 56, 50), c1 = Color3.fromRGB(125, 119, 113), s0 = scale, s1 = scale * 2.6, life = 1.8, v0 = 4, v1 = 9, spread = 24, n = if MOBILE_VFX then 3 else 7, a0 = 0.3 },
+		}, { color = glow, bright = if MOBILE_VFX then 1.6 else 3.0, range = 18, dur = 0.4 })
 	end
 	-- 물기둥과 퍼지는 물결
 	function FX.splash(pos)
@@ -3057,10 +3061,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end)
 		end
-		local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
-		task.delay(0.15, function()
-			flash:Destroy()
-		end)
+		-- 발사 화염·조명은 FX.muzzle 입자가 담당한다. 구형 광구를 중복 생성하지 않는다.
 		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
 		FX.projectile(ball, nc)
 		-- 수면 그림자는 PC에서만 표시한다. 모바일에서는 비행 궤적을 우선한다.
@@ -3108,29 +3109,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				else
 					FX.splash(to)
 				end
-				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to),
-					if hullHit then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(150, 225, 245),
-					Enum.Material.Neon, Enum.PartType.Ball)
-				local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)),
-					if hullHit then Color3.fromRGB(90, 90, 96) else Color3.fromRGB(205, 232, 240),
-					Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-				smoke.Transparency = if hullHit then 0.3 else 0.52
-				local s0 = os.clock()
-				local c2
-				c2 = RunService.Heartbeat:Connect(function()
-					local k = (os.clock() - s0) / 1.0
-					if k >= 1 or finished then
-						c2:Disconnect()
-						boom:Destroy()
-						smoke:Destroy()
-						return
-					end
-					boom.Size = Vector3.new(1, 1, 1) * (2 + k * 8)
-					boom.Transparency = k
-					smoke.Size = Vector3.new(1, 1, 1) * (3 + k * 10)
-					smoke.Position = to + Vector3.new(0, 1 + k * 6, 0)
-					smoke.Transparency = 0.3 + k * 0.7
-				end)
+				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
+				-- 별도 프레임 연결을 만들지 않아 모바일 부하도 줄인다.
 				if fx then
 					fx()
 				end
