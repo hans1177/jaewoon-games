@@ -17,6 +17,7 @@ ReplicatedStorage:SetAttribute("MareQAAssetStatus", "RUNNING")
 ReplicatedStorage:SetAttribute("MareQAAssetTotals", "")
 ReplicatedStorage:SetAttribute("MareQAFeatureStatus", "RUNNING")
 ReplicatedStorage:SetAttribute("MareQAFeatureTotals", "")
+ReplicatedStorage:SetAttribute("MareQAFeatureProgress", "0:START")
 local function ok(msg)
 	oks += 1
 	print("[QA] OK " .. msg)
@@ -209,6 +210,10 @@ task.spawn(function()
 	end
 	local function call(action, payload)
 		featureCalls += 1
+		-- [기능 검사 진행] 100건 단위로만 기록해 2천여 건 전수검사의 지연과 멈춤을 구분한다.
+		if featureCalls == 1 or featureCalls % 100 == 0 then
+			ReplicatedStorage:SetAttribute("MareQAFeatureProgress", tostring(featureCalls) .. ":" .. action)
+		end
 		local row = coverage[action]
 		if not row then
 			row = { calls = 0, accepted = 0, rejected = 0, invalid = 0 }
@@ -413,6 +418,7 @@ task.spawn(function()
 		calls = featureCalls, accepted = accepted, rejected = rejected, failed = featureFails, issues = issues,
 		coverage = coverage, observed = observed,
 	}))
+	ReplicatedStorage:SetAttribute("MareQAFeatureProgress", tostring(featureCalls) .. ":DONE")
 	ReplicatedStorage:SetAttribute("MareQAFeatureStatus", if featureFails == 0 and accepted > 0 then "PASS" else "FAIL")
 	print(string.format("[QA] DONE calls=%d accepted=%d rejected=%d featureFails=%d", featureCalls, accepted, rejected, featureFails))
 end)
