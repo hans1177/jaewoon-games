@@ -87,6 +87,30 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/img\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
   assert.match(field,/attackBtn\.Name = "FieldAttack"/);
   assert.match(field,/b\.Name = "FieldDodge"/);
+  // [실제 터치 사각형] 모서리까지 입력을 받으므로 원형 그림의 빈 여백도 겹치면 안 된다.
+  assert.ok(field.includes('math.min(112, math.max(72, workspace.CurrentCamera.ViewportSize.X - 232))'));
+  assert.ok(field.includes('if compactTouch then 90 else 98'));
+  assert.ok(field.includes('if compactTouch then math.min(116, workspace.CurrentCamera.ViewportSize.X - 230)'));
+  assert.ok(field.includes('if compactTouch then -math.min(85, workspace.CurrentCamera.ViewportSize.X - 247)'));
+  assert.ok(field.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)'));
+  const overlaps=(a,b)=>a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  for(const [width,height] of [[320,640],[360,780],[384,832],[428,926]]){
+    const rect=(left,top,w,h)=>({left,top,right:left+w,bottom:top+h});
+    const pad=rect(28,height-178,150,150);
+    const dodgeX=Math.max(226,width-120);
+    const dodge=rect(dodgeX-48,height-259,96,96);
+    const attackX=width-Math.min(85,width-247);
+    const attackHit=rect(attackX-69,height-154,138,138);
+    const hero=rect(12,74,202,82);
+    const weapon=rect(width-12-Math.min(116,width-230),112,Math.min(116,width-230),44);
+    const complete=rect(width-102,64,90,38);
+    const title=rect(109,12,Math.min(112,Math.max(72,width-232)),40);
+    const camera=rect(width-120,12,108,44);
+    for(const [left,right] of [[pad,dodge],[pad,attackHit],[dodge,attackHit],
+      [hero,weapon],[hero,complete],[title,camera]]){
+      assert.equal(overlaps(left,right),false,'모바일 '+width+'×'+height+' 탐험 조작 겹침');
+    }
+  }
   assert.match(field,/attackCaption\.Name = "FieldAttackCaption"/);
   assert.match(field,/dodgeCaption\.Name = "FieldDodgeCaption"/);
   assert.match(field,/addIcon\(attackBtn, "Menu\/cc0_sword"\)/);

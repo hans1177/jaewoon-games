@@ -1209,7 +1209,7 @@ function FieldScene.start(opts)
 	local title = label(gui, "", 16)
 	title.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
 	title.Position = if compactTouch then UDim2.fromOffset(109, 12) else UDim2.new(0.5, 0, 0, 18)
-	title.Size = UDim2.fromOffset(if compactTouch then 112 else 320, if compactTouch then 40 else 24)
+	title.Size = UDim2.fromOffset(if compactTouch then math.min(112, math.max(72, workspace.CurrentCamera.ViewportSize.X - 232)) else 320, if compactTouch then 40 else 24) -- [좁은 세로] 시야 버튼과 제목 분리
 	title.TextWrapped = compactTouch
 	if compactTouch then title.TextSize = 11 end
 
@@ -1521,7 +1521,7 @@ function FieldScene.start(opts)
 	completeBtn.ZIndex = 25
 	completeBtn.Visible = false
 	completeBtn.TextSize = 17
-	local completeReopen = btn(gui, "조사 완료", Color3.fromRGB(137, 111, 59), UDim2.fromOffset(98, 38),
+	local completeReopen = btn(gui, "조사 완료", Color3.fromRGB(137, 111, 59), UDim2.fromOffset(if compactTouch then 90 else 98, 38), -- [좁은 세로] 영웅 상태창과 이격
 		UDim2.new(1, -12, 0, 64), Vector2.new(1, 0))
 	completeReopen.Name = "FieldCompleteReopen"
 	completeReopen.Visible = false
@@ -2372,8 +2372,8 @@ function FieldScene.start(opts)
 	local attackBtn = btn(gui, "", Color3.fromRGB(177, 57, 43),
 		UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,
 			if compactTouch then 118 elseif visualMobile then 128 else 112),
-		UDim2.new(1, if compactTouch then -85 elseif visualMobile then -98 else -88,
-			1, if compactTouch then -85 elseif visualMobile then -98 else -88), Vector2.new(0.5, 0.5))
+		UDim2.new(1, if compactTouch then -math.min(85, workspace.CurrentCamera.ViewportSize.X - 247) elseif visualMobile then -98 else -88,
+			1, if compactTouch then -85 elseif visualMobile then -98 else -88), Vector2.new(0.5, 0.5)) -- [좁은 세로] 공격 여유 터치 영역과 이동 패드 사이 최소 간격
 	attackBtn.Name = "FieldAttack"
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
 	attackBtn:SetAttribute("TouchPriority", "ATTACK")
@@ -6336,7 +6336,7 @@ function FieldScene.start(opts)
 	-- 선택 중 계속 무기를 순환시키던 버튼을 제거하여 카메라·회피·공격 영역을 보호한다.
 	do
 		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105),
-			UDim2.fromOffset(if compactTouch then 116 else 142, 44), UDim2.new(1, -12, 0, 112), Vector2.new(1, 0))
+			UDim2.fromOffset(if compactTouch then math.min(116, workspace.CurrentCamera.ViewportSize.X - 230) else 142, 44), UDim2.new(1, -12, 0, 112), Vector2.new(1, 0)) -- [좁은 세로] 영웅 HUD와 무기 버튼 분리
 		wbtn.Name = "FieldWeapon"
 		wbtn.TextSize = if compactTouch then 12 else 13
 		wbtn.TextWrapped = true
@@ -6400,8 +6400,8 @@ function FieldScene.start(opts)
 		local b = btn(gui, "", Color3.fromRGB(32, 141, 144),
 			UDim2.fromOffset(if compactTouch then 96 elseif visualMobile then 106 else 94,
 				if compactTouch then 96 elseif visualMobile then 106 else 94),
-			if compactTouch then UDim2.new(1, -171, 1, -211)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66),
+			if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)
+				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66), -- [좁은 세로] 조이스틱 150px 경계 바깥에 회피 터치 영역 고정
 			Vector2.new(0.5, 0.5))
 		b.Name = "FieldDodge"
 		b.Text = ""
