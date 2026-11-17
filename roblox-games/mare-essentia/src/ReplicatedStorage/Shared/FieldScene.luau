@@ -1353,11 +1353,12 @@ function FieldScene.start(opts)
 		-- [유적 설명 잘림 복구] 긴 상호작용 기록만 체력바 아래와 퀘스트 안내 위로 옮겨
 		-- 모바일 가로·세로 화면에서 최대 세 줄로 읽는다. 전투 알림 위치는 기존 그대로.
 		local expanded = duration ~= nil and duration > 2.2
-		note.AnchorPoint = if expanded then Vector2.new(0.5, 0)
-			elseif compactTouch then Vector2.zero else Vector2.new(0.5, 0)
-		note.Position = if expanded then UDim2.new(0.5, 0, 0, 106)
+		-- [긴 현장 안내] 체력·동료·미니맵·교체 버튼에서 떨어진 여백에 표시한다.
+		note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+		note.Position = if expanded then
+			(if compactTouch then UDim2.fromOffset(12, 398) else UDim2.new(0.5, 0, 0, 190))
 			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
-		note.Size = if expanded then UDim2.new(0.78, 0, 0, 64)
+		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
 		note.TextYAlignment = Enum.TextYAlignment.Center
@@ -3792,7 +3793,7 @@ function FieldScene.start(opts)
 		at0.Parent, at1.Parent = shaft, shaft
 		local trail = Instance.new("Trail")
 		trail.Attachment0, trail.Attachment1 = at0, at1
-		trail.FaceCamera = true
+		trail.FaceCamera = false -- [투사체] 카메라를 향한 사각 빛판 대신 아주 얇은 실제 비행 잔흔
 		trail.Lifetime = if bow then 0.085 elseif crossbow then 0.055 else 0.035
 		trail.MinLength = 0.15
 		trail.LightEmission = if gun then 0.55 else 0.12
@@ -3800,8 +3801,8 @@ function FieldScene.start(opts)
 			elseif crossbow then Color3.fromRGB(199, 214, 220) else Color3.fromRGB(208, 194, 150))
 		trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.38),
 			NumberSequenceKeypoint.new(1, 1)})
-		trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.60),
-			NumberSequenceKeypoint.new(1, 0)})
+		trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0, 0),
+			NumberSequenceKeypoint.new(0.22, 0.15), NumberSequenceKeypoint.new(1, 0)})
 		trail.Parent = shaft
 		local duration = flightOverride or (if gun then 0.09 elseif crossbow then 0.16 elseif bow then 0.24 else 0.18)
 		local lift = if bow then math.min(flight.Magnitude * 0.045, 2.5)
@@ -6094,9 +6095,38 @@ function FieldScene.start(opts)
 		local a = if alongX then Vector3.new(ORIGIN.X - half + 4, ORIGIN.Y, lane) else Vector3.new(lane, ORIGIN.Y, ORIGIN.Z - half + 4)
 		local dir = if alongX then Vector3.new(1, 0, 0) else Vector3.new(0, 0, 1)
 		local len = half * 2 - 8
-		local warn = part(folder, Vector3.new(len, 0.2, 9), CFrame.lookAt(a, a + dir) * CFrame.new(0, 0.3, -len / 2), Color3.fromRGB(255, 70, 50), Enum.Material.Neon)
-		warn.Transparency = 0.7
-		warn.CanCollide, warn.CanQuery = false, false
+		-- [바위 경고] 충돌 폭 9스터드를 따라 두 줄 경계선을 표시한다.
+		-- 네모난 네온판은 없애고 실제 바위 이동축과 동일한 방향을 사용한다.
+		local warn = Instance.new("Folder")
+		warn.Name = "FieldBoulderWarning"
+		warn.Parent = folder
+		for side = -1, 1, 2 do
+			local shift = Vector3.new(-dir.Z, 0, dir.X) * (4.5 * side)
+			local begin = part(warn, Vector3.one * 0.1, CFrame.new(a + shift + Vector3.new(0, 0.35, 0)),
+				Color3.fromRGB(255, 70, 50))
+			local finishAt = part(warn, Vector3.one * 0.1, CFrame.new(a + dir * len + shift + Vector3.new(0, 0.35, 0)),
+				Color3.fromRGB(255, 70, 50))
+			begin.Transparency, finishAt.Transparency = 1, 1
+			begin.CanCollide, begin.CanQuery, begin.CanTouch = false, false, false
+			finishAt.CanCollide, finishAt.CanQuery, finishAt.CanTouch = false, false, false
+			local p0 = Instance.new("Attachment")
+			p0.Parent = begin
+			local p1 = Instance.new("Attachment")
+			p1.Parent = finishAt
+			local beam = Instance.new("Beam")
+			beam.Attachment0, beam.Attachment1 = p0, p1
+			beam.Width0, beam.Width1 = 0.18, 0.18
+			beam.Color = ColorSequence.new(Color3.fromRGB(255, 70, 50))
+			beam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.13, 0.18),
+				NumberSequenceKeypoint.new(0.87, 0.18),
+				NumberSequenceKeypoint.new(1, 0.8),
+			})
+			beam.LightEmission = 0.8
+			beam.FaceCamera = false
+			beam.Parent = warn
+		end
 		say("⚠ 바위가 굴러와요! 경고선에서 비켜요")
 		sfx("sfx_naval_cannon", 0.5, 0.6)
 		task.delay(2, function()
@@ -6852,9 +6882,14 @@ function FieldScene.start(opts)
 						endAt.Parent = target
 						local lane = Instance.new("Beam")
 						lane.Attachment0, lane.Attachment1 = startAt, endAt
-						lane.Width0, lane.Width1 = if isCharge then 2.7 else 0.16, if isCharge then 2.7 else 0.08
+						-- [적 예고] 넓은 직사각형 빔 대신 조준 중심을 따라 가늘어지는 경고선.
+						lane.Width0, lane.Width1 = if isCharge then 0.42 else 0.16, 0.04
 						lane.Color = ColorSequence.new(Color3.fromRGB(255, 75, 59), Color3.fromRGB(255, 180, 123))
-						lane.Transparency = NumberSequence.new(0.28)
+						lane.Transparency = NumberSequence.new({
+							NumberSequenceKeypoint.new(0, 0.8),
+							NumberSequenceKeypoint.new(0.25, 0.25),
+							NumberSequenceKeypoint.new(1, 0.85),
+						})
 						lane.LightEmission = 0.8
 						lane.FaceCamera = false
 						lane.Parent = target
@@ -7415,8 +7450,13 @@ function FieldScene.start(opts)
 						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
 						local status = Instance.new("Frame")
 						status.Name = "FieldAllyStatus" .. i
-						status.Position = UDim2.fromOffset(12, 162 + (i - 1) * 56)
+						-- [동료 HUD] 가로 화면은 미니맵 오른쪽, 좁은 세로 화면은 퀘스트 아래.
+						-- 아주 낮은 해상도는 월드 동료 이름표만 유지하여 이동 패드를 가리지 않는다.
+						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+						status.Position = if screen.X >= 720 then UDim2.fromOffset(356, 74 + (i - 1) * 56)
+							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
 						status.Size = UDim2.fromOffset(202, 52)
+						status.Visible = screen.X >= 720 or screen.Y >= 540
 						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
 						status.BackgroundTransparency = 0.12
 						status.BorderSizePixel = 0
