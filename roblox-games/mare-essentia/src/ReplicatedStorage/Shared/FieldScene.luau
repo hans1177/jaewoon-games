@@ -2548,7 +2548,7 @@ function FieldScene.start(opts)
 	-- [무기 외형] 등록된 실제 3D 메시만 사용한다. 늦게 도착한 모델도 기존 장착 함수로 갱신한다.
 	-- 기존 무기·동료 데이터와 무관한 클라이언트 연출만 교체한다. 전투 수치·저장키는 수정하지 않는다.
 	-- [실물 장비] 주인공/동료/적이 같은 검증된 Relics 메시를 공유한다. 오른손 무기, 왼손 실제 방패.
-	local function equipFieldWeapon(character, weapon, shieldModel)
+	local function equipFieldWeapon(character, weapon, shieldModel, thrownAsset: string?)
 		if not character or not weapon then return end
 		local prev = character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword")
 		if prev then prev:Destroy() end
@@ -2557,13 +2557,19 @@ function FieldScene.start(opts)
 		character:SetAttribute("EquippedWeaponId", weapon.id)
 		character:SetAttribute("EquippedWeaponName", weapon.name)
 		character:SetAttribute("EquippedShieldModel", shieldModel or "")
+		character:SetAttribute("EquippedThrownAsset", thrownAsset or "")
 		character:SetAttribute("WeaponVisualSource", "unarmed")
-		if weapon.family == "fist" and not shieldModel then return end
+		if weapon.family == "fist" and not shieldModel and not thrownAsset then return end
 		local rightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
 		local leftHand = character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
 		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 		local group = lib and lib:FindFirstChild("Relics")
 		local items = {}
+		if thrownAsset then
+			-- [실물 투척병] 동일한 장착·용접 경로 사용. 손에 든 돌/도기와 날아가는 모델이 일치한다.
+			table.insert(items, { modelName = if thrownAsset == "stone" then "rock-small" else "pot",
+				kind = if thrownAsset == "stone" then "Town" else "Relics", hand = rightHand, shield = false, throwable = true })
+		end
 		if weapon.family ~= "fist" then
 			table.insert(items, { modelName = weapon.model, hand = rightHand, shield = false })
 		end
@@ -2574,8 +2580,10 @@ function FieldScene.start(opts)
 		for _, item in items do
 			local modelName = item.modelName
 			local hand = item.hand
-			local registeredId = modelName and AssetIds["Relics/" .. modelName]
-			local tpl = registeredId and group and group:FindFirstChild(modelName)
+			local assetKind = item.kind or "Relics"
+			local assetGroup = if assetKind == "Relics" then group else (lib and lib:FindFirstChild(assetKind))
+			local registeredId = modelName and AssetIds[assetKind .. "/" .. modelName]
+			local tpl = registeredId and assetGroup and assetGroup:FindFirstChild(modelName)
 			if not (hand and hand:IsA("BasePart") and tpl and tpl:IsA("Model")) then
 				complete = false
 				continue
@@ -2598,6 +2606,7 @@ function FieldScene.start(opts)
 			local bb, ext = held:GetBoundingBox()
 			local longest = math.max(ext.X, ext.Y, ext.Z)
 			local targetLength = if item.shield then (if modelName == "shield-rectangle" then 3.1 else 2.5)
+				elseif item.throwable then 1.25
 				elseif weapon.family == "dagger" then 1.8
 				elseif weapon.family == "bow" then 3.5
 				elseif weapon.family == "spear" then 4.6
@@ -2636,7 +2645,7 @@ function FieldScene.start(opts)
 	local relicGroup = assetLibrary and assetLibrary:FindFirstChild("Relics")
 	if relicGroup then
 		table.insert(conns, relicGroup.ChildAdded:Connect(function(asset)
-			if not asset:IsA("Model") or not (string.match(asset.Name, "^weapon%-") or string.match(asset.Name, "^shield%-"))
+			if not asset:IsA("Model") or not (string.match(asset.Name, "^weapon%-") or string.match(asset.Name, "^shield%-") or asset.Name == "pot")
 				or not AssetIds["Relics/" .. asset.Name] then return end
 			task.defer(function()
 				local deadline = os.clock() + 5
@@ -2660,10 +2669,12 @@ function FieldScene.start(opts)
 					if characterModel:IsA("Model") and characterModel:GetAttribute("WeaponVisualSource") == "asset_pending" then
 						local id = characterModel:GetAttribute("EquippedWeaponId")
 						local shieldName = characterModel:GetAttribute("EquippedShieldModel")
+						local thrownName = characterModel:GetAttribute("EquippedThrownAsset")
 						if type(id) == "string" then
 							local weapon = Weapons.get(id)
-							if weapon.model == asset.Name or shieldName == asset.Name then
-								equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil)
+							if weapon.model == asset.Name or shieldName == asset.Name or (asset.Name == "pot" and thrownName == "jar") then
+								equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil,
+									if thrownName ~= "" then thrownName else nil)
 							end
 						end
 					end
@@ -2674,7 +2685,7 @@ function FieldScene.start(opts)
 	-- [몬스터 무기·방패] 기존 적을 생성한 뒤 승인된 실물 메시를 손에 장착한다.
 	for _, enemy in enemies do
 		if enemy.model and enemy.model.Parent and enemy.weapon then
-			equipFieldWeapon(enemy.model, enemy.weapon, enemy.shieldModel)
+			equipFieldWeapon(enemy.model, enemy.weapon, enemy.shieldModel, enemy.throwAsset)
 		end
 	end
 	-- 플레이어 무기는 현장 교체 시 즉시 실제 손의 장비까지 교체한다.
