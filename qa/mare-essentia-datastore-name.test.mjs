@@ -1233,7 +1233,7 @@ test('마을 7개 시설은 승인된 건축물과 업종별 실물 구조로 �
  assert.match(facilities,/signatureAsset = if localArchitecture then nil/);
  assert.match(facilities,/signature:SetAttribute\("FacilityIdentity", f.tab\)/);
  assert.match(facilities,/local body = \(signature and signature:FindFirstChildWhichIsA\("BasePart", true\)\)/);
- assert.match(facilities,/or house\(folder, f.pos, f.w \* grow, f.d \* grow, f.floors, style, rng, tone\)/);
+ assert.match(facilities,/or house\(folder, f.pos, f.w \* grow, f.d \* grow, visualFloors, style, rng, tone\)/);
  assert.match(facilities,/style.kit == "eastasia"/);
  assert.match(facilities,/localArchitecture/);
  for(const [group,asset] of [
@@ -1245,5 +1245,42 @@ test('마을 7개 시설은 승인된 건축물과 업종별 실물 구조로 �
  ])assert.ok(ids.includes('["'+group+'/'+asset+'"]'),group+'/'+asset+' 기존 등록 자산');
  assert.match(facilities,/prompt\(folder, Vector3.new\(f.pos.X, 3, doorZ\), f.name, "들어가기", f.tab, onFacility\)/);
  assert.match(facilities,/villager\(folder, Vector3.new\(f.pos.X \+ 3, 0, doorZ\)/);
+ assert.doesNotMatch(facilities,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+});
+
+ 
+// [시설별 실제 경제-건축 발전] 건축 수량과 항구 단계에 따른 1~5단계 자동 증축.
+test('마을 7개 시설은 실제 건설 수량·번영도·항구 발전도에 따라 독립 증축된다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const client=read('StarterPlayer/Game.client.luau');
+ const economy=read('ReplicatedStorage/Shared/Economy.luau');
+ const begin=scene.indexOf('-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }');
+ const end=scene.indexOf('-- 조선소:', begin);
+ assert.ok(begin>=0&&end>begin);
+ const facilities=scene.slice(begin,end);
+ for(const [name,key] of [
+  ['교역소','market'],['주점','tavern'],['항만청','dock'],['은행','market'],
+  ['상인 길드','warehouse'],['학자의 서재','school'],['도서관 (도감)','school']
+ ]) {
+  const line=facilities.split('\n').find(x=>x.includes('name = "'+name+'", tab = '));
+  assert.ok(line&&line.includes('economy = "'+key+'"'),name+' 경제 시설 연계');
+  assert.ok(economy.includes('id = "'+key+'"'),key+' 기존 세계경제 건축물');
+ }
+ assert.match(scene,/sceneLevel = math\.clamp\(math\.floor\(\(sceneLevel \+ info\.sim\.stage\) \/ 2 \+ 0\.5\), 1, 5\)/);
+ for(const threshold of ['count >= 16 then 5','count >= 9 then 4','count >= 4 then 3','count >= 1 then 2']) {
+  assert.ok(facilities.includes(threshold),'실제 수량 증축 경계 '+threshold);
+ }
+ assert.match(facilities,/local facilityTier = math\.min\(sceneLevel, builtTier\)/);
+ assert.match(facilities,/if info\.sim and \(tonumber\(info\.sim\.prosperity\) or 100\) < 90 then/);
+ assert.match(facilities,/facilityTier = math\.min\(facilityTier, 4\)/);
+ assert.match(facilities,/local lv = facilityTier/);
+ assert.match(facilities,/local visualFloors = math\.min\(3, f\.floors/);
+ assert.match(facilities,/body:SetAttribute\("FacilityVisualTier", facilityTier\)/);
+ assert.match(facilities,/body:SetAttribute\("FacilityEconomyKind", f\.economy\)/);
+ assert.match(facilities,/body:SetAttribute\("FacilityEconomicCount", count or 0\)/);
+ assert.match(facilities,/body:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+ assert.match(client,/bld\.tavern or 0/);
+ assert.match(client,/if \(tonumber\(sim and sim\.prosperity\) or 100\) >= 90 then "P1" else "P0"/);
+ assert.match(facilities,/prompt\(folder, Vector3\.new\(f\.pos\.X, 3, doorZ\), f\.name, "들어가기", f\.tab, onFacility\)/);
  assert.doesNotMatch(facilities,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
 });
