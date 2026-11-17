@@ -6927,6 +6927,8 @@ function H.startField(s)
 		-- [선택 집안] 기존 저장된 선장 출신을 공식 Weapons 정의로 변환. 기존 저장 키와 전투 수치는 그대로 사용한다.
 		weapon = Weapons.originWeapon(view and view.captain and view.captain.origin and view.captain.origin.id,
 			view and view.player and view.player.year).id,
+		reserveWeapon = Weapons.originSidearm(view and view.captain and view.captain.origin and view.captain.origin.id,
+			view and view.player and view.player.year).id, -- 집안별 2번 무기, 별도 저장 불필요
 		year = view and view.player and view.player.year, -- 실제 역사 시대로 활·총기 발화방식 결정
 		name = s.name,
 		portId = s.portId,
@@ -10696,7 +10698,7 @@ renderTitle = function()
 			n2.TextYAlignment = Enum.TextYAlignment.Top
 			n2.ZIndex = 14
 			local originWeapon = Weapons.originWeapon(o.id, chosenYear)
-			local n3 = mkLabel(b, "⚔ " .. originWeapon.name .. " · " .. originWeapon.note, 16, INK, true)
+			local n3 = mkLabel(b, "⚔ 주: " .. originWeapon.name .. " · 보조: " .. Weapons.originSidearm(o.id, chosenYear).name, 16, INK, true)
 			n3.Name = "OriginStartingWeapon"
 			n3.Position = UDim2.fromOffset(8, 83)
 			n3.Size = UDim2.new(1, -12, 0, 33)
@@ -10716,7 +10718,7 @@ renderTitle = function()
 		if cur2 then
 			tLabel(titleScroll, "선택: " .. cur2.name .. " · " .. cur2.story, 18, COLORS.muted, false, nxt())
 			local initialWeapon = Weapons.originWeapon(H.chosenOrigin, chosenYear)
-			tLabel(titleScroll, "첫 탐험 기본 무기: " .. initialWeapon.name .. " (" .. initialWeapon.note .. ")", 19, INK, true, nxt())
+			tLabel(titleScroll, "탐험 2무기: " .. initialWeapon.name .. " ↔ " .. Weapons.originSidearm(H.chosenOrigin, chosenYear).name .. " · 전투 중 교체", 19, INK, true, nxt())
 		end
 	end
 
