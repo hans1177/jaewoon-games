@@ -140,6 +140,18 @@ local earlyMobParts = {
 	["People/hair_simpleparted"] = true,
 	["People/hair_buzzed"] = true,
 	["People/hair_buzzedfemale"] = true,
+	-- [신규 승인 3D 머리·액세서리] AssetIds에 등록된 경우에만 기존 우선 로딩 큐에 들어간다.
+	["People/hair_braided_crown"] = true,
+	["People/hair_low_bun"] = true,
+	["People/hair_sailor_ponytail"] = true,
+	["People/hair_side_braid"] = true,
+	["People/hair_shoulder_waves"] = true,
+	["People/hair_court_curls"] = true,
+	["People/acc_sailor_headband"] = true,
+	["People/acc_pearl_hairpin"] = true,
+	["People/acc_ribbon_bow"] = true,
+	["People/acc_feather_hat"] = true,
+	["People/acc_guild_badge"] = true,
 }
 local queue = {}
 for key, assetId in ids do

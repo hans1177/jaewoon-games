@@ -642,6 +642,33 @@ local MOB_OUTFIT_PARTS = {
 	},
 }
 
+-- [주민·동료 추가 실물 헤어 6종] 기등록 모델을 먼저 유지하고 등록된 원본 번호가 있을 때만 전환한다.
+-- 주민 역할/성별/머리색 결정은 기존 R15에서 가져오고 저장·전투·직업 수치는 변경하지 않는다.
+local NPC_REGISTERED_HAIR = {
+	citizen_male = { short = "hair_court_curls" },
+	citizen_female = { long = "hair_shoulder_waves", bun = "hair_low_bun" },
+	citizen_guard_female = { bun = "hair_braided_crown" },
+	citizen_official_male = { short = "hair_court_curls" },
+	citizen_official_female = { long = "hair_shoulder_waves", bun = "hair_braided_crown" },
+	citizen_sailor_female = { long = "hair_sailor_ponytail", bun = "hair_low_bun" },
+	citizen_artisan_female = { long = "hair_side_braid", bun = "hair_low_bun" },
+	companion_male = { short = "hair_court_curls" },
+	companion_female = { long = "hair_side_braid", bun = "hair_braided_crown" },
+}
+-- [승인된 헤드·몸통 액세서리 5종] 추가 요소만 분리한다. 위치는 R15 부위의 상대 좌표.
+-- 배열 7/8열: 기존 Y 오프셋 뒤의 X/Z 배율(미지정이면 0). 금속 배지는 겉옷 바깥쪽에 보이게 장착한다.
+local NPC_REGISTERED_ACCESSORY = {
+	citizen_female = { "acc_ribbon_bow", "Head", 0.85, 0.90, 0.90, 0.33, 0.12, -0.08 },
+	citizen_official_male = { "acc_guild_badge", "UpperTorso", 0.45, 0.50, 0.60, 0.12, -0.28, -0.56 },
+	citizen_official_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
+	citizen_sailor_male = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	citizen_sailor_female = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	citizen_guard_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.45, 0.50, 0.60, 0.12, -0.28, -0.56 },
+	companion_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	companion_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
+}
+
 -- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 자산이 늦게 로드되면 같은 함수를 재호출한다.
 function Pose.applyRegisteredMobOutfit(model)
 	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
@@ -650,6 +677,13 @@ function Pose.applyRegisteredMobOutfit(model)
 	local npcOutfit = npcProfile ~= nil and model:GetAttribute("MobAssetProfile") == nil
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
+	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
+	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
+	local accessory = npcOutfit and NPC_REGISTERED_ACCESSORY[profile]
+	if accessory and AssetIds["People/" .. accessory[1]] then
+		specs = table.clone(specs)
+		table.insert(specs, accessory)
+	end
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
 
@@ -692,15 +726,22 @@ function Pose.applyRegisteredMobOutfit(model)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
-		-- [여성 3D 머리] 생성 시 정한 올림머리/긴머리를 실물 메시에도 그대로 반영한다.
-		-- 작업자 전용 짧은 머리·성직자 후드는 기존 계열 그대로 둔다.
-		if npcOutfit and string.sub(assetName, 1, 5) == "hair_"
-			and (profile == "citizen_female" or profile == "citizen_official_female"
-				or profile == "citizen_sailor_female" or profile == "citizen_artisan_female"
-				or profile == "companion_female") then
+		-- [신규 메시 자동 선택] 실제로 등록된 머리만 기존 스타일·성별·직업에 맞춰 교체한다.
+		-- 신규 등록이 없으면 기등록 긴머리/올림머리/짧은머리를 정확히 보존한다.
+		if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
 			local hairstyle = model:GetAttribute("NpcHairStyle")
-			if hairstyle == "long" then assetName = "hair_long"
-			elseif hairstyle == "bun" then assetName = "hair_buns" end
+			local femaleLong = profile == "citizen_female" or profile == "citizen_official_female"
+				or profile == "citizen_sailor_female" or profile == "citizen_artisan_female"
+				or profile == "companion_female"
+			local preferred = NPC_REGISTERED_HAIR[profile]
+			local candidate = preferred and preferred[hairstyle or "short"]
+			if candidate and AssetIds["People/" .. candidate] then
+				assetName = candidate
+			elseif femaleLong and hairstyle == "long" then
+				assetName = "hair_long"
+			elseif femaleLong and hairstyle == "bun" then
+				assetName = "hair_buns"
+			end
 		end
 		local slotName = "R15Asset_" .. assetName
 		if model:FindFirstChild(slotName) then
@@ -736,7 +777,9 @@ function Pose.applyRegisteredMobOutfit(model)
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
 			bounds = skin:GetBoundingBox()
-			skin:PivotTo((target.CFrame * CFrame.new(0, target.Size.Y * spec[6], 0)) * bounds:ToObjectSpace(skin:GetPivot()))
+			-- 신규 머리핀/길드 배지는 기존 Y축 부착을 보존하면서 R15 상대 X/Z 위치도 반영한다.
+			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
+				target.Size.Y * spec[6], target.Size.Z * (spec[8] or 0))) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true

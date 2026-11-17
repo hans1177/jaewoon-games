@@ -1116,8 +1116,8 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   }
   assert.match(pose,/model:SetAttribute\("NpcHairStyle", outfit\.hair\)/);
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
-  assert.match(pose,/if hairstyle == "long" then assetName = "hair_long"/);
-  assert.match(pose,/elseif hairstyle == "bun" then assetName = "hair_buns"/);
+  assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
+  assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
   assert.match(pose,/if hair and npcOutfit and model:GetAttribute\("NpcHairTint"\) then 0\.72/);
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
@@ -1344,4 +1344,51 @@ test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 
  assert.match(region,/if facilityTier >= 5 then/);
  assert.match(region,/prompt\(folder, Vector3\.new\(f\.pos\.X, 3, doorZ\), f\.name, "들어가기", f\.tab, onFacility\)/);
  assert.doesNotMatch(region,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+});
+
+ 
+// [원본 머리 6종 + 액세서리 5종] 실제 3D 원본 증빙, 등록 후 역할별 장착, R15 관절·저장 불변.
+test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 등록된 경우에만 정밀 장착된다',async()=>{
+ const pose=read('ReplicatedStorage/Shared/Pose.luau');
+ const loader=read('ServerScriptService/AssetLoader.server.luau');
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+ const names=[
+  'hair_braided_crown','hair_low_bun','hair_sailor_ponytail',
+  'hair_side_braid','hair_shoulder_waves','hair_court_curls',
+  'acc_sailor_headband','acc_pearl_hairpin','acc_ribbon_bow',
+  'acc_feather_hat','acc_guild_badge'
+ ];
+ const crypto=await import('node:crypto');
+ for(const name of names){
+  const f='roblox-games/mare-essentia/assets/people/'+name+'.glb';
+  assert.ok(fs.existsSync(f),'원본 GLB 누락: '+name);
+  const raw=fs.readFileSync(f);
+  const license=JSON.parse(fs.readFileSync(f+'.license.json','utf8'));
+  const gitSha=crypto.createHash('sha1').update('blob '+raw.length+String.fromCharCode(0)).update(raw).digest('hex');
+  assert.equal(license.license,'CC0-1.0',name+' 무료 사용 승인');
+  assert.equal(license.sourceSizeBytes,raw.length,name+' 원본 크기');
+  assert.equal(license.sourceGitBlobSha1,gitSha,name+' 원본 해시 증빙');
+  assert.equal(raw.subarray(0,4).toString('ascii'),'glTF',name+' GLB 형식');
+  assert.ok(loader.includes('["People/'+name+'"] = true'),name+' 기존 자산 선적 우선순위');
+  assert.ok(pose.includes('"'+name+'"'),name+' 역할별 복식 연결');
+ }
+ for(const role of [
+  'citizen_male','citizen_female','citizen_guard_female','citizen_official_male','citizen_official_female',
+  'citizen_sailor_female','citizen_artisan_female','companion_male','companion_female'
+ ])assert.ok(pose.includes(role+' = {'),role+' 남녀·직업 원본 보존');
+ assert.match(pose,/local NPC_REGISTERED_HAIR = \{/);
+ assert.match(pose,/local NPC_REGISTERED_ACCESSORY = \{/);
+ assert.match(pose,/if candidate and AssetIds\["People\/" \.\. candidate\] then/);
+ assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
+ assert.match(pose,/specs = table\.clone\(specs\)/);
+ assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
+ assert.match(pose,/target\.Size\.Z \* \(spec\[8\] or 0\)/);
+ assert.match(pose,/skin:ScaleTo\(ratio\)/);
+ assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
+ assert.match(pose,/part\.Anchored, part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
+ assert.match(pose,/model:SetAttribute\(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState"/);
+ assert.match(port,/string\.sub\(asset\.Name, 1, 4\) == "acc_"/);
+ assert.match(field,/peopleGroup\.ChildAdded:Connect\(function\(asset\)/);
+ assert.doesNotMatch(pose,/rbxassetid:\/\/[0-9]+/);
 });
