@@ -657,9 +657,9 @@ function NavalBattle.play(opts)
 	tacticStroke.Thickness = 1.5
 	tacticStroke.Parent = tactic
 	local lastTacticText, lastTacticColor = "", nil
-	-- [선박 밑 사거리] 바다를 가리던 거대한 원판 대신 얇은 점선 원주만 그린다.
-	-- 기존 포의 cannon.range를 그대로 사용한다. 수치는 바꾸지 않는다.
-	local rangeRing = { segments = {} }
+	-- [실전 사거리 나침반] 기존 사거리 원주 조각 재사용: 좌·우 선측포 영역, 회전 탐색광, 장전·포격·명중 펄스.
+	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
+	local rangeRing = { segments = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
 		local count = if MOBILE_VFX then 20 else 32
 		local segmentLength = 2 * math.pi * cannon.range / count * 0.67
@@ -667,6 +667,32 @@ function NavalBattle.play(opts)
 			local seg = part(folder, Vector3.new(1.15, 0.16, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
 			seg.Transparency = 0.72
 			rangeRing.segments[i] = seg
+		end
+		-- 기존 등록 선박 메시와 사거리 원주에 광선만 연결한다. 새 Part·선박·외부 에셋은 만들지 않는다.
+		local hullPart = me.model:FindFirstChildWhichIsA("BasePart", true)
+		if hullPart then
+			local origin = Instance.new("Attachment")
+			origin.Name = "RangeSweepOrigin"
+			origin.Parent = hullPart
+			local edge = Instance.new("Attachment")
+			edge.Name = "RangeSweepEdge"
+			edge.Parent = rangeRing.segments[1]
+			local sweep = Instance.new("Beam")
+			sweep.Name = "RangeSweepBeam"
+			sweep.Attachment0 = origin
+			sweep.Attachment1 = edge
+			sweep.FaceCamera = true
+			sweep.LightEmission = 0.85
+			sweep.Width0, sweep.Width1 = 0.08, if MOBILE_VFX then 0.6 else 1.0
+			sweep.Color = ColorSequence.new(Color3.fromRGB(160, 235, 215), Color3.fromRGB(255, 217, 139))
+			sweep.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.96),
+				NumberSequenceKeypoint.new(0.56, 0.87),
+				NumberSequenceKeypoint.new(1, 0.38),
+			})
+			sweep.Enabled = false
+			sweep.Parent = folder
+			rangeRing.radar = { hull = hullPart, origin = origin, edge = edge, beam = sweep }
 		end
 	end
 	local trajDots = {}
@@ -3155,6 +3181,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if finished or not sh or amount <= 0 then
 			return
 		end
+		-- [전술 원주 피격 반응] 실제 피해 숫자가 발생했을 때만 펄스를 준다.
+		if toPlayer then
+			rangeRing.hitUntil = os.clock() + 0.55
+		else
+			rangeRing.impactUntil = os.clock() + 0.48
+		end
 		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
 		if not on then
 			return
@@ -3259,6 +3291,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_cannon_reload", 0.34, 0.95 + math.random() * 0.1)
 				end
 			end)
+		end
+		-- [발사 펄스] 우리 기함 실제 포구에서 발사된 경우 사거리 나침반이 순간적으로 밝아진다.
+		if shooter == me then
+			rangeRing.volleyUntil = os.clock() + 0.36
 		end
 		-- 발사 화염·조명은 FX.muzzle 입자가 담당한다. 구형 광구를 중복 생성하지 않는다.
 		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
@@ -3957,22 +3993,69 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			poseShip(al, now, nil)
 		end
 		do
-			-- [사거리 정확도] 기존 cannon.range로 얇은 원주와 발사 각도를 표시한다.
-			-- 적이 사거리 안이어도 함선 옆면이 적을 향하지 않으면 황색 정렬 안내를 띄운다.
+			-- [해전 사거리 레이더] 실제 함선 위치/방위·실측 사거리로 반경이 움직인다.
+			-- 기존 원주 조각을 재활용해 좌현·우현 포격 호, 8초 회전 스캔, 장전 진행, 적선 방위와 명중 펄스를 표시한다.
 			local dd = (foe.pos - me.pos).Magnitude
 			local inRange = dd < cannon.range
 			local direction = foe.pos - me.pos
-			local broadside = if dd > 0.1 then math.abs(Vector3.new(math.cos(me.theta), 0, math.sin(me.theta)):Cross(direction.Unit).Y) else 0
+			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
+			local broadside = if dd > 0.1 then math.abs(heading:Cross(direction.Unit).Y) else 0
 			local aligned = broadside > 0.5
 			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
+			local tau = math.pi * 2
+			local scanAngle = (now * 0.78) % tau
+			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
+			local reloadProgress = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cd), 0, 1)
+			local firing = now < rangeRing.volleyUntil
+			local hitFoe = now < rangeRing.impactUntil
+			local hitMe = now < rangeRing.hitUntil
+			rangeRing.fade = math.clamp(rangeRing.fade + (if phase == "duel" then dt * 3.5 else -dt * 3.5), 0, 1)
+			local enemyAngle = if dd > 0.1 then math.atan2(direction.Z, direction.X) else 0
 			for i, seg in rangeRing.segments do
-				local angle = (i - 1) * math.pi * 2 / #rangeRing.segments
+				local angle = (i - 1) * tau / #rangeRing.segments
 				local radial = Vector3.new(math.cos(angle), 0, math.sin(angle))
 				local tangent = Vector3.new(-radial.Z, 0, radial.X)
 				local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
 				seg.CFrame = CFrame.lookAt(at, at + tangent)
-				seg.Color = color
-				seg.Transparency = if opts.cardOnly then 1 elseif inRange and aligned then 0.49 else 0.67
+				-- 좌·우 선측: 실제 조준 기준인 교차곱 0.5 이상인 방향만 두껍고 밝게.
+				local sideArc = math.abs(heading:Cross(radial).Y) > 0.5
+				local charged = ((angle - me.theta + tau) % tau) / tau <= reloadProgress
+				local trailAngle = (scanAngle - angle + tau) % tau
+				local trail = if trailAngle < 1.2 then 1 - trailAngle / 1.2 else 0
+				local enemyGap = math.abs((angle - enemyAngle + math.pi) % tau - math.pi)
+				local onEnemy = enemyGap < math.pi / #rangeRing.segments * 1.3
+				local tint = if sideArc then (if inRange and aligned then Color3.fromRGB(100, 216, 158) else Color3.fromRGB(230, 178, 104))
+					else Color3.fromRGB(94, 127, 138)
+				local alpha = if sideArc then (if charged then 0.43 else 0.66) else 0.84
+				if trail > 0 then
+					tint = tint:Lerp(Color3.fromRGB(150, 247, 220), trail)
+					alpha = math.min(alpha, 0.78 - 0.68 * trail)
+				end
+				if onEnemy then
+					local pulse = 0.5 + 0.5 * math.sin(now * 6)
+					tint = if inRange and aligned then Color3.fromRGB(114, 255, 177) else Color3.fromRGB(255, 155, 115)
+					alpha = math.min(alpha, 0.3 - pulse * 0.19)
+				end
+				if firing and sideArc then
+					tint, alpha = Color3.fromRGB(255, 231, 136), 0.06
+				elseif hitFoe and onEnemy then
+					tint, alpha = Color3.fromRGB(255, 243, 192), 0.02
+				elseif hitMe then
+					tint, alpha = Color3.fromRGB(255, 119, 100), math.min(alpha, 0.34)
+				end
+				seg.Color = tint
+				seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
+			end
+			-- [회전 탐색광] 새 물체를 만들지 않고 기존 선박 메시·원주 Attachment 위치만 이동.
+			if rangeRing.radar then
+				local radar = rangeRing.radar
+				local center = ORIGIN + me.pos + Vector3.new(0, 0.3, 0)
+				local rim = center + Vector3.new(math.cos(scanAngle), 0, math.sin(scanAngle)) * cannon.range
+				radar.origin.Position = radar.hull.CFrame:PointToObjectSpace(center)
+				radar.edge.Position = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
+				radar.beam.Enabled = not opts.cardOnly and rangeRing.fade > 0.08 and phase == "duel"
+				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
+					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
 			end
 			rangeLabel.Text = string.format("%s · %dm/%dm · %s", cannon.name, math.floor(dd), cannon.range,
 				if not inRange then "사거리 밖" elseif aligned then "발사각 확보" else "선측 정렬")
