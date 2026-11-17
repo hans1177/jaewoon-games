@@ -2193,8 +2193,12 @@ function FieldScene.start(opts)
 		local bow = shotMotion == "BOW" or shotMotion == "LONGBOW"
 		local crossbow = shotMotion == "CROSSBOW"
 		local gun = shotMotion == "PISTOL" or shotMotion == "RIFLE"
+		local flight = to - from
+		local flightDir = if flight.Magnitude > 0.05 then flight.Unit else Vector3.new(0, 0, -1)
+		local streakLength = math.min(flight.Magnitude * 0.6, if bow then 3.4 elseif crossbow then 2.7 else 2.2)
+		-- [탄두-탄미] 맵 전체를 잇는 고정 빔이 아니라 실제 전진하는 짧은 발광 궤적을 만든다.
 		local a0, at0 = anchorAt(from)
-		local a1, at1 = anchorAt(to)
+		local a1, at1 = anchorAt(from + flightDir * streakLength)
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = at0, at1
 		beam.Width0 = if bow then (if charged then 0.17 else 0.10)
@@ -2215,6 +2219,8 @@ function FieldScene.start(opts)
 		local duration = if shotMotion == "RIFLE" or shotMotion == "PISTOL" then 0.09
 			elseif crossbow then 0.13 elseif bow then 0.20 else 0.16
 		game:GetService("TweenService"):Create(a0, TweenInfo.new(duration, Enum.EasingStyle.Linear),
+			{ Position = to - flightDir * streakLength }):Play()
+		game:GetService("TweenService"):Create(a1, TweenInfo.new(duration, Enum.EasingStyle.Linear),
 			{ Position = to }):Play()
 		task.delay(duration + 0.06, function()
 			a0:Destroy()
