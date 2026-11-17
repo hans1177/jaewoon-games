@@ -2100,7 +2100,7 @@ function FieldScene.start(opts)
 	end))
 
 	-- 궁수 화살 궤적: 두 끝점 사이에 빔을 잠깐 그린다 (모양 파트 없이 보이지 않는 좌표만 쓴다)
-	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?, flightOverride: number?)
+	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?, flightOverride: number?, shotMotion: string?, charged: boolean?)
 		if thrownAsset == "stone" or thrownAsset == "jar" or thrownAsset == "bomb" then
 			-- [실물 포물선] 실등록된 돌·도기·해적 화약폭탄 메시만 복제한다. 임시 원형 대체 금지.
 			local kind = if thrownAsset == "stone" then "Town" else "Relics"
@@ -2156,17 +2156,35 @@ function FieldScene.start(opts)
 			at.Parent = a
 			return a, at
 		end
+		-- [실물 사격 궤적] 기존 공용 Beam 두 개 앵커만 사용한다. 시위·석궁 볼트·화기 탄도를 분리한다.
+		-- 피해 판정은 FieldScene 원본에서 이미 확정되며 여기서는 빛의 폭·색·이동만 표시한다.
+		local bow = shotMotion == "BOW" or shotMotion == "LONGBOW"
+		local crossbow = shotMotion == "CROSSBOW"
+		local gun = shotMotion == "PISTOL" or shotMotion == "RIFLE"
 		local a0, at0 = anchorAt(from)
 		local a1, at1 = anchorAt(to)
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = at0, at1
-		beam.Width0, beam.Width1 = 0.5, 0.15
-		beam.Color = ColorSequence.new(Color3.fromRGB(255, 232, 150), Color3.fromRGB(255, 150, 70))
-		beam.LightEmission = 1
+		beam.Width0 = if bow then (if charged then 0.17 else 0.10)
+			elseif crossbow then (if charged then 0.13 else 0.08)
+			elseif gun then (if charged then 0.24 else 0.16) else 0.26
+		beam.Width1 = if bow then 0.025 elseif crossbow then 0.02 elseif gun then 0.045 else 0.08
+		beam.Color = if bow then ColorSequence.new(Color3.fromRGB(178, 214, 154), Color3.fromRGB(224, 195, 130))
+			elseif crossbow then ColorSequence.new(Color3.fromRGB(188, 213, 228), Color3.fromRGB(243, 226, 173))
+			elseif gun then ColorSequence.new(Color3.fromRGB(255, 243, 197), Color3.fromRGB(255, 177, 82))
+			else ColorSequence.new(Color3.fromRGB(255, 232, 150), Color3.fromRGB(255, 150, 70))
+		beam.LightEmission = if bow then 0.24 elseif crossbow then 0.42 else 0.82
 		beam.FaceCamera = true
-		beam.Transparency = NumberSequence.new(0.1)
+		beam.Transparency = NumberSequence.new(if bow then 0.26 elseif crossbow then 0.18 else 0.08)
+		beam.CurveSize0 = if bow then 0.35 else 0
+		beam.Segments = if bow then 5 else 1
 		beam.Parent = a0
-		task.delay(0.22, function()
+		-- 탄속: 볼트는 직진, 장궁 화살은 조금 느리고 화승총 탄환은 거의 즉시 화면을 가른다.
+		local duration = if shotMotion == "RIFLE" or shotMotion == "PISTOL" then 0.09
+			elseif crossbow then 0.13 elseif bow then 0.20 else 0.16
+		game:GetService("TweenService"):Create(a0, TweenInfo.new(duration, Enum.EasingStyle.Linear),
+			{ Position = to }):Play()
+		task.delay(duration + 0.06, function()
 			a0:Destroy()
 			a1:Destroy()
 		end)
