@@ -496,9 +496,11 @@ local MOB_OUTFIT_PARTS = {
 	},
 	pirate = {
 		{ "male_peasant_body", "UpperTorso", 1.21, 1.55, 1.26, -0.10 },
+		{ "hair_beard", "Head", 1.14, 1.25, 1.15, 0.18 },
 	},
 	pirate_female = {
 		{ "female_peasant_body", "UpperTorso", 1.19, 1.53, 1.26, -0.10 },
+		{ "hair_buns", "Head", 1.17, 1.26, 1.17, 0.19 },
 	},
 	brute = {
 		{ "male_peasant_body", "UpperTorso", 1.23, 1.57, 1.27, -0.10 },
@@ -517,10 +519,48 @@ local MOB_OUTFIT_PARTS = {
 -- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 자산이 늦게 로드되면 같은 함수를 재호출한다.
 function Pose.applyRegisteredMobOutfit(model)
 	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
-	local specs = MOB_OUTFIT_PARTS[model:GetAttribute("MobAssetProfile")]
+	local profile = model:GetAttribute("MobAssetProfile")
+	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
+
+	-- [기본 복식 재질] 실제 GLB가 지연될 때도 병종별 실루엣·소재가 다르게 보인다.
+	-- 얼굴·피부·R15 관절은 원본 그대로, 몸통·장갑·장화의 표시용 재질만 한 번 교정한다.
+	if model:GetAttribute("MobMaterialProfileApplied") ~= profile then
+		local armored = profile == "knight" or profile == "warlord"
+		local leather = profile == "brute" or profile == "rogue" or profile == "ranger"
+		local cloth = if armored then Color3.fromRGB(59, 68, 79)
+			elseif profile == "bombard" then Color3.fromRGB(100, 75, 59)
+			elseif profile == "pirate_female" then Color3.fromRGB(103, 83, 69)
+			elseif leather then Color3.fromRGB(81, 89, 77)
+			else Color3.fromRGB(114, 89, 70)
+		local steel = if profile == "warlord" then Color3.fromRGB(80, 93, 105) else Color3.fromRGB(115, 123, 131)
+		for _, part in model:GetChildren() do
+			if not part:IsA("BasePart") or part.Name == "HumanoidRootPart" or part.Name == "Head" then continue end
+			local n = part.Name
+			if n:find("Hand", 1, true) or n:find("Foot", 1, true) then
+				part.Material = Enum.Material.Leather
+				part.Color = part.Color:Lerp(Color3.fromRGB(53, 42, 36), 0.52)
+				part.Reflectance = 0
+			elseif armored and (n:find("Arm", 1, true) or n:find("Leg", 1, true) or n == "UpperTorso") then
+				part.Material = Enum.Material.Metal
+				part.Color = part.Color:Lerp(steel, 0.64)
+				part.Reflectance = 0.025
+			elseif n:find("Torso", 1, true) or n:find("Arm", 1, true) then
+				part.Material = if leather then Enum.Material.Leather else Enum.Material.Fabric
+				part.Color = part.Color:Lerp(cloth, 0.56)
+				part.Reflectance = 0
+			elseif n:find("Leg", 1, true) then
+				part.Material = Enum.Material.Fabric
+				part.Color = part.Color:Lerp(cloth:Lerp(Color3.new(0, 0, 0), 0.24), 0.45)
+				part.Reflectance = 0
+			end
+		end
+		model:SetAttribute("MobMaterialProfileApplied", profile)
+	end
+
+	-- [승인 메시 부착] 천/가죽/강철/머리카락을 부위별로 구분하며 실제 원본 텍스처와 PBR 맵은 보존한다.
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
@@ -529,9 +569,8 @@ function Pose.applyRegisteredMobOutfit(model)
 			attached += 1
 			continue
 		end
-		-- [안전] 등록·사용승인된 이름이 아니거나 실제 메시가 없으면 빈 외형을 가장하지 않는다.
-		local approved = AssetIds["People/" .. assetName]
-		local source = approved and people and people:FindFirstChild(assetName)
+		local registeredId = AssetIds["People/" .. assetName]
+		local source = registeredId and people and people:FindFirstChild(assetName)
 		local target = model:FindFirstChild(boneName)
 		if not (source and source:IsA("Model") and target and target:IsA("BasePart")) then continue end
 		local skin = source:Clone()
@@ -546,7 +585,7 @@ function Pose.applyRegisteredMobOutfit(model)
 				table.insert(parts, item)
 			end
 		end
-		-- [모바일/관절 보호] 통짜 캐릭터 모델·과도한 파츠는 장착하지 않는다.
+		-- [모바일·리그 안전] 통짜 다관절 인물이나 과도한 메시 파츠는 덧씌우지 않는다.
 		if #parts < 1 or #parts > 12 then skin:Destroy(); continue end
 		local ok = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
@@ -563,6 +602,26 @@ function Pose.applyRegisteredMobOutfit(model)
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true
+				local textured = part:FindFirstChildOfClass("SurfaceAppearance") ~= nil
+					or (part:IsA("MeshPart") and part.TextureID ~= "")
+				if not textured then
+					local meshName = (assetName .. "_" .. part.Name):lower()
+					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
+					local hair = meshName:find("hair_", 1, true)
+					local hide = meshName:find("hood", 1, true)
+					local tunic = meshName:find("peasant", 1, true)
+					part.Material = if armor then Enum.Material.Metal elseif hair or hide or tunic then Enum.Material.Fabric else Enum.Material.Leather
+					local tint = if armor then Color3.fromRGB(108, 117, 124)
+						elseif hair then Color3.fromRGB(69, 52, 41)
+						elseif hide then Color3.fromRGB(71, 78, 71)
+						elseif tunic then Color3.fromRGB(126, 108, 86)
+						else Color3.fromRGB(96, 79, 65)
+					-- 원본 메시 색을 최대한 유지한다. 흰색 단색 메시일 때만 실제 소재색을 분명히 준다.
+					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
+						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
+					part.Color = part.Color:Lerp(tint, if neutral and part.Color.R > 0.72 then 0.78 else 0.14)
+					part.Reflectance = if armor then 0.025 else 0
+				end
 				local weld = Instance.new("WeldConstraint")
 				weld.Part0, weld.Part1, weld.Parent = target, part, part
 			end
