@@ -66,6 +66,7 @@ end
 -- 장면별 모든 인간 NPC는 이 원본을 복제하므로 뼈대 없는 정적 메시를 NPC로 사용하지 않는다.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local r15Template = nil
 local r15RetryAt = 0 -- 일시적인 아바타 생성 실패 후 재시도. 영구적으로 모든 동료를 숨기지 않는다.
@@ -277,6 +278,12 @@ local NPC_PROFESSION_LOOK = {
 	royal_scholar = "official", royal_scribe = "official", royal_archivist = "official",
 	royal_administrator = "official", royal_court_officer = "official", royal_servant = "official",
 	royal_messenger = "official",
+}
+-- [지역/시대] 서유럽 근세 재단복만 적용하고 비유럽·중세 복식은 그대로 보존한다.
+local EUROPEAN_DETAIL_CULTURES = {
+	north = true, med = true, brick = true, nordic = true, stone = true,
+	iberia = true, italy = true, france = true, britain = true,
+	england = true, portugal = true, spain = true, netherlands = true,
 }
 -- outfit 추가 필드: age("child"|"adult"|"elder"), hair("short"|"bun"|"long"), hairColor, skirt(Color3), skirtLong
 function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height, outfit)
@@ -568,73 +575,147 @@ local MOB_OUTFIT_PARTS = {
 	citizen_male = {
 		{ "male_peasant_body", "UpperTorso", 1.18, 1.52, 1.25, -0.08 },
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
 	},
 	citizen_female = {
 		{ "female_peasant_body", "UpperTorso", 1.16, 1.50, 1.22, -0.08 },
 		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
 	},
 	-- [항구 주민 2차 복식] 중노동·궁정 경비·상점/행정 구분. 등록된 소형 People 메시만 쓴다.
 	citizen_worker_male = {
 		{ "male_peasant_body", "UpperTorso", 1.20, 1.52, 1.25, -0.08 },
 		{ "hair_buzzed", "Head", 1.14, 1.22, 1.17, 0.12 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	citizen_worker_female = {
 		{ "female_peasant_body", "UpperTorso", 1.18, 1.50, 1.22, -0.08 },
 		{ "hair_buzzedfemale", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	citizen_guard_male = {
 		{ "male_ranger_body", "UpperTorso", 1.22, 1.55, 1.25, -0.10 },
 		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.30, 1.12, 1.29, 0.25 },
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_guard", "UpperTorso", 1.22, 1.51, 1.22, 0.00 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_guard_female = {
 		{ "female_ranger_body", "UpperTorso", 1.18, 1.53, 1.23, -0.10 },
 		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.48, 1.08, 1.45, 0.29 },
 		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_guard", "UpperTorso", 1.22, 1.51, 1.22, 0.00 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_official_male = {
 		{ "male_peasant_body", "UpperTorso", 1.19, 1.53, 1.25, -0.08 },
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_official_female = {
 		{ "female_peasant_body", "UpperTorso", 1.17, 1.51, 1.22, -0.08 },
 		{ "hair_long", "Head", 1.16, 1.26, 1.18, 0.12 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	-- [3차 직능 복식] 선원은 활동복, 장인은 생활복으로 구분한다. 신규 자산/파트 생성 없음.
 	citizen_sailor_male = {
 		{ "male_ranger_body", "UpperTorso", 1.18, 1.54, 1.24, -0.08 },
 		{ "hair_simpleparted", "Head", 1.14, 1.22, 1.17, 0.12 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_sash", "LowerTorso", 1.20, 1.16, 1.22, 0.02 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_sailor_female = {
 		{ "female_ranger_body", "UpperTorso", 1.17, 1.52, 1.22, -0.08 },
 		{ "hair_buns", "Head", 1.15, 1.23, 1.17, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_sash", "LowerTorso", 1.20, 1.16, 1.22, 0.02 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_artisan_male = {
 		{ "male_peasant_body", "UpperTorso", 1.19, 1.52, 1.24, -0.08 },
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
+		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_artisan_female = {
 		{ "female_peasant_body", "UpperTorso", 1.17, 1.50, 1.22, -0.08 },
 		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
+		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	-- [성직 동료] 금속 갑옷 대신 승인된 생활복·후드를 써 직책을 시각적으로 구별한다.
 	companion_clergy_male = {
 		{ "male_peasant_body", "UpperTorso", 1.18, 1.53, 1.23, -0.08 },
 		{ "male_ranger_head_hood", "Head", 1.22, 1.29, 1.21, 0.15 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_stole", "UpperTorso", 1.19, 1.45, 1.21, -0.05 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	companion_clergy_female = {
 		{ "female_peasant_body", "UpperTorso", 1.16, 1.51, 1.22, -0.08 },
 		{ "female_ranger_head_hood", "Head", 1.22, 1.29, 1.21, 0.15 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_stole", "UpperTorso", 1.19, 1.45, 1.21, -0.05 },
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	companion_male = {
 		{ "male_ranger_body", "UpperTorso", 1.23, 1.56, 1.26, -0.10 },
 		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.27, 1.13, 1.29, 0.25 },
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 },
+		{ "outfit_sash", "LowerTorso", 1.20, 1.16, 1.22, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	companion_female = {
 		{ "female_ranger_body", "UpperTorso", 1.18, 1.52, 1.23, -0.10 },
 		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.48, 1.08, 1.45, 0.29 },
 		{ "hair_long", "Head", 1.16, 1.26, 1.18, 0.12 },
+		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
+		{ "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 },
+		{ "outfit_sash", "LowerTorso", 1.20, 1.16, 1.22, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	warlord = {
 		{ "male_ranger_body", "UpperTorso", 1.27, 1.61, 1.32, -0.12 },
@@ -675,6 +756,14 @@ function Pose.applyRegisteredMobOutfit(model)
 	local npcProfile = model:GetAttribute("NpcAssetProfile")
 	local profile = model:GetAttribute("MobAssetProfile") or npcProfile
 	local npcOutfit = npcProfile ~= nil and model:GetAttribute("MobAssetProfile") == nil
+	-- [근세 유럽 복식] 연도/문화권을 검사하고 모바일에는 서로 다른 세부 메시 2종만 표시한다.
+	local year = model:GetAttribute("AppearanceYear")
+	local culture = model:GetAttribute("AppearanceCulture")
+	local detailAllowed = npcOutfit and type(year) == "number" and year >= 1500 and year < 1800
+		and EUROPEAN_DETAIL_CULTURES[culture] == true
+	local detailLimit = if UserInputService.TouchEnabled then 2 else 4
+	local detailOrder = {}
+	local detailKinds = 0
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
@@ -726,6 +815,17 @@ function Pose.applyRegisteredMobOutfit(model)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
+		-- [직접 제작 GLB] 좌우 소매·장화를 하나씩 개별 장착하고 모바일 부하를 제한한다.
+		if string.sub(assetName, 1, 7) == "outfit_" then
+			if not detailOrder[assetName] then
+				detailKinds += 1
+				detailOrder[assetName] = detailKinds
+			end
+			if not detailAllowed or detailOrder[assetName] > detailLimit then
+				attached += 1
+				continue
+			end
+		end
 		-- [신규 메시 자동 선택] 실제로 등록된 머리만 기존 스타일·성별·직업에 맞춰 교체한다.
 		-- 신규 등록이 없으면 기등록 긴머리/올림머리/짧은머리를 정확히 보존한다.
 		if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
@@ -743,7 +843,7 @@ function Pose.applyRegisteredMobOutfit(model)
 				assetName = "hair_buns"
 			end
 		end
-		local slotName = "R15Asset_" .. assetName
+		local slotName = "R15Asset_" .. assetName .. "_" .. boneName
 		if model:FindFirstChild(slotName) then
 			attached += 1
 			continue
@@ -785,7 +885,8 @@ function Pose.applyRegisteredMobOutfit(model)
 				part.Massless = true
 				local textured = part:FindFirstChildOfClass("SurfaceAppearance") ~= nil
 					or (part:IsA("MeshPart") and part.TextureID ~= "")
-				if not textured then
+				-- [PBR 보존] 직접 제작한 옷의 황동·가죽·천 원본 색과 재질은 덮지 않는다.
+				if not textured and string.sub(assetName, 1, 7) ~= "outfit_" then
 					local meshName = (assetName .. "_" .. part.Name):lower()
 					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
 					local hair = meshName:find("hair_", 1, true)

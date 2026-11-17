@@ -152,6 +152,16 @@ local earlyMobParts = {
 	["People/acc_ribbon_bow"] = true,
 	["People/acc_feather_hat"] = true,
 	["People/acc_guild_badge"] = true,
+	-- [직접 제작 유럽풍 의상] 로블록스 등록된 3D 재단복만 기존 People 큐에서 로드.
+	["People/outfit_vest"] = true,
+	["People/outfit_coat"] = true,
+	["People/outfit_guard"] = true,
+	["People/outfit_apron"] = true,
+	["People/outfit_sash"] = true,
+	["People/outfit_belt"] = true,
+	["People/outfit_cuff"] = true,
+	["People/outfit_boot"] = true,
+	["People/outfit_stole"] = true,
 }
 local queue = {}
 for key, assetId in ids do

@@ -7823,7 +7823,7 @@ function FieldScene.start(opts)
 					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
 					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
 					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year,
-						companion = true, gender = if ad.female then "female" else "male" } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
+						companion = true, gender = if ad.female then "female" else "male", culture = ad.nation } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
 					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
 					if type(opts.year) == "number" and opts.year >= 1500 then
 						outfit.hair = if ad.female then (if persona == 2 then "bun" else "long") else "short"

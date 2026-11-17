@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 // DataStore 이름이 개명·유니버스 변경 중에 조용히 바뀌어 플레이어 저장이 초기화되는 사고를 막는다.
 // (2026-11-08: 새 유니버스에서 MareEssentia_v2로 저장이 시작됨.) 바꿔야 한다면 기존 저장 이전(마이그레이션)을 먼저 구현하고 이 테스트를 의도적으로 갱신한다.
@@ -1391,4 +1392,45 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  assert.match(port,/string\.sub\(asset\.Name, 1, 4\) == "acc_"/);
  assert.match(field,/peopleGroup\.ChildAdded:Connect\(function\(asset\)/);
  assert.doesNotMatch(pose,/rbxassetid:\/\/[0-9]+/);
+});
+
+
+// [직접 제작 복식 QA] 실제 GLB 원본·무료 증거·기존 관절 연결 및 모바일 한도 검증.
+test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15 장착 근거를 갖는다',()=>{
+  const names=['outfit_vest','outfit_coat','outfit_guard','outfit_apron','outfit_sash','outfit_belt','outfit_cuff','outfit_boot','outfit_stole'];
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const loader=read('ServerScriptService/AssetLoader.server.luau');
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  for(const name of names){
+    const file='roblox-games/mare-essentia/assets/people/'+name+'.glb';
+    const bytes=fs.readFileSync(file);
+    assert.equal(bytes.toString('ascii',0,4),'glTF','3D 원본 바이너리 누락: '+name);
+    assert.equal(bytes.readUInt32LE(4),2,'GLB 버전 오류: '+name);
+    assert.equal(bytes.readUInt32LE(8),bytes.length,'GLB 크기 오류: '+name);
+    assert.equal(bytes.readUInt32LE(16),0x4e4f534a,'GLB JSON 청크 누락: '+name);
+    const gltf=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
+    assert.equal(gltf.asset.version,'2.0');
+    assert.ok(gltf.meshes[0].primitives.length>0 && gltf.meshes[0].primitives.length<=12,'모바일 모델 부품 초과: '+name);
+    assert.ok(gltf.materials.length>=4,'원본 복식 소재 구분 누락: '+name);
+    const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const actualSha=crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+    assert.equal(proof.sourceGitBlobSha1,actualSha,'원본 메시 SHA-1 오류: '+name);
+    assert.equal(proof.license,'CC0-1.0','상업 이용 무료 사용권 누락: '+name);
+    assert.ok(proof.triangles>=100 && proof.parts<=12,'3D 지오메트리 부족: '+name);
+    assert.ok(pose.includes('"'+name+'"'),'NPC 프로필 실물 복식 누락: '+name);
+    assert.ok(loader.includes('["People/'+name+'"] = true'),'기존 People 로더 연결 누락: '+name);
+  }
+  for(const profile of ['citizen_male','citizen_female','citizen_worker_male','citizen_worker_female',
+    'citizen_guard_male','citizen_guard_female','citizen_official_male','citizen_official_female',
+    'citizen_sailor_male','citizen_sailor_female','citizen_artisan_male','citizen_artisan_female',
+    'companion_male','companion_female','companion_clergy_male','companion_clergy_female'])
+    assert.ok(pose.includes(profile+' = {'),'NPC 16종 복식 프로필 누락: '+profile);
+  assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[culture\] == true/);
+  assert.match(pose,/year >= 1500 and year < 1800/);
+  assert.match(pose,/UserInputService\.TouchEnabled then 2 else 4/);
+  assert.match(pose,/slotName = "R15Asset_" \.\. assetName \.\. "_" \.\. boneName/);
+  assert.match(pose,/string\.sub\(assetName, 1, 7\) ~= "outfit_"/);
+  assert.match(field,/companion = true, gender = if ad\.female then "female" else "male", culture = ad\.nation/);
+  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
+  assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
 });
