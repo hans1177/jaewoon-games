@@ -2363,29 +2363,32 @@ function FieldScene.start(opts)
 	end
 
 	-- [누적 명중 연타 HUD] 숙련 2~3타와 분리한다. 실제 공격 속도·피해·3초 유지 규칙은 변경하지 않는다.
-	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
+	local comboLabel = label(gui, "", 54, Color3.fromRGB(255, 226, 120))
 	comboLabel.Name = "FieldHitStreak"
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-	comboLabel.Position = UDim2.fromScale(0.5, 0.29)
-	comboLabel.Size = UDim2.new(0.9, 0, 0, 62)
+	comboLabel.Position = UDim2.fromScale(0.5, 0.27)
+	comboLabel.Size = UDim2.new(0.94, 0, 0, 112)
 	comboLabel.TextTransparency = 1
-	comboLabel.TextStrokeTransparency = 0.18
-	comboLabel.Font = Enum.Font.GothamBlack
+	-- [연타 전용 글꼴] 검증된 Roblox 기본 Bangers 폰트 + 먹색 외곽선. 외부 유료 폰트·이미지 없음.
+	comboLabel.Font = Enum.Font.Bangers
+	comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)
+	comboLabel.TextStrokeTransparency = 0.04
 	comboLabel.ZIndex = 22
-	local comboInfo = label(gui, "", 14, Color3.fromRGB(202, 235, 255))
+	local comboInfo = label(gui, "", if visualMobile then 17 else 18, Color3.fromRGB(202, 235, 255))
 	comboInfo.Name = "FieldStreakRecord"
 	comboInfo.AnchorPoint = Vector2.new(0.5, 0.5)
-	comboInfo.Position = UDim2.fromScale(0.5, 0.354)
-	comboInfo.Size = UDim2.new(0.86, 0, 0, 24)
-	comboInfo.TextStrokeTransparency = 0.28
-	comboInfo.Font = Enum.Font.GothamBold
+	comboInfo.Position = UDim2.fromScale(0.5, 0.44)
+	comboInfo.Size = UDim2.new(0.92, 0, 0, 30)
+	comboInfo.TextStrokeColor3 = Color3.fromRGB(15, 22, 30)
+	comboInfo.TextStrokeTransparency = 0.06
+	comboInfo.Font = Enum.Font.GothamBlack
 	comboInfo.ZIndex = 22
 	comboInfo.Visible = false
 	local comboGauge = Instance.new("Frame")
 	comboGauge.Name = "FieldStreakTimer"
 	comboGauge.AnchorPoint = Vector2.new(0.5, 0.5)
-	comboGauge.Position = UDim2.fromScale(0.5, 0.387)
-	comboGauge.Size = UDim2.new(0.38, 0, 0, 6)
+	comboGauge.Position = UDim2.fromScale(0.5, 0.492)
+	comboGauge.Size = UDim2.new(0.46, 0, 0, 9)
 	comboGauge.BackgroundColor3 = Color3.fromRGB(23, 32, 45)
 	comboGauge.BackgroundTransparency = 0.2
 	comboGauge.BorderSizePixel = 0
@@ -2413,20 +2416,25 @@ function FieldScene.start(opts)
 		local token = comboToken
 		if comboTween then comboTween:Cancel() end
 		if comboPopTween then comboPopTween:Cancel() end
-		local targetSize = if milestone then 38 else 30
+		-- [타격 연출] 숫자/획수가 클 때 스크린을 가리지 않도록 긴 문장만 축소한다.
+		local targetSize = if #text > 48 then (if visualMobile then 34 else 42)
+			elseif milestone then (if visualMobile then 63 else 76)
+			else (if visualMobile then 51 else 60)
 		comboLabel.Text = text
-		comboLabel.TextSize = targetSize + (if milestone then 8 else 5)
+		comboLabel.TextSize = targetSize + (if milestone then 19 else 12)
 		comboLabel.TextColor3 = accent or (if milestone then Color3.fromRGB(255, 226, 112) else Color3.fromRGB(232, 249, 255))
 		comboLabel.TextTransparency = 0
-		comboLabel.Position = UDim2.fromScale(0.5, if milestone then 0.27 else 0.29)
-		comboPopTween = TweenService:Create(comboLabel, TweenInfo.new(0.14, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-			TextSize = targetSize,
+		comboLabel.TextStrokeTransparency = 0.04
+		comboLabel.Rotation = if milestone then -6 else (if comboToken % 2 == 0 then 3 else -3)
+		comboLabel.Position = UDim2.fromScale(0.5, if milestone then 0.245 else 0.27)
+		comboPopTween = TweenService:Create(comboLabel, TweenInfo.new(0.13, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			TextSize = targetSize, Rotation = 0,
 		})
 		comboPopTween:Play()
 		task.delay(if milestone then 0.75 else 0.43, function()
 			if finished or comboToken ~= token or not comboLabel.Parent then return end
 			comboTween = TweenService:Create(comboLabel, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-				TextTransparency = 1, Position = UDim2.fromScale(0.5, 0.24),
+				TextTransparency = 1, TextStrokeTransparency = 1, Position = UDim2.fromScale(0.5, 0.20),
 			})
 			comboTween:Play()
 		end)
@@ -2731,7 +2739,8 @@ function FieldScene.start(opts)
 				streakBest = math.max(streakBest, streakN)
 				comboInfo.Visible = true
 				comboInfo.TextColor3 = accent
-				comboInfo.Text = string.format("%s · 초당 %.1f타 · 명중 %d%% · 최고 %d타",
+				-- [속도 읽기] 한글 글자는 고딕 볼드, 숫자는 크고 대비 높은 메달로 표시한다.
+				comboInfo.Text = string.format("%s  ·  초당 %.1f타  ·  적중 %d%%  ·  최고 %d연타",
 					grade, pace, fieldStreakResult.accuracy, streakBest)
 				comboGauge.Visible = true
 				comboGaugeFill.Size = UDim2.fromScale(1, 1)
@@ -4119,7 +4128,7 @@ function FieldScene.start(opts)
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
 			-- [전투 스킬] 공격 바로 위로 3칸을 계단형 배치. 회피·방어와 원형 터치 영역을 분리한다.
-			local i = slotOf[id] or 1
+			local i = if type(id) == "number" then id else (slotOf[id] or 1)
 			return UDim2.new(1, ATK_C.X + (if i == 1 then -outerSkillRadius
 				elseif i == 2 then -outerSkillRadius * 0.40 else outerSkillRadius * 0.14),
 				1, ATK_C.Y - (if i == 1 then outerSkillRadius * 0.80
@@ -4127,7 +4136,7 @@ function FieldScene.start(opts)
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), slotPos(if slotI == 1 then "heavy" elseif slotI == 2 then "sweep" else "card1"), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), slotPos(slotI), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.Text = ""
 			lb:SetAttribute("SkillFullName", "잠긴 스킬")
