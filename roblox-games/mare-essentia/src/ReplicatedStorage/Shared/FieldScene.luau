@@ -3989,21 +3989,24 @@ function FieldScene.start(opts)
 			count = math.min(n, 16), distance = dist, duration = 0.32, hideRing = true,
 		})
 	end
-	-- [검술 궤적] 손·무기 Trail과 연동하는 반투명 붓질 스프라이트. 전투 판정과 별도다.
+	-- [검술 궤적] 손·무기 Trail과 연동하는 방향성 불꽃·검광. 전투 판정과 별도다.
 	local function slashArc(hrp: BasePart, color: Color3, reach: number, arc: number, tilt: number)
 		if not CommonVFX then return end
 		-- [무기별 검광 실루엣] 창·레이피어는 좁은 찌르기, 단검은 짧은 사선, 검은 긴 호, 도끼·철퇴는 무거운 궤도.
-		-- 승인된 공용 검광 스프라이트를 사용하며 새 도형·모델을 만들지 않는다.
+		-- 승인된 공용 작은 불꽃과 Trail만 사용하며 새 도형·모델을 만들지 않는다.
 		local thrust = wpn.family == "spear" or wpn.motion == "RAPIER"
 		local dagger = wpn.family == "dagger"
 		local weighted = wpn.family == "axe" or wpn.family == "blunt"
+		local style = if thrust then "pierce" elseif dagger then "dagger"
+			elseif wpn.family == "axe" then "cleave" elseif wpn.family == "blunt" then "hammer"
+			elseif wpn.family == "fist" then "fist" else "blade"
 		local span = math.min(reach, if thrust then 9 elseif dagger then 6.5 else 12)
 		local orientation = tilt + arc * (if thrust then 0.12 elseif weighted then 0.19 else 0.25)
 		local base = hrp.CFrame
 		pcall(CommonVFX.Create, "SHAPE_BURST", {
 			parent = workspace, cframe = base * CFrame.new(0, if weighted then 0.32 else 0.76, -span * 0.38),
-			color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.68), textureKey = "slash",
-			rotation = orientation, hideRing = true, count = if visualMobile then 1 else (if weighted then 4 else 2),
+			color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.68), style = style,
+			rotation = orientation, hideRing = not weighted, count = if visualMobile then 1 else (if weighted then 4 else 2),
 			distance = if thrust then 1.5 else 2.8,
 			startSize = math.max(0.85, span * (if thrust then 0.14 elseif dagger then 0.22 else 0.32)),
 			endSize = span * (if thrust then 0.82 elseif dagger then 0.96 else 1.30),
@@ -4017,8 +4020,8 @@ function FieldScene.start(opts)
 				pcall(CommonVFX.Create, "SHAPE_BURST", {
 					parent = workspace, cframe = base * CFrame.new(0, 0.72, -span * 0.42),
 					color = color:Lerp(Color3.new(1, 1, 1), 0.45), accent = color,
-					textureKey = "slash", rotation = orientation + (if dagger then -29 else 15),
-					hideRing = true, count = 0, startSize = math.max(0.65, span * 0.16),
+					style = style, rotation = orientation + (if dagger then -29 else 15),
+					hideRing = true, hideFlash = false, count = 0, startSize = math.max(0.65, span * 0.16),
 					endSize = span * (if dagger then 0.78 else 1.04), duration = 0.13,
 				})
 			end)
@@ -4142,11 +4145,12 @@ function FieldScene.start(opts)
 			end)
 		end
 	end
-	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number)
+	local function pulseAt(atom: string, cf: CFrame, color: Color3, accent: Color3, endDia: number, count: number, style: string?)
 		if not CommonVFX or not CommonVFX.Create then return end
 		pcall(CommonVFX.Create, atom, {
 			parent = workspace, cframe = cf, duration = 0.42, color = color, accent = accent,
 			startDiameter = 1.4, endDiameter = endDia, startSize = 0.46, endSize = 2.6, count = count,
+			style = style,
 		})
 	end
 
@@ -4746,10 +4750,17 @@ function FieldScene.start(opts)
 					then "IMPACT_FLASH" else "SHAPE_BURST"
 				local epic = beat == 10
 				local center = impactPos + e.root.CFrame.RightVector * (if family == "dagger" or fist then side * 0.25 else 0)
+				local direction = (center - hrpPos) * Vector3.new(1, 0, 1)
+				local contactFrame = if direction.Magnitude > 0.1 then CFrame.lookAt(center, center + direction.Unit)
+					else CFrame.new(center)
+				local style = if family == "dagger" then "dagger" elseif thrust then "pierce"
+					elseif family == "axe" then "cleave" elseif family == "blunt" then "hammer"
+					elseif fist then "fist" elseif bow then "arrow" elseif crossbow then "bolt"
+					elseif impactWeapon.ranged then "gunshot" else "blade"
 				pcall(CommonVFX.Create, atom, {
-					parent = workspace, cframe = CFrame.new(center), color = tint,
+					parent = workspace, cframe = contactFrame, color = tint,
 					accent = tint:Lerp(Color3.new(1, 1, 1), 0.76),
-					textureKey = if sharp then "slash" else nil, rotation = angle,
+					style = style, rotation = angle,
 					duration = if family == "dagger" then 0.13 elseif heavy then 0.27 else 0.19,
 					startSize = if sharp then 0.40 else 0.55,
 					endSize = size + (if epic then 1.0 else 0),
@@ -4763,9 +4774,9 @@ function FieldScene.start(opts)
 				if not visualMobile and (beat == 4 or beat == 7 or beat == 10) then
 					local glint = center + e.root.CFrame.RightVector * side * (if thrust then 0.12 else 0.28)
 					pcall(CommonVFX.Create, "SHAPE_BURST", {
-						parent = workspace, cframe = CFrame.new(glint),
+						parent = workspace, cframe = if direction.Magnitude > 0.1 then CFrame.lookAt(glint, glint + direction.Unit) else CFrame.new(glint),
 						color = tint:Lerp(Color3.new(1, 1, 1), 0.72), accent = tint,
-						textureKey = if sharp then "slash" else nil, rotation = angle - side * 58,
+						style = style, rotation = angle - side * 58,
 						hideRing = true, count = if heavy then 3 else 1,
 						startSize = 0.18, endSize = if thrust then 1.35 elseif heavy then 2.35 else size * 0.65,
 						duration = if heavy then 0.14 else 0.11, distance = if heavy then 1.9 else 0.9,
@@ -4778,8 +4789,8 @@ function FieldScene.start(opts)
 						if finished or not e.root.Parent or wpn.id ~= fxWeapon
 							or swingBridge.impactSeq ~= hitSeq then return end
 						pcall(CommonVFX.Create, "SHAPE_BURST", {
-							parent = workspace, cframe = CFrame.new(center), color = tint:Lerp(Color3.new(1, 1, 1), 0.45),
-							accent = tint, textureKey = "slash", rotation = angle - side * 13,
+							parent = workspace, cframe = contactFrame, color = tint:Lerp(Color3.new(1, 1, 1), 0.45),
+							accent = tint, style = style, rotation = angle - side * 13,
 							hideRing = true, count = 0, startSize = 0.23, endSize = size * 0.75, duration = 0.13,
 						})
 					end)
@@ -5624,7 +5635,7 @@ function FieldScene.start(opts)
 								aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.73),
 								(if bow then 3.7 elseif crossbow then 3.5 elseif rifle then 5.4 else 4.4)
 									+ (if fxBeat >= 7 then 0.8 else 0),
-								if visualMobile then 2 elseif fxBeat == 10 then 6 else 4)
+								if visualMobile then 2 elseif fxBeat == 10 then 6 else 4, "gunshot")
 							-- [공중 연사 발구름] 기존 시각 발놀림에만 아주 짧은 보조 파동.
 							if not visualMobile and (fxBeat == 6 or fxBeat == 9) then
 								pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(side, -1.8, -0.5),
@@ -5731,7 +5742,10 @@ function FieldScene.start(opts)
 							local size = if fxFamily == "dagger" then 3.0 elseif thrust then 4.0
 								elseif fxFamily == "axe" then 5.8 elseif fxFamily == "blunt" then 5.2 elseif fist then 4.1 else 4.6
 							pulseAt(atom, at, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.74),
-								size + (if fxBeat >= 7 then 1 else 0), if visualMobile then 2 else 4)
+								size + (if fxBeat >= 7 then 1 else 0), if visualMobile then 2 else 4,
+								if fxFamily == "dagger" then "dagger" elseif thrust then "pierce"
+									elseif fxFamily == "axe" then "cleave" elseif fxFamily == "blunt" then "hammer"
+									elseif fist then "fist" else "blade")
 							-- [3·6·9타 무기별 2박] 날렵한 무기는 교차 칼빛, 무거운 무기는 발구름 충격파.
 							if not visualMobile and (fxBeat == 3 or fxBeat == 6 or fxBeat == 9) then
 								if heavy or fist then
@@ -5747,7 +5761,10 @@ function FieldScene.start(opts)
 					if basicBeat == 10 then
 						auraOn(ch0, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.66), 0.42)
 						pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -1.6, -1.2),
-							trailColor, Color3.fromRGB(255, 249, 226), 8, if visualMobile then 3 else 8)
+							trailColor, Color3.fromRGB(255, 249, 226), 8, if visualMobile then 3 else 8,
+							if wpn.family == "dagger" then "dagger" elseif wpn.family == "spear" or wpn.motion == "RAPIER" then "pierce"
+								elseif wpn.family == "axe" then "cleave" elseif wpn.family == "blunt" then "hammer"
+								elseif wpn.family == "fist" then "fist" else "blade")
 						-- [10타 무기별 2박 피날레] 명중 후 칼빛·창끝 섬광, PC에서는 후속 검광 또는 중량 충격파.
 						local finishAt, finishWeapon = swingBridge.basicAt, wpn.id
 						task.delay(0.14, function()
@@ -5792,7 +5809,11 @@ function FieldScene.start(opts)
 							or swingBridge.basicAt ~= fxAt or wpn.id ~= fxWeapon then return end
 						pulseAt(if wpn.family == "axe" or wpn.family == "blunt" then "CRITICAL_BURST" else "IMPACT_FLASH",
 							hrp.CFrame * CFrame.new(0, if wpn.family == "axe" or wpn.family == "blunt" then -0.82 else 0.81, -2.0),
-							firstColor, Color3.fromRGB(255, 252, 233), if visualMobile then 2.8 else 3.8, if visualMobile then 2 else 4)
+							firstColor, Color3.fromRGB(255, 252, 233), if visualMobile then 2.8 else 3.8,
+							if visualMobile then 2 else 4,
+							if wpn.family == "dagger" then "dagger" elseif wpn.family == "spear" or wpn.motion == "RAPIER" then "pierce"
+								elseif wpn.family == "axe" then "cleave" elseif wpn.family == "blunt" then "hammer"
+								elseif wpn.family == "fist" then "fist" else "blade")
 					end)
 				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
