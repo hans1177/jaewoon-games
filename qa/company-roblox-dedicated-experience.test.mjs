@@ -825,9 +825,9 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
   assert.ok(field.includes('e.chargeTarget = e.model:GetPivot().Position + to.Unit * reach'));
-  assert.ok(field.includes('local step = math.min(remaining.Magnitude, 48 * dtc)'));
+  assert.ok(field.includes('desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))'));
   assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
-  assert.ok(field.includes('e.ac.def.speed * 0.8 * dtc'),'enemy speed respects frame lag');
+  assert.ok(field.includes('math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))'),'enemy speed respects frame lag');
   assert.ok(field.includes('pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)'));
   assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
   assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
@@ -838,11 +838,11 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
     assert.equal(assets[key]?.assetType,'Image',key);
     assert.equal(assets[key]?.usePermissionGranted,true,key);
   }
-  assert.ok(field.includes('addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")'));
+  assert.ok(field.includes('local dodgeIcon = addIcon(b, "Menu/chart_compass")'));
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
   // 아이콘 전용 버튼은 원화의 중앙 배치·잘림 방지를 위해 별도 크기를 사용한다.
   assert.ok(field.includes('img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)'));
-  assert.ok(field.includes('img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79),'));
+  assert.ok(field.includes('img.Size = UDim2.fromScale(if iconOnly then 0.88 else (if painted then 0.83 else 0.79),'));
 });
 
 // [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
@@ -860,16 +860,18 @@ test('Mare exploration preserves combat rules while grounding allies and contain
     assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
   }
   assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
-  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.08, root0\.Position\.Z - 4\)/);
+  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.015, root0\.Position\.Z - 4\)/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
   assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
   assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
   assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
   assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
-  assert.match(field,/chooseBtn\.Name = "FieldWeaponSelect"/);
-  assert.match(field,/chooseBtn:SetAttribute\("AvailableWeaponCount", #availableWeapons\)/);
-  assert.match(field,/for _, candidate in Weapons\.playerChoices\(\) do/);
-  assert.match(field,/for _, candidate in Weapons\.Regional do/);
+  // [집안별 무기] 임의 전체 순환이 아닌 최초 선택 무기 두 개만 실제 교체한다.
+  assert.match(field,/wbtn:SetAttribute\("WeaponChoiceCount", 2\)/);
+  assert.match(field,/wbtn:SetAttribute\("WeaponPrimaryId", wpn\.id\)/);
+  assert.match(field,/wbtn:SetAttribute\("WeaponSecondaryId", reserveWeapon\.id\)/);
+  assert.match(field,/wpn, reserveWeapon = reserveWeapon, wpn/);
+  assert.doesNotMatch(field,/chooseBtn\.Name = "FieldWeaponSelect"/);
   assert.match(field,/equipFieldWeapon\(player\.Character, wpn\)/);
   assert.match(field,/if finished or not folder\.Parent then return \{ finish = finish, cancelled = true \} end/);
   assert.match(field,/local created, model = pcall\(Pose\.createR15, folder, pos,/);
@@ -886,7 +888,10 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   const assets=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   assert.match(field,/pp\.KeyboardKeyCode = Enum\.KeyCode\.T/);
   assert.match(field,/cluePrompt\.KeyboardKeyCode = Enum\.KeyCode\.T/);
-  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.E then/);
+  assert.doesNotMatch(field,/input\.KeyCode == Enum\.KeyCode\.E then/);
+  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.F then/);
+  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.R then/);
+  assert.match(field,/input\.KeyCode == Enum\.KeyCode\.G then/);
   assert.doesNotMatch(field,/task\.delay\(0\.8,\s*function\(\)\s*finish\("clear"\)/);
   assert.match(field,/completeBtn\.Name = "FieldComplete"/);
   assert.match(field,/if not finished and found >= nodeCount then finish\("clear"\) end/);
@@ -898,36 +903,22 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/FieldExitReason/);
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
-  assert.match(field,/local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68/);
-  assert.match(field,/local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64/);
-  assert.match(field,/arcPos\(innerSkillRadius, 42\), basicSize/);
-  assert.match(field,/arcPos\(innerSkillRadius, 114\), basicSize/);
-  // [조작 영역] 세 스킬과 기본 회피·방어는 동일한 실제 공격 버튼을 중심으로 반원형 배치.
-  assert.match(field,/Vector2\.new\(attackBtn\.Position\.X\.Offset, attackBtn\.Position\.Y\.Offset\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(\(slotOf\[id\] or 1\) - 1\) \* 42\.5\)/);
-  assert.match(field,/arcPos\(outerSkillRadius, 20 \+ \(slotI - 1\) \* 42\.5\)/);
-  const arc=(radius,angle)=>{const r=angle*Math.PI/180;return {x:-90-radius*Math.cos(r),y:-88-radius*Math.sin(r)};};
-  for(const [width,height] of [[390,640],[832,384],[320,360]]){
-    const outer=Math.max(162,Math.min(200,width*.56,height*.45));
-    const inner=Math.max(94,Math.min(114,outer*.56));
-    const skill=width<360?64:76,basic=width<360?60:68;
-    const coords=[[arc(outer,20),skill],[arc(outer,62.5),skill],[arc(outer,105),skill],
-                  [arc(inner,42),basic],[arc(inner,114),basic]];
-    for(const [pos,size] of coords){
-      assert.ok(width+pos.x-size/2>=0 && width+pos.x+size/2<=width,width+' skill x');
-      assert.ok(height+pos.y-size/2>=0 && height+pos.y+size/2<=height,height+' skill y');
-    }
-    for(let i=0;i<coords.length;i++)for(let j=i+1;j<coords.length;j++){
-      const [a,as]=coords[i], [b,bs]=coords[j];
-      assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>=(as+bs)*.5-1,'skill circle overlap '+width+':'+i+':'+j);
-    }
-  }
-  assert.match(field,/slotPos\("heavy"\), skillSize/);
-  assert.match(field,/slotPos\("sweep"\), skillSize/);
-  assert.match(field,/UDim2\.fromOffset\(skillSize, skillSize\)/);
+  // [자동 5타 강타] 수동 스킬 버튼이 아닌 기본 공격·회피 전용 입력과 자동 강타 경로를 검사한다.
+  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/ch:GetAttribute\("FieldAutoSkillPending"\)/);
+  assert.match(field,/mark == pl\.autoNormalHits/);
+  assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
+  assert.match(field,/if useMove\("heavy"\) then/);
+  assert.match(field,/bindPress\(attackBtn, useAttack\)/);
+  assert.match(field,/hit\.Size = attackBtn\.Size \+ UDim2\.fromOffset\(20, 20\)/);
+  assert.match(field,/b\.Name = "FieldDodge"/);
+  assert.match(field,/bindPress\(b, function\(\) useMove\("dodge"\) end\)/);
+  assert.match(field,/attackBtn\.Position\.X\.Offset - 146/);
+  assert.match(field,/local dodgeIcon = addIcon\(b, "Menu\/chart_compass"\)/);
+  assert.doesNotMatch(field,/slotPos\("heavy"\), skillSize/);
   assert.match(field,/local observedCardId = nil/);
   assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
-  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice\)/);
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice, fieldStreakResult\)/);
   assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
   assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
   assert.match(field,/if special and rareTrace then/);
@@ -1163,9 +1154,9 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
   assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style\)/);
   assert.match(battle,/FX\.impact\(to, nc\.ball, style\)/);
-  assert.match(battle,/FX\.splash\(to, style\)/);
-  assert.match(battle,/FX\.flame\(at, 3, sunk\.fx\)/);
-  assert.match(battle,/function FX\.waterColumn\(pos, profile\)/);
+  assert.match(battle,/FX\.splash\(to, style, nc\.ball\)/);
+  assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
+  assert.match(battle,/function FX\.waterColumn\(pos, profile, power\)/);
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
   assert.match(battle,/local density = if MOBILE_VFX then 0\.55 else 1/,'mobile density is bounded');
