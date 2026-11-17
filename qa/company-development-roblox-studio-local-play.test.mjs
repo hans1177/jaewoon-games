@@ -4667,3 +4667,41 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
   assert.equal(script.length,45,'existing town gameplay and capture sequence must remain unchanged');
 });
+
+test('Mare central plaza is reserved as empty walking space and all original civic structures moved outside',()=>{
+  const root='roblox-games/mare-essentia/';
+  const port=fs.readFileSync(root+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const town=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-town.json','utf8'));
+  assert.match(port,/local CENTRAL_PLAZA_RADIUS = 26/);
+  assert.match(port,/parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals"/);
+  assert.match(port,/dx \* dx \+ dz \* dz < CENTRAL_PLAZA_RADIUS \* CENTRAL_PLAZA_RADIUS then return nil end/);
+  assert.match(port,/local function house\(parent, pos, w, d, floors, style, rng, wallColor\)[\s\S]{0,250}CENTRAL_PLAZA_RADIUS/);
+  assert.match(port,/folder:SetAttribute\("CentralPlazaClearRadius", CENTRAL_PLAZA_RADIUS\)/);
+  assert.match(port,/folder:SetAttribute\("CentralPlazaReserved", true\)/);
+  for(const kept of ['disc(24, 0.17, plazaCol[sceneLevel], plazaMat[sceneLevel])','{ name = "교역소", tab = "trade"','{ name = "주점", tab = "quest"','local extraStalls =']){
+    assert.ok(port.includes(kept),'plaza paving, facility access, and trading must remain intact: '+kept);
+  }
+  for(const marker of [
+    'Vector3.new(-124, 0, 126)', 'local ax, az = -160, -128',
+    'Vector3.new(-106, 1, 122)', 'Vector3.new(-108, 0, 122)',
+    'Vector3.new(-94, 0, -13)', 'Vector3.new(-94, 0, 13)',
+    'Vector3.new(-114, 0, -14)', 'Vector3.new(-114, 0, 14)',
+    'Vector3.new(-136, 0, 14)', 'Vector3.new(-126, 0, 32)',
+    'Vector3.new(-82, 0, -26)', 'Vector3.new(-190, 0, 128)'
+  ])assert.ok(port.includes(marker),'civic structure relocation missing: '+marker);
+  for(const old of [
+    'Vector3.new(-26, 0, 0), 12, true',
+    'local ax, az = -8, 11',
+    'Vector3.new(-10, 0, 0), 7, true',
+    'Vector3.new(-18, 0, -13)', 'Vector3.new(2, 0, 14)',
+    'Vector3.new(-6, 0, 13), 4, false',
+    'Vector3.new(-8, 0, 9), 4.5, false',
+    'CFrame.new(-8, 1, 0)'
+  ])assert.ok(!port.includes(old),'old central square obstruction not removed: '+old);
+  const check=town.find(row=>row.type==='luau'&&row.code?.includes('TOWN_CENTRAL_PLAZA_STRUCTURE:'));
+  assert.ok(check,'official Studio must inspect plaza after building');
+  assert.match(check.code,/TOWN_CENTRAL_PLAZA_PART:/);
+  assert.match(check.code,/CentralPlazaClearRadius/);
+  assert.match(check.code,/plaza_structures=0 inspected=%d/);
+  assert.equal(town.length,45,'all existing town screenshots, game layout checks and capture stages must remain');
+});
