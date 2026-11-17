@@ -2903,18 +2903,23 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
     if(mareScript&&!report.summary.abortedEarly){
       const auditCode="local r=game:GetService('ReplicatedStorage') local h=game:GetService('HttpService') "
-        +"local keys={'MareModelAuditState','MareModelAuditTotals','MareQAAssetStatus','MareQAAssetTotals','MareQAFeatureStatus','MareQAFeatureTotals'} "
+        +"local keys={'MareModelAuditState','MareModelAuditTotals','MareQAAssetStatus','MareQAAssetTotals','MareQAFeatureStatus','MareQAFeatureTotals','MareQAFeatureProgress'} "
         +"local a={} for _,key in ipairs(keys) do a[key]=r:GetAttribute(key) or '' end "
         +"return 'MARE_STUDIO_AUDIT='..h:JSONEncode(a)";
       try{
-        let last={};
-        // [전수 감사] Studio 자산 타임아웃(140초) 이후의 최종 판정까지 동일 실행에서 기다린다.
-        const mareAuditDeadline=Date.now()+175000;
+        let last={},lastFeatureProgress='';
+        // [전수 감사] 자산 검사와 2천여 기능 호출의 최종 상태를 확인한다. 미완료는 끝까지 실패 처리한다.
+        const mareAuditDeadline=Date.now()+300000;
         for(;;){
           const out=await luau('Server',auditCode);
           const marker=out.split(/\r?\n/).find(line=>line.startsWith('MARE_STUDIO_AUDIT='));
           if(!marker)throw new Error('MARE_STUDIO_AUDIT_RESPONSE_MISSING');
           last=JSON.parse(marker.slice('MARE_STUDIO_AUDIT='.length));
+          const featureProgress=String(last.MareQAFeatureProgress||'');
+          if(featureProgress&&featureProgress!==lastFeatureProgress){
+            lastFeatureProgress=featureProgress;
+            console.log('STUDIO_SCRIPT_MARE_FEATURE_PROGRESS='+featureProgress);
+          }
           const states=[last.MareModelAuditState,last.MareQAAssetStatus,last.MareQAFeatureStatus];
           if(states.every(state=>state==='PASS'||state==='FAIL'))break;
           if(Date.now()+3000>=mareAuditDeadline)break;
@@ -2924,7 +2929,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.assetAudit={
           models:{status:last.MareModelAuditState||'UNVERIFIED',...parseTotals('MareModelAuditTotals')},
           registered:{status:last.MareQAAssetStatus||'UNVERIFIED',...parseTotals('MareQAAssetTotals')},
-          features:{status:last.MareQAFeatureStatus||'UNVERIFIED',...parseTotals('MareQAFeatureTotals')}
+          features:{status:last.MareQAFeatureStatus||'UNVERIFIED',progress:last.MareQAFeatureProgress||'',...parseTotals('MareQAFeatureTotals')}
         };
         console.log('STUDIO_SCRIPT_MARE_FULL_AUDIT='+JSON.stringify(report.assetAudit).slice(0,1900));
         if(report.assetAudit.models.status==='FAIL'||report.assetAudit.registered.status==='FAIL'){
