@@ -4231,19 +4231,32 @@ function PortScene.build(info, onFacility)
 
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
-		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
-		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
+		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), economy = "market", always = true },
+		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), economy = "tavern", always = true },
 		{ name = "항만청", tab = "route", pos = Vector3.new(8, 0, 58), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
 		{ name = "은행", tab = "harbor", pos = Vector3.new(-50, 0, 36), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
 		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-50, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
-		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-88, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
-		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-88, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
+		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-88, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), economy = "school", always = true },
+		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-88, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), economy = "school", always = true },
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
-			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
-			local grow = 1.21 + 0.02 * (sceneLevel - 1) -- 시설 필지와 입구 보행 폭을 확보하며 단계별 증축을 유지
-			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
+			-- [경제 발전도 직결] 실제 마을 시설 건설 수량이 없으면 높은 단계 외형을 선물하지 않는다.
+			-- SceneLevel은 항구 투자+실물경제 stage의 정본이고, 시설 실적은 기존 Econ.town buildings를 읽기만 한다.
+			local built = info.sim and info.sim.buildings
+			local count = if built then math.max(0, math.floor(tonumber(built[f.economy]) or 0)) else nil
+			-- sqrt(count) 구간(1/4/9/16)과 기존 클라이언트 건설 스탬프를 일치시켜 성장 때만 재배치한다.
+			local builtTier = if count == nil then sceneLevel elseif count >= 16 then 5
+				elseif count >= 9 then 4 elseif count >= 4 then 3 elseif count >= 1 then 2 else 1
+			local facilityTier = math.min(sceneLevel, builtTier)
+			-- 실물경제가 침체하면 최고급 5단계 증축만 보류한다. 경제 수치·건설 상태는 그대로 둔다.
+			if info.sim and (tonumber(info.sim.prosperity) or 100) < 90 then
+				facilityTier = math.min(facilityTier, 4)
+			end
+			local grow = 1.21 + 0.025 * (facilityTier - 1)
+			local visualFloors = math.min(3, f.floors + (if facilityTier >= 4 then 1 else 0))
+			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70),
+				if facilityTier <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (facilityTier - 1))
 			-- [시설 고유 건축] 서재=학문탑, 도서관=열주 학술관.
 			-- 지역 양식을 지켜야 할 한옥·중정·고상식 건물은 기존 현지 주택을 쓰고 주변 실물 부속으로 차별화한다.
 			local form = (style.house or {}).form
@@ -4254,16 +4267,28 @@ function PortScene.build(info, onFacility)
 				elseif f.name == "도서관 (도감)" then "temple-stone"
 				else nil
 			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
-				math.max(f.w, f.d) * grow * HOUSE_SCALE, true, tone)
+				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055), true, tone)
 			if signature then
 				signature.Name = if f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
 				signature:SetAttribute("FacilityIdentity", f.tab)
 			end
 			local body = (signature and signature:FindFirstChildWhichIsA("BasePart", true))
-				or house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
+				or house(folder, f.pos, f.w * grow, f.d * grow, visualFloors, style, rng, tone)
+			-- [자동 완공 증거] 단일 책임 장면의 읽기 전용 표식. 기존 저장·구매·건설 판정은 건드리지 않는다.
+			if body then
+				body:SetAttribute("FacilityVisualTier", facilityTier)
+				body:SetAttribute("FacilityCityTier", sceneLevel)
+				body:SetAttribute("FacilityEconomyKind", f.economy)
+				body:SetAttribute("FacilityEconomicCount", count or 0)
+				body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			end
+			if signature then
+				signature:SetAttribute("FacilityVisualTier", facilityTier)
+				signature:SetAttribute("FacilityEconomicCount", count or 0)
+			end
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d * grow / 2 - 2 else f.pos.Z + f.d * grow / 2 + 2
-			local signHeight = (f.floors * 3 + 6) * grow
+			local signHeight = (visualFloors * 3 + 6) * grow
 			if signature then
 				local _, ext = signature:GetBoundingBox()
 				signHeight = math.max(signHeight, ext.Y * 0.64)
@@ -4271,7 +4296,7 @@ function PortScene.build(info, onFacility)
 			sign(folder, body, f.name, nil, signHeight)
 			do
 				-- 시설별 외형 단계 (승인된 기존 3D 소품만): 2단계 생활 소품, 3단계 장식, 4단계 깃발·기둥, 5단계 상징물
-				local lv = sceneLevel
+				local lv = facilityTier
 				local zs = if f.pos.Z > 0 then -1 else 1
 				local fx, fz = f.pos.X, doorZ
 				local function at(dx, dz) return Vector3.new(fx + dx, 0, fz + zs * dz) end
@@ -4291,7 +4316,13 @@ function PortScene.build(info, onFacility)
 					importedModel(folder, "Cargo", "barrel", at(-8, 1), 2.7, false)
 					importedModel(folder, "Town", "bench_A", at(8, 2), 4.2, false)
 					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
-					if lv >= 3 then importedModel(folder, "Town", "stall-red", at(10, 4), 5.5, false) end
+					if lv >= 3 then
+						importedModel(folder, "Town", "stall-red", at(10, 4), 5.5, false)
+						if not localArchitecture then
+							importedModel(folder, "Town", "roof-high-window",
+								f.pos + Vector3.new(0, visualFloors * 5.8 * grow, 0), 5.5, false, style.roofs[1])
+						end
+					end
 					if lv >= 4 then lantern(folder, at(5, 0), 3) importedModel(folder, "Castle", "flag-banner-short", at(-8, 1), 7, false) end
 					if lv >= 5 then importedModel(folder, "Cargo", "pot-stew", at(9, 0), 2.2, false) end
 				elseif f.name == "항만청" then
@@ -4332,6 +4363,10 @@ function PortScene.build(info, onFacility)
 					importedModel(folder, "Interior", "bookcaseopenlow", at(-9, 1.8), 4.3, false)
 					importedModel(folder, "Interior", "bookcaseclosed", at(9, 1.8), 4.3, false)
 					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 3 and not localArchitecture then
+						importedModel(folder, "Town", "kenney_grey_window_round_01",
+							f.pos + Vector3.new(-5, visualFloors * 2.5, -1), 5, false)
+					end
 					if lv >= 5 then importedModel(folder, "Terrain", "statue-column", at(12, 2.5), 9, false) end
 				end
 			end
