@@ -5157,8 +5157,7 @@ function PortScene.build(info, onFacility)
 			if not safe then
 				-- 이동 경로가 막혔으면 빈 정지 위치를 찾고, 그것도 없으면 시각 NPC만 숨긴다.
 				for _, offset in offsets do
-					-- [좌표 정합] 주민 위치와 일과형 경유지를 모두 세계 좌표로 평행 이동한다.
-				local candidate = original + offset
+					local candidate = original + offset
 					if not blocked(candidate, 0, walker.model) then
 						safe = candidate
 						walker.mode, walker.kind = "stay", "look"
