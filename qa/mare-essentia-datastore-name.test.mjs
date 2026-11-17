@@ -1058,3 +1058,23 @@ test('왕궁 경기병 2명과 지역별 창고·식료품·직업 모션은 순
  assert.match(port,/local visibleCap = if game:GetService\("UserInputService"\)\.TouchEnabled then 6 else 12/);
  assert.match(port,/local courtStaff = PortBuildings\.royalPopulation/);
 });
+
+// [경제-건축 연결] 기존 SimCity형 예산/수요 엔진과 시각 필지 키를 연결한다. 구매·저장 기능은 아직 미도입.
+test('자동 경제발전 건축 필지는 기존 경제 수요를 읽고 미래 수동 건축 키를 보존한다',()=>{
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  const econ=read('ReplicatedStorage/Shared/Economy.luau');
+  assert.match(econ,/function E\.buildingTargets\(t\)/);
+  assert.match(econ,/function E\.stepBuildings\(t, budget\)/);
+  assert.match(econ,/E\.stepBuildings\(t, math\.min\(t\.treasury, tax \* 0\.5\)\)/);
+  assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
+  assert.match(port,/CityConstructionCanPurchase", false/);
+  assert.match(port,/SetAttribute\("BuildPlotId"/);
+  assert.match(port,/SetAttribute\("BuildState", "vacant"\)/);
+  assert.match(port,/SetAttribute\("BuildState", "constructing"\)/);
+  assert.match(port,/SetAttribute\("BuildState", "complete"\)/);
+  assert.match(port,/SetAttribute\("BuildEconomicCount", count\)/);
+  assert.match(port,/info\.portId \.\. ":harbor:" \.\. plot\.id/);
+  assert.match(port,/info\.portId \.\. ":royal:main"/);
+  assert.match(port,/local function fillRow\(z, t, xStart, side, laneIndex, rowIndex\)/);
+  assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+});

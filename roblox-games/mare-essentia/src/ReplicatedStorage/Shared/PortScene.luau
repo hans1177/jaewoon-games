@@ -1457,6 +1457,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local mark = part(folder, Vector3.new(1, 1, 1), CFrame.new(at + Vector3.new(0, 0, 0)), Color3.new(1, 1, 1))
 			mark:SetAttribute("ConstructionPhase", phase)
 			mark:SetAttribute("ConstructionWork", buildingType)
+			-- [건축 필지] 경제 엔진의 기존 공사 상태를 읽는 표시 전용 값. 추후 직접 건축과 동일 키를 사용한다.
+			mark.Name = "ConstructionPlot_" .. buildingType
+			mark:SetAttribute("BuildPlotId", info.portId .. ":construction:" .. buildingType)
+			mark:SetAttribute("BuildType", buildingType)
+			mark:SetAttribute("BuildPhase", phase)
+			mark:SetAttribute("BuildState", "constructing")
+			mark:SetAttribute("BuildTier", lvl)
+			mark:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 			mark.Transparency = 1
 			mark.CanCollide = false
 			sign(folder, mark, "🚧 공사 중", Color3.fromRGB(200, 120, 30), 9)
@@ -2351,6 +2359,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							ground:SetAttribute("IndustryGood", c[7] or "")
 							ground:SetAttribute("PortId", info.portId)
 							ground:SetAttribute("DevelopmentTier", lvl)
+							-- [경제↔건축] 현재 시설 숫자만 읽어 준공 및 증축 가능 등급을 표시한다. 건설비·저장값 변경 없음.
+							local visualTier = math.clamp(1 + math.floor(math.sqrt(math.max(0, count)) / 3), 1, lvl)
+							ground:SetAttribute("BuildPlotId", ("%s:industry:%d:%d"):format(info.portId, index, n))
+							ground:SetAttribute("BuildType", c[1])
+							ground:SetAttribute("BuildPhase", 4)
+							ground:SetAttribute("BuildState", "complete")
+							ground:SetAttribute("BuildTier", visualTier)
+							ground:SetAttribute("BuildEconomicCount", count)
+							ground:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 							placed += 1
 							table.insert(placedLots, { X = x, Z = z, H = 18 })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
@@ -2423,9 +2440,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
-	local function fillRow(z, t, xStart)
+	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
+	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
+		local slotIndex = 0
 		while x > X_END do
+			slotIndex += 1
+			local plotId = ("%s:home:%d:%d:%d:%d"):format(info.portId, side, laneIndex, rowIndex, slotIndex)
 			if rng:NextNumber() < dens then
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
@@ -2437,6 +2458,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				local ww = fw * (sz / S)
 				local body = house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
 				if body then
+					-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
+					body:SetAttribute("BuildPlotId", plotId)
+					body:SetAttribute("BuildType", "house")
+					body:SetAttribute("BuildPhase", 4)
+					body:SetAttribute("BuildState", "complete")
+					body:SetAttribute("BuildTier", fl)
+					body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 					table.insert(placedLots, { X = pos.X, Z = pos.Z, H = half })
 					if smokers < 28 and rng:NextNumber() < 0.22 then
 						smokers += 1
@@ -2467,6 +2495,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						local model = importedModel(folder, group, asset, at, size, false)
 						if model then
 							model.Name = "Undeveloped_" .. asset
+							-- 미개발지는 건물을 자동으로 짓지 않고 미래 건축 메뉴가 읽을 필지 상태만 공개한다.
+							model:SetAttribute("BuildPlotId", plotId)
+							model:SetAttribute("BuildType", "house")
+							model:SetAttribute("BuildPhase", 0)
+							model:SetAttribute("BuildState", "vacant")
+							model:SetAttribute("BuildTier", 0)
+							model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 							wildernessQuota -= 1
 							table.insert(placedLots, { X = x, Z = z0, H = half })
 						end
@@ -2491,8 +2526,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
-				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260)
-				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260)
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260, side, p, 1)
+				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260, side, p, 2)
 			end
 		end
 	end
@@ -2900,6 +2935,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						marker.Name = "HarborPlot_" .. plot.id .. "_Boundary_" .. i
 						marker:SetAttribute("HarborPlot", plot.id)
 						marker:SetAttribute("PortId", info.portId)
+						marker:SetAttribute("BuildPlotId", info.portId .. ":harbor:" .. plot.id)
+						marker:SetAttribute("BuildType", plot.id)
+						marker:SetAttribute("BuildPhase", 4)
+						marker:SetAttribute("BuildState", "complete")
+						marker:SetAttribute("BuildTier", lvl)
+						marker:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						marker:SetAttribute("PlotCenterX", plot.x)
 						marker:SetAttribute("PlotCenterZ", plot.z)
 						marker:SetAttribute("PlotHalfWidth", plot.halfX)
@@ -3648,6 +3689,10 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	-- [향후 건축 시뮬] 기존 경제 건설·증축 알고리즘을 정본으로 두고, 지금은 도시 외형만 자동 갱신한다.
+	folder:SetAttribute("CityBuildingMode", "AUTO_VISUAL_READ_ONLY")
+	folder:SetAttribute("CityDevelopmentTier", sceneLevel)
+	folder:SetAttribute("CityConstructionCanPurchase", false)
 	-- [항만 단계] 장면과 항만 표지·투명 보행 경계가 같은 1~5단계 결과를 쓴다.
 	local dockGrowth = PortBuildings.harborVisual(sceneLevel, info.sim and info.sim.buildings)
 	folder:SetAttribute("HarborVisualTier", dockGrowth.tier)
@@ -4041,6 +4086,13 @@ function PortScene.build(info, onFacility)
 		main:SetAttribute("PortId", info.portId)
 		main:SetAttribute("FootprintRatio", 10)
 		main:SetAttribute("RoyalTier", palaceTier)
+		-- [궁정 건축] 궁전 등급도 기존 발전도와 통일된 표시용 필지 규약으로 공개한다.
+		main:SetAttribute("BuildPlotId", info.portId .. ":royal:main")
+		main:SetAttribute("BuildType", "palace")
+		main:SetAttribute("BuildPhase", 4)
+		main:SetAttribute("BuildState", "complete")
+		main:SetAttribute("BuildTier", palaceTier)
+		main:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 		main:SetAttribute("RoyalPlotScale", PortBuildings.RoyalCityPlots.plotScale[sceneLevel])
 		part(folder, Vector3.new(wide + 6, 3.2, deep * 0.77 + 6), CFrame.new(px, tall + 1.6, 0), roofColor, if east or tropical then Enum.Material.WoodPlanks else Enum.Material.Slate)
 		for _, side in { -1, 1 } do
