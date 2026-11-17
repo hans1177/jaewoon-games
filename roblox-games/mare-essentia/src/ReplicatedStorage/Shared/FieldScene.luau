@@ -695,7 +695,7 @@ function FieldScene.start(opts)
 	local lastCombatAt = os.clock()
 	local activeHealers = {}
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
-	local fieldStreakResult = { hits = 0, speed = 0 }
+	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100 }
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
 	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
@@ -972,8 +972,8 @@ function FieldScene.start(opts)
 	continueBtn.Activated:Connect(function() completePopup.Visible = false end)
 	local function showCompletion()
 		if completePopup.Visible then return end
-		popupSummary.Text = string.format("이번 최고 %d연타 · 초당 %.1f타\n역대 최고 %d연타 · 보상은 귀환 후 확정",
-			fieldStreakResult.hits, fieldStreakResult.speed,
+		popupSummary.Text = string.format("이번 최고 %d연타 · 초당 %.1f타 · 명중률 %d%%\n역대 최고 %d연타 · 보상은 귀환 후 확정",
+			fieldStreakResult.hits, fieldStreakResult.speed, fieldStreakResult.accuracy,
 			math.max(math.floor(tonumber(opts.fieldStreakBest) or 0), fieldStreakResult.hits))
 		completeBtn.Visible, completeReopen.Visible = true, true
 		completePopup.Visible = true
@@ -2058,7 +2058,8 @@ function FieldScene.start(opts)
 	local streakN, streakT, streakSpeedBest = 0, 0, 0
 	local streakBest = math.floor(math.clamp(tonumber(opts.fieldStreakBest) or 0, 0, 500))
 	local streakRecent, streakRecordShown, streakHudAt = {}, false, 0
-	local streakActionSeq, streakCountedSeq = 0, -1
+	local streakActionSeq, streakCountedSeq, streakAttempts, streakLanded = 0, -1, 0, 0
+	-- [정확도 경쟁] 무기·광역 타격 범위를 불문하고 공격 행동 1회당 시도/성공 1회만 집계한다.
 	local function streakLimit(): number
 		return if streakN >= 100 then 1.8 elseif streakN >= 50 then 2.25 else 3
 	end
@@ -2098,8 +2099,11 @@ function FieldScene.start(opts)
 	-- [연타 축하] 화면 효과·소리는 5타 간격, 핵심 기록 10·25·50·100·200타만 강하게 강조한다.
 	local function comboCinema(n: number, isRecord: boolean)
 		local _, h0 = char3()
-		local spectacular = n == 25 or n == 50 or n == 100 or n == 200 or (n > 200 and n % 100 == 0)
-		local title = if n >= 200 then "신화" elseif n >= 100 then "전설"
+		local precision = if streakAttempts > 0 then streakLanded / streakAttempts else 1
+		local qualified = if n >= 200 then precision >= 0.95 elseif n >= 100 then precision >= 0.90
+			elseif n >= 50 then precision >= 0.85 elseif n >= 25 then precision >= 0.70 else true
+		local spectacular = qualified and (n == 25 or n == 50 or n == 100 or n == 200 or (n > 200 and n % 100 == 0))
+		local title = if not qualified then "정밀도 부족" elseif n >= 200 then "신화" elseif n >= 100 then "전설"
 			elseif n >= 50 then "폭주" elseif n >= 25 then "질주" elseif n >= 10 then "가속" else "연결"
 		local color = if n >= 200 then Color3.fromRGB(255, 155, 231)
 			elseif n >= 100 then Color3.fromRGB(255, 115, 102)
@@ -2267,6 +2271,7 @@ function FieldScene.start(opts)
 			if ownerAttack ~= false and streakActionSeq > 0 and streakCountedSeq ~= streakActionSeq then
 				-- 같은 광역 베기·일제 사격으로 여러 적을 맞혀도 기록은 1타만 오른다.
 				streakCountedSeq = streakActionSeq
+				streakLanded += 1
 				if hitAt - streakT > streakLimit() then endStreak("시간 만료") end
 				local miracle = streakN >= 10 and (streakLimit() - (hitAt - streakT)) > 0
 					and (streakLimit() - (hitAt - streakT)) <= 0.5
@@ -2280,6 +2285,7 @@ function FieldScene.start(opts)
 				streakSpeedBest = math.max(streakSpeedBest, pace)
 				fieldStreakResult.hits = math.max(fieldStreakResult.hits, streakN)
 				fieldStreakResult.speed = streakSpeedBest
+				fieldStreakResult.accuracy = math.floor(streakLanded / math.max(streakAttempts, 1) * 100 + 0.5)
 				local grade = if pace >= 5 then "폭주" elseif pace >= 3 then "질주"
 					elseif pace >= 1.5 then "가속" else "연결"
 				local accent = if pace >= 5 then Color3.fromRGB(255, 194, 95)
@@ -2291,7 +2297,8 @@ function FieldScene.start(opts)
 				streakBest = math.max(streakBest, streakN)
 				comboInfo.Visible = true
 				comboInfo.TextColor3 = accent
-				comboInfo.Text = string.format("%s · 초당 %.1f타 · 역대 %d연타", grade, pace, streakBest)
+				comboInfo.Text = string.format("%s · 초당 %.1f타 · 명중 %d%% · 최고 %d타",
+					grade, pace, fieldStreakResult.accuracy, streakBest)
 				comboGauge.Visible = true
 				comboGaugeFill.Size = UDim2.fromScale(1, 1)
 				if miracle then
@@ -2684,6 +2691,7 @@ function FieldScene.start(opts)
 		end
 		-- [공격 1회 = 연타 최대 1타] 대시 회피는 공격으로 집계하지 않는다.
 		streakActionSeq += 1
+		streakAttempts += 1
 		lastCombatAt = now
 		-- 조준 보조: 가까운 적(40스터드 안)을 바라보고, 닿지 않으면 몸을 날려 붙는다 (폰에서 헛손질 방지)
 		do
@@ -2927,6 +2935,7 @@ function FieldScene.start(opts)
 		end
 		look = look.Unit
 		streakActionSeq += 1
+		streakAttempts += 1
 		lastCombatAt = os.clock()
 		pl.stamina -= 25
 		dashCd = os.clock() + 3
@@ -3428,6 +3437,7 @@ function FieldScene.start(opts)
 			pl.cd[key] = now + 8
 			if sk == "volley" or sk == "snipe" or sk == "bash" then
 				streakActionSeq += 1
+				streakAttempts += 1
 				lastCombatAt = now
 			end
 			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
