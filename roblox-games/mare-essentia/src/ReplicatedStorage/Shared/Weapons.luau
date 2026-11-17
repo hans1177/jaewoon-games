@@ -202,14 +202,14 @@ export type ActionDesign = {
 -- 기존 피해량, 사거리, 기력, 재사용 시간은 ActionCombat/Weapons 원본을 그대로 사용한다.
 -- 평타는 한 번의 입력에 한 번만 판정하고, 숙련 연타 2~3타는 기존 R15 무기 동작으로만 재생한다. 숙련도 자체는 최대 5단계다.
 Weapons.ActionDesign = {
-	fist = { basic = "잽", heavy = "승룡", sweep = "회축", heavyName = "승룡 어퍼컷", sweepName = "회전 발차기", cadence = "잽·크로스·훅·팔꿈치·발차기", heavyBeat = 1, sweepBeat = 2 },
-	blade = { basic = "베기", heavy = "강참", sweep = "반월", heavyName = "내려 베기", sweepName = "반월 베기", cadence = "좌베기·우베기·찌르기·올려베기·되치기", heavyBeat = 4, sweepBeat = 2 },
-	dagger = { basic = "찌르기", heavy = "급습", sweep = "난무", heavyName = "급소 찌르기", sweepName = "역수 연격", cadence = "역수·찌르기·훑기·되치기·역수", heavyBeat = 1, sweepBeat = 2 },
-	axe = { basic = "찍기", heavy = "분쇄", sweep = "광풍", heavyName = "도끼 내려찍기", sweepName = "휩쓸기", cadence = "세로찍기·대각찍기·휘두르기·분쇄·회수", heavyBeat = 4, sweepBeat = 3 },
-	spear = { basic = "찌르기", heavy = "관통", sweep = "봉쇄", heavyName = "긴 창 찌르기", sweepName = "창 휩쓸기", cadence = "견제·깊은찌르기·창자루·휩쓸기·회수", heavyBeat = 2, sweepBeat = 4 },
-	blunt = { basic = "타격", heavy = "강격", sweep = "충격", heavyName = "철퇴 내려찍기", sweepName = "철퇴 휩쓸기", cadence = "옆치기·찍기·올려치기·지면강타·회수", heavyBeat = 4, sweepBeat = 2 },
-	bow = { basic = "궁술", heavy = "집중", sweep = "견제", heavyName = "정밀 사격 자세", sweepName = "견제 활쏘기", cadence = "시위당김·발사·화살채움·재조준·놓기", heavyBeat = 1, sweepBeat = 2 },
-	firearm = { basic = "사격", heavy = "정조준", sweep = "견제", heavyName = "정밀 조준 자세", sweepName = "견제 사격 자세", cadence = "조준·발포·반동·재장전·사격준비", heavyBeat = 1, sweepBeat = 2 },
+	fist = { basic = "잽", heavy = "승룡", sweep = "회축", heavyName = "승룡 어퍼컷", sweepName = "회전 발차기", cadence = "잽·크로스·훅·회전훅·앞차기·역돌려차기·팔꿈치·회피주먹·공중차기·회전마무리", heavyBeat = 1, sweepBeat = 2 },
+	blade = { basic = "베기", heavy = "강참", sweep = "반월", heavyName = "내려 베기", sweepName = "반월 베기", cadence = "좌베기·우베기·전진찌르기·낮은베기·상승베기·역선회·반월베기·교차베기·도약베기·회전마무리", heavyBeat = 4, sweepBeat = 2 },
+	dagger = { basic = "찌르기", heavy = "급습", sweep = "난무", heavyName = "급소 찌르기", sweepName = "역수 연격", cadence = "역수·교차찌르기·낮은훑기·돌아치기·몸비틀기·쌍역수·교차회전·측면급습·공중교차·그림자마무리", heavyBeat = 1, sweepBeat = 2 },
+	axe = { basic = "찍기", heavy = "분쇄", sweep = "광풍", heavyName = "도끼 내려찍기", sweepName = "휩쓸기", cadence = "내려찍기·대각찍기·횡베기·역횡베기·상승도끼·회전베기·낮은선회·전진찍기·도약찍기·회전마무리", heavyBeat = 4, sweepBeat = 3 },
+	spear = { basic = "찌르기", heavy = "관통", sweep = "봉쇄", heavyName = "긴 창 찌르기", sweepName = "창 휩쓸기", cadence = "빠른찌르기·긴찌르기·창자루·횡휩쓸기·교차찌르기·역선회·낮은관통·전진찌르기·도약찌르기·회전관통", heavyBeat = 2, sweepBeat = 4 },
+	blunt = { basic = "타격", heavy = "강격", sweep = "충격", heavyName = "철퇴 내려찍기", sweepName = "철퇴 휩쓸기", cadence = "횡타·역타·올려치기·내려찍기·몸통회전·낮은타격·대각강타·전진타·회전상승·회전강타", heavyBeat = 4, sweepBeat = 2 },
+	bow = { basic = "궁술", heavy = "집중", sweep = "견제", heavyName = "정밀 사격 자세", sweepName = "견제 활쏘기", cadence = "사선사격·측면스텝·낮은사격·교차사격·회전속사·역회전·도약사격·연속격발·공중회전·공중마무리", heavyBeat = 1, sweepBeat = 2 },
+	firearm = { basic = "사격", heavy = "정조준", sweep = "견제", heavyName = "정밀 조준 자세", sweepName = "견제 사격 자세", cadence = "스냅사격·측면스텝·낮은선회·역회전·교차사격·측면발포·슬라이드·연속격발·공중사격·회전마무리", heavyBeat = 1, sweepBeat = 2 },
 } :: { [string]: ActionDesign }
 function Weapons.actionDesign(w: Weapon): ActionDesign
 	return Weapons.ActionDesign[w.family] or Weapons.ActionDesign.blade
