@@ -1061,9 +1061,9 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/local rangeRing = \{ segments = \{\} \}/,'range is an outline, not a solid sea-covering disk');
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
-  assert.match(battle,/FX\.projectile\(ball, nc\)/,'the existing cannon routine gets a traced cannonball');
+  assert.match(battle,/FX\.projectile\(ball, nc, style\)/,'the existing cannon routine gets culture-stage trails');
   assert.doesNotMatch(battle,/local boom = part\(folder|local flash = part\(folder/,'cartoon light balls must not mask cannon bursts');
-  assert.match(battle,/function FX\.flame\(pos, scale\)[\s\S]*?FX\.burst\(/,'sinking flames use sprites instead of orange spheres');
+  assert.match(battle,/function FX\.flame\(pos, scale, profile\)[\s\S]*?FX\.burst\(/,'sinking flames use profile-based particles');
 
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
   assert.match(battle,/shadow\.CFrame = CFrame\.new\(bpos\.X/,'PC ballistic water shadow follows the real cannonball');
@@ -1076,12 +1076,60 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'mobile boarding actors are bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* 19/,'boarding zoom cannot change ship mechanics');
-  assert.match(battle,/if MOBILE_VFX then 1 else 2/,'mobile flames are limited to one deck vent');
+  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
+  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 20 else 32/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'existing damage authority is unchanged');
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution is unchanged');
+});
+
+// [7대륙 36척] 실물 자산·단계별 효과·구매/서버 판정 보호 회귀 검사.
+test('Mare registered 36 ship models have seven regional battle signatures and six visual tiers', () => {
+  const root='roblox-games/mare-essentia';
+  const shipFile=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/Ships.luau','utf8');
+  const battle=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const client=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
+  const ids=fs.readFileSync(root+'/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const ledger=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8'));
+  const plans=[...shipFile.matchAll(/\{ id="([a-z_]+)", name="[^"]+", faction="([a-z_]+)", stage=(\d+)/g)]
+    .map(m=>({id:m[1],faction:m[2],stage:Number(m[3])}));
+  assert.equal(plans.length,36,'36 independent blueprint entries');
+  const groups={};
+  for(const plan of plans){
+    groups[plan.faction]=(groups[plan.faction]||0)+1;
+    assert.ok(plan.stage>=1&&plan.stage<=6,plan.id+' visual stage must be within 1-6');
+    for(const suffix of ['-v5','-v5-mobile']){
+      const key='Naval/'+plan.id+suffix;
+      assert.ok(ledger.assets[key]?.assetId,key+' must have a real registered asset ID');
+      assert.equal(ledger.assets[key]?.usePermissionGranted,true,key+' must have universe use permission');
+      assert.ok(ids.includes('["'+key+'"] = '+ledger.assets[key].assetId),key+' must bind to active AssetIds');
+    }
+  }
+  assert.deepEqual(groups,{europe:5,east_asia:5,new_world:5,middle_east:5,southeast_asia:5,africa:5,lost:6});
+  for(const faction of Object.keys(groups)){
+    assert.ok(battle.includes(faction+' = { flash = Color3.fromRGB'),'distinct VFX theme required for '+faction);
+  }
+  assert.match(battle,/FX_PROFILES\[blueprint\.id\] = style/,'blueprint id drives visual profile');
+  assert.match(battle,/blueprint\.existingId and not FX_PROFILES\[blueprint\.existingId\]/,'legacy save id is preserved');
+  assert.match(battle,/AssetIds\["Naval\/" \.\. shipId \.\. "-v5"\]/,'only registered V5 IDs can select combat models');
+  assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
+  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style\)/);
+  assert.match(battle,/FX\.impact\(to, nc\.ball, style\)/);
+  assert.match(battle,/FX\.splash\(to, style\)/);
+  assert.match(battle,/FX\.flame\(at, 3, sunk\.fx\)/);
+  assert.match(battle,/function FX\.waterColumn\(pos, profile\)/);
+  assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
+  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.55 else 1/,'mobile density is bounded');
+  assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
+  assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
+  assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
+  assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution remains unchanged');
+  assert.match(client,/string\.format\("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData\.Blueprints\)/);
+  assert.doesNotMatch(client,/선박 35종|미지의 땅 2~6단계/);
+  assert.match(client,/elseif related then "연관 함종 존재·이 설계는 구매 미개방"/);
+  assert.match(client,/if hasFull and hasMobile then "원본·모바일 경량판 등록"/);
 });
 
 test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
