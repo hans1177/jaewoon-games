@@ -2887,6 +2887,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [접현 충돌] 사다리·닻줄이 맞닿는 순간의 물보라·목재 먼지·쇳조각, 시각 효과만 재생한다.
 	function FX.boarding()
+		FX.boardingActive = true
 		local center = ORIGIN + (me.pos + foe.pos) * 0.5
 		FX.burst(center + Vector3.new(0, 6, 0), nil, {
 			{ tex = "spark", c0 = YELLOW, c1 = ORANGE, s0 = 0.8, s1 = 0.12, life = 0.65, v0 = 9, v1 = 24, spread = 130, glow = 0.7, n = if MOBILE_VFX then 8 else 19, a0 = 0.08 },
@@ -3162,7 +3163,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			slab.Name = "TavernTable"
 		end
 		local pivot = sh.model:GetPivot()
-		for i = 1, 4 do
+		for i = 1, (if MOBILE_VFX then 2 else 4) do
 			local seed = i * 17 + (if side == "me" then 1 else 99)
 			local ok, rig = pcall(Pose.createR15, folder, Vector3.zero, 0, coat, Random.new(seed), role, 5)
 			if ok and rig then
@@ -3204,7 +3205,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_hit", 0.5, 1.3 + math.random() * 0.3)
 		end
 	end
+	-- [실제 접현] 기존 R15 선원을 갑판에 재사용하고 검술 동작만 연출한다.
+	-- 백병전 피해·승패·카드 상태에 간섭하지 않으며, 중복 소환은 막는다.
 	local function updateCrews(now)
+		if FX.boardingActive and not FX.boardingCrewSpawned and not opts.card then
+			FX.boardingCrewSpawned = true
+			task.spawn(function()
+				if finished then return end
+				spawnCrew(me, "me", Color3.fromRGB(60, 87, 107), "Sailor")
+				if finished then return end
+				spawnCrew(foe, "foe", Color3.fromRGB(117, 48, 39), "Rogue")
+			end)
+		end
 		for side, list in crews do
 			local sh = if side == "me" then me else foe
 			local other = if side == "me" then foe else me
@@ -3220,6 +3232,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Pose.work(c.rig, "hammer", now + c.idx * 0.3)
 				elseif active and (mode.kind == "melee" or mode.kind == "shoot") then
 					Pose.makeR15Action(c.rig, if mode.kind == "shoot" then "shoot" else "attack", math.clamp(((now + c.idx * 0.15) % 0.8) / 0.4, 0, 1), now)
+				elseif FX.boardingActive then
+					Pose.makeR15Action(c.rig, "attack", math.clamp(((now + c.idx * 0.2) % 1.0) / 0.65, 0, 1), now)
 				else
 					Pose.makeR15Action(c.rig, "idle", 0, now + c.idx)
 				end
