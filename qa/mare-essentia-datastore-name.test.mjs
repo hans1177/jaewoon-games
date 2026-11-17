@@ -437,3 +437,33 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
   assert.doesNotMatch(field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]'))),/AC\.damageEnemy|rewardGold|saveState/);
 });
+
+
+// [지역 기후·사계절 배경] 계절은 시각적 요소로 한정하고 승인된 환경 모델을 재사용한다.
+test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+  for (const marker of [
+    'month = os.date("!*t").month', 'FieldSeason', 'FieldSeasonLabel', 'FieldClimateZone',
+    'FieldSeasonMonth', 'local winterScene =', 'local monsoon =', 'foliageTint',
+    'local detailAssets =', 'FieldSeasonalDrift', 'local driftType =', 'local weatherOptions = if snowy'
+  ]) assert.ok(field.includes(marker),'계절/기후 묘사 연결 누락: '+marker);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local arid = not tropical and/);
+  assert.match(field,/local climateZone = if northern then "북방"/);
+  assert.match(field,/local weatherOptions = if snowy then/);
+  assert.match(field,/drift\.Rate = \(if visualMobile then 3 else 8\)/);
+  assert.match(field,/timeLabel\.Text = string\.format\("%s %s %02d:%02d/);
+  assert.match(field,/placeModel\(folder, entry\[1\], entry\[2\], pos, entry\[3\], entry\[6\], entry\.tint\)/);
+  for (const name of [
+    'coast-grass-patch','Grass_Small','river-stone-bank','debris','Rock_2','log-stack',
+    'forest-bush-detailed','forest-flower-purple','north-pine-fall','crops-wheatstageb',
+    'forest-flower-yellow','arid-cactus-short','east-bamboo-grove'
+  ]) assert.ok(assets.includes('["Terrain/'+name+'"]'),'미등록 계절 배경 모델: '+name);
+  const start=field.indexOf('-- [지역 원근·계절 디테일]');
+  const end=field.indexOf('-- 생산지·탐험 지역',start);
+  assert.ok(start>0 && end>start,'계절 환경 배치 블록 누락');
+  assert.doesNotMatch(field.slice(start,end),/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+  // 전투/적 자동 재출현은 장면의 계절 연출과 무관하다.
+  assert.doesNotMatch(field,/FieldEnemyRespawn|spawnReinforcement/);
+});
