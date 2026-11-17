@@ -1059,6 +1059,9 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
   assert.match(battle,/FX\.projectile\(ball, nc\)/,'the existing cannon routine gets a traced cannonball');
+  assert.doesNotMatch(battle,/local boom = part\(folder|local flash = part\(folder/,'cartoon light balls must not mask cannon bursts');
+  assert.match(battle,/function FX\.flame\(pos, scale\)[\s\S]*?FX\.burst\(/,'sinking flames use sprites instead of orange spheres');
+
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
   assert.match(battle,/shadow\.CFrame = CFrame\.new\(bpos\.X/,'PC ballistic water shadow follows the real cannonball');
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
