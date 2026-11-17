@@ -88,8 +88,10 @@ function Sfx.play(name, volume, speed, fallback)
 	end
 	s.PlaybackSpeed = speed or (0.96 + math.random() * 0.08)
 	s:Play()
-	task.delay(math.max(3, s.TimeLength + 1), function()
-		s:Destroy()
+	-- [모바일 느린 로딩] 첫 재생은 TimeLength=0일 수 있어 3초 만에 자르지 않는다.
+	s.Ended:Once(function() if s.Parent then s:Destroy() end end)
+	task.delay(math.max(12, s.TimeLength + 1), function()
+		if s.Parent then s:Destroy() end
 	end)
 end
 
@@ -169,6 +171,13 @@ function Sfx.music(name)
 	s:Play()
 	TweenService:Create(s, TweenInfo.new(2), { Volume = target }):Play()
 	currentMusic = s
+	-- [배경음 자동 복구] 승인된 음원도 첫 요청이 지연될 수 있다. 22초 뒤 미로딩일 때만 재요청.
+	task.delay(22, function()
+		if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
+			currentName = nil
+			Sfx.music(name)
+		end
+	end)
 end
 
 
@@ -447,7 +456,14 @@ function Sfx.ambient(names, gain)
 			s.Volume = 0
 			s:Play()
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
-			table.insert(ambient, s)
+				table.insert(ambient, s)
+			-- [환경음 자동 복구] 로딩 실패 뒤에도 같은 날씨가 이어지면 22초마다 복구를 재시도한다.
+			task.delay(22, function()
+				if ambientKey == key and s.Parent and not s.IsLoaded then
+					ambientKey = nil
+					Sfx.ambient(names, gain)
+				end
+			end)
 		end
 	end
 end
