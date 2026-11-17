@@ -1259,11 +1259,12 @@ function FieldScene.start(opts)
 		bar.Parent = barBack
 		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
 		model:SetAttribute("MotionVariant", styleN) -- 복식·전투 몸짓 전용(저장/피해와 무관)
-		tag.Text = def[1] .. " · " .. style[1]
+		local isElite = isBoss or ac.kind == "shield" or ac.kind == "charger"
+		tag.Text = (if isElite and not isBoss then "정예 " else "") .. def[1] .. " · " .. style[1]
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
@@ -1936,25 +1937,37 @@ function FieldScene.start(opts)
 		})
 	end
 
-	-- 연타 표시: 3연타 마무리에서 크게 보여 준다
+	-- [명중 연타 HUD] 무기 숙련 2~3타와 별개로 실제 연속 명중 수를 표시한다.
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
+	comboLabel.Name = "FieldHitStreak"
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-	comboLabel.Position = UDim2.fromScale(0.5, 0.62)
-	comboLabel.Size = UDim2.fromOffset(300, 40)
+	comboLabel.Position = UDim2.fromScale(0.5, 0.29)
+	comboLabel.Size = UDim2.new(0.88, 0, 0, 62)
 	comboLabel.TextTransparency = 1
-	local function showCombo(text: string)
+	comboLabel.TextStrokeTransparency = 0.18
+	comboLabel.Font = Enum.Font.GothamBlack
+	comboLabel.ZIndex = 22
+	local comboToken, comboTween = 0, nil
+	local function showCombo(text: string, milestone: boolean?)
+		if finished or not comboLabel.Parent then return end
+		comboToken += 1
+		local token = comboToken
+		if comboTween then comboTween:Cancel() end
 		comboLabel.Text = text
+		comboLabel.TextSize = if milestone then 38 else 29
+		comboLabel.TextColor3 = if milestone then Color3.fromRGB(255, 226, 112) else Color3.fromRGB(232, 249, 255)
 		comboLabel.TextTransparency = 0
-		task.spawn(function()
-			for i = 1, 14 do
-				comboLabel.TextTransparency = i / 14
-				comboLabel.Position = UDim2.fromScale(0.5, 0.62 - i * 0.004)
-				task.wait(0.03)
-			end
+		comboLabel.Position = UDim2.fromScale(0.5, if milestone then 0.27 else 0.29)
+		task.delay(if milestone then 0.65 else 0.4, function()
+			if finished or comboToken ~= token or not comboLabel.Parent then return end
+			comboTween = TweenService:Create(comboLabel, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				TextTransparency = 1, Position = UDim2.fromScale(0.5, 0.24),
+			})
+			comboTween:Play()
 		end)
 	end
 
-	local function nearest(hrp, range)
+		local function nearest(hrp, range)
 		local best, bestD = nil, range
 		for _, e in enemies do
 			local d = (e.root.Position - hrp.Position).Magnitude
@@ -1987,16 +2000,20 @@ function FieldScene.start(opts)
 
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
 	-- 연속 명중 연출: 5·10·15… 명중마다 화면 번쩍임·충격파·잠깐 멈춤(슬로모션 느낌)
-	local streakN, streakT = 0, 0
+	local streakN, streakT, streakBest = 0, 0, 0 -- [이번 탐험 최고 기록] 저장 구조는 바꾸지 않는다.
 	local function comboCinema(n: number)
 		local _, h0 = char3()
-		showCombo(string.format("%d 콤보!", n))
-		screenFlash(Color3.fromRGB(255, 236, 170), 0.55)
-		hitStopUntil = math.max(hitStopUntil, os.clock() + 0.22)
-		shakeUntil, shakeAmp = os.clock() + 0.3, 1.2
+		local spectacular = n >= 50 and n % 25 == 0
+		showCombo(string.format("%d연타%s!", n, if n >= 10 and n >= streakBest then " · 신기록" else ""), true)
+		screenFlash(Color3.fromRGB(255, 236, 170), if visualMobile then 0.84 else 0.62)
+		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.16 else 0.08))
+		shakeUntil, shakeAmp = os.clock() + 0.2, if visualMobile then 0.3 else 0.7
+		if n % 10 == 0 then sfx("sfx_card_ring", 0.48, 1 + math.min(n, 100) / 250)
+		else sfx("sfx_card_chain", 0.32, 1.05) end
+		if spectacular then sfx("sfx_fanfare", 0.45, 1.12) end
 		if h0 then
-			shockRing(h0.Position - Vector3.new(0, 2.5, 0), 18, Color3.fromRGB(255, 220, 120), 0.5)
-			afterimage(player.Character, Color3.fromRGB(255, 214, 120), 3, 0.05)
+			shockRing(h0.Position - Vector3.new(0, 2.5, 0), if spectacular then 24 else 14, Color3.fromRGB(255, 220, 120), 0.36)
+			if spectacular then afterimage(player.Character, Color3.fromRGB(255, 214, 120), if visualMobile then 1 else 2, 0.05) end
 		end
 	end
 	-- [무기별 2~3연타 막타] 2타는 짧게, 3타는 각 무기에 맞춘 순간 마무리로 차별화한다.
@@ -2026,7 +2043,7 @@ function FieldScene.start(opts)
 			elseif wpn.id == "crossbow" then "관통 사격"
 			elseif family == "firearm" then "반동 사격"
 			else "교차 베기"
-		showCombo(string.format("%s %d연타 · %s!", wpn.name, stage, finishName))
+		showCombo(string.format("%s %d연타 · %s!", wpn.name, stage, finishName), strong)
 		screenFlash(color, if visualMobile then (if strong then 0.91 else 0.95) else (if strong then 0.81 else 0.91))
 		local now = os.clock()
 		shakeUntil = math.max(shakeUntil, now + (if strong then 0.14 else 0.07))
@@ -2099,6 +2116,30 @@ function FieldScene.start(opts)
 	end
 
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
+		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
+		local evadeAt = os.clock()
+		if not quiet and e.elite and not e.ac.dead and (e.ac.state == "chase" or e.ac.state == "recover")
+			and evadeAt - (e.lastDodge or -100) >= 7 and math.random() < (if e.boss then 0.12 else 0.22) then
+			local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+			if away.Magnitude > 0.1 then
+				local side = Vector3.new(-away.Unit.Z, 0, away.Unit.X) * (if (e.motionPhase or 0) < 0.5 then 1 else -1)
+				local target = e.root.Position + side * 4.2
+				if math.abs(target.X - ORIGIN.X) < half - 8 and math.abs(target.Z - ORIGIN.Z) < half - 8 then
+					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.3, side
+					e.hurtAt = -100
+					if e.tag and e.tag.Parent then
+						local oldText = e.tag.Text
+						e.tag.Text = "회피!"
+						task.delay(0.45, function()
+							if e.tag and e.tag.Parent and e.tag.Text == "회피!" then e.tag.Text = oldText end
+						end)
+					end
+					burst(e.root.Position + Vector3.new(0, 1.6, 0), 8, false, "dodge")
+					sfx("sfx_skill_evade", 0.5, 1.18)
+					return
+				end
+			end
+		end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
@@ -2112,14 +2153,13 @@ function FieldScene.start(opts)
 		end
 		if not quiet then
 			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
-			if os.clock() - streakT > 3 then
-				streakN = 0
-			end
+			if os.clock() - streakT > 3 then streakN = 0 end
 			streakN += 1
 			streakT = os.clock()
-			if streakN % 5 == 0 then
-				comboCinema(streakN)
-			end
+			local isRecord = streakN >= 10 and streakN > streakBest
+			streakBest = math.max(streakBest, streakN)
+			showCombo(string.format("%d연타%s", streakN, if isRecord then " · 신기록!" else ""), false)
+			if streakN % 5 == 0 then comboCinema(streakN) end
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -3532,45 +3572,59 @@ function FieldScene.start(opts)
 					say("헛쳤다! 지금이 기회")
 				end
 			end
-			-- 이동: 규칙이 정한 방향(다가가기·거리 두기)
+			-- [적 가감속·선회] 기존 추적/후퇴/돌진 규칙은 유지하고 이동을 부드럽게 보간한다.
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			local beforeMove = e.root.Position
-			if frozen or e.ac.state == "stagger" then e.chargeTarget = nil end
-			if e.chargeTarget then
-				-- [적 이동] 돌진 중에는 일반 추적과 겹쳐 앞뒤로 튀지 않도록 기존 이동 분기에서만 갱신한다.
-				local pv = e.model:GetPivot()
+			if frozen or e.ac.state == "stagger" then
+				e.chargeTarget = nil
+				e.dodgeUntil = 0
+			end
+			local pv = e.model:GetPivot()
+			local desired = Vector3.zero
+			local facing = if flat.Magnitude > 0.1 then flat.Unit else nil
+			local evading = (e.dodgeUntil or 0) > now
+			local charging = e.chargeTarget ~= nil
+			if evading then
+				desired = (e.dodgeDir or Vector3.zero) * (if e.boss then 15 else 19)
+			elseif charging then
 				local remaining = Vector3.new(e.chargeTarget.X - pv.Position.X, 0, e.chargeTarget.Z - pv.Position.Z)
-				if remaining.Magnitude <= 0.08 then
+				if remaining.Magnitude <= 0.2 then
 					e.chargeTarget = nil
 				else
-					local step = math.min(remaining.Magnitude, 48 * dtc)
-					local dir = remaining.Unit
-					local front = CFrame.lookAt(Vector3.zero, dir)
-					e.model:PivotTo(CFrame.new(pv.Position + dir * step) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
-					if step >= remaining.Magnitude then e.chargeTarget = nil end
-					wish = 1
+					desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))
+					facing = remaining.Unit
 				end
 			elseif e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
-				-- 차례를 기다리는 적: 주인공 둘레를 천천히 돈다(한꺼번에 몰려 때리지 않는다)
-				local sd = flat.Unit:Cross(Vector3.yAxis) * (e.circleDir or 1)
+				-- 공격 차례를 기다리는 적은 정면을 유지하며 측면으로 포위한다.
 				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
-				local pv = e.model:GetPivot()
-				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
-				e.model:PivotTo(CFrame.new(pv.Position + sd * e.ac.def.speed * 0.45 * dtc) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
-				wish = 0.5
+				desired = flat.Unit:Cross(Vector3.yAxis) * e.circleDir * e.ac.def.speed * 0.45
 			elseif wish ~= 0 and flat.Magnitude > 0.1 then
-				local step = flat.Unit * wish * math.min(e.ac.def.speed * 0.8 * dtc, flat.Magnitude)
-				local pv = e.model:GetPivot()
-				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
-				e.model:PivotTo(CFrame.new(pv.Position + step) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
-			elseif flat.Magnitude > 0.1 and e.ac.state ~= "idle" and e.ac.state ~= "stagger" then
-				local pv = e.model:GetPivot()
-				local front = CFrame.lookAt(Vector3.zero, flat.Unit)
-				e.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation, math.clamp(dtc * 10, 0, 1)))
+				desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
 			end
-			-- [발걸음] 실제 이동 거리로 보행 위상을 계산해 헛발질을 줄인다.
-			if wish ~= 0 then
-				e.gait = (e.gait or 0) + (e.root.Position - beforeMove).Magnitude / (if e.boss then 7 else 5.2)
+			local response = if evading then 22 elseif charging then 17 elseif desired.Magnitude > 0 then 9 else 13
+			e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * dtc))
+			if e.moveVel.Magnitude < 0.07 then e.moveVel = Vector3.zero end
+			local delta = e.moveVel * dtc
+			if charging and e.chargeTarget then
+				local remaining = (e.chargeTarget - pv.Position) * Vector3.new(1, 0, 1)
+				if delta.Magnitude >= remaining.Magnitude then
+					delta = remaining
+					e.chargeTarget = nil
+				end
+			elseif not evading and wish > 0 and delta.Magnitude > flat.Magnitude then
+				delta = flat
+			end
+			if delta.Magnitude > 0.001 or facing then
+				local rot = pv.Rotation
+				if facing then
+					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
+					rot = rot:Lerp(targetRot, 1 - math.exp(-7 * dtc))
+				end
+				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
+			end
+			local traveled = (e.root.Position - beforeMove).Magnitude
+			if traveled > 0.02 then
+				e.gait = (e.gait or 0) + traveled / (if e.boss then 7 else 5.2)
 			end
 			if e.warn and now > (e.warnUntil or 0) + 0.3 then
 				e.warn:Destroy()
@@ -3582,7 +3636,9 @@ function FieldScene.start(opts)
 			if e.fm then
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
-				if hurtProgress >= 0 and hurtProgress < 1 then
+				if (e.dodgeUntil or 0) > now then
+					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.3, 0, 1)
+				elseif hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
 				elseif acs == "windup" then
 					st, ph = "ANTICIPATION", math.clamp(e.ac.t / math.max(e.ac.def.windup, 0.05), 0, 1)
@@ -3590,7 +3646,7 @@ function FieldScene.start(opts)
 					st, ph = "ATTACK", 0.25 + math.clamp(e.ac.t / math.max(e.ac.def.active, 0.05), 0, 1) * 0.35
 				elseif acs == "recover" then
 					st, ph = "RECOVERY", math.clamp(e.ac.t / math.max(e.ac.def.recover, 0.05), 0, 1)
-				elseif wish ~= 0 then
+				elseif traveled > 0.025 then
 					st, ph = "RUN", (e.gait or 0) % 1
 				end
 				-- 몸통 기울기: 근접형은 준비 때 뒤로 젖혔다가 타격 때 앞으로 숙이고, 사수는 활을 당기며 뒤로 젖힌다
@@ -3616,7 +3672,10 @@ function FieldScene.start(opts)
 				if st == "IDLE" then
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
 				elseif st == "RUN" then
-					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.10
+					local pace = math.clamp((e.moveVel or Vector3.zero).Magnitude / math.max(e.ac.def.speed, 1), 0, 1.4)
+					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075 * pace, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.12 * pace
+				elseif st == "EVADE" then
+					bob, roll, lean = -0.18 * math.sin(ph * math.pi), (if (e.motionPhase or 0) < 0.5 then 1 else -1) * 0.20 * math.sin(ph * math.pi), -0.20
 				elseif st == "HIT" then
 					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end
@@ -3649,7 +3708,7 @@ function FieldScene.start(opts)
 			elseif attackProgress >= 0 and attackProgress < 1 then
 				Pose.makeR15Action(e.model, "attack", attackProgress, now - e.spawnT)
 			else
-				Pose.makeR15Action(e.model, if wish ~= 0 then "run" else "idle", 0, if wish ~= 0 then (e.gait or 0) * 2 * math.pi else now - e.spawnT)
+				Pose.makeR15Action(e.model, if traveled > 0.025 then "run" else "idle", 0, if traveled > 0.025 then (e.gait or 0) * 2 * math.pi else now - e.spawnT)
 			end
 		end
 	end))

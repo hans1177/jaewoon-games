@@ -102,7 +102,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	end
 	h.lastActorState = state
 	table.clear(h.canon)
-	CM.SampleProceduralActorMotion(state, phase, {
+	CM.SampleProceduralActorMotion(if state == "EVADE" then "RUN" else state, phase, {
 		bodyPlan = "BIPED",
 		actorClass = if isBoss then "BOSS" elseif h.model:GetAttribute("MotionRole") == "ally-ranged" or h.model:GetAttribute("MotionRole") == "ally-melee" then "NPC" else "ENEMY",
 		availableJoints = AVAILABLE,
@@ -155,6 +155,24 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("FootL", -math.max(0, plant) * 0.13 * stride, 0, 0)
 		bend("FootR", -math.max(0, -plant) * 0.13 * stride, 0, 0)
 		bend("Spine", -0.04 * stride, -plant * 0.035, 0)
+		-- [달리기 반작용] 발의 보폭과 반대쪽 팔·팔꿈치가 자연스럽게 움직인다.
+		bend("UpperArmL", -plant * 0.23 * stride, 0, -0.04)
+		bend("UpperArmR", plant * 0.23 * stride, 0, 0.04)
+		bend("ForearmL", -0.13 - math.max(0, -plant) * 0.12, 0, 0)
+		bend("ForearmR", -0.13 - math.max(0, plant) * 0.12, 0, 0)
+	elseif state == "EVADE" then
+		-- [정예 회피] 기존 R15 달리기 포즈에 측면 체중 이동과 가드·발 디딤을 더한다.
+		local side = if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1
+		local slip = math.sin(math.clamp(phase, 0, 1) * math.pi)
+		bend("Spine", -0.19 * slip, 0.22 * side * slip, 0.16 * side * slip)
+		bend("Chest", -0.24 * slip, -0.19 * side * slip, 0.20 * side * slip)
+		bend("Head", 0, -0.16 * side * slip, 0)
+		bend("UpperArmL", -0.55 * slip, 0, -0.20 * slip)
+		bend("UpperArmR", -0.55 * slip, 0, 0.20 * slip)
+		bend("ThighL", 0.30 * slip, 0, -0.13 * side * slip)
+		bend("ThighR", -0.25 * slip, 0, 0.13 * side * slip)
+		bend("ShinL", -0.34 * slip, 0, 0)
+		bend("ShinR", -0.20 * slip, 0, 0)
 	elseif state == "HIT" then
 		bend("Head", 0.1 * pulse, 0.1 * pulse * (if persona == 1 then -1 else 1), 0)
 	end
@@ -345,7 +363,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- [시작·정지·피격·예고 연결] 현재 AI의 공격 타이밍은 그대로 두고 관절만 짧게 보간한다.
 	if h.transitionPose then
 		h.transitionElapsed = (h.transitionElapsed or 0) + math.clamp(dt, 0, 0.15)
-		local duration = if state == "ATTACK" or state == "HIT" then 0.065
+		local duration = if state == "ATTACK" or state == "HIT" or state == "EVADE" then 0.065
 			elseif state == "ANTICIPATION" or state == "INTERACT" then 0.12
 			elseif state == "RECOVERY" then 0.16 else 0.23
 		local q = math.clamp(h.transitionElapsed / duration, 0, 1)
