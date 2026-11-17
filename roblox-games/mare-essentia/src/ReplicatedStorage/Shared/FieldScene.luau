@@ -3594,6 +3594,20 @@ function FieldScene.start(opts)
 				ch0:SetAttribute("FieldDodgeBeat", -(ch0:GetAttribute("FieldDodgeBeat") or -1))
 			end
 			local dodgeOrigin = hrp.CFrame
+			-- [완벽 회피 판정 준비] 누르는 순간 이미 공격 예고/진행 중이던 적만 기록한다.
+			-- 실제 적 공격이 무적 시간 내에 빗나가야 성공. 단순 연속 회피·멀리서 누르기로 발동하지 않는다.
+			local matrixThreats = {}
+			for _, enemy in enemies do
+				local state = enemy.ac.state
+				if not enemy.ac.dead and (state == "windup" or state == "active")
+					and (enemy.root.Position - dodgeOrigin.Position).Magnitude <= enemy.ac.def.range * STUD + 8 then
+					matrixThreats[enemy] = true
+				end
+			end
+			pl.matrixDodgeUntil = now + (mv.invuln or 0.35)
+			pl.matrixDodgeOrigin = dodgeOrigin.Position
+			pl.matrixDodgeThreats = matrixThreats
+			pl.matrixDodgeConsumed = false
 			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
@@ -4700,6 +4714,8 @@ function FieldScene.start(opts)
 		end
 		local now = os.clock()
 		local dtc = math.min(dt, 0.1)
+		-- [매트릭스 회피] 성공한 순간만 짧게 적 세계시간을 늦춘다. 주인공·동료·재화·쿨타임은 정상 진행.
+		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
 		local acList = {}
 		for _, o in enemies do table.insert(acList, o.ac) end
 		local attackers = AC.attackersCount(acList)
@@ -4714,13 +4730,13 @@ function FieldScene.start(opts)
 			local frozen = now < (e.holdUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
-				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * dtc * 2)
+				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * enemyDt * 2)
 			end
 			local event, hit = nil, nil
 			if not frozen then
 				local others = attackers - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
 				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
-				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
+				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
 				-- [적 무기 연속 동작] 공격 차례에 따라 기존 공용 무기 1~3타를 순환한다. 피해·판정은 동일.
@@ -4890,6 +4906,13 @@ function FieldScene.start(opts)
 				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
+				-- [완벽 회피] 실전 공격 판정이 온 순간에만 검증한다. 무적 회피 중이며
+				-- 해당 적을 회피 시작 때 위협으로 확인했을 때만 100% 성공으로 인정한다.
+				local perfectDodge = not pl.ward and not pl.matrixDodgeConsumed
+					and now <= (pl.matrixDodgeUntil or 0) and AC.isInvulnerable(pl, now)
+					and pl.matrixDodgeThreats and pl.matrixDodgeThreats[e] == true
+					and (hit or (pl.matrixDodgeOrigin
+						and (e.root.Position - pl.matrixDodgeOrigin).Magnitude <= e.ac.def.range * STUD + 8))
 				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
 				if hit and pl.ward then
 					pl.ward = false
@@ -4947,7 +4970,19 @@ function FieldScene.start(opts)
 						say("피했다!")
 					end
 				else
-					say("헛쳤다! 지금이 기회")
+					if not perfectDodge then say("헛쳤다! 지금이 기회") end
+				end
+				if perfectDodge then
+					-- [매트릭스식 성공 연출] 피해/보상/시전 횟수 추가 없이 적 AI·이동만 0.72초 동안 24% 속도로 재생.
+					pl.matrixDodgeConsumed = true
+					pl.matrixSlowUntil = now + 0.72
+					showCombo("완벽 회피! · 매트릭스 슬로모션", true, Color3.fromRGB(122, 240, 246))
+					screenFlash(Color3.fromRGB(122, 236, 248), if visualMobile then 0.91 else 0.82)
+					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
+						Color3.fromRGB(98, 220, 242), Color3.fromRGB(238, 255, 255), 13, if visualMobile then 5 else 12)
+					afterimage(char, Color3.fromRGB(141, 230, 250), if visualMobile then 2 else 4, 0.055)
+					sfx("sfx_card_ring", 0.44, 1.38)
+					shakeUntil, shakeAmp = now + 0.12, if visualMobile then 0.12 else 0.26
 				end
 			end
 			-- [적 가감속·선회] 기존 추적/후퇴/돌진 규칙은 유지하고 이동을 부드럽게 보간한다.
@@ -4984,10 +5019,10 @@ function FieldScene.start(opts)
 			if not charging and not evading and (frozen or e.ac.state == "windup" or e.ac.state == "active" or e.ac.state == "recover") then
 				e.moveVel = Vector3.zero
 			else
-				e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * dtc))
+				e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * enemyDt))
 			end
 			if e.moveVel.Magnitude < 0.07 then e.moveVel = Vector3.zero end
-			local delta = e.moveVel * dtc
+			local delta = e.moveVel * enemyDt
 			if charging and e.chargeTarget then
 				local remaining = (e.chargeTarget - pv.Position) * Vector3.new(1, 0, 1)
 				if delta.Magnitude >= remaining.Magnitude then
@@ -5001,7 +5036,7 @@ function FieldScene.start(opts)
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
-					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * dtc))
+					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
 				end
 				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
 			end
@@ -5049,7 +5084,7 @@ function FieldScene.start(opts)
 				-- 실제 전진한 거리만 발 디딤 포즈로 전달해 공중에서 미끄러지는 느낌을 막는다.
 				e.attackStep = 0
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
-					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dtc, flat.Magnitude - 2.5)
+					local lunge = flat.Unit * math.min(def0.speed * 1.8 * enemyDt, flat.Magnitude - 2.5)
 					e.model:PivotTo(e.model:GetPivot() + lunge)
 					e.attackStep = lunge.Magnitude
 				end
@@ -5088,7 +5123,7 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
+				FM.actor(e.fm, st, ph, enemyDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
 					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
 					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
