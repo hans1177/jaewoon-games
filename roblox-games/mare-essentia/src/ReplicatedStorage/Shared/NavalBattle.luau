@@ -372,8 +372,25 @@ function NavalBattle.play(opts)
 			{ water = Color3.fromRGB(66, 124, 138), props = {
 				{ "mystic-sand-dune", 140, -425, -362 }, { "arid-cactus-tall", 43, -405, -342 },
 				{ "cliff-rock", 132, 478, 364 }, { "egypt-obelisk", 56, 450, 340 } } },
+			-- [동양 해역] 대나무 해안과 조선식 절벽 지형. 기존 등록 모델만 사용.
+			{ water = Color3.fromRGB(43, 130, 138), props = {
+				{ "cliff-steps-rock", 136, 413, -343 }, { "east-bamboo-grove", 65, 438, -323 },
+				{ "platform-beach", 137, -466, 360 }, { "east-bamboo-grove", 55, -433, 344 } } },
+			-- [고대 항로] 해안 바위 너머 그리스식 폐허.
+			{ water = Color3.fromRGB(48, 105, 144), props = {
+				{ "cliff-rock", 144, -431, -370 }, { "greek-ruins-a", 62, -410, -341 },
+				{ "cliff-steps-rock", 133, 450, 374 }, { "greek-column", 57, 431, 355 } } },
+			-- [안개 해역] 해안 동굴·기울어진 숲. 바다의 선회 공간에는 배치하지 않는다.
+			{ water = Color3.fromRGB(51, 89, 100), props = {
+				{ "cliff-cave-rock", 150, 412, -358 }, { "haunted-pine-crooked", 56, 436, -334 },
+				{ "cliff-waterfall-rock", 137, -468, 364 }, { "haunted-gravestone-broken", 47, -437, 343 } } },
+			-- [미지의 해역] 먼 해상 환상 지형. 배가 움직이는 중심 항로는 비워 둔다.
+			{ water = Color3.fromRGB(38, 101, 119), props = {
+				{ "land-floating-island", 148, 475, -403 }, { "mystic-crystals", 47, 457, -375 },
+				{ "cliff-rock", 129, -472, 389 }, { "mystic-stone-arch", 52, -456, 362 } } },
 		}
 		local mapKey = tostring(opts.shipId or "") .. tostring(opts.enemyName or "") .. tostring(opts.weatherName or "")
+			.. tostring(opts.portId or "") .. tostring(opts.regionId or "")
 		local mapHash = 0
 		for i = 1, #mapKey do mapHash += string.byte(mapKey, i) end
 		local coast = coasts[mapHash % #coasts + 1]
@@ -688,7 +705,7 @@ function NavalBattle.play(opts)
 	adviceLine.AnchorPoint = Vector2.new(0.5, 0)
 	adviceLine.Position = UDim2.new(0.5, 0, 0, 174)
 	adviceLine.Size = UDim2.fromOffset(math.min(420, battleViewport.X - 32), 24)
-	adviceLine.Visible = battleViewport.X >= 480 -- [폰 세로] 좁은 화면은 상단 전술 안내만 사용
+	adviceLine.Visible = battleViewport.X >= 720 -- [모바일 HUD] 중간 폭에서도 카드 지원·전술판과 중앙 조언이 겹치지 않게 한다
 	adviceLine.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 	adviceLine.BackgroundTransparency = 1
 	adviceLine.TextTransparency = 1
@@ -727,7 +744,7 @@ function NavalBattle.play(opts)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
 	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.62 elseif MOBILE_VFX then 0.52 else 0.55, 0, 0, 46)
+	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.62 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
 	tactic.TextSize = if MOBILE_VFX then 12 else 14
 	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
@@ -748,7 +765,7 @@ function NavalBattle.play(opts)
 	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
 	local rangeRing = { segments = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
-		local count = if MOBILE_VFX then 24 else 40 -- [깨끗한 탐지 원] 조각 수만 약간 늘리고 파츠는 재사용
+		local count = if MOBILE_VFX then 28 else 40 -- [깨끗한 탐지 원] 모바일 포각 윤곽을 다듬되 고정 파츠만 재사용
 		local segmentLength = 2 * math.pi * cannon.range / count * 0.86
 		for i = 1, count do
 			local seg = part(folder, Vector3.new(0.72, 0.12, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
@@ -770,7 +787,7 @@ function NavalBattle.play(opts)
 			sweep.Attachment1 = edge
 			sweep.FaceCamera = true
 			sweep.LightEmission = 0.85
-			sweep.Width0, sweep.Width1 = 0.04, if MOBILE_VFX then 0.24 else 0.32 -- [탐지 안테나] 두꺼운 리본 제거
+			sweep.Width0, sweep.Width1 = 0.035, if MOBILE_VFX then 0.17 else 0.25 -- [탐지 안테나] 얇은 단일 광선으로 정리
 			sweep.Color = ColorSequence.new(Color3.fromRGB(160, 235, 215), Color3.fromRGB(255, 217, 139))
 			sweep.Transparency = NumberSequence.new({
 				NumberSequenceKeypoint.new(0, 0.97),
@@ -795,7 +812,8 @@ function NavalBattle.play(opts)
 	local flair, combo, dodged = 0, 0, 0
 	local comboLabel = label(gui, "", 22, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0)
-	comboLabel.Position = UDim2.new(0.5, 0, 0, 208)
+	comboLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then math.min(336, battleViewport.Y - 105) else 208)
+	comboLabel.Visible = battleViewport.X >= 480 or battleViewport.Y >= 520 -- [가로 소형] 겹침 방지
 	comboLabel.Size = UDim2.fromOffset(300, 30)
 
 	local subtitle = label(gui, "", 16)
@@ -836,8 +854,8 @@ function NavalBattle.play(opts)
 		if #entries > 0 and not opts.cardOnly then
 			local panel = Instance.new("Frame")
 			panel.AnchorPoint = Vector2.new(1, 0)
-			panel.Position = UDim2.new(1, -16, 0, 122)
-			panel.Size = UDim2.fromOffset(190, 24 + #entries * 30)
+			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 720 then 173 else 122) -- [폭별 배치] 좁은 폰에서 중앙 전술판 아래로 분리
+			panel.Size = UDim2.fromOffset(if battleViewport.X < 480 then 166 else 190, 24 + #entries * 30)
 			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
 			panel.BackgroundTransparency = 0.35
 			panel.BorderSizePixel = 0
@@ -1194,7 +1212,7 @@ function NavalBattle.play(opts)
 		end
 		knob.Position = UDim2.new(0.5, d.X, 0.5, d.Y)
 		local nx, ny = d.X / r, -d.Y / r
-		steerDir = if math.abs(nx) < 0.12 then 0 else nx -- [해상 조타] 스틱을 오른쪽으로 밀면 우현, 왼쪽은 좌현
+		steerDir = if math.abs(nx) < 0.12 then 0 else nx -- [조타 입력] 화면 오른쪽을 +로 고정하고 실제 화면 방향은 선회 루프에서 보정
 		stickThrottle = math.clamp(0.6 + ny * 0.5, 0.1, 1)
 	end
 	local function stickRelease()
@@ -3000,10 +3018,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		FX.burst(pos + Vector3.new(0, scale * 0.2, 0), nil, {
 			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else Color3.fromRGB(190, 52, 28),
-				s0 = scale * 1.65, s1 = scale * 0.55, life = 1.25, v0 = 6, v1 = 12,
+				s0 = scale * 1.95, s1 = scale * 0.70, life = 1.40, v0 = 6, v1 = 12,
 				spread = 35, glow = 1, n = if MOBILE_VFX then 4 else 5 + stage * 2, a0 = 0.04 },
-			{ tex = "smoke", c0 = C_DARK, c1 = theme.smoke, s0 = scale * 1.3,
-				s1 = scale * (2.6 + stage * 0.21), life = 2.7, v0 = 5, v1 = 12, spread = 32,
+			{ tex = "smoke", c0 = C_DARK, c1 = theme.smoke, s0 = scale * 1.55,
+				s1 = scale * (3.1 + stage * 0.24), life = 3.1, v0 = 5, v1 = 12, spread = 32,
 				n = if MOBILE_VFX then 3 else 3 + stage, a0 = 0.3 },
 		}, { color = theme.flash, bright = if MOBILE_VFX then 1.6 else 2 + stage * 0.2, range = 18, dur = 0.4 })
 	end
@@ -3165,7 +3183,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local spread = if style.faction == "southeast_asia" then 44 elseif style.faction == "new_world" then 32 else 20
 		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
 			{ tex = "smoke", c0 = FOAM, c1 = theme.foam,
-				s0 = (2.7 + stage * 0.33) * strength, s1 = (7.0 + stage * 1.45) * strength,
+				s0 = (3.3 + stage * 0.37) * strength, s1 = (9.0 + stage * 1.55) * strength,
 				life = (0.95 + stage * 0.09) * math.sqrt(strength), v0 = 12 * strength, v1 = (22 + stage * 1.2) * strength,
 				spread = spread * 0.52, n = math.max(3, math.floor((5 + stage * 1.2) * density * strength)),
 				a0 = 0.17, acc = Vector3.new(0, -19, 0), drag = 1 },
@@ -3299,12 +3317,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local fire = emitterOn(vent, {
 					tex = "fire", c0 = theme.flash,
 					c1 = if profile.faction == "lost" then theme.spark else RED,
-					s0 = 2.7 + stage * 0.52, s1 = 0.55, life = 1.1, v0 = 3, v1 = 8,
+					s0 = 3.5 + stage * 0.62, s1 = 0.65, life = 1.2, v0 = 3, v1 = 8,
 					spread = 24, glow = 1, rate = 0, a0 = 0.05, acc = Vector3.new(0, 7, 0)
 				})
 				local soot = emitterOn(vent, {
 					tex = "smoke", c0 = if profile.faction == "lost" then theme.smoke else SOOT,
-					c1 = theme.smoke, s0 = 2.2 + stage * 0.28, s1 = 8.5 + stage * 0.9,
+					c1 = theme.smoke, s0 = 2.8 + stage * 0.34, s1 = 10.0 + stage * 1.15,
 					life = 3.2, v0 = 3, v1 = 11, spread = 26, rate = 0, a0 = 0.38,
 					acc = Vector3.new(0, 6, 0), drag = 1.3
 				})
@@ -3902,7 +3920,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
-			me.theta += steerDir * (if now < skillUntil.evade then 2.6 else 1.5) * dt
+			-- [화면 기준 조타] 카메라가 접현/침몰 시 반대쪽으로 돌아가도 스틱 우측은 화면 우측 선회.
+			local rightTurn = Vector3.new(-math.sin(me.theta), 0, math.cos(me.theta))
+			local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1
+			me.theta += steerDir * turnSign * (if now < skillUntil.evade then 2.6 else 1.5) * dt
 			-- [접현 돌진] 수동 조타 중에는 그 방향 우선. 자동 조타일 때만 실제 적선으로 선수를 향한다.
 			if now < skillUntil.dash and phase == "duel" and steerDir == 0 then
 				local approach = foe.pos - me.pos
@@ -4340,7 +4361,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				FX.burst(ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 7, 0), nil, {
 					{ tex = "smoke", c0 = C_DARK, c1 = mist.smoke, s0 = 6 + k * 4, s1 = 19 + k * 13,
 						life = 2.8, v0 = 6, v1 = 15, spread = 48, n = if MOBILE_VFX then 5 else 11,
-						a0 = 0.35, acc = Vector3.new(0, 5, 0), drag = 1.7 },
+						a0 = 0.30, acc = Vector3.new(0, 5, 0), drag = 1.6 },
 				})
 			end
 			if sink.mode == "fire" and now >= (FX.sinkFlameAt or 0) and k < 0.88 then
@@ -4393,9 +4414,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local gunSide = if sideCross < 0 then "우현" else "좌현"
 			local aimAngle = if dd > 0.1 then math.deg(math.acos(math.clamp(heading:Dot(direction.Unit), -1, 1))) else 0
 			local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5) -- [실제 포각] 선측 정면 90°, 양옆 60° 이내가 포격 가능
+			-- [조향 가이드] 실제 명중 판정을 바꾸지 않고 가장 가까운 좌/우 선측 90° 위치만 안내한다.
+			local enemyBearing = if dd > 0.1 then math.atan2(direction.Z, direction.X) else me.theta
+			local turnLeft = (enemyBearing + math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
+			local turnRight = (enemyBearing - math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
+			local turnNeeded = if math.abs(turnRight) < math.abs(turnLeft) then turnRight else turnLeft
+			local steerCue = (if turnNeeded >= 0 then "우로 " else "좌로 ") .. tostring(math.floor(math.abs(math.deg(turnNeeded)) + 0.5)) .. "°
 			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
 			local tau = math.pi * 2
-			local scanAngle = (now * 1.85) % tau -- [탐지광] 8초/회전 → 약 3.4초/회전
+			local scanAngle = (now * 2.45) % tau -- [탐지광] 약 2.6초/회전, 조각 잔광은 점진적으로 감쇠
 			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local reloadProgress = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cd), 0, 1)
 			local firing = now < rangeRing.volleyUntil
@@ -4413,7 +4440,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local sideArc = math.abs(heading:Cross(radial).Y) > 0.5
 				local charged = ((angle - me.theta + tau) % tau) / tau <= reloadProgress
 				local trailAngle = (scanAngle - angle + tau) % tau
-				local trail = if trailAngle < 1.65 then (1 - trailAngle / 1.65) ^ 1.35 else 0 -- [잔광] 짧은 원주 잔상
+				local trail = if trailAngle < 1.45 then (1 - trailAngle / 1.45) ^ 1.25 else 0 -- [잔광] 좁은 원주 잔상, 뒤쪽만 남는다
 				local enemyGap = math.abs((angle - enemyAngle + math.pi) % tau - math.pi)
 				local onEnemy = enemyGap < math.pi / #rangeRing.segments * 1.3
 				local tint = if sideArc then (if inRange and aligned then Color3.fromRGB(100, 216, 158) else Color3.fromRGB(230, 178, 104))
@@ -4457,10 +4484,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			rangeLabel.Text = if battleViewport.X < 480 then
 				string.format("포각 %s %d° · %s", gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else "조타 필요")
+					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
 				else string.format("%s %dm/%dm · %s %d° · %s", cannon.name, math.floor(dd), cannon.range,
 					gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else "측면 정렬")
+					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
 			rangeLabel.TextColor3 = color
 			-- [전술 단계] 실제 사거리와 기존 시각용 장전 쿨타임만 표시한다.
 			local status, tip, tone
@@ -4477,7 +4504,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
 			elseif not aligned then
 				status, tip, tone = "② 선측 정렬 · 포각 확인",
-					string.format("%s %d° · 측면 편차 %d° (60° 이내면 포격)", gunSide, math.floor(aimAngle + 0.5), sideDeviation),
+					string.format("%s %d° · 편차 %d° · %s", gunSide, math.floor(aimAngle + 0.5), sideDeviation, steerCue),
 					Color3.fromRGB(255, 185, 123)
 			elseif now < nextMeFire then
 				status, tip, tone = "③ 대포 재장전", string.format("남은 약 %.1f초 · 적선과의 거리 %dm", math.max(0, nextMeFire - now), math.floor(dd)), Color3.fromRGB(242, 212, 138)
@@ -4485,7 +4512,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
 			end
 			local messageText = if battleViewport.X < 480 then status .. "\n" ..
-				(if not inRange then "대포 사거리 밖" elseif not aligned then string.format("%s 포각 %d°", gunSide, math.floor(aimAngle + 0.5))
+				(if not inRange then "대포 사거리 밖" elseif not aligned then steerCue .. " 돌려"
 					elseif now < nextMeFire then "대포 장전 중" else "측면 포격 가능")
 				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
 			if messageText ~= lastTacticText then
