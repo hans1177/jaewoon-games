@@ -206,6 +206,43 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		-- 미끄러지듯 측면으로 움직이는 대신 축발 발목을 세우고 회피발을 들어 딛는다.
 		bend("FootL", 0.24 * slip, -0.14 * side * slip, -0.06 * side * slip)
 		bend("FootR", -0.18 * slip, 0.15 * side * slip, 0.08 * side * slip)
+		-- [병종별 접지] 기존 정예 회피 이동·확률·무적 판정과 무관한 고유 R15 동작.
+		if role == "archer" then
+			-- 사수는 고개를 표적에 남겨 두고 무릎을 낮춰 뒤로 측보한다.
+			bend("Chest", 0.26 * slip, -0.18 * side * slip, 0)
+			bend("Head", -0.08 * slip, 0.20 * side * slip, 0)
+			bend("UpperArmL", -0.35 * slip, 0, -0.17 * slip)
+			bend("ForearmR", -0.28 * slip, 0, 0)
+			bend("ShinL", -0.22 * slip, 0, 0)
+		elseif role == "shield" then
+			-- 방패병은 왼손 방패를 앞세워 몸을 옆으로 틀고 축발을 지탱한다.
+			bend("UpperArmL", -0.72 * slip, 0, -0.31 * slip)
+			bend("ForearmL", -0.48 * slip, 0, 0)
+			bend("Chest", 0.18 * slip, 0.10 * side * slip, 0)
+			bend("ThighR", -0.24 * slip, 0, 0.10 * slip)
+			bend("FootR", 0.18 * slip, 0, 0)
+		elseif role == "charger" then
+			-- 돌진병은 체중을 뒤로 뺐다가 몸을 앞으로 던져 다음 공격 자세를 준비한다.
+			bend("Spine", -0.29 * slip, 0.08 * side * slip, 0)
+			bend("Chest", -0.34 * slip, 0.12 * side * slip, 0)
+			bend("FootR", 0.29 * slip, 0, -0.06 * side * slip)
+		elseif role == "thrower" then
+			-- 투척병은 폭탄을 든 손을 높이 두고 어깨·머리를 낮춘다.
+			bend("Chest", 0.33 * slip, -0.08 * side * slip, 0)
+			bend("Head", -0.22 * slip, 0, 0)
+			bend("UpperArmR", -0.64 * slip, 0, 0.19 * slip)
+			bend("ShinR", -0.21 * slip, 0, 0)
+		elseif role == "boss" then
+			-- 두목은 얇은 발 미끄러짐 대신 느린 무게중심 이동과 넓은 축발.
+			bend("Spine", -0.11 * slip, 0.24 * side * slip, 0)
+			bend("ThighL", -0.29 * slip, 0, -0.12 * side * slip)
+			bend("ShinL", -0.33 * slip, 0, 0)
+			bend("FootL", 0.28 * slip, 0, 0)
+		elseif role == "grunt" then
+			-- 검병은 상체를 틀고 가벼운 교차 디딤으로 빠져나간다.
+			bend("Chest", -0.14 * slip, 0.24 * side * slip, 0)
+			bend("FootR", -0.17 * slip, 0, 0.12 * side * slip)
+		end
 	elseif state == "HIT" then
 		bend("Head", 0.1 * pulse, 0.1 * pulse * (if persona == 1 then -1 else 1), 0)
 	end
