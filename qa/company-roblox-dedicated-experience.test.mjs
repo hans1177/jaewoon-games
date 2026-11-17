@@ -587,7 +587,7 @@ test('Mare trade goods practice validates existing originals, rights and blocked
   assert.match(workflow,/Practice and verify approved trade goods using existing asset ledger/);
   assert.match(workflow,/python3 tools\/devloop\/assets_wanted\.py roblox-games\/mare-essentia --verify-goods/);
   assert.match(workflow,/Refresh asset practice ledger after Roblox registration/);
-  assert.match(workflow,/roblox-games\/mare-essentia\/assets-wanted\.json.*roblox-games\/mare-essentia\/assets\/cardart\/\*\.png; do/);
+  assert.match(workflow,/roblox-games\/mare-essentia\/assets-wanted\.json.*roblox-games\/mare-essentia\/assets\/cardart\/\*\.png[^;\n]*; do/);
   assert.match(workflow,/roblox-games\/mare-essentia\/assets\/relics\/weapon-(?:mace|crossbow)\.glb/);
   assert.match(workflow,/SKIP_UNVERIFIED_WEAPON_MODEL/);
   assert.match(uploader,/MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH/);
