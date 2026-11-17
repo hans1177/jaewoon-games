@@ -360,3 +360,35 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(field,/AC\.tryMove\(pl, moveId, now\)/);
 });
 
+
+
+// [탐험 지도 다양성] 승인된 외부 메시와 기존 퀘스트/전투 계약만 사용한다.
+test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 단서 조사 연결',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+  const start=field.indexOf('local landforms = {');
+  const end=field.indexOf('local featureList = landforms',start);
+  assert.ok(start>0 && end>start,'현장 지형 모델 선택 구간 누락');
+  const scenery=field.slice(start,end);
+  for(const theme of ['coast','forest','highland','mine','ruins','fort','desert','farm','lake','plains']){
+    assert.match(scenery,new RegExp('\\b'+theme+' = \\{'),'퀘스트 지형 모델 목록 누락: '+theme);
+  }
+  for(const [,kind,name] of scenery.matchAll(/\{"(Terrain|Town|Castle|Naval)","([^"]+)",/g)){
+    assert.ok(assets.includes('["'+kind+'/'+name+'"]'),'승인되지 않은 지형 에셋: '+kind+'/'+name);
+  }
+  assert.match(field,/FieldQuestTerrainTheme/);
+  assert.match(field,/FieldTerrainFeatureCount/);
+  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/FieldTerrainLandmark/);
+  assert.match(field,/FieldTerrainClue/);
+  assert.match(field,/FieldTerrainClues/);
+  assert.match(field,/FieldTimePhase/);
+  assert.match(field,/FieldWeatherClock/);
+  assert.match(field,/FieldPrecipitation/);
+  assert.match(field,/FieldAmbientAnimal/);
+  assert.match(field,/FieldAmbientObservations/);
+  assert.match(field,/local function spawnWildlife/);
+  assert.match(field,/weatherNext = now \+ climateRng:NextNumber/);
+  assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
+  assert.doesNotMatch(field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]'))),/AC\.damageEnemy|rewardGold|saveState/);
+});
