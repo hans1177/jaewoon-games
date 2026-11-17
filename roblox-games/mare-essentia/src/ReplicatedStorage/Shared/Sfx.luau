@@ -59,6 +59,26 @@ local function make(name, parent)
 	s.Volume = VOLUME[name] or 0.6
 	s.SoundGroup = parent
 	s.Parent = SoundService
+	-- [오디오 실제 로드 진단] Play() 요청만으로는 접근 권한·파일 로딩 성공을 알 수 없다.
+	-- 각 음원당 최초 실패 한 번만 기록해 모바일 로그 폭증을 막는다.
+	group:SetAttribute("AudioLastRequested", name)
+	if not s.IsLoaded then
+		s.Loaded:Once(function()
+			if not s.Parent then return end
+			broken[name] = nil
+			group:SetAttribute("AudioLastLoaded", name)
+		end)
+	end
+	task.delay(12, function()
+		if s.Parent and not s.IsLoaded then
+			broken[name] = os.clock() + 20
+			group:SetAttribute("AudioLastFailed", name)
+			if not warned[name] then
+				warned[name] = true
+				warn("[MareAudio] 음원 로드 실패: 권한·게시 Universe·연결 점검:", name, s.SoundId)
+			end
+		end
+	end)
 	return s
 end
 
@@ -87,6 +107,12 @@ function Sfx.play(name, volume, speed, fallback)
 		s.Volume = volume
 	end
 	s.PlaybackSpeed = speed or (0.96 + math.random() * 0.08)
+	-- [첫 모바일 터치 효과음] 파일이 늦게 도착했다면 같은 사운드를 다시 재생한다.
+	if not s.IsLoaded then
+		s.Loaded:Once(function()
+			if s.Parent and sfxOn and not s.Playing then s:Play() end
+		end)
+	end
 	s:Play()
 	-- [모바일 느린 로딩] 첫 재생은 TimeLength=0일 수 있어 3초 만에 자르지 않는다.
 	s.Ended:Once(function() if s.Parent then s:Destroy() end end)
@@ -168,6 +194,11 @@ function Sfx.music(name)
 	s.Looped = true
 	local target = s.Volume
 	s.Volume = 0
+	if not s.IsLoaded then
+		s.Loaded:Once(function()
+			if s.Parent and currentMusic == s and not s.Playing then s:Play() end
+		end)
+	end
 	s:Play()
 	TweenService:Create(s, TweenInfo.new(2), { Volume = target }):Play()
 	currentMusic = s
@@ -454,6 +485,11 @@ function Sfx.ambient(names, gain)
 			s.Looped = true
 			local target = s.Volume * level
 			s.Volume = 0
+			if not s.IsLoaded then
+				s.Loaded:Once(function()
+					if s.Parent and ambientKey == key and not s.Playing then s:Play() end
+				end)
+			end
 			s:Play()
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
 				table.insert(ambient, s)

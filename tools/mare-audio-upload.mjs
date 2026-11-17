@@ -13,7 +13,9 @@ const meta=JSON.parse(fs.readFileSync(dir+'/manifest.json','utf8'));
 const receiptPath=dir+'/uploaded.json';
 const preservedReceipts=fs.existsSync(receiptPath)?JSON.parse(fs.readFileSync(receiptPath,'utf8')):{};
 const idsPath='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau';
-const universeId=process.env.MARE_UNIVERSE_ID||'10774821253';
+// [실제 게시 게임 고정] 이전 초기 테스트 Universe가 아니라 기존 canonical 게시 Universe에만 오디오 사용 권한을 준다.
+const universeId=process.env.MARE_UNIVERSE_ID||'10775310508';
+if(universeId!=='10775310508')throw Error('AUDIO_UNIVERSE_MUST_MATCH_MARE_LIVE');
 if(meta.source!=='OWNER_REQUESTED_ORIGINAL_SYNTH_SCORE'||meta.license!=='OWNER_CREATED_AUDIO')throw Error('AUDIO_PROVENANCE_INVALID');
 
 // 신규 자산은 기존 저장소에 보관된 CC0 원본의 해시·허락·다운로드 출처를 검증한 뒤
@@ -308,10 +310,11 @@ for(const t of meta.tracks){
     if(!provenance){
       if(rec.sha256!==sha||!rec.granted||!/^[1-9]\d*$/.test(String(rec.assetId)))
         throw Error('AUDIO_LEGACY_CC0_REPLACEMENT_REQUIRED');
+      // [권한 재확인] 예전 영수증의 granted=true는 대상 Universe가 기록되지 않았다.
+      // 자체 합성 원본은 재등록하지 않고 기존 ID에 현재 게임의 사용 권한만 다시 부여한다.
       console.log('AUDIO_LEGACY_PRESERVED '+t.name);
-      continue;
     }
-    if(!(rec.sha256===sha&&/^[1-9]\d*$/.test(String(rec.assetId)))){
+    if(provenance&&!(rec.sha256===sha&&/^[1-9]\d*$/.test(String(rec.assetId)))){
       const form=new FormData();
       form.append('request',JSON.stringify({
         assetType:'Audio',displayName:('Mare '+t.label).slice(0,50),
@@ -335,26 +338,35 @@ for(const t of meta.tracks){
       console.log('AUDIO_UPLOADED '+t.name+'='+assetId);
       await sleep(2500);
     }
-    if(!rec.granted){
+    // [실제 게임 사용 권한] 무조건 granted=true였던 과거 영수증은 어느 Universe였는지 알 수 없다.
+    // 현재 대상이 명시된 영수증만 신뢰한다. 이미 권한이 있으면 Roblox의 AlreadyHasAccess도 성공으로 확인한다.
+    if(rec.grantedUniverseId!==universeId){
       const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
         method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
         body:JSON.stringify({subjectType:'Universe',subjectId:universeId,action:'Use',
           requests:[{assetId:Number(rec.assetId),grantToDependencies:true}]}),
       });
-      if(grant.errors?.length)throw Error('AUDIO_UNIVERSE_PERMISSION_REJECTED');
-      rec.granted=true;receipts[t.name]=rec;save();
-      console.log('AUDIO_GRANTED '+t.name);
+      const ok=Array.isArray(grant.successAssetIds)&&grant.successAssetIds.some(id=>String(id)===String(rec.assetId));
+      const already=Array.isArray(grant.errors)&&grant.errors.length===1
+        &&String(grant.errors[0].assetId)===String(rec.assetId)&&grant.errors[0].code==='AlreadyHasAccess';
+      if(!ok&&!already)throw Error('AUDIO_LIVE_UNIVERSE_GRANT_UNVERIFIED:'+t.name+':'+JSON.stringify(grant.errors||[]).slice(0,160));
+      rec.granted=true;rec.grantedUniverseId=universeId;receipts[t.name]=rec;save();
+      console.log('AUDIO_GRANTED_LIVE '+t.name+' universe='+universeId+(already?' already':''));
+      // 등록 권한 API는 분당 제한이 있으므로 모바일 게임의 새 사운드 업로드와 충돌하지 않는다.
+      await sleep(800);
     }
-    Object.assign(rec,provenance);
+    if(provenance)Object.assign(rec,provenance);
     receipts[t.name]=rec;save();
   }catch(e){
     failures++;
     console.log('AUDIO_FAILED '+t.name+' '+String(e.message||e).slice(0,200));
   }
 }
-const lines=meta.tracks.filter(t=>receipts[t.name]?.granted).map(t=>' '+t.name+'="rbxassetid://'+receipts[t.name].assetId+'",');
+const lines=meta.tracks.filter(t=>receipts[t.name]?.granted&&receipts[t.name]?.grantedUniverseId===universeId)
+  .map(t=>' '+t.name+'="rbxassetid://'+receipts[t.name].assetId+'",');
 fs.writeFileSync(idsPath,
   '-- 업로드 워크플로(mare-audio-upload)가 기록한 음악·효과음 ID. 등록과 권한 승인이 끝난 것만 들어간다. 없으면 소리 없이 지나간다.\nreturn {\n'+lines.join('\n')+'\n}\n');
-console.log('AUDIO_IDS_WRITTEN count='+lines.length+' failures='+failures);
+console.log('AUDIO_IDS_WRITTEN count='+lines.length+' live_universe='+universeId+' failures='+failures);
+if(lines.length!==meta.tracks.length)throw Error('AUDIO_LIVE_UNIVERSE_GRANTS_INCOMPLETE:'+lines.length+'/'+meta.tracks.length);
 // 일부 음원/권한 실패를 성공으로 숨기지 않는다. 이미 승인된 ID와 영수증은 복구용으로 보존.
 if(failures>0)process.exitCode=1;

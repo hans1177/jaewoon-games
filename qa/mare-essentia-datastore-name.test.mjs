@@ -266,12 +266,32 @@ test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 
     'if ambientKey == key and #ambient > 0 then',
     'Sfx.ambient(names, gain)',
     'local priority = { "music_harbor"',
+    's.Loaded:Once(function()',
+    'group:SetAttribute("AudioLastFailed", name)',
+    'group:SetAttribute("AudioLastLoaded", name)',
+    'if s.Parent and sfxOn and not s.Playing then s:Play() end',
+    'if s.Parent and ambientKey == key and not s.Playing then s:Play() end',
   ]) assert.ok(audio.includes(snippet),'음향 복원 경로 누락: '+snippet);
   assert.doesNotMatch(audio,/broken\[name\] = true/,'오디오 로딩 실패 영구 봉인 금지');
   assert.doesNotMatch(audio,/local first = probe\(all\)/,'모바일 전체 음원 100개 동시 프리로드 금지');
   assert.ok(fieldScene.includes('Sfx.ambient({ "sfx_wind" }, 0.60)'));
   assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));
   assert.ok(fieldScene.includes('elseif phase == "밤" then 0.43 else 0.58'));
+  // [무음 근본 원인] 100개 영수증의 granted=true만 믿고 다른 Universe를 건너뛰면 실게임에서 소리가 나지 않는다.
+  const upload=fs.readFileSync('tools/mare-audio-upload.mjs','utf8');
+  const receipts=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/audio/uploaded.json','utf8'));
+  const audioIds=read('ReplicatedStorage/Shared/AudioIds.luau');
+  assert.ok(upload.includes("process.env.MARE_UNIVERSE_ID||'10775310508'"));
+  assert.ok(upload.includes("if(universeId!=='10775310508')"));
+  assert.ok(upload.includes('if(rec.grantedUniverseId!==universeId)'));
+  assert.ok(upload.includes("grant.errors[0].code==='AlreadyHasAccess'"));
+  assert.ok(upload.includes('rec.grantedUniverseId=universeId'));
+  assert.ok(upload.includes('if(provenance&&!(rec.sha256===sha'));
+  assert.ok(upload.includes('receipts[t.name]?.grantedUniverseId===universeId'));
+  assert.ok(Object.keys(receipts).length >= 100,'기존 오디오 100종 영수증 보존');
+  for(const [name, receipt] of Object.entries(receipts)) {
+    assert.equal(audioIds.includes(name+'="rbxassetid://'+receipt.assetId+'"'),true,'등록 음원 ID 원본 보존: '+name);
+  }
 });
 
 // [몹 상태이상 회귀] 정예 둔화/두목 독은 방어·회피한 공격에서 발동하지 않고 전투·저장 흐름에 섞이지 않는다.
