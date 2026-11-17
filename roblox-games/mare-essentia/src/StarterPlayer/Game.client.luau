@@ -6447,7 +6447,7 @@ local function renderYard()
 				for _, item in yard.ships do
 					if item.id == plan.id then shop = item; break end
 				end
-				local status = if shop then (if shop.locked then shop.locked else "이 조선소에서 구매 가능")
+				local status = if shop then (if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능")
 					elseif plan.faction == "lost" then "호놀룰루 전용"
 					else "해당 지역의 조선소에서 구매"
 				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
@@ -6456,7 +6456,21 @@ local function renderYard()
 				local info = string.format("%s · %s\n선체: %s\n돛·노: %s\n갑판: %s\n3D: %s\n지역 연출: %s\n%d단계 포격: %s\n고유 운용: %s · 약점: %s\n구매 지역·해금: %s",
 					plan.era, plan.sailingZone, plan.hull, plan.rig, plan.deck, visual,
 					regionScenes[plan.faction] or "기본 해전 연출", plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
-				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 240)
+				-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
+				local purchase = nil
+				if shop then
+					local pay = math.max(0, shop.netCost)
+					info ..= string.format("\n정가 %s · 기함 매각 보상 %s · 실결제 %s",
+						H.commas(shop.price), H.commas(shop.tradeIn), H.commas(pay))
+					if not shop.canCarry then info ..= "\n화물을 먼저 내려야 구매 가능" end
+					purchase = {{
+						text = if shop.owned then "현재 기함" elseif shop.locked then "잠김" else "교체\n" .. H.commas(pay),
+						color = if shop.owned then COLORS.gold else COLORS.blue,
+						enabled = yard.available and not shop.owned and not shop.locked and shop.canCarry and shop.netCost <= view.player.coins,
+						onClick = function() call("BuyShip", { shipId = shop.id }) end
+					}}
+				end
+				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 274)
 			end)
 		end
 	end
