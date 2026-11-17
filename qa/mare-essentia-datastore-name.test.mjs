@@ -164,3 +164,24 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   assert.match(field,/canon\.HandR = \(canon\.HandR or id\)/);
   assert.match(field,/canon\.FootL = \(canon\.FootL or id\)/);
 });
+
+ 
+// [원거리 사격 회귀] 근접 판정에 묶이던 원거리 스킬과 석궁 견착을 기존 R15/전투 경로에서 검사한다.
+test('원거리 공격은 무기 사거리로 조준·발사하며 석궁 R15 양손 견착을 사용한다',()=>{
+  const fieldMotion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  const weapons=read('ReplicatedStorage/Shared/Weapons.luau');
+  assert.match(weapons,/id = "crossbow"[^\n]+ranged = true, range = 26/);
+  assert.match(weapons,/id = "bow"[^\n]+ranged = true, range = 26/);
+  assert.match(weapons,/id = "gun"[^\n]+ranged = true, range = 22/);
+  assert.match(field,/local STUD = 2/);
+  assert.match(field,/local near, nd = nil, if wpn\.ranged then wpn\.range \* STUD \+ 3 else 40/);
+  assert.match(field,/local rangeR = if wpn\.ranged or moveId == "rush" then wpn\.range else mv\.range/);
+  assert.match(field,/local rangedShot = wpn\.ranged/);
+  assert.match(field,/if rangedShot and shots >= 1 then break end/);
+  assert.match(field,/if wpn\.ranged then return CFrame\.new\(0, -0\.12 \* bell\(p\), 0\)/);
+  assert.match(field,/local crossbow = wpn\.motion == "CROSSBOW"/);
+  assert.match(field,/canon\.ForearmL = \(canon\.ForearmL or id\)/);
+  assert.match(fieldMotion,/elseif crossbow then[\s\S]*?bend\("UpperArmL",[\s\S]*?bend\("ForearmL"/);
+  assert.match(field,/arrowTrail\(a0, b0\)/);
+  assert.match(field,/if not wpn\.ranged and nd > reach - 2 then/);
+});
