@@ -217,7 +217,7 @@ local FIELD_TINT = {
 	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
 	["Rock_2"] = Color3.fromRGB(153, 148, 134),
 }
-local function placeModel(parent, kind, asset, bottom, desired, solid)
+local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
 	local tpl = group and group:FindFirstChild(asset)
@@ -232,7 +232,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid)
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
-			local tint = FIELD_TINT[asset]
+			local tint = tintOverride or FIELD_TINT[asset]
 			if tint then
 				d.Color = tint
 				pcall(function() (d :: any).UsePartColor = true end)
@@ -416,7 +416,44 @@ function FieldScene.start(opts)
 			end
 		end
 	end
-	local biome = lookFor(opts.name or "", opts.portId)
+	-- [지역·계절 지형] 실제 달력 월에 맞춰 온대 사계절·북방 설기·열대 우건기·건조지대의 차이를 준다.
+	-- 기존 위험도·몬스터·보상과 무관한 이번 필드 한정 시각 값이며 원본 BIOMES 테이블은 변경하지 않는다.
+	local biome = table.clone(lookFor(opts.name or "", opts.portId))
+	local month = os.date("!*t").month
+	local season = if month >= 3 and month <= 5 then "봄" elseif month >= 6 and month <= 8 then "여름"
+		elseif month >= 9 and month <= 11 then "가을" else "겨울"
+	local region = biome.region or ""
+	local northern = region == "nordic" or region == "hanse" or region == "britain" or region == "stone"
+	local tropical = region == "seasia" or region == "tropic" or region == "malabar"
+		or region == "pacific" or region == "creole"
+	local arid = region == "desert" or region == "ottoman" or region == "med"
+		or region == "wafrica" or region == "swahili" or biome.mat == Enum.Material.Sand
+	local climateZone = if northern then "북방" elseif tropical then "열대"
+		elseif arid then "건조" else "온대"
+	local monsoon = tropical and month >= 5 and month <= 10
+	local seasonName = if tropical then (if monsoon then "우기" else "건기")
+		elseif arid then (if season == "겨울" then "서늘한 계절" else "건조한 계절")
+		else season
+	local winterScene = season == "겨울" and (northern or biome.mat == Enum.Material.Snow)
+	if winterScene then
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(218, 226, 228), 0.83)
+		biome.mat = Enum.Material.Snow
+		biome.fog = biome.fog:Lerp(Color3.fromRGB(187, 208, 223), 0.38)
+	elseif northern and biome.mat == Enum.Material.Snow then
+		biome.mat = Enum.Material.Grass
+		biome.ground = Color3.fromRGB(91, 117, 86):Lerp(biome.ground, if season == "여름" then 0.15 else 0.42)
+	elseif not arid and not tropical and biome.mat == Enum.Material.Grass then
+		if season == "봄" then biome.ground = biome.ground:Lerp(Color3.fromRGB(91, 154, 83), 0.30)
+		elseif season == "가을" then biome.ground = biome.ground:Lerp(Color3.fromRGB(155, 127, 77), 0.37)
+		elseif season == "겨울" then biome.ground = biome.ground:Lerp(Color3.fromRGB(151, 153, 131), 0.33) end
+	elseif tropical and monsoon then
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(53, 112, 71), 0.27)
+		biome.fog = biome.fog:Lerp(Color3.fromRGB(157, 195, 182), 0.30)
+	end
+	folder:SetAttribute("FieldSeason", season)
+	folder:SetAttribute("FieldSeasonLabel", seasonName)
+	folder:SetAttribute("FieldClimateZone", climateZone)
+	folder:SetAttribute("FieldSeasonMonth", month)
 	local visualMobile = game:GetService("UserInputService").TouchEnabled
 	folder:SetAttribute("FieldDifficultyGrade", math.clamp(math.floor(tonumber(opts.danger) or 1), 1, 5))
 	folder:SetAttribute("FieldRegion", biome.region or "generic")
@@ -590,7 +627,7 @@ function FieldScene.start(opts)
 	local function placeFeature(entry)
 		if not folder.Parent then return nil end
 		local pos = entry.position or (ORIGIN + Vector3.new(entry[4] * half * mirror, 0, entry[5] * half))
-		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
+		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
 		if not m then return nil end
 		if entry.landmark then
 			m.Name = "FieldTerrainLandmark"
@@ -642,6 +679,14 @@ function FieldScene.start(opts)
 	end
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
+	-- [구획별 단순화된 식생 팔레트] 고스트 오브 쓰시마처럼 동일 화면의 나뭇잎색을 절제해 지역 정체성을 강조한다.
+	local foliageTint = if winterScene then Color3.fromRGB(150, 173, 160)
+		elseif northern and season == "가을" then Color3.fromRGB(155, 119, 66)
+		elseif season == "가을" and not tropical and not arid then Color3.fromRGB(196, 119, 61)
+		elseif season == "봄" and not tropical and not arid then Color3.fromRGB(111, 170, 91)
+		elseif tropical then Color3.fromRGB(81, 146, 82)
+		elseif arid then Color3.fromRGB(156, 151, 94)
+		else Color3.fromRGB(102, 153, 82)
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
 	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
@@ -668,6 +713,10 @@ function FieldScene.start(opts)
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		local entry = { kind, name, h, nil, nil, false }
 		entry.position = pos
+		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
+		entry.tint = if name == "tree-pinedefaulta" or name == "north-pine-fall"
+			then (if winterScene then Color3.fromRGB(85, 117, 116) else Color3.fromRGB(103, 146, 92))
+			else foliageTint
 		stageFeature(entry)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
@@ -797,6 +846,37 @@ function FieldScene.start(opts)
 			entry.position = ORIGIN + Vector3.new(x, 0, z)
 			stageFeature(entry)
 		end
+	end
+
+
+	-- [지역 원근·계절 디테일] 큰 랜드마크 앞에 잎·풀·자갈·화단 군집을 층으로 배치해 평면감을 줄인다.
+	-- 지역마다 실제 승인된 기존 Terrain 모델만 사용한다. 새 물체 합성이나 지형 장벽은 만들지 않는다.
+	local detailAssets = if questTerrain == "coast" then { "coast-grass-patch", "Grass_Small", "river-stone-bank" }
+		elseif questTerrain == "mine" then { "debris", "Rock_2", "log-stack" }
+		elseif questTerrain == "ruins" or questTerrain == "fort" then { "forest-bush-detailed", "river-stone-bank", "forest-flower-purple" }
+		elseif questTerrain == "highland" then { "river-stone-bank", "Rock_2", "north-pine-fall" }
+		elseif questTerrain == "farm" then { "crops-wheatstageb", "forest-flower-yellow", "Grass_Small" }
+		elseif questTerrain == "lake" then { "river-stone-bank", "forest-bush-detailed", "forest-flower-purple" }
+		elseif questTerrain == "desert" then { "arid-cactus-short", "coast-grass-patch", "Grass_Small" }
+		elseif questTerrain == "forest" then { "forest-bush-detailed", "forest-flower-purple", "Grass_Small" }
+		else { "Grass_Small", "forest-flower-yellow", "river-stone-bank" }
+	if tropical then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
+	elseif winterScene then detailAssets = { "north-pine-fall", "river-stone-bank", "Rock_2" }
+	elseif season == "가을" and (questTerrain == "forest" or questTerrain == "plains") then
+		detailAssets = { "forest-bush-detailed", "forest-flower-yellow", "coast-grass-patch" }
+	end
+	local detailCount = if visualMobile then 10 else 24
+	for index = 1, detailCount do
+		local band = math.floor((index - 1) / 4)
+		local side = if index % 2 == 0 then -1 else 1
+		local px = side * half * (0.51 + rng:NextNumber(0, 0.11))
+		local pz = -half * 0.71 + band * half * 0.17 + rng:NextNumber(-7, 7)
+		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
+		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
+			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
+			else rng:NextNumber(2.2, 5.2), nil, nil, false }
+		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
+		stageFeature(entry)
 	end
 
 	-- 생산지·탐험 지역에 신규 CC0 자연 자산을 배치한다.
@@ -1752,10 +1832,13 @@ function FieldScene.start(opts)
 	do
 		local lighting = game:GetService("Lighting")
 		local climateRng = Random.new((opts.seed or 7) * 137 + 19)
-		local snowy = biome.mat == Enum.Material.Snow or biome.region == "nordic"
-		local dry = biome.mat == Enum.Material.Sand or biome.kind == "mine"
+		local snowy = winterScene or (region == "nordic" and season ~= "여름")
+		local dry = arid or biome.kind == "mine"
+		-- [기후별 기상] 북방 설기·온대 봄비·열대 우기·사막 건기를 구별한다.
 		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
+			elseif monsoon then { "흐림", "비", "소나기", "옅은 안개", "비" }
 			elseif dry then { "맑음", "흐림", "옅은 안개" }
+			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
 		local clockStart = os.clock()
@@ -1764,7 +1847,8 @@ function FieldScene.start(opts)
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
 		timeLabel.Position = UDim2.fromOffset(12, 216)
-		timeLabel.Size = UDim2.fromOffset(228, 26)
+		timeLabel.Size = UDim2.fromOffset(if visualMobile then 252 else 300, 26)
+		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
 		-- 투명 발사대는 눈·빗방울의 발원점일 뿐, 동물·장식용 기본 파츠를 생성하지 않는다.
 		local precipAnchor = part(folder, Vector3.new(55, 0.2, 55),
@@ -1789,6 +1873,32 @@ function FieldScene.start(opts)
 		precip.LightEmission = if snowy then 0.2 else 0.08
 		precip.Rate = 0
 		precip.Parent = precipAnchor
+		-- [계절의 숨결] 기존 비·눈 발원점을 재사용해 봄 꽃가루·가을 낙엽·열대 수증기·사막 먼지를 띄운다.
+		local driftType = if arid then "모래바람" elseif season == "가을" and not tropical then "낙엽"
+			elseif season == "봄" and not tropical then "꽃가루" elseif monsoon then "수증기"
+			elseif snowy then "설풍" else "산들바람"
+		local driftColor = if driftType == "모래바람" then Color3.fromRGB(209, 180, 124)
+			elseif driftType == "낙엽" then Color3.fromRGB(198, 118, 58)
+			elseif driftType == "꽃가루" then Color3.fromRGB(234, 207, 129)
+			elseif driftType == "설풍" then Color3.fromRGB(225, 236, 244)
+			else Color3.fromRGB(190, 215, 195)
+		local drift = Instance.new("ParticleEmitter")
+		drift.Name = "FieldSeasonalDrift"
+		drift.Texture = "rbxasset://textures/particles/smoke_main.dds"
+		drift.Shape = Enum.ParticleEmitterShape.Box
+		drift.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+		drift.EmissionDirection = Enum.NormalId.Front
+		drift.Lifetime = NumberRange.new(2.0, 3.5)
+		drift.Speed = NumberRange.new(2.4, 4.8)
+		drift.Size = NumberSequence.new(if driftType == "수증기" then 0.7 else 0.24)
+		drift.Transparency = NumberSequence.new(0.62, 1)
+		drift.Color = ColorSequence.new(driftColor)
+		drift.LightEmission = 0.04
+		drift.Rotation = NumberRange.new(0, 360)
+		drift.RotSpeed = NumberRange.new(-28, 28)
+		drift.Rate = 0
+		drift.Parent = precipAnchor
+		folder:SetAttribute("FieldSeasonalDrift", driftType)
 		folder:SetAttribute("FieldWeather", weather)
 		local timeElapsed = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
@@ -1833,7 +1943,12 @@ function FieldScene.start(opts)
 			precip.Rate = if weather == "눈" then (if visualMobile then 17 else 31)
 				elseif weather == "비" or weather == "소나기" then (if visualMobile then 45 else 90) else 0
 			if weather == "소나기" then precip.Rate *= 1.45 end
-			timeLabel.Text = string.format("%s %02d:%02d  ·  %s", phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
+			-- 바람은 지역 특성과 기상에 따라 방향·강도가 달라지되 이동/전투 판정에는 영향이 없다.
+			local gust = math.sin(now * 0.15 + month) * 2.0
+			local windStrength = if weather == "소나기" then 2.2 elseif weather == "눈" then 1.7 else 1
+			drift.Acceleration = Vector3.new((5.5 + gust) * windStrength, if driftType == "낙엽" then -3.0 else 0.8, 1.9 * windStrength)
+			drift.Rate = (if visualMobile then 3 else 8) * (if weather == "소나기" then 0.45 else 1)
+			timeLabel.Text = string.format("%s %s %02d:%02d · %s", seasonName, phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
 			folder:SetAttribute("FieldTimePhase", phase)
 			folder:SetAttribute("FieldClockTime", clock)
 		end))
