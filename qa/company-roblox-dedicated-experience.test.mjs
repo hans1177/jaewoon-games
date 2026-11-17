@@ -1124,7 +1124,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
 });
 
 // [해전 화면 검증] 기존 해전 코드의 화면 방향 조향·8개 해역·폰 UI·포각·탐지광·침몰 효과와 규칙 불변을 검증한다.
-test('Mare naval steering, eight coasts, mobile HUD, aiming, radar and large VFX share one canonical battle flow', () => {
+test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD, aiming and radar share one battle flow', () => {
   const src=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(src,/steerDir = if math\.abs\(nx\) < 0\.12 then 0 else nx/);
   assert.match(src,/local turnSign = if rightTurn:Dot\(cam\.CFrame\.RightVector\) < -0\.05 then -1 else 1/);
@@ -1136,7 +1136,23 @@ test('Mare naval steering, eight coasts, mobile HUD, aiming, radar and large VFX
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','land-floating-island']){
     assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
   }
-  assert.match(src,/local coast = coasts\[mapHash % #coasts \+ 1\]/);
+  // [16해역 회귀] 지역 풀을 유지하고 시간·날씨·모바일 예산은 전투 판정과 분리한다.
+  const sceneIds=[...src.matchAll(/\{ id="([a-z_]+)", name="[^"]+", water=Color3\.fromRGB/g)].map(m=>m[1]);
+  assert.deepEqual(sceneIds,[
+    'caribbean','atlantic_storm','mediterranean','japan','china','indian_monsoon','north_sea','arctic',
+    'cape','volcanic','tropical','ghost','harbor','strait','gold_coast','moonlight'
+  ]);
+  assert.match(src,/local coastIndex = regions\[sceneSeed % #regions \+ 1\]/);
+  assert.match(src,/folder:SetAttribute\("NavalEnvironmentCount", #coasts\)/);
+  assert.match(src,/folder:SetAttribute\("NavalTimePhase", phase\)/);
+  assert.match(src,/folder:SetAttribute\("NavalWeatherMode", mode\)/);
+  assert.match(src,/local portLat, portLon = tonumber\(opts\.portLat\), tonumber\(opts\.portLon\)/);
+  assert.match(src,/for i = 1, \(if MOBILE_VFX then 11 else 26\) do/);
+  assert.match(src,/if MOBILE_VFX and index > 2 then break end/);
+  assert.match(src,/folder\.Destroying:Connect\(function\(\)[\s\S]*?colorGrade:Destroy\(\)/);
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(client,/portLat = view\.player and PortData\.Ports\[view\.player\.portId\]/);
+  assert.match(client,/portLon = view\.player and PortData\.Ports\[view\.player\.portId\]/);
   assert.match(src,/local steerCue = \(if turnNeeded >= 0 then "우로 " else "좌로 "\)/);
   assert.match(src,/\) \.\. "°"/, "aim cue string literal must be closed");
   assert.match(src,/local scanAngle = \(now \* 2\.45\) % tau/);

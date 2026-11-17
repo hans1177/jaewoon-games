@@ -3026,6 +3026,10 @@ local function call(action, payload)
 				return names
 			end)(),
 			weatherName = view.weather and view.weather.name,
+			-- [해역별 해전 연출] 기존 항구 좌표를 배경 선택에만 전달한다. 서버 전투·저장 불변.
+			portId = view.player and view.player.portId,
+			portLat = view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].lat,
+			portLon = view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].lon,
 			advisorName = (function()
 				for _, c in (view.companions and view.companions.list) or {} do
 					if c.joined then return c.name end
