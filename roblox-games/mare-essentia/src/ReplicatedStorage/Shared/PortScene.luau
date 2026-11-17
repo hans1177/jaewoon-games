@@ -5098,7 +5098,7 @@ function PortScene.build(info, onFacility)
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
 	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
-	pcall(function()
+	local routeOk, routeError = pcall(function()
 		local params = OverlapParams.new()
 		params.FilterType = Enum.RaycastFilterType.Include
 		params.FilterDescendantsInstances = { folder }
@@ -5121,17 +5121,19 @@ function PortScene.build(info, onFacility)
 			end
 			return false
 		end
-		local relocated, stopped = 0, 0
+		local relocated, stopped, inspected = 0, 0, 0
 		for _, walker in walkers do
 			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" or walker.mode == "circle" then
 				continue
 			end
+			inspected += 1
 			local original = walker.base
 			local moving = walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil)
 			local scheduled = walker.mode == "schedule" and walker.morning and walker.market and walker.evening
 			local safe
 			for _, offset in offsets do
-				local candidate = original * CFrame.new(offset)
+				-- [좌표 정합] 주민 위치와 일과형 경유지를 모두 세계 좌표로 평행 이동한다.
+				local candidate = original + offset
 				if scheduled then
 					local morning, market, evening = walker.morning + offset, walker.market + offset, walker.evening + offset
 					local function clearSegment(a, b)
@@ -5155,7 +5157,8 @@ function PortScene.build(info, onFacility)
 			if not safe then
 				-- 이동 경로가 막혔으면 빈 정지 위치를 찾고, 그것도 없으면 시각 NPC만 숨긴다.
 				for _, offset in offsets do
-					local candidate = original * CFrame.new(offset)
+					-- [좌표 정합] 주민 위치와 일과형 경유지를 모두 세계 좌표로 평행 이동한다.
+				local candidate = original + offset
 					if not blocked(candidate, 0, walker.model) then
 						safe = candidate
 						walker.mode, walker.kind = "stay", "look"
@@ -5174,10 +5177,13 @@ function PortScene.build(info, onFacility)
 				stopped += 1
 			end
 		end
+		folder:SetAttribute("NpcRouteChecked", inspected)
 		folder:SetAttribute("NpcRouteRelocated", relocated)
 		folder:SetAttribute("NpcRouteBlocked", stopped)
 	end)
-
+	-- [진단] 질의가 실패하면 성공으로 간주하지 않고 스튜디오에서 확인할 수 있게 보존한다.
+	folder:SetAttribute("NpcRouteAudit", if routeOk then "PASS" else "FAIL")
+	if not routeOk then folder:SetAttribute("NpcRouteFailure", tostring(routeError)) end
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()
