@@ -247,6 +247,25 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
   assert.ok(chance(1,true,true,true)>=.35,'빗나감 하한 유효');
 });
 
+// [유적 탐험 회귀] 프롬프트가 전투 키와 겹치거나 긴 설명이 22px에서 잘리지 않게 한다.
+// 원더 발견 원화는 썸네일이 아니라 실제 등록된 Roblox UI 이미지로 표시해야 한다.
+test('유적 상호작용 안내는 모바일에서 줄바꿈되고 발견 화면은 등록 원화를 직접 표시한다',()=>{
+  assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
+  assert.ok(field.includes('note.Size = UDim2.new(0.78, 0, 0, 56)'));
+  assert.ok(field.includes('note.TextWrapped = true'));
+  assert.ok(field.includes('say(clueText[theme] or clueText.plains, 4.5)'));
+  assert.ok(field.includes('prompt.KeyboardKeyCode = Enum.KeyCode.T'));
+  assert.ok(field.includes('math.min(extent.X * 0.55 + 4, 16)'));
+  assert.ok(field.includes('math.min(extent.Z * 0.55 + 4, 16)'));
+  assert.ok(client.includes('local image = "rbxassetid://" .. tostring(assetId)'));
+  assert.doesNotMatch(client,/local image = "rbxthumb:\/\//,'원더 발견화면 썸네일 대신 등록 원화 연결');
+  const scenes=read('ReplicatedStorage/Shared/WonderScenes.luau');
+  const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+  for(const match of scenes.matchAll(/art = "(event_[a-z_]+)"/g)){
+    assert.ok(assets.includes('["CardArt/'+match[1]+'"]'),'등록되지 않은 원더 유적 삽화: '+match[1]);
+  }
+});
+
 // [재생기/날씨 음향 회귀] 최초 지연 로드와 권한 실패가 모든 음악·효과음을 영구 음소거하지 않도록 한다.
 test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 재시도 경로를 유지한다',()=>{
   const audio=read('ReplicatedStorage/Shared/Sfx.luau');
